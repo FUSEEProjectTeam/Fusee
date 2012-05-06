@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C4dApi.i" />
+    <None Include="..\README.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\c4d_basebitmap.swig.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ge_prepass.swig.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\lib_description.swig.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\lib_ca.swig.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\c4d_gedata.swig.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\resource\modules\gv\expressiontag\res\description\gvdynamic.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="c4d_customdatatype.swig.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="customgui_inexclude.swig.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="operatingsystem.swig.h">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

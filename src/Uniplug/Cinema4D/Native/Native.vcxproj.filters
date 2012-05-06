@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C4dApiWrapper.cpp" />
+    <ClCompile Include="source\main.cpp" />
+    <ClCompile Include="C4dApiExtensions\ObjectDataM.cpp">
+      <Filter>C4dApiExtensions</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="mono.def" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="C4dApiExtensions">
+      <UniqueIdentifier>{33198356-a310-4ecb-9041-21a797445c82}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C4dApiExtensions\ObjectDataM.h">
+      <Filter>C4dApiExtensions</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

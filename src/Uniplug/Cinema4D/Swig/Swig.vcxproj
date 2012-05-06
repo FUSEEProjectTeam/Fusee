@@ -1,0 +1,176 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\README.txt" />
+    <None Include="C4dApi.i" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\..\resource\modules\gv\expressiontag\res\description\gvdynamic.h" />
+    <ClInclude Include="c4d_customdatatype.swig.h" />
+    <ClInclude Include="customgui_inexclude.swig.h" />
+    <ClInclude Include="include\c4d_basebitmap.swig.h" />
+    <ClInclude Include="include\c4d_gedata.swig.h" />
+    <ClInclude Include="include\ge_prepass.swig.h" />
+    <ClInclude Include="include\lib_ca.swig.h" />
+    <ClInclude Include="include\lib_description.swig.h" />
+    <ClInclude Include="operatingsystem.swig.h" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{DF2CEF11-FC94-4D78-BC42-004720BC5C87}</ProjectGuid>
+    <RootNamespace>Swig</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <TargetName />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <TargetName />
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <TargetName />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <TargetName />
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <OutputFile>
+      </OutputFile>
+    </Link>
+    <CustomBuildStep>
+      <Command>swig -c++  -o ../Native/C4dApiWrapper.cpp -csharp -namespace C4d -dllimport Native.cdl -outdir ../C4d/C4dApi -I"include" -I"../Native/C4dApiExtensions" -I"$(C4D_DIR)\resource\_api" -I"$(C4D_DIR)\resource\_api\c4d_preview" -I"$(C4D_DIR)\resource\_api\c4d_customgui" -I"$(C4D_DIR)\resource\_api\c4d_libs" -I"$(C4D_DIR)\resource\_api\c4d_gv" -I"$(C4D_DIR)\resource\modules\Modeling\res\description" -I"$(C4D_DIR)\resource\res\description" -I"$(C4D_DIR)\resource\modules\objects\res\description" -I"$(C4D_DIR)\resource\_api_maxon\source" -I"$(C4D_DIR)\resource\modules\gv\expressiontag\res\description" "$(ProjectDir)C4dApi.i"</Command>
+      <Message>Generating C# Wrapper and Extension</Message>
+      <Outputs>../Native/C4dApiWrapper.cpp</Outputs>
+      <Inputs> $(ProjectDir)C4D.i</Inputs>
+    </CustomBuildStep>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <OutputFile>
+      </OutputFile>
+    </Link>
+    <CustomBuildStep>
+      <Command>swig -c++  -o ../Native/C4dApiWrapper.cpp -csharp -namespace C4d -dllimport Native.cdl64 -outdir ../C4d/C4dApi -I"include" -I"../Native/C4dApiExtensions" -I"$(C4D_DIR)\resource\_api" -I"$(C4D_DIR)\resource\_api\c4d_preview" -I"$(C4D_DIR)\resource\_api\c4d_customgui" -I"$(C4D_DIR)\resource\_api\c4d_libs" -I"$(C4D_DIR)\resource\_api\c4d_gv" -I"$(C4D_DIR)\resource\modules\Modeling\res\description" -I"$(C4D_DIR)\resource\res\description" -I"$(C4D_DIR)\resource\modules\objects\res\description" -I"$(C4D_DIR)\resource\_api_maxon\source" -I"$(C4D_DIR)\resource\modules\Modeling\res\description" -I"$(C4D_DIR)\resource\res\description" -I"$(C4D_DIR)\resource\modules\objects\res\description" -I"$(C4D_DIR)\resource\_api_maxon\source" -I"$(C4D_DIR)\resource\modules\gv\expressiontag\res\description" "$(ProjectDir)C4dApi.i"</Command>
+      <Message>Generating C# Wrapper and Extension</Message>
+      <Outputs>../Native/C4dApiWrapper.cpp</Outputs>
+      <Inputs> $(ProjectDir)C4D.i</Inputs>
+    </CustomBuildStep>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <OutputFile>
+      </OutputFile>
+    </Link>
+    <CustomBuildStep>
+      <Command>swig -c++  -o ../Native/C4dApiWrapper.cpp -csharp -namespace C4d -dllimport Native.cdl -outdir ../C4d/C4dApi -I"include" -I"../Native/C4dApiExtensions" -I"$(C4D_DIR)\resource\_api" -I"$(C4D_DIR)\resource\_api\c4d_preview" -I"$(C4D_DIR)\resource\_api\c4d_customgui" -I"$(C4D_DIR)\resource\_api\c4d_libs" -I"$(C4D_DIR)\resource\_api\c4d_gv" -I"$(C4D_DIR)\resource\modules\Modeling\res\description" -I"$(C4D_DIR)\resource\res\description" -I"$(C4D_DIR)\resource\modules\objects\res\description" -I"$(C4D_DIR)\resource\_api_maxon\source" -I"$(C4D_DIR)\resource\modules\gv\expressiontag\res\description" "$(ProjectDir)C4dApi.i"</Command>
+      <Message>Generating C# Wrapper and Extension</Message>
+      <Outputs>../Native/C4dApiWrapper.cpp</Outputs>
+      <Inputs> $(ProjectDir)C4D.i</Inputs>
+    </CustomBuildStep>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>
+      </EnableCOMDATFolding>
+      <OptimizeReferences>
+      </OptimizeReferences>
+      <OutputFile>
+      </OutputFile>
+    </Link>
+    <CustomBuildStep>
+      <Command>swig -c++  -o ../Native/C4dApiWrapper.cpp -csharp -namespace C4d -dllimport Native.cdl64 -outdir ../C4d/C4dApi  -I"include" -I"../Native/C4dApiExtensions" -I"$(C4D_DIR)\resource\_api" -I"$(C4D_DIR)\resource\_api\c4d_preview" -I"$(C4D_DIR)\resource\_api\c4d_customgui" -I"$(C4D_DIR)\resource\_api\c4d_libs" -I"$(C4D_DIR)\resource\_api\c4d_gv" -I"$(C4D_DIR)\resource\modules\Modeling\res\description" -I"$(C4D_DIR)\resource\res\description" -I"$(C4D_DIR)\resource\modules\objects\res\description" -I"$(C4D_DIR)\resource\_api_maxon\source" -I"$(C4D_DIR)\resource\modules\Modeling\res\description" -I"$(C4D_DIR)\resource\res\description" -I"$(C4D_DIR)\resource\modules\objects\res\description" -I"$(C4D_DIR)\resource\_api_maxon\source" -I"$(C4D_DIR)\resource\modules\gv\expressiontag\res\description" "$(ProjectDir)C4dApi.i"</Command>
+      <Message>Generating C# Wrapper and Extension</Message>
+      <Outputs>../Native/C4dApiWrapper.cpp</Outputs>
+      <Inputs> $(ProjectDir)C4D.i</Inputs>
+    </CustomBuildStep>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
