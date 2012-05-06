@@ -1,22 +1,24 @@
-﻿Der Buildvorgang wurde am 08.04.2012 16:22:14 gestartet.
-     1>Projekt "C:\Users\dominik_uni\HiWiJob\Branches\FuseeMerged\Fusee\src\Uniplug\Cinema4D\Swig\Swig.vcxproj" auf Knoten "2", rebuild Ziel(e).
+﻿Der Buildvorgang wurde am 06.05.2012 12:04:00 gestartet.
+     1>Projekt "C:\Users\dsteffen\HiwiJob\GIT\Fusee\src\Uniplug\Cinema4D\Swig\Swig.vcxproj" auf Knoten "2", rebuild Ziel(e).
      1>_PrepareForClean:
          Die Datei "Debug\Swig.lastbuildstate" wird gelöscht.
+       PrepareForBuild:
+         Das Verzeichnis "C:\Users\dsteffen\HiwiJob\GIT\Fusee\src\Uniplug\Cinema4D\Debug\" wird erstellt.
        InitializeBuildStatus:
          "Debug\Swig.unsuccessfulbuild" wird erstellt, da "AlwaysCreate" angegeben wurde.
        CustomBuildStep:
          Description: Generating C# Wrapper and Extension
-         swig -c++  -o ../Native/C4dApiWrapper.cpp -csharp -namespace C4d -dllimport Native.cdl -outdir ../C4d/C4dApi -I"include" -I"../Native/C4dApiExtensions" -I"C:\Program Files\MAXON\CINEMA 4D R13\resource\_api" -I"C:\Program Files\MAXON\CINEMA 4D R13\resource\_api\c4d_preview" -I"C:\Program Files\MAXON\CINEMA 4D R13\resource\_api\c4d_customgui" -I"C:\Program Files\MAXON\CINEMA 4D R13\resource\_api\c4d_libs" -I"C:\Program Files\MAXON\CINEMA 4D R13\resource\_api\c4d_gv" -I"C:\Program Files\MAXON\CINEMA 4D R13\resource\modules\Modeling\res\description" -I"C:\Program Files\MAXON\CINEMA 4D R13\resource\res\description" -I"C:\Program Files\MAXON\CINEMA 4D R13\resource\modules\objects\res\description" -I"C:\Program Files\MAXON\CINEMA 4D R13\resource\_api_maxon\source" -I"C:\Program Files\MAXON\CINEMA 4D R13\resource\modules\gv\expressiontag\res\description" "C:\Users\dominik_uni\HiWiJob\Branches\FuseeMerged\Fusee\src\Uniplug\Cinema4D\Swig\C4dApi.i"
+         swig -c++  -o ../Native/C4dApiWrapper.cpp -csharp -namespace C4d -dllimport Native.cdl -outdir ../C4d/C4dApi -I"include" -I"../Native/C4dApiExtensions" -I"C:\Program Files\MAXON\CINEMA 4D R13\resource\_api" -I"C:\Program Files\MAXON\CINEMA 4D R13\resource\_api\c4d_preview" -I"C:\Program Files\MAXON\CINEMA 4D R13\resource\_api\c4d_customgui" -I"C:\Program Files\MAXON\CINEMA 4D R13\resource\_api\c4d_libs" -I"C:\Program Files\MAXON\CINEMA 4D R13\resource\_api\c4d_gv" -I"C:\Program Files\MAXON\CINEMA 4D R13\resource\modules\Modeling\res\description" -I"C:\Program Files\MAXON\CINEMA 4D R13\resource\res\description" -I"C:\Program Files\MAXON\CINEMA 4D R13\resource\modules\objects\res\description" -I"C:\Program Files\MAXON\CINEMA 4D R13\resource\_api_maxon\source" -I"C:\Program Files\MAXON\CINEMA 4D R13\resource\modules\gv\expressiontag\res\description" "C:\Users\dsteffen\HiwiJob\GIT\Fusee\src\Uniplug\Cinema4D\Swig\C4dApi.i"
          :VCEnd
      1>C:\Program Files\MAXON\CINEMA 4D R13\resource\_api\c4d_baseobject.h(440): warning 325: Nested struct not currently supported (NgonNeighborSegment ignored)
      1>C:\Program Files\MAXON\CINEMA 4D R13\resource\_api\c4d_gv\c4d_graphview_def.h(887): warning 314: 'in' is a C# keyword, renaming to '_in'
      1>C:\Program Files\MAXON\CINEMA 4D R13\resource\_api\c4d_gv\c4d_graphview_def.h(888): warning 314: 'out' is a C# keyword, renaming to '_out'
-     1>C:\Users\dominik_uni\HiWiJob\Branches\FuseeMerged\Fusee\src\Uniplug\Cinema4D\Swig\C4dApi.i(953): warning 302: Identifier 'ModelingCommandData' redefined (ignored),
+     1>C:\Users\dsteffen\HiwiJob\GIT\Fusee\src\Uniplug\Cinema4D\Swig\C4dApi.i(953): warning 302: Identifier 'ModelingCommandData' redefined (ignored),
      1>operatingsystem.swig.h(299): warning 302: previous definition of 'ModelingCommandData'.
      1>C:\Program Files\MAXON\CINEMA 4D R13\resource\_api\c4d_general.h(229): warning 401: Base class 'GeListNode' undefined.
      1>C:\Program Files\MAXON\CINEMA 4D R13\resource\_api\c4d_baselist.h(492): warning 401: 'GeListNode' must be defined before it is used as a base class.
      1>include\lib_description.swig.h(192): warning 401: Base class 'iCustomDataType< DescID >' undefined.
-     1>C:\Users\dominik_uni\HiWiJob\Branches\FuseeMerged\Fusee\src\Uniplug\Cinema4D\Swig\C4dApi.i(961): warning 401: 'iCustomDataType< DescID >' must be defined before it is used as a base class.
+     1>C:\Users\dsteffen\HiwiJob\GIT\Fusee\src\Uniplug\Cinema4D\Swig\C4dApi.i(961): warning 401: 'iCustomDataType< DescID >' must be defined before it is used as a base class.
      1>include\lib_description.swig.h(361): warning 401: Nothing known about base class 'C4DLibrary'. Ignored.
      1>include\lib_ca.swig.h(63): warning 401: Base class 'BaseObject' undefined.
      1>C:\Program Files\MAXON\CINEMA 4D R13\resource\_api\c4d_baseobject.h(84): warning 401: 'BaseObject' must be defined before it is used as a base class.
@@ -78,8 +80,8 @@
        FinalizeBuildStatus:
          Die Datei "Debug\Swig.unsuccessfulbuild" wird gelöscht.
          Aktualisieren des Timestamps von "Debug\Swig.lastbuildstate".
-     1>Die Erstellung des Projekts "C:\Users\dominik_uni\HiWiJob\Branches\FuseeMerged\Fusee\src\Uniplug\Cinema4D\Swig\Swig.vcxproj" ist abgeschlossen, rebuild Ziel(e).
+     1>Die Erstellung des Projekts "C:\Users\dsteffen\HiwiJob\GIT\Fusee\src\Uniplug\Cinema4D\Swig\Swig.vcxproj" ist abgeschlossen, rebuild Ziel(e).
 
 Das Erstellen war erfolgreich.
 
-Verstrichene Zeit 00:00:51.58
+Verstrichene Zeit 00:00:31.01

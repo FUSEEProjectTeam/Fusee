@@ -55,6 +55,10 @@
     <Content Include="res\YourLogoPattern.tif" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>Copy "C:\Users\dsteffen\HiwiJob\SVN\Fusee\src\Uniplug\Cinema4D\YourManagedPlugin\res\YourLogoPattern.tif" "%25C4D_DIR%25/plugins/YourManagedPlugin/res"
+echo "Logo copied to plugin folder."</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
