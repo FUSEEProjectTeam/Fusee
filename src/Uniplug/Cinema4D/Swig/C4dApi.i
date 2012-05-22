@@ -591,54 +591,7 @@ BaseTag *
 // lib_description.h
 %ignore DescriptionLib;
 %include "lib_description.swig.h";
-//////////////////////////////////////////////////////////////////
-// lib_ca.h
-%feature("director") BrushToolData;
-%nodefaultctor BrushToolData;
 
-%ignore m_pPoints;
-%ignore m_pGlobalPoints;
-%ignore m_pNormals;
-%ignore m_pPolys;
-%extend BrushObjectInfo
-{
-	// Replacement for m_pPoints
-	Vector GetPointAt(LONG inx)
-	{
-		return self->m_pPoints[inx];
-	}
-	// No setter because m_pPoints is const Vector*
-
-	// Replacement for m_pGlobalPoints
-	Vector GetGlobalPointAt(LONG inx)
-	{
-		return self->m_pGlobalPoints[inx];
-	}
-	void SetGlobalPointAt(LONG inx, Vector v)
-	{
-		self->m_pGlobalPoints[inx] = v;
-	}
-
-	// Replacement for m_pNormals
-	Vector GetNormalAt(LONG inx)
-	{
-		return self->m_pNormals[inx];
-	}
-	void SetNormalAt(LONG inx, Vector v)
-	{
-		self->m_pNormals[inx] = v;
-	}
-
-	// Replacement for m_pPolys
-	CPolygon GetPolyAt(LONG inx)
-	{
-		return self->m_pPolys[inx];
-	}
-	// No Setter because m_pPolys is const CPoly*
-}
-%feature("director") BaseTag;
-
-%include "lib_ca.swig.h";
 
 //////////////////////////////////////////////////////////////////
 //NEW

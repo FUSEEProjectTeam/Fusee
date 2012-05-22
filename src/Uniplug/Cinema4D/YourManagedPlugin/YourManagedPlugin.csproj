@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\..\..\..\..\..\..\Program Files\MAXON\CINEMA 4D R13\plugins\YourManagedPlugin\</OutputPath>
+    <OutputPath>$(C4D_DIR)\plugins\YourManagedPlugin\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -52,13 +52,11 @@
     <Compile Include="YourPluginMainClass.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="res\YourLogoPattern.tif" />
+    <Content Include="res\YourLogoPattern.tif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>Copy "C:\Users\dsteffen\HiwiJob\SVN\Fusee\src\Uniplug\Cinema4D\YourManagedPlugin\res\YourLogoPattern.tif" "%25C4D_DIR%25/plugins/YourManagedPlugin/res"
-echo "Logo copied to plugin folder."</PostBuildEvent>
-  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

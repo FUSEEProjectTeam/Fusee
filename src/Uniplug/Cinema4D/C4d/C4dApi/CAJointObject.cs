@@ -11,12 +11,10 @@ namespace C4d {
 using System;
 using System.Runtime.InteropServices;
 
-public class CAJointObject : IDisposable {
+public class CAJointObject : BaseObject {
   private HandleRef swigCPtr;
-  protected bool swigCMemOwn;
 
-  internal CAJointObject(IntPtr cPtr, bool cMemoryOwn) {
-    swigCMemOwn = cMemoryOwn;
+  internal CAJointObject(IntPtr cPtr, bool cMemoryOwn) : base(C4dApiPINVOKE.CAJointObject_SWIGUpcast(cPtr), cMemoryOwn) {
     swigCPtr = new HandleRef(this, cPtr);
   }
 
@@ -24,7 +22,7 @@ public class CAJointObject : IDisposable {
     return (obj == null) ? new HandleRef(null, IntPtr.Zero) : obj.swigCPtr;
   }
 
-  public virtual void Dispose() {
+  public override void Dispose() {
     lock(this) {
       if (swigCPtr.Handle != IntPtr.Zero) {
         if (swigCMemOwn) {
@@ -34,6 +32,7 @@ public class CAJointObject : IDisposable {
         swigCPtr = new HandleRef(null, IntPtr.Zero);
       }
       GC.SuppressFinalize(this);
+      base.Dispose();
     }
   }
 

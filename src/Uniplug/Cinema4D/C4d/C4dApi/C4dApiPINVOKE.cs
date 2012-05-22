@@ -5435,702 +5435,6 @@ class C4dApiPINVOKE {
   [DllImport("Native.cdl", EntryPoint="CSharp_DescGenerateTitle")]
   public static extern string /* String_imtype */ DescGenerateTitle(HandleRef jarg1);
 
-  [DllImport("Native.cdl", EntryPoint="CSharp_MirrorTransformData_m_Mp_set")]
-  public static extern void MirrorTransformData_m_Mp_set(HandleRef jarg1, Fusee.Math.Core.Vector3D /* Vector_imtype */ jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_MirrorTransformData_m_Mp_get")]
-  public static extern Fusee.Math.Core.Vector3D /* Vector_imtype_out */ MirrorTransformData_m_Mp_get(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_MirrorTransformData_m_Mn_set")]
-  public static extern void MirrorTransformData_m_Mn_set(HandleRef jarg1, Fusee.Math.Core.Vector3D /* Vector_imtype */ jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_MirrorTransformData_m_Mn_get")]
-  public static extern Fusee.Math.Core.Vector3D /* Vector_imtype_out */ MirrorTransformData_m_Mn_get(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_MirrorTransformData_m_Mg_set")]
-  public static extern void MirrorTransformData_m_Mg_set(HandleRef jarg1, IntPtr /* Matrix_imtype */ jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_MirrorTransformData_m_Mg_get")]
-  public static extern C34M /* Matrix_imtype_out */ MirrorTransformData_m_Mg_get(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_MirrorTransformData_m_Mi_set")]
-  public static extern void MirrorTransformData_m_Mi_set(HandleRef jarg1, IntPtr /* Matrix_imtype */ jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_MirrorTransformData_m_Mi_get")]
-  public static extern C34M /* Matrix_imtype_out */ MirrorTransformData_m_Mi_get(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_MirrorTransformData_m_pData_set")]
-  public static extern void MirrorTransformData_m_pData_set(HandleRef jarg1, HandleRef jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_MirrorTransformData_m_pData_get")]
-  public static extern IntPtr MirrorTransformData_m_pData_get(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_new_MirrorTransformData")]
-  public static extern IntPtr new_MirrorTransformData();
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_delete_MirrorTransformData")]
-  public static extern void delete_MirrorTransformData(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_MSG_MIRROR_TRANSFORM_get")]
-  public static extern int MSG_MIRROR_TRANSFORM_get();
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_MIRROR_TRANSFORM_CONTAINER_get")]
-  public static extern int MIRROR_TRANSFORM_CONTAINER_get();
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_MIRROR_TRANSFORM_CONTAINER_MATRIX_get")]
-  public static extern int MIRROR_TRANSFORM_CONTAINER_MATRIX_get();
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_MIRROR_TRANSFORM_CONTAINER_SOURCE_get")]
-  public static extern int MIRROR_TRANSFORM_CONTAINER_SOURCE_get();
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_MIRROR_TRANSFORM_CONTAINER_LMATRIXN_get")]
-  public static extern int MIRROR_TRANSFORM_CONTAINER_LMATRIXN_get();
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_MIRROR_TRANSFORM_CONTAINER_LMATRIX_get")]
-  public static extern int MIRROR_TRANSFORM_CONTAINER_LMATRIX_get();
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_MIRROR_TRANSFORM_CONTAINER_FMATRIX_get")]
-  public static extern int MIRROR_TRANSFORM_CONTAINER_FMATRIX_get();
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_MIRROR_TRANSFORM_CONTAINER_POS_get")]
-  public static extern int MIRROR_TRANSFORM_CONTAINER_POS_get();
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_MIRROR_TRANSFORM_CONTAINER_ROT_get")]
-  public static extern int MIRROR_TRANSFORM_CONTAINER_ROT_get();
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_MIRROR_TRANSFORM_CONTAINER_SCL_get")]
-  public static extern int MIRROR_TRANSFORM_CONTAINER_SCL_get();
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_MIRROR_TRANSFORM_CONTAINER_FPOS_get")]
-  public static extern int MIRROR_TRANSFORM_CONTAINER_FPOS_get();
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_MIRROR_TRANSFORM_CONTAINER_FROT_get")]
-  public static extern int MIRROR_TRANSFORM_CONTAINER_FROT_get();
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_MIRROR_TRANSFORM_CONTAINER_FSCL_get")]
-  public static extern int MIRROR_TRANSFORM_CONTAINER_FSCL_get();
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_new_JointRestState")]
-  public static extern IntPtr new_JointRestState();
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_JointRestState_m_bMg_set")]
-  public static extern void JointRestState_m_bMg_set(HandleRef jarg1, IntPtr /* Matrix_imtype */ jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_JointRestState_m_bMg_get")]
-  public static extern C34M /* Matrix_imtype_out */ JointRestState_m_bMg_get(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_JointRestState_m_bMi_set")]
-  public static extern void JointRestState_m_bMi_set(HandleRef jarg1, IntPtr /* Matrix_imtype */ jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_JointRestState_m_bMi_get")]
-  public static extern C34M /* Matrix_imtype_out */ JointRestState_m_bMi_get(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_JointRestState_m_oMg_set")]
-  public static extern void JointRestState_m_oMg_set(HandleRef jarg1, IntPtr /* Matrix_imtype */ jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_JointRestState_m_oMg_get")]
-  public static extern C34M /* Matrix_imtype_out */ JointRestState_m_oMg_get(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_JointRestState_m_oMi_set")]
-  public static extern void JointRestState_m_oMi_set(HandleRef jarg1, IntPtr /* Matrix_imtype */ jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_JointRestState_m_oMi_get")]
-  public static extern C34M /* Matrix_imtype_out */ JointRestState_m_oMi_get(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_JointRestState_m_Len_set")]
-  public static extern void JointRestState_m_Len_set(HandleRef jarg1, double jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_JointRestState_m_Len_get")]
-  public static extern double JointRestState_m_Len_get(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_delete_JointRestState")]
-  public static extern void delete_JointRestState(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAJointObject_Alloc")]
-  public static extern IntPtr CAJointObject_Alloc();
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAJointObject_Free")]
-  public static extern void CAJointObject_Free(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAJointObject_GetBone")]
-  public static extern void CAJointObject_GetBone(HandleRef jarg1, IntPtr /* Matrix*&_imtype */ jarg2, HandleRef jarg3);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAJointObject_GetWeightTag")]
-  public static extern IntPtr CAJointObject_GetWeightTag(HandleRef jarg1, HandleRef jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAWeightTag_Alloc")]
-  public static extern IntPtr CAWeightTag_Alloc();
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAWeightTag_Free")]
-  public static extern void CAWeightTag_Free(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAWeightTag_GetJoint")]
-  public static extern IntPtr CAWeightTag_GetJoint(HandleRef jarg1, int jarg2, HandleRef jarg3);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAWeightTag_GetJointCount")]
-  public static extern int CAWeightTag_GetJointCount(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAWeightTag_FindJoint")]
-  public static extern int CAWeightTag_FindJoint(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAWeightTag_GetJointRestState")]
-  public static extern IntPtr CAWeightTag_GetJointRestState(HandleRef jarg1, int jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAWeightTag_SetJointRestState")]
-  public static extern void CAWeightTag_SetJointRestState(HandleRef jarg1, int jarg2, HandleRef jarg3);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAWeightTag_GetWeightMap")]
-  public static extern void CAWeightTag_GetWeightMap(HandleRef jarg1, int jarg2, HandleRef jarg3, int jarg4);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAWeightTag_SetWeightMap")]
-  public static extern bool CAWeightTag_SetWeightMap(HandleRef jarg1, int jarg2, HandleRef jarg3, int jarg4);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAWeightTag_GetWeightCount")]
-  public static extern int CAWeightTag_GetWeightCount(HandleRef jarg1, int jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAWeightTag_GetIndexWeight")]
-  public static extern void CAWeightTag_GetIndexWeight(HandleRef jarg1, int jarg2, int jarg3, HandleRef jarg4, HandleRef jarg5);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAWeightTag_GetWeight")]
-  public static extern double CAWeightTag_GetWeight(HandleRef jarg1, int jarg2, int jarg3);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAWeightTag_SetWeight")]
-  public static extern bool CAWeightTag_SetWeight(HandleRef jarg1, int jarg2, int jarg3, double jarg4);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAWeightTag_GetWeightDirty")]
-  public static extern IntPtr CAWeightTag_GetWeightDirty(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAWeightTag_WeightDirty")]
-  public static extern void CAWeightTag_WeightDirty(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAWeightTag_GetGeomMg")]
-  public static extern C34M /* Matrix_imtype_out */ CAWeightTag_GetGeomMg(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAWeightTag_SetGeomMg")]
-  public static extern void CAWeightTag_SetGeomMg(HandleRef jarg1, IntPtr /* constMatrix&_imtype */ jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAWeightTag_AddJoint")]
-  public static extern int CAWeightTag_AddJoint(HandleRef jarg1, HandleRef jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAWeightTag_RemoveJoint")]
-  public static extern void CAWeightTag_RemoveJoint(HandleRef jarg1, HandleRef jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAWeightTag_CalculateBoneStates")]
-  public static extern void CAWeightTag_CalculateBoneStates(HandleRef jarg1, int jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAWeightTag_TransferWeightMap")]
-  public static extern bool CAWeightTag_TransferWeightMap(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, int jarg4, int jarg5, int jarg6, int jarg7, HandleRef jarg8);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetNext")]
-  public static extern IntPtr CAMorphNode_GetNext(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetPrev")]
-  public static extern IntPtr CAMorphNode_GetPrev(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetUp")]
-  public static extern IntPtr CAMorphNode_GetUp(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetDown")]
-  public static extern IntPtr CAMorphNode_GetDown(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetLink")]
-  public static extern IntPtr CAMorphNode_GetLink(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetInfo")]
-  public static extern int CAMorphNode_GetInfo(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetP")]
-  public static extern Fusee.Math.Core.Vector3D /* Vector_imtype_out */ CAMorphNode_GetP(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetS")]
-  public static extern Fusee.Math.Core.Vector3D /* Vector_imtype_out */ CAMorphNode_GetS(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetR")]
-  public static extern Fusee.Math.Core.Vector3D /* Vector_imtype_out */ CAMorphNode_GetR(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_SetP")]
-  public static extern void CAMorphNode_SetP(HandleRef jarg1, ref Fusee.Math.Core.Vector3D /* constVector&_imtype */ jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_SetS")]
-  public static extern void CAMorphNode_SetS(HandleRef jarg1, ref Fusee.Math.Core.Vector3D /* constVector&_imtype */ jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_SetR")]
-  public static extern void CAMorphNode_SetR(HandleRef jarg1, ref Fusee.Math.Core.Vector3D /* constVector&_imtype */ jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetPointCount")]
-  public static extern int CAMorphNode_GetPointCount(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_SetPointCount")]
-  public static extern bool CAMorphNode_SetPointCount(HandleRef jarg1, int jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetPoint")]
-  public static extern Fusee.Math.Core.Vector3D /* Vector_imtype_out */ CAMorphNode_GetPoint(HandleRef jarg1, int jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_SetPoint")]
-  public static extern void CAMorphNode_SetPoint(HandleRef jarg1, int jarg2, ref Fusee.Math.Core.Vector3D /* constVector&_imtype */ jarg3);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetTangentCount")]
-  public static extern int CAMorphNode_GetTangentCount(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_SetTangentCount")]
-  public static extern bool CAMorphNode_SetTangentCount(HandleRef jarg1, int jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetTangent")]
-  public static extern Fusee.Math.Core.Vector3D /* Vector_imtype_out */ CAMorphNode_GetTangent(HandleRef jarg1, int jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_SetTangent")]
-  public static extern void CAMorphNode_SetTangent(HandleRef jarg1, int jarg2, ref Fusee.Math.Core.Vector3D /* constVector&_imtype */ jarg3);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetVertexMapTagCount")]
-  public static extern int CAMorphNode_GetVertexMapTagCount(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetVertexMapCount")]
-  public static extern int CAMorphNode_GetVertexMapCount(HandleRef jarg1, int jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_SetVertexMapCount")]
-  public static extern bool CAMorphNode_SetVertexMapCount(HandleRef jarg1, int jarg2, int jarg3);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetVertexMap")]
-  public static extern double CAMorphNode_GetVertexMap(HandleRef jarg1, int jarg2, int jarg3);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_SetVertexMap")]
-  public static extern void CAMorphNode_SetVertexMap(HandleRef jarg1, int jarg2, int jarg3, double jarg4);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetParamCount")]
-  public static extern int CAMorphNode_GetParamCount(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_SetParamCount")]
-  public static extern bool CAMorphNode_SetParamCount(HandleRef jarg1, int jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetParam")]
-  public static extern bool CAMorphNode_GetParam(HandleRef jarg1, int jarg2, HandleRef jarg3, HandleRef jarg4);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_SetParam")]
-  public static extern void CAMorphNode_SetParam(HandleRef jarg1, int jarg2, HandleRef jarg3, HandleRef jarg4);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetUVTagCount")]
-  public static extern int CAMorphNode_GetUVTagCount(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetUVCount")]
-  public static extern int CAMorphNode_GetUVCount(HandleRef jarg1, int jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_SetUVCount")]
-  public static extern bool CAMorphNode_SetUVCount(HandleRef jarg1, int jarg2, int jarg3);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetUV")]
-  public static extern void CAMorphNode_GetUV(HandleRef jarg1, int jarg2, int jarg3, HandleRef jarg4);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_SetUV")]
-  public static extern void CAMorphNode_SetUV(HandleRef jarg1, int jarg2, int jarg3, HandleRef jarg4);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetWeightMapTagCount")]
-  public static extern int CAMorphNode_GetWeightMapTagCount(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetWeightMapJointCount")]
-  public static extern int CAMorphNode_GetWeightMapJointCount(HandleRef jarg1, int jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetWeightMapCount")]
-  public static extern int CAMorphNode_GetWeightMapCount(HandleRef jarg1, int jarg2, int jarg3);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_SetWeightMapCount")]
-  public static extern bool CAMorphNode_SetWeightMapCount(HandleRef jarg1, int jarg2, int jarg3, int jarg4);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetWeightMap")]
-  public static extern double CAMorphNode_GetWeightMap(HandleRef jarg1, int jarg2, int jarg3, int jarg4);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_SetWeightMap")]
-  public static extern void CAMorphNode_SetWeightMap(HandleRef jarg1, int jarg2, int jarg3, int jarg4, double jarg5);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorph_GetName")]
-  public static extern string /* String_imtype */ CAMorph_GetName(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorph_SetName")]
-  public static extern void CAMorph_SetName(HandleRef jarg1, string /* constString&_imtype */ jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorph_GetID")]
-  public static extern int CAMorph_GetID(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorph_CopyFrom")]
-  public static extern bool CAMorph_CopyFrom(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, int jarg4);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorph_Find")]
-  public static extern IntPtr CAMorph_Find(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorph_GetNodeIndex")]
-  public static extern int CAMorph_GetNodeIndex(HandleRef jarg1, HandleRef jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorph_FindIndex")]
-  public static extern int CAMorph_FindIndex(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorph_FindFromIndex")]
-  public static extern IntPtr CAMorph_FindFromIndex(HandleRef jarg1, HandleRef jarg2, int jarg3);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorph_GetFirst")]
-  public static extern IntPtr CAMorph_GetFirst(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorph_SetMode")]
-  public static extern bool CAMorph_SetMode(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, int jarg4, int jarg5);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorph_Store")]
-  public static extern bool CAMorph_Store(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, int jarg4);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorph_Apply")]
-  public static extern bool CAMorph_Apply(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, int jarg4);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAPoseMorphTag_Alloc")]
-  public static extern IntPtr CAPoseMorphTag_Alloc();
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAPoseMorphTag_Free")]
-  public static extern void CAPoseMorphTag_Free(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAPoseMorphTag_GetMorphCount")]
-  public static extern int CAPoseMorphTag_GetMorphCount(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAPoseMorphTag_GetMorph")]
-  public static extern IntPtr CAPoseMorphTag_GetMorph(HandleRef jarg1, int jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAPoseMorphTag_GetMorphID")]
-  public static extern IntPtr CAPoseMorphTag_GetMorphID(HandleRef jarg1, int jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAPoseMorphTag_GetActiveMorphIndex")]
-  public static extern int CAPoseMorphTag_GetActiveMorphIndex(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAPoseMorphTag_GetMode")]
-  public static extern int CAPoseMorphTag_GetMode(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAPoseMorphTag_GetActiveMorph")]
-  public static extern IntPtr CAPoseMorphTag_GetActiveMorph(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAPoseMorphTag_GetMorphBase")]
-  public static extern IntPtr CAPoseMorphTag_GetMorphBase(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAPoseMorphTag_AddMorph")]
-  public static extern IntPtr CAPoseMorphTag_AddMorph(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAPoseMorphTag_RemoveMorph")]
-  public static extern void CAPoseMorphTag_RemoveMorph(HandleRef jarg1, int jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAPoseMorphTag_InitMorphs")]
-  public static extern void CAPoseMorphTag_InitMorphs(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAPoseMorphTag_UpdateMorphs")]
-  public static extern void CAPoseMorphTag_UpdateMorphs(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAPoseMorphTag_GetMorphIndex")]
-  public static extern int CAPoseMorphTag_GetMorphIndex(HandleRef jarg1, HandleRef jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_CAPoseMorphTag_ExitEdit")]
-  public static extern bool CAPoseMorphTag_ExitEdit(HandleRef jarg1, HandleRef jarg2, bool jarg3);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BRUSHBASE_MOUSE_FLAG_ADDUNDO_get")]
-  public static extern int BRUSHBASE_MOUSE_FLAG_ADDUNDO_get();
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BRUSHBASE_MOUSE_FLAG_ADDUNDO_FULL_get")]
-  public static extern int BRUSHBASE_MOUSE_FLAG_ADDUNDO_FULL_get();
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BRUSHBASE_MOUSE_FLAG_SORTED_DIST_get")]
-  public static extern int BRUSHBASE_MOUSE_FLAG_SORTED_DIST_get();
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BRUSHBASE_MOUSE_FLAG_SORTED_OBJECT_get")]
-  public static extern int BRUSHBASE_MOUSE_FLAG_SORTED_OBJECT_get();
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BRUSHBASE_MOUSE_FLAG_SORTED_ORIGINOBJECT_get")]
-  public static extern int BRUSHBASE_MOUSE_FLAG_SORTED_ORIGINOBJECT_get();
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BRUSHBASE_FALLOFF_STRENGTH_get")]
-  public static extern int BRUSHBASE_FALLOFF_STRENGTH_get();
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BRUSHBASE_FALLOFF_ABSSTRENGTH_get")]
-  public static extern int BRUSHBASE_FALLOFF_ABSSTRENGTH_get();
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_new_BrushObjectInfo")]
-  public static extern IntPtr new_BrushObjectInfo();
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushObjectInfo_m_pObject_set")]
-  public static extern void BrushObjectInfo_m_pObject_set(HandleRef jarg1, HandleRef jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushObjectInfo_m_pObject_get")]
-  public static extern IntPtr BrushObjectInfo_m_pObject_get(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushObjectInfo_m_pOriginObject_set")]
-  public static extern void BrushObjectInfo_m_pOriginObject_set(HandleRef jarg1, HandleRef jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushObjectInfo_m_pOriginObject_get")]
-  public static extern IntPtr BrushObjectInfo_m_pOriginObject_get(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushObjectInfo_m_pDeformObject_set")]
-  public static extern void BrushObjectInfo_m_pDeformObject_set(HandleRef jarg1, HandleRef jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushObjectInfo_m_pDeformObject_get")]
-  public static extern IntPtr BrushObjectInfo_m_pDeformObject_get(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushObjectInfo_m_pNeighbor_set")]
-  public static extern void BrushObjectInfo_m_pNeighbor_set(HandleRef jarg1, HandleRef jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushObjectInfo_m_pNeighbor_get")]
-  public static extern IntPtr BrushObjectInfo_m_pNeighbor_get(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushObjectInfo_m_PointCount_set")]
-  public static extern void BrushObjectInfo_m_PointCount_set(HandleRef jarg1, int jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushObjectInfo_m_PointCount_get")]
-  public static extern int BrushObjectInfo_m_PointCount_get(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushObjectInfo_m_PolyCount_set")]
-  public static extern void BrushObjectInfo_m_PolyCount_set(HandleRef jarg1, int jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushObjectInfo_m_PolyCount_get")]
-  public static extern int BrushObjectInfo_m_PolyCount_get(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushObjectInfo_GetPointAt")]
-  public static extern Fusee.Math.Core.Vector3D /* Vector_imtype_out */ BrushObjectInfo_GetPointAt(HandleRef jarg1, int jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushObjectInfo_GetGlobalPointAt")]
-  public static extern Fusee.Math.Core.Vector3D /* Vector_imtype_out */ BrushObjectInfo_GetGlobalPointAt(HandleRef jarg1, int jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushObjectInfo_SetGlobalPointAt")]
-  public static extern void BrushObjectInfo_SetGlobalPointAt(HandleRef jarg1, int jarg2, Fusee.Math.Core.Vector3D /* Vector_imtype */ jarg3);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushObjectInfo_GetNormalAt")]
-  public static extern Fusee.Math.Core.Vector3D /* Vector_imtype_out */ BrushObjectInfo_GetNormalAt(HandleRef jarg1, int jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushObjectInfo_SetNormalAt")]
-  public static extern void BrushObjectInfo_SetNormalAt(HandleRef jarg1, int jarg2, Fusee.Math.Core.Vector3D /* Vector_imtype */ jarg3);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushObjectInfo_GetPolyAt")]
-  public static extern IntPtr BrushObjectInfo_GetPolyAt(HandleRef jarg1, int jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_delete_BrushObjectInfo")]
-  public static extern void delete_BrushObjectInfo(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushVertexData_m_Dist_set")]
-  public static extern void BrushVertexData_m_Dist_set(HandleRef jarg1, double jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushVertexData_m_Dist_get")]
-  public static extern double BrushVertexData_m_Dist_get(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushVertexData_m_Index_set")]
-  public static extern void BrushVertexData_m_Index_set(HandleRef jarg1, int jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushVertexData_m_Index_get")]
-  public static extern int BrushVertexData_m_Index_get(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushVertexData_m_pObject_set")]
-  public static extern void BrushVertexData_m_pObject_set(HandleRef jarg1, HandleRef jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushVertexData_m_pObject_get")]
-  public static extern IntPtr BrushVertexData_m_pObject_get(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_new_BrushVertexData")]
-  public static extern IntPtr new_BrushVertexData();
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_delete_BrushVertexData")]
-  public static extern void delete_BrushVertexData(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushPixelData_m_pObject_set")]
-  public static extern void BrushPixelData_m_pObject_set(HandleRef jarg1, HandleRef jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushPixelData_m_pObject_get")]
-  public static extern IntPtr BrushPixelData_m_pObject_get(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushPixelData_m_Index_set")]
-  public static extern void BrushPixelData_m_Index_set(HandleRef jarg1, int jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushPixelData_m_Index_get")]
-  public static extern int BrushPixelData_m_Index_get(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushPixelData_m_Z_set")]
-  public static extern void BrushPixelData_m_Z_set(HandleRef jarg1, double jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushPixelData_m_Z_get")]
-  public static extern double BrushPixelData_m_Z_get(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushPixelData_m_pNext_set")]
-  public static extern void BrushPixelData_m_pNext_set(HandleRef jarg1, HandleRef jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushPixelData_m_pNext_get")]
-  public static extern IntPtr BrushPixelData_m_pNext_get(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_new_BrushPixelData")]
-  public static extern IntPtr new_BrushPixelData();
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_delete_BrushPixelData")]
-  public static extern void delete_BrushPixelData(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_Alloc")]
-  public static extern IntPtr BrushBase_Alloc();
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_Free")]
-  public static extern void BrushBase_Free(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_InitTool")]
-  public static extern bool BrushBase_InitTool(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, HandleRef jarg5);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_FreeTool")]
-  public static extern void BrushBase_FreeTool(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_InitDefaultSettings")]
-  public static extern void BrushBase_InitDefaultSettings(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_GetDEnabling")]
-  public static extern bool BrushBase_GetDEnabling(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, HandleRef jarg5, int jarg6, HandleRef jarg7);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_SetDParameter")]
-  public static extern bool BrushBase_SetDParameter(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, HandleRef jarg5, HandleRef jarg6);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_GetDDescription")]
-  public static extern bool BrushBase_GetDDescription(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, HandleRef jarg5);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_Message")]
-  public static extern bool BrushBase_Message(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, int jarg4, HandleRef jarg5);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_GetCursorInfo")]
-  public static extern bool BrushBase_GetCursorInfo(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, double jarg5, double jarg6, HandleRef jarg7);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_MouseInput")]
-  public static extern bool BrushBase_MouseInput(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, HandleRef jarg5, HandleRef jarg6);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_GetSelected")]
-  public static extern IntPtr BrushBase_GetSelected(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, HandleRef jarg5, int jarg6, int jarg7, double jarg8, HandleRef jarg9);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_GetCursor")]
-  public static extern double BrushBase_GetCursor(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_GetObjectInfo__SWIG_0")]
-  public static extern void BrushBase_GetObjectInfo__SWIG_0(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_GetObjectInfo__SWIG_1")]
-  public static extern bool BrushBase_GetObjectInfo__SWIG_1(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_ValidateObjects")]
-  public static extern bool BrushBase_ValidateObjects(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_GetObjectAt")]
-  public static extern IntPtr BrushBase_GetObjectAt(HandleRef jarg1, int jarg2, int jarg3);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_GetFalloff")]
-  public static extern double BrushBase_GetFalloff(HandleRef jarg1, double jarg2, int jarg3);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_GetObjects")]
-  public static extern bool BrushBase_GetObjects(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_UpdateCache")]
-  public static extern bool BrushBase_UpdateCache(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, bool jarg5);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_CalcSurfaceDistances__SWIG_0")]
-  public static extern IntPtr BrushBase_CalcSurfaceDistances__SWIG_0(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, ref Fusee.Math.Core.Vector3D /* Vector*&_imtype */ jarg5, ref Fusee.Math.Core.Vector3D /* Vector*&_imtype */ jarg6, HandleRef jarg7);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_CalcSurfaceDistances__SWIG_1")]
-  public static extern IntPtr BrushBase_CalcSurfaceDistances__SWIG_1(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, ref Fusee.Math.Core.Vector3D /* Vector*&_imtype */ jarg5, ref Fusee.Math.Core.Vector3D /* Vector*&_imtype */ jarg6);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_CalcSurfaceDistances__SWIG_2")]
-  public static extern IntPtr BrushBase_CalcSurfaceDistances__SWIG_2(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, ref Fusee.Math.Core.Vector3D /* Vector*&_imtype */ jarg5);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_CalcSurfaceDistances__SWIG_3")]
-  public static extern IntPtr BrushBase_CalcSurfaceDistances__SWIG_3(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_CalcSurfaceDistances__SWIG_4")]
-  public static extern IntPtr BrushBase_CalcSurfaceDistances__SWIG_4(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_CalcSurfaceDistancesFromPoint__SWIG_0")]
-  public static extern IntPtr BrushBase_CalcSurfaceDistancesFromPoint__SWIG_0(HandleRef jarg1, HandleRef jarg2, int jarg3, HandleRef jarg4, ref Fusee.Math.Core.Vector3D /* Vector*&_imtype */ jarg5, ref Fusee.Math.Core.Vector3D /* Vector*&_imtype */ jarg6, HandleRef jarg7);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_CalcSurfaceDistancesFromPoint__SWIG_1")]
-  public static extern IntPtr BrushBase_CalcSurfaceDistancesFromPoint__SWIG_1(HandleRef jarg1, HandleRef jarg2, int jarg3, HandleRef jarg4, ref Fusee.Math.Core.Vector3D /* Vector*&_imtype */ jarg5, ref Fusee.Math.Core.Vector3D /* Vector*&_imtype */ jarg6);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_CalcSurfaceDistancesFromPoint__SWIG_2")]
-  public static extern IntPtr BrushBase_CalcSurfaceDistancesFromPoint__SWIG_2(HandleRef jarg1, HandleRef jarg2, int jarg3, HandleRef jarg4, ref Fusee.Math.Core.Vector3D /* Vector*&_imtype */ jarg5);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_CalcSurfaceDistancesFromPoint__SWIG_3")]
-  public static extern IntPtr BrushBase_CalcSurfaceDistancesFromPoint__SWIG_3(HandleRef jarg1, HandleRef jarg2, int jarg3, HandleRef jarg4);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_CalcSurfaceDistancesFromPoint__SWIG_4")]
-  public static extern IntPtr BrushBase_CalcSurfaceDistancesFromPoint__SWIG_4(HandleRef jarg1, HandleRef jarg2, int jarg3);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_m_pBrushBase_set")]
-  public static extern void BrushToolData_m_pBrushBase_set(HandleRef jarg1, HandleRef jarg2);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_m_pBrushBase_get")]
-  public static extern IntPtr BrushToolData_m_pBrushBase_get(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_InitTool")]
-  public static extern bool BrushToolData_InitTool(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_InitToolSwigExplicitBrushToolData")]
-  public static extern bool BrushToolData_InitToolSwigExplicitBrushToolData(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_FreeTool")]
-  public static extern void BrushToolData_FreeTool(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_FreeToolSwigExplicitBrushToolData")]
-  public static extern void BrushToolData_FreeToolSwigExplicitBrushToolData(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_InitDefaultSettings")]
-  public static extern void BrushToolData_InitDefaultSettings(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_InitDefaultSettingsSwigExplicitBrushToolData")]
-  public static extern void BrushToolData_InitDefaultSettingsSwigExplicitBrushToolData(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_GetDEnabling")]
-  public static extern bool BrushToolData_GetDEnabling(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, HandleRef jarg5, int jarg6, HandleRef jarg7);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_GetDEnablingSwigExplicitBrushToolData")]
-  public static extern bool BrushToolData_GetDEnablingSwigExplicitBrushToolData(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, HandleRef jarg5, int jarg6, HandleRef jarg7);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_SetDParameter")]
-  public static extern bool BrushToolData_SetDParameter(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, HandleRef jarg5, HandleRef jarg6);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_SetDParameterSwigExplicitBrushToolData")]
-  public static extern bool BrushToolData_SetDParameterSwigExplicitBrushToolData(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, HandleRef jarg5, HandleRef jarg6);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_GetDDescription")]
-  public static extern bool BrushToolData_GetDDescription(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, HandleRef jarg5);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_GetDDescriptionSwigExplicitBrushToolData")]
-  public static extern bool BrushToolData_GetDDescriptionSwigExplicitBrushToolData(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, HandleRef jarg5);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_Message")]
-  public static extern bool BrushToolData_Message(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, int jarg4, HandleRef jarg5);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_MessageSwigExplicitBrushToolData")]
-  public static extern bool BrushToolData_MessageSwigExplicitBrushToolData(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, int jarg4, HandleRef jarg5);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_GetCursorInfo")]
-  public static extern bool BrushToolData_GetCursorInfo(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, double jarg5, double jarg6, HandleRef jarg7);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_GetCursorInfoSwigExplicitBrushToolData")]
-  public static extern bool BrushToolData_GetCursorInfoSwigExplicitBrushToolData(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, double jarg5, double jarg6, HandleRef jarg7);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_MouseInput")]
-  public static extern bool BrushToolData_MouseInput(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, HandleRef jarg5, HandleRef jarg6);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_MouseInputSwigExplicitBrushToolData")]
-  public static extern bool BrushToolData_MouseInputSwigExplicitBrushToolData(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, HandleRef jarg5, HandleRef jarg6);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_MouseInputStart")]
-  public static extern bool BrushToolData_MouseInputStart(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, HandleRef jarg5, HandleRef jarg6, HandleRef jarg7);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_MouseInputStartSwigExplicitBrushToolData")]
-  public static extern bool BrushToolData_MouseInputStartSwigExplicitBrushToolData(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, HandleRef jarg5, HandleRef jarg6, HandleRef jarg7);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_MouseInputDrag")]
-  public static extern bool BrushToolData_MouseInputDrag(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, HandleRef jarg5, HandleRef jarg6, HandleRef jarg7, int jarg8, double jarg9, double jarg10, HandleRef jarg11);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_MouseInputDragSwigExplicitBrushToolData")]
-  public static extern bool BrushToolData_MouseInputDragSwigExplicitBrushToolData(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, HandleRef jarg5, HandleRef jarg6, HandleRef jarg7, int jarg8, double jarg9, double jarg10, HandleRef jarg11);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_MouseInputEnd")]
-  public static extern bool BrushToolData_MouseInputEnd(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, HandleRef jarg5, HandleRef jarg6);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_MouseInputEndSwigExplicitBrushToolData")]
-  public static extern bool BrushToolData_MouseInputEndSwigExplicitBrushToolData(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, HandleRef jarg5, HandleRef jarg6);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_delete_BrushToolData")]
-  public static extern void delete_BrushToolData(HandleRef jarg1);
-
-  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_director_connect")]
-  public static extern void BrushToolData_director_connect(HandleRef jarg1, BrushToolData.SwigDelegateBrushToolData_0 delegate0, BrushToolData.SwigDelegateBrushToolData_1 delegate1, BrushToolData.SwigDelegateBrushToolData_2 delegate2, BrushToolData.SwigDelegateBrushToolData_3 delegate3, BrushToolData.SwigDelegateBrushToolData_4 delegate4, BrushToolData.SwigDelegateBrushToolData_5 delegate5, BrushToolData.SwigDelegateBrushToolData_6 delegate6, BrushToolData.SwigDelegateBrushToolData_7 delegate7, BrushToolData.SwigDelegateBrushToolData_8 delegate8, BrushToolData.SwigDelegateBrushToolData_9 delegate9, BrushToolData.SwigDelegateBrushToolData_10 delegate10, BrushToolData.SwigDelegateBrushToolData_11 delegate11);
-
   [DllImport("Native.cdl", EntryPoint="CSharp_COLORMODE_MAXCOLOR_get")]
   public static extern int COLORMODE_MAXCOLOR_get();
 
@@ -7315,6 +6619,15 @@ class C4dApiPINVOKE {
 
   [DllImport("Native.cdl", EntryPoint="CSharp_MSG_DOCUMENTINFO_TYPE_COPY_get")]
   public static extern int MSG_DOCUMENTINFO_TYPE_COPY_get();
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_MSG_DOCUMENTINFO_TYPE_LOAD_XREFS_get")]
+  public static extern int MSG_DOCUMENTINFO_TYPE_LOAD_XREFS_get();
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_MSG_DOCUMENTINFO_TYPE_MERGE_XREFS_get")]
+  public static extern int MSG_DOCUMENTINFO_TYPE_MERGE_XREFS_get();
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_MSG_DOCUMENTINFO_TYPE_XREFS_IMPORTED_get")]
+  public static extern int MSG_DOCUMENTINFO_TYPE_XREFS_IMPORTED_get();
 
   [DllImport("Native.cdl", EntryPoint="CSharp_MSG_GETSELECTION_get")]
   public static extern int MSG_GETSELECTION_get();
@@ -11433,7 +10746,7 @@ class C4dApiPINVOKE {
   public static extern bool BaseSelect_ToggleAll(HandleRef jarg1, int jarg2, int jarg3);
 
   [DllImport("Native.cdl", EntryPoint="CSharp_BaseSelect_GetRange")]
-  public static extern bool BaseSelect_GetRange(HandleRef jarg1, int jarg2, HandleRef jarg3, HandleRef jarg4);
+  public static extern bool BaseSelect_GetRange(HandleRef jarg1, int jarg2, int jarg3, HandleRef jarg4, HandleRef jarg5);
 
   [DllImport("Native.cdl", EntryPoint="CSharp_BaseSelect_IsSelected")]
   public static extern bool BaseSelect_IsSelected(HandleRef jarg1, int jarg2);
@@ -11599,6 +10912,702 @@ class C4dApiPINVOKE {
 
   [DllImport("Native.cdl", EntryPoint="CSharp_RegisterManagerInformation")]
   public static extern bool RegisterManagerInformation(int jarg1, string /* constString&_imtype */ jarg2, int jarg3);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_MirrorTransformData_m_Mp_set")]
+  public static extern void MirrorTransformData_m_Mp_set(HandleRef jarg1, Fusee.Math.Core.Vector3D /* Vector_imtype */ jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_MirrorTransformData_m_Mp_get")]
+  public static extern Fusee.Math.Core.Vector3D /* Vector_imtype_out */ MirrorTransformData_m_Mp_get(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_MirrorTransformData_m_Mn_set")]
+  public static extern void MirrorTransformData_m_Mn_set(HandleRef jarg1, Fusee.Math.Core.Vector3D /* Vector_imtype */ jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_MirrorTransformData_m_Mn_get")]
+  public static extern Fusee.Math.Core.Vector3D /* Vector_imtype_out */ MirrorTransformData_m_Mn_get(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_MirrorTransformData_m_Mg_set")]
+  public static extern void MirrorTransformData_m_Mg_set(HandleRef jarg1, IntPtr /* Matrix_imtype */ jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_MirrorTransformData_m_Mg_get")]
+  public static extern C34M /* Matrix_imtype_out */ MirrorTransformData_m_Mg_get(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_MirrorTransformData_m_Mi_set")]
+  public static extern void MirrorTransformData_m_Mi_set(HandleRef jarg1, IntPtr /* Matrix_imtype */ jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_MirrorTransformData_m_Mi_get")]
+  public static extern C34M /* Matrix_imtype_out */ MirrorTransformData_m_Mi_get(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_MirrorTransformData_m_pData_set")]
+  public static extern void MirrorTransformData_m_pData_set(HandleRef jarg1, HandleRef jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_MirrorTransformData_m_pData_get")]
+  public static extern IntPtr MirrorTransformData_m_pData_get(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_new_MirrorTransformData")]
+  public static extern IntPtr new_MirrorTransformData();
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_delete_MirrorTransformData")]
+  public static extern void delete_MirrorTransformData(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_MSG_MIRROR_TRANSFORM_get")]
+  public static extern int MSG_MIRROR_TRANSFORM_get();
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_MIRROR_TRANSFORM_CONTAINER_get")]
+  public static extern int MIRROR_TRANSFORM_CONTAINER_get();
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_MIRROR_TRANSFORM_CONTAINER_MATRIX_get")]
+  public static extern int MIRROR_TRANSFORM_CONTAINER_MATRIX_get();
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_MIRROR_TRANSFORM_CONTAINER_SOURCE_get")]
+  public static extern int MIRROR_TRANSFORM_CONTAINER_SOURCE_get();
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_MIRROR_TRANSFORM_CONTAINER_LMATRIXN_get")]
+  public static extern int MIRROR_TRANSFORM_CONTAINER_LMATRIXN_get();
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_MIRROR_TRANSFORM_CONTAINER_LMATRIX_get")]
+  public static extern int MIRROR_TRANSFORM_CONTAINER_LMATRIX_get();
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_MIRROR_TRANSFORM_CONTAINER_FMATRIX_get")]
+  public static extern int MIRROR_TRANSFORM_CONTAINER_FMATRIX_get();
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_MIRROR_TRANSFORM_CONTAINER_POS_get")]
+  public static extern int MIRROR_TRANSFORM_CONTAINER_POS_get();
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_MIRROR_TRANSFORM_CONTAINER_ROT_get")]
+  public static extern int MIRROR_TRANSFORM_CONTAINER_ROT_get();
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_MIRROR_TRANSFORM_CONTAINER_SCL_get")]
+  public static extern int MIRROR_TRANSFORM_CONTAINER_SCL_get();
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_MIRROR_TRANSFORM_CONTAINER_FPOS_get")]
+  public static extern int MIRROR_TRANSFORM_CONTAINER_FPOS_get();
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_MIRROR_TRANSFORM_CONTAINER_FROT_get")]
+  public static extern int MIRROR_TRANSFORM_CONTAINER_FROT_get();
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_MIRROR_TRANSFORM_CONTAINER_FSCL_get")]
+  public static extern int MIRROR_TRANSFORM_CONTAINER_FSCL_get();
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_new_JointRestState")]
+  public static extern IntPtr new_JointRestState();
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_JointRestState_m_bMg_set")]
+  public static extern void JointRestState_m_bMg_set(HandleRef jarg1, IntPtr /* Matrix_imtype */ jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_JointRestState_m_bMg_get")]
+  public static extern C34M /* Matrix_imtype_out */ JointRestState_m_bMg_get(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_JointRestState_m_bMi_set")]
+  public static extern void JointRestState_m_bMi_set(HandleRef jarg1, IntPtr /* Matrix_imtype */ jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_JointRestState_m_bMi_get")]
+  public static extern C34M /* Matrix_imtype_out */ JointRestState_m_bMi_get(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_JointRestState_m_oMg_set")]
+  public static extern void JointRestState_m_oMg_set(HandleRef jarg1, IntPtr /* Matrix_imtype */ jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_JointRestState_m_oMg_get")]
+  public static extern C34M /* Matrix_imtype_out */ JointRestState_m_oMg_get(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_JointRestState_m_oMi_set")]
+  public static extern void JointRestState_m_oMi_set(HandleRef jarg1, IntPtr /* Matrix_imtype */ jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_JointRestState_m_oMi_get")]
+  public static extern C34M /* Matrix_imtype_out */ JointRestState_m_oMi_get(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_JointRestState_m_Len_set")]
+  public static extern void JointRestState_m_Len_set(HandleRef jarg1, double jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_JointRestState_m_Len_get")]
+  public static extern double JointRestState_m_Len_get(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_delete_JointRestState")]
+  public static extern void delete_JointRestState(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAJointObject_Alloc")]
+  public static extern IntPtr CAJointObject_Alloc();
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAJointObject_Free")]
+  public static extern void CAJointObject_Free(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAJointObject_GetBone")]
+  public static extern void CAJointObject_GetBone(HandleRef jarg1, IntPtr /* Matrix*&_imtype */ jarg2, HandleRef jarg3);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAJointObject_GetWeightTag")]
+  public static extern IntPtr CAJointObject_GetWeightTag(HandleRef jarg1, HandleRef jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAWeightTag_Alloc")]
+  public static extern IntPtr CAWeightTag_Alloc();
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAWeightTag_Free")]
+  public static extern void CAWeightTag_Free(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAWeightTag_GetJoint")]
+  public static extern IntPtr CAWeightTag_GetJoint(HandleRef jarg1, int jarg2, HandleRef jarg3);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAWeightTag_GetJointCount")]
+  public static extern int CAWeightTag_GetJointCount(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAWeightTag_FindJoint")]
+  public static extern int CAWeightTag_FindJoint(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAWeightTag_GetJointRestState")]
+  public static extern IntPtr CAWeightTag_GetJointRestState(HandleRef jarg1, int jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAWeightTag_SetJointRestState")]
+  public static extern void CAWeightTag_SetJointRestState(HandleRef jarg1, int jarg2, HandleRef jarg3);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAWeightTag_GetWeightMap")]
+  public static extern void CAWeightTag_GetWeightMap(HandleRef jarg1, int jarg2, HandleRef jarg3, int jarg4);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAWeightTag_SetWeightMap")]
+  public static extern bool CAWeightTag_SetWeightMap(HandleRef jarg1, int jarg2, HandleRef jarg3, int jarg4);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAWeightTag_GetWeightCount")]
+  public static extern int CAWeightTag_GetWeightCount(HandleRef jarg1, int jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAWeightTag_GetIndexWeight")]
+  public static extern void CAWeightTag_GetIndexWeight(HandleRef jarg1, int jarg2, int jarg3, HandleRef jarg4, HandleRef jarg5);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAWeightTag_GetWeight")]
+  public static extern double CAWeightTag_GetWeight(HandleRef jarg1, int jarg2, int jarg3);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAWeightTag_SetWeight")]
+  public static extern bool CAWeightTag_SetWeight(HandleRef jarg1, int jarg2, int jarg3, double jarg4);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAWeightTag_GetWeightDirty")]
+  public static extern IntPtr CAWeightTag_GetWeightDirty(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAWeightTag_WeightDirty")]
+  public static extern void CAWeightTag_WeightDirty(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAWeightTag_GetGeomMg")]
+  public static extern C34M /* Matrix_imtype_out */ CAWeightTag_GetGeomMg(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAWeightTag_SetGeomMg")]
+  public static extern void CAWeightTag_SetGeomMg(HandleRef jarg1, IntPtr /* constMatrix&_imtype */ jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAWeightTag_AddJoint")]
+  public static extern int CAWeightTag_AddJoint(HandleRef jarg1, HandleRef jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAWeightTag_RemoveJoint")]
+  public static extern void CAWeightTag_RemoveJoint(HandleRef jarg1, HandleRef jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAWeightTag_CalculateBoneStates")]
+  public static extern void CAWeightTag_CalculateBoneStates(HandleRef jarg1, int jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAWeightTag_TransferWeightMap")]
+  public static extern bool CAWeightTag_TransferWeightMap(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, int jarg4, int jarg5, int jarg6, int jarg7, HandleRef jarg8);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetNext")]
+  public static extern IntPtr CAMorphNode_GetNext(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetPrev")]
+  public static extern IntPtr CAMorphNode_GetPrev(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetUp")]
+  public static extern IntPtr CAMorphNode_GetUp(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetDown")]
+  public static extern IntPtr CAMorphNode_GetDown(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetLink")]
+  public static extern IntPtr CAMorphNode_GetLink(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetInfo")]
+  public static extern int CAMorphNode_GetInfo(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetP")]
+  public static extern Fusee.Math.Core.Vector3D /* Vector_imtype_out */ CAMorphNode_GetP(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetS")]
+  public static extern Fusee.Math.Core.Vector3D /* Vector_imtype_out */ CAMorphNode_GetS(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetR")]
+  public static extern Fusee.Math.Core.Vector3D /* Vector_imtype_out */ CAMorphNode_GetR(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_SetP")]
+  public static extern void CAMorphNode_SetP(HandleRef jarg1, ref Fusee.Math.Core.Vector3D /* constVector&_imtype */ jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_SetS")]
+  public static extern void CAMorphNode_SetS(HandleRef jarg1, ref Fusee.Math.Core.Vector3D /* constVector&_imtype */ jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_SetR")]
+  public static extern void CAMorphNode_SetR(HandleRef jarg1, ref Fusee.Math.Core.Vector3D /* constVector&_imtype */ jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetPointCount")]
+  public static extern int CAMorphNode_GetPointCount(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_SetPointCount")]
+  public static extern bool CAMorphNode_SetPointCount(HandleRef jarg1, int jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetPoint")]
+  public static extern Fusee.Math.Core.Vector3D /* Vector_imtype_out */ CAMorphNode_GetPoint(HandleRef jarg1, int jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_SetPoint")]
+  public static extern void CAMorphNode_SetPoint(HandleRef jarg1, int jarg2, ref Fusee.Math.Core.Vector3D /* constVector&_imtype */ jarg3);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetTangentCount")]
+  public static extern int CAMorphNode_GetTangentCount(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_SetTangentCount")]
+  public static extern bool CAMorphNode_SetTangentCount(HandleRef jarg1, int jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetTangent")]
+  public static extern Fusee.Math.Core.Vector3D /* Vector_imtype_out */ CAMorphNode_GetTangent(HandleRef jarg1, int jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_SetTangent")]
+  public static extern void CAMorphNode_SetTangent(HandleRef jarg1, int jarg2, ref Fusee.Math.Core.Vector3D /* constVector&_imtype */ jarg3);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetVertexMapTagCount")]
+  public static extern int CAMorphNode_GetVertexMapTagCount(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetVertexMapCount")]
+  public static extern int CAMorphNode_GetVertexMapCount(HandleRef jarg1, int jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_SetVertexMapCount")]
+  public static extern bool CAMorphNode_SetVertexMapCount(HandleRef jarg1, int jarg2, int jarg3);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetVertexMap")]
+  public static extern double CAMorphNode_GetVertexMap(HandleRef jarg1, int jarg2, int jarg3);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_SetVertexMap")]
+  public static extern void CAMorphNode_SetVertexMap(HandleRef jarg1, int jarg2, int jarg3, double jarg4);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetParamCount")]
+  public static extern int CAMorphNode_GetParamCount(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_SetParamCount")]
+  public static extern bool CAMorphNode_SetParamCount(HandleRef jarg1, int jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetParam")]
+  public static extern bool CAMorphNode_GetParam(HandleRef jarg1, int jarg2, HandleRef jarg3, HandleRef jarg4);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_SetParam")]
+  public static extern void CAMorphNode_SetParam(HandleRef jarg1, int jarg2, HandleRef jarg3, HandleRef jarg4);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetUVTagCount")]
+  public static extern int CAMorphNode_GetUVTagCount(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetUVCount")]
+  public static extern int CAMorphNode_GetUVCount(HandleRef jarg1, int jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_SetUVCount")]
+  public static extern bool CAMorphNode_SetUVCount(HandleRef jarg1, int jarg2, int jarg3);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetUV")]
+  public static extern void CAMorphNode_GetUV(HandleRef jarg1, int jarg2, int jarg3, HandleRef jarg4);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_SetUV")]
+  public static extern void CAMorphNode_SetUV(HandleRef jarg1, int jarg2, int jarg3, HandleRef jarg4);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetWeightMapTagCount")]
+  public static extern int CAMorphNode_GetWeightMapTagCount(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetWeightMapJointCount")]
+  public static extern int CAMorphNode_GetWeightMapJointCount(HandleRef jarg1, int jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetWeightMapCount")]
+  public static extern int CAMorphNode_GetWeightMapCount(HandleRef jarg1, int jarg2, int jarg3);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_SetWeightMapCount")]
+  public static extern bool CAMorphNode_SetWeightMapCount(HandleRef jarg1, int jarg2, int jarg3, int jarg4);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_GetWeightMap")]
+  public static extern double CAMorphNode_GetWeightMap(HandleRef jarg1, int jarg2, int jarg3, int jarg4);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorphNode_SetWeightMap")]
+  public static extern void CAMorphNode_SetWeightMap(HandleRef jarg1, int jarg2, int jarg3, int jarg4, double jarg5);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorph_GetName")]
+  public static extern string /* String_imtype */ CAMorph_GetName(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorph_SetName")]
+  public static extern void CAMorph_SetName(HandleRef jarg1, string /* constString&_imtype */ jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorph_GetID")]
+  public static extern int CAMorph_GetID(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorph_CopyFrom")]
+  public static extern bool CAMorph_CopyFrom(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, int jarg4);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorph_Find")]
+  public static extern IntPtr CAMorph_Find(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorph_GetNodeIndex")]
+  public static extern int CAMorph_GetNodeIndex(HandleRef jarg1, HandleRef jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorph_FindIndex")]
+  public static extern int CAMorph_FindIndex(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorph_FindFromIndex")]
+  public static extern IntPtr CAMorph_FindFromIndex(HandleRef jarg1, HandleRef jarg2, int jarg3);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorph_GetFirst")]
+  public static extern IntPtr CAMorph_GetFirst(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorph_SetMode")]
+  public static extern bool CAMorph_SetMode(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, int jarg4, int jarg5);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorph_Store")]
+  public static extern bool CAMorph_Store(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, int jarg4);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAMorph_Apply")]
+  public static extern bool CAMorph_Apply(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, int jarg4);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAPoseMorphTag_Alloc")]
+  public static extern IntPtr CAPoseMorphTag_Alloc();
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAPoseMorphTag_Free")]
+  public static extern void CAPoseMorphTag_Free(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAPoseMorphTag_GetMorphCount")]
+  public static extern int CAPoseMorphTag_GetMorphCount(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAPoseMorphTag_GetMorph")]
+  public static extern IntPtr CAPoseMorphTag_GetMorph(HandleRef jarg1, int jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAPoseMorphTag_GetMorphID")]
+  public static extern IntPtr CAPoseMorphTag_GetMorphID(HandleRef jarg1, int jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAPoseMorphTag_GetActiveMorphIndex")]
+  public static extern int CAPoseMorphTag_GetActiveMorphIndex(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAPoseMorphTag_GetMode")]
+  public static extern int CAPoseMorphTag_GetMode(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAPoseMorphTag_GetActiveMorph")]
+  public static extern IntPtr CAPoseMorphTag_GetActiveMorph(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAPoseMorphTag_GetMorphBase")]
+  public static extern IntPtr CAPoseMorphTag_GetMorphBase(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAPoseMorphTag_AddMorph")]
+  public static extern IntPtr CAPoseMorphTag_AddMorph(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAPoseMorphTag_RemoveMorph")]
+  public static extern void CAPoseMorphTag_RemoveMorph(HandleRef jarg1, int jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAPoseMorphTag_InitMorphs")]
+  public static extern void CAPoseMorphTag_InitMorphs(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAPoseMorphTag_UpdateMorphs")]
+  public static extern void CAPoseMorphTag_UpdateMorphs(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAPoseMorphTag_GetMorphIndex")]
+  public static extern int CAPoseMorphTag_GetMorphIndex(HandleRef jarg1, HandleRef jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAPoseMorphTag_ExitEdit")]
+  public static extern bool CAPoseMorphTag_ExitEdit(HandleRef jarg1, HandleRef jarg2, bool jarg3);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BRUSHBASE_MOUSE_FLAG_ADDUNDO_get")]
+  public static extern int BRUSHBASE_MOUSE_FLAG_ADDUNDO_get();
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BRUSHBASE_MOUSE_FLAG_ADDUNDO_FULL_get")]
+  public static extern int BRUSHBASE_MOUSE_FLAG_ADDUNDO_FULL_get();
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BRUSHBASE_MOUSE_FLAG_SORTED_DIST_get")]
+  public static extern int BRUSHBASE_MOUSE_FLAG_SORTED_DIST_get();
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BRUSHBASE_MOUSE_FLAG_SORTED_OBJECT_get")]
+  public static extern int BRUSHBASE_MOUSE_FLAG_SORTED_OBJECT_get();
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BRUSHBASE_MOUSE_FLAG_SORTED_ORIGINOBJECT_get")]
+  public static extern int BRUSHBASE_MOUSE_FLAG_SORTED_ORIGINOBJECT_get();
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BRUSHBASE_FALLOFF_STRENGTH_get")]
+  public static extern int BRUSHBASE_FALLOFF_STRENGTH_get();
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BRUSHBASE_FALLOFF_ABSSTRENGTH_get")]
+  public static extern int BRUSHBASE_FALLOFF_ABSSTRENGTH_get();
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_new_BrushObjectInfo")]
+  public static extern IntPtr new_BrushObjectInfo();
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushObjectInfo_m_pObject_set")]
+  public static extern void BrushObjectInfo_m_pObject_set(HandleRef jarg1, HandleRef jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushObjectInfo_m_pObject_get")]
+  public static extern IntPtr BrushObjectInfo_m_pObject_get(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushObjectInfo_m_pOriginObject_set")]
+  public static extern void BrushObjectInfo_m_pOriginObject_set(HandleRef jarg1, HandleRef jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushObjectInfo_m_pOriginObject_get")]
+  public static extern IntPtr BrushObjectInfo_m_pOriginObject_get(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushObjectInfo_m_pDeformObject_set")]
+  public static extern void BrushObjectInfo_m_pDeformObject_set(HandleRef jarg1, HandleRef jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushObjectInfo_m_pDeformObject_get")]
+  public static extern IntPtr BrushObjectInfo_m_pDeformObject_get(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushObjectInfo_m_pNeighbor_set")]
+  public static extern void BrushObjectInfo_m_pNeighbor_set(HandleRef jarg1, HandleRef jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushObjectInfo_m_pNeighbor_get")]
+  public static extern IntPtr BrushObjectInfo_m_pNeighbor_get(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushObjectInfo_m_PointCount_set")]
+  public static extern void BrushObjectInfo_m_PointCount_set(HandleRef jarg1, int jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushObjectInfo_m_PointCount_get")]
+  public static extern int BrushObjectInfo_m_PointCount_get(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushObjectInfo_m_PolyCount_set")]
+  public static extern void BrushObjectInfo_m_PolyCount_set(HandleRef jarg1, int jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushObjectInfo_m_PolyCount_get")]
+  public static extern int BrushObjectInfo_m_PolyCount_get(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushObjectInfo_GetPointAt")]
+  public static extern Fusee.Math.Core.Vector3D /* Vector_imtype_out */ BrushObjectInfo_GetPointAt(HandleRef jarg1, int jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushObjectInfo_GetGlobalPointAt")]
+  public static extern Fusee.Math.Core.Vector3D /* Vector_imtype_out */ BrushObjectInfo_GetGlobalPointAt(HandleRef jarg1, int jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushObjectInfo_SetGlobalPointAt")]
+  public static extern void BrushObjectInfo_SetGlobalPointAt(HandleRef jarg1, int jarg2, Fusee.Math.Core.Vector3D /* Vector_imtype */ jarg3);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushObjectInfo_GetNormalAt")]
+  public static extern Fusee.Math.Core.Vector3D /* Vector_imtype_out */ BrushObjectInfo_GetNormalAt(HandleRef jarg1, int jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushObjectInfo_SetNormalAt")]
+  public static extern void BrushObjectInfo_SetNormalAt(HandleRef jarg1, int jarg2, Fusee.Math.Core.Vector3D /* Vector_imtype */ jarg3);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushObjectInfo_GetPolyAt")]
+  public static extern IntPtr BrushObjectInfo_GetPolyAt(HandleRef jarg1, int jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_delete_BrushObjectInfo")]
+  public static extern void delete_BrushObjectInfo(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushVertexData_m_Dist_set")]
+  public static extern void BrushVertexData_m_Dist_set(HandleRef jarg1, double jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushVertexData_m_Dist_get")]
+  public static extern double BrushVertexData_m_Dist_get(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushVertexData_m_Index_set")]
+  public static extern void BrushVertexData_m_Index_set(HandleRef jarg1, int jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushVertexData_m_Index_get")]
+  public static extern int BrushVertexData_m_Index_get(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushVertexData_m_pObject_set")]
+  public static extern void BrushVertexData_m_pObject_set(HandleRef jarg1, HandleRef jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushVertexData_m_pObject_get")]
+  public static extern IntPtr BrushVertexData_m_pObject_get(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_new_BrushVertexData")]
+  public static extern IntPtr new_BrushVertexData();
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_delete_BrushVertexData")]
+  public static extern void delete_BrushVertexData(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushPixelData_m_pObject_set")]
+  public static extern void BrushPixelData_m_pObject_set(HandleRef jarg1, HandleRef jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushPixelData_m_pObject_get")]
+  public static extern IntPtr BrushPixelData_m_pObject_get(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushPixelData_m_Index_set")]
+  public static extern void BrushPixelData_m_Index_set(HandleRef jarg1, int jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushPixelData_m_Index_get")]
+  public static extern int BrushPixelData_m_Index_get(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushPixelData_m_Z_set")]
+  public static extern void BrushPixelData_m_Z_set(HandleRef jarg1, double jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushPixelData_m_Z_get")]
+  public static extern double BrushPixelData_m_Z_get(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushPixelData_m_pNext_set")]
+  public static extern void BrushPixelData_m_pNext_set(HandleRef jarg1, HandleRef jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushPixelData_m_pNext_get")]
+  public static extern IntPtr BrushPixelData_m_pNext_get(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_new_BrushPixelData")]
+  public static extern IntPtr new_BrushPixelData();
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_delete_BrushPixelData")]
+  public static extern void delete_BrushPixelData(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_Alloc")]
+  public static extern IntPtr BrushBase_Alloc();
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_Free")]
+  public static extern void BrushBase_Free(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_InitTool")]
+  public static extern bool BrushBase_InitTool(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, HandleRef jarg5);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_FreeTool")]
+  public static extern void BrushBase_FreeTool(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_InitDefaultSettings")]
+  public static extern void BrushBase_InitDefaultSettings(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_GetDEnabling")]
+  public static extern bool BrushBase_GetDEnabling(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, HandleRef jarg5, int jarg6, HandleRef jarg7);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_SetDParameter")]
+  public static extern bool BrushBase_SetDParameter(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, HandleRef jarg5, HandleRef jarg6);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_GetDDescription")]
+  public static extern bool BrushBase_GetDDescription(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, HandleRef jarg5);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_Message")]
+  public static extern bool BrushBase_Message(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, int jarg4, HandleRef jarg5);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_GetCursorInfo")]
+  public static extern bool BrushBase_GetCursorInfo(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, double jarg5, double jarg6, HandleRef jarg7);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_MouseInput")]
+  public static extern bool BrushBase_MouseInput(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, HandleRef jarg5, HandleRef jarg6);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_GetSelected")]
+  public static extern IntPtr BrushBase_GetSelected(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, HandleRef jarg5, int jarg6, int jarg7, double jarg8, HandleRef jarg9);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_GetCursor")]
+  public static extern double BrushBase_GetCursor(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_GetObjectInfo__SWIG_0")]
+  public static extern void BrushBase_GetObjectInfo__SWIG_0(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_GetObjectInfo__SWIG_1")]
+  public static extern bool BrushBase_GetObjectInfo__SWIG_1(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_ValidateObjects")]
+  public static extern bool BrushBase_ValidateObjects(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_GetObjectAt")]
+  public static extern IntPtr BrushBase_GetObjectAt(HandleRef jarg1, int jarg2, int jarg3);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_GetFalloff")]
+  public static extern double BrushBase_GetFalloff(HandleRef jarg1, double jarg2, int jarg3);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_GetObjects")]
+  public static extern bool BrushBase_GetObjects(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_UpdateCache")]
+  public static extern bool BrushBase_UpdateCache(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, bool jarg5);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_CalcSurfaceDistances__SWIG_0")]
+  public static extern IntPtr BrushBase_CalcSurfaceDistances__SWIG_0(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, ref Fusee.Math.Core.Vector3D /* Vector*&_imtype */ jarg5, ref Fusee.Math.Core.Vector3D /* Vector*&_imtype */ jarg6, HandleRef jarg7);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_CalcSurfaceDistances__SWIG_1")]
+  public static extern IntPtr BrushBase_CalcSurfaceDistances__SWIG_1(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, ref Fusee.Math.Core.Vector3D /* Vector*&_imtype */ jarg5, ref Fusee.Math.Core.Vector3D /* Vector*&_imtype */ jarg6);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_CalcSurfaceDistances__SWIG_2")]
+  public static extern IntPtr BrushBase_CalcSurfaceDistances__SWIG_2(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, ref Fusee.Math.Core.Vector3D /* Vector*&_imtype */ jarg5);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_CalcSurfaceDistances__SWIG_3")]
+  public static extern IntPtr BrushBase_CalcSurfaceDistances__SWIG_3(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_CalcSurfaceDistances__SWIG_4")]
+  public static extern IntPtr BrushBase_CalcSurfaceDistances__SWIG_4(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_CalcSurfaceDistancesFromPoint__SWIG_0")]
+  public static extern IntPtr BrushBase_CalcSurfaceDistancesFromPoint__SWIG_0(HandleRef jarg1, HandleRef jarg2, int jarg3, HandleRef jarg4, ref Fusee.Math.Core.Vector3D /* Vector*&_imtype */ jarg5, ref Fusee.Math.Core.Vector3D /* Vector*&_imtype */ jarg6, HandleRef jarg7);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_CalcSurfaceDistancesFromPoint__SWIG_1")]
+  public static extern IntPtr BrushBase_CalcSurfaceDistancesFromPoint__SWIG_1(HandleRef jarg1, HandleRef jarg2, int jarg3, HandleRef jarg4, ref Fusee.Math.Core.Vector3D /* Vector*&_imtype */ jarg5, ref Fusee.Math.Core.Vector3D /* Vector*&_imtype */ jarg6);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_CalcSurfaceDistancesFromPoint__SWIG_2")]
+  public static extern IntPtr BrushBase_CalcSurfaceDistancesFromPoint__SWIG_2(HandleRef jarg1, HandleRef jarg2, int jarg3, HandleRef jarg4, ref Fusee.Math.Core.Vector3D /* Vector*&_imtype */ jarg5);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_CalcSurfaceDistancesFromPoint__SWIG_3")]
+  public static extern IntPtr BrushBase_CalcSurfaceDistancesFromPoint__SWIG_3(HandleRef jarg1, HandleRef jarg2, int jarg3, HandleRef jarg4);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushBase_CalcSurfaceDistancesFromPoint__SWIG_4")]
+  public static extern IntPtr BrushBase_CalcSurfaceDistancesFromPoint__SWIG_4(HandleRef jarg1, HandleRef jarg2, int jarg3);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_m_pBrushBase_set")]
+  public static extern void BrushToolData_m_pBrushBase_set(HandleRef jarg1, HandleRef jarg2);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_m_pBrushBase_get")]
+  public static extern IntPtr BrushToolData_m_pBrushBase_get(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_InitTool")]
+  public static extern bool BrushToolData_InitTool(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_InitToolSwigExplicitBrushToolData")]
+  public static extern bool BrushToolData_InitToolSwigExplicitBrushToolData(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_FreeTool")]
+  public static extern void BrushToolData_FreeTool(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_FreeToolSwigExplicitBrushToolData")]
+  public static extern void BrushToolData_FreeToolSwigExplicitBrushToolData(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_InitDefaultSettings")]
+  public static extern void BrushToolData_InitDefaultSettings(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_InitDefaultSettingsSwigExplicitBrushToolData")]
+  public static extern void BrushToolData_InitDefaultSettingsSwigExplicitBrushToolData(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_GetDEnabling")]
+  public static extern bool BrushToolData_GetDEnabling(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, HandleRef jarg5, int jarg6, HandleRef jarg7);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_GetDEnablingSwigExplicitBrushToolData")]
+  public static extern bool BrushToolData_GetDEnablingSwigExplicitBrushToolData(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, HandleRef jarg5, int jarg6, HandleRef jarg7);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_SetDParameter")]
+  public static extern bool BrushToolData_SetDParameter(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, HandleRef jarg5, HandleRef jarg6);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_SetDParameterSwigExplicitBrushToolData")]
+  public static extern bool BrushToolData_SetDParameterSwigExplicitBrushToolData(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, HandleRef jarg5, HandleRef jarg6);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_GetDDescription")]
+  public static extern bool BrushToolData_GetDDescription(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, HandleRef jarg5);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_GetDDescriptionSwigExplicitBrushToolData")]
+  public static extern bool BrushToolData_GetDDescriptionSwigExplicitBrushToolData(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, HandleRef jarg5);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_Message")]
+  public static extern bool BrushToolData_Message(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, int jarg4, HandleRef jarg5);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_MessageSwigExplicitBrushToolData")]
+  public static extern bool BrushToolData_MessageSwigExplicitBrushToolData(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, int jarg4, HandleRef jarg5);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_GetCursorInfo")]
+  public static extern bool BrushToolData_GetCursorInfo(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, double jarg5, double jarg6, HandleRef jarg7);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_GetCursorInfoSwigExplicitBrushToolData")]
+  public static extern bool BrushToolData_GetCursorInfoSwigExplicitBrushToolData(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, double jarg5, double jarg6, HandleRef jarg7);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_MouseInput")]
+  public static extern bool BrushToolData_MouseInput(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, HandleRef jarg5, HandleRef jarg6);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_MouseInputSwigExplicitBrushToolData")]
+  public static extern bool BrushToolData_MouseInputSwigExplicitBrushToolData(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, HandleRef jarg5, HandleRef jarg6);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_MouseInputStart")]
+  public static extern bool BrushToolData_MouseInputStart(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, HandleRef jarg5, HandleRef jarg6, HandleRef jarg7);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_MouseInputStartSwigExplicitBrushToolData")]
+  public static extern bool BrushToolData_MouseInputStartSwigExplicitBrushToolData(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, HandleRef jarg5, HandleRef jarg6, HandleRef jarg7);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_MouseInputDrag")]
+  public static extern bool BrushToolData_MouseInputDrag(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, HandleRef jarg5, HandleRef jarg6, HandleRef jarg7, int jarg8, double jarg9, double jarg10, HandleRef jarg11);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_MouseInputDragSwigExplicitBrushToolData")]
+  public static extern bool BrushToolData_MouseInputDragSwigExplicitBrushToolData(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, HandleRef jarg5, HandleRef jarg6, HandleRef jarg7, int jarg8, double jarg9, double jarg10, HandleRef jarg11);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_MouseInputEnd")]
+  public static extern bool BrushToolData_MouseInputEnd(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, HandleRef jarg5, HandleRef jarg6);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_MouseInputEndSwigExplicitBrushToolData")]
+  public static extern bool BrushToolData_MouseInputEndSwigExplicitBrushToolData(HandleRef jarg1, HandleRef jarg2, HandleRef jarg3, HandleRef jarg4, HandleRef jarg5, HandleRef jarg6);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_delete_BrushToolData")]
+  public static extern void delete_BrushToolData(HandleRef jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_BrushToolData_director_connect")]
+  public static extern void BrushToolData_director_connect(HandleRef jarg1, BrushToolData.SwigDelegateBrushToolData_0 delegate0, BrushToolData.SwigDelegateBrushToolData_1 delegate1, BrushToolData.SwigDelegateBrushToolData_2 delegate2, BrushToolData.SwigDelegateBrushToolData_3 delegate3, BrushToolData.SwigDelegateBrushToolData_4 delegate4, BrushToolData.SwigDelegateBrushToolData_5 delegate5, BrushToolData.SwigDelegateBrushToolData_6 delegate6, BrushToolData.SwigDelegateBrushToolData_7 delegate7, BrushToolData.SwigDelegateBrushToolData_8 delegate8, BrushToolData.SwigDelegateBrushToolData_9 delegate9, BrushToolData.SwigDelegateBrushToolData_10 delegate10, BrushToolData.SwigDelegateBrushToolData_11 delegate11);
 
   [DllImport("Native.cdl", EntryPoint="CSharp_new_HandleInfo")]
   public static extern IntPtr new_HandleInfo();
@@ -15613,6 +15622,15 @@ class C4dApiPINVOKE {
 
   [DllImport("Native.cdl", EntryPoint="CSharp_HNWeightTag_SWIGUpcast")]
   public static extern IntPtr HNWeightTag_SWIGUpcast(IntPtr jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAJointObject_SWIGUpcast")]
+  public static extern IntPtr CAJointObject_SWIGUpcast(IntPtr jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAWeightTag_SWIGUpcast")]
+  public static extern IntPtr CAWeightTag_SWIGUpcast(IntPtr jarg1);
+
+  [DllImport("Native.cdl", EntryPoint="CSharp_CAPoseMorphTag_SWIGUpcast")]
+  public static extern IntPtr CAPoseMorphTag_SWIGUpcast(IntPtr jarg1);
 
   [DllImport("Native.cdl", EntryPoint="CSharp_ObjectData_SWIGUpcast")]
   public static extern IntPtr ObjectData_SWIGUpcast(IntPtr jarg1);

@@ -11,12 +11,10 @@ namespace C4d {
 using System;
 using System.Runtime.InteropServices;
 
-public class CAWeightTag : IDisposable {
+public class CAWeightTag : BaseTag {
   private HandleRef swigCPtr;
-  protected bool swigCMemOwn;
 
-  internal CAWeightTag(IntPtr cPtr, bool cMemoryOwn) {
-    swigCMemOwn = cMemoryOwn;
+  internal CAWeightTag(IntPtr cPtr, bool cMemoryOwn) : base(C4dApiPINVOKE.CAWeightTag_SWIGUpcast(cPtr), cMemoryOwn) {
     swigCPtr = new HandleRef(this, cPtr);
   }
 
@@ -24,7 +22,7 @@ public class CAWeightTag : IDisposable {
     return (obj == null) ? new HandleRef(null, IntPtr.Zero) : obj.swigCPtr;
   }
 
-  public virtual void Dispose() {
+  public override void Dispose() {
     lock(this) {
       if (swigCPtr.Handle != IntPtr.Zero) {
         if (swigCMemOwn) {
@@ -34,6 +32,7 @@ public class CAWeightTag : IDisposable {
         swigCPtr = new HandleRef(null, IntPtr.Zero);
       }
       GC.SuppressFinalize(this);
+      base.Dispose();
     }
   }
 

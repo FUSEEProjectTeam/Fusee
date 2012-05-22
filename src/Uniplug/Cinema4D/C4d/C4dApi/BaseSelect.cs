@@ -77,8 +77,8 @@ public class BaseSelect : IDisposable {
     return ret;
   }
 
-  public bool GetRange(int seg, SWIGTYPE_p_LONG a, SWIGTYPE_p_LONG b) {
-    bool ret = C4dApiPINVOKE.BaseSelect_GetRange(swigCPtr, seg, SWIGTYPE_p_LONG.getCPtr(a), SWIGTYPE_p_LONG.getCPtr(b));
+  public bool GetRange(int seg, int maxElements, SWIGTYPE_p_LONG a, SWIGTYPE_p_LONG b) {
+    bool ret = C4dApiPINVOKE.BaseSelect_GetRange(swigCPtr, seg, maxElements, SWIGTYPE_p_LONG.getCPtr(a), SWIGTYPE_p_LONG.getCPtr(b));
     return ret;
   }
 

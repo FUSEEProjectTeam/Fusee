@@ -11,12 +11,10 @@ namespace C4d {
 using System;
 using System.Runtime.InteropServices;
 
-public class CAPoseMorphTag : IDisposable {
+public class CAPoseMorphTag : BaseTag {
   private HandleRef swigCPtr;
-  protected bool swigCMemOwn;
 
-  internal CAPoseMorphTag(IntPtr cPtr, bool cMemoryOwn) {
-    swigCMemOwn = cMemoryOwn;
+  internal CAPoseMorphTag(IntPtr cPtr, bool cMemoryOwn) : base(C4dApiPINVOKE.CAPoseMorphTag_SWIGUpcast(cPtr), cMemoryOwn) {
     swigCPtr = new HandleRef(this, cPtr);
   }
 
@@ -24,7 +22,7 @@ public class CAPoseMorphTag : IDisposable {
     return (obj == null) ? new HandleRef(null, IntPtr.Zero) : obj.swigCPtr;
   }
 
-  public virtual void Dispose() {
+  public override void Dispose() {
     lock(this) {
       if (swigCPtr.Handle != IntPtr.Zero) {
         if (swigCMemOwn) {
@@ -34,6 +32,7 @@ public class CAPoseMorphTag : IDisposable {
         swigCPtr = new HandleRef(null, IntPtr.Zero);
       }
       GC.SuppressFinalize(this);
+      base.Dispose();
     }
   }
 

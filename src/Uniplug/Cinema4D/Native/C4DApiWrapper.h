@@ -11,6 +11,41 @@
 #ifndef SWIG_C4dApi_WRAP_H_
 #define SWIG_C4dApi_WRAP_H_
 
+class SwigDirector_CommandData : public CommandData, public Swig::Director {
+
+public:
+    SwigDirector_CommandData();
+    virtual Bool Execute(BaseDocument *doc);
+    virtual Bool ExecuteSubID(BaseDocument *doc, LONG subid);
+    virtual Bool ExecuteOptionID(BaseDocument *doc, LONG plugid, LONG subid);
+    virtual LONG GetState(BaseDocument *doc);
+    virtual Bool GetSubContainer(BaseDocument *doc, BaseContainer &submenu);
+    virtual Bool RestoreLayout(void *secret);
+    virtual String GetScriptName();
+    virtual Bool Message(LONG type, void *data);
+
+    typedef unsigned int (SWIGSTDCALL* SWIG_Callback0_t)(void *);
+    typedef unsigned int (SWIGSTDCALL* SWIG_Callback1_t)(void *, int);
+    typedef unsigned int (SWIGSTDCALL* SWIG_Callback2_t)(void *, int, int);
+    typedef int (SWIGSTDCALL* SWIG_Callback3_t)(void *);
+    typedef unsigned int (SWIGSTDCALL* SWIG_Callback4_t)(void *, void *);
+    typedef unsigned int (SWIGSTDCALL* SWIG_Callback5_t)(void *);
+    typedef char * /* String_ctype */ (SWIGSTDCALL* SWIG_Callback6_t)();
+    typedef unsigned int (SWIGSTDCALL* SWIG_Callback7_t)(int, void *);
+    void swig_connect_director(SWIG_Callback0_t callbackExecute, SWIG_Callback1_t callbackExecuteSubID, SWIG_Callback2_t callbackExecuteOptionID, SWIG_Callback3_t callbackGetState, SWIG_Callback4_t callbackGetSubContainer, SWIG_Callback5_t callbackRestoreLayout, SWIG_Callback6_t callbackGetScriptName, SWIG_Callback7_t callbackMessage);
+
+private:
+    SWIG_Callback0_t swig_callbackExecute;
+    SWIG_Callback1_t swig_callbackExecuteSubID;
+    SWIG_Callback2_t swig_callbackExecuteOptionID;
+    SWIG_Callback3_t swig_callbackGetState;
+    SWIG_Callback4_t swig_callbackGetSubContainer;
+    SWIG_Callback5_t swig_callbackRestoreLayout;
+    SWIG_Callback6_t swig_callbackGetScriptName;
+    SWIG_Callback7_t swig_callbackMessage;
+    void swig_init_callbacks();
+};
+
 class SwigDirector_BrushToolData : public BrushToolData, public Swig::Director {
 
 public:
@@ -55,41 +90,6 @@ private:
     SWIG_Callback9_t swig_callbackMouseInputStart;
     SWIG_Callback10_t swig_callbackMouseInputDrag;
     SWIG_Callback11_t swig_callbackMouseInputEnd;
-    void swig_init_callbacks();
-};
-
-class SwigDirector_CommandData : public CommandData, public Swig::Director {
-
-public:
-    SwigDirector_CommandData();
-    virtual Bool Execute(BaseDocument *doc);
-    virtual Bool ExecuteSubID(BaseDocument *doc, LONG subid);
-    virtual Bool ExecuteOptionID(BaseDocument *doc, LONG plugid, LONG subid);
-    virtual LONG GetState(BaseDocument *doc);
-    virtual Bool GetSubContainer(BaseDocument *doc, BaseContainer &submenu);
-    virtual Bool RestoreLayout(void *secret);
-    virtual String GetScriptName();
-    virtual Bool Message(LONG type, void *data);
-
-    typedef unsigned int (SWIGSTDCALL* SWIG_Callback0_t)(void *);
-    typedef unsigned int (SWIGSTDCALL* SWIG_Callback1_t)(void *, int);
-    typedef unsigned int (SWIGSTDCALL* SWIG_Callback2_t)(void *, int, int);
-    typedef int (SWIGSTDCALL* SWIG_Callback3_t)(void *);
-    typedef unsigned int (SWIGSTDCALL* SWIG_Callback4_t)(void *, void *);
-    typedef unsigned int (SWIGSTDCALL* SWIG_Callback5_t)(void *);
-    typedef char * /* String_ctype */ (SWIGSTDCALL* SWIG_Callback6_t)();
-    typedef unsigned int (SWIGSTDCALL* SWIG_Callback7_t)(int, void *);
-    void swig_connect_director(SWIG_Callback0_t callbackExecute, SWIG_Callback1_t callbackExecuteSubID, SWIG_Callback2_t callbackExecuteOptionID, SWIG_Callback3_t callbackGetState, SWIG_Callback4_t callbackGetSubContainer, SWIG_Callback5_t callbackRestoreLayout, SWIG_Callback6_t callbackGetScriptName, SWIG_Callback7_t callbackMessage);
-
-private:
-    SWIG_Callback0_t swig_callbackExecute;
-    SWIG_Callback1_t swig_callbackExecuteSubID;
-    SWIG_Callback2_t swig_callbackExecuteOptionID;
-    SWIG_Callback3_t swig_callbackGetState;
-    SWIG_Callback4_t swig_callbackGetSubContainer;
-    SWIG_Callback5_t swig_callbackRestoreLayout;
-    SWIG_Callback6_t swig_callbackGetScriptName;
-    SWIG_Callback7_t swig_callbackMessage;
     void swig_init_callbacks();
 };
 

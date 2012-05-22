@@ -39,7 +39,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="C4d">
-      <HintPath>..\..\..\..\..\..\..\..\..\..\Program Files\MAXON\CINEMA 4D R13\plugins\ManagedPlugIn\win32\C4d.dll</HintPath>
+      <HintPath>$(C4D_DIR)\plugins\ManagedPlugIn\win32\C4d.dll</HintPath>
     </Reference>
     <Reference Include="Fusee.Math">
       <HintPath>..\..\..\..\bin\Debug\Fusee.Math.dll</HintPath>
