@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{F1EA338D-1D05-4D83-A739-F5AF559F0559}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Fusee.Engine.Imp</RootNamespace>
+    <AssemblyName>Fusee.Engine.Imp.WebGL.Proxies</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\..\Bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\..\Bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="MeshReference.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RenderCanvasImp.cs" />
+    <Compile Include="RenderContextImp.cs" />
+    <Compile Include="ShaderParamHandle.cs" />
+    <Compile Include="ShaderProgramImp.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Fusee.Engine.Common">
+      <HintPath>..\..\..\..\Bin\Debug\Fusee.Engine.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Engine.Imp.OpenTK, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Bin\Debug\Fusee.Engine.Imp.OpenTK.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Math.Core, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\bin\Debug\Fusee.Math.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="JSIL.Meta">
+      <HintPath>..\..\..\..\ExternalBinaries\JSIL.Meta.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="defaults.jsilconfig" />
+    <None Include="JSIL.bat" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Scripts\browser.css" />
+    <Content Include="Scripts\Examples.Simple.css" />
+    <Content Include="Scripts\Examples.Simple.html" />
+    <Content Include="Scripts\Fusee.Engine.Imp.WebGL.js" />
+    <Content Include="Scripts\JSIL.Bootstrap.js" />
+    <Content Include="Scripts\JSIL.Browser.js" />
+    <Content Include="Scripts\JSIL.Core.js" />
+    <Content Include="Scripts\SystemExternals.js" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>cd $(ProjectDir)
+JSIL.bat $(OutDir)</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

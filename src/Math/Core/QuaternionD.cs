@@ -1,918 +1,669 @@
-#region Copyright(C) Notice
-//	Fusee.Math math library. Based on the Sharp3D math library originally developed by
-//	Copyright (C) 2003-2004  
-//	Eran Kampf
-//	tentacle@zahav.net.il
-//	http://www.ekampf.com/Fusee.Math/
-//
-//	This library is free software; you can redistribute it and/or
-//	modify it under the terms of the GNU Lesser General Public
-//	License as published by the Free Software Foundation; either
-//	version 2.1 of the License, or (at your option) any later version.
-//
-//	This library is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//	Lesser General Public License for more details.
-//
-//	You should have received a copy of the GNU Lesser General Public
-//	License along with this library; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#endregion
 using System;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Collections;
-using System.IO;
-using System.Text.RegularExpressions;
-using System.Runtime.Serialization;
-using System.Security.Permissions;
 using System.Runtime.InteropServices;
 
-namespace Fusee.Math.Core
+namespace Fusee.Math
 {
-	/// <summary>
-	/// Represents a double-precision floating-point quaternion.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// A quaternion can be thought of as a 4-Dimentional vector of form:
-	/// q = [w, x, y, z] = w + xi + yj +zk.
-	/// </para>
-	/// <para>
-	/// A Quaternion is often written as q = s + V where S represents
-	/// the scalar part (w component) and V is a 3D vector representing
-	/// the imaginery coefficients (x,y,z components).
-	/// </para>
-	/// </remarks>
-	[Serializable]
-	[StructLayout(LayoutKind.Sequential)]
-	[TypeConverter(typeof(QuaternionDConverter))]
-	public struct QuaternionD : ICloneable, ISerializable
-	{
-		#region Private Fields
-		private double _w;
-		private double _x;
-		private double _y;
-		private double _z;
-		#endregion
+    /// <summary>
+    /// Represents a QuaternionD.
+    /// </summary>
+    [Serializable]
+    [StructLayout(LayoutKind.Sequential)]
+    public struct QuaternionD : IEquatable<QuaternionD>
+    {
+        #region Fields
 
-		#region Constructors
-		/// <summary>
-		/// Initializes a new instance of the <see cref="QuaternionD"/> class with the specified coordinates.
-		/// </summary>
-		/// <param name="w">The quaternions's W coordinate.</param>
-		/// <param name="x">The quaternions's X coordinate.</param>
-		/// <param name="y">The quaternions's Y coordinate.</param>
-		/// <param name="z">The quaternions's Z coordinate.</param>
-		public QuaternionD(double w, double x, double y, double z)
-		{
-			_w = w;
-			_x = x;
-			_y = y;
-			_z = z;
-		}
-		/// <summary>
-		/// Initializes a new instance of the <see cref="QuaternionD"/> class with the specified coordinates.
-		/// </summary>
-		/// <param name="w">A scalar.</param>
-		/// <param name="v">A <see cref="Vector3D"/> instance.</param>
-		public QuaternionD(double w, Vector3D v)
-		{
-			_w = w;
-			_x = v.X;
-			_y = v.Y;
-			_z = v.Z;
-		}
-		/// <summary>
-		/// Initializes a new instance of the <see cref="QuaternionD"/> class with the specified coordinates.
-		/// </summary>
-		/// <param name="coordinates">An array containing the coordinate parameters.</param>
-		public QuaternionD(double[] coordinates)
-		{
-			Debug.Assert(coordinates != null);
-			Debug.Assert(coordinates.Length >= 4);
+        double3 _xyz;
+        double _w;
 
-			_w = coordinates[0];
-			_x = coordinates[1];
-			_y = coordinates[2];
-			_z = coordinates[3];
-		}
-		/// <summary>
-		/// Initializes a new instance of the <see cref="QuaternionD"/> class using coordinates from a given <see cref="QuaternionD"/> instance.
-		/// </summary>
-		/// <param name="q">A <see cref="QuaternionD"/> to get the coordinates from.</param>
-		public QuaternionD(QuaternionD q)
-		{
-			_w = q.W;
-			_x = q.X;
-			_y = q.Y;
-			_z = q.Z;
-		}
-		/// <summary>
-		/// Initializes a new instance of the <see cref="QuaternionD"/> class with serialized data.
-		/// </summary>
-		/// <param name="info">The object that holds the serialized object data.</param>
-		/// <param name="context">The contextual information about the source or destination.</param>
-		private QuaternionD(SerializationInfo info, StreamingContext context)
-		{
-			_w = info.GetSingle("W");
-			_x = info.GetSingle("X");
-			_y = info.GetSingle("Y");
-			_z = info.GetSingle("Z");
-		}
-		#endregion
+        #endregion
 
-		#region Constants
-		/// <summary>
-		/// Double-precision floating point zero quaternion.
-		/// </summary>
-		public static readonly QuaternionD Zero      = new QuaternionD(0, 0, 0, 0);
-		/// <summary>
-		/// Double-precision floating point identity quaternion.
-		/// </summary>
-		public static readonly QuaternionD Identity  = new QuaternionD(1, 0, 0, 0);
-		/// <summary>
-		/// Double-precision floating point X-Axis quaternion.
-		/// </summary>
-		public static readonly QuaternionD XAxis		= new QuaternionD(0, 1, 0, 0);
-		/// <summary>
-		/// Double-precision floating point Y-Axis quaternion.
-		/// </summary>
-		public static readonly QuaternionD YAxis		= new QuaternionD(0, 0, 1, 0);
-		/// <summary>
-		/// Double-precision floating point Z-Axis quaternion.
-		/// </summary>
-		public static readonly QuaternionD ZAxis		= new QuaternionD(0, 0, 0, 1);
-		/// <summary>
-		/// Double-precision floating point W-Axis quaternion.
-		/// </summary>
-		public static readonly QuaternionD WAxis		= new QuaternionD(1, 0, 0, 0);
-		#endregion
+        #region Constructors
 
-		#region Public Properties
-		/// <summery>
-		/// Gets or sets the w-coordinate of this quaternion.
-		/// </summery>
-		/// <value>The w-coordinate of this quaternion.</value>
-		public double W
-		{
-			get { return _w; }
-			set { _w = value;}
-		}
-		/// <summery>
-		/// Gets or sets the x-coordinate of this quaternion.
-		/// </summery>
-		/// <value>The x-coordinate of this quaternion.</value>
-		public double X
-		{
-			get { return _x; }
-			set { _x = value;}
-		}
-		/// <summery>
-		/// Gets or sets the y-coordinate of this quaternion.
-		/// </summery>
-		/// <value>The y-coordinate of this quaternion.</value>
-		public double Y
-		{
-			get { return _y; }
-			set { _y = value;}
-		}
-		/// <summery>
-		/// Gets or sets the z-coordinate of this quaternion.
-		/// </summery>
-		/// <value>The z-coordinate of this quaternion.</value>
-		public double Z
-		{
-			get { return _z; }
-			set { _z = value;}
-		}
-		#endregion
+        /// <summary>
+        /// Construct a new QuaternionD from vector and w components
+        /// </summary>
+        /// <param name="v">The vector part</param>
+        /// <param name="w">The w part</param>
+        public QuaternionD(double3 v, double w)
+        {
+            _xyz = v;
+            _w = w;
+        }
 
-		#region ICloneable Members
-		/// <summary>
-		/// Creates an exact copy of this <see cref="QuaternionD"/> object.
-		/// </summary>
-		/// <returns>The <see cref="QuaternionD"/> object this method creates, cast as an object.</returns>
-		object ICloneable.Clone()
-		{
-			return new QuaternionD(this);
-		}
-		/// <summary>
-		/// Creates an exact copy of this <see cref="QuaternionD"/> object.
-		/// </summary>
-		/// <returns>The <see cref="QuaternionD"/> object this method creates.</returns>
-		public QuaternionD Clone()
-		{
-			return new QuaternionD(this);
-		}
-		#endregion
+        /// <summary>
+        /// Construct a new QuaternionD
+        /// </summary>
+        /// <param name="xx">The xx component</param>
+        /// <param name="yy">The yy component</param>
+        /// <param name="zz">The zz component</param>
+        /// <param name="w">The w component</param>
+        public QuaternionD(double xx, double yy, double zz, double w)
+            : this(new double3(xx, yy, zz), w)
+        { }
 
-		#region ISerializable Members
-		/// <summary>
-		/// Populates a <see cref="SerializationInfo"/> with the data needed to serialize this object.
-		/// </summary>
-		/// <param name="info">The <see cref="SerializationInfo"/> to populate with data. </param>
-		/// <param name="context">The destination (see <see cref="StreamingContext"/>) for this serialization.</param>
-		//[SecurityPermissionAttribute(SecurityAction.Demand, SerializationFormatter=true)]
-		public void GetObjectData(SerializationInfo info, StreamingContext context)
-		{
-			info.AddValue("W", _w);
-			info.AddValue("X", _x);
-			info.AddValue("Y", _y);
-			info.AddValue("Z", _z);
-		}
-		#endregion
+        #endregion
 
-		#region Public Static Parse Methods
-		/// <summary>
-		/// Converts the specified string to its <see cref="QuaternionD"/> equivalent.
-		/// </summary>
-		/// <param name="s">A string representation of a <see cref="QuaternionD"/></param>
-		/// <returns>A <see cref="QuaternionD"/> that represents the vector specified by the <paramref name="s"/> parameter.</returns>
-		public static QuaternionD Parse(string s)
-		{
-			Regex r = new Regex(@"\((?<w>.*),(?<x>.*),(?<y>.*),(?<z>.*)\)", RegexOptions.None);
-			Match m = r.Match(s);
-			if (m.Success)
-			{
-				return new QuaternionD(
-					double.Parse(m.Result("${w}")),
-					double.Parse(m.Result("${x}")),
-					double.Parse(m.Result("${y}")),
-					double.Parse(m.Result("${z}"))
-					);
-			}
-			else
-			{
-				throw new ParseException("Unsuccessful Match.");
-			}
-		}
-		#endregion
+        #region Public Members
 
-		#region Public Static Quaternion Arithmetics
-		/// <summary>
-		/// Adds two quaternions.
-		/// </summary>
-		/// <param name="a">A <see cref="QuaternionD"/> instance.</param>
-		/// <param name="b">A <see cref="QuaternionD"/> instance.</param>
-		/// <returns>A new <see cref="QuaternionD"/> instance containing the sum.</returns>
-		public static QuaternionD Add(QuaternionD a, QuaternionD b)
-		{
-			return new QuaternionD(a.W + b.W, a.X + b.X, a.Y + b.Y, a.Z + b.Z);
-		}
-		/// <summary>
-		/// Adds two quaternions and put the result in the third quaternion.
-		/// </summary>
-		/// <param name="a">A <see cref="QuaternionD"/> instance.</param>
-		/// <param name="b">A <see cref="QuaternionD"/> instance.</param>
-		/// <param name="result">A <see cref="QuaternionD"/> instance to hold the result.</param>
-		public static void Add(QuaternionD a, QuaternionD b, ref QuaternionD result)
-		{
-			result.W = a.W + b.W;
-			result.X = a.X + b.X;
-			result.Y = a.Y + b.Y;
-			result.Z = a.Z + b.Z;
-		}
+        #region Properties
+        // ReSharper disable InconsistentNaming
 
-		/// <summary>
-		/// Subtracts a quaternion from a quaternion.
-		/// </summary>
-		/// <param name="a">A <see cref="QuaternionD"/> instance.</param>
-		/// <param name="b">A <see cref="QuaternionD"/> instance.</param>
-		/// <returns>A new <see cref="QuaternionD"/> instance containing the difference.</returns>
-		public static QuaternionD Subtract(QuaternionD a, QuaternionD b)
-		{
-			return new QuaternionD(a.W - b.W, a.X - b.X, a.Y - b.Y, a.Z - b.Z);
-		}
-		/// <summary>
-		/// Subtracts a quaternion from a quaternion and puts the result into a third quaternion.
-		/// </summary>
-		/// <param name="a">A <see cref="QuaternionD"/> instance.</param>
-		/// <param name="b">A <see cref="QuaternionD"/> instance.</param>
-		/// <param name="result">A <see cref="QuaternionD"/> instance to hold the result.</param>
-		public static void Subtract(QuaternionD a, QuaternionD b, ref QuaternionD result)
-		{
-			result.W = a.W - b.W;
-			result.X = a.X - b.X;
-			result.Y = a.Y - b.Y;
-			result.Z = a.Z - b.Z;
-		}
-		/// <summary>
-		/// Multiplies quaternion <paramref name="a"/> by quaternion <paramref name="b"/>.
-		/// </summary>
-		/// <param name="a">A <see cref="QuaternionD"/> instance.</param>
-		/// <param name="b">A <see cref="QuaternionD"/> instance.</param>
-		/// <returns>A new <see cref="QuaternionD"/> containing the result.</returns>
-		public static QuaternionD Multiply(QuaternionD a, QuaternionD b)
-		{
-			QuaternionD result = new QuaternionD();
-			result.W = a.W * b.W - a.X * b.X - a.Y * b.Y - a.Z * b.Z;
-			result.X = a.W * b.X + a.X * b.W + a.Y * b.Z - a.Z * b.Y;
-			result.Y = a.W * b.Y + a.Y * b.W + a.Z * b.X - a.X * b.Z;
-			result.Z = a.W * b.Z + a.Z * b.W + a.X * b.Y - a.Y * b.X;
+        /// <summary>
+        /// Gets or sets an Fusee.Math.double3 with the x, y and z components of this instance.
+        /// </summary>
+        public double3 xyz { get { return _xyz; } set { _xyz = value; } }
 
-			return result;
-		}
-		/// <summary>
-		/// Multiplies quaternion <paramref name="a"/> by quaternion <paramref name="b"/> and put the result in a third quaternion.
-		/// </summary>
-		/// <param name="a">A <see cref="QuaternionD"/> instance.</param>
-		/// <param name="b">A <see cref="QuaternionD"/> instance.</param>
-		/// <param name="result">A <see cref="QuaternionD"/> instance to hold the result.</param>
-		public static void Multiply(QuaternionD a, QuaternionD b, ref QuaternionD result)
-		{
-			result.W = a.W * b.W - a.X * b.X - a.Y * b.Y - a.Z * b.Z;
-			result.X = a.W * b.X + a.X * b.W + a.Y * b.Z - a.Z * b.Y;
-			result.Y = a.W * b.Y + a.Y * b.W + a.Z * b.X - a.X * b.Z;
-			result.Z = a.W * b.Z + a.Z * b.W + a.X * b.Y - a.Y * b.X;
-		}
-		/// <summary>
-		/// Multiplies a quaternion by a scalar.
-		/// </summary>
-		/// <param name="q">A <see cref="QuaternionD"/> instance.</param>
-		/// <param name="s">A scalar.</param>
-		/// <returns>A <see cref="QuaternionD"/> instance to hold the result.</returns>
-		public static QuaternionD Multiply(QuaternionD q, double s)
-		{
-			QuaternionD result = new QuaternionD(q);
-			result.W *= s;
-			result.X *= s;
-			result.Y *= s;
-			result.Z *= s;
+        /// <summary>
+        /// Gets or sets the x component of this instance.
+        /// </summary>
+        public double x { get { return _xyz.x; } set { _xyz.x = value; } }
 
-			return result;
-		}
-		/// <summary>
-		/// Multiplies a quaternion by a scalar and put the result in a third quaternion.
-		/// </summary>
-		/// <param name="q">A <see cref="QuaternionD"/> instance.</param>
-		/// <param name="s">A scalar.</param>
-		/// <param name="result">A <see cref="QuaternionD"/> instance to hold the result.</param>
-		public static void Multiply(QuaternionD q, double s, ref QuaternionD result)
-		{
-			result.W = q.W * s;
-			result.X = q.X * s;
-			result.Y = q.Y * s;
-			result.Z = q.Z * s;
-		}
-		/// <summary>
-		/// Divides a quaternion by a scalar.
-		/// </summary>
-		/// <param name="q">A <see cref="QuaternionD"/> instance.</param>
-		/// <param name="s">A scalar.</param>
-		/// <returns>A <see cref="QuaternionD"/> instance to hold the result.</returns>
-		public static QuaternionD Divide(QuaternionD q, double s)
-		{
-			if(s == 0) 
-			{
-				throw new DivideByZeroException( "Dividing quaternion by zero" );
-			}
+        /// <summary>
+        /// Gets or sets the y component of this instance.
+        /// </summary>
+         public double y { get { return _xyz.y; } set { _xyz.y = value; } }
 
-			QuaternionD result = new QuaternionD(q);
+        /// <summary>
+        /// Gets or sets the z component of this instance.
+        /// </summary>
+        public double z { get { return _xyz.z; } set { _xyz.z = value; } }
 
-			result.W /= s;
-			result.X /= s;
-			result.Y /= s;
-			result.Z /= s;
+        /// <summary>
+        /// Gets or sets the w component of this instance.
+        /// </summary>
+        public double w { get { return _w; } set { _w = value; } }
 
-			return result;
-		}
-		/// <summary>
-		/// Divides a quaternion by a scalar and put the result in a third quaternion.
-		/// </summary>
-		/// <param name="q">A <see cref="QuaternionD"/> instance.</param>
-		/// <param name="s">A scalar.</param>
-		/// <param name="result">A <see cref="QuaternionD"/> instance to hold the result.</param>
-		public static void Divide(QuaternionD q, double s, ref QuaternionD result)
-		{
-			if(s == 0) 
-			{
-				throw new DivideByZeroException( "Dividing quaternion by zero" );
-			}
+        // ReSharper restore InconsistentNaming
+        #endregion
 
-			result.W = q.W / s;
-			result.X = q.X / s;
-			result.Y = q.Y / s;
-			result.Z = q.Z / s;
-		}
-	
-		/// <summary>
-		/// Calculates the dot product of two quaternions.
-		/// </summary>
-		/// <param name="a">A <see cref="QuaternionD"/> instance.</param>
-		/// <param name="b">A <see cref="QuaternionD"/> instance.</param>
-		/// <returns>The dot product value.</returns>
-		public static double Dot(QuaternionD a, QuaternionD b)
-		{
-			return a.W * b.W + a.X * b.X + a.Y * b.Y + a.Z * b.Z;
-		}
-		/// <summary>
-		/// Calculates the logarithm of a given quaternion.
-		/// </summary>
-		/// <param name="a">A <see cref="QuaternionD"/> instance.</param>
-		/// <returns>The quaternion's logarithm.</returns>
-		public static QuaternionD Log(QuaternionD a)
-		{
-			QuaternionD result = new QuaternionD(0,0,0,0);
+        #region Instance
 
-			if (MathFunctions.Abs(a.W) < 1.0)
-			{
-				double angle = System.Math.Acos(a.W);
-				double sin = System.Math.Sin(angle);
+        #region ToAxisAngle
 
-				if (MathFunctions.Abs(sin) >= 0)
-				{
-					double coeff = angle / sin;
-					result.X = coeff * a.X;
-					result.Y = coeff * a.Y;
-					result.Z = coeff * a.Z;
-				}
-				else
-				{
-					result.X = a.X;
-					result.Y = a.Y;
-					result.Z = a.Z;
-				}
-			}
+        /// <summary>
+        /// Convert the current QuaternionD to axis angle representation
+        /// </summary>
+        /// <param name="axis">The resultant axis</param>
+        /// <param name="angle">The resultant angle</param>
+        public void ToAxisAngle(out double3 axis, out double angle)
+        {
+            double4 result = ToAxisAngle();
+            axis = result.xyz;
+            angle = result.w;
+        }
 
-			return result;
-		}
-		/// <summary>
-		/// Calculates the exponent of a quaternion.
-		/// </summary>
-		/// <param name="a">A <see cref="QuaternionD"/> instance.</param>
-		/// <returns>The quaternion's exponent.</returns>
-		public QuaternionD Exp(QuaternionD a)
-		{
-			QuaternionD result = new QuaternionD(0,0,0,0);
+        /// <summary>
+        /// Convert this instance to an axis-angle representation.
+        /// </summary>
+        /// <returns>A double4 that is the axis-angle representation of this QuaternionD.</returns>
+        public double4 ToAxisAngle()
+        {
+            QuaternionD q = this;
+            if (q.w > 1.0f)
+                q.Normalize();
 
-			double angle = System.Math.Sqrt(a.X*a.X + a.Y*a.Y + a.Z*a.Z);
-			double sin = System.Math.Sin(angle);
+            var result = new double4 {w = 2.0f*(double) System.Math.Acos(q.w)};
 
-			if (MathFunctions.Abs(sin) > 0)
-			{
-				double coeff = angle / sin;
-				result.X = coeff * a.X;
-				result.Y = coeff * a.Y;
-				result.Z = coeff * a.Z;
-			}
-			else
-			{
-				result.X = a.X;
-				result.Y = a.Y;
-				result.Z = a.Z;
-			}
+            // angle
+            var den = (double)System.Math.Sqrt(1.0 - q.w * q.w);
+            if (den > 0.0001f)
+            {
+                result.xyz = q.xyz / den;
+            }
+            else
+            {
+                // This occurs when the angle is zero. 
+                // Not a problem: just set an arbitrary normalized axis.
+                result.xyz = double3.UnitX;
+            }
 
-			return result;
-		}
-		/// <summary>
-		/// Converts a given <see cref="QuaternionD"/> to a matrix.
-		/// </summary>
-		/// <param name="q">A <see cref="QuaternionD"/> instance.</param>
-		/// <returns>A new <see cref="Matrix4D"/> instance.</returns>
-		public static Matrix4D QuaternionToMatrix(QuaternionD q) 
-		{
-			double x = q.X;
-			double y = q.Y;
-			double z = q.Z;
-			double w = q.W;
-			double xx = x * x;
-			double yy = y * y;
-			double zz = z * z;
-			double xy = x * y;
-			double xz = x * z;
-			double yz = y * z;
-			double wx = w * x;
-			double wy = w * y;
-			double wz = w * z;
-			return new Matrix4D(
-				1d - 2d * yy - 2d * zz,  2d * xy - 2d * wz,     
-				2d * xz + 2d * wy,       0d,
-				2d * xy + 2d * wz,       1d - 2d * xx - 2d * zz,
-				2d * yz - 2d * wx,       0d,
-				2d * xz - 2d * wy,       2d * yz + 2d * wx,     
-				1d - 2d * xx - 2d * yy,  0d,
-				0d,                      0d,                    
-				0d,                      1d);
-		}
-		
-		/// <summary>
-		/// Turn an axis and an angle to a quaternion.
-		/// </summary>
-		/// <param name="axis">A unit <see cref="Vector3D"/> instance.</param>
-		/// <param name="angle">An angle.</param>
-		/// <returns>A new <see cref="QuaternionD"/> instance.</returns>
-		public static QuaternionD FromAxisAngle(Vector3D axis, double angle) 
-		{
-			double halfAngle = angle / 2d;
-			double sin = System.Math.Sin(halfAngle);
-			return new QuaternionD(System.Math.Cos(halfAngle), axis.X * sin, axis.Y * sin, axis.Z * sin);
-		}
-		#endregion
+            return result;
+        }
 
-		#region Public Methods
-		/// <summary>
-		/// Gets the modulus of the quaternion.
-		/// </summary>
-		/// <returns>
-		/// The modulus of the quaternion:  sqrt(w*w + x*x + y*y + z*z).
-		/// </returns>
-		public double GetModulus()
-		{
-			return System.Math.Sqrt(_w*_w + _x*_x + _y*_y + _z*_z);
-		}
-		/// <summary>
-		/// Gets the squared modulus of the quaternion.
-		/// </summary>
-		/// <returns>
-		/// The squared modulus of the quaternion:  (w*w + x*x + y*y + z*z).
-		/// </returns>
-		public double GetModulusSquared()
-		{
-			return (_w*_w + _x*_x + _y*_y + _z*_z);
-		}
-		/// <summary>
-		/// Gets the conjugate of the quaternion.
-		/// </summary>
-		/// <returns>
-		/// The conjugate of the quaternion.
-		/// </returns>
-		public QuaternionD GetConjugate()
-		{
-			return new QuaternionD(_w, -_x, -_y, -_z);
-		}
-		/// <summary>
-		/// Inverts the quaternion.
-		/// </summary>
-		public void Inverse()
-		{
-			double norm = GetModulusSquared();
-			if (norm > 0)
-			{
-				double invNorm = 1.0 / norm;
-				_w *=  invNorm;
-				_x *= -invNorm;
-				_y *= -invNorm;
-				_z *= -invNorm;
-			}
-			else
-			{
-				throw new QuaternionNotInvertibleException("Quaternion "+this.ToString()+" is not invertable");
-			}
-		}
-		
-		/// <summary>
-		/// Normelizes the quaternion.
-		/// </summary>
-		public void Normalize()
-		{
-			double norm = GetModulus();
-			if (norm == 0)
-			{
-				throw new DivideByZeroException("Trying to normalize a quaternion with modulus of zero.");
-			}
+        #endregion
 
-			_w /= norm;
-			_x /= norm;
-			_y /= norm;
-			_z /= norm;
-		}
-		/// <summary>
-		/// Clamps quaternion values to zero using a given tolerance value.
-		/// </summary>
-		/// <param name="tolerance">The tolerance to use.</param>
-		/// <remarks>
-		/// The quaternion values that are close to zero within the given tolerance are set to zero.
-		/// </remarks>
-		public void ClampZero(double tolerance)
-		{
-			_x = MathFunctions.Clamp(_x, 0, tolerance);
-			_y = MathFunctions.Clamp(_y, 0, tolerance);
-			_z = MathFunctions.Clamp(_z, 0, tolerance);
-			_w = MathFunctions.Clamp(_w, 0, tolerance);
-		}
-		/// <summary>
-		/// Clamps quaternion values to zero using the default tolerance value.
-		/// </summary>
-		/// <remarks>
-		/// The quaternion values that are close to zero within the given tolerance are set to zero.
-		/// The tolerance value used is <see cref="MathFunctions.EpsilonD"/>
-		/// </remarks>
-		public void ClampZero()
-		{
-			_x = MathFunctions.Clamp(_x, 0);
-			_y = MathFunctions.Clamp(_y, 0);
-			_z = MathFunctions.Clamp(_z, 0);
-			_w = MathFunctions.Clamp(_w, 0);
-		}
-		#endregion
+        #region public double Length
 
-		#region Overrides
-		/// <summary>
-		/// Returns the hashcode for this instance.
-		/// </summary>
-		/// <returns>A 32-bit signed integer hash code.</returns>
-		public override int GetHashCode()
-		{
-			return _w.GetHashCode() ^ _x.GetHashCode() ^ _y.GetHashCode() ^ _z.GetHashCode();
-		}
-		/// <summary>
-		/// Returns a value indicating whether this instance is equal to
-		/// the specified object.
-		/// </summary>
-		/// <param name="obj">An object to compare to this instance.</param>
-		/// <returns><see langword="true"/> if <paramref name="obj"/> is a <see cref="QuaternionD"/> and has the same values as this instance; otherwise, <see langword="false"/>.</returns>
-		public override bool Equals(object obj)
-		{
-			if (obj is QuaternionD)
-			{
-				QuaternionD q = (QuaternionD)obj;
-				return (_w == q.W) && (_x == q.X) && (_y == q.Y) && (_z == q.Z);
-			}
-			return false;
-		}
+        /// <summary>
+        /// Gets the length (magnitude) of the QuaternionD.
+        /// </summary>
+        /// <seealso cref="LengthSquared"/>
+        public double Length
+        {
+            get
+            {
+                return (double)System.Math.Sqrt(w * w + xyz.LengthSquared);
+            }
+        }
 
-		/// <summary>
-		/// Returns a string representation of this object.
-		/// </summary>
-		/// <returns>A string representation of this object.</returns>
-		public override string ToString()
-		{
-			return string.Format("({0}, {1}, {2}, {3})", _w, _x, _y, _z);
-		}
-		#endregion
+        #endregion
 
-		#region Comparison Operators
-		/// <summary>
-		/// Tests whether two specified quaternions are equal.
-		/// </summary>
-		/// <param name="a">The left-hand quaternion.</param>
-		/// <param name="b">The right-hand quaternion.</param>
-		/// <returns><see langword="true"/> if the two quaternions are equal; otherwise, <see langword="false"/>.</returns>
-		public static bool operator==(QuaternionD a, QuaternionD b)
-		{
-			return ValueType.Equals(a,b);
-		}
-		/// <summary>
-		/// Tests whether two specified quaternions are not equal.
-		/// </summary>
-		/// <param name="a">The left-hand quaternion.</param>
-		/// <param name="b">The right-hand quaternion.</param>
-		/// <returns><see langword="true"/> if the two quaternions are not equal; otherwise, <see langword="false"/>.</returns>
-		public static bool operator!=(QuaternionD a, QuaternionD b)
-		{
-			return !ValueType.Equals(a,b);
-		}
+        #region public double LengthSquared
 
-		#endregion
+        /// <summary>
+        /// Gets the square of the QuaternionD length (magnitude).
+        /// </summary>
+        public double LengthSquared
+        {
+            get
+            {
+                return w * w + xyz.LengthSquared;
+            }
+        }
 
-		#region Binary Operators
-		/// <summary>
-		/// Adds two quaternions.
-		/// </summary>
-		/// <param name="a">A <see cref="QuaternionD"/> instance.</param>
-		/// <param name="b">A <see cref="QuaternionD"/> instance.</param>
-		/// <returns>A new <see cref="QuaternionD"/> instance containing the sum.</returns>
-		public static QuaternionD operator+(QuaternionD a, QuaternionD b)
-		{
-			return QuaternionD.Add(a,b);
-		}
-		/// <summary>
-		/// Subtracts a quaternion from a quaternion.
-		/// </summary>
-		/// <param name="a">A <see cref="QuaternionD"/> instance.</param>
-		/// <param name="b">A <see cref="QuaternionD"/> instance.</param>
-		/// <returns>A new <see cref="QuaternionD"/> instance containing the difference.</returns>
-		public static QuaternionD operator-(QuaternionD a, QuaternionD b)
-		{
-			return QuaternionD.Subtract(a,b);
-		}
-		/// <summary>
-		/// Multiplies quaternion <paramref name="a"/> by quaternion <paramref name="b"/>.
-		/// </summary>
-		/// <param name="a">A <see cref="QuaternionD"/> instance.</param>
-		/// <param name="b">A <see cref="QuaternionD"/> instance.</param>
-		/// <returns>A new <see cref="QuaternionD"/> containing the result.</returns>
-		public static QuaternionD operator*(QuaternionD a, QuaternionD b)
-		{
-			return QuaternionD.Multiply(a,b);
-		}
-		/// <summary>
-		/// Multiplies a quaternion by a scalar.
-		/// </summary>
-		/// <param name="q">A <see cref="QuaternionD"/> instance.</param>
-		/// <param name="s">A scalar.</param>
-		/// <returns>A <see cref="QuaternionD"/> instance to hold the result.</returns>
-		public static QuaternionD operator*(QuaternionD q, double s)
-		{
-			return QuaternionD.Multiply(q,s);
-		}
-		/// <summary>
-		/// Multiplies a quaternion by a scalar.
-		/// </summary>
-		/// <param name="q">A <see cref="QuaternionD"/> instance.</param>
-		/// <param name="s">A scalar.</param>
-		/// <returns>A <see cref="QuaternionD"/> instance to hold the result.</returns>
-		public static QuaternionD operator*(double s, QuaternionD q)
-		{
-			return QuaternionD.Multiply(q,s);
-		}
-		/// <summary>
-		/// Divides a quaternion by a scalar.
-		/// </summary>
-		/// <param name="q">A <see cref="QuaternionD"/> instance.</param>
-		/// <param name="s">A scalar.</param>
-		/// <returns>A <see cref="QuaternionD"/> instance to hold the result.</returns>
-		public static QuaternionD operator/(QuaternionD q, double s)
-		{
-			return QuaternionD.Divide(q,s);
-		}
-		/// <summary>
-		/// Divides a scalar by a quaternion.
-		/// </summary>
-		/// <param name="q">A <see cref="QuaternionD"/> instance.</param>
-		/// <param name="s">A scalar.</param>
-		/// <returns>A <see cref="QuaternionD"/> instance to hold the result.</returns>
-		public static QuaternionD operator/(double s, QuaternionD q)
-		{
-			return QuaternionD.Multiply(q, 1/s);
-		}
-		#endregion
+        #endregion
 
-		#region Array Indexing Operator
-		/// <summary>
-		/// Indexer ( [w, x, y, z] ).
-		/// </summary>
-		public double this[int index] 
-		{
-			get	
-			{
-				switch( index ) 
-				{
-					case 0:
-						return _w;
-					case 1:
-						return _x;
-					case 2:
-						return _y;
-					case 3:
-						return _z;
-					default:
-						throw new IndexOutOfRangeException();
-				}
-			}
-			set 
-			{
-				switch( index ) 
-				{
-					case 0:
-						_w = value;
-						break;
-					case 1:
-						_x = value;
-						break;
-					case 2:
-						_y = value;
-						break;
-					case 3:
-						_z = value;
-						break;
-					default:
-						throw new IndexOutOfRangeException();
-				}
-				return;
-			}
-		}
-		#endregion
+        #region public void Normalize()
 
-		#region Conversion Operators
-		/// <summary>
-		/// Converts the quaternion to an array of double-precision floating point numbers.
-		/// </summary>
-		/// <param name="q">A <see cref="QuaternionD"/> instance.</param>
-		/// <returns>An array of double-precision floating point numbers.</returns>
-		/// <remarks>The array is [w, x, y, z].</remarks>
-		public static explicit operator double[](QuaternionD q)
-		{
-			double[] doubles = new double[4];
-			doubles[0] = q.W;
-			doubles[1] = q.X;
-			doubles[2] = q.Y;
-			doubles[3] = q.Z;
-			return	doubles;
-		}
-		/// <summary>
-		/// Converts the quaternion to an array of double-precision floating point numbers.
-		/// </summary>
-		/// <param name="q">A <see cref="QuaternionD"/> instance.</param>
-		/// <returns>An array of double-precision floating point numbers.</returns>
-		/// <remarks>The array is [w, x, y, z].</remarks>
-		public static explicit operator DoubleArrayList(QuaternionD q)
-		{
-			DoubleArrayList doubles = new DoubleArrayList(4);
-			doubles[0] = q.W;
-			doubles[1] = q.X;
-			doubles[2] = q.Y;
-			doubles[3] = q.Z;
-			return	doubles;
-		}
+        /// <summary>
+        /// Scales the QuaternionD to unit length.
+        /// </summary>
+        public void Normalize()
+        {
+            double scale = 1.0f / Length;
+            xyz *= scale;
+            w *= scale;
+        }
 
-		#endregion
-	}
+        #endregion
 
-	#region QuaternionDConverter class
-	/// <summary>
-	/// Converts a <see cref="QuaternionD"/> to and from string representation.
-	/// </summary>
-	public class QuaternionDConverter : ExpandableObjectConverter
-	{
-		/// <summary>
-		/// Returns whether this converter can convert an object of the given type to the type of this converter, using the specified context.
-		/// </summary>
-		/// <param name="context">An <see cref="ITypeDescriptorContext"/> that provides a format context.</param>
-		/// <param name="sourceType">A <see cref="Type"/> that represents the type you want to convert from.</param>
-		/// <returns><b>true</b> if this converter can perform the conversion; otherwise, <b>false</b>.</returns>
-		public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
-		{
-			if (sourceType == typeof(string))
-				return true;
+        #region public void Conjugate()
 
-			return base.CanConvertFrom (context, sourceType);
-		}
-		/// <summary>
-		/// Returns whether this converter can convert the object to the specified type, using the specified context.
-		/// </summary>
-		/// <param name="context">An <see cref="ITypeDescriptorContext"/> that provides a format context.</param>
-		/// <param name="destinationType">A <see cref="Type"/> that represents the type you want to convert to.</param>
-		/// <returns><b>true</b> if this converter can perform the conversion; otherwise, <b>false</b>.</returns>
-		public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
-		{
-			if (destinationType == typeof(string))
-				return true;
+        /// <summary>
+        /// Convert this QuaternionD to its conjugate
+        /// </summary>
+        public void Conjugate()
+        {
+            xyz = -xyz;
+        }
 
-			return base.CanConvertTo (context, destinationType);
-		}
-		/// <summary>
-		/// Converts the given value object to the specified type, using the specified context and culture information.
-		/// </summary>
-		/// <param name="context">An <see cref="ITypeDescriptorContext"/> that provides a format context.</param>
-		/// <param name="culture">A <see cref="System.Globalization.CultureInfo"/> object. If a null reference (Nothing in Visual Basic) is passed, the current culture is assumed.</param>
-		/// <param name="value">The <see cref="Object"/> to convert.</param>
-		/// <param name="destinationType">The Type to convert the <paramref name="value"/> parameter to.</param>
-		/// <returns>An <see cref="Object"/> that represents the converted value.</returns>
-		public override object ConvertTo(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value, Type destinationType)
-		{
-			if ((destinationType == typeof(string)) && (value is QuaternionD))
-			{
-				QuaternionD q = (QuaternionD)value;
-				return q.ToString();
-			}
+        #endregion
 
-			return base.ConvertTo (context, culture, value, destinationType);
-		}
-		/// <summary>
-		/// Converts the given object to the type of this converter, using the specified context and culture information.
-		/// </summary>
-		/// <param name="context">An <see cref="ITypeDescriptorContext"/> that provides a format context.</param>
-		/// <param name="culture">The <see cref="System.Globalization.CultureInfo"/> to use as the current culture. </param>
-		/// <param name="value">The <see cref="Object"/> to convert.</param>
-		/// <returns>An <see cref="Object"/> that represents the converted value.</returns>
-		/// <exception cref="ParseException">Failed parsing from string.</exception>
-		public override object ConvertFrom(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
-		{
-			if (value.GetType() == typeof(string))
-			{
-				return QuaternionD.Parse((string)value);
-			}
+        #endregion
 
-			return base.ConvertFrom (context, culture, value);
-		}
+        #region Static
 
-		/// <summary>
-		/// Returns whether this object supports a standard set of values that can be picked from a list.
-		/// </summary>
-		/// <param name="context">An <see cref="ITypeDescriptorContext"/> that provides a format context.</param>
-		/// <returns><b>true</b> if <see cref="GetStandardValues"/> should be called to find a common set of values the object supports; otherwise, <b>false</b>.</returns>
-		public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
-		{
-			return true;
-		}
+        #region Fields
 
-		/// <summary>
-		/// Returns a collection of standard values for the data type this type converter is designed for when provided with a format context.
-		/// </summary>
-		/// <param name="context">An <see cref="ITypeDescriptorContext"/> that provides a format context that can be used to extract additional information about the environment from which this converter is invoked. This parameter or properties of this parameter can be a null reference.</param>
-		/// <returns>A <see cref="TypeConverter.StandardValuesCollection"/> that holds a standard set of valid values, or a null reference (Nothing in Visual Basic) if the data type does not support a standard set of values.</returns>
-		public override System.ComponentModel.TypeConverter.StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
-		{
-			StandardValuesCollection svc = 
-				new StandardValuesCollection(new object[6] {QuaternionD.Zero, QuaternionD.Identity, QuaternionD.XAxis, QuaternionD.YAxis, QuaternionD.ZAxis, QuaternionD.WAxis} );
+        /// <summary>
+        /// Defines the identity QuaternionD.
+        /// </summary>
+        public static QuaternionD Identity = new QuaternionD(0, 0, 0, 1);
 
-			return svc;
-		}
-	}
-	#endregion
+        #endregion
+
+        #region Add
+
+        /// <summary>
+        /// Add two QuaternionDs
+        /// </summary>
+        /// <param name="left">The first operand</param>
+        /// <param name="right">The second operand</param>
+        /// <returns>The result of the addition</returns>
+        public static QuaternionD Add(QuaternionD left, QuaternionD right)
+        {
+            return new QuaternionD(
+                left.xyz + right.xyz,
+                left.w + right.w);
+        }
+
+        /// <summary>
+        /// Add two QuaternionDs
+        /// </summary>
+        /// <param name="left">The first operand</param>
+        /// <param name="right">The second operand</param>
+        /// <param name="result">The result of the addition</param>
+        public static void Add(ref QuaternionD left, ref QuaternionD right, out QuaternionD result)
+        {
+            result = new QuaternionD(
+                left.xyz + right.xyz,
+                left.w + right.w);
+        }
+
+        #endregion
+
+        #region Sub
+
+        /// <summary>
+        /// Subtracts two instances.
+        /// </summary>
+        /// <param name="left">The left instance.</param>
+        /// <param name="right">The right instance.</param>
+        /// <returns>The result of the operation.</returns>
+        public static QuaternionD Sub(QuaternionD left, QuaternionD right)
+        {
+            return  new QuaternionD(
+                left.xyz - right.xyz,
+                left.w - right.w);
+        }
+
+        /// <summary>
+        /// Subtracts two instances.
+        /// </summary>
+        /// <param name="left">The left instance.</param>
+        /// <param name="right">The right instance.</param>
+        /// <param name="result">The result of the operation.</param>
+        public static void Sub(ref QuaternionD left, ref QuaternionD right, out QuaternionD result)
+        {
+            result = new QuaternionD(
+                left.xyz - right.xyz,
+                left.w - right.w);
+        }
+
+        #endregion
+
+        #region Mult
+
+        /// <summary>
+        /// Multiplies two instances.
+        /// </summary>
+        /// <param name="left">The first instance.</param>
+        /// <param name="right">The second instance.</param>
+        /// <returns>A new instance containing the result of the calculation.</returns>
+        [Obsolete("Use Multiply instead.")]
+        public static QuaternionD Mult(QuaternionD left, QuaternionD right)
+        {
+            return new QuaternionD(
+                right.w * left.xyz + left.w * right.xyz + double3.Cross(left.xyz, right.xyz),
+                left.w * right.w - double3.Dot(left.xyz, right.xyz));
+        }
+
+        /// <summary>
+        /// Multiplies two instances.
+        /// </summary>
+        /// <param name="left">The first instance.</param>
+        /// <param name="right">The second instance.</param>
+        /// <param name="result">A new instance containing the result of the calculation.</param>
+        [Obsolete("Use Multiply instead.")]
+        public static void Mult(ref QuaternionD left, ref QuaternionD right, out QuaternionD result)
+        {
+            result = new QuaternionD(
+                right.w * left.xyz + left.w * right.xyz + double3.Cross(left.xyz, right.xyz),
+                left.w * right.w - double3.Dot(left.xyz, right.xyz));
+        }
+
+        /// <summary>
+        /// Multiplies two instances.
+        /// </summary>
+        /// <param name="left">The first instance.</param>
+        /// <param name="right">The second instance.</param>
+        /// <returns>A new instance containing the result of the calculation.</returns>
+        public static QuaternionD Multiply(QuaternionD left, QuaternionD right)
+        {
+            QuaternionD result;
+            Multiply(ref left, ref right, out result);
+            return result;
+        }
+
+        /// <summary>
+        /// Multiplies two instances.
+        /// </summary>
+        /// <param name="left">The first instance.</param>
+        /// <param name="right">The second instance.</param>
+        /// <param name="result">A new instance containing the result of the calculation.</param>
+        public static void Multiply(ref QuaternionD left, ref QuaternionD right, out QuaternionD result)
+        {
+            result = new QuaternionD(
+                right.w * left.xyz + left.w * right.xyz + double3.Cross(left.xyz, right.xyz),
+                left.w * right.w - double3.Dot(left.xyz, right.xyz));
+        }
+
+        /// <summary>
+        /// Multiplies an instance by a scalar.
+        /// </summary>
+        /// <param name="QuaternionD">The instance.</param>
+        /// <param name="scale">The scalar.</param>
+        /// <param name="result">A new instance containing the result of the calculation.</param>
+        public static void Multiply(ref QuaternionD QuaternionD, double scale, out QuaternionD result)
+        {
+            result = new QuaternionD(QuaternionD.x * scale, QuaternionD.y * scale, QuaternionD.z * scale, QuaternionD.w * scale);
+        }
+
+        /// <summary>
+        /// Multiplies an instance by a scalar.
+        /// </summary>
+        /// <param name="QuaternionD">The instance.</param>
+        /// <param name="scale">The scalar.</param>
+        /// <returns>A new instance containing the result of the calculation.</returns>
+        public static QuaternionD Multiply(QuaternionD QuaternionD, double scale)
+        {
+            return new QuaternionD(QuaternionD.x * scale, QuaternionD.y * scale, QuaternionD.z * scale, QuaternionD.w * scale);
+        }
+
+        #endregion
+
+        #region Conjugate
+
+        /// <summary>
+        /// Get the conjugate of the given QuaternionD
+        /// </summary>
+        /// <param name="q">The QuaternionD</param>
+        /// <returns>The conjugate of the given QuaternionD</returns>
+        public static QuaternionD Conjugate(QuaternionD q)
+        {
+            return new QuaternionD(-q.xyz, q.w);
+        }
+
+        /// <summary>
+        /// Get the conjugate of the given QuaternionD
+        /// </summary>
+        /// <param name="q">The QuaternionD</param>
+        /// <param name="result">The conjugate of the given QuaternionD</param>
+        public static void Conjugate(ref QuaternionD q, out QuaternionD result)
+        {
+            result = new QuaternionD(-q.xyz, q.w);
+        }
+
+        #endregion
+
+        #region Invert
+
+        /// <summary>
+        /// Get the inverse of the given QuaternionD
+        /// </summary>
+        /// <param name="q">The QuaternionD to invert</param>
+        /// <returns>The inverse of the given QuaternionD</returns>
+        public static QuaternionD Invert(QuaternionD q)
+        {
+            QuaternionD result;
+            Invert(ref q, out result);
+            return result;
+        }
+
+        /// <summary>
+        /// Get the inverse of the given QuaternionD
+        /// </summary>
+        /// <param name="q">The QuaternionD to invert</param>
+        /// <param name="result">The inverse of the given QuaternionD</param>
+        public static void Invert(ref QuaternionD q, out QuaternionD result)
+        {
+            double lengthSq = q.LengthSquared;
+            // ReSharper disable CompareOfdoublesByEqualityOperator
+            if (lengthSq != 0.0)
+            {
+                double i = 1.0f / lengthSq;
+                result = new QuaternionD(q.xyz * -i, q.w * i);
+            }
+            else
+            {
+                result = q;
+            }
+            // ReSharper restore CompareOfdoublesByEqualityOperator
+        }
+
+        #endregion
+
+        #region Normalize
+
+        /// <summary>
+        /// Scale the given QuaternionD to unit length
+        /// </summary>
+        /// <param name="q">The QuaternionD to normalize</param>
+        /// <returns>The normalized QuaternionD</returns>
+        public static QuaternionD Normalize(QuaternionD q)
+        {
+            QuaternionD result;
+            Normalize(ref q, out result);
+            return result;
+        }
+
+        /// <summary>
+        /// Scale the given QuaternionD to unit length
+        /// </summary>
+        /// <param name="q">The QuaternionD to normalize</param>
+        /// <param name="result">The normalized QuaternionD</param>
+        public static void Normalize(ref QuaternionD q, out QuaternionD result)
+        {
+            double scale = 1.0f / q.Length;
+            result = new QuaternionD(q.xyz * scale, q.w * scale);
+        }
+
+        #endregion
+
+        #region FromAxisAngle
+
+        /// <summary>
+        /// Build a QuaternionD from the given axis and angle
+        /// </summary>
+        /// <param name="axis">The axis to rotate about</param>
+        /// <param name="angle">The rotation angle in radians</param>
+        /// <returns></returns>
+        public static QuaternionD FromAxisAngle(double3 axis, double angle)
+        {
+            // ReSharper disable CompareOfdoublesByEqualityOperator
+            if (axis.LengthSquared == 0.0f)
+                return Identity;
+
+            QuaternionD result = Identity;
+
+            angle *= 0.5f;
+            axis.Normalize();
+            result.xyz = axis * (double)System.Math.Sin(angle);
+            result.w = (double)System.Math.Cos(angle);
+
+            return Normalize(result);
+            // ReSharper restore CompareOfdoublesByEqualityOperator
+        }
+
+        #endregion
+
+        #region Slerp
+
+        /// <summary>
+        /// Do Spherical linear interpolation between two QuaternionDs 
+        /// </summary>
+        /// <param name="q1">The first QuaternionD</param>
+        /// <param name="q2">The second QuaternionD</param>
+        /// <param name="blend">The blend factor</param>
+        /// <returns>A smooth blend between the given QuaternionDs</returns>
+        public static QuaternionD Slerp(QuaternionD q1, QuaternionD q2, double blend)
+        {
+            // if either input is zero, return the other.
+            if (q1.LengthSquared == 0.0f)
+            {
+                if (q2.LengthSquared == 0.0f)
+                {
+                    return Identity;
+                }
+                return q2;
+            }
+            else if (q2.LengthSquared == 0.0f)
+            {
+                return q1;
+            }
 
 
+            double cosHalfAngle = q1.w * q2.w + double3.Dot(q1.xyz, q2.xyz);
+
+            if (cosHalfAngle >= 1.0f || cosHalfAngle <= -1.0f)
+            {
+                // angle = 0.0f, so just return one input.
+                return q1;
+            }
+            else if (cosHalfAngle < 0.0f)
+            {
+                q2.xyz = -q2.xyz;
+                q2.w = -q2.w;
+                cosHalfAngle = -cosHalfAngle;
+            }
+
+            double blendA;
+            double blendB;
+            if (cosHalfAngle < 0.99f)
+            {
+                // do proper slerp for big angles
+                double halfAngle = (double)System.Math.Acos(cosHalfAngle);
+                double sinHalfAngle = (double)System.Math.Sin(halfAngle);
+                double oneOverSinHalfAngle = 1.0f / sinHalfAngle;
+                blendA = (double)System.Math.Sin(halfAngle * (1.0f - blend)) * oneOverSinHalfAngle;
+                blendB = (double)System.Math.Sin(halfAngle * blend) * oneOverSinHalfAngle;
+            }
+            else
+            {
+                // do lerp if angle is really small.
+                blendA = 1.0f - blend;
+                blendB = blend;
+            }
+
+            QuaternionD result = new QuaternionD(blendA * q1.xyz + blendB * q2.xyz, blendA * q1.w + blendB * q2.w);
+            if (result.LengthSquared > 0.0f)
+                return Normalize(result);
+            else
+                return Identity;
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Operators
+
+        /// <summary>
+        /// Adds two instances.
+        /// </summary>
+        /// <param name="left">The first instance.</param>
+        /// <param name="right">The second instance.</param>
+        /// <returns>The result of the calculation.</returns>
+        public static QuaternionD operator +(QuaternionD left, QuaternionD right)
+        {
+            left.xyz += right.xyz;
+            left.w += right.w;
+            return left;
+        }
+
+        /// <summary>
+        /// Subtracts two instances.
+        /// </summary>
+        /// <param name="left">The first instance.</param>
+        /// <param name="right">The second instance.</param>
+        /// <returns>The result of the calculation.</returns>
+        public static QuaternionD operator -(QuaternionD left, QuaternionD right)
+        {
+            left.xyz -= right.xyz;
+            left.w -= right.w;
+            return left;
+        }
+
+        /// <summary>
+        /// Multiplies two instances.
+        /// </summary>
+        /// <param name="left">The first instance.</param>
+        /// <param name="right">The second instance.</param>
+        /// <returns>The result of the calculation.</returns>
+        public static QuaternionD operator *(QuaternionD left, QuaternionD right)
+        {
+            Multiply(ref left, ref right, out left);
+            return left;
+        }
+
+        /// <summary>
+        /// Multiplies an instance by a scalar.
+        /// </summary>
+        /// <param name="QuaternionD">The instance.</param>
+        /// <param name="scale">The scalar.</param>
+        /// <returns>A new instance containing the result of the calculation.</returns>
+        public static QuaternionD operator *(QuaternionD QuaternionD, double scale)
+        {
+            Multiply(ref QuaternionD, scale, out QuaternionD);
+            return QuaternionD;
+        }
+
+        /// <summary>
+        /// Multiplies an instance by a scalar.
+        /// </summary>
+        /// <param name="QuaternionD">The instance.</param>
+        /// <param name="scale">The scalar.</param>
+        /// <returns>A new instance containing the result of the calculation.</returns>
+        public static QuaternionD operator *(double scale, QuaternionD QuaternionD)
+        {
+            return new QuaternionD(QuaternionD.x * scale, QuaternionD.y * scale, QuaternionD.z * scale, QuaternionD.w * scale);
+        }
+
+        /// <summary>
+        /// Compares two instances for equality.
+        /// </summary>
+        /// <param name="left">The first instance.</param>
+        /// <param name="right">The second instance.</param>
+        /// <returns>True, if left equals right; false otherwise.</returns>
+        public static bool operator ==(QuaternionD left, QuaternionD right)
+        {
+            return left.Equals(right);
+        }
+
+        /// <summary>
+        /// Compares two instances for inequality.
+        /// </summary>
+        /// <param name="left">The first instance.</param>
+        /// <param name="right">The second instance.</param>
+        /// <returns>True, if left does not equal right; false otherwise.</returns>
+        public static bool operator !=(QuaternionD left, QuaternionD right)
+        {
+            return !left.Equals(right);
+        }
+
+        #endregion
+
+        #region Overrides
+
+        #region public override string ToString()
+
+        /// <summary>
+        /// Returns a System.String that represents the current QuaternionD.
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return String.Format("V: {0}, w: {1}", xyz, w);
+        }
+
+        #endregion
+
+        #region public override bool Equals (object o)
+
+        /// <summary>
+        /// Compares this object instance to another object for equality. 
+        /// </summary>
+        /// <param name="other">The other object to be used in the comparison.</param>
+        /// <returns>True if both objects are QuaternionDs of equal value. Otherwise it returns false.</returns>
+        public override bool Equals(object other)
+        {
+            if (other is QuaternionD == false) return false;
+               return this == (QuaternionD)other;
+        }
+
+        #endregion
+
+        #region public override int GetHashCode ()
+
+        /// <summary>
+        /// Provides the hash code for this object. 
+        /// </summary>
+        /// <returns>A hash code formed from the bitwise XOR of this objects members.</returns>
+        public override int GetHashCode()
+        {
+            return xyz.GetHashCode() ^ w.GetHashCode();
+        }
+
+        #endregion
+
+        #endregion
+
+        #endregion
+
+        #region IEquatable<QuaternionD> Members
+
+        /// <summary>
+        /// Compares this QuaternionD instance to another QuaternionD for equality. 
+        /// </summary>
+        /// <param name="other">The other QuaternionD to be used in the comparison.</param>
+        /// <returns>True if both instances are equal; false otherwise.</returns>
+        public bool Equals(QuaternionD other)
+        {
+            // ReSharper disable CompareOfdoublesByEqualityOperator
+            return xyz == other.xyz && w == other.w;
+            // ReSharper restore CompareOfdoublesByEqualityOperator
+        }
+
+        #endregion
+    }
 }

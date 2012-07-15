@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using C4d;
-using Fusee.Math.Core;
+﻿using C4d;
+using Fusee.Math;
 
 namespace RigPlugin
 {
@@ -39,12 +34,12 @@ namespace RigPlugin
              * Standard BaseObject vom Typ Joint erstellen, diese sind bei Menschen immer aktiv
              */
             BaseObject jointSpine = this.allocJoint("Spine");
-            BaseObject jointAbs = this.allocJoint("Abs", jointSpine, new Vector3D(0, 100, 0));
-            BaseObject jointChest = this.allocJoint("Chest", jointAbs, new Vector3D(0, 50, 0));
-            BaseObject jointNeck = this.allocJoint("Neck", jointChest, new Vector3D(0, 25, 0));
-            BaseObject jointHead = this.allocJoint("Head", jointNeck, new Vector3D(0, 50, 0));
-            BaseObject jointL_Hip = this.allocJoint("L_Hip", jointSpine, new Vector3D(25, 0, 0));
-            BaseObject jointL_Shoulder = this.allocJoint("L_Shoulder", jointChest, new Vector3D(25, 0, 0));
+            BaseObject jointAbs = this.allocJoint("Abs", jointSpine, new double3(0, 100, 0));
+            BaseObject jointChest = this.allocJoint("Chest", jointAbs, new double3(0, 50, 0));
+            BaseObject jointNeck = this.allocJoint("Neck", jointChest, new double3(0, 25, 0));
+            BaseObject jointHead = this.allocJoint("Head", jointNeck, new double3(0, 50, 0));
+            BaseObject jointL_Hip = this.allocJoint("L_Hip", jointSpine, new double3(25, 0, 0));
+            BaseObject jointL_Shoulder = this.allocJoint("L_Shoulder", jointChest, new double3(25, 0, 0));
             
             /**
              * Spiegelung
@@ -166,8 +161,8 @@ namespace RigPlugin
 
             if (this.arms > 0)
             {
-                BaseObject jointL_Upperam = this.allocJoint("L_Upperarm", parentJoint, new Vector3D(75, 0, 0));
-                BaseObject jointL_Forearm = this.allocJoint("L_Forearm", jointL_Upperam, new Vector3D(75, 0, 0));
+                BaseObject jointL_Upperam = this.allocJoint("L_Upperarm", parentJoint, new double3(75, 0, 0));
+                BaseObject jointL_Forearm = this.allocJoint("L_Forearm", jointL_Upperam, new double3(75, 0, 0));
                 BaseObject jointL_Hand = null;
 
                 this.wtag.AddJoint(jointL_Upperam);
@@ -175,11 +170,11 @@ namespace RigPlugin
 
                 if (this.hands > 0)
                 {
-                    jointL_Hand = this.allocJoint("L_Hand", jointL_Forearm, new Vector3D(25, 0, 0));
+                    jointL_Hand = this.allocJoint("L_Hand", jointL_Forearm, new double3(25, 0, 0));
 
                     if (this.finger > 0)
                     {
-                        this.allocBonesInBones("L_Finger", "L_FingerBone", jointL_Hand, new Vector3D(25, 0, 10), new Vector3D(0, 0, -5), new Vector3D(5, 0, 0), new Vector3D(0, 0, 0), this.finger);
+                        this.allocBonesInBones("L_Finger", "L_FingerBone", jointL_Hand, new double3(25, 0, 10), new double3(0, 0, -5), new double3(5, 0, 0), new double3(0, 0, 0), this.finger);
                     }
                     this.wtag.AddJoint(jointL_Hand);
                 }
@@ -199,7 +194,7 @@ namespace RigPlugin
 
                         if (this.finger > 0)
                         {
-                            this.allocBonesInBones("R_Finger", "R_FingerBone", jointR_Hand, new Vector3D(-25, 0, 10), new Vector3D(0, 0, -5), new Vector3D(-5, 0, 0), new Vector3D(0, 0, 0), this.finger);
+                            this.allocBonesInBones("R_Finger", "R_FingerBone", jointR_Hand, new double3(-25, 0, 10), new double3(0, 0, -5), new double3(-5, 0, 0), new double3(0, 0, 0), this.finger);
                         }
                     }
                 }
@@ -215,8 +210,8 @@ namespace RigPlugin
 
             if (this.legs > 0)
             {
-                BaseObject jointL_Leg = this.allocJoint("L_Leg", parentJoint, new Vector3D(0, -100, 0));
-                BaseObject jointL_Cnemials = this.allocJoint("L_Cnemials", jointL_Leg, new Vector3D(0, -100, 0));
+                BaseObject jointL_Leg = this.allocJoint("L_Leg", parentJoint, new double3(0, -100, 0));
+                BaseObject jointL_Cnemials = this.allocJoint("L_Cnemials", jointL_Leg, new double3(0, -100, 0));
                 BaseObject jointL_Foot = null;
 
                 this.wtag.AddJoint(jointL_Leg);
@@ -224,11 +219,11 @@ namespace RigPlugin
 
                 if (this.feet > 0)
                 {
-                    jointL_Foot = this.allocJoint("L_Foot", jointL_Cnemials, new Vector3D(0, 0, -50));
+                    jointL_Foot = this.allocJoint("L_Foot", jointL_Cnemials, new double3(0, 0, -50));
 
                     if (this.toes > 0)
                     {
-                        this.allocBonesInBones("L_Feet", "L_FeetBone", jointL_Foot, new Vector3D(15, 0, -25), new Vector3D(-5, 0, 0), new Vector3D(0, 0, -5), new Vector3D(0, 0, 0), this.toes);
+                        this.allocBonesInBones("L_Feet", "L_FeetBone", jointL_Foot, new double3(15, 0, -25), new double3(-5, 0, 0), new double3(0, 0, -5), new double3(0, 0, 0), this.toes);
                     }
                     this.wtag.AddJoint(jointL_Foot);
                 }
@@ -249,7 +244,7 @@ namespace RigPlugin
 
                         if (this.toes > 0)
                         {
-                            this.allocBonesInBones("R_Feet", "R_FeetBone", jointR_Foot, new Vector3D(15, 0, -25), new Vector3D(-5, 0, 0), new Vector3D(0, 0, -5), new Vector3D(0, 0, 0), this.toes);
+                            this.allocBonesInBones("R_Feet", "R_FeetBone", jointR_Foot, new double3(15, 0, -25), new double3(-5, 0, 0), new double3(0, 0, -5), new double3(0, 0, 0), this.toes);
                         }
                     }
                 }

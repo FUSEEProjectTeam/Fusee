@@ -1,6 +1,4 @@
-﻿using System.IO;
-using System.Reflection;
-using C4d;
+﻿using C4d;
 namespace Biped
 {
     [Plugin]

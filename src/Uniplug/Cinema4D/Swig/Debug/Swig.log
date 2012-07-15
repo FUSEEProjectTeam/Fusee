@@ -1,12 +1,12 @@
 ﻿C:\Program Files\MAXON\CINEMA 4D R13\resource\_api\c4d_baseobject.h(440): warning 325: Nested struct not currently supported (NgonNeighborSegment ignored)
 C:\Program Files\MAXON\CINEMA 4D R13\resource\_api\c4d_gv\c4d_graphview_def.h(887): warning 314: 'in' is a C# keyword, renaming to '_in'
 C:\Program Files\MAXON\CINEMA 4D R13\resource\_api\c4d_gv\c4d_graphview_def.h(888): warning 314: 'out' is a C# keyword, renaming to '_out'
-D:\users\cm\Dev\FuseeGit\Fusee\src\Uniplug\Cinema4D\Swig\C4dApi.i(906): warning 302: Identifier 'ModelingCommandData' redefined (ignored),
+D:\users\cm\Dev\Fusee\src\Uniplug\Cinema4D\Swig\C4dApi.i(906): warning 302: Identifier 'ModelingCommandData' redefined (ignored),
 operatingsystem.swig.h(299): warning 302: previous definition of 'ModelingCommandData'.
 C:\Program Files\MAXON\CINEMA 4D R13\resource\_api\c4d_general.h(229): warning 401: Base class 'GeListNode' undefined.
 C:\Program Files\MAXON\CINEMA 4D R13\resource\_api\c4d_baselist.h(504): warning 401: 'GeListNode' must be defined before it is used as a base class.
 include\lib_description.swig.h(192): warning 401: Base class 'iCustomDataType< DescID >' undefined.
-D:\users\cm\Dev\FuseeGit\Fusee\src\Uniplug\Cinema4D\Swig\C4dApi.i(914): warning 401: 'iCustomDataType< DescID >' must be defined before it is used as a base class.
+D:\users\cm\Dev\Fusee\src\Uniplug\Cinema4D\Swig\C4dApi.i(914): warning 401: 'iCustomDataType< DescID >' must be defined before it is used as a base class.
 include\lib_description.swig.h(361): warning 401: Nothing known about base class 'C4DLibrary'. Ignored.
 include\c4d_basebitmap.swig.h(90): warning 401: Base class 'CustomDataType' undefined.
 c4d_customdatatype.swig.h(33): warning 401: 'CustomDataType' must be defined before it is used as a base class.

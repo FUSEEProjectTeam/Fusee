@@ -59,11 +59,11 @@
     <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Fusee.Math">
-      <HintPath>..\..\..\..\bin\Debug\Fusee.Math.dll</HintPath>
+    <Reference Include="Fusee.Math.Conversion">
+      <HintPath>..\..\..\..\bin\Debug\Fusee.Math.Conversion.dll</HintPath>
     </Reference>
-    <Reference Include="Fusee.Math.ArrayConversion">
-      <HintPath>..\..\..\..\bin\Debug\Fusee.Math.ArrayConversion.dll</HintPath>
+    <Reference Include="Fusee.Math.Core">
+      <HintPath>..\..\..\..\bin\Debug\Fusee.Math.Core.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

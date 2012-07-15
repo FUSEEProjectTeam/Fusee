@@ -1,6 +1,4 @@
 ﻿using C4d;
-using System;
-using Fusee.Math.Core;
 
 
 namespace RigPlugin

@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using C4d;
-using Fusee.Math.Core;
+﻿using C4d;
+using Fusee.Math;
 
 namespace RigPlugin
 {
@@ -51,10 +46,10 @@ namespace RigPlugin
          * Anlegen eines Joint Objekts
          * @param string Name des Joint Objekts
          * @param BaseObject Parent Joint, falls dieser gekuppelt werden soll
-         * @param Vector3D Vektor in die der Joint zeigen soll
+         * @param double3 Vektor in die der Joint zeigen soll
          * @return BaseObject Joint Objekt zurückgeben
          */
-        protected BaseObject allocJoint(string name, BaseObject parentJoint = null, Vector3D vec = new Vector3D())
+        protected BaseObject allocJoint(string name, BaseObject parentJoint = null, double3 vec = new double3())
         {
             BaseObject myJoint = BaseObject.Alloc(C4dApi.Ojoint); // Speicher reservieren für den Joint
             myJoint.SetName(name); // Joint mit einem Namen versehen
@@ -69,12 +64,12 @@ namespace RigPlugin
 
         protected BaseObject allocMirrorJoint(string name, BaseObject parentJoint, BaseObject mirrorJoint)
         {
-            Vector3D vecparent = mirrorJoint.GetAbsPos();
-            BaseObject myJoint = this.allocJoint(name, parentJoint, new Vector3D(vecparent.X * -1, vecparent.Y, vecparent.Z));
+            double3 vecparent = mirrorJoint.GetAbsPos();
+            BaseObject myJoint = this.allocJoint(name, parentJoint, new double3(vecparent.x * -1, vecparent.y, vecparent.z));
             return myJoint;
         }
 
-        protected bool allocBonesInBones(string mainname, string bonename, BaseObject parent, Vector3D vec = new Vector3D(), Vector3D vecMulti = new Vector3D(), Vector3D vecBone = new Vector3D(), Vector3D vecBoneMulti = new Vector3D(), long counter = 0)
+        protected bool allocBonesInBones(string mainname, string bonename, BaseObject parent, double3 vec = new double3(), double3 vecMulti = new double3(), double3 vecBone = new double3(), double3 vecBoneMulti = new double3(), long counter = 0)
         {
             int KnochenLinks;
             int bone = (int)counter;
@@ -83,8 +78,8 @@ namespace RigPlugin
             {
                 while (bone != 0)
                 {
-                    BaseObject jointBone = this.allocJoint(mainname + "_" + bone, parent, new Vector3D(vec.X += vecMulti.X, vec.Y += vecMulti.Y, vec.Z += vecMulti.Z));
-                    //BaseObject jointBone = this.allocJoint(mainname +"_"+ bone, parent, new Vector3D(vec.X, vec.Y, vec.Z + bone_z));
+                    BaseObject jointBone = this.allocJoint(mainname + "_" + bone, parent, new double3(vec.x += vecMulti.x, vec.y += vecMulti.y, vec.z += vecMulti.z));
+                    //BaseObject jointBone = this.allocJoint(mainname +"_"+ bone, parent, new double3(vec.x, vec.y, vec.z + bone_z));
                     this.wtag.AddJoint(jointBone);
 
                     if (bone == 1)
@@ -98,7 +93,7 @@ namespace RigPlugin
 
                     while (KnochenLinks != 0)
                     {
-                        jointBone = this.allocJoint(bonename + "_" + KnochenLinks, jointBone, new Vector3D(vecBone.X += vecBoneMulti.X, vecBone.Y += vecBoneMulti.Y, vecBone.Z += vecBoneMulti.Z));
+                        jointBone = this.allocJoint(bonename + "_" + KnochenLinks, jointBone, new double3(vecBone.x += vecBoneMulti.x, vecBone.y += vecBoneMulti.y, vecBone.z += vecBoneMulti.z));
                         this.wtag.AddJoint(jointBone);
                         KnochenLinks--;
                     }
@@ -108,7 +103,7 @@ namespace RigPlugin
             return true;
         }
 
-        protected BaseObject[] allocBonesSwing(string mainname, BaseObject parent, long counter = 0, Vector3D vec = new Vector3D())
+        protected BaseObject[] allocBonesSwing(string mainname, BaseObject parent, long counter = 0, double3 vec = new double3())
         {
             int bone = (int)counter;
             bone -= 2;
@@ -116,7 +111,7 @@ namespace RigPlugin
             /* 
              * Vor Swing joint
              */
-            BaseObject myJoint = this.allocJoint(mainname, parent, new Vector3D(vec.X, 0, 0));
+            BaseObject myJoint = this.allocJoint(mainname, parent, new double3(vec.x, 0, 0));
             parent = myJoint;
             this.wtag.AddJoint(myJoint);
 
@@ -129,46 +124,46 @@ namespace RigPlugin
             {
                 if (temp / 2 > bone && change == false)
                 {
-                    vec.Y = 0;
+                    vec.y = 0;
                     change = true;
                 }
-                BaseObject jointBone = this.allocJoint(mainname + "_" + bone, parent, new Vector3D(vec.X, vec.Y, vec.Z));
+                BaseObject jointBone = this.allocJoint(mainname + "_" + bone, parent, new double3(vec.x, vec.y, vec.z));
                 this.wtag.AddJoint(jointBone);
                 parent = jointBone;
                 bone--;
             }
 
             // Nach Swing Joint
-            BaseObject myJoint1 = this.allocJoint(mainname, parent, new Vector3D(vec.X, 0, 0));
+            BaseObject myJoint1 = this.allocJoint(mainname, parent, new double3(vec.x, 0, 0));
             this.wtag.AddJoint(myJoint1);
             // Array als rückgabe vorbereiten
             BaseObject[] arrJoint = { myJoint, myJoint1 };
             return arrJoint;
         }
 
-        protected BaseObject allocBonesCurveY(string mainname, BaseObject parent, long counter = 0, Vector3D vec = new Vector3D())
+        protected BaseObject allocBonesCurveY(string mainname, BaseObject parent, long counter = 0, double3 vec = new double3())
         {
             int bone = (int)counter;
             BaseObject myJoint = null;
-            double x = vec.X;
-            double y = vec.Y;
+            double x = vec.x;
+            double y = vec.y;
             if (x < 0)
             {
                 x *= -1;
             }
             while (bone > 0)
             {
-                vec.Y += x / bone;
-                if (vec.Y > x)
+                vec.y += x / bone;
+                if (vec.y > x)
                 {
-                    vec.Y = x;
+                    vec.y = x;
                 }
                 myJoint = this.allocJoint(mainname, parent, vec);
                 this.wtag.AddJoint(myJoint);
-                vec.X += vec.Y;
-                if (vec.X > 0)
+                vec.x += vec.y;
+                if (vec.x > 0)
                 {
-                    vec.X = 0;
+                    vec.x = 0;
                 }
 
                 parent = myJoint;

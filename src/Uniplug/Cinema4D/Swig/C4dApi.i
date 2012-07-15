@@ -364,35 +364,35 @@ BaseTag *
 // %ignore __MEDIZINI;
 // %include "ge_math.h";
 
-// Map Vector* and &   TO   ref Fusee.Math.Core.Vector3D
-%typemap(cstype, out="$csclassname") Vector *, Vector & "ref Fusee.Math.Core.Vector3D /* Vector*&_cstype */"
+// Map Vector* and &   TO   ref Fusee.Math.double3
+%typemap(cstype, out="$csclassname") Vector *, Vector & "ref Fusee.Math.double3 /* Vector*&_cstype */"
 %typemap(csin) Vector *, Vector & "ref $csinput /* Vector*&_csin */"
-%typemap(imtype, out="IntPtr") Vector *, Vector & "ref Fusee.Math.Core.Vector3D /* Vector*&_imtype */"
+%typemap(imtype, out="IntPtr") Vector *, Vector & "ref Fusee.Math.double3 /* Vector*&_imtype */"
 %typemap(in) Vector *, Vector & "$1 = ($1_ltype)$input; /* Vector*&_in */"
 %typemap(csdirectorin, 
-   pre="    Fusee.Math.Core.Vector3D vec_$iminput;\n"
-       "    unsafe {vec_$iminput = Fusee.Math.ArrayConversion.Convert.ArrayDoubleToVector3D((double *)$iminput);}\n"
+   pre="    Fusee.Math.double3 vec_$iminput;\n"
+       "    unsafe {vec_$iminput = Fusee.Math.ArrayConvert.ArrayDoubleTodouble3((double *)$iminput);}\n"
        "    /* Vector*&_csdirectorin_pre */", 
-   post="        unsafe {Fusee.Math.ArrayConversion.Convert.Vector3DToArrayDouble(vec_$iminput, (double *)$iminput);}\n"
+   post="        unsafe {Fusee.Math.ArrayConvert.double3ToArrayDouble(vec_$iminput, (double *)$iminput);}\n"
         "        /* Vector*&_csdirectorin_post */"
   ) Vector *, Vector &
   "ref vec_$iminput /* Vector*&_csdirectorin */"
 %typemap(csdirectorout) Vector *, Vector & "$cscall /* Vector*&_csdirectorout */"
 
-// Map const Vector &  TO  Fusee.Math.Core.Vector3D
-%typemap(cstype, out="Fusee.Math.Core.Vector3D /* constVector&_cstype_out */") const Vector & "Fusee.Math.Core.Vector3D /* constVector&_cstype */"
+// Map const Vector &  TO  Fusee.Math.double3
+%typemap(cstype, out="Fusee.Math.double3 /* constVector&_cstype_out */") const Vector & "Fusee.Math.double3 /* constVector&_cstype */"
 %typemap(csin) const Vector & "ref $csinput /* constVector&_csin */"
-%typemap(imtype, out="IntPtr /* constVector&_imtype_out */") const Vector & "ref Fusee.Math.Core.Vector3D /* constVector&_imtype */"
+%typemap(imtype, out="IntPtr /* constVector&_imtype_out */") const Vector & "ref Fusee.Math.double3 /* constVector&_imtype */"
 %typemap(csout, excode=SWIGEXCODE) const Vector &
 %{ {  /* <constVector&_csout> */
       IntPtr p_ret = $imcall;$excode
-      Fusee.Math.Core.Vector3D ret;
-      unsafe {ret = Fusee.Math.ArrayConversion.Convert.ArrayDoubleToVector3D((double *)p_ret);}
+      Fusee.Math.double3 ret;
+      unsafe {ret = Fusee.Math.ArrayConvert.ArrayDoubleTodouble3((double *)p_ret);}
       return ret;
    } /* </constVector&_csout> */ %}
 %typemap(csdirectorin, 
-   pre="    Fusee.Math.Core.Vector3D vec_$iminput;\n"
-       "    unsafe {vec_$iminput = Fusee.Math.ArrayConversion.Convert.ArrayDoubleToVector3D((double *)$iminput);}\n"
+   pre="    Fusee.Math.double3 vec_$iminput;\n"
+       "    unsafe {vec_$iminput = Fusee.Math.ArrayConvert.ArrayDoubleTodouble3((double *)$iminput);}\n"
        "    /* constVector&_csdirectorin_pre */", 
    post="        /* no re-conversion because of const declaration */\n"
         "        /* constVector&_csdirectorin_post */"
@@ -400,14 +400,14 @@ BaseTag *
   "vec_$iminput /* Vector*&_csdirectorin */"
 
 
-// Map Vector   TO   Fusee.Math.Core.Vector3D
-%typemap(cstype, out="Fusee.Math.Core.Vector3D /* Vector_cstype_out */") Vector "Fusee.Math.Core.Vector3D /* Vectorcstype */"
+// Map Vector   TO   Fusee.Math.double3
+%typemap(cstype, out="Fusee.Math.double3 /* Vector_cstype_out */") Vector "Fusee.Math.double3 /* Vectorcstype */"
 %typemap(csout, excode=SWIGEXCODE) Vector 
 %{ {  /* <Vector_csout> */
-      Fusee.Math.Core.Vector3D ret = $imcall;$excode
+      Fusee.Math.double3 ret = $imcall;$excode
       return ret;
    } /* <Vector_csout> */ %}
-%typemap(imtype, out="Fusee.Math.Core.Vector3D /* Vector_imtype_out */") Vector "Fusee.Math.Core.Vector3D /* Vector_imtype */"
+%typemap(imtype, out="Fusee.Math.double3 /* Vector_imtype_out */") Vector "Fusee.Math.double3 /* Vector_imtype */"
 %typemap(ctype, out="Vector_POD /* Vector_ctype_out */") Vector "Vector /* Vector_ctype */"
 %typemap(directorout) Vector
 %{ /* <Vector_directorout> */
@@ -447,19 +447,19 @@ BaseTag *
    /* <Vector_csvarout> */
    get
    {  
-      Fusee.Math.Core.Vector3D ret = $imcall;$excode
+      Fusee.Math.double3 ret = $imcall;$excode
       return ret;
    } /* <Vector_csvarout> */ %}
 
 
-// Map Matrix* and &   TO   ref Fusee.Math.Core.Matrix4D
-%typemap(cstype, out="$csclassname") Matrix *, Matrix & "ref Fusee.Math.Core.Matrix4D /* Matrix*&_cstype */"
+// Map Matrix* and &   TO   ref Fusee.Math.double4x4
+%typemap(cstype, out="$csclassname") Matrix *, Matrix & "ref Fusee.Math.double4x4 /* Matrix*&_cstype */"
 %typemap(csin, 
    pre="    double[] adbl_$csinput;\n"
-       "    unsafe {adbl_$csinput = Fusee.Math.ArrayConversion.Convert.Matrix4DToArrayDoubleC4DLayout($csinput);"
+       "    unsafe {adbl_$csinput = Fusee.Math.ArrayConvert.double4x4ToArrayDoubleC4DLayout($csinput);"
        "    fixed (double *pdbl_$csinput = adbl_$csinput) {\n"
        "    /* Matrix*&_csin_pre */", 
-   post="        $csinput = Fusee.Math.ArrayConversion.Convert.ArrayDoubleC4DLayoutToMatrix4D(pdbl_$csinput);\n"
+   post="        $csinput = Fusee.Math.ArrayConvert.ArrayDoubleC4DLayoutTodouble4x4(pdbl_$csinput);\n"
         "        /* Matrix*&_csin_post */",
    terminator="} } /* Matrix*&_csin_terminator */"
   ) Matrix *, Matrix &
@@ -467,16 +467,16 @@ BaseTag *
 %typemap(imtype, out="IntPtr") Matrix *, Matrix & "IntPtr /* Matrix*&_imtype */"
 %typemap(in) Matrix *, Matrix & "$1 = ($1_ltype)$input; /* Matrix*&_in */"
 %typemap(csdirectorin, 
-   pre="    Fusee.Math.Core.Matrix4D mtx_$iminput;\n"
-       "    unsafe {mtx_$iminput = Fusee.Math.ArrayConversion.Convert.ArrayDoubleC4DLayoutToMatrix4D((double *)$iminput);}\n"
+   pre="    Fusee.Math.double4x4 mtx_$iminput;\n"
+       "    unsafe {mtx_$iminput = Fusee.Math.ArrayConvert.ArrayDoubleC4DLayoutTodouble4x4((double *)$iminput);}\n"
        "    /* Matrix*&_csdirectorin_pre */", 
-   post="        unsafe {Fusee.Math.ArrayConversion.Convert.Matrix4DToArrayDoubleC4DLayout(mtx_$iminput, (double *)$iminput);}\n"
+   post="        unsafe {Fusee.Math.ArrayConvert.double4x4ToArrayDoubleC4DLayout(mtx_$iminput, (double *)$iminput);}\n"
         "        /* Matrix*&_csdirectorin_post */"
   ) Matrix *, Matrix &
   "ref mtx_$iminput /* Matrix*&_csdirectorin */"
 %typemap(csdirectorout) Matrix *, Matrix & "$cscall /* Matrix*&_csdirectorout */"
 
-// Map Matrix   TO   Fusee.Math.Core.Matrix4D
+// Map Matrix   TO   Fusee.Math.double4x4
 %typemap(ctype) Matrix "Matrix_POD /* Matrix_ctype */"
 %typemap(out) Matrix 
 %{ /* <Matrix_out> */ 
@@ -487,10 +487,10 @@ BaseTag *
    $1 = *((Matrix *)(&$input)); 
    /* </Matrix_in> */%}
 
-%typemap(cstype) Matrix "Fusee.Math.Core.Matrix4D /* Matrix_cstype */"
+%typemap(cstype) Matrix "Fusee.Math.double4x4 /* Matrix_cstype */"
 %typemap(csin, 
    pre="    double[] adbl_$csinput;\n"
-       "    unsafe {adbl_$csinput = Fusee.Math.ArrayConversion.Convert.Matrix4DToArrayDoubleC4DLayout($csinput);"
+       "    unsafe {adbl_$csinput = Fusee.Math.ArrayConvert.double4x4ToArrayDoubleC4DLayout($csinput);"
        "    fixed (double *pdbl_$csinput = adbl_$csinput) {\n"
        "    /* Matrix_csin_pre */", 
    terminator="} } /* Matrix_csin_terminator */"
@@ -499,15 +499,15 @@ BaseTag *
 %typemap(csout, excode=SWIGEXCODE) Matrix 
 %{ {  /* <Matrix_csout> */
       C34M ret_c34m = $imcall;$excode
-	  Fusee.Math.Core.Matrix4D ret;
-	  unsafe {ret = Fusee.Math.ArrayConversion.Convert.ArrayDoubleC4DLayoutToMatrix4D(ret_c34m.m);}
+	  Fusee.Math.double4x4 ret;
+	  unsafe {ret = Fusee.Math.ArrayConvert.ArrayDoubleC4DLayoutTodouble4x4(ret_c34m.m);}
       return ret;
    } /* </Matrix_csout> */ %}
 %typemap(imtype, out="C34M /* Matrix_imtype_out */") Matrix "IntPtr /* Matrix_imtype */"
 // %typemap(in) Matrix "$1 = ($1_ltype)$input; /* Matrix_in */"
 %typemap(csdirectorin, 
-   pre="    Fusee.Math.Core.Matrix4D mtx_$iminput;\n"
-       "    unsafe {mtx_$iminput = Fusee.Math.ArrayConversion.Convert.ArrayDoubleC4DLayoutToMatrix4D((double *)$iminput);}\n"
+   pre="    Fusee.Math.double4x4 mtx_$iminput;\n"
+       "    unsafe {mtx_$iminput = Fusee.Math.ArrayConvert.ArrayDoubleC4DLayoutTodouble4x4((double *)$iminput);}\n"
        "    /* Matrix_csdirectorin_pre */"
   ) Matrix
   "mtx_$iminput /* Matrix_csdirectorin */"
@@ -519,7 +519,7 @@ BaseTag *
        double[] adbl_$csinput;
        unsafe 
 	   {
-		   adbl_$csinput = Fusee.Math.ArrayConversion.Convert.Matrix4DToArrayDoubleC4DLayout($csinput);
+		   adbl_$csinput = Fusee.Math.ArrayConvert.double4x4ToArrayDoubleC4DLayout($csinput);
            fixed (double *pdbl_$csinput = adbl_$csinput) 
 		   {
               $imcall;$excode
@@ -531,19 +531,19 @@ BaseTag *
    get
    {  
       C34M ret_c34m = $imcall;$excode
-	  Fusee.Math.Core.Matrix4D ret;
-	  unsafe {ret = Fusee.Math.ArrayConversion.Convert.ArrayDoubleC4DLayoutToMatrix4D(ret_c34m.m);}
+	  Fusee.Math.double4x4 ret;
+	  unsafe {ret = Fusee.Math.ArrayConvert.ArrayDoubleC4DLayoutTodouble4x4(ret_c34m.m);}
       return ret;   
    } /* <Matrix_csvarout> */ %}
 
-// Map  const Matrix&  TO   Fusee.Math.Core. (currently only if occurring as return value)
-%typemap(cstype, out="Fusee.Math.Core.Matrix4D /* constMatrix&_cstype_out */") const Matrix& "ref Fusee.Math.Core.Matrix4D /* constMatrix&_cstype */"
+// Map  const Matrix&  TO   Fusee.Math. (currently only if occurring as return value)
+%typemap(cstype, out="Fusee.Math.double4x4 /* constMatrix&_cstype_out */") const Matrix& "ref Fusee.Math.double4x4 /* constMatrix&_cstype */"
 %typemap(csin, 
    pre="    double[] adbl_$csinput;\n"
-       "    unsafe {adbl_$csinput = Fusee.Math.ArrayConversion.Convert.Matrix4DToArrayDoubleC4DLayout($csinput);"
+       "    unsafe {adbl_$csinput = Fusee.Math.ArrayConvert.double4x4ToArrayDoubleC4DLayout($csinput);"
        "    fixed (double *pdbl_$csinput = adbl_$csinput) {\n"
        "    /* constMatrix&_csin_pre */", 
-   post="        // NOP $csinput = Fusee.Math.ArrayConversion.Convert.ArrayDoubleC4DLayoutToMatrix4D(pdbl_$csinput);\n"
+   post="        // NOP $csinput = Fusee.Math.ArrayConvert.ArrayDoubleC4DLayoutTodouble4x4(pdbl_$csinput);\n"
         "        /* constMatrix&_csin_post */",
    terminator="} } /* constMatrix&_csin_terminator */"
   ) const Matrix&
@@ -551,17 +551,17 @@ BaseTag *
 %typemap(csout, excode=SWIGEXCODE) const Matrix&
 %{ {  /* <constMatrix&_csout> */
       IntPtr p_ret = $imcall;$excode
-      Fusee.Math.Core.Matrix4D ret;
-      unsafe {ret = Fusee.Math.ArrayConversion.Convert.ArrayDoubleC4DLayoutToMatrix4D((double *)p_ret);}
+      Fusee.Math.double4x4 ret;
+      unsafe {ret = Fusee.Math.ArrayConvert.ArrayDoubleC4DLayoutTodouble4x4((double *)p_ret);}
       return ret;
    } /* </constMatrix&_csout> */ %}
 %typemap(imtype, out="IntPtr /* constMatrix&_imtype_out */") const Matrix& "IntPtr /* constMatrix&_imtype */"
 %typemap(in) const Matrix& "$1 = ($1_ltype)$input; /* constMatrix&_in */"
 %typemap(csdirectorin, 
-   pre="    Fusee.Math.Core.Matrix4D mtx_$iminput;\n"
-       "    unsafe {mtx_$iminput = Fusee.Math.ArrayConversion.Convert.ArrayDoubleC4DLayoutToMatrix4D((double *)$iminput);}\n"
+   pre="    Fusee.Math.double4x4 mtx_$iminput;\n"
+       "    unsafe {mtx_$iminput = Fusee.Math.ArrayConvert.ArrayDoubleC4DLayoutTodouble4x4((double *)$iminput);}\n"
        "    /* constMatrix&_csdirectorin_pre */", 
-   post="        unsafe {Fusee.Math.ArrayConversion.Convert.Matrix4DToArrayDoubleC4DLayout(mtx_$iminput, (double *)$iminput);}\n"
+   post="        unsafe {Fusee.Math.ArrayConvert.double4x4ToArrayDoubleC4DLayout(mtx_$iminput, (double *)$iminput);}\n"
         "        /* constMatrix&_csdirectorin_post */"
   ) const Matrix&
   "ref mtx_$iminput /* constMatrix&_csdirectorin */"

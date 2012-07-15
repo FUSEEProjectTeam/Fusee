@@ -1,6 +1,6 @@
 ﻿using C4d;
 using System;
-using Fusee.Math.Core;
+using Fusee.Math;
 
 namespace DoubleCircle
 {
@@ -33,22 +33,22 @@ namespace DoubleCircle
             return true;
         }
 
-        static Vector3D SwapPoint(Vector3D p, int plane)
+        static double3 SwapPoint(double3 p, int plane)
         {
 	        switch (plane)
 	        {
-                case 1: return new Vector3D(-p.X, p.Y, p.Z);
-                case 2: return new Vector3D(p.X, -p.Y, p.Z);
+                case 1: return new double3(-p.x, p.y, p.z);
+                case 2: return new double3(p.x, -p.y, p.z);
 	        }
 	        return p;
         }
  
-        static Vector3D GetRTHandle(BaseObject op, int id)
+        static double3 GetRTHandle(BaseObject op, int id)
         {
 	        BaseContainer data = GetDataInstance(op);
 	        double rad	  = data.GetReal(CIRCLEOBJECT_RAD);
 	        int plane  = data.GetLong(C4dApi.PRIM_PLANE);
-	        return SwapPoint(new Vector3D(rad,0.0,0.0),plane);
+	        return SwapPoint(new double3(rad,0.0,0.0),plane);
         }
 
 		public override DRAWRESULT Draw(BaseObject op, DRAWPASS type, BaseDraw bd, BaseDrawHelp bh)
@@ -58,17 +58,17 @@ namespace DoubleCircle
 
 	        int hitid = op.GetHighlightHandle(bd);
 
-	        Matrix4D m = bh.GetMg();
+	        double4x4 m = bh.GetMg();
 
 	        if (hitid==0)
                 bd.SetPen(C4dApi.GetViewColor(C4dApi.VIEWCOLOR_SELECTION_PREVIEW));
 	        else
                 bd.SetPen(C4dApi.GetViewColor(C4dApi.VIEWCOLOR_ACTIVEPOINT));
 
-            // Vector3D zeroPos = new Vector3D(0, 0, 0);
+            // double3 zeroPos = new double3(0, 0, 0);
 	        bd.SetMatrix_Matrix(op, ref m);
             bd.DrawHandle(GetRTHandle(op, 0), DRAWHANDLE.DRAWHANDLE_BIG,0);
-	        bd.DrawLine(GetRTHandle(op, 0), new Vector3D(0, 0, 0),0);
+	        bd.DrawLine(GetRTHandle(op, 0), new double3(0, 0, 0),0);
 	
 	        return DRAWRESULT.DRAWRESULT_OK;
         }
@@ -77,24 +77,24 @@ namespace DoubleCircle
         {
             if (0 != (qualifier & QUALIFIER.QUALIFIER_CTRL)) 
                 return -1;
-            Matrix4D mg = op.GetMg();
+            double4x4 mg = op.GetMg();
             if (bd.PointInRange(mg * GetRTHandle(op,0),x,y)) 
                 return 0; // OK
             return -1; // Not OK
         }
 
         //TODO: deleted 'override'
-        public bool MoveHandle(BaseObject op, BaseObject undo, ref Matrix4D tm, int hit_id, QUALIFIER qualifier)
+        public bool MoveHandle(BaseObject op, BaseObject undo, ref double4x4 tm, int hit_id, QUALIFIER qualifier)
         {
             BaseContainer src = undo.GetDataInstance();
             BaseContainer dst = op.GetDataInstance();
 	
-            Vector3D handle_dir = new Vector3D(1.0,0.0,0.0); 
+            double3 handle_dir = new double3(1.0,0.0,0.0); 
             handle_dir = SwapPoint(handle_dir,src.GetLong(C4dApi.PRIM_PLANE));
 	
-            double val = Vector3D.Dot(tm.Offset, handle_dir);
+            double val = double3.Dot(tm.Offset, handle_dir);
 
-            dst.SetReal(CIRCLEOBJECT_RAD, MathFunctions.Saturate(src.GetReal(CIRCLEOBJECT_RAD)+val, 0.0, C4dApi.MAXRANGE));
+            dst.SetReal(CIRCLEOBJECT_RAD, M.Saturate(src.GetReal(CIRCLEOBJECT_RAD)+val, 0.0, C4dApi.MAXRANGE));
             return true;
         }
 
@@ -126,12 +126,12 @@ namespace DoubleCircle
                 sn = Math.Sin(angle);
                 cs = Math.Cos(angle);
 
-                Vector3D vOuter = new Vector3D(cs * rad, sn * rad, 0.0);
-                Vector3D vOuterTangentL = new Vector3D(sn * rad * TANG, -cs * rad * TANG, 0.0);
-                Vector3D vOuterTangentR = -vOuterTangentL;
-                Vector3D vInner = vOuter * 0.5;
-                Vector3D vInnerTangentL = vOuterTangentL * 0.5;
-                Vector3D vInnerTangentR = -vInnerTangentL;
+                double3 vOuter = new double3(cs * rad, sn * rad, 0.0);
+                double3 vOuterTangentL = new double3(sn * rad * TANG, -cs * rad * TANG, 0.0);
+                double3 vOuterTangentR = -vOuterTangentL;
+                double3 vInner = vOuter * 0.5;
+                double3 vInnerTangentL = vOuterTangentL * 0.5;
+                double3 vInnerTangentR = -vInnerTangentL;
 
                 op.SetPointAt(i, vOuter);
                 Tangent outerTangent = new Tangent();
@@ -152,7 +152,7 @@ namespace DoubleCircle
 
         static void OrientObject(SplineObject op, int plane, bool reverse)
         {
-            // Vector3D padr = op.GetPointW();
+            // double3 padr = op.GetPointW();
             // Tangent hadr = op.GetTangentW(), h;
             int nPoints = op.GetPointCount(); 
             int i;
@@ -166,13 +166,13 @@ namespace DoubleCircle
                     case 1: // ZY
                         for (i = 0; i < nPoints; i++)
                         {
-                            Vector3D v  = op.GetPointAt(i);
-                            op.SetPointAt(i, new Vector3D(-v.Z, v.Y, v.X));
+                            double3 v  = op.GetPointAt(i);
+                            op.SetPointAt(i, new double3(-v.z, v.y, v.x));
                             if (!bTangents) continue;
                             Tangent t = op.GetTangentAt(i);
                             Tangent t2 = new Tangent();
-                            t2.vl = new Vector3D(-t.vl.Z, t.vl.Y, t.vl.X);
-                            t2.vr = new Vector3D(-t.vr.Z, t.vr.Y, t.vr.X);
+                            t2.vl = new double3(-t.vl.z, t.vl.y, t.vl.x);
+                            t2.vr = new double3(-t.vr.z, t.vr.y, t.vr.x);
                             op.SetTangentAt(i, t2);
                         }
                         break;
@@ -180,13 +180,13 @@ namespace DoubleCircle
                     case 2: // XZ
                         for (i = 0; i < nPoints; i++)
                         {
-                            Vector3D v = op.GetPointAt(i);
-                            op.SetPointAt(i, new Vector3D(v.X, -v.Z, v.Y));
+                            double3 v = op.GetPointAt(i);
+                            op.SetPointAt(i, new double3(v.x, -v.z, v.y));
                             if (!bTangents) continue;
                             Tangent t = op.GetTangentAt(i);
                             Tangent t2 = new Tangent();
-                            t2.vl = new Vector3D(t.vl.X, -t.vl.Z, t.vl.Y);
-                            t2.vr = new Vector3D(t.vr.X, -t.vr.Z, t.vr.Y);
+                            t2.vl = new double3(t.vl.x, -t.vl.z, t.vl.y);
+                            t2.vr = new double3(t.vr.x, -t.vr.z, t.vr.y);
                             op.SetTangentAt(i, t2);
                         }
                         break;
@@ -195,7 +195,7 @@ namespace DoubleCircle
 
             if (reverse)
             {
-                Vector3D p;
+                double3 p;
                 int to = nPoints / 2;
                 if ((nPoints % 2) != 0) 
                     to++;
@@ -210,10 +210,10 @@ namespace DoubleCircle
                     Tangent h2 = op.GetTangentAt(nPoints-1-i);
                     Tangent hTmp1 = new Tangent();
                     Tangent hTmp2 = new Tangent();
-                    hTmp1.vl = new Vector3D(h2.vr);
-                    hTmp1.vr = new Vector3D(h2.vl);
-                    hTmp2.vl = new Vector3D(h1.vr);
-                    hTmp2.vr = new Vector3D(h1.vl);
+                    hTmp1.vl = new double3(h2.vr);
+                    hTmp1.vr = new double3(h2.vl);
+                    hTmp2.vl = new double3(h1.vr);
+                    hTmp2.vr = new double3(h1.vl);
                     op.SetTangentAt(i, hTmp1);
                     op.SetTangentAt(nPoints-1-i, hTmp2);
                 }
