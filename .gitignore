@@ -11,5 +11,7 @@ C4dApi
 *.pdb
 *.tlog
 *.log
+*.scc
+*.vspscc
 # mstest test results
 TestResults
