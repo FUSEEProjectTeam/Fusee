@@ -36,9 +36,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Cube.cs" />
+    <Compile Include="Geometry.cs" />
     <Compile Include="ImpFactory.cs" />
     <Compile Include="Input.cs" />
     <Compile Include="Mesh.cs" />
+    <Compile Include="MeshReader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RenderCanvas.cs" />
     <Compile Include="RenderContext.cs" />

@@ -6,7 +6,7 @@ namespace Fusee.Engine
     {
         public Cube()
         {
-           Vertices = new float3[]
+            Vertices = new float3[]
             {
                 new float3{x=-0.5f, y=-0.5f, z= 0.5f},
                 new float3{x= 0.5f, y=-0.5f, z= 0.5f},

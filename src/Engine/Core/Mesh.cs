@@ -30,6 +30,16 @@ namespace Fusee.Engine
         }
         public bool NormalsSet { get { return (_meshImp != null) && _meshImp.NormalsSet; } }
 
+        private float2[] _uvs;
+        public float2[] UVs
+        {
+            get { return _uvs; }
+            set { if (_meshImp != null) _meshImp.InvalidateUVs(); _uvs = value; }
+        }
+        public bool UVsSet { get { return (_meshImp != null) && _meshImp.UVsSet; } }
+
+
+
         private short[] _triangles;
         public short[] Triangles
         {

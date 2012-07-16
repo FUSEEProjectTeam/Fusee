@@ -10,5 +10,7 @@
         bool ColorsSet { get; }
         void InvalidateTriangles();
         bool TrianglesSet { get; }
+        bool UVsSet { get; }
+        void InvalidateUVs();
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Fusee.Engine;
 using Fusee.Math;
 
@@ -41,7 +42,9 @@ void main()
 
         public override void Init()
         {
-            _mesh = new Cube();
+            //Mesh cube = new Cube();
+            Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"Fusee.obj"));
+            _mesh = geo.ToMesh();
             _angleHorz = 0;
             _rotationSpeed = 10.0f;
             ShaderProgram sp = RC.CreateShader(_vs, _ps);
@@ -88,7 +91,7 @@ void main()
             }
 
 
-            RC.ModelView = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz) * float4x4.LookAt(0, 1, 2, 0, 0, 0, 0, 1, 0);
+            RC.ModelView = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert) * float4x4.LookAt(0, 200, 400, 0, 50, 0, 0, 1, 0);
 
             RC.Render(_mesh);
             Present();
@@ -99,7 +102,7 @@ void main()
             RC.Viewport(0, 0, Width, Height);
 
             float aspectRatio = Width / (float)Height;
-            RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 64);
+            RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 5000);
         }
 
         public static void Main()
