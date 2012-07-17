@@ -75,7 +75,7 @@ namespace Fusee.Engine
         }
 
         public RenderCanvasGameWindow(RenderCanvasImp renderCanvasImp)
-            : base(1280, 720, GraphicsMode.Default)
+            : base(1280, 720, new GraphicsMode(32,24,0,8) /*GraphicsMode.Default*/, "Fusee Engine")
         {
             _renderCanvasImp = renderCanvasImp;
         }

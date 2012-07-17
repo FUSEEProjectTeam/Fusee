@@ -688,10 +688,15 @@ JSIL.MakeStaticClass("System.Console", true, [], function ($) {
 });
 
 JSIL.SplitString = function (str, separators) {
-  if (separators.length > 1)
-    throw new Error("Split cannot handle more than one separator");
+    if (separators == null) {
+        str.replace(/ +?/g, " ");
+        separators = [" "];
+    }
 
-  return str.split(separators[0]);
+    if (separators.length > 1)
+        throw new Error("Split cannot handle more than one separator");
+
+    return str.split(separators[0]);
 };
 
 JSIL.ConcatString = function (/* ...values */) {

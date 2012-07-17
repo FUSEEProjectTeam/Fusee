@@ -57,9 +57,6 @@
   <ItemGroup>
     <None Include="defaults.jsilconfig" />
     <None Include="JSIL.bat" />
-    <None Include="Scripts\Fusee.obj">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Scripts\browser.css" />

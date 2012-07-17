@@ -2,11 +2,25 @@
 using System.Collections.Generic;
 using Fusee.Math;
 using System.IO;
+using JSIL.Meta;
 
- namespace Fusee.Engine
+namespace Fusee.Engine
 {
     public class MeshReader
     {
+        /// <summary>
+        /// Replacement for double.Parse(s, [InvariantCulture])
+        /// Hack needed for JSIL.
+        /// </summary>
+        /// <param name="s">string to parse</param>
+        /// <returns>A double nuber</returns>
+        // TODO: Get rid of this hack
+        [JSExternal]
+        public static double Double_Parse(string s)
+        {
+            return double.Parse(s, System.Globalization.CultureInfo.InvariantCulture);
+        }
+
         /// <summary>
         /// Parses the contents of the TextReader object passed to the method and tries to 
         /// interpret the contents as a <a href="http://en.wikipedia.org/wiki/Wavefront_.obj_file">Wavefront obj</a> file.
@@ -39,8 +53,8 @@ using System.IO;
 
                     string[] values = FilteredSplit(tmp, null);
 
-                    g.AddTexCoord(new double2(double.Parse(values[0], System.Globalization.CultureInfo.InvariantCulture),
-                                              double.Parse(values[1], System.Globalization.CultureInfo.InvariantCulture)));
+                    g.AddTexCoord(new double2(Double_Parse(values[0]),
+                                              Double_Parse(values[1])));
                 }
                 else if (line.StartsWith("vn"))
                 {
@@ -49,9 +63,9 @@ using System.IO;
 
                     string[] values = FilteredSplit(tmp, null);
 
-                    g.AddNormal(new double3(double.Parse(values[0], System.Globalization.CultureInfo.InvariantCulture),
-                                            double.Parse(values[1], System.Globalization.CultureInfo.InvariantCulture),
-                                            double.Parse(values[2], System.Globalization.CultureInfo.InvariantCulture)));
+                    g.AddNormal(new double3(Double_Parse(values[0]),
+                                            Double_Parse(values[1]),
+                                            Double_Parse(values[2])));
                 }
                 else if (line.StartsWith("v"))
                 {
@@ -60,9 +74,9 @@ using System.IO;
 
                     string[] values = FilteredSplit(tmp, null);
 
-                    g.AddVertex(new double3(double.Parse(values[0], System.Globalization.CultureInfo.InvariantCulture),
-                                            double.Parse(values[1], System.Globalization.CultureInfo.InvariantCulture),
-                                            double.Parse(values[2], System.Globalization.CultureInfo.InvariantCulture)));
+                    g.AddVertex(new double3(Double_Parse(values[0]),
+                                            Double_Parse(values[1]),
+                                            Double_Parse(values[2])));
                 }
                 else if (line.StartsWith("f"))
                 {
@@ -153,6 +167,8 @@ using System.IO;
                 lineNumber++;
             }
 
+            if (!g.HasNormals)
+                g.CreateNormals(3.141592 / 4.0);
             return g;
         }
 

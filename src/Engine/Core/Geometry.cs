@@ -139,12 +139,104 @@ namespace Fusee.Engine
             get { return _texCoords != null; }
         }
 
+        public IList<int> GetAllFacesContainingVertex(int iV, out IList<int> vertInFace)
+        {
+            List<int> ret = new List<int>();
+            vertInFace = new List<int>();
+            for (int iF = 0; iF < _faces.Count; iF++)
+            {
+                for (int iFV = 0; iFV < _faces[iF].InxVert.Length; iFV++)
+                {
+                    if (iV == _faces[iF].InxVert[iFV])
+                    {
+                        ret.Add(iF);
+                        vertInFace.Add(iFV);
+                        break;
+                    }
+                }
+            }
+            return ret;
+        }
+
+        public double3 CalcFaceNormal(Face f)
+        {
+            if (f.InxVert.Length < 3)
+                throw new Exception("Cannot calculate normal of degenerate face with only " + f.InxVert.Length + " vertices.");
+            double3 v1 = _vertices[f.InxVert[0]] - _vertices[f.InxVert[1]];
+            double3 v2 = _vertices[f.InxVert[0]] - _vertices[f.InxVert[2]];
+            return double3.Normalize(double3.Cross(v1, v2));
+        }
+
+        public void CreateNormals(double smoothingAngle)
+        {
+            double cSmoothingAngle = System.Math.Cos(smoothingAngle);
+
+            _normals = new List<double3>();
+            for (int iV = 0; iV < _vertices.Count; iV++)
+            {
+                IList<int> vertInFace;
+                IList<int> facesWithIV = GetAllFacesContainingVertex(iV, out vertInFace);
+                List<double3> normals = new List<double3>();
+                foreach (int i in facesWithIV)
+                {
+                        normals.Add(CalcFaceNormal(_faces[i]));
+                }
+                // Quick and dirty solution: if the smoothing angle holds for all combinations we create a shared normal,
+                // otherwise we create individual normals for each face. 
+                // TODO: Build groups of shared normmals where faces are connected by edges (need edges to do this)
+                bool smoothit = true;
+                for (int i = 0; i < normals.Count; i++)
+                {
+                    for (int j = i+1; j < normals.Count; j++)
+                    {
+                        if (double3.Dot(normals[i], normals[j]) < cSmoothingAngle)
+                        {
+                            smoothit = false;
+                            break;
+                        }
+                    }
+                    if (!smoothit)
+                        break;
+                }
+                if (smoothit)
+                {
+                    // create a single normal and set each face to it
+                    double3 daNormal = new double3(0, 0, 0);
+                    foreach (var n in normals)
+                    {
+                        daNormal += n;
+                    }
+                    daNormal /= (double) normals.Count;
+                    int iN = AddNormal(daNormal);
+                    for(int i = 0; i < facesWithIV.Count; i++)
+                    {
+                        if (_faces[facesWithIV[i]].InxNormal == null)
+                            _faces[facesWithIV[i]].InxNormal = new int[_faces[facesWithIV[i]].InxVert.Length];
+                        _faces[facesWithIV[i]].InxNormal[vertInFace[i]] = iN;
+                    }
+                }
+                else
+                {
+                    // create individual normals and assign to respective face vertices
+                    for (int i = 0; i < normals.Count; i++)
+                    {
+                        int iN = AddNormal(normals[i]);
+
+                        if (_faces[facesWithIV[i]].InxNormal == null)
+                            _faces[facesWithIV[i]].InxNormal = new int[_faces[facesWithIV[i]].InxVert.Length];
+                        
+                        _faces[facesWithIV[i]].InxNormal[vertInFace[i]] = iN;
+                    }
+                }
+            }
+        }
+
         struct TripleInx
         {
             public int iV, iT, iN;
             public override int GetHashCode()
             {
-                return iV.GetHashCode() ^ iT.GetHashCode() ^ iN.GetHashCode();
+                return iV ^ iT ^ iN;
             }
         }
 
