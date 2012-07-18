@@ -1,8 +1,8 @@
 Fusee
 =====
 
-Fusee aims at becoming a 3D realtime engine with a strong emphasis 
-on content transformation and manipulation.
+Fusee aims at becoming a multiplatform 3D realtime engine with 
+a strong emphasis on content transformation and manipulation.
 
 Fusee is written mainly in C# and can be programmed in C#. 
 
