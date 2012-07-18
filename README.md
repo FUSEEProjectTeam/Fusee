@@ -1,11 +1,11 @@
 Fusee
 =====
 
-This is the 'Fusee' Open Source Project.
+Fusee aims at becoming a multiplatform 3D realtime engine with 
+a strong emphasis on content transformation and manipulation.
 
-It's in the hands of Professor Ch. Müller - Hochschule Furtwangen University Germany.
+Fusee is written mainly in C# and can be programmed in C#. 
 
-This is still an Alpha State.
-
-
-An addition only by me
+Fusee builds bridges to make your code run in environments that
+don't support C#, like Content-Creation-Software C++ Plug-In-APIs
+and native HTML5/WebGL Javascript code.
