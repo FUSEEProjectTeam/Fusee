@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using C4d;
-using Fusee.Math.Core;
+using Fusee.Math;
 
 
 namespace YourManagedPlugin

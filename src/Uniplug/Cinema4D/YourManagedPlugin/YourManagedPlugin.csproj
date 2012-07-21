@@ -36,8 +36,11 @@
       <HintPath>$(C4D_DIR)\plugins\ManagedPlugIn\Win32\C4d.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Fusee.Math">
-      <HintPath>..\..\..\..\bin\Debug\Fusee.Math.dll</HintPath>
+    <Reference Include="Fusee.Math.Conversion">
+      <HintPath>..\..\..\..\Bin\Debug\Fusee.Math.Conversion.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Math.Core">
+      <HintPath>..\..\..\..\Bin\Debug\Fusee.Math.Core.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
