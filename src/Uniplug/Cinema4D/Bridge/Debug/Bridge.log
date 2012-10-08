@@ -1,4 +1,35 @@
-﻿C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\Microsoft.CppBuild.targets(299,5): warning MSB8004: Das Output-Verzeichnis endet nicht mit einem nachstehenden Schrägstrich. Der Schrägstrich wird in dieser Buildinstanz hinzugefügt, da er für die ordnungsgemäße Auswertung des Output-Verzeichnisses erforderlich ist.
-  PluginB.cpp
-     Bibliothek "C:\Program Files\MAXON\CINEMA 4D R13/plugins/ManagedPlugIn/win32\Bridge.lib" und Objekt "C:\Program Files\MAXON\CINEMA 4D R13/plugins/ManagedPlugIn/win32\Bridge.exp" werden erstellt.
-  Bridge.vcxproj -> C:\Program Files\MAXON\CINEMA 4D R13/plugins/ManagedPlugIn/win32\Bridge.dll
+﻿Der Buildvorgang wurde am 08.10.2012 12:48:17 gestartet.
+     1>Projekt "C:\Users\dsteffen\Development\GitHub\Fusee\src\Uniplug\Cinema4D\Bridge\Bridge.vcxproj" auf Knoten "2", rebuild Ziel(e).
+     1>_PrepareForClean:
+         Die Datei "Debug\Bridge.lastbuildstate" wird gelöscht.
+     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\Microsoft.CppBuild.targets(299,5): warning MSB8004: Das Output-Verzeichnis endet nicht mit einem nachstehenden Schrägstrich. Der Schrägstrich wird in dieser Buildinstanz hinzugefügt, da er für die ordnungsgemäße Auswertung des Output-Verzeichnisses erforderlich ist.
+       InitializeBuildStatus:
+         "Debug\Bridge.unsuccessfulbuild" wird erstellt, da "AlwaysCreate" angegeben wurde.
+       GenerateTargetFrameworkMonikerAttribute:
+       Das Ziel "GenerateTargetFrameworkMonikerAttribute" wird übersprungen, da alle Ausgabedateien hinsichtlich der Eingabedateien aktuell sind.
+       ClCompile:
+         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /Iinclude /AI"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0" /AI"C:\Program Files\MAXON\CINEMA 4D R13\plugins\ManagedPlugIn\Win32" /Zi /clr /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _USRDLL /D BRIDGE_EXPORTS /D _WINDLL /D _UNICODE /D UNICODE /Gm- /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yc"StdAfx.h" /Fp"Debug\Bridge.pch" /Fo"Debug\\" /Fd"Debug\vc100.pdb" /TP /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\System.Core.dll" /analyze- /errorReport:prompt stdafx.cpp /clr:nostdlib 
+         stdafx.cpp
+         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /Iinclude /AI"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0" /AI"C:\Program Files\MAXON\CINEMA 4D R13\plugins\ManagedPlugIn\Win32" /Zi /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _USRDLL /D BRIDGE_EXPORTS /D _WINDLL /D _UNICODE /D UNICODE /Gm- /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /TP /analyze- /errorReport:prompt dllmain.cpp /clr:nostdlib 
+         dllmain.cpp
+         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /Iinclude /AI"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0" /AI"C:\Program Files\MAXON\CINEMA 4D R13\plugins\ManagedPlugIn\Win32" /Zi /clr /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _USRDLL /D BRIDGE_EXPORTS /D _WINDLL /D _UNICODE /D UNICODE /Gm- /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"StdAfx.h" /Fp"Debug\Bridge.pch" /Fo"Debug\\" /Fd"Debug\vc100.pdb" /TP /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\System.Core.dll" /analyze- /errorReport:prompt PluginB.cpp /clr:nostdlib 
+         PluginB.cpp
+         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /Iinclude /AI"C:\Program Files\MAXON\CINEMA 4D R13\plugins\ManagedPlugIn\Win32" /Zi /clr /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _USRDLL /D BRIDGE_EXPORTS /D _WINDLL /D _UNICODE /D UNICODE /Gm- /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /TP /analyze- /errorReport:prompt "C:\Users\dsteffen\AppData\Local\Temp\.NETFramework,Version=v4.0.AssemblyAttributes.cpp"
+         .NETFramework,Version=v4.0.AssemblyAttributes.cpp
+       Link:
+         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Program Files\MAXON\CINEMA 4D R13/plugins/ManagedPlugIn/win32\Bridge.dll" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Debug\Bridge.dll.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\Program Files\MAXON\CINEMA 4D R13\plugins\ManagedPlugIn\win32\Bridge.pdb" /ASSEMBLYDEBUG /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /FIXED:NO /NXCOMPAT /MACHINE:X86 /DLL Debug\dllmain.obj
+         Debug\PluginB.obj
+         Debug\stdafx.obj
+         "Debug\.NETFramework,Version=v4.0.AssemblyAttributes.obj"
+            Bibliothek "C:\Program Files\MAXON\CINEMA 4D R13/plugins/ManagedPlugIn/win32\Bridge.lib" und Objekt "C:\Program Files\MAXON\CINEMA 4D R13/plugins/ManagedPlugIn/win32\Bridge.exp" werden erstellt.
+         Bridge.vcxproj -> C:\Program Files\MAXON\CINEMA 4D R13/plugins/ManagedPlugIn/win32\Bridge.dll
+       Manifest:
+         c:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:"C:\Program Files\MAXON\CINEMA 4D R13/plugins/ManagedPlugIn/win32\Bridge.dll;#2" /manifest Debug\Bridge.dll.intermediate.manifest
+       FinalizeBuildStatus:
+         Die Datei "Debug\Bridge.unsuccessfulbuild" wird gelöscht.
+         Aktualisieren des Timestamps von "Debug\Bridge.lastbuildstate".
+     1>Die Erstellung des Projekts "C:\Users\dsteffen\Development\GitHub\Fusee\src\Uniplug\Cinema4D\Bridge\Bridge.vcxproj" ist abgeschlossen, rebuild Ziel(e).
+
+Das Erstellen war erfolgreich.
+
+Verstrichene Zeit 00:00:03.98

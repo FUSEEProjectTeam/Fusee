@@ -34,6 +34,7 @@ namespace YourManagedPlugin
             Logger.Debug("Hello, I'm the first outprinted message by your plugin code.");
             Logger.Debug("You can see me in the 'Cinema 4D' console when using the plugin.");
             Logger.Debug("Open the console by just pressing shift+F10 in 'Cinema 4D'");
+            Logger.Debug("Last Change - 08102012");
 
             return true;
         }
