@@ -443,7 +443,8 @@ JSIL.MakeClass($asm01.TypeRef("System.Object"), "Fusee.Engine.RenderContextImp",
     $.Method({ Static: false, Public: true }, "SetShaderParam4f",
     new JSIL.MethodSignature(null, [$asm44.TypeRef("Fusee.Engine.IShaderParam"), $asm00.TypeRef("Fusee.Math.float4")]),
     function SetShaderParam4f(param, val) {
-        this.gl.uniform4f(param.handle, val);
+        var flatVector = new Float32Array(val.ToArray());
+        this.gl.uniform4fv(param.handle, flatVector);
     }
   );
 

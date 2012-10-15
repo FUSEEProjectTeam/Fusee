@@ -201,7 +201,7 @@ namespace Fusee.Engine
                 if (smoothit)
                 {
                     // create a single normal and set each face to it
-                    double3 daNormal = new double3(0, 0, 0);
+                    double3 daNormal = new double3(){x=0,y=0,z=0};
                     foreach (var n in normals)
                     {
                         daNormal += n;

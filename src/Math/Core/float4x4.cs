@@ -669,40 +669,6 @@ namespace Fusee.Math
         
         #endregion
 
-        #region Obsolete Functions
-
-        #region Translation Functions
-
-        /// <summary>
-        /// Builds a translation matrix.
-        /// </summary>
-        /// <param name="trans">The translation vector.</param>
-        /// <returns>A new Matrix4 instance.</returns>
-        [Obsolete("Use CreateTranslation instead.")]
-        public static float4x4 Translation(float3 trans)
-        {
-            return Translation(trans.x, trans.y, trans.z);
-        }
-
-        /// <summary>
-        /// Build a translation matrix with the given translation
-        /// </summary>
-        /// <param name="x">X translation</param>
-        /// <param name="y">Y translation</param>
-        /// <param name="z">Z translation</param>
-        /// <returns>A Translation matrix</returns>
-        [Obsolete("Use CreateTranslation instead.")]
-        public static float4x4 Translation(float x, float y, float z)
-        {
-            float4x4 result = Identity;
-            result.Row3 = new float4(x, y, z, 1.0f);
-            return result;
-        }
-
-        #endregion
-
-        #endregion
-
         #region Scale Functions
 
         /// <summary>
@@ -1048,7 +1014,12 @@ namespace Fusee.Math
                 float oneOverPivot = 1.0f / pivot;
                 inverse[icol, icol] = 1.0f;
                 for (int k = 0; k < 4; ++k)
-                    inverse[icol, k] *= oneOverPivot;
+                {
+                    // Tribute to JSIL. TODO: remove this hack.                    
+                    // original: inverse[icol, k] *= oneOverPivot;
+                    float tmp = inverse[icol, k] * oneOverPivot;
+                    inverse[icol, k] = tmp;
+                }
 
                 // Do elimination of non-diagonal elements
                 for (int j = 0; j < 4; ++j)
@@ -1059,7 +1030,12 @@ namespace Fusee.Math
                         float f = inverse[j, icol];
                         inverse[j, icol] = 0.0f;
                         for (int k = 0; k < 4; ++k)
-                            inverse[j, k] -= inverse[icol, k] * f;
+                        {
+                            // Tribute to JSIL. TODO: remove this hack.                    
+                            // original: inverse[j, k] -= inverse[icol, k] * f;
+                            float tmp = inverse[j, k] - inverse[icol, k] * f;
+                            inverse[j, k] = tmp;
+                        }
                     }
                 }
             }

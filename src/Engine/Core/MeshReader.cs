@@ -168,7 +168,7 @@ namespace Fusee.Engine
             }
 
             if (!g.HasNormals)
-                g.CreateNormals(3.141592 / 4.0);
+                g.CreateNormals(80 * 3.141592 / 180.0);
             return g;
         }
 

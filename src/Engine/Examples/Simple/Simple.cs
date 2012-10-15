@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Fusee.Engine;
 using Fusee.Math;
@@ -19,13 +20,15 @@ varying vec4 vColor;
 varying vec3 vNormal;
         
 uniform mat4 FUSEE_MVP;
+uniform mat4 FUSEE_ITMV;
 
 void main()
 {
     gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
     // vColor = vec4(fuNormal * 0.5 + 0.5, 1.0);
-    vec4 norm4 = FUSEE_MVP * vec4(fuNormal, 0.0);
-    vNormal = norm4.xyz;
+    // vec4 norm4 = FUSEE_MVP * vec4(fuNormal, 0.0);
+    // vNormal = norm4.xyz;
+    vNormal = mat3(FUSEE_ITMV) * fuNormal;
 }";
 
         protected string _ps = @"
@@ -36,11 +39,10 @@ precision highp float;
         
 varying vec4 vColor;
 varying vec3 vNormal;
-        
+
 void main()
 {
-    // gl_FragColor = vColor;
-    gl_FragColor = vec4(0.03, 0.75, 0.57, 1.0) * dot(vNormal, vec3(0, 0, -1));
+    gl_FragColor = vec4(0.03, 0.75, 0.57, 1.0) * dot(vNormal, vec3(0, 0, 1));
 }";
 
         private static float _angleHorz = 0.0f, _angleVert = 0.0f, _angleVelHorz = 0, _angleVelVert = 0, _rotationSpeed = 10.0f, _damping = 0.95f;
@@ -48,8 +50,7 @@ void main()
 
         public override void Init()
         {
-            //Mesh cube = new Cube();
-            Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"SampleObj/Cube.obj"));
+            Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"SampleObj/Teapot.obj"));
             _mesh = geo.ToMesh();
             _angleHorz = 0;
             _rotationSpeed = 10.0f;
