@@ -58,40 +58,28 @@
     <Compile Include="Simple.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="SampleObj\Capsule.obj">
+    <None Include="SampleObj\Capsule.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="SampleObj\Cone.obj">
+    <None Include="SampleObj\Cone.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="SampleObj\Cube.obj">
+    <None Include="SampleObj\Cube.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="SampleObj\Cylinder.obj">
+    <None Include="SampleObj\Cylinder.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="SampleObj\Donut.obj">
+    <None Include="SampleObj\Donut.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="SampleObj\Fusee.obj">
+    <None Include="SampleObj\Fusee.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="SampleObj\FuseeRing.obj">
+    <None Include="SampleObj\Sphere.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="SampleObj\Sphere.obj">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="SampleObj\Teapot.obj">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="SampleObj\TeapotTop.obj">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="SampleObj\TeapotTop2.obj">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="SampleObj\TeapotTop3.obj">
+    <None Include="SampleObj\Teapot.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

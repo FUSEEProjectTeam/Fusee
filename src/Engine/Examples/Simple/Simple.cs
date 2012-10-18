@@ -50,7 +50,7 @@ void main()
 
         public override void Init()
         {
-            Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"SampleObj/Teapot.obj"));
+            Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"SampleObj/Teapot.obj.model"));
             _mesh = geo.ToMesh();
             _angleHorz = 0;
             _rotationSpeed = 10.0f;
