@@ -26022,36 +26022,6 @@ SWIGEXPORT int SWIGSTDCALL CSharp_MSG_DOCUMENTINFO_TYPE_COPY_get() {
 }
 
 
-SWIGEXPORT int SWIGSTDCALL CSharp_MSG_DOCUMENTINFO_TYPE_LOAD_XREFS_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)(1017);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_MSG_DOCUMENTINFO_TYPE_MERGE_XREFS_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)(1018);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_MSG_DOCUMENTINFO_TYPE_XREFS_IMPORTED_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)(1019);
-  jresult = result; 
-  return jresult;
-}
-
-
 SWIGEXPORT int SWIGSTDCALL CSharp_MSG_GETSELECTION_get() {
   int jresult ;
   int result;
@@ -44410,21 +44380,19 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseSelect_ToggleAll(void * jarg1, in
 }
 
 
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseSelect_GetRange(void * jarg1, int jarg2, int jarg3, void * jarg4, void * jarg5) {
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseSelect_GetRange(void * jarg1, int jarg2, void * jarg3, void * jarg4) {
   unsigned int jresult ;
   BaseSelect *arg1 = (BaseSelect *) 0 ;
   LONG arg2 ;
-  LONG arg3 ;
+  LONG *arg3 = (LONG *) 0 ;
   LONG *arg4 = (LONG *) 0 ;
-  LONG *arg5 = (LONG *) 0 ;
   Bool result;
   
   arg1 = (BaseSelect *)jarg1; 
   arg2 = (LONG)jarg2; 
-  arg3 = (LONG)jarg3; 
+  arg3 = (LONG *)jarg3; 
   arg4 = (LONG *)jarg4; 
-  arg5 = (LONG *)jarg5; 
-  result = ((BaseSelect const *)arg1)->GetRange(arg2,arg3,arg4,arg5);
+  result = ((BaseSelect const *)arg1)->GetRange(arg2,arg3,arg4);
   jresult = result; 
   return jresult;
 }
