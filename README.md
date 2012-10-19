@@ -1,4 +1,4 @@
-![FUSEE logo](http://webuser.hs-furtwangen.de/~mch/Fusee/FuseeLogo150.png) JSIL
+![FUSEE logo](http://webuser.hs-furtwangen.de/~mch/Fusee/FuseeLogo150.png) FUSEE
 =====
 
 Fusee aims at becoming a multiplatform 3D realtime engine with a strong emphasis on content transformation and manipulation.
