@@ -9,41 +9,46 @@ namespace Examples
     public class Simple : RenderCanvas 
     {
         protected string _vs = @"
-/* Copies incoming vertex color without change.
-    * Applies the transformation matrix to vertex position.
-    */
-attribute vec4 fuColor;
-attribute vec3 fuVertex;
-attribute vec3 fuNormal;
-        
-varying vec4 vColor;
-varying vec3 vNormal;
-        
-uniform mat4 FUSEE_MVP;
-uniform mat4 FUSEE_ITMV;
+            #version 120
 
-void main()
-{
-    gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
-    // vColor = vec4(fuNormal * 0.5 + 0.5, 1.0);
-    // vec4 norm4 = FUSEE_MVP * vec4(fuNormal, 0.0);
-    // vNormal = norm4.xyz;
-    vNormal = mat3(FUSEE_ITMV) * fuNormal;
-}";
+            /* Copies incoming vertex color without change.
+             * Applies the transformation matrix to vertex position.
+             */
+
+            attribute vec4 fuColor;
+            attribute vec3 fuVertex;
+            attribute vec3 fuNormal;
+        
+            varying vec4 vColor;
+            varying vec3 vNormal;
+        
+            uniform mat4 FUSEE_MVP;
+            uniform mat4 FUSEE_ITMV;
+
+            void main()
+            {
+                gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
+                // vColor = vec4(fuNormal * 0.5 + 0.5, 1.0);
+                // vec4 norm4 = FUSEE_MVP * vec4(fuNormal, 0.0);
+                // vNormal = norm4.xyz;
+                vNormal = mat3(FUSEE_ITMV) * fuNormal;
+            }";
 
         protected string _ps = @"
-/* Copies incoming fragment color without change. */
-#ifdef GL_ES
-precision highp float;
-#endif
-        
-varying vec4 vColor;
-varying vec3 vNormal;
+            #version 120
 
-void main()
-{
-    gl_FragColor = vec4(0.03, 0.75, 0.57, 1.0) * dot(vNormal, vec3(0, 0, 1));
-}";
+            /* Copies incoming fragment color without change. */
+            #ifdef GL_ES
+                precision highp float;
+            #endif
+        
+            varying vec4 vColor;
+            varying vec3 vNormal;
+
+            void main()
+            {
+                gl_FragColor = vec4(0.03, 0.75, 0.57, 1.0) * dot(vNormal, vec3(0, 0, 1));
+            }";
 
         private static float _angleHorz = 0.0f, _angleVert = 0.0f, _angleVelHorz = 0, _angleVelVert = 0, _rotationSpeed = 10.0f, _damping = 0.95f;
         protected Mesh _mesh;
