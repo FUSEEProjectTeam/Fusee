@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using Fusee.Engine;
+﻿using Fusee.Engine;
 using Fusee.Math;
 
-namespace MyTestGame
+namespace Examples.MyTestGame
 {
     public class MyTestGame : RenderCanvas
     {
         // GLSL
-        protected string _vs = @"
+        protected string Vs = @"
             #version 120
 
             /* Copies incoming vertex color without change.
@@ -32,7 +29,7 @@ namespace MyTestGame
                 vNormal = mat3(FUSEE_ITMV) * fuNormal;
             }";
 
-        protected string _ps = @"
+        protected string Ps = @"
             #version 120
 
             /* Copies incoming fragment color without change. */
@@ -40,99 +37,54 @@ namespace MyTestGame
                 precision highp float;
             #endif
         
-            varying vec4 vColor;
+            uniform vec4 vColor;
             varying vec3 vNormal;
 
             void main()
             {
-                gl_FragColor = vec4(0.5, 0.15, 0.17, 1.0) * dot(vNormal, vec3(0, 0, 1));
+                gl_FragColor = vColor * dot(vNormal, vec3(0, 0, 1));
             }";
 
         // Variablen
-        protected Mesh _mesh;
-
-        private static int cubeX = 0;
-        private static int orientY = 0;
-        private static float rotateY = 0.0f;
-
-        private static bool animActive = false;
-
-        // Konstanten
-        private const float piHalf = (float)Math.PI / 2.0f;           // Pi halbe = 90°
+        private Level _exampleLevel;
+        private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
+        private const float RotationSpeed = 10.0f;
+        private const float Damping = 0.95f;
 
         // Init()
         public override void Init()
         {
-            // Todo: Funktion basteln: MeshReader.loadObj("Datei");
-            Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"SampleObj/Cube.obj.model"));  
-            _mesh = geo.ToMesh();
-
-            ShaderProgram sp = RC.CreateShader(_vs, _ps);
-
+            ShaderProgram sp = RC.CreateShader(Vs, Ps);
+            
             RC.SetShader(sp);
-            RC.ClearColor = new float4(1, 1, 1, 1);
+            _exampleLevel = new Level(4, 4, RC, sp);
+            RC.ClearColor = new float4(0, 0, 0, 1);
+            
         }
 
         // RenderAFrame()
         public override void RenderAFrame()
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-
-            // aktuelle X-Position des Wuerfels
-            int cubeXtmp = cubeX;
-
-            if (In.IsKeyDown(KeyCodes.Left))
+            
+            if (In.IsButtonDown(MouseButtons.Left))
             {
-                // wenn noch keine Animation aktiv
-                if (!animActive)
-                {
-                    orientY++;
-                    animActive = true;
-                }
+                _angleVelHorz = RotationSpeed * In.GetAxis(InputAxis.MouseX) * (float)DeltaTime;
+                _angleVelVert = RotationSpeed * In.GetAxis(InputAxis.MouseY) * (float)DeltaTime;
             }
-
-            // wenn eine Animation aktiv
-            if (animActive)
+            else
             {
-                float rotateTarg = (float)orientY * piHalf;       // Drehungsziel (aktuell + 90°)
-
-                // wenn Drehnung noch nicht abgeschlossen
-                if (rotateY < rotateTarg)
-                {
-                    // Rotation des Cubes erhoehen
-                    rotateY += 2.0f * (float)DeltaTime;
-
-                    // Fortschritt der Drehung, damit der Cube sich gleichmaessig bewegt
-                    float progr = 1 - ((rotateTarg - rotateY) / piHalf);
-                    float curPos = progr * 200;
-
-                    cubeXtmp = cubeX - (int)curPos;
-                }
-
-                // wenn Drehung abgeschlossen
-                if (rotateY >= rotateTarg)
-                {
-                    orientY %= 4;                                   // 0, 1, 2, 3, 0, 1, 2, ...
-                    rotateY = (orientY == 0) ? 0 : rotateTarg;      // 0°, 90°, 180°, 270°, 360°, 90°, ...
-
-                    cubeX -= 200;
-                    cubeXtmp = cubeX;
-
-                    animActive = false;
-                }
+                _angleVelHorz *= Damping;
+                _angleVelVert *= Damping;
             }
+            _angleHorz += _angleVelHorz;
+            _angleVert += _angleVelVert;
 
-            // Rotation ist um die Y-Achse, Bewegung aber in X-Richtung
-            float4x4 mtxObjRot = float4x4.CreateRotationY(-rotateY) * float4x4.CreateRotationX(0) * float4x4.CreateRotationZ(0);
-            float4x4 mtxObjPos = float4x4.CreateTranslation(cubeXtmp, 0, 0);
+            float4x4 mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
 
-            // Kamera ausrichten
-            float4x4 mtxCamPos = float4x4.CreateTranslation(0, 0, 0);
-            float4x4 mtxCamRot = float4x4.LookAt(0, 0, 4000, 0, 0, 0, 0, 1, 0);
-        
-            // Rendern
-            RC.ModelView = mtxObjRot * mtxObjPos * mtxCamPos * mtxCamRot;
-            RC.Render(_mesh);
+            
+            _exampleLevel.Render(mtxRot);
+
 
             Present();  // <-- ohne ergibt Endlosschleife, völlige Überlastung...
         }
@@ -142,12 +94,12 @@ namespace MyTestGame
             RC.Viewport(0, 0, Width, Height);
 
             float aspectRatio = Width / (float)Height;
-            RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 5000);
+            RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 10000);
         }
 
         public static void Main()
         {
-            MyTestGame app = new MyTestGame();
+            var app = new MyTestGame();
             app.Run();
         }
     }
