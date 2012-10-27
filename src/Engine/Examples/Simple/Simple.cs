@@ -9,7 +9,7 @@ namespace Examples
     public class Simple : RenderCanvas 
     {
         protected string _vs = @"
-            #version 120
+            // #version 120
 
             /* Copies incoming vertex color without change.
              * Applies the transformation matrix to vertex position.
@@ -35,32 +35,40 @@ namespace Examples
             }";
 
         protected string _ps = @"
-            #version 120
+            // #version 120
 
             /* Copies incoming fragment color without change. */
             #ifdef GL_ES
                 precision highp float;
             #endif
         
-            varying vec4 vColor;
+            uniform vec4 vColor;
             varying vec3 vNormal;
 
             void main()
             {
-                gl_FragColor = vec4(0.03, 0.75, 0.57, 1.0) * dot(vNormal, vec3(0, 0, 1));
+                gl_FragColor = vColor * dot(vNormal, vec3(0, 0, 1));
             }";
 
         private static float _angleHorz = 0.0f, _angleVert = 0.0f, _angleVelHorz = 0, _angleVelVert = 0, _rotationSpeed = 10.0f, _damping = 0.95f;
-        protected Mesh _mesh;
+        protected Mesh _mesh, _meshFace;
+        protected IShaderParam _vColorParam;
 
         public override void Init()
         {
             Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"SampleObj/Teapot.obj.model"));
             _mesh = geo.ToMesh();
+
+            Geometry geo2 = MeshReader.ReadWavefrontObj(new StreamReader(@"SampleObj/Face.obj.model"));
+            _meshFace = geo2.ToMesh();
+
             _angleHorz = 0;
             _rotationSpeed = 10.0f;
             ShaderProgram sp = RC.CreateShader(_vs, _ps);
             RC.SetShader(sp);
+            _vColorParam = sp.GetShaderParam("vColor");
+
+
             RC.ClearColor = new float4(1, 1, 1, 1);
         }
 
@@ -99,9 +107,16 @@ namespace Examples
                 _angleVert += _rotationSpeed * (float)DeltaTime;
             }
 
-            RC.ModelView = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert) * float4x4.LookAt(0, 200, 400, 0, 50, 0, 0, 1, 0);
+            float4x4 mtxRot = float4x4.CreateRotationY(_angleHorz)*float4x4.CreateRotationX(_angleVert);
+            float4x4 mtxCam = float4x4.LookAt(0, 200, 400, 0, 50, 0, 0, 1, 0);
 
+            RC.ModelView = mtxRot * float4x4.CreateTranslation(-100, 0, 0) * mtxCam;
+            RC.SetShaderParam(_vColorParam, new float4(0.5f, 0.8f, 0, 1));
             RC.Render(_mesh);
+
+            RC.ModelView = mtxRot * float4x4.CreateTranslation(100, 0, 0) * mtxCam;
+            RC.SetShaderParam(_vColorParam, new float4(0.8f, 0.5f, 0, 1));
+            RC.Render(_meshFace);
             Present();
         }
 
