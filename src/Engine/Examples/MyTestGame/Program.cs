@@ -57,6 +57,10 @@ namespace Examples.MyTestGame
         private static float _angleHorz = 0.4f;
         private static float _angleVert = -1.0f;
         private static float _angleVelHorz, _angleVelVert;
+
+        private static bool _topView;
+        private static bool _keyPressed;
+
         private const float RotationSpeed = 10.0f;
         private const float Damping = 0.95f;
 
@@ -75,25 +79,54 @@ namespace Examples.MyTestGame
         public override void RenderAFrame()
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-            
-            if (In.IsButtonDown(MouseButtons.Left))
+
+            if (In.IsKeyDown(KeyCodes.V))
             {
-                _angleVelHorz = RotationSpeed * In.GetAxis(InputAxis.MouseX) * (float)DeltaTime;
-                _angleVelVert = RotationSpeed * In.GetAxis(InputAxis.MouseY) * (float)DeltaTime;
+                if (!_keyPressed)
+                {
+                    _angleVelHorz = 0.0f;
+                    _angleVelVert = 0.0f;
+
+                    if (_topView)
+                    {
+                        _angleHorz = 0.4f;
+                        _angleVert = -1.0f;
+
+                        _topView = false;
+                    }
+                    else
+                    {
+                        _angleHorz = 0.0f;
+                        _angleVert = 0.0f;
+                        _topView = true;
+                    }
+
+                    _keyPressed = true;
+                }
             }
             else
             {
-                _angleVelHorz *= Damping;
-                _angleVelVert *= Damping;
+                _keyPressed = false;
+
+                if (In.IsButtonDown(MouseButtons.Left))
+                {
+                    _angleVelHorz = RotationSpeed*In.GetAxis(InputAxis.MouseX)*(float) DeltaTime;
+                    _angleVelVert = RotationSpeed*In.GetAxis(InputAxis.MouseY)*(float) DeltaTime;
+                }
+                else
+                {
+                    _angleVelHorz *= Damping;
+                    _angleVelVert *= Damping;
+                }
+
+                // _angleHorz = Math.Max(0.0f, Math.Min(_angleHorz + _angleVelHorz, 0.45f));
+                // _angleVert = Math.Max(-1.35f, Math.Min(_angleVert + _angleVelVert, 0.0f));
+
+                _angleHorz += _angleVelHorz;
+                _angleVert += _angleVelVert;
+
+                // Console.WriteLine("_angleHorz: {0}, _angleVert: {1}", _angleHorz, _angleVert);
             }
-
-            // _angleHorz = Math.Max(0.0f, Math.Min(_angleHorz + _angleVelHorz, 0.45f));
-            // _angleVert = Math.Max(-1.35f, Math.Min(_angleVert + _angleVelVert, 0.0f));
-
-            _angleHorz += _angleVelHorz;
-            _angleVert += _angleVelVert;
-
-            Console.WriteLine("_angleHorz: {0}, _angleVert: {1}", _angleHorz, _angleVert);
 
 
             if (In.IsKeyDown(KeyCodes.Left))
