@@ -1,4 +1,5 @@
-﻿using Fusee.Engine;
+﻿using System;
+using Fusee.Engine;
 using Fusee.Math;
 
 namespace Examples.MyTestGame
@@ -47,7 +48,11 @@ namespace Examples.MyTestGame
 
         // Variablen
         private Level _exampleLevel;
-        private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
+        private RollingCube _rollingCube;
+
+        private static float _angleHorz = 0.407f;
+        private static float _angleVert = -1.00f;
+        private static float _angleVelHorz, _angleVelVert;
         private const float RotationSpeed = 10.0f;
         private const float Damping = 0.95f;
 
@@ -57,9 +62,10 @@ namespace Examples.MyTestGame
             ShaderProgram sp = RC.CreateShader(Vs, Ps);
             
             RC.SetShader(sp);
-            _exampleLevel = new Level(4, 4, RC, sp);
             RC.ClearColor = new float4(0, 0, 0, 1);
-            
+
+            _rollingCube = new RollingCube(RC, sp);
+            _exampleLevel = new Level(7, 7, RC, sp, _rollingCube);
         }
 
         // RenderAFrame()
@@ -80,11 +86,20 @@ namespace Examples.MyTestGame
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
 
-            float4x4 mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
+            float4x4 mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationZ(0.5f);
+            _exampleLevel.Render(mtxRot, DeltaTime);
 
-            
-            _exampleLevel.Render(mtxRot);
+            if (In.IsKeyDown(KeyCodes.Left))
+                _exampleLevel.MoveCube(Level.Directions.Left);
 
+            if (In.IsKeyDown(KeyCodes.Right))
+                _exampleLevel.MoveCube(Level.Directions.Right);
+
+            if (In.IsKeyDown(KeyCodes.Up))
+                _exampleLevel.MoveCube(Level.Directions.Forward);
+
+            if (In.IsKeyDown(KeyCodes.Down))
+                _exampleLevel.MoveCube(Level.Directions.Backward);
 
             Present();  // <-- ohne ergibt Endlosschleife, völlige Überlastung...
         }
