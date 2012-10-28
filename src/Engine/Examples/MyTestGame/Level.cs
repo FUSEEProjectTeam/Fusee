@@ -19,7 +19,7 @@ namespace Examples.MyTestGame
         public float4x4 CamTranslation;
         public float4x4 ObjectOrientation = float4x4.CreateRotationX((float)Math.PI / 2);
 
-        internal float DeltaTime { get; private set; }
+        internal float LvlDeltaTime { get; private set; }
 
 
         //Dummies for level files - level files need a check on read not to be bigger than the board
@@ -128,6 +128,9 @@ namespace Examples.MyTestGame
                 var curState = LevelFeld[posCurXy[0], posCurXy[1]].State;
                 var curType = LevelFeld[posCurXy[0], posCurXy[1]].Type;
 
+                Console.WriteLine("posX: {0}, posY: {1}", posCurXy[0], posCurXy[1]);
+                Console.WriteLine("lastX: {0}, lastY: {1}", posLastXy[0], posLastXy[1]);
+
                 LevelFeld[posLastXy[0], posLastXy[1]].State = Feld.FieldStates.FsDead;
 
                 if (curType == Feld.FieldTypes.FtVoid || curType == Feld.FieldTypes.FtEnd ||
@@ -157,7 +160,7 @@ namespace Examples.MyTestGame
 
         public void Render(float4x4 mtxRot, double dTime)
         {
-            DeltaTime = (float) dTime;
+            LvlDeltaTime = (float) dTime;
 
             foreach (var feld in LevelFeld)
                 if (feld != null)
