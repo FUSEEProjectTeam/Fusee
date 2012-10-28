@@ -10,8 +10,8 @@ namespace Examples.MyTestGame
         public FieldTypes Type;
         public FieldStates State;
 
-        public byte X;
-        public byte Y;
+        public int X;
+        public int Y;
         private static Mesh _feldMesh;
 
         public enum FieldTypes
