@@ -60,13 +60,35 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Scripts\browser.css" />
+    <Content Include="Scripts\Examples.Simple.bak.html" />
     <Content Include="Scripts\Examples.Simple.css" />
     <Content Include="Scripts\Examples.Simple.html" />
     <Content Include="Scripts\Fusee.Engine.Imp.WebGL.js" />
+    <Content Include="Scripts\gamepad.js" />
     <Content Include="Scripts\JSIL.Bootstrap.js" />
+    <Content Include="Scripts\JSIL.Bootstrap.Resources.js" />
+    <Content Include="Scripts\JSIL.Browser.Audio.js" />
     <Content Include="Scripts\JSIL.Browser.js" />
+    <Content Include="Scripts\JSIL.Browser.Loaders.js" />
+    <Content Include="Scripts\JSIL.Browser.Touch.js" />
     <Content Include="Scripts\JSIL.Core.js" />
+    <Content Include="Scripts\JSIL.IO.js" />
+    <Content Include="Scripts\JSIL.js" />
+    <Content Include="Scripts\JSIL.JSON.js" />
+    <Content Include="Scripts\JSIL.LocalStorage.js" />
+    <Content Include="Scripts\JSIL.ReadOnlyStorage.js" />
+    <Content Include="Scripts\JSIL.Storage.js" />
+    <Content Include="Scripts\JSIL.TestFixture.js" />
+    <Content Include="Scripts\JSIL.XML.js" />
+    <Content Include="Scripts\JSIL.XNA3.js" />
+    <Content Include="Scripts\JSIL.XNA4.js" />
+    <Content Include="Scripts\JSIL.XNACore.js" />
+    <Content Include="Scripts\JSIL.XNAStorage.js" />
+    <Content Include="Scripts\printStackTrace.js" />
+    <Content Include="Scripts\System.Drawing.js" />
+    <Content Include="Scripts\System.Windows.js" />
     <Content Include="Scripts\SystemExternals.js" />
+    <Content Include="Scripts\webgl-2d.js" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
