@@ -1,4 +1,5 @@
-﻿using Fusee.Engine;
+﻿using System;
+using Fusee.Engine;
 using Fusee.Math;
 
 namespace Examples.MyTestGame
@@ -49,8 +50,8 @@ namespace Examples.MyTestGame
         private Level _exampleLevel;
 
 
-        private static float _angleHorz = 0.407f;
-        private static float _angleVert = -1.00f;
+        private static float _angleHorz = 0.4f;
+        private static float _angleVert = -1.0f;
         private static float _angleVelHorz, _angleVelVert;
         private const float RotationSpeed = 10.0f;
         private const float Damping = 0.95f;
@@ -63,7 +64,7 @@ namespace Examples.MyTestGame
             RC.SetShader(sp);
             RC.ClearColor = new float4(0, 0, 0, 1);
 
-            _exampleLevel = new Level(7, 7, RC, sp);
+            _exampleLevel = new Level(RC, sp);
         }
 
         // RenderAFrame()
@@ -81,8 +82,13 @@ namespace Examples.MyTestGame
                 _angleVelHorz *= Damping;
                 _angleVelVert *= Damping;
             }
+
+            //_angleHorz = Math.Max(0.3f, Math.Min(_angleHorz + _angleVelHorz, 0.5f));
+            //_angleVert =  Math.Max(-1.1f, Math.Min(_angleVert + _angleVelVert, 0.9f));
+
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
+            
 
             if (In.IsKeyDown(KeyCodes.Left))
                 _exampleLevel.MoveCube(Level.Directions.Left);
