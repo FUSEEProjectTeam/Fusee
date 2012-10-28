@@ -43,7 +43,7 @@ namespace Examples.MyTestGame
 
             void main()
             {
-                gl_FragColor = vColor * dot(vNormal, vec3(0, 0, 1));
+                gl_FragColor = dot(vColor, vec4(0, 0, 0, 1)) * vColor * dot(vNormal, vec3(0, 0, 1));
             }";
 
         // Variablen
@@ -86,9 +86,6 @@ namespace Examples.MyTestGame
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
 
-            float4x4 mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationZ(0.5f);
-            _exampleLevel.Render(mtxRot, DeltaTime);
-
             if (In.IsKeyDown(KeyCodes.Left))
                 _exampleLevel.MoveCube(Level.Directions.Left);
 
@@ -100,6 +97,9 @@ namespace Examples.MyTestGame
 
             if (In.IsKeyDown(KeyCodes.Down))
                 _exampleLevel.MoveCube(Level.Directions.Backward);
+
+            float4x4 mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationZ(0.5f);
+            _exampleLevel.Render(mtxRot, DeltaTime);
 
             Present();  // <-- ohne ergibt Endlosschleife, völlige Überlastung...
         }
