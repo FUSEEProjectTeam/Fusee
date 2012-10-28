@@ -10,8 +10,8 @@ namespace Examples.MyTestGame
         private readonly Mesh _rCubeMesh;
         private readonly Level _curLevel;
 
-        public int[] _cubeCxy;
-        public int[] _cubeLastCxy;
+        public int[] CubeCxy;
+        public int[] CubeLastCxy;
 
         private static int[] _orientCyx;
         private static float[] _rotateCyx;
@@ -29,8 +29,8 @@ namespace Examples.MyTestGame
             _curLevel = curLevel;
             _rCubeMesh = MeshReader.LoadMesh("SampleObj/Cube.obj.model");
 
-            _cubeCxy = new int[2];
-            _cubeLastCxy = new int[2];
+            CubeCxy = new int[2];
+            CubeLastCxy = new int[2];
 
             _orientCyx = new int[2];
             _rotateCyx = new float[2];
@@ -42,8 +42,8 @@ namespace Examples.MyTestGame
         // Funktionen
         public void ResetCube(int x, int y)
         {
-            _cubeCxy[0] = x * 200;
-            _cubeCxy[1] = y * 200;
+            CubeCxy[0] = x * 200;
+            CubeCxy[1] = y * 200;
 
             for (int i = 0; i < 1; i++)
             {
@@ -59,8 +59,8 @@ namespace Examples.MyTestGame
         {
             if (_curDirCxy[0] + _curDirCxy[1] == 0)
             {
-                _cubeLastCxy[0] = (int)(_cubeCxy[0] / 200.0);
-                _cubeLastCxy[1] = (int)(_cubeCxy[1] / 200.0);
+                CubeLastCxy[0] = (int)(CubeCxy[0] / 200.0);
+                CubeLastCxy[1] = (int)(CubeCxy[1] / 200.0);
 
                 _curDirCxy[0] = dirX;
                 _curDirCxy[1] = dirY;
@@ -81,7 +81,7 @@ namespace Examples.MyTestGame
         public void RenderCube(float4x4 camPosition, float4x4 camTranslation, float4x4 objectOrientation, float4x4 mtxRot, double deltaTime)
         {
             var rotateTargCyx = new[] {_orientCyx[0]*PiHalf, _orientCyx[1]*PiHalf};
-            var cubeXYtmp = new float[] {_cubeCxy[0], _cubeCxy[1]};
+            var cubeXYtmp = new float[] {CubeCxy[0], CubeCxy[1]};
             var useRotCyx = new[] {0.0f, 0.0f};
 
             for (int i = 0; i <= 1; i++)
@@ -94,15 +94,15 @@ namespace Examples.MyTestGame
                     float progr = 1 - (Math.Abs(rotateTargCyx[i] - _rotateCyx[i]) / PiHalf);
                     float curPos = progr * 200 * _curDirCxy[i];
 
-                    cubeXYtmp[i] = _cubeCxy[i] + (int)curPos;
+                    cubeXYtmp[i] = CubeCxy[i] + (int)curPos;
 
                     // rotation target reached?
                     if ((rotateTargCyx[i] - _rotateCyx[i]) * _curDirCxy[i] < 0)
                     {
                         _rotateCyx[i] = _orientCyx[i] * PiHalf;
 
-                        _cubeCxy[i] += 200 * _curDirCxy[i];
-                        cubeXYtmp[i] = _cubeCxy[i];
+                        CubeCxy[i] += 200 * _curDirCxy[i];
+                        cubeXYtmp[i] = CubeCxy[i];
 
                         _curDirCxy[i] = 0;
                         CheckField = true;

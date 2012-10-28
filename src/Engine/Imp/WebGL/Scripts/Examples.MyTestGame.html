@@ -21,8 +21,7 @@
 			contentRoot: "./SampleObj/",
 			manifests: [
 				"Examples.MyTestGame.exe"
-			],
-		};
+			],		};
 	</script>
 
 	<script src="JSIL.js" type="text/javascript"></script> 
@@ -49,8 +48,8 @@
 
 		function runMain () {
 			// We can't invoke Main() since it disposes the Game immediately, breaking everything.
-			var asm = JSIL.GetAssembly("Examples.MyTestGame, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null", true);
-			asm.Examples.MyTestGame.Main([]);
+			var asm = JSIL.GetAssembly("Examples.MyTestGame, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", true);
+			asm.Examples.MyTestGame.MyTestGame.Main([]);
 		};
 
 		window.onresize = function(event) {

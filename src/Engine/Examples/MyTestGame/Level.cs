@@ -140,11 +140,11 @@ namespace Examples.MyTestGame
 
         private void CheckField()
         {
-            var lastX = RCube._cubeLastCxy[0];
-            var lastY = RCube._cubeLastCxy[1];
+            var lastX = RCube.CubeLastCxy[0];
+            var lastY = RCube.CubeLastCxy[1];
 
-            var curX = (int) (RCube._cubeCxy[0]/200.0);
-            var curY = (int) (RCube._cubeCxy[1]/200.0);
+            var curX = (int) (RCube.CubeCxy[0]/200.0);
+            var curY = (int) (RCube.CubeCxy[1]/200.0);
 
             if (OutOfBounds(curX, curY, LevelFeld))
                 ResetLevel();
@@ -178,7 +178,7 @@ namespace Examples.MyTestGame
         
         private static bool OutOfBounds(int x, int y, Feld[,] array)
         {
-            return x < 0 || x > array.GetLength(0) || y < 0 || y > array.GetLength(1);
+            return x < 0 || x >= array.GetLength(0) || y < 0 || y >= array.GetLength(1);
         }
 
 

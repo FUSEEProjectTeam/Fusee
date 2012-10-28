@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define WEBBUILD
+
+
 using Fusee.Engine;
 using Fusee.Math;
 
@@ -7,9 +9,13 @@ namespace Examples.MyTestGame
     public class MyTestGame : RenderCanvas
     {
         // GLSL
-        protected string Vs = @"
-            #version 120
+#if (!WEBBUILD)
+        private const string GlslVersion = @"#version 120";
+#else
+        private const string GlslVersion = @"";
+#endif
 
+        protected string Vs = GlslVersion + @"
             /* Copies incoming vertex color without change.
              * Applies the transformation matrix to vertex position.
              */
@@ -30,9 +36,7 @@ namespace Examples.MyTestGame
                 vNormal = mat3(FUSEE_ITMV) * fuNormal;
             }";
 
-        protected string Ps = @"
-            #version 120
-
+        protected string Ps = GlslVersion + @"
             /* Copies incoming fragment color without change. */
             #ifdef GL_ES
                 precision highp float;
@@ -118,7 +122,7 @@ namespace Examples.MyTestGame
 
         public static void Main()
         {
-            MyTestGame app = new MyTestGame();
+            var app = new MyTestGame();
             app.Run();
         }
     }
