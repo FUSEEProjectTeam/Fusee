@@ -21,6 +21,7 @@ namespace Examples.MyTestGame
         // const
         private const float PiHalf = (float) Math.PI / 2.0f;
         private const int CubeSize = 200;
+        private const float CubeSpeed = 3.0f;
 
         // constructor
         public RollingCube(Level curLevel)
@@ -76,7 +77,7 @@ namespace Examples.MyTestGame
                 if (_curDirXy[i] == 0) continue;
 
                 // rotate and check if target reached
-                _rotateYx[i] += 2.0f * _curLevel.LvlDeltaTime;
+                _rotateYx[i] += CubeSpeed * _curLevel.LvlDeltaTime;
                 if (_rotateYx[i] < PiHalf) continue;
 
                 PosCurXy[i] += _curDirXy[i];
@@ -88,7 +89,7 @@ namespace Examples.MyTestGame
             }
         }
 
-        public void RenderCube(float4x4 camPosition, float4x4 camTranslation, float4x4 objectOrientation, float4x4 mtxRot)
+        public void RenderCube()
         {
             // anim cube and get translations
             AnimCube();
@@ -104,7 +105,7 @@ namespace Examples.MyTestGame
             var invArAxis = float4x4.CreateTranslation(100*_curDirXy[0], 100*_curDirXy[1], -100);
 
             // set modelview and color of cube
-            _curLevel.RContext.ModelView = arAxis*mtxObjRot*invArAxis*mtxObjPos*camTranslation*mtxRot*camPosition;
+            _curLevel.RContext.ModelView = _curLevel.AddCameraTrans(arAxis*mtxObjRot*invArAxis*mtxObjPos);
             _curLevel.RContext.SetShaderParam(_curLevel.VColorObj, _cubeColor);
 
             // render

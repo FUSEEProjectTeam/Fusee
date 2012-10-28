@@ -1,6 +1,7 @@
 ﻿#define WEBBUILD
 
 
+using System;
 using Fusee.Engine;
 using Fusee.Math;
 
@@ -51,8 +52,7 @@ namespace Examples.MyTestGame
             }";
 
         // Variablen
-        private Level _exampleLevel;
-
+        private static Level _exampleLevel;
 
         private static float _angleHorz = 0.4f;
         private static float _angleVert = -1.0f;
@@ -87,12 +87,14 @@ namespace Examples.MyTestGame
                 _angleVelVert *= Damping;
             }
 
-            //_angleHorz = Math.Max(0.3f, Math.Min(_angleHorz + _angleVelHorz, 0.5f));
-            //_angleVert =  Math.Max(-1.1f, Math.Min(_angleVert + _angleVelVert, 0.9f));
+            // _angleHorz = Math.Max(0.0f, Math.Min(_angleHorz + _angleVelHorz, 0.45f));
+            // _angleVert = Math.Max(-1.35f, Math.Min(_angleVert + _angleVelVert, 0.0f));
 
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
-            
+
+            Console.WriteLine("_angleHorz: {0}, _angleVert: {1}", _angleHorz, _angleVert);
+
 
             if (In.IsKeyDown(KeyCodes.Left))
                 _exampleLevel.MoveCube(Level.Directions.Left);
@@ -106,7 +108,7 @@ namespace Examples.MyTestGame
             if (In.IsKeyDown(KeyCodes.Down))
                 _exampleLevel.MoveCube(Level.Directions.Backward);
 
-            float4x4 mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationZ(0.5f);
+            float4x4 mtxRot = float4x4.CreateRotationZ(_angleHorz)*float4x4.CreateRotationX(_angleVert);
             _exampleLevel.Render(mtxRot, DeltaTime);
 
             Present();  // <-- ohne ergibt Endlosschleife, völlige Überlastung...

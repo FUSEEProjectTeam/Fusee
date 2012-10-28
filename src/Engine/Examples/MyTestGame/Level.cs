@@ -19,6 +19,7 @@ namespace Examples.MyTestGame
         public float4x4 CamTranslation;
         public float4x4 ObjectOrientation = float4x4.CreateRotationX((float)Math.PI / 2);
 
+        private float4x4 _mtxRot;
         internal float LvlDeltaTime { get; private set; }
 
 
@@ -128,9 +129,6 @@ namespace Examples.MyTestGame
                 var curState = LevelFeld[posCurXy[0], posCurXy[1]].State;
                 var curType = LevelFeld[posCurXy[0], posCurXy[1]].Type;
 
-                Console.WriteLine("posX: {0}, posY: {1}", posCurXy[0], posCurXy[1]);
-                Console.WriteLine("lastX: {0}, lastY: {1}", posLastXy[0], posLastXy[1]);
-
                 LevelFeld[posLastXy[0], posLastXy[1]].State = Feld.FieldStates.FsDead;
 
                 if (curType == Feld.FieldTypes.FtVoid || curType == Feld.FieldTypes.FtEnd ||
@@ -158,16 +156,22 @@ namespace Examples.MyTestGame
             }
         }
 
+        public float4x4 AddCameraTrans(float4x4 mod)
+        {
+            return mod * CamTranslation * _mtxRot * CamPosition;
+        }
+
         public void Render(float4x4 mtxRot, double dTime)
         {
             LvlDeltaTime = (float) dTime;
+            _mtxRot = mtxRot;
 
             foreach (var feld in LevelFeld)
                 if (feld != null)
-                    feld.Render(CamPosition, CamTranslation, ObjectOrientation, mtxRot);
+                    feld.Render(ObjectOrientation);
 
             if (RCube != null)
-                RCube.RenderCube(CamPosition, CamTranslation, ObjectOrientation, mtxRot);
+                RCube.RenderCube();
         }
 
         private static bool OutOfBounds(int x, int y, Feld[,] array)

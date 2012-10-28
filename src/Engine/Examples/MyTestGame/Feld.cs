@@ -41,7 +41,7 @@ namespace Examples.MyTestGame
             State = FieldStates.FsAlive;
         }
 
-        public void Render(float4x4 camPosition, float4x4 camTranslation, float4x4 objectOrientation, float4x4 mtxRot)
+        public void Render(float4x4 mtxObjRot)
         {
             if (Type == FieldTypes.FtVoid)
                 return;
@@ -73,9 +73,12 @@ namespace Examples.MyTestGame
                     break;
             }
 
+            var mtxObjPos = float4x4.CreateTranslation(X*200, Y*200, 0);
+
+            _curLevel.RContext.ModelView = _curLevel.AddCameraTrans(mtxObjRot*mtxObjPos);
             _curLevel.RContext.SetShaderParam(_curLevel.VColorObj, new float4(vColor, val));
 
-            _curLevel.RContext.ModelView = objectOrientation * float4x4.CreateTranslation(X * 200, Y * 200, 0) * camTranslation * mtxRot * camPosition;
+
             _curLevel.RContext.Render(_feldMesh);
         }
     }
