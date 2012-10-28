@@ -1,5 +1,4 @@
-﻿using System;
-using Fusee.Engine;
+﻿using Fusee.Engine;
 using Fusee.Math;
 
 namespace Examples.MyTestGame
@@ -48,7 +47,7 @@ namespace Examples.MyTestGame
 
         // Variablen
         private Level _exampleLevel;
-        private RollingCube _rollingCube;
+
 
         private static float _angleHorz = 0.407f;
         private static float _angleVert = -1.00f;
@@ -64,8 +63,7 @@ namespace Examples.MyTestGame
             RC.SetShader(sp);
             RC.ClearColor = new float4(0, 0, 0, 1);
 
-            _rollingCube = new RollingCube(RC, sp);
-            _exampleLevel = new Level(7, 7, RC, sp, _rollingCube);
+            _exampleLevel = new Level(7, 7, RC, sp);
         }
 
         // RenderAFrame()

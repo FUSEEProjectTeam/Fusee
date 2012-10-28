@@ -8,7 +8,7 @@ namespace Examples.MyTestGame
     {
         // Variablen
         private readonly Mesh _rCubeMesh;
-        private readonly RenderContext _rc;
+        private readonly Level _curLevel;
 
         public int[] _cubeCxy;
         public int[] _cubeLastCxy;
@@ -17,23 +17,17 @@ namespace Examples.MyTestGame
         private static float[] _rotateCyx;
         private static int[] _curDirCxy;
 
-        private static IShaderParam _vColorObj;
-
-        public bool CheckColl;
+        public bool CheckField;
 
         // Konstanten
         private const float PiHalf = (float) Math.PI / 2.0f;
       
 
         // Constructor
-        public RollingCube(RenderContext rContext, ShaderProgram sProg)
+        public RollingCube(Level curLevel)
         {
-            _rc = rContext;
+            _curLevel = curLevel;
             _rCubeMesh = MeshReader.LoadMesh("SampleObj/Cube.obj.model");
-            _vColorObj = sProg.GetShaderParam("vColor");
-
-            // Warum geht das nicht??
-            // rContext.GetShaderParam();
 
             _cubeCxy = new int[2];
             _cubeLastCxy = new int[2];
@@ -58,7 +52,7 @@ namespace Examples.MyTestGame
                 _curDirCxy[i] = 0;
             }
 
-            CheckColl = false;
+            CheckField = false;
         }
 
         public bool MoveCube(sbyte dirX, sbyte dirY)
@@ -111,7 +105,7 @@ namespace Examples.MyTestGame
                         cubeXYtmp[i] = _cubeCxy[i];
 
                         _curDirCxy[i] = 0;
-                        CheckColl = true;
+                        CheckField = true;
                     }
 
                     useRotCyx[i] = _rotateCyx[i];
@@ -123,10 +117,10 @@ namespace Examples.MyTestGame
             var mtxObjPos = float4x4.CreateTranslation(cubeXYtmp[0], cubeXYtmp[1], 110);
 
             // Rendern
-            _rc.ModelView = mtxObjRot * mtxObjPos * camTranslation * mtxRot * camPosition;
+            _curLevel.RContext.ModelView = mtxObjRot * mtxObjPos * camTranslation * mtxRot * camPosition;
 
-            _rc.SetShaderParam(_vColorObj, new float4(0.5f, 0.15f, 0.17f, 1.0f));
-            _rc.Render(_rCubeMesh);
+            _curLevel.RContext.SetShaderParam(_curLevel.VColorObj, new float4(0.5f, 0.15f, 0.17f, 1.0f));
+            _curLevel.RContext.Render(_rCubeMesh);
         }
     }
 }
