@@ -150,7 +150,6 @@ namespace Examples.MyTestGame
                 ResetLevel();
             else
             {
-
                 var curState = LevelFeld[curX, curY].State;
                 var curType = LevelFeld[curX, curY].Type;
 
