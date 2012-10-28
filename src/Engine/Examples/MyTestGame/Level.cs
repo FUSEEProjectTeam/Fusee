@@ -19,6 +19,9 @@ namespace Examples.MyTestGame
         public float4x4 CamTranslation;
         public float4x4 ObjectOrientation = float4x4.CreateRotationX((float)Math.PI / 2);
 
+        internal float DeltaTime { get; private set; }
+
+
         //Dummies for level files - level files need a check on read not to be bigger than the board
         private readonly int[][,] _lvlTmp =
             {
@@ -116,11 +119,25 @@ namespace Examples.MyTestGame
                 RCube.ResetCube(StartCxy[0], StartCxy[1]);
         }
 
+        public void CheckField(int[] posLastXy, int[] posCurXy)
+        {
+            if (OutOfBounds(posCurXy[0], posCurXy[1], LevelFeld))
+                ResetLevel();
+            else
+            {
+                var curState = LevelFeld[posCurXy[0], posCurXy[1]].State;
+                var curType = LevelFeld[posCurXy[0], posCurXy[1]].Type;
+
+                LevelFeld[posLastXy[0], posLastXy[1]].State = Feld.FieldStates.FsDead;
+
+                if (curType == Feld.FieldTypes.FtVoid || curType == Feld.FieldTypes.FtEnd ||
+                    curState == Feld.FieldStates.FsDead)
+                    ResetLevel();
+            }
+        }
+
         public void MoveCube(Directions dir)
         {
-            if (RCube.CheckField)
-                CheckField();
-
             switch (dir)
             {
                 case Directions.Left:
@@ -138,49 +155,22 @@ namespace Examples.MyTestGame
             }
         }
 
-        private void CheckField()
+        public void Render(float4x4 mtxRot, double dTime)
         {
-            var lastX = RCube.CubeLastCxy[0];
-            var lastY = RCube.CubeLastCxy[1];
-
-            var curX = (int) (RCube.CubeCxy[0]/200.0);
-            var curY = (int) (RCube.CubeCxy[1]/200.0);
-
-            if (OutOfBounds(curX, curY, LevelFeld))
-                ResetLevel();
-            else
-            {
-                var curState = LevelFeld[curX, curY].State;
-                var curType = LevelFeld[curX, curY].Type;
-
-                LevelFeld[lastX, lastY].State = Feld.FieldStates.FsDead;
-
-                if (curType == Feld.FieldTypes.FtVoid || curType == Feld.FieldTypes.FtEnd ||
-                    curState == Feld.FieldStates.FsDead)
-                    ResetLevel();
-            }
-
-            RCube.CheckField = false;
-        }
-
-        public void Render(float4x4 mtxRot, double deltaTime)
-        {
-            if (RCube.CheckField)
-                CheckField();
+            DeltaTime = (float) dTime;
 
             foreach (var feld in LevelFeld)
                 if (feld != null)
                     feld.Render(CamPosition, CamTranslation, ObjectOrientation, mtxRot);
 
             if (RCube != null)
-                RCube.RenderCube(CamPosition, CamTranslation, ObjectOrientation, mtxRot, deltaTime);
+                RCube.RenderCube(CamPosition, CamTranslation, ObjectOrientation, mtxRot);
         }
-        
+
         private static bool OutOfBounds(int x, int y, Feld[,] array)
         {
             return x < 0 || x >= array.GetLength(0) || y < 0 || y >= array.GetLength(1);
         }
-
 
 /*
         private static int LinCoords(int x, int y, int[,] array)
