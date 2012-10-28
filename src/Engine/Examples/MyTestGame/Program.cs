@@ -118,7 +118,7 @@ namespace Examples.MyTestGame
 
         public static void Main()
         {
-            var app = new MyTestGame();
+            MyTestGame app = new MyTestGame();
             app.Run();
         }
     }
