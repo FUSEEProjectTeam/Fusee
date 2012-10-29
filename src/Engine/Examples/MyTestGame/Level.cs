@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Fusee.Engine;
 using Fusee.Math;
 
@@ -13,7 +12,7 @@ namespace Examples.MyTestGame
         public IShaderParam VColorObj { get; private set; }
         public RenderContext RContext { get; private set; }
 
-        public Feld[,] LevelFeld;
+        public Field[,] LevelFeld;
         public int[] StartXy;
         private static int _curLvlId;
 
@@ -83,7 +82,11 @@ namespace Examples.MyTestGame
                 StartXy = new int[2];
                 _curLvlId = id;
 
-                LoadLevel(id);
+             //   for (int i = 0; i < 500; i++)
+             //   {
+                    LoadLevel(id);                  
+              //  }
+
             }
         }
 
@@ -92,20 +95,20 @@ namespace Examples.MyTestGame
             // if id > amount of levels, go to fist lvl
            id %= _lvlTmp.Length;
 
-            // X and Y swapped + turned 90°
+            // X and Y swapped and turned 90°
             var sizeX = _lvlTmp[id].GetLength(1);
             var sizeY = _lvlTmp[id].GetLength(0);
 
-            LevelFeld = new Feld[sizeX, sizeY];
+            LevelFeld = new Field[sizeX, sizeY];
 
             for (var y = 0; y < sizeY; y++)
                 for (var x = 0; x < sizeX; x++)
                 {
-                    var fType = (Feld.FieldTypes) _lvlTmp[id][sizeY - 1 - y, x];
-                    LevelFeld[x, y] = new Feld(this) { X = x, Y = y, Type = fType };
+                    var fType = (Field.FieldTypes) _lvlTmp[id][sizeY - 1 - y, x];
+                    LevelFeld[x, y] = new Field(this, x, y, fType);
 
                     // set start coordinates
-                    if (fType == Feld.FieldTypes.FtStart)
+                    if (fType == Field.FieldTypes.FtStart)
                     {
                         StartXy[0] = x;
                         StartXy[1] = y;
@@ -120,7 +123,7 @@ namespace Examples.MyTestGame
         {
             foreach (var feld in LevelFeld)
                 if (feld != null)
-                    feld.ResetFeld();
+                    feld.ResetField();
 
             if (RCube != null)
                 RCube.ResetCube(StartXy[0], StartXy[1]);
@@ -132,22 +135,28 @@ namespace Examples.MyTestGame
                 ResetLevel();
             else
             {
-                LevelFeld[posLastXy[0], posLastXy[1]].State = Feld.FieldStates.FsDead;
+                LevelFeld[posLastXy[0], posLastXy[1]].DeadField();
 
                 var curState = LevelFeld[posCurXy[0], posCurXy[1]].State;
                 var curType = LevelFeld[posCurXy[0], posCurXy[1]].Type;
 
-                if (curType == Feld.FieldTypes.FtVoid || curState == Feld.FieldStates.FsDead)
+                if (curType == Field.FieldTypes.FtVoid || curState == Field.FieldStates.FsDead)
                     ResetLevel();
 
-                if (curType == Feld.FieldTypes.FtEnd)
+                if (curType == Field.FieldTypes.FtEnd)
                 {
-                    // LINQ to check if player used all fields
-                    var actualNumQuery = from element in LevelFeld.OfType<Feld>() where element.State == Feld.FieldStates.FsDead select element;
-                    var actualNumCount = actualNumQuery.Count();
+                    // LINQ could be used. However, JSIL can't do that
+                    var actualNumCount = 0;
+                    var targetNumCount = 0;
 
-                    var targetNumQuery = from element in LevelFeld.OfType<Feld>() where element.Type == Feld.FieldTypes.FtNormal select element;
-                    var targetNumCount = targetNumQuery.Count();
+                    foreach (var field in LevelFeld)
+                    {
+                        if (field.State == Field.FieldStates.FsDead)
+                            actualNumCount++;
+
+                        if (field.Type == Field.FieldTypes.FtNormal)
+                            targetNumCount++;
+                    }
 
                     if (targetNumCount == actualNumCount - 1)
                     {
@@ -198,17 +207,9 @@ namespace Examples.MyTestGame
                 RCube.RenderCube();
         }
 
-        private static bool OutOfBounds(int x, int y, Feld[,] array)
+        private static bool OutOfBounds(int x, int y, Field[,] array)
         {
             return x < 0 || x >= array.GetLength(0) || y < 0 || y >= array.GetLength(1);
-        }
-
-/*
-        private static int LinCoords(int x, int y, int[,] array)
-        {
-            return (array.GetLength(1)*y + x);
-        }
-*/
-         
+        }     
     }
 }
