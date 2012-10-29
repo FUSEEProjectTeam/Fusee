@@ -82,11 +82,7 @@ namespace Examples.MyTestGame
                 StartXy = new int[2];
                 _curLvlId = id;
 
-             //   for (int i = 0; i < 500; i++)
-             //   {
-                    LoadLevel(id);                  
-              //  }
-
+                LoadLevel(id);
             }
         }
 
