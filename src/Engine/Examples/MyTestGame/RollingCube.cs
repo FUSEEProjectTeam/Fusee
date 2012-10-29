@@ -27,7 +27,7 @@ namespace Examples.MyTestGame
         public RollingCube(Level curLevel)
         {
             _curLevel = curLevel;
-            _cubeMesh = MeshReader.LoadMesh("SampleObj/Cube.obj.model");
+            _cubeMesh = _curLevel.GlobalCubeMesh;
             _cubeColor = new float4(0.5f, 0.15f, 0.17f, 1.0f);
 
             PosCurXy = new int[2];

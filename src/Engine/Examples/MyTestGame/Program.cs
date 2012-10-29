@@ -1,4 +1,4 @@
-﻿#define WEBBUILD
+﻿//#define WEBBUILD
 
 
 using Fusee.Engine;
@@ -62,6 +62,7 @@ namespace Examples.MyTestGame
 
         private const float RotationSpeed = 10.0f;
         private const float Damping = 0.95f;
+
 
         // Init()
         public override void Init()

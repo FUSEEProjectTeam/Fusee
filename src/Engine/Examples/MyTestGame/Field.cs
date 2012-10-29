@@ -30,7 +30,7 @@ namespace Examples.MyTestGame
         public Field(Level curLevel, int x, int y, FieldTypes type)
         {
             _curLevel = curLevel;
-            _feldMesh = MeshReader.LoadMesh("SampleObj/Tile.obj.model");
+            _feldMesh = _curLevel.GlobalFieldMesh;
 
             Coord = new Point {x = x, y = y, z = 0};
             Type = type;
