@@ -52,7 +52,7 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Feld.cs" />
+    <Compile Include="Field.cs" />
     <Compile Include="Level.cs" />
     <Compile Include="RollingCube.cs" />
     <Compile Include="Program.cs" />

@@ -3,15 +3,14 @@ using Fusee.Math;
 
 namespace Examples.MyTestGame
 {
-    public class Feld
+    public class Field
     {
         private readonly Level _curLevel;
 
-        public FieldTypes Type;
-        public FieldStates State;
+        internal Point Coord { get; private set; }
+        internal FieldTypes Type { get; private set; }
+        internal FieldStates State { get; private set; }
 
-        public int X;
-        public int Y;
         private static Mesh _feldMesh;
 
         public enum FieldTypes
@@ -28,17 +27,27 @@ namespace Examples.MyTestGame
             FsAlive
         }
 
-        public Feld(Level curLevel)
+        public Field(Level curLevel, int x, int y, FieldTypes type)
         {
             _curLevel = curLevel;
             _feldMesh = MeshReader.LoadMesh("SampleObj/Tile.obj.model");
 
-            ResetFeld();
+            Coord = new Point {x = x, y = y, z = 0};
+            Type = type;
+
+            ResetField();
         }
 
-        public void ResetFeld()
+        public void ResetField()
         {
             State = FieldStates.FsAlive;
+            Coord = new Point { x = Coord.x, y = Coord.y, z = 0 };
+        }
+
+        public void DeadField()
+        {
+            State = FieldStates.FsDead;
+            Coord = new Point {x = Coord.x, y = Coord.y, z = -100};
         }
 
         public void Render(float4x4 mtxObjRot)
@@ -73,7 +82,7 @@ namespace Examples.MyTestGame
                     break;
             }
 
-            var mtxObjPos = float4x4.CreateTranslation(X*200, Y*200, 0);
+            var mtxObjPos = float4x4.CreateTranslation(Coord.x*200, Coord.y*200, Coord.z);
 
             _curLevel.RContext.ModelView = _curLevel.AddCameraTrans(mtxObjRot*mtxObjPos);
             _curLevel.RContext.SetShaderParam(_curLevel.VColorObj, new float4(vColor, val));
