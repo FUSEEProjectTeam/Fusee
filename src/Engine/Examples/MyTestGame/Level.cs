@@ -8,25 +8,25 @@ namespace Examples.MyTestGame
     {
         private readonly ShaderProgram _sp;
 
-        public RollingCube RCube { get; private set; }
-        public IShaderParam VColorObj { get; private set; }
-        public RenderContext RContext { get; private set; }
+        internal RollingCube RCube { get; private set; }
+        internal IShaderParam VColorObj { get; private set; }
+        internal RenderContext RContext { get; private set; }
 
-        public Field[,] LevelFeld;
-        public int[] StartXy;
-        private static int _curLvlId;
+        private Field[,] _levelFeld;
+        private int[] _startXy;
+        private int _curLvlId;
 
-        public float4x4 CamPosition = float4x4.LookAt(0, 0, 3000, 0, 0, 0, 0, 1, 0);
-        public float4x4 CamTranslation;
-        public float4x4 ObjectOrientation = float4x4.CreateRotationX((float)Math.PI / 2);
-
+        private float4x4 _camPosition;
+        private float4x4 _camTranslation;
+        private float4x4 _objOrientation;
         private float4x4 _mtxRot;
+
+        internal Mesh GlobalFieldMesh { get; private set; }
+        internal Mesh GlobalCubeMesh { get; private set; }
+
         internal float LvlDeltaTime { get; private set; }
 
-        public readonly Mesh GlobalFieldMesh = MeshReader.LoadMesh("SampleObj/Tile.obj.model");
-        public readonly Mesh GlobalCubeMesh = MeshReader.LoadMesh("SampleObj/Cube.obj.model");
-
-        //Dummies for level files - level files need a check on read not to be bigger than the board
+        // dummies for level files
         private readonly int[][,] _lvlTmp =
             {
                 new[,]
@@ -78,10 +78,16 @@ namespace Examples.MyTestGame
         {
             if (RCube == null)
             {
+                GlobalFieldMesh = MeshReader.LoadMesh("SampleObj/Tile.obj.model");
+                GlobalCubeMesh = MeshReader.LoadMesh("SampleObj/Cube.obj.model");
+
+                _camPosition = float4x4.LookAt(0, 0, 3000, 0, 0, 0, 0, 1, 0);
+                _objOrientation = float4x4.CreateRotationX((float)Math.PI / 2);
+
                 RCube = new RollingCube(this);
                 VColorObj = _sp.GetShaderParam("vColor");
 
-                StartXy = new int[2];
+                _startXy = new int[2];
                 _curLvlId = id;
 
                 LoadLevel(id);
@@ -97,46 +103,46 @@ namespace Examples.MyTestGame
             var sizeX = _lvlTmp[id].GetLength(1);
             var sizeY = _lvlTmp[id].GetLength(0);
 
-            LevelFeld = new Field[sizeX, sizeY];
+            _levelFeld = new Field[sizeX, sizeY];
 
             for (var y = 0; y < sizeY; y++)
                 for (var x = 0; x < sizeX; x++)
                 {
                     var fType = (Field.FieldTypes) _lvlTmp[id][sizeY - 1 - y, x];
-                    LevelFeld[x, y] = new Field(this, x, y, fType);
+                    _levelFeld[x, y] = new Field(this, x, y, fType);
 
                     // set start coordinates
                     if (fType == Field.FieldTypes.FtStart)
                     {
-                        StartXy[0] = x;
-                        StartXy[1] = y;
+                        _startXy[0] = x;
+                        _startXy[1] = y;
                     }
                 }
 
-            CamTranslation = float4x4.CreateTranslation((float) -(sizeX - 1)*100, (float) -(sizeY - 1)*100, 150);
+            _camTranslation = float4x4.CreateTranslation((float) -(sizeX - 1)*100, (float) -(sizeY - 1)*100, 150);
             ResetLevel();
         }
 
         private void ResetLevel()
         {
-            foreach (var feld in LevelFeld)
+            foreach (var feld in _levelFeld)
                 if (feld != null)
                     feld.ResetField();
 
             if (RCube != null)
-                RCube.ResetCube(StartXy[0], StartXy[1]);
+                RCube.ResetCube(_startXy[0], _startXy[1]);
         }
 
         public void CheckField(int[] posLastXy, int[] posCurXy)
         {
-            if (OutOfBounds(posCurXy[0], posCurXy[1], LevelFeld))
+            if (OutOfBounds(posCurXy[0], posCurXy[1], _levelFeld))
                 ResetLevel();
             else
             {
-                LevelFeld[posLastXy[0], posLastXy[1]].DeadField();
+                _levelFeld[posLastXy[0], posLastXy[1]].DeadField();
 
-                var curState = LevelFeld[posCurXy[0], posCurXy[1]].State;
-                var curType = LevelFeld[posCurXy[0], posCurXy[1]].Type;
+                var curState = _levelFeld[posCurXy[0], posCurXy[1]].State;
+                var curType = _levelFeld[posCurXy[0], posCurXy[1]].Type;
 
                 if (curType == Field.FieldTypes.FtVoid || curState == Field.FieldStates.FsDead)
                     ResetLevel();
@@ -147,7 +153,7 @@ namespace Examples.MyTestGame
                     var actualNumCount = 0;
                     var targetNumCount = 0;
 
-                    foreach (var field in LevelFeld)
+                    foreach (var field in _levelFeld)
                     {
                         if (field.State == Field.FieldStates.FsDead)
                             actualNumCount++;
@@ -189,7 +195,7 @@ namespace Examples.MyTestGame
 
         public float4x4 AddCameraTrans(float4x4 mod)
         {
-            return mod * CamTranslation * _mtxRot * CamPosition;
+            return mod * _camTranslation * _mtxRot * _camPosition;
         }
 
         public void Render(float4x4 mtxRot, double dTime)
@@ -197,9 +203,9 @@ namespace Examples.MyTestGame
             LvlDeltaTime = (float) dTime;
             _mtxRot = mtxRot;
 
-            foreach (var feld in LevelFeld)
+            foreach (var feld in _levelFeld)
                 if (feld != null)
-                    feld.Render(ObjectOrientation);
+                    feld.Render(_objOrientation);
 
             if (RCube != null)
                 RCube.RenderCube();
