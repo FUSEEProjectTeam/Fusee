@@ -16,7 +16,8 @@ namespace Fusee.Engine
 
         private void KeyDown(object sender, KeyEventArgs kea)
         {
-            _keysPressed.Add((int)kea.KeyCode, true);
+            if (!_keysPressed.ContainsKey((int)kea.KeyCode))
+                _keysPressed.Add((int)kea.KeyCode, true);
         }
 
         private void KeyUp(object sender, KeyEventArgs kea)
