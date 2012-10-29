@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Fusee.Engine;
 using Fusee.Math;
 
@@ -13,7 +14,8 @@ namespace Examples.MyTestGame
         public RenderContext RContext { get; private set; }
 
         public Feld[,] LevelFeld;
-        public int[] StartCxy;
+        public int[] StartXy;
+        private static int _curLvlId;
 
         public float4x4 CamPosition = float4x4.LookAt(0, 0, 3000, 0, 0, 0, 0, 1, 0);
         public float4x4 CamTranslation;
@@ -42,7 +44,7 @@ namespace Examples.MyTestGame
                         {2, 0, 3, 2, 2, 0, 2},
                         {2, 0, 0, 0, 2, 0, 2},
                         {2, 2, 2, 2, 2, 0, 2},
-                        {0, 0, 0, 0, 0, 0, 2},
+                        {2, 2, 0, 0, 0, 0, 2},
                         {1, 2, 2, 2, 2, 2, 2}
                     }
             };
@@ -60,7 +62,7 @@ namespace Examples.MyTestGame
             _sp = sp;
             RContext = rc;
 
-            ConstructLevel(1);
+            ConstructLevel(0);
         }
 
         public Level(RenderContext rc, ShaderProgram sp, int id)
@@ -78,7 +80,8 @@ namespace Examples.MyTestGame
                 RCube = new RollingCube(this);
                 VColorObj = _sp.GetShaderParam("vColor");
 
-                StartCxy = new int[2];
+                StartXy = new int[2];
+                _curLvlId = id;
 
                 LoadLevel(id);
             }
@@ -86,6 +89,9 @@ namespace Examples.MyTestGame
 
         private void LoadLevel(int id)
         {
+            // if id > amount of levels, go to fist lvl
+           id %= _lvlTmp.Length;
+
             // X and Y swapped + turned 90°
             var sizeX = _lvlTmp[id].GetLength(1);
             var sizeY = _lvlTmp[id].GetLength(0);
@@ -101,8 +107,8 @@ namespace Examples.MyTestGame
                     // set start coordinates
                     if (fType == Feld.FieldTypes.FtStart)
                     {
-                        StartCxy[0] = x;
-                        StartCxy[1] = y;
+                        StartXy[0] = x;
+                        StartXy[1] = y;
                     }
                 }
 
@@ -117,7 +123,7 @@ namespace Examples.MyTestGame
                     feld.ResetFeld();
 
             if (RCube != null)
-                RCube.ResetCube(StartCxy[0], StartCxy[1]);
+                RCube.ResetCube(StartXy[0], StartXy[1]);
         }
 
         public void CheckField(int[] posLastXy, int[] posCurXy)
@@ -126,14 +132,32 @@ namespace Examples.MyTestGame
                 ResetLevel();
             else
             {
+                LevelFeld[posLastXy[0], posLastXy[1]].State = Feld.FieldStates.FsDead;
+
                 var curState = LevelFeld[posCurXy[0], posCurXy[1]].State;
                 var curType = LevelFeld[posCurXy[0], posCurXy[1]].Type;
 
-                LevelFeld[posLastXy[0], posLastXy[1]].State = Feld.FieldStates.FsDead;
-
-                if (curType == Feld.FieldTypes.FtVoid || curType == Feld.FieldTypes.FtEnd ||
-                    curState == Feld.FieldStates.FsDead)
+                if (curType == Feld.FieldTypes.FtVoid || curState == Feld.FieldStates.FsDead)
                     ResetLevel();
+
+                if (curType == Feld.FieldTypes.FtEnd)
+                {
+                    // LINQ to check if player used all fields
+                    var actualNumQuery = from element in LevelFeld.OfType<Feld>() where element.State == Feld.FieldStates.FsDead select element;
+                    var actualNumCount = actualNumQuery.Count();
+
+                    var targetNumQuery = from element in LevelFeld.OfType<Feld>() where element.Type == Feld.FieldTypes.FtNormal select element;
+                    var targetNumCount = targetNumQuery.Count();
+
+                    if (targetNumCount == actualNumCount - 1)
+                    {
+                        _curLvlId = ++_curLvlId % _lvlTmp.Length;
+                        LoadLevel(_curLvlId);                       
+                    } else
+                    {
+                        ResetLevel();
+                    }
+                }
             }
         }
 

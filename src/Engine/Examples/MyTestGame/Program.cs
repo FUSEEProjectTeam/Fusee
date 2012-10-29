@@ -1,7 +1,6 @@
 ﻿#define WEBBUILD
 
 
-using System;
 using Fusee.Engine;
 using Fusee.Math;
 
