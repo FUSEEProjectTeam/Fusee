@@ -23,6 +23,8 @@ namespace Examples.MyTestGame
         private float4x4 _mtxRot;
         internal float LvlDeltaTime { get; private set; }
 
+        public readonly Mesh GlobalFieldMesh = MeshReader.LoadMesh("SampleObj/Tile.obj.model");
+        public readonly Mesh GlobalCubeMesh = MeshReader.LoadMesh("SampleObj/Cube.obj.model");
 
         //Dummies for level files - level files need a check on read not to be bigger than the board
         private readonly int[][,] _lvlTmp =
