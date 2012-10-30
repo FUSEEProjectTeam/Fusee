@@ -1,7 +1,4 @@
-﻿//#define WEBBUILD
-
-
-using Fusee.Engine;
+﻿using Fusee.Engine;
 using Fusee.Math;
 
 namespace Examples.MyTestGame
@@ -9,13 +6,11 @@ namespace Examples.MyTestGame
     public class MyTestGame : RenderCanvas
     {
         // GLSL
-#if (!WEBBUILD)
-        private const string GlslVersion = @"#version 120";
-#else
-        private const string GlslVersion = @"";
-#endif
+        protected string Vs = @"
+            #ifndef GL_ES
+                #version 120
+            #endif
 
-        protected string Vs = GlslVersion + @"
             /* Copies incoming vertex color without change.
              * Applies the transformation matrix to vertex position.
              */
@@ -36,7 +31,7 @@ namespace Examples.MyTestGame
                 vNormal = mat3(FUSEE_ITMV) * fuNormal;
             }";
 
-        protected string Ps = GlslVersion + @"
+        protected string Ps = @"
             /* Copies incoming fragment color without change. */
             #ifdef GL_ES
                 precision highp float;
@@ -119,13 +114,8 @@ namespace Examples.MyTestGame
                     _angleVelVert *= Damping;
                 }
 
-                // _angleHorz = Math.Max(0.0f, Math.Min(_angleHorz + _angleVelHorz, 0.45f));
-                // _angleVert = Math.Max(-1.35f, Math.Min(_angleVert + _angleVelVert, 0.0f));
-
                 _angleHorz += _angleVelHorz;
                 _angleVert += _angleVelVert;
-
-                // Console.WriteLine("_angleHorz: {0}, _angleVert: {1}", _angleHorz, _angleVert);
             }
 
 
@@ -144,14 +134,14 @@ namespace Examples.MyTestGame
             float4x4 mtxRot = float4x4.CreateRotationZ(_angleHorz)*float4x4.CreateRotationX(_angleVert);
             _exampleLevel.Render(mtxRot, DeltaTime);
 
-            Present();  // <-- ohne ergibt Endlosschleife, völlige Überlastung...
+            Present();
         }
 
         public override void Resize()
         {
             RC.Viewport(0, 0, Width, Height);
 
-            float aspectRatio = Width / (float)Height;
+            var aspectRatio = Width / (float)Height;
             RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 10000);
         }
 

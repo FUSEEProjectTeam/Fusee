@@ -1,4 +1,5 @@
-﻿using Fusee.Engine;
+﻿using System;
+using Fusee.Engine;
 using Fusee.Math;
 
 namespace Examples.MyTestGame
@@ -6,16 +7,21 @@ namespace Examples.MyTestGame
     public class Field
     {
         private readonly Level _curLevel;
+        private readonly Mesh _feldMesh;
+        private readonly int _fieldId;
 
-        internal Point Coord { get; private set; }
         internal FieldTypes Type { get; private set; }
         internal FieldStates State { get; private set; }
 
-        private static Mesh _feldMesh;
+        // x-y-z
+        internal float[] CoordXyz { get; private set; }
+        private readonly float[] _veloXyz;
+        private float _curBright;
 
+        // enums
         public enum FieldTypes
         {
-            FtVoid = 0,
+            FtNull = 0,
             FtStart = 1,
             FtEnd = 3,
             FtNormal = 2
@@ -23,38 +29,85 @@ namespace Examples.MyTestGame
 
         public enum FieldStates
         {
-            FsDead,
-            FsAlive
+            FsLoading,
+            FsAlive,
+            FsDead
         }
 
-        public Field(Level curLevel, int x, int y, FieldTypes type)
+        // constructor
+        public Field(Level curLevel, int id, int x, int y, FieldTypes type)
         {
             _curLevel = curLevel;
             _feldMesh = _curLevel.GlobalFieldMesh;
+            _fieldId = id;
 
-            Coord = new Point {x = x, y = y, z = 0};
+            CoordXyz = new[] {x, y, 0.0f};
+            _veloXyz = new[] {0.0f, 0.0f, 0.0f};
+            _curBright = 1.0f;
+
             Type = type;
-
-            ResetField();
+            State = FieldStates.FsLoading;
         }
 
+        // methods
         public void ResetField()
         {
-            State = FieldStates.FsAlive;
-            Coord = new Point { x = Coord.x, y = Coord.y, z = 0 };
+            State = FieldStates.FsLoading;
+
+            CoordXyz[2] = -_fieldId/2.0f;
+            _veloXyz[2] = 0.1f;
+
+            // default brightness: z coord divided by maximum dist
+            _curBright = 1 - (CoordXyz[2]/(-_curLevel.FieldCount/2.0f));
         }
 
         public void DeadField()
         {
-            State = FieldStates.FsDead;
-            Coord = new Point {x = Coord.x, y = Coord.y, z = -100};
+            if (State != FieldStates.FsDead)
+            {
+                State = FieldStates.FsDead;
+
+                CoordXyz[2] = 0;
+                _veloXyz[2] = (Type == FieldTypes.FtEnd) ? -0.4f : -0.1f;
+            }
+        }
+
+        private void LoadAnimation()
+        {
+            if (State != FieldStates.FsLoading) return;
+
+            _veloXyz[2] = Math.Max(-0.01f, -CoordXyz[2] / 10.0f);
+            CoordXyz[2] += _veloXyz[2];
+
+            _curBright = 1 - (CoordXyz[2])/(-_curLevel.FieldCount/2.0f);
+
+            if (CoordXyz[2] > -0.01f)
+            {
+                CoordXyz[2] = 0;
+                _veloXyz[2] = 0;
+                _curBright = 1.0f;
+
+                State = FieldStates.FsAlive;
+            }                
+        }
+
+        private void DeadAnimation()
+        {
+            if (State != FieldStates.FsDead) return;
+
+            if (_curBright > 0.0f)
+            {
+                CoordXyz[2] += _veloXyz[2];
+                _curBright -= .02f;
+            }       
         }
 
         public void Render(float4x4 mtxObjRot)
         {
-            if (Type == FieldTypes.FtVoid)
-                return;
+            LoadAnimation();
+            DeadAnimation();
 
+            // color fields
             var vColor = new float3(0.0f, 0.0f, 0.0f);
             var val = 1.0f;
 
@@ -75,18 +128,12 @@ namespace Examples.MyTestGame
                     break;
             }
 
-            switch (State)
-            {
-                case FieldStates.FsDead:
-                    val = 0.2f;
-                    break;
-            }
+            // translate fields
+            var mtxObjPos = float4x4.CreateTranslation(CoordXyz[0]*200, CoordXyz[1]*200, CoordXyz[2]*100);
 
-            var mtxObjPos = float4x4.CreateTranslation(Coord.x*200, Coord.y*200, Coord.z);
-
+            // set translation and color, then render
             _curLevel.RContext.ModelView = _curLevel.AddCameraTrans(mtxObjRot*mtxObjPos);
-            _curLevel.RContext.SetShaderParam(_curLevel.VColorObj, new float4(vColor, val));
-
+            _curLevel.RContext.SetShaderParam(_curLevel.VColorObj, new float4(vColor, _curBright * val));
 
             _curLevel.RContext.Render(_feldMesh);
         }
