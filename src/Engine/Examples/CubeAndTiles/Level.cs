@@ -2,7 +2,7 @@
 using Fusee.Engine;
 using Fusee.Math;
 
-namespace Examples.MyTestGame
+namespace Examples.CubeAndTiles
 {
     public class Level
     {
