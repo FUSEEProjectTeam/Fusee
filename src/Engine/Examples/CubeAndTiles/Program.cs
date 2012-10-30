@@ -3,7 +3,7 @@ using Fusee.Math;
 
 namespace Examples.CubeAndTiles
 {
-    public class MyTestGame : RenderCanvas
+    public class CubeAndTiles : RenderCanvas
     {
         // GLSL
         protected string Vs = @"
@@ -147,7 +147,7 @@ namespace Examples.CubeAndTiles
 
         public static void Main()
         {
-            var app = new MyTestGame();
+            var app = new CubeAndTiles();
             app.Run();
         }
     }

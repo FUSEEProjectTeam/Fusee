@@ -177,7 +177,7 @@ namespace Examples.CubeAndTiles
             {
                 if (_levelFeld[curX, curY] == null)
                 {
-                    ResetLevel();
+                    DeadLevel();
                     return;
                 }
 
