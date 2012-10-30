@@ -1,5 +1,4 @@
-﻿using System;
-using Fusee.Engine;
+﻿using Fusee.Engine;
 using Fusee.Math;
 
 namespace Examples.CubeAndTiles
@@ -94,7 +93,7 @@ namespace Examples.CubeAndTiles
                 GlobalCubeMesh = MeshReader.LoadMesh("SampleObj/Cube.obj.model");
 
                 _camPosition = float4x4.LookAt(0, 0, 3000, 0, 0, 0, 0, 1, 0);
-                _objOrientation = float4x4.CreateRotationX((float)Math.PI / 2);
+                _objOrientation = float4x4.CreateRotationX((float)MathHelper.Pi / 2);
 
                 _rCube = new RollingCube(this);
 

@@ -11,7 +11,7 @@ echo JJSIL Cross compiling Example.Simple.exe and referenced DLLs
 echo %JSIL_DIR%\bin\JSILc.exe -o="%1..\Web" %1Examples.Simple.exe
 "%JSIL_DIR%\bin\JSILc.exe" -o="%1..\Web" %1Examples.Simple.exe
 echo.
-echo JJSIL Cross compiling Example.MyTestGame.exe and referenced DLLs
+echo JJSIL Cross compiling Example.CubeAndTiles.exe and referenced DLLs
 echo "%JSIL_DIR%\bin\JSILc.exe" -o="%1..\Web" %1Examples.CubeAndTiles.exe
 "%JSIL_DIR%\bin\JSILc.exe" -o="%1..\Web" %1Examples.CubeAndTiles.exe
 echo.
