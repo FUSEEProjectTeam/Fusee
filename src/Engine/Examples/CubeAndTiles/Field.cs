@@ -7,16 +7,17 @@ namespace Examples.CubeAndTiles
     public class Field
     {
         private readonly Level _curLevel;
-        private readonly Mesh _feldMesh;
+        private readonly Mesh _fieldMesh;
         private readonly int _fieldId;
+
+        internal int[] CoordXy { get; private set; }
+
+        private float _posZ;
+        private float _veloZ;
+        private float _curBright;
 
         internal FieldTypes Type { get; private set; }
         internal FieldStates State { get; private set; }
-
-        // x-y-z
-        internal float[] CoordXyz { get; private set; }
-        private readonly float[] _veloXyz;
-        private float _curBright;
 
         // enums
         public enum FieldTypes
@@ -38,11 +39,13 @@ namespace Examples.CubeAndTiles
         public Field(Level curLevel, int id, int x, int y, FieldTypes type)
         {
             _curLevel = curLevel;
-            _feldMesh = _curLevel.GlobalFieldMesh;
+            _fieldMesh = _curLevel.GlobalFieldMesh;
             _fieldId = id;
 
-            CoordXyz = new[] {x, y, 0.0f};
-            _veloXyz = new[] {0.0f, 0.0f, 0.0f};
+            CoordXy = new[] {x, y};
+
+            _posZ = 0.0f;
+            _veloZ = 0.0f;
             _curBright = 1.0f;
 
             Type = type;
@@ -54,11 +57,11 @@ namespace Examples.CubeAndTiles
         {
             State = FieldStates.FsLoading;
 
-            CoordXyz[2] = -_fieldId/2.0f;
-            _veloXyz[2] = 0.1f;
+            _posZ = -_fieldId/2.0f;
+            _veloZ = 0.1f;
 
             // default brightness: z coord divided by maximum dist
-            _curBright = 1 - (CoordXyz[2]/(-_curLevel.FieldCount/2.0f));
+            _curBright = 1 - (_posZ/(-_curLevel.FieldCount/2.0f));
         }
 
         public void DeadField()
@@ -67,8 +70,8 @@ namespace Examples.CubeAndTiles
             {
                 State = FieldStates.FsDead;
 
-                CoordXyz[2] = 0;
-                _veloXyz[2] = (Type == FieldTypes.FtEnd) ? -0.4f : -0.1f;
+                _posZ = 0;
+                _veloZ = (Type == FieldTypes.FtEnd) ? -0.4f : -0.1f;
             }
         }
 
@@ -76,15 +79,15 @@ namespace Examples.CubeAndTiles
         {
             if (State != FieldStates.FsLoading) return;
 
-            _veloXyz[2] = Math.Max(-0.01f, -CoordXyz[2] / 10.0f);
-            CoordXyz[2] += _veloXyz[2];
+            _veloZ = Math.Max(-0.01f, -_posZ/10.0f);
+            _posZ += _veloZ;
 
-            _curBright = 1 - (CoordXyz[2])/(-_curLevel.FieldCount/2.0f);
+            _curBright = 1 - (_posZ)/(-_curLevel.FieldCount/2.0f);
 
-            if (CoordXyz[2] > -0.01f)
+            if (_posZ > -0.01f)
             {
-                CoordXyz[2] = 0;
-                _veloXyz[2] = 0;
+                _posZ = 0;
+                _veloZ = 0;
                 _curBright = 1.0f;
 
                 State = FieldStates.FsAlive;
@@ -97,7 +100,7 @@ namespace Examples.CubeAndTiles
 
             if (_curBright > 0.0f)
             {
-                CoordXyz[2] += _veloXyz[2];
+                _posZ += _veloZ;
                 _curBright -= .02f;
             }       
         }
@@ -129,13 +132,13 @@ namespace Examples.CubeAndTiles
             }
 
             // translate fields
-            var mtxObjPos = float4x4.CreateTranslation(CoordXyz[0]*200, CoordXyz[1]*200, CoordXyz[2]*100);
+            var mtxObjPos = float4x4.CreateTranslation(CoordXy[0]*200, CoordXy[1]*200, _posZ*100);
 
             // set translation and color, then render
             _curLevel.RContext.ModelView = _curLevel.AddCameraTrans(mtxObjRot*mtxObjPos);
             _curLevel.RContext.SetShaderParam(_curLevel.VColorObj, new float4(vColor, _curBright * val));
 
-            _curLevel.RContext.Render(_feldMesh);
+            _curLevel.RContext.Render(_fieldMesh);
         }
     }
 }

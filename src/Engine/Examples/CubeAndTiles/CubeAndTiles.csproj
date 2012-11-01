@@ -52,6 +52,7 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LevelTemplates.cs" />
     <Compile Include="Field.cs" />
     <Compile Include="Level.cs" />
     <Compile Include="RollingCube.cs" />

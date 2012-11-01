@@ -25,7 +25,7 @@ namespace Examples.CubeAndTiles
         // const
         private const float PiHalf = (float) Math.PI/2.0f;
         private const int CubeSize = 200;
-        private const float CubeSpeed = 5.0f;
+        private const float CubeSpeed = 4.0f;
 
         public enum CubeStates
         {

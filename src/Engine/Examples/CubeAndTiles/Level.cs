@@ -27,30 +27,8 @@ namespace Examples.CubeAndTiles
 
         internal float LvlDeltaTime { get; private set; }
 
-        // dummies for level files
-        private readonly int[][,] _lvlTmp =
-            {
-                new[,]
-                    {
-                        {0, 0, 2, 2, 2, 0, 0},
-                        {0, 0, 2, 0, 2, 0, 0},
-                        {0, 0, 2, 0, 2, 2, 2},
-                        {0, 0, 2, 0, 0, 0, 2},
-                        {1, 2, 2, 0, 3, 2, 2}
-                    },
-
-                new[,]
-                    {
-                        {2, 2, 2, 2, 2, 2, 2},
-                        {2, 0, 0, 0, 0, 0, 2},
-                        {2, 0, 3, 2, 2, 0, 2},
-                        {2, 0, 0, 0, 2, 0, 2},
-                        {2, 2, 2, 2, 2, 0, 2},
-                        {2, 2, 0, 0, 0, 0, 2},
-                        {1, 2, 2, 2, 2, 2, 2}
-                    }
-            };
-
+        // array for level files
+        private int[][,] _lvlTmp;
 
         public enum LevelStates
         {
@@ -89,6 +67,8 @@ namespace Examples.CubeAndTiles
         {
             if (_rCube == null)
             {
+                _lvlTmp = LevelTemplates.LvlTmp;
+
                 GlobalFieldMesh = MeshReader.LoadMesh("SampleObj/Tile.obj.model");
                 GlobalCubeMesh = MeshReader.LoadMesh("SampleObj/Cube.obj.model");
 
