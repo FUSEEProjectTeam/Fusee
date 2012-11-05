@@ -19,7 +19,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\Bin\Debug\</OutputPath>
+    <OutputPath>..\..\..\..\Bin\Debug\Examples\Simple\</OutputPath>
     <BaseIntermediateOutputPath>..\..\..\..\Tmp\Obj\Engine.Examples.Simmple\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>

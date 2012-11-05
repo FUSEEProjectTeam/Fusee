@@ -8,7 +8,7 @@ namespace Examples.CubeAndTiles
         // GLSL
         protected string Vs = @"
             #ifndef GL_ES
-                #version 120
+               #version 120
             #endif
 
             /* Copies incoming vertex color without change.
