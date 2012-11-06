@@ -22,19 +22,17 @@ var hasCORSXhr = false, hasCORSImage = false;
 var blobBuilderInfo = {
 };
 
-function getAbsoluteUrl (localUrl) {
-  var temp = document.createElement("a");
-  temp.href = localUrl;
-  return temp.href;
-}
-
 function doXHR (uri, asBinary, onComplete) {
   var req = null, isXDR = false;
 
   var needCORS = jsilConfig.CORS;
   var urlPrefix = window.location.protocol + "//" + window.location.host + "/";
 
-  var absoluteUrl = getAbsoluteUrl(uri);
+  var temp = document.createElement("a");
+  temp.href = uri;
+  var absoluteUrl = temp.href;
+  temp = null;
+
   var sameHost = (absoluteUrl.indexOf(urlPrefix) >= 0);
 
   needCORS = needCORS && !sameHost;
@@ -252,34 +250,30 @@ var finishLoadingScript = function (state, path) {
   });
 };
 
-var loadScriptInternal = function (uri, onError, onDoneLoading, state) {
-  var absoluteUrl = getAbsoluteUrl(uri);
+var assetLoaders = {
+  "Library": function loadLibrary (filename, data, onError, onDoneLoading, state) {
+    loadTextAsync(jsilConfig.libraryRoot + filename, function (result, error) {
+      var finisher = function () {
+        finishLoadingScript(state, jsilConfig.libraryRoot + filename);
+      };
 
-  var finisher = function () {
-    finishLoadingScript(state, uri);
-  };
-
-  if (absoluteUrl.indexOf("file://") === 0) {
-    // No browser properly supports XHR against file://
-    onDoneLoading(finisher);
-  } else {
-    loadTextAsync(uri, function (result, error) {
       if ((result !== null) && (!error))
         onDoneLoading(finisher);
       else
         onError(error);
     });
-  }
-};
-
-var assetLoaders = {
-  "Library": function loadLibrary (filename, data, onError, onDoneLoading, state) {
-    var uri = jsilConfig.libraryRoot + filename;
-    loadScriptInternal(uri, onError, onDoneLoading, state);
   },
   "Script": function loadScript (filename, data, onError, onDoneLoading, state) {
-    var uri = jsilConfig.scriptRoot + filename;
-    loadScriptInternal(uri, onError, onDoneLoading, state);
+    loadTextAsync(jsilConfig.scriptRoot + filename, function (result, error) {
+      var finisher = function () {
+        finishLoadingScript(state, jsilConfig.scriptRoot + filename);
+      };
+
+      if ((result !== null) && (!error))
+        onDoneLoading(finisher);
+      else
+        onError(error);
+    });
   },
   "Image": function loadImage (filename, data, onError, onDoneLoading) {
     var e = document.createElement("img");

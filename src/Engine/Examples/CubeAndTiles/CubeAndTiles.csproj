@@ -125,6 +125,7 @@
 "%25JSIL_DIR%25\bin\JSILc.exe" -o "$(TargetDir)Web" "$(TargetPath)"
 echo ### PB: Copying additional Scripts ###
 xcopy /Y "..\..\WebGL.Scripts\Scripts\*.*" "Web\"
+xcopy /Y "SampleObj\*.*" "Web\SampleObj\"
 echo ### PB: Done ###</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

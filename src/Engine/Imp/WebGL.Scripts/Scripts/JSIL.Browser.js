@@ -249,13 +249,11 @@ function releaseKeys (keyCodes) {
 
 function initBrowserHooks () {
   var canvas = document.getElementById("canvas");
-  if (canvas) {
-    $jsilbrowserstate.nativeWidth = canvas.width;
-    $jsilbrowserstate.nativeHeight = canvas.height;
+  $jsilbrowserstate.nativeWidth = canvas.width;
+  $jsilbrowserstate.nativeHeight = canvas.height;
 
-    canvas.draggable = false;
-    canvas.unselectable = true;
-  }
+  canvas.draggable = false;
+  canvas.unselectable = true;
 
   // Be a good browser citizen!
   // Disabling commonly used hotkeys makes people rage.
@@ -324,16 +322,20 @@ function initBrowserHooks () {
     }, true
   );
 
+  canvas.addEventListener(
+    "contextmenu", function (evt) {
+      evt.preventDefault();
+      evt.stopPropagation();
+      return false;
+    }, true
+  );
+
   var mapMouseCoords = function (evt) {
-    var localCanvas = canvas || document.getElementById("canvas");
-    if (!localCanvas)
-      return;
+    var currentWidth = canvas.clientWidth;
+    var currentHeight = canvas.clientHeight;
 
-    var currentWidth = localCanvas.clientWidth;
-    var currentHeight = localCanvas.clientHeight;
-
-    var x = evt.clientX - localCanvas.offsetLeft;
-    var y = evt.clientY - localCanvas.offsetTop;
+    var x = evt.clientX - canvas.offsetLeft;
+    var y = evt.clientY - canvas.offsetTop;
 
     x = x * $jsilbrowserstate.nativeWidth / currentWidth;
     y = y * $jsilbrowserstate.nativeHeight / currentHeight;
@@ -342,56 +344,30 @@ function initBrowserHooks () {
     $jsilbrowserstate.mousePosition[1] = y;
   };
 
-  if (canvas) {
-    canvas.addEventListener(
-      "contextmenu", function (evt) {
-        evt.preventDefault();
-        evt.stopPropagation();
-        return false;
-      }, true
-    );
+  canvas.addEventListener(
+    "mousedown", function (evt) {     
+      mapMouseCoords(evt);
 
-    canvas.addEventListener(
-      "mousedown", function (evt) {     
-        mapMouseCoords(evt);
+      var button = evt.button;
+      if (Array.prototype.indexOf.call($jsilbrowserstate.heldButtons, button) === -1)
+        $jsilbrowserstate.heldButtons.push(button);
 
-        var button = evt.button;
-        if (Array.prototype.indexOf.call($jsilbrowserstate.heldButtons, button) === -1)
-          $jsilbrowserstate.heldButtons.push(button);
+      return false;
+    }, true
+  );
 
-        return false;
-      }, true
-    );
+  canvas.addEventListener(
+    "mouseup", function (evt) {
+      mapMouseCoords(evt);
+      
+      var button = evt.button;
+      $jsilbrowserstate.heldButtons = $jsilbrowserstate.heldButtons.filter(function (element, index, array) {
+        (element !== button);
+      });
 
-    canvas.addEventListener(
-      "mouseup", function (evt) {
-        mapMouseCoords(evt);
-        
-        var button = evt.button;
-        $jsilbrowserstate.heldButtons = $jsilbrowserstate.heldButtons.filter(function (element, index, array) {
-          (element !== button);
-        });
-
-        return false;
-      }, true
-    );
-
-    canvas.addEventListener(
-      "onselectstart", function (evt) {
-        evt.preventDefault();
-        evt.stopPropagation();
-        return false;
-      }, true
-    );
-
-    canvas.addEventListener(
-      "ondragstart", function (evt) {
-        evt.preventDefault();
-        evt.stopPropagation();
-        return false;
-      }, true
-    );
-  };
+      return false;
+    }, true
+  );
 
   document.addEventListener(
     "mousemove", function (evt) {
@@ -399,8 +375,24 @@ function initBrowserHooks () {
     }, true
   );
 
-  if (typeof(initTouchEvents) !== "undefined")
-    initTouchEvents();
+  canvas.addEventListener(
+    "onselectstart", function (evt) {
+      evt.preventDefault();
+      evt.stopPropagation();
+      return false;
+    }, true
+  );
+
+  canvas.addEventListener(
+    "ondragstart", function (evt) {
+      evt.preventDefault();
+      evt.stopPropagation();
+      return false;
+    }, true
+  );
+
+  /*if (initTouchEvents)
+    initTouchEvents();*/
 };
 
 function getAssetName (filename, preserveCase) {
@@ -664,8 +656,6 @@ function pollAssetQueue () {
         return 0;
     };
 
-    state.assetsLoadingNames = {};
-
     state.finishQueue.sort(function (lhs, rhs) {
       var lhsTypeIndex = 2, rhsTypeIndex = 2;
       var lhsIndex = lhs[1];
@@ -807,13 +797,11 @@ function beginLoading () {
       if (jsilConfig.onLoadFailed && loadFailures && (loadFailures.length > 0)) {
         jsilConfig.onLoadFailed(loadFailures);
       } else {
-        if (typeof (runMain) === "function") {
-          $jsilbrowserstate.mainRunAtTime = Date.now();
-          $jsilbrowserstate.isMainRunning = true;
-          runMain();
-          $jsilbrowserstate.isMainRunning = false;
-          $jsilbrowserstate.hasMainRun = true;
-        }
+        $jsilbrowserstate.mainRunAtTime = Date.now();
+        $jsilbrowserstate.isMainRunning = true;
+        runMain();
+        $jsilbrowserstate.isMainRunning = false;
+        $jsilbrowserstate.hasMainRun = true;
       }
 
       // Main doesn't block since we're using the browser's event loop          
