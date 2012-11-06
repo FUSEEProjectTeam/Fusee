@@ -596,6 +596,11 @@ JSIL.MakeEnum(
 );
 
 JSIL.SplitString = function (str, separators) {
+  // <HACK CM>
+  if (separators === null)
+	separators = [" "];
+  // </HACK CM>
+    
   if (separators.length > 1)
     throw new Error("Split cannot handle more than one separator");
 
