@@ -130,6 +130,18 @@ namespace Examples
 
         public static void Main()
         {
+            float3[] verts = new float3[1000];
+            
+            double t1 = Diagnostics.Timer;
+            for (int i= 0; i < verts.Length; i++)
+            {
+                verts[i].x = i;
+                verts[i].y = i+1;
+                verts[i].z = i-1;
+            }
+            double t2 = Diagnostics.Timer;
+            Diagnostics.Log("Initializing " + verts.Length + " float3 objects took " + (t2 - t1) + " ms.");
+
             Simple app = new Simple();
             app.Run();
         }

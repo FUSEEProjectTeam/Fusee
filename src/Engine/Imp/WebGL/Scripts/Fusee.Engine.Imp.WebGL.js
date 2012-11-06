@@ -1000,6 +1000,45 @@ JSIL.ImplementExternals("Fusee.Engine.MeshReader", function ($) {
 });
 
 
+JSIL.ImplementExternals("Fusee.Engine.Diagnostics", function ($) {
+
+    $.Field({ Static: true, Public: false }, "TimerFunc", $.Object, null);
+    $.Field({ Static: true, Public: false }, "_first", $.Double, null);
+
+
+    $.Method({ Static: true, Public: true }, "get_Timer",
+    new JSIL.MethodSignature($.Double, []),
+        function get_Timer() {
+            if (this.TimerFunc === null) {
+                if (window.performance.now !== null) {
+                    this.TimerFunc = window.performance.now;
+                }
+                else if (window.performance.webkitNow !== null) {
+                    this.TimerFunc = window.performance.webkitNow;
+                } else {
+                    this._first = +new Date;
+                    this.TimerFunc = function () {
+                        var now = +new Date;
+                        return (now - _first) / 1000.0;
+                    };
+                }
+            }
+            return this.TimerFunc();
+        }
+    );
+
+    $.Method({ Static: true, Public: true }, "Log",
+    new JSIL.MethodSignature(null, [$.Object]),
+        function Log(o) {
+            return console.log(o.toString());
+        }
+    );
+
+
+});
+
+
+
 /**
 * Provides requestAnimationFrame in a cross browser way.
 */
