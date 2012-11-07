@@ -7,6 +7,7 @@ namespace SceneManagement
 {
     public class Behaviour : Component
     {
+        private readonly int _id = 1;
         public GameEntity gameEntity;
         public Transformation transform;
         public Renderer renderer;
@@ -38,6 +39,10 @@ namespace SceneManagement
         public override void Traverse(TraversalState _traversalState)
         {
             Update();
+        }
+        public override int GETID()
+        {
+            return _id;
         }
     }
 }

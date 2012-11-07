@@ -51,25 +51,25 @@ namespace SceneManagement
 
         public void AddComponent(Component component)
         {
-            string type = component.GetType().Name;
+            int id = component.GETID();
             //Console.WriteLine("The name of the added Component is " + type);
-            switch (type)
+            switch (id)
             {
-                case "Transformation":
-                    _childComponents.Add(new Transformation());
+                case 1:
+                    _childComponents.Add(component);
                     break;
-                case "Renderer":
-                    _childComponents.Add(new Renderer());
+                case 2:
+                    _childComponents.Add(component as Transformation);
+                    break;
+                case 3:
+                    _childComponents.Add(component as Renderer);
                     if (renderer == null)
                     {
                         renderer = component as Renderer;
                     }
                     break;
-                case "TestBehaviour":
-                    _childComponents.Add(component as TestBehaviour);
-                    break;
                 default:
-                    Console.WriteLine("The name of the added Component is "+type);
+                    Console.WriteLine("The name of the added Component is "+component.GetType().Name);
                     break;
             }
         }

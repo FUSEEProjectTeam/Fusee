@@ -17,6 +17,7 @@ namespace SceneManagement
         //TestZone
         private GameEntity _testGE;
         private TestBehaviour _testBE;
+
         protected float4 _farbe = new float4(0.5f, 1, 1, 0.3f);
         protected IShaderParam _vColorParam;
 
@@ -28,6 +29,8 @@ namespace SceneManagement
             _testGE.AddComponent(_testBE);
             _testGE.AddComponent(new Renderer());
             _scene.Instantiate(_testGE);
+
+
             ShaderProgram sp = RC.CreateShader(_material._vs, _material._ps);
             RC.SetShader(sp);
             _vColorParam = sp.GetShaderParam("vColor");

@@ -8,6 +8,7 @@ namespace SceneManagement
 {
     public class Transformation : Component
     {
+        private readonly int _id = 2;
         private TraversalState _traversalState; 
         private float4x4 _transformMatrix;
         private float4x4 _worldMatrix;
@@ -97,7 +98,10 @@ namespace SceneManagement
        }
        */
 
-
+       public override int GETID()
+       {
+           return _id;
+       }
 
        
     }

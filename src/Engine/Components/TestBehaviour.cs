@@ -25,7 +25,7 @@ namespace SceneManagement
         public override void Update()
         {
             //transform.Matrix = float4x4.CreateRotationY(x);
-            transform.LocalPosition+=new float3(x,x,x);
+            transform.LocalPosition+=new float3(-x,x,x);
             x += 0.01F;
             
             //Console.WriteLine(this.ToString()+" is running.");

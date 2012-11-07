@@ -18,5 +18,10 @@ namespace SceneManagement
        {
            
        }
+
+       virtual public int GETID()
+       {
+           return 0;
+       }
     }
 }
