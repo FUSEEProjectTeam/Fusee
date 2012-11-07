@@ -6,9 +6,9 @@ echo if not exist "%1..\Web\SampleObj\nul" md "%1..\Web\SampleObj"
 if not exist "%1..\Web\SampleObj\nul" md "%1..\Web\SampleObj"
 
 echo -----------------------------------------------------------------------
-echo JJSIL Cross compiling TestGame.exe and referenced DLLs
-echo %JSIL_DIR%\bin\JSILc.exe -o="%1..\Web" %1TestGame.exe
-%JSIL_DIR%\bin\JSILc.exe -o="%1..\Web" %1TestGame.exe
+echo JJSIL Cross compiling Engine.Simple.exe and referenced DLLs
+echo %JSIL_DIR%\bin\JSILc.exe -o="%1..\Web" %1Engine.Simple.exe
+%JSIL_DIR%\bin\JSILc.exe -o="%1..\Web" %1Engine.Simple.exe
 
 echo -----------------------------------------------------------------------
 echo Copying needed JScript files to output directory
