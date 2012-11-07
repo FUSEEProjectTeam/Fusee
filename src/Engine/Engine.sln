@@ -36,6 +36,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Math", "Math", "{8377F240-7
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "..\Math\Core\Core.csproj", "{E95FA1C8-6491-4B4B-BBE1-EDA6B16B2C6A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SceneManagement", "Components\SceneManagement.csproj", "{81B3A7F0-F8E4-45D0-BE69-B869C9B1803E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SceneManagement", "SceneManagement", "{144B8974-A184-499E-B250-65FB7B8804BA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -106,6 +110,16 @@ Global
 		{E95FA1C8-6491-4B4B-BBE1-EDA6B16B2C6A}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{E95FA1C8-6491-4B4B-BBE1-EDA6B16B2C6A}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{E95FA1C8-6491-4B4B-BBE1-EDA6B16B2C6A}.Release|x86.ActiveCfg = Release|Any CPU
+		{81B3A7F0-F8E4-45D0-BE69-B869C9B1803E}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{81B3A7F0-F8E4-45D0-BE69-B869C9B1803E}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{81B3A7F0-F8E4-45D0-BE69-B869C9B1803E}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{81B3A7F0-F8E4-45D0-BE69-B869C9B1803E}.Debug|x86.ActiveCfg = Debug|x86
+		{81B3A7F0-F8E4-45D0-BE69-B869C9B1803E}.Debug|x86.Build.0 = Debug|x86
+		{81B3A7F0-F8E4-45D0-BE69-B869C9B1803E}.Release|Any CPU.ActiveCfg = Release|x86
+		{81B3A7F0-F8E4-45D0-BE69-B869C9B1803E}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{81B3A7F0-F8E4-45D0-BE69-B869C9B1803E}.Release|Mixed Platforms.Build.0 = Release|x86
+		{81B3A7F0-F8E4-45D0-BE69-B869C9B1803E}.Release|x86.ActiveCfg = Release|x86
+		{81B3A7F0-F8E4-45D0-BE69-B869C9B1803E}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -115,5 +129,6 @@ Global
 		{F1EA338D-1D05-4D83-A739-F5AF559F0559} = {D8EA1B59-13BE-48B8-B197-5C26FAE7099F}
 		{82073B72-5B43-4333-9BF4-081BE4C85435} = {2DC1CA2C-F4F6-4779-B000-597CB6A54A04}
 		{E95FA1C8-6491-4B4B-BBE1-EDA6B16B2C6A} = {8377F240-717A-4BD7-8896-80B4B35C1F8F}
+		{81B3A7F0-F8E4-45D0-BE69-B869C9B1803E} = {144B8974-A184-499E-B250-65FB7B8804BA}
 	EndGlobalSection
 EndGlobal
