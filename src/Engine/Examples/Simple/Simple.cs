@@ -130,7 +130,7 @@ namespace Examples
 
         public static void Main()
         {
-            float3[] verts = new float3[1000];
+            float3[] verts = new float3[1000000];
             
             double t1 = Diagnostics.Timer;
             for (int i= 0; i < verts.Length; i++)

@@ -1000,30 +1000,34 @@ JSIL.ImplementExternals("Fusee.Engine.MeshReader", function ($) {
 });
 
 
+
+var FUSEE_GLOBAL_TimerFunc = null;
+var FUSEE_GLOBAL_first = 0.0;
+
 JSIL.ImplementExternals("Fusee.Engine.Diagnostics", function ($) {
 
-    $.Field({ Static: true, Public: false }, "TimerFunc", $.Object, null);
+/*    $.Field({ Static: true, Public: false }, "TimerFunc", $.Object, null);
     $.Field({ Static: true, Public: false }, "_first", $.Double, null);
-
+*/
 
     $.Method({ Static: true, Public: true }, "get_Timer",
     new JSIL.MethodSignature($.Double, []),
         function get_Timer() {
-            if (this.TimerFunc === null) {
-                if (window.performance.now !== null) {
-                    this.TimerFunc = window.performance.now;
+            if (FUSEE_GLOBAL_TimerFunc === null) {
+                if ("now" in window.performance && window.performance.now !== null) {
+                    FUSEE_GLOBAL_TimerFunc = window.performance.now;
                 }
-                else if (window.performance.webkitNow !== null) {
-                    this.TimerFunc = window.performance.webkitNow;
+                else if ("webkitNow" in window.performance && window.performance.webkitNow !== null) {
+                    FUSEE_GLOBAL_TimerFunc = window.performance.webkitNow;
                 } else {
-                    this._first = +new Date;
-                    this.TimerFunc = function () {
+                    FUSEE_GLOBAL_first = +new Date;
+                    FUSEE_GLOBAL_TimerFunc = function () {
                         var now = +new Date;
-                        return (now - _first) / 1000.0;
+                        return (now - FUSEE_GLOBAL_first) / 1000.0;
                     };
                 }
             }
-            return this.TimerFunc();
+            return FUSEE_GLOBAL_TimerFunc.call(window.performance);
         }
     );
 
