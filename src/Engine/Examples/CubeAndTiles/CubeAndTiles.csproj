@@ -38,6 +38,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -66,6 +67,7 @@
     <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
     <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -134,19 +136,16 @@
     <Content Include="Web\Examples.CubeAndTiles.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Web\Examples.CubeAndTiles.contentproj.manifest.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if $(ConfigurationName) == Debug+Web (
-echo ### PB: JSIL CCing ###
+echo ### Postbuild $(TargetName): JSIL CCing ###
 "%25JSIL_DIR%25\bin\JSILc.exe" -o "$(TargetDir)Web" "$(TargetPath)"
-echo ### PB: Copying additional Scripts ###
-xcopy /Y "..\..\WebGL.Scripts\Scripts\*.*" "Web\"
+echo ### Postbuild $(TargetName): Copying additional Scripts ###
+xcopy /Y "..\..\WebGL\Scripts\*.*" "Web\"
 xcopy /Y "SampleObj\*.*" "Web\SampleObj\"
-echo ### PB: Done ###
+echo ### Postbuild $(TargetName): Done ###
 )</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

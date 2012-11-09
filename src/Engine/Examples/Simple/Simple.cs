@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using Fusee.Engine;
 using Fusee.Math;
 
-namespace Examples
+namespace Examples.Simple
 {
     public class Simple : RenderCanvas 
     {
-        protected string _vs = @"
+        protected string Vs = @"
             // #version 120
 
             /* Copies incoming vertex color without change.
@@ -34,7 +32,7 @@ namespace Examples
                 vNormal = mat3(FUSEE_ITMV) * fuNormal;
             }";
 
-        protected string _ps = @"
+        protected string Ps = @"
             // #version 120
 
             /* Copies incoming fragment color without change. */
@@ -51,22 +49,22 @@ namespace Examples
             }";
 
         private static float _angleHorz = 0.0f, _angleVert = 0.0f, _angleVelHorz = 0, _angleVelVert = 0, _rotationSpeed = 10.0f, _damping = 0.95f;
-        protected Mesh _mesh, _meshFace;
-        protected IShaderParam _vColorParam;
+        protected Mesh Mesh, MeshFace;
+        protected IShaderParam VColorParam;
 
         public override void Init()
         {
             Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"SampleObj/Teapot.obj.model"));
-            _mesh = geo.ToMesh();
+            Mesh = geo.ToMesh();
 
             Geometry geo2 = MeshReader.ReadWavefrontObj(new StreamReader(@"SampleObj/Face.obj.model"));
-            _meshFace = geo2.ToMesh();
+            MeshFace = geo2.ToMesh();
 
             _angleHorz = 0;
             _rotationSpeed = 10.0f;
-            ShaderProgram sp = RC.CreateShader(_vs, _ps);
+            ShaderProgram sp = RC.CreateShader(Vs, Ps);
             RC.SetShader(sp);
-            _vColorParam = sp.GetShaderParam("vColor");
+            VColorParam = sp.GetShaderParam("vColor");
 
 
             RC.ClearColor = new float4(1, 1, 1, 1);
@@ -111,12 +109,12 @@ namespace Examples
             float4x4 mtxCam = float4x4.LookAt(0, 200, 400, 0, 50, 0, 0, 1, 0);
 
             RC.ModelView = mtxRot * float4x4.CreateTranslation(-100, 0, 0) * mtxCam;
-            RC.SetShaderParam(_vColorParam, new float4(0.5f, 0.8f, 0, 1));
-            RC.Render(_mesh);
+            RC.SetShaderParam(VColorParam, new float4(0.5f, 0.8f, 0, 1));
+            RC.Render(Mesh);
 
             RC.ModelView = mtxRot * float4x4.CreateTranslation(100, 0, 0) * mtxCam;
-            RC.SetShaderParam(_vColorParam, new float4(0.8f, 0.5f, 0, 1));
-            RC.Render(_meshFace);
+            RC.SetShaderParam(VColorParam, new float4(0.8f, 0.5f, 0, 1));
+            RC.Render(MeshFace);
             Present();
         }
 

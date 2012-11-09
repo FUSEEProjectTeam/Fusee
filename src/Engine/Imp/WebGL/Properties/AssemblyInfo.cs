@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // Allgemeine Informationen über eine Assembly werden über die folgenden 
 // Attribute gesteuert. Ändern Sie diese Attributwerte, um die Informationen zu ändern,
 // die mit einer Assembly verknüpft sind.
-[assembly: AssemblyTitle("Fusee.Engine.Proxies")]
+[assembly: AssemblyTitle("WebGL.Scripts")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Fusee.Engine.Proxies")]
+[assembly: AssemblyProduct("WebGL.Scripts")]
 [assembly: AssemblyCopyright("Copyright ©  2012")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // Die folgende GUID bestimmt die ID der Typbibliothek, wenn dieses Projekt für COM verfügbar gemacht wird
-[assembly: Guid("7336dc21-d334-4e5e-b0d4-5baf9ca2a5fc")]
+[assembly: Guid("c1503671-01f3-42d4-be54-7e6054b4d2c0")]
 
 // Versionsinformationen für eine Assembly bestehen aus den folgenden vier Werten:
 //
