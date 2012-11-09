@@ -1,4 +1,4 @@
-﻿namespace WebGL.Scripts
+﻿namespace WebGL
 {
     public class Dummy
     {
