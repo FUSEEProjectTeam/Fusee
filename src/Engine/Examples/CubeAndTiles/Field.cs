@@ -131,7 +131,7 @@ namespace Examples.CubeAndTiles
                     break;
 
                 default:
-                    vColor = new float3(0.0f, 0.0f, 0.0f)
+                    vColor = new float3(0.0f, 0.0f, 0.0f);
                     break;
             }
 
