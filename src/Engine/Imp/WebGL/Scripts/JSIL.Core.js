@@ -53,6 +53,110 @@ JSIL.SetValueProperty = function (target, key, value, enumerable) {
   Object.defineProperty(target, key, descriptor);
 };
 
+JSIL.DefineLazyDefaultProperty = function (target, key, getDefault) {
+  var isInitialized = false;
+  var defaultValue;
+
+  var descriptor = {
+    configurable: true,
+    enumerable: true
+  };
+
+  var cleanup = function () {
+    var currentDescriptor = Object.getOwnPropertyDescriptor(target, key);
+
+    // Someone could have replaced us with a new property. If so, don't trample
+    // over them.
+    if (
+      currentDescriptor &&
+      (currentDescriptor.get === descriptor.get) &&
+      (currentDescriptor.set === descriptor.set)
+    )
+      Object.defineProperty(target, key, {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        value: target[key]
+      });
+  };
+
+  var initIfNeeded = function (self) {
+    if (!isInitialized) {
+      defaultValue = getDefault.call(self);
+      if (!isInitialized) {
+        isInitialized = true;
+        JSIL.Host.runLater(cleanup);
+      }
+    }
+  };
+
+  var getter = function LazyDefaultProperty_Get () {
+    initIfNeeded(this);
+
+    return defaultValue;
+  };
+
+  var setter = function LazyDefaultProperty_Set (value) {
+    var setterDesc = {
+      configurable: true,
+      enumerable: true,
+      writable: true,
+      value: value
+    };
+
+    Object.defineProperty(
+      this, key, setterDesc
+    );
+
+    initIfNeeded(this);
+
+    return value;
+  };
+
+  descriptor.get = getter;
+  descriptor.set = setter;
+
+  Object.defineProperty(target, key, descriptor);
+};
+
+JSIL.SetLazyValueProperty = function (target, key, getValue) {
+  var isInitialized = false;
+  var value;
+
+  var descriptor = {
+    configurable: true,
+    enumerable: true,
+  };
+
+  var cleanup = function () {
+    var currentDescriptor = Object.getOwnPropertyDescriptor(target, key);
+
+    // Someone could have replaced us with a new property. If so, don't trample
+    // over them.
+    if (
+      currentDescriptor &&
+      (currentDescriptor.get === descriptor.get)
+    )
+      JSIL.SetValueProperty(target, key, value);
+  };
+
+  var getter = function LazyValueProperty_Get () {
+    if (!isInitialized) {
+      value = getValue.call(this);
+      if (!isInitialized) {
+        isInitialized = true;
+        JSIL.Host.runLater(cleanup);
+      }
+    }
+
+    return value;
+  };
+
+  descriptor.get = getter;
+
+  Object.defineProperty(target, key, descriptor);
+};
+
 JSIL.SetTypeId = function (typeObject, publicInterface, prototype, value) {
   if (!value)
     value = prototype;
@@ -126,10 +230,12 @@ JSIL.GetAssembly = function (assemblyName, requireExisting) {
     assemblyId = ++JSIL.$NextAssemblyId;
   }
 
-  JSIL.SetValueProperty(result, "get_Location", function () { return ""; });
-  JSIL.SetValueProperty(result, "Location", "");
+  var makeReflectionAssembly = function () {
+    return new $jsilcore.System.Reflection.RuntimeAssembly(result, assemblyName);
+  };
 
   JSIL.SetValueProperty(result, "__Declared__", false);
+  JSIL.SetLazyValueProperty(result, "__Assembly__", makeReflectionAssembly);
   JSIL.SetValueProperty(result, "__AssemblyId__", assemblyId, false);
 
   JSIL.SetValueProperty(result, "TypeRef", 
@@ -140,11 +246,11 @@ JSIL.GetAssembly = function (assemblyName, requireExisting) {
 
   JSIL.SetValueProperty(result, "toString", 
     function Assembly_ToString () {
-      return assemblyName;
+      return "<" + assemblyName + " Public Interface>";
     }
   );
 
-  JSIL.SetValueProperty(result, "typesByName", {}, false);
+  JSIL.SetValueProperty(result, "$typesByName", {}, false);
 
   JSIL.PrivateNamespaces[assemblyName] = result;
   return result;
@@ -166,108 +272,13 @@ $jsilcore.ArrayNull = [];
 $jsilcore.FunctionNotInitialized = function () { throw new Error("FunctionNotInitialized"); };
 $jsilcore.FunctionNull = function () { throw new Error("FunctionNull"); };
 
-$jsilcore.PropertyNotInitialized = {};
+JSIL.Memoize = function Memoize (value) {
+  if (typeof (value) === "undefined")
+    throw new Error("Referenced type is undefined");
 
-JSIL.Memoize = function (value) {
   return function MemoizedValue () { 
-    return value 
-  };
-};
-
-JSIL.DefineLazyDefaultProperty = function (target, key, getDefault) {
-  var state = $jsilcore.PropertyNotInitialized;
-
-  var descriptor = {
-    configurable: true,
-    enumerable: true
-  };
-
-  var cleanup = function () {
-    var currentDescriptor = Object.getOwnPropertyDescriptor(target, key);
-
-    // Someone could have replaced us with a new property. If so, don't trample
-    // over them.
-    if (
-      currentDescriptor &&
-      (currentDescriptor.get === descriptor.get) &&
-      (currentDescriptor.set === descriptor.set)
-    )
-      Object.defineProperty(target, key, {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        value: target[key]
-      });
-  };
-
-  var initIfNeeded = function (self) {
-    if (state === $jsilcore.PropertyNotInitialized) {
-      state = getDefault.call(self);
-      JSIL.Host.runLater(cleanup);
-    }
-  };
-
-  var getter = function LazyDefaultProperty_Get () {
-    initIfNeeded(this);
-
-    return state;
-  };
-
-  var setter = function LazyDefaultProperty_Set (value) {
-    var setterDesc = {
-      configurable: true,
-      enumerable: true,
-      writable: true,
-      value: value
-    };
-
-    Object.defineProperty(
-      this, key, setterDesc
-    );
-
-    initIfNeeded(this);
-
     return value;
   };
-
-  descriptor.get = getter;
-  descriptor.set = setter;
-
-  Object.defineProperty(target, key, descriptor);
-};
-
-JSIL.SetLazyValueProperty = function (target, key, getValue) {
-  var state = $jsilcore.PropertyNotInitialized;
-
-  var descriptor = {
-    configurable: true,
-    enumerable: true,
-  };
-
-  var cleanup = function () {
-    var currentDescriptor = Object.getOwnPropertyDescriptor(target, key);
-
-    // Someone could have replaced us with a new property. If so, don't trample
-    // over them.
-    if (
-      currentDescriptor &&
-      (currentDescriptor.get === descriptor.get)
-    )
-      JSIL.SetValueProperty(target, key, state);
-  };
-
-  var getter = function LazyValueProperty_Get () {
-    if (state === $jsilcore.PropertyNotInitialized) {
-      state = getValue.call(this);
-      JSIL.Host.runLater(cleanup);
-    }
-
-    return state;
-  };
-
-  descriptor.get = getter;
-
-  Object.defineProperty(target, key, descriptor);
 };
 
 
@@ -722,10 +733,10 @@ JSIL.GetTypeByName = function (name, assembly) {
     throw new Error("Positional generic method parameter '" + name + "' cannot be resolved by GetTypeByName.");
 
   if (assembly !== undefined) {
-    var tbn = assembly.typesByName;
+    var tbn = assembly.$typesByName;
 
     if (typeof (tbn) === "object") {
-      var typeFunction = assembly.typesByName[name];
+      var typeFunction = tbn[name];
       if (typeof (typeFunction) === "function")
         return typeFunction(false);
     } else {
@@ -766,11 +777,11 @@ JSIL.DefineTypeName = function (name, getter, isPublic) {
     }
   }
 
-  var existing = $private.typesByName[name];
+  var existing = $private.$typesByName[name];
   if (typeof (existing) === "function")
     throw new Error("Type '" + name + "' has already been defined.");
 
-  $private.typesByName[name] = getter;
+  $private.$typesByName[name] = getter;
 };
 
 JSIL.DeclareNamespace = function (name, sealed) {
@@ -994,6 +1005,18 @@ JSIL.MakeExternalMemberStub = function (namespaceName, getMemberName, inheritedM
   return result;
 };
 
+JSIL.MemberRecord = function (type, descriptor, data, attributes) {
+  this.type = type;
+  this.descriptor = descriptor;
+  this.data = data;
+  this.attributes = attributes;
+};
+
+JSIL.RawMethodRecord = function (name, isStatic) {
+  this.name = name;
+  this.isStatic = isStatic;
+};
+
 JSIL.ImplementExternals = function (namespaceName, externals) {
   if (typeof (namespaceName) !== "string") {
     JSIL.Host.error(new Error("ImplementExternals expected name of namespace"));
@@ -1050,16 +1073,17 @@ JSIL.ImplementExternals = function (namespaceName, externals) {
 
     var m = typeObject.__Members__;
     for (var i = 0; i < m.length; i++) {
-      var type = m[i][0];
-      var descriptor = m[i][1];
-      var data = m[i][2];
+      var member = m[i];
+      var type = member.type;
+      var descriptor = member.descriptor;
+      var data = member.data;
 
       var name = data.mangledName || descriptor.EscapedName;
 
       var target = descriptor.Static ? publicInterface : publicInterface.prototype;
 
       if (data.mangledName) {
-        obj[descriptor.Static ? data.mangledName : prefix + data.mangledName] = [m[i], target[name]];
+        obj[descriptor.Static ? data.mangledName : prefix + data.mangledName] = [member, target[name]];
       }
     }
 
@@ -1068,10 +1092,10 @@ JSIL.ImplementExternals = function (namespaceName, externals) {
       var rawMethod = rm[i];
       var suffix = "$raw";
 
-      if (rawMethod[0]) {
-        obj[rawMethod[1] + suffix] = [null, publicInterface[rawMethod[1]]];
+      if (rawMethod.isStatic) {
+        obj[rawMethod.name + suffix] = [null, publicInterface[rawMethod.name]];
       } else {
-        obj[prefix + rawMethod[1] + suffix] = [null, publicInterface.prototype[rawMethod[1]]];
+        obj[prefix + rawMethod.name + suffix] = [null, publicInterface.prototype[rawMethod.name]];
       }
     }
     
@@ -1106,22 +1130,6 @@ JSIL.Initialize = function () {
   var arn = JSIL.AllRegisteredNames;
   for (var i = 0, l = arn.length; i < l; i++)
     arn[i].sealed = true;
-
-  var forceInitList = [
-    "System.Object",
-    "System.Reflection.MemberInfo",
-    "System.Reflection.MethodBase",
-    "System.Reflection.FieldInfo",
-    "System.Type"
-  ];
-
-  /*
-  for (var i = 0; i < forceInitList.length; i++) {
-    var typeName = forceInitList[i];
-    var type = JSIL.GetTypeByName(typeName);
-    JSIL.InitializeType(type);
-  };
-  */
 };
 
 JSIL.GenericParameter = function (name, context) {
@@ -1500,7 +1508,7 @@ JSIL.TypeObjectPrototype.toString = function () {
 };
 
 JSIL.TypeObjectPrototype.get_Assembly = function() { 
-  return this.__Context__; 
+  return this.__Context__.__Assembly__; 
 }
 JSIL.TypeObjectPrototype.get_Namespace = function() { 
   // FIXME: Probably wrong for nested types.
@@ -1852,7 +1860,7 @@ $jsilcore.$Of$NoInitialize = function () {
     "Of", "toString", "__FullName__", "__OfCache__", "Of$NoInitialize",
     "GetType", "__ReflectionCache__", "__Members__", "__ThisTypeId__",
     "__RanCctors__", "__RanFieldInitializers__", "__PreInitMembrane__",
-    "__FieldList__"
+    "__FieldList__", "__InterfaceMembers__"
   ];
 
   // FIXME: for ( in ) is deoptimized in V8. Maybe use Object.keys(), or type metadata?
@@ -2038,11 +2046,10 @@ JSIL.RebindRawMethods = function (publicInterface, typeObject) {
     for (var i = 0; i < rm.length; i++) {
       var item = rm[i];
 
-      // Only static methods
-      if (!item[0])
+      if (!item.isStatic)
         continue;
 
-      var methodName = item[1];
+      var methodName = item.name;
       var method = publicInterface[methodName];
 
       var boundMethod = method.bind(publicInterface);
@@ -2077,7 +2084,7 @@ JSIL.RenameGenericMethods = function (publicInterface, typeObject) {
   for (var i = 0, l = members.length; i < l; i++) {
     var member = members[i];
 
-    switch (member[0]) {
+    switch (member.type) {
       case "MethodInfo":
       case "ConstructorInfo":
         break;
@@ -2085,8 +2092,8 @@ JSIL.RenameGenericMethods = function (publicInterface, typeObject) {
         continue _loop;
     }
 
-    var descriptor = member[1];
-    var data = member[2];
+    var descriptor = member.descriptor;
+    var data = member.data;
     var signature = data.signature;
 
     var oldName = data.mangledName;
@@ -2131,11 +2138,11 @@ JSIL.FixupFieldTypes = function (publicInterface, typeObject) {
   _loop:
   for (var i = 0, l = members.length; i < l; i++) {
     var member = members[i];
-    if (member[0] !== "FieldInfo")
+    if (member.type !== "FieldInfo")
       continue _loop;
 
-    var descriptor = member[1];
-    var data = member[2];
+    var descriptor = member.descriptor;
+    var data = member.data;
 
     var fieldType = data.fieldType;
     resolvedFieldTypeRef = JSIL.ResolveGenericTypeReference(fieldType, resolveContext);
@@ -2147,7 +2154,7 @@ JSIL.FixupFieldTypes = function (publicInterface, typeObject) {
     var newData = Object.create(data);
     newData.fieldType = resolvedFieldType;
 
-    members[i] = [member[0], member[1], newData];
+    members[i] = new JSIL.MemberRecord(member.type, member.descriptor, newData, member.attributes);
   }
 };
 
@@ -2232,7 +2239,7 @@ JSIL.FixupInterfaces = function (publicInterface, typeObject) {
     // In cases where an interface method (IInterface_MethodName) is implemented by a regular method
     //  (MethodName), we make a copy of the regular method with the name of the interface method, so
     //  that attempts to directly invoke the interface method will still work.
-    var members = iface.__Members__;
+    var members = iface.__InterfaceMembers__;
     var proto = publicInterface.prototype;
 
     var escapedLocalName = JSIL.EscapeName(ifaceLocalName);
@@ -2405,10 +2412,10 @@ JSIL.MakeFieldInitializer = function (typeObject) {
     var key = "f" + i.toString();
 
     if (field.isStruct) {
-      body[i] = JSIL.FormatMemberAccess("target", field.name) + " = new types." + key + "();";
+      body.push(JSIL.FormatMemberAccess("target", field.name) + " = new types." + key + "();");
       types[key] = field.type.__PublicInterface__;
     } else {
-      body[i] = JSIL.FormatMemberAccess("target", field.name) + " = defaults." + key + ";";
+      body.push(JSIL.FormatMemberAccess("target", field.name) + " = defaults." + key + ";");
 
       if (typeof (field.defaultValueExpression) === "function") {
         // FIXME: This wants a this-reference?
@@ -3499,14 +3506,20 @@ JSIL.ApplyExternals = function (publicInterface, typeObject, fullName) {
       continue;
     }
 
-    var member = externals[k][0]
+    var member = externals[k][0];
     var value = externals[k][1];
 
-    if (member !== null)
-      typeObject.__Members__.push(member);
+    if (member !== null) {
+      if (Object.getPrototypeOf(member) !== JSIL.MemberRecord.prototype)
+        throw new Error("Invalid prototype");
 
-    if (isRaw)
-      typeObject.__RawMethods__.push([isStatic, key]);
+      typeObject.__Members__.push(member);
+    }
+
+    if (isRaw) {
+      var rawRecord = new JSIL.RawMethodRecord(key, isStatic);
+      typeObject.__RawMethods__.push(rawRecord);
+    }
 
     JSIL.SetValueProperty(target, key, value);
   }
@@ -3772,6 +3785,19 @@ JSIL.$ActuallyMakeCastMethods = function (publicInterface, typeObject, specialTy
       throwCastError(expression);
   };
 
+  var int64CastFunction = function Cast_Int64_Impl (expression) {
+    if (expression === false)
+      return System.Int64.Zero;
+    else if (expression === true)
+      return System.Int64.One;
+    else if (typeof (expression) === "number")
+      return System.Int64.FromNumber(expression);
+    else if (checkMethod(expression))
+      return expression;
+    else
+      throwCastError(expression);
+  };
+
   switch (specialType) {
     case "interface":
       break;
@@ -3828,6 +3854,15 @@ JSIL.$ActuallyMakeCastMethods = function (publicInterface, typeObject, specialTy
       asFunction = throwCastError;
       castFunction = numericCastFunction;
 
+      break;
+
+    case "int64":
+      customCheckOnly = true;
+      asFunction = throwCastError;
+
+      castFunction = function Cast_Int64 (expression) {
+        return int64CastFunction(expression);
+      };
       break;
   }
 
@@ -3904,13 +3939,14 @@ JSIL.MakeCastMethods = function (publicInterface, typeObject, specialType) {
 
 JSIL.MakeTypeAlias = function (sourceAssembly, fullName) {
   var context = $private;
+  var tbn = sourceAssembly.$typesByName;
 
   Object.defineProperty(
-    context.typesByName, fullName, {
+    context.$typesByName, fullName, {
       configurable: false,
       enumerable: true,
       get: function () {
-        return sourceAssembly.typesByName[fullName];
+        return tbn[fullName];
       }
     }
   );
@@ -4201,7 +4237,7 @@ JSIL.MakeInterface = function (fullName, isPublic, genericArguments, initializer
     typeObject.__CallStack__ = callStack;
     JSIL.SetTypeId(typeObject, publicInterface, JSIL.AssignTypeId(assembly, fullName));
 
-    typeObject.__Members__ = {};
+    typeObject.__InterfaceMembers__ = {};
     typeObject.__RenamedMethods__ = {};
     typeObject.__ShortName__ = localName;
     typeObject.__Context__ = $private;
@@ -4611,6 +4647,16 @@ JSIL.$BindGenericMethod = function (outerThis, body, methodName, genericArgument
   return result;
 };
 
+
+JSIL.MemberBuilder = function () {
+  this.attributes = [];
+};
+
+JSIL.MemberBuilder.prototype.Attribute = function (attributeType, attributeArguments) {
+  this.attributes.push([attributeType, attributeArguments]);
+};
+
+
 JSIL.InterfaceBuilder = function (context, typeObject, publicInterface) {
   this.context = context;
   this.typeObject = typeObject;
@@ -4744,12 +4790,13 @@ JSIL.InterfaceBuilder.prototype.ParseDescriptor = function (descriptor, name, si
   return result;
 };
 
-JSIL.InterfaceBuilder.prototype.PushMember = function (type, descriptor, data) {
+JSIL.InterfaceBuilder.prototype.PushMember = function (type, descriptor, data, attributes) {
   var members = this.typeObject.__Members__;
   if (!JSIL.IsArray(members))
     this.typeObject.__Members__ = members = [];
 
-  Array.prototype.push.call(members, [type, descriptor, data]);
+  var record = new JSIL.MemberRecord(type, descriptor, data, attributes);
+  Array.prototype.push.call(members, record);
 
   return members.length - 1;
 };
@@ -4839,7 +4886,7 @@ JSIL.InterfaceBuilder.MakeProperty = function (typeName, name, target, methodSou
 
 JSIL.InterfaceBuilder.prototype.Property = function (_descriptor, name, propertyType) {
   if (this.typeObject.IsInterface) {
-    this.typeObject.__Members__[name] = Property;
+    this.typeObject.__InterfaceMembers__[name] = Property;
     return;
   }
 
@@ -4848,7 +4895,10 @@ JSIL.InterfaceBuilder.prototype.Property = function (_descriptor, name, property
   var props = this.typeObject.__Properties__;
   props.push([descriptor.Static, name, descriptor.Virtual, propertyType]);
 
-  this.PushMember("PropertyInfo", descriptor, null);
+  var memberBuilder = new JSIL.MemberBuilder();
+  this.PushMember("PropertyInfo", descriptor, null, memberBuilder.attributes);
+
+  return memberBuilder;
 };
 
 JSIL.InterfaceBuilder.prototype.GenericProperty = function (_descriptor, name, propertyType) {
@@ -4857,7 +4907,10 @@ JSIL.InterfaceBuilder.prototype.GenericProperty = function (_descriptor, name, p
   var props = this.typeObject.__Properties__;
   props.push([descriptor.Static, name, descriptor.Virtual, propertyType]);
 
-  this.PushMember("PropertyInfo", descriptor, null);
+  var memberBuilder = new JSIL.MemberBuilder();
+  this.PushMember("PropertyInfo", descriptor, null, memberBuilder.attributes);
+
+  return memberBuilder;
 };
 
 JSIL.InterfaceBuilder.prototype.Field = function (_descriptor, fieldName, fieldType, defaultValueExpression) {
@@ -4868,10 +4921,11 @@ JSIL.InterfaceBuilder.prototype.Field = function (_descriptor, fieldName, fieldT
     defaultValueExpression: defaultValueExpression 
   };
 
-  var fieldIndex = this.PushMember("FieldInfo", descriptor, data);
+  var memberBuilder = new JSIL.MemberBuilder();
+  var fieldIndex = this.PushMember("FieldInfo", descriptor, data, memberBuilder.attributes);
 
   if (!descriptor.Static)
-    return;
+    return memberBuilder;
 
   var maybeRunCctors = this.maybeRunCctors;
 
@@ -4900,7 +4954,7 @@ JSIL.InterfaceBuilder.prototype.Field = function (_descriptor, fieldName, fieldT
 
       var initFieldDefault = function InitFieldDefault () {
         var actualFieldInfo = members[fieldIndex];
-        var actualFieldType = actualFieldInfo[2].fieldType;
+        var actualFieldType = actualFieldInfo.data.fieldType;
 
         var fieldTypeResolved;
 
@@ -4946,6 +5000,8 @@ JSIL.InterfaceBuilder.prototype.Field = function (_descriptor, fieldName, fieldT
     fi = this.typeObject.__FieldInitializers__ = [];
 
   fi.push(fieldCreator);
+
+  return memberBuilder;
 };
 
 JSIL.InterfaceBuilder.prototype.ExternalMethod = function (_descriptor, methodName, signature) {
@@ -4979,12 +5035,15 @@ JSIL.InterfaceBuilder.prototype.ExternalMethod = function (_descriptor, methodNa
     JSIL.SetValueProperty(descriptor.Target, mangledName, newValue);
   }
 
+  var memberBuilder = new JSIL.MemberBuilder();
   this.PushMember("MethodInfo", descriptor, { 
     signature: signature, 
     mangledName: mangledName,
     isExternal: true,
     isPlaceholder: isPlaceholder
-  });
+  }, memberBuilder.attributes);
+
+  return memberBuilder;
 };
 
 JSIL.InterfaceBuilder.prototype.ExternalProperty = function (descriptor, propertyName, propertyType) {
@@ -4997,7 +5056,7 @@ JSIL.InterfaceBuilder.prototype.ExternalProperty = function (descriptor, propert
     new JSIL.MethodSignature(null, [propertyType], [])
   );
 
-  this.Property(descriptor, propertyName, propertyType);
+  return this.Property(descriptor, propertyName, propertyType);
 };
 
 JSIL.InterfaceBuilder.prototype.RawMethod = function (isStatic, methodName, fn) {
@@ -5011,7 +5070,8 @@ JSIL.InterfaceBuilder.prototype.RawMethod = function (isStatic, methodName, fn) 
     methodName, fn
   );
 
-  this.typeObject.__RawMethods__.push([isStatic, methodName]);
+  var rawRecord = new JSIL.RawMethodRecord(methodName, isStatic);
+  this.typeObject.__RawMethods__.push(rawRecord);
 };
 
 JSIL.InterfaceBuilder.prototype.Method = function (_descriptor, methodName, signature, fn) {
@@ -5020,8 +5080,8 @@ JSIL.InterfaceBuilder.prototype.Method = function (_descriptor, methodName, sign
   var mangledName = signature.GetKey(descriptor.EscapedName);
 
   if (this.typeObject.IsInterface) {
-    this.typeObject.__Members__[methodName] = Function;
-    this.typeObject.__Members__[mangledName] = Function;
+    this.typeObject.__InterfaceMembers__[methodName] = Function;
+    this.typeObject.__InterfaceMembers__[mangledName] = Function;
     return;
   }
 
@@ -5029,11 +5089,14 @@ JSIL.InterfaceBuilder.prototype.Method = function (_descriptor, methodName, sign
 
   JSIL.SetValueProperty(descriptor.Target, mangledName, fn);
 
+  var memberBuilder = new JSIL.MemberBuilder();
   this.PushMember("MethodInfo", descriptor, { 
     signature: signature, 
     mangledName: mangledName,
     isExternal: false
-  });
+  }, memberBuilder.attributes);
+
+  return memberBuilder;
 };
 
 JSIL.InterfaceBuilder.prototype.InheritBaseMethod = function (name) {
@@ -5064,11 +5127,14 @@ JSIL.InterfaceBuilder.prototype.InheritBaseMethod = function (name) {
 
   JSIL.SetValueProperty(descriptor.Target, mangledName, fn);
 
+  var memberBuilder = new JSIL.MemberBuilder();
   this.PushMember("MethodInfo", descriptor, {
     signature: signature, 
     mangledName: mangledName,
     isExternal: false
-  });
+  }, memberBuilder.attributes);
+
+  return memberBuilder;
 };
 
 JSIL.InterfaceBuilder.prototype.InheritDefaultConstructor = function () {
@@ -5084,6 +5150,7 @@ JSIL.InterfaceBuilder.prototype.ImplementInterfaces = function (/* ...interfaces
     interfaces.push(arguments[i]);
   }
 };
+
 
 JSIL.MethodSignature = function (returnType, argumentTypes, genericArgumentNames, context) {
   this.context = context || $private;
@@ -5555,7 +5622,10 @@ JSIL.GetTypeInternal = function (parsedTypeName, defaultContext, throwOnFail) {
 JSIL.GetTypeFromAssembly = function (assembly, typeName, genericArguments, throwOnFail) {
   var resolved, result = null;
 
-  resolved = JSIL.ResolveName(assembly, typeName, true, throwOnFail === true);
+  var publicInterface = assembly.__PublicInterface__ || assembly;
+  assembly = publicInterface.__Assembly__;
+
+  resolved = JSIL.ResolveName(publicInterface, typeName, true, throwOnFail === true);
   if (resolved === null)
     return null;
 
@@ -5565,13 +5635,30 @@ JSIL.GetTypeFromAssembly = function (assembly, typeName, genericArguments, throw
     if (JSIL.IsArray(genericArguments) && (genericArguments.length > 0))
       result = result.Of.apply(result, genericArguments);
   } else if (throwOnFail) {
-    throw new System.TypeLoadException("The type '" + typeName + "' could not be found in the assembly.");
+    throw new System.TypeLoadException("The type '" + typeName + "' could not be found in the assembly '" + assembly.toString() + "'.");
   }
 
   if (result !== null)
     return result.__Type__;
   else
     return null;
+};
+
+JSIL.GetTypesFromAssembly = function (assembly) {
+  var publicInterface = assembly.__PublicInterface__ || assembly;
+  assembly = publicInterface.__Assembly__;
+
+  var result = [];
+  var types = publicInterface.$typesByName;
+  for (var k in types) {
+    var typeFunction = types[k];
+    var publicInterface = typeFunction(false);
+    var type = publicInterface.__Type__;
+
+    result.push(type);
+  }
+
+  return result;
 };
 
 JSIL.CreateInstanceOfType = function (type, constructorName, constructorArguments) {
@@ -5681,12 +5768,12 @@ JSIL.GetReflectionCache = function (typeObject) {
 
   for (var i = 0, l = members.length; i < l; i++) {
     var member = members[i];
-    if (!JSIL.IsArray(member))
+    if (!member)
       continue;
 
-    var type = member[0];
-    var descriptor = member[1];
-    var data = member[2];
+    var type = member.type;
+    var descriptor = member.descriptor;
+    var data = member.data;
 
     var info = makeTypeInstance(type);
 

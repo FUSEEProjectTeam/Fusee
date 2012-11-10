@@ -396,7 +396,7 @@ JSIL.ImplementExternals("Microsoft.Xna.Framework.Content.ContentLoadException", 
     Static: false,
     Public: true
   }, ".ctor", new JSIL.MethodSignature(null, [$.String], []), function (message) {
-    this._message = String(message);
+    System.Exception.prototype._ctor.call(this, message);
   });
 });
 
@@ -1024,6 +1024,11 @@ JSIL.ImplementExternals("Microsoft.Xna.Framework.Content.ContentTypeReaderManage
 
         var typeReaderInstance = JSIL.CreateInstanceOfType(typeReaderType);
         var targetType = typeReaderInstance.TargetType;
+        if (!targetType) {
+          JSIL.Host.error(new Error("The type reader '" + typeReaderName + "' is broken or not implemented."));
+          return null;
+        }
+
         var targetTypeName = targetType.toString();
 
         thisType.AddTypeReader(typeReaderName, contentReader, typeReaderInstance);
@@ -1107,19 +1112,23 @@ JSIL.ImplementExternals("Microsoft.Xna.Framework.Content.ContentReader", functio
     }
   );
 
+  $.RawMethod(false, "makeError", function throwError (text) {
+    return new Microsoft.Xna.Framework.Content.ContentLoadException(text);
+  });
 
   $.Method({Static:false, Public:false}, "ReadHeader", 
     (new JSIL.MethodSignature($.Int32, [], [])), 
     function ReadHeader () {
       var formatHeader = String.fromCharCode.apply(String, this.ReadBytes(3));
-      if (formatHeader != "XNB") throw new Error("Invalid XNB format");
+      if (formatHeader != "XNB") 
+        throw this.makeError("Invalid XNB format");
 
       var platformId = String.fromCharCode(this.ReadByte());
       switch (platformId) {
       case "w":
         break;
       default:
-        throw new Error("Unsupported XNB platform: " + platformId);
+        throw this.makeError("Unsupported XNB platform: " + platformId);
       }
 
       var formatVersion = this.ReadByte();
@@ -1128,7 +1137,7 @@ JSIL.ImplementExternals("Microsoft.Xna.Framework.Content.ContentReader", functio
       case 5:
         break;
       default:
-        throw new Error("Unsupported XNB format version: " + formatVersion);
+        throw this.makeError("Unsupported XNB format version: " + formatVersion);
       }
 
       var formatFlags = this.ReadByte();
@@ -1137,12 +1146,15 @@ JSIL.ImplementExternals("Microsoft.Xna.Framework.Content.ContentReader", functio
       var isCompressed = (formatFlags & 0x80) != 0;
 
       if (isCompressed) 
-        throw new Error("Compressed XNBs are not supported");
+        throw this.makeError("Compressed XNBs are not supported");
 
       var uncompressedSize = this.ReadUInt32();
 
       var typeReaderCount = this.Read7BitEncodedInt();
       this.typeReaders = Microsoft.Xna.Framework.Content.ContentTypeReaderManager.ReadTypeManifest(typeReaderCount, this);
+
+      if (!this.typeReaders)
+        throw this.makeError("Failed to construct type readers");
     }
   );
 
@@ -2750,7 +2762,7 @@ JSIL.ImplementExternals("Microsoft.Xna.Framework.Game", function ($) {
       this.components = JSIL.CreateInstanceOfType(
         Microsoft.Xna.Framework.GameComponentCollection.__Type__, "$internalCtor", [this]
       );
-      this.targetElapsedTime = System.TimeSpan.FromTicks(166667);
+      this.targetElapsedTime = System.TimeSpan.FromTicks(System.Int64.FromInt32(166667));
       this.isFixedTimeStep = true;
       this.forceElapsedTimeToZero = true;
       this._isDead = false;
@@ -3041,7 +3053,10 @@ JSIL.ImplementExternals("Microsoft.Xna.Framework.Game", function ($) {
   $.RawMethod(false, "_FixedTimeStep", function Game_FixedTimeStep (
     elapsed, frameDelay, millisecondInTicks, maxElapsedTimeMs, longFrame
   ) {
-    this._gameTime.elapsedGameTime._ticks = (frameDelay * millisecondInTicks);
+    var tInt64 = $jsilcore.System.Int64;
+    var frameLength64 = tInt64.FromNumber(frameDelay * millisecondInTicks);
+    this._gameTime.elapsedGameTime._ticks = frameLength64;
+    this._gameTime.elapsedGameTime.$invalidate();
 
     elapsed += this._extraTime;
     this._extraTime = 0;
@@ -3058,7 +3073,10 @@ JSIL.ImplementExternals("Microsoft.Xna.Framework.Game", function ($) {
     }
 
     for (var i = 0; i < numFrames; i++) {
-      this._gameTime.totalGameTime._ticks += (frameDelay * millisecondInTicks);
+      this._gameTime.totalGameTime._ticks = tInt64.op_Addition(
+        this._gameTime.totalGameTime._ticks, frameLength64, this._gameTime.totalGameTime._ticks
+      );
+      this._gameTime.totalGameTime.$invalidate();
 
       this._TimedUpdate(longFrame);
     }
@@ -3073,8 +3091,15 @@ JSIL.ImplementExternals("Microsoft.Xna.Framework.Game", function ($) {
     if (elapsed > maxElapsedTimeMs)
       elapsed = maxElapsedTimeMs;
 
-    this._gameTime.elapsedGameTime._ticks = (elapsed * millisecondInTicks);
-    this._gameTime.totalGameTime._ticks += (elapsed * millisecondInTicks);
+    var tInt64 = $jsilcore.System.Int64;
+    var elapsed64 = tInt64.FromNumber(elapsed * millisecondInTicks);
+
+    this._gameTime.elapsedGameTime._ticks = elapsed64;
+    this._gameTime.elapsedGameTime.$invalidate();
+    this._gameTime.totalGameTime._ticks = tInt64.op_Addition(
+      this._gameTime.totalGameTime._ticks, elapsed64, this._gameTime.totalGameTime._ticks
+    );
+    this._gameTime.totalGameTime.$invalidate();
 
     this._TimedUpdate(longFrame);
   });
@@ -3094,6 +3119,8 @@ JSIL.ImplementExternals("Microsoft.Xna.Framework.Game", function ($) {
     var now = this._GetNow();
 
     var frameDelay = this.targetElapsedTime.get_TotalMilliseconds();
+    if (frameDelay <= 0)
+      throw new Error("Game frame duration must be a positive, nonzero number!");
 
     if (this._lastFrame === 0) {
       var elapsed = frameDelay;
@@ -4307,9 +4334,9 @@ JSIL.ImplementExternals("Microsoft.Xna.Framework.Rectangle", function ($) {
     }
   );
 
-  $.Method({Static:false, Public:true }, "Offset", 
+  $.Method({Static:false, Public:true }, "OffsetPoint", 
     (new JSIL.MethodSignature(null, [$xnaasms[0].TypeRef("Microsoft.Xna.Framework.Point")], [])), 
-    function Offset (amount) {
+    function OffsetPoint (amount) {
       this.X += amount.X;
       this.Y += amount.Y;
     }

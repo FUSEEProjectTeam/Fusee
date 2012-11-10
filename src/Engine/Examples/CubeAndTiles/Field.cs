@@ -111,7 +111,7 @@ namespace Examples.CubeAndTiles
             DeadAnimation();
 
             // color fields
-            var vColor = new float3(0.0f, 0.0f, 0.0f);
+            float3 vColor;
             var val = 1.0f;
 
             switch (Type)
@@ -128,6 +128,10 @@ namespace Examples.CubeAndTiles
 
                 case FieldTypes.FtNormal:
                     vColor = new float3(0.8f, 0.8f, 0.8f);
+                    break;
+
+                default:
+                    vColor = new float3(0.0f, 0.0f, 0.0f)
                     break;
             }
 
