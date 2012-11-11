@@ -50,106 +50,106 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Scripts\browser.css">
+    <Content Include="browser.css">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\ES5.js">
+    <Content Include="ES5.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\Fusee.Engine.Imp.WebGL.js">
+    <Content Include="Fusee.Engine.Imp.WebGL.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\gamepad.js">
+    <Content Include="gamepad.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\JSIL.Bootstrap.DateTime.js">
+    <Content Include="JSIL.Bootstrap.DateTime.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\JSIL.Bootstrap.Int64.js">
+    <Content Include="JSIL.Bootstrap.Int64.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\JSIL.Bootstrap.js">
+    <Content Include="JSIL.Bootstrap.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\JSIL.Bootstrap.Resources.js">
+    <Content Include="JSIL.Bootstrap.Resources.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\JSIL.Bootstrap.Text.js">
+    <Content Include="JSIL.Bootstrap.Text.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\JSIL.Browser.Audio.js">
+    <Content Include="JSIL.Browser.Audio.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\JSIL.Browser.js">
+    <Content Include="JSIL.Browser.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\JSIL.Browser.Loaders.js">
+    <Content Include="JSIL.Browser.Loaders.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\JSIL.Browser.Touch.js">
+    <Content Include="JSIL.Browser.Touch.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\JSIL.Core.js">
+    <Content Include="JSIL.Core.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\JSIL.Core.Types.js">
+    <Content Include="JSIL.Core.Types.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\JSIL.IO.js">
+    <Content Include="JSIL.IO.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\JSIL.js">
+    <Content Include="JSIL.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\JSIL.JSON.js">
+    <Content Include="JSIL.JSON.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\JSIL.LocalStorage.js">
+    <Content Include="JSIL.LocalStorage.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\JSIL.ReadOnlyStorage.js">
+    <Content Include="JSIL.ReadOnlyStorage.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\JSIL.Shell.js">
+    <Content Include="JSIL.Shell.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\JSIL.Shell.Loaders.js">
+    <Content Include="JSIL.Shell.Loaders.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\JSIL.Storage.js">
+    <Content Include="JSIL.Storage.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\JSIL.TestFixture.js">
+    <Content Include="JSIL.TestFixture.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\JSIL.XML.js">
+    <Content Include="JSIL.XML.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\JSIL.XNA3.js">
+    <Content Include="JSIL.XNA3.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\JSIL.XNA4.js">
+    <Content Include="JSIL.XNA4.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\JSIL.XNACore.js">
+    <Content Include="JSIL.XNACore.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\JSIL.XNAStorage.js">
+    <Content Include="JSIL.XNAStorage.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\printStackTrace.js">
+    <Content Include="printStackTrace.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\System.Drawing.js">
+    <Content Include="System.Drawing.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\System.Windows.js">
+    <Content Include="System.Windows.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\SystemExternals.js">
+    <Content Include="SystemExternals.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Scripts\webgl-2d.js">
+    <Content Include="webgl-2d.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

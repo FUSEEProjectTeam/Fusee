@@ -593,10 +593,16 @@ JSIL.MakeClass("System.Object", "System.Exception", true, [], function ($) {
   $.Property({Public: true , Static: false}, "InnerException");
 });
 
-JSIL.MakeClass("System.Exception", "System.FormatException", true);
-JSIL.MakeClass("System.Exception", "System.InvalidCastException", true);
-JSIL.MakeClass("System.Exception", "System.InvalidOperationException", true);
-JSIL.MakeClass("System.Exception", "System.IO.FileNotFoundException", true);
+JSIL.MakeClass("System.Exception", "System.SystemException", true);
+
+JSIL.MakeClass("System.SystemException", "System.FormatException", true);
+JSIL.MakeClass("System.SystemException", "System.InvalidCastException", true);
+JSIL.MakeClass("System.SystemException", "System.InvalidOperationException", true);
+JSIL.MakeClass("System.SystemException", "System.NotImplementedException", true);
+JSIL.MakeClass("System.SystemException", "System.Reflection.AmbiguousMatchException", true);
+
+JSIL.MakeClass("System.SystemException", "System.IOException", true);
+JSIL.MakeClass("System.IOException", "System.IO.FileNotFoundException", true);
 
 JSIL.ImplementExternals("System.Console", function ($) {
   $.RawMethod(true, "WriteLine", function () {
@@ -1971,7 +1977,7 @@ JSIL.ImplementExternals("System.Collections.Generic.Dictionary`2", function ($) 
         this.tKeysEnumerator = JSIL.ArrayEnumerator.Of(this.TKey);
       }
 
-      return new JSIL.AbstractEnumerable(
+      var result = new JSIL.AbstractEnumerable(
         (function getKeysProxy () {
           var keys = [];
 
@@ -1987,6 +1993,10 @@ JSIL.ImplementExternals("System.Collections.Generic.Dictionary`2", function ($) 
           return new (this.tKeysEnumerator)(keys, -1);
         }).bind(this)
       );
+
+      // FIXME: Terrible hack
+      result.get_Count = this.get_Count.bind(this);
+      return result;
     }
   );
 
@@ -1997,7 +2007,7 @@ JSIL.ImplementExternals("System.Collections.Generic.Dictionary`2", function ($) 
         this.tValuesEnumerator = JSIL.ArrayEnumerator.Of(this.TValue);
       }
 
-      return new JSIL.AbstractEnumerable(
+      var result = new JSIL.AbstractEnumerable(
         (function getValuesProxy () {
           var values = [];
 
@@ -2013,6 +2023,10 @@ JSIL.ImplementExternals("System.Collections.Generic.Dictionary`2", function ($) 
           return new (this.tValuesEnumerator)(values, -1);
         }).bind(this)
       );
+
+      // FIXME: Terrible hack
+      result.get_Count = this.get_Count.bind(this);
+      return result;
     }
   );
 
@@ -2400,7 +2414,7 @@ JSIL.ImplementExternals(
     );
     
     $.Method({Static:true , Public:true }, "ToArray", 
-      new JSIL.MethodSignature(System.Array.Of("!!0"), [$jsilcore.TypeRef("System.Collections.Generic.IEnumerable`1", ["!!0"])], ["TSource"]),
+      new JSIL.MethodSignature($jsilcore.TypeRef("System.Array", ["!!0"]), [$jsilcore.TypeRef("System.Collections.Generic.IEnumerable`1", ["!!0"])], ["TSource"]),
       function (T, enumerable) {
         return JSIL.EnumerableToArray(enumerable);
       }
@@ -2449,7 +2463,7 @@ JSIL.MakeStaticClass("System.Linq.Enumerable", true, [], function ($) {
   );
 
   $.ExternalMethod({Static:true , Public:true }, "ToArray", 
-    new JSIL.MethodSignature(System.Array.Of("!!0"), [$jsilcore.TypeRef("System.Collections.Generic.IEnumerable`1", ["!!0"])], ["TSource"])
+    new JSIL.MethodSignature($jsilcore.TypeRef("System.Array", ["!!0"]), [$jsilcore.TypeRef("System.Collections.Generic.IEnumerable`1", ["!!0"])], ["TSource"])
   );
 });
 
@@ -2559,6 +2573,8 @@ JSIL.ImplementExternals(
       var resultValue = 0;
       var temp = new JSIL.Variable();
 
+      var publicInterface = TEnum.__PublicInterface__;
+
       for (var i = 0, l = items.length; i < l; i++) {
         var item = items[i].trim();
         if (item.length === 0)
@@ -2574,10 +2590,10 @@ JSIL.ImplementExternals(
       var name = TEnum.__ValueToName__[resultValue];
 
       if (typeof (name) === "undefined") {
-        result.value = TEnum.$MakeValue(resultValue, null);
+        result.value = publicInterface.$MakeValue(resultValue, null);
         return true;
       } else {
-        result.value = TEnum[name];
+        result.value = publicInterface[name];
         return true;
       }
     };
@@ -2590,6 +2606,8 @@ JSIL.ImplementExternals(
 
       var num = parseInt(text, 10);
 
+      var publicInterface = TEnum.__PublicInterface__;
+
       if (isNaN(num)) {
         if (ignoreCase) {
           var names = TEnum.__Names__;
@@ -2597,12 +2615,12 @@ JSIL.ImplementExternals(
             var isMatch = (names[i].toLowerCase() == text.toLowerCase());
 
             if (isMatch) {
-              result.value = TEnum[names[i]];
+              result.value = publicInterface[names[i]];
               break;
             }
           }
         } else {
-          result.value = TEnum[text];
+          result.value = publicInterface[text];
         }
 
         return (typeof (result.value) !== "undefined");
@@ -2610,10 +2628,10 @@ JSIL.ImplementExternals(
         var name = TEnum.__ValueToName__[num];
 
         if (typeof (name) === "undefined") {
-          result.value = TEnum.$MakeValue(num, null);
+          result.value = publicInterface.$MakeValue(num, null);
           return true;
         } else {
-          result.value = TEnum[name];
+          result.value = publicInterface[name];
           return true;
         }
       }
@@ -2658,7 +2676,7 @@ JSIL.ImplementExternals(
     );
 
     $.Method({Static:true , Public:true }, "GetNames", 
-      new JSIL.MethodSignature(System.Array.Of($jsilcore.System.String), [$jsilcore.TypeRef("System.Type")], []),
+      new JSIL.MethodSignature($jsilcore.TypeRef("System.Array", [$.String]), [$jsilcore.TypeRef("System.Type")], []),
       function (enm) {
         return enm.__Names__;
       }
@@ -2681,7 +2699,14 @@ JSIL.ImplementExternals(
 
 JSIL.ImplementExternals("System.Activator", function ($) {
   var mscorlib = JSIL.GetCorlib();
-  
+
+  $.Method({Static:true , Public:true }, "CreateInstance", 
+    (new JSIL.MethodSignature($.Object, [mscorlib.TypeRef("System.Type")], [])), 
+    function CreateInstance (type) {
+      return JSIL.CreateInstanceOfType(type, []);
+    }
+  );
+
   $.Method({Static:true , Public:true }, "CreateInstance", 
     (new JSIL.MethodSignature($.Object, [mscorlib.TypeRef("System.Type"), mscorlib.TypeRef("System.Array", [$.Object])], [])), 
     function CreateInstance (type, args) {
@@ -3114,6 +3139,29 @@ JSIL.ImplementExternals("System.Convert", function ($) {
     $.Method(descriptor, methodName, makeSignature($.String), from.string);
 
     $.Method(descriptor, methodName, makeSignature($.String, true), from.string);
+
+    var fromObject = function Convert_FromObject (value) {
+      if ($jsilcore.System.String.$Is(value))
+        return from.string(value);
+      else if (from.int64 && $jsilcore.System.Int64.$Is(value))
+        return from.int64(value);
+      else if (from.uint64 && $jsilcore.System.UInt64.$Is(value))
+        return from.uint64(value);
+      else if ($jsilcore.System.Int32.$Is(value))
+        return from.int(value);
+      else if ($jsilcore.System.UInt32.$Is(value))
+        return from.uint(value);
+      else if ($jsilcore.System.Boolean.$Is(value))
+        return from.boolean(value);
+      else if ($jsilcore.System.Double.$Is(value))
+        return from.float(value);
+      else
+        throw new System.NotImplementedException(
+          "Conversion from type '" + JSIL.GetType(value) + "' to type '" + typeName + "' not implemented."
+        );
+    };
+
+    $.Method(descriptor, methodName, makeSignature($.Object, false), fromObject);
   };
 
   makeConvertMethods("Boolean", $.Boolean, {
@@ -3745,958 +3793,24 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Linq.Expressions.LambdaExpression"), "S
 JSIL.ImplementExternals("System.Linq.Expressions.Expression`1", function ($) {
 });
 
-JSIL.ImplementExternals("System.DateTime", function ($) {
-  $.RawMethod(false, "$internalCtor", function (msSince1970) {
-    // FIXME: Should be ticks
-    this.dateData = msSince1970;
-  });
-
-  $.Method({Static:false, Public:true }, ".ctor", 
-    (new JSIL.MethodSignature(null, [$.Int64], [])), 
-    function _ctor (ticks) {
-      // FIXME
-      this.dateData = ticks;
-    }
-  );
-
-  $.Method({Static:false, Public:false}, ".ctor", 
-    (new JSIL.MethodSignature(null, [$.UInt64], [])), 
-    function _ctor (dateData) {
-      // FIXME
-      this.dateData = dateData;
-    }
-  );
-
-  $.Method({Static:false, Public:true }, ".ctor", 
-    (new JSIL.MethodSignature(null, [$.Int64, $jsilcore.TypeRef("System.DateTimeKind")], [])), 
-    function _ctor (ticks, kind) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:false}, ".ctor", 
-    (new JSIL.MethodSignature(null, [
-          $.Int64, $jsilcore.TypeRef("System.DateTimeKind"), 
-          $.Boolean
-        ], [])), 
-    function _ctor (ticks, kind, isAmbiguousDst) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, ".ctor", 
-    (new JSIL.MethodSignature(null, [
-          $.Int32, $.Int32, 
-          $.Int32
-        ], [])), 
-    function _ctor (year, month, day) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, ".ctor", 
-    (new JSIL.MethodSignature(null, [
-          $.Int32, $.Int32, 
-          $.Int32, $jsilcore.TypeRef("System.Globalization.Calendar")
-        ], [])), 
-    function _ctor (year, month, day, calendar) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, ".ctor", 
-    (new JSIL.MethodSignature(null, [
-          $.Int32, $.Int32, 
-          $.Int32, $.Int32, 
-          $.Int32, $.Int32
-        ], [])), 
-    function _ctor (year, month, day, hour, minute, second) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, ".ctor", 
-    (new JSIL.MethodSignature(null, [
-          $.Int32, $.Int32, 
-          $.Int32, $.Int32, 
-          $.Int32, $.Int32, 
-          $jsilcore.TypeRef("System.DateTimeKind")
-        ], [])), 
-    function _ctor (year, month, day, hour, minute, second, kind) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, ".ctor", 
-    (new JSIL.MethodSignature(null, [
-          $.Int32, $.Int32, 
-          $.Int32, $.Int32, 
-          $.Int32, $.Int32, 
-          $jsilcore.TypeRef("System.Globalization.Calendar")
-        ], [])), 
-    function _ctor (year, month, day, hour, minute, second, calendar) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, ".ctor", 
-    (new JSIL.MethodSignature(null, [
-          $.Int32, $.Int32, 
-          $.Int32, $.Int32, 
-          $.Int32, $.Int32, 
-          $.Int32
-        ], [])), 
-    function _ctor (year, month, day, hour, minute, second, millisecond) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, ".ctor", 
-    (new JSIL.MethodSignature(null, [
-          $.Int32, $.Int32, 
-          $.Int32, $.Int32, 
-          $.Int32, $.Int32, 
-          $.Int32, $jsilcore.TypeRef("System.DateTimeKind")
-        ], [])), 
-    function _ctor (year, month, day, hour, minute, second, millisecond, kind) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, ".ctor", 
-    (new JSIL.MethodSignature(null, [
-          $.Int32, $.Int32, 
-          $.Int32, $.Int32, 
-          $.Int32, $.Int32, 
-          $.Int32, $jsilcore.TypeRef("System.Globalization.Calendar")
-        ], [])), 
-    function _ctor (year, month, day, hour, minute, second, millisecond, calendar) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, ".ctor", 
-    (new JSIL.MethodSignature(null, [
-          $.Int32, $.Int32, 
-          $.Int32, $.Int32, 
-          $.Int32, $.Int32, 
-          $.Int32, $jsilcore.TypeRef("System.Globalization.Calendar"), 
-          $jsilcore.TypeRef("System.DateTimeKind")
-        ], [])), 
-    function _ctor (year, month, day, hour, minute, second, millisecond, calendar, kind) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:false}, ".ctor", 
-    (new JSIL.MethodSignature(null, [$jsilcore.TypeRef("System.Runtime.Serialization.SerializationInfo"), $jsilcore.TypeRef("System.Runtime.Serialization.StreamingContext")], [])), 
-    function _ctor (info, context) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "Add", 
-    (new JSIL.MethodSignature($jsilcore.TypeRef("System.DateTime"), [$jsilcore.TypeRef("System.TimeSpan")], [])), 
-    function Add (value) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:false}, "Add", 
-    (new JSIL.MethodSignature($jsilcore.TypeRef("System.DateTime"), [$.Double, $.Int32], [])), 
-    function Add (value, scale) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "AddDays", 
-    (new JSIL.MethodSignature($jsilcore.TypeRef("System.DateTime"), [$.Double], [])), 
-    function AddDays (value) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "AddHours", 
-    (new JSIL.MethodSignature($jsilcore.TypeRef("System.DateTime"), [$.Double], [])), 
-    function AddHours (value) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "AddMilliseconds", 
-    (new JSIL.MethodSignature($jsilcore.TypeRef("System.DateTime"), [$.Double], [])), 
-    function AddMilliseconds (value) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "AddMinutes", 
-    (new JSIL.MethodSignature($jsilcore.TypeRef("System.DateTime"), [$.Double], [])), 
-    function AddMinutes (value) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "AddMonths", 
-    (new JSIL.MethodSignature($jsilcore.TypeRef("System.DateTime"), [$.Int32], [])), 
-    function AddMonths (months) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "AddSeconds", 
-    (new JSIL.MethodSignature($jsilcore.TypeRef("System.DateTime"), [$.Double], [])), 
-    function AddSeconds (value) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "AddTicks", 
-    (new JSIL.MethodSignature($jsilcore.TypeRef("System.DateTime"), [$.Int64], [])), 
-    function AddTicks (value) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "AddYears", 
-    (new JSIL.MethodSignature($jsilcore.TypeRef("System.DateTime"), [$.Int32], [])), 
-    function AddYears (value) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:true , Public:true }, "Compare", 
-    (new JSIL.MethodSignature($.Int32, [$jsilcore.TypeRef("System.DateTime"), $jsilcore.TypeRef("System.DateTime")], [])), 
-    function Compare (t1, t2) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "CompareTo", 
-    (new JSIL.MethodSignature($.Int32, [$.Object], [])), 
-    function CompareTo (value) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "CompareTo", 
-    (new JSIL.MethodSignature($.Int32, [$jsilcore.TypeRef("System.DateTime")], [])), 
-    function CompareTo (value) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:true , Public:false}, "DateToTicks", 
-    (new JSIL.MethodSignature($.Int64, [
-          $.Int32, $.Int32, 
-          $.Int32
-        ], [])), 
-    function DateToTicks (year, month, day) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:true , Public:true }, "DaysInMonth", 
-    (new JSIL.MethodSignature($.Int32, [$.Int32, $.Int32], [])), 
-    function DaysInMonth (year, month) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:true , Public:false}, "DoubleDateToTicks", 
-    (new JSIL.MethodSignature($.Int64, [$.Double], [])), 
-    function DoubleDateToTicks (value) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "Object.Equals", 
-    (new JSIL.MethodSignature($.Boolean, [$.Object], [])), 
-    function Object_Equals (value) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "Equals", 
-    (new JSIL.MethodSignature($.Boolean, [$jsilcore.TypeRef("System.DateTime")], [])), 
-    function Equals (value) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:true , Public:true }, "Equals", 
-    (new JSIL.MethodSignature($.Boolean, [$jsilcore.TypeRef("System.DateTime"), $jsilcore.TypeRef("System.DateTime")], [])), 
-    function Equals (t1, t2) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:true , Public:true }, "FromBinary", 
-    (new JSIL.MethodSignature($jsilcore.TypeRef("System.DateTime"), [$.Int64], [])), 
-    function FromBinary (dateData) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:true , Public:false}, "FromBinaryRaw", 
-    (new JSIL.MethodSignature($jsilcore.TypeRef("System.DateTime"), [$.Int64], [])), 
-    function FromBinaryRaw (dateData) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:true , Public:true }, "FromFileTime", 
-    (new JSIL.MethodSignature($jsilcore.TypeRef("System.DateTime"), [$.Int64], [])), 
-    function FromFileTime (fileTime) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:true , Public:true }, "FromFileTimeUtc", 
-    (new JSIL.MethodSignature($jsilcore.TypeRef("System.DateTime"), [$.Int64], [])), 
-    function FromFileTimeUtc (fileTime) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:true , Public:true }, "FromOADate", 
-    (new JSIL.MethodSignature($jsilcore.TypeRef("System.DateTime"), [$.Double], [])), 
-    function FromOADate (d) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "get_Date", 
-    (new JSIL.MethodSignature($jsilcore.TypeRef("System.DateTime"), [], [])), 
-    function get_Date () {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "get_Day", 
-    (new JSIL.MethodSignature($.Int32, [], [])), 
-    function get_Day () {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "get_DayOfWeek", 
-    (new JSIL.MethodSignature($jsilcore.TypeRef("System.DayOfWeek"), [], [])), 
-    function get_DayOfWeek () {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "get_DayOfYear", 
-    (new JSIL.MethodSignature($.Int32, [], [])), 
-    function get_DayOfYear () {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "get_Hour", 
-    (new JSIL.MethodSignature($.Int32, [], [])), 
-    function get_Hour () {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:false}, "get_InternalKind", 
-    (new JSIL.MethodSignature($.UInt64, [], [])), 
-    function get_InternalKind () {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:false}, "get_InternalTicks", 
-    (new JSIL.MethodSignature($.Int64, [], [])), 
-    function get_InternalTicks () {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "get_Kind", 
-    (new JSIL.MethodSignature($jsilcore.TypeRef("System.DateTimeKind"), [], [])), 
-    function get_Kind () {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "get_Millisecond", 
-    (new JSIL.MethodSignature($.Int32, [], [])), 
-    function get_Millisecond () {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "get_Minute", 
-    (new JSIL.MethodSignature($.Int32, [], [])), 
-    function get_Minute () {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "get_Month", 
-    (new JSIL.MethodSignature($.Int32, [], [])), 
-    function get_Month () {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:true , Public:true }, "get_Now", 
-    (new JSIL.MethodSignature($jsilcore.TypeRef("System.DateTime"), [], [])), 
-    function get_Now () {
-      // FIXME
-      return JSIL.CreateInstanceOfType(
-        $jsilcore.System.DateTime.__Type__, "$internalCtor", [Date.now()]
-      );
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "get_Second", 
-    (new JSIL.MethodSignature($.Int32, [], [])), 
-    function get_Second () {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "get_Ticks", 
-    (new JSIL.MethodSignature($.Int64, [], [])), 
-    function get_Ticks () {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "get_TimeOfDay", 
-    (new JSIL.MethodSignature($jsilcore.TypeRef("System.TimeSpan"), [], [])), 
-    function get_TimeOfDay () {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:true , Public:true }, "get_Today", 
-    (new JSIL.MethodSignature($jsilcore.TypeRef("System.DateTime"), [], [])), 
-    function get_Today () {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:true , Public:true }, "get_UtcNow", 
-    (new JSIL.MethodSignature($jsilcore.TypeRef("System.DateTime"), [], [])), 
-    function get_UtcNow () {
-      // FIXME
-      return JSIL.CreateInstanceOfType(
-        $jsilcore.System.DateTime.__Type__, "$internalCtor", [Date.now()]
-      );
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "get_Year", 
-    (new JSIL.MethodSignature($.Int32, [], [])), 
-    function get_Year () {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:false}, "GetDatePart", 
-    (new JSIL.MethodSignature($.Int32, [$.Int32], [])), 
-    function GetDatePart (part) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "GetDateTimeFormats", 
-    (new JSIL.MethodSignature($jsilcore.TypeRef("System.Array", [$.String]), [], [])), 
-    function GetDateTimeFormats () {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "GetDateTimeFormats", 
-    (new JSIL.MethodSignature($jsilcore.TypeRef("System.Array", [$.String]), [$jsilcore.TypeRef("System.IFormatProvider")], [])), 
-    function GetDateTimeFormats (provider) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "GetDateTimeFormats", 
-    (new JSIL.MethodSignature($jsilcore.TypeRef("System.Array", [$.String]), [$.Char], [])), 
-    function GetDateTimeFormats (format) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "GetDateTimeFormats", 
-    (new JSIL.MethodSignature($jsilcore.TypeRef("System.Array", [$.String]), [$.Char, $jsilcore.TypeRef("System.IFormatProvider")], [])), 
-    function GetDateTimeFormats (format, provider) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "GetHashCode", 
-    (new JSIL.MethodSignature($.Int32, [], [])), 
-    function GetHashCode () {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:true , Public:false}, "GetSystemTimeAsFileTime", 
-    (new JSIL.MethodSignature($.Int64, [], [])), 
-    function GetSystemTimeAsFileTime () {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "GetTypeCode", 
-    (new JSIL.MethodSignature($jsilcore.TypeRef("System.TypeCode"), [], [])), 
-    function GetTypeCode () {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:false}, "IsAmbiguousDaylightSavingTime", 
-    (new JSIL.MethodSignature($.Boolean, [], [])), 
-    function IsAmbiguousDaylightSavingTime () {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "IsDaylightSavingTime", 
-    (new JSIL.MethodSignature($.Boolean, [], [])), 
-    function IsDaylightSavingTime () {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:true , Public:true }, "IsLeapYear", 
-    (new JSIL.MethodSignature($.Boolean, [$.Int32], [])), 
-    function IsLeapYear (year) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:true , Public:true }, "op_Addition", 
-    (new JSIL.MethodSignature($jsilcore.TypeRef("System.DateTime"), [$jsilcore.TypeRef("System.DateTime"), $jsilcore.TypeRef("System.TimeSpan")], [])), 
-    function op_Addition (d, t) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:true , Public:true }, "op_Equality", 
-    (new JSIL.MethodSignature($.Boolean, [$jsilcore.TypeRef("System.DateTime"), $jsilcore.TypeRef("System.DateTime")], [])), 
-    function op_Equality (d1, d2) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:true , Public:true }, "op_GreaterThan", 
-    (new JSIL.MethodSignature($.Boolean, [$jsilcore.TypeRef("System.DateTime"), $jsilcore.TypeRef("System.DateTime")], [])), 
-    function op_GreaterThan (t1, t2) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:true , Public:true }, "op_GreaterThanOrEqual", 
-    (new JSIL.MethodSignature($.Boolean, [$jsilcore.TypeRef("System.DateTime"), $jsilcore.TypeRef("System.DateTime")], [])), 
-    function op_GreaterThanOrEqual (t1, t2) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:true , Public:true }, "op_Inequality", 
-    (new JSIL.MethodSignature($.Boolean, [$jsilcore.TypeRef("System.DateTime"), $jsilcore.TypeRef("System.DateTime")], [])), 
-    function op_Inequality (d1, d2) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:true , Public:true }, "op_LessThan", 
-    (new JSIL.MethodSignature($.Boolean, [$jsilcore.TypeRef("System.DateTime"), $jsilcore.TypeRef("System.DateTime")], [])), 
-    function op_LessThan (t1, t2) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:true , Public:true }, "op_LessThanOrEqual", 
-    (new JSIL.MethodSignature($.Boolean, [$jsilcore.TypeRef("System.DateTime"), $jsilcore.TypeRef("System.DateTime")], [])), 
-    function op_LessThanOrEqual (t1, t2) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:true , Public:true }, "op_Subtraction", 
-    (new JSIL.MethodSignature($jsilcore.TypeRef("System.DateTime"), [$jsilcore.TypeRef("System.DateTime"), $jsilcore.TypeRef("System.TimeSpan")], [])), 
-    function op_Subtraction (d, t) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:true , Public:true }, "op_Subtraction", 
-    (new JSIL.MethodSignature($jsilcore.TypeRef("System.TimeSpan"), [$jsilcore.TypeRef("System.DateTime"), $jsilcore.TypeRef("System.DateTime")], [])), 
-    function op_Subtraction (d1, d2) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:true , Public:true }, "Parse", 
-    (new JSIL.MethodSignature($jsilcore.TypeRef("System.DateTime"), [$.String], [])), 
-    function Parse (s) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:true , Public:true }, "Parse", 
-    (new JSIL.MethodSignature($jsilcore.TypeRef("System.DateTime"), [$.String, $jsilcore.TypeRef("System.IFormatProvider")], [])), 
-    function Parse (s, provider) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:true , Public:true }, "Parse", 
-    (new JSIL.MethodSignature($jsilcore.TypeRef("System.DateTime"), [
-          $.String, $jsilcore.TypeRef("System.IFormatProvider"), 
-          $jsilcore.TypeRef("System.Globalization.DateTimeStyles")
-        ], [])), 
-    function Parse (s, provider, styles) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:true , Public:true }, "ParseExact", 
-    (new JSIL.MethodSignature($jsilcore.TypeRef("System.DateTime"), [
-          $.String, $.String, 
-          $jsilcore.TypeRef("System.IFormatProvider")
-        ], [])), 
-    function ParseExact (s, format, provider) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:true , Public:true }, "ParseExact", 
-    (new JSIL.MethodSignature($jsilcore.TypeRef("System.DateTime"), [
-          $.String, $.String, 
-          $jsilcore.TypeRef("System.IFormatProvider"), $jsilcore.TypeRef("System.Globalization.DateTimeStyles")
-        ], [])), 
-    function ParseExact (s, format, provider, style) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:true , Public:true }, "ParseExact", 
-    (new JSIL.MethodSignature($jsilcore.TypeRef("System.DateTime"), [
-          $.String, $jsilcore.TypeRef("System.Array", [$.String]), 
-          $jsilcore.TypeRef("System.IFormatProvider"), $jsilcore.TypeRef("System.Globalization.DateTimeStyles")
-        ], [])), 
-    function ParseExact (s, formats, provider, style) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:true , Public:true }, "SpecifyKind", 
-    (new JSIL.MethodSignature($jsilcore.TypeRef("System.DateTime"), [$jsilcore.TypeRef("System.DateTime"), $jsilcore.TypeRef("System.DateTimeKind")], [])), 
-    function SpecifyKind (value, kind) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "Subtract", 
-    (new JSIL.MethodSignature($jsilcore.TypeRef("System.TimeSpan"), [$jsilcore.TypeRef("System.DateTime")], [])), 
-    function Subtract (value) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "Subtract", 
-    (new JSIL.MethodSignature($jsilcore.TypeRef("System.DateTime"), [$jsilcore.TypeRef("System.TimeSpan")], [])), 
-    function Subtract (value) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:false}, "IConvertible.ToBoolean", 
-    (new JSIL.MethodSignature($.Boolean, [$jsilcore.TypeRef("System.IFormatProvider")], [])), 
-    function IConvertible_ToBoolean (provider) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:false}, "IConvertible.ToByte", 
-    (new JSIL.MethodSignature($.Byte, [$jsilcore.TypeRef("System.IFormatProvider")], [])), 
-    function IConvertible_ToByte (provider) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:false}, "IConvertible.ToChar", 
-    (new JSIL.MethodSignature($.Char, [$jsilcore.TypeRef("System.IFormatProvider")], [])), 
-    function IConvertible_ToChar (provider) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:false}, "IConvertible.ToDateTime", 
-    (new JSIL.MethodSignature($jsilcore.TypeRef("System.DateTime"), [$jsilcore.TypeRef("System.IFormatProvider")], [])), 
-    function IConvertible_ToDateTime (provider) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:false}, "IConvertible.ToDecimal", 
-    (new JSIL.MethodSignature($jsilcore.TypeRef("System.Decimal"), [$jsilcore.TypeRef("System.IFormatProvider")], [])), 
-    function IConvertible_ToDecimal (provider) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:false}, "IConvertible.ToDouble", 
-    (new JSIL.MethodSignature($.Double, [$jsilcore.TypeRef("System.IFormatProvider")], [])), 
-    function IConvertible_ToDouble (provider) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:false}, "IConvertible.ToInt16", 
-    (new JSIL.MethodSignature($.Int16, [$jsilcore.TypeRef("System.IFormatProvider")], [])), 
-    function IConvertible_ToInt16 (provider) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:false}, "IConvertible.ToInt32", 
-    (new JSIL.MethodSignature($.Int32, [$jsilcore.TypeRef("System.IFormatProvider")], [])), 
-    function IConvertible_ToInt32 (provider) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:false}, "IConvertible.ToInt64", 
-    (new JSIL.MethodSignature($.Int64, [$jsilcore.TypeRef("System.IFormatProvider")], [])), 
-    function IConvertible_ToInt64 (provider) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:false}, "IConvertible.ToSByte", 
-    (new JSIL.MethodSignature($.SByte, [$jsilcore.TypeRef("System.IFormatProvider")], [])), 
-    function IConvertible_ToSByte (provider) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:false}, "IConvertible.ToSingle", 
-    (new JSIL.MethodSignature($.Single, [$jsilcore.TypeRef("System.IFormatProvider")], [])), 
-    function IConvertible_ToSingle (provider) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:false}, "IConvertible.ToType", 
-    (new JSIL.MethodSignature($.Object, [$jsilcore.TypeRef("System.Type"), $jsilcore.TypeRef("System.IFormatProvider")], [])), 
-    function IConvertible_ToType (type, provider) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:false}, "IConvertible.ToUInt16", 
-    (new JSIL.MethodSignature($.UInt16, [$jsilcore.TypeRef("System.IFormatProvider")], [])), 
-    function IConvertible_ToUInt16 (provider) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:false}, "IConvertible.ToUInt32", 
-    (new JSIL.MethodSignature($.UInt32, [$jsilcore.TypeRef("System.IFormatProvider")], [])), 
-    function IConvertible_ToUInt32 (provider) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:false}, "IConvertible.ToUInt64", 
-    (new JSIL.MethodSignature($.UInt64, [$jsilcore.TypeRef("System.IFormatProvider")], [])), 
-    function IConvertible_ToUInt64 (provider) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:false}, "ISerializable.GetObjectData", 
-    (new JSIL.MethodSignature(null, [$jsilcore.TypeRef("System.Runtime.Serialization.SerializationInfo"), $jsilcore.TypeRef("System.Runtime.Serialization.StreamingContext")], [])), 
-    function ISerializable_GetObjectData (info, context) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:true , Public:false}, "TicksToOADate", 
-    (new JSIL.MethodSignature($.Double, [$.Int64], [])), 
-    function TicksToOADate (value) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:true , Public:false}, "TimeToTicks", 
-    (new JSIL.MethodSignature($.Int64, [
-          $.Int32, $.Int32, 
-          $.Int32
-        ], [])), 
-    function TimeToTicks (hour, minute, second) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "ToBinary", 
-    (new JSIL.MethodSignature($.Int64, [], [])), 
-    function ToBinary () {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:false}, "ToBinaryRaw", 
-    (new JSIL.MethodSignature($.Int64, [], [])), 
-    function ToBinaryRaw () {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "ToFileTime", 
-    (new JSIL.MethodSignature($.Int64, [], [])), 
-    function ToFileTime () {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "ToFileTimeUtc", 
-    (new JSIL.MethodSignature($.Int64, [], [])), 
-    function ToFileTimeUtc () {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "ToLocalTime", 
-    (new JSIL.MethodSignature($jsilcore.TypeRef("System.DateTime"), [], [])), 
-    function ToLocalTime () {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "ToLongDateString", 
-    (new JSIL.MethodSignature($.String, [], [])), 
-    function ToLongDateString () {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "ToLongTimeString", 
-    (new JSIL.MethodSignature($.String, [], [])), 
-    function ToLongTimeString () {
-      // FIXME
-      return "ToLongTimeString";
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "ToOADate", 
-    (new JSIL.MethodSignature($.Double, [], [])), 
-    function ToOADate () {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "ToShortDateString", 
-    (new JSIL.MethodSignature($.String, [], [])), 
-    function ToShortDateString () {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "ToShortTimeString", 
-    (new JSIL.MethodSignature($.String, [], [])), 
-    function ToShortTimeString () {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "toString", 
-    (new JSIL.MethodSignature($.String, [], [])), 
-    function toString () {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "ToString", 
-    (new JSIL.MethodSignature($.String, [$.String], [])), 
-    function ToString (format) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "ToString", 
-    (new JSIL.MethodSignature($.String, [$jsilcore.TypeRef("System.IFormatProvider")], [])), 
-    function ToString (provider) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "ToString", 
-    (new JSIL.MethodSignature($.String, [$.String, $jsilcore.TypeRef("System.IFormatProvider")], [])), 
-    function ToString (format, provider) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:false, Public:true }, "ToUniversalTime", 
-    (new JSIL.MethodSignature($jsilcore.TypeRef("System.DateTime"), [], [])), 
-    function ToUniversalTime () {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:true , Public:false}, "TryCreate", 
-    (new JSIL.MethodSignature($.Boolean, [
-          $.Int32, $.Int32, 
-          $.Int32, $.Int32, 
-          $.Int32, $.Int32, 
-          $.Int32, $jsilcore.TypeRef("JSIL.Reference", [$jsilcore.TypeRef("System.DateTime")])
-        ], [])), 
-    function TryCreate (year, month, day, hour, minute, second, millisecond, /* ref */ result) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:true , Public:true }, "TryParse", 
-    (new JSIL.MethodSignature($.Boolean, [$.String, $jsilcore.TypeRef("JSIL.Reference", [$jsilcore.TypeRef("System.DateTime")])], [])), 
-    function TryParse (s, /* ref */ result) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:true , Public:true }, "TryParse", 
-    (new JSIL.MethodSignature($.Boolean, [
-          $.String, $jsilcore.TypeRef("System.IFormatProvider"), 
-          $jsilcore.TypeRef("System.Globalization.DateTimeStyles"), $jsilcore.TypeRef("JSIL.Reference", [$jsilcore.TypeRef("System.DateTime")])
-        ], [])), 
-    function TryParse (s, provider, styles, /* ref */ result) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:true , Public:true }, "TryParseExact", 
-    (new JSIL.MethodSignature($.Boolean, [
-          $.String, $.String, 
-          $jsilcore.TypeRef("System.IFormatProvider"), $jsilcore.TypeRef("System.Globalization.DateTimeStyles"), 
-          $jsilcore.TypeRef("JSIL.Reference", [$jsilcore.TypeRef("System.DateTime")])
-        ], [])), 
-    function TryParseExact (s, format, provider, style, /* ref */ result) {
-      throw new Error('Not implemented');
-    }
-  );
-
-  $.Method({Static:true , Public:true }, "TryParseExact", 
-    (new JSIL.MethodSignature($.Boolean, [
-          $.String, $jsilcore.TypeRef("System.Array", [$.String]), 
-          $jsilcore.TypeRef("System.IFormatProvider"), $jsilcore.TypeRef("System.Globalization.DateTimeStyles"), 
-          $jsilcore.TypeRef("JSIL.Reference", [$jsilcore.TypeRef("System.DateTime")])
-        ], [])), 
-    function TryParseExact (s, formats, provider, style, /* ref */ result) {
-      throw new Error('Not implemented');
-    }
-  );
-
-});
+JSIL.ParseDataURL = function (dataUrl) {
+  var colonIndex = dataUrl.indexOf(":");
+  if ((colonIndex != 4) || (dataUrl.substr(0, 5) !== "data:"))
+    throw new Error("Invalid Data URL header");
+
+  var semicolonIndex = dataUrl.indexOf(";");
+  var mimeType = dataUrl.substr(colonIndex + 1, semicolonIndex - colonIndex - 1);
+
+  var commaIndex = dataUrl.indexOf(",");
+  if (commaIndex <= semicolonIndex)
+    throw new Error("Invalid Data URL header");
+
+  var encodingType = dataUrl.substr(semicolonIndex + 1, commaIndex - semicolonIndex - 1);
+  if (encodingType.toLowerCase() !== "base64")
+    throw new Error("Invalid Data URL encoding type: " + encodingType);
+
+  var base64 = dataUrl.substr(commaIndex + 1);
+  var bytes = System.Convert.FromBase64String(base64);
+
+  return [mimeType, bytes];
+};

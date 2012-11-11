@@ -128,16 +128,16 @@ $jsilxna.ImageCache.prototype.evictExtraItems = function () {
 $jsilxna.imageChannelCache = new $jsilxna.ImageCache(
   1024,
   (1024 * 1024) * 256,
-  2500,
-  30000,
+  2000,
+  15000,
   500
 );
 
 $jsilxna.textCache = new $jsilxna.ImageCache(
-  1024,
-  (1024 * 1024) * 64,
-  500,
-  3000,
+  512,
+  (1024 * 1024) * 32,
+  250,
+  1000,
   250
 );
 
@@ -4750,6 +4750,37 @@ $jsilxna.Color = function ($) {
       return this._cachedCss = "rgb(" + this.r + "," + this.g + "," + this.b + ")";
     }
   });
+
+  $.Method({Static:true , Public:true }, "FromNonPremultiplied", 
+    (new JSIL.MethodSignature($jsilxna.colorRef(), [$xnaasms.xna.TypeRef("Microsoft.Xna.Framework.Vector4")], [])), 
+    function FromNonPremultiplied (vector) {
+      var result = $jsilxna.makeColorInstance();
+
+      result.r = $jsilxna.ClampByte(vector.X * 255);
+      result.g = $jsilxna.ClampByte(vector.Y * 255);
+      result.b = $jsilxna.ClampByte(vector.Z * 255);
+      result.a = $jsilxna.ClampByte(vector.W * 255);
+
+      return result;
+    }
+  );
+
+  $.Method({Static:true , Public:true }, "FromNonPremultiplied", 
+    (new JSIL.MethodSignature($jsilxna.colorRef(), [
+          $.Int32, $.Int32, 
+          $.Int32, $.Int32
+        ], [])), 
+    function FromNonPremultiplied (r, g, b, a) {
+      var result = $jsilxna.makeColorInstance();
+
+      result.r = $jsilxna.ClampByte(r);
+      result.g = $jsilxna.ClampByte(g);
+      result.b = $jsilxna.ClampByte(b);
+      result.a = $jsilxna.ClampByte(a);
+
+      return result;
+    }
+  );  
 };
 
 $jsilxna.ClampByte = function (v) {
@@ -6223,8 +6254,10 @@ JSIL.ImplementExternals("Microsoft.Xna.Framework.Graphics.SpriteFont", function 
     function InternalMeasure (/* ref */ text) {
       var tVector2 = Microsoft.Xna.Framework.Vector2;
       var result = new tVector2(0, 0);
-      var lineWidth = 0;
+      var lineWidth = 0, lineHeight = 0;
       var lineCount = 1;
+
+      // FIXME: Is this handling overhang right for multiline text? Unclear.
 
       for (var i = 0, l = text.length; i < l; i++) {
         var ch = text[i];
@@ -6238,9 +6271,15 @@ JSIL.ImplementExternals("Microsoft.Xna.Framework.Graphics.SpriteFont", function 
         } else if (ch === "\n") {
           lineBreak = true;
         }
+
         if (lineBreak) {
+          if (lineHeight === 0)
+            lineHeight = this.lineSpacing;
+
           result.X = Math.max(lineWidth, result.X);
+          result.Y += lineHeight;
           lineWidth = 0;
+          lineHeight = this.lineSpacing;
 
           if (i < (l - 1)) 
             lineCount += 1;
@@ -6263,10 +6302,14 @@ JSIL.ImplementExternals("Microsoft.Xna.Framework.Graphics.SpriteFont", function 
         lineWidth += beforeGlyph;
         lineWidth += glyphWidth;
         lineWidth += afterGlyph;
+
+        var charRect = this.croppingData.get_Item(charIndex);
+
+        lineHeight = Math.max(lineHeight, charRect.Height);
       }
 
       result.X = Math.max(lineWidth, result.X);
-      result.Y = lineCount * this.lineSpacing;
+      result.Y += lineHeight;
 
       return result;
     }
@@ -6489,6 +6532,62 @@ JSIL.ImplementExternals("Microsoft.Xna.Framework.Graphics.Texture2D", function (
     }
   );
 
+  var fromStreamImpl = function (graphicsDevice, stream) {
+      var streamPosition = stream.get_Position().ToInt32();
+      var streamLength = stream.get_Length().ToInt32();
+      var url = stream.$GetURI();
+
+      // The stream is associated with a file at a given URI, so we can cheat
+      //  and construct an <img> from that URI.
+      if (url && (streamPosition === 0)) {
+        return JSIL.CreateInstanceOfType(
+          Microsoft.Xna.Framework.Graphics.Texture2D.__Type__, 
+          "$fromUri", [graphicsDevice, url]
+        );
+      }
+
+      // Gotta do this the hard way. HTML5 sucks. :(
+      // Read the rest of the stream into a buffer.
+      var bytesToRead = streamLength - streamPosition;
+      var bytes = JSIL.Array.New($jsilcore.System.Byte, bytesToRead);
+      var bytesRead = stream.Read(bytes, 0, bytesToRead);
+      if (bytesRead < bytesToRead)
+        throw new Error("Unable to read entire stream");
+
+      // Rewind the stream
+      stream.set_Position($jsilcore.System.Int64.FromInt32(streamPosition));
+
+      var headerMatches = function (header) {
+        for (var i = 0, l = Math.min(header.length, bytes.length); i < l; i++) {
+          if (bytes[i] !== header[i])
+            return false;
+        }
+
+        return true;
+      };
+
+      // Detect the image format
+      var mimeType;
+      var pngHeader = [137, 80, 78, 71, 13, 10, 26, 10];
+      var jpegHeader = [0xFF, 0xD8];
+
+      if (headerMatches(pngHeader))
+        mimeType = "image/png";
+      else if (headerMatches(jpegHeader))
+        mimeType = "image/jpeg";
+      else
+        throw new Error("Unable to detect image file type");
+
+      // FIXME: If this fails, provide data URL fallback?
+      url = JSIL.GetObjectURLForBytes(bytes, mimeType);
+
+      // FIXME: Memory leak if we never release the URL.
+      return JSIL.CreateInstanceOfType(
+        Microsoft.Xna.Framework.Graphics.Texture2D.__Type__, 
+        "$fromUri", [graphicsDevice, url]
+      );
+  };
+
   $.Method({Static:true , Public:true }, "FromStream", 
     (new JSIL.MethodSignature(getXnaGraphics().TypeRef("Microsoft.Xna.Framework.Graphics.Texture2D"), [
           getXnaGraphics().TypeRef("Microsoft.Xna.Framework.Graphics.GraphicsDevice"), $xnaasms[5].TypeRef("System.IO.Stream"), 
@@ -6496,24 +6595,15 @@ JSIL.ImplementExternals("Microsoft.Xna.Framework.Graphics.Texture2D", function (
           $.Boolean
         ], [])), 
     function FromStream (graphicsDevice, stream, width, height, zoom) {
-      var uri = stream.$GetURI();
-
-      return JSIL.CreateInstanceOfType(
-        Microsoft.Xna.Framework.Graphics.Texture2D.__Type__, 
-        "$fromUri", [graphicsDevice, uri]
-      );
+      // FIXME: width, height, zoom
+      return fromStreamImpl(graphicsDevice, stream);
     }
   );
 
   $.Method({Static:true , Public:true }, "FromStream", 
     (new JSIL.MethodSignature(getXnaGraphics().TypeRef("Microsoft.Xna.Framework.Graphics.Texture2D"), [getXnaGraphics().TypeRef("Microsoft.Xna.Framework.Graphics.GraphicsDevice"), $xnaasms[5].TypeRef("System.IO.Stream")], [])), 
     function FromStream (graphicsDevice, stream) {
-      var uri = stream.$GetURI();
-
-      return JSIL.CreateInstanceOfType(
-        Microsoft.Xna.Framework.Graphics.Texture2D.__Type__, 
-        "$fromUri", [graphicsDevice, uri]
-      );
+      return fromStreamImpl(graphicsDevice, stream);
     }
   );
 
@@ -6653,12 +6743,50 @@ JSIL.ImplementExternals("Microsoft.Xna.Framework.Graphics.Texture2D", function (
     return canvas;
   });
 
+  $.RawMethod(false, "$saveToStream", function saveToStream (stream, width, height, mimeType) {
+    var temporaryCanvas = document.createElement("canvas");
+    temporaryCanvas.width = width;
+    temporaryCanvas.height = height;
+
+    var temporaryCtx = temporaryCanvas.getContext("2d");
+    temporaryCtx.drawImage(this.image, 0, 0, width, height);
+
+    var dataUrl = temporaryCanvas.toDataURL(mimeType);
+    var parsed = JSIL.ParseDataURL(dataUrl);
+    if (parsed[0].toLowerCase() !== mimeType.toLowerCase())
+      throw new Error("Your browser cannot save images in the format '" + mimeType + "'; got back '" + parsed[0] + "'!");
+
+    var bytes = parsed[1];
+    stream.Write(bytes, 0, bytes.length);
+  });
+
+  $.Method({Static:false, Public:true }, "SaveAsJpeg", 
+    (new JSIL.MethodSignature(null, [
+          $jsilcore.TypeRef("System.IO.Stream"), $.Int32, 
+          $.Int32
+        ], [])), 
+    function SaveAsJpeg (stream, width, height) {
+      this.$saveToStream(stream, width, height, "image/jpeg");
+    }
+  );
+
+  $.Method({Static:false, Public:true }, "SaveAsPng", 
+    (new JSIL.MethodSignature(null, [
+          $jsilcore.TypeRef("System.IO.Stream"), $.Int32, 
+          $.Int32
+        ], [])), 
+    function SaveAsPng (stream, width, height) {
+      this.$saveToStream(stream, width, height, "image/png");
+    }
+  );
+
   $.Method({
     Static: false,
     Public: true
   }, "Dispose", new JSIL.MethodSignature(null, [], []), function () {
     var textures = document.getElementById("textures");
-    if (textures) textures.removeChild(this.image);
+    if (textures) 
+      textures.removeChild(this.image);
   });
 });
 
