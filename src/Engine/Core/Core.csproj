@@ -34,9 +34,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Include="Cube.cs" />
-    <Compile Include="Diagnostics.cs" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug+Web|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\..\..\Bin\Debug\</OutputPath>
@@ -55,7 +52,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Cube.cs" />
-    <Compile Include="Geometry.cs" />
+    <Compile Include="Diagnostics.cs" />
+	<Compile Include="Geometry.cs" />
     <Compile Include="ImpFactory.cs" />
     <Compile Include="Input.cs" />
     <Compile Include="Mesh.cs" />
@@ -80,12 +78,6 @@
     <Reference Include="System" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
