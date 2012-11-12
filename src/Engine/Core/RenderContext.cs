@@ -364,7 +364,16 @@ namespace Fusee.Engine
         {
             _rci.SetShaderParam(param, val);
         }
- 
+
+        void SetLightAmbient(LightIndex iLight, float4 ambientLightColor)
+        {
+           //  _rci.SetShaderParam("FUSEE_L0_AMBIENT", ambientLightColor);
+        }
+
+        void SetLightDiffuse(LightIndex iLight, float4 diffuseLightColor);
+
+        private void SetLightPosition(LightIndex iLight, float3 pos);
+
         public void Clear(ClearFlags flags)
         {
             _rci.Clear(flags);

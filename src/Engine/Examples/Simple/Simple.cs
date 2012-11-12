@@ -61,7 +61,7 @@ void main()
             
             _angleHorz = 0;
             _rotationSpeed = 10.0f;
-            ShaderProgram sp = Shaders.GetShader("", RC);
+            ShaderProgram sp = Shaders.GetShader("flat", RC);
             RC.SetShader(sp);
             _vColorParam = sp.GetShaderParam("vColor");
             RC.SetShaderParam(_vColorParam, new float4(0, 0, 1, 1));
