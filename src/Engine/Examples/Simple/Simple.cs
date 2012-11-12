@@ -1,13 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using Fusee.Engine;
 using Fusee.Math;
 
-namespace Examples
+namespace Examples.Simple
 {
     public class Simple : RenderCanvas 
     {
+<<<<<<< HEAD
+=======
+        protected string Vs = @"
+            // #version 120
+>>>>>>> origin/develop
 
         private const string Vs = @"
 # version 120
@@ -24,6 +27,7 @@ varying vec3 vNormal;
 uniform mat4 FUSEE_MVP;  //model view projection matrix
 uniform mat4 FUSEE_ITMV; //inver transvormierte model view matrix
 
+<<<<<<< HEAD
 void main()
 {
     gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
@@ -38,6 +42,24 @@ void main()
 #ifdef GL_ES
 precision highp float;
 #endif
+=======
+            void main()
+            {
+                gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
+                // vColor = vec4(fuNormal * 0.5 + 0.5, 1.0);
+                // vec4 norm4 = FUSEE_MVP * vec4(fuNormal, 0.0);
+                // vNormal = norm4.xyz;
+                vNormal = mat3(FUSEE_ITMV) * fuNormal;
+            }";
+
+        protected string Ps = @"
+            // #version 120
+
+            /* Copies incoming fragment color without change. */
+            #ifdef GL_ES
+                precision highp float;
+            #endif
+>>>>>>> origin/develop
         
 uniform vec4 vColor;
 varying vec3 vNormal;
@@ -48,15 +70,16 @@ void main()
 }";
 
         private static float _angleHorz = 0.0f, _angleVert = 0.0f, _angleVelHorz = 0, _angleVelVert = 0, _rotationSpeed = 10.0f, _damping = 0.95f;
-        protected Mesh _mesh, _meshFace;
-        protected IShaderParam _vColorParam;
+        protected Mesh Mesh, MeshFace;
+        protected IShaderParam VColorParam;
 
         public override void Init()
         {
             Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"SampleObj/Teapot.obj.model"));
-            _mesh = geo.ToMesh();
+            Mesh = geo.ToMesh();
 
             Geometry geo2 = MeshReader.ReadWavefrontObj(new StreamReader(@"SampleObj/Face.obj.model"));
+<<<<<<< HEAD
             _meshFace = geo2.ToMesh();
             
             _angleHorz = 0;
@@ -65,6 +88,16 @@ void main()
             RC.SetShader(sp);
             _vColorParam = sp.GetShaderParam("vColor");
             RC.SetShaderParam(_vColorParam, new float4(0, 0, 1, 1));
+=======
+            MeshFace = geo2.ToMesh();
+
+            _angleHorz = 0;
+            _rotationSpeed = 10.0f;
+            ShaderProgram sp = RC.CreateShader(Vs, Ps);
+            RC.SetShader(sp);
+            VColorParam = sp.GetShaderParam("vColor");
+
+>>>>>>> origin/develop
 
             RC.ClearColor = new float4(1, 1, 1, 1);
         }
@@ -108,12 +141,21 @@ void main()
             float4x4 mtxCam = float4x4.LookAt(0, 200, 400, 0, 50, 0, 0, 1, 0);
 
             RC.ModelView = mtxRot * float4x4.CreateTranslation(-100, 0, 0) * mtxCam;
+<<<<<<< HEAD
             RC.SetShaderParam(_vColorParam, new float4(0, 0, 1, 1));
             RC.Render(_mesh);
 
             RC.ModelView = mtxRot * float4x4.CreateTranslation(100, 0, 0) * mtxCam;
             RC.SetShaderParam(_vColorParam, new float4(1, 1, 0, 1));
             RC.Render(_meshFace);
+=======
+            RC.SetShaderParam(VColorParam, new float4(0.5f, 0.8f, 0, 1));
+            RC.Render(Mesh);
+
+            RC.ModelView = mtxRot * float4x4.CreateTranslation(100, 0, 0) * mtxCam;
+            RC.SetShaderParam(VColorParam, new float4(0.8f, 0.5f, 0, 1));
+            RC.Render(MeshFace);
+>>>>>>> origin/develop
             Present();
         }
 
@@ -127,6 +169,18 @@ void main()
 
         public static void Main()
         {
+            float3[] verts = new float3[1000000];
+            
+            double t1 = Diagnostics.Timer;
+            for (int i= 0; i < verts.Length; i++)
+            {
+                verts[i].x = i;
+                verts[i].y = i+1;
+                verts[i].z = i-1;
+            }
+            double t2 = Diagnostics.Timer;
+            Diagnostics.Log("Initializing " + verts.Length + " float3 objects took " + (t2 - t1) + " ms.");
+
             Simple app = new Simple();
             app.Run();
         }

@@ -16,22 +16,26 @@ namespace Fusee.Engine
 
         private void KeyDown(object sender, KeyEventArgs kea)
         {
-            _keysPressed.Add((int)kea.KeyCode, true);
+            if (!_keysPressed.ContainsKey((int)kea.KeyCode))
+                _keysPressed.Add((int)kea.KeyCode, true);
         }
 
         private void KeyUp(object sender, KeyEventArgs kea)
         {
-            _keysPressed.Remove((int)kea.KeyCode);
+            if (_keysPressed.ContainsKey((int)kea.KeyCode))
+                _keysPressed.Remove((int)kea.KeyCode);
         }
 
         private void ButtonDown(object sender, MouseEventArgs mea)
         {
-            _buttonsPressed.Add((int)mea.Button, true);
+            if (!_buttonsPressed.ContainsKey((int)mea.Button))
+                _buttonsPressed.Add((int)mea.Button, true);
         }
 
         private void ButtonUp(object sender, MouseEventArgs mea)
         {
-            _buttonsPressed.Remove((int)mea.Button);
+            if (_buttonsPressed.ContainsKey((int)mea.Button))
+                _buttonsPressed.Remove((int)mea.Button);
         }
 
         /// <summary>
