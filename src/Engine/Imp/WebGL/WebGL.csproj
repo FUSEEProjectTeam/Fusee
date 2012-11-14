@@ -54,7 +54,7 @@
     <Copy SourceFiles="@(ScriptFiles)" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
   </Target>
   <Target Name="Clean">
-    <Exec Command="rd /s /q $(OutDir)" Condition="Exists($(OutDir))" />
+    <Exec Command="rd /s /q $(OutputPath)" Condition="Exists($(OutputPath))" />
   </Target>
   <Target Name="Rebuild" DependsOnTargets="Clean;Build">
   </Target>

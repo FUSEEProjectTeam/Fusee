@@ -70,9 +70,6 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="LevelTemplates.cs" />
     <Compile Include="Field.cs" />
     <Compile Include="Level.cs" />
@@ -138,6 +135,9 @@
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="Clean">
+    <Exec Command="rd /s /q $(OutputPath)" Condition="Exists($(OutputPath))" />
+  </Target>
   <PropertyGroup>
     <PostBuildEvent>if $(ConfigurationName) == Debug+Web (
 echo ### Postbuild $(TargetName): JSIL CCing ###
