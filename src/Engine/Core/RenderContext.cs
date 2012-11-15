@@ -1,4 +1,5 @@
-﻿using Fusee.Engine;
+﻿using System;
+using Fusee.Engine;
 using JSIL.Meta;
 using Fusee.Math;
 
@@ -252,6 +253,11 @@ namespace Fusee.Engine
                 }
                 return _invTransModelViewProjection;
             }
+        }
+
+        public int CreateTexture(String filename)
+        {
+            return _rci.CreateTexture(filename);
         }
 
 

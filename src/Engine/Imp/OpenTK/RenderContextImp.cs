@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Drawing;
+using System.Drawing.Imaging;
 using Fusee.Math;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
@@ -9,6 +11,30 @@ namespace Fusee.Engine
     {
         public RenderContextImp(IRenderCanvasImp renderCanvas)
         {
+        }
+
+        public int CreateTexture(String filename)
+        {
+
+            int id = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, id);
+
+            Bitmap bmp = new Bitmap(filename);
+
+            System.Drawing.Imaging.BitmapData bmpData = bmp.LockBits(new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite,
+                                                                                                  System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+
+
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, bmpData.Width, bmpData.Height, 0,
+            OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, bmpData.Scan0);
+
+            bmp.UnlockBits(bmpData);
+
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMinFilter.Linear);
+
+            return id - 1;
         }
 
         public IShaderParam GetShaderParam(IShaderProgramImp shaderProgram, string paramName)

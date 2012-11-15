@@ -1,4 +1,5 @@
-﻿using Fusee.Math;
+﻿using System;
+using Fusee.Math;
 using JSIL.Meta;
 
 namespace Fusee.Engine
@@ -12,6 +13,8 @@ namespace Fusee.Engine
         float4 ClearColor { set; get; }
 
         float ClearDepth { set; get; }
+
+        int CreateTexture(String filename);
         
         IShaderProgramImp CreateShader(string vs, string ps);
         
