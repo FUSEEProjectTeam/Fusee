@@ -102,7 +102,7 @@
   <PropertyGroup>
     <PostBuildEvent>if $(ConfigurationName) == Debug+Web (
 echo ### Postbuild $(TargetName): JSIL CCing ###
-"%25JSIL_DIR%25\bin\JSILc.exe" -o "$(TargetDir)Web" "$(TargetPath)"
+"$(SolutionDir)Imp\WebGL\Compiler\JSILc.exe" -o "$(TargetDir)Web" "$(TargetPath)"
 echo ### Postbuild $(TargetName): Copying additional Scripts ###
 xcopy /Y /Q "..\..\WebGL\*.*" "Web\"
 xcopy /Y /Q "SampleObj\*.*" "Web\SampleObj\"
