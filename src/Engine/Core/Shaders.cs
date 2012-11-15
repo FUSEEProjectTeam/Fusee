@@ -134,7 +134,7 @@ void main()
             ShaderProgram spColor = rc.CreateShader(Vs, PsColor);
             return spColor;
         }
-        ShaderProgram spOriginal = rc.CreateShader(Vs, PsObjColor);
+        ShaderProgram spOriginal = rc.CreateShader(Vs, PsSimple);
         return spOriginal;
     }
 }

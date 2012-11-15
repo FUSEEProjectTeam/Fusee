@@ -73,12 +73,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="tex\Desert.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="tex\tex1.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <Content Include="tex\Desert.jpg" />
+    <Content Include="tex\tex1.jpg" />
     <Content Include="Web\Examples.Simple.css">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

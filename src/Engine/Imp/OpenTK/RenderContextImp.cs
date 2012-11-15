@@ -74,6 +74,13 @@ namespace Fusee.Engine
             }
         }
 
+        //public void SetLightAmbient(LightIndex iLight, float4 ambientLightColor);
+
+        //public void SetLightDiffuse(LightIndex iLight, float4 diffuseLightColor);
+
+        //public void SetLightPosition(LightIndex iLight, float3 pos);
+
+
         public float4x4 ModelView
         {
             get 

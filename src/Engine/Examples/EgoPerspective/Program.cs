@@ -14,7 +14,7 @@ namespace Examples
         protected ShaderProgram Sp3;
         protected IShaderParam VColorParam;
         protected IShaderParam VLightDir;
-        protected IShaderParam vMorph;
+        //protected IShaderParam vMorph;
         
         public override void Init()
         {
@@ -25,7 +25,7 @@ namespace Examples
             Sp3 = Shaders.GetShader("",RC);
             //VLightDir = Sp3.GetShaderParam("vLightDir");
             VColorParam = Sp3.GetShaderParam("vColor");
-            vMorph = Sp3.GetShaderParam("scale");
+            //vMorph = Sp3.GetShaderParam("scale");
             RC.ClearColor = new float4(1, 1, 1, 1);
             _angleHorz = 0;
             _rotationSpeed = 100.0f;
@@ -42,7 +42,7 @@ namespace Examples
             float number = zufall.Next(1000) / 1000;
             //RC.SetShaderParam(VColorParam, new float4(number, number, number, 1.0f));
             //RC.SetShaderParam(VLightDir, new float3(0.0f, 0.0f, 1));
-            RC.SetShaderParam(vMorph, new float4(1.5f, 1.0f, 1.0f, 1.0f));
+            //RC.SetShaderParam(vMorph, new float4(1.5f, 1.0f, 1.0f, 1.0f));
             _world.RenderWorld(_angleVert);
             Present();
         }

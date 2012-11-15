@@ -35,6 +35,12 @@ namespace Fusee.Engine
         [JSChangeName("SetShaderParamMtx4f")]
         void SetShaderParam(IShaderParam param, float4x4 val);
 
+        //void SetLightAmbient(LightIndex iLight, float4 ambientLightColor);
+
+        //void SetLightDiffuse(LightIndex iLight, float4 diffuseLightColor);
+
+        //void SetLightPosition(LightIndex iLight, float3 pos);
+
         void Clear(ClearFlags flags);
 
         void SetVertices(IMeshImp mesh, float3[] vertices);
