@@ -32,25 +32,31 @@ namespace Examples.Simple
                 vNormal = mat3(FUSEE_ITMV) * fuNormal;
             }";
 
-        protected string Ps = @"
-            // #version 120
+        protected string _ps = @"
+           #version 120
 
             /* Copies incoming fragment color without change. */
             #ifdef GL_ES
                 precision highp float;
             #endif
-        
+
+         
+            uniform sampler2D texture1;
             uniform vec4 vColor;
             varying vec3 vNormal;
 
             void main()
             {
-                gl_FragColor = vColor * dot(vNormal, vec3(0, 0, 1));
+                
+                gl_FragColor = texture2D(texture1, vec2(vNormal))  /* *dot(vNormal, vec3(0, 0, 1))*/;
             }";
 
         private static float _angleHorz = 0.0f, _angleVert = 0.0f, _angleVelHorz = 0, _angleVelVert = 0, _rotationSpeed = 10.0f, _damping = 0.95f;
         protected Mesh Mesh, MeshFace;
         protected IShaderParam VColorParam;
+        protected IShaderParam _texture1Param;
+        private int iTex2;
+        private int iTex;
 
         public override void Init()
         {
@@ -62,10 +68,13 @@ namespace Examples.Simple
 
             _angleHorz = 0;
             _rotationSpeed = 10.0f;
-            ShaderProgram sp = RC.CreateShader(Vs, Ps);
+            ShaderProgram sp = RC.CreateShader(Vs, _ps);
             RC.SetShader(sp);
             VColorParam = sp.GetShaderParam("vColor");
-
+            _texture1Param = sp.GetShaderParam("texture1");
+            iTex = RC.CreateTexture("tex/Desert.jpg");
+            iTex2 = RC.CreateTexture("tex/tex1.jpg");
+            //RC.SetShaderParam(_texture1Param, iTex);
 
             RC.ClearColor = new float4(1, 1, 1, 1);
         }
@@ -107,13 +116,13 @@ namespace Examples.Simple
 
             float4x4 mtxRot = float4x4.CreateRotationY(_angleHorz)*float4x4.CreateRotationX(_angleVert);
             float4x4 mtxCam = float4x4.LookAt(0, 200, 400, 0, 50, 0, 0, 1, 0);
-
+            RC.SetShaderParam(_texture1Param, iTex);
             RC.ModelView = mtxRot * float4x4.CreateTranslation(-100, 0, 0) * mtxCam;
-            RC.SetShaderParam(VColorParam, new float4(0.5f, 0.8f, 0, 1));
+            //RC.SetShaderParam(VColorParam, new float4(0.5f, 0.8f, 0, 1));
             RC.Render(Mesh);
-
+            RC.SetShaderParam(_texture1Param, iTex);
             RC.ModelView = mtxRot * float4x4.CreateTranslation(100, 0, 0) * mtxCam;
-            RC.SetShaderParam(VColorParam, new float4(0.8f, 0.5f, 0, 1));
+            //RC.SetShaderParam(VColorParam, new float4(0.8f, 0.5f, 0, 1));
             RC.Render(MeshFace);
             Present();
         }
