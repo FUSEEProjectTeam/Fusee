@@ -34,9 +34,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Include="Cube.cs" />
-    <Compile Include="Geometry.cs" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug+Web|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\..\..\Bin\Debug\</OutputPath>
@@ -65,7 +62,6 @@
     <Compile Include="RenderCanvas.cs" />
     <Compile Include="RenderContext.cs" />
     <Compile Include="ShaderProgram.cs" />
-    <Compile Include="Shaders.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Fusee.Engine.Common">
