@@ -2,36 +2,91 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Fusee.Engine;
 using Fusee.Math;
+
 
 namespace SceneManagement
 {
-    public class TraversalState
+    public class TraversalStateRender : ITraversalState
     {
-        private float4x4 _worldMatrix;
-        private GameEntity _owner;
-        public TraversalState(float4x4 ownerMatrix)
+        private Stack<bool> _hasTransform;
+        private Stack<bool> _hasRenderer;
+        private Stack<bool> _hasMesh;
+        private RenderQueue _queue;
+        private Stack<float4x4> _mtxModelViewStack;
+        private Stack<Mesh> _meshStack;
+        private Stack<Renderer> _RendererStack;
+
+        public TraversalStateRender(RenderQueue queue)
         {
-            _worldMatrix = ownerMatrix;
-        }        
-        public TraversalState(float4x4 ownerMatrix, GameEntity owner)
-        {
-            _worldMatrix = ownerMatrix;
-            _owner = owner;
+            _queue = queue;
+            _mtxModelViewStack = new Stack<float4x4>();
         }
 
-        public float4x4 Matrix
+        public void StoreMesh(Mesh mesh)
         {
-            get { 
-                float4x4 copy = _worldMatrix;
-                return copy;
-                }
-            set { _worldMatrix = value*_worldMatrix; }
+            _hasMesh.Pop();
+            _hasMesh.Push(true);
+            if (HasRenderingTriple())
+            {
+                AddRenderJob(_mtxModelViewStack.Peek(), _meshStack.Peek(), _RendererStack.Peek());
+            }
+
         }
 
-        public GameEntity Owner
+        public void StoreRenderer(Renderer Renderer)
         {
-            get { return _owner; }
+            _hasRenderer.Pop();
+            _hasRenderer.Push(true);
+            if (HasRenderingTriple())
+            {
+                AddRenderJob(_mtxModelViewStack.Peek(), _meshStack.Peek(), _RendererStack.Peek());
+            }
+
+        }
+
+        public void AddTransform(float4x4 mtx)
+        {
+            _mtxModelViewStack.Push(mtx*_mtxModelViewStack.Pop());
+            _hasTransform.Push(true);
+            if (HasRenderingTriple())
+            {
+                AddRenderJob(_mtxModelViewStack.Peek(), _meshStack.Peek(), _RendererStack.Peek());
+            }
+        }
+
+        public bool HasRenderingTriple()
+        {
+            return (_hasMesh.Peek() && _hasRenderer.Peek() && _hasTransform.Peek());
+        }
+
+
+
+        public void Push()
+        {
+            _mtxModelViewStack.Push(_mtxModelViewStack.Peek());
+            _hasMesh.Push(false);
+            _hasRenderer.Push(false);
+            _hasTransform.Push(false);
+        }
+
+        public void Pop()
+        {
+            _mtxModelViewStack.Pop();
+            _hasMesh.Pop();
+            _hasRenderer.Pop();
+            _hasTransform.Pop();
+        }
+
+        private void AddRenderJob(float4x4 matrix, Mesh mesh, Renderer renderer)
+        {
+            RenderMatrix renderMatrix = new RenderMatrix(matrix);
+            _queue.AddRenderJob(renderMatrix);
+            RenderMesh renderMesh = new RenderMesh(mesh);
+            _queue.AddRenderJob(renderMesh);
+            RenderRenderer renderRenderer = new RenderRenderer(renderer);
+            _queue.AddRenderJob(renderRenderer);
         }
     }
 }

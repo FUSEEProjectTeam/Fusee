@@ -5,11 +5,12 @@ using System.Text;
 using Fusee.Engine;
 using Fusee.Math;
 
+
 namespace SceneManagement
 {
     public class RenderQueue : RenderCanvas
     {
-        public List<DrawCall> Drawcalls = new List<DrawCall>();
+        public List<RenderJob> RenderJobs = new List<RenderJob>(); 
         public float4x4 Camera = float4x4.LookAt(0, 200, 2000, 0, 50, 0, 0, 1, 0);
         private Material _material = new Material();
         private FuseeObject _scene = new FuseeObject();
@@ -47,22 +48,25 @@ namespace SceneManagement
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
             _scene.Traverse();
             //Console.WriteLine("Draw Call Count: "+Drawcalls.Count);
-            foreach (var drawCall in Drawcalls)
+            
+            //Order: Matrix, Material, Mesh
+            for (int i = 0; i < RenderJobs.Count; i+=3 )
             {
-                RC.ModelView = drawCall._Transform.WorldMatrix*Camera;
-                RC.Render(drawCall._Mesh);
+                RC.ModelView = RenderJobs[i].GetMatrix() * Camera;
+                RC.Render(RenderJobs[i+2].GetMesh());
                 //Console.WriteLine("The mesh is "+drawCall._Mesh.ToString());
             }
             Present();
             _childGE.Log("Kind Weltmatrix");
             //Console.WriteLine("Rendering at "+DeltaTime+"ms and "+(1/DeltaTime)+" FPS"); // Use this to checkout Framerate
-            Drawcalls.Clear();
+            RenderJobs.Clear();
         }
 
-        public void AddDrawCall(DrawCall draw)
+        public void AddRenderJob(RenderJob job)
         {
-            Drawcalls.Add(draw);
+            RenderJobs.Add(job);
         }
+
         public override void Resize()
         {
             RC.Viewport(0, 0, Width, Height);
