@@ -15,9 +15,7 @@ namespace SceneManagement
         private Material _material = new Material();
        
         //TestZone
-        private SceneEntity _testGE;
-        private SceneEntity _childGE;
-        private TestBehaviour _testBE;
+
 
         protected float4 _farbe = new float4(0.5f, 1, 1, 0.3f);
         protected IShaderParam _vColorParam;
@@ -25,11 +23,7 @@ namespace SceneManagement
         public override void Init()
         {
             
-            _testBE = new TestBehaviour(_testGE._traversalState);
-            _testGE.AddComponent(_testBE);
-            _testGE.AddComponent(new Renderer());
-            _childGE.AddComponent(new Renderer());
-            _testGE.AddChild(_childGE);
+
 
             ShaderProgram sp = RC.CreateShader(_material._vs, _material._ps);
             RC.SetShader(sp);
@@ -53,7 +47,7 @@ namespace SceneManagement
                 //Console.WriteLine("The mesh is "+drawCall._Mesh.ToString());
             }
             Present();
-            _childGE.Log("Kind Weltmatrix");
+
             //Console.WriteLine("Rendering at "+DeltaTime+"ms and "+(1/DeltaTime)+" FPS"); // Use this to checkout Framerate
             RenderJobs.Clear();
         }

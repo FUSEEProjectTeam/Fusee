@@ -10,7 +10,6 @@ namespace SceneManagement
 {
     public class Renderer : Component
     {
-        private readonly int _id = 3;
         public Mesh mesh;
         public Material material;
 
@@ -19,9 +18,10 @@ namespace SceneManagement
             Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"SampleObj/Cube.obj.model"));
             mesh = geo.ToMesh();
         }
-        public override int GETID()
+        public override void Traverse(ITraversalState _traversalState)
         {
-            return _id;
+            _traversalState.StoreMesh(mesh);
         }
+
     }
 }

@@ -40,7 +40,7 @@ namespace SceneManagement
         override public void Traverse(ITraversalState _traversalState)
        {
           
-           // _worldMatrix =_traversalState.Matrix*Matrix;
+           _traversalState.AddTransform(_transformMatrix);
        }
 
         public float4x4 WorldMatrix

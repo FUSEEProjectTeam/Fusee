@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Fusee.Engine;
 using Fusee.Math;
+using SceneManagement;
 
 namespace SceneManagementScratch
 {
@@ -110,7 +111,7 @@ namespace SceneManagementScratch
             {
                 // Add DrawCall(matrix, Renderer, renderer);
             }
-            
+          
         }
         public void AddTransform(float4x4 mtx)
         {
