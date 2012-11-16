@@ -9,7 +9,6 @@ namespace SceneManagement
     public class Transformation : Component
     {
         private readonly int _id = 2;
-        private TraversalState _traversalState; 
         private float4x4 _transformMatrix;
         private float4x4 _worldMatrix;
         private float3 _localPosition;
@@ -17,15 +16,30 @@ namespace SceneManagement
         private Quaternion _localRotation;
         private float3 _localScale;
         private float3 _eulerAngles;
+        private SceneEntity _entity;
+
+
+
        public Transformation()
        {
            _transformMatrix = float4x4.Identity;
            _localPosition = new float3(_transformMatrix.Row3);
            _localScale = new float3(1,1,1);
        }
-       override public void Traverse(TraversalState _traversalState)
+
+       public Transformation(SceneEntity entity)
        {
-           this._traversalState = _traversalState;
+           _transformMatrix = float4x4.Identity;
+           _localPosition = new float3(_transformMatrix.Row3);
+           _localScale = new float3(1, 1, 1);
+           _entity = entity;
+      
+
+       }
+
+        override public void Traverse(ITraversalState _traversalState)
+       {
+          
            // _worldMatrix =_traversalState.Matrix*Matrix;
        }
 
@@ -33,11 +47,6 @@ namespace SceneManagement
         {
             get { return _worldMatrix; }
         }
-
-
-
-
-
 
 
        public float4x4 Matrix
@@ -61,20 +70,22 @@ namespace SceneManagement
            }
            get { return _localPosition; }
        }
-        public float3 Position
+        
+        
+        /*public float3 Position
         {
-            set { /* Will cause some headache
+            set {  Will cause some headache
                 _worldPosition = value;
                 _worldMatrix.Row3.x = _worldPosition.x;
                 _worldMatrix.Row3.y = _worldPosition.y;
-                _worldMatrix.Row3.z = _worldPosition.z;*/
+                _worldMatrix.Row3.z = _worldPosition.z;
             }
             get
             {
                 // recurse over parent chain up to the root object;
                 return 
             }
-        }
+        }*/
 
        public float3 LocalScale
        {
@@ -115,15 +126,7 @@ namespace SceneManagement
            
            get { return _eulerAngles; }
        }
-       
-
-       public override int GETID()
-       {
-           return _id;
-       }
-
-       
+      
     }
-
 
 }

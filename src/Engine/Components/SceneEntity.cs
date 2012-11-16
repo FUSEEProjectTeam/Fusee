@@ -8,10 +8,10 @@ namespace SceneManagement
 {
     public class SceneEntity
     {
-        
+
         private FuseeObject _sceneManager;
         private List<SceneEntity> _childGameEntities;
-        private List<Component> _childComponents; 
+        private List<Component> _childComponents;
         public string tag;
         public Transformation transform;
         public Renderer renderer;
@@ -22,8 +22,8 @@ namespace SceneManagement
         {
             _childComponents = new List<Component>();
             _childGameEntities = new List<SceneEntity>();
-            transform = new Transformation();
-           
+            transform = new Transformation(this);
+
             _childComponents.Add(transform);
             tag = "default";
         }
@@ -33,7 +33,7 @@ namespace SceneManagement
         {
             _childComponents = new List<Component>();
             _childGameEntities = new List<SceneEntity>();
-            transform = new Transformation();
+            transform = new Transformation(this);
             _childComponents.Add(transform);
             tag = "default";
             _parent = parent;
@@ -44,7 +44,7 @@ namespace SceneManagement
 
         public void Traverse(ITraversalState traversal)
         {
-       
+
             foreach (var childComponent in _childComponents)
             {
                 childComponent.Traverse(traversal);
@@ -61,12 +61,12 @@ namespace SceneManagement
         {
             if (component is Action)
             {
-                
+
 
             }
             _childComponents.Add(component);
 
-           
+
             //Console.WriteLine("The name of the added Component is " + type);
 
         }
@@ -74,12 +74,12 @@ namespace SceneManagement
         public void AddChild(SceneEntity child)
         {
             _childGameEntities.Add(child);
-            
+
         }
-        
+
         public void Log(string text)
         {
-           Console.WriteLine(text+transform.WorldMatrix); 
+            Console.WriteLine(text + transform.WorldMatrix);
         }
 
         public SceneEntity parent
@@ -87,7 +87,7 @@ namespace SceneManagement
             get { return _parent; }
             set { _parent = value; }
         }
-         
+
     }
 }
 
