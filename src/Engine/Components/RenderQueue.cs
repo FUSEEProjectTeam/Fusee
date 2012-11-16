@@ -16,6 +16,7 @@ namespace SceneManagement
         
         //TestZone
         private GameEntity _testGE;
+        private GameEntity _childGE;
         private TestBehaviour _testBE;
 
         protected float4 _farbe = new float4(0.5f, 1, 1, 0.3f);
@@ -29,7 +30,9 @@ namespace SceneManagement
             _testGE.AddComponent(_testBE);
             _testGE.AddComponent(new Renderer());
             _scene.Instantiate(_testGE);
-
+            _childGE = new GameEntity(_scene);
+            _childGE.AddComponent(new Renderer());
+            _testGE.AddChild(_childGE);
 
             ShaderProgram sp = RC.CreateShader(_material._vs, _material._ps);
             RC.SetShader(sp);
@@ -51,6 +54,7 @@ namespace SceneManagement
                 //Console.WriteLine("The mesh is "+drawCall._Mesh.ToString());
             }
             Present();
+            _childGE.Log("Kind Weltmatrix");
             //Console.WriteLine("Rendering at "+DeltaTime+"ms and "+(1/DeltaTime)+" FPS"); // Use this to checkout Framerate
             Drawcalls.Clear();
         }

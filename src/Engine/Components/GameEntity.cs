@@ -36,6 +36,7 @@ namespace SceneManagement
             {
                 childComponent.Traverse(_traversalState);
             }
+
             foreach (var childGameEntity in _childGameEntities)
             {
                 childGameEntity.Traverse(_traversalState);
@@ -51,6 +52,13 @@ namespace SceneManagement
 
         public void AddComponent(Component component)
         {
+            if (component is Behaviour)
+            {
+                
+
+            }
+            _childComponents.Add(component);
+
             int id = component.GETID();
             //Console.WriteLine("The name of the added Component is " + type);
             switch (id)
@@ -79,7 +87,10 @@ namespace SceneManagement
             _childGameEntities.Add(child);
             
         }
-        
+        public void Log(string text)
+        {
+           Console.WriteLine(text+transform.WorldMatrix); 
+        }
          
     }
 }

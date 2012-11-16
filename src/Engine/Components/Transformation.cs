@@ -13,6 +13,7 @@ namespace SceneManagement
         private float4x4 _transformMatrix;
         private float4x4 _worldMatrix;
         private float3 _localPosition;
+        private float3 _worldPosition;
         private Quaternion _localRotation;
         private float3 _localScale;
         private float3 _eulerAngles;
@@ -24,8 +25,8 @@ namespace SceneManagement
        }
        override public void Traverse(TraversalState _traversalState)
        {
-           
-           _worldMatrix = _traversalState.Matrix*Matrix;
+           this._traversalState = _traversalState;
+           // _worldMatrix =_traversalState.Matrix*Matrix;
        }
 
         public float4x4 WorldMatrix
@@ -60,6 +61,20 @@ namespace SceneManagement
            }
            get { return _localPosition; }
        }
+        public float3 Position
+        {
+            set { /* Will cause some headache
+                _worldPosition = value;
+                _worldMatrix.Row3.x = _worldPosition.x;
+                _worldMatrix.Row3.y = _worldPosition.y;
+                _worldMatrix.Row3.z = _worldPosition.z;*/
+            }
+            get
+            {
+                // recurse over parent chain up to the root object;
+                return 
+            }
+        }
 
        public float3 LocalScale
        {
@@ -89,14 +104,18 @@ namespace SceneManagement
            }
        }
 
-     /*  public float3 EulerAngles
+       public float3 EulerAngles
        {
-           get
-           {
-               
-           }
+          set
+          {
+              _eulerAngles = value;
+              _worldMatrix *= (float4x4.CreateRotationY(_eulerAngles.y)*float4x4.CreateRotationX(_eulerAngles.x)*
+                             float4x4.CreateRotationZ(_eulerAngles.z));
+          }
+           
+           get { return _eulerAngles; }
        }
-       */
+       
 
        public override int GETID()
        {

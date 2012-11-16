@@ -11,6 +11,12 @@ namespace SceneManagement
         public GameEntity gameEntity;
         public Transformation transform;
         public Renderer renderer;
+
+        public Behaviour()
+        {
+            // TODO: Complete member initialization
+        }
+        
         public Behaviour(TraversalState _traversalState)
         {
             gameEntity = _traversalState.Owner;
@@ -19,10 +25,7 @@ namespace SceneManagement
             Start();
         }
 
-        public Behaviour()
-        {
-            // TODO: Complete member initialization
-        }
+
 
 
 
