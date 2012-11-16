@@ -30,7 +30,7 @@ namespace SceneManagement
            set { _sceneEntity = value; }
        }
 
-       virtual public void Traverse(TraversalState _traversalState)
+       virtual public void Traverse(ITraversalState _traversalState)
        {
            
        }

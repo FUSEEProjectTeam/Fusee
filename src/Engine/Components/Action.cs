@@ -23,7 +23,7 @@ namespace SceneManagement
             
         }
 
-        public override void Traverse(TraversalState _traversalState)
+        public override void Traverse(ITraversalState _traversalState)
         {
             Update();
         }

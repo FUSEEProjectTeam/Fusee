@@ -7,7 +7,7 @@ using Fusee.Math;
 
 namespace SceneManagement
 {
-    interface ITraversalState
+    public interface ITraversalState
     {
         void StoreMesh(Mesh mesh);
         void AddTransform(float4x4 mtx);

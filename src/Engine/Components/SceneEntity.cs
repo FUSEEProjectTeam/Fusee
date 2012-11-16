@@ -8,7 +8,7 @@ namespace SceneManagement
 {
     public class SceneEntity
     {
-        public TraversalState _traversalState; // TODO: Make this private again >>currently just a Hack
+        
         private FuseeObject _sceneManager;
         private List<SceneEntity> _childGameEntities;
         private List<Component> _childComponents; 
@@ -23,7 +23,7 @@ namespace SceneManagement
             _childComponents = new List<Component>();
             _childGameEntities = new List<SceneEntity>();
             transform = new Transformation();
-            _traversalState = new TraversalState(transform.Matrix,this);
+           
             _childComponents.Add(transform);
             tag = "default";
         }
@@ -34,7 +34,6 @@ namespace SceneManagement
             _childComponents = new List<Component>();
             _childGameEntities = new List<SceneEntity>();
             transform = new Transformation();
-            _traversalState = new TraversalState(transform.Matrix, this);
             _childComponents.Add(transform);
             tag = "default";
             _parent = parent;
@@ -43,18 +42,17 @@ namespace SceneManagement
 
 
 
-        public void Traverse(TraversalState traversal)
+        public void Traverse(ITraversalState traversal)
         {
-            _traversalState.Matrix *= traversal.Matrix;
- 
+       
             foreach (var childComponent in _childComponents)
             {
-                childComponent.Traverse(_traversalState);
+                childComponent.Traverse(traversal);
             }
 
             foreach (var childSceneEntity in _childGameEntities)
             {
-                childSceneEntity.Traverse(_traversalState);
+                childSceneEntity.Traverse(traversal);
             }
 
         }

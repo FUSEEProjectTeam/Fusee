@@ -61,11 +61,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Behaviour.cs" />
+    <Compile Include="Action.cs" />
     <Compile Include="Component.cs" />
     <Compile Include="DrawCall.cs" />
     <Compile Include="FuseeObject.cs" />
-    <Compile Include="GameEntity.cs" />
     <Compile Include="ITraversalState.cs" />
     <Compile Include="Material.cs" />
     <Compile Include="Program.cs" />
@@ -76,6 +75,7 @@
     <Compile Include="RenderMatrix.cs" />
     <Compile Include="RenderMesh.cs" />
     <Compile Include="RenderQueue.cs" />
+    <Compile Include="SceneEntity.cs" />
     <Compile Include="Scratchpad.cs" />
     <Compile Include="TestBehaviour.cs" />
     <Compile Include="Transformation.cs" />
