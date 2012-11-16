@@ -10,20 +10,40 @@ namespace SceneManagement
 {
     public class RenderQueue : RenderCanvas
     {
+        private ITraversalState _traversal;
         public List<RenderJob> RenderJobs = new List<RenderJob>(); 
+        public List<SceneEntity> SceneMembers = new List<SceneEntity>(); 
         public float4x4 Camera = float4x4.LookAt(0, 200, 2000, 0, 50, 0, 0, 1, 0);
         private Material _material = new Material();
        
         //TestZone
+        private SceneEntity TestEntity = new SceneEntity();
+        private Renderer testrenderer = new Renderer();
+        private TestBehaviour testscript = new TestBehaviour();
 
+        // Child
+        private SceneEntity ChildEntity = new SceneEntity();
+        private Renderer Childrenderer = new Renderer();
+        private ChildAction Childscript = new ChildAction();
+        
 
         protected float4 _farbe = new float4(0.5f, 1, 1, 0.3f);
         protected IShaderParam _vColorParam;
 
         public override void Init()
         {
-            
+            _traversal =  new TraversalStateRender(this);
+            // Parent
+            TestEntity.AddComponent(testrenderer);
+            TestEntity.AddComponent(testscript);
+            testscript.Init(TestEntity);
+            TestEntity.AddChild(ChildEntity); // Als Child hinzugefuegt
+            SceneMembers.Add(TestEntity);
 
+            // Child
+            ChildEntity.AddComponent(Childrenderer);
+            ChildEntity.AddComponent(Childscript);
+            Childscript.Init(ChildEntity);
 
             ShaderProgram sp = RC.CreateShader(_material._vs, _material._ps);
             RC.SetShader(sp);
@@ -37,14 +57,19 @@ namespace SceneManagement
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
-            //Console.WriteLine("Draw Call Count: "+Drawcalls.Count);
-            
-            //Order: Matrix, Material, Mesh
+            foreach (var sceneMember in SceneMembers)
+            {
+                sceneMember.Traverse(_traversal);
+            }
+
+            // Order: Matrix, Mesh, Renderer
             for (int i = 0; i < RenderJobs.Count; i+=3 )
             {
+                //Console.WriteLine(RenderJobs[i].ToString()+" ist auf index"+i);
+                //Console.WriteLine(RenderJobs[i+1].ToString() + " ist auf index" + (i+1));
+                //Console.WriteLine(RenderJobs[i+2].ToString() + " ist auf index" + (i+2));
                 RC.ModelView = RenderJobs[i].GetMatrix() * Camera;
-                RC.Render(RenderJobs[i+2].GetMesh());
-                //Console.WriteLine("The mesh is "+drawCall._Mesh.ToString());
+                RC.Render(RenderJobs[i+1].GetMesh());
             }
             Present();
 

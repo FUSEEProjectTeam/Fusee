@@ -22,11 +22,25 @@ namespace SceneManagement
         {
             _queue = queue;
             _mtxModelViewStack = new Stack<float4x4>();
+            _meshStack = new Stack<Mesh>();
+            _RendererStack = new Stack<Renderer>();
+            _hasTransform = new Stack<bool>();
+            _hasRenderer = new Stack<bool>();
+            _hasMesh = new Stack<bool>();
+            _mtxModelViewStack.Push(float4x4.Identity);
+            /*
+            
+            _meshStack.Push(null);
+            _RendererStack.Push(null);
+            */
         }
 
         public void StoreMesh(Mesh mesh)
         {
-            _hasMesh.Pop();
+
+                _hasMesh.Pop();
+ 
+            _meshStack.Push(mesh);
             _hasMesh.Push(true);
             if (HasRenderingTriple())
             {
@@ -37,7 +51,10 @@ namespace SceneManagement
 
         public void StoreRenderer(Renderer Renderer)
         {
-            _hasRenderer.Pop();
+
+                _hasRenderer.Pop();
+
+            _RendererStack.Push(Renderer);
             _hasRenderer.Push(true);
             if (HasRenderingTriple())
             {
@@ -48,7 +65,10 @@ namespace SceneManagement
 
         public void AddTransform(float4x4 mtx)
         {
-            _mtxModelViewStack.Push(mtx*_mtxModelViewStack.Pop());
+
+                _mtxModelViewStack.Push(mtx * _mtxModelViewStack.Pop());
+
+            
             _hasTransform.Push(true);
             if (HasRenderingTriple())
             {
@@ -65,7 +85,10 @@ namespace SceneManagement
 
         public void Push()
         {
-            _mtxModelViewStack.Push(_mtxModelViewStack.Peek());
+
+                _mtxModelViewStack.Push(_mtxModelViewStack.Peek());
+
+            
             _hasMesh.Push(false);
             _hasRenderer.Push(false);
             _hasTransform.Push(false);

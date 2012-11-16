@@ -9,7 +9,6 @@ namespace SceneManagement
     public class SceneEntity
     {
 
-        private FuseeObject _sceneManager;
         public string tag;
         public Transformation transform;
         public Renderer renderer;
@@ -61,11 +60,11 @@ namespace SceneManagement
 
         public void AddComponent(Component component)
         {
-            if (component is Action)
+            /*if (component is Action) // TODO sorting addition process
             {
 
 
-            }
+            }*/
             _childComponents.Add(component);
 
 

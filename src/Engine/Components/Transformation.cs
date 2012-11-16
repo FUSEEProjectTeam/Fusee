@@ -126,6 +126,17 @@ namespace SceneManagement
            
            get { return _eulerAngles; }
        }
+       public float3 LocalEulerAngles
+       {
+           set
+           {
+               _eulerAngles = value;
+               _transformMatrix *= (float4x4.CreateRotationY(_eulerAngles.y) * float4x4.CreateRotationX(_eulerAngles.x) *
+                              float4x4.CreateRotationZ(_eulerAngles.z));
+           }
+
+           get { return _eulerAngles; }
+       }
       
     }
 

@@ -62,6 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Action.cs" />
+    <Compile Include="ChildAction.cs" />
     <Compile Include="Component.cs" />
     <Compile Include="DrawCall.cs" />
     <Compile Include="ITraversalState.cs" />

@@ -12,7 +12,12 @@ namespace SceneManagement
         public Transformation transform = new Transformation();
         public Renderer renderer = new Renderer();
 
-
+        public void Init(SceneEntity entity)
+        {
+            SceneEntity = entity;
+            transform = SceneEntity.transform;
+            renderer = SceneEntity.renderer;
+        }
         virtual public void Start()
         {
             

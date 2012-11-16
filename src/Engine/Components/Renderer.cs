@@ -21,6 +21,9 @@ namespace SceneManagement
         public override void Traverse(ITraversalState _traversalState)
         {
             _traversalState.StoreMesh(mesh);
+            _traversalState.StoreRenderer(this);
+            
+            
         }
 
     }
