@@ -62,18 +62,15 @@
     <Compile Include="Simple.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="SampleObj\Face.obj.model">
+    <None Include="Files\Face.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="SampleObj\Teapot.obj.model">
+    <None Include="Files\Teapot.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Web\Examples.Simple.css">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\Examples.Simple.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -103,9 +100,10 @@
     <PostBuildEvent>if $(ConfigurationName) == Debug+Web (
 echo ### Postbuild $(TargetName): JSIL CCing ###
 "$(SolutionDir)Imp\WebGL\Compiler\JSILc.exe" -o "$(TargetDir)Web" "$(TargetPath)"
+echo ### Postbuild $(TargetName): Creating default HTML file ###
+"$(SolutionDir)Imp\WebGL\Compiler\fuHTMLGen.exe" "$(TargetDir)\" "$(TargetDir)Web" "$(TargetPath)"
 echo ### Postbuild $(TargetName): Copying additional Scripts ###
 xcopy /Y /Q "..\..\WebGL\*.*" "Web\"
-xcopy /Y /Q "SampleObj\*.*" "Web\SampleObj\"
 echo ### Postbuild $(TargetName): Done ###
 )</PostBuildEvent>
   </PropertyGroup>
