@@ -39,11 +39,13 @@ namespace SceneManagement
             testscript.Init(TestEntity);
             TestEntity.AddChild(ChildEntity); // Als Child hinzugefuegt
             SceneMembers.Add(TestEntity);
-
+            
             // Child
             ChildEntity.AddComponent(Childrenderer);
             ChildEntity.AddComponent(Childscript);
             Childscript.Init(ChildEntity);
+            Childscript.Start();
+            testscript.Start();
 
             ShaderProgram sp = RC.CreateShader(_material._vs, _material._ps);
             RC.SetShader(sp);

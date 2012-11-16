@@ -8,7 +8,6 @@ namespace SceneManagement
 {
     public class Transformation : Component
     {
-        private readonly int _id = 2;
         private float4x4 _transformMatrix;
         private float4x4 _worldMatrix;
         private float3 _localPosition;
