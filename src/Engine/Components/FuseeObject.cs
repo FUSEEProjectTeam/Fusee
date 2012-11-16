@@ -8,28 +8,28 @@ namespace SceneManagement
 {
    public class FuseeObject
    {
-       public RenderQueue _RenderQueue;
+        public RenderQueue _RenderQueue;
         private TraversalState _traversalState = new TraversalState(float4x4.Identity);
-        private List<GameEntity> _gameEntities;
+        private List<SceneEntity> _gameEntities;
         public FuseeObject()
         {
             
-            _gameEntities = new List<GameEntity>();
+            _gameEntities = new List<SceneEntity>();
         }
         public FuseeObject(RenderQueue render)
         {
             _RenderQueue = render;
-            _gameEntities = new List<GameEntity>();
+            _gameEntities = new List<SceneEntity>();
         }
         virtual public void Traverse()
         {
-            foreach (var gameEntity in _gameEntities)
+            foreach (var SceneEntity in _gameEntities)
             {
-                gameEntity.Traverse(_traversalState);
+                SceneEntity.Traverse(_traversalState);
             }
         }
 
-       virtual public void Instantiate(GameEntity entity)
+       virtual public void Instantiate(SceneEntity entity)
        {
            _gameEntities.Add(entity);
        }

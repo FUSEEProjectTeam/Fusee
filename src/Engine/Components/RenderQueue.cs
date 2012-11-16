@@ -13,11 +13,10 @@ namespace SceneManagement
         public List<RenderJob> RenderJobs = new List<RenderJob>(); 
         public float4x4 Camera = float4x4.LookAt(0, 200, 2000, 0, 50, 0, 0, 1, 0);
         private Material _material = new Material();
-        private FuseeObject _scene = new FuseeObject();
-        
+       
         //TestZone
-        private GameEntity _testGE;
-        private GameEntity _childGE;
+        private SceneEntity _testGE;
+        private SceneEntity _childGE;
         private TestBehaviour _testBE;
 
         protected float4 _farbe = new float4(0.5f, 1, 1, 0.3f);
@@ -25,13 +24,10 @@ namespace SceneManagement
 
         public override void Init()
         {
-            _scene._RenderQueue = this;
-            _testGE = new GameEntity(_scene);
+            
             _testBE = new TestBehaviour(_testGE._traversalState);
             _testGE.AddComponent(_testBE);
             _testGE.AddComponent(new Renderer());
-            _scene.Instantiate(_testGE);
-            _childGE = new GameEntity(_scene);
             _childGE.AddComponent(new Renderer());
             _testGE.AddChild(_childGE);
 
@@ -46,7 +42,7 @@ namespace SceneManagement
         public override void  RenderAFrame()
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-            _scene.Traverse();
+
             //Console.WriteLine("Draw Call Count: "+Drawcalls.Count);
             
             //Order: Matrix, Material, Mesh

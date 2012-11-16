@@ -7,14 +7,14 @@ using Fusee.Math;
 
 namespace SceneManagement
 {
-    public class TestBehaviour : Behaviour
+    public class TestBehaviour : Action
     {
         private float x;
         public TestBehaviour(TraversalState _traversalState)
         {
-            gameEntity = _traversalState.Owner;
-            transform = gameEntity.transform;
-            renderer = gameEntity.renderer;
+            SceneEntity = _traversalState.Owner;
+            transform = SceneEntity.transform;
+            renderer = SceneEntity.renderer;
             Start();
         }
         

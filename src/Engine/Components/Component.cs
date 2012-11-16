@@ -6,22 +6,34 @@ using Fusee.Math;
 
 namespace SceneManagement
 {
-   public class Component : FuseeObject
+   public class Component
     {
-        
+       
+       private SceneEntity _sceneEntity;
+
+       #region Constructors
        public Component()
         {
             
         }
+
+       public Component(SceneEntity sceneEntity)
+       {
+          _sceneEntity = sceneEntity;
+       }
+
+       #endregion; 
+
+       public SceneEntity SceneEntity
+       {
+           get { return _sceneEntity; }
+           set { _sceneEntity = value; }
+       }
 
        virtual public void Traverse(TraversalState _traversalState)
        {
            
        }
 
-       virtual public int GETID()
-       {
-           return 0;
-       }
     }
 }

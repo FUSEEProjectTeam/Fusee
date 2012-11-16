@@ -150,7 +150,7 @@ namespace SceneManagementScratch
     }
 
 
-    // Was GameEntity
+    // Was SceneEntity
     public class SceneEntity
     {
         public SceneEntity()
@@ -180,9 +180,9 @@ namespace SceneManagementScratch
                 childComponent.Traverse(traversal);
             }
 
-            foreach (var childGameEntity in _childSceneEntities)
+            foreach (var childSceneEntity in _childSceneEntities)
             {
-                childGameEntity.Traverse(traversal);
+                childSceneEntity.Traverse(traversal);
             }
             traversal.Pop();
         }
