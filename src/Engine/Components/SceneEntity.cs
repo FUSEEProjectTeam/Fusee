@@ -10,18 +10,18 @@ namespace SceneManagement
     {
 
         private FuseeObject _sceneManager;
-        private List<SceneEntity> _childGameEntities;
-        private List<Component> _childComponents;
         public string tag;
         public Transformation transform;
         public Renderer renderer;
         private SceneEntity _parent;
+        private List<SceneEntity> _childSceneEntities;
+        private List<Component> _childComponents;
 
 
         public SceneEntity()
         {
             _childComponents = new List<Component>();
-            _childGameEntities = new List<SceneEntity>();
+            _childSceneEntities = new List<SceneEntity>();
             transform = new Transformation(this);
 
             _childComponents.Add(transform);
@@ -32,7 +32,7 @@ namespace SceneManagement
         public SceneEntity(SceneEntity parent)
         {
             _childComponents = new List<Component>();
-            _childGameEntities = new List<SceneEntity>();
+            _childSceneEntities = new List<SceneEntity>();
             transform = new Transformation(this);
             _childComponents.Add(transform);
             tag = "default";
@@ -45,15 +45,17 @@ namespace SceneManagement
         public void Traverse(ITraversalState traversal)
         {
 
+            traversal.Push();
             foreach (var childComponent in _childComponents)
             {
                 childComponent.Traverse(traversal);
             }
 
-            foreach (var childSceneEntity in _childGameEntities)
+            foreach (var childSceneEntity in _childSceneEntities)
             {
                 childSceneEntity.Traverse(traversal);
             }
+            traversal.Pop();
 
         }
 
@@ -69,11 +71,12 @@ namespace SceneManagement
 
             //Console.WriteLine("The name of the added Component is " + type);
 
+
         }
 
         public void AddChild(SceneEntity child)
         {
-            _childGameEntities.Add(child);
+            _childSceneEntities.Add(child);
 
         }
 
@@ -91,43 +94,3 @@ namespace SceneManagement
     }
 }
 
-
-/*
-  public class SceneEntity
-    {
-        public SceneEntity()
-        {
-        }
-
-        public SceneEntity(SceneEntity parent)
-        {
-            _parent = parent;
-        }
-
-        private SceneEntity _parent;
- * 
-	    public SceneEntity Parent
-	    {
-		    get { return _parent;}
-		    set { _parent = value;}
-	    }
-	
-        private List<SceneEntity> _childSceneEntities;
-        private List<Component> _childComponents;
-
-        public void Traverse(ITraversalState traversal)
-        {
-            traversal.Push();
-            foreach (var childComponent in _childComponents)
-            {
-                childComponent.Traverse(traversal);
-            }
-
-            foreach (var childSceneEntity in _childSceneEntities)
-            {
-                childSceneEntity.Traverse(traversal);
-            }
-            traversal.Pop();
-        }
-    }
- */
