@@ -132,25 +132,15 @@
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+  
   <Target Name="Clean">
     <Exec Command="rd /s /q $(OutputPath)" Condition="Exists($(OutputPath))" />
   </Target>
-  <PropertyGroup>
-    <PostBuildEvent>if $(ConfigurationName) == Debug+Web (
-echo ### Postbuild $(TargetName): JSIL CCing ###
-"$(SolutionDir)Imp\WebGL\Compiler\JSILc.exe" -o "$(TargetDir)Web" "$(TargetPath)"
-echo ### Postbuild $(TargetName): Creating default HTML file ###
-"$(SolutionDir)Imp\WebGL\Compiler\fuHTMLGen.exe" "$(TargetDir)\" "$(TargetDir)Web" "$(TargetPath)"
-echo ### Postbuild $(TargetName): Copying additional Scripts ###
-xcopy /Y /Q "..\..\WebGL\*.*" "Web\"
-echo ### Postbuild $(TargetName): Done ###
-)</PostBuildEvent>
-  </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
+  <Import Project="$(SolutionDir)\Imp\WebGL\Fusee.targets" Condition="'$(PostBuildEvent)' == ''" />
 </Project>
