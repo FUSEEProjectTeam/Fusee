@@ -62,10 +62,10 @@
     <Compile Include="Simple.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Files\Face.obj.model">
+    <None Include="Assets\Face.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Files\Teapot.obj.model">
+    <None Include="Assets\Teapot.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -93,15 +93,12 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-
   <PropertyGroup>
     <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
-
   <Target Name="Clean">
     <Exec Command="rd /s /q $(OutputPath)" Condition="Exists($(OutputPath))" />
   </Target>
-
   <Import Project="$(SolutionDir)\Imp\WebGL\Fusee.targets" Condition="'$(PostBuildEvent)' == ''" />
 </Project>
