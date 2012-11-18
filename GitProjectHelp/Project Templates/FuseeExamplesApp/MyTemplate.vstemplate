@@ -12,7 +12,6 @@
     <EnableLocationBrowseButton>true</EnableLocationBrowseButton>
     <Icon>__TemplateIcon.ico</Icon>
     <PreviewImage>__PreviewImage.png</PreviewImage>
-	<Hidden>true</Hidden>
   </TemplateData>
   <TemplateContent>
     <Project TargetFileName="FuseeExampleApp.csproj" File="FuseeExampleApp.csproj" ReplaceParameters="true">
