@@ -20,7 +20,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>..\..\..\..\Bin\Debug\Examples\Simple\</OutputPath>
-    <BaseIntermediateOutputPath>..\..\..\..\Tmp\Obj\Engine.Examples.Simmple\$(Configuration)\</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>..\..\..\..\Tmp\Obj\Engine.Examples.Simple\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -31,7 +31,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\..\..\..\Bin\Release\</OutputPath>
-    <BaseIntermediateOutputPath>..\..\..\..\Tmp\Obj\Engine.Examples.Simmple\$(Configuration)\</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>..\..\..\..\Tmp\Obj\Engine.Examples.Simple\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -58,25 +58,19 @@
     <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Simple.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="SampleObj\Face.obj.model">
+    <None Include="Assets\Face.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="SampleObj\Teapot.obj.model">
+    <None Include="Assets\Teapot.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Web\Examples.Simple.css">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\Examples.Simple.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -100,20 +94,11 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if $(ConfigurationName) == Debug+Web (
-echo ### Postbuild $(TargetName): JSIL CCing ###
-"%25JSIL_DIR%25\bin\JSILc.exe" -o "$(TargetDir)Web" "$(TargetPath)"
-echo ### Postbuild $(TargetName): Copying additional Scripts ###
-xcopy /Y /Q "..\..\WebGL\*.*" "Web\"
-xcopy /Y /Q "SampleObj\*.*" "Web\SampleObj\"
-echo ### Postbuild $(TargetName): Done ###
-)</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
+  <Target Name="Clean">
+    <Exec Command="rd /s /q $(OutputPath)" Condition="Exists($(OutputPath))" />
   </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  <Import Project="$(SolutionDir)\Imp\WebGL\Fusee.targets" Condition="'$(PostBuildEvent)' == ''" />
 </Project>

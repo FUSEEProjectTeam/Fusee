@@ -54,10 +54,10 @@ namespace Examples.Simple
 
         public override void Init()
         {
-            Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"SampleObj/Teapot.obj.model"));
+            Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Teapot.obj.model"));
             Mesh = geo.ToMesh();
 
-            Geometry geo2 = MeshReader.ReadWavefrontObj(new StreamReader(@"SampleObj/Face.obj.model"));
+            Geometry geo2 = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Face.obj.model"));
             MeshFace = geo2.ToMesh();
 
             _angleHorz = 0;
