@@ -53,7 +53,7 @@
   <ItemGroup>
     <Compile Include="Cube.cs" />
     <Compile Include="Diagnostics.cs" />
-	<Compile Include="Geometry.cs" />
+    <Compile Include="Geometry.cs" />
     <Compile Include="ImpFactory.cs" />
     <Compile Include="Input.cs" />
     <Compile Include="Mesh.cs" />
@@ -75,6 +75,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\ExternalBinaries\JSIL.Meta.dll</HintPath>
     </Reference>
+    <Reference Include="System" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
