@@ -20,7 +20,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>..\..\..\..\Bin\Debug\Examples\Simple\</OutputPath>
-    <BaseIntermediateOutputPath>..\..\..\..\Tmp\Obj\Engine.Examples.Simmple\$(Configuration)\</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>..\..\..\..\Tmp\Obj\Engine.Examples.Simple\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -31,7 +31,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\..\..\..\Bin\Release\</OutputPath>
-    <BaseIntermediateOutputPath>..\..\..\..\Tmp\Obj\Engine.Examples.Simmple\$(Configuration)\</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>..\..\..\..\Tmp\Obj\Engine.Examples.Simple\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
