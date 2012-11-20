@@ -79,6 +79,7 @@
     <Reference Include="JSIL.Meta">
       <HintPath>..\..\..\ExternalBinaries\JSIL.Meta.dll</HintPath>
     </Reference>
+    <Reference Include="System.Drawing" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="Clean">
