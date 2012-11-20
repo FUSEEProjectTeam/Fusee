@@ -1,4 +1,5 @@
-﻿using Fusee.Engine;
+﻿using System;
+using Fusee.Engine;
 using JSIL.Meta;
 using Fusee.Math;
 
@@ -69,6 +70,11 @@ namespace Fusee.Engine
         private bool _transProjectionOk;
         private bool _transModelViewProjectionOk;
 
+
+        public int CreateTexture(String filename)
+        {
+            return _rci.CreateTexture(filename);
+        }
 
         public float4x4 ModelView
         {
@@ -361,6 +367,12 @@ namespace Fusee.Engine
 
         [JSChangeName("SetShaderParamMtx4f")]
         public void SetShaderParam(IShaderParam param, float4x4 val)
+        {
+            _rci.SetShaderParam(param, val);
+        }
+
+        [JSChangeName("SetShaderParamI")]
+        public void SetShaderParam(IShaderParam param, int val)
         {
             _rci.SetShaderParam(param, val);
         }

@@ -1,4 +1,6 @@
-﻿using Fusee.Math;
+﻿using System;
+using System.Drawing;
+using Fusee.Math;
 using JSIL.Meta;
 
 namespace Fusee.Engine
@@ -31,6 +33,14 @@ namespace Fusee.Engine
 
         [JSChangeName("SetShaderParamMtx4f")]
         void SetShaderParam(IShaderParam param, float4x4 val);
+
+
+        void SetShaderParam(IShaderParam param, int val);
+
+        //HP Functions
+        //Bitmap LoadImage(String filename);
+        int CreateTexture(String filename);
+        //HP Functions End
 
         void Clear(ClearFlags flags);
 
