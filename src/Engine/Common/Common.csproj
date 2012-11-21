@@ -52,6 +52,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="IInputImp.cs" />
+    <Compile Include="ImageData.cs" />
     <Compile Include="IMeshImp.cs" />
     <Compile Include="InitEventArgs.cs" />
     <Compile Include="IRenderCanvasImp.cs" />
@@ -79,6 +80,7 @@
     <Reference Include="JSIL.Meta">
       <HintPath>..\..\..\ExternalBinaries\JSIL.Meta.dll</HintPath>
     </Reference>
+    <Reference Include="System" />
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

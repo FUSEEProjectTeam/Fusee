@@ -76,6 +76,24 @@ namespace Fusee.Engine
             return _rci.CreateTexture(filename);
         }
 
+        public int CreateTexture(ImageData imgData)
+        {
+            return _rci.CreateTexture(imgData);
+        }
+
+        public ImageData LoadImage(String filename)
+        {
+            return _rci.LoadImage(filename);
+        }
+
+
+        public void SetShaderParamTexture(IShaderParam param, int texId)
+        {
+            _rci.SetShaderParamTexture(param, texId);
+        }
+
+
+
         public float4x4 ModelView
         {
             get
@@ -392,6 +410,9 @@ namespace Fusee.Engine
 
             if (m.Colors != null && m.Colors.Length != 0 && !m.ColorsSet)
                 _rci.SetColors(m._meshImp, m.Colors);
+
+            if (m.UVs != null && m.UVs.Length != 0 && !m.NormalsSet)
+                _rci.SetUVs(m._meshImp, m.UVs);
 
             if (m.Normals != null && m.Normals.Length != 0 && !m.NormalsSet)
                 _rci.SetNormals(m._meshImp, m.Normals);
