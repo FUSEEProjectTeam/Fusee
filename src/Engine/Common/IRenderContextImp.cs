@@ -37,15 +37,7 @@ namespace Fusee.Engine
 
         void SetShaderParam(IShaderParam param, int val);
 
-        //HP Functions
-        //Bitmap LoadImage(String filename);
-        int CreateTexture(String filename);
-
-        ImageData LoadImage(String filename);
-        int CreateTexture(ImageData img);
-        void SetShaderParamTexture(IShaderParam param, int texId);
-
-        //HP Functions End
+        
 
         void Clear(ClearFlags flags);
 
@@ -53,7 +45,6 @@ namespace Fusee.Engine
 
         void SetNormals(IMeshImp mr, float3[] normals);
 
-        void SetUVs(IMeshImp mr, float2[] uvs);
 
         void SetColors(IMeshImp mr, uint[] colors);
 

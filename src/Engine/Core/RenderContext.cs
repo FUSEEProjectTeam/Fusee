@@ -70,27 +70,7 @@ namespace Fusee.Engine
         private bool _transProjectionOk;
         private bool _transModelViewProjectionOk;
 
-
-        public int CreateTexture(String filename)
-        {
-            return _rci.CreateTexture(filename);
-        }
-
-        public int CreateTexture(ImageData imgData)
-        {
-            return _rci.CreateTexture(imgData);
-        }
-
-        public ImageData LoadImage(String filename)
-        {
-            return _rci.LoadImage(filename);
-        }
-
-
-        public void SetShaderParamTexture(IShaderParam param, int texId)
-        {
-            _rci.SetShaderParamTexture(param, texId);
-        }
+        
 
 
 
@@ -335,13 +315,6 @@ namespace Fusee.Engine
         {
             ShaderProgram sp = new ShaderProgram(_rci, _rci.CreateShader(vs, ps));
             sp._spi = _rci.CreateShader(vs, ps);
-            /*
-            sp.ShaderParamHandlesImp = new ShaderParamHandleImp[MatrixParamNames.Length];
-            for (int i=0; i < MatrixParamNames.Length; i++)
-            {
-                sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames[i]);
-            }
-             * */
             return sp;
         }
 
@@ -388,13 +361,7 @@ namespace Fusee.Engine
         {
             _rci.SetShaderParam(param, val);
         }
-
-        [JSChangeName("SetShaderParamI")]
-        public void SetShaderParam(IShaderParam param, int val)
-        {
-            _rci.SetShaderParam(param, val);
-        }
- 
+       
         public void Clear(ClearFlags flags)
         {
             _rci.Clear(flags);
@@ -410,10 +377,7 @@ namespace Fusee.Engine
 
             if (m.Colors != null && m.Colors.Length != 0 && !m.ColorsSet)
                 _rci.SetColors(m._meshImp, m.Colors);
-
-            if (m.UVs != null && m.UVs.Length != 0 && !m.NormalsSet)
-                _rci.SetUVs(m._meshImp, m.UVs);
-
+            
             if (m.Normals != null && m.Normals.Length != 0 && !m.NormalsSet)
                 _rci.SetNormals(m._meshImp, m.Normals);
 
