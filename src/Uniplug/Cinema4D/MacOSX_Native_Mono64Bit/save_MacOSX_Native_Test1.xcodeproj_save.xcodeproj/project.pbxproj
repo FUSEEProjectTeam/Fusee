@@ -44,14 +44,14 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 653A926E0858FEB50017BCBC /* _api.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 65B7742B083D084C00F90C2D /* _api */;
+			remoteGlobalIDString = 65B7742B083D084C00F90C2D;
 			remoteInfo = _api;
 		};
 		7BBA51021632EA4D0066F8D2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 653A926E0858FEB50017BCBC /* _api.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 26B0356E0E672B8000A14379 /* _api_stdmem */;
+			remoteGlobalIDString = 26B0356E0E672B8000A14379;
 			remoteInfo = _api_stdmem;
 		};
 /* End PBXContainerItemProxy section */
@@ -180,7 +180,7 @@
 			attributes = {
 				LastUpgradeCheck = 0430;
 			};
-			buildConfigurationList = 65450B6A085517D90099394F /* Build configuration list for PBXProject "MacOSX_Native_Test1" */;
+			buildConfigurationList = 65450B6A085517D90099394F /* Build configuration list for PBXProject "save_MacOSX_Native_Test1.xcodeproj_save" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -362,7 +362,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		65450B6A085517D90099394F /* Build configuration list for PBXProject "MacOSX_Native_Test1" */ = {
+		65450B6A085517D90099394F /* Build configuration list for PBXProject "save_MacOSX_Native_Test1.xcodeproj_save" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				65450B6B085517D90099394F /* Debug */,

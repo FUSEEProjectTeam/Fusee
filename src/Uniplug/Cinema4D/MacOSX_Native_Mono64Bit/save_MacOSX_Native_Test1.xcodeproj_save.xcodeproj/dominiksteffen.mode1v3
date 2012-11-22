@@ -273,7 +273,8 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>0</integer>
+									<integer>13</integer>
+									<integer>12</integer>
 								</array>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateVisibleRectKey</key>
@@ -324,13 +325,12 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>7BBA50FE1632E9750066F8D2</string>
+										<string>7B7DA7A5165EE6B8003ABC54</string>
 										<key>history</key>
 										<array>
-											<string>7B609CFD1632C8340040AC86</string>
 											<string>7BBA50FB1632E9750066F8D2</string>
 											<string>7BBA50FC1632E9750066F8D2</string>
-											<string>7BBA50FD1632E9750066F8D2</string>
+											<string>7BBA50FE1632E9750066F8D2</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -342,14 +342,14 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 0}, {1397, 716}}</string>
+								<string>{{0, 0}, {1397, 713}}</string>
 								<key>RubberWindowFrame</key>
 								<string>0 129 1680 899 0 0 1680 1028 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
 							<key>Proportion</key>
-							<string>716pt</string>
+							<string>713pt</string>
 						</dict>
 						<dict>
 							<key>ContentConfiguration</key>
@@ -362,14 +362,14 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 721}, {1397, 137}}</string>
+								<string>{{0, 718}, {1397, 140}}</string>
 								<key>RubberWindowFrame</key>
 								<string>0 129 1680 899 0 0 1680 1028 </string>
 							</dict>
 							<key>Module</key>
 							<string>XCDetailModule</string>
 							<key>Proportion</key>
-							<string>137pt</string>
+							<string>140pt</string>
 						</dict>
 					</array>
 					<key>Proportion</key>
@@ -388,9 +388,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>7BBA50941632D8540066F8D2</string>
+				<string>7B7DA7A6165EE6B8003ABC54</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>7BBA50951632D8540066F8D2</string>
+				<string>7B7DA7A7165EE6B8003ABC54</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -528,8 +528,8 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>/Development/MAXON/CINEMA4DR13/plugins/MacOSX_Native_Test1/MacOSX_Native_Test1.xcodeproj</string>
 		<string>7B42233A157BDBF500F07A2B</string>
+		<string>/Users/dominiksteffen/GIT/Fusee/src/Uniplug/Cinema4D/MacOSX_Native_Mono64Bit/save_MacOSX_Native_Test1.xcodeproj_save.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
 	<string>0 129 1680 899 0 0 1680 1028 </string>
@@ -553,7 +553,7 @@
 								<key>PBXProjectModuleGUID</key>
 								<string>1CD0528F0623707200166675</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>C4dApiWrapper.cpp</string>
+								<string></string>
 								<key>StatusBarVisibility</key>
 								<true/>
 							</dict>
@@ -570,8 +570,6 @@
 							<string>527pt</string>
 						</dict>
 						<dict>
-							<key>BecomeActive</key>
-							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
@@ -611,7 +609,7 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>7B42233A157BDBF500F07A2B</string>
-				<string>7BBA50961632D8540066F8D2</string>
+				<string>7B7DA7A8165EE6B8003ABC54</string>
 				<string>1CD0528F0623707200166675</string>
 				<string>XCMainBuildResultsModuleGUID</string>
 			</array>
@@ -624,7 +622,7 @@
 			<key>WindowToolGUID</key>
 			<string>7B42233A157BDBF500F07A2B</string>
 			<key>WindowToolIsVisible</key>
-			<true/>
+			<false/>
 		</dict>
 		<dict>
 			<key>Identifier</key>

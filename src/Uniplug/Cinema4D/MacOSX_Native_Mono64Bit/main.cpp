@@ -2,6 +2,7 @@
 // Get your own plugin id on the maxon website.
 #define ID_PLUGINTEMPLATE 1000001
 
+
 #ifdef __MAC
     // mac osx includes
 #endif

@@ -13,6 +13,8 @@
 		7BBA50F31632E93F0066F8D2 /* C4dApiWrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7BBA50F11632E93F0066F8D2 /* C4dApiWrapper.cpp */; };
 		7BBA50F41632E93F0066F8D2 /* C4DApiWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 7BBA50F21632E93F0066F8D2 /* C4DApiWrapper.h */; };
 		7BDD4AE1164096C20038DA4E /* libmono-2.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BDD4AE0164096C20038DA4E /* libmono-2.0.dylib */; };
+		7BF8F361165ED6E900C70D22 /* _api_debug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 7BF8F360165ED6E900C70D22 /* _api_debug.xcconfig */; };
+		7BF8F363165ED70C00C70D22 /* _api_release.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 7BF8F362165ED70C00C70D22 /* _api_release.xcconfig */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -27,23 +29,30 @@
 /* End PBXBuildRule section */
 
 /* Begin PBXContainerItemProxy section */
-		26EDA6230FA303CF00050D59 /* PBXContainerItemProxy */ = {
+		7B7DA7B8165EE709003ABC54 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 653A926E0858FEB50017BCBC /* _api.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 26B036990E672B8000A14379;
+			containerPortal = 7BF8F364165ED72A00C70D22 /* _api.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 26B0356E0E672B8000A14379 /* _api_stdmem */;
 			remoteInfo = _api_stdmem;
 		};
-		657FF108085913EC00750201 /* PBXContainerItemProxy */ = {
+		7BF8F36C165ED72A00C70D22 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 653A926E0858FEB50017BCBC /* _api.xcodeproj */;
+			containerPortal = 7BF8F364165ED72A00C70D22 /* _api.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 65B7742C083D084C00F90C2D;
 			remoteInfo = _api;
 		};
-		7BBA50F51632E9510066F8D2 /* PBXContainerItemProxy */ = {
+		7BF8F36E165ED72A00C70D22 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 653A926E0858FEB50017BCBC /* _api.xcodeproj */;
+			containerPortal = 7BF8F364165ED72A00C70D22 /* _api.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 26B036990E672B8000A14379;
+			remoteInfo = _api_stdmem;
+		};
+		7BF8F3C4165EDD1200C70D22 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7BF8F364165ED72A00C70D22 /* _api.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 65B7742B083D084C00F90C2D;
 			remoteInfo = _api;
@@ -51,9 +60,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		653A926E0858FEB50017BCBC /* _api.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = _api.xcodeproj; path = ../../resource/_api_lib/_api.xcodeproj; sourceTree = SOURCE_ROOT; };
-		6553A1DA0926F00F0034739A /* _api_debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.xcconfig; name = _api_debug.xcconfig; path = ../../resource/_api_lib/_api_debug.xcconfig; sourceTree = SOURCE_ROOT; };
-		6553A1DB0926F00F0034739A /* _api_release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.xcconfig; name = _api_release.xcconfig; path = ../../resource/_api_lib/_api_release.xcconfig; sourceTree = SOURCE_ROOT; };
 		7B1A99A41632BC1300331960 /* MacOSX_Native_Test1.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = MacOSX_Native_Test1.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B609CA81632C1620040AC86 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		7B609CC41632C2E00040AC86 /* ObjectDataM.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ObjectDataM.cpp; sourceTree = "<group>"; };
@@ -65,6 +71,9 @@
 		7BBA50F11632E93F0066F8D2 /* C4dApiWrapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = C4dApiWrapper.cpp; sourceTree = "<group>"; };
 		7BBA50F21632E93F0066F8D2 /* C4DApiWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = C4DApiWrapper.h; sourceTree = "<group>"; };
 		7BDD4AE0164096C20038DA4E /* libmono-2.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libmono-2.0.dylib"; path = "/Library/Frameworks/Mono.framework/Versions/3.0.0_64/lib/libmono-2.0.dylib"; sourceTree = "<absolute>"; };
+		7BF8F360165ED6E900C70D22 /* _api_debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = _api_debug.xcconfig; path = /Development/MAXON/CINEMA4DR13/resource/_api_lib/_api_debug.xcconfig; sourceTree = "<absolute>"; };
+		7BF8F362165ED70C00C70D22 /* _api_release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = _api_release.xcconfig; path = /Development/MAXON/CINEMA4DR13/resource/_api_lib/_api_release.xcconfig; sourceTree = "<absolute>"; };
+		7BF8F364165ED72A00C70D22 /* _api.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = _api.xcodeproj; path = /Development/MAXON/CINEMA4DR13/resource/_api_lib/_api.xcodeproj; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,15 +88,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		657FF105085913EC00750201 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				657FF109085913EC00750201 /* lib_api_debug.a */,
-				26EDA6240FA303CF00050D59 /* lib_api_stdmem_debug.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		65E51686083D10D0005BFD9A = {
 			isa = PBXGroup;
 			children = (
@@ -114,9 +114,9 @@
 		65E516A4083D10D1005BFD9A /* _libs */ = {
 			isa = PBXGroup;
 			children = (
-				6553A1DA0926F00F0034739A /* _api_debug.xcconfig */,
-				6553A1DB0926F00F0034739A /* _api_release.xcconfig */,
-				653A926E0858FEB50017BCBC /* _api.xcodeproj */,
+				7BF8F364165ED72A00C70D22 /* _api.xcodeproj */,
+				7BF8F362165ED70C00C70D22 /* _api_release.xcconfig */,
+				7BF8F360165ED6E900C70D22 /* _api_debug.xcconfig */,
 			);
 			name = _libs;
 			sourceTree = "<group>";
@@ -138,6 +138,15 @@
 				7B609CC51632C2E00040AC86 /* ObjectDataM.h */,
 			);
 			name = Resources;
+			sourceTree = "<group>";
+		};
+		7BF8F365165ED72A00C70D22 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				7BF8F36D165ED72A00C70D22 /* lib_api_debug.a */,
+				7BF8F36F165ED72A00C70D22 /* lib_api_stdmem_debug.a */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -169,7 +178,8 @@
 				65805F2D0851B32A0065CE1B /* PBXBuildRule */,
 			);
 			dependencies = (
-				7BBA50F61632E9510066F8D2 /* PBXTargetDependency */,
+				7BF8F3C5165EDD1200C70D22 /* PBXTargetDependency */,
+				7B7DA7B9165EE709003ABC54 /* PBXTargetDependency */,
 			);
 			name = MacOSX_Native_Test1;
 			productName = "xtensions (Debug)";
@@ -199,8 +209,8 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 657FF105085913EC00750201 /* Products */;
-					ProjectRef = 653A926E0858FEB50017BCBC /* _api.xcodeproj */;
+					ProductGroup = 7BF8F365165ED72A00C70D22 /* Products */;
+					ProjectRef = 7BF8F364165ED72A00C70D22 /* _api.xcodeproj */;
 				},
 			);
 			projectRoot = ../../..;
@@ -211,18 +221,18 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		26EDA6240FA303CF00050D59 /* lib_api_stdmem_debug.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = lib_api_stdmem_debug.a;
-			remoteRef = 26EDA6230FA303CF00050D59 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		657FF109085913EC00750201 /* lib_api_debug.a */ = {
+		7BF8F36D165ED72A00C70D22 /* lib_api_debug.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = lib_api_debug.a;
-			remoteRef = 657FF108085913EC00750201 /* PBXContainerItemProxy */;
+			remoteRef = 7BF8F36C165ED72A00C70D22 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		7BF8F36F165ED72A00C70D22 /* lib_api_stdmem_debug.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = lib_api_stdmem_debug.a;
+			remoteRef = 7BF8F36E165ED72A00C70D22 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -232,6 +242,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7BF8F361165ED6E900C70D22 /* _api_debug.xcconfig in Resources */,
+				7BF8F363165ED70C00C70D22 /* _api_release.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -261,10 +273,15 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		7BBA50F61632E9510066F8D2 /* PBXTargetDependency */ = {
+		7B7DA7B9165EE709003ABC54 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = _api_stdmem;
+			targetProxy = 7B7DA7B8165EE709003ABC54 /* PBXContainerItemProxy */;
+		};
+		7BF8F3C5165EDD1200C70D22 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = _api;
-			targetProxy = 7BBA50F51632E9510066F8D2 /* PBXContainerItemProxy */;
+			targetProxy = 7BF8F3C4165EDD1200C70D22 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -273,8 +290,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
+				C4D_ROOTDIR = /Development/MAXON/CINEMA4DR13;
 				FRAMEWORK_SEARCH_PATHS = "$(MONO_FRAMEWORK_DIR)/Versions/3.0.0_64/lib";
 				GCC_ENABLE_CPP_RTTI = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					C4D_COCOA,
+					"MAC_OS_X_VERSION_MIN_REQUIRED=1050",
+					__MAC,
+				);
 				GCC_VERSION = 4.2;
 				HEADER_SEARCH_PATHS = (
 					"$(C4D_ROOTDIR)/resource/modules/gv/expressiontag/res/description",
@@ -289,6 +312,8 @@
 					"$(C4D_ROOTDIR)/modules/dynamics/res/description",
 					"$(C4D_ROOTDIR)/resource/modules/modeling/res/description",
 					"$(MONO_FRAMEWORK_DIR)/Versions/3.0.0/include/glib-2.0",
+					"$(C4D_ROOTDIR)/resource/modules/newman/res/description",
+					"$(C4D_ROOTDIR)/resource/modules/xtensions/res/description",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(C4D_ROOTDIR)/resource/_api_lib",
@@ -333,6 +358,7 @@
 		65450B68085517D80099394F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				C4D_ROOTDIR = /Development/MAXON/CINEMA4DR13;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_VERSION = 4.2;
 				HEADER_SEARCH_PATHS = (
@@ -365,10 +391,9 @@
 		};
 		65450B6B085517D90099394F /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6553A1DA0926F00F0034739A /* _api_debug.xcconfig */;
 			buildSettings = {
-				C4D_ROOTDIR = ../..;
 				GCC_VERSION = 4.2;
+				HEADER_SEARCH_PATHS = "";
 				OTHER_LDFLAGS = "$(C4D_ROOTDIR)/resource/_api_lib/lib_api_debug.a";
 				PRODUCT_NAME = cinema4dsdk;
 			};
@@ -376,9 +401,7 @@
 		};
 		65450B6C085517D90099394F /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6553A1DB0926F00F0034739A /* _api_release.xcconfig */;
 			buildSettings = {
-				C4D_ROOTDIR = ../..;
 				GCC_VERSION = 4.2;
 				OTHER_LDFLAGS = "$(C4D_ROOTDIR)/resource/_api_lib/lib_api_release.a";
 				PRODUCT_NAME = cinema4dsdk;
