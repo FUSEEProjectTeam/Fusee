@@ -58,10 +58,7 @@
     <Target Name="Build">
     <Copy SourceFiles="@(ScriptFiles)" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
   </Target>
-  <Target Name="Clean">
-    <Exec Command="rd /s /q $(OutputPath)" Condition="Exists($(OutputPath))" />
-  </Target>
-  <Target Name="Rebuild" DependsOnTargets="Clean;Build">
+  <Target Name="Rebuild" DependsOnTargets="Build">
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
