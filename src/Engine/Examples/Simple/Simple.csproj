@@ -95,5 +95,5 @@
   <Target Name="Clean">
     <Exec Command="rd /s /q $(OutputPath)" Condition="Exists($(OutputPath))" />
   </Target>
-  <Import Project="$(SolutionDir)\Imp\WebGL\Fusee.targets" Condition="'$(PostBuildEvent)' == ''" />
+  <Import Project="$(SolutionDir)\Fusee.targets" Condition="'$(PostBuildEvent)' == ''" />
 </Project>
