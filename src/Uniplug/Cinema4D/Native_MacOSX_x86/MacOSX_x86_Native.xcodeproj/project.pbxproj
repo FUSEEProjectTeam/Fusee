@@ -10,18 +10,14 @@
 		7B7A1BEC1584E121007C9F44 /* ObjectDataM.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7B7A1BE11584E121007C9F44 /* ObjectDataM.cpp */; };
 		7B7A1BED1584E121007C9F44 /* ObjectDataM.h in Headers */ = {isa = PBXBuildFile; fileRef = 7B7A1BE21584E121007C9F44 /* ObjectDataM.h */; };
 		7B7A1BF41584E121007C9F44 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7B7A1BEB1584E121007C9F44 /* main.cpp */; };
-		7BC295CB15C6960B004E6B06 /* C4dApiWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 7BC295CA15C6960B004E6B06 /* C4dApiWrapper.h */; };
-		7BE13A1715BADCDB000F51AB /* C4dApiWrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7BE13A1515BADCDB000F51AB /* C4dApiWrapper.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		7B7A1BD61584DF03007C9F44 /* libMacOSX_x86_Native.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libMacOSX_x86_Native.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B7A1BE11584E121007C9F44 /* ObjectDataM.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ObjectDataM.cpp; sourceTree = "<group>"; };
 		7B7A1BE21584E121007C9F44 /* ObjectDataM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObjectDataM.h; sourceTree = "<group>"; };
 		7B7A1BE61584E121007C9F44 /* mono.def */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = mono.def; sourceTree = "<group>"; };
-		7B7A1BEB1584E121007C9F44 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = source/main.cpp; sourceTree = "<group>"; };
-		7BC295CA15C6960B004E6B06 /* C4dApiWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = C4dApiWrapper.h; sourceTree = "<group>"; };
-		7BE13A1515BADCDB000F51AB /* C4dApiWrapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = C4dApiWrapper.cpp; sourceTree = "<group>"; };
+		7B7A1BEB1584E121007C9F44 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		7BE6FF0A1632C0A3003641FD /* MacOSX_x86_Native.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; name = MacOSX_x86_Native.dylib; path = build/Debug/MacOSX_x86_Native.dylib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -38,11 +34,9 @@
 		7B7A1BCB1584DF02007C9F44 = {
 			isa = PBXGroup;
 			children = (
-				7BC295CA15C6960B004E6B06 /* C4dApiWrapper.h */,
-				7BE13A1515BADCDB000F51AB /* C4dApiWrapper.cpp */,
+				7BE6FF041632C04D003641FD /* Resources */,
+				7BE6FF011632C028003641FD /* Source */,
 				7B7A1BE01584E121007C9F44 /* C4dApiExtensions */,
-				7B7A1BE61584E121007C9F44 /* mono.def */,
-				7B7A1BEB1584E121007C9F44 /* main.cpp */,
 				7B7A1BD71584DF03007C9F44 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -50,7 +44,7 @@
 		7B7A1BD71584DF03007C9F44 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				7B7A1BD61584DF03007C9F44 /* libMacOSX_x86_Native.dylib */,
+				7BE6FF0A1632C0A3003641FD /* MacOSX_x86_Native.dylib */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -64,6 +58,22 @@
 			path = C4dApiExtensions;
 			sourceTree = "<group>";
 		};
+		7BE6FF011632C028003641FD /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				7B7A1BEB1584E121007C9F44 /* main.cpp */,
+			);
+			name = Source;
+			sourceTree = "<group>";
+		};
+		7BE6FF041632C04D003641FD /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				7B7A1BE61584E121007C9F44 /* mono.def */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -72,7 +82,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				7B7A1BED1584E121007C9F44 /* ObjectDataM.h in Headers */,
-				7BC295CB15C6960B004E6B06 /* C4dApiWrapper.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -93,7 +102,7 @@
 			);
 			name = MacOSX_x86_Native;
 			productName = Fusee_Native;
-			productReference = 7B7A1BD61584DF03007C9F44 /* libMacOSX_x86_Native.dylib */;
+			productReference = 7BE6FF0A1632C0A3003641FD /* MacOSX_x86_Native.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 /* End PBXNativeTarget section */
@@ -129,7 +138,6 @@
 			files = (
 				7B7A1BEC1584E121007C9F44 /* ObjectDataM.cpp in Sources */,
 				7B7A1BF41584E121007C9F44 /* main.cpp in Sources */,
-				7BE13A1715BADCDB000F51AB /* C4dApiWrapper.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -248,10 +256,11 @@
 		7B7A1BDB1584DF03007C9F44 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
+				C4D_ROOTDIR = ../..;
 				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
 				DSTROOT = "$(SYMROOT)";
-				EXECUTABLE_PREFIX = lib;
 				FRAMEWORK_SEARCH_PATHS = (
 					/Library/Frameworks/Mono.framework/Versions/2.10.9/,
 					"/Development/MAXON/CINEMA4DR13/resource/**",
@@ -281,7 +290,8 @@
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
 				);
-				MACH_O_TYPE = staticlib;
+				MACH_O_TYPE = mh_dylib;
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_DEFINITION_PLIST = "";
 				PRODUCT_NAME = MacOSX_x86_Native;
 			};
@@ -290,10 +300,11 @@
 		7B7A1BDC1584DF03007C9F44 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
+				C4D_ROOTDIR = ../..;
 				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
 				DSTROOT = "$(SYMROOT)";
-				EXECUTABLE_PREFIX = lib;
 				FRAMEWORK_SEARCH_PATHS = (
 					/Library/Frameworks/Mono.framework/Versions/2.10.9/,
 					"/Development/MAXON/CINEMA4DR13/resource/**",
@@ -323,7 +334,8 @@
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
 				);
-				MACH_O_TYPE = staticlib;
+				MACH_O_TYPE = mh_dylib;
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_DEFINITION_PLIST = "";
 				PRODUCT_NAME = MacOSX_x86_Native;
 			};

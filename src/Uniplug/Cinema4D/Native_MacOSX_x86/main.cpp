@@ -1,6 +1,6 @@
 // Its possible to select values between 1000001 and 1000010 - But these are only for testing.
 // Get your own plugin id on the maxon website.
-#define ID_PLUGINTEMPLATE 1000001
+#define ID_PLUGINTEMPLATE 1000009
 
 #ifdef __MAC
     // mac osx includes
@@ -85,7 +85,7 @@ MonoDomain *domain = NULL;
 
 Bool PluginStart(void)			// the main function C4D calls to start the plugin - nearly as a main
 {
-	MessageDialog("'Cinema 4D' - Started with plugin in developement");					// The message in the popup window
+	MessageDialog("'Cinema 4D' - Started with Native OSX Test plugin in developement");					// The message in the popup window
 
 	pluginStarted = true;
 
