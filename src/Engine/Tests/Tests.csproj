@@ -34,6 +34,23 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Math\Core\Core.csproj">
+      <Project>{e95fa1c8-6491-4b4b-bbe1-eda6b16b2c6a}</Project>
+      <Name>Core %28Math\Core%29</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\..\ExternalBinaries\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Math\Core\CoreTest.cs" />
+    <Compile Include="Math\Core\Double2Test.cs" />
+    <Compile Include="Tests.cs" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
