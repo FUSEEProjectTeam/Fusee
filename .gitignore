@@ -59,6 +59,9 @@ ipch/
 *.vsp
 *.vspx
 
+# MonoDevelop
+*.userprefs
+
 # Guidance Automation Toolkit
 *.gpState
 

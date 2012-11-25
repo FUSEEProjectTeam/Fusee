@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
+//using System.Drawing;
 using System.IO;
 using Fusee.Engine;
 using Fusee.Math;
@@ -22,7 +22,6 @@ namespace Examples
             attribute vec3 fuNormal;
             
             
-        
             varying vec4 vColor;
             varying vec3 vNormal;
            
