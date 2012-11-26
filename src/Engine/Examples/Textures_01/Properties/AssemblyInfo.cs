@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // Allgemeine Informationen über eine Assembly werden über die folgenden 
 // Attribute gesteuert. Ändern Sie diese Attributwerte, um die Informationen zu ändern,
 // die mit einer Assembly verknüpft sind.
-[assembly: AssemblyTitle("MyTestGame")]
+[assembly: AssemblyTitle("Textures_01")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Furtwangen University")]
-[assembly: AssemblyProduct("Fusee")]
-[assembly: AssemblyCopyright("Copyright (c) 2012 by the Fusee Project")]
+[assembly: AssemblyCompany("Microsoft")]
+[assembly: AssemblyProduct("Textures_01")]
+[assembly: AssemblyCopyright("Copyright © Microsoft 2012")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // Die folgende GUID bestimmt die ID der Typbibliothek, wenn dieses Projekt für COM verfügbar gemacht wird
-[assembly: Guid("bdf50f17-8a2d-41cc-91b7-04822810ee94")]
+[assembly: Guid("06f0f194-34fd-4f38-8c35-a7d6795d8eeb")]
 
 // Versionsinformationen für eine Assembly bestehen aus den folgenden vier Werten:
 //

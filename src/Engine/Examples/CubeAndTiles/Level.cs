@@ -69,8 +69,8 @@ namespace Examples.CubeAndTiles
             {
                 _lvlTmp = LevelTemplates.LvlTmp;
 
-                GlobalFieldMesh = MeshReader.LoadMesh("SampleObj/Tile.obj.model");
-                GlobalCubeMesh = MeshReader.LoadMesh("SampleObj/Cube.obj.model");
+                GlobalFieldMesh = MeshReader.LoadMesh("Assets/Tile.obj.model");
+                GlobalCubeMesh = MeshReader.LoadMesh("Assets/Cube.obj.model");
 
                 _camPosition = float4x4.LookAt(0, 0, 3000, 0, 0, 0, 0, 1, 0);
                 _objOrientation = float4x4.CreateRotationX((float)MathHelper.Pi / 2);
