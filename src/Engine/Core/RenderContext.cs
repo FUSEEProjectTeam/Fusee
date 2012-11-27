@@ -9,6 +9,7 @@ namespace Fusee.Engine
     {
         private IRenderContextImp _rci;
         private ShaderProgram _currentShader;
+        private LightParams[] _lightParams = { new LightParams(), new LightParams() };
 
         /*
         public static readonly string[] MatrixParamNames  = {
@@ -308,7 +309,75 @@ namespace Fusee.Engine
                 SetShaderParam(sp, InvTransProjection);
 
             if ((sp = _currentShader.GetShaderParam("FUSEE_ITMVP")) != null)
-                SetShaderParam(sp, InvTransModelViewProjection);      
+                SetShaderParam(sp, InvTransModelViewProjection);
+
+            for (int i = 0; i < 8; i++)
+            {
+                if ((sp = _currentShader.GetShaderParam("FUSEE_L" + i + "_AMBIENT")) != null)
+                    SetShaderParam(sp, _lightParams[i].ambientColor);
+                if ((sp = _currentShader.GetShaderParam("FUSEE_L" + i + "_DIFFUSE")) != null)
+                    SetShaderParam(sp, _lightParams[i].diffuseColor);
+                if ((sp = _currentShader.GetShaderParam("FUSEE_L" + i + "_SPECULAR")) != null)
+                    SetShaderParam(sp, _lightParams[i].specularColor);
+                if ((sp = _currentShader.GetShaderParam("FUSEE_L" + i + "_POSITION")) != null)
+                    SetShaderParam(sp, _lightParams[i].position);
+                if ((sp = _currentShader.GetShaderParam("FUSEE_L" + i + "_DIRECTION")) != null)
+                    SetShaderParam(sp, _lightParams[i].direction);
+            }
+        }
+
+        public void SetLightActive(int lightInx, float active)
+        {
+            _lightParams[lightInx].active = active;
+            IShaderParam sp;
+            string paramName = "FUSEE_L" + lightInx + "_ACTIVE";
+            if ((sp = _currentShader.GetShaderParam(paramName)) != null)
+                SetShaderParam(sp, _lightParams[lightInx].active);
+        }
+
+        public void SetLightAmbient(int lightInx, float4 ambientColor)
+        {
+            _lightParams[lightInx].ambientColor = ambientColor;
+            IShaderParam sp;
+            string paramName = "FUSEE_L" + lightInx + "_AMBIENT";
+            if ((sp = _currentShader.GetShaderParam(paramName)) != null)
+                SetShaderParam(sp, _lightParams[lightInx].ambientColor);
+        }
+
+        public void SetLightDiffuse(int lightInx, float4 diffuseColor)
+        {
+            _lightParams[lightInx].diffuseColor = diffuseColor;
+            IShaderParam sp;
+            string paramName = "FUSEE_L" + lightInx + "_DIFFUSE";
+            if ((sp = _currentShader.GetShaderParam(paramName)) != null)
+                SetShaderParam(sp, _lightParams[lightInx].diffuseColor);
+        }
+
+        public void SetLightSpecular(int lightInx, float4 specularColor)
+        {
+            _lightParams[lightInx].specularColor = specularColor;
+            IShaderParam sp;
+            string paramName = "FUSEE_L" + lightInx + "_SPECULAR";
+            if ((sp = _currentShader.GetShaderParam(paramName)) != null)
+                SetShaderParam(sp, _lightParams[lightInx].specularColor);
+        }
+
+        public void SetLightPosition(int lightInx, float3 position)
+        {
+            _lightParams[lightInx].position = position;
+            IShaderParam sp;
+            string paramName = "FUSEE_L" + lightInx + "_POSITION";
+            if ((sp = _currentShader.GetShaderParam(paramName)) != null)
+                SetShaderParam(sp, _lightParams[lightInx].position);
+        }
+
+        public void SetLightDirection(int lightInx, float3 direction)
+        {
+            _lightParams[lightInx].direction = direction;
+            IShaderParam sp;
+            string paramName = "FUSEE_L" + lightInx + "_DIRECTION";
+            if ((sp = _currentShader.GetShaderParam(paramName)) != null)
+                SetShaderParam(sp, _lightParams[lightInx].direction);
         }
         
         public ShaderProgram CreateShader(string vs, string ps)
@@ -403,5 +472,15 @@ namespace Fusee.Engine
             set { _rci.ClearDepth = value; }
             get { return _rci.ClearDepth; }
         }
+    }
+    class LightParams
+    {
+        public float active = 0.0f;
+        public float4 ambientColor = new float4(1, 1, 1, 1);
+        public float4 diffuseColor = new float4(1, 1, 1, 1);
+        public float4 specularColor = new float4(1, 1, 1, 1);
+        public float3 position = new float3(0, 0, 0);
+        public float3 direction = new float3(1, 1, 1);
+        public int type = 0;
     }
 }

@@ -62,6 +62,7 @@
     <Compile Include="RenderCanvas.cs" />
     <Compile Include="RenderContext.cs" />
     <Compile Include="ShaderProgram.cs" />
+    <Compile Include="Shaders.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Fusee.Engine.Common">
