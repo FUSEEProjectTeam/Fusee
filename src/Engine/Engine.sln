@@ -57,7 +57,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JSIL-Binary", "..\..\Extern
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{89A15B9C-5CEA-4C53-A36C-9AE3CD81C8AC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EgoPerspective", "Examples\E\EgoPerspective.csproj", "{4C6F9F9C-A4E8-483F-866C-2552DDBDD4F5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EgoPerspective", "Examples\EgoPerspective\EgoPerspective.csproj", "{4C6F9F9C-A4E8-483F-866C-2552DDBDD4F5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

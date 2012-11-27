@@ -10,9 +10,9 @@ using Fusee.Math;
 
 class Object
 {
-    private int posX, posY, posZ;
-    private int angXY, angXZ, angYZ;
-    private float4x4 position;
+    private float posX, posY, posZ;
+    private float angX, angY, angZ;
+    private float4x4 _position;
 
     private Mesh mesh;
 
@@ -22,28 +22,64 @@ class Object
         posX = x;
         posY = y;
         posZ = z;
+        angX = .0f;
+        angY = .0f;
+        angY = .0f;
     }
 
-    public Mesh getMesh()
+    public Mesh GetMesh()
     {
         return mesh;
     }
 
-    public int getPosX()
+    public float GetPosX()
     {
         return posX;
     }
-    public int getPosY()
+    public float GetPosY()
     {
         return posY;
     }
-    public int getPosZ()
+    public float GetPosZ()
     {
         return posZ;
     }
-    public int angleXY()
+    public float GetAngleX()
     {
-        return angXY;
+        return angX;
+    }
+    public float GetAngleY()
+    {
+        return angY;
+    }
+    public float GetAngleZ()
+    {
+        return angZ;
+    }
+
+    public void SetX(float x)
+    {
+        posX = x;
+    }
+    public void setY(float y)
+    {
+        posY = y;
+    }
+    public void SetZ(float z)
+    {
+        posZ = z;
+    }
+    public void SetAngleX(float angle)
+    {
+        angX = angle;
+    }
+    public void SetAngleY(float angle)
+    {
+        angY = angle;
+    }
+    public void SetAngleZ(float angle)
+    {
+        angZ = angle;
     }
 
 }
