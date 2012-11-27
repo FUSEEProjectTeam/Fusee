@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Imp", "Imp", "{D8EA1B59-13BE-48B8-B197-5C26FAE7099F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenTK", "Imp\OpenTK\OpenTK.csproj", "{F7AD2BB5-D2B0-4697-BDDB-4CC26152A6B6}"
