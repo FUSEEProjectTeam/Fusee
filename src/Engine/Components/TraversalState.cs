@@ -37,11 +37,10 @@ namespace SceneManagement
 
         public void StoreMesh(Mesh mesh)
         {
-
-                _hasMesh.Pop();
- 
+            _hasMesh.Pop();
             _meshStack.Push(mesh);
             _hasMesh.Push(true);
+            
             if (HasRenderingTriple())
             {
                 AddRenderJob(_mtxModelViewStack.Peek(), _meshStack.Peek(), _RendererStack.Peek());
@@ -65,7 +64,7 @@ namespace SceneManagement
 
         public void AddTransform(float4x4 mtx)
         {
-
+            _hasTransform.Pop();
                 _mtxModelViewStack.Push(mtx * _mtxModelViewStack.Pop());
 
             
@@ -97,6 +96,8 @@ namespace SceneManagement
         public void Pop()
         {
             _mtxModelViewStack.Pop();
+            _meshStack.Pop();
+            _RendererStack.Pop();
             _hasMesh.Pop();
             _hasRenderer.Pop();
             _hasTransform.Pop();
@@ -104,6 +105,8 @@ namespace SceneManagement
 
         private void AddRenderJob(float4x4 matrix, Mesh mesh, Renderer renderer)
         {
+            //Console.WriteLine("_meshstack"+_meshStack.Count+"_viewstack"+_mtxModelViewStack.Count+"_renderstack"+_RendererStack.Count);
+            //Console.WriteLine("_hasTransform+"+_hasTransform.Count+"_hasMesh+"+_hasMesh.Count+"_hasRenderer"+_hasRenderer.Count);
             RenderMatrix renderMatrix = new RenderMatrix(matrix);
             _queue.AddRenderJob(renderMatrix);
             RenderMesh renderMesh = new RenderMesh(mesh);
@@ -111,5 +114,7 @@ namespace SceneManagement
             RenderRenderer renderRenderer = new RenderRenderer(renderer);
             _queue.AddRenderJob(renderRenderer);
         }
+
+
     }
 }
