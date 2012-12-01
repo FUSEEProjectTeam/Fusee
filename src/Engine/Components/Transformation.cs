@@ -4,57 +4,56 @@ using System.Linq;
 using System.Text;
 using Fusee.Math;
 
+//TODO: Testen ob GarbageCollector Arbeitsspeicher freigibt
+
 namespace SceneManagement
 {
     public class Transformation : Component
     {
         private float4x4 _transformMatrix;
-        private float4x4 _worldMatrix;
         private float3 _localPosition;
-        private float3 _worldPosition;
-        private Quaternion _localRotation;
+        private Quaternion _quaternion;
+        private bool _quaternionDirty;
         private float3 _localScale;
         private float3 _eulerAngles;
         private SceneEntity _entity;
-
-
+        private bool _matrixDirty;
 
        public Transformation()
        {
            _transformMatrix = float4x4.Identity;
-           _localPosition = new float3(_transformMatrix.Row3);
            _localScale = new float3(1,1,1);
+           _matrixDirty = false;
        }
 
        public Transformation(SceneEntity entity)
        {
            _transformMatrix = float4x4.Identity;
-           _localPosition = new float3(_transformMatrix.Row3);
            _localScale = new float3(1, 1, 1);
            _entity = entity;
-      
+           _matrixDirty = false;
 
        }
 
-        override public void Traverse(ITraversalState _traversalState)
-       {
-          
-           _traversalState.AddTransform(_transformMatrix);
+       override public void Traverse(ITraversalState _traversalState)
+       {          
+           _traversalState.AddTransform(Matrix);
        }
 
-        public float4x4 WorldMatrix
-        {
-            get { return _worldMatrix; }
-        }
 
 
        public float4x4 Matrix
        {
            get
            {
+               if (_matrixDirty)
+               {
+                   _transformMatrix = float4x4.Scale(_localScale) * float4x4.CreateRotationY(_eulerAngles.y) * float4x4.CreateRotationX(_eulerAngles.x) * float4x4.CreateRotationZ(_eulerAngles.z) * float4x4.CreateTranslation(_localPosition);
+                   _matrixDirty = false;
+               }
                return _transformMatrix;
            }
-           set { _transformMatrix = value; }
+           set { _transformMatrix = value; } // TODO: Extract Position, Rotation, Scale after assignment.
        }
 
 
@@ -63,35 +62,19 @@ namespace SceneManagement
            set
            {
                _localPosition = value;
-               _transformMatrix.Row3.x = _localPosition.x;
-               _transformMatrix.Row3.y = _localPosition.y;
-               _transformMatrix.Row3.z = _localPosition.z;
+               _matrixDirty = true;
            }
            get { return _localPosition; }
        }
         
         
-        /*public float3 Position
-        {
-            set {  Will cause some headache
-                _worldPosition = value;
-                _worldMatrix.Row3.x = _worldPosition.x;
-                _worldMatrix.Row3.y = _worldPosition.y;
-                _worldMatrix.Row3.z = _worldPosition.z;
-            }
-            get
-            {
-                // recurse over parent chain up to the root object;
-                return 
-            }
-        }*/
 
        public float3 LocalScale
        {
            set
            {
                _localScale = value;
-               _transformMatrix *= float4x4.Scale(this.LocalScale);
+               _matrixDirty = true;
            }
            get
            {
@@ -100,38 +83,34 @@ namespace SceneManagement
            }
        }
 
-       public Quaternion LocalRotation
+       public Quaternion LocalQuaternion
        {
            get
            {
-               Quaternion locrot = _localRotation;
-               return locrot;
+               if (_quaternionDirty)
+               {
+                   // TODO: Add Euler to quaternion conversion and vice versa
+                   _quaternionDirty = false;
+               }
+               
+               return _quaternion;
            }
            set
            {
-               _localRotation = value;
-               _transformMatrix *= float4x4.Rotate(_localRotation);
+               _quaternion = value;
+               // TODO: Update eulerangles value from quaternion value
            }
        }
 
-       public float3 EulerAngles
-       {
-          set
-          {
-              _eulerAngles = value;
-              _worldMatrix *= (float4x4.CreateRotationY(_eulerAngles.y)*float4x4.CreateRotationX(_eulerAngles.x)*
-                             float4x4.CreateRotationZ(_eulerAngles.z));
-          }
-           
-           get { return _eulerAngles; }
-       }
+
+        // TODO: Add eulerdirty functionality
        public float3 LocalEulerAngles
        {
            set
            {
                _eulerAngles = value;
-               _transformMatrix *= (float4x4.CreateRotationY(_eulerAngles.y) * float4x4.CreateRotationX(_eulerAngles.x) *
-                              float4x4.CreateRotationZ(_eulerAngles.z));
+               _matrixDirty = true;
+               _quaternionDirty = true;
            }
 
            get { return _eulerAngles; }

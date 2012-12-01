@@ -21,7 +21,7 @@ namespace SceneManagement
         {
             //transform.LocalScale = new float3(1.1f, 1.1f, 1.1f);
             //transform.Matrix = float4x4.CreateRotationY(x);
-            transform.LocalEulerAngles = new float3(0.1f, 0, 0);
+            transform.LocalEulerAngles = new float3(0, x, 0);
             //transform.LocalPosition = new float3(-x*10, x*10, x*10);
             
             x += 0.01f;

@@ -14,14 +14,15 @@ namespace SceneManagement
         
         public override void Start()
         {
+            transform.LocalEulerAngles = new float3(0, 90, 0);
             transform.LocalPosition = new float3(100,20,30);
-            transform.LocalEulerAngles = new float3(0,90,0);
+            
         }
 
         public override void Update()
         {
             //transform.Matrix = float4x4.CreateRotationY(x);
-            transform.LocalEulerAngles=new float3(0,0.1f,0);
+            transform.LocalEulerAngles=new float3(0,x,0);
             //transform.LocalPosition+=new float3(-x,x,x);
             //transform.LocalScale = new float3(x,x,x);
             x += 0.01F;

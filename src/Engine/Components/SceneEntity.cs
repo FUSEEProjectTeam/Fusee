@@ -79,10 +79,6 @@ namespace SceneManagement
 
         }
 
-        public void Log(string text)
-        {
-            Console.WriteLine(text + transform.WorldMatrix);
-        }
 
         public SceneEntity parent
         {
