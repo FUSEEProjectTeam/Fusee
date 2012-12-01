@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
-namespace SceneManagement
+namespace Fusee.SceneManagement
 {
     public class Action : Component
     {

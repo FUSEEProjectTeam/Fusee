@@ -1,61 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using Fusee.Engine;
 using Fusee.Math;
 
 
-namespace SceneManagement
+namespace Fusee.SceneManagement
 {
-    public class RenderQueue : RenderCanvas
+    public class RenderQueue
     {
+        
         private ITraversalState _traversal;
         public List<RenderJob> RenderJobs = new List<RenderJob>(); 
         public List<SceneEntity> SceneMembers = new List<SceneEntity>(); 
-        public float4x4 Camera = float4x4.LookAt(0, 200, 2000, 0, 50, 0, 0, 1, 0);
-        private Material _material = new Material();
-       
-        //TestZone
-        private SceneEntity TestEntity = new SceneEntity();
-        private Renderer testrenderer = new Renderer();
-        private TestBehaviour testscript = new TestBehaviour();
-
-        // Child
-        private SceneEntity ChildEntity = new SceneEntity();
-        private Renderer Childrenderer = new Renderer();
-        private ChildAction Childscript = new ChildAction();
         
 
-        protected float4 _farbe = new float4(0.5f, 1, 1, 0.3f);
-        protected IShaderParam _vColorParam;
-
-        public override void Init()
+        public RenderQueue()
         {
             _traversal =  new TraversalStateRender(this);
-            // Parent
-            TestEntity.AddComponent(testrenderer);
-            TestEntity.AddComponent(testscript);
-            testscript.Init(TestEntity);
-            TestEntity.AddChild(ChildEntity); // Als Child hinzugefuegt
-            SceneMembers.Add(TestEntity);
-            
-            // Child
-            ChildEntity.AddComponent(Childrenderer);
-            ChildEntity.AddComponent(Childscript);
-            Childscript.Init(ChildEntity);
-            Childscript.Start();
-            testscript.Start();
-
-            ShaderProgram sp = RC.CreateShader(_material._vs, _material._ps);
-            RC.SetShader(sp);
-            _vColorParam = sp.GetShaderParam("vColor");
-            RC.ClearColor = new float4(1, 1, 1, 1);
-            RC.SetShaderParam(_vColorParam, _farbe);
         }
 
 
-        public override void  RenderAFrame()
+        public void  Traverse(RenderCanvas renderCanvas, RenderContext RC, float4x4 camera)
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
@@ -70,10 +34,10 @@ namespace SceneManagement
                 //Console.WriteLine(RenderJobs[i].ToString()+" ist auf index"+i);
                 //Console.WriteLine(RenderJobs[i+1].ToString() + " ist auf index" + (i+1));
                 //Console.WriteLine(RenderJobs[i+2].ToString() + " ist auf index" + (i+2));
-                RC.ModelView = RenderJobs[i].GetMatrix() * Camera;
+                RC.ModelView = RenderJobs[i].GetMatrix() * camera;
                 RC.Render(RenderJobs[i+1].GetMesh());
             }
-            Present();
+            renderCanvas.Present();
 
             //Console.WriteLine("Rendering at "+DeltaTime+"ms and "+(1/DeltaTime)+" FPS"); // Use this to checkout Framerate
             RenderJobs.Clear();
@@ -84,18 +48,5 @@ namespace SceneManagement
             RenderJobs.Add(job);
         }
 
-        public override void Resize()
-        {
-            RC.Viewport(0, 0, Width, Height);
-
-            float aspectRatio = Width / (float)Height;
-            RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 5000);
-        }
-
-        public static void Main()
-        {
-            RenderQueue app = new RenderQueue();
-            app.Run();
-        }
     }
 }

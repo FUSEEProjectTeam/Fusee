@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Fusee.Engine;
-namespace SceneManagement
+namespace Fusee.SceneManagement
 {
     public class Material
     {

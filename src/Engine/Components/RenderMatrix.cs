@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Fusee.Math;
 
-namespace SceneManagement
+namespace Fusee.SceneManagement
 {
     public class RenderMatrix : RenderJob
     {

@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Fusee.Math;
 
 //TODO: Testen ob GarbageCollector Arbeitsspeicher freigibt
 
-namespace SceneManagement
+namespace Fusee.SceneManagement
 {
     public class Transformation : Component
     {

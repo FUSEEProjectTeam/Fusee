@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using Fusee.Engine;
 using Fusee.Math;
 
-namespace SceneManagement
+namespace Fusee.SceneManagement
 {
     public class Renderer : Component
     {
