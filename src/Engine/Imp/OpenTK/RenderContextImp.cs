@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Drawing;
-using System.Drawing.Imaging;
 using Fusee.Math;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
@@ -9,12 +7,9 @@ namespace Fusee.Engine
 {
     public class RenderContextImp : IRenderContextImp
     {
-        
-
         public RenderContextImp(IRenderCanvasImp renderCanvas)
         {
         }
-        
 
         public IShaderParam GetShaderParam(IShaderProgramImp shaderProgram, string paramName)
         {
@@ -53,11 +48,6 @@ namespace Fusee.Engine
             }
         }
 
-        public void SetShaderParam(IShaderParam param, int val)
-        {
-            GL.Uniform1(((ShaderParam)param).handle, val);
-        }
-        
         public float4x4 ModelView
         {
             get 
@@ -142,6 +132,7 @@ namespace Fusee.Engine
             GL.BindAttribLocation(program, Helper.VertexAttribLocation, Helper.VertexAttribName);
             GL.BindAttribLocation(program, Helper.ColorAttribLocation, Helper.ColorAttribName);
             GL.BindAttribLocation(program, Helper.NormalAttribLocation, Helper.NormalAttribName);
+
             GL.LinkProgram(program); // AAAARRRRRGGGGHHHH!!!! Must be called AFTER BindAttribLocation
             return new ShaderProgramImp {Program = program};
         }
@@ -203,7 +194,6 @@ namespace Fusee.Engine
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
 
-
         public void SetColors(IMeshImp mr, uint[] colors)
         {
             if (colors == null || colors.Length == 0)
@@ -225,7 +215,7 @@ namespace Fusee.Engine
                     colsBytes, vboBytes));
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
-        
+
 
         public void SetTriangles(IMeshImp mr, short[] triangleIndices)
         {
@@ -291,7 +281,6 @@ namespace Fusee.Engine
                 GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
                 GL.DisableVertexAttribArray(Helper.NormalAttribLocation);
             }
-            
         }
 
         public IMeshImp CreateMeshImp()

@@ -1,0 +1,64 @@
+<!DOCTYPE html> 
+<html>
+<head>
+	<title>Examples.Simple</title>
+
+	<link rel="stylesheet" href="browser.css">
+	<link rel="stylesheet" href="Examples.Simple.css">
+
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+</head>
+
+<body onload="onLoad()">
+	<script>
+		var jsilConfig = {
+			libraryRoot: "./",
+			scriptRoot: "./",
+			fileRoot: "./",
+			//localStorage: true,
+			//readOnlyStorage: true,
+			//fileVirtualRoot:"./",
+			contentRoot: "./SampleObj/",
+			manifests: [
+				"Examples.Simple.exe"
+			],
+		};
+	</script>
+
+	<script src="JSIL.js" type="text/javascript"></script> 
+	<script src="SystemExternals.js" type="text/javascript"></script>
+	<!--
+	<script src="SystemExternals.js" type="text/javascript"></script>
+	-->
+
+	<!-- workaround for chromium bug -->
+	<div id="scripts"></div>
+	<div id="images"></div>
+	<div id="sounds"></div>
+	<div id="fonts"></div>
+
+	<canvas id="canvas" width="100%" height="100%"></canvas><br>
+	<button id="loadButton">Load Application</button>
+
+	<div id="log"></div>
+
+	<script type="text/javascript">
+		var assetsToLoad = [
+			["Library", "Fusee.Engine.Imp.WebGL.js"]
+		];
+
+		function runMain () {
+			// We can't invoke Main() since it disposes the Game immediately, breaking everything.
+			var asm = JSIL.GetAssembly("Examples.Simple, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null", true);
+			asm.Examples.Simple.Main([]);
+		};
+
+		window.onresize = function(event) {
+			document.getElementById("canvas").setAttribute('width', window.innerWidth);
+			document.getElementById("canvas").setAttribute('height', window.innerHeight);
+		}
+
+		window.onresize();
+	</script>
+</body>
+</html>

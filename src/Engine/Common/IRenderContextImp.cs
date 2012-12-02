@@ -1,6 +1,4 @@
-﻿using System;
-using System.Drawing;
-using Fusee.Math;
+﻿using Fusee.Math;
 using JSIL.Meta;
 
 namespace Fusee.Engine
@@ -34,17 +32,11 @@ namespace Fusee.Engine
         [JSChangeName("SetShaderParamMtx4f")]
         void SetShaderParam(IShaderParam param, float4x4 val);
 
-
-        void SetShaderParam(IShaderParam param, int val);
-
-        
-
         void Clear(ClearFlags flags);
 
         void SetVertices(IMeshImp mesh, float3[] vertices);
 
         void SetNormals(IMeshImp mr, float3[] normals);
-
 
         void SetColors(IMeshImp mr, uint[] colors);
 

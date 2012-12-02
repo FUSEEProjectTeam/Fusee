@@ -4,7 +4,7 @@ using System.Text;
 using Fusee.Math;
 using Fusee.SceneManagement;
 
-namespace Examples.Simple
+namespace Examples.Components
 {
     class ChildAction : ActionCode
     {

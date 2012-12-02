@@ -513,7 +513,6 @@ namespace Fusee.Math
         }
 
         #endregion
-
         #region Conversion
         public static Quaternion EulerToQuaternion(float3 e)
         {

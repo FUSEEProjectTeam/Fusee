@@ -173,17 +173,6 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// This method loads an object file and returns it as a mesh.
-        /// </summary>
-        /// <param name="path">Path to the object to load</param>
-        /// <returns>The newly created Mesh object</returns>
-        public static Mesh LoadMesh(string path)
-        {
-            Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(path));
-            return geo.ToMesh();
-        }
-
-        /// <summary>
         /// This method is used to split string in a list of strings based on the separator passed to the method.
         /// </summary>
         /// <param name="strIn"></param>
