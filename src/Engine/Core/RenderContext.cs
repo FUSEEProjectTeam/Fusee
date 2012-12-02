@@ -1,4 +1,5 @@
-﻿using Fusee.Engine;
+﻿using System;
+using Fusee.Engine;
 using JSIL.Meta;
 using Fusee.Math;
 
@@ -68,6 +69,9 @@ namespace Fusee.Engine
         private bool _transModelViewOk;
         private bool _transProjectionOk;
         private bool _transModelViewProjectionOk;
+
+        
+
 
 
         public float4x4 ModelView
@@ -311,13 +315,6 @@ namespace Fusee.Engine
         {
             ShaderProgram sp = new ShaderProgram(_rci, _rci.CreateShader(vs, ps));
             sp._spi = _rci.CreateShader(vs, ps);
-            /*
-            sp.ShaderParamHandlesImp = new ShaderParamHandleImp[MatrixParamNames.Length];
-            for (int i=0; i < MatrixParamNames.Length; i++)
-            {
-                sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames[i]);
-            }
-             * */
             return sp;
         }
 
@@ -364,7 +361,7 @@ namespace Fusee.Engine
         {
             _rci.SetShaderParam(param, val);
         }
- 
+       
         public void Clear(ClearFlags flags)
         {
             _rci.Clear(flags);
@@ -380,7 +377,7 @@ namespace Fusee.Engine
 
             if (m.Colors != null && m.Colors.Length != 0 && !m.ColorsSet)
                 _rci.SetColors(m._meshImp, m.Colors);
-
+            
             if (m.Normals != null && m.Normals.Length != 0 && !m.NormalsSet)
                 _rci.SetNormals(m._meshImp, m.Normals);
 

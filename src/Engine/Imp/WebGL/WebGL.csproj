@@ -5,96 +5,61 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{F1EA338D-1D05-4D83-A739-F5AF559F0559}</ProjectGuid>
+    <ProjectGuid>{4A183140-3153-4F7E-A692-F4E3EF2CFA0A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Fusee.Engine.Imp</RootNamespace>
-    <AssemblyName>Fusee.Engine.Imp.WebGL.Proxies</AssemblyName>
+    <RootNamespace>Fusee.Engine.Imp.WebGL</RootNamespace>
+    <AssemblyName>Fusee.Engine.Imp.WebGL</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\Bin\Debug\</OutputPath>
+    <OutputPath>..\..\..\..\Bin\Debug\WebGL\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\..\..\Bin\Release\</OutputPath>
+    <OutputPath>..\..\..\..\Bin\Release\WebGL\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug+Web|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\..\..\..\Bin\Debug\WebGL\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisLogFile>..\..\..\..\Bin\Debug\WebGL\WebGL.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+    <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
+    <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="MeshReference.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RenderCanvasImp.cs" />
-    <Compile Include="RenderContextImp.cs" />
-    <Compile Include="ShaderParamHandle.cs" />
-    <Compile Include="ShaderProgramImp.cs" />
+    <ScriptFiles Include="Scripts\*.*" />
   </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Fusee.Engine.Common">
-      <HintPath>..\..\..\..\Bin\Debug\Fusee.Engine.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="Fusee.Engine.Imp.OpenTK, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Bin\Debug\Fusee.Engine.Imp.OpenTK.dll</HintPath>
-    </Reference>
-    <Reference Include="Fusee.Math.Core, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\bin\Debug\Fusee.Math.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="JSIL.Meta">
-      <HintPath>..\..\..\..\ExternalBinaries\JSIL.Meta.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="defaults.jsilconfig" />
-    <None Include="JSIL.bat" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Scripts\browser.css" />
-    <Content Include="Scripts\Examples.Simple.bak.html" />
-    <Content Include="Scripts\Examples.Simple.css" />
-    <Content Include="Scripts\Examples.Simple.html" />
-    <Content Include="Scripts\Fusee.Engine.Imp.WebGL.js" />
-    <Content Include="Scripts\gamepad.js" />
-    <Content Include="Scripts\JSIL.Bootstrap.js" />
-    <Content Include="Scripts\JSIL.Bootstrap.Resources.js" />
-    <Content Include="Scripts\JSIL.Browser.Audio.js" />
-    <Content Include="Scripts\JSIL.Browser.js" />
-    <Content Include="Scripts\JSIL.Browser.Loaders.js" />
-    <Content Include="Scripts\JSIL.Browser.Touch.js" />
-    <Content Include="Scripts\JSIL.Core.js" />
-    <Content Include="Scripts\JSIL.IO.js" />
-    <Content Include="Scripts\JSIL.js" />
-    <Content Include="Scripts\JSIL.JSON.js" />
-    <Content Include="Scripts\JSIL.LocalStorage.js" />
-    <Content Include="Scripts\JSIL.ReadOnlyStorage.js" />
-    <Content Include="Scripts\JSIL.Storage.js" />
-    <Content Include="Scripts\JSIL.TestFixture.js" />
-    <Content Include="Scripts\JSIL.XML.js" />
-    <Content Include="Scripts\JSIL.XNA3.js" />
-    <Content Include="Scripts\JSIL.XNA4.js" />
-    <Content Include="Scripts\JSIL.XNACore.js" />
-    <Content Include="Scripts\JSIL.XNAStorage.js" />
-    <Content Include="Scripts\printStackTrace.js" />
-    <Content Include="Scripts\System.Drawing.js" />
-    <Content Include="Scripts\System.Windows.js" />
-    <Content Include="Scripts\SystemExternals.js" />
-    <Content Include="Scripts\webgl-2d.js" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>cd $(ProjectDir)
-JSIL.bat $(OutDir)</PostBuildEvent>
-  </PropertyGroup>
+    <Target Name="Build">
+    <Copy SourceFiles="@(ScriptFiles)" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
+  </Target>
+  <Target Name="Rebuild" DependsOnTargets="Build">
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
