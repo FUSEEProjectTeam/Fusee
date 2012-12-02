@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Fusee.Math;
 
-//TODO: Testen ob GarbageCollector Arbeitsspeicher freigibt
+
 
 namespace Fusee.SceneManagement
 {
@@ -12,17 +12,19 @@ namespace Fusee.SceneManagement
         private float4x4 _transformMatrix;
         private float3 _localPosition;
         private Quaternion _quaternion;
-        private bool _quaternionDirty;
         private float3 _localScale;
         private float3 _eulerAngles;
         private SceneEntity _entity;
         private bool _matrixDirty;
-
+        private bool _quaternionDirty;
+        private bool _eulerDirty;
        public Transformation()
        {
            _transformMatrix = float4x4.Identity;
            _localScale = new float3(1,1,1);
            _matrixDirty = false;
+           _quaternionDirty = false;
+           _eulerDirty = false;
        }
 
        public Transformation(SceneEntity entity)
@@ -31,6 +33,8 @@ namespace Fusee.SceneManagement
            _localScale = new float3(1, 1, 1);
            _entity = entity;
            _matrixDirty = false;
+           _quaternionDirty = false;
+           _eulerDirty = false;
 
        }
 
@@ -88,6 +92,7 @@ namespace Fusee.SceneManagement
            {
                if (_quaternionDirty)
                {
+                   _quaternion = Quaternion.EulerToQuaternion(_eulerAngles);
                    // TODO: Add Euler to quaternion conversion and vice versa
                    _quaternionDirty = false;
                }
@@ -96,7 +101,10 @@ namespace Fusee.SceneManagement
            }
            set
            {
+               _matrixDirty = true;
+               _eulerDirty = true;
                _quaternion = value;
+               _eulerAngles = LocalEulerAngles; // Hack ??
                // TODO: Update eulerangles value from quaternion value
            }
        }
@@ -112,9 +120,23 @@ namespace Fusee.SceneManagement
                _quaternionDirty = true;
            }
 
-           get { return _eulerAngles; }
+           get
+           {
+               if(_eulerDirty)
+               {
+                   _eulerAngles = Quaternion.QuaternionToEuler(_quaternion);
+                   _eulerDirty = false;
+               }
+               return _eulerAngles;
+           }
        }
-      
+      private void UpdateMembers() // Extract members from transformmatrix
+      {
+          _quaternion = Quaternion.Identity;
+          _eulerAngles = float3.One;
+          _localScale = float3.One;
+          _localPosition = float3.One;
+      }
     }
 
 }

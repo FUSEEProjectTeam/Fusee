@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Fusee.SceneManagement
 {
-    public class Action : Component
+    public class ActionCode : Component
     {
        
         public SceneEntity SceneEntity = new SceneEntity();

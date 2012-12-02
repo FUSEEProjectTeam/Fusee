@@ -6,7 +6,7 @@ using Fusee.SceneManagement;
 
 namespace Examples.Simple
 {
-    class ChildAction : Action
+    class ChildAction : ActionCode
     {
         private float x=0.5f;
 

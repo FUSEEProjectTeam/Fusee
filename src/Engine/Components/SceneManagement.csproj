@@ -56,7 +56,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Action.cs" />
+    <Compile Include="ActionCode.cs" />
     <Compile Include="Component.cs" />
     <Compile Include="ITraversalState.cs" />
     <Compile Include="Material.cs" />
