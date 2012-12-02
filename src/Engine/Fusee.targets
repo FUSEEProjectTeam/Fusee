@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Target Name="PostBuildEvent" Condition="'$(Configuration)' == 'Debug+Web'">
+    <PropertyGroup>
+      <WebOutputDir>$(TargetDir)Web</WebOutputDir>
+    </PropertyGroup>
+    <ItemGroup>
+      <WebGLFiles Include="$(TargetDir)..\..\WebGL\*.*" />
+    </ItemGroup>
+
+    <Message Importance="High" Text="### PostBuildEvent $(TargetName): JSIL CCing ###" />
+    <MakeDir Directories="$(WebOutputDir)" Condition="!Exists($(WebOutputDir))" />
+    <Exec ContinueOnError="true" Command='"$(SolutionDir)..\..\ExternalBinaries\JSIL\Compiler\JSILc.exe" -o "$(WebOutputDir)" "$(TargetPath)"' />
+    <Message Importance="High" Text="### PostBuildEvent $(TargetName): Creating default HTML file ###" />
+    <Exec ContinueOnError="true" Command='"$(SolutionDir)..\..\ExternalBinaries\JSIL\Compiler\fuHTMLGen.exe" "$(TargetDir)\" "$(WebOutputDir)" "$(TargetPath)"' />
+    <Message Importance="High" Text="### PostBuildEvent $(TargetName): Copying additional Scripts ###" />
+    <Copy SourceFiles="@(WebGLFiles)" DestinationFolder="$(WebOutputDir)" SkipUnchangedFiles="true" />
+    <Message Importance="High" Text="### PostBuildEvent $(TargetName): Done ###" />
+  </Target>
+</Project>
