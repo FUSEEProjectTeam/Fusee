@@ -58,9 +58,11 @@
   <ItemGroup>
     <Compile Include="ActionCode.cs" />
     <Compile Include="Component.cs" />
+    <Compile Include="DirectionalLight.cs" />
     <Compile Include="ITraversalState.cs" />
     <Compile Include="Material.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RenderDirectionalLight.cs" />
     <Compile Include="Renderer.cs" />
     <Compile Include="RenderJob.cs" />
     <Compile Include="SceneManager.cs" />

@@ -102,6 +102,12 @@ namespace Fusee.SceneManagement
             _hasTransform.Pop();
         }
 
+        public void addLight(float3 direction, float4 color, int typ) 
+        {
+            RenderDirectionalLight light = new RenderDirectionalLight(direction, color, typ);
+            _queue.AddLightJob(light);
+        }
+
         private void AddRenderJob(float4x4 matrix, Mesh mesh, Renderer renderer)
         {
             //Console.WriteLine("_meshstack"+_meshStack.Count+"_viewstack"+_mtxModelViewStack.Count+"_renderstack"+_RendererStack.Count);

@@ -34,14 +34,11 @@ namespace Fusee.SceneManagement
             }
 
             // Order: Matrix, Mesh, Renderer
-            // TODO: change renderjob submission to method.
             for (int i = 0; i < RenderJobs.Length; i++ )
             {
 
-
-                //Console.WriteLine(RenderJobs[i].ToString()+" ist auf index"+i);
-                //Console.WriteLine(RenderJobs[i+1].ToString() + " ist auf index" + (i+1));
-                //Console.WriteLine(RenderJobs[i+2].ToString() + " ist auf index" + (i+2));
+                
+                
                 for (int k = 0; k < RenderJobs[i].Count;k++)
                 {
                     RenderJobs[i][k].SubmitWork(RC);
