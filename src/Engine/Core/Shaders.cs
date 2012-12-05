@@ -55,15 +55,13 @@ namespace Fusee.Engine
         }
 
         private const string VsMultiLight = @"
-# version 120
+//  # version 120 // not working with GL_ES
 /* Copies incoming vertex color without change.
     * Applies the transformation matrix to vertex position.
     */
 attribute vec4 fuColor;
 attribute vec3 fuVertex;
 attribute vec3 fuNormal;
-        
-//varying vec4 vColor;
 varying vec3 vNormal;
 
 varying vec3 fuL0HalfVector;
@@ -82,134 +80,44 @@ uniform vec4 FUSEE_L1_DIFFUSE;
 uniform vec4 FUSEE_L1_SPECULAR;
 uniform vec3 FUSEE_L1_POSITION;
 uniform vec3 FUSEE_L1_DIRECTION;
-
 
 uniform mat4 FUSEE_MVP;  //model view projection matrix
 uniform mat4 FUSEE_ITMV; //inverte transformierte model view matrix
 
 void main()
 {
-/*
-    struct light
-    {
-        bool active;
-        vec4 ambient;
-        vec4 diffuse;
-        vec4 specular;
-        vec3 position;
-        vec3 direction;
-        vec3 halfV;
-    };
-    light Lights[2]
-
-    struct light l0 {
-        FUSEE_L0_ACTIVE,
-        FUSEE_L0_AMBIENT,
-        FUSEE_L0_DIFFUSE,
-        FUSEE_L0_SCECULAR,
-        FUSEE_L0_POSITION,
-        FUSEE_L0_DIRECTION,
-        vec3(0,0,0)
-    }
-
-    Lights[0] = l0;
-
-    struct light l1 {
-        FUSEE_L1_ACTIVE,
-        FUSEE_L1_AMBIENT,
-        FUSEE_L1_DIFFUSE,
-        FUSEE_L1_SCECULAR,
-        FUSEE_L1_POSITION,
-        FUSEE_L1_DIRECTION,
-        vec3(0,0,0)
-    };
-
-Lights[1] = l1;
-
-
-    for(int i=0;i<2;i++)
-    {
-        vec3 eyeVector = -fuVertex;
-        vec3 L = vec3(vec4(fuVertex,1) - vec4(Lights[i].position, 1));
-        Lights[i].halfV = eyeVector - L;
-    }
-*/
-
     vec3 eyeVector = -fuVertex;
-
     vec3 L0 = vec3(vec4(fuVertex,1) - vec4(FUSEE_L0_POSITION, 1));
     fuL0HalfVector = eyeVector - L0;
-
     vec3 L1 = vec3(vec4(fuVertex,1) - vec4(FUSEE_L1_POSITION, 1));
     fuL1HalfVector = eyeVector - L1;
-
     vNormal = mat3(FUSEE_ITMV) * fuNormal;
-    
-
     gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
-
 }";
 
-
         private const string PsMultiLight = @"
-
+#ifdef GL_ES
+precision highp float;
+#endif
 varying vec3 halfVector;
 varying vec3 vNormal;
-//varying vec4 ambient, diffuse;
-
 varying vec3 fuL0HalfVector;
 varying vec3 fuL1HalfVector;
 
-uniform float FUSEE_L0_ACTIVE;
 uniform vec4 FUSEE_L0_AMBIENT;
 uniform vec4 FUSEE_L0_DIFFUSE;
 uniform vec4 FUSEE_L0_SPECULAR;
 uniform vec3 FUSEE_L0_POSITION;
 uniform vec3 FUSEE_L0_DIRECTION;
 
-uniform float FUSEE_L1_ACTIVE;
 uniform vec4 FUSEE_L1_AMBIENT;
 uniform vec4 FUSEE_L1_DIFFUSE;
 uniform vec4 FUSEE_L1_SPECULAR;
 uniform vec3 FUSEE_L1_POSITION;
 uniform vec3 FUSEE_L1_DIRECTION;
 
-
 void main()
 {
-/*
-struct light
-{
-    bool active;
-    vec4 ambient;
-    vec4 diffuse;
-    vec4 specular;
-    vec3 position;
-    vec3 direction;
-    vec3 halfV;
-};
-    lightNum = 2;
-    struct light l0 {
-    FUSEE_L0_ACTIVE,
-    FUSEE_L0_AMBIENT,
-    FUSEE_L0_DIFFUSE,
-    FUSEE_L0_SCECULAR,
-    FUSEE_L0_POSITION,
-    FUSEE_L0_DIRECTION,
-    vec3(0,0,0)
-    };
-Lights[0] = l0;
-    struct light l1 {
-    FUSEE_L1_ACTIVE,
-    FUSEE_L1_AMBIENT,
-    FUSEE_L1_DIFFUSE,
-    FUSEE_L1_SCECULAR,
-    FUSEE_L1_POSITION,
-    FUSEE_L1_DIRECTION,
-    vec3(0,0,0)
-    };
-Lights[1] = l1;
-    */
     vec3 L0halfV = normalize(fuL0HalfVector);
     vec3 L1halfV = normalize(fuL1HalfVector);
     float frontMaterialAmbient = 0.2;
@@ -222,42 +130,21 @@ Lights[1] = l1;
     vec4 L1colorDiffuse = vec4(0,0,0,1);
     vec4 L1colorSpecular = vec4(0,0,0,1);
     vec4 color;
-/*
-    for(int i = 0; i<2;i++)
-    {
-        if(Lights[i].active)
-        {
-            color *= Lights[i].ambient;
-            float NdotL = max(dot(normalize(vNormal), normalize(Lights[i].direction)), 0.0);
-            if(NdotL > 0.0)
-            {
-                color += Lights[i].diffuse * NdotL;
-                color += Lights[i].specular * pow(NdotHV, 64);
-            }
-        }
-    }
-*/
 
-        if(FUSEE_L0_ACTIVE == 1)
-        {
-            L0colorAmbient = FUSEE_L0_AMBIENT * 0.4;
-            float L0NdotL = max(dot(normalize(vNormal), normalize(FUSEE_L0_DIRECTION)), 0.0);
-            if(L0NdotL > 0.0)
-            {
-                L0colorDiffuse += FUSEE_L0_DIFFUSE * L0NdotL;
-                L0colorSpecular += FUSEE_L0_SPECULAR * pow(L0NdotHV, 256);
-            }
-        }
-        if(FUSEE_L1_ACTIVE == 1)
-        {
-            L1colorAmbient *= FUSEE_L1_AMBIENT;
-            float L1NdotL = max(dot(normalize(vNormal), normalize(FUSEE_L1_DIRECTION)), 0.0);
-            if(L1NdotL > 0.0)
-            {
-                L1colorDiffuse += FUSEE_L1_DIFFUSE * L1NdotL;
-                L1colorSpecular += FUSEE_L1_SPECULAR * pow(L1NdotHV, 256);
-            }
-        }
+    L0colorAmbient = FUSEE_L0_AMBIENT * 0.4;
+    float L0NdotL = max(dot(normalize(vNormal), normalize(FUSEE_L0_DIRECTION)), 0.0);
+    if(L0NdotL > 0.0)
+    {
+        L0colorDiffuse += FUSEE_L0_DIFFUSE * L0NdotL;
+        L0colorSpecular += FUSEE_L0_SPECULAR * pow(L0NdotHV, 256.0);
+    }
+    L1colorAmbient *= FUSEE_L1_AMBIENT;
+    float L1NdotL = max(dot(normalize(vNormal), normalize(FUSEE_L1_DIRECTION)), 0.0);
+    if(L1NdotL > 0.0)
+    {
+        L1colorDiffuse += FUSEE_L1_DIFFUSE * L1NdotL;
+        L1colorSpecular += FUSEE_L1_SPECULAR * pow(L1NdotHV, 256.0);
+    }
     vec4 colorAmbient = L0colorAmbient + L1colorAmbient * 0.4;
     vec4 colorDiffuse = L0colorDiffuse + L1colorDiffuse;
     vec4 colorSpecular= L0colorSpecular + L1colorSpecular;

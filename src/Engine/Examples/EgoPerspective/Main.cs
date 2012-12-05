@@ -22,13 +22,7 @@ namespace Examples.EgoPerspective
 
             Sp3 = Shaders.GetShader("multiLight", RC);
             RC.SetShader(Sp3);
-            //VLightDir = Sp3.GetShaderParam("vLightDir");
-            //  VColorParam = Sp3.GetShaderParam("vColor");
-            // vMorph = Sp3.GetShaderParam("scale");
-            //RC.SetLightDirection(0, new float3(1, 0,0));
-            RC.SetLightActive(0, 1);
             // /*
-            RC.SetLightActive(1, 1);
             RC.SetLightAmbient(1, new float4(0, 1, 0, 1));
             RC.SetLightSpecular(1, new float4(0, 1, 0, 1));
             RC.SetLightDiffuse(1, new float4(0, 1, 0, 1));
@@ -49,13 +43,8 @@ namespace Examples.EgoPerspective
         public override void RenderAFrame()
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-
-
-            //RC.SetShader(Sp3);
             Random zufall = new Random();
             float number = zufall.Next(1000) / 1000;
-            //RC.SetShaderParam(VColorParam, new float4(number, number, number, 1.0f));
-            //RC.SetShaderParam(VLightDir, new float3(0.0f, 0.0f, 1));
             _world.RenderWorld(_angleVert);
             Present();
         }
