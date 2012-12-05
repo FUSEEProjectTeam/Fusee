@@ -394,6 +394,18 @@ namespace Fusee.Engine
             UpdateCurrentShader();
         }
 
+        public ShaderMaterial CreateMaterial(ShaderProgram program)
+        {
+            ShaderMaterial sm = new ShaderMaterial(program);
+            return sm;
+        }
+
+        public void SetMaterial(ShaderMaterial mat)
+        {
+            IShaderParam param;
+            if ((param = mat.GetShader().GetShaderParam("FUSEE_MAT_SHININESS")) != null)
+                SetShaderParam(param, mat.GetShininess());
+        }
 
         // Pass thru
         public IShaderParam GetShaderParam(ShaderProgram program, string paramName)

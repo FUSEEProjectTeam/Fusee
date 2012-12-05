@@ -17,12 +17,14 @@ namespace Examples.EgoPerspective
         public override void Init()
         {
             _world = new World(RC, In);
-            Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/castle.obj.model"));
+            Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Teapot.obj.model"));
             _world.addObject(geo, 0, 0, 1000);
 
             Sp3 = Shaders.GetShader("multiLight", RC);
             RC.SetShader(Sp3);
-            // /*
+            ShaderMaterial m = RC.CreateMaterial(Sp3);          
+            m.SetShininess(8);
+            RC.SetMaterial(m);
             RC.SetLightAmbient(1, new float4(0, 1, 0, 1));
             RC.SetLightSpecular(1, new float4(0, 1, 0, 1));
             RC.SetLightDiffuse(1, new float4(0, 1, 0, 1));

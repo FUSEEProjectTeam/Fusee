@@ -197,6 +197,8 @@ varying vec3 vNormal;
 
 varying vec3 fuL0HalfVector;
 varying vec3 fuL1HalfVector;
+
+uniform float FUSEE_MAT_SHININESS;
         
 uniform float FUSEE_L0_ACTIVE;
 uniform vec4 FUSEE_L0_AMBIENT;
@@ -247,6 +249,8 @@ uniform vec4 FUSEE_L1_SPECULAR;
 uniform vec3 FUSEE_L1_POSITION;
 uniform vec3 FUSEE_L1_DIRECTION;
 
+uniform float FUSEE_MAT_SHININESS;
+
 void main()
 {
     vec3 L0halfV = normalize(fuL0HalfVector);
@@ -267,14 +271,14 @@ void main()
     if(L0NdotL > 0.0)
     {
         L0colorDiffuse += FUSEE_L0_DIFFUSE * L0NdotL;
-        L0colorSpecular += FUSEE_L0_SPECULAR * pow(L0NdotHV, 256.0);
+        L0colorSpecular += FUSEE_L0_SPECULAR * pow(L0NdotHV, FUSEE_MAT_SHININESS);
     }
     L1colorAmbient *= FUSEE_L1_AMBIENT;
     float L1NdotL = max(dot(normalize(vNormal), normalize(FUSEE_L1_DIRECTION)), 0.0);
     if(L1NdotL > 0.0)
     {
         L1colorDiffuse += FUSEE_L1_DIFFUSE * L1NdotL;
-        L1colorSpecular += FUSEE_L1_SPECULAR * pow(L1NdotHV, 256.0);
+        L1colorSpecular += FUSEE_L1_SPECULAR * pow(L1NdotHV, FUSEE_MAT_SHININESS);
     }
     vec4 colorAmbient = L0colorAmbient + L1colorAmbient * 0.4;
     vec4 colorDiffuse = L0colorDiffuse + L1colorDiffuse;
