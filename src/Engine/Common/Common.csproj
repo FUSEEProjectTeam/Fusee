@@ -59,6 +59,7 @@
     <Compile Include="IShaderParam.cs" />
     <Compile Include="IShaderProgramImp.cs" />
     <Compile Include="KeyEventArgs.cs" />
+    <Compile Include="Light.cs" />
     <Compile Include="MouseEventArgs.cs" />
     <Compile Include="Point.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -17,7 +17,7 @@ namespace Examples.EgoPerspective
         public override void Init()
         {
             _world = new World(RC, In);
-            Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Teapot.obj.model"));
+            Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/castle.obj.model"));
             _world.addObject(geo, 0, 0, 1000);
 
             Sp3 = Shaders.GetShader("multiLight", RC);
