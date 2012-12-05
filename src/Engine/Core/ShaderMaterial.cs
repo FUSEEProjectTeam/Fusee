@@ -45,7 +45,7 @@ namespace Fusee.Engine
 
         public float GetEmmision()
         {
-            return _shininess;
+            return _emission;
         }
 
         public void SetAmbient(float4 ambient)
