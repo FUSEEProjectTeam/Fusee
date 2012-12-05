@@ -12,12 +12,12 @@ namespace Fusee.SceneManagement
         private Stack<bool> _hasTransform;
         private Stack<bool> _hasRenderer;
         private Stack<bool> _hasMesh;
-        private RenderQueue _queue;
+        private SceneManager _queue;
         private Stack<float4x4> _mtxModelViewStack;
         private Stack<Mesh> _meshStack;
         private Stack<Renderer> _RendererStack;
 
-        public TraversalStateRender(RenderQueue queue)
+        public TraversalStateRender(SceneManager queue)
         {
             _queue = queue;
             _mtxModelViewStack = new Stack<float4x4>();
@@ -33,7 +33,7 @@ namespace Fusee.SceneManagement
             _RendererStack.Push(null);
             */
         }
-
+        // TODO: Store Mesh as local variable instead of stacks as it is not used in further traversals.
         public void StoreMesh(Mesh mesh)
         {
             _hasMesh.Pop();

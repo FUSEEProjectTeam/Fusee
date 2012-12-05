@@ -5,7 +5,7 @@ using Fusee.Math;
 
 namespace Fusee.SceneManagement
 {
-    public class RenderQueue
+    public class SceneManager
     {
         
         private ITraversalState _traversal;
@@ -13,7 +13,7 @@ namespace Fusee.SceneManagement
         public List<SceneEntity> SceneMembers = new List<SceneEntity>(); 
         
 
-        public RenderQueue()
+        public SceneManager()
         {
             _traversal =  new TraversalStateRender(this);
         }
@@ -29,6 +29,7 @@ namespace Fusee.SceneManagement
             }
 
             // Order: Matrix, Mesh, Renderer
+            // TODO: change renderjob submission to method.
             for (int i = 0; i < RenderJobs.Count; i+=3 )
             {
                 //Console.WriteLine(RenderJobs[i].ToString()+" ist auf index"+i);
