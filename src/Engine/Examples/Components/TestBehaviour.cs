@@ -21,7 +21,7 @@ namespace Examples.Components
             
             transform.LocalQuaternion = Quaternion.FromAxisAngle(new float3(0, 0, 1), x);
             Quaternion q = Quaternion.MatrixToQuaternion(transform.Matrix);
-            Console.WriteLine("Native Quaternion: "+transform.LocalQuaternion.ToString()+" Calculated Quaternion: "+q.ToString());
+            //Console.WriteLine("Native Quaternion: "+transform.LocalQuaternion.ToString()+" Calculated Quaternion: "+q.ToString());
             x += 0.01F;
 
         }

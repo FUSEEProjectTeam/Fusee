@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Fusee.Math;
-
+using Fusee.Engine;
 namespace Fusee.SceneManagement
 {
     public class RenderMatrix : RenderJob
@@ -13,9 +13,9 @@ namespace Fusee.SceneManagement
             _matrix = matrix;
         }
 
-        public override float4x4 GetMatrix()
+        public override void SubmitWork(RenderContext renderContext)
         {
-            return _matrix;
+            renderContext.ModelView = _matrix*renderContext.Camera;
         }
     }
 }

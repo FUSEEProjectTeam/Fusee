@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Fusee.Engine;
 using Fusee.Math;
-
+using System;
 
 namespace Fusee.SceneManagement
 {
@@ -9,13 +9,18 @@ namespace Fusee.SceneManagement
     {
         
         private ITraversalState _traversal;
-        public List<RenderJob> RenderJobs = new List<RenderJob>(); 
+        public List<RenderJob>[] RenderJobs = new List<RenderJob>[10]; 
         public List<SceneEntity> SceneMembers = new List<SceneEntity>(); 
         
 
         public SceneManager()
         {
             _traversal =  new TraversalStateRender(this);
+            for (int i = 0; i < RenderJobs.Length; i++ )
+            {
+                RenderJobs[i] = new List<RenderJob>();
+            }
+            
         }
 
 
@@ -30,23 +35,39 @@ namespace Fusee.SceneManagement
 
             // Order: Matrix, Mesh, Renderer
             // TODO: change renderjob submission to method.
-            for (int i = 0; i < RenderJobs.Count; i+=3 )
+            for (int i = 0; i < RenderJobs.Length; i++ )
             {
+
+
                 //Console.WriteLine(RenderJobs[i].ToString()+" ist auf index"+i);
                 //Console.WriteLine(RenderJobs[i+1].ToString() + " ist auf index" + (i+1));
                 //Console.WriteLine(RenderJobs[i+2].ToString() + " ist auf index" + (i+2));
-                RC.ModelView = RenderJobs[i].GetMatrix() * camera;
-                RC.Render(RenderJobs[i+1].GetMesh());
+                for (int k = 0; k < RenderJobs[i].Count;k++)
+                {
+                    RenderJobs[i][k].SubmitWork(RC);
+
+                }
+                    
+                    
             }
             renderCanvas.Present();
 
             //Console.WriteLine("Rendering at "+DeltaTime+"ms and "+(1/DeltaTime)+" FPS"); // Use this to checkout Framerate
-            RenderJobs.Clear();
+            foreach (var renderjob in RenderJobs)
+            {
+                renderjob.Clear();
+            }
         }
 
         public void AddRenderJob(RenderJob job)
         {
-            RenderJobs.Add(job);
+            
+            RenderJobs[1].Add(job);
+        }
+
+        public void AddLightJob(RenderJob job)
+        {
+            RenderJobs[0].Add(job);
         }
 
     }

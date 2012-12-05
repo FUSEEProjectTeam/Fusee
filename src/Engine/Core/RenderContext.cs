@@ -37,6 +37,7 @@ namespace Fusee.Engine
             Projection = float4x4.Identity;
         }
 
+        public float4x4 Camera; // TODO: Implement Camera. Temporary solution!!
         // Settable matrices
         private float4x4 _modelView;
         private float4x4 _projection;
