@@ -94,7 +94,7 @@ namespace Fusee.Engine
                 param2 = _sp.GetShaderParam("brightColor");
                 param3 = _sp.GetShaderParam("chessSize");
                 param4 = _sp.GetShaderParam("smoothFactor");
-                rc.SetShaderParam(param1, new float3(0 0, 0));
+                rc.SetShaderParam(param1, new float3(0, 0, 0));
                 rc.SetShaderParam(param2, new float3(1, 1, 0));
                 rc.SetShaderParam(param3, 25);
                 rc.SetShaderParam(param4, 1);
