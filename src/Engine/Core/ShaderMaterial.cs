@@ -1,5 +1,6 @@
 ﻿using Fusee.Math;
 using Fusee.Engine;
+using System.Collections.Generic;
 
 namespace Fusee.Engine
 {
@@ -11,6 +12,7 @@ namespace Fusee.Engine
         private float4 _diffuse;
         private float _shininess;
         private ShaderProgram _sp;
+        public List<IShaderParam> ParamListe;
 
         public ShaderMaterial(ShaderProgram program)
         {
@@ -72,18 +74,32 @@ namespace Fusee.Engine
         {
             _emission = emission;
         }
-        public ShaderMaterial useMaterial(string s, RenderContext rc)
+        public ShaderMaterial(string s, RenderContext rc)
         {
+            if (s == "multiLight")
+            {
+                ShaderProgram sp = Shaders.GetShader("multiLight",rc);
+                _shininess = 64;
+                rc.SetShader(sp);
+            }
             if (s == "chess")
             {
-                ShaderMaterial material = rc.CreateMaterial(Shaders.GetShader("multiLight",rc));
-                material.SetShininess(64);
-                return material;
+                ShaderProgram sp = Shaders.GetShader("chess", rc);
+                _shininess = 64;
+                ParamListe.Add(sp.GetShaderParam("darkColor"));
+                ParamListe.Add(sp.GetShaderParam("brightColor"));
+                ParamListe.Add(sp.GetShaderParam("chessSize"));
+                ParamListe.Add(sp.GetShaderParam("smoothFactor"));
+                rc.SetShaderParam(ParamListe[0], new float3(1,1,0));
+                rc.SetShaderParam(ParamListe[1], new float3(1, 1, 0));
+                rc.SetShaderParam(ParamListe[2], 1.0f);
+                rc.SetShaderParam(ParamListe[3], 1.0f);
+                rc.SetShader(sp);
             }
 
-            ShaderMaterial m = rc.CreateMaterial(Shaders.GetShader("multiLight", rc));
-            m.SetShininess(64);
-            return m;
+            ShaderProgram shp = Shaders.GetShader("multiLight", rc);
+            _shininess = 64;
+            rc.SetShader(shp);
         }
     }   
 }

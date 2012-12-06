@@ -394,12 +394,6 @@ namespace Fusee.Engine
             UpdateCurrentShader();
         }
 
-        public ShaderMaterial CreateMaterial(ShaderProgram program)
-        {
-            ShaderMaterial sm = new ShaderMaterial(program);
-            return sm;
-        }
-
         public void SetMaterial(ShaderMaterial mat)
         {
             IShaderParam param;

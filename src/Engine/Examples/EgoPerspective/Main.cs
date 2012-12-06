@@ -20,11 +20,7 @@ namespace Examples.EgoPerspective
             Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Teapot.obj.model"));
             _world.addObject(geo, 0, 0, 1000);
 
-            Sp3 = Shaders.GetShader("multiLight", RC);
-            RC.SetShader(Sp3);
-            ShaderMaterial m = RC.CreateMaterial(Sp3);          
-            m.SetShininess(8);
-            RC.SetMaterial(m);
+            ShaderMaterial m = new ShaderMaterial("multiLight", RC);
             RC.SetLightAmbient(1, new float4(0, 1, 0, 1));
             RC.SetLightSpecular(1, new float4(0, 1, 0, 1));
             RC.SetLightDiffuse(1, new float4(0, 1, 0, 1));
