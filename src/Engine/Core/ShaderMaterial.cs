@@ -12,7 +12,10 @@ namespace Fusee.Engine
         private float4 _diffuse;
         private float _shininess;
         private ShaderProgram _sp;
-        public List<IShaderParam> ParamListe;
+        public IShaderParam param1;
+        public IShaderParam param2;
+        public IShaderParam param3;
+        public IShaderParam param4;
 
         public ShaderMaterial(ShaderProgram program)
         {
@@ -78,28 +81,39 @@ namespace Fusee.Engine
         {
             if (s == "multiLight")
             {
-                ShaderProgram sp = Shaders.GetShader("multiLight",rc);
-                _shininess = 64;
-                rc.SetShader(sp);
+                _sp = Shaders.GetShader("multiLight",rc);
+                rc.SetShader(_sp);
+                _shininess = 256.0f;
+                UpdateMaterial(rc);
             }
-            if (s == "chess")
+            else if (s == "chess")
             {
-                ShaderProgram sp = Shaders.GetShader("chess", rc);
+                _sp = MoreShaders.GetShader("chess", rc);
                 _shininess = 64;
-                ParamListe.Add(sp.GetShaderParam("darkColor"));
-                ParamListe.Add(sp.GetShaderParam("brightColor"));
-                ParamListe.Add(sp.GetShaderParam("chessSize"));
-                ParamListe.Add(sp.GetShaderParam("smoothFactor"));
-                rc.SetShaderParam(ParamListe[0], new float3(1,1,0));
-                rc.SetShaderParam(ParamListe[1], new float3(1, 1, 0));
-                rc.SetShaderParam(ParamListe[2], 1.0f);
-                rc.SetShaderParam(ParamListe[3], 1.0f);
-                rc.SetShader(sp);
+                param1 = _sp.GetShaderParam("darkColor");
+                param2 = _sp.GetShaderParam("brightColor");
+                param3 = _sp.GetShaderParam("chessSize");
+                param4 = _sp.GetShaderParam("smoothFactor");
+                rc.SetShaderParam(param1, new float3(0 0, 0));
+                rc.SetShaderParam(param2, new float3(1, 1, 0));
+                rc.SetShaderParam(param3, 25);
+                rc.SetShaderParam(param4, 1);
+                rc.SetShader(_sp);
             }
-
-            ShaderProgram shp = Shaders.GetShader("multiLight", rc);
-            _shininess = 64;
-            rc.SetShader(shp);
+            else
+            {
+                ShaderProgram shp = Shaders.GetShader("multiLight", rc);
+                _shininess = 64;
+                rc.SetShader(shp);
+            }
+        }
+        public void UpdateMaterial(RenderContext rc)
+        {
+            IShaderParam sp;
+            if ((sp = _sp.GetShaderParam("FUSEE_MAT_SHININESS")) != null)
+                rc.SetShaderParam(sp, _shininess);
+            if ((sp = _sp.GetShaderParam("FUSEE_MAT_SPECULAR")) != null)
+                rc.SetShaderParam(sp, _specular);
         }
     }   
 }

@@ -165,6 +165,11 @@ attribute vec4 fuColor;
 attribute vec3 fuVertex;
 attribute vec3 fuNormal;
 
+
+uniform vec3 darkColor;
+uniform vec3 brightColor;
+uniform float chessSize;
+uniform float smoothFactor;
 uniform vec3 FUSEE_L0_POSITION;
 vec3  Normal;
 varying float LightIntensity;
