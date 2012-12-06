@@ -1,0 +1,17 @@
+﻿{
+  "OutputDirectory": "%assemblypath%",
+  "Assemblies": {
+    "Stubbed": [
+      "mscorlib,",
+      "System.*",
+      "Microsoft.*"
+    ],
+    "Ignored": [
+      "Microsoft.VisualC,",
+      "Accessibility,",
+      "SMDiagnostics,",
+      "System.EnterpriseServices,",
+      "JSIL.Meta,"
+    ] 
+	}
+}
