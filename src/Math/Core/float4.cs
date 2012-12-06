@@ -358,11 +358,17 @@ namespace Fusee.Math
 
         #endregion public void Scale()
 
+        #region public float[] ToArray()
+
+        /// <summary>
+        /// XML-Comment
+        /// </summary>
         public float[] ToArray()
         {
             return new float[] { x, y, z, w };
         }
 
+        #endregion
 
         #endregion
 
