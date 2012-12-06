@@ -72,5 +72,18 @@ namespace Fusee.Engine
         {
             _emission = emission;
         }
+        public ShaderMaterial useMaterial(string s, RenderContext rc)
+        {
+            if (s == "chess")
+            {
+                ShaderMaterial material = rc.CreateMaterial(Shaders.GetShader("multiLight",rc));
+                material.SetShininess(64);
+                return material;
+            }
+
+            ShaderMaterial m = rc.CreateMaterial(Shaders.GetShader("multiLight", rc));
+            m.SetShininess(64);
+            return m;
+        }
     }   
 }
