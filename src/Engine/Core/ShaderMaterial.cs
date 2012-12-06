@@ -79,7 +79,15 @@ namespace Fusee.Engine
         }
         public ShaderMaterial(string s, RenderContext rc)
         {
-            if (s == "multiLight")
+            if (s == "color")
+            {
+                _sp = MoreShaders.GetShader("color", rc);
+                rc.SetShader(_sp);
+                param1 = _sp.GetShaderParam("FUSEE_MAT_AMBIENT");
+                rc.SetShaderParam(param1, _ambient);
+                UpdateMaterial(rc);
+            }
+            else if (s == "multiLight")
             {
                 _sp = Shaders.GetShader("multiLight",rc);
                 rc.SetShader(_sp);
@@ -90,15 +98,17 @@ namespace Fusee.Engine
             {
                 _sp = MoreShaders.GetShader("chess", rc);
                 _shininess = 64;
+                rc.SetShader(_sp);
                 param1 = _sp.GetShaderParam("darkColor");
                 param2 = _sp.GetShaderParam("brightColor");
                 param3 = _sp.GetShaderParam("chessSize");
                 param4 = _sp.GetShaderParam("smoothFactor");
                 rc.SetShaderParam(param1, new float3(0, 0, 0));
-                rc.SetShaderParam(param2, new float3(1, 1, 0));
-                rc.SetShaderParam(param3, 25);
+                rc.SetShaderParam(param2, new float3(1, 1, 1));
+                rc.SetShaderParam(param3, 100);
                 rc.SetShaderParam(param4, 1);
-                rc.SetShader(_sp);
+                rc.SetLightPosition(0, new float3(0, 2000, 2000));
+                
             }
             else
             {
@@ -114,6 +124,8 @@ namespace Fusee.Engine
                 rc.SetShaderParam(sp, _shininess);
             if ((sp = _sp.GetShaderParam("FUSEE_MAT_SPECULAR")) != null)
                 rc.SetShaderParam(sp, _specular);
+            if ((sp = _sp.GetShaderParam("FUSEE_MAT_AMBIENT")) != null)
+                rc.SetShaderParam(sp, _ambient);
         }
     }   
 }

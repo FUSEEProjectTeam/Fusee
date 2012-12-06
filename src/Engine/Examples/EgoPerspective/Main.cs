@@ -12,18 +12,26 @@ namespace Examples.EgoPerspective
         private World _world;
         protected ShaderProgram Sp3;
         protected IShaderParam VColorParam;
-        protected IShaderParam VLightDir;
+        protected ShaderMaterial m, m2;
 
         public override void Init()
         {
             _world = new World(RC, In);
-            Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Teapot.obj.model"));
-            _world.addObject(geo, 0, 0, 1000);
-
-            ShaderMaterial m = new ShaderMaterial("multiLight", RC);
-            m.SetSpecular(new float4(1,0,0,1));
-            m.SetShininess(256.0f);
+            Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/castle.obj.model"));
+            Geometry geo2 = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/ground.obj.model"));
+            m = new ShaderMaterial("color", RC);
+            m.SetAmbient(new float4(0.3f, 0.3f , 0.3f, 1));
             m.UpdateMaterial(RC);
+            
+            m2 = new ShaderMaterial("color", RC);
+            m2.SetAmbient(new float4(0, 0.3f, 0, 1));
+            m2.SetShininess(256.0f);
+            m2.UpdateMaterial(RC);
+
+            _world.addObject(geo, m, 0, -100, 1000);
+            _world.addObject(geo2, m2, 0, -100, 1000);
+
+
             RC.SetLightAmbient(1, new float4(0, 1, 0, 1));
             RC.SetLightSpecular(1, new float4(0, 0.6f, 0, 1));
             RC.SetLightDiffuse(1, new float4(0, 0.4f, 0, 1));
@@ -33,7 +41,7 @@ namespace Examples.EgoPerspective
             RC.SetLightAmbient(0, new float4(0, 0, 1, 1));
             RC.SetLightSpecular(0, new float4(0, 0, 0.6f, 1));
             RC.SetLightDiffuse(0, new float4(0, 0, 0.4f, 1));
-            RC.SetLightPosition(0, new float3(1000, 1000, 2000));
+         //   RC.SetLightPosition(0, new float3(0, 2000, 2000));
             RC.SetLightDirection(0, new float3(1, 1, 2));
             RC.ClearColor = new float4(1, 1, 1, 1);
             _angleHorz = 0;
@@ -43,6 +51,7 @@ namespace Examples.EgoPerspective
 
         public override void RenderAFrame()
         {
+            
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
             Random zufall = new Random();
             float number = zufall.Next(1000) / 1000;

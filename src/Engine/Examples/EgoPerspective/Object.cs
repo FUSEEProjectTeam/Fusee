@@ -15,10 +15,12 @@ class Object
     private float4x4 _position;
 
     private Mesh mesh;
+    private ShaderMaterial material;
 
-    public Object(Geometry geo, int x, int y, int z)
+    public Object(Geometry geo, ShaderMaterial m, int x, int y, int z)
     {
         mesh = geo.ToMesh();
+        material = m;
         posX = x;
         posY = y;
         posZ = z;
@@ -30,6 +32,10 @@ class Object
     public Mesh GetMesh()
     {
         return mesh;
+    }
+    public ShaderProgram GetShader()
+    {
+        return material.GetShader();
     }
 
     public float GetPosX()

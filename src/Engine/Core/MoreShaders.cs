@@ -11,19 +11,18 @@ namespace Fusee.Engine
 
         public static ShaderProgram GetShader(string name, RenderContext rc)
         {
-            if (name == "simple")
+            if (name == "color")
             {
-
-                ShaderProgram spSimple = rc.CreateShader(Vs, PsSimple);
-                return spSimple;
+                ShaderProgram spColor = rc.CreateShader(VSColor, PSColor);
+                return spColor;
             }
 
             if (name == "chess")
             {
-                ShaderProgram spLight = rc.CreateShader(VSChess, PSChess);
-                return spLight;
+                ShaderProgram spChess = rc.CreateShader(VSChess, PSChess);
+                return spChess;
             }
-            ShaderProgram spOriginal = rc.CreateShader(Vs, PsSimple);
+            ShaderProgram spOriginal = rc.CreateShader(VSColor, PSColor);
             return spOriginal;
         }
 
@@ -218,7 +217,7 @@ void main(){
 
 
 
-        private const string Vs = @"
+        private const string VSColor = @"
 # version 120
 /* Copies incoming vertex color without change.
     * Applies the transformation matrix to vertex position.
@@ -226,40 +225,27 @@ void main(){
 attribute vec4 fuColor;
 attribute vec3 fuVertex;
 attribute vec3 fuNormal;
-        
-varying vec4 vColor;
-varying vec3 vNormal;
-        
-
+       
 uniform mat4 FUSEE_MVP;  //model view projection matrix
 uniform mat4 FUSEE_ITMV; //inverte transformierte model view matrix
 
 void main()
 {
-
     gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
-    vColor = vec4(fuNormal * 0.5 + 0.5, 1.0);
-    // vec4 norm4 = FUSEE_MVP * vec4(fuNormal, 0.0);
-    // vNormal = norm4.xyz;
-    vNormal = mat3(FUSEE_ITMV) * fuNormal;
 }";
 
-        private const string PsSimple = @"
+        private const string PSColor = @"
 /* Copies incoming fragment color without change. */
 #ifdef GL_ES
 precision highp float;
 #endif
         
-//uniform vec4 vColor;
-varying vec3 vNormal;
-uniform sampler2D texture1;
+uniform vec4 FUSEE_MAT_AMBIENT;
 
 void main()
-{
-    
-    gl_FragColor = texture2D(texture1, vec2(vNormal)) * dot(vNormal, vec3(0, 0, 1)) ;
+{    
+    gl_FragColor = FUSEE_MAT_AMBIENT;
 }";
-
 
     }
 }
