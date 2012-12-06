@@ -22,7 +22,7 @@ namespace Examples.EgoPerspective
             Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/ground.obj.model"));
             _world.addObject(geo, 0, 0, 1000);
 
-            sp = MoreShaders.GetShader("multiLight", RC);
+            sp = MoreShaders.GetShader("chess", RC);
             RC.SetShader(sp);
             darkColor = sp.GetShaderParam("darkColor");
             brightColor = sp.GetShaderParam("brightColor");

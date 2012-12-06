@@ -18,9 +18,9 @@ namespace Fusee.Engine
                 return spSimple;
             }
 
-            if (name == "multiLight")
+            if (name == "chess")
             {
-                ShaderProgram spLight = rc.CreateShader(VsMultiLight, PsMultiLight);
+                ShaderProgram spLight = rc.CreateShader(VSChess, PSChess);
                 return spLight;
             }
             ShaderProgram spOriginal = rc.CreateShader(Vs, PsSimple);
@@ -158,7 +158,7 @@ void main()
     gl_FragColor = vec4(LC ,1) ;
 }";
 
-        private const string VsMultiLight = @"
+        private const string VSChess = @"
 //  # version 120 // not working with GL_ES
 
 attribute vec4 fuColor;
@@ -184,7 +184,7 @@ void main(void) {
 
 }";
 
-        private const string PsMultiLight = @"
+        private const string PSChess = @"
 #ifdef GL_ES
 precision highp float;
 #endif
