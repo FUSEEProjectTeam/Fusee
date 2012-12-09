@@ -1000,15 +1000,10 @@ JSIL.ImplementExternals("Fusee.Engine.MeshReader", function ($) {
 });
 
 
-
 var FUSEE_GLOBAL_TimerFunc = null;
 var FUSEE_GLOBAL_first = 0.0;
 
 JSIL.ImplementExternals("Fusee.Engine.Diagnostics", function ($) {
-
-/*    $.Field({ Static: true, Public: false }, "TimerFunc", $.Object, null);
-    $.Field({ Static: true, Public: false }, "_first", $.Double, null);
-*/
 
     $.Method({ Static: true, Public: true }, "get_Timer",
     new JSIL.MethodSignature($.Double, []),
