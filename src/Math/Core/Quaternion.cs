@@ -514,6 +514,50 @@ namespace Fusee.Math
 
         #endregion
 
+        #region Conversion
+        public static Quaternion EulerToQuaternion(float3 e)
+        {
+            float c1 = (float)System.Math.Cos(e.x / 2);
+            float s1 = (float)System.Math.Sin(e.x / 2);
+            float c2 = (float)System.Math.Cos(e.y / 2);
+            float s2 = (float)System.Math.Sin(e.y / 2);
+            float c3 = (float)System.Math.Cos(e.z / 2);
+            float s3 = (float)System.Math.Sin(e.z / 2);
+            float c1C2 = c1 * c2;
+            float s1S2 = s1 * s2;
+            float w = c1C2 * c3 - s1S2 * s3;
+            float x = c1C2 * s3 + s1S2 * c3;
+            float y = s1 * c2 * c3 + c1 * s2 * s3;
+            float z = c1 * s2 * c3 - s1 * c2 * s3;
+            return new Quaternion(x,y,z,w);
+        }
+        public static float3 QuaternionToEuler(Quaternion q1)
+        {
+            float sqw = q1.w*q1.w;
+            float sqx = q1.x*q1.x;
+            float sqy = q1.y*q1.y;
+            float sqz = q1.z*q1.z;
+	        float unit = sqx + sqy + sqz + sqw; // if normalised is one, otherwise is correction factor
+	        float test = q1.x*q1.y + q1.z*q1.w;
+            float3 result = new float3(0,0,0);
+	        if (test > 0.499*unit) { // singularity at north pole
+                result.x = (float)(2 * System.Math.Atan2(q1.x, q1.w));
+                result.y = (float)System.Math.PI / 2;
+		        result.z = 0;
+		        return result;
+	        }
+	        if (test < -0.499*unit) { // singularity at south pole
+                result.x = (float)(-2 * System.Math.Atan2(q1.x, q1.w));
+                result.y = (float)(-System.Math.PI / 2);
+		        result.z = 0;
+		        return result;
+	        }
+            result.x = (float)System.Math.Atan2(2 * q1.y * q1.w - 2 * q1.x * q1.z, sqx - sqy - sqz + sqw);
+            result.y = (float)System.Math.Asin(2 * test / unit);
+            result.z = (float)System.Math.Atan2(2 * q1.x * q1.w - 2 * q1.y * q1.z, -sqx + sqy - sqz + sqw);
+            return result;
+        }
+        #endregion
         #endregion
 
         #region Operators
