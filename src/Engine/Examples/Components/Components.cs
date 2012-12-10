@@ -7,7 +7,7 @@ namespace Examples.Components
 {
     public class Components : RenderCanvas
     {
-        private SceneManager _sceneManager = new SceneManager();
+        private SceneManager _queue = new SceneManager();
         public List<RenderJob> RenderJobs = new List<RenderJob>(); 
         public List<SceneEntity> SceneMembers = new List<SceneEntity>(); 
         public float4x4 Camera = float4x4.LookAt(0, 200, 2000, 0, 50, 0, 0, 1, 0);
@@ -29,13 +29,13 @@ namespace Examples.Components
 
         public override void Init()
         {
-            RC.Camera = Camera;
+           
             // Parent
             TestEntity.AddComponent(testrenderer);
             TestEntity.AddComponent(testscript);
             testscript.Init(TestEntity);
             TestEntity.AddChild(ChildEntity); // Als Child hinzugefuegt
-            _sceneManager.SceneMembers.Add(TestEntity);
+            _queue.SceneMembers.Add(TestEntity);
             
             // Child
             ChildEntity.AddComponent(Childrenderer);
@@ -54,7 +54,7 @@ namespace Examples.Components
 
         public override void  RenderAFrame()
         {
-            _sceneManager.Traverse(this, RC, Camera);
+            _queue.Traverse(this, RC, Camera);
         }
 
 
