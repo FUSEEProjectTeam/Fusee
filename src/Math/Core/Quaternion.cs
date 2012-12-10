@@ -515,11 +515,13 @@ namespace Fusee.Math
         #endregion
 
         #region Conversion
+
         /// <summary>
         /// Convert Euler angle to Quaternion rotation.
         /// </summary>
         /// <param name="e">Euler angle to convert.</param>
         /// <returns>A Quaternion representing the euler angle passed to this method.</returns>
+
         public static Quaternion EulerToQuaternion(float3 e)
         {
             float c1 = (float)System.Math.Cos(e.x / 2);
@@ -537,11 +539,13 @@ namespace Fusee.Math
             return new Quaternion(x,y,z,w);
         }
 
+
         /// <summary>
         /// Convert Quaternion rotation to Euler angle.
         /// </summary>
         /// <param name="q1">Quaternion rotation to convert.</param>
         /// <returns>A Euler angle of type float3 from the passed Quaternion rotation.</returns>
+
         public static float3 QuaternionToEuler(Quaternion q1)
         {
             float sqw = q1.w*q1.w;
@@ -569,6 +573,7 @@ namespace Fusee.Math
             return result;
         }
 
+
         public static Quaternion MatrixToQuaternion(float4x4 m)
         {
             Quaternion q = Quaternion.Identity;
@@ -586,6 +591,7 @@ namespace Fusee.Math
         {
             return System.Math.Abs(a)*System.Math.Sign(b);
         }
+
 
         #endregion
         #endregion
