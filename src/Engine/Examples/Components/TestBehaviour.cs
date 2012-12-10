@@ -20,6 +20,7 @@ namespace Examples.Components
             //transform.Matrix = float4x4.CreateRotationY(x);
             //transform.LocalEulerAngles=new float3(0,x,0);
             transform.LocalQuaternion = Quaternion.FromAxisAngle(new float3(0, 0, 1), x);
+            Quaternion q = Quaternion.MatrixToQuaternion(transform.Matrix);
             //transform.LocalPosition+=new float3(-x,x,x);
             //transform.LocalScale = new float3(x,x,x);
             x += 0.01F;

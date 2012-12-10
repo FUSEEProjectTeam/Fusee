@@ -29,6 +29,7 @@ namespace Examples.Components
 
         public override void Init()
         {
+            RC.Camera = Camera;
            
             // Parent
             TestEntity.AddComponent(testrenderer);
