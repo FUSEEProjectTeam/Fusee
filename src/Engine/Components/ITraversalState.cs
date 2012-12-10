@@ -13,6 +13,8 @@ namespace Fusee.SceneManagement
         void StoreRenderer(Renderer renderer);
         void Push();
         void Pop();
-        void addLight(float3 direction, float4 color, int typ);
+        void addLightDirectional(float3 direction, float4 color);
+        void addLightPoint(float3 position, float4 color);
+        void addLightSpot(float3 position, float3 direction, float4 color);
     }
 }

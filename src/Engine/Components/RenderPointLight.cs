@@ -7,17 +7,18 @@ using Fusee.Math;
 
 namespace Fusee.SceneManagement
 {
-    class RenderDirectionalLight : RenderJob
+    class RenderPointLight :RenderJob
     {
-        private float3 _direction;
+        
+        private float3 _position;
         private float4 _color;
         private int _type;
         
        
-        public RenderDirectionalLight( float3 direction, float4 color)
+        public RenderPointLight( float3 position, float4 color)
         {
-            _direction = direction;
-            _type = 0;
+            _position = position;
+            _type = 1;
             _color = color;
         }
          public override void SubmitWork(RenderContext renderContext)
@@ -25,6 +26,5 @@ namespace Fusee.SceneManagement
              //TODO Warten Auf Timon und Casper
              //renderContext.setLight(_direction, _color, _type);
          }
-
     }
 }
