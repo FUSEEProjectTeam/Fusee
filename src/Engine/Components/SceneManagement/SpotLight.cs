@@ -32,6 +32,7 @@ namespace Fusee.SceneManagement
 
         virtual public void Traverse(ITraversalState _traversalState)
         {
+            //TODO Typübergabe implementieren.
             _traversalState.addLightSpot(_position, _direction , _color);
         }
     }

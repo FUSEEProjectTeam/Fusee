@@ -24,7 +24,8 @@ namespace Fusee.SceneManagement
          public override void SubmitWork(RenderContext renderContext)
          {
              //TODO Warten Auf Timon und Casper
-             //renderContext.setLight(_direction, _color, _type);
+             //TODO overload the method for the different lighttypes
+             //renderContext.setLight(_position, _color, _type);
          }
     }
 }
