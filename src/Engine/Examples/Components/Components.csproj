@@ -78,31 +78,31 @@
     <Compile Include="TestBehaviour.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="SampleObj\Capsule.obj.model">
+    <None Include="Assets\Capsule.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="SampleObj\Cone.obj.model">
+    <None Include="Assets\Cone.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="SampleObj\Cube.obj.model">
+    <None Include="Assets\Cube.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="SampleObj\Cylinder.obj.model">
+    <None Include="Assets\Cylinder.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="SampleObj\Donut.obj.model">
+    <None Include="Assets\Donut.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="SampleObj\Face.obj.model">
+    <None Include="Assets\Face.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="SampleObj\Fusee.obj.model">
+    <None Include="Assets\Fusee.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="SampleObj\Sphere.obj.model">
+    <None Include="Assets\Sphere.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="SampleObj\Teapot.obj.model">
+    <None Include="Assets\Teapot.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

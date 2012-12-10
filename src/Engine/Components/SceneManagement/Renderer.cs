@@ -15,7 +15,7 @@ namespace Fusee.SceneManagement
         public float4 color;
         public Renderer()
         {
-            Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"SampleObj/Cube.obj.model"));
+            Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Cube.obj.model"));
             mesh = geo.ToMesh();
             material = new Material();
             color = new float4(1,0,0,1);
