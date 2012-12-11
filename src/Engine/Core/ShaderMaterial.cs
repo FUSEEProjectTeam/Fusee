@@ -1,4 +1,5 @@
-﻿using Fusee.Math;
+﻿using System;
+using Fusee.Math;
 using Fusee.Engine;
 using System.Collections.Generic;
 
@@ -6,16 +7,9 @@ namespace Fusee.Engine
 {
     public class ShaderMaterial
     {
-        private float _emission;
-        private float4 _ambient;
-        private float4 _specular;
-        private float4 _diffuse;
-        private float _shininess;
         private ShaderProgram _sp;
-        public IShaderParam param1;
-        public IShaderParam param2;
-        public IShaderParam param3;
-        public IShaderParam param4;
+        private Dictionary<string,dynamic> _list;
+
 
         public ShaderMaterial(ShaderProgram program)
         {
@@ -28,65 +22,29 @@ namespace Fusee.Engine
             return _sp;
         }
 
-        public float4 GetDiffuse()
-        {
-            return _diffuse;
-        }
+        //public dynamic GetParam(int index)
+        
+        //}
 
-        public float4 GetAmbient()
-        {
-            return _ambient;
-        }
+        //public void SetParam(int index, dynamic value)
+        //{
+        //}
 
-        public float GetShininess()
-        {
-            return _shininess;
-        }
-
-        public float4 GetSpecular()
-        {
-            return _specular;
-        }
-
-        public float GetEmmision()
-        {
-            return _emission;
-        }
-
-        public void SetAmbient(float4 ambient)
-        {
-            _ambient = ambient;
-        }
-
-        public void SetDiffuse(float4 diffuse)
-        {
-            _diffuse = diffuse;
-        }
-
-        public void SetSpecular(float4 specular)
-        {
-            _specular = specular;
-        }
-
-        public void SetShininess(float shininess)
-        {
-            _shininess = shininess;
-        }
-
-        public void SetEmission(float emission)
-        {
-            _emission = emission;
-        }
         public ShaderMaterial(string s, RenderContext rc)
         {
-            if (s == "color")
+            if (s == "multiLight")
             {
-                _sp = MoreShaders.GetShader("color", rc);
+                _sp = Shaders.GetShader("multiLight", rc);
                 rc.SetShader(_sp);
-                param1 = _sp.GetShaderParam("FUSEE_MAT_AMBIENT");
-                rc.SetShaderParam(param1, _ambient);
-                UpdateMaterial(rc);
+                _list = Shaders.GetParams("multiLight");
+                IShaderParam sp;
+                foreach (KeyValuePair<string, dynamic> k in _list)
+                {
+                    if ((sp = _sp.GetShaderParam(k.Key)) != null)
+                         rc.SetShaderParam(sp, k.Value);
+                }
             }
+<<<<<<< HEAD
             else if (s == "multiLight")
             {
                 _sp = Shaders.GetShader("multiLight",rc);
@@ -126,6 +84,8 @@ namespace Fusee.Engine
                 rc.SetShaderParam(sp, _specular);
             if ((sp = _sp.GetShaderParam("FUSEE_MAT_AMBIENT")) != null)
                 rc.SetShaderParam(sp, _ambient);
+=======
+>>>>>>> dynamic material list
         }
     }   
 }

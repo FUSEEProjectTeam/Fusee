@@ -54,6 +54,21 @@ namespace Fusee.Engine
             return spOriginal;
         }
 
+        private static Dictionary<string, dynamic> multiLightParamList = new Dictionary<string, dynamic>();
+
+        public static Dictionary<string,dynamic> GetParams(string s)
+        {
+            if (s == "multiLight")
+            {
+                multiLightParamList.Add("FUSEE_MAT_SHININESS", 256.0f);
+                multiLightParamList.Add("FUSEE_MAT_SPECULAR", new float4(0,0,0,1));
+                multiLightParamList.Add("FUSEE_MAT_DIFFUSE", new float4(0, 0, 0, 1));
+                multiLightParamList.Add("FUSEE_MAT_AMBIENT", new float4(0, 0, 0, 1));
+                multiLightParamList.Add("FUSEE_MAT_EMISSION", new float4(0, 0, 0, 1));
+            }
+            return multiLightParamList;
+        } 
+
         private const string VsMultiLight = @"
 //  # version 120 // not working with GL_ES
 /* Copies incoming vertex color without change.
@@ -128,10 +143,10 @@ uniform vec4 FUSEE_L1_SPECULAR;
 uniform vec3 FUSEE_L1_POSITION;
 uniform vec3 FUSEE_L1_DIRECTION;
 
-vec4 L0colorDiffuse;
-vec4 L0colorSpecular;
-vec4 L1colorDiffuse;
-vec4 L1colorSpecular;
+vec4 L0colorDiffuse = vec4(1,1,1,1);
+vec4 L0colorSpecular = vec4(1,1,1,1);
+vec4 L1colorDiffuse = vec4(1,1,1,1);
+vec4 L1colorSpecular = vec4(1,1,1,1);
 void main()
 {
     vec3 L0halfV = normalize(fuL0HalfVector);
@@ -167,11 +182,9 @@ void main()
 /* Copies incoming vertex color without change.
     * Applies the transformation matrix to vertex position.
     */
-attribute vec4 fuColor;
 attribute vec3 fuVertex;
 attribute vec3 fuNormal;
         
-//varying vec4 vColor;
 varying vec3 vNormal;
 varying vec3 halfVector;
         
@@ -201,13 +214,15 @@ void main()
 
 varying vec3 halfVector;
 varying vec3 vNormal;
-//varying vec4 ambient, diffuse;
 
 uniform vec4 FUSEE_L0_AMBIENT;
 uniform vec4 FUSEE_L0_DIFFUSE;
 uniform vec4 FUSEE_L0_SPECULAR;
 uniform vec3 FUSEE_L0_POSITION;
 uniform vec3 FUSEE_L0_DIRECTION;
+
+uniform vec4 FUSEE_MAT_AMBIENT;
+uniform float FUSEE_MAT_SHININESS;
 
 void main()
 {
@@ -217,12 +232,12 @@ void main()
     float NdotHV = max(dot(normalize(vNormal), halfV), 0.0);
 
     float NdotL = max(dot(normalize(vNormal), normalize(FUSEE_L0_DIRECTION)), 0.0);
-    vec4 color = FUSEE_L0_AMBIENT * 0.4;
+    vec4 color = FUSEE_L0_AMBIENT * FUSEE_MAT_AMBIENT;
     
     if(NdotL > 0.0)
     {
         color += FUSEE_L0_DIFFUSE * NdotL;
-        color += FUSEE_L0_SPECULAR * pow(NdotHV, 64);
+        color += FUSEE_L0_SPECULAR * pow(NdotHV, FUSEE_MAT_SHININESS);
     }
     gl_FragColor = color;
 }
