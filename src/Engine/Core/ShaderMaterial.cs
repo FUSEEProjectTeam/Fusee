@@ -112,9 +112,9 @@ namespace Fusee.Engine
             }
             else
             {
-                ShaderProgram shp = Shaders.GetShader("multiLight", rc);
+                _sp = Shaders.GetShader("chess", rc);
                 _shininess = 64;
-                rc.SetShader(shp);
+                rc.SetShader(_sp);
             }
         }
         public void UpdateMaterial(RenderContext rc)
