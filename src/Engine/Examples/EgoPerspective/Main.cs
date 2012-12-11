@@ -19,13 +19,14 @@ namespace Examples.EgoPerspective
             _world = new World(RC, In);
             Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/castle.obj.model"));
             Geometry geo2 = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/ground.obj.model"));
-            m = new ShaderMaterial("color", RC);
-            m.SetAmbient(new float4(0.3f, 0.3f , 0.3f, 1));
+            m = new ShaderMaterial("simple", RC);
+            m.SetAmbient(new float4(0.4f, 0.4f , 0.4f, 1));
+            m.SetDiffuse(new float4(0.5f, 0.5f, 0.5f, 1));
+            m.SetSpecular(new float4(0.3f, 0.3f, 0.3f, 1));
             m.UpdateMaterial(RC);
             
-            m2 = new ShaderMaterial("color", RC);
+            m2 = new ShaderMaterial("chess", RC);
             m2.SetAmbient(new float4(0, 0.3f, 0, 1));
-            m2.SetShininess(256.0f);
             m2.UpdateMaterial(RC);
 
             _world.addObject(geo, m, 0, -100, 1000);
@@ -38,12 +39,12 @@ namespace Examples.EgoPerspective
             RC.SetLightPosition(1, new float3(-1000, 1000, 2000));
             RC.SetLightDirection(1, new float3(-1, 1, 2));
             // */
-            RC.SetLightAmbient(0, new float4(0, 0, 1, 1));
-            RC.SetLightSpecular(0, new float4(0, 0, 0.6f, 1));
-            RC.SetLightDiffuse(0, new float4(0, 0, 0.4f, 1));
+            RC.SetLightAmbient(0, new float4(0.3f, 0.3f, 0.3f, 1));
+            RC.SetLightSpecular(0, new float4(1, 1, 1f, 1));
+            RC.SetLightDiffuse(0, new float4(1, 1, 1, 1));
          //   RC.SetLightPosition(0, new float3(0, 2000, 2000));
-            RC.SetLightDirection(0, new float3(1, 1, 2));
-            RC.ClearColor = new float4(1, 1, 1, 1);
+            RC.SetLightDirection(0, new float3(0, 0, 1));
+            RC.ClearColor = new float4(0.6f, 0.8f, 1, 1);
             _angleHorz = 0;
             _rotationSpeed = 100.0f;
 

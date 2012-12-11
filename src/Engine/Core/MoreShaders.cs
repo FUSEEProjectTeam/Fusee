@@ -22,6 +22,11 @@ namespace Fusee.Engine
                 ShaderProgram spChess = rc.CreateShader(VSChess, PSChess);
                 return spChess;
             }
+            if (name == "simple")
+            {
+                ShaderProgram simple = rc.CreateShader(Vs, Ps);
+                return simple;
+            }
             ShaderProgram spOriginal = rc.CreateShader(VSColor, PSColor);
             return spOriginal;
         }
@@ -247,5 +252,55 @@ void main()
     gl_FragColor = FUSEE_MAT_AMBIENT;
 }";
 
+                private const string Vs = @"
+# version 120
+/* Copies incoming vertex color without change.
+    * Applies the transformation matrix to vertex position.
+    */
+attribute vec4 fuColor;
+attribute vec3 fuVertex;
+attribute vec3 fuNormal;
+       
+uniform mat4 FUSEE_MVP;  //model view projection matrix
+uniform mat4 FUSEE_ITMV; //inverte transformierte model view matrix
+
+uniform vec4 FUSEE_L0_AMBIENT;
+uniform vec4 FUSEE_L0_DIFFUSE;
+uniform vec4 FUSEE_L0_SPECULAR;
+uniform vec3 FUSEE_L0_DIRECTION;
+uniform vec4 FUSEE_MAT_AMBIENT;
+uniform vec4 FUSEE_MAT_DIFFUSE;
+uniform vec4 FUSEE_MAT_SPECULAR;
+uniform vec4 FUSEE_MAT_SHININESS;
+
+
+varying vec4 ambient;
+varying vec4 diffuse;
+varying vec4 specular;
+
+void main()
+{
+    ambient = FUSEE_L0_AMBIENT * FUSEE_MAT_AMBIENT;
+    diffuse = FUSEE_MAT_DIFFUSE * dot(fuNormal,FUSEE_L0_DIRECTION) * FUSEE_L0_DIFFUSE;
+    specular = FUSEE_L0_SPECULAR * FUSEE_MAT_SPECULAR * 0;
+
+    gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
+}";
+
+        private const string Ps = @"
+/* Copies incoming fragment color without change. */
+#ifdef GL_ES
+precision highp float;
+#endif
+        
+varying vec4 ambient;
+varying vec4 diffuse;
+varying vec4 specular;
+
+void main()
+{    
+    vec4 color = ambient + diffuse + specular;
+    gl_FragColor = color;
+}";
     }
 }
