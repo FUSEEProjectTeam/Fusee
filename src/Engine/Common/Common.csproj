@@ -52,12 +52,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="IInputImp.cs" />
+    <Compile Include="ImageData.cs" />
     <Compile Include="IMeshImp.cs" />
     <Compile Include="InitEventArgs.cs" />
     <Compile Include="IRenderCanvasImp.cs" />
     <Compile Include="IRenderContextImp.cs" />
     <Compile Include="IShaderParam.cs" />
     <Compile Include="IShaderProgramImp.cs" />
+    <Compile Include="ITextureParam.cs" />
     <Compile Include="KeyEventArgs.cs" />
     <Compile Include="MouseEventArgs.cs" />
     <Compile Include="Point.cs" />
@@ -80,7 +82,6 @@
       <HintPath>..\..\..\ExternalBinaries\JSIL.Meta.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Drawing" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="Clean">

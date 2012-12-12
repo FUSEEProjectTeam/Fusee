@@ -1,17 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
+﻿using System.IO;
 using Fusee.Engine;
 using Fusee.Math;
 
-
-namespace Examples
+namespace Examples.Textures_Example
 {
-    public class Simple : RenderCanvas
+    public class Textures_Example : RenderCanvas
     {
         protected string _vs = @"
-            #version 120
+            #ifndef GL_ES
+               #version 120
+            #endif
 
             /* Copies incoming vertex color without change.
              * Applies the transformation matrix to vertex position.
@@ -20,12 +18,12 @@ namespace Examples
             attribute vec4 fuColor;
             attribute vec3 fuVertex;
             attribute vec3 fuNormal;
-            
+            attribute vec2 fuUV;
             
         
             varying vec4 vColor;
             varying vec3 vNormal;
-           
+            varying vec2 vUV;
         
             uniform mat4 FUSEE_MVP;
             uniform mat4 FUSEE_ITMV;
@@ -37,25 +35,28 @@ namespace Examples
                 // vec4 norm4 = FUSEE_MVP * vec4(fuNormal, 0.0);
                 // vNormal = norm4.xyz;
                 vNormal = mat3(FUSEE_ITMV) * fuNormal;
-                
+                vUV = fuUV;
             }";
 
         protected string _ps = @"
-           #version 120
+           #ifndef GL_ES
+               #version 120
+            #endif
 
             /* Copies incoming fragment color without change. */
             #ifdef GL_ES
                 precision highp float;
             #endif
 
-                    
+         
+            uniform sampler2D texture1;
             uniform vec4 vColor;
             varying vec3 vNormal;
-            
+            varying vec2 vUV;
 
             void main()
             {             
-                gl_FragColor = vColor * dot(vNormal, vec3(0, 0, 1));
+                gl_FragColor = texture2D(texture1, vUV)  /* *dot(vNormal, vec3(0, 0, 1))*/;
             }";
 
         private static float _angleHorz = 0.0f, _angleVert = 0.0f, _angleVelHorz = 0, _angleVelVert = 0, _rotationSpeed = 10.0f, _damping = 0.95f;
@@ -78,7 +79,14 @@ namespace Examples
             _vColorParam = sp.GetShaderParam("vColor");
             _texture1Param = sp.GetShaderParam("texture1");
 
-         
+            /*
+            ImageData imgData = RC.LoadImage("C:/Users/Patrik/Pictures/desert.jpg");
+            int iTex = RC.CreateTexture(imgData);
+            RC.SetShaderParamTexture(_texture1Param, iTex);
+             */
+            ImageData imgData = RC.LoadImage("Assets/Desert.jpg");
+            ITextureParam iTex = RC.CreateTexture(imgData);
+            RC.SetShaderParamTexture(_texture1Param, iTex);
         }
 
         public override void RenderAFrame()
@@ -139,7 +147,7 @@ namespace Examples
 
         public static void Main()
         {
-            Simple app = new Simple();
+            Textures_Example app = new Textures_Example();
             app.Run();
         }
 
