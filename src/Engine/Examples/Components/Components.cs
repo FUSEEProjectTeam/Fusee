@@ -11,7 +11,7 @@ namespace Examples.Components
         public List<RenderJob> RenderJobs = new List<RenderJob>(); 
         public List<SceneEntity> SceneMembers = new List<SceneEntity>(); 
         public float4x4 Camera = float4x4.LookAt(0, 200, 2000, 0, 50, 0, 0, 1, 0);
-        private Material _material = new Material();
+        //private Material _material = new Material();
        
         //TestZone
         private SceneEntity TestEntity = new SceneEntity();
@@ -25,7 +25,7 @@ namespace Examples.Components
         
 
         protected float4 _farbe = new float4(1, 0, 0, 1);
-        protected IShaderParam _vColorParam;
+        //protected IShaderParam _vColorParam;
 
         public override void Init()
         {
@@ -44,11 +44,13 @@ namespace Examples.Components
             Childscript.Start();
             testscript.Start();
 
-            ShaderProgram sp = RC.CreateShader(_material._vs, _material._ps);
+            //ShaderProgram sp = RC.CreateShader(_material._vs, _material._ps);
+            ShaderProgram sp = Shaders.GetShader("multiLight",RC);
             RC.SetShader(sp);
-            _vColorParam = sp.GetShaderParam("vColor");
+
+            //_vColorParam = sp.GetShaderParam("vColor");
             RC.ClearColor = new float4(1, 1, 1, 1);
-            RC.SetShaderParam(_vColorParam, _farbe);
+            //RC.SetShaderParam(_vColorParam, _farbe);
         }
 
 

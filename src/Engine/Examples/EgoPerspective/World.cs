@@ -48,7 +48,7 @@ namespace Examples.EgoPerspective
 
 
 
-        public void addObject(Geometry geo, ShaderMaterial m, int posX, int posY, int posZ)
+        public void addObject(Geometry geo, Material m, int posX, int posY, int posZ)
         {
             objects.Add(new Object(geo, m, posX, posY, posZ));
         }

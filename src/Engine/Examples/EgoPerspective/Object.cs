@@ -15,9 +15,9 @@ class Object
     private float4x4 _position;
 
     private Mesh mesh;
-    private ShaderMaterial material;
+    private Material material;
 
-    public Object(Geometry geo, ShaderMaterial m, int x, int y, int z)
+    public Object(Geometry geo, Material m, int x, int y, int z)
     {
         mesh = geo.ToMesh();
         material = m;
