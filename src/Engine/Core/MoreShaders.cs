@@ -245,7 +245,7 @@ void main()
 precision highp float;
 #endif
         
-uniform vec4 FUSEE_MAT_AMBIENT;
+uniform vec4 FUSEE_MAT_AMBIENT = vec4(0,0,1,1);
 
 void main()
 {    

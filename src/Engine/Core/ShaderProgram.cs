@@ -17,7 +17,7 @@ namespace Fusee.Engine
             {
                 ShaderParamInfo newInfo = new ShaderParamInfo()
                                               {
-                                                  Handle = _rci.GetShaderParam(_spi, info.Name),
+                                                  Handle = info.Handle,
                                                   Name = info.Name,
                                                   Type = info.Type,
                                                   Size = info.Size,

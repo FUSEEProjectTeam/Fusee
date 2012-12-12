@@ -83,17 +83,17 @@ varying vec3 fuL0HalfVector;
 varying vec3 fuL1HalfVector;
 
 uniform float FUSEE_MAT_SHININESS = 0.5f;
-uniform vec4 FUSEE_MAT_AMBIENT = vec4(1,1,1,1);
-uniform vec4 FUSEE_MAT_DIFFUSE = vec4(1,1,1,1);
-uniform vec4 FUSEE_MAT_SPECULAR = vec4(1,1,1,1);
-uniform vec4 FUSEE_MAT_EMISSION = vec4(1,1,1,1);
+uniform vec4 FUSEE_MAT_AMBIENT = vec4(0.5f,0.5f,0.5f,1);
+uniform vec4 FUSEE_MAT_DIFFUSE = vec4(0.5f,0.5f,0.5f,1);
+uniform vec4 FUSEE_MAT_SPECULAR = vec4(0.5f,0.5f,0.5f,1);
+uniform vec4 FUSEE_MAT_EMISSION = vec4(0.5f,0.5f,0.5f,1);
 
 uniform float FUSEE_L0_ACTIVE = 1.0f;
-uniform vec4 FUSEE_L0_AMBIENT = vec4(1,1,1,1);
-uniform vec4 FUSEE_L0_DIFFUSE = vec4(1,1,1,1);
-uniform vec4 FUSEE_L0_SPECULAR = vec4(1,1,1,1);
-uniform vec3 FUSEE_L0_POSITION = vec3(1,1,1);
-uniform vec3 FUSEE_L0_DIRECTION = vec3(1,1,1);
+uniform vec4 FUSEE_L0_AMBIENT = vec4(0,0,1,1);
+uniform vec4 FUSEE_L0_DIFFUSE = vec4(0,0,1,1);
+uniform vec4 FUSEE_L0_SPECULAR = vec4(0,0,1,1);
+uniform vec3 FUSEE_L0_POSITION = vec3(0,0,1);
+uniform vec3 FUSEE_L0_DIRECTION = vec3(0,0,1);
 
 uniform float FUSEE_L1_ACTIVE = 1.0f;
 uniform vec4 FUSEE_L1_AMBIENT = vec4(1,1,1,1);
@@ -149,6 +149,8 @@ vec4 L0colorDiffuse = vec4(1,1,1,1);
 vec4 L0colorSpecular = vec4(1,1,1,1);
 vec4 L1colorDiffuse = vec4(1,1,1,1);
 vec4 L1colorSpecular = vec4(1,1,1,1);
+
+
 void main()
 {
     vec3 L0halfV = normalize(fuL0HalfVector);

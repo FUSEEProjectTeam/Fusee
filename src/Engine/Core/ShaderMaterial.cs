@@ -8,18 +8,20 @@ namespace Fusee.Engine
     public class ShaderMaterial
     {
         private ShaderProgram _sp;
-        private Dictionary<string, dynamic> _list ; 
+        private Dictionary<string, dynamic> _list; 
 
         public ShaderMaterial(ShaderProgram program)
         {
             _sp = program;
+            _list = new Dictionary<string, dynamic>();
             foreach (KeyValuePair<string, ShaderParamInfo> k in _sp._paramsByName)
             {
-                _list.Add(k.Key,_sp._rci.GetParamValue((IShaderProgramImp)program, k.Value.Handle));
+                Console.WriteLine(k.Key);
+                _list.Add(k.Key,_sp._rci.GetParamValue(program._spi, k.Value.Handle));
             }
         }
 
-        public void SetValue(string name, float f)
+        public void SetValue(string name, dynamic f)
         {
             ShaderParamInfo info;
             if (_sp._paramsByName.TryGetValue(name, out info))

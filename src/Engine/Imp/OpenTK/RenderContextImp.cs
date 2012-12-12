@@ -26,20 +26,21 @@ namespace Fusee.Engine
         public float GetParamValue(IShaderProgramImp program, IShaderParam handle)
         {
             float f;
-            GL.GetUniform(((ShaderProgramImp) program).Program, ((ShaderParam)handle).handle, out f);
+            GL.GetUniform(((ShaderProgramImp)program).Program, ((ShaderParam)handle).handle, out f);
             return f;
         }
 
         public IEnumerable<ShaderParamInfo> GetShaderParamList(IShaderProgramImp shaderProgram)
         {
-            ShaderProgramImp sp = (ShaderProgramImp) shaderProgram;
+            var sp = (ShaderProgramImp) shaderProgram;
             int nParams;
             GL.GetProgram(sp.Program,ProgramParameter.ActiveUniforms, out nParams);
             for (int i = 0; i < nParams; i++)
             {
                 ActiveUniformType t;
-                ShaderParamInfo ret = new ShaderParamInfo();
+                var ret = new ShaderParamInfo();
                 ret.Name = GL.GetActiveUniform(sp.Program, i, out ret.Size, out t);
+                ret.Handle = GetShaderParam(sp, ret.Name);
                 switch (t)
                 {
                     case ActiveUniformType.Int:
@@ -67,7 +68,6 @@ namespace Fusee.Engine
                         throw new ArgumentOutOfRangeException();
                 }
                 yield return ret;
-
             }
         }
 
