@@ -29,6 +29,11 @@ namespace Fusee.Engine
             // TODO: save value for later use
         }
 
+        public ShaderProgram GetShader()
+        {
+            return _sp;
+        }
+
         public void UpdateMaterial(RenderContext rc)
         {
             IShaderParam sp;

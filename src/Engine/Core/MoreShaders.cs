@@ -175,6 +175,7 @@ uniform vec3 brightColor;
 uniform float chessSize;
 uniform float smoothFactor;
 uniform vec3 FUSEE_L0_POSITION;
+
 vec3  Normal;
 varying float LightIntensity;
 varying vec3  OBposition;
@@ -198,13 +199,15 @@ void main(void) {
 precision highp float;
 #endif
 
-varying float LightIntensity;
-
-varying vec3  OBposition;
 uniform vec3 darkColor;
 uniform vec3 brightColor;
 uniform float chessSize;
 uniform float smoothFactor;
+
+varying float LightIntensity;
+
+varying vec3  OBposition;
+
 
 void main(){
   float halfChess = chessSize / 2.0;
