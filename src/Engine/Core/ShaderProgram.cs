@@ -25,17 +25,19 @@ namespace Fusee.Engine
                 _paramsByName.Add(info.Name, newInfo);
             }
         }
-
+        
         public IShaderParam GetShaderParam(string paramName)
         {
-            IShaderParam ret;
+            ShaderParamInfo ret;
             if (_paramsByName.TryGetValue(paramName, out ret))
-                return ret;
-            ret = _rci.GetShaderParam(_spi, paramName);
-            if (ret != null)
+                return ret.Handle;
+            //ret = _rci.GetShaderParam(_spi, paramName);
+            //if (ret != null)
                 _paramsByName[paramName] = ret;
-            return ret;
+            return ret.Handle;
         }
+
+        
 
         // TODO: add SetParameter methods here (remove from render context).
     }

@@ -406,6 +406,11 @@ namespace Fusee.Engine
             return _rci.GetShaderParam(program._spi, paramName);
         }
 
+        public float GetParamValue(ShaderProgram program, IShaderParam handle)
+        {
+            return _rci.GetParamValue(program._spi, handle);
+        }
+
         [JSChangeName("SetShaderParam1f")]
         public void SetShaderParam(IShaderParam param, float val)
         {

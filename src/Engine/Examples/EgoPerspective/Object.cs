@@ -33,10 +33,10 @@ class Object
     {
         return mesh;
     }
-    public ShaderProgram GetShader()
-    {
-        return material.GetShader();
-    }
+    //public ShaderProgram GetShader()
+    //{
+        //return material.GetShader();
+    //}
 
     public float GetPosX()
     {

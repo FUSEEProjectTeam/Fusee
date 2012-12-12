@@ -8,17 +8,17 @@ namespace Fusee.Engine
     public class ShaderMaterial
     {
         private ShaderProgram _sp;
+        private Dictionary<string, dynamic> _list ; 
 
         public ShaderMaterial(ShaderProgram program)
         {
             _sp = program;
+            foreach (KeyValuePair<string, ShaderParamInfo> k in _sp._paramsByName)
+            {
+                _list.Add(k.Key,_sp._rci.GetParamValue((IShaderProgramImp)program, k.Value.Handle));
+            }
         }
 
-        public ShaderProgram GetShader()
-        {
-            return _sp;
-        }
-       
         public void SetValue(string name, float f)
         {
             ShaderParamInfo info;
@@ -26,6 +26,17 @@ namespace Fusee.Engine
                 _sp._rci.SetShaderParam(info.Handle, f);
             // TODO: save value for later use
         }
+
+        public void UpdateMaterial(RenderContext rc)
+        {
+            IShaderParam sp;
+            foreach (KeyValuePair<string, dynamic> k in _list)
+            {
+                if ((sp = _sp.GetShaderParam(k.Key)) != null)
+                    rc.SetShaderParam(sp, k.Value);
+            }
+        }
+
 
         //public dynamic GetParam(int index)
         
@@ -43,11 +54,7 @@ namespace Fusee.Engine
                 rc.SetShader(_sp);
                 _list = Shaders.GetParams("multiLight");
                 IShaderParam sp;
-                foreach (KeyValuePair<string, dynamic> k in _list)
-                {
-                    if ((sp = _sp.GetShaderParam(k.Key)) != null)
-                         rc.SetShaderParam(sp, k.Value);
-                }
+                
                 foreach (ShaderParamInfo spi in rc.GetShaderParamAt(_sp))
                 {
                     
@@ -84,18 +91,8 @@ namespace Fusee.Engine
                 rc.SetShader(_sp);
             }
         }
-        public void UpdateMaterial(RenderContext rc)
-        {
-            IShaderParam sp;
-            if ((sp = _sp.GetShaderParam("FUSEE_MAT_SHININESS")) != null)
-                rc.SetShaderParam(sp, _shininess);
-            if ((sp = _sp.GetShaderParam("FUSEE_MAT_SPECULAR")) != null)
-                rc.SetShaderParam(sp, _specular);
-            if ((sp = _sp.GetShaderParam("FUSEE_MAT_AMBIENT")) != null)
-                rc.SetShaderParam(sp, _ambient);
-=======
->>>>>>> dynamic material list
-        }
+        
+        
         */
     }   
 }

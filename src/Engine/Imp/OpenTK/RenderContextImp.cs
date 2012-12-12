@@ -19,8 +19,15 @@ namespace Fusee.Engine
 
         public IShaderParam GetShaderParam(IShaderProgramImp shaderProgram, string paramName)
         {
-            int h = GL.GetUniformLocation(((ShaderProgramImp)shaderProgram).Program, paramName);
+            int h = GL.GetUniformLocation(((ShaderProgramImp) shaderProgram).Program, paramName);
             return (h == -1) ? null : new ShaderParam {handle = h};
+        }
+
+        public float GetParamValue(IShaderProgramImp program, IShaderParam handle)
+        {
+            float f;
+            GL.GetUniform(((ShaderProgramImp) program).Program, ((ShaderParam)handle).handle, out f);
+            return f;
         }
 
         public IEnumerable<ShaderParamInfo> GetShaderParamList(IShaderProgramImp shaderProgram)
@@ -63,6 +70,8 @@ namespace Fusee.Engine
 
             }
         }
+
+        
 
         public void SetShaderParam(IShaderParam param, float val)
         {

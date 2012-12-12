@@ -22,6 +22,8 @@ namespace Fusee.Engine
 
         IShaderParam GetShaderParam(IShaderProgramImp shaderProgram, string paramName);
 
+        float GetParamValue(IShaderProgramImp shaderProgram, IShaderParam param);
+
         [JSChangeName("SetShaderParam1f")]
         void SetShaderParam(IShaderParam param, float val);
 

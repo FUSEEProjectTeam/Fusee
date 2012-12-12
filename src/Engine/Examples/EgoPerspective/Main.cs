@@ -19,16 +19,9 @@ namespace Examples.EgoPerspective
             _world = new World(RC, In);
             Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/castle.obj.model"));
             Geometry geo2 = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/ground.obj.model"));
-            m = new ShaderMaterial("simple", RC);
-            RC.SetShader(m.GetShader());
-            m.SetAmbient(new float4(0.4f, 0.4f , 0.4f, 1));
-            m.SetDiffuse(new float4(0.5f, 0.5f, 0.5f, 1));
-            m.SetSpecular(new float4(0.3f, 0.3f, 0.3f, 1));
-            m.UpdateMaterial(RC);
+            Sp3 = Shaders.GetShader("multiLight", RC);
+            m = new ShaderMaterial(Sp3);
             
-            m2 = new ShaderMaterial("chess", RC);
-            m2.SetAmbient(new float4(0, 0.3f, 0, 1));
-            m2.UpdateMaterial(RC);
 
             _world.addObject(geo, m, 0, -100, 1000);
             _world.addObject(geo2, m2, 0, -100, 1000);

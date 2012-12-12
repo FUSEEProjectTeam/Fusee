@@ -82,25 +82,25 @@ varying vec3 vNormal;
 varying vec3 fuL0HalfVector;
 varying vec3 fuL1HalfVector;
 
-uniform float FUSEE_MAT_SHININESS;
-uniform vec4 FUSEE_MAT_AMBIENT;
-uniform vec4 FUSEE_MAT_DIFFUSE;
-uniform vec4 FUSEE_MAT_SPECULAR;
-uniform vec4 FUSEE_MAT_EMISSION;
+uniform float FUSEE_MAT_SHININESS = 0.5f;
+uniform vec4 FUSEE_MAT_AMBIENT = vec4(1,1,1,1);
+uniform vec4 FUSEE_MAT_DIFFUSE = vec4(1,1,1,1);
+uniform vec4 FUSEE_MAT_SPECULAR = vec4(1,1,1,1);
+uniform vec4 FUSEE_MAT_EMISSION = vec4(1,1,1,1);
 
-uniform float FUSEE_L0_ACTIVE;
-uniform vec4 FUSEE_L0_AMBIENT;
-uniform vec4 FUSEE_L0_DIFFUSE;
-uniform vec4 FUSEE_L0_SPECULAR;
-uniform vec3 FUSEE_L0_POSITION;
-uniform vec3 FUSEE_L0_DIRECTION;
+uniform float FUSEE_L0_ACTIVE = 1.0f;
+uniform vec4 FUSEE_L0_AMBIENT = vec4(1,1,1,1);
+uniform vec4 FUSEE_L0_DIFFUSE = vec4(1,1,1,1);
+uniform vec4 FUSEE_L0_SPECULAR = vec4(1,1,1,1);
+uniform vec3 FUSEE_L0_POSITION = vec3(1,1,1);
+uniform vec3 FUSEE_L0_DIRECTION = vec3(1,1,1);
 
-uniform float FUSEE_L1_ACTIVE;
-uniform vec4 FUSEE_L1_AMBIENT;
-uniform vec4 FUSEE_L1_DIFFUSE;
-uniform vec4 FUSEE_L1_SPECULAR;
-uniform vec3 FUSEE_L1_POSITION;
-uniform vec3 FUSEE_L1_DIRECTION;
+uniform float FUSEE_L1_ACTIVE = 1.0f;
+uniform vec4 FUSEE_L1_AMBIENT = vec4(1,1,1,1);
+uniform vec4 FUSEE_L1_DIFFUSE = vec4(1,1,1,1);
+uniform vec4 FUSEE_L1_SPECULAR = vec4(1,1,1,1);
+uniform vec3 FUSEE_L1_POSITION = vec3(1,1,1);
+uniform vec3 FUSEE_L1_DIRECTION = vec3(1,1,1);
 
 uniform mat4 FUSEE_MVP;  //model view projection matrix
 uniform mat4 FUSEE_ITMV; //inverte transformierte model view matrix
@@ -125,23 +125,25 @@ varying vec3 vNormal;
 varying vec3 fuL0HalfVector;
 varying vec3 fuL1HalfVector;
 
-uniform float FUSEE_MAT_SHININESS;
-uniform vec4 FUSEE_MAT_AMBIENT;
-uniform vec4 FUSEE_MAT_DIFFUSE;
-uniform vec4 FUSEE_MAT_SPECULAR;
-uniform vec4 FUSEE_MAT_EMISSION;
+uniform float FUSEE_MAT_SHININESS = 0.5f;
+uniform vec4 FUSEE_MAT_AMBIENT = vec4(1,1,1,1);
+uniform vec4 FUSEE_MAT_DIFFUSE = vec4(1,1,1,1);
+uniform vec4 FUSEE_MAT_SPECULAR = vec4(1,1,1,1);
+uniform vec4 FUSEE_MAT_EMISSION = vec4(1,1,1,1);
 
-uniform vec4 FUSEE_L0_AMBIENT;
-uniform vec4 FUSEE_L0_DIFFUSE;
-uniform vec4 FUSEE_L0_SPECULAR;
-uniform vec3 FUSEE_L0_POSITION;
-uniform vec3 FUSEE_L0_DIRECTION;
+uniform float FUSEE_L0_ACTIVE = 1.0f;
+uniform vec4 FUSEE_L0_AMBIENT = vec4(1,1,1,1);
+uniform vec4 FUSEE_L0_DIFFUSE = vec4(1,1,1,1);
+uniform vec4 FUSEE_L0_SPECULAR = vec4(1,1,1,1);
+uniform vec3 FUSEE_L0_POSITION = vec3(1,1,1);
+uniform vec3 FUSEE_L0_DIRECTION = vec3(1,1,1);
 
-uniform vec4 FUSEE_L1_AMBIENT;
-uniform vec4 FUSEE_L1_DIFFUSE;
-uniform vec4 FUSEE_L1_SPECULAR;
-uniform vec3 FUSEE_L1_POSITION;
-uniform vec3 FUSEE_L1_DIRECTION;
+uniform float FUSEE_L1_ACTIVE = 1.0f;
+uniform vec4 FUSEE_L1_AMBIENT = vec4(1,1,1,1);
+uniform vec4 FUSEE_L1_DIFFUSE = vec4(1,1,1,1);
+uniform vec4 FUSEE_L1_SPECULAR = vec4(1,1,1,1);
+uniform vec3 FUSEE_L1_POSITION = vec3(1,1,1);
+uniform vec3 FUSEE_L1_DIRECTION = vec3(1,1,1);
 
 vec4 L0colorDiffuse = vec4(1,1,1,1);
 vec4 L0colorSpecular = vec4(1,1,1,1);
