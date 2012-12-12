@@ -8,18 +8,23 @@ namespace Fusee.Engine
     public class ShaderMaterial
     {
         private ShaderProgram _sp;
-        private Dictionary<string,dynamic> _list;
-
 
         public ShaderMaterial(ShaderProgram program)
         {
             _sp = program;
         }
 
-
         public ShaderProgram GetShader()
         {
             return _sp;
+        }
+       
+        public void SetValue(string name, float f)
+        {
+            ShaderParamInfo info;
+            if (_sp._paramsByName.TryGetValue(name, out info))
+                _sp._rci.SetShaderParam(info.Handle, f);
+            // TODO: save value for later use
         }
 
         //public dynamic GetParam(int index)
@@ -29,7 +34,7 @@ namespace Fusee.Engine
         //public void SetParam(int index, dynamic value)
         //{
         //}
-
+        /*
         public ShaderMaterial(string s, RenderContext rc)
         {
             if (s == "multiLight")
@@ -42,6 +47,10 @@ namespace Fusee.Engine
                 {
                     if ((sp = _sp.GetShaderParam(k.Key)) != null)
                          rc.SetShaderParam(sp, k.Value);
+                }
+                foreach (ShaderParamInfo spi in rc.GetShaderParamAt(_sp))
+                {
+                    
                 }
             }
 <<<<<<< HEAD
@@ -87,5 +96,6 @@ namespace Fusee.Engine
 =======
 >>>>>>> dynamic material list
         }
+        */
     }   
 }

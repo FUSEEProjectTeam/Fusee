@@ -67,6 +67,7 @@
     <Compile Include="Helper.cs" />
     <Compile Include="RenderEventArgs.cs" />
     <Compile Include="ResizeEventArgs.cs" />
+    <Compile Include="ShaderParamInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Math\Core\Core.csproj">

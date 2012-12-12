@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Fusee.Engine;
 using JSIL.Meta;
 using Fusee.Math;
@@ -394,7 +395,10 @@ namespace Fusee.Engine
             UpdateCurrentShader();
         }
 
-        
+        public IEnumerable<ShaderParamInfo> GetShaderParamList(ShaderProgram program)
+        {
+            return _rci.GetShaderParamList(program._spi);
+        }
 
         // Pass thru
         public IShaderParam GetShaderParam(ShaderProgram program, string paramName)

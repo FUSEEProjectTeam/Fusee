@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using Fusee.Math;
 using JSIL.Meta;
@@ -16,7 +17,9 @@ namespace Fusee.Engine
         float ClearDepth { set; get; }
         
         IShaderProgramImp CreateShader(string vs, string ps);
-        
+
+        IEnumerable<ShaderParamInfo> GetShaderParamList(IShaderProgramImp shaderProgram);
+
         IShaderParam GetShaderParam(IShaderProgramImp shaderProgram, string paramName);
 
         [JSChangeName("SetShaderParam1f")]
