@@ -12,6 +12,7 @@ namespace Examples.Components
         public List<SceneEntity> SceneMembers = new List<SceneEntity>(); 
         public float4x4 Camera = float4x4.LookAt(0, 200, 2000, 0, 50, 0, 0, 1, 0);
         //private Material _material = new Material();
+        private Material _material;
        
         //TestZone
         private SceneEntity TestEntity = new SceneEntity();
@@ -45,9 +46,16 @@ namespace Examples.Components
             testscript.Start();
 
             //ShaderProgram sp = RC.CreateShader(_material._vs, _material._ps);
-            ShaderProgram sp = Shaders.GetShader("multiLight",RC);
+            ShaderProgram sp = Shaders.GetShader("singleLight",RC);
             RC.SetShader(sp);
-
+            _material = new Material(sp);
+            RC.SetLightAmbient(0, new float4(1, 0, 0, 1));
+            RC.SetLightSpecular(0, new float4(0, 1, 0, 1));
+            RC.SetLightDiffuse(0, new float4(0, 1, 0, 1));
+            _material.SetValue("FUSEE_MAT_AMBIENT", new float4(0.5f,0,0,1));
+            _material.SetValue("FUSEE_MAT_DIFFUSE", new float4(1, 1, 1, 1));
+            _material.UpdateMaterial(RC);
+            RC.SetShader(sp);
             //_vColorParam = sp.GetShaderParam("vColor");
             RC.ClearColor = new float4(1, 1, 1, 1);
             //RC.SetShaderParam(_vColorParam, _farbe);

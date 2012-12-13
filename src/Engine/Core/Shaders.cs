@@ -54,21 +54,6 @@ namespace Fusee.Engine
             return spOriginal;
         }
 
-        private static Dictionary<string, dynamic> multiLightParamList = new Dictionary<string, dynamic>();
-
-        public static Dictionary<string,dynamic> GetParams(string s)
-        {
-            if (s == "multiLight")
-            {
-                multiLightParamList.Add("FUSEE_MAT_SHININESS", 256.0f);
-                multiLightParamList.Add("FUSEE_MAT_SPECULAR", new float4(0,0,0,1));
-                multiLightParamList.Add("FUSEE_MAT_DIFFUSE", new float4(0, 0, 0, 1));
-                multiLightParamList.Add("FUSEE_MAT_AMBIENT", new float4(0, 0, 0, 1));
-                multiLightParamList.Add("FUSEE_MAT_EMISSION", new float4(0, 0, 0, 1));
-            }
-            return multiLightParamList;
-        } 
-
         private const string VsMultiLight = @"
 //  # version 120 // not working with GL_ES
 /* Copies incoming vertex color without change.
@@ -92,14 +77,14 @@ uniform float FUSEE_L0_ACTIVE = 1.0f;
 uniform vec4 FUSEE_L0_AMBIENT = vec4(0,0,1,1);
 uniform vec4 FUSEE_L0_DIFFUSE = vec4(0,0,1,1);
 uniform vec4 FUSEE_L0_SPECULAR = vec4(0,0,1,1);
-uniform vec3 FUSEE_L0_POSITION = vec3(0,0,1);
-uniform vec3 FUSEE_L0_DIRECTION = vec3(0,0,1);
+uniform vec3 FUSEE_L0_POSITION = vec3(-1000,1000,2000);
+uniform vec3 FUSEE_L0_DIRECTION = vec3(1,1,1);
 
 uniform float FUSEE_L1_ACTIVE = 1.0f;
-uniform vec4 FUSEE_L1_AMBIENT = vec4(1,1,1,1);
-uniform vec4 FUSEE_L1_DIFFUSE = vec4(1,1,1,1);
-uniform vec4 FUSEE_L1_SPECULAR = vec4(1,1,1,1);
-uniform vec3 FUSEE_L1_POSITION = vec3(1,1,1);
+uniform vec4 FUSEE_L1_AMBIENT = vec4(0,1,0,1);
+uniform vec4 FUSEE_L1_DIFFUSE = vec4(0,1,0,1);
+uniform vec4 FUSEE_L1_SPECULAR = vec4(0,1,0,1);
+uniform vec3 FUSEE_L1_POSITION = vec3(1000,1000,2000);
 uniform vec3 FUSEE_L1_DIRECTION = vec3(1,1,1);
 
 uniform mat4 FUSEE_MVP;  //model view projection matrix
@@ -192,11 +177,11 @@ attribute vec3 fuNormal;
 varying vec3 vNormal;
 varying vec3 halfVector;
         
-uniform vec4 FUSEE_L0_AMBIENT;
-uniform vec4 FUSEE_L0_DIFFUSE;
-uniform vec4 FUSEE_L0_SPECULAR;
-uniform vec3 FUSEE_L0_POSITION;
-uniform vec3 FUSEE_L0_DIRECTION;
+uniform vec4 FUSEE_L0_AMBIENT = vec4(1,0,0,1);
+uniform vec4 FUSEE_L0_DIFFUSE = vec4(1,0,0,1);
+uniform vec4 FUSEE_L0_SPECULAR = vec4(1,0,0,1);
+uniform vec3 FUSEE_L0_POSITION = vec3(1,1,1);
+uniform vec3 FUSEE_L0_DIRECTION = vec3(1000,1000,2000);
 
 uniform mat4 FUSEE_MVP;  //model view projection matrix
 uniform mat4 FUSEE_ITMV; //inverte transformierte model view matrix
@@ -219,14 +204,14 @@ void main()
 varying vec3 halfVector;
 varying vec3 vNormal;
 
-uniform vec4 FUSEE_L0_AMBIENT;
+uniform vec4 FUSEE_L0_AMBIENT = vec4(1,0,0,1);
 uniform vec4 FUSEE_L0_DIFFUSE;
 uniform vec4 FUSEE_L0_SPECULAR;
 uniform vec3 FUSEE_L0_POSITION;
 uniform vec3 FUSEE_L0_DIRECTION;
 
-uniform vec4 FUSEE_MAT_AMBIENT;
-uniform float FUSEE_MAT_SHININESS;
+uniform vec4 FUSEE_MAT_AMBIENT = vec4(1,0,0,1);
+uniform float FUSEE_MAT_SHININESS = 256.0f;
 
 void main()
 {

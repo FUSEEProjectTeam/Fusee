@@ -14,7 +14,8 @@ namespace Fusee.SceneManagement
 
         public Renderer()
         {
-            Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"SampleObj/Cube.obj.model"));
+            //Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"SampleObj/Cube.obj.model"));
+            Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"SampleObj/Teapot.obj.model"));
             mesh = geo.ToMesh();
         }
         public override void Traverse(ITraversalState _traversalState)

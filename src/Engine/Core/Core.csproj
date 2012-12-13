@@ -62,7 +62,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RenderCanvas.cs" />
     <Compile Include="RenderContext.cs" />
-    <Compile Include="ShaderMaterial.cs" />
+    <Compile Include="Material.cs" />
     <Compile Include="ShaderProgram.cs" />
     <Compile Include="Shaders.cs" />
   </ItemGroup>
