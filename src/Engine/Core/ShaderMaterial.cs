@@ -21,12 +21,16 @@ namespace Fusee.Engine
             }
         }
 
-        public void SetValue(string name, dynamic f)
+        public void SetValue(string name, dynamic value)
         {
             ShaderParamInfo info;
             if (_sp._paramsByName.TryGetValue(name, out info))
-                _sp._rci.SetShaderParam(info.Handle, f);
-            // TODO: save value for later use
+                _sp._rci.SetShaderParam(info.Handle, value);
+            if (_list.ContainsKey(name))
+            {
+                _list[name] = value;
+            }
+
         }
 
         public ShaderProgram GetShader()
