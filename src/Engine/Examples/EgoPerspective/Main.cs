@@ -23,27 +23,22 @@ namespace Examples.EgoPerspective
             RC.SetShader(Sp3);
             RC.SetLightPosition(0, new float3(0, 1000, 1000));
             m = new ShaderMaterial(Sp3);
+            m2 = new ShaderMaterial(Sp3);
            
-            m.SetValue("chessSize", 1000);
+            m.SetValue("chessSize", 100);
             m.SetValue("smoothFactor", 1);
-            m.SetValue("darkColor", new float3(1, 0, 0));
-            m.SetValue("brightColor", new float3(0, 0, 0));
+            m.SetValue("darkColor", new float3(0, 0, 0));
+            m.SetValue("brightColor", new float3(1, 1, 1));
+            m.UpdateMaterial(RC);
 
-            //Param = new IShaderParam[4];
-            //Param[0] = RC.GetShaderParam(Sp3, "brightColor");
-            //Param[1] = RC.GetShaderParam(Sp3, "darkColor");
-            //Param[2] = RC.GetShaderParam(Sp3, "smoothFactor");
-            //Param[3] = RC.GetShaderParam(Sp3, "chessSize");
-            //RC.SetShaderParam(Param[0], new float3(1,1,1));
-            //RC.SetShaderParam(Param[1], new float3(0, 0, 0));
-            //RC.SetShaderParam(Param[2], 1);
-            //RC.SetShaderParam(Param[3], 100);
+            m2.SetValue("chessSize", 100);
+            m2.SetValue("smoothFactor", 1);
+            m2.SetValue("darkColor", new float3(1, 1, 0));
+            m2.SetValue("brightColor", new float3(0, 1, 0));
+            m2.UpdateMaterial(RC);  
 
-            
-            
-
-            _world.addObject(geo2, m, 0, -100, 1000);
-          //  _world.addObject(geo2, m, 0, -100, 1000);
+            _world.addObject(geo, m, 0, -100, 1000);
+            _world.addObject(geo2, m2, 0, -100, 1000);
 
             RC.ClearColor = new float4(0.6f, 0.8f, 1, 1);
             _angleHorz = 0;

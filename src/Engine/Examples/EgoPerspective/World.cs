@@ -97,7 +97,7 @@ namespace Examples.EgoPerspective
             ////// render all objects
             foreach (Object t in objects)
             {
-                RC.SetShader(t.GetShader());
+                RC.SetShader(t.GetShader(RC));
                 float4x4 mtxRot = float4x4.CreateRotationY(t.GetAngleX()) * float4x4.CreateRotationX(-t.GetAngleY());
                 float4x4 mtxCam = float4x4.LookAt(0, 200, 400, 0, 50, 0, 0, 1, 0);
                 float4x4 mtxTrans = float4x4.CreateTranslation(t.GetPosX() - _globalPosX, t.GetPosY() + globalPosY,

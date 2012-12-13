@@ -21,7 +21,7 @@ namespace Fusee.Engine
         {
             int h = GL.GetUniformLocation(((ShaderProgramImp) shaderProgram).Program, paramName);
             return (h == -1) ? null : new ShaderParam {handle = h};
-        }
+        }   
 
         public float GetParamValue(IShaderProgramImp program, IShaderParam handle)
         {

@@ -33,8 +33,9 @@ class Object
     {
         return mesh;
     }
-    public ShaderProgram GetShader()
-    {
+    public ShaderProgram GetShader(RenderContext RC)
+    {   
+        material.UpdateMaterial(RC);
         return material.GetShader();
     }
 
