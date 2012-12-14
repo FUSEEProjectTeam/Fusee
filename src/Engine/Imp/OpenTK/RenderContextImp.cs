@@ -27,7 +27,7 @@ namespace Fusee.Engine
 
             ImageData ret = new ImageData()
             {
-                RgbValues = new byte[bytes],
+                PixelData = new byte[bytes],
                 Height = bmpData.Height,
                 Width = bmpData.Width,
                 Stride = bmpData.Stride
@@ -35,7 +35,7 @@ namespace Fusee.Engine
             };
 
             // Copy the RGB values into the array.
-            System.Runtime.InteropServices.Marshal.Copy(bmpData.Scan0, ret.RgbValues, 0, bytes);
+            System.Runtime.InteropServices.Marshal.Copy(bmpData.Scan0, ret.PixelData, 0, bytes);
 
             bmp.UnlockBits(bmpData);
             return ret;
@@ -47,7 +47,7 @@ namespace Fusee.Engine
             int id = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2D, id);
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, img.Width, img.Height, 0,
-            OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, img.RgbValues);
+            OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, img.PixelData);
 
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMinFilter.Linear);

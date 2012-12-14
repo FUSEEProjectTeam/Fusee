@@ -24,6 +24,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.ShaderProgramIm
 });
 
 JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.Texture", true, [], function ($) {
+    $.ImplementInterfaces($fuseeCommon.TypeRef("Fusee.Engine.ITexture"));
 
     $.Method({ Static: false, Public: true }, ".ctor",
     new JSIL.MethodSignature(null, []),
@@ -347,6 +348,8 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
         function IRenderContextImp_LoadImage(filename) {
             var image = JSIL.Host.getImage(filename);
             var canvas = document.createElement("canvas");
+            canvas.width = image.width;
+            canvas.height = image.height;
             var context = canvas.getContext("2d");
 
             context.drawImage(image, 0, 0);
@@ -355,7 +358,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
             imageData.Width = image.width;
             imageData.Height = image.height;
             imageData.Stride = image.width * 4; //TODO: Adjust pixel-size
-            imageData.RgbValues = myData.data;
+            imageData.PixelData = myData.data;
             isloaded = true;
             return imageData;
         }
@@ -364,17 +367,19 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
     $.Method({ Static: false, Public: true }, "IRenderContextImp_CreateTexture",
         new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.ITexture"), [$fuseeCommon.TypeRef("Fusee.Engine.ImageData")]),
         function IRenderContextImp_CreateTexture(img) {
+            var ubyteView = new Uint8Array(img.PixelData);
+
             var glTexOb = this.gl.createTexture();
-            this.gl.bindTexture(this.gl.TEXURE_2D, glTexOb);
+            this.gl.bindTexture(this.gl.TEXTURE_2D, glTexOb);
 
-            this.gl.texImage2D(this.gl.TEXURE_2D, 0, this.gl.RGBA, img.Width, img.Height, 0,
-								this.gl.RGBA, this.gl.UNSIGNED_BYTE, img.RgbValues);
+            this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, img.Width, img.Height, 0,
+								this.gl.RGBA, this.gl.UNSIGNED_BYTE, ubyteView);
 
-            /*
-            this.gl.texParameteri(this.gl.TEXURE_2D, this.gl.TEXURE_MIN_FILTER, this.gl.LINEAR);
-            this.gl.texParameteri(this.gl.TEXURE_2D, this.gl.TEXURE_MAG_FILTER, this.gl.LINEAR);
-            */
-            
+
+            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
+            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.LINEAR);
+
+
             var texRet = new $asmThis.Fusee.Engine.Texture();
             texRet.handle = glTexOb;
 
@@ -382,7 +387,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
         }
     );
 
-	
+
     $.Method({ Static: false, Public: true }, "IRenderContextImp_Clear",
     new JSIL.MethodSignature(null, [$asm02.TypeRef("RenderEngine.ClearFlags")]),
     function IRenderContextImp_Clear(flags) {
