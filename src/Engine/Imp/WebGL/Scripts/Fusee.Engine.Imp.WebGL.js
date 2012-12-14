@@ -23,6 +23,17 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.ShaderProgramIm
     $.Field({ Static: false, Public: true }, "Program",$.Object, null);
 });
 
+JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.Texture", true, [], function ($) {
+
+    $.Method({ Static: false, Public: true }, ".ctor",
+    new JSIL.MethodSignature(null, []),
+    function _ctor() {
+    }
+  );
+
+    $.Field({ Static: false, Public: true }, "handle", $.Object, null);
+});
+
 JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.ShaderParam", true, [], function ($) {
 
     $.Method({ Static: false, Public: true }, ".ctor",
@@ -34,16 +45,6 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.ShaderParam", t
     $.Field({ Static: false, Public: true }, "handle",$.Object, null);
 });
 
-JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.TextureParam", true, [], function ($) {
-
-    $.Method({ Static: false, Public: true }, ".ctor",
-    new JSIL.MethodSignature(null, []),
-    function _ctor() {
-    }
-  );
-
-    $.Field({ Static: false, Public: true }, "handle", $.Object, null);
-});
 
 JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderCanvasImp", true, [], function ($) {
     //var gl;
@@ -271,23 +272,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
     }
   );
 
-    $.Method({ Static: false, Public: true }, "IRenderContextImp_LoadImage",
-        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.ImageData"), [$.String]),
-        function IRenderContextImp_LoadImage(filename) {
-            var image = new Image();
-            var isloaded = false;
-            var imageData = new $fuseeCommon.Fusee.Engine.ImageData();
-            image.onload = function() {
-                imageData.Width = image.width;
-                imageData.Height = image.height;
-                imageData.Stride = image.width * 3; //TODO: Adjust pixel-size
 
-            }
-            image.src = url;
-            return texture;
-
-        }
-    );
     // <IRenderContextImp Properties implementation>
     // Note: unlike the method interface-implementations, the Property interface-implementations
     // are NOT to be prefixed with the interface name.
@@ -357,7 +342,47 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
     // </IRenderContextImp Properties implementation>
 
 
+    $.Method({ Static: false, Public: true }, "IRenderContextImp_LoadImage",
+        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.ImageData"), [$.String]),
+        function IRenderContextImp_LoadImage(filename) {
+            var image = JSIL.Host.getImage(filename);
+            var canvas = document.createElement("canvas");
+            var context = canvas.getContext("2d");
 
+            context.drawImage(image, 0, 0);
+            var myData = context.getImageData(0, 0, image.width, image.height);
+            var imageData = new $fuseeCommon.Fusee.Engine.ImageData();
+            imageData.Width = image.width;
+            imageData.Height = image.height;
+            imageData.Stride = image.width * 4; //TODO: Adjust pixel-size
+            imageData.RgbValues = myData.data;
+            isloaded = true;
+            return imageData;
+        }
+    );
+
+    $.Method({ Static: false, Public: true }, "IRenderContextImp_CreateTexture",
+        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.ITexture"), [$fuseeCommon.TypeRef("Fusee.Engine.ImageData")]),
+        function IRenderContextImp_CreateTexture(img) {
+            var glTexOb = this.gl.createTexture();
+            this.gl.bindTexture(this.gl.TEXURE_2D, glTexOb);
+
+            this.gl.texImage2D(this.gl.TEXURE_2D, 0, this.gl.RGBA, img.Width, img.Height, 0,
+								this.gl.RGBA, this.gl.UNSIGNED_BYTE, img.RgbValues);
+
+            /*
+            this.gl.texParameteri(this.gl.TEXURE_2D, this.gl.TEXURE_MIN_FILTER, this.gl.LINEAR);
+            this.gl.texParameteri(this.gl.TEXURE_2D, this.gl.TEXURE_MAG_FILTER, this.gl.LINEAR);
+            */
+            
+            var texRet = new $asmThis.Fusee.Engine.Texture();
+            texRet.handle = glTexOb;
+
+            return texRet;
+        }
+    );
+
+	
     $.Method({ Static: false, Public: true }, "IRenderContextImp_Clear",
     new JSIL.MethodSignature(null, [$asm02.TypeRef("RenderEngine.ClearFlags")]),
     function IRenderContextImp_Clear(flags) {
@@ -517,10 +542,10 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
   );
 
     $.Method({ Static: false, Public: true }, "SetShaderParamTexture",
-    new JSIL.MethodSignature(null, [$asmThis.TypeRef("Fusee.Engine.IShaderParam"), $.Int32]),
-    function SetShaderParamTexture(param, texID) {
+    new JSIL.MethodSignature(null, [$asmThis.TypeRef("Fusee.Engine.IShaderParam"), $asmThis.TypeRef("Fusee.Engine.ITexture")]),
+    function SetShaderParamTexture(param, texId) {
         this.gl.activeTexture(this.gl.TEXTURE0 + this._currentTextureUnit);
-        this.gl.bindTexture(this.gl.TEXTURE_2D, texId);
+        this.gl.bindTexture(this.gl.TEXTURE_2D, texId.handle);
         this._currentTextureUnit++;
     }
   );
@@ -568,7 +593,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
     $.Method({ Static: false, Public: true }, "IRenderContextImp_SetUVs",
     new JSIL.MethodSignature(null, [$asmThis.TypeRef("Fusee.Engine.IMeshImp"), $jsilcore.TypeRef("System.Array", [$.UInt32])]),
     function IRenderContextImp_SetUVs(mr, uvs) {
-        if (colors == null || uvs.length == 0) {
+        if (uvs == null || uvs.length == 0) {
             throw new Exception("UVs must not be null or empty");
         }
 
@@ -587,8 +612,8 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, mr.UVBufferObject);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, flatBuffer, this.gl.STATIC_DRAW);
         vboBytes = this.gl.getBufferParameter(this.gl.ARRAY_BUFFER, this.gl.BUFFER_SIZE);
-        if (vboBytes != colsBytes)
-            throw new Exception("Problem uploading UV buffer to VBO (UVs). Tried to upload " + UvBytes + " bytes, uploaded " + vboBytes + ".");
+        if (vboBytes != UvBytes)
+            throw new Exception("Problem uploading UV buffer to VBO (UVs). Tried to upload " + UvBytes + " bytes, uploaded " + UvBytes + ".");
     }
   );
 

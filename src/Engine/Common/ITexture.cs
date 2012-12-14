@@ -1,6 +1,6 @@
 ﻿namespace Fusee.Engine
 {
-    public interface ITextureParam
+    public interface ITexture
     {
         // this is a markup-only for differente Texture-Parameters
     }

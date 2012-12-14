@@ -71,12 +71,12 @@ namespace Fusee.Engine
         private bool _transModelViewProjectionOk;
 
 
-        public ITextureParam CreateTexture(String filename)
+        public ITexture CreateTexture(String filename)
         {
             return _rci.CreateTexture(filename);
         }
 
-        public ITextureParam CreateTexture(ImageData imgData)
+        public ITexture CreateTexture(ImageData imgData)
         {
             return _rci.CreateTexture(imgData);
         }
@@ -87,7 +87,7 @@ namespace Fusee.Engine
         }
 
 
-        public void SetShaderParamTexture(IShaderParam param, ITextureParam texId)
+        public void SetShaderParamTexture(IShaderParam param, ITexture texId)
         {
             _rci.SetShaderParamTexture(param, texId);
         }

@@ -59,7 +59,7 @@
     <Compile Include="IRenderContextImp.cs" />
     <Compile Include="IShaderParam.cs" />
     <Compile Include="IShaderProgramImp.cs" />
-    <Compile Include="ITextureParam.cs" />
+    <Compile Include="ITexture.cs" />
     <Compile Include="KeyEventArgs.cs" />
     <Compile Include="MouseEventArgs.cs" />
     <Compile Include="Point.cs" />

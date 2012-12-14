@@ -1,7 +1,7 @@
 ﻿
 namespace Fusee.Engine
 {
-    class TextureParam : ITextureParam
+    class Texture : ITexture
     {
         internal int handle;
     }

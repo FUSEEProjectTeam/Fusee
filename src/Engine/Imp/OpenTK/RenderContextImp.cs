@@ -42,7 +42,7 @@ namespace Fusee.Engine
         }
 
 
-        public ITextureParam CreateTexture(ImageData img)
+        public ITexture CreateTexture(ImageData img)
         {
             int id = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2D, id);
@@ -52,26 +52,21 @@ namespace Fusee.Engine
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMinFilter.Linear);
 
-            ITextureParam texID = new TextureParam{handle = id};
+            ITexture texID = new Texture{handle = id};
             return texID;
 
         }
 
 
-
-        public ITextureParam CreateTexture(String filename)
+        public ITexture CreateTexture(String filename)
         {
             Bitmap bmp = new Bitmap(filename);
             // GL.ActiveTexture(TextureUnit.Texture3);
             int id = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2D, id);
 
-
-
             System.Drawing.Imaging.BitmapData bmpData = bmp.LockBits(new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite,
                                                                                                   System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-
-
 
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, bmpData.Width, bmpData.Height, 0,
             OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, bmpData.Scan0);
@@ -81,7 +76,7 @@ namespace Fusee.Engine
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMinFilter.Linear);
 
-            ITextureParam texID = new TextureParam { handle = id };
+            ITexture texID = new Texture { handle = id };
             return texID;
         }
 
@@ -128,10 +123,10 @@ namespace Fusee.Engine
             GL.Uniform1(((ShaderParam)param).handle, val);
         }
 
-        public void SetShaderParamTexture(IShaderParam param, ITextureParam texId)
+        public void SetShaderParamTexture(IShaderParam param, ITexture texId)
         {
             GL.ActiveTexture((TextureUnit)(TextureUnit.Texture0 + _currentTextureUnit));
-            GL.BindTexture(TextureTarget.Texture2D, ((TextureParam)texId).handle);
+            GL.BindTexture(TextureTarget.Texture2D, ((Texture)texId).handle);
             _currentTextureUnit++;
         }
 

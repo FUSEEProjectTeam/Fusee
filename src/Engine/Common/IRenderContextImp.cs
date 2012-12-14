@@ -33,17 +33,16 @@ namespace Fusee.Engine
         [JSChangeName("SetShaderParamMtx4f")]
         void SetShaderParam(IShaderParam param, float4x4 val);
 
-
+        [JSChangeName("SetShaderParamInt")]
         void SetShaderParam(IShaderParam param, int val);
 
         //HP Functions
         //Bitmap LoadImage(String filename);
         
         ImageData LoadImage(String filename);
-        ITextureParam CreateTexture(String filename);
-        ITextureParam CreateTexture(ImageData img);
-        [JSChangeName("SetShaderParamInt")]
-        void SetShaderParamTexture(IShaderParam param, ITextureParam texId);
+        ITexture CreateTexture(String filename);
+        ITexture CreateTexture(ImageData img);
+        void SetShaderParamTexture(IShaderParam param, ITexture texId);
 
         //HP Functions End
 

@@ -85,7 +85,7 @@ namespace Examples.Textures_Example
             RC.SetShaderParamTexture(_texture1Param, iTex);
              */
             ImageData imgData = RC.LoadImage("Assets/Desert.jpg");
-            ITextureParam iTex = RC.CreateTexture(imgData);
+            ITexture iTex = RC.CreateTexture(imgData);
             RC.SetShaderParamTexture(_texture1Param, iTex);
         }
 
