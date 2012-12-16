@@ -24,7 +24,7 @@ namespace Fusee.SceneManagement
         }
 
 
-        public void  Traverse(RenderCanvas renderCanvas, RenderContext RC, float4x4 camera)
+        public void Traverse(RenderCanvas renderCanvas, RenderContext RC, float4x4 camera)
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 

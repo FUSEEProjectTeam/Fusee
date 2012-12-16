@@ -17,7 +17,7 @@ namespace Fusee.SceneManagement
             attribute vec3 fuVertex;
             attribute vec3 fuNormal;
         
-            varying vec4 vColor;
+            uniform vec4 uColor;
             varying vec3 vNormal;
         
             uniform mat4 FUSEE_MVP;
@@ -26,9 +26,6 @@ namespace Fusee.SceneManagement
             void main()
             {
                 gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
-                // vColor = vec4(fuNormal * 0.5 + 0.5, 1.0);
-                // vec4 norm4 = FUSEE_MVP * vec4(fuNormal, 0.0);
-                // vNormal = norm4.xyz;
                 vNormal = mat3(FUSEE_ITMV) * fuNormal;
             }";
 
@@ -40,12 +37,12 @@ namespace Fusee.SceneManagement
                 precision highp float;
             #endif
         
-            uniform vec4 vColor;
+            uniform vec4 uColor;
             varying vec3 vNormal;
 
             void main()
             {
-                gl_FragColor = vColor * dot(vNormal, vec3(0, 0, 1));
+                gl_FragColor = uColor * dot(vNormal, vec3(0, 0, 1));
             }";
        
 

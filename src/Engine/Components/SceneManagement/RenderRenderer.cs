@@ -8,10 +8,12 @@ namespace Fusee.SceneManagement
     public class RenderRenderer : RenderJob
     {
         private Renderer _renderer;
-        
+        private IShaderParam _uColor;
+
         public RenderRenderer(Renderer renderer)
         {
             _renderer = renderer;
+            _uColor = null;
         }
         public override void SubmitWork(RenderContext renderContext)
         {
@@ -19,9 +21,12 @@ namespace Fusee.SceneManagement
             {
                 _renderer.sp = renderContext.CreateShader(_renderer.material._vs, _renderer.material._ps);
             }
-            IShaderParam vcolor = _renderer.sp.GetShaderParam("vColor");
-            renderContext.SetShaderParam(vcolor, _renderer.color);
             renderContext.SetShader(_renderer.sp);
+            if (_uColor == null)
+            {
+                _uColor = _renderer.sp.GetShaderParam("uColor");
+            }
+            renderContext.SetShaderParam(_uColor, _renderer.color);
         }
     }
 }

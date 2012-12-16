@@ -15,6 +15,7 @@ namespace Examples.Components
         {
             transform.LocalPosition = new float3(0, 200, 200);
             //transform.LocalScale = new float3(2,2,2);
+            renderer.color= new float4(0,1,0,1);
         }
 
         public override void Update()

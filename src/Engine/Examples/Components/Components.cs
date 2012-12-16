@@ -45,11 +45,13 @@ namespace Examples.Components
             Childscript.Start();
             testscript.Start();
 
+            
+            /*
             ShaderProgram sp = RC.CreateShader(_material._vs, _material._ps);
             RC.SetShader(sp);
-            _vColorParam = sp.GetShaderParam("vColor");
+            _vColorParam = sp.GetShaderParam("uColor");        
+            RC.SetShaderParam(_vColorParam, _farbe);*/
             RC.ClearColor = new float4(1, 1, 1, 1);
-            RC.SetShaderParam(_vColorParam, _farbe);
         }
 
 
