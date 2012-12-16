@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using Fusee.Engine;
 using Fusee.Math;
 
@@ -12,12 +10,35 @@ namespace Fusee.SceneManagement
         private Stack<bool> _hasTransform;
         private Stack<bool> _hasRenderer;
         private Stack<bool> _hasMesh;
-        private RenderQueue _queue;
+        private SceneManager _queue;
         private Stack<float4x4> _mtxModelViewStack;
         private Stack<Mesh> _meshStack;
         private Stack<Renderer> _RendererStack;
+        private double _deltaTime;
+        private Input _input;
 
-        public TraversalStateRender(RenderQueue queue)
+        public void SetInput(Input input)
+        {
+            _input = input;
+        }
+
+        public void SetDeltaTime(double delta)
+        {
+            _deltaTime = delta;
+        }
+
+        public void GetInput(out Input input)
+        {
+            input = _input;
+        }
+
+        public void GetDeltaTime(out double deltaTime)
+        {
+            deltaTime = _deltaTime;
+        }
+
+
+        public TraversalStateRender(SceneManager queue)
         {
             _queue = queue;
             _mtxModelViewStack = new Stack<float4x4>();
@@ -33,7 +54,7 @@ namespace Fusee.SceneManagement
             _RendererStack.Push(null);
             */
         }
-
+        // TODO: Store Mesh as local variable instead of stacks as it is not used in further traversals.
         public void StoreMesh(Mesh mesh)
         {
             _hasMesh.Pop();
@@ -100,6 +121,24 @@ namespace Fusee.SceneManagement
             _hasMesh.Pop();
             _hasRenderer.Pop();
             _hasTransform.Pop();
+        }
+
+        public void AddLightDirectional(float3 direction, float4 color, Light.LightType type) 
+        {
+            RenderDirectionalLight light = new RenderDirectionalLight(direction, color, type);
+            _queue.AddLightJob(light);
+        }
+
+        public void AddLightPoint(float3 position, float4 color, Light.LightType type) 
+        {
+            RenderPointLight light = new RenderPointLight(position, color, type);
+            _queue.AddLightJob(light);
+        }
+
+        public void AddLightSpot(float3 position, float3 direction, float4 color, Light.LightType type) 
+        {
+            RenderSpotLight light = new RenderSpotLight(position, direction, color, type);
+            _queue.AddLightJob(light);
         }
 
         private void AddRenderJob(float4x4 matrix, Mesh mesh, Renderer renderer)

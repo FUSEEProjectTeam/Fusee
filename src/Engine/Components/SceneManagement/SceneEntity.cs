@@ -59,17 +59,16 @@ namespace Fusee.SceneManagement
 
         public void AddComponent(Component component)
         {
-            /*if (component is Action) // TODO sorting addition process
+            if (component is Renderer) // TODO sorting addition process
             {
-
-
-            }*/
-            _childComponents.Add(component);
-
-
+                _childComponents.Add(component);
+                renderer =(Renderer)component;
+            }
+            else
+            {
+                _childComponents.Add(component);  
+            }
             //Console.WriteLine("The name of the added Component is " + type);
-
-
         }
 
         public void AddChild(SceneEntity child)
