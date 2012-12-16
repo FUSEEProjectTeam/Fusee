@@ -60,6 +60,7 @@
     <Compile Include="Component.cs" />
     <Compile Include="DirectionalLight.cs" />
     <Compile Include="ITraversalState.cs" />
+    <Compile Include="Light.cs" />
     <Compile Include="Material.cs" />
     <Compile Include="PointLight.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

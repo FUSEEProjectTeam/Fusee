@@ -1,25 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Fusee.Math;
-using Fusee.Engine;
+﻿using Fusee.Math;
 
 namespace Fusee.SceneManagement
 {
-    public enum LightType
-    {
-        Point,
-        Directional,
-        Spot,
-    }
 
-    class SpotLight : Component
+    public class SpotLight : Light
     {
-        private LightType _type;
-        private float3 _position;
+      
         private float3 _direction;
-        private float4 _color;
 
         public SpotLight(float3 position, float3 direction, float4 color) 
         {
@@ -37,10 +24,10 @@ namespace Fusee.SceneManagement
             _color = new float4(0.5f, 0.5f, 0.5f, 0.5f);   
         }
 
-        virtual public void Traverse(ITraversalState _traversalState)
+        override public void Traverse(ITraversalState _traversalState)
         {
             //TODO Typübergabe implementieren.
-            _traversalState.addLightSpot(_position, _direction , _color);
+            _traversalState.AddLightSpot(_position, _direction , _color, _type);
         }
     }
 }

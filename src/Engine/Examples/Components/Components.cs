@@ -22,7 +22,10 @@ namespace Examples.Components
         private SceneEntity ChildEntity = new SceneEntity();
         private Renderer Childrenderer = new Renderer();
         private ChildAction Childscript = new ChildAction();
-        
+        //Light test
+        private SpotLight spot = new SpotLight();
+        private PointLight point = new PointLight();
+        private DirectionalLight direct = new DirectionalLight();
 
         protected float4 _farbe = new float4(1, 0, 0, 1);
         protected IShaderParam _vColorParam;
@@ -34,6 +37,10 @@ namespace Examples.Components
             // Parent
             TestEntity.AddComponent(testrenderer);
             TestEntity.AddComponent(testscript);
+            TestEntity.AddComponent(spot);
+            TestEntity.AddComponent(point);
+            TestEntity.AddComponent(direct);
+
             testscript.Init(TestEntity);
             TestEntity.AddChild(ChildEntity); // Als Child hinzugefuegt
             _queue.SceneMembers.Add(TestEntity);

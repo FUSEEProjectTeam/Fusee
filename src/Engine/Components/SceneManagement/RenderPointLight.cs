@@ -1,24 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Fusee.Engine;
 using Fusee.Math;
 
 namespace Fusee.SceneManagement
 {
-    class RenderPointLight :RenderJob
+    public class RenderPointLight : RenderJob
     {
         
         private float3 _position;
         private float4 _color;
-        private int _type;
+        private Light.LightType _type;
         
        
-        public RenderPointLight( float3 position, float4 color)
+        public RenderPointLight(float3 position, float4 color, Light.LightType type)
         {
             _position = position;
-            _type = 1;
+            _type = Light.LightType.Point;
             _color = color;
         }
          public override void SubmitWork(RenderContext renderContext)
@@ -26,6 +23,7 @@ namespace Fusee.SceneManagement
              //TODO Warten Auf Timon und Casper
              //TODO overload the method for the different lighttypes
              //renderContext.setLight(_position, _color, _type);
+             //Console.WriteLine("Pointlight worked");
          }
     }
 }
