@@ -30,6 +30,8 @@ namespace Fusee.SceneManagement
 
             foreach (var sceneMember in SceneMembers)
             {
+                
+                _traversal.SetDeltaTime(renderCanvas.DeltaTime);
                 sceneMember.Traverse(_traversal);
             }
 
@@ -65,6 +67,11 @@ namespace Fusee.SceneManagement
         public void AddLightJob(RenderJob job)
         {
             RenderJobs[0].Add(job);
+        }
+
+        public void SetInput(Input input)
+        {
+            _traversal.SetInput(input);
         }
 
     }

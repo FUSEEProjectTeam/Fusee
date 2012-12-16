@@ -16,6 +16,29 @@ namespace Fusee.SceneManagement
         private Stack<float4x4> _mtxModelViewStack;
         private Stack<Mesh> _meshStack;
         private Stack<Renderer> _RendererStack;
+        private double _deltaTime;
+        private Input _input;
+
+        public void SetInput(Input input)
+        {
+            _input = input;
+        }
+
+        public void SetDeltaTime(double delta)
+        {
+            _deltaTime = delta;
+        }
+
+        public void GetInput(out Input input)
+        {
+            input = _input;
+        }
+
+        public void GetDeltaTime(out double deltaTime)
+        {
+            deltaTime = _deltaTime;
+        }
+
 
         public TraversalStateRender(SceneManager queue)
         {

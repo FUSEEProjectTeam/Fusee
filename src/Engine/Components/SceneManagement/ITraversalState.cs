@@ -16,5 +16,9 @@ namespace Fusee.SceneManagement
         void addLightDirectional(float3 direction, float4 color);
         void addLightPoint(float3 position, float4 color);
         void addLightSpot(float3 position, float3 direction, float4 color);
+        void SetInput(Input input);
+        void SetDeltaTime(double delta);
+        void GetInput(out Input input);
+        void GetDeltaTime(out double deltaTime);
     }
 }

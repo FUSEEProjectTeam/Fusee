@@ -8,12 +8,12 @@ namespace Fusee.SceneManagement
     public class ActionCode : Component
     {
      //TODO: Test without new calls  
-        public SceneEntity SceneEntity = new SceneEntity();
-        public Transformation transform = new Transformation();
-        public Renderer renderer = new Renderer();
+        public SceneEntity SceneEntity;
+        public Transformation transform;
+        public Renderer renderer;
 
         protected Input Input;
-        protected float DeltaTime;
+        protected double DeltaTime;
 
         public void Init(SceneEntity entity)
         {
@@ -33,10 +33,9 @@ namespace Fusee.SceneManagement
 
         public override void Traverse(ITraversalState _traversalState)
         {
-            // Input = _traversalState.Input;
-            // DeltaTime = _traversalState.DeltaTime;
+            _traversalState.GetInput(out Input);
+            _traversalState.GetDeltaTime(out DeltaTime);
             Update();
-            Input = null;
         }
 
     }   
