@@ -10,7 +10,6 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Fusee.Engine</RootNamespace>
     <AssemblyName>Fusee.Engine.Common</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -49,6 +48,8 @@
     <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
     <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
     <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
+    <WarningLevel>4</WarningLevel>
+    <Optimize>false</Optimize>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="IInputImp.cs" />
@@ -70,18 +71,15 @@
     <Compile Include="ResizeEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Math\Core\Core.csproj">
-      <Project>{E95FA1C8-6491-4B4B-BBE1-EDA6B16B2C6A}</Project>
-      <Name>Core %28Math\Core%29</Name>
-    </ProjectReference>
-    <Reference Include="Fusee.Math.Core, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\bin\Debug\Fusee.Math.Core.dll</HintPath>
-    </Reference>
     <Reference Include="JSIL.Meta">
-      <HintPath>..\..\..\ExternalBinaries\JSIL.Meta.dll</HintPath>
+      <HintPath>..\..\..\ExternalBinaries\JSIL\Compiler\JSIL.Meta.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Drawing" />
+    <ProjectReference Include="..\..\Math\Core\Math.Core.csproj">
+      <Project>{E95FA1C8-6491-4B4B-BBE1-EDA6B16B2C6A}</Project>
+      <Name>Math.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="Clean">

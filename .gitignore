@@ -6,6 +6,7 @@ C4dApi/
 
 ##
 ## .gitignore from https://github.com/github/gitignore/blob/master/CSharp.gitignore
+##             and https://github.com/github/gitignore/blob/master/Global/MonoDevelop.gitignore
 ##
 
 # Build Folders (you can keep bin if you'd like, to store dlls and pdbs)
@@ -58,6 +59,15 @@ ipch/
 *.psess
 *.vsp
 *.vspx
+
+# MonoDevelop
+*.userprefs
+*.usertasks
+
+#Mono Project Files
+*.pidb
+*.resources
+test-results/
 
 # Guidance Automation Toolkit
 *.gpState
