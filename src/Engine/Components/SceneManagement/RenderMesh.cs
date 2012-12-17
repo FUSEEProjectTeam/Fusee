@@ -13,9 +13,9 @@ namespace Fusee.SceneManagement
         {
             _mesh = mesh;
         }
-        public override Mesh GetMesh()
+        public override void SubmitWork(RenderContext renderContext)
         {
-            return _mesh;
+            renderContext.Render(_mesh);
         }
     }
 }

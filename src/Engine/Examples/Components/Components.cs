@@ -7,7 +7,7 @@ namespace Examples.Components
 {
     public class Components : RenderCanvas
     {
-        private RenderQueue _queue = new RenderQueue();
+        private SceneManager _queue = new SceneManager();
         public List<RenderJob> RenderJobs = new List<RenderJob>(); 
         public List<SceneEntity> SceneMembers = new List<SceneEntity>(); 
         public float4x4 Camera = float4x4.LookAt(0, 200, 2000, 0, 50, 0, 0, 1, 0);
@@ -22,17 +22,25 @@ namespace Examples.Components
         private SceneEntity ChildEntity = new SceneEntity();
         private Renderer Childrenderer = new Renderer();
         private ChildAction Childscript = new ChildAction();
-        
+        //Light test
+        private SpotLight spot = new SpotLight();
+        private PointLight point = new PointLight();
+        private DirectionalLight direct = new DirectionalLight();
 
         protected float4 _farbe = new float4(1, 0, 0, 1);
         protected IShaderParam _vColorParam;
 
         public override void Init()
         {
+            RC.Camera = Camera;
            
             // Parent
             TestEntity.AddComponent(testrenderer);
             TestEntity.AddComponent(testscript);
+            TestEntity.AddComponent(spot);
+            TestEntity.AddComponent(point);
+            TestEntity.AddComponent(direct);
+
             testscript.Init(TestEntity);
             TestEntity.AddChild(ChildEntity); // Als Child hinzugefuegt
             _queue.SceneMembers.Add(TestEntity);
@@ -44,11 +52,14 @@ namespace Examples.Components
             Childscript.Start();
             testscript.Start();
 
+            
+            /*
             ShaderProgram sp = RC.CreateShader(_material._vs, _material._ps);
             RC.SetShader(sp);
-            _vColorParam = sp.GetShaderParam("vColor");
+            _vColorParam = sp.GetShaderParam("uColor");        
+            RC.SetShaderParam(_vColorParam, _farbe);*/
             RC.ClearColor = new float4(1, 1, 1, 1);
-            RC.SetShaderParam(_vColorParam, _farbe);
+            _queue.SetInput(In);
         }
 
 

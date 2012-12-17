@@ -515,6 +515,13 @@ namespace Fusee.Math
         #endregion
 
         #region Conversion
+
+        /// <summary>
+        /// Convert Euler angle to Quaternion rotation.
+        /// </summary>
+        /// <param name="e">Euler angle to convert.</param>
+        /// <returns>A Quaternion representing the euler angle passed to this method.</returns>
+
         public static Quaternion EulerToQuaternion(float3 e)
         {
             float c1 = (float)System.Math.Cos(e.x / 2);
@@ -531,6 +538,14 @@ namespace Fusee.Math
             float z = c1 * s2 * c3 - s1 * c2 * s3;
             return new Quaternion(x,y,z,w);
         }
+
+
+        /// <summary>
+        /// Convert Quaternion rotation to Euler angle.
+        /// </summary>
+        /// <param name="q1">Quaternion rotation to convert.</param>
+        /// <returns>A Euler angle of type float3 from the passed Quaternion rotation.</returns>
+
         public static float3 QuaternionToEuler(Quaternion q1)
         {
             float sqw = q1.w*q1.w;
@@ -557,6 +572,27 @@ namespace Fusee.Math
             result.z = (float)System.Math.Atan2(2 * q1.x * q1.w - 2 * q1.y * q1.z, -sqx + sqy - sqz + sqw);
             return result;
         }
+
+
+        public static Quaternion MatrixToQuaternion(float4x4 m)
+        {
+            Quaternion q = Quaternion.Identity;
+            q.w = (float) (System.Math.Sqrt( System.Math.Max( 0, 1 + m.M11 + m.M22 + m.M33 ) ) / 2);
+            q.x = (float) (System.Math.Sqrt( System.Math.Max( 0, 1 + m.M11 - m.M22 - m.M33 ) ) / 2);
+            q.z = (float) (System.Math.Sqrt( System.Math.Max( 0, 1 - m.M11 + m.M22 - m.M33 ) ) / 2);
+            q.y = (float) (System.Math.Sqrt( System.Math.Max( 0, 1 - m.M11 - m.M22 + m.M33 ) ) / 2);
+            q.x = copysign(q.x, m.M32 - m.M23);
+            q.z = copysign(q.z, m.M13 - m.M31);
+            q.y = copysign(q.y, m.M21 - m.M12);
+            return q;
+        }
+
+        public static float copysign(float a, float b)
+        {
+            return System.Math.Abs(a)*System.Math.Sign(b);
+        }
+
+
         #endregion
         #endregion
 
