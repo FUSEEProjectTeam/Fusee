@@ -19,26 +19,19 @@ namespace Examples.EgoPerspective
             _world = new World(RC, In);
             Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/castle.obj.model"));
             Geometry geo2 = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/ground.obj.model"));
-            Sp3 = MoreShaders.GetShader("chess", RC);
+            Sp3 = MoreShaders.GetShader("color", RC);
             RC.SetShader(Sp3);
             RC.SetLightPosition(0, new float3(0, 1000, 1000));
             m = new ShaderMaterial(Sp3);
-            m2 = new ShaderMaterial(Sp3);
            
-            m.SetValue("chessSize", 100);
-            m.SetValue("smoothFactor", 1);
-            m.SetValue("darkColor", new float3(0, 0, 0));
-            m.SetValue("brightColor", new float3(1, 1, 1));
+            m.SetValue("FUSEE_MAT_COLOR", new float3(0,0.5f, 1));
+            m.SetValue("SpecularLevel", 1);
+            m.SetValue("SpecularSize", 1);
             m.UpdateMaterial(RC);
 
-            m2.SetValue("chessSize", 100);
-            m2.SetValue("smoothFactor", 1);
-            m2.SetValue("darkColor", new float3(1, 1, 0));
-            m2.SetValue("brightColor", new float3(0, 1, 0));
-            m2.UpdateMaterial(RC);  
 
             _world.addObject(geo, m, 0, -100, 1000);
-            _world.addObject(geo2, m2, 0, -100, 1000);
+            _world.addObject(geo2, m, 0, -100, 1000);
 
             RC.ClearColor = new float4(0.6f, 0.8f, 1, 1);
             _angleHorz = 0;

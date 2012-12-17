@@ -13,7 +13,7 @@ namespace Fusee.Engine
         {
             if (name == "color")
             {
-                ShaderProgram spColor = rc.CreateShader(VSColor, PSColor);
+                ShaderProgram spColor = rc.CreateShader(VsMultiLight2, PsMultiLight2);
                 return spColor;
             }
 
@@ -40,110 +40,28 @@ attribute vec4 fuColor;
 attribute vec3 fuVertex;
 attribute vec3 fuNormal;
 
-
-
-uniform float FUSEE_L0_ACTIVE;
-uniform vec4 FUSEE_L0_AMBIENT;
-uniform vec4 FUSEE_L0_DIFFUSE;
-uniform vec4 FUSEE_L0_SPECULAR;
-uniform vec3 FUSEE_L0_POSITION;
-uniform vec3 FUSEE_L0_DIRECTION;
-
-uniform float FUSEE_L1_ACTIVE;
-uniform vec4 FUSEE_L1_AMBIENT;
-uniform vec4 FUSEE_L1_DIFFUSE;
-uniform vec4 FUSEE_L1_SPECULAR;
-uniform vec3 FUSEE_L1_POSITION;
-uniform vec3 FUSEE_L1_DIRECTION;
-
-uniform float FUSEE_L2_ACTIVE;
-uniform vec4 FUSEE_L2_AMBIENT;
-uniform vec4 FUSEE_L2_DIFFUSE;
-uniform vec4 FUSEE_L2_SPECULAR;
-uniform vec3 FUSEE_L2_POSITION;
-uniform vec3 FUSEE_L2_DIRECTION;
-
-uniform float FUSEE_L3_ACTIVE;
-uniform vec4 FUSEE_L3_AMBIENT;
-uniform vec4 FUSEE_L3_DIFFUSE;
-uniform vec4 FUSEE_L3_SPECULAR;
-uniform vec3 FUSEE_L3_POSITION;
-uniform vec3 FUSEE_L3_DIRECTION;
-
-uniform float FUSEE_L4_ACTIVE;
-uniform vec4 FUSEE_L4_AMBIENT;
-uniform vec4 FUSEE_L4_DIFFUSE;
-uniform vec4 FUSEE_L4_SPECULAR;
-uniform vec3 FUSEE_L4_POSITION;
-uniform vec3 FUSEE_L4_DIRECTION;
-
-uniform float FUSEE_L5_ACTIVE;
-uniform vec4 FUSEE_L5_AMBIENT;
-uniform vec4 FUSEE_L5_DIFFUSE;
-uniform vec4 FUSEE_L5_SPECULAR;
-uniform vec3 FUSEE_L5_POSITION;
-uniform vec3 FUSEE_L5_DIRECTION;
-
-uniform float FUSEE_L6_ACTIVE;
-uniform vec4 FUSEE_L6_AMBIENT;
-uniform vec4 FUSEE_L6_DIFFUSE;
-uniform vec4 FUSEE_L6_SPECULAR;
-uniform vec3 FUSEE_L6_POSITION;
-uniform vec3 FUSEE_L6_DIRECTION;
-
-uniform float FUSEE_L7_ACTIVE;
-uniform vec4 FUSEE_L7_AMBIENT;
-uniform vec4 FUSEE_L7_DIFFUSE;
-uniform vec4 FUSEE_L7_SPECULAR;
-uniform vec3 FUSEE_L7_POSITION;
-uniform vec3 FUSEE_L7_DIRECTION;
-
 uniform mat4 FUSEE_MVP;  //model view projection matrix
 uniform mat4 FUSEE_ITMV; //inverte transformierte model view matrix
 
-varying vec3 LC; 
+uniform vec3 FUSEE_L0_POSITION;
+varying float LightIntensity;
 varying float SpecIntensity;
 
-vec3 normal;
-vec3 pos;
+vec3  Normal;
 
-void calcDiffuse(in vec3 lightPos, in vec3 lightColor, inout vec3 endColor)
-{
-  vec3 toLight = lightPos - pos;
-  endColor  += max(dot(normalize(toLight), normal), 0.0) * lightColor;
-}
 
 void main()
 {
+  gl_Position     = FUSEE_MVP * vec4(fuVertex, 1.0);
+  vec3 pos        = vec3(FUSEE_MVP * fuVertex);
+  Normal          = normalize(FUSEE_ITMV * fuNormal);
+  vec3 posToLight = normalize(LightPos - pos);
+  LightIntensity  = max(dot(posToLight, Normal), 0.0);
 
-  gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
-
-    normal = mat3(FUSEE_ITMV) * fuNormal;
-    pos = vec3(FUSEE_MVP * vec4(fuVertex,1));
-  
-    vec3 diffuseColor = vec3(0,0,0);
-    if(FUSEE_L0_ACTIVE == 1)
-      calcDiffuse(vec3(FUSEE_L0_POSITION), vec3(FUSEE_L0_DIFFUSE), diffuseColor);
-    if(FUSEE_L1_ACTIVE == 1)
-      calcDiffuse(vec3(FUSEE_L1_POSITION), vec3(FUSEE_L1_DIFFUSE), diffuseColor);
-    if(FUSEE_L2_ACTIVE == 1)
-      calcDiffuse(vec3(FUSEE_L2_POSITION), vec3(FUSEE_L2_DIFFUSE), diffuseColor);
-    if(FUSEE_L3_ACTIVE == 1)
-      calcDiffuse(vec3(FUSEE_L3_POSITION), vec3(FUSEE_L3_DIFFUSE), diffuseColor);
-    if(FUSEE_L4_ACTIVE == 1)
-      calcDiffuse(vec3(FUSEE_L4_POSITION), vec3(FUSEE_L4_DIFFUSE), diffuseColor);
-    if(FUSEE_L5_ACTIVE == 1)
-      calcDiffuse(vec3(FUSEE_L5_POSITION), vec3(FUSEE_L5_DIFFUSE), diffuseColor);
-    if(FUSEE_L6_ACTIVE == 1)
-      calcDiffuse(vec3(FUSEE_L6_POSITION), vec3(FUSEE_L6_DIFFUSE), diffuseColor);
-    if(FUSEE_L7_ACTIVE == 1)
-      calcDiffuse(vec3(FUSEE_L7_POSITION), vec3(FUSEE_L7_DIFFUSE), diffuseColor);
-    LC = diffuseColor;
-
-         vec3 reflectVec =  vec3(1,1,1); // reflect(-(FUSEE_L0_POSITION-pos), normal);
-         vec3 viewVec    = normalize(-pos);
-         SpecIntensity   = max(dot(reflectVec, viewVec), 0.0);
-
+  //Specular by Randi Rost: www.3dshaders.com
+  vec3 reflectVec = reflect(-posToLight, Normal);
+  vec3 viewVec    = normalize(-pos);
+  SpecIntensity   = max(dot(reflectVec, viewVec), 0.0);
 
 }";
 
@@ -153,13 +71,18 @@ void main()
 precision highp float;
 #endif
 
-varying vec3 LC;
+varying float LightIntensity;
 varying float SpecIntensity;
+uniform vec3 FUSEE_MAT_COLOR;
+uniform float SpecularLevel;
+uniform float SpecularSize;
 
 void main()
 {
     
-    gl_FragColor = vec4(LC ,1) ;
+    	vec3 thisColor = Color * LightIntensity;
+	thisColor += max(0.0, SpecularLevel * pow(SpecIntensity, SpecularSize));
+  gl_FragColor = vec4(thisColor, 1.0);
 }";
 
         private const string VSChess = @"
