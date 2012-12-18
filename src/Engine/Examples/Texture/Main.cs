@@ -2,7 +2,7 @@
 using Fusee.Engine;
 using Fusee.Math;
 
-namespace Examples.Textures
+namespace Examples.Texture
 {
     public class Texture : RenderCanvas
     {
