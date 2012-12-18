@@ -63,7 +63,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Components", "Components", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SceneManagement", "Components\SceneManagement\SceneManagement.csproj", "{81B3A7F0-F8E4-45D0-BE69-B869C9B1803E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Textures_Example", "Examples\Textures_Example\Textures_Example.csproj", "{FEDC94C7-0F0A-4891-8740-AD00FDBF3A61}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Texture", "Examples\Textures_Example\Texture.csproj", "{FEDC94C7-0F0A-4891-8740-AD00FDBF3A61}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

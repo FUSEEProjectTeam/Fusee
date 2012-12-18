@@ -2,9 +2,9 @@
 using Fusee.Engine;
 using Fusee.Math;
 
-namespace Examples.Textures_Example
+namespace Examples.Textures
 {
-    public class Textures_Example : RenderCanvas
+    public class Texture : RenderCanvas
     {
         protected string _vs = @"
             #ifndef GL_ES
@@ -147,7 +147,7 @@ namespace Examples.Textures_Example
 
         public static void Main()
         {
-            Textures_Example app = new Textures_Example();
+            Texture app = new Texture();
             app.Run();
         }
 

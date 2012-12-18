@@ -16,6 +16,15 @@ namespace Fusee.Engine
             _currentTextureUnit = 0;
         }
 
+        /// <summary>
+        /// Creates a new Bitmap-Object from an image file,
+        /// locks the bits in the memory and makes them available
+        /// for furher action (e.g. creating a texture).
+        /// Method must be called before creating a texture to get the necessary
+        /// ImageData struct
+        /// </summary>
+        /// <param name="filename">Path to the image file you would like to use as texture</param>
+        /// <returns>An ImageData object with all necessary information for the texture-binding process</returns>
         public ImageData LoadImage(String filename)
         {
             Bitmap bmp = new Bitmap(filename);
@@ -40,7 +49,11 @@ namespace Fusee.Engine
             bmp.UnlockBits(bmpData);
             return ret;
         }
-
+        /// <summary>
+        /// Creates a new Texture and  binds to the shader
+        /// </summary>
+        /// <param name="img">A given ImageData object, which contains all necessary information for the upload to the graphics card</param>
+        /// <returns>An ITexture that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK</returns>
 
         public ITexture CreateTexture(ImageData img)
         {
