@@ -4,7 +4,7 @@ using Fusee.Math;
 
 namespace Examples.Textures
 {
-    public class Texture : RenderCanvas
+    public class Textures : RenderCanvas
     {
         protected string _vs = @"
             #ifndef GL_ES
@@ -147,7 +147,7 @@ namespace Examples.Textures
 
         public static void Main()
         {
-            Texture app = new Texture();
+            Textures app = new Textures();
             app.Run();
         }
 
