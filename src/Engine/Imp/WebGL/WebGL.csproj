@@ -53,8 +53,10 @@
     <Optimize>false</Optimize>
   </PropertyGroup>
   <Target Name="Build">
-    <Exec Condition=" '$(OS)' != 'Windows_NT' " Command="rsync -a Scripts/*.* $(OutputPath)" />
-    <Exec Condition=" '$(OS)' == 'Windows_NT' " Command="xcopy Scripts\*.* $(OutputPath) /D /E /C /Q /R /Y /K" />
+    <Exec Condition=" '$(OS)' != 'Windows_NT' " Command="rsync -a Scripts/*.* $(OutputPath)Scripts/" />
+    <Exec Condition=" '$(OS)' == 'Windows_NT' " Command="xcopy Scripts\*.* $(OutputPath)Scripts\ /D /E /C /Q /R /Y /K" />
+    <Exec Condition=" '$(OS)' != 'Windows_NT' " Command="rsync -a Styles/*.* $(OutputPath)Styles/" />
+    <Exec Condition=" '$(OS)' == 'Windows_NT' " Command="xcopy Styles\*.* $(OutputPath)Styles\ /D /E /C /Q /R /Y /K" />
   </Target>
   <Target Name="Rebuild" DependsOnTargets="Build">
   </Target>

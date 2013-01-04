@@ -5,16 +5,25 @@
       <WebOutputDir>$(TargetDir)Web</WebOutputDir>
     </PropertyGroup>
     <ItemGroup>
-      <WebGLFiles Include="$(TargetDir)..\..\WebGL\*.*" />
+      <WebGLScripts Include="$(TargetDir)..\..\WebGL\Scripts\*.*" />
+      <WebGLStyles Include="$(TargetDir)..\..\WebGL\Styles\*.*" />
     </ItemGroup>
 
+    <MakeDir Directories="$(WebOutputDir)" Condition="!Exists('$(WebOutputDir)')" />
+    <MakeDir Directories="$(WebOutputDir)\Assets" Condition="!Exists('$(WebOutputDir)\Assets')" />
+    <MakeDir Directories="$(WebOutputDir)\Assets\Scripts" Condition="!Exists('$(WebOutputDir)\Scripts')" />
+    <MakeDir Directories="$(WebOutputDir)\Assets\Styles" Condition="!Exists('$(WebOutputDir)\Styles')" />
+
     <Message Importance="High" Text="### PostBuildEvent $(TargetName): JSIL CCing ###" />
-    <MakeDir Directories="$(WebOutputDir)" Condition="!Exists($(WebOutputDir))" />
-    <Exec ContinueOnError="true" Timeout="60000" Command='"$(SolutionDir)..\..\ExternalBinaries\JSIL\Compiler\JSILc.exe" -o "$(WebOutputDir)" "$(TargetPath)"' />
-    <Message Importance="High" Text="### PostBuildEvent $(TargetName): Copying additional Scripts ###" />
-    <Copy SourceFiles="@(WebGLFiles)" DestinationFolder="$(WebOutputDir)" SkipUnchangedFiles="true" />
+    <Exec ContinueOnError="true" Timeout="60000" Command='"$(SolutionDir)..\..\ExternalBinaries\JSIL\Compiler\JSILc.exe" -o "$(WebOutputDir)\Assets\Scripts" "$(TargetPath)"' />
+    
+    <Message Importance="High" Text="### PostBuildEvent $(TargetName): Copying additional scripts/styles ###" />
+    <Copy SourceFiles="@(WebGLScripts)" DestinationFolder="$(WebOutputDir)\Assets\Scripts" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(WebGLStyles)" DestinationFolder="$(WebOutputDir)\Assets\Styles" SkipUnchangedFiles="true" />
+
     <Message Importance="High" Text="### PostBuildEvent $(TargetName): Creating default HTML file ###" />
     <Exec ContinueOnError="true" Timeout="60000" Command='"$(SolutionDir)..\..\ExternalBinaries\JSIL\Compiler\fuHTMLGen.exe" "$(TargetDir)\" "$(WebOutputDir)" "$(TargetPath)"' />
+    
     <Message Importance="High" Text="### PostBuildEvent $(TargetName): Done ###" />
   </Target>
 </Project>
