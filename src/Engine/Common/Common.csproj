@@ -53,12 +53,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="IInputImp.cs" />
+    <Compile Include="ImageData.cs" />
     <Compile Include="IMeshImp.cs" />
     <Compile Include="InitEventArgs.cs" />
     <Compile Include="IRenderCanvasImp.cs" />
     <Compile Include="IRenderContextImp.cs" />
     <Compile Include="IShaderParam.cs" />
     <Compile Include="IShaderProgramImp.cs" />
+    <Compile Include="ITexture.cs" />
     <Compile Include="KeyEventArgs.cs" />
     <Compile Include="Light.cs" />
     <Compile Include="MouseEventArgs.cs" />

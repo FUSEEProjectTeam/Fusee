@@ -10,17 +10,95 @@ namespace Fusee.Engine
 {
     public class RenderContextImp : IRenderContextImp
     {
-        
+        private int _currentTextureUnit;
 
         public RenderContextImp(IRenderCanvasImp renderCanvas)
         {
+            _currentTextureUnit = 0;
         }
-        
+
+        /// <summary>
+        /// Creates a new Bitmap-Object from an image file,
+        /// locks the bits in the memory and makes them available
+        /// for furher action (e.g. creating a texture).
+        /// Method must be called before creating a texture to get the necessary
+        /// ImageData struct
+        /// </summary>
+        /// <param name="filename">Path to the image file you would like to use as texture</param>
+        /// <returns>An ImageData object with all necessary information for the texture-binding process</returns>
+        public ImageData LoadImage(String filename)
+        {
+            Bitmap bmp = new Bitmap(filename);
+
+            BitmapData bmpData = bmp.LockBits(new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite,
+                System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            int strideAbs = (bmpData.Stride < 0) ? -bmpData.Stride : bmpData.Stride;
+            int bytes = (strideAbs) * bmp.Height;
+
+            ImageData ret = new ImageData()
+            {
+                PixelData = new byte[bytes],
+                Height = bmpData.Height,
+                Width = bmpData.Width,
+                Stride = bmpData.Stride
+
+            };
+
+            // Copy the RGB values into the array.
+            System.Runtime.InteropServices.Marshal.Copy(bmpData.Scan0, ret.PixelData, 0, bytes);
+
+            bmp.UnlockBits(bmpData);
+            return ret;
+        }
+        /// <summary>
+        /// Creates a new Texture and  binds to the shader
+        /// </summary>
+        /// <param name="img">A given ImageData object, which contains all necessary information for the upload to the graphics card</param>
+        /// <returns>An ITexture that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK</returns>
+
+        public ITexture CreateTexture(ImageData img)
+        {
+            int id = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, id);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, img.Width, img.Height, 0,
+            OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, img.PixelData);
+
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMinFilter.Linear);
+
+            ITexture texID = new Texture{handle = id};
+            return texID;
+
+        }
+
+
+        public ITexture CreateTexture(String filename)
+        {
+            Bitmap bmp = new Bitmap(filename);
+            // GL.ActiveTexture(TextureUnit.Texture3);
+            int id = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, id);
+
+            System.Drawing.Imaging.BitmapData bmpData = bmp.LockBits(new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite,
+                                                                                                  System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, bmpData.Width, bmpData.Height, 0,
+            OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, bmpData.Scan0);
+
+            bmp.UnlockBits(bmpData);
+
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMinFilter.Linear);
+
+            ITexture texID = new Texture { handle = id };
+            return texID;
+        }
+
 
         public IShaderParam GetShaderParam(IShaderProgramImp shaderProgram, string paramName)
         {
             int h = GL.GetUniformLocation(((ShaderProgramImp) shaderProgram).Program, paramName);
-            return (h == -1) ? null : new ShaderParam {handle = h};
+            return (h == -1) ? null : new ShaderParam { handle = h };
         }   
 
         public float GetParamValue(IShaderProgramImp program, IShaderParam handle)
@@ -99,7 +177,7 @@ namespace Fusee.Engine
         {
             unsafe
             {
-                float* mF = (float*) (&val);
+                float* mF = (float*)(&val);
                 GL.UniformMatrix4(((ShaderParam)param).handle, 1, false, mF);
             }
         }
@@ -108,15 +186,22 @@ namespace Fusee.Engine
         {
             GL.Uniform1(((ShaderParam)param).handle, val);
         }
-        
+
+        public void SetShaderParamTexture(IShaderParam param, ITexture texId)
+        {
+            GL.ActiveTexture((TextureUnit)(TextureUnit.Texture0 + _currentTextureUnit));
+            GL.BindTexture(TextureTarget.Texture2D, ((Texture)texId).handle);
+            _currentTextureUnit++;
+        }
+
         public float4x4 ModelView
         {
-            get 
+            get
             { throw new NotImplementedException(); }
-            set 
+            set
             {
                 GL.MatrixMode(MatrixMode.Modelview);
-                unsafe {GL.LoadMatrix((float*)(&value));}
+                unsafe { GL.LoadMatrix((float*)(&value)); }
             }
         }
 
@@ -135,7 +220,7 @@ namespace Fusee.Engine
         {
             get
             {
-                Vector4 ret; 
+                Vector4 ret;
                 GL.GetFloat(GetPName.ColorClearValue, out ret);
                 return new float4(ret.X, ret.Y, ret.Z, ret.W);
             }
@@ -192,14 +277,18 @@ namespace Fusee.Engine
             // enable GLSL (ES) shaders to use fuVertex, fuColor and fuNormal attributes
             GL.BindAttribLocation(program, Helper.VertexAttribLocation, Helper.VertexAttribName);
             GL.BindAttribLocation(program, Helper.ColorAttribLocation, Helper.ColorAttribName);
+            GL.BindAttribLocation(program, Helper.UvAttribLocation, Helper.UvAttribName);
             GL.BindAttribLocation(program, Helper.NormalAttribLocation, Helper.NormalAttribName);
+
             GL.LinkProgram(program); // AAAARRRRRGGGGHHHH!!!! Must be called AFTER BindAttribLocation
-            return new ShaderProgramImp {Program = program};
+            return new ShaderProgramImp { Program = program };
         }
 
 
         public void SetShader(IShaderProgramImp program)
         {
+            _currentTextureUnit = 0;
+
             GL.UseProgram(((ShaderProgramImp)program).Program);
         }
 
@@ -254,6 +343,27 @@ namespace Fusee.Engine
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
 
+        public void SetUVs(IMeshImp mr, float2[] uvs)
+        {
+            if (uvs == null || uvs.Length == 0)
+            {
+                throw new ArgumentException("Normals must not be null or empty");
+            }
+
+            int vboBytes;
+            int uvsBytes = uvs.Length * 2 * sizeof(float);
+            if (((MeshImp)mr).NormalBufferObject == 0)
+                GL.GenBuffers(1, out ((MeshImp)mr).UVBufferObject);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).UVBufferObject);
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(uvsBytes), uvs, BufferUsageHint.StaticDraw);
+            GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out vboBytes);
+            if (vboBytes != uvsBytes)
+                throw new ApplicationException(String.Format(
+                    "Problem uploading uv buffer to VBO (uvs). Tried to upload {0} bytes, uploaded {1}.",
+                    uvsBytes, vboBytes));
+            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+        }
 
         public void SetColors(IMeshImp mr, uint[] colors)
         {
@@ -276,7 +386,7 @@ namespace Fusee.Engine
                     colsBytes, vboBytes));
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
-        
+
 
         public void SetTriangles(IMeshImp mr, short[] triangleIndices)
         {
@@ -307,7 +417,7 @@ namespace Fusee.Engine
             {
                 GL.EnableVertexAttribArray(Helper.VertexAttribLocation);
                 GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).VertexBufferObject);
-                GL.VertexAttribPointer(Helper.VertexAttribLocation, 3, VertexAttribPointerType.Float , false, 0, IntPtr.Zero);
+                GL.VertexAttribPointer(Helper.VertexAttribLocation, 3, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
             }
             if (((MeshImp)mr).ColorBufferObject != 0)
             {
@@ -315,6 +425,14 @@ namespace Fusee.Engine
                 GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).ColorBufferObject);
                 GL.VertexAttribPointer(Helper.ColorAttribLocation, 4, VertexAttribPointerType.UnsignedByte, true, 0, IntPtr.Zero);
             }
+
+            if (((MeshImp)mr).UVBufferObject != 0)
+            {
+                GL.EnableVertexAttribArray(Helper.UvAttribLocation);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).UVBufferObject);
+                GL.VertexAttribPointer(Helper.UvAttribLocation, 2, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
+            }
+
             if (((MeshImp)mr).NormalBufferObject != 0)
             {
                 GL.EnableVertexAttribArray(Helper.NormalAttribLocation);
@@ -342,7 +460,11 @@ namespace Fusee.Engine
                 GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
                 GL.DisableVertexAttribArray(Helper.NormalAttribLocation);
             }
-            
+            if (((MeshImp)mr).UVBufferObject != 0)
+            {
+                GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+                GL.DisableVertexAttribArray(Helper.UvAttribLocation);
+            }
         }
 
         public IMeshImp CreateMeshImp()

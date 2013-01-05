@@ -54,17 +54,17 @@ namespace Fusee.Engine
         private float4x4 _invTransModelView;
         private float4x4 _invTransProjection;
         private float4x4 _invTransModelViewProjection;
-        
+
         private float4x4 _transModelView;
         private float4x4 _transProjection;
         private float4x4 _transModelViewProjection;
 
         private bool _modelViewProjectionOk;
-        
+
         private bool _invModelViewOk;
         private bool _invProjectionOk;
         private bool _invModelViewProjectionOk;
-        
+
         private bool _invTransModelViewOk;
         private bool _invTransProjectionOk;
         private bool _invTransModelViewProjectionOk;
@@ -73,7 +73,27 @@ namespace Fusee.Engine
         private bool _transProjectionOk;
         private bool _transModelViewProjectionOk;
 
-        
+
+        public ITexture CreateTexture(String filename)
+        {
+            return _rci.CreateTexture(filename);
+        }
+
+        public ITexture CreateTexture(ImageData imgData)
+        {
+            return _rci.CreateTexture(imgData);
+        }
+
+        public ImageData LoadImage(String filename)
+        {
+            return _rci.LoadImage(filename);
+        }
+
+
+        public void SetShaderParamTexture(IShaderParam param, ITexture texId)
+        {
+            _rci.SetShaderParamTexture(param, texId);
+        }
 
 
 
@@ -86,8 +106,8 @@ namespace Fusee.Engine
             set
             {
                 // Update matrix
-                _modelView = value;               
- 
+                _modelView = value;
+
                 // Invalidate derived matrices
                 _modelViewProjectionOk = false;
                 _invModelViewOk = false;
@@ -112,8 +132,8 @@ namespace Fusee.Engine
             set
             {
                 // Update matrix
-                _projection = value;               
- 
+                _projection = value;
+
                 // Invalidate derived matrices
                 _modelViewProjectionOk = false;
                 _invProjectionOk = false;
@@ -129,7 +149,7 @@ namespace Fusee.Engine
             }
         }
 
-        public float4x4 ModelViewProjection 
+        public float4x4 ModelViewProjection
         {
             get
             {
@@ -302,7 +322,7 @@ namespace Fusee.Engine
 
             if ((sp = _currentShader.GetShaderParam("FUSEE_TMVP")) != null)
                 SetShaderParam(sp, TransModelViewProjection);
-            
+
             // Inverted and transposed versions
             if ((sp = _currentShader.GetShaderParam("FUSEE_ITMV")) != null)
                 SetShaderParam(sp, InvTransModelView);
@@ -381,11 +401,18 @@ namespace Fusee.Engine
             if ((sp = _currentShader.GetShaderParam(paramName)) != null)
                 SetShaderParam(sp, _lightParams[lightInx].Direction);
         }
-        
+
         public ShaderProgram CreateShader(string vs, string ps)
         {
             ShaderProgram sp = new ShaderProgram(_rci, _rci.CreateShader(vs, ps));
             sp._spi = _rci.CreateShader(vs, ps);
+            /*
+            sp.ShaderParamHandlesImp = new ShaderParamHandleImp[MatrixParamNames.Length];
+            for (int i=0; i < MatrixParamNames.Length; i++)
+            {
+                sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames[i]);
+            }
+             * */
             return sp;
         }
 
@@ -441,7 +468,13 @@ namespace Fusee.Engine
         {
             _rci.SetShaderParam(param, val);
         }
-       
+
+        [JSChangeName("SetShaderParamI")]
+        public void SetShaderParam(IShaderParam param, int val)
+        {
+            _rci.SetShaderParam(param, val);
+        }
+
         public void Clear(ClearFlags flags)
         {
             _rci.Clear(flags);
@@ -457,7 +490,10 @@ namespace Fusee.Engine
 
             if (m.Colors != null && m.Colors.Length != 0 && !m.ColorsSet)
                 _rci.SetColors(m._meshImp, m.Colors);
-            
+
+            if (m.UVs != null && m.UVs.Length != 0 && !m.NormalsSet)
+                _rci.SetUVs(m._meshImp, m.UVs);
+
             if (m.Normals != null && m.Normals.Length != 0 && !m.NormalsSet)
                 _rci.SetNormals(m._meshImp, m.Normals);
 

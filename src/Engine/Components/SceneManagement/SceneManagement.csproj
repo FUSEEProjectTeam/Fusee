@@ -99,7 +99,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\Math\Core\Math.Core.csproj">
       <Project>{E95FA1C8-6491-4B4B-BBE1-EDA6B16B2C6A}</Project>
-      <Name>Core %28Math\Core%29</Name>
+      <Name>Math.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Common\Common.csproj">
       <Project>{DFD770F6-4222-4255-AAE0-DCACDC7B21EB}</Project>
