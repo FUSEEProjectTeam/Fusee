@@ -182,7 +182,7 @@ void main()
 }";
 
         private const string VsSingleLight = @"
-# version 120
+//# version 120
 /* Copies incoming vertex color without change.
     * Applies the transformation matrix to vertex position.
     */
@@ -215,7 +215,9 @@ void main()
 }";
 
         private const string PsSingleLight = @"
-
+#ifdef GL_ES
+precision highp float;
+#endif
 varying vec3 halfVector;
 varying vec3 vNormal;
 
@@ -236,12 +238,12 @@ void main()
     float NdotHV = max(dot(normalize(vNormal), halfV), 0.0);
 
     float NdotL = max(dot(normalize(vNormal), normalize(FUSEE_L0_DIRECTION)), 0.0);
-    vec4 color = FUSEE_L0_AMBIENT * FUSEE_MAT_AMBIENT;
+    vec4 color = FUSEE_L0_AMBIENT * 0.4;
     
     if(NdotL > 0.0)
     {
         color += FUSEE_L0_DIFFUSE * NdotL;
-        color += FUSEE_L0_SPECULAR * pow(NdotHV, FUSEE_MAT_SHININESS);
+        color += FUSEE_L0_SPECULAR * NdotHV * NdotHV * NdotHV * NdotHV * NdotHV * NdotHV * NdotHV * NdotHV;
     }
     gl_FragColor = color;
 }

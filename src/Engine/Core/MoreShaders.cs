@@ -73,7 +73,7 @@ precision highp float;
 
 varying float LightIntensity;
 varying float SpecIntensity;
-uniform vec3 FUSEE_MAT_COLOR;
+uniform vec3 FUSEE_L0_AMBIENT;
 uniform float SpecularLevel;
 uniform float SpecularSize;
 
