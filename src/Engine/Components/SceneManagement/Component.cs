@@ -5,10 +5,14 @@ using Fusee.Math;
 
 namespace Fusee.SceneManagement
 {
+    /// <summary>
+    /// Base class from which all Components are derived.
+    /// </summary>
    public class Component
-    {
-       
+   {
+       #region Private Members
        private SceneEntity _sceneEntity;
+       #endregion
 
        #region Constructors
        public Component()
@@ -23,6 +27,7 @@ namespace Fusee.SceneManagement
 
        #endregion; 
 
+       #region Public Members
        public SceneEntity SceneEntity
        {
            get { return _sceneEntity; }
@@ -31,8 +36,8 @@ namespace Fusee.SceneManagement
 
        virtual public void Traverse(ITraversalState _traversalState)
        {
-           
-       }
 
-    }
+       }
+       #endregion
+   }
 }
