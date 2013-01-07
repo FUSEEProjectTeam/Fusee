@@ -62,6 +62,7 @@
     <Compile Include="IShaderProgramImp.cs" />
     <Compile Include="ITexture.cs" />
     <Compile Include="KeyEventArgs.cs" />
+    <Compile Include="Light.cs" />
     <Compile Include="MouseEventArgs.cs" />
     <Compile Include="Point.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -69,6 +70,7 @@
     <Compile Include="Helper.cs" />
     <Compile Include="RenderEventArgs.cs" />
     <Compile Include="ResizeEventArgs.cs" />
+    <Compile Include="ShaderParamInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="JSIL.Meta">

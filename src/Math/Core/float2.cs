@@ -298,6 +298,11 @@ namespace Fusee.Math
 
         #endregion public void Scale()
 
+        public float[] ToArray()
+        {
+            return new float[] { x, y};
+        }
+
         #endregion
 
         #region Static
