@@ -50,7 +50,7 @@ namespace Fusee.Engine
             return ret;
         }
         /// <summary>
-        /// Creates a new Texture and  binds to the shader
+        /// Creates a new Texture and  binds it to the shader
         /// </summary>
         /// <param name="img">A given ImageData object, which contains all necessary information for the upload to the graphics card</param>
         /// <returns>An ITexture that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK</returns>
@@ -93,6 +93,10 @@ namespace Fusee.Engine
             return texID;
         }
 
+        public void ResetTexture()
+        {
+            GL.ActiveTexture((TextureUnit) (TextureUnit.Texture0));
+        }
 
         public IShaderParam GetShaderParam(IShaderProgramImp shaderProgram, string paramName)
         {
@@ -135,7 +139,11 @@ namespace Fusee.Engine
         {
             GL.Uniform1(((ShaderParam)param).handle, val);
         }
-
+        /// <summary>
+        /// Sets a given Shader Parameter to a created texture
+        /// </summary>
+        /// <param name="param">Shader Parameter used for texture binding</param>
+        /// <param name="texId">An ITexture probably returned from CreateTexture method</param>
         public void SetShaderParamTexture(IShaderParam param, ITexture texId)
         {
             GL.ActiveTexture((TextureUnit)(TextureUnit.Texture0 + _currentTextureUnit));

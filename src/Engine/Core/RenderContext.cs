@@ -82,6 +82,11 @@ namespace Fusee.Engine
             return _rci.CreateTexture(imgData);
         }
 
+        public void ResetTexture()
+        {
+            _rci.ResetTexture();
+        }
+
         public ImageData LoadImage(String filename)
         {
             return _rci.LoadImage(filename);
