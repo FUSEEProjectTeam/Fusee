@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using Fusee.Math;
@@ -10,10 +11,12 @@ namespace Fusee.Engine
     public class RenderContextImp : IRenderContextImp
     {
         private int _currentTextureUnit;
+        private Dictionary<int, int> _shaderParam2TexUnit;   
 
         public RenderContextImp(IRenderCanvasImp renderCanvas)
         {
             _currentTextureUnit = 0;
+            _shaderParam2TexUnit = new Dictionary<int, int>();
         }
 
         /// <summary>
@@ -139,6 +142,7 @@ namespace Fusee.Engine
         {
             GL.Uniform1(((ShaderParam)param).handle, val);
         }
+
         /// <summary>
         /// Sets a given Shader Parameter to a created texture
         /// </summary>
@@ -146,9 +150,16 @@ namespace Fusee.Engine
         /// <param name="texId">An ITexture probably returned from CreateTexture method</param>
         public void SetShaderParamTexture(IShaderParam param, ITexture texId)
         {
-            GL.ActiveTexture((TextureUnit)(TextureUnit.Texture0 + _currentTextureUnit));
+            int iParam = ((ShaderParam) param).handle;
+            int texUnit;
+            if (!_shaderParam2TexUnit.TryGetValue(iParam, out texUnit))
+            {
+                texUnit = _currentTextureUnit++;
+                _shaderParam2TexUnit[iParam] = texUnit;
+                GL.Uniform1(iParam, texUnit);
+            }
+            GL.ActiveTexture((TextureUnit)(TextureUnit.Texture0 + texUnit));
             GL.BindTexture(TextureTarget.Texture2D, ((Texture)texId).handle);
-            _currentTextureUnit++;
         }
 
         public float4x4 ModelView
@@ -245,6 +256,7 @@ namespace Fusee.Engine
         public void SetShader(IShaderProgramImp program)
         {
             _currentTextureUnit = 0;
+            _shaderParam2TexUnit.Clear();
 
             GL.UseProgram(((ShaderProgramImp)program).Program);
         }

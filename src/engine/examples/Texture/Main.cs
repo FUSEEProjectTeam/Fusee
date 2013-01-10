@@ -138,7 +138,7 @@ namespace Examples.Textures
             //RC.SetShaderParam(_vColorParam, new float4(0.5f, 0.8f, 0, 1));
             RC.SetShaderParamTexture(_texture1Param, _iTex1);
             RC.Render(_mesh);
-            
+            //RC.ResetTexture();
 
             RC.ModelView = mtxRot * float4x4.CreateTranslation(100, 0, 0) * mtxCam;
             //RC.SetShaderParam(_vColorParam, new float4(0.8f, 0.5f, 0, 1));
