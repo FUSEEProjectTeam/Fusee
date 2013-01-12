@@ -11,20 +11,21 @@ namespace Examples.CubeAndTiles
         private readonly Mesh _cubeMesh;
         private readonly Level _curLevel;
 
-        private static float[] _rotateYx;
-        private static int[] _curDirXy;
+        private static float[] _rotateYX;
+        private static int[] _curDirXY;
+        private static Quaternion _orientQuat;
 
         private float _posZ;
         private float _veloZ;
         private float _curBright;
 
-        internal int[] PosCurXy { get; private set; }
-        internal int[] PosLastXy { get; private set; }
+        internal int[] PosCurXY { get; private set; }
+        internal int[] PosLastXY { get; private set; }
         internal CubeStates State { get; private set; }
 
         // const
         private const float PiHalf = (float) Math.PI/2.0f;
-        private const int CubeSize = 200;
+        internal const int CubeSize = 200;
         private const float CubeSpeed = 4.0f;
 
         public enum CubeStates
@@ -44,11 +45,13 @@ namespace Examples.CubeAndTiles
             _cubeMesh = _curLevel.GlobalCubeMesh;
             _cubeColor = new float3(0.5f, 0.15f, 0.17f);
 
-            PosCurXy = new int[2];
-            PosLastXy = new int[2];
+            PosCurXY = new int[2];
+            PosLastXY = new int[2];
 
-            _rotateYx = new float[2];
-            _curDirXy = new int[2];
+            _rotateYX = new float[2];
+            _curDirXY = new int[2];
+
+            _orientQuat = Quaternion.Identity;
 
             _posZ = 0;
             _veloZ = 0.0f;
@@ -62,14 +65,16 @@ namespace Examples.CubeAndTiles
         {
             State = CubeStates.CsLoading;
 
-            PosCurXy[0] = x;
-            PosCurXy[1] = y;
+            PosCurXY[0] = x;
+            PosCurXY[1] = y;
 
             for (var i = 0; i < 1; i++)
             {
-                _rotateYx[i] = 0.0f;
-                _curDirXy[i] = 0;
+                _rotateYX[i] = 0.0f;
+                _curDirXY[i] = 0;
             }
+
+            _orientQuat = Quaternion.Identity;
 
             _posZ = 2;
             _veloZ = -1.0f;
@@ -100,18 +105,18 @@ namespace Examples.CubeAndTiles
 
         public bool MoveCube(sbyte dirX, sbyte dirY)
         {
-            if (_curDirXy[0] + _curDirXy[1] == 0)
+            if (_curDirXY[0] + _curDirXY[1] == 0)
             {
-                PosLastXy[0] = PosCurXy[0];
-                PosLastXy[1] = PosCurXy[1];
+                PosLastXY[0] = PosCurXY[0];
+                PosLastXY[1] = PosCurXY[1];
 
-                _curDirXy[0] = dirX;
-                _curDirXy[1] = dirY;
+                _curDirXY[0] = dirX;
+                _curDirXY[1] = dirY;
 
                 return true;
             }
 
-            _curLevel.SetDeadField(PosLastXy[0], PosLastXy[1]);
+            _curLevel.SetDeadField(PosLastXY[0], PosLastXY[1]);
 
             return false;
         }
@@ -167,18 +172,31 @@ namespace Examples.CubeAndTiles
             // 2nd: moving in y direction
             for (var i = 0; i <= 1; i++)
             {
-                if (_curDirXy[i] == 0) continue;
+                if (_curDirXY[i] == 0) continue;
 
                 // rotate and check if target reached
-                _rotateYx[i] += CubeSpeed*_curLevel.LvlDeltaTime;
-                if (_rotateYx[i] < PiHalf) continue;
+                _rotateYX[i] += CubeSpeed*_curLevel.LvlDeltaTime;
+                if (_rotateYX[i] < PiHalf) continue;
 
-                PosCurXy[i] += _curDirXy[i];
+                PosCurXY[i] += _curDirXY[i];
 
-                _rotateYx[i] = 0;
-                _curDirXy[i] = 0;
+                // rotation with quaterions
+                float3 rotVektor;
 
-                _curLevel.CheckField(PosCurXy);
+                if (i == 0)
+                    rotVektor = new float3(-_curDirXY[0] * PiHalf, 0, 0);
+                else
+                    rotVektor = new float3(0, 0, _curDirXY[1] * PiHalf);
+
+                _orientQuat *= Quaternion.EulerToQuaternion(rotVektor);
+                _orientQuat.Normalize();
+
+                // reset
+                _rotateYX[i] = 0;
+                _curDirXY[i] = 0;
+
+                // check if special/dead field
+                _curLevel.CheckField(PosCurXY);
             }
         }
 
@@ -192,18 +210,20 @@ namespace Examples.CubeAndTiles
             AnimCube();
 
             // set cube translation
-            var mtxObjRot = float4x4.CreateRotationY(_rotateYx[0]*_curDirXy[0])*
-                            float4x4.CreateRotationX(-_rotateYx[1]*_curDirXy[1]);
+            var mtxObjRot = float4x4.CreateRotationY(_rotateYX[0]*_curDirXY[0])*
+                            float4x4.CreateRotationX(-_rotateYX[1]*_curDirXY[1]);
 
-            var mtxObjPos = float4x4.CreateTranslation(PosCurXy[0]*CubeSize, PosCurXy[1]*CubeSize,
-                                                       _posZ*CubeSize + (CubeSize/2.0f + 15));
+            var mtxObjOrientRot = Quaternion.QuaternionToMatrix(_orientQuat);
 
-            var arAxis = float4x4.CreateTranslation(-100*_curDirXy[0], -100*_curDirXy[1], 100);
-            var invArAxis = float4x4.CreateTranslation(100*_curDirXy[0], 100*_curDirXy[1], -100);
+            // cube position
+            var mtxObjPos = float4x4.CreateTranslation(PosCurXY[0]*CubeSize, PosCurXY[1]*CubeSize,
+                                                       _posZ*CubeSize);
+
+            var arAxis = float4x4.CreateTranslation(-100 * _curDirXY[0], -100 * _curDirXY[1], 100);
+            var invArAxis = float4x4.CreateTranslation(100 * _curDirXY[0], 100 * _curDirXY[1], -100);
 
             // set modelview and color of cube
-            _curLevel.RContext.ModelView = _curLevel.AddCameraTrans(arAxis*mtxObjRot*invArAxis*mtxObjPos);
-
+            _curLevel.RContext.ModelView = _curLevel.AddCameraTrans(mtxObjOrientRot * arAxis * mtxObjRot * invArAxis * mtxObjPos);
             _curLevel.RContext.SetShaderParam(_curLevel.VColorObj, new float4(_cubeColor, _curBright));
 
             // render

@@ -142,7 +142,8 @@ namespace Examples.CubeAndTiles
             }
 
             // translate fields
-            var mtxObjPos = float4x4.CreateTranslation(CoordXy[0]*200, CoordXy[1]*200, _posZ*100);
+            var mtxObjPos = float4x4.CreateTranslation(CoordXY[0]*200, CoordXY[1]*200,
+                                                       _posZ*100 - (RollingCube.CubeSize/2.0f + 15));
 
             // set translation and color, then render
             _curLevel.RContext.ModelView = _curLevel.AddCameraTrans(mtxObjRot*mtxObjPos);

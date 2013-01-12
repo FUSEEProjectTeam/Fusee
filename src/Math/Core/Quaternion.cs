@@ -544,8 +544,7 @@ namespace Fusee.Math
         /// Convert Quaternion rotation to Euler angle.
         /// </summary>
         /// <param name="q1">Quaternion rotation to convert.</param>
-        /// <returns>A Euler angle of type float3 from the passed Quaternion rotation.</returns>
-
+        /// <returns>An Euler angle of type float3 from the passed Quaternion rotation.</returns>
         public static float3 QuaternionToEuler(Quaternion q1)
         {
             float sqw = q1.w*q1.w;
@@ -585,6 +584,41 @@ namespace Fusee.Math
             q.z = copysign(q.z, m.M13 - m.M31);
             q.y = copysign(q.y, m.M21 - m.M12);
             return q;
+        }
+
+        /// <summary>
+        /// Convert Quaternion to rotation matrix
+        /// </summary>
+        /// <param name="q1">Quaternion to convert.</param>
+        /// <returns>A matrix of type float4x4 from the passed Quaternion.</returns>
+        public static float4x4 QuaternionToMatrix(Quaternion q)
+        {
+            float sqw = q.w*q.w;
+            float sqx = q.x*q.x;
+            float sqy = q.y*q.y;
+            float sqz = q.z*q.z;
+
+            float invs = 1/(sqx + sqy + sqz + sqw);
+            float m00 = (sqx - sqy - sqz + sqw)*invs;
+            float m11 = (-sqx + sqy - sqz + sqw)*invs;
+            float m22 = (-sqx - sqy + sqz + sqw)*invs;
+
+            float tmp1 = q.x*q.y;
+            float tmp2 = q.z*q.w;
+            float m10 = 2.0f*(tmp1 + tmp2)*invs;
+            float m01 = 2.0f*(tmp1 - tmp2)*invs;
+
+            tmp1 = q.x*q.z;
+            tmp2 = q.y*q.w;
+            float m20 = 2.0f*(tmp1 - tmp2)*invs;
+            float m02 = 2.0f*(tmp1 + tmp2)*invs;
+
+            tmp1 = q.y*q.z;
+            tmp2 = q.x*q.w;
+            float m21 = 2.0f*(tmp1 + tmp2)*invs;
+            float m12 = 2.0f*(tmp1 - tmp2)*invs;
+
+            return new float4x4(m00, m01, m02, 0, m10, m11, m12, 0, m20, m21, m22, 0, 0, 0, 0, 1);
         }
 
         public static float copysign(float a, float b)
