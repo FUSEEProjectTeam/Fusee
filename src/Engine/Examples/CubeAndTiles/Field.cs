@@ -102,11 +102,17 @@ namespace Examples.CubeAndTiles
             {
                 _posZ += _veloZ;
                 _curBright -= .02f;
-            }       
+            }
+            else
+                _curBright = 0;
         }
 
         public void Render(float4x4 mtxObjRot)
         {
+            // do not render dead fields with brightness <= 0
+            if ((_curBright <= 0) && (State == FieldStates.FsDead))
+                return;
+
             LoadAnimation();
             DeadAnimation();
 
