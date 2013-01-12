@@ -47,6 +47,7 @@ namespace Fusee.Engine
         ImageData LoadImage(String filename);
         ITexture CreateTexture(String filename);
         ITexture CreateTexture(ImageData img);
+        void ResetTexture();
         void SetShaderParamTexture(IShaderParam param, ITexture texId);
 
         //HP Functions End
