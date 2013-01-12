@@ -6,6 +6,10 @@ namespace Examples.CubeAndTiles
     public class Level
     {
         internal IShaderParam VColorObj { get; private set; }
+
+        internal IShaderParam VTextureObj { get; private set; }
+        internal ITexture TextureField { get; private set; }
+
         internal RenderContext RContext { get; private set; }
 
         private RollingCube _rCube;
@@ -50,6 +54,8 @@ namespace Examples.CubeAndTiles
         public Level(RenderContext rc, ShaderProgram sp)
         {
             VColorObj = sp.GetShaderParam("vColor");
+            VTextureObj = sp.GetShaderParam("vTexture");
+
             RContext = rc;
 
             ConstructLevel(0);
@@ -58,6 +64,8 @@ namespace Examples.CubeAndTiles
         public Level(RenderContext rc, ShaderProgram sp, int id)
         {
             VColorObj = sp.GetShaderParam("vColor");
+            VTextureObj = sp.GetShaderParam("vTexture");
+
             RContext = rc;
 
             ConstructLevel(id);
@@ -72,8 +80,12 @@ namespace Examples.CubeAndTiles
                 GlobalFieldMesh = MeshReader.LoadMesh("Assets/Tile.obj.model");
                 GlobalCubeMesh = MeshReader.LoadMesh("Assets/Cube.obj.model");
 
+                ImageData imgData = RContext.LoadImage("Assets/stone.jpg");
+                TextureField = RContext.CreateTexture(imgData);
+                RContext.SetShaderParamTexture(VTextureObj, TextureField);
+
                 _camPosition = float4x4.LookAt(0, 0, 3000, 0, 0, 0, 0, 1, 0);
-                _objOrientation = float4x4.CreateRotationX((float)MathHelper.Pi / 2);
+                _objOrientation = float4x4.CreateRotationX(MathHelper.Pi / 2);
 
                 _rCube = new RollingCube(this);
 
