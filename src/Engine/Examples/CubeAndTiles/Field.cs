@@ -1,5 +1,4 @@
-﻿using System;
-using Fusee.Engine;
+﻿using Fusee.Engine;
 using Fusee.Math;
 
 namespace Examples.CubeAndTiles
@@ -16,8 +15,7 @@ namespace Examples.CubeAndTiles
         private float _veloZ;
         private float _curBright;
 
-        private float _randomRotZ;
-        private int _randomText;
+        private readonly float _randomRotZ;
 
         internal FieldTypes Type { get; private set; }
         internal FieldStates State { get; private set; }
@@ -84,7 +82,7 @@ namespace Examples.CubeAndTiles
         {
             if (State != FieldStates.FsLoading) return;
 
-            _veloZ = Math.Max(-0.01f, -_posZ/10.0f);
+            _veloZ = System.Math.Max(-0.01f, -_posZ/10.0f);
             _posZ += _veloZ;
 
             _curBright = 1 - (_posZ)/(-_curLevel.FieldCount/2.0f);
@@ -147,7 +145,7 @@ namespace Examples.CubeAndTiles
             }
 
             // translate fields
-            var mtxFieldRot = float4x4.CreateRotationZ((float) (_randomRotZ*Math.PI/2));
+            var mtxFieldRot = float4x4.CreateRotationZ((float) (_randomRotZ*System.Math.PI/2));
 
             var mtxObjPos = float4x4.CreateTranslation(CoordXY[0]*200, CoordXY[1]*200,
                                                        _posZ*100 - (RollingCube.CubeSize/2.0f + 15));
