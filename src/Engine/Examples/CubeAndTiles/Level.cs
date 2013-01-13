@@ -6,10 +6,8 @@ namespace Examples.CubeAndTiles
     public class Level
     {
         internal IShaderParam VColorObj { get; private set; }
-
         internal IShaderParam VTextureObj { get; private set; }
-        internal ITexture TextureField { get; private set; }
-
+    
         internal RenderContext RContext { get; private set; }
 
         private RollingCube _rCube;
@@ -27,9 +25,13 @@ namespace Examples.CubeAndTiles
         private float4x4 _mtxRot;
 
         internal Mesh GlobalFieldMesh { get; private set; }
+        internal ITexture TextureField { get; private set; }
+
         internal Mesh GlobalCubeMesh { get; private set; }
+        internal ITexture TextureCube { get; private set; }
 
         internal float LvlDeltaTime { get; private set; }
+        internal System.Random ObjRandom { get; private set; }
 
         // array for level files
         private int[][,] _lvlTmp;
@@ -52,17 +54,14 @@ namespace Examples.CubeAndTiles
         };
 
         public Level(RenderContext rc, ShaderProgram sp)
+            : this(rc, sp, 0)
         {
-            VColorObj = sp.GetShaderParam("vColor");
-            VTextureObj = sp.GetShaderParam("vTexture");
-
-            RContext = rc;
-
-            ConstructLevel(0);
         }
 
         public Level(RenderContext rc, ShaderProgram sp, int id)
         {
+            ObjRandom = new System.Random(((int)((System.DateTime.Now.Ticks & 0x0000FFFF))));
+
             VColorObj = sp.GetShaderParam("vColor");
             VTextureObj = sp.GetShaderParam("vTexture");
 
@@ -73,27 +72,34 @@ namespace Examples.CubeAndTiles
 
         private void ConstructLevel(int id)
         {
-            if (_rCube == null)
-            {
-                _lvlTmp = LevelTemplates.LvlTmp;
+            if (_rCube != null)
+                return;
 
-                GlobalFieldMesh = MeshReader.LoadMesh("Assets/Tile.obj.model");
-                GlobalCubeMesh = MeshReader.LoadMesh("Assets/Cube.obj.model");
+            _lvlTmp = LevelTemplates.LvlTmp;
 
-                ImageData imgData = RContext.LoadImage("Assets/stone.jpg");
-                TextureField = RContext.CreateTexture(imgData);
-                RContext.SetShaderParamTexture(VTextureObj, TextureField);
+            // load meshes
+            GlobalFieldMesh = MeshReader.LoadMesh("Assets/Tile.obj.model");
+            GlobalCubeMesh = MeshReader.LoadMesh("Assets/Cube.obj.model");
 
-                _camPosition = float4x4.LookAt(0, 0, 3000, 0, 0, 0, 0, 1, 0);
-                _objOrientation = float4x4.CreateRotationX(MathHelper.Pi / 2);
+            // load textures
+            ImageData imgData = RContext.LoadImage("Assets/tex_stone.jpg");
+            TextureField = RContext.CreateTexture(imgData);
 
-                _rCube = new RollingCube(this);
+            imgData = RContext.LoadImage("Assets/tex_cube.jpg");
+            TextureCube = RContext.CreateTexture(imgData);
 
-                _startXy = new int[2];
-                _curLvlId = id;
+            // camera
+            _camPosition = float4x4.LookAt(0, 0, 3000, 0, 0, 0, 0, 1, 0);
+            _objOrientation = float4x4.CreateRotationX(MathHelper.Pi/2);
 
-                LoadLevel(id);
-            }
+            // create cube and set vars
+            _rCube = new RollingCube(this);
+
+            _startXy = new int[2];
+            _curLvlId = id;
+
+            // load level
+            LoadLevel(id);
         }
 
         private void LoadLevel(int id)

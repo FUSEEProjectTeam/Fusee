@@ -113,10 +113,10 @@ namespace Examples.CubeAndTiles
                 _curDirXY[0] = dirX;
                 _curDirXY[1] = dirY;
 
+                _curLevel.SetDeadField(PosLastXY[0], PosLastXY[1]);
+
                 return true;
             }
-
-            _curLevel.SetDeadField(PosLastXY[0], PosLastXY[1]);
 
             return false;
         }
@@ -224,7 +224,9 @@ namespace Examples.CubeAndTiles
 
             // set modelview and color of cube
             _curLevel.RContext.ModelView = _curLevel.AddCameraTrans(mtxObjOrientRot * arAxis * mtxObjRot * invArAxis * mtxObjPos);
+
             _curLevel.RContext.SetShaderParam(_curLevel.VColorObj, new float4(_cubeColor, _curBright));
+            _curLevel.RContext.SetShaderParamTexture(_curLevel.VTextureObj, _curLevel.TextureCube);
 
             // render
             _curLevel.RContext.Render(_cubeMesh);

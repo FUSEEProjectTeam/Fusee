@@ -10,11 +10,14 @@ namespace Examples.CubeAndTiles
         private readonly Mesh _fieldMesh;
         private readonly int _fieldId;
 
-        internal int[] CoordXy { get; private set; }
+        internal int[] CoordXY { get; private set; }
 
         private float _posZ;
         private float _veloZ;
         private float _curBright;
+
+        private float _randomRotZ;
+        private int _randomText;
 
         internal FieldTypes Type { get; private set; }
         internal FieldStates State { get; private set; }
@@ -42,11 +45,13 @@ namespace Examples.CubeAndTiles
             _fieldMesh = _curLevel.GlobalFieldMesh;
             _fieldId = id;
 
-            CoordXy = new[] {x, y};
+            CoordXY = new[] {x, y};
 
             _posZ = 0.0f;
             _veloZ = 0.0f;
             _curBright = 1.0f;
+            
+            _randomRotZ = curLevel.ObjRandom.Next(0, 4);
 
             Type = type;
             State = FieldStates.FsLoading;
@@ -142,12 +147,16 @@ namespace Examples.CubeAndTiles
             }
 
             // translate fields
+            var mtxFieldRot = float4x4.CreateRotationZ((float) (_randomRotZ*Math.PI/2));
+
             var mtxObjPos = float4x4.CreateTranslation(CoordXY[0]*200, CoordXY[1]*200,
                                                        _posZ*100 - (RollingCube.CubeSize/2.0f + 15));
 
             // set translation and color, then render
-            _curLevel.RContext.ModelView = _curLevel.AddCameraTrans(mtxObjRot*mtxObjPos);
+            _curLevel.RContext.ModelView = _curLevel.AddCameraTrans(mtxObjRot*mtxFieldRot*mtxObjPos);
+
             _curLevel.RContext.SetShaderParam(_curLevel.VColorObj, new float4(vColor, _curBright * val));
+            _curLevel.RContext.SetShaderParamTexture(_curLevel.VTextureObj, _curLevel.TextureField);
 
             _curLevel.RContext.Render(_fieldMesh);
         }
