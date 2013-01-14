@@ -60,7 +60,7 @@ namespace Examples.CubeAndTiles
 
         public Level(RenderContext rc, ShaderProgram sp, int id)
         {
-            ObjRandom = new System.Random(((int)((System.DateTime.Now.Ticks & 0x0000FFFF))));
+            ObjRandom = new System.Random();
 
             VColorObj = sp.GetShaderParam("vColor");
             VTextureObj = sp.GetShaderParam("vTexture");
