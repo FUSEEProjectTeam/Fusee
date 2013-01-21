@@ -515,14 +515,16 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
     $.Method({ Static: false, Public: true }, "SetShaderParam2f",
     new JSIL.MethodSignature(null, [$asmThis.TypeRef("Fusee.Engine.IShaderParam"), $asm00.TypeRef("Fusee.Math.float2")]),
     function SetShaderParam2f(param, val) {
-        this.gl.uniform2f(param.handle, val);
+        var flatVector = new Float32Array(val.ToArray());
+        this.gl.uniform2fv(param.handle, flatVector);
     }
   );
 
     $.Method({ Static: false, Public: true }, "SetShaderParam3f",
     new JSIL.MethodSignature(null, [$asmThis.TypeRef("Fusee.Engine.IShaderParam"), $asm00.TypeRef("Fusee.Math.float3")]),
     function SetShaderParam3f(param, val) {
-        this.gl.uniform3f(param.handle, val);
+        var flatVector = new Float32Array(val.ToArray());
+        this.gl.uniform3fv(param.handle, flatVector);
     }
   );
 

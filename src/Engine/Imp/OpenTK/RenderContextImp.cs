@@ -103,9 +103,59 @@ namespace Fusee.Engine
 
         public IShaderParam GetShaderParam(IShaderProgramImp shaderProgram, string paramName)
         {
-            int h = GL.GetUniformLocation(((ShaderProgramImp)shaderProgram).Program, paramName);
+            int h = GL.GetUniformLocation(((ShaderProgramImp) shaderProgram).Program, paramName);
             return (h == -1) ? null : new ShaderParam { handle = h };
+        }   
+
+        public float GetParamValue(IShaderProgramImp program, IShaderParam handle)
+        {
+            float f;
+            GL.GetUniform(((ShaderProgramImp)program).Program, ((ShaderParam)handle).handle, out f);
+            return f;
         }
+
+        public IEnumerable<ShaderParamInfo> GetShaderParamList(IShaderProgramImp shaderProgram)
+        {
+            var sp = (ShaderProgramImp) shaderProgram;
+            int nParams;
+            GL.GetProgram(sp.Program,ProgramParameter.ActiveUniforms, out nParams);
+            for (int i = 0; i < nParams; i++)
+            {
+                ActiveUniformType t;
+                var ret = new ShaderParamInfo();
+                ret.Name = GL.GetActiveUniform(sp.Program, i, out ret.Size, out t);
+                ret.Handle = GetShaderParam(sp, ret.Name);
+                switch (t)
+                {
+                    case ActiveUniformType.Int:
+                        ret.Type = typeof (int);
+                        break;
+                    case ActiveUniformType.Float:
+                        ret.Type = typeof (float);
+                        break;
+                    case ActiveUniformType.FloatVec2:
+                        ret.Type = typeof (float2);
+                        break;
+                    case ActiveUniformType.FloatVec3:
+                        ret.Type = typeof (float3);
+                        break;
+                    case ActiveUniformType.FloatVec4:
+                        ret.Type = typeof (float4);
+                        break;
+                    case ActiveUniformType.FloatMat4:
+                        ret.Type = typeof (float4x4);
+                        break;
+                    case ActiveUniformType.Sampler2D:
+                        //TODO ret.Type = typeof (sampler?);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+                yield return ret;
+            }
+        }
+
+        
 
         public void SetShaderParam(IShaderParam param, float val)
         {

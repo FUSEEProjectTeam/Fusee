@@ -289,6 +289,12 @@ namespace Fusee.Math
 
         #endregion public void Scale()
 
+         public double[] ToArray()
+         {
+             return new double[] { x, y, z };
+         }
+
+
         #endregion
 
         #region Static
