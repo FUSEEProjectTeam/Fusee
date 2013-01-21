@@ -59,7 +59,7 @@ namespace Examples.Texture
             {     
                 vec4 tex1 = texture2D(texture1,vUV);
                 vec4 tex2 = texture2D(texture2,vUV);        
-                gl_FragColor = mix(tex1, tex2, 0.1);  /* *dot(vNormal, vec3(0, 0, 1))*/;
+                gl_FragColor = mix(tex1, tex2, 0.4);  /* *dot(vNormal, vec3(0, 0, 1))*/;
                 //gl_FragColor = vColor;
             }";
 
