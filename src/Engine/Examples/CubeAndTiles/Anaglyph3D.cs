@@ -11,21 +11,13 @@ namespace Examples.CubeAndTiles
     internal class S3DV
     {
         internal static float EyeDistance = 80f;
-        internal static float FocalDistance = 10f;
+        internal static float FocalDistance = 3000f;
     }
 
     public class Anaglyph3D
     {
-        // private RenderContext RContext;
-        // private ShaderProgram SProgram;
-
-        // private int _Width;
-        // private int _Height;
-
         internal float4x4 LeftEye { get; private set; }
         internal float4x4 RightEye { get; private set; }
-
-        // internal float zvalue = 0.0f; // original: 1.0
 
         // KeyCodes
         private const KeyCodes DownEyeDistance = KeyCodes.O;
@@ -33,17 +25,9 @@ namespace Examples.CubeAndTiles
         private const KeyCodes DownFocalDistance = KeyCodes.K;
         private const KeyCodes UpFocalDistance = KeyCodes.L;
 
-        //private bool _useProjectionMatrix = false;
-
-        // Methoden
-        public Anaglyph3D(RenderContext rc, ShaderProgram sp, int w, int h)
+        // Constructor
+        public Anaglyph3D()
         {
-            // RContext = rc;
-            // SProgram = sp;
-
-            // _Width = w;
-            // _Height = h;
-
             LeftEye = float4x4.LookAt(-S3DV.EyeDistance, 0, 3000, 0, 0, 0, 0, 1, 0);
             RightEye = float4x4.LookAt(+S3DV.EyeDistance, 0, 3000, 0, 0, 0, 0, 1, 0);
         }
@@ -60,7 +44,7 @@ namespace Examples.CubeAndTiles
                 S3DV.EyeDistance -= eyeDistanceAdjust;
 
             // k and l
-            const float focalDistanceAdjust = 0.5f;
+            const float focalDistanceAdjust = 1f;
 
             if (key.IsKeyDown(UpFocalDistance))
                 S3DV.FocalDistance += focalDistanceAdjust;
@@ -68,8 +52,8 @@ namespace Examples.CubeAndTiles
             if (key.IsKeyDown(DownFocalDistance))
                 S3DV.FocalDistance -= focalDistanceAdjust;
 
-            LeftEye = float4x4.LookAt(-S3DV.EyeDistance, 0, 3000, 0, 0, 0, 0, 1, 0);
-            RightEye = float4x4.LookAt(+S3DV.EyeDistance, 0, 3000, 0, 0, 0, 0, 1, 0);
+            LeftEye = float4x4.LookAt(-S3DV.EyeDistance, 0, S3DV.FocalDistance, 0, 0, 0, 0, 1, 0);
+            RightEye = float4x4.LookAt(+S3DV.EyeDistance, 0, S3DV.FocalDistance, 0, 0, 0, 0, 1, 0);  
         }
 
         /* ProjectionMatrix

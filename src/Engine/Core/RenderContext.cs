@@ -485,30 +485,6 @@ namespace Fusee.Engine
             _rci.Clear(flags);
         }
 
-
-        public void Render(Mesh m, bool anaglyph3D)
-        {
-            if (m._meshImp == null)
-                m._meshImp = _rci.CreateMeshImp();
-
-            if (m.Vertices != null && m.Vertices.Length != 0 && !m.VerticesSet)
-                _rci.SetVertices(m._meshImp, m.Vertices);
-
-            if (m.Colors != null && m.Colors.Length != 0 && !m.ColorsSet)
-                _rci.SetColors(m._meshImp, m.Colors);
-
-            if (m.UVs != null && m.UVs.Length != 0 && !m.NormalsSet)
-                _rci.SetUVs(m._meshImp, m.UVs);
-
-            if (m.Normals != null && m.Normals.Length != 0 && !m.NormalsSet)
-                _rci.SetNormals(m._meshImp, m.Normals);
-
-            if (m.Triangles != null && m.Triangles.Length != 0 && !m.TrianglesSet)
-                _rci.SetTriangles(m._meshImp, m.Triangles);
-
-            _rci.Render(m._meshImp, anaglyph3D);
-        }
-
         public void Render(Mesh m)
         {
             if (m._meshImp == null)
@@ -535,6 +511,11 @@ namespace Fusee.Engine
         public void Viewport(int x, int y, int width, int height)
         {
             _rci.Viewport(x, y, width, height);
+        }
+
+        public void ColorMask(bool red, bool green, bool blue, bool alpha)
+        {
+            _rci.ColorMask(red, green, blue, alpha);
         }
 
         public float4 ClearColor

@@ -48,11 +48,11 @@ namespace Examples.CubeAndTiles
             void main()
             {
                 vec4 _Balance = vec4(0.299, 0.587, 0.114, 0);
+                vec4 colTex = vColor * texture2D(vTexture, vUV);
 
-                float R = vColor.r * _Balance.r + vColor.g * _Balance.g + vColor.b * _Balance.b;
-                float B = vColor.r * _Balance.r + vColor.g * _Balance.g + vColor.b * _Balance.b;
+                float anaglyph = colTex.r * _Balance.r + colTex.g * _Balance.g + colTex.b * _Balance.b;
 
-                gl_FragColor = vec4(R, 0, B, 0.7) * dot(vNormal, vec3(0, 0, 1)) * 2;
+                gl_FragColor = vec4(anaglyph, anaglyph, anaglyph, 1) * dot(vNormal, vec3(0, 0, 1)) * 1.5;
             }";
 
         // variables
@@ -77,7 +77,7 @@ namespace Examples.CubeAndTiles
             RC.SetShader(sp);
             RC.ClearColor = new float4(0, 0, 0, 1);
 
-            _anaglyph3D = new Anaglyph3D(RC, sp, Width, Height);
+            _anaglyph3D = new Anaglyph3D();
             _exampleLevel = new Level(RC, sp, _anaglyph3D);
         }
 

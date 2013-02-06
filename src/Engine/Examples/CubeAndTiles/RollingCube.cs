@@ -197,14 +197,17 @@ namespace Examples.CubeAndTiles
             }
         }
 
-        public void RenderCube()
+        public void RenderCube(bool onlyRender = false)
         {
-            // anim cube while loading, dying, winning, moving
-            LoadAnimation();
-            DeadAnimation();
-            WinningAnimation();
+            if (!onlyRender)
+            {
+                // anim cube while loading, dying, winning, moving
+                LoadAnimation();
+                DeadAnimation();
+                WinningAnimation();
 
-            AnimCube();
+                AnimCube();
+            }
 
             // set cube translation
             var mtxObjRot = float4x4.CreateRotationY(_rotateYX[0]*_curDirXY[0])*
@@ -220,16 +223,16 @@ namespace Examples.CubeAndTiles
             var invArAxis = float4x4.CreateTranslation(100 * _curDirXY[0], 100 * _curDirXY[1], -100);
 
             // set modelview and color of cube
-            var aColor = new float3(0, 1, 0);
+            var aColor = new float3(1, 0, 0);
 
             // render
-            //_curLevel.RContext.SetShaderParam(_curLevel.VColorObj, new float4(aColor, _curBright));
-            _curLevel.AddCameraTransAndRender(_cubeMesh, mtxObjOrientRot*arAxis*mtxObjRot*invArAxis*mtxObjPos);
+            _curLevel.RContext.ModelView = _curLevel.AddCameraTrans(mtxObjOrientRot * arAxis * mtxObjRot * invArAxis * mtxObjPos);
+
+            _curLevel.RContext.SetShaderParam(_curLevel.VColorObj, new float4(aColor, _curBright));
+            _curLevel.RContext.SetShaderParamTexture(_curLevel.VTextureObj, _curLevel.TextureCube);
 
 
-            // _curLevel.RContext.SetShaderParamTexture(_curLevel.VTextureObj, _curLevel.TextureCube);
-            //_curLevel.RContext.ModelView = _curLevel.AddCameraTrans(mtxObjOrientRot * arAxis * mtxObjRot * invArAxis * mtxObjPos,false);
-            //_curLevel.RContext.Render(_cubeMesh);
+            _curLevel.RContext.Render(_cubeMesh);
         }
     }
 }

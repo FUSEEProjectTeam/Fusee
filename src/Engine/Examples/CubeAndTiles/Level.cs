@@ -86,11 +86,11 @@ namespace Examples.CubeAndTiles
             GlobalCubeMesh = MeshReader.LoadMesh("Assets/Cube.obj.model");
 
             // load textures
-        //    ImageData imgData = RContext.LoadImage("Assets/tex_stone.jpg");
-          //  TextureField = RContext.CreateTexture(imgData);
+            ImageData imgData = RContext.LoadImage("Assets/tex_stone.jpg");
+            TextureField = RContext.CreateTexture(imgData);
 
-          //  imgData = RContext.LoadImage("Assets/tex_cube.jpg");
-          //  TextureCube = RContext.CreateTexture(imgData);
+            imgData = RContext.LoadImage("Assets/tex_cube.jpg");
+            TextureCube = RContext.CreateTexture(imgData);
 
             // camera
             _camPosition = float4x4.LookAt(0, 0, 3000, 0, 0, 0, 0, 1, 0);
@@ -285,31 +285,33 @@ namespace Examples.CubeAndTiles
             LvlDeltaTime = (float) dTime;
             _mtxRot = mtxRot;
 
-         //   for (int x = 0; x < 2; x++)
-          //  {
+            for (int x = 0; x < 2; x++)
+            {
+                RContext.Clear(ClearFlags.Depth);
+
+                if (_anaglyphState)
+                    RContext.ColorMask(true, false, false, false);      // LINKS
+                else
+                    RContext.ColorMask(false, true, true, false);      // RECHTS
+
                 foreach (var feld in _levelFeld)
                     if (feld != null)
-                        feld.Render(_objOrientation);
+                        feld.Render(_objOrientation, _anaglyphState);
 
                 if (_rCube != null)
-                    _rCube.RenderCube();
+                    _rCube.RenderCube(_anaglyphState);
 
-           //     _anaglyphState = !_anaglyphState;
-           // }
+                _anaglyphState = !_anaglyphState;
+                RContext.ColorMask(true, true, true, false);
+            }
         }
 
-        public void AddCameraTransAndRender(Mesh renderMesh, float4x4 mod)
+        public float4x4 AddCameraTrans(float4x4 mod)
         {
-            RContext.SetShaderParam(VColorObj, new float4(new float3(0.5f, 0.5f, 0.5f), 1));
+            if (_anaglyphState)
+                return mod*_camTranslation*_mtxRot*_anaglyph3D.LeftEye;
 
-            RContext.ModelView = mod*_camTranslation*_mtxRot*_anaglyph3D.LeftEye;
-            RContext.Render(renderMesh, true);
-
-
-            RContext.ModelView = mod*_camTranslation*_mtxRot*_anaglyph3D.RightEye;
-            RContext.Render(renderMesh, false);
-
-
+            return mod*_camTranslation*_mtxRot*_anaglyph3D.RightEye;
         }
 
         private static bool OutOfBounds(int x, int y, Field[,] array)

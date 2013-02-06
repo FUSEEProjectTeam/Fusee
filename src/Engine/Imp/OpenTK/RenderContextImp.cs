@@ -430,42 +430,6 @@ namespace Fusee.Engine
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
 
-        public void Render(IMeshImp mr, bool state)
-        {
-            float top = 1 * 0.00685399926964f;
-            float bottom  = -top;
-
-            float a = 1.3333f * 0.00685399926964f * 2000;
-            float b = a - 35/2;
-            float c = a + 35/2;
-
-            GL.Clear(ClearBufferMask.DepthBufferBit);
-
-            if (!state)
-            {
-                // false = rechts
-                float left = -b * 1 / 2000;
-                float right = c * 1 / 2000;
-
-                GL.Frustum(left, right, bottom, top, 1, 10000);
-                GL.ColorMask(false, false, true, false);
-            }
-            else
-            {
-                // true = links
-                float left = -c * 1 / 2000;
-                float right = b * 1 / 2000;
-
-                GL.Frustum(left, right, bottom, top, 1, 10000);
-                GL.ColorMask(true, false, false, true);
-            }
-
-            Render(mr);
-
-            GL.Disable(EnableCap.Blend);
-            GL.ColorMask(true, true, true, true);
-        }
-
         public void Render(IMeshImp mr)
         {
             if (((MeshImp)mr).VertexBufferObject != 0)
@@ -530,6 +494,11 @@ namespace Fusee.Engine
         public void Viewport(int x, int y, int width, int height)
         {
             GL.Viewport(x, y, width, height);
+        }
+
+        public void ColorMask(bool red, bool green, bool blue, bool alpha)
+        {
+            GL.ColorMask(red, green, blue, alpha);
         }
     }
 }
