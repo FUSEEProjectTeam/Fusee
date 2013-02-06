@@ -8,7 +8,7 @@ namespace Examples.CubeAndTiles
         // GLSL
         protected string Vs = @"
             #ifndef GL_ES
-               #version 120
+             //  #version 120
             #endif
 
             /* Copies incoming vertex color without change.
@@ -47,12 +47,12 @@ namespace Examples.CubeAndTiles
 
             void main()
             {
-                float4 _Balance = float4(0.299, 0.587, 0.114, 0);
+                vec4 _Balance = vec4(0.299, 0.587, 0.114, 0);
 
-                float R = vColor.r * _Balance + vColor.g * _Balance + vColor.b * _Balance;
-                float B = vColor.r * _Balance + vColor.g * _Balance + vColor.b * _Balance;
+                float R = vColor.r * _Balance.r + vColor.g * _Balance.g + vColor.b * _Balance.b;
+                float B = vColor.r * _Balance.r + vColor.g * _Balance.g + vColor.b * _Balance.b;
 
-                gl_FragColor = float4(R, 0, B, 0.7) * dot(vNormal, vec3(0, 0, 1)) * 2;
+                gl_FragColor = vec4(R, 0, B, 0.7) * dot(vNormal, vec3(0, 0, 1)) * 2;
             }";
 
         // variables
