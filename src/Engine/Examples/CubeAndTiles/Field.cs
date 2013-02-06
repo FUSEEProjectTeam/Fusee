@@ -150,13 +150,15 @@ namespace Examples.CubeAndTiles
             var mtxObjPos = float4x4.CreateTranslation(CoordXY[0]*200, CoordXY[1]*200,
                                                        _posZ*100 - (RollingCube.CubeSize/2.0f + 15));
 
+            _curLevel.AddCameraTransAndRender(_fieldMesh, mtxObjRot * mtxFieldRot * mtxObjPos);
+
             // set translation and color, then render
-            _curLevel.RContext.ModelView = _curLevel.AddCameraTrans(mtxObjRot*mtxFieldRot*mtxObjPos);
+            //_curLevel.RContext.ModelView = _curLevel.AddCameraTrans(mtxObjRot*mtxFieldRot*mtxObjPos);
 
-            _curLevel.RContext.SetShaderParam(_curLevel.VColorObj, new float4(vColor, _curBright * val));
-            _curLevel.RContext.SetShaderParamTexture(_curLevel.VTextureObj, _curLevel.TextureField);
+            //_curLevel.RContext.SetShaderParam(_curLevel.VColorObj, new float4(vColor, _curBright * val));
+            //_curLevel.RContext.SetShaderParamTexture(_curLevel.VTextureObj, _curLevel.TextureField);
 
-            _curLevel.RContext.Render(_fieldMesh);
+            //_curLevel.RContext.Render(_fieldMesh);
         }
     }
 }

@@ -10,6 +10,9 @@ namespace Examples.CubeAndTiles
     
         internal RenderContext RContext { get; private set; }
 
+        private Anaglyph3D _anaglyph3D;
+        private bool _anaglyphState = false;
+
         private RollingCube _rCube;
         private Field[,] _levelFeld;
 
@@ -53,12 +56,12 @@ namespace Examples.CubeAndTiles
             Backward
         };
 
-        public Level(RenderContext rc, ShaderProgram sp)
-            : this(rc, sp, 0)
+        public Level(RenderContext rc, ShaderProgram sp, Anaglyph3D anaglyph3D)
+            : this(rc, sp, 0, anaglyph3D)
         {
         }
 
-        public Level(RenderContext rc, ShaderProgram sp, int id)
+        public Level(RenderContext rc, ShaderProgram sp, int id, Anaglyph3D anaglyph3D)
         {
             ObjRandom = new System.Random();
 
@@ -66,6 +69,7 @@ namespace Examples.CubeAndTiles
             VTextureObj = sp.GetShaderParam("vTexture");
 
             RContext = rc;
+            _anaglyph3D = anaglyph3D;
 
             ConstructLevel(id);
         }
@@ -82,11 +86,11 @@ namespace Examples.CubeAndTiles
             GlobalCubeMesh = MeshReader.LoadMesh("Assets/Cube.obj.model");
 
             // load textures
-            ImageData imgData = RContext.LoadImage("Assets/tex_stone.jpg");
-            TextureField = RContext.CreateTexture(imgData);
+        //    ImageData imgData = RContext.LoadImage("Assets/tex_stone.jpg");
+          //  TextureField = RContext.CreateTexture(imgData);
 
-            imgData = RContext.LoadImage("Assets/tex_cube.jpg");
-            TextureCube = RContext.CreateTexture(imgData);
+          //  imgData = RContext.LoadImage("Assets/tex_cube.jpg");
+          //  TextureCube = RContext.CreateTexture(imgData);
 
             // camera
             _camPosition = float4x4.LookAt(0, 0, 3000, 0, 0, 0, 0, 1, 0);
@@ -281,17 +285,31 @@ namespace Examples.CubeAndTiles
             LvlDeltaTime = (float) dTime;
             _mtxRot = mtxRot;
 
-            foreach (var feld in _levelFeld)
-                if (feld != null)
-                    feld.Render(_objOrientation);
+         //   for (int x = 0; x < 2; x++)
+          //  {
+                foreach (var feld in _levelFeld)
+                    if (feld != null)
+                        feld.Render(_objOrientation);
 
-            if (_rCube != null)
-                _rCube.RenderCube();
+                if (_rCube != null)
+                    _rCube.RenderCube();
+
+           //     _anaglyphState = !_anaglyphState;
+           // }
         }
 
-        public float4x4 AddCameraTrans(float4x4 mod)
+        public void AddCameraTransAndRender(Mesh renderMesh, float4x4 mod)
         {
-            return mod * _camTranslation * _mtxRot * _camPosition;
+            RContext.SetShaderParam(VColorObj, new float4(new float3(0.5f, 0.5f, 0.5f), 1));
+
+            RContext.ModelView = mod*_camTranslation*_mtxRot*_anaglyph3D.LeftEye;
+            RContext.Render(renderMesh, true);
+
+
+            RContext.ModelView = mod*_camTranslation*_mtxRot*_anaglyph3D.RightEye;
+            RContext.Render(renderMesh, false);
+
+
         }
 
         private static bool OutOfBounds(int x, int y, Field[,] array)

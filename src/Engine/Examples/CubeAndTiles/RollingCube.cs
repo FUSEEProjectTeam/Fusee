@@ -181,12 +181,9 @@ namespace Examples.CubeAndTiles
                 PosCurXY[i] += _curDirXY[i];
 
                 // rotation with quaterions
-                float3 rotVektor;
-
-                if (i == 0)
-                    rotVektor = new float3(-_curDirXY[0] * PiHalf, 0, 0);
-                else
-                    rotVektor = new float3(0, 0, _curDirXY[1] * PiHalf);
+                var rotVektor = (i == 0)
+                                    ? new float3(-_curDirXY[0]*PiHalf, 0, 0)    // around x-axis
+                                    : new float3(0, 0, _curDirXY[1]*PiHalf);    // around y-axis
 
                 _orientQuat *= Quaternion.EulerToQuaternion(rotVektor);
                 _orientQuat.Normalize();
@@ -223,13 +220,16 @@ namespace Examples.CubeAndTiles
             var invArAxis = float4x4.CreateTranslation(100 * _curDirXY[0], 100 * _curDirXY[1], -100);
 
             // set modelview and color of cube
-            _curLevel.RContext.ModelView = _curLevel.AddCameraTrans(mtxObjOrientRot * arAxis * mtxObjRot * invArAxis * mtxObjPos);
-
-            _curLevel.RContext.SetShaderParam(_curLevel.VColorObj, new float4(_cubeColor, _curBright));
-            _curLevel.RContext.SetShaderParamTexture(_curLevel.VTextureObj, _curLevel.TextureCube);
+            var aColor = new float3(0, 1, 0);
 
             // render
-            _curLevel.RContext.Render(_cubeMesh);
+            //_curLevel.RContext.SetShaderParam(_curLevel.VColorObj, new float4(aColor, _curBright));
+            _curLevel.AddCameraTransAndRender(_cubeMesh, mtxObjOrientRot*arAxis*mtxObjRot*invArAxis*mtxObjPos);
+
+
+            // _curLevel.RContext.SetShaderParamTexture(_curLevel.VTextureObj, _curLevel.TextureCube);
+            //_curLevel.RContext.ModelView = _curLevel.AddCameraTrans(mtxObjOrientRot * arAxis * mtxObjRot * invArAxis * mtxObjPos,false);
+            //_curLevel.RContext.Render(_cubeMesh);
         }
     }
 }

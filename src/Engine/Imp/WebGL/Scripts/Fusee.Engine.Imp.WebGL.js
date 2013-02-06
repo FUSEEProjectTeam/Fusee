@@ -548,7 +548,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
     new JSIL.MethodSignature(null, [$asmThis.TypeRef("Fusee.Engine.IShaderParam"), $.Int32]),
     function SetShaderParamInt(param, val) {
         var flatMatrix = new Float32Array(val.ToArray());
-        this.gl.uniform1(param.handle, false, flatMatrix);
+        this.gl.uniform1i(param.handle, false, flatMatrix);
     }
   );
 
@@ -556,12 +556,13 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
     new JSIL.MethodSignature(null, [$asmThis.TypeRef("Fusee.Engine.IShaderParam"), $asmThis.TypeRef("Fusee.Engine.ITexture")]),
     function SetShaderParamTexture(param, texId) {
         var iParam = param.handle;
-        var texUnit;
+        var texUnit = this._currentTextureUnit;
+        
         if (!this._shaderParam2TexUnit.hasOwnProperty(iParam.toString()))
         {
             texUnit = this._currentTextureUnit++;
             this._shaderParam2TexUnit[iParam.toString()] = texUnit;
-            GL.Uniform1(iParam, texUnit);
+            this.gl.uniform1i(iParam, texUnit);
         }
 
         this.gl.activeTexture(this.gl.TEXTURE0 + texUnit);

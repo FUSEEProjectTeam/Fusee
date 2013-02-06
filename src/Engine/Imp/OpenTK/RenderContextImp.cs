@@ -328,7 +328,7 @@ namespace Fusee.Engine
             int vertsBytes = vertices.Length * 3 * sizeof(float);
             if (((MeshImp)mr).VertexBufferObject == 0)
                 GL.GenBuffers(1, out ((MeshImp)mr).VertexBufferObject);
-
+            
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).VertexBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertsBytes), vertices, BufferUsageHint.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out vboBytes);
@@ -428,6 +428,42 @@ namespace Fusee.Engine
                     "Problem uploading vertex buffer to VBO (offsets). Tried to upload {0} bytes, uploaded {1}.",
                     trisBytes, vboBytes));
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+        }
+
+        public void Render(IMeshImp mr, bool state)
+        {
+            float top = 1 * 0.00685399926964f;
+            float bottom  = -top;
+
+            float a = 1.3333f * 0.00685399926964f * 2000;
+            float b = a - 35/2;
+            float c = a + 35/2;
+
+            GL.Clear(ClearBufferMask.DepthBufferBit);
+
+            if (!state)
+            {
+                // false = rechts
+                float left = -b * 1 / 2000;
+                float right = c * 1 / 2000;
+
+                GL.Frustum(left, right, bottom, top, 1, 10000);
+                GL.ColorMask(false, false, true, false);
+            }
+            else
+            {
+                // true = links
+                float left = -c * 1 / 2000;
+                float right = b * 1 / 2000;
+
+                GL.Frustum(left, right, bottom, top, 1, 10000);
+                GL.ColorMask(true, false, false, true);
+            }
+
+            Render(mr);
+
+            GL.Disable(EnableCap.Blend);
+            GL.ColorMask(true, true, true, true);
         }
 
         public void Render(IMeshImp mr)

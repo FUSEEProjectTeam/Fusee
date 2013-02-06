@@ -68,8 +68,10 @@ namespace Fusee.Engine
 
         void Viewport(int x, int y, int width, int height);
 
+        void Render(IMeshImp meshImp, bool anaglyphState);
         void Render(IMeshImp mr);
 
         IMeshImp CreateMeshImp();
+
     }
 }

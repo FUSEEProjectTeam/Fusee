@@ -47,11 +47,17 @@ namespace Examples.CubeAndTiles
 
             void main()
             {
-                gl_FragColor = dot(vColor, vec4(0, 0, 0, 1)) * vColor * dot(vNormal, vec3(0, 0, 1)) * 1.2 * texture2D(vTexture, vUV);
+                float4 _Balance = float4(0.299, 0.587, 0.114, 0);
+
+                float R = vColor.r * _Balance + vColor.g * _Balance + vColor.b * _Balance;
+                float B = vColor.r * _Balance + vColor.g * _Balance + vColor.b * _Balance;
+
+                gl_FragColor = float4(R, 0, B, 0.7) * dot(vNormal, vec3(0, 0, 1)) * 2;
             }";
 
         // variables
         private static Level _exampleLevel;
+        private static Anaglyph3D _anaglyph3D;
 
         private static float _angleHorz = 0.4f;
         private static float _angleVert = -1.0f;
@@ -71,7 +77,8 @@ namespace Examples.CubeAndTiles
             RC.SetShader(sp);
             RC.ClearColor = new float4(0, 0, 0, 1);
 
-            _exampleLevel = new Level(RC, sp);
+            _anaglyph3D = new Anaglyph3D(RC, sp, Width, Height);
+            _exampleLevel = new Level(RC, sp, _anaglyph3D);
         }
 
         // RenderAFrame()
@@ -80,6 +87,8 @@ namespace Examples.CubeAndTiles
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
             // keyboard
+            _anaglyph3D.UpdateEyeDistance(In);
+
             if (_lastKey == KeyCodes.None)
             {
                 if (In.IsKeyDown(KeyCodes.V))
