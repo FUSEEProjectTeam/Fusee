@@ -70,6 +70,8 @@ namespace Fusee.Engine
 
         void ColorMask(bool red, bool green, bool blue, bool alpha);
 
+        void Frustum(double left, double right, double bottom, double top, double zNear, double zFar);
+
         void Render(IMeshImp mr);
 
         IMeshImp CreateMeshImp();

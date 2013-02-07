@@ -3,39 +3,69 @@ using System.Diagnostics;
 using Fusee.Engine;
 using Fusee.Math;
 
-// Unity3D-Anaglyph-izer translated for Fusee
+// Using code by Unity3D-Anaglyph-izer:
 // source: https://github.com/EsimpleStudios/Unity3D-Anaglyph-izer
 
 namespace Examples.CubeAndTiles
 {
     internal class S3DV
     {
-        internal static float EyeDistance = 80f;
-        internal static float FocalDistance = 3000f;
+        internal static float EyeDistance = 35f;
+        internal static float CamDistance = 3000f;
+        internal static float Convergence = 0f;
+
+        internal static float AspectRatio = 1.77778f;
+        internal static float FieldOfView = MathHelper.PiOver4;
+
+        internal static float NearClipping = 1f;
+        internal static float FarClipping = 10000f;
     }
 
     public class Anaglyph3D
     {
-        internal float4x4 LeftEye { get; private set; }
-        internal float4x4 RightEye { get; private set; }
+        internal RenderContext RContext;
+        private bool _isLeftEye;
+
+        internal bool IsLeftEye
+        {
+            get { return _isLeftEye; }
+            private set { _isLeftEye = value; }
+        }
+
+        private float4x4 _leftEye;
+        private float4x4 _rightEye;
 
         // KeyCodes
-        private const KeyCodes DownEyeDistance = KeyCodes.O;
-        private const KeyCodes UpEyeDistance = KeyCodes.P;
-        private const KeyCodes DownFocalDistance = KeyCodes.K;
-        private const KeyCodes UpFocalDistance = KeyCodes.L;
+        private const KeyCodes DownEyeDistance = KeyCodes.D;
+        private const KeyCodes UpEyeDistance = KeyCodes.A;
+        private const KeyCodes DownConvDistance = KeyCodes.Q;
+        private const KeyCodes UpConvDistance = KeyCodes.E;
+        private const KeyCodes DownCamDistance = KeyCodes.S;
+        private const KeyCodes UpCamDistance = KeyCodes.W;
 
         // Constructor
-        public Anaglyph3D()
+        public Anaglyph3D(RenderContext rc)
         {
-            LeftEye = float4x4.LookAt(-S3DV.EyeDistance, 0, 3000, 0, 0, 0, 0, 1, 0);
-            RightEye = float4x4.LookAt(+S3DV.EyeDistance, 0, 3000, 0, 0, 0, 0, 1, 0);
+            RContext = rc;
+
+            _leftEye = float4x4.LookAt(-S3DV.EyeDistance*0.5f, 0, S3DV.CamDistance, 0, 0, S3DV.Convergence, 0, 1, 0);
+            _rightEye = float4x4.LookAt(+S3DV.EyeDistance*0.5f, 0, S3DV.CamDistance, 0, 0, S3DV.Convergence, 0, 1, 0);
+
+            _isLeftEye = true;
         }
-       
+
+        // keyboard input
         public void UpdateEyeDistance(Input key)
         {
-            // o and p
-            const float eyeDistanceAdjust = 1f;
+            const float camAdjust = 5f;
+
+            if (key.IsKeyDown(UpCamDistance))
+                S3DV.CamDistance = Math.Max(1500, S3DV.CamDistance - camAdjust);
+
+            if (key.IsKeyDown(DownCamDistance))
+                S3DV.CamDistance = Math.Min(3000, S3DV.CamDistance + camAdjust);
+            
+            var eyeDistanceAdjust = 1f/(Math.Max(1, Math.Abs(S3DV.Convergence/100)));
 
             if (key.IsKeyDown(UpEyeDistance))
                 S3DV.EyeDistance += eyeDistanceAdjust;
@@ -43,50 +73,54 @@ namespace Examples.CubeAndTiles
             if (key.IsKeyDown(DownEyeDistance))
                 S3DV.EyeDistance -= eyeDistanceAdjust;
 
-            // k and l
-            const float focalDistanceAdjust = 1f;
+            const float convergenceAdjust = 8f;
 
-            if (key.IsKeyDown(UpFocalDistance))
-                S3DV.FocalDistance += focalDistanceAdjust;
+            if (key.IsKeyDown(UpConvDistance))
+                S3DV.Convergence = Math.Min(S3DV.CamDistance - 500, S3DV.Convergence + convergenceAdjust);
 
-            if (key.IsKeyDown(DownFocalDistance))
-                S3DV.FocalDistance -= focalDistanceAdjust;
+            if (key.IsKeyDown(DownConvDistance))
+                S3DV.Convergence = Math.Max(-2000, S3DV.Convergence - convergenceAdjust);
 
-            LeftEye = float4x4.LookAt(-S3DV.EyeDistance, 0, S3DV.FocalDistance, 0, 0, 0, 0, 1, 0);
-            RightEye = float4x4.LookAt(+S3DV.EyeDistance, 0, S3DV.FocalDistance, 0, 0, 0, 0, 1, 0);  
+            S3DV.Convergence = Math.Min(S3DV.Convergence, S3DV.CamDistance - 500);
+
+            _leftEye = float4x4.LookAt(-S3DV.EyeDistance * 0.5f, 0, S3DV.CamDistance, 0, 0, S3DV.Convergence, 0, 1, 0);
+            _rightEye = float4x4.LookAt(+S3DV.EyeDistance * 0.5f, 0, S3DV.CamDistance, 0, 0, S3DV.Convergence, 0, 1, 0);
+
+            Debug.WriteLine(S3DV.CamDistance + " - " + S3DV.Convergence + " - " + S3DV.EyeDistance);
         }
 
-        /* ProjectionMatrix
-        private static float4x4 PerspectiveOffCenter(float left, float right, float bottom, float top, float near, float far)
+        // switch between eyes
+        public void SwitchEye()
         {
-            var x = (2.0f*near)/(right - left);
-            var y = (2.0f*near)/(top - bottom);
+            RContext.Clear(ClearFlags.Depth);
 
-            var a = (right + left)/(right - left);
-            var b = (top + bottom)/(top - bottom);
-            var c = -(far + near)/(far - near);
-            var d = -(2.0f*far*near)/(far - near);
+            _isLeftEye = !_isLeftEye;
 
-            const float e = -1.0f;
-
-            var m = new float4x4(x, 0f, a, 0f, 0f, y, b, 0f, 0f, 0f, c, d, 0f, 0f, e, 0f);
-
-            return m;
+            if (_isLeftEye)
+                RContext.ColorMask(true, false, false, false);
+            else
+                RContext.ColorMask(false, true, true, false);
         }
 
-        private float4x4 ProjectionMatrix(bool isLeftEye)
+        public void NormalMode()
         {
-            // temporary (missing in camera)
-            const float nearClipPlane = 1f;
-            const float farClipPlane = 10000f;
-            const float fieldOfView = 45f;
-            var aspect = (float) _Width/_Height;
+            RContext.ColorMask(true, true, true, false);           
+        }
 
-            // convert FOV to radians
-            const double fov = fieldOfView/180.0f*Math.PI; 
+        public float4x4 EyeTranslation()
+        {
+            return _isLeftEye ? _leftEye : _rightEye;
+        }
 
-            var a = (float) (nearClipPlane*Math.Tan(fov*0.5f));
-            var b = nearClipPlane/S3DV.FocalDistance;
+        // Frustum
+        #region
+        public void SetFrustum(bool isLeftEye)
+        {
+            var topBottom = (float)(S3DV.NearClipping * Math.Tan(S3DV.FieldOfView * 0.5f));
+
+            var a = (float) (S3DV.AspectRatio * Math.Tan(S3DV.FieldOfView * 0.5f) * S3DV.Convergence);
+            var b = a - S3DV.EyeDistance / 2;
+            var c = a + S3DV.EyeDistance / 2;
 
             float left;
             float right;
@@ -94,18 +128,18 @@ namespace Examples.CubeAndTiles
             if (isLeftEye)
             {
                 // left camera
-                left = (- aspect*a + (S3DV.EyeDistance)*b);
-                right = (aspect*a + (S3DV.EyeDistance)*b);
+                left = -b * S3DV.NearClipping / S3DV.Convergence;
+                right = c * S3DV.NearClipping / S3DV.Convergence;
             }
-            else 
+            else
             {
                 // right camera
-                left = - aspect*a - (S3DV.EyeDistance)*b;
-                right = aspect*a - (S3DV.EyeDistance)*b;
+                left = -c * S3DV.NearClipping / S3DV.Convergence;
+                right = b * S3DV.NearClipping / S3DV.Convergence;
             }
-
-            return PerspectiveOffCenter(left, right, -a, a, nearClipPlane, farClipPlane);
+            
+            RContext.Frustum(left, right, -topBottom, topBottom, S3DV.NearClipping, S3DV.FarClipping);
         }
-         */
+        #endregion
     }
 }

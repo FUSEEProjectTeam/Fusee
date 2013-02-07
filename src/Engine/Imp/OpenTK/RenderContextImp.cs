@@ -500,5 +500,10 @@ namespace Fusee.Engine
         {
             GL.ColorMask(red, green, blue, alpha);
         }
+
+        public void Frustum(double left, double right, double bottom, double top, double zNear, double zFar)
+        {
+            GL.Frustum(left, right, bottom, top, zNear, zFar);
+        }
     }
 }

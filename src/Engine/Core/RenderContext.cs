@@ -518,6 +518,11 @@ namespace Fusee.Engine
             _rci.ColorMask(red, green, blue, alpha);
         }
 
+        public void Frustum(double left, double right, double bottom, double top, double zNear, double zFar)
+        {
+            _rci.Frustum(left, right, bottom, top, zNear, zFar);
+        }
+
         public float4 ClearColor
         {
             set { _rci.ClearColor = value; }

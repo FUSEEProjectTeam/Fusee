@@ -1,4 +1,5 @@
-﻿using Fusee.Engine;
+﻿using System.Diagnostics;
+using Fusee.Engine;
 using Fusee.Math;
 
 namespace Examples.CubeAndTiles
@@ -52,7 +53,7 @@ namespace Examples.CubeAndTiles
 
                 float anaglyph = colTex.r * _Balance.r + colTex.g * _Balance.g + colTex.b * _Balance.b;
 
-                gl_FragColor = vec4(anaglyph, anaglyph, anaglyph, 1) * dot(vNormal, vec3(0, 0, 1)) * 1.5;
+                gl_FragColor = vec4(anaglyph, anaglyph, anaglyph, 1) * dot(vNormal, vec3(0, 0, 1)) * 1.8;
             }";
 
         // variables
@@ -77,7 +78,7 @@ namespace Examples.CubeAndTiles
             RC.SetShader(sp);
             RC.ClearColor = new float4(0, 0, 0, 1);
 
-            _anaglyph3D = new Anaglyph3D();
+            _anaglyph3D = new Anaglyph3D(RC);
             _exampleLevel = new Level(RC, sp, _anaglyph3D);
         }
 

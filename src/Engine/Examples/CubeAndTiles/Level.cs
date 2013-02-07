@@ -10,8 +10,7 @@ namespace Examples.CubeAndTiles
     
         internal RenderContext RContext { get; private set; }
 
-        private Anaglyph3D _anaglyph3D;
-        private bool _anaglyphState = false;
+        private readonly Anaglyph3D _anaglyph3D;
 
         private RollingCube _rCube;
         private Field[,] _levelFeld;
@@ -287,31 +286,22 @@ namespace Examples.CubeAndTiles
 
             for (int x = 0; x < 2; x++)
             {
-                RContext.Clear(ClearFlags.Depth);
-
-                if (_anaglyphState)
-                    RContext.ColorMask(true, false, false, false);      // LINKS
-                else
-                    RContext.ColorMask(false, true, true, false);      // RECHTS
+                _anaglyph3D.SwitchEye();
 
                 foreach (var feld in _levelFeld)
                     if (feld != null)
-                        feld.Render(_objOrientation, _anaglyphState);
+                        feld.Render(_objOrientation, _anaglyph3D.IsLeftEye);
 
                 if (_rCube != null)
-                    _rCube.RenderCube(_anaglyphState);
-
-                _anaglyphState = !_anaglyphState;
-                RContext.ColorMask(true, true, true, false);
+                    _rCube.RenderCube(_anaglyph3D.IsLeftEye);
             }
+
+            _anaglyph3D.NormalMode();
         }
 
         public float4x4 AddCameraTrans(float4x4 mod)
         {
-            if (_anaglyphState)
-                return mod*_camTranslation*_mtxRot*_anaglyph3D.LeftEye;
-
-            return mod*_camTranslation*_mtxRot*_anaglyph3D.RightEye;
+            return mod*_camTranslation*_mtxRot*_anaglyph3D.EyeTranslation();
         }
 
         private static bool OutOfBounds(int x, int y, Field[,] array)
