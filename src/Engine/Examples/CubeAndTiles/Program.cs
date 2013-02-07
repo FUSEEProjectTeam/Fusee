@@ -53,7 +53,7 @@ namespace Examples.CubeAndTiles
 
                 float anaglyph = colTex.r * _Balance.r + colTex.g * _Balance.g + colTex.b * _Balance.b;
 
-                gl_FragColor = vec4(anaglyph, anaglyph, anaglyph, 1) * dot(vNormal, vec3(0, 0, 1)) * 1.8;
+                gl_FragColor = dot(vColor, vec4(0, 0, 0, 1)) * vec4(anaglyph, anaglyph, anaglyph, 1) * dot(vNormal, vec3(0, 0, 1)) * 1.8;
             }";
 
         // variables
