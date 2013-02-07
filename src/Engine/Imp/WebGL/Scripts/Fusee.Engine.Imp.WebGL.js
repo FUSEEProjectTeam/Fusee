@@ -394,6 +394,13 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
     function IRenderContextImp_Clear(flags) {
         this.gl.clear(flags.value);
     }
+    );
+    
+    $.Method({ Static: false, Public: true }, "IRenderContextImp_ColorMask",
+    new JSIL.MethodSignature(null, [$.Boolean, $.Boolean, $.Boolean, $.Boolean]),
+    function IRenderContextImp_ColorMask(red, green, blue, alpha) {
+        this.gl.colorMask(red, green, blue, alpha);
+    }
   );
 
     $.Method({ Static: false, Public: true }, "IRenderContextImp_CreateShader",

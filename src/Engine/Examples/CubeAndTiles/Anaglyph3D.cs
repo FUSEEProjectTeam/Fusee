@@ -85,8 +85,6 @@ namespace Examples.CubeAndTiles
 
             _leftEye = float4x4.LookAt(-S3DV.EyeDistance * 0.5f, 0, S3DV.CamDistance, 0, 0, S3DV.Convergence, 0, 1, 0);
             _rightEye = float4x4.LookAt(+S3DV.EyeDistance * 0.5f, 0, S3DV.CamDistance, 0, 0, S3DV.Convergence, 0, 1, 0);
-
-            Debug.WriteLine(S3DV.CamDistance + " - " + S3DV.Convergence + " - " + S3DV.EyeDistance);
         }
 
         // switch between eyes
@@ -113,7 +111,6 @@ namespace Examples.CubeAndTiles
         }
 
         // Frustum
-        #region
         public void SetFrustum(bool isLeftEye)
         {
             var topBottom = (float)(S3DV.NearClipping * Math.Tan(S3DV.FieldOfView * 0.5f));
@@ -140,6 +137,5 @@ namespace Examples.CubeAndTiles
             
             RContext.Frustum(left, right, -topBottom, topBottom, S3DV.NearClipping, S3DV.FarClipping);
         }
-        #endregion
     }
 }
