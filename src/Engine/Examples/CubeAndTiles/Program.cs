@@ -48,12 +48,12 @@ namespace Examples.CubeAndTiles
 
             void main()
             {
-                vec4 _Balance = vec4(0.299, 0.587, 0.114, 0);
                 vec4 colTex = vColor * texture2D(vTexture, vUV);
 
-                float anaglyph = colTex.r * _Balance.r + colTex.g * _Balance.g + colTex.b * _Balance.b;
+                vec4 _redBalance = vec4(0.1, 0.7, 0.3, 0);
+                float _redColor = (colTex.r * _redBalance.r + colTex.g * _redBalance.g + colTex.b * _redBalance.b);
 
-                gl_FragColor = dot(vColor, vec4(0, 0, 0, 1)) * vec4(anaglyph, anaglyph, anaglyph, 1) * dot(vNormal, vec3(0, 0, 1)) * 1.8;
+                gl_FragColor = dot(vColor, vec4(0, 0, 0, 1)) * vec4(_redColor, colTex.g, colTex.b, 1) * dot(vNormal, vec3(0, 0, 1)) * 1.5;
             }";
 
         // variables
@@ -131,6 +131,12 @@ namespace Examples.CubeAndTiles
                 _exampleLevel.MoveCube(Level.Directions.Backward);
 
             // mouse
+            if (In.GetAxis(InputAxis.MouseWheel) > 0)
+                _exampleLevel.ZoomCamera(50);
+
+            if (In.GetAxis(InputAxis.MouseWheel) < 0)
+                _exampleLevel.ZoomCamera(-50);
+
             if (In.IsButtonDown(MouseButtons.Left))
             {
                 _angleVelHorz = RotationSpeed*In.GetAxis(InputAxis.MouseX)*(float) DeltaTime;

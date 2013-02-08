@@ -223,14 +223,13 @@ namespace Examples.CubeAndTiles
             var invArAxis = float4x4.CreateTranslation(100 * _curDirXY[0], 100 * _curDirXY[1], -100);
 
             // set modelview and color of cube
-            var aColor = new float3(1, 0, 0);
+            var aColor = new float3(1, 0.2f, 0.2f);
 
             // render
             _curLevel.RContext.ModelView = _curLevel.AddCameraTrans(mtxObjOrientRot * arAxis * mtxObjRot * invArAxis * mtxObjPos);
 
             _curLevel.RContext.SetShaderParam(_curLevel.VColorObj, new float4(aColor, _curBright));
             _curLevel.RContext.SetShaderParamTexture(_curLevel.VTextureObj, _curLevel.TextureCube);
-
 
             _curLevel.RContext.Render(_cubeMesh);
         }

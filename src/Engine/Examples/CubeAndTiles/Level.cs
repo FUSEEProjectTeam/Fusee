@@ -1,4 +1,5 @@
-﻿using Fusee.Engine;
+﻿using System;
+using Fusee.Engine;
 using Fusee.Math;
 
 namespace Examples.CubeAndTiles
@@ -21,11 +22,11 @@ namespace Examples.CubeAndTiles
         private int _curLvlId;
         private LevelStates _lvlState;
 
-        private float4x4 _camPosition;
+        private int _camPosition;
         private float4x4 _camTranslation;
         private float4x4 _objOrientation;
         private float4x4 _mtxRot;
-
+        
         internal Mesh GlobalFieldMesh { get; private set; }
         internal ITexture TextureField { get; private set; }
 
@@ -33,7 +34,7 @@ namespace Examples.CubeAndTiles
         internal ITexture TextureCube { get; private set; }
 
         internal float LvlDeltaTime { get; private set; }
-        internal System.Random ObjRandom { get; private set; }
+        internal Random ObjRandom { get; private set; }
 
         // array for level files
         private int[][,] _lvlTmp;
@@ -62,7 +63,7 @@ namespace Examples.CubeAndTiles
 
         public Level(RenderContext rc, ShaderProgram sp, int id, Anaglyph3D anaglyph3D)
         {
-            ObjRandom = new System.Random();
+            ObjRandom = new Random();
 
             VColorObj = sp.GetShaderParam("vColor");
             VTextureObj = sp.GetShaderParam("vTexture");
@@ -92,7 +93,7 @@ namespace Examples.CubeAndTiles
             TextureCube = RContext.CreateTexture(imgData);
 
             // camera
-            _camPosition = float4x4.LookAt(0, 0, 3000, 0, 0, 0, 0, 1, 0);
+            _camPosition = 3000;
             _objOrientation = float4x4.CreateRotationX(MathHelper.Pi/2);
 
             // create cube and set vars
@@ -299,9 +300,15 @@ namespace Examples.CubeAndTiles
             _anaglyph3D.NormalMode();
         }
 
+        public void ZoomCamera(int val)
+        {
+            _camPosition = Math.Min(3001, Math.Max(1500, _camPosition - val));
+        }
+
         public float4x4 AddCameraTrans(float4x4 mod)
         {
-            return mod*_camTranslation*_mtxRot*_anaglyph3D.EyeTranslation();
+            var lookAt = _anaglyph3D.LookAt3D(0, 0, _camPosition, 0, 0, 0, 0, 1, 0);
+            return mod*_camTranslation*_mtxRot*lookAt;
         }
 
         private static bool OutOfBounds(int x, int y, Field[,] array)
