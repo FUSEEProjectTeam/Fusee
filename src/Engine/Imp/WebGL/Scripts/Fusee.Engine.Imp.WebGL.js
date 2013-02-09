@@ -554,8 +554,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
     $.Method({ Static: false, Public: true }, "SetShaderParamInt",
     new JSIL.MethodSignature(null, [$asmThis.TypeRef("Fusee.Engine.IShaderParam"), $.Int32]),
     function SetShaderParamInt(param, val) {
-        var flatMatrix = new Float32Array(val.ToArray());
-        this.gl.uniform1i(param.handle, false, flatMatrix);
+        this.gl.uniform1i(param.handle, val);
     }
   );
 
