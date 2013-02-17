@@ -4,7 +4,7 @@ using Fusee.Math;
 
 namespace Examples.Texture
 {
-    public class Textures : RenderCanvas
+    public class Texture : RenderCanvas
     {
         protected string _vs = @"
             #ifndef GL_ES
@@ -56,10 +56,15 @@ namespace Examples.Texture
             varying vec2 vUV;
 
             void main()
+<<<<<<< HEAD
             {     
                 vec4 tex1 = texture2D(texture1,vUV);
                 vec4 tex2 = texture2D(texture2,vUV);        
                 gl_FragColor = mix(tex1, tex2, 0.4);  /* *dot(vNormal, vec3(0, 0, 1))*/;
+=======
+            {             
+                gl_FragColor = texture2D(texture1, vUV)  /* *dot(vNormal, vec3(0, 0, 1))*/;
+>>>>>>> origin/develop
                 //gl_FragColor = vColor;
             }";
 
@@ -67,7 +72,10 @@ namespace Examples.Texture
         protected Mesh _mesh, _meshFace;
         protected IShaderParam _vColorParam;
         protected IShaderParam _texture1Param;
+<<<<<<< HEAD
         protected IShaderParam _texture2Param;
+=======
+>>>>>>> origin/develop
         protected ImageData _imgData1;
         protected ImageData _imgData2;
         protected ITexture _iTex1;
@@ -144,12 +152,19 @@ namespace Examples.Texture
             RC.SetShaderParamTexture(_texture1Param, _iTex1);
             RC.Render(_mesh);
             //RC.ResetTexture();
+<<<<<<< HEAD
             */
 
             RC.ModelView = mtxRot * float4x4.CreateTranslation(100, 0, 0) * mtxCam;
             //RC.SetShaderParam(_vColorParam, new float4(0.8f, 0.5f, 0, 1));
             RC.SetShaderParamTexture(_texture2Param, _iTex2);
             RC.SetShaderParamTexture(_texture1Param, _iTex1);
+=======
+
+            RC.ModelView = mtxRot * float4x4.CreateTranslation(100, 0, 0) * mtxCam;
+            //RC.SetShaderParam(_vColorParam, new float4(0.8f, 0.5f, 0, 1));
+            RC.SetShaderParamTexture(_texture1Param, _iTex2);
+>>>>>>> origin/develop
             RC.Render(_meshFace);
             Present();
         }
@@ -164,7 +179,7 @@ namespace Examples.Texture
 
         public static void Main()
         {
-            Textures app = new Textures();
+            Texture app = new Texture();
             app.Run();
         }
 
