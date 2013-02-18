@@ -95,7 +95,38 @@ namespace Fusee.Engine
             _rci.SetShaderParamTexture(param, texId);
         }
 
+        //directional or Point- Light 
+        public void SetLight(float3 v3, float4 color, int type, int id)
+        {
+            switch (type)
+            {
+                case 0:
+                    SetLightActive(id, 1);
+                    SetLightAmbient(id, color);
+                    SetLightDiffuse(id, color);
+                    SetLightSpecular(id, color);
+                    SetLightDirection(id, v3);
+                    break;
+                case 1:
+                    SetLightActive(id, 1);
+                    SetLightAmbient(id, color);
+                    SetLightDiffuse(id, color);
+                    SetLightSpecular(id, color);
+                    SetLightPosition(id, v3);
+                    break;
+            }
+        }
 
+        //Spotlight with position AND direction
+        public void SetLight(float3 position, float3 direction,  float4 color, int type, int id)
+        {
+            SetLightActive(id, 1);
+            SetLightAmbient(id, color);
+            SetLightDiffuse(id, color);
+            SetLightSpecular(id, color);
+            SetLightPosition(id, position);
+            SetLightDirection(id,direction);
+        }
 
         public float4x4 ModelView
         {
