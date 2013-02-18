@@ -223,7 +223,7 @@ namespace Examples.CubeAndTiles
             var invArAxis = float4x4.CreateTranslation(100 * _curDirXY[0], 100 * _curDirXY[1], -100);
 
             // set modelview and color of cube
-            var aColor = new float3(1, 0.2f, 0.2f);
+            var aColor = new float3(1, 0.1f, 0.1f);
 
             // render
             _curLevel.RContext.ModelView = _curLevel.AddCameraTrans(mtxObjOrientRot * arAxis * mtxObjRot * invArAxis * mtxObjPos);

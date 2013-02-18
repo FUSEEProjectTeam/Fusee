@@ -8,10 +8,12 @@ namespace Examples.CubeAndTiles
     {
         internal IShaderParam VColorObj { get; private set; }
         internal IShaderParam VTextureObj { get; private set; }
-    
+        private readonly IShaderParam VUseAnaglyph;
+
         internal RenderContext RContext { get; private set; }
 
         private readonly Anaglyph3D _anaglyph3D;
+        internal bool UseAnaglyph3D;
 
         private RollingCube _rCube;
         private Field[,] _levelFeld;
@@ -69,7 +71,12 @@ namespace Examples.CubeAndTiles
             VTextureObj = sp.GetShaderParam("vTexture");
 
             RContext = rc;
+
             _anaglyph3D = anaglyph3D;
+            UseAnaglyph3D = false;
+
+            VUseAnaglyph = sp.GetShaderParam("vUseAnaglyph");
+            RContext.SetShaderParam(VUseAnaglyph, UseAnaglyph3D ? 1 : 0);
 
             ConstructLevel(id);
         }
@@ -212,7 +219,6 @@ namespace Examples.CubeAndTiles
                         DeadLevel();
                         SetDeadField(curX, curY);
                     }
-
                 }
             }
         }
@@ -285,16 +291,24 @@ namespace Examples.CubeAndTiles
             LvlDeltaTime = (float) dTime;
             _mtxRot = mtxRot;
 
+            RContext.SetShaderParam(VUseAnaglyph, UseAnaglyph3D ? 1 : 0);
+
             for (int x = 0; x < 2; x++)
             {
-                _anaglyph3D.SwitchEye();
+                if (UseAnaglyph3D)
+                    _anaglyph3D.SwitchEye();
+
+                var renderOnly = UseAnaglyph3D && _anaglyph3D.IsLeftEye;
 
                 foreach (var feld in _levelFeld)
                     if (feld != null)
-                        feld.Render(_objOrientation, _anaglyph3D.IsLeftEye);
+                        feld.Render(_objOrientation, renderOnly);
 
                 if (_rCube != null)
-                    _rCube.RenderCube(_anaglyph3D.IsLeftEye);
+                    _rCube.RenderCube(renderOnly);
+
+                if (!UseAnaglyph3D)
+                    break;
             }
 
             _anaglyph3D.NormalMode();
@@ -302,12 +316,15 @@ namespace Examples.CubeAndTiles
 
         public void ZoomCamera(int val)
         {
-            _camPosition = Math.Min(3001, Math.Max(1500, _camPosition - val));
+            _camPosition = Math.Min(3000, Math.Max(1500, _camPosition - val));
         }
 
         public float4x4 AddCameraTrans(float4x4 mod)
         {
-            var lookAt = _anaglyph3D.LookAt3D(0, 0, _camPosition, 0, 0, 0, 0, 1, 0);
+            var lookAt = UseAnaglyph3D
+                         ? _anaglyph3D.LookAt3D(0, 0, _camPosition, 0, 0, 0, 0, 1, 0)
+                         : float4x4.LookAt(0, 0, _camPosition, 0, 0, 0, 0, 1, 0);
+
             return mod*_camTranslation*_mtxRot*lookAt;
         }
 

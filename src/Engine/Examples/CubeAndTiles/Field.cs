@@ -134,8 +134,8 @@ namespace Examples.CubeAndTiles
                     break;
 
                 case FieldTypes.FtEnd:
-                    val = 0.8f;
-                    vColor = new float3(1.0f, 0.5f, 0.5f);
+                    val = 1.0f;
+                    vColor = new float3(1.0f, 0.1f, 0.1f);
                     break;
 
                 case FieldTypes.FtNormal:

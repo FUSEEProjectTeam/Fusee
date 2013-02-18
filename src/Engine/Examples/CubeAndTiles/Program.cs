@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Fusee.Engine;
+﻿using Fusee.Engine;
 using Fusee.Math;
 
 namespace Examples.CubeAndTiles
@@ -9,7 +8,7 @@ namespace Examples.CubeAndTiles
         // GLSL
         protected string Vs = @"
             #ifndef GL_ES
-             //  #version 120
+                #version 120
             #endif
 
             /* Copies incoming vertex color without change.
@@ -46,14 +45,21 @@ namespace Examples.CubeAndTiles
             varying vec3 vNormal;
             varying vec2 vUV;
 
+            uniform int vUseAnaglyph;
+
             void main()
             {
                 vec4 colTex = vColor * texture2D(vTexture, vUV);
 
-                vec4 _redBalance = vec4(0.1, 0.7, 0.3, 0);
-                float _redColor = (colTex.r * _redBalance.r + colTex.g * _redBalance.g + colTex.b * _redBalance.b);
+                if (vUseAnaglyph != 0)
+                {
+                    vec4 _redBalance = vec4(0.1, 0.65, 0.25, 0);
+                    float _redColor = (colTex.r * _redBalance.r + colTex.g * _redBalance.g + colTex.b * _redBalance.b) * 1.5;
 
-                gl_FragColor = dot(vColor, vec4(0, 0, 0, 1)) * vec4(_redColor, colTex.g, colTex.b, 1) * dot(vNormal, vec3(0, 0, 1)) * 1.5;
+                    gl_FragColor = dot(vColor, vec4(0, 0, 0, 1)) * vec4(_redColor, colTex.g, colTex.b, 1) * dot(vNormal, vec3(0, 0, 1)) * 1.4;
+                } else {
+                    gl_FragColor = dot(vColor, vec4(0, 0, 0, 1)) * colTex * dot(vNormal, vec3(0, 0, 1));
+                }
             }";
 
         // variables
@@ -88,13 +94,10 @@ namespace Examples.CubeAndTiles
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
             // keyboard
-            _anaglyph3D.UpdateEyeDistance(In);
-
             if (_lastKey == KeyCodes.None)
             {
                 if (In.IsKeyDown(KeyCodes.V))
                 {
-
                     _angleVelHorz = 0.0f;
                     _angleVelVert = 0.0f;
 
@@ -113,6 +116,12 @@ namespace Examples.CubeAndTiles
                     }
 
                     _lastKey = KeyCodes.V;
+                }
+
+                if (In.IsKeyDown(KeyCodes.C))
+                {
+                    _exampleLevel.UseAnaglyph3D = !_exampleLevel.UseAnaglyph3D;
+                    _lastKey = KeyCodes.C;
                 }
             }
             else if (!In.IsKeyDown(_lastKey))
