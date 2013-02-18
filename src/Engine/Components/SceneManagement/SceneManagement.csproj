@@ -75,7 +75,8 @@
     <Compile Include="SceneEntity.cs" />
     <Compile Include="SpotLight.cs" />
     <Compile Include="Transformation.cs" />
-    <Compile Include="TraversalState.cs" />
+    <Compile Include="TraversalStateRender.cs" />
+    <Compile Include="TraversalStateSearch.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

@@ -41,7 +41,12 @@ namespace Fusee.SceneManagement
         /// <param name="_traversalState"></param>
         public override void Traverse(ITraversalState _traversalState)
         {
-            _traversalState.GetInput(out Input);
+            _traversalState.Visit(this);
+        }
+
+        public void TraverseForRendering(ITraversalState _traversalState)
+        {
+            Input = _traversalState.Input;
             _traversalState.GetDeltaTime(out DeltaTime);
             Update();
         }

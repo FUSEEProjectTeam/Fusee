@@ -18,9 +18,11 @@ namespace Fusee.SceneManagement
             _type = Light.LightType.Directional;
             _color = color;
         }
+
          public override void SubmitWork(RenderContext renderContext)
          {
              //TODO Warten Auf Timon und Casper
+             //renderContext.SetLightDirection((int)_type, _direction);
              //renderContext.setLight(_direction, _color, _type);
              //Console.WriteLine("DirectionalLight worked");
          }

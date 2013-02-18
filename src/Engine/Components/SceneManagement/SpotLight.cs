@@ -26,8 +26,13 @@ namespace Fusee.SceneManagement
 
         override public void Traverse(ITraversalState _traversalState)
         {
+            _traversalState.Visit(this);
+        }
+
+        public void TraverseForRendering(ITraversalState _traversalState)
+        {
             //TODO Typübergabe implementieren.
-            _traversalState.AddLightSpot(_position, _direction , _color, _type);
+            _traversalState.AddLightSpot(_position, _direction, _color, _type);
         }
     }
 }

@@ -17,19 +17,29 @@ namespace Fusee.SceneManagement
         private double _deltaTime;
         private Input _input;
 
-        public void SetInput(Input input)
-        {
-            _input = input;
-        }
+
 
         public void SetDeltaTime(double delta)
         {
             _deltaTime = delta;
         }
 
-        public void GetInput(out Input input)
+
+
+
+        public Input Input
         {
-            input = _input;
+            set { _input = value; }
+            get
+            {
+                if (_input != null)
+                {
+                    return _input;
+                }else
+                {
+                    return null;
+                }
+            }
         }
 
         public void GetDeltaTime(out double deltaTime)
@@ -41,6 +51,7 @@ namespace Fusee.SceneManagement
         public TraversalStateRender(SceneManager queue)
         {
             _queue = queue;
+            
             _mtxModelViewStack = new Stack<float4x4>();
             _meshStack = new Stack<Mesh>();
             _RendererStack = new Stack<Renderer>();
@@ -153,6 +164,40 @@ namespace Fusee.SceneManagement
             _queue.AddRenderJob(renderRenderer);
         }
 
+        public void Visit(SceneEntity sceneEntity)
+        {
+            sceneEntity.TraverseForRendering(this);
+        }
+
+        public void Visit(Transformation transformation)
+        {
+            transformation.TraverseForRendering(this);
+        }
+
+        public void Visit(ActionCode actionCode)
+        {
+            actionCode.TraverseForRendering(this);
+        }
+
+        public void Visit(Renderer renderer)
+        {
+            renderer.TraverseForRendering(this);
+        }
+
+        public void Visit(DirectionalLight directionalLight)
+        {
+            directionalLight.TraverseForRendering(this);
+        }
+
+        public void Visit(SpotLight spotLight)
+        {
+            spotLight.TraverseForRendering(this);
+        }
+
+        public void Visit(PointLight pointLight)
+        {
+            pointLight.TraverseForRendering(this);
+        }
 
     }
 }

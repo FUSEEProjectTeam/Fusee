@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Fusee.Engine;
 using Fusee.Math;
 using Fusee.SceneManagement;
@@ -7,10 +8,9 @@ namespace Examples.Components
 {
     public class Components : RenderCanvas
     {
-        private SceneManager _queue = new SceneManager();
         public List<RenderJob> RenderJobs = new List<RenderJob>(); 
         public List<SceneEntity> SceneMembers = new List<SceneEntity>(); 
-        public float4x4 Camera = float4x4.LookAt(0, 200, 2000, 0, 50, 0, 0, 1, 0);
+        public float4x4 Camera = float4x4.LookAt(0, 0, -10, 0, 0, 0, 0, 1, 0);
         private Material _material = new Material();
        
         //TestZone
@@ -27,23 +27,32 @@ namespace Examples.Components
         private PointLight point = new PointLight();
         private DirectionalLight direct = new DirectionalLight();
 
+
+        //ExceptionTest
+        private Renderer testrendererException = new Renderer();
+
+        //some values
         protected float4 _farbe = new float4(1, 0, 0, 1);
         protected IShaderParam _vColorParam;
 
         public override void Init()
         {
             RC.Camera = Camera;
+            SceneManager.RC = RC;
+            
            
             // Parent
+            TestEntity.name = "erster";
             TestEntity.AddComponent(testrenderer);
+            TestEntity.AddComponent(testrendererException); //TODO: Test Exceptions
             TestEntity.AddComponent(testscript);
             TestEntity.AddComponent(spot);
             TestEntity.AddComponent(point);
-            TestEntity.AddComponent(direct);
-
+            //TestEntity.AddComponent(direct);
+            SceneManager.Manager.AddSceneEntity(TestEntity);
             testscript.Init(TestEntity);
             TestEntity.AddChild(ChildEntity); // Als Child hinzugefuegt
-            _queue.SceneMembers.Add(TestEntity);
+            
             
             // Child
             ChildEntity.AddComponent(Childrenderer);
@@ -58,14 +67,14 @@ namespace Examples.Components
             RC.SetShader(sp);
             _vColorParam = sp.GetShaderParam("uColor");        
             RC.SetShaderParam(_vColorParam, _farbe);*/
-            RC.ClearColor = new float4(1, 1, 1, 1);
-            _queue.SetInput(In);
+            RC.ClearColor = new float4(0, 0, 0, 1);
+            SceneManager.Manager.SetInput(In);
         }
 
 
         public override void  RenderAFrame()
         {
-            _queue.Traverse(this, RC, Camera);
+            SceneManager.Manager.Traverse(this);
         }
 
 
@@ -80,6 +89,7 @@ namespace Examples.Components
 
         public static void Main()
         {
+            
             Components app = new Components();
             app.Run();
         }
