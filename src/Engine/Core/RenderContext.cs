@@ -74,19 +74,9 @@ namespace Fusee.Engine
         private bool _transModelViewProjectionOk;
 
 
-        public ITexture CreateTexture(String filename)
-        {
-            return _rci.CreateTexture(filename);
-        }
-
         public ITexture CreateTexture(ImageData imgData)
         {
             return _rci.CreateTexture(imgData);
-        }
-
-        public void ResetTexture()
-        {
-            _rci.ResetTexture();
         }
 
         public ImageData LoadImage(String filename)

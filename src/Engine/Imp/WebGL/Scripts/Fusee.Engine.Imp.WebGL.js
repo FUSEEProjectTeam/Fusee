@@ -352,7 +352,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
             canvas.width = image.width;
             canvas.height = image.height;
             var context = canvas.getContext("2d");
-
+            
             context.drawImage(image, 0, 0);
             var myData = context.getImageData(0, 0, image.width, image.height);
             var imageData = new $fuseeCommon.Fusee.Engine.ImageData();
@@ -380,6 +380,8 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
             this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
             this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.LINEAR);
 
+            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
+            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
 
             var texRet = new $asmThis.Fusee.Engine.Texture();
             texRet.handle = glTexOb;
@@ -500,7 +502,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
     function IRenderContextImp_SetShader(program) {
         this._currentTextureUnit = 0;
         this._shaderParam2TexUnit = {};
-    
+
         this.gl.useProgram(program.Program);
     }
   );
@@ -557,16 +559,15 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
     function SetShaderParamTexture(param, texId) {
         var iParam = param.handle;
         var texUnit = this._currentTextureUnit;
-        if (!this._shaderParam2TexUnit.hasOwnProperty(iParam.toString()))
-        {
+        if (!this._shaderParam2TexUnit.hasOwnProperty(iParam.toString())) {
             texUnit = this._currentTextureUnit++;
             this._shaderParam2TexUnit[iParam.toString()] = texUnit;
-            this.gl.uniform1i(iParam, texUnit);
         }
 
+        this.gl.uniform1i(iParam, texUnit);
         this.gl.activeTexture(this.gl.TEXTURE0 + texUnit);
         this.gl.bindTexture(this.gl.TEXTURE_2D, texId.handle);
-        
+
     }
   );
 

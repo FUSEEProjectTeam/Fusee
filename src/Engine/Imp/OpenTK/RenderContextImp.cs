@@ -31,6 +31,7 @@ namespace Fusee.Engine
         public ImageData LoadImage(String filename)
         {
             Bitmap bmp = new Bitmap(filename);
+            bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
 
             BitmapData bmpData = bmp.LockBits(new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite,
                 System.Drawing.Imaging.PixelFormat.Format32bppArgb);
@@ -74,32 +75,6 @@ namespace Fusee.Engine
         }
 
 
-        public ITexture CreateTexture(String filename)
-        {
-            Bitmap bmp = new Bitmap(filename);
-            // GL.ActiveTexture(TextureUnit.Texture3);
-            int id = GL.GenTexture();
-            GL.BindTexture(TextureTarget.Texture2D, id);
-
-            System.Drawing.Imaging.BitmapData bmpData = bmp.LockBits(new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite,
-                                                                                                  System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, bmpData.Width, bmpData.Height, 0,
-            OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, bmpData.Scan0);
-
-            bmp.UnlockBits(bmpData);
-
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMinFilter.Linear);
-
-            ITexture texID = new Texture { handle = id };
-            return texID;
-        }
-
-        public void ResetTexture()
-        {
-            GL.ActiveTexture((TextureUnit) (TextureUnit.Texture0));
-        }
 
         public IShaderParam GetShaderParam(IShaderProgramImp shaderProgram, string paramName)
         {
@@ -206,8 +181,8 @@ namespace Fusee.Engine
             {
                 texUnit = _currentTextureUnit++;
                 _shaderParam2TexUnit[iParam] = texUnit;
-                GL.Uniform1(iParam, texUnit);
             }
+            GL.Uniform1(iParam, texUnit);
             GL.ActiveTexture((TextureUnit)(TextureUnit.Texture0 + texUnit));
             GL.BindTexture(TextureTarget.Texture2D, ((Texture)texId).handle);
         }
@@ -366,12 +341,12 @@ namespace Fusee.Engine
         {
             if (uvs == null || uvs.Length == 0)
             {
-                throw new ArgumentException("Normals must not be null or empty");
+                throw new ArgumentException("UVs must not be null or empty");
             }
 
             int vboBytes;
             int uvsBytes = uvs.Length * 2 * sizeof(float);
-            if (((MeshImp)mr).NormalBufferObject == 0)
+            if (((MeshImp)mr).UVBufferObject == 0)
                 GL.GenBuffers(1, out ((MeshImp)mr).UVBufferObject);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).UVBufferObject);
