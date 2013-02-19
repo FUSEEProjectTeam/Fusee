@@ -50,12 +50,12 @@ namespace Fusee.Engine
             bmp.UnlockBits(bmpData);
             return ret;
         }
+
         /// <summary>
         /// Creates a new Texture and  binds to the shader
         /// </summary>
         /// <param name="img">A given ImageData object, which contains all necessary information for the upload to the graphics card</param>
         /// <returns>An ITexture that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK</returns>
-
         public ITexture CreateTexture(ImageData img)
         {
             int id = GL.GenTexture();
@@ -187,6 +187,7 @@ namespace Fusee.Engine
             GL.Uniform1(((ShaderParam)param).handle, val);
         }
 
+        
         public void SetShaderParamTexture(IShaderParam param, ITexture texId)
         {
             GL.ActiveTexture((TextureUnit)(TextureUnit.Texture0 + _currentTextureUnit));

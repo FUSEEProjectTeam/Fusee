@@ -1,7 +1,7 @@
 ﻿namespace Fusee.Engine
 {
     /// <summary>
-    /// Struct containing the necessary ImageData for further provessing (e.g. texturing)
+    /// Struct containing Image Data for further processing (e.g. texturing)
     /// </summary>
     public struct ImageData
     {

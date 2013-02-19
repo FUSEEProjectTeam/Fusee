@@ -32,6 +32,10 @@ namespace Fusee.Engine
         };
         */
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RenderContext"/> class.
+        /// </summary>
+        /// <param name="rci">The rci.</param>
         public RenderContext(IRenderContextImp rci)
         {
             _rci = rci;
@@ -74,11 +78,23 @@ namespace Fusee.Engine
         private bool _transModelViewProjectionOk;
 
 
+        /// <summary>
+        /// Creates a new Bitmap-Object from an image file,
+        /// locks the bits in the memory and makes them available
+        /// for furher action (e.g. creating a texture).
+        /// </summary>
+        /// <param name="filename">Path to the image file</param>
+        /// <returns>An ImageData struct with all necessary information for the texture-binding process</returns>
         public ITexture CreateTexture(String filename)
         {
             return _rci.CreateTexture(filename);
         }
 
+        /// <summary>
+        /// Creates a new texture and binds it to the shader
+        /// </summary>
+        /// <param name="img">An ImageData struct, containing all necessary information for the upload to the graphics card</param>
+        /// <returns>An ITexture that can be used for texturing in the shader.</returns>
         public ITexture CreateTexture(ImageData imgData)
         {
             return _rci.CreateTexture(imgData);
@@ -89,7 +105,11 @@ namespace Fusee.Engine
             return _rci.LoadImage(filename);
         }
 
-
+        /// <summary>
+        /// Sets a given Shader Parameter to a created texture
+        /// </summary>
+        /// <param name="param">Shader Parameter used for texture binding</param>
+        /// <param name="texId">An ITexture probably returned from CreateTexture() method</param>
         public void SetShaderParamTexture(IShaderParam param, ITexture texId)
         {
             _rci.SetShaderParamTexture(param, texId);
