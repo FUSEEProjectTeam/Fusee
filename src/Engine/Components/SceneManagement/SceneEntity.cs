@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using Fusee.Math;
 
@@ -7,7 +8,7 @@ namespace Fusee.SceneManagement
 {
     public class SceneEntity
     {
-
+        public string name;
         public string tag;
         public Transformation transform;
         public Renderer renderer;
@@ -23,6 +24,7 @@ namespace Fusee.SceneManagement
             transform = new Transformation(this);
 
             _childComponents.Add(transform);
+            name = "defaultSceneEntity";
             tag = "default";
         }
 
@@ -39,30 +41,40 @@ namespace Fusee.SceneManagement
 
 
 
-
-        public void Traverse(ITraversalState traversal)
+        public void TraverseForRendering(SceneVisitorRendering sceneVisitorRendering)
         {
-
-            traversal.Push();
+            
             foreach (var childComponent in _childComponents)
             {
-                childComponent.Traverse(traversal);
+                childComponent.Accept(sceneVisitorRendering);
             }
 
             foreach (var childSceneEntity in _childSceneEntities)
             {
-                childSceneEntity.Traverse(traversal);
+                childSceneEntity.Accept(sceneVisitorRendering);
             }
-            traversal.Pop();
+        }
 
+
+        public void Accept(SceneVisitor sv)
+        {
+            sv.Visit(this);    
         }
 
         public void AddComponent(Component component)
         {
             if (component is Renderer) // TODO sorting addition process
             {
-                _childComponents.Add(component);
-                renderer =(Renderer)component;
+                if(renderer==null)
+                {
+                    _childComponents.Add(component);
+                    renderer = (Renderer)component;  
+                }else
+                {
+                    Debug.WriteLine("A SceneEntity can only have one RendererComponent at a time.");
+                    //throw new Exception("A SceneEntity can only have one RendererComponent at a time.");
+                }
+                
             }
             else
             {
@@ -76,12 +88,53 @@ namespace Fusee.SceneManagement
             _childSceneEntities.Add(child);
 
         }
+        // TODO: Add Find Functions, Add GetComponent/s in Children
+        public SceneEntity[] GetChildren()
+        {
+            return _childSceneEntities.ToArray();
+        }
 
+        public T GetComponent<T>()
+        {
+            foreach (var childComponent in _childComponents)
+            {
+                if(childComponent.GetType() == typeof(T))
+                {
+                    return (T)(object)childComponent;
+                }
+            }
+            return (T)(object)null;
+        }
+
+        
+        public T[] GetComponents<T>()
+        {
+            List<T> componentItems = new List<T>();
+            foreach (var childComponent in _childComponents)
+            {
+                if (childComponent.GetType() == typeof(T))
+                {
+                    componentItems.Add((T)(object)childComponent);
+                }
+            }
+            return componentItems.ToArray();
+        }
+
+        
+        public  static SceneEntity FindSceneEntity(string sceneEntityName)
+        {
+            return SceneManager.Manager.FindSceneEntity(sceneEntityName);
+        }
 
         public SceneEntity parent
         {
             get { return _parent; }
             set { _parent = value; }
+        }
+
+        public static void DestroySceneEntity(SceneEntity objectToBeDestroyed)
+        {
+               
         }
 
     }

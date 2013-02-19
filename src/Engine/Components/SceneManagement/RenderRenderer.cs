@@ -17,16 +17,27 @@ namespace Fusee.SceneManagement
         }
         public override void SubmitWork(RenderContext renderContext)
         {
-            if(_renderer.sp==null)
+            if(_renderer.material.sp==null)
             {
-                _renderer.sp = renderContext.CreateShader(_renderer.material._vs, _renderer.material._ps);
+                _renderer.material.sp = renderContext.CreateShader(_renderer.material._vs, _renderer.material._ps);
+                _renderer.material.InitValues(renderContext);
             }
-            renderContext.SetShader(_renderer.sp);
-            if (_uColor == null)
+          /* if(renderContext.CurrentShader != _renderer.material.sp)
             {
-                _uColor = _renderer.sp.GetShaderParam("uColor");
+            
+                renderContext.SetShader(_renderer.material.sp);
+            }else
+           {
+               _renderer.material.UpdateValues(renderContext); 
+           }*/
+            _renderer.material.UpdateValues(renderContext); 
+            renderContext.SetShader(_renderer.material.sp);
+            /*if (_uColor == null)
+            {
+                _uColor = _renderer.sp.GetShaderParam("vColor");
             }
             renderContext.SetShaderParam(_uColor, _renderer.color);
+             */
         }
     }
 }

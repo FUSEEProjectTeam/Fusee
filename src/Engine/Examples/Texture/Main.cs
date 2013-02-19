@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Fusee.Engine;
 using Fusee.Math;
 
@@ -7,9 +8,9 @@ namespace Examples.Texture
     public class Texture : RenderCanvas
     {
         protected string _vs = @"
-            #ifndef GL_ES
-               #version 120
-            #endif
+            //#ifndef GL_ES
+              // #version 120
+            //#endif
 
             /* Copies incoming vertex color without change.
              * Applies the transformation matrix to vertex position.
@@ -39,9 +40,9 @@ namespace Examples.Texture
             }";
 
         protected string _ps = @"
-           #ifndef GL_ES
-               #version 120
-            #endif
+           //#ifndef GL_ES
+             //  #version 120
+            //#endif
 
             /* Copies incoming fragment color without change. */
             #ifdef GL_ES
@@ -76,11 +77,19 @@ namespace Examples.Texture
 
         public override void Init()
         {
+<<<<<<< HEAD
             Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Sphere.obj.model"));
             _meshSphere = geo.ToMesh();
 
             Geometry geo2 = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Cube.obj.model"));
             _meshCube = geo2.ToMesh();
+=======
+            Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Teapot.obj.model"));
+            _mesh = geo.ToMesh();
+            Console.WriteLine("Hello world");
+            Geometry geo2 = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Face.obj.model"));
+            _meshFace = geo2.ToMesh();
+>>>>>>> origin/develop
 
             _angleHorz = 0;
             _rotationSpeed = 10.0f;

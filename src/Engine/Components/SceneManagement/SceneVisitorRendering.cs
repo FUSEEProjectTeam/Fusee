@@ -1,11 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
 using Fusee.Engine;
 using Fusee.Math;
 
-
 namespace Fusee.SceneManagement
 {
-    public class TraversalStateRender : ITraversalState
+    public class SceneVisitorRendering : SceneVisitor
     {
         private Stack<bool> _hasTransform;
         private Stack<bool> _hasRenderer;
@@ -17,19 +20,29 @@ namespace Fusee.SceneManagement
         private double _deltaTime;
         private Input _input;
 
-        public void SetInput(Input input)
-        {
-            _input = input;
-        }
+
 
         public void SetDeltaTime(double delta)
         {
             _deltaTime = delta;
         }
 
-        public void GetInput(out Input input)
+
+
+
+        public Input Input
         {
-            input = _input;
+            set { _input = value; }
+            get
+            {
+                if (_input != null)
+                {
+                    return _input;
+                }else
+                {
+                    return null;
+                }
+            }
         }
 
         public void GetDeltaTime(out double deltaTime)
@@ -38,9 +51,10 @@ namespace Fusee.SceneManagement
         }
 
 
-        public TraversalStateRender(SceneManager queue)
+        public SceneVisitorRendering(SceneManager queue)
         {
             _queue = queue;
+            
             _mtxModelViewStack = new Stack<float4x4>();
             _meshStack = new Stack<Mesh>();
             _RendererStack = new Stack<Renderer>();
@@ -48,6 +62,7 @@ namespace Fusee.SceneManagement
             _hasRenderer = new Stack<bool>();
             _hasMesh = new Stack<bool>();
             _mtxModelViewStack.Push(float4x4.Identity);
+            PrepareDoubleDispatch();
             /*
             
             _meshStack.Push(null);
@@ -55,8 +70,9 @@ namespace Fusee.SceneManagement
             */
         }
         // TODO: Store Mesh as local variable instead of stacks as it is not used in further traversals.
-        public void StoreMesh(Mesh mesh)
+        private void StoreMesh(Mesh mesh)
         {
+            
             _hasMesh.Pop();
             _meshStack.Push(mesh);
             _hasMesh.Push(true);
@@ -68,7 +84,7 @@ namespace Fusee.SceneManagement
 
         }
 
-        public void StoreRenderer(Renderer Renderer)
+        private void StoreRenderer(Renderer Renderer)
         {
 
                 _hasRenderer.Pop();
@@ -82,7 +98,9 @@ namespace Fusee.SceneManagement
 
         }
 
-        public void AddTransform(float4x4 mtx)
+
+
+        private void AddTransform(float4x4 mtx)
         {
             _hasTransform.Pop();
                 _mtxModelViewStack.Push(mtx * _mtxModelViewStack.Pop());
@@ -95,14 +113,14 @@ namespace Fusee.SceneManagement
             }
         }
 
-        public bool HasRenderingTriple()
+        private bool HasRenderingTriple()
         {
             return (_hasMesh.Peek() && _hasRenderer.Peek() && _hasTransform.Peek());
         }
 
 
 
-        public void Push()
+        private void Push()
         {
 
                 _mtxModelViewStack.Push(_mtxModelViewStack.Peek());
@@ -113,7 +131,7 @@ namespace Fusee.SceneManagement
             _hasTransform.Push(false);
         }
 
-        public void Pop()
+        private void Pop()
         {
             _mtxModelViewStack.Pop();
             _meshStack.Pop();
@@ -123,25 +141,25 @@ namespace Fusee.SceneManagement
             _hasTransform.Pop();
         }
 
-        public void AddLightDirectional(float3 direction, float4 color, Light.LightType type) 
+        public void AddLightDirectional(float3 direction, float4 color, Light.LightType type, int channel) 
         {
-            RenderDirectionalLight light = new RenderDirectionalLight(direction, color, type);
+            RenderDirectionalLight light = new RenderDirectionalLight(direction, color, type, channel );
             _queue.AddLightJob(light);
         }
 
-        public void AddLightPoint(float3 position, float4 color, Light.LightType type) 
+        public void AddLightPoint(float3 position, float4 color, Light.LightType type, int channel) 
         {
-            RenderPointLight light = new RenderPointLight(position, color, type);
+            RenderPointLight light = new RenderPointLight(position, color, type, channel );
             _queue.AddLightJob(light);
         }
 
-        public void AddLightSpot(float3 position, float3 direction, float4 color, Light.LightType type) 
+        public void AddLightSpot(float3 position, float3 direction, float4 color, Light.LightType type, int channel) 
         {
-            RenderSpotLight light = new RenderSpotLight(position, direction, color, type);
+            RenderSpotLight light = new RenderSpotLight(position, direction, color, type, channel );
             _queue.AddLightJob(light);
         }
 
-        private void AddRenderJob(float4x4 matrix, Mesh mesh, Renderer renderer)
+        public void AddRenderJob(float4x4 matrix, Mesh mesh, Renderer renderer)
         {
             //Console.WriteLine("_meshstack"+_meshStack.Count+"_viewstack"+_mtxModelViewStack.Count+"_renderstack"+_RendererStack.Count);
             //Console.WriteLine("_hasTransform+"+_hasTransform.Count+"_hasMesh+"+_hasMesh.Count+"_hasRenderer"+_hasRenderer.Count);
@@ -154,5 +172,39 @@ namespace Fusee.SceneManagement
         }
 
 
+        // Polymorphic Visitcomponent Methods
+        public override void Visit(SceneEntity cEntity)
+        {
+            Push();
+            cEntity.TraverseForRendering(this);
+            Pop();
+        }
+        private void VisitComponent(ActionCode actionCode)
+        {
+            actionCode.TraverseForRendering(this);
+        }
+        private void VisitComponent(Renderer renderer)
+        {
+            StoreMesh(renderer.mesh);
+            StoreRenderer(renderer);
+        }
+        private void VisitComponent(Transformation transform)
+        {
+            AddTransform(transform.Matrix);
+        }
+        private void VisitComponent(DirectionalLight directionalLight)
+        {
+            directionalLight.TraverseForRendering(this);
+        }
+        private void VisitComponent(PointLight pointLight)
+        {
+            pointLight.TraverseForRendering(this);
+        }
+        private void VisitComponent(SpotLight spotLight)
+        {
+            spotLight.TraverseForRendering(this);
+        }
+
+        
     }
 }
