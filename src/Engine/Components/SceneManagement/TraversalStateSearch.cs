@@ -19,9 +19,9 @@ namespace Fusee.SceneManagement
         public void StoreRenderer(Renderer renderer){}
         public void Push(){}
         public void Pop(){}
-        public void AddLightDirectional(float3 direction, float4 color, Light.LightType type){}
-        public void AddLightPoint(float3 position, float4 color, Light.LightType type){}
-        public void AddLightSpot(float3 position, float3 direction, float4 color, Light.LightType type){}
+        public void AddLightDirectional(float3 direction, float4 color, Light.LightType type, int channel){}
+        public void AddLightPoint(float3 position, float4 color, Light.LightType type, int channel){}
+        public void AddLightSpot(float3 position, float3 direction, float4 color, Light.LightType type, int channel){}
         public void SetDeltaTime(double delta){}       
         public void GetDeltaTime(out double deltaTime)
         {

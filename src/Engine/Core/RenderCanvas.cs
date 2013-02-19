@@ -31,6 +31,7 @@ namespace Fusee.Engine
             _canvasImp.Render += delegate(object sender, RenderEventArgs args)
                                      {
                                          _in.OnUpdateFrame(_canvasImp.DeltaTime);
+                                         Time.Instance.DeltaTimeIncrement = _canvasImp.DeltaTime;
                                          RenderAFrame();
                                      };
 
@@ -62,6 +63,7 @@ namespace Fusee.Engine
 
         public int Height { get { return _canvasImp.Height; } }
 
+        /*
         public double DeltaTime
         {
             get
@@ -69,6 +71,7 @@ namespace Fusee.Engine
                 return _canvasImp.DeltaTime;
             }
         }
+         * */
 
         public void Present()
         {

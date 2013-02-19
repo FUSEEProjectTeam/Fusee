@@ -9,6 +9,7 @@ namespace Fusee.SceneManagement
     /// ActionCode class grants access to an SceneEntities Components.
     /// Supported: DeltaTime, Input recognition
     /// </summary>
+
     public class ActionCode : Component
     {
         //TODO: Test without new calls 

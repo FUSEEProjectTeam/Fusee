@@ -1,5 +1,6 @@
 ﻿
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using Fusee.Engine;
 using Fusee.Math;
@@ -19,6 +20,9 @@ namespace Examples.Components
             //renderer.material.SwitchTexture();
             parenttest = SceneEntity.FindSceneEntity("erster");
             parentscript = parenttest.GetComponent<TestBehaviour>();
+         
+            Time.Instance.TimeFlow = 1;
+
         }
 
         public override void Update()
@@ -27,8 +31,12 @@ namespace Examples.Components
             {
                 parentscript.Test(x);
                 transform.LocalEulerAngles = new float3(0, x, 0);
-                x -= 0.5f*(float)DeltaTime;
+                x -= 0.5f*(float)Time.Instance.DeltaTime;
             }
+
+            Debug.WriteLine(Time.Instance.DeltaTime  );
+            Debug.WriteLine(Time.Instance.FramePerSecond);
+
         }
     }
 }
