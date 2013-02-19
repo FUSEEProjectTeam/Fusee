@@ -44,6 +44,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.ShaderParam", t
   );
 
     $.Field({ Static: false, Public: true }, "handle",$.Object, null);
+    $.Field({ Static: false, Public: true }, "id", $.Int32, null);     // to uniquely identify shader parameters
 });
 
 
@@ -262,6 +263,8 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
     $.Field({ Static: false, Public: false }, "gl", $.Object, null);
     $.Field({ Static: false, Public: false }, "_currentTextureUnit", $.Int32, null);
     $.Field({ Static: false, Public: false }, "_shaderParam2TexUnit", $.Object, null);
+    $.Field({ Static: false, Public: false }, "_currentShaderParamHandle", $.Int32, null);
+
 
     $.Method({ Static: false, Public: true }, ".ctor",
     new JSIL.MethodSignature(null, [$asmThis.TypeRef("Fusee.Engine.RenderCanvasImp")]),
@@ -352,7 +355,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
             canvas.width = image.width;
             canvas.height = image.height;
             var context = canvas.getContext("2d");
-            
+
             context.drawImage(image, 0, 0);
             var myData = context.getImageData(0, 0, image.width, image.height);
             var imageData = new $fuseeCommon.Fusee.Engine.ImageData();
@@ -372,7 +375,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
 
             var glTexOb = this.gl.createTexture();
             this.gl.bindTexture(this.gl.TEXTURE_2D, glTexOb);
-
+            this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true);
             this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, img.Width, img.Height, 0,
 								this.gl.RGBA, this.gl.UNSIGNED_BYTE, ubyteView);
 
@@ -449,6 +452,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
             return null;
         var ret = new $asmThis.Fusee.Engine.ShaderParam();
         ret.handle = h;
+        ret.id = this._currentShaderParamHandle++;
         return ret;
     }
   );
@@ -558,10 +562,14 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
     new JSIL.MethodSignature(null, [$asmThis.TypeRef("Fusee.Engine.IShaderParam"), $asmThis.TypeRef("Fusee.Engine.ITexture")]),
     function SetShaderParamTexture(param, texId) {
         var iParam = param.handle;
-        var texUnit = this._currentTextureUnit;
-        if (!this._shaderParam2TexUnit.hasOwnProperty(iParam.toString())) {
+        var texUnit = -1;
+        var iParamStr = param.id.toString();
+        if (this._shaderParam2TexUnit.hasOwnProperty(iParamStr)) {
+            texUnit = this._shaderParam2TexUnit[iParamStr];
+        }
+        else {
             texUnit = this._currentTextureUnit++;
-            this._shaderParam2TexUnit[iParam.toString()] = texUnit;
+            this._shaderParam2TexUnit[iParamStr] = texUnit;
         }
 
         this.gl.uniform1i(iParam, texUnit);
