@@ -37,9 +37,9 @@ namespace Fusee.Engine
         */
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RenderContext" /> class.
+        /// 
         /// </summary>
-        /// <param name="rci">The rci.</param>
+        /// <param name="rci"></param>
         public RenderContext(IRenderContextImp rci)
         {
             _rci = rci;
@@ -48,7 +48,7 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// The camera
+        /// 
         /// </summary>
         public float4x4 Camera; // TODO: Implement Camera. Temporary solution!!
         private float4x4 _modelView;
@@ -76,10 +76,6 @@ namespace Fusee.Engine
 
 
         
-        public ITexture CreateTexture(String filename)
-        {
-            return _rci.CreateTexture(filename);
-        }
 
         /// <summary>
         /// Creates a new texture and binds it to the shader
@@ -128,10 +124,10 @@ namespace Fusee.Engine
 
 
         /// <summary>
-        /// Gets or sets the model view.
+        /// 
         /// </summary>
         /// <value>
-        /// The model view.
+        /// 
         /// </value>
         public float4x4 ModelView
         {
@@ -160,10 +156,10 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// Gets or sets the projection.
+        /// 
         /// </summary>
         /// <value>
-        /// The projection.
+        /// 
         /// </value>
         public float4x4 Projection
         {
@@ -192,10 +188,10 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// Gets the model view projection.
+        /// 
         /// </summary>
         /// <value>
-        /// The model view projection.
+        /// 
         /// </value>
         public float4x4 ModelViewProjection
         {
@@ -211,10 +207,10 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// Gets the inv model view.
+        /// 
         /// </summary>
         /// <value>
-        /// The inv model view.
+        /// 
         /// </value>
         public float4x4 InvModelView
         {
@@ -230,10 +226,10 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// Gets the inv projection.
+        /// 
         /// </summary>
         /// <value>
-        /// The inv projection.
+        /// 
         /// </value>
         public float4x4 InvProjection
         {
@@ -249,10 +245,10 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// Gets the inv model view projection.
+        /// 
         /// </summary>
         /// <value>
-        /// The inv model view projection.
+        /// 
         /// </value>
         public float4x4 InvModelViewProjection
         {
@@ -269,10 +265,10 @@ namespace Fusee.Engine
 
 
         /// <summary>
-        /// Gets the trans model view.
+        /// 
         /// </summary>
         /// <value>
-        /// The trans model view.
+        /// 
         /// </value>
         public float4x4 TransModelView
         {
@@ -288,10 +284,10 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// Gets the trans projection.
+        /// 
         /// </summary>
         /// <value>
-        /// The trans projection.
+        /// 
         /// </value>
         public float4x4 TransProjection
         {
@@ -307,10 +303,10 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// Gets the trans model view projection.
+        /// 
         /// </summary>
         /// <value>
-        /// The trans model view projection.
+        /// 
         /// </value>
         public float4x4 TransModelViewProjection
         {
@@ -327,10 +323,10 @@ namespace Fusee.Engine
 
 
         /// <summary>
-        /// Gets the inv trans model view.
+        /// 
         /// </summary>
         /// <value>
-        /// The inv trans model view.
+        /// 
         /// </value>
         public float4x4 InvTransModelView
         {
@@ -346,10 +342,10 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// Gets the inv trans projection.
+        /// 
         /// </summary>
         /// <value>
-        /// The inv trans projection.
+        /// 
         /// </value>
         public float4x4 InvTransProjection
         {
@@ -365,10 +361,10 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// Gets the inv trans model view projection.
+        /// 
         /// </summary>
         /// <value>
-        /// The inv trans model view projection.
+        /// 
         /// </value>
         public float4x4 InvTransModelViewProjection
         {
@@ -385,7 +381,7 @@ namespace Fusee.Engine
 
 
         /// <summary>
-        /// Updates the current shader.
+        /// 
         /// </summary>
         private void UpdateCurrentShader()
         {
@@ -454,10 +450,10 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// Sets active light.
+        /// 
         /// </summary>
-        /// <param name="lightInx">The light inx.</param>
-        /// <param name="active">The active.</param>
+        /// <param name="lightInx"></param>
+        /// <param name="active"></param>
         public void SetLightActive(int lightInx, float active)
         {
             _lightParams[lightInx].Active = active;
@@ -468,10 +464,10 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// Sets the ambient light.
+        /// 
         /// </summary>
-        /// <param name="lightInx">The light inx.</param>
-        /// <param name="ambientColor">Color of the ambient.</param>
+        /// <param name="lightInx"></param>
+        /// <param name="ambientColor"></param>
         public void SetLightAmbient(int lightInx, float4 ambientColor)
         {
             _lightParams[lightInx].AmbientColor = ambientColor;
@@ -482,10 +478,10 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// Sets the diffuse light.
+        /// 
         /// </summary>
-        /// <param name="lightInx">The light inx.</param>
-        /// <param name="diffuseColor">Color of the diffuse.</param>
+        /// <param name="lightInx"></param>
+        /// <param name="diffuseColor"></param>
         public void SetLightDiffuse(int lightInx, float4 diffuseColor)
         {
             _lightParams[lightInx].DiffuseColor= diffuseColor;
@@ -496,10 +492,10 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// Sets the specular light.
+        /// 
         /// </summary>
-        /// <param name="lightInx">The light inx.</param>
-        /// <param name="specularColor">Color of the specular.</param>
+        /// <param name="lightInx"></param>
+        /// <param name="specularColor"></param>
         public void SetLightSpecular(int lightInx, float4 specularColor)
         {
             _lightParams[lightInx].SpecularColor = specularColor;
@@ -510,10 +506,10 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// Sets the light position.
+        /// 
         /// </summary>
-        /// <param name="lightInx">The light inx.</param>
-        /// <param name="position">The position.</param>
+        /// <param name="lightInx"></param>
+        /// <param name="position"></param>
         public void SetLightPosition(int lightInx, float3 position)
         {
             _lightParams[lightInx].Position = position;
@@ -524,10 +520,10 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// Sets the light direction.
+        /// 
         /// </summary>
-        /// <param name="lightInx">The light inx.</param>
-        /// <param name="direction">The direction.</param>
+        /// <param name="lightInx"></param>
+        /// <param name="direction"></param>
         public void SetLightDirection(int lightInx, float3 direction)
         {
             _lightParams[lightInx].Direction = direction;
@@ -538,10 +534,10 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// Creates the shader.
+        /// 
         /// </summary>
-        /// <param name="vs">The vertex shader.</param>
-        /// <param name="ps">The pixel shader.</param>
+        /// <param name="vs"></param>
+        /// <param name="ps"></param>
         /// <returns></returns>
         public ShaderProgram CreateShader(string vs, string ps)
         {
@@ -558,9 +554,9 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// Sets the shader.
+        /// 
         /// </summary>
-        /// <param name="program">The program.</param>
+        /// <param name="program"></param>
         public void SetShader(ShaderProgram program)
         {
             _currentShader = program;
@@ -569,9 +565,9 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// Gets the shader param list.
+        /// 
         /// </summary>
-        /// <param name="program">The program.</param>
+        /// <param name="program"></param>
         /// <returns></returns>
         public IEnumerable<ShaderParamInfo> GetShaderParamList(ShaderProgram program)
         {
@@ -670,9 +666,9 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// Clears the specified flags.
+        /// 
         /// </summary>
-        /// <param name="flags">The flags.</param>
+        /// <param name="flags"></param>
         public void Clear(ClearFlags flags)
         {
             _rci.Clear(flags);
@@ -706,22 +702,22 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// Viewports the specified x.
+        /// 
         /// </summary>
-        /// <param name="x">The x.</param>
-        /// <param name="y">The y.</param>
-        /// <param name="width">The width.</param>
-        /// <param name="height">The height.</param>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
         public void Viewport(int x, int y, int width, int height)
         {
             _rci.Viewport(x, y, width, height);
         }
 
         /// <summary>
-        /// Gets or sets the color of the clear.
+        /// 
         /// </summary>
         /// <value>
-        /// The color of the clear.
+        /// 
         /// </value>
         public float4 ClearColor
         {
@@ -730,10 +726,10 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// Gets or sets the clear depth.
+        /// 
         /// </summary>
         /// <value>
-        /// The clear depth.
+        /// 
         /// </value>
         public float ClearDepth
         {

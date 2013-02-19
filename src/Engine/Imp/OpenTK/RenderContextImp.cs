@@ -72,28 +72,6 @@ namespace Fusee.Engine
         }
 
 
-        public ITexture CreateTexture(String filename)
-        {
-            Bitmap bmp = new Bitmap(filename);
-            // GL.ActiveTexture(TextureUnit.Texture3);
-            int id = GL.GenTexture();
-            GL.BindTexture(TextureTarget.Texture2D, id);
-
-            System.Drawing.Imaging.BitmapData bmpData = bmp.LockBits(new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite,
-                                                                                                  System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, bmpData.Width, bmpData.Height, 0,
-            OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, bmpData.Scan0);
-
-            bmp.UnlockBits(bmpData);
-
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMinFilter.Linear);
-
-            ITexture texID = new Texture { handle = id };
-            return texID;
-        }
-
 
         public IShaderParam GetShaderParam(IShaderProgramImp shaderProgram, string paramName)
         {
