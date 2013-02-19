@@ -38,10 +38,9 @@ namespace Fusee.SceneManagement
 
        }
 
-       override public void Traverse(ITraversalState _traversalState)
-       {          
-           _traversalState.AddTransform(Matrix);
-       }
+
+
+        
 
 
 

@@ -95,7 +95,10 @@ namespace Fusee.Engine
             _rci.SetShaderParamTexture(param, texId);
         }
 
-
+        public ShaderProgram CurrentShader
+        {
+            get { return _currentShader; }
+        }
 
         public float4x4 ModelView
         {

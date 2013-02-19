@@ -58,7 +58,6 @@
     <Compile Include="ActionCode.cs" />
     <Compile Include="Component.cs" />
     <Compile Include="DirectionalLight.cs" />
-    <Compile Include="ITraversalState.cs" />
     <Compile Include="Light.cs" />
     <Compile Include="Material.cs" />
     <Compile Include="PointLight.cs" />
@@ -73,9 +72,11 @@
     <Compile Include="RenderMatrix.cs" />
     <Compile Include="RenderMesh.cs" />
     <Compile Include="SceneEntity.cs" />
+    <Compile Include="SceneVisitor.cs" />
+    <Compile Include="SceneVisitorRendering.cs" />
+    <Compile Include="SceneVisitorSearch.cs" />
     <Compile Include="SpotLight.cs" />
     <Compile Include="Transformation.cs" />
-    <Compile Include="TraversalState.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
