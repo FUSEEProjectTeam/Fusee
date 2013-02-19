@@ -134,11 +134,20 @@ namespace Fusee.SceneManagement
         private void Pop()
         {
             _mtxModelViewStack.Pop();
-            _meshStack.Pop();
-            _RendererStack.Pop();
-            _hasMesh.Pop();
-            _hasRenderer.Pop();
             _hasTransform.Pop();
+            if(_meshStack.Count > 0)
+            {
+                _meshStack.Pop();
+                _hasMesh.Pop();  
+            }
+            
+            if(_RendererStack.Count > 0)
+            {
+                _RendererStack.Pop();
+                _hasRenderer.Pop();
+            }
+            
+            
         }
 
         public void AddLightDirectional(float3 direction, float4 color, Light.LightType type, int channel) 
@@ -204,7 +213,15 @@ namespace Fusee.SceneManagement
         {
             spotLight.TraverseForRendering(this);
         }
-
+        private void VisitComponent(Camera camera)
+        {
+            
+            if (_mtxModelViewStack.Peek() != null)
+            {
+                camera.ViewMatrix = _mtxModelViewStack.Peek();
+                _queue.AddCamera(camera.SubmitWork());
+            }
+        }
         
     }
 }

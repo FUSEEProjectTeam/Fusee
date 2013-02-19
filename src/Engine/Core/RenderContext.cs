@@ -35,14 +35,16 @@ namespace Fusee.Engine
         public RenderContext(IRenderContextImp rci)
         {
             _rci = rci;
+            View = float4x4.Identity;
             ModelView = float4x4.Identity;
             Projection = float4x4.Identity;
         }
 
-        public float4x4 Camera; // TODO: Implement Camera. Temporary solution!!
+        
         // Settable matrices
         private float4x4 _modelView;
         private float4x4 _projection;
+        private float4x4 _view; 
 
         // Derived matrices
         private float4x4 _modelViewProjection;
@@ -98,6 +100,12 @@ namespace Fusee.Engine
         public ShaderProgram CurrentShader
         {
             get { return _currentShader; }
+        }
+
+        public float4x4 View
+        {
+            get { return _view; }
+            set { _view = value; }
         }
 
         public float4x4 ModelView
