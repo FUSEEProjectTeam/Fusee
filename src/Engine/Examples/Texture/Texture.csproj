@@ -8,8 +8,10 @@
     <ProjectGuid>{FEDC94C7-0F0A-4891-8740-AD00FDBF3A61}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Examples.Textures</RootNamespace>
-    <AssemblyName>Examples.Textures</AssemblyName>
+    <RootNamespace>Examples.Texture</RootNamespace>
+    <AssemblyName>Examples.Texture</AssemblyName>
+    <RootNamespace>Examples.Texture</RootNamespace>
+    <AssemblyName>Examples.Texture</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <UseVSHostingProcess>false</UseVSHostingProcess>
@@ -19,7 +21,8 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\Bin\Debug\Examples\Textures</OutputPath>
+    <OutputPath>..\..\..\..\Bin\Debug\Examples\Texture</OutputPath>
+    <OutputPath>..\..\..\..\Bin\Debug\Examples\Texture</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -28,7 +31,8 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\..\..\Bin\Release\Examples\Textures</OutputPath>
+    <OutputPath>..\..\..\..\Bin\Release\Examples\Texture</OutputPath>
+    <OutputPath>..\..\..\..\Bin\Release\Examples\Texture</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -41,7 +45,8 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\Bin\Debug\Examples\Textures</OutputPath>
+    <OutputPath>..\..\..\..\Bin\Debug\Examples\Texture</OutputPath>
+    <OutputPath>..\..\..\..\Bin\Debug\Examples\Texture</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -49,19 +54,6 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Main.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Assets\Desert.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Assets\Face.obj.model">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Assets\Teapot.obj.model">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Math\Core\Math.Core.csproj">
@@ -80,6 +72,22 @@
       <Project>{F7AD2BB5-D2B0-4697-BDDB-4CC26152A6B6}</Project>
       <Name>OpenTK</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\Cube.obj.model">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Assets\Sphere.obj.model">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Assets\cube_tex.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\world_map.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
