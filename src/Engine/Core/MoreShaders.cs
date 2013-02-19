@@ -338,7 +338,10 @@ void main()
 
 
 private const string VsBump = @"
-# version 120
+#ifndef GL_ES
+    # version 120
+#endif
+
 /* Copies incoming vertex color without change.
     * Applies the transformation matrix to vertex position.
     */
@@ -462,10 +465,14 @@ void main()
 }";
 
 private const string PsBump = @"
-/* Copies incoming fragment color without change. */
-#ifdef GL_ES
-precision highp float;
-#endif
+           #ifndef GL_ES
+               #version 120
+            #endif
+
+            /* Copies incoming fragment color without change. */
+            #ifdef GL_ES
+                precision highp float;
+            #endif
 
 uniform sampler2D texture1;
 uniform sampler2D normalTex;
@@ -519,9 +526,9 @@ void main()
         (intensity[5] * vDiffuse[5]) +
         (intensity[6] * vDiffuse[6]) +
         (intensity[7] * vDiffuse[7]) +
-        endSpecular +
+         endSpecular +
          endAmbient; 
-    gl_FragColor = texture2D(normalTex, vUV) * cf; 
+    gl_FragColor = vec4(1,1,1,1) * cf;  ///texture2D(normalTex, vUV) * cf; 
 }";
 
 
