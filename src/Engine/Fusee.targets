@@ -1,12 +1,22 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Target Name="BeforeBuild">
+    <ItemGroup>
+      <DLLFiles Include="$(TargetDir)\..\..\*.dll" />
+    </ItemGroup>
+
+    <Message Importance="High" Text="### BeforeBuildEvent $(TargetName): Copying necessary files ###" />
+    <Copy SourceFiles="@(DLLFiles)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" />
+  </Target>
+  
   <Target Name="AfterBuild" Condition="'$(Configuration)' == 'Debug+Web'">
     <PropertyGroup>
       <WebOutputDir>$(TargetDir)Web</WebOutputDir>
     </PropertyGroup>
     <ItemGroup>
-      <WebGLScripts Include="$(TargetDir)..\..\WebGL\Scripts\*.*" />
-      <WebGLStyles Include="$(TargetDir)..\..\WebGL\Styles\*.*" />
+      <WebGLScripts Include="$(TargetDir)\..\..\WebGL\Scripts\*.*" />
+      <WebGLStyles Include="$(TargetDir)\..\..\WebGL\Styles\*.*" />
+      <XNAAudioScript Include="$(TargetDir)\..\..\XNAAudio\*.*" />
     </ItemGroup>
 
     <MakeDir Directories="$(WebOutputDir)" Condition="!Exists('$(WebOutputDir)')" />
@@ -20,6 +30,7 @@
     <Message Importance="High" Text="### PostBuildEvent $(TargetName): Copying additional scripts/styles ###" />
     <Copy SourceFiles="@(WebGLScripts)" DestinationFolder="$(WebOutputDir)\Assets\Scripts" SkipUnchangedFiles="true" />
     <Copy SourceFiles="@(WebGLStyles)" DestinationFolder="$(WebOutputDir)\Assets\Styles" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(XNAAudioScript)" DestinationFolder="$(WebOutputDir)\Assets\Scripts" SkipUnchangedFiles="true" />
 
     <Message Importance="High" Text="### PostBuildEvent $(TargetName): Creating default HTML file ###" />
     <Exec ContinueOnError="true" Timeout="60000" Command='"$(SolutionDir)..\..\ExternalBinaries\JSIL\Compiler\fuHTMLGen.exe" "$(TargetDir)\" "$(WebOutputDir)" "$(TargetPath)"' />

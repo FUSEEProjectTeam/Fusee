@@ -5,8 +5,8 @@ using System.Runtime.InteropServices;
 // Allgemeine Informationen über eine Assembly werden über die folgenden 
 // Attribute gesteuert. Ändern Sie diese Attributwerte, um die Informationen zu ändern,
 // die mit einer Assembly verknüpft sind.
-[assembly: AssemblyTitle("Fusee.Engine.Imp.OpenTK")]
-[assembly: AssemblyDescription("OpenTK implementation of the render engine hardware layer")]
+[assembly: AssemblyTitle("Fusee.Engine.Imp.NAudio")]
+[assembly: AssemblyDescription("NAudio implementation of the render engine hardware layer")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Furtwangen University")]
 [assembly: AssemblyProduct("Fusee")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // Die folgende GUID bestimmt die ID der Typbibliothek, wenn dieses Projekt für COM verfügbar gemacht wird
-[assembly: Guid("4ebd6436-8e5a-4f4e-a8d7-84bfeec9a9da")]
+[assembly: Guid("deaa3e09-b412-40c9-8d81-95b5d7a16a9f")]
 
 // Versionsinformationen für eine Assembly bestehen aus den folgenden vier Werten:
 //

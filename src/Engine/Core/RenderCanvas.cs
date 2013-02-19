@@ -5,8 +5,9 @@ namespace Fusee.Engine
 {
     public class RenderCanvas
     {
-        private RenderContext _rc;
         internal IRenderCanvasImp _canvasImp;
+
+        private RenderContext _rc;
         protected RenderContext RC
         {
             get { return _rc; }
@@ -16,6 +17,12 @@ namespace Fusee.Engine
         protected Input In
         {
             get { return _in; }
+        }
+
+        private Audio _audio;
+        protected Audio Aud
+        {
+            get { return _audio; }
         }
 
         public RenderCanvas()
@@ -39,6 +46,7 @@ namespace Fusee.Engine
                                          Resize();
                                      };
 
+            _audio = new Audio(ImpFactory.CreateIAudioImp());
         }
 
         public virtual void RenderAFrame()
