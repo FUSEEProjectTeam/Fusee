@@ -23,9 +23,9 @@ namespace Examples.Components
         private Renderer Childrenderer = new Renderer();
         private ChildAction Childscript = new ChildAction();
         //Light test
-        private SpotLight spot = new SpotLight();
-        private PointLight point = new PointLight();
-        private DirectionalLight direct = new DirectionalLight();
+        private SpotLight spot = new SpotLight(3);
+        private PointLight point = new PointLight(1);
+        private DirectionalLight direct = new DirectionalLight(2);
 
 
         //ExceptionTest
@@ -48,7 +48,7 @@ namespace Examples.Components
             TestEntity.AddComponent(testscript);
             TestEntity.AddComponent(spot);
             TestEntity.AddComponent(point);
-            //TestEntity.AddComponent(direct);
+            TestEntity.AddComponent(direct);
             SceneManager.Manager.AddSceneEntity(TestEntity);
             testscript.Init(TestEntity);
             TestEntity.AddChild(ChildEntity); // Als Child hinzugefuegt
@@ -61,7 +61,6 @@ namespace Examples.Components
             Childscript.Start();
             testscript.Start();
 
-            
             /*
             ShaderProgram sp = RC.CreateShader(_material._vs, _material._ps);
             RC.SetShader(sp);

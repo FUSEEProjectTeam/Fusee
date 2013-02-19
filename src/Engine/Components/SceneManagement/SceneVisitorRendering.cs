@@ -141,21 +141,21 @@ namespace Fusee.SceneManagement
             _hasTransform.Pop();
         }
 
-        public void AddLightDirectional(float3 direction, float4 color, Light.LightType type) 
+        public void AddLightDirectional(float3 direction, float4 color, Light.LightType type, int channel) 
         {
-            RenderDirectionalLight light = new RenderDirectionalLight(direction, color, type);
+            RenderDirectionalLight light = new RenderDirectionalLight(direction, color, type, channel );
             _queue.AddLightJob(light);
         }
 
-        public void AddLightPoint(float3 position, float4 color, Light.LightType type) 
+        public void AddLightPoint(float3 position, float4 color, Light.LightType type, int channel) 
         {
-            RenderPointLight light = new RenderPointLight(position, color, type);
+            RenderPointLight light = new RenderPointLight(position, color, type, channel );
             _queue.AddLightJob(light);
         }
 
-        public void AddLightSpot(float3 position, float3 direction, float4 color, Light.LightType type) 
+        public void AddLightSpot(float3 position, float3 direction, float4 color, Light.LightType type, int channel) 
         {
-            RenderSpotLight light = new RenderSpotLight(position, direction, color, type);
+            RenderSpotLight light = new RenderSpotLight(position, direction, color, type, channel );
             _queue.AddLightJob(light);
         }
 
