@@ -27,15 +27,17 @@ namespace Examples.Components
 
         public override void Update()
         {
-            if(Input.IsButtonDown(MouseButtons.Left))
-            {
+            //if(Input.IsButtonDown(MouseButtons.Left))
+            //{
+                Debug.WriteLine("parent "+parentscript.transform.LocalPosition);
+                Debug.WriteLine("child "+transform.LocalPosition);
                 parentscript.Test(x);
                 transform.LocalEulerAngles = new float3(0, x, 0);
                 x -= 0.5f*(float)Time.Instance.DeltaTime;
-            }
-
-            Debug.WriteLine(Time.Instance.DeltaTime  );
-            Debug.WriteLine(Time.Instance.FramePerSecond);
+            //}
+            Debug.WriteLine("matrix "+transform.Matrix);
+            //Debug.WriteLine(Time.Instance.DeltaTime  );
+            //Debug.WriteLine(Time.Instance.FramePerSecond);
 
         }
     }
