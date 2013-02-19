@@ -40,10 +40,7 @@ namespace Fusee.SceneManagement
         /// Overrides Traverse with empty body
         /// </summary>
         /// <param name="_traversalState"></param>
-        override public void Traverse(ITraversalState _traversalState)
-        {
 
-        }
         #endregion 
 
     }

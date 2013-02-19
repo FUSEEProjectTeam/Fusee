@@ -42,22 +42,10 @@ namespace Fusee.SceneManagement
         /// Overrides Traverse. Add's Spotlight to the lightqueue.
         /// </summary>
         /// <param name="_traversalState"></param>
-        override public void Traverse(ITraversalState _traversalState)
-        {
-            _traversalState.Visit(this);
-        }
-
-        public void TraverseForRendering(ITraversalState _traversalState)
-        {
-            //TODO Typübergabe implementieren.
-            _traversalState.AddLightSpot(_position, _direction, _color, _type, _channel);
-        }
-
-        /*
         public void TraverseForRendering(SceneVisitorRendering sceneVisitorRendering)
         {
             sceneVisitorRendering.AddLightSpot(_position, _direction, _color, _type, _channel );
-        }*/
+        }
 
         #endregion
     }

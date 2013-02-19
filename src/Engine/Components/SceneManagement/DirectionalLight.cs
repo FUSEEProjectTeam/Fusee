@@ -41,21 +41,12 @@ namespace Fusee.SceneManagement
         /// Overrides Traverse. Add's Directionallight to the lightqueue.
         /// </summary>
         /// <param name="_traversalState"></param>
-        override public void Traverse(ITraversalState _traversalState)
-        {
-            _traversalState.Visit(this);
-        }
 
-        public void TraverseForRendering(ITraversalState _traversalState)
-        {
-            _traversalState.AddLightDirectional(_direction, _color, _type, _channel);
-        }
-
-        /*
+        
         public void TraverseForRendering(SceneVisitorRendering sceneVisitorRendering)
         {
             sceneVisitorRendering.AddLightDirectional(_direction, _color, _type, _channel);
-        }*/
+        }
 
         #endregion
     }

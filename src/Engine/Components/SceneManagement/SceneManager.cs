@@ -56,7 +56,7 @@ namespace Fusee.SceneManagement
             {
                 
                 //_traversalRender.SetDeltaTime(renderCanvas.DeltaTime);
-                _sceneVisitorRendering.SetDeltaTime(renderCanvas.DeltaTime);
+                _sceneVisitorRendering.SetDeltaTime(Time.Instance.DeltaTime);
                 //sceneMember.Traverse(_traversalRender);
                 sceneMember.Accept(_sceneVisitorRendering);
             }
