@@ -81,7 +81,7 @@ namespace Examples.Components
 
 
             RC.ClearColor = new float4(0, 0, 0, 1);
-            SceneManager.Manager.SetInput(In);
+            //SceneManager.Manager.SetInput(In);
         }
 
 
