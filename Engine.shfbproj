@@ -20,9 +20,10 @@
     <Language>en-US</Language>
     <DocumentationSources>
       <DocumentationSource sourceFile="src\Engine\Common\Common.csproj" />
-<DocumentationSource sourceFile="src\Engine\Core\Core.csproj" />
-<DocumentationSource sourceFile="src\Math\Core\Math.Core.csproj" />
-<DocumentationSource sourceFile="src\Engine\Components\SceneManagement\SceneManagement.csproj" /></DocumentationSources>
+      <DocumentationSource sourceFile="src\Engine\Core\Core.csproj" />
+      <DocumentationSource sourceFile="src\Math\Core\Math.Core.csproj" />
+      <DocumentationSource sourceFile="src\Engine\Components\SceneManagement\SceneManagement.csproj" />
+    </DocumentationSources>
     <SyntaxFilters>CSharp</SyntaxFilters>
     <SdkLinkTarget>Blank</SdkLinkTarget>
     <RootNamespaceContainer>False</RootNamespaceContainer>
@@ -31,6 +32,23 @@
     <NamingMethod>Guid</NamingMethod>
     <HelpTitle>A Sandcastle Documented Class Library</HelpTitle>
     <ContentPlacement>AboveNamespaces</ContentPlacement>
+    <ApiFilter>
+      <Filter entryType="Namespace" fullName="Fusee.Engine" isExposed="True">
+  <Filter entryType="Interface" fullName="Fusee.Engine.IInputImp" filterName="IInputImp" isExposed="False" />
+  <Filter entryType="Interface" fullName="Fusee.Engine.IMeshImp" filterName="IMeshImp" isExposed="False" />
+  <Filter entryType="Class" fullName="Fusee.Engine.ImpFactory" filterName="ImpFactory" isExposed="False" />
+  <Filter entryType="Class" fullName="Fusee.Engine.InitEventArgs" filterName="InitEventArgs" isExposed="False" />
+  <Filter entryType="Interface" fullName="Fusee.Engine.IRenderCanvasImp" filterName="IRenderCanvasImp" isExposed="False" />
+  <Filter entryType="Interface" fullName="Fusee.Engine.IRenderContextImp" filterName="IRenderContextImp" isExposed="False" />
+  <Filter entryType="Interface" fullName="Fusee.Engine.IShaderParam" filterName="IShaderParam" isExposed="False" />
+  <Filter entryType="Interface" fullName="Fusee.Engine.IShaderProgramImp" filterName="IShaderProgramImp" isExposed="False" />
+  <Filter entryType="Interface" fullName="Fusee.Engine.ITexture" filterName="ITexture" isExposed="False" />
+</Filter>
+<Filter entryType="Namespace" fullName="System" isExposed="False">
+  <Filter entryType="Class" fullName="System.Object" filterName="Object" isExposed="False" />
+  <Filter entryType="Class" fullName="System.ValueType" filterName="ValueType" isExposed="False" />
+</Filter></ApiFilter>
+    <VisibleItems>InheritedMembers, InheritedFrameworkMembers, Protected, SealedProtected</VisibleItems>
   </PropertyGroup>
   <!-- There are no properties for these groups.  AnyCPU needs to appear in
        order for Visual Studio to perform the build.  The others are optional
