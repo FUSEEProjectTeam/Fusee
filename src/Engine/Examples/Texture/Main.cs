@@ -98,8 +98,6 @@ namespace Examples.Texture
             _imgData2 = RC.LoadImage("Assets/cube_tex.jpg");
             _iTex2 = RC.CreateTexture(_imgData2);
 
-            //RC.SetShaderParamTexture(_texture1Param, _iTex1);
-            //RC.SetShaderParamTexture(_texture2Param, _iTex2);
        }
 
         public override void RenderAFrame()
