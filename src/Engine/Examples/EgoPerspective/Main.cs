@@ -8,7 +8,7 @@ namespace Examples.EgoPerspective
 {
     public class EgoPerspective : RenderCanvas
     {
-        private static float _angleHorz = 0.0f, _angleVert = 0.0f, _angleVelHorz = 0, _angleVelVert = 0, _rotationSpeed = 10.0f, _damping = 0.95f, _moveX = 0.0f, _moveY = 0.0f, _moveZ = 0.0f;
+        private static float _angleHorz = 0.0f, _angleVert = 0.0f, _rotationSpeed = 10.0f; //_angleVelHorz = 0, _angleVelVert = 0, _damping = 0.95f, _moveX = 0.0f, _moveY = 0.0f, _moveZ = 0.0f;
         private World _world;
         protected ShaderProgram Sp3;
         protected IShaderParam[] Param;
