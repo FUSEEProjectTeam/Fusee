@@ -74,11 +74,6 @@ namespace Fusee.Engine
         private bool _transModelViewProjectionOk;
 
 
-        public ITexture CreateTexture(String filename)
-        {
-            return _rci.CreateTexture(filename);
-        }
-
         public ITexture CreateTexture(ImageData imgData)
         {
             return _rci.CreateTexture(imgData);
@@ -95,6 +90,10 @@ namespace Fusee.Engine
             _rci.SetShaderParamTexture(param, texId);
         }
 
+        public ShaderProgram CurrentShader
+        {
+            get { return _currentShader; }
+        }
         //directional or Point- Light 
         public void SetLight(float3 v3, float4 color, int type, int id)
         {
