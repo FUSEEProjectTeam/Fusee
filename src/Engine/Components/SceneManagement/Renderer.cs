@@ -19,15 +19,6 @@ namespace Fusee.SceneManagement
             material = new Material();
             color = new float4(1,0,0,1);
         }
-        public override void Traverse(ITraversalState _traversalState)
-        {
-            _traversalState.Visit(this);
-        }
 
-        public void TraverseForRendering(ITraversalState _traversalState)
-        {
-            _traversalState.StoreMesh(mesh);
-            _traversalState.StoreRenderer(this); 
-        }
     }
 }

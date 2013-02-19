@@ -9,14 +9,16 @@ namespace Fusee.SceneManagement
     {
         private static readonly SceneManager _manager = new SceneManager();
         private RenderContext _renderContext;
-        private TraversalStateRender _traversalRender;
-        private List<RenderJob>[] RenderJobs = new List<RenderJob>[10]; 
-        private List<SceneEntity> SceneMembers = new List<SceneEntity>(); 
+        //private TraversalStateRender _traversalRender;
         
+        private List<RenderJob>[] RenderJobs = new List<RenderJob>[10]; 
+        private List<SceneEntity> SceneMembers = new List<SceneEntity>();
+        private SceneVisitorRendering _sceneVisitorRendering;
 
         private SceneManager()
         {
-            _traversalRender =  new TraversalStateRender(this);
+            _sceneVisitorRendering = new SceneVisitorRendering(this);
+            //_traversalRender =  new TraversalStateRender(this);
             for (int i = 0; i < RenderJobs.Length; i++ )
             {
                 RenderJobs[i] = new List<RenderJob>();
@@ -53,8 +55,10 @@ namespace Fusee.SceneManagement
             foreach (var sceneMember in SceneMembers)
             {
                 
-                _traversalRender.SetDeltaTime(renderCanvas.DeltaTime);
-                sceneMember.Traverse(_traversalRender);
+                //_traversalRender.SetDeltaTime(renderCanvas.DeltaTime);
+                _sceneVisitorRendering.SetDeltaTime(renderCanvas.DeltaTime);
+                //sceneMember.Traverse(_traversalRender);
+                sceneMember.Accept(_sceneVisitorRendering);
             }
 
             // Order: Matrix, Mesh, Renderer
@@ -93,7 +97,8 @@ namespace Fusee.SceneManagement
 
         public void SetInput(Input input)
         {
-            _traversalRender.Input = input;
+            //_traversalRender.Input = input;
+            _sceneVisitorRendering.Input = input;
         }
 
         // Ursprüngliche SceneEntity suche
@@ -119,8 +124,8 @@ namespace Fusee.SceneManagement
         // neue suche
         public SceneEntity FindSceneEntity(string name)
         {
-            TraversalStateSearch searcher = new TraversalStateSearch();
-            SceneEntity result = searcher.FindSceneEntity(SceneMembers, name);
+            SceneVisitorSearch sceneVisitorSearch = new SceneVisitorSearch();
+            SceneEntity result = sceneVisitorSearch.FindSceneEntity(SceneMembers, name);
             return result;
         }
 

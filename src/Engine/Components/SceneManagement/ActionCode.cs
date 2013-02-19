@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using Fusee.Engine;
 
@@ -39,15 +40,11 @@ namespace Fusee.SceneManagement
         /// Traverse is giving the Update routine access to the DeltaTime and the Input class and afterwards executes the Update routine.
         /// </summary>
         /// <param name="_traversalState"></param>
-        public override void Traverse(ITraversalState _traversalState)
+        public void TraverseForRendering(SceneVisitorRendering sceneVisitorRendering)
         {
-            _traversalState.Visit(this);
-        }
-
-        public void TraverseForRendering(ITraversalState _traversalState)
-        {
-            Input = _traversalState.Input;
-            _traversalState.GetDeltaTime(out DeltaTime);
+            
+            Input = sceneVisitorRendering.Input;
+            sceneVisitorRendering.GetDeltaTime(out DeltaTime);
             Update();
         }
         #endregion

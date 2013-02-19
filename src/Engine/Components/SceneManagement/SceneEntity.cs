@@ -39,28 +39,26 @@ namespace Fusee.SceneManagement
             _parent = parent;
         }
 
-        public void TraverseForRendering(ITraversalState traversal)
+
+
+        public void TraverseForRendering(SceneVisitorRendering sceneVisitorRendering)
         {
-            traversal.Push();
+            
             foreach (var childComponent in _childComponents)
             {
-                childComponent.Traverse(traversal);
+                childComponent.Accept(sceneVisitorRendering);
             }
 
             foreach (var childSceneEntity in _childSceneEntities)
             {
-                childSceneEntity.Traverse(traversal);
+                childSceneEntity.Accept(sceneVisitorRendering);
             }
-            traversal.Pop();
-               
-
         }
 
 
-        public void Traverse(ITraversalState traversal)
+        public void Accept(SceneVisitor sv)
         {
-            traversal.Visit(this);
-            
+            sv.Visit(this);    
         }
 
         public void AddComponent(Component component)
@@ -123,7 +121,7 @@ namespace Fusee.SceneManagement
         }
 
         
-        public SceneEntity FindSceneEntity(string sceneEntityName)
+        public  static SceneEntity FindSceneEntity(string sceneEntityName)
         {
             return SceneManager.Manager.FindSceneEntity(sceneEntityName);
         }

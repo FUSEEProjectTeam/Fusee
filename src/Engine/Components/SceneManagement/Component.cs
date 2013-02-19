@@ -33,10 +33,9 @@ namespace Fusee.SceneManagement
            get { return _sceneEntity; }
            set { _sceneEntity = value; }
        }
-
-       virtual public void Traverse(ITraversalState _traversalState)
+       public void Accept(SceneVisitor sv)
        {
-
+           sv.Visit(this);
        }
        #endregion
    }
