@@ -12,17 +12,22 @@ namespace Fusee.Engine
             get { return _rc; }
         }
 
+        /*
         private Input _in;
+
         protected Input In
         {
             get { return _in; }
         }
+        */
 
+       
         public RenderCanvas()
         {
             _canvasImp = ImpFactory.CreateIRenderCanvasImp();
             _rc = new RenderContext(ImpFactory.CreateIRenderContextImp(_canvasImp));
-            _in = new Input(ImpFactory.CreateIInputImp(_canvasImp));
+            //_in = new Input(ImpFactory.CreateIInputImp(_canvasImp));
+            Input.Instance.InputImp = ImpFactory.CreateIInputImp(_canvasImp);
             _canvasImp.Init += delegate(object sender, InitEventArgs args)
                                    {
                                        Init();
@@ -30,7 +35,7 @@ namespace Fusee.Engine
 
             _canvasImp.Render += delegate(object sender, RenderEventArgs args)
                                      {
-                                         _in.OnUpdateFrame(_canvasImp.DeltaTime);
+                                         Input.Instance.OnUpdateFrame(_canvasImp.DeltaTime);
                                          Time.Instance.DeltaTimeIncrement = _canvasImp.DeltaTime;
                                          RenderAFrame();
                                      };
