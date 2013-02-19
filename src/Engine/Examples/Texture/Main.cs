@@ -8,9 +8,9 @@ namespace Examples.Texture
     public class Texture : RenderCanvas
     {
         protected string _vs = @"
-            //#ifndef GL_ES
-              // #version 120
-            //#endif
+            #ifndef GL_ES
+               #version 120
+            #endif
 
             /* Copies incoming vertex color without change.
              * Applies the transformation matrix to vertex position.
@@ -40,9 +40,9 @@ namespace Examples.Texture
             }";
 
         protected string _ps = @"
-           //#ifndef GL_ES
-             //  #version 120
-            //#endif
+           #ifndef GL_ES
+               #version 120
+            #endif
 
             /* Copies incoming fragment color without change. */
             #ifdef GL_ES
@@ -77,20 +77,14 @@ namespace Examples.Texture
 
         public override void Init()
         {
-<<<<<<< HEAD
+
             Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Sphere.obj.model"));
             _meshSphere = geo.ToMesh();
 
             Geometry geo2 = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Cube.obj.model"));
             _meshCube = geo2.ToMesh();
-=======
-            Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Teapot.obj.model"));
-            _mesh = geo.ToMesh();
-            Console.WriteLine("Hello world");
-            Geometry geo2 = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Face.obj.model"));
-            _meshFace = geo2.ToMesh();
->>>>>>> origin/develop
 
+            
             _angleHorz = 0;
             _rotationSpeed = 10.0f;
             ShaderProgram sp = RC.CreateShader(_vs, _ps);
@@ -115,8 +109,8 @@ namespace Examples.Texture
 
             if (In.IsButtonDown(MouseButtons.Left))
             {
-                _angleVelHorz = _rotationSpeed * In.GetAxis(InputAxis.MouseX) * (float)DeltaTime;
-                _angleVelVert = _rotationSpeed * In.GetAxis(InputAxis.MouseY) * (float)DeltaTime;
+                _angleVelHorz = _rotationSpeed * In.GetAxis(InputAxis.MouseX) * (float)Time.Instance.DeltaTime;
+                _angleVelVert = _rotationSpeed * In.GetAxis(InputAxis.MouseY) * (float)Time.Instance.DeltaTime;
             }
             else
             {
@@ -128,19 +122,19 @@ namespace Examples.Texture
 
             if (In.IsKeyDown(KeyCodes.Left))
             {
-                _angleHorz -= _rotationSpeed * (float)DeltaTime;
+                _angleHorz -= _rotationSpeed * (float)Time.Instance.DeltaTime;
             }
             if (In.IsKeyDown(KeyCodes.Right))
             {
-                _angleHorz += _rotationSpeed * (float)DeltaTime;
+                _angleHorz += _rotationSpeed * (float)Time.Instance.DeltaTime;
             }
             if (In.IsKeyDown(KeyCodes.Up))
             {
-                _angleVert -= _rotationSpeed * (float)DeltaTime;
+                _angleVert -= _rotationSpeed * (float)Time.Instance.DeltaTime;
             }
             if (In.IsKeyDown(KeyCodes.Down))
             {
-                _angleVert += _rotationSpeed * (float)DeltaTime;
+                _angleVert += _rotationSpeed * (float)Time.Instance.DeltaTime;
             }
 
             float4x4 mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
