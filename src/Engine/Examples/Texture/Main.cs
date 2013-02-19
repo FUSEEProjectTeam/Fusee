@@ -3,9 +3,9 @@ using System.IO;
 using Fusee.Engine;
 using Fusee.Math;
 
-namespace Examples.Textures
+namespace Examples.Texture
 {
-    public class Textures : RenderCanvas
+    public class Texture : RenderCanvas
     {
         protected string _vs = @"
             //#ifndef GL_ES
@@ -58,12 +58,17 @@ namespace Examples.Textures
             void main()
             {             
                 gl_FragColor = texture2D(texture1, vUV)  /* *dot(vNormal, vec3(0, 0, 1))*/;
+                //gl_FragColor = vColor;
             }";
 
         private static float _angleHorz = 0.0f, _angleVert = 0.0f, _angleVelHorz = 0, _angleVelVert = 0, _rotationSpeed = 10.0f, _damping = 0.95f;
         protected Mesh _mesh, _meshFace;
         protected IShaderParam _vColorParam;
         protected IShaderParam _texture1Param;
+        protected ImageData _imgData1;
+        protected ImageData _imgData2;
+        protected ITexture _iTex1;
+        protected ITexture _iTex2;
 
         public override void Init()
         {
@@ -85,9 +90,11 @@ namespace Examples.Textures
             int iTex = RC.CreateTexture(imgData);
             RC.SetShaderParamTexture(_texture1Param, iTex);
              */
-            ImageData imgData = RC.LoadImage("Assets/Desert.jpg");
-            ITexture iTex = RC.CreateTexture(imgData);
-            RC.SetShaderParamTexture(_texture1Param, iTex);
+            _imgData1 = RC.LoadImage("Assets/Jellyfish.jpg");
+            _iTex1 = RC.CreateTexture(_imgData1);
+            _imgData2 = RC.LoadImage("Assets/Desert.jpg");
+            _iTex2 = RC.CreateTexture(_imgData2);
+           
         }
 
         public override void RenderAFrame()
@@ -130,10 +137,13 @@ namespace Examples.Textures
 
             RC.ModelView = mtxRot * float4x4.CreateTranslation(-100, 0, 0) * mtxCam;
             //RC.SetShaderParam(_vColorParam, new float4(0.5f, 0.8f, 0, 1));
+            RC.SetShaderParamTexture(_texture1Param, _iTex1);
             RC.Render(_mesh);
+            //RC.ResetTexture();
 
             RC.ModelView = mtxRot * float4x4.CreateTranslation(100, 0, 0) * mtxCam;
             //RC.SetShaderParam(_vColorParam, new float4(0.8f, 0.5f, 0, 1));
+            RC.SetShaderParamTexture(_texture1Param, _iTex2);
             RC.Render(_meshFace);
             Present();
         }
@@ -148,7 +158,7 @@ namespace Examples.Textures
 
         public static void Main()
         {
-            Textures app = new Textures();
+            Texture app = new Texture();
             app.Run();
         }
 
