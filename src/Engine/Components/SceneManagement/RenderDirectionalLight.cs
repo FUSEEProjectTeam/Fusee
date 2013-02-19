@@ -10,7 +10,8 @@ namespace Fusee.SceneManagement
     public class RenderDirectionalLight : RenderJob
     {
         #region Fields
-        private float3 _direction;
+        
+        private float3 _direction;        
         private float4 _color;
         private Light.LightType _type;
         private int _channel;
@@ -18,12 +19,12 @@ namespace Fusee.SceneManagement
 
         #region Constructor
         /// <summary>
-        /// The only constructor( float3, float4, Light.Lighttype, int).
+        /// Creates a RenderDirectionalLight needed parameters:( float3, float4, Light.Lighttype, int).
         /// </summary>
-        /// <param name="direction">Direction of the light. </param>
+        /// <param name="direction">Direction of the light.</param>
         /// <param name="color">Color of the light "Red Green Blue Alpha"</param>
-        /// <param name="type"></param>
-        /// <param name="channel"></param>
+        /// <param name="type">The light type.</param>
+        /// <param name="channel">The memory space of the light.(0 - 7)</param>
         public RenderDirectionalLight(float3 direction, float4 color, Light.LightType type, int channel)
         {
             _direction = direction;
@@ -33,6 +34,9 @@ namespace Fusee.SceneManagement
         }
         #endregion
 
+        /// <summary>
+        /// Enqueues the directional light to the renderqueue. 
+        /// </summary>
          public override void SubmitWork(RenderContext renderContext)
          {
              //TODO Warten Auf Timon und Casper

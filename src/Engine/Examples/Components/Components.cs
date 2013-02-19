@@ -67,7 +67,7 @@ namespace Examples.Components
             _vColorParam = sp.GetShaderParam("uColor");        
             RC.SetShaderParam(_vColorParam, _farbe);*/
             RC.ClearColor = new float4(0, 0, 0, 1);
-            SceneManager.Manager.SetInput(In);
+            //SceneManager.Manager.SetInput(In);
         }
 
 
