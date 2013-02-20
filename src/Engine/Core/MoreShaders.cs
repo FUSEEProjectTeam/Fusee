@@ -69,6 +69,71 @@ uniform vec4 FUSEE_L5_AMBIENT;
 uniform vec4 FUSEE_L6_AMBIENT;
 uniform vec4 FUSEE_L7_AMBIENT;
 
+uniform float FUSEE_L0_ACTIVE;
+uniform float FUSEE_L1_ACTIVE;
+uniform float FUSEE_L2_ACTIVE;
+uniform float FUSEE_L3_ACTIVE;
+uniform float FUSEE_L4_ACTIVE;
+uniform float FUSEE_L5_ACTIVE;
+uniform float FUSEE_L6_ACTIVE;
+uniform float FUSEE_L7_ACTIVE;
+
+varying vec2 vUV;
+varying vec3 lightDir[8];
+varying vec3 vNormal;
+varying vec4 endAmbient;
+
+vec3 vPos;
+ 
+void main()
+{
+    vUV = fuUV;
+    vNormal = normalize(mat3(FUSEE_ITMV) * fuNormal);
+    lightDir[0] = -normalize(FUSEE_L0_DIRECTION);
+    lightDir[1] = -normalize(FUSEE_L1_DIRECTION);
+    lightDir[2] = -normalize(FUSEE_L2_DIRECTION);
+    lightDir[3] = -normalize(FUSEE_L3_DIRECTION);
+    lightDir[4] = -normalize(FUSEE_L4_DIRECTION);
+    lightDir[5] = -normalize(FUSEE_L5_DIRECTION);
+    lightDir[6] = -normalize(FUSEE_L6_DIRECTION);
+    lightDir[7] = -normalize(FUSEE_L7_DIRECTION); 
+
+    if(FUSEE_L0_ACTIVE == 1) {
+        endAmbient += FUSEE_L0_AMBIENT;
+    }
+    if(FUSEE_L1_ACTIVE == 1) {
+        endAmbient += FUSEE_L1_AMBIENT;
+    }
+    if(FUSEE_L2_ACTIVE == 1) {
+        endAmbient += FUSEE_L2_AMBIENT;
+    }
+    if(FUSEE_L3_ACTIVE == 1) {
+        endAmbient += FUSEE_L3_AMBIENT;
+    }
+    if(FUSEE_L4_ACTIVE == 1) {
+        endAmbient += FUSEE_L4_AMBIENT;
+    }
+    if(FUSEE_L5_ACTIVE == 1) {
+        endAmbient += FUSEE_L5_AMBIENT;
+    }
+    if(FUSEE_L6_ACTIVE == 1) {
+        endAmbient += FUSEE_L6_AMBIENT;
+    }
+    if(FUSEE_L7_ACTIVE == 1) {
+        endAmbient += FUSEE_L7_AMBIENT;
+    }
+    
+    gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
+}";
+
+        private const string PsDiffuse = @"
+/* Copies incoming fragment color without change. */
+#ifdef GL_ES
+precision highp float;
+#endif
+
+uniform sampler2D texture1;
+
 uniform vec4 FUSEE_L0_DIFFUSE;
 uniform vec4 FUSEE_L1_DIFFUSE;
 uniform vec4 FUSEE_L2_DIFFUSE;
@@ -87,74 +152,47 @@ uniform float FUSEE_L5_ACTIVE;
 uniform float FUSEE_L6_ACTIVE;
 uniform float FUSEE_L7_ACTIVE;
 
-varying vec2 vUV;
-varying vec3 lightDir[8];
-varying vec3 vNormal;
-varying vec4 vDiffuse[8];
-varying vec4 endAmbient;
-
-vec3 vPos;
- 
-void main()
-{
-    vUV = fuUV;
-    vNormal = normalize(mat3(FUSEE_ITMV) * fuNormal);
-    lightDir[0] = -normalize(FUSEE_L0_DIRECTION);
-    lightDir[1] = -normalize(FUSEE_L1_DIRECTION);
-    lightDir[2] = -normalize(FUSEE_L2_DIRECTION);
-    lightDir[3] = normalize(FUSEE_L3_DIRECTION);
-    lightDir[4] = normalize(FUSEE_L4_DIRECTION);
-    lightDir[5] = normalize(FUSEE_L5_DIRECTION);
-    lightDir[6] = normalize(FUSEE_L6_DIRECTION);
-    lightDir[7] = normalize(FUSEE_L7_DIRECTION); 
-
-    vDiffuse[0] = FUSEE_L0_DIFFUSE;
-    vDiffuse[1] = FUSEE_L1_DIFFUSE;
-    vDiffuse[2] = FUSEE_L2_DIFFUSE;
-    vDiffuse[3] = FUSEE_L3_DIFFUSE;
-    vDiffuse[4] = FUSEE_L4_DIFFUSE;
-    vDiffuse[5] = FUSEE_L5_DIFFUSE;
-    vDiffuse[6] = FUSEE_L6_DIFFUSE;
-    vDiffuse[7] = FUSEE_L7_DIFFUSE;
-
-    endAmbient = FUSEE_L0_AMBIENT + FUSEE_L1_AMBIENT + FUSEE_L2_AMBIENT;
-    
-    gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
-}";
-
-        private const string PsDiffuse = @"
-/* Copies incoming fragment color without change. */
-#ifdef GL_ES
-precision highp float;
-#endif
-
-uniform sampler2D texture1;
-
 varying vec3 lightDir[8]; 
-varying vec4 vDiffuse[8];
 varying vec3 vNormal;
 varying vec2 vUV;
 varying vec4 endAmbient;
  
 void main()
 {
-    vec4 cf;
+    vec4 endIntensity = vec4(0,0,0,0);
     float intensity[8];    
     for(int i=0; i<intensity.length();i++)
     {
         intensity[i] = max(dot(lightDir[i],normalize(vNormal)),0.0);
     } 
-    cf = (intensity[0] * vDiffuse[0]) +
-        (intensity[1] * vDiffuse[1]) +
-        (intensity[2] * vDiffuse[2]) +
-        (intensity[3] * vDiffuse[3]) +
-        (intensity[4] * vDiffuse[4]) +
-        (intensity[5] * vDiffuse[5]) +
-        (intensity[6] * vDiffuse[6]) +
-        (intensity[7] * vDiffuse[7]) +
-         endAmbient; 
 
-    gl_FragColor = texture2D(texture1, vUV) * cf; 
+    if(FUSEE_L0_ACTIVE == 1) {
+        endIntensity += intensity[0] * FUSEE_L0_DIFFUSE;
+    }
+    if(FUSEE_L1_ACTIVE == 1) {
+        endIntensity += intensity[1] * FUSEE_L1_DIFFUSE;
+    }
+    if(FUSEE_L2_ACTIVE == 1) {
+        endIntensity += intensity[2] * FUSEE_L2_DIFFUSE;
+    }
+    if(FUSEE_L3_ACTIVE == 1) {
+        endIntensity += intensity[3] * FUSEE_L3_DIFFUSE;
+    }
+    if(FUSEE_L4_ACTIVE == 1) {
+        endIntensity += intensity[4] * FUSEE_L4_DIFFUSE;
+    }
+    if(FUSEE_L5_ACTIVE == 1) {
+        endIntensity += intensity[5] * FUSEE_L5_DIFFUSE;
+    }
+    if(FUSEE_L6_ACTIVE == 1) {
+        endIntensity += intensity[6] * FUSEE_L6_DIFFUSE;
+    }
+    if(FUSEE_L7_ACTIVE == 1) {
+        endIntensity += intensity[7] * FUSEE_L7_DIFFUSE;
+    }
+    endIntensity += endAmbient; 
+
+    gl_FragColor = texture2D(texture1, vUV) * endIntensity; 
 }";
 
 private const string VsSpecular = @"
