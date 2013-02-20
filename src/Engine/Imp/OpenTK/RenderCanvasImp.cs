@@ -25,9 +25,13 @@ namespace Fusee.Engine
 
         internal RenderCanvasGameWindow _gameWindow;
 
-        public RenderCanvasImp()
-        {
-            _gameWindow = new RenderCanvasGameWindow(this);
+        public RenderCanvasImp ()
+		{
+			try {
+				_gameWindow = new RenderCanvasGameWindow (this, true);
+			} catch (Exception ex) {
+				_gameWindow = new RenderCanvasGameWindow (this, false);
+			}
         }
 
         public void Present()
@@ -74,8 +78,8 @@ namespace Fusee.Engine
             get { return _deltaTime; }
         }
 
-        public RenderCanvasGameWindow(RenderCanvasImp renderCanvasImp)
-            : base(1280, 720, new GraphicsMode(32,24,0,8) /*GraphicsMode.Default*/, "Fusee Engine")
+        public RenderCanvasGameWindow(RenderCanvasImp renderCanvasImp, bool antiAliasing)
+            : base(1280, 720, new GraphicsMode(32,24,0,(antiAliasing) ? 8 : 0) /*GraphicsMode.Default*/, "Fusee Engine")
         {
             _renderCanvasImp = renderCanvasImp;
         }
