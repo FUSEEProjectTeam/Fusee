@@ -29,7 +29,7 @@ namespace Fusee.Engine
 		{
 			try {
 				_gameWindow = new RenderCanvasGameWindow (this, true);
-			} catch (Exception ex) {
+			} catch {
 				_gameWindow = new RenderCanvasGameWindow (this, false);
 			}
         }
@@ -89,7 +89,7 @@ namespace Fusee.Engine
             // Check for necessary capabilities:
             string version = GL.GetString(StringName.Version);
             int major = (int)version[0];
-            int minor = (int)version[2];
+            // int minor = (int)version[2];
             if (major < 2)
             {
                 MessageBox.Show("You need at least OpenGL 2.0 to run this example. Aborting.", "GLSL not supported",
