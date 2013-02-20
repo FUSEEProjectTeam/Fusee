@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Fusee.Engine
+﻿namespace Fusee.Engine
 {
     public class Audio
     {
@@ -22,11 +17,6 @@ namespace Fusee.Engine
         public void LoadFile(string fileName)
         {
             _audioImp.LoadFile(fileName);
-        }
-
-        public void Init()
-        {
-            _audioImp.Init();
         }
 
         public void Play()

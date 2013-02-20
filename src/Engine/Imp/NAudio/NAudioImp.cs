@@ -31,16 +31,12 @@ namespace Fusee.Engine
         public void OpenDevice()
         {
             WaveOutDevice = new DirectSoundOut();
+            WaveOutDevice.Init(MainOutputStream);
         }
 
         public void LoadFile(string fileName)
         {
             MainOutputStream = CreateInputStream("Assets/tetris.mp3");
-        }
-
-        public void Init()
-        {
-            WaveOutDevice.Init(MainOutputStream);
         }
 
         public void Play()

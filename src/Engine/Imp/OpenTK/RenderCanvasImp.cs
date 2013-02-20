@@ -99,6 +99,8 @@ namespace Fusee.Engine
             _renderCanvasImp.DoInit();
         }
 
+
+
         protected override void OnUnload(EventArgs e)
         {
 

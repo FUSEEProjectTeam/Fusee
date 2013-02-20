@@ -6,8 +6,9 @@
 	JSIL v0.5.0 build 25310. Until then it was changed and maintained manually.
 */
 
-var $asmThis = JSIL.DeclareAssembly("Fusee.Engine.Imp.WebGL, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null");
+var $asmThis = JSIL.DeclareAssembly("Fusee.Engine.Imp.WebGL");
 var $fuseeCommon = JSIL.GetAssembly("Fusee.Engine.Common");
+var $WebAudioImp = JSIL.GetAssembly("Fusee.Engine.Imp.WebAudio");
 
 JSIL.DeclareNamespace("Fusee");
 JSIL.DeclareNamespace("Fusee.Engine");
@@ -1113,7 +1114,6 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.InputImp", true
     });
 });
 
-
 JSIL.ImplementExternals("Fusee.Engine.ImpFactory", function ($) {
 
 
@@ -1126,7 +1126,7 @@ JSIL.ImplementExternals("Fusee.Engine.ImpFactory", function ($) {
 
     $.Method({ Static: true, Public: true }, "CreateIRenderCanvasImp",
         new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.IRenderCanvasImp"), []),
-            function ImpFactory_CreateIRenderCanvasImp(renderCanvasImp) {
+            function ImpFactory_CreateIRenderCanvasImp() {
 				// return new $asmThis.Fusee.Engine.TheEmptyDummyClass
                 return new $asmThis.Fusee.Engine.RenderCanvasImp();
             }
@@ -1136,6 +1136,13 @@ JSIL.ImplementExternals("Fusee.Engine.ImpFactory", function ($) {
         new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.IRenderContextImp"), [$fuseeCommon.TypeRef("Fusee.Engine.IRenderCanvasImp")]),
             function ImpFactory_CreateIRenderContextImp(renderCanvasImp) {
                 return new $asmThis.Fusee.Engine.RenderContextImp(renderCanvasImp);
+            }
+    );
+	
+	$.Method({ Static: true, Public: true }, "CreateIAudioImp",
+        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.IAudioImp"), []),
+            function ImpFactory_CreateIAudioImp() {
+                return new $WebAudioImp.Fusee.Engine.WebAudioImp();
             }
     );
 

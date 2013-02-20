@@ -16,7 +16,7 @@
     <ItemGroup>
       <WebGLScripts Include="$(TargetDir)\..\..\WebGL\Scripts\*.*" />
       <WebGLStyles Include="$(TargetDir)\..\..\WebGL\Styles\*.*" />
-      <XNAAudioScript Include="$(TargetDir)\..\..\XNAAudio\*.*" />
+      <WebAudioScript Include="$(TargetDir)\..\..\WebAudio\*.*" />
     </ItemGroup>
 
     <MakeDir Directories="$(WebOutputDir)" Condition="!Exists('$(WebOutputDir)')" />
@@ -30,7 +30,7 @@
     <Message Importance="High" Text="### PostBuildEvent $(TargetName): Copying additional scripts/styles ###" />
     <Copy SourceFiles="@(WebGLScripts)" DestinationFolder="$(WebOutputDir)\Assets\Scripts" SkipUnchangedFiles="true" />
     <Copy SourceFiles="@(WebGLStyles)" DestinationFolder="$(WebOutputDir)\Assets\Styles" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="@(XNAAudioScript)" DestinationFolder="$(WebOutputDir)\Assets\Scripts" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(WebAudioScript)" DestinationFolder="$(WebOutputDir)\Assets\Scripts" SkipUnchangedFiles="true" />
 
     <Message Importance="High" Text="### PostBuildEvent $(TargetName): Creating default HTML file ###" />
     <Exec ContinueOnError="true" Timeout="60000" Command='"$(SolutionDir)..\..\ExternalBinaries\JSIL\Compiler\fuHTMLGen.exe" "$(TargetDir)\" "$(WebOutputDir)" "$(TargetPath)"' />

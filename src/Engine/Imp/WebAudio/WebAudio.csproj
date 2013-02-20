@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{4A183140-3153-4F7E-A692-F4E3EF2CFA0A}</ProjectGuid>
+    <ProjectGuid>{7E796695-4174-471A-BBE8-3CAF39904588}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Fusee.Engine.Imp.XNAAudio</RootNamespace>
-    <AssemblyName>Fusee.Engine.Imp.XNAAudio</AssemblyName>
+    <RootNamespace>Fusee.Engine.Imp.WebAudio</RootNamespace>
+    <AssemblyName>Fusee.Engine.Imp.WebAudio</AssemblyName>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\Bin\Debug\XNAAudio\</OutputPath>
+    <OutputPath>..\..\..\..\Bin\Debug\WebAudio\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -27,7 +27,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\..\..\Bin\Release\XNAAudio\</OutputPath>
+    <OutputPath>..\..\..\..\Bin\Release\WebAudio\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -35,38 +35,26 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug+Web|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\..\..\..\Bin\Debug\XNAAudio\</OutputPath>
+    <OutputPath>..\..\..\..\Bin\Debug\WebAudio\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <CodeAnalysisLogFile>..\..\..\..\Bin\Debug\XNAAudio\XNAAudio.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
-    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
-    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
     <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
-    <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
-    <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
-    <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <WarningLevel>4</WarningLevel>
     <Optimize>false</Optimize>
   </PropertyGroup>
   <ItemGroup />
   <ItemGroup>
-    <Content Include="Fusee.Engine.Imp.XNAAudio.js" />
+    <Content Include="Fusee.Engine.Imp.WebAudio.js" />
   </ItemGroup>
   <Target Name="Build">
-    <Exec Condition=" '$(OS)' != 'Windows_NT' " Command="rsync -a Fusee.Engine.Imp.XNAAudio.js $(OutputPath)/" />
-    <Exec Condition=" '$(OS)' == 'Windows_NT' " Command="xcopy Fusee.Engine.Imp.XNAAudio.js $(OutputPath)\ /D /E /C /Q /R /Y /K" />
+    <Exec Condition=" '$(OS)' != 'Windows_NT' " Command="rsync -a *.js $(OutputPath)" />
+    <Exec Condition=" '$(OS)' == 'Windows_NT' " Command="xcopy *.js $(OutputPath) /D /C /Q /R /Y /K" />
   </Target>
   <Target Name="Rebuild" DependsOnTargets="Build">
   </Target>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
+  <Target Name="Clean">
+    <Exec Command="rd /s /q $(OutputPath)" Condition="Exists($(OutputPath))" />
   </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

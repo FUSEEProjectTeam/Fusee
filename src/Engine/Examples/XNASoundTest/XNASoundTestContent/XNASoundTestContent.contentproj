@@ -42,7 +42,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="tetris.mp3">
+    <Compile Include="Assets\tetris.mp3">
       <Name>tetris</Name>
       <Importer>Mp3Importer</Importer>
       <Processor>SongProcessor</Processor>

@@ -6,8 +6,6 @@
 
         void LoadFile(string fileName);
 
-        void Init();
-
         void Play();
 
         void Pause();
