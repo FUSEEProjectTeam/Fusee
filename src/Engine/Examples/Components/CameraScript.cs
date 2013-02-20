@@ -16,7 +16,7 @@ namespace Examples.Components
         public override void Update()
         {
             //float mousemove = Input.GetAxis(InputAxis.MouseX);
-            if (Input.IsButtonDown(MouseButtons.Left))
+            if (Input.Instance.IsButtonDown(MouseButtons.Left))
             {
                 transform.LocalEulerAngles += new float3(0, 0, -0.1f);
             }
