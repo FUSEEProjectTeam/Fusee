@@ -44,10 +44,14 @@
   <Filter entryType="Interface" fullName="Fusee.Engine.IShaderProgramImp" filterName="IShaderProgramImp" isExposed="False" />
   <Filter entryType="Interface" fullName="Fusee.Engine.ITexture" filterName="ITexture" isExposed="False" />
 </Filter>
-<Filter entryType="Namespace" fullName="System" isExposed="False">
-  <Filter entryType="Class" fullName="System.Object" filterName="Object" isExposed="False" />
-  <Filter entryType="Class" fullName="System.ValueType" filterName="ValueType" isExposed="False" />
-</Filter></ApiFilter>
+<Filter entryType="Namespace" fullName="Fusee.SceneManagement" isExposed="True">
+  <Filter entryType="Class" fullName="Fusee.SceneManagement.ActionCode" filterName="ActionCode" isExposed="True">
+    <Filter entryType="Field" fullName="Fusee.SceneManagement.ActionCode.renderer" filterName="renderer" isExposed="False" />
+    <Filter entryType="Field" fullName="Fusee.SceneManagement.ActionCode.SceneEntity" filterName="SceneEntity" isExposed="False" />
+    <Filter entryType="Field" fullName="Fusee.SceneManagement.ActionCode.transform" filterName="transform" isExposed="False" />
+  </Filter>
+</Filter>
+<Filter entryType="Namespace" fullName="System" isExposed="False" /></ApiFilter>
     <VisibleItems>InheritedMembers, InheritedFrameworkMembers, Protected, SealedProtected</VisibleItems>
   </PropertyGroup>
   <!-- There are no properties for these groups.  AnyCPU needs to appear in
