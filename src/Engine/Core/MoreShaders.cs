@@ -6,9 +6,18 @@ using Fusee.Math;
 
 namespace Fusee.Engine
 {
+    /// <summary>
+    /// Contains all pixel and vertex shaders and a method to create a ShaderProgram in Rendercontext.
+    /// </summary>
     public static class MoreShaders
     {
 
+        /// <summary>
+        /// Creates the shader in RenderContext and returns a ShaderProgram.
+        /// </summary>
+        /// <param name="name">ShaderName.</param>
+        /// <param name="rc">RenderContext.</param>
+        /// <returns></returns>
         public static ShaderProgram GetShader(string name, RenderContext rc)
         {
             if (name == "simple")
@@ -37,6 +46,7 @@ namespace Fusee.Engine
             return spOriginal;
         }
 
+
 private const string VsDiffuse = @"
 #ifndef GL_ES
     #version 120
@@ -49,7 +59,6 @@ attribute vec2 fuUV;
        
 uniform mat4 FUSEE_MVP;  //model view projection matrix
 uniform mat4 FUSEE_ITMV; //inverte transformierte model view matrix
-
 
 uniform vec4 FUSEE_L0_AMBIENT;
 uniform vec4 FUSEE_L1_AMBIENT;
@@ -107,6 +116,7 @@ void main()
     
     gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
 }";
+
 
 private const string PsDiffuse = @"
 #ifndef GL_ES
@@ -184,6 +194,7 @@ void main()
     gl_FragColor = texture2D(texture1, vUV) * endIntensity; 
 }";
 
+
 private const string VsSpecular = @"
 #ifndef GL_ES
     #version 120
@@ -257,6 +268,7 @@ void main()
 
     gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
 }";
+
 
 private const string PsSpecular = @"
 #ifndef GL_ES
@@ -415,6 +427,7 @@ void main()
 
 
 
+
 private const string VsBump = @"
 #ifndef GL_ES
     # version 120
@@ -462,7 +475,7 @@ void main()
     vUV = fuUV;
     vNormal = normalize(mat3(FUSEE_ITMV) * fuNormal);
 
-    eyeVector = mat3(FUSEE_MVP) * fuVertex;
+    eyeVector = mat3(FUSEE_MVP) * -fuVertex;
       
     endAmbient = vec4(0,0,0,0);
     if(FUSEE_L0_ACTIVE == 1.0) {
@@ -492,6 +505,7 @@ void main()
 
     gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
 }";
+
 
 private const string PsBump = @"
            #ifndef GL_ES
@@ -566,7 +580,7 @@ void main()
     vec4 endSpecular = vec4(0,0,0,0);
     if(FUSEE_L0_ACTIVE == 1.0) {
         vec3 vHalfVector = normalize(normalize(eyeVector) - normalize(eyeVector - FUSEE_L0_POSITION));
-        float L3NdotHV = max(dot(normalize(tempNormal), vHalfVector), 0.0);
+        float L3NdotHV = max(min(dot(normalize(tempNormal), vHalfVector),1.0), 0.0);
         float shine = pow(L3NdotHV, specularLevel) * 16.0;
         endSpecular += FUSEE_L0_SPECULAR * shine;
     }
@@ -686,6 +700,7 @@ private const string Vs = @"
                 vNormal = mat3(FUSEE_ITMV) * fuNormal;
                 vUV = fuUV;
             }";
+
 
         private const string Ps = @"
            #ifndef GL_ES

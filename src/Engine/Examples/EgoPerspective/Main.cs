@@ -18,30 +18,36 @@ namespace Examples.EgoPerspective
         protected IShaderParam _specularSize;
         protected IShaderParam _texture1Param;
         protected IShaderParam _texture2Param;
+        protected float x, z, time;
 
         public override void Init()
         {
             _world = new World(RC, In);
             Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Cube.obj.model"));
-            Geometry geo2 = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/ground.obj.model"));
+            Geometry geo2 = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Teapot.obj.model"));
 
             Sp = MoreShaders.GetShader("bump", RC);
             RC.SetShader(Sp);
             m = new ShaderMaterial(Sp);
 
-            RC.SetLightActive(7, 1);
-            RC.SetLightPosition(7, new float3(500, 0, 0));
-            RC.SetLightAmbient(7, new float4(0.1f, 0.1f, 0.1f, 1));
-            RC.SetLightSpecular(7, new float4(0.1f, 0.1f, 0.1f, 1));
-            RC.SetLightDiffuse(7, new float4(1.0f, 1.0f, 1.0f, 1));
-            RC.SetLightDirection(7, new float3(-1, 0, 0));
+            x = 500;
+            z = 0;
+            time = 0;
 
-            RC.SetLightActive(6, 1);
-            RC.SetLightPosition(6, new float3(-500, 100, 0));
-            RC.SetLightAmbient(6, new float4(0.1f, 0.1f, 0.1f, 1));
-            RC.SetLightSpecular(6, new float4(0.2f, 0.2f, 0.2f, 0));
-            RC.SetLightDiffuse(6, new float4(1.0f, 1.0f, 1.0f, 1));
-            RC.SetLightDirection(6, new float3(5, -1, 0));
+
+            RC.SetLightActive(0, 1);
+            RC.SetLightPosition(0, new float3(500, 0, 0));
+            RC.SetLightAmbient(0, new float4(0.1f, 0.1f, 0.1f, 1));
+            RC.SetLightSpecular(0, new float4(0.1f, 0.1f, 0.1f, 1));
+            RC.SetLightDiffuse(0, new float4(1.0f, 1.0f, 1.0f, 1));
+            RC.SetLightDirection(0, new float3(-1, 0, 0));
+
+            //RC.SetLightActive(6, 1);
+            //RC.SetLightPosition(6, new float3(-500, 100, 0));
+            //RC.SetLightAmbient(6, new float4(0.1f, 0.1f, 0.1f, 1));
+            //RC.SetLightSpecular(6, new float4(0.2f, 0.2f, 0.2f, 0));
+            //RC.SetLightDiffuse(6, new float4(1.0f, 1.0f, 1.0f, 1));
+            //RC.SetLightDirection(6, new float3(5, -1, 0));
 
             //RC.SetLightActive(2, 1);
             //RC.SetLightPosition(2, new float3(0, 500, 0));
@@ -76,7 +82,7 @@ namespace Examples.EgoPerspective
 
 
 
-            //_world.addObject(geo2, m, 0, -100, 700);
+           // _world.addObject(geo2, m, 0, -100, 700);
             _world.addObject(geo, m, 500, -100, 700);
 
             RC.ClearColor = new float4(0.1f, 0.1f, 0.1f, 1);
@@ -87,7 +93,14 @@ namespace Examples.EgoPerspective
 
         public override void RenderAFrame()
         {
-            
+            x = (float)Math.Cos(time) * 500;
+            z = (float)Math.Sin(time) * 500;
+            time += 0.01f;
+            RC.SetLightPosition(0, new float3(x, 0, z));
+            RC.SetLightDirection(0, new float3(-x, 0, -z));
+
+
+
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
             Random zufall = new Random();
             float number = zufall.Next(1000) / 1000;
