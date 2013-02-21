@@ -43,13 +43,22 @@ namespace Fusee.Engine
         [JSChangeName("SetShaderParamInt")]
         void SetShaderParam(IShaderParam param, int val);
 
+<<<<<<< HEAD
 
         
         ImageData LoadImage(String filename);
-        ITexture CreateTexture(ImageData img);
-        void SetShaderParamTexture(IShaderParam param, ITexture texId);
+=======
+        ImageData CreateImage(int width, int height, String bgColor);
 
-        //HP Functions End
+        ImageData TextOnImage(ImageData imgData, String fontName, float fontSize, String text, String textColor,
+                              float startPosX, float startPosY);
+
+        ImageData LoadImage(String filename);
+
+>>>>>>> feat_HP_pbe02_textures
+        ITexture CreateTexture(ImageData img);
+
+        void SetShaderParamTexture(IShaderParam param, ITexture texId);
 
         void Clear(ClearFlags flags);
 

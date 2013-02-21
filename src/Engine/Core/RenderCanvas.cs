@@ -28,24 +28,35 @@ namespace Fusee.Engine
             get { return _rc; }
         }
 
+        /*
         private Input _in;
+<<<<<<< HEAD
         /// <summary>
         /// This property will be replaced by the Input class singleton!!!
         /// </summary>
+=======
+
+>>>>>>> feat_HP_pbe02_textures
         protected Input In
         {
             get { return _in; }
         }
+        */
 
+<<<<<<< HEAD
         /// <summary>
         /// The RenderCanvas constructor. Depending on the implementation this constructor instantiates a 3D viewing window or connects a 3D 
         /// render context to an existing part of the application window.
         /// </summary>
+=======
+       
+>>>>>>> feat_HP_pbe02_textures
         public RenderCanvas()
         {
             _canvasImp = ImpFactory.CreateIRenderCanvasImp();
             _rc = new RenderContext(ImpFactory.CreateIRenderContextImp(_canvasImp));
-            _in = new Input(ImpFactory.CreateIInputImp(_canvasImp));
+            //_in = new Input(ImpFactory.CreateIInputImp(_canvasImp));
+            Input.Instance.InputImp = ImpFactory.CreateIInputImp(_canvasImp);
             _canvasImp.Init += delegate(object sender, InitEventArgs args)
                                    {
                                        Init();
@@ -53,7 +64,8 @@ namespace Fusee.Engine
 
             _canvasImp.Render += delegate(object sender, RenderEventArgs args)
                                      {
-                                         _in.OnUpdateFrame(_canvasImp.DeltaTime);
+                                         Input.Instance.OnUpdateFrame(_canvasImp.DeltaTime);
+                                         Time.Instance.DeltaTimeIncrement = _canvasImp.DeltaTime;
                                          RenderAFrame();
                                      };
 
@@ -125,9 +137,13 @@ namespace Fusee.Engine
         /// </value>
         public int Height { get { return _canvasImp.Height; } }
 
+<<<<<<< HEAD
         /// <summary>
         /// This property will be replaced by the DeltaTime class singleton!!!
         /// </summary>
+=======
+        /*
+>>>>>>> feat_HP_pbe02_textures
         public double DeltaTime
         {
             get
@@ -135,6 +151,7 @@ namespace Fusee.Engine
                 return _canvasImp.DeltaTime;
             }
         }
+         * */
 
         /// <summary>
         /// Presents the contents of the backbuffer on the visible part of this render canvas.

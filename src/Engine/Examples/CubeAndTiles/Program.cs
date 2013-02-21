@@ -105,8 +105,8 @@ namespace Examples.CubeAndTiles
 
                 if (In.IsButtonDown(MouseButtons.Left))
                 {
-                    _angleVelHorz = RotationSpeed*In.GetAxis(InputAxis.MouseX)*(float) DeltaTime;
-                    _angleVelVert = RotationSpeed*In.GetAxis(InputAxis.MouseY)*(float) DeltaTime;
+                    _angleVelHorz = RotationSpeed*In.GetAxis(InputAxis.MouseX)*(float) Time.Instance.DeltaTime;
+                    _angleVelVert = RotationSpeed*In.GetAxis(InputAxis.MouseY)*(float) Time.Instance.DeltaTime;
                 }
                 else
                 {
@@ -132,7 +132,7 @@ namespace Examples.CubeAndTiles
                 _exampleLevel.MoveCube(Level.Directions.Backward);
 
             float4x4 mtxRot = float4x4.CreateRotationZ(_angleHorz)*float4x4.CreateRotationX(_angleVert);
-            _exampleLevel.Render(mtxRot, DeltaTime);
+            _exampleLevel.Render(mtxRot, Time.Instance.DeltaTime);
 
             Present();
         }

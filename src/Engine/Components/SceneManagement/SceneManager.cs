@@ -5,17 +5,20 @@ using System;
 
 namespace Fusee.SceneManagement
 {
-    public class SceneManager
+    public sealed class SceneManager
     {
+        private static readonly SceneManager _manager = new SceneManager();
+        private RenderContext _renderContext;
+        //private TraversalStateRender _traversalRender;
         
-        private ITraversalState _traversal;
-        public List<RenderJob>[] RenderJobs = new List<RenderJob>[10]; 
-        public List<SceneEntity> SceneMembers = new List<SceneEntity>(); 
-        
+        private List<RenderJob>[] RenderJobs = new List<RenderJob>[10]; 
+        private List<SceneEntity> SceneMembers = new List<SceneEntity>();
+        private SceneVisitorRendering _sceneVisitorRendering;
 
-        public SceneManager()
+        private SceneManager()
         {
-            _traversal =  new TraversalStateRender(this);
+            _sceneVisitorRendering = new SceneVisitorRendering(this);
+            //_traversalRender =  new TraversalStateRender(this);
             for (int i = 0; i < RenderJobs.Length; i++ )
             {
                 RenderJobs[i] = new List<RenderJob>();
@@ -23,16 +26,44 @@ namespace Fusee.SceneManagement
             
         }
 
+        public static SceneManager Manager
+        {
+            get { return _manager; }
+        }
 
-        public void Traverse(RenderCanvas renderCanvas, RenderContext RC, float4x4 camera)
+        public static RenderContext RC
+        {
+            set{
+                if (_manager._renderContext == null)
+                {
+                    _manager._renderContext = value;
+                }
+            }
+            get { return _manager._renderContext; }
+        }
+
+
+        public void AddSceneEntity(SceneEntity sceneEntity)
+        {
+            SceneMembers.Add(sceneEntity);
+        }
+
+        public void AddCamera(RenderCamera cameramatrix)
+        {
+            RenderJobs[0].Add(cameramatrix);
+        }
+
+        public void Traverse(RenderCanvas renderCanvas)
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
             foreach (var sceneMember in SceneMembers)
             {
                 
-                _traversal.SetDeltaTime(renderCanvas.DeltaTime);
-                sceneMember.Traverse(_traversal);
+                //_traversalRender.SetDeltaTime(renderCanvas.DeltaTime);
+                _sceneVisitorRendering.SetDeltaTime(Time.Instance.DeltaTime);
+                //sceneMember.Traverse(_traversalRender);
+                sceneMember.Accept(_sceneVisitorRendering);
             }
 
             // Order: Matrix, Mesh, Renderer
@@ -61,18 +92,49 @@ namespace Fusee.SceneManagement
         public void AddRenderJob(RenderJob job)
         {
             
-            RenderJobs[1].Add(job);
+            RenderJobs[2].Add(job);
         }
 
         public void AddLightJob(RenderJob job)
         {
-            RenderJobs[0].Add(job);
+            RenderJobs[1].Add(job);
         }
 
         public void SetInput(Input input)
         {
-            _traversal.SetInput(input);
+            //_traversalRender.Input = input;
+            _sceneVisitorRendering.Input = input;
         }
+
+        // Ursprüngliche SceneEntity suche
+        /*public SceneEntity FindSceneEntity(string sceneEntityName)
+        {
+            foreach (var sceneMember in SceneMembers)
+            {
+                if(sceneMember.name == sceneEntityName)
+                {
+                    return sceneMember;
+                }
+                foreach (var child in sceneMember.GetChildren())
+                {
+                    if (child.name == sceneEntityName)
+                    {
+                        return child;
+                    }
+                }
+            }
+            return null;
+        }*/
+
+        // neue suche
+        public SceneEntity FindSceneEntity(string name)
+        {
+            SceneVisitorSearch sceneVisitorSearch = new SceneVisitorSearch();
+            SceneEntity result = sceneVisitorSearch.FindSceneEntity(SceneMembers, name);
+            return result;
+        }
+
+
 
     }
 }

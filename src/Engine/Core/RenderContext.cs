@@ -44,15 +44,26 @@ namespace Fusee.Engine
         public RenderContext(IRenderContextImp rci)
         {
             _rci = rci;
+            View = float4x4.Identity;
             ModelView = float4x4.Identity;
             Projection = float4x4.Identity;
         }
 
+<<<<<<< HEAD
         /// <deprecated></deprecated>
         [Obsolete("This field will soon be replaced by enabling RenderContext to seperate between Model and View matrix.")]
         public float4x4 Camera; // TODO: Implement Camera. Temporary solution!!
         private float4x4 _modelView;
         private float4x4 _projection;
+=======
+        
+        // Settable matrices
+        private float4x4 _modelView;
+        private float4x4 _projection;
+        private float4x4 _view; 
+
+        // Derived matrices
+>>>>>>> feat_HP_pbe02_textures
         private float4x4 _modelViewProjection;
         private float4x4 _invModelView;
         private float4x4 _invProjection;
@@ -74,8 +85,19 @@ namespace Fusee.Engine
         private bool _transProjectionOk;
         private bool _transModelViewProjectionOk;
 
+        public ImageData CreateImage (int width, int height, String bgColor)
+        {
+            return _rci.CreateImage(width, height, bgColor);
+        }
 
+<<<<<<< HEAD
         
+=======
+        public ImageData TextOnImage(ImageData imgData, String fontName, float fontSize, String text, String textColor, float startPosX, float startPosY)
+        {
+            return _rci.TextOnImage(imgData, fontName, fontSize, text, textColor, startPosX, startPosY);
+        }
+>>>>>>> feat_HP_pbe02_textures
 
         /// <summary>
         /// Creates a new texture and binds it to the shader.
@@ -121,7 +143,48 @@ namespace Fusee.Engine
             _rci.SetShaderParamTexture(param, texId);
         }
 
+        public ShaderProgram CurrentShader
+        {
+            get { return _currentShader; }
+        }
+        //directional or Point- Light 
+        public void SetLight(float3 v3, float4 color, int type, int id)
+        {
+            switch (type)
+            {
+                case 0:
+                    SetLightActive(id, 1);
+                    SetLightAmbient(id, color);
+                    SetLightDiffuse(id, color);
+                    SetLightSpecular(id, color);
+                    SetLightDirection(id, v3);
+                    break;
+                case 1:
+                    SetLightActive(id, 1);
+                    SetLightAmbient(id, color);
+                    SetLightDiffuse(id, color);
+                    SetLightSpecular(id, color);
+                    SetLightPosition(id, v3);
+                    break;
+            }
+        }
 
+        //Spotlight with position AND direction
+        public void SetLight(float3 position, float3 direction,  float4 color, int type, int id)
+        {
+            SetLightActive(id, 1);
+            SetLightAmbient(id, color);
+            SetLightDiffuse(id, color);
+            SetLightSpecular(id, color);
+            SetLightPosition(id, position);
+            SetLightDirection(id,direction);
+        }
+
+        public float4x4 View
+        {
+            get { return _view; }
+            set { _view = value; }
+        }
 
         /// <summary>
         /// The ModelView matrix used by the rendering pipeline. 
