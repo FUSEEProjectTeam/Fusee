@@ -269,6 +269,7 @@ private const string PsSpecular = @"
 #endif
 
 uniform sampler2D texture1;
+uniform float specularLevel;
 
 uniform vec4 FUSEE_L0_SPECULAR;
 uniform vec4 FUSEE_L1_SPECULAR;
@@ -326,49 +327,49 @@ void main()
     if(FUSEE_L0_ACTIVE == 1.0) {
         vec3 vHalfVector = normalize(normalize(eyeVector) - normalize(eyeVector - FUSEE_L0_POSITION));
         float L0NdotHV = max(dot(normalize(vNormal), vHalfVector), 0.0);
-        float shine = pow(L0NdotHV, 64.0) * 8.0;
+        float shine = pow(L0NdotHV, specularLevel) * 8.0;
         endSpecular += FUSEE_L0_SPECULAR * shine;
     }
     if(FUSEE_L1_ACTIVE == 1.0) {
         vec3 vHalfVector = normalize(normalize(eyeVector) - normalize(eyeVector - FUSEE_L1_POSITION));
         float L1NdotHV = max(dot(normalize(vNormal), vHalfVector), 0.0);
-        float shine = pow(L1NdotHV, 64.0) * 16.0;
+        float shine = pow(L1NdotHV, specularLevel) * 16.0;
         endSpecular += FUSEE_L1_SPECULAR * shine;
     }
     if(FUSEE_L2_ACTIVE == 1.0) {
         vec3 vHalfVector = normalize(normalize(eyeVector) - normalize(eyeVector - FUSEE_L2_POSITION));
         float L2NdotHV = max(dot(normalize(vNormal), vHalfVector), 0.0);
-        float shine = pow(L2NdotHV, 64.0) * 16.0;
+        float shine = pow(L2NdotHV, specularLevel) * 16.0;
         endSpecular += FUSEE_L2_SPECULAR * shine;
     }
     if(FUSEE_L3_ACTIVE == 1.0) {
         vec3 vHalfVector = normalize(normalize(eyeVector) - normalize(eyeVector - FUSEE_L3_POSITION));
         float L3NdotHV = max(dot(normalize(vNormal), vHalfVector), 0.0);
-        float shine = pow(L3NdotHV, 64.0) * 16.0;
+        float shine = pow(L3NdotHV, specularLevel) * 16.0;
         endSpecular += FUSEE_L3_SPECULAR * shine;
     }
     if(FUSEE_L4_ACTIVE == 1.0) {
         vec3 vHalfVector = normalize(normalize(eyeVector) - normalize(eyeVector - FUSEE_L4_POSITION));
         float L4NdotHV = max(dot(normalize(vNormal), vHalfVector), 0.0);
-        float shine = pow(L4NdotHV, 64.0) * 16.0;
+        float shine = pow(L4NdotHV, specularLevel) * 16.0;
         endSpecular += FUSEE_L4_SPECULAR * shine;
     }
     if(FUSEE_L5_ACTIVE == 1.0) {
         vec3 vHalfVector = normalize(normalize(eyeVector) - normalize(eyeVector - FUSEE_L5_POSITION));
         float L5NdotHV = max(dot(normalize(vNormal), vHalfVector), 0.0);
-        float shine = pow(L5NdotHV, 64.0) * 16.0;
+        float shine = pow(L5NdotHV, specularLevel) * 16.0;
         endSpecular += FUSEE_L5_SPECULAR * shine;
     }
     if(FUSEE_L6_ACTIVE == 1.0) {
         vec3 vHalfVector = normalize(normalize(eyeVector) - normalize(eyeVector - FUSEE_L6_POSITION));
         float L6NdotHV = max(dot(normalize(vNormal), vHalfVector), 0.0);
-        float shine = pow(L6NdotHV, 64.0) * 16.0;
+        float shine = pow(L6NdotHV, specularLevel) * 16.0;
         endSpecular += FUSEE_L6_SPECULAR * shine;
     }
     if(FUSEE_L7_ACTIVE == 1.0) {
         vec3 vHalfVector = normalize(normalize(eyeVector) - normalize(eyeVector - FUSEE_L7_POSITION));
         float L7NdotHV = max(dot(normalize(vNormal), vHalfVector), 0.0);
-        float shine = pow(L7NdotHV, 64.0) * 16.0;
+        float shine = pow(L7NdotHV, specularLevel) * 16.0;
         endSpecular += FUSEE_L7_SPECULAR * shine;
     }
     
@@ -504,6 +505,7 @@ private const string PsBump = @"
 
 uniform sampler2D texture1;
 uniform sampler2D normalTex;
+uniform float specularLevel;
 
 uniform vec4 FUSEE_L0_SPECULAR;
 uniform vec4 FUSEE_L1_SPECULAR;
@@ -565,49 +567,49 @@ void main()
     if(FUSEE_L0_ACTIVE == 1.0) {
         vec3 vHalfVector = normalize(normalize(eyeVector) - normalize(eyeVector - FUSEE_L0_POSITION));
         float L3NdotHV = max(dot(normalize(tempNormal), vHalfVector), 0.0);
-        float shine = pow(L3NdotHV, 64.0) * 16.0;
+        float shine = pow(L3NdotHV, specularLevel) * 16.0;
         endSpecular += FUSEE_L0_SPECULAR * shine;
     }
     if(FUSEE_L1_ACTIVE == 1.0) {
         vec3 vHalfVector = normalize(normalize(eyeVector) - normalize(eyeVector - FUSEE_L1_POSITION));
         float L3NdotHV = max(dot(normalize(tempNormal), vHalfVector), 0.0);
-        float shine = pow(L3NdotHV, 64.0) * 16.0;
+        float shine = pow(L3NdotHV, specularLevel) * 16.0;
         endSpecular += FUSEE_L1_SPECULAR * shine;
     }
     if(FUSEE_L2_ACTIVE == 1.0) {
         vec3 vHalfVector = normalize(normalize(eyeVector) - normalize(eyeVector - FUSEE_L2_POSITION));
         float L3NdotHV = max(dot(normalize(tempNormal), vHalfVector), 0.0);
-        float shine = pow(L3NdotHV, 64.0) * 16.0;
+        float shine = pow(L3NdotHV, specularLevel) * 16.0;
         endSpecular += FUSEE_L2_SPECULAR * shine;
     }
     if(FUSEE_L3_ACTIVE == 1.0) {
         vec3 vHalfVector = normalize(normalize(eyeVector) - normalize(eyeVector - FUSEE_L3_POSITION));
         float L3NdotHV = max(dot(normalize(tempNormal), vHalfVector), 0.0);
-        float shine = pow(L3NdotHV, 64.0) * 16.0;
+        float shine = pow(L3NdotHV, specularLevel) * 16.0;
         endSpecular += FUSEE_L3_SPECULAR * shine;
     }
     if(FUSEE_L4_ACTIVE == 1.0) {
         vec3 vHalfVector = normalize(normalize(eyeVector) - normalize(eyeVector - FUSEE_L4_POSITION));
         float L3NdotHV = max(dot(normalize(tempNormal), vHalfVector), 0.0);
-        float shine = pow(L3NdotHV, 64.0) * 16.0;
+        float shine = pow(L3NdotHV, specularLevel) * 16.0;
         endSpecular += FUSEE_L4_SPECULAR * shine;
     }
     if(FUSEE_L5_ACTIVE == 1.0) {
         vec3 vHalfVector = normalize(normalize(eyeVector) - normalize(eyeVector - FUSEE_L5_POSITION));
         float L3NdotHV = max(dot(normalize(tempNormal), vHalfVector), 0.0);
-        float shine = pow(L3NdotHV, 64.0) * 16.0;
+        float shine = pow(L3NdotHV, specularLevel) * 16.0;
         endSpecular += FUSEE_L5_SPECULAR * shine;
     }
     if(FUSEE_L6_ACTIVE == 1.0) {
         vec3 vHalfVector = normalize(normalize(eyeVector) - normalize(eyeVector - FUSEE_L6_POSITION));
         float L3NdotHV = max(dot(normalize(tempNormal), vHalfVector), 0.0);
-        float shine = pow(L3NdotHV, 64.0) * 16.0;
+        float shine = pow(L3NdotHV, specularLevel) * 16.0;
         endSpecular += FUSEE_L6_SPECULAR * shine;
     }
     if(FUSEE_L7_ACTIVE == 1.0) {
         vec3 vHalfVector = normalize(normalize(eyeVector) - normalize(eyeVector - FUSEE_L7_POSITION));
         float L3NdotHV = max(dot(normalize(tempNormal), vHalfVector), 0.0);
-        float shine = pow(L3NdotHV, 64.0) * 16.0;
+        float shine = pow(L3NdotHV, specularLevel) * 16.0;
         endSpecular += FUSEE_L7_SPECULAR * shine;
     }
     
