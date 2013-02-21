@@ -78,6 +78,12 @@ namespace Fusee.SceneManagement
             Console.WriteLine("Initvalues got called");
         }
 
+        /*public ImageData GetTexture(string texturename)
+        {
+            
+        }*/
+
+
         public void UpdateValues(RenderContext rc)
         {
             //if(rc.GetShaderParam(sp,"texture1") != _texture1Param)

@@ -35,7 +35,6 @@ namespace Fusee.SceneManagement
            _matrixDirty = false;
            _quaternionDirty = false;
            _eulerDirty = false;
-
        }
 
 
@@ -55,9 +54,35 @@ namespace Fusee.SceneManagement
                }
                return _transformMatrix;
            }
-           set { _transformMatrix = value; } // TODO: Extract Position, Rotation, Scale after assignment.
+           set
+           {
+               //_eulerDirty = true;
+               //_matrixDirty = true;
+               //_quaternionDirty = true;
+               _transformMatrix = value;
+               UpdateMembers();
+           } // TODO: Extract Position, Rotation, Scale after assignment.
        }
 
+        private float3 GetScaleFromMatrix(float4x4 matrix)
+        {
+            float xs, ys, zs;
+            xs = GetLengthOfVector(new float3(matrix.M11, matrix.M12, matrix.M13));
+            ys = GetLengthOfVector(new float3(matrix.M21, matrix.M22, matrix.M23));
+            zs = GetLengthOfVector(new float3(matrix.M31, matrix.M32, matrix.M33));
+            return new float3(xs,ys,zs);
+        }
+
+        private float3 GetPositionFromMatrix(float4x4 matrix)
+        {
+            return new float3(matrix.M41,matrix.M42,matrix.M43);
+        }
+
+        private float GetLengthOfVector(float3 vector)
+        {
+            double sum = (vector.x*vector.x + vector.y*vector.y + vector.z*vector.z);
+            return (float)System.Math.Sqrt(sum);
+        }
 
        public float3 LocalPosition
        {
@@ -66,7 +91,10 @@ namespace Fusee.SceneManagement
                _localPosition = value;
                _matrixDirty = true;
            }
-           get { return _localPosition; }
+           get
+           {
+               return _localPosition;
+           }
        }
         
         
@@ -131,10 +159,10 @@ namespace Fusee.SceneManagement
        }
       private void UpdateMembers() // Extract members from transformmatrix
       {
-          _quaternion = Quaternion.Identity;
-          _eulerAngles = float3.One;
-          _localScale = float3.One;
-          _localPosition = float3.One;
+          //_quaternion = Quaternion.Identity;
+          //_eulerAngles = float3.;
+          _localScale = GetScaleFromMatrix(_transformMatrix);
+          _localPosition = GetPositionFromMatrix(_transformMatrix);
       }
     }
 

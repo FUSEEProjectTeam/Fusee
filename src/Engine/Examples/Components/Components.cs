@@ -35,11 +35,23 @@ namespace Examples.Components
         protected float4 _farbe = new float4(1, 0, 0, 1);
         protected IShaderParam _vColorParam;
 
+        // Scene Camera Setup
+        private SceneEntity cameraholder = new SceneEntity();
+        private Camera scenecamera;
+        private CameraScript camscript = new CameraScript();
         public override void Init()
         {
-            RC.Camera = Camera;
+
             SceneManager.RC = RC;
-            
+            //Setup Camera
+            cameraholder.name = "CameraOwner";
+            cameraholder.transform.Matrix = Camera;
+            scenecamera = new Camera(cameraholder.transform);
+            cameraholder.AddComponent(camscript);
+            cameraholder.AddComponent(scenecamera);
+
+            camscript.Init(cameraholder);
+            //SceneManager.Manager.AddSceneEntity(cameraholder);
            
             // Parent
             TestEntity.name = "erster";
@@ -60,14 +72,16 @@ namespace Examples.Components
             Childscript.Init(ChildEntity);
             Childscript.Start();
             testscript.Start();
-
+            ChildEntity.AddChild(cameraholder);
             /*
             ShaderProgram sp = RC.CreateShader(_material._vs, _material._ps);
             RC.SetShader(sp);
             _vColorParam = sp.GetShaderParam("uColor");        
             RC.SetShaderParam(_vColorParam, _farbe);*/
+
+
             RC.ClearColor = new float4(0, 0, 0, 1);
-            SceneManager.Manager.SetInput(In);
+            //SceneManager.Manager.SetInput(In);
         }
 
 

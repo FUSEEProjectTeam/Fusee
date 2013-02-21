@@ -51,6 +51,7 @@
     </StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="CameraScript.cs" />
     <Compile Include="ChildAction.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Components.cs" />

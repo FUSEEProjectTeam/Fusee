@@ -6,19 +6,31 @@ namespace Fusee.SceneManagement
     /// Light is the base class for all lightsources in the scene.
     /// All lights are derived from this class and this class is derived from Component.
     /// </summary>
-
     public class Light : Component
     {
         #region Enums
+        /// <summary>
+        /// Enums for lighttypes at the moment there are 3
+        /// </summary>
         public enum LightType
         {
-            Directional, // 0
-            Point,       // 1 
-            Spot,        // 2
+            /// <summary>
+            /// Directional = 0
+            /// </summary>
+            Directional,
+            /// <summary>
+            /// Point = 1
+            /// </summary>
+            Point,
+            /// <summary>
+            /// The spot = 2
+            /// </summary>
+            Spot,
         }
-#endregion
+        #endregion
 
         #region Fields
+
         protected LightType _type;
         protected float3 _position;
         protected float4 _color;
@@ -26,6 +38,9 @@ namespace Fusee.SceneManagement
         #endregion
 
         #region Constructors
+        /// <summary>
+        /// Creates an object of light.
+        /// </summary>
         public  Light()
         {
             _type = LightType.Point;
@@ -34,14 +49,5 @@ namespace Fusee.SceneManagement
             _channel = 0;
         }
         #endregion
-
-        #region Methods
-        /// <summary>
-        /// Overrides Traverse with empty body
-        /// </summary>
-        /// <param name="_traversalState"></param>
-
-        #endregion 
-
     }
 }
