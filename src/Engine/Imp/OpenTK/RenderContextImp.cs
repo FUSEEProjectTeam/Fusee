@@ -31,6 +31,7 @@ namespace Fusee.Engine
         public ImageData LoadImage(String filename)
         {
             Bitmap bmp = new Bitmap(filename);
+            //Flip y-axis, otherwise texture would be upside down
             bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
 
             BitmapData bmpData = bmp.LockBits(new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite,
@@ -47,7 +48,7 @@ namespace Fusee.Engine
 
             };
 
-            // Copy the RGB values into the array.
+            
             System.Runtime.InteropServices.Marshal.Copy(bmpData.Scan0, ret.PixelData, 0, bytes);
 
             bmp.UnlockBits(bmpData);
