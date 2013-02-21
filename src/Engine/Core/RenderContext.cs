@@ -73,6 +73,15 @@ namespace Fusee.Engine
         private bool _transProjectionOk;
         private bool _transModelViewProjectionOk;
 
+        public ImageData CreateImage (int width, int height, String bgColor)
+        {
+            return _rci.CreateImage(width, height, bgColor);
+        }
+
+        public ImageData TextOnImage(ImageData imgData, String fontName, float fontSize, String text, String textColor, float startPosX, float startPosY)
+        {
+            return _rci.TextOnImage(imgData, fontName, fontSize, text, textColor, startPosX, startPosY);
+        }
 
         public ITexture CreateTexture(ImageData imgData)
         {
