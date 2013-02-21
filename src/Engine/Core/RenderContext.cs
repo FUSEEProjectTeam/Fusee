@@ -44,33 +44,45 @@ namespace Fusee.Engine
         // Settable matrices
         private float4x4 _modelView;
         private float4x4 _projection;
-        private float4x4 _view; 
-
+        private float4x4 _view;
+        private float4x4 _model;
         // Derived matrices
         private float4x4 _modelViewProjection;
 
+        private float4x4 _invView;
+        private float4x4 _invModel;
         private float4x4 _invModelView;
         private float4x4 _invProjection;
         private float4x4 _invModelViewProjection;
 
+        private float4x4 _invTransView;
+        private float4x4 _invTransModel;
         private float4x4 _invTransModelView;
         private float4x4 _invTransProjection;
         private float4x4 _invTransModelViewProjection;
 
+        private float4x4 _transView;
+        private float4x4 _transModel;
         private float4x4 _transModelView;
         private float4x4 _transProjection;
         private float4x4 _transModelViewProjection;
 
         private bool _modelViewProjectionOk;
 
+        private bool _invViewOk;
+        private bool _invModelOk;
         private bool _invModelViewOk;
         private bool _invProjectionOk;
         private bool _invModelViewProjectionOk;
 
+        private bool _invTransViewOk;
+        private bool _invTransModelOk;
         private bool _invTransModelViewOk;
         private bool _invTransProjectionOk;
         private bool _invTransModelViewProjectionOk;
 
+        private bool _transViewOk;
+        private bool _transModelOk;
         private bool _transModelViewOk;
         private bool _transProjectionOk;
         private bool _transModelViewProjectionOk;
@@ -132,9 +144,57 @@ namespace Fusee.Engine
         public float4x4 View
         {
             get { return _view; }
-            set { _view = value; }
+            set
+            {
+                _view = value;
+
+                _modelViewProjectionOk = false;
+                _invViewOk = false; 
+                _invModelViewOk = false;
+                _invModelViewProjectionOk = false;
+
+                _invTransViewOk = false;
+                _invTransModelViewOk = false;
+                _invTransModelViewProjectionOk = false;
+
+                _transViewOk = false;
+                _transModelViewOk = false;
+                _transModelViewProjectionOk = false;
+                _modelView = _model*_view;
+                
+                UpdateCurrentShader();
+                _rci.ModelView = _modelView;
+            }
         }
 
+        public float4x4 Model
+        {
+            
+            get { return _model; }
+            set
+            {
+                _model = value;
+
+
+                _modelViewProjectionOk = false;
+                _invModelOk = false;
+                _invModelViewOk = false;
+                _invModelViewProjectionOk = false;
+
+                _invTransModelOk = false;
+                _invTransModelViewOk = false;
+                _invTransModelViewProjectionOk = false;
+
+                _transModelOk = false;
+                _transModelViewOk = false;
+                _transModelViewProjectionOk = false;
+                _modelView = _model*_view;
+
+                UpdateCurrentShader();
+                _rci.ModelView = _modelView;
+
+            } //TODO: Flags
+        }
         public float4x4 ModelView
         {
             get
@@ -145,13 +205,23 @@ namespace Fusee.Engine
             {
                 // Update matrix
                 _modelView = value;
-
+                _view = float4x4.Identity;
+                _model = value;
                 // Invalidate derived matrices
                 _modelViewProjectionOk = false;
+
+                _invModelOk = false;
+                _invViewOk = false;
                 _invModelViewOk = false;
                 _invModelViewProjectionOk = false;
+
+                _invTransModelOk = false;
+                _invTransViewOk = false;
                 _invTransModelViewOk = false;
                 _invTransModelViewProjectionOk = false;
+
+                _transModelOk = false;
+                _transViewOk = false;
                 _transModelViewOk = false;
                 _transModelViewProjectionOk = false;
 
@@ -200,6 +270,32 @@ namespace Fusee.Engine
             }
         }
 
+        public float4x4 InvView
+        {
+            get
+            {
+                if (!_invViewOk)
+                {
+                    _invView = float4x4.Invert(View);
+                    _invViewOk = true;
+                }
+                return _invView;
+            }
+        }
+
+        public float4x4 InvModel
+        {
+            get
+            {
+                if (!_invModelOk)
+                {
+                    _invModel = float4x4.Invert(Model);
+                    _invModelOk = true;
+                }
+                return _invModel;
+            }
+        }
+
         public float4x4 InvModelView
         {
             get
@@ -239,6 +335,31 @@ namespace Fusee.Engine
             }
         }
 
+        public float4x4 TransView
+        {
+            get
+            {
+                if (!_transViewOk)
+                {
+                    _transView = float4x4.Transpose(View);
+                    _transViewOk = true;
+                }
+                return _transView;
+            }
+        }
+
+        public float4x4 TransModel
+        {
+            get
+            {
+                if (!_transModelOk)
+                {
+                    _transModel = float4x4.Transpose(Model);
+                    _transModelOk = true;
+                }
+                return _transModel;
+            }
+        }
 
         public float4x4 TransModelView
         {
@@ -279,6 +400,31 @@ namespace Fusee.Engine
             }
         }
 
+        public float4x4 InvTransView
+        {
+            get
+            {
+                if (!_invTransViewOk)
+                {
+                    _invTransView = float4x4.Invert(TransView);
+                    _invTransViewOk = true;
+                }
+                return _invTransView;
+            }
+        }
+
+        public float4x4 InvTransModel
+        {
+            get
+            {
+                if (!_invTransModelOk)
+                {
+                    _invTransModel = float4x4.Invert(TransModel);
+                    _invTransModelOk = true;
+                }
+                return _invTransModel;
+            }
+        }
 
         public float4x4 InvTransModelView
         {

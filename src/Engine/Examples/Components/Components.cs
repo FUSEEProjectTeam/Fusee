@@ -45,12 +45,13 @@ namespace Examples.Components
             SceneManager.RC = RC;
             //Setup Camera
             cameraholder.name = "CameraOwner";
-            cameraholder.transform.Matrix = Camera;
+            cameraholder.transform.LocalPosition = new float3(0,0,10);
             scenecamera = new Camera(cameraholder.transform);
             cameraholder.AddComponent(camscript);
             cameraholder.AddComponent(scenecamera);
 
             camscript.Init(cameraholder);
+            //SceneManager.Manager.AddSceneEntity(cameraholder);
             //SceneManager.Manager.AddSceneEntity(cameraholder);
            
             // Parent
@@ -63,8 +64,8 @@ namespace Examples.Components
             TestEntity.AddComponent(direct);
             SceneManager.Manager.AddSceneEntity(TestEntity);
             testscript.Init(TestEntity);
-            TestEntity.AddChild(ChildEntity); // Als Child hinzugefuegt
-            
+            //TestEntity.AddChild(ChildEntity); // Als Child hinzugefuegt
+            SceneManager.Manager.AddSceneEntity(ChildEntity);
             
             // Child
             ChildEntity.AddComponent(Childrenderer);
@@ -72,7 +73,7 @@ namespace Examples.Components
             Childscript.Init(ChildEntity);
             Childscript.Start();
             testscript.Start();
-            ChildEntity.AddChild(cameraholder);
+            TestEntity.AddChild(cameraholder);
             /*
             ShaderProgram sp = RC.CreateShader(_material._vs, _material._ps);
             RC.SetShader(sp);

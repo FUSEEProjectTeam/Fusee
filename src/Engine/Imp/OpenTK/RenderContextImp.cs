@@ -194,6 +194,7 @@ namespace Fusee.Engine
             set
             {
                 GL.MatrixMode(MatrixMode.Modelview);
+
                 unsafe { GL.LoadMatrix((float*)(&value)); }
             }
         }

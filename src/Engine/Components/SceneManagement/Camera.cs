@@ -21,7 +21,7 @@ namespace Fusee.SceneManagement
         public float4x4 ViewMatrix
         {
             get { return _viewmatrix; }
-            set { _viewmatrix = value;}
+            set { _viewmatrix = float4x4.Invert(value);}
         }
         
         public RenderCamera SubmitWork()

@@ -11,9 +11,9 @@ namespace Examples.Components
         
         public override void Start()
         {
-            transform.LocalEulerAngles = new float3(0, 90, 0);
-            transform.LocalPosition = new float3(0,0,0);
-            renderer.material.SwitchTexture();
+            //transform.LocalEulerAngles = new float3(0, 90, 0);
+            //transform.LocalPosition = new float3(0,0,0);
+            //renderer.material.SwitchTexture();
             renderer.color = new float4(1,1,1,1);
             Renderer[] test = SceneEntity.GetComponents<Renderer>();
             
@@ -22,10 +22,8 @@ namespace Examples.Components
 
         public override void Update()
         {
-            //transform.LocalQuaternion = Quaternion.FromAxisAngle(new float3(0, 0, 1), x);
-            //Quaternion q = Quaternion.MatrixToQuaternion(transform.Matrix);
-            //transform.LocalEulerAngles = new float3(-180,x,0);
-            //x += 0.1F*(float)DeltaTime;
+            Debug.WriteLine("parent position: "+transform.LocalPosition);
+            transform.LocalEulerAngles+=new float3(0,0.1f,0);
         }
 
         public void Test(float x)
