@@ -30,10 +30,16 @@ namespace Fusee.Engine
             _canvasImp = ImpFactory.CreateIRenderCanvasImp();
             _rc = new RenderContext(ImpFactory.CreateIRenderContextImp(_canvasImp));
             _in = new Input(ImpFactory.CreateIInputImp(_canvasImp));
+
             _canvasImp.Init += delegate(object sender, InitEventArgs args)
-                                   {
-                                       Init();
-                                   };
+                                    {
+                                        Init();
+                                    };
+
+            _canvasImp.UnLoad += delegate(object sender, InitEventArgs args)
+                                    {
+                                        UnLoad();
+                                    };
 
             _canvasImp.Render += delegate(object sender, RenderEventArgs args)
                                      {
@@ -49,11 +55,16 @@ namespace Fusee.Engine
             _audio = new Audio(ImpFactory.CreateIAudioImp());
         }
 
-        public virtual void RenderAFrame()
+        public virtual void Init()
         {
         }
 
-        public virtual void Init()
+        public virtual void UnLoad()
+        {
+            _audio.CloseDevice();
+        }
+
+        public virtual void RenderAFrame()
         {
         }
 

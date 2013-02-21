@@ -30,13 +30,38 @@ namespace Fusee.Engine
 
         public void OpenDevice()
         {
+            CloseDevice();
             WaveOutDevice = new DirectSoundOut();
-            WaveOutDevice.Init(MainOutputStream);
+        }
+
+        public void CloseDevice()
+        {
+            if (WaveOutDevice != null)
+            {
+                WaveOutDevice.Stop();
+            }
+
+            if (MainOutputStream != null)
+            {
+                // this one really closes the file and ACM conversion
+                VolumeStream.Close();
+                VolumeStream = null;
+                // this one does the metering stream
+                MainOutputStream.Close();
+                MainOutputStream = null;
+            }
+
+            if (WaveOutDevice != null)
+            {
+                WaveOutDevice.Dispose();
+                WaveOutDevice = null;
+            }
         }
 
         public void LoadFile(string fileName)
         {
             MainOutputStream = CreateInputStream("Assets/tetris.mp3");
+            WaveOutDevice.Init(MainOutputStream);
         }
 
         public void Play()

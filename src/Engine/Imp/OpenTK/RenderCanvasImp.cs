@@ -18,7 +18,7 @@ namespace Fusee.Engine
         public double DeltaTime
         {
             get
-            {
+            {            
                 return _gameWindow.DeltaTime; 
             }
         }
@@ -43,6 +43,8 @@ namespace Fusee.Engine
         }
 
         public event EventHandler<InitEventArgs> Init;
+        public event EventHandler<InitEventArgs> UnLoad; 
+
         public event EventHandler<RenderEventArgs> Render;
         public event EventHandler<ResizeEventArgs> Resize;
 
@@ -50,6 +52,12 @@ namespace Fusee.Engine
         {
             if (Init != null)
                 Init(this, new InitEventArgs());
+        }
+
+        internal void DoUnLoad()
+        {
+            if (UnLoad != null)
+                UnLoad(this, new InitEventArgs());
         }
 
         internal void DoRender()
@@ -99,11 +107,9 @@ namespace Fusee.Engine
             _renderCanvasImp.DoInit();
         }
 
-
-
         protected override void OnUnload(EventArgs e)
         {
-
+            _renderCanvasImp.DoUnLoad();
             // if (_renderCanvasImp != null)
             //     _renderCanvasImp.Dispose();      
         }

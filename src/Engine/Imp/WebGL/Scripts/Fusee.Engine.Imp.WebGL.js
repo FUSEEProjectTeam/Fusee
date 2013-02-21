@@ -128,6 +128,44 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderCanvasImp
 }
   );
 
+    $.Field({ Static: false, Public: false }, "IRenderCanvasImp_UnLoad", $jsilcore.TypeRef("System.EventHandler`1", [$fuseeCommon.TypeRef("Fusee.Engine.MouseEventArgs")]), function ($) {
+        return null;
+    });
+
+    $.Method({ Static: false, Public: true }, "IRenderCanvasImp_add_UnLoad",
+        new JSIL.MethodSignature(null, [$jsilcore.TypeRef("System.EventHandler`1", [$fuseeCommon.TypeRef("Fusee.Engine.InitEventArgs")])]),
+        function IRenderCanvasImp_add_UnLoad(value) {
+            var eventHandler = this.IRenderCanvasImp_UnLoad;
+            do {
+                var eventHandler2 = eventHandler;
+                var value2 = $jsilcore.System.Delegate.Combine(eventHandler2, value);
+                eventHandler = $jsilcore.System.Threading.Interlocked.CompareExchange$b1($jsilcore.System.EventHandler$b1.Of($fuseeCommon.Fusee.Engine.InitEventArgs))(/* ref */new JSIL.MemberReference(this, "IRenderCanvasImp_UnLoad"), value2, eventHandler2);
+            } while (eventHandler !== eventHandler2);
+        }
+    );
+
+    $.Method({ Static: false, Public: true }, "IRenderCanvasImp_remove_UnLoad",
+        new JSIL.MethodSignature(null, [$jsilcore.TypeRef("System.EventHandler`1", [$fuseeCommon.TypeRef("Fusee.Engine.InitEventArgs")])]),
+        function IRenderCanvasImp_remove_UnLoad(value) {
+            var eventHandler = this.IRenderCanvasImp_UnLoad;
+            do {
+                var eventHandler2 = eventHandler;
+                var value2 = $jsilcore.System.Delegate.Remove(eventHandler2, value);
+                eventHandler = $jsilcore.System.Threading.Interlocked.CompareExchange$b1($jsilcore.System.EventHandler$b1.Of($fuseeCommon.Fusee.Engine.InitEventArgs))(/* ref */new JSIL.MemberReference(this, "IRenderCanvasImp_UnLoad"), value2, eventHandler2);
+            } while (eventHandler !== eventHandler2);
+        }
+    );
+
+
+    $.Method({ Static: false, Public: true }, "DoUnLoad",
+    new JSIL.MethodSignature(null, []),
+    function DoUnLoad() {
+        if (this.IRenderCanvasImp_UnLoad !== null) {
+            this.IRenderCanvasImp_UnLoad(this, (new $fuseeCommon.Fusee.Engine.InitEventArgs()).__Initialize__({
+        }));
+    }
+}
+  );
 
 $.Field({ Static: false, Public: false }, "IRenderCanvasImp_Render", $jsilcore.TypeRef("System.EventHandler`1", [$fuseeCommon.TypeRef("Fusee.Engine.MouseEventArgs")]), function ($) {
     return null;

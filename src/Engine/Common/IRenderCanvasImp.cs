@@ -14,6 +14,7 @@ namespace Fusee.Engine
         void Run();
 
         event EventHandler<InitEventArgs> Init;
+        event EventHandler<InitEventArgs> UnLoad; 
         event EventHandler<RenderEventArgs> Render;
         event EventHandler<ResizeEventArgs> Resize;
     }

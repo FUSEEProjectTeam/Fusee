@@ -1,4 +1,6 @@
-﻿namespace Fusee.Engine
+﻿using JSIL.Meta;
+
+namespace Fusee.Engine
 {
     public class Audio
     {
@@ -12,6 +14,12 @@
         public void OpenDevice()
         {
             _audioImp.OpenDevice();
+        }
+
+        [JSIgnore]
+        public void CloseDevice()
+        {
+            _audioImp.CloseDevice();
         }
 
         public void LoadFile(string fileName)

@@ -47,6 +47,9 @@
   <ItemGroup />
   <ItemGroup>
     <Content Include="Fusee.Engine.Imp.WebAudio.js" />
+    <Content Include="soundjs-0.4.0.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Target Name="Build">
     <Exec Condition=" '$(OS)' != 'Windows_NT' " Command="rsync -a *.js $(OutputPath)" />
