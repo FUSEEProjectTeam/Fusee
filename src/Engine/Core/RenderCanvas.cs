@@ -30,27 +30,23 @@ namespace Fusee.Engine
 
         /*
         private Input _in;
-<<<<<<< HEAD
+
         /// <summary>
         /// This property will be replaced by the Input class singleton!!!
         /// </summary>
-=======
 
->>>>>>> feat_HP_pbe02_textures
         protected Input In
         {
             get { return _in; }
         }
         */
 
-<<<<<<< HEAD
+
         /// <summary>
         /// The RenderCanvas constructor. Depending on the implementation this constructor instantiates a 3D viewing window or connects a 3D 
         /// render context to an existing part of the application window.
         /// </summary>
-=======
-       
->>>>>>> feat_HP_pbe02_textures
+
         public RenderCanvas()
         {
             _canvasImp = ImpFactory.CreateIRenderCanvasImp();
@@ -137,13 +133,12 @@ namespace Fusee.Engine
         /// </value>
         public int Height { get { return _canvasImp.Height; } }
 
-<<<<<<< HEAD
+
         /// <summary>
         /// This property will be replaced by the DeltaTime class singleton!!!
         /// </summary>
-=======
         /*
->>>>>>> feat_HP_pbe02_textures
+
         public double DeltaTime
         {
             get

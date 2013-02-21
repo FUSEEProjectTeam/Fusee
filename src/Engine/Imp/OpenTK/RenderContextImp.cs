@@ -63,17 +63,12 @@ namespace Fusee.Engine
         /// <summary>
         /// Creates a new Image with a specified size and color.
         /// </summary>
-<<<<<<< HEAD
-        /// <param name="img">A given ImageData object, which contains all necessary information for the upload to the graphics card</param>
-        /// <returns>An ITexture that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK</returns>
-        public ITexture CreateTexture(ImageData img)
-=======
         /// <param name="width">The width of the image.</param>
         /// <param name="height">The height of the image.</param>
         /// <param name="bgColor">The color of the image. Value must be JS compatible.</param>
         /// <returns>An ImageData struct containing all necessary information for further processing.</returns>
         public ImageData CreateImage (int width, int height, String bgColor)
->>>>>>> feat_HP_pbe02_textures
+
         {
             Bitmap bmp = new Bitmap(width, height);
             Graphics gfx = Graphics.FromImage(bmp);
@@ -107,8 +102,6 @@ namespace Fusee.Engine
             
         }
 
-<<<<<<< HEAD
-=======
         /// <summary>
         /// Maps a specified text with on an image.
         /// </summary>
@@ -176,7 +169,6 @@ namespace Fusee.Engine
 
         }
 
->>>>>>> feat_HP_pbe02_textures
 
 
         public IShaderParam GetShaderParam(IShaderProgramImp shaderProgram, string paramName)
@@ -271,15 +263,14 @@ namespace Fusee.Engine
             GL.Uniform1(((ShaderParam)param).handle, val);
         }
 
-<<<<<<< HEAD
+
         
-=======
+
         /// <summary>
         /// Sets a given Shader Parameter to a created texture
         /// </summary>
         /// <param name="param">Shader Parameter used for texture binding</param>
         /// <param name="texId">An ITexture probably returned from CreateTexture method</param>
->>>>>>> feat_HP_pbe02_textures
         public void SetShaderParamTexture(IShaderParam param, ITexture texId)
         {
             int iParam = ((ShaderParam) param).handle;
