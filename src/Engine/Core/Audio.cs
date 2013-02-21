@@ -22,14 +22,14 @@ namespace Fusee.Engine
             _audioImp.CloseDevice();
         }
 
-        public void LoadFile(string fileName)
+        public IAudioStream LoadFile(string fileName)
         {
-            _audioImp.LoadFile(fileName);
+            return _audioImp.LoadFile(fileName);
         }
 
-        public void Play()
+        public void Play(IAudioStream stream)
         {
-            _audioImp.Play();
+            _audioImp.Play(stream);
         }
 
         public void Pause()

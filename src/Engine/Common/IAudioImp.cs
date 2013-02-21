@@ -9,9 +9,9 @@ namespace Fusee.Engine
         [JSIgnore]
         void CloseDevice();
 
-        void LoadFile(string fileName);
+        IAudioStream LoadFile(string fileName);
 
-        void Play();
+        void Play(IAudioStream stream);
 
         void Pause();
     }

@@ -8,30 +8,16 @@ namespace Fusee.Engine
     public class NAudioImp : IAudioImp
     {
         internal IWavePlayer WaveOutDevice;
-        internal WaveStream MainOutputStream;
-        internal WaveChannel32 VolumeStream;
 
-        private WaveStream CreateInputStream(string fileName)
-        {
-            WaveChannel32 inputStream;
-            if (fileName.EndsWith(".mp3"))
-            {
-                WaveStream mp3Reader = new Mp3FileReader(fileName);
-                inputStream = new WaveChannel32(mp3Reader);
-            }
-            else
-            {
-                throw new InvalidOperationException("Unsupported extension");
-            }
-
-            VolumeStream = inputStream;
-            return VolumeStream;
-        }
-
+        internal readonly IAudioStream[] AllStreams = new IAudioStream[128];
+        internal int LoadedStreams;
+    
         public void OpenDevice()
         {
             CloseDevice();
             WaveOutDevice = new DirectSoundOut();
+
+            LoadedStreams = 0;
         }
 
         public void CloseDevice()
@@ -41,14 +27,9 @@ namespace Fusee.Engine
                 WaveOutDevice.Stop();
             }
 
-            if (MainOutputStream != null)
+            for (var x = 0; x < LoadedStreams; x++)
             {
-                // this one really closes the file and ACM conversion
-                VolumeStream.Close();
-                VolumeStream = null;
-                // this one does the metering stream
-                MainOutputStream.Close();
-                MainOutputStream = null;
+                AllStreams[x].Dispose();
             }
 
             if (WaveOutDevice != null)
@@ -58,15 +39,21 @@ namespace Fusee.Engine
             }
         }
 
-        public void LoadFile(string fileName)
+        public IAudioStream LoadFile(string fileName)
         {
-            MainOutputStream = CreateInputStream("Assets/tetris.mp3");
-            WaveOutDevice.Init(MainOutputStream);
+            IAudioStream tmp = new AudioStream(fileName, WaveOutDevice);
+            AllStreams[LoadedStreams] = tmp;
+            LoadedStreams++;
+            return tmp;
         }
 
-        public void Play()
+        public void Play(IAudioStream stream)
         {
-            WaveOutDevice.Play();
+            if (stream != null)
+            {
+                WaveOutDevice.Init(((AudioStream) stream).MainOutputStream);
+                WaveOutDevice.Play();
+            }
         }
 
         public void Pause()

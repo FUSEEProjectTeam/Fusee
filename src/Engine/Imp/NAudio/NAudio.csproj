@@ -47,6 +47,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AudioStream.cs" />
     <Compile Include="Implementor.cs" />
     <Compile Include="NAudioImp.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -65,4 +66,5 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <Import Project="$(SolutionDir)/Fusee.targets" Condition="'$(PostBuildEvent)' == ''" />
 </Project>

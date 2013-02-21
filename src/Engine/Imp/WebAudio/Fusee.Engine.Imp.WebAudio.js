@@ -6,26 +6,54 @@
 	JSIL v0.6.0 build 16283. Until then it was changed and maintained manually.
 */
 
-var $asmThis = JSIL.DeclareAssembly("Fusee.Engine.Imp.WebAudio");
+var $WebAudioImp = JSIL.DeclareAssembly("Fusee.Engine.Imp.WebAudio");
 var $fuseeCommon = JSIL.GetAssembly("Fusee.Engine.Common");
 
 JSIL.DeclareNamespace("Fusee");
 JSIL.DeclareNamespace("Fusee.Engine");
 
+JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.AudioStream", true, [], function ($) {
+  var $thisType = $.publicInterface;
+
+  $.Property({Static:false, Public:false}, "MainOutputStream", $.Object);
+  $.Property({Static:false, Public:false}, "StreamFileName", $.String);
+ 
+  $.Method({Static:false, Public:true }, ".ctor", 
+    new JSIL.MethodSignature(null, [$.String]), 
+    function AudioStream__ctor (fileName) {
+		this.AudioStream$StreamFileName$value = fileName;
+	    //this.AudioStream$MainOutputStream$value = createjs.Sound.registerSound(fileName);
+    }
+  );
+
+  $.Method({Static:false, Public:true }, "Play", 
+    new JSIL.MethodSignature(null, []), 
+    function AudioStream_Play () {
+      createjs.Sound.play(this.AudioStream$StreamFileName$value);
+    }
+  );
+
+  $.ImplementInterfaces($fuseeCommon.TypeRef("Fusee.Engine.IAudioStream"))
+});
+
 JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.WebAudioImp", true, [], function ($) {
   var $thisType = $.publicInterface;
+  var soundInstance;  // the soundInstance returned by Sound when we create or play a src
   
   $.Method({Static:false, Public:true }, ".ctor", 
     new JSIL.MethodSignature(null, []),
     function WebAudioImp__ctor () {
-			// not implemented
+      this.AllStreams = JSIL.Array.New($fuseeCommon.Fusee.Engine.IAudioStream, 128);
     }
   );
 
   $.Method({Static:false, Public:true }, "LoadFile", 
-    new JSIL.MethodSignature(null, [$.String]),
+    new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.IAudioStream"), [$.String]),
     function WebAudioImp_LoadFile (fileName) {
-      //loadedAudio = this.get_Content().Load$b1($T00())(fileName);
+      var tmp = new $WebAudioImp.Fusee.Engine.AudioStream(fileName);
+      this.AllStreams[this.LoadedStreams] = tmp;
+      ++this.LoadedStreams;
+      return tmp;
     }
   );
 
@@ -46,11 +74,13 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.WebAudioImp", t
   $.Method({Static:false, Public:true }, "Play", 
     new JSIL.MethodSignature(null, []),
     function WebAudioImp_Play () {
-      // $XNAasm02.CallStatic($T01(), "Play", null, loadedAudio);
+		//var instance = allAssets["./Assets/tetris"];
+		//soundInstance = createjs.Sound.play(instance);
     }
   );
   
   $.Field({ Static: false, Public: false }, "loadedAudio", $.String, null);
-  
+  $.Field({Static:false, Public:false, ReadOnly:true }, "AllStreams", $jsilcore.TypeRef("System.Array", [$fuseeCommon.TypeRef("Fusee.Engine.IAudioStream")]));
+    
   $.ImplementInterfaces($fuseeCommon.TypeRef("Fusee.Engine.IAudioImp"))
 });

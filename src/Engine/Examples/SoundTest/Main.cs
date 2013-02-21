@@ -8,7 +8,9 @@ namespace Examples.SoundTest
     public class SoundTest : RenderCanvas
     {
         protected string Vs = @"
-            // #version 120
+          
+          //   #version 120
+            
 
             /* Copies incoming vertex color without change.
              * Applies the transformation matrix to vertex position.
@@ -34,7 +36,9 @@ namespace Examples.SoundTest
             }";
 
         protected string Ps = @"
+          
            //  #version 120
+       
 
             /* Copies incoming fragment color without change. */
             #ifdef GL_ES
@@ -66,9 +70,9 @@ namespace Examples.SoundTest
             RC.SetShader(sp);
 
             Aud.OpenDevice();
-            Aud.LoadFile("Assets/tetris.mp3");
-            Aud.Play();
-
+            var audio1 = Aud.LoadFile("Assets/tetris.mp3");
+            audio1.Play();
+            
             _panningVal = 0;
         }
 
