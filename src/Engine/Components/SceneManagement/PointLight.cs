@@ -50,5 +50,9 @@ namespace Fusee.SceneManagement
         }
 
         #endregion
+        public override void Accept(SceneVisitor sv)
+        {
+            sv.Visit((PointLight)this);
+        }
     }
 }

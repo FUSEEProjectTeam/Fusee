@@ -51,7 +51,7 @@ namespace Examples.Components
             cameraholder.AddComponent(scenecamera);
 
             camscript.Init(cameraholder);
-            //SceneManager.Manager.AddSceneEntity(cameraholder);
+            SceneManager.Manager.AddSceneEntity(cameraholder);
             //SceneManager.Manager.AddSceneEntity(cameraholder);
            
             // Parent
@@ -73,7 +73,7 @@ namespace Examples.Components
             Childscript.Init(ChildEntity);
             Childscript.Start();
             testscript.Start();
-            TestEntity.AddChild(cameraholder);
+            //TestEntity.AddChild(cameraholder);
             /*
             ShaderProgram sp = RC.CreateShader(_material._vs, _material._ps);
             RC.SetShader(sp);

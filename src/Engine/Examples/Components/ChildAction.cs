@@ -34,6 +34,7 @@ namespace Examples.Components
                 //transform.LocalEulerAngles = new float3(0, x, 0);
                 //x -= 0.5f*(float)Time.Instance.DeltaTime;
                 //speed += 0.05f;
+                transform.LocalPosition += new float3(0,0,0.1f);
             }
             else
             {

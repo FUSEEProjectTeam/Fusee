@@ -146,6 +146,10 @@ namespace Fusee.Engine
             get { return _view; }
             set
             {
+                //value.M13 *= -1; // Correct Operation to make Coordinate System left handed
+                //value.M23 *= -1;
+                //value.M33 *= -1;
+                //value.M43 *= -1;
                 _view = value;
 
                 _modelViewProjectionOk = false;
@@ -240,6 +244,8 @@ namespace Fusee.Engine
             set
             {
                 // Update matrix
+                
+
                 _projection = value;
 
                 // Invalidate derived matrices
@@ -250,9 +256,10 @@ namespace Fusee.Engine
                 _invTransProjectionOk = false;
                 _transProjectionOk = false;
                 _transProjectionOk = false;
-
+                
                 UpdateCurrentShader();
-
+                
+                
                 _rci.Projection = value;
             }
         }

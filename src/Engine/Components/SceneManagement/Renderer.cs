@@ -30,6 +30,10 @@ namespace Fusee.SceneManagement
             material = new Material();
             color = new float4(1,0,0,1);
         }
+        public override void Accept(SceneVisitor sv)
+        {
+            sv.Visit((Renderer)this);
+        }
         #endregion
     }
 }

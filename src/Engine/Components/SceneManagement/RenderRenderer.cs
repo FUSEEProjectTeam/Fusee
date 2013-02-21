@@ -34,7 +34,7 @@ namespace Fusee.SceneManagement
                 _renderer.material.InitValues(renderContext);
             }
 
-            _renderer.material.UpdateValues(renderContext); 
+            //_renderer.material.UpdateValues(renderContext); 
             renderContext.SetShader(_renderer.material.sp);
 
         }
