@@ -23,7 +23,7 @@ namespace Examples.Components
         private Renderer Childrenderer = new Renderer();
         private ChildAction Childscript = new ChildAction();
         //Light test
-        private SpotLight spot = new SpotLight(3);
+        private SpotLight spot = new SpotLight(0);
         private PointLight point = new PointLight(1);
         private DirectionalLight direct = new DirectionalLight(2);
 
@@ -33,7 +33,7 @@ namespace Examples.Components
 
         //some values
         protected float4 _farbe = new float4(1, 0, 0, 1);
-        protected IShaderParam _vColorParam;
+        //protected IShaderParam _vColorParam;
 
         // Scene Camera Setup
         private SceneEntity cameraholder = new SceneEntity();

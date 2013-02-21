@@ -38,7 +38,7 @@ namespace Fusee.SceneManagement
         /// Creates a directional light in the scene. Direction, color and position will get standart values.
         /// Channel is needed. It is possible to set up to 8 lights in the scene.
         /// </summary>
-        /// <param name="channel">The memory space of the light.(0 - 7)</param>
+        /// <param name="channel">The memory space of the light(0 - 7).</param>
         public DirectionalLight( int channel)
         {
             _position = new float3(0,0,0);
@@ -51,7 +51,7 @@ namespace Fusee.SceneManagement
 
         #region Methods
         /// <summary>
-        /// Add's Directionallight to the lightqueue.
+        /// TraverseForRendering add's Directionallight to the lightqueue.
         /// </summary>
         public void TraverseForRendering(SceneVisitorRendering sceneVisitorRendering)
         {
