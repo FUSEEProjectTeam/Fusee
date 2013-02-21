@@ -521,8 +521,8 @@ namespace Fusee.Engine
         /// Activates the light with the given index.
         /// </summary>
         /// <param name="lightInx">The light to activate. Can range from 0 to 7. Up to eight lights are supported.</param>
-        /// <param name="active"></param>
-        public void SetLightActive(int lightInx, float active)
+        /// <param name="active">1 - activate the light. 0 - deactiv</param>
+        public void SetLightActive(int lightInx, int active)
         {
             _lightParams[lightInx].Active = active;
             IShaderParam sp;
@@ -532,10 +532,16 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// 
+        /// Sets the ambient color component on the light with the given index.
         /// </summary>
-        /// <param name="lightInx"></param>
-        /// <param name="ambientColor"></param>
+        /// <param name="lightInx">The light to set the ambient color on. Can range from 0 to 7. Up to eight lights are supported.</param>
+        /// <param name="ambientColor">
+        /// The ambient color to be emitted by the given light. The value is interpreted as a (Red, Green, Blue, Alpha) quadruple with
+        /// component values ranging from 0.0f to 1.0f. The Alpha component will be ignored.
+        /// </param>
+        /// <remarks>
+        /// An ambient light component represents a fixed-intensity and fixed-color light that affects all parts of all objects in the scene equally.
+        /// </remarks>
         public void SetLightAmbient(int lightInx, float4 ambientColor)
         {
             _lightParams[lightInx].AmbientColor = ambientColor;
@@ -546,10 +552,18 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// 
+        /// Sets the diffuse color component on the light with the given index.
         /// </summary>
-        /// <param name="lightInx"></param>
-        /// <param name="diffuseColor"></param>
+        /// <param name="lightInx">The light to set the diffuse color on. Can range from 0 to 7. Up to eight lights are supported.</param>
+        /// <param name="diffuseColor">
+        /// The diffuse color to be emitted by the given light. The value is interpreted as a (Red, Green, Blue, Alpha) quadruple with
+        /// component values ranging from 0.0f to 1.0f. The Alpha component will be ignored.
+        /// </param>
+        /// <remarks>
+        /// A diffuse light component results in different parts of objects shaded with different intensites based on the angle of the incoming
+        /// light ray at each given spot on the object surface. This component is what makes objects look "3D" - e.g. coloring the different faces of a cube with 
+        /// different intensities or creating brightness gradients on curved surfaces like a sphere.
+        /// </remarks>
         public void SetLightDiffuse(int lightInx, float4 diffuseColor)
         {
             _lightParams[lightInx].DiffuseColor= diffuseColor;
@@ -560,10 +574,20 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// 
+        /// Sets the specular color component on the light with the given index.
         /// </summary>
-        /// <param name="lightInx"></param>
-        /// <param name="specularColor"></param>
+        /// <param name="lightInx">The light to set the specular color on. Can range from 0 to 7. Up to eight lights are supported.</param>
+        /// <param name="specularColor">
+        /// The specular color to be emitted by the given light. The value is interpreted as a (Red, Green, Blue, Alpha) quadruple with
+        /// component values ranging from 0.0f to 1.0f. The Alpha component will be ignored.
+        /// </param>
+        /// <remarks>
+        /// A specular light component results in highlights created on the lit surfaces where the light source is mirrored into the viewers' eye.
+        /// Bright highlights with small radii make objects' materials look glossy. The specular light component adds realism to 3D scenes in 
+        /// walk-through animations because the specualar light's intensity at a given point on an object's surface depends not only on the 
+        /// incoming light ray angle but also on the positon of the viewer. With a moving camera, also the specular highlights move on the
+        /// objects' surfaces.
+        /// </remarks>
         public void SetLightSpecular(int lightInx, float4 specularColor)
         {
             _lightParams[lightInx].SpecularColor = specularColor;
@@ -574,10 +598,10 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// 
+        /// Sets the position of the light with the given index.
         /// </summary>
-        /// <param name="lightInx"></param>
-        /// <param name="position"></param>
+        /// <param name="lightInx">The light to set the position on. Can range from 0 to 7. Up to eight lights are supported.</param>
+        /// <param name="position">The position of the light in 3D space.</param>
         public void SetLightPosition(int lightInx, float3 position)
         {
             _lightParams[lightInx].Position = position;
@@ -588,10 +612,10 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// 
+        /// Sets the direction of the light with the given index.
         /// </summary>
-        /// <param name="lightInx"></param>
-        /// <param name="direction"></param>
+        /// <param name="lightInx">The light to set the direction on. Can range from 0 to 7. Up to eight lights are supported.</param>
+        /// <param name="position">The direction vector into which the light emits rays.</param>
         public void SetLightDirection(int lightInx, float3 direction)
         {
             _lightParams[lightInx].Direction = direction;
@@ -602,11 +626,16 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// 
+        /// Creates a shader object from vertex shader source code and pixel shader source code.
         /// </summary>
-        /// <param name="vs"></param>
-        /// <param name="ps"></param>
-        /// <returns></returns>
+        /// <param name="vs">A string containing the vertex shader source.</param>
+        /// <param name="ps">A string containing the pixel (fragment) shader source code.</param>
+        /// <returns>A shader program object identifying the combination of the given vertex and pixel shader.</returns>
+        /// <remarks>
+        /// Currently only shaders in GLSL (or rather GLSL/ES) source language(s) are supported.
+        /// The result is already compiled to code executable on the GPU. <see cref="Fusee.Engine.RenderContext.SetShader(ShaderProgram)"/>
+        /// to activate the result as the current shader used for rendering geometry passed to the RenderContext.
+        /// </remarks>
         public ShaderProgram CreateShader(string vs, string ps)
         {
             ShaderProgram sp = new ShaderProgram(_rci, _rci.CreateShader(vs, ps));
@@ -622,21 +651,28 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// 
+        /// Activates the passed shader program as the current shader for geometry rendering.
         /// </summary>
-        /// <param name="program"></param>
+        /// <param name="program">The shader to apply to mesh geometry subsequently passed to the RenderContext</param>
+        /// <seealso cref="Fusee.Engine.RenderContext.CreateShader"/>
+        /// <seealso cref="Fusee.Engine.RenderContext.Render(Mesh)"/>
         public void SetShader(ShaderProgram program)
         {
             _currentShader = program;
             _rci.SetShader(program._spi);
-            //UpdateCurrentShader();
+            UpdateCurrentShader();
         }
 
         /// <summary>
-        /// 
+        /// Get a list of (uniform) shader parameters accessed by the given shader.
         /// </summary>
-        /// <param name="program"></param>
-        /// <returns></returns>
+        /// <param name="program">The shader program to query for parameters.</param>
+        /// <returns>
+        /// A list of shader parameters accessed by the shader code of the given shader program. The parameters listed here
+        /// are the so-called uniform parameters of the shader (in contrast to the varying parameters). The list contains all
+        /// uniform parameters that are accessed by either the vertex shader, the pixel shader, or both shaders compiled into
+        /// the given shader.
+        /// </returns>
         public IEnumerable<ShaderParamInfo> GetShaderParamList(ShaderProgram program)
         {
             return _rci.GetShaderParamList(program._spi);
@@ -644,14 +680,15 @@ namespace Fusee.Engine
 
         // Pass thru
         /// <summary>
-        /// Gets the shader parameter.
+        /// Returns an identifiyer for the named (uniform) parameter used in the specified shader program.
         /// </summary>
-        /// <remarks>
-        /// Can be used to assign an a shader paramter to an IShaderParam
-        /// </remarks>
-        /// <param name="program">The program.</param>
+        /// <param name="program">The shader program using the parameter.</param>
         /// <param name="paramName">Name of the shader parameter.</param>
-        /// <returns></returns>
+        /// <returns>A handle object to identify the given parameter in subsequent calls to SetShaderParam.</returns>
+        /// <remarks>
+        /// The returned handle can be used to assign values to a (uniform) shader paramter.
+        /// </remarks>
+        /// <seealso cref="SetShaderParam(IShaderParam,float)"/>
         public IShaderParam GetShaderParam(ShaderProgram program, string paramName)
         {
             return _rci.GetShaderParam(program._spi, paramName);
@@ -662,17 +699,22 @@ namespace Fusee.Engine
         /// </summary>
         /// <param name="program">The program.</param>
         /// <param name="handle">The handle.</param>
-        /// <returns></returns>
+        /// <returns>The float value.</returns>
         public float GetParamValue(ShaderProgram program, IShaderParam handle)
         {
             return _rci.GetParamValue(program._spi, handle);
         }
 
         /// <summary>
-        /// Sets the shader parameter to a float-value.
+        /// Sets the specified shader parameter to a float value.
         /// </summary>
-        /// <param name="param">The shader parameter name.</param>
-        /// <param name="val">The float-value that should be assigned to the shader parameter.</param>
+        /// <param name="param">The shader parameter identifier.</param>
+        /// <param name="val">The float value that should be assigned to the shader parameter.</param>
+        /// <remarks>
+        /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
+        /// a given uniform parameter name used in a shader program.
+        /// </remarks>
+        /// <seealso cref="GetShaderParamList"/>
         [JSChangeName("SetShaderParam1f")]
         public void SetShaderParam(IShaderParam param, float val)
         {
@@ -682,8 +724,13 @@ namespace Fusee.Engine
         /// <summary>
         /// Sets the shader parameter to a float2 value.
         /// </summary>
-        /// <param name="param">The shader parameter name.</param>
+        /// <param name="param">The shader parameter identifier.</param>
         /// <param name="val">The float2 value that should be assigned to the shader parameter.</param>
+        /// <remarks>
+        /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
+        /// a given uniform parameter name used in a shader program.
+        /// </remarks>
+        /// <seealso cref="GetShaderParamList"/>
         [JSChangeName("SetShaderParam2f")]
         public void SetShaderParam(IShaderParam param, float2 val)
         {
@@ -693,8 +740,13 @@ namespace Fusee.Engine
         /// <summary>
         /// Sets the shader parameter to a float3 value.
         /// </summary>
-        /// <param name="param">The shader parameter name.</param>
+        /// <param name="param">The shader parameter identifier.</param>
         /// <param name="val">The float3 value that should be assigned to the shader parameter.</param>
+        /// <remarks>
+        /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
+        /// a given uniform parameter name used in a shader program.
+        /// </remarks>
+        /// <seealso cref="GetShaderParamList"/>
         [JSChangeName("SetShaderParam3f")]
         public void SetShaderParam(IShaderParam param, float3 val)
         {
@@ -704,8 +756,13 @@ namespace Fusee.Engine
         /// <summary>
         /// Sets the shader parameter to a float4 value.
         /// </summary>
-        /// <param name="param">The shader parameter name.</param>
+        /// <param name="param">The shader parameter identifier.</param>
         /// <param name="val">The float4 value that should be assigned to the shader parameter.</param>
+        /// <remarks>
+        /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
+        /// a given uniform parameter name used in a shader program.
+        /// </remarks>
+        /// <seealso cref="GetShaderParamList"/>
         [JSChangeName("SetShaderParam4f")]
         public void SetShaderParam(IShaderParam param, float4 val)
         {
@@ -713,20 +770,29 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// Sets the shader parameter to a float4x4 value.
+        /// Sets the shader parameter to a float4x4 matrixvalue.
         /// </summary>
-        /// <param name="param">The shader parameter name.</param>
-        /// <param name="val">The float4x4 value that should be assigned to the shader parameter.</param>
+        /// <param name="param">The shader parameter identifier.</param>
+        /// <param name="val">The float4x4 matrix that should be assigned to the shader parameter.</param>
+        /// <remarks>
+        /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
+        /// a given uniform parameter name used in a shader program.
+        /// </remarks>
+        /// <seealso cref="GetShaderParamList"/>
         public void SetShaderParam(IShaderParam param, float4x4 val)
         {
             _rci.SetShaderParam(param, val);
         }
 
         /// <summary>
-        /// Sets the shader parameter to a Int value.
+        /// Sets the shader parameter to a integer value.
         /// </summary>
-        /// <param name="param">The shader parameter name.</param>
-        /// <param name="val">The Int value that should be assigned to the shader parameter.</param>
+        /// <param name="param">The shader parameter identifier.</param>
+        /// <param name="val">The integer value that should be assigned to the shader parameter.</param>
+        /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
+        /// a given uniform parameter name used in a shader program.
+        /// </remarks>
+        /// <seealso cref="GetShaderParamList"/>
         [JSChangeName("SetShaderParamI")]
         public void SetShaderParam(IShaderParam param, int val)
         {
@@ -734,9 +800,16 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// 
+        /// Erases the contents of the speciefied rendering buffers.
         /// </summary>
-        /// <param name="flags"></param>
+        /// <param name="flags">A combination of flags specifying the rendering buffers to clear.</param>
+        /// <remarks>
+        /// Calling this method erases all contents of the rendering buffers. A typical use case for this method
+        /// is to erase the contents of the color buffer and the depth buffer (z-buffer) before rendering starts
+        /// at the beginning of a rendering loop. Thus, rendering the current frame starts with an empty color and
+        /// z-buffer. <see cref="ClearFlags"/> for a list of possible buffers to clear. Make sure to use the bitwisee
+        /// or-operator (|) to combine several buffers to clear.
+        /// </remarks>
         public void Clear(ClearFlags flags)
         {
             _rci.Clear(flags);
@@ -746,6 +819,10 @@ namespace Fusee.Engine
         /// Renders the specified mesh.
         /// </summary>
         /// <param name="m">The mesh that should be rendered.</param>
+        /// <remarks>
+        /// Passes geometry to be pushed through the rendering pipeline. <see cref="Mesh"/> for a description how geometry is made up.
+        /// The geometry is transformed and rendered by the currently active shader program.
+        /// </remarks>
         public void Render(Mesh m)
         {
             if (m._meshImp == null)
@@ -770,23 +847,31 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// 
+        /// Sets the rectangular output region within the output buffer(s).
         /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
+        /// <param name="x">leftmost pixel of the rectangular output region within the output buffer.</param>
+        /// <param name="y">topmost pixel of the rectangular output region within the output buffer.</param>
+        /// <param name="width">horizontal size (in pixels) of the output region.</param>
+        /// <param name="height">vertical size (in pixels) of the ouput region.</param>
+        /// <remarks>
+        /// Setting the Viewport limits the rendering ouptut to the specified rectangular region. 
+        /// </remarks>
         public void Viewport(int x, int y, int width, int height)
         {
             _rci.Viewport(x, y, width, height);
         }
 
         /// <summary>
-        /// 
+        /// The color to use when clearing the color buffer.
         /// </summary>
         /// <value>
-        /// 
+        /// The color value is interpreted as a (Red, Green, Blue, Alpha) quadruple with
+        /// component values ranging from 0.0f to 1.0f.
         /// </value>
+        /// <remarks>
+        /// This is the color that will be copied to all pixels in the output color buffer when Clear is called on the render context.
+        /// </remarks>
+        /// <seealso cref="Clear"/>
         public float4 ClearColor
         {
             set { _rci.ClearColor = value; }
@@ -794,11 +879,14 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// 
+        /// The depth value to use when clearing the color buffer.
         /// </summary>
         /// <value>
-        /// 
+        /// Typically set to the highest possible depth value. Typically ranges between 0 and 1.
         /// </value>
+        /// <remarks>
+        /// This is the depth (z-) value that will be copied to all pixels in the depth (z-) buffer when Clear is called on the render context.
+        /// </remarks>
         public float ClearDepth
         {
             set { _rci.ClearDepth = value; }
