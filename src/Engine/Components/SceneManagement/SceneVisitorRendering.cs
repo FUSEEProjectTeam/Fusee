@@ -62,7 +62,7 @@ namespace Fusee.SceneManagement
             _hasRenderer = new Stack<bool>();
             _hasMesh = new Stack<bool>();
             _mtxModelViewStack.Push(float4x4.Identity);
-            PrepareDoubleDispatch();
+            //PrepareDoubleDispatch();
             /*
             
             _meshStack.Push(null);
@@ -134,11 +134,20 @@ namespace Fusee.SceneManagement
         private void Pop()
         {
             _mtxModelViewStack.Pop();
-            _meshStack.Pop();
-            _RendererStack.Pop();
-            _hasMesh.Pop();
-            _hasRenderer.Pop();
             _hasTransform.Pop();
+            if(_meshStack.Count > 0)
+            {
+                _meshStack.Pop();
+                _hasMesh.Pop();  
+            }
+            
+            if(_RendererStack.Count > 0)
+            {
+                _RendererStack.Pop();
+                _hasRenderer.Pop();
+            }
+            
+            
         }
 
         public void AddLightDirectional(float3 direction, float4 color, Light.LightType type, int channel) 
@@ -179,6 +188,7 @@ namespace Fusee.SceneManagement
             cEntity.TraverseForRendering(this);
             Pop();
         }
+        /*
         private void VisitComponent(ActionCode actionCode)
         {
             actionCode.TraverseForRendering(this);
@@ -204,7 +214,50 @@ namespace Fusee.SceneManagement
         {
             spotLight.TraverseForRendering(this);
         }
+        private void VisitComponent(Camera camera)
+        {
+            
+            if (_mtxModelViewStack.Peek() != null)
+            {
+                camera.ViewMatrix = _mtxModelViewStack.Peek();
+                _queue.AddCamera(camera.SubmitWork());
+            }
+        }*/
 
+        override public void Visit(ActionCode actionCode)
+        {
+            actionCode.TraverseForRendering(this);
+        }
+        override public void Visit(Renderer renderer)
+        {
+            StoreMesh(renderer.mesh);
+            StoreRenderer(renderer);
+        }
+        override public void Visit(Transformation transform)
+        {
+            AddTransform(transform.Matrix);
+        }
+        override public void Visit(DirectionalLight directionalLight)
+        {
+            directionalLight.TraverseForRendering(this);
+        }
+        override public void Visit(PointLight pointLight)
+        {
+            pointLight.TraverseForRendering(this);
+        }
+        override public void Visit(SpotLight spotLight)
+        {
+            spotLight.TraverseForRendering(this);
+        }
+        override public void Visit(Camera camera)
+        {
+
+            if (_mtxModelViewStack.Peek() != null)
+            {
+                camera.ViewMatrix = _mtxModelViewStack.Peek();
+                _queue.AddCamera(camera.SubmitWork());
+            }
+        }
         
     }
 }

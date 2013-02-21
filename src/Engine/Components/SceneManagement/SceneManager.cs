@@ -48,6 +48,11 @@ namespace Fusee.SceneManagement
             SceneMembers.Add(sceneEntity);
         }
 
+        public void AddCamera(RenderCamera cameramatrix)
+        {
+            RenderJobs[0].Add(cameramatrix);
+        }
+
         public void Traverse(RenderCanvas renderCanvas)
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
@@ -87,12 +92,12 @@ namespace Fusee.SceneManagement
         public void AddRenderJob(RenderJob job)
         {
             
-            RenderJobs[1].Add(job);
+            RenderJobs[2].Add(job);
         }
 
         public void AddLightJob(RenderJob job)
         {
-            RenderJobs[0].Add(job);
+            RenderJobs[1].Add(job);
         }
 
         public void SetInput(Input input)

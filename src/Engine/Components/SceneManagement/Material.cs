@@ -72,13 +72,19 @@ namespace Fusee.SceneManagement
             _texture1Param = sp.GetShaderParam("texture1");
             imgData = rc.LoadImage("Assets/earth_texture512x256.png");
             iTex = rc.CreateTexture(imgData);
-            imgData2 = rc.LoadImage("Assets/planet.jpg");
-            iTex2 = rc.CreateTexture(imgData2);
+            //imgData2 = rc.LoadImage("Assets/planet.jpg");
+            //iTex2 = rc.CreateTexture(imgData2);
             rc.SetShaderParamTexture(_texture1Param, iTex);
             Console.WriteLine("Initvalues got called");
         }
 
-        public void UpdateValues(RenderContext rc)
+        /*public ImageData GetTexture(string texturename)
+        {
+            
+        }*/
+
+
+        /*public void UpdateValues(RenderContext rc)
         {
             //if(rc.GetShaderParam(sp,"texture1") != _texture1Param)
             if(!test)
@@ -89,7 +95,7 @@ namespace Fusee.SceneManagement
                 rc.SetShaderParamTexture(_texture1Param, iTex2);
             }
             
-        }
+        }*/
 
         public void SwitchTexture()
         {

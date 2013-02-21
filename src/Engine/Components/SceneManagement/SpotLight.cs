@@ -4,9 +4,7 @@ namespace Fusee.SceneManagement
 {
     /// <summary>
     /// This class is derived from Light and set's a Spotlight in the scene.
-    /// A position, a direction and the color of the lightsource is needed.
     /// </summary>
-
     public class SpotLight : Light
     {
 
@@ -17,6 +15,13 @@ namespace Fusee.SceneManagement
         #endregion
 
         #region Constructors
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SpotLight"/> class. Position, direction, color and the channel are needed.
+        /// </summary>
+        /// <param name="position">The position of the spotlight.</param>
+        /// <param name="direction">The direction of the spotlight.</param>
+        /// <param name="color">The color of the spotlight(Red, Green, Blue, Alpha).</param>
+        /// <param name="channel">The memory space of the light(0 - 7).</param>
         public SpotLight(float3 position, float3 direction, float4 color, int channel) 
         {
             _type = LightType.Spot;
@@ -26,6 +31,10 @@ namespace Fusee.SceneManagement
             _channel = channel;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SpotLight"/> class. Only the channel is needed.
+        /// </summary>
+        /// <param name="channel">The memory space of the light(0 - 7).</param>
         public SpotLight( int channel) 
         {
             _type = LightType.Spot;
@@ -39,14 +48,17 @@ namespace Fusee.SceneManagement
         #region Methods
 
         /// <summary>
-        /// Overrides Traverse. Add's Spotlight to the lightqueue.
+        /// TraverseForRendering add's Spotlight to the lightqueue.
         /// </summary>
-        /// <param name="_traversalState"></param>
         public void TraverseForRendering(SceneVisitorRendering sceneVisitorRendering)
         {
             sceneVisitorRendering.AddLightSpot(_position, _direction, _color, _type, _channel );
         }
 
         #endregion
+        public override void Accept(SceneVisitor sv)
+        {
+            sv.Visit((SpotLight)this);
+        }
     }
 }

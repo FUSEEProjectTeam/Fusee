@@ -17,6 +17,14 @@ namespace Fusee.SceneManagement
         #endregion
 
         #region Constructors
+        /// <summary>
+        /// Creates a directional light in the scene. Direction, color, position, and channel is needed.
+        /// It is possible to set up to 8 lights in the scene.
+        /// </summary>
+        /// <param name="direction">Direction of the light.</param>
+        /// <param name="color">The color of the light.</param>
+        /// <param name="position">The position in the scene.</param>
+        /// <param name="channel">The memory space of the light.(0 - 7)</param>
         public DirectionalLight(float3 direction, float4 color, float3 position, int channel)
         {
             _position = position;
@@ -26,6 +34,11 @@ namespace Fusee.SceneManagement
             _channel = channel;
         }
 
+        /// <summary>
+        /// Creates a directional light in the scene. Direction, color and position will get standart values.
+        /// Channel is needed. It is possible to set up to 8 lights in the scene.
+        /// </summary>
+        /// <param name="channel">The memory space of the light(0 - 7).</param>
         public DirectionalLight( int channel)
         {
             _position = new float3(0,0,0);
@@ -38,16 +51,17 @@ namespace Fusee.SceneManagement
 
         #region Methods
         /// <summary>
-        /// Overrides Traverse. Add's Directionallight to the lightqueue.
+        /// TraverseForRendering add's Directionallight to the lightqueue.
         /// </summary>
-        /// <param name="_traversalState"></param>
-
-        
         public void TraverseForRendering(SceneVisitorRendering sceneVisitorRendering)
         {
             sceneVisitorRendering.AddLightDirectional(_direction, _color, _type, _channel);
         }
 
         #endregion
+        public override void Accept(SceneVisitor sv)
+        {
+            sv.Visit((DirectionalLight)this);
+        }
     }
 }

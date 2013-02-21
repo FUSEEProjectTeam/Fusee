@@ -19,8 +19,8 @@ namespace Examples.Components
             transform.LocalPosition = new float3(2, 2, 0);
             renderer.color= new float4(0,1,0,1);
             //renderer.material.SwitchTexture();
-            parenttest = SceneEntity.FindSceneEntity("erster");
-            parentscript = parenttest.GetComponent<TestBehaviour>();
+            //parenttest = SceneEntity.FindSceneEntity("erster");
+            //parentscript = parenttest.GetComponent<TestBehaviour>();
 
             Time.Instance.TimeFlow = speed;
 
@@ -30,16 +30,17 @@ namespace Examples.Components
         {
             if(Input.Instance.IsButtonDown(MouseButtons.Left))
             {
-                parentscript.Test(x);
-                transform.LocalEulerAngles = new float3(0, x, 0);
-                x -= 0.5f*(float)Time.Instance.DeltaTime;
-                speed += 0.05f;
+                //parentscript.Test(x);
+                //transform.LocalEulerAngles = new float3(0, x, 0);
+                //x -= 0.5f*(float)Time.Instance.DeltaTime;
+                //speed += 0.05f;
+                transform.LocalPosition += new float3(0,0,0.1f);
             }
             else
             {
-                speed = 0.1f;
+                //speed = 0.1f;
             }
-            Time.Instance.TimeFlow = speed;
+            //Time.Instance.TimeFlow = speed;
             Debug.WriteLine("Smooth Framerate: " + Time.Instance.FamePerSecondSmooth);
             Debug.WriteLine("Normal Framerate: " + Time.Instance.FramePerSecond);
 
