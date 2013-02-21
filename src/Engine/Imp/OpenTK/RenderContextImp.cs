@@ -149,9 +149,9 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// Creates a new Texture and  binds it to the shader
+        /// Creates a new Texture and  binds it to the shader.
         /// </summary>
-        /// <param name="img">A given ImageData object, which contains all necessary information for the upload to the graphics card.</param>
+        /// <param name="img">A given ImageData object, containing all necessary information for the upload to the graphics card.</param>
         /// <returns>An ITexture that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
         public ITexture CreateTexture(ImageData img)
         {

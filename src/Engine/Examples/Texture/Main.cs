@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using Fusee.Engine;
 using Fusee.Math;
 
@@ -76,6 +75,7 @@ namespace Examples.Texture
         protected ITexture _iTex1;
         protected ITexture _iTex2;
         protected ITexture _iTex3;
+        
 
         public override void Init()
         {
@@ -110,10 +110,10 @@ namespace Examples.Texture
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
 
-            if (In.IsButtonDown(MouseButtons.Left))
+            if (Input.Instance.IsButtonDown(MouseButtons.Left))
             {
-                _angleVelHorz = _rotationSpeed * In.GetAxis(InputAxis.MouseX) * (float)Time.Instance.DeltaTime;
-                _angleVelVert = _rotationSpeed * In.GetAxis(InputAxis.MouseY) * (float)Time.Instance.DeltaTime;
+                _angleVelHorz = _rotationSpeed * Input.Instance.GetAxis(InputAxis.MouseX) * (float)Time.Instance.DeltaTime;
+                _angleVelVert = _rotationSpeed * Input.Instance.GetAxis(InputAxis.MouseY) * (float)Time.Instance.DeltaTime;
             }
             else
             {
@@ -123,19 +123,19 @@ namespace Examples.Texture
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
 
-            if (In.IsKeyDown(KeyCodes.Left))
+            if (Input.Instance.IsKeyDown(KeyCodes.Left))
             {
                 _angleHorz -= _rotationSpeed * (float)Time.Instance.DeltaTime;
             }
-            if (In.IsKeyDown(KeyCodes.Right))
+            if (Input.Instance.IsKeyDown(KeyCodes.Right))
             {
                 _angleHorz += _rotationSpeed * (float)Time.Instance.DeltaTime;
             }
-            if (In.IsKeyDown(KeyCodes.Up))
+            if (Input.Instance.IsKeyDown(KeyCodes.Up))
             {
                 _angleVert -= _rotationSpeed * (float)Time.Instance.DeltaTime;
             }
-            if (In.IsKeyDown(KeyCodes.Down))
+            if (Input.Instance.IsKeyDown(KeyCodes.Down))
             {
                 _angleVert += _rotationSpeed * (float)Time.Instance.DeltaTime;
             }
