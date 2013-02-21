@@ -30,8 +30,11 @@ namespace Fusee.SceneManagement
             if(_renderer.material.sp==null)
             {
                 //_renderer.material.sp = MoreShaders.GetShader("diffuse", renderContext);
+                _renderer.material = new Material();
                 _renderer.material.sp = renderContext.CreateShader(_renderer.material._vs, _renderer.material._ps);
+                renderContext.SetShader(_renderer.material.sp);
                 _renderer.material.InitValues(renderContext);
+                return;
             }
 
             //_renderer.material.UpdateValues(renderContext); 

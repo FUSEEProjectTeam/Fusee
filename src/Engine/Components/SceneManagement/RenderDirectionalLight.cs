@@ -40,7 +40,7 @@ namespace Fusee.SceneManagement
          public override void SubmitWork(RenderContext renderContext)
          {
              //TODO Warten Auf Timon und Casper
-             //renderContext.SetLight(_direction, _color, (int)_type, _channel);
+             renderContext.SetLight(_direction, _color, (int)_type, _channel);
              //Console.WriteLine("DirectionalLight worked");
          }
 
