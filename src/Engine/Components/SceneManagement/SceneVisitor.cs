@@ -6,6 +6,10 @@ using System.Reflection;
 
 namespace Fusee.SceneManagement
 {
+
+    /// <summary>
+    /// The SceneVisitor is the base class for Scene traversing functions
+    /// </summary>
     public class SceneVisitor
     {
         // private delegate void VisitorMethod(Component c);
@@ -128,40 +132,72 @@ namespace Fusee.SceneManagement
         {
             Debug.WriteLine("component has been visitted");
         }*/
+        /// <summary>
+        /// Visits the specified cEntity to collect data if required by the current Visitor derivate.
+        /// </summary>
+        /// <param name="cEntity">The cEntity.</param>
         virtual public void Visit(SceneEntity cEntity)
         {
 
         }
+        /// <summary>
+        /// Visits the specified action code to collect data if required by the current Visitor derivate.
+        /// </summary>
+        /// <param name="actionCode">The action code.</param>
         public virtual void Visit(ActionCode actionCode)
         {
             
         }
 
+        /// <summary>
+        /// Visits the specified directional light to collect data if required by the current Visitor derivate.
+        /// </summary>
+        /// <param name="directionalLight">The directional light.</param>
         public virtual void Visit(DirectionalLight directionalLight)
         {
             
         }
 
+        /// <summary>
+        /// Visits the specified point light to collect data if required by the current Visitor derivate.
+        /// </summary>
+        /// <param name="pointLight">The point light.</param>
         public virtual void Visit(PointLight pointLight)
         {
            
         }
 
+        /// <summary>
+        /// Visits the specified renderer to collect data if required by the current Visitor derivate.
+        /// </summary>
+        /// <param name="renderer">The renderer.</param>
         public virtual void Visit(Renderer renderer)
         {
             
         }
 
 
+        /// <summary>
+        /// Visits the specified spot light to collect data if required by the current Visitor derivate.
+        /// </summary>
+        /// <param name="spotLight">The spot light.</param>
         public virtual void Visit(SpotLight spotLight)
         {
            
         }
 
+        /// <summary>
+        /// Visits the specified transformation to collect data if required by the current Visitor derivate.
+        /// </summary>
+        /// <param name="transformation">The transformation.</param>
         public virtual void Visit(Transformation transformation)
         {
             
         }
+        /// <summary>
+        /// Visits the specified camera to collect data if required by the current Visitor derivate.
+        /// </summary>
+        /// <param name="camera">The camera.</param>
         public virtual void Visit(Camera camera)
         {
 
