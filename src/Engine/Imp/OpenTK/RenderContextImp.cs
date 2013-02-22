@@ -121,11 +121,11 @@ namespace Fusee.Engine
                                     arrayHandle.AddrOfPinnedObject());
             Color color = Color.FromName(textColor);
             Font font = new Font(fontName, fontSize, FontStyle.Regular, GraphicsUnit.World);
-            PointF pointF = new PointF(startPosX, startPosY);
+            
 
             Graphics gfx = Graphics.FromImage(bmp);
             gfx.TextRenderingHint = TextRenderingHint.AntiAlias;
-            gfx.DrawString(text, font, new SolidBrush(color), pointF);
+            gfx.DrawString(text, font, new SolidBrush(color), startPosX, startPosY);
 
             //Flip y-axis, otherwise texture would be upside down
             bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
