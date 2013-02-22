@@ -5,35 +5,64 @@ using Fusee.Math;
 namespace Fusee.Engine
 {
     /// <summary>
-    /// Stores threedimensional, polygonal geometry and provides methods for manipulation. 
-    /// To actually render the geometry in the engine, convert Geometry to Mesh objects.
+    /// Stores threedimensional, polygonal geometry and provides methods for manipulation.
+    /// To actually render the geometry in the engine, convert Geometry to <see cref="Mesh"/> objects.
     /// </summary>
     public class Geometry
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public class Face
         {
+            /// <summary>
+            /// The inx vert
+            /// </summary>
             public int[] InxVert;
+            /// <summary>
+            /// The inx normal
+            /// </summary>
             public int[] InxNormal;
+            /// <summary>
+            /// The inx tex coord
+            /// </summary>
             public int[] InxTexCoord;
         }
 
         internal List<double3> _vertices;
 
         /// <summary>
-        /// The list of vertices (3D positions
+        /// The list of vertices (3D positions).
         /// </summary>
+        /// <value>
+        /// The vertices.
+        /// </value>
         public IList<double3> Vertices
         {
             set { _vertices = new List<double3>(value); }
             get { return _vertices; }
         }
+
         internal List<double3> _normals;
+        /// <summary>
+        /// Gets or sets the normals.
+        /// </summary>
+        /// <value>
+        /// The normals.
+        /// </value>
         public IList<double3> Normals
         {
             set { _vertices = new List<double3>(value); }
             get { return _vertices; }
         }
+
         internal List<double2> _texCoords;
+        /// <summary>
+        /// Gets or sets the texture coordinates.
+        /// </summary>
+        /// <value>
+        /// The texture coordinates.
+        /// </value>
         public IList<double2> TexCoords
         {
             set { _texCoords = new List<double2>(value); }
@@ -41,23 +70,42 @@ namespace Fusee.Engine
         }
 
         internal List<Face> _faces;
+        /// <summary>
+        /// Gets or sets the faces.
+        /// </summary>
+        /// <value>
+        /// The faces.
+        /// </value>
         public IList<Face> Faces
         {
             set { _faces = new List<Face>(value); }
             get { return _faces; }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Geometry"/> class.
+        /// </summary>
         public Geometry()
         {
             _vertices = new List<double3>();
         }
 
+        /// <summary>
+        /// Adds a vertex.
+        /// </summary>
+        /// <param name="v">A 3D vector.</param>
+        /// <returns></returns>
         public int AddVertex(double3 v)
         {
             _vertices.Add(v);
             return _vertices.Count - 1;
         }
 
+        /// <summary>
+        /// Adds the texture coordinates.
+        /// </summary>
+        /// <param name="uv">Texture coordinate</param>
+        /// <returns></returns>
         public int AddTexCoord(double2 uv)
         {
             if (_texCoords == null)
@@ -66,6 +114,11 @@ namespace Fusee.Engine
             return _texCoords.Count - 1;
         }
 
+        /// <summary>
+        /// Adds the normal.
+        /// </summary>
+        /// <param name="normal">The normal.</param>
+        /// <returns></returns>
         public int AddNormal(double3 normal)
         {
             if (_normals == null)
@@ -74,6 +127,25 @@ namespace Fusee.Engine
             return _normals.Count - 1;
         }
 
+        /// <summary>
+        /// Adds the face.
+        /// </summary>
+        /// <param name="vertInx">The vert inx.</param>
+        /// <param name="texCoordInx">The tex coord inx.</param>
+        /// <param name="normalInx">The normal inx.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException">vertInx</exception>
+        /// <exception cref="System.ArgumentException">
+        /// "Vertex index out of range: vertInx[i]"
+        /// or
+        /// "Number of texture coordinate indices must match number of vertex indices"
+        /// or
+        /// "Texture coordinate index out of range: texCoordInx[i]"
+        /// or
+        /// "Number of normal indices must match number of vertex indices"
+        /// or
+        /// "Normal index out of range: normalInx[i]"
+        /// </exception>
         public int AddFace(int[] vertInx, int[] texCoordInx, int[] normalInx)
         {
             int i;
@@ -129,16 +201,34 @@ namespace Fusee.Engine
             return _faces.Count - 1;
         }
 
+        /// <summary>
+        /// Gets a value indicating whether this instance has normals.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if this instance has normals; otherwise, <c>false</c>.
+        /// </value>
         public bool HasNormals
         {
             get { return _normals != null; }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether this instance has tex coords.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if this instance has texture coordinates; otherwise, <c>false</c>.
+        /// </value>
         public bool HasTexCoords
         {
             get { return _texCoords != null; }
         }
 
+        /// <summary>
+        /// Gets all faces containing vertex.
+        /// </summary>
+        /// <param name="iV">The i V.</param>
+        /// <param name="vertInFace">The vert in face.</param>
+        /// <returns></returns>
         public IList<int> GetAllFacesContainingVertex(int iV, out IList<int> vertInFace)
         {
             List<int> ret = new List<int>();
@@ -158,6 +248,12 @@ namespace Fusee.Engine
             return ret;
         }
 
+        /// <summary>
+        /// Calcs the face normal.
+        /// </summary>
+        /// <param name="f">The face.</param>
+        /// <returns>The nomal vectorfor the face.</returns>
+        /// <exception cref="System.Exception">"Cannot calculate normal of degenerate face with only  + f.InxVert.Length +  vertices."</exception>
         public double3 CalcFaceNormal(Face f)
         {
             if (f.InxVert.Length < 3)
@@ -167,6 +263,10 @@ namespace Fusee.Engine
             return double3.Normalize(double3.Cross(v1, v2));
         }
 
+        /// <summary>
+        /// Creates the normals.
+        /// </summary>
+        /// <param name="smoothingAngle">The smoothing angle.</param>
         public void CreateNormals(double smoothingAngle)
         {
             double cSmoothingAngle = System.Math.Cos(smoothingAngle);
@@ -231,15 +331,31 @@ namespace Fusee.Engine
             }
         }
 
-        struct TripleInx
+        /// <summary>
+        /// 
+        /// </summary>
+        internal struct TripleInx
         {
+            /// <summary>
+            /// The i V
+            /// </summary>
             public int iV, iT, iN;
+            /// <summary>
+            /// Returns a hash code for this instance.
+            /// </summary>
+            /// <returns>
+            /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+            /// </returns>
             public override int GetHashCode()
             {
                 return iV ^ iT ^ iN;
             }
         }
 
+        /// <summary>
+        /// Converts the whole geomentry to a <see cref="Mesh"/>.
+        /// </summary>
+        /// <returns><see cref="Mesh"/></returns>
         public Mesh ToMesh()
         {
             // TODO: make a big case decision based on HasTexCoords and HasNormals around the implementation and implement each case individually

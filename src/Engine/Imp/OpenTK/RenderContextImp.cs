@@ -68,6 +68,7 @@ namespace Fusee.Engine
         /// <param name="bgColor">The color of the image. Value must be JS compatible.</param>
         /// <returns>An ImageData struct containing all necessary information for further processing.</returns>
         public ImageData CreateImage (int width, int height, String bgColor)
+
         {
             Bitmap bmp = new Bitmap(width, height);
             Graphics gfx = Graphics.FromImage(bmp);
@@ -261,6 +262,9 @@ namespace Fusee.Engine
         {
             GL.Uniform1(((ShaderParam)param).handle, val);
         }
+
+
+        
 
         /// <summary>
         /// Sets a given Shader Parameter to a created texture

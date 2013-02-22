@@ -1,4 +1,6 @@
-﻿using System;
+﻿#pragma warning disable 1591 //disables the warning about missing XML-comments
+
+using System;
 using System.Collections.Generic;
 using Fusee.Math;
 using JSIL.Meta;
@@ -41,14 +43,15 @@ namespace Fusee.Engine
         [JSChangeName("SetShaderParamInt")]
         void SetShaderParam(IShaderParam param, int val);
 
+
+        ITexture CreateTexture(ImageData imageData);
+        
+        ImageData LoadImage(String filename);
+
         ImageData CreateImage(int width, int height, String bgColor);
 
         ImageData TextOnImage(ImageData imgData, String fontName, float fontSize, String text, String textColor,
                               float startPosX, float startPosY);
-
-        ImageData LoadImage(String filename);
-
-        ITexture CreateTexture(ImageData img);
 
         void SetShaderParamTexture(IShaderParam param, ITexture texId);
 
@@ -73,3 +76,5 @@ namespace Fusee.Engine
         IMeshImp CreateMeshImp();
     }
 }
+
+#pragma warning restore 1591
