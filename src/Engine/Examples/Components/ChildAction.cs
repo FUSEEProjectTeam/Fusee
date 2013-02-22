@@ -33,14 +33,15 @@ namespace Examples.Components
                 //parentscript.Test(x);
                 //transform.LocalEulerAngles = new float3(0, x, 0);
                 //x -= 0.5f*(float)Time.Instance.DeltaTime;
-                //speed += 0.5f;
+                //speed += 0.05f;
+                transform.LocalPosition += new float3(0,0,0.1f);
             }
             else
             {
                 //speed = 0.1f;
             }
             //Time.Instance.TimeFlow = speed;
-            Debug.WriteLine("Smooth Framerate: " + Time.Instance.FramePerSecondSmooth);
+            Debug.WriteLine("Smooth Framerate: " + Time.Instance.FamePerSecondSmooth);
             Debug.WriteLine("Normal Framerate: " + Time.Instance.FramePerSecond);
 
         }

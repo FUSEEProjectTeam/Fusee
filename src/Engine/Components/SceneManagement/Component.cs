@@ -46,9 +46,9 @@ namespace Fusee.SceneManagement
        /// Passes the Component to the SceneVisitor which decides what to do with that Component.
        /// </summary>
        /// <param name="sv">The sv.</param>
-       public void Accept(SceneVisitor sv)
+       virtual public void Accept(SceneVisitor sv)
        {
-           sv.Visit(this);
+           //sv.Visit(this);
        }
        #endregion
    }

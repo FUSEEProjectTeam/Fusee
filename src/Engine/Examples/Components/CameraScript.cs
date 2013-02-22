@@ -18,7 +18,7 @@ namespace Examples.Components
             //float mousemove = Input.GetAxis(InputAxis.MouseX);
             if (Input.Instance.IsButtonDown(MouseButtons.Left))
             {
-                transform.LocalPosition += new float3(0, 0, 0.1f);
+                //transform.LocalPosition += new float3(0, 0, 0.1f);
             }
         }
     }

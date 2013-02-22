@@ -36,7 +36,7 @@ namespace Fusee.SceneManagement
          public override void SubmitWork(RenderContext renderContext)
          {
              //TODO Warten Auf Timon und Casper
-             //renderContext.SetLight(_position, _color, (int)_type, _channel);
+             renderContext.SetLight(_position, _color, (int)_type, _channel);
              //Console.WriteLine("Pointlight worked");
          }
     }

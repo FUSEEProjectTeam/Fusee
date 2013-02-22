@@ -192,5 +192,9 @@ namespace Fusee.SceneManagement
           _localScale = GetScaleFromMatrix(_transformMatrix);
           _localPosition = GetPositionFromMatrix(_transformMatrix);
       }
+      public override void Accept(SceneVisitor sv)
+      {
+          sv.Visit((Transformation)this);
+      }
     }
 }

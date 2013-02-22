@@ -47,5 +47,9 @@ namespace Fusee.SceneManagement
             var job = new RenderCamera(_viewmatrix);
             return job;
         }
+        public override void Accept(SceneVisitor sv)
+        {
+            sv.Visit((Camera)this);
+        }
     }
 }

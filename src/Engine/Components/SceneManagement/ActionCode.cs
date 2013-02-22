@@ -58,6 +58,11 @@ namespace Fusee.SceneManagement
         {
             
         }
+
+        public override void Accept(SceneVisitor sv)
+        {
+            sv.Visit((ActionCode)this);
+        }
         #endregion
     }   
 }
