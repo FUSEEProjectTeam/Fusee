@@ -74,11 +74,11 @@ namespace Examples.Simple
         {
             RC.Clear(ClearFlags.Color| ClearFlags.Depth);
 
-
+            
             if (Input.Instance.IsButtonDown(MouseButtons.Left))
             {
-                _angleVelHorz = _rotationSpeed * Input.Instance.GetAxis(InputAxis.MouseX) * (float)Time.Instance.DeltaTime;
-                _angleVelVert = _rotationSpeed * Input.Instance.GetAxis(InputAxis.MouseY) * (float)Time.Instance.DeltaTime;
+                _angleVelHorz = _rotationSpeed * Input.Instance.GetAxis(InputAxis.MouseX) * (float) Time.Instance.DeltaTime;
+                _angleVelVert = _rotationSpeed * Input.Instance.GetAxis(InputAxis.MouseY) * (float) Time.Instance.DeltaTime;
             }
             else
             {

@@ -105,8 +105,8 @@ namespace Examples.CubeAndTiles
 
                 if (Input.Instance.IsButtonDown(MouseButtons.Left))
                 {
-                    _angleVelHorz = RotationSpeed * Input.Instance.GetAxis(InputAxis.MouseX) * (float)Time.Instance.DeltaTime;
-                    _angleVelVert = RotationSpeed * Input.Instance.GetAxis(InputAxis.MouseY) * (float)Time.Instance.DeltaTime;
+                    _angleVelHorz = RotationSpeed*Input.Instance.GetAxis(InputAxis.MouseX)*(float) Time.Instance.DeltaTime;
+                    _angleVelVert = RotationSpeed*Input.Instance.GetAxis(InputAxis.MouseY)*(float) Time.Instance.DeltaTime;
                 }
                 else
                 {

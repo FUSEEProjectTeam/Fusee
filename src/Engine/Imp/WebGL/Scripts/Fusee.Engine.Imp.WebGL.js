@@ -347,6 +347,34 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
     // </IRenderContextImp Properties implementation>
 
 
+    $.Method({ Static: false, Public: true }, "IRenderContextImp_CreateImage",
+        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.ImageData"), [$.Int32, $.Int32, $.String]),
+        function IRenderContextImp_CreateImage(width, height, bgcolor) {
+
+            var canvas = document.createElement("canvas");
+            canvas.width = width;
+            canvas.height = height;
+
+            var context = canvas.getContext("2d");
+            context.fillStyle = bgcolor;
+            context.fillRect(0,0,width, height);
+
+            var myData = context.getImageData(0, 0, width, height);
+            var imageData = new $fuseeCommon.Fusee.Engine.ImageData();
+            
+            imageData.Width = width;
+            imageData.Height = height;
+            imageData.Stride = width * 4; //TODO: Adjust pixel-size
+            imageData.PixelData = myData.data;
+            
+            isloaded = true;
+            return imageData;
+            
+
+        }
+    );
+
+    
     $.Method({ Static: false, Public: true }, "IRenderContextImp_LoadImage",
         new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.ImageData"), [$.String]),
         function IRenderContextImp_LoadImage(filename) {
@@ -365,6 +393,35 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
             imageData.PixelData = myData.data;
             isloaded = true;
             return imageData;
+        }
+    );
+
+    $.Method({ Static: false, Public: true }, "IRenderContextImp_TextOnImage",
+        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.ImageData"), [$fuseeCommon.TypeRef("Fusee.Engine.ImageData"), $.String, $.Int32, $.String, $.String, $.Int32, $.Int32]),
+        function IRenderContextImp_TextOnImage(imgData, fontname, fontsize, text, textcolor, startposx, startposy) {
+
+            var canvas = document.createElement("canvas");
+            canvas.width = imgData.Width;
+            canvas.height = imgData.Height;
+
+            var context = canvas.getContext("2d");
+            var myData = context.createImageData(canvas.width, canvas.height);
+            for (var i = 0; i < imgData.Width * imgData.Height * 4; i++) {
+                myData.data[i] = imgData.PixelData[i];
+            }
+            context.putImageData(myData, 0, 0);
+
+            var font = fontsize + "px " + fontname;
+            context.font = font;
+            context.fillStyle = textcolor;
+            context.fillText(text, startposx, startposy);
+
+            var myData2 = context.getImageData(0, 0, canvas.width, canvas.height);
+            imgData.PixelData = myData2.data;
+            isloaded = true;
+
+            return imgData;
+
         }
     );
 

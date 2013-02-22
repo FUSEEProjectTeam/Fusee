@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using Fusee.Engine;
 using Fusee.Math;
 
@@ -41,8 +40,8 @@ namespace Examples.Texture
 
         protected string _ps = @"
            #ifndef GL_ES
-               #version 120
-            #endif
+              #version 120
+           #endif
 
             /* Copies incoming fragment color without change. */
             #ifdef GL_ES
@@ -72,8 +71,11 @@ namespace Examples.Texture
         protected IShaderParam _texture2Param;
         protected ImageData _imgData1;
         protected ImageData _imgData2;
+        protected ImageData _imgData3;
         protected ITexture _iTex1;
         protected ITexture _iTex2;
+        protected ITexture _iTex3;
+        
 
         public override void Init()
         {
@@ -84,7 +86,7 @@ namespace Examples.Texture
             Geometry geo2 = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Cube.obj.model"));
             _meshCube = geo2.ToMesh();
 
-            
+
             _angleHorz = 0;
             _rotationSpeed = 10.0f;
             ShaderProgram sp = RC.CreateShader(_vs, _ps);
@@ -96,9 +98,12 @@ namespace Examples.Texture
             _imgData1 = RC.LoadImage("Assets/world_map.jpg");
             _iTex1 = RC.CreateTexture(_imgData1);
             _imgData2 = RC.LoadImage("Assets/cube_tex.jpg");
+            //_imgData2 = RC.CreateImage(500, 500, "Green");
+            _imgData2 = RC.TextOnImage(_imgData2, "Georgia", 80f, "Hello World!", "Black", 10f, 120f);
             _iTex2 = RC.CreateTexture(_imgData2);
+            
 
-       }
+        }
 
         public override void RenderAFrame()
         {
@@ -138,18 +143,17 @@ namespace Examples.Texture
             float4x4 mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
             float4x4 mtxCam = float4x4.LookAt(0, 200, 400, 0, 50, 0, 0, 1, 0);
 
-            
+
             RC.ModelView = mtxRot * float4x4.CreateTranslation(-100, 0, 0) * mtxCam;
             //RC.SetShaderParam(_vColorParam, new float4(0.5f, 0.8f, 0, 1));
             RC.SetShaderParamTexture(_texture1Param, _iTex1);
-            RC.SetShaderParamTexture(_texture2Param, _iTex2);
             RC.Render(_meshSphere);
-            
+
             RC.ModelView = mtxRot * float4x4.CreateTranslation(100, 0, 0) * mtxCam;
             //RC.SetShaderParam(_vColorParam, new float4(0.8f, 0.5f, 0, 1));
             RC.SetShaderParamTexture(_texture1Param, _iTex2);
             RC.Render(_meshCube);
-            
+
             Present();
         }
 
