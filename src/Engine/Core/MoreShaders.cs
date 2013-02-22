@@ -578,7 +578,7 @@ void main()
     vec3 tempNormal = vNormal + normalize(texture2D(normalTex, vUV).rgb * maxVariance - minVariance);
  
     vec4 endSpecular = vec4(0,0,0,0);
-    if(FUSEE_L0_ACTIVE == 1.0) {
+    if(FUSEE_L0_ACTIVE == 1.0 && specularLevel != 0) {
         vec3 vHalfVector = normalize(normalize(eyeVector) - normalize(eyeVector - FUSEE_L0_POSITION));
         float L3NdotHV = max(min(dot(normalize(tempNormal), vHalfVector),1.0), 0.0);
         float shine = pow(L3NdotHV, specularLevel) * 16.0;
