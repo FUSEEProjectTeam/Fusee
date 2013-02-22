@@ -414,7 +414,8 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
             var font = fontsize + "px " + fontname;
             context.font = font;
             context.fillStyle = textcolor;
-            context.fillText(text, startposx, startposy + fontsize);
+            context.textBaseline = "top";
+            context.fillText(text, startposx, startposy);
 
             var myData2 = context.getImageData(0, 0, canvas.width, canvas.height);
             imgData.PixelData = myData2.data;

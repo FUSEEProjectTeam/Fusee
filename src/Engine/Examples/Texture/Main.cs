@@ -79,7 +79,7 @@ namespace Examples.Texture
 
         public override void Init()
         {
-
+                       
             Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Sphere.obj.model"));
             _meshSphere = geo.ToMesh();
 
