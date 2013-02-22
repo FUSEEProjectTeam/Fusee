@@ -7,7 +7,7 @@ namespace Examples.Simple
     public class Simple : RenderCanvas 
     {
         protected string Vs = @"
-             #version 120
+             // #version 120
 
             /* Copies incoming vertex color without change.
              * Applies the transformation matrix to vertex position.
@@ -33,7 +33,7 @@ namespace Examples.Simple
             }";
 
         protected string Ps = @"
-             #version 120
+            //#version 120
 
             /* Copies incoming fragment color without change. */
             #ifdef GL_ES

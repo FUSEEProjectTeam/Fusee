@@ -61,8 +61,7 @@ namespace Examples.SoundTest
         private IAudioStream _audio2;
         private IAudioStream _audio1;
         private bool _once = false;
-
-        private float vol = 1.0f;
+        private float _vol = 1.0f;
 
         public override void Init()
         {
@@ -78,7 +77,6 @@ namespace Examples.SoundTest
             _audio1 = Audio.Instance.LoadFile("Assets/tetris.mp3");
             _audio2 = Audio.Instance.LoadFile("Assets/pacman.mp3");
             _audio1.Play();
-            _audio1.Loop = true;
             
             _panningVal = 0;
         }
@@ -87,7 +85,7 @@ namespace Examples.SoundTest
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
-         /*   if ((!_once) && (Input.Instance.IsKeyDown(KeyCodes.S)))
+         /*  if ((!_once) && (Input.Instance.IsKeyDown(KeyCodes.S)))
             {
                 _audio2.Play();
                 _once = true;
@@ -95,23 +93,18 @@ namespace Examples.SoundTest
 
             if ((_once) && (Input.Instance.IsKeyDown(KeyCodes.D)))
             {
-                //_audio2.Stop();
-                //_audio1.Stop();
-                //Aud.Stop();
-                _audio1.SetVolume(1.0f);
-
+                _audio2.Stop();
+                _audio1.Stop();
                 _once = false;
-            }*/
+            }
+            */
 
-
-        //    if (Input.Instance.IsKeyDown(KeyCodes.Up))
-      //          vol = Math.Min(vol + 0.001f, 1.0f);
-    //        if (Input.Instance.IsKeyDown(KeyCodes.Down))
-  //              vol = Math.Max(vol - 0.001f, 0f);
-
-
-//            _audio1.SetVolume(vol);
-
+            //if (Input.Instance.IsKeyDown(KeyCodes.Up))
+            //    _vol = Math.Min(_vol + 0.001f, 1.0f);
+            //if (Input.Instance.IsKeyDown(KeyCodes.Down))
+            //    _vol = Math.Max(_vol - 0.001f, 0f);
+         
+            //_audio1.SetVolume(_vol);
 
             if (Input.Instance.IsKeyDown(KeyCodes.Left))
             {
