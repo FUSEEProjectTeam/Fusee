@@ -4,11 +4,16 @@ namespace Fusee.Engine
 {
     public class Audio
     {
-        private readonly IAudioImp _audioImp;
+        private static Audio _instance;
 
-        public Audio(IAudioImp audioImp)
+        private IAudioImp _audioImp;
+
+        internal IAudioImp AudioImp
         {
-            _audioImp = audioImp;
+            set
+            {
+                _audioImp = value;
+            }
         }
 
         public void OpenDevice()
@@ -35,6 +40,21 @@ namespace Fusee.Engine
         public void Pause()
         {
             _audioImp.Pause();
+        }
+
+        /// <summary>
+        /// Provides the Instance of the Audio Class.
+        /// </summary>
+        public static Audio Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = new Audio();
+                }
+                return _instance;
+            }
         }
     }
 }

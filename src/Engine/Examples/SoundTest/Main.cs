@@ -61,6 +61,7 @@ namespace Examples.SoundTest
         private IAudioStream _audio2;
         private IAudioStream _audio1;
         private bool _once = false;
+        private float _vol = 1.0f;
 
         public override void Init()
         {
@@ -72,9 +73,9 @@ namespace Examples.SoundTest
             ShaderProgram sp = RC.CreateShader(Vs, Ps);
             RC.SetShader(sp);
 
-            Aud.OpenDevice();
-            _audio1 = Aud.LoadFile("Assets/tetris.mp3");
-            _audio2 = Aud.LoadFile("Assets/pacman.mp3");
+            Audio.Instance.OpenDevice();
+            _audio1 = Audio.Instance.LoadFile("Assets/tetris.mp3");
+            _audio2 = Audio.Instance.LoadFile("Assets/pacman.mp3");
             _audio1.Play();
             
             _panningVal = 0;
@@ -84,25 +85,32 @@ namespace Examples.SoundTest
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
-            if ((!_once) && (In.IsKeyDown(KeyCodes.S)))
+         /*  if ((!_once) && (Input.Instance.IsKeyDown(KeyCodes.S)))
             {
                 _audio2.Play();
                 _once = true;
             }
 
-            if ((_once) && (In.IsKeyDown(KeyCodes.D)))
+            if ((_once) && (Input.Instance.IsKeyDown(KeyCodes.D)))
             {
                 _audio2.Stop();
                 _audio1.Stop();
                 _once = false;
             }
-               
+            */
 
-            if (In.IsKeyDown(KeyCodes.Left))
+            //if (Input.Instance.IsKeyDown(KeyCodes.Up))
+            //    _vol = Math.Min(_vol + 0.001f, 1.0f);
+            //if (Input.Instance.IsKeyDown(KeyCodes.Down))
+            //    _vol = Math.Max(_vol - 0.001f, 0f);
+         
+            //_audio1.SetVolume(_vol);
+
+            if (Input.Instance.IsKeyDown(KeyCodes.Left))
             {
                 _panningVal = Math.Max(-1, _panningVal - 0.001f);
             }
-            if (In.IsKeyDown(KeyCodes.Right))
+            if (Input.Instance.IsKeyDown(KeyCodes.Right))
             {
                 _panningVal = Math.Min(+1, _panningVal + 0.001f);
             }

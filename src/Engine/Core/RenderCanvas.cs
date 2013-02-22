@@ -16,7 +16,6 @@ namespace Fusee.Engine
         private RenderContext _rc;
         internal IRenderCanvasImp _canvasImp;
 
-
         /// <summary>
         /// Returns the render context object.
         /// </summary>
@@ -28,24 +27,18 @@ namespace Fusee.Engine
             get { return _rc; }
         }
 
-
-
         /// <summary>
         /// The RenderCanvas constructor. Depending on the implementation this constructor instantiates a 3D viewing window or connects a 3D 
         /// render context to an existing part of the application window.
         /// </summary>
-
-        private Audio _audio;
-        protected Audio Aud
-        {
-            get { return _audio; }
-        }
-
         public RenderCanvas()
         {
             _canvasImp = ImpFactory.CreateIRenderCanvasImp();
             _rc = new RenderContext(ImpFactory.CreateIRenderContextImp(_canvasImp));
+
             Input.Instance.InputImp = ImpFactory.CreateIInputImp(_canvasImp);
+            Audio.Instance.AudioImp = ImpFactory.CreateIAudioImp();
+
             _canvasImp.Init += delegate(object sender, InitEventArgs args)
                                     {
                                         Init();
@@ -67,8 +60,6 @@ namespace Fusee.Engine
                                      {
                                          Resize();
                                      };
-
-            _audio = new Audio(ImpFactory.CreateIAudioImp());
         }
 
         /// <summary>
@@ -97,7 +88,7 @@ namespace Fusee.Engine
         
         public virtual void UnLoad()
         {
-            _audio.CloseDevice();
+            Audio.Instance.CloseDevice();
         }
 
         /// <summary>
