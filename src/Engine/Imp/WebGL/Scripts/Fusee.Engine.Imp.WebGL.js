@@ -396,24 +396,24 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
 
             var context = canvas.getContext("2d");
             context.fillStyle = bgcolor;
-            context.fillRect(0,0,width, height);
+            context.fillRect(0, 0, width, height);
 
             var myData = context.getImageData(0, 0, width, height);
             var imageData = new $fuseeCommon.Fusee.Engine.ImageData();
-            
+
             imageData.Width = width;
             imageData.Height = height;
             imageData.Stride = width * 4; //TODO: Adjust pixel-size
             imageData.PixelData = myData.data;
-            
+
             isloaded = true;
             return imageData;
-            
+
 
         }
     );
 
-    
+
     $.Method({ Static: false, Public: true }, "IRenderContextImp_LoadImage",
         new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.ImageData"), [$.String]),
         function IRenderContextImp_LoadImage(filename) {
@@ -453,6 +453,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
             var font = fontsize + "px " + fontname;
             context.font = font;
             context.fillStyle = textcolor;
+            context.textBaseline = "top";
             context.fillText(text, startposx, startposy);
 
             var myData2 = context.getImageData(0, 0, canvas.width, canvas.height);
