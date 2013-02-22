@@ -8,6 +8,7 @@
 
 var $asmThis = JSIL.DeclareAssembly("Fusee.Engine.Imp.WebGL, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null");
 var $fuseeCommon = JSIL.GetAssembly("Fusee.Engine.Common");
+var $fuseeMath = JSIL.GetAssembly("Fusee.Math.Core");
 
 JSIL.DeclareNamespace("Fusee");
 JSIL.DeclareNamespace("Fusee.Engine");
@@ -443,19 +444,85 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
         return ret;
     }
   );
+  
+	$debug = function (log_txt) {
+		if (typeof window.console != 'undefined') {
+			console.log(log_txt);
+		}
+	}
+
+
 
     $.Method({ Static: false, Public: true }, "IRenderContextImp_GetShaderParam",
     new JSIL.MethodSignature($asmThis.TypeRef("Fusee.Engine.IShaderParam"), [$asmThis.TypeRef("Fusee.Engine.IShaderProgramImp"), $.String]),
     function IRenderContextImp_GetShaderParam(program, paramName) {
-        var h = this.gl.getUniformLocation(program.Program, paramName);
-        if (h == null)
-            return null;
-        var ret = new $asmThis.Fusee.Engine.ShaderParam();
-        ret.handle = h;
-        ret.id = this._currentShaderParamHandle++;
-        return ret;
+		if(program.__ThisTypeId__ != undefined){ //i got program
+			var h = this.gl.getUniformLocation(program.Program, paramName);
+			if (h == null)
+				return null;
+			var ret = new $asmThis.Fusee.Engine.ShaderParam();
+			ret.handle = h;
+			ret.id = this._currentShaderParamHandle++;
+			return ret;
+		}else{ // i got program.Program
+			var h = this.gl.getUniformLocation(program, paramName);
+			if (h == null)
+				return null;
+			var ret = new $asmThis.Fusee.Engine.ShaderParam();
+			ret.handle = h;
+			ret.id = this._currentShaderParamHandle++;
+			return ret;
+		}
     }
   );
+  
+    var $T05 = function () {
+    return ($T05 = JSIL.Memoize($asm05.System.Collections.Generic.List$b1.Of($asmThis.Fusee.Engine.ShaderParamInfo))) ();
+  };
+  
+  $.Method({Static:false, Public:true }, "IRenderContextImp_GetShaderParamList", 
+    new JSIL.MethodSignature($asmThis.TypeRef("System.Collections.Generic.IList`1", [$asm00.TypeRef("Fusee.Engine.ShaderParamInfo")]), [$asm01.TypeRef("Fusee.Engine.IShaderProgramImp")], []), 
+    function IRenderContextImp_GetShaderParamList (shaderProgram) {
+	  var sp = shaderProgram.Program;
+	  var nParams = this.gl.getProgramParameter(sp,this.gl.ACTIVE_UNIFORMS);
+	  var list = new($jsilcore.System.Collections.Generic.List$b1.Of($fuseeCommon.Fusee.Engine.ShaderParamInfo))();
+      //var list = $sig.get(0x1928, null, [$asm05.System.Int32], []).Construct($T05(), 10);
+
+      for (var i = 0; i < nParams; ++i) {
+        var t = this.gl.getActiveUniform(sp,i).type;
+        var ret = new ($fuseeCommon.Fusee.Engine.ShaderParamInfo)();
+		
+        //var activeInfo = this.gl.getActiveUniform(sp,i);
+		//ret.Name = activeInfo.name;
+		ret.Name = this.gl.getActiveUniform(sp,i).name;
+        ret.Handle = this.IRenderContextImp_GetShaderParam(sp,ret.Name);
+        switch (t) {
+          case this.gl.INT: 
+            ret.Type = $jsilcore.System.Int32.__Type__;
+            break;
+          case this.gl.FLOAT:
+            ret.Type = $jsilcore.System.Single.__Type__;
+            break;
+		  case this.gl.FLOAT_VEC2:
+		    ret.Type = $fuseeMath.Fusee.Math.float2.__Type__;
+            break;
+		  case this.gl.FLOAT_VEC3:
+		    ret.Type = $fuseeMath.Fusee.Math.float3.__Type__;
+            break;
+		  case this.gl.FLOAT_VEC4:
+		    ret.Type = $fuseeMath.Fusee.Math.float4.__Type__;
+            break;
+		  case this.gl.FLOAT_MAT4:
+		    ret.Type = $fuseeMath.Fusee.Math.float4x4.__Type__;
+            break;
+
+        }
+        list.Add(ret.MemberwiseClone());
+      }
+      return list;
+    }
+  );
+
 
     $.Method({ Static: false, Public: true }, "IRenderContextImp_Render",
     new JSIL.MethodSignature(null, [$asmThis.TypeRef("Fusee.Engine.IMeshImp")]),
