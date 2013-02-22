@@ -15,7 +15,7 @@ namespace Fusee.Engine
     public class RenderContextImp : IRenderContextImp
     {
         private int _currentTextureUnit;
-        private Dictionary<int, int> _shaderParam2TexUnit;   
+        private Dictionary<int, int> _shaderParam2TexUnit;
 
         public RenderContextImp(IRenderCanvasImp renderCanvas)
         {
@@ -42,7 +42,7 @@ namespace Fusee.Engine
                 System.Drawing.Imaging.PixelFormat.Format32bppArgb);
             int strideAbs = (bmpData.Stride < 0) ? -bmpData.Stride : bmpData.Stride;
             int bytes = (strideAbs) * bmp.Height;
-            
+
 
             ImageData ret = new ImageData()
             {
@@ -53,7 +53,7 @@ namespace Fusee.Engine
 
             };
 
-            
+
             System.Runtime.InteropServices.Marshal.Copy(bmpData.Scan0, ret.PixelData, 0, bytes);
 
             bmp.UnlockBits(bmpData);
@@ -67,8 +67,7 @@ namespace Fusee.Engine
         /// <param name="height">The height of the image.</param>
         /// <param name="bgColor">The color of the image. Value must be JS compatible.</param>
         /// <returns>An ImageData struct containing all necessary information for further processing.</returns>
-        public ImageData CreateImage (int width, int height, String bgColor)
-
+        public ImageData CreateImage(int width, int height, String bgColor)
         {
             Bitmap bmp = new Bitmap(width, height);
             Graphics gfx = Graphics.FromImage(bmp);
@@ -99,7 +98,7 @@ namespace Fusee.Engine
             return ret;
 
 
-            
+
         }
 
         /// <summary>
@@ -113,7 +112,7 @@ namespace Fusee.Engine
         /// <param name="startPosX">The horizontal start-position of the text on the image.</param>
         /// <param name="startPosY">The vertical start-position of the text on the image.</param>
         /// <returns>An ImageData struct containing all necessary information for further processing</returns>
-     public ImageData TextOnImage(ImageData imgData, String fontName, float fontSize, String text, String textColor, float startPosX, float startPosY)
+        public ImageData TextOnImage(ImageData imgData, String fontName, float fontSize, String text, String textColor, float startPosX, float startPosY)
         {
 
             GCHandle arrayHandle = GCHandle.Alloc(imgData.PixelData,
@@ -142,15 +141,15 @@ namespace Fusee.Engine
             imgData.Stride = bmpData.Stride;
 
             Marshal.Copy(bmpData.Scan0, imgData.PixelData, 0, bytes);
-            
-           
+
+
             bmp.UnlockBits(bmpData);
             return imgData;
 
         }
 
         /// <summary>
-        /// Creates a new Texture and  binds it to the shader.
+        /// Creates a new Texture and binds it to the shader.
         /// </summary>
         /// <param name="img">A given ImageData object, containing all necessary information for the upload to the graphics card.</param>
         /// <returns>An ITexture that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
@@ -164,7 +163,7 @@ namespace Fusee.Engine
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMinFilter.Linear);
 
-            ITexture texID = new Texture{handle = id};
+            ITexture texID = new Texture { handle = id };
             return texID;
 
         }
@@ -173,9 +172,9 @@ namespace Fusee.Engine
 
         public IShaderParam GetShaderParam(IShaderProgramImp shaderProgram, string paramName)
         {
-            int h = GL.GetUniformLocation(((ShaderProgramImp) shaderProgram).Program, paramName);
+            int h = GL.GetUniformLocation(((ShaderProgramImp)shaderProgram).Program, paramName);
             return (h == -1) ? null : new ShaderParam { handle = h };
-        }   
+        }
 
         public float GetParamValue(IShaderProgramImp program, IShaderParam handle)
         {
@@ -186,9 +185,9 @@ namespace Fusee.Engine
 
         public IEnumerable<ShaderParamInfo> GetShaderParamList(IShaderProgramImp shaderProgram)
         {
-            var sp = (ShaderProgramImp) shaderProgram;
+            var sp = (ShaderProgramImp)shaderProgram;
             int nParams;
-            GL.GetProgram(sp.Program,ProgramParameter.ActiveUniforms, out nParams);
+            GL.GetProgram(sp.Program, ProgramParameter.ActiveUniforms, out nParams);
             for (int i = 0; i < nParams; i++)
             {
                 ActiveUniformType t;
@@ -198,22 +197,22 @@ namespace Fusee.Engine
                 switch (t)
                 {
                     case ActiveUniformType.Int:
-                        ret.Type = typeof (int);
+                        ret.Type = typeof(int);
                         break;
                     case ActiveUniformType.Float:
-                        ret.Type = typeof (float);
+                        ret.Type = typeof(float);
                         break;
                     case ActiveUniformType.FloatVec2:
-                        ret.Type = typeof (float2);
+                        ret.Type = typeof(float2);
                         break;
                     case ActiveUniformType.FloatVec3:
-                        ret.Type = typeof (float3);
+                        ret.Type = typeof(float3);
                         break;
                     case ActiveUniformType.FloatVec4:
-                        ret.Type = typeof (float4);
+                        ret.Type = typeof(float4);
                         break;
                     case ActiveUniformType.FloatMat4:
-                        ret.Type = typeof (float4x4);
+                        ret.Type = typeof(float4x4);
                         break;
                     case ActiveUniformType.Sampler2D:
                         //TODO ret.Type = typeof (sampler?);
@@ -225,7 +224,7 @@ namespace Fusee.Engine
             }
         }
 
-        
+
 
         public void SetShaderParam(IShaderParam param, float val)
         {
@@ -264,7 +263,7 @@ namespace Fusee.Engine
         }
 
 
-        
+
 
         /// <summary>
         /// Sets a given Shader Parameter to a created texture
@@ -273,7 +272,7 @@ namespace Fusee.Engine
         /// <param name="texId">An ITexture probably returned from CreateTexture method</param>
         public void SetShaderParamTexture(IShaderParam param, ITexture texId)
         {
-            int iParam = ((ShaderParam) param).handle;
+            int iParam = ((ShaderParam)param).handle;
             int texUnit;
             if (!_shaderParam2TexUnit.TryGetValue(iParam, out texUnit))
             {
@@ -492,7 +491,7 @@ namespace Fusee.Engine
 
             if (((MeshImp)mr).ElementBufferObject == 0)
                 GL.GenBuffers(1, out ((MeshImp)mr).ElementBufferObject);
-            // Upload the   index buffer (elements inside the vertex buffer, not color indices as per the IndexPointer function!)
+            // Upload the index buffer (elements inside the vertex buffer, not color indices as per the IndexPointer function!)
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, ((MeshImp)mr).ElementBufferObject);
             GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(trisBytes), triangleIndices, BufferUsageHint.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ElementArrayBuffer, BufferParameterName.BufferSize, out vboBytes);

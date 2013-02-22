@@ -45,7 +45,7 @@ namespace Fusee.Engine
 
 
         ITexture CreateTexture(ImageData imageData);
-        
+
         ImageData LoadImage(String filename);
 
         ImageData CreateImage(int width, int height, String bgColor);
