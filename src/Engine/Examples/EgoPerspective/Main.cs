@@ -21,7 +21,7 @@ namespace Examples.EgoPerspective
 
         public override void Init()
         {
-            _world = new World(RC, In);
+            _world = new World(RC, Input.Instance);
             Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/ground.obj.model"));
             Geometry geo2 = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Teapot.obj.model"));
 

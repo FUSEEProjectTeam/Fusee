@@ -75,7 +75,7 @@ namespace Examples.CubeAndTiles
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
-            if (In.IsKeyDown(KeyCodes.V))
+            if (Input.Instance.IsKeyDown(KeyCodes.V))
             {
                 if (!_keyPressed)
                 {
@@ -103,10 +103,10 @@ namespace Examples.CubeAndTiles
             {
                 _keyPressed = false;
 
-                if (In.IsButtonDown(MouseButtons.Left))
+                if (Input.Instance.IsButtonDown(MouseButtons.Left))
                 {
-                    _angleVelHorz = RotationSpeed*In.GetAxis(InputAxis.MouseX)*(float) Time.Instance.DeltaTime;
-                    _angleVelVert = RotationSpeed*In.GetAxis(InputAxis.MouseY)*(float) Time.Instance.DeltaTime;
+                    _angleVelHorz = RotationSpeed*Input.Instance.GetAxis(InputAxis.MouseX)*(float) Time.Instance.DeltaTime;
+                    _angleVelVert = RotationSpeed*Input.Instance.GetAxis(InputAxis.MouseY)*(float) Time.Instance.DeltaTime;
                 }
                 else
                 {
@@ -119,16 +119,16 @@ namespace Examples.CubeAndTiles
             }
 
 
-            if (In.IsKeyDown(KeyCodes.Left))
+            if (Input.Instance.IsKeyDown(KeyCodes.Left))
                 _exampleLevel.MoveCube(Level.Directions.Left);
 
-            if (In.IsKeyDown(KeyCodes.Right))
+            if (Input.Instance.IsKeyDown(KeyCodes.Right))
                 _exampleLevel.MoveCube(Level.Directions.Right);
 
-            if (In.IsKeyDown(KeyCodes.Up))
+            if (Input.Instance.IsKeyDown(KeyCodes.Up))
                 _exampleLevel.MoveCube(Level.Directions.Forward);
 
-            if (In.IsKeyDown(KeyCodes.Down))
+            if (Input.Instance.IsKeyDown(KeyCodes.Down))
                 _exampleLevel.MoveCube(Level.Directions.Backward);
 
             float4x4 mtxRot = float4x4.CreateRotationZ(_angleHorz)*float4x4.CreateRotationX(_angleVert);
