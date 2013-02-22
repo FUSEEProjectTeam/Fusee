@@ -11,12 +11,10 @@ namespace Fusee.Engine
     public class RenderContextImp : IRenderContextImp
     {
         private int _currentTextureUnit;
-        private Dictionary<int, int> _shaderParam2TexUnit;   
 
         public RenderContextImp(IRenderCanvasImp renderCanvas)
         {
             _currentTextureUnit = 0;
-            _shaderParam2TexUnit = new Dictionary<int, int>();
         }
 
         /// <summary>
@@ -31,8 +29,6 @@ namespace Fusee.Engine
         public ImageData LoadImage(String filename)
         {
             Bitmap bmp = new Bitmap(filename);
-            //Flip y-axis, otherwise texture would be upside down
-            bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
 
             BitmapData bmpData = bmp.LockBits(new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite,
                 System.Drawing.Imaging.PixelFormat.Format32bppArgb);
@@ -48,18 +44,18 @@ namespace Fusee.Engine
 
             };
 
-            
+            // Copy the RGB values into the array.
             System.Runtime.InteropServices.Marshal.Copy(bmpData.Scan0, ret.PixelData, 0, bytes);
 
             bmp.UnlockBits(bmpData);
             return ret;
         }
+
         /// <summary>
-        /// Creates a new Texture and  binds it to the shader
+        /// Creates a new Texture and  binds to the shader
         /// </summary>
         /// <param name="img">A given ImageData object, which contains all necessary information for the upload to the graphics card</param>
         /// <returns>An ITexture that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK</returns>
-
         public ITexture CreateTexture(ImageData img)
         {
             int id = GL.GenTexture();
@@ -169,23 +165,12 @@ namespace Fusee.Engine
             GL.Uniform1(((ShaderParam)param).handle, val);
         }
 
-        /// <summary>
-        /// Sets a given Shader Parameter to a created texture
-        /// </summary>
-        /// <param name="param">Shader Parameter used for texture binding</param>
-        /// <param name="texId">An ITexture probably returned from CreateTexture method</param>
+        
         public void SetShaderParamTexture(IShaderParam param, ITexture texId)
         {
-            int iParam = ((ShaderParam) param).handle;
-            int texUnit;
-            if (!_shaderParam2TexUnit.TryGetValue(iParam, out texUnit))
-            {
-                texUnit = _currentTextureUnit++;
-                _shaderParam2TexUnit[iParam] = texUnit;
-            }
-            GL.Uniform1(iParam, texUnit);
-            GL.ActiveTexture((TextureUnit)(TextureUnit.Texture0 + texUnit));
+            GL.ActiveTexture((TextureUnit)(TextureUnit.Texture0 + _currentTextureUnit));
             GL.BindTexture(TextureTarget.Texture2D, ((Texture)texId).handle);
+            _currentTextureUnit++;
         }
 
         public float4x4 ModelView
@@ -195,7 +180,6 @@ namespace Fusee.Engine
             set
             {
                 GL.MatrixMode(MatrixMode.Modelview);
-
                 unsafe { GL.LoadMatrix((float*)(&value)); }
             }
         }
@@ -283,7 +267,6 @@ namespace Fusee.Engine
         public void SetShader(IShaderProgramImp program)
         {
             _currentTextureUnit = 0;
-            _shaderParam2TexUnit.Clear();
 
             GL.UseProgram(((ShaderProgramImp)program).Program);
         }
@@ -343,12 +326,12 @@ namespace Fusee.Engine
         {
             if (uvs == null || uvs.Length == 0)
             {
-                throw new ArgumentException("UVs must not be null or empty");
+                throw new ArgumentException("Normals must not be null or empty");
             }
 
             int vboBytes;
             int uvsBytes = uvs.Length * 2 * sizeof(float);
-            if (((MeshImp)mr).UVBufferObject == 0)
+            if (((MeshImp)mr).NormalBufferObject == 0)
                 GL.GenBuffers(1, out ((MeshImp)mr).UVBufferObject);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).UVBufferObject);
