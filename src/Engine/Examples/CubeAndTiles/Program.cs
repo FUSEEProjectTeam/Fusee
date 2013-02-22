@@ -96,7 +96,7 @@ namespace Examples.CubeAndTiles
             // keyboard
             if (_lastKey == KeyCodes.None)
             {
-                if (In.IsKeyDown(KeyCodes.V))
+                if (Input.Instance.IsKeyDown(KeyCodes.V))
                 {
                     _angleVelHorz = 0.0f;
                     _angleVelVert = 0.0f;
@@ -118,38 +118,38 @@ namespace Examples.CubeAndTiles
                     _lastKey = KeyCodes.V;
                 }
 
-                if (In.IsKeyDown(KeyCodes.C))
+                if (Input.Instance.IsKeyDown(KeyCodes.C))
                 {
                     _exampleLevel.UseAnaglyph3D = !_exampleLevel.UseAnaglyph3D;
                     _lastKey = KeyCodes.C;
                 }
             }
-            else if (!In.IsKeyDown(_lastKey))
+            else if (!Input.Instance.IsKeyDown(_lastKey))
                 _lastKey = KeyCodes.None;
 
-            if (In.IsKeyDown(KeyCodes.Left))
+            if (Input.Instance.IsKeyDown(KeyCodes.Left))
                 _exampleLevel.MoveCube(Level.Directions.Left);
 
-            if (In.IsKeyDown(KeyCodes.Right))
+            if (Input.Instance.IsKeyDown(KeyCodes.Right))
                 _exampleLevel.MoveCube(Level.Directions.Right);
 
-            if (In.IsKeyDown(KeyCodes.Up))
+            if (Input.Instance.IsKeyDown(KeyCodes.Up))
                 _exampleLevel.MoveCube(Level.Directions.Forward);
 
-            if (In.IsKeyDown(KeyCodes.Down))
+            if (Input.Instance.IsKeyDown(KeyCodes.Down))
                 _exampleLevel.MoveCube(Level.Directions.Backward);
 
             // mouse
-            if (In.GetAxis(InputAxis.MouseWheel) > 0)
+            if (Input.Instance.GetAxis(InputAxis.MouseWheel) > 0)
                 _exampleLevel.ZoomCamera(50);
 
-            if (In.GetAxis(InputAxis.MouseWheel) < 0)
+            if (Input.Instance.GetAxis(InputAxis.MouseWheel) < 0)
                 _exampleLevel.ZoomCamera(-50);
 
-            if (In.IsButtonDown(MouseButtons.Left))
+            if (Input.Instance.IsButtonDown(MouseButtons.Left))
             {
-                _angleVelHorz = RotationSpeed*In.GetAxis(InputAxis.MouseX)*(float) DeltaTime;
-                _angleVelVert = RotationSpeed*In.GetAxis(InputAxis.MouseY)*(float) DeltaTime;
+                _angleVelHorz = RotationSpeed*Input.Instance.GetAxis(InputAxis.MouseX)*(float) Time.Instance.DeltaTime;
+                _angleVelVert = RotationSpeed * Input.Instance.GetAxis(InputAxis.MouseY) * (float)Time.Instance.DeltaTime;
             }
             else
             {
@@ -161,7 +161,7 @@ namespace Examples.CubeAndTiles
             _angleVert += _angleVelVert;
 
             var mtxRot = float4x4.CreateRotationZ(_angleHorz)*float4x4.CreateRotationX(_angleVert);
-            _exampleLevel.Render(mtxRot, DeltaTime);
+            _exampleLevel.Render(mtxRot, Time.Instance.DeltaTime);
 
             Present();
         }
