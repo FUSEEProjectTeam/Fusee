@@ -53,6 +53,7 @@
     <Optimize>false</Optimize>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="IAudioStream.cs" />
     <Compile Include="IInputImp.cs" />
     <Compile Include="ImageData.cs" />
     <Compile Include="IMeshImp.cs" />
@@ -61,6 +62,7 @@
     <Compile Include="IRenderContextImp.cs" />
     <Compile Include="IShaderParam.cs" />
     <Compile Include="IShaderProgramImp.cs" />
+    <Compile Include="IAudioImp.cs" />
     <Compile Include="ITexture.cs" />
     <Compile Include="KeyEventArgs.cs" />
     <Compile Include="Light.cs" />

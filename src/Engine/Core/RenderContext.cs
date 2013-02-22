@@ -1107,6 +1107,16 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
             _rci.Viewport(x, y, width, height);
         }
 
+        public void ColorMask(bool red, bool green, bool blue, bool alpha)
+        {
+            _rci.ColorMask(red, green, blue, alpha);
+        }
+
+        public void Frustum(double left, double right, double bottom, double top, double zNear, double zFar)
+        {
+            _rci.Frustum(left, right, bottom, top, zNear, zFar);
+        }
+
         /// <summary>
         /// The color to use when clearing the color buffer.
         /// </summary>

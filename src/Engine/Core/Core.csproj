@@ -53,6 +53,7 @@
     <Optimize>false</Optimize>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Audio.cs" />
     <Compile Include="Cube.cs" />
     <Compile Include="Diagnostics.cs" />
     <Compile Include="Geometry.cs" />

@@ -28,18 +28,6 @@ namespace Fusee.Engine
             get { return _rc; }
         }
 
-        /*
-        private Input _in;
-
-        /// <summary>
-        /// This property will be replaced by the Input class singleton!!!
-        /// </summary>
-
-        protected Input In
-        {
-            get { return _in; }
-        }
-        */
 
 
         /// <summary>
@@ -47,16 +35,26 @@ namespace Fusee.Engine
         /// render context to an existing part of the application window.
         /// </summary>
 
+        private Audio _audio;
+        protected Audio Aud
+        {
+            get { return _audio; }
+        }
+
         public RenderCanvas()
         {
             _canvasImp = ImpFactory.CreateIRenderCanvasImp();
             _rc = new RenderContext(ImpFactory.CreateIRenderContextImp(_canvasImp));
-            //_in = new Input(ImpFactory.CreateIInputImp(_canvasImp));
             Input.Instance.InputImp = ImpFactory.CreateIInputImp(_canvasImp);
             _canvasImp.Init += delegate(object sender, InitEventArgs args)
-                                   {
-                                       Init();
-                                   };
+                                    {
+                                        Init();
+                                    };
+
+            _canvasImp.UnLoad += delegate(object sender, InitEventArgs args)
+                                    {
+                                        UnLoad();
+                                    };
 
             _canvasImp.Render += delegate(object sender, RenderEventArgs args)
                                      {
@@ -69,6 +67,8 @@ namespace Fusee.Engine
                                      {
                                          Resize();
                                      };
+
+            _audio = new Audio(ImpFactory.CreateIAudioImp());
         }
 
         /// <summary>
@@ -92,6 +92,12 @@ namespace Fusee.Engine
         /// </remarks>
         public virtual void Init()
         {
+        }
+
+        
+        public virtual void UnLoad()
+        {
+            _audio.CloseDevice();
         }
 
         /// <summary>
@@ -133,20 +139,6 @@ namespace Fusee.Engine
         /// </value>
         public int Height { get { return _canvasImp.Height; } }
 
-
-        /// <summary>
-        /// This property will be replaced by the DeltaTime class singleton!!!
-        /// </summary>
-        /*
-
-        public double DeltaTime
-        {
-            get
-            {
-                return _canvasImp.DeltaTime;
-            }
-        }
-         * */
 
         /// <summary>
         /// Presents the contents of the backbuffer on the visible part of this render canvas.

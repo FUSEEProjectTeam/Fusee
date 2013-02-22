@@ -71,6 +71,10 @@ namespace Fusee.Engine
 
         void Viewport(int x, int y, int width, int height);
 
+        void ColorMask(bool red, bool green, bool blue, bool alpha);
+
+        void Frustum(double left, double right, double bottom, double top, double zNear, double zFar);
+
         void Render(IMeshImp mr);
 
         IMeshImp CreateMeshImp();

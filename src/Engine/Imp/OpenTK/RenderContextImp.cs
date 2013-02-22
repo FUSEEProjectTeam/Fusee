@@ -400,7 +400,7 @@ namespace Fusee.Engine
             int vertsBytes = vertices.Length * 3 * sizeof(float);
             if (((MeshImp)mr).VertexBufferObject == 0)
                 GL.GenBuffers(1, out ((MeshImp)mr).VertexBufferObject);
-
+            
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).VertexBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertsBytes), vertices, BufferUsageHint.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out vboBytes);
@@ -566,6 +566,16 @@ namespace Fusee.Engine
         public void Viewport(int x, int y, int width, int height)
         {
             GL.Viewport(x, y, width, height);
+        }
+
+        public void ColorMask(bool red, bool green, bool blue, bool alpha)
+        {
+            GL.ColorMask(red, green, blue, alpha);
+        }
+
+        public void Frustum(double left, double right, double bottom, double top, double zNear, double zFar)
+        {
+            GL.Frustum(left, right, bottom, top, zNear, zFar);
         }
     }
 }

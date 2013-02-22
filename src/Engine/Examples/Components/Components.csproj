@@ -82,10 +82,6 @@
       <Project>{E95FA1C8-6491-4B4B-BBE1-EDA6B16B2C6A}</Project>
       <Name>Math.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Imp\OpenTK\OpenTK.csproj">
-      <Project>{F7AD2BB5-D2B0-4697-BDDB-4CC26152A6B6}</Project>
-      <Name>OpenTK</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\earth_texture512x256.png">

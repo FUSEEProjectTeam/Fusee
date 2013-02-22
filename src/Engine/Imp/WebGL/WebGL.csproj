@@ -52,6 +52,7 @@
     <WarningLevel>4</WarningLevel>
     <Optimize>false</Optimize>
   </PropertyGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="Scripts\Fusee.Engine.Imp.WebGL.js" />
     <Content Include="Scripts\SystemExternals.js" />
