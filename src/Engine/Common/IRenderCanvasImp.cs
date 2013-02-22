@@ -1,4 +1,6 @@
-﻿using System;
+﻿#pragma warning disable 1591 //disables the warning about missing XML-comments
+
+using System;
 
 namespace Fusee.Engine
 {
@@ -19,3 +21,5 @@ namespace Fusee.Engine
         event EventHandler<ResizeEventArgs> Resize;
     }
 }
+
+#pragma warning restore 1591

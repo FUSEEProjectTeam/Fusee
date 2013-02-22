@@ -22,6 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>..\..\..\Bin\Debug\Fusee.Engine.Core.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -67,6 +68,7 @@
     <Compile Include="ShaderMaterial.cs" />
     <Compile Include="ShaderProgram.cs" />
     <Compile Include="Shaders.cs" />
+    <Compile Include="Time.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="JSIL.Meta, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">

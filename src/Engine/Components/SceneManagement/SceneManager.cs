@@ -5,17 +5,41 @@ using System;
 
 namespace Fusee.SceneManagement
 {
-    public class SceneManager
+    /// <summary>
+    /// The SceneManager class handles the rendering of the scene
+    /// </summary>
+    public sealed class SceneManager
     {
-        
-        private ITraversalState _traversal;
-        public List<RenderJob>[] RenderJobs = new List<RenderJob>[10]; 
-        public List<SceneEntity> SceneMembers = new List<SceneEntity>(); 
-        
+        /// <summary>
+        /// The _manager Singleton
+        /// </summary>
+        private static readonly SceneManager _manager = new SceneManager();
+        /// <summary>
+        /// The _render context
+        /// </summary>
+        private RenderContext _renderContext;
+        //private TraversalStateRender _traversalRender;
 
-        public SceneManager()
+        /// <summary>
+        /// The render jobs
+        /// </summary>
+        private List<RenderJob>[] RenderJobs = new List<RenderJob>[10];
+        /// <summary>
+        /// The scene members
+        /// </summary>
+        private List<SceneEntity> SceneMembers = new List<SceneEntity>();
+        /// <summary>
+        /// The _scene visitor rendering
+        /// </summary>
+        private SceneVisitorRendering _sceneVisitorRendering;
+
+        /// <summary>
+        /// Prevents a default instance of the <see cref="SceneManager"/> class from being created.
+        /// </summary>
+        private SceneManager()
         {
-            _traversal =  new TraversalStateRender(this);
+            _sceneVisitorRendering = new SceneVisitorRendering(this);
+            //_traversalRender =  new TraversalStateRender(this);
             for (int i = 0; i < RenderJobs.Length; i++ )
             {
                 RenderJobs[i] = new List<RenderJob>();
@@ -23,16 +47,68 @@ namespace Fusee.SceneManagement
             
         }
 
+        /// <summary>
+        /// Gets the Singleton SceneManager instance.
+        /// </summary>
+        /// <value>
+        /// The manager instance.
+        /// </value>
+        public static SceneManager Manager
+        {
+            get { return _manager; }
+        }
 
-        public void Traverse(RenderCanvas renderCanvas, RenderContext RC, float4x4 camera)
+        /// <summary>
+        /// Gets or sets(only once) a RenderContext instance.
+        /// </summary>
+        /// <value>
+        /// The RenderContext.
+        /// </value>
+        public static RenderContext RC
+        {
+            set{
+                if (_manager._renderContext == null)
+                {
+                    _manager._renderContext = value;
+                }
+            }
+            get { return _manager._renderContext; }
+        }
+
+
+        /// <summary>
+        /// Adds the scene entity to the scene.
+        /// </summary>
+        /// <param name="sceneEntity">The scene entity.</param>
+        public void AddSceneEntity(SceneEntity sceneEntity)
+        {
+            SceneMembers.Add(sceneEntity);
+        }
+
+        /// <summary>
+        /// Adds the camera to the rendering queue [0].
+        /// </summary>
+        /// <param name="cameramatrix">The cameramatrix.</param>
+        public void AddCamera(RenderCamera cameramatrix)
+        {
+            RenderJobs[0].Add(cameramatrix);
+        }
+
+        /// <summary>
+        /// Traverses the scene's entities with their corresponding components.
+        /// </summary>
+        /// <param name="renderCanvas">The render canvas.</param>
+        public void Traverse(RenderCanvas renderCanvas)
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
             foreach (var sceneMember in SceneMembers)
             {
                 
-                _traversal.SetDeltaTime(renderCanvas.DeltaTime);
-                sceneMember.Traverse(_traversal);
+                //_traversalRender.SetDeltaTime(renderCanvas.DeltaTime);
+                _sceneVisitorRendering.SetDeltaTime(Time.Instance.DeltaTime);
+                //sceneMember.Traverse(_traversalRender);
+                sceneMember.Accept(_sceneVisitorRendering);
             }
 
             // Order: Matrix, Mesh, Renderer
@@ -58,21 +134,60 @@ namespace Fusee.SceneManagement
             }
         }
 
+        /// <summary>
+        /// Adds a render job to the render queue[2].
+        /// </summary>
+        /// <param name="job">The job.</param>
         public void AddRenderJob(RenderJob job)
         {
             
+            RenderJobs[2].Add(job);
+        }
+
+        /// <summary>
+        /// Adds a light job to the light queue [1].
+        /// </summary>
+        /// <param name="job">The job.</param>
+        public void AddLightJob(RenderJob job)
+        {
             RenderJobs[1].Add(job);
         }
 
-        public void AddLightJob(RenderJob job)
+
+        // Ursprüngliche SceneEntity suche
+        /*public SceneEntity FindSceneEntity(string sceneEntityName)
         {
-            RenderJobs[0].Add(job);
+            foreach (var sceneMember in SceneMembers)
+            {
+                if(sceneMember.name == sceneEntityName)
+                {
+                    return sceneMember;
+                }
+                foreach (var child in sceneMember.GetChildren())
+                {
+                    if (child.name == sceneEntityName)
+                    {
+                        return child;
+                    }
+                }
+            }
+            return null;
+        }*/
+
+        // neue suche
+        /// <summary>
+        /// Finds the scene entity inside the current scene.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <returns></returns>
+        public SceneEntity FindSceneEntity(string name)
+        {
+            SceneVisitorSearch sceneVisitorSearch = new SceneVisitorSearch();
+            SceneEntity result = sceneVisitorSearch.FindSceneEntity(SceneMembers, name);
+            return result;
         }
 
-        public void SetInput(Input input)
-        {
-            _traversal.SetInput(input);
-        }
+
 
     }
 }

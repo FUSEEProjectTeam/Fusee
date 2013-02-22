@@ -573,6 +573,11 @@ namespace Fusee.Math
         }
 
 
+        /// <summary>
+        /// Takes a float4x4 matric and returns quaternions.
+        /// </summary>
+        /// <param name="m"></param>
+        /// <returns></returns>
         public static Quaternion MatrixToQuaternion(float4x4 m)
         {
             Quaternion q = Quaternion.Identity;
@@ -621,6 +626,13 @@ namespace Fusee.Math
             return new float4x4(m00, m01, m02, 0, m10, m11, m12, 0, m20, m21, m22, 0, 0, 0, 0, 1);
         }
 
+        /// <summary>
+        /// a with the algebraic sign of b.
+        /// </summary>
+        /// <remarks>Takes a as an absolute value and multiplies it with: +1 for any positiv number for b, -1 for any negative number for b or 0 for 0 for b.</remarks>
+        /// <param name="a">Absolut value</param>
+        /// <param name="b">A positiv/negativ number or zero.</param>
+        /// <returns>Returns a with the algebraic sign of b.</returns>
         public static float copysign(float a, float b)
         {
             return System.Math.Abs(a)*System.Math.Sign(b);

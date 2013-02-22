@@ -75,10 +75,10 @@ namespace Examples.Simple
             RC.Clear(ClearFlags.Color| ClearFlags.Depth);
 
             
-            if (In.IsButtonDown(MouseButtons.Left))
+            if (Input.Instance.IsButtonDown(MouseButtons.Left))
             {
-                _angleVelHorz = _rotationSpeed * In.GetAxis(InputAxis.MouseX) * (float) DeltaTime;
-                _angleVelVert = _rotationSpeed * In.GetAxis(InputAxis.MouseY) * (float) DeltaTime;
+                _angleVelHorz = _rotationSpeed * Input.Instance.GetAxis(InputAxis.MouseX) * (float) Time.Instance.DeltaTime;
+                _angleVelVert = _rotationSpeed * Input.Instance.GetAxis(InputAxis.MouseY) * (float) Time.Instance.DeltaTime;
             }
             else
             {
@@ -88,21 +88,21 @@ namespace Examples.Simple
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
 
-            if (In.IsKeyDown(KeyCodes.Left))
+            if (Input.Instance.IsKeyDown(KeyCodes.Left))
             {
-                _angleHorz -= _rotationSpeed * (float)DeltaTime;
+                _angleHorz -= _rotationSpeed * (float)Time.Instance.DeltaTime;
             }
-            if (In.IsKeyDown(KeyCodes.Right))
+            if (Input.Instance.IsKeyDown(KeyCodes.Right))
             {
-                _angleHorz += _rotationSpeed * (float)DeltaTime;
+                _angleHorz += _rotationSpeed * (float)Time.Instance.DeltaTime;
             }
-            if (In.IsKeyDown(KeyCodes.Up))
+            if (Input.Instance.IsKeyDown(KeyCodes.Up))
             {
-                _angleVert -= _rotationSpeed * (float)DeltaTime;
+                _angleVert -= _rotationSpeed * (float)Time.Instance.DeltaTime;
             }
-            if (In.IsKeyDown(KeyCodes.Down))
+            if (Input.Instance.IsKeyDown(KeyCodes.Down))
             {
-                _angleVert += _rotationSpeed * (float)DeltaTime;
+                _angleVert += _rotationSpeed * (float)Time.Instance.DeltaTime;
             }
 
             float4x4 mtxRot = float4x4.CreateRotationY(_angleHorz)*float4x4.CreateRotationX(_angleVert);
