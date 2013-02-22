@@ -44,15 +44,25 @@ namespace Fusee.Engine
         public RenderContext(IRenderContextImp rci)
         {
             _rci = rci;
+            View = float4x4.Identity;
             ModelView = float4x4.Identity;
             Projection = float4x4.Identity;
         }
 
+
         /// <deprecated></deprecated>
         [Obsolete("This field will soon be replaced by enabling RenderContext to seperate between Model and View matrix.")]
         public float4x4 Camera; // TODO: Implement Camera. Temporary solution!!
+
+
+        
+        // Settable matrices
         private float4x4 _modelView;
         private float4x4 _projection;
+        private float4x4 _view; 
+
+        // Derived matrices
+
         private float4x4 _modelViewProjection;
         private float4x4 _invModelView;
         private float4x4 _invProjection;
@@ -74,8 +84,36 @@ namespace Fusee.Engine
         private bool _transProjectionOk;
         private bool _transModelViewProjectionOk;
 
+        /// <summary>
+        /// Creates a new Image with a specified size and color.
+        /// </summary>
+        /// <param name="width">The width of the image.</param>
+        /// <param name="height">The height of the image.</param>
+        /// <param name="bgColor">The color of the image. Value must be JS compatible.</param>
+        /// <returns>An ImageData struct containing all necessary information for further processing.</returns>
+        public ImageData CreateImage (int width, int height, String bgColor)
+        {
+            return _rci.CreateImage(width, height, bgColor);
+        }
 
-        
+
+
+        /// <summary>
+        /// Maps a specified text with on an image.
+        /// </summary>
+        /// <param name="imgData">The ImageData struct with the PixelData from the image.</param>
+        /// <param name="fontName">The name of the text-font.</param>
+        /// <param name="fontSize">The size of the text-font.</param>
+        /// <param name="text">The text that sould be mapped on the iamge.</param>
+        /// <param name="textColor">The color of the text-font.</param>
+        /// <param name="startPosX">The horizontal start-position of the text on the image.</param>
+        /// <param name="startPosY">The vertical start-position of the text on the image.</param>
+        /// <returns>An ImageData struct containing all necessary information for further processing</returns>
+        public ImageData TextOnImage(ImageData imgData, String fontName, float fontSize, String text, String textColor, float startPosX, float startPosY)
+        {
+            return _rci.TextOnImage(imgData, fontName, fontSize, text, textColor, startPosX, startPosY);
+        }
+
 
         /// <summary>
         /// Creates a new texture and binds it to the shader.
@@ -121,7 +159,48 @@ namespace Fusee.Engine
             _rci.SetShaderParamTexture(param, texId);
         }
 
+        public ShaderProgram CurrentShader
+        {
+            get { return _currentShader; }
+        }
+        //directional or Point- Light 
+        public void SetLight(float3 v3, float4 color, int type, int id)
+        {
+            switch (type)
+            {
+                case 0:
+                    SetLightActive(id, 1);
+                    SetLightAmbient(id, color);
+                    SetLightDiffuse(id, color);
+                    SetLightSpecular(id, color);
+                    SetLightDirection(id, v3);
+                    break;
+                case 1:
+                    SetLightActive(id, 1);
+                    SetLightAmbient(id, color);
+                    SetLightDiffuse(id, color);
+                    SetLightSpecular(id, color);
+                    SetLightPosition(id, v3);
+                    break;
+            }
+        }
 
+        //Spotlight with position AND direction
+        public void SetLight(float3 position, float3 direction,  float4 color, int type, int id)
+        {
+            SetLightActive(id, 1);
+            SetLightAmbient(id, color);
+            SetLightDiffuse(id, color);
+            SetLightSpecular(id, color);
+            SetLightPosition(id, position);
+            SetLightDirection(id,direction);
+        }
+
+        public float4x4 View
+        {
+            get { return _view; }
+            set { _view = value; }
+        }
 
         /// <summary>
         /// The ModelView matrix used by the rendering pipeline. 

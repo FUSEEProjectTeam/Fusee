@@ -77,8 +77,8 @@ namespace Examples.Simple
             
             if (In.IsButtonDown(MouseButtons.Left))
             {
-                _angleVelHorz = _rotationSpeed * In.GetAxis(InputAxis.MouseX) * (float) DeltaTime;
-                _angleVelVert = _rotationSpeed * In.GetAxis(InputAxis.MouseY) * (float) DeltaTime;
+                _angleVelHorz = _rotationSpeed * In.GetAxis(InputAxis.MouseX) * (float) Time.Instance.DeltaTime;
+                _angleVelVert = _rotationSpeed * In.GetAxis(InputAxis.MouseY) * (float) Time.Instance.DeltaTime;
             }
             else
             {
@@ -90,19 +90,19 @@ namespace Examples.Simple
 
             if (In.IsKeyDown(KeyCodes.Left))
             {
-                _angleHorz -= _rotationSpeed * (float)DeltaTime;
+                _angleHorz -= _rotationSpeed * (float)Time.Instance.DeltaTime;
             }
             if (In.IsKeyDown(KeyCodes.Right))
             {
-                _angleHorz += _rotationSpeed * (float)DeltaTime;
+                _angleHorz += _rotationSpeed * (float)Time.Instance.DeltaTime;
             }
             if (In.IsKeyDown(KeyCodes.Up))
             {
-                _angleVert -= _rotationSpeed * (float)DeltaTime;
+                _angleVert -= _rotationSpeed * (float)Time.Instance.DeltaTime;
             }
             if (In.IsKeyDown(KeyCodes.Down))
             {
-                _angleVert += _rotationSpeed * (float)DeltaTime;
+                _angleVert += _rotationSpeed * (float)Time.Instance.DeltaTime;
             }
 
             float4x4 mtxRot = float4x4.CreateRotationY(_angleHorz)*float4x4.CreateRotationX(_angleVert);
