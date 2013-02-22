@@ -21,7 +21,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.AudioStream", t
   $.Method({Static:false, Public:true }, ".ctor", 
     new JSIL.MethodSignature(null, [$.String]), 
     function AudioStream__ctor (fileName) {
-		this.AudioStream$StreamFileName$value = fileName;
+      this.AudioStream$StreamFileName$value = fileName.replace(/\.[^/.]+$/, "");
 	    //this.AudioStream$MainOutputStream$value = createjs.Sound.registerSound(fileName);
     }
   );
@@ -29,7 +29,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.AudioStream", t
   $.Method({Static:false, Public:true }, "Play", 
     new JSIL.MethodSignature(null, []), 
     function AudioStream_Play () {
-      createjs.Sound.play(this.AudioStream$StreamFileName$value);
+		createjs.Sound.play(JSIL.Host.getAssetVal(this.AudioStream$StreamFileName$value));
     }
   );
 
@@ -38,7 +38,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.AudioStream", t
 
 JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.WebAudioImp", true, [], function ($) {
   var $thisType = $.publicInterface;
-  var soundInstance;  // the soundInstance returned by Sound when we create or play a src
+  var soundInstance;
   
   $.Method({Static:false, Public:true }, ".ctor", 
     new JSIL.MethodSignature(null, []),

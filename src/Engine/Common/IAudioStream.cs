@@ -7,5 +7,6 @@
         void Dispose();
 
         void Play();
+        void Stop();
     }
 }

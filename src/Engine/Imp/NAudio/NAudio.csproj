@@ -65,6 +65,6 @@
   </Target>
   <Target Name="AfterBuild">
   </Target>
+   <Import Project="$(SolutionDir)/Fusee.targets" Condition="'$(PostBuildEvent)' == ''" />
   -->
-  <Import Project="$(SolutionDir)/Fusee.targets" Condition="'$(PostBuildEvent)' == ''" />
 </Project>

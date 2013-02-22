@@ -8,9 +8,9 @@ namespace Examples.SoundTest
     public class SoundTest : RenderCanvas
     {
         protected string Vs = @"
-          
-          //   #version 120
-            
+            #ifndef GL_ES
+                #version 120
+            #endif            
 
             /* Copies incoming vertex color without change.
              * Applies the transformation matrix to vertex position.
@@ -36,14 +36,14 @@ namespace Examples.SoundTest
             }";
 
         protected string Ps = @"
-          
-           //  #version 120
-       
+            #ifndef GL_ES
+                #version 120
+            #endif
 
             /* Copies incoming fragment color without change. */
             #ifdef GL_ES
                 precision highp float;
-            #endif
+            #endif         
         
             uniform vec4 vColor;
             varying vec3 vNormal;
@@ -58,6 +58,9 @@ namespace Examples.SoundTest
         private float _panningVal;
         protected Mesh Mesh;
         private static float _angleHorz;
+        private IAudioStream _audio2;
+        private IAudioStream _audio1;
+        private bool _once = false;
 
         public override void Init()
         {
@@ -70,8 +73,9 @@ namespace Examples.SoundTest
             RC.SetShader(sp);
 
             Aud.OpenDevice();
-            var audio1 = Aud.LoadFile("Assets/tetris.mp3");
-            audio1.Play();
+            _audio1 = Aud.LoadFile("Assets/tetris.mp3");
+            _audio2 = Aud.LoadFile("Assets/pacman.mp3");
+            _audio1.Play();
             
             _panningVal = 0;
         }
@@ -79,6 +83,20 @@ namespace Examples.SoundTest
         public override void RenderAFrame()
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
+
+            if ((!_once) && (In.IsKeyDown(KeyCodes.S)))
+            {
+                _audio2.Play();
+                _once = true;
+            }
+
+            if ((_once) && (In.IsKeyDown(KeyCodes.D)))
+            {
+                _audio2.Stop();
+                _audio1.Stop();
+                _once = false;
+            }
+               
 
             if (In.IsKeyDown(KeyCodes.Left))
             {

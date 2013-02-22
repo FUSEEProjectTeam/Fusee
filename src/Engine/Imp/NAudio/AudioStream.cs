@@ -5,7 +5,7 @@ namespace Fusee.Engine
 {
     class AudioStream : IAudioStream
     {
-        internal IWavePlayer WaveOutDevice;
+        internal NAudioImp Audio;
 
         internal WaveStream MainOutputStream { get; set; }
         internal WaveChannel32 VolumeStream;
@@ -27,26 +27,35 @@ namespace Fusee.Engine
             return VolumeStream;
         }
 
-        public AudioStream(string fileName, IWavePlayer waveOut)
+        public AudioStream(string fileName, NAudioImp audioCl)
         {
+            Audio = audioCl;
+
             MainOutputStream = CreateInputStream(fileName);
-            WaveOutDevice = waveOut;
         }
 
         public void Play()
         {
-            WaveOutDevice.Init(MainOutputStream);
-            WaveOutDevice.Play();
+            Audio.Mixer.AddInputStream(VolumeStream);
+        }
+
+        public void Stop()
+        {
+            Audio.Mixer.RemoveInputStream(VolumeStream);
         }
 
         public void Dispose()
         {
-            if (MainOutputStream != null)
+            if (VolumeStream != null)
             {
-                // this one really closes the file and ACM conversion
+                Audio.Mixer.RemoveInputStream(VolumeStream);
+
                 VolumeStream.Close();
                 VolumeStream = null;
-                // this one does the metering stream
+            }
+
+            if (MainOutputStream != null)
+            {
                 MainOutputStream.Close();
                 MainOutputStream = null;
             }
