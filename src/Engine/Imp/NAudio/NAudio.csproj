@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="AudioStream.cs" />
     <Compile Include="Implementor.cs" />
+    <Compile Include="LoopStream.cs" />
     <Compile Include="NAudioImp.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

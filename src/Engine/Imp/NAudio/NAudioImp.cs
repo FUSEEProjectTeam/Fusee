@@ -10,9 +10,10 @@ namespace Fusee.Engine
         internal IWavePlayer WaveOutDevice;
         internal WaveMixerStream32 Mixer;
 
-        internal readonly IAudioStream[] AllStreams = new IAudioStream[128];
-        internal int LoadedStreams;
-    
+        private readonly IAudioStream[] _allStreams = new IAudioStream[128];
+        private int _loadedStreams;
+        private float _volume;
+
         public void OpenDevice()
         {
             CloseDevice();
@@ -24,21 +25,18 @@ namespace Fusee.Engine
             WaveOutDevice.Init(Mixer);
             WaveOutDevice.Play();
 
-            LoadedStreams = 0;
+            _loadedStreams = 0;
+            _volume = 1.0f;
         }
 
         public void CloseDevice()
         {
             if (WaveOutDevice != null)
-            {
                 if (WaveOutDevice.PlaybackState == PlaybackState.Playing)
                     WaveOutDevice.Stop();
-            }
 
-            for (var x = 0; x < LoadedStreams; x++)
-            {
-                AllStreams[x].Dispose();
-            }
+            for (var x = 0; x < _loadedStreams; x++)
+                _allStreams[x].Dispose();
 
             if (WaveOutDevice != null)
             {
@@ -56,9 +54,33 @@ namespace Fusee.Engine
         public IAudioStream LoadFile(string fileName)
         {
             IAudioStream tmp = new AudioStream(fileName, this);
-            AllStreams[LoadedStreams] = tmp;
-            LoadedStreams++;
+            _allStreams[_loadedStreams] = tmp;
+            _loadedStreams++;
             return tmp;
+        }
+
+        public void Play()
+        {
+            if (WaveOutDevice == null) return;
+
+            if (WaveOutDevice.PlaybackState != PlaybackState.Playing)
+                WaveOutDevice.Play();
+        }
+
+        public void Pause()
+        {
+            if (WaveOutDevice == null) return;
+
+            if (WaveOutDevice.PlaybackState == PlaybackState.Playing)
+                WaveOutDevice.Pause();
+        }
+
+        public void Stop()
+        {
+            if (WaveOutDevice == null) return;
+
+            if (WaveOutDevice.PlaybackState != PlaybackState.Stopped)
+                WaveOutDevice.Stop();
         }
 
         public void Play(IAudioStream stream)
@@ -67,9 +89,31 @@ namespace Fusee.Engine
                 ((AudioStream)stream).Play();
         }
 
-        public void Pause()
+        public void Pause(IAudioStream stream)
         {
-            WaveOutDevice.Pause();
+            if (stream != null)
+                ((AudioStream)stream).Pause();
+        }
+
+        public void Stop(IAudioStream stream)
+        {
+            if (stream != null)
+                ((AudioStream)stream).Stop();
+        }
+
+        public void SetVolume(float val)
+        {
+            var compr = _volume / val;
+
+            for (var x = 0; x < _loadedStreams; x++)
+                _allStreams[x].Volume *= compr;
+
+            _volume = val;            
+        }
+
+        public float GetVolume()
+        {
+            return _volume;
         }
     }
 }

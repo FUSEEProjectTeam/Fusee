@@ -27,14 +27,44 @@ namespace Fusee.Engine
             return _audioImp.LoadFile(fileName);
         }
 
-        public void Play(IAudioStream stream)
+        public void Play()
         {
-            _audioImp.Play(stream);
+            _audioImp.Play();
         }
 
         public void Pause()
         {
             _audioImp.Pause();
+        }
+
+        public void Stop()
+        {
+            _audioImp.Stop();
+        }
+
+        public void Play(IAudioStream stream)
+        {
+            _audioImp.Play(stream);
+        }
+
+        public void Pause(IAudioStream stream)
+        {
+            _audioImp.Pause(stream);
+        }
+
+        public void Stop(IAudioStream stream)
+        {
+            _audioImp.Stop(stream);
+        }
+
+        public void SetVolume(float val)
+        {
+            _audioImp.SetVolume(val);
+        }
+
+        public float GetVolume()
+        {
+            return _audioImp.GetVolume();
         }
     }
 }
