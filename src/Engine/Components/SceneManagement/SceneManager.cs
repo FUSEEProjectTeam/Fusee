@@ -5,16 +5,37 @@ using System;
 
 namespace Fusee.SceneManagement
 {
+    /// <summary>
+    /// The SceneManager class handles the rendering of the scene
+    /// </summary>
     public sealed class SceneManager
     {
+        /// <summary>
+        /// The _manager Singleton
+        /// </summary>
         private static readonly SceneManager _manager = new SceneManager();
+        /// <summary>
+        /// The _render context
+        /// </summary>
         private RenderContext _renderContext;
         //private TraversalStateRender _traversalRender;
-        
-        private List<RenderJob>[] RenderJobs = new List<RenderJob>[10]; 
+
+        /// <summary>
+        /// The render jobs
+        /// </summary>
+        private List<RenderJob>[] RenderJobs = new List<RenderJob>[10];
+        /// <summary>
+        /// The scene members
+        /// </summary>
         private List<SceneEntity> SceneMembers = new List<SceneEntity>();
+        /// <summary>
+        /// The _scene visitor rendering
+        /// </summary>
         private SceneVisitorRendering _sceneVisitorRendering;
 
+        /// <summary>
+        /// Prevents a default instance of the <see cref="SceneManager"/> class from being created.
+        /// </summary>
         private SceneManager()
         {
             _sceneVisitorRendering = new SceneVisitorRendering(this);
@@ -26,11 +47,23 @@ namespace Fusee.SceneManagement
             
         }
 
+        /// <summary>
+        /// Gets the Singleton SceneManager instance.
+        /// </summary>
+        /// <value>
+        /// The manager instance.
+        /// </value>
         public static SceneManager Manager
         {
             get { return _manager; }
         }
 
+        /// <summary>
+        /// Gets or sets(only once) a RenderContext instance.
+        /// </summary>
+        /// <value>
+        /// The RenderContext.
+        /// </value>
         public static RenderContext RC
         {
             set{
@@ -43,16 +76,28 @@ namespace Fusee.SceneManagement
         }
 
 
+        /// <summary>
+        /// Adds the scene entity to the scene.
+        /// </summary>
+        /// <param name="sceneEntity">The scene entity.</param>
         public void AddSceneEntity(SceneEntity sceneEntity)
         {
             SceneMembers.Add(sceneEntity);
         }
 
+        /// <summary>
+        /// Adds the camera to the rendering queue [0].
+        /// </summary>
+        /// <param name="cameramatrix">The cameramatrix.</param>
         public void AddCamera(RenderCamera cameramatrix)
         {
             RenderJobs[0].Add(cameramatrix);
         }
 
+        /// <summary>
+        /// Traverses the scene's entities with their corresponding components.
+        /// </summary>
+        /// <param name="renderCanvas">The render canvas.</param>
         public void Traverse(RenderCanvas renderCanvas)
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
@@ -89,22 +134,25 @@ namespace Fusee.SceneManagement
             }
         }
 
+        /// <summary>
+        /// Adds a render job to the render queue[2].
+        /// </summary>
+        /// <param name="job">The job.</param>
         public void AddRenderJob(RenderJob job)
         {
             
             RenderJobs[2].Add(job);
         }
 
+        /// <summary>
+        /// Adds a light job to the light queue [1].
+        /// </summary>
+        /// <param name="job">The job.</param>
         public void AddLightJob(RenderJob job)
         {
             RenderJobs[1].Add(job);
         }
 
-        public void SetInput(Input input)
-        {
-            //_traversalRender.Input = input;
-            _sceneVisitorRendering.Input = input;
-        }
 
         // Ursprüngliche SceneEntity suche
         /*public SceneEntity FindSceneEntity(string sceneEntityName)
@@ -127,6 +175,11 @@ namespace Fusee.SceneManagement
         }*/
 
         // neue suche
+        /// <summary>
+        /// Finds the scene entity inside the current scene.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <returns></returns>
         public SceneEntity FindSceneEntity(string name)
         {
             SceneVisitorSearch sceneVisitorSearch = new SceneVisitorSearch();

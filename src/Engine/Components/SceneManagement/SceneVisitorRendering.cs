@@ -98,7 +98,7 @@ namespace Fusee.SceneManagement
         /// <summary>
         /// Initializes a new instance of the <see cref="SceneVisitorRendering"/> class.
         /// </summary>
-        /// <param name="queue">The queue.</param>
+        /// <param name="queue">The SceneManager reference.</param>
         public SceneVisitorRendering(SceneManager queue)
         {
             _queue = queue;
@@ -119,7 +119,7 @@ namespace Fusee.SceneManagement
         }
         // TODO: Store Mesh as local variable instead of stacks as it is not used in further traversals.
         /// <summary>
-        /// Stores the mesh.
+        /// Stores the mesh in internal stack.
         /// </summary>
         /// <param name="mesh">The mesh.</param>
         private void StoreMesh(Mesh mesh)
@@ -137,7 +137,7 @@ namespace Fusee.SceneManagement
         }
 
         /// <summary>
-        /// Stores the renderer.
+        /// Stores the renderer in internal stack.
         /// </summary>
         /// <param name="Renderer">The renderer.</param>
         private void StoreRenderer(Renderer Renderer)
@@ -157,7 +157,7 @@ namespace Fusee.SceneManagement
 
 
         /// <summary>
-        /// Adds the transform.
+        /// Adds the transform to the internal stack.
         /// </summary>
         /// <param name="mtx">The MTX.</param>
         private void AddTransform(float4x4 mtx)
@@ -223,7 +223,7 @@ namespace Fusee.SceneManagement
         }
 
         /// <summary>
-        /// Adds the light directional.
+        /// Adds the directional lightto the rendering queue.
         /// </summary>
         /// <param name="direction">The direction.</param>
         /// <param name="color">The color.</param>
@@ -236,7 +236,7 @@ namespace Fusee.SceneManagement
         }
 
         /// <summary>
-        /// Adds the light point.
+        /// Adds the point light to the rendering queue.
         /// </summary>
         /// <param name="position">The position.</param>
         /// <param name="color">The color.</param>
@@ -249,7 +249,7 @@ namespace Fusee.SceneManagement
         }
 
         /// <summary>
-        /// Adds the light spot.
+        /// Adds the spot light to the rendering queue.
         /// </summary>
         /// <param name="position">The position.</param>
         /// <param name="direction">The direction.</param>
@@ -263,7 +263,7 @@ namespace Fusee.SceneManagement
         }
 
         /// <summary>
-        /// Adds the render job.
+        /// Adds the render job that consists of Matrix, Renderer and Mesh to the rendering queue.
         /// </summary>
         /// <param name="matrix">The matrix.</param>
         /// <param name="mesh">The mesh.</param>
