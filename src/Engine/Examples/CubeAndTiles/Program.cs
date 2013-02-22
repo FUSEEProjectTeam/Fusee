@@ -115,24 +115,6 @@ namespace Examples.CubeAndTiles
                         _topView = true;
                     }
 
-                {
-                    _angleVelHorz = 0.0f;
-                    _angleVelVert = 0.0f;
-
-                    if (_topView)
-                    {
-                        _angleHorz = 0.4f;
-                        _angleVert = -1.0f;
-
-                        _topView = false;
-                    }
-                    else
-                    {
-                        _angleHorz = 0.0f;
-                        _angleVert = 0.0f;
-                        _topView = true;
-                    }
-
                     _lastKey = KeyCodes.V;
                 }
 
@@ -145,16 +127,16 @@ namespace Examples.CubeAndTiles
             else if (!In.IsKeyDown(_lastKey))
                 _lastKey = KeyCodes.None;
 
-            if (Input.Instance.IsKeyDown(KeyCodes.Left))
+            if (In.IsKeyDown(KeyCodes.Left))
                 _exampleLevel.MoveCube(Level.Directions.Left);
 
-            if (Input.Instance.IsKeyDown(KeyCodes.Right))
+            if (In.IsKeyDown(KeyCodes.Right))
                 _exampleLevel.MoveCube(Level.Directions.Right);
 
-            if (Input.Instance.IsKeyDown(KeyCodes.Up))
+            if (In.IsKeyDown(KeyCodes.Up))
                 _exampleLevel.MoveCube(Level.Directions.Forward);
 
-            if (Input.Instance.IsKeyDown(KeyCodes.Down))
+            if (In.IsKeyDown(KeyCodes.Down))
                 _exampleLevel.MoveCube(Level.Directions.Backward);
 
             // mouse

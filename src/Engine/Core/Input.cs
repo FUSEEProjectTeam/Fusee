@@ -29,13 +29,15 @@ namespace Fusee.Engine
             }
         }
 
+        private IInputImp _inputImp;
+        private float[] _axes;
+        private float[] _axesPreviousAbsolute;
         // private HashSet<KeyCodes> _keysPressed;
         // private HashSet<MouseButtons> _buttonsPressed;
         // private Dictionary<KeyCodes, bool> _keysPressed;
         // private Dictionary<MouseButtons, bool> _buttonsPressed;
-
-        private readonly Dictionary<int, bool> _keysPressed;
-        private readonly Dictionary<int, bool> _buttonsPressed;
+        private Dictionary<int, bool> _keysPressed;
+        private Dictionary<int, bool> _buttonsPressed;
 
         private void KeyDown(object sender, KeyEventArgs kea)
         {
@@ -68,8 +70,6 @@ namespace Fusee.Engine
         {
             
             
-
-
         }
 
         /// <summary>
@@ -111,8 +111,7 @@ namespace Fusee.Engine
         internal void OnUpdateFrame(double deltaTime)
         {
             Point p = _inputImp.GetMousePos();
-
-            var curr = (float) p.x;
+            float curr = (float) p.x;
             _axes[(int)InputAxis.MouseX] = (curr - _axesPreviousAbsolute[(int)InputAxis.MouseX]) * ((float) deltaTime);
             _axesPreviousAbsolute[(int) InputAxis.MouseX] = curr;
 
