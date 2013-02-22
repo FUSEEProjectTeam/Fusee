@@ -9,6 +9,11 @@ namespace Fusee.Engine
         //internal Dictionary<string, IShaderParam> _paramsByName;
         internal Dictionary<string, ShaderParamInfo> _paramsByName;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ShaderProgram"/> class.
+        /// </summary>
+        /// <param name="renderContextImp">The render context imp.</param>
+        /// <param name="shaderProgramImp">The shader program imp.</param>
         public ShaderProgram(IRenderContextImp renderContextImp, IShaderProgramImp shaderProgramImp)
         {
             _spi = shaderProgramImp;
@@ -28,6 +33,11 @@ namespace Fusee.Engine
             }
         }
 
+        /// <summary>
+        /// Gets the shader param.
+        /// </summary>
+        /// <param name="paramName">Name of the param.</param>
+        /// <returns></returns>
         public IShaderParam GetShaderParam(string paramName)
         {
             ShaderParamInfo ret;
