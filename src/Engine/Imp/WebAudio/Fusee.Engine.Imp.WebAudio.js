@@ -17,12 +17,20 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.AudioStream", t
 
   $.Property({Static:false, Public:false}, "MainOutputStream", $.Object);
   $.Property({Static:false, Public:false}, "StreamFileName", $.String);
+  $.Property({Static:false, Public:false}, "Loop", $.Boolean);
  
   $.Method({Static:false, Public:true }, ".ctor", 
     new JSIL.MethodSignature(null, [$.String]), 
     function AudioStream__ctor (fileName) {
       this.AudioStream$StreamFileName$value = fileName.replace(/\.[^/.]+$/, "");
-      this.AudioStream$MainOutputStream$value = createjs.Sound.createInstance(fileName);
+
+      var instance = createjs.Sound.createInstance(fileName);
+      instance.onComplete = function(instance) {
+                              if (this.AudioStream$Loop$value)
+                                instance.play();
+                            }
+
+      this.AudioStream$MainOutputStream$value = instance;
     }
   );
 
@@ -48,11 +56,25 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.AudioStream", t
   );
 
   $.Method({Static:false, Public:true }, "set_Volume", 
-    new JSIL.MethodSignature(null, []), 
-    function AudioStream_set_Volume () {
+    new JSIL.MethodSignature(null, [$.Double]), 
+    function AudioStream_set_Volume (value) {
       // not implemented
     }
   );
+
+  $.Method({Static:false, Public:true }, "get_Volume", 
+    new JSIL.MethodSignature($.Double, []), 
+    function AudioStream_get_Volume () {
+      // not implemented
+    }
+  );
+
+  $.Method({Static:false, Public:true }, "set_Loop", 
+    new JSIL.MethodSignature(null, [$.Boolean]), 
+    function AudioStream_set_Loop (value) {
+      this.AudioStream$Loop$value = value;
+    }
+  );
 
   $.ImplementInterfaces($fuseeCommon.TypeRef("Fusee.Engine.IAudioStream"))
 });
@@ -85,6 +107,13 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.WebAudioImp", t
     }
   );
 
+  $.Method({Static:false, Public:true }, "CloseDevice", 
+    new JSIL.MethodSignature(null, []),
+    function WebAudioImp_CloseDevice () {
+      // not implemented
+    }
+  );
+
   $.Method({Static:false, Public:true }, "Play", 
     new JSIL.MethodSignature(null, []),
     function WebAudioImp_Play () {
@@ -106,6 +135,20 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.WebAudioImp", t
     function WebAudioImp_Stop () {
       for (var x = 0; x < this.LoadedStreams; x++)
         this.AllStreams[this.LoadedStreams].Stop();
+    }
+  );
+
+  $.Method({Static:false, Public:true }, "GetVolume", 
+    new JSIL.MethodSignature($.Double, []),
+    function WebAudioImp_GetVolume () {
+      // not implemented
+    }
+  );
+
+  $.Method({Static:false, Public:true }, "SetVolume", 
+    new JSIL.MethodSignature(null, [$.Double]),
+    function WebAudioImp_SetVolume () {
+      // not implemented
     }
   );
 

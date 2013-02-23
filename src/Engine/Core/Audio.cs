@@ -21,7 +21,6 @@ namespace Fusee.Engine
             _audioImp.OpenDevice();
         }
 
-        [JSIgnore]
         public void CloseDevice()
         {
             _audioImp.CloseDevice();

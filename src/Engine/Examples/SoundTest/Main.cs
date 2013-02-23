@@ -73,12 +73,29 @@ namespace Examples.SoundTest
             ShaderProgram sp = RC.CreateShader(Vs, Ps);
             RC.SetShader(sp);
 
+
+
             Audio.Instance.OpenDevice();
-            _audio1 = Audio.Instance.LoadFile("Assets/tetris.mp3");
-            _audio2 = Audio.Instance.LoadFile("Assets/pacman.mp3");
-            _audio1.Play(true);
-            _audio2.Play();
-            
+
+            _audio1 = Audio.Instance.LoadFile("Assets/pacman.mp3");
+            _audio1.Loop = true;
+            _audio1.Play();
+            _audio1.Pause();
+            _audio1.Stop();
+            _audio1.Volume = 0.5f;
+
+            Audio.Instance.GetVolume();
+            Audio.Instance.SetVolume(0.5f);
+            Audio.Instance.Play();
+            Audio.Instance.Play(_audio1);
+            Audio.Instance.Pause();
+            Audio.Instance.Pause(_audio1);
+            Audio.Instance.Stop();
+            Audio.Instance.Stop(_audio1);
+
+
+            Audio.Instance.CloseDevice();
+
             _panningVal = 0;
         }
 
@@ -104,7 +121,7 @@ namespace Examples.SoundTest
             if (Input.Instance.IsKeyDown(KeyCodes.Down))
                 _vol = Math.Max(_vol - 0.01f, 0f);
 
-            _audio2.Volume = _vol;
+            _audio1.Volume = _vol;
 
             if (Input.Instance.IsKeyDown(KeyCodes.Left))
             {
