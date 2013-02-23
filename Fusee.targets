@@ -25,7 +25,7 @@
     <MakeDir Directories="$(WebOutputDir)\Assets\Styles" Condition="!Exists('$(WebOutputDir)\Styles')" />
 
     <Message Importance="High" Text="### PostBuildEvent $(TargetName): JSIL CCing ###" />
-    <Exec ContinueOnError="true" Timeout="60000" Command='"$(SolutionDir)..\..\ExternalBinaries\JSIL\Compiler\JSILc.exe" -o "$(WebOutputDir)\Assets\Scripts" "$(TargetPath)"' />
+    <Exec ContinueOnError="true" Timeout="60000" Command='"$(SolutionDir)ExternalBinaries\JSIL\Compiler\JSILc.exe" -o "$(WebOutputDir)\Assets\Scripts" "$(TargetPath)"' />
     
     <Message Importance="High" Text="### PostBuildEvent $(TargetName): Copying additional scripts/styles ###" />
     <Copy SourceFiles="@(WebGLScripts)" DestinationFolder="$(WebOutputDir)\Assets\Scripts" SkipUnchangedFiles="true" />
@@ -33,7 +33,7 @@
     <Copy SourceFiles="@(WebAudioScript)" DestinationFolder="$(WebOutputDir)\Assets\Scripts" SkipUnchangedFiles="true" />
 
     <Message Importance="High" Text="### PostBuildEvent $(TargetName): Creating default HTML file ###" />
-    <Exec ContinueOnError="true" Timeout="60000" Command='"$(SolutionDir)..\..\ExternalBinaries\JSIL\Compiler\fuHTMLGen.exe" "$(TargetDir)\" "$(WebOutputDir)" "$(TargetPath)"' />
+    <Exec ContinueOnError="true" Timeout="60000" Command='"$(SolutionDir)ExternalBinaries\JSIL\Compiler\fuHTMLGen.exe" "$(TargetDir)\" "$(WebOutputDir)" "$(TargetPath)"' />
     
     <Message Importance="High" Text="### PostBuildEvent $(TargetName): Done ###" />
   </Target>
