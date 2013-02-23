@@ -9,7 +9,7 @@
 
         void Dispose();
 
-        void Play();
+        void Play(bool loop = false);
         void Pause();
         void Stop();
     }

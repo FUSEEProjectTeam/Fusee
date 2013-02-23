@@ -5,10 +5,16 @@ namespace Fusee.Engine
 {
     public class LoopStream : WaveStream
     {
-        readonly WaveStream _sourceStream;
-        internal WaveChannel32 VolumeStream { set; get; }
+        private WaveChannel32 _volumeStream;
 
-        private WaveStream CreateInputStream(string fileName)
+        public enum PlaybackState
+        {
+            Stopped,
+            Playing,
+            Paused,
+        }
+
+        private void CreateInputStream(string fileName)
         {
             WaveChannel32 inputStream;
 
@@ -22,54 +28,84 @@ namespace Fusee.Engine
                 throw new InvalidOperationException("Unsupported extension");
             }
 
-            VolumeStream = inputStream;
-            return inputStream;
+            _volumeStream = inputStream;
         }
 
         public LoopStream(string fileName)
         {
-            _sourceStream = CreateInputStream(fileName);
-            EnableLooping = true;
+            CreateInputStream(fileName);
+            Loop = true;
         }
 
-        public bool EnableLooping { get; set; }
-
-        public override WaveFormat WaveFormat
+        public void CloseStream()
         {
-            get { return _sourceStream.WaveFormat; }
-        }
-
-        public override long Length
-        {
-            get { return _sourceStream.Length; }
-        }
-
-        public override long Position
-        {
-            get { return _sourceStream.Position; }
-            set { _sourceStream.Position = value; }
+            if (_volumeStream != null)
+                _volumeStream.Close();
         }
 
         public override int Read(byte[] buffer, int offset, int count)
         {
+            // last state
+            if (_state != PlaybackState.Playing)
+            {
+                if (_state == PlaybackState.Paused)
+                    _volumeStream.Position = _currentPos;
+
+                if (_state == PlaybackState.Stopped)
+                    _volumeStream.Position = 0;
+
+                // now playing again
+                _state = PlaybackState.Playing;                
+            }
+
+            _currentPos = _volumeStream.Position;
+
             int totalBytesRead = 0;
 
             while (totalBytesRead < count)
             {
-                int bytesRead = _sourceStream.Read(buffer, offset + totalBytesRead, count - totalBytesRead);
+                int bytesRead = _volumeStream.Read(buffer, offset + totalBytesRead, count - totalBytesRead);
 
-                if (bytesRead == 0)
-                {
-                    if (_sourceStream.Position == 0 || !EnableLooping)
-                        break;
-
-                    _sourceStream.Position = 0;
-                }
+                if (_volumeStream.Position > _volumeStream.Length)
+                    if (Loop)
+                        _volumeStream.Position = 0;
 
                 totalBytesRead += bytesRead;
             }
 
             return totalBytesRead;
+        }
+
+        private long _currentPos;
+        public bool Loop { get; set; }
+
+        private PlaybackState _state;
+        public PlaybackState State
+        {
+            get { return _state; }
+            set { _state = value; }
+        }
+
+        public override WaveFormat WaveFormat
+        {
+            get { return _volumeStream.WaveFormat; }
+        }
+
+        public override long Length
+        {
+            get { return _volumeStream.Length; }
+        }
+
+        public override long Position
+        {
+            get { return _volumeStream.Position; }
+            set { _volumeStream.Position = value; }
+        }
+
+        public float Volume
+        {
+            get { return _volumeStream.Volume; }
+            set { _volumeStream.Volume = value; }
         }
     }
 }

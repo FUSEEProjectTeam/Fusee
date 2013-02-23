@@ -1,16 +1,11 @@
 ﻿using System;
-using NAudio.Wave;
 
 namespace Fusee.Engine
 {
     class AudioStream : IAudioStream
     {
         private readonly NAudioImp _audio;
-
         private LoopStream _mainOutputStream;
-        private WaveChannel32 _volumeStream;
-
-        private int _pausePosition;
 
         public float Volume
         {
@@ -18,49 +13,48 @@ namespace Fusee.Engine
             set { SetVolume(value); }
         }
 
-        public bool Loop { get; set; }
+        public bool Loop
+        {
+            get { return _mainOutputStream.Loop; }
+            set { _mainOutputStream.Loop = value; }
+        }
 
         public AudioStream(string fileName, NAudioImp audioCl)
         {
             _audio = audioCl;
 
-            _mainOutputStream = new LoopStream(fileName);
-            
-            _volumeStream = _mainOutputStream.VolumeStream;
-            _volumeStream.Volume = _audio.GetVolume();
+            _mainOutputStream = new LoopStream(fileName)
+                                    {
+                                        Volume = _audio.GetVolume(),
+                                        State = LoopStream.PlaybackState.Stopped
+                                    };
         }
 
-        public void Play()
+        public void Play(bool loop = true)
         {
-            _audio.Mixer.AddInputStream(_volumeStream);
+            _mainOutputStream.Loop = loop;
+            _audio.Mixer.AddInputStream(_mainOutputStream);
         }
 
         public void Pause()
         {
-            _audio.Mixer.RemoveInputStream(_volumeStream);
+            _audio.Mixer.RemoveInputStream(_mainOutputStream);
+            _mainOutputStream.State = LoopStream.PlaybackState.Paused;
         }
 
         public void Stop()
         {
-            _audio.Mixer.RemoveInputStream(_volumeStream);
-            _audio.Mixer.Position = 0;
-            _mainOutputStream.Position = 0;
-            _volumeStream.Position = 0;
-            _audio.Mixer.AddInputStream(_volumeStream);
+            _audio.Mixer.RemoveInputStream(_mainOutputStream);
+            _mainOutputStream.State = LoopStream.PlaybackState.Stopped;
         }
 
         public void Dispose()
         {
-            if (_volumeStream != null)
-            {
-                _audio.Mixer.RemoveInputStream(_volumeStream);
-
-                _volumeStream.Close();
-                _volumeStream = null;
-            }
-
             if (_mainOutputStream != null)
             {
+                _audio.Mixer.RemoveInputStream(_mainOutputStream);
+
+                _mainOutputStream.CloseStream();
                 _mainOutputStream.Close();
                 _mainOutputStream = null;
             }
@@ -71,14 +65,12 @@ namespace Fusee.Engine
             var maxVal = Math.Min(_audio.GetVolume(), val);
             maxVal = Math.Max(maxVal, 0);
 
-            _volumeStream.Volume = maxVal;
+            _mainOutputStream.Volume = maxVal;
         }
 
         internal float GetVolume()
         {
-            return _volumeStream.Volume;
+            return _mainOutputStream.Volume;
         }
-
-        
     }
 }

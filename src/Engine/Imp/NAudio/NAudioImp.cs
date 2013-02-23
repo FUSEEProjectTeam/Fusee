@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using NAudio.Wave;
+﻿using NAudio.Wave;
 
 namespace Fusee.Engine
 {
@@ -21,7 +18,7 @@ namespace Fusee.Engine
             WaveOutDevice = new DirectSoundOut();
 
             Mixer = new WaveMixerStream32 {AutoStop = false};
-
+                                        
             WaveOutDevice.Init(Mixer);
             WaveOutDevice.Play();
 
@@ -48,7 +45,7 @@ namespace Fusee.Engine
             {
                 Mixer.Dispose();
                 Mixer = null;
-            }    
+            }
         }
 
         public IAudioStream LoadFile(string fileName)
@@ -63,24 +60,24 @@ namespace Fusee.Engine
         {
             if (WaveOutDevice == null) return;
 
-            if (WaveOutDevice.PlaybackState != PlaybackState.Playing)
-                WaveOutDevice.Play();
+            for (var x = 0; x < _loadedStreams; x++)
+                _allStreams[x].Play();
         }
 
         public void Pause()
         {
             if (WaveOutDevice == null) return;
 
-            if (WaveOutDevice.PlaybackState == PlaybackState.Playing)
-                WaveOutDevice.Pause();
+            for (var x = 0; x < _loadedStreams; x++)
+                _allStreams[x].Pause();
         }
 
         public void Stop()
         {
             if (WaveOutDevice == null) return;
 
-            if (WaveOutDevice.PlaybackState != PlaybackState.Stopped)
-                WaveOutDevice.Stop();
+            for (var x = 0; x < _loadedStreams; x++)
+                _allStreams[x].Stop();
         }
 
         public void Play(IAudioStream stream)
