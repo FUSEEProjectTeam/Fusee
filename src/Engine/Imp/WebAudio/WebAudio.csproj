@@ -45,6 +45,7 @@
     <Optimize>false</Optimize>
   </PropertyGroup>
   <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)/Microsoft.CSharp.targets" />
   <ItemGroup>
     <Content Include="Fusee.Engine.Imp.WebAudio.js" />
     <Content Include="soundjs-0.4.0.min.js">
@@ -52,12 +53,11 @@
     </Content>
   </ItemGroup>
   <Target Name="Build">
+    <MakeDir Directories="$(OutputPath)" Condition="!Exists('$(OutputPath)')" />
+
     <Exec Condition=" '$(OS)' != 'Windows_NT' " Command="rsync -a *.js $(OutputPath)" />
     <Exec Condition=" '$(OS)' == 'Windows_NT' " Command="xcopy *.js $(OutputPath) /D /C /Q /R /Y /K" />
   </Target>
-  <Target Name="Rebuild" DependsOnTargets="Build">
-  </Target>
-  <Target Name="Clean">
-    <Exec Command="rd /s /q $(OutputPath)" Condition="Exists($(OutputPath))" />
-  </Target>
+  <Target Name="Rebuild" DependsOnTargets="Build" />
+  <Target Name="Clean" />
 </Project>
