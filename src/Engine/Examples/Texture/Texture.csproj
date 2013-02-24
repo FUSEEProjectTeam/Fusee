@@ -93,5 +93,6 @@
   <Target Name="Clean">
     <Exec Command="rd /s /q $(OutputPath)" Condition="Exists($(OutputPath))" />
   </Target>
-  <Import Project="$(SolutionDir)/Fusee.targets" Condition="'$(PostBuildEvent)' == ''" />
+  <Import Project="$(SolutionDir)/Fusee_Windows.targets" Condition="'$(PostBuildEvent)' == '' And '$(OS)' == 'Windows_NT' " />
+  <Import Project="$(SolutionDir)/Fusee_Linux.targets" Condition="'$(PostBuildEvent)' == '' And '$(OS)' != 'Windows_NT' " />
 </Project>

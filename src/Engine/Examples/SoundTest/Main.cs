@@ -73,8 +73,7 @@ namespace Examples.SoundTest
             ShaderProgram sp = RC.CreateShader(Vs, Ps);
             RC.SetShader(sp);
 
-
-
+            // to implement:
             Audio.Instance.OpenDevice();
 
             _audio1 = Audio.Instance.LoadFile("Assets/pacman.mp3");
@@ -93,8 +92,12 @@ namespace Examples.SoundTest
             Audio.Instance.Stop();
             Audio.Instance.Stop(_audio1);
 
-
             Audio.Instance.CloseDevice();
+
+            // testfile
+            Audio.Instance.OpenDevice();
+            _audio1 = Audio.Instance.LoadFile("Assets/tetris.mp3");
+            _audio1.Play();
 
             _panningVal = 0;
         }
