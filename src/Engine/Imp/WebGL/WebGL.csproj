@@ -71,5 +71,8 @@
     <Exec Condition=" '$(OS)' == 'Windows_NT' " Command="xcopy Styles\*.* $(OutputPath)Styles\ /D /E /C /Q /R /Y /K" />
   </Target>
   <Target Name="Rebuild" DependsOnTargets="Build" />
-  <Target Name="Clean" />
+  <Target Name="Clean">
+    <Exec Condition=" '$(OS)' == 'Windows_NT' And Exists('$(OutputPath)') " Command="rd /s /q $(OutputPath)" />
+    <Exec Condition=" '$(OS)' != 'Windows_NT' And Exists('$(OutputPath)') " Command="rm '$(OutputPath)' -r -f" />
+  </Target>
 </Project>

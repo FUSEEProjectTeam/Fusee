@@ -60,12 +60,10 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
+  <Target Name="Clean">
+    <Exec Condition=" '$(OS)' == 'Windows_NT' And Exists('$(OutputPath)') " Command="del /q $(OutputPath)Fusee.Engine.Imp.NAudio.*" />
+    <Exec Condition=" '$(OS)' != 'Windows_NT' And Exists('$(OutputPath)') " Command="rm '$(OutputPath)'Fusee.Engine.Imp.NAudio.*" />
+    <Exec Condition=" '$(OS)' == 'Windows_NT' And Exists('$(OutputPath)NAudio.dll') " Command="del /q $(OutputPath)NAudio.dll" />
+    <Exec Condition=" '$(OS)' != 'Windows_NT' And Exists('$(OutputPath)NAudio.dll') " Command="rm '$(OutputPath)'NAudio.dll" />
   </Target>
-  <Target Name="AfterBuild">
-  </Target>
-   <Import Project="$(SolutionDir)/Fusee.targets" Condition="'$(PostBuildEvent)' == ''" />
-  -->
 </Project>
