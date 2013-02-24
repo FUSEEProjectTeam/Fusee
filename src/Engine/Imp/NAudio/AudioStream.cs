@@ -62,8 +62,8 @@ namespace Fusee.Engine
 
         internal void SetVolume(float val)
         {
-            var maxVal = Math.Min(_audio.GetVolume(), val);
-            maxVal = Math.Max(maxVal, 0);
+            var maxVal = System.Math.Min(_audio.GetVolume(), val);
+            maxVal = System.Math.Max(maxVal, 0);
 
             _mainOutputStream.Volume = maxVal;
         }

@@ -81,4 +81,7 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
 </Project>
