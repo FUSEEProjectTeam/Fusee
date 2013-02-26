@@ -8,7 +8,9 @@ namespace Examples.Simple
     {
         //Pixel and Vertex Shader
         protected string Vs = @"
-             #version 120
+             #ifndef GL_ES
+               #version 120
+            #endif
 
             /* Copies incoming vertex color without change.
              * Applies the transformation matrix to vertex position.
@@ -17,9 +19,11 @@ namespace Examples.Simple
             attribute vec4 fuColor;
             attribute vec3 fuVertex;
             attribute vec3 fuNormal;
+            attribute vec2 fuUV;
         
             varying vec4 vColor;
             varying vec3 vNormal;
+            varying vec2 vUV;
         
             uniform mat4 FUSEE_MVP;
             uniform mat4 FUSEE_ITMV;
@@ -31,22 +35,27 @@ namespace Examples.Simple
                 // vec4 norm4 = FUSEE_MVP * vec4(fuNormal, 0.0);
                 // vNormal = norm4.xyz;
                 vNormal = mat3(FUSEE_ITMV) * fuNormal;
+                vUV = fuUV;
             }";
 
         protected string Ps = @"
-             #version 120
+             #ifndef GL_ES
+               #version 120
+            #endif
 
             /* Copies incoming fragment color without change. */
             #ifdef GL_ES
                 precision highp float;
             #endif
         
+            uniform sampler2D texture1;
             uniform vec4 vColor;
             varying vec3 vNormal;
+            varying vec2 vUV;
 
             void main()
             {
-                gl_FragColor = vColor * dot(vNormal, vec3(0, 0, 1));
+                gl_FragColor = texture2D(texture1, vUV);;
             }";
         //angle variable
         private static float _angleHorz = 0.0f, _angleVert = 0.0f, _angleVelHorz = 0, _angleVelVert = 0, _rotationSpeed = 10.0f, _damping = 0.95f;
@@ -54,6 +63,11 @@ namespace Examples.Simple
         protected Mesh Mesh, MeshFace;
         //variable for color
         protected IShaderParam VColorParam;
+        protected IShaderParam _vTextureParam;
+        protected ImageData _imgData1;
+        protected ImageData _imgData2;
+        protected ITexture _iTex1;
+        protected ITexture _iTex2;
 
         public override void Init()
         {
@@ -69,6 +83,13 @@ namespace Examples.Simple
             ShaderProgram sp = RC.CreateShader(Vs, Ps);
             RC.SetShader(sp);
             VColorParam = sp.GetShaderParam("vColor");
+            _vTextureParam = sp.GetShaderParam("texture1");
+
+            _imgData1 = RC.LoadImage("Assets/world_map.jpg");
+            _imgData2 = RC.LoadImage("Assets/cube_tex.jpg");
+
+            _iTex1 = RC.CreateTexture(_imgData1);
+            _iTex2 = RC.CreateTexture(_imgData2);
 
 
             RC.ClearColor = new float4(1, 1, 1, 1);
@@ -115,12 +136,14 @@ namespace Examples.Simple
 
             RC.ModelView = mtxRot * float4x4.CreateTranslation(-100, 0, 0) * mtxCam;
             //colordecloration
-            RC.SetShaderParam(VColorParam, new float4(0.5f, 0.8f, 0, 1));
+            //RC.SetShaderParam(VColorParam, new float4(0.5f, 0.8f, 0, 1));
+            RC.SetShaderParamTexture(_vTextureParam, _iTex1);
             RC.Render(Mesh);
 
             RC.ModelView = mtxRot * float4x4.CreateTranslation(100, 0, 0) * mtxCam;
             //colordecloration
-            RC.SetShaderParam(VColorParam, new float4(0.8f, 0.5f, 0, 1));
+            //RC.SetShaderParam(VColorParam, new float4(0.8f, 0.5f, 0, 1));
+            RC.SetShaderParamTexture(_vTextureParam, _iTex2);
             RC.Render(MeshFace);
             Present();
         }
