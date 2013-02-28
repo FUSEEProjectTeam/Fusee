@@ -22,14 +22,12 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.AudioStream", t
   $.Method({Static:false, Public:true }, ".ctor", 
     new JSIL.MethodSignature(null, [$.String]), 
     function AudioStream__ctor (fileName) {
-      this.AudioStream$StreamFileName$value = fileName.replace(/\.[^/.]+$/, "");
+	  var playbackFile = fileName.replace(/\.[^/.]+$/, "");
+	  playbackFile = JSIL.Host.getAssetVal(playbackFile);
 
-      var instance = createjs.Sound.createInstance(fileName);
-      instance.onComplete = function(instance) {
-                              if (this.AudioStream$Loop$value)
-                                instance.play();
-                            }
+      var instance = createjs.Sound.createInstance(playbackFile);
 
+      this.AudioStream$StreamFileName$value = playbackFile;
       this.AudioStream$MainOutputStream$value = instance;
     }
   );
