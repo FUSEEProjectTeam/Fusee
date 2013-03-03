@@ -5,7 +5,7 @@
     {
         public static IAudioImp CreateAudioImp()
         {
-            return new NAudioImp();
+            return new SFMLAudioImp();
         }
     }
 }

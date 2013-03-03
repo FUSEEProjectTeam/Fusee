@@ -4,10 +4,12 @@
   <Target Name="BeforeBuild" Condition=" '$(OS)' == 'Windows_NT' ">
     <ItemGroup>
       <DLLFiles Include="$(TargetDir)..\..\*.dll" />
+      <SFMLFiles Include="$(SolutionDir)ExternalBinaries\SFML\*.dll" />
     </ItemGroup>
 
     <Message Importance="High" Text="### BeforeBuildEvent $(TargetName): Copying necessary files ###" />
     <Copy SourceFiles="@(DLLFiles)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(SFMLFiles)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" />
   </Target>
   
   <!--- AfterBuild on Windows -->

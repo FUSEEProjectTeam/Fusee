@@ -37,6 +37,7 @@ namespace Fusee.Engine
             _rc = new RenderContext(ImpFactory.CreateIRenderContextImp(_canvasImp));
 
             Input.Instance.InputImp = ImpFactory.CreateIInputImp(_canvasImp);
+
             Audio.Instance.AudioImp = ImpFactory.CreateIAudioImp();
 
             _canvasImp.Init += delegate(object sender, InitEventArgs args)

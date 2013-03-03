@@ -61,7 +61,7 @@ namespace Examples.SoundTest
         private IAudioStream _audio2;
         private IAudioStream _audio1;
         private bool _once;
-        private float _vol = 1.0f;
+        private float _vol = 100.0f;
 
         public override void Init()
         {
@@ -74,30 +74,32 @@ namespace Examples.SoundTest
             RC.SetShader(sp);
 
             // to implement:
-            Audio.Instance.OpenDevice();
+         //   Audio.Instance.OpenDevice();
 
-            _audio1 = Audio.Instance.LoadFile("Assets/pacman.mp3");
+          /*  _audio1 = Audio.Instance.LoadFile("Assets/pacman.mp3");
             _audio1.Loop = true;
             _audio1.Play();
             _audio1.Pause();
             _audio1.Stop();
             _audio1.Volume = 0.5f;
-
-            Audio.Instance.GetVolume();
+            */
+         /*   Audio.Instance.GetVolume();
             Audio.Instance.SetVolume(0.5f);
             Audio.Instance.Play();
             Audio.Instance.Play(_audio1);
             Audio.Instance.Pause();
             Audio.Instance.Pause(_audio1);
             Audio.Instance.Stop();
-            Audio.Instance.Stop(_audio1);
+            Audio.Instance.Stop(_audio1);*/
 
-            Audio.Instance.CloseDevice();
+           // Audio.Instance.CloseDevice();
 
             // testfile
-            Audio.Instance.OpenDevice();
-            _audio1 = Audio.Instance.LoadFile("Assets/tetris.mp3");
+          //  Audio.Instance.OpenDevice();
+            _audio1 = Audio.Instance.LoadFile("Assets/tetris.ogg", true);
             _audio1.Play();
+            _audio2 = Audio.Instance.LoadFile("Assets/pacman.ogg", true);
+            _audio2.Play();
 
             _panningVal = 0;
         }
@@ -108,14 +110,15 @@ namespace Examples.SoundTest
 
            if ((!_once) && (Input.Instance.IsKeyDown(KeyCodes.S)))
             {
-               Audio.Instance.Pause();
-              //  _audio1.Pause();
+               //Audio.Instance.Pause();
+                _audio1.Pause();
                 _once = true;
             }
 
             if ((_once) && (Input.Instance.IsKeyDown(KeyCodes.D)))
             {
-                Audio.Instance.Play();
+                _audio1.Play();
+                //Audio.Instance.Play();
                 _once = false;
             }
 

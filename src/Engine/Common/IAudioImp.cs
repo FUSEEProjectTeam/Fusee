@@ -1,4 +1,4 @@
-﻿using JSIL.Meta;
+﻿#pragma warning disable 1591 //disables the warning about missing XML-comments
 
 namespace Fusee.Engine
 {
@@ -7,7 +7,7 @@ namespace Fusee.Engine
         void OpenDevice();
         void CloseDevice();
 
-        IAudioStream LoadFile(string fileName);
+        IAudioStream LoadFile(string fileName, bool streaming);
 
         void Play();
         void Pause();
@@ -21,3 +21,5 @@ namespace Fusee.Engine
         float GetVolume();
     }
 }
+
+#pragma warning restore 1591
