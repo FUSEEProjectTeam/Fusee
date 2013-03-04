@@ -96,10 +96,10 @@ namespace Examples.SoundTest
 
             // testfile
           //  Audio.Instance.OpenDevice();
-            _audio1 = Audio.Instance.LoadFile("Assets/tetris.ogg", true);
+            _audio1 = Audio.Instance.LoadFile("Assets/pacman.mp3", false);
             _audio1.Play();
-            _audio2 = Audio.Instance.LoadFile("Assets/pacman.ogg", true);
-            _audio2.Play();
+           // _audio2 = Audio.Instance.LoadFile("Assets/pacman.ogg", true);
+           // _audio2.Play();
 
             _panningVal = 0;
         }
