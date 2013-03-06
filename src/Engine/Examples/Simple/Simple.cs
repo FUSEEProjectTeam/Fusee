@@ -49,25 +49,55 @@ namespace Examples.Simple
             }";
 
         private static float _angleHorz = 0.0f, _angleVert = 0.0f, _angleVelHorz = 0, _angleVelVert = 0, _rotationSpeed = 10.0f, _damping = 0.95f;
-        protected Mesh Mesh, MeshFace;
-        protected IShaderParam VColorParam;
+        protected Mesh Mesh;//, MeshFace;
+        //protected IShaderParam VColorParam;
+        protected IShaderParam Shininess;
+        protected IShaderParam Ambient;
+        protected IShaderParam Specular;
+        protected IShaderParam Diffuse;
+        protected IShaderParam Emission;
 
         public override void Init()
         {
-            Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Teapot.obj.model"));
+            Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Cube.obj.model"));
             Mesh = geo.ToMesh();
 
-            Geometry geo2 = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Face.obj.model"));
-            MeshFace = geo2.ToMesh();
+            //Geometry geo2 = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Face.obj.model"));
+            //MeshFace = geo2.ToMesh();
 
             _angleHorz = 0;
             _rotationSpeed = 10.0f;
-            ShaderProgram sp = RC.CreateShader(Vs, Ps);
+            ShaderProgram sp = Shaders.GetShader("multiLight",RC);
+            
+            ShaderMaterial m = new ShaderMaterial(sp);
+
+
             RC.SetShader(sp);
-            VColorParam = sp.GetShaderParam("vColor");
+            //material stuff
+            m.SetValue("FUSEE_MAT_SHININESS", 265.0f);
+            m.SetValue("FUSEE_MAT_AMBIENT", new float4(0, 0, 0, 1));
+            m.SetValue("FUSEE_MAT_DIFFUSE", new float4(0, 0, 0, 1));
+            m.SetValue("FUSEE_MAT_SPECULAR", new float4(0, 0, 0, 1));
+            m.SetValue("FUSEE_MAT_EMISSION", new float4(0, 0, 0, 1));
+            
+            RC.SetLight(new float3(2000, 10000, 20000), new float3(0, 1, 1), new float4(0.2f, 0.8f, 0.2f, 1), 2, 0);
+            RC.SetLight(new float3(2000, 10000, 20000), new float3(0, 1, 1), new float4(0.5f, 0.5f, 0.2f, 1), 2, 1);
+            //m.UpdateMaterial(RC);
 
+            //VColorParam = sp.GetShaderParam("vColor");
+            //Shininess = sp.GetShaderParam("FUSEE_MAT_SHININESS");
+            //Ambient = sp.GetShaderParam("FUSEE_MAT_AMBIENT");
+            //Diffuse = sp.GetShaderParam("FUSEE_MAT_DIFFUSE");
+            //Specular = sp.GetShaderParam("FUSEE_MAT_SPECULAR");
+            //Emission = sp.GetShaderParam("FUSEE_MAT_EMISSION");
 
+            //RC.SetShaderParam(Shininess, 265f);
+            //RC.SetShaderParam(Ambient, new float4(0.5f, 0.8f, 0, 1));
+            //RC.SetShaderParam(Diffuse, new float4(0.5f, 0.8f, 0, 1));
+            //RC.SetShaderParam(Specular, new float4(0.5f, 0.8f, 0, 1));
+            //RC.SetShaderParam(Emission, new float4(0.5f, 0.8f, 0, 1));
             RC.ClearColor = new float4(1, 1, 1, 1);
+            RC.SetShader(sp);
         }
 
         public override void RenderAFrame()
@@ -109,12 +139,12 @@ namespace Examples.Simple
             float4x4 mtxCam = float4x4.LookAt(0, 200, 400, 0, 50, 0, 0, 1, 0);
 
             RC.ModelView = mtxRot * float4x4.CreateTranslation(-100, 0, 0) * mtxCam;
-            RC.SetShaderParam(VColorParam, new float4(0.5f, 0.8f, 0, 1));
+            //RC.SetShaderParam(VColorParam, new float4(0.5f, 0.8f, 0, 1));
             RC.Render(Mesh);
 
-            RC.ModelView = mtxRot * float4x4.CreateTranslation(100, 0, 0) * mtxCam;
-            RC.SetShaderParam(VColorParam, new float4(0.8f, 0.5f, 0, 1));
-            RC.Render(MeshFace);
+            //RC.ModelView = mtxRot * float4x4.CreateTranslation(100, 0, 0) * mtxCam;
+            //RC.SetShaderParam(VColorParam, new float4(0.8f, 0.5f, 0, 1));
+            //RC.Render(MeshFace);
             Present();
         }
 
@@ -129,13 +159,13 @@ namespace Examples.Simple
         public static void Main()
         {
             float3[] verts = new float3[1000000];
-            
+
             double t1 = Diagnostics.Timer;
-            for (int i= 0; i < verts.Length; i++)
+            for (int i = 0; i < verts.Length; i++)
             {
                 verts[i].x = i;
-                verts[i].y = i+1;
-                verts[i].z = i-1;
+                verts[i].y = i + 1;
+                verts[i].z = i - 1;
             }
             double t2 = Diagnostics.Timer;
             Diagnostics.Log("Initializing " + verts.Length + " float3 objects took " + (t2 - t1) + " ms.");

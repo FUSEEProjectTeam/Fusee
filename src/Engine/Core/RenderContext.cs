@@ -450,7 +450,7 @@ namespace Fusee.Engine
         {
             _currentShader = program;
             _rci.SetShader(program._spi);
-            //UpdateCurrentShader();
+            UpdateCurrentShader();
         }
 
         public IEnumerable<ShaderParamInfo> GetShaderParamList(ShaderProgram program)
