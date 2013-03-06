@@ -1,4 +1,9 @@
-﻿namespace Fusee.Engine
+﻿#define MP3Warning
+
+using System.Diagnostics;
+using System.IO;
+
+namespace Fusee.Engine
 {
     public class SFMLAudioImp : IAudioImp
     {
@@ -21,6 +26,11 @@
 
         public IAudioStream LoadFile(string fileName, bool streaming)
         {
+#if MP3Warning
+            if (Path.GetExtension(fileName) == ".mp3")
+                Debug.WriteLine("Warning: Using mp3 files requires a lot of memory and might require a license. Please consider using ogg files instead.");
+#endif
+
             IAudioStream tmp = new AudioStream(fileName, streaming, this);
             _allStreams[_loadedStreams] = tmp;
             _loadedStreams++;
