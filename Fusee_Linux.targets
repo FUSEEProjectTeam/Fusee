@@ -6,7 +6,7 @@
     <Message Importance="High" Text="### BeforeBuildEvent $(TargetName): Copying necessary files ###" />
     <MakeDir Directories="$(OutputPath)" Condition="!Exists('$(OutputPath)')" />
     <Exec Command="rsync -a $(OutputPath)../../*.dll $(OutputPath)" />
-    <Exec Command="rsync -a $(SolutionDir)ExternalBinaries/SFML/*.dll $(OutputPath)" />
+    <Exec Command="rsync -a $(SolutionDir)ExternalBinaries/SFML/*.so* $(OutputPath)" />
   </Target> 
   
   <!--- AfterBuild on Non-Windows -->

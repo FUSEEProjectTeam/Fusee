@@ -53,10 +53,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)/Microsoft.CSharp.targets" />
   <Target Name="Build">
-  	<MakeDir Directories="$(OutputPath)" Condition="!Exists('$(OutputPath)')" />
-  	<MakeDir Directories="$(OutputPath)Scripts" Condition="!Exists('$(OutputPath)Scripts')" />
-  	<MakeDir Directories="$(OutputPath)Styles" Condition="!Exists('$(OutputPath)Styles')" />
-  
+    <MakeDir Directories="$(OutputPath)" Condition="!Exists('$(OutputPath)')" />
+    <MakeDir Directories="$(OutputPath)Scripts" Condition="!Exists('$(OutputPath)Scripts')" />
+    <MakeDir Directories="$(OutputPath)Styles" Condition="!Exists('$(OutputPath)Styles')" />
     <Exec Condition=" '$(OS)' != 'Windows_NT' " Command="rsync -a Scripts/*.* $(OutputPath)Scripts/" />
     <Exec Condition=" '$(OS)' == 'Windows_NT' " Command="xcopy Scripts\*.* $(OutputPath)Scripts\ /D /E /C /Q /R /Y /K" />
     <Exec Condition=" '$(OS)' != 'Windows_NT' " Command="rsync -a Styles/*.* $(OutputPath)Styles/" />
