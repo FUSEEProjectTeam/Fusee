@@ -56,14 +56,14 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.AudioStream", t
   $.Method({Static:false, Public:true }, "set_Volume", 
     new JSIL.MethodSignature(null, [$.Double]), 
     function AudioStream_set_Volume (value) {
-      // not implemented
+      this.AudioStream$MainOutputStream$value.setVolume(value/100);
     }
   );
 
   $.Method({Static:false, Public:true }, "get_Volume", 
     new JSIL.MethodSignature($.Double, []), 
     function AudioStream_get_Volume () {
-      // not implemented
+      this.AudioStream$MainOutputStream$value.getVolume() * 100;
     }
   );
 
@@ -131,22 +131,21 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.WebAudioImp", t
   $.Method({Static:false, Public:true }, "Stop", 
     new JSIL.MethodSignature(null, []),
     function WebAudioImp_Stop () {
-      for (var x = 0; x < this.LoadedStreams; x++)
-        this.AllStreams[this.LoadedStreams].Stop();
+      createjs.Sound.stop();
     }
   );
 
   $.Method({Static:false, Public:true }, "GetVolume", 
     new JSIL.MethodSignature($.Double, []),
     function WebAudioImp_GetVolume () {
-      // not implemented
+      return createjs.Sound.getVolume() * 100;
     }
   );
 
   $.Method({Static:false, Public:true }, "SetVolume", 
     new JSIL.MethodSignature(null, [$.Double]),
-    function WebAudioImp_SetVolume () {
-      // not implemented
+    function WebAudioImp_SetVolume (value) {
+		createjs.Sound.setVolume(value/100);
     }
   );
 

@@ -1,58 +1,81 @@
 ﻿#define MP3Warning
 
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using SFML.Audio;
 
 namespace Fusee.Engine
 {
     public class SFMLAudioImp : IAudioImp
     {
-        private readonly IAudioStream[] _allStreams = new IAudioStream[128];
-        private int _loadedStreams;
+        private readonly List<AudioStream> _allStreams;
 
         private float _volume;
 
+        public SFMLAudioImp()
+        {
+            _allStreams = new List<AudioStream>();           
+        }
+
         public void OpenDevice()
         {
-            _loadedStreams = 0;
+            _allStreams.Clear();
             _volume = 100f;
         }
 
         public void CloseDevice()
         {
-            for (var x = 0; x < _loadedStreams; x++)
-                _allStreams[x].Dispose();
+            foreach (var audioStream in _allStreams)
+               audioStream.Dispose();
         }
 
         public IAudioStream LoadFile(string fileName, bool streaming)
         {
 #if MP3Warning
             if (Path.GetExtension(fileName) == ".mp3")
-                Debug.WriteLine("Warning: Using mp3 files requires a lot of memory and might require a license. Please consider using ogg files instead.");
+                Debug.WriteLine(
+                    "Warning: Using mp3 files requires a lot of memory and might require a license. Please consider using ogg files instead.");
 #endif
 
-            IAudioStream tmp = new AudioStream(fileName, streaming, this);
-            _allStreams[_loadedStreams] = tmp;
-            _loadedStreams++;
-            return tmp;
+            // sound already loaded?
+            SoundBuffer tmpSndBuffer = null;
+
+            if (!streaming)
+                foreach (
+                    var audioStream in
+                        _allStreams.Where(audioStream => !audioStream.IsStream && audioStream.FileName == fileName))
+                {
+                    tmpSndBuffer = audioStream.OutputBuffer;
+                    break;
+                }
+
+            IAudioStream tmpAudioStream = tmpSndBuffer == null
+                                 ? new AudioStream(fileName, streaming, this)
+                                 : new AudioStream(fileName, tmpSndBuffer, this);
+
+            _allStreams.Add((AudioStream) tmpAudioStream);
+
+            return tmpAudioStream;
         }
 
         public void Play()
         {
-            for (var x = 0; x < _loadedStreams; x++)
-                _allStreams[x].Play();
+            foreach (var audioStream in _allStreams)
+                audioStream.Play();
         }
 
         public void Pause()
         {
-            for (var x = 0; x < _loadedStreams; x++)
-                _allStreams[x].Pause();
+            foreach (var audioStream in _allStreams)
+                audioStream.Pause();
         }
 
         public void Stop()
         {
-            for (var x = 0; x < _loadedStreams; x++)
-                _allStreams[x].Stop();
+            foreach (var audioStream in _allStreams)
+                audioStream.Stop();
         }
 
         public void Play(IAudioStream stream)
@@ -77,8 +100,8 @@ namespace Fusee.Engine
         {
             var compr = _volume / val;
 
-            for (var x = 0; x < _loadedStreams; x++)
-                _allStreams[x].Volume *= compr;
+            foreach (var audioStream in _allStreams)
+                audioStream.Volume *= compr;
 
             _volume = val;            
         }

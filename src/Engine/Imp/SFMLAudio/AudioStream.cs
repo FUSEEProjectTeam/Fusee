@@ -6,11 +6,13 @@ namespace Fusee.Engine
     {
         private readonly SFMLAudioImp _audio;
 
-        private SoundBuffer _outputBuffer;
+        internal SoundBuffer OutputBuffer { get; set; }
+        internal string FileName { get; set; }
+
         private Sound _outputSound;
         private Music _outputStream;
 
-        private readonly bool _isStream;
+        internal bool IsStream { get; set; }
 
         public float Volume
         {
@@ -20,28 +22,41 @@ namespace Fusee.Engine
 
         public bool Loop
         {
-            get { return _isStream ? _outputStream.Loop : _outputSound.Loop; }
+            get { return IsStream ? _outputStream.Loop : _outputSound.Loop; }
             set
             {
-                if (_isStream)
+                if (IsStream)
                     _outputStream.Loop = value;
                 else
                     _outputSound.Loop = value;
             }
         }
 
+        public AudioStream(string fileName, SoundBuffer sndBuffer, SFMLAudioImp audioCl)
+        {
+            _audio = audioCl;
+            IsStream = false;
+
+            OutputBuffer = sndBuffer;
+            _outputSound = new Sound(sndBuffer);
+
+            FileName = fileName;
+        }
+
         public AudioStream(string fileName, bool streaming, SFMLAudioImp audioCl)
         {
             _audio = audioCl;
-            _isStream = streaming;
+            IsStream = streaming;
 
-            if (_isStream)
+            if (IsStream)
                 _outputStream = new Music(fileName);
             else
             {
-                _outputBuffer = new SoundBuffer(fileName);
-                _outputSound = new Sound(_outputBuffer);
+                OutputBuffer = new SoundBuffer(fileName);
+                _outputSound = new Sound(OutputBuffer);
             }
+
+            FileName = fileName;
         }
 
         public void Dispose()
@@ -52,10 +67,10 @@ namespace Fusee.Engine
                 _outputStream = null;
             }
 
-            if (_outputBuffer != null)
+            if (OutputBuffer != null)
             {
-                _outputBuffer.Dispose();
-                _outputBuffer = null;
+                OutputBuffer.Dispose();
+                OutputBuffer = null;
             }
 
             if (_outputSound != null)
@@ -67,7 +82,7 @@ namespace Fusee.Engine
 
         public void Play(bool loop = true)
         {
-            if (_isStream)
+            if (IsStream)
             {
                 _outputStream.Play();
                 _outputStream.Loop = loop;
@@ -81,7 +96,7 @@ namespace Fusee.Engine
 
         public void Pause()
         {
-            if (_isStream)
+            if (IsStream)
                 _outputStream.Pause();
             else
                 _outputSound.Pause();
@@ -89,7 +104,7 @@ namespace Fusee.Engine
 
         public void Stop()
         {
-            if (_isStream)
+            if (IsStream)
                 _outputStream.Stop();
             else
                 _outputSound.Stop();
@@ -100,7 +115,7 @@ namespace Fusee.Engine
             var maxVal = System.Math.Min(_audio.GetVolume(), val);
             maxVal = System.Math.Max(maxVal, 0);
 
-            if (_isStream)
+            if (IsStream)
                 _outputStream.Volume = maxVal;
             else
                 _outputSound.Volume = maxVal;
@@ -108,7 +123,7 @@ namespace Fusee.Engine
 
         internal float GetVolume()
         {
-            return _isStream ? _outputStream.Volume : _outputSound.Volume;
+            return IsStream ? _outputStream.Volume : _outputSound.Volume;
         }
     }
 }
