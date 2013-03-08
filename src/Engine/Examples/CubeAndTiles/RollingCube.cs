@@ -9,6 +9,8 @@ namespace Examples.CubeAndTiles
         // vars
         private readonly float3 _cubeColor;
         private readonly Mesh _cubeMesh;
+        private readonly IAudioStream _cubeSound;
+
         private readonly Level _curLevel;
 
         private static float[] _rotateYX;
@@ -26,7 +28,7 @@ namespace Examples.CubeAndTiles
         // const
         private const float PiHalf = (float) Math.PI/2.0f;
         internal const int CubeSize = 200;
-        private const float CubeSpeed = 4.0f;
+        private const float CubeSpeed = 3.8f;
 
         public enum CubeStates
         {
@@ -43,7 +45,11 @@ namespace Examples.CubeAndTiles
         {
             _curLevel = curLevel;
             _cubeMesh = _curLevel.GlobalCubeMesh;
-            _cubeColor = new float3(0.5f, 0.15f, 0.17f);
+
+            _cubeSound = Audio.Instance.LoadFile("Assets/cube.ogg");
+            _cubeSound.Volume = 50;
+
+            _cubeColor = new float3(1, 0.1f, 0.1f);
 
             PosCurXY = new int[2];
             PosLastXY = new int[2];
@@ -83,24 +89,22 @@ namespace Examples.CubeAndTiles
 
         public void DeadCube()
         {
-            if (State != CubeStates.CsDying)
-            {
-                State = CubeStates.CsDying;
+            if (State == CubeStates.CsDying) return;
 
-                _posZ = 0;
-                _veloZ = -0.2f;
-            }
+            State = CubeStates.CsDying;
+
+            _posZ = 0;
+            _veloZ = -0.2f;
         }
 
         public void WinningCube()
         {
-            if (State != CubeStates.CsWon)
-            {
-                State = CubeStates.CsWinning;
+            if (State == CubeStates.CsWon) return;
 
-                _posZ = 0;
-                _veloZ = +0.2f;
-            }            
+            State = CubeStates.CsWinning;
+
+            _posZ = 0;
+            _veloZ = +0.2f;
         }
 
         public bool MoveCube(sbyte dirX, sbyte dirY)
@@ -114,6 +118,8 @@ namespace Examples.CubeAndTiles
                 _curDirXY[1] = dirY;
 
                 _curLevel.SetDeadField(PosLastXY[0], PosLastXY[1]);
+
+                _cubeSound.Play();
 
                 return true;
             }
@@ -156,6 +162,8 @@ namespace Examples.CubeAndTiles
         private void DeadAnimation()
         {
             if (State != CubeStates.CsDying) return;
+
+            _cubeSound.Stop();
 
             if (_curBright > 0.0f)
             {
@@ -222,13 +230,10 @@ namespace Examples.CubeAndTiles
             var arAxis = float4x4.CreateTranslation(-100 * _curDirXY[0], -100 * _curDirXY[1], 100);
             var invArAxis = float4x4.CreateTranslation(100 * _curDirXY[0], 100 * _curDirXY[1], -100);
 
-            // set modelview and color of cube
-            var aColor = new float3(1, 0.1f, 0.1f);
-
             // render
             _curLevel.RContext.ModelView = _curLevel.AddCameraTrans(mtxObjOrientRot * arAxis * mtxObjRot * invArAxis * mtxObjPos);
 
-            _curLevel.RContext.SetShaderParam(_curLevel.VColorObj, new float4(aColor, _curBright));
+            _curLevel.RContext.SetShaderParam(_curLevel.VColorObj, new float4(_cubeColor, _curBright));
             _curLevel.RContext.SetShaderParamTexture(_curLevel.VTextureObj, _curLevel.TextureCube);
 
             _curLevel.RContext.Render(_cubeMesh);

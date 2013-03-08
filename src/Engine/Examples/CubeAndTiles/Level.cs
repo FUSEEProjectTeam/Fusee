@@ -8,7 +8,7 @@ namespace Examples.CubeAndTiles
     {
         internal IShaderParam VColorObj { get; private set; }
         internal IShaderParam VTextureObj { get; private set; }
-        private readonly IShaderParam VUseAnaglyph;
+        private readonly IShaderParam _vUseAnaglyph;
 
         internal RenderContext RContext { get; private set; }
 
@@ -75,9 +75,9 @@ namespace Examples.CubeAndTiles
             _anaglyph3D = anaglyph3D;
             UseAnaglyph3D = false;
 
-            VUseAnaglyph = sp.GetShaderParam("vUseAnaglyph");
-            RContext.SetShaderParam(VUseAnaglyph, UseAnaglyph3D ? 1 : 0);
-
+            _vUseAnaglyph = sp.GetShaderParam("vUseAnaglyph");
+            RContext.SetShaderParam(_vUseAnaglyph, UseAnaglyph3D ? 1 : 0);
+            
             ConstructLevel(id);
         }
 
@@ -291,7 +291,7 @@ namespace Examples.CubeAndTiles
             LvlDeltaTime = (float) dTime;
             _mtxRot = mtxRot;
 
-            RContext.SetShaderParam(VUseAnaglyph, UseAnaglyph3D ? 1 : 0);
+            RContext.SetShaderParam(_vUseAnaglyph, UseAnaglyph3D ? 1 : 0);
 
             for (int x = 0; x < 2; x++)
             {
