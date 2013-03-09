@@ -1,18 +1,17 @@
-html, body {
+*, html, body {
 	margin: 0px;
 	padding: 0px;
 }
 
 body {
+	height: 500px;
 	overflow: hidden;
 }
 
 /* CANVAS */
 #canvas {
 	background-color: black;
-	margin: 0px;
 	border: 0px;
-	padding: 0px;
 	left: 0px;
 	top: 0px;
 
@@ -36,13 +35,15 @@ body {
 
 /* PROGRESS BAR */
 #loadingProgress {
+	position: absolute;	
 	width: 600px;
 	height: 53px;
-	left: 339px;
-	top: 320px;
+	left: 50%;
+	top: 50%;
+	margin-left: -300px;
+	margin-top: -26px;
 	border: 3px solid white;
 	border-radius: 6px;
-	position: absolute;	
 	z-index: 99;
 	overflow: hidden;
 	background: black;
@@ -53,7 +54,7 @@ body {
 	border: 1px solid white;
 	border-right: none;
 	border-left: none;
-    	margin: -1px;
+    margin: -1px;
 	padding: 0px;
 	background: #009C78 url('loading_rocket.png') no-repeat right center;
 }
