@@ -4,7 +4,7 @@ namespace Fusee.Engine
 {
     class AudioStream : IAudioStream
     {
-        private readonly SFMLAudioImp _audio;
+        private SFMLAudioImp _audio;
 
         internal SoundBuffer OutputBuffer { get; set; }
         internal string FileName { get; set; }
@@ -13,6 +13,8 @@ namespace Fusee.Engine
         private Music _outputStream;
 
         internal bool IsStream { get; set; }
+
+        internal float RelVolume { get; set; }
 
         public float Volume
         {
@@ -34,21 +36,15 @@ namespace Fusee.Engine
 
         public AudioStream(string fileName, SoundBuffer sndBuffer, SFMLAudioImp audioCl)
         {
-            _audio = audioCl;
-            IsStream = false;
-
             OutputBuffer = sndBuffer;
             _outputSound = new Sound(sndBuffer);
 
-            FileName = fileName;
+            Init(fileName, false, audioCl);
         }
 
         public AudioStream(string fileName, bool streaming, SFMLAudioImp audioCl)
         {
-            _audio = audioCl;
-            IsStream = streaming;
-
-            if (IsStream)
+            if (streaming)
                 _outputStream = new Music(fileName);
             else
             {
@@ -56,7 +52,18 @@ namespace Fusee.Engine
                 _outputSound = new Sound(OutputBuffer);
             }
 
+            Init(fileName, streaming, audioCl);
+        }
+
+        private void Init(string fileName, bool streaming, SFMLAudioImp audioCl)
+        {
+            _audio = audioCl;
+            IsStream = streaming;
+
             FileName = fileName;
+
+            RelVolume = 1;
+            Volume = audioCl.GetVolume();
         }
 
         public void Dispose()
@@ -119,6 +126,8 @@ namespace Fusee.Engine
                 _outputStream.Volume = maxVal;
             else
                 _outputSound.Volume = maxVal;
+
+            RelVolume = maxVal/_audio.GetVolume();
         }
 
         internal float GetVolume()

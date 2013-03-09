@@ -98,12 +98,10 @@ namespace Fusee.Engine
 
         public void SetVolume(float val)
         {
-            var compr = _volume / val;
-
             foreach (var audioStream in _allStreams)
-                audioStream.Volume *= compr;
+                audioStream.Volume = val * audioStream.RelVolume;
 
-            _volume = val;            
+            _volume = val;
         }
 
         public float GetVolume()

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using Fusee.Engine;
 using Fusee.Math;
@@ -53,30 +54,49 @@ namespace Examples.SoundTest
                 gl_FragColor = vec4(0.8, 0.2, 0.2, 1) * dot(vNormal, vec3(0, 0, 1));
             }";
 
-        //SampleToWaveProvider _mainOutputStream;
-        //PanningSampleProvider _panningSampleProvider;
-        private float _panningVal;
         protected Mesh Mesh;
+        private Tests _tests;
+
         private static float _angleHorz;
         private IAudioStream _audio2;
         private IAudioStream _audio1;
         private bool _once;
         private float _vol = 100.0f;
 
+        private int _state;
+        private int _testID;
+
+        private float _timeStep;
+        private float _curTime;
+
         public override void Init()
         {
             RC.ClearColor = new float4(0, 0, 0, 1);
 
-            Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Cube.obj.model"));
-            Mesh = geo.ToMesh();
+            Mesh = MeshReader.LoadMesh("Assets/Cube.obj.model");
 
-            ShaderProgram sp = RC.CreateShader(Vs, Ps);
+            var sp = RC.CreateShader(Vs, Ps);
             RC.SetShader(sp);
 
+            _audio1 = Audio.Instance.LoadFile("Assets/beep.ogg");
+            
+            _state = 0;
+            _testID = 1;
+
+            _timeStep = 1.0f;
+            _curTime = 3.0f;
+
+            _tests = new Tests(_audio1);
+
+          /*  Audio.Instance.GetVolume();
+
+            Audio.Instance.Play();
+            Audio.Instance.Pause();
+            Audio.Instance.Stop();
             // to implement:
          //   Audio.Instance.OpenDevice();
 
-          /*  _audio1 = Audio.Instance.LoadFile("Assets/pacman.mp3");
+            _audio1 = Audio.Instance.LoadFile("Assets/pacman.mp3");
             _audio1.Loop = true;
             _audio1.Play();
             _audio1.Pause();
@@ -93,59 +113,46 @@ namespace Examples.SoundTest
             Audio.Instance.Stop(_audio1);*/
 
            // Audio.Instance.CloseDevice();
-
-            // testfile
-          //  Audio.Instance.OpenDevice();
-            _audio1 = Audio.Instance.LoadFile("Assets/pacman.mp3", false);
-            _audio1.Play();
-           // _audio2 = Audio.Instance.LoadFile("Assets/pacman.ogg", true);
-           // _audio2.Play();
-
-            _panningVal = 0;
         }
 
         public override void RenderAFrame()
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
-           if ((!_once) && (Input.Instance.IsKeyDown(KeyCodes.S)))
+            if (Time.Instance.TimeSinceStart > _curTime)
             {
-               //Audio.Instance.Pause();
-                _audio1.Pause();
-                _once = true;
-            }
+                _curTime += _timeStep;
 
-            if ((_once) && (Input.Instance.IsKeyDown(KeyCodes.D)))
-            {
-                _audio1.Play();
-                //Audio.Instance.Play();
-                _once = false;
-            }
+                var done = false;
 
-            if (Input.Instance.IsKeyDown(KeyCodes.Up))
-                _vol = Math.Min(_vol + 0.01f, 1.0f);
-            if (Input.Instance.IsKeyDown(KeyCodes.Down))
-                _vol = Math.Max(_vol - 0.01f, 0f);
+                switch (_testID)
+                {
+                    case 1:
+                        done = _tests.Test1(_state);
+                        break;
 
-            _audio1.Volume = _vol;
+                    case 2:
+                        done = _tests.Test2(_state);
+                        break;
+                }
 
-            if (Input.Instance.IsKeyDown(KeyCodes.Left))
-            {
-                _panningVal = Math.Max(-1, _panningVal - 0.001f);
-            }
-            if (Input.Instance.IsKeyDown(KeyCodes.Right))
-            {
-                _panningVal = Math.Min(+1, _panningVal + 0.001f);
+                if (done)
+                {
+                    _testID++;
+                    _state = 0;
+                }
+                else
+                    _state++;
             }
 
             _angleHorz += 0.002f;
-            float4x4 mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(0);
-            float4x4 mtxCam = float4x4.LookAt(0, 200, 400, 0, 50, 0, 0, 1, 0);
+
+            var mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(0);
+            var mtxCam = float4x4.LookAt(0, 200, 400, 0, 50, 0, 0, 1, 0);
 
             RC.ModelView = mtxRot * float4x4.CreateTranslation(-100, 0, 0) * mtxCam;
             RC.Render(Mesh);
 
-            //_panningSampleProvider.Pan = _panningVal;
             Present();
         }
 
