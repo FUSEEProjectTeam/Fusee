@@ -9,16 +9,12 @@ namespace Fusee.Engine
 
         IAudioStream LoadFile(string fileName, bool streaming);
 
-        void Play();
-        void Pause();
         void Stop();
-
-        void Play(IAudioStream stream);
-        void Pause(IAudioStream stream);
-        void Stop(IAudioStream stream);
 
         void SetVolume(float val);
         float GetVolume();
+
+        void SetPanning(float val);
     }
 }
 

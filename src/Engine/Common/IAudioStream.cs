@@ -17,13 +17,18 @@
         /// <summary>
         /// 
         /// </summary>
-        void Dispose();
+        float Panning { set; get; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        void Play();
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="loop"></param>
-        void Play(bool loop = false);
+        void Play(bool loop);
 
         /// <summary>
         /// 

@@ -16,7 +16,10 @@ namespace Fusee.Engine
 
         public SFMLAudioImp()
         {
-            _allStreams = new List<AudioStream>();           
+            _allStreams = new List<AudioStream>();
+
+            Listener.Direction = new Vector3F(0, 0, -0.1f);
+            Listener.Position = new Vector3F(0, 0, 0.1f);
         }
 
         public void OpenDevice()
@@ -60,53 +63,35 @@ namespace Fusee.Engine
             return tmpAudioStream;
         }
 
-        public void Play()
-        {
-            foreach (var audioStream in _allStreams)
-                audioStream.Play();
-        }
-
-        public void Pause()
-        {
-            foreach (var audioStream in _allStreams)
-                audioStream.Pause();
-        }
-
         public void Stop()
         {
             foreach (var audioStream in _allStreams)
                 audioStream.Stop();
         }
 
-        public void Play(IAudioStream stream)
-        {
-            if (stream != null)
-                ((AudioStream) stream).Play();
-        }
-
-        public void Pause(IAudioStream stream)
-        {
-            if (stream != null)
-                ((AudioStream) stream).Pause();
-        }
-
-        public void Stop(IAudioStream stream)
-        {
-            if (stream != null)
-                ((AudioStream) stream).Stop();
-        }
-
         public void SetVolume(float val)
         {
-            foreach (var audioStream in _allStreams)
-                audioStream.Volume = val * audioStream.RelVolume;
+            var maxVal = System.Math.Min(100, val);
+            maxVal = System.Math.Max(maxVal, 0);
 
-            _volume = val;
+            _volume = maxVal;
+
+            foreach (var audioStream in _allStreams)
+                audioStream.SetGlobalVolume(maxVal);
         }
 
         public float GetVolume()
         {
             return _volume;
+        }
+
+        public void SetPanning(float val)
+        {
+            var maxVal = System.Math.Min(100, val);
+            maxVal = System.Math.Max(maxVal, -100);
+
+            foreach (var audioStream in _allStreams)
+                audioStream.Panning = maxVal;
         }
     }
 }

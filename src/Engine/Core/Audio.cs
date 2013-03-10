@@ -43,52 +43,9 @@ namespace Fusee.Engine
         /// <summary>
         /// 
         /// </summary>
-        public void Play()
-        {
-            _audioImp.Play();
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public void Pause()
-        {
-            _audioImp.Pause();
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
         public void Stop()
         {
             _audioImp.Stop();
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="stream"></param>
-        public void Play(IAudioStream stream)
-        {
-            _audioImp.Play(stream);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="stream"></param>
-        public void Pause(IAudioStream stream)
-        {
-            _audioImp.Pause(stream);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="stream"></param>
-        public void Stop(IAudioStream stream)
-        {
-            _audioImp.Stop(stream);
         }
 
         /// <summary>
@@ -107,6 +64,15 @@ namespace Fusee.Engine
         public float GetVolume()
         {
             return _audioImp.GetVolume();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="val"></param>
+        public void SetPanning(float val)
+        {
+            _audioImp.SetPanning(val);
         }
 
         /// <summary>

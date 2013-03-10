@@ -22,6 +22,12 @@ namespace Fusee.Engine
             set { SetVolume(value); }
         }
 
+        public float Panning
+        {
+            get { return GetPanning(); }
+            set { SetPanning(value); }
+        }
+
         public bool Loop
         {
             get { return IsStream ? _outputStream.Loop : _outputSound.Loop; }
@@ -64,6 +70,11 @@ namespace Fusee.Engine
 
             RelVolume = 1;
             Volume = audioCl.GetVolume();
+
+            if (IsStream)
+                _outputStream.MinDistance = 100;
+            else
+                _outputSound.MinDistance = 100;
         }
 
         public void Dispose()
@@ -87,17 +98,23 @@ namespace Fusee.Engine
             }
         }
 
-        public void Play(bool loop = true)
+        public void Play()
+        {
+            Play(Loop);
+        }
+
+        public void Play(bool loop)
         {
             if (IsStream)
             {
-                _outputStream.Play();
                 _outputStream.Loop = loop;
+                _outputStream.Play();
             }
             else
             {
-                _outputSound.Play();
                 _outputSound.Loop = loop;
+                _outputSound.Play();
+
             }
         }
 
@@ -130,9 +147,32 @@ namespace Fusee.Engine
             RelVolume = maxVal/_audio.GetVolume();
         }
 
+        internal void SetGlobalVolume(float val)
+        {
+            if (IsStream)
+                _outputStream.Volume = val*RelVolume;
+            else
+                _outputSound.Volume = val*RelVolume;
+        }
+
         internal float GetVolume()
         {
             return IsStream ? _outputStream.Volume : _outputSound.Volume;
+        }
+
+        internal void SetPanning(float val)
+        {
+            var tmpPos = new Vector3F(val, 0, 0);
+
+            if (IsStream)
+                _outputStream.Position = tmpPos;
+            else
+                _outputSound.Position = tmpPos;
+        }
+
+        internal float GetPanning()
+        {
+            return IsStream ? _outputStream.Position.X : _outputSound.Position.X;
         }
     }
 }
