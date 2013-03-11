@@ -1,7 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
-using Fusee.Engine;
+﻿using Fusee.Engine;
 using Fusee.Math;
 
 namespace Examples.SoundTest
@@ -138,7 +135,7 @@ namespace Examples.SoundTest
                     _curTime += 2*_timeStep;
 
                     if (_testID == 8)
-                        Debug.WriteLine("-- done --");
+                        System.Diagnostics.Debug.WriteLine("-- done --");
                 }
                 else
                     _state++;
@@ -160,7 +157,7 @@ namespace Examples.SoundTest
             RC.Viewport(0, 0, Width, Height);
 
             var aspectRatio = Width / (float)Height;
-            RC.Projection = float4x4.CreatePerspectiveFieldOfView((float) (Math.PI/4f), aspectRatio, 1, 10000);
+            RC.Projection = float4x4.CreatePerspectiveFieldOfView((float) (System.Math.PI/4f), aspectRatio, 1, 10000);
         }
 
         public static void Main()

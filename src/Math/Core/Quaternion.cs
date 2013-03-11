@@ -594,7 +594,7 @@ namespace Fusee.Math
         /// <summary>
         /// Convert Quaternion to rotation matrix
         /// </summary>
-        /// <param name="q1">Quaternion to convert.</param>
+        /// <param name="q">Quaternion to convert.</param>
         /// <returns>A matrix of type float4x4 from the passed Quaternion.</returns>
         public static float4x4 QuaternionToMatrix(Quaternion q)
         {

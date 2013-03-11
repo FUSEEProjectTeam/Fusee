@@ -14,8 +14,6 @@ namespace Fusee.Engine
 
         internal bool IsStream { get; set; }
 
-        internal float RelVolume { get; set; }
-
         public float Volume
         {
             get { return GetVolume(); }
@@ -68,8 +66,7 @@ namespace Fusee.Engine
 
             FileName = fileName;
 
-            RelVolume = 1;
-            Volume = audioCl.GetVolume();
+            Volume = 100;
 
             if (IsStream)
                 _outputStream.MinDistance = 100;
@@ -136,33 +133,26 @@ namespace Fusee.Engine
 
         internal void SetVolume(float val)
         {
-            var maxVal = System.Math.Min(_audio.GetVolume(), val);
+            var maxVal = System.Math.Min(100, val);
             maxVal = System.Math.Max(maxVal, 0);
 
             if (IsStream)
                 _outputStream.Volume = maxVal;
             else
                 _outputSound.Volume = maxVal;
-
-            RelVolume = maxVal/_audio.GetVolume();
-        }
-
-        internal void SetGlobalVolume(float val)
-        {
-            if (IsStream)
-                _outputStream.Volume = val*RelVolume;
-            else
-                _outputSound.Volume = val*RelVolume;
         }
 
         internal float GetVolume()
         {
-            return IsStream ? _outputStream.Volume : _outputSound.Volume;
+            return (float) System.Math.Round(IsStream ? _outputStream.Volume : _outputSound.Volume, 2);
         }
 
         internal void SetPanning(float val)
         {
-            var tmpPos = new Vector3F(val, 0, 0);
+            var maxVal = System.Math.Min(100, val);
+            maxVal = System.Math.Max(maxVal, -100);
+
+            var tmpPos = new Vector3F(maxVal, 0, 0);
 
             if (IsStream)
                 _outputStream.Position = tmpPos;
@@ -172,7 +162,7 @@ namespace Fusee.Engine
 
         internal float GetPanning()
         {
-            return IsStream ? _outputStream.Position.X : _outputSound.Position.X;
+            return (float) System.Math.Round(IsStream ? _outputStream.Position.X : _outputSound.Position.X, 2);
         }
     }
 }

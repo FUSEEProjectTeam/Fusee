@@ -861,7 +861,7 @@ namespace Fusee.Engine
         /// Sets the direction of the light with the given index.
         /// </summary>
         /// <param name="lightInx">The light to set the direction on. Can range from 0 to 7. Up to eight lights are supported.</param>
-        /// <param name="position">The direction vector into which the light emits rays.</param>
+        /// <param name="direction">The direction vector into which the light emits rays.</param>
         public void SetLightDirection(int lightInx, float3 direction)
         {
             _lightParams[lightInx].Direction = direction;
@@ -1035,6 +1035,7 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
         /// </summary>
         /// <param name="param">The shader parameter identifier.</param>
         /// <param name="val">The integer value that should be assigned to the shader parameter.</param>
+        /// <remarks>
         /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
         /// a given uniform parameter name used in a shader program.
         /// </remarks>

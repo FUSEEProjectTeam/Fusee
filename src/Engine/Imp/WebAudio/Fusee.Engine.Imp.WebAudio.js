@@ -3,7 +3,7 @@
    This file creates the connection to the underlying WebAudio part.
 
 	Just for the records: The first version of this file was generated using 
-	JSIL v0.6.0 build 16283. Until then it was changed and maintained manually.
+	JSIL v0.6.0 build 16283. From then on it was changed and maintained manually.
 */
 
 var $WebAudioImp = JSIL.DeclareAssembly("Fusee.Engine.Imp.WebAudio");
@@ -14,11 +14,13 @@ JSIL.DeclareNamespace("Fusee.Engine");
 
 JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.AudioStream", true, [], function ($) {
   var $thisType = $.publicInterface;
-
-  $.Property({Static:false, Public:false}, "MainOutputStream", $.Object);
-  $.Property({Static:false, Public:false}, "StreamFileName", $.String);
+  
+  $.Field({Static:false, Public:false}, "MainOutputStream", $.Object);
+  $.Field({Static:false, Public:false}, "StreamFileName", $.String);
+  
   $.Property({Static:false, Public:false}, "Loop", $.Boolean);
- 
+  $.Property({Static:false, Public:false}, "Panning", $.Single);
+   
   $.Method({Static:false, Public:true }, ".ctor", 
     new JSIL.MethodSignature(null, [$.String]), 
     function AudioStream__ctor (fileName) {
@@ -27,43 +29,70 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.AudioStream", t
 
       var instance = createjs.Sound.createInstance(playbackFile);
 
-      this.AudioStream$StreamFileName$value = playbackFile;
-      this.AudioStream$MainOutputStream$value = instance;
+      this.StreamFileName = playbackFile;
+      this.MainOutputStream = instance;
+
+	  this.MainOutputStream.addEventListener("complete", this.playingComplete.bind(this));
+    }
+  );
+  
+  $.Method({Static:false, Public:false }, "playingComplete", 
+    new JSIL.MethodSignature(null, [$.Object]), 
+	function playingComplete(event) {
+	  if (event.type == "complete")
+	    if (this.AudioStream$Loop$value) {
+			var self = this;
+			window.setTimeout(function () { self.MainOutputStream.play(); }, 1);	
+		}
+	}
+  );
+  
+  $.Method({Static:false, Public:true }, "Play", 
+    new JSIL.MethodSignature(null, []), 
+    function AudioStream_Play () {
+	  if (this.MainOutputStream.paused && this.MainOutputStream.playState == "playSucceeded")
+		this.MainOutputStream.resume();
+      else
+        this.MainOutputStream.play();	  
     }
   );
 
   $.Method({Static:false, Public:true }, "Play", 
-    new JSIL.MethodSignature(null, []), 
-    function AudioStream_Play () {
-      this.AudioStream$MainOutputStream$value.play();
+    new JSIL.MethodSignature(null, [$.Boolean]), 
+    function AudioStream_Play (loop) {
+	  this.Loop = loop;
+	  this.Play();
     }
   );
-
+  
   $.Method({Static:false, Public:true }, "Pause", 
     new JSIL.MethodSignature(null, []), 
     function AudioStream_Pause () {
-      this.AudioStream$MainOutputStream$value.pause();
+      this.MainOutputStream.pause();
     }
   );
 
   $.Method({Static:false, Public:true }, "Stop", 
     new JSIL.MethodSignature(null, []), 
     function AudioStream_Stop () {
-      this.AudioStream$MainOutputStream$value.stop();
+      this.MainOutputStream.stop();
     }
   );
 
   $.Method({Static:false, Public:true }, "set_Volume", 
-    new JSIL.MethodSignature(null, [$.Double]), 
+    new JSIL.MethodSignature(null, [$.Single]), 
     function AudioStream_set_Volume (value) {
-      this.AudioStream$MainOutputStream$value.setVolume(value/100);
+      var maxVal = System.Math.Min(100, value);
+      maxVal = System.Math.Max(maxVal, 0);
+
+      this.MainOutputStream.setVolume(maxVal/100);
     }
   );
 
   $.Method({Static:false, Public:true }, "get_Volume", 
-    new JSIL.MethodSignature($.Double, []), 
+    new JSIL.MethodSignature($.Single, []),
     function AudioStream_get_Volume () {
-      this.AudioStream$MainOutputStream$value.getVolume() * 100;
+      return this.MainOutputStream.getVolume() * 100;
     }
   );
 
@@ -73,13 +102,38 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.AudioStream", t
       this.AudioStream$Loop$value = value;
     }
   );
+  $.Method({Static:false, Public:true }, "get_Loop", 
+    new JSIL.MethodSignature($.Boolean, []), 
+    function AudioStream_get_Loop () {
+      return this.AudioStream$Loop$value;
+    }
+  );
+
+  $.Method({Static:false, Public:true }, "set_Panning", 
+    new JSIL.MethodSignature(null, [$.Single]), 
+    function AudioStream_set_Panning (value) {
+      var maxVal = System.Math.Min(100, value);
+      maxVal = System.Math.Max(maxVal, -100);
+
+	  this.MainOutputStream.setPan(maxVal/100);
+    }
+  );
+
+  $.Method({Static:false, Public:true }, "get_Panning", 
+    new JSIL.MethodSignature($.Boolean, []), 
+    function AudioStream_get_Panning () {
+      return this.MainOutputStream.getPan() * 100;
+    }
+  );
 
   $.ImplementInterfaces($fuseeCommon.TypeRef("Fusee.Engine.IAudioStream"))
 });
 
 JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.WebAudioImp", true, [], function ($) {
   var $thisType = $.publicInterface;
-  var soundInstance;
+  
+  $.Field({Static:false, Public:false }, "AllStreams", $jsilcore.TypeRef("System.Array", [$fuseeCommon.TypeRef("Fusee.Engine.IAudioStream")]));
+  $.Field({Static:false, Public:false }, "LoadedStreams", $.Int32);
   
   $.Method({Static:false, Public:true }, ".ctor", 
     new JSIL.MethodSignature(null, []),
@@ -112,22 +166,6 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.WebAudioImp", t
     }
   );
 
-  $.Method({Static:false, Public:true }, "Play", 
-    new JSIL.MethodSignature(null, []),
-    function WebAudioImp_Play () {
-      for (var x = 0; x < this.LoadedStreams; x++)
-        this.AllStreams[this.LoadedStreams].Play();
-    }
-  );
-  
-  $.Method({Static:false, Public:true }, "Pause", 
-    new JSIL.MethodSignature(null, []),
-    function WebAudioImp_Pause () {
-      for (var x = 0; x < this.LoadedStreams; x++)
-        this.AllStreams[this.LoadedStreams].Pause();
-    }
-  );
-
   $.Method({Static:false, Public:true }, "Stop", 
     new JSIL.MethodSignature(null, []),
     function WebAudioImp_Stop () {
@@ -136,21 +174,32 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.WebAudioImp", t
   );
 
   $.Method({Static:false, Public:true }, "GetVolume", 
-    new JSIL.MethodSignature($.Double, []),
+    new JSIL.MethodSignature($.Single, []),
     function WebAudioImp_GetVolume () {
       return createjs.Sound.getVolume() * 100;
     }
   );
 
   $.Method({Static:false, Public:true }, "SetVolume", 
-    new JSIL.MethodSignature(null, [$.Double]),
+    new JSIL.MethodSignature(null, [$.Single]),
     function WebAudioImp_SetVolume (value) {
-		createjs.Sound.setVolume(value/100);
+      var maxVal = System.Math.Min(100, value);
+      maxVal = System.Math.Max(maxVal, 0);
+
+	  createjs.Sound.setVolume(maxVal/100);
     }
   );
 
-  $.Field({ Static: false, Public: false }, "loadedAudio", $.String, null);
-  $.Field({Static:false, Public:false, ReadOnly:true }, "AllStreams", $jsilcore.TypeRef("System.Array", [$fuseeCommon.TypeRef("Fusee.Engine.IAudioStream")]));
+  $.Method({Static:false, Public:true }, "SetPanning", 
+    new JSIL.MethodSignature(null, [$.Single]),
+    function WebAudioImp_SetPanning (value) {
+      var maxVal = System.Math.Min(100, value);
+      maxVal = System.Math.Max(maxVal, -100);
+
+	  for (var x = 0; x < this.LoadedStreams; x++)
+		this.AllStreams[x].Panning = maxVal;
+    }
+  );
     
   $.ImplementInterfaces($fuseeCommon.TypeRef("Fusee.Engine.IAudioImp"))
 });

@@ -12,8 +12,6 @@ namespace Fusee.Engine
     {
         private readonly List<AudioStream> _allStreams;
 
-        private float _volume;
-
         public SFMLAudioImp()
         {
             _allStreams = new List<AudioStream>();
@@ -25,7 +23,7 @@ namespace Fusee.Engine
         public void OpenDevice()
         {
             _allStreams.Clear();
-            _volume = 100f;
+            Listener.GlobalVolume = 100;
         }
 
         public void CloseDevice()
@@ -74,15 +72,12 @@ namespace Fusee.Engine
             var maxVal = System.Math.Min(100, val);
             maxVal = System.Math.Max(maxVal, 0);
 
-            _volume = maxVal;
-
-            foreach (var audioStream in _allStreams)
-                audioStream.SetGlobalVolume(maxVal);
+            Listener.GlobalVolume = maxVal;
         }
 
         public float GetVolume()
         {
-            return _volume;
+            return (float) System.Math.Round(Listener.GlobalVolume, 2);
         }
 
         public void SetPanning(float val)
