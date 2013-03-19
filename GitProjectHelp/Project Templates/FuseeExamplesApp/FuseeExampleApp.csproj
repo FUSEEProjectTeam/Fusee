@@ -66,19 +66,17 @@
       <Project>{E95FA1C8-6491-4B4B-BBE1-EDA6B16B2C6A}</Project>
       <Name>Math.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Imp\OpenTK\OpenTK.csproj">
-      <Project>{F7AD2BB5-D2B0-4697-BDDB-4CC26152A6B6}</Project>
-      <Name>OpenTK</Name>
-    </ProjectReference>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)/Microsoft.CSharp.targets" />
+    <Import Project="$(MSBuildToolsPath)/Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
     </PostBuildEvent>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">$(ProjectDir)../../</SolutionDir>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">$(ProjectDir)../../../../</SolutionDir>
   </PropertyGroup>
   <Target Name="Clean">
-    <Exec Command="rd /s /q $(OutputPath)" Condition="Exists($(OutputPath))" />
+    <Exec Condition=" '$(OS)' == 'Windows_NT' And Exists('$(OutputPath)') " Command="rd /s /q $(OutputPath)" />
+    <Exec Condition=" '$(OS)' != 'Windows_NT' And Exists('$(OutputPath)') " Command="rm '$(OutputPath)' -r -f" />
   </Target>
-  <Import Project="$(SolutionDir)/Fusee.targets" Condition="'$(PostBuildEvent)' == ''" />
+  <Import Project="$(SolutionDir)/Fusee_Windows.targets" Condition="'$(PostBuildEvent)' == '' And '$(OS)' == 'Windows_NT' " />
+  <Import Project="$(SolutionDir)/Fusee_Linux.targets" Condition="'$(PostBuildEvent)' == '' And '$(OS)' != 'Windows_NT' " />
 </Project>

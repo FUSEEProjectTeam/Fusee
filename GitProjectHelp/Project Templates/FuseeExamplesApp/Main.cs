@@ -1,4 +1,5 @@
 ﻿using Fusee.Engine;
+using Fusee.Math;
 
 namespace Examples.$safeprojectname$
 {
