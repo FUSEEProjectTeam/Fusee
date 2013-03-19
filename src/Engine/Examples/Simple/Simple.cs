@@ -7,7 +7,7 @@ namespace Examples.Simple
     public class Simple : RenderCanvas 
     {
         protected string Vs = @"
-             #version 120
+             // #version 120
 
             /* Copies incoming vertex color without change.
              * Applies the transformation matrix to vertex position.
@@ -33,7 +33,7 @@ namespace Examples.Simple
             }";
 
         protected string Ps = @"
-             #version 120
+            //#version 120
 
             /* Copies incoming fragment color without change. */
             #ifdef GL_ES
@@ -128,18 +128,6 @@ namespace Examples.Simple
 
         public static void Main()
         {
-            float3[] verts = new float3[1000000];
-            
-            double t1 = Diagnostics.Timer;
-            for (int i= 0; i < verts.Length; i++)
-            {
-                verts[i].x = i;
-                verts[i].y = i+1;
-                verts[i].z = i-1;
-            }
-            double t2 = Diagnostics.Timer;
-            Diagnostics.Log("Initializing " + verts.Length + " float3 objects took " + (t2 - t1) + " ms.");
-
             Simple app = new Simple();
             app.Run();
         }

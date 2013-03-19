@@ -5,7 +5,7 @@ using Fusee.Math;
 namespace Fusee.SceneManagement
 {
     /// <summary>
-    /// RednerDirectionalLight is derived from Renderjob and is responible for passing the DirectionalLight towards the renderqueue.
+    /// RednerDirectionalLight is derived from Renderjob and is responible for passing the DirectionalLight towards the RenderContext.
     /// </summary>
     public class RenderDirectionalLight : RenderJob
     {
@@ -24,7 +24,7 @@ namespace Fusee.SceneManagement
         /// <param name="direction">Direction of the light.</param>
         /// <param name="color">Color of the light "Red Green Blue Alpha"</param>
         /// <param name="type">The light type.</param>
-        /// <param name="channel">The memory space of the light.(0 - 7)</param>
+        /// <param name="channel">The memory space of the light(0 - 7).</param>
         public RenderDirectionalLight(float3 direction, float4 color, Light.LightType type, int channel)
         {
             _direction = direction;
@@ -35,12 +35,12 @@ namespace Fusee.SceneManagement
         #endregion
 
         /// <summary>
-        /// Enqueues the directional light to the renderqueue. 
+        ///  Passes directionallight's parameters to RenderContext.
         /// </summary>
          public override void SubmitWork(RenderContext renderContext)
          {
              //TODO Warten Auf Timon und Casper
-             //renderContext.SetLight(_direction, _color, _type, _channel);
+             renderContext.SetLight(_direction, _color, (int)_type, _channel);
              //Console.WriteLine("DirectionalLight worked");
          }
 

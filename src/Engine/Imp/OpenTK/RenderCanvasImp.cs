@@ -18,16 +18,20 @@ namespace Fusee.Engine
         public double DeltaTime
         {
             get
-            {
+            {            
                 return _gameWindow.DeltaTime; 
             }
         }
 
         internal RenderCanvasGameWindow _gameWindow;
 
-        public RenderCanvasImp()
-        {
-            _gameWindow = new RenderCanvasGameWindow(this);
+        public RenderCanvasImp ()
+		{
+			try {
+				_gameWindow = new RenderCanvasGameWindow (this, true);
+			} catch {
+				_gameWindow = new RenderCanvasGameWindow (this, false);
+			}
         }
 
         public void Present()
@@ -43,6 +47,8 @@ namespace Fusee.Engine
         }
 
         public event EventHandler<InitEventArgs> Init;
+        public event EventHandler<InitEventArgs> UnLoad; 
+
         public event EventHandler<RenderEventArgs> Render;
         public event EventHandler<ResizeEventArgs> Resize;
 
@@ -50,6 +56,12 @@ namespace Fusee.Engine
         {
             if (Init != null)
                 Init(this, new InitEventArgs());
+        }
+
+        internal void DoUnLoad()
+        {
+            if (UnLoad != null)
+                UnLoad(this, new InitEventArgs());
         }
 
         internal void DoRender()
@@ -74,8 +86,8 @@ namespace Fusee.Engine
             get { return _deltaTime; }
         }
 
-        public RenderCanvasGameWindow(RenderCanvasImp renderCanvasImp)
-            : base(1280, 720, new GraphicsMode(32,24,0,8) /*GraphicsMode.Default*/, "Fusee Engine")
+        public RenderCanvasGameWindow(RenderCanvasImp renderCanvasImp, bool antiAliasing)
+            : base(1280, 720, new GraphicsMode(32,24,0,(antiAliasing) ? 8 : 0) /*GraphicsMode.Default*/, "Fusee Engine")
         {
             _renderCanvasImp = renderCanvasImp;
         }
@@ -85,7 +97,7 @@ namespace Fusee.Engine
             // Check for necessary capabilities:
             string version = GL.GetString(StringName.Version);
             int major = (int)version[0];
-            int minor = (int)version[2];
+            // int minor = (int)version[2];
             if (major < 2)
             {
                 MessageBox.Show("You need at least OpenGL 2.0 to run this example. Aborting.", "GLSL not supported",
@@ -101,7 +113,7 @@ namespace Fusee.Engine
 
         protected override void OnUnload(EventArgs e)
         {
-
+            _renderCanvasImp.DoUnLoad();
             // if (_renderCanvasImp != null)
             //     _renderCanvasImp.Dispose();      
         }

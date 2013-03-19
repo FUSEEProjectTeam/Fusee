@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Fusee.Engine;
 using JSIL.Meta;
 using Fusee.Math;
 
@@ -12,7 +13,6 @@ namespace Fusee.Engine
     /// </summary>
     public class RenderContext
     {
-       
         private IRenderContextImp _rci;
         private ShaderProgram _currentShader;
         private Light[] _lightParams = new Light[8];
@@ -36,9 +36,8 @@ namespace Fusee.Engine
             "FUSEE_IT_MVP",
         };
         */
-
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="rci"></param>
         public RenderContext(IRenderContextImp rci)
@@ -49,40 +48,53 @@ namespace Fusee.Engine
             Projection = float4x4.Identity;
         }
 
-
-        /// <deprecated></deprecated>
-        [Obsolete("This field will soon be replaced by enabling RenderContext to seperate between Model and View matrix.")]
-        public float4x4 Camera; // TODO: Implement Camera. Temporary solution!!
-
-
         
         // Settable matrices
         private float4x4 _modelView;
         private float4x4 _projection;
-        private float4x4 _view; 
-
+        private float4x4 _view;
+        private float4x4 _model;
         // Derived matrices
-
         private float4x4 _modelViewProjection;
+
+        private float4x4 _invView;
+        private float4x4 _invModel;
         private float4x4 _invModelView;
         private float4x4 _invProjection;
         private float4x4 _invModelViewProjection;
+
+        private float4x4 _invTransView;
+        private float4x4 _invTransModel;
         private float4x4 _invTransModelView;
         private float4x4 _invTransProjection;
         private float4x4 _invTransModelViewProjection;
+
+        private float4x4 _transView;
+        private float4x4 _transModel;
         private float4x4 _transModelView;
         private float4x4 _transProjection;
         private float4x4 _transModelViewProjection;
+
         private bool _modelViewProjectionOk;
+
+        private bool _invViewOk;
+        private bool _invModelOk;
         private bool _invModelViewOk;
         private bool _invProjectionOk;
         private bool _invModelViewProjectionOk;
+
+        private bool _invTransViewOk;
+        private bool _invTransModelOk;
         private bool _invTransModelViewOk;
         private bool _invTransProjectionOk;
         private bool _invTransModelViewProjectionOk;
+
+        private bool _transViewOk;
+        private bool _transModelOk;
         private bool _transModelViewOk;
         private bool _transProjectionOk;
         private bool _transModelViewProjectionOk;
+
 
         /// <summary>
         /// Creates a new Image with a specified size and color.
@@ -91,7 +103,7 @@ namespace Fusee.Engine
         /// <param name="height">The height of the image.</param>
         /// <param name="bgColor">The color of the image. Value must be JS compatible.</param>
         /// <returns>An ImageData struct containing all necessary information for further processing.</returns>
-        public ImageData CreateImage (int width, int height, String bgColor)
+        public ImageData CreateImage(int width, int height, String bgColor)
         {
             return _rci.CreateImage(width, height, bgColor);
         }
@@ -137,7 +149,7 @@ namespace Fusee.Engine
         /// <remarks>
         /// This is the first step for the texturing Process.
         /// The Bitmap-bits get locked in the memory and are made available for
-        /// further processing. The returned ImageData-Struct can be used in the 
+        /// further processing. The returned ImageData-Struct can be used in the
         /// CreateTexture method.
         /// </remarks>
         /// <param name="filename">Path to the image file</param>
@@ -199,19 +211,72 @@ namespace Fusee.Engine
         public float4x4 View
         {
             get { return _view; }
-            set { _view = value; }
+            set
+            {
+                //value.M13 *= -1; // Correct Operation to make Coordinate System left handed
+                //value.M23 *= -1;
+                //value.M33 *= -1;
+                //value.M43 *= -1;
+                _view = value;
+
+                _modelViewProjectionOk = false;
+                _invViewOk = false; 
+                _invModelViewOk = false;
+                _invModelViewProjectionOk = false;
+
+                _invTransViewOk = false;
+                _invTransModelViewOk = false;
+                _invTransModelViewProjectionOk = false;
+
+                _transViewOk = false;
+                _transModelViewOk = false;
+                _transModelViewProjectionOk = false;
+                _modelView = _model*_view;
+                
+                UpdateCurrentShader();
+                _rci.ModelView = _modelView;
+            }
+        }
+
+        public float4x4 Model
+        {
+            
+            get { return _model; }
+            set
+            {
+                _model = value;
+
+
+                _modelViewProjectionOk = false;
+                _invModelOk = false;
+                _invModelViewOk = false;
+                _invModelViewProjectionOk = false;
+
+                _invTransModelOk = false;
+                _invTransModelViewOk = false;
+                _invTransModelViewProjectionOk = false;
+
+                _transModelOk = false;
+                _transModelViewOk = false;
+                _transModelViewProjectionOk = false;
+                _modelView = _model*_view;
+
+                UpdateCurrentShader();
+                _rci.ModelView = _modelView;
+
+            } //TODO: Flags
         }
 
         /// <summary>
-        /// The ModelView matrix used by the rendering pipeline. 
+        /// The ModelView matrix used by the rendering pipeline.
         /// </summary>
         /// <value>
         /// The 4x4 ModelView matrix defining the transformation applied to model coordinates yielding view coordinates.
         /// </value>
         /// <remarks>
         /// Model coordinates are the coordinates directly taken from the model (the mesh geometry - <see cref="Fusee.Engine.Mesh"/>). The rendering pipeline
-        /// transforms these coordinates into View coordinates. Further down the pipeline the coordinates will be transformed to screen coordinates to allow the 
-        /// geometry to be rendered to pixel positions on the screen. The ModelView matrix defines the transformations performed on the original model coordinates 
+        /// transforms these coordinates into View coordinates. Further down the pipeline the coordinates will be transformed to screen coordinates to allow the
+        /// geometry to be rendered to pixel positions on the screen. The ModelView matrix defines the transformations performed on the original model coordinates
         /// to yield view coordinates. In most cases the matrix is a composition of several translations, rotations, and scale operations.
         /// </remarks>
         public float4x4 ModelView
@@ -224,13 +289,23 @@ namespace Fusee.Engine
             {
                 // Update matrix
                 _modelView = value;
-
+                _view = float4x4.Identity;
+                _model = value;
                 // Invalidate derived matrices
                 _modelViewProjectionOk = false;
+
+                _invModelOk = false;
+                _invViewOk = false;
                 _invModelViewOk = false;
                 _invModelViewProjectionOk = false;
+
+                _invTransModelOk = false;
+                _invTransViewOk = false;
                 _invTransModelViewOk = false;
                 _invTransModelViewProjectionOk = false;
+
+                _transModelOk = false;
+                _transViewOk = false;
                 _transModelViewOk = false;
                 _transModelViewProjectionOk = false;
 
@@ -239,6 +314,7 @@ namespace Fusee.Engine
                 _rci.ModelView = value;
             }
         }
+
 
         /// <summary>
         /// The projection matrix used by the rendering pipeline
@@ -262,6 +338,8 @@ namespace Fusee.Engine
             set
             {
                 // Update matrix
+                
+
                 _projection = value;
 
                 // Invalidate derived matrices
@@ -272,12 +350,14 @@ namespace Fusee.Engine
                 _invTransProjectionOk = false;
                 _transProjectionOk = false;
                 _transProjectionOk = false;
-
+                
                 UpdateCurrentShader();
-
+                
+                
                 _rci.Projection = value;
             }
         }
+
 
         /// <summary>
         /// The combination of the ModelView and Projection matrices.
@@ -286,7 +366,7 @@ namespace Fusee.Engine
         /// The 4x4 matrix resulting from the matrix multiplaction of the ModelView and the Projection matrix.
         /// </value>
         /// <remarks>
-        /// <see cref="Fusee.Engine.RenderContext.ModelView"/> and <see cref="Fusee.Engine.RenderContext.Projection"/>. 
+        /// <see cref="Fusee.Engine.RenderContext.ModelView"/> and <see cref="Fusee.Engine.RenderContext.Projection"/>.
         /// </remarks>
         public float4x4 ModelViewProjection
         {
@@ -300,6 +380,33 @@ namespace Fusee.Engine
                 return _modelViewProjection;
             }
         }
+
+        public float4x4 InvView
+        {
+            get
+            {
+                if (!_invViewOk)
+                {
+                    _invView = float4x4.Invert(View);
+                    _invViewOk = true;
+                }
+                return _invView;
+            }
+        }
+
+        public float4x4 InvModel
+        {
+            get
+            {
+                if (!_invModelOk)
+                {
+                    _invModel = float4x4.Invert(Model);
+                    _invModelOk = true;
+                }
+                return _invModel;
+            }
+        }
+
 
         /// <summary>
         /// The inverse of the ModelView matrix.
@@ -326,6 +433,7 @@ namespace Fusee.Engine
             }
         }
 
+
         /// <summary>
         /// The inverse of the Projection matrix.
         /// </summary>
@@ -350,6 +458,7 @@ namespace Fusee.Engine
                 return _invProjection;
             }
         }
+
 
         /// <summary>
         /// The inverse of the ModelViewProjection matrix.
@@ -376,6 +485,32 @@ namespace Fusee.Engine
             }
         }
 
+        public float4x4 TransView
+        {
+            get
+            {
+                if (!_transViewOk)
+                {
+                    _transView = float4x4.Transpose(View);
+                    _transViewOk = true;
+                }
+                return _transView;
+            }
+        }
+
+        public float4x4 TransModel
+        {
+            get
+            {
+                if (!_transModelOk)
+                {
+                    _transModel = float4x4.Transpose(Model);
+                    _transModelOk = true;
+                }
+                return _transModel;
+            }
+        }
+
 
         /// <summary>
         /// The transpose of the ModelView matrix.
@@ -385,7 +520,7 @@ namespace Fusee.Engine
         /// </value>
         /// <remarks>
         /// If the ModelView matrix is orthogonal (i.e. contains no scale component), its transpose matrix
-        /// is equal to its inverse  matrix.
+        /// is equal to its inverse matrix.
         /// </remarks>
         /// <seealso cref="Fusee.Engine.RenderContext.ModelView"/>
         /// <seealso cref="Fusee.Engine.RenderContext.InvModelView"/>
@@ -402,6 +537,7 @@ namespace Fusee.Engine
             }
         }
 
+
         /// <summary>
         /// The transpose of the Projection matrix.
         /// </summary>
@@ -410,7 +546,7 @@ namespace Fusee.Engine
         /// </value>
         /// <remarks>
         /// If the Projection matrix is orthogonal (i.e. contains no scale component), its transpose matrix
-        /// is equal to its inverse  matrix.
+        /// is equal to its inverse matrix.
         /// </remarks>
         /// <seealso cref="Fusee.Engine.RenderContext.Projection"/>
         /// <seealso cref="Fusee.Engine.RenderContext.InvProjection"/>
@@ -427,6 +563,7 @@ namespace Fusee.Engine
             }
         }
 
+
         /// <summary>
         /// The transpose of the ModelViewProjection matrix.
         /// </summary>
@@ -435,7 +572,7 @@ namespace Fusee.Engine
         /// </value>
         /// <remarks>
         /// If the ModelViewProjection matrix is orthogonal (i.e. contains no scale component), its transpose matrix
-        /// is equal to its inverse  matrix.
+        /// is equal to its inverse matrix.
         /// </remarks>
         /// <seealso cref="Fusee.Engine.RenderContext.ModelViewProjection"/>
         /// <seealso cref="Fusee.Engine.RenderContext.InvModelViewProjection"/>
@@ -449,6 +586,32 @@ namespace Fusee.Engine
                     _transModelViewProjectionOk = true;
                 }
                 return _transModelViewProjection;
+            }
+        }
+
+        public float4x4 InvTransView
+        {
+            get
+            {
+                if (!_invTransViewOk)
+                {
+                    _invTransView = float4x4.Invert(TransView);
+                    _invTransViewOk = true;
+                }
+                return _invTransView;
+            }
+        }
+
+        public float4x4 InvTransModel
+        {
+            get
+            {
+                if (!_invTransModelOk)
+                {
+                    _invTransModel = float4x4.Invert(TransModel);
+                    _invTransModelOk = true;
+                }
+                return _invTransModel;
             }
         }
 
@@ -479,6 +642,7 @@ namespace Fusee.Engine
             }
         }
 
+
         /// <summary>
         /// The inverse transpose of the Projection matrix.
         /// </summary>
@@ -504,6 +668,7 @@ namespace Fusee.Engine
                 return _invTransProjection;
             }
         }
+
 
         /// <summary>
         /// The inverse transpose of the ModelViewProjection matrix.
@@ -543,7 +708,7 @@ namespace Fusee.Engine
             }
 
             IShaderParam sp;
-            // Normal versions of MV and P       
+            // Normal versions of MV and P
             if ((sp = _currentShader.GetShaderParam("FUSEE_MV")) != null)
                 SetShaderParam(sp, ModelView);
 
@@ -642,12 +807,12 @@ namespace Fusee.Engine
         /// </param>
         /// <remarks>
         /// A diffuse light component results in different parts of objects shaded with different intensites based on the angle of the incoming
-        /// light ray at each given spot on the object surface. This component is what makes objects look "3D" - e.g. coloring the different faces of a cube with 
+        /// light ray at each given spot on the object surface. This component is what makes objects look "3D" - e.g. coloring the different faces of a cube with
         /// different intensities or creating brightness gradients on curved surfaces like a sphere.
         /// </remarks>
         public void SetLightDiffuse(int lightInx, float4 diffuseColor)
         {
-            _lightParams[lightInx].DiffuseColor= diffuseColor;
+            _lightParams[lightInx].DiffuseColor = diffuseColor;
             IShaderParam sp;
             string paramName = "FUSEE_L" + lightInx + "_DIFFUSE";
             if ((sp = _currentShader.GetShaderParam(paramName)) != null)
@@ -664,8 +829,8 @@ namespace Fusee.Engine
         /// </param>
         /// <remarks>
         /// A specular light component results in highlights created on the lit surfaces where the light source is mirrored into the viewers' eye.
-        /// Bright highlights with small radii make objects' materials look glossy. The specular light component adds realism to 3D scenes in 
-        /// walk-through animations because the specualar light's intensity at a given point on an object's surface depends not only on the 
+        /// Bright highlights with small radii make objects' materials look glossy. The specular light component adds realism to 3D scenes in
+        /// walk-through animations because the specualar light's intensity at a given point on an object's surface depends not only on the
         /// incoming light ray angle but also on the positon of the viewer. With a moving camera, also the specular highlights move on the
         /// objects' surfaces.
         /// </remarks>
@@ -696,7 +861,7 @@ namespace Fusee.Engine
         /// Sets the direction of the light with the given index.
         /// </summary>
         /// <param name="lightInx">The light to set the direction on. Can range from 0 to 7. Up to eight lights are supported.</param>
-        /// <param name="position">The direction vector into which the light emits rays.</param>
+        /// <param name="direction">The direction vector into which the light emits rays.</param>
         public void SetLightDirection(int lightInx, float3 direction)
         {
             _lightParams[lightInx].Direction = direction;
@@ -722,12 +887,12 @@ namespace Fusee.Engine
             ShaderProgram sp = new ShaderProgram(_rci, _rci.CreateShader(vs, ps));
             sp._spi = _rci.CreateShader(vs, ps);
             /*
-            sp.ShaderParamHandlesImp = new ShaderParamHandleImp[MatrixParamNames.Length];
-            for (int i=0; i < MatrixParamNames.Length; i++)
-            {
-                sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames[i]);
-            }
-             * */
+sp.ShaderParamHandlesImp = new ShaderParamHandleImp[MatrixParamNames.Length];
+for (int i=0; i < MatrixParamNames.Length; i++)
+{
+sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames[i]);
+}
+* */
             return sp;
         }
 
@@ -870,6 +1035,7 @@ namespace Fusee.Engine
         /// </summary>
         /// <param name="param">The shader parameter identifier.</param>
         /// <param name="val">The integer value that should be assigned to the shader parameter.</param>
+        /// <remarks>
         /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
@@ -935,11 +1101,21 @@ namespace Fusee.Engine
         /// <param name="width">horizontal size (in pixels) of the output region.</param>
         /// <param name="height">vertical size (in pixels) of the ouput region.</param>
         /// <remarks>
-        /// Setting the Viewport limits the rendering ouptut to the specified rectangular region. 
+        /// Setting the Viewport limits the rendering ouptut to the specified rectangular region.
         /// </remarks>
         public void Viewport(int x, int y, int width, int height)
         {
             _rci.Viewport(x, y, width, height);
+        }
+
+        public void ColorMask(bool red, bool green, bool blue, bool alpha)
+        {
+            _rci.ColorMask(red, green, blue, alpha);
+        }
+
+        public void Frustum(double left, double right, double bottom, double top, double zNear, double zFar)
+        {
+            _rci.Frustum(left, right, bottom, top, zNear, zFar);
         }
 
         /// <summary>

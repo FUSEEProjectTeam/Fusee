@@ -22,25 +22,33 @@ namespace Examples.EgoPerspective
         public override void Init()
         {
             _world = new World(RC, Input.Instance);
-            Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/ground.obj.model"));
+            Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Cube.obj.model"));
             Geometry geo2 = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Teapot.obj.model"));
 
-            Sp = MoreShaders.GetShader("bump", RC);
+            Sp = MoreShaders.GetShader("diffuse", RC);
             RC.SetShader(Sp);
             m = new ShaderMaterial(Sp);
 
-            RC.SetLightActive(0, 1);
-            RC.SetLightPosition(0, new float3(0, 1000, 0));
-            RC.SetLightAmbient(0, new float4(0.3f, 0.3f, 0.3f, 1));
-            RC.SetLightSpecular(0, new float4(0.3f, 0.3f, 0.3f, 1));
-            RC.SetLightDiffuse(0, new float4(0.7f, 0.7f, 0.7f, 1));
-            RC.SetLightDirection(0, new float3(0, -1, 0));
+            RC.SetLightActive(7, 1);
+            RC.SetLightPosition(7, new float3(500, 0, 0));
+            RC.SetLightAmbient(7, new float4(0.1f, 0.1f, 0.1f, 1));
+            RC.SetLightSpecular(7, new float4(0.2f, 0.2f, 0.2f, 1));
+            RC.SetLightDiffuse(7, new float4(0.0f, 0.0f, 1.0f, 1));
+            RC.SetLightDirection(7, new float3(-1, 0, 0));
 
-            //RC.SetLightPosition(1, new float3(0, -1000, 0));
-            //RC.SetLightAmbient(1, new float4(0.1f, 0.1f, 0.1f, 1));
-            //RC.SetLightSpecular(1, new float4(0, 0, 0.3f, 0));
-            //RC.SetLightDiffuse(1, new float4(0.0f, 0.7f, 0.0f, 1));
-            //RC.SetLightDirection(1, new float3(0, -1, 0));
+            RC.SetLightActive(6, 1);
+            RC.SetLightPosition(6, new float3(-500, 0, 0));
+            RC.SetLightAmbient(6, new float4(0.1f, 0.1f, 0.1f, 1));
+            RC.SetLightSpecular(6, new float4(0.2f, 0.2f, 0.2f, 0));
+            RC.SetLightDiffuse(6, new float4(1.0f, 0.0f, 0.0f, 1));
+            RC.SetLightDirection(6, new float3(1, 0, 0));
+
+            RC.SetLightActive(2, 1);
+            RC.SetLightPosition(2, new float3(0, 500, 0));
+            RC.SetLightAmbient(2, new float4(0.1f, 0.1f, 0.1f, 1));
+            RC.SetLightSpecular(2, new float4(0, 0, 0.2f, 0));
+            RC.SetLightDiffuse(2, new float4(0.0f, 1.0f, 0.0f, 1));
+            RC.SetLightDirection(2, new float3(0, -1, 0));
 
             //RC.SetLightPosition(2, new float3(1000, 1000, 1000));
             //RC.SetLightAmbient(2, new float4(0.1f, 0.1f, 0.1f, 1));
@@ -48,15 +56,21 @@ namespace Examples.EgoPerspective
             //RC.SetLightDiffuse(2, new float4(0.0f, 0.0f, 0.7f, 1));
             //RC.SetLightDirection(2, new float3(-1, -1, -1));
 
-            //_texture1Param = Sp.GetShaderParam("texture1");
-            _texture2Param = Sp.GetShaderParam("normalTex");
+            //RC.SetLightPosition(3, new float3(1000, 1000, 1000));
+            //RC.SetLightAmbient(3, new float4(0.1f, 0.1f, 0.1f, 1));
+            //RC.SetLightSpecular(3, new float4(0, 0.3f, 0, 0));
+            //RC.SetLightDiffuse(3, new float4(0.0f, 0.0f, 0.7f, 1));
+            //RC.SetLightDirection(3, new float3(-1, -1, -1));
+
+            _texture1Param = Sp.GetShaderParam("texture1");
+            //_texture2Param = Sp.GetShaderParam("normalTex");
 
             ImageData imgData = RC.LoadImage("Assets/wall.jpg");
-            ImageData imgData2 = RC.LoadImage("Assets/normal2.jpg");
+            //ImageData imgData2 = RC.LoadImage("Assets/normal2.jpg");
             ITexture iTex = RC.CreateTexture(imgData);
-            ITexture iTex2 = RC.CreateTexture(imgData2);
-            //RC.SetShaderParamTexture(_texture1Param, iTex);
-            RC.SetShaderParamTexture(_texture2Param, iTex2);
+            //ITexture iTex2 = RC.CreateTexture(imgData2);
+            RC.SetShaderParamTexture(_texture1Param, iTex);
+            //RC.SetShaderParamTexture(_texture2Param, iTex2);
 
 
 

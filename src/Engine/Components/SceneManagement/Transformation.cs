@@ -7,6 +7,9 @@ using Fusee.Math;
 
 namespace Fusee.SceneManagement
 {
+    /// <summary>
+    /// Transformation is derived from Component and stores all positions, angles and movement of all SceneEntitys. 
+    /// </summary>
     public class Transformation : Component
     {
         private float4x4 _transformMatrix;
@@ -18,6 +21,10 @@ namespace Fusee.SceneManagement
         private bool _matrixDirty;
         private bool _quaternionDirty;
         private bool _eulerDirty;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Transformation"/> class. No SceneEntity will be set.
+        /// </summary>
        public Transformation()
        {
            _transformMatrix = float4x4.Identity;
@@ -27,6 +34,10 @@ namespace Fusee.SceneManagement
            _eulerDirty = false;
        }
 
+       /// <summary>
+       /// Initializes a new instance of the <see cref="Transformation"/> class. Sets a SceneEntity for Transform.
+       /// </summary>
+       /// <param name="entity">The SceneEntity that will be set to in Transform.</param>
        public Transformation(SceneEntity entity)
        {
            _transformMatrix = float4x4.Identity;
@@ -39,10 +50,13 @@ namespace Fusee.SceneManagement
 
 
 
-        
 
 
 
+
+       /// <summary>
+       /// Gets or sets the float4x4 transformMatrix.
+       /// </summary>
        public float4x4 Matrix
        {
            get
@@ -56,13 +70,12 @@ namespace Fusee.SceneManagement
            }
            set
            {
-               //_eulerDirty = true;
-               //_matrixDirty = true;
-               //_quaternionDirty = true;
+
                _transformMatrix = value;
                UpdateMembers();
            } // TODO: Extract Position, Rotation, Scale after assignment.
        }
+
 
         private float3 GetScaleFromMatrix(float4x4 matrix)
         {
@@ -73,10 +86,12 @@ namespace Fusee.SceneManagement
             return new float3(xs,ys,zs);
         }
 
+
         private float3 GetPositionFromMatrix(float4x4 matrix)
         {
             return new float3(matrix.M41,matrix.M42,matrix.M43);
         }
+
 
         private float GetLengthOfVector(float3 vector)
         {
@@ -84,6 +99,9 @@ namespace Fusee.SceneManagement
             return (float)System.Math.Sqrt(sum);
         }
 
+        /// <summary>
+        /// Gets or sets the float3 LocalPosition.
+        /// </summary>
        public float3 LocalPosition
        {
            set
@@ -96,9 +114,12 @@ namespace Fusee.SceneManagement
                return _localPosition;
            }
        }
-        
-        
 
+
+
+       /// <summary>
+       /// Gets or sets the float3 LocalScale.
+       /// </summary>
        public float3 LocalScale
        {
            set
@@ -113,6 +134,9 @@ namespace Fusee.SceneManagement
            }
        }
 
+       /// <summary>
+       /// Gets or sets the Quaternion LocalQuaternion.
+       /// </summary>
        public Quaternion LocalQuaternion
        {
            get
@@ -138,6 +162,9 @@ namespace Fusee.SceneManagement
 
 
         // TODO: Add eulerdirty functionality
+       /// <summary>
+       /// Gets or sets the float3 LocalEulerAngles.
+       /// </summary>
        public float3 LocalEulerAngles
        {
            set
@@ -157,6 +184,7 @@ namespace Fusee.SceneManagement
                return _eulerAngles;
            }
        }
+
       private void UpdateMembers() // Extract members from transformmatrix
       {
           //_quaternion = Quaternion.Identity;
@@ -164,6 +192,9 @@ namespace Fusee.SceneManagement
           _localScale = GetScaleFromMatrix(_transformMatrix);
           _localPosition = GetPositionFromMatrix(_transformMatrix);
       }
+      public override void Accept(SceneVisitor sv)
+      {
+          sv.Visit((Transformation)this);
+      }
     }
-
 }

@@ -79,7 +79,7 @@ namespace Examples.Texture
 
         public override void Init()
         {
-
+                       
             Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Sphere.obj.model"));
             _meshSphere = geo.ToMesh();
 
@@ -99,7 +99,7 @@ namespace Examples.Texture
             _iTex1 = RC.CreateTexture(_imgData1);
             _imgData2 = RC.LoadImage("Assets/cube_tex.jpg");
             //_imgData2 = RC.CreateImage(500, 500, "Green");
-            _imgData2 = RC.TextOnImage(_imgData2, "Georgia", 80f, "Hello World!", "Black", 10f, 120f);
+            _imgData2 = RC.TextOnImage(_imgData2, "Verdana", 80f, "FUSEE rocks!", "Black", 0, 30);
             _iTex2 = RC.CreateTexture(_imgData2);
             
 

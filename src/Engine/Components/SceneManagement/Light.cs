@@ -39,7 +39,7 @@ namespace Fusee.SceneManagement
 
         #region Constructors
         /// <summary>
-        /// Creates an object of light.
+        /// Creates a light object.
         /// </summary>
         public  Light()
         {

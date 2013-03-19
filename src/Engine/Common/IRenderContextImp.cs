@@ -45,7 +45,7 @@ namespace Fusee.Engine
 
 
         ITexture CreateTexture(ImageData imageData);
-        
+
         ImageData LoadImage(String filename);
 
         ImageData CreateImage(int width, int height, String bgColor);
@@ -70,6 +70,10 @@ namespace Fusee.Engine
         void SetShader(IShaderProgramImp shaderProgramImp);
 
         void Viewport(int x, int y, int width, int height);
+
+        void ColorMask(bool red, bool green, bool blue, bool alpha);
+
+        void Frustum(double left, double right, double bottom, double top, double zNear, double zFar);
 
         void Render(IMeshImp mr);
 
