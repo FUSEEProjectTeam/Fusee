@@ -41,58 +41,8 @@ namespace Fusee.SceneManagement
         /// The _ renderer stack
         /// </summary>
         private Stack<Renderer> _RendererStack;
-        /// <summary>
-        /// The _delta time
-        /// </summary>
-        private double _deltaTime;
-        /// <summary>
-        /// The _input
-        /// </summary>
-        private Input _input;
 
 
-
-        /// <summary>
-        /// Sets the delta time.
-        /// </summary>
-        /// <param name="delta">The delta.</param>
-        public void SetDeltaTime(double delta)
-        {
-            _deltaTime = delta;
-        }
-
-
-
-
-        /// <summary>
-        /// Gets or sets the input.
-        /// </summary>
-        /// <value>
-        /// The input.
-        /// </value>
-        public Input Input
-        {
-            set { _input = value; }
-            get
-            {
-                if (_input != null)
-                {
-                    return _input;
-                }else
-                {
-                    return null;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets the delta time.
-        /// </summary>
-        /// <param name="deltaTime">The delta time.</param>
-        public void GetDeltaTime(out double deltaTime)
-        {
-            deltaTime = _deltaTime;
-        }
 
 
         /// <summary>
@@ -274,10 +224,11 @@ namespace Fusee.SceneManagement
             //Console.WriteLine("_hasTransform+"+_hasTransform.Count+"_hasMesh+"+_hasMesh.Count+"_hasRenderer"+_hasRenderer.Count);
             RenderMatrix renderMatrix = new RenderMatrix(matrix);
             _queue.AddRenderJob(renderMatrix);
-            RenderMesh renderMesh = new RenderMesh(mesh);
-            _queue.AddRenderJob(renderMesh);
+
             RenderRenderer renderRenderer = new RenderRenderer(renderer);
             _queue.AddRenderJob(renderRenderer);
+            RenderMesh renderMesh = new RenderMesh(mesh);
+            _queue.AddRenderJob(renderMesh);
         }
 
 
@@ -342,8 +293,12 @@ namespace Fusee.SceneManagement
         /// <param name="renderer">The renderer.</param>
         override public void Visit(Renderer renderer)
         {
-            StoreMesh(renderer.mesh);
-            StoreRenderer(renderer);
+            if(renderer.mesh != null && renderer.material != null)
+            {
+                StoreMesh(renderer.mesh);
+                StoreRenderer(renderer); 
+            }
+            
         }
         /// <summary>
         /// Visits the specified transform.

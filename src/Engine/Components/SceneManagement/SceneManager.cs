@@ -104,10 +104,6 @@ namespace Fusee.SceneManagement
 
             foreach (var sceneMember in SceneMembers)
             {
-                
-                //_traversalRender.SetDeltaTime(renderCanvas.DeltaTime);
-                _sceneVisitorRendering.SetDeltaTime(Time.Instance.DeltaTime);
-                //sceneMember.Traverse(_traversalRender);
                 sceneMember.Accept(_sceneVisitorRendering);
             }
 
@@ -141,7 +137,7 @@ namespace Fusee.SceneManagement
         public void AddRenderJob(RenderJob job)
         {
             
-            RenderJobs[2].Add(job);
+            RenderJobs[1].Add(job);
         }
 
         /// <summary>
@@ -150,7 +146,7 @@ namespace Fusee.SceneManagement
         /// <param name="job">The job.</param>
         public void AddLightJob(RenderJob job)
         {
-            RenderJobs[1].Add(job);
+            RenderJobs[0].Add(job);
         }
 
 

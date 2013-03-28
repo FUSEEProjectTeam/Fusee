@@ -38,9 +38,7 @@ namespace Fusee.Engine
         }
 
 private const string VsDiffuse = @"
-#ifndef GL_ES
-    #version 120
-#endif
+#version 120
 
 attribute vec4 fuColor;
 attribute vec3 fuVertex;
@@ -109,9 +107,7 @@ void main()
 }";
 
 private const string PsDiffuse = @"
-#ifndef GL_ES
-    #version 120
-#endif
+#version 120
 
 /* Copies incoming fragment color without change. */
 #ifdef GL_ES
@@ -654,9 +650,7 @@ void main()
 
 
 private const string Vs = @"
-            #ifndef GL_ES
-               #version 120
-            #endif
+
 
             /* Copies incoming vertex color without change.
              * Applies the transformation matrix to vertex position.
@@ -686,9 +680,7 @@ private const string Vs = @"
             }";
 
         private const string Ps = @"
-           #ifndef GL_ES
-               #version 120
-            #endif
+
 
             /* Copies incoming fragment color without change. */
             #ifdef GL_ES

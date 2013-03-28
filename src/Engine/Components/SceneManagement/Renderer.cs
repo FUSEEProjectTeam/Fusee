@@ -25,10 +25,33 @@ namespace Fusee.SceneManagement
         public Renderer()
         {
 
-            Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Sphere.obj.model"));
+        }
+
+        public Renderer (ShaderProgram sp)
+        {
+            material = new Material(sp);
+        }
+
+        public Renderer(Geometry geo)
+        {
             mesh = geo.ToMesh();
-            material = new Material();
-            color = new float4(1,0,0,1);
+        }
+
+        public Renderer(Mesh mesh)
+        {
+            this.mesh = mesh;
+        }
+
+        public Renderer(Mesh mesh, ShaderProgram sp)
+        {
+            this.mesh = mesh;
+            material = new Material(sp);
+        }
+
+        public Renderer(Geometry geo, ShaderProgram shaderProgram)
+        {
+            mesh = geo.ToMesh();
+            material = new Material(shaderProgram);
         }
         public override void Accept(SceneVisitor sv)
         {
