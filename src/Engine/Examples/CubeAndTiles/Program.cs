@@ -1,4 +1,5 @@
-﻿using Fusee.Engine;
+﻿using System.Runtime.InteropServices;
+using Fusee.Engine;
 using Fusee.Math;
 
 namespace Examples.CubeAndTiles
@@ -73,8 +74,8 @@ namespace Examples.CubeAndTiles
         private static bool _topView;
         private static KeyCodes _lastKey = KeyCodes.None;
 
-        private const float RotationSpeed = 10.0f;
-        private const float Damping = 0.95f;
+        private const float RotationSpeed = 1f;
+        private const float Damping = 0.92f;
 
         // Init()
         public override void Init()
@@ -145,16 +146,18 @@ namespace Examples.CubeAndTiles
 
             if (Input.Instance.GetAxis(InputAxis.MouseWheel) < 0)
                 _exampleLevel.ZoomCamera(-50);
-
+            //
             if (Input.Instance.IsButtonDown(MouseButtons.Left))
             {
-                _angleVelHorz = RotationSpeed*Input.Instance.GetAxis(InputAxis.MouseX)*(float) Time.Instance.DeltaTime;
-                _angleVelVert = RotationSpeed * Input.Instance.GetAxis(InputAxis.MouseY) * (float)Time.Instance.DeltaTime;
+                _angleVelHorz = RotationSpeed*Input.Instance.GetAxis(InputAxis.MouseX);
+                _angleVelVert = RotationSpeed*Input.Instance.GetAxis(InputAxis.MouseY);
             }
             else
             {
-                _angleVelHorz *= Damping;
-                _angleVelVert *= Damping;
+                var curDamp = (float) System.Math.Exp(-Damping*Time.Instance.DeltaTime);
+
+                _angleVelHorz *= curDamp;
+                _angleVelVert *= curDamp;
             }
 
             _angleHorz += _angleVelHorz;

@@ -47,7 +47,7 @@ namespace Examples.CubeAndTiles
 
             _posZ = 0.0f;
             _veloZ = 0.0f;
-            _curBright = 1.0f;
+            _curBright = 0.0f;
             
             _randomRotZ = curLevel.ObjRandom.Next(0, 4);
 
@@ -61,7 +61,7 @@ namespace Examples.CubeAndTiles
             State = FieldStates.FsLoading;
 
             _posZ = -_fieldId/2.0f;
-            _veloZ = 0.1f;
+            _veloZ = 6f;
 
             // default brightness: z coord divided by maximum dist
             _curBright = 1 - (_posZ/(-_curLevel.FieldCount/2.0f));
@@ -74,7 +74,7 @@ namespace Examples.CubeAndTiles
                 State = FieldStates.FsDead;
 
                 _posZ = 0;
-                _veloZ = (Type == FieldTypes.FtEnd) ? -0.4f : -0.1f;
+                _veloZ = (Type == FieldTypes.FtEnd) ? -24f : -6f;
             }
         }
 
@@ -82,8 +82,8 @@ namespace Examples.CubeAndTiles
         {
             if (State != FieldStates.FsLoading) return;
 
-            _veloZ = System.Math.Max(-0.01f, -_posZ/10.0f);
-            _posZ += _veloZ;
+            _veloZ = System.Math.Max(-0.6f, -_posZ/0.17f);
+            _posZ += _veloZ * (float) Time.Instance.DeltaTime;
 
             _curBright = 1 - (_posZ)/(-_curLevel.FieldCount/2.0f);
 
@@ -103,8 +103,8 @@ namespace Examples.CubeAndTiles
 
             if (_curBright > 0.0f)
             {
-                _posZ += _veloZ;
-                _curBright -= .02f;
+                _posZ += _veloZ*(float) Time.Instance.DeltaTime;
+                _curBright -= 1.2f*(float) Time.Instance.DeltaTime;
             }
             else
                 _curBright = 0;
