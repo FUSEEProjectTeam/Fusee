@@ -90,6 +90,21 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderCanvasImp
     }
   );
 
+	$.Method({ Static: false, Public: true }, "IRenderCanvasImp_get_VerticalSync",
+      new JSIL.MethodSignature($.Boolean, []),
+        function get_VerticalSync() {
+          return false;
+        }
+    );
+
+	$.Method({ Static: false, Public: true }, "IRenderCanvasImp_set_VerticalSync",
+      new JSIL.MethodSignature(null, [$.Boolean]),
+        function set_VerticalSync() {
+          // not implemented
+        }
+    );	
+	
+  
     $.Field({ Static: false, Public: false }, "IRenderCanvasImp_Init", $jsilcore.TypeRef("System.EventHandler`1", [$fuseeCommon.TypeRef("Fusee.Engine.MouseEventArgs")]), function ($) {
         return null;
     });
