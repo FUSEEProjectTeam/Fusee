@@ -111,6 +111,9 @@ namespace Fusee.Engine
             GL.ClearColor(Color.MidnightBlue);
             GL.Enable(EnableCap.DepthTest);
 
+            // Use VSync!
+            Context.SwapInterval = 1;
+
             _renderCanvasImp.DoInit();
         }
 
