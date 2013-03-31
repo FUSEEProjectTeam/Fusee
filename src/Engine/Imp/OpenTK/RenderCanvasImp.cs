@@ -23,6 +23,12 @@ namespace Fusee.Engine
             }
         }
 
+        public bool VerticalSync
+        {
+            get { return _gameWindow.Context.SwapInterval == 1; }
+            set { _gameWindow.Context.SwapInterval = (value) ? 1 : 0; }
+        }
+
         internal RenderCanvasGameWindow _gameWindow;
 
         public RenderCanvasImp ()

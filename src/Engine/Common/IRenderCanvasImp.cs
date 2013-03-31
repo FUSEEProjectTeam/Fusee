@@ -11,6 +11,8 @@ namespace Fusee.Engine
 
         double DeltaTime { get; }
 
+        bool VerticalSync { get; set; }
+
         void Present();
 
         void Run();

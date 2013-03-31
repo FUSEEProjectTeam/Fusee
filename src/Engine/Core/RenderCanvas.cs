@@ -131,6 +131,17 @@ namespace Fusee.Engine
         /// </value>
         public int Height { get { return _canvasImp.Height; } }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether VSync is active.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if VSync is active; otherwise, <c>false</c>.
+        /// </value>
+        public bool VSync
+        {
+            set { _canvasImp.VerticalSync = value; }
+            get { return _canvasImp.VerticalSync; }
+        }
 
         /// <summary>
         /// Presents the contents of the backbuffer on the visible part of this render canvas.
