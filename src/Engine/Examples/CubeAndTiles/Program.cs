@@ -146,7 +146,7 @@ namespace Examples.CubeAndTiles
 
             if (Input.Instance.GetAxis(InputAxis.MouseWheel) < 0)
                 _exampleLevel.ZoomCamera(-50);
-            //
+
             if (Input.Instance.IsButtonDown(MouseButtons.Left))
             {
                 _angleVelHorz = RotationSpeed*Input.Instance.GetAxis(InputAxis.MouseX);
