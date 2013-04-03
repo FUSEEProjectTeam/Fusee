@@ -64,7 +64,11 @@ namespace Examples.Texture
                 //gl_FragColor = vColor;
             }";
 
-        private static float _angleHorz = 0.0f, _angleVert = 0.0f, _angleVelHorz = 0, _angleVelVert = 0, _rotationSpeed = 10.0f, _damping = 0.95f;
+        private static float _angleHorz = 0.0f, _angleVert = 0.0f, _angleVelHorz = 0, _angleVelVert = 0;
+
+        private const float RotationSpeed = 1f;
+        private const float Damping = 0.92f;
+        
         protected Mesh _meshSphere, _meshCube;
         protected IShaderParam _vColorParam;
         protected IShaderParam _texture1Param;
@@ -86,9 +90,6 @@ namespace Examples.Texture
             Geometry geo2 = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Cube.obj.model"));
             _meshCube = geo2.ToMesh();
 
-
-            _angleHorz = 0;
-            _rotationSpeed = 10.0f;
             ShaderProgram sp = RC.CreateShader(_vs, _ps);
             RC.SetShader(sp);
             _vColorParam = sp.GetShaderParam("vColor");
@@ -109,35 +110,37 @@ namespace Examples.Texture
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
-
             if (Input.Instance.IsButtonDown(MouseButtons.Left))
             {
-                _angleVelHorz = _rotationSpeed * Input.Instance.GetAxis(InputAxis.MouseX) * (float)Time.Instance.DeltaTime;
-                _angleVelVert = _rotationSpeed * Input.Instance.GetAxis(InputAxis.MouseY) * (float)Time.Instance.DeltaTime;
+                _angleVelHorz = RotationSpeed * Input.Instance.GetAxis(InputAxis.MouseX);
+                _angleVelVert = RotationSpeed * Input.Instance.GetAxis(InputAxis.MouseY);
             }
             else
             {
-                _angleVelHorz *= _damping;
-                _angleVelVert *= _damping;
+                var curDamp = (float)System.Math.Exp(-Damping * Time.Instance.DeltaTime);
+
+                _angleVelHorz *= curDamp;
+                _angleVelVert *= curDamp;
             }
+
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
 
             if (Input.Instance.IsKeyDown(KeyCodes.Left))
             {
-                _angleHorz -= _rotationSpeed * (float)Time.Instance.DeltaTime;
+                _angleHorz -= RotationSpeed * (float)Time.Instance.DeltaTime;
             }
             if (Input.Instance.IsKeyDown(KeyCodes.Right))
             {
-                _angleHorz += _rotationSpeed * (float)Time.Instance.DeltaTime;
+                _angleHorz += RotationSpeed * (float)Time.Instance.DeltaTime;
             }
             if (Input.Instance.IsKeyDown(KeyCodes.Up))
             {
-                _angleVert -= _rotationSpeed * (float)Time.Instance.DeltaTime;
+                _angleVert -= RotationSpeed * (float)Time.Instance.DeltaTime;
             }
             if (Input.Instance.IsKeyDown(KeyCodes.Down))
             {
-                _angleVert += _rotationSpeed * (float)Time.Instance.DeltaTime;
+                _angleVert += RotationSpeed * (float)Time.Instance.DeltaTime;
             }
 
             float4x4 mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);

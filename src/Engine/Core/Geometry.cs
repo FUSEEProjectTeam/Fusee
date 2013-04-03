@@ -52,8 +52,8 @@ namespace Fusee.Engine
         /// </value>
         public IList<double3> Normals
         {
-            set { _vertices = new List<double3>(value); }
-            get { return _vertices; }
+            set { _normals = new List<double3>(value); }
+            get { return _normals; }
         }
 
         internal List<double2> _texCoords;
@@ -224,11 +224,11 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// Gets all faces containing vertex.
+        /// Gets all faces containing a certain vertex.
         /// </summary>
-        /// <param name="iV">The i V.</param>
-        /// <param name="vertInFace">The vert in face.</param>
-        /// <returns></returns>
+        /// <param name="iV">The index of the vertex.</param>
+        /// <param name="vertInFace">Out parameter: A list of indices of the vertex in each respecitve face.</param>
+        /// <returns>A list of indices containing the vertex.</returns>
         public IList<int> GetAllFacesContainingVertex(int iV, out IList<int> vertInFace)
         {
             List<int> ret = new List<int>();
@@ -249,11 +249,11 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// Calcs the face normal.
+        /// Calculates the normal vector for a given face.
         /// </summary>
-        /// <param name="f">The face.</param>
-        /// <returns>The nomal vectorfor the face.</returns>
-        /// <exception cref="System.Exception">"Cannot calculate normal of degenerate face with only  + f.InxVert.Length +  vertices."</exception>
+        /// <param name="f">The face to calculate the normal for.</param>
+        /// <returns>The nomal vector for the face.</returns>
+        /// <exception cref="System.Exception">The face doesn't consist of 3 or more vertices.</exception>
         public double3 CalcFaceNormal(Face f)
         {
             if (f.InxVert.Length < 3)
@@ -264,9 +264,12 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// Creates the normals.
+        /// Creates normals for the entire geometry based on a given smoothing angle.
         /// </summary>
         /// <param name="smoothingAngle">The smoothing angle.</param>
+        /// <remarks>
+        /// If 
+        /// </remarks>
         public void CreateNormals(double smoothingAngle)
         {
             double cSmoothingAngle = System.Math.Cos(smoothingAngle);

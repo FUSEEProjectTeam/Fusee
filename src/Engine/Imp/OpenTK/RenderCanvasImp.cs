@@ -23,14 +23,23 @@ namespace Fusee.Engine
             }
         }
 
+        public bool VerticalSync
+        {
+            get { return _gameWindow.Context.SwapInterval == 1; }
+            set { _gameWindow.Context.SwapInterval = (value) ? 1 : 0; }
+        }
+
         internal RenderCanvasGameWindow _gameWindow;
 
         public RenderCanvasImp ()
-		{
-			try {
-				_gameWindow = new RenderCanvasGameWindow (this, true);
+        {
+            const int width = 1280;
+            var height = System.Math.Min(Screen.PrimaryScreen.Bounds.Height - 100, 720);
+
+            try {
+				_gameWindow = new RenderCanvasGameWindow (this, width, height, true);
 			} catch {
-				_gameWindow = new RenderCanvasGameWindow (this, false);
+                _gameWindow = new RenderCanvasGameWindow(this, width, height, false);
 			}
         }
 
@@ -86,8 +95,8 @@ namespace Fusee.Engine
             get { return _deltaTime; }
         }
 
-        public RenderCanvasGameWindow(RenderCanvasImp renderCanvasImp, bool antiAliasing)
-            : base(1280, 720, new GraphicsMode(32,24,0,(antiAliasing) ? 8 : 0) /*GraphicsMode.Default*/, "Fusee Engine")
+        public RenderCanvasGameWindow(RenderCanvasImp renderCanvasImp, int width, int height, bool antiAliasing)
+            : base(width, height, new GraphicsMode(32,24,0,(antiAliasing) ? 8 : 0) /*GraphicsMode.Default*/, "Fusee Engine")
         {
             _renderCanvasImp = renderCanvasImp;
         }
@@ -107,6 +116,9 @@ namespace Fusee.Engine
 
             GL.ClearColor(Color.MidnightBlue);
             GL.Enable(EnableCap.DepthTest);
+
+            // Use VSync!
+            Context.SwapInterval = 1;
 
             _renderCanvasImp.DoInit();
         }

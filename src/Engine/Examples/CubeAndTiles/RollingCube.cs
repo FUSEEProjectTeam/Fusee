@@ -59,7 +59,7 @@ namespace Examples.CubeAndTiles
 
             _orientQuat = Quaternion.Identity;
 
-            _posZ = 0;
+            _posZ = 2;
             _veloZ = 0.0f;
             _curBright = 0.0f;
 
@@ -83,8 +83,8 @@ namespace Examples.CubeAndTiles
             _orientQuat = Quaternion.Identity;
 
             _posZ = 2;
-            _veloZ = -1.0f;
-            _curBright = 0;
+            _veloZ = 0.0f;
+            _curBright = 0.0f;
         }
 
         public void DeadCube()
@@ -94,7 +94,7 @@ namespace Examples.CubeAndTiles
             State = CubeStates.CsDying;
 
             _posZ = 0;
-            _veloZ = -0.2f;
+            _veloZ = -10f;
         }
 
         public void WinningCube()
@@ -104,7 +104,7 @@ namespace Examples.CubeAndTiles
             State = CubeStates.CsWinning;
 
             _posZ = 0;
-            _veloZ = +0.2f;
+            _veloZ = +10f;
         }
 
         public bool MoveCube(sbyte dirX, sbyte dirY)
@@ -131,8 +131,8 @@ namespace Examples.CubeAndTiles
         {
             if (State != CubeStates.CsLoading) return;
            
-            _veloZ = Math.Min(-0.01f, -_posZ / 10.0f);
-            _posZ += _veloZ;
+            _veloZ = Math.Min(-0.6f, -_posZ / 0.17f);
+            _posZ += _veloZ*(float) Time.Instance.DeltaTime;
 
             _curBright = 1 - (_posZ/2);
 
@@ -152,8 +152,8 @@ namespace Examples.CubeAndTiles
 
             if (_curBright > 0.0f)
             {
-                _posZ += _veloZ;
-                _curBright -= .05f;
+                _posZ += _veloZ * (float)Time.Instance.DeltaTime;
+                _curBright -= 3f * (float) Time.Instance.DeltaTime;
             }
             else
                 State = CubeStates.CsWon;            
@@ -167,8 +167,8 @@ namespace Examples.CubeAndTiles
 
             if (_curBright > 0.0f)
             {
-                _posZ += _veloZ;
-                _curBright -= .05f;
+                _posZ += _veloZ * (float)Time.Instance.DeltaTime;
+                _curBright -= 3f * (float) Time.Instance.DeltaTime;
             }
             else
                 State = CubeStates.CsDead;

@@ -15,11 +15,17 @@ namespace Examples.SolarSystem
         }
         public override void Update()
         {
-            //float mousemove = Input.GetAxis(InputAxis.MouseX);
-            if (Input.Instance.IsButtonDown(MouseButtons.Left))
+            
+
+            if (Input.Instance.GetAxis(InputAxis.MouseWheel) != 0)
             {
-                transform.LocalPosition += new float3(0, 0, 0.1f);
+                transform.LocalPosition -=new float3(0,0, (float)(Input.Instance.GetAxis(InputAxis.MouseWheel)*Time.Instance.DeltaTime)*1000);
             }
+        }
+
+        void SwitchTarget()
+        {
+
         }
     }
 }

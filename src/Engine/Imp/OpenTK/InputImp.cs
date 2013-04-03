@@ -6,37 +6,39 @@ namespace Fusee.Engine
 {
     public class InputImp : IInputImp
     {
-        protected GameWindow _gameWindow;
-        internal Keymapper _keyMapper;
+        protected GameWindow GameWindow;
+        internal Keymapper KeyMapper;
 
         public InputImp(IRenderCanvasImp renderCanvas)
         {
             if (renderCanvas == null)
                 throw new ArgumentNullException("renderCanvas");
+
             if (!(renderCanvas is RenderCanvasImp))
                 throw new ArgumentException("renderCanvas must be of type RenderCanvasImp", "renderCanvas");
-            _gameWindow = ((RenderCanvasImp) renderCanvas)._gameWindow;
-            _gameWindow.Keyboard.KeyDown += OnGameWinKeyDown;
-            _gameWindow.Keyboard.KeyUp += OnGameWinKeyUp;
-            _gameWindow.Mouse.ButtonDown += OnGameWinMouseDown;
-            _gameWindow.Mouse.ButtonUp += OnGameWinMouseUp;
 
-            _keyMapper = new Keymapper();
+            GameWindow = ((RenderCanvasImp) renderCanvas)._gameWindow;
+            GameWindow.Keyboard.KeyDown += OnGameWinKeyDown;
+            GameWindow.Keyboard.KeyUp += OnGameWinKeyUp;
+            GameWindow.Mouse.ButtonDown += OnGameWinMouseDown;
+            GameWindow.Mouse.ButtonUp += OnGameWinMouseUp;
+
+            KeyMapper = new Keymapper();
         }
 
         public void FrameTick(double time)
         {
-            // Do Nothing
+            // do nothing
         }
 
         public Point GetMousePos()
         {
-            return new Point{x = _gameWindow.Mouse.X, y = _gameWindow.Mouse.Y};
+            return new Point{x = GameWindow.Mouse.X, y = GameWindow.Mouse.Y};
         }
 
         public int GetMouseWheelPos()
         {
-            return _gameWindow.Mouse.Wheel;
+            return GameWindow.Mouse.Wheel;
         }
 
         public event EventHandler<MouseEventArgs> MouseButtonDown;
@@ -45,34 +47,8 @@ namespace Fusee.Engine
         {
             if (MouseButtonDown != null)
             {
-                MouseButtons mb = MouseButtons.Unknown;
-                switch (mouseArgs.Button)
-                {
-                    case MouseButton.Left:
-                        mb = MouseButtons.Left;
-                        break;
-                    case MouseButton.Middle:
-                        mb = MouseButtons.Middle;
-                        break;
-                    case MouseButton.Right:
-                        mb = MouseButtons.Right;
-                        break;
-                 }
-                MouseButtonDown(this, new MouseEventArgs
-                                          {
-                                             Button = mb,
-                                             Position = new Point{x=mouseArgs.X, y=mouseArgs.Y}
-                                          });   
-            }
-        }
+                var mb = MouseButtons.Unknown;
 
-        public event EventHandler<MouseEventArgs> MouseButtonUp;
-
-        protected void OnGameWinMouseUp(object sender, MouseButtonEventArgs mouseArgs)
-        {
-            if (MouseButtonUp != null)
-            {
-                MouseButtons mb = MouseButtons.Unknown;
                 switch (mouseArgs.Button)
                 {
                     case MouseButton.Left:
@@ -85,11 +61,41 @@ namespace Fusee.Engine
                         mb = MouseButtons.Right;
                         break;
                 }
-                MouseButtonUp(this, new MouseEventArgs
+
+                MouseButtonDown(this, new MouseEventArgs
+                    {
+                        Button = mb,
+                        Position = new Point {x = mouseArgs.X, y = mouseArgs.Y}
+                    });
+            }
+        }
+
+        public event EventHandler<MouseEventArgs> MouseButtonUp;
+
+        protected void OnGameWinMouseUp(object sender, MouseButtonEventArgs mouseArgs)
+        {
+            if (MouseButtonUp != null)
+            {
+                var mb = MouseButtons.Unknown;
+
+                switch (mouseArgs.Button)
                 {
-                    Button = mb,
-                    Position = new Point { x = mouseArgs.X, y = mouseArgs.Y }
-                });
+                    case MouseButton.Left:
+                        mb = MouseButtons.Left;
+                        break;
+                    case MouseButton.Middle:
+                        mb = MouseButtons.Middle;
+                        break;
+                    case MouseButton.Right:
+                        mb = MouseButtons.Right;
+                        break;
+                }
+
+                MouseButtonUp(this, new MouseEventArgs
+                    {
+                        Button = mb,
+                        Position = new Point {x = mouseArgs.X, y = mouseArgs.Y}
+                    });
             }
         }
       
@@ -101,12 +107,12 @@ namespace Fusee.Engine
             {
                 // TODO: implement correct Alt, Control, Shift behavior
                 KeyDown(this, new KeyEventArgs
-                                  {
-                                      Alt = false,
-                                      Control = false,
-                                      Shift = false,
-                                      KeyCode = _keyMapper[key.Key],
-                                  });
+                    {
+                        Alt = false,
+                        Control = false,
+                        Shift = false,
+                        KeyCode = KeyMapper[key.Key],
+                    });
             }
         }
 
@@ -118,12 +124,12 @@ namespace Fusee.Engine
             {
                 // TODO: implement correct Alt, Control, Shift behavior
                 KeyUp(this, new KeyEventArgs
-                {
-                    Alt = false,
-                    Control = false,
-                    Shift = false,
-                    KeyCode = _keyMapper[key.Key],
-                });
+                    {
+                        Alt = false,
+                        Control = false,
+                        Shift = false,
+                        KeyCode = KeyMapper[key.Key],
+                    });
             }
         }
     }

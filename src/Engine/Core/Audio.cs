@@ -4,7 +4,18 @@
 namespace Fusee.Engine
 {
     /// <summary>
+    /// The Audio class provides all audio functionality. It is accessible from everywhere.
     /// 
+    /// Supported file formats are: mp3, ogg, wav, flac, aiff, au, raw, paf, svx, nist, voc,
+    /// ircam, w64, mat4, mat5 pvf, htk, sds, avr, sd2, caf, wve, mpc2k, rf64
+    /// 
+    /// Audio can be either buffered completely or be played as a stream.
+    /// 
+    /// E.g. : IAudioStream myAudio1;
+    ///
+    ///        myAudio1 = Audio.Instance.LoadFile("Assets/Music.ogg"). 
+    /// 
+    ///        myAudio1.play();                            
     /// </summary>
     public class Audio
     {
@@ -20,28 +31,25 @@ namespace Fusee.Engine
                 _audioImp.OpenDevice();
             }
         }
-       
-        /// <summary>
-        /// 
-        /// </summary>
+
         internal void CloseDevice()
         {
             _audioImp.CloseDevice();
         }
 
         /// <summary>
-        /// 
+        /// Loads an audiofile.
         /// </summary>
-        /// <param name="fileName"></param>
-        /// <param name="streaming"></param>
-        /// <returns></returns>
+        /// <param name="fileName">Path to the file.</param>
+        /// <param name="streaming"><c>true</c> if the audiofile shall be streamed; otherwise, <c>false</c>.</param>
+        /// <returns>The audiofile as an <see cref="IAudioStream"/></returns>
         public IAudioStream LoadFile(string fileName, bool streaming = false)
         {
             return _audioImp.LoadFile(fileName, streaming);
         }
 
         /// <summary>
-        /// 
+        /// Stops all <see cref="IAudioStream"/>s.
         /// </summary>
         public void Stop()
         {
@@ -49,27 +57,27 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// 
+        /// Sets the main volume (0 to 100)
         /// </summary>
-        /// <param name="val"></param>
+        /// <param name="val">The value</param>
         public void SetVolume(float val)
         {
             _audioImp.SetVolume(val);
         }
 
         /// <summary>
-        /// 
+        /// Gets the main volume.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The main value (0 to 100)</returns>
         public float GetVolume()
         {
             return _audioImp.GetVolume();
         }
 
         /// <summary>
-        /// 
+        /// Sets the panning of all <see cref="IAudioStream"/>s (-100 to +100)
         /// </summary>
-        /// <param name="val"></param>
+        /// <param name="val">The value</param>
         public void SetPanning(float val)
         {
             _audioImp.SetPanning(val);
@@ -78,6 +86,9 @@ namespace Fusee.Engine
         /// <summary>
         /// Provides the Instance of the Audio Class.
         /// </summary>
+        /// <value>
+        /// The instance.
+        /// </value>
         public static Audio Instance
         {
             get { return _instance ?? (_instance = new Audio()); }

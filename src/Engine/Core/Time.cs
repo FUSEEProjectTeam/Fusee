@@ -123,6 +123,8 @@ namespace Fusee.Engine
             {
                     _timeFlow = value;
             }
+
+            get { return _timeFlow ; }
         }
 
         private Time()
