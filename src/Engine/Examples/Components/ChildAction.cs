@@ -41,7 +41,7 @@ namespace Examples.Components
                 //speed = 0.1f;
             }
             //Time.Instance.TimeFlow = speed;
-            Debug.WriteLine("Smooth Framerate: " + Time.Instance.FamePerSecondSmooth);
+            Debug.WriteLine("Smooth Framerate: " + Time.Instance.FramePerSecondSmooth);
             Debug.WriteLine("Normal Framerate: " + Time.Instance.FramePerSecond);
 
         }

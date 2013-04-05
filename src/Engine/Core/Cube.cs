@@ -2,8 +2,14 @@
 
 namespace Fusee.Engine
 {
+    /// <summary>
+    /// Creates a simple cube geomentry straight from the code.
+    /// </summary>
     public class Cube : Mesh
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Cube"/> class.
+        /// </summary>
         public Cube()
         {
             Vertices = new float3[]

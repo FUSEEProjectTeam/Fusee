@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using Fusee.Engine;
 using Fusee.Math;
 
@@ -41,8 +40,8 @@ namespace Examples.Texture
 
         protected string _ps = @"
            #ifndef GL_ES
-               #version 120
-            #endif
+              #version 120
+           #endif
 
             /* Copies incoming fragment color without change. */
             #ifdef GL_ES
@@ -65,28 +64,32 @@ namespace Examples.Texture
                 //gl_FragColor = vColor;
             }";
 
-        private static float _angleHorz = 0.0f, _angleVert = 0.0f, _angleVelHorz = 0, _angleVelVert = 0, _rotationSpeed = 10.0f, _damping = 0.95f;
+        private static float _angleHorz = 0.0f, _angleVert = 0.0f, _angleVelHorz = 0, _angleVelVert = 0;
+
+        private const float RotationSpeed = 1f;
+        private const float Damping = 0.92f;
+        
         protected Mesh _meshSphere, _meshCube;
         protected IShaderParam _vColorParam;
         protected IShaderParam _texture1Param;
         protected IShaderParam _texture2Param;
         protected ImageData _imgData1;
         protected ImageData _imgData2;
+        protected ImageData _imgData3;
         protected ITexture _iTex1;
         protected ITexture _iTex2;
+        protected ITexture _iTex3;
+        
 
         public override void Init()
         {
-
+                       
             Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Sphere.obj.model"));
             _meshSphere = geo.ToMesh();
 
             Geometry geo2 = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Cube.obj.model"));
             _meshCube = geo2.ToMesh();
 
-            
-            _angleHorz = 0;
-            _rotationSpeed = 10.0f;
             ShaderProgram sp = RC.CreateShader(_vs, _ps);
             RC.SetShader(sp);
             _vColorParam = sp.GetShaderParam("vColor");
@@ -96,60 +99,64 @@ namespace Examples.Texture
             _imgData1 = RC.LoadImage("Assets/world_map.jpg");
             _iTex1 = RC.CreateTexture(_imgData1);
             _imgData2 = RC.LoadImage("Assets/cube_tex.jpg");
+            //_imgData2 = RC.CreateImage(500, 500, "Green");
+            _imgData2 = RC.TextOnImage(_imgData2, "Verdana", 80f, "FUSEE rocks!", "Black", 0, 30);
             _iTex2 = RC.CreateTexture(_imgData2);
+            
 
-       }
+        }
 
         public override void RenderAFrame()
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
-
             if (Input.Instance.IsButtonDown(MouseButtons.Left))
             {
-                _angleVelHorz = _rotationSpeed * Input.Instance.GetAxis(InputAxis.MouseX) * (float)Time.Instance.DeltaTime;
-                _angleVelVert = _rotationSpeed * Input.Instance.GetAxis(InputAxis.MouseY) * (float)Time.Instance.DeltaTime;
+                _angleVelHorz = RotationSpeed * Input.Instance.GetAxis(InputAxis.MouseX);
+                _angleVelVert = RotationSpeed * Input.Instance.GetAxis(InputAxis.MouseY);
             }
             else
             {
-                _angleVelHorz *= _damping;
-                _angleVelVert *= _damping;
+                var curDamp = (float)System.Math.Exp(-Damping * Time.Instance.DeltaTime);
+
+                _angleVelHorz *= curDamp;
+                _angleVelVert *= curDamp;
             }
+
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
 
             if (Input.Instance.IsKeyDown(KeyCodes.Left))
             {
-                _angleHorz -= _rotationSpeed * (float)Time.Instance.DeltaTime;
+                _angleHorz -= RotationSpeed * (float)Time.Instance.DeltaTime;
             }
             if (Input.Instance.IsKeyDown(KeyCodes.Right))
             {
-                _angleHorz += _rotationSpeed * (float)Time.Instance.DeltaTime;
+                _angleHorz += RotationSpeed * (float)Time.Instance.DeltaTime;
             }
             if (Input.Instance.IsKeyDown(KeyCodes.Up))
             {
-                _angleVert -= _rotationSpeed * (float)Time.Instance.DeltaTime;
+                _angleVert -= RotationSpeed * (float)Time.Instance.DeltaTime;
             }
             if (Input.Instance.IsKeyDown(KeyCodes.Down))
             {
-                _angleVert += _rotationSpeed * (float)Time.Instance.DeltaTime;
+                _angleVert += RotationSpeed * (float)Time.Instance.DeltaTime;
             }
 
             float4x4 mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
             float4x4 mtxCam = float4x4.LookAt(0, 200, 400, 0, 50, 0, 0, 1, 0);
 
-            
+
             RC.ModelView = mtxRot * float4x4.CreateTranslation(-100, 0, 0) * mtxCam;
             //RC.SetShaderParam(_vColorParam, new float4(0.5f, 0.8f, 0, 1));
             RC.SetShaderParamTexture(_texture1Param, _iTex1);
-            RC.SetShaderParamTexture(_texture2Param, _iTex2);
             RC.Render(_meshSphere);
-            
+
             RC.ModelView = mtxRot * float4x4.CreateTranslation(100, 0, 0) * mtxCam;
             //RC.SetShaderParam(_vColorParam, new float4(0.8f, 0.5f, 0, 1));
             RC.SetShaderParamTexture(_texture1Param, _iTex2);
             RC.Render(_meshCube);
-            
+
             Present();
         }
 

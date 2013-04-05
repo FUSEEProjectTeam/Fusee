@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using Fusee.Engine;
 using Fusee.Math;
 using Fusee.SceneManagement;
 namespace Examples.Components
@@ -7,7 +8,7 @@ namespace Examples.Components
     public class TestBehaviour : ActionCode
     {
         //private float x;
-
+        private float speed;
         
         public override void Start()
         {
@@ -18,6 +19,8 @@ namespace Examples.Components
             Renderer[] test = SceneEntity.GetComponents<Renderer>();
             
             Debug.WriteLine("the first members color is "+test[0].color);
+            speed = 0;
+            Time.Instance.TimeFlow  = speed;
         }
 
         public override void Update()
@@ -28,8 +31,10 @@ namespace Examples.Components
 
         public void Test(float x)
         {
-            transform.LocalEulerAngles = new float3((float)Math.Sin(x), (float)Math.Sin(x), (float)Math.Sin(x));
+            transform.LocalEulerAngles = new float3((float)Math.Sin(x), (float)Math.Sin(x), (float)Math.Sin(x)) * (float)Time.Instance.DeltaTime;
             //Debug.WriteLine("Hello this is testbehaviour");
+            speed += 0.1f;
+            Time.Instance.TimeFlow = speed;
         }
 
     }

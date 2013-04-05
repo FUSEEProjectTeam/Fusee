@@ -2,16 +2,20 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Drawing.Text;
+using System.IO;
+using System.Runtime.InteropServices;
 using Fusee.Math;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using PixelFormat = System.Drawing.Imaging.PixelFormat;
 
 namespace Fusee.Engine
 {
     public class RenderContextImp : IRenderContextImp
     {
         private int _currentTextureUnit;
-        private Dictionary<int, int> _shaderParam2TexUnit;   
+        private Dictionary<int, int> _shaderParam2TexUnit;
 
         public RenderContextImp(IRenderCanvasImp renderCanvas)
         {
@@ -24,20 +28,21 @@ namespace Fusee.Engine
         /// locks the bits in the memory and makes them available
         /// for furher action (e.g. creating a texture).
         /// Method must be called before creating a texture to get the necessary
-        /// ImageData struct
+        /// ImageData struct.
         /// </summary>
-        /// <param name="filename">Path to the image file you would like to use as texture</param>
-        /// <returns>An ImageData object with all necessary information for the texture-binding process</returns>
+        /// <param name="filename">Path to the image file you would like to use as texture.</param>
+        /// <returns>An ImageData object with all necessary information for the texture-binding process.</returns>
         public ImageData LoadImage(String filename)
         {
             Bitmap bmp = new Bitmap(filename);
             //Flip y-axis, otherwise texture would be upside down
             bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
 
-            BitmapData bmpData = bmp.LockBits(new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite,
+            BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite,
                 System.Drawing.Imaging.PixelFormat.Format32bppArgb);
             int strideAbs = (bmpData.Stride < 0) ? -bmpData.Stride : bmpData.Stride;
             int bytes = (strideAbs) * bmp.Height;
+
 
             ImageData ret = new ImageData()
             {
@@ -48,18 +53,106 @@ namespace Fusee.Engine
 
             };
 
-            
+
             System.Runtime.InteropServices.Marshal.Copy(bmpData.Scan0, ret.PixelData, 0, bytes);
 
             bmp.UnlockBits(bmpData);
             return ret;
         }
-        /// <summary>
-        /// Creates a new Texture and  binds it to the shader
-        /// </summary>
-        /// <param name="img">A given ImageData object, which contains all necessary information for the upload to the graphics card</param>
-        /// <returns>An ITexture that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK</returns>
 
+        /// <summary>
+        /// Creates a new Image with a specified size and color.
+        /// </summary>
+        /// <param name="width">The width of the image.</param>
+        /// <param name="height">The height of the image.</param>
+        /// <param name="bgColor">The color of the image. Value must be JS compatible.</param>
+        /// <returns>An ImageData struct containing all necessary information for further processing.</returns>
+        public ImageData CreateImage(int width, int height, String bgColor)
+        {
+            Bitmap bmp = new Bitmap(width, height);
+            Graphics gfx = Graphics.FromImage(bmp);
+            Color color = Color.FromName(bgColor);
+            gfx.Clear(color);
+
+            bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
+
+            BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite,
+                System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            int strideAbs = (bmpData.Stride < 0) ? -bmpData.Stride : bmpData.Stride;
+            int bytes = (strideAbs) * bmp.Height;
+
+
+            ImageData ret = new ImageData()
+            {
+                PixelData = new byte[bytes],
+                Height = bmpData.Height,
+                Width = bmpData.Width,
+                Stride = bmpData.Stride
+
+            };
+
+
+            System.Runtime.InteropServices.Marshal.Copy(bmpData.Scan0, ret.PixelData, 0, bytes);
+
+            bmp.UnlockBits(bmpData);
+            return ret;
+
+
+
+        }
+
+        /// <summary>
+        /// Maps a specified text with on an image.
+        /// </summary>
+        /// <param name="imgData">The ImageData struct with the PixelData from the image.</param>
+        /// <param name="fontName">The name of the text-font.</param>
+        /// <param name="fontSize">The size of the text-font.</param>
+        /// <param name="text">The text that sould be mapped on the iamge.</param>
+        /// <param name="textColor">The color of the text-font.</param>
+        /// <param name="startPosX">The horizontal start-position of the text on the image.</param>
+        /// <param name="startPosY">The vertical start-position of the text on the image.</param>
+        /// <returns>An ImageData struct containing all necessary information for further processing</returns>
+        public ImageData TextOnImage(ImageData imgData, String fontName, float fontSize, String text, String textColor, float startPosX, float startPosY)
+        {
+
+            GCHandle arrayHandle = GCHandle.Alloc(imgData.PixelData,
+                                   GCHandleType.Pinned);
+            Bitmap bmp = new Bitmap(imgData.Width, imgData.Height, imgData.Stride, PixelFormat.Format32bppArgb,
+                                    arrayHandle.AddrOfPinnedObject());
+            Color color = Color.FromName(textColor);
+            Font font = new Font(fontName, fontSize, FontStyle.Regular, GraphicsUnit.World);
+            
+
+            Graphics gfx = Graphics.FromImage(bmp);
+            gfx.TextRenderingHint = TextRenderingHint.AntiAlias;
+            gfx.DrawString(text, font, new SolidBrush(color), startPosX, startPosY);
+
+            //Flip y-axis, otherwise texture would be upside down
+            bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
+
+            BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite,
+                System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            int strideAbs = (bmpData.Stride < 0) ? -bmpData.Stride : bmpData.Stride;
+            int bytes = (strideAbs) * bmp.Height;
+
+            imgData.PixelData = new byte[bytes];
+            imgData.Height = bmpData.Height;
+            imgData.Width = bmpData.Width;
+            imgData.Stride = bmpData.Stride;
+
+            Marshal.Copy(bmpData.Scan0, imgData.PixelData, 0, bytes);
+
+
+            bmp.UnlockBits(bmpData);
+            return imgData;
+
+        }
+
+        /// <summary>
+        /// Creates a new Texture and binds it to the shader.
+        /// </summary>
+        /// <param name="img">A given ImageData object, containing all necessary information for the upload to the graphics card.</param>
+        /// <returns>An ITexture that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
         public ITexture CreateTexture(ImageData img)
         {
             int id = GL.GenTexture();
@@ -70,7 +163,7 @@ namespace Fusee.Engine
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMinFilter.Linear);
 
-            ITexture texID = new Texture{handle = id};
+            ITexture texID = new Texture { handle = id };
             return texID;
 
         }
@@ -79,7 +172,7 @@ namespace Fusee.Engine
 
         public IShaderParam GetShaderParam(IShaderProgramImp shaderProgram, string paramName)
         {
-            int h = GL.GetUniformLocation(((ShaderProgramImp) shaderProgram).Program, paramName);
+            int h = GL.GetUniformLocation(((ShaderProgramImp)shaderProgram).Program, paramName);
             return (h == -1) ? null : new ShaderParam { handle = h };
         }
 
@@ -92,9 +185,9 @@ namespace Fusee.Engine
 
         public IList<ShaderParamInfo> GetShaderParamList(IShaderProgramImp shaderProgram)
         {
-            var sp = (ShaderProgramImp) shaderProgram;
+            var sp = (ShaderProgramImp)shaderProgram;
             int nParams;
-            GL.GetProgram(sp.Program,ProgramParameter.ActiveUniforms, out nParams);
+            GL.GetProgram(sp.Program, ProgramParameter.ActiveUniforms, out nParams);
             List<ShaderParamInfo> list = new List<ShaderParamInfo>();
             for (int i = 0; i < nParams; i++)
             {
@@ -105,22 +198,22 @@ namespace Fusee.Engine
                 switch (t)
                 {
                     case ActiveUniformType.Int:
-                        ret.Type = typeof (int);
+                        ret.Type = typeof(int);
                         break;
                     case ActiveUniformType.Float:
-                        ret.Type = typeof (float);
+                        ret.Type = typeof(float);
                         break;
                     case ActiveUniformType.FloatVec2:
-                        ret.Type = typeof (float2);
+                        ret.Type = typeof(float2);
                         break;
                     case ActiveUniformType.FloatVec3:
-                        ret.Type = typeof (float3);
+                        ret.Type = typeof(float3);
                         break;
                     case ActiveUniformType.FloatVec4:
-                        ret.Type = typeof (float4);
+                        ret.Type = typeof(float4);
                         break;
                     case ActiveUniformType.FloatMat4:
-                        ret.Type = typeof (float4x4);
+                        ret.Type = typeof(float4x4);
                         break;
                     case ActiveUniformType.Sampler2D:
                         //TODO ret.Type = typeof (sampler?);
@@ -133,7 +226,7 @@ namespace Fusee.Engine
             return list;
         }
 
-        
+
 
         public void SetShaderParam(IShaderParam param, float val)
         {
@@ -171,6 +264,9 @@ namespace Fusee.Engine
             GL.Uniform1(((ShaderParam)param).handle, val);
         }
 
+
+
+
         /// <summary>
         /// Sets a given Shader Parameter to a created texture
         /// </summary>
@@ -178,7 +274,7 @@ namespace Fusee.Engine
         /// <param name="texId">An ITexture probably returned from CreateTexture method</param>
         public void SetShaderParamTexture(IShaderParam param, ITexture texId)
         {
-            int iParam = ((ShaderParam) param).handle;
+            int iParam = ((ShaderParam)param).handle;
             int texUnit;
             if (!_shaderParam2TexUnit.TryGetValue(iParam, out texUnit))
             {
@@ -197,7 +293,6 @@ namespace Fusee.Engine
             set
             {
                 GL.MatrixMode(MatrixMode.Modelview);
-
                 unsafe { GL.LoadMatrix((float*)(&value)); }
             }
         }
@@ -307,7 +402,7 @@ namespace Fusee.Engine
             int vertsBytes = vertices.Length * 3 * sizeof(float);
             if (((MeshImp)mr).VertexBufferObject == 0)
                 GL.GenBuffers(1, out ((MeshImp)mr).VertexBufferObject);
-
+            
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).VertexBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertsBytes), vertices, BufferUsageHint.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out vboBytes);
@@ -398,7 +493,7 @@ namespace Fusee.Engine
 
             if (((MeshImp)mr).ElementBufferObject == 0)
                 GL.GenBuffers(1, out ((MeshImp)mr).ElementBufferObject);
-            // Upload the   index buffer (elements inside the vertex buffer, not color indices as per the IndexPointer function!)
+            // Upload the index buffer (elements inside the vertex buffer, not color indices as per the IndexPointer function!)
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, ((MeshImp)mr).ElementBufferObject);
             GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(trisBytes), triangleIndices, BufferUsageHint.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ElementArrayBuffer, BufferParameterName.BufferSize, out vboBytes);
@@ -473,6 +568,16 @@ namespace Fusee.Engine
         public void Viewport(int x, int y, int width, int height)
         {
             GL.Viewport(x, y, width, height);
+        }
+
+        public void ColorMask(bool red, bool green, bool blue, bool alpha)
+        {
+            GL.ColorMask(red, green, blue, alpha);
+        }
+
+        public void Frustum(double left, double right, double bottom, double top, double zNear, double zFar)
+        {
+            GL.Frustum(left, right, bottom, top, zNear, zFar);
         }
     }
 }

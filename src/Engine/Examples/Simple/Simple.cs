@@ -1,14 +1,12 @@
-﻿using System.IO;
-using Fusee.Engine;
+﻿using Fusee.Engine;
 using Fusee.Math;
 
 namespace Examples.Simple
 {
-    public class Simple : RenderCanvas 
+    public class Simple : RenderCanvas
     {
-        protected string Vs = @"
-            // #version 120
-
+        // pixel and vertex shader
+        private const string Vs = @"
             /* Copies incoming vertex color without change.
              * Applies the transformation matrix to vertex position.
              */
@@ -16,105 +14,124 @@ namespace Examples.Simple
             attribute vec4 fuColor;
             attribute vec3 fuVertex;
             attribute vec3 fuNormal;
-        
+            attribute vec2 fuUV;        // for texture
+
             varying vec4 vColor;
             varying vec3 vNormal;
-        
+            varying vec2 vUV;           // for texture
+
             uniform mat4 FUSEE_MVP;
             uniform mat4 FUSEE_ITMV;
 
             void main()
             {
                 gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
-                // vColor = vec4(fuNormal * 0.5 + 0.5, 1.0);
-                // vec4 norm4 = FUSEE_MVP * vec4(fuNormal, 0.0);
-                // vNormal = norm4.xyz;
+
                 vNormal = mat3(FUSEE_ITMV) * fuNormal;
+                vUV = fuUV;             // for texture
             }";
 
-        protected string Ps = @"
-            // #version 120
-
+        private const string Ps = @"
             /* Copies incoming fragment color without change. */
             #ifdef GL_ES
                 precision highp float;
             #endif
-        
+
+            uniform sampler2D texture1; // for texture
             uniform vec4 vColor;
-            varying vec3 vNormal;
+            varying vec3 vNormal;       // for texture
+            varying vec2 vUV;
 
             void main()
             {
-                gl_FragColor = vColor * dot(vNormal, vec3(0, 0, 1));
+                gl_FragColor = texture2D(texture1, vUV);  // for texture
             }";
 
-        private static float _angleHorz = 0.0f, _angleVert = 0.0f, _angleVelHorz = 0, _angleVelVert = 0, _rotationSpeed = 10.0f, _damping = 0.95f;
-        protected Mesh Mesh, MeshFace;
-        protected IShaderParam VColorParam;
+        // angle variables
+        private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
+
+        private const float RotationSpeed = 1f;
+        private const float Damping = 0.92f;
+        
+        // model variable
+        private Mesh _meshTea, _meshFace;
+        
+        // variables for color and texture
+        private IShaderParam _vColorParam;
+        private IShaderParam _vTextureParam;
+
+        private ImageData _imgData;
+        private ITexture _tex;
+        
 
         public override void Init()
         {
-            Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Teapot.obj.model"));
-            Mesh = geo.ToMesh();
+            // initialize the variables
+            _meshTea = MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
+            _meshFace = MeshReader.LoadMesh(@"Assets/Face.obj.model");
 
-            Geometry geo2 = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Face.obj.model"));
-            MeshFace = geo2.ToMesh();
-
-            _angleHorz = 0;
-            _rotationSpeed = 10.0f;
-            ShaderProgram sp = RC.CreateShader(Vs, Ps);
+            var sp = RC.CreateShader(Vs, Ps);
             RC.SetShader(sp);
-            VColorParam = sp.GetShaderParam("vColor");
 
+            _vColorParam = sp.GetShaderParam("vColor");
+            _vTextureParam = sp.GetShaderParam("texture1");
+
+            _imgData = RC.LoadImage("Assets/world_map.jpg");
+            _tex = RC.CreateTexture(_imgData);
 
             RC.ClearColor = new float4(1, 1, 1, 1);
         }
 
         public override void RenderAFrame()
         {
-            RC.Clear(ClearFlags.Color| ClearFlags.Depth);
+            RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
-
+            // move per mouse
             if (Input.Instance.IsButtonDown(MouseButtons.Left))
             {
-                _angleVelHorz = _rotationSpeed * Input.Instance.GetAxis(InputAxis.MouseX) * (float)Time.Instance.DeltaTime;
-                _angleVelVert = _rotationSpeed * Input.Instance.GetAxis(InputAxis.MouseY) * (float)Time.Instance.DeltaTime;
+                _angleVelHorz = RotationSpeed * Input.Instance.GetAxis(InputAxis.MouseX);
+                _angleVelVert = RotationSpeed * Input.Instance.GetAxis(InputAxis.MouseY);
             }
             else
             {
-                _angleVelHorz *= _damping;
-                _angleVelVert *= _damping;
+                var curDamp = (float)System.Math.Exp(-Damping * Time.Instance.DeltaTime);
+
+                _angleVelHorz *= curDamp;
+                _angleVelVert *= curDamp;
             }
+
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
 
+            // move per keyboard
             if (Input.Instance.IsKeyDown(KeyCodes.Left))
-            {
-                _angleHorz -= _rotationSpeed * (float)Time.Instance.DeltaTime;
-            }
+                _angleHorz -= RotationSpeed * (float)Time.Instance.DeltaTime;
+
             if (Input.Instance.IsKeyDown(KeyCodes.Right))
-            {
-                _angleHorz += _rotationSpeed * (float)Time.Instance.DeltaTime;
-            }
+                _angleHorz += RotationSpeed * (float)Time.Instance.DeltaTime;
+
             if (Input.Instance.IsKeyDown(KeyCodes.Up))
-            {
-                _angleVert -= _rotationSpeed * (float)Time.Instance.DeltaTime;
-            }
+                _angleVert -= RotationSpeed * (float)Time.Instance.DeltaTime;
+
             if (Input.Instance.IsKeyDown(KeyCodes.Down))
-            {
-                _angleVert += _rotationSpeed * (float)Time.Instance.DeltaTime;
-            }
+                _angleVert += RotationSpeed * (float)Time.Instance.DeltaTime;
 
-            float4x4 mtxRot = float4x4.CreateRotationY(_angleHorz)*float4x4.CreateRotationX(_angleVert);
-            float4x4 mtxCam = float4x4.LookAt(0, 200, 400, 0, 50, 0, 0, 1, 0);
+            var mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
+            var mtxCam = float4x4.LookAt(0, 200, 400, 0, 50, 0, 0, 1, 0);
 
+            // first mesh (using color)
             RC.ModelView = mtxRot * float4x4.CreateTranslation(-100, 0, 0) * mtxCam;
-            RC.SetShaderParam(VColorParam, new float4(0.5f, 0.8f, 0, 1));
-            RC.Render(Mesh);
 
+            RC.SetShaderParam(_vColorParam, new float4(0.5f, 0.8f, 0, 1));
+            RC.Render(_meshTea);
+
+            // second mesh (using texture)
             RC.ModelView = mtxRot * float4x4.CreateTranslation(100, 0, 0) * mtxCam;
-            RC.SetShaderParam(VColorParam, new float4(0.8f, 0.5f, 0, 1));
-            RC.Render(MeshFace);
+
+            RC.SetShaderParamTexture(_vTextureParam, _tex);
+            RC.Render(_meshFace);
+
+            // swap buffers
             Present();
         }
 
@@ -122,25 +139,13 @@ namespace Examples.Simple
         {
             RC.Viewport(0, 0, Width, Height);
 
-            float aspectRatio = Width / (float)Height;
+            var aspectRatio = Width/(float) Height;
             RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 5000);
         }
 
         public static void Main()
         {
-            float3[] verts = new float3[1000000];
-            
-            double t1 = Diagnostics.Timer;
-            for (int i= 0; i < verts.Length; i++)
-            {
-                verts[i].x = i;
-                verts[i].y = i+1;
-                verts[i].z = i-1;
-            }
-            double t2 = Diagnostics.Timer;
-            Diagnostics.Log("Initializing " + verts.Length + " float3 objects took " + (t2 - t1) + " ms.");
-
-            Simple app = new Simple();
+            var app = new Simple();
             app.Run();
         }
 

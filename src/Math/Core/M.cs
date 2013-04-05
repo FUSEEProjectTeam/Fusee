@@ -2,7 +2,13 @@ using System;
 
 namespace Fusee.Math
 {
-	/// <summary>
+    /// <summary>
+    /// Provides additional mathematical function needed for 3D graphics.
+    /// </summary>
+    internal class NamespaceDoc
+    {
+    }
+    /// <summary>
 	/// Provides standard mathematical functions and helpers for different types.
 	/// </summary>
 	public static class M

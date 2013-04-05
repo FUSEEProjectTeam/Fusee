@@ -1,8 +1,9 @@
 ﻿using Fusee.Engine;
+using Fusee.Math;
 
-namespace Examples.$safeprojectname$
+namespace Examples.EmptyProject
 {
-    public class $safeprojectname$ : RenderCanvas 
+    public class EmptyProject : RenderCanvas
     {
         public override void Init()
         {
@@ -25,7 +26,7 @@ namespace Examples.$safeprojectname$
 
         public static void Main()
         {
-            var app = new $safeprojectname$();
+            var app = new EmptyProject();
             app.Run();
         }
 
