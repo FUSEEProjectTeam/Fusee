@@ -8,38 +8,38 @@ namespace Fusee.Engine
     public class ShaderMaterial
     {
         private ShaderProgram _sp;
-        private Dictionary<string, dynamic> _list;
+       // private Dictionary<string, dynamic> _list;
 
         // Create uninitialized Material. Param List will be stored, but Params have no value set.
         // You will need to set the value before using the material.
         public ShaderMaterial(ShaderProgram program)
         {
             _sp = program;
-            _list = new Dictionary<string, dynamic>();
-            foreach (KeyValuePair<string, ShaderParamInfo> k in _sp._paramsByName)
-            {
-                _list.Add(k.Key, _sp._rci.GetParamValue(program._spi, k.Value.Handle));
-            }
+           // _list = new Dictionary<string, dynamic>();
+            //foreach (KeyValuePair<string, ShaderParamInfo> k in _sp._paramsByName)
+            //{
+            //    _list.Add(k.Key, _sp._rci.GetParamValue(program._spi, k.Value.Handle));
+            //}
             
         }
 
         // Create Ready to Use Material. All Parameters initialized.
         public ShaderMaterial(string materialname, RenderContext RC)
         {
-            _sp = Shaders.GetShader(materialname, RC);
-            _list = Shaders.GetParams(materialname);
-            RC.SetShader(_sp);
-            UpdateMaterial(RC);
+            //_sp = Shaders.GetShader(materialname, RC);
+            //_list = Shaders.GetParams(materialname);
+            //RC.SetShader(_sp);
+            //UpdateMaterial(RC);
         }
 
-        public void SetValue(string name, dynamic value)
-        {
-            ShaderParamInfo info;
-            if (_sp._paramsByName.TryGetValue(name, out info))
-                _sp._rci.SetShaderParam(info.Handle, value);
-            if (_list.ContainsKey(name))
-                _list[name] = value;
-        }
+        //public void SetValue(string name, dynamic value)
+        //{
+            //ShaderParamInfo info;
+            //if (_sp._paramsByName.TryGetValue(name, out info))
+            //    _sp._rci.SetShaderParam(info.Handle, value);
+            //if (_list.ContainsKey(name))
+            //    _list[name] = value;
+        //}
 
         public ShaderProgram GetShader()
         {
@@ -48,12 +48,12 @@ namespace Fusee.Engine
 
         public void UpdateMaterial(RenderContext rc)
         {
-            IShaderParam sp;
-            foreach (KeyValuePair<string, dynamic> k in _list)
-            {
-                if ((sp = _sp.GetShaderParam(k.Key)) != null)
-                    rc.SetShaderParam(sp, k.Value);
-            }
+            //IShaderParam sp;
+            //foreach (KeyValuePair<string, dynamic> k in _list)
+            //{
+            //    if ((sp = _sp.GetShaderParam(k.Key)) != null)
+            //        rc.SetShaderParam(sp, k.Value);
+            //}
         }
     }   
 }
