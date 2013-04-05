@@ -1,7 +1,7 @@
 ﻿namespace Fusee.Engine
 {
     // This class is instantiated dynamically (by reflection)
-    public class Implementor
+    public class RenderingImplementor
     {
         public static IRenderCanvasImp CreateRenderCanvasImp()
         {
@@ -17,6 +17,5 @@
         {
             return new InputImp(rci);
         }
-
     }
 }

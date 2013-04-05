@@ -30,7 +30,6 @@ namespace Fusee.Engine
         /// <summary>
         /// Represents the light status.
         /// </summary>
-        public float Active;
         /// <summary>
         /// Represents the ambient color.
         /// </summary>

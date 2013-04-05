@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Furtwangen University")]
 [assembly: AssemblyProduct("Fusee")]
-[assembly: AssemblyCopyright("Copyright ©  2012 the Fusee Project")]
+[assembly: AssemblyCopyright("Copyright © 2013 the Fusee Project")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

@@ -59,9 +59,9 @@ namespace Examples.Components
             TestEntity.AddComponent(testrenderer);
             TestEntity.AddComponent(testrendererException); //TODO: Test Exceptions
             TestEntity.AddComponent(testscript);
-            TestEntity.AddComponent(spot);
-            TestEntity.AddComponent(point);
-            TestEntity.AddComponent(direct);
+            //TestEntity.AddComponent(spot);
+            //TestEntity.AddComponent(point);
+            //TestEntity.AddComponent(direct);
             SceneManager.Manager.AddSceneEntity(TestEntity);
             testscript.Init(TestEntity);
             //TestEntity.AddChild(ChildEntity); // Als Child hinzugefuegt
