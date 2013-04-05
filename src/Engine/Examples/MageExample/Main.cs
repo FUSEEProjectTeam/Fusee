@@ -258,9 +258,9 @@ void main()
         {
             spBump = RC.CreateShader(VsBump, PsBump);
 
-            Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/mageBodyOBJ.obj"));
-            Geometry geo2 = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/mageGloveLOBJ.obj"));
-            Geometry geo3 = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/mageGloveROBJ.obj"));
+            Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/mageBodyOBJ.obj.model"));
+            Geometry geo2 = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/mageGloveLOBJ.obj.model"));
+            Geometry geo3 = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/mageGloveROBJ.obj.model"));
 
             Body = geo.ToMesh();
             GloveL = geo2.ToMesh();
