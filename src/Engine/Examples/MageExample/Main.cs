@@ -237,7 +237,7 @@ void main()
 
 
 
-        private static float _angleHorz = 0.0f, _angleVert = 0.0f, _angleVelHorz = 0, _angleVelVert = 0, _rotationSpeed = 10.0f, _damping = 0.95f;
+        private static float _angleHorz = 0.0f, _angleVert = 0.0f, _angleVelHorz = 0, _angleVelVert = 0, _rotationSpeed = 1.5f, _damping = 0.92f;
         protected Mesh Body, GloveL, GloveR;
         protected IShaderParam VColorParam;
         protected ShaderMaterial mBody, mGlove;
@@ -337,8 +337,8 @@ void main()
             RC.SetShaderParam(_specularLevelBody, 64.0f);
 
             RC.ClearColor = new float4(0.3f, 0.3f, 0.3f, 1);
+
             _angleHorz = 0;
-            _rotationSpeed = 100.0f;
             _angleVert += 1.75f;
         }
 
@@ -349,14 +349,17 @@ void main()
 
             if (Input.Instance.IsButtonDown(MouseButtons.Left))
             {
-                _angleVelHorz = _rotationSpeed * Input.Instance.GetAxis(InputAxis.MouseX) * (float)Time.Instance.DeltaTime;
-                _angleVelVert = _rotationSpeed * Input.Instance.GetAxis(InputAxis.MouseY) * (float)Time.Instance.DeltaTime;
+                _angleVelHorz = _rotationSpeed * Input.Instance.GetAxis(InputAxis.MouseX);
+                _angleVelVert = _rotationSpeed * Input.Instance.GetAxis(InputAxis.MouseY);
             }
             else
             {
-                _angleVelHorz *= _damping;
-                _angleVelVert *= _damping;
+                var curDamp = (float)System.Math.Exp(-_damping * Time.Instance.DeltaTime);
+
+                _angleVelHorz *= curDamp;
+                _angleVelVert *= curDamp;
             }
+
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
 
@@ -377,12 +380,12 @@ void main()
                 _angleVert += _rotationSpeed * (float)Time.Instance.DeltaTime;
             }
 
-            _angleHorz -= 0.01f;
+            _angleHorz -= 1.0f * (float)Time.Instance.DeltaTime;
 
             float4x4 mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
             float4x4 mtxCam = float4x4.LookAt(0, -10, 3, 0, 50, 0, 0, 1, 0);
 
-            RC.ModelView = mtxRot * float4x4.CreateTranslation(0, 0, 0) * mtxCam;
+            RC.ModelView = mtxRot * float4x4.CreateTranslation(0, -2f, 0) * mtxCam;
             //RC.SetShaderParam(VColorParam, new float4(0.5f, 0.8f, 0, 1));
 
             RC.SetShaderParamTexture(_texture1ParamBody, iTex);
@@ -391,7 +394,7 @@ void main()
 
             RC.Render(Body);
 
-            RC.ModelView = mtxRot * float4x4.CreateTranslation(0, 0, 0) * mtxCam;
+            RC.ModelView = mtxRot * float4x4.CreateTranslation(0, -2f, 0) * mtxCam;
             //RC.SetShaderParam(VColorParam, new float4(0.8f, 0.5f, 0, 1));
             RC.SetShaderParamTexture(_texture1ParamGlove, iTexGlove);
             RC.SetShaderParamTexture(_texture2ParamGlove, iTex2Glove);
