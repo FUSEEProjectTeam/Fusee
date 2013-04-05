@@ -28,19 +28,21 @@ namespace Examples.EgoPerspective
 
             Sp = MoreShaders.GetShader("bump", RC);
             RC.SetShader(Sp);
-            m = new ShaderMaterial(Sp);
+            
 
             x = 500;
             z = 0;
             time = 0;
 
 
-            RC.SetLightActive(0, 1);
+            RC.SetLightActive(0, 1.0f);
+            
             RC.SetLightPosition(0, new float3(500, 0, 0));
-            RC.SetLightAmbient(0, new float4(0.5f, 0.5f, 0.5f, 1));
+            RC.SetLightAmbient(0, new float4(0.3f, 0.3f, 0.3f, 1));
             RC.SetLightSpecular(0, new float4(0.1f, 0.1f, 0.1f, 1));
-            RC.SetLightDiffuse(0, new float4(1.0f, 1.0f, 1.0f, 1));
+            RC.SetLightDiffuse(0, new float4(0.7f, 0.7f, 0.7f, 1));
             RC.SetLightDirection(0, new float3(-1, 0, 0));
+            m = new ShaderMaterial(Sp);
 
             //RC.SetLightActive(6, 1);
             //RC.SetLightPosition(6, new float3(-500, 100, 0));
