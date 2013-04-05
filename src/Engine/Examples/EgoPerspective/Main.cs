@@ -22,7 +22,7 @@ namespace Examples.EgoPerspective
 
         public override void Init()
         {
-            _world = new World(RC, In);
+            _world = new World(RC);
             Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Cube.obj.model"));
             Geometry geo2 = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Teapot.obj.model"));
 
@@ -37,7 +37,7 @@ namespace Examples.EgoPerspective
 
             RC.SetLightActive(0, 1);
             RC.SetLightPosition(0, new float3(500, 0, 0));
-            RC.SetLightAmbient(0, new float4(0.1f, 0.1f, 0.1f, 1));
+            RC.SetLightAmbient(0, new float4(0.5f, 0.5f, 0.5f, 1));
             RC.SetLightSpecular(0, new float4(0.1f, 0.1f, 0.1f, 1));
             RC.SetLightDiffuse(0, new float4(1.0f, 1.0f, 1.0f, 1));
             RC.SetLightDirection(0, new float3(-1, 0, 0));
@@ -93,6 +93,8 @@ namespace Examples.EgoPerspective
 
         public override void RenderAFrame()
         {
+
+
             x = (float)Math.Cos(time) * 500;
             z = (float)Math.Sin(time) * 500;
             time += 0.01f;
