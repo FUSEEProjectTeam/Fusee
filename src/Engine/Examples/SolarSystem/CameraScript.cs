@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Fusee.Math;
@@ -19,13 +20,12 @@ namespace Examples.SolarSystem
 
             if (Input.Instance.GetAxis(InputAxis.MouseWheel) != 0)
             {
-                transform.LocalPosition -=new float3(0,0, (float)(Input.Instance.GetAxis(InputAxis.MouseWheel)*Time.Instance.DeltaTime)*1000);
+                Debug.WriteLine("mouse wheel");
+                transform.LocalPosition -= new float3(0, 0, (Input.Instance.GetAxis(InputAxis.MouseWheel)*100));
             }
+
+           
         }
 
-        void SwitchTarget()
-        {
-
-        }
     }
 }

@@ -194,6 +194,7 @@ namespace Fusee.SceneManagement
         {
             
         }
+
         /// <summary>
         /// Visits the specified camera to collect data if required by the current Visitor derivate.
         /// </summary>

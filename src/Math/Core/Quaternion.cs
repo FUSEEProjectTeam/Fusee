@@ -524,19 +524,34 @@ namespace Fusee.Math
 
         public static Quaternion EulerToQuaternion(float3 e)
         {
-            float c1 = (float)System.Math.Cos(e.x / 2);
-            float s1 = (float)System.Math.Sin(e.x / 2);
-            float c2 = (float)System.Math.Cos(e.y / 2);
-            float s2 = (float)System.Math.Sin(e.y / 2);
-            float c3 = (float)System.Math.Cos(e.z / 2);
-            float s3 = (float)System.Math.Sin(e.z / 2);
-            float c1C2 = c1 * c2;
-            float s1S2 = s1 * s2;
-            float w = c1C2 * c3 - s1S2 * s3;
-            float x = c1C2 * s3 + s1S2 * c3;
-            float y = s1 * c2 * c3 + c1 * s2 * s3;
-            float z = c1 * s2 * c3 - s1 * c2 * s3;
-            return new Quaternion(x,y,z,w);
+            // The new quaternion variable.
+            var q = new Quaternion();
+
+            // Converts all degrees angles to radians.
+            float radiansY = DegreesToRadians(e.y);
+            float radiansZ = DegreesToRadians(e.z);
+            float radiansX = DegreesToRadians(e.x);
+
+            // Finds the Sin and Cosin for each half angles.
+            var sY = (float)System.Math.Sin(radiansY * 0.5f);
+            var cY = (float)System.Math.Cos(radiansY * 0.5f);
+            var sZ = (float)System.Math.Sin(radiansZ * 0.5f);
+            var cZ = (float)System.Math.Cos(radiansZ * 0.5f);
+            var sX = (float)System.Math.Sin(radiansX * 0.5f);
+            var cX = (float)System.Math.Cos(radiansX * 0.5f);
+
+            // Formula to construct a new Quaternion based on Euler Angles.
+            q.w = cY * cZ * cX - sY * sZ * sX;
+            q.x = sY * sZ * cX + cY * cZ * sX;
+            q.y = sY * cZ * cX + cY * sZ * sX;
+            q.z = cY * sZ * cX - sY * cZ * sX;
+
+            return q;
+        }
+
+        private static float DegreesToRadians(float input)
+        {
+            return input*((float) System.Math.PI/180.0f);
         }
 
 
@@ -578,17 +593,18 @@ namespace Fusee.Math
         /// </summary>
         /// <param name="m"></param>
         /// <returns></returns>
-        public static Quaternion MatrixToQuaternion(float4x4 m)
+        public static Quaternion LookRotation(float3 lookAt, float3 upDirection)
         {
-            Quaternion q = Quaternion.Identity;
-            q.w = (float) (System.Math.Sqrt( System.Math.Max( 0, 1 + m.M11 + m.M22 + m.M33 ) ) / 2);
-            q.x = (float) (System.Math.Sqrt( System.Math.Max( 0, 1 + m.M11 - m.M22 - m.M33 ) ) / 2);
-            q.z = (float) (System.Math.Sqrt( System.Math.Max( 0, 1 - m.M11 + m.M22 - m.M33 ) ) / 2);
-            q.y = (float) (System.Math.Sqrt( System.Math.Max( 0, 1 - m.M11 - m.M22 + m.M33 ) ) / 2);
-            q.x = copysign(q.x, m.M32 - m.M23);
-            q.z = copysign(q.z, m.M13 - m.M31);
-            q.y = copysign(q.y, m.M21 - m.M12);
-            return q;
+            float3.OrthoNormalize(ref lookAt, ref upDirection);
+            float3 right = float3.Cross(upDirection, lookAt);
+            
+            float w = (float)System.Math.Sqrt(1.0f + right.x + upDirection.y + lookAt.z)*0.5f;
+            float w4Recip = 1.0f/(4.0f*w);
+            float x = (upDirection.z - lookAt.y)*w4Recip;
+            float y = (lookAt.x-right.z)*w4Recip;
+            float z = (right.y - upDirection.x)*w4Recip;
+            var ret = new Quaternion(x,y,z,w);
+            return ret;
         }
 
         /// <summary>
@@ -598,32 +614,27 @@ namespace Fusee.Math
         /// <returns>A matrix of type float4x4 from the passed Quaternion.</returns>
         public static float4x4 QuaternionToMatrix(Quaternion q)
         {
-            float sqw = q.w*q.w;
-            float sqx = q.x*q.x;
-            float sqy = q.y*q.y;
-            float sqz = q.z*q.z;
-
-            float invs = 1/(sqx + sqy + sqz + sqw);
-            float m00 = (sqx - sqy - sqz + sqw)*invs;
-            float m11 = (-sqx + sqy - sqz + sqw)*invs;
-            float m22 = (-sqx - sqy + sqz + sqw)*invs;
-
-            float tmp1 = q.x*q.y;
-            float tmp2 = q.z*q.w;
-            float m10 = 2.0f*(tmp1 + tmp2)*invs;
-            float m01 = 2.0f*(tmp1 - tmp2)*invs;
-
-            tmp1 = q.x*q.z;
-            tmp2 = q.y*q.w;
-            float m20 = 2.0f*(tmp1 - tmp2)*invs;
-            float m02 = 2.0f*(tmp1 + tmp2)*invs;
-
-            tmp1 = q.y*q.z;
-            tmp2 = q.x*q.w;
-            float m21 = 2.0f*(tmp1 + tmp2)*invs;
-            float m12 = 2.0f*(tmp1 - tmp2)*invs;
-
-            return new float4x4(m00, m01, m02, 0, m10, m11, m12, 0, m20, m21, m22, 0, 0, 0, 0, 1);
+            //q.Normalize();
+            var matrix = new float4x4
+                             {
+                                 M11 = 1 - 2*(q.y*q.y + q.z*q.z),
+                                 M12 = 2*(q.x*q.y + q.z*q.w),
+                                 M13 = 2*(q.x*q.z - q.y*q.w),
+                                 M14 = 0,
+                                 M21 = 2*(q.x*q.y - q.z*q.w),
+                                 M22 = 1 - 2*(q.x*q.x + q.z*q.z),
+                                 M23 = 2*(q.z*q.y + q.x*q.w),
+                                 M24 = 0,
+                                 M31 = 2*(q.x*q.z + q.y*q.w),
+                                 M32 = 2*(q.y*q.z - q.x*q.w),
+                                 M33 = 1 - 2*(q.x*q.x + q.y*q.y),
+                                 M34 = 0,
+                                 M41 = 0,
+                                 M42 = 0,
+                                 M43 = 0,
+                                 M44 = 1
+                             };
+            return matrix;
         }
 
         /// <summary>

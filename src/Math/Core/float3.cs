@@ -805,6 +805,14 @@ namespace Fusee.Math
             result.z = vec.z * scale;
         }
 
+        public static void OrthoNormalize(ref float3 normal, ref float3 tangent)
+        {
+            normal = Normalize(normal);
+            float3 proj = normal*Dot(tangent, normal);
+            tangent -= proj;
+            tangent = Normalize(tangent);
+        }
+
         #endregion
 
         #region NormalizeFast

@@ -87,7 +87,7 @@ namespace Examples.SolarSystem
         private ImageData _earthImage;
         private ITexture _earthITexture;
 
-        /*/ moon
+        // moon
         private SceneEntity _moon;
         private Renderer _moonRenderer;
         private PlanetMaterial _moonMaterial;
@@ -95,7 +95,7 @@ namespace Examples.SolarSystem
         private IShaderParam _moonIShaderParam;
         private ImageData _moonImage;
         private ITexture _moonITexture;
-        */
+        
          
         // mars
         private SceneEntity _mars;
@@ -163,7 +163,7 @@ namespace Examples.SolarSystem
             SceneManager.RC = RC;
 
             WorldOrigin.AddComponent(camrotation);
-            camrotation.Init(WorldOrigin);
+            
 
             planetgeometry = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Sphere.obj.model"));
             spacebox = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/spacebox.obj.model")); 
@@ -239,8 +239,8 @@ namespace Examples.SolarSystem
             //SceneManager.Manager.AddSceneEntity(_earth);
             _emptyEarth.AddChild(_earth);
 
-            /*/ Setup Moon
-            _emptyMoonAction = new MoonAction(_earth, _speedmoon);
+             //Setup Moon
+            _emptyMoonAction = new MoonAction(_earth, _speedearth*5.0f);
             _emptyMoon.transform.LocalPosition = _earth.transform.LocalPosition;
             _moon = new SceneEntity { name = "Moon" };
             _emptyMoonAction.Init(_emptyMoon);
@@ -254,10 +254,10 @@ namespace Examples.SolarSystem
             _moonRenderer.material = _moonMaterial;
             _moon.AddComponent(_moonRenderer);
             _emptyMoon.AddComponent(_emptyMoonAction);
-            _moon.transform.LocalPosition = new float3(0.1f, 0, 0);
-            _moon.transform.LocalScale = new float3(0.1f, 0.1f, 0.1f);
+            _moon.transform.LocalPosition = new float3(0.2f, 0, 0);
+            _moon.transform.LocalScale = new float3(0.05f, 0.05f, 0.05f);
             SceneManager.Manager.AddSceneEntity(_emptyMoon);
-            _emptyMoon.AddChild(_moon);*/
+            _emptyMoon.AddChild(_moon);
 
             // Setup sun
             _sun = new SceneEntity { name = "Sun" };
@@ -411,6 +411,8 @@ namespace Examples.SolarSystem
             _emptySaturn.transform.LocalEulerAngles = new float3(0, 95, 0);
             _emptyUranus.transform.LocalEulerAngles = new float3(0, 145, 0);
             _emptyNeptun.transform.LocalEulerAngles = new float3(0, 245, 0);
+
+            camrotation.Init(WorldOrigin);
 
             RC.ClearColor = new float4(0, 0, 0, 1);
         }

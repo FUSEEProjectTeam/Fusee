@@ -104,6 +104,17 @@ namespace Fusee.Engine
             return _keysPressed.ContainsKey((int)key);
         }
 
+        public bool OnKeyDown(KeyCodes key)
+        {
+            if(_keysPressed.ContainsKey((int)key))
+            {
+                _keysPressed.Remove((int) key);
+                return true;
+            }
+            return false;
+            
+        }
+
         /// <summary>
         /// Check if a given mouse button is pressed during the current frame.
         /// </summary>
