@@ -142,14 +142,7 @@ namespace Fusee.SceneManagement
 
             }else
             {
-                if(transform.GlobalMatrixDirty)
-                {
-                    transform.Matrix = transform.GlobalMatrix;
-                }else
-                {
-                    
-                    transform.SetGlobalMat(transform.Matrix);
-                }
+
 
                 if(_hasTransform.Count > 0)
                 {

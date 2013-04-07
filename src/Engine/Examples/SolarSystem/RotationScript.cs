@@ -28,9 +28,9 @@ namespace Examples.SolarSystem
 
                 //transform.GlobalQuaternion = Quaternion.FromAxisAngle(new float3(0,1,0),-mousemoveX)*transform.GlobalQuaternion;
                 //transform.GlobalQuaternion = Quaternion.FromAxisAngle(new float3(0, 0, 1), -mousemoveY)*transform.GlobalQuaternion;
-                transform.GlobalEulerAngles += new float3(0, -mousemoveX*100, 0);
-                transform.GlobalEulerAngles += new float3(-mousemoveY*100, 0, 0);
-                Debug.WriteLine("GlobalEulerAngles: "+transform.GlobalEulerAngles);
+                transform.LocalEulerAngles += new float3(0, -mousemoveX*100, 0);
+                transform.LocalEulerAngles += new float3(-mousemoveY*100, 0, 0);
+                Debug.WriteLine("GlobalEulerAngles: "+transform.LocalEulerAngles);
             }
 
             if (Input.Instance.IsKeyDown(KeyCodes.Up))

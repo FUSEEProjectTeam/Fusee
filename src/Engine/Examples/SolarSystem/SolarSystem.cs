@@ -187,7 +187,9 @@ namespace Examples.SolarSystem
             spaceboxImage = RC.LoadImage("Assets/spaceboxTexture.png");
             spaceboxIShaderParam = spaceboxMaterial.sp.GetShaderParam("texture1");
             spaceboxITexture = RC.CreateTexture(spaceboxImage);
+            spaceboxImage.PixelData = null;
             spaceboxMaterial.Tex = spaceboxITexture;
+            spaceboxITexture = null;
             spaceboxMaterial.Textureparam = spaceboxIShaderParam;
             spaceboxRenderer = new Renderer(spacebox);
             spaceboxRenderer.material = spaceboxMaterial;
@@ -255,7 +257,7 @@ namespace Examples.SolarSystem
             _moonRenderer.material = _moonMaterial;
             _moon.AddComponent(_moonRenderer);
             _emptyMoon.AddComponent(_emptyMoonAction);
-            _moon.transform.LocalPosition = new float3(0.2f, 0, 0);
+            _moon.transform.LocalPosition = new float3(0.5f, 0, 0);
             _moon.transform.LocalScale = new float3(0.05f, 0.05f, 0.05f);
             SceneManager.Manager.AddSceneEntity(_emptyMoon);
             _emptyMoon.AddChild(_moon);

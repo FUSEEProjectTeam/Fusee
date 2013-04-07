@@ -163,6 +163,10 @@ namespace Fusee.SceneManagement
        {
            set
            {
+               if (_entity == null || _entity.parent == null)
+               {
+                   GlobalPosition = value;
+               }
                _localPosition = value;
                _matrixDirty = true;
            }
@@ -195,6 +199,10 @@ namespace Fusee.SceneManagement
        {
            set
            {
+               if (_entity == null || _entity.parent == null)
+               {
+                   GlobalScale = value;
+               }
                _localScale = value;
                _matrixDirty = true;
            }
@@ -236,6 +244,10 @@ namespace Fusee.SceneManagement
            }
            set
            {
+               if (_entity == null || _entity.parent == null)
+               {
+                   GlobalQuaternion = value;
+               }
                _matrixDirty = true;
                _eulerDirty = true;
                _quaternion = value;
@@ -273,6 +285,10 @@ namespace Fusee.SceneManagement
        {
            set
            {
+               if(_entity == null || _entity.parent == null)
+               {
+                   GlobalEulerAngles = value;
+               }
                _eulerAngles = value;
                _matrixDirty = true;
                _quaternionDirty = true;
