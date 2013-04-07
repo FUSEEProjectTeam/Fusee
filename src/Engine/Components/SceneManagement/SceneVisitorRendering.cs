@@ -101,7 +101,6 @@ namespace Fusee.SceneManagement
             {
                 AddRenderJob(_mtxModelViewStack.Peek(), _meshStack.Peek(), _RendererStack.Peek());
             }
-
         }
 
 
@@ -152,6 +151,11 @@ namespace Fusee.SceneManagement
                     transform.SetGlobalMat(transform.Matrix);
                 }
 
+                if(_hasTransform.Count > 0)
+                {
+                    _hasTransform.Pop();
+                }
+
                 _hasTransform.Push(true);
                 
                 _mtxModelViewStack.Push(transform.GlobalMatrix);
@@ -160,6 +164,7 @@ namespace Fusee.SceneManagement
                 {
                     AddRenderJob(_mtxModelViewStack.Peek(), _meshStack.Peek(), _RendererStack.Peek());
                 }
+                
             }
         }
 
@@ -197,16 +202,19 @@ namespace Fusee.SceneManagement
         {
             _mtxModelViewStack.Pop();
             _hasTransform.Pop();
+            _hasMesh.Pop();
+            _hasRenderer.Pop();
             if(_meshStack.Count > 0)
             {
+
                 _meshStack.Pop();
-                _hasMesh.Pop();  
+                  
             }
             
             if(_RendererStack.Count > 0)
             {
                 _RendererStack.Pop();
-                _hasRenderer.Pop();
+                
             }
             
             
@@ -269,6 +277,7 @@ namespace Fusee.SceneManagement
             _queue.AddRenderJob(renderRenderer);
             RenderMesh renderMesh = new RenderMesh(mesh);
             _queue.AddRenderJob(renderMesh);
+            //Debug.WriteLine("Transforms: "+_hasTransform.Count+" Renderers: "+_hasRenderer.Count+" Meshes: "+_hasMesh.Count);
         }
 
 

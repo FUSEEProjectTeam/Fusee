@@ -10,9 +10,13 @@ namespace Examples.SolarSystem
 {
     class CameraScript : ActionCode
     {
+        private Camera scenecam;
+        private bool perspective;
         public override void Start()
         {
+            perspective = true;
             //transform.LocalPosition= new float3(0,0,-100);
+            scenecam = SceneEntity.GetComponent<Camera>();
         }
         public override void Update()
         {
@@ -24,6 +28,18 @@ namespace Examples.SolarSystem
                 transform.LocalPosition -= new float3(0, 0, (Input.Instance.GetAxis(InputAxis.MouseWheel)*100));
             }
 
+            if (Input.Instance.OnKeyDown(KeyCodes.P))
+            {
+                if(perspective)
+                {
+                    scenecam.ProjectionType(Projection.Orthographic); 
+                }else
+                {
+                    scenecam.ProjectionType(Projection.Perspective);
+                }
+                perspective = !perspective;
+
+            }
            
         }
 

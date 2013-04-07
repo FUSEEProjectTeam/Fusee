@@ -94,7 +94,7 @@ namespace Fusee.SceneManagement
                _globalMatrixDirty = false;
                _transformMatrix = value;
                UpdateLocalMembers();
-           } // TODO: Extract Position, Rotation, Scale after assignment.
+           } 
        }
 
        /// <summary>
@@ -228,8 +228,7 @@ namespace Fusee.SceneManagement
            {
                if (_quaternionDirty)
                {
-                   _quaternion = Quaternion.EulerToQuaternion(_eulerAngles);
-                   // TODO: Add Euler to quaternion conversion and vice versa
+                   _quaternion = Quaternion.EulerToQuaternion2(_eulerAngles);
                    _quaternionDirty = false;
                }
                
@@ -240,8 +239,6 @@ namespace Fusee.SceneManagement
                _matrixDirty = true;
                _eulerDirty = true;
                _quaternion = value;
-               _eulerAngles = LocalEulerAngles; // Hack ??
-               // TODO: Update eulerangles value from quaternion value
            }
        }
 
@@ -254,9 +251,7 @@ namespace Fusee.SceneManagement
            {
                if (_globalQuaternionDirty)
                {
-                   _globalQuaternion = Quaternion.EulerToQuaternion(_globalEulerAngles);
-                   //_globalQuaternion = Quaternion.LookRotation(_globalMatrix.Row2.xyz, _globalMatrix.Row1.xyz);
-                   // TODO: Add Euler to quaternion conversion and vice versa
+                   _globalQuaternion = Quaternion.EulerToQuaternion2(_globalEulerAngles);
                    _globalQuaternionDirty = false;
                }
 
@@ -267,13 +262,10 @@ namespace Fusee.SceneManagement
                _globalMatrixDirty = true;
                _globalEulerDirty = true;
                _globalQuaternion = value;
-               _globalEulerAngles = GlobalEulerAngles; // Hack ??
-               // TODO: Update eulerangles value from quaternion value
            }
        }
 
 
-        // TODO: Add eulerdirty functionality
        /// <summary>
        /// Gets or sets the float3 LocalEulerAngles.
        /// </summary>
@@ -325,9 +317,7 @@ namespace Fusee.SceneManagement
       {
           
           _quaternion = Quaternion.LookRotation(_transformMatrix.Column2.xyz, _transformMatrix.Column1.xyz);
-          //_eulerAngles = Quaternion.QuaternionToEuler(_quaternion);
-          //Debug.WriteLine("update local members");
-          // TODO: Fix Conversion Bug
+          _eulerAngles = Quaternion.QuaternionToEuler(_quaternion);
           _localScale = GetScaleFromMatrix(_transformMatrix);
           _localPosition = GetPositionFromMatrix(_transformMatrix);
           _eulerDirty = false;
@@ -338,9 +328,7 @@ namespace Fusee.SceneManagement
       {
  
           _globalQuaternion = Quaternion.LookRotation(_globalMatrix.Row2.xyz, _globalMatrix.Row1.xyz);
-          //_globalEulerAngles = Quaternion.QuaternionToEuler(_globalQuaternion);
-            //Debug.WriteLine("update globAL members");
-          // TODO: Fix Conversion Bug
+          _globalEulerAngles = Quaternion.QuaternionToEuler(_globalQuaternion);
           _globalScale = GetScaleFromMatrix(_globalMatrix);
           _globalPosition = GetPositionFromMatrix(_globalMatrix);
 

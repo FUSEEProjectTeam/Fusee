@@ -26,7 +26,8 @@ namespace Examples.SolarSystem
                 float mousemoveX = (float)Input.Instance.GetAxis(InputAxis.MouseX);
                 float mousemoveY = (float)Input.Instance.GetAxis(InputAxis.MouseY);
 
-                
+                //transform.GlobalQuaternion = Quaternion.FromAxisAngle(new float3(0,1,0),-mousemoveX)*transform.GlobalQuaternion;
+                //transform.GlobalQuaternion = Quaternion.FromAxisAngle(new float3(0, 0, 1), -mousemoveY)*transform.GlobalQuaternion;
                 transform.GlobalEulerAngles += new float3(0, -mousemoveX*100, 0);
                 transform.GlobalEulerAngles += new float3(-mousemoveY*100, 0, 0);
                 Debug.WriteLine("GlobalEulerAngles: "+transform.GlobalEulerAngles);

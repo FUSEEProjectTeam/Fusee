@@ -111,8 +111,17 @@ namespace Fusee.Engine
                 _keysPressed.Remove((int) key);
                 return true;
             }
+            return false;  
+        }
+
+        public bool OnKeyUp(KeyCodes key)
+        {
+            if (!_keysPressed.ContainsKey((int)key))
+            {
+                _keysPressed.Add((int)key, true);
+                return true;
+            }
             return false;
-            
         }
 
         /// <summary>
@@ -125,6 +134,26 @@ namespace Fusee.Engine
         public bool IsButtonDown(MouseButtons button)
         {
             return _buttonsPressed.ContainsKey((int)button);
+        }
+
+        public bool OnButtonDown(MouseButtons button)
+        {
+            if (_buttonsPressed.ContainsKey((int)button))
+            {
+                _buttonsPressed.Remove((int)button);
+                return true;
+            }
+            return false;  
+        }
+
+        public bool OnButtonUp(MouseButtons button)
+        {
+            if (!_buttonsPressed.ContainsKey((int)button))
+            {
+                _buttonsPressed.Add((int)button, true);
+                return true;
+            }
+            return false;
         }
 
         internal void OnUpdateFrame(double deltaTime)

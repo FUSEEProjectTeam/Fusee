@@ -172,6 +172,7 @@ namespace Examples.SolarSystem
             cameraholder.name = "CameraOwner";
             cameraholder.transform.LocalPosition = new float3(0, 0, 10);
             scenecamera = new Camera(cameraholder.transform);
+            scenecamera.Resize(Width, Height);
             cameraholder.AddComponent(camscript);
             cameraholder.AddComponent(scenecamera);
             cameraholder.AddComponent(direct);
@@ -411,9 +412,8 @@ namespace Examples.SolarSystem
             _emptySaturn.transform.LocalEulerAngles = new float3(0, 95, 0);
             _emptyUranus.transform.LocalEulerAngles = new float3(0, 145, 0);
             _emptyNeptun.transform.LocalEulerAngles = new float3(0, 245, 0);
-
+            
             camrotation.Init(WorldOrigin);
-
             RC.ClearColor = new float4(0, 0, 0, 1);
         }
 
@@ -428,9 +428,7 @@ namespace Examples.SolarSystem
         public override void Resize()
         {
             RC.Viewport(0, 0, Width, Height);
-
-            float aspectRatio = Width / (float)Height;
-            RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 5000);
+            scenecamera.Resize(Width, Height);
         }
 
         public static void Main()

@@ -522,11 +522,10 @@ namespace Fusee.Math
         /// <param name="e">Euler angle to convert.</param>
         /// <returns>A Quaternion representing the euler angle passed to this method.</returns>
 
-        public static Quaternion EulerToQuaternion(float3 e)
+        public static Quaternion EulerToQuaternion2(float3 e)
         {
             // The new quaternion variable.
             var q = new Quaternion();
-
             // Converts all degrees angles to radians.
             float radiansY = DegreesToRadians(e.y);
             float radiansZ = DegreesToRadians(e.z);
@@ -547,6 +546,23 @@ namespace Fusee.Math
             q.z = cY * sZ * cX - sY * cZ * sX;
 
             return q;
+        }
+
+        public static Quaternion EulerToQuaternion(float3 e)
+        {
+            float c1 = (float)System.Math.Cos(e.x / 2);
+            float s1 = (float)System.Math.Sin(e.x / 2);
+            float c2 = (float)System.Math.Cos(e.y / 2);
+            float s2 = (float)System.Math.Sin(e.y / 2);
+            float c3 = (float)System.Math.Cos(e.z / 2);
+            float s3 = (float)System.Math.Sin(e.z / 2);
+            float c1C2 = c1 * c2;
+            float s1S2 = s1 * s2;
+            float w = c1C2 * c3 - s1S2 * s3;
+            float x = c1C2 * s3 + s1S2 * c3;
+            float y = s1 * c2 * c3 + c1 * s2 * s3;
+            float z = c1 * s2 * c3 - s1 * c2 * s3;
+            return new Quaternion(x, y, z, w);
         }
 
         private static float DegreesToRadians(float input)

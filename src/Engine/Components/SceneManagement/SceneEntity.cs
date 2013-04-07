@@ -133,7 +133,6 @@ namespace Fusee.SceneManagement
         public void AddChild(SceneEntity child)
         {
             _childSceneEntities.Add(child);
-
         }
         // TODO: Add Find Functions, Add GetComponent/s in Children
         /// <summary>
