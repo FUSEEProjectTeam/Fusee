@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using Fusee.Engine;
 using Fusee.Math;
 
 namespace Fusee.SceneManagement

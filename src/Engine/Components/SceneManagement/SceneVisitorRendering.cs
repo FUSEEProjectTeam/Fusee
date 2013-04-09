@@ -150,7 +150,6 @@ namespace Fusee.SceneManagement
                 }
 
                 _hasTransform.Push(true);
-                
                 _mtxModelViewStack.Push(transform.GlobalMatrix);
 
                 if (HasRenderingTriple())

@@ -44,7 +44,8 @@ namespace Fusee.SceneManagement
        {
            _transformMatrix = float4x4.Identity;
             _globalMatrix = _transformMatrix;
-
+            _quaternion = Quaternion.Identity;
+            _globalQuaternion = Quaternion.Identity;
            _globalScale = new float3(1,1,1);
            _localScale = new float3(1,1,1);
            _matrixDirty = false;
@@ -60,7 +61,8 @@ namespace Fusee.SceneManagement
        {
            _transformMatrix = float4x4.Identity;
            _globalMatrix = _transformMatrix;
-
+           _quaternion = Quaternion.Identity;
+           _globalQuaternion = Quaternion.Identity;
            _globalScale = new float3(1,1,1);
            _localScale = new float3(1, 1, 1);
            _entity = entity;
@@ -112,13 +114,13 @@ namespace Fusee.SceneManagement
            }
            set
            {
-               if(_globalMatrix != value)
+              /* if(_globalMatrix != value)
                {
                    _globalMatrix = value;
                    _globalMatrixDirty = true;
                    UpdateGlobalMembers();
                    return;
-               }
+               }*/
                _globalMatrix = value;
                UpdateGlobalMembers();
            } 
