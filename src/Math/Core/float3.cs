@@ -785,10 +785,14 @@ namespace Fusee.Math
         /// </returns>
         public static float3 Normalize(float3 vec)
         {
-            float scale = 1.0f / vec.Length;
-            vec.x *= scale;
-            vec.y *= scale;
-            vec.z *= scale;
+            var scale = 1.0f/vec.Length;
+
+            if (!double.IsNaN(scale) && !double.IsPositiveInfinity(scale)) {
+                vec.x *= scale;
+                vec.y *= scale;
+                vec.z *= scale;
+            }
+
             return vec;
         }
 
@@ -800,9 +804,17 @@ namespace Fusee.Math
         public static void Normalize(ref float3 vec, out float3 result)
         {
             float scale = 1.0f / vec.Length;
-            result.x = vec.x * scale;
-            result.y = vec.y * scale;
-            result.z = vec.z * scale;
+
+            if (!double.IsNaN(scale))
+            {
+                result.x = vec.x*scale;
+                result.y = vec.y*scale;
+                result.z = vec.z*scale;
+            }
+            else
+            {
+                result = vec;
+            }
         }
 
         #endregion
