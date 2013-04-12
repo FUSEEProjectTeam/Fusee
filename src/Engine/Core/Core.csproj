@@ -73,6 +73,9 @@
     <Compile Include="Time.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="LinqForGeometry">
+      <HintPath>C:\Users\dominik\DevelopmentTEMP\LinqForGeometry\LinqForGeometry\bin\Debug\LinqForGeometry.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="JSIL.Meta">

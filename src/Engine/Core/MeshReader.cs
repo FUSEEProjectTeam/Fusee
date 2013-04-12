@@ -4,6 +4,8 @@ using Fusee.Math;
 using System.IO;
 using JSIL.Meta;
 
+using hsfurtwangen.dsteffen.lfg;
+
 namespace Fusee.Engine
 {
     public class MeshReader
@@ -179,7 +181,10 @@ namespace Fusee.Engine
         /// <returns>The newly created Mesh object</returns>
         public static Mesh LoadMesh(string path)
         {
-            Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(path));
+            // TODO: Changed by dsteffen for LinqForGeometry
+            //Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(path));
+            var geo = new hsfurtwangen.dsteffen.lfg.Geometry();
+            geo.LoadAsset(path);
             return geo.ToMesh();
         }
 
