@@ -102,8 +102,6 @@ namespace Examples.Texture
             //_imgData2 = RC.CreateImage(500, 500, "Green");
             _imgData2 = RC.TextOnImage(_imgData2, "Verdana", 80f, "FUSEE rocks!", "Black", 0, 30);
             _iTex2 = RC.CreateTexture(_imgData2);
-            
-
         }
 
         public override void RenderAFrame()
