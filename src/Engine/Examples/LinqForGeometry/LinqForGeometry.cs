@@ -72,27 +72,26 @@ namespace Examples.LinqForGeometry
 
         private const float RotationSpeed = 1f;
         private const float Damping = 0.92f;
-        
+
         // model variable
         private Mesh _lfgmesh, _meshFace;
-        
+
         // variables for color and texture
         private IShaderParam _vColorParam;
         private IShaderParam _vTextureParam;
 
         private ImageData _imgData;
         private ITexture _tex;
-        
+
 
         public override void Init()
         {
             // initialize the variables
-            //_lfgmesh = MeshReader.LoadMesh("C:/Users/dominik/DevelopmentTEMP/LinqForGeometry/LinqForGeometry/assets/cube_square_1.obj");
-            //_lfgmesh = MeshReader.LoadMesh("C:/Users/dominik/DevelopmentTEMP/LinqForGeometry/LinqForGeometry/assets/cube_square_1_textured.obj");
-            //_lfgmesh = MeshReader.LoadMesh("C:/Users/dominik/DevelopmentTEMP/LinqForGeometry/LinqForGeometry/assets/sphere_quadrangle_1.obj");
-            //_lfgmesh = MeshReader.LoadMesh("C:/Users/dominik/DevelopmentTEMP/LinqForGeometry/LinqForGeometry/assets/Teapot.obj.model");
-            _lfgmesh = MeshReader.LoadMesh("C:/Users/dominik/DevelopmentTEMP/LinqForGeometry/LinqForGeometry/assets/Teapot_textured.obj.model");
-            
+            _lfgmesh = MeshReader.LoadMesh("Assets/cube_quadrangle_1_textured.obj.model");
+            //_lfgmesh = MeshReader.LoadMesh("Assets/sphere_quadrangle_1.obj.model");
+            //_lfgmesh = MeshReader.LoadMesh("Assets/Teapot.obj.model");
+            //_lfgmesh = MeshReader.LoadMesh("Assets/Teapot_textured.obj.model");
+
             /*
             // This would be a solution to step over the MeshReader Class.
             var geo = new Geometry();
@@ -107,7 +106,7 @@ namespace Examples.LinqForGeometry
             // Texture stuff
             _vTextureParam = sp.GetShaderParam("texture1");
             //_imgData = RC.LoadImage("Assets/world_map.jpg");
-            _imgData = RC.LoadImage("Assets/checkerboard.jpg");
+            _imgData = RC.LoadImage("Assets/checkerboard_tex.jpg");
             _tex = RC.CreateTexture(_imgData);
 
 
@@ -167,7 +166,7 @@ namespace Examples.LinqForGeometry
         {
             RC.Viewport(0, 0, Width, Height);
 
-            var aspectRatio = Width/(float) Height;
+            var aspectRatio = Width / (float)Height;
             RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 5000);
         }
 
