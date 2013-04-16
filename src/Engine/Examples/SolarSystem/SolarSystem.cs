@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using Fusee.Engine;
 using Fusee.Math;
@@ -144,9 +145,9 @@ namespace Examples.SolarSystem
 
 
         //Light test
-        private SpotLight spot = new SpotLight(0);
-        private PointLight point = new PointLight(1);
-        private DirectionalLight direct = new DirectionalLight(2);
+        //private SpotLight spot = new SpotLight(0);
+        //private PointLight point = new PointLight(1);
+        private DirectionalLight direct = new DirectionalLight(new float3(0,-1,0),new float4(1,1,1,1),new float3(0,100,0),0);
 
 
 
@@ -160,6 +161,7 @@ namespace Examples.SolarSystem
         public override void Init()
         {
             //Time.Instance.TimeFlow = 0.01f;
+            
             SceneManager.RC = RC;
 
             WorldOrigin.AddComponent(camrotation);
@@ -227,7 +229,7 @@ namespace Examples.SolarSystem
             // Setup Earth
             _earth = new SceneEntity {name = "Earth"};
             _earthAction.Init(_earth);
-            _earthMaterial = new PlanetMaterial(MoreShaders.GetShader("simpel", RC));
+            _earthMaterial = new PlanetMaterial(MoreShaders.GetShader("diffuse", RC));
             _earthImage = RC.LoadImage("Assets/earth.jpg");
             _earthIShaderParam = _earthMaterial.sp.GetShaderParam("texture1");
             _earthITexture = RC.CreateTexture(_earthImage);
@@ -247,7 +249,7 @@ namespace Examples.SolarSystem
             _emptyMoon.transform.LocalPosition = _earth.transform.LocalPosition;
             _moon = new SceneEntity { name = "Moon" };
             _emptyMoonAction.Init(_emptyMoon);
-            _moonMaterial = new PlanetMaterial(MoreShaders.GetShader("simpel", RC));
+            _moonMaterial = new PlanetMaterial(MoreShaders.GetShader("diffuse", RC));
             _moonImage = RC.LoadImage("Assets/moon.jpg");
             _moonIShaderParam = _moonMaterial.sp.GetShaderParam("texture1");
             _moonITexture = RC.CreateTexture(_moonImage);
@@ -265,7 +267,7 @@ namespace Examples.SolarSystem
             // Setup sun
             _sun = new SceneEntity { name = "Sun" };
             //_sunAction.Init(_sun);
-            _sunMaterial = new PlanetMaterial(MoreShaders.GetShader("simpel", RC));
+            _sunMaterial = new PlanetMaterial(MoreShaders.GetShader("diffuse", RC));
             _sunImage = RC.LoadImage("Assets/sun.jpg");
             _sunIShaderParam = _sunMaterial.sp.GetShaderParam("texture1");
             _sunITexture = RC.CreateTexture(_sunImage);
@@ -282,7 +284,7 @@ namespace Examples.SolarSystem
             // Setup mercury
             _mercury = new SceneEntity { name = "Mercury" };
             _mercuryAction.Init(_mercury);
-            _mercuryMaterial = new PlanetMaterial(MoreShaders.GetShader("simpel", RC));
+            _mercuryMaterial = new PlanetMaterial(MoreShaders.GetShader("diffuse", RC));
             _mercuryImage = RC.LoadImage("Assets/merkur.jpg");
             _mercuryIShaderParam = _mercuryMaterial.sp.GetShaderParam("texture1");
             _mercuryITexture = RC.CreateTexture(_mercuryImage);
@@ -300,7 +302,7 @@ namespace Examples.SolarSystem
             // Setup venus
             _venus = new SceneEntity { name = "Venus" };
             _venusAction.Init(_venus);
-            _venusMaterial = new PlanetMaterial(MoreShaders.GetShader("simpel", RC));
+            _venusMaterial = new PlanetMaterial(MoreShaders.GetShader("diffuse", RC));
             _venusImage = RC.LoadImage("Assets/venus.jpg");
             _venusIShaderParam = _venusMaterial.sp.GetShaderParam("texture1");
             _venusITexture = RC.CreateTexture(_venusImage);
@@ -318,7 +320,7 @@ namespace Examples.SolarSystem
             // Setup mars
             _mars = new SceneEntity { name = "Mars" };
             _marsAction.Init(_mars);
-            _marsMaterial = new PlanetMaterial(MoreShaders.GetShader("simpel", RC));
+            _marsMaterial = new PlanetMaterial(MoreShaders.GetShader("diffuse", RC));
             _marsImage = RC.LoadImage("Assets/mars.jpg");
             _marsIShaderParam = _marsMaterial.sp.GetShaderParam("texture1");
             _marsITexture = RC.CreateTexture(_marsImage);
@@ -336,7 +338,7 @@ namespace Examples.SolarSystem
             // Setup jupiter
             _jupiter = new SceneEntity { name = "Jupiter" };
             _jupiterAction.Init(_jupiter);
-            _jupiterMaterial = new PlanetMaterial(MoreShaders.GetShader("simpel", RC));
+            _jupiterMaterial = new PlanetMaterial(MoreShaders.GetShader("diffuse", RC));
             _jupiterImage = RC.LoadImage("Assets/jupiter.jpg");
             _jupiterIShaderParam = _jupiterMaterial.sp.GetShaderParam("texture1");
             _jupiterITexture = RC.CreateTexture(_jupiterImage);
@@ -354,7 +356,7 @@ namespace Examples.SolarSystem
             // Setup saturn
             _saturn = new SceneEntity { name = "Saturn" };
             _saturnAction.Init(_saturn);
-            _saturnMaterial = new PlanetMaterial(MoreShaders.GetShader("simpel", RC));
+            _saturnMaterial = new PlanetMaterial(MoreShaders.GetShader("diffuse", RC));
             _saturnImage = RC.LoadImage("Assets/saturn.jpg");
             _saturnIShaderParam = _saturnMaterial.sp.GetShaderParam("texture1");
             _saturnITexture = RC.CreateTexture(_saturnImage);
@@ -372,7 +374,7 @@ namespace Examples.SolarSystem
             // Setup uranus
             _uranus = new SceneEntity { name = "Uranus" };
             _uranusAction.Init(_uranus);
-            _uranusMaterial = new PlanetMaterial(MoreShaders.GetShader("simpel", RC));
+            _uranusMaterial = new PlanetMaterial(MoreShaders.GetShader("diffuse", RC));
             _uranusImage = RC.LoadImage("Assets/uranus.jpg");
             _uranusIShaderParam = _uranusMaterial.sp.GetShaderParam("texture1");
             _uranusITexture = RC.CreateTexture(_uranusImage);
@@ -390,7 +392,7 @@ namespace Examples.SolarSystem
             // Setup neptun
             _neptun = new SceneEntity { name = "Neptun" };
             _neptunAction.Init(_neptun);
-            _neptunMaterial = new PlanetMaterial(MoreShaders.GetShader("simpel", RC));
+            _neptunMaterial = new PlanetMaterial(MoreShaders.GetShader("diffuse", RC));
             _neptunImage = RC.LoadImage("Assets/neptune.jpg");
             _neptunIShaderParam = _neptunMaterial.sp.GetShaderParam("texture1");
             _neptunITexture = RC.CreateTexture(_neptunImage);
@@ -423,6 +425,7 @@ namespace Examples.SolarSystem
         public override void RenderAFrame()
         {
             SceneManager.Manager.Traverse(this);
+            Debug.WriteLine(Time.Instance.FramePerSecondSmooth);
         }
 
 

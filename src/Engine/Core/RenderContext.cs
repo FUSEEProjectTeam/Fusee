@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Fusee.Engine;
 using JSIL.Meta;
 using Fusee.Math;
+using System.Diagnostics;
 
 namespace Fusee.Engine
 {
@@ -773,7 +774,7 @@ namespace Fusee.Engine
             _lightParams[lightInx].Active = active;
             IShaderParam sp;
             string paramName = "FUSEE_L" + lightInx + "_ACTIVE";
-            if(_currentShader!=null)
+            
             if ((sp = _currentShader.GetShaderParam(paramName)) != null)
                 SetShaderParam(sp, _lightParams[lightInx].Active);
         }
@@ -794,7 +795,6 @@ namespace Fusee.Engine
             _lightParams[lightInx].AmbientColor = ambientColor;
             IShaderParam sp;
             string paramName = "FUSEE_L" + lightInx + "_AMBIENT";
-            if(_currentShader!=null)
             if ((sp = _currentShader.GetShaderParam(paramName)) != null)
                 SetShaderParam(sp, _lightParams[lightInx].AmbientColor);
         }
@@ -817,7 +817,6 @@ namespace Fusee.Engine
             _lightParams[lightInx].DiffuseColor = diffuseColor;
             IShaderParam sp;
             string paramName = "FUSEE_L" + lightInx + "_DIFFUSE";
-            if (_currentShader != null)
             if ((sp = _currentShader.GetShaderParam(paramName)) != null)
                 SetShaderParam(sp, _lightParams[lightInx].DiffuseColor);
         }
@@ -842,7 +841,6 @@ namespace Fusee.Engine
             _lightParams[lightInx].SpecularColor = specularColor;
             IShaderParam sp;
             string paramName = "FUSEE_L" + lightInx + "_SPECULAR";
-            if (_currentShader != null)
             if ((sp = _currentShader.GetShaderParam(paramName)) != null)
                 SetShaderParam(sp, _lightParams[lightInx].SpecularColor);
         }
@@ -857,7 +855,6 @@ namespace Fusee.Engine
             _lightParams[lightInx].Position = position;
             IShaderParam sp;
             string paramName = "FUSEE_L" + lightInx + "_POSITION";
-            if (_currentShader != null)
             if ((sp = _currentShader.GetShaderParam(paramName)) != null)
                 SetShaderParam(sp, _lightParams[lightInx].Position);
         }
@@ -872,7 +869,6 @@ namespace Fusee.Engine
             _lightParams[lightInx].Direction = direction;
             IShaderParam sp;
             string paramName = "FUSEE_L" + lightInx + "_DIRECTION";
-            if (_currentShader != null)
             if ((sp = _currentShader.GetShaderParam(paramName)) != null)
                 SetShaderParam(sp, _lightParams[lightInx].Direction);
         }
@@ -911,7 +907,7 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
         public void SetShader(ShaderProgram program)
         {
             _currentShader = program;
-            _rci.SetShader(program._spi);
+            _rci.SetShader(program._spi); 
             UpdateCurrentShader();
         }
 

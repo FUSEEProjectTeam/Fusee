@@ -91,7 +91,7 @@ namespace Fusee.SceneManagement
         /// <param name="cameramatrix">The cameramatrix.</param>
         public void AddCamera(RenderCamera cameramatrix)
         {
-            RenderJobs[0].Add(cameramatrix);
+            RenderJobs[1].Add(cameramatrix);
         }
 
         /// <summary>
@@ -108,13 +108,15 @@ namespace Fusee.SceneManagement
             }
 
             // Order: Matrix, Mesh, Renderer
-            for (int i = 0; i < RenderJobs.Length; i++ )
+            for (int i = 1; i < RenderJobs.Length; i++ )
             {
 
                 
                 
                 for (int k = 0; k < RenderJobs[i].Count;k++)
                 {
+
+                    
                     RenderJobs[i][k].SubmitWork(RC);
 
                 }
@@ -130,6 +132,14 @@ namespace Fusee.SceneManagement
             }
         }
 
+        public void UpdateLights()
+        {
+            for (int j = 0; j < RenderJobs[0].Count; j++)
+            {
+                RenderJobs[0][j].SubmitWork(RC);
+            }
+        }
+
         /// <summary>
         /// Adds a render job to the render queue[2].
         /// </summary>
@@ -137,7 +147,7 @@ namespace Fusee.SceneManagement
         public void AddRenderJob(RenderJob job)
         {
             
-            RenderJobs[1].Add(job);
+            RenderJobs[2].Add(job);
         }
 
         /// <summary>

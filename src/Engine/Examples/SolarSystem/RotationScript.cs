@@ -25,13 +25,11 @@ namespace Examples.SolarSystem
             if(Input.Instance.IsButtonDown(MouseButtons.Left)){
                 float mousemoveX = (float)Input.Instance.GetAxis(InputAxis.MouseX);
                 float mousemoveY = (float)Input.Instance.GetAxis(InputAxis.MouseY);
-                // TODO: FIX Quaternions.
-                //_rotationamount += mousemoveX;
-                transform.GlobalQuaternion = Quaternion.FromAxisAngle(new float3(0, 0, 1), -mousemoveY) * Quaternion.FromAxisAngle(new float3(0, 1, 0), -mousemoveX) * transform.GlobalQuaternion;
-                //transform.GlobalQuaternion *= Quaternion.FromAxisAngle(new float3(0, 0, 1), mousemoveY)*transform.GlobalQuaternion;
-                //transform.LocalEulerAngles += new float3(0, -mousemoveX*100, 0);
-                //transform.LocalEulerAngles += new float3(-mousemoveY*100, 0, 0);
-                Debug.WriteLine("GlobalEulerAngles: "+transform.GlobalQuaternion);
+
+                //transform.GlobalQuaternion = Quaternion.FromAxisAngle(new float3(0, 0, 1), -mousemoveY) * Quaternion.FromAxisAngle(new float3(0, 1, 0), -mousemoveX) * transform.GlobalQuaternion;
+                
+                transform.LocalEulerAngles += new float3(0, -mousemoveX*100, 0);
+                transform.LocalEulerAngles += new float3(-mousemoveY*100, 0, 0);
             }
 
             if (Input.Instance.IsKeyDown(KeyCodes.Up))
