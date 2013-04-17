@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Fusee.Engine;
 using JSIL.Meta;
 using Fusee.Math;
-using System.Diagnostics;
 
 namespace Fusee.Engine
 {
@@ -21,6 +19,8 @@ namespace Fusee.Engine
 
         private readonly Light[] _lightParams;
         private readonly LightParamNames[] _lightShaderParams;
+
+        private bool _updatedShaderParams;
 
         internal struct MatrixParamNames
         {
@@ -68,14 +68,16 @@ namespace Fusee.Engine
 
             _lightParams = new Light[8];
             _lightShaderParams = new LightParamNames[8];
+
+            _updatedShaderParams = false;
         }
 
-        
         // Settable matrices
         private float4x4 _modelView;
         private float4x4 _projection;
         private float4x4 _view;
         private float4x4 _model;
+
         // Derived matrices
         private float4x4 _modelViewProjection;
 
@@ -130,8 +132,6 @@ namespace Fusee.Engine
             return _rci.CreateImage(width, height, bgColor);
         }
 
-
-
         /// <summary>
         /// Maps a specified text with on an image.
         /// </summary>
@@ -147,7 +147,6 @@ namespace Fusee.Engine
         {
             return _rci.TextOnImage(imgData, fontName, fontSize, text, textColor, startPosX, startPosY);
         }
-
 
         /// <summary>
         /// Creates a new texture and binds it to the shader.
@@ -261,6 +260,7 @@ namespace Fusee.Engine
                 _modelView = _model*_view;
                 
                 UpdateCurrentShader();
+
                 _rci.ModelView = _modelView;
             }
         }
@@ -377,9 +377,8 @@ namespace Fusee.Engine
                 _invTransProjectionOk = false;
                 _transProjectionOk = false;
                 _transProjectionOk = false;
-                
+
                 UpdateCurrentShader();
-                
                 
                 _rci.Projection = value;
             }
@@ -723,7 +722,6 @@ namespace Fusee.Engine
             }
         }
 
-
         private void UpdateCurrentShader()
         {
             // Todo: Check if the respective matrix was changed since last accessed by the currently updated shader
@@ -731,6 +729,9 @@ namespace Fusee.Engine
 
             if (_currentShader == null)
                 return;
+
+            if (!_updatedShaderParams)
+                UpdateShaderParams();
 
             // Normal versions of MV and P
             if (_currentShaderParams.FUSEE_MV != null)
@@ -772,7 +773,7 @@ namespace Fusee.Engine
             if (_currentShaderParams.FUSEE_ITMVP != null)
                 SetShaderParam(_currentShaderParams.FUSEE_ITMVP, InvTransModelViewProjection);
 
-            for (int i = 0; i < 8; i++)
+            for (var i = 0; i < 8; i++)
             {
                 if (_lightShaderParams[i].FUSEE_L_AMBIENT != null)
                     SetShaderParam(_lightShaderParams[i].FUSEE_L_AMBIENT, _lightParams[i].AmbientColor);
@@ -823,10 +824,13 @@ namespace Fusee.Engine
             {
                 _lightShaderParams[i].FUSEE_L_AMBIENT = _currentShader.GetShaderParam("FUSEE_L" + i + "_AMBIENT");
                 _lightShaderParams[i].FUSEE_L_DIFFUSE = _currentShader.GetShaderParam("FUSEE_L" + i + "_DIFFUSE");
-                _lightShaderParams[i].FUSEE_L_SPECULAR= _currentShader.GetShaderParam("FUSEE_L" + i + "_SPECULAR");
+                _lightShaderParams[i].FUSEE_L_SPECULAR = _currentShader.GetShaderParam("FUSEE_L" + i + "_SPECULAR");
                 _lightShaderParams[i].FUSEE_L_POSITION = _currentShader.GetShaderParam("FUSEE_L" + i + "_POSITION");
                 _lightShaderParams[i].FUSEE_L_DIRECTION = _currentShader.GetShaderParam("FUSEE_L" + i + "_DIRECTION");
             }
+
+            _updatedShaderParams = true;
+            UpdateCurrentShader();
         }
 
         /// <summary>
@@ -970,8 +974,11 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
         /// <seealso cref="Fusee.Engine.RenderContext.Render(Mesh)"/>
         public void SetShader(ShaderProgram program)
         {
+            _updatedShaderParams = false;
+
             _currentShader = program;
             _rci.SetShader(program._spi); 
+
             UpdateShaderParams();
         }
 
