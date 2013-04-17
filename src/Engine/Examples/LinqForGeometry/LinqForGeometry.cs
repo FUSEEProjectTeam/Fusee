@@ -74,7 +74,7 @@ namespace Examples.LinqForGeometry
         private const float Damping = 0.92f;
 
         // model variable
-        private Mesh _lfgmesh, _meshFace;
+        private Mesh _lfgmesh;
 
         // variables for color and texture
         private IShaderParam _vColorParam;
@@ -83,21 +83,26 @@ namespace Examples.LinqForGeometry
         private ImageData _imgData;
         private ITexture _tex;
 
+        // LFG Geo
+        private Geometry _Geo;
 
         public override void Init()
         {
             // initialize the variables
-            _lfgmesh = MeshReader.LoadMesh("Assets/cube_quadrangle_1_textured.obj.model");
+            //_lfgmesh = MeshReader.LoadMesh("Assets/cube_quadrangle_1_textured.obj.model");
             //_lfgmesh = MeshReader.LoadMesh("Assets/sphere_quadrangle_1.obj.model");
             //_lfgmesh = MeshReader.LoadMesh("Assets/Teapot.obj.model");
             //_lfgmesh = MeshReader.LoadMesh("Assets/Teapot_textured.obj.model");
 
-            /*
-            // This would be a solution to step over the MeshReader Class.
-            var geo = new Geometry();
-            geo.LoadAsset("C:/Users/dominik/DevelopmentTEMP/LinqForGeometry/LinqForGeometry/assets/cube_square_1.obj");
-            _lfgmesh = geo.ToMesh();
-            */
+
+            // This would be a solution to step over the MeshReader Class
+            // TODO: Important for now to use the transformation methods.
+            _Geo = new Geometry();
+            _Geo.LoadAsset("Assets/cube_quadrangle_1_textured.obj.model");
+            //_Geo.LoadAsset("Assets/sphere_quadrangle_1.obj.model");
+            //_Geo.LoadAsset("Assets/Teapot_textured.obj.model");
+            _lfgmesh = _Geo.ToMesh();
+
 
             ShaderProgram sp = RC.CreateShader(_vs, _ps);
             RC.SetShader(sp);
@@ -117,6 +122,21 @@ namespace Examples.LinqForGeometry
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
+            // Pull the users input
+            PullInput();
+
+            // A crash happens here with the color ... (_vColorParam is null)
+            //RC.SetShaderParam(_vColorParam, new float4(0.5f, 0.8f, 0, 1));
+            RC.SetShaderParamTexture(_vTextureParam, _tex);
+            RC.Render(_lfgmesh);
+
+            // swap buffers
+            Present();
+        }
+
+        // Pull the users input
+        public void PullInput()
+        {
             // move per mouse
             if (Input.Instance.IsButtonDown(MouseButtons.Left))
             {
@@ -130,6 +150,96 @@ namespace Examples.LinqForGeometry
                 _angleVelHorz *= curDamp;
                 _angleVelVert *= curDamp;
             }
+
+            // Scale the model up with the middle mouse button
+            if (Input.Instance.IsButtonDown(MouseButtons.Middle))
+            {
+                if (_Geo.Scale(1.1f, 1.1f, 1.1f))
+                {
+                    _lfgmesh = _Geo.ToMesh();
+                }
+            }
+
+            // Reset the model with the right mouse button
+            if (Input.Instance.IsButtonDown(MouseButtons.Right))
+            {
+                if (_Geo.ResetGeometryToDefault()) {
+                    _lfgmesh = _Geo.ToMesh();
+                }
+            }
+
+
+            /* Scaling input START */
+            if (Input.Instance.IsKeyDown(KeyCodes.Q))
+            {
+                if (_Geo.Scale(1.1f, 1.1f, 1.1f))
+                {
+                    _lfgmesh = _Geo.ToMesh();
+                }
+            }
+            else if (Input.Instance.IsKeyDown(KeyCodes.A))
+            {
+                if (_Geo.Scale(0.9f, 0.9f, 0.9f))
+                {
+                    _lfgmesh = _Geo.ToMesh();
+                }
+            }
+            // Scale only x direction
+            if (Input.Instance.IsKeyDown(KeyCodes.W))
+            {
+                if (_Geo.Scale(1.1f, 1.0f, 1.0f))
+                {
+                    _lfgmesh = _Geo.ToMesh();
+                }
+            }
+            else if (Input.Instance.IsKeyDown(KeyCodes.S))
+            {
+                if (_Geo.Scale(0.9f, 1.0f, 1.0f))
+                {
+                    _lfgmesh = _Geo.ToMesh();
+                }
+            }
+
+            // Scale only y direction
+            if (Input.Instance.IsKeyDown(KeyCodes.E))
+            {
+                if (_Geo.Scale(1.0f, 1.1f, 1.0f))
+                {
+                    _lfgmesh = _Geo.ToMesh();
+                }
+            }
+            else if (Input.Instance.IsKeyDown(KeyCodes.D))
+            {
+                if (_Geo.Scale(1.0f, 0.9f, 1.0f))
+                {
+                    _lfgmesh = _Geo.ToMesh();
+                }
+            }
+
+            // Scale only z direction
+            if (Input.Instance.IsKeyDown(KeyCodes.R))
+            {
+                if (_Geo.Scale(1.0f, 1.0f, 1.1f))
+                {
+                    _lfgmesh = _Geo.ToMesh();
+                }
+            }
+            else if (Input.Instance.IsKeyDown(KeyCodes.F))
+            {
+                if (_Geo.Scale(1.0f, 1.0f, 0.9f))
+                {
+                    _lfgmesh = _Geo.ToMesh();
+                }
+            }
+
+            if (Input.Instance.IsKeyDown(KeyCodes.T))
+            {
+                if (_Geo.ResetGeometryToDefault())
+                {
+                    _lfgmesh = _Geo.ToMesh();
+                }
+            }
+            /* Scaling input END */
 
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
@@ -152,14 +262,6 @@ namespace Examples.LinqForGeometry
 
             // first mesh (using color)
             RC.ModelView = mtxRot * float4x4.CreateTranslation(-100, 0, 0) * mtxCam;
-
-            // TODO: The crash happens here with the color ... (_vColorParam is null)
-            //RC.SetShaderParam(_vColorParam, new float4(0.5f, 0.8f, 0, 1));
-            RC.SetShaderParamTexture(_vTextureParam, _tex);
-            RC.Render(_lfgmesh);
-
-            // swap buffers
-            Present();
         }
 
         public override void Resize()
