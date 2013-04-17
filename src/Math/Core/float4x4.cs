@@ -334,13 +334,13 @@ namespace Fusee.Math
 
         #region float[] ToArray()
 
-        /* 
-         * float[] ToArray()
-         * {
-         *   return new float[] { M11, M12, M13, M14, M21, M22, M23, M24, M31, M32, M33, M34, M41, M42, M43, M44 };
-         *   // return new float[] { M11, M21, M31, M41, M12, M22, M32, M42, M13, M23, M33, M43, M14, M24, M34, M44 };
-         * }
-         */
+// ReSharper disable UnusedMember.Local
+        private float[] ToArray()
+        {
+            return new[] {M11, M12, M13, M14, M21, M22, M23, M24, M31, M32, M33, M34, M41, M42, M43, M44};
+            // return new float[] { M11, M21, M31, M41, M12, M22, M32, M42, M13, M23, M33, M43, M14, M24, M34, M44 };
+        }
+// ReSharper restore UnusedMember.Local
 
         #endregion
 
