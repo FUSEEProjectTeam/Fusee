@@ -785,10 +785,15 @@ namespace Fusee.Math
         /// </returns>
         public static float3 Normalize(float3 vec)
         {
-            float scale = 1.0f / vec.Length;
-            vec.x *= scale;
-            vec.y *= scale;
-            vec.z *= scale;
+            if (vec != Zero)
+            {
+                var scale = 1.0f/vec.Length;
+
+                vec.x *= scale;
+                vec.y *= scale;
+                vec.z *= scale;
+            }
+
             return vec;
         }
 
@@ -799,10 +804,18 @@ namespace Fusee.Math
         /// <param name="result">The normalized vector</param>
         public static void Normalize(ref float3 vec, out float3 result)
         {
-            float scale = 1.0f / vec.Length;
-            result.x = vec.x * scale;
-            result.y = vec.y * scale;
-            result.z = vec.z * scale;
+            if (vec != Zero)
+            {
+                float scale = 1.0f / vec.Length;
+
+                result.x = vec.x*scale;
+                result.y = vec.y*scale;
+                result.z = vec.z*scale;
+            }
+            else
+            {
+                result = vec;
+            }
         }
 
         public static void OrthoNormalize(ref float3 normal, ref float3 tangent)

@@ -818,18 +818,14 @@ namespace Fusee.Math
         /// <returns>A Matrix4 that transforms world space to camera space</returns>
         public static float4x4 LookAt(float3 eye, float3 target, float3 up)
         {
-            float3 z = float3.Normalize(eye - target);
-            float3 x = float3.Normalize(float3.Cross(up, z));
-            float3 y = float3.Normalize(float3.Cross(z, x));
+            var z = float3.Normalize(eye - target);
+            var x = float3.Normalize(float3.Cross(up, z));
+            var y = float3.Cross(z, x);
 
-            float4x4 rot = new float4x4(new float4(x.x, y.x, z.x, 0.0f),
-                                        new float4(x.y, y.y, z.y, 0.0f),
-                                        new float4(x.z, y.z, z.z, 0.0f),
-                                        float4.UnitW);
-
-            float4x4 trans = float4x4.CreateTranslation(-eye);
-
-            return trans * rot;
+            return new float4x4(new float4(x.x, y.x, z.x, 0),
+                                new float4(x.y, y.y, z.y, 0),
+                                new float4(x.z, y.z, z.z, 0),
+                                new float4(-float3.Dot(x, eye), -float3.Dot(y, eye), -float3.Dot(z, eye), 1));
         }
 
         /// <summary>

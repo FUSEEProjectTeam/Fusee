@@ -8,10 +8,6 @@ namespace Examples.CubeAndTiles
     {
         // GLSL
         protected string Vs = @"
-            #ifndef GL_ES
-                #version 120
-            #endif
-
             /* Copies incoming vertex color without change.
              * Applies the transformation matrix to vertex position.
              */
@@ -31,7 +27,7 @@ namespace Examples.CubeAndTiles
             void main()
             {
                 gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
-                vNormal = mat3(FUSEE_ITMV) * fuNormal;
+                vNormal = mat3(FUSEE_ITMV[0].xyz, FUSEE_ITMV[1].xyz, FUSEE_ITMV[2].xyz) * fuNormal;
                 vUV = fuUV;
             }";
 

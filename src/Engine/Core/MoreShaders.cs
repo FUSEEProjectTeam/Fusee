@@ -6,9 +6,18 @@ using Fusee.Math;
 
 namespace Fusee.Engine
 {
+    /// <summary>
+    /// Contains all pixel and vertex shaders and a method to create a ShaderProgram in Rendercontext.
+    /// </summary>
     public static class MoreShaders
     {
 
+        /// <summary>
+        /// Creates the shader in RenderContext and returns a ShaderProgram.
+        /// </summary>
+        /// <param name="name">ShaderName.</param>
+        /// <param name="rc">RenderContext.</param>
+        /// <returns></returns>
         public static ShaderProgram GetShader(string name, RenderContext rc)
         {
             if (name == "simple")
@@ -37,9 +46,8 @@ namespace Fusee.Engine
             return spOriginal;
         }
 
-private const string VsDiffuse = @"
-#version 120
 
+private const string VsDiffuse = @"
 attribute vec4 fuColor;
 attribute vec3 fuVertex;
 attribute vec3 fuNormal;
@@ -47,7 +55,6 @@ attribute vec2 fuUV;
        
 uniform mat4 FUSEE_MVP;  //model view projection matrix
 uniform mat4 FUSEE_ITMV; //inverte transformierte model view matrix
-
 
 uniform vec4 FUSEE_L0_AMBIENT;
 uniform vec4 FUSEE_L1_AMBIENT;
@@ -76,7 +83,7 @@ vec3 vPos;
 void main()
 {
     vUV = fuUV;
-    vNormal = normalize(mat3(FUSEE_ITMV) * fuNormal);
+    vNormal = normalize(mat3(FUSEE_ITMV[0].xyz, FUSEE_ITMV[1].xyz, FUSEE_ITMV[2].xyz) * fuNormal);
 
     if(FUSEE_L0_ACTIVE == 1.0) {
         endAmbient += FUSEE_L0_AMBIENT;
@@ -106,10 +113,8 @@ void main()
     gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
 }";
 
-private const string PsDiffuse = @"
-#version 120
 
-/* Copies incoming fragment color without change. */
+private const string PsDiffuse = @"
 #ifdef GL_ES
     precision highp float;
 #endif
@@ -180,11 +185,8 @@ void main()
     gl_FragColor = texture2D(texture1, vUV) * endIntensity; 
 }";
 
-private const string VsSpecular = @"
-#ifndef GL_ES
-    #version 120
-#endif
 
+private const string VsSpecular = @"
 attribute vec4 fuColor;
 attribute vec3 fuVertex;
 attribute vec3 fuNormal;
@@ -221,9 +223,9 @@ vec3 vPos;
 void main()
 {
     vUV = fuUV;
-    vNormal = normalize(mat3(FUSEE_ITMV) * fuNormal);
+    vNormal = normalize(mat3(FUSEE_ITMV[0].xyz, FUSEE_ITMV[1].xyz, FUSEE_ITMV[2].xyz) * fuNormal);
 
-    eyeVector = mat3(FUSEE_MVP) * fuVertex;
+    eyeVector = mat3(FUSEE_MVP[0].xyz, FUSEE_MVP[1].xyz, FUSEE_MVP[2].xyz) * fuVertex;
       
     endAmbient = vec4(0,0,0,0);
     if(FUSEE_L0_ACTIVE == 1.0) {
@@ -254,17 +256,15 @@ void main()
     gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
 }";
 
-private const string PsSpecular = @"
-#ifndef GL_ES
-    #version 120
-#endif
 
+private const string PsSpecular = @"
 /* Copies incoming fragment color without change. */
 #ifdef GL_ES
     precision highp float;
 #endif
 
 uniform sampler2D texture1;
+uniform float specularLevel;
 
 uniform vec4 FUSEE_L0_SPECULAR;
 uniform vec4 FUSEE_L1_SPECULAR;
@@ -322,49 +322,49 @@ void main()
     if(FUSEE_L0_ACTIVE == 1.0) {
         vec3 vHalfVector = normalize(normalize(eyeVector) - normalize(eyeVector - FUSEE_L0_POSITION));
         float L0NdotHV = max(dot(normalize(vNormal), vHalfVector), 0.0);
-        float shine = pow(L0NdotHV, 64.0) * 8.0;
+        float shine = pow(L0NdotHV, specularLevel) * 8.0;
         endSpecular += FUSEE_L0_SPECULAR * shine;
     }
     if(FUSEE_L1_ACTIVE == 1.0) {
         vec3 vHalfVector = normalize(normalize(eyeVector) - normalize(eyeVector - FUSEE_L1_POSITION));
         float L1NdotHV = max(dot(normalize(vNormal), vHalfVector), 0.0);
-        float shine = pow(L1NdotHV, 64.0) * 16.0;
+        float shine = pow(L1NdotHV, specularLevel) * 16.0;
         endSpecular += FUSEE_L1_SPECULAR * shine;
     }
     if(FUSEE_L2_ACTIVE == 1.0) {
         vec3 vHalfVector = normalize(normalize(eyeVector) - normalize(eyeVector - FUSEE_L2_POSITION));
         float L2NdotHV = max(dot(normalize(vNormal), vHalfVector), 0.0);
-        float shine = pow(L2NdotHV, 64.0) * 16.0;
+        float shine = pow(L2NdotHV, specularLevel) * 16.0;
         endSpecular += FUSEE_L2_SPECULAR * shine;
     }
     if(FUSEE_L3_ACTIVE == 1.0) {
         vec3 vHalfVector = normalize(normalize(eyeVector) - normalize(eyeVector - FUSEE_L3_POSITION));
         float L3NdotHV = max(dot(normalize(vNormal), vHalfVector), 0.0);
-        float shine = pow(L3NdotHV, 64.0) * 16.0;
+        float shine = pow(L3NdotHV, specularLevel) * 16.0;
         endSpecular += FUSEE_L3_SPECULAR * shine;
     }
     if(FUSEE_L4_ACTIVE == 1.0) {
         vec3 vHalfVector = normalize(normalize(eyeVector) - normalize(eyeVector - FUSEE_L4_POSITION));
         float L4NdotHV = max(dot(normalize(vNormal), vHalfVector), 0.0);
-        float shine = pow(L4NdotHV, 64.0) * 16.0;
+        float shine = pow(L4NdotHV, specularLevel) * 16.0;
         endSpecular += FUSEE_L4_SPECULAR * shine;
     }
     if(FUSEE_L5_ACTIVE == 1.0) {
         vec3 vHalfVector = normalize(normalize(eyeVector) - normalize(eyeVector - FUSEE_L5_POSITION));
         float L5NdotHV = max(dot(normalize(vNormal), vHalfVector), 0.0);
-        float shine = pow(L5NdotHV, 64.0) * 16.0;
+        float shine = pow(L5NdotHV, specularLevel) * 16.0;
         endSpecular += FUSEE_L5_SPECULAR * shine;
     }
     if(FUSEE_L6_ACTIVE == 1.0) {
         vec3 vHalfVector = normalize(normalize(eyeVector) - normalize(eyeVector - FUSEE_L6_POSITION));
         float L6NdotHV = max(dot(normalize(vNormal), vHalfVector), 0.0);
-        float shine = pow(L6NdotHV, 64.0) * 16.0;
+        float shine = pow(L6NdotHV, specularLevel) * 16.0;
         endSpecular += FUSEE_L6_SPECULAR * shine;
     }
     if(FUSEE_L7_ACTIVE == 1.0) {
         vec3 vHalfVector = normalize(normalize(eyeVector) - normalize(eyeVector - FUSEE_L7_POSITION));
         float L7NdotHV = max(dot(normalize(vNormal), vHalfVector), 0.0);
-        float shine = pow(L7NdotHV, 64.0) * 16.0;
+        float shine = pow(L7NdotHV, specularLevel) * 16.0;
         endSpecular += FUSEE_L7_SPECULAR * shine;
     }
     
@@ -410,11 +410,8 @@ void main()
 
 
 
-private const string VsBump = @"
-#ifndef GL_ES
-    # version 120
-#endif
 
+private const string VsBump = @"
 /* Copies incoming vertex color without change.
     * Applies the transformation matrix to vertex position.
     */
@@ -455,9 +452,9 @@ vec3 vPos;
 void main()
 {
     vUV = fuUV;
-    vNormal = normalize(mat3(FUSEE_ITMV) * fuNormal);
+    vNormal = normalize(mat3(FUSEE_ITMV[0].xyz, FUSEE_ITMV[1].xyz, FUSEE_ITMV[2].xyz) * fuNormal);
 
-    eyeVector = mat3(FUSEE_MVP) * fuVertex;
+    eyeVector = mat3(FUSEE_MVP[0].xyz, FUSEE_MVP[1].xyz, FUSEE_MVP[2].xyz) * -fuVertex;
       
     endAmbient = vec4(0,0,0,0);
     if(FUSEE_L0_ACTIVE == 1.0) {
@@ -489,10 +486,6 @@ void main()
 }";
 
 private const string PsBump = @"
-           #ifndef GL_ES
-               #version 120
-            #endif
-
             /* Copies incoming fragment color without change. */
             #ifdef GL_ES
                 precision highp float;
@@ -500,6 +493,7 @@ private const string PsBump = @"
 
 uniform sampler2D texture1;
 uniform sampler2D normalTex;
+uniform float specularLevel;
 
 uniform vec4 FUSEE_L0_SPECULAR;
 uniform vec4 FUSEE_L1_SPECULAR;
@@ -558,52 +552,52 @@ void main()
     vec3 tempNormal = vNormal + normalize(texture2D(normalTex, vUV).rgb * maxVariance - minVariance);
  
     vec4 endSpecular = vec4(0,0,0,0);
-    if(FUSEE_L0_ACTIVE == 1.0) {
+    if(FUSEE_L0_ACTIVE == 1.0 ) {
         vec3 vHalfVector = normalize(normalize(eyeVector) - normalize(eyeVector - FUSEE_L0_POSITION));
-        float L3NdotHV = max(dot(normalize(tempNormal), vHalfVector), 0.0);
-        float shine = pow(L3NdotHV, 64.0) * 16.0;
+        float L3NdotHV = max(min(dot(normalize(tempNormal), vHalfVector),1.0), 0.0);
+        float shine = pow(L3NdotHV, specularLevel) * 16.0;
         endSpecular += FUSEE_L0_SPECULAR * shine;
     }
     if(FUSEE_L1_ACTIVE == 1.0) {
         vec3 vHalfVector = normalize(normalize(eyeVector) - normalize(eyeVector - FUSEE_L1_POSITION));
         float L3NdotHV = max(dot(normalize(tempNormal), vHalfVector), 0.0);
-        float shine = pow(L3NdotHV, 64.0) * 16.0;
+        float shine = pow(L3NdotHV, specularLevel) * 16.0;
         endSpecular += FUSEE_L1_SPECULAR * shine;
     }
     if(FUSEE_L2_ACTIVE == 1.0) {
         vec3 vHalfVector = normalize(normalize(eyeVector) - normalize(eyeVector - FUSEE_L2_POSITION));
         float L3NdotHV = max(dot(normalize(tempNormal), vHalfVector), 0.0);
-        float shine = pow(L3NdotHV, 64.0) * 16.0;
+        float shine = pow(L3NdotHV, specularLevel) * 16.0;
         endSpecular += FUSEE_L2_SPECULAR * shine;
     }
     if(FUSEE_L3_ACTIVE == 1.0) {
         vec3 vHalfVector = normalize(normalize(eyeVector) - normalize(eyeVector - FUSEE_L3_POSITION));
         float L3NdotHV = max(dot(normalize(tempNormal), vHalfVector), 0.0);
-        float shine = pow(L3NdotHV, 64.0) * 16.0;
+        float shine = pow(L3NdotHV, specularLevel) * 16.0;
         endSpecular += FUSEE_L3_SPECULAR * shine;
     }
     if(FUSEE_L4_ACTIVE == 1.0) {
         vec3 vHalfVector = normalize(normalize(eyeVector) - normalize(eyeVector - FUSEE_L4_POSITION));
         float L3NdotHV = max(dot(normalize(tempNormal), vHalfVector), 0.0);
-        float shine = pow(L3NdotHV, 64.0) * 16.0;
+        float shine = pow(L3NdotHV, specularLevel) * 16.0;
         endSpecular += FUSEE_L4_SPECULAR * shine;
     }
     if(FUSEE_L5_ACTIVE == 1.0) {
         vec3 vHalfVector = normalize(normalize(eyeVector) - normalize(eyeVector - FUSEE_L5_POSITION));
         float L3NdotHV = max(dot(normalize(tempNormal), vHalfVector), 0.0);
-        float shine = pow(L3NdotHV, 64.0) * 16.0;
+        float shine = pow(L3NdotHV, specularLevel) * 16.0;
         endSpecular += FUSEE_L5_SPECULAR * shine;
     }
     if(FUSEE_L6_ACTIVE == 1.0) {
         vec3 vHalfVector = normalize(normalize(eyeVector) - normalize(eyeVector - FUSEE_L6_POSITION));
         float L3NdotHV = max(dot(normalize(tempNormal), vHalfVector), 0.0);
-        float shine = pow(L3NdotHV, 64.0) * 16.0;
+        float shine = pow(L3NdotHV, specularLevel) * 16.0;
         endSpecular += FUSEE_L6_SPECULAR * shine;
     }
     if(FUSEE_L7_ACTIVE == 1.0) {
         vec3 vHalfVector = normalize(normalize(eyeVector) - normalize(eyeVector - FUSEE_L7_POSITION));
         float L3NdotHV = max(dot(normalize(tempNormal), vHalfVector), 0.0);
-        float shine = pow(L3NdotHV, 64.0) * 16.0;
+        float shine = pow(L3NdotHV, specularLevel) * 16.0;
         endSpecular += FUSEE_L7_SPECULAR * shine;
     }
     
@@ -647,11 +641,7 @@ void main()
     gl_FragColor = texture2D(texture1, vUV) * endIntensity; 
 }";
 
-
-
 private const string Vs = @"
-
-
             /* Copies incoming vertex color without change.
              * Applies the transformation matrix to vertex position.
              */
@@ -675,13 +665,12 @@ private const string Vs = @"
                 // vColor = vec4(fuNormal * 0.5 + 0.5, 1.0);
                 // vec4 norm4 = FUSEE_MVP * vec4(fuNormal, 0.0);
                 // vNormal = norm4.xyz;
-                vNormal = mat3(FUSEE_ITMV) * fuNormal;
+                vNormal = mat3(FUSEE_ITMV[0].xyz, FUSEE_ITMV[1].xyz, FUSEE_ITMV[2].xyz) * fuNormal;
                 vUV = fuUV;
             }";
 
+
         private const string Ps = @"
-
-
             /* Copies incoming fragment color without change. */
             #ifdef GL_ES
                 precision highp float;

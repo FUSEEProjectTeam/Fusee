@@ -25,7 +25,7 @@ namespace Examples.EgoPerspective
             Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Cube.obj.model"));
             Geometry geo2 = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Teapot.obj.model"));
 
-            Sp = MoreShaders.GetShader("diffuse", RC);
+            Sp = MoreShaders.GetShader("bump", RC);
             RC.SetShader(Sp);
             m = new ShaderMaterial(Sp);
 
@@ -63,14 +63,14 @@ namespace Examples.EgoPerspective
             //RC.SetLightDirection(3, new float3(-1, -1, -1));
 
             _texture1Param = Sp.GetShaderParam("texture1");
-            //_texture2Param = Sp.GetShaderParam("normalTex");
+            _texture2Param = Sp.GetShaderParam("normalTex");
 
             ImageData imgData = RC.LoadImage("Assets/wall.jpg");
-            //ImageData imgData2 = RC.LoadImage("Assets/normal2.jpg");
+            ImageData imgData2 = RC.LoadImage("Assets/normal2.jpg");
             ITexture iTex = RC.CreateTexture(imgData);
-            //ITexture iTex2 = RC.CreateTexture(imgData2);
+            ITexture iTex2 = RC.CreateTexture(imgData2);
             RC.SetShaderParamTexture(_texture1Param, iTex);
-            //RC.SetShaderParamTexture(_texture2Param, iTex2);
+            RC.SetShaderParamTexture(_texture2Param, iTex2);
 
 
 
