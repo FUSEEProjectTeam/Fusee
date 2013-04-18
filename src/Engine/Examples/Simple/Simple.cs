@@ -6,7 +6,7 @@ namespace Examples.Simple
     public class Simple : RenderCanvas
     {
         // pixel and vertex shader
-        private const string Vs = @"
+        protected string Vs = @"
             /* Copies incoming vertex color without change.
              * Applies the transformation matrix to vertex position.
              */
@@ -14,37 +14,31 @@ namespace Examples.Simple
             attribute vec4 fuColor;
             attribute vec3 fuVertex;
             attribute vec3 fuNormal;
-            attribute vec2 fuUV;        // for texture
-
+        
             varying vec4 vColor;
             varying vec3 vNormal;
-            varying vec2 vUV;           // for texture
-
+        
             uniform mat4 FUSEE_MVP;
             uniform mat4 FUSEE_ITMV;
 
             void main()
             {
                 gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
-
-                vNormal = mat3(FUSEE_ITMV) * fuNormal;
-                vUV = fuUV;             // for texture
+                vNormal = normalize(mat3(FUSEE_ITMV[0].xyz, FUSEE_ITMV[1].xyz, FUSEE_ITMV[2].xyz) * fuNormal);
             }";
 
-        private const string Ps = @"
+        protected string Ps = @"
             /* Copies incoming fragment color without change. */
             #ifdef GL_ES
                 precision highp float;
             #endif
-
-            uniform sampler2D texture1; // for texture
+        
             uniform vec4 vColor;
-            varying vec3 vNormal;       // for texture
-            varying vec2 vUV;
+            varying vec3 vNormal;
 
             void main()
             {
-                gl_FragColor = texture2D(texture1, vUV);  // for texture
+                gl_FragColor = vColor * dot(vNormal, vec3(0, 0, 1));
             }";
 
         // angle variables
@@ -56,13 +50,8 @@ namespace Examples.Simple
         // model variable
         private Mesh _meshTea, _meshFace;
         
-        // variables for color and texture
+        // variables for color
         private IShaderParam _vColorParam;
-        private IShaderParam _vTextureParam;
-
-        private ImageData _imgData;
-        private ITexture _tex;
-        
 
         public override void Init()
         {
@@ -74,10 +63,6 @@ namespace Examples.Simple
             RC.SetShader(sp);
 
             _vColorParam = sp.GetShaderParam("vColor");
-            _vTextureParam = sp.GetShaderParam("texture1");
-
-            _imgData = RC.LoadImage("Assets/world_map.jpg");
-            _tex = RC.CreateTexture(_imgData);
 
             RC.ClearColor = new float4(1, 1, 1, 1);
         }
@@ -119,16 +104,16 @@ namespace Examples.Simple
             var mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
             var mtxCam = float4x4.LookAt(0, 200, 400, 0, 50, 0, 0, 1, 0);
 
-            // first mesh (using color)
+            // first mesh
             RC.ModelView = mtxRot * float4x4.CreateTranslation(-100, 0, 0) * mtxCam;
 
             RC.SetShaderParam(_vColorParam, new float4(0.5f, 0.8f, 0, 1));
             RC.Render(_meshTea);
 
-            // second mesh (using texture)
+            // second mesh
             RC.ModelView = mtxRot * float4x4.CreateTranslation(100, 0, 0) * mtxCam;
 
-            RC.SetShaderParamTexture(_vTextureParam, _tex);
+            RC.SetShaderParam(_vColorParam, new float4(1f, 1f, 0, 1));
             RC.Render(_meshFace);
 
             // swap buffers
