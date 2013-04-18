@@ -8,6 +8,7 @@ namespace Examples.LinqForGeometry
 {
     public class LinqForGeometry : RenderCanvas
     {
+        #region Shader
         // pixel and vertex shader
         protected string _vs = @"
             #ifndef GL_ES
@@ -67,6 +68,8 @@ namespace Examples.LinqForGeometry
                 //gl_FragColor = vColor;
             }";
 
+        #endregion Shader
+
         // angle variables
         private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
 
@@ -85,6 +88,9 @@ namespace Examples.LinqForGeometry
 
         // LFG Geo
         private Geometry _Geo;
+
+        // 'Gamedesign'
+        private float _MovementSpeed = 10.0f;
 
         public override void Init()
         {
@@ -137,7 +143,7 @@ namespace Examples.LinqForGeometry
         // Pull the users input
         public void PullInput()
         {
-            // move per mouse
+            #region Mouse
             if (Input.Instance.IsButtonDown(MouseButtons.Left))
             {
                 _angleVelHorz = RotationSpeed * Input.Instance.GetAxis(InputAxis.MouseX);
@@ -163,13 +169,14 @@ namespace Examples.LinqForGeometry
             // Reset the model with the right mouse button
             if (Input.Instance.IsButtonDown(MouseButtons.Right))
             {
-                if (_Geo.ResetGeometryToDefault()) {
+                if (_Geo.ResetGeometryToDefault())
+                {
                     _lfgmesh = _Geo.ToMesh();
                 }
             }
+            #endregion Mouse
 
-
-            /* Scaling input START */
+            #region Scaling
             if (Input.Instance.IsKeyDown(KeyCodes.Q))
             {
                 if (_Geo.Scale(1.1f, 1.1f, 1.1f))
@@ -239,29 +246,124 @@ namespace Examples.LinqForGeometry
                     _lfgmesh = _Geo.ToMesh();
                 }
             }
-            /* Scaling input END */
+            #endregion Scaling
 
+            #region Translation
+            if (Input.Instance.IsKeyDown(KeyCodes.U))
+            {
+                if (_Geo.Translate(0f, (_MovementSpeed * (float)Time.Instance.DeltaTime) * 2, 0f))
+                {
+                    _lfgmesh = _Geo.ToMesh();
+                }
+            }
+            else if (Input.Instance.IsKeyDown(KeyCodes.J))
+            {
+                if (_Geo.Translate(0f, (-_MovementSpeed * (float)Time.Instance.DeltaTime) * 2, 0f))
+                {
+                    _lfgmesh = _Geo.ToMesh();
+                }
+            }
+            if (Input.Instance.IsKeyDown(KeyCodes.H))
+            {
+                if (_Geo.Translate(-(_MovementSpeed * (float)Time.Instance.DeltaTime) * 2, 0f, 0f))
+                {
+                    _lfgmesh = _Geo.ToMesh();
+                }
+            }
+            else if (Input.Instance.IsKeyDown(KeyCodes.K))
+            {
+                if (_Geo.Translate((_MovementSpeed * (float)Time.Instance.DeltaTime) * 2, 0f, 0f))
+                {
+                    _lfgmesh = _Geo.ToMesh();
+                }
+            }
+            if (Input.Instance.IsKeyDown(KeyCodes.Z))
+            {
+                if (_Geo.Translate(0f, 0f, -(_MovementSpeed * (float)Time.Instance.DeltaTime) * 2))
+                {
+                    _lfgmesh = _Geo.ToMesh();
+                }
+            }
+            else if (Input.Instance.IsKeyDown(KeyCodes.I))
+            {
+                if (_Geo.Translate(0f, 0f, (_MovementSpeed * (float)Time.Instance.DeltaTime) * 2))
+                {
+                    _lfgmesh = _Geo.ToMesh();
+                }
+            }
+            #endregion Translation
+
+            #region Rotation
+            if (Input.Instance.IsKeyDown(KeyCodes.Up))
+            {
+                if (_Geo.RotateX(1f * (float)Time.Instance.DeltaTime))
+                {
+                    _lfgmesh = _Geo.ToMesh();
+                }
+            }
+            else if (Input.Instance.IsKeyDown(KeyCodes.Down))
+            {
+                if (_Geo.RotateX(-1f * (float)Time.Instance.DeltaTime))
+                {
+                    _lfgmesh = _Geo.ToMesh();
+                }
+            }
+
+            if (Input.Instance.IsKeyDown(KeyCodes.Left))
+            {
+                if (_Geo.RotateY(1f * (float)Time.Instance.DeltaTime))
+                {
+                    _lfgmesh = _Geo.ToMesh();
+                }
+            }
+            else if (Input.Instance.IsKeyDown(KeyCodes.Right))
+            {
+                if (_Geo.RotateY(-1f * (float)Time.Instance.DeltaTime))
+                {
+                    _lfgmesh = _Geo.ToMesh();
+                }
+            }
+
+            if (Input.Instance.IsKeyDown(KeyCodes.O))
+            {
+                if (_Geo.RotateZ(1f * (float)Time.Instance.DeltaTime))
+                {
+                    _lfgmesh = _Geo.ToMesh();
+                }
+            }
+            else if (Input.Instance.IsKeyDown(KeyCodes.P))
+            {
+                if (_Geo.RotateZ(-1f * (float)Time.Instance.DeltaTime))
+                {
+                    _lfgmesh = _Geo.ToMesh();
+                }
+            }
+            #endregion Rotation
+
+            if (Input.Instance.IsKeyDown(KeyCodes.NumPad8))
+            {
+                if (_Geo.RotateLocalX(_MovementSpeed * (float)Time.Instance.DeltaTime))
+                {
+                    _lfgmesh = _Geo.ToMesh();
+                }
+            }
+            else if (Input.Instance.IsKeyDown(KeyCodes.NumPad2))
+            {
+                if (_Geo.RotateLocalX(-_MovementSpeed * (float)Time.Instance.DeltaTime))
+                {
+                    _lfgmesh = _Geo.ToMesh();
+                }
+            }
+
+            var mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
 
-            // move per keyboard
-            if (Input.Instance.IsKeyDown(KeyCodes.Left))
-                _angleHorz -= RotationSpeed * (float)Time.Instance.DeltaTime;
+            var mtxCam = float4x4.LookAt(0, 200, 400, 0, 0, 0, 0, 1, 0);
 
-            if (Input.Instance.IsKeyDown(KeyCodes.Right))
-                _angleHorz += RotationSpeed * (float)Time.Instance.DeltaTime;
-
-            if (Input.Instance.IsKeyDown(KeyCodes.Up))
-                _angleVert -= RotationSpeed * (float)Time.Instance.DeltaTime;
-
-            if (Input.Instance.IsKeyDown(KeyCodes.Down))
-                _angleVert += RotationSpeed * (float)Time.Instance.DeltaTime;
-
-            var mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
-            var mtxCam = float4x4.LookAt(0, 200, 400, 0, 50, 0, 0, 1, 0);
-
-            // first mesh (using color)
-            RC.ModelView = mtxRot * float4x4.CreateTranslation(-100, 0, 0) * mtxCam;
+            // first mesh
+            RC.ModelView = mtxRot * float4x4.CreateTranslation(0, 0, 0) * mtxCam;
+            //RC.ModelView = float4x4.CreateTranslation(0, 0, 0) * mtxCam;
         }
 
         public override void Resize()
