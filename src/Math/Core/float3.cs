@@ -10,7 +10,9 @@ namespace Fusee.Math
     /// </remarks>
     [Serializable]
     [StructLayout(LayoutKind.Sequential)]
+// ReSharper disable InconsistentNaming
     public struct float3 : IEquatable<float3>
+// ReSharper restore InconsistentNaming
     {
         #region Fields
 
@@ -94,9 +96,9 @@ namespace Fusee.Math
         [Obsolete("Use static Add() method instead.")]
         public void Add(float3 right)
         {
-            this.x += right.x;
-            this.y += right.y;
-            this.z += right.z;
+            x += right.x;
+            y += right.y;
+            z += right.z;
         }
 
         /// <summary>
@@ -106,9 +108,9 @@ namespace Fusee.Math
         [Obsolete("Use static Add() method instead.")]
         public void Add(ref float3 right)
         {
-            this.x += right.x;
-            this.y += right.y;
-            this.z += right.z;
+            x += right.x;
+            y += right.y;
+            z += right.z;
         }
 
         #endregion public void Add()
@@ -122,9 +124,9 @@ namespace Fusee.Math
         [Obsolete("Use static Subtract() method instead.")]
         public void Sub(float3 right)
         {
-            this.x -= right.x;
-            this.y -= right.y;
-            this.z -= right.z;
+            x -= right.x;
+            y -= right.y;
+            z -= right.z;
         }
 
         /// <summary>
@@ -134,9 +136,9 @@ namespace Fusee.Math
         [Obsolete("Use static Subtract() method instead.")]
         public void Sub(ref float3 right)
         {
-            this.x -= right.x;
-            this.y -= right.y;
-            this.z -= right.z;
+            x -= right.x;
+            y -= right.y;
+            z -= right.z;
         }
 
         #endregion public void Sub()
@@ -150,9 +152,9 @@ namespace Fusee.Math
         [Obsolete("Use static Multiply() method instead.")]
         public void Mult(float f)
         {
-            this.x *= f;
-            this.y *= f;
-            this.z *= f;
+            x *= f;
+            y *= f;
+            z *= f;
         }
 
         #endregion public void Mult()
@@ -166,10 +168,11 @@ namespace Fusee.Math
         [Obsolete("Use static Divide() method instead.")]
         public void Div(float f)
         {
-            float mult = 1.0f / f;
-            this.x *= mult;
-            this.y *= mult;
-            this.z *= mult;
+            if (!(f > MathHelper.EpsilonFloat)) return;
+            var mult = 1.0f / f;
+            x *= mult;
+            y *= mult;
+            z *= mult;
         }
 
         #endregion public void Div()
@@ -249,7 +252,8 @@ namespace Fusee.Math
         /// </summary>
         public void Normalize()
         {
-            float scale = 1.0f / this.Length;
+            if (!(Length > MathHelper.EpsilonFloat)) return;
+            var scale = 1.0f/Length;
             x *= scale;
             y *= scale;
             z *= scale;
@@ -283,9 +287,9 @@ namespace Fusee.Math
         [Obsolete("Use static Multiply() method instead.")]
         public void Scale(float sx, float sy, float sz)
         {
-            this.x = x * sx;
-            this.y = y * sy;
-            this.z = z * sz;
+            x = x * sx;
+            y = y * sy;
+            z = z * sz;
         }
 
         /// <summary>
@@ -295,9 +299,9 @@ namespace Fusee.Math
         [Obsolete("Use static Multiply() method instead.")]
         public void Scale(float3 scale)
         {
-            this.x *= scale.x;
-            this.y *= scale.y;
-            this.z *= scale.z;
+            x *= scale.x;
+            y *= scale.y;
+            z *= scale.z;
         }
 
         /// <summary>
@@ -307,9 +311,9 @@ namespace Fusee.Math
          [Obsolete("Use static Multiply() method instead.")]
         public void Scale(ref float3 scale)
         {
-            this.x *= scale.x;
-            this.y *= scale.y;
-            this.z *= scale.z;
+            x *= scale.x;
+            y *= scale.y;
+            z *= scale.z;
         }
 
         #endregion public void Scale()
@@ -320,7 +324,7 @@ namespace Fusee.Math
          /// <returns>Returns an array of floats with the three components of the vector.</returns>
          public float[] ToArray()
          {
-             return new float[] { x, y, z};
+             return new[] {x, y, z};
          }
 
 
@@ -447,6 +451,7 @@ namespace Fusee.Math
         [Obsolete("Use static Divide() method instead.")]
         public static float3 Div(float3 a, float f)
         {
+            if (!(f > MathHelper.EpsilonFloat)) return Zero;
             float mult = 1.0f / f;
             a.x *= mult;
             a.y *= mult;
@@ -463,10 +468,15 @@ namespace Fusee.Math
         [Obsolete("Use static Divide() method instead.")]
         public static void Div(ref float3 a, float f, out float3 result)
         {
-            float mult = 1.0f / f;
-            result.x = a.x * mult;
-            result.y = a.y * mult;
-            result.z = a.z * mult;
+            if (!(f > MathHelper.EpsilonFloat))
+            {
+                var mult = 1.0f/f;
+                result.x = a.x*mult;
+                result.y = a.y*mult;
+                result.z = a.z*mult;
+            }
+            else
+                result = Zero;
         }
 
         #endregion
@@ -785,7 +795,7 @@ namespace Fusee.Math
         /// </returns>
         public static float3 Normalize(float3 vec)
         {
-            if (vec != Zero)
+            if (vec.Length > MathHelper.EpsilonFloat)
             {
                 var scale = 1.0f/vec.Length;
 
@@ -804,9 +814,9 @@ namespace Fusee.Math
         /// <param name="result">The normalized vector</param>
         public static void Normalize(ref float3 vec, out float3 result)
         {
-            if (vec != Zero)
+            if (vec.Length > MathHelper.EpsilonFloat)
             {
-                float scale = 1.0f / vec.Length;
+                var scale = 1.0f/vec.Length;
 
                 result.x = vec.x*scale;
                 result.y = vec.y*scale;
@@ -818,15 +828,25 @@ namespace Fusee.Math
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="normal"></param>
+        /// <param name="tangent"></param>
+        /// <returns></returns>
         public static float3[] OrthoNormalize(float3 normal, float3 tangent)
         {
-            float3[] ret = new float3[2];
+            var ret = new float3[2];
+
             normal = Normalize(normal);
-            float3 proj = normal*Dot(tangent, normal);
+            var proj = normal*Dot(tangent, normal);
+
             tangent -= proj;
             tangent = Normalize(tangent);
+
             ret[0] = normal;
             ret[1] = tangent;
+
             return ret;
         }
 
@@ -1018,9 +1038,9 @@ namespace Fusee.Math
         public static float3 TransformVector(float3 vec, float4x4 mat)
         {
             float3 v;
-            v.x = float3.Dot(vec, new float3(mat.Column0));
-            v.y = float3.Dot(vec, new float3(mat.Column1));
-            v.z = float3.Dot(vec, new float3(mat.Column2));
+            v.x = Dot(vec, new float3(mat.Column0));
+            v.y = Dot(vec, new float3(mat.Column1));
+            v.z = Dot(vec, new float3(mat.Column2));
             return v;
         }
 
@@ -1076,8 +1096,8 @@ namespace Fusee.Math
         /// </remarks>
         public static void TransformNormal(ref float3 norm, ref float4x4 mat, out float3 result)
         {
-            float4x4 Inverse = float4x4.Invert(mat);
-            float3.TransformNormalInverse(ref norm, ref Inverse, out result);
+            var inverse = float4x4.Invert(mat);
+            TransformNormalInverse(ref norm, ref inverse, out result);
         }
 
         /// <summary>
@@ -1095,9 +1115,9 @@ namespace Fusee.Math
         public static float3 TransformNormalInverse(float3 norm, float4x4 invMat)
         {
             float3 n;
-            n.x = float3.Dot(norm, new float3(invMat.Row0));
-            n.y = float3.Dot(norm, new float3(invMat.Row1));
-            n.z = float3.Dot(norm, new float3(invMat.Row2));
+            n.x = Dot(norm, new float3(invMat.Row0));
+            n.y = Dot(norm, new float3(invMat.Row1));
+            n.z = Dot(norm, new float3(invMat.Row2));
             return n;
         }
 
@@ -1137,9 +1157,9 @@ namespace Fusee.Math
         public static float3 TransformPosition(float3 pos, float4x4 mat)
         {
             float3 p;
-            p.x = float3.Dot(pos, new float3(mat.Column0)) + mat.Row3.x;
-            p.y = float3.Dot(pos, new float3(mat.Column1)) + mat.Row3.y;
-            p.z = float3.Dot(pos, new float3(mat.Column2)) + mat.Row3.z;
+            p.x = Dot(pos, new float3(mat.Column0)) + mat.Row3.x;
+            p.y = Dot(pos, new float3(mat.Column1)) + mat.Row3.y;
+            p.z = Dot(pos, new float3(mat.Column2)) + mat.Row3.z;
             return p;
         }
 
@@ -1190,7 +1210,7 @@ namespace Fusee.Math
         /// <param name="result">The transformed vector</param>
         public static void Transform(ref float3 vec, ref float4x4 mat, out float3 result)
         {
-            float4 v4 = new float4(vec.x, vec.y, vec.z, 1.0f);
+            var v4 = new float4(vec.x, vec.y, vec.z, 1.0f);
             float4.Transform(ref v4, ref mat, out v4);
             result = v4.xyz;
         }
@@ -1221,12 +1241,12 @@ namespace Fusee.Math
             // Since vec.w == 0, we can optimize quat * vec * quat^-1 as follows:
             // vec + 2.0 * cross(quat.xyz, cross(quat.xyz, vec) + quat.ww * vec)
             float3 xyz = quat.xyz, temp, temp2;
-            float3.Cross(ref xyz, ref vec, out temp);
-            float3.Multiply(ref vec, quat.w, out temp2);
-            float3.Add(ref temp, ref temp2, out temp);
-            float3.Cross(ref xyz, ref temp, out temp);
-            float3.Multiply(ref temp, 2, out temp);
-            float3.Add(ref vec, ref temp, out result);
+            Cross(ref xyz, ref vec, out temp);
+            Multiply(ref vec, quat.w, out temp2);
+            Add(ref temp, ref temp2, out temp);
+            Cross(ref xyz, ref temp, out temp);
+            Multiply(ref temp, 2, out temp);
+            Add(ref vec, ref temp, out result);
         }
 
         /// <summary>
@@ -1252,11 +1272,17 @@ namespace Fusee.Math
         /// <param name="result">The transformed vector</param>
         public static void TransformPerspective(ref float3 vec, ref float4x4 mat, out float3 result)
         {
-            float4 v = new float4(vec);
+            var v = new float4(vec);
             float4.Transform(ref v, ref mat, out v);
-            result.x = v.x / v.w;
-            result.y = v.y / v.w;
-            result.z = v.z / v.w;
+
+            if (v.w > MathHelper.EpsilonFloat)
+            {
+                result.x = v.x / v.w;
+                result.y = v.y / v.w;
+                result.z = v.z / v.w;    
+            }
+            else
+                result = Zero;          
         }
 
         #endregion
@@ -1276,7 +1302,10 @@ namespace Fusee.Math
         /// </remarks>
         public static float CalculateAngle(float3 first, float3 second)
         {
-            return (float)System.Math.Acos((float3.Dot(first, second)) / (first.Length * second.Length));
+            if ((first.Length > MathHelper.EpsilonFloat) && (second.Length > MathHelper.EpsilonFloat))
+                return (float)System.Math.Acos((Dot(first, second)) / (first.Length * second.Length));
+
+            return 0;
         }
 
         /// <summary>
@@ -1291,8 +1320,12 @@ namespace Fusee.Math
         public static void CalculateAngle(ref float3 first, ref float3 second, out float result)
         {
             float temp;
-            float3.Dot(ref first, ref second, out temp);
-            result = (float)System.Math.Acos(temp / (first.Length * second.Length));
+            Dot(ref first, ref second, out temp);
+
+            if ((first.Length > MathHelper.EpsilonFloat) && (second.Length > MathHelper.EpsilonFloat))
+                result = (float) System.Math.Acos(temp/(first.Length*second.Length));
+            else
+                result = 0;
         }
 
         #endregion
@@ -1307,7 +1340,9 @@ namespace Fusee.Math
         /// <value>
         /// The xy.
         /// </value>
+// ReSharper disable InconsistentNaming
         public float2 xy { get { return new float2(x, y); } set { x = value.x; y = value.y; } }
+// ReSharper restore InconsistentNaming
 
         #endregion
 
@@ -1402,10 +1437,13 @@ namespace Fusee.Math
         /// </returns>
         public static float3 operator /(float3 vec, float scale)
         {
-            float mult = 1.0f / scale;
+            if (!(scale > MathHelper.EpsilonFloat)) return Zero;
+
+            var mult = 1.0f / scale;
             vec.x *= mult;
             vec.y *= mult;
             vec.z *= mult;
+
             return vec;
         }
 
@@ -1464,7 +1502,9 @@ namespace Fusee.Math
         /// </returns>
         public override int GetHashCode()
         {
+// ReSharper disable NonReadonlyFieldInGetHashCode
             return x.GetHashCode() ^ y.GetHashCode() ^ z.GetHashCode();
+// ReSharper restore NonReadonlyFieldInGetHashCode
         }
 
         #endregion
@@ -1483,7 +1523,7 @@ namespace Fusee.Math
             if (!(obj is float3))
                 return false;
 
-            return this.Equals((float3)obj);
+            return Equals((float3)obj);
         }
 
         #endregion
@@ -1504,9 +1544,9 @@ namespace Fusee.Math
         public bool Equals(float3 other)
         {
             return
-                x == other.x &&
-                y == other.y &&
-                z == other.z;
+                System.Math.Abs(x - other.x) < MathHelper.EpsilonFloat &&
+                System.Math.Abs(y - other.y) < MathHelper.EpsilonFloat &&
+                System.Math.Abs(z - other.z) < MathHelper.EpsilonFloat;
         }
 
         #endregion

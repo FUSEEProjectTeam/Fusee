@@ -10,6 +10,16 @@ namespace Fusee.Math
         #region Fields
 
         /// <summary>
+        /// Defines the value which represents the machine epsilon for <see cref="float"/> in C#.
+        /// </summary>
+        public const float EpsilonFloat = 1.192093E-07f;
+
+        /// <summary>
+        /// Defines the value which represents the machine epsilon for <see cref="double"/> in C#.
+        /// </summary>
+        public const double EpsilonDouble = 1.11022302462516E-16d;
+
+        /// <summary>
         /// Defines the value of Pi as a <see cref="System.Single"/>.
         /// </summary>
         public const float Pi = 3.141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825342117067982148086513282306647093844609550582231725359408128481117450284102701938521105559644622948954930382f;
@@ -25,7 +35,7 @@ namespace Fusee.Math
         public const float PiOver3 = Pi / 3;
 
         /// <summary>
-        /// Definesthe value of  Pi divided by four as a <see cref="System.Single"/>.
+        /// Defines the value of  Pi divided by four as a <see cref="System.Single"/>.
         /// </summary>
         public const float PiOver4 = Pi / 4;
 
