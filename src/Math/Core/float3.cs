@@ -818,6 +818,14 @@ namespace Fusee.Math
             }
         }
 
+        public static void OrthoNormalize(ref float3 normal, ref float3 tangent)
+        {
+            normal = Normalize(normal);
+            float3 proj = normal*Dot(tangent, normal);
+            tangent -= proj;
+            tangent = Normalize(tangent);
+        }
+
         #endregion
 
         #region NormalizeFast

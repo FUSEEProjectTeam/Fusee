@@ -11,7 +11,7 @@ namespace Fusee.Engine
 
     public struct Light
     {
-        public int Active;
+        public float Active;
         public float4 AmbientColor;
         public float4 DiffuseColor;
         public float4 SpecularColor;

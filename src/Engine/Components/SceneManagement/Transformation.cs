@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using Fusee.Math;
 
@@ -17,10 +18,24 @@ namespace Fusee.SceneManagement
         private Quaternion _quaternion;
         private float3 _localScale;
         private float3 _eulerAngles;
+
+        private float4x4 _globalMatrix;
+        private float3 _globalPosition;
+        private Quaternion _globalQuaternion;
+        private float3 _globalScale;
+        private float3 _globalEulerAngles;
+
+
         private SceneEntity _entity;
+
         private bool _matrixDirty;
         private bool _quaternionDirty;
         private bool _eulerDirty;
+
+        private bool _globalMatrixDirty;
+        private bool _globalQuaternionDirty;
+        private bool _globalEulerDirty;
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Transformation"/> class. No SceneEntity will be set.
@@ -28,6 +43,10 @@ namespace Fusee.SceneManagement
        public Transformation()
        {
            _transformMatrix = float4x4.Identity;
+            _globalMatrix = _transformMatrix;
+            _quaternion = Quaternion.Identity;
+            _globalQuaternion = Quaternion.Identity;
+           _globalScale = new float3(1,1,1);
            _localScale = new float3(1,1,1);
            _matrixDirty = false;
            _quaternionDirty = false;
@@ -41,6 +60,10 @@ namespace Fusee.SceneManagement
        public Transformation(SceneEntity entity)
        {
            _transformMatrix = float4x4.Identity;
+           _globalMatrix = _transformMatrix;
+           _quaternion = Quaternion.Identity;
+           _globalQuaternion = Quaternion.Identity;
+           _globalScale = new float3(1,1,1);
            _localScale = new float3(1, 1, 1);
            _entity = entity;
            _matrixDirty = false;
@@ -63,33 +86,69 @@ namespace Fusee.SceneManagement
            {
                if (_matrixDirty)
                {
-                   _transformMatrix = float4x4.Scale(_localScale) * float4x4.CreateRotationY(_eulerAngles.y) * float4x4.CreateRotationX(_eulerAngles.x) * float4x4.CreateRotationZ(_eulerAngles.z) * float4x4.CreateTranslation(_localPosition);
+                   _transformMatrix = float4x4.Scale(_localScale) * Quaternion.QuaternionToMatrix(LocalQuaternion) * float4x4.CreateTranslation(_localPosition);
                    _matrixDirty = false;
                }
                return _transformMatrix;
            }
            set
            {
-
+               _globalMatrixDirty = false;
                _transformMatrix = value;
-               UpdateMembers();
-           } // TODO: Extract Position, Rotation, Scale after assignment.
+               UpdateLocalMembers();
+           } 
        }
+
+       /// <summary>
+       /// Gets or sets the float4x4 transformMatrix.
+       /// </summary>
+       public float4x4 GlobalMatrix
+       {
+           get
+           {
+               if (_globalMatrixDirty)
+               {
+                   _globalMatrix = float4x4.Scale(_globalScale) * Quaternion.QuaternionToMatrix(GlobalQuaternion) * float4x4.CreateTranslation(_globalPosition);
+               }
+               return _globalMatrix;
+           }
+           set
+           {
+              /* if(_globalMatrix != value)
+               {
+                   _globalMatrix = value;
+                   _globalMatrixDirty = true;
+                   UpdateGlobalMembers();
+                   return;
+               }*/
+               _globalMatrix = value;
+               UpdateGlobalMembers();
+           } 
+       }
+
+        public bool GlobalMatrixDirty
+        {
+            get { return _globalMatrixDirty; }
+        }
+
+        public void SetGlobalMat(float4x4 mat)
+        {
+            _globalMatrix = mat;
+            UpdateGlobalMembers();
+            _globalMatrixDirty = false;
+        }
+        
 
 
         private float3 GetScaleFromMatrix(float4x4 matrix)
         {
-            float xs, ys, zs;
-            xs = GetLengthOfVector(new float3(matrix.M11, matrix.M12, matrix.M13));
-            ys = GetLengthOfVector(new float3(matrix.M21, matrix.M22, matrix.M23));
-            zs = GetLengthOfVector(new float3(matrix.M31, matrix.M32, matrix.M33));
-            return new float3(xs,ys,zs);
+            return new float3(GetLengthOfVector(matrix.Row0.xyz), GetLengthOfVector(matrix.Row1.xyz), GetLengthOfVector(matrix.Row2.xyz));
         }
 
 
         private float3 GetPositionFromMatrix(float4x4 matrix)
         {
-            return new float3(matrix.M41,matrix.M42,matrix.M43);
+            return matrix.Row3.xyz;
         }
 
 
@@ -106,6 +165,10 @@ namespace Fusee.SceneManagement
        {
            set
            {
+               if (_entity == null || _entity.parent == null)
+               {
+                   GlobalPosition = value;
+               }
                _localPosition = value;
                _matrixDirty = true;
            }
@@ -116,6 +179,20 @@ namespace Fusee.SceneManagement
        }
 
 
+        public float3 GlobalPosition
+        {
+            set
+            {
+                _globalPosition = value;
+                _globalMatrixDirty = true;
+            }
+            get
+            {
+                return _globalPosition;
+            }
+        }
+
+
 
        /// <summary>
        /// Gets or sets the float3 LocalScale.
@@ -124,6 +201,10 @@ namespace Fusee.SceneManagement
        {
            set
            {
+               if (_entity == null || _entity.parent == null)
+               {
+                   GlobalScale = value;
+               }
                _localScale = value;
                _matrixDirty = true;
            }
@@ -134,6 +215,20 @@ namespace Fusee.SceneManagement
            }
        }
 
+        public float3 GlobalScale
+        {
+            set
+            {
+                _globalScale = value;
+                _globalMatrixDirty = true;
+            }
+            get
+            {
+                float3 scale = _globalScale;
+                return scale;
+            }
+        }
+
        /// <summary>
        /// Gets or sets the Quaternion LocalQuaternion.
        /// </summary>
@@ -143,8 +238,7 @@ namespace Fusee.SceneManagement
            {
                if (_quaternionDirty)
                {
-                   _quaternion = Quaternion.EulerToQuaternion(_eulerAngles);
-                   // TODO: Add Euler to quaternion conversion and vice versa
+                   _quaternion = Quaternion.EulerToQuaternion2(_eulerAngles);
                    _quaternionDirty = false;
                }
                
@@ -152,16 +246,40 @@ namespace Fusee.SceneManagement
            }
            set
            {
+               if (_entity == null || _entity.parent == null)
+               {
+                   GlobalQuaternion = value;
+               }
                _matrixDirty = true;
                _eulerDirty = true;
                _quaternion = value;
-               _eulerAngles = LocalEulerAngles; // Hack ??
-               // TODO: Update eulerangles value from quaternion value
+           }
+       }
+
+       /// <summary>
+       /// Gets or sets the Quaternion GlobalQuaternion.
+       /// </summary>
+       public Quaternion GlobalQuaternion
+       {
+           get
+           {
+               if (_globalQuaternionDirty)
+               {
+                   _globalQuaternion = Quaternion.EulerToQuaternion2(_globalEulerAngles);
+                   _globalQuaternionDirty = false;
+               }
+
+               return _globalQuaternion;
+           }
+           set
+           {
+               _globalMatrixDirty = true;
+               _globalEulerDirty = true;
+               _globalQuaternion = value;
            }
        }
 
 
-        // TODO: Add eulerdirty functionality
        /// <summary>
        /// Gets or sets the float3 LocalEulerAngles.
        /// </summary>
@@ -169,6 +287,10 @@ namespace Fusee.SceneManagement
        {
            set
            {
+               if(_entity == null || _entity.parent == null)
+               {
+                   GlobalEulerAngles = value;
+               }
                _eulerAngles = value;
                _matrixDirty = true;
                _quaternionDirty = true;
@@ -185,16 +307,56 @@ namespace Fusee.SceneManagement
            }
        }
 
-      private void UpdateMembers() // Extract members from transformmatrix
+       /// <summary>
+       /// Gets or sets the float3 GlobalEulerAngles.
+       /// </summary>
+       public float3 GlobalEulerAngles
+       {
+           set
+           {
+               _globalEulerAngles = value;
+               _globalMatrixDirty = true;
+               _globalQuaternionDirty = true;
+           }
+
+           get
+           {
+               if (_globalEulerDirty)
+               {
+                   _globalEulerAngles = Quaternion.QuaternionToEuler(_globalQuaternion);
+                   _globalEulerDirty = false;
+               }
+               return _globalEulerAngles;
+           }
+       }
+
+
+      private void UpdateLocalMembers() // Extract members from transformMatrix
       {
-          //_quaternion = Quaternion.Identity;
-          //_eulerAngles = float3.;
+          
+          _quaternion = Quaternion.LookRotation(_transformMatrix.Column2.xyz, _transformMatrix.Column1.xyz);
+          _eulerAngles = Quaternion.QuaternionToEuler(_quaternion);
           _localScale = GetScaleFromMatrix(_transformMatrix);
           _localPosition = GetPositionFromMatrix(_transformMatrix);
+          _eulerDirty = false;
+          _quaternionDirty = false;
       }
+
+      private void UpdateGlobalMembers() // Extract members from globalMatrix
+      {
+ 
+          _globalQuaternion = Quaternion.LookRotation(_globalMatrix.Row2.xyz, _globalMatrix.Row1.xyz);
+          _globalEulerAngles = Quaternion.QuaternionToEuler(_globalQuaternion);
+          _globalScale = GetScaleFromMatrix(_globalMatrix);
+          _globalPosition = GetPositionFromMatrix(_globalMatrix);
+
+          _globalEulerDirty = false;
+          _globalQuaternionDirty = false;
+      }
+
       public override void Accept(SceneVisitor sv)
       {
-          sv.Visit((Transformation)this);
+          sv.Visit(this);
       }
     }
 }

@@ -29,7 +29,7 @@ namespace Fusee.SceneManagement
         {
  
             _renderer.material.Update(renderContext);
-
+            SceneManager.Manager.UpdateLights();
         }
     }
 }

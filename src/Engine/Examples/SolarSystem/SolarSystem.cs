@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using Fusee.Engine;
 using Fusee.Math;
@@ -87,7 +88,7 @@ namespace Examples.SolarSystem
         private ImageData _earthImage;
         private ITexture _earthITexture;
 
-        /*/ moon
+        // moon
         private SceneEntity _moon;
         private Renderer _moonRenderer;
         private PlanetMaterial _moonMaterial;
@@ -95,7 +96,7 @@ namespace Examples.SolarSystem
         private IShaderParam _moonIShaderParam;
         private ImageData _moonImage;
         private ITexture _moonITexture;
-        */
+        
          
         // mars
         private SceneEntity _mars;
@@ -144,9 +145,9 @@ namespace Examples.SolarSystem
 
 
         //Light test
-        private SpotLight spot = new SpotLight(0);
-        private PointLight point = new PointLight(1);
-        private DirectionalLight direct = new DirectionalLight(2);
+        //private SpotLight spot = new SpotLight(0);
+        //private PointLight point = new PointLight(1);
+        private DirectionalLight direct = new DirectionalLight(new float3(0,-1,0),new float4(1,1,1,1),new float3(0,100,0),0);
 
 
 
@@ -160,10 +161,11 @@ namespace Examples.SolarSystem
         public override void Init()
         {
             //Time.Instance.TimeFlow = 0.01f;
+            
             SceneManager.RC = RC;
 
             WorldOrigin.AddComponent(camrotation);
-            camrotation.Init(WorldOrigin);
+            
 
             planetgeometry = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Sphere.obj.model"));
             spacebox = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/spacebox.obj.model")); 
@@ -172,6 +174,7 @@ namespace Examples.SolarSystem
             cameraholder.name = "CameraOwner";
             cameraholder.transform.LocalPosition = new float3(0, 0, 10);
             scenecamera = new Camera(cameraholder.transform);
+            scenecamera.Resize(Width, Height);
             cameraholder.AddComponent(camscript);
             cameraholder.AddComponent(scenecamera);
             cameraholder.AddComponent(direct);
@@ -186,7 +189,9 @@ namespace Examples.SolarSystem
             spaceboxImage = RC.LoadImage("Assets/spaceboxTexture.png");
             spaceboxIShaderParam = spaceboxMaterial.sp.GetShaderParam("texture1");
             spaceboxITexture = RC.CreateTexture(spaceboxImage);
+            spaceboxImage.PixelData = null;
             spaceboxMaterial.Tex = spaceboxITexture;
+            spaceboxITexture = null;
             spaceboxMaterial.Textureparam = spaceboxIShaderParam;
             spaceboxRenderer = new Renderer(spacebox);
             spaceboxRenderer.material = spaceboxMaterial;
@@ -224,7 +229,7 @@ namespace Examples.SolarSystem
             // Setup Earth
             _earth = new SceneEntity {name = "Earth"};
             _earthAction.Init(_earth);
-            _earthMaterial = new PlanetMaterial(MoreShaders.GetShader("simpel", RC));
+            _earthMaterial = new PlanetMaterial(MoreShaders.GetShader("diffuse", RC));
             _earthImage = RC.LoadImage("Assets/earth.jpg");
             _earthIShaderParam = _earthMaterial.sp.GetShaderParam("texture1");
             _earthITexture = RC.CreateTexture(_earthImage);
@@ -239,12 +244,12 @@ namespace Examples.SolarSystem
             //SceneManager.Manager.AddSceneEntity(_earth);
             _emptyEarth.AddChild(_earth);
 
-            /*/ Setup Moon
-            _emptyMoonAction = new MoonAction(_earth, _speedmoon);
+             //Setup Moon
+            _emptyMoonAction = new MoonAction(_earth, _speedearth*5.0f);
             _emptyMoon.transform.LocalPosition = _earth.transform.LocalPosition;
             _moon = new SceneEntity { name = "Moon" };
             _emptyMoonAction.Init(_emptyMoon);
-            _moonMaterial = new PlanetMaterial(MoreShaders.GetShader("simpel", RC));
+            _moonMaterial = new PlanetMaterial(MoreShaders.GetShader("diffuse", RC));
             _moonImage = RC.LoadImage("Assets/moon.jpg");
             _moonIShaderParam = _moonMaterial.sp.GetShaderParam("texture1");
             _moonITexture = RC.CreateTexture(_moonImage);
@@ -254,15 +259,15 @@ namespace Examples.SolarSystem
             _moonRenderer.material = _moonMaterial;
             _moon.AddComponent(_moonRenderer);
             _emptyMoon.AddComponent(_emptyMoonAction);
-            _moon.transform.LocalPosition = new float3(0.1f, 0, 0);
-            _moon.transform.LocalScale = new float3(0.1f, 0.1f, 0.1f);
+            _moon.transform.LocalPosition = new float3(0.5f, 0, 0);
+            _moon.transform.LocalScale = new float3(0.05f, 0.05f, 0.05f);
             SceneManager.Manager.AddSceneEntity(_emptyMoon);
-            _emptyMoon.AddChild(_moon);*/
+            _emptyMoon.AddChild(_moon);
 
             // Setup sun
             _sun = new SceneEntity { name = "Sun" };
             //_sunAction.Init(_sun);
-            _sunMaterial = new PlanetMaterial(MoreShaders.GetShader("simpel", RC));
+            _sunMaterial = new PlanetMaterial(MoreShaders.GetShader("diffuse", RC));
             _sunImage = RC.LoadImage("Assets/sun.jpg");
             _sunIShaderParam = _sunMaterial.sp.GetShaderParam("texture1");
             _sunITexture = RC.CreateTexture(_sunImage);
@@ -279,7 +284,7 @@ namespace Examples.SolarSystem
             // Setup mercury
             _mercury = new SceneEntity { name = "Mercury" };
             _mercuryAction.Init(_mercury);
-            _mercuryMaterial = new PlanetMaterial(MoreShaders.GetShader("simpel", RC));
+            _mercuryMaterial = new PlanetMaterial(MoreShaders.GetShader("diffuse", RC));
             _mercuryImage = RC.LoadImage("Assets/merkur.jpg");
             _mercuryIShaderParam = _mercuryMaterial.sp.GetShaderParam("texture1");
             _mercuryITexture = RC.CreateTexture(_mercuryImage);
@@ -297,7 +302,7 @@ namespace Examples.SolarSystem
             // Setup venus
             _venus = new SceneEntity { name = "Venus" };
             _venusAction.Init(_venus);
-            _venusMaterial = new PlanetMaterial(MoreShaders.GetShader("simpel", RC));
+            _venusMaterial = new PlanetMaterial(MoreShaders.GetShader("diffuse", RC));
             _venusImage = RC.LoadImage("Assets/venus.jpg");
             _venusIShaderParam = _venusMaterial.sp.GetShaderParam("texture1");
             _venusITexture = RC.CreateTexture(_venusImage);
@@ -315,7 +320,7 @@ namespace Examples.SolarSystem
             // Setup mars
             _mars = new SceneEntity { name = "Mars" };
             _marsAction.Init(_mars);
-            _marsMaterial = new PlanetMaterial(MoreShaders.GetShader("simpel", RC));
+            _marsMaterial = new PlanetMaterial(MoreShaders.GetShader("diffuse", RC));
             _marsImage = RC.LoadImage("Assets/mars.jpg");
             _marsIShaderParam = _marsMaterial.sp.GetShaderParam("texture1");
             _marsITexture = RC.CreateTexture(_marsImage);
@@ -333,7 +338,7 @@ namespace Examples.SolarSystem
             // Setup jupiter
             _jupiter = new SceneEntity { name = "Jupiter" };
             _jupiterAction.Init(_jupiter);
-            _jupiterMaterial = new PlanetMaterial(MoreShaders.GetShader("simpel", RC));
+            _jupiterMaterial = new PlanetMaterial(MoreShaders.GetShader("diffuse", RC));
             _jupiterImage = RC.LoadImage("Assets/jupiter.jpg");
             _jupiterIShaderParam = _jupiterMaterial.sp.GetShaderParam("texture1");
             _jupiterITexture = RC.CreateTexture(_jupiterImage);
@@ -351,7 +356,7 @@ namespace Examples.SolarSystem
             // Setup saturn
             _saturn = new SceneEntity { name = "Saturn" };
             _saturnAction.Init(_saturn);
-            _saturnMaterial = new PlanetMaterial(MoreShaders.GetShader("simpel", RC));
+            _saturnMaterial = new PlanetMaterial(MoreShaders.GetShader("diffuse", RC));
             _saturnImage = RC.LoadImage("Assets/saturn.jpg");
             _saturnIShaderParam = _saturnMaterial.sp.GetShaderParam("texture1");
             _saturnITexture = RC.CreateTexture(_saturnImage);
@@ -369,7 +374,7 @@ namespace Examples.SolarSystem
             // Setup uranus
             _uranus = new SceneEntity { name = "Uranus" };
             _uranusAction.Init(_uranus);
-            _uranusMaterial = new PlanetMaterial(MoreShaders.GetShader("simpel", RC));
+            _uranusMaterial = new PlanetMaterial(MoreShaders.GetShader("diffuse", RC));
             _uranusImage = RC.LoadImage("Assets/uranus.jpg");
             _uranusIShaderParam = _uranusMaterial.sp.GetShaderParam("texture1");
             _uranusITexture = RC.CreateTexture(_uranusImage);
@@ -387,7 +392,7 @@ namespace Examples.SolarSystem
             // Setup neptun
             _neptun = new SceneEntity { name = "Neptun" };
             _neptunAction.Init(_neptun);
-            _neptunMaterial = new PlanetMaterial(MoreShaders.GetShader("simpel", RC));
+            _neptunMaterial = new PlanetMaterial(MoreShaders.GetShader("diffuse", RC));
             _neptunImage = RC.LoadImage("Assets/neptune.jpg");
             _neptunIShaderParam = _neptunMaterial.sp.GetShaderParam("texture1");
             _neptunITexture = RC.CreateTexture(_neptunImage);
@@ -411,7 +416,8 @@ namespace Examples.SolarSystem
             _emptySaturn.transform.LocalEulerAngles = new float3(0, 95, 0);
             _emptyUranus.transform.LocalEulerAngles = new float3(0, 145, 0);
             _emptyNeptun.transform.LocalEulerAngles = new float3(0, 245, 0);
-
+            
+            camrotation.Init(WorldOrigin);
             RC.ClearColor = new float4(0, 0, 0, 1);
         }
 
@@ -419,6 +425,7 @@ namespace Examples.SolarSystem
         public override void RenderAFrame()
         {
             SceneManager.Manager.Traverse(this);
+            Debug.WriteLine(Time.Instance.FramePerSecondSmooth);
         }
 
 
@@ -426,9 +433,7 @@ namespace Examples.SolarSystem
         public override void Resize()
         {
             RC.Viewport(0, 0, Width, Height);
-
-            float aspectRatio = Width / (float)Height;
-            RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 5000);
+            scenecamera.Resize(Width, Height);
         }
 
         public static void Main()

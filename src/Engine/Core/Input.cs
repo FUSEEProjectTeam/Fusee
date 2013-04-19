@@ -104,6 +104,26 @@ namespace Fusee.Engine
             return _keysPressed.ContainsKey((int)key);
         }
 
+        public bool OnKeyDown(KeyCodes key)
+        {
+            if(_keysPressed.ContainsKey((int)key))
+            {
+                _keysPressed.Remove((int) key);
+                return true;
+            }
+            return false;  
+        }
+
+        public bool OnKeyUp(KeyCodes key)
+        {
+            if (!_keysPressed.ContainsKey((int)key))
+            {
+                _keysPressed.Add((int)key, true);
+                return true;
+            }
+            return false;
+        }
+
         /// <summary>
         /// Check if a given mouse button is pressed during the current frame.
         /// </summary>
@@ -114,6 +134,26 @@ namespace Fusee.Engine
         public bool IsButtonDown(MouseButtons button)
         {
             return _buttonsPressed.ContainsKey((int)button);
+        }
+
+        public bool OnButtonDown(MouseButtons button)
+        {
+            if (_buttonsPressed.ContainsKey((int)button))
+            {
+                _buttonsPressed.Remove((int)button);
+                return true;
+            }
+            return false;  
+        }
+
+        public bool OnButtonUp(MouseButtons button)
+        {
+            if (!_buttonsPressed.ContainsKey((int)button))
+            {
+                _buttonsPressed.Add((int)button, true);
+                return true;
+            }
+            return false;
         }
 
         internal void OnUpdateFrame(double deltaTime)

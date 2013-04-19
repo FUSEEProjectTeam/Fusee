@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Fusee.SceneManagement;
@@ -20,14 +21,14 @@ namespace Examples.SolarSystem
 
         public override void Start()
         {
-            transform.LocalPosition = _earth.transform.LocalPosition;
+            transform.LocalPosition = _earth.transform.GlobalPosition;
         }
 
         public override void Update()
         {
-            transform.Matrix = _earth.transform.Matrix;
-            
-            //transform.LocalEulerAngles += _rotationspeed * (float)Time.Instance.DeltaTime;
+            transform.LocalPosition = _earth.transform.GlobalPosition;
+            //Debug.WriteLine("Earth LocalPos: "+_earth.transform.LocalPosition+ " Earth Global Pos: "+_earth.transform.GlobalPosition);
+            transform.LocalEulerAngles += _rotationspeed * (float)Time.Instance.DeltaTime;
         }
     }
 }

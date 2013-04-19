@@ -1,5 +1,0 @@
-1. Zip the content in the template folder (e.g. FuseeExamplesApp) and name it as the folder.
-2. Copy the zip file to C:\Users\[user name]\My Documents\Visual Studio [Version]\Templates\ProjectTemplates\Visual C#\FUSEE\.
-3. Open Visual Studio and load the FUSEE engine.
-4. You can now use the template to add a new project via the "Add -> New Project" dialog.
-5. Important: Set project path to "[...]\dev\src\Engine\Examples\"

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using JSIL.Meta;
 using Fusee.Math;
+using System.Diagnostics;
 
 namespace Fusee.Engine
 {
