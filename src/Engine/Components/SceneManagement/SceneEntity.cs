@@ -202,7 +202,10 @@ namespace Fusee.SceneManagement
         public SceneEntity parent
         {
             get { return _parent; }
-            set { _parent = value; }
+            set {
+                    transform.Parent = value;
+                    _parent = value; 
+                }
         }
 
         /// <summary>

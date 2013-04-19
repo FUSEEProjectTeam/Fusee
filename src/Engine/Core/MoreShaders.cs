@@ -31,6 +31,12 @@ namespace Fusee.Engine
                 return spDiffuse;
             }
 
+            if (name == "diffuse2")
+            {
+                ShaderProgram spDiffuse2 = rc.CreateShader(VsDiffuse2, PsDiffuse2);
+                return spDiffuse2;
+            }
+
             if (name == "specular")
             {
                 ShaderProgram spSpecular = rc.CreateShader(VsSpecular, PsSpecular);
@@ -185,6 +191,158 @@ void main()
     gl_FragColor = texture2D(texture1, vUV) * endIntensity; 
 }";
 
+private const string VsDiffuse2 = @"
+attribute vec4 fuColor;
+attribute vec3 fuVertex;
+attribute vec3 fuNormal;
+attribute vec2 fuUV;
+       
+uniform mat4 FUSEE_M;
+uniform mat4 FUSEE_MV; 
+uniform mat4 FUSEE_MVP;  
+
+uniform vec4 FUSEE_L0_AMBIENT;
+uniform vec4 FUSEE_L1_AMBIENT;
+uniform vec4 FUSEE_L2_AMBIENT;
+uniform vec4 FUSEE_L3_AMBIENT;
+uniform vec4 FUSEE_L4_AMBIENT;
+uniform vec4 FUSEE_L5_AMBIENT;
+uniform vec4 FUSEE_L6_AMBIENT;
+uniform vec4 FUSEE_L7_AMBIENT;
+
+uniform float FUSEE_L0_ACTIVE;
+uniform float FUSEE_L1_ACTIVE;
+uniform float FUSEE_L2_ACTIVE;
+uniform float FUSEE_L3_ACTIVE;
+uniform float FUSEE_L4_ACTIVE;
+uniform float FUSEE_L5_ACTIVE;
+uniform float FUSEE_L6_ACTIVE;
+uniform float FUSEE_L7_ACTIVE;
+
+
+varying vec2 vUV;
+varying vec3 vNormal;
+varying vec4 endAmbient;
+varying vec3 vPos;
+
+void main(void)
+{
+   vUV = fuUV;
+   vPos = normalize(vec3(mat3(FUSEE_MV[0].xyz, FUSEE_MV[1].xyz, FUSEE_MV[2].xyz) * fuVertex));       
+   vNormal = normalize(vec3(mat3(FUSEE_M[0].xyz, FUSEE_M[1].xyz, FUSEE_M[2].xyz) * fuNormal));
+
+    endAmbient=vec4(0,0,0,0);
+    if(FUSEE_L0_ACTIVE == 1.0) {
+        endAmbient += FUSEE_L0_AMBIENT;
+    }
+    if(FUSEE_L1_ACTIVE == 1.0) {
+        endAmbient += FUSEE_L1_AMBIENT;
+    }
+    if(FUSEE_L2_ACTIVE == 1.0) {
+        endAmbient += FUSEE_L2_AMBIENT;
+    }
+    if(FUSEE_L3_ACTIVE == 1.0) {
+        endAmbient += FUSEE_L3_AMBIENT;
+    }
+    if(FUSEE_L4_ACTIVE == 1.0) {
+        endAmbient += FUSEE_L4_AMBIENT;
+    }
+    if(FUSEE_L5_ACTIVE == 1.0) {
+        endAmbient += FUSEE_L5_AMBIENT;
+    }
+    if(FUSEE_L6_ACTIVE == 1.0) {
+        endAmbient += FUSEE_L6_AMBIENT;
+    }
+    if(FUSEE_L7_ACTIVE == 1.0) {
+        endAmbient += FUSEE_L7_AMBIENT;
+    }
+    //endAmbient=normalize(endAmbient);
+    //endAmbient = clamp(endAmbient, 0.0, 1.0); 
+   gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
+
+}";
+
+private const string PsDiffuse2 = @"
+#ifdef GL_ES
+    precision highp float;
+#endif
+
+uniform sampler2D texture1;
+
+uniform vec4 FUSEE_L0_DIFFUSE;
+uniform vec4 FUSEE_L1_DIFFUSE;
+uniform vec4 FUSEE_L2_DIFFUSE;
+uniform vec4 FUSEE_L3_DIFFUSE;
+uniform vec4 FUSEE_L4_DIFFUSE;
+uniform vec4 FUSEE_L5_DIFFUSE;
+uniform vec4 FUSEE_L6_DIFFUSE;
+uniform vec4 FUSEE_L7_DIFFUSE;
+
+uniform float FUSEE_L0_ACTIVE;
+uniform float FUSEE_L1_ACTIVE;
+uniform float FUSEE_L2_ACTIVE;
+uniform float FUSEE_L3_ACTIVE;
+uniform float FUSEE_L4_ACTIVE;
+uniform float FUSEE_L5_ACTIVE;
+uniform float FUSEE_L6_ACTIVE;
+uniform float FUSEE_L7_ACTIVE;
+
+uniform vec3 FUSEE_L0_DIRECTION;
+uniform vec3 FUSEE_L1_DIRECTION;
+uniform vec3 FUSEE_L2_DIRECTION;
+uniform vec3 FUSEE_L3_DIRECTION;
+uniform vec3 FUSEE_L4_DIRECTION;
+uniform vec3 FUSEE_L5_DIRECTION;
+uniform vec3 FUSEE_L6_DIRECTION;
+uniform vec3 FUSEE_L7_DIRECTION;
+
+varying vec3 vNormal;
+varying vec3 vPos;
+varying vec2 vUV;
+varying vec4 endAmbient;
+
+void main(void)
+{
+
+// diffuse
+   vec4 Idiff = vec4(0,0,0,0);
+    if(FUSEE_L0_ACTIVE == 1.0){  
+        Idiff += FUSEE_L0_DIFFUSE * max(dot(vNormal,vec3(normalize(FUSEE_L0_DIRECTION - vPos))), 0.1);  
+    }
+
+    if(FUSEE_L1_ACTIVE == 1.0){ 
+        Idiff += FUSEE_L1_DIFFUSE * max(dot(vNormal,vec3(normalize(FUSEE_L1_DIRECTION - vPos))), 0.1);  
+    }
+
+    if(FUSEE_L2_ACTIVE == 1.0){ 
+        Idiff += FUSEE_L2_DIFFUSE * max(dot(vNormal,vec3(normalize(FUSEE_L2_DIRECTION - vPos))), 0.1);  
+    }
+
+    if(FUSEE_L3_ACTIVE == 1.0){
+        Idiff += FUSEE_L3_DIFFUSE * max(dot(vNormal,vec3(normalize(FUSEE_L3_DIRECTION - vPos))), 0.1);  
+    }
+
+    if(FUSEE_L4_ACTIVE == 1.0){ 
+        Idiff += FUSEE_L4_DIFFUSE * max(dot(vNormal,vec3(normalize(FUSEE_L4_DIRECTION - vPos))), 0.1);  
+    }
+
+    if(FUSEE_L5_ACTIVE == 1.0){  
+        Idiff += FUSEE_L5_DIFFUSE * max(dot(vNormal,vec3(normalize(FUSEE_L5_DIRECTION - vPos))), 0.1);  
+    }
+
+    if(FUSEE_L6_ACTIVE == 1.0){ 
+        Idiff += FUSEE_L6_DIFFUSE * max(dot(vNormal,vec3(normalize(FUSEE_L6_DIRECTION - vPos))), 0.1);  
+    }
+
+    if(FUSEE_L7_ACTIVE == 1.0){   
+        Idiff += FUSEE_L7_DIFFUSE * max(dot(vNormal,vec3(normalize(FUSEE_L7_DIRECTION - vPos))), 0.1);  
+    }
+
+    Idiff = clamp(Idiff, 0.0, 1.0); 
+    gl_FragColor = texture2D(texture1, vUV)*(Idiff*endAmbient);
+}
+
+";
 
 private const string VsSpecular = @"
 attribute vec4 fuColor;

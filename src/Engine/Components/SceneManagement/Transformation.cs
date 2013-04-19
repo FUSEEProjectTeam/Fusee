@@ -32,6 +32,8 @@ namespace Fusee.SceneManagement
         private bool _quaternionDirty;
         private bool _eulerDirty;
 
+        private bool _hasParent;
+
         private bool _globalMatrixDirty;
         private bool _globalQuaternionDirty;
         private bool _globalEulerDirty;
@@ -42,6 +44,7 @@ namespace Fusee.SceneManagement
         /// </summary>
        public Transformation()
        {
+           _hasParent = false;
            _transformMatrix = float4x4.Identity;
             _globalMatrix = _transformMatrix;
             _quaternion = Quaternion.Identity;
@@ -59,6 +62,15 @@ namespace Fusee.SceneManagement
        /// <param name="entity">The SceneEntity that will be set to in Transform.</param>
        public Transformation(SceneEntity entity)
        {
+           if (entity.parent == null)
+           {
+               _hasParent = false;
+           }
+           else
+           {
+               _hasParent = true;
+           }
+           
            _transformMatrix = float4x4.Identity;
            _globalMatrix = _transformMatrix;
            _quaternion = Quaternion.Identity;
@@ -73,7 +85,20 @@ namespace Fusee.SceneManagement
 
 
 
-
+       public SceneEntity Parent
+       {
+           set
+           {
+               if (value == null)
+               {
+                   _hasParent = false;
+               }
+               else
+               {
+                   _hasParent = true;
+               }
+           }
+       }
 
 
 
@@ -165,7 +190,7 @@ namespace Fusee.SceneManagement
        {
            set
            {
-               if (_entity == null || _entity.parent == null)
+               if (!_hasParent)
                {
                    GlobalPosition = value;
                }
@@ -201,7 +226,7 @@ namespace Fusee.SceneManagement
        {
            set
            {
-               if (_entity == null || _entity.parent == null)
+               if (!_hasParent)
                {
                    GlobalScale = value;
                }
@@ -246,7 +271,7 @@ namespace Fusee.SceneManagement
            }
            set
            {
-               if (_entity == null || _entity.parent == null)
+               if (!_hasParent)
                {
                    GlobalQuaternion = value;
                }
@@ -287,7 +312,7 @@ namespace Fusee.SceneManagement
        {
            set
            {
-               if(_entity == null || _entity.parent == null)
+               if(!_hasParent)
                {
                    GlobalEulerAngles = value;
                }
@@ -335,16 +360,21 @@ namespace Fusee.SceneManagement
       {
           
           _quaternion = Quaternion.LookRotation(_transformMatrix.Column2.xyz, _transformMatrix.Column1.xyz);
+          //_quaternion = Quaternion.Identity;
+          //Debug.WriteLine("LocalQuaternion: "+_quaternion);
           _eulerAngles = Quaternion.QuaternionToEuler(_quaternion);
+          //Debug.WriteLine("LocalEuler: " + _eulerAngles);
           _localScale = GetScaleFromMatrix(_transformMatrix);
+          //Debug.WriteLine("LocalScale: " + _localScale);
           _localPosition = GetPositionFromMatrix(_transformMatrix);
+          //Debug.WriteLine("LocalPosition: " + _localPosition);
           _eulerDirty = false;
           _quaternionDirty = false;
       }
 
       private void UpdateGlobalMembers() // Extract members from globalMatrix
       {
- 
+          //_globalQuaternion = Quaternion.Identity;
           _globalQuaternion = Quaternion.LookRotation(_globalMatrix.Row2.xyz, _globalMatrix.Row1.xyz);
           _globalEulerAngles = Quaternion.QuaternionToEuler(_globalQuaternion);
           _globalScale = GetScaleFromMatrix(_globalMatrix);
