@@ -306,7 +306,6 @@ void main(void)
 
 // diffuse
    vec4 Idiff = vec4(0,0,0,0);
-vNormal=normalize(vNormal);
     if(FUSEE_L0_ACTIVE == 1.0){  
         Idiff += FUSEE_L0_DIFFUSE * max(dot(vNormal,vec3(normalize(FUSEE_L0_DIRECTION - vPos))), 0.1);  
     }

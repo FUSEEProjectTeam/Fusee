@@ -6,9 +6,9 @@ using Fusee.Engine;
 using Fusee.Math;
 using Fusee.SceneManagement;
 
-namespace Examples.SolarSystem
+namespace Examples.Solar
 {
-    public class SolarSystem : RenderCanvas
+    public class Solar : RenderCanvas
     {
         public List<RenderJob> RenderJobs = new List<RenderJob>();
         public List<SceneEntity> SceneMembers = new List<SceneEntity>();
@@ -147,8 +147,8 @@ namespace Examples.SolarSystem
         //Light test
         //private SpotLight spot = new SpotLight(0);
         //private PointLight point = new PointLight(1);
-        private DirectionalLight direct = new DirectionalLight(new float3(-500,1000,0),new float4(0,0,1,1),new float3(0,0,0),0);
-        private DirectionalLight direct2 = new DirectionalLight(new float3(500, 1000, 0), new float4(1, 0, 0, 1), new float3(0, 0, 0), 1);
+        private DirectionalLight direct = new DirectionalLight(new float3(-500,1000,0),new float4(1,1,1,1),new float3(0,0,0),0);
+        //private DirectionalLight direct2 = new DirectionalLight(new float3(500, 1000, 0), new float4(1, 1, 1, 1), new float3(0, 0, 0), 1);
 
 
 
@@ -178,7 +178,7 @@ namespace Examples.SolarSystem
             cameraholder.AddComponent(camscript);
             cameraholder.AddComponent(scenecamera);
             cameraholder.AddComponent(direct);
-            cameraholder.AddComponent(direct2);
+            //cameraholder.AddComponent(direct2);
             camscript.Init(cameraholder);
             SceneManager.Manager.AddSceneEntity(WorldOrigin);
             WorldOrigin.AddChild(cameraholder);
@@ -419,14 +419,14 @@ namespace Examples.SolarSystem
             _emptyNeptun.transform.LocalEulerAngles = new float3(0, 245, 0);
             
             camrotation.Init(WorldOrigin);
-            RC.ClearColor = new float4(0, 0, 0, 1);
+            RC.ClearColor = new float4(1, 0, 0, 1);
         }
 
 
         public override void RenderAFrame()
         {
             SceneManager.Manager.Traverse(this);
-            Debug.WriteLine(Time.Instance.FramePerSecondSmooth);
+            //Debug.WriteLine(Time.Instance.FramePerSecondSmooth);
         }
 
 
@@ -440,7 +440,7 @@ namespace Examples.SolarSystem
         public static void Main()
         {
 
-            var app = new SolarSystem();
+            var app = new Solar();
             app.Run();
         }
     }

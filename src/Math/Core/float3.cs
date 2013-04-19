@@ -818,12 +818,16 @@ namespace Fusee.Math
             }
         }
 
-        public static void OrthoNormalize(ref float3 normal, ref float3 tangent)
+        public static float3[] OrthoNormalize(float3 normal, float3 tangent)
         {
+            float3[] ret = new float3[2];
             normal = Normalize(normal);
             float3 proj = normal*Dot(tangent, normal);
             tangent -= proj;
             tangent = Normalize(tangent);
+            ret[0] = normal;
+            ret[1] = tangent;
+            return ret;
         }
 
         #endregion

@@ -8,8 +8,8 @@
     <ProjectGuid>{F7118566-EBBE-4001-9074-8FCD69A8F51F}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Examples.SolarSystem</RootNamespace>
-    <AssemblyName>Examples.SolarSystem</AssemblyName>
+    <RootNamespace>Examples.Solar</RootNamespace>
+    <AssemblyName>Examples.Solar</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <UseVSHostingProcess>false</UseVSHostingProcess>
@@ -50,7 +50,7 @@
     <Compile Include="CameraScript.cs" />
     <Compile Include="MoonAction.cs" />
     <Compile Include="RotationScript.cs" />
-    <Compile Include="SolarSystem.cs" />
+    <Compile Include="Solar.cs" />
     <Compile Include="PlanetAction.cs" />
     <Compile Include="PlanetMaterial.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -77,7 +77,6 @@
     <Content Include="Assets\earth.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\git.jpg" />
     <Content Include="Assets\gruen.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -116,12 +115,12 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\spacebox.obj.model">
+    <Content Include="Assets\spacebox.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Assets\Sphere.obj.model">
+    </Content>
+    <Content Include="Assets\Sphere.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

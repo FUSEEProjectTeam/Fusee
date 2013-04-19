@@ -6,7 +6,7 @@ using System.Text;
 using Fusee.Math;
 using Fusee.Engine;
 using Fusee.SceneManagement;
-namespace Examples.SolarSystem
+namespace Examples.Solar
 {
     class CameraScript : ActionCode
     {
@@ -25,7 +25,7 @@ namespace Examples.SolarSystem
             if (Input.Instance.GetAxis(InputAxis.MouseWheel) != 0)
             {
                 Debug.WriteLine("mouse wheel");
-                transform.LocalPosition -= new float3(0, 0, (Input.Instance.GetAxis(InputAxis.MouseWheel)*100));
+                transform.LocalPosition -= new float3(0, 0, (Input.Instance.GetAxis(InputAxis.MouseWheel)*10));
             }
 
             if (Input.Instance.OnKeyDown(KeyCodes.P))
@@ -40,7 +40,7 @@ namespace Examples.SolarSystem
                 perspective = !perspective;
 
             }
-           
+            //Debug.WriteLine("Current FPS: "+Time.Instance.FramePerSecondSmooth);
         }
 
     }

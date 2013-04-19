@@ -611,7 +611,10 @@ namespace Fusee.Math
         /// <returns></returns>
         public static Quaternion LookRotation(float3 lookAt, float3 upDirection)
         {
-            float3.OrthoNormalize(ref lookAt, ref upDirection);
+            float3[] result = float3.OrthoNormalize(lookAt,upDirection);
+            upDirection = result[1];
+            lookAt = result[0];
+
             float3 right = float3.Cross(upDirection, lookAt);
             
             float w = (float)System.Math.Sqrt(1.0f + right.x + upDirection.y + lookAt.z)*0.5f;
