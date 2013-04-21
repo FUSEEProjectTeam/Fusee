@@ -20,12 +20,15 @@ namespace Examples.CubeAndTiles
             varying vec3 vNormal;
             varying vec2 vUV;
         
-            uniform mat4 FUSEE_MVP;
+            uniform mat4 FUSEE_MV;
+            uniform mat4 FUSEE_P;
             uniform mat4 FUSEE_ITMV;
 
             void main()
             {
+                mat4 FUSEE_MVP = FUSEE_P * FUSEE_MV;
                 gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
+
                 vNormal = mat3(FUSEE_ITMV[0].xyz, FUSEE_ITMV[1].xyz, FUSEE_ITMV[2].xyz) * fuNormal;
                 vUV = fuUV;
             }";

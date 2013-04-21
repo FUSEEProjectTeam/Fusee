@@ -172,8 +172,8 @@ namespace Examples.CubeAndTiles
 
             _curLevel.RContext.ModelView = _modelView*_curLevel.CamTrans;
 
+            // TODO: SetShaderParam shouldn't set this if it's already set
             _curLevel.RContext.SetShaderParam(_curLevel.VColorObj, new float4(_fieldColor, _curBright*_fieldBright));
-            _curLevel.RContext.SetShaderParamTexture(_curLevel.VTextureObj, _curLevel.TextureField);
 
             _curLevel.RContext.Render(_fieldMesh);
         }

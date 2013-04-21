@@ -232,9 +232,7 @@ namespace Examples.CubeAndTiles
 
             // render
             _curLevel.RContext.ModelView = mtxObjOrientRot * arAxis * mtxObjRot * invArAxis * mtxObjPos * _curLevel.CamTrans;
-
             _curLevel.RContext.SetShaderParam(_curLevel.VColorObj, new float4(_cubeColor, _curBright));
-            _curLevel.RContext.SetShaderParamTexture(_curLevel.VTextureObj, _curLevel.TextureCube);
 
             _curLevel.RContext.Render(_cubeMesh);
         }

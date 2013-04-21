@@ -298,9 +298,13 @@ namespace Examples.CubeAndTiles
 
                 var renderOnly = UseAnaglyph3D && _anaglyph3D.IsLeftEye;
 
+                RContext.SetShaderParamTexture(VTextureObj, TextureField);
+
                 foreach (var feld in _levelFeld)
                     if (feld != null)
                         feld.Render(_objOrientation, renderOnly);
+
+                RContext.SetShaderParamTexture(VTextureObj, TextureCube);
 
                 if (_rCube != null)
                     _rCube.RenderCube(renderOnly);
