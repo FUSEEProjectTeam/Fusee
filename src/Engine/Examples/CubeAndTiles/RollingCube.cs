@@ -183,7 +183,7 @@ namespace Examples.CubeAndTiles
                 if (_curDirXY[i] == 0) continue;
 
                 // rotate and check if target reached
-                _rotateYX[i] += CubeSpeed*_curLevel.LvlDeltaTime;
+                _rotateYX[i] += CubeSpeed*(float) Time.Instance.DeltaTime;
                 if (_rotateYX[i] < PiHalf) continue;
 
                 PosCurXY[i] += _curDirXY[i];
@@ -231,7 +231,7 @@ namespace Examples.CubeAndTiles
             var invArAxis = float4x4.CreateTranslation(100 * _curDirXY[0], 100 * _curDirXY[1], -100);
 
             // render
-            _curLevel.RContext.ModelView = _curLevel.AddCameraTrans(mtxObjOrientRot * arAxis * mtxObjRot * invArAxis * mtxObjPos);
+            _curLevel.RContext.ModelView = mtxObjOrientRot * arAxis * mtxObjRot * invArAxis * mtxObjPos * _curLevel.CamTrans;
 
             _curLevel.RContext.SetShaderParam(_curLevel.VColorObj, new float4(_cubeColor, _curBright));
             _curLevel.RContext.SetShaderParamTexture(_curLevel.VTextureObj, _curLevel.TextureCube);

@@ -1,5 +1,4 @@
-﻿using System.Runtime.InteropServices;
-using Fusee.Engine;
+﻿using Fusee.Engine;
 using Fusee.Math;
 
 namespace Examples.CubeAndTiles
@@ -7,7 +6,7 @@ namespace Examples.CubeAndTiles
     public class CubeAndTiles : RenderCanvas
     {
         // GLSL
-        protected string Vs = @"
+        private const string Vs = @"
             /* Copies incoming vertex color without change.
              * Applies the transformation matrix to vertex position.
              */
@@ -31,7 +30,7 @@ namespace Examples.CubeAndTiles
                 vUV = fuUV;
             }";
 
-        protected string Ps = @"
+        private const string PsStart = @"
             /* Copies incoming fragment color without change. */
             #ifdef GL_ES
                 precision highp float;
@@ -42,26 +41,27 @@ namespace Examples.CubeAndTiles
             varying vec3 vNormal;
             varying vec2 vUV;
 
-            uniform int vUseAnaglyph;
-
             void main()
             {
                 vec4 colTex = vColor * texture2D(vTexture, vUV);
+            ";
 
-                if (vUseAnaglyph != 0)
-                {
-                    vec4 _redBalance = vec4(0.1, 0.65, 0.25, 0);
-                    float _redColor = (colTex.r * _redBalance.r + colTex.g * _redBalance.g + colTex.b * _redBalance.b) * 1.5;
+        private const string PsAnaglyph = @"
+                vec4 _redBalance = vec4(0.1, 0.65, 0.25, 0);
+                float _redColor = (colTex.r * _redBalance.r + colTex.g * _redBalance.g + colTex.b * _redBalance.b) * 1.5;
+                gl_FragColor = dot(vColor, vec4(0, 0, 0, 1)) * vec4(_redColor, colTex.g, colTex.b, 1) * dot(vNormal, vec3(0, 0, 1)) * 1.4;
+            }";
 
-                    gl_FragColor = dot(vColor, vec4(0, 0, 0, 1)) * vec4(_redColor, colTex.g, colTex.b, 1) * dot(vNormal, vec3(0, 0, 1)) * 1.4;
-                } else {
-                    gl_FragColor = dot(vColor, vec4(0, 0, 0, 1)) * colTex * dot(vNormal, vec3(0, 0, 1));
-                }
+        private const string PsNonAnaglyph = @"
+                gl_FragColor = dot(vColor, vec4(0, 0, 0, 1)) * colTex * dot(vNormal, vec3(0, 0, 1));
             }";
 
         // variables
         private static Level _exampleLevel;
         private static Anaglyph3D _anaglyph3D;
+
+        private ShaderProgram _spAnaglyph;
+        private ShaderProgram _spNonAnaglyph;
 
         private static float _angleHorz = 0.4f;
         private static float _angleVert = -1.0f;
@@ -76,13 +76,15 @@ namespace Examples.CubeAndTiles
         // Init()
         public override void Init()
         {
-            ShaderProgram sp = RC.CreateShader(Vs, Ps);
-            
-            RC.SetShader(sp);
+            _spNonAnaglyph = RC.CreateShader(Vs, PsStart + PsNonAnaglyph);
+            _spAnaglyph = RC.CreateShader(Vs, PsStart + PsAnaglyph);
+
+            RC.SetShader(_spNonAnaglyph);
+
             RC.ClearColor = new float4(0, 0, 0, 1);
 
             _anaglyph3D = new Anaglyph3D(RC);
-            _exampleLevel = new Level(RC, sp, _anaglyph3D);
+            _exampleLevel = new Level(RC, _spNonAnaglyph, _anaglyph3D);
         }
 
         // RenderAFrame()
@@ -117,6 +119,8 @@ namespace Examples.CubeAndTiles
 
                 if (Input.Instance.IsKeyDown(KeyCodes.C))
                 {
+                    RC.SetShader(_exampleLevel.UseAnaglyph3D ? _spNonAnaglyph : _spAnaglyph);
+
                     _exampleLevel.UseAnaglyph3D = !_exampleLevel.UseAnaglyph3D;
                     _lastKey = KeyCodes.C;
                 }
@@ -160,7 +164,8 @@ namespace Examples.CubeAndTiles
             _angleVert += _angleVelVert;
 
             var mtxRot = float4x4.CreateRotationZ(_angleHorz)*float4x4.CreateRotationX(_angleVert);
-            _exampleLevel.Render(mtxRot, Time.Instance.DeltaTime);
+
+            _exampleLevel.Render(mtxRot);
 
             Present();
         }
