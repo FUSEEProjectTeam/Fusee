@@ -1203,19 +1203,15 @@ namespace Fusee.Math
         /// <returns>The inverse of the given matrix.</returns>
         public static float4x4 InvertAffine(float4x4 mat)
         {
-            var column0 = new float3(mat.M11, mat.M21, mat.M31);
-            var column1 = new float3(mat.M12, mat.M22, mat.M32);
-            var column2 = new float3(mat.M13, mat.M23, mat.M33);
-
-            var val1 = -(mat.M11*mat.M41 + mat.M21*mat.M42 + mat.M31*mat.M43);
-            var val2 = -(mat.M12*mat.M41 + mat.M22*mat.M42 + mat.M32*mat.M43);
-            var val3 = -(mat.M13*mat.M41 + mat.M23*mat.M42 + mat.M33*mat.M43);
+            var val1 = -(mat.M11*mat.M41 + mat.M12*mat.M42 + mat.M13*mat.M43);
+            var val2 = -(mat.M21*mat.M41 + mat.M22*mat.M42 + mat.M23*mat.M43);
+            var val3 = -(mat.M31*mat.M41 + mat.M32*mat.M42 + mat.M33*mat.M43);
 
             return
-                new float4x4(new float4(column0, 0f),
-                             new float4(column1, 0f),
-                             new float4(column2, 0f),
-                             new float4(val1, val2, val3, 1f));
+                new float4x4(new float4(mat.M11, mat.M21, mat.M31, 0),
+                             new float4(mat.M12, mat.M22, mat.M32, 0),
+                             new float4(mat.M13, mat.M23, mat.M33, 0),
+                             new float4(val1, val2, val3, 1));
         }
 
         #endregion
