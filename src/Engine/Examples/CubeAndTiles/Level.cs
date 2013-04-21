@@ -34,6 +34,7 @@ namespace Examples.CubeAndTiles
 
         internal Mesh GlobalCubeMesh { get; private set; }
         internal ITexture TextureCube { get; private set; }
+        internal float3 CubeColor { get; set; }
 
         internal float LvlDeltaTime { get; private set; }
         internal Random ObjRandom { get; private set; }
@@ -52,6 +53,7 @@ namespace Examples.CubeAndTiles
         
         public enum Directions
         {
+            None,
             Left,
             Right,
             Forward,

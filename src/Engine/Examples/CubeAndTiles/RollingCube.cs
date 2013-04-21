@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using Fusee.Engine;
 using Fusee.Math;
 
@@ -50,6 +51,7 @@ namespace Examples.CubeAndTiles
             _cubeSound.Volume = 50;
 
             _cubeColor = new float3(1, 0.1f, 0.1f);
+            _curLevel.CubeColor = new float3(1, 0.1f, 0.1f);
 
             PosCurXY = new int[2];
             PosLastXY = new int[2];
@@ -233,7 +235,7 @@ namespace Examples.CubeAndTiles
             // render
             _curLevel.RContext.ModelView = _curLevel.AddCameraTrans(mtxObjOrientRot * arAxis * mtxObjRot * invArAxis * mtxObjPos);
 
-            _curLevel.RContext.SetShaderParam(_curLevel.VColorObj, new float4(_cubeColor, _curBright));
+            _curLevel.RContext.SetShaderParam(_curLevel.VColorObj, new float4(_curLevel.CubeColor, _curBright));
             _curLevel.RContext.SetShaderParamTexture(_curLevel.VTextureObj, _curLevel.TextureCube);
 
             _curLevel.RContext.Render(_cubeMesh);

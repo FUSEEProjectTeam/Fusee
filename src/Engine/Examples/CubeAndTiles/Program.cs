@@ -73,6 +73,8 @@ namespace Examples.CubeAndTiles
         private const float RotationSpeed = 1f;
         private const float Damping = 0.92f;
 
+        private bool _clientConnected = false;
+
         // Init()
         public override void Init()
         {
@@ -117,24 +119,48 @@ namespace Examples.CubeAndTiles
 
                 if (Input.Instance.IsKeyDown(KeyCodes.C))
                 {
-                    _exampleLevel.UseAnaglyph3D = !_exampleLevel.UseAnaglyph3D;
+                    Network.Instance.OpenConnection(ConnectionType.CtClient, "127.0.0.1", 14242);
                     _lastKey = KeyCodes.C;
                 }
+
+                if (Input.Instance.IsKeyDown(KeyCodes.S))
+                {
+                    Network.Instance.OpenConnection(ConnectionType.CtServer, 14242);
+                    _lastKey = KeyCodes.S;
+                }
+
+                var msg = Level.Directions.None;
+
+                if (Input.Instance.IsKeyDown(KeyCodes.Left)) {
+                    _exampleLevel.MoveCube(Level.Directions.Left);
+                    _lastKey = KeyCodes.Left;
+                    msg = Level.Directions.Left;
+                }
+
+                if (Input.Instance.IsKeyDown(KeyCodes.Right)) {
+                    _exampleLevel.MoveCube(Level.Directions.Right);
+                    _lastKey = KeyCodes.Right;
+                    msg = Level.Directions.Right;
+                }
+
+               if (Input.Instance.IsKeyDown(KeyCodes.Up)) {
+                    _exampleLevel.MoveCube(Level.Directions.Forward);
+                    _lastKey = KeyCodes.Up;
+                    msg = Level.Directions.Forward;
+                }
+
+                if (Input.Instance.IsKeyDown(KeyCodes.Down)) {
+                    _exampleLevel.MoveCube(Level.Directions.Backward);
+                    _lastKey = KeyCodes.Down;
+                    msg = Level.Directions.Backward;
+                }
+
+                if (msg != Level.Directions.None)
+                    if (Network.Instance.Connected || Network.Instance.NetType == ConnectionType.CtClient)
+                        Network.Instance.SendMessage(System.Convert.ToString((int) msg));
             }
             else if (!Input.Instance.IsKeyDown(_lastKey))
                 _lastKey = KeyCodes.None;
-
-            if (Input.Instance.IsKeyDown(KeyCodes.Left))
-                _exampleLevel.MoveCube(Level.Directions.Left);
-
-            if (Input.Instance.IsKeyDown(KeyCodes.Right))
-                _exampleLevel.MoveCube(Level.Directions.Right);
-
-            if (Input.Instance.IsKeyDown(KeyCodes.Up))
-                _exampleLevel.MoveCube(Level.Directions.Forward);
-
-            if (Input.Instance.IsKeyDown(KeyCodes.Down))
-                _exampleLevel.MoveCube(Level.Directions.Backward);
 
             // mouse
             if (Input.Instance.GetAxis(InputAxis.MouseWheel) > 0)
@@ -161,6 +187,32 @@ namespace Examples.CubeAndTiles
 
             var mtxRot = float4x4.CreateRotationZ(_angleHorz)*float4x4.CreateRotationX(_angleVert);
             _exampleLevel.Render(mtxRot, Time.Instance.DeltaTime);
+
+            while (Network.Instance.IncServerMsgCount > 0)
+            {
+                var msg = Network.Instance.IncServerMsg;
+
+                if (msg.Type == MessageType.StatusChanged)
+                    if (msg.Status == ConnectionStatus.Connected)
+                        _exampleLevel.CubeColor = new float3(0f, 1f, 0);
+
+                if (msg.Type == MessageType.Data)
+                {
+                    int move;
+                    if (System.Int32.TryParse(msg.Message, out move))
+                        if (move != (int) Level.Directions.None)
+                            _exampleLevel.MoveCube((Level.Directions) move);
+                }
+            }
+
+            while (Network.Instance.IncClientMsgCount > 0)
+            {
+                var msg = Network.Instance.IncClientMsg;
+
+                if (msg.Type == MessageType.StatusChanged)
+                    if (msg.Status == ConnectionStatus.Connected)
+                        _exampleLevel.CubeColor = new float3(0f, 1f, 0);
+            }
 
             Present();
         }

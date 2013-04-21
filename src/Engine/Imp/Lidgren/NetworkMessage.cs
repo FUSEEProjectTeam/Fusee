@@ -7,13 +7,26 @@ namespace Fusee.Engine
 {
     struct NetworkMessage : INetworkMsg
     {
-        public string Message { get; private set; }
-        public int ID { get; private set; }
+        public MessageType Type { get; private set; }
+        public ConnectionStatus Status { get; private set; }
 
-        public NetworkMessage(int id, string msg) : this()
+        public string Message { get; private set; }
+
+        public NetworkMessage(MessageType type, string msg) : this()
         {
+            Type = type;
+            Status = 0;
+
             Message = msg;
-            ID = id;
+        }
+
+        public NetworkMessage(MessageType type, ConnectionStatus status)
+            : this()
+        {
+            Type = type;
+            Status = status;
+
+            Message = status.ToString();
         }
     }
 }

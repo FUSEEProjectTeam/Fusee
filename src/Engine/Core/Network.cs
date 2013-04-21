@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Fusee.Engine
 {
@@ -12,19 +13,24 @@ namespace Fusee.Engine
         {
             set
             {
+                Connected = false;
                 _networkImp = value;
             }
         }
 
-        public enum MessageType
+        public ConnectionType NetType;
+        public bool Connected;
+
+        public void OpenConnection(ConnectionType type, int port)
         {
-            ConnectionEstablished,
-            Data
+            NetType = type;
+            _networkImp.OpenConnection(type, "", port);
         }
 
-        public void OpenConnection(string host, int port)
+        public void OpenConnection(ConnectionType type, string host, int port)
         {
-            _networkImp.OpenConnection(host, port);
+            NetType = type;
+            _networkImp.OpenConnection(type, host, port);
         }
 
         public int IncClientMsgCount
@@ -55,6 +61,11 @@ namespace Fusee.Engine
                 _networkImp.IncServerMsg.RemoveAt(0);
                 return msg;
             }
+        }
+
+        public void SendMessage(string msg)
+        {
+            var x = _networkImp.SendMessage(msg);
         }
 
         internal void OnUpdateFrame()
