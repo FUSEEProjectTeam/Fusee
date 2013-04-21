@@ -6,7 +6,7 @@ namespace Examples.Simple
     public class Simple : RenderCanvas
     {
         // pixel and vertex shader
-        protected string Vs = @"
+        private const string Vs = @"
             /* Copies incoming vertex color without change.
              * Applies the transformation matrix to vertex position.
              */
@@ -27,7 +27,7 @@ namespace Examples.Simple
                 vNormal = normalize(mat3(FUSEE_ITMV[0].xyz, FUSEE_ITMV[1].xyz, FUSEE_ITMV[2].xyz) * fuNormal);
             }";
 
-        protected string Ps = @"
+        private const string Ps = @"
             /* Copies incoming fragment color without change. */
             #ifdef GL_ES
                 precision highp float;
@@ -47,10 +47,10 @@ namespace Examples.Simple
         private const float RotationSpeed = 1f;
         private const float Damping = 0.92f;
         
-        // model variable
+        // model variables
         private Mesh _meshTea, _meshFace;
         
-        // variables for color
+        // variable for color
         private IShaderParam _vColorParam;
 
         public override void Init()

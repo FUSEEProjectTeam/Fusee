@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace Fusee.Math
@@ -38,6 +39,11 @@ namespace Fusee.Math
         /// The identity matrix
         /// </summary>
         public static float4x4 Identity = new float4x4(float4.UnitX, float4.UnitY, float4.UnitZ, float4.UnitW);
+
+        /// <summary>
+        /// The zero matrix
+        /// </summary>
+        public static float4x4 Zero = new float4x4(float4.Zero, float4.Zero, float4.Zero, float4.Zero);
 
         #endregion
 
@@ -1021,8 +1027,17 @@ namespace Fusee.Math
         /// <returns>A new instance that is the result of the multiplication</returns>
         public static float4x4 Mult(float4x4 left, float4x4 right)
         {
+            if (left == Identity) return right;
+            if (right == Identity) return left;
+            if (left == Zero || right == Zero) return Zero;
+
             float4x4 result;
-            Mult(ref left, ref right, out result);
+
+            if (left.IsAffine && right.IsAffine)
+                MultAffine(ref left, ref right, out result);
+            else
+                Mult(ref left, ref right, out result);
+
             return result;
         }
 
@@ -1039,18 +1054,51 @@ namespace Fusee.Math
                 left.M11*right.M12 + left.M12*right.M22 + left.M13*right.M32 + left.M14*right.M42,
                 left.M11*right.M13 + left.M12*right.M23 + left.M13*right.M33 + left.M14*right.M43,
                 left.M11*right.M14 + left.M12*right.M24 + left.M13*right.M34 + left.M14*right.M44,
+
                 left.M21*right.M11 + left.M22*right.M21 + left.M23*right.M31 + left.M24*right.M41,
                 left.M21*right.M12 + left.M22*right.M22 + left.M23*right.M32 + left.M24*right.M42,
                 left.M21*right.M13 + left.M22*right.M23 + left.M23*right.M33 + left.M24*right.M43,
                 left.M21*right.M14 + left.M22*right.M24 + left.M23*right.M34 + left.M24*right.M44,
+
                 left.M31*right.M11 + left.M32*right.M21 + left.M33*right.M31 + left.M34*right.M41,
                 left.M31*right.M12 + left.M32*right.M22 + left.M33*right.M32 + left.M34*right.M42,
                 left.M31*right.M13 + left.M32*right.M23 + left.M33*right.M33 + left.M34*right.M43,
                 left.M31*right.M14 + left.M32*right.M24 + left.M33*right.M34 + left.M34*right.M44,
+
                 left.M41*right.M11 + left.M42*right.M21 + left.M43*right.M31 + left.M44*right.M41,
                 left.M41*right.M12 + left.M42*right.M22 + left.M43*right.M32 + left.M44*right.M42,
                 left.M41*right.M13 + left.M42*right.M23 + left.M43*right.M33 + left.M44*right.M43,
                 left.M41*right.M14 + left.M42*right.M24 + left.M43*right.M34 + left.M44*right.M44);
+        }
+
+        /// <summary>
+        /// Multiplies two instances if both matrices represents affine transformations.
+        /// </summary>
+        /// <param name="left">The left operand of the multiplication.</param>
+        /// <param name="right">The right operand of the multiplication.</param>
+        /// <param name="result">A new instance that is the result of the multiplication</param>
+        public static void MultAffine(ref float4x4 left, ref float4x4 right, out float4x4 result)
+        {
+            result = new float4x4(
+                left.M11*right.M11 + left.M12*right.M21 + left.M13*right.M31,
+                left.M11*right.M12 + left.M12*right.M22 + left.M13*right.M32,
+                left.M11*right.M13 + left.M12*right.M23 + left.M13*right.M33,
+                0f,
+
+                left.M21*right.M11 + left.M22*right.M21 + left.M23*right.M31,
+                left.M21*right.M12 + left.M22*right.M22 + left.M23*right.M32,
+                left.M21*right.M13 + left.M22*right.M23 + left.M23*right.M33,
+                0f,
+
+                left.M31*right.M11 + left.M32*right.M21 + left.M33*right.M31,
+                left.M31*right.M12 + left.M32*right.M22 + left.M33*right.M32,
+                left.M31*right.M13 + left.M32*right.M23 + left.M33*right.M33,
+                0f,
+
+                left.M41*right.M11 + left.M42*right.M21 + left.M43*right.M31 + right.M41,
+                left.M41*right.M12 + left.M42*right.M22 + left.M43*right.M32 + right.M42,
+                left.M41*right.M13 + left.M42*right.M23 + left.M43*right.M33 + right.M43,
+                1f);
         }
 
         #endregion
@@ -1058,13 +1106,15 @@ namespace Fusee.Math
         #region Invert Functions
 
         /// <summary>
-        /// Calculate the inverse of the given matrix
+        /// Calculate the inverse of the given matrix.
         /// </summary>
-        /// <param name="mat">The matrix to invert</param>
-        /// <returns>The inverse of the given matrix if it has one, or the input if it is singular</returns>
-        /// <exception cref="InvalidOperationException">Thrown if the Matrix4 is singular.</exception>
+        /// <param name="mat">The matrix to invert.</param>
+        /// <returns>The inverse of the given matrix if it has one, or the input if it is singular.</returns>
         public static float4x4 Invert(float4x4 mat)
         {
+            if (mat == Identity || mat == Zero) return mat;
+            if (mat.IsAffine) return InvertAffine(mat);
+
             mat.Transpose();
 
             var tmp0 = mat.M33*mat.M44;
@@ -1105,7 +1155,6 @@ namespace Fusee.Math
             tmp3 = mat.M14*mat.M22;
             tmp4 = mat.M12*mat.M23;
             tmp5 = mat.M13*mat.M22;
-
             tmp6 = mat.M11*mat.M24;
             tmp7 = mat.M14*mat.M21;
             tmp8 = mat.M11*mat.M23;
@@ -1145,6 +1194,28 @@ namespace Fusee.Math
             }
 
             return mat;
+        }
+
+        /// <summary>
+        /// Calculate the inverse of a given matrix which represents an affine transformation.
+        /// </summary>
+        /// <param name="mat">The matrix to invert.</param>
+        /// <returns>The inverse of the given matrix.</returns>
+        public static float4x4 InvertAffine(float4x4 mat)
+        {
+            var column0 = new float3(mat.M11, mat.M21, mat.M31);
+            var column1 = new float3(mat.M12, mat.M22, mat.M32);
+            var column2 = new float3(mat.M13, mat.M23, mat.M33);
+
+            var val1 = -(mat.M11*mat.M41 + mat.M21*mat.M42 + mat.M31*mat.M43);
+            var val2 = -(mat.M12*mat.M41 + mat.M22*mat.M42 + mat.M32*mat.M43);
+            var val3 = -(mat.M13*mat.M41 + mat.M23*mat.M42 + mat.M33*mat.M43);
+
+            return
+                new float4x4(new float4(column0, 0f),
+                             new float4(column1, 0f),
+                             new float4(column2, 0f),
+                             new float4(val1, val2, val3, 1f));
         }
 
         #endregion
@@ -1357,8 +1428,20 @@ namespace Fusee.Math
 
         #region IEquatable<Matrix4> Members
 
+        /// <summary>
+        /// Indicates whether the current matrix represents an affine transformation.
+        /// </summary>
+        /// <returns>true if the current matrix represents an affine transformation; otherwise, false.</returns>
+        public bool IsAffine
+        {
+            get
+            {
+                return (Column3 == float4.UnitW);
+            }
+        }
+
         /// <summary>Indicates whether the current matrix is equal to another matrix.</summary>
-        /// <param name="other">An matrix to compare with this matrix.</param>
+        /// <param name="other">A matrix to compare with this matrix.</param>
         /// <returns>true if the current matrix is equal to the matrix parameter; otherwise, false.</returns>
         public bool Equals(float4x4 other)
         {
