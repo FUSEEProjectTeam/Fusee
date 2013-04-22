@@ -108,19 +108,22 @@ namespace Examples.LinqForGeometry
             //_lfgmesh = MeshReader.LoadMesh("Assets/Teapot.obj.model");
             //_lfgmesh = MeshReader.LoadMesh("Assets/Teapot_textured.obj.model");
 
-
+            #region MeshImports
             // This would be a solution to step over the MeshReader Class
             // Important for now to use the transformation methods on the data structure.
             _Geo = new Geometry();
-            //_Geo.LoadAsset("Assets/cube_quadrangle_1_textured.obj.model");
-            _Geo.LoadAsset("Assets/cube_triangulate.obj.model");
+            _Geo.LoadAsset("Assets/cube_quadrangle_1_textured.obj.model");
+            //_Geo.LoadAsset("Assets/cube_triangulate.obj.model");
             //_Geo.LoadAsset("Assets/sphere_quadrangle_1.obj.model");
             //_Geo.LoadAsset("Assets/Teapot_textured.obj.model");
             //_Geo.LoadAsset("Assets/Sphere.obj.model");
             //_Geo.LoadAsset("Assets/Sphere_triangulate.obj.model");
-            
+            #endregion MeshImports
+
+            #region TextureLoad
             _imgData = RC.LoadImage("Assets/checkerboard_tex.jpg");
             //_imgData = RC.LoadImage("Assets/world_map.jpg");
+            #endregion TextureLoad
 
             _lfgmesh = _Geo.ToMesh();
 
