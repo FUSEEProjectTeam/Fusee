@@ -6,6 +6,13 @@ using Geometry = hsfurtwangen.dsteffen.lfg.Geometry;
 
 namespace Examples.LinqForGeometry
 {
+    /// <summary>
+    /// This example is used to test the LinqForGeometry data structure.
+    /// It provides different methods to manipulate geometry data !DIRECTLY! on the data structure.
+    /// This should not be used in productive code.
+    /// You want to use the transformation algorithms fusee provides to manipulate data.
+    /// The here shown transformation algorithms are not ment to be used every frame in an engine. They are just examples for whats possible with the data structure.
+    /// </summary>
     public class LinqForGeometry : RenderCanvas
     {
         #region Shader
@@ -91,10 +98,11 @@ namespace Examples.LinqForGeometry
 
         // 'Gamedesign'
         private float _MovementSpeed = 10.0f;
+        private float _InvertMouseAxis = -1.0f;
 
         public override void Init()
         {
-            // initialize the variables
+            // Use the changed MeshReader to import. Not very usable. Only works without the possibility to apply transformations.
             //_lfgmesh = MeshReader.LoadMesh("Assets/cube_quadrangle_1_textured.obj.model");
             //_lfgmesh = MeshReader.LoadMesh("Assets/sphere_quadrangle_1.obj.model");
             //_lfgmesh = MeshReader.LoadMesh("Assets/Teapot.obj.model");
@@ -102,24 +110,26 @@ namespace Examples.LinqForGeometry
 
 
             // This would be a solution to step over the MeshReader Class
-            // TODO: Important for now to use the transformation methods.
+            // Important for now to use the transformation methods on the data structure.
             _Geo = new Geometry();
-            _Geo.LoadAsset("Assets/cube_quadrangle_1_textured.obj.model");
+            //_Geo.LoadAsset("Assets/cube_quadrangle_1_textured.obj.model");
+            _Geo.LoadAsset("Assets/cube_triangulate.obj.model");
             //_Geo.LoadAsset("Assets/sphere_quadrangle_1.obj.model");
             //_Geo.LoadAsset("Assets/Teapot_textured.obj.model");
-            _lfgmesh = _Geo.ToMesh();
+            //_Geo.LoadAsset("Assets/Sphere.obj.model");
+            //_Geo.LoadAsset("Assets/Sphere_triangulate.obj.model");
+            
+            _imgData = RC.LoadImage("Assets/checkerboard_tex.jpg");
+            //_imgData = RC.LoadImage("Assets/world_map.jpg");
 
+            _lfgmesh = _Geo.ToMesh();
 
             ShaderProgram sp = RC.CreateShader(_vs, _ps);
             RC.SetShader(sp);
 
-            //_vColorParam = sp.GetShaderParam("vColor");
             // Texture stuff
             _vTextureParam = sp.GetShaderParam("texture1");
-            //_imgData = RC.LoadImage("Assets/world_map.jpg");
-            _imgData = RC.LoadImage("Assets/checkerboard_tex.jpg");
             _tex = RC.CreateTexture(_imgData);
-
 
             RC.ClearColor = new float4(1, 1, 1, 0.8f);
         }
@@ -148,13 +158,15 @@ namespace Examples.LinqForGeometry
             {
                 _angleVelHorz = RotationSpeed * Input.Instance.GetAxis(InputAxis.MouseX);
                 _angleVelVert = RotationSpeed * Input.Instance.GetAxis(InputAxis.MouseY);
-            }
-            else
-            {
-                var curDamp = (float)System.Math.Exp(-Damping * Time.Instance.DeltaTime);
 
-                _angleVelHorz *= curDamp;
-                _angleVelVert *= curDamp;
+                if (_Geo.RotateY(_angleVelHorz * _InvertMouseAxis))
+                {
+                    if (_Geo.RotateX(_angleVelVert * _InvertMouseAxis))
+                    {
+                        //_lfgmesh = _Geo.ToMesh();
+                        _Geo._Changes = true;
+                    }
+                }
             }
 
             // Scale the model up with the middle mouse button
@@ -162,7 +174,8 @@ namespace Examples.LinqForGeometry
             {
                 if (_Geo.Scale(1.1f, 1.1f, 1.1f))
                 {
-                    _lfgmesh = _Geo.ToMesh();
+                    //_lfgmesh = _Geo.ToMesh();
+                    _Geo._Changes = true;
                 }
             }
 
@@ -171,7 +184,8 @@ namespace Examples.LinqForGeometry
             {
                 if (_Geo.ResetGeometryToDefault())
                 {
-                    _lfgmesh = _Geo.ToMesh();
+                    //_lfgmesh = _Geo.ToMesh();
+                    _Geo._Changes = true;
                 }
             }
             #endregion Mouse
@@ -181,14 +195,16 @@ namespace Examples.LinqForGeometry
             {
                 if (_Geo.Scale(1.1f, 1.1f, 1.1f))
                 {
-                    _lfgmesh = _Geo.ToMesh();
+                    //_lfgmesh = _Geo.ToMesh();
+                    _Geo._Changes = true;
                 }
             }
             else if (Input.Instance.IsKeyDown(KeyCodes.A))
             {
                 if (_Geo.Scale(0.9f, 0.9f, 0.9f))
                 {
-                    _lfgmesh = _Geo.ToMesh();
+                    //_lfgmesh = _Geo.ToMesh();
+                    _Geo._Changes = true;
                 }
             }
             // Scale only x direction
@@ -196,14 +212,16 @@ namespace Examples.LinqForGeometry
             {
                 if (_Geo.Scale(1.1f, 1.0f, 1.0f))
                 {
-                    _lfgmesh = _Geo.ToMesh();
+                    //_lfgmesh = _Geo.ToMesh();
+                    _Geo._Changes = true;
                 }
             }
             else if (Input.Instance.IsKeyDown(KeyCodes.S))
             {
                 if (_Geo.Scale(0.9f, 1.0f, 1.0f))
                 {
-                    _lfgmesh = _Geo.ToMesh();
+                    //_lfgmesh = _Geo.ToMesh();
+                    _Geo._Changes = true;
                 }
             }
 
@@ -212,14 +230,16 @@ namespace Examples.LinqForGeometry
             {
                 if (_Geo.Scale(1.0f, 1.1f, 1.0f))
                 {
-                    _lfgmesh = _Geo.ToMesh();
+                    //_lfgmesh = _Geo.ToMesh();
+                    _Geo._Changes = true;
                 }
             }
             else if (Input.Instance.IsKeyDown(KeyCodes.D))
             {
                 if (_Geo.Scale(1.0f, 0.9f, 1.0f))
                 {
-                    _lfgmesh = _Geo.ToMesh();
+                    //_lfgmesh = _Geo.ToMesh();
+                    _Geo._Changes = true;
                 }
             }
 
@@ -228,14 +248,16 @@ namespace Examples.LinqForGeometry
             {
                 if (_Geo.Scale(1.0f, 1.0f, 1.1f))
                 {
-                    _lfgmesh = _Geo.ToMesh();
+                    //_lfgmesh = _Geo.ToMesh();
+                    _Geo._Changes = true;
                 }
             }
             else if (Input.Instance.IsKeyDown(KeyCodes.F))
             {
                 if (_Geo.Scale(1.0f, 1.0f, 0.9f))
                 {
-                    _lfgmesh = _Geo.ToMesh();
+                    //_lfgmesh = _Geo.ToMesh();
+                    _Geo._Changes = true;
                 }
             }
 
@@ -243,7 +265,8 @@ namespace Examples.LinqForGeometry
             {
                 if (_Geo.ResetGeometryToDefault())
                 {
-                    _lfgmesh = _Geo.ToMesh();
+                    //_lfgmesh = _Geo.ToMesh();
+                    _Geo._Changes = true;
                 }
             }
             #endregion Scaling
@@ -253,42 +276,48 @@ namespace Examples.LinqForGeometry
             {
                 if (_Geo.Translate(0f, (_MovementSpeed * (float)Time.Instance.DeltaTime) * 2, 0f))
                 {
-                    _lfgmesh = _Geo.ToMesh();
+                    //_lfgmesh = _Geo.ToMesh();
+                    _Geo._Changes = true;
                 }
             }
             else if (Input.Instance.IsKeyDown(KeyCodes.J))
             {
                 if (_Geo.Translate(0f, (-_MovementSpeed * (float)Time.Instance.DeltaTime) * 2, 0f))
                 {
-                    _lfgmesh = _Geo.ToMesh();
+                    //_lfgmesh = _Geo.ToMesh();
+                    _Geo._Changes = true;
                 }
             }
             if (Input.Instance.IsKeyDown(KeyCodes.H))
             {
                 if (_Geo.Translate(-(_MovementSpeed * (float)Time.Instance.DeltaTime) * 2, 0f, 0f))
                 {
-                    _lfgmesh = _Geo.ToMesh();
+                    //_lfgmesh = _Geo.ToMesh();
+                    _Geo._Changes = true;
                 }
             }
             else if (Input.Instance.IsKeyDown(KeyCodes.K))
             {
                 if (_Geo.Translate((_MovementSpeed * (float)Time.Instance.DeltaTime) * 2, 0f, 0f))
                 {
-                    _lfgmesh = _Geo.ToMesh();
+                    //_lfgmesh = _Geo.ToMesh();
+                    _Geo._Changes = true;
                 }
             }
             if (Input.Instance.IsKeyDown(KeyCodes.Z))
             {
                 if (_Geo.Translate(0f, 0f, -(_MovementSpeed * (float)Time.Instance.DeltaTime) * 2))
                 {
-                    _lfgmesh = _Geo.ToMesh();
+                    //_lfgmesh = _Geo.ToMesh();
+                    _Geo._Changes = true;
                 }
             }
             else if (Input.Instance.IsKeyDown(KeyCodes.I))
             {
                 if (_Geo.Translate(0f, 0f, (_MovementSpeed * (float)Time.Instance.DeltaTime) * 2))
                 {
-                    _lfgmesh = _Geo.ToMesh();
+                    //_lfgmesh = _Geo.ToMesh();
+                    _Geo._Changes = true;
                 }
             }
             #endregion Translation
@@ -298,14 +327,16 @@ namespace Examples.LinqForGeometry
             {
                 if (_Geo.RotateX(1f * (float)Time.Instance.DeltaTime))
                 {
-                    _lfgmesh = _Geo.ToMesh();
+                    //_lfgmesh = _Geo.ToMesh();
+                    _Geo._Changes = true;
                 }
             }
             else if (Input.Instance.IsKeyDown(KeyCodes.Down))
             {
                 if (_Geo.RotateX(-1f * (float)Time.Instance.DeltaTime))
                 {
-                    _lfgmesh = _Geo.ToMesh();
+                    //_lfgmesh = _Geo.ToMesh();
+                    _Geo._Changes = true;
                 }
             }
 
@@ -313,14 +344,16 @@ namespace Examples.LinqForGeometry
             {
                 if (_Geo.RotateY(1f * (float)Time.Instance.DeltaTime))
                 {
-                    _lfgmesh = _Geo.ToMesh();
+                    //_lfgmesh = _Geo.ToMesh();
+                    _Geo._Changes = true;
                 }
             }
             else if (Input.Instance.IsKeyDown(KeyCodes.Right))
             {
                 if (_Geo.RotateY(-1f * (float)Time.Instance.DeltaTime))
                 {
-                    _lfgmesh = _Geo.ToMesh();
+                    //_lfgmesh = _Geo.ToMesh();
+                    _Geo._Changes = true;
                 }
             }
 
@@ -328,42 +361,49 @@ namespace Examples.LinqForGeometry
             {
                 if (_Geo.RotateZ(1f * (float)Time.Instance.DeltaTime))
                 {
-                    _lfgmesh = _Geo.ToMesh();
+                    //_lfgmesh = _Geo.ToMesh();
+                    _Geo._Changes = true;
                 }
             }
             else if (Input.Instance.IsKeyDown(KeyCodes.P))
             {
                 if (_Geo.RotateZ(-1f * (float)Time.Instance.DeltaTime))
                 {
-                    _lfgmesh = _Geo.ToMesh();
+                    //_lfgmesh = _Geo.ToMesh();
+                    _Geo._Changes = true;
                 }
             }
             #endregion Rotation
 
+            #region TestLocalRotation
             if (Input.Instance.IsKeyDown(KeyCodes.NumPad8))
             {
                 if (_Geo.RotateLocalX(_MovementSpeed * (float)Time.Instance.DeltaTime))
                 {
-                    _lfgmesh = _Geo.ToMesh();
+                    //_lfgmesh = _Geo.ToMesh();
+                    _Geo._Changes = true;
                 }
             }
             else if (Input.Instance.IsKeyDown(KeyCodes.NumPad2))
             {
                 if (_Geo.RotateLocalX(-_MovementSpeed * (float)Time.Instance.DeltaTime))
                 {
-                    _lfgmesh = _Geo.ToMesh();
+                    //_lfgmesh = _Geo.ToMesh();
+                    _Geo._Changes = true;
                 }
             }
+            #endregion TestLocalRotation
 
-            var mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
-            _angleHorz += _angleVelHorz;
-            _angleVert += _angleVelVert;
+            if (_Geo._Changes)
+            {
+                _lfgmesh = _Geo.ToMesh();
+            }
 
             var mtxCam = float4x4.LookAt(0, 200, 400, 0, 0, 0, 0, 1, 0);
 
-            // first mesh
-            RC.ModelView = mtxRot * float4x4.CreateTranslation(0, 0, 0) * mtxCam;
-            //RC.ModelView = float4x4.CreateTranslation(0, 0, 0) * mtxCam;
+            RC.ModelView = float4x4.CreateTranslation(0, 0, 0) * mtxCam;
+
+            _Geo._Changes = false;
         }
 
         public override void Resize()
