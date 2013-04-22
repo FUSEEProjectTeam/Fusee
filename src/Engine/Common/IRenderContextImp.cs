@@ -76,7 +76,7 @@ namespace Fusee.Engine
         void Frustum(double left, double right, double bottom, double top, double zNear, double zFar);
 
         void Render(IMeshImp mr);
-
+        void DebugLine(float3 start, float3 end, float3 color);
         IMeshImp CreateMeshImp();
     }
 }

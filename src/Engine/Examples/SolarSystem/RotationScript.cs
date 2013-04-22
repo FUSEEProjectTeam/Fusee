@@ -18,7 +18,7 @@ namespace Examples.Solar
         public override void Start()
         {
             _target = SceneEntity.FindSceneEntity(_planets[_currentTargetId]);
-            Debug.WriteLine(_target.ToString());
+            Debug.WriteLine(_target.name);
         }
 
         public override void Update()

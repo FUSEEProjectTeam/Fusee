@@ -16,7 +16,7 @@ namespace Fusee.Engine
 
         private ShaderProgram _currentShader;
         private MatrixParamNames _currentShaderParams;
-
+        private ShaderProgram _debugShader;
         private readonly Light[] _lightParams;
         private readonly LightParamNames[] _lightShaderParams;
 
@@ -70,7 +70,7 @@ namespace Fusee.Engine
 
             _lightParams = new Light[8];
             _lightShaderParams = new LightParamNames[8];
-
+            _debugShader = MoreShaders.GetShader("oneColor",this);
             _updatedShaderParams = false;
         }
 
@@ -1174,6 +1174,15 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
                 _rci.SetTriangles(m._meshImp, m.Triangles);
 
             _rci.Render(m._meshImp);
+        }
+
+        public void DebugLine(float3 start, float3 end, float3 color)
+        {
+            SetShader(_debugShader);
+            SetShaderParam(_currentShaderParams.FUSEE_MVP, ModelViewProjection);
+            IShaderParam col = _debugShader.GetShaderParam("Col");
+            SetShaderParam(col, color);
+            _rci.DebugLine(start, end, color);
         }
 
         /// <summary>

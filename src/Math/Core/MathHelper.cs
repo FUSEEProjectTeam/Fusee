@@ -257,6 +257,29 @@ namespace Fusee.Math
 
         #endregion
 
+        public static float Clamp(float val, float min, float max)
+        {
+            if (val < min)
+            {
+                return min;
+            }
+            else if (val > max)
+            {
+                return max;
+            }
+            return val;
+        }
+
+        public static float3 Clamp(float3 val, float min, float max)
+        {
+            return new float3(Clamp(val.x, min, max), Clamp(val.x, min, max), Clamp(val.x, min, max));
+        }
+
+        public static float Deg2Rad(float deg)
+        {
+            return deg * .017453292519943295f;
+        }
+
         #endregion
     } 
 }

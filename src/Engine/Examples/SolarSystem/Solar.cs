@@ -92,7 +92,7 @@ namespace Examples.Solar
         private SceneEntity _moon;
         private Renderer _moonRenderer;
         private PlanetMaterial _moonMaterial;
-        private PlanetAction _moonAction = new PlanetAction(new float3(0, 0.1f, 0));
+        private PlanetAction _moonAction = new PlanetAction(new float3(0, 2.7f, 0));
         private IShaderParam _moonIShaderParam;
         private ImageData _moonImage;
         private ITexture _moonITexture;
@@ -177,7 +177,7 @@ namespace Examples.Solar
             scenecamera.Resize(Width, Height);
             cameraholder.AddComponent(camscript);
             cameraholder.AddComponent(scenecamera);
-            cameraholder.AddComponent(direct);
+            //cameraholder.AddComponent(direct);
             //cameraholder.AddComponent(direct2);
             camscript.Init(cameraholder);
             SceneManager.Manager.AddSceneEntity(WorldOrigin);
@@ -240,16 +240,17 @@ namespace Examples.Solar
             _earthRenderer.material = _earthMaterial;
             _earth.AddComponent(_earthRenderer);
             _earth.AddComponent(_earthAction);
+            _earth.AddComponent(direct);
             _earth.transform.LocalPosition = new float3(2.9f,0,0);
             _earth.transform.LocalScale = new float3(0.1f, 0.1f, 0.1f);
             //SceneManager.Manager.AddSceneEntity(_earth);
             _emptyEarth.AddChild(_earth);
 
              //Setup Moon
-            _emptyMoonAction = new MoonAction(_earth, _speedearth*5.0f);
-            _emptyMoon.transform.LocalPosition = _earth.transform.LocalPosition;
             _moon = new SceneEntity { name = "Moon" };
-            _emptyMoonAction.Init(_emptyMoon);
+            _emptyMoonAction = new MoonAction(_earth, _speedearth * 5.0f);
+            _emptyMoon.transform.LocalPosition = _earth.transform.LocalPosition;
+            
             _moonMaterial = new PlanetMaterial(MoreShaders.GetShader("diffuse2", RC));
             _moonImage = RC.LoadImage("Assets/moon.jpg");
             _moonIShaderParam = _moonMaterial.sp.GetShaderParam("texture1");
@@ -264,7 +265,7 @@ namespace Examples.Solar
             _moon.transform.LocalScale = new float3(0.05f, 0.05f, 0.05f);
             SceneManager.Manager.AddSceneEntity(_emptyMoon);
             _emptyMoon.AddChild(_moon);
-
+            _emptyMoonAction.Init(_emptyMoon);
             // Setup sun
             _sun = new SceneEntity { name = "Sun" };
             //_sunAction.Init(_sun);

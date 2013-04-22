@@ -13,6 +13,7 @@ namespace Examples.Solar
     {
         private SceneEntity _earth;
         private float3 _rotationspeed;
+        private Transformation _moonpos;
         public MoonAction(SceneEntity earth, float3 rotationspeed)
         {
             _earth = earth;
@@ -22,6 +23,7 @@ namespace Examples.Solar
         public override void Start()
         {
             transform.LocalPosition = _earth.transform.GlobalPosition;
+            _moonpos = SceneEntity.FindSceneEntity("Moon").transform;
         }
 
         public override void Update()
@@ -29,6 +31,7 @@ namespace Examples.Solar
             transform.LocalPosition = _earth.transform.GlobalPosition;
             //Debug.WriteLine("Earth LocalPos: "+_earth.transform.LocalPosition+ " Earth Global Pos: "+_earth.transform.GlobalPosition);
             transform.LocalEulerAngles += _rotationspeed * (float)Time.Instance.DeltaTime;
+            SceneManager.RC.DebugLine(transform.GlobalPosition, _moonpos.GlobalPosition, new float3(255, 0, 0));
         }
     }
 }

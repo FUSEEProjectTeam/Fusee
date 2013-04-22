@@ -25,7 +25,7 @@ namespace Examples.Solar
             if (Input.Instance.GetAxis(InputAxis.MouseWheel) != 0)
             {
                 Debug.WriteLine("mouse wheel");
-                transform.LocalPosition -= new float3(0, 0, (Input.Instance.GetAxis(InputAxis.MouseWheel)*10));
+                transform.LocalPosition -= new float3(0, 0, (Input.Instance.GetAxis(InputAxis.MouseWheel)*100));
             }
 
             if (Input.Instance.OnKeyDown(KeyCodes.P))

@@ -48,10 +48,38 @@ namespace Fusee.Engine
                 ShaderProgram spBump = rc.CreateShader(VsBump, PsBump);
                 return spBump;
             }
+
+            if (name == "oneColor")
+            {
+                ShaderProgram spOneColor = rc.CreateShader(VsOneColor, PsOneColor);
+                return spOneColor;
+            }
+
             ShaderProgram spOriginal = rc.CreateShader(Vs, Ps);
             return spOriginal;
         }
 
+
+        private const string VsOneColor = @"
+attribute vec3 fuVertex;
+attribute vec3 fuNormal;
+
+uniform vec3 Col;
+uniform mat4 FUSEE_MVP;
+
+
+void main(){
+gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
+}
+";
+        private const string PsOneColor = @"
+uniform vec3 Col;
+
+void main(){
+    gl_FragColor.a = 1;
+    gl_FragColor.rgb = Col;
+}
+";
 
 private const string VsDiffuse = @"
 attribute vec4 fuColor;
@@ -307,35 +335,35 @@ void main(void)
 // diffuse
    vec4 Idiff = vec4(0,0,0,0);
     if(FUSEE_L0_ACTIVE == 1.0){  
-        Idiff += FUSEE_L0_DIFFUSE * max(dot(vNormal,vec3(normalize(FUSEE_L0_DIRECTION - vPos))), 0.1);  
+        Idiff += FUSEE_L0_DIFFUSE * dot(vNormal,-FUSEE_L0_DIRECTION)*6; 
     }
 
     if(FUSEE_L1_ACTIVE == 1.0){ 
-        Idiff += FUSEE_L1_DIFFUSE * max(dot(vNormal,vec3(normalize(FUSEE_L1_DIRECTION - vPos))), 0.1);  
+        Idiff += FUSEE_L1_DIFFUSE * dot(vNormal,-FUSEE_L1_DIRECTION); 
     }
 
     if(FUSEE_L2_ACTIVE == 1.0){ 
-        Idiff += FUSEE_L2_DIFFUSE * max(dot(vNormal,vec3(normalize(FUSEE_L2_DIRECTION - vPos))), 0.1);  
+        Idiff += FUSEE_L2_DIFFUSE * dot(vNormal,-FUSEE_L2_DIRECTION); 
     }
 
     if(FUSEE_L3_ACTIVE == 1.0){
-        Idiff += FUSEE_L3_DIFFUSE * max(dot(vNormal,vec3(normalize(FUSEE_L3_DIRECTION - vPos))), 0.1);  
+        Idiff += FUSEE_L3_DIFFUSE * dot(vNormal,-FUSEE_L3_DIRECTION); 
     }
 
     if(FUSEE_L4_ACTIVE == 1.0){ 
-        Idiff += FUSEE_L4_DIFFUSE * max(dot(vNormal,vec3(normalize(FUSEE_L4_DIRECTION - vPos))), 0.1);  
+        Idiff += FUSEE_L4_DIFFUSE * dot(vNormal,-FUSEE_L4_DIRECTION); 
     }
 
     if(FUSEE_L5_ACTIVE == 1.0){  
-        Idiff += FUSEE_L5_DIFFUSE * max(dot(vNormal,vec3(normalize(FUSEE_L5_DIRECTION - vPos))), 0.1);  
+        Idiff += FUSEE_L5_DIFFUSE * dot(vNormal,-FUSEE_L5_DIRECTION); 
     }
 
     if(FUSEE_L6_ACTIVE == 1.0){ 
-        Idiff += FUSEE_L6_DIFFUSE * max(dot(vNormal,vec3(normalize(FUSEE_L6_DIRECTION - vPos))), 0.1);  
+        Idiff += FUSEE_L6_DIFFUSE * dot(vNormal,-FUSEE_L6_DIRECTION); 
     }
 
     if(FUSEE_L7_ACTIVE == 1.0){   
-        Idiff += FUSEE_L7_DIFFUSE * max(dot(vNormal,vec3(normalize(FUSEE_L7_DIRECTION - vPos))), 0.1);  
+        Idiff += FUSEE_L7_DIFFUSE * dot(vNormal,-FUSEE_L7_DIRECTION); 
     }
 
     Idiff = clamp(Idiff, 0.0, 1.0); 

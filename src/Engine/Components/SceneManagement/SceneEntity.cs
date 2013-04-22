@@ -118,11 +118,16 @@ namespace Fusee.SceneManagement
                     Debug.WriteLine("A SceneEntity can only have one RendererComponent at a time.");
                     //throw new Exception("A SceneEntity can only have one RendererComponent at a time.");
                 }
-                
+
+            }
+            else if (component is Light)
+            {
+                component.SceneEntity = this;
+                _childComponents.Add(component);
             }
             else
             {
-                _childComponents.Add(component);  
+                _childComponents.Add(component);
             }
             //Console.WriteLine("The name of the added Component is " + type);
         }
