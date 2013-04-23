@@ -10,12 +10,12 @@ namespace Examples.Solar
 {
     public class Solar : RenderCanvas
     {
-        
+        /*
         // Planet Geometry
         private Geometry planetgeometry;
 
         // Spacebox
-        private Geometry spacebox;
+        private Geometry spacebox;*/
         /*
         private SceneEntity _spacebox;
         private Renderer spaceboxRenderer;
@@ -28,17 +28,8 @@ namespace Examples.Solar
         //Speed of Planets
         private static float3 _speedearth = new float3(0, 0.69635f, 0);
 
-        
-        // Null Objects
-        private SceneEntity _emptyMoon;
-        private SceneEntity _emptyMercury;
-        private SceneEntity _emptyVenus;
-        private SceneEntity _emptyEarth;
-        private SceneEntity _emptyMars;
-        private SceneEntity _emptyJupiter;
-        private SceneEntity _emptySaturn;
-        private SceneEntity _emptyUranus;
-        private SceneEntity _emptyNeptun;
+
+
 
         // Null Object Actions
         /*
@@ -147,53 +138,63 @@ namespace Examples.Solar
         //Light test
         //private SpotLight spot = new SpotLight(0);
         //private PointLight point = new PointLight(1);
-        private DirectionalLight direct = new DirectionalLight(new float3(-500,1000,0),new float4(1,1,1,1),new float3(0,0,0),0);
         //private DirectionalLight direct2 = new DirectionalLight(new float3(500, 1000, 0), new float4(1, 1, 1, 1), new float3(0, 0, 0), 1);
+        Camera scenecamera;
 
-
-
-        // Scene Camera
-        private SceneEntity cameraholder;
-        private Camera scenecamera;
-        private CameraScript camscript;
-        private SceneEntity WorldOrigin;
-        //private ActionCode camrotation = new RotationScript();
         public override void Init()
-        {  
+        {
             SceneManager.RC = RC;
             SceneEntity _planet;
+            // Lights
+            DirectionalLight direct = new DirectionalLight(new float3(-500, 1000, 0), new float4(1, 1, 1, 1), new float3(0, 0, 0), 0);
+
             // Load Geometry
-            planetgeometry = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Sphere.obj.model"));
-            spacebox = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/spacebox.obj.model"));
+
+            Geometry planetgeometry = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Sphere.obj.model"));
+            Geometry spacebox = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/spacebox.obj.model"));
 
             // Setup Empty Objects
-           _emptyMoon= new SceneEntity("emptyPlanetHolder", new MoonAction(_speedearth * 5.0f));
-           _emptyMercury = new SceneEntity("emptyPlanetHolder",new PlanetAction(_speedearth*4.1477f));
-           _emptyVenus = new SceneEntity("emptyPlanetHolder",new PlanetAction(_speedearth*1.6150f));
-           _emptyEarth = new SceneEntity("emptyPlanetHolder",new PlanetAction(_speedearth));
-           _emptyMars = new SceneEntity("emptyPlanetHolder",new PlanetAction(_speedearth*0.5320f));
-           _emptyJupiter = new SceneEntity("emptyPlanetHolder",new PlanetAction(_speedearth*0.0833f));
-           _emptySaturn = new SceneEntity("emptyPlanetHolder",new PlanetAction(_speedearth*0.03476f));
-           _emptyUranus = new SceneEntity("emptyPlanetHolder",new PlanetAction(_speedearth*0.0119f));
-           _emptyNeptun = new SceneEntity("emptyPlanetHolder",new PlanetAction(_speedearth*0.0062f));
-           SceneManager.Manager.AddSceneEntity(_emptyMoon);
-           SceneManager.Manager.AddSceneEntity(_emptyMercury);
-           SceneManager.Manager.AddSceneEntity(_emptyVenus);
-           SceneManager.Manager.AddSceneEntity(_emptyEarth);
-           SceneManager.Manager.AddSceneEntity(_emptyMars);
-           SceneManager.Manager.AddSceneEntity(_emptyJupiter);
-           SceneManager.Manager.AddSceneEntity(_emptySaturn);
-           SceneManager.Manager.AddSceneEntity(_emptyUranus);
-           SceneManager.Manager.AddSceneEntity(_emptyNeptun);
+            // Null Objects
+            SceneEntity _emptyMoon;
+            SceneEntity _emptyMercury;
+            SceneEntity _emptyVenus;
+            SceneEntity _emptyEarth;
+            SceneEntity _emptyMars;
+            SceneEntity _emptyJupiter;
+            SceneEntity _emptySaturn;
+            SceneEntity _emptyUranus;
+            SceneEntity _emptyNeptun;
+            _emptyMoon = new SceneEntity("emptyPlanetHolder", new MoonAction(_speedearth * 5.0f));
+            _emptyMercury = new SceneEntity("emptyPlanetHolder", new PlanetAction(_speedearth * 4.1477f));
+            _emptyVenus = new SceneEntity("emptyPlanetHolder", new PlanetAction(_speedearth * 1.6150f));
+            _emptyEarth = new SceneEntity("emptyPlanetHolder", new PlanetAction(_speedearth));
+            _emptyMars = new SceneEntity("emptyPlanetHolder", new PlanetAction(_speedearth * 0.5320f));
+            _emptyJupiter = new SceneEntity("emptyPlanetHolder", new PlanetAction(_speedearth * 0.0833f));
+            _emptySaturn = new SceneEntity("emptyPlanetHolder", new PlanetAction(_speedearth * 0.03476f));
+            _emptyUranus = new SceneEntity("emptyPlanetHolder", new PlanetAction(_speedearth * 0.0119f));
+            _emptyNeptun = new SceneEntity("emptyPlanetHolder", new PlanetAction(_speedearth * 0.0062f));
+            SceneManager.Manager.AddSceneEntity(_emptyMoon);
+            SceneManager.Manager.AddSceneEntity(_emptyMercury);
+            SceneManager.Manager.AddSceneEntity(_emptyVenus);
+            SceneManager.Manager.AddSceneEntity(_emptyEarth);
+            SceneManager.Manager.AddSceneEntity(_emptyMars);
+            SceneManager.Manager.AddSceneEntity(_emptyJupiter);
+            SceneManager.Manager.AddSceneEntity(_emptySaturn);
+            SceneManager.Manager.AddSceneEntity(_emptyUranus);
+            SceneManager.Manager.AddSceneEntity(_emptyNeptun);
 
             //Setup Camera
+            // Scene Camera
+            SceneEntity cameraholder;
+            CameraScript camscript;
+            SceneEntity WorldOrigin;
             WorldOrigin = new SceneEntity("WorldOrigin", new RotationScript());
             SceneManager.Manager.AddSceneEntity(WorldOrigin);
             cameraholder = new SceneEntity("CameraOwner", new CameraScript(), WorldOrigin);
             cameraholder.transform.GlobalPosition = new float3(0, 0, 10);
             scenecamera = new Camera(cameraholder);
             scenecamera.Resize(Width, Height);
-           
+
             //Setup Scene Camera
             /*
             cameraholder.name = "CameraOwner";
@@ -209,7 +210,7 @@ namespace Examples.Solar
             WorldOrigin.AddChild(cameraholder);
             */
             // Setup Space Box
-            SceneEntity _spaceBox = new SceneEntity("Spacebox",new PlanetMaterial(MoreShaders.GetShader("simpel", RC),"Assets/spaceboxTexture.png"),new Renderer(spacebox));
+            SceneEntity _spaceBox = new SceneEntity("Spacebox", new PlanetMaterial(MoreShaders.GetShader("simpel", RC), "Assets/spaceboxTexture.png"), new Renderer(spacebox));
             SceneManager.Manager.AddSceneEntity(_spaceBox);
 
             // Setup Empty Objects
@@ -265,14 +266,14 @@ namespace Examples.Solar
             //SceneManager.Manager.AddSceneEntity(_earth);
             _emptyEarth.AddChild(_earth);
             */
-             //Setup Moon
+            //Setup Moon
             //_emptyMoon.transform.LocalPosition = _earth.transform.LocalPosition;
             //_emptyMoonAction = new MoonAction(_speedearth * 5.0f);
             //_emptyMoon.AddComponent(_emptyMoonAction);
             _planet = new SceneEntity("Moon", new PlanetAction(new float3(0, 2.7f, 0)), _emptyMoon, new PlanetMaterial(MoreShaders.GetShader("diffuse2", RC), "Assets/moon.jpg"), new Renderer(planetgeometry));
             _planet.transform.GlobalPosition = new float3(0.5f, 0, 0);
-            _planet.transform.GlobalScale = new float3(0.05f, 0.05f, 0.05f);  
-            
+            _planet.transform.GlobalScale = new float3(0.05f, 0.05f, 0.05f);
+
 
             //SceneManager.Manager.AddSceneEntity(_emptyMoon);
             //_emptyMoon.AddChild(_moon);
@@ -472,7 +473,7 @@ namespace Examples.Solar
             _emptyNeptun.AddChild(_neptun);*/
             SceneManager.Manager.StartActionCode();
             // Random Rotations
-            _emptyEarth.transform.LocalEulerAngles = new float3(0,45,0);
+            _emptyEarth.transform.LocalEulerAngles = new float3(0, 45, 0);
             _emptyMercury.transform.LocalEulerAngles = new float3(0, 55, 0);
             _emptyVenus.transform.LocalEulerAngles = new float3(0, 335, 0);
             _emptyMars.transform.LocalEulerAngles = new float3(0, 125, 0);
@@ -480,10 +481,10 @@ namespace Examples.Solar
             _emptySaturn.transform.LocalEulerAngles = new float3(0, 95, 0);
             _emptyUranus.transform.LocalEulerAngles = new float3(0, 145, 0);
             _emptyNeptun.transform.LocalEulerAngles = new float3(0, 245, 0);
-            
+
             //camrotation.Init(WorldOrigin);
             RC.ClearColor = new float4(1, 0, 0, 1);
-            
+
         }
 
 
