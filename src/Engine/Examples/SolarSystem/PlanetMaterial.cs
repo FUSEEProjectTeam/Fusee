@@ -18,6 +18,14 @@ namespace Examples.Solar
             sp = shaderProgram;
         }
 
+        public PlanetMaterial(ShaderProgram shaderProgram, string texturepath)
+        {
+            sp = shaderProgram;
+            Textureparam = sp.GetShaderParam("texture1");
+            ImageData Image = SceneManager.RC.LoadImage(texturepath);
+            Tex = SceneManager.RC.CreateTexture(Image);
+        }
+
         public override void Update(RenderContext renderContext)
         {
             renderContext.SetShader(sp);

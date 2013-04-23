@@ -24,7 +24,8 @@ namespace Examples.Solar
         public override void Update()
         {
             transform.LocalEulerAngles += _rotationSpeed*(float)Time.Instance.DeltaTime;
-            SceneManager.RC.DebugLine(new float3(0, 0, 0),transform.GlobalPosition, new float3(255,0,0));
+            if(SceneEntity.parent!=null)
+            SceneManager.RC.DebugLine(SceneEntity.parent.transform.GlobalPosition,transform.GlobalPosition, new float3(255,0,0));
         }
     }
 }

@@ -30,7 +30,6 @@ namespace Fusee.SceneManagement
             SceneEntity = entity;
             transform = SceneEntity.transform;
             renderer = SceneEntity.renderer;
-            Start();
         }
 
         /// <summary>

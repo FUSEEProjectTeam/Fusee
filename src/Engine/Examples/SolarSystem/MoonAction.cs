@@ -14,15 +14,17 @@ namespace Examples.Solar
         private SceneEntity _earth;
         private float3 _rotationspeed;
         private Transformation _moonpos;
-        public MoonAction(SceneEntity earth, float3 rotationspeed)
+        public MoonAction(float3 rotationspeed)
         {
-            _earth = earth;
+            //_earth = earth;
             _rotationspeed = rotationspeed;
         }
 
         public override void Start()
         {
+            _earth = SceneEntity.FindSceneEntity("Earth");
             transform.LocalPosition = _earth.transform.GlobalPosition;
+            
             _moonpos = SceneEntity.FindSceneEntity("Moon").transform;
         }
 

@@ -71,13 +71,81 @@ namespace Fusee.SceneManagement
             _parent = parent;
         }
 
+        public SceneEntity(string _name, ActionCode action, SceneEntity parent, Material material, Renderer _renderer)
+        {
+            _childComponents = new List<Component>();
+            _childSceneEntities = new List<SceneEntity>();
+            name = _name;
+            transform = new Transformation(this);
+            _childComponents.Add(transform);
+            _childComponents.Add(action);
+            action.Init(this);
+            AddComponent(_renderer);
+            renderer.material = material;
+            tag = "default";
+            _parent = parent;
+            _parent.AddChild(this);
+
+        }
+
+        public SceneEntity(string _name, ActionCode action, Material material, Renderer _renderer)
+        {
+            _childComponents = new List<Component>();
+            _childSceneEntities = new List<SceneEntity>();
+            name = _name;
+            transform = new Transformation(this);
+            _childComponents.Add(transform);
+            _childComponents.Add(action);
+            action.Init(this);
+            AddComponent(_renderer);
+            renderer.material = material;
+            tag = "default";
+        }
+
+        public SceneEntity(string _name, Material material, Renderer _renderer)
+        {
+            _childComponents = new List<Component>();
+            _childSceneEntities = new List<SceneEntity>();
+            name = _name;
+            transform = new Transformation(this);
+            _childComponents.Add(transform);
+            AddComponent(_renderer);
+            renderer.material = material;
+            tag = "default";
+        }
+
+        public SceneEntity(string _name, ActionCode action, SceneEntity parent)
+        {
+            _childComponents = new List<Component>();
+            _childSceneEntities = new List<SceneEntity>();
+            name = _name;
+            transform = new Transformation(this);
+            _childComponents.Add(transform);
+            _childComponents.Add(action);
+            action.Init(this);
+            tag = "default";
+            _parent = parent;
+            _parent.AddChild(this);
+        }
+
+        public SceneEntity(string _name, ActionCode action)
+        {
+            _childComponents = new List<Component>();
+            _childSceneEntities = new List<SceneEntity>();
+            name = _name;
+            transform = new Transformation(this);
+            _childComponents.Add(transform);
+            _childComponents.Add(action);
+            action.Init(this);
+            tag = "default";
+        }
 
 
         /// <summary>
         /// Traverses through the current SceneEntities components and through its children and their components.
         /// </summary>
         /// <param name="sceneVisitorRendering">The scene visitor rendering.</param>
-        public void TraverseForRendering(SceneVisitorRendering sceneVisitorRendering)
+        public void TraverseForRendering(SceneVisitor sceneVisitorRendering)
         {
             
             foreach (var childComponent in _childComponents)

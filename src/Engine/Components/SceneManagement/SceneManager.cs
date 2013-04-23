@@ -193,6 +193,14 @@ namespace Fusee.SceneManagement
             return result;
         }
 
+        public void StartActionCode()
+        {
+            SceneVisitorStartAction startactions = new SceneVisitorStartAction();
+            foreach (var sceneMember in SceneMembers)
+            {
+                sceneMember.Accept(startactions);
+            }
+        }
 
 
     }
