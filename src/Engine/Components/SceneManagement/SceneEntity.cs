@@ -71,13 +71,81 @@ namespace Fusee.SceneManagement
             _parent = parent;
         }
 
+        public SceneEntity(string _name, ActionCode action, SceneEntity parent, Material material, Renderer _renderer)
+        {
+            _childComponents = new List<Component>();
+            _childSceneEntities = new List<SceneEntity>();
+            name = _name;
+            transform = new Transformation(this);
+            _childComponents.Add(transform);
+            _childComponents.Add(action);
+            action.Init(this);
+            AddComponent(_renderer);
+            renderer.material = material;
+            tag = "default";
+            _parent = parent;
+            _parent.AddChild(this);
+
+        }
+
+        public SceneEntity(string _name, ActionCode action, Material material, Renderer _renderer)
+        {
+            _childComponents = new List<Component>();
+            _childSceneEntities = new List<SceneEntity>();
+            name = _name;
+            transform = new Transformation(this);
+            _childComponents.Add(transform);
+            _childComponents.Add(action);
+            action.Init(this);
+            AddComponent(_renderer);
+            renderer.material = material;
+            tag = "default";
+        }
+
+        public SceneEntity(string _name, Material material, Renderer _renderer)
+        {
+            _childComponents = new List<Component>();
+            _childSceneEntities = new List<SceneEntity>();
+            name = _name;
+            transform = new Transformation(this);
+            _childComponents.Add(transform);
+            AddComponent(_renderer);
+            renderer.material = material;
+            tag = "default";
+        }
+
+        public SceneEntity(string _name, ActionCode action, SceneEntity parent)
+        {
+            _childComponents = new List<Component>();
+            _childSceneEntities = new List<SceneEntity>();
+            name = _name;
+            transform = new Transformation(this);
+            _childComponents.Add(transform);
+            _childComponents.Add(action);
+            action.Init(this);
+            tag = "default";
+            _parent = parent;
+            _parent.AddChild(this);
+        }
+
+        public SceneEntity(string _name, ActionCode action)
+        {
+            _childComponents = new List<Component>();
+            _childSceneEntities = new List<SceneEntity>();
+            name = _name;
+            transform = new Transformation(this);
+            _childComponents.Add(transform);
+            _childComponents.Add(action);
+            action.Init(this);
+            tag = "default";
+        }
 
 
         /// <summary>
         /// Traverses through the current SceneEntities components and through its children and their components.
         /// </summary>
         /// <param name="sceneVisitorRendering">The scene visitor rendering.</param>
-        public void TraverseForRendering(SceneVisitorRendering sceneVisitorRendering)
+        public void TraverseForRendering(SceneVisitor sceneVisitorRendering)
         {
             
             foreach (var childComponent in _childComponents)
@@ -118,11 +186,16 @@ namespace Fusee.SceneManagement
                     Debug.WriteLine("A SceneEntity can only have one RendererComponent at a time.");
                     //throw new Exception("A SceneEntity can only have one RendererComponent at a time.");
                 }
-                
+
+            }
+            else if (component is Light)
+            {
+                component.SceneEntity = this;
+                _childComponents.Add(component);
             }
             else
             {
-                _childComponents.Add(component);  
+                _childComponents.Add(component);
             }
             //Console.WriteLine("The name of the added Component is " + type);
         }
@@ -202,7 +275,10 @@ namespace Fusee.SceneManagement
         public SceneEntity parent
         {
             get { return _parent; }
-            set { _parent = value; }
+            set {
+                    transform.Parent = value;
+                    _parent = value; 
+                }
         }
 
         /// <summary>

@@ -44,6 +44,13 @@ namespace Fusee.SceneManagement
             ProjectionType(proj);
         }
 
+        public Camera(SceneEntity owner)
+        {
+            ViewMatrix = owner.transform.Matrix;
+            ProjectionType(proj);
+            owner.AddComponent(this);
+        }
+
         /// <summary>
         /// Allows to set and get the Viewmatrix of the Camera.
         /// </summary>

@@ -6,7 +6,7 @@ using Fusee.Engine;
 using Fusee.Math;
 using Fusee.SceneManagement;
 
-namespace Examples.SolarSystem
+namespace Examples.Solar
 {
     public class PlanetAction : ActionCode
     {
@@ -24,6 +24,8 @@ namespace Examples.SolarSystem
         public override void Update()
         {
             transform.LocalEulerAngles += _rotationSpeed*(float)Time.Instance.DeltaTime;
+            if(SceneEntity.parent!=null)
+            SceneManager.RC.DebugLine(SceneEntity.parent.transform.GlobalPosition,transform.GlobalPosition, new float3(255,0,0));
         }
     }
 }

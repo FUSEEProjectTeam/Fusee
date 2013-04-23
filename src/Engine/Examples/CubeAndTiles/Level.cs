@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Fusee.Engine;
 using Fusee.Math;
 
@@ -8,7 +9,6 @@ namespace Examples.CubeAndTiles
     {
         internal IShaderParam VColorObj { get; private set; }
         internal IShaderParam VTextureObj { get; private set; }
-        private readonly IShaderParam _vUseAnaglyph;
 
         internal RenderContext RContext { get; private set; }
 
@@ -27,7 +27,8 @@ namespace Examples.CubeAndTiles
         private int _camPosition;
         private float4x4 _camTranslation;
         private float4x4 _objOrientation;
-        private float4x4 _mtxRot;
+
+        internal float4x4 CamTrans { get; private set; }
         
         internal Mesh GlobalFieldMesh { get; private set; }
         internal ITexture TextureField { get; private set; }
@@ -35,7 +36,6 @@ namespace Examples.CubeAndTiles
         internal Mesh GlobalCubeMesh { get; private set; }
         internal ITexture TextureCube { get; private set; }
 
-        internal float LvlDeltaTime { get; private set; }
         internal Random ObjRandom { get; private set; }
 
         // array for level files
@@ -74,9 +74,6 @@ namespace Examples.CubeAndTiles
 
             _anaglyph3D = anaglyph3D;
             UseAnaglyph3D = false;
-
-            _vUseAnaglyph = sp.GetShaderParam("vUseAnaglyph");
-            RContext.SetShaderParam(_vUseAnaglyph, UseAnaglyph3D ? 1 : 0);
             
             ConstructLevel(id);
         }
@@ -281,28 +278,33 @@ namespace Examples.CubeAndTiles
             return false;
         }
 
-        public void Render(float4x4 mtxRot, double dTime)
+        public void Render(float4x4 mtxRot)
         {
             if (WonDeadAnimation())
                 return;
 
             LoadAnimation();
 
-            LvlDeltaTime = (float) dTime;
-            _mtxRot = mtxRot;
+            var lookAt = UseAnaglyph3D
+             ? _anaglyph3D.LookAt3D(0, 0, _camPosition, 0, 0, 0, 0, 1, 0)
+             : float4x4.LookAt(0, 0, _camPosition, 0, 0, 0, 0, 1, 0);
 
-            RContext.SetShaderParam(_vUseAnaglyph, UseAnaglyph3D ? 1 : 0);
+            CamTrans = _camTranslation*mtxRot*lookAt;
 
-            for (int x = 0; x < 2; x++)
+            for (var x = 0; x < 2; x++)
             {
                 if (UseAnaglyph3D)
                     _anaglyph3D.SwitchEye();
 
                 var renderOnly = UseAnaglyph3D && _anaglyph3D.IsLeftEye;
 
+                RContext.SetShaderParamTexture(VTextureObj, TextureField);
+
                 foreach (var feld in _levelFeld)
                     if (feld != null)
                         feld.Render(_objOrientation, renderOnly);
+
+                RContext.SetShaderParamTexture(VTextureObj, TextureCube);
 
                 if (_rCube != null)
                     _rCube.RenderCube(renderOnly);
@@ -316,16 +318,7 @@ namespace Examples.CubeAndTiles
 
         public void ZoomCamera(int val)
         {
-            _camPosition = Math.Min(3000, Math.Max(1500, _camPosition - val));
-        }
-
-        public float4x4 AddCameraTrans(float4x4 mod)
-        {
-            var lookAt = UseAnaglyph3D
-                         ? _anaglyph3D.LookAt3D(0, 0, _camPosition, 0, 0, 0, 0, 1, 0)
-                         : float4x4.LookAt(0, 0, _camPosition, 0, 0, 0, 0, 1, 0);
-
-            return mod*_camTranslation*_mtxRot*lookAt;
+            _camPosition = Math.Min(5000, Math.Max(1500, _camPosition - val));
         }
 
         private static bool OutOfBounds(int x, int y, Field[,] array)

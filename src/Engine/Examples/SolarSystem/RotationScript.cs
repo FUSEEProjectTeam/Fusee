@@ -7,7 +7,7 @@ using Fusee.Engine;
 using Fusee.SceneManagement;
 using Fusee.Math;
 
-namespace Examples.SolarSystem
+namespace Examples.Solar
 {
     class RotationScript : ActionCode
     {
@@ -18,6 +18,7 @@ namespace Examples.SolarSystem
         public override void Start()
         {
             _target = SceneEntity.FindSceneEntity(_planets[_currentTargetId]);
+            Debug.WriteLine(_target.name);
         }
 
         public override void Update()
@@ -76,10 +77,8 @@ namespace Examples.SolarSystem
                 {
                     _currentTargetId = 0;
                 }
-                Debug.WriteLine("Current id: "+_currentTargetId);
-                
                 _target = SceneEntity.FindSceneEntity(_planets[_currentTargetId]);
-                
+                Debug.WriteLine("Current Planet: " + _target.name);
             }
 
             if (Input.Instance.OnKeyDown(KeyCodes.Left))
@@ -89,12 +88,11 @@ namespace Examples.SolarSystem
                 {
                     _currentTargetId = _planets.Length-1;
                 }
-                Debug.WriteLine("Current id: " + _currentTargetId);
-
                 _target = SceneEntity.FindSceneEntity(_planets[_currentTargetId]);
-
+                Debug.WriteLine("Current Planet: " + _target.name);
             }
             transform.GlobalPosition = _target.transform.GlobalPosition;
+            //Debug.WriteLine("Target is cool & RotationScript GlobalPos: " + _target.transform.GlobalPosition);   
         }
     }
 }

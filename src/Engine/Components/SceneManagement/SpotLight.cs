@@ -52,6 +52,10 @@ namespace Fusee.SceneManagement
         /// </summary>
         public void TraverseForRendering(SceneVisitorRendering sceneVisitorRendering)
         {
+            if (SceneEntity != null)
+            {
+                _position = SceneEntity.transform.GlobalPosition;
+            }
             sceneVisitorRendering.AddLightSpot(_position, _direction, _color, _type, _channel );
         }
 

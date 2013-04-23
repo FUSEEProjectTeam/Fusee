@@ -1,11 +1,16 @@
 ﻿using System.IO;
 using Fusee.Engine;
 using Fusee.Math;
-
+/* In this example 2 objects are rendered with textures on them.
+ * The ways to use textures are 
+ *  - 1. Load any image file from your hard drive and use it as a texture.
+ *  - 2. Create a rectangular ImageData object that can be used as a texture.
+ */
 namespace Examples.Texture
 {
     public class Texture : RenderCanvas
     {
+        //At first we have to define the shader.
         protected string _vs = @"
             #ifndef GL_ES
                #version 120
@@ -48,20 +53,17 @@ namespace Examples.Texture
                 precision highp float;
             #endif
 
-         
+            //The parameter required for the texturing process
             uniform sampler2D texture1;
-            uniform sampler2D texture2;
             uniform vec4 vColor;
             varying vec3 vNormal;
+            //The parameter holding the UV-Coordinates of the texture
             varying vec2 vUV;
 
             void main()
-            {     
-                vec4 tex1 = texture2D(texture1,vUV);
-                vec4 tex2 = texture2D(texture2,vUV);
-                //gl_FragColor = texture2D(texture1, vUV);        
-                gl_FragColor = mix(tex1, tex2, 0.6);  /* *dot(vNormal, vec3(0, 0, 1))*/;
-                //gl_FragColor = vColor;
+            {    
+              //The most basic texturing function, expecting the above mentioned parameters   
+              gl_FragColor = texture2D(texture1, vUV);        
             }";
 
         private static float _angleHorz = 0.0f, _angleVert = 0.0f, _angleVelHorz = 0, _angleVelVert = 0;
@@ -69,38 +71,42 @@ namespace Examples.Texture
         private const float RotationSpeed = 1f;
         private const float Damping = 0.92f;
         
+        //Two objects will be rendered, so we need two Mesh-bbjects which hold the information. 
         protected Mesh _meshSphere, _meshCube;
-        protected IShaderParam _vColorParam;
+        //To work with the parameter set in the shader, we have to declare an IShaderparam
         protected IShaderParam _texture1Param;
-        protected IShaderParam _texture2Param;
+        //The ImageData-objects hold the Pixel-data from the image we would like to use as a texture.
         protected ImageData _imgData1;
         protected ImageData _imgData2;
-        protected ImageData _imgData3;
+        //The Itexture-objects hold the Texturing-handle
         protected ITexture _iTex1;
         protected ITexture _iTex2;
-        protected ITexture _iTex3;
+        
         
 
         public override void Init()
         {
-                       
+            //We load two object-model on which the textures will be displayed           
             Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Sphere.obj.model"));
             _meshSphere = geo.ToMesh();
 
             Geometry geo2 = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Cube.obj.model"));
             _meshCube = geo2.ToMesh();
 
+            //The shader is created and our IShaderParam is connected with the parameter specified in the shader.
             ShaderProgram sp = RC.CreateShader(_vs, _ps);
             RC.SetShader(sp);
-            _vColorParam = sp.GetShaderParam("vColor");
             _texture1Param = sp.GetShaderParam("texture1");
-            _texture2Param = sp.GetShaderParam("texture2");
-
+            
+            //The first texture is a .jpg-file loaded from the hard drive 
             _imgData1 = RC.LoadImage("Assets/world_map.jpg");
-            _iTex1 = RC.CreateTexture(_imgData1);
-            _imgData2 = RC.LoadImage("Assets/cube_tex.jpg");
-            //_imgData2 = RC.CreateImage(500, 500, "Green");
+            //The second texture is created by ourselves
+            _imgData2 = RC.CreateImage(600, 600, "Green");
+            //Another option is to put some text on a texture
             _imgData2 = RC.TextOnImage(_imgData2, "Verdana", 80f, "FUSEE rocks!", "Black", 0, 30);
+            
+            //At last the texture are created
+            _iTex1 = RC.CreateTexture(_imgData1);
             _iTex2 = RC.CreateTexture(_imgData2);
             
 
@@ -108,6 +114,7 @@ namespace Examples.Texture
 
         public override void RenderAFrame()
         {
+            //Some basic movement controls
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
             if (Input.Instance.IsButtonDown(MouseButtons.Left))
@@ -146,14 +153,12 @@ namespace Examples.Texture
             float4x4 mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
             float4x4 mtxCam = float4x4.LookAt(0, 200, 400, 0, 50, 0, 0, 1, 0);
 
-
+            //The objects are placed on the canvas, textured and finally rendered
             RC.ModelView = mtxRot * float4x4.CreateTranslation(-100, 0, 0) * mtxCam;
-            //RC.SetShaderParam(_vColorParam, new float4(0.5f, 0.8f, 0, 1));
             RC.SetShaderParamTexture(_texture1Param, _iTex1);
             RC.Render(_meshSphere);
 
             RC.ModelView = mtxRot * float4x4.CreateTranslation(100, 0, 0) * mtxCam;
-            //RC.SetShaderParam(_vColorParam, new float4(0.8f, 0.5f, 0, 1));
             RC.SetShaderParamTexture(_texture1Param, _iTex2);
             RC.Render(_meshCube);
 

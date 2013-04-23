@@ -1,5 +1,5 @@
 ﻿using Fusee.Math;
-
+using System.Diagnostics;
 
 namespace Fusee.SceneManagement
 {
@@ -61,6 +61,12 @@ namespace Fusee.SceneManagement
         #endregion
         public override void Accept(SceneVisitor sv)
         {
+            if (SceneEntity != null)
+            {
+                _position = SceneEntity.transform.GlobalPosition;
+                _direction = -SceneEntity.transform.GlobalMatrix.Row2.xyz;
+                SceneManager.RC.DebugLine(_position, _direction * 100, new float3(255, 255, 0));
+            }
             sv.Visit((DirectionalLight)this);
         }
     }

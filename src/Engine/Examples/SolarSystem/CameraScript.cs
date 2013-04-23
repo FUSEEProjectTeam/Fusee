@@ -6,7 +6,7 @@ using System.Text;
 using Fusee.Math;
 using Fusee.Engine;
 using Fusee.SceneManagement;
-namespace Examples.SolarSystem
+namespace Examples.Solar
 {
     class CameraScript : ActionCode
     {
@@ -40,7 +40,7 @@ namespace Examples.SolarSystem
                 perspective = !perspective;
 
             }
-           
+            //Debug.WriteLine("Current FPS: "+Time.Instance.FramePerSecondSmooth);
         }
 
     }
