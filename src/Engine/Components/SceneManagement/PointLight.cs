@@ -5,14 +5,19 @@ namespace Fusee.SceneManagement
 {
     /// <summary>
     /// This class is derived from Light and set's a Pointlight in the scene.
-    /// A color and the position of the lightsource is needed.
+    /// A color and the position of the lightsource are needed.
     /// </summary>
-
     public class PointLight : Light
     {
 
         #region Constructors
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PointLight"/> class. Position, color and channel are needet.
+        /// </summary>
+        /// <param name="position">The position of the pointlight.</param>
+        /// <param name="color">The color of the pointlight.</param>
+        /// <param name="channel">The memory space of the light(0 - 7).</param>
         public PointLight(float3 position, float4 color, int channel)
         {
             _position = position;
@@ -21,6 +26,11 @@ namespace Fusee.SceneManagement
             _channel = channel;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PointLight"/> class. Only the channel is needed. Other params
+        /// will be set to default value. 
+        /// </summary>
+        /// <param name="channel">The memory space of the light(0 - 7).</param>
         public PointLight(int channel)
         {
             _type = LightType.Point;
@@ -32,15 +42,17 @@ namespace Fusee.SceneManagement
 
         #region Methods
         /// <summary>
-        /// Overrides Traverse. Add's Pointlight to the lightqueue.
+        /// TraverseForRendering add's Pointlight to the lightqueue.
         /// </summary>
-        /// <param name="_traversalState"></param>
-
         public void TraverseForRendering(SceneVisitorRendering sceneVisitorRendering)
         {
             sceneVisitorRendering.AddLightPoint(_position , _color, _type, _channel);
         }
 
         #endregion
+        public override void Accept(SceneVisitor sv)
+        {
+            sv.Visit((PointLight)this);
+        }
     }
 }

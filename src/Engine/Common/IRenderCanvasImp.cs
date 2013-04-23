@@ -1,4 +1,6 @@
-﻿using System;
+﻿#pragma warning disable 1591 //disables the warning about missing XML-comments
+
+using System;
 
 namespace Fusee.Engine
 {
@@ -9,12 +11,17 @@ namespace Fusee.Engine
 
         double DeltaTime { get; }
 
+        bool VerticalSync { get; set; }
+
         void Present();
 
         void Run();
 
         event EventHandler<InitEventArgs> Init;
+        event EventHandler<InitEventArgs> UnLoad; 
         event EventHandler<RenderEventArgs> Render;
         event EventHandler<ResizeEventArgs> Resize;
     }
 }
+
+#pragma warning restore 1591

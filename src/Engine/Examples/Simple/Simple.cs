@@ -1,14 +1,12 @@
-﻿using System.IO;
-using Fusee.Engine;
+﻿using Fusee.Engine;
 using Fusee.Math;
 
 namespace Examples.Simple
 {
-    public class Simple : RenderCanvas 
+    public class Simple : RenderCanvas
     {
-        protected string Vs = @"
-            // #version 120
-
+        // pixel and vertex shader
+        private const string Vs = @"
             /* Copies incoming vertex color without change.
              * Applies the transformation matrix to vertex position.
              */
@@ -26,15 +24,10 @@ namespace Examples.Simple
             void main()
             {
                 gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
-                // vColor = vec4(fuNormal * 0.5 + 0.5, 1.0);
-                // vec4 norm4 = FUSEE_MVP * vec4(fuNormal, 0.0);
-                // vNormal = norm4.xyz;
-                vNormal = mat3(FUSEE_ITMV) * fuNormal;
+                vNormal = normalize(mat3(FUSEE_ITMV[0].xyz, FUSEE_ITMV[1].xyz, FUSEE_ITMV[2].xyz) * fuNormal);
             }";
 
-        protected string Ps = @"
-            // #version 120
-
+        private const string Ps = @"
             /* Copies incoming fragment color without change. */
             #ifdef GL_ES
                 precision highp float;
@@ -48,48 +41,37 @@ namespace Examples.Simple
                 gl_FragColor = vColor * dot(vNormal, vec3(0, 0, 1));
             }";
 
-        private static float _angleHorz = 0.0f, _angleVert = 0.0f, _angleVelHorz = 0, _angleVelVert = 0, _rotationSpeed = 10.0f, _damping = 0.95f;
-        protected Mesh Mesh;//, MeshFace;
-        //protected IShaderParam VColorParam;
-        protected IShaderParam Shininess;
-        protected IShaderParam Ambient;
-        protected IShaderParam Specular;
-        protected IShaderParam Diffuse;
-        protected IShaderParam Emission;
+        protected IShaderParam VColorParam;
+        // angle variables
+        private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
+
+
+        private const float RotationSpeed = 1f;
+        private const float Damping = 0.92f;
+        
+        // model variables
+        private Mesh _meshTea, _meshFace;
+        
+        // variable for color
+        private IShaderParam _vColorParam;
 
         public override void Init()
         {
-            Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Cube.obj.model"));
             Mesh = geo.ToMesh();
+            // initialize the variables
+            _meshTea = MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
+            _meshFace = MeshReader.LoadMesh(@"Assets/Face.obj.model");
 
-            //Geometry geo2 = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Face.obj.model"));
-            //MeshFace = geo2.ToMesh();
-
-            _angleHorz = 0;
-            _rotationSpeed = 10.0f;
-            ShaderProgram sp = Shaders.GetShader("multiLight",RC);
-            
-            ShaderMaterial m = new ShaderMaterial(sp);
+            ShaderProgram sp = RC.CreateShader(Vs, Ps);
+            var sp = RC.CreateShader(Vs, Ps);
 
 
             RC.SetShader(sp);
-            //material stuff
-            m.SetValue("FUSEE_MAT_SHININESS", 265.0f);
-            m.SetValue("FUSEE_MAT_AMBIENT", new float4(0, 0, 0, 1));
-            m.SetValue("FUSEE_MAT_DIFFUSE", new float4(0, 0, 0, 1));
-            m.SetValue("FUSEE_MAT_SPECULAR", new float4(0, 0, 0, 1));
-            m.SetValue("FUSEE_MAT_EMISSION", new float4(0, 0, 0, 1));
-            
-            RC.SetLight(new float3(2000, 10000, 20000), new float3(0, 1, 1), new float4(0.2f, 0.8f, 0.2f, 1), 2, 0);
-            RC.SetLight(new float3(2000, 10000, 20000), new float3(0, 1, 1), new float4(0.5f, 0.5f, 0.2f, 1), 2, 1);
-            //m.UpdateMaterial(RC);
+            VColorParam = sp.GetShaderParam("vColor");
+            _vColorParam = sp.GetShaderParam("vColor");
 
-            //VColorParam = sp.GetShaderParam("vColor");
-            //Shininess = sp.GetShaderParam("FUSEE_MAT_SHININESS");
-            //Ambient = sp.GetShaderParam("FUSEE_MAT_AMBIENT");
-            //Diffuse = sp.GetShaderParam("FUSEE_MAT_DIFFUSE");
-            //Specular = sp.GetShaderParam("FUSEE_MAT_SPECULAR");
-            //Emission = sp.GetShaderParam("FUSEE_MAT_EMISSION");
+
+
 
             //RC.SetShaderParam(Shininess, 265f);
             //RC.SetShaderParam(Ambient, new float4(0.5f, 0.8f, 0, 1));
@@ -102,49 +84,55 @@ namespace Examples.Simple
 
         public override void RenderAFrame()
         {
-            RC.Clear(ClearFlags.Color| ClearFlags.Depth);
+            RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
-            
-            if (In.IsButtonDown(MouseButtons.Left))
+            // move per mouse
+            if (Input.Instance.IsButtonDown(MouseButtons.Left))
             {
-                _angleVelHorz = _rotationSpeed * In.GetAxis(InputAxis.MouseX) * (float) Time.Instance.DeltaTime;
-                _angleVelVert = _rotationSpeed * In.GetAxis(InputAxis.MouseY) * (float) Time.Instance.DeltaTime;
+                _angleVelHorz = RotationSpeed * Input.Instance.GetAxis(InputAxis.MouseX);
+                _angleVelVert = RotationSpeed * Input.Instance.GetAxis(InputAxis.MouseY);
             }
             else
             {
-                _angleVelHorz *= _damping;
-                _angleVelVert *= _damping;
+                var curDamp = (float)System.Math.Exp(-Damping * Time.Instance.DeltaTime);
+
+                _angleVelHorz *= curDamp;
+                _angleVelVert *= curDamp;
             }
+
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
 
-            if (In.IsKeyDown(KeyCodes.Left))
-            {
-                _angleHorz -= _rotationSpeed * (float)Time.Instance.DeltaTime;
-            }
-            if (In.IsKeyDown(KeyCodes.Right))
-            {
-                _angleHorz += _rotationSpeed * (float)Time.Instance.DeltaTime;
-            }
-            if (In.IsKeyDown(KeyCodes.Up))
-            {
-                _angleVert -= _rotationSpeed * (float)Time.Instance.DeltaTime;
-            }
-            if (In.IsKeyDown(KeyCodes.Down))
-            {
-                _angleVert += _rotationSpeed * (float)Time.Instance.DeltaTime;
-            }
+            // move per keyboard
+            if (Input.Instance.IsKeyDown(KeyCodes.Left))
+                _angleHorz -= RotationSpeed * (float)Time.Instance.DeltaTime;
 
-            float4x4 mtxRot = float4x4.CreateRotationY(_angleHorz)*float4x4.CreateRotationX(_angleVert);
-            float4x4 mtxCam = float4x4.LookAt(0, 200, 400, 0, 50, 0, 0, 1, 0);
+            if (Input.Instance.IsKeyDown(KeyCodes.Right))
+                _angleHorz += RotationSpeed * (float)Time.Instance.DeltaTime;
 
+            if (Input.Instance.IsKeyDown(KeyCodes.Up))
+                _angleVert -= RotationSpeed * (float)Time.Instance.DeltaTime;
+
+            if (Input.Instance.IsKeyDown(KeyCodes.Down))
+                _angleVert += RotationSpeed * (float)Time.Instance.DeltaTime;
+
+            var mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
+            var mtxCam = float4x4.LookAt(0, 200, 400, 0, 50, 0, 0, 1, 0);
+
+            // first mesh
             RC.ModelView = mtxRot * float4x4.CreateTranslation(-100, 0, 0) * mtxCam;
-            //RC.SetShaderParam(VColorParam, new float4(0.5f, 0.8f, 0, 1));
             RC.Render(Mesh);
+            RC.Render(MeshFace);
+            RC.SetShaderParam(_vColorParam, new float4(0.5f, 0.8f, 0, 1));
+            RC.Render(_meshTea);
 
-            //RC.ModelView = mtxRot * float4x4.CreateTranslation(100, 0, 0) * mtxCam;
-            //RC.SetShaderParam(VColorParam, new float4(0.8f, 0.5f, 0, 1));
-            //RC.Render(MeshFace);
+            // second mesh
+            RC.ModelView = mtxRot * float4x4.CreateTranslation(100, 0, 0) * mtxCam;
+
+            RC.SetShaderParam(_vColorParam, new float4(1f, 1f, 0, 1));
+            RC.Render(_meshFace);
+
+            // swap buffers
             Present();
         }
 
@@ -152,25 +140,14 @@ namespace Examples.Simple
         {
             RC.Viewport(0, 0, Width, Height);
 
-            float aspectRatio = Width / (float)Height;
+            var aspectRatio = Width/(float) Height;
             RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 5000);
         }
 
         public static void Main()
         {
-            float3[] verts = new float3[1000000];
-
-            double t1 = Diagnostics.Timer;
-            for (int i = 0; i < verts.Length; i++)
-            {
-                verts[i].x = i;
-                verts[i].y = i + 1;
-                verts[i].z = i - 1;
-            }
-            double t2 = Diagnostics.Timer;
-            Diagnostics.Log("Initializing " + verts.Length + " float3 objects took " + (t2 - t1) + " ms.");
-
             Simple app = new Simple();
+            var app = new Simple();
             app.Run();
         }
 

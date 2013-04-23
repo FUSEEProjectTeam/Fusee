@@ -5,9 +5,8 @@ using Fusee.Math;
 namespace Fusee.SceneManagement
 {
     /// <summary>
-    /// Passes the Spotlight parameters to the RenderContext
+    /// RenderSpotLight is derived from Renderjob and is responible for passing the SpotLight towards the RenderContext.
     /// </summary>
-
     public class RenderSpotLight : RenderJob
     {
         #region Fields
@@ -21,7 +20,15 @@ namespace Fusee.SceneManagement
         #endregion 
 
         #region Constructors
-        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RenderSpotLight"/> class. Position, direction, color, type and channel.
+        /// </summary>
+        /// <param name="position">The position of the light.</param>
+        /// <param name="direction">The direction of the light.</param>
+        /// <param name="color">The lightcolor.</param>
+        /// <param name="type">The type.</param>
+        /// <param name="channel">The memory space of the light(0 - 7).</param>
         public RenderSpotLight(float3 position, float3 direction, float4 color, Light.LightType type, int channel)
         {
             _position = position;
@@ -38,11 +45,10 @@ namespace Fusee.SceneManagement
         /// <summary>
         /// Passes spotlight's parameters to RenderContext.
         /// </summary>
-        /// <param name="renderContext"></param>
         public override void SubmitWork(RenderContext renderContext)
         {
             //TODO Warten Auf Timon und Casper
-            //renderContext.SetLight(_position, _direction, _color, _type, _channel);
+            renderContext.SetLight(_position, _direction, _color, (int)_type, _channel);
             //Console.WriteLine("Spotlight worked");
         }
 

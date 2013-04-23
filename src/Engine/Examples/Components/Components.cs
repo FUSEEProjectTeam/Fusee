@@ -23,7 +23,7 @@ namespace Examples.Components
         private Renderer Childrenderer = new Renderer();
         private ChildAction Childscript = new ChildAction();
         //Light test
-        private SpotLight spot = new SpotLight(3);
+        private SpotLight spot = new SpotLight(0);
         private PointLight point = new PointLight(1);
         private DirectionalLight direct = new DirectionalLight(2);
 
@@ -33,26 +33,39 @@ namespace Examples.Components
 
         //some values
         protected float4 _farbe = new float4(1, 0, 0, 1);
-        protected IShaderParam _vColorParam;
+        //protected IShaderParam _vColorParam;
 
+        // Scene Camera Setup
+        private SceneEntity cameraholder = new SceneEntity();
+        private Camera scenecamera;
+        private CameraScript camscript = new CameraScript();
         public override void Init()
         {
-            RC.Camera = Camera;
+
             SceneManager.RC = RC;
-            
+            //Setup Camera
+            cameraholder.name = "CameraOwner";
+            cameraholder.transform.LocalPosition = new float3(0,0,10);
+            scenecamera = new Camera(cameraholder.transform);
+            cameraholder.AddComponent(camscript);
+            cameraholder.AddComponent(scenecamera);
+
+            camscript.Init(cameraholder);
+            SceneManager.Manager.AddSceneEntity(cameraholder);
+            //SceneManager.Manager.AddSceneEntity(cameraholder);
            
             // Parent
             TestEntity.name = "erster";
             TestEntity.AddComponent(testrenderer);
             TestEntity.AddComponent(testrendererException); //TODO: Test Exceptions
             TestEntity.AddComponent(testscript);
-            TestEntity.AddComponent(spot);
-            TestEntity.AddComponent(point);
-            TestEntity.AddComponent(direct);
+            //TestEntity.AddComponent(spot);
+            //TestEntity.AddComponent(point);
+            //TestEntity.AddComponent(direct);
             SceneManager.Manager.AddSceneEntity(TestEntity);
             testscript.Init(TestEntity);
-            TestEntity.AddChild(ChildEntity); // Als Child hinzugefuegt
-            
+            //TestEntity.AddChild(ChildEntity); // Als Child hinzugefuegt
+            SceneManager.Manager.AddSceneEntity(ChildEntity);
             
             // Child
             ChildEntity.AddComponent(Childrenderer);
@@ -60,14 +73,16 @@ namespace Examples.Components
             Childscript.Init(ChildEntity);
             Childscript.Start();
             testscript.Start();
-
+            //TestEntity.AddChild(cameraholder);
             /*
             ShaderProgram sp = RC.CreateShader(_material._vs, _material._ps);
             RC.SetShader(sp);
             _vColorParam = sp.GetShaderParam("uColor");        
             RC.SetShaderParam(_vColorParam, _farbe);*/
+
+
             RC.ClearColor = new float4(0, 0, 0, 1);
-            SceneManager.Manager.SetInput(In);
+            //SceneManager.Manager.SetInput(In);
         }
 
 

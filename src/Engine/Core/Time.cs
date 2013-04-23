@@ -5,58 +5,126 @@ using System.Text;
 
 namespace Fusee.Engine
 {
+    /// <summary>
+    /// The Time class provides all time information. It is accessible from everywhere.
+    /// 
+    /// E.g. : int smoothedFramerate;
+    ///
+    ///        smoothedFramerate = Time.Instance.FramePerSecondSmooth. 
+    /// 
+    ///        Time.Instance.TimeFlow = 2;                             
+    /// </summary>
     public class Time
     {
+
         private static Time _instance;
         private double _deltaTime;
         private double _time;
         private float _timeFlow;
         private long _frameCount;
         private double _realTime;
+        private int _framePerSecondSmooth;
+        private float _timeSecond;
+        private int _framePerSecond;
+        private float _unsmoothedFps;
+        private double _realDeltaTime;
 
+        internal double DeltaTimeIncrement
+        {
+            set
+            {
+                _deltaTime = value;
 
+                _realDeltaTime = _deltaTime;
+                _unsmoothedFps = (float)(1 / _deltaTime);
+                _timeSecond += (float)value;
+                _framePerSecond++;
+                _realTime += _deltaTime;
+                _frameCount++;
+                _deltaTime *= _timeFlow;
+                _time += _deltaTime;
+
+                if (_timeSecond >= 1)
+                {
+                    _framePerSecondSmooth = _framePerSecond;
+                    _framePerSecond = 0;
+                    _timeSecond = 0;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Provides the average framerate of the last second (read only).
+        /// </summary>
+        public int FramePerSecondSmooth
+        {
+            get { return _framePerSecondSmooth; }
+        }
+
+        /// <summary>
+        /// Provides the passed time since start of the application uneffected by TimeFlow (read only).
+        /// </summary>
         public double RealTimeSinceStart
         {
             get { return _realTime;  }   
         }
 
-        public int FramePerSecond
+        /// <summary>
+        /// Provides the peek framerate, updated every frame (read only).
+        /// </summary>
+        public float FramePerSecond
         {
-
-          get{ return (int)(1 / _deltaTime); }
-
+            get { return _unsmoothedFps; }
         }
-
+        
+        /// <summary>
+        /// Provides the total number of rendered frames (read only).
+        /// </summary>
         public long Frames
         {
             get { return _frameCount; }
         }
 
+        /// <summary>
+        /// Provides the DeltaTime that is effected by the TimeFlow (read only).
+        /// </summary>
         public double DeltaTime
         {
             get { return _deltaTime; }
         }
 
+        /// <summary>
+        /// Provides the DeltaTime that is uneffected by the TimeFlow (read only).
+        /// </summary>
+        public double RealDeltaTime
+        {
+            get { return _realDeltaTime; }
+        }        
+
+        /// <summary>
+        /// Provides the passed time since start of the application effected by TimeFlow (read only).
+        /// </summary>
         public double TimeSinceStart
         {
             get { return _time; }
         }
 
-        internal double DeltaTimeIncrement
-        {
-            set 
-            {
-                _deltaTime = value;
-                _realTime += _deltaTime;
-                _frameCount++;
-                _deltaTime *= _timeFlow;
-                _time += _deltaTime;
-            }
-        }
-
+        /// <summary>
+        /// The timeFlow modifies the speed of the time.
+        /// 
+        /// 0 the time stops.
+        /// 1 normal time speed.
+        /// Smaller then 1 time passes slower. 
+        /// Bigger then 1 time passes faster.
+        /// </summary>
         public float TimeFlow
         {
-            set { _timeFlow = value; }
+            set
+            {
+                    _timeFlow = value;
+            }
+
+            get { return _timeFlow ; }
         }
 
         private Time()
@@ -64,6 +132,9 @@ namespace Fusee.Engine
             _timeFlow = 1;
         }
 
+        /// <summary>
+        /// Provides the Instance of the Time Class.
+        /// </summary>
         public static Time Instance
         {
             get

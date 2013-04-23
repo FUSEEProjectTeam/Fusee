@@ -522,6 +522,32 @@ namespace Fusee.Math
         /// <param name="e">Euler angle to convert.</param>
         /// <returns>A Quaternion representing the euler angle passed to this method.</returns>
 
+        public static Quaternion EulerToQuaternion2(float3 e)
+        {
+            // The new quaternion variable.
+            var q = new Quaternion();
+            // Converts all degrees angles to radians.
+            float radiansY = DegreesToRadians(e.y);
+            float radiansZ = DegreesToRadians(e.z);
+            float radiansX = DegreesToRadians(e.x);
+
+            // Finds the Sin and Cosin for each half angles.
+            var sY = (float)System.Math.Sin(radiansY * 0.5f);
+            var cY = (float)System.Math.Cos(radiansY * 0.5f);
+            var sZ = (float)System.Math.Sin(radiansZ * 0.5f);
+            var cZ = (float)System.Math.Cos(radiansZ * 0.5f);
+            var sX = (float)System.Math.Sin(radiansX * 0.5f);
+            var cX = (float)System.Math.Cos(radiansX * 0.5f);
+
+            // Formula to construct a new Quaternion based on Euler Angles.
+            q.w = cY * cZ * cX - sY * sZ * sX;
+            q.x = sY * sZ * cX + cY * cZ * sX;
+            q.y = sY * cZ * cX + cY * sZ * sX;
+            q.z = cY * sZ * cX - sY * cZ * sX;
+
+            return q;
+        }
+
         public static Quaternion EulerToQuaternion(float3 e)
         {
             float c1 = (float)System.Math.Cos(e.x / 2);
@@ -536,7 +562,12 @@ namespace Fusee.Math
             float x = c1C2 * s3 + s1S2 * c3;
             float y = s1 * c2 * c3 + c1 * s2 * s3;
             float z = c1 * s2 * c3 - s1 * c2 * s3;
-            return new Quaternion(x,y,z,w);
+            return new Quaternion(x, y, z, w);
+        }
+
+        private static float DegreesToRadians(float input)
+        {
+            return input*((float) System.Math.PI/180.0f);
         }
 
 
@@ -544,8 +575,7 @@ namespace Fusee.Math
         /// Convert Quaternion rotation to Euler angle.
         /// </summary>
         /// <param name="q1">Quaternion rotation to convert.</param>
-        /// <returns>A Euler angle of type float3 from the passed Quaternion rotation.</returns>
-
+        /// <returns>An Euler angle of type float3 from the passed Quaternion rotation.</returns>
         public static float3 QuaternionToEuler(Quaternion q1)
         {
             float sqw = q1.w*q1.w;
@@ -574,19 +604,65 @@ namespace Fusee.Math
         }
 
 
-        public static Quaternion MatrixToQuaternion(float4x4 m)
+        /// <summary>
+        /// Takes a float4x4 matric and returns quaternions.
+        /// </summary>
+        /// <param name="m"></param>
+        /// <returns></returns>
+        public static Quaternion LookRotation(float3 lookAt, float3 upDirection)
         {
-            Quaternion q = Quaternion.Identity;
-            q.w = (float) (System.Math.Sqrt( System.Math.Max( 0, 1 + m.M11 + m.M22 + m.M33 ) ) / 2);
-            q.x = (float) (System.Math.Sqrt( System.Math.Max( 0, 1 + m.M11 - m.M22 - m.M33 ) ) / 2);
-            q.z = (float) (System.Math.Sqrt( System.Math.Max( 0, 1 - m.M11 + m.M22 - m.M33 ) ) / 2);
-            q.y = (float) (System.Math.Sqrt( System.Math.Max( 0, 1 - m.M11 - m.M22 + m.M33 ) ) / 2);
-            q.x = copysign(q.x, m.M32 - m.M23);
-            q.z = copysign(q.z, m.M13 - m.M31);
-            q.y = copysign(q.y, m.M21 - m.M12);
-            return q;
+            float3[] result = float3.OrthoNormalize(lookAt,upDirection);
+            upDirection = result[1];
+            lookAt = result[0];
+
+            float3 right = float3.Cross(upDirection, lookAt);
+            
+            float w = (float)System.Math.Sqrt(1.0f + right.x + upDirection.y + lookAt.z)*0.5f;
+            float w4Recip = 1.0f/(4.0f*w);
+            float x = (upDirection.z - lookAt.y)*w4Recip;
+            float y = (lookAt.x-right.z)*w4Recip;
+            float z = (right.y - upDirection.x)*w4Recip;
+            var ret = new Quaternion(x,y,z,w);
+            return ret;
         }
 
+        /// <summary>
+        /// Convert Quaternion to rotation matrix
+        /// </summary>
+        /// <param name="q">Quaternion to convert.</param>
+        /// <returns>A matrix of type float4x4 from the passed Quaternion.</returns>
+        public static float4x4 QuaternionToMatrix(Quaternion q)
+        {
+            //q.Normalize();
+            var matrix = new float4x4
+                             {
+                                 M11 = 1 - 2*(q.y*q.y + q.z*q.z),
+                                 M12 = 2*(q.x*q.y + q.z*q.w),
+                                 M13 = 2*(q.x*q.z - q.y*q.w),
+                                 M14 = 0,
+                                 M21 = 2*(q.x*q.y - q.z*q.w),
+                                 M22 = 1 - 2*(q.x*q.x + q.z*q.z),
+                                 M23 = 2*(q.z*q.y + q.x*q.w),
+                                 M24 = 0,
+                                 M31 = 2*(q.x*q.z + q.y*q.w),
+                                 M32 = 2*(q.y*q.z - q.x*q.w),
+                                 M33 = 1 - 2*(q.x*q.x + q.y*q.y),
+                                 M34 = 0,
+                                 M41 = 0,
+                                 M42 = 0,
+                                 M43 = 0,
+                                 M44 = 1
+                             };
+            return matrix;
+        }
+
+        /// <summary>
+        /// a with the algebraic sign of b.
+        /// </summary>
+        /// <remarks>Takes a as an absolute value and multiplies it with: +1 for any positiv number for b, -1 for any negative number for b or 0 for 0 for b.</remarks>
+        /// <param name="a">Absolut value</param>
+        /// <param name="b">A positiv/negativ number or zero.</param>
+        /// <returns>Returns a with the algebraic sign of b.</returns>
         public static float copysign(float a, float b)
         {
             return System.Math.Abs(a)*System.Math.Sign(b);

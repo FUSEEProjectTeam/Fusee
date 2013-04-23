@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-
-
 
 
 namespace Fusee.SceneManagement
 {
+
+    /// <summary>
+    /// The SceneVisitor is the base class for Scene traversing functions
+    /// </summary>
     public class SceneVisitor
     {
         // private delegate void VisitorMethod(Component c);
@@ -19,7 +19,7 @@ namespace Fusee.SceneManagement
 
 
         // An adapter object builds the bridge between 
-        protected class Adapter<TVisitor, TComponent>
+        /*protected class Adapter<TVisitor, TComponent>
             where TVisitor : SceneVisitor
             where TComponent : Component
         {
@@ -95,9 +95,9 @@ namespace Fusee.SceneManagement
             var result = Delegate.CreateDelegate(tAdapterMethod, adapter, adapterMethod);
 
             return (ComponentVisitor) result;
-        }
+        }*/
 
-        public void Visit(Component c)
+        /*public void Visit(Component c)
         {
             if (_ddMethods == null)
             {
@@ -117,60 +117,92 @@ namespace Fusee.SceneManagement
             if (_ddMethods.TryGetValue(c.GetType(), out cv))
                 cv(this, c);
             
-        }
+        }*/
 
-        virtual public void Visit(SceneEntity cEntity)
-        {
 
-        }
 
         
 
 
-        /*
-        public virtual void VisitEntity(SceneEntity sceneEntity)
-        {
-            PrepareDoubleDispatch();
-            sceneEntity.Accept(this);
-        }
+       
 
 
         // Polymorphic Component Visits
-        public virtual void VisitComponent(Component c)
+       /* virtual public void Visit(Component component)
         {
-            c.Accept(this);
-        }
-
-        public virtual void VisitComponent(ActionCode actionCode)
-        {
-            VisitComponent((Component) actionCode);
-        }
-
-        public virtual void VisitComponent(DirectionalLight directionalLight)
-        {
-            VisitComponent((Component) directionalLight);
-        }
-
-        public virtual void VisitComponent(PointLight pointLight)
-        {
-            VisitComponent((Component) pointLight);
-        }
-
-        public virtual void VisitComponent(Renderer renderer)
-        {
-            VisitComponent((Component) renderer);
-        }
-
-
-        public virtual void VisitComponent(SpotLight spotLight)
-        {
-            VisitComponent((Component) spotLight);
-        }
-
-        public virtual void VisitComponent(Transformation transformation)
-        {
-            VisitComponent((Component) transformation);
+            Debug.WriteLine("component has been visitted");
         }*/
+        /// <summary>
+        /// Visits the specified cEntity to collect data if required by the current Visitor derivate.
+        /// </summary>
+        /// <param name="cEntity">The cEntity.</param>
+        virtual public void Visit(SceneEntity cEntity)
+        {
+
+        }
+        /// <summary>
+        /// Visits the specified action code to collect data if required by the current Visitor derivate.
+        /// </summary>
+        /// <param name="actionCode">The action code.</param>
+        public virtual void Visit(ActionCode actionCode)
+        {
+            
+        }
+
+        /// <summary>
+        /// Visits the specified directional light to collect data if required by the current Visitor derivate.
+        /// </summary>
+        /// <param name="directionalLight">The directional light.</param>
+        public virtual void Visit(DirectionalLight directionalLight)
+        {
+            
+        }
+
+        /// <summary>
+        /// Visits the specified point light to collect data if required by the current Visitor derivate.
+        /// </summary>
+        /// <param name="pointLight">The point light.</param>
+        public virtual void Visit(PointLight pointLight)
+        {
+           
+        }
+
+        /// <summary>
+        /// Visits the specified renderer to collect data if required by the current Visitor derivate.
+        /// </summary>
+        /// <param name="renderer">The renderer.</param>
+        public virtual void Visit(Renderer renderer)
+        {
+            
+        }
+
+
+        /// <summary>
+        /// Visits the specified spot light to collect data if required by the current Visitor derivate.
+        /// </summary>
+        /// <param name="spotLight">The spot light.</param>
+        public virtual void Visit(SpotLight spotLight)
+        {
+           
+        }
+
+        /// <summary>
+        /// Visits the specified transformation to collect data if required by the current Visitor derivate.
+        /// </summary>
+        /// <param name="transformation">The transformation.</param>
+        public virtual void Visit(Transformation transformation)
+        {
+            
+        }
+
+        /// <summary>
+        /// Visits the specified camera to collect data if required by the current Visitor derivate.
+        /// </summary>
+        /// <param name="camera">The camera.</param>
+        public virtual void Visit(Camera camera)
+        {
+
+        }
 
     }
 
