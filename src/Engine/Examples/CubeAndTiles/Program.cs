@@ -1,4 +1,4 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Diagnostics;
 using Fusee.Engine;
 using Fusee.Math;
 
@@ -73,8 +73,6 @@ namespace Examples.CubeAndTiles
         private const float RotationSpeed = 1f;
         private const float Damping = 0.92f;
 
-        private bool _clientConnected = false;
-
         // Init()
         public override void Init()
         {
@@ -92,6 +90,40 @@ namespace Examples.CubeAndTiles
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
+            // mouse
+            if (Input.Instance.GetAxis(InputAxis.MouseWheel) > 0)
+                _exampleLevel.ZoomCamera(50);
+
+            if (Input.Instance.GetAxis(InputAxis.MouseWheel) < 0)
+                _exampleLevel.ZoomCamera(-50);
+
+            if (Input.Instance.IsButtonDown(MouseButtons.Left))
+            {
+                _angleVelHorz = RotationSpeed*Input.Instance.GetAxis(InputAxis.MouseX);
+                _angleVelVert = RotationSpeed*Input.Instance.GetAxis(InputAxis.MouseY);
+            }
+            else
+            {
+                var curDamp = (float) System.Math.Exp(-Damping*Time.Instance.DeltaTime);
+
+                _angleVelHorz *= curDamp;
+                _angleVelVert *= curDamp;
+            }
+
+            _angleHorz += _angleVelHorz;
+            _angleVert += _angleVelVert;
+
+            KeyboardInput();
+            NetworkInput();
+
+            var mtxRot = float4x4.CreateRotationZ(_angleHorz)*float4x4.CreateRotationX(_angleVert);
+            _exampleLevel.Render(mtxRot, Time.Instance.DeltaTime);
+
+            Present();
+        }
+
+        private void KeyboardInput()
+        {
             // keyboard
             if (_lastKey == KeyCodes.None)
             {
@@ -119,102 +151,89 @@ namespace Examples.CubeAndTiles
 
                 if (Input.Instance.IsKeyDown(KeyCodes.C))
                 {
-                    Network.Instance.OpenConnection(ConnectionType.CtClient, "127.0.0.1", 14242);
+                    Network.Instance.Config.SysType = SysType.Client;
+                    Network.Instance.Config.Discovery = true;
+                    Network.Instance.Config.ConnectOnDiscovery = true;
+                    Network.Instance.Config.DefaultPort = 54954;
+
+                    Network.Instance.StartPeer();
+                    Network.Instance.SendDiscoveryMessage(14242);
+    
                     _lastKey = KeyCodes.C;
                 }
 
                 if (Input.Instance.IsKeyDown(KeyCodes.S))
                 {
-                    Network.Instance.OpenConnection(ConnectionType.CtServer, 14242);
+                    Network.Instance.Config.SysType = SysType.Server;
+                    Network.Instance.Config.Discovery = true;
+
+                    Network.Instance.StartPeer();
+
                     _lastKey = KeyCodes.S;
                 }
 
                 var msg = Level.Directions.None;
 
-                if (Input.Instance.IsKeyDown(KeyCodes.Left)) {
+                if (Input.Instance.IsKeyDown(KeyCodes.Left))
+                {
                     _exampleLevel.MoveCube(Level.Directions.Left);
                     _lastKey = KeyCodes.Left;
                     msg = Level.Directions.Left;
                 }
 
-                if (Input.Instance.IsKeyDown(KeyCodes.Right)) {
+                if (Input.Instance.IsKeyDown(KeyCodes.Right))
+                {
                     _exampleLevel.MoveCube(Level.Directions.Right);
                     _lastKey = KeyCodes.Right;
                     msg = Level.Directions.Right;
                 }
 
-               if (Input.Instance.IsKeyDown(KeyCodes.Up)) {
+                if (Input.Instance.IsKeyDown(KeyCodes.Up))
+                {
                     _exampleLevel.MoveCube(Level.Directions.Forward);
                     _lastKey = KeyCodes.Up;
                     msg = Level.Directions.Forward;
                 }
 
-                if (Input.Instance.IsKeyDown(KeyCodes.Down)) {
+                if (Input.Instance.IsKeyDown(KeyCodes.Down))
+                {
                     _exampleLevel.MoveCube(Level.Directions.Backward);
                     _lastKey = KeyCodes.Down;
                     msg = Level.Directions.Backward;
                 }
 
                 if (msg != Level.Directions.None)
-                    if (Network.Instance.Connected || Network.Instance.NetType == ConnectionType.CtClient)
-                        Network.Instance.SendMessage(System.Convert.ToString((int) msg));
+                    if (Network.Instance.Status.Connected || Network.Instance.Config.SysType == SysType.Client)
+                        Network.Instance.SendMessage(System.Convert.ToString((int)msg));
             }
             else if (!Input.Instance.IsKeyDown(_lastKey))
                 _lastKey = KeyCodes.None;
+        }
 
-            // mouse
-            if (Input.Instance.GetAxis(InputAxis.MouseWheel) > 0)
-                _exampleLevel.ZoomCamera(50);
-
-            if (Input.Instance.GetAxis(InputAxis.MouseWheel) < 0)
-                _exampleLevel.ZoomCamera(-50);
-
-            if (Input.Instance.IsButtonDown(MouseButtons.Left))
+        private void NetworkInput()
+        {
+            INetworkMsg msg;
+            while ((msg = Network.Instance.IncomingMsg) != null)
             {
-                _angleVelHorz = RotationSpeed*Input.Instance.GetAxis(InputAxis.MouseX);
-                _angleVelVert = RotationSpeed*Input.Instance.GetAxis(InputAxis.MouseY);
-            }
-            else
-            {
-                var curDamp = (float) System.Math.Exp(-Damping*Time.Instance.DeltaTime);
-
-                _angleVelHorz *= curDamp;
-                _angleVelVert *= curDamp;
-            }
-
-            _angleHorz += _angleVelHorz;
-            _angleVert += _angleVelVert;
-
-            var mtxRot = float4x4.CreateRotationZ(_angleHorz)*float4x4.CreateRotationX(_angleVert);
-            _exampleLevel.Render(mtxRot, Time.Instance.DeltaTime);
-
-            while (Network.Instance.IncServerMsgCount > 0)
-            {
-                var msg = Network.Instance.IncServerMsg;
-
                 if (msg.Type == MessageType.StatusChanged)
+                {
+                    Debug.WriteLine("StatusChange: " + msg.Status.ToString());
+
                     if (msg.Status == ConnectionStatus.Connected)
                         _exampleLevel.CubeColor = new float3(0f, 1f, 0);
+                }
 
                 if (msg.Type == MessageType.Data)
                 {
                     int move;
                     if (System.Int32.TryParse(msg.Message, out move))
-                        if (move != (int) Level.Directions.None)
-                            _exampleLevel.MoveCube((Level.Directions) move);
+                        if (move != (int)Level.Directions.None)
+                            _exampleLevel.MoveCube((Level.Directions)move);
                 }
+
+                if (msg.Type == MessageType.DiscoveryRequest)
+                    Debug.WriteLine("DiscoveryRequest");
             }
-
-            while (Network.Instance.IncClientMsgCount > 0)
-            {
-                var msg = Network.Instance.IncClientMsg;
-
-                if (msg.Type == MessageType.StatusChanged)
-                    if (msg.Status == ConnectionStatus.Connected)
-                        _exampleLevel.CubeColor = new float3(0f, 1f, 0);
-            }
-
-            Present();
         }
 
         public override void Resize()

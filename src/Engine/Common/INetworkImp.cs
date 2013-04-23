@@ -2,20 +2,44 @@
 
 namespace Fusee.Engine
 {
-    public enum ConnectionType
+    public class NetConfigValues
     {
-        CtPeer,
-        CtClient,
-        CtServer
+        public SysType SysType;
+        public int DefaultPort;
+        public bool Discovery;
+        public bool ConnectOnDiscovery;
+    }
+
+    public class NetStatusValues
+    {
+        public bool Connected { get; set; }
+        public ConnectionStatus LastStatus;
+    }
+
+    public enum SysType
+    {
+        Peer,
+        Client,
+        Server
     }
 
     public interface INetworkImp
     {
-        List<INetworkMsg> IncClientMsg { get; }
-        List<INetworkMsg> IncServerMsg { get; }
+        NetConfigValues Config { get; set; }
+        NetStatusValues Status { get; set; }
+ 
+        List<INetworkMsg> IncomingMsg { get; }
 
-        bool OpenConnection(ConnectionType type, string host, int port);
+        void StartPeer(int port);
+
+        bool OpenConnection(SysType type, string host, int port);
+        void CloseConnection();
+
         bool SendMessage(string msg);
+        void SendDiscoveryMessage(int port);
+
         void OnUpdateFrame();
+
+        void CloseDevice();
     }
 }

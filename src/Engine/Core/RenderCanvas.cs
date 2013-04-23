@@ -93,6 +93,7 @@ namespace Fusee.Engine
         public virtual void UnLoad()
         {
             Audio.Instance.CloseDevice();
+            Network.Instance.CloseDevice();
         }
 
         /// <summary>

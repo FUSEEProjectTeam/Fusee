@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿// TODO: Comment stuff and remove #pragma
+#pragma warning disable 1591
+
 using System.Linq;
 
 namespace Fusee.Engine
@@ -11,66 +13,92 @@ namespace Fusee.Engine
 
         internal INetworkImp NetworkImp
         {
-            set
-            {
-                Connected = false;
-                _networkImp = value;
-            }
+            set { _networkImp = value; }
         }
 
-        public ConnectionType NetType;
-        public bool Connected;
-
-        public void OpenConnection(ConnectionType type, int port)
+        public NetStatusValues Status
         {
-            NetType = type;
-            _networkImp.OpenConnection(type, "", port);
+            get { return _networkImp.Status; }
+            set { _networkImp.Status = value; }
         }
 
-        public void OpenConnection(ConnectionType type, string host, int port)
+        public NetConfigValues Config
         {
-            NetType = type;
-            _networkImp.OpenConnection(type, host, port);
+            get { return _networkImp.Config; }
+            set { _networkImp.Config = value; }
         }
 
-        public int IncClientMsgCount
+        // Start System //
+        public void StartPeer()
         {
-            get { return _networkImp.IncClientMsg.Count; }
+            StartPeer(Config.DefaultPort);
         }
 
-        public int IncServerMsgCount
+        public void StartPeer(int port)
         {
-            get { return _networkImp.IncServerMsg.Count; }
+            _networkImp.StartPeer(port);           
         }
 
-        public INetworkMsg IncClientMsg
+        // Open Connections //
+        public void OpenConnection(string host)
+        {
+            OpenConnection(host, Config.DefaultPort);
+        }
+
+        public void OpenConnection(int port)
+        {
+            OpenConnection("", port);
+        }
+
+        public void OpenConnection(string host, int port)
+        {
+            _networkImp.OpenConnection(Config.SysType, host, port);
+        }
+
+        public void CloseConnection()
+        {
+            _networkImp.CloseConnection();
+        }
+
+        // Incoming Messages //
+        public int IncomingMsgCount
+        {
+            get { return _networkImp.IncomingMsg.Count; }
+        }
+
+        public INetworkMsg IncomingMsg
         {
             get
             {
-                var msg = _networkImp.IncClientMsg.FirstOrDefault();
-                _networkImp.IncClientMsg.RemoveAt(0);
+                var msg = _networkImp.IncomingMsg.DefaultIfEmpty(null).First();
+                _networkImp.IncomingMsg.Remove(msg);
                 return msg;
             }
         }
 
-        public INetworkMsg IncServerMsg
+        public bool SendMessage(string msg)
         {
-            get
-            {
-                var msg = _networkImp.IncServerMsg.FirstOrDefault();
-                _networkImp.IncServerMsg.RemoveAt(0);
-                return msg;
-            }
+            return _networkImp.SendMessage(msg);
         }
 
-        public void SendMessage(string msg)
+        public void SendDiscoveryMessage()
         {
-            var x = _networkImp.SendMessage(msg);
+            _networkImp.SendDiscoveryMessage(Config.DefaultPort);
+        }
+
+        public void SendDiscoveryMessage(int port)
+        {
+            _networkImp.SendDiscoveryMessage(port);
         }
 
         internal void OnUpdateFrame()
         {
             _networkImp.OnUpdateFrame();
+        }
+
+        public void CloseDevice()
+        {
+            _networkImp.CloseDevice();
         }
 
         /// <summary>
@@ -85,3 +113,5 @@ namespace Fusee.Engine
         }
     }
 }
+
+#pragma warning restore 1591

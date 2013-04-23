@@ -1,32 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Net;
 
 namespace Fusee.Engine
 {
-    struct NetworkMessage : INetworkMsg
+    public class NetworkMessage : INetworkMsg
     {
-        public MessageType Type { get; private set; }
-        public ConnectionStatus Status { get; private set; }
+        public MessageType Type { get; internal set; }
+        public ConnectionStatus Status { get; internal set; }
+        public IPEndPoint Sender { get; internal set; }
 
-        public string Message { get; private set; }
-
-        public NetworkMessage(MessageType type, string msg) : this()
-        {
-            Type = type;
-            Status = 0;
-
-            Message = msg;
-        }
-
-        public NetworkMessage(MessageType type, ConnectionStatus status)
-            : this()
-        {
-            Type = type;
-            Status = status;
-
-            Message = status.ToString();
-        }
+        public string Message { get; internal set; }
     }
 }
