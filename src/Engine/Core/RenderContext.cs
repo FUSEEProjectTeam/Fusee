@@ -275,7 +275,6 @@ namespace Fusee.Engine
             {
                 _model = value;
 
-
                 _modelViewProjectionOk = false;
                 _invModelOk = false;
                 _invModelViewOk = false;
@@ -288,7 +287,7 @@ namespace Fusee.Engine
                 _transModelOk = false;
                 _transModelViewOk = false;
                 _transModelViewProjectionOk = false;
-                _modelView = _model * _view;
+                _modelView = _model*_view;
 
                 UpdateCurrentShader();
                 _rci.ModelView = _modelView;
@@ -320,6 +319,7 @@ namespace Fusee.Engine
                 _modelView = value;
                 _view = float4x4.Identity;
                 _model = value;
+
                 // Invalidate derived matrices
                 _modelViewProjectionOk = false;
 
@@ -341,6 +341,7 @@ namespace Fusee.Engine
                 UpdateCurrentShader();
 
                 _rci.ModelView = value;
+
             }
         }
 
@@ -367,8 +368,6 @@ namespace Fusee.Engine
             set
             {
                 // Update matrix
-
-
                 _projection = value;
 
                 // Invalidate derived matrices
@@ -402,7 +401,7 @@ namespace Fusee.Engine
             {
                 if (!_modelViewProjectionOk)
                 {
-                    _modelViewProjection = ModelView * Projection;
+                    _modelViewProjection = float4x4.Mult(ModelView, Projection);
                     _modelViewProjectionOk = true;
                 }
                 return _modelViewProjection;
@@ -454,7 +453,7 @@ namespace Fusee.Engine
             {
                 if (!_invModelViewOk)
                 {
-                    _invModelView = float4x4.Invert(ModelView);
+                    _invModelView = float4x4.InvertAffine(ModelView);
                     _invModelViewOk = true;
                 }
                 return _invModelView;
@@ -663,7 +662,7 @@ namespace Fusee.Engine
             {
                 if (!_invTransModelViewOk)
                 {
-                    _invTransModelView = float4x4.Invert(TransModelView);
+                    _invTransModelView = float4x4.InvertAffine(TransModelView);
                     _invTransModelViewOk = true;
                 }
                 return _invTransModelView;
@@ -965,7 +964,7 @@ namespace Fusee.Engine
         /// </remarks>
         public ShaderProgram CreateShader(string vs, string ps)
         {
-            var sp = new ShaderProgram(_rci, _rci.CreateShader(vs, ps)) { _spi = _rci.CreateShader(vs, ps) };
+            var sp = new ShaderProgram(_rci, _rci.CreateShader(vs, ps)) {_spi = _rci.CreateShader(vs, ps)};
             /*
 sp.ShaderParamHandlesImp = new ShaderParamHandleImp[MatrixParamNames.Length];
 for (int i=0; i < MatrixParamNames.Length; i++)

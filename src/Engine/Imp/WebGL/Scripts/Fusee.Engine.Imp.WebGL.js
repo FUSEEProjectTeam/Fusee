@@ -325,6 +325,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
     function _ctor(renderCanvas) {
         this.gl = document.getElementById("canvas").getContext("experimental-webgl");
         this.gl.enable(this.gl.DEPTH_TEST);
+        this.gl.enable(this.gl.CULL_FACE);
         this.gl.clearColor(0.0, 0.0, 0.2, 1.0);
         this._currentTextureUnit = 0;
 
