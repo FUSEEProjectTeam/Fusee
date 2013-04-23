@@ -6,6 +6,7 @@ using Fusee.Engine;
 using Fusee.Math;
 using Fusee.SceneManagement;
 
+
 namespace Examples.SolarSystem
 {
     public class SolarSystem : RenderCanvas
