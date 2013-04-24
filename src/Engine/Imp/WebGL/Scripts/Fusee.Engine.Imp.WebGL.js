@@ -576,7 +576,25 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
     $.Method({ Static: false, Public: true }, "IRenderContextImp_GetShaderParam",
     new JSIL.MethodSignature($WebGLImp.TypeRef("Fusee.Engine.IShaderParam"), [$WebGLImp.TypeRef("Fusee.Engine.IShaderProgramImp"), $.String]),
     function IRenderContextImp_GetShaderParam(program, paramName) {
-        return ret;
+<<<<<<< Temporary merge branch 1
+		if(program.__ThisTypeId__ != undefined){ //i got program
+			var h = this.gl.getUniformLocation(program.Program, paramName);
+			if (h == null)
+				return null;
+			var ret = new $asmThis.Fusee.Engine.ShaderParam();
+			ret.handle = h;
+			ret.id = this._currentShaderParamHandle++;
+			return ret;
+		}else{ // i got program.Program
+			var h = this.gl.getUniformLocation(program, paramName);
+			if (h == null)
+				return null;
+			var ret = new $asmThis.Fusee.Engine.ShaderParam();
+			ret.handle = h;
+			ret.id = this._currentShaderParamHandle++;
+			return ret;
+		}
+=======
         var h = this.gl.getUniformLocation(program.Program, paramName);
         if (h == null)
             return null;
@@ -584,7 +602,8 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
         ret.handle = h;
         ret.id = this._currentShaderParamHandle++;
         return ret;
-  }
+>>>>>>> Temporary merge branch 2
+    }
   );
   
     var $T05 = function () {

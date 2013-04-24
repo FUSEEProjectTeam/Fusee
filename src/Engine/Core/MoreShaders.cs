@@ -643,7 +643,6 @@ void main()
     gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
 }";
 
-
 private const string PsBump = @"
             /* Copies incoming fragment color without change. */
             #ifdef GL_ES
