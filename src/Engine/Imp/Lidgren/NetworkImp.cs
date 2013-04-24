@@ -40,10 +40,6 @@ namespace Fusee.Engine
         {
             _netConfig = new NetPeerConfiguration("FUSEE3D");
 
-            _netPeer = new NetPeer(_netConfig);
-            _netClient = new NetClient(_netConfig);
-            _netServer = new NetServer(_netConfig);
-
             IncomingMsg = new List<INetworkMsg>();
  
             _config = new NetConfigValues
@@ -65,25 +61,28 @@ namespace Fusee.Engine
         {
             // CHECK FOR ALREADY RUNNING
             EndPeers();
+            CloseDevices();
 
+            _netConfig = _netConfig.Clone();
             _netConfig.Port = port;
 
             switch (_config.SysType)
             {
                 case SysType.Peer:
+                    _netPeer = new NetPeer(_netConfig);
                     _netPeer.Start();
                     break;
 
                 case SysType.Client:
+                    _netClient = new NetClient(_netConfig);
                     _netClient.Start();
                     break;
 
                 case SysType.Server:
+                    _netServer = new NetServer(_netConfig);
                     _netServer.Start();
                     break;
             }
-
-            System.Threading.Thread.Sleep(500);
         }
 
         public void EndPeers()
@@ -98,18 +97,24 @@ namespace Fusee.Engine
             switch (sysType)
             {
                 case SysType.Peer:
+                    if (_netPeer == null) return;
+
                     if (_netPeer.Status == NetPeerStatus.Running)
                         _netPeer.Shutdown("Shutting Down");
 
                     break;
 
                 case SysType.Client:
+                    if (_netClient == null) return;
+
                     if (_netClient.Status == NetPeerStatus.Running)
                         _netClient.Shutdown("Shutting Down");
 
                     break;
 
                 case SysType.Server:
+                    if (_netServer == null) return;
+
                     if (_netServer.Status == NetPeerStatus.Running)
                         _netServer.Shutdown("Shutting Down");
 
@@ -194,8 +199,39 @@ namespace Fusee.Engine
 
                 case SysType.Client:
                     var sendMsg = _netClient.CreateMessage();
+                    sendMsg.Write(msg);
+
                     sendResult = _netClient.SendMessage(sendMsg, NetDeliveryMethod.ReliableOrdered);                 
                     
+                    break;
+
+                case SysType.Server:
+                    //sendMsg = _netServer.CreateMessage();
+                    //_netServer.SendMessage(sendMsg, NetDeliveryMethod.ReliableOrdered);
+
+                    break;
+            }
+
+            return (sendResult == NetSendResult.Sent);
+        }
+
+        public bool SendMessage(byte[] data)
+        {
+            var sendResult = NetSendResult.Queued;
+
+            switch (_config.SysType)
+            {
+                case SysType.Peer:
+                    //sendMsg = _netPeer.CreateMessage(msg);
+                    //sendMsg.Write(msg);
+
+                    break;
+
+                case SysType.Client:
+                    var sendMsg = _netClient.CreateMessage();
+                    sendMsg.Write(data);
+                    sendResult = _netClient.SendMessage(sendMsg, NetDeliveryMethod.ReliableOrdered);
+
                     break;
 
                 case SysType.Server:
@@ -307,7 +343,7 @@ namespace Fusee.Engine
                     return new NetworkMessage
                                {
                                    Type = (MessageType) msg.MessageType,
-                                   Message = msg.ReadString()
+                                   Message = msg.ReadBytes(msg.LengthBytes)
                                };
 
                 case NetIncomingMessageType.DebugMessage:
@@ -354,7 +390,7 @@ namespace Fusee.Engine
             }
         }
 
-        public void CloseDevice()
+        public void CloseDevices()
         {
             if (_netPeer != null)
             {

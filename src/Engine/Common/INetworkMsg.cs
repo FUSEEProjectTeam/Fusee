@@ -40,6 +40,6 @@ namespace Fusee.Engine
         MessageType Type { get; }
         ConnectionStatus Status { get; }
 
-        string Message { get; }
+        dynamic Message { get; }
     }
 }

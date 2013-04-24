@@ -76,9 +76,15 @@ namespace Fusee.Engine
             }
         }
 
+        // Send Messages //
         public bool SendMessage(string msg)
         {
             return _networkImp.SendMessage(msg);
+        }
+
+        public bool SendMessage(byte[] data)
+        {
+            return _networkImp.SendMessage(data);
         }
 
         public void SendDiscoveryMessage()
@@ -98,7 +104,7 @@ namespace Fusee.Engine
 
         public void CloseDevice()
         {
-            _networkImp.CloseDevice();
+            _networkImp.CloseDevices();
         }
 
         /// <summary>

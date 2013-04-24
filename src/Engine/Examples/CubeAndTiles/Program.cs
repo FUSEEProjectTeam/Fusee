@@ -1,4 +1,6 @@
 ﻿using System.Diagnostics;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 using Fusee.Engine;
 using Fusee.Math;
 
@@ -166,45 +168,48 @@ namespace Examples.CubeAndTiles
                 {
                     Network.Instance.Config.SysType = SysType.Server;
                     Network.Instance.Config.Discovery = true;
+                    Network.Instance.Config.DefaultPort = 14242;
 
                     Network.Instance.StartPeer();
 
                     _lastKey = KeyCodes.S;
                 }
 
-                var msg = Level.Directions.None;
-
                 if (Input.Instance.IsKeyDown(KeyCodes.Left))
                 {
                     _exampleLevel.MoveCube(Level.Directions.Left);
                     _lastKey = KeyCodes.Left;
-                    msg = Level.Directions.Left;
                 }
 
                 if (Input.Instance.IsKeyDown(KeyCodes.Right))
                 {
                     _exampleLevel.MoveCube(Level.Directions.Right);
                     _lastKey = KeyCodes.Right;
-                    msg = Level.Directions.Right;
                 }
 
                 if (Input.Instance.IsKeyDown(KeyCodes.Up))
                 {
                     _exampleLevel.MoveCube(Level.Directions.Forward);
                     _lastKey = KeyCodes.Up;
-                    msg = Level.Directions.Forward;
                 }
 
                 if (Input.Instance.IsKeyDown(KeyCodes.Down))
                 {
                     _exampleLevel.MoveCube(Level.Directions.Backward);
                     _lastKey = KeyCodes.Down;
-                    msg = Level.Directions.Backward;
                 }
 
-                if (msg != Level.Directions.None)
+                if (Input.Instance.IsKeyDown(KeyCodes.M))
+                {
                     if (Network.Instance.Status.Connected || Network.Instance.Config.SysType == SysType.Client)
-                        Network.Instance.SendMessage(System.Convert.ToString((int)msg));
+                    {
+                        var ms = new MemoryStream();
+                        var bf1 = new BinaryFormatter();
+                        bf1.Serialize(ms, _exampleLevel.RCube.ModelView);
+
+                        Network.Instance.SendMessage(ms.ToArray());
+                    }
+                }
             }
             else if (!Input.Instance.IsKeyDown(_lastKey))
                 _lastKey = KeyCodes.None;
@@ -225,10 +230,15 @@ namespace Examples.CubeAndTiles
 
                 if (msg.Type == MessageType.Data)
                 {
-                    int move;
-                    if (System.Int32.TryParse(msg.Message, out move))
-                        if (move != (int)Level.Directions.None)
-                            _exampleLevel.MoveCube((Level.Directions)move);
+                    var ms = new MemoryStream(msg.Message) {Position = 0};
+                    var bf1 = new BinaryFormatter();
+
+                    _exampleLevel.RCube.ModelView = (float4x4) bf1.Deserialize(ms);
+
+                    //int move;
+                    //if (System.Int32.TryParse(msg.Message, out move))
+                    //    if (move != (int)Level.Directions.None)
+                    //        _exampleLevel.MoveCube((Level.Directions)move);
                 }
 
                 if (msg.Type == MessageType.DiscoveryRequest)

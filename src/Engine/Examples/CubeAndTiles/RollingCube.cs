@@ -24,7 +24,11 @@ namespace Examples.CubeAndTiles
 
         internal int[] PosCurXY { get; private set; }
         internal int[] PosLastXY { get; private set; }
+
         internal CubeStates State { get; private set; }
+        internal float4x4 ModelView { get; set; }
+
+        private bool _dirtyFlag;
 
         // const
         private const float PiHalf = (float) Math.PI/2.0f;
@@ -66,6 +70,8 @@ namespace Examples.CubeAndTiles
             _curBright = 0.0f;
 
             ResetCube(0, 0);
+
+            _dirtyFlag = true;
         }
 
         // methods
@@ -146,6 +152,8 @@ namespace Examples.CubeAndTiles
 
                 State = CubeStates.CsAlive;
             }
+
+            _dirtyFlag = true;
         }
 
         private void WinningAnimation()
@@ -158,7 +166,9 @@ namespace Examples.CubeAndTiles
                 _curBright -= 3f * (float) Time.Instance.DeltaTime;
             }
             else
-                State = CubeStates.CsWon;            
+                State = CubeStates.CsWon;
+
+            _dirtyFlag = true;
         }
 
         private void DeadAnimation()
@@ -174,6 +184,8 @@ namespace Examples.CubeAndTiles
             }
             else
                 State = CubeStates.CsDead;
+
+            _dirtyFlag = true;
         }
 
         private void AnimCube()
@@ -183,6 +195,8 @@ namespace Examples.CubeAndTiles
             for (var i = 0; i <= 1; i++)
             {
                 if (_curDirXY[i] == 0) continue;
+
+                _dirtyFlag = true;
 
                 // rotate and check if target reached
                 _rotateYX[i] += CubeSpeed*_curLevel.LvlDeltaTime;
@@ -219,21 +233,28 @@ namespace Examples.CubeAndTiles
                 AnimCube();
             }
 
-            // set cube translation
-            var mtxObjRot = float4x4.CreateRotationY(_rotateYX[0]*_curDirXY[0])*
-                            float4x4.CreateRotationX(-_rotateYX[1]*_curDirXY[1]);
+            if (_dirtyFlag)
+            {
+                // set cube translation
+                var mtxObjRot = float4x4.CreateRotationY(_rotateYX[0]*_curDirXY[0])*
+                                float4x4.CreateRotationX(-_rotateYX[1]*_curDirXY[1]);
 
-            var mtxObjOrientRot = Quaternion.QuaternionToMatrix(_orientQuat);
+                var mtxObjOrientRot = Quaternion.QuaternionToMatrix(_orientQuat);
 
-            // cube position
-            var mtxObjPos = float4x4.CreateTranslation(PosCurXY[0]*CubeSize, PosCurXY[1]*CubeSize,
-                                                       _posZ*CubeSize);
+                // cube position
+                var mtxObjPos = float4x4.CreateTranslation(PosCurXY[0]*CubeSize, PosCurXY[1]*CubeSize,
+                                                           _posZ*CubeSize);
 
-            var arAxis = float4x4.CreateTranslation(-100 * _curDirXY[0], -100 * _curDirXY[1], 100);
-            var invArAxis = float4x4.CreateTranslation(100 * _curDirXY[0], 100 * _curDirXY[1], -100);
+                var arAxis = float4x4.CreateTranslation(-100*_curDirXY[0], -100*_curDirXY[1], 100);
+                var invArAxis = float4x4.CreateTranslation(100*_curDirXY[0], 100*_curDirXY[1], -100);
+
+                ModelView = mtxObjOrientRot*arAxis*mtxObjRot*invArAxis*mtxObjPos;
+
+                _dirtyFlag = false;
+            }
 
             // render
-            _curLevel.RContext.ModelView = _curLevel.AddCameraTrans(mtxObjOrientRot * arAxis * mtxObjRot * invArAxis * mtxObjPos);
+            _curLevel.RContext.ModelView = _curLevel.AddCameraTrans(ModelView);
 
             _curLevel.RContext.SetShaderParam(_curLevel.VColorObj, new float4(_curLevel.CubeColor, _curBright));
             _curLevel.RContext.SetShaderParamTexture(_curLevel.VTextureObj, _curLevel.TextureCube);

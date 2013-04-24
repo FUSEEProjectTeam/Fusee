@@ -15,7 +15,7 @@ namespace Examples.CubeAndTiles
         private readonly Anaglyph3D _anaglyph3D;
         internal bool UseAnaglyph3D;
 
-        private RollingCube _rCube;
+        internal RollingCube RCube { get; set; }
         private Field[,] _levelFeld;
 
         internal int FieldCount { get; private set; }
@@ -85,7 +85,7 @@ namespace Examples.CubeAndTiles
 
         private void ConstructLevel(int id)
         {
-            if (_rCube != null)
+            if (RCube != null)
                 return;
 
             _lvlTmp = LevelTemplates.LvlTmp;
@@ -106,7 +106,7 @@ namespace Examples.CubeAndTiles
             _objOrientation = float4x4.CreateRotationX(MathHelper.Pi/2);
 
             // create cube and set vars
-            _rCube = new RollingCube(this);
+            RCube = new RollingCube(this);
 
             _startXy = new int[2];
             _curLvlId = id;
@@ -115,7 +115,7 @@ namespace Examples.CubeAndTiles
             LoadLevel(id);
         }
 
-        private void LoadLevel(int id)
+        public void LoadLevel(int id)
         {
             // if id > amount of levels, go to fist lvl
            id %= _lvlTmp.Length;
@@ -144,6 +144,7 @@ namespace Examples.CubeAndTiles
                 }
 
             _camTranslation = float4x4.CreateTranslation((float) -(sizeX - 1)*100, (float) -(sizeY - 1)*100, 150);
+
             ResetLevel();
         }
 
@@ -155,20 +156,20 @@ namespace Examples.CubeAndTiles
                 if (feld != null)
                     feld.ResetField();
 
-            if (_rCube != null)
-                _rCube.ResetCube(_startXy[0], _startXy[1]);
+            if (RCube != null)
+                RCube.ResetCube(_startXy[0], _startXy[1]);
         }
 
         private void WinLevel()
         {
             _lvlState = LevelStates.LsWinning;
-            _rCube.WinningCube();
+            RCube.WinningCube();
         }
 
         private void DeadLevel()
         {
             _lvlState = LevelStates.LsDying;
-            _rCube.DeadCube();
+            RCube.DeadCube();
         }
 
         internal void SetDeadField(int x, int y)
@@ -233,16 +234,16 @@ namespace Examples.CubeAndTiles
             switch (dir)
             {
                 case Directions.Left:
-                    _rCube.MoveCube(-1, 0);
+                    RCube.MoveCube(-1, 0);
                     break;
                 case Directions.Right:
-                    _rCube.MoveCube(+1, 0);
+                    RCube.MoveCube(+1, 0);
                     break;
                 case Directions.Forward:
-                    _rCube.MoveCube(0, +1);
+                    RCube.MoveCube(0, +1);
                     break;
                 case Directions.Backward:
-                    _rCube.MoveCube(0, -1);
+                    RCube.MoveCube(0, -1);
                     break;
             }
         }
@@ -255,7 +256,7 @@ namespace Examples.CubeAndTiles
             var allReady = true;
 
             allReady &= _levelFeld[_startXy[0], _startXy[1]].State == Field.FieldStates.FsAlive;
-            allReady &= _rCube.State == RollingCube.CubeStates.CsAlive;
+            allReady &= RCube.State == RollingCube.CubeStates.CsAlive;
 
             if (allReady)
                 _lvlState = LevelStates.LsPlaying;
@@ -265,7 +266,7 @@ namespace Examples.CubeAndTiles
         {
             // cube is dying, wait for it
             if (_lvlState == LevelStates.LsDying)
-                if (_rCube.State == RollingCube.CubeStates.CsDead)
+                if (RCube.State == RollingCube.CubeStates.CsDead)
                 {
                     ResetLevel();
                     return true;
@@ -273,7 +274,7 @@ namespace Examples.CubeAndTiles
 
             // cube is winning, wait for it
             if (_lvlState == LevelStates.LsWinning)
-                if (_rCube.State == RollingCube.CubeStates.CsWon)
+                if (RCube.State == RollingCube.CubeStates.CsWon)
                 {
                     _curLvlId = ++_curLvlId % _lvlTmp.Length;
                     LoadLevel(_curLvlId);
@@ -306,8 +307,8 @@ namespace Examples.CubeAndTiles
                     if (feld != null)
                         feld.Render(_objOrientation, renderOnly);
 
-                if (_rCube != null)
-                    _rCube.RenderCube(renderOnly);
+                if (RCube != null)
+                    RCube.RenderCube(renderOnly);
 
                 if (!UseAnaglyph3D)
                     break;

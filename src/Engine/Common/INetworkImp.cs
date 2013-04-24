@@ -36,10 +36,12 @@ namespace Fusee.Engine
         void CloseConnection();
 
         bool SendMessage(string msg);
+        bool SendMessage(byte[] data);
+
         void SendDiscoveryMessage(int port);
 
         void OnUpdateFrame();
 
-        void CloseDevice();
+        void CloseDevices();
     }
 }

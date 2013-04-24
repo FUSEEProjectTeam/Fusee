@@ -8,6 +8,6 @@ namespace Fusee.Engine
         public ConnectionStatus Status { get; internal set; }
         public IPEndPoint Sender { get; internal set; }
 
-        public string Message { get; internal set; }
+        public dynamic Message { get; internal set; }
     }
 }
