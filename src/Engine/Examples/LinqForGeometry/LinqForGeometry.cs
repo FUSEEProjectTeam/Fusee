@@ -103,6 +103,7 @@ namespace Examples.LinqForGeometry
         public override void Init()
         {
             // Use the changed MeshReader to import. Not very usable. Only works without the possibility to apply transformations.
+            // This is connected to the task restructuring the classes and files in LFG and the implementation in the fusee project.
             //_lfgmesh = MeshReader.LoadMesh("Assets/cube_quadrangle_1_textured.obj.model");
             //_lfgmesh = MeshReader.LoadMesh("Assets/sphere_quadrangle_1.obj.model");
             //_lfgmesh = MeshReader.LoadMesh("Assets/Teapot.obj.model");
@@ -144,7 +145,7 @@ namespace Examples.LinqForGeometry
             // Pull the users input
             PullInput();
 
-            // A crash happens here with the color ... (_vColorParam is null)
+            // A crash happens here with the color something fusee related ... (_vColorParam is null)
             //RC.SetShaderParam(_vColorParam, new float4(0.5f, 0.8f, 0, 1));
             RC.SetShaderParamTexture(_vTextureParam, _tex);
             RC.Render(_lfgmesh);
@@ -166,7 +167,6 @@ namespace Examples.LinqForGeometry
                 {
                     if (_Geo.RotateX(_angleVelVert * _InvertMouseAxis))
                     {
-                        //_lfgmesh = _Geo.ToMesh();
                         _Geo._Changes = true;
                     }
                 }
@@ -177,7 +177,6 @@ namespace Examples.LinqForGeometry
             {
                 if (_Geo.Scale(1.1f, 1.1f, 1.1f))
                 {
-                    //_lfgmesh = _Geo.ToMesh();
                     _Geo._Changes = true;
                 }
             }
@@ -187,7 +186,6 @@ namespace Examples.LinqForGeometry
             {
                 if (_Geo.ResetGeometryToDefault())
                 {
-                    //_lfgmesh = _Geo.ToMesh();
                     _Geo._Changes = true;
                 }
             }
@@ -198,7 +196,6 @@ namespace Examples.LinqForGeometry
             {
                 if (_Geo.Scale(1.1f, 1.1f, 1.1f))
                 {
-                    //_lfgmesh = _Geo.ToMesh();
                     _Geo._Changes = true;
                 }
             }
@@ -206,7 +203,6 @@ namespace Examples.LinqForGeometry
             {
                 if (_Geo.Scale(0.9f, 0.9f, 0.9f))
                 {
-                    //_lfgmesh = _Geo.ToMesh();
                     _Geo._Changes = true;
                 }
             }
@@ -215,7 +211,6 @@ namespace Examples.LinqForGeometry
             {
                 if (_Geo.Scale(1.1f, 1.0f, 1.0f))
                 {
-                    //_lfgmesh = _Geo.ToMesh();
                     _Geo._Changes = true;
                 }
             }
@@ -223,7 +218,6 @@ namespace Examples.LinqForGeometry
             {
                 if (_Geo.Scale(0.9f, 1.0f, 1.0f))
                 {
-                    //_lfgmesh = _Geo.ToMesh();
                     _Geo._Changes = true;
                 }
             }
@@ -233,7 +227,6 @@ namespace Examples.LinqForGeometry
             {
                 if (_Geo.Scale(1.0f, 1.1f, 1.0f))
                 {
-                    //_lfgmesh = _Geo.ToMesh();
                     _Geo._Changes = true;
                 }
             }
@@ -241,7 +234,6 @@ namespace Examples.LinqForGeometry
             {
                 if (_Geo.Scale(1.0f, 0.9f, 1.0f))
                 {
-                    //_lfgmesh = _Geo.ToMesh();
                     _Geo._Changes = true;
                 }
             }
@@ -251,7 +243,6 @@ namespace Examples.LinqForGeometry
             {
                 if (_Geo.Scale(1.0f, 1.0f, 1.1f))
                 {
-                    //_lfgmesh = _Geo.ToMesh();
                     _Geo._Changes = true;
                 }
             }
@@ -259,7 +250,6 @@ namespace Examples.LinqForGeometry
             {
                 if (_Geo.Scale(1.0f, 1.0f, 0.9f))
                 {
-                    //_lfgmesh = _Geo.ToMesh();
                     _Geo._Changes = true;
                 }
             }
@@ -268,7 +258,6 @@ namespace Examples.LinqForGeometry
             {
                 if (_Geo.ResetGeometryToDefault())
                 {
-                    //_lfgmesh = _Geo.ToMesh();
                     _Geo._Changes = true;
                 }
             }
@@ -279,7 +268,6 @@ namespace Examples.LinqForGeometry
             {
                 if (_Geo.Translate(0f, (_MovementSpeed * (float)Time.Instance.DeltaTime) * 2, 0f))
                 {
-                    //_lfgmesh = _Geo.ToMesh();
                     _Geo._Changes = true;
                 }
             }
@@ -287,7 +275,6 @@ namespace Examples.LinqForGeometry
             {
                 if (_Geo.Translate(0f, (-_MovementSpeed * (float)Time.Instance.DeltaTime) * 2, 0f))
                 {
-                    //_lfgmesh = _Geo.ToMesh();
                     _Geo._Changes = true;
                 }
             }
@@ -295,7 +282,6 @@ namespace Examples.LinqForGeometry
             {
                 if (_Geo.Translate(-(_MovementSpeed * (float)Time.Instance.DeltaTime) * 2, 0f, 0f))
                 {
-                    //_lfgmesh = _Geo.ToMesh();
                     _Geo._Changes = true;
                 }
             }
@@ -303,7 +289,6 @@ namespace Examples.LinqForGeometry
             {
                 if (_Geo.Translate((_MovementSpeed * (float)Time.Instance.DeltaTime) * 2, 0f, 0f))
                 {
-                    //_lfgmesh = _Geo.ToMesh();
                     _Geo._Changes = true;
                 }
             }
@@ -311,7 +296,6 @@ namespace Examples.LinqForGeometry
             {
                 if (_Geo.Translate(0f, 0f, -(_MovementSpeed * (float)Time.Instance.DeltaTime) * 2))
                 {
-                    //_lfgmesh = _Geo.ToMesh();
                     _Geo._Changes = true;
                 }
             }
@@ -319,7 +303,6 @@ namespace Examples.LinqForGeometry
             {
                 if (_Geo.Translate(0f, 0f, (_MovementSpeed * (float)Time.Instance.DeltaTime) * 2))
                 {
-                    //_lfgmesh = _Geo.ToMesh();
                     _Geo._Changes = true;
                 }
             }
@@ -330,7 +313,6 @@ namespace Examples.LinqForGeometry
             {
                 if (_Geo.RotateX(1f * (float)Time.Instance.DeltaTime))
                 {
-                    //_lfgmesh = _Geo.ToMesh();
                     _Geo._Changes = true;
                 }
             }
@@ -338,7 +320,6 @@ namespace Examples.LinqForGeometry
             {
                 if (_Geo.RotateX(-1f * (float)Time.Instance.DeltaTime))
                 {
-                    //_lfgmesh = _Geo.ToMesh();
                     _Geo._Changes = true;
                 }
             }
@@ -347,7 +328,6 @@ namespace Examples.LinqForGeometry
             {
                 if (_Geo.RotateY(1f * (float)Time.Instance.DeltaTime))
                 {
-                    //_lfgmesh = _Geo.ToMesh();
                     _Geo._Changes = true;
                 }
             }
@@ -355,7 +335,6 @@ namespace Examples.LinqForGeometry
             {
                 if (_Geo.RotateY(-1f * (float)Time.Instance.DeltaTime))
                 {
-                    //_lfgmesh = _Geo.ToMesh();
                     _Geo._Changes = true;
                 }
             }
@@ -364,7 +343,6 @@ namespace Examples.LinqForGeometry
             {
                 if (_Geo.RotateZ(1f * (float)Time.Instance.DeltaTime))
                 {
-                    //_lfgmesh = _Geo.ToMesh();
                     _Geo._Changes = true;
                 }
             }
@@ -372,7 +350,6 @@ namespace Examples.LinqForGeometry
             {
                 if (_Geo.RotateZ(-1f * (float)Time.Instance.DeltaTime))
                 {
-                    //_lfgmesh = _Geo.ToMesh();
                     _Geo._Changes = true;
                 }
             }
@@ -383,7 +360,6 @@ namespace Examples.LinqForGeometry
             {
                 if (_Geo.RotateLocalX(_MovementSpeed * (float)Time.Instance.DeltaTime))
                 {
-                    //_lfgmesh = _Geo.ToMesh();
                     _Geo._Changes = true;
                 }
             }
@@ -391,7 +367,6 @@ namespace Examples.LinqForGeometry
             {
                 if (_Geo.RotateLocalX(-_MovementSpeed * (float)Time.Instance.DeltaTime))
                 {
-                    //_lfgmesh = _Geo.ToMesh();
                     _Geo._Changes = true;
                 }
             }

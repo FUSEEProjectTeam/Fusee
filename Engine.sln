@@ -115,7 +115,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmptyProject", "src\Engine\
 		{0A06B3EA-5934-4373-854A-B4D6E7E1FE16} = {0A06B3EA-5934-4373-854A-B4D6E7E1FE16}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LFG", "C:\Users\dominik\DevelopmentTEMP\LinqForGeometry\LinqForGeometry\LFG.csproj", "{DFFDB3A9-2429-4E47-B65C-E2C0F3F66146}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LFG", "src\Engine\LinqForGeometry\LFG.csproj", "{DFFDB3A9-2429-4E47-B65C-E2C0F3F66146}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinqForGeometry", "src\Engine\Examples\LinqForGeometry\LinqForGeometry.csproj", "{EB55B224-BD34-4B5E-BE49-7CD5E30972B4}"
 EndProject

@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>10.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{DFFDB3A9-2429-4E47-B65C-E2C0F3F66146}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>LinqForGeometry</RootNamespace>
+    <AssemblyName>LinqForGeometry</AssemblyName>
+    <StartupObject>
+    </StartupObject>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>False</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <Externalconsole>True</Externalconsole>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugType>none</DebugType>
+    <Optimize>True</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <Externalconsole>True</Externalconsole>
+    <GenerateDocumentation>True</GenerateDocumentation>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Fusee.Engine.Core">
+      <HintPath>E:\Development\Fusee\Bin\Debug\Fusee.Engine.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Math.Core, Version=0.1.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>E:\Development\Fusee\Bin\Debug\Fusee.Math.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="src\Exceptions\ExcMeshLeak.cs" />
+    <Compile Include="src\GlobalInf.cs" />
+    <Compile Include="src\Importer\GeoFace.cs" />
+    <Compile Include="src\Importer\WavefrontImporter.cs" />
+    <Compile Include="src\Geometry.cs" />
+    <Compile Include="src\Loader.cs" />
+    <Compile Include="src\Structs\Handles\HandleVertex.cs" />
+    <Compile Include="src\Structs\Handles\HandleFace.cs" />
+    <Compile Include="src\Structs\Handles\HandleHalfEdge.cs" />
+    <Compile Include="src\Structs\Handles\HandleEdge.cs" />
+    <Compile Include="src\GeometryData.cs" />
+    <Compile Include="src\Structs\PtrContainer\VertexPtrCont.cs" />
+    <Compile Include="src\Structs\PtrContainer\FacePtrCont.cs" />
+    <Compile Include="src\Structs\PtrContainer\HEdgePtrCont.cs" />
+    <Compile Include="src\Structs\PtrContainer\EdgePtrCont.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup />
+</Project>
