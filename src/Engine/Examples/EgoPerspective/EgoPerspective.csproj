@@ -53,7 +53,7 @@
     <Compile Include="World.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Math\Core\Core.csproj">
+    <ProjectReference Include="..\..\..\Math\Core\Math.Core.csproj">
       <Project>{E95FA1C8-6491-4B4B-BBE1-EDA6B16B2C6A}</Project>
       <Name>Core %28Math\Core%29</Name>
     </ProjectReference>
