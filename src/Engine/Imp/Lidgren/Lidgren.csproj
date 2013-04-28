@@ -48,6 +48,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Compression.cs" />
     <Compile Include="Implementor.cs" />
     <Compile Include="NetworkImp.cs" />
     <Compile Include="NetworkMessage.cs" />

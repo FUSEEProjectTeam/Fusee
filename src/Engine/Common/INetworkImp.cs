@@ -36,7 +36,7 @@ namespace Fusee.Engine
         void CloseConnection();
 
         bool SendMessage(string msg);
-        bool SendMessage(byte[] data);
+        bool SendMessage(object data, bool compress);
 
         void SendDiscoveryMessage(int port);
 

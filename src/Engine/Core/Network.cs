@@ -82,9 +82,9 @@ namespace Fusee.Engine
             return _networkImp.SendMessage(msg);
         }
 
-        public bool SendMessage(byte[] data)
+        public bool SendMessage(object obj, bool compress = false)
         {
-            return _networkImp.SendMessage(data);
+            return _networkImp.SendMessage(obj, compress);
         }
 
         public void SendDiscoveryMessage()

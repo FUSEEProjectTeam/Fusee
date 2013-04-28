@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Net;
+using System.Runtime.Serialization.Formatters.Binary;
 using Lidgren.Network;
 
 namespace Fusee.Engine
@@ -185,7 +187,7 @@ namespace Fusee.Engine
             }
         }
 
-        public bool SendMessage(string msg)
+        public bool SendMessage(byte[] msg)
         {
             var sendResult = NetSendResult.Queued;
 
@@ -194,42 +196,13 @@ namespace Fusee.Engine
                 case SysType.Peer:
                     //sendMsg = _netPeer.CreateMessage(msg);
                     //sendMsg.Write(msg);
-                    
+
                     break;
 
                 case SysType.Client:
                     var sendMsg = _netClient.CreateMessage();
                     sendMsg.Write(msg);
 
-                    sendResult = _netClient.SendMessage(sendMsg, NetDeliveryMethod.ReliableOrdered);                 
-                    
-                    break;
-
-                case SysType.Server:
-                    //sendMsg = _netServer.CreateMessage();
-                    //_netServer.SendMessage(sendMsg, NetDeliveryMethod.ReliableOrdered);
-
-                    break;
-            }
-
-            return (sendResult == NetSendResult.Sent);
-        }
-
-        public bool SendMessage(byte[] data)
-        {
-            var sendResult = NetSendResult.Queued;
-
-            switch (_config.SysType)
-            {
-                case SysType.Peer:
-                    //sendMsg = _netPeer.CreateMessage(msg);
-                    //sendMsg.Write(msg);
-
-                    break;
-
-                case SysType.Client:
-                    var sendMsg = _netClient.CreateMessage();
-                    sendMsg.Write(data);
                     sendResult = _netClient.SendMessage(sendMsg, NetDeliveryMethod.ReliableOrdered);
 
                     break;
@@ -241,7 +214,32 @@ namespace Fusee.Engine
                     break;
             }
 
-            return (sendResult == NetSendResult.Sent);
+            return (sendResult == NetSendResult.Sent);            
+        }
+
+        public bool SendMessage(string msg)
+        {
+            var enc = new System.Text.ASCIIEncoding();
+            return SendMessage(enc.GetBytes(msg));
+        }
+
+        public bool SendMessage(object obj, bool compress)
+        {
+            byte[] data;
+
+            if (compress)
+                data = Compression.SerializeAndCompress(obj);
+            else
+            {
+                var ms = new MemoryStream();
+                var bf = new BinaryFormatter();
+
+                bf.Serialize(ms, obj);
+
+                data = ms.ToArray();
+            }
+
+            return SendMessage(data);
         }
 
         public void SendDiscoveryMessage(int port)
@@ -343,7 +341,7 @@ namespace Fusee.Engine
                     return new NetworkMessage
                                {
                                    Type = (MessageType) msg.MessageType,
-                                   Message = msg.ReadBytes(msg.LengthBytes)
+                                   Message = Compression.DecompressAndDeserialze(msg.ReadBytes(msg.LengthBytes))
                                };
 
                 case NetIncomingMessageType.DebugMessage:

@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Runtime.Serialization.Formatters.Binary;
 using Fusee.Engine;
 using Fusee.Math;
@@ -200,16 +201,8 @@ namespace Examples.CubeAndTiles
                 }
 
                 if (Input.Instance.IsKeyDown(KeyCodes.M))
-                {
                     if (Network.Instance.Status.Connected || Network.Instance.Config.SysType == SysType.Client)
-                    {
-                        var ms = new MemoryStream();
-                        var bf1 = new BinaryFormatter();
-                        bf1.Serialize(ms, _exampleLevel.RCube.ModelView);
-
-                        Network.Instance.SendMessage(ms.ToArray());
-                    }
-                }
+                        Network.Instance.SendMessage(_exampleLevel.RCube.ModelView, true);
             }
             else if (!Input.Instance.IsKeyDown(_lastKey))
                 _lastKey = KeyCodes.None;
@@ -222,7 +215,7 @@ namespace Examples.CubeAndTiles
             {
                 if (msg.Type == MessageType.StatusChanged)
                 {
-                    Debug.WriteLine("StatusChange: " + msg.Status.ToString());
+                    Debug.WriteLine("StatusChange: " + msg.Status);
 
                     if (msg.Status == ConnectionStatus.Connected)
                         _exampleLevel.CubeColor = new float3(0f, 1f, 0);
@@ -230,10 +223,7 @@ namespace Examples.CubeAndTiles
 
                 if (msg.Type == MessageType.Data)
                 {
-                    var ms = new MemoryStream(msg.Message) {Position = 0};
-                    var bf1 = new BinaryFormatter();
-
-                    _exampleLevel.RCube.ModelView = (float4x4) bf1.Deserialize(ms);
+                    _exampleLevel.RCube.ModelView = (float4x4) msg.Message;
 
                     //int move;
                     //if (System.Int32.TryParse(msg.Message, out move))
