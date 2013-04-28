@@ -632,27 +632,24 @@ namespace Fusee.Math
         {
             q.Normalize();
 
-            // be careful here: we need transposed matrices!
+            // be careful here: you might need a transposed matrix!
             return new float4x4
                        {
-                           M11 = 1 - 2*q.y*q.y - 2*q.z*q.z,
-                           M12 = 2 * q.x * q.y - 2 * q.z * q.w,
-                           M13 = 2 * q.x * q.z + 2 * q.y * q.w,
+                           M11 = 1 - 2*(q.y*q.y + q.z*q.z),
+                           M12 = 2*(q.x*q.y + q.z*q.w),
+                           M13 = 2*(q.x*q.z - q.y*q.w),
                            M14 = 0,
-
-                           M21 = 2*q.x*q.y + 2*q.z*q.w,
-                           M22 = 1 - 2 * q.x * q.x - 2 * q.z * q.z,
-                           M23 = 2 * q.y * q.z - 2 * q.x * q.w,
+                           M21 = 2*(q.x*q.y - q.z*q.w),
+                           M22 = 1 - 2*(q.x*q.x + q.z*q.z),
+                           M23 = 2*(q.z*q.y + q.x*q.w),
                            M24 = 0,
-
-                           M31 = 2*q.x*q.z - 2*q.y*q.w,
-                           M32 = 2 * q.z * q.y + 2 * q.x * q.w,
-                           M33 = 1 - 2 * q.x * q.x - 2 * q.y * q.y,
+                           M31 = 2*(q.x*q.z + q.y*q.w),
+                           M32 = 2*(q.y*q.z - q.x*q.w),
+                           M33 = 1 - 2*(q.x*q.x + q.y*q.y),
                            M34 = 0,
-
                            M41 = 0,
-                           M42 = 0,                         
-                           M43 = 0,                        
+                           M42 = 0,
+                           M43 = 0,
                            M44 = 1
                        };
         }

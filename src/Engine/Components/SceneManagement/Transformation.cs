@@ -263,7 +263,7 @@ namespace Fusee.SceneManagement
            {
                if (_quaternionDirty)
                {
-                   _quaternion = Quaternion.EulerToQuaternion2(_eulerAngles);
+                   _quaternion = Quaternion.EulerToQuaternion(_eulerAngles, true);
                    _quaternionDirty = false;
                }
                
@@ -290,7 +290,7 @@ namespace Fusee.SceneManagement
            {
                if (_globalQuaternionDirty)
                {
-                   _globalQuaternion = Quaternion.EulerToQuaternion2(_globalEulerAngles);
+                   _globalQuaternion = Quaternion.EulerToQuaternion(_globalEulerAngles, true);
                    _globalQuaternionDirty = false;
                }
 

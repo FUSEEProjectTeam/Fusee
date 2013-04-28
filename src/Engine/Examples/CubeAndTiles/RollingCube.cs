@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using Fusee.Engine;
 using Fusee.Math;
 
@@ -222,7 +221,7 @@ namespace Examples.CubeAndTiles
             var mtxObjRot = float4x4.CreateRotationY(_rotateYX[0]*_curDirXY[0])*
                             float4x4.CreateRotationX(-_rotateYX[1]*_curDirXY[1]);
 
-            var mtxObjOrientRot = Quaternion.QuaternionToMatrix(_orientQuat);
+            var mtxObjOrientRot = float4x4.Transpose(Quaternion.QuaternionToMatrix(_orientQuat));
 
             // cube position
             var mtxObjPos = float4x4.CreateTranslation(PosCurXY[0]*CubeSize, PosCurXY[1]*CubeSize,
