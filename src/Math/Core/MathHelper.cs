@@ -267,6 +267,62 @@ namespace Fusee.Math
 
         #endregion
 
+        #region Clamp
+
+        /// <summary>
+        /// Clamp a value to the given minimum and maximum vectors.
+        /// </summary>
+        /// <param name="val">Input value</param>
+        /// <param name="min">Minimum value</param>
+        /// <param name="max">Maximum value</param>
+        /// <returns>
+        /// The clamped value.
+        /// </returns>
+        public static double Clamp(double val, double min, double max)
+        {
+            return val < min ? min : val > max ? max : val;
+        }
+
+        /// <summary>
+        /// Clamp a value to the given minimum and maximum vectors.
+        /// </summary>
+        /// <param name="val">Input value.</param>
+        /// <param name="min">Minimum value.</param>
+        /// <param name="max">Maximum value.</param>
+        /// <returns>
+        /// The clamped value.
+        /// </returns>
+        public static float Clamp(float val, float min, float max)
+        {
+            return val < min ? min : val > max ? max : val;
+        }
+
+        #endregion
+
+        #region Equals
+
+        /// <summary>
+        /// Compares two double values for equality.
+        /// </summary>
+        /// <param name="a">The first value.</param>
+        /// <param name="b">The second value.</param>
+        public static bool Equals(double a, double b)
+        {
+            return (System.Math.Abs(a - b) < EpsilonDouble);
+        }
+
+        /// <summary>
+        /// Compares two float values for equality.
+        /// </summary>
+        /// <param name="a">The first value.</param>
+        /// <param name="b">The second value.</param>
+        public static bool Equals(float a, float b)
+        {
+            return (System.Math.Abs(a - b) < EpsilonFloat);
+        }
+
+        #endregion
+
         #endregion
     } 
 }

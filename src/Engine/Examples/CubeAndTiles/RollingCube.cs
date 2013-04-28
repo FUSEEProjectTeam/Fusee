@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Fusee.Engine;
 using Fusee.Math;
 
@@ -190,8 +191,8 @@ namespace Examples.CubeAndTiles
 
                 // rotation with quaterions
                 var rotVektor = (i == 0)
-                                    ? new float3(-_curDirXY[0]*PiHalf, 0, 0)    // around x-axis
-                                    : new float3(0, 0, _curDirXY[1]*PiHalf);    // around y-axis
+                                    ? new float3(0, -_curDirXY[0] * PiHalf, 0)   // around y-axis?
+                                    : new float3(_curDirXY[1]*PiHalf, 0, 0);     // around x-axis
 
                 _orientQuat *= Quaternion.EulerToQuaternion(rotVektor);
                 _orientQuat.Normalize();
@@ -199,7 +200,7 @@ namespace Examples.CubeAndTiles
                 // reset
                 _rotateYX[i] = 0;
                 _curDirXY[i] = 0;
-
+               
                 // check if special/dead field
                 _curLevel.CheckField(PosCurXY);
             }
