@@ -128,7 +128,6 @@ namespace hsfurtwangen.dsteffen.lfg
         {
             float3 normalized = new float3(0, 0, 0);
 
-            //List<float3> adjacentfaceNormals = EnVertexAdjacentFaces(handleVertex).Select(face => _LfaceNormals[face._DataIndex]).ToList();
             List<float3> adjacentfaceNormals = new List<float3>();
             IEnumerable<HandleFace> adjacentfaces = EnVertexAdjacentFaces(handleVertex);
 
@@ -158,18 +157,9 @@ namespace hsfurtwangen.dsteffen.lfg
                 }
             }
 
-            /*
-             *     foreach (HandleFace handleFace in adjacentfaces) {
-                adjacentfaceNormals.Add(
-                    _LfaceNormals[handleFace]
-                    );
-            }
-             */
-
             int adjacentfaceCount = adjacentfaceNormals.Count;
             var sumNormals = new float3();
             sumNormals = adjacentfaceNormals.Aggregate(sumNormals, (current, adjacentfaceNormal) => float3.Add(current, adjacentfaceNormal));
-            //sumNormals = float3.Divide(sumNormals, adjacentfaceCount);
             normalized = float3.Normalize(sumNormals);
 
             return normalized;
@@ -468,7 +458,6 @@ namespace hsfurtwangen.dsteffen.lfg
             }
 
             return new HandleEdge() { _DataIndex = _LedgePtrCont.Count - 1 };
-            //return new HandleEdge() { _DataIndex = _LhedgePtrCont.Count / 2 - 1 };
         }
 
 
@@ -492,8 +481,6 @@ namespace hsfurtwangen.dsteffen.lfg
         public IEnumerable<HandleVertex> EnStarVertexVertex(HandleVertex hv)
         {
             return VertexCenterHalfEdges(hv).Select(val => _LhedgePtrCont[val._he]._v);
-            //IEnumerable<HEdgePtrCont> EnhEdgePtr = _LhedgePtrCont.FindAll(hedges => hedges._v == hv);
-            //return EnhEdgePtr.Select(val => _LhedgePtrCont[val._he]._v);
         }
 
 
@@ -506,8 +493,6 @@ namespace hsfurtwangen.dsteffen.lfg
         public IEnumerable<HandleHalfEdge> EnStarVertexIncomingHalfEdge(HandleVertex hv)
         {
             return VertexCenterHalfEdges(hv).Select(val => _LhedgePtrCont[_LhedgePtrCont[val._he]._he]._he);
-            //IEnumerable<HEdgePtrCont> EnhEdgePtr = _LhedgePtrCont.FindAll(hedges => hedges._v == hv);
-            //return EnhEdgePtr.Select(val => _LhedgePtrCont[_LhedgePtrCont[val._he]._he]._he);
         }
 
 
@@ -520,8 +505,6 @@ namespace hsfurtwangen.dsteffen.lfg
         public IEnumerable<HandleHalfEdge> EnStarVertexOutgoingHalfEdge(HandleVertex hv)
         {
             return VertexCenterHalfEdges(hv).Select(val => _LhedgePtrCont[val._he]._he);
-            //IEnumerable<HEdgePtrCont> EnhEdgePtr = _LhedgePtrCont.FindAll(hedges => hedges._v == hv);
-            //return EnhEdgePtr.Select(val => _LhedgePtrCont[val._he]._he);
         }
 
 
@@ -534,9 +517,6 @@ namespace hsfurtwangen.dsteffen.lfg
         public IEnumerable<HandleFace> EnVertexAdjacentFaces(HandleVertex hv)
         {
             return VertexCenterHalfEdges(hv).Select(val => val._f);
-            //IEnumerable<HEdgePtrCont> enIncomingHedges = _LhedgePtrCont.FindAll(hedges => hedges._v == hv);
-            //IEnumerable<HandleFace> enHandleFacesAdjacentInc = enIncomingHedges.Select(val => val._f);
-            //return enHandleFacesAdjacentInc;
         }
 
 
@@ -629,9 +609,6 @@ namespace hsfurtwangen.dsteffen.lfg
             this._LvertexVal = null;
 
             this._LvertexVal = new List<float3>(this._LvertexValDefault);
-
-            //this._LvertexValDefault.Clear();
-            //this._LvertexValDefault = null;
         }
 
     }

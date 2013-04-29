@@ -175,6 +175,7 @@ namespace hsfurtwangen.dsteffen.lfg
             mesh.Normals = _GeometryContainer._LVertexNormals.ToArray();
             mesh.UVs = _GeometryContainer._LuvCoordinates.ToArray();
 
+
             // Convert all the faces to 'triangles'.
             mesh.Triangles = _LtriangleList.ToArray();
             // This is the staement for every frame convertion.
@@ -524,33 +525,6 @@ namespace hsfurtwangen.dsteffen.lfg
                 float4 row2 = new float4((float)sin, 0f, (float)cos, 0f);
                 float4 row3 = new float4(0f, 0f, 0f, 1f);
                 float4x4 transfMatrix = new float4x4(row0, row1, row2, row3);
-
-                List<float3> tmpVerts = EnAllVertices().Select(vertId => transfMatrix * _GeometryContainer._LvertexVal[vertId]).ToList();
-
-                this._GeometryContainer._LvertexVal.Clear();
-                this._GeometryContainer._LvertexVal = null;
-                this._GeometryContainer._LvertexVal = new List<float3>(tmpVerts);
-
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-                throw;
-            }
-        }
-
-
-        public bool RotateLocalX(float alpha)
-        {
-            // TODO: No Local Rotation, yet. This has to be fixed sometime.
-            try
-            {
-                float4x4 transfMatrix = new float4x4();
-                //float4x4.CreateRotationX(alpha, out transfMatrix);
-                float4x4.CreateFromAxisAngle(new float3(1f, 0f, 0f), alpha, out transfMatrix);
-
-                Fusee.Engine.Diagnostics.Log("Test");
 
                 List<float3> tmpVerts = EnAllVertices().Select(vertId => transfMatrix * _GeometryContainer._LvertexVal[vertId]).ToList();
 

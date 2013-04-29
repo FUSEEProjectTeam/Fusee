@@ -84,7 +84,7 @@ namespace Examples.LinqForGeometry
         private const float Damping = 0.92f;
 
         // model variable
-        private Mesh _lfgmesh;
+        private Mesh _lfgmesh, _levelMesh;
 
         // variables for color and texture
         private IShaderParam _vColorParam;
@@ -102,12 +102,9 @@ namespace Examples.LinqForGeometry
 
         public override void Init()
         {
-            // Use the changed MeshReader to import. Not very usable. Only works without the possibility to apply transformations.
-            // This is connected to the task restructuring the classes and files in LFG and the implementation in the fusee project.
+            // Use the Fusee MeshReader to test against mine...
             //_lfgmesh = MeshReader.LoadMesh("Assets/cube_quadrangle_1_textured.obj.model");
-            //_lfgmesh = MeshReader.LoadMesh("Assets/sphere_quadrangle_1.obj.model");
-            //_lfgmesh = MeshReader.LoadMesh("Assets/Teapot.obj.model");
-            //_lfgmesh = MeshReader.LoadMesh("Assets/Teapot_textured.obj.model");
+            //_lfgmesh = MeshReader.LoadMesh("Assets/cube_quadrangle_1_textured_quad.obj.model");
 
             #region MeshImports
             // This would be a solution to step over the MeshReader Class
@@ -122,8 +119,9 @@ namespace Examples.LinqForGeometry
             #endregion MeshImports
 
             #region TextureLoad
-            _imgData = RC.LoadImage("Assets/checkerboard_tex.jpg");
+            //_imgData = RC.LoadImage("Assets/checkerboard_tex.jpg");
             //_imgData = RC.LoadImage("Assets/world_map.jpg");
+            _imgData = RC.LoadImage("Assets/Mat_Color.jpg");
             #endregion TextureLoad
 
             _lfgmesh = _Geo.ToMesh();
@@ -135,7 +133,7 @@ namespace Examples.LinqForGeometry
             _vTextureParam = sp.GetShaderParam("texture1");
             _tex = RC.CreateTexture(_imgData);
 
-            RC.ClearColor = new float4(1, 1, 1, 0.8f);
+            RC.ClearColor = new float4(0f, 0f, 0.5f, 1f);
         }
 
         public override void RenderAFrame()
@@ -149,6 +147,7 @@ namespace Examples.LinqForGeometry
             //RC.SetShaderParam(_vColorParam, new float4(0.5f, 0.8f, 0, 1));
             RC.SetShaderParamTexture(_vTextureParam, _tex);
             RC.Render(_lfgmesh);
+            //RC.Render(_levelMesh);
 
             // swap buffers
             Present();
@@ -377,7 +376,7 @@ namespace Examples.LinqForGeometry
                 _lfgmesh = _Geo.ToMesh();
             }
 
-            var mtxCam = float4x4.LookAt(0, 200, 400, 0, 0, 0, 0, 1, 0);
+            var mtxCam = float4x4.LookAt(0, 500, 500, 0, 0, 0, 0, 1, 0);
 
             RC.ModelView = float4x4.CreateTranslation(0, 0, 0) * mtxCam;
 

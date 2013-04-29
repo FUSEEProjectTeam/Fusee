@@ -35,6 +35,7 @@ namespace hsfurtwangen.dsteffen.lfg.Importer
         // GeometryData related
         internal List<GeoFace> _LgeoFaces;
         internal List<float2> _LuvCoords;
+        public List<KeyValuePair<int, int>> _LKVuvandvert;
 
         public WavefrontImporter()
         {
@@ -44,6 +45,7 @@ namespace hsfurtwangen.dsteffen.lfg.Importer
             // GeometryData related
             _LgeoFaces = new List<GeoFace>();
             _LuvCoords = new List<float2>();
+            _LKVuvandvert = new List<KeyValuePair<int, int>>();
         }
 
         /// <summary>
@@ -79,14 +81,11 @@ namespace hsfurtwangen.dsteffen.lfg.Importer
         /// <param name="pathToAsset"></param>
         public List<GeoFace> LoadAsset(String pathToAsset)
         {
-            // Clear the content before the import
             _SassetFileContent = "";
 
-            // Helper Lists
             List<String> LvertexHelper = new List<string>();
             List<String> LfaceHelper = new List<string>();
 
-            // String related
             String[] splitChar = { " " };
             String[] splitChar2 = { "/" };
 
@@ -157,7 +156,6 @@ namespace hsfurtwangen.dsteffen.lfg.Importer
                     }
                     else if (lineStart.Equals("f "))
                     {
-                        // face
                         // there are faces, faces with texture coord, faces with vertex normals and faces with text and normals
                         if (globalinf.LFGMessages._DEBUGOUTPUT)
                         {
@@ -187,12 +185,12 @@ namespace hsfurtwangen.dsteffen.lfg.Importer
                                         int fv = int.Parse(s, CultureInfo.InvariantCulture);
                                         geoF._LFVertices.Add(LvertexAttr[fv - 1]);
 
-                                        // faceSplit[1] would correspond to the correct uv map data index pair
                                         if (faceSplit.Length >= 1)
                                         {
                                             string uvIndex = faceSplit[1];
                                             int uvAdress = int.Parse(uvIndex, CultureInfo.InvariantCulture);
                                             geoF._UV.Add(_LuvCoords[uvAdress - 1]);
+                                            _LKVuvandvert.Add(new KeyValuePair<int, int>(uvAdress - 1, fv - 1));
                                         }
                                     }
                                     catch (FormatException)
@@ -227,8 +225,7 @@ namespace hsfurtwangen.dsteffen.lfg.Importer
             // Clear the content after the import is done
             _SassetFileContent = "";
 
-            if (_LgeoFaces != null)
-            {
+            if (_LgeoFaces != null) {
                 return _LgeoFaces;
             }
             else
