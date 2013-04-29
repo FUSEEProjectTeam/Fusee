@@ -61,10 +61,14 @@ namespace Fusee.Engine
 
 
         private const string VsOneColor = @"
+#ifdef GL_ES
+    precision mediump float;
+#endif
 attribute vec3 fuVertex;
-attribute vec3 fuNormal;
 
-uniform vec3 Col;
+varying vec4 vColor;
+
+uniform vec4 Col;
 uniform mat4 FUSEE_MVP;
 
 
@@ -73,11 +77,15 @@ gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
 }
 ";
         private const string PsOneColor = @"
-uniform vec3 Col;
+#ifdef GL_ES
+    precision mediump float;
+#endif
+
+uniform vec4 Col;
+varying vec4 vColor;
 
 void main(){
-    gl_FragColor.a = 1;
-    gl_FragColor.rgb = Col;
+    gl_FragColor = Col;
 }
 ";
 
@@ -335,7 +343,7 @@ void main(void)
 // diffuse
    vec4 Idiff = vec4(0,0,0,0);
     if(FUSEE_L0_ACTIVE == 1.0){  
-        Idiff += FUSEE_L0_DIFFUSE * dot(vNormal,-FUSEE_L0_DIRECTION)*6; 
+        Idiff += FUSEE_L0_DIFFUSE * dot(vNormal,-FUSEE_L0_DIRECTION)*6.0; 
     }
 
     if(FUSEE_L1_ACTIVE == 1.0){ 

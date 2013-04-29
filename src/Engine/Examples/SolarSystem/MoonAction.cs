@@ -33,7 +33,7 @@ namespace Examples.Solar
             transform.LocalPosition = _earth.transform.GlobalPosition;
             //Debug.WriteLine("Earth LocalPos: "+_earth.transform.LocalPosition+ " Earth Global Pos: "+_earth.transform.GlobalPosition);
             transform.LocalEulerAngles += _rotationspeed * (float)Time.Instance.DeltaTime;
-            SceneManager.RC.DebugLine(transform.GlobalPosition, _moonpos.GlobalPosition, new float3(255, 0, 0));
+            SceneManager.RC.DebugLine(transform.GlobalPosition, _moonpos.GlobalPosition, new float4(1, 0, 0,1));
         }
     }
 }

@@ -558,11 +558,8 @@ namespace Fusee.Engine
             }
         }
 
-        public void DebugLine(float3 start, float3 end, float3 color)
+        public void DebugLine(float3 start, float3 end, float4 color)
         {
-            start /= 2;
-            end /= 2;
-            GL.Color4(Color.FromArgb((int)color.x,(int)color.y,(int)color.z));
             GL.Begin(BeginMode.Lines);
             GL.Vertex3(start.x, start.y, start.z);
             GL.Vertex3(end.x, end.y, end.z);

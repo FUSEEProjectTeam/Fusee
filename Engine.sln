@@ -105,7 +105,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebAudio", "src\Engine\Imp\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFMLAudio", "src\Engine\Imp\SFMLAudio\SFMLAudio.csproj", "{0A06B3EA-5934-4373-854A-B4D6E7E1FE16}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SolarSystem", "src\Engine\Examples\SolarSystem\SolarSystem.csproj", "{F7118566-EBBE-4001-9074-8FCD69A8F51F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Solar", "src\Engine\Examples\SolarSystem\Solar.csproj", "{F7118566-EBBE-4001-9074-8FCD69A8F51F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4A183140-3153-4F7E-A692-F4E3EF2CFA0A} = {4A183140-3153-4F7E-A692-F4E3EF2CFA0A}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmptyProject", "src\Engine\Examples\EmptyProject\EmptyProject.csproj", "{5CC07A6C-E203-4FC9-862F-8F0A0CFBF474}"
 	ProjectSection(ProjectDependencies) = postProject
