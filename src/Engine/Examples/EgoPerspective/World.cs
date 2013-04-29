@@ -12,7 +12,7 @@ namespace Examples.EgoPerspective
     class World
     {
         private RenderContext RC;
-        private Input In;
+        //private Input In;
         private List<Object> objects;
 
         private float _globalPosX;
@@ -27,10 +27,10 @@ namespace Examples.EgoPerspective
 
 
 
-        public World(RenderContext renderCon, Input input)
+        public World(RenderContext renderCon)
         {
             RC = renderCon;
-            In = input;
+            //In = input;
             objects = new List<Object>();
             _globalPosX = 0;
             globalPosY = 0;
@@ -56,43 +56,43 @@ namespace Examples.EgoPerspective
 
         public void RenderWorld(float drehungHorz)
         {
-
-            if (In.IsButtonDown(MouseButtons.Left))
+            if (Input.Instance.IsButtonDown(MouseButtons.Left))
             {
                 foreach (Object t in objects)
                 {
-                    t.SetAngleX(t.GetAngleX()+_rotationSpeedM*In.GetAxis(InputAxis.MouseX)); // *deltatime
-                    t.SetAngleY(t.GetAngleY()+_rotationSpeedM*In.GetAxis(InputAxis.MouseY));
+                    t.SetAngleX(t.GetAngleX() + _rotationSpeedM * Input.Instance.GetAxis(InputAxis.MouseX)); // *deltatime
+                    t.SetAngleY(t.GetAngleY() + _rotationSpeedM * Input.Instance.GetAxis(InputAxis.MouseY));
                 }
             }
-            if (In.IsKeyDown(KeyCodes.W))
+            if (Input.Instance.IsKeyDown(KeyCodes.W))
             {
-                _globalPosX += _speed*(float) Math.Sin(_globalAngleX);
-                _globalPosZ += _speed*(float) Math.Cos(_globalAngleX);
+                _globalPosX += _speed * (float)Math.Sin(_globalAngleX);
+                _globalPosZ += _speed * (float)Math.Cos(_globalAngleX);
             }
-            if (In.IsKeyDown(KeyCodes.S))
+            if (Input.Instance.IsKeyDown(KeyCodes.S))
             {
-                _globalPosX -= _speed*(float) Math.Sin(_globalAngleX);
-                _globalPosZ -= _speed*(float) Math.Cos(_globalAngleX);
+                _globalPosX -= _speed * (float)Math.Sin(_globalAngleX);
+                _globalPosZ -= _speed * (float)Math.Cos(_globalAngleX);
             }
-            if (In.IsKeyDown(KeyCodes.A))
+            if (Input.Instance.IsKeyDown(KeyCodes.A))
             {
-                _globalPosX += _speed*(float) Math.Cos(_globalAngleX);
-                _globalPosZ -= _speed*(float) Math.Sin(_globalAngleX);
+                _globalPosX += _speed * (float)Math.Cos(_globalAngleX);
+                _globalPosZ -= _speed * (float)Math.Sin(_globalAngleX);
             }
-            if (In.IsKeyDown(KeyCodes.D))
+            if (Input.Instance.IsKeyDown(KeyCodes.D))
             {
-                _globalPosX -= _speed*(float) Math.Cos(_globalAngleX);
-                _globalPosZ += _speed*(float) Math.Sin(_globalAngleX);
+                _globalPosX -= _speed * (float)Math.Cos(_globalAngleX);
+                _globalPosZ += _speed * (float)Math.Sin(_globalAngleX);
             }
-            if (In.IsKeyDown(KeyCodes.Left))
+            if (Input.Instance.IsKeyDown(KeyCodes.Left))
             {
                 _globalAngleX += _rotationSpeed;
             }
-            if (In.IsKeyDown(KeyCodes.Right))
+            if (Input.Instance.IsKeyDown(KeyCodes.Right))
             {
                 _globalAngleX -= _rotationSpeed;
             }
+
 
             ////// render all objects
             foreach (Object t in objects)

@@ -1341,7 +1341,6 @@ namespace Fusee.Math
                 y = value.y;
             }
         }
-
 // ReSharper restore InconsistentNaming
 
         #endregion

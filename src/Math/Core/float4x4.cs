@@ -352,6 +352,21 @@ namespace Fusee.Math
 
         #endregion
 
+        #region public void Round()
+
+        /// <summary>
+        /// Rounds this instance to 6 digits (max float precision).
+        /// </summary>
+        public void Round()
+        {
+            Row0.Round();
+            Row1.Round();
+            Row2.Round();
+            Row3.Round();
+        }
+
+        #endregion
+
         #endregion
 
         #region Static
@@ -1279,6 +1294,23 @@ namespace Fusee.Math
                 ((matrix.M11*vector.x) + (matrix.M12*vector.y) + (matrix.M13*vector.z) + matrix.M14)/w,
                 ((matrix.M21*vector.x) + (matrix.M22*vector.y) + (matrix.M23*vector.z) + matrix.M24)/w,
                 ((matrix.M31*vector.x) + (matrix.M32*vector.y) + (matrix.M33*vector.z) + matrix.M34)/w);
+        }
+
+        #endregion
+
+        #region Round
+
+        /// <summary>
+        /// Rounds the given matrix to 6 digits (max float precision).
+        /// </summary>
+        /// <param name="mat">The matrix to round.</param>
+        /// <returns>The rounded matrix.</returns>
+        public static float4x4 Round(float4x4 mat)
+        {
+            return new float4x4(float4.Round(mat.Row0),
+                                float4.Round(mat.Row1),
+                                float4.Round(mat.Row2),
+                                float4.Round(mat.Row3));
         }
 
         #endregion

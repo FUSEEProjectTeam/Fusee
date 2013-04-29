@@ -372,6 +372,21 @@ namespace Fusee.Math
 
         #endregion
 
+        #region public void Round()
+
+        /// <summary>
+        /// Rounds the float4 to 6 digits (max float precision).
+        /// </summary>
+        public void Round()
+        {
+            x = (float) System.Math.Round(x, 6);
+            y = (float) System.Math.Round(y, 6);
+            z = (float) System.Math.Round(z, 6);
+            w = (float) System.Math.Round(w, 6);
+        }
+
+        #endregion
+
         #endregion
 
         #region Static
@@ -956,6 +971,23 @@ namespace Fusee.Math
             Quaternion.Multiply(ref t, ref i, out v);
 
             result = new float4(v.x, v.y, v.z, v.w);
+        }
+
+        #endregion
+
+        #region Round
+
+        /// <summary>
+        /// Rounds a vector to 6 digits (max float precision).
+        /// </summary>
+        /// <param name="vec">The input vector.</param>
+        /// <returns>The rounded vector.</returns>
+        public static float4 Round(float4 vec)
+        {
+            return new float4((float) System.Math.Round(vec.x, 6),
+                              (float) System.Math.Round(vec.y, 6),
+                              (float) System.Math.Round(vec.z, 6),
+                              (float) System.Math.Round(vec.w, 6));
         }
 
         #endregion

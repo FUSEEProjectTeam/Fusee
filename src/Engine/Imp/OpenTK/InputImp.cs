@@ -103,7 +103,7 @@ namespace Fusee.Engine
 
         protected void OnGameWinKeyDown(object sender, KeyboardKeyEventArgs key)
         {
-            if (KeyDown != null)
+            if (KeyDown != null && KeyMapper.ContainsKey(key.Key))
             {
                 // TODO: implement correct Alt, Control, Shift behavior
                 KeyDown(this, new KeyEventArgs
@@ -120,7 +120,7 @@ namespace Fusee.Engine
 
         protected void OnGameWinKeyUp(object sender, KeyboardKeyEventArgs key)
         {
-            if (KeyUp != null)
+            if (KeyUp != null && KeyMapper.ContainsKey(key.Key))
             {
                 // TODO: implement correct Alt, Control, Shift behavior
                 KeyUp(this, new KeyEventArgs

@@ -19,7 +19,7 @@ namespace Fusee.Engine
 
         IShaderProgramImp CreateShader(string vs, string ps);
 
-        IEnumerable<ShaderParamInfo> GetShaderParamList(IShaderProgramImp shaderProgram);
+        IList<ShaderParamInfo> GetShaderParamList(IShaderProgramImp shaderProgram);
 
         IShaderParam GetShaderParam(IShaderProgramImp shaderProgram, string paramName);
 

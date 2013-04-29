@@ -849,7 +849,7 @@ namespace Fusee.Engine
         /// </summary>
         /// <param name="lightInx">The light to activate. Can range from 0 to 7. Up to eight lights are supported.</param>
         /// <param name="active">1 - activate the light. 0 - deactiv</param>
-        public void SetLightActive(int lightInx, int active)
+        public void SetLightActive(int lightInx, float active)
         {
             _lightParams[lightInx].Active = active;
             IShaderParam sp;
