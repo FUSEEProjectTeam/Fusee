@@ -83,7 +83,10 @@ namespace Fusee.SceneManagement
            _eulerDirty = false;
        }
 
-
+       public float3 Forward
+       {
+           get { return -GlobalMatrix.Row2.xyz; }
+       }
 
        public SceneEntity Parent
        {

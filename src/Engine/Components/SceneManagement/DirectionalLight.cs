@@ -64,8 +64,8 @@ namespace Fusee.SceneManagement
             if (SceneEntity != null)
             {
                 _position = SceneEntity.transform.GlobalPosition;
-                _direction = -SceneEntity.transform.GlobalMatrix.Row2.xyz;
-                SceneManager.RC.DebugLine(_position, _direction * 100, new float4(1, 1, 0,1));
+                _direction = SceneEntity.transform.Forward;
+                //SceneManager.RC.DebugLine(_position, _direction * 100, new float4(1, 1, 0,1));
             }
             sv.Visit((DirectionalLight)this);
         }
