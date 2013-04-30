@@ -4,6 +4,7 @@ using System.IO.Compression;
 using System.Runtime.Serialization.Formatters.Binary;
 using Fusee.Engine;
 using Fusee.Math;
+using ProtoBuf;
 
 namespace Examples.CubeAndTiles
 {
@@ -202,7 +203,7 @@ namespace Examples.CubeAndTiles
 
                 if (Input.Instance.IsKeyDown(KeyCodes.M))
                     if (Network.Instance.Status.Connected || Network.Instance.Config.SysType == SysType.Client)
-                        Network.Instance.SendMessage(_exampleLevel.RCube.ModelView, true);
+                        Network.Instance.SendMessage(_exampleLevel.RCube.ModelView);
             }
             else if (!Input.Instance.IsKeyDown(_lastKey))
                 _lastKey = KeyCodes.None;
@@ -223,12 +224,18 @@ namespace Examples.CubeAndTiles
 
                 if (msg.Type == MessageType.Data)
                 {
-                    _exampleLevel.RCube.ModelView = (float4x4) msg.Message;
+                    float4x4 msgObj;
 
-                    //int move;
-                    //if (System.Int32.TryParse(msg.Message, out move))
-                    //    if (move != (int)Level.Directions.None)
-                    //        _exampleLevel.MoveCube((Level.Directions)move);
+                    using (var ms = new MemoryStream())
+                    {
+                        ms.Write(msg.Message, 0, msg.Message.Length);
+                        ms.Position = 0;
+                        msgObj = Serializer.Deserialize<float4x4>(ms);
+                    }
+
+                    _exampleLevel.RCube.ModelView = (float4x4) msgObj;
+
+                    Debug.WriteLine(msgObj);
                 }
 
                 if (msg.Type == MessageType.DiscoveryRequest)

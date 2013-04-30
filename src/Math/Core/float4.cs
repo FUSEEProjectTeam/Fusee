@@ -1,5 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
+using ProtoBuf;
 
 namespace Fusee.Math
 {
@@ -9,28 +11,35 @@ namespace Fusee.Math
     /// </remarks>
     [Serializable]
     [StructLayout(LayoutKind.Sequential)]
-    public struct float4 : IEquatable<float4>
+    [ProtoContract]
+// ReSharper disable InconsistentNaming
+    public struct float4  : IEquatable<float4>
+// ReSharper restore InconsistentNaming
     {
         #region Fields
 
         /// <summary>
         /// The x component of the float4.
         /// </summary>
+        [ProtoMember(1)] 
         public float x;
 
         /// <summary>
         /// The y component of the float4.
         /// </summary>
+        [ProtoMember(2)] 
         public float y;
 
         /// <summary>
         /// The z component of the float4.
         /// </summary>
+        [ProtoMember(3)] 
         public float z;
 
         /// <summary>
         /// The w component of the float4.
         /// </summary>
+        [ProtoMember(4)]
         public float w;
 
         /// <summary>
@@ -72,6 +81,8 @@ namespace Fusee.Math
 
         #region Constructors
 
+
+
         /// <summary>
         /// Constructs a new float4.
         /// </summary>
@@ -79,7 +90,7 @@ namespace Fusee.Math
         /// <param name="y">The y component of the float4.</param>
         /// <param name="z">The z component of the float4.</param>
         /// <param name="w">The w component of the float4.</param>
-        public float4(float x, float y, float z, float w)
+        public float4(float x, float y, float z, float w) : this()
         {
             this.x = x;
             this.y = y;

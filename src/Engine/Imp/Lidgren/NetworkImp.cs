@@ -2,8 +2,9 @@
 using System.Diagnostics;
 using System.IO;
 using System.Net;
-using System.Runtime.Serialization.Formatters.Binary;
 using Lidgren.Network;
+using ProtoBuf;
+
 
 namespace Fusee.Engine
 {
@@ -227,7 +228,7 @@ namespace Fusee.Engine
         {
             byte[] data;
 
-            if (compress)
+            /*if (compress)
                 data = Compression.SerializeAndCompress(obj);
             else
             {
@@ -236,6 +237,12 @@ namespace Fusee.Engine
 
                 bf.Serialize(ms, obj);
 
+                data = ms.ToArray();
+            }*/
+
+            using (var ms = new MemoryStream())
+            {
+                Serializer.Serialize(ms, obj);
                 data = ms.ToArray();
             }
 
@@ -331,18 +338,18 @@ namespace Fusee.Engine
                         OpenConnection(_config.SysType, msg.SenderEndPoint);
 
                     return new NetworkMessage
-                               {
-                                   Type = (MessageType) msg.MessageType,
-                                   Sender = msg.SenderEndPoint,
-                                   Message = msg.ReadString()
-                               };
+                        {
+                            Type = (MessageType) msg.MessageType,
+                            Sender = msg.SenderEndPoint,
+                            Message = msg.ReadString()
+                        };
 
                 case NetIncomingMessageType.Data:
                     return new NetworkMessage
-                               {
-                                   Type = (MessageType) msg.MessageType,
-                                   Message = Compression.DecompressAndDeserialze(msg.ReadBytes(msg.LengthBytes))
-                               };
+                        {
+                            Type = (MessageType) msg.MessageType,
+                            Message = msg.ReadBytes(msg.LengthBytes)
+                        };
 
                 case NetIncomingMessageType.DebugMessage:
                 case NetIncomingMessageType.VerboseDebugMessage:
