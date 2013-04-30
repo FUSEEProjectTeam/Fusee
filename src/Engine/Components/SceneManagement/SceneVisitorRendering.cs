@@ -220,9 +220,9 @@ namespace Fusee.SceneManagement
         /// <param name="ambient">The ambient color.</param>
         /// <param name="type">The type.</param>
         /// <param name="channel">The channel.</param>
-        public void AddLightDirectional(float3 direction, float4 diffuse, float4 ambient, Light.LightType type, int channel) 
+        public void AddLightDirectional(float3 direction, float4 diffuse, float4 ambient, float4 specular, Light.LightType type, int channel) 
         {
-            RenderDirectionalLight light = new RenderDirectionalLight(direction, diffuse, ambient, type, channel );
+            RenderDirectionalLight light = new RenderDirectionalLight(direction, diffuse, ambient, specular, type, channel );
             _queue.AddLightJob(light);
         }
 
@@ -233,9 +233,9 @@ namespace Fusee.SceneManagement
         /// <param name="color">The color.</param>
         /// <param name="type">The type.</param>
         /// <param name="channel">The channel.</param>
-        public void AddLightPoint(float3 position, float4 diffuse, float4 ambient, Light.LightType type, int channel) 
+        public void AddLightPoint(float3 position, float4 diffuse, float4 ambient, float4 specular, Light.LightType type, int channel) 
         {
-            RenderPointLight light = new RenderPointLight(position, diffuse, ambient, type, channel );
+            RenderPointLight light = new RenderPointLight(position, diffuse, ambient, specular, type, channel );
             _queue.AddLightJob(light);
         }
 
@@ -247,9 +247,9 @@ namespace Fusee.SceneManagement
         /// <param name="color">The color.</param>
         /// <param name="type">The type.</param>
         /// <param name="channel">The channel.</param>
-        public void AddLightSpot(float3 position, float3 direction, float4 color, Light.LightType type, int channel) 
+        public void AddLightSpot(float3 position, float3 direction, float4 diffuse, float4 ambient, float4 specular, Light.LightType type, int channel) 
         {
-            RenderSpotLight light = new RenderSpotLight(position, direction, color, type, channel );
+            RenderSpotLight light = new RenderSpotLight(position, direction, diffuse, ambient, specular, type, channel );
             _queue.AddLightJob(light);
         }
 

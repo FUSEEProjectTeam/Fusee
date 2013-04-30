@@ -16,7 +16,7 @@ namespace Examples.FuseeExampleApp1
         {
             SceneManager.RC = RC;
             SceneEntity _object;
-            DirectionalLight direct = new DirectionalLight(new float3(1, 1, 1), new float4(0.7f, 0.7f, 0.7f, 1), new float4(0.3f, 0.3f, 0.3f, 1), new float3(0, 0, 0), 0);
+            DirectionalLight direct = new DirectionalLight(new float3(1, 1, 1), new float4(0.7f, 0.7f, 0.7f, 1), new float4(0.3f, 0.3f, 0.3f, 1), new float4(0.1f, 0.1f, 0.1f, 1),  new float3(0, 0, 0), 0);
 
             Geometry sphere = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Sphere.obj.model"));
             Geometry spacebox = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/spacebox.obj.model"));
@@ -32,7 +32,7 @@ namespace Examples.FuseeExampleApp1
             _emptyRoot = new SceneEntity("emptyRoot", new MouseAction());
             _emptySphere = new SceneEntity("emptySphere", new ActionCode());
             _emptyCube = new SceneEntity("emptyCube", new ActionCode());
-            _emptyLight = new SceneEntity("emptyLight", new RotateAction(new float3(0,0,0)));
+            _emptyLight = new SceneEntity("emptyLight", new ActionCode());
 
             SceneManager.Manager.AddSceneEntity(_emptyRoot);
             SceneManager.Manager.AddSceneEntity(_emptySphere);
@@ -63,7 +63,7 @@ namespace Examples.FuseeExampleApp1
             _object.AddComponent(direct);
 
             //Cube
-            _object = new SceneEntity("Cube1", new ActionCode(), _emptyCube, new SpecularMaterial(MoreShaders.GetShader("specular", RC), "Assets/normal2.jpg"), new Renderer(cube));
+            _object = new SceneEntity("Cube1", new ActionCode(), _emptyCube, new DiffuseMaterial(MoreShaders.GetShader("diffuse", RC), "Assets/wall.jpg"), new Renderer(cube));
             _object.transform.GlobalPosition = new float3(-2.9f, 0, 0);
             _object.transform.GlobalScale = new float3(0.01f, 0.01f, 0.01f);
 

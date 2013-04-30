@@ -206,7 +206,7 @@ namespace Fusee.Engine
             get { return _currentShader; }
         }
         //directional or Point- Light
-        public void SetLight(float3 v3, float4 diffuse, float4 ambient, int type, int id)
+        public void SetLight(float3 v3, float4 diffuse, float4 ambient, float4 specular, int type, int id)
         {
             switch (type)
             {
@@ -214,26 +214,26 @@ namespace Fusee.Engine
                     SetLightActive(id, 1);
                     SetLightAmbient(id, ambient);
                     SetLightDiffuse(id, diffuse);
-                    SetLightSpecular(id, ambient);
+                    SetLightSpecular(id, specular);
                     SetLightDirection(id, v3);
                     break;
                 case 1:
                     SetLightActive(id, 1);
                     SetLightAmbient(id, ambient);
                     SetLightDiffuse(id, diffuse);
-                    SetLightSpecular(id, ambient);
+                    SetLightSpecular(id, specular);
                     SetLightPosition(id, v3);
                     break;
             }
         }
 
         //Spotlight with position AND direction
-        public void SetLight(float3 position, float3 direction, float4 color, int type, int id)
+        public void SetLight(float3 position, float3 direction, float4 diffuse, float4 ambient, float4 specular, int type, int id)
         {
             SetLightActive(id, 1);
-            SetLightAmbient(id, color);
-            SetLightDiffuse(id, color);
-            SetLightSpecular(id, color);
+            SetLightAmbient(id, ambient);
+            SetLightDiffuse(id, diffuse);
+            SetLightSpecular(id, specular);
             SetLightPosition(id, position);
             SetLightDirection(id, direction);
         }

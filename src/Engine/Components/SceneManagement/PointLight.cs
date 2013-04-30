@@ -18,10 +18,12 @@ namespace Fusee.SceneManagement
         /// <param name="position">The position of the pointlight.</param>
         /// <param name="color">The color of the pointlight.</param>
         /// <param name="channel">The memory space of the light(0 - 7).</param>
-        public PointLight(float3 position, float4 color, int channel)
+        public PointLight(float3 position, float4 diffuse, float4 ambient, float4 specular, int channel)
         {
             _position = position;
-            _color = color;
+            _diffuseColor = diffuse;
+            _ambientColor = ambient;
+            _specularColor = specular;
             _type = LightType.Point;
             _channel = channel;
         }
@@ -35,7 +37,7 @@ namespace Fusee.SceneManagement
         {
             _type = LightType.Point;
             _position = new float3(0, 0, 0);
-            _color = new float4(0.5f, 0.5f, 0.5f, 0.5f);
+            _diffuseColor = new float4(1, 1, 1, 1);
             _channel = channel;
         }
         #endregion
@@ -50,7 +52,6 @@ namespace Fusee.SceneManagement
         public PointLight(float4 color, float3 position, int channel)
         {
             _position = position;
-            _color = color;
             _diffuseColor = new float4(0.6f, 0.6f, 0.6f, 1);
             _ambientColor = new float4(0.3f, 0.3f, 0.3f, 1);
             _specularColor = new float4(0.1f, 0.1f, 0.1f, 1);
@@ -66,7 +67,7 @@ namespace Fusee.SceneManagement
         /// </summary>
         public void TraverseForRendering(SceneVisitorRendering sceneVisitorRendering)
         {
-            sceneVisitorRendering.AddLightPoint(_position , _diffuseColor, _ambientColor, _type, _channel);
+            sceneVisitorRendering.AddLightPoint(_position , _diffuseColor, _ambientColor, _specularColor, _type, _channel);
         }
 
         #endregion

@@ -47,6 +47,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="BumpMaterial.cs" />
     <Compile Include="CamScript.cs" />
     <Compile Include="SpecularMaterial.cs" />
     <Compile Include="DiffuseMaterial.cs" />

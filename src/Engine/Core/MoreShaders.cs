@@ -600,7 +600,7 @@ void main()
         endIntensity += intensity * FUSEE_L7_DIFFUSE;
     }
 
-    endIntensity += endSpecular;
+    //endIntensity += endSpecular;
     endIntensity += endAmbient;
     endIntensity = clamp(endIntensity, 0, 1); 
     gl_FragColor = texture2D(texture1, vUV) * endIntensity; 
@@ -802,8 +802,7 @@ void main()
     vec4 endIntensity = vec4(0,0,0,0);
 
     if(FUSEE_L0_ACTIVE == 1.0) {
-        float intensity = max(dot(-normalize(FUSEE_L0_DIRECTION),normalize(tempNormal)),0.0);
-        endIntensity += intensity * FUSEE_L0_DIFFUSE;
+        endIntensity += max(dot(-normalize(FUSEE_L0_DIRECTION),normalize(tempNormal)),0.0) * FUSEE_L0_DIFFUSE;
     }
     if(FUSEE_L1_ACTIVE == 1.0) {
         float intensity = max(dot(-normalize(FUSEE_L1_DIRECTION),normalize(tempNormal)),0.0);
@@ -836,6 +835,7 @@ void main()
 
     endIntensity += endSpecular;
     endIntensity += endAmbient; 
+    endIntensity = clamp(endIntensity, 0.0, 1.0);
     gl_FragColor = texture2D(texture1, vUV) * endIntensity; 
 }";
 
