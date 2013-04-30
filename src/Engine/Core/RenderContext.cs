@@ -1163,7 +1163,7 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
             if (m.Colors != null && m.Colors.Length != 0 && !m.ColorsSet)
                 _rci.SetColors(m._meshImp, m.Colors);
 
-            if (m.UVs != null && m.UVs.Length != 0 && !m.NormalsSet)
+            if (m.UVs != null && m.UVs.Length != 0 && !m.UVsSet)
                 _rci.SetUVs(m._meshImp, m.UVs);
 
             if (m.Normals != null && m.Normals.Length != 0 && !m.NormalsSet)
