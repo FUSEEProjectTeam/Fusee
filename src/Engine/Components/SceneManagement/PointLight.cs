@@ -39,6 +39,23 @@ namespace Fusee.SceneManagement
             _channel = channel;
         }
         #endregion
+        #region Constructors
+        /// <summary>
+        /// Creates a point light in the scene. Position, color, position, and channel is needed.
+        /// It is possible to set up to 8 lights in the scene.
+        /// </summary>
+        /// <param name="color">The color of the light.</param>
+        /// <param name="position">The position in the scene.</param>
+        /// <param name="channel">The memory space of the light.(0 - 7)</param>
+        public PointLight(float4 color, float3 position, int channel)
+        {
+            _position = position;
+            _color = color;
+            _type = LightType.Point;
+            _channel = channel;
+        }
+
+        #endregion
 
         #region Methods
         /// <summary>
