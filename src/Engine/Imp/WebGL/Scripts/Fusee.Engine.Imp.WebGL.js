@@ -10,6 +10,7 @@ var $WebGLImp = JSIL.DeclareAssembly("Fusee.Engine.Imp.WebGL");
 var $WebAudioImp = JSIL.GetAssembly("Fusee.Engine.Imp.WebAudio");
 var $fuseeCommon = JSIL.GetAssembly("Fusee.Engine.Common");
 var $fuseeMath = JSIL.GetAssembly("Fusee.Math.Core");
+var $fuseeFirstGetShaderParamCall = false;
 
 JSIL.DeclareNamespace("Fusee");
 JSIL.DeclareNamespace("Fusee.Engine");
@@ -577,6 +578,20 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
     new JSIL.MethodSignature($WebGLImp.TypeRef("Fusee.Engine.IShaderParam"), [$WebGLImp.TypeRef("Fusee.Engine.IShaderProgramImp"), $.String]),
     function IRenderContextImp_GetShaderParam(program, paramName) {
 		if(program.__ThisTypeId__ != undefined){ //i got program
+			if($fuseeFirstGetShaderParamCall){
+				$fuseeFirstGetShaderParamCall = false;
+				var enumerator = program.Program._rci.IRenderContextImp_GetShaderParamList(this._spi).IEnumerable$b1_GetEnumerator();
+				try {
+					while (enumerator.IEnumerator_MoveNext()) {
+						var info = enumerator.IEnumerator$b1_get_Current().MemberwiseClone();
+						program.Program._paramsByName.Add(info.Name, info.Handle);
+					}
+				} finally {
+					if (enumerator !== null) {
+						enumerator.IDisposable_Dispose();
+					}
+				}
+			}
 			var h = this.gl.getUniformLocation(program.Program, paramName);
 			if (h == null)
 				return null;
@@ -585,6 +600,20 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
 			ret.id = this._currentShaderParamHandle++;
 			return ret;
 		}else{ // i got program.Program
+			if($fuseeFirstGetShaderParamCall){
+				$fuseeFirstGetShaderParamCall = false;
+				var enumerator = program._rci.IRenderContextImp_GetShaderParamList(this._spi).IEnumerable$b1_GetEnumerator();
+				try {
+					while (enumerator.IEnumerator_MoveNext()) {
+						var info = enumerator.IEnumerator$b1_get_Current().MemberwiseClone();
+						program._paramsByName.Add(info.Name, info.Handle);
+					}
+				} finally {
+					if (enumerator !== null) {
+						enumerator.IDisposable_Dispose();
+					}
+				}
+			}
 			var h = this.gl.getUniformLocation(program, paramName);
 			if (h == null)
 				return null;
