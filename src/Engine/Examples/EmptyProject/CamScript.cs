@@ -6,7 +6,7 @@ using System.Text;
 using Fusee.Math;
 using Fusee.Engine;
 using Fusee.SceneManagement;
-namespace Examples.Solar
+namespace Examples.LightTypeTest
 {
     class CamScript : ActionCode
     {

@@ -164,6 +164,8 @@ private const string PsDiffuse = @"
 
 uniform sampler2D texture1;
 
+uniform vec4 FUSEE_L0_POSITION;
+
 uniform vec4 FUSEE_L0_DIFFUSE;
 uniform vec4 FUSEE_L1_DIFFUSE;
 uniform vec4 FUSEE_L2_DIFFUSE;

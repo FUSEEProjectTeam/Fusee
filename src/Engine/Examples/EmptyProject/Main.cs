@@ -1,13 +1,11 @@
 ﻿using System.IO;
-using Examples.LightTypeTest;
-using Examples.Solar;
 using Fusee.Engine;
 using Fusee.Math;
 using Fusee.SceneManagement;
 
-namespace Examples.FuseeExampleApp1
+namespace Examples.LightTypeTest
 {
-    public class FuseeExampleApp1 : RenderCanvas
+    public class LightTypeTest : RenderCanvas
     {
 
         Camera scenecamera;
@@ -16,7 +14,10 @@ namespace Examples.FuseeExampleApp1
         {
             SceneManager.RC = RC;
             SceneEntity _object;
+
             DirectionalLight direct = new DirectionalLight(new float3(1, 1, 1), new float4(0.7f, 0.7f, 0.7f, 1), new float4(0.3f, 0.3f, 0.3f, 1), new float4(0.1f, 0.1f, 0.1f, 1),  new float3(0, 0, 0), 0);
+            PointLight point = new PointLight(new float3(1, 0, 0), new float4(0.7f, 0.7f, 0.7f, 1), new float4(0.3f, 0.3f, 0.3f, 1), new float4(0.1f, 0.1f, 0.1f, 1), 0);
+            SpotLight spot = new SpotLight(new float3(1,1,1), new float3(1, 1, 1), new float4(0.7f, 0.7f, 0.7f, 1), new float4(0.3f, 0.3f, 0.3f, 1), new float4(0.1f, 0.1f, 0.1f, 1), 0);
 
             Geometry sphere = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Sphere.obj.model"));
             Geometry spacebox = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/spacebox.obj.model"));
@@ -92,7 +93,7 @@ namespace Examples.FuseeExampleApp1
 
         public static void Main()
         {
-            var app = new FuseeExampleApp1();
+            var app = new LightTypeTest();
             app.Run();
         }
 

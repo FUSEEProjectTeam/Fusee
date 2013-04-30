@@ -8,8 +8,8 @@
     <ProjectGuid>{5CC07A6C-E203-4FC9-862F-8F0A0CFBF474}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Examples.EmptyProject</RootNamespace>
-    <AssemblyName>Examples.EmptyProject</AssemblyName>
+    <RootNamespace>Examples.LightTypeTest</RootNamespace>
+    <AssemblyName>Examples.LightTypeTest</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <UseVSHostingProcess>false</UseVSHostingProcess>
@@ -45,6 +45,9 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="BumpMaterial.cs" />

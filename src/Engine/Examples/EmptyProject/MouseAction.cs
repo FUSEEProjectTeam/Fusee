@@ -7,14 +7,13 @@ using Fusee.Engine;
 using Fusee.SceneManagement;
 using Fusee.Math;
 
-namespace Examples.Solar
+namespace Examples.LightTypeTest
 {
     class MouseAction : ActionCode
     {
         private String[] _planets = { "DirLight", "Sphere1", "Cube1", "Root1"};
         private int _currentTargetId = 0;
         private SceneEntity _target;
-        private float _rotationamount;
         public override void Start()
         {
             _target = SceneEntity.FindSceneEntity(_planets[_currentTargetId]);
