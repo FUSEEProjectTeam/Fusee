@@ -34,6 +34,9 @@ namespace Fusee.SceneManagement
         protected LightType _type;
         protected float3 _position;
         protected float4 _color;
+        protected float4 _diffuseColor;
+        protected float4 _ambientColor;
+        protected float4 _specularColor;
         protected int _channel;
         #endregion
 

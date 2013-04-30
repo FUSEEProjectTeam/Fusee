@@ -13,8 +13,12 @@ namespace Fusee.SceneManagement
         
         private float3 _direction;        
         private float4 _color;
+        private float4 _diffuseColor;
+        private float4 _ambientColor;
+        private float4 _specularColor;
         private Light.LightType _type;
         private int _channel;
+
         #endregion
 
         #region Constructor
@@ -39,8 +43,10 @@ namespace Fusee.SceneManagement
         /// </summary>
          public override void SubmitWork(RenderContext renderContext)
          {
-             //TODO Warten Auf Timon und Casper
              renderContext.SetLight(_direction, _color, (int)_type, _channel);
+             renderContext.SetLightDiffuse(_channel, _diffuseColor);
+             renderContext.SetLightDiffuse(_channel, _ambientColor);
+             renderContext.SetLightDiffuse(_channel, _specularColor);
              //Console.WriteLine("DirectionalLight worked");
          }
 

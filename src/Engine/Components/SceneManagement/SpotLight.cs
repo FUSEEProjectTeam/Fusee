@@ -58,6 +58,9 @@ namespace Fusee.SceneManagement
             _direction = direction;
             _position = position;
             _color = color;
+            _diffuseColor = new float4(0.6f, 0.6f, 0.6f, 1);
+            _ambientColor = new float4(0.3f, 0.3f, 0.3f, 1);
+            _specularColor = new float4(0.1f, 0.1f, 0.1f, 1);
             _type = LightType.Spot;
             _channel = channel;
         }

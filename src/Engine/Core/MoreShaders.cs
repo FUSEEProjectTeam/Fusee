@@ -223,6 +223,7 @@ void main()
         endIntensity += max(dot(-normalize(FUSEE_L7_DIRECTION),normalize(vNormal)),0.0) * FUSEE_L7_DIFFUSE;
     }
     endIntensity += endAmbient; 
+    endIntensity = clamp(endIntensity, 0.0, 1.0);
 
     gl_FragColor = texture2D(texture1, vUV) * endIntensity; 
 }";
@@ -238,7 +239,7 @@ uniform mat4 FUSEE_MV;
 uniform mat4 FUSEE_MVP;  
 
 uniform vec4 FUSEE_L0_AMBIENT;
-uniform vec4 FUSEE_L1_AMBIENT;
+uniform vec4 FUSEE_L1_AMwBIENT;
 uniform vec4 FUSEE_L2_AMBIENT;
 uniform vec4 FUSEE_L3_AMBIENT;
 uniform vec4 FUSEE_L4_AMBIENT;
