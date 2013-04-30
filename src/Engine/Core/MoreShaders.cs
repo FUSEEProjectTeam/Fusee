@@ -97,6 +97,7 @@ attribute vec2 fuUV;
        
 uniform mat4 FUSEE_MVP;  //model view projection matrix
 uniform mat4 FUSEE_ITMV; //inverte transformierte model view matrix
+uniform mat4 FUSEE_M;
 
 uniform vec4 FUSEE_L0_AMBIENT;
 uniform vec4 FUSEE_L1_AMBIENT;
@@ -125,7 +126,7 @@ vec3 vPos;
 void main()
 {
     vUV = fuUV;
-    vNormal = normalize(mat3(FUSEE_ITMV[0].xyz, FUSEE_ITMV[1].xyz, FUSEE_ITMV[2].xyz) * fuNormal);
+    vNormal = normalize(mat3(FUSEE_M[0].xyz, FUSEE_M[1].xyz, FUSEE_M[2].xyz) * fuNormal);
 
     if(FUSEE_L0_ACTIVE == 1.0) {
         endAmbient += FUSEE_L0_AMBIENT;
@@ -239,7 +240,7 @@ uniform mat4 FUSEE_MV;
 uniform mat4 FUSEE_MVP;  
 
 uniform vec4 FUSEE_L0_AMBIENT;
-uniform vec4 FUSEE_L1_AMwBIENT;
+uniform vec4 FUSEE_L1_AMBIENT;
 uniform vec4 FUSEE_L2_AMBIENT;
 uniform vec4 FUSEE_L3_AMBIENT;
 uniform vec4 FUSEE_L4_AMBIENT;
@@ -389,6 +390,7 @@ attribute vec2 fuUV;
        
 uniform mat4 FUSEE_MVP;  //model view projection matrix
 uniform mat4 FUSEE_ITMV; //inverte transformierte model view matrix
+uniform mat4 FUSEE_M;
 
 uniform vec4 FUSEE_L0_AMBIENT;
 uniform vec4 FUSEE_L1_AMBIENT;
@@ -418,7 +420,7 @@ vec3 vPos;
 void main()
 {
     vUV = fuUV;
-    vNormal = normalize(mat3(FUSEE_ITMV[0].xyz, FUSEE_ITMV[1].xyz, FUSEE_ITMV[2].xyz) * fuNormal);
+    vNormal = normalize(mat3(FUSEE_M[0].xyz, FUSEE_M[1].xyz, FUSEE_M[2].xyz) * fuNormal);
 
     eyeVector = mat3(FUSEE_MVP[0].xyz, FUSEE_MVP[1].xyz, FUSEE_MVP[2].xyz) * fuVertex;
       
@@ -515,7 +517,7 @@ void main()
 {
     vec4 endSpecular = vec4(0,0,0,0);
     if(FUSEE_L0_ACTIVE == 1.0) {
-        vec3 vHalfVector = normalize(normalize(eyeVector) - normalize(eyeVector - FUSEE_L0_POSITION));
+        vec3 vHalfVector = normalize(normalize(eyeVector) - normalize(eyeVector - FUSEE_L0_DIRECTION));
         float L0NdotHV = max(dot(normalize(vNormal), vHalfVector), 0.0);
         float shine = pow(L0NdotHV, specularLevel) * 8.0;
         endSpecular += FUSEE_L0_SPECULAR * shine;
@@ -599,7 +601,8 @@ void main()
     }
 
     endIntensity += endSpecular;
-    endIntensity += endAmbient; 
+    endIntensity += endAmbient;
+    endIntensity = clamp(endIntensity, 0, 1); 
     gl_FragColor = texture2D(texture1, vUV) * endIntensity; 
 }";
 

@@ -11,7 +11,8 @@ namespace Fusee.SceneManagement
     {
 
         private float3 _position;
-        private float4 _color;
+        private float4 _diffuseColor;
+        private float4 _ambientColor;
         private Light.LightType _type;
         private int _channel;
 
@@ -23,11 +24,12 @@ namespace Fusee.SceneManagement
         /// <param name="color">The color of the light (Red, Green, Blue, Alpha).</param>
         /// <param name="type">The light type.</param>
         /// <param name="channel">The memory space of the light(0 - 7).</param>
-        public RenderPointLight(float3 position, float4 color, Light.LightType type, int channel)
+        public RenderPointLight(float3 position, float4 diffuse, float4 ambient, Light.LightType type, int channel)
         {
             _position = position;
             _type = Light.LightType.Point;
-            _color = color;
+            _diffuseColor = diffuse;
+            _ambientColor = ambient;
             _channel = channel;
         }
         /// <summary>
@@ -36,7 +38,7 @@ namespace Fusee.SceneManagement
          public override void SubmitWork(RenderContext renderContext)
          {
              //TODO Warten Auf Timon und Casper
-             renderContext.SetLight(_position, _color, (int)_type, _channel);
+             renderContext.SetLight(_position, _diffuseColor, _ambientColor, (int)_type, _channel);
              //Console.WriteLine("Pointlight worked");
          }
     }

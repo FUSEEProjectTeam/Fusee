@@ -66,7 +66,7 @@ namespace Fusee.SceneManagement
         /// </summary>
         public void TraverseForRendering(SceneVisitorRendering sceneVisitorRendering)
         {
-            sceneVisitorRendering.AddLightPoint(_position , _color, _type, _channel);
+            sceneVisitorRendering.AddLightPoint(_position , _diffuseColor, _ambientColor, _type, _channel);
         }
 
         #endregion

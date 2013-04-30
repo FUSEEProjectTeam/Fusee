@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using Examples.LightTypeTest;
 using Examples.Solar;
 using Fusee.Engine;
 using Fusee.Math;
@@ -15,11 +16,13 @@ namespace Examples.FuseeExampleApp1
         {
             SceneManager.RC = RC;
             SceneEntity _object;
-            DirectionalLight direct = new DirectionalLight(new float3(1, 0, 0), new float4(1, 1, 1, 1), new float3(0, 0, 0), 0);
+            DirectionalLight direct = new DirectionalLight(new float3(1, 1, 1), new float4(0.7f, 0.7f, 0.7f, 1), new float4(0.3f, 0.3f, 0.3f, 1), new float3(0, 0, 0), 0);
 
             Geometry sphere = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Sphere.obj.model"));
             Geometry spacebox = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/spacebox.obj.model"));
             Geometry cube = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Cube.obj.model"));
+            Geometry lamp = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/lamp2.obj.model"));
+
 
             SceneEntity _emptySphere;
             SceneEntity _emptyCube;
@@ -49,18 +52,18 @@ namespace Examples.FuseeExampleApp1
             SceneManager.Manager.AddSceneEntity(_spaceBox);
 
             //Sphere
-            _object = new SceneEntity("Sphere1", new ActionCode(), _emptySphere, new DiffuseMaterial(MoreShaders.GetShader("diffuse", RC), "Assets/metall.jpg"), new Renderer(sphere));
+            _object = new SceneEntity("Sphere1", new ActionCode(), _emptySphere, new DiffuseMaterial(MoreShaders.GetShader("diffuse", RC), "Assets/wall.jpg"), new Renderer(sphere));
             _object.transform.GlobalPosition = new float3(2.9f, 0, 0);
             _object.transform.GlobalScale = new float3(1, 1, 1);
 
             // LightObject
-            _object = new SceneEntity("DirLight", new RotateAction(new float3(-45,90,0)), _emptyLight, new DiffuseMaterial(MoreShaders.GetShader("diffuse2", RC), "Assets/metall.jpg"), new Renderer(sphere));
+            _object = new SceneEntity("DirLight", new RotateAction(new float3(0,20,0)), _emptyLight, new DiffuseMaterial(MoreShaders.GetShader("diffuse", RC), "Assets/metall.jpg"), new Renderer(lamp));
             _object.transform.GlobalPosition = new float3(0, 0, 0);
-            _object.transform.GlobalScale = new float3(0.1f, 0.1f, 0.1f);
+            _object.transform.GlobalScale = new float3(0.3f, 0.3f, 0.3f);
             _object.AddComponent(direct);
 
             //Cube
-            _object = new SceneEntity("Cube1", new ActionCode(), _emptyCube, new DiffuseMaterial(MoreShaders.GetShader("diffuse", RC), "Assets/metall.jpg"), new Renderer(cube));
+            _object = new SceneEntity("Cube1", new ActionCode(), _emptyCube, new SpecularMaterial(MoreShaders.GetShader("specular", RC), "Assets/normal2.jpg"), new Renderer(cube));
             _object.transform.GlobalPosition = new float3(-2.9f, 0, 0);
             _object.transform.GlobalScale = new float3(0.01f, 0.01f, 0.01f);
 

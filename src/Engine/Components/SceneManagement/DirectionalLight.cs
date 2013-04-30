@@ -25,11 +25,10 @@ namespace Fusee.SceneManagement
         /// <param name="color">The color of the light.</param>
         /// <param name="position">The position in the scene.</param>
         /// <param name="channel">The memory space of the light.(0 - 7)</param>
-        public DirectionalLight(float3 direction, float4 color, float3 position, int channel)
+        public DirectionalLight(float3 direction, float4 diffuse, float4 ambient, float3 position, int channel)
         {
             _position = position;
             _direction = direction;
-            _color = color;
             _diffuseColor = new float4(0.6f, 0.6f, 0.6f, 1);
             _ambientColor = new float4(0.3f, 0.3f, 0.3f, 1);
             _specularColor = new float4(0.1f, 0.1f, 0.1f, 1);
@@ -49,7 +48,6 @@ namespace Fusee.SceneManagement
             _color = new float4(0.5f, 0.5f, 0.5f, 0.5f);
             _diffuseColor = new float4(0.6f, 0.6f, 0.6f, 1);
             _ambientColor = new float4(0.3f, 0.3f, 0.3f, 1);
-            _specularColor = new float4(0.1f, 0.1f, 0.1f, 1);
             _type = LightType.Directional;
             _channel = channel;
         }
@@ -61,7 +59,7 @@ namespace Fusee.SceneManagement
         /// </summary>
         public void TraverseForRendering(SceneVisitorRendering sceneVisitorRendering)
         {
-            sceneVisitorRendering.AddLightDirectional(_direction, _color, _type, _channel);
+            sceneVisitorRendering.AddLightDirectional(_direction, _diffuseColor, _ambientColor, _type, _channel);
         }
 
         #endregion

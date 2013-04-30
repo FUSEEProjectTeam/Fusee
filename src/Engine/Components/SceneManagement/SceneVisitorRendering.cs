@@ -216,12 +216,13 @@ namespace Fusee.SceneManagement
         /// Adds the directional lightto the rendering queue.
         /// </summary>
         /// <param name="direction">The direction.</param>
-        /// <param name="color">The color.</param>
+        /// <param name="diffuse">The diffuse color.</param>
+        /// <param name="ambient">The ambient color.</param>
         /// <param name="type">The type.</param>
         /// <param name="channel">The channel.</param>
-        public void AddLightDirectional(float3 direction, float4 color, Light.LightType type, int channel) 
+        public void AddLightDirectional(float3 direction, float4 diffuse, float4 ambient, Light.LightType type, int channel) 
         {
-            RenderDirectionalLight light = new RenderDirectionalLight(direction, color, type, channel );
+            RenderDirectionalLight light = new RenderDirectionalLight(direction, diffuse, ambient, type, channel );
             _queue.AddLightJob(light);
         }
 
@@ -232,9 +233,9 @@ namespace Fusee.SceneManagement
         /// <param name="color">The color.</param>
         /// <param name="type">The type.</param>
         /// <param name="channel">The channel.</param>
-        public void AddLightPoint(float3 position, float4 color, Light.LightType type, int channel) 
+        public void AddLightPoint(float3 position, float4 diffuse, float4 ambient, Light.LightType type, int channel) 
         {
-            RenderPointLight light = new RenderPointLight(position, color, type, channel );
+            RenderPointLight light = new RenderPointLight(position, diffuse, ambient, type, channel );
             _queue.AddLightJob(light);
         }
 
