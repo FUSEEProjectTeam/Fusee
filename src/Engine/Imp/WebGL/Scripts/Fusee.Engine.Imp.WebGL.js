@@ -576,12 +576,11 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
     $.Method({ Static: false, Public: true }, "IRenderContextImp_GetShaderParam",
     new JSIL.MethodSignature($WebGLImp.TypeRef("Fusee.Engine.IShaderParam"), [$WebGLImp.TypeRef("Fusee.Engine.IShaderProgramImp"), $.String]),
     function IRenderContextImp_GetShaderParam(program, paramName) {
-<<<<<<< Temporary merge branch 1
 		if(program.__ThisTypeId__ != undefined){ //i got program
 			var h = this.gl.getUniformLocation(program.Program, paramName);
 			if (h == null)
 				return null;
-			var ret = new $asmThis.Fusee.Engine.ShaderParam();
+			var ret = new $WebGLImp.Fusee.Engine.ShaderParam();
 			ret.handle = h;
 			ret.id = this._currentShaderParamHandle++;
 			return ret;
@@ -589,12 +588,11 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
 			var h = this.gl.getUniformLocation(program, paramName);
 			if (h == null)
 				return null;
-			var ret = new $asmThis.Fusee.Engine.ShaderParam();
+			var ret = new $WebGLImp.Fusee.Engine.ShaderParam();
 			ret.handle = h;
 			ret.id = this._currentShaderParamHandle++;
 			return ret;
 		}
-=======
         var h = this.gl.getUniformLocation(program.Program, paramName);
         if (h == null)
             return null;
@@ -602,16 +600,15 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
         ret.handle = h;
         ret.id = this._currentShaderParamHandle++;
         return ret;
->>>>>>> Temporary merge branch 2
     }
   );
   
     var $T05 = function () {
-    return ($T05 = JSIL.Memoize($asm05.System.Collections.Generic.List$b1.Of($asmThis.Fusee.Engine.ShaderParamInfo))) ();
+    return ($T05 = JSIL.Memoize($asm05.System.Collections.Generic.List$b1.Of($WebGLImp.Fusee.Engine.ShaderParamInfo))) ();
   };
   
   $.Method({Static:false, Public:true }, "IRenderContextImp_GetShaderParamList", 
-    new JSIL.MethodSignature($asmThis.TypeRef("System.Collections.Generic.IList`1", [$asm00.TypeRef("Fusee.Engine.ShaderParamInfo")]), [$asm01.TypeRef("Fusee.Engine.IShaderProgramImp")], []), 
+    new JSIL.MethodSignature($WebGLImp.TypeRef("System.Collections.Generic.IList`1", [$asm00.TypeRef("Fusee.Engine.ShaderParamInfo")]), [$asm01.TypeRef("Fusee.Engine.IShaderProgramImp")], []), 
     function IRenderContextImp_GetShaderParamList (shaderProgram) {
 	  var sp = shaderProgram.Program;
 	  var nParams = this.gl.getProgramParameter(sp,this.gl.ACTIVE_UNIFORMS);

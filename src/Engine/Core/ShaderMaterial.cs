@@ -21,17 +21,17 @@ namespace Fusee.Engine
         // You will need to set the value before using the material.
         public ShaderMaterial(ShaderProgram program)
         {
-            _sp = program;
-            _list = new Dictionary<string, ParamPair>();
-            foreach (KeyValuePair<string, ShaderParamInfo> k in _sp._paramsByName)
-            {
-                var pair = new ParamPair
-                               {
-                                   ParamInfo = k.Value,
-                                   Value = null  //_sp._rci.GetParamValue(program._spi, k.Value.Handle)
-                               };
-                _list.Add(k.Key, pair);
-            }
+            //_sp = program;
+            //_list = new Dictionary<string, ParamPair>();
+            //foreach (KeyValuePair<string, ShaderParamInfo> k in _sp._paramsByName)
+            //{
+            //    var pair = new ParamPair
+            //                   {
+            //                       ParamInfo = k.Value,
+            //                       Value = null  //_sp._rci.GetParamValue(program._spi, k.Value.Handle)
+            //                   };
+            //    _list.Add(k.Key, pair);
+            //}
             
         }
 
@@ -44,72 +44,72 @@ namespace Fusee.Engine
         //    UpdateMaterial(RC);
         //}
 
-        public void SetValue(string name, int value)
-        {
-            ShaderParamInfo info;
-            if (_sp._paramsByName.TryGetValue(name, out info))
-                _sp._rci.SetShaderParam(info.Handle, value);
-            ParamPair pair;
-            pair.ParamInfo = info;
-            pair.Value = value;
-            if (_list.ContainsKey(name))
-                _list[name] = pair;
-        }
-        public void SetValue(string name, float value)
-        {
-            ShaderParamInfo info;
-            if (_sp._paramsByName.TryGetValue(name, out info))
-                _sp._rci.SetShaderParam(info.Handle, value);
-            ParamPair pair;
-            pair.ParamInfo = info;
-            pair.Value = value;
-            if (_list.ContainsKey(name))
-                _list[name] = pair;
-        }
-        public void SetValue(string name, float2 value)
-        {
-            ShaderParamInfo info;
-            if (_sp._paramsByName.TryGetValue(name, out info))
-                _sp._rci.SetShaderParam(info.Handle, value);
-            ParamPair pair;
-            pair.ParamInfo = info;
-            pair.Value = value;
-            if (_list.ContainsKey(name))
-                _list[name] = pair;
-        }
-        public void SetValue(string name, float3 value)
-        {
-            ShaderParamInfo info;
-            if (_sp._paramsByName.TryGetValue(name, out info))
-                _sp._rci.SetShaderParam(info.Handle, value);
-            ParamPair pair;
-            pair.ParamInfo = info;
-            pair.Value = value;
-            if (_list.ContainsKey(name))
-                _list[name] = pair;
-        }
-        public void SetValue(string name, float4 value)
-        {
-            ShaderParamInfo info;
-            if (_sp._paramsByName.TryGetValue(name, out info))
-                _sp._rci.SetShaderParam(info.Handle, value);
-            ParamPair pair;
-            pair.ParamInfo = info;
-            pair.Value = value;
-            if (_list.ContainsKey(name))
-                _list[name] = pair;
-        }
-        public void SetValue(string name, float4x4 value)
-        {
-            ShaderParamInfo info;
-            if (_sp._paramsByName.TryGetValue(name, out info))
-                _sp._rci.SetShaderParam(info.Handle, value);
-            ParamPair pair;
-            pair.ParamInfo = info;
-            pair.Value = value;
-            if (_list.ContainsKey(name))
-                _list[name] = pair;
-        }
+        //public void SetValue(string name, int value)
+        //{
+        //    ShaderParamInfo info;
+        //    if (_sp._paramsByName.TryGetValue(name, out info))
+        //        _sp._rci.SetShaderParam(info.Handle, value);
+        //    ParamPair pair;
+        //    pair.ParamInfo = info;
+        //    pair.Value = value;
+        //    if (_list.ContainsKey(name))
+        //        _list[name] = pair;
+        //}
+        //public void SetValue(string name, float value)
+        //{
+        //    ShaderParamInfo info;
+        //    if (_sp._paramsByName.TryGetValue(name, out info))
+        //        _sp._rci.SetShaderParam(info.Handle, value);
+        //    ParamPair pair;
+        //    pair.ParamInfo = info;
+        //    pair.Value = value;
+        //    if (_list.ContainsKey(name))
+        //        _list[name] = pair;
+        //}
+        //public void SetValue(string name, float2 value)
+        //{
+        //    ShaderParamInfo info;
+        //    if (_sp._paramsByName.TryGetValue(name, out info))
+        //        _sp._rci.SetShaderParam(info.Handle, value);
+        //    ParamPair pair;
+        //    pair.ParamInfo = info;
+        //    pair.Value = value;
+        //    if (_list.ContainsKey(name))
+        //        _list[name] = pair;
+        //}
+        //public void SetValue(string name, float3 value)
+        //{
+        //    ShaderParamInfo info;
+        //    if (_sp._paramsByName.TryGetValue(name, out info))
+        //        _sp._rci.SetShaderParam(info.Handle, value);
+        //    ParamPair pair;
+        //    pair.ParamInfo = info;
+        //    pair.Value = value;
+        //    if (_list.ContainsKey(name))
+        //        _list[name] = pair;
+        //}
+        //public void SetValue(string name, float4 value)
+        //{
+        //    ShaderParamInfo info;
+        //    if (_sp._paramsByName.TryGetValue(name, out info))
+        //        _sp._rci.SetShaderParam(info.Handle, value);
+        //    ParamPair pair;
+        //    pair.ParamInfo = info;
+        //    pair.Value = value;
+        //    if (_list.ContainsKey(name))
+        //        _list[name] = pair;
+        //}
+        //public void SetValue(string name, float4x4 value)
+        //{
+        //    ShaderParamInfo info;
+        //    if (_sp._paramsByName.TryGetValue(name, out info))
+        //        _sp._rci.SetShaderParam(info.Handle, value);
+        //    ParamPair pair;
+        //    pair.ParamInfo = info;
+        //    pair.Value = value;
+        //    if (_list.ContainsKey(name))
+        //        _list[name] = pair;
+        //}
 
 
  

@@ -57,19 +57,17 @@ namespace Examples.Simple
 
         public override void Init()
         {
-            Mesh = geo.ToMesh();
             // initialize the variables
             _meshTea = MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
             _meshFace = MeshReader.LoadMesh(@"Assets/Face.obj.model");
 
-            ShaderProgram sp = RC.CreateShader(Vs, Ps);
+            //ShaderProgram sp = RC.CreateShader(Vs, Ps);
             var sp = RC.CreateShader(Vs, Ps);
 
-
-            RC.SetShader(sp);
+            // im webgl iteration über liste auslagern und beim ersten aufruf von getshader param einbauen.
             VColorParam = sp.GetShaderParam("vColor");
             _vColorParam = sp.GetShaderParam("vColor");
-
+// RC.SetShader(sp);
 
 
 
@@ -121,8 +119,8 @@ namespace Examples.Simple
 
             // first mesh
             RC.ModelView = mtxRot * float4x4.CreateTranslation(-100, 0, 0) * mtxCam;
-            RC.Render(Mesh);
-            RC.Render(MeshFace);
+            //RC.Render(Mesh);
+            //RC.Render(MeshFace);
             RC.SetShaderParam(_vColorParam, new float4(0.5f, 0.8f, 0, 1));
             RC.Render(_meshTea);
 
@@ -146,7 +144,7 @@ namespace Examples.Simple
 
         public static void Main()
         {
-            Simple app = new Simple();
+            //Simple app = new Simple();
             var app = new Simple();
             app.Run();
         }
