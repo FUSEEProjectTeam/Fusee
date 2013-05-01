@@ -199,15 +199,15 @@ namespace Examples.CubeAndTiles
                 _dirtyFlag = true;
 
                 // rotate and check if target reached
-                _rotateYX[i] += CubeSpeed*_curLevel.LvlDeltaTime;
+                _rotateYX[i] += CubeSpeed*(float) Time.Instance.DeltaTime;
                 if (_rotateYX[i] < PiHalf) continue;
 
                 PosCurXY[i] += _curDirXY[i];
 
                 // rotation with quaterions
                 var rotVektor = (i == 0)
-                                    ? new float3(-_curDirXY[0]*PiHalf, 0, 0)    // around x-axis
-                                    : new float3(0, 0, _curDirXY[1]*PiHalf);    // around y-axis
+                                    ? new float3(0, -_curDirXY[0] * PiHalf, 0)   // around y-axis?
+                                    : new float3(_curDirXY[1]*PiHalf, 0, 0);     // around x-axis
 
                 _orientQuat *= Quaternion.EulerToQuaternion(rotVektor);
                 _orientQuat.Normalize();
@@ -215,7 +215,7 @@ namespace Examples.CubeAndTiles
                 // reset
                 _rotateYX[i] = 0;
                 _curDirXY[i] = 0;
-
+               
                 // check if special/dead field
                 _curLevel.CheckField(PosCurXY);
             }
@@ -239,7 +239,7 @@ namespace Examples.CubeAndTiles
                 var mtxObjRot = float4x4.CreateRotationY(_rotateYX[0]*_curDirXY[0])*
                                 float4x4.CreateRotationX(-_rotateYX[1]*_curDirXY[1]);
 
-                var mtxObjOrientRot = Quaternion.QuaternionToMatrix(_orientQuat);
+                var mtxObjOrientRot = float4x4.Transpose(Quaternion.QuaternionToMatrix(_orientQuat));
 
                 // cube position
                 var mtxObjPos = float4x4.CreateTranslation(PosCurXY[0]*CubeSize, PosCurXY[1]*CubeSize,
@@ -255,9 +255,7 @@ namespace Examples.CubeAndTiles
 
             // render
             _curLevel.RContext.ModelView = _curLevel.AddCameraTrans(ModelView);
-
             _curLevel.RContext.SetShaderParam(_curLevel.VColorObj, new float4(_curLevel.CubeColor, _curBright));
-            _curLevel.RContext.SetShaderParamTexture(_curLevel.VTextureObj, _curLevel.TextureCube);
 
             _curLevel.RContext.Render(_cubeMesh);
         }

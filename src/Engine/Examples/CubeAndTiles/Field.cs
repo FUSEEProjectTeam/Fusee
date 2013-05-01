@@ -15,10 +15,15 @@ namespace Examples.CubeAndTiles
         private float _veloZ;
         private float _curBright;
 
+        private readonly float _fieldBright;
+        private readonly float3 _fieldColor;
         private readonly float _randomRotZ;
 
         internal FieldTypes Type { get; private set; }
         internal FieldStates State { get; private set; }
+
+        private float4x4 _modelView;
+        private bool _dirtyFlag;
 
         // enums
         public enum FieldTypes
@@ -44,15 +49,40 @@ namespace Examples.CubeAndTiles
             _fieldId = id;
 
             CoordXY = new[] {x, y};
+            Type = type;
 
             _posZ = 0.0f;
             _veloZ = 0.0f;
             _curBright = 0.0f;
-            
+
+            // color and brightness
+            _fieldBright = 1.0f;
+
+            switch (Type)
+            {
+                case FieldTypes.FtStart:
+                    _fieldBright = 0.8f;
+                    _fieldColor = new float3(0.0f, 1.0f, 0.0f);
+                    break;
+
+                case FieldTypes.FtEnd:
+                    _fieldBright = 1.0f;
+                    _fieldColor = new float3(1.0f, 0.1f, 0.1f);
+                    break;
+
+                case FieldTypes.FtNormal:
+                    _fieldColor = new float3(0.8f, 0.8f, 0.8f);
+                    break;
+
+                default:
+                    _fieldColor = new float3(0.0f, 0.0f, 0.0f);
+                    break;
+            }
+
             _randomRotZ = curLevel.ObjRandom.Next(0, 4);
 
-            Type = type;
             State = FieldStates.FsLoading;
+            _dirtyFlag = true;
         }
 
         // methods
@@ -94,7 +124,9 @@ namespace Examples.CubeAndTiles
                 _curBright = 1.0f;
 
                 State = FieldStates.FsAlive;
-            }                
+            }
+
+            _dirtyFlag = true;
         }
 
         private void DeadAnimation()
@@ -108,12 +140,14 @@ namespace Examples.CubeAndTiles
             }
             else
                 _curBright = 0;
+
+            _dirtyFlag = true;
         }
 
         public void Render(float4x4 mtxObjRot, bool onlyRender = false)
         {
             // do not render dead fields with brightness <= 0
-            if ((_curBright <= 0) && (State == FieldStates.FsDead))
+            if ((_curBright <= MathHelper.EpsilonFloat) && (State == FieldStates.FsDead))
                 return;
 
             if (!onlyRender)
@@ -122,42 +156,24 @@ namespace Examples.CubeAndTiles
                 DeadAnimation();
             }
 
-            // color fields
-            float3 vColor;
-            var val = 1.0f;
-
-            switch (Type)
+            if (_dirtyFlag)
             {
-                case FieldTypes.FtStart:
-                    val = 0.8f;
-                    vColor = new float3(0.0f, 1.0f, 0.0f);
-                    break;
+                // translate fields
+                var mtxFieldRot = float4x4.CreateRotationZ((float) (_randomRotZ*System.Math.PI/2));
 
-                case FieldTypes.FtEnd:
-                    val = 1.0f;
-                    vColor = new float3(1.0f, 0.1f, 0.1f);
-                    break;
+                var mtxObjPos = float4x4.CreateTranslation(CoordXY[0]*200, CoordXY[1]*200,
+                                                           _posZ*100 - (RollingCube.CubeSize/2.0f + 15));
 
-                case FieldTypes.FtNormal:
-                    vColor = new float3(0.8f, 0.8f, 0.8f);
-                    break;
+                // set translation and color, then render
+                _modelView = mtxObjRot*mtxFieldRot*mtxObjPos;
 
-                default:
-                    vColor = new float3(0.0f, 0.0f, 0.0f);
-                    break;
+                _dirtyFlag = false;
             }
 
-            // translate fields
-            var mtxFieldRot = float4x4.CreateRotationZ((float) (_randomRotZ*System.Math.PI/2));
+            _curLevel.RContext.ModelView = _modelView*_curLevel.CamTrans;
 
-            var mtxObjPos = float4x4.CreateTranslation(CoordXY[0]*200, CoordXY[1]*200,
-                                                       _posZ*100 - (RollingCube.CubeSize/2.0f + 15));
-
-            // set translation and color, then render
-            _curLevel.RContext.ModelView = _curLevel.AddCameraTrans(mtxObjRot*mtxFieldRot*mtxObjPos);
-
-            _curLevel.RContext.SetShaderParam(_curLevel.VColorObj, new float4(vColor, _curBright * val));
-            _curLevel.RContext.SetShaderParamTexture(_curLevel.VTextureObj, _curLevel.TextureField);
+            // TODO: SetShaderParam shouldn't set this if it's already set
+            _curLevel.RContext.SetShaderParam(_curLevel.VColorObj, new float4(_fieldColor, _curBright*_fieldBright));
 
             _curLevel.RContext.Render(_fieldMesh);
         }

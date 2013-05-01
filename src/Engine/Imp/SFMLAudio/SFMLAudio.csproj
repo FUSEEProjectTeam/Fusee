@@ -64,5 +64,9 @@
     <Exec Condition=" '$(OS)' != 'Windows_NT' And Exists('$(OutputPath)') " Command="rm '$(OutputPath)'Fusee.Engine.Imp.SFMLAudio.*" />
     <Exec Condition=" '$(OS)' == 'Windows_NT' And Exists('$(OutputPath)SFMLAudio.dll') " Command="del /q $(OutputPath)SFMLAudio.dll" />
     <Exec Condition=" '$(OS)' != 'Windows_NT' And Exists('$(OutputPath)SFMLAudio.dll') " Command="rm '$(OutputPath)'SFMLAudio.dll" />
+    <Exec Condition=" '$(OS)' == 'Windows_NT' And Exists('$(OutputPath)') " Command='del /q "$(OutputPath)Fusee.Engine.Imp.NAudio.*"' />
+    <Exec Condition=" '$(OS)' != 'Windows_NT' And Exists('$(OutputPath)') " Command="rm '$(OutputPath)'Fusee.Engine.Imp.NAudio.*" />
+    <Exec Condition=" '$(OS)' == 'Windows_NT' And Exists('$(OutputPath)NAudio.dll') " Command='del /q "$(OutputPath)NAudio.dll"' />
+    <Exec Condition=" '$(OS)' != 'Windows_NT' And Exists('$(OutputPath)NAudio.dll') " Command="rm '$(OutputPath)'NAudio.dll" />
   </Target>
 </Project>

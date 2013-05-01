@@ -1,23 +1,28 @@
 ﻿using Fusee.Engine;
+using Fusee.SceneManagement;
 using Fusee.Math;
 
 namespace Examples.$safeprojectname$
 {
     public class $safeprojectname$ : RenderCanvas 
     {
+        // is called on startup
         public override void Init()
         {
-            // is called on startup
+            RC.ClearColor = new float4(0.1f, 0.1f, 0.5f, 1);
         }
 
+        // is called once a frame
         public override void RenderAFrame()
         {
-            // is called once a frame
+            RC.Clear(ClearFlags.Color | ClearFlags.Depth);
+
+            Present();
         }
 
+        // is called when the window was resized
         public override void Resize()
         {
-            // is called when the window is resized
             RC.Viewport(0, 0, Width, Height);
 
             var aspectRatio = Width / (float)Height;
@@ -29,6 +34,5 @@ namespace Examples.$safeprojectname$
             var app = new $safeprojectname$();
             app.Run();
         }
-
     }
 }

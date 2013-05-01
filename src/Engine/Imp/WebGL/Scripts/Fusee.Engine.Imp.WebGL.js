@@ -325,6 +325,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
     function _ctor(renderCanvas) {
         this.gl = document.getElementById("canvas").getContext("experimental-webgl");
         this.gl.enable(this.gl.DEPTH_TEST);
+        this.gl.enable(this.gl.CULL_FACE);
         this.gl.clearColor(0.0, 0.0, 0.2, 1.0);
         this._currentTextureUnit = 0;
 
@@ -512,7 +513,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
         this.gl.clear(flags.value);
     }
     );
-    
+
     $.Method({ Static: false, Public: true }, "IRenderContextImp_ColorMask",
     new JSIL.MethodSignature(null, [$.Boolean, $.Boolean, $.Boolean, $.Boolean]),
     function IRenderContextImp_ColorMask(red, green, blue, alpha) {
@@ -619,6 +620,41 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
         }
     }
   );
+
+    $.Method({ Static: false, Public: true }, "IRenderContextImp_DebugLine",
+        new JSIL.MethodSignature(null, [$asm00.TypeRef("Fusee.Math.float3"), $asm00.TypeRef("Fusee.Math.float3"), $asm00.TypeRef("Fusee.Math.float4")]),
+        function IRenderContextImp_DebugLine(start, end, color) {
+
+
+
+            var vertices = [];
+            vertices.push(start.x, start.y, start.z);
+            vertices.push(end.x, end.y, end.z);
+
+
+            var itemSize = 3;
+            var numItems = vertices.length / itemSize;
+            var posBuffer = this.gl.createBuffer();
+
+    
+            
+
+
+            this.gl.enableVertexAttribArray($fuseeCommon.Fusee.Engine.Helper.VertexAttribLocation);
+            this.gl.bindBuffer(this.gl.ARRAY_BUFFER, posBuffer);
+            this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(vertices), this.gl.STATIC_DRAW);
+            this.gl.vertexAttribPointer($fuseeCommon.Fusee.Engine.Helper.VertexAttribLocation, itemSize, this.gl.FLOAT, false, 0, 0);
+
+
+
+            
+            this.gl.drawArrays(this.gl.LINE_STRIP, 0, numItems);
+
+  
+            this.gl.disableVertexAttribArray($fuseeCommon.Fusee.Engine.Helper.VertexAttribLocation);
+        }
+    );
+
 
     $.Method({ Static: false, Public: true }, "IRenderContextImp_SetShader",
     new JSIL.MethodSignature(null, [$WebGLImp.TypeRef("Fusee.Engine.IShaderProgramImp")]),
