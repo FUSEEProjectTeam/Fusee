@@ -320,16 +320,16 @@ void main()
             _texture2ParamGlove = SpGlove.GetShaderParam("normalTex");
             _specularLevelGlove = SpGlove.GetShaderParam("specularLevel");
 
-            ImageData imgDataGlove = RC.LoadImage("Assets/HandAOMap.tif");
-            ImageData imgData2Glove = RC.LoadImage("Assets/HandschuhNormalMap.png");
+            ImageData imgDataGlove = RC.LoadImage("Assets/HandAOMap.jpg");
+            ImageData imgData2Glove = RC.LoadImage("Assets/HandschuhNormalMap.jpg");
             iTexGlove = RC.CreateTexture(imgDataGlove);
             iTex2Glove = RC.CreateTexture(imgData2Glove);
             RC.SetShaderParamTexture(_texture1ParamGlove, iTexGlove);
             RC.SetShaderParamTexture(_texture2ParamGlove, iTex2Glove);
             RC.SetShaderParam(_specularLevelGlove, 64.0f);
 
-            ImageData imgData = RC.LoadImage("Assets/TextureAtlas.tif");
-            ImageData imgData2 = RC.LoadImage("Assets/TextureAtlasNormal.png");
+            ImageData imgData = RC.LoadImage("Assets/TextureAtlas.jpg");
+            ImageData imgData2 = RC.LoadImage("Assets/TextureAtlasNormal.jpg");
             iTex = RC.CreateTexture(imgData);
             iTex2 = RC.CreateTexture(imgData2);
             RC.SetShaderParamTexture(_texture1ParamBody, iTex);
