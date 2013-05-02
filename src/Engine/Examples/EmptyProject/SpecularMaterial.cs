@@ -31,8 +31,8 @@ namespace Examples.LightTypeTest
         public override void Update(RenderContext renderContext)
         {
             renderContext.SetShader(sp);
-            renderContext.SetShaderParam(SpecularLevel, 32.0f);
             renderContext.SetShaderParamTexture(Textureparam, Tex);
+            renderContext.SetShaderParam(SpecularLevel, 32.0f);
 
         }
     }

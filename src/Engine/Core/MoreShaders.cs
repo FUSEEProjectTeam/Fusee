@@ -39,7 +39,7 @@ namespace Fusee.Engine
 
             if (name == "specular")
             {
-                ShaderProgram spSpecular = rc.CreateShader(VsSpecular, PsSpecular);
+                ShaderProgram spSpecular = rc.CreateShader(VsSpecular2, PsSpecular2);
                 return spSpecular;
             }
 
@@ -98,6 +98,8 @@ attribute vec2 fuUV;
 uniform mat4 FUSEE_MVP;  //model view projection matrix
 uniform mat4 FUSEE_ITMV; //inverte transformierte model view matrix
 uniform mat4 FUSEE_M;
+uniform mat4 FUSEE_V;
+uniform mat4 FUSEE_P;
 
 uniform vec4 FUSEE_L0_AMBIENT;
 uniform vec4 FUSEE_L1_AMBIENT;
@@ -153,6 +155,8 @@ void main()
         endAmbient += FUSEE_L7_AMBIENT;
     }
     
+
+
     gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
 }";
 
@@ -412,8 +416,10 @@ uniform float FUSEE_L5_ACTIVE;
 uniform float FUSEE_L6_ACTIVE;
 uniform float FUSEE_L7_ACTIVE;
 
+
 varying vec2 vUV;
 varying vec3 vNormal;
+varying vec3 viewVertex;
 varying vec4 endAmbient;
 varying vec3 eyeVector;
 
@@ -421,6 +427,7 @@ vec3 vPos;
  
 void main()
 {
+    viewVertex = fuVertex;
     vUV = fuUV;
     vNormal = normalize(mat3(FUSEE_M[0].xyz, FUSEE_M[1].xyz, FUSEE_M[2].xyz) * fuNormal);
 
@@ -514,16 +521,20 @@ varying vec3 vNormal;
 varying vec2 vUV;
 varying vec4 endAmbient;
 varying vec3 eyeVector;
+varying vec3 viewVertex;
 
 void main()
 {
     vec4 endSpecular = vec4(0,0,0,0);
+
+
     if(FUSEE_L0_ACTIVE == 1.0) {
         vec3 vHalfVector = normalize(normalize(eyeVector) - normalize(eyeVector - FUSEE_L0_DIRECTION));
         float L0NdotHV = max(dot(normalize(vNormal), vHalfVector), 0.0);
         float shine = pow(L0NdotHV, specularLevel) * 8.0;
         endSpecular += FUSEE_L0_SPECULAR * shine;
     }
+
     if(FUSEE_L1_ACTIVE == 1.0) {
         vec3 vHalfVector = normalize(normalize(eyeVector) - normalize(eyeVector - FUSEE_L1_POSITION));
         float L1NdotHV = max(dot(normalize(vNormal), vHalfVector), 0.0);
@@ -622,6 +633,7 @@ attribute vec2 fuUV;
        
 uniform mat4 FUSEE_MVP;  //model view projection matrix
 uniform mat4 FUSEE_ITMV; //inverte transformierte model view matrix
+uniform mat4 FUSEE_M;
 
 uniform vec4 FUSEE_L0_AMBIENT;
 uniform vec4 FUSEE_L1_AMBIENT;
@@ -646,14 +658,15 @@ varying vec3 lightDir[8];
 varying vec3 vNormal;
 varying vec4 endAmbient;
 varying vec3 eyeVector;
+varying vec3 viewVertex;
 
 vec3 vPos;
  
 void main()
 {
     vUV = fuUV;
-    vNormal = normalize(mat3(FUSEE_ITMV[0].xyz, FUSEE_ITMV[1].xyz, FUSEE_ITMV[2].xyz) * fuNormal);
-
+    vNormal = normalize(mat3(FUSEE_M[0].xyz, FUSEE_M[1].xyz, FUSEE_M[2].xyz) * fuNormal);
+    viewVertex = fuVertex;
     eyeVector = mat3(FUSEE_MVP[0].xyz, FUSEE_MVP[1].xyz, FUSEE_MVP[2].xyz) * -fuVertex;
       
     endAmbient = vec4(0,0,0,0);
@@ -744,6 +757,7 @@ varying vec3 vNormal;
 varying vec2 vUV;
 varying vec4 endAmbient;
 varying vec3 eyeVector;
+varying vec3 viewVertex;
  
 void main()
 {       
@@ -751,6 +765,8 @@ void main()
     float minVariance = maxVariance/2.0;
     vec3 tempNormal = vNormal + normalize(texture2D(normalTex, vUV).rgb * maxVariance - minVariance);
  
+
+
     vec4 endSpecular = vec4(0,0,0,0);
     if(FUSEE_L0_ACTIVE == 1.0 ) {
         vec3 vHalfVector = normalize(normalize(eyeVector) - normalize(eyeVector - FUSEE_L0_POSITION));
@@ -758,6 +774,11 @@ void main()
         float shine = pow(L3NdotHV, specularLevel) * 16.0;
         endSpecular += FUSEE_L0_SPECULAR * shine;
     }
+//    vec3 lightVec = normalize(FUSEE_L0_DIRECTION - eyeVector);
+//    vec3 r = -normalize(reflect(lightVec, vNormal));
+//    float s = pow(max(dot(r, normalize(-viewVertex)), 0.0), specularLevel);
+//    endSpecular = FUSEE_L0_SPECULAR * s;
+
     if(FUSEE_L1_ACTIVE == 1.0) {
         vec3 vHalfVector = normalize(normalize(eyeVector) - normalize(eyeVector - FUSEE_L1_POSITION));
         float L3NdotHV = max(dot(normalize(tempNormal), vHalfVector), 0.0);
@@ -802,6 +823,8 @@ void main()
     }
     
     vec4 endIntensity = vec4(0,0,0,0);
+
+
 
     if(FUSEE_L0_ACTIVE == 1.0) {
         endIntensity += max(dot(-normalize(FUSEE_L0_DIRECTION),normalize(tempNormal)),0.0) * FUSEE_L0_DIFFUSE;
@@ -886,5 +909,92 @@ private const string Vs = @"
             {             
                 gl_FragColor = texture2D(texture1, vUV)  /* *dot(vNormal, vec3(0, 0, 1))*/;
             }";
+
+
+        private const string VsSpecular2 = @"
+
+            attribute vec3 fuVertex;
+            attribute vec3 fuNormal;
+            attribute vec2 fuUV;
+                  
+            varying vec4 vColor;
+            varying vec3 vNormal;
+            varying vec2 vUV;
+            varying vec4 vWorldVertex;
+            varying vec3 vWorldNormal;
+            varying vec3 vViewVec;
+            varying vec4 endAmbient;
+    
+            uniform mat4 FUSEE_M;
+            uniform mat4 FUSEE_MV; 
+            uniform mat4 FUSEE_MVP;
+            uniform mat4 FUSEE_ITMV;
+            uniform mat4 FUSEE_V;
+            uniform mat4 FUSEE_P; 
+            uniform vec4 FUSEE_L0_AMBIENT;
+            uniform float FUSEE_L0_ACTIVE;
+
+
+            void main()
+            {
+                vWorldVertex = FUSEE_M * vec4(fuVertex, 1.0);
+                vec4 viewVertex = FUSEE_V * vWorldVertex;
+                gl_Position = FUSEE_P * viewVertex;
+                vUV = fuUV;
+
+                vWorldNormal = mat3(FUSEE_ITMV[0].xyz, FUSEE_ITMV[1].xyz, FUSEE_ITMV[2].xyz) * fuNormal;
+                vNormal = normalize(mat3(FUSEE_M[0].xyz, FUSEE_M[1].xyz, FUSEE_M[2].xyz) * fuNormal);
+                vViewVec = normalize(-viewVertex.xyz);
+
+                endAmbient=vec4(0,0,0,0);
+                if(FUSEE_L0_ACTIVE == 1.0) {
+                    endAmbient += FUSEE_L0_AMBIENT;
+                }
+
+            }";
+
+
+        private const string PsSpecular2 = @"
+            /* Copies incoming fragment color without change. */
+            #ifdef GL_ES
+                precision highp float;
+            #endif
+
+         
+            uniform sampler2D texture1;
+            uniform vec3 FUSEE_L0_DIRECTION;
+            uniform vec4 FUSEE_L0_DIFFUSE;
+            uniform vec4 FUSEE_L0_SPECULAR;
+            uniform float FUSEE_L0_ACTIVE;
+            uniform float specularLevel;
+    
+
+            varying vec4 vColor;
+            varying vec3 vNormal;
+            varying vec2 vUV;
+            varying vec4 vWorldVertex;
+            varying vec3 vWorldNormal;
+            varying vec3 vViewVec;
+            varying vec4 endAmbient;
+
+            void main()
+            {             
+                vec3 normal = normalize(vWorldNormal);
+                vec3 lightVec = normalize(FUSEE_L0_DIRECTION - normalize(vWorldVertex.xyz));
+                
+                // Calculate specular term
+                vec3 r = -normalize(reflect(lightVec, normal));
+                float s = pow(max(dot(r, vViewVec), 0.0), specularLevel);
+                
+                vec4 endIntensity = vec4(0, 0, 0, 0);
+                if(FUSEE_L0_ACTIVE == 1.0) {
+                    endIntensity += max(dot(-normalize(FUSEE_L0_DIRECTION),normalize(vNormal)),0.0) * FUSEE_L0_DIFFUSE;
+                }
+                endIntensity += endAmbient;
+                endIntensity += FUSEE_L0_SPECULAR * s;
+
+                gl_FragColor = texture2D(texture1, vUV) * endIntensity;  /* *dot(vNormal, vec3(0, 0, 1))*/;
+            }";
+
     }
 }
