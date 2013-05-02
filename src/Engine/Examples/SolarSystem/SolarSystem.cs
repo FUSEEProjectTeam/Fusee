@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
+﻿using System.IO;
 using Fusee.Engine;
 using Fusee.Math;
 using Fusee.SceneManagement;
 
-namespace Examples.Solar
+namespace Examples.SolarSystem
 {
-    public class Solar : RenderCanvas
+    public class SolarSystem : RenderCanvas
     {
         /*
         // Planet Geometry
@@ -505,7 +502,7 @@ namespace Examples.Solar
         public static void Main()
         {
 
-            var app = new Solar();
+            var app = new SolarSystem();
             app.Run();
         }
     }

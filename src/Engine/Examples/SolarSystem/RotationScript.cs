@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using Fusee.Engine;
 using Fusee.SceneManagement;
 using Fusee.Math;
 
-namespace Examples.Solar
+namespace Examples.SolarSystem
 {
     class RotationScript : ActionCode
     {

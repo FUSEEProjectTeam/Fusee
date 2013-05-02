@@ -5,42 +5,6 @@ namespace Examples.Simple
 {
     public class Simple : RenderCanvas
     {
-        // pixel and vertex shader
-        private const string Vs = @"
-            /* Copies incoming vertex color without change.
-             * Applies the transformation matrix to vertex position.
-             */
-
-            attribute vec4 fuColor;
-            attribute vec3 fuVertex;
-            attribute vec3 fuNormal;
-        
-            varying vec4 vColor;
-            varying vec3 vNormal;
-        
-            uniform mat4 FUSEE_MVP;
-            uniform mat4 FUSEE_ITMV;
-
-            void main()
-            {
-                gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
-                vNormal = normalize(mat3(FUSEE_ITMV[0].xyz, FUSEE_ITMV[1].xyz, FUSEE_ITMV[2].xyz) * fuNormal);
-            }";
-
-        private const string Ps = @"
-            /* Copies incoming fragment color without change. */
-            #ifdef GL_ES
-                precision highp float;
-            #endif
-        
-            uniform vec4 vColor;
-            varying vec3 vNormal;
-
-            void main()
-            {
-                gl_FragColor = vColor * dot(vNormal, vec3(0, 0, 1));
-            }";
-
         // angle variables
         private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
 
@@ -51,7 +15,7 @@ namespace Examples.Simple
         private Mesh _meshTea, _meshFace;
         
         // variable for color
-        private IShaderParam _vColorParam;
+        private IShaderParam _colParam;
 
         public override void Init()
         {
@@ -59,10 +23,10 @@ namespace Examples.Simple
             _meshTea = MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
             _meshFace = MeshReader.LoadMesh(@"Assets/Face.obj.model");
 
-            var sp = RC.CreateShader(Vs, Ps);
+            var sp = MoreShaders.GetShader("oneColor", RC);
             RC.SetShader(sp);
 
-            _vColorParam = sp.GetShaderParam("vColor");
+            _colParam = sp.GetShaderParam("Col");
 
             RC.ClearColor = new float4(1, 1, 1, 1);
         }
@@ -107,13 +71,13 @@ namespace Examples.Simple
             // first mesh
             RC.ModelView = mtxRot * float4x4.CreateTranslation(-100, 0, 0) * mtxCam;
 
-            RC.SetShaderParam(_vColorParam, new float4(0.5f, 0.8f, 0, 1));
+            RC.SetShaderParam(_colParam, new float4(0.5f, 0.8f, 0, 1));
             RC.Render(_meshTea);
 
             // second mesh
             RC.ModelView = mtxRot * float4x4.CreateTranslation(100, 0, 0) * mtxCam;
 
-            RC.SetShaderParam(_vColorParam, new float4(1f, 1f, 0, 1));
+            RC.SetShaderParam(_colParam, new float4(0.8f, 0.8f, 0, 1));
             RC.Render(_meshFace);
 
             // swap buffers
@@ -133,6 +97,5 @@ namespace Examples.Simple
             var app = new Simple();
             app.Run();
         }
-
     }
 }

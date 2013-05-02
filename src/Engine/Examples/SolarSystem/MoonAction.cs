@@ -7,7 +7,7 @@ using Fusee.SceneManagement;
 using Fusee.Math;
 using Fusee.Engine;
 
-namespace Examples.Solar
+namespace Examples.SolarSystem
 {
     public class MoonAction : ActionCode
     {
