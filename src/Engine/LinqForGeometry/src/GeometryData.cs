@@ -164,10 +164,10 @@ namespace hsfurtwangen.dsteffen.lfg
             var sumNormals = new float3();
             sumNormals = adjacentfaceNormals.Aggregate(sumNormals, (current, adjacentfaceNormal) => float3.Add(current, adjacentfaceNormal));
           
-            //normalized = MathHelperNormalize(sumNormals);
-
-            //return normalized;
-            return sumNormals;
+            normalized = MathHelperNormalize(sumNormals);
+            return normalized;
+            //sumNormals = float3.Multiply(sumNormals, -1);
+            //return sumNormals;
         }
 
         /// <summary>

@@ -5,11 +5,11 @@ using System.Runtime.CompilerServices;
 // Change them to the values specific to your project.
 
 [assembly: AssemblyTitle("LinqForGeometry")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Linq For Geometry - Thesis 2013")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("")]
-[assembly: AssemblyCopyright("dominik")]
+[assembly: AssemblyCompany("HFU Furtwangen")]
+[assembly: AssemblyProduct("Linq For Geometry")]
+[assembly: AssemblyCopyright("Dominik Steffen")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
