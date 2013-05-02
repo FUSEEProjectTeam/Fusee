@@ -8,11 +8,7 @@ namespace Fusee.SceneManagement
     public class SpotLight : Light
     {
 
-        #region Fields
 
-        private float3 _direction;
-
-        #endregion
 
         #region Constructors
         /// <summary>
@@ -75,16 +71,18 @@ namespace Fusee.SceneManagement
         /// </summary>
         public void TraverseForRendering(SceneVisitorRendering sceneVisitorRendering)
         {
-            if (SceneEntity != null)
-            {
-                _position = SceneEntity.transform.GlobalPosition;
-            }
             sceneVisitorRendering.AddLightSpot(_position, _direction, _diffuseColor, _ambientColor, _specularColor , _type, _channel );
         }
 
         #endregion
         public override void Accept(SceneVisitor sv)
         {
+            if (SceneEntity != null)
+            {
+                _position = SceneEntity.transform.GlobalPosition;
+                _direction = SceneEntity.transform.Forward;
+                //SceneManager.RC.DebugLine(_position, _direction * 100, new float4(1, 1, 0,1));
+            }
             sv.Visit((SpotLight)this);
         }
     }
