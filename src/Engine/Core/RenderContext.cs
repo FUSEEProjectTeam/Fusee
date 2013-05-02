@@ -964,7 +964,7 @@ namespace Fusee.Engine
         /// </remarks>
         public ShaderProgram CreateShader(string vs, string ps)
         {
-            var sp = new ShaderProgram(_rci, _rci.CreateShader(vs, ps)) {_spi = _rci.CreateShader(vs, ps)};
+            var sp = new ShaderProgram(_rci, _rci.CreateShader(vs, ps));
             /*
 sp.ShaderParamHandlesImp = new ShaderParamHandleImp[MatrixParamNames.Length];
 for (int i=0; i < MatrixParamNames.Length; i++)
