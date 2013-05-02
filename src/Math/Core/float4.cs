@@ -9,7 +9,9 @@ namespace Fusee.Math
     /// </remarks>
     [Serializable]
     [StructLayout(LayoutKind.Sequential)]
+// ReSharper disable InconsistentNaming
     public struct float4 : IEquatable<float4>
+// ReSharper restore InconsistentNaming
     {
         #region Fields
 
@@ -149,10 +151,10 @@ namespace Fusee.Math
         [Obsolete("Use static Add() method instead.")]
         public void Add(float4 right)
         {
-            this.x += right.x;
-            this.y += right.y;
-            this.z += right.z;
-            this.w += right.w;
+            x += right.x;
+            y += right.y;
+            z += right.z;
+            w += right.w;
         }
 
         /// <summary>Add the Vector passed as parameter to this instance.</summary>
@@ -160,10 +162,10 @@ namespace Fusee.Math
         [Obsolete("Use static Add() method instead.")]
         public void Add(ref float4 right)
         {
-            this.x += right.x;
-            this.y += right.y;
-            this.z += right.z;
-            this.w += right.w;
+            x += right.x;
+            y += right.y;
+            z += right.z;
+            w += right.w;
         }
 
         #endregion public void Add()
@@ -366,6 +368,21 @@ namespace Fusee.Math
         public float[] ToArray()
         {
             return new float[] { x, y, z, w };
+        }
+
+        #endregion
+
+        #region public void Round()
+
+        /// <summary>
+        /// Rounds the float4 to 6 digits (max float precision).
+        /// </summary>
+        public void Round()
+        {
+            x = (float) System.Math.Round(x, 6);
+            y = (float) System.Math.Round(y, 6);
+            z = (float) System.Math.Round(z, 6);
+            w = (float) System.Math.Round(w, 6);
         }
 
         #endregion
@@ -958,6 +975,23 @@ namespace Fusee.Math
 
         #endregion
 
+        #region Round
+
+        /// <summary>
+        /// Rounds a vector to 6 digits (max float precision).
+        /// </summary>
+        /// <param name="vec">The input vector.</param>
+        /// <returns>The rounded vector.</returns>
+        public static float4 Round(float4 vec)
+        {
+            return new float4((float) System.Math.Round(vec.x, 6),
+                              (float) System.Math.Round(vec.y, 6),
+                              (float) System.Math.Round(vec.z, 6),
+                              (float) System.Math.Round(vec.w, 6));
+        }
+
+        #endregion
+
         #endregion
 
         #region Swizzle
@@ -965,12 +999,16 @@ namespace Fusee.Math
         /// <summary>
         /// Gets or sets an OpenTK.float2 with the x and y components of this instance.
         /// </summary>
+// ReSharper disable InconsistentNaming
         public float2 xy { get { return new float2(x, y); } set { x = value.x; y = value.y; } }
+// ReSharper restore InconsistentNaming
 
         /// <summary>
         /// Gets or sets an OpenTK.float3 with the x, y and z components of this instance.
         /// </summary>
+// ReSharper disable InconsistentNaming
         public float3 xyz { get { return new float3(x, y, z); } set { x = value.x; y = value.y; z = value.z; } }
+// ReSharper restore InconsistentNaming
 
         #endregion
 
@@ -1138,7 +1176,9 @@ namespace Fusee.Math
         /// <returns>A System.Int32 containing the unique hashcode for this instance.</returns>
         public override int GetHashCode()
         {
+// ReSharper disable NonReadonlyFieldInGetHashCode
             return x.GetHashCode() ^ y.GetHashCode() ^ z.GetHashCode() ^ w.GetHashCode();
+// ReSharper restore NonReadonlyFieldInGetHashCode
         }
 
         #endregion
@@ -1172,10 +1212,10 @@ namespace Fusee.Math
         public bool Equals(float4 other)
         {
             return
-                x == other.x &&
-                y == other.y &&
-                z == other.z &&
-                w == other.w;
+                System.Math.Abs(x - other.x) < MathHelper.EpsilonFloat &&
+                System.Math.Abs(y - other.y) < MathHelper.EpsilonFloat &&
+                System.Math.Abs(z - other.z) < MathHelper.EpsilonFloat &&
+                System.Math.Abs(w - other.w) < MathHelper.EpsilonFloat;
         }
 
         #endregion

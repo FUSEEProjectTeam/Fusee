@@ -19,7 +19,7 @@ namespace Fusee.Engine
 
         IShaderProgramImp CreateShader(string vs, string ps);
 
-        IEnumerable<ShaderParamInfo> GetShaderParamList(IShaderProgramImp shaderProgram);
+        IList<ShaderParamInfo> GetShaderParamList(IShaderProgramImp shaderProgram);
 
         IShaderParam GetShaderParam(IShaderProgramImp shaderProgram, string paramName);
 
@@ -76,7 +76,7 @@ namespace Fusee.Engine
         void Frustum(double left, double right, double bottom, double top, double zNear, double zFar);
 
         void Render(IMeshImp mr);
-
+        void DebugLine(float3 start, float3 end, float4 color);
         IMeshImp CreateMeshImp();
     }
 }

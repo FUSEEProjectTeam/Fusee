@@ -52,6 +52,10 @@ namespace Fusee.SceneManagement
         #endregion
         public override void Accept(SceneVisitor sv)
         {
+            if (SceneEntity != null)
+            {
+                _position = SceneEntity.transform.GlobalPosition;
+            }
             sv.Visit((PointLight)this);
         }
     }

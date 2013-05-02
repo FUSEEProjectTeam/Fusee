@@ -63,9 +63,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="Clean">
-    <Exec Condition=" '$(OS)' == 'Windows_NT' And Exists('$(OutputPath)') " Command="del /q $(OutputPath)Fusee.Engine.Imp.OpenTK.*" />
+    <Exec Condition=" '$(OS)' == 'Windows_NT' And Exists('$(OutputPath)') " Command='del /q "$(OutputPath)Fusee.Engine.Imp.OpenTK.*"' />
     <Exec Condition=" '$(OS)' != 'Windows_NT' And Exists('$(OutputPath)') " Command="rm '$(OutputPath)'Fusee.Engine.Imp.OpenTK.*" />
-    <Exec Condition=" '$(OS)' == 'Windows_NT' And Exists('$(OutputPath)OpenTK.dll') " Command="del /q $(OutputPath)OpenTK.dll" />
+    <Exec Condition=" '$(OS)' == 'Windows_NT' And Exists('$(OutputPath)OpenTK.dll') " Command='del /q "$(OutputPath)OpenTK.dll"' />
     <Exec Condition=" '$(OS)' != 'Windows_NT' And Exists('$(OutputPath)OpenTK.dll') " Command="rm '$(OutputPath)'OpenTK.dll" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

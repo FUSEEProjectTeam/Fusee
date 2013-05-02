@@ -6,7 +6,7 @@ using Fusee.Engine;
 using Fusee.Math;
 using Fusee.SceneManagement;
 
-namespace Examples.SolarSystem
+namespace Examples.Solar
 {
     public class PlanetMaterial : Material
     {
@@ -16,6 +16,14 @@ namespace Examples.SolarSystem
         public PlanetMaterial(ShaderProgram shaderProgram)
         {
             sp = shaderProgram;
+        }
+
+        public PlanetMaterial(ShaderProgram shaderProgram, string texturepath)
+        {
+            sp = shaderProgram;
+            Textureparam = sp.GetShaderParam("texture1");
+            ImageData Image = SceneManager.RC.LoadImage(texturepath);
+            Tex = SceneManager.RC.CreateTexture(Image);
         }
 
         public override void Update(RenderContext renderContext)

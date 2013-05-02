@@ -59,7 +59,7 @@ namespace Fusee.SceneManagement
             _hasTransform = new Stack<bool>();
             _hasRenderer = new Stack<bool>();
             _hasMesh = new Stack<bool>();
-            _mtxModelViewStack.Push(float4x4.Identity);
+            //_mtxModelViewStack.Push(float4x4.Identity);
             //PrepareDoubleDispatch();
             /*
             
@@ -101,7 +101,6 @@ namespace Fusee.SceneManagement
             {
                 AddRenderJob(_mtxModelViewStack.Peek(), _meshStack.Peek(), _RendererStack.Peek());
             }
-
         }
 
 
@@ -110,16 +109,54 @@ namespace Fusee.SceneManagement
         /// Adds the transform to the internal stack.
         /// </summary>
         /// <param name="mtx">The MTX.</param>
-        private void AddTransform(float4x4 mtx)
+        private void AddTransform(Transformation transform)
         {
-            _hasTransform.Pop();
-                _mtxModelViewStack.Push(mtx * _mtxModelViewStack.Pop());
-
-            
-            _hasTransform.Push(true);
-            if (HasRenderingTriple())
+            if (_mtxModelViewStack.Count > 0)
             {
-                AddRenderJob(_mtxModelViewStack.Peek(), _meshStack.Peek(), _RendererStack.Peek());
+
+
+                if (transform.GlobalMatrixDirty)
+                {
+                    transform.Matrix = float4x4.Invert(_mtxModelViewStack.Peek())*transform.GlobalMatrix;
+                    transform.SetGlobalMat(transform.Matrix * _mtxModelViewStack.Peek());
+                    _hasTransform.Pop();
+                    _mtxModelViewStack.Push(transform.Matrix*_mtxModelViewStack.Pop());
+                    _hasTransform.Push(true);
+
+                    if (HasRenderingTriple())
+                    {
+                        AddRenderJob(_mtxModelViewStack.Peek(), _meshStack.Peek(), _RendererStack.Peek());
+                    }
+
+                    return;
+                }
+                transform.SetGlobalMat(transform.Matrix*_mtxModelViewStack.Peek());
+                _hasTransform.Pop();
+                _mtxModelViewStack.Push(transform.Matrix*_mtxModelViewStack.Pop());
+                _hasTransform.Push(true);
+
+                if (HasRenderingTriple())
+                {
+                    AddRenderJob(_mtxModelViewStack.Peek(), _meshStack.Peek(), _RendererStack.Peek());
+                }
+
+            }else
+            {
+
+
+                if(_hasTransform.Count > 0)
+                {
+                    _hasTransform.Pop();
+                }
+
+                _hasTransform.Push(true);
+                _mtxModelViewStack.Push(transform.GlobalMatrix);
+
+                if (HasRenderingTriple())
+                {
+                    AddRenderJob(_mtxModelViewStack.Peek(), _meshStack.Peek(), _RendererStack.Peek());
+                }
+                
             }
         }
 
@@ -141,7 +178,7 @@ namespace Fusee.SceneManagement
         /// </summary>
         private void Push()
         {
-
+            if(_mtxModelViewStack.Count > 0)
                 _mtxModelViewStack.Push(_mtxModelViewStack.Peek());
 
             
@@ -157,16 +194,19 @@ namespace Fusee.SceneManagement
         {
             _mtxModelViewStack.Pop();
             _hasTransform.Pop();
+            _hasMesh.Pop();
+            _hasRenderer.Pop();
             if(_meshStack.Count > 0)
             {
+
                 _meshStack.Pop();
-                _hasMesh.Pop();  
+                  
             }
             
             if(_RendererStack.Count > 0)
             {
                 _RendererStack.Pop();
-                _hasRenderer.Pop();
+                
             }
             
             
@@ -229,6 +269,7 @@ namespace Fusee.SceneManagement
             _queue.AddRenderJob(renderRenderer);
             RenderMesh renderMesh = new RenderMesh(mesh);
             _queue.AddRenderJob(renderMesh);
+            //Debug.WriteLine("Transforms: "+_hasTransform.Count+" Renderers: "+_hasRenderer.Count+" Meshes: "+_hasMesh.Count);
         }
 
 
@@ -306,8 +347,9 @@ namespace Fusee.SceneManagement
         /// <param name="transform">The transform.</param>
         override public void Visit(Transformation transform)
         {
-            AddTransform(transform.Matrix);
+            AddTransform(transform);
         }
+
         /// <summary>
         /// Visits the specified directional light to collect data if required by the current Visitor derivate.
         /// </summary>

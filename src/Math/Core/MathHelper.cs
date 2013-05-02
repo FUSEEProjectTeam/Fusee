@@ -10,9 +10,19 @@ namespace Fusee.Math
         #region Fields
 
         /// <summary>
+        /// Defines the value which represents the machine epsilon for <see cref="float"/> in C#.
+        /// </summary>
+        public const float EpsilonFloat = 1.192093E-07f;
+
+        /// <summary>
+        /// Defines the value which represents the machine epsilon for <see cref="double"/> in C#.
+        /// </summary>
+        public const double EpsilonDouble = 1.11022302462516E-16d;
+
+        /// <summary>
         /// Defines the value of Pi as a <see cref="System.Single"/>.
         /// </summary>
-        public const float Pi = 3.141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825342117067982148086513282306647093844609550582231725359408128481117450284102701938521105559644622948954930382f;
+        public const float Pi = 3.14159265358979f;
 
         /// <summary>
         /// Defines the value of Pi divided by two as a <see cref="System.Single"/>.
@@ -25,7 +35,7 @@ namespace Fusee.Math
         public const float PiOver3 = Pi / 3;
 
         /// <summary>
-        /// Definesthe value of  Pi divided by four as a <see cref="System.Single"/>.
+        /// Defines the value of  Pi divided by four as a <see cref="System.Single"/>.
         /// </summary>
         public const float PiOver4 = Pi / 4;
 
@@ -253,6 +263,62 @@ namespace Fusee.Math
             float temp = a;
             a = b;
             b = temp;
+        }
+
+        #endregion
+
+        #region Clamp
+
+        /// <summary>
+        /// Clamp a value to the given minimum and maximum vectors.
+        /// </summary>
+        /// <param name="val">Input value</param>
+        /// <param name="min">Minimum value</param>
+        /// <param name="max">Maximum value</param>
+        /// <returns>
+        /// The clamped value.
+        /// </returns>
+        public static double Clamp(double val, double min, double max)
+        {
+            return val < min ? min : val > max ? max : val;
+        }
+
+        /// <summary>
+        /// Clamp a value to the given minimum and maximum vectors.
+        /// </summary>
+        /// <param name="val">Input value.</param>
+        /// <param name="min">Minimum value.</param>
+        /// <param name="max">Maximum value.</param>
+        /// <returns>
+        /// The clamped value.
+        /// </returns>
+        public static float Clamp(float val, float min, float max)
+        {
+            return val < min ? min : val > max ? max : val;
+        }
+
+        #endregion
+
+        #region Equals
+
+        /// <summary>
+        /// Compares two double values for equality.
+        /// </summary>
+        /// <param name="a">The first value.</param>
+        /// <param name="b">The second value.</param>
+        public static bool Equals(double a, double b)
+        {
+            return (System.Math.Abs(a - b) < EpsilonDouble);
+        }
+
+        /// <summary>
+        /// Compares two float values for equality.
+        /// </summary>
+        /// <param name="a">The first value.</param>
+        /// <param name="b">The second value.</param>
+        public static bool Equals(float a, float b)
+        {
+            return (System.Math.Abs(a - b) < EpsilonFloat);
         }
 
         #endregion

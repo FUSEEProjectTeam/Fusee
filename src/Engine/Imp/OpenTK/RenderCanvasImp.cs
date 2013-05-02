@@ -105,8 +105,10 @@ namespace Fusee.Engine
         {
             // Check for necessary capabilities:
             string version = GL.GetString(StringName.Version);
+
             int major = (int)version[0];
             // int minor = (int)version[2];
+
             if (major < 2)
             {
                 MessageBox.Show("You need at least OpenGL 2.0 to run this example. Aborting.", "GLSL not supported",
@@ -115,7 +117,9 @@ namespace Fusee.Engine
             }
 
             GL.ClearColor(Color.MidnightBlue);
+
             GL.Enable(EnableCap.DepthTest);
+            GL.Enable(EnableCap.CullFace);
 
             // Use VSync!
             Context.SwapInterval = 1;

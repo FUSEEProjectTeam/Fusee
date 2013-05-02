@@ -3,6 +3,7 @@
 C4dApi/
 *.tlog
 *.scc
+*.orig
 
 ##
 ## .gitignore from https://github.com/github/gitignore/blob/master/CSharp.gitignore

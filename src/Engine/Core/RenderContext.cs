@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Fusee.Engine;
 using JSIL.Meta;
 using Fusee.Math;
 
@@ -13,29 +12,52 @@ namespace Fusee.Engine
     /// </summary>
     public class RenderContext
     {
-        private IRenderContextImp _rci;
+        private readonly IRenderContextImp _rci;
+
         private ShaderProgram _currentShader;
-        private Light[] _lightParams = new Light[8];
+        private MatrixParamNames _currentShaderParams;
+        private ShaderProgram _debugShader;
+        private IShaderParam _debugColor;
+        private readonly Light[] _lightParams;
+        private readonly LightParamNames[] _lightShaderParams;
 
-        /*
-        public static readonly string[] MatrixParamNames  = {
-            "FUSEE_MV",
-            "FUSEE_P",
-            "FUSEE_MVP",
+        private bool _updatedShaderParams;
 
-            "FUSEE_I_MV",
-            "FUSEE_I_P",
-            "FUSEE_I_MVP",
+        internal struct MatrixParamNames
+        {
+            // ReSharper disable InconsistentNaming
+            public IShaderParam FUSEE_M;
+            public IShaderParam FUSEE_V;
+            public IShaderParam FUSEE_MV;
 
-            "FUSEE_T_MV",
-            "FUSEE_T_P",
-            "FUSEE_T_MVP",
+            public IShaderParam FUSEE_P;
+            public IShaderParam FUSEE_MVP;
 
-            "FUSEE_IT_MV",
-            "FUSEE_IT_P",
-            "FUSEE_IT_MVP",
+            public IShaderParam FUSEE_IMV;
+            public IShaderParam FUSEE_IP;
+            public IShaderParam FUSEE_IMVP;
+
+            public IShaderParam FUSEE_TMV;
+            public IShaderParam FUSEE_TP;
+            public IShaderParam FUSEE_TMVP;
+
+            public IShaderParam FUSEE_ITMV;
+            public IShaderParam FUSEE_ITP;
+            public IShaderParam FUSEE_ITMVP;
+            // ReSharper restore InconsistentNaming
         };
-        */
+
+        internal struct LightParamNames
+        {
+            // ReSharper disable InconsistentNaming
+            public IShaderParam FUSEE_L_AMBIENT;
+            public IShaderParam FUSEE_L_DIFFUSE;
+            public IShaderParam FUSEE_L_SPECULAR;
+            public IShaderParam FUSEE_L_POSITION;
+            public IShaderParam FUSEE_L_DIRECTION;
+            // ReSharper restore InconsistentNaming
+        }
+
         /// <summary>
         ///
         /// </summary>
@@ -46,14 +68,20 @@ namespace Fusee.Engine
             View = float4x4.Identity;
             ModelView = float4x4.Identity;
             Projection = float4x4.Identity;
+
+            _lightParams = new Light[8];
+            _lightShaderParams = new LightParamNames[8];
+            _debugShader = MoreShaders.GetShader("oneColor",this);
+            _debugColor = _debugShader.GetShaderParam("Col");
+            _updatedShaderParams = false;
         }
 
-        
         // Settable matrices
         private float4x4 _modelView;
         private float4x4 _projection;
         private float4x4 _view;
         private float4x4 _model;
+
         // Derived matrices
         private float4x4 _modelViewProjection;
 
@@ -108,8 +136,6 @@ namespace Fusee.Engine
             return _rci.CreateImage(width, height, bgColor);
         }
 
-
-
         /// <summary>
         /// Maps a specified text with on an image.
         /// </summary>
@@ -126,7 +152,6 @@ namespace Fusee.Engine
             return _rci.TextOnImage(imgData, fontName, fontSize, text, textColor, startPosX, startPosY);
         }
 
-
         /// <summary>
         /// Creates a new texture and binds it to the shader.
         /// </summary>
@@ -141,6 +166,11 @@ namespace Fusee.Engine
         public ITexture CreateTexture(ImageData imgData)
         {
             return _rci.CreateTexture(imgData);
+        }
+
+        public ITexture DisableTexture()
+        {
+            return _rci.CreateTexture(CreateImage(1, 1, "white"));
         }
 
         /// <summary>
@@ -175,7 +205,7 @@ namespace Fusee.Engine
         {
             get { return _currentShader; }
         }
-        //directional or Point- Light 
+        //directional or Point- Light
         public void SetLight(float3 v3, float4 color, int type, int id)
         {
             switch (type)
@@ -198,14 +228,14 @@ namespace Fusee.Engine
         }
 
         //Spotlight with position AND direction
-        public void SetLight(float3 position, float3 direction,  float4 color, int type, int id)
+        public void SetLight(float3 position, float3 direction, float4 color, int type, int id)
         {
             SetLightActive(id, 1);
             SetLightAmbient(id, color);
             SetLightDiffuse(id, color);
             SetLightSpecular(id, color);
             SetLightPosition(id, position);
-            SetLightDirection(id,direction);
+            SetLightDirection(id, direction);
         }
 
         public float4x4 View
@@ -220,7 +250,7 @@ namespace Fusee.Engine
                 _view = value;
 
                 _modelViewProjectionOk = false;
-                _invViewOk = false; 
+                _invViewOk = false;
                 _invModelViewOk = false;
                 _invModelViewProjectionOk = false;
 
@@ -231,21 +261,21 @@ namespace Fusee.Engine
                 _transViewOk = false;
                 _transModelViewOk = false;
                 _transModelViewProjectionOk = false;
-                _modelView = _model*_view;
-                
+                _modelView = _model * _view;
+
                 UpdateCurrentShader();
+
                 _rci.ModelView = _modelView;
             }
         }
 
         public float4x4 Model
         {
-            
+
             get { return _model; }
             set
             {
                 _model = value;
-
 
                 _modelViewProjectionOk = false;
                 _invModelOk = false;
@@ -291,6 +321,7 @@ namespace Fusee.Engine
                 _modelView = value;
                 _view = float4x4.Identity;
                 _model = value;
+
                 // Invalidate derived matrices
                 _modelViewProjectionOk = false;
 
@@ -312,6 +343,7 @@ namespace Fusee.Engine
                 UpdateCurrentShader();
 
                 _rci.ModelView = value;
+
             }
         }
 
@@ -338,8 +370,6 @@ namespace Fusee.Engine
             set
             {
                 // Update matrix
-                
-
                 _projection = value;
 
                 // Invalidate derived matrices
@@ -350,10 +380,9 @@ namespace Fusee.Engine
                 _invTransProjectionOk = false;
                 _transProjectionOk = false;
                 _transProjectionOk = false;
-                
+
                 UpdateCurrentShader();
-                
-                
+
                 _rci.Projection = value;
             }
         }
@@ -374,7 +403,7 @@ namespace Fusee.Engine
             {
                 if (!_modelViewProjectionOk)
                 {
-                    _modelViewProjection = ModelView * Projection;
+                    _modelViewProjection = float4x4.Mult(ModelView, Projection);
                     _modelViewProjectionOk = true;
                 }
                 return _modelViewProjection;
@@ -426,7 +455,7 @@ namespace Fusee.Engine
             {
                 if (!_invModelViewOk)
                 {
-                    _invModelView = float4x4.Invert(ModelView);
+                    _invModelView = float4x4.InvertAffine(ModelView);
                     _invModelViewOk = true;
                 }
                 return _invModelView;
@@ -635,7 +664,7 @@ namespace Fusee.Engine
             {
                 if (!_invTransModelViewOk)
                 {
-                    _invTransModelView = float4x4.Invert(TransModelView);
+                    _invTransModelView = float4x4.InvertAffine(TransModelView);
                     _invTransModelViewOk = true;
                 }
                 return _invTransModelView;
@@ -696,71 +725,123 @@ namespace Fusee.Engine
             }
         }
 
-
         private void UpdateCurrentShader()
         {
             // Todo: Check if the respective matrix was changed since last accessed by the currently updated shader
             // Todo: and set only if matrix was changed.
+
+            if (_currentShader == null)
+                return;
+
+            if (!_updatedShaderParams)
+                UpdateShaderParams();
+
+            // Normal versions of MV and P
+            if (_currentShaderParams.FUSEE_M != null)
+                SetShaderParam(_currentShaderParams.FUSEE_M, Model);
+
+            if (_currentShaderParams.FUSEE_V != null)
+                SetShaderParam(_currentShaderParams.FUSEE_V, View);
+
+            if (_currentShaderParams.FUSEE_MV != null)
+                SetShaderParam(_currentShaderParams.FUSEE_MV, ModelView);
+
+            if (_currentShaderParams.FUSEE_P != null)
+                SetShaderParam(_currentShaderParams.FUSEE_P, Projection);
+
+            if (_currentShaderParams.FUSEE_MVP != null)
+                SetShaderParam(_currentShaderParams.FUSEE_MVP, ModelViewProjection);
+
+            // Inverted versions
+            if (_currentShaderParams.FUSEE_IMV != null)
+                SetShaderParam(_currentShaderParams.FUSEE_IMV, InvModelView);
+
+            if (_currentShaderParams.FUSEE_IP != null)
+                SetShaderParam(_currentShaderParams.FUSEE_IP, InvProjection);
+
+            if (_currentShaderParams.FUSEE_IMVP != null)
+                SetShaderParam(_currentShaderParams.FUSEE_IMVP, InvModelViewProjection);
+
+            // Transposed versions
+            if (_currentShaderParams.FUSEE_TMV != null)
+                SetShaderParam(_currentShaderParams.FUSEE_TMV, TransModelView);
+
+            if (_currentShaderParams.FUSEE_TP != null)
+                SetShaderParam(_currentShaderParams.FUSEE_TP, TransProjection);
+
+            if (_currentShaderParams.FUSEE_TMVP != null)
+                SetShaderParam(_currentShaderParams.FUSEE_TMVP, TransModelViewProjection);
+
+            // Inverted and transposed versions
+            if (_currentShaderParams.FUSEE_ITMV != null)
+                SetShaderParam(_currentShaderParams.FUSEE_ITMV, InvTransModelView);
+
+            if (_currentShaderParams.FUSEE_ITP != null)
+                SetShaderParam(_currentShaderParams.FUSEE_ITP, InvTransProjection);
+
+            if (_currentShaderParams.FUSEE_ITMVP != null)
+                SetShaderParam(_currentShaderParams.FUSEE_ITMVP, InvTransModelViewProjection);
+
+            for (var i = 0; i < 8; i++)
+            {
+                if (_lightShaderParams[i].FUSEE_L_AMBIENT != null)
+                    SetShaderParam(_lightShaderParams[i].FUSEE_L_AMBIENT, _lightParams[i].AmbientColor);
+
+                if (_lightShaderParams[i].FUSEE_L_DIFFUSE != null)
+                    SetShaderParam(_lightShaderParams[i].FUSEE_L_DIFFUSE, _lightParams[i].DiffuseColor);
+
+                if (_lightShaderParams[i].FUSEE_L_SPECULAR != null)
+                    SetShaderParam(_lightShaderParams[i].FUSEE_L_SPECULAR, _lightParams[i].SpecularColor);
+
+                if (_lightShaderParams[i].FUSEE_L_POSITION != null)
+                    SetShaderParam(_lightShaderParams[i].FUSEE_L_POSITION, _lightParams[i].Position);
+
+                if (_lightShaderParams[i].FUSEE_L_DIRECTION != null)
+                    SetShaderParam(_lightShaderParams[i].FUSEE_L_DIRECTION, _lightParams[i].Direction);
+            }
+        }
+
+        private void UpdateShaderParams()
+        {
             if (_currentShader == null)
             {
                 // TODO: log that no shader was set
                 return;
             }
 
-            IShaderParam sp;
             // Normal versions of MV and P
-            if ((sp = _currentShader.GetShaderParam("FUSEE_MV")) != null)
-                SetShaderParam(sp, ModelView);
-
-            if ((sp = _currentShader.GetShaderParam("FUSEE_P")) != null)
-                SetShaderParam(sp, Projection);
-
-            if ((sp = _currentShader.GetShaderParam("FUSEE_MVP")) != null)
-                SetShaderParam(sp, ModelViewProjection);
+            _currentShaderParams.FUSEE_M = _currentShader.GetShaderParam("FUSEE_M");
+            _currentShaderParams.FUSEE_V = _currentShader.GetShaderParam("FUSEE_V");
+            _currentShaderParams.FUSEE_MV = _currentShader.GetShaderParam("FUSEE_MV");
+            _currentShaderParams.FUSEE_P = _currentShader.GetShaderParam("FUSEE_P");
+            _currentShaderParams.FUSEE_MVP = _currentShader.GetShaderParam("FUSEE_MVP");
 
             // Inverted versions
-            if ((sp = _currentShader.GetShaderParam("FUSEE_IMV")) != null)
-                SetShaderParam(sp, InvModelView);
-
-            if ((sp = _currentShader.GetShaderParam("FUSEE_IP")) != null)
-                SetShaderParam(sp, InvProjection);
-
-            if ((sp = _currentShader.GetShaderParam("FUSEE_IMVP")) != null)
-                SetShaderParam(sp, InvModelViewProjection);
+            _currentShaderParams.FUSEE_IMV = _currentShader.GetShaderParam("FUSEE_IMV");
+            _currentShaderParams.FUSEE_IP = _currentShader.GetShaderParam("FUSEE_IP");
+            _currentShaderParams.FUSEE_IMVP = _currentShader.GetShaderParam("FUSEE_IMVP");
 
             // Transposed versions
-            if ((sp = _currentShader.GetShaderParam("FUSEE_TMV")) != null)
-                SetShaderParam(sp, TransModelView);
-
-            if ((sp = _currentShader.GetShaderParam("FUSEE_TP")) != null)
-                SetShaderParam(sp, TransProjection);
-
-            if ((sp = _currentShader.GetShaderParam("FUSEE_TMVP")) != null)
-                SetShaderParam(sp, TransModelViewProjection);
+            _currentShaderParams.FUSEE_TMV = _currentShader.GetShaderParam("FUSEE_TMV");
+            _currentShaderParams.FUSEE_TP = _currentShader.GetShaderParam("FUSEE_TP");
+            _currentShaderParams.FUSEE_TMVP = _currentShader.GetShaderParam("FUSEE_TMVP");
 
             // Inverted and transposed versions
-            if ((sp = _currentShader.GetShaderParam("FUSEE_ITMV")) != null)
-                SetShaderParam(sp, InvTransModelView);
-
-            if ((sp = _currentShader.GetShaderParam("FUSEE_ITP")) != null)
-                SetShaderParam(sp, InvTransProjection);
-
-            if ((sp = _currentShader.GetShaderParam("FUSEE_ITMVP")) != null)
-                SetShaderParam(sp, InvTransModelViewProjection);
+            _currentShaderParams.FUSEE_ITMV = _currentShader.GetShaderParam("FUSEE_ITMV");
+            _currentShaderParams.FUSEE_ITP = _currentShader.GetShaderParam("FUSEE_ITP");
+            _currentShaderParams.FUSEE_ITMVP = _currentShader.GetShaderParam("FUSEE_ITMVP");
 
             for (int i = 0; i < 8; i++)
             {
-                if ((sp = _currentShader.GetShaderParam("FUSEE_L" + i + "_AMBIENT")) != null)
-                    SetShaderParam(sp, _lightParams[i].AmbientColor);
-                if ((sp = _currentShader.GetShaderParam("FUSEE_L" + i + "_DIFFUSE")) != null)
-                    SetShaderParam(sp, _lightParams[i].DiffuseColor);
-                if ((sp = _currentShader.GetShaderParam("FUSEE_L" + i + "_SPECULAR")) != null)
-                    SetShaderParam(sp, _lightParams[i].SpecularColor);
-                if ((sp = _currentShader.GetShaderParam("FUSEE_L" + i + "_POSITION")) != null)
-                    SetShaderParam(sp, _lightParams[i].Position);
-                if ((sp = _currentShader.GetShaderParam("FUSEE_L" + i + "_DIRECTION")) != null)
-                    SetShaderParam(sp, _lightParams[i].Direction);
+                _lightShaderParams[i].FUSEE_L_AMBIENT = _currentShader.GetShaderParam("FUSEE_L" + i + "_AMBIENT");
+                _lightShaderParams[i].FUSEE_L_DIFFUSE = _currentShader.GetShaderParam("FUSEE_L" + i + "_DIFFUSE");
+                _lightShaderParams[i].FUSEE_L_SPECULAR = _currentShader.GetShaderParam("FUSEE_L" + i + "_SPECULAR");
+                _lightShaderParams[i].FUSEE_L_POSITION = _currentShader.GetShaderParam("FUSEE_L" + i + "_POSITION");
+                _lightShaderParams[i].FUSEE_L_DIRECTION = _currentShader.GetShaderParam("FUSEE_L" + i + "_DIRECTION");
             }
+
+            _updatedShaderParams = true;
+            UpdateCurrentShader();
         }
 
         /// <summary>
@@ -768,12 +849,12 @@ namespace Fusee.Engine
         /// </summary>
         /// <param name="lightInx">The light to activate. Can range from 0 to 7. Up to eight lights are supported.</param>
         /// <param name="active">1 - activate the light. 0 - deactiv</param>
-        public void SetLightActive(int lightInx, int active)
+        public void SetLightActive(int lightInx, float active)
         {
             _lightParams[lightInx].Active = active;
             IShaderParam sp;
             string paramName = "FUSEE_L" + lightInx + "_ACTIVE";
-            if(_currentShader!=null)
+
             if ((sp = _currentShader.GetShaderParam(paramName)) != null)
                 SetShaderParam(sp, _lightParams[lightInx].Active);
         }
@@ -794,7 +875,6 @@ namespace Fusee.Engine
             _lightParams[lightInx].AmbientColor = ambientColor;
             IShaderParam sp;
             string paramName = "FUSEE_L" + lightInx + "_AMBIENT";
-            if(_currentShader!=null)
             if ((sp = _currentShader.GetShaderParam(paramName)) != null)
                 SetShaderParam(sp, _lightParams[lightInx].AmbientColor);
         }
@@ -817,7 +897,6 @@ namespace Fusee.Engine
             _lightParams[lightInx].DiffuseColor = diffuseColor;
             IShaderParam sp;
             string paramName = "FUSEE_L" + lightInx + "_DIFFUSE";
-            if (_currentShader != null)
             if ((sp = _currentShader.GetShaderParam(paramName)) != null)
                 SetShaderParam(sp, _lightParams[lightInx].DiffuseColor);
         }
@@ -842,7 +921,6 @@ namespace Fusee.Engine
             _lightParams[lightInx].SpecularColor = specularColor;
             IShaderParam sp;
             string paramName = "FUSEE_L" + lightInx + "_SPECULAR";
-            if (_currentShader != null)
             if ((sp = _currentShader.GetShaderParam(paramName)) != null)
                 SetShaderParam(sp, _lightParams[lightInx].SpecularColor);
         }
@@ -857,7 +935,6 @@ namespace Fusee.Engine
             _lightParams[lightInx].Position = position;
             IShaderParam sp;
             string paramName = "FUSEE_L" + lightInx + "_POSITION";
-            if (_currentShader != null)
             if ((sp = _currentShader.GetShaderParam(paramName)) != null)
                 SetShaderParam(sp, _lightParams[lightInx].Position);
         }
@@ -872,7 +949,6 @@ namespace Fusee.Engine
             _lightParams[lightInx].Direction = direction;
             IShaderParam sp;
             string paramName = "FUSEE_L" + lightInx + "_DIRECTION";
-            if (_currentShader != null)
             if ((sp = _currentShader.GetShaderParam(paramName)) != null)
                 SetShaderParam(sp, _lightParams[lightInx].Direction);
         }
@@ -890,8 +966,7 @@ namespace Fusee.Engine
         /// </remarks>
         public ShaderProgram CreateShader(string vs, string ps)
         {
-            ShaderProgram sp = new ShaderProgram(_rci, _rci.CreateShader(vs, ps));
-            sp._spi = _rci.CreateShader(vs, ps);
+            var sp = new ShaderProgram(_rci, _rci.CreateShader(vs, ps)) {_spi = _rci.CreateShader(vs, ps)};
             /*
 sp.ShaderParamHandlesImp = new ShaderParamHandleImp[MatrixParamNames.Length];
 for (int i=0; i < MatrixParamNames.Length; i++)
@@ -910,9 +985,12 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
         /// <seealso cref="Fusee.Engine.RenderContext.Render(Mesh)"/>
         public void SetShader(ShaderProgram program)
         {
+            _updatedShaderParams = false;
+
             _currentShader = program;
             _rci.SetShader(program._spi);
-            UpdateCurrentShader();
+
+            UpdateShaderParams();
         }
 
         /// <summary>
@@ -1097,6 +1175,18 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
                 _rci.SetTriangles(m._meshImp, m.Triangles);
 
             _rci.Render(m._meshImp);
+        }
+
+        public void DebugLine(float3 start, float3 end, float4 color)
+        {
+            start /= 2;
+            end /= 2;
+
+            SetShader(_debugShader);
+            SetShaderParam(_currentShaderParams.FUSEE_MVP, ModelViewProjection);
+            //IShaderParam col = _debugShader.GetShaderParam("Col");
+            SetShaderParam(_debugColor, color);
+            _rci.DebugLine(start, end, color);
         }
 
         /// <summary>
