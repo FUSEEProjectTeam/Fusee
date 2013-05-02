@@ -35,7 +35,7 @@ namespace Examples.EgoPerspective
             time = 0;
 
 
-            RC.SetLightActive(0, 1.0f);
+            RC.SetLightActive(0, 1);
             
             RC.SetLightPosition(0, new float3(500, 0, 0));
             RC.SetLightAmbient(0, new float4(0.3f, 0.3f, 0.3f, 1));
