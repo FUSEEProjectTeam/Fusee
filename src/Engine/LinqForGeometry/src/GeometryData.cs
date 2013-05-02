@@ -113,7 +113,7 @@ namespace hsfurtwangen.dsteffen.lfg
 
                 float3 n = float3.Cross(v1, v2);
                 _LfaceNormals.Add(
-                    float3.Normalize(n)
+                    MathHelperNormalize(n)
                     );
             }
         }
@@ -160,9 +160,23 @@ namespace hsfurtwangen.dsteffen.lfg
             int adjacentfaceCount = adjacentfaceNormals.Count;
             var sumNormals = new float3();
             sumNormals = adjacentfaceNormals.Aggregate(sumNormals, (current, adjacentfaceNormal) => float3.Add(current, adjacentfaceNormal));
-            normalized = float3.Normalize(sumNormals);
+            // TODO: For testing the normal problem.
+            //sumNormals = float3.Divide(sumNormals, adjacentfaceCount);
+            normalized = MathHelperNormalize(sumNormals);
 
             return normalized;
+        }
+
+        /// <summary>
+        /// Normalizes a given vertex.
+        /// </summary>
+        /// <param name="val">Vertex to be normalized.</param>
+        /// <returns>Normalized Vertex</returns>
+        private float3 MathHelperNormalize(float3 val) {
+            
+            //return float3.Multiply(val, (1 / (float)val.Length));
+            
+            return float3.Normalize(val);
         }
 
         /// <summary>
