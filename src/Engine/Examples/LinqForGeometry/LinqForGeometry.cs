@@ -354,22 +354,6 @@ namespace Examples.LinqForGeometry
             }
             #endregion Rotation
 
-            #region TestLocalRotation
-            if (Input.Instance.IsKeyDown(KeyCodes.NumPad8))
-            {
-                if (_Geo.RotateLocalX(_MovementSpeed * (float)Time.Instance.DeltaTime))
-                {
-                    _Geo._Changes = true;
-                }
-            }
-            else if (Input.Instance.IsKeyDown(KeyCodes.NumPad2))
-            {
-                if (_Geo.RotateLocalX(-_MovementSpeed * (float)Time.Instance.DeltaTime))
-                {
-                    _Geo._Changes = true;
-                }
-            }
-            #endregion TestLocalRotation
 
             if (_Geo._Changes)
             {
