@@ -100,7 +100,7 @@ namespace hsfurtwangen.dsteffen.lfg
         public void AddFaceNormal(HandleFace handleFace)
         {
             IEnumerable<HandleVertex> enVerts = EnFaceVertices(handleFace);
-            var Lverts = enVerts.Select(handleVertex => _LvertexVal[handleVertex]).ToList();
+            var Lverts = enVerts.Select(handleVertex => _LvertexVal[handleVertex._DataIndex]).ToList();
 
             if (Lverts.Count >= 3)
             {
@@ -108,10 +108,13 @@ namespace hsfurtwangen.dsteffen.lfg
                 float3 p1 = Lverts[1];
                 float3 p2 = Lverts[2];
 
-                float3 v1 = float3.Subtract(p1, p0);
-                float3 v2 = float3.Subtract(p2, p0);
+                float3 v1 = float3.Subtract(p2, p0);
+                float3 v2 = float3.Subtract(p1, p0);
 
                 float3 n = float3.Cross(v1, v2);
+
+                Debug.WriteLine("Vertex normal calc: " + MathHelperNormalize(n));
+
                 _LfaceNormals.Add(
                     MathHelperNormalize(n)
                     );
@@ -160,11 +163,11 @@ namespace hsfurtwangen.dsteffen.lfg
             int adjacentfaceCount = adjacentfaceNormals.Count;
             var sumNormals = new float3();
             sumNormals = adjacentfaceNormals.Aggregate(sumNormals, (current, adjacentfaceNormal) => float3.Add(current, adjacentfaceNormal));
-            // TODO: For testing the normal problem.
-            //sumNormals = float3.Divide(sumNormals, adjacentfaceCount);
-            normalized = MathHelperNormalize(sumNormals);
+          
+            //normalized = MathHelperNormalize(sumNormals);
 
-            return normalized;
+            //return normalized;
+            return sumNormals;
         }
 
         /// <summary>

@@ -61,6 +61,10 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>
+    </StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="LinqForGeometry.cs" />
@@ -75,7 +79,7 @@
     <None Include="Assets\cube_quadrangle_1_textured.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-	<None Include="Assets\cube_quadrangle_1_textured_quad.obj.model">
+    <None Include="Assets\cube_quadrangle_1_textured_quad.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Assets\plane_quadrangle_1.obj.model">
@@ -90,28 +94,28 @@
     <Content Include="Assets\Teapot_textured.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-	<Content Include="Assets\Sphere.obj.model">
+    <Content Include="Assets\Sphere.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-	<Content Include="Assets\world_map.jpg">
+    <Content Include="Assets\world_map.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-	<Content Include="Assets\Sphere_triangulate.obj.model">
+    <Content Include="Assets\Sphere_triangulate.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-	<Content Include="Assets\cube_triangulate.obj.model">
+    <Content Include="Assets\cube_triangulate.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-	<Content Include="Assets\level1.obj.model">
+    <Content Include="Assets\level1.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-		<Content Include="Assets\logo1.obj.model">
+    <Content Include="Assets\logo1.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-	<Content Include="Assets\level2.obj.model">
+    <Content Include="Assets\level2.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-	<Content Include="Assets\Mat_Color.jpg">
+    <Content Include="Assets\Mat_Color.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -128,7 +132,7 @@
       <Project>{E95FA1C8-6491-4B4B-BBE1-EDA6B16B2C6A}</Project>
       <Name>Math.Core</Name>
     </ProjectReference>
-	<ProjectReference Include="$(SolutionDir)src\Engine\LinqForGeometry\LFG.csproj">
+    <ProjectReference Include="$(SolutionDir)src\Engine\LinqForGeometry\LFG.csproj">
       <Project>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Project>
       <Name>LinqForGeometry</Name>
     </ProjectReference>

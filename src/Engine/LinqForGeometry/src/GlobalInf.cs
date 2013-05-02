@@ -26,7 +26,7 @@ namespace hsfurtwangen.dsteffen.lfg.globalinf
         private static string _ERROR = "ERROR: ";
         
         // Dev
-        public static bool _DEBUGOUTPUT = true;
+        public static bool _DEBUGOUTPUT = false;
 
         // Project related
         public static string INFO_IMPORTERDISCLAIMER = "\n\n\n\n   ########## IMPORTER FOR LFG - LINQ FOR GEOMETRY ##########\n   ##########     Starting import of asset ...     ########## \n   ##########         Dominik Steffen 2013         ########## \n \n ";
