@@ -122,11 +122,13 @@ uniform float FUSEE_L7_ACTIVE;
 varying vec2 vUV;
 varying vec3 vNormal;
 varying vec4 endAmbient;
+varying vec3 vGlobalPos;
 
 vec3 vPos;
  
 void main()
 {
+    vGlobalPos = mat3(FUSEE_M[0].xyz, FUSEE_M[1].xyz, FUSEE_M[2].xyz) * fuVertex;
     vUV = fuUV;
     vNormal = normalize(mat3(FUSEE_M[0].xyz, FUSEE_M[1].xyz, FUSEE_M[2].xyz) * fuNormal);
 
@@ -200,13 +202,14 @@ uniform vec3 FUSEE_L7_DIRECTION;
 varying vec3 vNormal;
 varying vec2 vUV;
 varying vec4 endAmbient;
+varying vec3 vGlobalPos;
  
 void main()
 {
     vec4 endIntensity = vec4(0,0,0,0);
 
     if(FUSEE_L0_ACTIVE == 1.0) {
-        endIntensity += max(dot(-normalize(FUSEE_L0_DIRECTION),normalize(vNormal)),0.0) * FUSEE_L0_DIFFUSE;
+        endIntensity += max(dot(-normalize(normalize(vGlobalPos) - vec3(0, 0, 0)),normalize(vNormal)),0.0) * FUSEE_L0_DIFFUSE;
     }
     if(FUSEE_L1_ACTIVE == 1.0) {
         endIntensity += max(dot(-normalize(FUSEE_L1_DIRECTION),normalize(vNormal)),0.0) * FUSEE_L1_DIFFUSE;

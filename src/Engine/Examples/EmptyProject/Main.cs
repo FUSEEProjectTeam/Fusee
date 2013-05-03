@@ -53,7 +53,7 @@ namespace Examples.LightTypeTest
             SceneManager.Manager.AddSceneEntity(_spaceBox);
 
             //Sphere
-            _object = new SceneEntity("Sphere1", new ActionCode(), _emptySphere, new BumpMaterial(MoreShaders.GetShader("specular", RC), "Assets/wall.jpg", "Assets/wall.jpg"), new Renderer(sphere));
+            _object = new SceneEntity("Sphere1", new ActionCode(), _emptySphere, new DiffuseMaterial(MoreShaders.GetShader("diffuse", RC), "Assets/wall.jpg"), new Renderer(sphere));
             _object.transform.GlobalPosition = new float3(2.9f, 0, 0);
             _object.transform.GlobalScale = new float3(1, 1, 1);
 
@@ -61,10 +61,10 @@ namespace Examples.LightTypeTest
             _object = new SceneEntity("DirLight", new RotateAction(new float3(0,20,0)), _emptyLight, new DiffuseMaterial(MoreShaders.GetShader("diffuse", RC), "Assets/metall.jpg"), new Renderer(lamp));
             _object.transform.GlobalPosition = new float3(0, 0, 0);
             _object.transform.GlobalScale = new float3(0.3f, 0.3f, 0.3f);
-            _object.AddComponent(direct);
+            _object.AddComponent(point);
 
             //Cube
-            _object = new SceneEntity("Cube1", new ActionCode(), _emptyCube, new BumpMaterial(MoreShaders.GetShader("specular", RC), "Assets/wall.jpg", "Assets/normal2.jpg"), new Renderer(cube));
+            _object = new SceneEntity("Cube1", new ActionCode(), _emptyCube, new DiffuseMaterial(MoreShaders.GetShader("diffuse", RC), "Assets/wall.jpg"), new Renderer(cube));
             _object.transform.GlobalPosition = new float3(-2.9f, 0, 0);
             _object.transform.GlobalScale = new float3(0.01f, 0.01f, 0.01f);
 
