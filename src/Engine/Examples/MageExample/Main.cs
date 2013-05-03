@@ -304,7 +304,7 @@ void main()
             //RC.SetShaderParamTexture(_texture2ParamBody, iTex2);
             //RC.SetShaderParam(_specularLevelBody, 64.0f);
 
-            RC.ClearColor = new float4(0.3f, 0.3f, 0.3f, 1);
+            RC.ClearColor = new float4(0.5f, 0.5f, 0.5f, 1);
 
             _angleHorz = 0;
             _angleVert += 1.75f;
