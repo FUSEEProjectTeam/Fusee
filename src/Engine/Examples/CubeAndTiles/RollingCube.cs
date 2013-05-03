@@ -254,7 +254,7 @@ namespace Examples.CubeAndTiles
             }
 
             // render
-            _curLevel.RContext.ModelView = _curLevel.AddCameraTrans(ModelView);
+            _curLevel.RContext.ModelView = ModelView*_curLevel.CamTrans;
             _curLevel.RContext.SetShaderParam(_curLevel.VColorObj, new float4(_curLevel.CubeColor, _curBright));
 
             _curLevel.RContext.Render(_cubeMesh);

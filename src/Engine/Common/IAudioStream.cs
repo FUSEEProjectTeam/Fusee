@@ -1,7 +1,10 @@
 ﻿namespace Fusee.Engine
 {
     /// <summary>
-    /// Loaded files with <see cref="Audio"/> class can be controlled via this IAudioStream interface.
+    /// Loaded files with <see>
+    ///                       <cref>Audio</cref>
+    ///                   </see>
+    ///     class can be controlled via this IAudioStream interface.
     /// </summary>
     public interface IAudioStream
     {

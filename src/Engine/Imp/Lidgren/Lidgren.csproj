@@ -70,9 +70,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="Clean">
-    <Exec Condition=" '$(OS)' == 'Windows_NT' And Exists('$(OutputPath)') " Command="del /q $(OutputPath)Fusee.Engine.Imp.Lidgren.*" />
+    <Exec Condition=" '$(OS)' == 'Windows_NT' And Exists('$(OutputPath)') " Command="del /q &quot;$(OutputPath)Fusee.Engine.Imp.Lidgren.*&quot;" />
     <Exec Condition=" '$(OS)' != 'Windows_NT' And Exists('$(OutputPath)') " Command="rm '$(OutputPath)'Fusee.Engine.Imp.Lidgren.*" />
-    <Exec Condition=" '$(OS)' == 'Windows_NT' And Exists('$(OutputPath)Lidgren.dll') " Command="del /q $(OutputPath)Lidgren.dll" />
-    <Exec Condition=" '$(OS)' != 'Windows_NT' And Exists('$(OutputPath)Lidgren.dll') " Command="rm '$(OutputPath)'Lidgren.dll" />
+    <Exec Condition=" '$(OS)' == 'Windows_NT' And Exists('$(OutputPath)Lidgren.Network.dll') " Command="del /q &quot;$(OutputPath)Lidgren.Network.dll&quot;" />
+    <Exec Condition=" '$(OS)' != 'Windows_NT' And Exists('$(OutputPath)Lidgren.Network.dll') " Command="rm '$(OutputPath)'Lidgren.Network.dll" />
   </Target>
 </Project>
