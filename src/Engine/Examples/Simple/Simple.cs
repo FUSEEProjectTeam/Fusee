@@ -41,8 +41,10 @@ namespace Examples.Simple
                 gl_FragColor = vColor * dot(vNormal, vec3(0, 0, 1));
             }";
 
+        protected IShaderParam VColorParam;
         // angle variables
         private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
+
 
         private const float RotationSpeed = 1f;
         private const float Damping = 0.92f;
@@ -59,12 +61,23 @@ namespace Examples.Simple
             _meshTea = MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
             _meshFace = MeshReader.LoadMesh(@"Assets/Face.obj.model");
 
+            //ShaderProgram sp = RC.CreateShader(Vs, Ps);
             var sp = RC.CreateShader(Vs, Ps);
-            RC.SetShader(sp);
 
+            // im webgl iteration über liste auslagern und beim ersten aufruf von getshader param einbauen.
+            VColorParam = sp.GetShaderParam("vColor");
             _vColorParam = sp.GetShaderParam("vColor");
+// RC.SetShader(sp);
 
+
+
+            //RC.SetShaderParam(Shininess, 265f);
+            //RC.SetShaderParam(Ambient, new float4(0.5f, 0.8f, 0, 1));
+            //RC.SetShaderParam(Diffuse, new float4(0.5f, 0.8f, 0, 1));
+            //RC.SetShaderParam(Specular, new float4(0.5f, 0.8f, 0, 1));
+            //RC.SetShaderParam(Emission, new float4(0.5f, 0.8f, 0, 1));
             RC.ClearColor = new float4(1, 1, 1, 1);
+            RC.SetShader(sp);
         }
 
         public override void RenderAFrame()
@@ -106,7 +119,8 @@ namespace Examples.Simple
 
             // first mesh
             RC.ModelView = mtxRot * float4x4.CreateTranslation(-100, 0, 0) * mtxCam;
-
+            //RC.Render(Mesh);
+            //RC.Render(MeshFace);
             RC.SetShaderParam(_vColorParam, new float4(0.5f, 0.8f, 0, 1));
             RC.Render(_meshTea);
 
@@ -130,6 +144,7 @@ namespace Examples.Simple
 
         public static void Main()
         {
+            //Simple app = new Simple();
             var app = new Simple();
             app.Run();
         }

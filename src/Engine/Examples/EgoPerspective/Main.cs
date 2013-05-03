@@ -22,27 +22,25 @@ namespace Examples.EgoPerspective
 
         public override void Init()
         {
-            _world = new World(RC);
+            //_world = new World(RC, Input.Instance);
             Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Cube.obj.model"));
             Geometry geo2 = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Teapot.obj.model"));
 
             Sp = MoreShaders.GetShader("bump", RC);
             RC.SetShader(Sp);
-            
+            m = new ShaderMaterial(Sp);
 
             x = 500;
             z = 0;
             time = 0;
 
 
-            RC.SetLightActive(0, 1.0f);
-            
+            RC.SetLightActive(0, 1);
             RC.SetLightPosition(0, new float3(500, 0, 0));
-            RC.SetLightAmbient(0, new float4(0.3f, 0.3f, 0.3f, 1));
+            RC.SetLightAmbient(0, new float4(0.1f, 0.1f, 0.1f, 1));
             RC.SetLightSpecular(0, new float4(0.1f, 0.1f, 0.1f, 1));
-            RC.SetLightDiffuse(0, new float4(0.7f, 0.7f, 0.7f, 1));
+            RC.SetLightDiffuse(0, new float4(1.0f, 1.0f, 1.0f, 1));
             RC.SetLightDirection(0, new float3(-1, 0, 0));
-            m = new ShaderMaterial(Sp);
 
             //RC.SetLightActive(6, 1);
             //RC.SetLightPosition(6, new float3(-500, 100, 0));
@@ -71,16 +69,19 @@ namespace Examples.EgoPerspective
             //RC.SetLightDirection(3, new float3(-1, -1, -1));
 
             _texture1Param = Sp.GetShaderParam("texture1");
+            //_texture2Param = Sp.GetShaderParam("normalTex");
             _texture2Param = Sp.GetShaderParam("normalTex");
-            _specularLevel = Sp.GetShaderParam("specularLevel");
 
-            ImageData imgData = RC.LoadImage("Assets/metall.jpg");
-            ImageData imgData2 = RC.LoadImage("Assets/normal2.jpg");
-            ITexture iTex = RC.CreateTexture(imgData);
-            ITexture iTex2 = RC.CreateTexture(imgData2);
-            RC.SetShaderParamTexture(_texture1Param, iTex);
+
+            //ImageData imgData2 = RC.LoadImage("Assets/normal2.jpg");
             RC.SetShaderParamTexture(_texture2Param, iTex2);
-            RC.SetShaderParam(_specularLevel, 128.0f);
+
+            //ITexture iTex = RC.CreateTexture(imgData);
+            // iTex2 = RC.CreateTexture(imgData2);
+            //RC.SetShaderParamTexture(_texture1Param, iTex);
+            //RC.SetShaderParamTexture(_texture2Param, iTex2);
+            //RC.SetShaderParamTexture(_texture2Param, iTex2);
+
 
 
 
@@ -95,8 +96,6 @@ namespace Examples.EgoPerspective
 
         public override void RenderAFrame()
         {
-
-
             x = (float)Math.Cos(time) * 500;
             z = (float)Math.Sin(time) * 500;
             time += 0.01f;

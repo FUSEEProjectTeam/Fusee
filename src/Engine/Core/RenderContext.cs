@@ -989,9 +989,10 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
 
             _currentShader = program;
             _rci.SetShader(program._spi);
+            //UpdateCurrentShader();
 
             UpdateShaderParams();
-        }
+ }
 
         /// <summary>
         /// Get a list of (uniform) shader parameters accessed by the given shader.
