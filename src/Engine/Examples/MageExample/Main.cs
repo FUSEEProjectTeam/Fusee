@@ -240,7 +240,7 @@ void main()
         private static float _angleHorz = 0.0f, _angleVert = 0.0f, _angleVelHorz = 0, _angleVelVert = 0, _rotationSpeed = 1.5f, _damping = 0.92f;
         protected Mesh Body, GloveL, GloveR;
         protected IShaderParam VColorParam;
-        protected ShaderMaterial mBody, mGlove;
+        //protected ShaderMaterial mBody, mGlove;
         private IShaderParam _texture1ParamBody;
         private IShaderParam _texture2ParamBody;
         private IShaderParam _specularLevelBody;
@@ -248,7 +248,7 @@ void main()
         private IShaderParam _texture2ParamGlove;
         private IShaderParam _specularLevelGlove;
 
-        private ShaderProgram spBump;
+        private ShaderProgram SpBody, SpGlove;
         private ITexture iTexGlove;
         private ITexture iTex2Glove;
         private ITexture iTex;
@@ -256,7 +256,6 @@ void main()
 
         public override void Init()
         {
-            spBump = RC.CreateShader(VsBump, PsBump);
 
             Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/mageBodyOBJ.obj.model"));
             Geometry geo2 = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/mageGloveLOBJ.obj.model"));
@@ -267,74 +266,43 @@ void main()
             GloveR = geo3.ToMesh();
 
             ShaderProgram SpBody = RC.CreateShader(VsBump, PsBump);
-            ShaderProgram SpGlove = RC.CreateShader(VsBump, PsBump);
-            RC.SetShader(spBump);
-            mBody = new ShaderMaterial(spBump);
-            mGlove = new ShaderMaterial(spBump);
+            RC.SetShader(SpBody);
 
             RC.SetLightActive(0, 1);
-            RC.SetLightPosition(0, new float3(5, 0, -2));
-            RC.SetLightAmbient(0, new float4(0.2f, 0.2f, 0.2f, 1));
-            RC.SetLightSpecular(0, new float4(0.1f, 0.1f, 0.1f, 1));
-            RC.SetLightDiffuse(0, new float4(0.8f, 0.8f, 0.8f, 1));
-            RC.SetLightDirection(0, new float3(-1, 0, 0));
+            RC.SetLightPosition(0, new float3(5.0f, 0.0f, -2.0f));
+            RC.SetLightAmbient(0, new float4(0.2f, 0.2f, 0.2f, 1.0f));
+            RC.SetLightSpecular(0, new float4(0.1f, 0.1f, 0.1f, 1.0f));
+            RC.SetLightDiffuse(0, new float4(0.8f, 0.8f, 0.8f, 1.0f));
+            RC.SetLightDirection(0, new float3(-1.0f, 0.0f, 0.0f));
 
             RC.SetLightActive(1, 1);
-            RC.SetLightPosition(1, new float3(-5, 0, -2));
-            RC.SetLightAmbient(1, new float4(0.5f, 0.5f, 0.5f, 1));
-            RC.SetLightSpecular(1, new float4(0.1f, 0.1f, 0.1f, 1));
-            RC.SetLightDiffuse(1, new float4(1.0f, 1.0f, 1.0f, 1));
-            RC.SetLightDirection(1, new float3(1, 0, 0));
-
-            RC.SetLightActive(6, 1);
-            RC.SetLightPosition(6, new float3(0, 1, 2));
-            RC.SetLightAmbient(6, new float4(0.1f, 0.1f, 0.1f, 1));
-            RC.SetLightSpecular(6, new float4(0.2f, 0.2f, 0.2f, 0));
-            RC.SetLightDiffuse(6, new float4(1.0f, 1.0f, 1.0f, 1));
-            RC.SetLightDirection(6, new float3(5, -1, 0));
-
-            //RC.SetLightActive(2, 1);
-            //RC.SetLightPosition(2, new float3(0, 500, 0));
-            //RC.SetLightAmbient(2, new float4(0.1f, 0.1f, 0.1f, 1));
-            //RC.SetLightSpecular(2, new float4(0, 0, 0.2f, 0));
-            //RC.SetLightDiffuse(2, new float4(0.0f, 1.0f, 0.0f, 1));
-            //RC.SetLightDirection(2, new float3(0, -1, 0));
-
-            //RC.SetLightPosition(2, new float3(1000, 1000, 1000));
-            //RC.SetLightAmbient(2, new float4(0.1f, 0.1f, 0.1f, 1));
-            //RC.SetLightSpecular(2, new float4(0, 0.3f, 0, 0));
-            //RC.SetLightDiffuse(2, new float4(0.0f, 0.0f, 0.7f, 1));
-            //RC.SetLightDirection(2, new float3(-1, -1, -1));
-
-            //RC.SetLightPosition(3, new float3(1000, 1000, 1000));
-            //RC.SetLightAmbient(3, new float4(0.1f, 0.1f, 0.1f, 1));
-            //RC.SetLightSpecular(3, new float4(0, 0.3f, 0, 0));
-            //RC.SetLightDiffuse(3, new float4(0.0f, 0.0f, 0.7f, 1));
-            //RC.SetLightDirection(3, new float3(-1, -1, -1));
+            RC.SetLightPosition(1, new float3(-5.0f, 0.0f, -2.0f));
+            RC.SetLightAmbient(1, new float4(0.5f, 0.5f, 0.5f, 1.0f));
+            RC.SetLightSpecular(1, new float4(0.1f, 0.1f, 0.1f, 1.0f));
+            RC.SetLightDiffuse(1, new float4(1.0f, 1.0f, 1.0f, 1.0f));
+            RC.SetLightDirection(1, new float3(1.0f, 0.0f, 0.0f));
 
             _texture1ParamBody = SpBody.GetShaderParam("texture1");
             _texture2ParamBody = SpBody.GetShaderParam("normalTex");
             _specularLevelBody = SpBody.GetShaderParam("specularLevel");
 
-            _texture1ParamGlove = SpGlove.GetShaderParam("texture1");
-            _texture2ParamGlove = SpGlove.GetShaderParam("normalTex");
-            _specularLevelGlove = SpGlove.GetShaderParam("specularLevel");
-
             ImageData imgDataGlove = RC.LoadImage("Assets/HandAOMap.jpg");
             ImageData imgData2Glove = RC.LoadImage("Assets/HandschuhNormalMap.jpg");
             iTexGlove = RC.CreateTexture(imgDataGlove);
             iTex2Glove = RC.CreateTexture(imgData2Glove);
-            RC.SetShaderParamTexture(_texture1ParamGlove, iTexGlove);
-            RC.SetShaderParamTexture(_texture2ParamGlove, iTex2Glove);
-            RC.SetShaderParam(_specularLevelGlove, 64.0f);
+            //RC.SetShader(SpGlove);
+            //RC.SetShaderParamTexture(_texture1ParamGlove, iTexGlove);
+            //RC.SetShaderParamTexture(_texture2ParamGlove, iTex2Glove);
+            //RC.SetShaderParam(_specularLevelGlove, 64.0f);
 
             ImageData imgData = RC.LoadImage("Assets/TextureAtlas.jpg");
             ImageData imgData2 = RC.LoadImage("Assets/TextureAtlasNormal.jpg");
             iTex = RC.CreateTexture(imgData);
             iTex2 = RC.CreateTexture(imgData2);
-            RC.SetShaderParamTexture(_texture1ParamBody, iTex);
-            RC.SetShaderParamTexture(_texture2ParamBody, iTex2);
-            RC.SetShaderParam(_specularLevelBody, 64.0f);
+            //RC.SetShader(SpBody);
+            //RC.SetShaderParamTexture(_texture1ParamBody, iTex);
+            //RC.SetShaderParamTexture(_texture2ParamBody, iTex2);
+            //RC.SetShaderParam(_specularLevelBody, 64.0f);
 
             RC.ClearColor = new float4(0.3f, 0.3f, 0.3f, 1);
 
@@ -388,6 +356,7 @@ void main()
             RC.ModelView = mtxRot * float4x4.CreateTranslation(0, -2f, 0) * mtxCam;
             //RC.SetShaderParam(VColorParam, new float4(0.5f, 0.8f, 0, 1));
 
+            
             RC.SetShaderParamTexture(_texture1ParamBody, iTex);
             RC.SetShaderParamTexture(_texture2ParamBody, iTex2);
             RC.SetShaderParam(_specularLevelBody, 64.0f);
@@ -395,10 +364,10 @@ void main()
             RC.Render(Body);
 
             RC.ModelView = mtxRot * float4x4.CreateTranslation(0, -2f, 0) * mtxCam;
-            //RC.SetShaderParam(VColorParam, new float4(0.8f, 0.5f, 0, 1));
-            RC.SetShaderParamTexture(_texture1ParamGlove, iTexGlove);
-            RC.SetShaderParamTexture(_texture2ParamGlove, iTex2Glove);
-            RC.SetShaderParam(_specularLevelGlove, 64.0f);
+
+            RC.SetShaderParamTexture(_texture1ParamBody, iTexGlove);
+            RC.SetShaderParamTexture(_texture2ParamBody, iTex2Glove);
+            RC.SetShaderParam(_specularLevelBody, 64.0f);
 
             RC.Render(GloveL);
             RC.Render(GloveR);
