@@ -68,13 +68,13 @@ namespace Examples.EgoPerspective
             //RC.SetLightDiffuse(3, new float4(0.0f, 0.0f, 0.7f, 1));
             //RC.SetLightDirection(3, new float3(-1, -1, -1));
 
-            _texture1Param = Sp.GetShaderParam("texture1");
+            //_texture1Param = Sp.GetShaderParam("texture1");
             //_texture2Param = Sp.GetShaderParam("normalTex");
-            _texture2Param = Sp.GetShaderParam("normalTex");
+            //_texture2Param = Sp.GetShaderParam("normalTex");
 
 
             //ImageData imgData2 = RC.LoadImage("Assets/normal2.jpg");
-            RC.SetShaderParamTexture(_texture2Param, iTex2);
+            //RC.SetShaderParamTexture(_texture2Param, iTex2);
 
             //ITexture iTex = RC.CreateTexture(imgData);
             // iTex2 = RC.CreateTexture(imgData2);
