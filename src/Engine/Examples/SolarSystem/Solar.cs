@@ -146,7 +146,7 @@ namespace Examples.Solar
             SceneManager.RC = RC;
             SceneEntity _planet;
             // Lights
-            DirectionalLight direct = new DirectionalLight(new float3(-500, 1000, 0), new float4(1, 1, 1, 1), new float3(0, 0, 0), 0);
+            DirectionalLight direct = new DirectionalLight(new float3(1, 1, 1), new float4(0.7f, 0.7f, 0.7f, 1), new float4(0.3f, 0.3f, 0.3f, 1), new float4(0.9f, 0.9f, 0.9f, 1), new float3(0, 0, 0), 0);
 
             // Load Geometry
 

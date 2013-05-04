@@ -210,15 +210,15 @@ namespace Fusee.Engine
         {
             switch (type)
             {
-                case 0:
-                    SetLightActive(id, 1);
+                case 1:
+                    SetLightActive(id, type);
                     SetLightAmbient(id, ambient);
                     SetLightDiffuse(id, diffuse);
                     SetLightSpecular(id, specular);
                     SetLightDirection(id, v3);
                     break;
-                case 1:
-                    SetLightActive(id, 1);
+                case 2:
+                    SetLightActive(id, type);
                     SetLightAmbient(id, ambient);
                     SetLightDiffuse(id, diffuse);
                     SetLightSpecular(id, specular);
@@ -230,7 +230,7 @@ namespace Fusee.Engine
         //Spotlight with position AND direction
         public void SetLight(float3 position, float3 direction, float4 diffuse, float4 ambient, float4 specular, int type, int id)
         {
-            SetLightActive(id, 1);
+            SetLightActive(id, type);
             SetLightAmbient(id, ambient);
             SetLightDiffuse(id, diffuse);
             SetLightSpecular(id, specular);

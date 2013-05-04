@@ -15,7 +15,11 @@ namespace Fusee.SceneManagement
         public enum LightType
         {
             /// <summary>
-            /// Directional = 0
+            /// Disabled Light = 0
+            /// </summary>
+            Disabled,
+            /// <summary>
+            /// Directional = 1
             /// </summary>
             Directional,
             /// <summary>
