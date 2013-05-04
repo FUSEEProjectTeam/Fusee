@@ -484,7 +484,7 @@ namespace Examples.Solar
 
             //camrotation.Init(WorldOrigin);
             RC.ClearColor = new float4(1, 0, 0, 1);
-
+            RC.DebugLinesEnabled = false;
         }
 
 

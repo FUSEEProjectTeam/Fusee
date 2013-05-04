@@ -40,7 +40,8 @@ namespace Fusee.SceneManagement
         {
             _sceneVisitorRendering = new SceneVisitorRendering(this);
             //_traversalRender =  new TraversalStateRender(this);
-            for (int i = 0; i < RenderJobs.Length; i++ )
+            int length = RenderJobs.Length;
+            for (int i = 0; i < length; i++ )
             {
                 RenderJobs[i] = new List<RenderJob>();
             }
@@ -101,19 +102,21 @@ namespace Fusee.SceneManagement
         public void Traverse(RenderCanvas renderCanvas)
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-
-            foreach (var sceneMember in SceneMembers)
+            int length = SceneMembers.Count;
+            for (int i=0;i<length; i++)
             {
-                sceneMember.Accept(_sceneVisitorRendering);
+                SceneMembers[i].Accept(_sceneVisitorRendering);
+                //sceneMember.Accept();
             }
 
             // Order: Matrix, Mesh, Renderer
-            for (int i = 1; i < RenderJobs.Length; i++ )
+            length = RenderJobs.Length;
+            for (int i = 1; i < length; i++ )
             {
 
-                
-                
-                for (int k = 0; k < RenderJobs[i].Count;k++)
+
+                int innerlength = RenderJobs[i].Count;
+                for (int k = 0; k < innerlength;k++)
                 {
 
                     
@@ -126,15 +129,17 @@ namespace Fusee.SceneManagement
             renderCanvas.Present();
 
             //Console.WriteLine("Rendering at "+DeltaTime+"ms and "+(1/DeltaTime)+" FPS"); // Use this to checkout Framerate
-            foreach (var renderjob in RenderJobs)
+            length = RenderJobs.Length;
+            for (int j = 0; j < length;j++ )
             {
-                renderjob.Clear();
+                RenderJobs[j].Clear();
             }
         }
 
         public void UpdateLights()
         {
-            for (int j = 0; j < RenderJobs[0].Count; j++)
+            int length = RenderJobs[0].Count;
+            for (int j = 0; j < length; j++)
             {
                 RenderJobs[0][j].SubmitWork(RC);
             }
