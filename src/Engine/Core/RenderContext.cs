@@ -20,7 +20,7 @@ namespace Fusee.Engine
         private IShaderParam _debugColor;
         private readonly Light[] _lightParams;
         private readonly LightParamNames[] _lightShaderParams;
-
+        private bool _debugLinesEnabled = true;
         private bool _updatedShaderParams;
 
         internal struct MatrixParamNames
@@ -1177,16 +1177,25 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
             _rci.Render(m._meshImp);
         }
 
+        public bool DebugLinesEnabled
+        {
+            get { return _debugLinesEnabled; }
+            set { _debugLinesEnabled = value; }
+        }
+
         public void DebugLine(float3 start, float3 end, float4 color)
         {
-            start /= 2;
-            end /= 2;
+            if (_debugLinesEnabled)
+            {
+                start /= 2;
+                end /= 2;
 
-            SetShader(_debugShader);
-            SetShaderParam(_currentShaderParams.FUSEE_MVP, ModelViewProjection);
-            //IShaderParam col = _debugShader.GetShaderParam("Col");
-            SetShaderParam(_debugColor, color);
-            _rci.DebugLine(start, end, color);
+                SetShader(_debugShader);
+                SetShaderParam(_currentShaderParams.FUSEE_MVP, ModelViewProjection);
+                //IShaderParam col = _debugShader.GetShaderParam("Col");
+                SetShaderParam(_debugColor, color);
+                _rci.DebugLine(start, end, color);
+            }
         }
 
         /// <summary>
