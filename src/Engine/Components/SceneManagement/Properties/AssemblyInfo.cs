@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // Allgemeine Informationen über eine Assembly werden über die folgenden 
 // Attribute gesteuert. Ändern Sie diese Attributwerte, um die Informationen zu ändern,
 // die mit einer Assembly verknüpft sind.
-[assembly: AssemblyTitle("Fusee.SceneManagement")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Fusee.Engine.SceneManagement")]
+[assembly: AssemblyDescription("SceneManagement for the Fusee Project")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Components")]
-[assembly: AssemblyCopyright("Copyright ©  2012")]
+[assembly: AssemblyCompany("Furtwangen University")]
+[assembly: AssemblyProduct("Fusee Engine")]
+[assembly: AssemblyCopyright("Copyright © 2013 The Fusee Project")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

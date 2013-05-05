@@ -8,8 +8,8 @@
     <ProjectGuid>{F7118566-EBBE-4001-9074-8FCD69A8F51F}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Examples.Solar</RootNamespace>
-    <AssemblyName>Examples.Solar</AssemblyName>
+    <RootNamespace>Examples.SolarSystem</RootNamespace>
+    <AssemblyName>Examples.SolarSystem</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <UseVSHostingProcess>false</UseVSHostingProcess>
@@ -50,10 +50,10 @@
     <Compile Include="CameraScript.cs" />
     <Compile Include="MoonAction.cs" />
     <Compile Include="RotationScript.cs" />
-    <Compile Include="Solar.cs" />
     <Compile Include="PlanetAction.cs" />
     <Compile Include="PlanetMaterial.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SolarSystem.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\Common.csproj">
@@ -134,7 +134,7 @@
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">$(ProjectDir)../../../../</SolutionDir>
   </PropertyGroup>
   <Target Name="Clean">
-    <Exec Condition=" '$(OS)' == 'Windows_NT' And Exists('$(OutputPath)') " Command='rd /s /q "$(OutputPath)"' />
+    <Exec Condition=" '$(OS)' == 'Windows_NT' And Exists('$(OutputPath)') " Command="rd /s /q &quot;$(OutputPath)&quot;" />
     <Exec Condition=" '$(OS)' != 'Windows_NT' And Exists('$(OutputPath)') " Command="rm '$(OutputPath)' -r -f" />
   </Target>
   <Import Project="$(SolutionDir)/Fusee_Windows.targets" Condition="'$(PostBuildEvent)' == '' And '$(OS)' == 'Windows_NT' " />
