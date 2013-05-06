@@ -101,14 +101,7 @@ uniform mat4 FUSEE_M;
 uniform mat4 FUSEE_V;
 uniform mat4 FUSEE_P;
 
-uniform vec4 FUSEE_L0_AMBIENT;
-uniform vec4 FUSEE_L1_AMBIENT;
-uniform vec4 FUSEE_L2_AMBIENT;
-uniform vec4 FUSEE_L3_AMBIENT;
-uniform vec4 FUSEE_L4_AMBIENT;
-uniform vec4 FUSEE_L5_AMBIENT;
-uniform vec4 FUSEE_L6_AMBIENT;
-uniform vec4 FUSEE_L7_AMBIENT;
+
 
 uniform float FUSEE_L0_ACTIVE;
 uniform float FUSEE_L1_ACTIVE;
@@ -121,7 +114,6 @@ uniform float FUSEE_L7_ACTIVE;
 
 varying vec2 vUV;
 varying vec3 vNormal;
-varying vec4 endAmbient;
 varying vec3 vGlobalPos;
 
 vec3 vPos;
@@ -132,31 +124,31 @@ void main()
     vUV = fuUV;
     vNormal = normalize(mat3(FUSEE_M[0].xyz, FUSEE_M[1].xyz, FUSEE_M[2].xyz) * fuNormal);
 
-    if(FUSEE_L0_ACTIVE != 0.0) {
-        endAmbient += FUSEE_L0_AMBIENT;
-    }
-    if(FUSEE_L1_ACTIVE != 0.0) {
-        endAmbient += FUSEE_L1_AMBIENT;
-    }
-    if(FUSEE_L2_ACTIVE != 0.0) {
-        endAmbient += FUSEE_L2_AMBIENT;
-    }
-    if(FUSEE_L3_ACTIVE != 0.0) {
-        endAmbient += FUSEE_L3_AMBIENT;
-    }
-    if(FUSEE_L4_ACTIVE != 0.0) {
-        endAmbient += FUSEE_L4_AMBIENT;
-    }
-    if(FUSEE_L5_ACTIVE != 0.0) {
-        endAmbient += FUSEE_L5_AMBIENT;
-    }
-    if(FUSEE_L6_ACTIVE != 0.0) {
-        endAmbient += FUSEE_L6_AMBIENT;
-    }
-    if(FUSEE_L7_ACTIVE != 0.0) {
-        endAmbient += FUSEE_L7_AMBIENT;
-    }
-    
+//    if(FUSEE_L0_ACTIVE != 0.0) {
+//        endAmbient += FUSEE_L0_AMBIENT;
+//    }
+//    if(FUSEE_L1_ACTIVE != 0.0) {
+//        endAmbient += FUSEE_L1_AMBIENT;
+//    }
+//    if(FUSEE_L2_ACTIVE != 0.0) {
+//        endAmbient += FUSEE_L2_AMBIENT;
+//    }
+//    if(FUSEE_L3_ACTIVE != 0.0) {
+//        endAmbient += FUSEE_L3_AMBIENT;
+//    }
+//    if(FUSEE_L4_ACTIVE != 0.0) {
+//        endAmbient += FUSEE_L4_AMBIENT;
+//    }
+//    if(FUSEE_L5_ACTIVE != 0.0) {
+//        endAmbient += FUSEE_L5_AMBIENT;
+//    }
+//    if(FUSEE_L6_ACTIVE != 0.0) {
+//        endAmbient += FUSEE_L6_AMBIENT;
+//    }
+//    if(FUSEE_L7_ACTIVE != 0.0) {
+//        endAmbient += FUSEE_L7_AMBIENT;
+//    }
+//    
 
 
     gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
@@ -170,7 +162,7 @@ private const string PsDiffuse = @"
 
 uniform sampler2D texture1;
 
-uniform vec4 FUSEE_L0_POSITION;
+uniform vec3 FUSEE_L0_POSITION;
 
 uniform vec4 FUSEE_L0_DIFFUSE;
 uniform vec4 FUSEE_L1_DIFFUSE;
@@ -180,6 +172,15 @@ uniform vec4 FUSEE_L4_DIFFUSE;
 uniform vec4 FUSEE_L5_DIFFUSE;
 uniform vec4 FUSEE_L6_DIFFUSE;
 uniform vec4 FUSEE_L7_DIFFUSE;
+
+uniform vec4 FUSEE_L0_AMBIENT;
+uniform vec4 FUSEE_L1_AMBIENT;
+uniform vec4 FUSEE_L2_AMBIENT;
+uniform vec4 FUSEE_L3_AMBIENT;
+uniform vec4 FUSEE_L4_AMBIENT;
+uniform vec4 FUSEE_L5_AMBIENT;
+uniform vec4 FUSEE_L6_AMBIENT;
+uniform vec4 FUSEE_L7_AMBIENT;
 
 uniform float FUSEE_L0_ACTIVE;
 uniform float FUSEE_L1_ACTIVE;
@@ -201,15 +202,38 @@ uniform vec3 FUSEE_L7_DIRECTION;
 
 varying vec3 vNormal;
 varying vec2 vUV;
-varying vec4 endAmbient;
 varying vec3 vGlobalPos;
+
+void CalcDirectLight(vec4 difColor, vec4 ambColor, vec3 direction, inout vec4 intensity) {
+    intensity += ambColor;
+    intensity += max(dot(-normalize(direction),normalize(vNormal)),0.0) * difColor;
+}
+
+void CalcPointLight(vec4 difColor, vec4 ambColor, vec3 direction, vec3 position, inout vec4 intensity) {
+    intensity += ambColor;
+    vec3 pos = vGlobalPos - position;
+    intensity += max(dot(-normalize(pos),normalize(vNormal)),0.0) * difColor;
+    
+}
+
+void CalcSpotLight() {
+    // add diffuse light calculation for spotlight here
+}
  
 void main()
 {
     vec4 endIntensity = vec4(0,0,0,0);
+    if(FUSEE_L0_ACTIVE != 0.0){
+        if(FUSEE_L0_ACTIVE == 1.0)
+            CalcDirectLight(FUSEE_L0_DIFFUSE, FUSEE_L0_AMBIENT, FUSEE_L0_DIRECTION, endIntensity);
+        if(FUSEE_L0_ACTIVE == 2.0)
+            CalcPointLight(FUSEE_L0_DIFFUSE, FUSEE_L0_AMBIENT, FUSEE_L0_DIRECTION, FUSEE_L0_POSITION, endIntensity);
+        if(FUSEE_L0_ACTIVE == 3.0)
+            CalcSpotLight();
+    }  
 
     if(FUSEE_L0_ACTIVE != 0.0) {
-        endIntensity += max(dot(-normalize(normalize(vGlobalPos) - vec3(0, 0, 0)),normalize(vNormal)),0.0) * FUSEE_L0_DIFFUSE;
+        endIntensity += max(dot(-normalize(FUSEE_L0_DIRECTION),normalize(vNormal)),0.0) * FUSEE_L0_DIFFUSE;
     }
     if(FUSEE_L1_ACTIVE != 0.0) {
         endIntensity += max(dot(-normalize(FUSEE_L1_DIRECTION),normalize(vNormal)),0.0) * FUSEE_L1_DIFFUSE;
@@ -232,7 +256,6 @@ void main()
     if(FUSEE_L7_ACTIVE != 0.0) {
         endIntensity += max(dot(-normalize(FUSEE_L7_DIRECTION),normalize(vNormal)),0.0) * FUSEE_L7_DIFFUSE;
     }
-    endIntensity += endAmbient; 
     endIntensity = clamp(endIntensity, 0.0, 1.0);
 
     gl_FragColor = texture2D(texture1, vUV) * endIntensity; 
