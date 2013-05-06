@@ -61,7 +61,9 @@ namespace Examples.LightTypeTest
             _object = new SceneEntity("DirLight", new RotateAction(new float3(0,20,0)), _emptyLight, new DiffuseMaterial(MoreShaders.GetShader("diffuse", RC), "Assets/metall.jpg"), new Renderer(lamp));
             _object.transform.GlobalPosition = new float3(0, 0, 0);
             _object.transform.GlobalScale = new float3(0.3f, 0.3f, 0.3f);
-            _object.AddComponent(point);
+            SceneEntity _object2 = new SceneEntity("FlyingLight",new RotatingLightAction(), _object);
+            _object2.transform.GlobalPosition = new float3(0, 0, -100);
+            _object2.AddComponent(point);
 
             //Cube
             _object = new SceneEntity("Cube1", new ActionCode(), _emptyCube, new DiffuseMaterial(MoreShaders.GetShader("diffuse", RC), "Assets/wall.jpg"), new Renderer(cube));

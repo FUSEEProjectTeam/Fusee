@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="BumpMaterial.cs" />
     <Compile Include="CamScript.cs" />
+    <Compile Include="RotatingLightAction.cs" />
     <Compile Include="SpecularMaterial.cs" />
     <Compile Include="DiffuseMaterial.cs" />
     <Compile Include="Main.cs" />
