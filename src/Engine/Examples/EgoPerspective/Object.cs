@@ -1,93 +1,87 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
-using Fusee.Engine;
-using Fusee.Math;
+﻿using Fusee.Engine;
 
-
-class Object
+namespace Examples.EgoPerspective
 {
-    private float posX, posY, posZ;
-    private float angX, angY, angZ;
-    private float4x4 _position;
+    class Object
+    {
+        private float _posX, _posY, _posZ;
+        private float _angX, _angY, _angZ;
 
-    private Mesh mesh;
-    private ShaderMaterial material;
+        private readonly Mesh _mesh;
+        private readonly ShaderMaterial _material;
 
-    public Object(Geometry geo, ShaderMaterial m, int x, int y, int z)
-    {
-        mesh = geo.ToMesh();
-        material = m;
-        posX = x;
-        posY = y;
-        posZ = z;
-        angX = .0f;
-        angY = .0f;
-        angY = .0f;
-    }
+        public Object(Geometry geo, ShaderMaterial m, int x, int y, int z)
+        {
+            _mesh = geo.ToMesh();
+            _material = m;
+            _posX = x;
+            _posY = y;
+            _posZ = z;
+            _angX = .0f;
+            _angY = .0f;
+            _angY = .0f;
+        }
 
-    public Mesh GetMesh()
-    {
-        return mesh;
-    }
-    public ShaderProgram GetShader(RenderContext RC)
-    {   
-        material.UpdateMaterial(RC);
-        return material.GetShader();
-    }
+        public Mesh GetMesh()
+        {
+            return _mesh;
+        }
+        public ShaderProgram GetShader(RenderContext rc)
+        {   
+            _material.UpdateMaterial(rc);
+            return _material.GetShader();
+        }
 
-    public float GetPosX()
-    {
-        return posX;
-    }
-    public float GetPosY()
-    {
-        return posY;
-    }
-    public float GetPosZ()
-    {
-        return posZ;
-    }
-    public float GetAngleX()
-    {
-        return angX;
-    }
-    public float GetAngleY()
-    {
-        return angY;
-    }
-    public float GetAngleZ()
-    {
-        return angZ;
-    }
+        public float GetPosX()
+        {
+            return _posX;
+        }
+        public float GetPosY()
+        {
+            return _posY;
+        }
+        public float GetPosZ()
+        {
+            return _posZ;
+        }
+        public float GetAngleX()
+        {
+            return _angX;
+        }
+        public float GetAngleY()
+        {
+            return _angY;
+        }
+        public float GetAngleZ()
+        {
+            return _angZ;
+        }
 
-    public void SetX(float x)
-    {
-        posX = x;
-    }
-    public void setY(float y)
-    {
-        posY = y;
-    }
-    public void SetZ(float z)
-    {
-        posZ = z;
-    }
-    public void SetAngleX(float angle)
-    {
-        angX = angle;
-    }
-    public void SetAngleY(float angle)
-    {
-        angY = angle;
-    }
-    public void SetAngleZ(float angle)
-    {
-        angZ = angle;
-    }
+        public void SetX(float x)
+        {
+            _posX = x;
+        }
+        public void SetY(float y)
+        {
+            _posY = y;
+        }
+        public void SetZ(float z)
+        {
+            _posZ = z;
+        }
+        public void SetAngleX(float angle)
+        {
+            _angX = angle;
+        }
+        public void SetAngleY(float angle)
+        {
+            _angY = angle;
+        }
+        public void SetAngleZ(float angle)
+        {
+            _angZ = angle;
+        }
 
+    }
 }
 

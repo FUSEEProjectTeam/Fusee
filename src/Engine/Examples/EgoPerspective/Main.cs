@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using Fusee.Engine;
 using Fusee.Math;
 
@@ -8,115 +6,102 @@ namespace Examples.EgoPerspective
 {
     public class EgoPerspective : RenderCanvas
     {
-        private static float _angleHorz = 0.0f, _angleVert = 0.0f, _rotationSpeed = 10.0f; //_angleVelHorz = 0, _angleVelVert = 0, _damping = 0.95f, _moveX = 0.0f, _moveY = 0.0f, _moveZ = 0.0f;
+        //At first we have to define the shader.
+        protected string VsSimpleTexture = @"
+            #ifndef GL_ES
+               #version 120
+            #endif
+
+            /* Copies incoming vertex color without change.
+             * Applies the transformation matrix to vertex position.
+             */
+
+            attribute vec4 fuColor;
+            attribute vec3 fuVertex;
+            attribute vec3 fuNormal;
+            attribute vec2 fuUV;
+            
+        
+            varying vec4 vColor;
+            varying vec3 vNormal;
+            varying vec2 vUV;
+        
+            uniform mat4 FUSEE_MVP;
+            uniform mat4 FUSEE_ITMV;
+
+            void main()
+            {
+                gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
+                // vColor = vec4(fuNormal * 0.5 + 0.5, 1.0);
+                // vec4 norm4 = FUSEE_MVP * vec4(fuNormal, 0.0);
+                // vNormal = norm4.xyz;
+                vNormal = mat3(FUSEE_ITMV) * fuNormal;
+                vUV = fuUV;
+            }";
+
+        protected string PsSimpleTexture = @"
+           #ifndef GL_ES
+              #version 120
+           #endif
+
+            /* Copies incoming fragment color without change. */
+            #ifdef GL_ES
+                precision highp float;
+            #endif
+
+            //The parameter required for the texturing process
+            uniform sampler2D texture1;
+            uniform vec4 vColor;
+            varying vec3 vNormal;
+            //The parameter holding the UV-Coordinates of the texture
+            varying vec2 vUV;
+
+            void main()
+            {    
+              //The most basic texturing function, expecting the above mentioned parameters   
+              gl_FragColor = texture2D(texture1, vUV);        
+            }";
+
         private World _world;
         protected ShaderProgram Sp;
         protected IShaderParam[] Param;
-        protected ShaderMaterial m, m2;
+        protected ShaderMaterial M;
+        protected IShaderParam Texture1Param;
 
-        protected IShaderParam _specularLevel;
-        protected IShaderParam _specularSize;
-        protected IShaderParam _texture1Param;
-        protected IShaderParam _texture2Param;
-        protected float x, z, time;
 
         public override void Init()
         {
             _world = new World(RC);
-            Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Cube.obj.model"));
-            Geometry geo2 = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Teapot.obj.model"));
+            Geometry geo1 = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Cube.obj.model"));
 
-            Sp = MoreShaders.GetShader("bump", RC);
+            Sp = RC.CreateShader(VsSimpleTexture, PsSimpleTexture);
+            M = new ShaderMaterial(Sp);
             RC.SetShader(Sp);
-            
 
-            x = 500;
-            z = 0;
-            time = 0;
+            Texture1Param = Sp.GetShaderParam("texture1");
 
+            ImageData imgData = RC.LoadImage("Assets/cube_tex.jpg");
 
-            RC.SetLightActive(0, 1);
-            
-            RC.SetLightPosition(0, new float3(500, 0, 0));
-            RC.SetLightAmbient(0, new float4(0.3f, 0.3f, 0.3f, 1));
-            RC.SetLightSpecular(0, new float4(0.1f, 0.1f, 0.1f, 1));
-            RC.SetLightDiffuse(0, new float4(0.7f, 0.7f, 0.7f, 1));
-            RC.SetLightDirection(0, new float3(-1, 0, 0));
-            m = new ShaderMaterial(Sp);
-
-            //RC.SetLightActive(6, 1);
-            //RC.SetLightPosition(6, new float3(-500, 100, 0));
-            //RC.SetLightAmbient(6, new float4(0.1f, 0.1f, 0.1f, 1));
-            //RC.SetLightSpecular(6, new float4(0.2f, 0.2f, 0.2f, 0));
-            //RC.SetLightDiffuse(6, new float4(1.0f, 1.0f, 1.0f, 1));
-            //RC.SetLightDirection(6, new float3(5, -1, 0));
-
-            //RC.SetLightActive(2, 1);
-            //RC.SetLightPosition(2, new float3(0, 500, 0));
-            //RC.SetLightAmbient(2, new float4(0.1f, 0.1f, 0.1f, 1));
-            //RC.SetLightSpecular(2, new float4(0, 0, 0.2f, 0));
-            //RC.SetLightDiffuse(2, new float4(0.0f, 1.0f, 0.0f, 1));
-            //RC.SetLightDirection(2, new float3(0, -1, 0));
-
-            //RC.SetLightPosition(2, new float3(1000, 1000, 1000));
-            //RC.SetLightAmbient(2, new float4(0.1f, 0.1f, 0.1f, 1));
-            //RC.SetLightSpecular(2, new float4(0, 0.3f, 0, 0));
-            //RC.SetLightDiffuse(2, new float4(0.0f, 0.0f, 0.7f, 1));
-            //RC.SetLightDirection(2, new float3(-1, -1, -1));
-
-            //RC.SetLightPosition(3, new float3(1000, 1000, 1000));
-            //RC.SetLightAmbient(3, new float4(0.1f, 0.1f, 0.1f, 1));
-            //RC.SetLightSpecular(3, new float4(0, 0.3f, 0, 0));
-            //RC.SetLightDiffuse(3, new float4(0.0f, 0.0f, 0.7f, 1));
-            //RC.SetLightDirection(3, new float3(-1, -1, -1));
-
-            _texture1Param = Sp.GetShaderParam("texture1");
-            _texture2Param = Sp.GetShaderParam("normalTex");
-            _specularLevel = Sp.GetShaderParam("specularLevel");
-
-            ImageData imgData = RC.LoadImage("Assets/metall.jpg");
-            ImageData imgData2 = RC.LoadImage("Assets/normal2.jpg");
             ITexture iTex = RC.CreateTexture(imgData);
-            ITexture iTex2 = RC.CreateTexture(imgData2);
-            RC.SetShaderParamTexture(_texture1Param, iTex);
-            RC.SetShaderParamTexture(_texture2Param, iTex2);
-            RC.SetShaderParam(_specularLevel, 128.0f);
 
+            RC.SetShaderParamTexture(Texture1Param, iTex);
 
-
-           // _world.addObject(geo2, m, 0, -100, 700);
-            _world.addObject(geo, m, 500, -100, 700);
+            _world.AddObject(geo1, M, 0, 0, 500);
 
             RC.ClearColor = new float4(0.1f, 0.1f, 0.1f, 1);
-            _angleHorz = 0;
-            _rotationSpeed = 100.0f;
 
         }
 
         public override void RenderAFrame()
         {
-
-
-            x = (float)Math.Cos(time) * 500;
-            z = (float)Math.Sin(time) * 500;
-            time += 0.01f;
-            RC.SetLightPosition(0, new float3(x, 0, z));
-            RC.SetLightDirection(0, new float3(-x, 0, -z));
-
-
-
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-            Random zufall = new Random();
-            float number = zufall.Next(1000) / 1000;
-            _world.RenderWorld(_angleVert);
+            _world.RenderWorld();
             Present();
         }
 
         public override void Resize()
         {
-            // is called when the window is resized
             RC.Viewport(0, 0, Width, Height);
-
             var aspectRatio = Width / (float)Height;
             RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 10000);
         }

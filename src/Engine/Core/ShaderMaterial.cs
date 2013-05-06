@@ -36,12 +36,7 @@ namespace Fusee.Engine
 
         public void UpdateMaterial(RenderContext rc)
         {
-            //IShaderParam sp;
-            //foreach (KeyValuePair<string, dynamic> k in _list)
-            //{
-            //    if ((sp = _sp.GetShaderParam(k.Key)) != null)
-            //        rc.SetShaderParam(sp, k.Value);
-            //}
+            rc.SetShader(_sp);
         }
     }   
 }
