@@ -9,8 +9,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("Texture - Example for using the Fusee Engine")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Furtwangen University")]
-[assembly: AssemblyProduct("Fusee")]
-[assembly: AssemblyCopyright("Copyright (c) 2012 by the Fusee Project")]
+[assembly: AssemblyProduct("Fusee Engine")]
+[assembly: AssemblyCopyright("Copyright © 2013 The Fusee Project")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

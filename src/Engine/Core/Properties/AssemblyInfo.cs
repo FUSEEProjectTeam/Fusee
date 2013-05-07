@@ -9,8 +9,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("Core implementation of the Fusee Render Engine")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Furtwangen University")]
-[assembly: AssemblyProduct("ConvertedLib")]
-[assembly: AssemblyCopyright("Copyright ©  2012 by the Fusee Project")]
+[assembly: AssemblyProduct("Fusee Engine")]
+[assembly: AssemblyCopyright("Copyright © 2013 The Fusee Project")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
