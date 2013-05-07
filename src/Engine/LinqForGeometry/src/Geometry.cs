@@ -114,7 +114,17 @@ namespace hsfurtwangen.dsteffen.lfg
 
                 if (faceVertCount == 3)
                 {
+                    if (globalinf.LFGMessages._DEBUGOUTPUT || true)
+                    {
+                        Debug.WriteLine(" --- ");
+                        foreach (var vert in face._LFVertices)
+                        {
+                            Debug.WriteLine("Vert" + vert);
+                        }
+                        Debug.WriteLine(" --- ");
+                    }
                     GeoFace newFace = new GeoFace() { _LFVertices = new List<float3>(), _UV = new List<float2>() };
+                    
                     newFace._LFVertices.Add(face._LFVertices[0]);
                     newFace._LFVertices.Add(face._LFVertices[1]);
                     newFace._LFVertices.Add(face._LFVertices[2]);
@@ -127,8 +137,15 @@ namespace hsfurtwangen.dsteffen.lfg
                 }
                 else if (faceVertCount > 3)
                 {
+                    if (globalinf.LFGMessages._DEBUGOUTPUT || true)
+                    {
+                        Debug.WriteLine(" --- ");
+                        foreach (var vert in face._LFVertices) {
+                            Debug.WriteLine("Vert" + vert);
+                        }
+                        Debug.WriteLine(" --- ");
+                    }
                     secondVert++;
-                    // Changed from while (secondVert != faceVertCount - 1) to while (secondVert <= faceVertCount - 1)
                     while (secondVert != faceVertCount - 1)
                     {
                         GeoFace newFace = new GeoFace() { _LFVertices = new List<float3>(), _UV = new List<float2>() };
@@ -172,14 +189,11 @@ namespace hsfurtwangen.dsteffen.lfg
 
             Mesh mesh = new Mesh();
             mesh.Vertices = _GeometryContainer._LvertexVal.ToArray();
-            mesh.Normals = _GeometryContainer._LVertexNormals.ToArray();
+            mesh.Triangles = _LtriangleList.ToArray();
             mesh.UVs = _GeometryContainer._LuvCoordinates.ToArray();
 
-
-            // Convert all the faces to 'triangles'.
-            mesh.Triangles = _LtriangleList.ToArray();
-            // This is the staement for every frame convertion.
-            //mesh.Triangles = EnAllFaces().SelectMany(face => FaceSurroundingVertices(face).Select(vert => (short)vert._DataIndex)).ToArray();
+            // TODO: Set the normals that does not affect the rendering?!
+            mesh.Normals = _GeometryContainer._LVertexNormals.ToArray();
 
             return mesh;
         }
@@ -198,7 +212,10 @@ namespace hsfurtwangen.dsteffen.lfg
             }
             else
             {
-                Console.WriteLine("$$$ Vertex has been already inserted!");
+                if (globalinf.LFGMessages._DEBUGOUTPUT)
+                {
+                    Console.WriteLine("$$$ Vertex has been already inserted!");
+                }
             }
             return hvToAdd;
         }
@@ -246,7 +263,10 @@ namespace hsfurtwangen.dsteffen.lfg
                     }
                     else
                     {
-                        Console.WriteLine("$$$ Edge has been already inserted!");
+                        if (globalinf.LFGMessages._DEBUGOUTPUT)
+                        {
+                            Console.WriteLine("$$$ Edge has been already inserted!");
+                        }
                     }
                     LtmpEdgesForFace.Add(handleEdge);
                 }
@@ -260,7 +280,10 @@ namespace hsfurtwangen.dsteffen.lfg
                     }
                     else
                     {
-                        Console.WriteLine("$$$ Edge has been already inserted!");
+                        if (globalinf.LFGMessages._DEBUGOUTPUT)
+                        {
+                            Console.WriteLine("$$$ Edge has been already inserted!");
+                        }
                     }
                     LtmpEdgesForFace.Add(handleEdge);
                 }

@@ -15,7 +15,7 @@ namespace Examples.LinqForGeometry
     /// </summary>
     public class LinqForGeometry : RenderCanvas
     {
-        #region Shader
+        #region ShaderDefinition
         // pixel and vertex shader
         protected string _vs = @"
             #ifndef GL_ES
@@ -75,16 +75,16 @@ namespace Examples.LinqForGeometry
                 //gl_FragColor = vColor;
             }";
 
-        #endregion Shader
+        #endregion ShaderDefinition
 
         // angle variables
-        private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
+        private static float _angleVelHorz, _angleVelVert;
 
+        // control mechanics
         private const float RotationSpeed = 1f;
-        private const float Damping = 0.92f;
 
         // model variable
-        private Mesh _lfgmesh, _levelMesh;
+        private Mesh _lfgmesh, _FuseeMesh;
 
         // variables for color and texture
         private IShaderParam _vColorParam;
@@ -93,7 +93,7 @@ namespace Examples.LinqForGeometry
         private ImageData _imgData;
         private ITexture _tex;
 
-        // LFG Geo
+        // LFG Geometry
         private Geometry _Geo;
 
         // 'Gamedesign'
@@ -103,8 +103,8 @@ namespace Examples.LinqForGeometry
         public override void Init()
         {
             // Use the Fusee MeshReader to test against mine...
-            _levelMesh = MeshReader.LoadMesh("Assets/cube_quadrangle_1_textured.obj.model");
-            //_levelMesh = MeshReader.LoadMesh("Assets/cube_quadrangle_1_textured_quad.obj.model");
+            _FuseeMesh = MeshReader.LoadMesh("Assets/cube_quadrangle_1_textured.obj.model");
+            //_FuseeMesh = MeshReader.LoadMesh("Assets/cube_quadrangle_1_textured_quad.obj.model");
 
             #region MeshImports
             // This would be a solution to step over the MeshReader Class
@@ -112,6 +112,7 @@ namespace Examples.LinqForGeometry
             _Geo = new Geometry();
             _Geo.LoadAsset("Assets/cube_quadrangle_1_textured.obj.model");
             //_Geo.LoadAsset("Assets/cube_triangulate.obj.model");
+            //_Geo.LoadAsset("Assets/cube_quadrangle_1_textured_quad.obj.model");
             //_Geo.LoadAsset("Assets/sphere_quadrangle_1.obj.model");
             //_Geo.LoadAsset("Assets/Teapot_textured.obj.model");
             //_Geo.LoadAsset("Assets/Sphere.obj.model");
@@ -124,14 +125,17 @@ namespace Examples.LinqForGeometry
             _imgData = RC.LoadImage("Assets/Mat_Color.jpg");
             #endregion TextureLoad
 
-            _lfgmesh = _Geo.ToMesh();
-
-            ShaderProgram sp = RC.CreateShader(_vs, _ps);
+            #region Shader
+            var sp = MoreShaders.GetShader("oneColor", RC);
+            //ShaderProgram sp = RC.CreateShader(_vs, _ps);
             RC.SetShader(sp);
+            _vColorParam = sp.GetShaderParam("Col");
+            //_vTextureParam = sp.GetShaderParam("texture1");
+            //_tex = RC.CreateTexture(_imgData);
+            #endregion Shader
 
-            // Texture stuff
-            _vTextureParam = sp.GetShaderParam("texture1");
-            _tex = RC.CreateTexture(_imgData);
+            // Convert to Mesh
+            _lfgmesh = _Geo.ToMesh();
 
             RC.ClearColor = new float4(0f, 0f, 0.5f, 1f);
         }
@@ -143,11 +147,13 @@ namespace Examples.LinqForGeometry
             // Pull the users input
             PullInput();
 
-            // A crash happens here with the color something fusee related ... (_vColorParam is null)
-            //RC.SetShaderParam(_vColorParam, new float4(0.5f, 0.8f, 0, 1));
-            RC.SetShaderParamTexture(_vTextureParam, _tex);
+            #region SetShaderActive
+            RC.SetShaderParam(_vColorParam, new float4(0.5f, 0.8f, 0, 1));
+            //RC.SetShaderParamTexture(_vTextureParam, _tex);
+            #endregion SetShaderActive
+
             RC.Render(_lfgmesh);
-            //RC.Render(_levelMesh);
+            //RC.Render(_FuseeMesh);
 
             // swap buffers
             Present();

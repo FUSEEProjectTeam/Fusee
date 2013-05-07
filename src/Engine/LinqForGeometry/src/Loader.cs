@@ -87,7 +87,10 @@ namespace hsfurtwangen.dsteffen.lfg
 
                     if (!IsNullOrEmpty(enhandlevert))
                     {
-                        Console.Write("$$$ Vertex " + i + " is connected to verts: ");
+                        if (globalinf.LFGMessages._DEBUGOUTPUT)
+                        {
+                            Console.Write("$$$ Vertex " + i + " is connected to verts: ");
+                        }
                         foreach (HandleVertex verthandle in enhandlevert)
                         {
                             Console.Write(verthandle._DataIndex + " ");
@@ -98,7 +101,10 @@ namespace hsfurtwangen.dsteffen.lfg
 
                     if (!IsNullOrEmpty(enhandlehedgeInc))
                     {
-                        Console.Write("$$$ Vertex " + i + " is connected to INCOMING halfedge: ");
+                        if (globalinf.LFGMessages._DEBUGOUTPUT)
+                        {
+                            Console.Write("$$$ Vertex " + i + " is connected to INCOMING halfedge: ");
+                        }
                         foreach (HandleHalfEdge hedgehandle in enhandlehedgeInc)
                         {
                             Console.Write(hedgehandle._DataIndex + " ");
@@ -109,7 +115,10 @@ namespace hsfurtwangen.dsteffen.lfg
 
                     if (!IsNullOrEmpty(enhandlehedgeOut))
                     {
-                        Console.Write("$$$ Vertex " + i + " is connected to OUTGOING halfedge: ");
+                        if (globalinf.LFGMessages._DEBUGOUTPUT)
+                        {
+                            Console.Write("$$$ Vertex " + i + " is connected to OUTGOING halfedge: ");
+                        }
                         foreach (HandleHalfEdge hedgehandle in enhandlehedgeOut)
                         {
                             Console.Write(hedgehandle._DataIndex + " ");
@@ -120,7 +129,10 @@ namespace hsfurtwangen.dsteffen.lfg
 
                     if (!IsNullOrEmpty(enhandleAdjacentFaces))
                     {
-                        Console.Write("$$$ Vertex " + i + " is connected to ADJACENT face: ");
+                        if (globalinf.LFGMessages._DEBUGOUTPUT)
+                        {
+                            Console.Write("$$$ Vertex " + i + " is connected to ADJACENT face: ");
+                        }
                         foreach (HandleFace facehandle in enhandleAdjacentFaces)
                         {
                             Console.Write(facehandle._DataIndex + " ");
@@ -142,15 +154,18 @@ namespace hsfurtwangen.dsteffen.lfg
                 if (i < _lfgSys._LfaceHndl.Count)
                 {
 
-                    IEnumerable<HandleVertex> enhandlevert = _lfgSys.FaceSurroundingVertices(new HandleFace() {_DataIndex = i});
-                    IEnumerable<HandleHalfEdge> enhandlehedges = _lfgSys.FaceSurroundingHalfEdges(new HandleFace() {_DataIndex = i});
+                    IEnumerable<HandleVertex> enhandlevert = _lfgSys.FaceSurroundingVertices(new HandleFace() { _DataIndex = i });
+                    IEnumerable<HandleHalfEdge> enhandlehedges = _lfgSys.FaceSurroundingHalfEdges(new HandleFace() { _DataIndex = i });
                     IEnumerable<HandleEdge> enhandleedges = _lfgSys.FaceSurroundingEdges(new HandleFace() { _DataIndex = i });
                     IEnumerable<HandleFace> enhandlefaces = _lfgSys.FaceSurroundingFaces(new HandleFace() { _DataIndex = i });
 
 
                     if (!IsNullOrEmpty(enhandlevert))
                     {
-                        Console.Write("$$$ Face " + i + " is surrounded by VERTICES: ");
+                        if (globalinf.LFGMessages._DEBUGOUTPUT)
+                        {
+                            Console.Write("$$$ Face " + i + " is surrounded by VERTICES: ");
+                        }
                         foreach (HandleVertex verthandle in enhandlevert)
                         {
                             Console.Write(verthandle._DataIndex + " ");
@@ -161,7 +176,10 @@ namespace hsfurtwangen.dsteffen.lfg
 
                     if (!IsNullOrEmpty(enhandlehedges))
                     {
-                        Console.Write("$$$ Face " + i + " is surrounded by HALFEDGES: ");
+                        if (globalinf.LFGMessages._DEBUGOUTPUT)
+                        {
+                            Console.Write("$$$ Face " + i + " is surrounded by HALFEDGES: ");
+                        }
                         foreach (HandleHalfEdge hedgehandle in enhandlehedges)
                         {
                             Console.Write(hedgehandle._DataIndex + " ");
@@ -172,7 +190,10 @@ namespace hsfurtwangen.dsteffen.lfg
 
                     if (!IsNullOrEmpty(enhandleedges))
                     {
-                        Console.Write("$$$ Face " + i + " is surrounded by EDGES: ");
+                        if (globalinf.LFGMessages._DEBUGOUTPUT)
+                        {
+                            Console.Write("$$$ Face " + i + " is surrounded by EDGES: ");
+                        }
                         foreach (HandleEdge edgehandle in enhandleedges)
                         {
                             Console.Write(edgehandle._DataIndex + " ");
@@ -183,7 +204,10 @@ namespace hsfurtwangen.dsteffen.lfg
 
                     if (!IsNullOrEmpty(enhandlefaces))
                     {
-                        Console.Write("$$$ Face " + i + " is surrounded by FACES: ");
+                        if (globalinf.LFGMessages._DEBUGOUTPUT)
+                        {
+                            Console.Write("$$$ Face " + i + " is surrounded by FACES: ");
+                        }
                         foreach (HandleFace facehandle in enhandlefaces)
                         {
                             Console.Write(facehandle._DataIndex + " ");

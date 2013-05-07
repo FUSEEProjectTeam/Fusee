@@ -47,7 +47,6 @@ namespace hsfurtwangen.dsteffen.lfg
         private List<FacePtrCont> _LfacePtrCont;
 
 
-
         /// <summary>
         /// Initializes a new instance of the <see cref="hsfurtwangen.dsteffen.lfg.Geometry"/> class.
         /// </summary>
@@ -102,21 +101,25 @@ namespace hsfurtwangen.dsteffen.lfg
             IEnumerable<HandleVertex> enVerts = EnFaceVertices(handleFace);
             var Lverts = enVerts.Select(handleVertex => _LvertexVal[handleVertex._DataIndex]).ToList();
 
+            // TODO: Calculating triangle normals.
+
             if (Lverts.Count >= 3)
             {
-                float3 p0 = Lverts[0];
-                float3 p1 = Lverts[1];
-                float3 p2 = Lverts[2];
 
-                float3 v1 = float3.Subtract(p2, p0);
-                float3 v2 = float3.Subtract(p1, p0);
+                float3 v0 = Lverts[0];
+                float3 v1 = Lverts[1];
+                float3 v2 = Lverts[2];
 
-                float3 n = float3.Cross(v1, v2);
+                float3 c1 = float3.Subtract(v0, v1);
+                float3 c2 = float3.Subtract(v0, v2);
 
-                Debug.WriteLine("Vertex normal calc: " + MathHelperNormalize(n));
+                float3 n = float3.Cross(c1, c2);
+
+                Debug.WriteLine("Calculated face normal: " + n);
+                Debug.WriteLine("Calculated face normal normalized: " + float3.Normalize(n));
 
                 _LfaceNormals.Add(
-                    MathHelperNormalize(n)
+                    float3.Normalize(n)
                     );
             }
         }
@@ -129,12 +132,10 @@ namespace hsfurtwangen.dsteffen.lfg
         /// <returns>float3 value which is the normal vektor for the vertex</returns>
         public float3 CalcVertexNormal(HandleVertex handleVertex)
         {
-            float3 normalized = new float3(0, 0, 0);
-
             List<float3> adjacentfaceNormals = new List<float3>();
             IEnumerable<HandleFace> adjacentfaces = EnVertexAdjacentFaces(handleVertex);
-
             int faceNormalsCount = _LfaceNormals.Count;
+
             foreach (HandleFace handleFace in adjacentfaces)
             {
                 try
@@ -147,39 +148,45 @@ namespace hsfurtwangen.dsteffen.lfg
                                 _LfaceNormals[handleFace]
                                 );
                         }
+                        else
+                        {
+                            throw new Exception("Runtime Error: Face handle is not in the face list.");
+                        }
                     }
                     else
                     {
-                        // TODO: Error face handle should not be -1. Should not occure. Otherwise perhaps a runtime error.
-                        throw new Exception("Runtime Error: Face handle for vertex is -1. Vertex does not point to a face.");
+                        throw new Exception("Runtime Error: Face handle is invalid.");
                     }
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-                    Fusee.Engine.Diagnostics.Log("Runtime Error: Face handle for vertex is -1. Vertex does not point to a face.");
+                    Debug.WriteLine(e.Message);
                 }
             }
 
-            int adjacentfaceCount = adjacentfaceNormals.Count;
-            var sumNormals = new float3();
-            sumNormals = adjacentfaceNormals.Aggregate(sumNormals, (current, adjacentfaceNormal) => float3.Add(current, adjacentfaceNormal));
-          
-            normalized = MathHelperNormalize(sumNormals);
-            return normalized;
-            //sumNormals = float3.Multiply(sumNormals, -1);
-            //return sumNormals;
-        }
+            Debug.WriteLine(" \n --- New Vertex Normal Calc --- ");
+            foreach (var faceNormal in adjacentfaceNormals)
+            {
+                Debug.WriteLine("%%% Adj. Face Normal: " + faceNormal);
+            }
 
-        /// <summary>
-        /// Normalizes a given vertex.
-        /// </summary>
-        /// <param name="val">Vertex to be normalized.</param>
-        /// <returns>Normalized Vertex</returns>
-        private float3 MathHelperNormalize(float3 val) {
-            
-            //return float3.Multiply(val, (1 / (float)val.Length));
-            
-            return float3.Normalize(val);
+            float3 sumNormals = new float3();
+
+            Debug.WriteLine(" \n ---Zwischenergebnisse--- ");
+            foreach (float3 faceNormal in adjacentfaceNormals)
+            {
+                sumNormals += faceNormal;
+                Debug.WriteLine(" now -> " + sumNormals);
+            }
+            Debug.WriteLine("Ergebnis: " + sumNormals);
+            Debug.WriteLine(" --- End Vert Normal Calc--- \n");
+
+            Debug.WriteLine("\n Normal with loop: " + sumNormals);
+            sumNormals /= adjacentfaceNormals.Count;
+            Debug.WriteLine("Normal with loop divided: " + sumNormals);
+            float3 normalized = float3.Normalize(sumNormals);
+            Debug.WriteLine("Normal with loop normalized : " + normalized + "\n");
+            return normalized;
         }
 
         /// <summary>
