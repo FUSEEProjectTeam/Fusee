@@ -192,7 +192,7 @@ namespace hsfurtwangen.dsteffen.lfg
             mesh.Triangles = _LtriangleList.ToArray();
             mesh.UVs = _GeometryContainer._LuvCoordinates.ToArray();
 
-            // TODO: Set the normals that does not affect the rendering?!
+            // TODO: Set the normals that do not affect the rendering?!
             mesh.Normals = _GeometryContainer._LVertexNormals.ToArray();
 
             return mesh;

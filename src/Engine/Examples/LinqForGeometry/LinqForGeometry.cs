@@ -106,6 +106,10 @@ namespace Examples.LinqForGeometry
             _FuseeMesh = MeshReader.LoadMesh("Assets/cube_quadrangle_1_textured.obj.model");
             //_FuseeMesh = MeshReader.LoadMesh("Assets/cube_quadrangle_1_textured_quad.obj.model");
 
+            // TODO: For Debug testing, set the normals for the fusee imported model to null.
+            // the model should look strange. But nothing happens.
+            _FuseeMesh.Normals = null;
+
             #region MeshImports
             // This would be a solution to step over the MeshReader Class
             // Important for now to use the transformation methods on the data structure.
@@ -152,8 +156,8 @@ namespace Examples.LinqForGeometry
             //RC.SetShaderParamTexture(_vTextureParam, _tex);
             #endregion SetShaderActive
 
-            RC.Render(_lfgmesh);
-            //RC.Render(_FuseeMesh);
+            //RC.Render(_lfgmesh);
+            RC.Render(_FuseeMesh);
 
             // swap buffers
             Present();
