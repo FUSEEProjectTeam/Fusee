@@ -108,7 +108,6 @@ namespace Examples.LinqForGeometry
 
             // TODO: For Debug testing, set the normals for the fusee imported model to null.
             // the model should look strange. But nothing happens.
-            _FuseeMesh.Normals = null;
 
             #region MeshImports
             // This would be a solution to step over the MeshReader Class
@@ -156,8 +155,9 @@ namespace Examples.LinqForGeometry
             //RC.SetShaderParamTexture(_vTextureParam, _tex);
             #endregion SetShaderActive
 
-            //RC.Render(_lfgmesh);
-            RC.Render(_FuseeMesh);
+            RC.Render(_lfgmesh);
+            _FuseeMesh.Normals = null;
+            //RC.Render(_FuseeMesh);
 
             // swap buffers
             Present();

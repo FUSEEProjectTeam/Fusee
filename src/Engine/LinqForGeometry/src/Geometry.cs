@@ -114,6 +114,8 @@ namespace hsfurtwangen.dsteffen.lfg
 
                 if (faceVertCount == 3)
                 {
+                    /*
+                     * TODO: Remove this code. It's not needed?
                     if (globalinf.LFGMessages._DEBUGOUTPUT || true)
                     {
                         Debug.WriteLine(" --- ");
@@ -134,13 +136,16 @@ namespace hsfurtwangen.dsteffen.lfg
                     newFace._UV.Add(face._UV[2]);
 
                     triangleFaces.Add(newFace);
+                    */
+                    triangleFaces.Add(face);
                 }
                 else if (faceVertCount > 3)
                 {
                     if (globalinf.LFGMessages._DEBUGOUTPUT || true)
                     {
                         Debug.WriteLine(" --- ");
-                        foreach (var vert in face._LFVertices) {
+                        foreach (var vert in face._LFVertices)
+                        {
                             Debug.WriteLine("Vert" + vert);
                         }
                         Debug.WriteLine(" --- ");
@@ -183,17 +188,23 @@ namespace hsfurtwangen.dsteffen.lfg
             if (!_triangleListSet && !_ChangesOnFaces)
             {
                 _LtriangleList.Clear();
-                _LtriangleList = EnAllFaces().SelectMany(face => FaceSurroundingVertices(face).Select(vert => (short)vert._DataIndex)).ToList();
+                //_LtriangleList = EnAllFaces().SelectMany(face => FaceSurroundingVertices(face).Select(vert => (short)vert._DataIndex)).ToList();
+                foreach (HandleFace face in EnAllFaces())
+                {
+                    foreach (HandleVertex vert in FaceSurroundingVertices(face))
+                    {
+                        _LtriangleList.Add((short)vert._DataIndex);
+                    }
+                }
+
                 _triangleListSet = true;
             }
 
             Mesh mesh = new Mesh();
             mesh.Vertices = _GeometryContainer._LvertexVal.ToArray();
             mesh.Triangles = _LtriangleList.ToArray();
-            mesh.UVs = _GeometryContainer._LuvCoordinates.ToArray();
-
-            // TODO: Set the normals that do not affect the rendering?!
             mesh.Normals = _GeometryContainer._LVertexNormals.ToArray();
+            mesh.UVs = _GeometryContainer._LuvCoordinates.ToArray();
 
             return mesh;
         }
