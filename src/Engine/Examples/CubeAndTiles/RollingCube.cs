@@ -47,7 +47,7 @@ namespace Examples.CubeAndTiles
             _cubeMesh = _curLevel.GlobalCubeMesh;
 
             _cubeSound = Audio.Instance.LoadFile("Assets/cube.ogg");
-            _cubeSound.Volume = 50;
+            _cubeSound.Volume = 5;
 
             _cubeColor = new float3(1, 0.1f, 0.1f);
 
