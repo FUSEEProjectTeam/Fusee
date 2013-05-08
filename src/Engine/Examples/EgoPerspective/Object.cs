@@ -1,8 +1,8 @@
 ﻿using Fusee.Engine;
 
-namespace Examples.EgoPerspective
+namespace Examples.WorldRendering
 {
-    class Object
+    internal class Object
     {
         private float _posX, _posY, _posZ;
         private float _angX, _angY, _angZ;
@@ -26,8 +26,9 @@ namespace Examples.EgoPerspective
         {
             return _mesh;
         }
+
         public ShaderProgram GetShader(RenderContext rc)
-        {   
+        {
             _material.UpdateMaterial(rc);
             return _material.GetShader();
         }
@@ -36,22 +37,27 @@ namespace Examples.EgoPerspective
         {
             return _posX;
         }
+
         public float GetPosY()
         {
             return _posY;
         }
+
         public float GetPosZ()
         {
             return _posZ;
         }
+
         public float GetAngleX()
         {
             return _angX;
         }
+
         public float GetAngleY()
         {
             return _angY;
         }
+
         public float GetAngleZ()
         {
             return _angZ;
@@ -61,27 +67,30 @@ namespace Examples.EgoPerspective
         {
             _posX = x;
         }
+
         public void SetY(float y)
         {
             _posY = y;
         }
+
         public void SetZ(float z)
         {
             _posZ = z;
         }
+
         public void SetAngleX(float angle)
         {
             _angX = angle;
         }
+
         public void SetAngleY(float angle)
         {
             _angY = angle;
         }
+
         public void SetAngleZ(float angle)
         {
             _angZ = angle;
         }
-
     }
 }
-

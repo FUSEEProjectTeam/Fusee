@@ -1,4 +1,5 @@
-﻿using Fusee.Engine;
+﻿using System;
+using Fusee.Engine;
 using Fusee.Math;
 
 namespace Examples.CubeAndTiles
@@ -112,8 +113,8 @@ namespace Examples.CubeAndTiles
         {
             if (State != FieldStates.FsLoading) return;
 
-            _veloZ = System.Math.Max(-0.6f, -_posZ/0.17f);
-            _posZ += _veloZ * (float) Time.Instance.DeltaTime;
+            _veloZ = Math.Max(-0.6f, -_posZ/0.17f);
+            _posZ += _veloZ*(float) Time.Instance.DeltaTime;
 
             _curBright = 1 - (_posZ)/(-_curLevel.FieldCount/2.0f);
 
@@ -159,7 +160,7 @@ namespace Examples.CubeAndTiles
             if (_dirtyFlag)
             {
                 // translate fields
-                var mtxFieldRot = float4x4.CreateRotationZ((float) (_randomRotZ*System.Math.PI/2));
+                var mtxFieldRot = float4x4.CreateRotationZ((float) (_randomRotZ*Math.PI/2));
 
                 var mtxObjPos = float4x4.CreateTranslation(CoordXY[0]*200, CoordXY[1]*200,
                                                            _posZ*100 - (RollingCube.CubeSize/2.0f + 15));

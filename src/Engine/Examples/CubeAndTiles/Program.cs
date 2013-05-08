@@ -1,4 +1,5 @@
-﻿using Fusee.Engine;
+﻿using System;
+using Fusee.Engine;
 using Fusee.Math;
 
 namespace Examples.CubeAndTiles
@@ -157,7 +158,7 @@ namespace Examples.CubeAndTiles
             }
             else
             {
-                var curDamp = (float) System.Math.Exp(-Damping*Time.Instance.DeltaTime);
+                var curDamp = (float) Math.Exp(-Damping*Time.Instance.DeltaTime);
 
                 _angleVelHorz *= curDamp;
                 _angleVelVert *= curDamp;
@@ -177,7 +178,7 @@ namespace Examples.CubeAndTiles
         {
             RC.Viewport(0, 0, Width, Height);
 
-            var aspectRatio = Width / (float)Height;
+            var aspectRatio = Width/(float) Height;
             RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 10000);
         }
 

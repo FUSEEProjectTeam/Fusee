@@ -132,7 +132,7 @@ namespace Examples.MageExample
         private ITexture _iTex2;
         private ITexture _iTex2Glove;
         private ITexture _iTexGlove;
-        
+
         private IShaderParam _specularLevelBody;
         private IShaderParam _texture1ParamBody;
         private IShaderParam _texture2ParamBody;
@@ -141,7 +141,7 @@ namespace Examples.MageExample
         private float _angleVert;
         private float _angleVelHorz;
         private float _angleVelVert;
-        
+
         private float _rotationSpeed;
 
         public override void Init()

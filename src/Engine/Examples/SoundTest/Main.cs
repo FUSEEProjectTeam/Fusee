@@ -21,7 +21,7 @@ namespace Examples.SoundTest
         private float _timeStep;
         private float _curTime;
 
-        private IShaderParam vColor;
+        private IShaderParam _vColor;
 
         public override void Init()
         {
@@ -32,8 +32,8 @@ namespace Examples.SoundTest
             var sp = MoreShaders.GetShader("simple", RC);
             RC.SetShader(sp);
 
-            vColor = RC.GetShaderParam(sp, "vColor");
-            RC.SetShaderParam(vColor, new float4(0.8f, 0.1f, 0.1f, 1));
+            _vColor = RC.GetShaderParam(sp, "vColor");
+            RC.SetShaderParam(_vColor, new float4(0.8f, 0.1f, 0.1f, 1));
 
             // sound by http://www.soundjay.com
             _audio1 = Audio.Instance.LoadFile("Assets/beep.ogg");

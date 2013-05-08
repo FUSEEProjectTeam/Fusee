@@ -130,8 +130,8 @@ namespace Examples.CubeAndTiles
         private void LoadAnimation()
         {
             if (State != CubeStates.CsLoading) return;
-           
-            _veloZ = Math.Min(-0.6f, -_posZ / 0.17f);
+
+            _veloZ = Math.Min(-0.6f, -_posZ/0.17f);
             _posZ += _veloZ*(float) Time.Instance.DeltaTime;
 
             _curBright = 1 - (_posZ/2);
@@ -152,11 +152,11 @@ namespace Examples.CubeAndTiles
 
             if (_curBright > 0.0f)
             {
-                _posZ += _veloZ * (float)Time.Instance.DeltaTime;
-                _curBright -= 3f * (float) Time.Instance.DeltaTime;
+                _posZ += _veloZ*(float) Time.Instance.DeltaTime;
+                _curBright -= 3f*(float) Time.Instance.DeltaTime;
             }
             else
-                State = CubeStates.CsWon;            
+                State = CubeStates.CsWon;
         }
 
         private void DeadAnimation()
@@ -167,8 +167,8 @@ namespace Examples.CubeAndTiles
 
             if (_curBright > 0.0f)
             {
-                _posZ += _veloZ * (float)Time.Instance.DeltaTime;
-                _curBright -= 3f * (float) Time.Instance.DeltaTime;
+                _posZ += _veloZ*(float) Time.Instance.DeltaTime;
+                _curBright -= 3f*(float) Time.Instance.DeltaTime;
             }
             else
                 State = CubeStates.CsDead;
@@ -190,8 +190,8 @@ namespace Examples.CubeAndTiles
 
                 // rotation with quaterions
                 var rotVektor = (i == 0)
-                                    ? new float3(0, -_curDirXY[0] * PiHalf, 0)   // around y-axis?
-                                    : new float3(_curDirXY[1]*PiHalf, 0, 0);     // around x-axis
+                                    ? new float3(0, -_curDirXY[0]*PiHalf, 0) // around y-axis?
+                                    : new float3(_curDirXY[1]*PiHalf, 0, 0); // around x-axis
 
                 _orientQuat *= Quaternion.EulerToQuaternion(rotVektor);
                 _orientQuat.Normalize();
@@ -199,7 +199,7 @@ namespace Examples.CubeAndTiles
                 // reset
                 _rotateYX[i] = 0;
                 _curDirXY[i] = 0;
-               
+
                 // check if special/dead field
                 _curLevel.CheckField(PosCurXY);
             }
@@ -227,11 +227,11 @@ namespace Examples.CubeAndTiles
             var mtxObjPos = float4x4.CreateTranslation(PosCurXY[0]*CubeSize, PosCurXY[1]*CubeSize,
                                                        _posZ*CubeSize);
 
-            var arAxis = float4x4.CreateTranslation(-100 * _curDirXY[0], -100 * _curDirXY[1], 100);
-            var invArAxis = float4x4.CreateTranslation(100 * _curDirXY[0], 100 * _curDirXY[1], -100);
+            var arAxis = float4x4.CreateTranslation(-100*_curDirXY[0], -100*_curDirXY[1], 100);
+            var invArAxis = float4x4.CreateTranslation(100*_curDirXY[0], 100*_curDirXY[1], -100);
 
             // render
-            _curLevel.RContext.ModelView = mtxObjOrientRot * arAxis * mtxObjRot * invArAxis * mtxObjPos * _curLevel.CamTrans;
+            _curLevel.RContext.ModelView = mtxObjOrientRot*arAxis*mtxObjRot*invArAxis*mtxObjPos*_curLevel.CamTrans;
             _curLevel.RContext.SetShaderParam(_curLevel.VColorObj, new float4(_cubeColor, _curBright));
 
             _curLevel.RContext.Render(_cubeMesh);

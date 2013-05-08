@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using Fusee.Engine;
 using Fusee.Math;
 
@@ -29,7 +28,7 @@ namespace Examples.CubeAndTiles
         private float4x4 _objOrientation;
 
         internal float4x4 CamTrans { get; private set; }
-        
+
         internal Mesh GlobalFieldMesh { get; private set; }
         internal ITexture TextureField { get; private set; }
 
@@ -49,7 +48,7 @@ namespace Examples.CubeAndTiles
             LsWinning,
             LsDying
         }
-        
+
         public enum Directions
         {
             Left,
@@ -74,7 +73,7 @@ namespace Examples.CubeAndTiles
 
             _anaglyph3D = anaglyph3D;
             UseAnaglyph3D = false;
-            
+
             ConstructLevel(id);
         }
 
@@ -90,7 +89,7 @@ namespace Examples.CubeAndTiles
             GlobalCubeMesh = MeshReader.LoadMesh("Assets/Cube.obj.model");
 
             // load textures
-            ImageData imgData = RContext.LoadImage("Assets/tex_stone.jpg");
+            var imgData = RContext.LoadImage("Assets/tex_stone.jpg");
             TextureField = RContext.CreateTexture(imgData);
 
             imgData = RContext.LoadImage("Assets/tex_cube.jpg");
@@ -113,13 +112,13 @@ namespace Examples.CubeAndTiles
         private void LoadLevel(int id)
         {
             // if id > amount of levels, go to fist lvl
-           id %= _lvlTmp.Length;
+            id %= _lvlTmp.Length;
 
             // X and Y swapped and turned 90°
             var sizeX = _lvlTmp[id].GetLength(1);
             var sizeY = _lvlTmp[id].GetLength(0);
 
-            _levelFeld = new Field[sizeX, sizeY];
+            _levelFeld = new Field[sizeX,sizeY];
             FieldCount = 0;
 
             for (var y = 0; y < sizeY; y++)
@@ -246,7 +245,7 @@ namespace Examples.CubeAndTiles
         {
             if (_lvlState != LevelStates.LsLoadFields)
                 return;
-            
+
             var allReady = true;
 
             allReady &= _levelFeld[_startXy[0], _startXy[1]].State == Field.FieldStates.FsAlive;
@@ -270,7 +269,7 @@ namespace Examples.CubeAndTiles
             if (_lvlState == LevelStates.LsWinning)
                 if (_rCube.State == RollingCube.CubeStates.CsWon)
                 {
-                    _curLvlId = ++_curLvlId % _lvlTmp.Length;
+                    _curLvlId = ++_curLvlId%_lvlTmp.Length;
                     LoadLevel(_curLvlId);
                     return true;
                 }
@@ -286,8 +285,8 @@ namespace Examples.CubeAndTiles
             LoadAnimation();
 
             var lookAt = UseAnaglyph3D
-             ? _anaglyph3D.LookAt3D(0, 0, _camPosition, 0, 0, 0, 0, 1, 0)
-             : float4x4.LookAt(0, 0, _camPosition, 0, 0, 0, 0, 1, 0);
+                             ? _anaglyph3D.LookAt3D(0, 0, _camPosition, 0, 0, 0, 0, 1, 0)
+                             : float4x4.LookAt(0, 0, _camPosition, 0, 0, 0, 0, 1, 0);
 
             CamTrans = _camTranslation*mtxRot*lookAt;
 
@@ -324,6 +323,6 @@ namespace Examples.CubeAndTiles
         private static bool OutOfBounds(int x, int y, Field[,] array)
         {
             return x < 0 || x >= array.GetLength(0) || y < 0 || y >= array.GetLength(1);
-        }     
+        }
     }
 }

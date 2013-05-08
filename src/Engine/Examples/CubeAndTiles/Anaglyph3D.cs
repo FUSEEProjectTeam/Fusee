@@ -52,14 +52,16 @@ namespace Examples.CubeAndTiles
         public void NormalMode()
         {
             if (_rContext == null) return;
-            
+
             _rContext.ColorMask(true, true, true, false);
         }
 
         // CameraTranslations
-        public float4x4 LookAt3D(float eyeX, float eyeY, float eyeZ, float targetX, float targetY, float targetZ, float upX, float upY, float upZ)
+        public float4x4 LookAt3D(float eyeX, float eyeY, float eyeZ, float targetX, float targetY, float targetZ,
+                                 float upX, float upY, float upZ)
         {
-            return LookAt3D(new float3(eyeX, eyeY, eyeZ), new float3(targetX, targetY, targetZ), new float3(upX, upY, upZ));
+            return LookAt3D(new float3(eyeX, eyeY, eyeZ), new float3(targetX, targetY, targetZ),
+                            new float3(upX, upY, upZ));
         }
 
         public float4x4 LookAt3D(float3 eye, float3 target, float3 up)

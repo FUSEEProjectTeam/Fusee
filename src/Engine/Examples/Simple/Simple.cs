@@ -15,9 +15,16 @@ namespace Examples.Simple
         // model variables
         private Mesh _meshTea, _meshFace;
 
-        // variable for color
-        private IShaderParam _colParam;
+        // variables for shader
+        private ShaderProgram _spColor;
+        private ShaderProgram _spTexture;
 
+        private IShaderParam _colorParam;
+        private IShaderParam _textureParam;
+
+        private ITexture _iTex;
+
+        // is called on startup
         public override void Init()
         {
             RC.ClearColor = new float4(1, 1, 1, 1);
@@ -26,12 +33,18 @@ namespace Examples.Simple
             _meshTea = MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
             _meshFace = MeshReader.LoadMesh(@"Assets/Face.obj.model");
 
-            var sp = MoreShaders.GetShader("default", RC);
-            RC.SetShader(sp);
+            _spColor = MoreShaders.GetShader("simple", RC);
+            _spTexture = MoreShaders.GetShader("texture", RC);
 
-            _colParam = sp.GetShaderParam("vColor");
+            _colorParam = _spColor.GetShaderParam("vColor");
+            _textureParam = _spTexture.GetShaderParam("texture1");
+
+            // load texture
+            var imgData = RC.LoadImage("Assets/world_map.jpg");
+            _iTex = RC.CreateTexture(imgData);
         }
 
+        // is called once a frame
         public override void RenderAFrame()
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
@@ -72,19 +85,24 @@ namespace Examples.Simple
             // first mesh
             RC.ModelView = float4x4.CreateTranslation(0, -50, 0)*mtxRot*float4x4.CreateTranslation(-150, 0, 0)*mtxCam;
 
-            RC.SetShaderParam(_colParam, new float4(0.5f, 0.8f, 0, 1));
+            RC.SetShader(_spColor);
+            RC.SetShaderParam(_colorParam, new float4(0.5f, 0.8f, 0, 1));
+
             RC.Render(_meshTea);
 
             // second mesh
             RC.ModelView = mtxRot*float4x4.CreateTranslation(150, 0, 0)*mtxCam;
 
-            RC.SetShaderParam(_colParam, new float4(0.8f, 0.8f, 0, 1));
+            RC.SetShader(_spTexture);
+            RC.SetShaderParamTexture(_textureParam, _iTex);
+
             RC.Render(_meshFace);
 
             // swap buffers
             Present();
         }
 
+        // is called when the window was resized
         public override void Resize()
         {
             RC.Viewport(0, 0, Width, Height);
