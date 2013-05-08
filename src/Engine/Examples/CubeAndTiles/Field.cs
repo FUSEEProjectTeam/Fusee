@@ -19,27 +19,19 @@ namespace Examples.CubeAndTiles
         private readonly float3 _fieldColor;
         private readonly float _randomRotZ;
 
-        internal FieldTypes Type { get; private set; }
-        internal FieldStates State { get; private set; }
-
-        private float4x4 _modelView;
-        private bool _dirtyFlag;
-
-        // enums
         public enum FieldTypes
         {
             FtNull = 0,
             FtStart = 1,
             FtEnd = 3,
             FtNormal = 2
-        }
+        };
 
-        public enum FieldStates
-        {
-            FsLoading,
-            FsAlive,
-            FsDead
-        }
+        internal FieldTypes Type { get; private set; }
+        internal FieldStates State { get; private set; }
+
+        private float4x4 _modelView;
+        private bool _dirtyFlag;
 
         // constructor
         public Field(Level curLevel, int id, int x, int y, FieldTypes type)

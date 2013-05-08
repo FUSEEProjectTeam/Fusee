@@ -35,16 +35,6 @@ namespace Examples.CubeAndTiles
         internal const int CubeSize = 200;
         private const float CubeSpeed = 3.8f;
 
-        public enum CubeStates
-        {
-            CsLoading,
-            CsAlive,
-            CsWinning,
-            CsWon,
-            CsDying,
-            CsDead
-        }
-
         // constructor
         public RollingCube(Level curLevel)
         {

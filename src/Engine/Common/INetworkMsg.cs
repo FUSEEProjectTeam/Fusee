@@ -5,6 +5,18 @@ using System.Text;
 
 namespace Fusee.Engine
 {
+    public enum ConnectionStatus
+    {
+        None,
+        InitiatedConnect,
+        ReceivedInitiation,
+        RespondedAwaitingApproval,
+        RespondedConnect,
+        Connected,
+        Disconnecting,
+        Disconnected,
+    }
+
     public enum MessageType
     {
         Error = 0,
@@ -23,16 +35,14 @@ namespace Fusee.Engine
         ConnectionLatencyUpdated = 4096,
     }
 
-    public enum ConnectionStatus
+    public enum MessageDelivery
     {
-        None,
-        InitiatedConnect,
-        ReceivedInitiation,
-        RespondedAwaitingApproval,
-        RespondedConnect,
-        Connected,
-        Disconnecting,
-        Disconnected,
+        Unknown = 0,
+        Unreliable = (byte) 1,
+        UnreliableSequenced = (byte) 2,
+        ReliableUnordered = (byte) 34,
+        ReliableSequenced = (byte) 35,
+        ReliableOrdered = (byte) 67,
     }
 
     public interface INetworkMsg

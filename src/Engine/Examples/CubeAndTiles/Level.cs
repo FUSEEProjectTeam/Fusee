@@ -22,7 +22,7 @@ namespace Examples.CubeAndTiles
 
         private int[] _startXy;
         private int _curLvlId;
-        private LevelStates _lvlState;
+        internal LevelStates State;
 
         private int _camPosition;
         private float4x4 _camTranslation;
@@ -41,24 +41,6 @@ namespace Examples.CubeAndTiles
 
         // array for level files
         private int[][,] _lvlTmp;
-
-        public enum LevelStates
-        {
-            LsLoadFields,
-            LsLoadCube,
-            LsPlaying,
-            LsWinning,
-            LsDying
-        }
-        
-        public enum Directions
-        {
-            None,
-            Left,
-            Right,
-            Forward,
-            Backward
-        };
 
         public Level(RenderContext rc, ShaderProgram sp, Anaglyph3D anaglyph3D)
             : this(rc, sp, 0, anaglyph3D)
@@ -147,7 +129,7 @@ namespace Examples.CubeAndTiles
 
         private void ResetLevel()
         {
-            _lvlState = LevelStates.LsLoadFields;
+            State = LevelStates.LsLoadFields;
 
             foreach (var feld in _levelFeld)
                 if (feld != null)
@@ -159,13 +141,13 @@ namespace Examples.CubeAndTiles
 
         private void WinLevel()
         {
-            _lvlState = LevelStates.LsWinning;
+            State = LevelStates.LsWinning;
             RCube.WinningCube();
         }
 
         private void DeadLevel()
         {
-            _lvlState = LevelStates.LsDying;
+            State = LevelStates.LsDying;
             RCube.DeadCube();
         }
 
@@ -192,7 +174,7 @@ namespace Examples.CubeAndTiles
                 var curState = _levelFeld[curX, curY].State;
                 var curType = _levelFeld[curX, curY].Type;
 
-                if (curState == Field.FieldStates.FsDead)
+                if (curState == FieldStates.FsDead)
                     DeadLevel();
 
                 if (curType == Field.FieldTypes.FtEnd)
@@ -205,7 +187,7 @@ namespace Examples.CubeAndTiles
                     {
                         if (field == null) continue;
 
-                        if (field.State == Field.FieldStates.FsDead)
+                        if (field.State == FieldStates.FsDead)
                             actualNumCount++;
 
                         if (field.Type == Field.FieldTypes.FtNormal)
@@ -225,7 +207,7 @@ namespace Examples.CubeAndTiles
 
         public void MoveCube(Directions dir)
         {
-            if (_lvlState != LevelStates.LsPlaying)
+            if (State != LevelStates.LsPlaying)
                 return;
 
             switch (dir)
@@ -247,31 +229,31 @@ namespace Examples.CubeAndTiles
 
         private void LoadAnimation()
         {
-            if (_lvlState != LevelStates.LsLoadFields)
+            if (State != LevelStates.LsLoadFields)
                 return;
             
             var allReady = true;
 
-            allReady &= _levelFeld[_startXy[0], _startXy[1]].State == Field.FieldStates.FsAlive;
-            allReady &= RCube.State == RollingCube.CubeStates.CsAlive;
+            allReady &= _levelFeld[_startXy[0], _startXy[1]].State == FieldStates.FsAlive;
+            allReady &= RCube.State == CubeStates.CsAlive;
 
             if (allReady)
-                _lvlState = LevelStates.LsPlaying;
+                State = LevelStates.LsPlaying;
         }
 
         private bool WonDeadAnimation()
         {
             // cube is dying, wait for it
-            if (_lvlState == LevelStates.LsDying)
-                if (RCube.State == RollingCube.CubeStates.CsDead)
+            if (State == LevelStates.LsDying)
+                if (RCube.State == CubeStates.CsDead)
                 {
                     ResetLevel();
                     return true;
                 }
 
             // cube is winning, wait for it
-            if (_lvlState == LevelStates.LsWinning)
-                if (RCube.State == RollingCube.CubeStates.CsWon)
+            if (State == LevelStates.LsWinning)
+                if (RCube.State == CubeStates.CsWon)
                 {
                     _curLvlId = ++_curLvlId % _lvlTmp.Length;
                     LoadLevel(_curLvlId);

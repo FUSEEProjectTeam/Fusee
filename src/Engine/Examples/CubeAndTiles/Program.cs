@@ -65,7 +65,7 @@ namespace Examples.CubeAndTiles
             }";
 
         // variables
-        private static Level _exampleLevel;
+        internal static Level ExampleLevel;
         private static Anaglyph3D _anaglyph3D;
 
         private ShaderProgram _spAnaglyph;
@@ -92,7 +92,7 @@ namespace Examples.CubeAndTiles
             RC.ClearColor = new float4(0, 0, 0, 1);
 
             _anaglyph3D = new Anaglyph3D(RC);
-            _exampleLevel = new Level(RC, _spNonAnaglyph, _anaglyph3D);
+            ExampleLevel = new Level(RC, _spNonAnaglyph, _anaglyph3D);
         }
 
         // RenderAFrame()
@@ -102,10 +102,10 @@ namespace Examples.CubeAndTiles
 
             // mouse
             if (Input.Instance.GetAxis(InputAxis.MouseWheel) > 0)
-                _exampleLevel.ZoomCamera(50);
+                ExampleLevel.ZoomCamera(50);
 
             if (Input.Instance.GetAxis(InputAxis.MouseWheel) < 0)
-                _exampleLevel.ZoomCamera(-50);
+                ExampleLevel.ZoomCamera(-50);
 
             if (Input.Instance.IsButtonDown(MouseButtons.Left))
             {
@@ -124,17 +124,16 @@ namespace Examples.CubeAndTiles
             _angleVert += _angleVelVert;
 
             KeyboardInput();
-            NetworkInput();
+            NetImp.HandleNetwork();
 
             var mtxRot = float4x4.CreateRotationZ(_angleHorz)*float4x4.CreateRotationX(_angleVert);
-            _exampleLevel.Render(mtxRot);
+            ExampleLevel.Render(mtxRot);
 
             Present();
         }
 
-        private void KeyboardInput()
+        private static void KeyboardInput()
         {
-            // keyboard
             if (_lastKey == KeyCodes.None)
             {
                 if (Input.Instance.IsKeyDown(KeyCodes.V))
@@ -159,96 +158,40 @@ namespace Examples.CubeAndTiles
                     _lastKey = KeyCodes.V;
                 }
 
+                // if (Input.Instance.IsKeyDown(KeyCodes.B))
+                // {
+                //    _exampleLevel.UseAnaglyph3D = !_exampleLevel.UseAnaglyph3D;
+                //    RC.SetShader(_exampleLevel.UseAnaglyph3D ? _spAnaglyph : _spNonAnaglyph);
+                //    _lastKey = KeyCodes.B;
+                // }
+
                 if (Input.Instance.IsKeyDown(KeyCodes.C))
                 {
-                    // RC.SetShader(_exampleLevel.UseAnaglyph3D ? _spNonAnaglyph : _spAnaglyph);
-                    
-                    Network.Instance.Config.SysType = SysType.Client;
-                    Network.Instance.Config.Discovery = true;
-                    Network.Instance.Config.ConnectOnDiscovery = true;
-                    Network.Instance.Config.DefaultPort = 54954;
-
-                    Network.Instance.StartPeer();
-                    Network.Instance.SendDiscoveryMessage(14242);
-    
+                    NetImp.StartUpClient();
                     _lastKey = KeyCodes.C;
                 }
 
                 if (Input.Instance.IsKeyDown(KeyCodes.S))
                 {
-                    Network.Instance.Config.SysType = SysType.Server;
-                    Network.Instance.Config.Discovery = true;
-                    Network.Instance.Config.DefaultPort = 14242;
-
-                    Network.Instance.StartPeer();
-
+                    NetImp.StartUpServer();
                     _lastKey = KeyCodes.S;
                 }
 
                 if (Input.Instance.IsKeyDown(KeyCodes.Left))
-                {
-                    _exampleLevel.MoveCube(Level.Directions.Left);
-                    _lastKey = KeyCodes.Left;
-                }
+                    ExampleLevel.MoveCube(Directions.Left);
 
                 if (Input.Instance.IsKeyDown(KeyCodes.Right))
-                {
-                    _exampleLevel.MoveCube(Level.Directions.Right);
-                    _lastKey = KeyCodes.Right;
-                }
+                    ExampleLevel.MoveCube(Directions.Right);
 
                 if (Input.Instance.IsKeyDown(KeyCodes.Up))
-                {
-                    _exampleLevel.MoveCube(Level.Directions.Forward);
-                    _lastKey = KeyCodes.Up;
-                }
+                    ExampleLevel.MoveCube(Directions.Forward);
 
                 if (Input.Instance.IsKeyDown(KeyCodes.Down))
-                {
-                    _exampleLevel.MoveCube(Level.Directions.Backward);
-                    _lastKey = KeyCodes.Down;
-                }
+                    ExampleLevel.MoveCube(Directions.Backward);
 
-                if (Input.Instance.IsKeyDown(KeyCodes.M))
-                    if (Network.Instance.Status.Connected || Network.Instance.Config.SysType == SysType.Client)
-                        Network.Instance.SendMessage(_exampleLevel.RCube.ModelView);
             }
             else if (!Input.Instance.IsKeyDown(_lastKey))
                 _lastKey = KeyCodes.None;
-        }
-
-        private void NetworkInput()
-        {
-            INetworkMsg msg;
-            while ((msg = Network.Instance.IncomingMsg) != null)
-            {
-                if (msg.Type == MessageType.StatusChanged)
-                {
-                    Debug.WriteLine("StatusChange: " + msg.Status);
-
-                    if (msg.Status == ConnectionStatus.Connected)
-                        _exampleLevel.CubeColor = new float3(0f, 1f, 0);
-                }
-
-                if (msg.Type == MessageType.Data)
-                {
-                    float4x4 msgObj;
-
-                    using (var ms = new MemoryStream())
-                    {
-                        ms.Write(msg.Message, 0, msg.Message.Length);
-                        ms.Position = 0;
-                        msgObj = Serializer.Deserialize<float4x4>(ms);
-                    }
-
-                    _exampleLevel.RCube.ModelView = (float4x4) msgObj;
-
-                    Debug.WriteLine(msgObj);
-                }
-
-                if (msg.Type == MessageType.DiscoveryRequest)
-                    Debug.WriteLine("DiscoveryRequest");
-            }
         }
 
         public override void Resize()
