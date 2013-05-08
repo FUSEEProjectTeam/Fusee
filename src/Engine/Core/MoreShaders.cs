@@ -25,6 +25,19 @@ namespace Fusee.Engine
                 ShaderProgram spSimple = rc.CreateShader(Vs, Ps);
                 return spSimple;
             }
+
+            if (name == "texture")
+            {
+                ShaderProgram spTexture = rc.CreateShader(VsTexture, PsTexture);
+                return spTexture;
+            }
+
+            if (name == "texture2")
+            {
+                ShaderProgram spTexture = rc.CreateShader(VsTexture, PsTexture2);
+                return spTexture;
+            }
+
             if (name == "diffuse")
             {
                 ShaderProgram spDiffuse = rc.CreateShader(VsDiffuse, PsDiffuse);
@@ -224,6 +237,7 @@ void main()
     }
     endIntensity += endAmbient; 
 
+    endIntensity = clamp(endIntensity, 0.0, 1.0); 
     gl_FragColor = texture2D(texture1, vUV) * endIntensity; 
 }";
 
@@ -254,7 +268,6 @@ uniform float FUSEE_L4_ACTIVE;
 uniform float FUSEE_L5_ACTIVE;
 uniform float FUSEE_L6_ACTIVE;
 uniform float FUSEE_L7_ACTIVE;
-
 
 varying vec2 vUV;
 varying vec3 vNormal;
@@ -834,6 +847,63 @@ void main()
     endIntensity += endAmbient; 
     gl_FragColor = texture2D(texture1, vUV) * endIntensity; 
 }";
+
+        private const string VsTexture = @"
+            /* Copies incoming vertex color without change.
+             * Applies the transformation matrix to vertex position.
+             */
+
+            attribute vec4 fuColor;
+            attribute vec3 fuVertex;
+            attribute vec3 fuNormal;
+            attribute vec2 fuUV;
+
+            varying vec4 vColor;
+            varying vec3 vNormal;
+            varying vec2 vUV;
+        
+            uniform mat4 FUSEE_MVP;
+            uniform mat4 FUSEE_ITMV;
+
+            void main()
+            {
+                gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
+                vNormal = mat3(FUSEE_ITMV[0].xyz, FUSEE_ITMV[1].xyz, FUSEE_ITMV[2].xyz) * fuNormal;
+                vUV = fuUV;
+            }";
+
+
+        private const string PsTexture = @"
+            /* Copies incoming fragment color without change. */
+            #ifdef GL_ES
+                precision highp float;
+            #endif
+         
+            uniform sampler2D texture1;
+            uniform vec4 vColor;
+            varying vec3 vNormal;
+            varying vec2 vUV;
+
+            void main()
+            {             
+                gl_FragColor = texture2D(texture1, vUV) * dot(vNormal, vec3(0, 0, 1));
+            }";
+
+        private const string PsTexture2 = @"
+            /* Copies incoming fragment color without change. */
+            #ifdef GL_ES
+                precision highp float;
+            #endif
+         
+            uniform sampler2D texture1;
+            uniform vec4 vColor;
+            varying vec3 vNormal;
+            varying vec2 vUV;
+
+            void main()
+            {             
+                gl_FragColor = texture2D(texture1, vUV);
+            }";
 
         private const string Vs = @"
             /* Copies incoming vertex color without change.
