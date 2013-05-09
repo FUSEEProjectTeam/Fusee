@@ -381,7 +381,7 @@ namespace Fusee.SceneManagement
         override public void Visit(Camera camera)
         {
 
-            if (_mtxModelViewStack.Peek() != null)
+            if (_mtxModelViewStack != null)
             {
                 camera.ViewMatrix = _mtxModelViewStack.Peek();
                 _queue.AddCamera(camera.SubmitWork());
