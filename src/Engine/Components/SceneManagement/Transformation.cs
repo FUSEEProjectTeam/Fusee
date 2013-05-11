@@ -70,7 +70,7 @@ namespace Fusee.SceneManagement
            {
                _hasParent = true;
            }
-           
+           SceneEntity = entity;
            _transformMatrix = float4x4.Identity;
            _globalMatrix = _transformMatrix;
            _quaternion = Quaternion.Identity;
@@ -378,7 +378,7 @@ namespace Fusee.SceneManagement
       private void UpdateGlobalMembers() // Extract members from globalMatrix
       {
           //_globalQuaternion = Quaternion.Identity;
-          _globalQuaternion = Quaternion.LookRotation(_globalMatrix.Row2.xyz, _globalMatrix.Row1.xyz);
+          _globalQuaternion = Quaternion.LookRotation(_globalMatrix.Column2.xyz, _globalMatrix.Column1.xyz);
           _globalEulerAngles = Quaternion.QuaternionToEuler(_globalQuaternion);
           _globalScale = GetScaleFromMatrix(_globalMatrix);
           _globalPosition = GetPositionFromMatrix(_globalMatrix);

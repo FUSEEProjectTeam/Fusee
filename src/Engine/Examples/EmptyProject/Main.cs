@@ -55,8 +55,8 @@ namespace Examples.LightTypeTest
 
             //Sphere
             _object = new SceneEntity("Sphere1", new ActionCode(), _emptySphere, new DiffuseMaterial(MoreShaders.GetShader("diffuse", RC), "Assets/wall.jpg"), new Renderer(sphere));
-            _object.transform.GlobalPosition = new float3(0, 0, 0);
-            _object.transform.GlobalScale = new float3(1, 1, 1);
+            _object.transform.GlobalPosition = new float3(2, 0, 0);
+            _object.transform.GlobalScale = new float3(0.5f, 0.5f, 0.5f);
 
 
 

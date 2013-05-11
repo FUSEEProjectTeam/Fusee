@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using Fusee.Engine;
 using Fusee.Math;
 using System;
@@ -127,9 +128,8 @@ namespace Fusee.SceneManagement
                     
             }
             renderCanvas.Present();
-
-            //Console.WriteLine("Rendering at "+DeltaTime+"ms and "+(1/DeltaTime)+" FPS"); // Use this to checkout Framerate
             length = RenderJobs.Length;
+            //Debug.WriteLine("Drawn "+RenderJobs[2].Count/3+" Objects at "+Time.Instance.FramePerSecondSmooth+" FPS!");
             for (int j = 0; j < length;j++ )
             {
                 RenderJobs[j].Clear();

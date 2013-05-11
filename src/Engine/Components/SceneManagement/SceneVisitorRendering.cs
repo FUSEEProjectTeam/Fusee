@@ -113,45 +113,57 @@ namespace Fusee.SceneManagement
         {
             if (_mtxModelViewStack.Count > 0)
             {
-
-
                 if (transform.GlobalMatrixDirty)
                 {
                     transform.Matrix = float4x4.Invert(_mtxModelViewStack.Peek())*transform.GlobalMatrix;
                     transform.SetGlobalMat(transform.Matrix * _mtxModelViewStack.Peek());
-                    _hasTransform.Pop();
-                    _mtxModelViewStack.Push(transform.Matrix*_mtxModelViewStack.Pop());
-                    _hasTransform.Push(true);
-
+                    _mtxModelViewStack.Push(transform.Matrix * _mtxModelViewStack.Pop());
+                    if (SceneManager.RC.frustum.SphereInFrustum(transform.GlobalPosition, transform.GlobalScale.y))
+                    {
+                        _hasTransform.Pop();       
+                        _hasTransform.Push(true);
+                    }
+                    
+                    
                     if (HasRenderingTriple())
                     {
                         AddRenderJob(_mtxModelViewStack.Peek(), _meshStack.Peek(), _RendererStack.Peek());
                     }
-
                     return;
                 }
-                transform.SetGlobalMat(transform.Matrix*_mtxModelViewStack.Peek());
-                _hasTransform.Pop();
-                _mtxModelViewStack.Push(transform.Matrix*_mtxModelViewStack.Pop());
-                _hasTransform.Push(true);
 
+                transform.SetGlobalMat(transform.Matrix*_mtxModelViewStack.Peek());
+                _mtxModelViewStack.Push(transform.Matrix * _mtxModelViewStack.Pop());
+                if (SceneManager.RC.frustum.SphereInFrustum(transform.GlobalPosition,transform.GlobalScale.y))
+                {
+                    _hasTransform.Pop();
+                    _hasTransform.Push(true);
+                }
+                
+                
+                
+                
+                
                 if (HasRenderingTriple())
                 {
                     AddRenderJob(_mtxModelViewStack.Peek(), _meshStack.Peek(), _RendererStack.Peek());
                 }
-
+                
             }else
             {
-
-
-                if(_hasTransform.Count > 0)
-                {
-                    _hasTransform.Pop();
-                }
-
-                _hasTransform.Push(true);
                 _mtxModelViewStack.Push(transform.GlobalMatrix);
-
+                
+                if (SceneManager.RC.frustum.SphereInFrustum(transform.GlobalPosition, transform.GlobalScale.y))
+                {
+                    if (_hasTransform.Count > 0)
+                    {
+                        _hasTransform.Pop();
+                    }
+                    
+                    _hasTransform.Push(true);
+                }
+               
+                
                 if (HasRenderingTriple())
                 {
                     AddRenderJob(_mtxModelViewStack.Peek(), _meshStack.Peek(), _RendererStack.Peek());
@@ -192,7 +204,11 @@ namespace Fusee.SceneManagement
         /// </summary>
         private void Pop()
         {
-            _mtxModelViewStack.Pop();
+            if(_mtxModelViewStack.Count > 0)
+            {
+                _mtxModelViewStack.Pop();
+            }
+            
             _hasTransform.Pop();
             _hasMesh.Pop();
             _hasRenderer.Pop();
@@ -382,7 +398,7 @@ namespace Fusee.SceneManagement
         override public void Visit(Camera camera)
         {
 
-            if (_mtxModelViewStack.Peek() != null)
+            if (_mtxModelViewStack.Count > 0)
             {
                 camera.ViewMatrix = _mtxModelViewStack.Peek();
                 _queue.AddCamera(camera.SubmitWork());

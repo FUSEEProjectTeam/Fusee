@@ -41,6 +41,13 @@ namespace Examples.Solar
 
             }
             //Debug.WriteLine("Current FPS: "+Time.Instance.FramePerSecondSmooth);
+            //DrawCameraView();
+        }
+
+        private void DrawCameraView()
+        {
+            // CenterRay
+            SceneManager.RC.DebugLine(transform.GlobalPosition+transform.Forward, transform.Forward*scenecam.Far,new float4(0,1,0,1));
         }
 
     }
