@@ -54,7 +54,7 @@ namespace Examples.CubeAndTiles
             Left,
             Right,
             Forward,
-            Backward
+            Backward,
         };
 
         public Level(RenderContext rc, ShaderProgram sp, Anaglyph3D anaglyph3D)
@@ -188,6 +188,17 @@ namespace Examples.CubeAndTiles
                 var curState = _levelFeld[curX, curY].State;
                 var curType = _levelFeld[curX, curY].Type;
 
+                if (curType == Field.FieldTypes.FtTele)
+                {
+                    foreach (var field in _levelFeld)
+                    {
+                        if (field == null) continue;
+
+                        if (field.Type == Field.FieldTypes.FtTele && (field.CoordXY[0] != curX || field.CoordXY[1] != curY))
+                            TeleportCube(field.CoordXY[0], field.CoordXY[1]);
+                    }
+                
+                }
                 if (curState == Field.FieldStates.FsDead)
                     DeadLevel();
 
@@ -204,7 +215,7 @@ namespace Examples.CubeAndTiles
                         if (field.State == Field.FieldStates.FsDead)
                             actualNumCount++;
 
-                        if (field.Type == Field.FieldTypes.FtNormal)
+                        if (field.Type != Field.FieldTypes.FtStart && field.Type != Field.FieldTypes.FtEnd)
                             targetNumCount++;
                     }
 
@@ -239,6 +250,11 @@ namespace Examples.CubeAndTiles
                     _rCube.MoveCube(0, -1);
                     break;
             }
+        }
+
+        public void TeleportCube(int x, int y)
+        {
+            _rCube.TeleportCube(x,y);
         }
 
         private void LoadAnimation()
@@ -324,5 +340,7 @@ namespace Examples.CubeAndTiles
         {
             return x < 0 || x >= array.GetLength(0) || y < 0 || y >= array.GetLength(1);
         }
+
+
     }
 }

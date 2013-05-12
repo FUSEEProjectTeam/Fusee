@@ -9,7 +9,7 @@ namespace Examples.CubeAndTiles
         // vars
         private readonly float3 _cubeColor;
         private readonly Mesh _cubeMesh;
-        private readonly IAudioStream _cubeSound;
+        private readonly IAudioStream _cubeMoveSound;
 
         private readonly Level _curLevel;
 
@@ -46,8 +46,8 @@ namespace Examples.CubeAndTiles
             _curLevel = curLevel;
             _cubeMesh = _curLevel.GlobalCubeMesh;
 
-            _cubeSound = Audio.Instance.LoadFile("Assets/cube.ogg");
-            _cubeSound.Volume = 5;
+            _cubeMoveSound = Audio.Instance.LoadFile("Assets/cube.ogg");
+            _cubeMoveSound.Volume = 5;
 
             _cubeColor = new float3(1, 0.1f, 0.1f);
 
@@ -119,7 +119,25 @@ namespace Examples.CubeAndTiles
 
                 _curLevel.SetDeadField(PosLastXY[0], PosLastXY[1]);
 
-                _cubeSound.Play();
+                _cubeMoveSound.Play();
+
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool TeleportCube(int x, int y)
+        {
+            if (_curDirXY[0] + _curDirXY[1] == 0)
+            {
+                PosLastXY[0] = PosCurXY[0];
+                PosLastXY[1] = PosCurXY[1];
+
+                PosCurXY[0] = x;
+                PosCurXY[1] = y;
+
+                _curLevel.SetDeadField(PosLastXY[0], PosLastXY[1]);
 
                 return true;
             }
@@ -163,7 +181,7 @@ namespace Examples.CubeAndTiles
         {
             if (State != CubeStates.CsDying) return;
 
-            _cubeSound.Stop();
+            _cubeMoveSound.Stop();
 
             if (_curBright > 0.0f)
             {
