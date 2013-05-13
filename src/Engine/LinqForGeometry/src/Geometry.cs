@@ -189,6 +189,15 @@ namespace hsfurtwangen.dsteffen.lfg
             {
                 _LtriangleList.Clear();
                 //_LtriangleList = EnAllFaces().SelectMany(face => FaceSurroundingVertices(face).Select(vert => (short)vert._DataIndex)).ToList();
+                foreach (var face in _LfaceHndl)
+                {
+                    List<HandleVertex> LtmpVertsTriangle = _GeometryContainer.IteratorVerticesAroundFaceForTriangles(face);
+                    foreach (HandleVertex vert in LtmpVertsTriangle) {
+                        _LtriangleList.Add((short)vert._DataIndex);
+                    }
+                }
+                
+                /*
                 foreach (HandleFace face in EnAllFaces())
                 {
                     foreach (HandleVertex vert in FaceSurroundingVertices(face))
@@ -196,7 +205,7 @@ namespace hsfurtwangen.dsteffen.lfg
                         _LtriangleList.Add((short)vert._DataIndex);
                     }
                 }
-
+                */
                 _triangleListSet = true;
             }
 

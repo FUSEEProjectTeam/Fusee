@@ -603,6 +603,23 @@ namespace hsfurtwangen.dsteffen.lfg
         }
 
 
+        public List<HandleVertex> IteratorVerticesAroundFaceForTriangles(HandleFace hf) {
+            List<HandleVertex> LtmpVert = new List<HandleVertex>();
+            HandleHalfEdge heh = _LfacePtrCont[hf]._h;
+            int indexStart = heh._DataIndex;
+
+            while (true)
+            {
+                LtmpVert.Add(_LhedgePtrCont[heh]._v);
+                heh = _LhedgePtrCont[heh]._nhe;
+
+                if (LtmpVert.Count >= 3) { break; }
+            }
+
+            return LtmpVert;
+        }
+
+
         /// <summary>
         /// Iterator.
         /// Circulate around all the faces surrounding a specific face.
