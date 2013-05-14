@@ -129,18 +129,28 @@ namespace Examples.LinqForGeometry
             #endregion TextureLoad
 
             #region Shader
-            var sp = MoreShaders.GetShader("oneColor", RC);
+            //ShaderProgram sp = MoreShaders.GetShader("oneColor", RC);
+            ShaderProgram sp = MoreShaders.GetShader("diffuse", RC);
+            
             //ShaderProgram sp = RC.CreateShader(_vs, _ps);
-            RC.SetShader(sp);
             _vColorParam = sp.GetShaderParam("Col");
             //_vTextureParam = sp.GetShaderParam("texture1");
             //_tex = RC.CreateTexture(_imgData);
+
+            RC.SetShader(sp);
             #endregion Shader
 
             // Convert to Mesh
             _lfgmesh = _Geo.ToMesh();
 
-            RC.ClearColor = new float4(0f, 0f, 0.5f, 1f);
+            RC.ClearColor = new float4(0f, 0f, 0f, 1f);
+            //RC.SetLight(new float3(0.0f, 0.0f, 0.0f), new float4(1.0f, 0f, 1.0f, 1.0f), 0, 0);
+            RC.SetLightActive(0, 1);
+            RC.SetLightPosition(0, new float3(5.0f, 0.0f, -2.0f));
+            RC.SetLightAmbient(0, new float4(0.2f, 0.2f, 0.2f, 1.0f));
+            RC.SetLightSpecular(0, new float4(0.1f, 0.1f, 0.1f, 1.0f));
+            RC.SetLightDiffuse(0, new float4(0.8f, 0.8f, 0.8f, 1.0f));
+            RC.SetLightDirection(0, new float3(-1.0f, 0.0f, 0.0f));
         }
 
         public override void RenderAFrame()
@@ -157,7 +167,7 @@ namespace Examples.LinqForGeometry
 
             RC.Render(_lfgmesh);
             _FuseeMesh.Normals = null;
-            //RC.Render(_FuseeMesh);
+            RC.Render(_FuseeMesh);
 
             // swap buffers
             Present();
