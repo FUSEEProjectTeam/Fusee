@@ -115,7 +115,6 @@ namespace Examples.LinqForGeometry
             _Geo.LoadAsset("Assets/cube_quadrangle_1_textured.obj.model");
             //_Geo.LoadAsset("Assets/cube_triangulate.obj.model");
             //_Geo.LoadAsset("Assets/cube_quadrangle_1_textured_quad.obj.model");
-            //_Geo.LoadAsset("Assets/sphere_quadrangle_1.obj.model");
             //_Geo.LoadAsset("Assets/Teapot_textured.obj.model");
             //_Geo.LoadAsset("Assets/Sphere.obj.model");
             //_Geo.LoadAsset("Assets/Sphere_triangulate.obj.model");
@@ -130,10 +129,16 @@ namespace Examples.LinqForGeometry
             #region Shader
           
             #region LightShader
-            ShaderProgram msDiffuse = MoreShaders.GetShader("diffuse", RC);
+            ShaderProgram msDiffuse = MoreShaders.GetShader("specular", RC);
+            //_vLightShaderParam = msDiffuse.GetShaderParam("Col");
             RC.SetShader(msDiffuse);
 
-            RC.SetLight(new float3(0.0f, 20.0f, 0.0f), new float4(0f, 1.0f, 0f, 1.0f), 1, 0);
+            //RC.SetLight(new float3(0.0f, -1.0f, 0.0f), new float4(0f, 1.0f, 0f, 1.0f), 1, 0);
+            RC.SetLightActive(0, 1.0f);
+            //RC.SetLightPosition(0, new float3(0, 100, 0));
+            RC.SetLightAmbient(0, new float4(0.3f, 0.3f, 0.3f, 1));
+            RC.SetLightDiffuse(0, new float4(0.7f, 0.7f, 0.7f, 1));
+            RC.SetLightDirection(0, new float3(0, 1, 0));
             #endregion LightShader
 
             #region ColorShader
@@ -165,8 +170,7 @@ namespace Examples.LinqForGeometry
 
             #region SetShaderActive
             //RC.SetShaderParamTexture(_vTextureParam, _tex);
-            //RC.SetShaderParam(_vColorParam, new float4(0.2f, 0.2f, 0.8f, 1.0f));
-            //RC.SetShaderParam(_vLightShaderParam, new float4(1, 1, 1, 1));
+            //RC.SetShaderParam(_vLightShaderParam, new float4(1.0f, 0.0f, 0.0f, 1.0f));
             #endregion SetShaderActive
 
             //RC.Render(_lfgmesh);
@@ -384,10 +388,9 @@ namespace Examples.LinqForGeometry
                 _Geo._Changes = false;
             }
 
-            var mtxCam = float4x4.LookAt(0, 500, 500, 0, 0, 0, 0, 1, 0);
+            float4x4 mtxCam = float4x4.LookAt(0, 500, 500, 0, 0, 0, 0, 1, 0);
 
             RC.ModelView = float4x4.CreateTranslation(0, 0, 0) * mtxCam;
-
         }
 
         public override void Resize()
@@ -395,7 +398,8 @@ namespace Examples.LinqForGeometry
             RC.Viewport(0, 0, Width, Height);
 
             var aspectRatio = Width / (float)Height;
-            RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 5000);
+            //RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 5000);
+            RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 10000);
         }
 
         public static void Main()
