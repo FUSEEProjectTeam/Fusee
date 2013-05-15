@@ -108,7 +108,7 @@ namespace Fusee.SceneManagement
         /// <summary>
         /// Adds the transform to the internal stack.
         /// </summary>
-        /// <param name="mtx">The MTX.</param>
+        /// <param name="transform">The transformation.</param>
         private void AddTransform(Transformation transform)
         {
             if (_mtxModelViewStack.Count > 0)
@@ -381,7 +381,7 @@ namespace Fusee.SceneManagement
         override public void Visit(Camera camera)
         {
 
-            if (_mtxModelViewStack.Peek() != null)
+            if (_mtxModelViewStack != null)
             {
                 camera.ViewMatrix = _mtxModelViewStack.Peek();
                 _queue.AddCamera(camera.SubmitWork());

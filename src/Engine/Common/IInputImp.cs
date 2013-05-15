@@ -1,6 +1,4 @@
-﻿#pragma warning disable 1591 //disables the warning about missing XML-comments
-
-using System;
+﻿using System;
 
 namespace Fusee.Engine
 {
@@ -46,10 +44,6 @@ namespace Fusee.Engine
         /// <summary>
         /// Trigger this event in your implementation once a key on the keyboard is released.
         /// </summary>
-        event EventHandler<KeyEventArgs> KeyUp;
-
-           
+        event EventHandler<KeyEventArgs> KeyUp;      
     }
 }
-
-#pragma warning restore 1591
