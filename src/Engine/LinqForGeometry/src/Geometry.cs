@@ -192,22 +192,22 @@ namespace hsfurtwangen.dsteffen.lfg
                 foreach (var face in _LfaceHndl)
                 {
                     List<HandleVertex> LtmpVertsTriangle = _GeometryContainer.IteratorVerticesAroundFaceForTriangles(face);
-                    foreach (HandleVertex vert in LtmpVertsTriangle) {
-                        _LtriangleList.Add((short)vert._DataIndex);
-                    }
-                }
-                
-                /*
-                foreach (HandleFace face in EnAllFaces())
-                {
-                    foreach (HandleVertex vert in FaceSurroundingVertices(face))
+                    foreach (HandleVertex vert in LtmpVertsTriangle)
                     {
                         _LtriangleList.Add((short)vert._DataIndex);
                     }
                 }
-                */
                 _triangleListSet = true;
             }
+
+
+            _GeometryContainer._LfaceNormals.Clear();
+            foreach (HandleFace face in EnAllFaces())
+            {
+                _GeometryContainer.CalcFaceNormal(face);
+            }
+            _GeometryContainer._LVertexNormals = EnAllVertices().Select(handleVert => _GeometryContainer.CalcVertexNormal(handleVert)).ToList();
+
 
             Mesh mesh = new Mesh();
             mesh.Vertices = _GeometryContainer._LvertexVal.ToArray();
@@ -317,7 +317,7 @@ namespace hsfurtwangen.dsteffen.lfg
 
             // Calculate and add the face normal to a list here
             int lastFaceIndex = _LfaceHndl.Count - 1;
-            _GeometryContainer.AddFaceNormal(_LfaceHndl[lastFaceIndex]);
+            _GeometryContainer.CalcFaceNormal(_LfaceHndl[lastFaceIndex]);
         }
 
 

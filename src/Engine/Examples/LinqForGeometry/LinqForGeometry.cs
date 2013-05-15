@@ -89,6 +89,7 @@ namespace Examples.LinqForGeometry
         // variables for color and texture
         private IShaderParam _vColorParam;
         private IShaderParam _vTextureParam;
+        private IShaderParam _vLightShaderParam;
 
         private ImageData _imgData;
         private ITexture _tex;
@@ -103,11 +104,9 @@ namespace Examples.LinqForGeometry
         public override void Init()
         {
             // Use the Fusee MeshReader to test against mine...
-            _FuseeMesh = MeshReader.LoadMesh("Assets/cube_quadrangle_1_textured.obj.model");
+            //_FuseeMesh = MeshReader.LoadMesh("Assets/cube_quadrangle_1_textured.obj.model");
             //_FuseeMesh = MeshReader.LoadMesh("Assets/cube_quadrangle_1_textured_quad.obj.model");
-
-            // TODO: For Debug testing, set the normals for the fusee imported model to null.
-            // the model should look strange. But nothing happens.
+            _FuseeMesh = MeshReader.LoadMesh("Assets/Sphere.obj.model");
 
             #region MeshImports
             // This would be a solution to step over the MeshReader Class
@@ -125,32 +124,46 @@ namespace Examples.LinqForGeometry
             #region TextureLoad
             //_imgData = RC.LoadImage("Assets/checkerboard_tex.jpg");
             //_imgData = RC.LoadImage("Assets/world_map.jpg");
-            _imgData = RC.LoadImage("Assets/Mat_Color.jpg");
+            //_imgData = RC.LoadImage("Assets/Mat_Color.jpg");
             #endregion TextureLoad
 
             #region Shader
+          
+            #region LightShader
+            ShaderProgram msDiffuse = MoreShaders.GetShader("diffuse", RC);
+            _vLightShaderParam = msDiffuse.GetShaderParam("FUSEE_L0_DIFFUSE");
+            RC.SetShader(msDiffuse);
+
+            /*
+            RC.SetLightActive(0, 1);
+            RC.SetLightPosition(0, new float3(0.0f, 10.0f, 0.0f));
+            RC.SetLightAmbient(0, new float4(0.0f, 1.0f, 0.0f, 1.0f));
+            RC.SetLightSpecular(0, new float4(1.0f, 1.0f, 0.0f, 0.0f));
+            RC.SetLightDiffuse(0, new float4(1.0f, 0.0f, 0.0f, 1.0f));
+            RC.SetLightDirection(0, new float3(0.0f, -1.0f, 0.0f));
+            */
+
+            RC.SetLight(new float3(0.0f, 1.0f, 0.0f), new float3(0.0f, 20.0f, 10.0f), new float4(0f, 1.0f, 0f, 1.0f), 0, 0);
+            #endregion LightShader
+
+            #region ColorShader
             //ShaderProgram sp = MoreShaders.GetShader("oneColor", RC);
-            ShaderProgram sp = MoreShaders.GetShader("diffuse", RC);
-            
+            //_vColorParam = sp.GetShaderParam("Col");
+            #endregion ColorShader
+
+            #region TextureShader
             //ShaderProgram sp = RC.CreateShader(_vs, _ps);
-            _vColorParam = sp.GetShaderParam("Col");
             //_vTextureParam = sp.GetShaderParam("texture1");
             //_tex = RC.CreateTexture(_imgData);
+            #endregion TextureShader
 
-            RC.SetShader(sp);
+            //RC.SetShader(sp);
             #endregion Shader
 
             // Convert to Mesh
             _lfgmesh = _Geo.ToMesh();
 
-            RC.ClearColor = new float4(0f, 0f, 0f, 1f);
-            //RC.SetLight(new float3(0.0f, 0.0f, 0.0f), new float4(1.0f, 0f, 1.0f, 1.0f), 0, 0);
-            RC.SetLightActive(0, 1);
-            RC.SetLightPosition(0, new float3(5.0f, 0.0f, -2.0f));
-            RC.SetLightAmbient(0, new float4(0.2f, 0.2f, 0.2f, 1.0f));
-            RC.SetLightSpecular(0, new float4(0.1f, 0.1f, 0.1f, 1.0f));
-            RC.SetLightDiffuse(0, new float4(0.8f, 0.8f, 0.8f, 1.0f));
-            RC.SetLightDirection(0, new float3(-1.0f, 0.0f, 0.0f));
+            RC.ClearColor = new float4(0.3f, 0.3f, 0.3f, 1f);
         }
 
         public override void RenderAFrame()
@@ -161,12 +174,12 @@ namespace Examples.LinqForGeometry
             PullInput();
 
             #region SetShaderActive
-            RC.SetShaderParam(_vColorParam, new float4(0.5f, 0.8f, 0, 1));
             //RC.SetShaderParamTexture(_vTextureParam, _tex);
+            //RC.SetShaderParam(_vColorParam, new float4(0.2f, 0.2f, 0.8f, 1.0f));
+            RC.SetShaderParam(_vLightShaderParam, new float4(1, 1, 1, 1));
             #endregion SetShaderActive
 
-            RC.Render(_lfgmesh);
-            _FuseeMesh.Normals = null;
+            //RC.Render(_lfgmesh);
             RC.Render(_FuseeMesh);
 
             // swap buffers
@@ -378,13 +391,13 @@ namespace Examples.LinqForGeometry
             if (_Geo._Changes)
             {
                 _lfgmesh = _Geo.ToMesh();
+                _Geo._Changes = false;
             }
 
             var mtxCam = float4x4.LookAt(0, 500, 500, 0, 0, 0, 0, 1, 0);
 
             RC.ModelView = float4x4.CreateTranslation(0, 0, 0) * mtxCam;
 
-            _Geo._Changes = false;
         }
 
         public override void Resize()

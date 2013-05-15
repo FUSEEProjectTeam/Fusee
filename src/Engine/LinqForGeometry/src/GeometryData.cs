@@ -96,12 +96,10 @@ namespace hsfurtwangen.dsteffen.lfg
         /// Normally should not be called by the user. The system is calling it once a face has been inserted to the geometry object.
         /// </summary>
         /// <param name="handleFace">Handle to a face</param>
-        public void AddFaceNormal(HandleFace handleFace)
+        public void CalcFaceNormal(HandleFace handleFace)
         {
             IEnumerable<HandleVertex> enVerts = EnFaceVertices(handleFace);
             var Lverts = enVerts.Select(handleVertex => _LvertexVal[handleVertex._DataIndex]).ToList();
-
-            // TODO: Calculating triangle normals.
 
             if (Lverts.Count >= 3)
             {
@@ -115,8 +113,7 @@ namespace hsfurtwangen.dsteffen.lfg
 
                 float3 n = float3.Cross(c1, c2);
 
-                Debug.WriteLine("Calculated face normal: " + n);
-                Debug.WriteLine("Calculated face normal normalized: " + float3.Normalize(n));
+                Debug.WriteLine("CalcNormal: " + n);
 
                 _LfaceNormals.Add(
                     float3.Normalize(n)
@@ -164,28 +161,29 @@ namespace hsfurtwangen.dsteffen.lfg
                 }
             }
 
-            Debug.WriteLine(" \n --- New Vertex Normal Calc --- ");
+            //Debug.WriteLine(" \n --- New Vertex Normal Calc --- ");
+            /*
             foreach (var faceNormal in adjacentfaceNormals)
             {
                 Debug.WriteLine("%%% Adj. Face Normal: " + faceNormal);
             }
-
+            */
             float3 sumNormals = new float3();
 
-            Debug.WriteLine(" \n ---Zwischenergebnisse--- ");
+            //Debug.WriteLine(" \n ---Zwischenergebnisse--- ");
             foreach (float3 faceNormal in adjacentfaceNormals)
             {
                 sumNormals += faceNormal;
-                Debug.WriteLine(" now -> " + sumNormals);
+                //Debug.WriteLine(" now -> " + sumNormals);
             }
-            Debug.WriteLine("Ergebnis: " + sumNormals);
-            Debug.WriteLine(" --- End Vert Normal Calc--- \n");
+            //Debug.WriteLine("Ergebnis: " + sumNormals);
+            //Debug.WriteLine(" --- End Vert Normal Calc--- \n");
 
-            Debug.WriteLine("\n Normal with loop: " + sumNormals);
+            //Debug.WriteLine("\n Normal with loop: " + sumNormals);
             sumNormals /= adjacentfaceNormals.Count;
-            Debug.WriteLine("Normal with loop divided: " + sumNormals);
+            //Debug.WriteLine("Normal with loop divided: " + sumNormals);
             float3 normalized = float3.Normalize(sumNormals);
-            Debug.WriteLine("Normal with loop normalized : " + normalized + "\n");
+            //Debug.WriteLine("Normal with loop normalized : " + normalized + "\n");
             return normalized;
         }
 
