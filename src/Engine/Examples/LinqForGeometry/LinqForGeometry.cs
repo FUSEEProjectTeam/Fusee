@@ -104,9 +104,9 @@ namespace Examples.LinqForGeometry
         public override void Init()
         {
             // Use the Fusee MeshReader to test against mine...
-            //_FuseeMesh = MeshReader.LoadMesh("Assets/cube_quadrangle_1_textured.obj.model");
+            _FuseeMesh = MeshReader.LoadMesh("Assets/cube_quadrangle_1_textured.obj.model");
             //_FuseeMesh = MeshReader.LoadMesh("Assets/cube_quadrangle_1_textured_quad.obj.model");
-            _FuseeMesh = MeshReader.LoadMesh("Assets/Sphere.obj.model");
+            //_FuseeMesh = MeshReader.LoadMesh("Assets/Sphere.obj.model");
 
             #region MeshImports
             // This would be a solution to step over the MeshReader Class
@@ -131,19 +131,9 @@ namespace Examples.LinqForGeometry
           
             #region LightShader
             ShaderProgram msDiffuse = MoreShaders.GetShader("diffuse", RC);
-            _vLightShaderParam = msDiffuse.GetShaderParam("FUSEE_L0_DIFFUSE");
             RC.SetShader(msDiffuse);
 
-            /*
-            RC.SetLightActive(0, 1);
-            RC.SetLightPosition(0, new float3(0.0f, 10.0f, 0.0f));
-            RC.SetLightAmbient(0, new float4(0.0f, 1.0f, 0.0f, 1.0f));
-            RC.SetLightSpecular(0, new float4(1.0f, 1.0f, 0.0f, 0.0f));
-            RC.SetLightDiffuse(0, new float4(1.0f, 0.0f, 0.0f, 1.0f));
-            RC.SetLightDirection(0, new float3(0.0f, -1.0f, 0.0f));
-            */
-
-            RC.SetLight(new float3(0.0f, 1.0f, 0.0f), new float3(0.0f, 20.0f, 10.0f), new float4(0f, 1.0f, 0f, 1.0f), 0, 0);
+            RC.SetLight(new float3(0.0f, 20.0f, 0.0f), new float4(0f, 1.0f, 0f, 1.0f), 1, 0);
             #endregion LightShader
 
             #region ColorShader
@@ -176,7 +166,7 @@ namespace Examples.LinqForGeometry
             #region SetShaderActive
             //RC.SetShaderParamTexture(_vTextureParam, _tex);
             //RC.SetShaderParam(_vColorParam, new float4(0.2f, 0.2f, 0.8f, 1.0f));
-            RC.SetShaderParam(_vLightShaderParam, new float4(1, 1, 1, 1));
+            //RC.SetShaderParam(_vLightShaderParam, new float4(1, 1, 1, 1));
             #endregion SetShaderActive
 
             //RC.Render(_lfgmesh);
