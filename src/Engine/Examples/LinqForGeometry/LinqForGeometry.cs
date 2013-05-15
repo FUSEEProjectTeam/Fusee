@@ -130,15 +130,16 @@ namespace Examples.LinqForGeometry
           
             #region LightShader
             ShaderProgram msDiffuse = MoreShaders.GetShader("specular", RC);
-            //_vLightShaderParam = msDiffuse.GetShaderParam("Col");
+            _vLightShaderParam = msDiffuse.GetShaderParam("texture1");
+            ImageData imgData = RC.LoadImage("Assets/world_map.jpg");
+            ITexture iTex = RC.CreateTexture(imgData);
             RC.SetShader(msDiffuse);
 
-            //RC.SetLight(new float3(0.0f, -1.0f, 0.0f), new float4(0f, 1.0f, 0f, 1.0f), 1, 0);
             RC.SetLightActive(0, 1.0f);
-            //RC.SetLightPosition(0, new float3(0, 100, 0));
-            RC.SetLightAmbient(0, new float4(0.3f, 0.3f, 0.3f, 1));
-            RC.SetLightDiffuse(0, new float4(0.7f, 0.7f, 0.7f, 1));
-            RC.SetLightDirection(0, new float3(0, 1, 0));
+            RC.SetLightPosition(0, new float3(0, 200, 100));
+            RC.SetLightAmbient(0, new float4(0.3f, 0.3f, 0.3f, 1.0f));
+            RC.SetLightDiffuse(0, new float4(0.0f, 1.0f, 0.0f, 1.0f));
+            RC.SetLightDirection(0, new float3(0.0f, -1.0f, 0.0f));
             #endregion LightShader
 
             #region ColorShader
@@ -146,18 +147,12 @@ namespace Examples.LinqForGeometry
             //_vColorParam = sp.GetShaderParam("Col");
             #endregion ColorShader
 
-            #region TextureShader
-            //ShaderProgram sp = RC.CreateShader(_vs, _ps);
-            //_vTextureParam = sp.GetShaderParam("texture1");
-            //_tex = RC.CreateTexture(_imgData);
-            #endregion TextureShader
-
-            //RC.SetShader(sp);
             #endregion Shader
 
             // Convert to Mesh
             _lfgmesh = _Geo.ToMesh();
 
+            RC.SetShaderParamTexture(_vLightShaderParam, iTex);
             RC.ClearColor = new float4(0.3f, 0.3f, 0.3f, 1f);
         }
 
@@ -168,12 +163,7 @@ namespace Examples.LinqForGeometry
             // Pull the users input
             PullInput();
 
-            #region SetShaderActive
-            //RC.SetShaderParamTexture(_vTextureParam, _tex);
-            //RC.SetShaderParam(_vLightShaderParam, new float4(1.0f, 0.0f, 0.0f, 1.0f));
-            #endregion SetShaderActive
-
-            //RC.Render(_lfgmesh);
+            RC.Render(_lfgmesh);
             RC.Render(_FuseeMesh);
 
             // swap buffers
@@ -398,7 +388,6 @@ namespace Examples.LinqForGeometry
             RC.Viewport(0, 0, Width, Height);
 
             var aspectRatio = Width / (float)Height;
-            //RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 5000);
             RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 10000);
         }
 
