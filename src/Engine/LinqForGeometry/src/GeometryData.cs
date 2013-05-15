@@ -113,12 +113,31 @@ namespace hsfurtwangen.dsteffen.lfg
 
                 float3 n = float3.Cross(c1, c2);
 
-                Debug.WriteLine("CalcNormal: " + n);
+                Debug.WriteLine("CalcNormal: " + float3.Normalize(n));
 
                 _LfaceNormals.Add(
                     float3.Normalize(n)
                     );
             }
+        }
+
+        /// <summary>
+        /// Only for testing, calculates face normals with the help of the hes.
+        /// </summary>
+        /// <returns></returns>
+        public float3 CalcFaceNormalsToList(HandleFace faceHandle) {
+            List<HandleVertex> tmpList = IteratorVerticesAroundFaceForTriangles(faceHandle);
+
+            var v0 = _LvertexVal[tmpList[0]];
+            var v1 = _LvertexVal[tmpList[1]];
+            var v2 = _LvertexVal[tmpList[2]];
+
+            float3 c1 = float3.Subtract(v0, v1);
+            float3 c2 = float3.Subtract(v0, v2);
+
+            float3 n = float3.Cross(c1, c2);
+
+            return float3.Normalize(n);
         }
 
         /// <summary>
@@ -601,7 +620,8 @@ namespace hsfurtwangen.dsteffen.lfg
         }
 
 
-        public List<HandleVertex> IteratorVerticesAroundFaceForTriangles(HandleFace hf) {
+        public List<HandleVertex> IteratorVerticesAroundFaceForTriangles(HandleFace hf)
+        {
             List<HandleVertex> LtmpVert = new List<HandleVertex>();
             HandleHalfEdge heh = _LfacePtrCont[hf]._h;
             int indexStart = heh._DataIndex;

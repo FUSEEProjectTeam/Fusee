@@ -114,29 +114,6 @@ namespace hsfurtwangen.dsteffen.lfg
 
                 if (faceVertCount == 3)
                 {
-                    /*
-                     * TODO: Remove this code. It's not needed?
-                    if (globalinf.LFGMessages._DEBUGOUTPUT || true)
-                    {
-                        Debug.WriteLine(" --- ");
-                        foreach (var vert in face._LFVertices)
-                        {
-                            Debug.WriteLine("Vert" + vert);
-                        }
-                        Debug.WriteLine(" --- ");
-                    }
-                    GeoFace newFace = new GeoFace() { _LFVertices = new List<float3>(), _UV = new List<float2>() };
-                    
-                    newFace._LFVertices.Add(face._LFVertices[0]);
-                    newFace._LFVertices.Add(face._LFVertices[1]);
-                    newFace._LFVertices.Add(face._LFVertices[2]);
-
-                    newFace._UV.Add(face._UV[0]);
-                    newFace._UV.Add(face._UV[1]);
-                    newFace._UV.Add(face._UV[2]);
-
-                    triangleFaces.Add(newFace);
-                    */
                     triangleFaces.Add(face);
                 }
                 else if (faceVertCount > 3)
@@ -204,7 +181,8 @@ namespace hsfurtwangen.dsteffen.lfg
             _GeometryContainer._LfaceNormals.Clear();
             foreach (HandleFace face in EnAllFaces())
             {
-                _GeometryContainer.CalcFaceNormal(face);
+                //_GeometryContainer.CalcFaceNormal(face);
+                _GeometryContainer._LfaceNormals.Add(_GeometryContainer.CalcFaceNormalsToList(face));
             }
             _GeometryContainer._LVertexNormals = EnAllVertices().Select(handleVert => _GeometryContainer.CalcVertexNormal(handleVert)).ToList();
 

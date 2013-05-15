@@ -136,9 +136,9 @@ namespace Examples.LinqForGeometry
             RC.SetShader(msDiffuse);
 
             RC.SetLightActive(0, 1.0f);
-            RC.SetLightPosition(0, new float3(0, 200, 100));
-            RC.SetLightAmbient(0, new float4(0.3f, 0.3f, 0.3f, 1.0f));
-            RC.SetLightDiffuse(0, new float4(0.0f, 1.0f, 0.0f, 1.0f));
+            RC.SetLightPosition(0, new float3(0, 100, 100));
+            RC.SetLightAmbient(0, new float4(0.2f, 0.2f, 0.2f, 1.0f));
+            RC.SetLightDiffuse(0, new float4(1.0f, 0.0f, 1.0f, 1.0f));
             RC.SetLightDirection(0, new float3(0.0f, -1.0f, 0.0f));
             #endregion LightShader
 
@@ -164,7 +164,7 @@ namespace Examples.LinqForGeometry
             PullInput();
 
             RC.Render(_lfgmesh);
-            RC.Render(_FuseeMesh);
+            //RC.Render(_FuseeMesh);
 
             // swap buffers
             Present();
