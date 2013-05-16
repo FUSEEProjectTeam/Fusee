@@ -24,7 +24,7 @@ namespace Examples.LightTypeTest
 
             if (Input.Instance.GetAxis(InputAxis.MouseWheel) != 0)
             {
-                Debug.WriteLine("mouse wheel");
+                //Debug.WriteLine("mouse wheel");
                 transform.LocalPosition -= new float3(0, 0, (Input.Instance.GetAxis(InputAxis.MouseWheel)*100));
             }
 

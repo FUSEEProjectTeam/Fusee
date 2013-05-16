@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Fusee.Math;
@@ -18,7 +19,7 @@ namespace Fusee.SceneManagement
 
         private bool _projectionDirty;
         private float _fieldOfView = 45;
-        private float _near = 1f;
+        private float _near = 0.0001f;
         private float _far = 5000;
         private float _aspectRatio = 0.1f;
 
@@ -40,15 +41,16 @@ namespace Fusee.SceneManagement
         /// <param name="cameratransformation">The matrix that will become the Viewmatrix.</param>
         public Camera(Transformation cameratransformation)
         {
-            ViewMatrix = cameratransformation.Matrix;
+            ViewMatrix = cameratransformation.GlobalMatrix;
             ProjectionType(proj);
         }
 
         public Camera(SceneEntity owner)
         {
-            ViewMatrix = owner.transform.Matrix;
+            ViewMatrix = owner.transform.GlobalMatrix;
             ProjectionType(proj);
             owner.AddComponent(this);
+            SceneEntity = owner;
         }
 
         /// <summary>
@@ -222,6 +224,29 @@ namespace Fusee.SceneManagement
         public override void Accept(SceneVisitor sv)
         {
             sv.Visit((Camera)this);
+            //DrawCameraView();
+        }
+
+
+        public void DrawCameraView()
+        {
+            //globalPosition
+            float3 globalpos = SceneManager.RC.ModelView.Row3.xyz;
+
+            // Forward Direction
+            float3 forward = -SceneManager.RC.ModelView.Row2.xyz;
+            float3 farvec = forward*_far;
+            // Center Ray
+            SceneManager.RC.DebugLine(new float3(0,0,0),forward*_far,new float4(0,1,0,1));
+
+            // Far left up
+
+            // Far right up
+
+            // Far left down
+
+            // Far right down
+
         }
     }
 }

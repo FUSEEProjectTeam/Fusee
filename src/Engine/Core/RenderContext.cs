@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using JSIL.Meta;
 using Fusee.Math;
-
 namespace Fusee.Engine
 {
     /// <summary>
@@ -13,7 +12,7 @@ namespace Fusee.Engine
     public class RenderContext
     {
         private readonly IRenderContextImp _rci;
-
+        public Frustum frustum;
         private ShaderProgram _currentShader;
         private MatrixParamNames _currentShaderParams;
         private ShaderProgram _debugShader;
@@ -68,7 +67,7 @@ namespace Fusee.Engine
             View = float4x4.Identity;
             ModelView = float4x4.Identity;
             Projection = float4x4.Identity;
-
+            frustum = new Frustum(ModelViewProjection);
             _lightParams = new Light[8];
             _lightShaderParams = new LightParamNames[8];
             _debugShader = MoreShaders.GetShader("oneColor",this);
@@ -985,12 +984,15 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
         /// <seealso cref="Fusee.Engine.RenderContext.Render(Mesh)"/>
         public void SetShader(ShaderProgram program)
         {
-            _updatedShaderParams = false;
-
-            _currentShader = program;
-            _rci.SetShader(program._spi);
-
+           
+                _updatedShaderParams = false;
+                if (_currentShader != program)
+                {
+                    _currentShader = program;
+                    _rci.SetShader(program._spi);
+                }
             UpdateShaderParams();
+            
         }
 
         /// <summary>
@@ -1254,6 +1256,12 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
             set { _rci.ClearDepth = value; }
             get { return _rci.ClearDepth; }
         }
+
+        public void UpdateFrustum()
+        {
+            frustum.UpdateFrustum(ModelViewProjection);
+        }
+
     }
 
 }

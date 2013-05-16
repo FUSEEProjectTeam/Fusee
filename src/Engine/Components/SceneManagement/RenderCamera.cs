@@ -38,6 +38,7 @@ namespace Fusee.SceneManagement
             }
 
             renderContext.View=_matrix;
+            renderContext.UpdateFrustum();
         }
     }
 }

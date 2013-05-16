@@ -54,9 +54,15 @@ namespace Examples.LightTypeTest
             SceneManager.Manager.AddSceneEntity(_spaceBox);
 
             //Sphere
+<<<<<<< HEAD
             _object = new SceneEntity("Sphere1", new ActionCode(), _emptySphere, new BumpMaterial(MoreShaders.GetShader("bump", RC), "Assets/spiegel1.jpg", "Assets/normal2.jpg"), new Renderer(sphere));
             _object.transform.GlobalPosition = new float3(0, 0, 0);
             _object.transform.GlobalScale = new float3(1, 1, 1);
+=======
+            _object = new SceneEntity("Sphere1", new ActionCode(), _emptySphere, new DiffuseMaterial(MoreShaders.GetShader("diffuse", RC), "Assets/wall.jpg"), new Renderer(sphere));
+            _object.transform.GlobalPosition = new float3(2, 0, 0);
+            _object.transform.GlobalScale = new float3(0.5f, 0.5f, 0.5f);
+>>>>>>> 740ebbe04356e0c0cb4ffb30df645aa0197a741a
 
 
 
