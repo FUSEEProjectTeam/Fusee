@@ -1259,7 +1259,7 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
 
         public void UpdateFrustum()
         {
-            frustum.UpdateFrustum(ModelViewProjection);
+            frustum.UpdateFrustum(InvModelViewProjection);
         }
 
     }
