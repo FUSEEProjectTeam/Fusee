@@ -112,10 +112,10 @@ namespace Examples.LinqForGeometry
             // This would be a solution to step over the MeshReader Class
             // Important for now to use the transformation methods on the data structure.
             _Geo = new Geometry();
-            _Geo.LoadAsset("Assets/cube_quadrangle_1_textured.obj.model");
+            //_Geo.LoadAsset("Assets/cube_quadrangle_1_textured.obj.model");
             //_Geo.LoadAsset("Assets/cube_triangulate.obj.model");
             //_Geo.LoadAsset("Assets/cube_quadrangle_1_textured_quad.obj.model");
-            //_Geo.LoadAsset("Assets/Teapot_textured.obj.model");
+            _Geo.LoadAsset("Assets/Teapot_textured.obj.model");
             //_Geo.LoadAsset("Assets/Sphere.obj.model");
             //_Geo.LoadAsset("Assets/Sphere_triangulate.obj.model");
             #endregion MeshImports
@@ -136,9 +136,9 @@ namespace Examples.LinqForGeometry
             RC.SetShader(msDiffuse);
 
             RC.SetLightActive(0, 1.0f);
-            RC.SetLightPosition(0, new float3(0, 100, 100));
-            RC.SetLightAmbient(0, new float4(0.2f, 0.2f, 0.2f, 1.0f));
-            RC.SetLightDiffuse(0, new float4(1.0f, 0.0f, 1.0f, 1.0f));
+            RC.SetLightPosition(0, new float3(0, 200, 100));
+            RC.SetLightAmbient(0, new float4(0.1f, 0.1f, 0.1f, 1.0f));
+            RC.SetLightDiffuse(0, new float4(0.0f, 1.0f, 0.0f, 1.0f));
             RC.SetLightDirection(0, new float3(0.0f, -1.0f, 0.0f));
             #endregion LightShader
 
@@ -153,7 +153,7 @@ namespace Examples.LinqForGeometry
             _lfgmesh = _Geo.ToMesh();
 
             RC.SetShaderParamTexture(_vLightShaderParam, iTex);
-            RC.ClearColor = new float4(0.3f, 0.3f, 0.3f, 1f);
+            RC.ClearColor = new float4(0.2f, 0.2f, 0.2f, 1f);
         }
 
         public override void RenderAFrame()

@@ -90,11 +90,18 @@ namespace hsfurtwangen.dsteffen.lfg
             timeDone = String.Format(globalinf.LFGMessages.UTIL_STOPWFORMAT, timeSpan.Seconds, timeSpan.Milliseconds);
             Console.WriteLine("\n\n     Time needed to convert the object to the HES: " + timeDone);
 
-            // Calc the vertex normals.
-            _GeometryContainer._LVertexNormals = EnAllVertices().Select(handleVert => _GeometryContainer.CalcVertexNormal(handleVert)).ToList();
+            _GeometryContainer._LfaceNormals.Clear();
+            foreach (HandleFace face in EnAllFaces())
+            {
+                _GeometryContainer.CalcFaceNormalsToList(face);
+            }
+            //_GeometryContainer._LVertexNormals = EnAllVertices().Select(handleVert => _GeometryContainer.CalcVertexNormalPerfTest(handleVert)).ToList();
 
             // Set the default form etc. of the model.
             _GeometryContainer.SetVertexDefaults();
+
+            // Precalculate the adjacent faces for every vertex
+            PreCalculateVertAdjacentFaces();
         }
 
 
@@ -161,11 +168,10 @@ namespace hsfurtwangen.dsteffen.lfg
         /// <returns>Fusee Mesh</returns>
         public Mesh ToMesh()
         {
-            // TODO: This is what takes a long time and is responsible for framedrops. Have to set a bool if any changes on the triangles are made so they will be generated one time.
+            // Calculate Triangles from faces
             if (!_triangleListSet && !_ChangesOnFaces)
             {
                 _LtriangleList.Clear();
-                //_LtriangleList = EnAllFaces().SelectMany(face => FaceSurroundingVertices(face).Select(vert => (short)vert._DataIndex)).ToList();
                 foreach (var face in _LfaceHndl)
                 {
                     List<HandleVertex> LtmpVertsTriangle = _GeometryContainer.IteratorVerticesAroundFaceForTriangles(face);
@@ -177,15 +183,21 @@ namespace hsfurtwangen.dsteffen.lfg
                 _triangleListSet = true;
             }
 
-
-            _GeometryContainer._LfaceNormals.Clear();
-            foreach (HandleFace face in EnAllFaces())
+            // When vertices were manipulated, recalculate the normals for lighting.
+            if (_Changes)
             {
-                //_GeometryContainer.CalcFaceNormal(face);
-                _GeometryContainer._LfaceNormals.Add(_GeometryContainer.CalcFaceNormalsToList(face));
-            }
-            _GeometryContainer._LVertexNormals = EnAllVertices().Select(handleVert => _GeometryContainer.CalcVertexNormal(handleVert)).ToList();
+                _GeometryContainer._LfaceNormals.Clear();
+                foreach (HandleFace face in EnAllFaces())
+                {
+                    _GeometryContainer.CalcFaceNormalsToList(face);
+                }
 
+                _GeometryContainer._LVertexNormals.Clear();
+                foreach (HandleVertex vertex in EnAllVertices())
+                {
+                    _GeometryContainer.CalcVertexNormalPerfTest(vertex);
+                }
+            }
 
             Mesh mesh = new Mesh();
             mesh.Vertices = _GeometryContainer._LvertexVal.ToArray();
@@ -294,8 +306,22 @@ namespace hsfurtwangen.dsteffen.lfg
             _GeometryContainer.UpdateCWHedges(LtmpEdgesForFace);
 
             // Calculate and add the face normal to a list here
-            int lastFaceIndex = _LfaceHndl.Count - 1;
-            _GeometryContainer.CalcFaceNormal(_LfaceHndl[lastFaceIndex]);
+            //int lastFaceIndex = _LfaceHndl.Count - 1;
+            //_GeometryContainer.CalcFaceNormal(_LfaceHndl[lastFaceIndex]);
+        }
+
+
+        /// <summary>
+        /// This method precalculates the faces that are corresponding to a specific vertex.
+        /// The system needs this to cache them and speed up normal calculation.
+        /// </summary>
+        public void PreCalculateVertAdjacentFaces()
+        {
+            List<HandleFace> LFacePointers = new List<HandleFace>();
+            foreach (HandleVertex vertH in _LverticeHndl)
+            {
+                _GeometryContainer._LvertFaceLookUp.Add(_GeometryContainer.EnVertexAdjacentFaces(vertH).ToList());
+            }
         }
 
 

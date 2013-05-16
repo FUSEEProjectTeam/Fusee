@@ -46,6 +46,7 @@ namespace hsfurtwangen.dsteffen.lfg
         private List<EdgePtrCont> _LedgePtrCont;
         private List<FacePtrCont> _LfacePtrCont;
 
+        public List<List<HandleFace>> _LvertFaceLookUp;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="hsfurtwangen.dsteffen.lfg.Geometry"/> class.
@@ -64,6 +65,8 @@ namespace hsfurtwangen.dsteffen.lfg
             _LfaceNormals = new List<float3>();
             _LVertexNormals = new List<float3>();
             _LuvCoordinates = new List<float2>();
+
+            _LvertFaceLookUp = new List<List<HandleFace>>();
         }
 
 
@@ -125,8 +128,10 @@ namespace hsfurtwangen.dsteffen.lfg
         /// Only for testing, calculates face normals with the help of the hes.
         /// </summary>
         /// <returns></returns>
-        public float3 CalcFaceNormalsToList(HandleFace faceHandle) {
-            List<HandleVertex> tmpList = IteratorVerticesAroundFaceForTriangles(faceHandle);
+        public void CalcFaceNormalsToList(HandleFace faceHandle)
+        {
+            //List<HandleVertex> tmpList = IteratorVerticesAroundFaceForTriangles(faceHandle);
+            List<HandleVertex> tmpList = IteratorVerticesAroundFace(faceHandle).ToList();
 
             var v0 = _LvertexVal[tmpList[0]];
             var v1 = _LvertexVal[tmpList[1]];
@@ -137,7 +142,7 @@ namespace hsfurtwangen.dsteffen.lfg
 
             float3 n = float3.Cross(c1, c2);
 
-            return float3.Normalize(n);
+            _LfaceNormals.Add(float3.Normalize(n));
         }
 
         /// <summary>
@@ -171,7 +176,7 @@ namespace hsfurtwangen.dsteffen.lfg
                     }
                     else
                     {
-                        throw new Exception("Runtime Error: Face handle is invalid.");
+                        //throw new Exception("Runtime Error: Face handle is invalid.");
                     }
                 }
                 catch (Exception e)
@@ -180,30 +185,36 @@ namespace hsfurtwangen.dsteffen.lfg
                 }
             }
 
-            //Debug.WriteLine(" \n --- New Vertex Normal Calc --- ");
-            /*
-            foreach (var faceNormal in adjacentfaceNormals)
-            {
-                Debug.WriteLine("%%% Adj. Face Normal: " + faceNormal);
-            }
-            */
             float3 sumNormals = new float3();
 
-            //Debug.WriteLine(" \n ---Zwischenergebnisse--- ");
             foreach (float3 faceNormal in adjacentfaceNormals)
             {
                 sumNormals += faceNormal;
-                //Debug.WriteLine(" now -> " + sumNormals);
             }
-            //Debug.WriteLine("Ergebnis: " + sumNormals);
-            //Debug.WriteLine(" --- End Vert Normal Calc--- \n");
 
-            //Debug.WriteLine("\n Normal with loop: " + sumNormals);
             sumNormals /= adjacentfaceNormals.Count;
-            //Debug.WriteLine("Normal with loop divided: " + sumNormals);
             float3 normalized = float3.Normalize(sumNormals);
-            //Debug.WriteLine("Normal with loop normalized : " + normalized + "\n");
             return normalized;
+        }
+
+        /// <summary>
+        /// Only for performance optimization testing
+        /// </summary>
+        /// <param name="handleVertex"></param>
+        /// <returns></returns>
+        public void CalcVertexNormalPerfTest(HandleVertex handleVertex)
+        {
+            float3 sumNormals = new float3();
+            //sumNormals = EnVertexAdjacentFaces(handleVertex).Where(face => face._DataIndex != -1).Aggregate(sumNormals, (current, face) => current + _LfaceNormals[face._DataIndex]);
+            foreach (var handleFace in _LvertFaceLookUp[handleVertex._DataIndex])
+            {
+                if (handleFace != -1)
+                {
+                    sumNormals += _LfaceNormals[handleFace._DataIndex];
+                }
+            }
+            _LVertexNormals.Add(float3.Normalize(sumNormals));
+            //_LVertexNormals.Add(sumNormals);
         }
 
         /// <summary>
@@ -366,17 +377,6 @@ namespace hsfurtwangen.dsteffen.lfg
                 vHndl._DataIndex = index;
                 return vHndl;
             }
-        }
-
-
-        /// <summary>
-        /// Returns the data corresponding to a vertex handle
-        /// </summary>
-        /// <param name="hv">HandleVertex with ID the data is wanted to be retrieved</param>
-        /// <returns></returns>
-        public float3 GetVertexData(HandleVertex hv)
-        {
-            return _LvertexVal[hv._DataIndex];
         }
 
 
@@ -626,6 +626,7 @@ namespace hsfurtwangen.dsteffen.lfg
             HandleHalfEdge heh = _LfacePtrCont[hf]._h;
             int indexStart = heh._DataIndex;
 
+            /*
             while (true)
             {
                 LtmpVert.Add(_LhedgePtrCont[heh]._v);
@@ -633,8 +634,29 @@ namespace hsfurtwangen.dsteffen.lfg
 
                 if (LtmpVert.Count >= 3) { break; }
             }
+            */
+            for (int i = 0; i < 3; i++)
+            {
+                LtmpVert.Add(_LhedgePtrCont[heh]._v);
+                heh = _LhedgePtrCont[heh]._nhe;
+            }
 
             return LtmpVert;
+        }
+
+        public IEnumerable<HandleVertex> IteratorVerticesAroundFace(HandleFace hf)
+        {
+            List<HandleVertex> LtmpVert = new List<HandleVertex>();
+            HandleHalfEdge heh = _LfacePtrCont[hf]._h;
+            int indexStart = heh._DataIndex;
+
+            for (int i = 0; i < 3; i++)
+            {
+                LtmpVert.Add(_LhedgePtrCont[heh]._v);
+                heh = _LhedgePtrCont[heh]._nhe;
+            }
+
+            return LtmpVert.AsEnumerable();
         }
 
 
