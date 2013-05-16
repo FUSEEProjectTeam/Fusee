@@ -37,6 +37,7 @@ namespace Fusee.Engine
                 this.d = d / l;
             }
 
+            // compute distance between plane-normal(direction) and point
             public float distance(float3 p) {
 	            return (d + float3.Dot(normal,p));
             }
@@ -47,7 +48,7 @@ namespace Fusee.Engine
 
         public void UpdateFrustum(float4x4 mvp)
         {
-            //mvp = float4x4.Invert(mvp);
+            // Set the Planes using the ITMV: Inverted ModelViewProjection
             pl[(int)PlaneSide.NEARP].setCoefficients(mvp.M31 + mvp.M41, mvp.M32 + mvp.M42, mvp.M33 + mvp.M43, mvp.M34 + mvp.M44);
 
 
@@ -69,12 +70,14 @@ namespace Fusee.Engine
 
         public bool PointInFrustum(float3 point)
         {
-            
+            //Loop through the planes and check the distance against the point
             for (int i = 0; i < 6; i++)
             {
-
-                if (pl[i].distance(point) < 0)
+                float dist = pl[i].distance(point);
+                
+                if (dist < 0)
                 {
+                    //Debug.WriteLine("dist: "+dist+" | point: "+point+" | Index: "+i);
                     return false;
                 }
             }
