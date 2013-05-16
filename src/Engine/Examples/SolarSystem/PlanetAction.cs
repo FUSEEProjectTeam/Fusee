@@ -22,7 +22,7 @@ namespace Examples.Solar
             transform.LocalEulerAngles = new float3(0, 0, 0);
             if (SceneEntity.name == "Earth")
             {
-                Debug.WriteLine("erde besucht");
+                
                 isEarth = true;
             }
         }
@@ -38,6 +38,10 @@ namespace Examples.Solar
             {
                 SceneManager.RC.DebugLine(transform.GlobalPosition, transform.Forward*100, new float4(1, 1, 0, 1));
             }
+             if (SceneEntity.name == "Neptun")
+             {
+                 Debug.WriteLine("Neptun is at: "+transform.GlobalPosition);
+             }
         }
     }
 }

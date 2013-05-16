@@ -10,16 +10,65 @@ namespace Fusee.Engine
     public class Frustum
     {
         private float[,] frustum = new float[6, 4];
-
+        private Plane[] pl = new Plane[6];
         public Frustum(float4x4 mvp)
         {
             UpdateFrustum(mvp);
         }
 
+        private enum PlaneSide
+        {
+            NEARP, FARP, BOTTOM, TOP, LEFT, RIGHT,
+        }
 
+        private struct Plane
+        {
+            public float3 normal;
+            public float d;
+            public void setCoefficients(float a, float b, float c, float d)
+            {
+                // set the normal vector
+                normal = new float3(a, b, c);
+                //compute the lenght of the vector
+                float l = normal.Length;
+                // normalize the vector
+                normal = new float3(a / l, b / l, c / l);
+                // and divide d by th length as well
+                this.d = d / l;
+            }
+
+            public float distance(float3 p) {
+	            return (d + float3.Dot(normal,p));
+            }
+
+
+        }
+
+        public void setFrustum(float4x4 mvp)
+        {
+            //mvp = float4x4.Invert(mvp);
+            pl[(int)PlaneSide.NEARP].setCoefficients(mvp.M31 + mvp.M41, mvp.M32 + mvp.M42, mvp.M33 + mvp.M43, mvp.M34 + mvp.M44);
+
+
+            pl[(int)PlaneSide.FARP].setCoefficients(-mvp.M31 + mvp.M41, -mvp.M32 + mvp.M42, -mvp.M33 + mvp.M43, -mvp.M34 + mvp.M44);
+
+
+            pl[(int)PlaneSide.BOTTOM].setCoefficients(mvp.M21 + mvp.M41, mvp.M22 + mvp.M42, mvp.M23 + mvp.M43, mvp.M24 + mvp.M44);
+
+
+            pl[(int)PlaneSide.TOP].setCoefficients(-mvp.M21 + mvp.M41, -mvp.M22 + mvp.M42, -mvp.M23 + mvp.M43, -mvp.M24 + mvp.M44);
+
+
+            pl[(int)PlaneSide.LEFT].setCoefficients(mvp.M11 + mvp.M41, mvp.M12 + mvp.M42, mvp.M13 + mvp.M43, mvp.M14 + mvp.M44);
+
+
+            pl[(int)PlaneSide.RIGHT].setCoefficients(-mvp.M11 + mvp.M41, -mvp.M12 + mvp.M42, -mvp.M13 + mvp.M43, -mvp.M14 + mvp.M44);
+
+        }
 
         public void UpdateFrustum(float4x4 mvp)
         {
+            //setFrustum(mvp);
             float t; // Temporary normalized value
             /* Extract the numbers for the RIGHT plane */
             frustum[0, 0] = mvp.M14 - mvp.M11;
@@ -98,24 +147,38 @@ namespace Fusee.Engine
             frustum[5, 1] /= t;
             frustum[5, 2] /= t;
             frustum[5, 3] /= t;
-            Debug.WriteLine(mvp);
+            //Debug.WriteLine(mvp);
         }
 
-        public bool PointInFrustum(float3 point)
+        public bool PointInFrustum(float3 point, float4x4 _mvp)
         {
-
+            float4 pc = _mvp * new float4(point.x, point.y, point.z, 1); 
+            /*
             for (int p = 0; p < 6; p++)
                 if (frustum[p, 0] * point.x + frustum[p, 1] * point.y + frustum[p, 2] * point.z + frustum[p, 3] < 0)
                 {
                     Debug.WriteLine(point + " is not in frustum. " + frustum[p, 0] + "|" + frustum[p, 1] + "|" + frustum[p, 2] + "|" + frustum[p, 3]);
                     return false;
                 }
-            return true;
+            return true;*/
+            
+            setFrustum(_mvp);
+            bool result = true;
+            for (int i = 0; i < 6; i++)
+            {
+
+                if (pl[i].distance(point) < 0)
+                {
+                    return false;
+                }
+            }
+            return result;
         }
 
 
-        public bool SphereInFrustum(float3 point, float radius)
+        public bool SphereInFrustum(float3 point, float radius, float4x4 vp)
         {
+            
             for (int p = 0; p < 6; p++)
                 if (frustum[p,0] * point.x + frustum[p,1] * point.y + frustum[p,2] * point.z + frustum[p,3] <= -radius)
                 {

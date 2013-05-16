@@ -118,7 +118,8 @@ namespace Fusee.SceneManagement
                     transform.Matrix = float4x4.Invert(_mtxModelViewStack.Peek())*transform.GlobalMatrix;
                     transform.SetGlobalMat(transform.Matrix * _mtxModelViewStack.Peek());
                     _mtxModelViewStack.Push(transform.Matrix * _mtxModelViewStack.Pop());
-                    if (SceneManager.RC.frustum.SphereInFrustum(transform.GlobalPosition, transform.GlobalScale.y))
+                    //Debug.WriteLine("Matrix: " + transform.GlobalMatrix + " Point: " + transform.GlobalPosition);
+                    if (SceneManager.RC.frustum.PointInFrustum(transform.GlobalPosition, SceneManager.RC.InvModelViewProjection))
                     {
                         _hasTransform.Pop();       
                         _hasTransform.Push(true);
@@ -134,7 +135,8 @@ namespace Fusee.SceneManagement
 
                 transform.SetGlobalMat(transform.Matrix*_mtxModelViewStack.Peek());
                 _mtxModelViewStack.Push(transform.Matrix * _mtxModelViewStack.Pop());
-                if (SceneManager.RC.frustum.SphereInFrustum(transform.GlobalPosition,transform.GlobalScale.y))
+                //Debug.WriteLine("Matrix: " + transform.GlobalMatrix + " Point: " + transform.GlobalPosition);
+                if (SceneManager.RC.frustum.PointInFrustum(transform.GlobalPosition, SceneManager.RC.InvModelViewProjection))
                 {
                     _hasTransform.Pop();
                     _hasTransform.Push(true);
@@ -152,8 +154,8 @@ namespace Fusee.SceneManagement
             }else
             {
                 _mtxModelViewStack.Push(transform.GlobalMatrix);
-                
-                if (SceneManager.RC.frustum.SphereInFrustum(transform.GlobalPosition, transform.GlobalScale.y))
+                //Debug.WriteLine("Matrix: " + transform.GlobalMatrix + " Point: " + transform.GlobalPosition);
+                if (SceneManager.RC.frustum.PointInFrustum(transform.GlobalPosition, SceneManager.RC.InvModelViewProjection))
                 {
                     if (_hasTransform.Count > 0)
                     {
