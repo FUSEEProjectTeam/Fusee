@@ -119,7 +119,7 @@ namespace Fusee.SceneManagement
                     transform.SetGlobalMat(transform.Matrix * _mtxModelViewStack.Peek());
                     _mtxModelViewStack.Push(transform.Matrix * _mtxModelViewStack.Pop());
                     //Debug.WriteLine("Matrix: " + transform.GlobalMatrix + " Point: " + transform.GlobalPosition);
-                    if (SceneManager.RC.frustum.PointInFrustum(transform.GlobalPosition, SceneManager.RC.InvModelViewProjection))
+                    if (SceneManager.RC.frustum.PointInFrustum(transform.GlobalPosition))
                     {
                         _hasTransform.Pop();       
                         _hasTransform.Push(true);
@@ -136,7 +136,7 @@ namespace Fusee.SceneManagement
                 transform.SetGlobalMat(transform.Matrix*_mtxModelViewStack.Peek());
                 _mtxModelViewStack.Push(transform.Matrix * _mtxModelViewStack.Pop());
                 //Debug.WriteLine("Matrix: " + transform.GlobalMatrix + " Point: " + transform.GlobalPosition);
-                if (SceneManager.RC.frustum.PointInFrustum(transform.GlobalPosition, SceneManager.RC.InvModelViewProjection))
+                if (SceneManager.RC.frustum.PointInFrustum(transform.GlobalPosition))
                 {
                     _hasTransform.Pop();
                     _hasTransform.Push(true);
@@ -155,7 +155,7 @@ namespace Fusee.SceneManagement
             {
                 _mtxModelViewStack.Push(transform.GlobalMatrix);
                 //Debug.WriteLine("Matrix: " + transform.GlobalMatrix + " Point: " + transform.GlobalPosition);
-                if (SceneManager.RC.frustum.PointInFrustum(transform.GlobalPosition, SceneManager.RC.InvModelViewProjection))
+                if (SceneManager.RC.frustum.PointInFrustum(transform.GlobalPosition))
                 {
                     if (_hasTransform.Count > 0)
                     {
