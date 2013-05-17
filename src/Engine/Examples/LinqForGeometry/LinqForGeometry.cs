@@ -104,30 +104,21 @@ namespace Examples.LinqForGeometry
         public override void Init()
         {
             // Use the Fusee MeshReader to test against mine...
-            _FuseeMesh = MeshReader.LoadMesh("Assets/cube_quadrangle_1_textured.obj.model");
-            //_FuseeMesh = MeshReader.LoadMesh("Assets/cube_quadrangle_1_textured_quad.obj.model");
+            //_FuseeMesh = MeshReader.LoadMesh("Assets/Cube.obj.model");
+            //_FuseeMesh = MeshReader.LoadMesh("Assets/Teapot.obj.model");
             //_FuseeMesh = MeshReader.LoadMesh("Assets/Sphere.obj.model");
 
             #region MeshImports
             // This would be a solution to step over the MeshReader Class
             // Important for now to use the transformation methods on the data structure.
             _Geo = new Geometry();
-            //_Geo.LoadAsset("Assets/cube_quadrangle_1_textured.obj.model");
-            //_Geo.LoadAsset("Assets/cube_triangulate.obj.model");
-            //_Geo.LoadAsset("Assets/cube_quadrangle_1_textured_quad.obj.model");
-            _Geo.LoadAsset("Assets/Teapot_textured.obj.model");
+            _Geo.LoadAsset("Assets/Cube.obj.model");
+            //_Geo.LoadAsset("Assets/Teapot.obj.model");
             //_Geo.LoadAsset("Assets/Sphere.obj.model");
-            //_Geo.LoadAsset("Assets/Sphere_triangulate.obj.model");
             #endregion MeshImports
 
-            #region TextureLoad
-            //_imgData = RC.LoadImage("Assets/checkerboard_tex.jpg");
-            //_imgData = RC.LoadImage("Assets/world_map.jpg");
-            //_imgData = RC.LoadImage("Assets/Mat_Color.jpg");
-            #endregion TextureLoad
 
             #region Shader
-          
             #region LightShader
             ShaderProgram msDiffuse = MoreShaders.GetShader("specular", RC);
             _vLightShaderParam = msDiffuse.GetShaderParam("texture1");
@@ -164,7 +155,7 @@ namespace Examples.LinqForGeometry
             PullInput();
 
             RC.Render(_lfgmesh);
-            //RC.Render(_FuseeMesh);
+           // RC.Render(_FuseeMesh);
 
             // swap buffers
             Present();
@@ -282,28 +273,28 @@ namespace Examples.LinqForGeometry
             #region Translation
             if (Input.Instance.IsKeyDown(KeyCodes.U))
             {
-                if (_Geo.Translate(0f, (_MovementSpeed * (float)Time.Instance.DeltaTime) * 2, 0f))
+                if (_Geo.Translate(0f, (_MovementSpeed * (float)Time.Instance.DeltaTime) * 10, 0f))
                 {
                     _Geo._Changes = true;
                 }
             }
             else if (Input.Instance.IsKeyDown(KeyCodes.J))
             {
-                if (_Geo.Translate(0f, (-_MovementSpeed * (float)Time.Instance.DeltaTime) * 2, 0f))
+                if (_Geo.Translate(0f, (-_MovementSpeed * (float)Time.Instance.DeltaTime) * 10, 0f))
                 {
                     _Geo._Changes = true;
                 }
             }
             if (Input.Instance.IsKeyDown(KeyCodes.H))
             {
-                if (_Geo.Translate(-(_MovementSpeed * (float)Time.Instance.DeltaTime) * 2, 0f, 0f))
+                if (_Geo.Translate(-(_MovementSpeed * (float)Time.Instance.DeltaTime) * 10, 0f, 0f))
                 {
                     _Geo._Changes = true;
                 }
             }
             else if (Input.Instance.IsKeyDown(KeyCodes.K))
             {
-                if (_Geo.Translate((_MovementSpeed * (float)Time.Instance.DeltaTime) * 2, 0f, 0f))
+                if (_Geo.Translate((_MovementSpeed * (float)Time.Instance.DeltaTime) * 10, 0f, 0f))
                 {
                     _Geo._Changes = true;
                 }
