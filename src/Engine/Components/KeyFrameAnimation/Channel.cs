@@ -1,158 +1,102 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using Fusee.Math;
+using Fusse.KeyFrameAnimation;
 
 
 namespace Fusee.KeyFrameAnimation
 {
-    public class Channel
+    public class Channel<TValue> : ChannelBase
     {
-        private List<Keyframe> _timeline;
-        private IComparer<Keyframe> _sort;
 
-        //TODO The First Keyframe should have the start value of the Objekt. Shoukd be done by "Channelmanager / Animation".
+        public delegate TValue LerpFunc<TValue>(TValue firstVal, TValue secondVal, float time1, float time2);
+        public delegate void SetChanelValue(TValue  val);
+        public event SetChanelValue TimeChanged;
+
+        private SortedList<float, Keyframe<TValue>> _timeline = new SortedList<float, Keyframe<TValue>>();
+        private LerpFunc<TValue> _lerpIt;
+
+
         public Channel()
         {
-            _timeline = new List<Keyframe>();
-            _sort = new KeyFrameSort();
-            _timeline.Add(new Keyframe());
         }
 
-
-        //Add Keyframes 
-
-        public void AddKeyframe(Keyframe keyframe)
+        public Channel(SetChanelValue timeChanged, LerpFunc<TValue> lerpFunc)
         {
-            bool create = true;
+            TimeChanged += timeChanged;
+            _lerpIt = lerpFunc;
+        }
 
-            for (int next = 0; next < _timeline.Count; next++)
-            {
-                if (keyframe.Time == _timeline[next].Time)
-                {
-                    create = false;
-                }
-            }
+        public Channel(LerpFunc<TValue> lerpFunc)
+        {
+            _lerpIt = lerpFunc;
+        }
 
-            if (create)
+        protected override void DoTick(float time)
+        {
+            if (TimeChanged != null)
             {
-                _timeline.Add(keyframe);
-                SortTimeline();
+                TValue  currentValue = GetValueAt(time);
+                TimeChanged(currentValue);
             }
-            //else //TODO necessary?
-            //{
-            //    keyframe = null;
-            //}
+        }
+
+        
+        //Add Keyframes 
+        public void AddKeyframe(Keyframe<TValue> keyframe)
+        {
+            
+            if (_timeline.ContainsKey(keyframe.Time))
+            {
+                RemoveKeyframe(keyframe.Time);
+            }
+            _timeline.Add(keyframe.Time, keyframe);
         }
 
         //Maybe we schould place here the current values of the animated Object as a startvalue, therefore we need them first.
-        public void AddKeyframe()
+        public void AddKeyframe(float time, TValue value)
         {
 
-            if (_timeline != null)
+            if (_timeline.ContainsKey(time))
             {
-                bool create = true;
-
-                if (_timeline[0].Time == 0)
-                {
-                    create = false;
-                }
-
-                if (create)
-                {
-                    _timeline.Add(new Keyframe());
-                    SortTimeline();
-                }
+                RemoveKeyframe(time);
             }
+            _timeline.Add(time, new Keyframe<TValue>(time, value));
+            
         }
 
-        public void AddKeyframe(float time)
-        {
-            bool create = true;
-
-            for (int next = 0; next < _timeline.Count; next++)
-            {
-                if (time == _timeline[next].Time)
-                {
-                    create = false;
-                }
-            }
-
-            if (create)
-            {
-                _timeline.Add(new Keyframe(time));
-                SortTimeline();
-            }
-
-        }
-
-        public void AddKeyframe(float time, float value)
-        {
-            bool create = true;
-
-            for (int next = 0; next < _timeline.Count; next++)
-            {
-                if (time == _timeline[next].Time)
-                {
-                    create = false;
-                    //Console.WriteLine("worked.................");
-                }
-            }
-
-            if (create)
-            {
-                _timeline.Add(new Keyframe(time, value));
-                SortTimeline();
-            }
-        }
-
-        //Remove KEyframes
+        //Remove KEyframes 
         public void RemoveKeyframe(float time)
         {
-
-            foreach (Keyframe keyframe in _timeline)
-            {
-                if (keyframe.Time == time)
-                {
-                    _timeline.Remove(keyframe);
-                }
-            }
+            _timeline.Remove(time);
         }
 
         //Returns the value of a keyframe at a specific time
-        public float GetValueAt(float time)
+        public TValue GetValueAt(float time)
         {
-            float keyValue = 0;
-
-            for (int next = 1; next < _timeline.Count; next++)
+            TValue keyValue;
+           
+            if (_timeline != null && _timeline.Count > 1)
             {
-               
-                if (_timeline[next].Time > time && _timeline[next - 1].Time < time)
-                {
-                    /*Console.WriteLine("_timeline[next - 1].Time = " + _timeline[next - 1].Time);
-                    Console.WriteLine("_timeline[next - 1].Value = " + _timeline[next - 1].Value);
-                    Console.WriteLine("_timeline[next].Time = " + _timeline[next].Time);
-                    Console.WriteLine("_timeline[next].Value = " + _timeline[next].Value);
-                    /* Console.WriteLine("_timeline[0].Time = " + _timeline[0].Time);
-                    Console.WriteLine("_timeline[0].Time = " + _timeline[0].Value);
-                    Console.WriteLine("_timeline[1].Time = " + _timeline[1].Time);
-                    Console.WriteLine("_timeline[1].Time = " + _timeline[1].Value);
-                    Console.WriteLine("_timeline[2].Time = " + _timeline[2].Time);
-                    Console.WriteLine("_timeline[2].Time = " + _timeline[2].Value);
-                    */
+                keyValue = _timeline.ElementAt(0).Value.Value;
 
-                    keyValue = _timeline[next - 1].Value +
-                               (((_timeline[next].Value - _timeline[next - 1].Value) /
-                                 (_timeline[next].Time - _timeline[next - 1].Time)) * (time - _timeline[next - 1].Time));
-                    break;
+                for (int next = 1; next < _timeline.Count; next++)
+                {
+                    if (_timeline.ElementAt(next).Key > time && _timeline.ElementAt(next - 1).Key < time)
+                    {
+                        keyValue = _lerpIt(_timeline.ElementAt(next - 1).Value.Value, _timeline.ElementAt(next).Value.Value, _timeline.ElementAt(next).Value.Time - _timeline.ElementAt(next - 1).Value.Time, time - _timeline.ElementAt(next - 1).Value.Time );
+
+                        break;
+                    }
                 }
             }
+            else 
+            {
+                keyValue = _timeline.ElementAt(0).Value.Value;
+            }
+
             return keyValue;
-        }
- 
-        void SortTimeline()
-        {
-            if (_sort != null) _timeline.Sort(_sort);
         }
     }
 }

@@ -1,38 +1,36 @@
-﻿namespace Fusee.KeyFrameAnimation
+﻿using System;
+using System.Linq.Expressions;
+using Fusee.KeyFrameAnimation;
+
+namespace Fusee.KeyFrameAnimation
 {
-    public class Keyframe
+    public class Keyframe<TValue> //where TValue:
     {
-        private float _value;
+        private TValue _value;
         private float _time;
 
-        public Keyframe()
-        {
-            _value = 0;
-            _time = 0;
-        }
-
-        public Keyframe(float time)
-        {
-            _value = 0;
-            _time = time;
-        }
-
-        public Keyframe(float time ,float value)
+        public Keyframe(float time, TValue value)
         {
             _value = value;
-            _time = time;
+            _time = (float) System.Math.Round(time,5);
         }
 
         public float Time
         {
             get { return _time; }
-            set { _time = value; }
+            set
+            {
+                _time = (float) System.Math.Round(value,5);
+            }
         }
 
-        public float Value
+
+        public TValue Value
         {
-            get { return _value ; }
+            get { return _value; }
             set { _value = value; }
         }
+
     }
+ 
 }

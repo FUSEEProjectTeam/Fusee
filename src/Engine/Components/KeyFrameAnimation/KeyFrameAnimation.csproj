@@ -41,9 +41,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Animation.cs" />
     <Compile Include="Channel.cs" />
+    <Compile Include="ChannelBase.cs" />
     <Compile Include="Keyframe.cs" />
-    <Compile Include="KeyFrameSort.cs" />
+    <Compile Include="Lerp.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -58,6 +60,10 @@
     <ProjectReference Include="..\..\Core\Core.csproj">
       <Project>{1228EB3F-8BCC-453F-8A2E-D9246495A118}</Project>
       <Name>Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SceneManagement\SceneManagement.csproj">
+      <Project>{81B3A7F0-F8E4-45D0-BE69-B869C9B1803E}</Project>
+      <Name>SceneManagement</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
