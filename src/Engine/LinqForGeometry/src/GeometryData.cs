@@ -46,7 +46,7 @@ namespace hsfurtwangen.dsteffen.lfg
         private List<EdgePtrCont> _LedgePtrCont;
         private List<FacePtrCont> _LfacePtrCont;
 
-        public List<List<HandleFace>> _LvertFaceLookUp;
+        //public List<List<HandleFace>> _LvertFaceLookUp;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="hsfurtwangen.dsteffen.lfg.Geometry"/> class.
@@ -66,7 +66,7 @@ namespace hsfurtwangen.dsteffen.lfg
             _LVertexNormals = new List<float3>();
             _LuvCoordinates = new List<float2>();
 
-            _LvertFaceLookUp = new List<List<HandleFace>>();
+            //_LvertFaceLookUp = new List<List<HandleFace>>();
         }
 
 
@@ -124,13 +124,13 @@ namespace hsfurtwangen.dsteffen.lfg
             }
         }
 
+
         /// <summary>
         /// Only for testing, calculates face normals with the help of the hes.
         /// </summary>
         /// <returns></returns>
         public void CalcFaceNormalsToList(HandleFace faceHandle)
         {
-            //List<HandleVertex> tmpList = IteratorVerticesAroundFaceForTriangles(faceHandle);
             List<HandleVertex> tmpList = IteratorVerticesAroundFace(faceHandle).ToList();
 
             var v0 = _LvertexVal[tmpList[0]];
@@ -144,6 +144,7 @@ namespace hsfurtwangen.dsteffen.lfg
 
             _LfaceNormals.Add(float3.Normalize(n));
         }
+
 
         /// <summary>
         /// This method calculates a vertex normal. Starting Point is a handle to a vertex.
@@ -197,25 +198,6 @@ namespace hsfurtwangen.dsteffen.lfg
             return normalized;
         }
 
-        /// <summary>
-        /// Only for performance optimization testing
-        /// </summary>
-        /// <param name="handleVertex"></param>
-        /// <returns></returns>
-        public void CalcVertexNormalPerfTest(HandleVertex handleVertex)
-        {
-            float3 sumNormals = new float3();
-            //sumNormals = EnVertexAdjacentFaces(handleVertex).Where(face => face._DataIndex != -1).Aggregate(sumNormals, (current, face) => current + _LfaceNormals[face._DataIndex]);
-            foreach (var handleFace in _LvertFaceLookUp[handleVertex._DataIndex])
-            {
-                if (handleFace != -1)
-                {
-                    sumNormals += _LfaceNormals[handleFace._DataIndex];
-                }
-            }
-            _LVertexNormals.Add(float3.Normalize(sumNormals));
-            //_LVertexNormals.Add(sumNormals);
-        }
 
         /// <summary>
         /// This updates the half-edge a face points to.
@@ -259,6 +241,7 @@ namespace hsfurtwangen.dsteffen.lfg
 
                 if (hedgePtrCont1._f == _LfacePtrCont.Count - 1)
                 {
+                    #region UseHEdge1
                     // The face the edge1 points to is the active face - hurray! use this edge and move on.
                     if (i + 1 < edgeList.Count)
                     {
@@ -298,9 +281,11 @@ namespace hsfurtwangen.dsteffen.lfg
                             _LhedgePtrCont.Insert(indexhedge1, hedgePtrCont1);
                         }
                     }
+                    #endregion UseHEdge1
                 }
-                else
+                else if (hedgePtrCont2._f == _LfacePtrCont.Count - 1 || hedgePtrCont2._f == -1)
                 {
+                    #region UseHEdge2
                     hedgePtrCont2._f._DataIndex = _LfacePtrCont.Count - 1;
                     // The face the edge2 points to is the current face - let's use the second one then
                     if (i + 1 < edgeList.Count)
@@ -341,6 +326,54 @@ namespace hsfurtwangen.dsteffen.lfg
                             _LhedgePtrCont.Insert(indexhedge2, hedgePtrCont2);
                         }
                     }
+                    #endregion UseHEdge2
+                }
+                else
+                {
+                    /* It's an edge shared by more than two faces. So we need to do something.
+                     * TODO:
+                     * 
+                     * Insert new edge between the two vertices.
+                     * Update the pointers of the edge
+                     */
+
+                    /*
+                    Debug.WriteLine("Both edges are already in use. Do something different.");
+
+                    HandleVertex v1Handle = hedgePtrCont1._v;
+                    HandleVertex v2Handle = hedgePtrCont2._v;
+
+                    HandleEdge newEdge = CreateConnection(v1Handle, v2Handle);
+
+                    HandleHalfEdge hedge1 = _LedgePtrCont[newEdge._DataIndex]._he1;
+                    //HandleHalfEdge hedge2 = _LedgePtrCont[newEdge._DataIndex]._he2;
+
+                    HEdgePtrCont hedge1Ptr = _LhedgePtrCont[hedge1._DataIndex];
+                    //HEdgePtrCont hedge2Ptr = _LhedgePtrCont[hedge2._DataIndex];
+
+                    hedge1Ptr._f._DataIndex = _LfacePtrCont.Count - 1;
+                    //hedge2Ptr._f._DataIndex = -1;
+
+                    if (i + 1 < edgeList.Count)
+                    {
+                        // Just use the next edge
+                        HEdgePtrCont nextHedgePtrCont = _LhedgePtrCont[_LedgePtrCont[edgeList[i + 1]._DataIndex]._he1];
+                        hedge1Ptr._nhe._DataIndex = hedge1Ptr._nhe._DataIndex == -1 ? nextHedgePtrCont._he._DataIndex - 1 : hedge1Ptr._nhe._DataIndex;
+
+                        // sure?
+                        _LhedgePtrCont.Add(hedge1Ptr);
+                    }
+                    else
+                    {
+                        // Use the first of the triangle again, because the current is the last one.
+                        HEdgePtrCont nextHedgePtrCont = _LhedgePtrCont[_LedgePtrCont[edgeList[0]._DataIndex]._he1];
+                        hedge1Ptr._nhe._DataIndex = hedge1Ptr._nhe._DataIndex == -1 ? nextHedgePtrCont._he._DataIndex - 1 : hedge1Ptr._nhe._DataIndex;
+
+                        // sure?
+                        _LhedgePtrCont.Add(hedge1Ptr);
+                    }
+                     * */
+
                 }
             }
         }
@@ -555,9 +588,23 @@ namespace hsfurtwangen.dsteffen.lfg
         /// </summary>
         /// <param name="hv">A handle to a vertex to use as a 'center' vertex.</param>
         /// <returns>An Enumerable of HalfEdge handles to be used in loops, etc.</returns>
-        public IEnumerable<HandleFace> EnVertexAdjacentFaces(HandleVertex hv)
+        public IEnumerable<HandleFace> EnVertexAdjacentFaces(HandleVertex vertexHandle)
         {
-            return VertexCenterHalfEdges(hv).Select(val => val._f);
+            List<HandleFace> LtmpFaceHandles = new List<HandleFace>();
+            int hedgeIndx = _LvertexPtrCont[vertexHandle._DataIndex]._h._DataIndex;
+            int startHedgeIndex = hedgeIndx;
+
+            do
+            {
+                if (hedgeIndx == -1)
+                    break;
+
+                hedgeIndx = _LhedgePtrCont[hedgeIndx]._he._DataIndex;
+                LtmpFaceHandles.Add(_LhedgePtrCont[hedgeIndx]._f);
+                hedgeIndx = _LhedgePtrCont[hedgeIndx]._nhe._DataIndex;
+            } while (hedgeIndx != startHedgeIndex);
+
+            return LtmpFaceHandles.AsEnumerable();
         }
 
 

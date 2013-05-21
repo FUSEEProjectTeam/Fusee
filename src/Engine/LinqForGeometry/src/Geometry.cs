@@ -95,13 +95,9 @@ namespace hsfurtwangen.dsteffen.lfg
             {
                 _GeometryContainer.CalcFaceNormalsToList(face);
             }
-            //_GeometryContainer._LVertexNormals = EnAllVertices().Select(handleVert => _GeometryContainer.CalcVertexNormalPerfTest(handleVert)).ToList();
 
-            // Set the default form etc. of the model.
+            // Set the default form etc. of the model. primary for debugging for me etc...
             _GeometryContainer.SetVertexDefaults();
-
-            // Precalculate the adjacent faces for every vertex
-            PreCalculateVertAdjacentFaces();
         }
 
 
@@ -125,15 +121,6 @@ namespace hsfurtwangen.dsteffen.lfg
                 }
                 else if (faceVertCount > 3)
                 {
-                    if (globalinf.LFGMessages._DEBUGOUTPUT || true)
-                    {
-                        Debug.WriteLine(" --- ");
-                        foreach (var vert in face._LFVertices)
-                        {
-                            Debug.WriteLine("Vert" + vert);
-                        }
-                        Debug.WriteLine(" --- ");
-                    }
                     secondVert++;
                     while (secondVert != faceVertCount - 1)
                     {
@@ -187,21 +174,21 @@ namespace hsfurtwangen.dsteffen.lfg
             if (_Changes)
             {
                 _GeometryContainer._LfaceNormals.Clear();
-                foreach (HandleFace face in EnAllFaces())
+                foreach (HandleFace faceHandle in EnAllFaces())
                 {
-                    _GeometryContainer.CalcFaceNormalsToList(face);
+                    _GeometryContainer.CalcFaceNormalsToList(faceHandle);
                 }
 
                 _GeometryContainer._LVertexNormals.Clear();
-                foreach (HandleVertex vertex in EnAllVertices())
+                foreach (HandleVertex vertexHandle in EnAllVertices())
                 {
-                    _GeometryContainer.CalcVertexNormalPerfTest(vertex);
+                    _GeometryContainer._LVertexNormals.Add(_GeometryContainer.CalcVertexNormal(vertexHandle));
                 }
             }
 
             Mesh mesh = new Mesh();
-            mesh.Vertices = _GeometryContainer._LvertexVal.ToArray();
             mesh.Triangles = _LtriangleList.ToArray();
+            mesh.Vertices = _GeometryContainer._LvertexVal.ToArray();
             mesh.Normals = _GeometryContainer._LVertexNormals.ToArray();
             mesh.UVs = _GeometryContainer._LuvCoordinates.ToArray();
 
@@ -304,24 +291,6 @@ namespace hsfurtwangen.dsteffen.lfg
 
             // Hand over the list of edges that are used for this face. Now build up the connections.
             _GeometryContainer.UpdateCWHedges(LtmpEdgesForFace);
-
-            // Calculate and add the face normal to a list here
-            //int lastFaceIndex = _LfaceHndl.Count - 1;
-            //_GeometryContainer.CalcFaceNormal(_LfaceHndl[lastFaceIndex]);
-        }
-
-
-        /// <summary>
-        /// This method precalculates the faces that are corresponding to a specific vertex.
-        /// The system needs this to cache them and speed up normal calculation.
-        /// </summary>
-        public void PreCalculateVertAdjacentFaces()
-        {
-            List<HandleFace> LFacePointers = new List<HandleFace>();
-            foreach (HandleVertex vertH in _LverticeHndl)
-            {
-                _GeometryContainer._LvertFaceLookUp.Add(_GeometryContainer.EnVertexAdjacentFaces(vertH).ToList());
-            }
         }
 
 

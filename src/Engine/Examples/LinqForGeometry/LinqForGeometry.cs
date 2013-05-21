@@ -105,16 +105,21 @@ namespace Examples.LinqForGeometry
         {
             // Use the Fusee MeshReader to test against mine...
             //_FuseeMesh = MeshReader.LoadMesh("Assets/Cube.obj.model");
-            //_FuseeMesh = MeshReader.LoadMesh("Assets/Teapot.obj.model");
             //_FuseeMesh = MeshReader.LoadMesh("Assets/Sphere.obj.model");
+            //_FuseeMesh = MeshReader.LoadMesh("Assets/Teapot.obj.model");
+            //_FuseeMesh = MeshReader.LoadMesh("Assets/Teapot_triangular.obj.model");
+            //_FuseeMesh = MeshReader.LoadMesh("Assets/Stanford_Bunny.obj.model");
 
             #region MeshImports
             // This would be a solution to step over the MeshReader Class
             // Important for now to use the transformation methods on the data structure.
             _Geo = new Geometry();
-            _Geo.LoadAsset("Assets/Cube.obj.model");
-            //_Geo.LoadAsset("Assets/Teapot.obj.model");
+            //_Geo.LoadAsset("Assets/Cube.obj.model");
             //_Geo.LoadAsset("Assets/Sphere.obj.model");
+            _Geo.LoadAsset("Assets/Teapot.obj.model");
+            //_Geo.LoadAsset("Assets/Teapot_triangular.obj.model");
+            //_Geo.LoadAsset("Assets/Stanford_Bunny.obj.model");
+            //_Geo.LoadAsset("Assets/SharedCorners.obj.model");
             #endregion MeshImports
 
 
@@ -155,7 +160,7 @@ namespace Examples.LinqForGeometry
             PullInput();
 
             RC.Render(_lfgmesh);
-           // RC.Render(_FuseeMesh);
+            //RC.Render(_FuseeMesh);
 
             // swap buffers
             Present();
@@ -273,42 +278,42 @@ namespace Examples.LinqForGeometry
             #region Translation
             if (Input.Instance.IsKeyDown(KeyCodes.U))
             {
-                if (_Geo.Translate(0f, (_MovementSpeed * (float)Time.Instance.DeltaTime) * 10, 0f))
+                if (_Geo.Translate(0f, (_MovementSpeed * (float)Time.Instance.DeltaTime) * 20, 0f))
                 {
                     _Geo._Changes = true;
                 }
             }
             else if (Input.Instance.IsKeyDown(KeyCodes.J))
             {
-                if (_Geo.Translate(0f, (-_MovementSpeed * (float)Time.Instance.DeltaTime) * 10, 0f))
+                if (_Geo.Translate(0f, (-_MovementSpeed * (float)Time.Instance.DeltaTime) * 20, 0f))
                 {
                     _Geo._Changes = true;
                 }
             }
             if (Input.Instance.IsKeyDown(KeyCodes.H))
             {
-                if (_Geo.Translate(-(_MovementSpeed * (float)Time.Instance.DeltaTime) * 10, 0f, 0f))
+                if (_Geo.Translate(-(_MovementSpeed * (float)Time.Instance.DeltaTime) * 20, 0f, 0f))
                 {
                     _Geo._Changes = true;
                 }
             }
             else if (Input.Instance.IsKeyDown(KeyCodes.K))
             {
-                if (_Geo.Translate((_MovementSpeed * (float)Time.Instance.DeltaTime) * 10, 0f, 0f))
+                if (_Geo.Translate((_MovementSpeed * (float)Time.Instance.DeltaTime) * 20, 0f, 0f))
                 {
                     _Geo._Changes = true;
                 }
             }
             if (Input.Instance.IsKeyDown(KeyCodes.Z))
             {
-                if (_Geo.Translate(0f, 0f, -(_MovementSpeed * (float)Time.Instance.DeltaTime) * 2))
+                if (_Geo.Translate(0f, 0f, -(_MovementSpeed * (float)Time.Instance.DeltaTime) * 20))
                 {
                     _Geo._Changes = true;
                 }
             }
             else if (Input.Instance.IsKeyDown(KeyCodes.I))
             {
-                if (_Geo.Translate(0f, 0f, (_MovementSpeed * (float)Time.Instance.DeltaTime) * 2))
+                if (_Geo.Translate(0f, 0f, (_MovementSpeed * (float)Time.Instance.DeltaTime) * 20))
                 {
                     _Geo._Changes = true;
                 }
