@@ -1,10 +1,10 @@
-﻿using Fusee.Engine;
+﻿using System;
+using Fusee.Engine;
 using Fusee.Math;
 
-namespace Examples.Simple
+namespace WinForms
 {
-    [FuseeApplication(Name = "Simple Example", Description = "A very simple example.")]
-    public class Simple : RenderCanvas
+    public class WinFormsFusee : RenderCanvas
     {
         // pixel and vertex shader
         private const string Vs = @"
@@ -53,6 +53,12 @@ namespace Examples.Simple
         
         // variable for color
         private IShaderParam _vColorParam;
+
+        public WinFormsFusee(IntPtr winHandle)
+            : base(winHandle)
+        {
+
+        }
 
         public override void Init()
         {
@@ -129,11 +135,13 @@ namespace Examples.Simple
             RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 5000);
         }
 
+        /*
         public static void Main()
         {
             var app = new Simple();
             app.Run();
         }
+         */
 
     }
 }

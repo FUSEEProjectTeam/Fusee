@@ -8,6 +8,7 @@ namespace Fusee.Engine
     {
         int Width { get ; }
         int Height { get; }
+        string Caption { get; set; }
 
         double DeltaTime { get; }
 

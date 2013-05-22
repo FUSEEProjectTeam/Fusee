@@ -8,6 +8,7 @@ using Fusee.SceneManagement;
 
 namespace Examples.Solar
 {
+    [FuseeApplication(Name = "Solar System", Description = "Testcase and example code showing FUSEE's scene management.")]              
     public class Solar : RenderCanvas
     {
         /*

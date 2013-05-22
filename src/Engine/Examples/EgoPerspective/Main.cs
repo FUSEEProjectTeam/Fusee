@@ -6,6 +6,7 @@ using Fusee.Math;
 
 namespace Examples.EgoPerspective
 {
+    [FuseeApplication(Name = "Ego Perspective", Description = "Some experimental stuff.")]
     public class EgoPerspective : RenderCanvas
     {
         private static float _angleHorz = 0.0f, _angleVert = 0.0f, _rotationSpeed = 10.0f; //_angleVelHorz = 0, _angleVelVert = 0, _damping = 0.95f, _moveX = 0.0f, _moveY = 0.0f, _moveZ = 0.0f;

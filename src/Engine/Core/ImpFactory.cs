@@ -62,7 +62,7 @@ namespace Fusee.Engine
             if (mi == null)
                 throw new Exception("Implementor type (" + RenderingImplementor.ToString() + ") doesn't contain method CreateRenderCanvasImp");
 
-            return (IRenderCanvasImp) mi.Invoke(null, null);
+            return (IRenderCanvasImp)mi.Invoke(null, null);
         }
 
         [JSExternal]

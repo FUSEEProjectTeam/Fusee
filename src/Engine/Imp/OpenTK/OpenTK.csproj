@@ -54,8 +54,9 @@
     <Compile Include="Texture.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="OpenTK">
-      <HintPath>..\..\..\..\ExternalBinaries\OpenTK.dll</HintPath>
+    <Reference Include="OpenTK, Version=1.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\opentk\Binaries\OpenTK\Debug\OpenTK.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
@@ -63,9 +64,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="Clean">
-    <Exec Condition=" '$(OS)' == 'Windows_NT' And Exists('$(OutputPath)') " Command='del /q "$(OutputPath)Fusee.Engine.Imp.OpenTK.*"' />
+    <Exec Condition=" '$(OS)' == 'Windows_NT' And Exists('$(OutputPath)') " Command="del /q &quot;$(OutputPath)Fusee.Engine.Imp.OpenTK.*&quot;" />
     <Exec Condition=" '$(OS)' != 'Windows_NT' And Exists('$(OutputPath)') " Command="rm '$(OutputPath)'Fusee.Engine.Imp.OpenTK.*" />
-    <Exec Condition=" '$(OS)' == 'Windows_NT' And Exists('$(OutputPath)OpenTK.dll') " Command='del /q "$(OutputPath)OpenTK.dll"' />
+    <Exec Condition=" '$(OS)' == 'Windows_NT' And Exists('$(OutputPath)OpenTK.dll') " Command="del /q &quot;$(OutputPath)OpenTK.dll&quot;" />
     <Exec Condition=" '$(OS)' != 'Windows_NT' And Exists('$(OutputPath)OpenTK.dll') " Command="rm '$(OutputPath)'OpenTK.dll" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

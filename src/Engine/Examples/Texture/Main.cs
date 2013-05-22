@@ -8,6 +8,7 @@ using Fusee.Math;
  */
 namespace Examples.Texture
 {
+    [FuseeApplication(Name = "Texture", Description = "Shows how to load and display textures. Contains also some simple shader code using textures.")]
     public class Texture : RenderCanvas
     {
         //At first we have to define the shader.
