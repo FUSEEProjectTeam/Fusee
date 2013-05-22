@@ -1,47 +1,31 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using Fusee.Math;
 using Fusee.Engine;
+using Fusee.Math;
 using Fusee.SceneManagement;
-namespace Examples.Solar
+
+namespace Examples.SolarSystem
 {
-    class CameraScript : ActionCode
+    internal class CameraScript : ActionCode
     {
-        private Camera scenecam;
-        private bool perspective;
+        private Camera _sceneCam;
+        private bool _perspective;
+
         public override void Start()
         {
-            perspective = true;
-            //transform.LocalPosition= new float3(0,0,-100);
-            scenecam = SceneEntity.GetComponent<Camera>();
+            _perspective = true;
+            _sceneCam = SceneEntity.GetComponent<Camera>();
         }
+
         public override void Update()
         {
-            
-
-            if (Input.Instance.GetAxis(InputAxis.MouseWheel) != 0)
-            {
-                Debug.WriteLine("mouse wheel");
+            if (Math.Abs(Input.Instance.GetAxis(InputAxis.MouseWheel) - 0) > MathHelper.EpsilonFloat)
                 transform.LocalPosition -= new float3(0, 0, (Input.Instance.GetAxis(InputAxis.MouseWheel)*100));
-            }
 
             if (Input.Instance.OnKeyDown(KeyCodes.P))
             {
-                if(perspective)
-                {
-                    scenecam.ProjectionType(Projection.Orthographic); 
-                }else
-                {
-                    scenecam.ProjectionType(Projection.Perspective);
-                }
-                perspective = !perspective;
-
+                _sceneCam.ProjectionType(_perspective ? Projection.Orthographic : Projection.Perspective);
+                _perspective = !_perspective;
             }
-            //Debug.WriteLine("Current FPS: "+Time.Instance.FramePerSecondSmooth);
         }
-
     }
 }

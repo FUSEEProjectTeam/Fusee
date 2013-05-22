@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Fusee.Engine;
-using Fusee.Math;
+﻿using Fusee.Engine;
 using Fusee.SceneManagement;
 
-namespace Examples.Solar
+namespace Examples.SolarSystem
 {
     public class PlanetMaterial : Material
     {
-        public IShaderParam Textureparam;
+        public IShaderParam TextureParam;
         public ITexture Tex;
 
         public PlanetMaterial(ShaderProgram shaderProgram)
@@ -18,19 +13,20 @@ namespace Examples.Solar
             sp = shaderProgram;
         }
 
-        public PlanetMaterial(ShaderProgram shaderProgram, string texturepath)
+        public PlanetMaterial(ShaderProgram shaderProgram, string texturePath)
         {
             sp = shaderProgram;
-            Textureparam = sp.GetShaderParam("texture1");
-            ImageData Image = SceneManager.RC.LoadImage(texturepath);
-            Tex = SceneManager.RC.CreateTexture(Image);
+
+            TextureParam = sp.GetShaderParam("texture1");
+
+            var image = SceneManager.RC.LoadImage(texturePath);
+            Tex = SceneManager.RC.CreateTexture(image);
         }
 
         public override void Update(RenderContext renderContext)
         {
             renderContext.SetShader(sp);
-            renderContext.SetShaderParamTexture(Textureparam, Tex);
-
+            renderContext.SetShaderParamTexture(TextureParam, Tex);
         }
     }
 }

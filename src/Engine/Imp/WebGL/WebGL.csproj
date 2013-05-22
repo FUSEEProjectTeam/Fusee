@@ -56,14 +56,14 @@
     <MakeDir Directories="$(OutputPath)" Condition="!Exists('$(OutputPath)')" />
     <MakeDir Directories="$(OutputPath)Scripts" Condition="!Exists('$(OutputPath)Scripts')" />
     <MakeDir Directories="$(OutputPath)Styles" Condition="!Exists('$(OutputPath)Styles')" />
-    <Exec Condition=" '$(OS)' != 'Windows_NT' " Command="rsync -a Scripts/*.* $(OutputPath)Scripts/" />
+    <Exec Condition=" '$(OS)' != 'Windows_NT' " Command="cp -a Scripts/*.* $(OutputPath)Scripts/" />
     <Exec Condition=" '$(OS)' == 'Windows_NT' " Command="xcopy Scripts\*.* $(OutputPath)Scripts\ /D /E /C /Q /R /Y /K" />
-    <Exec Condition=" '$(OS)' != 'Windows_NT' " Command="rsync -a Styles/*.* $(OutputPath)Styles/" />
+    <Exec Condition=" '$(OS)' != 'Windows_NT' " Command="cp -a Styles/*.* $(OutputPath)Styles/" />
     <Exec Condition=" '$(OS)' == 'Windows_NT' " Command="xcopy Styles\*.* $(OutputPath)Styles\ /D /E /C /Q /R /Y /K" />
   </Target>
   <Target Name="Rebuild" DependsOnTargets="Build" />
   <Target Name="Clean">
-    <Exec Condition=" '$(OS)' == 'Windows_NT' And Exists('$(OutputPath)') " Command='rd /s /q "$(OutputPath)"' />
+    <Exec Condition=" '$(OS)' == 'Windows_NT' And Exists('$(OutputPath)') " Command="rd /s /q &quot;$(OutputPath)&quot;" />
     <Exec Condition=" '$(OS)' != 'Windows_NT' And Exists('$(OutputPath)') " Command="rm '$(OutputPath)' -r -f" />
   </Target>
 </Project>

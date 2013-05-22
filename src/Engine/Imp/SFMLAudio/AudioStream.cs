@@ -4,8 +4,6 @@ namespace Fusee.Engine
 {
     class AudioStream : IAudioStream
     {
-        private SFMLAudioImp _audio;
-
         internal SoundBuffer OutputBuffer { get; set; }
         internal string FileName { get; set; }
 
@@ -38,15 +36,15 @@ namespace Fusee.Engine
             }
         }
 
-        public AudioStream(string fileName, SoundBuffer sndBuffer, SFMLAudioImp audioCl)
+        public AudioStream(string fileName, SoundBuffer sndBuffer)
         {
             OutputBuffer = sndBuffer;
             _outputSound = new Sound(sndBuffer);
 
-            Init(fileName, false, audioCl);
+            Init(fileName, false);
         }
 
-        public AudioStream(string fileName, bool streaming, SFMLAudioImp audioCl)
+        public AudioStream(string fileName, bool streaming)
         {
             if (streaming)
                 _outputStream = new Music(fileName);
@@ -56,16 +54,13 @@ namespace Fusee.Engine
                 _outputSound = new Sound(OutputBuffer);
             }
 
-            Init(fileName, streaming, audioCl);
+            Init(fileName, streaming);
         }
 
-        private void Init(string fileName, bool streaming, SFMLAudioImp audioCl)
+        private void Init(string fileName, bool streaming)
         {
-            _audio = audioCl;
             IsStream = streaming;
-
             FileName = fileName;
-
             Volume = 100;
 
             if (IsStream)

@@ -1,6 +1,4 @@
-﻿#pragma warning disable 1591 //disables the warning about missing XML-comments
-
-namespace Fusee.Engine
+﻿namespace Fusee.Engine
 {
     public interface IMeshImp
     {
@@ -16,5 +14,3 @@ namespace Fusee.Engine
         void InvalidateUVs();
     }
 }
-
-#pragma warning restore 1591

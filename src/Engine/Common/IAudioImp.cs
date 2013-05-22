@@ -1,6 +1,4 @@
-﻿#pragma warning disable 1591 //disables the warning about missing XML-comments
-
-namespace Fusee.Engine
+﻿namespace Fusee.Engine
 {
     public interface IAudioImp
     {
@@ -17,5 +15,3 @@ namespace Fusee.Engine
         void SetPanning(float val);
     }
 }
-
-#pragma warning restore 1591

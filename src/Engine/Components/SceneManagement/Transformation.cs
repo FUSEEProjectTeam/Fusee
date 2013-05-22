@@ -26,7 +26,7 @@ namespace Fusee.SceneManagement
         private float3 _globalEulerAngles;
 
 
-        private SceneEntity _entity;
+        // private SceneEntity _entity;
 
         private bool _matrixDirty;
         private bool _quaternionDirty;
@@ -77,7 +77,7 @@ namespace Fusee.SceneManagement
            _globalQuaternion = Quaternion.Identity;
            _globalScale = new float3(1,1,1);
            _localScale = new float3(1, 1, 1);
-           _entity = entity;
+           // _entity = entity;
            _matrixDirty = false;
            _quaternionDirty = false;
            _eulerDirty = false;

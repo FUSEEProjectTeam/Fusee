@@ -15,7 +15,7 @@ namespace Fusee.SceneManagement
         //TODO: Test without new calls 
         #region Fields
 
-        public SceneEntity SceneEntity;
+        public new SceneEntity SceneEntity;
         public Transformation transform;
         public Renderer renderer;
 
