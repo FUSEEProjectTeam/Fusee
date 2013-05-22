@@ -5,6 +5,7 @@ using Fusee.SceneManagement;
 namespace Examples.SolarSystem
 {
     // ReSharper disable UseObjectOrCollectionInitializer
+    [FuseeApplication(Name = "Solar System", Description = "A Sample showing how to use FUSEE's built-in scene graph management system.")]
     public class SolarSystem : RenderCanvas
     {
         private static float3 _earthSpeed;

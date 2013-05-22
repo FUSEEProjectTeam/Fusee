@@ -4,6 +4,7 @@ using Fusee.Math;
 
 namespace Examples.WorldRendering
 {
+    [FuseeApplication(Name = "World Rendering", Description = "Shows some application of texture functionality inlcuding text rendering.")]
     public class WorldRendering : RenderCanvas
     {
         #region Shader
