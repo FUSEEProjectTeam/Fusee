@@ -73,7 +73,7 @@ namespace hsfurtwangen.dsteffen.lfg
         /// Perform some iterators on vertex based stuff ...
         /// </summary>
         private static void DoSomeIteratorsOnVertices()
-        {
+        {/*
             // Iterate in a star over one given vertex and print out to which other vertices it is connected.
             // Because its fun do it for every vertex in the geometry
             for (int i = 0; i < _lfgSys._LverticeHndl.Count; i++)
@@ -142,6 +142,7 @@ namespace hsfurtwangen.dsteffen.lfg
 
                 }
             }
+          * */
         }
 
         /// <summary>

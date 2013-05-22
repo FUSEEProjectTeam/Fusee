@@ -116,7 +116,7 @@ namespace hsfurtwangen.dsteffen.lfg
             fh = _LfacePtrCont[faceHandle._DataIndex];
             fh._fn._DataIndex = _LfaceNormals.Count - 1;
             _LfacePtrCont.RemoveAt(faceHandle._DataIndex);
-            _LfacePtrCont.Insert(faceHandle, fh);
+            _LfacePtrCont.Insert(faceHandle._DataIndex, fh);
         }
 
 
@@ -138,6 +138,74 @@ namespace hsfurtwangen.dsteffen.lfg
             sumNormals /= adjacentfaceNormals.Count;
             float3 normalized = float3.Normalize(sumNormals);
             return normalized;
+        }
+
+        /// <summary>
+        /// Only for testing now.
+        /// </summary>
+        public void CalcVertexNormalTest(HandleVertex vertexHandle)
+        {
+            foreach (int hedgeIndex in EnStarVertexIncomingHalfEdge(vertexHandle))
+            {
+                HEdgePtrCont hedge1 = _LhedgePtrCont[hedgeIndex];
+                HEdgePtrCont hedge2 = _LhedgePtrCont[_LhedgePtrCont[hedgeIndex]._he._DataIndex];
+
+                if (hedge1._f._DataIndex != -1 && hedge2._f._DataIndex != -1)
+                {
+                    float3 f1Normal = _LfaceNormals[_LfacePtrCont[hedge1._f._DataIndex]._fn._DataIndex];
+                    float3 f2Normal = _LfaceNormals[_LfacePtrCont[hedge2._f._DataIndex]._fn._DataIndex];
+
+                    // Compare to the angle.
+                    float dot = float3.Dot(f1Normal, f2Normal);
+                    double angle = System.Math.Cos(89 * 3.141592 / 180.0);
+
+                    if (System.Math.Acos(dot) < angle)
+                    {
+                        // aggregate the normals
+                        float3 val = float3.Add(f1Normal, f2Normal);
+                        _LVertexNormals.Add(float3.Normalize(val));
+                        hedge1._vn._DataIndex = _LVertexNormals.Count - 1;
+                    }
+                    else
+                    {
+                        // do not aggregate them
+                        _LVertexNormals.Add(float3.Normalize(f1Normal));
+                        hedge1._vn._DataIndex = _LVertexNormals.Count - 1;
+                    }
+                    _LhedgePtrCont.RemoveAt(hedgeIndex);
+                    _LhedgePtrCont.Insert(hedgeIndex, hedge1);
+                }
+                else
+                {
+                    Debug.WriteLine("Face -1 in Vertex Normal calculation.");
+                }
+
+            }
+        }
+
+        /// <summary>
+        /// Only for testing now
+        /// </summary>
+        /// <param name="face">A handle to a face to perform on.</param>
+        /// <returns>An array of handle indexes in the following order: vertex id, vertex normal id, vertex uv id</returns>
+        public List<int[]> ConvertFaceToMeshData(HandleFace face)
+        {
+            List<int[]> LarrHandlesAggregated = new List<int[]>();
+            HEdgePtrCont currentHedge = _LhedgePtrCont[_LfacePtrCont[face]._h];
+            int startHedgeVertexIndex = currentHedge._v._DataIndex;
+
+            do
+            {
+                int[] arrHandles = new int[3];
+                arrHandles[0] = currentHedge._v._DataIndex;
+                arrHandles[1] = currentHedge._vn._DataIndex;
+                arrHandles[2] = currentHedge._vuv._DataIndex;
+
+                LarrHandlesAggregated.Add(arrHandles);
+                currentHedge = _LhedgePtrCont[currentHedge._nhe._DataIndex];
+            } while (currentHedge._v._DataIndex != startHedgeVertexIndex);
+
+            return LarrHandlesAggregated;
         }
 
 
@@ -448,13 +516,14 @@ namespace hsfurtwangen.dsteffen.lfg
             hedge1._f._DataIndex = _LfacePtrCont.Count - 1;
             hedge1._nhe._DataIndex = -1;
             // TODO: Concept
-            hedge1._vuv._DataIndex = _LuvCoordinates.Count - 2;
+            hedge1._vuv._DataIndex = _LuvCoordinates.Count - 1;
 
             hedge2._he._DataIndex = _LedgePtrCont.Count == 0 ? 0 : _LhedgePtrCont.Count;
             hedge2._v._DataIndex = hvFrom._DataIndex;
             hedge2._f._DataIndex = -1;
             hedge2._nhe._DataIndex = -1;
             // TODO: Concept
+            // TODO: UV% Problem here. Should not point on the "last" first vertex of the face
             hedge2._vuv._DataIndex = _LuvCoordinates.Count - 1;
 
             _LhedgePtrCont.Add(hedge1);
@@ -518,9 +587,27 @@ namespace hsfurtwangen.dsteffen.lfg
         /// </summary>
         /// <param name="hv">A handle to a vertex to use as a 'center' vertex.</param>
         /// <returns>An Enumerable of HalfEdge handles to be used in loops, etc.</returns>
-        public IEnumerable<HandleHalfEdge> EnStarVertexIncomingHalfEdge(HandleVertex hv)
+        public IEnumerable<int> EnStarVertexIncomingHalfEdge(HandleVertex hv)
         {
-            return VertexCenterHalfEdges(hv).Select(val => _LhedgePtrCont[_LhedgePtrCont[val._he]._he]._he);
+            List<int> LTmpIncomingHedges = new List<int>();
+
+            //Get the one outgoing half-edge for the vertex.
+            int currentHedge = _LvertexPtrCont[hv._DataIndex]._h._DataIndex;
+            //Remember the index of the first half-edge
+            int startHedgeIndex = currentHedge;
+
+            do
+            {
+                if (currentHedge == -1)
+                    break;
+
+                // Get the neighbour of the current edge
+                currentHedge = _LhedgePtrCont[currentHedge]._he._DataIndex;
+                LTmpIncomingHedges.Add(currentHedge);
+                currentHedge = _LhedgePtrCont[currentHedge]._nhe._DataIndex;
+            } while (currentHedge != startHedgeIndex);
+
+            return LTmpIncomingHedges.AsEnumerable();
         }
 
 
@@ -541,6 +628,7 @@ namespace hsfurtwangen.dsteffen.lfg
         /// Circulate around a given vertex and enumerate all faces adjacent to the center vertex.
         /// </summary>
         /// <param name="hv">A handle to a vertex to use as a 'center' vertex.</param>
+        /// <param name="vertexHandle">Handle to the vertex to do this operation on.</param>
         /// <returns>An Enumerable of HalfEdge handles to be used in loops, etc.</returns>
         public IEnumerable<HandleFace> EnVertexAdjacentFaces(HandleVertex vertexHandle)
         {

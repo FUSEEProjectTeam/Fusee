@@ -153,7 +153,7 @@ namespace hsfurtwangen.dsteffen.lfg
         /// This method creates a list of triangles from the existing faces and vertices beeing hold by the data structure.
         /// </summary>
         /// <returns>Fusee Mesh</returns>
-        public Mesh ToMesh()
+        public Mesh ToMeshOld()
         {
             // Calculate Triangles from faces
             if (!_triangleListSet && !_ChangesOnFaces)
@@ -195,6 +195,58 @@ namespace hsfurtwangen.dsteffen.lfg
             return mesh;
         }
 
+
+        public Mesh ToMesh()
+        {
+
+            _GeometryContainer._LfaceNormals.Clear();
+            foreach (HandleFace faceHandle in EnAllFaces())
+            {
+                _GeometryContainer.CalcFaceNormalForFace(faceHandle);
+            }
+
+            _GeometryContainer._LVertexNormals.Clear();
+            foreach (HandleVertex handleVertex in _LverticeHndl)
+            {
+                _GeometryContainer.CalcVertexNormalTest(handleVertex);
+            }
+
+            List<short> LtrianglesTMP = new List<short>();
+            List<float3> LvertDataTMP = new List<float3>();
+            List<float3> LvertNormalsTMP = new List<float3>();
+            List<float2> LvertuvTMP = new List<float2>();
+
+            foreach (HandleFace face in _LfaceHndl)
+            {
+                //returns an array of handle indexes in the following order: vertex id, vertex normal id, vertex uv id
+                List<int[]> LarrHandles = _GeometryContainer.ConvertFaceToMeshData(face);
+                foreach (int[] arrHandle in LarrHandles)
+                {
+                    LvertDataTMP.Add(
+                        _GeometryContainer._LvertexVal[arrHandle[0]]
+                        );
+
+                    LvertNormalsTMP.Add(
+                        _GeometryContainer._LVertexNormals[arrHandle[1]]
+                        );
+
+                    LvertuvTMP.Add(
+                        _GeometryContainer._LuvCoordinates[arrHandle[2]]
+                        );
+
+                    int idx = LvertDataTMP.Count - 1;
+                    LtrianglesTMP.Add((short)idx);
+                }
+            }
+
+            Mesh mesh = new Mesh();
+            mesh.Vertices = LvertDataTMP.ToArray();
+            mesh.Normals = LvertNormalsTMP.ToArray();
+            mesh.UVs = LvertuvTMP.ToArray();
+            mesh.Triangles = LtrianglesTMP.ToArray();
+
+            return mesh;
+        }
 
         /// <summary>
         /// Adds a vertex to the geometry container. Can then be controlled by the kernel
@@ -312,8 +364,8 @@ namespace hsfurtwangen.dsteffen.lfg
         /// Returns an enumerable of INCOMING halfedge handles.
         /// </summary>
         /// <param name="hv">A handle to a vertex, should be selected from the GeometryData's vertex handle list to ensure it's correct.</param>
-        /// <returns>IEnumerable of type HandleHalfEdge</returns>
-        public IEnumerable<HandleHalfEdge> StarVertexIncomingHalfEdge(HandleVertex hv)
+        /// <returns>IEnumerable of type integers which are indexes for HalfEdges</returns>
+        public IEnumerable<int> StarVertexIncomingHalfEdge(HandleVertex hv)
         {
             return _GeometryContainer.EnStarVertexIncomingHalfEdge(hv);
         }

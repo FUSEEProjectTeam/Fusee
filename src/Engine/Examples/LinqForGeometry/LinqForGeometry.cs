@@ -120,6 +120,7 @@ namespace Examples.LinqForGeometry
             //_Geo.LoadAsset("Assets/Teapot_triangular.obj.model");
             //_Geo.LoadAsset("Assets/Stanford_Bunny.obj.model");
             //_Geo.LoadAsset("Assets/SharedCorners.obj.model");
+            //_Geo.LoadAsset("Assets/Cylinder.obj.model");
             #endregion MeshImports
 
 
@@ -128,14 +129,21 @@ namespace Examples.LinqForGeometry
             ShaderProgram msDiffuse = MoreShaders.GetShader("specular", RC);
             _vLightShaderParam = msDiffuse.GetShaderParam("texture1");
             ImageData imgData = RC.LoadImage("Assets/Cube_Mat_uv.jpg");
+            //ImageData imgData = RC.LoadImage("Assets/world_map.jpg");
             ITexture iTex = RC.CreateTexture(imgData);
             RC.SetShader(msDiffuse);
 
             RC.SetLightActive(0, 1.0f);
-            RC.SetLightPosition(0, new float3(0, 200, 100));
-            RC.SetLightAmbient(0, new float4(0.1f, 0.1f, 0.1f, 1.0f));
-            RC.SetLightDiffuse(0, new float4(0.0f, 1.0f, 0.0f, 1.0f));
+            //RC.SetLightPosition(0, new float3(0, 200, 0));
+            RC.SetLightAmbient(0, new float4(0.0f, 0.0f, 0.0f, 1.0f));
+            RC.SetLightDiffuse(0, new float4(1.0f, 1.0f, 1.0f, 1.0f));
             RC.SetLightDirection(0, new float3(0.0f, -1.0f, 0.0f));
+
+            RC.SetLightActive(1, 1.0f);
+            //RC.SetLightPosition(1, new float3(-200, 0, 0));
+            RC.SetLightAmbient(1, new float4(0.0f, 0.0f, 0.0f, 1.0f));
+            RC.SetLightDiffuse(1, new float4(0.5f, 0.5f, 0.5f, 1.0f));
+            RC.SetLightDirection(1, new float3(1.0f, 0.0f, 0.0f));
             #endregion LightShader
 
             #region ColorShader
