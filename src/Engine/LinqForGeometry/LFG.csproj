@@ -52,11 +52,14 @@
     <Compile Include="src\Importer\WavefrontImporter.cs" />
     <Compile Include="src\Geometry.cs" />
     <Compile Include="src\Loader.cs" />
+    <Compile Include="src\Structs\Handles\HandleFaceNormal.cs" />
     <Compile Include="src\Structs\Handles\HandleVertex.cs" />
     <Compile Include="src\Structs\Handles\HandleFace.cs" />
     <Compile Include="src\Structs\Handles\HandleHalfEdge.cs" />
     <Compile Include="src\Structs\Handles\HandleEdge.cs" />
     <Compile Include="src\GeometryData.cs" />
+    <Compile Include="src\Structs\Handles\HandleVertexNormal.cs" />
+    <Compile Include="src\Structs\Handles\HandleVertexUV.cs" />
     <Compile Include="src\Structs\PtrContainer\VertexPtrCont.cs" />
     <Compile Include="src\Structs\PtrContainer\FacePtrCont.cs" />
     <Compile Include="src\Structs\PtrContainer\HEdgePtrCont.cs" />

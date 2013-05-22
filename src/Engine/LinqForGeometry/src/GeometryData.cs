@@ -35,12 +35,12 @@ namespace hsfurtwangen.dsteffen.lfg
         private Geometry _geometry;
 
         public List<float3> _LvertexVal;
-        private List<float3> _LvertexValDefault;
 
         public List<float3> _LfaceNormals;
         public List<float3> _LVertexNormals;
         public List<float2> _LuvCoordinates;
 
+        private List<float3> _LvertexValDefault;
         private List<VertexPtrCont> _LvertexPtrCont;
         private List<HEdgePtrCont> _LhedgePtrCont;
         private List<EdgePtrCont> _LedgePtrCont;
@@ -96,40 +96,9 @@ namespace hsfurtwangen.dsteffen.lfg
         /// <summary>
         /// This method adds a face normal vector to a list.
         /// The vector is calculated for the face which handle the method expects.
-        /// Normally should not be called by the user. The system is calling it once a face has been inserted to the geometry object.
         /// </summary>
         /// <param name="handleFace">Handle to a face</param>
-        public void CalcFaceNormal(HandleFace handleFace)
-        {
-            IEnumerable<HandleVertex> enVerts = EnFaceVertices(handleFace);
-            var Lverts = enVerts.Select(handleVertex => _LvertexVal[handleVertex._DataIndex]).ToList();
-
-            if (Lverts.Count >= 3)
-            {
-
-                float3 v0 = Lverts[0];
-                float3 v1 = Lverts[1];
-                float3 v2 = Lverts[2];
-
-                float3 c1 = float3.Subtract(v0, v1);
-                float3 c2 = float3.Subtract(v0, v2);
-
-                float3 n = float3.Cross(c1, c2);
-
-                Debug.WriteLine("CalcNormal: " + float3.Normalize(n));
-
-                _LfaceNormals.Add(
-                    float3.Normalize(n)
-                    );
-            }
-        }
-
-
-        /// <summary>
-        /// Only for testing, calculates face normals with the help of the hes.
-        /// </summary>
-        /// <returns></returns>
-        public void CalcFaceNormalsToList(HandleFace faceHandle)
+        public void CalcFaceNormalForFace(HandleFace faceHandle)
         {
             List<HandleVertex> tmpList = IteratorVerticesAroundFace(faceHandle).ToList();
 
@@ -139,10 +108,15 @@ namespace hsfurtwangen.dsteffen.lfg
 
             float3 c1 = float3.Subtract(v0, v1);
             float3 c2 = float3.Subtract(v0, v2);
-
             float3 n = float3.Cross(c1, c2);
 
             _LfaceNormals.Add(float3.Normalize(n));
+
+            FacePtrCont fh = new FacePtrCont();
+            fh = _LfacePtrCont[faceHandle._DataIndex];
+            fh._fn._DataIndex = _LfaceNormals.Count - 1;
+            _LfacePtrCont.RemoveAt(faceHandle._DataIndex);
+            _LfacePtrCont.Insert(faceHandle, fh);
         }
 
 
@@ -154,45 +128,13 @@ namespace hsfurtwangen.dsteffen.lfg
         /// <returns>float3 value which is the normal vektor for the vertex</returns>
         public float3 CalcVertexNormal(HandleVertex handleVertex)
         {
-            List<float3> adjacentfaceNormals = new List<float3>();
             IEnumerable<HandleFace> adjacentfaces = EnVertexAdjacentFaces(handleVertex);
             int faceNormalsCount = _LfaceNormals.Count;
 
-            foreach (HandleFace handleFace in adjacentfaces)
-            {
-                try
-                {
-                    if (handleFace._DataIndex != -1)
-                    {
-                        if (faceNormalsCount > handleFace._DataIndex)
-                        {
-                            adjacentfaceNormals.Add(
-                                _LfaceNormals[handleFace]
-                                );
-                        }
-                        else
-                        {
-                            throw new Exception("Runtime Error: Face handle is not in the face list.");
-                        }
-                    }
-                    else
-                    {
-                        //throw new Exception("Runtime Error: Face handle is invalid.");
-                    }
-                }
-                catch (Exception e)
-                {
-                    Debug.WriteLine(e.Message);
-                }
-            }
+            List<float3> adjacentfaceNormals = (from faceHandle in adjacentfaces where faceHandle._DataIndex != -1 select _LfaceNormals[_LfacePtrCont[faceHandle._DataIndex]._fn._DataIndex]).ToList();
 
             float3 sumNormals = new float3();
-
-            foreach (float3 faceNormal in adjacentfaceNormals)
-            {
-                sumNormals += faceNormal;
-            }
-
+            sumNormals = adjacentfaceNormals.Aggregate(sumNormals, (current, faceNormal) => current + faceNormal);
             sumNormals /= adjacentfaceNormals.Count;
             float3 normalized = float3.Normalize(sumNormals);
             return normalized;
@@ -430,12 +372,14 @@ namespace hsfurtwangen.dsteffen.lfg
         /// It first checks if a connection is already present. If so it returns a handle to this connection
         /// If not it will establish a connection between the two input vertices.
         /// </summary>
-        /// <param name="hv1">Vertex From</param>
-        /// <param name="hv2">Vertex To</param>
-        public HandleEdge AddEdge(HandleVertex hvFrom, HandleVertex hvTo)
+        /// <param name="hvFrom">Vertex From</param>
+        /// <param name="hvTo">Vertex To</param>
+        /// <param name="uvFrom">uv coordinates for the from vertex</param>
+        /// <param name="uvTo">uv coordinates for the to vertex</param>
+        public HandleEdge AddEdge(HandleVertex hvFrom, HandleVertex hvTo, float2 uvFrom, float2 uvTo)
         {
             HandleEdge hndlEdge;
-            GetOrAddConnection(hvFrom, hvTo, out hndlEdge);
+            GetOrAddConnection(hvFrom, hvTo, uvFrom, uvTo, out hndlEdge);
             return new HandleEdge() { _DataIndex = hndlEdge._DataIndex };
         }
 
@@ -446,8 +390,10 @@ namespace hsfurtwangen.dsteffen.lfg
         /// <param name="hv1">HandleVertex From vertex</param>
         /// <param name="hv2">HandleVertex To vertex</param>
         /// <param name="he">HandleEdge is filled when connection already exists with valid index otherwise with -1</param>
+        /// <param name="uvFrom">Uv coordinates for the from vertex</param>
+        /// <param name="uvTo">Uv coordinates for the to vertex</param>
         /// <returns></returns>
-        public bool GetOrAddConnection(HandleVertex hv1, HandleVertex hv2, out HandleEdge he)
+        public bool GetOrAddConnection(HandleVertex hv1, HandleVertex hv2, float2 uvFrom, float2 uvTo, out HandleEdge he)
         {
             int index = -1;
             if (_LedgePtrCont.Count != 0 && _LhedgePtrCont.Count != 0)
@@ -473,6 +419,10 @@ namespace hsfurtwangen.dsteffen.lfg
                 {
                     Console.WriteLine("     Edge not found - creating new one.");
                 }
+                // TODO: Concept
+                _LuvCoordinates.Add(uvFrom);
+                _LuvCoordinates.Add(uvTo);
+
                 he._DataIndex = CreateConnection(hv1, hv2)._DataIndex;
                 return false;
             }
@@ -497,11 +447,15 @@ namespace hsfurtwangen.dsteffen.lfg
             hedge1._v._DataIndex = hvTo._DataIndex;
             hedge1._f._DataIndex = _LfacePtrCont.Count - 1;
             hedge1._nhe._DataIndex = -1;
+            // TODO: Concept
+            hedge1._vuv._DataIndex = _LuvCoordinates.Count - 2;
 
             hedge2._he._DataIndex = _LedgePtrCont.Count == 0 ? 0 : _LhedgePtrCont.Count;
             hedge2._v._DataIndex = hvFrom._DataIndex;
             hedge2._f._DataIndex = -1;
             hedge2._nhe._DataIndex = -1;
+            // TODO: Concept
+            hedge2._vuv._DataIndex = _LuvCoordinates.Count - 1;
 
             _LhedgePtrCont.Add(hedge1);
             _LhedgePtrCont.Add(hedge2);
@@ -673,15 +627,6 @@ namespace hsfurtwangen.dsteffen.lfg
             HandleHalfEdge heh = _LfacePtrCont[hf]._h;
             int indexStart = heh._DataIndex;
 
-            /*
-            while (true)
-            {
-                LtmpVert.Add(_LhedgePtrCont[heh]._v);
-                heh = _LhedgePtrCont[heh]._nhe;
-
-                if (LtmpVert.Count >= 3) { break; }
-            }
-            */
             for (int i = 0; i < 3; i++)
             {
                 LtmpVert.Add(_LhedgePtrCont[heh]._v);
@@ -690,6 +635,7 @@ namespace hsfurtwangen.dsteffen.lfg
 
             return LtmpVert;
         }
+
 
         public IEnumerable<HandleVertex> IteratorVerticesAroundFace(HandleFace hf)
         {

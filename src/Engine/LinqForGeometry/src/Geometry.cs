@@ -93,7 +93,7 @@ namespace hsfurtwangen.dsteffen.lfg
             _GeometryContainer._LfaceNormals.Clear();
             foreach (HandleFace face in EnAllFaces())
             {
-                _GeometryContainer.CalcFaceNormalsToList(face);
+                _GeometryContainer.CalcFaceNormalForFace(face);
             }
 
             // Set the default form etc. of the model. primary for debugging for me etc...
@@ -176,7 +176,7 @@ namespace hsfurtwangen.dsteffen.lfg
                 _GeometryContainer._LfaceNormals.Clear();
                 foreach (HandleFace faceHandle in EnAllFaces())
                 {
-                    _GeometryContainer.CalcFaceNormalsToList(faceHandle);
+                    _GeometryContainer.CalcFaceNormalForFace(faceHandle);
                 }
 
                 _GeometryContainer._LVertexNormals.Clear();
@@ -194,6 +194,7 @@ namespace hsfurtwangen.dsteffen.lfg
 
             return mesh;
         }
+
 
         /// <summary>
         /// Adds a vertex to the geometry container. Can then be controlled by the kernel
@@ -236,24 +237,25 @@ namespace hsfurtwangen.dsteffen.lfg
                     );
             }
 
+            /*
+            // Add the uv pair to a tmp list. This is for the actual face for the vertices.
             foreach (float2 uvpair in gf._UV)
             {
-                if (globalinf.LFGMessages._DEBUGOUTPUT)
-                {
-                    Fusee.Engine.Diagnostics.Log(uvpair);
-                }
                 _GeometryContainer._LuvCoordinates.Add(uvpair);
             }
+            */
 
             List<HandleEdge> LtmpEdgesForFace = new List<HandleEdge>();
             int vertsCount = LhFaceVerts.Count;
             for (int i = 0; i < vertsCount; i++)
             {
                 HandleVertex hvFrom = LhFaceVerts[i];
+                float2 uvFrom = gf._UV[i];
                 if (i + 1 < vertsCount)
                 {
                     HandleVertex hvTo = LhFaceVerts[i + 1];
-                    HandleEdge handleEdge = _GeometryContainer.AddEdge(hvFrom, hvTo);
+                    float2 uvTo = gf._UV[i + 1];
+                    HandleEdge handleEdge = _GeometryContainer.AddEdge(hvFrom, hvTo, uvFrom, uvTo);
                     if (!_LedgeHndl.Contains(handleEdge))
                     {
                         _LedgeHndl.Add(handleEdge);
@@ -270,7 +272,8 @@ namespace hsfurtwangen.dsteffen.lfg
                 else
                 {
                     HandleVertex hvTo = LhFaceVerts[0];
-                    HandleEdge handleEdge = _GeometryContainer.AddEdge(hvFrom, hvTo);
+                    float2 uvTo = gf._UV[0];
+                    HandleEdge handleEdge = _GeometryContainer.AddEdge(hvFrom, hvTo, uvFrom, uvTo);
                     if (!_LedgeHndl.Contains(handleEdge))
                     {
                         _LedgeHndl.Add(handleEdge);

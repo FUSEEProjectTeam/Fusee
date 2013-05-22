@@ -21,5 +21,6 @@ namespace hsfurtwangen.dsteffen.lfg.structs.ptrcontainer
     internal struct FacePtrCont
     {
         internal HandleHalfEdge _h;
+        internal HandleFaceNormal _fn;
     }
 }

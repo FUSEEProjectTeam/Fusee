@@ -26,9 +26,10 @@ namespace hsfurtwangen.dsteffen.lfg.structs.ptrcontainer
     {
         internal HandleHalfEdge _he;
         internal HandleHalfEdge _nhe;
-        // This is optional ...
-        // internal HandleHalfEdge _phe;
         internal HandleVertex _v;
         internal HandleFace _f;
+
+        internal HandleVertexNormal _vn;
+        internal HandleVertexUV _vuv;
     }
 }
