@@ -444,10 +444,10 @@ namespace hsfurtwangen.dsteffen.lfg
         /// <param name="hvTo">Vertex To</param>
         /// <param name="uvFrom">uv coordinates for the from vertex</param>
         /// <param name="uvTo">uv coordinates for the to vertex</param>
-        public HandleEdge AddEdge(HandleVertex hvFrom, HandleVertex hvTo, float2 uvFrom, float2 uvTo)
+        public HandleEdge AddEdge(HandleVertex hvFrom, HandleVertex hvTo)
         {
             HandleEdge hndlEdge;
-            GetOrAddConnection(hvFrom, hvTo, uvFrom, uvTo, out hndlEdge);
+            GetOrAddConnection(hvFrom, hvTo, out hndlEdge);
             return new HandleEdge() { _DataIndex = hndlEdge._DataIndex };
         }
 
@@ -461,7 +461,7 @@ namespace hsfurtwangen.dsteffen.lfg
         /// <param name="uvFrom">Uv coordinates for the from vertex</param>
         /// <param name="uvTo">Uv coordinates for the to vertex</param>
         /// <returns></returns>
-        public bool GetOrAddConnection(HandleVertex hv1, HandleVertex hv2, float2 uvFrom, float2 uvTo, out HandleEdge he)
+        public bool GetOrAddConnection(HandleVertex hv1, HandleVertex hv2, out HandleEdge he)
         {
             int index = -1;
             if (_LedgePtrCont.Count != 0 && _LhedgePtrCont.Count != 0)
@@ -487,9 +487,6 @@ namespace hsfurtwangen.dsteffen.lfg
                 {
                     Console.WriteLine("     Edge not found - creating new one.");
                 }
-                // TODO: Concept
-                _LuvCoordinates.Add(uvFrom);
-                _LuvCoordinates.Add(uvTo);
 
                 he._DataIndex = CreateConnection(hv1, hv2)._DataIndex;
                 return false;
@@ -515,16 +512,11 @@ namespace hsfurtwangen.dsteffen.lfg
             hedge1._v._DataIndex = hvTo._DataIndex;
             hedge1._f._DataIndex = _LfacePtrCont.Count - 1;
             hedge1._nhe._DataIndex = -1;
-            // TODO: Concept
-            hedge1._vuv._DataIndex = _LuvCoordinates.Count - 1;
 
             hedge2._he._DataIndex = _LedgePtrCont.Count == 0 ? 0 : _LhedgePtrCont.Count;
             hedge2._v._DataIndex = hvFrom._DataIndex;
             hedge2._f._DataIndex = -1;
             hedge2._nhe._DataIndex = -1;
-            // TODO: Concept
-            // TODO: UV% Problem here. Should not point on the "last" first vertex of the face
-            hedge2._vuv._DataIndex = _LuvCoordinates.Count - 1;
 
             _LhedgePtrCont.Add(hedge1);
             _LhedgePtrCont.Add(hedge2);
@@ -555,6 +547,45 @@ namespace hsfurtwangen.dsteffen.lfg
             }
 
             return new HandleEdge() { _DataIndex = _LedgePtrCont.Count - 1 };
+        }
+
+
+        public void InsertUVCoordinatesForFace(HandleFace faceHandle, List<float2> LuvCoord)
+        {
+            int startHEIndex = _LfacePtrCont[faceHandle]._h._DataIndex;
+            int currentHEIndex = startHEIndex;
+
+            List<HEdgePtrCont> LtmpHedges = new List<HEdgePtrCont>();
+
+            do
+            {
+                LtmpHedges.Add(
+                    _LhedgePtrCont[currentHEIndex]
+                    );
+
+                currentHEIndex = _LhedgePtrCont[currentHEIndex]._nhe._DataIndex;
+            } while (currentHEIndex != startHEIndex);
+
+            for (int i = 0; i < LtmpHedges.Count; i++)
+            {
+                HEdgePtrCont currentHedge = LtmpHedges[i];
+
+                if (i == LtmpHedges.Count - 1)
+                {
+                    _LuvCoordinates.Add(LuvCoord[0]);
+                    currentHedge._vuv._DataIndex = _LuvCoordinates.Count - 1;
+                }
+                else
+                {
+                    _LuvCoordinates.Add(LuvCoord[i + 1]);
+                    currentHedge._vuv._DataIndex = _LuvCoordinates.Count - 1;
+                }
+
+                int currentIndex = _LhedgePtrCont[currentHedge._he._DataIndex]._he._DataIndex;
+                _LhedgePtrCont.RemoveAt(currentIndex);
+                _LhedgePtrCont.Insert(currentIndex, currentHedge);
+            }
+
         }
 
 

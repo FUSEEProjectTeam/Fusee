@@ -307,7 +307,7 @@ namespace hsfurtwangen.dsteffen.lfg
                 {
                     HandleVertex hvTo = LhFaceVerts[i + 1];
                     float2 uvTo = gf._UV[i + 1];
-                    HandleEdge handleEdge = _GeometryContainer.AddEdge(hvFrom, hvTo, uvFrom, uvTo);
+                    HandleEdge handleEdge = _GeometryContainer.AddEdge(hvFrom, hvTo);
                     if (!_LedgeHndl.Contains(handleEdge))
                     {
                         _LedgeHndl.Add(handleEdge);
@@ -325,7 +325,7 @@ namespace hsfurtwangen.dsteffen.lfg
                 {
                     HandleVertex hvTo = LhFaceVerts[0];
                     float2 uvTo = gf._UV[0];
-                    HandleEdge handleEdge = _GeometryContainer.AddEdge(hvFrom, hvTo, uvFrom, uvTo);
+                    HandleEdge handleEdge = _GeometryContainer.AddEdge(hvFrom, hvTo);
                     if (!_LedgeHndl.Contains(handleEdge))
                     {
                         _LedgeHndl.Add(handleEdge);
@@ -346,6 +346,10 @@ namespace hsfurtwangen.dsteffen.lfg
 
             // Hand over the list of edges that are used for this face. Now build up the connections.
             _GeometryContainer.UpdateCWHedges(LtmpEdgesForFace);
+
+            // TODO: Try here to set the uvs?
+            int currentFaceIndex = _LfaceHndl.Count - 1;
+            _GeometryContainer.InsertUVCoordinatesForFace(new HandleFace() {_DataIndex = currentFaceIndex}, gf._UV);
         }
 
 
