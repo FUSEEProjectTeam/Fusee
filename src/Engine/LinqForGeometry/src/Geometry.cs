@@ -219,7 +219,7 @@ namespace hsfurtwangen.dsteffen.lfg
             foreach (HandleFace face in _LfaceHndl)
             {
                 //returns an array of handle indexes in the following order: vertex id, vertex normal id, vertex uv id
-                List<int[]> LarrHandles = _GeometryContainer.ConvertFaceToMeshData(face);
+                List<int[]> LarrHandles = _GeometryContainer.GrabFaceDataForMesh(face);
                 foreach (int[] arrHandle in LarrHandles)
                 {
                     LvertDataTMP.Add(
@@ -238,6 +238,7 @@ namespace hsfurtwangen.dsteffen.lfg
                     LtrianglesTMP.Add((short)idx);
                 }
             }
+            
 
             Mesh mesh = new Mesh();
             mesh.Vertices = LvertDataTMP.ToArray();
@@ -349,7 +350,7 @@ namespace hsfurtwangen.dsteffen.lfg
 
             // TODO: Try here to set the uvs?
             int currentFaceIndex = _LfaceHndl.Count - 1;
-            _GeometryContainer.InsertUVCoordinatesForFace(new HandleFace() {_DataIndex = currentFaceIndex}, gf._UV);
+            _GeometryContainer.InsertUVCoordinatesForFace(new HandleFace() { _DataIndex = currentFaceIndex }, gf._UV);
         }
 
 

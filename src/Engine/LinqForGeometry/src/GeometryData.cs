@@ -46,7 +46,7 @@ namespace hsfurtwangen.dsteffen.lfg
         private List<EdgePtrCont> _LedgePtrCont;
         private List<FacePtrCont> _LfacePtrCont;
 
-        //public List<List<HandleFace>> _LvertFaceLookUp;
+        private double _SmoothingAngle = 89;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="hsfurtwangen.dsteffen.lfg.Geometry"/> class.
@@ -145,7 +145,46 @@ namespace hsfurtwangen.dsteffen.lfg
         /// </summary>
         public void CalcVertexNormalTest(HandleVertex vertexHandle)
         {
-            foreach (int hedgeIndex in EnStarVertexIncomingHalfEdge(vertexHandle))
+            IEnumerable<int> EincomingHEdges = EnStarVertexIncomingHalfEdge(vertexHandle);
+            foreach (int hedgeIndex in EincomingHEdges)
+            {
+                List<float3> LfaceNormals = new List<float3>();
+                float3 currentNormal = _LfaceNormals[_LfacePtrCont[_LhedgePtrCont[hedgeIndex]._f._DataIndex]._fn._DataIndex];
+                float3 normalAggregate = new float3();
+                foreach (int eincomingHEdge in EincomingHEdges)
+                {
+                    if (eincomingHEdge == hedgeIndex) {
+                        normalAggregate += currentNormal;
+                        continue;
+                    }
+
+                    float3 normalToCompare = _LfaceNormals[_LfacePtrCont[_LhedgePtrCont[eincomingHEdge]._f._DataIndex]._fn._DataIndex];
+                    float dot = float3.Dot(currentNormal, normalToCompare);
+                    double angle = _SmoothingAngle;
+                    double acos = System.Math.Acos(dot) * (180 / 3.141592);
+
+                    if (acos < angle)
+                    {
+                        normalAggregate += float3.Add(normalAggregate, normalToCompare);
+                    }
+                }
+
+                _LVertexNormals.Add(float3.Normalize(normalAggregate));
+                HEdgePtrCont currentHedge = _LhedgePtrCont[hedgeIndex];
+                currentHedge._vn._DataIndex = _LVertexNormals.Count - 1;
+
+                _LhedgePtrCont.RemoveAt(hedgeIndex);
+                _LhedgePtrCont.Insert(hedgeIndex, currentHedge);
+            }
+        }
+
+        /// <summary>
+        /// Only for testing now.
+        /// </summary>
+        public void CalcVertexNormalTestOld(HandleVertex vertexHandle)
+        {
+            IEnumerable<int> EincomingEdges = EnStarVertexIncomingHalfEdge(vertexHandle);
+            foreach (int hedgeIndex in EincomingEdges)
             {
                 HEdgePtrCont hedge1 = _LhedgePtrCont[hedgeIndex];
                 HEdgePtrCont hedge2 = _LhedgePtrCont[_LhedgePtrCont[hedgeIndex]._he._DataIndex];
@@ -188,7 +227,7 @@ namespace hsfurtwangen.dsteffen.lfg
         /// </summary>
         /// <param name="face">A handle to a face to perform on.</param>
         /// <returns>An array of handle indexes in the following order: vertex id, vertex normal id, vertex uv id</returns>
-        public List<int[]> ConvertFaceToMeshData(HandleFace face)
+        public List<int[]> GrabFaceDataForMesh(HandleFace face)
         {
             List<int[]> LarrHandlesAggregated = new List<int[]>();
             HEdgePtrCont currentHedge = _LhedgePtrCont[_LfacePtrCont[face]._h];
@@ -559,9 +598,12 @@ namespace hsfurtwangen.dsteffen.lfg
 
             do
             {
+                if (_LhedgePtrCont[currentHEIndex]._f._DataIndex != faceHandle._DataIndex)
+                    break;
+
                 LtmpHedges.Add(
-                    _LhedgePtrCont[currentHEIndex]
-                    );
+                        _LhedgePtrCont[currentHEIndex]
+                        );
 
                 currentHEIndex = _LhedgePtrCont[currentHEIndex]._nhe._DataIndex;
             } while (currentHEIndex != startHEIndex);
@@ -586,8 +628,26 @@ namespace hsfurtwangen.dsteffen.lfg
                 _LhedgePtrCont.Insert(currentIndex, currentHedge);
             }
 
+            LtmpHedges.Clear();
         }
 
+
+        public List<int[]> RunOverHEdges()
+        {
+            List<int[]> LarrHandlesAggregated = new List<int[]>();
+
+            foreach (HEdgePtrCont currentHedge in _LhedgePtrCont)
+            {
+                int[] arrHandles = new int[3];
+                arrHandles[0] = currentHedge._v._DataIndex;
+                arrHandles[1] = currentHedge._vn._DataIndex;
+                arrHandles[2] = currentHedge._vuv._DataIndex;
+
+                LarrHandlesAggregated.Add(arrHandles);
+            }
+
+            return LarrHandlesAggregated;
+        }
 
         /// <summary>
         /// Iterator.
