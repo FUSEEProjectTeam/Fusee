@@ -23,7 +23,7 @@ namespace Examples.LightTypeTest
         {
             sp = shaderProgram;
             Textureparam = sp.GetShaderParam("texture1");
-            SpecularLevel = sp.GetShaderParam("specularLevel");
+            //SpecularLevel = sp.GetShaderParam("specularLevel");
             ImageData Image = SceneManager.RC.LoadImage(texturepath);
             Tex = SceneManager.RC.CreateTexture(Image);
         }
@@ -32,7 +32,7 @@ namespace Examples.LightTypeTest
         {
             renderContext.SetShader(sp);
             renderContext.SetShaderParamTexture(Textureparam, Tex);
-            renderContext.SetShaderParam(SpecularLevel, 32.0f);
+            //renderContext.SetShaderParam(SpecularLevel, 32.0f);
 
         }
     }
