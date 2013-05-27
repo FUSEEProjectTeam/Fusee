@@ -182,11 +182,22 @@ uniform vec3 FUSEE_L5_DIRECTION;
 uniform vec3 FUSEE_L6_DIRECTION;
 uniform vec3 FUSEE_L7_DIRECTION;
 
+float FUSEE_L0_SPOTANGLE;
+float FUSEE_L1_SPOTANGLE;
+float FUSEE_L2_SPOTANGLE;
+float FUSEE_L3_SPOTANGLE;
+float FUSEE_L4_SPOTANGLE;
+float FUSEE_L5_SPOTANGLE;
+float FUSEE_L6_SPOTANGLE;
+float FUSEE_L7_SPOTANGLE;
+
 varying vec3 vNormal;
 varying vec2 vUV;
 varying vec3 vNormalView;
 varying vec3 vGlobalPos;
 varying vec3 vViewPos;
+
+float spotAngle;
 
 void CalcDirectLight(vec4 difColor, vec4 ambColor, vec3 direction, inout vec4 intensity) {
     intensity += ambColor;
@@ -210,7 +221,7 @@ void CalcSpotLight(vec4 difColor, vec4 ambColor, vec3 position, vec3 direction, 
     if(alpha > angle){
         intensity += max(dot(normalize(pos),normalize(vNormal)),0.0) * difColor;  
     }
-    //intensity += max(dot(normalize(pos),normalize(vNormal)),0.0) * difColor;  
+     
 }
  
 void main()
@@ -222,71 +233,71 @@ void main()
         if(FUSEE_L0_ACTIVE == 2.0)
             CalcPointLight(FUSEE_L0_DIFFUSE, FUSEE_L0_AMBIENT, FUSEE_L0_POSITION, endIntensity);
         if(FUSEE_L0_ACTIVE == 3.0)
-            CalcSpotLight(FUSEE_L0_DIFFUSE, FUSEE_L0_AMBIENT, FUSEE_L0_POSITION, FUSEE_L0_DIRECTION, 0.96, endIntensity);
+            CalcSpotLight(FUSEE_L0_DIFFUSE, FUSEE_L0_AMBIENT, FUSEE_L0_POSITION, FUSEE_L0_DIRECTION, FUSEE_L0_SPOTANGLE, endIntensity);
     }  
 
-//    if(FUSEE_L1_ACTIVE != 0.0){
-//        if(FUSEE_L1_ACTIVE == 1.0)
-//            CalcDirectLight(FUSEE_L1_DIFFUSE, FUSEE_L1_AMBIENT, FUSEE_L1_DIRECTION, endIntensity);
-//        if(FUSEE_L1_ACTIVE == 2.0)
-//            CalcPointLight(FUSEE_L1_DIFFUSE, FUSEE_L1_AMBIENT, FUSEE_L1_POSITION, endIntensity);
-//        if(FUSEE_L1_ACTIVE == 3.0)
-//            CalcSpotLight();
-//    }  
+    if(FUSEE_L1_ACTIVE != 0.0){
+        if(FUSEE_L1_ACTIVE == 1.0)
+            CalcDirectLight(FUSEE_L1_DIFFUSE, FUSEE_L1_AMBIENT, FUSEE_L1_DIRECTION, endIntensity);
+        if(FUSEE_L1_ACTIVE == 2.0)
+            CalcPointLight(FUSEE_L1_DIFFUSE, FUSEE_L1_AMBIENT, FUSEE_L1_POSITION, endIntensity);
+        if(FUSEE_L1_ACTIVE == 3.0)
+            CalcSpotLight(FUSEE_L1_DIFFUSE, FUSEE_L1_AMBIENT, FUSEE_L1_POSITION, FUSEE_L1_DIRECTION, FUSEE_L1_SPOTANGLE, endIntensity);
+    }  
 
-//    if(FUSEE_L2_ACTIVE != 0.0){
-//        if(FUSEE_L2_ACTIVE == 1.0)
-//            CalcDirectLight(FUSEE_L2_DIFFUSE, FUSEE_L2_AMBIENT, FUSEE_L2_DIRECTION, endIntensity);
-//        if(FUSEE_L2_ACTIVE == 2.0)
-//            CalcPointLight(FUSEE_L2_DIFFUSE, FUSEE_L2_AMBIENT, FUSEE_L2_POSITION, endIntensity);
-//        if(FUSEE_L2_ACTIVE == 3.0)
-//            CalcSpotLight();
-//    }  
-//
-//    if(FUSEE_L3_ACTIVE != 0.0){
-//        if(FUSEE_L3_ACTIVE == 1.0)
-//            CalcDirectLight(FUSEE_L3_DIFFUSE, FUSEE_L3_AMBIENT, FUSEE_L3_DIRECTION, endIntensity);
-//        if(FUSEE_L3_ACTIVE == 2.0)
-//            CalcPointLight(FUSEE_L3_DIFFUSE, FUSEE_L3_AMBIENT, FUSEE_L3_POSITION, endIntensity);
-//        if(FUSEE_L3_ACTIVE == 3.0)
-//            CalcSpotLight();
-//    }  
-//
-//    if(FUSEE_L4_ACTIVE != 0.0){
-//        if(FUSEE_L4_ACTIVE == 1.0)
-//            CalcDirectLight(FUSEE_L4_DIFFUSE, FUSEE_L4_AMBIENT, FUSEE_L4_DIRECTION, endIntensity);
-//        if(FUSEE_L4_ACTIVE == 2.0)
-//            CalcPointLight(FUSEE_L4_DIFFUSE, FUSEE_L4_AMBIENT, FUSEE_L4_POSITION, endIntensity);
-//        if(FUSEE_L4_ACTIVE == 3.0)
-//            CalcSpotLight();
-//    }  
-//
-//    if(FUSEE_L5_ACTIVE != 0.0){
-//        if(FUSEE_L5_ACTIVE == 1.0)
-//            CalcDirectLight(FUSEE_L5_DIFFUSE, FUSEE_L5_AMBIENT, FUSEE_L5_DIRECTION, endIntensity);
-//        if(FUSEE_L5_ACTIVE == 2.0)
-//            CalcPointLight(FUSEE_L5_DIFFUSE, FUSEE_L5_AMBIENT, FUSEE_L5_POSITION, endIntensity);
-//        if(FUSEE_L5_ACTIVE == 3.0)
-//            CalcSpotLight();
-//    }  
-//
-//    if(FUSEE_L6_ACTIVE != 0.0){
-//        if(FUSEE_L6_ACTIVE == 1.0)
-//            CalcDirectLight(FUSEE_L6_DIFFUSE, FUSEE_L6_AMBIENT, FUSEE_L6_DIRECTION, endIntensity);
-//        if(FUSEE_L6_ACTIVE == 2.0)
-//            CalcPointLight(FUSEE_L6_DIFFUSE, FUSEE_L6_AMBIENT, FUSEE_L6_POSITION, endIntensity);
-//        if(FUSEE_L6_ACTIVE == 3.0)
-//            CalcSpotLight();
-//    }  
-//
-//    if(FUSEE_L7_ACTIVE != 0.0){
-//        if(FUSEE_L7_ACTIVE == 1.0)
-//            CalcDirectLight(FUSEE_L7_DIFFUSE, FUSEE_L7_AMBIENT, FUSEE_L7_DIRECTION, endIntensity);
-//        if(FUSEE_L7_ACTIVE == 2.0)
-//            CalcPointLight(FUSEE_L7_DIFFUSE, FUSEE_L7_AMBIENT, FUSEE_L7_POSITION, endIntensity);
-//        if(FUSEE_L7_ACTIVE == 3.0)
-//            CalcSpotLight();
-//    }  
+    if(FUSEE_L2_ACTIVE != 0.0){
+        if(FUSEE_L2_ACTIVE == 1.0)
+            CalcDirectLight(FUSEE_L2_DIFFUSE, FUSEE_L2_AMBIENT, FUSEE_L2_DIRECTION, endIntensity);
+        if(FUSEE_L2_ACTIVE == 2.0)
+            CalcPointLight(FUSEE_L2_DIFFUSE, FUSEE_L2_AMBIENT, FUSEE_L2_POSITION, endIntensity);
+        if(FUSEE_L2_ACTIVE == 3.0)
+            CalcSpotLight(FUSEE_L2_DIFFUSE, FUSEE_L2_AMBIENT, FUSEE_L2_POSITION, FUSEE_L2_DIRECTION, FUSEE_L2_SPOTANGLE, endIntensity);
+    }  
+
+    if(FUSEE_L3_ACTIVE != 0.0){
+        if(FUSEE_L3_ACTIVE == 1.0)
+            CalcDirectLight(FUSEE_L3_DIFFUSE, FUSEE_L3_AMBIENT, FUSEE_L3_DIRECTION, endIntensity);
+        if(FUSEE_L3_ACTIVE == 2.0)
+            CalcPointLight(FUSEE_L3_DIFFUSE, FUSEE_L3_AMBIENT, FUSEE_L3_POSITION, endIntensity);
+        if(FUSEE_L3_ACTIVE == 3.0)
+            CalcSpotLight(FUSEE_L3_DIFFUSE, FUSEE_L3_AMBIENT, FUSEE_L3_POSITION, FUSEE_L3_DIRECTION, FUSEE_L3_SPOTANGLE, endIntensity);
+    }  
+
+    if(FUSEE_L4_ACTIVE != 0.0){
+        if(FUSEE_L4_ACTIVE == 1.0)
+            CalcDirectLight(FUSEE_L4_DIFFUSE, FUSEE_L4_AMBIENT, FUSEE_L4_DIRECTION, endIntensity);
+        if(FUSEE_L4_ACTIVE == 2.0)
+            CalcPointLight(FUSEE_L4_DIFFUSE, FUSEE_L4_AMBIENT, FUSEE_L4_POSITION, endIntensity);
+        if(FUSEE_L4_ACTIVE == 3.0)
+            CalcSpotLight(FUSEE_L4_DIFFUSE, FUSEE_L4_AMBIENT, FUSEE_L4_POSITION, FUSEE_L4_DIRECTION, FUSEE_L4_SPOTANGLE, endIntensity);
+    }  
+
+    if(FUSEE_L5_ACTIVE != 0.0){
+        if(FUSEE_L5_ACTIVE == 1.0)
+            CalcDirectLight(FUSEE_L5_DIFFUSE, FUSEE_L5_AMBIENT, FUSEE_L5_DIRECTION, endIntensity);
+        if(FUSEE_L5_ACTIVE == 2.0)
+            CalcPointLight(FUSEE_L5_DIFFUSE, FUSEE_L5_AMBIENT, FUSEE_L5_POSITION, endIntensity);
+        if(FUSEE_L5_ACTIVE == 3.0)
+            CalcSpotLight(FUSEE_L5_DIFFUSE, FUSEE_L5_AMBIENT, FUSEE_L5_POSITION, FUSEE_L5_DIRECTION, FUSEE_L5_SPOTANGLE, endIntensity);
+    }  
+
+    if(FUSEE_L6_ACTIVE != 0.0){
+        if(FUSEE_L6_ACTIVE == 1.0)
+            CalcDirectLight(FUSEE_L6_DIFFUSE, FUSEE_L6_AMBIENT, FUSEE_L6_DIRECTION, endIntensity);
+        if(FUSEE_L6_ACTIVE == 2.0)
+            CalcPointLight(FUSEE_L6_DIFFUSE, FUSEE_L6_AMBIENT, FUSEE_L6_POSITION, endIntensity);
+        if(FUSEE_L6_ACTIVE == 3.0)
+            CalcSpotLight(FUSEE_L6_DIFFUSE, FUSEE_L6_AMBIENT, FUSEE_L6_POSITION, FUSEE_L6_DIRECTION, FUSEE_L6_SPOTANGLE, endIntensity);
+    }  
+
+    if(FUSEE_L7_ACTIVE != 0.0){
+        if(FUSEE_L7_ACTIVE == 1.0)
+            CalcDirectLight(FUSEE_L7_DIFFUSE, FUSEE_L7_AMBIENT, FUSEE_L7_DIRECTION, endIntensity);
+        if(FUSEE_L7_ACTIVE == 2.0)
+            CalcPointLight(FUSEE_L7_DIFFUSE, FUSEE_L7_AMBIENT, FUSEE_L7_POSITION, endIntensity);
+        if(FUSEE_L7_ACTIVE == 3.0)
+            CalcSpotLight(FUSEE_L7_DIFFUSE, FUSEE_L7_AMBIENT, FUSEE_L7_POSITION, FUSEE_L7_DIRECTION, FUSEE_L7_SPOTANGLE, endIntensity);
+    }  
 
     endIntensity = clamp(endIntensity, 0.0, 1.0);
 
@@ -340,6 +351,7 @@ void main()
             uniform mat4 FUSEE_V;
          
             uniform sampler2D texture1;
+            uniform float shininess;
 
             uniform vec3 FUSEE_L0_POSITION;
             uniform vec3 FUSEE_L1_POSITION;
@@ -395,7 +407,14 @@ void main()
             uniform vec4 FUSEE_L6_SPECULAR;
             uniform vec4 FUSEE_L7_SPECULAR;
 
-            uniform float shininess;
+            float FUSEE_L0_SPOTANGLE;
+            float FUSEE_L1_SPOTANGLE;
+            float FUSEE_L2_SPOTANGLE;
+            float FUSEE_L3_SPOTANGLE;
+            float FUSEE_L4_SPOTANGLE;
+            float FUSEE_L5_SPOTANGLE;
+            float FUSEE_L6_SPOTANGLE;
+            float FUSEE_L7_SPOTANGLE;
     
             varying vec3 vNormal;
             varying vec2 vUV;
@@ -408,7 +427,7 @@ void main()
                 intensity += max(dot(-normalize(direction),normalize(vNormal)),0.0) * difColor;
                 vec3 lightVector = normalize(tempDir2);
                 vec3 r = normalize(reflect(lightVector, normalize(vNormalView)));
-                float s = pow(max(dot(r, vec3(0,0,1.0)), 0.0), 16.0);
+                float s = pow(max(dot(r, vec3(0,0,1.0)), 0.0), shininess) * 16.0;
                 intensity += specColor * s;
             }
             void CalcPointLight(vec4 difColor, vec4 ambColor, vec4 specColor, vec3 position, inout vec4 intensity) {
@@ -420,16 +439,28 @@ void main()
                 vec3 lightVector = normalize(-pos);  
                 // Calculate specular term
                 vec3 r = normalize(reflect(lightVector, normalize(vNormalView)));
-                float s = pow(max(dot(r, vec3(0,0,1.0)), 0.0), 16.0);
+                float s = pow(max(dot(r, vec3(0,0,1.0)), 0.0), shininess) * 16.0;
                 intensity += specColor * s;
             }
-            void CalcSpotLight(){
-
+            void CalcSpotLight(vec4 difColor, vec4 ambColor, vec4 specColor, vec3 position, vec3 direction, float angle, inout vec4 intensity){
+                vec4 tempPos = FUSEE_V * vec4(position,1);
+                vec3 tempPos2 = vec3(tempPos)/tempPos.w;
+                intensity += ambColor;
+                vec3 pos = tempPos2 - vViewPos; /// ADD GLOBAL VERTEX-POSITION HERE
+                float alpha = dot(normalize(pos), normalize(mat3(FUSEE_V[0].xyz, FUSEE_V[1].xyz, FUSEE_V[2].xyz) * -direction));
+                if(alpha > angle){
+                    intensity += max(dot(normalize(pos),normalize(vNormalView)),0.0) * difColor; 
+                    vec3 lightVector = normalize(-pos);  
+                    // Calculate specular term
+                    vec3 r = normalize(reflect(lightVector, normalize(vNormalView)));
+                    float s = pow(max(dot(r, vec3(0,0,1.0)), 0.0), shininess) * 16.0;
+                    intensity += specColor * s; 
+                }
             }
 
             void main()
             {              
-         
+                FUSEE_L0_SPOTANGLE = 0.9;
                 vec4 endIntensity = vec4(0, 0, 0, 0);
                 if(FUSEE_L0_ACTIVE != 0.0){
                     if(FUSEE_L0_ACTIVE == 1.0)
@@ -437,7 +468,7 @@ void main()
                     if(FUSEE_L0_ACTIVE == 2.0)
                         CalcPointLight(FUSEE_L0_DIFFUSE, FUSEE_L0_AMBIENT, FUSEE_L0_SPECULAR, FUSEE_L0_POSITION, endIntensity);
                     if(FUSEE_L0_ACTIVE == 3.0)
-                        CalcSpotLight();
+                        CalcSpotLight(FUSEE_L0_DIFFUSE, FUSEE_L0_AMBIENT, FUSEE_L0_SPECULAR, FUSEE_L0_POSITION, FUSEE_L0_DIRECTION, FUSEE_L0_SPOTANGLE, endIntensity);
                 }    
                 if(FUSEE_L1_ACTIVE != 0.0){
                     if(FUSEE_L1_ACTIVE == 1.0)
@@ -445,7 +476,7 @@ void main()
                     if(FUSEE_L1_ACTIVE == 2.0)
                         CalcPointLight(FUSEE_L1_DIFFUSE, FUSEE_L1_AMBIENT, FUSEE_L1_SPECULAR, FUSEE_L1_POSITION, endIntensity);
                     if(FUSEE_L1_ACTIVE == 3.0)
-                        CalcSpotLight();
+                        CalcSpotLight(FUSEE_L1_DIFFUSE, FUSEE_L1_AMBIENT, FUSEE_L1_SPECULAR, FUSEE_L1_POSITION, FUSEE_L1_DIRECTION, FUSEE_L1_SPOTANGLE, endIntensity);
                 } 
                 if(FUSEE_L2_ACTIVE != 0.0){
                     if(FUSEE_L2_ACTIVE == 1.0)
@@ -453,7 +484,7 @@ void main()
                     if(FUSEE_L2_ACTIVE == 2.0)
                         CalcPointLight(FUSEE_L2_DIFFUSE, FUSEE_L2_AMBIENT, FUSEE_L2_SPECULAR, FUSEE_L2_POSITION, endIntensity);
                     if(FUSEE_L2_ACTIVE == 3.0)
-                        CalcSpotLight();
+                        CalcSpotLight(FUSEE_L2_DIFFUSE, FUSEE_L2_AMBIENT, FUSEE_L2_SPECULAR, FUSEE_L2_POSITION, FUSEE_L2_DIRECTION, FUSEE_L2_SPOTANGLE, endIntensity);
                 } 
                 if(FUSEE_L3_ACTIVE != 0.0){
                     if(FUSEE_L3_ACTIVE == 1.0)
@@ -461,7 +492,7 @@ void main()
                     if(FUSEE_L3_ACTIVE == 2.0)
                         CalcPointLight(FUSEE_L3_DIFFUSE, FUSEE_L3_AMBIENT, FUSEE_L3_SPECULAR, FUSEE_L3_POSITION, endIntensity);
                     if(FUSEE_L3_ACTIVE == 3.0)
-                        CalcSpotLight();
+                        CalcSpotLight(FUSEE_L3_DIFFUSE, FUSEE_L3_AMBIENT, FUSEE_L3_SPECULAR, FUSEE_L3_POSITION, FUSEE_L3_DIRECTION, FUSEE_L3_SPOTANGLE, endIntensity);
                 }    
                 if(FUSEE_L4_ACTIVE != 0.0){
                     if(FUSEE_L4_ACTIVE == 1.0)
@@ -469,7 +500,7 @@ void main()
                     if(FUSEE_L4_ACTIVE == 2.0)
                         CalcPointLight(FUSEE_L4_DIFFUSE, FUSEE_L4_AMBIENT, FUSEE_L4_SPECULAR, FUSEE_L4_POSITION, endIntensity);
                     if(FUSEE_L4_ACTIVE == 3.0)
-                        CalcSpotLight();
+                        CalcSpotLight(FUSEE_L4_DIFFUSE, FUSEE_L4_AMBIENT, FUSEE_L4_SPECULAR, FUSEE_L4_POSITION, FUSEE_L4_DIRECTION, FUSEE_L4_SPOTANGLE, endIntensity);
                 }                     
                 if(FUSEE_L5_ACTIVE != 0.0){
                     if(FUSEE_L5_ACTIVE == 1.0)
@@ -477,7 +508,7 @@ void main()
                     if(FUSEE_L5_ACTIVE == 2.0)
                         CalcPointLight(FUSEE_L5_DIFFUSE, FUSEE_L5_AMBIENT, FUSEE_L5_SPECULAR, FUSEE_L5_POSITION, endIntensity);
                     if(FUSEE_L5_ACTIVE == 3.0)
-                        CalcSpotLight();
+                        CalcSpotLight(FUSEE_L5_DIFFUSE, FUSEE_L5_AMBIENT, FUSEE_L5_SPECULAR, FUSEE_L5_POSITION, FUSEE_L5_DIRECTION, FUSEE_L5_SPOTANGLE, endIntensity);
                 }    
                 if(FUSEE_L6_ACTIVE != 0.0){
                     if(FUSEE_L6_ACTIVE == 1.0)
@@ -485,7 +516,7 @@ void main()
                     if(FUSEE_L6_ACTIVE == 2.0)
                         CalcPointLight(FUSEE_L6_DIFFUSE, FUSEE_L6_AMBIENT, FUSEE_L6_SPECULAR, FUSEE_L6_POSITION, endIntensity);
                     if(FUSEE_L6_ACTIVE == 3.0)
-                        CalcSpotLight();
+                        CalcSpotLight(FUSEE_L6_DIFFUSE, FUSEE_L6_AMBIENT, FUSEE_L6_SPECULAR, FUSEE_L6_POSITION, FUSEE_L6_DIRECTION, FUSEE_L6_SPOTANGLE, endIntensity);
                 }  
                 if(FUSEE_L7_ACTIVE != 0.0){
                     if(FUSEE_L7_ACTIVE == 1.0)
@@ -493,10 +524,10 @@ void main()
                     if(FUSEE_L7_ACTIVE == 2.0)
                         CalcPointLight(FUSEE_L7_DIFFUSE, FUSEE_L7_AMBIENT, FUSEE_L7_SPECULAR, FUSEE_L7_POSITION, endIntensity);
                     if(FUSEE_L7_ACTIVE == 3.0)
-                        CalcSpotLight();
+                        CalcSpotLight(FUSEE_L7_DIFFUSE, FUSEE_L7_AMBIENT, FUSEE_L7_SPECULAR, FUSEE_L7_POSITION, FUSEE_L7_DIRECTION, FUSEE_L7_SPOTANGLE, endIntensity);
                 }      
 
-                endIntensity = clamp(endIntensity, 0.0, 1.0);
+                //endIntensity = clamp(endIntensity, 0.0, 1.0);
                 gl_FragColor = texture2D(texture1, vUV) * endIntensity; 
             }";
 
