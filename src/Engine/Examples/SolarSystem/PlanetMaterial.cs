@@ -1,7 +1,7 @@
 ﻿using Fusee.Engine;
 using Fusee.SceneManagement;
 
-namespace Examples.SolarSystem
+namespace Examples.Solar
 {
     public class PlanetMaterial : Material
     {

@@ -3,7 +3,7 @@ using Fusee.Engine;
 using Fusee.Math;
 using Fusee.SceneManagement;
 
-namespace Examples.SolarSystem
+namespace Examples.Solar
 {
     internal class RotationScript : ActionCode
     {

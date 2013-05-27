@@ -9,8 +9,8 @@
     <ProjectGuid>{F7118566-EBBE-4001-9074-8FCD69A8F51F}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Examples.SolarSystem</RootNamespace>
-    <AssemblyName>Examples.SolarSystem</AssemblyName>
+    <RootNamespace>Examples.Solar</RootNamespace>
+    <AssemblyName>Examples.Solar</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
@@ -53,7 +53,7 @@
     <Compile Include="PlanetAction.cs" />
     <Compile Include="PlanetMaterial.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SolarSystem.cs" />
+    <Compile Include="Solar.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\earth.jpg">
