@@ -201,8 +201,16 @@ void CalcPointLight(vec4 difColor, vec4 ambColor, vec3 position, inout vec4 inte
     intensity += max(dot(normalize(pos),normalize(vNormal)),0.0) * difColor;   
 }
 
-void CalcSpotLight() {
-    // add diffuse light calculation for spotlight here
+void CalcSpotLight(vec4 difColor, vec4 ambColor, vec3 position, vec3 direction, float angle, inout vec4 intensity) {
+    vec4 tempPos = FUSEE_V * vec4(position,1);
+    vec3 tempPos2 = vec3(tempPos)/tempPos.w;
+    intensity += ambColor;
+    vec3 pos = position - vGlobalPos; /// ADD GLOBAL VERTEX-POSITION HERE
+    float alpha = dot(normalize(pos), normalize(-direction));
+    if(alpha > angle){
+        intensity += max(dot(normalize(pos),normalize(vNormal)),0.0) * difColor;  
+    }
+    //intensity += max(dot(normalize(pos),normalize(vNormal)),0.0) * difColor;  
 }
  
 void main()
@@ -214,71 +222,71 @@ void main()
         if(FUSEE_L0_ACTIVE == 2.0)
             CalcPointLight(FUSEE_L0_DIFFUSE, FUSEE_L0_AMBIENT, FUSEE_L0_POSITION, endIntensity);
         if(FUSEE_L0_ACTIVE == 3.0)
-            CalcSpotLight();
+            CalcSpotLight(FUSEE_L0_DIFFUSE, FUSEE_L0_AMBIENT, FUSEE_L0_POSITION, FUSEE_L0_DIRECTION, 0.96, endIntensity);
     }  
 
-    if(FUSEE_L1_ACTIVE != 0.0){
-        if(FUSEE_L1_ACTIVE == 1.0)
-            CalcDirectLight(FUSEE_L1_DIFFUSE, FUSEE_L1_AMBIENT, FUSEE_L1_DIRECTION, endIntensity);
-        if(FUSEE_L1_ACTIVE == 2.0)
-            CalcPointLight(FUSEE_L1_DIFFUSE, FUSEE_L1_AMBIENT, FUSEE_L1_POSITION, endIntensity);
-        if(FUSEE_L1_ACTIVE == 3.0)
-            CalcSpotLight();
-    }  
+//    if(FUSEE_L1_ACTIVE != 0.0){
+//        if(FUSEE_L1_ACTIVE == 1.0)
+//            CalcDirectLight(FUSEE_L1_DIFFUSE, FUSEE_L1_AMBIENT, FUSEE_L1_DIRECTION, endIntensity);
+//        if(FUSEE_L1_ACTIVE == 2.0)
+//            CalcPointLight(FUSEE_L1_DIFFUSE, FUSEE_L1_AMBIENT, FUSEE_L1_POSITION, endIntensity);
+//        if(FUSEE_L1_ACTIVE == 3.0)
+//            CalcSpotLight();
+//    }  
 
-    if(FUSEE_L2_ACTIVE != 0.0){
-        if(FUSEE_L2_ACTIVE == 1.0)
-            CalcDirectLight(FUSEE_L2_DIFFUSE, FUSEE_L2_AMBIENT, FUSEE_L2_DIRECTION, endIntensity);
-        if(FUSEE_L2_ACTIVE == 2.0)
-            CalcPointLight(FUSEE_L2_DIFFUSE, FUSEE_L2_AMBIENT, FUSEE_L2_POSITION, endIntensity);
-        if(FUSEE_L2_ACTIVE == 3.0)
-            CalcSpotLight();
-    }  
-
-    if(FUSEE_L3_ACTIVE != 0.0){
-        if(FUSEE_L3_ACTIVE == 1.0)
-            CalcDirectLight(FUSEE_L3_DIFFUSE, FUSEE_L3_AMBIENT, FUSEE_L3_DIRECTION, endIntensity);
-        if(FUSEE_L3_ACTIVE == 2.0)
-            CalcPointLight(FUSEE_L3_DIFFUSE, FUSEE_L3_AMBIENT, FUSEE_L3_POSITION, endIntensity);
-        if(FUSEE_L3_ACTIVE == 3.0)
-            CalcSpotLight();
-    }  
-
-    if(FUSEE_L4_ACTIVE != 0.0){
-        if(FUSEE_L4_ACTIVE == 1.0)
-            CalcDirectLight(FUSEE_L4_DIFFUSE, FUSEE_L4_AMBIENT, FUSEE_L4_DIRECTION, endIntensity);
-        if(FUSEE_L4_ACTIVE == 2.0)
-            CalcPointLight(FUSEE_L4_DIFFUSE, FUSEE_L4_AMBIENT, FUSEE_L4_POSITION, endIntensity);
-        if(FUSEE_L4_ACTIVE == 3.0)
-            CalcSpotLight();
-    }  
-
-    if(FUSEE_L5_ACTIVE != 0.0){
-        if(FUSEE_L5_ACTIVE == 1.0)
-            CalcDirectLight(FUSEE_L5_DIFFUSE, FUSEE_L5_AMBIENT, FUSEE_L5_DIRECTION, endIntensity);
-        if(FUSEE_L5_ACTIVE == 2.0)
-            CalcPointLight(FUSEE_L5_DIFFUSE, FUSEE_L5_AMBIENT, FUSEE_L5_POSITION, endIntensity);
-        if(FUSEE_L5_ACTIVE == 3.0)
-            CalcSpotLight();
-    }  
-
-    if(FUSEE_L6_ACTIVE != 0.0){
-        if(FUSEE_L6_ACTIVE == 1.0)
-            CalcDirectLight(FUSEE_L6_DIFFUSE, FUSEE_L6_AMBIENT, FUSEE_L6_DIRECTION, endIntensity);
-        if(FUSEE_L6_ACTIVE == 2.0)
-            CalcPointLight(FUSEE_L6_DIFFUSE, FUSEE_L6_AMBIENT, FUSEE_L6_POSITION, endIntensity);
-        if(FUSEE_L6_ACTIVE == 3.0)
-            CalcSpotLight();
-    }  
-
-    if(FUSEE_L7_ACTIVE != 0.0){
-        if(FUSEE_L7_ACTIVE == 1.0)
-            CalcDirectLight(FUSEE_L7_DIFFUSE, FUSEE_L7_AMBIENT, FUSEE_L7_DIRECTION, endIntensity);
-        if(FUSEE_L7_ACTIVE == 2.0)
-            CalcPointLight(FUSEE_L7_DIFFUSE, FUSEE_L7_AMBIENT, FUSEE_L7_POSITION, endIntensity);
-        if(FUSEE_L7_ACTIVE == 3.0)
-            CalcSpotLight();
-    }  
+//    if(FUSEE_L2_ACTIVE != 0.0){
+//        if(FUSEE_L2_ACTIVE == 1.0)
+//            CalcDirectLight(FUSEE_L2_DIFFUSE, FUSEE_L2_AMBIENT, FUSEE_L2_DIRECTION, endIntensity);
+//        if(FUSEE_L2_ACTIVE == 2.0)
+//            CalcPointLight(FUSEE_L2_DIFFUSE, FUSEE_L2_AMBIENT, FUSEE_L2_POSITION, endIntensity);
+//        if(FUSEE_L2_ACTIVE == 3.0)
+//            CalcSpotLight();
+//    }  
+//
+//    if(FUSEE_L3_ACTIVE != 0.0){
+//        if(FUSEE_L3_ACTIVE == 1.0)
+//            CalcDirectLight(FUSEE_L3_DIFFUSE, FUSEE_L3_AMBIENT, FUSEE_L3_DIRECTION, endIntensity);
+//        if(FUSEE_L3_ACTIVE == 2.0)
+//            CalcPointLight(FUSEE_L3_DIFFUSE, FUSEE_L3_AMBIENT, FUSEE_L3_POSITION, endIntensity);
+//        if(FUSEE_L3_ACTIVE == 3.0)
+//            CalcSpotLight();
+//    }  
+//
+//    if(FUSEE_L4_ACTIVE != 0.0){
+//        if(FUSEE_L4_ACTIVE == 1.0)
+//            CalcDirectLight(FUSEE_L4_DIFFUSE, FUSEE_L4_AMBIENT, FUSEE_L4_DIRECTION, endIntensity);
+//        if(FUSEE_L4_ACTIVE == 2.0)
+//            CalcPointLight(FUSEE_L4_DIFFUSE, FUSEE_L4_AMBIENT, FUSEE_L4_POSITION, endIntensity);
+//        if(FUSEE_L4_ACTIVE == 3.0)
+//            CalcSpotLight();
+//    }  
+//
+//    if(FUSEE_L5_ACTIVE != 0.0){
+//        if(FUSEE_L5_ACTIVE == 1.0)
+//            CalcDirectLight(FUSEE_L5_DIFFUSE, FUSEE_L5_AMBIENT, FUSEE_L5_DIRECTION, endIntensity);
+//        if(FUSEE_L5_ACTIVE == 2.0)
+//            CalcPointLight(FUSEE_L5_DIFFUSE, FUSEE_L5_AMBIENT, FUSEE_L5_POSITION, endIntensity);
+//        if(FUSEE_L5_ACTIVE == 3.0)
+//            CalcSpotLight();
+//    }  
+//
+//    if(FUSEE_L6_ACTIVE != 0.0){
+//        if(FUSEE_L6_ACTIVE == 1.0)
+//            CalcDirectLight(FUSEE_L6_DIFFUSE, FUSEE_L6_AMBIENT, FUSEE_L6_DIRECTION, endIntensity);
+//        if(FUSEE_L6_ACTIVE == 2.0)
+//            CalcPointLight(FUSEE_L6_DIFFUSE, FUSEE_L6_AMBIENT, FUSEE_L6_POSITION, endIntensity);
+//        if(FUSEE_L6_ACTIVE == 3.0)
+//            CalcSpotLight();
+//    }  
+//
+//    if(FUSEE_L7_ACTIVE != 0.0){
+//        if(FUSEE_L7_ACTIVE == 1.0)
+//            CalcDirectLight(FUSEE_L7_DIFFUSE, FUSEE_L7_AMBIENT, FUSEE_L7_DIRECTION, endIntensity);
+//        if(FUSEE_L7_ACTIVE == 2.0)
+//            CalcPointLight(FUSEE_L7_DIFFUSE, FUSEE_L7_AMBIENT, FUSEE_L7_POSITION, endIntensity);
+//        if(FUSEE_L7_ACTIVE == 3.0)
+//            CalcSpotLight();
+//    }  
 
     endIntensity = clamp(endIntensity, 0.0, 1.0);
 
