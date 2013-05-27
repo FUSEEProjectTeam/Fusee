@@ -16,7 +16,7 @@ namespace Tests
 
         public void Math()
         {
-            var core = new CoreTest();
+            new CoreTest();
         }
     }
 }

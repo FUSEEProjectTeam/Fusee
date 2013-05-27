@@ -1,6 +1,4 @@
-﻿#pragma warning disable 1591 //disables the warning about missing XML-comments
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Fusee.Math;
 using JSIL.Meta;
@@ -80,5 +78,3 @@ namespace Fusee.Engine
         IMeshImp CreateMeshImp();
     }
 }
-
-#pragma warning restore 1591

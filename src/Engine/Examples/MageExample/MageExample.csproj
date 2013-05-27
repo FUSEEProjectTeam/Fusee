@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">$(ProjectDir)../../../../</SolutionDir>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
@@ -10,7 +11,6 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Examples.MageExample</RootNamespace>
     <AssemblyName>Examples.MageExample</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
@@ -51,13 +51,27 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\mageBodyOBJ.obj">
+    <Content Include="Assets\HandAOMap.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\HandschuhNormalMap.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\TextureAtlas.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\TextureAtlasNormal.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\mageBodyOBJ.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Assets\mageGloveLOBJ.obj">
+    <None Include="Assets\mageGloveLOBJ.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Assets\mageGloveROBJ.obj">
+    <None Include="Assets\mageGloveROBJ.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -76,40 +90,17 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Assets\TextureAtlasNormal.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\TextureAtlas.tif">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\HandAOMap.tif">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\HandschuhNormalMap.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Assets\mageBodyOBJ.obj.model">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Assets\mageGloveLOBJ.obj.model">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Assets\mageGloveROBJ.obj.model">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <Reference Include="System" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)/Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
     </PostBuildEvent>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">$(ProjectDir)../../../../</SolutionDir>
   </PropertyGroup>
   <Target Name="Clean">
-    <Exec Condition=" '$(OS)' == 'Windows_NT' And Exists('$(OutputPath)') " Command="rd /s /q $(OutputPath)" />
+    <Exec Condition=" '$(OS)' == 'Windows_NT' And Exists('$(OutputPath)') " Command="rd /s /q &quot;$(OutputPath)&quot;" />
     <Exec Condition=" '$(OS)' != 'Windows_NT' And Exists('$(OutputPath)') " Command="rm '$(OutputPath)' -r -f" />
   </Target>
-  <Import Project="$(SolutionDir)/Fusee_Windows.targets" Condition="'$(PostBuildEvent)' == '' And '$(OS)' == 'Windows_NT' " />
-  <Import Project="$(SolutionDir)/Fusee_Linux.targets" Condition="'$(PostBuildEvent)' == '' And '$(OS)' != 'Windows_NT' " />
+  <Import Project="$(SolutionDir)Fusee_Windows.targets" Condition="'$(PostBuildEvent)' == '' And '$(OS)' == 'Windows_NT' " />
+  <Import Project="$(SolutionDir)Fusee_Linux.targets" Condition="'$(PostBuildEvent)' == '' And '$(OS)' != 'Windows_NT' " />
 </Project>

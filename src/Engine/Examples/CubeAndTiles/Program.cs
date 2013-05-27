@@ -1,10 +1,13 @@
-﻿using Fusee.Engine;
+﻿using System;
+using Fusee.Engine;
 using Fusee.Math;
 
 namespace Examples.CubeAndTiles
 {
     public class CubeAndTiles : RenderCanvas
     {
+        #region Shader
+
         // GLSL
         private const string Vs = @"
             /* Copies incoming vertex color without change.
@@ -59,6 +62,8 @@ namespace Examples.CubeAndTiles
                 gl_FragColor = dot(vColor, vec4(0, 0, 0, 1)) * colTex * dot(vNormal, vec3(0, 0, 1));
             }";
 
+        #endregion
+
         // variables
         private static Level _exampleLevel;
         private static Anaglyph3D _anaglyph3D;
@@ -79,12 +84,12 @@ namespace Examples.CubeAndTiles
         // Init()
         public override void Init()
         {
+            RC.ClearColor = new float4(0, 0, 0, 1);
+            
             _spNonAnaglyph = RC.CreateShader(Vs, PsStart + PsNonAnaglyph);
             _spAnaglyph = RC.CreateShader(Vs, PsStart + PsAnaglyph);
 
             RC.SetShader(_spNonAnaglyph);
-
-            RC.ClearColor = new float4(0, 0, 0, 1);
 
             _anaglyph3D = new Anaglyph3D(RC);
             _exampleLevel = new Level(RC, _spNonAnaglyph, _anaglyph3D);
@@ -118,6 +123,12 @@ namespace Examples.CubeAndTiles
                     }
 
                     _lastKey = KeyCodes.V;
+                }
+
+                if (Input.Instance.IsKeyDown(KeyCodes.S))
+                {
+                    Audio.Instance.SetVolume(Audio.Instance.GetVolume() > 0 ? 0 : 100);
+                    _lastKey = KeyCodes.S;
                 }
 
                 if (Input.Instance.IsKeyDown(KeyCodes.C))
@@ -157,7 +168,7 @@ namespace Examples.CubeAndTiles
             }
             else
             {
-                var curDamp = (float) System.Math.Exp(-Damping*Time.Instance.DeltaTime);
+                var curDamp = (float) Math.Exp(-Damping*Time.Instance.DeltaTime);
 
                 _angleVelHorz *= curDamp;
                 _angleVelVert *= curDamp;
@@ -177,7 +188,7 @@ namespace Examples.CubeAndTiles
         {
             RC.Viewport(0, 0, Width, Height);
 
-            var aspectRatio = Width / (float)Height;
+            var aspectRatio = Width/(float) Height;
             RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 10000);
         }
 

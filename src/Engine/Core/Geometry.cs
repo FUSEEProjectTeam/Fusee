@@ -184,7 +184,7 @@ namespace Fusee.Engine
                     throw new ArgumentException("Number of normal indices must match number of vertex indices",
                                                 "normalInx");
 
-                f.InxTexCoord = new int[normalInx.Length];
+                f.InxNormal = new int[normalInx.Length];
                 for (i = 0; i < normalInx.Length; i++)
                 {
                     if (!(0 <= normalInx[i] && normalInx[i] < _normals.Count))

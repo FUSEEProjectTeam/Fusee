@@ -1426,6 +1426,12 @@ namespace Fusee.Math
             return vec;
         }
 
+        /// <summary>
+        /// Multiplies two instances.
+        /// </summary>
+        /// <param name="vec1">The first instance.</param>
+        /// <param name="vec2">The second instance.</param>
+        /// <returns>The result of the multiplication.</returns>
         public static float3 operator *(float3 vec1, float3 vec2)
         {
             vec1.x *= vec2.x;

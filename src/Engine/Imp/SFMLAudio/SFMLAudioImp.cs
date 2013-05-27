@@ -53,8 +53,8 @@ namespace Fusee.Engine
                 }
 
             IAudioStream tmpAudioStream = tmpSndBuffer == null
-                                 ? new AudioStream(fileName, streaming, this)
-                                 : new AudioStream(fileName, tmpSndBuffer, this);
+                                 ? new AudioStream(fileName, streaming)
+                                 : new AudioStream(fileName, tmpSndBuffer);
 
             _allStreams.Add((AudioStream) tmpAudioStream);
 

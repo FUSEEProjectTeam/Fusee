@@ -5,8 +5,8 @@
   <Target Name="BeforeBuild" Condition=" '$(OS)' != 'Windows_NT' ">
     <Message Importance="High" Text="### BeforeBuildEvent $(TargetName): Copying necessary files ###" />
     <MakeDir Directories="$(OutputPath)" Condition="!Exists('$(OutputPath)')" />
-    <Exec Command="rsync -a $(OutputPath)../../*.dll $(OutputPath)" />
-    <Exec Command="rsync -a $(SolutionDir)ExternalBinaries/SFML/*.so* $(OutputPath)" />
+    <Exec Command="cp -a $(OutputPath)../../*.dll $(OutputPath)" />
+    <Exec Command="cp -a $(SolutionDir)ExternalBinaries/SFML/*.so* $(OutputPath)" />
   </Target> 
   
   <!--- AfterBuild on Non-Windows -->
@@ -20,9 +20,9 @@
     <Exec ContinueOnError="true" Timeout="60000" Command='mono "$(SolutionDir)ExternalBinaries/JSIL/Compiler/JSILc.exe" -o "$(OutputPath)Web/Assets/Scripts" "$(TargetPath)"' />
 
     <Message Importance="High" Text="### PostBuildEvent $(TargetName): Copying additional scripts/styles ###" />
-    <Exec Command="rsync -a $(OutputPath)../../WebGL/Scripts/*.* $(OutputPath)Web/Assets/Scripts" />
-    <Exec Command="rsync -a $(OutputPath)../../WebGL/Styles/*.* $(OutputPath)Web/Assets/Styles" />
-    <Exec Command="rsync -a $(OutputPath)../../WebAudio/*.* $(OutputPath)Web/Assets/Scripts" />
+    <Exec Command="cp -a -u $(OutputPath)../../WebGL/Scripts/*.* $(OutputPath)Web/Assets/Scripts" />
+    <Exec Command="cp -a -u $(OutputPath)../../WebGL/Styles/*.* $(OutputPath)Web/Assets/Styles" />
+    <Exec Command="cp -a -u $(OutputPath)../../WebAudio/*.* $(OutputPath)Web/Assets/Scripts" />
 
     <Message Importance="High" Text="### PostBuildEvent $(TargetName): Creating default HTML file ###" />
     <Exec ContinueOnError="true" Timeout="60000" Command='mono "$(SolutionDir)ExternalBinaries/JSIL/Compiler/fuHTMLGen.exe" "$(OutputPath)" "$(OutputPath)Web/" "$(TargetPath)"' />
