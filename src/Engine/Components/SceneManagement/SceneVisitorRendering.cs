@@ -120,9 +120,10 @@ namespace Fusee.SceneManagement
                     _mtxModelViewStack.Push(transform.Matrix * _mtxModelViewStack.Pop());
                     if (SceneManager.RC.frustum.SphereInFrustum(transform.GlobalPosition, transform.GlobalScale.y))
                     {
-                        _hasTransform.Pop();       
+                        _hasTransform.Pop();
                         _hasTransform.Push(true);
                     }
+                    
                     
                     
                     if (HasRenderingTriple())
@@ -138,6 +139,10 @@ namespace Fusee.SceneManagement
                 {
                     _hasTransform.Pop();
                     _hasTransform.Push(true);
+                }
+                else if(transform.SceneEntity.name == "Mercury")
+                {
+                    Debug.WriteLine("Fail");
                 }
                 
                 

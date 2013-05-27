@@ -98,7 +98,7 @@ namespace Fusee.Engine
             frustum[5, 1] /= t;
             frustum[5, 2] /= t;
             frustum[5, 3] /= t;
-            Debug.WriteLine(mvp);
+            //Debug.WriteLine(mvp);
         }
 
         public bool PointInFrustum(float3 point)

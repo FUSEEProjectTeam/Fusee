@@ -19,7 +19,7 @@ namespace Examples.Solar
         }
         public override void Start()
         {
-            transform.LocalEulerAngles = new float3(0, 0, 0);
+            //transform.LocalEulerAngles = new float3(0, 0, 0);
             if (SceneEntity.name == "Earth")
             {
                 Debug.WriteLine("erde besucht");
