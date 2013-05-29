@@ -19,6 +19,11 @@ namespace Fusse.KeyFrameAnimation
             _channels.Add(baseChannel);
         }
 
+        public void RemoveChannel(int channelPosition)
+        {
+            _channels.RemoveAt(channelPosition);
+        }
+
         public void SetTick(float time)
         {
             foreach (var baseChannel in _channels)
