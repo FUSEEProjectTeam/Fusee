@@ -2,6 +2,7 @@ Fusee is licensed under the MIT license.
 All third-party implementations to Fusee retain their respective license.
 
 - OpenTK - http://www.opentk.com/ - MIT
+- JSIL - http://www.jsil.org/ - MIT/X11
 - NUnit - http://www.nunit.org/ - based on zlib/libpng
 - SFML - http://www.sfml-dev.org/ - zlib/libpng
 - OpenAL - http://connect.creativelabs.com/openal/default.aspx - LGPL
