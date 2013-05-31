@@ -88,7 +88,6 @@ namespace hsfurtwangen.dsteffen.lfg
             );
             HandleFace fHndl = new HandleFace();
             fHndl._DataIndex = _LfacePtrCont.Count - 1;
-
             return fHndl;
         }
 
@@ -149,16 +148,24 @@ namespace hsfurtwangen.dsteffen.lfg
             foreach (int hedgeIndex in EincomingHEdges)
             {
                 List<float3> LfaceNormals = new List<float3>();
-                float3 currentNormal = _LfaceNormals[_LfacePtrCont[_LhedgePtrCont[hedgeIndex]._f._DataIndex]._fn._DataIndex];
+                int faceIndex = _LhedgePtrCont[hedgeIndex]._f._DataIndex;
+                if (faceIndex == -1)
+                    continue;
+
+                float3 currentNormal = _LfaceNormals[_LfacePtrCont[faceIndex]._fn._DataIndex];
                 float3 normalAggregate = new float3();
                 foreach (int eincomingHEdge in EincomingHEdges)
                 {
-                    if (eincomingHEdge == hedgeIndex) {
+                    if (eincomingHEdge == hedgeIndex)
+                    {
                         normalAggregate += currentNormal;
                         continue;
                     }
+                    int faceIndex2 = _LhedgePtrCont[eincomingHEdge]._f._DataIndex;
+                    if (faceIndex2 == -1)
+                        continue;
 
-                    float3 normalToCompare = _LfaceNormals[_LfacePtrCont[_LhedgePtrCont[eincomingHEdge]._f._DataIndex]._fn._DataIndex];
+                    float3 normalToCompare = _LfaceNormals[_LfacePtrCont[faceIndex2]._fn._DataIndex];
                     float dot = float3.Dot(currentNormal, normalToCompare);
                     double angle = _SmoothingAngle;
                     double acos = System.Math.Acos(dot) * (180 / 3.141592);
@@ -386,8 +393,8 @@ namespace hsfurtwangen.dsteffen.lfg
                      * Update the pointers of the edge
                      */
 
+                    Debug.WriteLine("Both edges are already in use and don't point to the current face. Do something different.");
                     /*
-                    Debug.WriteLine("Both edges are already in use. Do something different.");
 
                     HandleVertex v1Handle = hedgePtrCont1._v;
                     HandleVertex v2Handle = hedgePtrCont2._v;
@@ -503,12 +510,11 @@ namespace hsfurtwangen.dsteffen.lfg
         public bool GetOrAddConnection(HandleVertex hv1, HandleVertex hv2, out HandleEdge he)
         {
             int index = -1;
+            bool returnVal = false;
             if (_LedgePtrCont.Count != 0 && _LhedgePtrCont.Count != 0)
             {
                 index = _LedgePtrCont.FindIndex(
-                    edgePtrCont => _LhedgePtrCont[edgePtrCont._he1._DataIndex]._v._DataIndex == hv1._DataIndex && _LhedgePtrCont[edgePtrCont._he2._DataIndex]._v._DataIndex == hv2._DataIndex
-                        ||
-                    _LhedgePtrCont[edgePtrCont._he1._DataIndex]._v._DataIndex == hv2._DataIndex && _LhedgePtrCont[edgePtrCont._he2._DataIndex]._v._DataIndex == hv1._DataIndex
+                    edgePtrCont => _LhedgePtrCont[edgePtrCont._he1._DataIndex]._v._DataIndex == hv1._DataIndex && _LhedgePtrCont[edgePtrCont._he2._DataIndex]._v._DataIndex == hv2._DataIndex || _LhedgePtrCont[edgePtrCont._he1._DataIndex]._v._DataIndex == hv2._DataIndex && _LhedgePtrCont[edgePtrCont._he2._DataIndex]._v._DataIndex == hv1._DataIndex
                     );
             }
             if (index >= 0)
@@ -518,7 +524,7 @@ namespace hsfurtwangen.dsteffen.lfg
                     Console.WriteLine("     Existing edge found - Not creating a new one.");
                 }
                 he = new HandleEdge() { _DataIndex = index };
-                return true;
+                returnVal = true;
             }
             else
             {
@@ -526,10 +532,10 @@ namespace hsfurtwangen.dsteffen.lfg
                 {
                     Console.WriteLine("     Edge not found - creating new one.");
                 }
-
                 he._DataIndex = CreateConnection(hv1, hv2)._DataIndex;
-                return false;
+                returnVal = false;
             }
+            return returnVal;
         }
 
 

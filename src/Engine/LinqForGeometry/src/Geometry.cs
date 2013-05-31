@@ -250,7 +250,7 @@ namespace hsfurtwangen.dsteffen.lfg
         }
 
         /// <summary>
-        /// Adds a vertex to the geometry container. Can then be controlled by the kernel
+        /// Adds a vertex to the geometry container.
         /// </summary>
         /// <param name="val"></param>
         public HandleVertex AddVertex(float3 val)
@@ -282,6 +282,8 @@ namespace hsfurtwangen.dsteffen.lfg
                 _GeometryContainer.AddFace(gf)
                 );
 
+            Debug.WriteLine("Current Face -> AddFace: " + _LfaceHndl[_LfaceHndl.Count - 1]._DataIndex);
+
             List<HandleVertex> LhFaceVerts = new List<HandleVertex>();
             foreach (float3 vVal in gf._LFVertices)
             {
@@ -289,14 +291,6 @@ namespace hsfurtwangen.dsteffen.lfg
                         AddVertex(vVal)
                     );
             }
-
-            /*
-            // Add the uv pair to a tmp list. This is for the actual face for the vertices.
-            foreach (float2 uvpair in gf._UV)
-            {
-                _GeometryContainer._LuvCoordinates.Add(uvpair);
-            }
-            */
 
             List<HandleEdge> LtmpEdgesForFace = new List<HandleEdge>();
             int vertsCount = LhFaceVerts.Count;
@@ -348,9 +342,7 @@ namespace hsfurtwangen.dsteffen.lfg
             // Hand over the list of edges that are used for this face. Now build up the connections.
             _GeometryContainer.UpdateCWHedges(LtmpEdgesForFace);
 
-            // TODO: Try here to set the uvs?
-            int currentFaceIndex = _LfaceHndl.Count - 1;
-            _GeometryContainer.InsertUVCoordinatesForFace(new HandleFace() { _DataIndex = currentFaceIndex }, gf._UV);
+            _GeometryContainer.InsertUVCoordinatesForFace(new HandleFace() { _DataIndex = _LfaceHndl.Count - 1 }, gf._UV);
         }
 
 
