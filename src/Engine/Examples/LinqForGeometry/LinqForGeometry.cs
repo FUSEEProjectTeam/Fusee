@@ -104,8 +104,8 @@ namespace Examples.LinqForGeometry
         public override void Init()
         {
             // Use the Fusee MeshReader to test against mine...
-            //_FuseeMesh = MeshReader.LoadMesh("Assets/Cube.obj.model");
-            _FuseeMesh = MeshReader.LoadMesh("Assets/Sphere.obj.model");
+            _FuseeMesh = MeshReader.LoadMesh("Assets/Cube.obj.model");
+            //_FuseeMesh = MeshReader.LoadMesh("Assets/Sphere.obj.model");
             //_FuseeMesh = MeshReader.LoadMesh("Assets/Teapot.obj.model");
             //_FuseeMesh = MeshReader.LoadMesh("Assets/Teapot_triangular.obj.model");
             //_FuseeMesh = MeshReader.LoadMesh("Assets/Stanford_Bunny.obj.model");
@@ -114,8 +114,8 @@ namespace Examples.LinqForGeometry
             // This would be a solution to step over the MeshReader Class
             // Important for now to use the transformation methods on the data structure.
             _Geo = new Geometry();
-            //_Geo.LoadAsset("Assets/Cube.obj.model");
-            _Geo.LoadAsset("Assets/Sphere.obj.model");
+            _Geo.LoadAsset("Assets/Cube.obj.model");
+            //_Geo.LoadAsset("Assets/Sphere.obj.model");
             //_Geo.LoadAsset("Assets/Teapot.obj.model");
             //_Geo.LoadAsset("Assets/Teapot_triangular.obj.model");
             //_Geo.LoadAsset("Assets/Stanford_Bunny.obj.model");
@@ -126,10 +126,10 @@ namespace Examples.LinqForGeometry
 
             #region Shader
             #region LightShader
-            ShaderProgram msDiffuse = MoreShaders.GetShader("specular", RC);
+            ShaderProgram msDiffuse = MoreShaders.GetShader("diffuse", RC);
             _vLightShaderParam = msDiffuse.GetShaderParam("texture1");
-            //ImageData imgData = RC.LoadImage("Assets/Cube_Mat_uv.jpg");
-            ImageData imgData = RC.LoadImage("Assets/world_map.jpg");
+            ImageData imgData = RC.LoadImage("Assets/Cube_Mat_uv.jpg");
+            //ImageData imgData = RC.LoadImage("Assets/world_map.jpg");
             //ImageData imgData = RC.LoadImage("Assets/Teapot_Texture.jpg");
             ITexture iTex = RC.CreateTexture(imgData);
             RC.SetShader(msDiffuse);
