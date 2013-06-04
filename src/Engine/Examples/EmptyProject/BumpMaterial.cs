@@ -24,9 +24,9 @@ namespace Examples.LightTypeTest
         public BumpMaterial(ShaderProgram shaderProgram, string texturepath, string texturepath2)
         {
             sp = shaderProgram;
+            NormalTextureparam = sp.GetShaderParam("normalTex");
             Textureparam = sp.GetShaderParam("texture1");
-            //NormalTextureparam = sp.GetShaderParam("normalTexture");
-            //SpecularLevel = sp.GetShaderParam("specularLevel");
+            SpecularLevel = sp.GetShaderParam("shininess");
             ImageData image = SceneManager.RC.LoadImage(texturepath);
             ImageData image2 = SceneManager.RC.LoadImage(texturepath2);
             Tex = SceneManager.RC.CreateTexture(image);
@@ -37,8 +37,8 @@ namespace Examples.LightTypeTest
         {
             renderContext.SetShader(sp);
             renderContext.SetShaderParamTexture(Textureparam, Tex);
-            //renderContext.SetShaderParamTexture(NormalTextureparam, NormalTex);
-            //renderContext.SetShaderParam(SpecularLevel, 128.0f);
+            renderContext.SetShaderParamTexture(NormalTextureparam, NormalTex);
+            renderContext.SetShaderParam(SpecularLevel, 16.0f);
 
         }
     }

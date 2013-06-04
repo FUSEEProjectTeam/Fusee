@@ -11,7 +11,7 @@ namespace Examples.LightTypeTest
 {
     class MouseAction : ActionCode
     {
-        private String[] _planets = { "DirLight", "Sphere1", "Cube1", "Root1"};
+        private String[] _planets = {  "Sphere1", "Cube1", "Root1"};
         private int _currentTargetId = 0;
         private SceneEntity _target;
         public override void Start()

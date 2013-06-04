@@ -54,6 +54,8 @@ namespace Fusee.Engine
             public IShaderParam FUSEE_L_SPECULAR;
             public IShaderParam FUSEE_L_POSITION;
             public IShaderParam FUSEE_L_DIRECTION;
+            public IShaderParam FUSEE_L_SPOTANGLE;
+            public IShaderParam FUSEE_L_ACTIVE;
             // ReSharper restore InconsistentNaming
         }
 
@@ -797,6 +799,12 @@ namespace Fusee.Engine
 
                 if (_lightShaderParams[i].FUSEE_L_DIRECTION != null)
                     SetShaderParam(_lightShaderParams[i].FUSEE_L_DIRECTION, _lightParams[i].Direction);
+
+                if (_lightShaderParams[i].FUSEE_L_ACTIVE != null)
+                    SetShaderParam(_lightShaderParams[i].FUSEE_L_ACTIVE, _lightParams[i].Active);
+
+                if (_lightShaderParams[i].FUSEE_L_ACTIVE != null)
+                    SetShaderParam(_lightShaderParams[i].FUSEE_L_SPOTANGLE, _lightParams[i].Angle);
             }
         }
 
@@ -837,6 +845,8 @@ namespace Fusee.Engine
                 _lightShaderParams[i].FUSEE_L_SPECULAR = _currentShader.GetShaderParam("FUSEE_L" + i + "_SPECULAR");
                 _lightShaderParams[i].FUSEE_L_POSITION = _currentShader.GetShaderParam("FUSEE_L" + i + "_POSITION");
                 _lightShaderParams[i].FUSEE_L_DIRECTION = _currentShader.GetShaderParam("FUSEE_L" + i + "_DIRECTION");
+                _lightShaderParams[i].FUSEE_L_SPOTANGLE = _currentShader.GetShaderParam("FUSEE_L" + i + "_SPOTANGLE");
+                _lightShaderParams[i].FUSEE_L_ACTIVE = _currentShader.GetShaderParam("FUSEE_L" + i + "_ACTIVE");
             }
 
             _updatedShaderParams = true;
@@ -950,6 +960,21 @@ namespace Fusee.Engine
             string paramName = "FUSEE_L" + lightInx + "_DIRECTION";
             if ((sp = _currentShader.GetShaderParam(paramName)) != null)
                 SetShaderParam(sp, _lightParams[lightInx].Direction);
+        }
+
+        /// <summary>
+        /// Sets the opening angle of the spot light with the given index.
+        /// </summary>
+        /// <param name="lightInx">The light to set the direction on. Can range from 0 to 7. Up to eight lights are supported.</param>
+        /// <param name="angle">The opening angle of the spotlight in degree.</param>
+        public void SetLightSpotAngle(int lightInx, float angle)
+        {
+
+            _lightParams[lightInx].Angle = (float) System.Math.Cos(angle);
+            IShaderParam sp;
+            string paramName = "FUSEE_L" + lightInx + "_SPOTANGLE";
+            if ((sp = _currentShader.GetShaderParam(paramName)) != null)
+                SetShaderParam(sp, _lightParams[lightInx].Angle);
         }
 
         /// <summary>
