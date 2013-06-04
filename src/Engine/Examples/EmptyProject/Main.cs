@@ -39,7 +39,6 @@ namespace Examples.LightTypeTest
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             // initialize the variables
-            _mesh1 = MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
             _mesh2 = MeshReader.LoadMesh(@"Assets/Cube.obj.model");
             _meshSky = MeshReader.LoadMesh(@"Assets/spacebox.obj.model");
 
