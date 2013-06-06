@@ -72,8 +72,8 @@ namespace Fusee.Engine
             frustum = new Frustum(ModelViewProjection);
             _lightParams = new Light[8];
             _lightShaderParams = new LightParamNames[8];
-            _debugShader = MoreShaders.GetShader("oneColor",this);
-            _debugColor = _debugShader.GetShaderParam("Col");
+            _debugShader = MoreShaders.GetShader("color",this);
+            _debugColor = _debugShader.GetShaderParam("color");
             _updatedShaderParams = false;
         }
 

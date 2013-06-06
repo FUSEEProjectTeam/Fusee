@@ -110,14 +110,14 @@ namespace Examples.Solar
             _emptyNeptun.AddComponent(_emptyNeptunAction);
             */
             // Setup Earth
-            _planet = new SceneEntity("Earth", new PlanetAction(new float3(0, 0.69635f * 365, 0)), _emptyEarth, new PlanetMaterial(MoreShaders.GetShader("diffuse2", RC), "Assets/earth.jpg"), new Renderer(planetgeometry));
+            _planet = new SceneEntity("Earth", new PlanetAction(new float3(0, 0.69635f * 365, 0)), _emptyEarth, new PlanetMaterial(MoreShaders.GetShader("diffuse", RC), "Assets/earth.jpg"), new Renderer(planetgeometry));
             _planet.transform.GlobalPosition = new float3(2.9f, 0, 0);
             _planet.transform.GlobalScale = new float3(0.1f, 0.1f, 0.1f);
             _planet.AddComponent(direct);
             /*
             _earth = new SceneEntity {name = "Earth"};
             _earthAction.Init(_earth);
-            _earthMaterial = new PlanetMaterial(MoreShaders.GetShader("diffuse2", RC));
+            _earthMaterial = new PlanetMaterial(MoreShaders.GetShader("diffuse", RC));
             _earthImage = RC.LoadImage("Assets/earth.jpg");
             _earthIShaderParam = _earthMaterial.sp.GetShaderParam("texture1");
             _earthITexture = RC.CreateTexture(_earthImage);
@@ -137,7 +137,7 @@ namespace Examples.Solar
             //_emptyMoon.transform.GlobalPosition = _earth.transform.GlobalPosition;
             //_emptyMoonAction = new MoonAction(_speedearth * 5.0f);
             //_emptyMoon.AddComponent(_emptyMoonAction);
-            _planet = new SceneEntity("Moon", new PlanetAction(new float3(0, 2.7f, 0)), _emptyMoon, new PlanetMaterial(MoreShaders.GetShader("diffuse2", RC), "Assets/moon.jpg"), new Renderer(planetgeometry));
+            _planet = new SceneEntity("Moon", new PlanetAction(new float3(0, 2.7f, 0)), _emptyMoon, new PlanetMaterial(MoreShaders.GetShader("diffuse", RC), "Assets/moon.jpg"), new Renderer(planetgeometry));
             _planet.transform.GlobalPosition = new float3(0.5f, 0, 0);
             _planet.transform.GlobalScale = new float3(0.05f, 0.05f, 0.05f);
 
@@ -150,7 +150,7 @@ namespace Examples.Solar
             _emptyMoonAction = new MoonAction(_earth, _speedearth * 5.0f);
             
             
-            _moonMaterial = new PlanetMaterial(MoreShaders.GetShader("diffuse2", RC));
+            _moonMaterial = new PlanetMaterial(MoreShaders.GetShader("diffuse", RC));
             _moonImage = RC.LoadImage("Assets/moon.jpg");
             _moonIShaderParam = _moonMaterial.sp.GetShaderParam("texture1");
             _moonITexture = RC.CreateTexture(_moonImage);
@@ -167,14 +167,14 @@ namespace Examples.Solar
             _emptyMoonAction.Init(_emptyMoon);
             */
             // Setup sun
-            _planet = new SceneEntity("Sun", new PlanetMaterial(MoreShaders.GetShader("diffuse2", RC), "Assets/sun.jpg"), new Renderer(planetgeometry));
+            _planet = new SceneEntity("Sun", new PlanetMaterial(MoreShaders.GetShader("diffuse", RC), "Assets/sun.jpg"), new Renderer(planetgeometry));
             _planet.transform.LocalScale = new float3(2, 2, 2);
             SceneManager.Manager.AddSceneEntity(_planet);
 
             /*
             _sun = new SceneEntity { name = "Sun" };
             //_sunAction.Init(_sun);
-            _sunMaterial = new PlanetMaterial(MoreShaders.GetShader("diffuse2", RC));
+            _sunMaterial = new PlanetMaterial(MoreShaders.GetShader("diffuse", RC));
             _sunImage = RC.LoadImage("Assets/sun.jpg");
             _sunIShaderParam = _sunMaterial.sp.GetShaderParam("texture1");
             _sunITexture = RC.CreateTexture(_sunImage);
@@ -189,13 +189,13 @@ namespace Examples.Solar
             SceneManager.Manager.AddSceneEntity(_sun);
             */
             // Setup mercury
-            _planet = new SceneEntity("Mercury", new PlanetAction(_speedearth * 6.2234f), _emptyMercury, new PlanetMaterial(MoreShaders.GetShader("diffuse2", RC), "Assets/merkur.jpg"), new Renderer(planetgeometry));
+            _planet = new SceneEntity("Mercury", new PlanetAction(_speedearth * 6.2234f), _emptyMercury, new PlanetMaterial(MoreShaders.GetShader("diffuse", RC), "Assets/merkur.jpg"), new Renderer(planetgeometry));
             _planet.transform.GlobalPosition = new float3(20000, 0, 0);
             _planet.transform.GlobalScale = new float3(0.05f, 0.05f, 0.05f);
             /*
             _mercury = new SceneEntity { name = "Mercury" };
             _mercuryAction.Init(_mercury);
-            _mercuryMaterial = new PlanetMaterial(MoreShaders.GetShader("diffuse2", RC));
+            _mercuryMaterial = new PlanetMaterial(MoreShaders.GetShader("diffuse", RC));
             _mercuryImage = RC.LoadImage("Assets/merkur.jpg");
             _mercuryIShaderParam = _mercuryMaterial.sp.GetShaderParam("texture1");
             _mercuryITexture = RC.CreateTexture(_mercuryImage);
@@ -211,13 +211,13 @@ namespace Examples.Solar
             _emptyMercury.AddChild(_mercury);
             */
             // Setup venus
-            _planet = new SceneEntity("Venus", new PlanetAction(_speedearth * 1.5021f), _emptyVenus, new PlanetMaterial(MoreShaders.GetShader("diffuse2", RC), "Assets/venus.jpg"), new Renderer(planetgeometry));
+            _planet = new SceneEntity("Venus", new PlanetAction(_speedearth * 1.5021f), _emptyVenus, new PlanetMaterial(MoreShaders.GetShader("diffuse", RC), "Assets/venus.jpg"), new Renderer(planetgeometry));
             _planet.transform.GlobalPosition = new float3(2.6f, 0, 0);
             _planet.transform.GlobalScale = new float3(0.08f, 0.08f, 0.08f);
             /*
             _venus = new SceneEntity { name = "Venus" };
             _venusAction.Init(_venus);
-            _venusMaterial = new PlanetMaterial(MoreShaders.GetShader("diffuse2", RC));
+            _venusMaterial = new PlanetMaterial(MoreShaders.GetShader("diffuse", RC));
             _venusImage = RC.LoadImage("Assets/venus.jpg");
             _venusIShaderParam = _venusMaterial.sp.GetShaderParam("texture1");
             _venusITexture = RC.CreateTexture(_venusImage);
@@ -233,13 +233,13 @@ namespace Examples.Solar
             _emptyVenus.AddChild(_venus);*/
 
             // Setup mars
-            _planet = new SceneEntity("Mars", new PlanetAction(_speedearth * 374.125f), _emptyMars, new PlanetMaterial(MoreShaders.GetShader("diffuse2", RC), "Assets/mars.jpg"), new Renderer(planetgeometry));
+            _planet = new SceneEntity("Mars", new PlanetAction(_speedearth * 374.125f), _emptyMars, new PlanetMaterial(MoreShaders.GetShader("diffuse", RC), "Assets/mars.jpg"), new Renderer(planetgeometry));
             _planet.transform.GlobalPosition = new float3(3.25f, 0, 0);
             _planet.transform.GlobalScale = new float3(0.07f, 0.07f, 0.07f);
             /*
             _mars = new SceneEntity { name = "Mars" };
             _marsAction.Init(_mars);
-            _marsMaterial = new PlanetMaterial(MoreShaders.GetShader("diffuse2", RC));
+            _marsMaterial = new PlanetMaterial(MoreShaders.GetShader("diffuse", RC));
             _marsImage = RC.LoadImage("Assets/mars.jpg");
             _marsIShaderParam = _marsMaterial.sp.GetShaderParam("texture1");
             _marsITexture = RC.CreateTexture(_marsImage);
@@ -255,13 +255,13 @@ namespace Examples.Solar
             _emptyMars.AddChild(_mars);*/
 
             // Setup jupiter
-            _planet = new SceneEntity("Jupiter", new PlanetAction(_speedearth * 882.62f), _emptyJupiter, new PlanetMaterial(MoreShaders.GetShader("diffuse2", RC), "Assets/jupiter.jpg"), new Renderer(planetgeometry));
+            _planet = new SceneEntity("Jupiter", new PlanetAction(_speedearth * 882.62f), _emptyJupiter, new PlanetMaterial(MoreShaders.GetShader("diffuse", RC), "Assets/jupiter.jpg"), new Renderer(planetgeometry));
             _planet.transform.GlobalPosition = new float3(4, 0, 0);
             _planet.transform.GlobalScale = new float3(1, 1, 1);
             /*
             _jupiter = new SceneEntity { name = "Jupiter" };
             _jupiterAction.Init(_jupiter);
-            _jupiterMaterial = new PlanetMaterial(MoreShaders.GetShader("diffuse2", RC));
+            _jupiterMaterial = new PlanetMaterial(MoreShaders.GetShader("diffuse", RC));
             _jupiterImage = RC.LoadImage("Assets/jupiter.jpg");
             _jupiterIShaderParam = _jupiterMaterial.sp.GetShaderParam("texture1");
             _jupiterITexture = RC.CreateTexture(_jupiterImage);
@@ -277,12 +277,12 @@ namespace Examples.Solar
             _emptyJupiter.AddChild(_jupiter);
             */
             // Setup saturn
-            _planet = new SceneEntity("Saturn", new PlanetAction(_speedearth * 820.61f), _emptySaturn, new PlanetMaterial(MoreShaders.GetShader("diffuse2", RC), "Assets/saturn.jpg"), new Renderer(planetgeometry));
+            _planet = new SceneEntity("Saturn", new PlanetAction(_speedearth * 820.61f), _emptySaturn, new PlanetMaterial(MoreShaders.GetShader("diffuse", RC), "Assets/saturn.jpg"), new Renderer(planetgeometry));
             _planet.transform.GlobalPosition = new float3(5, 0, 0);
             _planet.transform.GlobalScale = new float3(0.3f, 0.3f, 0.3f);
             /*_saturn = new SceneEntity { name = "Saturn" };
             _saturnAction.Init(_saturn);
-            _saturnMaterial = new PlanetMaterial(MoreShaders.GetShader("diffuse2", RC));
+            _saturnMaterial = new PlanetMaterial(MoreShaders.GetShader("diffuse", RC));
             _saturnImage = RC.LoadImage("Assets/saturn.jpg");
             _saturnIShaderParam = _saturnMaterial.sp.GetShaderParam("texture1");
             _saturnITexture = RC.CreateTexture(_saturnImage);
@@ -298,12 +298,12 @@ namespace Examples.Solar
             _emptySaturn.AddChild(_saturn);*/
 
             // Setup uranus
-            _planet = new SceneEntity("Uranus", new PlanetAction(_speedearth * 509.30f), _emptyUranus, new PlanetMaterial(MoreShaders.GetShader("diffuse2", RC), "Assets/uranus.jpg"), new Renderer(planetgeometry));
+            _planet = new SceneEntity("Uranus", new PlanetAction(_speedearth * 509.30f), _emptyUranus, new PlanetMaterial(MoreShaders.GetShader("diffuse", RC), "Assets/uranus.jpg"), new Renderer(planetgeometry));
             _planet.transform.GlobalPosition = new float3(6, 0, 0);
             _planet.transform.GlobalScale = new float3(0.12f, 0.12f, 0.12f);
             /*_uranus = new SceneEntity { name = "Uranus" };
             _uranusAction.Init(_uranus);
-            _uranusMaterial = new PlanetMaterial(MoreShaders.GetShader("diffuse2", RC));
+            _uranusMaterial = new PlanetMaterial(MoreShaders.GetShader("diffuse", RC));
             _uranusImage = RC.LoadImage("Assets/uranus.jpg");
             _uranusIShaderParam = _uranusMaterial.sp.GetShaderParam("texture1");
             _uranusITexture = RC.CreateTexture(_uranusImage);
@@ -319,12 +319,12 @@ namespace Examples.Solar
             _emptyUranus.AddChild(_uranus);*/
 
             // Setup neptun
-            _planet = new SceneEntity("Neptun", new PlanetAction(_speedearth * 544.10f), _emptyNeptun, new PlanetMaterial(MoreShaders.GetShader("diffuse2", RC), "Assets/neptune.jpg"), new Renderer(planetgeometry));
+            _planet = new SceneEntity("Neptun", new PlanetAction(_speedearth * 544.10f), _emptyNeptun, new PlanetMaterial(MoreShaders.GetShader("diffuse", RC), "Assets/neptune.jpg"), new Renderer(planetgeometry));
             _planet.transform.GlobalPosition = new float3(7, 0, 0);
             _planet.transform.GlobalScale = new float3(0.14f, 0.14f, 0.14f);
             /*_neptun = new SceneEntity { name = "Neptun" };
             _neptunAction.Init(_neptun);
-            _neptunMaterial = new PlanetMaterial(MoreShaders.GetShader("diffuse2", RC));
+            _neptunMaterial = new PlanetMaterial(MoreShaders.GetShader("diffuse", RC));
             _neptunImage = RC.LoadImage("Assets/neptune.jpg");
             _neptunIShaderParam = _neptunMaterial.sp.GetShaderParam("texture1");
             _neptunITexture = RC.CreateTexture(_neptunImage);
