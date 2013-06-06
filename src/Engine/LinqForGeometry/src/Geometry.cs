@@ -55,7 +55,6 @@ namespace LinqForGeometry
         // Various runtime constants
         private static double _SmoothingAngle = 89;
         private const double piFactor = 180/3.141592;
-        Mesh _FuseeMesh = new Mesh();
 
         // For mesh conversion
         private List<short> LtrianglesTMP;
@@ -221,7 +220,6 @@ namespace LinqForGeometry
             {
                 CalcVertexNormal(handleVertex);
             }
-            
              
             LtrianglesTMP.Clear();
             LvertDataTMP.Clear();
@@ -233,13 +231,13 @@ namespace LinqForGeometry
                 GrabFaceDataForMesh(face);
             }
 
-            Mesh mesh = new Mesh();
-            mesh.Vertices = LvertDataTMP.ToArray();
-            mesh.Normals = LvertNormalsTMP.ToArray();
-            mesh.UVs = LvertuvTMP.ToArray();
-            mesh.Triangles = LtrianglesTMP.ToArray();
+            Mesh fuseeMesh = new Mesh();
+            fuseeMesh.Vertices = LvertDataTMP.ToArray();
+            fuseeMesh.Normals = LvertNormalsTMP.ToArray();
+            fuseeMesh.UVs = LvertuvTMP.ToArray();
+            fuseeMesh.Triangles = LtrianglesTMP.ToArray();
 
-            return mesh;
+            return fuseeMesh;
         }
 
         /// <summary>

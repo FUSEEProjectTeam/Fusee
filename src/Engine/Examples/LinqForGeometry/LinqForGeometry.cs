@@ -128,9 +128,9 @@ namespace Examples.LinqForGeometry
             #region LightShader
             ShaderProgram msDiffuse = MoreShaders.GetShader("diffuse", RC);
             _vLightShaderParam = msDiffuse.GetShaderParam("texture1");
-            //ImageData imgData = RC.LoadImage("Assets/Cube_Mat_uv.jpg");
+            ImageData imgData = RC.LoadImage("Assets/Cube_Mat_uv.jpg");
             //ImageData imgData = RC.LoadImage("Assets/world_map.jpg");
-            ImageData imgData = RC.LoadImage("Assets/Teapot_Texture.jpg");
+            //ImageData imgData = RC.LoadImage("Assets/Teapot_Texture.jpg");
             ITexture iTex = RC.CreateTexture(imgData);
             RC.SetShader(msDiffuse);
 
