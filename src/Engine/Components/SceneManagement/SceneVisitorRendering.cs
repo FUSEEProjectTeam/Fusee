@@ -142,10 +142,7 @@ namespace Fusee.SceneManagement
                     _hasTransform.Pop();
                     _hasTransform.Push(true);
                 }
-                else if(transform.SceneEntity.name == "Mercury")
-                {
-                    Debug.WriteLine("Fail");
-                }
+                
                 
                 
                 
