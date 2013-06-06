@@ -45,7 +45,7 @@ namespace LinqForGeometry
         private List<float3> _LVertexNormals;
         private List<float2> _LuvCoordinates;
         private List<float3> _LvertexValDefault;
-        
+
         // Pointer containers
         private List<VertexPtrCont> _LvertexPtrCont;
         private List<HEdgePtrCont> _LhedgePtrCont;
@@ -54,6 +54,7 @@ namespace LinqForGeometry
 
         // Various runtime constants
         private static double _SmoothingAngle = 89;
+        private const double piFactor = 180/3.141592;
         Mesh _FuseeMesh = new Mesh();
 
         // For mesh conversion
@@ -218,14 +219,15 @@ namespace LinqForGeometry
             _LVertexNormals.Clear();
             foreach (HandleVertex handleVertex in _LverticeHndl)
             {
-                CalcVertexNormalTest(handleVertex);
+                CalcVertexNormal(handleVertex);
             }
-
+            
+             
             LtrianglesTMP.Clear();
             LvertDataTMP.Clear();
             LvertNormalsTMP.Clear();
             LvertuvTMP.Clear();
-
+            
             foreach (HandleFace face in _LfaceHndl)
             {
                 GrabFaceDataForMesh(face);
@@ -575,35 +577,40 @@ namespace LinqForGeometry
         /// <summary>
         /// This method calculates vertex normals for a specific vertex in the geometry and inserts them at the corresponding half-edges.
         /// </summary>
-        public void CalcVertexNormalTest(HandleVertex vertexHandle)
+        public void CalcVertexNormal(HandleVertex vertexHandle)
         {
             IEnumerable<int> EincomingHEdges = EnStarVertexIncomingHalfEdge(vertexHandle);
+            // Loop over every incoming half-edge.
             foreach (int hedgeIndex in EincomingHEdges)
             {
                 List<float3> LfaceNormals = new List<float3>();
+                // Check if the half-edge is pointing to a face.
                 int faceIndex = _LhedgePtrCont[hedgeIndex]._f._DataIndex;
                 if (faceIndex == -1)
                     continue;
 
                 float3 currentNormal = _LfaceNormals[_LfacePtrCont[faceIndex]._fn._DataIndex];
                 float3 normalAggregate = new float3();
+                // Loop over every incoming half-edge again, so we can compare the angles between the current one and all the others.
+                // We do this to decide which normal should be added to the sum and which not.
                 foreach (int eincomingHEdge in EincomingHEdges)
                 {
+                    // Add the current normal if the index is on it and do not compare any angles etc.
                     if (eincomingHEdge == hedgeIndex)
                     {
                         normalAggregate += currentNormal;
                         continue;
                     }
+                    // Stop when the current half-edge is not pointing to a face.
                     int faceIndex2 = _LhedgePtrCont[eincomingHEdge]._f._DataIndex;
                     if (faceIndex2 == -1)
                         continue;
 
                     float3 normalToCompare = _LfaceNormals[_LfacePtrCont[faceIndex2]._fn._DataIndex];
                     float dot = float3.Dot(currentNormal, normalToCompare);
-                    double angle = _SmoothingAngle;
-                    double acos = System.Math.Acos(dot) * (180 / 3.141592);
+                    double acos = System.Math.Acos(dot) * piFactor;
 
-                    if (acos < angle)
+                    if (acos < _SmoothingAngle)
                     {
                         normalAggregate += float3.Add(normalAggregate, normalToCompare);
                     }
@@ -631,17 +638,9 @@ namespace LinqForGeometry
 
             do
             {
-                LvertDataTMP.Add(
-                    _LvertexVal[currentHedge._v._DataIndex]
-                    );
-
-                LvertNormalsTMP.Add(
-                    _LVertexNormals[currentHedge._vn._DataIndex]
-                    );
-
-                LvertuvTMP.Add(
-                    _LuvCoordinates[currentHedge._vuv]
-                    );
+                LvertDataTMP.Add(_LvertexVal[currentHedge._v._DataIndex]);
+                LvertNormalsTMP.Add(_LVertexNormals[currentHedge._vn._DataIndex]);
+                LvertuvTMP.Add(_LuvCoordinates[currentHedge._vuv]);
 
                 int idx = LvertDataTMP.Count - 1;
                 LtrianglesTMP.Add((short)idx);

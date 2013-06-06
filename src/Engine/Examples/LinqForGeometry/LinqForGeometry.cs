@@ -114,10 +114,10 @@ namespace Examples.LinqForGeometry
             // This would be a solution to step over the MeshReader Class
             // Important for now to use the transformation methods on the data structure.
             _Geo = new Geometry();
-            //_Geo.LoadAsset("Assets/Cube.obj.model");
+            _Geo.LoadAsset("Assets/Cube.obj.model");
             //_Geo.LoadAsset("Assets/Sphere.obj.model");
             //_Geo.LoadAsset("Assets/Teapot.obj.model");
-            _Geo.LoadAsset("Assets/Teapot_triangular.obj.model");
+            //_Geo.LoadAsset("Assets/Teapot_triangular.obj.model");
             //_Geo.LoadAsset("Assets/Stanford_Bunny.obj.model");
             //_Geo.LoadAsset("Assets/SharedCorners.obj.model");
             //_Geo.LoadAsset("Assets/Cylinder.obj.model");
