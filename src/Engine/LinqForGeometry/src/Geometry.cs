@@ -59,10 +59,6 @@ namespace hsfurtwangen.dsteffen.lfg
             _LedgeHndl = new List<HandleEdge>();
             _LfaceHndl = new List<HandleFace>();
 
-            _LtriangleList = new List<short>();
-
-            _LvertexVal = new List<float3>();
-
             _LvertexPtrCont = new List<VertexPtrCont>();
             _LhedgePtrCont = new List<HEdgePtrCont>();
             _LedgePtrCont = new List<EdgePtrCont>();
@@ -71,6 +67,9 @@ namespace hsfurtwangen.dsteffen.lfg
             _LfaceNormals = new List<float3>();
             _LVertexNormals = new List<float3>();
             _LuvCoordinates = new List<float2>();
+            
+            _LtriangleList = new List<short>();
+            _LvertexVal = new List<float3>();
         }
 
 
@@ -171,55 +170,10 @@ namespace hsfurtwangen.dsteffen.lfg
             return triangleFaces;
         }
 
-
         /// <summary>
-        /// Converts the geometry to a fusee mesh object.
-        /// This method creates a list of triangles from the existing faces and vertices beeing hold by the data structure.
+        /// This method converts the data structure to a fusee readable mesh structure
         /// </summary>
-        /// <returns>Fusee Mesh</returns>
-        public Mesh ToMeshOld()
-        {
-            // Calculate Triangles from faces
-            if (!_triangleListSet && !_ChangesOnFaces)
-            {
-                _LtriangleList.Clear();
-                foreach (var face in _LfaceHndl)
-                {
-                    List<HandleVertex> LtmpVertsTriangle = IteratorVerticesAroundFaceForTriangles(face);
-                    foreach (HandleVertex vert in LtmpVertsTriangle)
-                    {
-                        _LtriangleList.Add((short)vert._DataIndex);
-                    }
-                }
-                _triangleListSet = true;
-            }
-
-            // When vertices were manipulated, recalculate the normals for lighting.
-            if (_Changes)
-            {
-                _LfaceNormals.Clear();
-                foreach (HandleFace faceHandle in EnAllFaces())
-                {
-                    CalcFaceNormalForFace(faceHandle);
-                }
-
-                _LVertexNormals.Clear();
-                foreach (HandleVertex vertexHandle in EnAllVertices())
-                {
-                    _LVertexNormals.Add(CalcVertexNormal(vertexHandle));
-                }
-            }
-
-            Mesh mesh = new Mesh();
-            mesh.Triangles = _LtriangleList.ToArray();
-            mesh.Vertices = _LvertexVal.ToArray();
-            mesh.Normals = _LVertexNormals.ToArray();
-            mesh.UVs = _LuvCoordinates.ToArray();
-
-            return mesh;
-        }
-
-
+        /// <returns>A fusee readable Mesh object</returns>
         public Mesh ToMesh()
         {
 

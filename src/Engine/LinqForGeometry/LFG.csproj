@@ -57,7 +57,6 @@
     <Compile Include="src\Structs\Handles\HandleFace.cs" />
     <Compile Include="src\Structs\Handles\HandleHalfEdge.cs" />
     <Compile Include="src\Structs\Handles\HandleEdge.cs" />
-    <Compile Include="src\GeometryData.cs" />
     <Compile Include="src\Structs\Handles\HandleVertexNormal.cs" />
     <Compile Include="src\Structs\Handles\HandleVertexUV.cs" />
     <Compile Include="src\Structs\PtrContainer\VertexPtrCont.cs" />
