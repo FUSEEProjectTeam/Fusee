@@ -43,7 +43,13 @@ namespace LinqForGeometry
 
         // Various runtime constants
         private static double _SmoothingAngle = 89;
+        Mesh _FuseeMesh = new Mesh();
 
+        // For mesh conversion
+        private List<short> LtrianglesTMP;
+        private List<float3> LvertDataTMP;
+        private List<float3> LvertNormalsTMP;
+        private List<float2> LvertuvTMP;
 
         /// <summary>
         /// Constructor for the GeometryData class.
@@ -68,6 +74,12 @@ namespace LinqForGeometry
             _LuvCoordinates = new List<float2>();
 
             _LtriangleList = new List<short>();
+
+            // For mesh conversion
+            LtrianglesTMP = new List<short>();
+            LvertDataTMP = new List<float3>();
+            LvertNormalsTMP = new List<float3>();
+            LvertuvTMP = new List<float2>();
         }
 
 
@@ -100,13 +112,13 @@ namespace LinqForGeometry
             {
                 timeSpan = stopWatch.Elapsed;
                 timeDone = String.Format(LFGMessages.UTIL_STOPWFORMAT, timeSpan.Seconds, timeSpan.Milliseconds);
-                Console.WriteLine("\n\n     Time needed to import the .obj file: " + timeDone);
+                Debug.WriteLine("\n\n     Time needed to import the .obj file: " + timeDone);
                 stopWatch.Restart();
             }
 
             if (LFGMessages._DEBUGOUTPUT)
             {
-                Console.WriteLine(LFGMessages.INFO_PROCESSINGDS);
+                Debug.WriteLine(LFGMessages.INFO_PROCESSINGDS);
             }
 
             // Work on the facelist and transform the data structure to the 'half-edge' data structure.
@@ -120,7 +132,7 @@ namespace LinqForGeometry
                 stopWatch.Stop();
                 timeSpan = stopWatch.Elapsed;
                 timeDone = String.Format(LFGMessages.UTIL_STOPWFORMAT, timeSpan.Seconds, timeSpan.Milliseconds);
-                Console.WriteLine("\n\n     Time needed to convert the object to the HES: " + timeDone);
+                Debug.WriteLine("\n\n     Time needed to convert the object to the HES: " + timeDone);
             }
 
             _LfaceNormals.Clear();
@@ -198,32 +210,14 @@ namespace LinqForGeometry
                 CalcVertexNormalTest(handleVertex);
             }
 
-            List<short> LtrianglesTMP = new List<short>();
-            List<float3> LvertDataTMP = new List<float3>();
-            List<float3> LvertNormalsTMP = new List<float3>();
-            List<float2> LvertuvTMP = new List<float2>();
+            LtrianglesTMP.Clear();
+            LvertDataTMP.Clear();
+            LvertNormalsTMP.Clear();
+            LvertuvTMP.Clear();
 
             foreach (HandleFace face in _LfaceHndl)
             {
-                //returns an array of handle indexes in the following order: vertex id, vertex normal id, vertex uv id
-                List<int[]> LarrHandles = GrabFaceDataForMesh(face);
-                foreach (int[] arrHandle in LarrHandles)
-                {
-                    LvertDataTMP.Add(
-                        _LvertexVal[arrHandle[0]]
-                        );
-
-                    LvertNormalsTMP.Add(
-                        _LVertexNormals[arrHandle[1]]
-                        );
-
-                    LvertuvTMP.Add(
-                        _LuvCoordinates[arrHandle[2]]
-                        );
-
-                    int idx = LvertDataTMP.Count - 1;
-                    LtrianglesTMP.Add((short)idx);
-                }
+                GrabFaceDataForMesh(face);
             }
 
             Mesh mesh = new Mesh();
@@ -275,7 +269,7 @@ namespace LinqForGeometry
             {
                 if (LFGMessages._DEBUGOUTPUT)
                 {
-                    Console.WriteLine("$$$ Vertex has been already inserted!");
+                    Debug.WriteLine("$$$ Vertex has been already inserted!");
                 }
             }
             return hvToAdd;
@@ -343,7 +337,7 @@ namespace LinqForGeometry
                     {
                         if (LFGMessages._DEBUGOUTPUT)
                         {
-                            Console.WriteLine("$$$ Edge has been already inserted!");
+                            Debug.WriteLine("$$$ Edge has been already inserted!");
                         }
                     }
                     LtmpEdgesForFace.Add(handleEdge);
@@ -361,7 +355,7 @@ namespace LinqForGeometry
                     {
                         if (LFGMessages._DEBUGOUTPUT)
                         {
-                            Console.WriteLine("$$$ Edge has been already inserted!");
+                            Debug.WriteLine("$$$ Edge has been already inserted!");
                         }
                     }
                     LtmpEdgesForFace.Add(handleEdge);
@@ -418,7 +412,7 @@ namespace LinqForGeometry
             {
                 if (LFGMessages._DEBUGOUTPUT)
                 {
-                    Console.WriteLine("     Existing edge found - Not creating a new one.");
+                    Debug.WriteLine("     Existing edge found - Not creating a new one.");
                 }
                 he = new HandleEdge() { _DataIndex = index };
                 returnVal = true;
@@ -427,7 +421,7 @@ namespace LinqForGeometry
             {
                 if (LFGMessages._DEBUGOUTPUT)
                 {
-                    Console.WriteLine("     Edge not found - creating new one.");
+                    Debug.WriteLine("     Edge not found - creating new one.");
                 }
                 he._DataIndex = CreateConnection(hv1, hv2)._DataIndex;
                 returnVal = false;
@@ -619,24 +613,29 @@ namespace LinqForGeometry
         /// </summary>
         /// <param name="face">A handle to a face to perform on.</param>
         /// <returns>An array of handle indexes in the following order: vertex id, vertex normal id, vertex uv id</returns>
-        public List<int[]> GrabFaceDataForMesh(HandleFace face)
+        public void GrabFaceDataForMesh(HandleFace face)
         {
-            List<int[]> LarrHandlesAggregated = new List<int[]>();
             HEdgePtrCont currentHedge = _LhedgePtrCont[_LfacePtrCont[face]._h];
             int startHedgeVertexIndex = currentHedge._v._DataIndex;
 
             do
             {
-                int[] arrHandles = new int[3];
-                arrHandles[0] = currentHedge._v._DataIndex;
-                arrHandles[1] = currentHedge._vn._DataIndex;
-                arrHandles[2] = currentHedge._vuv._DataIndex;
+                LvertDataTMP.Add(
+                    _LvertexVal[currentHedge._v._DataIndex]
+                    );
 
-                LarrHandlesAggregated.Add(arrHandles);
+                LvertNormalsTMP.Add(
+                    _LVertexNormals[currentHedge._vn._DataIndex]
+                    );
+
+                LvertuvTMP.Add(
+                    _LuvCoordinates[currentHedge._vuv]
+                    );
+
+                int idx = LvertDataTMP.Count - 1;
+                LtrianglesTMP.Add((short)idx);
                 currentHedge = _LhedgePtrCont[currentHedge._nhe._DataIndex];
             } while (currentHedge._v._DataIndex != startHedgeVertexIndex);
-
-            return LarrHandlesAggregated;
         }
 
 
