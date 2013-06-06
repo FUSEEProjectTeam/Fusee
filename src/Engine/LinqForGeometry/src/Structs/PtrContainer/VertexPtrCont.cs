@@ -9,9 +9,9 @@
 	Mr. Prof. W. Waltre
 */
 
-using hsfurtwangen.dsteffen.lfg.structs.handles;
+using LinqForGeometry.Structs.Handles;
 
-namespace hsfurtwangen.dsteffen.lfg.structs.ptrcontainer
+namespace LinqForGeometry.Structs.PtrContainer
 {
     /// <summary>
     /// This is a vertex 'Pointer Container'.

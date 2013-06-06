@@ -10,17 +10,12 @@
 */
 
 using System;
-using System.Diagnostics;
 using System.Globalization;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
-
 using Fusee.Math;
-using hsfurtwangen.dsteffen.lfg.globalinf;
 
-namespace hsfurtwangen.dsteffen.lfg.Importer
+namespace LinqForGeometry.Importer
 {
     /// <summary>
     /// This is an importer for the <a href="http://en.wikipedia.org/wiki/Wavefront_.obj_file">Wavefront obj</a> computer graphics file
@@ -54,7 +49,7 @@ namespace hsfurtwangen.dsteffen.lfg.Importer
         /// <param name="pathToAsset">The path to the asset to be loaded in the system</param>
         private List<String> LoadFile(String pathToAsset)
         {
-            Console.WriteLine(globalinf.LFGMessages.INFO_IMPORTERDISCLAIMER);
+            Console.WriteLine(LFGMessages.INFO_IMPORTERDISCLAIMER);
             if (File.Exists(pathToAsset))
             {
                 StreamReader assetFile = new StreamReader(pathToAsset, System.Text.Encoding.Default);
@@ -123,7 +118,7 @@ namespace hsfurtwangen.dsteffen.lfg.Importer
                         string[] lineSplitted = line.Split(splitChar, StringSplitOptions.None);
 
                         // vertex texture coordinates
-                        if (globalinf.LFGMessages._DEBUGOUTPUT)
+                        if (LFGMessages._DEBUGOUTPUT)
                         {
                             Console.WriteLine(LFGMessages.INFO_UVFOUND + line);
                         }
@@ -157,7 +152,7 @@ namespace hsfurtwangen.dsteffen.lfg.Importer
                     else if (lineStart.Equals("f "))
                     {
                         // there are faces, faces with texture coord, faces with vertex normals and faces with text and normals
-                        if (globalinf.LFGMessages._DEBUGOUTPUT)
+                        if (LFGMessages._DEBUGOUTPUT)
                         {
                             Console.WriteLine(LFGMessages.INFO_FACEFOUND + line);
                         }
@@ -174,7 +169,7 @@ namespace hsfurtwangen.dsteffen.lfg.Importer
                                 string[] faceSplit = str.Split(splitChar2, StringSplitOptions.None);
                                 string s = faceSplit[0];
 
-                                if (globalinf.LFGMessages._DEBUGOUTPUT)
+                                if (LFGMessages._DEBUGOUTPUT)
                                 {
                                     Console.WriteLine(LFGMessages.INFO_VERTEXIDFORFACE + s);
                                 }
@@ -195,7 +190,7 @@ namespace hsfurtwangen.dsteffen.lfg.Importer
                                     }
                                     catch (FormatException e)
                                     {
-                                        if (globalinf.LFGMessages._DEBUGOUTPUT)
+                                        if (LFGMessages._DEBUGOUTPUT)
                                         {
                                             Console.WriteLine(LFGMessages.WARNING_INVALIDCHAR + s);
                                         }

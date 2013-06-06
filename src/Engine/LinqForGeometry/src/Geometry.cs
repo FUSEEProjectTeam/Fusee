@@ -2,49 +2,47 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-
 using Fusee.Math;
 using Fusee.Engine;
-using hsfurtwangen.dsteffen.lfg;
-using hsfurtwangen.dsteffen.lfg.structs.handles;
-using hsfurtwangen.dsteffen.lfg.structs.ptrcontainer;
-using hsfurtwangen.dsteffen.lfg.Importer;
-using hsfurtwangen.dsteffen.lfg.Exceptions;
+using LinqForGeometry.Exceptions;
+using LinqForGeometry.Importer;
+using LinqForGeometry.Structs.Handles;
+using LinqForGeometry.Structs.PtrContainer;
 
-namespace hsfurtwangen.dsteffen.lfg
+namespace LinqForGeometry
 {
     public class Geometry
     {
         private WavefrontImporter<float3> _objImporter;
         private List<GeoFace> _GeoFaces;
 
-        /// <summary>
-        /// These lists are public so the user can retrieve his handles and work with them.
-        /// </summary>
-        public List<HandleVertex> _LverticeHndl;
-        public List<HandleEdge> _LedgeHndl;
-        public List<HandleFace> _LfaceHndl;
-        public List<short> _LtriangleList;
-
         public bool _Changes = false;
-        public bool _triangleListSet = false;
-        public bool _ChangesOnFaces = false;
 
+        // Handles to pointer containers
+        private List<HandleVertex> _LverticeHndl;
+        private List<HandleEdge> _LedgeHndl;
+        private List<HandleFace> _LfaceHndl;
+        private List<short> _LtriangleList;
 
-        public List<float3> _LvertexVal;
+        // Boolean helpers
+        private bool _triangleListSet = false;
+        private bool _ChangesOnFaces = false;
 
-        public List<float3> _LfaceNormals;
-        public List<float3> _LVertexNormals;
-        public List<float2> _LuvCoordinates;
-
+        // Real data
+        private List<float3> _LvertexVal;
+        private List<float3> _LfaceNormals;
+        private List<float3> _LVertexNormals;
+        private List<float2> _LuvCoordinates;
         private List<float3> _LvertexValDefault;
+        
+        // Pointer containers
         private List<VertexPtrCont> _LvertexPtrCont;
         private List<HEdgePtrCont> _LhedgePtrCont;
         private List<EdgePtrCont> _LedgePtrCont;
         private List<FacePtrCont> _LfacePtrCont;
 
-        private double _SmoothingAngle = 89;
+        // Various runtime constants
+        private static double _SmoothingAngle = 89;
 
 
         /// <summary>
@@ -64,42 +62,51 @@ namespace hsfurtwangen.dsteffen.lfg
             _LedgePtrCont = new List<EdgePtrCont>();
             _LfacePtrCont = new List<FacePtrCont>();
 
+            _LvertexVal = new List<float3>();
             _LfaceNormals = new List<float3>();
             _LVertexNormals = new List<float3>();
             _LuvCoordinates = new List<float2>();
-            
+
             _LtriangleList = new List<short>();
-            _LvertexVal = new List<float3>();
         }
 
 
         /// <summary>
-        /// Loads an asset specified by the path
+        /// Loads an asset specified by the path string.
         /// </summary>
-        /// <param name="path">Path to the wavefront file</param>
+        /// <param name="path">Path to the wavefront.obj.model file.</param>
         public void LoadAsset(String path)
         {
             Stopwatch stopWatch = new Stopwatch();
-            stopWatch.Start();
+            TimeSpan timeSpan = new TimeSpan();
+            String timeDone;
+
+            if (LFGMessages._DEBUGOUTPUT)
+            {
+                stopWatch.Start();
+            }
 
             List<GeoFace> faceList = _objImporter.LoadAsset(path);
 
             // Convert a x-poly model to a triangular poly model because FUSEE only can handle triangular polys for now.
-            if (globalinf.LFGMessages.FLAG_FUSEE_TRIANGLES)
+            if (LFGMessages.FLAG_FUSEE_TRIANGLES)
             {
                 List<GeoFace> newFaces = ConvertFacesToTriangular(faceList);
                 faceList.Clear();
                 faceList = newFaces;
             }
 
-            TimeSpan timeSpan = stopWatch.Elapsed;
-            string timeDone = String.Format(globalinf.LFGMessages.UTIL_STOPWFORMAT, timeSpan.Seconds, timeSpan.Milliseconds);
-            Console.WriteLine("\n\n     Time needed to import the .obj file: " + timeDone);
-            stopWatch.Restart();
-
-            if (globalinf.LFGMessages._DEBUGOUTPUT)
+            if (LFGMessages._DEBUGOUTPUT)
             {
-                Console.WriteLine(globalinf.LFGMessages.INFO_PROCESSINGDS);
+                timeSpan = stopWatch.Elapsed;
+                timeDone = String.Format(LFGMessages.UTIL_STOPWFORMAT, timeSpan.Seconds, timeSpan.Milliseconds);
+                Console.WriteLine("\n\n     Time needed to import the .obj file: " + timeDone);
+                stopWatch.Restart();
+            }
+
+            if (LFGMessages._DEBUGOUTPUT)
+            {
+                Console.WriteLine(LFGMessages.INFO_PROCESSINGDS);
             }
 
             // Work on the facelist and transform the data structure to the 'half-edge' data structure.
@@ -108,10 +115,13 @@ namespace hsfurtwangen.dsteffen.lfg
                 AddFace(gf);
             }
 
-            stopWatch.Stop();
-            timeSpan = stopWatch.Elapsed;
-            timeDone = String.Format(globalinf.LFGMessages.UTIL_STOPWFORMAT, timeSpan.Seconds, timeSpan.Milliseconds);
-            Console.WriteLine("\n\n     Time needed to convert the object to the HES: " + timeDone);
+            if (LFGMessages.FLAG_FUSEE_TRIANGLES)
+            {
+                stopWatch.Stop();
+                timeSpan = stopWatch.Elapsed;
+                timeDone = String.Format(LFGMessages.UTIL_STOPWFORMAT, timeSpan.Seconds, timeSpan.Milliseconds);
+                Console.WriteLine("\n\n     Time needed to convert the object to the HES: " + timeDone);
+            }
 
             _LfaceNormals.Clear();
             foreach (HandleFace face in EnAllFaces())
@@ -119,7 +129,7 @@ namespace hsfurtwangen.dsteffen.lfg
                 CalcFaceNormalForFace(face);
             }
 
-            // Set the default form etc. of the model. primary for debugging for me etc...
+            // This is just for now for debugging
             SetVertexDefaults();
         }
 
@@ -176,7 +186,6 @@ namespace hsfurtwangen.dsteffen.lfg
         /// <returns>A fusee readable Mesh object</returns>
         public Mesh ToMesh()
         {
-
             _LfaceNormals.Clear();
             foreach (HandleFace faceHandle in EnAllFaces())
             {
@@ -217,7 +226,6 @@ namespace hsfurtwangen.dsteffen.lfg
                 }
             }
 
-
             Mesh mesh = new Mesh();
             mesh.Vertices = LvertDataTMP.ToArray();
             mesh.Normals = LvertNormalsTMP.ToArray();
@@ -234,7 +242,6 @@ namespace hsfurtwangen.dsteffen.lfg
         public HandleVertex AddVertex(float3 val)
         {
             int index = DoesVertexExist(val);
-
             HandleVertex hvToAdd = new HandleVertex() { _DataIndex = -1 };
 
             // When vertex does not exist - insert it
@@ -260,14 +267,13 @@ namespace hsfurtwangen.dsteffen.lfg
                 hvToAdd = vHndl;
             }
 
-
             if (!_LverticeHndl.Contains(hvToAdd))
             {
                 _LverticeHndl.Add(hvToAdd);
             }
             else
             {
-                if (globalinf.LFGMessages._DEBUGOUTPUT)
+                if (LFGMessages._DEBUGOUTPUT)
                 {
                     Console.WriteLine("$$$ Vertex has been already inserted!");
                 }
@@ -294,7 +300,6 @@ namespace hsfurtwangen.dsteffen.lfg
         /// <param name="gf">GeoFace object from the importer</param>
         private void AddFace(GeoFace gf)
         {
-            // Add Face from GD
             _LfacePtrCont.Add(
                new FacePtrCont()
                {
@@ -307,7 +312,6 @@ namespace hsfurtwangen.dsteffen.lfg
             HandleFace fHndl = new HandleFace();
             fHndl._DataIndex = _LfacePtrCont.Count - 1;
             _LfaceHndl.Add(fHndl);
-            // Add Face from GD
 
             Debug.WriteLine("Current Face -> AddFace: " + _LfaceHndl[_LfaceHndl.Count - 1]._DataIndex);
 
@@ -337,7 +341,7 @@ namespace hsfurtwangen.dsteffen.lfg
                     }
                     else
                     {
-                        if (globalinf.LFGMessages._DEBUGOUTPUT)
+                        if (LFGMessages._DEBUGOUTPUT)
                         {
                             Console.WriteLine("$$$ Edge has been already inserted!");
                         }
@@ -355,7 +359,7 @@ namespace hsfurtwangen.dsteffen.lfg
                     }
                     else
                     {
-                        if (globalinf.LFGMessages._DEBUGOUTPUT)
+                        if (LFGMessages._DEBUGOUTPUT)
                         {
                             Console.WriteLine("$$$ Edge has been already inserted!");
                         }
@@ -412,7 +416,7 @@ namespace hsfurtwangen.dsteffen.lfg
             }
             if (index >= 0)
             {
-                if (globalinf.LFGMessages._DEBUGOUTPUT)
+                if (LFGMessages._DEBUGOUTPUT)
                 {
                     Console.WriteLine("     Existing edge found - Not creating a new one.");
                 }
@@ -421,7 +425,7 @@ namespace hsfurtwangen.dsteffen.lfg
             }
             else
             {
-                if (globalinf.LFGMessages._DEBUGOUTPUT)
+                if (LFGMessages._DEBUGOUTPUT)
                 {
                     Console.WriteLine("     Edge not found - creating new one.");
                 }
@@ -488,6 +492,11 @@ namespace hsfurtwangen.dsteffen.lfg
         }
 
 
+        /// <summary>
+        /// Adds the uv coordiantes that correspond to a vertex to his corresponding half-edge.
+        /// </summary>
+        /// <param name="faceHandle">A handle to the face to work on.</param>
+        /// <param name="LuvCoord">A List of uv coordinate pairs.</param>
         public void InsertUVCoordinatesForFace(HandleFace faceHandle, List<float2> LuvCoord)
         {
             int startHEIndex = _LfacePtrCont[faceHandle]._h._DataIndex;
@@ -531,24 +540,6 @@ namespace hsfurtwangen.dsteffen.lfg
         }
 
 
-        public List<int[]> RunOverHEdges()
-        {
-            List<int[]> LarrHandlesAggregated = new List<int[]>();
-
-            foreach (HEdgePtrCont currentHedge in _LhedgePtrCont)
-            {
-                int[] arrHandles = new int[3];
-                arrHandles[0] = currentHedge._v._DataIndex;
-                arrHandles[1] = currentHedge._vn._DataIndex;
-                arrHandles[2] = currentHedge._vuv._DataIndex;
-
-                LarrHandlesAggregated.Add(arrHandles);
-            }
-
-            return LarrHandlesAggregated;
-        }
-
-
         /// <summary>
         /// This method adds a face normal vector to a list.
         /// The vector is calculated for the face which handle the method expects.
@@ -577,28 +568,7 @@ namespace hsfurtwangen.dsteffen.lfg
 
 
         /// <summary>
-        /// This method calculates a vertex normal. Starting Point is a handle to a vertex.
-        /// It will iterate over all faces adjacent to the vertex the handle points to.
-        /// </summary>
-        /// <param name="handleVertex">A handle to a vertex</param>
-        /// <returns>float3 value which is the normal vektor for the vertex</returns>
-        public float3 CalcVertexNormal(HandleVertex handleVertex)
-        {
-            IEnumerable<HandleFace> adjacentfaces = EnVertexAdjacentFaces(handleVertex);
-            int faceNormalsCount = _LfaceNormals.Count;
-
-            List<float3> adjacentfaceNormals = (from faceHandle in adjacentfaces where faceHandle._DataIndex != -1 select _LfaceNormals[_LfacePtrCont[faceHandle._DataIndex]._fn._DataIndex]).ToList();
-
-            float3 sumNormals = new float3();
-            sumNormals = adjacentfaceNormals.Aggregate(sumNormals, (current, faceNormal) => current + faceNormal);
-            sumNormals /= adjacentfaceNormals.Count;
-            float3 normalized = float3.Normalize(sumNormals);
-            return normalized;
-        }
-
-
-        /// <summary>
-        /// Only for testing now.
+        /// This method calculates vertex normals for a specific vertex in the geometry and inserts them at the corresponding half-edges.
         /// </summary>
         public void CalcVertexNormalTest(HandleVertex vertexHandle)
         {
@@ -645,52 +615,7 @@ namespace hsfurtwangen.dsteffen.lfg
 
 
         /// <summary>
-        /// Only for testing now.
-        /// </summary>
-        public void CalcVertexNormalTestOld(HandleVertex vertexHandle)
-        {
-            IEnumerable<int> EincomingEdges = EnStarVertexIncomingHalfEdge(vertexHandle);
-            foreach (int hedgeIndex in EincomingEdges)
-            {
-                HEdgePtrCont hedge1 = _LhedgePtrCont[hedgeIndex];
-                HEdgePtrCont hedge2 = _LhedgePtrCont[_LhedgePtrCont[hedgeIndex]._he._DataIndex];
-
-                if (hedge1._f._DataIndex != -1 && hedge2._f._DataIndex != -1)
-                {
-                    float3 f1Normal = _LfaceNormals[_LfacePtrCont[hedge1._f._DataIndex]._fn._DataIndex];
-                    float3 f2Normal = _LfaceNormals[_LfacePtrCont[hedge2._f._DataIndex]._fn._DataIndex];
-
-                    // Compare to the angle.
-                    float dot = float3.Dot(f1Normal, f2Normal);
-                    double angle = System.Math.Cos(89 * 3.141592 / 180.0);
-
-                    if (System.Math.Acos(dot) < angle)
-                    {
-                        // aggregate the normals
-                        float3 val = float3.Add(f1Normal, f2Normal);
-                        _LVertexNormals.Add(float3.Normalize(val));
-                        hedge1._vn._DataIndex = _LVertexNormals.Count - 1;
-                    }
-                    else
-                    {
-                        // do not aggregate them
-                        _LVertexNormals.Add(float3.Normalize(f1Normal));
-                        hedge1._vn._DataIndex = _LVertexNormals.Count - 1;
-                    }
-                    _LhedgePtrCont.RemoveAt(hedgeIndex);
-                    _LhedgePtrCont.Insert(hedgeIndex, hedge1);
-                }
-                else
-                {
-                    Debug.WriteLine("Face -1 in Vertex Normal calculation.");
-                }
-
-            }
-        }
-
-
-        /// <summary>
-        /// Only for testing now
+        /// Aggregates an array of information that contains 'vertex pointer, vertex normal, vertex uv coordinates' for every half-edge in the geometry.
         /// </summary>
         /// <param name="face">A handle to a face to perform on.</param>
         /// <returns>An array of handle indexes in the following order: vertex id, vertex normal id, vertex uv id</returns>
@@ -895,103 +820,7 @@ namespace hsfurtwangen.dsteffen.lfg
         }
 
 
-        /// <summary>
-        /// Serves as an enumerable retriever from the geometry object
-        /// </summary>
-        /// <param name="hv">A handle to a vertex, should be selected from the GeometryData's vertex handle list to ensure it's correct.</param>
-        /// <returns>IEnumerable of type HandleVertex</returns>
-        public IEnumerable<HandleVertex> StarIterateVertex(HandleVertex hv)
-        {
-            return EnStarVertexVertex(hv);
-        }
-
-
-        /// <summary>
-        /// Serves as an enumerable retriever from the geometry object.
-        /// Returns an enumerable of INCOMING halfedge handles.
-        /// </summary>
-        /// <param name="hv">A handle to a vertex, should be selected from the GeometryData's vertex handle list to ensure it's correct.</param>
-        /// <returns>IEnumerable of type integers which are indexes for HalfEdges</returns>
-        public IEnumerable<int> StarVertexIncomingHalfEdge(HandleVertex hv)
-        {
-            return EnStarVertexIncomingHalfEdge(hv);
-        }
-
-
-        /// <summary>
-        /// Serves as an enumerable retriever from the geometry object.
-        /// Returns an enumerable of OUTGOING halfedge handles.
-        /// </summary>
-        /// <param name="hv">A handle to a vertex, should be selected from the GeometryData's vertex handle list to ensure it's correct.</param>
-        /// <returns>IEnumerable of type HandleHalfEdge</returns>
-        public IEnumerable<HandleHalfEdge> StarVertexOutgoingHalfEdge(HandleVertex hv)
-        {
-            return EnStarVertexOutgoingHalfEdge(hv);
-        }
-
-
-        /// <summary>
-        /// Serves as an enumerable retriever from the geometry object
-        /// Returns an enumerable of adjacent face handles.
-        /// </summary>
-        /// <param name="hv">A handle to a vertex, should be selected from the GeometryData's vertex handle list to ensure it's correct.</param>
-        /// <returns>IEnumerable of type HandleFace</returns>
-        public IEnumerable<HandleFace> VertexAdjacentFaces(HandleVertex hv)
-        {
-            return EnVertexAdjacentFaces(hv);
-        }
-
-        /// <summary>
-        /// Serves as an enumerable retriever from the geometry object.
-        /// Returns an enumerable of surrounding halfedges specific to a center face.
-        /// </summary>
-        /// <param name="hf">A handle to a face, should be selected from the GeometryData's face handle list to ensure it's correct.</param>
-        /// <returns>IEnumerable of type HandleHalfEdge</returns>
-        public IEnumerable<HandleHalfEdge> FaceSurroundingHalfEdges(HandleFace hf)
-        {
-            return EnFaceHalfEdges(hf);
-        }
-
-
-        /// <summary>
-        /// Serves as an enumerable retriever from the geometry object.
-        /// Returns an enumerable of surrounding vertices specific to a center face.
-        /// </summary>
-        /// <param name="hf">A handle to a face, should be selected from the GeometryData's face handle list to ensure it's correct.</param>
-        /// <returns>IEnumerable of type HandleVertex</returns>
-        public IEnumerable<HandleVertex> FaceSurroundingVertices(HandleFace hf)
-        {
-            return EnFaceVertices(hf);
-        }
-
-
-        /// <summary>
-        /// Serves as an enumerable retriever from the geometry object.
-        /// Returns an enumerable of surrounding vertices specific to a center face.
-        /// </summary>
-        /// <param name="hf">A handle to a face, should be selected from the GeometryData's face handle list to ensure it's correct.</param>
-        /// <returns>IEnumerable of type HandleEdge</returns>
-        public IEnumerable<HandleEdge> FaceSurroundingEdges(HandleFace hf)
-        {
-            return EnFaceEdges(hf);
-        }
-
-
-        /// <summary>
-        /// Serves as an enumerable retriever from the geometry object.
-        /// Returns an enumerable of surrounding faces specific to a center face.
-        /// </summary>
-        /// <param name="hf">A handle to a face, should be selected from the GeometryData's face handle list to ensure it's correct.</param>
-        /// <returns>IEnumerable of type HandleFace</returns>
-        public IEnumerable<HandleFace> FaceSurroundingFaces(HandleFace hf)
-        {
-            return EnFaceFaces(hf);
-        }
-
-
-
         /* Standard circle iterators over all elemets of the geometry object */
-
         /// <summary>
         /// Returns an enumerable of all vertices handles in the geometry structure.
         /// </summary>
@@ -1021,8 +850,6 @@ namespace hsfurtwangen.dsteffen.lfg
             return _LfaceHndl.AsEnumerable();
         }
 
-
-        /* From GD */
 
         /// <summary>
         /// Iterator.
@@ -1240,12 +1067,8 @@ namespace hsfurtwangen.dsteffen.lfg
             this._LvertexVal = new List<float3>(this._LvertexValDefault);
         }
 
-        /* From GD */
-
-
 
         /* Standard transformations on the geometry */
-
         /// <summary>
         /// This method can scale the object bigger or smaller dependent on the input parameters
         /// </summary>

@@ -9,9 +9,7 @@
 	Mr. Prof. W. Walter
 */
 
-using System;
-
-namespace hsfurtwangen.dsteffen.lfg.globalinf
+namespace LinqForGeometry
 {
     /// <summary>
     /// This class just handles some messages i use to generate output in the program.

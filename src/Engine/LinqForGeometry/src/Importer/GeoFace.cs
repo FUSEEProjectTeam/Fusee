@@ -9,12 +9,10 @@
 	Mr. Prof. W. Walter
 */
 
-using System;
 using System.Collections.Generic;
-
 using Fusee.Math;
 
-namespace hsfurtwangen.dsteffen.lfg.Importer
+namespace LinqForGeometry.Importer
 {
     public struct GeoFace
     {

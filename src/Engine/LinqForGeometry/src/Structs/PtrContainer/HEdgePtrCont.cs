@@ -9,9 +9,9 @@
 	Mr. Prof. W. Walter
 */
 
-using hsfurtwangen.dsteffen.lfg.structs.handles;
+using LinqForGeometry.Structs.Handles;
 
-namespace hsfurtwangen.dsteffen.lfg.structs.ptrcontainer
+namespace LinqForGeometry.Structs.PtrContainer
 {
     /// <summary>
     /// This is a half-edge 'Pointer Container'.

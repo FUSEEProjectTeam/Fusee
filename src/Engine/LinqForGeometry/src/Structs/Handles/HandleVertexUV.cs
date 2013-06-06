@@ -12,7 +12,7 @@
 /// <summary>
 /// This is the handle struct for vertex uv coordinates
 /// </summary>
-namespace hsfurtwangen.dsteffen.lfg.structs.handles
+namespace LinqForGeometry.Structs.Handles
 {
 
     /// <summary>

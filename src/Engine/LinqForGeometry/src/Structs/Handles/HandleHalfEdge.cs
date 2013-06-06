@@ -12,7 +12,7 @@
 /// <summary>
 /// This is the handle struct for HalfEdges
 /// </summary>
-namespace hsfurtwangen.dsteffen.lfg.structs.handles
+namespace LinqForGeometry.Structs.Handles
 {
 
     /// <summary>

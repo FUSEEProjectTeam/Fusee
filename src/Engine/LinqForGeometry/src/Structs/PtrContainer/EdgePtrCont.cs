@@ -9,10 +9,9 @@
     Mr. Prof. W. Walter
 */
 
-using hsfurtwangen.dsteffen.lfg.structs.handles;
-using hsfurtwangen.dsteffen.lfg.structs.ptrcontainer;
+using LinqForGeometry.Structs.Handles;
 
-namespace hsfurtwangen.dsteffen.lfg.structs.ptrcontainer
+namespace LinqForGeometry.Structs.PtrContainer
 {
     /// <summary>
     /// This is a edge 'Pointer Container'.
