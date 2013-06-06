@@ -32,8 +32,6 @@ namespace hsfurtwangen.dsteffen.lfg
     public class GeometryData
     {
         // Vars
-        private Geometry _geometry;
-
         public List<float3> _LvertexVal;
 
         public List<float3> _LfaceNormals;
@@ -53,8 +51,6 @@ namespace hsfurtwangen.dsteffen.lfg
         /// </summary>
         public GeometryData(Geometry kc)
         {
-            _geometry = kc;
-
             _LvertexVal = new List<float3>();
 
             _LvertexPtrCont = new List<VertexPtrCont>();
