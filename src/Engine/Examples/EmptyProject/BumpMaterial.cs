@@ -12,7 +12,7 @@ namespace Examples.LightTypeTest
     {
         public IShaderParam Textureparam;
         public IShaderParam NormalTextureparam;
-        public IShaderParam SpecularLevel;
+        public IShaderParam SpecularLevel, Shininess;
         public ITexture Tex;
         public ITexture NormalTex;
 
@@ -26,7 +26,8 @@ namespace Examples.LightTypeTest
             sp = shaderProgram;
             NormalTextureparam = sp.GetShaderParam("normalTex");
             Textureparam = sp.GetShaderParam("texture1");
-            SpecularLevel = sp.GetShaderParam("shininess");
+            SpecularLevel = sp.GetShaderParam("specularLevel");
+            Shininess = sp.GetShaderParam("shininess");
             ImageData image = SceneManager.RC.LoadImage(texturepath);
             ImageData image2 = SceneManager.RC.LoadImage(texturepath2);
             Tex = SceneManager.RC.CreateTexture(image);
@@ -38,7 +39,8 @@ namespace Examples.LightTypeTest
             renderContext.SetShader(sp);
             renderContext.SetShaderParamTexture(Textureparam, Tex);
             renderContext.SetShaderParamTexture(NormalTextureparam, NormalTex);
-            renderContext.SetShaderParam(SpecularLevel, 16.0f);
+            renderContext.SetShaderParam(Shininess, 8.0f);
+            renderContext.SetShaderParam(SpecularLevel, 512.0f);
 
         }
     }

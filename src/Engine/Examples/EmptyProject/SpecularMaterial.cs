@@ -11,7 +11,7 @@ namespace Examples.LightTypeTest
     public class SpecularMaterial : Material
     {
         public IShaderParam Textureparam;
-        public IShaderParam SpecularLevel;
+        public IShaderParam SpecularLevel, Shininess;
         public ITexture Tex;
 
         public SpecularMaterial(ShaderProgram shaderProgram)
@@ -23,7 +23,8 @@ namespace Examples.LightTypeTest
         {
             sp = shaderProgram;
             Textureparam = sp.GetShaderParam("texture1");
-            SpecularLevel = sp.GetShaderParam("shininess");
+            SpecularLevel = sp.GetShaderParam("specularLevel");
+            Shininess = sp.GetShaderParam("shininess");
             ImageData Image = SceneManager.RC.LoadImage(texturepath);
             Tex = SceneManager.RC.CreateTexture(Image);
         }
@@ -32,7 +33,8 @@ namespace Examples.LightTypeTest
         {
             renderContext.SetShader(sp);
             renderContext.SetShaderParamTexture(Textureparam, Tex);
-            renderContext.SetShaderParam(SpecularLevel, 32.0f);
+            renderContext.SetShaderParam(Shininess, 8.0f);
+            renderContext.SetShaderParam(SpecularLevel, 512.0f);
 
         }
     }

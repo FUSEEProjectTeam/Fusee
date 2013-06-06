@@ -1450,7 +1450,7 @@ namespace Fusee.Math
         /// </returns>
         public static float3 operator /(float3 vec, float scale)
         {
-            if (!(scale > MathHelper.EpsilonFloat)) return Zero;
+            if (-MathHelper.EpsilonFloat < scale && scale < MathHelper.EpsilonFloat) return Zero;
 
             var mult = 1.0f/scale;
             vec.x *= mult;

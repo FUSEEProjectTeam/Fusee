@@ -8,6 +8,10 @@ namespace Fusee.SceneManagement
     public class SpotLight : Light
     {
 
+        #region Fields 
+
+        protected float _angle;
+        #endregion
 
 
         #region Constructors
@@ -18,7 +22,7 @@ namespace Fusee.SceneManagement
         /// <param name="direction">The direction of the spotlight.</param>
         /// <param name="color">The color of the spotlight(Red, Green, Blue, Alpha).</param>
         /// <param name="channel">The memory space of the light(0 - 7).</param>
-        public SpotLight(float3 position, float3 direction, float4 diffuse, float4 ambient, float4 specular, int channel) 
+        public SpotLight(float3 position, float3 direction, float4 diffuse, float4 ambient, float4 specular, float angle, int channel) 
         {
             _type = LightType.Spot;
             _position = position;
@@ -26,6 +30,7 @@ namespace Fusee.SceneManagement
             _diffuseColor = diffuse;
             _ambientColor = ambient;
             _specularColor = specular;
+            _angle = angle;
             _channel = channel;
         }
 

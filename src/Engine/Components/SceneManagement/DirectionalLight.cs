@@ -1,4 +1,5 @@
-﻿using Fusee.Math;
+﻿using System;
+using Fusee.Math;
 using System.Diagnostics;
 
 namespace Fusee.SceneManagement
@@ -68,8 +69,8 @@ namespace Fusee.SceneManagement
             if (SceneEntity != null)
             {
                 _position = SceneEntity.transform.GlobalPosition;
-                _direction = SceneEntity.transform.Forward;
-                //SceneManager.RC.DebugLine(_position, _direction * 100, new float4(1, 1, 0,1));
+                float4 tempPos = SceneManager.RC.View * new float4(SceneEntity.transform.Forward, 1);
+                _direction = new float3(tempPos.x, tempPos.y, tempPos.z) / tempPos.w;
             }
             sv.Visit((DirectionalLight)this);
         }

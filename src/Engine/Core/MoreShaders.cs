@@ -172,6 +172,8 @@ uniform float FUSEE_L5_SPOTANGLE;
 uniform float FUSEE_L6_SPOTANGLE;
 uniform float FUSEE_L7_SPOTANGLE;
 
+uniform mat4 FUSEE_V;
+
 varying vec3 vNormal;
 varying vec2 vUV;
 varying vec3 vViewPos;
