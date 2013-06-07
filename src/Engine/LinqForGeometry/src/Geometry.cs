@@ -54,7 +54,7 @@ namespace LinqForGeometry
 
         // Various runtime constants
         private static double _SmoothingAngle = 89;
-        private const double piFactor = 180/3.141592;
+        private const double piFactor = 180 / 3.141592;
 
         // For mesh conversion
         private List<short> LtrianglesTMP;
@@ -203,6 +203,7 @@ namespace LinqForGeometry
             return triangleFaces;
         }
 
+
         /// <summary>
         /// This method converts the data structure to a fusee readable mesh structure
         /// </summary>
@@ -220,12 +221,12 @@ namespace LinqForGeometry
             {
                 CalcVertexNormal(handleVertex);
             }
-             
+
             LtrianglesTMP.Clear();
             LvertDataTMP.Clear();
             LvertNormalsTMP.Clear();
             LvertuvTMP.Clear();
-            
+
             foreach (HandleFace face in _LfaceHndl)
             {
                 GrabFaceDataForMesh(face);
@@ -239,6 +240,7 @@ namespace LinqForGeometry
 
             return fuseeMesh;
         }
+
 
         /// <summary>
         /// Adds a vertex to the geometry container.
@@ -401,18 +403,16 @@ namespace LinqForGeometry
 
 
         /// <summary>
-        /// Returns true if a connection already exists and fills the out parameter with a handle to the edge
+        /// Returns a handle to the edge, to a newly created one or the already existing one.
         /// </summary>
         /// <param name="hv1">HandleVertex From vertex</param>
         /// <param name="hv2">HandleVertex To vertex</param>
         /// <param name="he">HandleEdge is filled when connection already exists with valid index otherwise with -1</param>
         /// <param name="uvFrom">Uv coordinates for the from vertex</param>
         /// <param name="uvTo">Uv coordinates for the to vertex</param>
-        /// <returns></returns>
-        public bool GetOrAddConnection(HandleVertex hv1, HandleVertex hv2, out HandleEdge he)
+        public void GetOrAddConnection(HandleVertex hv1, HandleVertex hv2, out HandleEdge he)
         {
             int index = -1;
-            bool returnVal = false;
             if (_LedgePtrCont.Count != 0 && _LhedgePtrCont.Count != 0)
             {
                 index = _LedgePtrCont.FindIndex(
@@ -426,7 +426,6 @@ namespace LinqForGeometry
                     Debug.WriteLine("     Existing edge found - Not creating a new one.");
                 }
                 he = new HandleEdge() { _DataIndex = index };
-                returnVal = true;
             }
             else
             {
@@ -435,9 +434,7 @@ namespace LinqForGeometry
                     Debug.WriteLine("     Edge not found - creating new one.");
                 }
                 he._DataIndex = CreateConnection(hv1, hv2)._DataIndex;
-                returnVal = false;
             }
-            return returnVal;
         }
 
 
@@ -786,43 +783,68 @@ namespace LinqForGeometry
                      */
 
                     Debug.WriteLine("Both edges are already in use and don't point to the current face. Do something different.");
-                    /*
+                    HEdgePtrCont hedge1 = hedgePtrCont1;
+                    HEdgePtrCont hedge2 = hedgePtrCont2;
 
-                    HandleVertex v1Handle = hedgePtrCont1._v;
-                    HandleVertex v2Handle = hedgePtrCont2._v;
-
-                    HandleEdge newEdge = CreateConnection(v1Handle, v2Handle);
-
-                    HandleHalfEdge hedge1 = _LedgePtrCont[newEdge._DataIndex]._he1;
-                    //HandleHalfEdge hedge2 = _LedgePtrCont[newEdge._DataIndex]._he2;
-
-                    HEdgePtrCont hedge1Ptr = _LhedgePtrCont[hedge1._DataIndex];
-                    //HEdgePtrCont hedge2Ptr = _LhedgePtrCont[hedge2._DataIndex];
-
-                    hedge1Ptr._f._DataIndex = _LfacePtrCont.Count - 1;
-                    //hedge2Ptr._f._DataIndex = -1;
+                    hedge1._f._DataIndex = _LfacePtrCont.Count - 1;
+                    hedge1._he._DataIndex = _LhedgePtrCont.Count + 1;
+                    hedge2._he._DataIndex = _LhedgePtrCont.Count;
 
                     if (i + 1 < edgeList.Count)
                     {
-                        // Just use the next edge
-                        HEdgePtrCont nextHedgePtrCont = _LhedgePtrCont[_LedgePtrCont[edgeList[i + 1]._DataIndex]._he1];
-                        hedge1Ptr._nhe._DataIndex = hedge1Ptr._nhe._DataIndex == -1 ? nextHedgePtrCont._he._DataIndex - 1 : hedge1Ptr._nhe._DataIndex;
-
-                        // sure?
-                        _LhedgePtrCont.Add(hedge1Ptr);
+                        int nextIndex = _LedgePtrCont[edgeList[i + 1]._DataIndex]._he1._DataIndex;
+                        hedge1._nhe._DataIndex = nextIndex;
                     }
                     else
                     {
-                        // Use the first of the triangle again, because the current is the last one.
-                        HEdgePtrCont nextHedgePtrCont = _LhedgePtrCont[_LedgePtrCont[edgeList[0]._DataIndex]._he1];
-                        hedge1Ptr._nhe._DataIndex = hedge1Ptr._nhe._DataIndex == -1 ? nextHedgePtrCont._he._DataIndex - 1 : hedge1Ptr._nhe._DataIndex;
-
-                        // sure?
-                        _LhedgePtrCont.Add(hedge1Ptr);
+                        int firstHEdgeIndex = _LedgePtrCont[edgeList[0]._DataIndex]._he1._DataIndex;
+                        hedge1._nhe._DataIndex = firstHEdgeIndex;
                     }
-                     * */
 
+                    // Add the hedges to the global list
+                    _LhedgePtrCont.Add(hedge1);
+                    _LhedgePtrCont.Add(hedge2);
+
+                    // Add an edge to the global list
+                    _LedgePtrCont.Add(
+                            new EdgePtrCont()
+                            {
+                                _he1 = new HandleHalfEdge() { _DataIndex = _LhedgePtrCont.Count - 2 },
+                                _he2 = new HandleHalfEdge() { _DataIndex = _LhedgePtrCont.Count - 1 }
+                            }
+                        );
+
+                    _LedgeHndl.Add(new HandleEdge() { _DataIndex = _LedgePtrCont.Count - 1 }
+                        );
+
+                    // Change the current edgelist
+                    edgeList.RemoveAt(i);
+                    edgeList.Insert(i, _LedgeHndl[_LedgeHndl.Count - 1]);
+
+                    // Change the next pointer for the edge before the current one
+                    int indexPrevhedge1 = i == 0 ? _LedgePtrCont[edgeList[i]._DataIndex]._he1 : _LedgePtrCont[edgeList[i - 1]._DataIndex]._he1;
+                    int indexPrevhedge2 = i == 0 ? _LedgePtrCont[edgeList[i]._DataIndex]._he2 : _LedgePtrCont[edgeList[i - 1]._DataIndex]._he2;
+                    HEdgePtrCont prevhedge1 = _LhedgePtrCont[indexhedge1];
+                    HEdgePtrCont prevhedge2 = _LhedgePtrCont[indexhedge2];
+
+                    if (prevhedge1._f._DataIndex == hedge1._f._DataIndex)
+                    {
+                        // use the first hedge
+                        prevhedge1._nhe._DataIndex = _LhedgePtrCont.Count - 2;
+                        _LhedgePtrCont.RemoveAt(indexPrevhedge1);
+                        _LhedgePtrCont.Insert(indexPrevhedge1, prevhedge1);
+                    }
+                    else
+                    {
+                        // use the second hedge
+                        prevhedge2._nhe._DataIndex = _LhedgePtrCont.Count - 2;
+                        _LhedgePtrCont.RemoveAt(indexPrevhedge2);
+                        _LhedgePtrCont.Insert(indexPrevhedge2, prevhedge2);
+                    }
+
+                    // New Code end.
                 }
+
             }
         }
 
