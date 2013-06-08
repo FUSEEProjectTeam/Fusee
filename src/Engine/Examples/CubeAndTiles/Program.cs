@@ -1,15 +1,13 @@
-﻿using System.Diagnostics;
-using System.IO;
-using System.IO.Compression;
-using System.Runtime.Serialization.Formatters.Binary;
+﻿using System;
 using Fusee.Engine;
 using Fusee.Math;
-using ProtoBuf;
 
 namespace Examples.CubeAndTiles
 {
     public class CubeAndTiles : RenderCanvas
     {
+        #region Shader
+
         // GLSL
         private const string Vs = @"
             /* Copies incoming vertex color without change.
@@ -64,8 +62,10 @@ namespace Examples.CubeAndTiles
                 gl_FragColor = dot(vColor, vec4(0, 0, 0, 1)) * colTex * dot(vNormal, vec3(0, 0, 1));
             }";
 
+        #endregion
+
         // variables
-        internal static Level ExampleLevel;
+        private static Level _exampleLevel;
         private static Anaglyph3D _anaglyph3D;
 
         private ShaderProgram _spAnaglyph;
@@ -84,15 +84,15 @@ namespace Examples.CubeAndTiles
         // Init()
         public override void Init()
         {
+            RC.ClearColor = new float4(0, 0, 0, 1);
+            
             _spNonAnaglyph = RC.CreateShader(Vs, PsStart + PsNonAnaglyph);
             _spAnaglyph = RC.CreateShader(Vs, PsStart + PsAnaglyph);
 
             RC.SetShader(_spNonAnaglyph);
 
-            RC.ClearColor = new float4(0, 0, 0, 1);
-
             _anaglyph3D = new Anaglyph3D(RC);
-            ExampleLevel = new Level(RC, _spNonAnaglyph, _anaglyph3D);
+            _exampleLevel = new Level(RC, _spNonAnaglyph, _anaglyph3D);
         }
 
         // RenderAFrame()
@@ -100,40 +100,7 @@ namespace Examples.CubeAndTiles
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
-            // mouse
-            if (Input.Instance.GetAxis(InputAxis.MouseWheel) > 0)
-                ExampleLevel.ZoomCamera(50);
-
-            if (Input.Instance.GetAxis(InputAxis.MouseWheel) < 0)
-                ExampleLevel.ZoomCamera(-50);
-
-            if (Input.Instance.IsButtonDown(MouseButtons.Left))
-            {
-                _angleVelHorz = RotationSpeed*Input.Instance.GetAxis(InputAxis.MouseX);
-                _angleVelVert = RotationSpeed*Input.Instance.GetAxis(InputAxis.MouseY);
-            }
-            else
-            {
-                var curDamp = (float) System.Math.Exp(-Damping*Time.Instance.DeltaTime);
-
-                _angleVelHorz *= curDamp;
-                _angleVelVert *= curDamp;
-            }
-
-            _angleHorz += _angleVelHorz;
-            _angleVert += _angleVelVert;
-
-            KeyboardInput();
-            NetImp.HandleNetwork();
-
-            var mtxRot = float4x4.CreateRotationZ(_angleHorz)*float4x4.CreateRotationX(_angleVert);
-            ExampleLevel.Render(mtxRot);
-
-            Present();
-        }
-
-        private static void KeyboardInput()
-        {
+            // keyboard
             if (_lastKey == KeyCodes.None)
             {
                 if (Input.Instance.IsKeyDown(KeyCodes.V))
@@ -158,47 +125,70 @@ namespace Examples.CubeAndTiles
                     _lastKey = KeyCodes.V;
                 }
 
-                // if (Input.Instance.IsKeyDown(KeyCodes.B))
-                // {
-                //    _exampleLevel.UseAnaglyph3D = !_exampleLevel.UseAnaglyph3D;
-                //    RC.SetShader(_exampleLevel.UseAnaglyph3D ? _spAnaglyph : _spNonAnaglyph);
-                //    _lastKey = KeyCodes.B;
-                // }
-
-                if (Input.Instance.IsKeyDown(KeyCodes.C))
-                {
-                    NetImp.StartUpClient();
-                    _lastKey = KeyCodes.C;
-                }
-
                 if (Input.Instance.IsKeyDown(KeyCodes.S))
                 {
-                    NetImp.StartUpServer();
+                    Audio.Instance.SetVolume(Audio.Instance.GetVolume() > 0 ? 0 : 100);
                     _lastKey = KeyCodes.S;
                 }
 
-                if (Input.Instance.IsKeyDown(KeyCodes.Left))
-                    ExampleLevel.MoveCube(Directions.Left);
+                if (Input.Instance.IsKeyDown(KeyCodes.C))
+                {
+                    RC.SetShader(_exampleLevel.UseAnaglyph3D ? _spNonAnaglyph : _spAnaglyph);
 
-                if (Input.Instance.IsKeyDown(KeyCodes.Right))
-                    ExampleLevel.MoveCube(Directions.Right);
-
-                if (Input.Instance.IsKeyDown(KeyCodes.Up))
-                    ExampleLevel.MoveCube(Directions.Forward);
-
-                if (Input.Instance.IsKeyDown(KeyCodes.Down))
-                    ExampleLevel.MoveCube(Directions.Backward);
-
+                    _exampleLevel.UseAnaglyph3D = !_exampleLevel.UseAnaglyph3D;
+                    _lastKey = KeyCodes.C;
+                }
             }
             else if (!Input.Instance.IsKeyDown(_lastKey))
                 _lastKey = KeyCodes.None;
+
+            if (Input.Instance.IsKeyDown(KeyCodes.Left))
+                _exampleLevel.MoveCube(Level.Directions.Left);
+
+            if (Input.Instance.IsKeyDown(KeyCodes.Right))
+                _exampleLevel.MoveCube(Level.Directions.Right);
+
+            if (Input.Instance.IsKeyDown(KeyCodes.Up))
+                _exampleLevel.MoveCube(Level.Directions.Forward);
+
+            if (Input.Instance.IsKeyDown(KeyCodes.Down))
+                _exampleLevel.MoveCube(Level.Directions.Backward);
+
+            // mouse
+            if (Input.Instance.GetAxis(InputAxis.MouseWheel) > 0)
+                _exampleLevel.ZoomCamera(50);
+
+            if (Input.Instance.GetAxis(InputAxis.MouseWheel) < 0)
+                _exampleLevel.ZoomCamera(-50);
+
+            if (Input.Instance.IsButtonDown(MouseButtons.Left))
+            {
+                _angleVelHorz = RotationSpeed*Input.Instance.GetAxis(InputAxis.MouseX);
+                _angleVelVert = RotationSpeed*Input.Instance.GetAxis(InputAxis.MouseY);
+            }
+            else
+            {
+                var curDamp = (float) Math.Exp(-Damping*Time.Instance.DeltaTime);
+
+                _angleVelHorz *= curDamp;
+                _angleVelVert *= curDamp;
+            }
+
+            _angleHorz += _angleVelHorz;
+            _angleVert += _angleVelVert;
+
+            var mtxRot = float4x4.CreateRotationZ(_angleHorz)*float4x4.CreateRotationX(_angleVert);
+
+            _exampleLevel.Render(mtxRot);
+
+            Present();
         }
 
         public override void Resize()
         {
             RC.Viewport(0, 0, Width, Height);
 
-            var aspectRatio = Width / (float)Height;
+            var aspectRatio = Width/(float) Height;
             RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 10000);
         }
 

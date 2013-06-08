@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using Fusee.Engine;
 using Fusee.Math;
 
@@ -15,32 +14,48 @@ namespace Examples.CubeAndTiles
         private readonly Anaglyph3D _anaglyph3D;
         internal bool UseAnaglyph3D;
 
-        internal RollingCube RCube { get; set; }
+        private RollingCube _rCube;
         private Field[,] _levelFeld;
 
         internal int FieldCount { get; private set; }
 
         private int[] _startXy;
         private int _curLvlId;
-        internal LevelStates State;
+        private LevelStates _lvlState;
 
         private int _camPosition;
         private float4x4 _camTranslation;
         private float4x4 _objOrientation;
 
         internal float4x4 CamTrans { get; private set; }
-        
+
         internal Mesh GlobalFieldMesh { get; private set; }
         internal ITexture TextureField { get; private set; }
 
         internal Mesh GlobalCubeMesh { get; private set; }
         internal ITexture TextureCube { get; private set; }
-        internal float3 CubeColor { get; set; }
 
         internal Random ObjRandom { get; private set; }
 
         // array for level files
         private int[][,] _lvlTmp;
+
+        public enum LevelStates
+        {
+            LsLoadFields,
+            LsLoadCube,
+            LsPlaying,
+            LsWinning,
+            LsDying
+        }
+
+        public enum Directions
+        {
+            Left,
+            Right,
+            Forward,
+            Backward,
+        };
 
         public Level(RenderContext rc, ShaderProgram sp, Anaglyph3D anaglyph3D)
             : this(rc, sp, 0, anaglyph3D)
@@ -58,13 +73,13 @@ namespace Examples.CubeAndTiles
 
             _anaglyph3D = anaglyph3D;
             UseAnaglyph3D = false;
-            
+
             ConstructLevel(id);
         }
 
         private void ConstructLevel(int id)
         {
-            if (RCube != null)
+            if (_rCube != null)
                 return;
 
             _lvlTmp = LevelTemplates.LvlTmp;
@@ -74,7 +89,7 @@ namespace Examples.CubeAndTiles
             GlobalCubeMesh = MeshReader.LoadMesh("Assets/Cube.obj.model");
 
             // load textures
-            ImageData imgData = RContext.LoadImage("Assets/tex_stone.jpg");
+            var imgData = RContext.LoadImage("Assets/tex_stone.jpg");
             TextureField = RContext.CreateTexture(imgData);
 
             imgData = RContext.LoadImage("Assets/tex_cube.jpg");
@@ -85,7 +100,7 @@ namespace Examples.CubeAndTiles
             _objOrientation = float4x4.CreateRotationX(MathHelper.Pi/2);
 
             // create cube and set vars
-            RCube = new RollingCube(this);
+            _rCube = new RollingCube(this);
 
             _startXy = new int[2];
             _curLvlId = id;
@@ -94,16 +109,16 @@ namespace Examples.CubeAndTiles
             LoadLevel(id);
         }
 
-        public void LoadLevel(int id)
+        private void LoadLevel(int id)
         {
             // if id > amount of levels, go to fist lvl
-           id %= _lvlTmp.Length;
+            id %= _lvlTmp.Length;
 
             // X and Y swapped and turned 90°
             var sizeX = _lvlTmp[id].GetLength(1);
             var sizeY = _lvlTmp[id].GetLength(0);
 
-            _levelFeld = new Field[sizeX, sizeY];
+            _levelFeld = new Field[sizeX,sizeY];
             FieldCount = 0;
 
             for (var y = 0; y < sizeY; y++)
@@ -123,32 +138,31 @@ namespace Examples.CubeAndTiles
                 }
 
             _camTranslation = float4x4.CreateTranslation((float) -(sizeX - 1)*100, (float) -(sizeY - 1)*100, 150);
-
             ResetLevel();
         }
 
         private void ResetLevel()
         {
-            State = LevelStates.LsLoadFields;
+            _lvlState = LevelStates.LsLoadFields;
 
             foreach (var feld in _levelFeld)
                 if (feld != null)
                     feld.ResetField();
 
-            if (RCube != null)
-                RCube.ResetCube(_startXy[0], _startXy[1]);
+            if (_rCube != null)
+                _rCube.ResetCube(_startXy[0], _startXy[1]);
         }
 
         private void WinLevel()
         {
-            State = LevelStates.LsWinning;
-            RCube.WinningCube();
+            _lvlState = LevelStates.LsWinning;
+            _rCube.WinningCube();
         }
 
         private void DeadLevel()
         {
-            State = LevelStates.LsDying;
-            RCube.DeadCube();
+            _lvlState = LevelStates.LsDying;
+            _rCube.DeadCube();
         }
 
         internal void SetDeadField(int x, int y)
@@ -174,7 +188,18 @@ namespace Examples.CubeAndTiles
                 var curState = _levelFeld[curX, curY].State;
                 var curType = _levelFeld[curX, curY].Type;
 
-                if (curState == FieldStates.FsDead)
+                if (curType == Field.FieldTypes.FtTele)
+                {
+                    foreach (var field in _levelFeld)
+                    {
+                        if (field == null) continue;
+
+                        if (field.Type == Field.FieldTypes.FtTele && (field.CoordXY[0] != curX || field.CoordXY[1] != curY))
+                            TeleportCube(field.CoordXY[0], field.CoordXY[1]);
+                    }
+                
+                }
+                if (curState == Field.FieldStates.FsDead)
                     DeadLevel();
 
                 if (curType == Field.FieldTypes.FtEnd)
@@ -187,10 +212,10 @@ namespace Examples.CubeAndTiles
                     {
                         if (field == null) continue;
 
-                        if (field.State == FieldStates.FsDead)
+                        if (field.State == Field.FieldStates.FsDead)
                             actualNumCount++;
 
-                        if (field.Type == Field.FieldTypes.FtNormal)
+                        if (field.Type != Field.FieldTypes.FtStart && field.Type != Field.FieldTypes.FtEnd)
                             targetNumCount++;
                     }
 
@@ -207,55 +232,60 @@ namespace Examples.CubeAndTiles
 
         public void MoveCube(Directions dir)
         {
-            if (State != LevelStates.LsPlaying)
+            if (_lvlState != LevelStates.LsPlaying)
                 return;
 
             switch (dir)
             {
                 case Directions.Left:
-                    RCube.MoveCube(-1, 0);
+                    _rCube.MoveCube(-1, 0);
                     break;
                 case Directions.Right:
-                    RCube.MoveCube(+1, 0);
+                    _rCube.MoveCube(+1, 0);
                     break;
                 case Directions.Forward:
-                    RCube.MoveCube(0, +1);
+                    _rCube.MoveCube(0, +1);
                     break;
                 case Directions.Backward:
-                    RCube.MoveCube(0, -1);
+                    _rCube.MoveCube(0, -1);
                     break;
             }
         }
 
+        public void TeleportCube(int x, int y)
+        {
+            _rCube.TeleportCube(x,y);
+        }
+
         private void LoadAnimation()
         {
-            if (State != LevelStates.LsLoadFields)
+            if (_lvlState != LevelStates.LsLoadFields)
                 return;
-            
+
             var allReady = true;
 
-            allReady &= _levelFeld[_startXy[0], _startXy[1]].State == FieldStates.FsAlive;
-            allReady &= RCube.State == CubeStates.CsAlive;
+            allReady &= _levelFeld[_startXy[0], _startXy[1]].State == Field.FieldStates.FsAlive;
+            allReady &= _rCube.State == RollingCube.CubeStates.CsAlive;
 
             if (allReady)
-                State = LevelStates.LsPlaying;
+                _lvlState = LevelStates.LsPlaying;
         }
 
         private bool WonDeadAnimation()
         {
             // cube is dying, wait for it
-            if (State == LevelStates.LsDying)
-                if (RCube.State == CubeStates.CsDead)
+            if (_lvlState == LevelStates.LsDying)
+                if (_rCube.State == RollingCube.CubeStates.CsDead)
                 {
                     ResetLevel();
                     return true;
                 }
 
             // cube is winning, wait for it
-            if (State == LevelStates.LsWinning)
-                if (RCube.State == CubeStates.CsWon)
+            if (_lvlState == LevelStates.LsWinning)
+                if (_rCube.State == RollingCube.CubeStates.CsWon)
                 {
-                    _curLvlId = ++_curLvlId % _lvlTmp.Length;
+                    _curLvlId = ++_curLvlId%_lvlTmp.Length;
                     LoadLevel(_curLvlId);
                     return true;
                 }
@@ -271,8 +301,8 @@ namespace Examples.CubeAndTiles
             LoadAnimation();
 
             var lookAt = UseAnaglyph3D
-             ? _anaglyph3D.LookAt3D(0, 0, _camPosition, 0, 0, 0, 0, 1, 0)
-             : float4x4.LookAt(0, 0, _camPosition, 0, 0, 0, 0, 1, 0);
+                             ? _anaglyph3D.LookAt3D(0, 0, _camPosition, 0, 0, 0, 0, 1, 0)
+                             : float4x4.LookAt(0, 0, _camPosition, 0, 0, 0, 0, 1, 0);
 
             CamTrans = _camTranslation*mtxRot*lookAt;
 
@@ -291,8 +321,8 @@ namespace Examples.CubeAndTiles
 
                 RContext.SetShaderParamTexture(VTextureObj, TextureCube);
 
-                if (RCube != null)
-                    RCube.RenderCube(renderOnly);
+                if (_rCube != null)
+                    _rCube.RenderCube(renderOnly);
 
                 if (!UseAnaglyph3D)
                     break;
@@ -309,6 +339,8 @@ namespace Examples.CubeAndTiles
         private static bool OutOfBounds(int x, int y, Field[,] array)
         {
             return x < 0 || x >= array.GetLength(0) || y < 0 || y >= array.GetLength(1);
-        }     
+        }
+
+
     }
 }

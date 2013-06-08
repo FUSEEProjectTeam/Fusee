@@ -1,4 +1,5 @@
-﻿using Fusee.Engine;
+﻿using System;
+using Fusee.Engine;
 using Fusee.Math;
 
 namespace Examples.CubeAndTiles
@@ -16,22 +17,33 @@ namespace Examples.CubeAndTiles
         private float _curBright;
 
         private readonly float _fieldBright;
-        private readonly float3 _fieldColor;
+        private float3 _fieldColor;
         private readonly float _randomRotZ;
 
+        internal FieldTypes Type { get; private set; }
+        internal FieldStates State { get; private set; }
+        internal FieldTypes TypeOld;
+
+        private float4x4 _modelView;
+        private bool _dirtyFlag;
+
+        // enums
         public enum FieldTypes
         {
             FtNull = 0,
             FtStart = 1,
             FtEnd = 3,
-            FtNormal = 2
-        };
+            FtNormal = 2,
+            FtTele = 4,
+            FtNormal2 = 5
+        }
 
-        internal FieldTypes Type { get; private set; }
-        internal FieldStates State { get; private set; }
-
-        private float4x4 _modelView;
-        private bool _dirtyFlag;
+        public enum FieldStates
+        {
+            FsLoading,
+            FsAlive,
+            FsDead
+        }
 
         // constructor
         public Field(Level curLevel, int id, int x, int y, FieldTypes type)
@@ -66,6 +78,14 @@ namespace Examples.CubeAndTiles
                     _fieldColor = new float3(0.8f, 0.8f, 0.8f);
                     break;
 
+                case FieldTypes.FtNormal2:
+                    _fieldColor = new float3(0.39f, 0.28f, 0.18f);
+                    break;
+
+                case FieldTypes.FtTele:
+                    _fieldColor = new float3(0.0f, 0.62f, 0.89f);
+                    break;
+
                 default:
                     _fieldColor = new float3(0.0f, 0.0f, 0.0f);
                     break;
@@ -80,6 +100,13 @@ namespace Examples.CubeAndTiles
         // methods
         public void ResetField()
         {
+
+            if (TypeOld == FieldTypes.FtNormal2 && State == FieldStates.FsDead)
+            {
+                _fieldColor = new float3(0.39f, 0.28f, 0.18f);
+                Type = FieldTypes.FtNormal2;
+            }
+
             State = FieldStates.FsLoading;
 
             _posZ = -_fieldId/2.0f;
@@ -91,12 +118,26 @@ namespace Examples.CubeAndTiles
 
         public void DeadField()
         {
-            if (State != FieldStates.FsDead)
+            if (Type != FieldTypes.FtNormal2)
             {
-                State = FieldStates.FsDead;
+                if (State != FieldStates.FsDead)
+                {
+                    State = FieldStates.FsDead;
+
+                    _posZ = 0;
+                    _veloZ = (Type == FieldTypes.FtEnd) ? -24f : -6f;
+                }
+            }
+            else
+            {
+                TypeOld = FieldTypes.FtNormal2;
 
                 _posZ = 0;
                 _veloZ = (Type == FieldTypes.FtEnd) ? -24f : -6f;
+
+                Type = FieldTypes.FtNormal;
+                _fieldColor = new float3(0.8f, 0.8f, 0.8f);
+                ResetField();
             }
         }
 
@@ -104,8 +145,8 @@ namespace Examples.CubeAndTiles
         {
             if (State != FieldStates.FsLoading) return;
 
-            _veloZ = System.Math.Max(-0.6f, -_posZ/0.17f);
-            _posZ += _veloZ * (float) Time.Instance.DeltaTime;
+            _veloZ = Math.Max(-0.6f, -_posZ/0.17f);
+            _posZ += _veloZ*(float) Time.Instance.DeltaTime;
 
             _curBright = 1 - (_posZ)/(-_curLevel.FieldCount/2.0f);
 
@@ -151,7 +192,7 @@ namespace Examples.CubeAndTiles
             if (_dirtyFlag)
             {
                 // translate fields
-                var mtxFieldRot = float4x4.CreateRotationZ((float) (_randomRotZ*System.Math.PI/2));
+                var mtxFieldRot = float4x4.CreateRotationZ((float) (_randomRotZ*Math.PI/2));
 
                 var mtxObjPos = float4x4.CreateTranslation(CoordXY[0]*200, CoordXY[1]*200,
                                                            _posZ*100 - (RollingCube.CubeSize/2.0f + 15));
