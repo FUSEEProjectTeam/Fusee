@@ -62,6 +62,10 @@
   <Target Name="Clean">
     <Exec Condition=" '$(OS)' == 'Windows_NT' And Exists('$(OutputPath)') " Command="del /q &quot;$(OutputPath)Fusee.Engine.Imp.SFMLAudio.*&quot;" />
     <Exec Condition=" '$(OS)' != 'Windows_NT' And Exists('$(OutputPath)') " Command="rm '$(OutputPath)'Fusee.Engine.Imp.SFMLAudio.*" />
+    <Exec Condition=" '$(OS)' == 'Windows_NT' And Exists('$(OutputPath)') " Command="del /q &quot;$(OutputPath)Fusee.Engine.Imp.NAudio.*&quot;" />
+    <Exec Condition=" '$(OS)' != 'Windows_NT' And Exists('$(OutputPath)') " Command="rm '$(OutputPath)'Fusee.Engine.Imp.NAudio.*" />
+    <Exec Condition=" '$(OS)' == 'Windows_NT' And Exists('$(OutputPath)NAudio.dll') " Command="del /q &quot;$(OutputPath)NAudio.dll&quot;" />
+    <Exec Condition=" '$(OS)' != 'Windows_NT' And Exists('$(OutputPath)NAudio.dll') " Command="rm '$(OutputPath)'NAudio.dll" />
     <Exec Condition=" '$(OS)' == 'Windows_NT' And Exists('$(OutputPath)sfmlNET.Audio.dll') " Command="del /q &quot;$(OutputPath)sfmlNET.Audio.dll&quot;" />
     <Exec Condition=" '$(OS)' != 'Windows_NT' And Exists('$(OutputPath)sfmlNET.Audio.dll') " Command="rm '$(OutputPath)'sfmlNET.Audio.dll" />
   </Target>

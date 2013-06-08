@@ -15,10 +15,13 @@ namespace Fusee.SceneManagement
         private float4x4 _matrix;
         private bool _dirty;
         private float4x4 _projection;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderCamera"/> class. Needs the ViewMatrix of a Camera.
         /// </summary>
         /// <param name="matrix">The matrix that will be the new ViewMatrix.</param>
+        /// <param name="projection">The matrix that will be the new projection.</param>
+        /// <param name="dirty">True if values have changed; otherwise, false.</param>
         public RenderCamera(float4x4 matrix, float4x4 projection, bool dirty)
         {
             _matrix = matrix;

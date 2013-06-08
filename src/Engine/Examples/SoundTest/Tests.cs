@@ -3,7 +3,7 @@ using Fusee.Engine;
 
 namespace Examples.SoundTest
 {
-    class Tests
+    internal class Tests
     {
         public bool Test1(IAudioStream audio, int state)
         {
@@ -19,7 +19,7 @@ namespace Examples.SoundTest
             if (state == 7)
             {
                 Debug.WriteLine("----> pause music for two seconds");
-                audio.Pause();                
+                audio.Pause();
             }
 
             if (state == 9)
@@ -118,7 +118,7 @@ namespace Examples.SoundTest
         {
             if (state == 0)
                 Debug.WriteLine("Test #5: looping for 2 seconds with loop as parameter");
-            
+
             if (state == 2)
                 audio.Play(true);
 

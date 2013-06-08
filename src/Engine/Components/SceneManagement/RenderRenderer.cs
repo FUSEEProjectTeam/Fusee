@@ -12,7 +12,7 @@ namespace Fusee.SceneManagement
     {
 
         private Renderer _renderer;
-        private IShaderParam _uColor;
+        //private IShaderParam _uColor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderRenderer"/> class. Needs to be provided with a Renderer Component.
@@ -20,7 +20,7 @@ namespace Fusee.SceneManagement
         public RenderRenderer(Renderer renderer)
         {
             _renderer = renderer;
-            _uColor = null;
+            //_uColor = null;
         }
         /// <summary>
         /// Overwrites the SubmitWork method of RenderJob class. Render Component will get shaders and materials and passed to the RenderContextImplementation.
