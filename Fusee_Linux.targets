@@ -17,15 +17,16 @@
     <MakeDir Directories="$(OutputPath)Web/Assets/Styles" Condition="!Exists('$(OutputPath)Web/Styles')" />
 
     <Message Importance="High" Text="### PostBuildEvent $(TargetName): JSIL CCing ###" />
-    <Exec ContinueOnError="true" Timeout="60000" Command='mono "$(SolutionDir)ExternalBinaries/JSIL/Compiler/JSILc.exe" -o "$(OutputPath)Web/Assets/Scripts" "$(TargetPath)"' />
+    <Exec ContinueOnError="true" Timeout="120000" Command='mono "$(SolutionDir)ExternalBinaries/JSIL/Compiler/JSILc.exe" -o "$(OutputPath)Web/Assets/Scripts" "$(TargetPath)"' />
 
     <Message Importance="High" Text="### PostBuildEvent $(TargetName): Copying additional scripts/styles ###" />
     <Exec Command="rsync -a $(OutputPath)../../WebGL/Scripts/*.* $(OutputPath)Web/Assets/Scripts" />
     <Exec Command="rsync -a $(OutputPath)../../WebGL/Styles/*.* $(OutputPath)Web/Assets/Styles" />
     <Exec Command="rsync -a $(OutputPath)../../WebAudio/*.* $(OutputPath)Web/Assets/Scripts" />
+    <Exec Command="rsync -a $(OutputPath)../../WebNet/*.* $(OutputPath)Web/Assets/Scripts" />
 
     <Message Importance="High" Text="### PostBuildEvent $(TargetName): Creating default HTML file ###" />
-    <Exec ContinueOnError="true" Timeout="60000" Command='mono "$(SolutionDir)ExternalBinaries/JSIL/Compiler/fuHTMLGen.exe" "$(OutputPath)" "$(OutputPath)Web/" "$(TargetPath)"' />
+    <Exec ContinueOnError="true" Timeout="120000" Command='mono "$(SolutionDir)ExternalBinaries/JSIL/Compiler/fuHTMLGen.exe" "$(OutputPath)" "$(OutputPath)Web/" "$(TargetPath)"' />
 
     <Message Importance="High" Text="### PostBuildEvent $(TargetName): Done ###" />
   </Target>

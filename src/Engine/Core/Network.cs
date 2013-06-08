@@ -2,6 +2,7 @@
 #pragma warning disable 1591
 
 using System.Linq;
+using JSIL.Meta;
 
 namespace Fusee.Engine
 {
@@ -66,12 +67,21 @@ namespace Fusee.Engine
             get { return _networkImp.IncomingMsg.Count; }
         }
 
+        [JSExternal]
+        private INetworkMsg FirstMessage()
+        {
+            return _networkImp.IncomingMsg.DefaultIfEmpty(null).First();
+        }
+
         public INetworkMsg IncomingMsg
         {
             get
             {
-                var msg = _networkImp.IncomingMsg.DefaultIfEmpty(null).First();
-                _networkImp.IncomingMsg.Remove(msg);
+                var msg = FirstMessage();
+
+                if (msg != null)
+                    _networkImp.IncomingMsg.Remove(msg);
+
                 return msg;
             }
         }

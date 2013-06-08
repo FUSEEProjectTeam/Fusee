@@ -45,10 +45,7 @@ namespace Examples.CubeAndTiles
 
         internal static void RecvGameState(GameState gameState)
         {
-            //
             //    Network.Instance.SendMessage(_exampleLevel.RCube.ModelView);
-
-
         }
 
         internal static void HandleNetwork()

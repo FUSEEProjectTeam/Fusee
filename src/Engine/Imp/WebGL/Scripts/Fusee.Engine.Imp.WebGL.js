@@ -8,8 +8,11 @@
 
 var $WebGLImp = JSIL.DeclareAssembly("Fusee.Engine.Imp.WebGL");
 var $WebAudioImp = JSIL.GetAssembly("Fusee.Engine.Imp.WebAudio");
+var $WebNetImp = JSIL.GetAssembly("Fusee.Engine.Imp.WebNet");
+
 var $fuseeCommon = JSIL.GetAssembly("Fusee.Engine.Common");
 var $fuseeMath = JSIL.GetAssembly("Fusee.Math.Core");
+
 var $fuseeFirstGetShaderParamCall = false;
 
 JSIL.DeclareNamespace("Fusee");
@@ -1373,8 +1376,6 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.InputImp", true
 });
 
 JSIL.ImplementExternals("Fusee.Engine.ImpFactory", function ($) {
-
-
     $.Method({ Static: true, Public: true }, "CreateIInputImp",
         new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.IInputImp"), [$fuseeCommon.TypeRef("Fusee.Engine.IRenderCanvasImp")]),
             function ImpFactory_CreateIInputImp(renderCanvasImp) {
@@ -1404,6 +1405,12 @@ JSIL.ImplementExternals("Fusee.Engine.ImpFactory", function ($) {
             }
     );
 
+	$.Method({ Static: true, Public: true }, "CreateINetworkImp",
+        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.INetworkImp"), []),
+            function ImpFactory_CreateINetworkImp() {
+                return new $WebNetImp.Fusee.Engine.WebNetImp();
+            }
+    );
 });
 
 
@@ -1415,7 +1422,6 @@ JSIL.ImplementExternals("Fusee.Engine.MeshReader", function ($) {
             }
     );
 });
-
 
 /**
 * Provides requestAnimationFrame in a cross browser way.
