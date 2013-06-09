@@ -40,9 +40,6 @@ namespace Examples.Solar
                 perspective = !perspective;
 
             }
-            SceneManager.RC.DebugLine(new float3(0, 0, 0), new float3(7, 0, 0), new float4(1, 1, 1, 1));
-            //Debug.WriteLine("Current FPS: "+Time.Instance.FramePerSecondSmooth);
-            //DrawCameraView();
         }
 
         private void DrawCameraView()

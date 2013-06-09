@@ -262,7 +262,7 @@ namespace Fusee.Engine
                 _transViewOk = false;
                 _transModelViewOk = false;
                 _transModelViewProjectionOk = false;
-                _modelView = _view * _model;
+                _modelView = _model * _view;
 
                 UpdateCurrentShader();
 
@@ -277,7 +277,7 @@ namespace Fusee.Engine
             set
             {
                 _model = value;
-
+                _modelView = _model * _view;
                 _modelViewProjectionOk = false;
                 _invModelOk = false;
                 _invModelViewOk = false;
@@ -290,7 +290,7 @@ namespace Fusee.Engine
                 _transModelOk = false;
                 _transModelViewOk = false;
                 _transModelViewProjectionOk = false;
-                _modelView = _model*_view;
+                
 
                 UpdateCurrentShader();
                 _rci.ModelView = _modelView;
