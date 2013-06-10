@@ -117,12 +117,12 @@ namespace Examples.LinqForGeometry
             //_Geo.LoadAsset("Assets/Cube.obj.model");
             //_Geo.LoadAsset("Assets/Sphere.obj.model");
             //_Geo.LoadAsset("Assets/Teapot.obj.model");
-            //_Geo.LoadAsset("Assets/Teapot_triangular.obj.model");
+            _Geo.LoadAsset("Assets/Teapot_triangular.obj.model");
             //_Geo.LoadAsset("Assets/Stanford_Bunny.obj.model");
             //_Geo.LoadAsset("Assets/SharedCorners.obj.model");
             //_Geo.LoadAsset("Assets/Cylinder.obj.model");
             //_Geo.LoadAsset("Assets/Tower_extrudetest.obj.model");
-            _Geo.LoadAsset("Assets/SharedCorners_pro.obj.model");
+            //_Geo.LoadAsset("Assets/SharedCorners_pro.obj.model");
             #endregion MeshImports
 
 

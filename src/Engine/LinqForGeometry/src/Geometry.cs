@@ -25,19 +25,20 @@ namespace LinqForGeometry
     public class Geometry
     {
         private WavefrontImporter<float3> _objImporter;
-        private List<GeoFace> _GeoFaces;
 
+        // Boolean helpers
         public bool _Changes = false;
 
         // Handles to pointer containers
         private List<HandleVertex> _LverticeHndl;
         private List<HandleEdge> _LedgeHndl;
         private List<HandleFace> _LfaceHndl;
-        private List<short> _LtriangleList;
 
-        // Boolean helpers
-        private bool _triangleListSet = false;
-        private bool _ChangesOnFaces = false;
+        // Pointer containers
+        private List<VertexPtrCont> _LvertexPtrCont;
+        private List<HEdgePtrCont> _LhedgePtrCont;
+        private List<EdgePtrCont> _LedgePtrCont;
+        private List<FacePtrCont> _LfacePtrCont;
 
         // Real data
         private List<float3> _LvertexVal;
@@ -46,21 +47,15 @@ namespace LinqForGeometry
         private List<float2> _LuvCoordinates;
         private List<float3> _LvertexValDefault;
 
-        // Pointer containers
-        private List<VertexPtrCont> _LvertexPtrCont;
-        private List<HEdgePtrCont> _LhedgePtrCont;
-        private List<EdgePtrCont> _LedgePtrCont;
-        private List<FacePtrCont> _LfacePtrCont;
-
         // Various runtime constants
-        private static double _SmoothingAngle = 89;
+        private const double _SmoothingAngle = 89;
         private const double piFactor = 180 / 3.141592;
 
         // For mesh conversion
-        private List<short> LtrianglesTMP;
-        private List<float3> LvertDataTMP;
-        private List<float3> LvertNormalsTMP;
-        private List<float2> LvertuvTMP;
+        private List<short> _LtrianglesFuseeMesh;
+        private List<float3> _LvertDataFuseeMesh;
+        private List<float3> _LvertNormalsFuseeMesh;
+        private List<float2> _LvertuvFuseeMesh;
 
         /// <summary>
         /// Constructor for the GeometryData class.
@@ -68,7 +63,6 @@ namespace LinqForGeometry
         public Geometry()
         {
             _objImporter = new WavefrontImporter<float3>();
-            _GeoFaces = new List<GeoFace>();
 
             _LverticeHndl = new List<HandleVertex>();
             _LedgeHndl = new List<HandleEdge>();
@@ -84,13 +78,11 @@ namespace LinqForGeometry
             _LVertexNormals = new List<float3>();
             _LuvCoordinates = new List<float2>();
 
-            _LtriangleList = new List<short>();
-
             // For mesh conversion
-            LtrianglesTMP = new List<short>();
-            LvertDataTMP = new List<float3>();
-            LvertNormalsTMP = new List<float3>();
-            LvertuvTMP = new List<float2>();
+            _LtrianglesFuseeMesh = new List<short>();
+            _LvertDataFuseeMesh = new List<float3>();
+            _LvertNormalsFuseeMesh = new List<float3>();
+            _LvertuvFuseeMesh = new List<float2>();
         }
 
 
@@ -125,10 +117,6 @@ namespace LinqForGeometry
                 timeDone = String.Format(LFGMessages.UTIL_STOPWFORMAT, timeSpan.Seconds, timeSpan.Milliseconds);
                 Debug.WriteLine("\n\n     Time needed to import the .obj file: " + timeDone);
                 stopWatch.Restart();
-            }
-
-            if (LFGMessages._DEBUGOUTPUT)
-            {
                 Debug.WriteLine(LFGMessages.INFO_PROCESSINGDS);
             }
 
@@ -159,6 +147,7 @@ namespace LinqForGeometry
 
         /// <summary>
         /// This method converts a quadrangular polygon mesh to a triangular polygon mesh
+        /// TODO: not the best solution. Have to change this.
         /// </summary>
         /// <param name="faces">List of GeoFace</param>
         /// <returns>List of GeoFaces</returns>
@@ -211,32 +200,38 @@ namespace LinqForGeometry
         public Mesh ToMesh()
         {
             _LfaceNormals.Clear();
-            foreach (HandleFace faceHandle in EnAllFaces())
+            foreach (HandleFace faceHandle in _LfaceHndl)
             {
                 CalcFaceNormalForFace(faceHandle);
             }
-
+            
             _LVertexNormals.Clear();
             foreach (HandleVertex handleVertex in _LverticeHndl)
             {
                 CalcVertexNormal(handleVertex);
             }
 
-            LtrianglesTMP.Clear();
-            LvertDataTMP.Clear();
-            LvertNormalsTMP.Clear();
-            LvertuvTMP.Clear();
+            _LtrianglesFuseeMesh.Clear();
+            _LvertDataFuseeMesh.Clear();
+            _LvertNormalsFuseeMesh.Clear();
+            _LvertuvFuseeMesh.Clear();
 
-            foreach (HandleFace face in _LfaceHndl)
+            foreach (HandleFace faceHandle in _LfaceHndl)
             {
-                GrabFaceDataForMesh(face);
+                foreach (HEdgePtrCont currentContainer in EnFaceAdjacentHalfEdges(faceHandle).Select(handleHalfEdge => _LhedgePtrCont[handleHalfEdge._DataIndex]))
+                {
+                    _LvertDataFuseeMesh.Add(_LvertexVal[currentContainer._v._DataIndex]);
+                    _LvertNormalsFuseeMesh.Add(_LVertexNormals[currentContainer._vn._DataIndex]);
+                    _LvertuvFuseeMesh.Add(_LuvCoordinates[currentContainer._vuv._DataIndex]);
+                    _LtrianglesFuseeMesh.Add((short)(_LvertDataFuseeMesh.Count - 1));
+                }
             }
 
             Mesh fuseeMesh = new Mesh();
-            fuseeMesh.Vertices = LvertDataTMP.ToArray();
-            fuseeMesh.Normals = LvertNormalsTMP.ToArray();
-            fuseeMesh.UVs = LvertuvTMP.ToArray();
-            fuseeMesh.Triangles = LtrianglesTMP.ToArray();
+            fuseeMesh.Vertices = _LvertDataFuseeMesh.ToArray();
+            fuseeMesh.Normals = _LvertNormalsFuseeMesh.ToArray();
+            fuseeMesh.UVs = _LvertuvFuseeMesh.ToArray();
+            fuseeMesh.Triangles = _LtrianglesFuseeMesh.ToArray();
 
             return fuseeMesh;
         }
@@ -504,23 +499,11 @@ namespace LinqForGeometry
             int startHEIndex = _LfacePtrCont[faceHandle]._h._DataIndex;
             int currentHEIndex = startHEIndex;
 
-            List<HEdgePtrCont> LtmpHedges = new List<HEdgePtrCont>();
-
-            do
-            {
-                if (_LhedgePtrCont[currentHEIndex]._f._DataIndex != faceHandle._DataIndex)
-                    break;
-
-                LtmpHedges.Add(
-                        _LhedgePtrCont[currentHEIndex]
-                        );
-
-                currentHEIndex = _LhedgePtrCont[currentHEIndex]._nhe._DataIndex;
-            } while (currentHEIndex != startHEIndex);
+            List<HandleHalfEdge> LtmpHedges = EnFaceAdjacentHalfEdges(faceHandle).ToList();
 
             for (int i = 0; i < LtmpHedges.Count; i++)
             {
-                HEdgePtrCont currentHedge = LtmpHedges[i];
+                HEdgePtrCont currentHedge = _LhedgePtrCont[LtmpHedges[i]];
 
                 if (i == LtmpHedges.Count - 1)
                 {
@@ -546,10 +529,12 @@ namespace LinqForGeometry
         /// This method adds a face normal vector to a list.
         /// The vector is calculated for the face which handle the method expects.
         /// </summary>
-        /// <param name="handleFace">Handle to a face</param>
+        /// <param name="handleFace">Handle to a face to calculate the normal for.</param>
         public void CalcFaceNormalForFace(HandleFace faceHandle)
         {
-            List<HandleVertex> tmpList = IteratorVerticesAroundFace(faceHandle).ToList();
+            List<HandleVertex> tmpList = EnFaceVertices(faceHandle).ToList();
+            if (tmpList.Count < 3)
+                return;
 
             var v0 = _LvertexVal[tmpList[0]];
             var v1 = _LvertexVal[tmpList[1]];
@@ -570,14 +555,18 @@ namespace LinqForGeometry
 
 
         /// <summary>
-        /// This method calculates vertex normals for a specific vertex in the geometry and inserts them at the corresponding half-edges.
+        /// This method calculates vertex normals for a specific vertex in the geometry and inserts them at the corresponding half-edges on the correct faces.
+        /// This method uses an angle based algorithm to determine whether to calculate with another faces normal or not.
         /// </summary>
+        /// <param name="vertexHandle">A handle for the vertex to calc the normals for.</param>
         public void CalcVertexNormal(HandleVertex vertexHandle)
         {
-            IEnumerable<int> EincomingHEdges = EnStarVertexIncomingHalfEdge(vertexHandle);
+            List<HandleHalfEdge> EincomingHEdges = EnVertexIncomingHalfEdge(vertexHandle).ToList();
+
             // Loop over every incoming half-edge.
-            foreach (int hedgeIndex in EincomingHEdges)
+            foreach (HandleHalfEdge handleHedge in EincomingHEdges)
             {
+                int hedgeIndex = handleHedge._DataIndex;
                 List<float3> LfaceNormals = new List<float3>();
                 // Check if the half-edge is pointing to a face.
                 int faceIndex = _LhedgePtrCont[hedgeIndex]._f._DataIndex;
@@ -618,29 +607,6 @@ namespace LinqForGeometry
                 _LhedgePtrCont.RemoveAt(hedgeIndex);
                 _LhedgePtrCont.Insert(hedgeIndex, currentHedge);
             }
-        }
-
-
-        /// <summary>
-        /// Aggregates an array of information that contains 'vertex pointer, vertex normal, vertex uv coordinates' for every half-edge in the geometry.
-        /// </summary>
-        /// <param name="face">A handle to a face to perform on.</param>
-        /// <returns>An array of handle indexes in the following order: vertex id, vertex normal id, vertex uv id</returns>
-        public void GrabFaceDataForMesh(HandleFace face)
-        {
-            HEdgePtrCont currentHedge = _LhedgePtrCont[_LfacePtrCont[face]._h];
-            int startHedgeVertexIndex = currentHedge._v._DataIndex;
-
-            do
-            {
-                LvertDataTMP.Add(_LvertexVal[currentHedge._v._DataIndex]);
-                LvertNormalsTMP.Add(_LVertexNormals[currentHedge._vn._DataIndex]);
-                LvertuvTMP.Add(_LuvCoordinates[currentHedge._vuv]);
-
-                int idx = LvertDataTMP.Count - 1;
-                LtrianglesTMP.Add((short)idx);
-                currentHedge = _LhedgePtrCont[currentHedge._nhe._DataIndex];
-            } while (currentHedge._v._DataIndex != startHedgeVertexIndex);
         }
 
 
@@ -882,25 +848,14 @@ namespace LinqForGeometry
 
         /// <summary>
         /// Iterator.
-        /// This is a private method that retrieves all halfedge pointer containers pointing to a vertex.
-        /// </summary>
-        /// <param name="hv">A handle to a vertex to use as a 'center' vertex.</param>
-        /// <returns>An Enumerable of HalfEdgePointerContainers to be used in other iterators.</returns>
-        private IEnumerable<HEdgePtrCont> VertexCenterHalfEdges(HandleVertex hv)
-        {
-            return _LhedgePtrCont.FindAll(hedges => hedges._v == hv);
-        }
-
-
-        /// <summary>
-        /// Iterator.
         /// Circulate around a given vertex and enumerate all vertices connected by a direct edge.
         /// </summary>
-        /// <param name="hv">A handle to a vertex to use as a 'center' vertex.</param>
+        /// <param name="vertexHandle">A handle to a vertex to use as a 'center' vertex.</param>
         /// <returns>An Enumerable of VertexHandles to be used in loops, etc.</returns>
-        public IEnumerable<HandleVertex> EnStarVertexVertex(HandleVertex hv)
+        public IEnumerable<HandleVertex> EnStarVertexVertex(HandleVertex vertexHandle)
         {
-            return VertexCenterHalfEdges(hv).Select(val => _LhedgePtrCont[val._he]._v);
+            IEnumerable<HandleHalfEdge> LincHedges = EnVertexIncomingHalfEdge(vertexHandle);
+            return LincHedges.Select(handleHalfEdge => _LhedgePtrCont[_LhedgePtrCont[handleHalfEdge._DataIndex]._he._DataIndex]._v).AsEnumerable();
         }
 
 
@@ -908,26 +863,24 @@ namespace LinqForGeometry
         /// Iterator.
         /// Circulate around a given vertex and enumerate all incoming halfedges.
         /// </summary>
-        /// <param name="hv">A handle to a vertex to use as a 'center' vertex.</param>
+        /// <param name="vertexHandle">A handle to a vertex to use as a 'center' vertex.</param>
         /// <returns>An Enumerable of HalfEdge handles to be used in loops, etc.</returns>
-        public IEnumerable<int> EnStarVertexIncomingHalfEdge(HandleVertex hv)
+        public IEnumerable<HandleHalfEdge> EnVertexIncomingHalfEdge(HandleVertex vertexHandle)
         {
-            List<int> LTmpIncomingHedges = new List<int>();
-
+            List<HandleHalfEdge> LTmpIncomingHedges = new List<HandleHalfEdge>();
             //Get the one outgoing half-edge for the vertex.
-            int currentHedge = _LvertexPtrCont[hv._DataIndex]._h._DataIndex;
+            int currentHedge = _LvertexPtrCont[vertexHandle._DataIndex]._h._DataIndex;
             //Remember the index of the first half-edge
             int startHedgeIndex = currentHedge;
-
             do
             {
                 if (currentHedge == -1)
                     break;
 
-                // Get the neighbour of the current edge
-                currentHedge = _LhedgePtrCont[currentHedge]._he._DataIndex;
-                LTmpIncomingHedges.Add(currentHedge);
-                currentHedge = _LhedgePtrCont[currentHedge]._nhe._DataIndex;
+                HEdgePtrCont currentHedgeContainer = _LhedgePtrCont[currentHedge];
+                if (vertexHandle._DataIndex == _LhedgePtrCont[currentHedgeContainer._he]._v._DataIndex)
+                    LTmpIncomingHedges.Add(currentHedgeContainer._he);
+                currentHedge = _LhedgePtrCont[currentHedgeContainer._he]._nhe._DataIndex;
             } while (currentHedge != startHedgeIndex);
 
             return LTmpIncomingHedges.AsEnumerable();
@@ -938,11 +891,12 @@ namespace LinqForGeometry
         /// Iterator.
         /// Circulate around a given vertex and enumerate all outgoing halfedges.
         /// </summary>
-        /// <param name="hv">A handle to a vertex to use as a 'center' vertex.</param>
+        /// <param name="vertexHandle">A handle to a vertex to use as a 'center' vertex.</param>
         /// <returns>An Enumerable of HalfEdge handles to be used in loops, etc.</returns>
-        public IEnumerable<HandleHalfEdge> EnStarVertexOutgoingHalfEdge(HandleVertex hv)
+        public IEnumerable<HandleHalfEdge> EnStarVertexOutgoingHalfEdge(HandleVertex vertexHandle)
         {
-            return VertexCenterHalfEdges(hv).Select(val => _LhedgePtrCont[val._he]._he);
+            IEnumerable<HandleHalfEdge> LincHedges = EnVertexIncomingHalfEdge(vertexHandle);
+            return LincHedges.Select(handleHalfEdge => _LhedgePtrCont[handleHalfEdge._DataIndex]._he).AsEnumerable();
         }
 
 
@@ -955,21 +909,8 @@ namespace LinqForGeometry
         /// <returns>An Enumerable of HalfEdge handles to be used in loops, etc.</returns>
         public IEnumerable<HandleFace> EnVertexAdjacentFaces(HandleVertex vertexHandle)
         {
-            List<HandleFace> LtmpFaceHandles = new List<HandleFace>();
-            int hedgeIndx = _LvertexPtrCont[vertexHandle._DataIndex]._h._DataIndex;
-            int startHedgeIndex = hedgeIndx;
-
-            do
-            {
-                if (hedgeIndx == -1)
-                    break;
-
-                hedgeIndx = _LhedgePtrCont[hedgeIndx]._he._DataIndex;
-                LtmpFaceHandles.Add(_LhedgePtrCont[hedgeIndx]._f);
-                hedgeIndx = _LhedgePtrCont[hedgeIndx]._nhe._DataIndex;
-            } while (hedgeIndx != startHedgeIndex);
-
-            return LtmpFaceHandles.AsEnumerable();
+            IEnumerable<HandleHalfEdge> LincHedges = EnVertexIncomingHalfEdge(vertexHandle);
+            return LincHedges.Select(handleHalfEdge => _LhedgePtrCont[handleHalfEdge._DataIndex]._f).AsEnumerable();
         }
 
 
@@ -977,34 +918,22 @@ namespace LinqForGeometry
         /// Iterator.
         /// This is a private method that retrieves all halfedge pointer containers which belong to a specific face handle.
         /// </summary>
-        /// <param name="hf">A handle to the center face.</param>
+        /// <param name="faceHandle">A handle to the face to get the half-edges from.</param>
         /// <returns>An Enumerable of haldedge pointer containers.</returns>
-        private IEnumerable<HEdgePtrCont> FaceCenterHalfEdges(HandleFace hf)
+        public IEnumerable<HandleHalfEdge> EnFaceAdjacentHalfEdges(HandleFace faceHandle)
         {
-            return _LhedgePtrCont.FindAll(hedges => hedges._f == hf);
-        }
+            int startHedgeIndex = _LfacePtrCont[faceHandle]._h._DataIndex;
+            int currentIndex = startHedgeIndex;
+            List<HandleHalfEdge> LHedgeHandles = new List<HandleHalfEdge>();
+            do
+            {
+                LHedgeHandles.Add(new HandleHalfEdge() { _DataIndex = currentIndex });
+                if (_LhedgePtrCont[_LhedgePtrCont[currentIndex]._nhe]._f._DataIndex != faceHandle._DataIndex)
+                    break;
 
-
-        /// <summary>
-        /// Converts a half edge handle to an edge handle.
-        /// </summary>
-        /// <param name="hh">A halfedge handle to convert.</param>
-        /// <returns>HandleEdge. A new Handle to an already existing edge.</returns>
-        private HandleEdge HalfEdgeHandleToEdgeHandle(HandleHalfEdge hh)
-        {
-            return new HandleEdge() { _DataIndex = hh / 2 };
-        }
-
-
-        /// <summary>
-        /// Iterator.
-        /// Circulate around all the halfedges of a given face handle.
-        /// </summary>
-        /// <param name="hf">A handle to a face used as the 'center' face.</param>
-        /// <returns>An Enumerable of halfedge handles to be used in loops, etc.</returns>
-        public IEnumerable<HandleHalfEdge> EnFaceHalfEdges(HandleFace hf)
-        {
-            return FaceCenterHalfEdges(hf).Select(val => _LhedgePtrCont[val._he]._he);
+                currentIndex = _LhedgePtrCont[currentIndex]._nhe._DataIndex;
+            } while (currentIndex != startHedgeIndex);
+            return LHedgeHandles.AsEnumerable();
         }
 
 
@@ -1012,55 +941,11 @@ namespace LinqForGeometry
         /// Iterator.
         /// Circulate around all the vertice of a given face handle.
         /// </summary>
-        /// <param name="hf">A handle to a face used as the 'center' face.</param>
+        /// <param name="faceHandle">A handle to a face used as the 'center' face.</param>
         /// <returns>An Enumerable of vertex handles to be used in loops, etc.</returns>
-        public IEnumerable<HandleVertex> EnFaceVertices(HandleFace hf)
+        public IEnumerable<HandleVertex> EnFaceVertices(HandleFace faceHandle)
         {
-            return FaceCenterHalfEdges(hf).Select(val => val._v);
-        }
-
-
-        /// <summary>
-        /// Iterator.
-        /// Circulate around all the edges of a given face handle.
-        /// </summary>
-        /// <param name="hf">A handle to a face used as the 'center' face.</param>
-        /// <returns>An Enumerable of edge handles to be used in loops, etc.</returns>
-        public IEnumerable<HandleEdge> EnFaceEdges(HandleFace hf)
-        {
-            return EnFaceHalfEdges(hf).Select(val => HalfEdgeHandleToEdgeHandle(val));
-        }
-
-
-        public List<HandleVertex> IteratorVerticesAroundFaceForTriangles(HandleFace hf)
-        {
-            List<HandleVertex> LtmpVert = new List<HandleVertex>();
-            HandleHalfEdge heh = _LfacePtrCont[hf]._h;
-            int indexStart = heh._DataIndex;
-
-            for (int i = 0; i < 3; i++)
-            {
-                LtmpVert.Add(_LhedgePtrCont[heh]._v);
-                heh = _LhedgePtrCont[heh]._nhe;
-            }
-
-            return LtmpVert;
-        }
-
-
-        public IEnumerable<HandleVertex> IteratorVerticesAroundFace(HandleFace hf)
-        {
-            List<HandleVertex> LtmpVert = new List<HandleVertex>();
-            HandleHalfEdge heh = _LfacePtrCont[hf]._h;
-            int indexStart = heh._DataIndex;
-
-            for (int i = 0; i < 3; i++)
-            {
-                LtmpVert.Add(_LhedgePtrCont[heh]._v);
-                heh = _LhedgePtrCont[heh]._nhe;
-            }
-
-            return LtmpVert.AsEnumerable();
+            return EnFaceAdjacentHalfEdges(faceHandle).Select(handleHalfEdge => _LhedgePtrCont[handleHalfEdge]._v).AsEnumerable();
         }
 
 
@@ -1068,32 +953,11 @@ namespace LinqForGeometry
         /// Iterator.
         /// Circulate around all the faces surrounding a specific face.
         /// </summary>
-        /// <param name="hf">A handle to a face used as the 'center' face.</param>
+        /// <param name="faceHandle">A handle to a face used as the 'center' face.</param>
         /// <returns>An Enumerable of face handles to be used in loops, etc.</returns>
-        public IEnumerable<HandleFace> EnFaceFaces(HandleFace hf)
+        public IEnumerable<HandleFace> EnFaceAdjacentFaces(HandleFace faceHandle)
         {
-            return FaceCenterHalfEdges(hf).Select(val => _LhedgePtrCont[val._he]._f);
-        }
-
-
-        /// <summary>
-        /// Set the vertex defaults by using the actual vertices.
-        /// This is called before the first change to a model is done.
-        /// </summary>
-        public void SetVertexDefaults()
-        {
-            if (this._LvertexValDefault == null)
-            {
-                this._LvertexValDefault = new List<float3>(this._LvertexVal);
-            }
-        }
-
-        public void ResetVerticesToDefault()
-        {
-            this._LvertexVal.Clear();
-            this._LvertexVal = null;
-
-            this._LvertexVal = new List<float3>(this._LvertexValDefault);
+            return EnFaceAdjacentHalfEdges(faceHandle).Select(handleHalfEdge => _LhedgePtrCont[_LhedgePtrCont[handleHalfEdge]._he]._f).AsEnumerable();
         }
 
 
@@ -1282,6 +1146,32 @@ namespace LinqForGeometry
                 return false;
                 throw;
             }
+        }
+
+
+        /// <summary>
+        /// Set the vertex defaults by using the actual vertices.
+        /// This is called before the first change to a model is done.
+        /// </summary>
+        public void SetVertexDefaults()
+        {
+            if (this._LvertexValDefault == null)
+            {
+                this._LvertexValDefault = new List<float3>(this._LvertexVal);
+            }
+        }
+
+
+        /// <summary>
+        /// Used for developing and debugging.
+        /// Resets geometry object to the data it had when initially loaded.
+        /// </summary>
+        public void ResetVerticesToDefault()
+        {
+            this._LvertexVal.Clear();
+            this._LvertexVal = null;
+
+            this._LvertexVal = new List<float3>(this._LvertexValDefault);
         }
 
     }

@@ -21,7 +21,7 @@ namespace LinqForGeometry
         // Keywords
         private static string _INFO = "INFO: ";
         private static string _WARNING = "WARNING: ";
-        private static string _ERROR = "ERROR: ";
+        //private static string _ERROR = "ERROR: ";
         
         // Dev
         public static bool _DEBUGOUTPUT = false;

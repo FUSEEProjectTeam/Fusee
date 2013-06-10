@@ -192,7 +192,7 @@ namespace LinqForGeometry.Importer
                                     {
                                         if (LFGMessages._DEBUGOUTPUT)
                                         {
-                                            Console.WriteLine(LFGMessages.WARNING_INVALIDCHAR + s);
+                                            Console.WriteLine(LFGMessages.WARNING_INVALIDCHAR + s + e);
                                         }
                                         //Debug.WriteLine(e.StackTrace);
                                         continue;
