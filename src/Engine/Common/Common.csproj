@@ -60,6 +60,8 @@
     <Compile Include="IInputImp.cs" />
     <Compile Include="ImageData.cs" />
     <Compile Include="IMeshImp.cs" />
+    <Compile Include="INetworkImp.cs" />
+    <Compile Include="INetworkMsg.cs" />
     <Compile Include="InitEventArgs.cs" />
     <Compile Include="IRenderCanvasImp.cs" />
     <Compile Include="IRenderContextImp.cs" />

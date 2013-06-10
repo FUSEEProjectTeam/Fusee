@@ -241,7 +241,7 @@ void main()
     gl_FragColor = texture2D(texture1, vUV) * endIntensity; 
 }";
 
-private const string VsDiffuse2 = @"
+    private const string VsDiffuse2 = @"
 attribute vec4 fuColor;
 attribute vec3 fuVertex;
 attribute vec3 fuNormal;
