@@ -103,6 +103,9 @@
 	<Content Include="Assets\Tower_extrudetest.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+	<Content Include="Assets\SharedCorners_pro.obj.model">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(SolutionDir)src\Engine\Common\Common.csproj">
