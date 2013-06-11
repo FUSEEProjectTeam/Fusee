@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
@@ -22,6 +23,8 @@ namespace Fusee.Engine
             get { return _config; }
             set
             {
+                _netConfig.RedirectPackets = value.RedirectPackets;
+
                 if (value.Discovery)
                 {
                     _netConfig.EnableMessageType(NetIncomingMessageType.DiscoveryResponse);
@@ -50,8 +53,11 @@ namespace Fusee.Engine
                 SysType = SysType.Client,
                 DefaultPort = 14242,
                 Discovery = false,
-                ConnectOnDiscovery = false
+                ConnectOnDiscovery = false,
+                RedirectPackets = false
             };
+
+            // _netConfig.RedirectedPacketsList.CollectionChanged += PackageCapture;
 
             Status = new NetStatusValues
             {
@@ -190,6 +196,9 @@ namespace Fusee.Engine
 
         public bool SendMessage(byte[] msg)
         {
+            _netConfig.RedirectPackets = true;
+            Debug.WriteLine(_netConfig.RedirectPackets + ": " + _netConfig.RedirectedPacketsList.Count);
+
             var sendResult = NetSendResult.Queued;
 
             switch (_config.SysType)
@@ -247,6 +256,18 @@ namespace Fusee.Engine
             }
 
             return SendMessage(data);
+        }
+
+        private void PackageCapture(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action != NotifyCollectionChangedAction.Add) return;
+
+            foreach (var newIt in e.NewItems)
+            {
+                // Debug.WriteLine("Message: " + newIt);
+            }
+
+            _netConfig.RedirectedPacketsList.Clear();
         }
 
         public void SendDiscoveryMessage(int port)
