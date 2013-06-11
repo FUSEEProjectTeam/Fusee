@@ -227,7 +227,8 @@ namespace LinqForGeometry
                 foreach (HEdgePtrCont currentContainer in EnFaceAdjacentHalfEdges(faceHandle).Select(handleHalfEdge => _LhedgePtrCont[handleHalfEdge._DataIndex]))
                 {
                     _LvertDataFuseeMesh.Add(_LvertexVal[currentContainer._v._DataIndex]);
-                    _LvertNormalsFuseeMesh.Add(_LVertexNormals[currentContainer._vn._DataIndex]);
+                    if (currentContainer._vn != -1)
+                        _LvertNormalsFuseeMesh.Add(_LVertexNormals[currentContainer._vn._DataIndex]);
                     _LvertuvFuseeMesh.Add(_LuvCoordinates[currentContainer._vuv._DataIndex]);
                     _LtrianglesFuseeMesh.Add((short)(_LvertDataFuseeMesh.Count - 1));
                 }
@@ -245,6 +246,7 @@ namespace LinqForGeometry
 
         /// <summary>
         /// Adds a vertex to the geometry container.
+        /// Will return a handle to the newly inserted or still existing vertex.
         /// </summary>
         /// <param name="val"></param>
         public HandleVertex AddVertex(float3 val)
@@ -306,7 +308,7 @@ namespace LinqForGeometry
         /// Adds a face from the importer to the geometry container
         /// </summary>
         /// <param name="gf">GeoFace object from the importer</param>
-        private void AddFace(GeoFace gf)
+        private void AddFaceOld(GeoFace gf)
         {
             _LfacePtrCont.Add(
                new FacePtrCont()
@@ -321,7 +323,7 @@ namespace LinqForGeometry
             fHndl._DataIndex = _LfacePtrCont.Count - 1;
             _LfaceHndl.Add(fHndl);
 
-            if(LinqForGeometry.LFGMessages._DEBUGOUTPUT)
+            if (LinqForGeometry.LFGMessages._DEBUGOUTPUT)
                 Debug.WriteLine("Current Face -> AddFace: " + _LfaceHndl[_LfaceHndl.Count - 1]._DataIndex);
 
             List<HandleVertex> LhFaceVerts = new List<HandleVertex>();
@@ -401,6 +403,77 @@ namespace LinqForGeometry
 
 
         /// <summary>
+        /// Adds a face from the importer to the geometry container
+        /// </summary>
+        /// <param name="gf">GeoFace object from the importer</param>
+        private void AddFace(GeoFace gf)
+        {
+            // Add a face container.
+            _LfacePtrCont.Add(
+                new FacePtrCont()
+                {
+                    _h = new HandleHalfEdge()
+                    {
+                        _DataIndex = -1
+                    }
+                }
+                );
+            // Add a face handle.
+            _LfaceHndl.Add(
+                new HandleFace() { _DataIndex = _LfacePtrCont.Count - 1 }
+                );
+
+            // Insert all the vertices for the face.
+            List<HandleVertex> LHandleVertsForFace = new List<HandleVertex>();
+            foreach (float3 vVal in gf._LFVertices)
+            {
+                LHandleVertsForFace.Add(
+                    AddVertex(vVal)
+                    );
+            }
+            // Insert all the uv coordinates for the face.
+            List<HandleVertexUV> LHandleUVsForFace = new List<HandleVertexUV>();
+            foreach (float2 uvVal in gf._UV)
+            {
+                _LuvCoordinates.Add(uvVal);
+                LHandleUVsForFace.Add(new HandleVertexUV() { _DataIndex = _LuvCoordinates.Count - 1 });
+            }
+
+            // Build up the half-edge connections for the face
+            List<HandleHalfEdge> LHandleHEForFace = new List<HandleHalfEdge>();
+            for (int i = 0; i < LHandleVertsForFace.Count; i++)
+            {
+                HandleVertex fromVert = LHandleVertsForFace[i];
+                HandleVertex toVert = i + 1 < LHandleVertsForFace.Count ? LHandleVertsForFace[i + 1] : LHandleVertsForFace[0];
+
+                LHandleHEForFace.Add(
+                        CreateConnection(fromVert, toVert)
+                    );
+            }
+
+            // Loop over all the half-edges for the face and concat them.
+            for (int i = 0; i < LHandleHEForFace.Count; i++)
+            {
+                HandleHalfEdge currentHedge = LHandleHEForFace[i];
+                HandleHalfEdge nextHedge = i + 1 < LHandleHEForFace.Count ? LHandleHEForFace[i + 1] : LHandleHEForFace[0];
+                HandleVertexUV currentUV = i + 1 < LHandleUVsForFace.Count ? LHandleUVsForFace[i + 1] : LHandleUVsForFace[0];
+
+                HEdgePtrCont hedge = _LhedgePtrCont[currentHedge];
+                hedge._nhe = nextHedge;
+                hedge._vuv = currentUV;
+
+                _LhedgePtrCont.RemoveAt(currentHedge);
+                _LhedgePtrCont.Insert(currentHedge, hedge);
+            }
+
+            // Set the faces first half-edge
+            FacePtrCont face = _LfacePtrCont.Last();
+            face._h = new HandleHalfEdge(LHandleHEForFace.First());
+            _LfacePtrCont.RemoveAt(_LfacePtrCont.Count - 1);
+            _LfacePtrCont.Add(face);
+        }
+
+        /// <summary>
         /// This method adds a edge to the container. The edge is 'drawn' between two vertices
         /// It first checks if a connection is already present. If so it returns a handle to this connection
         /// If not it will establish a connection between the two input vertices.
@@ -450,7 +523,7 @@ namespace LinqForGeometry
         /// </summary>
         /// <param name="hv1">HandleVertex from which vertex</param>
         /// <param name="hv2">Handlevertex to which vertex</param>
-        public HandleEdge CreateConnection(HandleVertex hvFrom, HandleVertex hvTo)
+        public HandleEdge CreateConnectionOld(HandleVertex hvFrom, HandleVertex hvTo)
         {
             HEdgePtrCont hedge1 = new HEdgePtrCont();
             HEdgePtrCont hedge2 = new HEdgePtrCont();
@@ -496,6 +569,156 @@ namespace LinqForGeometry
             return new HandleEdge() { _DataIndex = _LedgePtrCont.Count - 1 };
         }
 
+
+        /// <summary>
+        /// Establishes a connection between two vertices.
+        /// 1) Creates two half-edges
+        /// 2) Fills them with information
+        /// 3) Creates an edge pointer container and adds it to the geo container.
+        /// 4) returns a handle to an edge
+        /// </summary>
+        /// <param name="hv1">HandleVertex from which vertex</param>
+        /// <param name="hv2">Handlevertex to which vertex</param>
+        public HandleHalfEdge CreateConnection(HandleVertex fromVert, HandleVertex toVert)
+        {
+            // Check if the connection does already exist.
+            HandleEdge existingEdge = DoesConnectionExist(fromVert, toVert);
+            if (existingEdge != -1)
+            {
+                return ReuseExistingConnection(existingEdge, fromVert, toVert);
+            }
+            else
+            {
+                return CreateAllNewConnection(fromVert, toVert);
+            }
+        }
+
+        /// <summary>
+        /// For testing only now.
+        /// </summary>
+        /// <param name="existingEdge"></param>
+        /// <param name="fromVert"></param>
+        /// <param name="toVert"></param>
+        /// <returns></returns>
+        private HandleHalfEdge ReuseExistingConnection(HandleEdge existingEdge, HandleVertex fromVert, HandleVertex toVert)
+        {
+            // Check half-edge 1 and 2 if one points to the actual face. This is the one we use for our face then. If no one we build a new connection.
+            HEdgePtrCont hedge1 = _LhedgePtrCont[_LedgePtrCont[existingEdge]._he1];
+            HEdgePtrCont hedge2 = _LhedgePtrCont[_LedgePtrCont[existingEdge]._he2];
+
+            HandleHalfEdge hedgeToUse = new HandleHalfEdge(-1);
+
+            if (hedge2._f == -1)
+            {
+                // It is hedge 2 that is free. We should use it.
+                hedgeToUse = _LedgePtrCont[existingEdge]._he2;
+
+            }
+            else if (hedge1._f == -1)
+            {
+                // It is hedge 1 that is free. We should use it. Should never happen. TODO: Exception throw?
+                hedgeToUse = _LedgePtrCont[existingEdge]._he1;
+            }
+            else
+            {
+                // Neither one of the faces of the existing half-edges was free so we build a new edge.
+                return CreateAllNewConnection(fromVert, toVert);
+            }
+            // Updating the face pointer.
+            HEdgePtrCont hedge = _LhedgePtrCont[hedgeToUse];
+            hedge._f = new HandleFace(_LfacePtrCont.Count - 1);
+
+            _LhedgePtrCont.RemoveAt(hedgeToUse);
+            _LhedgePtrCont.Insert(hedgeToUse, hedge);
+
+            return hedgeToUse;
+        }
+
+        /// <summary>
+        /// For testing now only.
+        /// </summary>
+        /// <returns></returns>
+        private HandleHalfEdge CreateAllNewConnection(HandleVertex fromVert, HandleVertex toVert)
+        {
+            HEdgePtrCont hedge1 = new HEdgePtrCont()
+            {
+                _f = new HandleFace(_LfacePtrCont.Count - 1),
+                _he = new HandleHalfEdge(_LedgePtrCont.Count == 0 ? 1 : _LhedgePtrCont.Count + 1),
+                _v = new HandleVertex(toVert),
+                _vn = new HandleVertexNormal(-1),
+                _vuv = new HandleVertexUV(-1),
+                _nhe = new HandleHalfEdge(-1)
+            };
+
+            HEdgePtrCont hedge2 = new HEdgePtrCont()
+            {
+                _f = new HandleFace(-1),
+                _he = new HandleHalfEdge(_LedgePtrCont.Count == 0 ? 0 : _LhedgePtrCont.Count),
+                _v = new HandleVertex(fromVert),
+                _vn = new HandleVertexNormal(-1),
+                _vuv = new HandleVertexUV(-1),
+                _nhe = new HandleHalfEdge(-1)
+            };
+
+            _LhedgePtrCont.Add(hedge1);
+            _LhedgePtrCont.Add(hedge2);
+
+            _LedgePtrCont.Add(
+                new EdgePtrCont()
+                {
+                    _he1 = new HandleHalfEdge(_LhedgePtrCont.Count - 2),
+                    _he2 = new HandleHalfEdge(_LhedgePtrCont.Count - 1)
+                }
+                );
+            _LedgeHndl.Add(
+                new HandleEdge() { _DataIndex = _LedgePtrCont.Count - 1 }
+                );
+
+            // Update the vertices.
+            VertexPtrCont vertFrom = _LvertexPtrCont[fromVert._DataIndex];
+            VertexPtrCont vertTo = _LvertexPtrCont[toVert._DataIndex];
+
+            if (!vertFrom._h.isValid)
+            {
+                vertFrom._h = _LedgePtrCont[_LedgePtrCont.Count - 1]._he1;
+                _LvertexPtrCont.RemoveAt(fromVert);
+                _LvertexPtrCont.Insert(fromVert, vertFrom);
+            }
+            if (!vertTo._h.isValid)
+            {
+                vertTo._h = _LedgePtrCont[_LedgePtrCont.Count - 1]._he2;
+                _LvertexPtrCont.RemoveAt(toVert);
+                _LvertexPtrCont.Insert(toVert, vertTo);
+            }
+
+            return _LedgePtrCont.Last()._he1;
+        }
+
+        /// <summary>
+        /// Only for testing now.
+        /// </summary>
+        /// <param name="fromVert"></param>
+        /// <param name="toVert"></param>
+        /// <returns></returns>
+        private HandleEdge DoesConnectionExist(HandleVertex fromVert, HandleVertex toVert)
+        {
+            /*
+            var selection = from edge in _LedgeHndl
+                            where _LhedgePtrCont[_LedgePtrCont[edge]._he1]._v == fromVert && _LhedgePtrCont[_LedgePtrCont[edge]._he2]._v == toVert
+                                  || _LhedgePtrCont[_LedgePtrCont[edge]._he1]._v == toVert && _LhedgePtrCont[_LedgePtrCont[edge]._he2]._v == fromVert
+                            select edge;
+
+            foreach (HandleEdge handleEdge in selection)
+            {
+                return new HandleEdge() { _DataIndex = handleEdge._DataIndex };
+            }
+             * */
+            int index = -1;
+            index = _LedgePtrCont.FindIndex(
+                    edgePtrCont => _LhedgePtrCont[edgePtrCont._he1._DataIndex]._v._DataIndex == fromVert._DataIndex && _LhedgePtrCont[edgePtrCont._he2._DataIndex]._v._DataIndex == toVert._DataIndex || _LhedgePtrCont[edgePtrCont._he1._DataIndex]._v._DataIndex == toVert._DataIndex && _LhedgePtrCont[edgePtrCont._he2._DataIndex]._v._DataIndex == fromVert._DataIndex
+                    );
+            return new HandleEdge(index);
+        }
 
         /// <summary>
         /// Adds the uv coordiantes that correspond to a vertex to his corresponding half-edge.
