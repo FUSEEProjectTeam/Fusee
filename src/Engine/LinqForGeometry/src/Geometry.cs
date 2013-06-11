@@ -140,6 +140,11 @@ namespace LinqForGeometry
                 CalcFaceNormalForFace(face);
             }
 
+            foreach (HandleVertex vertex in EnAllVertices())
+            {
+                CalcVertexNormal(vertex);
+            }
+
             // This is just for now for debugging
             SetVertexDefaults();
         }
@@ -166,6 +171,7 @@ namespace LinqForGeometry
                 }
                 else if (faceVertCount > 3)
                 {
+                    Debug.WriteLine("Not triangulated face. Computing on it.");
                     secondVert++;
                     while (secondVert != faceVertCount - 1)
                     {
@@ -204,7 +210,7 @@ namespace LinqForGeometry
             {
                 CalcFaceNormalForFace(faceHandle);
             }
-            
+
             _LVertexNormals.Clear();
             foreach (HandleVertex handleVertex in _LverticeHndl)
             {
@@ -315,7 +321,8 @@ namespace LinqForGeometry
             fHndl._DataIndex = _LfacePtrCont.Count - 1;
             _LfaceHndl.Add(fHndl);
 
-            Debug.WriteLine("Current Face -> AddFace: " + _LfaceHndl[_LfaceHndl.Count - 1]._DataIndex);
+            if(LinqForGeometry.LFGMessages._DEBUGOUTPUT)
+                Debug.WriteLine("Current Face -> AddFace: " + _LfaceHndl[_LfaceHndl.Count - 1]._DataIndex);
 
             List<HandleVertex> LhFaceVerts = new List<HandleVertex>();
             foreach (float3 vVal in gf._LFVertices)
@@ -371,7 +378,20 @@ namespace LinqForGeometry
             }
 
             // Update the face handle, so that it points to the first half edge the face consists of.
-            UpdateFaceToHedgePtr(LtmpEdgesForFace[0]);
+            FacePtrCont faceCont = _LfacePtrCont.Last();
+            HEdgePtrCont hEdgePtrCont1 = _LhedgePtrCont[_LedgePtrCont[LtmpEdgesForFace[0]._DataIndex]._he1._DataIndex];
+            HEdgePtrCont hEdgePtrCont2 = _LhedgePtrCont[_LedgePtrCont[LtmpEdgesForFace[0]._DataIndex]._he2._DataIndex];
+            if (hEdgePtrCont1._f._DataIndex == (_LfacePtrCont.Count - 1))
+            {
+                faceCont._h._DataIndex = hEdgePtrCont1._he._DataIndex - 1;
+            }
+            else
+            {
+                // The first hedge does not point to this face - so you can assume it points to the neighbour face. So the second is the hedge to go with.
+                faceCont._h._DataIndex = hEdgePtrCont1._he._DataIndex;
+            }
+            _LfacePtrCont.RemoveAt(_LfacePtrCont.Count - 1);
+            _LfacePtrCont.Add(faceCont);
 
             // Hand over the list of edges that are used for this face. Now build up the connections.
             UpdateCWHedges(LtmpEdgesForFace);
@@ -392,44 +412,32 @@ namespace LinqForGeometry
         public HandleEdge AddEdge(HandleVertex hvFrom, HandleVertex hvTo)
         {
             HandleEdge hndlEdge;
-            GetOrAddConnection(hvFrom, hvTo, out hndlEdge);
-            return new HandleEdge() { _DataIndex = hndlEdge._DataIndex };
-        }
 
-
-        /// <summary>
-        /// Returns a handle to the edge, to a newly created one or the already existing one.
-        /// </summary>
-        /// <param name="hv1">HandleVertex From vertex</param>
-        /// <param name="hv2">HandleVertex To vertex</param>
-        /// <param name="he">HandleEdge is filled when connection already exists with valid index otherwise with -1</param>
-        /// <param name="uvFrom">Uv coordinates for the from vertex</param>
-        /// <param name="uvTo">Uv coordinates for the to vertex</param>
-        public void GetOrAddConnection(HandleVertex hv1, HandleVertex hv2, out HandleEdge he)
-        {
             int index = -1;
             if (_LedgePtrCont.Count != 0 && _LhedgePtrCont.Count != 0)
             {
                 index = _LedgePtrCont.FindIndex(
-                    edgePtrCont => _LhedgePtrCont[edgePtrCont._he1._DataIndex]._v._DataIndex == hv1._DataIndex && _LhedgePtrCont[edgePtrCont._he2._DataIndex]._v._DataIndex == hv2._DataIndex || _LhedgePtrCont[edgePtrCont._he1._DataIndex]._v._DataIndex == hv2._DataIndex && _LhedgePtrCont[edgePtrCont._he2._DataIndex]._v._DataIndex == hv1._DataIndex
+                    edgePtrCont => _LhedgePtrCont[edgePtrCont._he1._DataIndex]._v._DataIndex == hvFrom._DataIndex && _LhedgePtrCont[edgePtrCont._he2._DataIndex]._v._DataIndex == hvTo._DataIndex || _LhedgePtrCont[edgePtrCont._he1._DataIndex]._v._DataIndex == hvTo._DataIndex && _LhedgePtrCont[edgePtrCont._he2._DataIndex]._v._DataIndex == hvFrom._DataIndex
                     );
             }
             if (index >= 0)
             {
                 if (LFGMessages._DEBUGOUTPUT)
                 {
-                    Debug.WriteLine("     Existing edge found - Not creating a new one.");
+                    Debug.WriteLine("       Existing edge found - Not creating a new one.");
                 }
-                he = new HandleEdge() { _DataIndex = index };
+                hndlEdge = new HandleEdge() { _DataIndex = index };
             }
             else
             {
                 if (LFGMessages._DEBUGOUTPUT)
                 {
-                    Debug.WriteLine("     Edge not found - creating new one.");
+                    Debug.WriteLine("       Edge not found - creating new one.");
                 }
-                he._DataIndex = CreateConnection(hv1, hv2)._DataIndex;
+                hndlEdge._DataIndex = CreateConnection(hvFrom, hvTo)._DataIndex;
             }
+
+            return new HandleEdge() { _DataIndex = hndlEdge._DataIndex };
         }
 
 
@@ -592,7 +600,7 @@ namespace LinqForGeometry
 
                     float3 normalToCompare = _LfaceNormals[_LfacePtrCont[faceIndex2]._fn._DataIndex];
                     float dot = float3.Dot(currentNormal, normalToCompare);
-                    double acos = System.Math.Acos(dot) * piFactor;
+                    double acos = System.Math.Acos(dot);
 
                     if (acos < _SmoothingAngle)
                     {
@@ -607,30 +615,6 @@ namespace LinqForGeometry
                 _LhedgePtrCont.RemoveAt(hedgeIndex);
                 _LhedgePtrCont.Insert(hedgeIndex, currentHedge);
             }
-        }
-
-
-        /// <summary>
-        /// This updates the half-edge a face points to.
-        /// Is called directly after inserting a face and it's vertices, edges to the container is done
-        /// </summary>
-        /// <param name="handleEdge">the Edge Handle "containing" the half-edge the face should point to</param>
-        public void UpdateFaceToHedgePtr(HandleEdge handleEdge)
-        {
-            FacePtrCont faceCont = _LfacePtrCont.Count - 1 < 0 ? _LfacePtrCont[0] : _LfacePtrCont[_LfacePtrCont.Count - 1];
-            HEdgePtrCont hEdgePtrCont1 = _LhedgePtrCont[_LedgePtrCont[handleEdge._DataIndex]._he1._DataIndex];
-            HEdgePtrCont hEdgePtrCont2 = _LhedgePtrCont[_LedgePtrCont[handleEdge._DataIndex]._he2._DataIndex];
-            if (hEdgePtrCont1._f._DataIndex == (_LfacePtrCont.Count - 1))
-            {
-                faceCont._h._DataIndex = hEdgePtrCont1._he._DataIndex - 1;
-            }
-            else
-            {
-                // The first hedge does not point to this face - so you can assume it points to the neighbour face. So the second is the hedge to go with.
-                faceCont._h._DataIndex = hEdgePtrCont1._he._DataIndex;
-            }
-            _LfacePtrCont.RemoveAt(_LfacePtrCont.Count - 1);
-            _LfacePtrCont.Add(faceCont);
         }
 
 
