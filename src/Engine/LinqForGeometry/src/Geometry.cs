@@ -48,7 +48,7 @@ namespace LinqForGeometry
         private List<float3> _LvertexValDefault;
 
         // Various runtime constants
-        private const double _SmoothingAngle = 89;
+        private const double _SmoothingAngle = 89.999;
         private const double piFactor = 180 / 3.141592;
 
         // For mesh conversion
@@ -56,6 +56,9 @@ namespace LinqForGeometry
         private List<float3> _LvertDataFuseeMesh;
         private List<float3> _LvertNormalsFuseeMesh;
         private List<float2> _LvertuvFuseeMesh;
+
+        // Performance optimizing tools
+        private Stopwatch _normalStopWatch;
 
         /// <summary>
         /// Constructor for the GeometryData class.
@@ -83,8 +86,10 @@ namespace LinqForGeometry
             _LvertDataFuseeMesh = new List<float3>();
             _LvertNormalsFuseeMesh = new List<float3>();
             _LvertuvFuseeMesh = new List<float2>();
-        }
 
+            // Performance stuff
+            _normalStopWatch = new Stopwatch();
+        }
 
         /// <summary>
         /// Loads an asset specified by the path string.
@@ -137,7 +142,7 @@ namespace LinqForGeometry
             _LfaceNormals.Clear();
             foreach (HandleFace face in EnAllFaces())
             {
-                CalcFaceNormalForFace(face);
+                CalcFaceNormal(face);
             }
 
             foreach (HandleVertex vertex in EnAllVertices())
@@ -148,7 +153,6 @@ namespace LinqForGeometry
             // This is just for now for debugging
             SetVertexDefaults();
         }
-
 
         /// <summary>
         /// This method converts a quadrangular polygon mesh to a triangular polygon mesh
@@ -198,7 +202,6 @@ namespace LinqForGeometry
             return triangleFaces;
         }
 
-
         /// <summary>
         /// This method converts the data structure to a fusee readable mesh structure
         /// </summary>
@@ -208,14 +211,18 @@ namespace LinqForGeometry
             _LfaceNormals.Clear();
             foreach (HandleFace faceHandle in _LfaceHndl)
             {
-                CalcFaceNormalForFace(faceHandle);
+                CalcFaceNormal(faceHandle);
             }
 
+            _normalStopWatch.Reset();
+            _normalStopWatch.Start();
             _LVertexNormals.Clear();
             foreach (HandleVertex handleVertex in _LverticeHndl)
             {
                 CalcVertexNormal(handleVertex);
             }
+            _normalStopWatch.Stop();
+            Debug.WriteLine("Time taken to compute vertex normals: " + _normalStopWatch.ElapsedMilliseconds + " ms");
 
             _LtrianglesFuseeMesh.Clear();
             _LvertDataFuseeMesh.Clear();
@@ -224,12 +231,12 @@ namespace LinqForGeometry
 
             foreach (HandleFace faceHandle in _LfaceHndl)
             {
-                foreach (HEdgePtrCont currentContainer in EnFaceAdjacentHalfEdges(faceHandle).Select(handleHalfEdge => _LhedgePtrCont[handleHalfEdge._DataIndex]))
+                foreach (HEdgePtrCont currentContainer in EnFaceAdjacentHalfEdges(faceHandle).Select(handleHalfEdge => _LhedgePtrCont[handleHalfEdge]))
                 {
-                    _LvertDataFuseeMesh.Add(_LvertexVal[currentContainer._v._DataIndex]);
-                    if (currentContainer._vn != -1)
-                        _LvertNormalsFuseeMesh.Add(_LVertexNormals[currentContainer._vn._DataIndex]);
-                    _LvertuvFuseeMesh.Add(_LuvCoordinates[currentContainer._vuv._DataIndex]);
+                    _LvertDataFuseeMesh.Add(_LvertexVal[currentContainer._v]);
+                    if (currentContainer._vn.isValid)
+                        _LvertNormalsFuseeMesh.Add(_LVertexNormals[currentContainer._vn]);
+                    _LvertuvFuseeMesh.Add(_LuvCoordinates[currentContainer._vuv]);
                     _LtrianglesFuseeMesh.Add((short)(_LvertDataFuseeMesh.Count - 1));
                 }
             }
@@ -242,7 +249,6 @@ namespace LinqForGeometry
 
             return fuseeMesh;
         }
-
 
         /// <summary>
         /// Adds a vertex to the geometry container.
@@ -291,7 +297,6 @@ namespace LinqForGeometry
             return hvToAdd;
         }
 
-
         /// <summary>
         /// Checks if a vertex already exists in the value list
         /// </summary>
@@ -302,105 +307,6 @@ namespace LinqForGeometry
             int index = _LvertexVal.FindIndex(vert => vert.Equals(v));
             return index >= 0 ? index : -1;
         }
-
-
-        /// <summary>
-        /// Adds a face from the importer to the geometry container
-        /// </summary>
-        /// <param name="gf">GeoFace object from the importer</param>
-        private void AddFaceOld(GeoFace gf)
-        {
-            _LfacePtrCont.Add(
-               new FacePtrCont()
-               {
-                   _h = new HandleHalfEdge()
-                   {
-                       _DataIndex = -1
-                   }
-               }
-            );
-            HandleFace fHndl = new HandleFace();
-            fHndl._DataIndex = _LfacePtrCont.Count - 1;
-            _LfaceHndl.Add(fHndl);
-
-            if (LinqForGeometry.LFGMessages._DEBUGOUTPUT)
-                Debug.WriteLine("Current Face -> AddFace: " + _LfaceHndl[_LfaceHndl.Count - 1]._DataIndex);
-
-            List<HandleVertex> LhFaceVerts = new List<HandleVertex>();
-            foreach (float3 vVal in gf._LFVertices)
-            {
-                LhFaceVerts.Add(
-                        AddVertex(vVal)
-                    );
-            }
-
-            List<HandleEdge> LtmpEdgesForFace = new List<HandleEdge>();
-            int vertsCount = LhFaceVerts.Count;
-            for (int i = 0; i < vertsCount; i++)
-            {
-                HandleVertex hvFrom = LhFaceVerts[i];
-                float2 uvFrom = gf._UV[i];
-                if (i + 1 < vertsCount)
-                {
-                    HandleVertex hvTo = LhFaceVerts[i + 1];
-                    float2 uvTo = gf._UV[i + 1];
-
-                    HandleEdge handleEdge = AddEdge(hvFrom, hvTo);
-                    if (!_LedgeHndl.Contains(handleEdge))
-                    {
-                        _LedgeHndl.Add(handleEdge);
-                    }
-                    else
-                    {
-                        if (LFGMessages._DEBUGOUTPUT)
-                        {
-                            Debug.WriteLine("$$$ Edge has been already inserted!");
-                        }
-                    }
-                    LtmpEdgesForFace.Add(handleEdge);
-                }
-                else
-                {
-                    HandleVertex hvTo = LhFaceVerts[0];
-                    float2 uvTo = gf._UV[0];
-                    HandleEdge handleEdge = AddEdge(hvFrom, hvTo);
-                    if (!_LedgeHndl.Contains(handleEdge))
-                    {
-                        _LedgeHndl.Add(handleEdge);
-                    }
-                    else
-                    {
-                        if (LFGMessages._DEBUGOUTPUT)
-                        {
-                            Debug.WriteLine("$$$ Edge has been already inserted!");
-                        }
-                    }
-                    LtmpEdgesForFace.Add(handleEdge);
-                }
-            }
-
-            // Update the face handle, so that it points to the first half edge the face consists of.
-            FacePtrCont faceCont = _LfacePtrCont.Last();
-            HEdgePtrCont hEdgePtrCont1 = _LhedgePtrCont[_LedgePtrCont[LtmpEdgesForFace[0]._DataIndex]._he1._DataIndex];
-            HEdgePtrCont hEdgePtrCont2 = _LhedgePtrCont[_LedgePtrCont[LtmpEdgesForFace[0]._DataIndex]._he2._DataIndex];
-            if (hEdgePtrCont1._f._DataIndex == (_LfacePtrCont.Count - 1))
-            {
-                faceCont._h._DataIndex = hEdgePtrCont1._he._DataIndex - 1;
-            }
-            else
-            {
-                // The first hedge does not point to this face - so you can assume it points to the neighbour face. So the second is the hedge to go with.
-                faceCont._h._DataIndex = hEdgePtrCont1._he._DataIndex;
-            }
-            _LfacePtrCont.RemoveAt(_LfacePtrCont.Count - 1);
-            _LfacePtrCont.Add(faceCont);
-
-            // Hand over the list of edges that are used for this face. Now build up the connections.
-            UpdateCWHedges(LtmpEdgesForFace);
-
-            InsertUVCoordinatesForFace(new HandleFace() { _DataIndex = _LfaceHndl.Count - 1 }, gf._UV);
-        }
-
 
         /// <summary>
         /// Adds a face from the importer to the geometry container
@@ -451,7 +357,7 @@ namespace LinqForGeometry
                     );
             }
 
-            // Loop over all the half-edges for the face and concat them.
+            // Loop over all the half-edges for the face and concat them and set the correct uv coordinates.
             for (int i = 0; i < LHandleHEForFace.Count; i++)
             {
                 HandleHalfEdge currentHedge = LHandleHEForFace[i];
@@ -466,109 +372,12 @@ namespace LinqForGeometry
                 _LhedgePtrCont.Insert(currentHedge, hedge);
             }
 
-            // Set the faces first half-edge
+            // Set the half-edge the face points to.
             FacePtrCont face = _LfacePtrCont.Last();
             face._h = new HandleHalfEdge(LHandleHEForFace.First());
             _LfacePtrCont.RemoveAt(_LfacePtrCont.Count - 1);
             _LfacePtrCont.Add(face);
         }
-
-        /// <summary>
-        /// This method adds a edge to the container. The edge is 'drawn' between two vertices
-        /// It first checks if a connection is already present. If so it returns a handle to this connection
-        /// If not it will establish a connection between the two input vertices.
-        /// </summary>
-        /// <param name="hvFrom">Vertex From</param>
-        /// <param name="hvTo">Vertex To</param>
-        /// <param name="uvFrom">uv coordinates for the from vertex</param>
-        /// <param name="uvTo">uv coordinates for the to vertex</param>
-        public HandleEdge AddEdge(HandleVertex hvFrom, HandleVertex hvTo)
-        {
-            HandleEdge hndlEdge;
-
-            int index = -1;
-            if (_LedgePtrCont.Count != 0 && _LhedgePtrCont.Count != 0)
-            {
-                index = _LedgePtrCont.FindIndex(
-                    edgePtrCont => _LhedgePtrCont[edgePtrCont._he1._DataIndex]._v._DataIndex == hvFrom._DataIndex && _LhedgePtrCont[edgePtrCont._he2._DataIndex]._v._DataIndex == hvTo._DataIndex || _LhedgePtrCont[edgePtrCont._he1._DataIndex]._v._DataIndex == hvTo._DataIndex && _LhedgePtrCont[edgePtrCont._he2._DataIndex]._v._DataIndex == hvFrom._DataIndex
-                    );
-            }
-            if (index >= 0)
-            {
-                if (LFGMessages._DEBUGOUTPUT)
-                {
-                    Debug.WriteLine("       Existing edge found - Not creating a new one.");
-                }
-                hndlEdge = new HandleEdge() { _DataIndex = index };
-            }
-            else
-            {
-                if (LFGMessages._DEBUGOUTPUT)
-                {
-                    Debug.WriteLine("       Edge not found - creating new one.");
-                }
-                hndlEdge._DataIndex = CreateConnection(hvFrom, hvTo)._DataIndex;
-            }
-
-            return new HandleEdge() { _DataIndex = hndlEdge._DataIndex };
-        }
-
-
-        /// <summary>
-        /// Establishes a connection between two vertices.
-        /// 1) Creates two half-edges
-        /// 2) Fills them with information
-        /// 3) Creates an edge pointer container and adds it to the geo container.
-        /// 4) returns a handle to an edge
-        /// </summary>
-        /// <param name="hv1">HandleVertex from which vertex</param>
-        /// <param name="hv2">Handlevertex to which vertex</param>
-        public HandleEdge CreateConnectionOld(HandleVertex hvFrom, HandleVertex hvTo)
-        {
-            HEdgePtrCont hedge1 = new HEdgePtrCont();
-            HEdgePtrCont hedge2 = new HEdgePtrCont();
-
-            hedge1._he._DataIndex = _LedgePtrCont.Count == 0 ? 1 : _LhedgePtrCont.Count + 1;
-            hedge1._v._DataIndex = hvTo._DataIndex;
-            hedge1._f._DataIndex = _LfacePtrCont.Count - 1;
-            hedge1._nhe._DataIndex = -1;
-
-            hedge2._he._DataIndex = _LedgePtrCont.Count == 0 ? 0 : _LhedgePtrCont.Count;
-            hedge2._v._DataIndex = hvFrom._DataIndex;
-            hedge2._f._DataIndex = -1;
-            hedge2._nhe._DataIndex = -1;
-
-            _LhedgePtrCont.Add(hedge1);
-            _LhedgePtrCont.Add(hedge2);
-
-            _LedgePtrCont.Add(
-                new EdgePtrCont()
-                {
-                    _he1 = new HandleHalfEdge() { _DataIndex = _LedgePtrCont.Count > 0 ? _LedgePtrCont.Count * 2 : 0 },
-                    _he2 = new HandleHalfEdge() { _DataIndex = _LedgePtrCont.Count > 0 ? _LedgePtrCont.Count * 2 + 1 : 1 }
-                }
-            );
-
-            // Update the vertices so they point to the correct hedges.
-            VertexPtrCont vertFrom = _LvertexPtrCont[hvFrom._DataIndex];
-            VertexPtrCont vertTo = _LvertexPtrCont[hvTo._DataIndex];
-
-            if (vertFrom._h._DataIndex == -1)
-            {
-                vertFrom._h._DataIndex = _LedgePtrCont[_LedgePtrCont.Count - 1]._he1._DataIndex;
-                _LvertexPtrCont.RemoveAt(hvFrom._DataIndex);
-                _LvertexPtrCont.Insert(hvFrom._DataIndex, vertFrom);
-            }
-            if (vertTo._h._DataIndex == -1)
-            {
-                vertTo._h._DataIndex = _LedgePtrCont[_LedgePtrCont.Count - 1]._he2._DataIndex;
-                _LvertexPtrCont.RemoveAt(hvTo._DataIndex);
-                _LvertexPtrCont.Insert(hvTo._DataIndex, vertTo);
-            }
-
-            return new HandleEdge() { _DataIndex = _LedgePtrCont.Count - 1 };
-        }
-
 
         /// <summary>
         /// Establishes a connection between two vertices.
@@ -721,47 +530,11 @@ namespace LinqForGeometry
         }
 
         /// <summary>
-        /// Adds the uv coordiantes that correspond to a vertex to his corresponding half-edge.
-        /// </summary>
-        /// <param name="faceHandle">A handle to the face to work on.</param>
-        /// <param name="LuvCoord">A List of uv coordinate pairs.</param>
-        public void InsertUVCoordinatesForFace(HandleFace faceHandle, List<float2> LuvCoord)
-        {
-            int startHEIndex = _LfacePtrCont[faceHandle]._h._DataIndex;
-            int currentHEIndex = startHEIndex;
-
-            List<HandleHalfEdge> LtmpHedges = EnFaceAdjacentHalfEdges(faceHandle).ToList();
-
-            for (int i = 0; i < LtmpHedges.Count; i++)
-            {
-                HEdgePtrCont currentHedge = _LhedgePtrCont[LtmpHedges[i]];
-
-                if (i == LtmpHedges.Count - 1)
-                {
-                    _LuvCoordinates.Add(LuvCoord[0]);
-                    currentHedge._vuv._DataIndex = _LuvCoordinates.Count - 1;
-                }
-                else
-                {
-                    _LuvCoordinates.Add(LuvCoord[i + 1]);
-                    currentHedge._vuv._DataIndex = _LuvCoordinates.Count - 1;
-                }
-
-                int currentIndex = _LhedgePtrCont[currentHedge._he._DataIndex]._he._DataIndex;
-                _LhedgePtrCont.RemoveAt(currentIndex);
-                _LhedgePtrCont.Insert(currentIndex, currentHedge);
-            }
-
-            LtmpHedges.Clear();
-        }
-
-
-        /// <summary>
         /// This method adds a face normal vector to a list.
         /// The vector is calculated for the face which handle the method expects.
         /// </summary>
         /// <param name="handleFace">Handle to a face to calculate the normal for.</param>
-        public void CalcFaceNormalForFace(HandleFace faceHandle)
+        public void CalcFaceNormal(HandleFace faceHandle)
         {
             List<HandleVertex> tmpList = EnFaceVertices(faceHandle).ToList();
             if (tmpList.Count < 3)
@@ -784,7 +557,6 @@ namespace LinqForGeometry
             _LfacePtrCont.Insert(faceHandle._DataIndex, fh);
         }
 
-
         /// <summary>
         /// This method calculates vertex normals for a specific vertex in the geometry and inserts them at the corresponding half-edges on the correct faces.
         /// This method uses an angle based algorithm to determine whether to calculate with another faces normal or not.
@@ -797,14 +569,13 @@ namespace LinqForGeometry
             // Loop over every incoming half-edge.
             foreach (HandleHalfEdge handleHedge in EincomingHEdges)
             {
-                int hedgeIndex = handleHedge._DataIndex;
-                List<float3> LfaceNormals = new List<float3>();
+                int hedgeIndex = handleHedge;
                 // Check if the half-edge is pointing to a face.
-                int faceIndex = _LhedgePtrCont[hedgeIndex]._f._DataIndex;
+                int faceIndex = _LhedgePtrCont[hedgeIndex]._f;
                 if (faceIndex == -1)
                     continue;
 
-                float3 currentNormal = _LfaceNormals[_LfacePtrCont[faceIndex]._fn._DataIndex];
+                float3 currentNormal = _LfaceNormals[_LfacePtrCont[faceIndex]._fn];
                 float3 normalAggregate = new float3();
                 // Loop over every incoming half-edge again, so we can compare the angles between the current one and all the others.
                 // We do this to decide which normal should be added to the sum and which not.
@@ -817,29 +588,26 @@ namespace LinqForGeometry
                         continue;
                     }
                     // Stop when the current half-edge is not pointing to a face.
-                    int faceIndex2 = _LhedgePtrCont[eincomingHEdge]._f._DataIndex;
+                    int faceIndex2 = _LhedgePtrCont[eincomingHEdge]._f;
                     if (faceIndex2 == -1)
                         continue;
 
-                    float3 normalToCompare = _LfaceNormals[_LfacePtrCont[faceIndex2]._fn._DataIndex];
+                    float3 normalToCompare = _LfaceNormals[_LfacePtrCont[faceIndex2]._fn];
                     float dot = float3.Dot(currentNormal, normalToCompare);
-                    double acos = System.Math.Acos(dot);
-
+                    double acos = System.Math.Acos(dot) * piFactor;
+                    
                     if (acos < _SmoothingAngle)
-                    {
                         normalAggregate += float3.Add(normalAggregate, normalToCompare);
-                    }
                 }
 
                 _LVertexNormals.Add(float3.Normalize(normalAggregate));
                 HEdgePtrCont currentHedge = _LhedgePtrCont[hedgeIndex];
-                currentHedge._vn._DataIndex = _LVertexNormals.Count - 1;
+                currentHedge._vn = new HandleVertexNormal(_LVertexNormals.Count - 1);
 
                 _LhedgePtrCont.RemoveAt(hedgeIndex);
                 _LhedgePtrCont.Insert(hedgeIndex, currentHedge);
             }
         }
-
 
         /// <summary>
         /// Updates the "inner" half edges clockwise so the next pointers are correct.
@@ -1032,7 +800,6 @@ namespace LinqForGeometry
             return _LverticeHndl.AsEnumerable();
         }
 
-
         /// <summary>
         /// Returns an enumerable of all edge handles in the geometry structure.
         /// </summary>
@@ -1042,7 +809,6 @@ namespace LinqForGeometry
             return _LedgeHndl.AsEnumerable();
         }
 
-
         /// <summary>
         /// Returns an enumerable of all face handles in the geometry structure.
         /// </summary>
@@ -1051,7 +817,6 @@ namespace LinqForGeometry
         {
             return _LfaceHndl.AsEnumerable();
         }
-
 
         /// <summary>
         /// Iterator.
@@ -1064,7 +829,6 @@ namespace LinqForGeometry
             IEnumerable<HandleHalfEdge> LincHedges = EnVertexIncomingHalfEdge(vertexHandle);
             return LincHedges.Select(handleHalfEdge => _LhedgePtrCont[_LhedgePtrCont[handleHalfEdge._DataIndex]._he._DataIndex]._v).AsEnumerable();
         }
-
 
         /// <summary>
         /// Iterator.
@@ -1093,7 +857,6 @@ namespace LinqForGeometry
             return LTmpIncomingHedges.AsEnumerable();
         }
 
-
         /// <summary>
         /// Iterator.
         /// Circulate around a given vertex and enumerate all outgoing halfedges.
@@ -1105,7 +868,6 @@ namespace LinqForGeometry
             IEnumerable<HandleHalfEdge> LincHedges = EnVertexIncomingHalfEdge(vertexHandle);
             return LincHedges.Select(handleHalfEdge => _LhedgePtrCont[handleHalfEdge._DataIndex]._he).AsEnumerable();
         }
-
 
         /// <summary>
         /// Iterator.
@@ -1119,7 +881,6 @@ namespace LinqForGeometry
             IEnumerable<HandleHalfEdge> LincHedges = EnVertexIncomingHalfEdge(vertexHandle);
             return LincHedges.Select(handleHalfEdge => _LhedgePtrCont[handleHalfEdge._DataIndex]._f).AsEnumerable();
         }
-
 
         /// <summary>
         /// Iterator.
@@ -1143,7 +904,6 @@ namespace LinqForGeometry
             return LHedgeHandles.AsEnumerable();
         }
 
-
         /// <summary>
         /// Iterator.
         /// Circulate around all the vertice of a given face handle.
@@ -1154,7 +914,6 @@ namespace LinqForGeometry
         {
             return EnFaceAdjacentHalfEdges(faceHandle).Select(handleHalfEdge => _LhedgePtrCont[handleHalfEdge]._v).AsEnumerable();
         }
-
 
         /// <summary>
         /// Iterator.
@@ -1202,7 +961,6 @@ namespace LinqForGeometry
             }
         }
 
-
         /// <summary>
         /// This method translates the model to another position.
         /// </summary>
@@ -1234,7 +992,6 @@ namespace LinqForGeometry
                 throw;
             }
         }
-
 
         /// <summary>
         /// Rotates the object on the X-Axis.
@@ -1269,7 +1026,6 @@ namespace LinqForGeometry
             }
         }
 
-
         /// <summary>
         /// Rotates the object on the Y-Axis.
         /// </summary>
@@ -1302,7 +1058,6 @@ namespace LinqForGeometry
                 throw;
             }
         }
-
 
         /// <summary>
         /// Rotates the object on the Z-Axis.
@@ -1338,6 +1093,7 @@ namespace LinqForGeometry
         }
 
 
+        /* Developing Methods only for testing the data structure algorithms.*/
         /// <summary>
         /// Resets the geometry object to default scaling etc.
         /// </summary>
@@ -1355,7 +1111,6 @@ namespace LinqForGeometry
             }
         }
 
-
         /// <summary>
         /// Set the vertex defaults by using the actual vertices.
         /// This is called before the first change to a model is done.
@@ -1367,7 +1122,6 @@ namespace LinqForGeometry
                 this._LvertexValDefault = new List<float3>(this._LvertexVal);
             }
         }
-
 
         /// <summary>
         /// Used for developing and debugging.
