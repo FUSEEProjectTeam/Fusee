@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Fusee.Xirkit
 {
@@ -40,6 +41,17 @@ namespace Fusee.Xirkit
             foreach (Node root in _rootList)
                 root.Propagate();
         }
-    
+
+        public void DeleteRoot(int pos)
+        {
+            _rootList[pos].RemoveAllPins();
+            _rootList.RemoveAt(pos);
+        }
+
+        public void DeleteNode(int pos)
+        {
+            _nodeList[pos].RemoveAllPins();
+            _nodeList.RemoveAt(pos);
+        }
     }
 }

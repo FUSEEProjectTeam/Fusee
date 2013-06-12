@@ -11,42 +11,59 @@ namespace Fusee.KeyFrameAnimation
     {
 
         public delegate TValue LerpFunc<TValue>(TValue firstVal, TValue secondVal, float time1, float time2);
-        public delegate void SetChanelValue(TValue  val);
+        public delegate void SetChanelValue(TValue val);
         public event SetChanelValue TimeChanged;
 
         private SortedList<float, Keyframe<TValue>> _timeline = new SortedList<float, Keyframe<TValue>>();
         private LerpFunc<TValue> _lerpIt;
 
-
-        public Channel()
-        {
-        }
+        private TValue _value;
 
         public Channel(SetChanelValue timeChanged, LerpFunc<TValue> lerpFunc)
         {
             TimeChanged += timeChanged;
             _lerpIt = lerpFunc;
+            if (_timeline.Any())
+            {
+                _value = _timeline.ElementAt(0).Value.Value;
+            }
+
         }
 
         public Channel(LerpFunc<TValue> lerpFunc)
         {
             _lerpIt = lerpFunc;
+            if (_timeline.Any())
+            {
+                _value = _timeline.ElementAt(0).Value.Value;
+            }
         }
+
 
         protected override void DoTick(float time)
         {
             if (TimeChanged != null)
             {
-                TValue  currentValue = GetValueAt(time);
+                TValue currentValue = GetValueAt(time);
                 TimeChanged(currentValue);
+            }
+            else
+            {
+                GetValueAt(time);
             }
         }
 
-        
+        protected override void DemandTime()
+        {
+            base.Time = _timeline.ElementAt(_timeline.Count - 1).Key;
+        }
+
+
+
         //Add Keyframes 
         public void AddKeyframe(Keyframe<TValue> keyframe)
         {
-            
+
             if (_timeline.ContainsKey(keyframe.Time))
             {
                 RemoveKeyframe(keyframe.Time);
@@ -63,7 +80,7 @@ namespace Fusee.KeyFrameAnimation
                 RemoveKeyframe(time);
             }
             _timeline.Add(time, new Keyframe<TValue>(time, value));
-            
+
         }
 
         //Remove KEyframes 
@@ -72,11 +89,13 @@ namespace Fusee.KeyFrameAnimation
             _timeline.Remove(time);
         }
 
+
         //Returns the value of a keyframe at a specific time
         public TValue GetValueAt(float time)
         {
+
             TValue keyValue;
-           
+
             if (_timeline != null && _timeline.Count > 1)
             {
                 keyValue = _timeline.ElementAt(0).Value.Value;
@@ -85,18 +104,21 @@ namespace Fusee.KeyFrameAnimation
                 {
                     if (_timeline.ElementAt(next).Key > time && _timeline.ElementAt(next - 1).Key < time)
                     {
-                        keyValue = _lerpIt(_timeline.ElementAt(next - 1).Value.Value, _timeline.ElementAt(next).Value.Value, _timeline.ElementAt(next).Value.Time - _timeline.ElementAt(next - 1).Value.Time, time - _timeline.ElementAt(next - 1).Value.Time );
+                        keyValue = _lerpIt(_timeline.ElementAt(next - 1).Value.Value, _timeline.ElementAt(next).Value.Value, _timeline.ElementAt(next).Value.Time - _timeline.ElementAt(next - 1).Value.Time, time - _timeline.ElementAt(next - 1).Value.Time);
 
                         break;
                     }
                 }
             }
-            else 
+            else
             {
                 keyValue = _timeline.ElementAt(0).Value.Value;
             }
 
+            _value = keyValue;
             return keyValue;
         }
+
+        public TValue Value { get { return _value; } }
     }
 }

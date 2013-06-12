@@ -61,6 +61,10 @@
       <Project>{1228EB3F-8BCC-453F-8A2E-D9246495A118}</Project>
       <Name>Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Xirkit\Xirkit.csproj">
+      <Project>{F091790C-ED62-44D2-8622-966030A98E0B}</Project>
+      <Name>Xirkit</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SceneManagement\SceneManagement.csproj">
       <Project>{81B3A7F0-F8E4-45D0-BE69-B869C9B1803E}</Project>
       <Name>SceneManagement</Name>

@@ -136,6 +136,13 @@ namespace Fusee.Xirkit
                 return ret;
             }
         }
+
+        public void RemoveAllPins()
+        {
+            _outPinList.Clear();
+            _inPinList.Clear();
+            _inPinActualList.Clear();
+        }
     }
 }
 

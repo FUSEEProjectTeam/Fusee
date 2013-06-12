@@ -12,7 +12,7 @@ namespace Fusee.KeyFrameAnimation
         public Keyframe(float time, TValue value)
         {
             _value = value;
-            _time = (float) System.Math.Round(time,5);
+            _time = (float)System.Math.Round(time, 5);
         }
 
         public float Time
@@ -20,7 +20,7 @@ namespace Fusee.KeyFrameAnimation
             get { return _time; }
             set
             {
-                _time = (float) System.Math.Round(value,5);
+                _time = (float)System.Math.Round(value, 5);
             }
         }
 
@@ -30,7 +30,5 @@ namespace Fusee.KeyFrameAnimation
             get { return _value; }
             set { _value = value; }
         }
-
     }
- 
 }
