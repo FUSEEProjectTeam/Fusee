@@ -113,9 +113,9 @@ namespace Examples.LinqForGeometry
             // This would be a solution to step over the MeshReader Class
             // Important for now to use the transformation methods on the data structure.
             _Geo = new Geometry();
-            _Geo.LoadAsset("Assets/Models/Cube.obj.model");
+            //_Geo.LoadAsset("Assets/Models/Cube.obj.model");
             //_Geo.LoadAsset("Assets/Models/Sphere.obj.model");
-            //_Geo.LoadAsset("Assets/Models/Teapot.obj.model");
+            _Geo.LoadAsset("Assets/Models/Teapot.obj.model");
             //_Geo.LoadAsset("Assets/Models/SharedCorners.obj.model");
             //_Geo.LoadAsset("Assets/Models/Cylinder.obj.model");
             //_Geo.LoadAsset("Assets/Models/SharedCorners_pro.obj.model");
@@ -375,6 +375,16 @@ namespace Examples.LinqForGeometry
             }
             #endregion Rotation
 
+            #region ActivateVertexNormals
+            if (Input.Instance.IsKeyDown(KeyCodes.N))
+            {
+                _Geo._DoCalcVertexNormals = true;
+            }
+            if (Input.Instance.IsKeyDown(KeyCodes.M))
+            {
+                _Geo._DoCalcVertexNormals = false;
+            }
+            #endregion ActivateVertexNormals
 
             if (_Geo._Changes)
             {

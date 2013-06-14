@@ -28,6 +28,11 @@ namespace LinqForGeometry
 
         // Boolean helpers
         public bool _Changes = false;
+        private bool _VertexNormalActive = false;
+        public bool _DoCalcVertexNormals {
+            set { _VertexNormalActive = value; }
+            get { return _VertexNormalActive; }
+        }
 
         // Handles to pointer containers
         private List<HandleVertex> _LverticeHndl;
@@ -58,7 +63,7 @@ namespace LinqForGeometry
         private List<float2> _LvertuvFuseeMesh;
 
         // Performance optimizing tools
-        private Stopwatch _normalStopWatch;
+        private Stopwatch _normalCalcStopWatch;
 
         /// <summary>
         /// Constructor for the GeometryData class.
@@ -88,7 +93,7 @@ namespace LinqForGeometry
             _LvertuvFuseeMesh = new List<float2>();
 
             // Performance stuff
-            _normalStopWatch = new Stopwatch();
+            _normalCalcStopWatch = new Stopwatch();
         }
 
         /// <summary>
@@ -175,7 +180,6 @@ namespace LinqForGeometry
                 }
                 else if (faceVertCount > 3)
                 {
-                    Debug.WriteLine("Not triangulated face. Computing on it.");
                     secondVert++;
                     while (secondVert != faceVertCount - 1)
                     {
@@ -214,15 +218,19 @@ namespace LinqForGeometry
                 CalcFaceNormal(faceHandle);
             }
 
-            _normalStopWatch.Reset();
-            _normalStopWatch.Start();
-            _LVertexNormals.Clear();
-            foreach (HandleVertex handleVertex in _LverticeHndl)
+
+            if (_VertexNormalActive)
             {
-                CalcVertexNormal(handleVertex);
+                _normalCalcStopWatch.Reset();
+                _normalCalcStopWatch.Start();
+                _LVertexNormals.Clear();
+                foreach (HandleVertex handleVertex in _LverticeHndl)
+                {
+                    CalcVertexNormal(handleVertex);
+                }
+                _normalCalcStopWatch.Stop();
+                Debug.WriteLine("Time taken to compute vertex normals: " + _normalCalcStopWatch.ElapsedMilliseconds + " ms");
             }
-            _normalStopWatch.Stop();
-            Debug.WriteLine("Time taken to compute vertex normals: " + _normalStopWatch.ElapsedMilliseconds + " ms");
 
             _LtrianglesFuseeMesh.Clear();
             _LvertDataFuseeMesh.Clear();
@@ -234,8 +242,11 @@ namespace LinqForGeometry
                 foreach (HEdgePtrCont currentContainer in EnFaceAdjacentHalfEdges(faceHandle).Select(handleHalfEdge => _LhedgePtrCont[handleHalfEdge]))
                 {
                     _LvertDataFuseeMesh.Add(_LvertexVal[currentContainer._v]);
-                    if (currentContainer._vn.isValid)
-                        _LvertNormalsFuseeMesh.Add(_LVertexNormals[currentContainer._vn]);
+                    if (_VertexNormalActive)
+                    {
+                        if (currentContainer._vn.isValid)
+                            _LvertNormalsFuseeMesh.Add(_LVertexNormals[currentContainer._vn]);
+                    }
                     _LvertuvFuseeMesh.Add(_LuvCoordinates[currentContainer._vuv]);
                     _LtrianglesFuseeMesh.Add((short)(_LvertDataFuseeMesh.Count - 1));
                 }
@@ -243,7 +254,10 @@ namespace LinqForGeometry
 
             Mesh fuseeMesh = new Mesh();
             fuseeMesh.Vertices = _LvertDataFuseeMesh.ToArray();
-            fuseeMesh.Normals = _LvertNormalsFuseeMesh.ToArray();
+
+            if (_VertexNormalActive)
+                fuseeMesh.Normals = _LvertNormalsFuseeMesh.ToArray();
+
             fuseeMesh.UVs = _LvertuvFuseeMesh.ToArray();
             fuseeMesh.Triangles = _LtrianglesFuseeMesh.ToArray();
 
@@ -595,7 +609,7 @@ namespace LinqForGeometry
                     float3 normalToCompare = _LfaceNormals[_LfacePtrCont[faceIndex2]._fn];
                     float dot = float3.Dot(currentNormal, normalToCompare);
                     double acos = System.Math.Acos(dot) * piFactor;
-                    
+
                     if (acos < _SmoothingAngle)
                         normalAggregate += float3.Add(normalAggregate, normalToCompare);
                 }
