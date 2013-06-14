@@ -29,7 +29,8 @@ namespace LinqForGeometry
         // Boolean helpers
         public bool _Changes = false;
         private bool _VertexNormalActive = false;
-        public bool _DoCalcVertexNormals {
+        public bool _DoCalcVertexNormals
+        {
             set { _VertexNormalActive = value; }
             get { return _VertexNormalActive; }
         }
@@ -106,10 +107,8 @@ namespace LinqForGeometry
             TimeSpan timeSpan = new TimeSpan();
             String timeDone;
 
-            if (LFGMessages._DEBUGOUTPUT)
-            {
+            if(Debugger.IsAttached)
                 stopWatch.Start();
-            }
 
             List<GeoFace> faceList = _objImporter.LoadAsset(path);
 
@@ -121,14 +120,11 @@ namespace LinqForGeometry
                 faceList = newFaces;
             }
 
-            if (LFGMessages._DEBUGOUTPUT)
-            {
-                timeSpan = stopWatch.Elapsed;
-                timeDone = String.Format(LFGMessages.UTIL_STOPWFORMAT, timeSpan.Seconds, timeSpan.Milliseconds);
-                Debug.WriteLine("\n\n     Time needed to import the .obj file: " + timeDone);
-                stopWatch.Restart();
-                Debug.WriteLine(LFGMessages.INFO_PROCESSINGDS);
-            }
+            timeSpan = stopWatch.Elapsed;
+            timeDone = String.Format(LFGMessages.UTIL_STOPWFORMAT, timeSpan.Seconds, timeSpan.Milliseconds);
+            Debug.WriteLine("\n\n     Time needed to import the .obj file: " + timeDone);
+            stopWatch.Restart();
+            Debug.WriteLine(LFGMessages.INFO_PROCESSINGDS);
 
             // Work on the facelist and transform the data structure to the 'half-edge' data structure.
             foreach (GeoFace gf in faceList)

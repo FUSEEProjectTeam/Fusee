@@ -52,7 +52,7 @@ namespace LinqForGeometry.Importer
             Console.WriteLine(LFGMessages.INFO_IMPORTERDISCLAIMER);
             if (File.Exists(pathToAsset))
             {
-                StreamReader assetFile = new StreamReader(pathToAsset, System.Text.Encoding.Default);
+                StreamReader assetFile = new StreamReader(pathToAsset);
                 _SassetFileContent = assetFile.ReadToEnd();
                 assetFile.Close();
                 string[] contentAsLines = _SassetFileContent.Split(_SendOfLine, StringSplitOptions.RemoveEmptyEntries);
@@ -71,7 +71,7 @@ namespace LinqForGeometry.Importer
         }
 
         /// <summary>
-        /// Loads an asset to the kernel
+        /// Loads an asset from file to the memory.
         /// </summary>
         /// <param name="pathToAsset"></param>
         public List<GeoFace> LoadAsset(String pathToAsset)
@@ -94,26 +94,8 @@ namespace LinqForGeometry.Importer
                 {
                     string lineStart = line.Length > 2 ? line.Substring(0, 2) : line.Substring(0, line.Length);
 
-                    if (lineStart.Equals("v "))
-                    {
-                        // vertex
-                        string[] lineSplitted = line.Split(splitChar, StringSplitOptions.None);
-                        List<Double> tmpSave = new List<double>();
-                        foreach (string str in lineSplitted)
-                        {
-                            if (!str.StartsWith("v") && !str.Equals(""))
-                            {
-                                tmpSave.Add(float.Parse(str, CultureInfo.InvariantCulture));
-                            }
-                        }
-                        float3 fVal = new float3(
-                                (float)tmpSave[0],
-                                (float)tmpSave[1],
-                                (float)tmpSave[2]
-                        );
-                        LvertexAttr.Add(fVal);
-                    }
-                    else if (lineStart.Equals("vt"))
+                    
+                    if (line.StartsWith("vt"))
                     {
                         string[] lineSplitted = line.Split(splitChar, StringSplitOptions.None);
 
@@ -137,19 +119,38 @@ namespace LinqForGeometry.Importer
                             );
                         _LuvCoords.Add(uvVal);
                     }
-                    else if (lineStart.Equals("vn"))
+                    else if (line.StartsWith("vn"))
                     {
                         // vertex normals
                     }
-                    else if (lineStart.Equals("p "))
+                    else if (line.StartsWith("v"))
+                    {
+                        // vertex
+                        string[] lineSplitted = line.Split(splitChar, StringSplitOptions.None);
+                        List<Double> tmpSave = new List<double>();
+                        foreach (string str in lineSplitted)
+                        {
+                            if (!str.StartsWith("v") && !str.Equals(""))
+                            {
+                                tmpSave.Add(float.Parse(str, CultureInfo.InvariantCulture));
+                            }
+                        }
+                        float3 fVal = new float3(
+                                (float)tmpSave[0],
+                                (float)tmpSave[1],
+                                (float)tmpSave[2]
+                        );
+                        LvertexAttr.Add(fVal);
+                    }
+                    else if (line.StartsWith("p"))
                     {
                         // point
                     }
-                    else if (lineStart.Equals("l "))
+                    else if (line.StartsWith("l"))
                     {
                         // line
                     }
-                    else if (lineStart.Equals("f "))
+                    else if (line.StartsWith("f"))
                     {
                         // there are faces, faces with texture coord, faces with vertex normals and faces with text and normals
                         if (LFGMessages._DEBUGOUTPUT)
@@ -173,7 +174,8 @@ namespace LinqForGeometry.Importer
                                 {
                                     Console.WriteLine(LFGMessages.INFO_VERTEXIDFORFACE + s);
                                 }
-                                if (s != null || s != "" || !s.Equals("") || !s.Equals(" ") || s != " " || !s.Equals("\n") || s != "\n" || s != "\0" || !s.Equals("\0") || !s.Equals("\r") || s != "\r")
+                                //if (s != null || s != "" || !s.Equals("") || !s.Equals(" ") || s != " " || !s.Equals("\n") || s != "\n" || s != "\0" || !s.Equals("\0") || !s.Equals("\r") || s != "\r")
+                                if (!s.Equals("\r"))
                                 {
                                     try
                                     {
@@ -182,7 +184,7 @@ namespace LinqForGeometry.Importer
 
                                         if (faceSplit.Length >= 1)
                                         {
-                                            string uvIndex = faceSplit[1]; 
+                                            string uvIndex = faceSplit[1];
                                             int uvAdress = int.Parse(uvIndex, CultureInfo.InvariantCulture);
                                             geoF._UV.Add(_LuvCoords[uvAdress - 1]);
                                             _LKVuvandvert.Add(new KeyValuePair<int, int>(uvAdress - 1, fv - 1));
@@ -202,26 +204,25 @@ namespace LinqForGeometry.Importer
                         }
                         _LgeoFaces.Add(geoF);
                     }
-                    else if (lineStart.Equals("g "))
+                    else if (line.StartsWith("g"))
                     {
                         // group
                     }
-                    else if (lineStart.Equals("usemtl"))
+                    else if (line.StartsWith("usemtl"))
                     {
                         // use material
                     }
-                    else if (lineStart.Equals("mtllib"))
+                    else if (line.StartsWith("usemtllib"))
                     {
                         // material lib
                     }
                 }
             }
-
-
             // Clear the content after the import is done
             _SassetFileContent = "";
 
-            if (_LgeoFaces != null) {
+            if (_LgeoFaces != null)
+            {
                 return _LgeoFaces;
             }
             else

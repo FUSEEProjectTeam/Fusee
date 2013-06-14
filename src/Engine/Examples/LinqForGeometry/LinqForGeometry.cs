@@ -119,7 +119,6 @@ namespace Examples.LinqForGeometry
             //_Geo.LoadAsset("Assets/Models/SharedCorners.obj.model");
             //_Geo.LoadAsset("Assets/Models/Cylinder.obj.model");
             //_Geo.LoadAsset("Assets/Models/SharedCorners_pro.obj.model");
-            //_Geo.LoadAsset("Assets/Models/Pokeball.obj.model");
             #endregion MeshImports
 
 
