@@ -43,15 +43,44 @@ namespace Examples.WinFormsFusee
         }
 
 
+        private void StartCurrentApp()
+        {
+            //
+            //  STEP ONE - Create the Winforms Control
+            //
+            _currentControl = new RenderControl();
+            _currentControl.BackColor = System.Drawing.Color.Black;
+            _currentControl.Location = new System.Drawing.Point(0, 0);
+            _currentControl.Size = this.splitContainer1.Panel2.Size;
+            _currentControl.Dock = DockStyle.Fill;
+            _currentControl.Name = "RenderControl";
+            _currentControl.TabIndex = 0;
+            _currentControl.HandleCreated += renderControl_HandleCreated;   // <- This is crucial: Prepare for STEP TWO.
+            this.splitContainer1.Panel2.Controls.Add(_currentControl);
+        }
+
         private void renderControl_HandleCreated(object sender, EventArgs e)
         {
+            //
+            //  STEP TWO - Now the underlying Windows Window was created - we can hook OpenGL on it.
+            //
+            
+            // Take this as an example how to hook up any FUSEE application on a given Winforms form:
+
+            // First create a WinformsHost around the control
             _currentHost = new WinformsHost(_currentControl);
+
+            // Then instantiate your app (could be as well _currentApp = new MyOwnRenderCanvasDerivedClass(); )
             _currentApp = _appFinder.Instantiate(_currentInx);
 
+            // Now use the host as the canvas AND the input implementation of your App
             _currentApp.CanvasImplementor = _currentHost;
             _currentApp.InputImplementor = _currentHost;
 
+            // Then you can run the app
             _currentApp.Run();
+
+            // If not already done, show the window.
             _currentControl.Show();
         }
 
@@ -79,18 +108,6 @@ namespace Examples.WinFormsFusee
             GC.WaitForFullGCComplete();
         }
 
-        private void StartCurrentApp()
-        {
-            _currentControl = new RenderControl();
-            _currentControl.BackColor = System.Drawing.Color.Black;
-            _currentControl.Location = new System.Drawing.Point(0, 0);
-            _currentControl.Size = this.splitContainer1.Panel2.Size;
-            _currentControl.Dock = DockStyle.Fill;
-            _currentControl.Name = "RenderControl";
-            _currentControl.TabIndex = 0;
-            _currentControl.HandleCreated += renderControl_HandleCreated;
-            this.splitContainer1.Panel2.Controls.Add(_currentControl);
-        }
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
