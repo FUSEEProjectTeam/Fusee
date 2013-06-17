@@ -91,7 +91,7 @@ namespace Fusee.Engine
             MethodInfo mi = AudioImplementor.GetMethod("CreateAudioImp");
 
             if (mi == null)
-                throw new Exception("Implementor type (" + RenderingImplementor.ToString() + ") doesn't contain method CreateAudioImp");
+                throw new Exception("Implementor type (" + AudioImplementor.ToString() + ") doesn't contain method CreateAudioImp");
 
             return (IAudioImp)mi.Invoke(null, null);
         }

@@ -4,22 +4,22 @@
 #include <QMainWindow>
 
 namespace Ui {
-class AppBrowserWnd;
+class QtApplication;
 }
 
-class AppBrowserWnd : public QMainWindow
+class QtApplication : public QMainWindow
 {
     Q_OBJECT
     
 public:
-    explicit AppBrowserWnd(QWidget *parent = 0);
-    ~AppBrowserWnd();
+    explicit QtApplication(QWidget *parent = 0);
+    ~QtApplication();
     
 public slots:
 	void on_pushButton_clicked();
 
 private:
-    Ui::AppBrowserWnd *ui;
+    Ui::QtApplication *ui;
 };
 
 #endif // APPBROWSERWND_H

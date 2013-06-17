@@ -47,43 +47,41 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="appbrowserwnd.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_appbrowserwnd.cpp">
+    <ClCompile Include="QtApplication.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_QtApplication.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_appbrowserwnd.cpp">
+    <ClCompile Include="GeneratedFiles\Release\moc_QtApplication.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="QtHost.cpp">
+    <ClCompile Include="FuseeWidget.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_QtHost.cpp">
+    <ClCompile Include="GeneratedFiles\Debug\moc_FuseeWidget.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_QtHost.cpp">
+    <ClCompile Include="GeneratedFiles\Release\moc_FuseeWidget.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="appbrowserwnd.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="QtHost.h">
-      <Filter>Generated Files</Filter>
-    </CustomBuild>
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="appbrowserwnd.ui">
+    <CustomBuild Include="QtApplication.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="QtApplication.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="FuseeWidget.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GeneratedFiles\ui_appbrowserwnd.h">
+    <ClInclude Include="GeneratedFiles\ui_QtApplication.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>

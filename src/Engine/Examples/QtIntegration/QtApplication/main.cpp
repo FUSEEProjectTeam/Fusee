@@ -1,4 +1,4 @@
-#include "appbrowserwnd.h"
+#include "QtApplication.h"
 #include <QApplication>
 
 int main(int argc, char *argv[])
@@ -6,7 +6,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 	a.setAttribute(Qt::AA_NativeWindows);
 
-	AppBrowserWnd w;
+	QtApplication w;
 	w.setAttribute(Qt::WA_NativeWindow );
 	w.show();
     

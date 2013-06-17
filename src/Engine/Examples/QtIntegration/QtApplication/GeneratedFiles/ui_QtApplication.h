@@ -1,13 +1,13 @@
 /********************************************************************************
-** Form generated from reading UI file 'appbrowserwnd.ui'
+** Form generated from reading UI file 'QtApplication.ui'
 **
 ** Created by: Qt User Interface Compiler version 5.0.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
-#ifndef UI_APPBROWSERWND_H
-#define UI_APPBROWSERWND_H
+#ifndef UI_QTAPPLICATION_H
+#define UI_QTAPPLICATION_H
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QAction>
@@ -26,7 +26,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Ui_AppBrowserWnd
+class Ui_QtApplication
 {
 public:
     QWidget *centralWidget;
@@ -40,12 +40,12 @@ public:
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
 
-    void setupUi(QMainWindow *AppBrowserWnd)
+    void setupUi(QMainWindow *QtApplication)
     {
-        if (AppBrowserWnd->objectName().isEmpty())
-            AppBrowserWnd->setObjectName(QStringLiteral("AppBrowserWnd"));
-        AppBrowserWnd->resize(900, 818);
-        centralWidget = new QWidget(AppBrowserWnd);
+        if (QtApplication->objectName().isEmpty())
+            QtApplication->setObjectName(QStringLiteral("QtApplication"));
+        QtApplication->resize(900, 603);
+        centralWidget = new QWidget(QtApplication);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         horizontalLayout = new QHBoxLayout(centralWidget);
         horizontalLayout->setSpacing(6);
@@ -82,35 +82,35 @@ public:
 
         horizontalLayout->addWidget(renderParent);
 
-        AppBrowserWnd->setCentralWidget(centralWidget);
-        menuBar = new QMenuBar(AppBrowserWnd);
+        QtApplication->setCentralWidget(centralWidget);
+        menuBar = new QMenuBar(QtApplication);
         menuBar->setObjectName(QStringLiteral("menuBar"));
         menuBar->setGeometry(QRect(0, 0, 900, 23));
-        AppBrowserWnd->setMenuBar(menuBar);
-        mainToolBar = new QToolBar(AppBrowserWnd);
+        QtApplication->setMenuBar(menuBar);
+        mainToolBar = new QToolBar(QtApplication);
         mainToolBar->setObjectName(QStringLiteral("mainToolBar"));
-        AppBrowserWnd->addToolBar(Qt::TopToolBarArea, mainToolBar);
-        statusBar = new QStatusBar(AppBrowserWnd);
+        QtApplication->addToolBar(Qt::TopToolBarArea, mainToolBar);
+        statusBar = new QStatusBar(QtApplication);
         statusBar->setObjectName(QStringLiteral("statusBar"));
-        AppBrowserWnd->setStatusBar(statusBar);
+        QtApplication->setStatusBar(statusBar);
 
-        retranslateUi(AppBrowserWnd);
+        retranslateUi(QtApplication);
 
-        QMetaObject::connectSlotsByName(AppBrowserWnd);
+        QMetaObject::connectSlotsByName(QtApplication);
     } // setupUi
 
-    void retranslateUi(QMainWindow *AppBrowserWnd)
+    void retranslateUi(QMainWindow *QtApplication)
     {
-        AppBrowserWnd->setWindowTitle(QApplication::translate("AppBrowserWnd", "AppBrowserWnd", 0));
-        pushButton->setText(QApplication::translate("AppBrowserWnd", "Dr\303\274ckmich", 0));
+        QtApplication->setWindowTitle(QApplication::translate("QtApplication", "QtApplication", 0));
+        pushButton->setText(QApplication::translate("QtApplication", "Dr\303\274ckmich", 0));
     } // retranslateUi
 
 };
 
 namespace Ui {
-    class AppBrowserWnd: public Ui_AppBrowserWnd {};
+    class QtApplication: public Ui_QtApplication {};
 } // namespace Ui
 
 QT_END_NAMESPACE
 
-#endif // UI_APPBROWSERWND_H
+#endif // UI_QTAPPLICATION_H
