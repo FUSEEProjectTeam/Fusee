@@ -39,8 +39,8 @@ namespace Examples.LightTypeTest
             renderContext.SetShader(sp);
             renderContext.SetShaderParamTexture(Textureparam, Tex);
             renderContext.SetShaderParamTexture(NormalTextureparam, NormalTex);
-            renderContext.SetShaderParam(Shininess, 8.0f);
-            renderContext.SetShaderParam(SpecularLevel, 512.0f);
+            renderContext.SetShaderParam(Shininess, 16.0f);
+            renderContext.SetShaderParam(SpecularLevel, 256.0f);
 
         }
     }

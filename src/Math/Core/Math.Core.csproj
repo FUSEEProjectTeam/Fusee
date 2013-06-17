@@ -52,6 +52,7 @@
     <Compile Include="double4x4.cs" />
     <Compile Include="float2.cs" />
     <Compile Include="float3.cs" />
+    <Compile Include="float3x3.cs" />
     <Compile Include="float4.cs" />
     <Compile Include="float4x4.cs" />
     <Compile Include="M.cs" />
