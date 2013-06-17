@@ -26,4 +26,6 @@ protected:
 public:
 	FuseeWidget(QWidget *pWidget);
 	~FuseeWidget(void);
+
+	void SetTeapotColor(int color);
 };

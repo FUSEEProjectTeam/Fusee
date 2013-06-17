@@ -140,5 +140,10 @@ namespace Fusee.Engine
             app.Run();
         }
         */
+
+        public void SetTeapotColor(int color)
+        {
+            RC.SetShaderParam(_colorParam, new float4(((color >> 16) & 0xFF) / 255.0f, ((color >> 8) & 0xFF) / 255.0f, (color & 0xFF) / 255.0f, 1));
+        }
     }
 }

@@ -19,6 +19,7 @@
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPushButton>
+#include <QtWidgets/QSlider>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QVBoxLayout>
@@ -33,6 +34,9 @@ public:
     QHBoxLayout *horizontalLayout;
     QFrame *frame;
     QVBoxLayout *verticalLayout;
+    QSlider *redSlider;
+    QSlider *greenSlider;
+    QSlider *blueSlider;
     QPushButton *pushButton;
     QWidget *renderParent;
     QVBoxLayout *verticalLayout_2;
@@ -65,6 +69,28 @@ public:
         verticalLayout->setSpacing(6);
         verticalLayout->setContentsMargins(11, 11, 11, 11);
         verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
+        redSlider = new QSlider(frame);
+        redSlider->setObjectName(QStringLiteral("redSlider"));
+        redSlider->setMaximum(255);
+        redSlider->setOrientation(Qt::Horizontal);
+        redSlider->setInvertedControls(false);
+
+        verticalLayout->addWidget(redSlider);
+
+        greenSlider = new QSlider(frame);
+        greenSlider->setObjectName(QStringLiteral("greenSlider"));
+        greenSlider->setMaximum(255);
+        greenSlider->setOrientation(Qt::Horizontal);
+
+        verticalLayout->addWidget(greenSlider);
+
+        blueSlider = new QSlider(frame);
+        blueSlider->setObjectName(QStringLiteral("blueSlider"));
+        blueSlider->setMaximum(255);
+        blueSlider->setOrientation(Qt::Horizontal);
+
+        verticalLayout->addWidget(blueSlider);
+
         pushButton = new QPushButton(frame);
         pushButton->setObjectName(QStringLiteral("pushButton"));
 

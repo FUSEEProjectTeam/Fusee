@@ -88,6 +88,11 @@ void QtHostBridge::TriggerIdle()
 	_pImpl->_mh->TriggerIdle();
 }
 
+void QtHostBridge::SetTeapotColor(int color)
+{
+	_pImpl->_mh->SetTeapotColor(color);	
+}
+
 
 
 // IMyInterface wrapper implementation

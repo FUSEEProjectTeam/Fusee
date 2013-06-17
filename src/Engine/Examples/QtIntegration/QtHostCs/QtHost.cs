@@ -170,6 +170,13 @@ namespace Fusee.Engine
         public event EventHandler<KeyEventArgs> KeyDown;
         public event EventHandler<KeyEventArgs> KeyUp;
 
+        public void SetTeapotColor(int color)
+        {
+            this._theApp.SetTeapotColor(color);
+        }
+
+
+
         /*
         [StructLayout(LayoutKind.Sequential)]
         private struct Message

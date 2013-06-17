@@ -32,6 +32,7 @@ namespace FuseeQtHostBridge
 		QtHostBridgeInternal *_pImpl;
 
 	public:
+		// Application agnostic
 		QtHostBridge(void *hwnd);
 		void SetMousePosQuery(MousePosQueryFunc pFunc);
 		void TriggerMouseDown(int button, int x, int y);
@@ -40,6 +41,9 @@ namespace FuseeQtHostBridge
 		void TriggerKeyUp(int vKey);
 		void TriggerSizeChanged(int w, int h);
 		void TriggerIdle();
+
+		// Application specific
+		void SetTeapotColor(int color);
 	};
 
 

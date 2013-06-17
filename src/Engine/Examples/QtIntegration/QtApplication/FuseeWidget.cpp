@@ -60,3 +60,8 @@ void FuseeWidget::OnIdle()
 {
 	_pBridge->TriggerIdle();
 }
+
+void FuseeWidget::SetTeapotColor(int color)
+{
+	_pBridge->SetTeapotColor(color);
+}
