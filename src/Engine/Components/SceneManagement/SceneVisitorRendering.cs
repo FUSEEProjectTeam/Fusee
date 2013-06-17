@@ -267,9 +267,9 @@ namespace Fusee.SceneManagement
         /// <param name="color">The color.</param>
         /// <param name="type">The type.</param>
         /// <param name="channel">The channel.</param>
-        public void AddLightSpot(float3 position, float3 direction, float4 diffuse, float4 ambient, float4 specular, Light.LightType type, int channel) 
+        public void AddLightSpot(float3 position, float3 direction, float4 diffuse, float4 ambient, float4 specular, float angle, Light.LightType type, int channel) 
         {
-            RenderSpotLight light = new RenderSpotLight(position, direction, diffuse, ambient, specular, type, channel );
+            RenderSpotLight light = new RenderSpotLight(position, direction, diffuse, ambient, specular, angle, type, channel );
             _queue.AddLightJob(light);
         }
 

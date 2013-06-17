@@ -18,6 +18,7 @@ namespace Fusee.SceneManagement
         private float4 _specularColor;
         private Light.LightType _type;
         private int _channel;
+        private float _angle;
 
         #endregion 
 
@@ -31,7 +32,7 @@ namespace Fusee.SceneManagement
         /// <param name="color">The lightcolor.</param>
         /// <param name="type">The type.</param>
         /// <param name="channel">The memory space of the light(0 - 7).</param>
-        public RenderSpotLight(float3 position, float3 direction, float4 diffuse, float4 ambient, float4 specular, Light.LightType type, int channel)
+        public RenderSpotLight(float3 position, float3 direction, float4 diffuse, float4 ambient, float4 specular, float angle, Light.LightType type, int channel)
         {
             _position = position;
             _direction = direction;
@@ -40,6 +41,7 @@ namespace Fusee.SceneManagement
             _ambientColor = ambient;
             _specularColor = specular;
             _channel = channel;
+            _angle = angle;
         }
 
         #endregion
@@ -52,6 +54,7 @@ namespace Fusee.SceneManagement
         public override void SubmitWork(RenderContext renderContext)
         {
             renderContext.SetLight(_position, _direction, _diffuseColor, _ambientColor, _specularColor, (int)_type, _channel);
+            renderContext.SetLightSpotAngle(_channel, _angle);
             //Console.WriteLine("Spotlight worked");
         }
 

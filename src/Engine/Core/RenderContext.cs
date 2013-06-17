@@ -970,7 +970,7 @@ namespace Fusee.Engine
         public void SetLightSpotAngle(int lightInx, float angle)
         {
 
-            _lightParams[lightInx].Angle = (float) System.Math.Cos(angle);
+            _lightParams[lightInx].Angle = -(float)System.Math.Cos(angle);
             IShaderParam sp;
             string paramName = "FUSEE_L" + lightInx + "_SPOTANGLE";
             if ((sp = _currentShader.GetShaderParam(paramName)) != null)

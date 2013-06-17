@@ -1,4 +1,5 @@
 ﻿using Fusee.Math;
+using System;
 
 namespace Fusee.SceneManagement
 {
@@ -76,7 +77,7 @@ namespace Fusee.SceneManagement
         /// </summary>
         public void TraverseForRendering(SceneVisitorRendering sceneVisitorRendering)
         {
-            sceneVisitorRendering.AddLightSpot(_position, _direction, _diffuseColor, _ambientColor, _specularColor , _type, _channel );
+            sceneVisitorRendering.AddLightSpot(_position, _direction, _diffuseColor, _ambientColor, _specularColor, _angle, _type, _channel );
         }
 
         #endregion
@@ -84,9 +85,9 @@ namespace Fusee.SceneManagement
         {
             if (SceneEntity != null)
             {
-                _position = SceneEntity.transform.GlobalPosition;
-                _direction = SceneEntity.transform.Forward;
-                //SceneManager.RC.DebugLine(_position, _direction * 100, new float4(1, 1, 0,1));
+                float4 tempPos = float4x4.Transpose(SceneManager.RC.View) * new float4(SceneEntity.transform.GlobalPosition.x, SceneEntity.transform.GlobalPosition.y, SceneEntity.transform.GlobalPosition.z, 1);
+                _position = new float3(tempPos.x, tempPos.y, tempPos.z) / tempPos.w;
+                _direction = SceneEntity.transform.Forward; 
             }
             sv.Visit((SpotLight)this);
         }

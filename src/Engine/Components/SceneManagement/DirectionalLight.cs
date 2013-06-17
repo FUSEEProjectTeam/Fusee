@@ -67,10 +67,11 @@ namespace Fusee.SceneManagement
         public override void Accept(SceneVisitor sv)
         {
             if (SceneEntity != null)
-            {
-                _position = SceneEntity.transform.GlobalPosition;
-                float4 tempPos = SceneManager.RC.View * new float4(SceneEntity.transform.Forward, 1);
-                _direction = new float3(tempPos.x, tempPos.y, tempPos.z) / tempPos.w;
+            {   
+                //_position = SceneEntity.transform.GlobalPosition;
+                //float3 tempDir = new float(SceneManager.RC.View) * SceneEntity.transform.Forward;
+                //Console.WriteLine(SceneEntity.transform.Forward);
+                _direction = SceneEntity.transform.Forward;
             }
             sv.Visit((DirectionalLight)this);
         }

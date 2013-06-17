@@ -300,6 +300,7 @@ void main()
             uniform float FUSEE_L6_ACTIVE;
             uniform float FUSEE_L7_ACTIVE;
 
+
             void main()
             {
                 gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
@@ -382,16 +383,20 @@ void main()
             uniform float FUSEE_L5_SPOTANGLE;
             uniform float FUSEE_L6_SPOTANGLE;
             uniform float FUSEE_L7_SPOTANGLE;
+
+            uniform mat4 FUSEE_V;
     
             varying vec3 vNormal;
             varying vec2 vUV;
             varying vec3 vViewPos;
 
             void CalcDirectLight(vec4 difColor, vec4 ambColor, vec4 specColor, vec3 direction, inout vec4 intensity) {
+                vec3 tempDir = mat3(FUSEE_V[0].xyz, FUSEE_V[1].xyz, FUSEE_V[2].xyz) * direction;
+                //vec3 tempDir2 = vec3(tempDir.x, tempDir.y, tempDir.z)/tempDir.w;
                 intensity += ambColor;
-                intensity += max(dot(-normalize(direction),normalize(vNormal)),0.0) * difColor;                
+                intensity += max(dot(-normalize(tempDir),normalize(vNormal)),0.0) * difColor;                
                 if(specularLevel != 0.0){
-                    vec3 lightVector = normalize(direction);
+                    vec3 lightVector = normalize(tempDir);
                     vec3 r = normalize(reflect(lightVector, normalize(vNormal)));
                     float s = pow(max(dot(r, vec3(0,0,1.0)), 0.0), specularLevel) * shininess;
                     intensity += specColor * s;
@@ -409,15 +414,17 @@ void main()
                 }
             }
             void CalcSpotLight(vec4 difColor, vec4 ambColor, vec4 specColor, vec3 position, vec3 direction, float angle, inout vec4 intensity){
+                vec3 tempDir = mat3(FUSEE_V[0].xyz, FUSEE_V[1].xyz, FUSEE_V[2].xyz) * direction;
+                //vec3 tempDir2 = vec3(tempDir.x, tempDir.y, tempDir.z);
                 intensity += ambColor;
                 vec3 pos = position - vViewPos;
-                float alpha = acos(dot(normalize(pos), normalize(-direction)));
-                if(alpha < angle){
+                float alpha = dot(normalize(pos), normalize(-tempDir));
+                if(alpha > angle){
                     intensity += max(dot(normalize(pos),normalize(vNormal)),0.0) * difColor; 
                     if(specularLevel != 0.0){
                         vec3 lightVector = normalize(-pos);  
                         vec3 r = normalize(reflect(lightVector, normalize(vNormal)));
-                        float s = pow(max(dot(r, vec3(0,0,1.0)), 0.0), specularLevel) * shininess;
+                        float s = pow(max(dot(r, vec3(0,0,1.0)), 0.0), specularLevel) * shininess * angle;
                         intensity += specColor * s; 
                     }
                 }
