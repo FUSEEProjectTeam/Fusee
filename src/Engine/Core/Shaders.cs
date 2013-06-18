@@ -54,20 +54,20 @@ namespace Fusee.Engine
             return spOriginal;
         }
 
-        private static Dictionary<string, dynamic> multiLightParamList = new Dictionary<string, dynamic>();
+        //private static Dictionary<string, ParamPair> multiLightParamList = new Dictionary<string, ParamPair>();
 
-        public static Dictionary<string,dynamic> GetParams(string s)
-        {
-            if (s == "multiLight")
-            {
-                multiLightParamList.Add("FUSEE_MAT_SHININESS", 256.0f);
-                multiLightParamList.Add("FUSEE_MAT_SPECULAR", new float4(0,0,0,1));
-                multiLightParamList.Add("FUSEE_MAT_DIFFUSE", new float4(0, 0, 0, 1));
-                multiLightParamList.Add("FUSEE_MAT_AMBIENT", new float4(0, 0, 0, 1));
-                multiLightParamList.Add("FUSEE_MAT_EMISSION", new float4(0, 0, 0, 1));
-            }
-            return multiLightParamList;
-        } 
+        //public static Dictionary<string,ParamPair> GetParams(string s)
+        //{
+        //    if (s == "multiLight")
+        //    {
+        //        multiLightParamList.Add("FUSEE_MAT_SHININESS", 256.0f);
+        //        multiLightParamList.Add("FUSEE_MAT_SPECULAR", new float4(0,0,0,1));
+        //        multiLightParamList.Add("FUSEE_MAT_DIFFUSE", new float4(0, 0, 0, 1));
+        //        multiLightParamList.Add("FUSEE_MAT_AMBIENT", new float4(0, 0, 0, 1));
+        //        multiLightParamList.Add("FUSEE_MAT_EMISSION", new float4(0, 0, 0, 1));
+        //    }
+        //    return multiLightParamList;
+        //} 
 
         private const string VsMultiLight = @"
 //  # version 120 // not working with GL_ES

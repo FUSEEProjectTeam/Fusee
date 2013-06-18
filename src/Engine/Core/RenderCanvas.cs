@@ -115,6 +115,8 @@ namespace Fusee.Engine
             Input.Instance.InputImp = _inputImp;
             Audio.Instance.AudioImp = _audioImp;
 
+            Network.Instance.NetworkImp = ImpFactory.CreateINetworkImp();
+
             _canvasImp.Init += delegate(object sender, InitEventArgs args)
                                     {
                                         Init();
@@ -127,6 +129,7 @@ namespace Fusee.Engine
 
             _canvasImp.Render += delegate(object sender, RenderEventArgs args)
                                      {
+                                         Network.Instance.OnUpdateFrame();
                                          Input.Instance.OnUpdateFrame(_canvasImp.DeltaTime);
                                          Time.Instance.DeltaTimeIncrement = _canvasImp.DeltaTime;
                                          RenderAFrame();
@@ -165,6 +168,7 @@ namespace Fusee.Engine
         public virtual void UnLoad()
         {
             Audio.Instance.CloseDevice();
+            Network.Instance.CloseDevice();
         }
 
         /// <summary>

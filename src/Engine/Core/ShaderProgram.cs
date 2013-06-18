@@ -13,6 +13,10 @@ namespace Fusee.Engine
             _spi = shaderProgramImp;
             _rci = renderContextImp;
             _paramsByName = new Dictionary<string, IShaderParam>();
+            foreach (ShaderParamInfo info in _rci.GetShaderParamList(_spi))
+            {
+                _paramsByName.Add(info.Name, info.Handle);
+            }
             //_paramsByName = new Dictionary<string, ShaderParamInfo>();
             //foreach (ShaderParamInfo info in _rci.GetShaderParamList(_spi))
             //{

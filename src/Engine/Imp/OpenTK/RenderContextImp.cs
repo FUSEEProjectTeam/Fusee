@@ -176,10 +176,10 @@ namespace Fusee.Engine
             return (h == -1) ? null : new ShaderParam { handle = h };
         }
 
-        public float GetParamValue(IShaderProgramImp program, IShaderParam handle)
+        public float GetParamValue(IShaderProgramImp program, IShaderParam param)
         {
             float f;
-            GL.GetUniform(((ShaderProgramImp)program).Program, ((ShaderParam)handle).handle, out f);
+            GL.GetUniform(((ShaderProgramImp)program).Program, ((ShaderParam)param).handle, out f);
             return f;
         }
 
