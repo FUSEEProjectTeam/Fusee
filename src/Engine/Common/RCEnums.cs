@@ -83,6 +83,7 @@ namespace Fusee.Engine
         D1 = 49,
         D2 = 50,
         D3 = 51,
+        D4 = 52,
         D5 = 53,
         D6 = 54,
         D7 = 55,
