@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- BeforeBuild on Windows -->
+  <Target Name="BeforeBuild" Condition=" '$(OS)' == 'Windows_NT' ">
+    <ItemGroup>
+      <DLLFiles Include="$(TargetDir)..\..\*.dll" />
+      <SFMLFiles Include="$(SolutionDir)..\..\..\..\ExternalBinaries\SFML\*.dll" />
+    </ItemGroup>
+
+    <Message Importance="High" Text="### BeforeBuildEvent $(TargetName): Copying necessary files ###" />
+    <Copy SourceFiles="@(DLLFiles)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(SFMLFiles)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" />
+  </Target>
+  
+  <!--- AfterBuild on Windows -->
+  <Target Name="AfterBuild" Condition=" '$(Configuration)' == 'Debug+Web' And '$(OS)' == 'Windows_NT' ">
+    <PropertyGroup>
+      <WebOutputDir>$(TargetDir)Web\</WebOutputDir>
+    </PropertyGroup>
+    <ItemGroup>
+      <WebGLScripts Include="$(TargetDir)..\..\WebGL\Scripts\*.*" />
+      <WebGLStyles Include="$(TargetDir)..\..\WebGL\Styles\*.*" />
+      <WebAudioScript Include="$(TargetDir)..\..\WebAudio\*.*" />
+    </ItemGroup>
+
+    <MakeDir Directories="$(WebOutputDir)" Condition="!Exists('$(WebOutputDir)')" />
+    <MakeDir Directories="$(WebOutputDir)\Assets" Condition="!Exists('$(WebOutputDir)Assets')" />
+    <MakeDir Directories="$(WebOutputDir)\Assets\Scripts" Condition="!Exists('$(WebOutputDir)Scripts')" />
+    <MakeDir Directories="$(WebOutputDir)\Assets\Styles" Condition="!Exists('$(WebOutputDir)Styles')" />
+
+    <Message Importance="High" Text="### PostBuildEvent $(TargetName): JSIL CCing ###" />
+    <Exec ContinueOnError="true" Timeout="60000" Command='"$(SolutionDir)..\..\..\..\ExternalBinaries\JSIL\Compiler\JSILc.exe" -o "$(WebOutputDir)Assets\Scripts" "$(TargetPath)"' />
+    
+    <Message Importance="High" Text="### PostBuildEvent $(TargetName): Copying additional scripts/styles ###" />
+    <Copy SourceFiles="@(WebGLScripts)" DestinationFolder="$(WebOutputDir)Assets\Scripts" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(WebGLStyles)" DestinationFolder="$(WebOutputDir)Assets\Styles" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(WebAudioScript)" DestinationFolder="$(WebOutputDir)Assets\Scripts" SkipUnchangedFiles="true" />
+
+    <!-- Escaping necessary because of quotation marks! -->
+    <Message Importance="High" Text="### PostBuildEvent $(TargetName): Creating default HTML file ###" />
+    <Exec ContinueOnError="true" Timeout="60000" Command='"$(SolutionDir)..\..\..\..\ExternalBinaries\JSIL\Compiler\fuHTMLGen.exe" "$(TargetDir)\" "$(WebOutputDir)\" "$(TargetPath)"' />
+    
+    <Message Importance="High" Text="### PostBuildEvent $(TargetName): Done ###" />
+  </Target>
+</Project>

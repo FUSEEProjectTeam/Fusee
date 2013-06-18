@@ -128,7 +128,7 @@ public:
     void retranslateUi(QMainWindow *QtApplication)
     {
         QtApplication->setWindowTitle(QApplication::translate("QtApplication", "QtApplication", 0));
-        pushButton->setText(QApplication::translate("QtApplication", "Dr\303\274ckmich", 0));
+        pushButton->setText(QApplication::translate("QtApplication", "Start FUSEE App", 0));
     } // retranslateUi
 
 };

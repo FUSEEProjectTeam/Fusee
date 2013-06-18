@@ -45,10 +45,12 @@ namespace Fusee.Engine
         private IShaderParam _textureParam;
 
         private ITexture _iTex;
+        private float4 _theColor;
 
         // is called on startup
         public override void Init()
         {
+            _theColor = new float4(0.5f, 0.8f, 0, 1);
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             // initialize the variables
@@ -108,7 +110,7 @@ namespace Fusee.Engine
             RC.ModelView = float4x4.CreateTranslation(0, -50, 0) * mtxRot * float4x4.CreateTranslation(-150, 0, 0) * mtxCam;
 
             RC.SetShader(_spColor);
-            RC.SetShaderParam(_colorParam, new float4(0.5f, 0.8f, 0, 1));
+            RC.SetShaderParam(_colorParam, _theColor);
 
             RC.Render(_meshTea);
 
@@ -143,7 +145,7 @@ namespace Fusee.Engine
 
         public void SetTeapotColor(int color)
         {
-            RC.SetShaderParam(_colorParam, new float4(((color >> 16) & 0xFF) / 255.0f, ((color >> 8) & 0xFF) / 255.0f, (color & 0xFF) / 255.0f, 1));
+            _theColor = new float4(((color >> 16) & 0xFF) / 255.0f, ((color >> 8) & 0xFF) / 255.0f, (color & 0xFF) / 255.0f, 1);
         }
     }
 }

@@ -26,15 +26,8 @@ void QtApplication::on_pushButton_clicked()
     //int ret = QMessageBox::information( 0,  "TEst",
     //                                "Druckmichdruckt",
     //                                QMessageBox::Ok | QMessageBox::Default );
-	// MyClass *pMc = new MyClass();
-	// pMc->SimpleMethod(this->ui->renderParent->winId());
-
 	_pQH = new FuseeWidget(this->ui->renderParent);
-
-	/*
-	FuseeAppBridge pFuseeApp = new FuseeAppBridge(pQH);
-	pFuseeApp->Run();
-	*/
+	ui->pushButton->setEnabled(false);
 }
 
 void QtApplication::SliderChanged()
@@ -49,9 +42,6 @@ void QtApplication::SliderChanged()
 void QtApplication::on_redSlider_valueChanged()
 {
 	SliderChanged();
-	//int ret = QMessageBox::information( 0,  "Test",
-	//                                   "Sliderzurrt",
-	//                                   QMessageBox::Ok | QMessageBox::Default );
 }
 
 void QtApplication::on_greenSlider_valueChanged()
