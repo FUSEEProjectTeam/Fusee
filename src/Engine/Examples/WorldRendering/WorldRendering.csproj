@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{4C6F9F9C-A4E8-483F-866C-2552DDBDD4F5}</ProjectGuid>
+    <ProjectGuid>{50CC0D53-5914-44DE-AB49-8A006D7ACC37}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Examples.WorldRendering</RootNamespace>
