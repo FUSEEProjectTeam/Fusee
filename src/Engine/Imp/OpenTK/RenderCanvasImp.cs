@@ -299,7 +299,6 @@ namespace Fusee.Engine
              * */
         }
 
-        /* TODO !!! Update Fussee's OpenTK release to contain FrameEventArgs. CM ...
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             if (Keyboard[OpenTK.Input.Key.Escape])
@@ -311,7 +310,6 @@ namespace Fusee.Engine
                 else
                     WindowState = WindowState.Normal;
         }
-        */
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
