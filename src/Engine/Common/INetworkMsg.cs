@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 
 namespace Fusee.Engine
@@ -49,6 +50,7 @@ namespace Fusee.Engine
     {
         MessageType Type { get; }
         ConnectionStatus Status { get; }
+        IPEndPoint Sender { get; }
 
         dynamic Message { get; }
     }

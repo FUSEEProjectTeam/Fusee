@@ -1,11 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
+using System.Threading;
+using System.Timers;
 using Lidgren.Network;
 using ProtoBuf;
-
+using Timer = System.Timers.Timer;
 
 namespace Fusee.Engine
 {
@@ -14,6 +17,11 @@ namespace Fusee.Engine
         private NetPeer _netPeer;
         private NetServer _netServer;
         private NetClient _netClient;
+
+        private Timer _discoveryTimeout;
+
+        private int _peerID;
+        private string _peerIDString;
 
         private NetConfigValues _config;
         private NetPeerConfiguration _netConfig;
@@ -40,6 +48,12 @@ namespace Fusee.Engine
 
         public NetStatusValues Status { get; set; }
 
+        public string GetLocalIp()
+        {
+            IPAddress ipMask;
+            return NetUtility.GetMyAddress(out ipMask).ToString();
+        }
+
         public List<INetworkMsg> IncomingMsg { get; private set; }
 
         public NetworkImp()
@@ -47,15 +61,16 @@ namespace Fusee.Engine
             _netConfig = new NetPeerConfiguration("FUSEE3D");
 
             IncomingMsg = new List<INetworkMsg>();
- 
+
             _config = new NetConfigValues
-            {
-                SysType = SysType.Client,
-                DefaultPort = 14242,
-                Discovery = false,
-                ConnectOnDiscovery = false,
-                RedirectPackets = false
-            };
+                          {
+                              SysType = SysType.Client,
+                              DefaultPort = 14242,
+                              Discovery = false,
+                              ConnectOnDiscovery = false,
+                              DiscoveryTimeout = 5000,
+                              RedirectPackets = false,
+                          };
 
             // _netConfig.RedirectedPacketsList.CollectionChanged += PackageCapture;
 
@@ -68,28 +83,41 @@ namespace Fusee.Engine
 
         public void StartPeer(int port)
         {
-            // CHECK FOR ALREADY RUNNING
+            // Check if already running
             EndPeers();
             CloseDevices();
 
             _netConfig = _netConfig.Clone();
             _netConfig.Port = port;
 
+            // peerID
+            var random = new Random();
+            _peerID = random.Next(0, 100);
+            
             switch (_config.SysType)
             {
                 case SysType.Peer:
                     _netPeer = new NetPeer(_netConfig);
                     _netPeer.Start();
+
+                    _peerIDString = "FUSEE3D:Peer:" + _peerID;
+
                     break;
 
                 case SysType.Client:
                     _netClient = new NetClient(_netConfig);
                     _netClient.Start();
+
+                    _peerIDString = "FUSEE3D:Client:" + _peerID;
+
                     break;
 
                 case SysType.Server:
                     _netServer = new NetServer(_netConfig);
                     _netServer.Start();
+
+                    _peerIDString = "FUSEE3D:Server:" + _peerID;
+
                     break;
             }
         }
@@ -196,8 +224,7 @@ namespace Fusee.Engine
 
         public bool SendMessage(byte[] msg)
         {
-            _netConfig.RedirectPackets = true;
-            Debug.WriteLine(_netConfig.RedirectPackets + ": " + _netConfig.RedirectedPacketsList.Count);
+            // _netConfig.RedirectPackets = true;
 
             var sendResult = NetSendResult.Queued;
 
@@ -270,6 +297,17 @@ namespace Fusee.Engine
             _netConfig.RedirectedPacketsList.Clear();
         }
 
+        private void OnDiscoveryTimeout(object source, ElapsedEventArgs e)
+        {
+            _discoveryTimeout.Dispose();
+
+            if (Status.Connecting)
+            {
+                Status.Connecting = false;
+                Status.LastStatus = ConnectionStatus.Disconnected;
+            }
+        }
+
         public void SendDiscoveryMessage(int port)
         {
             switch (_config.SysType)
@@ -287,7 +325,14 @@ namespace Fusee.Engine
                     break;
             }
 
-            Debug.WriteLine("Discovery sent on port " + port);
+            Status.Connecting = true;
+
+            if (_config.DiscoveryTimeout > 0)
+            {
+                _discoveryTimeout = new Timer(_config.DiscoveryTimeout);
+                _discoveryTimeout.Elapsed += OnDiscoveryTimeout;
+                _discoveryTimeout.Enabled = true;
+            }
         }
 
         private void SendDiscoveryResponse(IPEndPoint ip)
@@ -298,7 +343,7 @@ namespace Fusee.Engine
             {
                 case SysType.Peer:
                     response = _netPeer.CreateMessage();
-                    response.Write("Peer:FUSEE3D");
+                    response.Write(_peerIDString);
 
                     _netPeer.SendDiscoveryResponse(response, ip);
 
@@ -306,7 +351,7 @@ namespace Fusee.Engine
 
                 case SysType.Client:
                     response = _netClient.CreateMessage();
-                    response.Write("Client:FUSEE3D");
+                    response.Write(_peerIDString);
 
                     _netClient.SendDiscoveryResponse(response, ip);
 
@@ -314,7 +359,7 @@ namespace Fusee.Engine
 
                 case SysType.Server:
                     response = _netServer.CreateMessage();
-                    response.Write("Server:FUSEE3D");
+                    response.Write(_peerIDString);
 
                     _netServer.SendDiscoveryResponse(response, ip);
 
@@ -332,55 +377,75 @@ namespace Fusee.Engine
                     switch (Status.LastStatus)
                     {
                         case ConnectionStatus.Connected:
+                            Status.Connecting = false;
                             Status.Connected = true;
                             break;
                         case ConnectionStatus.Disconnected:
+                            Status.Connecting = false;
                             Status.Connected = false;
+                            break;
+                        case ConnectionStatus.InitiatedConnect:
+                            Status.Connected = false;
+                            Status.Connecting = true;
                             break;
                     }
 
                     return new NetworkMessage
                                {
                                    Type = (MessageType) msg.MessageType,
-                                   Status = Status.LastStatus
+                                   Status = Status.LastStatus,
+                                   Sender = msg.SenderEndPoint
                                };
 
                 case NetIncomingMessageType.DiscoveryRequest:
-                    SendDiscoveryResponse(msg.SenderEndPoint);
+                        SendDiscoveryResponse(msg.SenderEndPoint);
 
-                    return new NetworkMessage
-                    {
-                        Type = (MessageType)msg.MessageType,
-                        Sender = msg.SenderEndPoint
-                    };
+                        return new NetworkMessage
+                                   {
+                                       Type = (MessageType) msg.MessageType,
+                                       Sender = msg.SenderEndPoint
+                                   };
 
                 case NetIncomingMessageType.DiscoveryResponse:
+                    var discoveryID = msg.ReadString();
+
+                    if (discoveryID == _peerIDString)
+                        return null;
+
                     if (_config.ConnectOnDiscovery)
                         OpenConnection(_config.SysType, msg.SenderEndPoint);
 
+                    if (_discoveryTimeout != null)
+                        _discoveryTimeout.Dispose();
+
                     return new NetworkMessage
-                        {
-                            Type = (MessageType) msg.MessageType,
-                            Sender = msg.SenderEndPoint,
-                            Message = msg.ReadString()
-                        };
+                               {
+                                   Type = (MessageType) msg.MessageType,
+                                   Sender = msg.SenderEndPoint,
+                                   Message = discoveryID
+                               };
 
                 case NetIncomingMessageType.Data:
                     return new NetworkMessage
-                        {
-                            Type = (MessageType) msg.MessageType,
-                            Message = msg.ReadBytes(msg.LengthBytes)
-                        };
+                               {
+                                   Type = (MessageType) msg.MessageType,
+                                   Sender = msg.SenderEndPoint,
+                                   Message = msg.ReadBytes(msg.LengthBytes)
+                               };
 
                 case NetIncomingMessageType.DebugMessage:
                 case NetIncomingMessageType.VerboseDebugMessage:
                 case NetIncomingMessageType.WarningMessage:
                 case NetIncomingMessageType.ErrorMessage:
-                    Debug.WriteLine(msg.MessageType + ": " + msg.ReadString());
-                    break;
+                    return new NetworkMessage
+                               {
+                                   Type = (MessageType) msg.MessageType,
+                                   Sender = new IPEndPoint(IPAddress.None, 0),
+                                   Message = msg.ReadString()
+                               };
             }
 
-            return new NetworkMessage();
+            return null;
         }
 
         public void OnUpdateFrame()
@@ -422,18 +487,24 @@ namespace Fusee.Engine
             {
                 CloseConnection(SysType.Peer);
                 _netPeer = null;
+
+                Thread.Sleep(1000);
             }
 
             if (_netClient != null)
             {
                 CloseConnection(SysType.Client);
                 _netClient = null;
+
+                Thread.Sleep(1000);
             }
 
             if (_netServer != null)
             {
                 CloseConnection(SysType.Server);
                 _netServer = null;
+
+                Thread.Sleep(1000);
             }
         }
     }

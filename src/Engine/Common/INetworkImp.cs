@@ -8,12 +8,15 @@ namespace Fusee.Engine
         public int DefaultPort;
         public bool Discovery;
         public bool ConnectOnDiscovery;
+        public int DiscoveryTimeout;
         public bool RedirectPackets;
     }
 
     public class NetStatusValues
     {
         public bool Connected { get; set; }
+        public bool Connecting { get; set; }
+
         public ConnectionStatus LastStatus;
     }
 
@@ -28,7 +31,9 @@ namespace Fusee.Engine
     {
         NetConfigValues Config { get; set; }
         NetStatusValues Status { get; set; }
- 
+
+        string GetLocalIp();
+
         List<INetworkMsg> IncomingMsg { get; }
 
         void StartPeer(int port);
@@ -44,5 +49,6 @@ namespace Fusee.Engine
         void OnUpdateFrame();
 
         void CloseDevices();
+
     }
 }

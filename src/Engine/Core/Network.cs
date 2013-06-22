@@ -29,6 +29,11 @@ namespace Fusee.Engine
             set { _networkImp.Config = value; }
         }
 
+        public string LocalIP
+        {
+            get { return _networkImp.GetLocalIp(); }
+        }
+
         // Start System //
         public void StartPeer()
         {
@@ -37,7 +42,7 @@ namespace Fusee.Engine
 
         public void StartPeer(int port)
         {
-            _networkImp.StartPeer(port);           
+            _networkImp.StartPeer(port);
         }
 
         // Open Connections //
