@@ -46,12 +46,32 @@ namespace Fusee.Engine
         ReliableOrdered = (byte) 67,
     }
 
+    public enum MsgDataTypes
+    {
+        Dynamic = 0,
+        Bytes = 1,
+        Int = 2,
+        Float = 3,
+        String = 4,
+    }
+
+    public struct NetworkMsgType
+    {
+        public MsgDataTypes MsgType;
+
+        public dynamic ReadDynamic;
+        public byte[] ReadBytes;
+        public int ReadInt;
+        public float ReadFloat;
+        public string ReadString;
+    }
+
     public interface INetworkMsg
     {
         MessageType Type { get; }
         ConnectionStatus Status { get; }
         IPEndPoint Sender { get; }
 
-        dynamic Message { get; }
+        NetworkMsgType Message { get; }
     }
 }

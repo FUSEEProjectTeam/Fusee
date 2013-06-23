@@ -237,16 +237,19 @@ namespace Fusee.Engine
                     break;
 
                 case SysType.Client:
-                    var sendMsg = _netClient.CreateMessage();
-                    sendMsg.Write(msg);
+                    var sendMsgClient = _netClient.CreateMessage();
+                    sendMsgClient.Write(msg);
 
-                    sendResult = _netClient.SendMessage(sendMsg, NetDeliveryMethod.ReliableOrdered);
+                    sendResult = _netClient.SendMessage(sendMsgClient, NetDeliveryMethod.ReliableOrdered);
 
                     break;
 
                 case SysType.Server:
-                    //sendMsg = _netServer.CreateMessage();
-                    //_netServer.SendMessage(sendMsg, NetDeliveryMethod.ReliableOrdered);
+                    var sendMsgServer = _netServer.CreateMessage();
+                    sendMsgServer.Write(msg);
+
+                    //_netServer.SendMessage(sendMsg, , NetDeliveryMethod.ReliableOrdered);
+                    _netServer.SendToAll(sendMsgServer, NetDeliveryMethod.UnreliableSequenced);
 
                     break;
             }
@@ -418,19 +421,20 @@ namespace Fusee.Engine
                     if (_discoveryTimeout != null)
                         _discoveryTimeout.Dispose();
 
+
                     return new NetworkMessage
                                {
-                                   Type = (MessageType) msg.MessageType,
+                                   Type = (MessageType)msg.MessageType,
                                    Sender = msg.SenderEndPoint,
-                                   Message = discoveryID
+                                   Message = new NetworkMsgType { MsgType = MsgDataTypes.String, ReadString = discoveryID }
                                };
 
                 case NetIncomingMessageType.Data:
                     return new NetworkMessage
                                {
-                                   Type = (MessageType) msg.MessageType,
+                                   Type = (MessageType)msg.MessageType,
                                    Sender = msg.SenderEndPoint,
-                                   Message = msg.ReadBytes(msg.LengthBytes)
+                                   Message = new NetworkMsgType { MsgType = MsgDataTypes.Bytes, ReadBytes = msg.ReadBytes(msg.LengthBytes) }
                                };
 
                 case NetIncomingMessageType.DebugMessage:
@@ -439,9 +443,9 @@ namespace Fusee.Engine
                 case NetIncomingMessageType.ErrorMessage:
                     return new NetworkMessage
                                {
-                                   Type = (MessageType) msg.MessageType,
+                                   Type = (MessageType)msg.MessageType,
                                    Sender = new IPEndPoint(IPAddress.None, 0),
-                                   Message = msg.ReadString()
+                                   Message = new NetworkMsgType { MsgType = MsgDataTypes.String, ReadString = msg.ReadString() }
                                };
             }
 
@@ -451,6 +455,8 @@ namespace Fusee.Engine
         public void OnUpdateFrame()
         {
             NetIncomingMessage msg;
+
+            
 
             if (_netPeer != null)
             {
@@ -476,6 +482,7 @@ namespace Fusee.Engine
                 {
                     IncomingMsg.Add(ReadMessage(msg));
                     _netServer.Recycle(msg);
+                    Debug.WriteLine(_netServer.ConnectionsCount);
                 }
 
             }
