@@ -22,9 +22,10 @@ namespace Fusee.Engine
                 _inputImp.MouseButtonUp += ButtonUp;
                 _axes = new float[(int)InputAxis.LastAxis];
                 _axesPreviousAbsolute = new float[(int)InputAxis.LastAxis];
-                //_keysPressed = new Dictionary<KeyCodes, bool>();
-                //_buttonsPressed = new Dictionary<MouseButtons, bool>();
+
                 _keysPressed = new Dictionary<int, bool>();
+                _keysDown = new Dictionary<int, bool>();
+
                 _buttonsPressed = new Dictionary<int, bool>();
             }
         }
@@ -32,17 +33,18 @@ namespace Fusee.Engine
         private IInputImp _inputImp;
         private float[] _axes;
         private float[] _axesPreviousAbsolute;
-        // private HashSet<KeyCodes> _keysPressed;
-        // private HashSet<MouseButtons> _buttonsPressed;
-        // private Dictionary<KeyCodes, bool> _keysPressed;
-        // private Dictionary<MouseButtons, bool> _buttonsPressed;
+
+        private Dictionary<int, bool> _keysDown; 
         private Dictionary<int, bool> _keysPressed;
+
         private Dictionary<int, bool> _buttonsPressed;
 
         private void KeyDown(object sender, KeyEventArgs kea)
         {
             if (!_keysPressed.ContainsKey((int)kea.KeyCode))
                 _keysPressed.Add((int)kea.KeyCode, true);
+
+            _keysDown.Add((int)kea.KeyCode, true);
         }
 
         private void KeyUp(object sender, KeyEventArgs kea)
@@ -99,28 +101,38 @@ namespace Fusee.Engine
         /// <returns>
         /// true if the key is pressed. Otherwise false.
         /// </returns>
-        public bool IsKeyDown(KeyCodes key)
+        public bool IsKeyPressed(KeyCodes key)
         {
             return _keysPressed.ContainsKey((int)key);
         }
 
-        public bool OnKeyDown(KeyCodes key)
+        /// <summary>
+        /// Check if the user started pressing a key in the current frames.
+        /// </summary>
+        /// <param name="key">The key to check.</param>
+        /// <returns>
+        /// true if the user started pressing the key in the current frame. Otherwise false.
+        /// </returns>
+        public bool IsKeyDown(KeyCodes key)
         {
-            if(_keysPressed.ContainsKey((int)key))
+            if (_keysDown.ContainsKey((int)key))
             {
-                _keysPressed.Remove((int) key);
+                _keysDown.Remove((int)key);
                 return true;
             }
-            return false;  
+            return false;
         }
 
-        public bool OnKeyUp(KeyCodes key)
+        /// <summary>
+        /// Check if the user stopped pressing a key in the current frames.
+        /// </summary>
+        /// <param name="key">The key to check.</param>
+        /// <returns>
+        /// true if the user stopped pressing the key in the current frame. Otherwise false.
+        /// </returns>
+        public bool IsKeyUp(KeyCodes key)
         {
-            if (!_keysPressed.ContainsKey((int)key))
-            {
-                _keysPressed.Add((int)key, true);
-                return true;
-            }
+            // not implemented
             return false;
         }
 

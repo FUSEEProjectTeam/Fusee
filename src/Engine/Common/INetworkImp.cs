@@ -22,6 +22,7 @@ namespace Fusee.Engine
 
     public enum SysType
     {
+        None,
         Peer,
         Client,
         Server
