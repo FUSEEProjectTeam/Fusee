@@ -24,11 +24,7 @@ namespace Examples.LightTypeTest
         public override void Update()
         {
             transform.LocalEulerAngles += _rotationSpeed*(float)Time.Instance.DeltaTime;
-<<<<<<< HEAD
             SceneManager.RC.DebugLine(transform.GlobalPosition, transform.Forward * 10000, new float4(1, 1, 0, 1));
-=======
-            SceneManager.RC.DebugLine(new float3(0,0,0), new float3(0,0,100), new float4(1, 1, 0, 1));
->>>>>>> aee660553ec7d2e5684d9d8359469c4c6d7cf5dc
             
 
             if (SceneEntity.parent != null)

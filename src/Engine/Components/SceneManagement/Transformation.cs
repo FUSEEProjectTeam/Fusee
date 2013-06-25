@@ -362,7 +362,7 @@ namespace Fusee.SceneManagement
       private void UpdateLocalMembers() // Extract members from transformMatrix
       {
           
-          _quaternion = Quaternion.LookRotation(_transformMatrix.Row2.xyz, _transformMatrix.Row2.xyz);
+          _quaternion = Quaternion.LookRotation(_transformMatrix.Column2.xyz, _transformMatrix.Column1.xyz);
           //_quaternion = Quaternion.Identity;
           //Debug.WriteLine("LocalQuaternion: "+_quaternion);
           _eulerAngles = Quaternion.QuaternionToEuler(_quaternion);
@@ -378,7 +378,7 @@ namespace Fusee.SceneManagement
       private void UpdateGlobalMembers() // Extract members from globalMatrix
       {
           //_globalQuaternion = Quaternion.Identity;
-          _globalQuaternion = Quaternion.LookRotation(_globalMatrix.Row2.xyz, _globalMatrix.Row2.xyz);
+          _globalQuaternion = Quaternion.LookRotation(_globalMatrix.Column2.xyz, _globalMatrix.Column2.xyz);
           _globalEulerAngles = Quaternion.QuaternionToEuler(_globalQuaternion);
           _globalScale = GetScaleFromMatrix(_globalMatrix);
           _globalPosition = GetPositionFromMatrix(_globalMatrix);

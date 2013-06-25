@@ -75,12 +75,7 @@ namespace Fusee.SceneManagement
         {
             if (SceneEntity != null)
             {
-<<<<<<< HEAD
                 float4 tempPos = float4x4.Transpose(SceneManager.RC.View) * new float4(SceneEntity.transform.GlobalPosition.x, SceneEntity.transform.GlobalPosition.y, SceneEntity.transform.GlobalPosition.z, 1);
-=======
-                float4x4 vt = float4x4.Transpose(SceneManager.RC.View);
-                float4 tempPos = vt * new float4(SceneEntity.transform.GlobalPosition.x, SceneEntity.transform.GlobalPosition.y, SceneEntity.transform.GlobalPosition.z, 1);
->>>>>>> aee660553ec7d2e5684d9d8359469c4c6d7cf5dc
                 _position = new float3(tempPos.x, tempPos.y, tempPos.z) / tempPos.w;
             }
             sv.Visit((PointLight)this);

@@ -113,51 +113,66 @@ namespace Fusee.SceneManagement
         {
             if (_mtxModelViewStack.Count > 0)
             {
-
-
                 if (transform.GlobalMatrixDirty)
                 {
-                    transform.Matrix = float4x4.Invert(_mtxModelViewStack.Peek()) * transform.GlobalMatrix;
+                    transform.Matrix = float4x4.Invert(_mtxModelViewStack.Peek())*transform.GlobalMatrix;
                     transform.SetGlobalMat(transform.Matrix * _mtxModelViewStack.Peek());
-                    _hasTransform.Pop();
                     _mtxModelViewStack.Push(transform.Matrix * _mtxModelViewStack.Pop());
-                    _hasTransform.Push(SceneManager.RC.frustum.PointInFrustum(transform.GlobalPosition));
-
+                    //Debug.WriteLine("Matrix: " + transform.GlobalMatrix + " Point: " + transform.GlobalPosition);
+                    if (SceneManager.RC.frustum.PointInFrustum(transform.GlobalPosition))
+                    {
+                        _hasTransform.Pop();
+                        _hasTransform.Push(true);
+                    }
+                    
+                    
+                    
                     if (HasRenderingTriple())
                     {
                         AddRenderJob(_mtxModelViewStack.Peek(), _meshStack.Peek(), _RendererStack.Peek());
                     }
-
                     return;
                 }
-                transform.SetGlobalMat(transform.Matrix * _mtxModelViewStack.Peek());
-                _hasTransform.Pop();
+
+                transform.SetGlobalMat(transform.Matrix*_mtxModelViewStack.Peek());
                 _mtxModelViewStack.Push(transform.Matrix * _mtxModelViewStack.Pop());
-                _hasTransform.Push(SceneManager.RC.frustum.PointInFrustum(transform.GlobalPosition));
-
-                if (HasRenderingTriple())
-                {
-                    AddRenderJob(_mtxModelViewStack.Peek(), _meshStack.Peek(), _RendererStack.Peek());
-                }
-
-            }
-            else
-            {
-
-
-                if (_hasTransform.Count > 0)
+                //Debug.WriteLine("Matrix: " + transform.GlobalMatrix + " Point: " + transform.GlobalPosition);
+                if (SceneManager.RC.frustum.PointInFrustum(transform.GlobalPosition))
                 {
                     _hasTransform.Pop();
+                    _hasTransform.Push(true);
                 }
-
-                _hasTransform.Push(SceneManager.RC.frustum.PointInFrustum(transform.GlobalPosition));
-                _mtxModelViewStack.Push(transform.GlobalMatrix);
-
+                
+                
+                
+                
+                
+                
                 if (HasRenderingTriple())
                 {
                     AddRenderJob(_mtxModelViewStack.Peek(), _meshStack.Peek(), _RendererStack.Peek());
                 }
-
+                
+            }else
+            {
+                _mtxModelViewStack.Push(transform.GlobalMatrix);
+                //Debug.WriteLine("Matrix: " + transform.GlobalMatrix + " Point: " + transform.GlobalPosition);
+                if (SceneManager.RC.frustum.PointInFrustum(transform.GlobalPosition))
+                {
+                    if (_hasTransform.Count > 0)
+                    {
+                        _hasTransform.Pop();
+                    }
+                    
+                    _hasTransform.Push(true);
+                }
+               
+                
+                if (HasRenderingTriple())
+                {
+                    AddRenderJob(_mtxModelViewStack.Peek(), _meshStack.Peek(), _RendererStack.Peek());
+                }
+                
             }
         }
 
