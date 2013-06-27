@@ -4,6 +4,7 @@ using Fusee.Math;
 
 namespace Examples.Simple
 {
+    [FuseeApplication(Name = "Simple Example", Description = "A very simple example.")]
     public class Simple : RenderCanvas
     {
         // angle variables

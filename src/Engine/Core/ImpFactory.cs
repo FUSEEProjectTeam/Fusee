@@ -84,7 +84,7 @@ namespace Fusee.Engine
             if (mi == null)
                 throw new Exception("Implementor type (" + RenderingImplementor.ToString() + ") doesn't contain method CreateRenderCanvasImp");
 
-            return (IRenderCanvasImp) mi.Invoke(null, null);
+            return (IRenderCanvasImp)mi.Invoke(null, null);
         }
 
         [JSExternal]
@@ -113,7 +113,7 @@ namespace Fusee.Engine
             MethodInfo mi = AudioImplementor.GetMethod("CreateAudioImp");
 
             if (mi == null)
-                throw new Exception("Implementor type (" + RenderingImplementor.ToString() + ") doesn't contain method CreateAudioImp");
+                throw new Exception("Implementor type (" + AudioImplementor.ToString() + ") doesn't contain method CreateAudioImp");
 
             return (IAudioImp)mi.Invoke(null, null);
         }

@@ -6,7 +6,7 @@ namespace Fusee.Engine
 {
     public class InputImp : IInputImp
     {
-        protected GameWindow GameWindow;
+        protected GameWindow _gameWindow;
         internal Keymapper KeyMapper;
 
         public InputImp(IRenderCanvasImp renderCanvas)
@@ -17,11 +17,19 @@ namespace Fusee.Engine
             if (!(renderCanvas is RenderCanvasImp))
                 throw new ArgumentException("renderCanvas must be of type RenderCanvasImp", "renderCanvas");
 
-            GameWindow = ((RenderCanvasImp) renderCanvas)._gameWindow;
-            GameWindow.Keyboard.KeyDown += OnGameWinKeyDown;
-            GameWindow.Keyboard.KeyUp += OnGameWinKeyUp;
-            GameWindow.Mouse.ButtonDown += OnGameWinMouseDown;
-            GameWindow.Mouse.ButtonUp += OnGameWinMouseUp;
+            _gameWindow = ((RenderCanvasImp) renderCanvas)._gameWindow;
+            if (_gameWindow != null)
+            {
+                _gameWindow.Keyboard.KeyDown += OnGameWinKeyDown;
+                _gameWindow.Keyboard.KeyUp += OnGameWinKeyUp;
+                _gameWindow.Mouse.ButtonDown += OnGameWinMouseDown;
+                _gameWindow.Mouse.ButtonUp += OnGameWinMouseUp;
+            }
+            else
+            {
+                // Todo
+
+            }
 
             KeyMapper = new Keymapper();
         }
@@ -33,12 +41,16 @@ namespace Fusee.Engine
 
         public Point GetMousePos()
         {
-            return new Point{x = GameWindow.Mouse.X, y = GameWindow.Mouse.Y};
+            if (_gameWindow != null)
+                return new Point{x = _gameWindow.Mouse.X, y = _gameWindow.Mouse.Y};
+            return new Point{x=0, y=0};
         }
 
         public int GetMouseWheelPos()
         {
-            return GameWindow.Mouse.Wheel;
+            if (_gameWindow != null)
+                return _gameWindow.Mouse.Wheel;
+            return 0;
         }
 
         public event EventHandler<MouseEventArgs> MouseButtonDown;

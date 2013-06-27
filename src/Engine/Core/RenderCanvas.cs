@@ -1,4 +1,5 @@
-﻿using Fusee.Engine;
+﻿using System;
+using Fusee.Engine;
 using Fusee.Math;
 
 namespace Fusee.Engine
@@ -14,7 +15,40 @@ namespace Fusee.Engine
     public class RenderCanvas
     {
         private RenderContext _rc;
+        private IRenderContextImp _renderContextImp;
+        private IAudioImp _audioImp;
+        private IInputImp _inputImp;
         internal IRenderCanvasImp _canvasImp;
+
+        [InjectMe] 
+        public IRenderCanvasImp CanvasImplementor
+        {
+            set { _canvasImp = value; }
+            get { return _canvasImp; }
+        }
+
+        [InjectMe]
+        public IRenderContextImp ContextImplementor
+        {
+            set { _renderContextImp = value; }
+            get { return _renderContextImp; }
+        }
+
+        [InjectMe]
+        public IInputImp InputImplementor
+        {
+            set { _inputImp = value; }
+            get { return _inputImp; }
+        }
+            
+        [InjectMe]
+        public IAudioImp AudioImplementor
+        {
+            set { _audioImp = value; }
+            get { return _audioImp; }
+        }
+
+
 
         /// <summary>
         /// Returns the render context object.
@@ -27,18 +61,59 @@ namespace Fusee.Engine
             get { return _rc; }
         }
 
+
+        /// <summary>
+        /// The default constructor. Creates a render canvas and initializes a couple of implemenentation instances for audio, rendering and input.
+        /// </summary>
+        public RenderCanvas()
+        {
+        }
+
+
         /// <summary>
         /// The RenderCanvas constructor. Depending on the implementation this constructor instantiates a 3D viewing window or connects a 3D 
         /// render context to an existing part of the application window.
         /// </summary>
-        public RenderCanvas()
+        public void InitImplementors()
         {
-            _canvasImp = ImpFactory.CreateIRenderCanvasImp();
-            _rc = new RenderContext(ImpFactory.CreateIRenderContextImp(_canvasImp));
+            if (_canvasImp == null)
+                _canvasImp = ImpFactory.CreateIRenderCanvasImp();
 
-            Input.Instance.InputImp = ImpFactory.CreateIInputImp(_canvasImp);
+            if (_renderContextImp == null)
+                _renderContextImp = ImpFactory.CreateIRenderContextImp(_canvasImp);
 
-            Audio.Instance.AudioImp = ImpFactory.CreateIAudioImp();
+            if (_inputImp == null)
+                _inputImp = ImpFactory.CreateIInputImp(_canvasImp);
+
+            if (_audioImp == null)
+                _audioImp = ImpFactory.CreateIAudioImp();
+        }
+
+        protected string GetAppName()
+        {
+            FuseeApplicationAttribute fae;
+            Object[] attributes = GetType().GetCustomAttributes(
+                typeof(FuseeApplicationAttribute), true);
+
+            if (attributes.Length > 0)
+            {
+                fae = (FuseeApplicationAttribute) attributes[0];
+                return fae.Name;
+            }
+            else
+            {
+                return GetType().Name;
+            }
+        }
+
+        protected void InitCanvas()
+        {
+            InitImplementors();
+            _canvasImp.Caption = GetAppName();
+           _rc = new RenderContext(_renderContextImp);
+
+            Input.Instance.InputImp = _inputImp;
+            Audio.Instance.AudioImp = _audioImp;
 
             Network.Instance.NetworkImp = ImpFactory.CreateINetworkImp();
 
@@ -116,6 +191,7 @@ namespace Fusee.Engine
         /// </remarks>
         public void Run()
         {
+            InitCanvas();
             _canvasImp.Run();
         }
 
@@ -158,5 +234,6 @@ namespace Fusee.Engine
         {
             _canvasImp.Present();
         }
+
      }
 }

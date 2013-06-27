@@ -8,6 +8,7 @@ namespace Fusee.Engine
         public int DefaultPort;
         public bool Discovery;
         public bool ConnectOnDiscovery;
+        public bool RedirectPackets;
     }
 
     public class NetStatusValues
