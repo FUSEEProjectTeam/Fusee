@@ -77,16 +77,10 @@ namespace Examples.LinqForGeometry
 
         #endregion ShaderDefinition
 
-        // angle variables
         private static float _angleVelHorz, _angleVelVert;
-
-        // control mechanics
         private const float RotationSpeed = 1f;
-
-        // model variable
         private Mesh _lfgmesh, _FuseeMesh;
 
-        // variables for color and texture
         private IShaderParam _vColorParam;
         private IShaderParam _vTextureParam;
         private IShaderParam _vLightShaderParam;
@@ -94,10 +88,8 @@ namespace Examples.LinqForGeometry
         private ImageData _imgData;
         private ITexture _tex;
 
-        // LFG Geometry
         private Geometry _Geo;
 
-        // 'Gamedesign'
         private float _MovementSpeed = 10.0f;
         private float _InvertMouseAxis = -1.0f;
 
@@ -110,8 +102,6 @@ namespace Examples.LinqForGeometry
             //_FuseeMesh = MeshReader.LoadMesh("Assets/Models/Teapot_triangular.obj.model");
 
             #region MeshImports
-            // This would be a solution to step over the MeshReader Class
-            // Important for now to use the transformation methods on the data structure.
             _Geo = new Geometry();
             //_Geo.LoadAsset("Assets/Models/Cube.obj.model");
             //_Geo.LoadAsset("Assets/Models/Sphere.obj.model");
@@ -120,7 +110,6 @@ namespace Examples.LinqForGeometry
             //_Geo.LoadAsset("Assets/Models/Cylinder.obj.model");
             //_Geo.LoadAsset("Assets/Models/SharedCorners_pro.obj.model");
             #endregion MeshImports
-
 
             #region Shader
             #region LightShader
@@ -152,7 +141,6 @@ namespace Examples.LinqForGeometry
 
             #endregion Shader
 
-            // Convert to Mesh
             _lfgmesh = _Geo.ToMesh();
 
             RC.SetShaderParamTexture(_vLightShaderParam, iTex);
@@ -162,10 +150,7 @@ namespace Examples.LinqForGeometry
         public override void RenderAFrame()
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-
-            // Pull the users input
-            PullInput();
-
+            PullUserInput();
             RC.Render(_lfgmesh);
             //RC.Render(_FuseeMesh);
 
@@ -174,7 +159,7 @@ namespace Examples.LinqForGeometry
         }
 
         // Pull the users input
-        public void PullInput()
+        public void PullUserInput()
         {
             #region Mouse
             if (Input.Instance.IsButtonDown(MouseButtons.Left))
