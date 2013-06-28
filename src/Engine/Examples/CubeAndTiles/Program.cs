@@ -103,7 +103,7 @@ namespace Examples.CubeAndTiles
             // keyboard
             if (_lastKey == KeyCodes.None)
             {
-                if (Input.Instance.IsKeyDown(KeyCodes.V))
+                if (Input.Instance.IsKeyPressed(KeyCodes.V))
                 {
                     _angleVelHorz = 0.0f;
                     _angleVelVert = 0.0f;
@@ -125,13 +125,13 @@ namespace Examples.CubeAndTiles
                     _lastKey = KeyCodes.V;
                 }
 
-                if (Input.Instance.IsKeyDown(KeyCodes.S))
+                if (Input.Instance.IsKeyPressed(KeyCodes.S))
                 {
                     Audio.Instance.SetVolume(Audio.Instance.GetVolume() > 0 ? 0 : 100);
                     _lastKey = KeyCodes.S;
                 }
 
-                if (Input.Instance.IsKeyDown(KeyCodes.C))
+                if (Input.Instance.IsKeyPressed(KeyCodes.C))
                 {
                     RC.SetShader(_exampleLevel.UseAnaglyph3D ? _spNonAnaglyph : _spAnaglyph);
 
@@ -139,19 +139,19 @@ namespace Examples.CubeAndTiles
                     _lastKey = KeyCodes.C;
                 }
             }
-            else if (!Input.Instance.IsKeyDown(_lastKey))
+            else if (!Input.Instance.IsKeyPressed(_lastKey))
                 _lastKey = KeyCodes.None;
 
-            if (Input.Instance.IsKeyDown(KeyCodes.Left))
+            if (Input.Instance.IsKeyPressed(KeyCodes.Left))
                 _exampleLevel.MoveCube(Level.Directions.Left);
 
-            if (Input.Instance.IsKeyDown(KeyCodes.Right))
+            if (Input.Instance.IsKeyPressed(KeyCodes.Right))
                 _exampleLevel.MoveCube(Level.Directions.Right);
 
-            if (Input.Instance.IsKeyDown(KeyCodes.Up))
+            if (Input.Instance.IsKeyPressed(KeyCodes.Up))
                 _exampleLevel.MoveCube(Level.Directions.Forward);
 
-            if (Input.Instance.IsKeyDown(KeyCodes.Down))
+            if (Input.Instance.IsKeyPressed(KeyCodes.Down))
                 _exampleLevel.MoveCube(Level.Directions.Backward);
 
             // mouse

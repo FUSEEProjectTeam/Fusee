@@ -60,7 +60,7 @@ namespace Examples.SolarSystem
                     Time.Instance.TimeFlow = 0;
             }
 
-            if (Input.Instance.OnKeyDown(KeyCodes.Right))
+            if (Input.Instance.IsKeyDown(KeyCodes.Right))
             {
                 _currentTargetId++;
 
@@ -70,7 +70,7 @@ namespace Examples.SolarSystem
                 _target = SceneEntity.FindSceneEntity(_planets[_currentTargetId]);
             }
 
-            if (Input.Instance.OnKeyDown(KeyCodes.Left))
+            if (Input.Instance.IsKeyDown(KeyCodes.Left))
             {
                 _currentTargetId--;
 

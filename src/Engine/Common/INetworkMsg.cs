@@ -48,7 +48,7 @@ namespace Fusee.Engine
 
     public enum MsgDataTypes
     {
-        Dynamic = 0,
+        Object = 0,
         Bytes = 1,
         Int = 2,
         Float = 3,
@@ -59,7 +59,7 @@ namespace Fusee.Engine
     {
         public MsgDataTypes MsgType;
 
-        public dynamic ReadDynamic;
+        public object ReadObject;
         public byte[] ReadBytes;
         public int ReadInt;
         public float ReadFloat;

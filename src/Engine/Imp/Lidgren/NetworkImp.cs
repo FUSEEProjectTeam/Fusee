@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Timers;
@@ -48,6 +49,36 @@ namespace Fusee.Engine
 
         public NetStatusValues Status { get; set; }
 
+        public List<INetworkConnection> Connections
+        {
+            get {
+                var emptyList = new List<INetworkConnection>();
+
+                switch (_config.SysType)
+                {
+                    case SysType.Peer:
+                        if (_netPeer == null) return emptyList;
+
+                        break;
+
+                    case SysType.Client:
+                        if (_netClient == null) return emptyList;
+
+                        break;
+
+                    case SysType.Server:
+                        if (_netServer == null) return emptyList;
+
+                        emptyList.AddRange(
+                            _netServer.Connections.Select(connection => new NetworkConnection {Connection = connection}));
+
+                        return emptyList;
+                }
+
+                return emptyList;
+            }
+        }
+
         public string GetLocalIp()
         {
             IPAddress ipMask;
@@ -64,7 +95,7 @@ namespace Fusee.Engine
 
             _config = new NetConfigValues
                           {
-                              SysType = SysType.Client,
+                              SysType = SysType.None,
                               DefaultPort = 14242,
                               Discovery = false,
                               ConnectOnDiscovery = false,
@@ -222,11 +253,28 @@ namespace Fusee.Engine
             }
         }
 
+        public bool SendMessage(NetworkMsgType msg)
+        {
+            switch (msg.MsgType)
+            {
+                case MsgDataTypes.String:
+                    return SendMessage(msg.ReadString);
+
+                case MsgDataTypes.Bytes:
+                    return SendMessage(msg.ReadBytes);
+
+                case MsgDataTypes.Object:
+                    return SendMessage(msg.ReadObject);
+            }
+
+            return false;
+        }
+
         public bool SendMessage(byte[] msg)
         {
             // _netConfig.RedirectPackets = true;
 
-            var sendResult = NetSendResult.Queued;
+            NetSendResult sendResult;
 
             switch (_config.SysType)
             {
@@ -241,20 +289,24 @@ namespace Fusee.Engine
                     sendMsgClient.Write(msg);
 
                     sendResult = _netClient.SendMessage(sendMsgClient, NetDeliveryMethod.ReliableOrdered);
-
-                    break;
+                    return (sendResult == NetSendResult.Sent);
 
                 case SysType.Server:
                     var sendMsgServer = _netServer.CreateMessage();
                     sendMsgServer.Write(msg);
 
-                    //_netServer.SendMessage(sendMsg, , NetDeliveryMethod.ReliableOrdered);
-                    _netServer.SendToAll(sendMsgServer, NetDeliveryMethod.UnreliableSequenced);
+                    var success = true;
 
-                    break;
+                    foreach (var connection in _netServer.Connections)
+                    {
+                        sendResult = connection.SendMessage(sendMsgServer, NetDeliveryMethod.ReliableOrdered, 0);
+                        success = success && (sendResult == NetSendResult.Sent);
+                    }
+
+                    return success;
             }
 
-            return (sendResult == NetSendResult.Sent);            
+            return false;
         }
 
         public bool SendMessage(string msg)
@@ -263,7 +315,7 @@ namespace Fusee.Engine
             return SendMessage(enc.GetBytes(msg));
         }
 
-        public bool SendMessage(object obj, bool compress)
+        public bool SendMessage(object obj)
         {
             byte[] data;
 
@@ -288,6 +340,7 @@ namespace Fusee.Engine
             return SendMessage(data);
         }
 
+        /* Not in use.
         private void PackageCapture(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.Action != NotifyCollectionChangedAction.Add) return;
@@ -298,7 +351,7 @@ namespace Fusee.Engine
             }
 
             _netConfig.RedirectedPacketsList.Clear();
-        }
+        } */
 
         private void OnDiscoveryTimeout(object source, ElapsedEventArgs e)
         {
@@ -456,8 +509,6 @@ namespace Fusee.Engine
         {
             NetIncomingMessage msg;
 
-            
-
             if (_netPeer != null)
             {
                 while ((msg = _netPeer.ReadMessage()) != null)
@@ -482,9 +533,7 @@ namespace Fusee.Engine
                 {
                     IncomingMsg.Add(ReadMessage(msg));
                     _netServer.Recycle(msg);
-                    Debug.WriteLine(_netServer.ConnectionsCount);
                 }
-
             }
         }
 

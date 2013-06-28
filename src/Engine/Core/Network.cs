@@ -1,6 +1,7 @@
 ﻿// TODO: Comment stuff and remove #pragma
 #pragma warning disable 1591
 
+using System.Collections.Generic;
 using System.Linq;
 using JSIL.Meta;
 
@@ -27,6 +28,11 @@ namespace Fusee.Engine
         {
             get { return _networkImp.Config; }
             set { _networkImp.Config = value; }
+        }
+
+        public List<INetworkConnection> Connections
+        {
+            get { return _networkImp.Connections; }
         }
 
         public string LocalIP
@@ -94,12 +100,20 @@ namespace Fusee.Engine
         // Send Messages //
         public bool SendMessage(string msg)
         {
-            return _networkImp.SendMessage(msg);
+            var data = new NetworkMsgType {MsgType = MsgDataTypes.String, ReadString = msg};
+            return _networkImp.SendMessage(data);
         }
 
-        public bool SendMessage(object obj, bool compress = false)
+        public bool SendMessage(int msg)
         {
-            return _networkImp.SendMessage(obj, compress);
+            var data = new NetworkMsgType { MsgType = MsgDataTypes.Int, ReadInt = msg };
+            return _networkImp.SendMessage(data);
+        }
+
+        public bool SendMessage(byte[] msg)
+        {
+            var data = new NetworkMsgType { MsgType = MsgDataTypes.Bytes, ReadBytes = msg };
+            return _networkImp.SendMessage(data);
         }
 
         public void SendDiscoveryMessage()

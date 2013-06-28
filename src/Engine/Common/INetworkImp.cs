@@ -33,6 +33,8 @@ namespace Fusee.Engine
         NetConfigValues Config { get; set; }
         NetStatusValues Status { get; set; }
 
+        List<INetworkConnection> Connections { get; }
+
         string GetLocalIp();
 
         List<INetworkMsg> IncomingMsg { get; }
@@ -42,14 +44,14 @@ namespace Fusee.Engine
         bool OpenConnection(SysType type, string host, int port);
         void CloseConnection();
 
-        bool SendMessage(string msg);
-        bool SendMessage(object data, bool compress);
+        bool SendMessage(NetworkMsgType data);
 
         void SendDiscoveryMessage(int port);
 
         void OnUpdateFrame();
 
         void CloseDevices();
+
 
     }
 }
