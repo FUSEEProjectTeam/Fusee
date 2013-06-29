@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -9,6 +8,7 @@ using System.Threading;
 using System.Timers;
 using Lidgren.Network;
 using ProtoBuf;
+
 using Timer = System.Timers.Timer;
 
 namespace Fusee.Engine
@@ -47,44 +47,10 @@ namespace Fusee.Engine
             }
         }
 
+        public event ConnectionUpdateEvent ConnectionUpdate;
+        public List<INetworkConnection> Connections { get; private set; }
+
         public NetStatusValues Status { get; set; }
-
-        public List<INetworkConnection> Connections
-        {
-            get {
-                var emptyList = new List<INetworkConnection>();
-
-                switch (_config.SysType)
-                {
-                    case SysType.Peer:
-                        if (_netPeer == null) return emptyList;
-
-                        break;
-
-                    case SysType.Client:
-                        if (_netClient == null) return emptyList;
-
-                        break;
-
-                    case SysType.Server:
-                        if (_netServer == null) return emptyList;
-
-                        emptyList.AddRange(
-                            _netServer.Connections.Select(connection => new NetworkConnection {Connection = connection}));
-
-                        return emptyList;
-                }
-
-                return emptyList;
-            }
-        }
-
-        public string GetLocalIp()
-        {
-            IPAddress ipMask;
-            return NetUtility.GetMyAddress(out ipMask).ToString();
-        }
-
         public List<INetworkMsg> IncomingMsg { get; private set; }
 
         public NetworkImp()
@@ -104,6 +70,7 @@ namespace Fusee.Engine
                           };
 
             // _netConfig.RedirectedPacketsList.CollectionChanged += PackageCapture;
+            Connections = new List<INetworkConnection>();
 
             Status = new NetStatusValues
             {
@@ -188,6 +155,39 @@ namespace Fusee.Engine
 
                     break;
             }
+        }
+
+        public string GetLocalIp()
+        {
+            IPAddress ipMask;
+            return NetUtility.GetMyAddress(out ipMask).ToString();
+        }
+
+        public void OnConnectionUpdate(ConnectionStatus lastStatus)
+        {
+            Connections.Clear();
+
+            switch (_config.SysType)
+            {
+                case SysType.Peer:
+                    break;
+
+                case SysType.Client:
+                    break;
+
+                case SysType.Server:
+                    if (_netServer == null)
+                        break;
+
+                    Connections.AddRange(
+                        _netServer.Connections.Select(connection => new NetworkConnection { Connection = connection }));
+
+                    break;
+            }
+
+            // event OnConnectionUpdate
+            if (ConnectionUpdate != null)
+                ConnectionUpdate(this, lastStatus);
         }
 
         public bool OpenConnection(SysType type, IPEndPoint ip)
@@ -433,16 +433,26 @@ namespace Fusee.Engine
                     switch (Status.LastStatus)
                     {
                         case ConnectionStatus.Connected:
+                            OnConnectionUpdate(Status.LastStatus);
+
+                            // TODO: This is not correct if server
                             Status.Connecting = false;
                             Status.Connected = true;
+
                             break;
                         case ConnectionStatus.Disconnected:
+                            OnConnectionUpdate(Status.LastStatus);
+
+                            // TODO: This is not correct if server
                             Status.Connecting = false;
                             Status.Connected = false;
+
                             break;
                         case ConnectionStatus.InitiatedConnect:
+                            // TODO: This is not correct if server
                             Status.Connected = false;
                             Status.Connecting = true;
+
                             break;
                     }
 
@@ -473,7 +483,6 @@ namespace Fusee.Engine
 
                     if (_discoveryTimeout != null)
                         _discoveryTimeout.Dispose();
-
 
                     return new NetworkMessage
                                {
@@ -515,7 +524,7 @@ namespace Fusee.Engine
                 {
                     IncomingMsg.Add(ReadMessage(msg));
                     _netPeer.Recycle(msg);
-                }               
+                }
             }
 
             if (_netClient != null)

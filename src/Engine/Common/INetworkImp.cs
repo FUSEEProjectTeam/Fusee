@@ -28,6 +28,8 @@ namespace Fusee.Engine
         Server
     }
 
+    public delegate void ConnectionUpdateEvent(object sender, ConnectionStatus eStatus);
+
     public interface INetworkImp
     {
         NetConfigValues Config { get; set; }
@@ -41,6 +43,9 @@ namespace Fusee.Engine
 
         void StartPeer(int port);
 
+        event ConnectionUpdateEvent ConnectionUpdate;
+        void OnConnectionUpdate(ConnectionStatus lastStatus);
+
         bool OpenConnection(SysType type, string host, int port);
         void CloseConnection();
 
@@ -51,7 +56,5 @@ namespace Fusee.Engine
         void OnUpdateFrame();
 
         void CloseDevices();
-
-
     }
 }

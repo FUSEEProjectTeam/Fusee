@@ -12,7 +12,6 @@ namespace Fusee.Engine
         private static Network _instance;
 
         private INetworkImp _networkImp;
-
         internal INetworkImp NetworkImp
         {
             set { _networkImp = value; }
@@ -28,6 +27,12 @@ namespace Fusee.Engine
         {
             get { return _networkImp.Config; }
             set { _networkImp.Config = value; }
+        }
+
+        public event ConnectionUpdateEvent OnConnectionUpdate
+        {
+            add { _networkImp.ConnectionUpdate += value; }
+            remove { _networkImp.ConnectionUpdate -= value; }
         }
 
         public List<INetworkConnection> Connections
@@ -51,7 +56,7 @@ namespace Fusee.Engine
             _networkImp.StartPeer(port);
         }
 
-        // Open Connections //
+        // Connections //
         public void OpenConnection(string host)
         {
             OpenConnection(host, Config.DefaultPort);
