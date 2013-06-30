@@ -28,9 +28,14 @@ namespace Fusee.Engine
             Connection.Disconnect(byeMessage);
         }
 
-        public void SendMessage(byte[] packet)
+        public bool SendMessage(byte[] packet)
         {
-            NetworkImp.SendMessage(packet, Connection);
+            return SendMessage(packet, MessageDelivery.ReliableOrdered, 0);
+        }
+
+        public bool SendMessage(byte[] packet, MessageDelivery msgDelivery, int msgChannel)
+        {
+            return NetworkImp.SendMessage(packet, Connection, msgDelivery, msgChannel);
         }
     }
 }

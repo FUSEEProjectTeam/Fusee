@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Timers;
 using Lidgren.Network;
-using ProtoBuf;
 
 using Timer = System.Timers.Timer;
 
@@ -279,25 +276,7 @@ namespace Fusee.Engine
             }
         }
 
-
-        public bool SendMessage(NetworkMsgType msg)
-        {
-            switch (msg.MsgType)
-            {
-                case MsgDataTypes.String:
-                    return SendMessage(msg.ReadString);
-
-                case MsgDataTypes.Bytes:
-                    return SendMessage(msg.ReadBytes);
-
-                case MsgDataTypes.Object:
-                    return SendMessage(msg.ReadObject);
-            }
-
-            return false;
-        }
-
-        public bool SendMessage(byte[] msg)
+        public bool SendMessage(byte[] msg, MessageDelivery msgDelivery, int msgChannel)
         {
             // _netConfig.RedirectPackets = true;
 
@@ -315,7 +294,7 @@ namespace Fusee.Engine
                     var sendMsgClient = _netClient.CreateMessage();
                     sendMsgClient.Write(msg);
 
-                    sendResult = _netClient.SendMessage(sendMsgClient, NetDeliveryMethod.ReliableOrdered);
+                    sendResult = _netClient.SendMessage(sendMsgClient, (NetDeliveryMethod) msgDelivery, msgChannel);
                     return (sendResult == NetSendResult.Sent);
 
                 case SysType.Server:
@@ -326,7 +305,7 @@ namespace Fusee.Engine
 
                     foreach (var connection in _netServer.Connections)
                     {
-                        sendResult = connection.SendMessage(sendMsgServer, NetDeliveryMethod.ReliableOrdered, 0);
+                        sendResult = connection.SendMessage(sendMsgServer, (NetDeliveryMethod) msgDelivery, msgChannel);
                         success = success && (sendResult == NetSendResult.Sent);
                     }
 
@@ -336,7 +315,7 @@ namespace Fusee.Engine
             return false;
         }
 
-        public bool SendMessage(byte[] msg, NetConnection connection)
+        public bool SendMessage(byte[] msg, NetConnection connection, MessageDelivery msgDelivery, int msgChannel)
         {
             // _netConfig.RedirectPackets = true;
 
@@ -354,63 +333,19 @@ namespace Fusee.Engine
                     var sendMsgClient = _netClient.CreateMessage();
                     sendMsgClient.Write(msg);
 
-                    sendResult = _netClient.SendMessage(sendMsgClient, connection, NetDeliveryMethod.ReliableOrdered);
+                    sendResult = _netClient.SendMessage(sendMsgClient, connection, (NetDeliveryMethod)msgDelivery, msgChannel);
                     return (sendResult == NetSendResult.Sent);
 
                 case SysType.Server:
                     var sendMsgServer = _netServer.CreateMessage();
                     sendMsgServer.Write(msg);
 
-                    sendResult = _netServer.SendMessage(sendMsgServer, connection, NetDeliveryMethod.ReliableOrdered);
+                    sendResult = _netServer.SendMessage(sendMsgServer, connection, (NetDeliveryMethod)msgDelivery, msgChannel);
                     return (sendResult == NetSendResult.Sent);
             }
 
             return false;
         }
-
-        public bool SendMessage(string msg)
-        {
-            var enc = new System.Text.ASCIIEncoding();
-            return SendMessage(enc.GetBytes(msg));
-        }
-
-        public bool SendMessage(object obj)
-        {
-            byte[] data;
-
-            /*if (compress)
-                data = Compression.SerializeAndCompress(obj);
-            else
-            {
-                var ms = new MemoryStream();
-                var bf = new BinaryFormatter();
-
-                bf.Serialize(ms, obj);
-
-                data = ms.ToArray();
-            }*/
-
-            using (var ms = new MemoryStream())
-            {
-                Serializer.Serialize(ms, obj);
-                data = ms.ToArray();
-            }
-
-            return SendMessage(data);
-        }
-
-        /* Not in use.
-        private void PackageCapture(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            if (e.Action != NotifyCollectionChangedAction.Add) return;
-
-            foreach (var newIt in e.NewItems)
-            {
-                // Debug.WriteLine("Message: " + newIt);
-            }
-
-            _netConfig.RedirectedPacketsList.Clear();
-        } */
 
         private void OnDiscoveryTimeout(object source, ElapsedEventArgs e)
         {

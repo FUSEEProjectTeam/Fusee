@@ -102,25 +102,18 @@ namespace Fusee.Engine
             }
         }
 
-        // Send Messages //
-        public bool SendMessage(string msg)
-        {
-            var data = new NetworkMsgType {MsgType = MsgDataTypes.String, ReadString = msg};
-            return _networkImp.SendMessage(data);
-        }
-
-        public bool SendMessage(int msg)
-        {
-            var data = new NetworkMsgType {MsgType = MsgDataTypes.Int, ReadInt = msg};
-            return _networkImp.SendMessage(data);
-        }
-
+        // SendMessage //
         public bool SendMessage(byte[] msg)
         {
-            var data = new NetworkMsgType {MsgType = MsgDataTypes.Bytes, ReadBytes = msg};
-            return _networkImp.SendMessage(data);
+            return SendMessage(msg, MessageDelivery.ReliableOrdered, 0);
         }
 
+        public bool SendMessage(byte[] msg, MessageDelivery msgDelivery, int channelID)
+        {
+            return _networkImp.SendMessage(msg, msgDelivery, channelID);
+        }
+        
+        // SendDiscoveryMessage //
         public void SendDiscoveryMessage()
         {
             _networkImp.SendDiscoveryMessage(Config.DefaultPort);

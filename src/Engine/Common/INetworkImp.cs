@@ -47,7 +47,7 @@ namespace Fusee.Engine
         bool OpenConnection(SysType type, string host, int port);
         void CloseConnection();
 
-        bool SendMessage(NetworkMsgType data);
+        bool SendMessage(byte[] msg, MessageDelivery msgDelivery, int msgChannel);
 
         void SendDiscoveryMessage(int port);
 

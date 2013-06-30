@@ -58,8 +58,9 @@ namespace Fusee.Engine
     public struct NetworkMsgType
     {
         public MsgDataTypes MsgType;
+        public MessageDelivery MsgDelivery;
+        public int MsgChannel;
 
-        public object ReadObject;
         public byte[] ReadBytes;
         public int ReadInt;
         public float ReadFloat;

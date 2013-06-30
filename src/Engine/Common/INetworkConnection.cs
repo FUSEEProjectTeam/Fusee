@@ -11,6 +11,7 @@ namespace Fusee.Engine
         void Disconnect();
         void Disconnect(string byeMessage);
         
-        void SendMessage(byte[] packet);
+        bool SendMessage(byte[] packet);
+        bool SendMessage(byte[] packet, MessageDelivery msgDelivery, int msgChannel);
     }
 }
