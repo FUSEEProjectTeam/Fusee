@@ -163,7 +163,7 @@ namespace Fusee.Engine
             return NetUtility.GetMyAddress(out ipMask).ToString();
         }
 
-        public void OnConnectionUpdate(ConnectionStatus lastStatus)
+        private void OnConnectionUpdate(ConnectionStatus lastStatus, NetConnection senderConnection)
         {
             Connections.Clear();
 
@@ -180,14 +180,17 @@ namespace Fusee.Engine
                         break;
 
                     Connections.AddRange(
-                        _netServer.Connections.Select(connection => new NetworkConnection { Connection = connection }));
+                        _netServer.Connections.Select(
+                            connection => new NetworkConnection {Connection = connection, NetworkImp = this}));
 
                     break;
             }
 
             // event OnConnectionUpdate
+            var newConnection = new NetworkConnection {Connection = senderConnection, NetworkImp = this};
+
             if (ConnectionUpdate != null)
-                ConnectionUpdate(this, lastStatus);
+                ConnectionUpdate(lastStatus, newConnection);
         }
 
         public bool OpenConnection(SysType type, IPEndPoint ip)
@@ -251,7 +254,31 @@ namespace Fusee.Engine
 
                     break;
             }
+
+            Thread.Sleep(1000);
         }
+
+        public void CloseDevices()
+        {
+            if (_netPeer != null)
+            {
+                CloseConnection(SysType.Peer);
+                _netPeer = null;
+            }
+
+            if (_netClient != null)
+            {
+                CloseConnection(SysType.Client);
+                _netClient = null;
+            }
+
+            if (_netServer != null)
+            {
+                CloseConnection(SysType.Server);
+                _netServer = null;
+            }
+        }
+
 
         public bool SendMessage(NetworkMsgType msg)
         {
@@ -304,6 +331,38 @@ namespace Fusee.Engine
                     }
 
                     return success;
+            }
+
+            return false;
+        }
+
+        public bool SendMessage(byte[] msg, NetConnection connection)
+        {
+            // _netConfig.RedirectPackets = true;
+
+            NetSendResult sendResult;
+
+            switch (_config.SysType)
+            {
+                case SysType.Peer:
+                    //sendMsg = _netPeer.CreateMessage(msg);
+                    //sendMsg.Write(msg);
+
+                    break;
+
+                case SysType.Client:
+                    var sendMsgClient = _netClient.CreateMessage();
+                    sendMsgClient.Write(msg);
+
+                    sendResult = _netClient.SendMessage(sendMsgClient, connection, NetDeliveryMethod.ReliableOrdered);
+                    return (sendResult == NetSendResult.Sent);
+
+                case SysType.Server:
+                    var sendMsgServer = _netServer.CreateMessage();
+                    sendMsgServer.Write(msg);
+
+                    sendResult = _netServer.SendMessage(sendMsgServer, connection, NetDeliveryMethod.ReliableOrdered);
+                    return (sendResult == NetSendResult.Sent);
             }
 
             return false;
@@ -433,7 +492,7 @@ namespace Fusee.Engine
                     switch (Status.LastStatus)
                     {
                         case ConnectionStatus.Connected:
-                            OnConnectionUpdate(Status.LastStatus);
+                            OnConnectionUpdate(Status.LastStatus, msg.SenderConnection);
 
                             // TODO: This is not correct if server
                             Status.Connecting = false;
@@ -441,7 +500,7 @@ namespace Fusee.Engine
 
                             break;
                         case ConnectionStatus.Disconnected:
-                            OnConnectionUpdate(Status.LastStatus);
+                            OnConnectionUpdate(Status.LastStatus, msg.SenderConnection);
 
                             // TODO: This is not correct if server
                             Status.Connecting = false;
@@ -543,33 +602,6 @@ namespace Fusee.Engine
                     IncomingMsg.Add(ReadMessage(msg));
                     _netServer.Recycle(msg);
                 }
-            }
-        }
-
-        public void CloseDevices()
-        {
-            if (_netPeer != null)
-            {
-                CloseConnection(SysType.Peer);
-                _netPeer = null;
-
-                Thread.Sleep(1000);
-            }
-
-            if (_netClient != null)
-            {
-                CloseConnection(SysType.Client);
-                _netClient = null;
-
-                Thread.Sleep(1000);
-            }
-
-            if (_netServer != null)
-            {
-                CloseConnection(SysType.Server);
-                _netServer = null;
-
-                Thread.Sleep(1000);
             }
         }
     }

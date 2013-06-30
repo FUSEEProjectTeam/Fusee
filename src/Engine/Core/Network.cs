@@ -111,13 +111,13 @@ namespace Fusee.Engine
 
         public bool SendMessage(int msg)
         {
-            var data = new NetworkMsgType { MsgType = MsgDataTypes.Int, ReadInt = msg };
+            var data = new NetworkMsgType {MsgType = MsgDataTypes.Int, ReadInt = msg};
             return _networkImp.SendMessage(data);
         }
 
         public bool SendMessage(byte[] msg)
         {
-            var data = new NetworkMsgType { MsgType = MsgDataTypes.Bytes, ReadBytes = msg };
+            var data = new NetworkMsgType {MsgType = MsgDataTypes.Bytes, ReadBytes = msg};
             return _networkImp.SendMessage(data);
         }
 
