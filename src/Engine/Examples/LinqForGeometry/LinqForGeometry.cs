@@ -11,7 +11,7 @@
 
 using Fusee.Engine;
 using Fusee.Math;
-using Geometry = LinqForGeometry.Geometry;
+using Geometry = LinqForGeometry.Core.Geometry;
 using LFG.ExternalModules.Transformations;
 
 namespace Examples.LinqForGeometry

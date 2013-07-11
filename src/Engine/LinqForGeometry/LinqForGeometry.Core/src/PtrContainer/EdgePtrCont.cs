@@ -1,4 +1,4 @@
-/*
+﻿/*
     Author: Dominik Steffen
     E-Mail: dominik.steffen@hs-furtwangen.de, dominik.steffen@gmail.com
     Bachlor Thesis Summer Semester 2013
@@ -9,9 +9,9 @@
     Mr. Prof. W. Walter
 */
 
-using LinqForGeometry.Structs.Handles;
+using LinqForGeometry.Core.Handles;
 
-namespace LinqForGeometry.Structs.PtrContainer
+namespace LinqForGeometry.Core.PtrContainer
 {
     /// <summary>
     /// This is a edge 'Pointer Container'.

@@ -9,7 +9,7 @@
 	Mr. Prof. W. Walter
 */
 
-namespace LinqForGeometry
+namespace LinqForGeometry.Core
 {
     /// <summary>
     /// This class just handles some messages i use to generate output in the program.

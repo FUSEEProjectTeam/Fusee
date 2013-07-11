@@ -1,4 +1,4 @@
-/*
+﻿/*
 	Author: Dominik Steffen
 	E-Mail: dominik.steffen@hs-furtwangen.de, dominik.steffen@gmail.com
 	Bachlor Thesis Summer Semester 2013
@@ -6,20 +6,21 @@
 	Project: LinqForGeometry
 	Professors:
 	Mr. Prof. C. Müller
-	Mr. Prof. W. Waltre
+	Mr. Prof. W. Walter
 */
 
-using LinqForGeometry.Structs.Handles;
+using LinqForGeometry.Core.Handles;
 
-namespace LinqForGeometry.Structs.PtrContainer
+namespace LinqForGeometry.Core.PtrContainer
 {
     /// <summary>
-    /// This is a vertex 'Pointer Container'.
-    /// The Reference to the next 'object' are stored in here depending on the 'half-edge data structure'
+    /// This is a Vertex 'Pointer Container'.
+    /// The Reference to the next 'object' are stored in here depending on the 'half-edge data strucute'
     /// Every Vertex has a reference to one of his outgoing 'Half-Edges'
     /// </summary>
-    internal struct VertexPtrCont
+    internal struct FacePtrCont
     {
         internal HandleHalfEdge _h;
+        internal HandleFaceNormal _fn;
     }
 }

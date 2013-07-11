@@ -1,4 +1,4 @@
-/*
+﻿/*
 	Author: Dominik Steffen
 	E-Mail: dominik.steffen@hs-furtwangen.de, dominik.steffen@gmail.com
 	Bachlor Thesis Summer Semester 2013
@@ -9,17 +9,14 @@
 	Mr. Prof. W. Walter
 */
 
-/// <summary>
-/// This is the handle struct for Edges
-/// </summary>
-namespace LinqForGeometry.Structs.Handles
+namespace LinqForGeometry.Core.Handles
 {
 
     /// <summary>
-    /// This is a handle struct for an 'Edge'.
+    /// This is a handle struct for a 'Vertex'.
     /// If invalid, the handle is -1. If the value is 0 it is a valid handle. (Because it's a possible valid array index)
     /// </summary>
-    public struct HandleEdge
+    public struct HandleVertex
     {
         internal int _DataIndex;
 
@@ -27,7 +24,7 @@ namespace LinqForGeometry.Structs.Handles
         /// Constructor for this struct.
         /// </summary>
         /// <param name="index">An array style index pointing to the real data container</param>
-        internal HandleEdge(int index)
+        internal HandleVertex(int index)
         {
             _DataIndex = index;
         }
@@ -37,7 +34,7 @@ namespace LinqForGeometry.Structs.Handles
         /// </summary>
         /// <param name="h">Expects a 'HandleFace' struct as param.</param>
         /// <returns>Returns an int 'adress' value.</returns>
-        public static implicit operator int(HandleEdge handle)
+        public static implicit operator int(HandleVertex handle)
         {
             return handle._DataIndex;
         }
@@ -51,4 +48,3 @@ namespace LinqForGeometry.Structs.Handles
         }
     }
 }
-

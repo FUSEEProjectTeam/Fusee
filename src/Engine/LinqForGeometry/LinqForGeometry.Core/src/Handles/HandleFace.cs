@@ -9,17 +9,14 @@
 	Mr. Prof. W. Walter
 */
 
-/// <summary>
-/// This is the handle struct for vertex uv coordinates
-/// </summary>
-namespace LinqForGeometry.Structs.Handles
+namespace LinqForGeometry.Core.Handles
 {
 
     /// <summary>
-    /// This is a handle struct for a 'Vertex uv coordinate'.
+    /// This is a handle struct for a 'Face'.
     /// If invalid, the handle is -1. If the value is 0 it is a valid handle. (Because it's a possible valid array index)
     /// </summary>
-    public struct HandleVertexUV
+    public struct HandleFace
     {
         internal int _DataIndex;
 
@@ -27,7 +24,7 @@ namespace LinqForGeometry.Structs.Handles
         /// Constructor for this struct.
         /// </summary>
         /// <param name="index">An array style index pointing to the real data container</param>
-        internal HandleVertexUV(int index)
+        internal HandleFace(int index)
         {
             _DataIndex = index;
         }
@@ -35,9 +32,9 @@ namespace LinqForGeometry.Structs.Handles
         /// <summary>
         /// Implicitly converts the Handle to an integer value.
         /// </summary>
-        /// <param name="h">Expects a 'HandleVertex' struct as param.</param>
+        /// <param name="h">Expects a 'HandleFace' struct as param.</param>
         /// <returns>Returns an int 'adress' value.</returns>
-        public static implicit operator int(HandleVertexUV handle)
+        public static implicit operator int(HandleFace handle)
         {
             return handle._DataIndex;
         }

@@ -12,7 +12,7 @@
 using System;
 using System.Linq;
 using Fusee.Math;
-using LinqForGeometry;
+using LinqForGeometry.Core;
 
 namespace LFG.ExternalModules.Transformations
 {

@@ -15,12 +15,12 @@ using System.Diagnostics;
 using System.Linq;
 using Fusee.Math;
 using Fusee.Engine;
-using LinqForGeometry.Exceptions;
-using LinqForGeometry.Importer;
-using LinqForGeometry.Structs.Handles;
-using LinqForGeometry.Structs.PtrContainer;
+using LinqForGeometry.Core.Exceptions;
+using LinqForGeometry.Core.Handles;
+using LinqForGeometry.Core.Importer;
+using LinqForGeometry.Core.PtrContainer;
 
-namespace LinqForGeometry
+namespace LinqForGeometry.Core
 {
     public class Geometry
     {
@@ -54,8 +54,8 @@ namespace LinqForGeometry
         private List<float3> _LvertexValDefault;
 
         // Various runtime constants
-        private const double _SmoothingAngle = 89.999;
-        private const double piFactor = 180 / 3.141592;
+        private const double _constSmoothingAngle = 89.999;
+        private const double _constPiFactor = 180 / 3.141592;
 
         // For mesh conversion
         private List<short> _LtrianglesFuseeMesh;
@@ -64,7 +64,7 @@ namespace LinqForGeometry
         private List<float2> _LvertuvFuseeMesh;
 
         // Performance optimizing tools
-        private Stopwatch _normalCalcStopWatch;
+        private Stopwatch _NormalCalcStopWatch;
 
         /// <summary>
         /// Constructor for the GeometryData class.
@@ -94,7 +94,7 @@ namespace LinqForGeometry
             _LvertuvFuseeMesh = new List<float2>();
 
             // Performance stuff
-            _normalCalcStopWatch = new Stopwatch();
+            _NormalCalcStopWatch = new Stopwatch();
         }
 
         /// <summary>
@@ -217,15 +217,15 @@ namespace LinqForGeometry
 
             if (_VertexNormalActive)
             {
-                _normalCalcStopWatch.Reset();
-                _normalCalcStopWatch.Start();
+                _NormalCalcStopWatch.Reset();
+                _NormalCalcStopWatch.Start();
                 _LVertexNormals.Clear();
                 foreach (HandleVertex handleVertex in _LverticeHndl)
                 {
                     CalcVertexNormal(handleVertex);
                 }
-                _normalCalcStopWatch.Stop();
-                Debug.WriteLine("Time taken to compute vertex normals: " + _normalCalcStopWatch.ElapsedMilliseconds + " ms");
+                _NormalCalcStopWatch.Stop();
+                Debug.WriteLine("Time taken to compute vertex normals: " + _NormalCalcStopWatch.ElapsedMilliseconds + " ms");
             }
 
             _LtrianglesFuseeMesh.Clear();
@@ -604,9 +604,9 @@ namespace LinqForGeometry
 
                     float3 normalToCompare = _LfaceNormals[_LfacePtrCont[faceIndex2]._fn];
                     float dot = float3.Dot(currentNormal, normalToCompare);
-                    double acos = System.Math.Acos(dot) * piFactor;
+                    double acos = System.Math.Acos(dot) * _constPiFactor;
 
-                    if (acos < _SmoothingAngle)
+                    if (acos < _constSmoothingAngle)
                         normalAggregate += float3.Add(normalAggregate, normalToCompare);
                 }
 

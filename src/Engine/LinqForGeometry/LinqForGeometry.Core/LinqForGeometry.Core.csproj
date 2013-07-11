@@ -7,7 +7,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{DFFDB3A9-2429-4E47-B65C-E2C0F3F66146}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>LinqForGeometry</RootNamespace>
+    <RootNamespace>LinqForGeometry.Core</RootNamespace>
     <AssemblyName>LinqForGeometry.Core</AssemblyName>
     <StartupObject>
     </StartupObject>
@@ -52,17 +52,17 @@
     <Compile Include="src\Importer\GeoFace.cs" />
     <Compile Include="src\Importer\WavefrontImporter.cs" />
     <Compile Include="src\Geometry.cs" />
-    <Compile Include="src\Structs\Handles\HandleFaceNormal.cs" />
-    <Compile Include="src\Structs\Handles\HandleVertex.cs" />
-    <Compile Include="src\Structs\Handles\HandleFace.cs" />
-    <Compile Include="src\Structs\Handles\HandleHalfEdge.cs" />
-    <Compile Include="src\Structs\Handles\HandleEdge.cs" />
-    <Compile Include="src\Structs\Handles\HandleVertexNormal.cs" />
-    <Compile Include="src\Structs\Handles\HandleVertexUV.cs" />
-    <Compile Include="src\Structs\PtrContainer\VertexPtrCont.cs" />
-    <Compile Include="src\Structs\PtrContainer\FacePtrCont.cs" />
-    <Compile Include="src\Structs\PtrContainer\HEdgePtrCont.cs" />
-    <Compile Include="src\Structs\PtrContainer\EdgePtrCont.cs" />
+    <Compile Include="src\Handles\HandleFaceNormal.cs" />
+    <Compile Include="src\Handles\HandleVertex.cs" />
+    <Compile Include="src\Handles\HandleFace.cs" />
+    <Compile Include="src\Handles\HandleHalfEdge.cs" />
+    <Compile Include="src\Handles\HandleEdge.cs" />
+    <Compile Include="src\Handles\HandleVertexNormal.cs" />
+    <Compile Include="src\Handles\HandleVertexUV.cs" />
+    <Compile Include="src\PtrContainer\VertexPtrCont.cs" />
+    <Compile Include="src\PtrContainer\FacePtrCont.cs" />
+    <Compile Include="src\PtrContainer\HEdgePtrCont.cs" />
+    <Compile Include="src\PtrContainer\EdgePtrCont.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

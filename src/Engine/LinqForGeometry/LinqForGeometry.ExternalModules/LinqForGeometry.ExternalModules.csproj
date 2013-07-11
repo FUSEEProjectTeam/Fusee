@@ -8,7 +8,7 @@
     <ProjectGuid>{F8BD0FDA-0EBD-44F1-967E-607B7279E10F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LinqForGeometry</RootNamespace>
+    <RootNamespace>LinqForGeometry.ExternalModules</RootNamespace>
     <AssemblyName>LinqForGeometry.ExternalModules</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>

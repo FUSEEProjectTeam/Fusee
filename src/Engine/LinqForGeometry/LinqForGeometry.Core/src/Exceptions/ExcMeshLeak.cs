@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LinqForGeometry.Exceptions
+namespace LinqForGeometry.Core.Exceptions
 {
     /// <summary>
     /// This is an exception used in the importer.

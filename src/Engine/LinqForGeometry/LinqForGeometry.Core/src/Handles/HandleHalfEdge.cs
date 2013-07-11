@@ -9,17 +9,14 @@
 	Mr. Prof. W. Walter
 */
 
-/// <summary>
-/// This is the handle struct for vertex normals
-/// </summary>
-namespace LinqForGeometry.Structs.Handles
+namespace LinqForGeometry.Core.Handles
 {
 
     /// <summary>
-    /// This is a handle struct for a 'Vertex'.
+    /// This is a handle struct for a 'HalfEdge'.
     /// If invalid, the handle is -1. If the value is 0 it is a valid handle. (Because it's a possible valid array index)
     /// </summary>
-    public struct HandleVertexNormal
+    public struct HandleHalfEdge
     {
         internal int _DataIndex;
 
@@ -27,7 +24,7 @@ namespace LinqForGeometry.Structs.Handles
         /// Constructor for this struct.
         /// </summary>
         /// <param name="index">An array style index pointing to the real data container</param>
-        internal HandleVertexNormal(int index)
+        internal HandleHalfEdge(int index)
         {
             _DataIndex = index;
         }
@@ -35,9 +32,9 @@ namespace LinqForGeometry.Structs.Handles
         /// <summary>
         /// Implicitly converts the Handle to an integer value.
         /// </summary>
-        /// <param name="h">Expects a 'HandleVertex' struct as param.</param>
+        /// <param name="h">Expects a 'HandleFace' struct as param.</param>
         /// <returns>Returns an int 'adress' value.</returns>
-        public static implicit operator int(HandleVertexNormal handle)
+        public static implicit operator int(HandleHalfEdge handle)
         {
             return handle._DataIndex;
         }
@@ -51,3 +48,4 @@ namespace LinqForGeometry.Structs.Handles
         }
     }
 }
+
