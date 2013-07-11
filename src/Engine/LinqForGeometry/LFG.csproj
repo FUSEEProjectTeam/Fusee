@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="src\Exceptions\ExcMeshLeak.cs" />
+    <Compile Include="src\ExternalModules\Transformations.cs" />
     <Compile Include="src\GlobalInf.cs" />
     <Compile Include="src\Importer\GeoFace.cs" />
     <Compile Include="src\Importer\WavefrontImporter.cs" />

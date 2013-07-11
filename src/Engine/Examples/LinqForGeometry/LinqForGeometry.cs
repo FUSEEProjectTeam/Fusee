@@ -1,7 +1,18 @@
-﻿using Fusee.Engine;
+﻿/*
+	Author: Dominik Steffen
+	E-Mail: dominik.steffen@hs-furtwangen.de, dominik.steffen@gmail.com
+	Bachlor Thesis Summer Semester 2013
+	'Computer Science in Media'
+	Project: LinqForGeometry
+	Professors:
+	Mr. Prof. C. Müller
+	Mr. Prof. W. Walter
+*/
+
+using Fusee.Engine;
 using Fusee.Math;
 
-using LinqForGeometry;
+using LinqForGeometry.ExternModules;
 using Geometry = LinqForGeometry.Geometry;
 
 namespace Examples.LinqForGeometry
@@ -103,9 +114,9 @@ namespace Examples.LinqForGeometry
 
             #region MeshImports
             _Geo = new Geometry();
-            //_Geo.LoadAsset("Assets/Models/Cube.obj.model");
+            _Geo.LoadAsset("Assets/Models/Cube.obj.model");
             //_Geo.LoadAsset("Assets/Models/Sphere.obj.model");
-            _Geo.LoadAsset("Assets/Models/Teapot.obj.model");
+            //_Geo.LoadAsset("Assets/Models/Teapot.obj.model");
             //_Geo.LoadAsset("Assets/Models/SharedCorners.obj.model");
             //_Geo.LoadAsset("Assets/Models/Cylinder.obj.model");
             //_Geo.LoadAsset("Assets/Models/SharedCorners_pro.obj.model");
@@ -115,9 +126,9 @@ namespace Examples.LinqForGeometry
             #region LightShader
             ShaderProgram msDiffuse = MoreShaders.GetShader("diffuse", RC);
             _vLightShaderParam = msDiffuse.GetShaderParam("texture1");
-            //ImageData imgData = RC.LoadImage("Assets/Textures/Cube_Mat_uv.jpg");
+            ImageData imgData = RC.LoadImage("Assets/Textures/Cube_Mat_uv.jpg");
             //ImageData imgData = RC.LoadImage("Assets/Textures/world_map.jpg");
-            ImageData imgData = RC.LoadImage("Assets/Textures/Teapot_Texture.jpg");
+            //ImageData imgData = RC.LoadImage("Assets/Textures/Teapot_Texture.jpg");
             ITexture iTex = RC.CreateTexture(imgData);
             RC.SetShader(msDiffuse);
 
@@ -167,9 +178,9 @@ namespace Examples.LinqForGeometry
                 _angleVelHorz = RotationSpeed * Input.Instance.GetAxis(InputAxis.MouseX);
                 _angleVelVert = RotationSpeed * Input.Instance.GetAxis(InputAxis.MouseY);
 
-                if (_Geo.RotateY(_angleVelHorz * _InvertMouseAxis))
+                if (Transformations.RotateY(_angleVelHorz * _InvertMouseAxis, ref _Geo))
                 {
-                    if (_Geo.RotateX(_angleVelVert * _InvertMouseAxis))
+                    if (Transformations.RotateX(_angleVelVert * _InvertMouseAxis, ref _Geo))
                     {
                         _Geo._Changes = true;
                     }
@@ -179,7 +190,7 @@ namespace Examples.LinqForGeometry
             // Scale the model up with the middle mouse button
             if (Input.Instance.IsButtonDown(MouseButtons.Middle))
             {
-                if (_Geo.Scale(1.1f, 1.1f, 1.1f))
+                if (Transformations.Scale(1.1f, 1.1f, 1.1f, ref _Geo))
                 {
                     _Geo._Changes = true;
                 }
@@ -198,14 +209,14 @@ namespace Examples.LinqForGeometry
             #region Scaling
             if (Input.Instance.IsKeyDown(KeyCodes.Q))
             {
-                if (_Geo.Scale(1.1f, 1.1f, 1.1f))
+                if (Transformations.Scale(1.1f, 1.1f, 1.1f, ref _Geo))
                 {
                     _Geo._Changes = true;
                 }
             }
             else if (Input.Instance.IsKeyDown(KeyCodes.A))
             {
-                if (_Geo.Scale(0.9f, 0.9f, 0.9f))
+                if (Transformations.Scale(0.9f, 0.9f, 0.9f, ref _Geo))
                 {
                     _Geo._Changes = true;
                 }
@@ -213,14 +224,14 @@ namespace Examples.LinqForGeometry
             // Scale only x direction
             if (Input.Instance.IsKeyDown(KeyCodes.W))
             {
-                if (_Geo.Scale(1.1f, 1.0f, 1.0f))
+                if (Transformations.Scale(1.1f, 1.0f, 1.0f, ref _Geo))
                 {
                     _Geo._Changes = true;
                 }
             }
             else if (Input.Instance.IsKeyDown(KeyCodes.S))
             {
-                if (_Geo.Scale(0.9f, 1.0f, 1.0f))
+                if (Transformations.Scale(0.9f, 1.0f, 1.0f, ref _Geo))
                 {
                     _Geo._Changes = true;
                 }
@@ -229,14 +240,14 @@ namespace Examples.LinqForGeometry
             // Scale only y direction
             if (Input.Instance.IsKeyDown(KeyCodes.E))
             {
-                if (_Geo.Scale(1.0f, 1.1f, 1.0f))
+                if (Transformations.Scale(1.0f, 1.1f, 1.0f, ref _Geo))
                 {
                     _Geo._Changes = true;
                 }
             }
             else if (Input.Instance.IsKeyDown(KeyCodes.D))
             {
-                if (_Geo.Scale(1.0f, 0.9f, 1.0f))
+                if (Transformations.Scale(1.0f, 0.9f, 1.0f, ref _Geo))
                 {
                     _Geo._Changes = true;
                 }
@@ -245,22 +256,14 @@ namespace Examples.LinqForGeometry
             // Scale only z direction
             if (Input.Instance.IsKeyDown(KeyCodes.R))
             {
-                if (_Geo.Scale(1.0f, 1.0f, 1.1f))
+                if (Transformations.Scale(1.0f, 1.0f, 1.1f, ref _Geo))
                 {
                     _Geo._Changes = true;
                 }
             }
             else if (Input.Instance.IsKeyDown(KeyCodes.F))
             {
-                if (_Geo.Scale(1.0f, 1.0f, 0.9f))
-                {
-                    _Geo._Changes = true;
-                }
-            }
-
-            if (Input.Instance.IsKeyDown(KeyCodes.T))
-            {
-                if (_Geo.ResetGeometryToDefault())
+                if (Transformations.Scale(1.0f, 1.0f, 0.9f, ref _Geo))
                 {
                     _Geo._Changes = true;
                 }
@@ -270,42 +273,42 @@ namespace Examples.LinqForGeometry
             #region Translation
             if (Input.Instance.IsKeyDown(KeyCodes.U))
             {
-                if (_Geo.Translate(0f, (_MovementSpeed * (float)Time.Instance.DeltaTime) * 20, 0f))
+                if (Transformations.Translate(0f, (_MovementSpeed * (float)Time.Instance.DeltaTime) * 20, 0f, ref _Geo))
                 {
                     _Geo._Changes = true;
                 }
             }
             else if (Input.Instance.IsKeyDown(KeyCodes.J))
             {
-                if (_Geo.Translate(0f, (-_MovementSpeed * (float)Time.Instance.DeltaTime) * 20, 0f))
+                if (Transformations.Translate(0f, (-_MovementSpeed * (float)Time.Instance.DeltaTime) * 20, 0f, ref _Geo))
                 {
                     _Geo._Changes = true;
                 }
             }
             if (Input.Instance.IsKeyDown(KeyCodes.H))
             {
-                if (_Geo.Translate(-(_MovementSpeed * (float)Time.Instance.DeltaTime) * 20, 0f, 0f))
+                if (Transformations.Translate(-(_MovementSpeed * (float)Time.Instance.DeltaTime) * 20, 0f, 0f, ref _Geo))
                 {
                     _Geo._Changes = true;
                 }
             }
             else if (Input.Instance.IsKeyDown(KeyCodes.K))
             {
-                if (_Geo.Translate((_MovementSpeed * (float)Time.Instance.DeltaTime) * 20, 0f, 0f))
+                if (Transformations.Translate((_MovementSpeed * (float)Time.Instance.DeltaTime) * 20, 0f, 0f, ref _Geo))
                 {
                     _Geo._Changes = true;
                 }
             }
             if (Input.Instance.IsKeyDown(KeyCodes.Z))
             {
-                if (_Geo.Translate(0f, 0f, -(_MovementSpeed * (float)Time.Instance.DeltaTime) * 20))
+                if (Transformations.Translate(0f, 0f, -(_MovementSpeed * (float)Time.Instance.DeltaTime) * 20, ref _Geo))
                 {
                     _Geo._Changes = true;
                 }
             }
             else if (Input.Instance.IsKeyDown(KeyCodes.I))
             {
-                if (_Geo.Translate(0f, 0f, (_MovementSpeed * (float)Time.Instance.DeltaTime) * 20))
+                if (Transformations.Translate(0f, 0f, (_MovementSpeed * (float)Time.Instance.DeltaTime) * 20, ref _Geo))
                 {
                     _Geo._Changes = true;
                 }
@@ -315,14 +318,14 @@ namespace Examples.LinqForGeometry
             #region Rotation
             if (Input.Instance.IsKeyDown(KeyCodes.Up))
             {
-                if (_Geo.RotateX(1f * (float)Time.Instance.DeltaTime))
+                if (Transformations.RotateX(1f * (float)Time.Instance.DeltaTime, ref _Geo))
                 {
                     _Geo._Changes = true;
                 }
             }
             else if (Input.Instance.IsKeyDown(KeyCodes.Down))
             {
-                if (_Geo.RotateX(-1f * (float)Time.Instance.DeltaTime))
+                if (Transformations.RotateX(-1f * (float)Time.Instance.DeltaTime, ref _Geo))
                 {
                     _Geo._Changes = true;
                 }
@@ -330,14 +333,14 @@ namespace Examples.LinqForGeometry
 
             if (Input.Instance.IsKeyDown(KeyCodes.Left))
             {
-                if (_Geo.RotateY(1f * (float)Time.Instance.DeltaTime))
+                if (Transformations.RotateY(1f * (float)Time.Instance.DeltaTime, ref _Geo))
                 {
                     _Geo._Changes = true;
                 }
             }
             else if (Input.Instance.IsKeyDown(KeyCodes.Right))
             {
-                if (_Geo.RotateY(-1f * (float)Time.Instance.DeltaTime))
+                if (Transformations.RotateY(-1f * (float)Time.Instance.DeltaTime, ref _Geo))
                 {
                     _Geo._Changes = true;
                 }
@@ -345,14 +348,14 @@ namespace Examples.LinqForGeometry
 
             if (Input.Instance.IsKeyDown(KeyCodes.O))
             {
-                if (_Geo.RotateZ(1f * (float)Time.Instance.DeltaTime))
+                if (Transformations.RotateZ(1f * (float)Time.Instance.DeltaTime, ref _Geo))
                 {
                     _Geo._Changes = true;
                 }
             }
             else if (Input.Instance.IsKeyDown(KeyCodes.P))
             {
-                if (_Geo.RotateZ(-1f * (float)Time.Instance.DeltaTime))
+                if (Transformations.RotateZ(-1f * (float)Time.Instance.DeltaTime, ref _Geo))
                 {
                     _Geo._Changes = true;
                 }
@@ -369,6 +372,14 @@ namespace Examples.LinqForGeometry
                 _Geo._DoCalcVertexNormals = false;
             }
             #endregion ActivateVertexNormals
+
+            if (Input.Instance.IsKeyDown(KeyCodes.T))
+            {
+                if (_Geo.ResetGeometryToDefault())
+                {
+                    _Geo._Changes = true;
+                }
+            }
 
             if (_Geo._Changes)
             {

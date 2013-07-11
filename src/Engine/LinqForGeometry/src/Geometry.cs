@@ -36,9 +36,9 @@ namespace LinqForGeometry
         }
 
         // Handles to pointer containers
-        private List<HandleVertex> _LverticeHndl;
-        private List<HandleEdge> _LedgeHndl;
-        private List<HandleFace> _LfaceHndl;
+        public List<HandleVertex> _LverticeHndl;
+        public List<HandleEdge> _LedgeHndl;
+        public List<HandleFace> _LfaceHndl;
 
         // Pointer containers
         private List<VertexPtrCont> _LvertexPtrCont;
@@ -47,9 +47,9 @@ namespace LinqForGeometry
         private List<FacePtrCont> _LfacePtrCont;
 
         // Real data
-        private List<float3> _LvertexVal;
-        private List<float3> _LfaceNormals;
-        private List<float3> _LVertexNormals;
+        public List<float3> _LvertexVal;
+        public List<float3> _LfaceNormals;
+        public List<float3> _LVertexNormals;
         private List<float2> _LuvCoordinates;
         private List<float3> _LvertexValDefault;
 
@@ -936,171 +936,7 @@ namespace LinqForGeometry
             return EnFaceAdjacentHalfEdges(faceHandle).Select(handleHalfEdge => _LhedgePtrCont[_LhedgePtrCont[handleHalfEdge]._he]._f).AsEnumerable();
         }
 
-
-        /* Standard transformations on the geometry */
-        /// <summary>
-        /// This method can scale the object bigger or smaller dependent on the input parameters
-        /// </summary>
-        /// <param name="scalarX"></param>
-        /// <param name="scalarY"></param>
-        /// <param name="scalarZ"></param>
-        /// <param name="scalarW"></param>
-        /// <returns>Boolean - true if the operation was succesful, false if not.</returns>
-        public bool Scale(float scalarX, float scalarY, float scalarZ, float scalarW = 1.0f)
-        {
-            try
-            {
-                float4 row0 = new float4(scalarX, 0f, 0f, 0f);
-                float4 row1 = new float4(0f, scalarY, 0f, 0f);
-                float4 row2 = new float4(0f, 0f, scalarZ, 0f);
-                float4 row3 = new float4(0f, 0f, 0f, scalarW);
-                float4x4 transfMatrix = new float4x4(row0, row1, row2, row3);
-
-                List<float3> tmpVerts = EnAllVertices().Select(vertId => transfMatrix * _LvertexVal[vertId]).ToList();
-
-                _LvertexVal.Clear();
-                _LvertexVal = null;
-                _LvertexVal = new List<float3>(tmpVerts);
-
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// This method translates the model to another position.
-        /// </summary>
-        /// <param name="tX">float factor</param>
-        /// <param name="tY">float factor</param>
-        /// <param name="tZ">float factor</param>
-        /// <returns>bool - true when operation succeeded</returns>
-        public bool Translate(float tX, float tY, float tZ)
-        {
-            try
-            {
-                float4 row0 = new float4(1f, 0f, 0f, tX);
-                float4 row1 = new float4(0f, 1f, 0f, tY);
-                float4 row2 = new float4(0f, 0f, 1f, tZ);
-                float4 row3 = new float4(0f, 0f, 0f, 1f);
-                float4x4 transfMatrix = new float4x4(row0, row1, row2, row3);
-
-                List<float3> tmpVerts = EnAllVertices().Select(vertId => transfMatrix * _LvertexVal[vertId]).ToList();
-
-                _LvertexVal.Clear();
-                _LvertexVal = null;
-                _LvertexVal = new List<float3>(tmpVerts);
-
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Rotates the object on the X-Axis.
-        /// </summary>
-        /// <param name="alpha">a float value representing an angle.</param>
-        /// <returns>bool - true if the operation succeeded.</returns>
-        public bool RotateX(float alpha)
-        {
-            try
-            {
-                double cos = System.Math.Cos((double)alpha);
-                double sin = System.Math.Sin((double)alpha);
-
-                float4 row0 = new float4(1f, 0f, 0f, 0f);
-                float4 row1 = new float4(0f, (float)cos, (float)sin, 0f);
-                float4 row2 = new float4(0f, (float)-sin, (float)cos, 0f);
-                float4 row3 = new float4(0f, 0f, 0f, 1f);
-                float4x4 transfMatrix = new float4x4(row0, row1, row2, row3);
-
-                List<float3> tmpVerts = EnAllVertices().Select(vertId => transfMatrix * _LvertexVal[vertId]).ToList();
-
-                _LvertexVal.Clear();
-                _LvertexVal = null;
-                _LvertexVal = new List<float3>(tmpVerts);
-
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Rotates the object on the Y-Axis.
-        /// </summary>
-        /// <param name="alpha">a float value representing an angle.</param>
-        /// <returns>bool - true if the operation succeeded.</returns>
-        public bool RotateY(float alpha)
-        {
-            try
-            {
-                double cos = System.Math.Cos((double)alpha);
-                double sin = System.Math.Sin((double)alpha);
-
-                float4 row0 = new float4((float)cos, 0f, (float)-sin, 0f);
-                float4 row1 = new float4(0f, 1f, 0f, 0f);
-                float4 row2 = new float4((float)sin, 0f, (float)cos, 0f);
-                float4 row3 = new float4(0f, 0f, 0f, 1f);
-                float4x4 transfMatrix = new float4x4(row0, row1, row2, row3);
-
-                List<float3> tmpVerts = EnAllVertices().Select(vertId => transfMatrix * _LvertexVal[vertId]).ToList();
-
-                _LvertexVal.Clear();
-                _LvertexVal = null;
-                _LvertexVal = new List<float3>(tmpVerts);
-
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Rotates the object on the Z-Axis.
-        /// </summary>
-        /// <param name="alpha">a float value representing an angle.</param>
-        /// <returns>bool - true if the operation succeeded.</returns>
-        public bool RotateZ(float alpha)
-        {
-            try
-            {
-                double cos = System.Math.Cos((double)alpha);
-                double sin = System.Math.Sin((double)alpha);
-
-                float4 row0 = new float4((float)cos, (float)sin, 0f, 0f);
-                float4 row1 = new float4((float)-sin, (float)cos, 0f, 0f);
-                float4 row2 = new float4(0f, 0f, 1f, 0f);
-                float4 row3 = new float4(0f, 0f, 0f, 1f);
-                float4x4 transfMatrix = new float4x4(row0, row1, row2, row3);
-
-                List<float3> tmpVerts = EnAllVertices().Select(vertId => transfMatrix * _LvertexVal[vertId]).ToList();
-
-                _LvertexVal.Clear();
-                _LvertexVal = null;
-                _LvertexVal = new List<float3>(tmpVerts);
-
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-                throw;
-            }
-        }
+        /* For some basic standard transformations demos on the geometry have a look in the 'ExternalModules' folder*/
 
 
         /* Developing Methods only for testing the data structure algorithms.*/
