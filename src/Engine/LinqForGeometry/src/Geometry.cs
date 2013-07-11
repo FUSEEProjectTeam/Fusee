@@ -936,9 +936,6 @@ namespace LinqForGeometry
             return EnFaceAdjacentHalfEdges(faceHandle).Select(handleHalfEdge => _LhedgePtrCont[_LhedgePtrCont[handleHalfEdge]._he]._f).AsEnumerable();
         }
 
-        /* For some basic standard transformations demos on the geometry have a look in the 'ExternalModules' folder*/
-
-
         /* Developing Methods only for testing the data structure algorithms.*/
         /// <summary>
         /// Resets the geometry object to default scaling etc.

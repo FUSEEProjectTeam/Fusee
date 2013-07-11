@@ -14,6 +14,9 @@ using Fusee.Math;
 
 namespace LinqForGeometry.Importer
 {
+    /// <summary>
+    /// This struct is a helper 'container' to temporary save date during the import and convertion process.
+    /// </summary>
     public struct GeoFace
     {
         internal List<float3> _LFVertices;

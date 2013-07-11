@@ -70,13 +70,13 @@
     <Compile Include="LinqForGeometry.cs" />
   </ItemGroup>
   <ItemGroup>
-	<Content Include="Assets\Textures\world_map.jpg">
+    <Content Include="Assets\Textures\world_map.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-	<Content Include="Assets\Textures\Cube_Mat_uv.jpg">
+    <Content Include="Assets\Textures\Cube_Mat_uv.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-	<Content Include="Assets\Textures\Teapot_Texture.jpg">
+    <Content Include="Assets\Textures\Teapot_Texture.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="Assets\Models\Cube.obj.model">
@@ -85,16 +85,16 @@
     <Content Include="Assets\Models\Sphere.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-	<Content Include="Assets\Models\Teapot.obj.model">
+    <Content Include="Assets\Models\Teapot.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-	<Content Include="Assets\Models\SharedCorners.obj.model">
+    <Content Include="Assets\Models\SharedCorners.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-	<Content Include="Assets\Models\Cylinder.obj.model">
+    <Content Include="Assets\Models\Cylinder.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-	<Content Include="Assets\Models\SharedCorners_pro.obj.model">
+    <Content Include="Assets\Models\SharedCorners_pro.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -111,9 +111,13 @@
       <Project>{E95FA1C8-6491-4B4B-BBE1-EDA6B16B2C6A}</Project>
       <Name>Math.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)src\Engine\LinqForGeometry\LFG.csproj">
-      <Project>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Project>
-      <Name>LinqForGeometry</Name>
+    <ProjectReference Include="..\..\..\..\LFG_ExternalModules\LFG.ExternalModules.csproj">
+      <Project>{F8BD0FDA-0EBD-44F1-967E-607B7279E10F}</Project>
+      <Name>LFG.ExternalModules</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\LinqForGeometry\LFG.Core.csproj">
+      <Project>{DFFDB3A9-2429-4E47-B65C-E2C0F3F66146}</Project>
+      <Name>LFG.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

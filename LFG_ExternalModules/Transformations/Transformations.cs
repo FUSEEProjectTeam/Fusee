@@ -10,12 +10,13 @@
 */
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Fusee.Math;
+using LinqForGeometry;
 
-namespace LinqForGeometry.ExternModules
+namespace LFG.ExternalModules.Transformations
 {
+
     /// <summary>
     /// This class provides some basic geometry transformations to apply on a LFG geometry object.
     /// For now, this is included as demos:
@@ -27,6 +28,7 @@ namespace LinqForGeometry.ExternModules
     /// </summary>
     public static class Transformations
     {
+
         /// <summary>
         /// This method can transform the object with a special matrix provided by the user.
         /// This method is applied using a basic LINQ/Lambda expression.

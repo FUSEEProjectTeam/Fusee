@@ -8,7 +8,7 @@
     <ProjectGuid>{DFFDB3A9-2429-4E47-B65C-E2C0F3F66146}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>LinqForGeometry</RootNamespace>
-    <AssemblyName>LinqForGeometry</AssemblyName>
+    <AssemblyName>LinqForGeometry.Core</AssemblyName>
     <StartupObject>
     </StartupObject>
   </PropertyGroup>
@@ -22,6 +22,7 @@
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
     <Externalconsole>True</Externalconsole>
+    <DocumentationFile>..\..\..\Bin\Debug\LinqForGeometry.Core.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>none</DebugType>
@@ -47,7 +48,6 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="src\Exceptions\ExcMeshLeak.cs" />
-    <Compile Include="src\ExternalModules\Transformations.cs" />
     <Compile Include="src\GlobalInf.cs" />
     <Compile Include="src\Importer\GeoFace.cs" />
     <Compile Include="src\Importer\WavefrontImporter.cs" />
