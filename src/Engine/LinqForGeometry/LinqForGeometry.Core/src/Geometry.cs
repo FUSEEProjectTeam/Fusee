@@ -107,7 +107,7 @@ namespace LinqForGeometry.Core
             TimeSpan timeSpan = new TimeSpan();
             String timeDone;
 
-            if(Debugger.IsAttached)
+            if (Debugger.IsAttached)
                 stopWatch.Start();
 
             List<GeoFace> faceList = _objImporter.LoadAsset(path);
@@ -243,7 +243,10 @@ namespace LinqForGeometry.Core
                         if (currentContainer._vn.isValid)
                             _LvertNormalsFuseeMesh.Add(_LVertexNormals[currentContainer._vn]);
                     }
-                    _LvertuvFuseeMesh.Add(_LuvCoordinates[currentContainer._vuv]);
+                    if (_LuvCoordinates.Count > 0)
+                    {
+                        _LvertuvFuseeMesh.Add(_LuvCoordinates[currentContainer._vuv]);
+                    }
                     _LtrianglesFuseeMesh.Add((short)(_LvertDataFuseeMesh.Count - 1));
                 }
             }
@@ -371,13 +374,14 @@ namespace LinqForGeometry.Core
             for (int i = 0; i < LHandleHEForFace.Count; i++)
             {
                 HandleHalfEdge currentHedge = LHandleHEForFace[i];
-                HandleHalfEdge nextHedge = i + 1 < LHandleHEForFace.Count ? LHandleHEForFace[i + 1] : LHandleHEForFace[0];
-                HandleVertexUV currentUV = i + 1 < LHandleUVsForFace.Count ? LHandleUVsForFace[i + 1] : LHandleUVsForFace[0];
-
                 HEdgePtrCont hedge = _LhedgePtrCont[currentHedge];
+                HandleHalfEdge nextHedge = i + 1 < LHandleHEForFace.Count ? LHandleHEForFace[i + 1] : LHandleHEForFace[0];
                 hedge._nhe = nextHedge;
-                hedge._vuv = currentUV;
-
+                if (LHandleUVsForFace.Count > 0)
+                {
+                    HandleVertexUV currentUV = i + 1 < LHandleUVsForFace.Count ? LHandleUVsForFace[i + 1] : LHandleUVsForFace[0];
+                    hedge._vuv = currentUV;
+                }
                 _LhedgePtrCont.RemoveAt(currentHedge);
                 _LhedgePtrCont.Insert(currentHedge, hedge);
             }

@@ -91,8 +91,10 @@ namespace Examples.LinqForGeometry
         private const float RotationSpeed = 1f;
         private Mesh _lfgmesh, _FuseeMesh;
 
-        private IShaderParam _vColorParam;
-        private IShaderParam _vTextureParam;
+        private ShaderProgram _spColor;
+        private ShaderProgram _msDiffuse;
+
+        private IShaderParam _colorParam;
         private IShaderParam _vLightShaderParam;
 
         private ImageData _imgData;
@@ -102,6 +104,19 @@ namespace Examples.LinqForGeometry
 
         private float _MovementSpeed = 10.0f;
         private float _InvertMouseAxis = -1.0f;
+
+        /// <summary>
+        /// Const variable for shader testing.
+        /// 0 -> Color Shader
+        /// 1 -> Texture Shader
+        /// ...
+        /// </summary>
+        private int _ShaderType = 0;
+
+        /// <summary>
+        /// Used for when the shader is changed on runtime.
+        /// </summary>
+        private bool _ShaderChange = true;
 
         public override void Init()
         {
@@ -119,41 +134,44 @@ namespace Examples.LinqForGeometry
             //_Geo.LoadAsset("Assets/Models/SharedCorners.obj.model");
             //_Geo.LoadAsset("Assets/Models/Cylinder.obj.model");
             //_Geo.LoadAsset("Assets/Models/SharedCorners_pro.obj.model");
+            //_Geo.LoadAsset("Assets/Models/bun_zipper_res4.obj.model");
             #endregion MeshImports
 
-            #region Shader
-            #region LightShader
-            ShaderProgram msDiffuse = MoreShaders.GetShader("diffuse", RC);
-            _vLightShaderParam = msDiffuse.GetShaderParam("texture1");
-            ImageData imgData = RC.LoadImage("Assets/Textures/Cube_Mat_uv.jpg");
-            //ImageData imgData = RC.LoadImage("Assets/Textures/world_map.jpg");
-            //ImageData imgData = RC.LoadImage("Assets/Textures/Teapot_Texture.jpg");
-            ITexture iTex = RC.CreateTexture(imgData);
-            RC.SetShader(msDiffuse);
+            #region TextureShader
+            _msDiffuse = MoreShaders.GetShader("diffuse", RC);
+            _vLightShaderParam = _msDiffuse.GetShaderParam("texture1");
 
-            RC.SetLightActive(0, 1.0f);
+            //ImageData imgData = RC.LoadImage("Assets/Textures/Cube_Mat_uv.jpg");
+            //ImageData imgData = RC.LoadImage("Assets/Textures/world_map.jpg");
+            ImageData imgData = RC.LoadImage("Assets/Textures/Teapot_Texture.jpg");
+
+            _tex = RC.CreateTexture(imgData);
+            #endregion TextureShader
+
+            #region ColorShader
+            _spColor = MoreShaders.GetShader("simple", RC);
+            _colorParam = _spColor.GetShaderParam("vColor");
+            #endregion ColorShader
+
+            RC.SetShader(_spColor);
+            RC.SetShaderParam(_colorParam, new float4(0.5f, 0.8f, 0, 1));
+
+            #region LightPos
+            RC.SetLightActive(0, 0f);
             //RC.SetLightPosition(0, new float3(0, 200, 0));
             RC.SetLightAmbient(0, new float4(0.0f, 0.0f, 0.0f, 1.0f));
             RC.SetLightDiffuse(0, new float4(1.0f, 1.0f, 1.0f, 1.0f));
             RC.SetLightDirection(0, new float3(0.0f, -1.0f, 0.0f));
 
-            RC.SetLightActive(1, 1.0f);
+            RC.SetLightActive(1, 0f);
             //RC.SetLightPosition(1, new float3(-200, 0, 0));
             RC.SetLightAmbient(1, new float4(0.0f, 0.0f, 0.0f, 1.0f));
             RC.SetLightDiffuse(1, new float4(0.5f, 0.5f, 0.5f, 1.0f));
             RC.SetLightDirection(1, new float3(1.0f, 0.0f, 0.0f));
-            #endregion LightShader
-
-            #region ColorShader
-            //ShaderProgram sp = MoreShaders.GetShader("oneColor", RC);
-            //_vColorParam = sp.GetShaderParam("Col");
-            #endregion ColorShader
-
-            #endregion Shader
+            #endregion LightPos
 
             _lfgmesh = _Geo.ToMesh();
 
-            RC.SetShaderParamTexture(_vLightShaderParam, iTex);
             RC.ClearColor = new float4(0.3f, 0.3f, 0.3f, 1f);
         }
 
@@ -166,6 +184,11 @@ namespace Examples.LinqForGeometry
 
             // swap buffers
             Present();
+
+            if (_ShaderChange)
+            {
+                ShaderChanger(_ShaderType);
+            }
         }
 
         // Pull the users input
@@ -386,6 +409,17 @@ namespace Examples.LinqForGeometry
                 _Geo._Changes = false;
             }
 
+            if (Input.Instance.IsKeyDown(KeyCodes.F1) && Input.Instance.IsKeyDown(KeyCodes.LControl))
+            {
+                _ShaderChange = true;
+                _ShaderType = 0;
+            }
+            else if (Input.Instance.IsKeyDown(KeyCodes.F2) && Input.Instance.IsKeyDown(KeyCodes.LControl))
+            {
+                _ShaderChange = true;
+                _ShaderType = 1;
+            }
+
             float4x4 mtxCam = float4x4.LookAt(0, 500, 500, 0, 0, 0, 0, 1, 0);
 
             RC.ModelView = float4x4.CreateTranslation(0, 0, 0) * mtxCam;
@@ -403,6 +437,33 @@ namespace Examples.LinqForGeometry
         {
             var app = new LinqForGeometry();
             app.Run();
+        }
+
+        /// <summary>
+        /// Changes the shader during runtime depending on an integer value.
+        /// </summary>
+        private void ShaderChanger(int shaderId)
+        {
+            // Determines which shader will be used in testing.
+            switch (shaderId)
+            {
+                case 0:
+                    RC.SetShader(_spColor);
+                    RC.SetShaderParam(_colorParam, new float4(0.5f, 0.8f, 0, 1));
+                    RC.SetLightActive(0, 0f);
+                    RC.SetLightActive(1, 0f);
+                    break;
+                case 1:
+                    RC.SetShader(_msDiffuse);
+                    RC.SetShaderParamTexture(_vLightShaderParam, _tex);
+                    RC.SetLightActive(0, 1f);
+                    RC.SetLightActive(1, 1f);
+                    break;
+                default:
+                    break;
+            }
+
+            _ShaderChange = false;
         }
 
     }

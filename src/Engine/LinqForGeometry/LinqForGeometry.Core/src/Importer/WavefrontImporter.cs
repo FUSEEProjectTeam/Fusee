@@ -184,7 +184,7 @@ namespace LinqForGeometry.Core.Importer
 
                                         if (faceSplit.Length >= 1)
                                         {
-                                            string uvIndex = faceSplit[1];
+                                            string uvIndex = faceSplit[1]; // TODO: Changed for TESTING! Was 1
                                             int uvAdress = int.Parse(uvIndex, CultureInfo.InvariantCulture);
                                             geoF._UV.Add(_LuvCoords[uvAdress - 1]);
                                             _LKVuvandvert.Add(new KeyValuePair<int, int>(uvAdress - 1, fv - 1));
