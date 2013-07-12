@@ -206,8 +206,10 @@ namespace LinqForGeometry.Core
         /// This method converts the data structure to a fusee readable mesh structure
         /// </summary>
         /// <returns>A fusee readable Mesh object</returns>
-        public Mesh ToMesh()
+        public Mesh ToMesh(bool useTriangulation = true)
         {
+            // TODO: Here develop code for triangulation.
+
             _LfaceNormals.Clear();
             foreach (HandleFace faceHandle in _LfaceHndl)
             {
