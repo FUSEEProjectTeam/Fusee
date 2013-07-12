@@ -34,6 +34,7 @@ namespace LinqForGeometry.Core
             set { _VertexNormalActive = value; }
             get { return _VertexNormalActive; }
         }
+        private bool _UsesTriangles = false;
 
         // Handles to pointer containers
         public List<HandleVertex> _LverticeHndl;
@@ -112,14 +113,6 @@ namespace LinqForGeometry.Core
 
             List<GeoFace> faceList = _objImporter.LoadAsset(path);
 
-            // Convert a x-poly model to a triangular poly model because FUSEE only can handle triangular polys for now.
-            if (LFGMessages.FLAG_FUSEE_TRIANGLES)
-            {
-                List<GeoFace> newFaces = ConvertFacesToTriangular(faceList);
-                faceList.Clear();
-                faceList = newFaces;
-            }
-
             timeSpan = stopWatch.Elapsed;
             timeDone = String.Format(LFGMessages.UTIL_STOPWFORMAT, timeSpan.Seconds, timeSpan.Milliseconds);
             Debug.WriteLine("\n\n     Time needed to import the .obj file: " + timeDone);
@@ -155,60 +148,18 @@ namespace LinqForGeometry.Core
             SetVertexDefaults();
         }
 
-        /// <summary>
-        /// This method converts a quadrangular polygon mesh to a triangular polygon mesh
-        /// TODO: not the best solution. Have to change this.
-        /// </summary>
-        /// <param name="faces">List of GeoFace</param>
-        /// <returns>List of GeoFaces</returns>
-        private List<GeoFace> ConvertFacesToTriangular(List<GeoFace> faces)
-        {
-            int secondVert = 0;
-            List<GeoFace> triangleFaces = new List<GeoFace>();
-
-            foreach (GeoFace face in faces)
-            {
-                int faceVertCount = face._LFVertices.Count;
-
-                if (faceVertCount == 3)
-                {
-                    triangleFaces.Add(face);
-                }
-                else if (faceVertCount > 3)
-                {
-                    secondVert++;
-                    while (secondVert != faceVertCount - 1)
-                    {
-                        GeoFace newFace = new GeoFace() { _LFVertices = new List<float3>(), _UV = new List<float2>() };
-                        newFace._LFVertices.Add(face._LFVertices[0]);
-                        newFace._LFVertices.Add(face._LFVertices[secondVert]);
-                        newFace._LFVertices.Add(face._LFVertices[secondVert + 1]);
-
-                        newFace._UV.Add(face._UV[0]);
-                        newFace._UV.Add(face._UV[secondVert]);
-                        newFace._UV.Add(face._UV[secondVert + 1]);
-
-                        triangleFaces.Add(newFace);
-                        secondVert++;
-                    }
-                    secondVert = 0;
-                }
-                else if (faceVertCount < 3)
-                {
-                    // Error. Faces with less than 3 vertices does not exist.
-                    throw new MeshLeakException();
-                }
-            }
-            return triangleFaces;
-        }
 
         /// <summary>
         /// This method converts the data structure to a fusee readable mesh structure
         /// </summary>
         /// <returns>A fusee readable Mesh object</returns>
-        public Mesh ToMesh(bool useTriangulation = true)
+        public Mesh ToMesh(bool shouldUseTriangulation = true)
         {
-            // TODO: Here develop code for triangulation.
+            if (shouldUseTriangulation && !_UsesTriangles)
+            {
+                TriangulateGeometry();
+                _UsesTriangles = true;
+            }
 
             _LfaceNormals.Clear();
             foreach (HandleFace faceHandle in _LfaceHndl)
@@ -263,6 +214,97 @@ namespace LinqForGeometry.Core
             fuseeMesh.Triangles = _LtrianglesFuseeMesh.ToArray();
 
             return fuseeMesh;
+        }
+
+        /// <summary>
+        /// This method converts a quad based 'Geometry' object to a triangle based one.
+        /// </summary>
+        private void TriangulateGeometry()
+        {
+            List<HandleFace> LtmpFaces = new List<HandleFace>();
+
+            foreach (HandleFace currentFace in _LfaceHndl)
+            {
+                // Pruefe zuerst ob man das face triangulaten sollte oder nicht.
+                if (EnFaceAdjacentHalfEdges(currentFace).Count() == 3)
+                    continue;
+
+                // Hole aktuelles face und merke den index.
+                FacePtrCont currentFaceCont = _LfacePtrCont[currentFace];
+                // Merke erste hedge h0.
+                HandleHalfEdge h0H = currentFaceCont._h;
+                HEdgePtrCont h0Cont = _LhedgePtrCont[h0H];
+                // Merke ersten vert v0.
+                HandleVertex v0H = _LhedgePtrCont[h0Cont._he]._v;
+                // Merke die letzte hedge im face hl.
+                HandleHalfEdge hlH = RetLastHalfEdgeInFaceCw(currentFace);
+                HEdgePtrCont hlCont = _LhedgePtrCont[hlH];
+                // Lege zwei neue hedges an und fülle sie korrekt.
+                int hedgeCount = _LhedgePtrCont.Count;
+                HandleHalfEdge hedge0H = new HandleHalfEdge() { _DataIndex = hedgeCount };
+                HandleHalfEdge hedge1H = new HandleHalfEdge() { _DataIndex = hedgeCount + 1 };
+                HandleEdge edgeHNew = new HandleEdge() { _DataIndex = _LedgeHndl.Count };
+                EdgePtrCont edgeContNew = new EdgePtrCont() { _he1 = hedge0H, _he2 = hedge1H };
+
+                HEdgePtrCont newhedge0 = new HEdgePtrCont()
+                {
+                    _nhe = h0H,
+                    _v = v0H,
+                    _he = hedge1H,
+                    _f = currentFace,
+                    _vn = hlCont._vn,
+                    _vuv = hlCont._vuv
+                };
+                // Hole h1 und h2 zum Merken.
+                HandleHalfEdge h1H = h0Cont._nhe;
+                HEdgePtrCont h1Cont = _LhedgePtrCont[h1H];
+                HandleHalfEdge h2H = h1Cont._nhe;
+                HEdgePtrCont h2Cont = _LhedgePtrCont[h2H];
+
+                HEdgePtrCont newhedge1 = new HEdgePtrCont()
+                {
+                    _nhe = h1Cont._nhe,
+                    _v = h1Cont._v,
+                    _he = hedge0H,
+                    _f = new HandleFace(-1),
+                    _vn = h1Cont._vn,
+                    _vuv = h1Cont._vuv,
+                };
+                // Update die jeweiligen next pointer der angrenzenden hedges.
+                h1Cont._nhe = hedge0H;
+                hlCont._nhe = hedge1H;
+                // Lege ein neues face an für das triangle 2.
+                HandleFace f1H = new HandleFace() { _DataIndex = (_LfaceHndl.Count-1) + LtmpFaces.Count + 1 };
+                FacePtrCont f1Cont = new FacePtrCont() { _fn = currentFaceCont._fn, _h = hlH };
+                // Update das neue triangle bezüglich des neuen faces. Dazu erstmal h2 holen noch.
+                newhedge1._f = f1H;
+                h2Cont._f = f1H;
+                hlCont._f = f1H;
+                // Sichere die Änderungen in den listen.
+                _LedgeHndl.Add(edgeHNew);
+                _LedgePtrCont.Add(edgeContNew);
+                _LhedgePtrCont.Add(newhedge0);
+                _LhedgePtrCont.Add(newhedge1);
+
+                // Speichere das face handle erstmal in tmp faces wegen der iteration.
+                LtmpFaces.Add(f1H);
+                _LfacePtrCont.Add(f1Cont);
+
+                _LhedgePtrCont.RemoveAt(h1H);
+                _LhedgePtrCont.Insert(h1H, h1Cont);
+
+                _LhedgePtrCont.RemoveAt(h2H);
+                _LhedgePtrCont.Insert(h2H, h2Cont);
+
+                _LhedgePtrCont.RemoveAt(hlH);
+                _LhedgePtrCont.Insert(hlH, hlCont);
+            }
+
+            foreach (HandleFace handleFace in LtmpFaces)
+            {
+                _LfaceHndl.Add(handleFace);
+            }
+            LtmpFaces.Clear();
         }
 
         /// <summary>
@@ -940,6 +982,26 @@ namespace LinqForGeometry.Core
         public IEnumerable<HandleFace> EnFaceAdjacentFaces(HandleFace faceHandle)
         {
             return EnFaceAdjacentHalfEdges(faceHandle).Select(handleHalfEdge => _LhedgePtrCont[_LhedgePtrCont[handleHalfEdge]._he]._f).AsEnumerable();
+        }
+
+        /// <summary>
+        /// This method retrieves the last Half-Edge in a face in clock wise order.
+        /// </summary>
+        /// <param name="faceH">This is the face you want to get the last half-edge in cw order from.</param>
+        /// <returns>HandleHalfEdge - Returns a Handle to the last Half-Edge in the face CW in order.</returns>
+        public HandleHalfEdge RetLastHalfEdgeInFaceCw(HandleFace faceH)
+        {
+            FacePtrCont f0Cont = _LfacePtrCont[faceH];
+            HEdgePtrCont h0Cont = _LhedgePtrCont[f0Cont._h];
+            HandleVertex v0H = _LhedgePtrCont[h0Cont._he]._v;
+
+            HEdgePtrCont currentHedge = h0Cont;
+            do
+            {
+                currentHedge = _LhedgePtrCont[currentHedge._nhe];
+            } while (currentHedge._v != v0H);
+
+            return _LhedgePtrCont[currentHedge._he]._he;
         }
 
         /* Developing Methods only for testing the data structure algorithms.*/

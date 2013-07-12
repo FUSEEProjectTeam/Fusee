@@ -79,10 +79,16 @@
     <Content Include="Assets\Textures\Teapot_Texture.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="Assets\Models\Cube.obj.model">
+    <Content Include="Assets\Models\Cube.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    </Content>
+	<Content Include="Assets\Models\Cube_quads.obj.model">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\Models\Sphere.obj.model">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+	<Content Include="Assets\Models\Sphere_quads.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Models\Teapot.obj.model">
@@ -92,6 +98,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Models\Cylinder.obj.model">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+	<Content Include="Assets\Models\Cylinder_quads.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Models\SharedCorners_pro.obj.model">
