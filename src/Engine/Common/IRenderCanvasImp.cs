@@ -10,6 +10,7 @@ namespace Fusee.Engine
         double DeltaTime { get; }
 
         bool VerticalSync { get; set; }
+        bool EnableBlending { get; set; }
 
         void Present();
 

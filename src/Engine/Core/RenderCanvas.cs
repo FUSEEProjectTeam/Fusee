@@ -148,6 +148,18 @@ namespace Fusee.Engine
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether Blending is enabled.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if Blending is enabled; otherwise, <c>false</c>.
+        /// </value>
+        public bool EnableBlending
+        {
+            get { return _canvasImp.EnableBlending; }
+            set { _canvasImp.EnableBlending = value; }
+        }
+
+        /// <summary>
         /// Presents the contents of the backbuffer on the visible part of this render canvas.
         /// </summary>
         /// <remarks>

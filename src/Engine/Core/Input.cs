@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Fusee.Engine
 {
@@ -34,7 +35,7 @@ namespace Fusee.Engine
         private float[] _axes;
         private float[] _axesPreviousAbsolute;
 
-        private Dictionary<int, bool> _keysDown; 
+        private Dictionary<int, bool> _keysDown;
         private Dictionary<int, bool> _keysPressed;
 
         private Dictionary<int, bool> _buttonsPressed;
@@ -45,7 +46,7 @@ namespace Fusee.Engine
                 _keysPressed.Add((int)kea.KeyCode, true);
 
             if (!_keysDown.ContainsKey((int)kea.KeyCode))
-                _keysDown.Add((int)kea.KeyCode, true);
+                _keysDown.Add((int)kea.KeyCode, false);
         }
 
         private void KeyUp(object sender, KeyEventArgs kea)
@@ -116,12 +117,7 @@ namespace Fusee.Engine
         /// </returns>
         public bool IsKeyDown(KeyCodes key)
         {
-            if (_keysDown.ContainsKey((int)key))
-            {
-                _keysDown.Remove((int)key);
-                return true;
-            }
-            return false;
+            return _keysDown.ContainsKey((int) key);
         }
 
         /// <summary>
@@ -185,7 +181,21 @@ namespace Fusee.Engine
 
             _axesPreviousAbsolute[(int)InputAxis.MouseX] = currX;
             _axesPreviousAbsolute[(int)InputAxis.MouseY] = currY;
-            _axesPreviousAbsolute[(int)InputAxis.MouseWheel] = currR; 
+            _axesPreviousAbsolute[(int)InputAxis.MouseWheel] = currR;
+
+            // KeysDown - this is after the first frame (remove them!)
+            var keysToModify2 = new List<int>();
+            keysToModify2.AddRange(from b in _keysDown where b.Value select b.Key);
+
+            foreach (var key in keysToModify2)
+                _keysDown.Remove(key);
+
+            // KeysDown - this is the first frame (set them to true!)
+            var keysToModify1 = new List<int>();
+            keysToModify1.AddRange(from b in _keysDown where !b.Value select b.Key);
+
+            foreach (var key in keysToModify1)
+                _keysDown[key] = true;
         }
 
         /// <summary>

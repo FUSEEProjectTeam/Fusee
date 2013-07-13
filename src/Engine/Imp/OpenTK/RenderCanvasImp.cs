@@ -29,6 +29,12 @@ namespace Fusee.Engine
             set { _gameWindow.Context.SwapInterval = (value) ? 1 : 0; }
         }
 
+        public bool EnableBlending
+        {
+            get { return _gameWindow.Blending; }
+            set { _gameWindow.Blending = value; }
+        }
+
         internal RenderCanvasGameWindow _gameWindow;
 
         public RenderCanvasImp ()
@@ -93,6 +99,23 @@ namespace Fusee.Engine
         public double DeltaTime
         {
             get { return _deltaTime; }
+        }
+
+        public bool Blending
+        {
+            get { return GL.IsEnabled(EnableCap.Blend); }
+            set
+            {
+                if (value)
+                {
+                    GL.Enable(EnableCap.Blend);
+                    GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+                }
+                else
+                {
+                    GL.Disable(EnableCap.Blend);
+                }
+            }
         }
 
         public RenderCanvasGameWindow(RenderCanvasImp renderCanvasImp, int width, int height, bool antiAliasing)

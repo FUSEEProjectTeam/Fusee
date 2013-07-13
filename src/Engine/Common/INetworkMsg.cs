@@ -71,7 +71,7 @@ namespace Fusee.Engine
     {
         MessageType Type { get; }
         ConnectionStatus Status { get; }
-        IPEndPoint Sender { get; }
+        INetworkConnection Sender { get; }
 
         NetworkMsgType Message { get; }
     }

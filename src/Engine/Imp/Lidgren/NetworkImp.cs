@@ -451,20 +451,20 @@ namespace Fusee.Engine
                     }
 
                     return new NetworkMessage
-                               {
-                                   Type = (MessageType) msg.MessageType,
-                                   Status = Status.LastStatus,
-                                   Sender = msg.SenderEndPoint
-                               };
+                        {
+                            Type = (MessageType) msg.MessageType,
+                            Status = Status.LastStatus,
+                            Sender = new NetworkConnection {Connection = msg.SenderConnection}
+                        };
 
                 case NetIncomingMessageType.DiscoveryRequest:
                         SendDiscoveryResponse(msg.SenderEndPoint);
 
-                        return new NetworkMessage
-                                   {
-                                       Type = (MessageType) msg.MessageType,
-                                       Sender = msg.SenderEndPoint
-                                   };
+                    return new NetworkMessage
+                        {
+                            Type = (MessageType) msg.MessageType,
+                            Sender = new NetworkConnection {Connection = msg.SenderConnection}
+                        };
 
                 case NetIncomingMessageType.DiscoveryResponse:
                     var discoveryID = msg.ReadString();
@@ -479,30 +479,35 @@ namespace Fusee.Engine
                         _discoveryTimeout.Dispose();
 
                     return new NetworkMessage
-                               {
-                                   Type = (MessageType)msg.MessageType,
-                                   Sender = msg.SenderEndPoint,
-                                   Message = new NetworkMsgType { MsgType = MsgDataTypes.String, ReadString = discoveryID }
-                               };
+                        {
+                            Type = (MessageType) msg.MessageType,
+                            Sender = new NetworkConnection {Connection = msg.SenderConnection},
+                            Message = new NetworkMsgType {MsgType = MsgDataTypes.String, ReadString = discoveryID}
+                        };
 
                 case NetIncomingMessageType.Data:
                     return new NetworkMessage
-                               {
-                                   Type = (MessageType)msg.MessageType,
-                                   Sender = msg.SenderEndPoint,
-                                   Message = new NetworkMsgType { MsgType = MsgDataTypes.Bytes, ReadBytes = msg.ReadBytes(msg.LengthBytes) }
-                               };
+                        {
+                            Type = (MessageType) msg.MessageType,
+                            Sender = new NetworkConnection {Connection = msg.SenderConnection},
+                            Message =
+                                new NetworkMsgType
+                                    {
+                                        MsgType = MsgDataTypes.Bytes,
+                                        ReadBytes = msg.ReadBytes(msg.LengthBytes)
+                                    }
+                        };
 
                 case NetIncomingMessageType.DebugMessage:
                 case NetIncomingMessageType.VerboseDebugMessage:
                 case NetIncomingMessageType.WarningMessage:
                 case NetIncomingMessageType.ErrorMessage:
                     return new NetworkMessage
-                               {
-                                   Type = (MessageType)msg.MessageType,
-                                   Sender = new IPEndPoint(IPAddress.None, 0),
-                                   Message = new NetworkMsgType { MsgType = MsgDataTypes.String, ReadString = msg.ReadString() }
-                               };
+                        {
+                            Type = (MessageType) msg.MessageType,
+                            Sender = new NetworkConnection {Connection = msg.SenderConnection},
+                            Message = new NetworkMsgType {MsgType = MsgDataTypes.String, ReadString = msg.ReadString()}
+                        };
             }
 
             return null;
