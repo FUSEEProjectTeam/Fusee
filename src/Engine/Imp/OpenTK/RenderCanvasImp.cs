@@ -10,10 +10,42 @@ namespace Fusee.Engine
 {
     public class RenderCanvasImp : IRenderCanvasImp
     {
-        public int Width { get { return _width; }}
         internal int _width;
-        public int Height { get { return _height; } }
+
+        public int Width
+        {
+            get { return _width; }
+            set
+            {
+                _gameWindow.Width = value;
+                _width = value;
+                ResizeWindow();
+            }
+        }
+
         internal int _height;
+
+        public int Height
+        {
+            get { return _height; }
+            set
+            {
+                _gameWindow.Height = value;
+                _height = value;
+                ResizeWindow();
+            }
+        }
+
+        private void ResizeWindow()
+        {
+            var width2 = _width/2;
+            var height2 = _height/2;
+
+            var scHeight2 = Screen.PrimaryScreen.Bounds.Height/2;
+            var scWidth2 = Screen.PrimaryScreen.Bounds.Width/2;
+
+            _gameWindow.Bounds = new Rectangle(scWidth2 - width2, scHeight2 - height2, _width, _height);
+        }
 
         public double DeltaTime
         {
@@ -35,17 +67,23 @@ namespace Fusee.Engine
             set { _gameWindow.Blending = value; }
         }
 
+        public bool Fullscreen
+        {
+            get { return (_gameWindow.WindowState == WindowState.Fullscreen); }
+            set { _gameWindow.WindowState = (value) ? WindowState.Fullscreen : WindowState.Normal; }
+        }
+
         internal RenderCanvasGameWindow _gameWindow;
 
         public RenderCanvasImp ()
         {
-            const int width = 1280;
-            var height = System.Math.Min(Screen.PrimaryScreen.Bounds.Height - 100, 720);
+            _width = 1280;
+            _height = System.Math.Min(Screen.PrimaryScreen.Bounds.Height - 100, 720);
 
             try {
-				_gameWindow = new RenderCanvasGameWindow (this, width, height, true);
+				_gameWindow = new RenderCanvasGameWindow(this, _width, _height, true);
 			} catch {
-                _gameWindow = new RenderCanvasGameWindow(this, width, height, false);
+                _gameWindow = new RenderCanvasGameWindow(this, _width, _height, false);
 			}
         }
 

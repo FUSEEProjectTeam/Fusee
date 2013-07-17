@@ -32,6 +32,7 @@ namespace Fusee.Engine
         }
 
         private IInputImp _inputImp;
+        
         private float[] _axes;
         private float[] _axesPreviousAbsolute;
 
@@ -39,6 +40,34 @@ namespace Fusee.Engine
         private Dictionary<int, bool> _keysPressed;
 
         private Dictionary<int, bool> _buttonsPressed;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to fix mouse at center.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if the mouse is fixed at center; otherwise, <c>false</c>.
+        /// </value>
+        public bool FixMouseAtCenter { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the cursor is visible.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if the cursor is visible; otherwise, <c>false</c>.
+        /// </value>
+        public bool CursorVisible
+        {
+            get { return _inputImp.CursorVisible; }
+            set { _inputImp.CursorVisible = value; }
+        }
+
+        /// <summary>
+        /// Create a new instance of the Input class and initialize it with an underlying InputImp instance.
+        /// </summary>
+        public Input()
+        {
+            // not implemented
+        }
 
         private void KeyDown(object sender, KeyEventArgs kea)
         {
@@ -68,14 +97,6 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// Create a new instance of the Input class and initialize it with an underlying InputImp instance.
-        /// </summary>
-        public Input()
-        {
-            // not implamented
-        }
-
-        /// <summary>
         /// Returns the scalar value for the given axis. Typically these values are used as velocities.
         /// </summary>
         /// <param name="axis">The axis for which the value is to be returned.</param>
@@ -85,6 +106,15 @@ namespace Fusee.Engine
         public float GetAxis(InputAxis axis)
         {
             return _axes[(int)axis];
+        }
+
+        /// <summary>
+        /// Sets the mouse position.
+        /// </summary>
+        /// <param name="pos">A <see cref="Point"/> with x and y values.</param>
+        public void SetMousePos(Point pos)
+        {
+            _inputImp.SetMousePos(pos);            
         }
 
         /// <summary>
@@ -178,6 +208,15 @@ namespace Fusee.Engine
             _axes[(int) InputAxis.MouseX] = (currX - _axesPreviousAbsolute[(int) InputAxis.MouseX])*deltaFix;
             _axes[(int) InputAxis.MouseY] = (currY - _axesPreviousAbsolute[(int) InputAxis.MouseY])*deltaFix;
             _axes[(int) InputAxis.MouseWheel] = (currR - _axesPreviousAbsolute[(int) InputAxis.MouseWheel])*deltaFix;
+
+            // Fix to Center
+            if (FixMouseAtCenter)
+            {
+                p = _inputImp.SetMouseToCenter();
+
+                currX = p.x;
+                currY = p.y;
+            }
 
             _axesPreviousAbsolute[(int)InputAxis.MouseX] = currX;
             _axesPreviousAbsolute[(int)InputAxis.MouseY] = currY;

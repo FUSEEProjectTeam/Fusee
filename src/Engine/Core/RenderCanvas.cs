@@ -125,7 +125,11 @@ namespace Fusee.Engine
         /// <value>
         /// The width in pixels.
         /// </value>
-        public int Width { get { return _canvasImp.Width; } }
+        public int Width
+        {
+            get { return _canvasImp.Width; }
+            set { _canvasImp.Width = value; }
+        }
 
         /// <summary>
         /// Retrieves the height of the canvas.
@@ -133,7 +137,11 @@ namespace Fusee.Engine
         /// <value>
         /// The height in pixels.
         /// </value>
-        public int Height { get { return _canvasImp.Height; } }
+        public int Height
+        {
+            get { return _canvasImp.Height; }
+            set { _canvasImp.Height = value; }
+        }
 
         /// <summary>
         /// Gets or sets a value indicating whether VSync is active.
@@ -153,10 +161,16 @@ namespace Fusee.Engine
         /// <value>
         ///   <c>true</c> if Blending is enabled; otherwise, <c>false</c>.
         /// </value>
-        public bool EnableBlending
+        public bool Blending
         {
             get { return _canvasImp.EnableBlending; }
             set { _canvasImp.EnableBlending = value; }
+        }
+
+        public bool Fullscreen
+        {
+            get { return _canvasImp.Fullscreen; }
+            set { _canvasImp.Fullscreen = value; }
         }
 
         /// <summary>

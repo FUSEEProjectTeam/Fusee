@@ -301,15 +301,10 @@ namespace Fusee.Engine
                     var sendMsgServer = _netServer.CreateMessage();
                     sendMsgServer.Write(msg);
 
-                    var success = true;
+                    if (_netServer.ConnectionsCount > 0)
+                        _netServer.SendMessage(sendMsgServer, _netServer.Connections, (NetDeliveryMethod)msgDelivery, msgChannel);
 
-                    foreach (var connection in _netServer.Connections)
-                    {
-                        sendResult = connection.SendMessage(sendMsgServer, (NetDeliveryMethod) msgDelivery, msgChannel);
-                        success = success && (sendResult == NetSendResult.Sent);
-                    }
-
-                    return success;
+                    return true;
             }
 
             return false;
@@ -481,7 +476,7 @@ namespace Fusee.Engine
                     return new NetworkMessage
                         {
                             Type = (MessageType) msg.MessageType,
-                            Sender = new NetworkConnection {Connection = msg.SenderConnection},
+                            Sender = new NetworkConnection {RemoteEndPoint = msg.SenderEndPoint},
                             Message = new NetworkMsgType {MsgType = MsgDataTypes.String, ReadString = discoveryID}
                         };
 
@@ -505,7 +500,7 @@ namespace Fusee.Engine
                     return new NetworkMessage
                         {
                             Type = (MessageType) msg.MessageType,
-                            Sender = new NetworkConnection {Connection = msg.SenderConnection},
+                            Sender = new NetworkConnection(),
                             Message = new NetworkMsgType {MsgType = MsgDataTypes.String, ReadString = msg.ReadString()}
                         };
             }

@@ -6,12 +6,23 @@ namespace Fusee.Engine
     public class NetworkConnection : INetworkConnection
     {
         internal NetworkImp NetworkImp;
-        internal NetConnection Connection;
 
-        public IPEndPoint RemoteEndPoint
+        private NetConnection _connection;
+
+        internal NetConnection Connection
         {
-            get { return Connection.RemoteEndPoint; }
+            set
+            {
+                _connection = value;
+
+                if (value != null)
+                    if (value.RemoteEndPoint != null)
+                        RemoteEndPoint = value.RemoteEndPoint;
+            }
+            get { return _connection; }
         }
+
+        public IPEndPoint RemoteEndPoint { internal set; get; }
 
         public float RoundtripTime
         {
