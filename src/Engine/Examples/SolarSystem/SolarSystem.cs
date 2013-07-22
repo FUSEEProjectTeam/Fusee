@@ -69,8 +69,6 @@ namespace Examples.SolarSystem
                                          new Renderer(planetMesh));
 
             planet.transform.LocalScale = new float3(2, 2, 2);
-            // planet.AddComponent(spot);
-
             SceneManager.Manager.AddSceneEntity(planet);
 
             // Setup Earth
@@ -80,6 +78,7 @@ namespace Examples.SolarSystem
 
             planet.transform.GlobalPosition = new float3(2.9f, 0, 0);
             planet.transform.GlobalScale = new float3(0.1f, 0.1f, 0.1f);
+            planet.AddComponent(direct);
 
             // Setup Moon
             planet = new SceneEntity("Moon", new PlanetAction(new float3(0, 2.7f, 0)), emptyMoon,
