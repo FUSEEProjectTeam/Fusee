@@ -18,6 +18,9 @@ namespace Fusee.Engine
         private static Type _audioImplementor;
 
         [JSIgnore]
+        private static Type _networkImplementor;
+
+        [JSIgnore]
         private static Type RenderingImplementor
         {
             get
@@ -43,15 +46,34 @@ namespace Fusee.Engine
             {
                 if (_audioImplementor == null)
                 {
-                    // TODO: Remove this hardcoded hack to NAudio
-                    Assembly impAsm = Assembly.LoadFrom("Fusee.Engine.Imp.NAudio.dll");
+                    // TODO: Remove this hardcoded hack to SFMLAudio
+                    Assembly impAsm = Assembly.LoadFrom("Fusee.Engine.Imp.SFMLAudio.dll");
 
                     if (impAsm == null)
-                        throw new Exception("Couldn't load implementor assembly (Fusee.Engine.Imp.NAudio.dll).");
+                        throw new Exception("Couldn't load implementor assembly (Fusee.Engine.Imp.SFMLAudio.dll).");
 
                     _audioImplementor = impAsm.GetType("Fusee.Engine.AudioImplementor");
                 }
                 return _audioImplementor;
+            }
+        }
+
+        [JSIgnore]
+        private static Type NetworkImplementor
+        {
+            get
+            {
+                if (_networkImplementor == null)
+                {
+                    // TODO: Remove this hardcoded hack to Lidgren
+                    Assembly impAsm = Assembly.LoadFrom("Fusee.Engine.Imp.Lidgren.dll");
+
+                    if (impAsm == null)
+                        throw new Exception("Couldn't load implementor assembly (Fusee.Engine.Imp.Lidgren.dll).");
+
+                    _networkImplementor = impAsm.GetType("Fusee.Engine.NetworkImplementor");
+                }
+                return _networkImplementor;
             }
         }
 
@@ -62,7 +84,7 @@ namespace Fusee.Engine
             if (mi == null)
                 throw new Exception("Implementor type (" + RenderingImplementor.ToString() + ") doesn't contain method CreateRenderCanvasImp");
 
-            return (IRenderCanvasImp) mi.Invoke(null, null);
+            return (IRenderCanvasImp)mi.Invoke(null, null);
         }
 
         [JSExternal]
@@ -91,9 +113,20 @@ namespace Fusee.Engine
             MethodInfo mi = AudioImplementor.GetMethod("CreateAudioImp");
 
             if (mi == null)
-                throw new Exception("Implementor type (" + RenderingImplementor.ToString() + ") doesn't contain method CreateAudioImp");
+                throw new Exception("Implementor type (" + AudioImplementor.ToString() + ") doesn't contain method CreateAudioImp");
 
             return (IAudioImp)mi.Invoke(null, null);
+        }
+
+        [JSExternal]
+        public static INetworkImp CreateINetworkImp()
+        {
+            MethodInfo mi = NetworkImplementor.GetMethod("CreateNetworkImp");
+
+            if (mi == null)
+                throw new Exception("Implementor type (" + RenderingImplementor.ToString() + ") doesn't contain method CreateNetworkImp");
+
+            return (INetworkImp)mi.Invoke(null, null);
         }
     }
 }

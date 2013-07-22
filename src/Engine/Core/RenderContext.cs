@@ -1009,16 +1009,15 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
         /// <seealso cref="Fusee.Engine.RenderContext.Render(Mesh)"/>
         public void SetShader(ShaderProgram program)
         {
-           
                 _updatedShaderParams = false;
+                
                 if (_currentShader != program)
                 {
                     _currentShader = program;
                     _rci.SetShader(program._spi);
                 }
-            UpdateShaderParams();
-            
-        }
+            UpdateShaderParams();         
+ }
 
         /// <summary>
         /// Get a list of (uniform) shader parameters accessed by the given shader.

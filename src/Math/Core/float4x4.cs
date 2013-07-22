@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using ProtoBuf;
 
 namespace Fusee.Math
 {
@@ -8,6 +9,7 @@ namespace Fusee.Math
     /// Represents a 4x4 Matrix
     /// </summary>
     [Serializable]
+    [ProtoContract]
     [StructLayout(LayoutKind.Sequential)]
 // ReSharper disable InconsistentNaming
     public struct float4x4 : IEquatable<float4x4>
@@ -18,21 +20,25 @@ namespace Fusee.Math
         /// <summary>
         /// Top row of the matrix
         /// </summary>
+        [ProtoMember(1)]
         public float4 Row0;
 
         /// <summary>
         /// 2nd row of the matrix
         /// </summary>
+        [ProtoMember(2)]
         public float4 Row1;
 
         /// <summary>
         /// 3rd row of the matrix
         /// </summary>
+        [ProtoMember(3)]
         public float4 Row2;
 
         /// <summary>
         /// Bottom row of the matrix
         /// </summary>
+        [ProtoMember(4)]
         public float4 Row3;
 
         /// <summary>

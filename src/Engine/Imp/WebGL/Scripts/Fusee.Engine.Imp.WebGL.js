@@ -8,7 +8,12 @@
 
 var $WebGLImp = JSIL.DeclareAssembly("Fusee.Engine.Imp.WebGL");
 var $WebAudioImp = JSIL.GetAssembly("Fusee.Engine.Imp.WebAudio");
+var $WebNetImp = JSIL.GetAssembly("Fusee.Engine.Imp.WebNet");
+
 var $fuseeCommon = JSIL.GetAssembly("Fusee.Engine.Common");
+var $fuseeMath = JSIL.GetAssembly("Fusee.Math.Core");
+
+var $fuseeFirstGetShaderParamCall = false;
 
 JSIL.DeclareNamespace("Fusee");
 JSIL.DeclareNamespace("Fusee.Engine");
@@ -102,7 +107,14 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderCanvasImp
         function set_VerticalSync() {
           // not implemented
         }
-    );	
+    );
+    
+	$.Method({ Static: false, Public: true }, "IRenderCanvasImp_set_Caption",
+      new JSIL.MethodSignature(null, [$.String]),
+        function set_Caption() {
+            // not implemented
+        }
+    );
 	
   
     $.Field({ Static: false, Public: false }, "IRenderCanvasImp_Init", $jsilcore.TypeRef("System.EventHandler`1", [$fuseeCommon.TypeRef("Fusee.Engine.MouseEventArgs")]), function ($) {
@@ -563,10 +575,63 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
         return ret;
     }
   );
+  
+	$debug = function (log_txt) {
+		if (typeof window.console != 'undefined') {
+			console.log(log_txt);
+		}
+	}
+
+
 
     $.Method({ Static: false, Public: true }, "IRenderContextImp_GetShaderParam",
     new JSIL.MethodSignature($WebGLImp.TypeRef("Fusee.Engine.IShaderParam"), [$WebGLImp.TypeRef("Fusee.Engine.IShaderProgramImp"), $.String]),
     function IRenderContextImp_GetShaderParam(program, paramName) {
+		if(program.__ThisTypeId__ != undefined){ //i got program
+			if($fuseeFirstGetShaderParamCall){
+				$fuseeFirstGetShaderParamCall = false;
+				var enumerator = program.Program._rci.IRenderContextImp_GetShaderParamList(this._spi).IEnumerable$b1_GetEnumerator();
+				try {
+					while (enumerator.IEnumerator_MoveNext()) {
+						var info = enumerator.IEnumerator$b1_get_Current().MemberwiseClone();
+						program.Program._paramsByName.Add(info.Name, info.Handle);
+					}
+				} finally {
+					if (enumerator !== null) {
+						enumerator.IDisposable_Dispose();
+					}
+				}
+			}
+			var h = this.gl.getUniformLocation(program.Program, paramName);
+			if (h == null)
+				return null;
+			var ret = new $WebGLImp.Fusee.Engine.ShaderParam();
+			ret.handle = h;
+			ret.id = this._currentShaderParamHandle++;
+			return ret;
+		}else{ // i got program.Program
+			if($fuseeFirstGetShaderParamCall){
+				$fuseeFirstGetShaderParamCall = false;
+				var enumerator = program._rci.IRenderContextImp_GetShaderParamList(this._spi).IEnumerable$b1_GetEnumerator();
+				try {
+					while (enumerator.IEnumerator_MoveNext()) {
+						var info = enumerator.IEnumerator$b1_get_Current().MemberwiseClone();
+						program._paramsByName.Add(info.Name, info.Handle);
+					}
+				} finally {
+					if (enumerator !== null) {
+						enumerator.IDisposable_Dispose();
+					}
+				}
+			}
+			var h = this.gl.getUniformLocation(program, paramName);
+			if (h == null)
+				return null;
+			var ret = new $WebGLImp.Fusee.Engine.ShaderParam();
+			ret.handle = h;
+			ret.id = this._currentShaderParamHandle++;
+			return ret;
+		}
         var h = this.gl.getUniformLocation(program.Program, paramName);
         if (h == null)
             return null;
@@ -576,6 +641,54 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
         return ret;
     }
   );
+  
+    var $T05 = function () {
+    return ($T05 = JSIL.Memoize($asm05.System.Collections.Generic.List$b1.Of($WebGLImp.Fusee.Engine.ShaderParamInfo))) ();
+  };
+  
+  $.Method({Static:false, Public:true }, "IRenderContextImp_GetShaderParamList", 
+    new JSIL.MethodSignature($WebGLImp.TypeRef("System.Collections.Generic.IList`1", [$asm00.TypeRef("Fusee.Engine.ShaderParamInfo")]), [$asm01.TypeRef("Fusee.Engine.IShaderProgramImp")], []), 
+    function IRenderContextImp_GetShaderParamList (shaderProgram) {
+	  var sp = shaderProgram.Program;
+	  var nParams = this.gl.getProgramParameter(sp,this.gl.ACTIVE_UNIFORMS);
+	  var list = new($jsilcore.System.Collections.Generic.List$b1.Of($fuseeCommon.Fusee.Engine.ShaderParamInfo))();
+      //var list = $sig.get(0x1928, null, [$asm05.System.Int32], []).Construct($T05(), 10);
+
+      for (var i = 0; i < nParams; ++i) {
+        var t = this.gl.getActiveUniform(sp,i).type;
+        var ret = new ($fuseeCommon.Fusee.Engine.ShaderParamInfo)();
+		
+        //var activeInfo = this.gl.getActiveUniform(sp,i);
+		//ret.Name = activeInfo.name;
+		ret.Name = this.gl.getActiveUniform(sp,i).name;
+        ret.Handle = this.IRenderContextImp_GetShaderParam(sp,ret.Name);
+        switch (t) {
+          case this.gl.INT: 
+            ret.Type = $jsilcore.System.Int32.__Type__;
+            break;
+          case this.gl.FLOAT:
+            ret.Type = $jsilcore.System.Single.__Type__;
+            break;
+		  case this.gl.FLOAT_VEC2:
+		    ret.Type = $fuseeMath.Fusee.Math.float2.__Type__;
+            break;
+		  case this.gl.FLOAT_VEC3:
+		    ret.Type = $fuseeMath.Fusee.Math.float3.__Type__;
+            break;
+		  case this.gl.FLOAT_VEC4:
+		    ret.Type = $fuseeMath.Fusee.Math.float4.__Type__;
+            break;
+		  case this.gl.FLOAT_MAT4:
+		    ret.Type = $fuseeMath.Fusee.Math.float4x4.__Type__;
+            break;
+
+        }
+        list.Add(ret.MemberwiseClone());
+      }
+      return list;
+    }
+  );
+
 
     $.Method({ Static: false, Public: true }, "IRenderContextImp_Render",
     new JSIL.MethodSignature(null, [$WebGLImp.TypeRef("Fusee.Engine.IMeshImp")]),
@@ -1270,8 +1383,6 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.InputImp", true
 });
 
 JSIL.ImplementExternals("Fusee.Engine.ImpFactory", function ($) {
-
-
     $.Method({ Static: true, Public: true }, "CreateIInputImp",
         new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.IInputImp"), [$fuseeCommon.TypeRef("Fusee.Engine.IRenderCanvasImp")]),
             function ImpFactory_CreateIInputImp(renderCanvasImp) {
@@ -1301,6 +1412,12 @@ JSIL.ImplementExternals("Fusee.Engine.ImpFactory", function ($) {
             }
     );
 
+	$.Method({ Static: true, Public: true }, "CreateINetworkImp",
+        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.INetworkImp"), []),
+            function ImpFactory_CreateINetworkImp() {
+                return new $WebNetImp.Fusee.Engine.WebNetImp();
+            }
+    );
 });
 
 
@@ -1312,7 +1429,6 @@ JSIL.ImplementExternals("Fusee.Engine.MeshReader", function ($) {
             }
     );
 });
-
 
 /**
 * Provides requestAnimationFrame in a cross browser way.
