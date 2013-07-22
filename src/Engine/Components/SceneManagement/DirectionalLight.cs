@@ -68,7 +68,7 @@ namespace Fusee.SceneManagement
         {
             if (SceneEntity != null)
             {   
-                _direction = new float3x3(float4x4.Transpose(SceneManager.RC.View)) * SceneEntity.transform.Forward; 
+                _direction = SceneEntity.transform.Forward * new float3x3(SceneManager.RC.View); 
             }
             sv.Visit((DirectionalLight)this);
         }
