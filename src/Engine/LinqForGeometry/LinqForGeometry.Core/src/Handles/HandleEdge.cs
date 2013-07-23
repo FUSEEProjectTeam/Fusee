@@ -48,4 +48,3 @@ namespace LinqForGeometry.Core.Handles
         }
     }
 }
-

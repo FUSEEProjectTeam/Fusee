@@ -274,7 +274,7 @@ namespace LinqForGeometry.Core
                 h1Cont._nhe = hedge0H;
                 hlCont._nhe = hedge1H;
                 // Lege ein neues face an für das triangle 2.
-                HandleFace f1H = new HandleFace() { _DataIndex = (_LfaceHndl.Count-1) + LtmpFaces.Count + 1 };
+                HandleFace f1H = new HandleFace() { _DataIndex = (_LfaceHndl.Count - 1) + LtmpFaces.Count + 1 };
                 FacePtrCont f1Cont = new FacePtrCont() { _fn = currentFaceCont._fn, _h = hlH };
                 // Update das neue triangle bezüglich des neuen faces. Dazu erstmal h2 holen noch.
                 newhedge1._f = f1H;
@@ -633,7 +633,7 @@ namespace LinqForGeometry.Core
                 if (faceIndex == -1)
                     continue;
 
-                float3 currentNormal = _LfaceNormals[_LfacePtrCont[faceIndex]._fn];
+                float3 currentFaceNormal = _LfaceNormals[_LfacePtrCont[faceIndex]._fn];
                 float3 normalAggregate = new float3();
                 // Loop over every incoming half-edge again, so we can compare the angles between the current one and all the others.
                 // We do this to decide which normal should be added to the sum and which not.
@@ -642,7 +642,7 @@ namespace LinqForGeometry.Core
                     // Add the current normal if the index is on it and do not compare any angles etc.
                     if (eincomingHEdge == hedgeIndex)
                     {
-                        normalAggregate += currentNormal;
+                        normalAggregate += currentFaceNormal;
                         continue;
                     }
                     // Stop when the current half-edge is not pointing to a face.
@@ -651,7 +651,7 @@ namespace LinqForGeometry.Core
                         continue;
 
                     float3 normalToCompare = _LfaceNormals[_LfacePtrCont[faceIndex2]._fn];
-                    float dot = float3.Dot(currentNormal, normalToCompare);
+                    float dot = float3.Dot(currentFaceNormal, normalToCompare);
                     double acos = System.Math.Acos(dot) * _constPiFactor;
 
                     if (acos < _constSmoothingAngle)
@@ -896,9 +896,10 @@ namespace LinqForGeometry.Core
         /// <returns>An Enumerable of HalfEdge handles to be used in loops, etc.</returns>
         public IEnumerable<HandleHalfEdge> EnVertexIncomingHalfEdge(HandleVertex vertexHandle)
         {
+            
             List<HandleHalfEdge> LTmpIncomingHedges = new List<HandleHalfEdge>();
             //Get the one outgoing half-edge for the vertex.
-            int currentHedge = _LvertexPtrCont[vertexHandle._DataIndex]._h._DataIndex;
+            HandleHalfEdge currentHedge = _LvertexPtrCont[vertexHandle]._h;
             //Remember the index of the first half-edge
             int startHedgeIndex = currentHedge;
             do
@@ -907,12 +908,17 @@ namespace LinqForGeometry.Core
                     break;
 
                 HEdgePtrCont currentHedgeContainer = _LhedgePtrCont[currentHedge];
-                if (vertexHandle._DataIndex == _LhedgePtrCont[currentHedgeContainer._he]._v._DataIndex)
+                if (vertexHandle == _LhedgePtrCont[currentHedgeContainer._he]._v)
+                {
                     LTmpIncomingHedges.Add(currentHedgeContainer._he);
-                currentHedge = _LhedgePtrCont[currentHedgeContainer._he]._nhe._DataIndex;
+                }
+                currentHedge = _LhedgePtrCont[currentHedgeContainer._he]._nhe;
             } while (currentHedge != startHedgeIndex);
 
             return LTmpIncomingHedges.AsEnumerable();
+            
+            //return _LhedgePtrCont.Where(e => e._v == vertexHandle).AsParallel().Select(e => _LhedgePtrCont[e._he._DataIndex]._he).AsParallel().ToList();
+            //return (from e in _LhedgePtrCont where e._v == vertexHandle select _LhedgePtrCont[e._he]._he).AsParallel().ToList();
         }
 
         /// <summary>
