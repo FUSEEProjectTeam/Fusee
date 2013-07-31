@@ -560,14 +560,6 @@ namespace Fusee.Engine
             }
         }
 
-        public void DebugLine(float3 start, float3 end, float4 color)
-        {
-            GL.Begin(BeginMode.Lines);
-            GL.Vertex3(start.x, start.y, start.z);
-            GL.Vertex3(end.x, end.y, end.z);
-            GL.End();
-        }
-
         public IMeshImp CreateMeshImp()
         {
             return new MeshImp();
@@ -579,14 +571,19 @@ namespace Fusee.Engine
             {
                 case BlendOperation.Add:
                     return BlendEquationMode.FuncAdd;
+                    break;
                 case BlendOperation.Subtract:
                     return BlendEquationMode.FuncSubtract;
+                    break;
                 case BlendOperation.ReverseSubtract:
                     return BlendEquationMode.FuncReverseSubtract;
+                    break;
                 case BlendOperation.Minimum:
                     return BlendEquationMode.Min;
+                    break;
                 case BlendOperation.Maximum:
                     return BlendEquationMode.Max;
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException("bo");
             }
@@ -598,14 +595,19 @@ namespace Fusee.Engine
             {
                 case BlendEquationMode.FuncAdd:
                     return BlendOperation.Add;
+                    break;
                 case BlendEquationMode.Min:
                     return BlendOperation.Minimum;
+                    break;
                 case BlendEquationMode.Max:
                     return BlendOperation.Maximum;
+                    break;
                 case BlendEquationMode.FuncSubtract:
                     return BlendOperation.Subtract;
+                    break;
                 case BlendEquationMode.FuncReverseSubtract:
                     return BlendOperation.ReverseSubtract;
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException("bom");
             }
@@ -616,29 +618,41 @@ namespace Fusee.Engine
             switch (blend)
             {
                 case Blend.Zero:
-                    return (int)BlendingFactorSrc.Zero;
+                    return (int) BlendingFactorSrc.Zero;
+                    break;
                 case Blend.One:
-                    return (int)BlendingFactorSrc.One;
+                    return (int) BlendingFactorSrc.One;
+                    break;
                 case Blend.SourceColor:
-                    return (int)BlendingFactorDest.SrcColor;
+                    return (int) BlendingFactorDest.SrcColor;
+                    break;
                 case Blend.InverseSourceColor:
-                    return (int)BlendingFactorDest.OneMinusSrcColor;
+                    return (int) BlendingFactorDest.OneMinusSrcColor;
+                    break;
                 case Blend.SourceAlpha:
-                    return (int)BlendingFactorSrc.SrcAlpha;
+                    return (int) BlendingFactorSrc.SrcAlpha;
+                    break;
                 case Blend.InverseSourceAlpha:
-                    return (int)BlendingFactorSrc.OneMinusSrcAlpha;
+                    return (int) BlendingFactorSrc.OneMinusSrcAlpha;
+                    break;
                 case Blend.DestinationAlpha:
-                    return (int)BlendingFactorSrc.DstAlpha;
+                    return (int) BlendingFactorSrc.DstAlpha;
+                    break;
                 case Blend.InverseDestinationAlpha:
-                    return (int)BlendingFactorSrc.OneMinusDstAlpha;
+                    return (int) BlendingFactorSrc.OneMinusDstAlpha;
+                    break;
                 case Blend.DestinationColor:
                     return (int)BlendingFactorSrc.DstColor;
+                    break;
                 case Blend.InverseDestinationColor:
                     return (int)BlendingFactorSrc.OneMinusDstColor;
+                    break;
                 case Blend.BlendFactor:
-                    return (int)((isForAlpha) ? BlendingFactorSrc.ConstantAlpha : BlendingFactorSrc.ConstantColor);
+                    return (int) ((isForAlpha) ? BlendingFactorSrc.ConstantAlpha : BlendingFactorSrc.ConstantColor); 
+                    break;
                 case Blend.InverseBlendFactor:
-                    return (int)((isForAlpha) ? BlendingFactorSrc.OneMinusConstantAlpha : BlendingFactorSrc.OneMinusConstantColor);
+                    return (int)((isForAlpha) ? BlendingFactorSrc.OneMinusConstantAlpha : BlendingFactorSrc.OneMinusConstantColor); 
+                    break;
                 // Ignored...
                 // case Blend.SourceAlphaSaturated:
                 //     break;
@@ -661,30 +675,42 @@ namespace Fusee.Engine
             {
                 case (int)BlendingFactorSrc.Zero:
                     return Blend.Zero;
+                    break;
                 case (int)BlendingFactorSrc.One:
                     return Blend.One;
+                    break;
                 case (int)BlendingFactorDest.SrcColor:
                     return Blend.SourceColor;
+                    break;
                 case (int)BlendingFactorDest.OneMinusSrcColor:
                     return Blend.InverseSourceColor;
+                    break;
                 case (int)BlendingFactorSrc.SrcAlpha:
                     return Blend.SourceAlpha;
+                    break;
                 case (int)BlendingFactorSrc.OneMinusSrcAlpha:
                     return Blend.InverseSourceAlpha;
+                    break;
                 case (int)BlendingFactorSrc.DstAlpha:
                     return Blend.DestinationAlpha;
+                    break;
                 case (int)BlendingFactorSrc.OneMinusDstAlpha:
                     return Blend.InverseDestinationAlpha;
+                    break;
                 case (int)BlendingFactorSrc.DstColor:
                     return Blend.DestinationColor;
+                    break;
                 case (int)BlendingFactorSrc.OneMinusDstColor:
                     return Blend.InverseDestinationColor;
+                    break;
                 case (int)BlendingFactorSrc.ConstantAlpha:
                 case (int)BlendingFactorSrc.ConstantColor:
                     return Blend.BlendFactor;
+                    break;
                 case (int)BlendingFactorSrc.OneMinusConstantAlpha:
                 case (int)BlendingFactorSrc.OneMinusConstantColor:
                     return Blend.InverseBlendFactor;
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException("blend");
             }
@@ -698,7 +724,7 @@ namespace Fusee.Engine
                 case RenderState.FillMode:
                     {
                         PolygonMode pm;
-                        switch ((FillMode)value)
+                        switch ((FillMode) value)
                         {
                             case FillMode.Point:
                                 pm = PolygonMode.Point;
@@ -715,9 +741,10 @@ namespace Fusee.Engine
                         GL.PolygonMode(MaterialFace.FrontAndBack, pm);
                         return;
                     }
+                    break;
                 case RenderState.CullMode:
                     {
-                        switch ((Cull)value)
+                        switch ((Cull) value)
                         {
                             case Cull.None:
                                 GL.Disable(EnableCap.CullFace);
@@ -742,7 +769,7 @@ namespace Fusee.Engine
                 case RenderState.ZFunc:
                     {
                         DepthFunction df;
-                        switch ((Compare)value)
+                        switch ((Compare) value)
                         {
                             case Compare.Never:
                                 df = DepthFunction.Never;
@@ -789,7 +816,7 @@ namespace Fusee.Engine
                 case RenderState.BlendOperation:
                     int alphaMode;
                     GL.GetInteger(GetPName.BlendEquationRgb, out alphaMode);
-                    GL.BlendEquationSeparate(BlendOperationToOgl((BlendOperation)value), (BlendEquationMode)alphaMode);
+                    GL.BlendEquationSeparate(BlendOperationToOgl((BlendOperation) value), (BlendEquationMode) alphaMode);
                     break;
                 case RenderState.BlendOperationAlpha:
                     int rgbMode;
@@ -802,10 +829,10 @@ namespace Fusee.Engine
                         GL.GetInteger(GetPName.BlendDstRgb, out rgbDst);
                         GL.GetInteger(GetPName.BlendSrcAlpha, out alphaSrc);
                         GL.GetInteger(GetPName.BlendDstAlpha, out alphaDst);
-                        GL.BlendFuncSeparate((BlendingFactorSrc)BlendToOgl((Blend)value),
-                                             (BlendingFactorDest)rgbDst,
-                                             (BlendingFactorSrc)alphaSrc,
-                                             (BlendingFactorDest)alphaDst);
+                        GL.BlendFuncSeparate((BlendingFactorSrc) BlendToOgl((Blend) value),
+                                             (BlendingFactorDest) rgbDst, 
+                                             (BlendingFactorSrc) alphaSrc,
+                                             (BlendingFactorDest) alphaDst);
                     }
                     break;
                 case RenderState.DestinationBlend:
@@ -814,10 +841,10 @@ namespace Fusee.Engine
                         GL.GetInteger(GetPName.BlendSrcRgb, out rgbSrc);
                         GL.GetInteger(GetPName.BlendSrcAlpha, out alphaSrc);
                         GL.GetInteger(GetPName.BlendDstAlpha, out alphaDst);
-                        GL.BlendFuncSeparate((BlendingFactorSrc)rgbSrc,
-                                             (BlendingFactorDest)BlendToOgl((Blend)value),
-                                             (BlendingFactorSrc)alphaSrc,
-                                             (BlendingFactorDest)alphaDst);
+                        GL.BlendFuncSeparate((BlendingFactorSrc) rgbSrc,
+                                             (BlendingFactorDest) BlendToOgl((Blend)value), 
+                                             (BlendingFactorSrc) alphaSrc,
+                                             (BlendingFactorDest) alphaDst);
                     }
                     break;
                 case RenderState.SourceBlendAlpha:
@@ -826,10 +853,10 @@ namespace Fusee.Engine
                         GL.GetInteger(GetPName.BlendSrcRgb, out rgbSrc);
                         GL.GetInteger(GetPName.BlendDstRgb, out rgbDst);
                         GL.GetInteger(GetPName.BlendDstAlpha, out alphaDst);
-                        GL.BlendFuncSeparate((BlendingFactorSrc)rgbSrc,
-                                             (BlendingFactorDest)rgbDst,
-                                             (BlendingFactorSrc)BlendToOgl((Blend)value, true),
-                                             (BlendingFactorDest)alphaDst);
+                        GL.BlendFuncSeparate((BlendingFactorSrc) rgbSrc,
+                                             (BlendingFactorDest) rgbDst,
+                                             (BlendingFactorSrc) BlendToOgl((Blend)value, true),
+                                             (BlendingFactorDest) alphaDst);
                     }
                     break;
                 case RenderState.DestinationBlendAlpha:
@@ -838,14 +865,14 @@ namespace Fusee.Engine
                         GL.GetInteger(GetPName.BlendSrcRgb, out rgbSrc);
                         GL.GetInteger(GetPName.BlendDstRgb, out rgbDst);
                         GL.GetInteger(GetPName.BlendSrcAlpha, out alphaSrc);
-                        GL.BlendFuncSeparate((BlendingFactorSrc)rgbSrc,
-                                             (BlendingFactorDest)rgbDst,
-                                             (BlendingFactorSrc)alphaSrc,
-                                             (BlendingFactorDest)BlendToOgl((Blend)value, true));
+                        GL.BlendFuncSeparate((BlendingFactorSrc) rgbSrc,
+                                             (BlendingFactorDest) rgbDst,
+                                             (BlendingFactorSrc) alphaSrc,
+                                             (BlendingFactorDest) BlendToOgl((Blend) value, true));
                     }
                     break;
                 case RenderState.BlendFactor:
-                    GL.BlendColor(Color.FromArgb((int)value));
+                    GL.BlendColor(Color.FromArgb((int) value));
                     break;
                 /* TODO: Implement texture wrapping rahter as a texture property than a "global" render state. This is most
                  * convenient to implment with OpenGL/TK and easier to mimic in DirectX than the other way round.
@@ -872,7 +899,7 @@ namespace Fusee.Engine
                         int pm;
                         FillMode ret;
                         GL.GetInteger(GetPName.PolygonMode, out pm);
-                        switch ((PolygonMode)pm)
+                        switch ((PolygonMode) pm)
                         {
                             case PolygonMode.Point:
                                 ret = FillMode.Point;
@@ -884,25 +911,28 @@ namespace Fusee.Engine
                                 ret = FillMode.Solid;
                                 break;
                             default:
-                                throw new ArgumentOutOfRangeException("pm", "Value " + ((PolygonMode)pm) + " not handled");
+                                throw new ArgumentOutOfRangeException("pm", "Value " + ((PolygonMode) pm) + " not handled");
                         }
-                        return (uint)ret;
+                        return (uint) ret;
                     }
+                    break;
                 case RenderState.CullMode:
                     {
                         int cullFace;
                         GL.GetInteger(GetPName.CullFace, out cullFace);
                         if (cullFace == 0)
-                            return (uint)Cull.None;
+                            return (uint) Cull.None;
                         int frontFace;
                         GL.GetInteger(GetPName.FrontFace, out frontFace);
                         if (frontFace == (int)FrontFaceDirection.Cw)
-                            return (uint)Cull.Clockwise;
-                        return (uint)Cull.Counterclockwise;
-                    }
+                            return (uint) Cull.Clockwise;
+                        return (uint) Cull.Counterclockwise;
+                    }                       
+                    break;
                 case RenderState.Clipping:
                     // clipping is always on in OpenGL - This state is simply ignored
                     return 1; // == true
+                    break;
                 case RenderState.ZFunc:
                     {
                         int depFunc;
@@ -937,13 +967,13 @@ namespace Fusee.Engine
                             default:
                                 throw new ArgumentOutOfRangeException("depFunc", "Value " + ((DepthFunction)depFunc) + " not handled");
                         }
-                        return (uint)ret;
+                        return (uint) ret;
                     }
                 case RenderState.ZEnable:
                     {
                         int depTest;
                         GL.GetInteger(GetPName.DepthTest, out depTest);
-                        return (uint)(depTest);
+                        return (uint) (depTest);
                     }
                 case RenderState.AlphaBlendEnable:
                     {
@@ -951,23 +981,23 @@ namespace Fusee.Engine
                         GL.GetInteger(GetPName.Blend, out blendEnable);
                         return (uint)(blendEnable);
                     }
-                case RenderState.BlendOperation:
+               case RenderState.BlendOperation:
                     {
                         int rgbMode;
                         GL.GetInteger(GetPName.BlendEquationRgb, out rgbMode);
-                        return (uint)BlendOperationFromOgl((BlendEquationMode)rgbMode);
-                    }
+                        return (uint) BlendOperationFromOgl((BlendEquationMode) rgbMode);
+                    } 
                 case RenderState.BlendOperationAlpha:
                     {
                         int alphaMode;
                         GL.GetInteger(GetPName.BlendEquationAlpha, out alphaMode);
-                        return (uint)BlendOperationFromOgl((BlendEquationMode)alphaMode);
-                    }
+                        return (uint) BlendOperationFromOgl((BlendEquationMode)alphaMode);
+                    } 
                 case RenderState.SourceBlend:
                     {
                         int rgbSrc;
                         GL.GetInteger(GetPName.BlendSrcRgb, out rgbSrc);
-                        return (uint)BlendFromOgl(rgbSrc);
+                        return (uint) BlendFromOgl(rgbSrc);
                     }
                 case RenderState.DestinationBlend:
                     {
@@ -990,7 +1020,8 @@ namespace Fusee.Engine
                 case RenderState.BlendFactor:
                     int col;
                     GL.GetInteger(GetPName.BlendColorExt, out col);
-                    return (uint)col;
+                    return (uint) col;
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException("renderState");
             }

@@ -76,5 +76,8 @@ namespace Fusee.Engine
         void Render(IMeshImp mr);
         void DebugLine(float3 start, float3 end, float4 color);
         IMeshImp CreateMeshImp();
+        void SetRenderState(RenderState renderState, uint value);
+
+        uint GetRenderState(RenderState renderState);
     }
 }

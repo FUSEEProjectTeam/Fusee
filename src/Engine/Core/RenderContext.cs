@@ -1246,6 +1246,16 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
             set { _rci.ClearDepth = value; }
             get { return _rci.ClearDepth; }
         }
+
+        public void SetRenderState(RenderState renderState, uint value)
+        {
+            _rci.SetRenderState(renderState, value);
+        }
+
+        public uint GetRenderState(RenderState renderState)
+        {
+            return _rci.GetRenderState(renderState);
+        }
     }
 
 }
