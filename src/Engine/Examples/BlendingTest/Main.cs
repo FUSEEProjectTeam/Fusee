@@ -47,7 +47,7 @@ namespace Examples.BlendingTest
             
             RC.SetRenderState(RenderState.AlphaBlendEnable, (uint) 1);
 
-            RC.SetRenderState(RenderState.BlendFactor, (uint)new ColorUint(0.5f, 0.5f, 0.5f, 0.5f));
+            RC.SetRenderState(RenderState.BlendFactor, (uint)new ColorUint(0.25f, 0.25f, 0.25f, 0.25f));
             RC.SetRenderState(RenderState.BlendOperation, (uint)(BlendOperation.Add));
             RC.SetRenderState(RenderState.SourceBlend, (uint)(Blend.BlendFactor));
             RC.SetRenderState(RenderState.DestinationBlend, (uint)(Blend.InverseBlendFactor));
