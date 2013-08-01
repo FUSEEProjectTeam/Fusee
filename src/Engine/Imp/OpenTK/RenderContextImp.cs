@@ -776,15 +776,15 @@ namespace Fusee.Engine
                     break;
                 case RenderState.ZEnable:
                     if (value == 0)
-                        GL.Enable(EnableCap.DepthTest);
-                    else
                         GL.Disable(EnableCap.DepthTest);
+                    else
+                        GL.Enable(EnableCap.DepthTest);
                     break;
                 case RenderState.AlphaBlendEnable:
                     if (value == 0)
-                        GL.Enable(EnableCap.Blend);
-                    else
                         GL.Disable(EnableCap.Blend);
+                    else
+                        GL.Enable(EnableCap.Blend);
                     break;
                 case RenderState.BlendOperation:
                     int alphaMode;
