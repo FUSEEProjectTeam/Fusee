@@ -224,14 +224,26 @@ namespace Fusee.Engine
 
             // KeysDown - this is after the first frame (remove them!)
             var keysToModify2 = new List<int>();
-            keysToModify2.AddRange(from b in _keysDown where b.Value select b.Key);
+
+// ReSharper disable once LoopCanBeConvertedToQuery
+            foreach (var i in _keysDown)
+            {
+                if (i.Value)
+                    keysToModify2.Add(i.Key);
+            }
 
             foreach (var key in keysToModify2)
                 _keysDown.Remove(key);
 
             // KeysDown - this is the first frame (set them to true!)
             var keysToModify1 = new List<int>();
-            keysToModify1.AddRange(from b in _keysDown where !b.Value select b.Key);
+            
+// ReSharper disable once LoopCanBeConvertedToQuery
+            foreach (var i in _keysDown)
+            {
+                if (!i.Value)
+                    keysToModify1.Add(i.Key);
+            }
 
             foreach (var key in keysToModify1)
                 _keysDown[key] = true;

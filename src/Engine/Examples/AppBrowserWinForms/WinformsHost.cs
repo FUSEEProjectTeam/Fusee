@@ -129,6 +129,18 @@ namespace Examples.WinFormsFusee
             // ignore - we create our own timer.
         }
 
+        public void SetMousePos(Point pos)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Point SetMouseToCenter()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool CursorVisible { get; set; }
+
         public Point GetMousePos()
         {
             return new Point {x = Cursor.Position.X, y = Cursor.Position.Y};
