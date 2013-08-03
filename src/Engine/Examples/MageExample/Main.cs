@@ -3,6 +3,7 @@ using Fusee.Math;
 
 namespace Examples.MageExample
 {
+    [FuseeApplication(Name = "Mage Example", Description = "Sample displaying a more complex character.")]
     public class MageExample : RenderCanvas
     {
         #region Shader

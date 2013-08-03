@@ -56,6 +56,7 @@
     <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Attributes.cs" />
     <Compile Include="IAudioStream.cs" />
     <Compile Include="IInputImp.cs" />
     <Compile Include="ImageData.cs" />

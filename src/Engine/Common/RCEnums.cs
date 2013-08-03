@@ -238,6 +238,7 @@ namespace Fusee.Engine
     /// <summary>
     /// Specifies constants that define which mouse button was pressed.
     /// </summary>
+    [Flags]
     public enum MouseButtons : int
     {
         Unknown = 0,

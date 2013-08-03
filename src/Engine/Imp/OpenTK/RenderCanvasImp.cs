@@ -1,29 +1,67 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
-using MathHelper = OpenTK.MathHelper;
+using OpenTK.Platform;
 
 namespace Fusee.Engine
 {
-    public class RenderCanvasImp : IRenderCanvasImp
+    /// <summary>
+    /// Use this class as a base class for implementing connectivity to whatever windows system you intend to support.
+    /// Inherit from this class, make sure to call the constructor with the window handle to render on, implement the
+    /// Run method and call the DoInit, DoUnload, DoRender and DoResize methods at appropriate incidences. Make sure
+    /// that _width and _height are set to the new window size before calling DoResize.
+    /// In addition you might have your connectivity class as well implement the <see cref="IInputImp"/> interface because
+    /// often mouse and keyboard input are tied to the windows output.
+    /// </summary>
+    public abstract class RenderCanvasWindowImp : RenderCanvasImpBase, IRenderCanvasImp, IDisposable
     {
-        internal int _width;
+        internal IWindowInfo _wi;
+        internal IGraphicsContext _context;
+        internal GraphicsMode _mode;
+        internal int _major, _minor;
+        internal GraphicsContextFlags _flags;
+        public string Caption { get; set; }
+        private double _lastTimeTick;
+        private double _deltaFrameTime;
+        private static Stopwatch _daWatch;
 
-        public int Width
+        public RenderCanvasWindowImp(IntPtr windowHandle)
         {
-            get { return _width; }
-            set
-            {
-                _gameWindow.Width = value;
-                _width = value;
-                ResizeWindow();
-            }
-        }
+            // _mode = GraphicsMode.Default;
+            bool antiAliasing = true;
+            _mode = new GraphicsMode(32, 24, 0, (antiAliasing) ? 8 : 0);
+            _major = 1;
+            _minor = 0;
+            _flags = GraphicsContextFlags.Default;
+            _wi = Utilities.CreateWindowsWindowInfo(windowHandle);
 
-        internal int _height;
+            try
+            {
+                _context = new GraphicsContext(_mode, _wi, _major, _minor, _flags);
+            }
+            catch
+            {
+                antiAliasing = false;
+                _mode = new GraphicsMode(32, 24, 0, (antiAliasing) ? 8 : 0);
+                _context = new GraphicsContext(_mode, _wi, _major, _minor, _flags);
+            }
+            
+            _context.MakeCurrent(_wi);
+            ((IGraphicsContextInternal)_context).LoadAll();
+
+            GL.ClearColor(Color.MidnightBlue);
+
+            GL.Enable(EnableCap.DepthTest);
+            GL.Enable(EnableCap.CullFace);
+
+            // Use VSync!
+            _context.SwapInterval = 1;
+            _lastTimeTick = Timer;
+        }
 
         public int Height
         {
@@ -50,15 +88,103 @@ namespace Fusee.Engine
         public double DeltaTime
         {
             get
-            {            
-                return _gameWindow.DeltaTime; 
+            {
+                return _deltaFrameTime;
+            }
+        }
+
+
+        public bool VerticalSync
+        {
+            get { return _context.SwapInterval == 1; }
+            set { _context.SwapInterval = (value) ? 1 : 0; }
+        }
+
+        public static double Timer
+        {
+            get
+            {
+                if (_daWatch == null)
+                {
+                    _daWatch = new Stopwatch();
+                    _daWatch.Start();
+                }
+                return ((double)_daWatch.ElapsedTicks) / ((double)Stopwatch.Frequency);
+            }
+        }
+
+        public void Present()
+        {
+            // Recalculate time tick.
+            double newTick = Timer;
+            _deltaFrameTime = newTick - _lastTimeTick;
+            _lastTimeTick = newTick;
+
+            // _context.MakeCurrent(_wi);
+            _context.SwapBuffers();
+        }
+
+        public abstract void Run();
+
+        private bool _disposed = false;
+
+        //Implement IDisposable.
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    // Free other state (managed objects).
+                }
+                // Free your own state (unmanaged objects).
+                _context.Dispose();
+                _context = null;
+                _wi.Dispose();
+                _wi = null;
+                _disposed = true;
+            }
+        }
+
+        // Use C# destructor syntax for finalization code.
+        ~RenderCanvasWindowImp()
+        {
+            // Simply call Dispose(false).
+            Dispose (false);
+        }
+
+    }
+
+    /// <summary>
+    /// This is a default render canvas implementation creating its own rendering window.
+    /// </summary>
+    public class RenderCanvasImp : RenderCanvasImpBase, IRenderCanvasImp
+    {
+        public string Caption
+        {
+            get { return (_gameWindow == null) ? "" : _gameWindow.Title; }
+            set { if (_gameWindow != null) _gameWindow.Title = value; }
+        }
+        public double DeltaTime
+        {
+            get
+            {
+                if (_gameWindow != null)
+                    return _gameWindow.DeltaTime;
+                return 0.01f;
             }
         }
 
         public bool VerticalSync
         {
-            get { return _gameWindow.Context.SwapInterval == 1; }
-            set { _gameWindow.Context.SwapInterval = (value) ? 1 : 0; }
+            get { return (_gameWindow != null) && _gameWindow.Context.SwapInterval == 1; }
+            set { if (_gameWindow != null) _gameWindow.Context.SwapInterval = (value) ? 1 : 0; }
         }
 
         public bool EnableBlending
@@ -75,16 +201,18 @@ namespace Fusee.Engine
 
         internal RenderCanvasGameWindow _gameWindow;
 
-        public RenderCanvasImp ()
+        public RenderCanvasImp()
         {
             _width = 1280;
             _height = System.Math.Min(Screen.PrimaryScreen.Bounds.Height - 100, 720);
-
-            try {
-				_gameWindow = new RenderCanvasGameWindow(this, _width, _height, true);
-			} catch {
+        
+            try
+            {
+		_gameWindow = new RenderCanvasGameWindow(this, _width, _height, true);
+            }
                 _gameWindow = new RenderCanvasGameWindow(this, _width, _height, false);
-			}
+            {
+            }
         }
 
         public void Present()
@@ -98,32 +226,38 @@ namespace Fusee.Engine
             if (_gameWindow != null)
                 _gameWindow.Run(30.0, 0.0);
         }
+    }
 
+    public class RenderCanvasImpBase
+    {
+        protected internal int _width;
+        protected internal int _height;
+        public int Width { get { return _width; }}
+        public int Height { get { return _height; } }
         public event EventHandler<InitEventArgs> Init;
-        public event EventHandler<InitEventArgs> UnLoad; 
-
+        public event EventHandler<InitEventArgs> UnLoad;
         public event EventHandler<RenderEventArgs> Render;
         public event EventHandler<ResizeEventArgs> Resize;
 
-        internal void DoInit()
+        internal protected void DoInit()
         {
             if (Init != null)
                 Init(this, new InitEventArgs());
         }
 
-        internal void DoUnLoad()
+        internal protected void DoUnLoad()
         {
             if (UnLoad != null)
                 UnLoad(this, new InitEventArgs());
         }
 
-        internal void DoRender()
+        internal protected void DoRender()
         {
             if (Render != null)
                 Render(this, new RenderEventArgs());
         }
 
-        internal void DoResize()
+        internal protected void DoResize()
         {
             if (Resize != null)
                 Resize(this, new ResizeEventArgs());

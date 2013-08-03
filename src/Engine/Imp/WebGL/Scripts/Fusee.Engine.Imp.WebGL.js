@@ -107,7 +107,14 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderCanvasImp
         function set_VerticalSync() {
           // not implemented
         }
-    );	
+    );
+    
+	$.Method({ Static: false, Public: true }, "IRenderCanvasImp_set_Caption",
+      new JSIL.MethodSignature(null, [$.String]),
+        function set_Caption() {
+            // not implemented
+        }
+    );
 	
   
     $.Field({ Static: false, Public: false }, "IRenderCanvasImp_Init", $jsilcore.TypeRef("System.EventHandler`1", [$fuseeCommon.TypeRef("Fusee.Engine.MouseEventArgs")]), function ($) {
