@@ -213,7 +213,7 @@ namespace Fusee.Engine
             if (FixMouseAtCenter)
             {
                 p = _inputImp.SetMouseToCenter();
-
+                
                 currX = p.x;
                 currY = p.y;
             }

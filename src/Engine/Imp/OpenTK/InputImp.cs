@@ -41,21 +41,23 @@ namespace Fusee.Engine
 
         public Point SetMouseToCenter()
         {
-            var ctrPoint = new Point
-                {
-                    x = GameWindow.Bounds.Left + (GameWindow.Width/2),
-                    y = GameWindow.Bounds.Top + (GameWindow.Height/2)
-                };
+            var ctrPoint = GetMousePos();
 
-            System.Windows.Forms.Cursor.Position = new System.Drawing.Point(ctrPoint.x, ctrPoint.y);
+            if (_gameWindow.Focused)
+            {
+                ctrPoint.x = _gameWindow.Bounds.Left + (_gameWindow.Width/2);
+                ctrPoint.y = _gameWindow.Bounds.Top + (_gameWindow.Height/2);
+
+                System.Windows.Forms.Cursor.Position = new System.Drawing.Point(ctrPoint.x, ctrPoint.y);
+            }
 
             return ctrPoint;
         }
 
         public bool CursorVisible
         {
-            get { return GameWindow.CursorVisible; }
-            set { GameWindow.CursorVisible = value; }
+            get { return _gameWindow.CursorVisible; }
+            set { _gameWindow.CursorVisible = value; }
         }
 
         public void SetMousePos(Point pos)
