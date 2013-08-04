@@ -75,7 +75,7 @@ namespace Fusee.Engine
                 {
                     // TODO: Use shared uniform paramters - currently SetShader will query the shader params and set all the common uniforms (like matrices and light)
                     _rc.SetShader(_compiledShaders[i]);
-                    _states[i].Apply(_rc);
+                    _rc.SetRenderState(_states[i]);
 
                     // TODO: split up RenderContext.Render into a preparation and a draw call so that we can prepare a mesh once and draw it for each pass.
                     _rc.Render(mesh);

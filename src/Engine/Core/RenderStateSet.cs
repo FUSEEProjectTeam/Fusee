@@ -216,21 +216,22 @@ namespace Fusee.Engine
         #endregion
         */
 
+
         /// <summary>
-        /// Apply this set of render states to the given render context
+        /// Enumerate this set of render states for its contents
         /// </summary>
-        /// <remarks>
-        /// Only the render states actually set (and thus stored) on this render state set are
-        /// applied and thus do change the respective state of the render context. All other state
-        /// values remain unchanged on the passed render context.
-        /// </remarks>
-        /// <param name="rc">The render context to set the render states on.</param>
-        public void Apply(RenderContext rc)
+        /// <value>An enumerator to be used in loops returning a key and its respective value.</value>
+        /// <example>
+        /// Use this enumerator in loops to query a RenderStateSet's contents.
+        /// <code>
+        /// RenderStateSet aRenderStateSet = ...;
+        /// foreach (var state in aRenderStateSet.States)
+        ///     DoSomethingWithState(state.Key, state.Value);
+        /// </code>
+        /// </example>
+        public IEnumerable<KeyValuePair<RenderState, uint>> States
         {
-            foreach (var state in _states)
-            {
-                rc.SetRenderState(state.Key, state.Value);
-            }
+            get { return _states; }
         }
 
         // Currently not supported by FUSEE:
