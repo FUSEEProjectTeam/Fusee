@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using Fusee.Math;
 using Fusee.Engine;
 using LinqForGeometry.Core.Exceptions;
@@ -180,7 +181,6 @@ namespace LinqForGeometry.Core
             SetVertexDefaults();
         }
 
-
         /// <summary>
         /// This method converts the data structure to a fusee readable mesh structure
         /// </summary>
@@ -203,15 +203,21 @@ namespace LinqForGeometry.Core
 
             if (_VertexNormalActive)
             {
-                _NormalCalcStopWatch.Reset();
-                _NormalCalcStopWatch.Start();
-                _LVertexNormals.Clear();
-                foreach (HandleVertex handleVertex in _LverticeHndl)
+                if (System.Diagnostics.Debugger.IsAttached)
                 {
-                    CalcVertexNormal(handleVertex);
+                    _NormalCalcStopWatch.Reset();
+                    _NormalCalcStopWatch.Start();
                 }
-                _NormalCalcStopWatch.Stop();
-                Debug.WriteLine("Time taken to compute vertex normals: " + _NormalCalcStopWatch.ElapsedMilliseconds + " ms");
+
+                _LVertexNormals.Clear();
+                _LverticeHndl.ForEach(CalcVertexNormal);
+
+                if (System.Diagnostics.Debugger.IsAttached)
+                {
+                    _NormalCalcStopWatch.Stop();
+                    Debug.WriteLine("Time taken to compute vertex normals: " + _NormalCalcStopWatch.ElapsedMilliseconds + " ms");
+                }
+
             }
 
             _LtrianglesFuseeMesh.Clear();
