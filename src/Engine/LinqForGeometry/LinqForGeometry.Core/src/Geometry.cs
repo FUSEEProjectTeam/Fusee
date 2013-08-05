@@ -83,7 +83,11 @@ namespace LinqForGeometry.Core
         private List<float3> _LvertexValDefault;
 
         // Various runtime constants
-        private const double _constSmoothingAngle = 50.0;
+        /// <summary>
+        /// The smoothing angle for the edged based vertex normal calculation.
+        /// Default is 89.9degrees.
+        /// </summary>
+        public double _SmoothingAngle = 89.9;
         private const double _constPiFactor = 180 / 3.141592;
 
         // For mesh conversion
@@ -646,11 +650,19 @@ namespace LinqForGeometry.Core
 
             _LfaceNormals.Add(float3.Normalize(n));
 
+            FacePtrCont fc = _LfacePtrCont[faceHandle];
+            _LfacePtrCont[faceHandle] = new FacePtrCont() {
+                _fn = new HandleFaceNormal(_LfaceNormals.Count -1),
+                _h = fc._h
+            };
+
+            /*
             FacePtrCont fh = new FacePtrCont();
-            fh = _LfacePtrCont[faceHandle._DataIndex];
-            fh._fn._DataIndex = _LfaceNormals.Count - 1;
-            _LfacePtrCont.RemoveAt(faceHandle._DataIndex);
-            _LfacePtrCont.Insert(faceHandle._DataIndex, fh);
+            fh = _LfacePtrCont[faceHandle];
+            fh._fn = new HandleFaceNormal(_LfaceNormals.Count - 1);
+            _LfacePtrCont.RemoveAt(faceHandle);
+            _LfacePtrCont.Insert(faceHandle, fh);
+             */
         }
 
         /// <summary>
@@ -692,16 +704,32 @@ namespace LinqForGeometry.Core
                     float dot = float3.Dot(currentFaceNormal, normalToCompare);
                     double acos = System.Math.Acos(dot) * _constPiFactor;
 
-                    if (acos < _constSmoothingAngle)
+                    if (acos < _SmoothingAngle)
                         normalAggregate += float3.Add(normalAggregate, normalToCompare);
                 }
 
                 _LVertexNormals.Add(float3.Normalize(normalAggregate));
+                // new to try code
+
+                HEdgePtrCont currentHedge = _LhedgePtrCont[hedgeIndex];
+                _LhedgePtrCont[hedgeIndex] = new HEdgePtrCont()
+                {
+                    _f = currentHedge._f,
+                    _he = currentHedge._he,
+                    _nhe = currentHedge._nhe,
+                    _v = currentHedge._v,
+                    _vn = new HandleVertexNormal(_LVertexNormals.Count - 1),
+                    _vuv = currentHedge._vuv
+                };
+                // old code
+
+                /*
                 HEdgePtrCont currentHedge = _LhedgePtrCont[hedgeIndex];
                 currentHedge._vn = new HandleVertexNormal(_LVertexNormals.Count - 1);
 
                 _LhedgePtrCont.RemoveAt(hedgeIndex);
                 _LhedgePtrCont.Insert(hedgeIndex, currentHedge);
+                */
             }
         }
 
@@ -931,9 +959,9 @@ namespace LinqForGeometry.Core
         /// <returns>An Enumerable of HalfEdge handles to be used in loops, etc.</returns>
         public IEnumerable<HandleHalfEdge> EnVertexIncomingHalfEdge(HandleVertex vertexHandle)
         {
-            
+
             List<HandleHalfEdge> LTmpIncomingHedges = new List<HandleHalfEdge>();
-            /*
+
             //Get the one outgoing half-edge for the vertex.
             HandleHalfEdge currentHedge = _LvertexPtrCont[vertexHandle]._h;
             //Remember the index of the first half-edge
@@ -952,8 +980,8 @@ namespace LinqForGeometry.Core
             } while (currentHedge != startHedgeIndex);
 
             return LTmpIncomingHedges.AsEnumerable();
-            */
-            return _LhedgePtrCont.Where(e => e._v == vertexHandle).AsParallel().Select(e => _LhedgePtrCont[e._he._DataIndex]._he).AsParallel().ToList();
+
+            //return _LhedgePtrCont.Where(e => e._v == vertexHandle).AsParallel().Select(e => _LhedgePtrCont[e._he._DataIndex]._he).AsParallel().ToList();
             //return (from e in _LhedgePtrCont where e._v == vertexHandle select _LhedgePtrCont[e._he]._he).AsParallel().ToList();
         }
 

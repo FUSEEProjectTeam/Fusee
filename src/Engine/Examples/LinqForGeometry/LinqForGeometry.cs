@@ -128,7 +128,7 @@ namespace Examples.LinqForGeometry
             #region MeshImports
             _Geo = new Geometry();
             //_Geo.LoadAsset("Assets/Models/Cube.obj.model");
-            _Geo.LoadAsset("Assets/Models/Cube_quads.obj.model");
+            //_Geo.LoadAsset("Assets/Models/Cube_quads.obj.model");
             //_Geo.LoadAsset("Assets/Models/Sphere.obj.model");
             //_Geo.LoadAsset("Assets/Models/Sphere_quads.obj.model");
             //_Geo.LoadAsset("Assets/Models/SharedCorners.obj.model");
@@ -136,7 +136,14 @@ namespace Examples.LinqForGeometry
             //_Geo.LoadAsset("Assets/Models/Cylinder_quads.obj.model");
             //_Geo.LoadAsset("Assets/Models/SharedCorners_pro.obj.model");
             //_Geo.LoadAsset("Assets/Models/Teapot.obj.model");
+
+            // Due to copyright reasons, this file will not be delivered with the project.
+            _Geo.LoadAsset("Assets/Models/Hellknight.obj.model");
             #endregion MeshImports
+
+            // Set the smoothing angle for the edge based vertex normal calculation
+            // Feel free to test around.
+            _Geo._SmoothingAngle = 89.0;
 
             // The shader colors here are not supposed to be changed. They don't have an effect. If you want to change the shaders
             // then please change the values in the ShaderChanger() method. These ones are just for declaration.
@@ -146,8 +153,11 @@ namespace Examples.LinqForGeometry
             _vLightShaderParam = _msDiffuse.GetShaderParam("texture1");
 
             //ImageData imgData = RC.LoadImage("Assets/Textures/Cube_Mat_uv.jpg");
-            ImageData imgData = RC.LoadImage("Assets/Textures/world_map.jpg");
+            //ImageData imgData = RC.LoadImage("Assets/Textures/world_map.jpg");
             //ImageData imgData = RC.LoadImage("Assets/Textures/Teapot_Texture.jpg");
+            
+            // Due to copyright reasons, this file will not be delivered with the project.
+            ImageData imgData = RC.LoadImage("Assets/Textures/Hellknight.jpg");
 
             _tex = RC.CreateTexture(imgData);
             #endregion TextureShader
@@ -419,6 +429,7 @@ namespace Examples.LinqForGeometry
                 _Geo._Changes = false;
             }
 
+            #region Shader Render Settings and demo
             if (Input.Instance.IsKeyDown(KeyCodes.F1) && Input.Instance.IsKeyPressed(KeyCodes.LControl))
             {
                 _ShaderChange = true;
@@ -433,6 +444,7 @@ namespace Examples.LinqForGeometry
             {
                 runDemo = !runDemo;
             }
+            #endregion
 
             float4x4 mtxCam = float4x4.LookAt(0, 500, 500, 0, 0, 0, 0, 1, 0);
 
