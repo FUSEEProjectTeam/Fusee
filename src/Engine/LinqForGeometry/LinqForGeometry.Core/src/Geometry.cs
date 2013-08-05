@@ -22,13 +22,23 @@ using LinqForGeometry.Core.PtrContainer;
 
 namespace LinqForGeometry.Core
 {
+    /// <summary>
+    /// This is the main object for the LINQForGeometry project.
+    /// This object contains a complete model as a mesh and the basic iterators.
+    /// </summary>
     public class Geometry
     {
         private WavefrontImporter<float3> _objImporter;
 
         // Boolean helpers
+        /// <summary>
+        /// Bool. Should be set to true, if geometrical changes have been done to the mesh.
+        /// </summary>
         public bool _Changes = false;
         private bool _VertexNormalActive = false;
+        /// <summary>
+        /// Accessor for the _VertexNormalActive Var. Set this to true to enable vertex normal calculation and false to not do the calculation.
+        /// </summary>
         public bool _DoCalcVertexNormals
         {
             set { _VertexNormalActive = value; }
@@ -37,8 +47,17 @@ namespace LinqForGeometry.Core
         private bool _UsesTriangles = false;
 
         // Handles to pointer containers
+        /// <summary>
+        /// This list contains the handles to vertices.
+        /// </summary>
         public List<HandleVertex> _LverticeHndl;
+        /// <summary>
+        /// This list contains handles to edges
+        /// </summary>
         public List<HandleEdge> _LedgeHndl;
+        /// <summary>
+        /// This list contains handles to faces
+        /// </summary>
         public List<HandleFace> _LfaceHndl;
 
         // Pointer containers
@@ -48,14 +67,23 @@ namespace LinqForGeometry.Core
         private List<FacePtrCont> _LfacePtrCont;
 
         // Real data
+        /// <summary>
+        /// Contains real vertex data as float3.
+        /// </summary>
         public List<float3> _LvertexVal;
+        /// <summary>
+        /// Contains real face normal data as float3.
+        /// </summary>
         public List<float3> _LfaceNormals;
+        /// <summary>
+        /// Contains real vertex normal data as float3
+        /// </summary>
         public List<float3> _LVertexNormals;
         private List<float2> _LuvCoordinates;
         private List<float3> _LvertexValDefault;
 
         // Various runtime constants
-        private const double _constSmoothingAngle = 89.999;
+        private const double _constSmoothingAngle = 50.0;
         private const double _constPiFactor = 180 / 3.141592;
 
         // For mesh conversion
@@ -152,6 +180,7 @@ namespace LinqForGeometry.Core
         /// <summary>
         /// This method converts the data structure to a fusee readable mesh structure
         /// </summary>
+        /// <param name="shouldUseTriangulation">Boolean. True if the mesh should be triangulated.</param>
         /// <returns>A fusee readable Mesh object</returns>
         public Mesh ToMesh(bool shouldUseTriangulation = true)
         {
@@ -191,7 +220,7 @@ namespace LinqForGeometry.Core
                 foreach (HEdgePtrCont currentContainer in EnFaceAdjacentHalfEdges(faceHandle).Select(handleHalfEdge => _LhedgePtrCont[handleHalfEdge]))
                 {
                     _LvertDataFuseeMesh.Add(_LvertexVal[currentContainer._v]);
-                    if (_VertexNormalActive)
+                    if (_VertexNormalActive || _LVertexNormals != null)
                     {
                         if (currentContainer._vn.isValid)
                             _LvertNormalsFuseeMesh.Add(_LVertexNormals[currentContainer._vn]);
@@ -207,7 +236,7 @@ namespace LinqForGeometry.Core
             Mesh fuseeMesh = new Mesh();
             fuseeMesh.Vertices = _LvertDataFuseeMesh.ToArray();
 
-            if (_VertexNormalActive)
+            if (_VertexNormalActive || _LvertNormalsFuseeMesh != null)
                 fuseeMesh.Normals = _LvertNormalsFuseeMesh.ToArray();
 
             fuseeMesh.UVs = _LvertuvFuseeMesh.ToArray();
@@ -312,7 +341,8 @@ namespace LinqForGeometry.Core
         /// Adds a vertex to the geometry container.
         /// Will return a handle to the newly inserted or still existing vertex.
         /// </summary>
-        /// <param name="val"></param>
+        /// <param name="val">float3 value to insert</param>
+        /// <returns>Returns a handle to the just inserted vertex or a handle to an existing one because the given one was already inserterd.</returns>
         public HandleVertex AddVertex(float3 val)
         {
             int index = DoesVertexExist(val);
@@ -445,8 +475,9 @@ namespace LinqForGeometry.Core
         /// 3) Creates an edge pointer container and adds it to the geo container.
         /// 4) returns a handle to an edge
         /// </summary>
-        /// <param name="hv1">HandleVertex from which vertex</param>
-        /// <param name="hv2">Handlevertex to which vertex</param>
+        /// <param name="fromVert">HandleVertex from which vertex</param>
+        /// <param name="toVert">Handlevertex to which vertex</param>
+        /// <returns>Returns a handle to the half-edge that has just been inserted</returns>
         public HandleHalfEdge CreateConnection(HandleVertex fromVert, HandleVertex toVert)
         {
             // Check if the connection does already exist.
@@ -581,18 +612,24 @@ namespace LinqForGeometry.Core
                 return new HandleEdge() { _DataIndex = handleEdge._DataIndex };
             }
              * */
+            /*
             int index = -1;
             index = _LedgePtrCont.FindIndex(
                     edgePtrCont => _LhedgePtrCont[edgePtrCont._he1._DataIndex]._v._DataIndex == fromVert._DataIndex && _LhedgePtrCont[edgePtrCont._he2._DataIndex]._v._DataIndex == toVert._DataIndex || _LhedgePtrCont[edgePtrCont._he1._DataIndex]._v._DataIndex == toVert._DataIndex && _LhedgePtrCont[edgePtrCont._he2._DataIndex]._v._DataIndex == fromVert._DataIndex
                     );
             return new HandleEdge(index);
+             */
+            return new HandleEdge(
+                _LedgePtrCont.FindIndex(
+                    edgePtrCont => _LhedgePtrCont[edgePtrCont._he1]._v == fromVert && _LhedgePtrCont[edgePtrCont._he2]._v == toVert || _LhedgePtrCont[edgePtrCont._he1]._v._DataIndex == toVert && _LhedgePtrCont[edgePtrCont._he2]._v == fromVert)
+                );
         }
 
         /// <summary>
         /// This method adds a face normal vector to a list.
         /// The vector is calculated for the face which handle the method expects.
         /// </summary>
-        /// <param name="handleFace">Handle to a face to calculate the normal for.</param>
+        /// <param name="faceHandle">Handle to a face to calculate the normal for.</param>
         public void CalcFaceNormal(HandleFace faceHandle)
         {
             List<HandleVertex> tmpList = EnFaceAdjacentVertices(faceHandle).ToList();
@@ -673,7 +710,7 @@ namespace LinqForGeometry.Core
         /// Is called after a face is inserted.
         /// </summary>
         /// <param name="edgeList">A list of edges that belong to a specific face</param>
-        public void UpdateCWHedges(List<HandleEdge> edgeList)
+        private void UpdateCWHedges(List<HandleEdge> edgeList)
         {
             // Proceed the loop for every edge and connect "hedge1" to the next hedge.
             for (int i = 0; i < edgeList.Count; i++)
@@ -896,6 +933,7 @@ namespace LinqForGeometry.Core
         {
             
             List<HandleHalfEdge> LTmpIncomingHedges = new List<HandleHalfEdge>();
+            /*
             //Get the one outgoing half-edge for the vertex.
             HandleHalfEdge currentHedge = _LvertexPtrCont[vertexHandle]._h;
             //Remember the index of the first half-edge
@@ -914,8 +952,8 @@ namespace LinqForGeometry.Core
             } while (currentHedge != startHedgeIndex);
 
             return LTmpIncomingHedges.AsEnumerable();
-            
-            //return _LhedgePtrCont.Where(e => e._v == vertexHandle).AsParallel().Select(e => _LhedgePtrCont[e._he._DataIndex]._he).AsParallel().ToList();
+            */
+            return _LhedgePtrCont.Where(e => e._v == vertexHandle).AsParallel().Select(e => _LhedgePtrCont[e._he._DataIndex]._he).AsParallel().ToList();
             //return (from e in _LhedgePtrCont where e._v == vertexHandle select _LhedgePtrCont[e._he]._he).AsParallel().ToList();
         }
 
@@ -990,6 +1028,7 @@ namespace LinqForGeometry.Core
         /// <summary>
         /// Resets the geometry object to default scaling etc.
         /// </summary>
+        /// <returns>Boolean. True if succesful.</returns>
         public bool ResetGeometryToDefault()
         {
             try

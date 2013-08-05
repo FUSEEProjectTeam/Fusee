@@ -30,7 +30,7 @@ namespace LinqForGeometry.Core.Importer
         // GeometryData related
         internal List<GeoFace> _LgeoFaces;
         internal List<float2> _LuvCoords;
-        public List<KeyValuePair<int, int>> _LKVuvandvert;
+        private List<KeyValuePair<int, int>> _LKVuvandvert;
 
         public WavefrontImporter()
         {

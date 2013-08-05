@@ -32,7 +32,7 @@ namespace LinqForGeometry.Core.Handles
         /// <summary>
         /// Implicitly converts the Handle to an integer value.
         /// </summary>
-        /// <param name="h">Expects a 'HandleVertex' struct as param.</param>
+        /// <param name="handle">Expects a 'HandleVertex' struct as param.</param>
         /// <returns>Returns an int 'adress' value.</returns>
         public static implicit operator int(HandleVertexUV handle)
         {

@@ -9,6 +9,8 @@
 	Mr. Prof. W. Walter
 */
 
+using System;
+using System.Diagnostics;
 using Fusee.Engine;
 using Fusee.Math;
 using Geometry = LinqForGeometry.Core.Geometry;
@@ -19,7 +21,7 @@ namespace Examples.LinqForGeometry
     /// <summary>
     /// This example is used to test the LinqForGeometry data structure.
     /// It provides different methods to manipulate geometry data !DIRECTLY! on the data structure.
-    /// This should not be used in productive code.
+    /// This should rather not be used in productive game code but in editing softare of for special purposes.
     /// You want to use the transformation algorithms fusee provides to manipulate data.
     /// The here shown transformation algorithms are not ment to be used every frame in an engine. They are just examples for whats possible with the data structure.
     /// </summary>
@@ -93,17 +95,20 @@ namespace Examples.LinqForGeometry
 
         private ShaderProgram _spColor;
         private ShaderProgram _msDiffuse;
-
         private IShaderParam _colorParam;
         private IShaderParam _vLightShaderParam;
-
         private ImageData _imgData;
         private ITexture _tex;
-
+        
+        // The LFG object.
         private Geometry _Geo;
 
+        // Control stuff.
         private float _MovementSpeed = 10.0f;
         private float _InvertMouseAxis = -1.0f;
+        private float _demotimeDone = 0f;
+        private int demoRaxis = 0;
+        private bool runDemo = false;
 
         /// <summary>
         /// Const variable for shader testing.
@@ -120,32 +125,28 @@ namespace Examples.LinqForGeometry
 
         public override void Init()
         {
-            // Use the Fusee MeshReader to test against mine...
-            //_FuseeMesh = MeshReader.LoadMesh("Assets/Models/Cube.obj.model");
-            //_FuseeMesh = MeshReader.LoadMesh("Assets/Models/Sphere.obj.model");
-            //_FuseeMesh = MeshReader.LoadMesh("Assets/Models/Teapot.obj.model");
-            //_FuseeMesh = MeshReader.LoadMesh("Assets/Models/Teapot_triangular.obj.model");
-
             #region MeshImports
             _Geo = new Geometry();
             //_Geo.LoadAsset("Assets/Models/Cube.obj.model");
-            //_Geo.LoadAsset("Assets/Models/Cube_quads.obj.model");
+            _Geo.LoadAsset("Assets/Models/Cube_quads.obj.model");
             //_Geo.LoadAsset("Assets/Models/Sphere.obj.model");
             //_Geo.LoadAsset("Assets/Models/Sphere_quads.obj.model");
-            _Geo.LoadAsset("Assets/Models/Teapot.obj.model");
             //_Geo.LoadAsset("Assets/Models/SharedCorners.obj.model");
             //_Geo.LoadAsset("Assets/Models/Cylinder.obj.model");
             //_Geo.LoadAsset("Assets/Models/Cylinder_quads.obj.model");
             //_Geo.LoadAsset("Assets/Models/SharedCorners_pro.obj.model");
-            //_Geo.LoadAsset("Assets/Models/bun_zipper_res4.obj.model");
+            //_Geo.LoadAsset("Assets/Models/Teapot.obj.model");
             #endregion MeshImports
 
+            // The shader colors here are not supposed to be changed. They don't have an effect. If you want to change the shaders
+            // then please change the values in the ShaderChanger() method. These ones are just for declaration.
+            #region Shaders
             #region TextureShader
             _msDiffuse = MoreShaders.GetShader("diffuse", RC);
             _vLightShaderParam = _msDiffuse.GetShaderParam("texture1");
 
-            ImageData imgData = RC.LoadImage("Assets/Textures/Cube_Mat_uv.jpg");
-            //ImageData imgData = RC.LoadImage("Assets/Textures/world_map.jpg");
+            //ImageData imgData = RC.LoadImage("Assets/Textures/Cube_Mat_uv.jpg");
+            ImageData imgData = RC.LoadImage("Assets/Textures/world_map.jpg");
             //ImageData imgData = RC.LoadImage("Assets/Textures/Teapot_Texture.jpg");
 
             _tex = RC.CreateTexture(imgData);
@@ -154,34 +155,40 @@ namespace Examples.LinqForGeometry
             #region ColorShader
             _spColor = MoreShaders.GetShader("simple", RC);
             _colorParam = _spColor.GetShaderParam("vColor");
-            #endregion ColorShader
 
             RC.SetShader(_spColor);
-            RC.SetShaderParam(_colorParam, new float4(0.5f, 0.8f, 0, 1));
+            RC.SetShaderParam(_colorParam, new float4(0f, 0f, 0f, 1));
+            #endregion ColorShader
 
             #region LightPos
+
             RC.SetLightActive(0, 0f);
-            //RC.SetLightPosition(0, new float3(0, 200, 0));
             RC.SetLightAmbient(0, new float4(0.0f, 0.0f, 0.0f, 1.0f));
             RC.SetLightDiffuse(0, new float4(1.0f, 1.0f, 1.0f, 1.0f));
             RC.SetLightDirection(0, new float3(0.0f, -1.0f, 0.0f));
 
             RC.SetLightActive(1, 0f);
-            //RC.SetLightPosition(1, new float3(-200, 0, 0));
             RC.SetLightAmbient(1, new float4(0.0f, 0.0f, 0.0f, 1.0f));
             RC.SetLightDiffuse(1, new float4(0.5f, 0.5f, 0.5f, 1.0f));
             RC.SetLightDirection(1, new float3(1.0f, 0.0f, 0.0f));
-            #endregion LightPos
 
+            #endregion LightPos
+            #endregion
+
+            // Convert the loaded lfg model to a fusee mesh the first time.
             _lfgmesh = _Geo.ToMesh();
 
-            RC.ClearColor = new float4(0.3f, 0.3f, 0.3f, 1f);
+            RC.ClearColor = new float4(0.2f, 0.2f, 0.2f, 1f);
         }
 
         public override void RenderAFrame()
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
             PullUserInput();
+
+            if (runDemo)
+                DemoRotation(3, 1f);
+
             RC.Render(_lfgmesh);
             //RC.Render(_FuseeMesh);
 
@@ -422,6 +429,10 @@ namespace Examples.LinqForGeometry
                 _ShaderChange = true;
                 _ShaderType = 1;
             }
+            else if (Input.Instance.IsKeyDown(KeyCodes.F3) && Input.Instance.IsKeyDown(KeyCodes.LControl))
+            {
+                runDemo = !runDemo;
+            }
 
             float4x4 mtxCam = float4x4.LookAt(0, 500, 500, 0, 0, 0, 0, 1, 0);
 
@@ -452,7 +463,7 @@ namespace Examples.LinqForGeometry
             {
                 case 0:
                     RC.SetShader(_spColor);
-                    RC.SetShaderParam(_colorParam, new float4(0.5f, 0.8f, 0, 1));
+                    RC.SetShaderParam(_colorParam, new float4(0.8f, 0.0f, 0, 1));
                     RC.SetLightActive(0, 0f);
                     RC.SetLightActive(1, 0f);
                     break;
@@ -467,6 +478,48 @@ namespace Examples.LinqForGeometry
             }
 
             _ShaderChange = false;
+        }
+
+        /// <summary>
+        /// This method is used for a demo rotation on the models. It uses an interval to rotate in one direction.
+        /// </summary>
+        /// <param name="intervall">A interval in seconds. e.g. 3.0f for 3 sec.</param>
+        /// <param name="rSpeed">The rotation speed. Typically 1.0f</param>
+        private void DemoRotation(float intervall, float rSpeed)
+        {
+            if (_demotimeDone < intervall)
+            {
+                float deltaTime = (float)Time.Instance.DeltaTime;
+
+                if (demoRaxis == 0)
+                    Transformations.RotateX(rSpeed * deltaTime, ref _Geo);
+                if (demoRaxis == 1)
+                    Transformations.RotateY(rSpeed * deltaTime, ref _Geo);
+                if (demoRaxis == 2)
+                    Transformations.RotateZ(rSpeed * deltaTime, ref _Geo);
+
+                _Geo._Changes = true;
+                _lfgmesh = _Geo.ToMesh();
+                _Geo._Changes = false;
+
+                _demotimeDone += deltaTime;
+                Debug.WriteLine("demoTimedone: " + _demotimeDone + "ms");
+            }
+            else
+            {
+                _demotimeDone = 0;
+                if (demoRaxis < 2)
+                {
+                    demoRaxis++;
+                }
+                else
+                {
+                    demoRaxis = 0;
+                }
+            }
+
+
+
         }
 
     }
