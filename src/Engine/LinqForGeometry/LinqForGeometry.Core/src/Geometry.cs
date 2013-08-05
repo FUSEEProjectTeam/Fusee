@@ -324,14 +324,35 @@ namespace LinqForGeometry.Core
                 LtmpFaces.Add(f1H);
                 _LfacePtrCont.Add(f1Cont);
 
-                _LhedgePtrCont.RemoveAt(h1H);
-                _LhedgePtrCont.Insert(h1H, h1Cont);
+                _LhedgePtrCont[h1H] = new HEdgePtrCont()
+                {
+                    _f = h1Cont._f,
+                    _he = h1Cont._he,
+                    _nhe = h1Cont._nhe,
+                    _v = h1Cont._v,
+                    _vn = h1Cont._vn,
+                    _vuv = h1Cont._vuv
+                };
 
-                _LhedgePtrCont.RemoveAt(h2H);
-                _LhedgePtrCont.Insert(h2H, h2Cont);
+                _LhedgePtrCont[h2H] = new HEdgePtrCont()
+                {
+                    _f = h2Cont._f,
+                    _he = h2Cont._he,
+                    _nhe = h2Cont._nhe,
+                    _v = h2Cont._v,
+                    _vn = h2Cont._vn,
+                    _vuv = h2Cont._vuv
+                };
 
-                _LhedgePtrCont.RemoveAt(hlH);
-                _LhedgePtrCont.Insert(hlH, hlCont);
+                _LhedgePtrCont[hlH] = new HEdgePtrCont()
+                {
+                    _f = hlCont._f,
+                    _he = hlCont._he,
+                    _nhe = hlCont._nhe,
+                    _v = hlCont._v,
+                    _vn = hlCont._vn,
+                    _vuv = hlCont._vuv
+                };
             }
 
             foreach (HandleFace handleFace in LtmpFaces)
@@ -461,8 +482,17 @@ namespace LinqForGeometry.Core
                     HandleVertexUV currentUV = i + 1 < LHandleUVsForFace.Count ? LHandleUVsForFace[i + 1] : LHandleUVsForFace[0];
                     hedge._vuv = currentUV;
                 }
-                _LhedgePtrCont.RemoveAt(currentHedge);
-                _LhedgePtrCont.Insert(currentHedge, hedge);
+                //_LhedgePtrCont.RemoveAt(currentHedge);
+                //_LhedgePtrCont.Insert(currentHedge, hedge);
+                _LhedgePtrCont[currentHedge] = new HEdgePtrCont()
+                {
+                    _f = hedge._f,
+                    _he = hedge._he,
+                    _nhe = hedge._nhe,
+                    _v = hedge._v,
+                    _vn = hedge._vn,
+                    _vuv = hedge._vuv
+                };
             }
 
             // Set the half-edge the face points to.
@@ -531,8 +561,15 @@ namespace LinqForGeometry.Core
             HEdgePtrCont hedge = _LhedgePtrCont[hedgeToUse];
             hedge._f = new HandleFace(_LfacePtrCont.Count - 1);
 
-            _LhedgePtrCont.RemoveAt(hedgeToUse);
-            _LhedgePtrCont.Insert(hedgeToUse, hedge);
+            _LhedgePtrCont[hedgeToUse] = new HEdgePtrCont()
+            {
+                _f = hedge._f,
+                _he = hedge._he,
+                _nhe = hedge._nhe,
+                _v = hedge._v,
+                _vn = hedge._vn,
+                _vuv = hedge._vuv
+            };
 
             return hedgeToUse;
         }
@@ -584,14 +621,12 @@ namespace LinqForGeometry.Core
             if (!vertFrom._h.isValid)
             {
                 vertFrom._h = _LedgePtrCont[_LedgePtrCont.Count - 1]._he1;
-                _LvertexPtrCont.RemoveAt(fromVert);
-                _LvertexPtrCont.Insert(fromVert, vertFrom);
+                _LvertexPtrCont[fromVert] = new VertexPtrCont() { _h = vertFrom._h };
             }
             if (!vertTo._h.isValid)
             {
                 vertTo._h = _LedgePtrCont[_LedgePtrCont.Count - 1]._he2;
-                _LvertexPtrCont.RemoveAt(toVert);
-                _LvertexPtrCont.Insert(toVert, vertTo);
+                _LvertexPtrCont[toVert] = new VertexPtrCont() { _h = vertTo._h };
             }
 
             return _LedgePtrCont.Last()._he1;
@@ -605,24 +640,6 @@ namespace LinqForGeometry.Core
         /// <returns></returns>
         private HandleEdge DoesConnectionExist(HandleVertex fromVert, HandleVertex toVert)
         {
-            /*
-            var selection = from edge in _LedgeHndl
-                            where _LhedgePtrCont[_LedgePtrCont[edge]._he1]._v == fromVert && _LhedgePtrCont[_LedgePtrCont[edge]._he2]._v == toVert
-                                  || _LhedgePtrCont[_LedgePtrCont[edge]._he1]._v == toVert && _LhedgePtrCont[_LedgePtrCont[edge]._he2]._v == fromVert
-                            select edge;
-
-            foreach (HandleEdge handleEdge in selection)
-            {
-                return new HandleEdge() { _DataIndex = handleEdge._DataIndex };
-            }
-             * */
-            /*
-            int index = -1;
-            index = _LedgePtrCont.FindIndex(
-                    edgePtrCont => _LhedgePtrCont[edgePtrCont._he1._DataIndex]._v._DataIndex == fromVert._DataIndex && _LhedgePtrCont[edgePtrCont._he2._DataIndex]._v._DataIndex == toVert._DataIndex || _LhedgePtrCont[edgePtrCont._he1._DataIndex]._v._DataIndex == toVert._DataIndex && _LhedgePtrCont[edgePtrCont._he2._DataIndex]._v._DataIndex == fromVert._DataIndex
-                    );
-            return new HandleEdge(index);
-             */
             return new HandleEdge(
                 _LedgePtrCont.FindIndex(
                     edgePtrCont => _LhedgePtrCont[edgePtrCont._he1]._v == fromVert && _LhedgePtrCont[edgePtrCont._he2]._v == toVert || _LhedgePtrCont[edgePtrCont._he1]._v._DataIndex == toVert && _LhedgePtrCont[edgePtrCont._he2]._v == fromVert)
@@ -651,18 +668,11 @@ namespace LinqForGeometry.Core
             _LfaceNormals.Add(float3.Normalize(n));
 
             FacePtrCont fc = _LfacePtrCont[faceHandle];
-            _LfacePtrCont[faceHandle] = new FacePtrCont() {
-                _fn = new HandleFaceNormal(_LfaceNormals.Count -1),
+            _LfacePtrCont[faceHandle] = new FacePtrCont()
+            {
+                _fn = new HandleFaceNormal(_LfaceNormals.Count - 1),
                 _h = fc._h
             };
-
-            /*
-            FacePtrCont fh = new FacePtrCont();
-            fh = _LfacePtrCont[faceHandle];
-            fh._fn = new HandleFaceNormal(_LfaceNormals.Count - 1);
-            _LfacePtrCont.RemoveAt(faceHandle);
-            _LfacePtrCont.Insert(faceHandle, fh);
-             */
         }
 
         /// <summary>
@@ -701,15 +711,13 @@ namespace LinqForGeometry.Core
                         continue;
 
                     float3 normalToCompare = _LfaceNormals[_LfacePtrCont[faceIndex2]._fn];
-                    float dot = float3.Dot(currentFaceNormal, normalToCompare);
-                    double acos = System.Math.Acos(dot) * _constPiFactor;
 
-                    if (acos < _SmoothingAngle)
+                    float dot = float3.Dot(currentFaceNormal, normalToCompare);
+                    if (System.Math.Acos(dot) * _constPiFactor < _SmoothingAngle)
                         normalAggregate += float3.Add(normalAggregate, normalToCompare);
                 }
 
                 _LVertexNormals.Add(float3.Normalize(normalAggregate));
-                // new to try code
 
                 HEdgePtrCont currentHedge = _LhedgePtrCont[hedgeIndex];
                 _LhedgePtrCont[hedgeIndex] = new HEdgePtrCont()
@@ -721,15 +729,6 @@ namespace LinqForGeometry.Core
                     _vn = new HandleVertexNormal(_LVertexNormals.Count - 1),
                     _vuv = currentHedge._vuv
                 };
-                // old code
-
-                /*
-                HEdgePtrCont currentHedge = _LhedgePtrCont[hedgeIndex];
-                currentHedge._vn = new HandleVertexNormal(_LVertexNormals.Count - 1);
-
-                _LhedgePtrCont.RemoveAt(hedgeIndex);
-                _LhedgePtrCont.Insert(hedgeIndex, currentHedge);
-                */
             }
         }
 
@@ -761,16 +760,21 @@ namespace LinqForGeometry.Core
                         {
                             // use first
                             hedgePtrCont1._nhe._DataIndex = hedgePtrCont1._nhe._DataIndex == -1 ? nextHedgePtrCont._he._DataIndex - 1 : hedgePtrCont1._nhe._DataIndex;
-                            _LhedgePtrCont.RemoveAt(indexhedge1);
-                            _LhedgePtrCont.Insert(indexhedge1, hedgePtrCont1);
                         }
                         else
                         {
                             // use second
                             hedgePtrCont1._nhe._DataIndex = hedgePtrCont1._nhe._DataIndex == -1 ? nextHedgePtrCont._he._DataIndex : hedgePtrCont1._nhe._DataIndex;
-                            _LhedgePtrCont.RemoveAt(indexhedge1);
-                            _LhedgePtrCont.Insert(indexhedge1, hedgePtrCont1);
                         }
+                        _LhedgePtrCont[indexhedge1] = new HEdgePtrCont()
+                        {
+                            _f = hedgePtrCont1._f,
+                            _he = hedgePtrCont1._he,
+                            _nhe = hedgePtrCont1._nhe,
+                            _v = hedgePtrCont1._v,
+                            _vn = hedgePtrCont1._vn,
+                            _vuv = hedgePtrCont1._vuv
+                        };
                     }
                     else
                     {
@@ -780,16 +784,21 @@ namespace LinqForGeometry.Core
                         {
                             // use first
                             hedgePtrCont1._nhe._DataIndex = hedgePtrCont1._nhe._DataIndex == -1 ? nextHedgePtrCont._he._DataIndex - 1 : hedgePtrCont1._nhe._DataIndex;
-                            _LhedgePtrCont.RemoveAt(indexhedge1);
-                            _LhedgePtrCont.Insert(indexhedge1, hedgePtrCont1);
                         }
                         else
                         {
                             // use second
                             hedgePtrCont1._nhe._DataIndex = hedgePtrCont1._nhe._DataIndex == -1 ? nextHedgePtrCont._he._DataIndex : hedgePtrCont1._nhe._DataIndex;
-                            _LhedgePtrCont.RemoveAt(indexhedge1);
-                            _LhedgePtrCont.Insert(indexhedge1, hedgePtrCont1);
                         }
+                        _LhedgePtrCont[indexhedge1] = new HEdgePtrCont()
+                        {
+                            _f = hedgePtrCont1._f,
+                            _he = hedgePtrCont1._he,
+                            _nhe = hedgePtrCont1._nhe,
+                            _v = hedgePtrCont1._v,
+                            _vn = hedgePtrCont1._vn,
+                            _vuv = hedgePtrCont1._vuv
+                        };
                     }
                     #endregion UseHEdge1
                 }
@@ -806,16 +815,21 @@ namespace LinqForGeometry.Core
                         {
                             // use first
                             hedgePtrCont2._nhe._DataIndex = hedgePtrCont2._nhe._DataIndex == -1 ? nextHedgePtrCont._he._DataIndex - 1 : hedgePtrCont2._nhe._DataIndex;
-                            _LhedgePtrCont.RemoveAt(indexhedge2);
-                            _LhedgePtrCont.Insert(indexhedge2, hedgePtrCont2);
                         }
                         else
                         {
                             // use second
                             hedgePtrCont2._nhe._DataIndex = hedgePtrCont2._nhe._DataIndex == -1 ? nextHedgePtrCont._he._DataIndex : hedgePtrCont2._nhe._DataIndex;
-                            _LhedgePtrCont.RemoveAt(indexhedge2);
-                            _LhedgePtrCont.Insert(indexhedge2, hedgePtrCont2);
                         }
+                        _LhedgePtrCont[indexhedge2] = new HEdgePtrCont()
+                        {
+                            _f = hedgePtrCont2._f,
+                            _he = hedgePtrCont2._he,
+                            _nhe = hedgePtrCont2._nhe,
+                            _v = hedgePtrCont2._v,
+                            _vn = hedgePtrCont2._vn,
+                            _vuv = hedgePtrCont2._vuv
+                        };
                     }
                     else
                     {
@@ -825,16 +839,21 @@ namespace LinqForGeometry.Core
                         {
                             // use first
                             hedgePtrCont2._nhe._DataIndex = hedgePtrCont2._nhe._DataIndex == -1 ? nextHedgePtrCont._he._DataIndex - 1 : hedgePtrCont2._nhe._DataIndex;
-                            _LhedgePtrCont.RemoveAt(indexhedge2);
-                            _LhedgePtrCont.Insert(indexhedge2, hedgePtrCont2);
                         }
                         else
                         {
                             // use second
                             hedgePtrCont2._nhe._DataIndex = hedgePtrCont2._nhe._DataIndex == -1 ? nextHedgePtrCont._he._DataIndex : hedgePtrCont2._nhe._DataIndex;
-                            _LhedgePtrCont.RemoveAt(indexhedge2);
-                            _LhedgePtrCont.Insert(indexhedge2, hedgePtrCont2);
                         }
+                        _LhedgePtrCont[indexhedge2] = new HEdgePtrCont()
+                        {
+                            _f = hedgePtrCont2._f,
+                            _he = hedgePtrCont2._he,
+                            _nhe = hedgePtrCont2._nhe,
+                            _v = hedgePtrCont2._v,
+                            _vn = hedgePtrCont2._vn,
+                            _vuv = hedgePtrCont2._vuv
+                        };
                     }
                     #endregion UseHEdge2
                 }
@@ -896,18 +915,31 @@ namespace LinqForGeometry.Core
                     {
                         // use the first hedge
                         prevhedge1._nhe._DataIndex = _LhedgePtrCont.Count - 2;
-                        _LhedgePtrCont.RemoveAt(indexPrevhedge1);
-                        _LhedgePtrCont.Insert(indexPrevhedge1, prevhedge1);
+                        _LhedgePtrCont[indexPrevhedge1] = new HEdgePtrCont()
+                        {
+                            _f = prevhedge1._f,
+                            _he = prevhedge1._he,
+                            _nhe = prevhedge1._nhe,
+                            _v = prevhedge1._v,
+                            _vn = prevhedge1._vn,
+                            _vuv = prevhedge1._vuv
+                        };
                     }
                     else
                     {
                         // use the second hedge
                         prevhedge2._nhe._DataIndex = _LhedgePtrCont.Count - 2;
-                        _LhedgePtrCont.RemoveAt(indexPrevhedge2);
-                        _LhedgePtrCont.Insert(indexPrevhedge2, prevhedge2);
+                        _LhedgePtrCont[indexPrevhedge2] = new HEdgePtrCont()
+                        {
+                            _f = prevhedge2._f,
+                            _he = prevhedge2._he,
+                            _nhe = prevhedge2._nhe,
+                            _v = prevhedge2._v,
+                            _vn = prevhedge2._vn,
+                            _vuv = prevhedge2._vuv
+                        };
                     }
 
-                    // New Code end.
                 }
 
             }
@@ -959,7 +991,6 @@ namespace LinqForGeometry.Core
         /// <returns>An Enumerable of HalfEdge handles to be used in loops, etc.</returns>
         public IEnumerable<HandleHalfEdge> EnVertexIncomingHalfEdge(HandleVertex vertexHandle)
         {
-
             List<HandleHalfEdge> LTmpIncomingHedges = new List<HandleHalfEdge>();
 
             //Get the one outgoing half-edge for the vertex.

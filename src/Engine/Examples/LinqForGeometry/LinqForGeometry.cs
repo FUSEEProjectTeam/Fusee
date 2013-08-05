@@ -99,7 +99,7 @@ namespace Examples.LinqForGeometry
         private IShaderParam _vLightShaderParam;
         private ImageData _imgData;
         private ITexture _tex;
-        
+
         // The LFG object.
         private Geometry _Geo;
 
@@ -125,6 +125,8 @@ namespace Examples.LinqForGeometry
 
         public override void Init()
         {
+            VSync = false;
+
             #region MeshImports
             _Geo = new Geometry();
             //_Geo.LoadAsset("Assets/Models/Cube.obj.model");
@@ -155,7 +157,7 @@ namespace Examples.LinqForGeometry
             //ImageData imgData = RC.LoadImage("Assets/Textures/Cube_Mat_uv.jpg");
             //ImageData imgData = RC.LoadImage("Assets/Textures/world_map.jpg");
             //ImageData imgData = RC.LoadImage("Assets/Textures/Teapot_Texture.jpg");
-            
+
             // Due to copyright reasons, this file will not be delivered with the project.
             ImageData imgData = RC.LoadImage("Assets/Textures/Hellknight.jpg");
 
@@ -515,7 +517,6 @@ namespace Examples.LinqForGeometry
                 _Geo._Changes = false;
 
                 _demotimeDone += deltaTime;
-                Debug.WriteLine("demoTimedone: " + _demotimeDone + "ms");
             }
             else
             {
@@ -529,10 +530,8 @@ namespace Examples.LinqForGeometry
                     demoRaxis = 0;
                 }
             }
-
-
-
         }
+
 
     }
 }
