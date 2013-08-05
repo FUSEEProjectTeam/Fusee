@@ -697,7 +697,7 @@ namespace LinqForGeometry.Core
                 // Check if the half-edge is pointing to a face.
                 int faceIndex = _LhedgePtrCont[hedgeIndex]._f;
                 if (faceIndex == -1)
-                    continue;
+                    return;
 
                 float3 currentFaceNormal = _LfaceNormals[_LfacePtrCont[faceIndex]._fn];
                 float3 normalAggregate = new float3();
