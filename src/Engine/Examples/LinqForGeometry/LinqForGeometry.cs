@@ -239,14 +239,14 @@ namespace Examples.LinqForGeometry
             #endregion Mouse
 
             #region Scaling
-            if (Input.Instance.IsKeyDown(KeyCodes.Q))
+            if (Input.Instance.IsKeyPressed(KeyCodes.Q))
             {
                 if (Transformations.Scale(1.1f, 1.1f, 1.1f, ref _Geo))
                 {
                     _Geo._Changes = true;
                 }
             }
-            else if (Input.Instance.IsKeyDown(KeyCodes.A))
+            else if (Input.Instance.IsKeyPressed(KeyCodes.A))
             {
                 if (Transformations.Scale(0.9f, 0.9f, 0.9f, ref _Geo))
                 {
@@ -254,14 +254,14 @@ namespace Examples.LinqForGeometry
                 }
             }
             // Scale only x direction
-            if (Input.Instance.IsKeyDown(KeyCodes.W))
+            if (Input.Instance.IsKeyPressed(KeyCodes.W))
             {
                 if (Transformations.Scale(1.1f, 1.0f, 1.0f, ref _Geo))
                 {
                     _Geo._Changes = true;
                 }
             }
-            else if (Input.Instance.IsKeyDown(KeyCodes.S))
+            else if (Input.Instance.IsKeyPressed(KeyCodes.S))
             {
                 if (Transformations.Scale(0.9f, 1.0f, 1.0f, ref _Geo))
                 {
@@ -270,14 +270,14 @@ namespace Examples.LinqForGeometry
             }
 
             // Scale only y direction
-            if (Input.Instance.IsKeyDown(KeyCodes.E))
+            if (Input.Instance.IsKeyPressed(KeyCodes.E))
             {
                 if (Transformations.Scale(1.0f, 1.1f, 1.0f, ref _Geo))
                 {
                     _Geo._Changes = true;
                 }
             }
-            else if (Input.Instance.IsKeyDown(KeyCodes.D))
+            else if (Input.Instance.IsKeyPressed(KeyCodes.D))
             {
                 if (Transformations.Scale(1.0f, 0.9f, 1.0f, ref _Geo))
                 {
@@ -286,14 +286,14 @@ namespace Examples.LinqForGeometry
             }
 
             // Scale only z direction
-            if (Input.Instance.IsKeyDown(KeyCodes.R))
+            if (Input.Instance.IsKeyPressed(KeyCodes.R))
             {
                 if (Transformations.Scale(1.0f, 1.0f, 1.1f, ref _Geo))
                 {
                     _Geo._Changes = true;
                 }
             }
-            else if (Input.Instance.IsKeyDown(KeyCodes.F))
+            else if (Input.Instance.IsKeyPressed(KeyCodes.F))
             {
                 if (Transformations.Scale(1.0f, 1.0f, 0.9f, ref _Geo))
                 {
@@ -303,42 +303,42 @@ namespace Examples.LinqForGeometry
             #endregion Scaling
 
             #region Translation
-            if (Input.Instance.IsKeyDown(KeyCodes.U))
+            if (Input.Instance.IsKeyPressed(KeyCodes.U))
             {
                 if (Transformations.Translate(0f, (_MovementSpeed * (float)Time.Instance.DeltaTime) * 20, 0f, ref _Geo))
                 {
                     _Geo._Changes = true;
                 }
             }
-            else if (Input.Instance.IsKeyDown(KeyCodes.J))
+            else if (Input.Instance.IsKeyPressed(KeyCodes.J))
             {
                 if (Transformations.Translate(0f, (-_MovementSpeed * (float)Time.Instance.DeltaTime) * 20, 0f, ref _Geo))
                 {
                     _Geo._Changes = true;
                 }
             }
-            if (Input.Instance.IsKeyDown(KeyCodes.H))
+            if (Input.Instance.IsKeyPressed(KeyCodes.H))
             {
                 if (Transformations.Translate(-(_MovementSpeed * (float)Time.Instance.DeltaTime) * 20, 0f, 0f, ref _Geo))
                 {
                     _Geo._Changes = true;
                 }
             }
-            else if (Input.Instance.IsKeyDown(KeyCodes.K))
+            else if (Input.Instance.IsKeyPressed(KeyCodes.K))
             {
                 if (Transformations.Translate((_MovementSpeed * (float)Time.Instance.DeltaTime) * 20, 0f, 0f, ref _Geo))
                 {
                     _Geo._Changes = true;
                 }
             }
-            if (Input.Instance.IsKeyDown(KeyCodes.Z))
+            if (Input.Instance.IsKeyPressed(KeyCodes.Z))
             {
                 if (Transformations.Translate(0f, 0f, -(_MovementSpeed * (float)Time.Instance.DeltaTime) * 20, ref _Geo))
                 {
                     _Geo._Changes = true;
                 }
             }
-            else if (Input.Instance.IsKeyDown(KeyCodes.I))
+            else if (Input.Instance.IsKeyPressed(KeyCodes.I))
             {
                 if (Transformations.Translate(0f, 0f, (_MovementSpeed * (float)Time.Instance.DeltaTime) * 20, ref _Geo))
                 {
@@ -348,14 +348,14 @@ namespace Examples.LinqForGeometry
             #endregion Translation
 
             #region Rotation
-            if (Input.Instance.IsKeyDown(KeyCodes.Up))
+            if (Input.Instance.IsKeyPressed(KeyCodes.Up))
             {
                 if (Transformations.RotateX(1f * (float)Time.Instance.DeltaTime, ref _Geo))
                 {
                     _Geo._Changes = true;
                 }
             }
-            else if (Input.Instance.IsKeyDown(KeyCodes.Down))
+            else if (Input.Instance.IsKeyPressed(KeyCodes.Down))
             {
                 if (Transformations.RotateX(-1f * (float)Time.Instance.DeltaTime, ref _Geo))
                 {
@@ -363,14 +363,14 @@ namespace Examples.LinqForGeometry
                 }
             }
 
-            if (Input.Instance.IsKeyDown(KeyCodes.Left))
+            if (Input.Instance.IsKeyPressed(KeyCodes.Left))
             {
                 if (Transformations.RotateY(1f * (float)Time.Instance.DeltaTime, ref _Geo))
                 {
                     _Geo._Changes = true;
                 }
             }
-            else if (Input.Instance.IsKeyDown(KeyCodes.Right))
+            else if (Input.Instance.IsKeyPressed(KeyCodes.Right))
             {
                 if (Transformations.RotateY(-1f * (float)Time.Instance.DeltaTime, ref _Geo))
                 {
@@ -378,14 +378,14 @@ namespace Examples.LinqForGeometry
                 }
             }
 
-            if (Input.Instance.IsKeyDown(KeyCodes.O))
+            if (Input.Instance.IsKeyPressed(KeyCodes.O))
             {
                 if (Transformations.RotateZ(1f * (float)Time.Instance.DeltaTime, ref _Geo))
                 {
                     _Geo._Changes = true;
                 }
             }
-            else if (Input.Instance.IsKeyDown(KeyCodes.P))
+            else if (Input.Instance.IsKeyPressed(KeyCodes.P))
             {
                 if (Transformations.RotateZ(-1f * (float)Time.Instance.DeltaTime, ref _Geo))
                 {
@@ -419,17 +419,17 @@ namespace Examples.LinqForGeometry
                 _Geo._Changes = false;
             }
 
-            if (Input.Instance.IsKeyDown(KeyCodes.F1) && Input.Instance.IsKeyDown(KeyCodes.LControl))
+            if (Input.Instance.IsKeyDown(KeyCodes.F1) && Input.Instance.IsKeyPressed(KeyCodes.LControl))
             {
                 _ShaderChange = true;
                 _ShaderType = 0;
             }
-            else if (Input.Instance.IsKeyDown(KeyCodes.F2) && Input.Instance.IsKeyDown(KeyCodes.LControl))
+            else if (Input.Instance.IsKeyDown(KeyCodes.F2) && Input.Instance.IsKeyPressed(KeyCodes.LControl))
             {
                 _ShaderChange = true;
                 _ShaderType = 1;
             }
-            else if (Input.Instance.IsKeyDown(KeyCodes.F3) && Input.Instance.IsKeyDown(KeyCodes.LControl))
+            else if (Input.Instance.IsKeyDown(KeyCodes.F3) && Input.Instance.IsKeyPressed(KeyCodes.LControl))
             {
                 runDemo = !runDemo;
             }
