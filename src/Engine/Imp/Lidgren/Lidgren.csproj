@@ -54,6 +54,7 @@
   <ItemGroup>
     <Compile Include="Compression.cs" />
     <Compile Include="Implementor.cs" />
+    <Compile Include="NetworkConnection.cs" />
     <Compile Include="NetworkImp.cs" />
     <Compile Include="NetworkMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

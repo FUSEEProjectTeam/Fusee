@@ -1,6 +1,7 @@
 ﻿// TODO: Comment stuff and remove #pragma
 #pragma warning disable 1591
 
+using System.Collections.Generic;
 using System.Linq;
 using JSIL.Meta;
 
@@ -11,7 +12,6 @@ namespace Fusee.Engine
         private static Network _instance;
 
         private INetworkImp _networkImp;
-
         internal INetworkImp NetworkImp
         {
             set { _networkImp = value; }
@@ -29,6 +29,22 @@ namespace Fusee.Engine
             set { _networkImp.Config = value; }
         }
 
+        public event ConnectionUpdateEvent OnConnectionUpdate
+        {
+            add { _networkImp.ConnectionUpdate += value; }
+            remove { _networkImp.ConnectionUpdate -= value; }
+        }
+
+        public List<INetworkConnection> Connections
+        {
+            get { return _networkImp.Connections; }
+        }
+
+        public string LocalIP
+        {
+            get { return _networkImp.GetLocalIp(); }
+        }
+
         // Start System //
         public void StartPeer()
         {
@@ -37,10 +53,10 @@ namespace Fusee.Engine
 
         public void StartPeer(int port)
         {
-            _networkImp.StartPeer(port);           
+            _networkImp.StartPeer(port);
         }
 
-        // Open Connections //
+        // Connections //
         public void OpenConnection(string host)
         {
             OpenConnection(host, Config.DefaultPort);
@@ -86,17 +102,18 @@ namespace Fusee.Engine
             }
         }
 
-        // Send Messages //
-        public bool SendMessage(string msg)
+        // SendMessage //
+        public bool SendMessage(byte[] msg)
         {
-            return _networkImp.SendMessage(msg);
+            return SendMessage(msg, MessageDelivery.ReliableOrdered, 0);
         }
 
-        public bool SendMessage(object obj, bool compress = false)
+        public bool SendMessage(byte[] msg, MessageDelivery msgDelivery, int channelID)
         {
-            return _networkImp.SendMessage(obj, compress);
+            return _networkImp.SendMessage(msg, msgDelivery, channelID);
         }
-
+        
+        // SendDiscoveryMessage //
         public void SendDiscoveryMessage()
         {
             _networkImp.SendDiscoveryMessage(Config.DefaultPort);

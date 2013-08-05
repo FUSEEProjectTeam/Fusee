@@ -24,6 +24,8 @@ namespace Fusee.Engine
         internal GraphicsMode _mode;
         internal int _major, _minor;
         internal GraphicsContextFlags _flags;
+        public int Width { get; set; }
+        public int Height { get; set; }
         public string Caption { get; set; }
         private double _lastTimeTick;
         private double _deltaFrameTime;
@@ -49,7 +51,7 @@ namespace Fusee.Engine
                 _mode = new GraphicsMode(32, 24, 0, (antiAliasing) ? 8 : 0);
                 _context = new GraphicsContext(_mode, _wi, _major, _minor, _flags);
             }
-            
+
             _context.MakeCurrent(_wi);
             ((IGraphicsContextInternal)_context).LoadAll();
 
@@ -77,6 +79,9 @@ namespace Fusee.Engine
             get { return _context.SwapInterval == 1; }
             set { _context.SwapInterval = (value) ? 1 : 0; }
         }
+
+        public bool EnableBlending { get; set; }
+        public bool Fullscreen { get; set; }
 
         public static double Timer
         {
@@ -134,7 +139,7 @@ namespace Fusee.Engine
         ~RenderCanvasWindowImp()
         {
             // Simply call Dispose(false).
-            Dispose (false);
+            Dispose(false);
         }
 
     }
@@ -144,11 +149,45 @@ namespace Fusee.Engine
     /// </summary>
     public class RenderCanvasImp : RenderCanvasImpBase, IRenderCanvasImp
     {
+        public int Width
+        {
+            get { return _width; }
+            set
+            {
+                _gameWindow.Width = value;
+                _width = value;
+                ResizeWindow();
+            }
+        }
+
+        public int Height
+        {
+            get { return _height; }
+            set
+            {
+                _gameWindow.Height = value;
+                _height = value;
+                ResizeWindow();
+            }
+        }
+
+        private void ResizeWindow()
+        {
+            var width2 = _width / 2;
+            var height2 = _height / 2;
+
+            var scHeight2 = Screen.PrimaryScreen.Bounds.Height / 2;
+            var scWidth2 = Screen.PrimaryScreen.Bounds.Width / 2;
+
+            _gameWindow.Bounds = new Rectangle(scWidth2 - width2, scHeight2 - height2, _width, _height);
+        }
+
         public string Caption
         {
             get { return (_gameWindow == null) ? "" : _gameWindow.Title; }
             set { if (_gameWindow != null) _gameWindow.Title = value; }
         }
+
         public double DeltaTime
         {
             get
@@ -165,13 +204,30 @@ namespace Fusee.Engine
             set { if (_gameWindow != null) _gameWindow.Context.SwapInterval = (value) ? 1 : 0; }
         }
 
+        public bool EnableBlending
+        {
+            get { return _gameWindow.Blending; }
+            set { _gameWindow.Blending = value; }
+        }
+
+        public bool Fullscreen
+        {
+            get { return (_gameWindow.WindowState == WindowState.Fullscreen); }
+            set { _gameWindow.WindowState = (value) ? WindowState.Fullscreen : WindowState.Normal; }
+        }
+
+        public bool Focused
+        {
+            get { return _gameWindow.Focused; }
+        }
+
         internal RenderCanvasGameWindow _gameWindow;
 
         public RenderCanvasImp()
         {
             const int width = 1280;
             var height = System.Math.Min(Screen.PrimaryScreen.Bounds.Height - 100, 720);
-        
+
             try
             {
                 _gameWindow = new RenderCanvasGameWindow(this, width, height, true);
@@ -199,8 +255,7 @@ namespace Fusee.Engine
     {
         protected internal int _width;
         protected internal int _height;
-        public int Width { get { return _width; }}
-        public int Height { get { return _height; } }
+
         public event EventHandler<InitEventArgs> Init;
         public event EventHandler<InitEventArgs> UnLoad;
         public event EventHandler<RenderEventArgs> Render;
@@ -231,17 +286,35 @@ namespace Fusee.Engine
         }
     }
 
-    class RenderCanvasGameWindow : GameWindow   
+    class RenderCanvasGameWindow : GameWindow
     {
         private RenderCanvasImp _renderCanvasImp;
         private double _deltaTime;
+
         public double DeltaTime
         {
             get { return _deltaTime; }
         }
 
+        public bool Blending
+        {
+            get { return GL.IsEnabled(EnableCap.Blend); }
+            set
+            {
+                if (value)
+                {
+                    GL.Enable(EnableCap.Blend);
+                    GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+                }
+                else
+                {
+                    GL.Disable(EnableCap.Blend);
+                }
+            }
+        }
+
         public RenderCanvasGameWindow(RenderCanvasImp renderCanvasImp, int width, int height, bool antiAliasing)
-            : base(width, height, new GraphicsMode(32,24,0,(antiAliasing) ? 8 : 0) /*GraphicsMode.Default*/, "Fusee Engine")
+            : base(width, height, new GraphicsMode(32, 24, 0, (antiAliasing) ? 8 : 0) /*GraphicsMode.Default*/, "Fusee Engine")
         {
             _renderCanvasImp = renderCanvasImp;
         }

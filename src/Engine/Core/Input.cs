@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Fusee.Engine
 {
@@ -22,27 +23,59 @@ namespace Fusee.Engine
                 _inputImp.MouseButtonUp += ButtonUp;
                 _axes = new float[(int)InputAxis.LastAxis];
                 _axesPreviousAbsolute = new float[(int)InputAxis.LastAxis];
-                //_keysPressed = new Dictionary<KeyCodes, bool>();
-                //_buttonsPressed = new Dictionary<MouseButtons, bool>();
+
                 _keysPressed = new Dictionary<int, bool>();
+                _keysDown = new Dictionary<int, bool>();
+
                 _buttonsPressed = new Dictionary<int, bool>();
             }
         }
 
         private IInputImp _inputImp;
+        
         private float[] _axes;
         private float[] _axesPreviousAbsolute;
-        // private HashSet<KeyCodes> _keysPressed;
-        // private HashSet<MouseButtons> _buttonsPressed;
-        // private Dictionary<KeyCodes, bool> _keysPressed;
-        // private Dictionary<MouseButtons, bool> _buttonsPressed;
+
+        private Dictionary<int, bool> _keysDown;
         private Dictionary<int, bool> _keysPressed;
+
         private Dictionary<int, bool> _buttonsPressed;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to fix mouse at center.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if the mouse is fixed at center; otherwise, <c>false</c>.
+        /// </value>
+        public bool FixMouseAtCenter { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the cursor is visible.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if the cursor is visible; otherwise, <c>false</c>.
+        /// </value>
+        public bool CursorVisible
+        {
+            get { return _inputImp.CursorVisible; }
+            set { _inputImp.CursorVisible = value; }
+        }
+
+        /// <summary>
+        /// Create a new instance of the Input class and initialize it with an underlying InputImp instance.
+        /// </summary>
+        public Input()
+        {
+            // not implemented
+        }
 
         private void KeyDown(object sender, KeyEventArgs kea)
         {
             if (!_keysPressed.ContainsKey((int)kea.KeyCode))
                 _keysPressed.Add((int)kea.KeyCode, true);
+
+            if (!_keysDown.ContainsKey((int)kea.KeyCode))
+                _keysDown.Add((int)kea.KeyCode, false);
         }
 
         private void KeyUp(object sender, KeyEventArgs kea)
@@ -64,14 +97,6 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// Create a new instance of the Input class and initialize it with an underlying InputImp instance.
-        /// </summary>
-        public Input()
-        {
-            // not implamented
-        }
-
-        /// <summary>
         /// Returns the scalar value for the given axis. Typically these values are used as velocities.
         /// </summary>
         /// <param name="axis">The axis for which the value is to be returned.</param>
@@ -81,6 +106,15 @@ namespace Fusee.Engine
         public float GetAxis(InputAxis axis)
         {
             return _axes[(int)axis];
+        }
+
+        /// <summary>
+        /// Sets the mouse position.
+        /// </summary>
+        /// <param name="pos">A <see cref="Point"/> with x and y values.</param>
+        public void SetMousePos(Point pos)
+        {
+            _inputImp.SetMousePos(pos);            
         }
 
         /// <summary>
@@ -99,28 +133,33 @@ namespace Fusee.Engine
         /// <returns>
         /// true if the key is pressed. Otherwise false.
         /// </returns>
-        public bool IsKeyDown(KeyCodes key)
+        public bool IsKeyPressed(KeyCodes key)
         {
             return _keysPressed.ContainsKey((int)key);
         }
 
-        public bool OnKeyDown(KeyCodes key)
+        /// <summary>
+        /// Check if the user started pressing a key in the current frames.
+        /// </summary>
+        /// <param name="key">The key to check.</param>
+        /// <returns>
+        /// true if the user started pressing the key in the current frame. Otherwise false.
+        /// </returns>
+        public bool IsKeyDown(KeyCodes key)
         {
-            if(_keysPressed.ContainsKey((int)key))
-            {
-                _keysPressed.Remove((int) key);
-                return true;
-            }
-            return false;  
+            return _keysDown.ContainsKey((int) key);
         }
 
-        public bool OnKeyUp(KeyCodes key)
+        /// <summary>
+        /// Check if the user stopped pressing a key in the current frames.
+        /// </summary>
+        /// <param name="key">The key to check.</param>
+        /// <returns>
+        /// true if the user stopped pressing the key in the current frame. Otherwise false.
+        /// </returns>
+        public bool IsKeyUp(KeyCodes key)
         {
-            if (!_keysPressed.ContainsKey((int)key))
-            {
-                _keysPressed.Add((int)key, true);
-                return true;
-            }
+            // not implemented
             return false;
         }
 
@@ -170,9 +209,44 @@ namespace Fusee.Engine
             _axes[(int) InputAxis.MouseY] = (currY - _axesPreviousAbsolute[(int) InputAxis.MouseY])*deltaFix;
             _axes[(int) InputAxis.MouseWheel] = (currR - _axesPreviousAbsolute[(int) InputAxis.MouseWheel])*deltaFix;
 
+            // Fix to Center
+            if (FixMouseAtCenter)
+            {
+                p = _inputImp.SetMouseToCenter();
+                
+                currX = p.x;
+                currY = p.y;
+            }
+
             _axesPreviousAbsolute[(int)InputAxis.MouseX] = currX;
             _axesPreviousAbsolute[(int)InputAxis.MouseY] = currY;
-            _axesPreviousAbsolute[(int)InputAxis.MouseWheel] = currR; 
+            _axesPreviousAbsolute[(int)InputAxis.MouseWheel] = currR;
+
+            // KeysDown - this is after the first frame (remove them!)
+            var keysToModify2 = new List<int>();
+
+// ReSharper disable once LoopCanBeConvertedToQuery
+            foreach (var i in _keysDown)
+            {
+                if (i.Value)
+                    keysToModify2.Add(i.Key);
+            }
+
+            foreach (var key in keysToModify2)
+                _keysDown.Remove(key);
+
+            // KeysDown - this is the first frame (set them to true!)
+            var keysToModify1 = new List<int>();
+            
+// ReSharper disable once LoopCanBeConvertedToQuery
+            foreach (var i in _keysDown)
+            {
+                if (!i.Value)
+                    keysToModify1.Add(i.Key);
+            }
+
+            foreach (var key in keysToModify1)
+                _keysDown[key] = true;
         }
 
         /// <summary>
