@@ -107,8 +107,13 @@ namespace Examples.LinqForGeometry
         private float _MovementSpeed = 10.0f;
         private float _InvertMouseAxis = -1.0f;
         private float _demotimeDone = 0f;
+        
+        private bool demoMode = false;
+        private const double demoTimeOut = 45.0; // 0.0 for infinite loop
+        private int demoActionInterval = 2; // number in seconds for how long to do one specific action
+        private double demoRunTime = 0;
         private int demoRaxis = 0;
-        private bool runDemo = false;
+        private bool runDemoAnimation = false;
 
         /// <summary>
         /// Const variable for shader testing.
@@ -127,6 +132,9 @@ namespace Examples.LinqForGeometry
         {
             VSync = false;
 
+            // Start the application in demo mode?
+            demoMode = true;
+
             #region MeshImports
             _Geo = new Geometry();
             //_Geo.LoadAsset("Assets/Models/Cube.obj.model");
@@ -137,10 +145,10 @@ namespace Examples.LinqForGeometry
             //_Geo.LoadAsset("Assets/Models/Cylinder.obj.model");
             //_Geo.LoadAsset("Assets/Models/Cylinder_quads.obj.model");
             //_Geo.LoadAsset("Assets/Models/SharedCorners_pro.obj.model");
-            //_Geo.LoadAsset("Assets/Models/Teapot.obj.model");
+            _Geo.LoadAsset("Assets/Models/Teapot.obj.model");
 
             // Due to copyright reasons, this file will not be delivered with the project.
-            _Geo.LoadAsset("Assets/Models/Hellknight.obj.model");
+            //_Geo.LoadAsset("Assets/Models/Hellknight.obj.model");
             #endregion MeshImports
 
             // Set the smoothing angle for the edge based vertex normal calculation
@@ -191,6 +199,11 @@ namespace Examples.LinqForGeometry
             _lfgmesh = _Geo.ToMesh();
 
             RC.ClearColor = new float4(0.2f, 0.2f, 0.2f, 1f);
+
+            // TODO: For Benchmarking only.
+            _ShaderType = 1;
+            runDemoAnimation = true;
+            _Geo._DoCalcVertexNormals = true;
         }
 
         public override void RenderAFrame()
@@ -198,8 +211,8 @@ namespace Examples.LinqForGeometry
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
             PullUserInput();
 
-            if (runDemo)
-                DemoRotation(3, 1f);
+            if (runDemoAnimation)
+                DemoRotation(demoActionInterval, 1f);
 
             RC.Render(_lfgmesh);
             //RC.Render(_FuseeMesh);
@@ -211,6 +224,14 @@ namespace Examples.LinqForGeometry
             {
                 ShaderChanger(_ShaderType);
             }
+
+            if(demoMode)
+                demoRunTime += Time.Instance.DeltaTime;
+
+            // If demo time is done quit the app
+            if (demoTimeOut != 0.0 && demoRunTime > demoTimeOut)
+                System.Environment.Exit(-1);
+
         }
 
         // Pull the users input
@@ -444,7 +465,7 @@ namespace Examples.LinqForGeometry
             }
             else if (Input.Instance.IsKeyDown(KeyCodes.F3) && Input.Instance.IsKeyPressed(KeyCodes.LControl))
             {
-                runDemo = !runDemo;
+                runDemoAnimation = !runDemoAnimation;
             }
             #endregion
 
@@ -499,9 +520,9 @@ namespace Examples.LinqForGeometry
         /// </summary>
         /// <param name="intervall">A interval in seconds. e.g. 3.0f for 3 sec.</param>
         /// <param name="rSpeed">The rotation speed. Typically 1.0f</param>
-        private void DemoRotation(float intervall, float rSpeed)
+        private void DemoRotation(float interval, float rSpeed)
         {
-            if (_demotimeDone < intervall)
+            if (_demotimeDone < interval)
             {
                 float deltaTime = (float)Time.Instance.DeltaTime;
 

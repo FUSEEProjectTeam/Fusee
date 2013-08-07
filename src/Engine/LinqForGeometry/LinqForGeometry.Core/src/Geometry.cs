@@ -997,6 +997,7 @@ namespace LinqForGeometry.Core
         /// <returns>An Enumerable of HalfEdge handles to be used in loops, etc.</returns>
         public IEnumerable<HandleHalfEdge> EnVertexIncomingHalfEdge(HandleVertex vertexHandle)
         {
+            
             List<HandleHalfEdge> LTmpIncomingHedges = new List<HandleHalfEdge>();
 
             //Get the one outgoing half-edge for the vertex.
@@ -1017,7 +1018,7 @@ namespace LinqForGeometry.Core
             } while (currentHedge != startHedgeIndex);
 
             return LTmpIncomingHedges.AsEnumerable();
-
+            
             //return _LhedgePtrCont.Where(e => e._v == vertexHandle).AsParallel().Select(e => _LhedgePtrCont[e._he._DataIndex]._he).AsParallel().ToList();
             //return (from e in _LhedgePtrCont where e._v == vertexHandle select _LhedgePtrCont[e._he]._he).AsParallel().ToList();
         }
