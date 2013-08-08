@@ -1,0 +1,429 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+
+<head>
+<title>LinqForGeometry - Bachlor Thesis project by Dominik Steffen, Hochschule Furtwangen - Table of Content</title>
+<link rel="stylesheet" href="TOC.css">
+<link rel="shortcut icon" href="favicon.ico"/>
+<script type="text/javascript" src="TOC.js"></script>
+</head>
+
+<body onload="javascript: Initialize('.aspx');" onresize="javascript: ResizeTree();">
+<form id="IndexForm" runat="server">
+
+<div id="TOCDiv" class="TOCDiv">
+
+<div id="divSearchOpts" class="SearchOpts" style="height: 100px; display: none;">
+<img class="TOCLink" onclick="javascript: ShowHideSearch(false);"
+    src="CloseSearch.png" height="16" width="16" alt="Hide search" style="float: right;"/>
+Keyword(s) for which to search:
+<input id="txtSearchText" type="text" style="width: 100%;"
+  onkeypress="javascript: return OnSearchTextKeyPress(event);" /><br />
+<input id="chkSortByTitle" type="checkbox" /><label for="chkSortByTitle">&nbsp;Sort results by title</label><br />
+<input type="button" value="Search" onclick="javascript: return PerformSearch();" />
+</div>
+
+<div id="divIndexOpts" class="IndexOpts" style="height: 25px; display: none;">
+<img class="TOCLink" onclick="javascript: ShowHideIndex(false);"
+    src="CloseSearch.png" height="17" width="17" alt="Hide index" style="float: right;"/>
+Keyword Index
+</div>
+
+<div id="divNavOpts" class="NavOpts" style="height: 20px;">
+    <img class="TOCLink" onclick="javascript: SyncTOC();" src="SyncTOC.gif"
+        height="16" width="16" alt="Sync to TOC"/>
+    <img class="TOCLink" onclick="javascript: ExpandOrCollapseAll(true);"
+        src="ExpandAll.bmp" height="16" width="16" alt="Expand all "/>
+    <img class="TOCLink" onclick="javascript: ExpandOrCollapseAll(false);"
+        src="CollapseAll.bmp" height="16" width="16" alt="Collapse all" />
+    <a href="#" title="Click to obtain a direct link to the displayed topic"
+        style="margin-left: 10px; vertical-align: top;"
+        onclick="javascript: ShowDirectLink();">Direct Link</a>
+</div>
+
+<div class="Tree" id="divSearchResults" style="display: none;"
+    onselectstart="javascript: return false;">
+</div>
+
+<div class="Tree" id="divIndexResults" style="display: none;"
+    onselectstart="javascript: return false;">
+</div>
+
+<div class="Tree" id="divTree" onselectstart="javascript: return false;">
+<div class="TreeNode">
+<img class="TreeNodeImg" onclick="javascript: Toggle(this);" src="Collapsed.gif"/><a class="UnselectedNode" onclick="javascript: return Expand(this);" href="html/15bd4aca-1197-890a-1871-e9901848667c.htm" target="TopicContent">LFG.ExternalModules.Transformations Namespace</a>
+<div class="Hidden">
+<div class="TreeNode">
+<img class="TreeNodeImg" onclick="javascript: Toggle(this);" src="Collapsed.gif"/><a class="UnselectedNode" onclick="javascript: return Expand(this);" href="html/6c27fb7a-d3d6-2a91-ed22-0ebc0cbc9e4e.htm" target="TopicContent">Transformations Class</a>
+<div class="Hidden">
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/6f1f6c58-a0d3-2435-86d9-3414682bfa50.htm" target="TopicContent">Transformations Members</a>
+</div>
+<div class="TreeNode">
+<img class="TreeNodeImg" onclick="javascript: Toggle(this);" src="Collapsed.gif"/><a class="UnselectedNode" onclick="javascript: return Expand(this);" href="html/fb520928-4c14-d22e-dd4f-fd782e38c28f.htm" target="TopicContent">Transformations Methods</a>
+<div class="Hidden">
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/b0fbc4c2-6067-15a9-2871-9d2abf13afe0.htm" target="TopicContent">RotateX Method </a>
+</div>
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/6323e9ce-ea9d-5264-8472-eab6998e9c4e.htm" target="TopicContent">RotateY Method </a>
+</div>
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/fe21d474-8538-8ce3-6729-be6842d6a9ee.htm" target="TopicContent">RotateZ Method </a>
+</div>
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/b8d83ba3-259c-15ed-58fa-8a16583c036c.htm" target="TopicContent">Scale Method </a>
+</div>
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/bbc9b09a-6dd7-4d1d-f40a-606e7500fd55.htm" target="TopicContent">Transform Method </a>
+</div>
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/8f4faa37-235e-1795-1b37-3fe1039fbcc7.htm" target="TopicContent">Translate Method </a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="TreeNode">
+<img class="TreeNodeImg" onclick="javascript: Toggle(this);" src="Collapsed.gif"/><a class="UnselectedNode" onclick="javascript: return Expand(this);" href="html/7bc9e4bc-5e4f-94b9-0c19-66c0afbf3a8e.htm" target="TopicContent">LinqForGeometry.Core Namespace</a>
+<div class="Hidden">
+<div class="TreeNode">
+<img class="TreeNodeImg" onclick="javascript: Toggle(this);" src="Collapsed.gif"/><a class="UnselectedNode" onclick="javascript: return Expand(this);" href="html/f260a91c-91ad-1a03-e63d-1fbd6fc54df8.htm" target="TopicContent">Geometry Class</a>
+<div class="Hidden">
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/6077aea9-f080-c19c-94d0-e08d7570d24a.htm" target="TopicContent">Geometry Members</a>
+</div>
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/55da513f-beef-a022-6324-1201b9fb1154.htm" target="TopicContent">Geometry Constructor </a>
+</div>
+<div class="TreeNode">
+<img class="TreeNodeImg" onclick="javascript: Toggle(this);" src="Collapsed.gif"/><a class="UnselectedNode" onclick="javascript: return Expand(this);" href="html/ad145e00-c687-bd78-dabb-d07b979dab74.htm" target="TopicContent">Geometry Fields</a>
+<div class="Hidden">
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/aa54063d-b16f-fba3-e754-73c1fe778dd0.htm" target="TopicContent">_Changes Field</a>
+</div>
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/c8358597-5a7f-5a3c-f3b0-672fef73e054.htm" target="TopicContent">_LedgeHndl Field</a>
+</div>
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/ac9cb4f5-840a-19fd-a6b5-cabd90fb4713.htm" target="TopicContent">_LfaceHndl Field</a>
+</div>
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/688ad1ef-76ee-b07b-30f3-071deb069d6f.htm" target="TopicContent">_LfaceNormals Field</a>
+</div>
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/4b0bc01b-fe0c-f739-6852-7497fcaab5c9.htm" target="TopicContent">_LVertexNormals Field</a>
+</div>
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/7566d715-643e-0ada-8ead-c3d5ce6ee1b6.htm" target="TopicContent">_LvertexVal Field</a>
+</div>
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/70bae56e-67c5-3bec-8879-d45aa6fcaf66.htm" target="TopicContent">_LverticeHndl Field</a>
+</div>
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/06086ec4-10b6-d713-b2fd-587ddaa637c1.htm" target="TopicContent">_SmoothingAngle Field</a>
+</div>
+</div>
+</div>
+<div class="TreeNode">
+<img class="TreeNodeImg" onclick="javascript: Toggle(this);" src="Collapsed.gif"/><a class="UnselectedNode" onclick="javascript: return Expand(this);" href="html/6ce63e79-6fef-7861-9fd3-a749dd4445e0.htm" target="TopicContent">Geometry Methods</a>
+<div class="Hidden">
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/bb3bcefc-b60e-6ae9-18bb-5a930d051d43.htm" target="TopicContent">AddVertex Method </a>
+</div>
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/cc1ee10c-8df3-38dd-7091-5cf1bc7d1e6a.htm" target="TopicContent">CalcFaceNormal Method </a>
+</div>
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/2906581f-7064-b727-0049-abfc735f344f.htm" target="TopicContent">CalcVertexNormal Method </a>
+</div>
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/27032028-aac6-de63-561f-1d8c09045f4f.htm" target="TopicContent">CreateConnection Method </a>
+</div>
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/f8341b5c-920a-dadc-5a21-080f316d3cbc.htm" target="TopicContent">EnAllEdges Method </a>
+</div>
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/1fcf54c1-d77d-c39c-844f-87638dc7b77f.htm" target="TopicContent">EnAllFaces Method </a>
+</div>
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/b745df62-b62c-0f67-ee01-788180c8ddb3.htm" target="TopicContent">EnAllVertices Method </a>
+</div>
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/69114e95-d17a-4d0e-5f5f-a2d8ca61e250.htm" target="TopicContent">EnFaceAdjacentFaces Method </a>
+</div>
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/31be67c4-a458-650d-fae2-7b20fb2820f2.htm" target="TopicContent">EnFaceAdjacentHalfEdges Method </a>
+</div>
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/79716a72-2973-75b9-681e-212658c54044.htm" target="TopicContent">EnFaceAdjacentVertices Method </a>
+</div>
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/1bc7e264-31e2-e79d-f2e9-2ab664308cf0.htm" target="TopicContent">EnStarVertexVertex Method </a>
+</div>
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/48d812e4-4897-9451-2886-32da790fe4db.htm" target="TopicContent">EnVertexAdjacentFaces Method </a>
+</div>
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/d8f906d9-0777-4eb2-1a2c-668b7a5dbe4d.htm" target="TopicContent">EnVertexIncomingHalfEdge Method </a>
+</div>
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/a1565a5b-b3ba-884a-f0da-f28dac46b193.htm" target="TopicContent">EnVertexOutgoingHalfEdge Method </a>
+</div>
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/b5e9eb62-5662-9c7f-bc4b-e5c61be97562.htm" target="TopicContent">LoadAsset Method </a>
+</div>
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/08adec4e-bde5-d9ce-6443-b7c6970b4afb.htm" target="TopicContent">ResetGeometryToDefault Method </a>
+</div>
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/9f3ac6c1-6650-7e45-bddb-39efff78b37b.htm" target="TopicContent">ResetVerticesToDefault Method </a>
+</div>
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/319920d1-9ef5-9a8e-4a64-371f28b7d6a9.htm" target="TopicContent">SetVertexDefaults Method </a>
+</div>
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/bd3ce29b-4f72-de5a-a6d1-77cd3701e6c2.htm" target="TopicContent">ToMesh Method </a>
+</div>
+</div>
+</div>
+<div class="TreeNode">
+<img class="TreeNodeImg" onclick="javascript: Toggle(this);" src="Collapsed.gif"/><a class="UnselectedNode" onclick="javascript: return Expand(this);" href="html/b0a15479-f2e5-dadc-22cc-b1ac3f88a76a.htm" target="TopicContent">Geometry Properties</a>
+<div class="Hidden">
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/b5278696-f618-be53-3774-f989a40f60ab.htm" target="TopicContent">_DoCalcVertexNormals Property </a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="TreeNode">
+<img class="TreeNodeImg" onclick="javascript: Toggle(this);" src="Collapsed.gif"/><a class="UnselectedNode" onclick="javascript: return Expand(this);" href="html/a99e477a-be85-0f0a-b82a-24cbb5f39744.htm" target="TopicContent">LinqForGeometry.Core.Handles Namespace</a>
+<div class="Hidden">
+<div class="TreeNode">
+<img class="TreeNodeImg" onclick="javascript: Toggle(this);" src="Collapsed.gif"/><a class="UnselectedNode" onclick="javascript: return Expand(this);" href="html/946b7dd8-89c2-e95d-8450-cd46b3524926.htm" target="TopicContent">HandleEdge Structure</a>
+<div class="Hidden">
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/24343cf8-a44d-3e1d-3aaf-6e5530ae8f82.htm" target="TopicContent">HandleEdge Members</a>
+</div>
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/1a93c49c-e1e1-3b83-7746-7ea1d563e492.htm" target="TopicContent">HandleEdge Methods</a>
+</div>
+<div class="TreeNode">
+<img class="TreeNodeImg" onclick="javascript: Toggle(this);" src="Collapsed.gif"/><a class="UnselectedNode" onclick="javascript: return Expand(this);" href="html/68e6488b-92b5-50ae-fd33-9aad94ecde5d.htm" target="TopicContent">HandleEdge Type Conversions</a>
+<div class="Hidden">
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/37ad7964-1d8b-b0f5-964f-27d4fb2b7cb6.htm" target="TopicContent">Implicit Conversion (HandleEdge to Int32)</a>
+</div>
+</div>
+</div>
+<div class="TreeNode">
+<img class="TreeNodeImg" onclick="javascript: Toggle(this);" src="Collapsed.gif"/><a class="UnselectedNode" onclick="javascript: return Expand(this);" href="html/ee250c97-7cd8-ea26-f475-fe1201a6aa73.htm" target="TopicContent">HandleEdge Properties</a>
+<div class="Hidden">
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/8a3ea1c8-4c24-d257-b5af-e4f4cdd0c027.htm" target="TopicContent">isValid Property </a>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="TreeNode">
+<img class="TreeNodeImg" onclick="javascript: Toggle(this);" src="Collapsed.gif"/><a class="UnselectedNode" onclick="javascript: return Expand(this);" href="html/e937c4a0-b304-fe65-26db-cddf49a1d589.htm" target="TopicContent">HandleFace Structure</a>
+<div class="Hidden">
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/2665474f-59d2-8fce-a509-3769ff15c565.htm" target="TopicContent">HandleFace Members</a>
+</div>
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/875e284b-3e49-6cc1-b373-ea1350189486.htm" target="TopicContent">HandleFace Methods</a>
+</div>
+<div class="TreeNode">
+<img class="TreeNodeImg" onclick="javascript: Toggle(this);" src="Collapsed.gif"/><a class="UnselectedNode" onclick="javascript: return Expand(this);" href="html/9f3e62af-60f6-8023-3de4-3f4f80c7be29.htm" target="TopicContent">HandleFace Type Conversions</a>
+<div class="Hidden">
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/f33f4e6c-0269-1165-a655-587f21f86ac1.htm" target="TopicContent">Implicit Conversion (HandleFace to Int32)</a>
+</div>
+</div>
+</div>
+<div class="TreeNode">
+<img class="TreeNodeImg" onclick="javascript: Toggle(this);" src="Collapsed.gif"/><a class="UnselectedNode" onclick="javascript: return Expand(this);" href="html/592205ca-cd9c-4a1c-e166-eb1fca6496e4.htm" target="TopicContent">HandleFace Properties</a>
+<div class="Hidden">
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/a577751c-1717-ec63-c7c7-c4bae768b321.htm" target="TopicContent">isValid Property </a>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="TreeNode">
+<img class="TreeNodeImg" onclick="javascript: Toggle(this);" src="Collapsed.gif"/><a class="UnselectedNode" onclick="javascript: return Expand(this);" href="html/93ec5030-17a1-e45e-3fe8-e704c5c859ab.htm" target="TopicContent">HandleFaceNormal Structure</a>
+<div class="Hidden">
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/ebf669b3-560d-6fec-aa1a-570c32530a49.htm" target="TopicContent">HandleFaceNormal Members</a>
+</div>
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/2483ecab-ebd7-9f32-0600-91f136da0f3f.htm" target="TopicContent">HandleFaceNormal Methods</a>
+</div>
+<div class="TreeNode">
+<img class="TreeNodeImg" onclick="javascript: Toggle(this);" src="Collapsed.gif"/><a class="UnselectedNode" onclick="javascript: return Expand(this);" href="html/42a217af-ae17-3a9f-9db9-a761526dd38f.htm" target="TopicContent">HandleFaceNormal Type Conversions</a>
+<div class="Hidden">
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/98691e75-6674-4836-e82b-297795252fdf.htm" target="TopicContent">Implicit Conversion (HandleFaceNormal to Int32)</a>
+</div>
+</div>
+</div>
+<div class="TreeNode">
+<img class="TreeNodeImg" onclick="javascript: Toggle(this);" src="Collapsed.gif"/><a class="UnselectedNode" onclick="javascript: return Expand(this);" href="html/c94df70c-4c02-3541-ce5f-c6860bdcc31f.htm" target="TopicContent">HandleFaceNormal Properties</a>
+<div class="Hidden">
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/d3bc90d3-172c-e948-fa10-d08bb4f96af3.htm" target="TopicContent">isValid Property </a>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="TreeNode">
+<img class="TreeNodeImg" onclick="javascript: Toggle(this);" src="Collapsed.gif"/><a class="UnselectedNode" onclick="javascript: return Expand(this);" href="html/0fcacabc-ca39-b48b-2498-aff58e5ee642.htm" target="TopicContent">HandleHalfEdge Structure</a>
+<div class="Hidden">
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/615f40b0-dfbb-b403-b2e1-d06d0c680467.htm" target="TopicContent">HandleHalfEdge Members</a>
+</div>
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/6a8133c9-0d64-2460-cdd6-9fd9c71c18e3.htm" target="TopicContent">HandleHalfEdge Methods</a>
+</div>
+<div class="TreeNode">
+<img class="TreeNodeImg" onclick="javascript: Toggle(this);" src="Collapsed.gif"/><a class="UnselectedNode" onclick="javascript: return Expand(this);" href="html/9876c9c5-d61b-e927-6042-d0a66ed806b5.htm" target="TopicContent">HandleHalfEdge Type Conversions</a>
+<div class="Hidden">
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/650c21a0-5a68-12f4-4460-a43006352204.htm" target="TopicContent">Implicit Conversion (HandleHalfEdge to Int32)</a>
+</div>
+</div>
+</div>
+<div class="TreeNode">
+<img class="TreeNodeImg" onclick="javascript: Toggle(this);" src="Collapsed.gif"/><a class="UnselectedNode" onclick="javascript: return Expand(this);" href="html/313e0ca1-157c-f24a-18b4-ab3e0fc11656.htm" target="TopicContent">HandleHalfEdge Properties</a>
+<div class="Hidden">
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/9bdf9417-4232-0e5d-57ac-8707f8ff58e0.htm" target="TopicContent">isValid Property </a>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="TreeNode">
+<img class="TreeNodeImg" onclick="javascript: Toggle(this);" src="Collapsed.gif"/><a class="UnselectedNode" onclick="javascript: return Expand(this);" href="html/acf5f286-57f6-0a58-e672-a1f14360fefd.htm" target="TopicContent">HandleVertex Structure</a>
+<div class="Hidden">
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/0ee9fc0e-cd23-727b-4b79-f385246b3ec8.htm" target="TopicContent">HandleVertex Members</a>
+</div>
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/b628dc76-8522-483e-dc40-555938e573ac.htm" target="TopicContent">HandleVertex Methods</a>
+</div>
+<div class="TreeNode">
+<img class="TreeNodeImg" onclick="javascript: Toggle(this);" src="Collapsed.gif"/><a class="UnselectedNode" onclick="javascript: return Expand(this);" href="html/0433e51f-d74e-554d-b82f-c86089cf448a.htm" target="TopicContent">HandleVertex Type Conversions</a>
+<div class="Hidden">
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/f744ed35-acdb-3cee-d944-dabb3f13fe56.htm" target="TopicContent">Implicit Conversion (HandleVertex to Int32)</a>
+</div>
+</div>
+</div>
+<div class="TreeNode">
+<img class="TreeNodeImg" onclick="javascript: Toggle(this);" src="Collapsed.gif"/><a class="UnselectedNode" onclick="javascript: return Expand(this);" href="html/d8003371-e0fc-9f18-2fa8-04d1d17f95cc.htm" target="TopicContent">HandleVertex Properties</a>
+<div class="Hidden">
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/2cff5df8-2127-d186-7bff-f8b076cacc58.htm" target="TopicContent">isValid Property </a>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="TreeNode">
+<img class="TreeNodeImg" onclick="javascript: Toggle(this);" src="Collapsed.gif"/><a class="UnselectedNode" onclick="javascript: return Expand(this);" href="html/14522254-f6cb-6223-4a2a-54e643ce7ced.htm" target="TopicContent">HandleVertexNormal Structure</a>
+<div class="Hidden">
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/380bb318-86a4-da52-cc66-18f2be230ead.htm" target="TopicContent">HandleVertexNormal Members</a>
+</div>
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/81a2fee7-65d0-805d-eab3-de9e73cf5b20.htm" target="TopicContent">HandleVertexNormal Methods</a>
+</div>
+<div class="TreeNode">
+<img class="TreeNodeImg" onclick="javascript: Toggle(this);" src="Collapsed.gif"/><a class="UnselectedNode" onclick="javascript: return Expand(this);" href="html/2d8fd5e0-8c81-0c69-a51f-830962a216d1.htm" target="TopicContent">HandleVertexNormal Type Conversions</a>
+<div class="Hidden">
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/0626ed12-a42f-9f58-39ee-0eccd6c0aad0.htm" target="TopicContent">Implicit Conversion (HandleVertexNormal to Int32)</a>
+</div>
+</div>
+</div>
+<div class="TreeNode">
+<img class="TreeNodeImg" onclick="javascript: Toggle(this);" src="Collapsed.gif"/><a class="UnselectedNode" onclick="javascript: return Expand(this);" href="html/8b81e696-2382-46a9-160f-349b678210a1.htm" target="TopicContent">HandleVertexNormal Properties</a>
+<div class="Hidden">
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/a8cd4a73-6d29-652c-1948-a870d31e510e.htm" target="TopicContent">isValid Property </a>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="TreeNode">
+<img class="TreeNodeImg" onclick="javascript: Toggle(this);" src="Collapsed.gif"/><a class="UnselectedNode" onclick="javascript: return Expand(this);" href="html/1622c6c1-4115-f942-7ddf-71a4fa3a559d.htm" target="TopicContent">HandleVertexUV Structure</a>
+<div class="Hidden">
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/1aba8589-2f5b-0b94-f094-f830567c3991.htm" target="TopicContent">HandleVertexUV Members</a>
+</div>
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/6a7c9a1f-3f8f-475a-5132-aff87b5dbac6.htm" target="TopicContent">HandleVertexUV Methods</a>
+</div>
+<div class="TreeNode">
+<img class="TreeNodeImg" onclick="javascript: Toggle(this);" src="Collapsed.gif"/><a class="UnselectedNode" onclick="javascript: return Expand(this);" href="html/7524d5f8-36a0-95eb-1bf2-2f5ab76d52e2.htm" target="TopicContent">HandleVertexUV Type Conversions</a>
+<div class="Hidden">
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/f191be1b-45e7-5b56-1b63-044ef74e9e98.htm" target="TopicContent">Implicit Conversion (HandleVertexUV to Int32)</a>
+</div>
+</div>
+</div>
+<div class="TreeNode">
+<img class="TreeNodeImg" onclick="javascript: Toggle(this);" src="Collapsed.gif"/><a class="UnselectedNode" onclick="javascript: return Expand(this);" href="html/a28a2860-678a-03ae-e771-5dda47cf40d7.htm" target="TopicContent">HandleVertexUV Properties</a>
+<div class="Hidden">
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/a5672fdb-8f7a-f0e2-f946-685880d00d30.htm" target="TopicContent">isValid Property </a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="TreeNode">
+<img class="TreeNodeImg" onclick="javascript: Toggle(this);" src="Collapsed.gif"/><a class="UnselectedNode" onclick="javascript: return Expand(this);" href="html/cd119d1c-b7e6-12b0-25fc-fb76b0b8b96c.htm" target="TopicContent">LinqForGeometry.Core.Importer Namespace</a>
+<div class="Hidden">
+<div class="TreeNode">
+<img class="TreeNodeImg" onclick="javascript: Toggle(this);" src="Collapsed.gif"/><a class="UnselectedNode" onclick="javascript: return Expand(this);" href="html/0668aa89-3a77-aa51-f4ca-7909ecf24f05.htm" target="TopicContent">GeoFace Structure</a>
+<div class="Hidden">
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/7299e7f4-21ff-c9f6-4530-f18fd645fd5c.htm" target="TopicContent">GeoFace Members</a>
+</div>
+<div class="TreeItem">
+<img src="Item.gif"/><a class="UnselectedNode" onclick="javascript: return SelectNode(this);" href="html/282f36ef-8b24-df17-7806-2a193dc99064.htm" target="TopicContent">GeoFace Methods</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+
+</div>
+
+<div id="TOCSizer" class="TOCSizer" onmousedown="OnMouseDown(event)" onselectstart="javascript: return false;"></div>
+
+<iframe id="TopicContent" name="TopicContent" class="TopicContent" src="html/15bd4aca-1197-890a-1871-e9901848667c.htm">
+This page uses an IFRAME but your browser does not support it.
+</iframe>
+
+</form>
+
+</body>
+
+</html>
