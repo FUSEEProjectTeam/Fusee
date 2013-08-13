@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Dynamic;
 
 namespace Fusee.Engine
 {
@@ -10,12 +11,13 @@ namespace Fusee.Engine
     }
 
     /// <summary>
-    /// A ShaderEffect contains a list of passes with each pass item being a combination of a set of render states, a ShaderProgram (the code running on the GPU), 
+    /// A ShaderEffect contains a list of passes with each pass item being a combination of a set of render states, and a
+    /// pair of Pixel and Vertex Shader Programs (the code running on the GPU).
     /// </summary>
     public class ShaderEffect
     {
         private readonly RenderStateSet[] _states;
-        private readonly ShaderProgram[] _compiledShaders; 
+        private ShaderProgram[] _compiledShaders; 
         private readonly string[] _vertexShaderSrc;
         private readonly string[] _pixelShaderSrc;
 
@@ -59,11 +61,12 @@ namespace Fusee.Engine
             {
                 throw new Exception("Error while compiling shader for pass " + i, ex);
             }
+
         }
 
         public void DetachFromContext()
         {
-            
+            _compiledShaders = null;
         }
 
         public void RenderMesh(Mesh mesh)

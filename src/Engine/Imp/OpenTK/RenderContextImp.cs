@@ -788,12 +788,12 @@ namespace Fusee.Engine
                     break;
                 case RenderState.BlendOperation:
                     int alphaMode;
-                    GL.GetInteger(GetPName.BlendEquationRgb, out alphaMode);
+                    GL.GetInteger(GetPName.BlendEquationAlpha, out alphaMode);
                     GL.BlendEquationSeparate(BlendOperationToOgl((BlendOperation)value), (BlendEquationMode)alphaMode);
                     break;
                 case RenderState.BlendOperationAlpha:
                     int rgbMode;
-                    GL.GetInteger(GetPName.BlendEquationAlpha, out rgbMode);
+                    GL.GetInteger(GetPName.BlendEquationRgb, out rgbMode);
                     GL.BlendEquationSeparate((BlendEquationMode)rgbMode, BlendOperationToOgl((BlendOperation)value));
                     break;
                 case RenderState.SourceBlend:

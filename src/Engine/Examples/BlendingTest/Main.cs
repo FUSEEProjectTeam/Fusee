@@ -8,22 +8,70 @@ namespace Examples.BlendingTest
     public class BlendingTest : RenderCanvas
     {
         // angle variables
-        private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
+        private float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
 
         private const float RotationSpeed = 1f;
         private const float Damping = 0.92f;
 
         // model variables
-        private Mesh _meshTea, _meshFace;
+        private Mesh _meshTea;
 
         // variables for shader
         private ShaderProgram _spColor;
-        private ShaderProgram _spTexture;
-
         private IShaderParam _colorParam;
-        private IShaderParam _textureParam;
 
-        private ITexture _iTex;
+        private ShaderEffect _shaderEffect = new ShaderEffect( new EffectPassDeclaration[]
+            {
+               new EffectPassDeclaration(){
+                   VS = @"
+            /* Copies incoming vertex color without change.
+             * Applies the transformation matrix to vertex position.
+             */
+
+            attribute vec4 fuColor;
+            attribute vec3 fuVertex;
+            attribute vec3 fuNormal;
+            attribute vec2 fuUV;
+                    
+            varying vec4 vColor;
+            varying vec3 vNormal;
+            varying vec2 vUV;
+        
+            uniform mat4 FUSEE_MVP;
+            uniform mat4 FUSEE_ITMV;
+
+            void main()
+            {
+                gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
+                vNormal = mat3(FUSEE_ITMV[0].xyz, FUSEE_ITMV[1].xyz, FUSEE_ITMV[2].xyz) * fuNormal;
+                vUV = fuUV;
+            }",
+
+        PS = @"
+            /* Copies incoming fragment color without change. */
+            #ifdef GL_ES
+                precision highp float;
+            #endif
+        
+            uniform vec4 vColor;
+            varying vec3 vNormal;
+
+            void main()
+            {
+                gl_FragColor = vColor * dot(vNormal, vec3(0, 0, 1));
+            }",
+
+         StateSet = new RenderStateSet()
+               {
+                    AlphaBlendEnable = true,
+                    BlendFactor = new float4(0.5f, 0.5f, 0.5f, 0.5f),
+                    BlendOperation = BlendOperation.Add,
+                    SourceBlend = Blend.BlendFactor,
+                    DestinationBlend = Blend.InverseBlendFactor
+                }
+             },
+         }); 
+
 
         // is called on startup
         public override void Init()
@@ -32,22 +80,16 @@ namespace Examples.BlendingTest
 
             // initialize the variables
             _meshTea = MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
-            _meshFace = MeshReader.LoadMesh(@"Assets/Cube.obj.model");
+
+            _shaderEffect.AttachToContext(RC);
+
 
             _spColor = MoreShaders.GetShader("simple", RC);
-            _spTexture = MoreShaders.GetShader("texture", RC);
-
             _colorParam = _spColor.GetShaderParam("vColor");
-            _textureParam = _spTexture.GetShaderParam("texture1");
-
-            // load texture
-            var imgData = RC.LoadImage("Assets/world_map.jpg");
-            _iTex = RC.CreateTexture(imgData);
-            RC.SetRenderState(RenderState.ZEnable, (uint) 1);
-            
-            RC.SetRenderState(RenderState.AlphaBlendEnable, (uint) 1);
 
             /*
+            RC.SetRenderState(RenderState.ZEnable, (uint) 1);            
+            RC.SetRenderState(RenderState.AlphaBlendEnable, (uint) 1);
             RC.SetRenderState(RenderState.BlendFactor, (uint)new ColorUint(0.25f, 0.25f, 0.25f, 0.25f));
             RC.SetRenderState(RenderState.BlendOperation, (uint)(BlendOperation.Add));
             RC.SetRenderState(RenderState.SourceBlend, (uint)(Blend.BlendFactor));
@@ -103,20 +145,15 @@ namespace Examples.BlendingTest
             var mtxCam = float4x4.LookAt(0, 200, 500, 0, 0, 0, 0, 1, 0);
 
             // first mesh
-            RC.ModelView = float4x4.CreateTranslation(0, -50, 0) * float4x4.CreateTranslation(-150, 0, 0)  * mtxRot* mtxCam;
+            RC.ModelView = float4x4.CreateTranslation(0, -50, 0) * mtxRot* mtxCam;
 
+            _shaderEffect.RenderMesh(_meshTea);
+
+            /*
             RC.SetShader(_spColor);
-            RC.SetShaderParam(_colorParam, new float4(0.5f, 0.8f, 0, 1));
-
+            // RC.SetShaderParam(_colorParam, new float4(0.5f, 0.8f, 0, 1));
             RC.Render(_meshTea);
-
-            // second mesh
-            RC.ModelView = float4x4.CreateTranslation(150, 0, 0) * mtxRot * mtxCam;
-
-            RC.SetShader(_spTexture);
-            RC.SetShaderParamTexture(_textureParam, _iTex);
-
-            RC.Render(_meshFace);
+            */
 
             // swap buffers
             Present();
