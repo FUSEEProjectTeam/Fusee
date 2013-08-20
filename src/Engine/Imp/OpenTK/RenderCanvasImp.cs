@@ -24,8 +24,17 @@ namespace Fusee.Engine
         internal GraphicsMode _mode;
         internal int _major, _minor;
         internal GraphicsContextFlags _flags;
-        public int Width { get; set; }
-        public int Height { get; set; }
+        public int Width
+        {
+            get { return _width; }
+            set { throw new NotImplementedException("Cannot (yet) set width on RenderContextWindowImp");}
+        }
+        public int Height        
+        {
+            get { return _height; }
+            set { throw new NotImplementedException("Cannot (yet) set height on RenderContextWindowImp");}
+        }
+
         public string Caption { get; set; }
         private double _lastTimeTick;
         private double _deltaFrameTime;
