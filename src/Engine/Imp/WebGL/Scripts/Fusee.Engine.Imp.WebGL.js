@@ -18,6 +18,17 @@ var $fuseeFirstGetShaderParamCall = false;
 JSIL.DeclareNamespace("Fusee");
 JSIL.DeclareNamespace("Fusee.Engine");
 
+var $ColorUintCtor_U = function () {
+    return ($ColorUintCtor_U = JSIL.Memoize(new JSIL.ConstructorSignature($asm01.TypeRef("Fusee.Engine.ColorUint"), [$jsilcore.TypeRef("System.UInt32")])))();
+};
+var $ColorUintCtor_S_S_S_S = function () {
+    return ($ColorUintCtor_S_S_S_S = JSIL.Memoize(new JSIL.ConstructorSignature($jsilcore.TypeRef("Fusee.Engine.ColorUint"), [
+        $jsilcore.TypeRef("System.Single"), $jsilcore.TypeRef("System.Single"),
+        $jsilcore.TypeRef("System.Single"), $jsilcore.TypeRef("System.Single")
+    ])))();
+};
+
+
 JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.TheEmptyDummyClass", true, [], function ($) {
    $.ImplementInterfaces($fuseeCommon.TypeRef("Fusee.Engine.IShaderProgramImp"));
      $.Field({ Static: false, Public: false }, "test", $.Object, null);
@@ -844,9 +855,9 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
         new JSIL.MethodSignature($.Int32, [$fuseeCommon.TypeRef("Fusee.Engine.BlendOperation")]),
         function BlendOperationToOgl(bo) {
             var boVal;
-            if ("value" in bo)
+            /*if ("value" in bo)
                 boVal = bo.value;
-            else
+            else */
                 boVal = bo;
             switch (boVal) {
             case $fuseeCommon.Fusee.Engine.BlendOperation.Add.value:
@@ -885,9 +896,9 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
         new JSIL.MethodSignature($.Int32, [$fuseeCommon.TypeRef("Fusee.Engine.Blend"), $.Boolean]),
         function BlendToOgl(blend, isForAlpha) {
             var blendVal;
-            if ("value" in blend)
+            /* if ("value" in blend)
                 blendVal = blend.value;
-            else
+            else */
                 blendVal = blend;
             switch (blendVal) {
             case $fuseeCommon.Fusee.Engine.Blend.Zero.value:
@@ -1094,8 +1105,9 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
                 }
                 break;
             case $fuseeCommon.Fusee.Engine.RenderState.BlendFactor.value:
-                var bc = $fuseeCommon.Fusee.Engine.Color.FromArgb(value);
-                this.gl.blendColor(bc.x, bc.y, bc.z, bc.w);
+                var bc = $ColorUintCtor_U().Construct(value);
+                var bc2 = bc.Tofloat4();
+                this.gl.blendColor(bc2.x, bc2.y, bc2.z, bc2.w);
                 break;
             default:
                 throw new Exception("Unknown renderState to set: " + renderState);
@@ -1181,8 +1193,8 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
                 return this.BlendFromOgl(this.gl.getParameter(this.gl.BLEND_DST_ALPHA));
             case $fuseeCommon.Fusee.Engine.RenderState.BlendFactor.value:
                 {
-                    var col = GL.GetInteger(this.gl.BLEND_COLOR);
-                    var uintCol = new $fuseeCommon.Fusee.Engine.ColorUint(col[0], col[1], col[2], col[3]);
+                    var col = this.gl.getParameter(this.gl.BLEND_COLOR);
+                    var uintCol = $ColorUintCtor_S_S_S_S().Construct(col[0], col[1], col[2], col[3]);
                     return uintCol.ToRgba();
                 }
             default:

@@ -76,6 +76,14 @@ namespace Examples.BlendingTest
         // is called on startup
         public override void Init()
         {
+            // ColorUint constructor test
+            ColorUint ui1 = new ColorUint((uint) 4711);
+            ColorUint ui2 = new ColorUint((byte)42, (byte)43, (byte)44, (byte)45);
+            ColorUint u3 = new ColorUint((float)1, (float)43, (float)44, (float)45);
+
+
+
+
             RC.ClearColor = new float4(1f, 1f, 1f, 1);
 
             // initialize the variables
