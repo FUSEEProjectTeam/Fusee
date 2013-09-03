@@ -165,10 +165,7 @@ namespace Fusee.Engine
 
             ITexture texID = new Texture { handle = id };
             return texID;
-
         }
-
-
 
         public IShaderParam GetShaderParam(IShaderProgramImp shaderProgram, string paramName)
         {

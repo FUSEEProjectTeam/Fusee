@@ -20,10 +20,11 @@ namespace Examples.BlendingTest
         private ShaderProgram _spColor;
         private IShaderParam _colorParam;
 
-        private ShaderEffect _shaderEffect = new ShaderEffect( new EffectPassDeclaration[]
+        private ShaderEffect _shaderEffect = new ShaderEffect( new[]
             {
-               new EffectPassDeclaration(){
-                   VS = @"
+               new EffectPassDeclaration
+                   {
+          VS = @"
             /* Copies incoming vertex color without change.
              * Applies the transformation matrix to vertex position.
              */
@@ -42,8 +43,9 @@ namespace Examples.BlendingTest
 
             void main()
             {
-                gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
                 vNormal = mat3(FUSEE_ITMV[0].xyz, FUSEE_ITMV[1].xyz, FUSEE_ITMV[2].xyz) * fuNormal;
+                vNormal = normalize(vNormal);
+                gl_Position = (FUSEE_MVP * vec4(fuVertex, 1.0) ) + vec4(5.0 * vNormal.x, 5.0 * vNormal.y, 0, 0);
                 vUV = fuUV;
             }",
 
@@ -58,21 +60,73 @@ namespace Examples.BlendingTest
 
             void main()
             {
-                gl_FragColor = vColor * dot(vNormal, vec3(0, 0, 1));
+                gl_FragColor = vec4(0, 0, 0, 1);
+            }",
+
+          StateSet = new RenderStateSet()
+               {
+                    AlphaBlendEnable = false,
+                    ZEnable = false
+                }
+             },
+
+         new EffectPassDeclaration
+             {
+                   VS = @"
+            attribute vec4 fuColor;
+            attribute vec3 fuVertex;
+            attribute vec3 fuNormal;
+            attribute vec2 fuUV;
+                    
+            varying vec4 vColor;
+            varying vec3 vNormal;
+            varying vec2 vUV;
+        
+            uniform mat4 FUSEE_MVP;
+            uniform mat4 FUSEE_ITMV;
+
+            void main()
+            {
+                gl_Position = (FUSEE_MVP * vec4(fuVertex, 1.0) ) * vec4(1, 1, 1, 1);
+                vNormal = mat3(FUSEE_ITMV[0].xyz, FUSEE_ITMV[1].xyz, FUSEE_ITMV[2].xyz) * fuNormal;
+                vUV = fuUV;
+            }",
+
+        PS = @"
+
+            #ifdef GL_ES
+                precision highp float;
+            #endif
+        
+            uniform vec4 vColor;
+            varying vec3 vNormal;
+
+            void main()
+            {
+                // vec4 result = vec4(0.3, 1, 0.7, 1) * dot(vNormal, vec3(0, 0, 1));
+                vec4 result = vColor * dot(vNormal, vec3(0, 0, 1));
+                result = vec4(floor(result.r * 3.0 + 0.5)/3.0, floor(result.g * 3.0 + 0.5)/3.0, floor(result.b* 3.0 + 0.5)/3.0, result.a); 
+                gl_FragColor = result;
+                // gl_FragColor = vec4(1, 0, 0, 1);
             }",
 
          StateSet = new RenderStateSet()
                {
-                    AlphaBlendEnable = true,
-                    BlendFactor = new float4(0.5f, 0.5f, 0.5f, 0.5f),
-                    BlendOperation = BlendOperation.Add,
-                    SourceBlend = Blend.BlendFactor,
-                    DestinationBlend = Blend.InverseBlendFactor
+                    AlphaBlendEnable = false,
+                    ZEnable = true,
+                    //BlendFactor = new float4(0.5f, 0.5f, 0.5f, 0.5f),
+                    //BlendOperation = BlendOperation.Add,
+                    //SourceBlend = Blend.BlendFactor,
+                    //DestinationBlend = Blend.InverseBlendFactor
                 }
              },
-         }); 
+            }, 
 
-
+            new[]
+                {
+                    new EffectParameterDeclaration {Name = "vColor", Value = new float4(1, 0.3f, 0.7f, 1)}, 
+                }); 
+        
         // is called on startup
         public override void Init()
         {

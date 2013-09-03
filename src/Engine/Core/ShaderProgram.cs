@@ -2,13 +2,19 @@
 
 namespace Fusee.Engine
 {
+    /// <summary>
+    /// Instances of this class represent a pair of a Vertex and a Pixel shader code, both compiled an 
+    /// uploaded to the gpu ready to be used. 
+    /// </summary>
+    /// <remarks>See <see cref="RenderContext.CreateShader"/> how to create instances and 
+    /// <see cref="RenderContext.SetShader"/> how to use instances as the current shaders.</remarks>
     public class ShaderProgram
     {
         internal IShaderProgramImp _spi;
         internal IRenderContextImp _rci;
         internal Dictionary<string, IShaderParam> _paramsByName;
 
-        public ShaderProgram(IRenderContextImp renderContextImp, IShaderProgramImp shaderProgramImp)
+        internal ShaderProgram(IRenderContextImp renderContextImp, IShaderProgramImp shaderProgramImp)
         {
             _spi = shaderProgramImp;
             _rci = renderContextImp;
