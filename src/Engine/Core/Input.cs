@@ -74,14 +74,26 @@ namespace Fusee.Engine
             if (!_keysPressed.ContainsKey((int)kea.KeyCode))
                 _keysPressed.Add((int)kea.KeyCode, true);
 
+            // <CM_CHANGES>
+            if (!_keysDown.ContainsKey((int)kea.KeyCode))
+                _keysDown.Add((int)kea.KeyCode, true);
+
+            /* 
             if (!_keysDown.ContainsKey((int)kea.KeyCode))
                 _keysDown.Add((int)kea.KeyCode, false);
+            </CM_CHANGES> */
         }
 
         private void KeyUp(object sender, KeyEventArgs kea)
         {
+            // <CM_CHANGES>
+            if (_keysDown.ContainsKey((int)kea.KeyCode))
+                _keysDown.Remove((int)kea.KeyCode);
+
+            /*
             if (_keysPressed.ContainsKey((int)kea.KeyCode))
-                _keysPressed.Remove((int)kea.KeyCode);
+                _keysPressed.Remove((int)kea.KeyCode); */
+            // </CM_CHANGES>
         }
 
         private void ButtonDown(object sender, MouseEventArgs mea)
@@ -147,6 +159,10 @@ namespace Fusee.Engine
         /// </returns>
         public bool IsKeyDown(KeyCodes key)
         {
+            if (_keysDown.ContainsKey((int) key))
+            {
+                int i = 42;
+            }
             return _keysDown.ContainsKey((int) key);
         }
 
@@ -222,6 +238,11 @@ namespace Fusee.Engine
             _axesPreviousAbsolute[(int)InputAxis.MouseY] = currY;
             _axesPreviousAbsolute[(int)InputAxis.MouseWheel] = currR;
 
+
+            // <CM_CHANGES>
+            _keysPressed.Clear();
+
+            /*
             // KeysDown - this is after the first frame (remove them!)
             var keysToModify2 = new List<int>();
 
@@ -247,6 +268,8 @@ namespace Fusee.Engine
 
             foreach (var key in keysToModify1)
                 _keysDown[key] = true;
+            */
+            // </CM_CHANGES>
         }
 
         /// <summary>
