@@ -411,7 +411,6 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
         new JSIL.MethodSignature($.Single, []),
         function get_ClearDepth() {
             return this.gl.getParameter(this.gl.DEPTH_CLEAR_VALUE);
-            ;
         }
     );
 
