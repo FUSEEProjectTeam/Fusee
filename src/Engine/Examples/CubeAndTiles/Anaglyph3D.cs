@@ -3,12 +3,6 @@ using Fusee.Math;
 
 namespace Examples.CubeAndTiles
 {
-    internal class StereoParams
-    {
-        internal static float EyeDistance = 30f;
-        internal static float Convergence = 0f;
-    }
-
     public class Anaglyph3D
     {
         private readonly RenderContext _rContext;

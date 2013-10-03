@@ -188,7 +188,7 @@ namespace Fusee.Engine
             var scHeight2 = Screen.PrimaryScreen.Bounds.Height / 2;
             var scWidth2 = Screen.PrimaryScreen.Bounds.Width / 2;
 
-            _gameWindow.Bounds = new Rectangle(scWidth2 - width2, scHeight2 - height2, _width, _height);
+            _gameWindow.ClientRectangle = new System.Drawing.Rectangle(scWidth2 - width2, scHeight2 - height2, _width, _height);
         }
 
         public string Caption

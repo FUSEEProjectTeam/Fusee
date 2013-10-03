@@ -72,6 +72,7 @@
     <Compile Include="ShaderMaterial.cs" />
     <Compile Include="ShaderProgram.cs" />
     <Compile Include="Shaders.cs" />
+    <Compile Include="Stereo3D.cs" />
     <Compile Include="Time.cs" />
   </ItemGroup>
   <ItemGroup>

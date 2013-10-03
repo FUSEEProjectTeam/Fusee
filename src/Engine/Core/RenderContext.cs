@@ -987,12 +987,14 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
         {
             _updatedShaderParams = false;
 
-            _currentShader = program;
-            _rci.SetShader(program._spi);
-            //UpdateCurrentShader();
+            if (_currentShader != program)
+            {
+                _currentShader = program;
+                _rci.SetShader(program._spi);
+            }
 
             UpdateShaderParams();
- }
+        }
 
         /// <summary>
         /// Get a list of (uniform) shader parameters accessed by the given shader.
@@ -1184,11 +1186,26 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
             start /= 2;
             end /= 2;
 
+            var oldShader = _currentShader;
             SetShader(_debugShader);
+
             SetShaderParam(_currentShaderParams.FUSEE_MVP, ModelViewProjection);
             //IShaderParam col = _debugShader.GetShaderParam("Col");
             SetShaderParam(_debugColor, color);
+            
             _rci.DebugLine(start, end, color);
+
+            SetShader(_debugShader);
+        }
+
+        public void DrawQuad(Rectangle vertices)
+        {
+            _rci.DrawQuad(vertices);
+        }
+
+        public void GetBuffercontent(Rectangle quad, ITexture texId)
+        {
+            _rci.GetBufferContent(quad, texId);
         }
 
         /// <summary>
