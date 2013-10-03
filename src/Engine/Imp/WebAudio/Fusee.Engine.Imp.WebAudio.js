@@ -101,7 +101,8 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.AudioStream", t
     function AudioStream_set_Loop (value) {
       this.AudioStream$Loop$value = value;
     }
-  );
+  );
+
   $.Method({Static:false, Public:true }, "get_Loop", 
     new JSIL.MethodSignature($.Boolean, []), 
     function AudioStream_get_Loop () {
