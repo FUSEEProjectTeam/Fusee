@@ -9,7 +9,7 @@ using Fusee.Math;
 namespace Fusee.SceneManagement
 {
     /// <summary>
-    /// A derivate of SceneVisitor, used to Visit Renderer, Transformation and Mesh components and submit to renderqueue.
+    /// A derivate of SceneVisitor, used to Visit Renderer, Transformation and Mesh components and submit to renderqueue of <see cref="SceneManager"/>.
     /// </summary>
     public class SceneVisitorRendering : SceneVisitor
     {
@@ -106,7 +106,7 @@ namespace Fusee.SceneManagement
 
 
         /// <summary>
-        /// Adds the transform to the internal stack.
+        /// Adds the transform object to the internal stack.
         /// </summary>
         /// <param name="transform">The transformation.</param>
         private void AddTransform(Transformation transform)
@@ -171,25 +171,15 @@ namespace Fusee.SceneManagement
             return (_hasMesh.Peek() && _hasRenderer.Peek() && _hasTransform.Peek());
         }
 
-
-
-        /// <summary>
-        /// Pushes this instance.
-        /// </summary>
         private void Push()
         {
             if(_mtxModelViewStack.Count > 0)
                 _mtxModelViewStack.Push(_mtxModelViewStack.Peek());
-
-            
             _hasMesh.Push(false);
             _hasRenderer.Push(false);
             _hasTransform.Push(false);
         }
 
-        /// <summary>
-        /// Pops this instance.
-        /// </summary>
         private void Pop()
         {
             _mtxModelViewStack.Pop();
@@ -198,22 +188,17 @@ namespace Fusee.SceneManagement
             _hasRenderer.Pop();
             if(_meshStack.Count > 0)
             {
-
-                _meshStack.Pop();
-                  
+                _meshStack.Pop(); 
             }
             
             if(_RendererStack.Count > 0)
             {
                 _RendererStack.Pop();
-                
-            }
-            
-            
+            }   
         }
 
         /// <summary>
-        /// Adds the directional lightto the rendering queue.
+        /// Adds a <see cref="DirectionalLight"/> to the rendering queue.
         /// </summary>
         /// <param name="direction">The direction.</param>
         /// <param name="color">The color.</param>
@@ -226,7 +211,7 @@ namespace Fusee.SceneManagement
         }
 
         /// <summary>
-        /// Adds the point light to the rendering queue.
+        /// Adds a <see cref="PointLight"/> to the rendering queue.
         /// </summary>
         /// <param name="position">The position.</param>
         /// <param name="color">The color.</param>
@@ -239,7 +224,7 @@ namespace Fusee.SceneManagement
         }
 
         /// <summary>
-        /// Adds the spot light to the rendering queue.
+        /// Adds a <see cref="SpotLight"/> to the rendering queue.
         /// </summary>
         /// <param name="position">The position.</param>
         /// <param name="direction">The direction.</param>
@@ -264,7 +249,6 @@ namespace Fusee.SceneManagement
             //Console.WriteLine("_hasTransform+"+_hasTransform.Count+"_hasMesh+"+_hasMesh.Count+"_hasRenderer"+_hasRenderer.Count);
             RenderMatrix renderMatrix = new RenderMatrix(matrix);
             _queue.AddRenderJob(renderMatrix);
-
             RenderRenderer renderRenderer = new RenderRenderer(renderer);
             _queue.AddRenderJob(renderRenderer);
             RenderMesh renderMesh = new RenderMesh(mesh);
@@ -275,7 +259,7 @@ namespace Fusee.SceneManagement
 
         // Polymorphic Visitcomponent Methods
         /// <summary>
-        /// Visits the specified cEntity to collect data if required by the current Visitor derivate.
+        /// Visits the specified <see cref="SceneEntity"/> to collect data if required by the current Visitor derivate.
         /// </summary>
         /// <param name="cEntity">The cEntity.</param>
         public override void Visit(SceneEntity cEntity)
@@ -321,7 +305,7 @@ namespace Fusee.SceneManagement
         }*/
 
         /// <summary>
-        /// Visits the specified action code to collect data if required by the current Visitor derivate.
+        /// Visits the specified <see cref="ActionCode"/> to collect data if required by the current Visitor derivate.
         /// </summary>
         /// <param name="actionCode">The action code.</param>
         override public void Visit(ActionCode actionCode)
@@ -329,7 +313,7 @@ namespace Fusee.SceneManagement
             actionCode.TraverseForRendering(this);
         }
         /// <summary>
-        /// Visits the specified renderer to collect data if required by the current Visitor derivate.
+        /// Visits the specified <see cref="Renderer"/> to collect data if required by the current Visitor derivate.
         /// </summary>
         /// <param name="renderer">The renderer.</param>
         override public void Visit(Renderer renderer)
@@ -342,16 +326,16 @@ namespace Fusee.SceneManagement
             
         }
         /// <summary>
-        /// Visits the specified transform.
+        /// Visits the specified <see cref="Transformation"/>.
         /// </summary>
-        /// <param name="transform">The transform.</param>
+        /// <param name="transform">The transformation instance.</param>
         override public void Visit(Transformation transform)
         {
             AddTransform(transform);
         }
 
         /// <summary>
-        /// Visits the specified directional light to collect data if required by the current Visitor derivate.
+        /// Visits the specified <see cref="DirectionalLight"/> to collect data if required by the current Visitor derivate.
         /// </summary>
         /// <param name="directionalLight">The directional light.</param>
         override public void Visit(DirectionalLight directionalLight)
@@ -359,7 +343,7 @@ namespace Fusee.SceneManagement
             directionalLight.TraverseForRendering(this);
         }
         /// <summary>
-        /// Visits the specified point light to collect data if required by the current Visitor derivate.
+        /// Visits the specified <see cref="PointLight"/> to collect data if required by the current Visitor derivate.
         /// </summary>
         /// <param name="pointLight">The point light.</param>
         override public void Visit(PointLight pointLight)
@@ -367,7 +351,7 @@ namespace Fusee.SceneManagement
             pointLight.TraverseForRendering(this);
         }
         /// <summary>
-        /// Visits the specified spot light to collect data if required by the current Visitor derivate.
+        /// Visits the specified <see cref="SpotLight"/> to collect data if required by the current Visitor derivate.
         /// </summary>
         /// <param name="spotLight">The spot light.</param>
         override public void Visit(SpotLight spotLight)
@@ -375,7 +359,7 @@ namespace Fusee.SceneManagement
             spotLight.TraverseForRendering(this);
         }
         /// <summary>
-        /// Visits the specified camera to collect data if required by the current Visitor derivate.
+        /// Visits the specified <see cref="Camera"/> to collect data if required by the current Visitor derivate.
         /// </summary>
         /// <param name="camera">The camera.</param>
         override public void Visit(Camera camera)

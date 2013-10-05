@@ -21,9 +21,12 @@ namespace Fusee.SceneManagement
             _matrix = matrix;
         }
 
+
         /// <summary>
-        /// Overwrites the SubmitWork method of RenderJob class. Set's the Model matrix into RendeContext. 
+        /// The SubmitWork method will be overwritten by a visited Component that "want's" to be rendered.
+        /// Therefore a RenderContext is needed.
         /// </summary>
+        /// <param name="renderContext"></param>
         public override void SubmitWork(RenderContext renderContext)
         {
             renderContext.Model = _matrix;

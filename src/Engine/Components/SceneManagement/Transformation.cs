@@ -9,7 +9,7 @@ using Fusee.Math;
 namespace Fusee.SceneManagement
 {
     /// <summary>
-    /// Transformation is derived from Component and stores all positions, angles and movement of all SceneEntitys. 
+    /// Transformation is derived from Component and stores all positions, angles and movement of all SceneEntities. 
     /// </summary>
     public class Transformation : Component
     {
@@ -25,8 +25,6 @@ namespace Fusee.SceneManagement
         private float3 _globalScale;
         private float3 _globalEulerAngles;
 
-
-        // private SceneEntity _entity;
 
         private bool _matrixDirty;
         private bool _quaternionDirty;
@@ -57,9 +55,10 @@ namespace Fusee.SceneManagement
        }
 
        /// <summary>
-       /// Initializes a new instance of the <see cref="Transformation"/> class. Sets a SceneEntity for Transform.
+       /// Initializes a new instance of the <see cref="Transformation" /> class. Sets a SceneEntity for Transform.
+       /// This is the recommended Constructor.
        /// </summary>
-       /// <param name="entity">The SceneEntity that will be set to in Transform.</param>
+       /// <param name="entity">The SceneEntity that will be set in Transform.</param>
        public Transformation(SceneEntity entity)
        {
            if (entity.parent == null)
@@ -83,11 +82,23 @@ namespace Fusee.SceneManagement
            _eulerDirty = false;
        }
 
+       /// <summary>
+       /// Gets the forward direction as float3 of the Transformation instance.
+       /// </summary>
+       /// <value>
+       /// The forward.
+       /// </value>
        public float3 Forward
        {
            get { return -GlobalMatrix.Row2.xyz; }
        }
 
+       /// <summary>
+       /// Sets the parent <see cref="SceneEntity"/>.
+       /// </summary>
+       /// <value>
+       /// The parent.
+       /// </value>
        public SceneEntity Parent
        {
            set
@@ -106,7 +117,7 @@ namespace Fusee.SceneManagement
 
 
        /// <summary>
-       /// Gets or sets the float4x4 transformMatrix.
+       /// Gets or sets the float4x4 local transformMatrix.
        /// </summary>
        public float4x4 Matrix
        {
@@ -128,7 +139,7 @@ namespace Fusee.SceneManagement
        }
 
        /// <summary>
-       /// Gets or sets the float4x4 transformMatrix.
+       /// Gets or sets the float4x4 global transformMatrix.
        /// </summary>
        public float4x4 GlobalMatrix
        {
@@ -154,20 +165,37 @@ namespace Fusee.SceneManagement
            } 
        }
 
+       /// <summary>
+       /// Gets a value indicating whether [global matrix dirty].
+       /// Do not use this method. It is intended to be used inside of <see cref="SceneVisitor"/> for covering the special cases of overwriting local and global matrices on this transformation instance. 
+       /// </summary>
+       /// <value>
+       ///   <c>true</c> if [global matrix dirty]; otherwise, <c>false</c>.
+       /// </value>
         public bool GlobalMatrixDirty
         {
             get { return _globalMatrixDirty; }
         }
 
+        /// <summary>
+        /// Sets the global Matrix of this Transformation instance. This method is used by <see cref="SceneVisitor"/>. 
+        /// Do not use this method. use the GlobalMatrix property instead.
+        /// </summary>
+        /// <param name="mat">The mat.</param>
         public void SetGlobalMat(float4x4 mat)
         {
             _globalMatrix = mat;
             UpdateGlobalMembers();
             _globalMatrixDirty = false;
         }
-        
 
 
+
+        /// <summary>
+        /// Gets the scale as float3 from a matrix.
+        /// </summary>
+        /// <param name="matrix">The matrix.</param>
+        /// <returns></returns>
         private float3 GetScaleFromMatrix(float4x4 matrix)
         {
             return new float3(GetLengthOfVector(matrix.Row0.xyz), GetLengthOfVector(matrix.Row1.xyz), GetLengthOfVector(matrix.Row2.xyz));
@@ -187,7 +215,7 @@ namespace Fusee.SceneManagement
         }
 
         /// <summary>
-        /// Gets or sets the float3 LocalPosition.
+        /// Gets or sets the float3 LocalPosition of this Transformation instance.
         /// </summary>
        public float3 LocalPosition
        {
@@ -207,6 +235,12 @@ namespace Fusee.SceneManagement
        }
 
 
+       /// <summary>
+       /// Gets or sets the global position of this Transformation instance.
+       /// </summary>
+       /// <value>
+       /// The global position as float3.
+       /// </value>
         public float3 GlobalPosition
         {
             set
@@ -222,9 +256,12 @@ namespace Fusee.SceneManagement
 
 
 
-       /// <summary>
-       /// Gets or sets the float3 LocalScale.
-       /// </summary>
+        /// <summary>
+        /// Gets or sets the float3 LocalScale of this Transformation instance.
+        /// </summary>
+        /// <value>
+        /// The local scale as float3.
+        /// </value>
        public float3 LocalScale
        {
            set
@@ -243,6 +280,12 @@ namespace Fusee.SceneManagement
            }
        }
 
+       /// <summary>
+       /// Gets or sets the global scale of this Transformation instance.
+       /// </summary>
+       /// <value>
+       /// The global scale as float3.
+       /// </value>
         public float3 GlobalScale
         {
             set
@@ -257,9 +300,12 @@ namespace Fusee.SceneManagement
             }
         }
 
-       /// <summary>
-       /// Gets or sets the Quaternion LocalQuaternion.
-       /// </summary>
+        /// <summary>
+        /// Gets or sets the Quaternion LocalQuaternion.
+        /// </summary>
+        /// <value>
+        /// The local quaternion.
+        /// </value>
        public Quaternion LocalQuaternion
        {
            get
@@ -287,6 +333,9 @@ namespace Fusee.SceneManagement
        /// <summary>
        /// Gets or sets the Quaternion GlobalQuaternion.
        /// </summary>
+       /// <value>
+       /// The global quaternion.
+       /// </value>
        public Quaternion GlobalQuaternion
        {
            get
@@ -311,6 +360,9 @@ namespace Fusee.SceneManagement
        /// <summary>
        /// Gets or sets the float3 LocalEulerAngles.
        /// </summary>
+       /// <value>
+       /// The local euler angles as float3.
+       /// </value>
        public float3 LocalEulerAngles
        {
            set
@@ -338,6 +390,9 @@ namespace Fusee.SceneManagement
        /// <summary>
        /// Gets or sets the float3 GlobalEulerAngles.
        /// </summary>
+       /// <value>
+       /// The global euler angles as float3.
+       /// </value>
        public float3 GlobalEulerAngles
        {
            set
@@ -387,6 +442,10 @@ namespace Fusee.SceneManagement
           _globalQuaternionDirty = false;
       }
 
+      /// <summary>
+      /// Passes this Component to the <see cref="SceneVisitor"/> which decides what to do with that Component.
+      /// </summary>
+      /// <param name="sv">The SceneVisitor.</param>
       public override void Accept(SceneVisitor sv)
       {
           sv.Visit(this);

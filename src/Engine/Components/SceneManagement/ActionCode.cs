@@ -58,7 +58,10 @@ namespace Fusee.SceneManagement
         {
             
         }
-
+        /// <summary>
+        /// Accept is called by the current visitor. This function is currently used for traversal and search algorithms by the SceneManager object. 
+        /// </summary>
+        /// <param name="sv">The visitor that is currently traversing the scene.</param>
         public override void Accept(SceneVisitor sv)
         {
             sv.Visit((ActionCode)this);

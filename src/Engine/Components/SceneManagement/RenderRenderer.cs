@@ -6,13 +6,12 @@ using Fusee.Engine;
 namespace Fusee.SceneManagement
 {
     /// <summary>
-    /// Creates a Renderer Component that will be passed to the RenderContext.
+    /// Creates a RendererRenderer Component that will be passed to the RenderContext as the current shaderprogram. 
     /// </summary>
     public class RenderRenderer : RenderJob
     {
 
         private Renderer _renderer;
-        //private IShaderParam _uColor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderRenderer"/> class. Needs to be provided with a Renderer Component.

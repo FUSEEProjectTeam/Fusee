@@ -41,15 +41,21 @@ namespace Fusee.SceneManagement
         #endregion
 
         #region Methods
+
         /// <summary>
-        /// TraverseForRendering add's Pointlight to the lightqueue.
+        /// Traverses this pointligt for rendering. The light information is passed to the SceneVisitorRendering.
         /// </summary>
+        /// <param name="sceneVisitorRendering">The scene visitor rendering object grabs the light information upon render time.</param>
         public void TraverseForRendering(SceneVisitorRendering sceneVisitorRendering)
         {
             sceneVisitorRendering.AddLightPoint(_position , _color, _type, _channel);
         }
 
         #endregion
+        /// <summary>
+        /// Passes the Component to the SceneVisitor which decides what to do with that Component.
+        /// </summary>
+        /// <param name="sv">The SceneVisitor instance updates the position of this pointlight according to the transformation of the pointlights parent.</param>
         public override void Accept(SceneVisitor sv)
         {
             if (SceneEntity != null)

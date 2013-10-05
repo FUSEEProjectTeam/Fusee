@@ -27,32 +27,59 @@ namespace Fusee.SceneManagement
 
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Renderer"/> class.
+        /// </summary>
+        /// <param name="sp">The Shaderprogram is used to initialize the Material<see cref="Material"/> of this Renderer.</param>
         public Renderer (ShaderProgram sp)
         {
             material = new Material(sp);
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Renderer"/> class.
+        /// </summary>
+        /// <param name="geo">The geometry information is parsed to a Mesh<see cref="Mesh"/> object upon initilization of Renderer.</param>
         public Renderer(Geometry geo)
         {
             mesh = geo.ToMesh();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Renderer"/> class.
+        /// </summary>
+        /// <param name="mesh">The mesh of this Renderer.</param>
         public Renderer(Mesh mesh)
         {
             this.mesh = mesh;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Renderer"/> class.
+        /// </summary>
+        /// <param name="mesh">The Mesh of this Renderer.</param>
+        /// <param name="sp">The Shaderprogram is used to initialize the Material of the Renderer.</param>
         public Renderer(Mesh mesh, ShaderProgram sp)
         {
             this.mesh = mesh;
             material = new Material(sp);
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Renderer"/> class.
+        /// </summary>
+        /// <param name="geo">The geo.</param>
+        /// <param name="shaderProgram">The shader program.</param>
         public Renderer(Geometry geo, ShaderProgram shaderProgram)
         {
             mesh = geo.ToMesh();
             material = new Material(shaderProgram);
         }
+
+        /// <summary>
+        /// Passes the Component to the SceneVisitor which decides what to do with that Component.
+        /// </summary>
+        /// <param name="sv">The SceneVisitor that traverses through the information of the renderer during runtime.</param>
         public override void Accept(SceneVisitor sv)
         {
             sv.Visit((Renderer)this);

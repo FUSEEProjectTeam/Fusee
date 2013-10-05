@@ -51,14 +51,19 @@ namespace Fusee.SceneManagement
 
         #region Methods
         /// <summary>
-        /// TraverseForRendering add's Directionallight to the lightqueue.
+        /// TraverseForRendering add's Directionallight to the light queue.
         /// </summary>
+        /// <param name="sceneVisitorRendering">The SceneVisitorRendering object that is passing the light information to the rendeirng queue.</param>
         public void TraverseForRendering(SceneVisitorRendering sceneVisitorRendering)
         {
             sceneVisitorRendering.AddLightDirectional(_direction, _color, _type, _channel);
         }
 
         #endregion
+        /// <summary>
+        /// Accept is called by the current visitor. This function is currently used for traversal and search algorithms by the SceneManager object. 
+        /// </summary>
+        /// <param name="sv">The visitor that is currently traversing the scene.</param>
         public override void Accept(SceneVisitor sv)
         {
             if (SceneEntity != null)
