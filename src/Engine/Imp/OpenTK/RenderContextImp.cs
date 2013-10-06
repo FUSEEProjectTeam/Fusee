@@ -12,11 +12,18 @@ using PixelFormat = System.Drawing.Imaging.PixelFormat;
 
 namespace Fusee.Engine
 {
+    /// <summary>
+    /// Implementation of the <see cref="IRenderContextImp" /> interface for usage with OpenTK framework.
+    /// </summary>
     public class RenderContextImp : IRenderContextImp
     {
         private int _currentTextureUnit;
         private Dictionary<int, int> _shaderParam2TexUnit;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RenderContextImp"/> class.
+        /// </summary>
+        /// <param name="renderCanvas">The render canvas interface.</param>
         public RenderContextImp(IRenderCanvasImp renderCanvas)
         {
             _currentTextureUnit = 0;
@@ -168,12 +175,27 @@ namespace Fusee.Engine
 
 
 
+        /// <summary>
+        /// Gets the shader parameter.
+        /// The Shader parameter is used to bind values inside of shaderprograms that run on the graphics card.
+        /// Do not use this function in frequent updates as it transfers information from graphics card to the cpu which takes time.
+        /// </summary>
+        /// <param name="shaderProgram">The shader program.</param>
+        /// <param name="paramName">Name of the parameter.</param>
+        /// <returns>The Shader parameter is returned if the name is found, otherwise null.</returns>
         public IShaderParam GetShaderParam(IShaderProgramImp shaderProgram, string paramName)
         {
             int h = GL.GetUniformLocation(((ShaderProgramImp)shaderProgram).Program, paramName);
             return (h == -1) ? null : new ShaderParam { handle = h };
         }
 
+        /// <summary>
+        /// Gets the float parameter value inside a shaderprogram by using a <see cref="IShaderParam" /> as search reference.
+        /// Do not use this function in frequent updates as it transfers information from graphics card to the cpu which takes time.
+        /// </summary>
+        /// <param name="program">The program.</param>
+        /// <param name="param">The parameter.</param>
+        /// <returns>A float number (default is 0).</returns>
         public float GetParamValue(IShaderProgramImp program, IShaderParam param)
         {
             float f;
@@ -181,6 +203,12 @@ namespace Fusee.Engine
             return f;
         }
 
+        /// <summary>
+        /// Gets the shader parameter list of a specific <see cref="IShaderProgramImp" />. 
+        /// </summary>
+        /// <param name="shaderProgram">The shader program.</param>
+        /// <returns>All Shader parameters of a shaderprogram are returned.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         public IList<ShaderParamInfo> GetShaderParamList(IShaderProgramImp shaderProgram)
         {
             var sp = (ShaderProgramImp)shaderProgram;
@@ -226,21 +254,41 @@ namespace Fusee.Engine
 
 
 
+        /// <summary>
+        /// Sets a float shader parameter.
+        /// </summary>
+        /// <param name="param">The parameter.</param>
+        /// <param name="val">The value.</param>
         public void SetShaderParam(IShaderParam param, float val)
         {
             GL.Uniform1(((ShaderParam)param).handle, val);
         }
 
+        /// <summary>
+        /// Sets a <see cref="float2" /> shader parameter.
+        /// </summary>
+        /// <param name="param">The parameter.</param>
+        /// <param name="val">The value.</param>
         public void SetShaderParam(IShaderParam param, float2 val)
         {
             GL.Uniform2(((ShaderParam)param).handle, val.x, val.y);
         }
 
+        /// <summary>
+        /// Sets a <see cref="float3" /> shader parameter.
+        /// </summary>
+        /// <param name="param">The parameter.</param>
+        /// <param name="val">The value.</param>
         public void SetShaderParam(IShaderParam param, float3 val)
         {
             GL.Uniform3(((ShaderParam)param).handle, val.x, val.y, val.z);
         }
 
+        /// <summary>
+        /// Sets a <see cref="float4" /> shader parameter.
+        /// </summary>
+        /// <param name="param">The parameter.</param>
+        /// <param name="val">The value.</param>
         public void SetShaderParam(IShaderParam param, float4 val)
         {
             GL.Uniform4(((ShaderParam)param).handle, val.x, val.y, val.z, val.w);
@@ -248,6 +296,11 @@ namespace Fusee.Engine
 
         // TODO add vector implementations
 
+        /// <summary>
+        /// Sets a <see cref="float4x4" /> shader parameter.
+        /// </summary>
+        /// <param name="param">The parameter.</param>
+        /// <param name="val">The value.</param>
         public void SetShaderParam(IShaderParam param, float4x4 val)
         {
             unsafe
@@ -257,6 +310,11 @@ namespace Fusee.Engine
             }
         }
 
+        /// <summary>
+        /// Sets a int shader parameter.
+        /// </summary>
+        /// <param name="param">The parameter.</param>
+        /// <param name="val">The value.</param>
         public void SetShaderParam(IShaderParam param, int val)
         {
             GL.Uniform1(((ShaderParam)param).handle, val);
@@ -284,6 +342,13 @@ namespace Fusee.Engine
             GL.BindTexture(TextureTarget.Texture2D, ((Texture)texId).handle);
         }
 
+        /// <summary>
+        /// Gets or sets the model view.
+        /// </summary>
+        /// <value>
+        /// The model view.
+        /// </value>
+        /// <exception cref="System.NotImplementedException"></exception>
         public float4x4 ModelView
         {
             get
