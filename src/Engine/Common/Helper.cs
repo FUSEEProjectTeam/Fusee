@@ -1,5 +1,9 @@
 ﻿﻿namespace Fusee.Engine
  {
+     /// <summary>
+     /// This Object is used by the OpenTK Graphics implementation in order to handle parameter passing between Fusee and OpenTK. 
+     /// Do not modify this object.
+     /// </summary>
      public class Helper
      {
          public static readonly string VertexAttribName = "fuVertex";

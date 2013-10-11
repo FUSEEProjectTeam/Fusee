@@ -243,6 +243,12 @@ namespace Fusee.Engine
             set { _canvasImp.EnableBlending = value; }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="RenderCanvas"/> is fullscreen.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if fullscreen; otherwise, <c>false</c>.
+        /// </value>
         public bool Fullscreen
         {
             get { return _canvasImp.Fullscreen; }

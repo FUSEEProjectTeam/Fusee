@@ -360,6 +360,19 @@ namespace Fusee.Engine
             }
         }
 
+        /// <summary>
+        /// The projection matrix used by the rendering pipeline
+        /// </summary>
+        /// <value>
+        /// The 4x4 projection matrix applied to view coordinates yielding clip space coordinates.
+        /// </value>
+        /// <remarks>
+        /// View coordinates are the result of the ModelView matrix multiplied to the geometry (<see cref="Fusee.Engine.RenderContext.ModelView"/>).
+        /// The coordinate system of the view space has its origin in the camera center with the z axis aligned to the viewing direction, and the x- and
+        /// y axes aligned to the viewing plane. Still, no projection from 3d space to the viewing plane has been performed. This is done by multiplying
+        /// view coordinate geometry wihth the projection matrix. Typically, the projection matrix either performs a parallel projection or a perspective
+        /// projection.
+        /// </remarks>
         public float4x4 Projection
         {
             get
@@ -371,6 +384,13 @@ namespace Fusee.Engine
             }
         }
 
+
+        /// <summary>
+        /// Gets or sets the color of the background.
+        /// </summary>
+        /// <value>
+        /// The color of the clear.
+        /// </value>
         public float4 ClearColor
         {
             get
@@ -385,6 +405,12 @@ namespace Fusee.Engine
             }
         }
 
+        /// <summary>
+        /// Gets or sets the clear depth value which is used to clear the depth buffer.
+        /// </summary>
+        /// <value>
+        /// Specifies the depth value used when the depth buffer is cleared. The initial value is 1. This value is clamped to the range [0,1].
+        /// </value>
         public float ClearDepth
         {
             get
@@ -399,6 +425,15 @@ namespace Fusee.Engine
             }
         }
 
+        /// <summary>
+        /// Creates the shaderprogram by using a valid GLSL vertex and fragment shader code. This code is compiled at runtime.
+        /// Do not use this function in frequent updates.
+        /// </summary>
+        /// <param name="vs">The vertex shader code.</param>
+        /// <param name="ps">The pixel(=fragment) shader code.</param>
+        /// <returns>An instance of <see cref="IShaderProgramImp" />.</returns>
+        /// <exception cref="System.ApplicationException">
+        /// </exception>
         public IShaderProgramImp CreateShader(string vs, string ps)
         {
             int statusCode;
@@ -440,6 +475,10 @@ namespace Fusee.Engine
         }
 
 
+        /// <summary>
+        /// Sets the shaderprogram onto the GL Rendercontext.
+        /// </summary>
+        /// <param name="program">The shaderprogram.</param>
         public void SetShader(IShaderProgramImp program)
         {
             _currentTextureUnit = 0;
@@ -448,12 +487,23 @@ namespace Fusee.Engine
             GL.UseProgram(((ShaderProgramImp)program).Program);
         }
 
+        /// <summary>
+        /// Clears the specified flags.
+        /// </summary>
+        /// <param name="flags">The flags.</param>
         public void Clear(ClearFlags flags)
         {
             GL.Clear((ClearBufferMask)flags);
         }
 
 
+        /// <summary>
+        /// Binds the vertices onto the GL Rendercontext and assigns an VertexBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="vertices">The vertices.</param>
+        /// <exception cref="System.ArgumentException">Vertices must not be null or empty</exception>
+        /// <exception cref="System.ApplicationException"></exception>
         public void SetVertices(IMeshImp mr, float3[] vertices)
         {
             if (vertices == null || vertices.Length == 0)
@@ -477,6 +527,13 @@ namespace Fusee.Engine
         }
 
 
+        /// <summary>
+        /// Binds the normals onto the GL Rendercontext and assigns an NormalBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="normals">The normals.</param>
+        /// <exception cref="System.ArgumentException">Normals must not be null or empty</exception>
+        /// <exception cref="System.ApplicationException"></exception>
         public void SetNormals(IMeshImp mr, float3[] normals)
         {
             if (normals == null || normals.Length == 0)
@@ -499,6 +556,13 @@ namespace Fusee.Engine
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
 
+        /// <summary>
+        /// Binds the UV coordinates onto the GL Rendercontext and assigns an UVBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="uvs">The UV's.</param>
+        /// <exception cref="System.ArgumentException">UVs must not be null or empty</exception>
+        /// <exception cref="System.ApplicationException"></exception>
         public void SetUVs(IMeshImp mr, float2[] uvs)
         {
             if (uvs == null || uvs.Length == 0)
@@ -521,6 +585,14 @@ namespace Fusee.Engine
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
 
+
+        /// <summary>
+        /// Binds the colors onto the GL Rendercontext and assigns an ColorBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="colors">The colors.</param>
+        /// <exception cref="System.ArgumentException">colors must not be null or empty</exception>
+        /// <exception cref="System.ApplicationException"></exception>
         public void SetColors(IMeshImp mr, uint[] colors)
         {
             if (colors == null || colors.Length == 0)
@@ -543,6 +615,13 @@ namespace Fusee.Engine
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
 
+        /// <summary>
+        /// Binds the triangles onto the GL Rendercontext and assigns an ElementBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="triangleIndices">The triangle indices.</param>
+        /// <exception cref="System.ArgumentException">triangleIndices must not be null or empty</exception>
+        /// <exception cref="System.ApplicationException"></exception>
         public void SetTriangles(IMeshImp mr, short[] triangleIndices)
         {
             if (triangleIndices == null || triangleIndices.Length == 0)
@@ -566,6 +645,10 @@ namespace Fusee.Engine
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
 
+        /// <summary>
+        /// Renders the specified <see cref="IMeshImp" />.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
         public void Render(IMeshImp mr)
         {
             if (((MeshImp)mr).VertexBufferObject != 0)
@@ -622,6 +705,12 @@ namespace Fusee.Engine
             }
         }
 
+        /// <summary>
+        /// Draws a Debug Line in 3D Space by using a start and end point (float3).
+        /// </summary>
+        /// <param name="start">The startpoint of the DebugLine.</param>
+        /// <param name="end">The endpoint of the DebugLine.</param>
+        /// <param name="color">The color of the DebugLine.</param>
         public void DebugLine(float3 start, float3 end, float4 color)
         {
             GL.Begin(BeginMode.Lines);
@@ -630,21 +719,51 @@ namespace Fusee.Engine
             GL.End();
         }
 
+        /// <summary>
+        /// Creates the mesh implementation.
+        /// </summary>
+        /// <returns>The <see cref="IMeshImp" /> instance.</returns>
         public IMeshImp CreateMeshImp()
         {
             return new MeshImp();
         }
 
+        /// <summary>
+        /// Set the Viewport of the rendering output window by x,y position and width,height parameters. 
+        /// The Viewport is the portion of the final image window.
+        /// </summary>
+        /// <param name="x">The x.</param>
+        /// <param name="y">The y.</param>
+        /// <param name="width">The width.</param>
+        /// <param name="height">The height.</param>
         public void Viewport(int x, int y, int width, int height)
         {
             GL.Viewport(x, y, width, height);
         }
 
+        /// <summary>
+        /// Enable or disable Color channels to be written to the frame buffer (final image).
+        /// Use this function as a color channel filter for the final image.
+        /// </summary>
+        /// <param name="red">if set to <c>true</c> [red].</param>
+        /// <param name="green">if set to <c>true</c> [green].</param>
+        /// <param name="blue">if set to <c>true</c> [blue].</param>
+        /// <param name="alpha">if set to <c>true</c> [alpha].</param>
         public void ColorMask(bool red, bool green, bool blue, bool alpha)
         {
             GL.ColorMask(red, green, blue, alpha);
         }
 
+        /// <summary>
+        /// Specify the View Frustum by settings its left,right,bottom,top,near and far planes. 
+        /// Image the View frustum as a cubical form that determines the Cameras 3D view along its far plane. 
+        /// </summary>
+        /// <param name="left">The left plane.</param>
+        /// <param name="right">The right plane.</param>
+        /// <param name="bottom">The bottom plane.</param>
+        /// <param name="top">The top plane.</param>
+        /// <param name="zNear">The z near plane.</param>
+        /// <param name="zFar">The z far plane.</param>
         public void Frustum(double left, double right, double bottom, double top, double zNear, double zFar)
         {
             GL.Frustum(left, right, bottom, top, zNear, zFar);

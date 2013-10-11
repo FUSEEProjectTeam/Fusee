@@ -377,7 +377,7 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// Runs this application instance.
+        /// Implementation Tasks: Runs this application instance. This function should not be called more than once as its only for initilization purposes.
         /// </summary>
         public void Run()
         {

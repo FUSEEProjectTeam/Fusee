@@ -126,7 +126,7 @@ namespace Fusee.SceneManagement
         /// Sets the Cameras view frustum dimensions with width and height units as pixels.
         /// </summary>
         /// <param name="width">The Camera width in pixels.</param>
-        /// /// <param name="width">The Camera height in pixels.</param>
+        /// <param name="height">The Camera height in pixels.</param>
         public void Resize(float width, float height)
         {
             _width = width;

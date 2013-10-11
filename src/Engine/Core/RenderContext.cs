@@ -1179,6 +1179,12 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
             _rci.Render(m._meshImp);
         }
 
+        /// <summary>
+        /// Draws a Debug Line in 3D Space by using a start and end point (float3).
+        /// </summary>
+        /// <param name="start">The startpoint of the DebugLine.</param>
+        /// <param name="end">The endpoint of the DebugLine.</param>
+        /// <param name="color">The color of the DebugLine.</param>
         public void DebugLine(float3 start, float3 end, float4 color)
         {
             start /= 2;
@@ -1206,11 +1212,29 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
             _rci.Viewport(x, y, width, height);
         }
 
+        /// <summary>
+        /// Enable or disable Color channels to be written to the frame buffer (final image).
+        /// Use this function as a color channel filter for the final image.
+        /// </summary>
+        /// <param name="red">if set to <c>true</c> [red].</param>
+        /// <param name="green">if set to <c>true</c> [green].</param>
+        /// <param name="blue">if set to <c>true</c> [blue].</param>
+        /// <param name="alpha">if set to <c>true</c> [alpha].</param>
         public void ColorMask(bool red, bool green, bool blue, bool alpha)
         {
             _rci.ColorMask(red, green, blue, alpha);
         }
 
+        /// <summary>
+        /// Specify the View Frustum by settings its left,right,bottom,top,near and far planes. 
+        /// Image the View frustum as a cubical form that determines the Cameras 3D view along its far plane. 
+        /// </summary>
+        /// <param name="left">The left plane.</param>
+        /// <param name="right">The right plane.</param>
+        /// <param name="bottom">The bottom plane.</param>
+        /// <param name="top">The top plane.</param>
+        /// <param name="zNear">The z near plane.</param>
+        /// <param name="zFar">The z far plane.</param>
         public void Frustum(double left, double right, double bottom, double top, double zNear, double zFar)
         {
             _rci.Frustum(left, right, bottom, top, zNear, zFar);
