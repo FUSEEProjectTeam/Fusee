@@ -8,6 +8,7 @@ using System.Text;
 
 namespace Fusee.Engine
 {
+    // Not documented because this class is not approved yet.
     class Compression
     {
         public static byte[] SerializeAndCompress(object obj)
