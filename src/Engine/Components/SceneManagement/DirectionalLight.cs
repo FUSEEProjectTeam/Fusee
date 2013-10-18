@@ -15,7 +15,6 @@ namespace Fusee.SceneManagement
         private float3 _direction;
 
         #endregion
-
         #region Constructors
         /// <summary>
         /// Creates a directional light in the scene. Direction, color, position, and channel is needed.
@@ -48,7 +47,6 @@ namespace Fusee.SceneManagement
             _channel = channel;
         }
         #endregion
-
         #region Methods
         /// <summary>
         /// TraverseForRendering add's Directionallight to the light queue.
@@ -60,6 +58,7 @@ namespace Fusee.SceneManagement
         }
 
         #endregion
+        #region Overrides
         /// <summary>
         /// Accept is called by the current visitor. This function is currently used for traversal and search algorithms by the SceneManager object. 
         /// </summary>
@@ -74,5 +73,6 @@ namespace Fusee.SceneManagement
             }
             sv.Visit((DirectionalLight)this);
         }
+        #endregion
     }
 }

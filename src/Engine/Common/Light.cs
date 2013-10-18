@@ -23,7 +23,7 @@ namespace Fusee.Engine
     }
 
     /// <summary>
-    /// 
+    /// The container that holds all informations that are required for shader light calculation.
     /// </summary>
     public struct Light
     {

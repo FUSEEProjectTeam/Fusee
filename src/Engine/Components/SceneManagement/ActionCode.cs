@@ -7,6 +7,13 @@ using Fusee.Engine;
 namespace Fusee.SceneManagement
 {
     /// <summary>
+    /// Provides scene management functionality for 3D graphics rendering and object relationships.
+    /// </summary>
+    internal class NamespaceDoc
+    {
+    }
+
+    /// <summary>
     /// ActionCode class grants access to an SceneEntities Components.
     /// Supported: DeltaTime, Input recognition
     /// </summary>

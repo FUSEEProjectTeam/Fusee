@@ -7,6 +7,7 @@ namespace Fusee.Engine
     /// </summary>
     class AudioStream : IAudioStream
     {
+        #region Fields
         internal SoundBuffer OutputBuffer { get; set; }
         internal string FileName { get; set; }
 
@@ -56,7 +57,9 @@ namespace Fusee.Engine
                     _outputSound.Loop = value;
             }
         }
+        #endregion
 
+        #region Constructors
         /// <summary>
         /// Initializes a new instance of the <see cref="AudioStream"/> class.
         /// </summary>
@@ -87,7 +90,9 @@ namespace Fusee.Engine
 
             Init(fileName, streaming);
         }
+        #endregion
 
+        #region Members
         private void Init(string fileName, bool streaming)
         {
             IsStream = streaming;
@@ -161,6 +166,9 @@ namespace Fusee.Engine
             else
                 _outputSound.Pause();
         }
+        #endregion
+
+        #region Internal Members
 
         /// <summary>
         /// Stops this <see cref="IAudioStream" />.
@@ -206,5 +214,6 @@ namespace Fusee.Engine
         {
             return (float) System.Math.Round(IsStream ? _outputStream.Position.X : _outputSound.Position.X, 2);
         }
+        #endregion
     }
 }

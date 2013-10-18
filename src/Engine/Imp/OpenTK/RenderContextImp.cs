@@ -17,9 +17,14 @@ namespace Fusee.Engine
     /// </summary>
     public class RenderContextImp : IRenderContextImp
     {
+        #region Fields
+
         private int _currentTextureUnit;
         private Dictionary<int, int> _shaderParam2TexUnit;
 
+        #endregion
+
+        #region Constructors
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderContextImp"/> class.
         /// </summary>
@@ -29,6 +34,10 @@ namespace Fusee.Engine
             _currentTextureUnit = 0;
             _shaderParam2TexUnit = new Dictionary<int, int>();
         }
+
+        #endregion
+
+        #region Image data related Members
 
         /// <summary>
         /// Creates a new Bitmap-Object from an image file,
@@ -342,6 +351,10 @@ namespace Fusee.Engine
             GL.BindTexture(TextureTarget.Texture2D, ((Texture)texId).handle);
         }
 
+        #endregion
+
+        #region Matrix Fields
+
         /// <summary>
         /// Gets or sets the model view.
         /// </summary>
@@ -384,6 +397,9 @@ namespace Fusee.Engine
             }
         }
 
+        #endregion
+
+        #region Clear Fields
 
         /// <summary>
         /// Gets or sets the color of the background.
@@ -425,6 +441,9 @@ namespace Fusee.Engine
             }
         }
 
+        #endregion
+
+        #region Rendering related Members
         /// <summary>
         /// Creates the shaderprogram by using a valid GLSL vertex and fragment shader code. This code is compiled at runtime.
         /// Do not use this function in frequent updates.
@@ -768,5 +787,7 @@ namespace Fusee.Engine
         {
             GL.Frustum(left, right, bottom, top, zNear, zFar);
         }
+
+        #endregion
     }
 }

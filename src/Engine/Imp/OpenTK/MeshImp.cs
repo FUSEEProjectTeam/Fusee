@@ -6,13 +6,16 @@
     /// </summary>
     public class MeshImp : IMeshImp
     {
+        #region Internal Fields
         internal int VertexBufferObject;
         internal int NormalBufferObject;
         internal int ColorBufferObject;
         internal int UVBufferObject;
         internal int ElementBufferObject;
         internal int NElements;
+        #endregion
 
+        #region Public Fields & Members pairs
         /// <summary>
         /// Invalidates the vertices.
         /// </summary>
@@ -86,5 +89,6 @@
         ///   <c>true</c> if [triangles set]; otherwise, <c>false</c>.
         /// </value>
         public bool TrianglesSet { get { return ElementBufferObject != 0; } }
+        #endregion
     }
 }

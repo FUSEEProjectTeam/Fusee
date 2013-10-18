@@ -6,8 +6,13 @@ using JSIL.Meta;
 
 namespace Fusee.Engine
 {
+    /// <summary>
+    /// This class is used to load 3D Models in .obj format into memory.
+    /// </summary>
     public class MeshReader
     {
+        #region Members
+
         /// <summary>
         /// Replacement for double.Parse(s, [InvariantCulture])
         /// Hack needed for JSIL.
@@ -207,6 +212,8 @@ namespace Fusee.Engine
 
             return values;
         }
+
+        #endregion
     }
 }
 

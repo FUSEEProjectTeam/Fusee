@@ -13,6 +13,7 @@ namespace Fusee.SceneManagement
     /// </summary>
     public class SceneEntity
     {
+        #region Fields
         /// <summary>
         /// The name of the SceneEntity.
         /// </summary>
@@ -41,8 +42,9 @@ namespace Fusee.SceneManagement
         /// The components of the current SceneEntity. 
         /// </summary>
         private List<Component> _childComponents;
+        #endregion
 
-
+        #region Constructors
         /// <summary>
         /// Initializes a new instance of the <see cref="SceneEntity"/> class.
         /// </summary>
@@ -172,8 +174,9 @@ namespace Fusee.SceneManagement
             action.Init(this);
             tag = "default";
         }
+        #endregion
 
-
+        #region Members
         /// <summary>
         /// Traverses through the current SceneEntities components and through its children and their components.
         /// </summary>
@@ -313,16 +316,8 @@ namespace Fusee.SceneManagement
                     _parent = value; 
                 }
         }
-        /*
-        /// <summary>
-        /// Removes the scene entity and all of its children from the scene. This method is in prototype state and is not implemented yet.
-        /// </summary>
-        /// <param name="objectToBeDestroyed">The object to be destroyed.</param>
-        public static void DestroySceneEntity(SceneEntity objectToBeDestroyed)
-        {
-               
-        }
-        */
+        #endregion
+
     }
 }
 

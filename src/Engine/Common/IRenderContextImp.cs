@@ -19,7 +19,7 @@ namespace Fusee.Engine
         /// The 4x4 ModelView matrix defining the transformation applied to model coordinates yielding view coordinates.
         /// </value>
         /// <remarks>
-        /// Model coordinates are the coordinates directly taken from the model (the mesh geometry - <see cref="Fusee.Engine.Mesh"/>). The rendering pipeline
+        /// Model coordinates are the coordinates directly taken from the model (the mesh geometry - <see cref="IMeshImp"/> ). The rendering pipeline
         /// transforms these coordinates into View coordinates. Further down the pipeline the coordinates will be transformed to screen coordinates to allow the
         /// geometry to be rendered to pixel positions on the screen. The ModelView matrix defines the transformations performed on the original model coordinates
         /// to yield view coordinates. In most cases the matrix is a composition of several translations, rotations, and scale operations.
@@ -33,7 +33,7 @@ namespace Fusee.Engine
         /// The 4x4 projection matrix applied to view coordinates yielding clip space coordinates.
         /// </value>
         /// <remarks>
-        /// View coordinates are the result of the ModelView matrix multiplied to the geometry (<see cref="Fusee.Engine.RenderContext.ModelView"/>).
+        /// View coordinates are the result of the ModelView matrix multiplied to the geometry (<see cref="Fusee.Engine.IRenderContextImp.ModelView"/>).
         /// The coordinate system of the view space has its origin in the camera center with the z axis aligned to the viewing direction, and the x- and
         /// y axes aligned to the viewing plane. Still, no projection from 3d space to the viewing plane has been performed. This is done by multiplying
         /// view coordinate geometry wihth the projection matrix. Typically, the projection matrix either performs a parallel projection or a perspective
@@ -73,7 +73,7 @@ namespace Fusee.Engine
         /// <returns>A shader program object identifying the combination of the given vertex and pixel shader.</returns>
         /// <remarks>
         /// Currently only shaders in GLSL (or rather GLSL/ES) source language(s) are supported.
-        /// The result is already compiled to code executable on the GPU. <see cref="Fusee.Engine.RenderContext.SetShader(ShaderProgram)"/>
+        /// The result is already compiled to code executable on the GPU. <see cref="Fusee.Engine.IRenderContextImp.SetShader"/>
         /// to activate the result as the current shader used for rendering geometry passed to the RenderContext.
         /// </remarks>
         IShaderProgramImp CreateShader(string vs, string ps);
@@ -307,8 +307,8 @@ namespace Fusee.Engine
         /// Activates the passed shader program as the current shader for geometry rendering.
         /// </summary>
         /// <param name="shaderProgramImp">The shader to apply to mesh geometry subsequently passed to the RenderContext</param>
-        /// <seealso cref="Fusee.Engine.RenderContext.CreateShader"/>
-        /// <seealso cref="Fusee.Engine.RenderContext.Render(Mesh)"/>
+        /// <seealso cref="IRenderContextImp.CreateShader"/>
+        /// <see cref="IRenderContextImp.Render(IMeshImp)"/>
         void SetShader(IShaderProgramImp shaderProgramImp);
 
         /// <summary>

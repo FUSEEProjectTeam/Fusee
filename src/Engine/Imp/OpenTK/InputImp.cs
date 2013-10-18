@@ -9,9 +9,12 @@ namespace Fusee.Engine
     /// </summary>
     public class InputImp : IInputImp
     {
+        #region Fields
         protected GameWindow _gameWindow;
         internal Keymapper KeyMapper;
+        #endregion
 
+        #region Constructors
         /// <summary>
         /// Initializes a new instance of the <see cref="InputImp"/> class.
         /// </summary>
@@ -42,7 +45,9 @@ namespace Fusee.Engine
 
             KeyMapper = new Keymapper();
         }
+        #endregion
 
+        #region Members
         /// <summary>
         /// Implement this to receive callbacks once a frame if your implementation needs
         /// regular updates.
@@ -217,5 +222,6 @@ namespace Fusee.Engine
                     });
             }
         }
+        #endregion
     }
 }

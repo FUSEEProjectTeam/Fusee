@@ -11,7 +11,7 @@ namespace Fusee.Engine
     /// </summary>
     public static class MoreShaders
     {
-
+        // TODO: rework the mesh creation approach in a better way for documentation.
         /// <summary>
         /// Creates the shader in RenderContext and returns a ShaderProgram.
         /// </summary>

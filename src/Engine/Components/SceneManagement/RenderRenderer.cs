@@ -10,9 +10,10 @@ namespace Fusee.SceneManagement
     /// </summary>
     public class RenderRenderer : RenderJob
     {
-
+        #region Fields
         private Renderer _renderer;
-
+        #endregion
+        #region Constructors
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderRenderer"/> class. Needs to be provided with a Renderer Component.
         /// </summary>
@@ -21,6 +22,8 @@ namespace Fusee.SceneManagement
             _renderer = renderer;
             //_uColor = null;
         }
+        #endregion
+        #region Overrides
         /// <summary>
         /// Overwrites the SubmitWork method of RenderJob class. Render Component will get shaders and materials and passed to the RenderContextImplementation.
         /// </summary>
@@ -30,5 +33,6 @@ namespace Fusee.SceneManagement
             _renderer.material.Update(renderContext);
             SceneManager.Manager.UpdateLights();
         }
+        #endregion
     }
 }

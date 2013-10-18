@@ -12,8 +12,8 @@ namespace Fusee.SceneManagement
     /// </summary>
     public class Camera : Component
     {
-        
 
+        #region Fields
         private Projection proj = Projection.Perspective;
 
         private bool _projectionDirty;
@@ -25,36 +25,8 @@ namespace Fusee.SceneManagement
         private float4x4 _viewmatrix;
         private float4x4 _projMatrix;
         private float _width=640, _height=480;
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Camera"/> class. The ViewMatrix will be set to float4x4 identity matrix.
-        /// </summary>
-        public Camera()
-        {
-            ViewMatrix = float4x4.Identity;
-            ProjectionType(proj);
 
-        }
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Camera"/> class. The ViewMatrix will be set to a provided float 4x4 matrix.
-        /// </summary>
-        /// <param name="cameratransformation">The matrix that will become the Viewmatrix.</param>
-        public Camera(Transformation cameratransformation)
-        {
-            ViewMatrix = cameratransformation.Matrix;
-            ProjectionType(proj);
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Camera"/> class. The SceneEntity will be set to apply its transformation to the Camera Component.
-        /// </summary>
-        /// <param name="owner">The SceneEntity where the Camera Component is attached to.</param>
-        public Camera(SceneEntity owner)
-        {
-            ViewMatrix = owner.transform.Matrix;
-            ProjectionType(proj);
-            owner.AddComponent(this);
-        }
-
+       
         /// <summary>
         /// Allows to set and get the Viewmatrix of the Camera.
         /// </summary>
@@ -63,81 +35,9 @@ namespace Fusee.SceneManagement
             get { return _viewmatrix; }
             set { _viewmatrix = float4x4.Invert(value);}
         }
-
-        /// <summary>
-        /// Sets the projection type of the Camera object.  
-        /// </summary>
-        /// <param name="projection">The Projection enum whereby Projection.Perspective or Projection.Orthographic is available.</param>
-        public void ProjectionType(Projection projection)
-        {
-            if((int)projection == 0)
-            {
-                
-                // Set Perspective Projection
-                proj = projection;
-                
-                float size = _near*(float) System.Math.Tan(DegreesToRadians(_fieldOfView)/2.0f);
-                float left = -size, right = size, bottom = -size/_aspectRatio, top = size/_aspectRatio;
-
-                _projMatrix = new float4x4();
-                
-                _projMatrix.M11 = 2*_near/(right - left);
-                _projMatrix.M12 = 0.0f;
-                _projMatrix.M13 = 0.0f;
-                _projMatrix.M14 = 0.0f;
-
-                _projMatrix.M21 = 0.0f;
-                _projMatrix.M22 = 2*_near/(top - bottom);
-                _projMatrix.M23 = 0.0f;
-                _projMatrix.M24 = 0.0f;
-
-                _projMatrix.M31 = (right + left)/(right - left);
-                _projMatrix.M32 = (top + bottom)/(top - bottom);
-                _projMatrix.M33 = -(_far + _near)/(_far - _near);
-                _projMatrix.M34 = -1.0f;
-
-                _projMatrix.M41 = 0.0f;
-                _projMatrix.M42 = 0.0f;
-                _projMatrix.M43 = -(2*_far*_near)/(_far - _near);
-                _projMatrix.M44 = 0.0f;
-                
-                _projectionDirty = true;
-
-            }
-            else if((int)projection == 1)
-            {
-                // Set Orthographic Projection
-                proj = projection;
-                _projMatrix = new float4x4();
-                _projMatrix = float4x4.CreateOrthographic(_width, _height, _near, _far);
-                _projectionDirty = true;
-            }
-        }
-
-        /// <summary>
-        /// This is called by the Resize function inside the entry point object in order to update the Cameras view frustum dimensions upon window resizing.
-        /// </summary>
-        public void Resize()
-        {
-            ProjectionType(proj);
-        }
-
-        /// <summary>
-        /// Sets the Cameras view frustum dimensions with width and height units as pixels.
-        /// </summary>
-        /// <param name="width">The Camera width in pixels.</param>
-        /// <param name="height">The Camera height in pixels.</param>
-        public void Resize(float width, float height)
-        {
-            _width = width;
-            _height = height;
-            _aspectRatio = _width/_height;
-            ProjectionType(proj);
-        }
-
         private float DegreesToRadians(float deg)
         {
-            return (deg*((float) System.Math.PI))/180;
+            return (deg * ((float)System.Math.PI)) / 180;
         }
 
         /// <summary>
@@ -217,6 +117,109 @@ namespace Fusee.SceneManagement
                 Resize();
             }
         }
+#endregion
+        #region Constructors
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Camera"/> class. The ViewMatrix will be set to float4x4 identity matrix.
+        /// </summary>
+        public Camera()
+        {
+            ViewMatrix = float4x4.Identity;
+            ProjectionType(proj);
+
+        }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Camera"/> class. The ViewMatrix will be set to a provided float 4x4 matrix.
+        /// </summary>
+        /// <param name="cameratransformation">The matrix that will become the Viewmatrix.</param>
+        public Camera(Transformation cameratransformation)
+        {
+            ViewMatrix = cameratransformation.Matrix;
+            ProjectionType(proj);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Camera"/> class. The SceneEntity will be set to apply its transformation to the Camera Component.
+        /// </summary>
+        /// <param name="owner">The SceneEntity where the Camera Component is attached to.</param>
+        public Camera(SceneEntity owner)
+        {
+            ViewMatrix = owner.transform.Matrix;
+            ProjectionType(proj);
+            owner.AddComponent(this);
+        }
+        #endregion
+        #region Public Members
+        /// <summary>
+        /// Sets the projection type of the Camera object.  
+        /// </summary>
+        /// <param name="projection">The Projection enum whereby Projection.Perspective or Projection.Orthographic is available.</param>
+        public void ProjectionType(Projection projection)
+        {
+            if((int)projection == 0)
+            {
+                
+                // Set Perspective Projection
+                proj = projection;
+                
+                float size = _near*(float) System.Math.Tan(DegreesToRadians(_fieldOfView)/2.0f);
+                float left = -size, right = size, bottom = -size/_aspectRatio, top = size/_aspectRatio;
+
+                _projMatrix = new float4x4();
+                
+                _projMatrix.M11 = 2*_near/(right - left);
+                _projMatrix.M12 = 0.0f;
+                _projMatrix.M13 = 0.0f;
+                _projMatrix.M14 = 0.0f;
+
+                _projMatrix.M21 = 0.0f;
+                _projMatrix.M22 = 2*_near/(top - bottom);
+                _projMatrix.M23 = 0.0f;
+                _projMatrix.M24 = 0.0f;
+
+                _projMatrix.M31 = (right + left)/(right - left);
+                _projMatrix.M32 = (top + bottom)/(top - bottom);
+                _projMatrix.M33 = -(_far + _near)/(_far - _near);
+                _projMatrix.M34 = -1.0f;
+
+                _projMatrix.M41 = 0.0f;
+                _projMatrix.M42 = 0.0f;
+                _projMatrix.M43 = -(2*_far*_near)/(_far - _near);
+                _projMatrix.M44 = 0.0f;
+                
+                _projectionDirty = true;
+
+            }
+            else if((int)projection == 1)
+            {
+                // Set Orthographic Projection
+                proj = projection;
+                _projMatrix = new float4x4();
+                _projMatrix = float4x4.CreateOrthographic(_width, _height, _near, _far);
+                _projectionDirty = true;
+            }
+        }
+
+        /// <summary>
+        /// This is called by the Resize function inside the entry point object in order to update the Cameras view frustum dimensions upon window resizing.
+        /// </summary>
+        public void Resize()
+        {
+            ProjectionType(proj);
+        }
+
+        /// <summary>
+        /// Sets the Cameras view frustum dimensions with width and height units as pixels.
+        /// </summary>
+        /// <param name="width">The Camera width in pixels.</param>
+        /// <param name="height">The Camera height in pixels.</param>
+        public void Resize(float width, float height)
+        {
+            _width = width;
+            _height = height;
+            _aspectRatio = _width/_height;
+            ProjectionType(proj);
+        }
 
         /// <summary>
         /// TraverseForRendering add's Camera to the lightqueue.
@@ -229,7 +232,8 @@ namespace Fusee.SceneManagement
             _projectionDirty = false;
             return job;
         }
-
+        #endregion
+        #region Overrides
         /// <summary>
         /// Accept is called by the current visitor. This function is currently used for traversal and search algorithms by the SceneManager object. 
         /// </summary>
@@ -238,5 +242,6 @@ namespace Fusee.SceneManagement
         {
             sv.Visit((Camera)this);
         }
+        #endregion
     }
 }

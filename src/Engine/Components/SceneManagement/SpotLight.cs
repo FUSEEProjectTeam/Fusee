@@ -45,7 +45,7 @@ namespace Fusee.SceneManagement
         }
         #endregion
 
-        #region Methods
+        #region Members
 
         /// <summary>
         /// Add's a Spotlight to the lightqueue.
@@ -61,6 +61,8 @@ namespace Fusee.SceneManagement
         }
 
         #endregion
+
+        #region Overrides
         /// <summary>
         /// Passes the Component to the SceneVisitor which decides what to do with that Component.
         /// </summary>
@@ -69,5 +71,6 @@ namespace Fusee.SceneManagement
         {
             sv.Visit((SpotLight)this);
         }
+        #endregion
     }
 }

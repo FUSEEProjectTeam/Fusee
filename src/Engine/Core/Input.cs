@@ -4,11 +4,12 @@ using System.Linq;
 namespace Fusee.Engine
 {
     /// <summary>
-    /// The Input class provides takes care of al imputs. It is accessible from everywhere.
+    /// The Input class takes care of all imputs. It is accessible from everywhere inside a Fusee project.
     /// E.g. : Input.Instance.IsButtonDown(MouseButtons.Left);
     /// </summary>
     public class Input
     {
+        #region Fields
 
         private static Input _instance;
 
@@ -61,6 +62,9 @@ namespace Fusee.Engine
             set { _inputImp.CursorVisible = value; }
         }
 
+        #endregion
+
+        #region Constructors
         /// <summary>
         /// Create a new instance of the Input class and initialize it with an underlying InputImp instance.
         /// </summary>
@@ -68,6 +72,9 @@ namespace Fusee.Engine
         {
             // not implemented
         }
+        #endregion
+
+        #region Members
 
         private void KeyDown(object sender, KeyEventArgs kea)
         {
@@ -151,7 +158,7 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// Check if the user started pressing a key in the current frames.
+        /// Check if the user started pressing a key in the current frame.
         /// </summary>
         /// <param name="key">The key to check.</param>
         /// <returns>
@@ -182,15 +189,21 @@ namespace Fusee.Engine
         /// <summary>
         /// Check if a given mouse button is pressed during the current frame.
         /// </summary>
-        /// <param name="button">the button to check.</param>
+        /// <param name="button">the mousebutton to check.</param>
         /// <returns>
-        /// true if the button is pressed. Otherwise false.
+        /// True if the mousebutton is pressed. Otherwise false.
         /// </returns>
         public bool IsButtonDown(MouseButtons button)
         {
             return _buttonsPressed.ContainsKey((int)button);
         }
 
+        /// <summary>
+        /// Called when [button down] event is triggered. 
+        /// Occurs when a Mouse button was pressed down once.
+        /// </summary>
+        /// <param name="button">The mousebutton.</param>
+        /// <returns>True, if mousebutton was pressed down once. Otherwise false.</returns>
         public bool OnButtonDown(MouseButtons button)
         {
             if (_buttonsPressed.ContainsKey((int)button))
@@ -201,6 +214,12 @@ namespace Fusee.Engine
             return false;  
         }
 
+        /// <summary>
+        /// Called when [button up] event is triggered.
+        /// Occurs when a Mouse button was released.
+        /// </summary>
+        /// <param name="button">The mousebutton.</param>
+        /// <returns>True, if mousebutton was released. Otherwise false.</returns>
         public bool OnButtonUp(MouseButtons button)
         {
             if (!_buttonsPressed.ContainsKey((int)button))
@@ -286,5 +305,7 @@ namespace Fusee.Engine
                 return _instance;
             }
         }
+
+        #endregion
     }
 }

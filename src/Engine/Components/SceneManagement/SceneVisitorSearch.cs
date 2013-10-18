@@ -10,9 +10,12 @@ namespace Fusee.SceneManagement
     /// </summary>
     class SceneVisitorSearch : SceneVisitor
     {
+        #region Fields
         private string _name;
         private SceneEntity _searchresult;
+        #endregion
 
+        #region Overrides
         /// <summary>
         /// Visits the specified <see cref="SceneEntity"/> to check it's name and set _searchresult as reference if the name matches.
         /// </summary>
@@ -26,6 +29,9 @@ namespace Fusee.SceneManagement
             }
 
         }
+        #endregion
+
+        #region Members
 
         /// <summary>
         /// Finds a <see cref="SceneEntity"/> by it's name.
@@ -46,5 +52,7 @@ namespace Fusee.SceneManagement
             }
             return _searchresult;
         }
+        #endregion
+
     }
 }

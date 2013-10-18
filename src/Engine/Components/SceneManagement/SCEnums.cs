@@ -11,6 +11,7 @@ namespace Fusee.SceneManagement
     /// </summary>
     public enum Projection : int
     {
+        #region Enums
         /// <summary>
         /// Perspective = 0
         /// </summary>
@@ -19,5 +20,6 @@ namespace Fusee.SceneManagement
         /// Orthographic = 1
         /// </summary>
         Orthographic = 1,
+        #endregion
     }
 }

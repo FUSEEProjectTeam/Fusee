@@ -19,11 +19,17 @@ namespace Fusee.Engine
     /// </summary>
     public abstract class RenderCanvasWindowImp : RenderCanvasImpBase, IRenderCanvasImp, IDisposable
     {
+        #region Internal Fields
+
         internal IWindowInfo _wi;
         internal IGraphicsContext _context;
         internal GraphicsMode _mode;
         internal int _major, _minor;
         internal GraphicsContextFlags _flags;
+
+        #endregion
+
+        #region Fields
         /// <summary>
         /// Gets or sets the width.
         /// </summary>
@@ -59,44 +65,6 @@ namespace Fusee.Engine
         private double _lastTimeTick;
         private double _deltaFrameTime;
         private static Stopwatch _daWatch;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RenderCanvasWindowImp"/> class.
-        /// </summary>
-        /// <param name="windowHandle">The window handle.</param>
-        public RenderCanvasWindowImp(IntPtr windowHandle)
-        {
-            // _mode = GraphicsMode.Default;
-            bool antiAliasing = true;
-            _mode = new GraphicsMode(32, 24, 0, (antiAliasing) ? 8 : 0);
-            _major = 1;
-            _minor = 0;
-            _flags = GraphicsContextFlags.Default;
-            _wi = Utilities.CreateWindowsWindowInfo(windowHandle);
-
-            try
-            {
-                _context = new GraphicsContext(_mode, _wi, _major, _minor, _flags);
-            }
-            catch
-            {
-                antiAliasing = false;
-                _mode = new GraphicsMode(32, 24, 0, (antiAliasing) ? 8 : 0);
-                _context = new GraphicsContext(_mode, _wi, _major, _minor, _flags);
-            }
-
-            _context.MakeCurrent(_wi);
-            ((IGraphicsContextInternal)_context).LoadAll();
-
-            GL.ClearColor(Color.MidnightBlue);
-
-            GL.Enable(EnableCap.DepthTest);
-            GL.Enable(EnableCap.CullFace);
-
-            // Use VSync!
-            _context.SwapInterval = 1;
-            _lastTimeTick = Timer;
-        }
 
         /// <summary>
         /// Gets the delta time.
@@ -164,6 +132,50 @@ namespace Fusee.Engine
             }
         }
 
+        #endregion
+
+        #region Constructors
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RenderCanvasWindowImp"/> class.
+        /// </summary>
+        /// <param name="windowHandle">The window handle.</param>
+        public RenderCanvasWindowImp(IntPtr windowHandle)
+        {
+            // _mode = GraphicsMode.Default;
+            bool antiAliasing = true;
+            _mode = new GraphicsMode(32, 24, 0, (antiAliasing) ? 8 : 0);
+            _major = 1;
+            _minor = 0;
+            _flags = GraphicsContextFlags.Default;
+            _wi = Utilities.CreateWindowsWindowInfo(windowHandle);
+
+            try
+            {
+                _context = new GraphicsContext(_mode, _wi, _major, _minor, _flags);
+            }
+            catch
+            {
+                antiAliasing = false;
+                _mode = new GraphicsMode(32, 24, 0, (antiAliasing) ? 8 : 0);
+                _context = new GraphicsContext(_mode, _wi, _major, _minor, _flags);
+            }
+
+            _context.MakeCurrent(_wi);
+            ((IGraphicsContextInternal)_context).LoadAll();
+
+            GL.ClearColor(Color.MidnightBlue);
+
+            GL.Enable(EnableCap.DepthTest);
+            GL.Enable(EnableCap.CullFace);
+
+            // Use VSync!
+            _context.SwapInterval = 1;
+            _lastTimeTick = Timer;
+        }
+        #endregion
+
+        #region Members
+
         /// <summary>
         /// Presents the rendered result of this instance. The rendering buffers are flushed and the deltatime is recalulated.
         /// Call this function after rendering.
@@ -219,7 +231,7 @@ namespace Fusee.Engine
             // Simply call Dispose(false).
             Dispose(false);
         }
-
+        #endregion
     }
 
     /// <summary>
@@ -227,6 +239,8 @@ namespace Fusee.Engine
     /// </summary>
     public class RenderCanvasImp : RenderCanvasImpBase, IRenderCanvasImp
     {
+        #region Fields
+
         public int Width
         {
             get { return _width; }
@@ -253,17 +267,6 @@ namespace Fusee.Engine
                 _height = value;
                 ResizeWindow();
             }
-        }
-
-        private void ResizeWindow()
-        {
-            var width2 = _width / 2;
-            var height2 = _height / 2;
-
-            var scHeight2 = Screen.PrimaryScreen.Bounds.Height / 2;
-            var scWidth2 = Screen.PrimaryScreen.Bounds.Width / 2;
-
-            _gameWindow.Bounds = new Rectangle(scWidth2 - width2, scHeight2 - height2, _width, _height);
         }
 
         /// <summary>
@@ -348,6 +351,9 @@ namespace Fusee.Engine
 
         internal RenderCanvasGameWindow _gameWindow;
 
+        #endregion
+
+        #region Constructors
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderCanvasImp"/> class.
         /// </summary>
@@ -364,6 +370,21 @@ namespace Fusee.Engine
             {
                 _gameWindow = new RenderCanvasGameWindow(this, width, height, false);
             }
+        }
+
+        #endregion
+
+        #region Members
+
+        private void ResizeWindow()
+        {
+            var width2 = _width / 2;
+            var height2 = _height / 2;
+
+            var scHeight2 = Screen.PrimaryScreen.Bounds.Height / 2;
+            var scWidth2 = Screen.PrimaryScreen.Bounds.Width / 2;
+
+            _gameWindow.Bounds = new Rectangle(scWidth2 - width2, scHeight2 - height2, _width, _height);
         }
 
         /// <summary>
@@ -384,13 +405,20 @@ namespace Fusee.Engine
             if (_gameWindow != null)
                 _gameWindow.Run(30.0, 0.0);
         }
+
+        #endregion
     }
 
     public class RenderCanvasImpBase
     {
+        #region Fields
+
         protected internal int _width;
         protected internal int _height;
 
+        #endregion
+
+        #region Events
         /// <summary>
         /// Occurs when [initialize].
         /// </summary>
@@ -407,6 +435,10 @@ namespace Fusee.Engine
         /// Occurs when [resize].
         /// </summary>
         public event EventHandler<ResizeEventArgs> Resize;
+
+        #endregion
+
+        #region Internal Members
 
         internal protected void DoInit()
         {
@@ -431,10 +463,14 @@ namespace Fusee.Engine
             if (Resize != null)
                 Resize(this, new ResizeEventArgs());
         }
+
+        #endregion
     }
 
     class RenderCanvasGameWindow : GameWindow
     {
+        #region Fields
+
         private RenderCanvasImp _renderCanvasImp;
         private double _deltaTime;
 
@@ -475,6 +511,9 @@ namespace Fusee.Engine
             }
         }
 
+        #endregion
+
+        #region Constructors
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderCanvasGameWindow"/> class.
         /// </summary>
@@ -487,6 +526,10 @@ namespace Fusee.Engine
         {
             _renderCanvasImp = renderCanvasImp;
         }
+
+        #endregion
+
+        #region Overrides
 
         protected override void OnLoad(EventArgs e)
         {
@@ -561,5 +604,7 @@ namespace Fusee.Engine
                 _renderCanvasImp.DoRender();
             }
         }
+
+        #endregion
     }
 }

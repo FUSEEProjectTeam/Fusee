@@ -39,8 +39,7 @@ namespace Fusee.SceneManagement
             _channel = channel;
         }
         #endregion
-
-        #region Methods
+        #region Members
 
         /// <summary>
         /// Traverses this pointligt for rendering. The light information is passed to the SceneVisitorRendering.
@@ -52,6 +51,7 @@ namespace Fusee.SceneManagement
         }
 
         #endregion
+        #region Overrides
         /// <summary>
         /// Passes the Component to the SceneVisitor which decides what to do with that Component.
         /// </summary>
@@ -64,5 +64,6 @@ namespace Fusee.SceneManagement
             }
             sv.Visit((PointLight)this);
         }
+        #endregion
     }
 }

@@ -13,6 +13,7 @@ namespace Fusee.SceneManagement
     /// </summary>
     public class SceneVisitorRendering : SceneVisitor
     {
+        #region Fields
         /// <summary>
         /// The _has transform
         /// </summary>
@@ -41,10 +42,10 @@ namespace Fusee.SceneManagement
         /// The _ renderer stack
         /// </summary>
         private Stack<Renderer> _RendererStack;
+        #endregion
 
 
-
-
+        #region Constructors
         /// <summary>
         /// Initializes a new instance of the <see cref="SceneVisitorRendering"/> class.
         /// </summary>
@@ -67,6 +68,9 @@ namespace Fusee.SceneManagement
             _RendererStack.Push(null);
             */
         }
+        #endregion
+
+        #region Members
         // TODO: Store Mesh as local variable instead of stacks as it is not used in further traversals.
         /// <summary>
         /// Stores the mesh in internal stack.
@@ -255,8 +259,9 @@ namespace Fusee.SceneManagement
             _queue.AddRenderJob(renderMesh);
             //Debug.WriteLine("Transforms: "+_hasTransform.Count+" Renderers: "+_hasRenderer.Count+" Meshes: "+_hasMesh.Count);
         }
+        #endregion
 
-
+        #region Overrides
         // Polymorphic Visitcomponent Methods
         /// <summary>
         /// Visits the specified <see cref="SceneEntity"/> to collect data if required by the current Visitor derivate.
@@ -371,6 +376,6 @@ namespace Fusee.SceneManagement
                 _queue.AddCamera(camera.SubmitWork());
             }
         }
-        
+        #endregion
     }
 }

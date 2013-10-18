@@ -13,6 +13,7 @@ namespace Fusee.SceneManagement
     /// </summary>
     public class Transformation : Component
     {
+        #region Private Fields
         private float4x4 _transformMatrix;
         private float3 _localPosition;
         private Quaternion _quaternion;
@@ -35,8 +36,9 @@ namespace Fusee.SceneManagement
         private bool _globalMatrixDirty;
         private bool _globalQuaternionDirty;
         private bool _globalEulerDirty;
+        #endregion
 
-
+        #region Constructors
         /// <summary>
         /// Initializes a new instance of the <see cref="Transformation"/> class. No SceneEntity will be set.
         /// </summary>
@@ -81,7 +83,9 @@ namespace Fusee.SceneManagement
            _quaternionDirty = false;
            _eulerDirty = false;
        }
+        #endregion
 
+        #region Public Fields
        /// <summary>
        /// Gets the forward direction as float3 of the Transformation instance.
        /// </summary>
@@ -412,9 +416,10 @@ namespace Fusee.SceneManagement
                return _globalEulerAngles;
            }
        }
+       #endregion
 
-
-      private void UpdateLocalMembers() // Extract members from transformMatrix
+        #region Members
+       private void UpdateLocalMembers() // Extract members from transformMatrix
       {
           
           _quaternion = Quaternion.LookRotation(_transformMatrix.Column2.xyz, _transformMatrix.Column1.xyz);
@@ -441,7 +446,9 @@ namespace Fusee.SceneManagement
           _globalEulerDirty = false;
           _globalQuaternionDirty = false;
       }
+       #endregion
 
+        #region Overrides
       /// <summary>
       /// Passes this Component to the <see cref="SceneVisitor"/> which decides what to do with that Component.
       /// </summary>
@@ -450,5 +457,6 @@ namespace Fusee.SceneManagement
       {
           sv.Visit(this);
       }
+      #endregion
     }
 }

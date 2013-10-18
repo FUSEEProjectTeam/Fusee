@@ -11,6 +11,7 @@ namespace Fusee.SceneManagement
     /// </summary>
     class SceneVisitorStartAction : SceneVisitor
     {
+        #region Overrides
         /// <summary>
         /// Visits the specified <see cref="SceneEntity"/> to gather data if required by the current Visitor derivate.
         /// </summary>
@@ -28,5 +29,6 @@ namespace Fusee.SceneManagement
         {
             actionCode.Start();
         }
+        #endregion
     }
 }

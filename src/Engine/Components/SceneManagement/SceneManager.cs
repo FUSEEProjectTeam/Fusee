@@ -10,20 +10,12 @@ namespace Fusee.SceneManagement
     /// </summary>
     public sealed class SceneManager
     {
+        #region Fields
         private static readonly SceneManager _manager = new SceneManager();
         private RenderContext _renderContext;
         private List<RenderJob>[] RenderJobs = new List<RenderJob>[10];
         private List<SceneEntity> SceneMembers = new List<SceneEntity>();
         private SceneVisitorRendering _sceneVisitorRendering;
-        
-        private SceneManager()
-        {
-            _sceneVisitorRendering = new SceneVisitorRendering(this);
-            for (int i = 0; i < RenderJobs.Length; i++ )
-            {
-                RenderJobs[i] = new List<RenderJob>();
-            }
-        }
 
         /// <summary>
         /// Gets the Singleton SceneManager instance.
@@ -44,7 +36,8 @@ namespace Fusee.SceneManagement
         /// </value>
         public static RenderContext RC
         {
-            set{
+            set
+            {
                 if (_manager._renderContext == null)
                 {
                     _manager._renderContext = value;
@@ -53,7 +46,20 @@ namespace Fusee.SceneManagement
             get { return _manager._renderContext; }
         }
 
+        #endregion
 
+        #region Constructors
+        private SceneManager()
+        {
+            _sceneVisitorRendering = new SceneVisitorRendering(this);
+            for (int i = 0; i < RenderJobs.Length; i++ )
+            {
+                RenderJobs[i] = new List<RenderJob>();
+            }
+        }
+        #endregion
+
+        #region Members
         /// <summary>
         /// Adds a <see cref="SceneEntity"/> to the scene.
         /// </summary>
@@ -163,7 +169,7 @@ namespace Fusee.SceneManagement
                 sceneMember.Accept(startactions);
             }
         }
-
+        #endregion
 
     }
 }

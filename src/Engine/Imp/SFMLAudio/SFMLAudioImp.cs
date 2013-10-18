@@ -13,8 +13,11 @@ namespace Fusee.Engine
     /// </summary>
     public class SFMLAudioImp : IAudioImp
     {
+        #region Fields
         private readonly List<AudioStream> _allStreams;
+        #endregion
 
+        #region Constructors
         /// <summary>
         /// Initializes a new instance of the <see cref="SFMLAudioImp"/> class.
         /// </summary>
@@ -25,7 +28,9 @@ namespace Fusee.Engine
             Listener.Direction = new Vector3F(0, 0, -0.1f);
             Listener.Position = new Vector3F(0, 0, 0.1f);
         }
+        #endregion
 
+        #region Members
         /// <summary>
         /// Opens the device. All <see cref="AudioStream" /> are reset. The GlobalVolume is set to 100(maximum).
         /// </summary>
@@ -121,5 +126,6 @@ namespace Fusee.Engine
             foreach (var audioStream in _allStreams)
                 audioStream.Panning = maxVal;
         }
+        #endregion
     }
 }

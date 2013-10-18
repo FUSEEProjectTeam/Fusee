@@ -40,7 +40,7 @@ namespace Fusee.SceneManagement
 
         #endregion
 
-        #region Methods
+        #region Overrides
 
         /// <summary>
         /// Passes spotlight's parameters to RenderContext.

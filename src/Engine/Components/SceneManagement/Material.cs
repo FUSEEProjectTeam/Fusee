@@ -10,6 +10,7 @@ namespace Fusee.SceneManagement
     /// </summary>
     public class Material
     {
+        #region Fields
         protected ImageData imgData;
         protected ImageData imgData2;
         protected ITexture iTex;
@@ -18,7 +19,8 @@ namespace Fusee.SceneManagement
         protected IShaderParam _texture1Param;
 
         public ShaderProgram sp;
-
+        #endregion
+        #region Constructors
         /// <summary>
         /// Initializes a new instance of the <see cref="Material"/> class.
         /// </summary>
@@ -34,7 +36,8 @@ namespace Fusee.SceneManagement
         {
             sp = _program;
         }
-
+        #endregion
+        #region Overrides
         /// <summary>
         /// Sets the materials shaderprogram onto the rendercontext upon render time.
         /// </summary>
@@ -43,5 +46,6 @@ namespace Fusee.SceneManagement
         {
             renderContext.SetShader(sp);
         }
+        #endregion
     }
 }
