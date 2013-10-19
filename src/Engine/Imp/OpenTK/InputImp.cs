@@ -70,8 +70,7 @@ namespace Fusee.Engine
             {
                 ctrPoint.x = _gameWindow.Bounds.Left + (_gameWindow.Width/2);
                 ctrPoint.y = _gameWindow.Bounds.Top + (_gameWindow.Height/2);
-
-                System.Windows.Forms.Cursor.Position = new System.Drawing.Point(ctrPoint.x, ctrPoint.y);
+                Mouse.SetPosition(ctrPoint.x, ctrPoint.y);
             }
 
             return ctrPoint;

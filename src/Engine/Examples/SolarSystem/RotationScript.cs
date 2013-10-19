@@ -22,7 +22,7 @@ namespace Examples.SolarSystem
 
         public override void Update()
         {
-            if (Input.Instance.IsButtonDown(MouseButtons.Left))
+            if (Input.Instance.IsButton(MouseButtons.Left))
             {
                 var mousemoveX = Input.Instance.GetAxis(InputAxis.MouseX);
                 var mousemoveY = Input.Instance.GetAxis(InputAxis.MouseY);
@@ -31,7 +31,7 @@ namespace Examples.SolarSystem
                 transform.LocalEulerAngles += new float3(-mousemoveY*100, 0, 0);
             }
 
-            if (Input.Instance.IsKeyDown(KeyCodes.Up))
+            if (Input.Instance.IsKey(KeyCodes.Up))
             {
                 var timeAdd = Time.Instance.TimeFlow;
 
@@ -43,7 +43,7 @@ namespace Examples.SolarSystem
                 Time.Instance.TimeFlow = timeAdd;
             }
 
-            if (Input.Instance.IsKeyDown(KeyCodes.Down))
+            if (Input.Instance.IsKey(KeyCodes.Down))
             {
                 if (Time.Instance.TimeFlow >= 0)
                 {
@@ -60,7 +60,7 @@ namespace Examples.SolarSystem
                     Time.Instance.TimeFlow = 0;
             }
 
-            if (Input.Instance.IsKeyDown(KeyCodes.Right))
+            if (Input.Instance.IsKey(KeyCodes.Right))
             {
                 _currentTargetId++;
 
@@ -70,7 +70,7 @@ namespace Examples.SolarSystem
                 _target = SceneEntity.FindSceneEntity(_planets[_currentTargetId]);
             }
 
-            if (Input.Instance.IsKeyDown(KeyCodes.Left))
+            if (Input.Instance.IsKey(KeyCodes.Left))
             {
                 _currentTargetId--;
 

@@ -62,7 +62,6 @@ namespace Examples.CubeAndTiles
         private static float _angleVelHorz, _angleVelVert;
 
         private static bool _topView;
-        private static KeyCodes _lastKey = KeyCodes.None;
 
         private const float RotationSpeed = 1f;
         private const float Damping = 0.92f;
@@ -85,55 +84,42 @@ namespace Examples.CubeAndTiles
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
             // keyboard
-            if (_lastKey == KeyCodes.None)
+            if (Input.Instance.IsKeyDown(KeyCodes.V))
             {
-                if (Input.Instance.IsKeyPressed(KeyCodes.V))
+                _angleVelHorz = 0.0f;
+                _angleVelVert = 0.0f;
+
+                if (_topView)
                 {
-                    _angleVelHorz = 0.0f;
-                    _angleVelVert = 0.0f;
+                    _angleHorz = 0.4f;
+                    _angleVert = -1.0f;
 
-                    if (_topView)
-                    {
-                        _angleHorz = 0.4f;
-                        _angleVert = -1.0f;
-
-                        _topView = false;
-                    }
-                    else
-                    {
-                        _angleHorz = 0.0f;
-                        _angleVert = 0.0f;
-                        _topView = true;
-                    }
-
-                    _lastKey = KeyCodes.V;
+                    _topView = false;
                 }
-
-                if (Input.Instance.IsKeyPressed(KeyCodes.S))
+                else
                 {
-                    Audio.Instance.SetVolume(Audio.Instance.GetVolume() > 0 ? 0 : 100);
-                    _lastKey = KeyCodes.S;
-                }
-
-                if (Input.Instance.IsKeyDown(KeyCodes.C))
-                {
-                    _exampleLevel.UseStereo3D = !_exampleLevel.UseStereo3D;
-                    _lastKey = KeyCodes.C;
+                    _angleHorz = 0.0f;
+                    _angleVert = 0.0f;
+                    _topView = true;
                 }
             }
-            else if (!Input.Instance.IsKeyDown(_lastKey))
-                _lastKey = KeyCodes.None;
 
-            if (Input.Instance.IsKeyPressed(KeyCodes.Left))
+            if (Input.Instance.IsKeyDown(KeyCodes.S))
+                Audio.Instance.SetVolume(Audio.Instance.GetVolume() > 0 ? 0 : 100);
+
+            if (Input.Instance.IsKeyDown(KeyCodes.C))
+                _exampleLevel.UseStereo3D = !_exampleLevel.UseStereo3D;
+
+            if (Input.Instance.IsKey(KeyCodes.Left))
                 _exampleLevel.MoveCube(Level.Directions.Left);
 
-            if (Input.Instance.IsKeyPressed(KeyCodes.Right))
+            if (Input.Instance.IsKey(KeyCodes.Right))
                 _exampleLevel.MoveCube(Level.Directions.Right);
 
-            if (Input.Instance.IsKeyPressed(KeyCodes.Up))
+            if (Input.Instance.IsKey(KeyCodes.Up))
                 _exampleLevel.MoveCube(Level.Directions.Forward);
 
-            if (Input.Instance.IsKeyPressed(KeyCodes.Down))
+            if (Input.Instance.IsKey(KeyCodes.Down))
                 _exampleLevel.MoveCube(Level.Directions.Backward);
 
             // mouse
@@ -143,7 +129,7 @@ namespace Examples.CubeAndTiles
             if (Input.Instance.GetAxis(InputAxis.MouseWheel) < 0)
                 _exampleLevel.ZoomCamera(-50);
 
-            if (Input.Instance.IsButtonDown(MouseButtons.Left))
+            if (Input.Instance.IsButton(MouseButtons.Left))
             {
                 _angleVelHorz = RotationSpeed*Input.Instance.GetAxis(InputAxis.MouseX);
                 _angleVelVert = RotationSpeed*Input.Instance.GetAxis(InputAxis.MouseY);

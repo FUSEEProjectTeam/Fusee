@@ -161,10 +161,16 @@ namespace Fusee.Engine
 
             _canvasImp.Render += delegate(object sender, RenderEventArgs args)
                                      {
+                                         // pre-rendering
                                          Network.Instance.OnUpdateFrame();
                                          Input.Instance.OnUpdateFrame(_canvasImp.DeltaTime);
                                          Time.Instance.DeltaTimeIncrement = _canvasImp.DeltaTime;
+
+                                         // rendering
                                          RenderAFrame();
+
+                                         // post-rendering
+                                         Input.Instance.OnLateUpdate(_canvasImp.DeltaTime);
                                      };
 
             _canvasImp.Resize += delegate(object sender, ResizeEventArgs args)
