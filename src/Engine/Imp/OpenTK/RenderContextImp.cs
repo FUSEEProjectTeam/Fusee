@@ -565,23 +565,6 @@ namespace Fusee.Engine
             GL.End();
         }
 
-        public void DrawQuad(Rectangle vertices)
-        {
-            GL.Begin(BeginMode.TriangleStrip);
-            GL.TexCoord2(0, 0);
-            GL.Vertex2(vertices.Left, vertices.Top);
-            
-            GL.TexCoord2(1, 0);
-            GL.Vertex2(vertices.Right, vertices.Top);
-            
-            GL.TexCoord2(0, 1);
-            GL.Vertex2(vertices.Left, vertices.Bottom);
-            
-            GL.TexCoord2(1, 1);
-            GL.Vertex2(vertices.Right, vertices.Bottom);
-            GL.End();
-        }
-
          public void GetBufferContent(Rectangle quad, ITexture texId)
         {
             GL.BindTexture(TextureTarget.Texture2D, ((Texture)texId).handle);

@@ -7,14 +7,10 @@ namespace Examples.CubeAndTiles
     [FuseeApplication(Name = "Cube & Tiles", Description = "Shows an entire game including user input, object texturing, and sound.")]
     public class CubeAndTiles : RenderCanvas
     {
-        #region Shader
+        #region CubeAndTiles Shader
 
         // GLSL
         private const string Vs = @"
-            /* Copies incoming vertex color without change.
-             * Applies the transformation matrix to vertex position.
-             */
-
             attribute vec4 fuColor;
             attribute vec3 fuVertex;
             attribute vec3 fuNormal;
@@ -37,8 +33,7 @@ namespace Examples.CubeAndTiles
                 vUV = fuUV;
             }";
 
-        private const string PsStart = @"
-            /* Copies incoming fragment color without change. */
+        private const string Ps = @"
             #ifdef GL_ES
                 precision highp float;
             #endif
@@ -51,15 +46,6 @@ namespace Examples.CubeAndTiles
             void main()
             {
                 vec4 colTex = vColor * texture2D(vTexture, vUV);
-            ";
-
-        private const string PsAnaglyph = @"
-                vec4 _redBalance = vec4(0.1, 0.65, 0.25, 0);
-                float _redColor = (colTex.r * _redBalance.r + colTex.g * _redBalance.g + colTex.b * _redBalance.b) * 1.5;
-                gl_FragColor = dot(vColor, vec4(0, 0, 0, 1)) * vec4(_redColor, colTex.g, colTex.b, 1) * dot(vNormal, vec3(0, 0, 1)) * 1.4;
-            }";
-
-        private const string PsNonAnaglyph = @"
                 gl_FragColor = dot(vColor, vec4(0, 0, 0, 1)) * colTex * dot(vNormal, vec3(0, 0, 1));
             }";
 
@@ -67,11 +53,10 @@ namespace Examples.CubeAndTiles
 
         // variables
         private static Level _exampleLevel;
-        private static Anaglyph3D _anaglyph3D;
+        private static Stereo3D _stereo3D;
 
-        private ShaderProgram _spAnaglyph;
-        private ShaderProgram _spNonAnaglyph;
-
+        private ShaderProgram _shaderProgram;
+        
         private static float _angleHorz = 0.4f;
         private static float _angleVert = -1.0f;
         private static float _angleVelHorz, _angleVelVert;
@@ -87,13 +72,11 @@ namespace Examples.CubeAndTiles
         {
             RC.ClearColor = new float4(0, 0, 0, 1);
             
-            _spNonAnaglyph = RC.CreateShader(Vs, PsStart + PsNonAnaglyph);
-            _spAnaglyph = RC.CreateShader(Vs, PsStart + PsAnaglyph);
+            _shaderProgram = RC.CreateShader(Vs, Ps);
+            RC.SetShader(_shaderProgram);
 
-            RC.SetShader(_spNonAnaglyph);
-
-            _anaglyph3D = new Anaglyph3D(RC);
-            _exampleLevel = new Level(RC, _spNonAnaglyph, _anaglyph3D);
+            _stereo3D = new Stereo3D(RC, Stereo3DMode.Anaglyph, Width, Height);
+            _exampleLevel = new Level(RC, _shaderProgram, _stereo3D);
         }
 
         // RenderAFrame()
@@ -132,15 +115,13 @@ namespace Examples.CubeAndTiles
                     _lastKey = KeyCodes.S;
                 }
 
-                if (Input.Instance.IsKeyPressed(KeyCodes.C))
+                if (Input.Instance.IsKeyDown(KeyCodes.C))
                 {
-                    RC.SetShader(_exampleLevel.UseAnaglyph3D ? _spNonAnaglyph : _spAnaglyph);
-
-                    _exampleLevel.UseAnaglyph3D = !_exampleLevel.UseAnaglyph3D;
+                    _exampleLevel.UseStereo3D = !_exampleLevel.UseStereo3D;
                     _lastKey = KeyCodes.C;
                 }
             }
-            else if (!Input.Instance.IsKeyPressed(_lastKey))
+            else if (!Input.Instance.IsKeyDown(_lastKey))
                 _lastKey = KeyCodes.None;
 
             if (Input.Instance.IsKeyPressed(KeyCodes.Left))
@@ -181,6 +162,9 @@ namespace Examples.CubeAndTiles
             var mtxRot = float4x4.CreateRotationZ(_angleHorz)*float4x4.CreateRotationX(_angleVert);
 
             _exampleLevel.Render(mtxRot);
+
+            if (_exampleLevel.UseStereo3D)
+                _stereo3D.Display();
 
             Present();
         }

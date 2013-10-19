@@ -76,7 +76,6 @@ namespace Fusee.Engine
         void Render(IMeshImp mr);
 
         void DebugLine(float3 start, float3 end, float4 color);
-        void DrawQuad(Rectangle vertices);
 
         void GetBufferContent(Rectangle quad, ITexture texId);
 

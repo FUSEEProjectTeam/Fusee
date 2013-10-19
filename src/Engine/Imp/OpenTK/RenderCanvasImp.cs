@@ -182,13 +182,13 @@ namespace Fusee.Engine
 
         private void ResizeWindow()
         {
-            var width2 = _width / 2;
-            var height2 = _height / 2;
+            var widthH = _width / 2;
+            var heightH = _height / 2;
 
-            var scHeight2 = Screen.PrimaryScreen.Bounds.Height / 2;
-            var scWidth2 = Screen.PrimaryScreen.Bounds.Width / 2;
+            var scHeightH = Screen.PrimaryScreen.Bounds.Height / 2;
+            var scWidthH = Screen.PrimaryScreen.Bounds.Width / 2;
 
-            _gameWindow.ClientRectangle = new System.Drawing.Rectangle(scWidth2 - width2, scHeight2 - height2, _width, _height);
+            _gameWindow.ClientRectangle = new System.Drawing.Rectangle(scWidthH - widthH, scHeightH - heightH, _width, _height);
         }
 
         public string Caption
@@ -326,6 +326,9 @@ namespace Fusee.Engine
             : base(width, height, new GraphicsMode(32, 24, 0, (antiAliasing) ? 8 : 0) /*GraphicsMode.Default*/, "Fusee Engine")
         {
             _renderCanvasImp = renderCanvasImp;
+
+            _renderCanvasImp._width = Width;
+            _renderCanvasImp._height = Height;
         }
 
         protected override void OnLoad(EventArgs e)
@@ -387,10 +390,7 @@ namespace Fusee.Engine
                 this.Exit();
 
             if (Keyboard[OpenTK.Input.Key.F11])
-                if (WindowState != WindowState.Fullscreen)
-                    WindowState = WindowState.Fullscreen;
-                else
-                    WindowState = WindowState.Normal;
+                WindowState = (WindowState != WindowState.Fullscreen) ? WindowState.Fullscreen : WindowState.Normal;
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)

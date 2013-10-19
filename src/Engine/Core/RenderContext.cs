@@ -1195,15 +1195,10 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
             
             _rci.DebugLine(start, end, color);
 
-            SetShader(_debugShader);
+            SetShader(oldShader);
         }
 
-        public void DrawQuad(Rectangle vertices)
-        {
-            _rci.DrawQuad(vertices);
-        }
-
-        public void GetBuffercontent(Rectangle quad, ITexture texId)
+        public void GetBufferContent(Rectangle quad, ITexture texId)
         {
             _rci.GetBufferContent(quad, texId);
         }

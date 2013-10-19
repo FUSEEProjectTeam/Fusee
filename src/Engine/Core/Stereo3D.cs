@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Fusee.Math;
+﻿using Fusee.Math;
 
 namespace Fusee.Engine
 {
@@ -24,37 +23,42 @@ namespace Fusee.Engine
     public class Stereo3D
     {
         private readonly RenderContext _rc;
+        private readonly float4 _clearColor;
 
         private readonly Stereo3DMode _activeMode;
         private Stereo3DEye _currentEye;
+
+        public Stereo3DEye CurrentEye
+        {
+            get { return _currentEye; }
+        }
 
         private readonly ShaderProgram _shaderProgram;
         private readonly IShaderParam _shaderTexture;
 
         private readonly Mesh _planeMesh;
 
-        private float _calibrationX;
-        private float _calibrationY;
-
         private readonly int _screenWidth;
         private readonly int _screenHeight;
+
+        #region Stereo3D Shaders
+
+        private readonly ITexture _contentLTex;
+        private readonly ITexture _contentRTex;
 
         #region OculusRift
 
         // variables and shader for Oculus Rift
-        public const float K0 = 1.0f;
-        public const float K1 = 0.22f;
-        public const float K2 = 0.24f;
-        public const float K3 = 0.0f;
+        private const float K0 = 1.0f;
+        private const float K1 = 0.22f;
+        private const float K2 = 0.24f;
+        private const float K3 = 0.0f;
 
         private readonly IShaderParam _lensCenterParam;
         private readonly IShaderParam _screenCenterParam;
         private readonly IShaderParam _scaleParam;
         private readonly IShaderParam _scaleInParam;
         private readonly IShaderParam _hdmWarpParam;
-
-        private readonly ITexture _contentLTex;
-        private readonly ITexture _contentRTex;
 
         private const string OculusVs = @"
             attribute vec3 fuVertex;
@@ -106,9 +110,56 @@ namespace Fusee.Engine
 
         #endregion
 
+        #region Anaglyph
+
+        // shader for anagylph mode
+        private const string AnaglyphVs = @"
+            attribute vec3 fuVertex;
+            attribute vec3 fuNormal;
+            attribute vec2 fuUV;
+        
+            varying vec3 vNormal;
+            varying vec2 vUV;
+        
+            uniform mat4 FUSEE_MV;
+            uniform mat4 FUSEE_P;
+            uniform mat4 FUSEE_ITMV;
+
+            void main()
+            {
+                mat4 FUSEE_MVP = FUSEE_P * FUSEE_MV;
+                gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
+
+                vNormal = mat3(FUSEE_ITMV[0].xyz, FUSEE_ITMV[1].xyz, FUSEE_ITMV[2].xyz) * fuNormal;
+                vUV = fuUV;
+            }";
+
+        private const string AnaglyphPs = @"
+            #ifdef GL_ES
+                precision highp float;
+            #endif
+        
+            uniform sampler2D vTexture;
+            varying vec3 vNormal;
+            varying vec2 vUV;
+
+            void main()
+            {
+                vec4 colTex = texture2D(vTexture, vUV);
+                vec4 _redBalance = vec4(0.1, 0.65, 0.25, 0);
+                float _redColor = (colTex.r * _redBalance.r + colTex.g * _redBalance.g + colTex.b * _redBalance.b) * 1.5;
+                gl_FragColor = vec4(_redColor, colTex.g, colTex.b, 1) * dot(vNormal, vec3(0, 0, 1)) * 1.4;
+            }";
+
+        #endregion
+
+        #endregion
+
         public Stereo3D(RenderContext rc, Stereo3DMode mode, int width, int height)
         {
             _rc = rc;
+            _clearColor = rc.ClearColor;
+
             _activeMode = mode;
 
             _screenWidth = width;
@@ -118,8 +169,9 @@ namespace Fusee.Engine
             _contentLTex = _rc.CreateTexture(imgData);
             _contentRTex = _rc.CreateTexture(imgData);
 
-            _planeMesh = MeshReader.LoadMesh("Assets/guiPlane.obj.model");
+            _planeMesh = new Cube();
 
+            // initialize shader
             switch (mode)
             {
                 case Stereo3DMode.Oculus:
@@ -133,52 +185,78 @@ namespace Fusee.Engine
                     _hdmWarpParam = _shaderProgram.GetShaderParam("HmdWarpParam");
 
                     break;
-            }
 
-            _calibrationX = 0;
-            _calibrationY = 0;
+                case Stereo3DMode.Anaglyph:
+                    _shaderProgram = _rc.CreateShader(AnaglyphVs, AnaglyphPs);
+                    _shaderTexture = _shaderProgram.GetShaderParam("vTexture");
+
+                    break;
+            }
         }
 
         public void Prepare(Stereo3DEye eye)
         {
             _currentEye = eye;
-            const int cuttingEdge = 100;
 
-            switch (eye)
+            switch (_activeMode)
             {
-                case Stereo3DEye.Left:
-                    _rc.Viewport(0, cuttingEdge, _screenWidth / 2, _screenHeight - cuttingEdge);
-                    break;
+                case Stereo3DMode.Oculus:
+                    _currentEye = eye;
+                    const int cuttingEdge = 100;
 
-                case Stereo3DEye.Right:
-                    _rc.Viewport(_screenWidth / 2, cuttingEdge, _screenWidth / 2, _screenHeight - cuttingEdge);
+                    switch (eye)
+                    {
+                        case Stereo3DEye.Left:
+                            _rc.Viewport(0, cuttingEdge, _screenWidth/2, _screenHeight - cuttingEdge);
+                            break;
+
+                        case Stereo3DEye.Right:
+                            _rc.Viewport(_screenWidth/2, cuttingEdge, _screenWidth/2, _screenHeight - cuttingEdge);
+                            break;
+                    }
+
                     break;
             }
 
-            _rc.ClearColor = new float4(0.1f, 0.1f, 0.1f, 0);
+            _rc.ClearColor = _clearColor;
             _rc.Clear(ClearFlags.Color | ClearFlags.Depth);
         }
 
         public void Save()
         {
-            //var picTrans = (int) System.Math.Round(_calibrationX);
-            const int picTrans = 81;
-
-            switch (_currentEye)
+            switch (_activeMode)
             {
-                case Stereo3DEye.Left:
-                    _rc.GetBufferContent(new Rectangle(-picTrans, 0, _screenWidth - picTrans, _screenHeight), _contentLTex);
+                case Stereo3DMode.Oculus:
+                    const int picTrans = 81;
+
+                    switch (_currentEye)
+                    {
+                        case Stereo3DEye.Left:
+                            _rc.GetBufferContent(new Rectangle(-picTrans, 0, _screenWidth - picTrans, _screenHeight),
+                                _contentLTex);
+                            break;
+                        case Stereo3DEye.Right:
+                            _rc.GetBufferContent(new Rectangle(+picTrans, 0, _screenWidth + picTrans, _screenHeight),
+                                _contentRTex);
+                            break;
+                    }
+
                     break;
-                case Stereo3DEye.Right:
-                    _rc.GetBufferContent(new Rectangle(+picTrans, 0, _screenWidth + picTrans, _screenHeight), _contentRTex);
+
+                case Stereo3DMode.Anaglyph:
+                    _rc.GetBufferContent(new Rectangle(0, 0, _screenWidth, _screenHeight),
+                        (_currentEye == Stereo3DEye.Left) ? _contentLTex : _contentRTex);
+
                     break;
             }
         }
 
         public void Display()
         {
-            _rc.ClearColor = new float4(0.0f, 0.0f, 0.0f, 1);
+            _rc.ClearColor = new float4(0, 0, 0, 0); // _clearColor
             _rc.Clear(ClearFlags.Color | ClearFlags.Depth);
+
+            var currShader = _rc.CurrentShader;
 
             switch (_activeMode)
             {
@@ -188,72 +266,42 @@ namespace Fusee.Engine
                     RenderDistortedEye(Stereo3DEye.Left, 0, 0, 0.5f, 1.0f);
                     RenderDistortedEye(Stereo3DEye.Right, 0.5f, 0.0f, 0.5f, 1.0f);
 
+                    _rc.Viewport(0, 0, _screenWidth, _screenHeight);
+
+                    break;
+
+                case Stereo3DMode.Anaglyph:
+                    _rc.Viewport(0, 0, _screenWidth, _screenHeight);
+
+                    float aspectRatio = (float) _screenWidth/_screenHeight;
+                    _rc.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 100000);
+
+                    _rc.SetShader(_shaderProgram);
+
+                    RenderColorMaskedEye(Stereo3DEye.Left, true, false, false, false);
+                    _rc.Clear(ClearFlags.Depth);
+                    RenderColorMaskedEye(Stereo3DEye.Right, false, true, true, false);
+
+                    _rc.ColorMask(true, true, true, false);
+
                     break;
             }
 
-            _rc.Viewport(0, 0, _screenWidth, _screenHeight);
-
-            #region Calibration
-            /*
-                if (Input.Instance.IsKeyPressed(KeyCodes.Left))
-                    _calibrationX -= 1f;
-
-                if (Input.Instance.IsKeyPressed(KeyCodes.Right))
-                    _calibrationX += 1f;
-
-                if (Input.Instance.IsKeyPressed(KeyCodes.Up))
-                    _calibrationY += 1f;
-
-                if (Input.Instance.IsKeyPressed(KeyCodes.Down))
-                    _calibrationY -= 1f;
-
-                if (Input.Instance.IsKeyDown(KeyCodes.Space))
-                    Debug.WriteLine(_calibrationX + "/" + _calibrationY);
-
-                _rc.Clear(ClearFlags.Depth);
-
-                _rc.ModelView = float4x4.Scale(1, 1, 1);
-                _rc.Projection = float4x4.CreateOrthographic(_screenWidth, _screenHeight, 0, 100000);
-
-                _rc.DebugLine(new float3(_calibrationX, -1000, 0), new float3(_calibrationX, 1000, 0), new float4(0, 1, 0, 1));
-                _rc.DebugLine(new float3(_calibrationX - 2, -1000, 0), new float3(_calibrationX - 2, 1000, 0), new float4(0, 1, 0, 1));
-                _rc.DebugLine(new float3(_calibrationX + 2, -1000, 0), new float3(_calibrationX + 2, 1000, 0), new float4(0, 1, 0, 1));
-
-                _rc.DebugLine(new float3(-10000, _calibrationY, 0), new float3(10000, _calibrationY, 0), new float4(0, 1, 0, 1));
-                _rc.DebugLine(new float3(-10000, _calibrationY - 2, 0), new float3(10000, _calibrationY - 2, 0), new float4(0, 1, 0, 1));
-                _rc.DebugLine(new float3(-10000, _calibrationY + 2, 0), new float3(10000, _calibrationY + 2, 0), new float4(0, 1, 0, 1));
-            
-                // Right
-                _rc.DebugLine(new float3(-150, -1000, 0), new float3(-150, 1000, 0), new float4(0, 1, 0, 1));
-                _rc.DebugLine(new float3(-150 - 2, -1000, 0), new float3(-150 - 2, 1000, 0), new float4(0, 1, 0, 1));
-                _rc.DebugLine(new float3(-150 + 2, -1000, 0), new float3(-150 + 2, 1000, 0), new float4(0, 1, 0, 1));
-            
-                // Left
-                _rc.DebugLine(new float3(-1550, -1000, 0), new float3(-1550, 1000, 0), new float4(0, 1, 0, 1));
-                _rc.DebugLine(new float3(-1550 - 2, -1000, 0), new float3(-1550 - 2, 1000, 0), new float4(0, 1, 0, 1));
-                _rc.DebugLine(new float3(-1550 + 2, -1000, 0), new float3(-1550 + 2, 1000, 0), new float4(0, 1, 0, 1));
-            
-                _rc.DebugLine(new float3(-10000, 684, 0), new float3(10000, 684, 0), new float4(0, 1, 0, 1));
-                _rc.DebugLine(new float3(-10000, 684 - 2, 0), new float3(10000, 684 - 2, 0), new float4(0, 1, 0, 1));
-                _rc.DebugLine(new float3(-10000, 684 + 2, 0), new float3(10000, 684 + 2, 0), new float4(0, 1, 0, 1));
-
-                _rc.DebugLine(new float3(-10000, -701, 0), new float3(10000, -701, 0), new float4(0, 1, 0, 1));
-                _rc.DebugLine(new float3(-10000, -701 - 2, 0), new float3(10000, -701 - 2, 0), new float4(0, 1, 0, 1));
-                _rc.DebugLine(new float3(-10000, -701 + 2, 0), new float3(10000, -701 + 2, 0), new float4(0, 1, 0, 1));
-            */
-            #endregion
+            _rc.SetShader(currShader);
         }
+
+        #region OculusRift
 
         private void RenderDistortedEye(Stereo3DEye eye, float x, float y, float w, float h)
         {
-            var absX = (int)System.Math.Round(x * _screenWidth);
-            var absY = (int)System.Math.Round(y * _screenHeight);
-            var absW = (int)System.Math.Round(w * _screenWidth);
-            var absH = (int)System.Math.Round(h * _screenHeight);
+            var absX = (int) System.Math.Round(x*_screenWidth);
+            var absY = (int) System.Math.Round(y*_screenHeight);
+            var absW = (int) System.Math.Round(w*_screenWidth);
+            var absH = (int) System.Math.Round(h*_screenHeight);
 
             _rc.Viewport(absX, absY, absW, absH);
 
-            float aspectRatio = (float)absW / absH;
+            float aspectRatio = (float) absW/absH;
             _rc.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 100000);
 
             var scale = new float2(0.1469278f, 0.2350845f);
@@ -262,7 +310,7 @@ namespace Fusee.Engine
 
             float2 lensCenter;
             float2 screenCenter;
-            
+
             if (eye == Stereo3DEye.Left)
             {
                 _rc.SetShaderParamTexture(_shaderTexture, _contentLTex);
@@ -284,22 +332,54 @@ namespace Fusee.Engine
             _rc.SetShaderParam(_scaleInParam, scaleIn);
             _rc.SetShaderParam(_hdmWarpParam, hdmWarp);
 
-            const int scaleW = 495;
-            const int scaleH = 280;
+            const int scaleW = 2*495;
+            const int scaleH = 2*280;
             const int transOff = 223;
 
             if (eye == Stereo3DEye.Left)
             {
-                _rc.ModelView = float4x4.Scale(scaleW, scaleH, 1) * float4x4.CreateTranslation(transOff, 0, 0);
+                _rc.ModelView = float4x4.Scale(scaleW, scaleH, 1)*float4x4.CreateTranslation(transOff, 0, 0);
                 _rc.View = float4x4.LookAt(0, 0, 820, 0, 0, 0, 0, 1, 0);
             }
             else
             {
-                _rc.ModelView = float4x4.Scale(scaleW, scaleH, 1) * float4x4.CreateTranslation(-transOff, 0, 0);
+                _rc.ModelView = float4x4.Scale(scaleW, scaleH, 1)*float4x4.CreateTranslation(-transOff, 0, 0);
                 _rc.View = float4x4.LookAt(0, 0, 820, 0, 0, 0, 0, 1, 0);
             }
 
             _rc.Render(_planeMesh);
         }
+
+        #endregion
+
+        #region Anaglyph
+
+        private void RenderColorMaskedEye(Stereo3DEye eye, bool red, bool green, bool blue, bool alpha)
+        {          
+            _rc.SetShaderParamTexture(_shaderTexture, eye == Stereo3DEye.Left ? _contentLTex : _contentRTex);
+            _rc.ColorMask(red, green, blue, alpha);
+
+            var scaleW = _screenWidth;
+            var scaleH = _screenHeight;
+
+            _rc.ModelView = float4x4.Scale(scaleW, scaleH, 1);
+            _rc.View = float4x4.LookAt(0, 0, 870, 0, 0, 0, 0, 1, 0);
+
+            _rc.Render(_planeMesh);
+        }
+
+        public float4x4 LookAt3D(Stereo3DEye eye, float3 eyeV, float3 target, float3 up)
+        {
+            var x = (eye == Stereo3DEye.Left)
+                ? eyeV.x - Stereo3DParams.EyeDistance
+                : eyeV.x + Stereo3DParams.EyeDistance;
+
+            var newEye = new float3(x, eyeV.y, eyeV.z);
+            var newTarget = new float3(target.x, target.y, target.z);
+
+            return float4x4.LookAt(newEye, newTarget, up);
+        }
+
+        #endregion
     }
 }

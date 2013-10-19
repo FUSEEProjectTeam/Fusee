@@ -48,8 +48,6 @@ namespace Fusee.Engine
             get { return _audioImp; }
         }
 
-
-
         /// <summary>
         /// Returns the render context object.
         /// </summary>
@@ -61,14 +59,12 @@ namespace Fusee.Engine
             get { return _rc; }
         }
 
-
         /// <summary>
         /// The default constructor. Creates a render canvas and initializes a couple of implemenentation instances for audio, rendering and input.
         /// </summary>
         public RenderCanvas()
         {
         }
-
 
         /// <summary>
         /// The RenderCanvas constructor. Depending on the implementation this constructor instantiates a 3D viewing window or connects a 3D 
