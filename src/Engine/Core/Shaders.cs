@@ -6,6 +6,9 @@ using Fusee.Math;
 
 namespace Fusee.Engine
 {
+    /// <summary>
+    /// Handles the <see cref="ShaderProgram"/> creation.
+    /// </summary>
     public static class Shaders
     {
 

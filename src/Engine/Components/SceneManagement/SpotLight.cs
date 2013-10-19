@@ -45,11 +45,12 @@ namespace Fusee.SceneManagement
         }
         #endregion
 
-        #region Methods
+        #region Members
 
         /// <summary>
-        /// TraverseForRendering add's Spotlight to the lightqueue.
+        /// Add's a Spotlight to the lightqueue.
         /// </summary>
+        /// <param name="sceneVisitorRendering">The SceneVisitorRendering instance.</param>
         public void TraverseForRendering(SceneVisitorRendering sceneVisitorRendering)
         {
             if (SceneEntity != null)
@@ -60,9 +61,16 @@ namespace Fusee.SceneManagement
         }
 
         #endregion
+
+        #region Overrides
+        /// <summary>
+        /// Passes the Component to the SceneVisitor which decides what to do with that Component.
+        /// </summary>
+        /// <param name="sv">The SceneVisitor.</param>
         public override void Accept(SceneVisitor sv)
         {
             sv.Visit((SpotLight)this);
         }
+        #endregion
     }
 }

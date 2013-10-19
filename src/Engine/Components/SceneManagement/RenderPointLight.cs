@@ -9,13 +9,13 @@ namespace Fusee.SceneManagement
     /// </summary>
     public class RenderPointLight : RenderJob
     {
-
+        #region Fields
         private float3 _position;
         private float4 _color;
         private Light.LightType _type;
         private int _channel;
-
-
+        #endregion
+        #region Constructors
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderPointLight"/> class. Position, color, type and channel are needed.
         /// </summary>
@@ -30,14 +30,15 @@ namespace Fusee.SceneManagement
             _color = color;
             _channel = channel;
         }
+        #endregion
+        #region Overrides
         /// <summary>
         ///  Passes pointlight's parameters to RenderContext. 
         /// </summary>
          public override void SubmitWork(RenderContext renderContext)
          {
-             //TODO Warten Auf Timon und Casper
              renderContext.SetLight(_position, _color, (int)_type, _channel);
-             //Console.WriteLine("Pointlight worked");
          }
+        #endregion
     }
 }

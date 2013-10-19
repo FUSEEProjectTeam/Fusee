@@ -3,8 +3,13 @@ using Lidgren.Network;
 
 namespace Fusee.Engine
 {
+    /// <summary>
+    /// Lidgren implementation of <see cref="INetworkConnection" /> interface.
+    /// </summary>
     public class NetworkConnection : INetworkConnection
     {
+        #region Fields
+
         internal NetworkImp NetworkImp;
 
         private NetConnection _connection;
@@ -22,6 +27,12 @@ namespace Fusee.Engine
             get { return _connection; }
         }
 
+        /// <summary>
+        /// Gets the remote end point aka the connection partner.
+        /// </summary>
+        /// <value>
+        /// The remote end point.
+        /// </value>
         public IPEndPoint RemoteEndPoint { internal set; get; }
 
         public float RoundtripTime
@@ -29,24 +40,49 @@ namespace Fusee.Engine
             get { return Connection.AverageRoundtripTime;}
         }
 
+        #endregion
+
+        #region Members
+
+        /// <summary>
+        /// Disconnects this instance from the remote end point.
+        /// </summary>
         public void Disconnect()
         {
             Disconnect("Disconnecting");
         }
 
+        /// <summary>
+        /// Disconnects this instance with specified bye message for the remote end point.
+        /// </summary>
+        /// <param name="byeMessage">The bye message.</param>
         public void Disconnect(string byeMessage)
         {
             Connection.Disconnect(byeMessage);
         }
 
+        /// <summary>
+        /// Sends the message as <see cref="MessageType" />.RealiableOrdered on channel 0.
+        /// </summary>
+        /// <param name="packet">The packet in byte[].</param>
+        /// <returns></returns>
         public bool SendMessage(byte[] packet)
         {
             return SendMessage(packet, MessageDelivery.ReliableOrdered, 0);
         }
 
+        /// <summary>
+        /// Sends the message with options.
+        /// </summary>
+        /// <param name="packet">The packet in byte[].</param>
+        /// <param name="msgDelivery">The <see cref="MessageDelivery" />.</param>
+        /// <param name="msgChannel">The message channel.</param>
+        /// <returns></returns>
         public bool SendMessage(byte[] packet, MessageDelivery msgDelivery, int msgChannel)
         {
             return NetworkImp.SendMessage(packet, Connection, msgDelivery, msgChannel);
         }
+
+        #endregion
     }
 }

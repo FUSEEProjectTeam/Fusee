@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.Security.AccessControl;
 using System.Windows.Forms;
 using OpenTK;
 using OpenTK.Graphics;
@@ -19,27 +20,126 @@ namespace Fusee.Engine
     /// </summary>
     public abstract class RenderCanvasWindowImp : RenderCanvasImpBase, IRenderCanvasImp, IDisposable
     {
+        #region Internal Fields
+
         internal IWindowInfo _wi;
         internal IGraphicsContext _context;
         internal GraphicsMode _mode;
         internal int _major, _minor;
         internal GraphicsContextFlags _flags;
+
+        #endregion
+
+        #region Fields
+        /// <summary>
+        /// Gets or sets the width.
+        /// </summary>
+        /// <value>
+        /// The width.
+        /// </value>
+        /// <exception cref="System.NotImplementedException">Cannot (yet) set width on RenderContextWindowImp</exception>
         public int Width
         {
             get { return _width; }
             set { throw new NotImplementedException("Cannot (yet) set width on RenderContextWindowImp");}
         }
+        /// <summary>
+        /// Gets or sets the height.
+        /// </summary>
+        /// <value>
+        /// The height.
+        /// </value>
+        /// <exception cref="System.NotImplementedException">Cannot (yet) set height on RenderContextWindowImp</exception>
         public int Height        
         {
             get { return _height; }
             set { throw new NotImplementedException("Cannot (yet) set height on RenderContextWindowImp");}
         }
 
+        /// <summary>
+        /// Gets or sets the caption(title of the window).
+        /// </summary>
+        /// <value>
+        /// The caption.
+        /// </value>
         public string Caption { get; set; }
         private double _lastTimeTick;
         private double _deltaFrameTime;
         private static Stopwatch _daWatch;
 
+        /// <summary>
+        /// Gets the delta time.
+        /// The delta time is the time that was required to render the last frame in milliseconds.
+        /// This value can be used to determine the frames per second of the application.
+        /// </summary>
+        /// <value>
+        /// The delta time in milliseconds.
+        /// </value>
+        public double DeltaTime
+        {
+            get
+            {
+                return _deltaFrameTime;
+            }
+        }
+
+
+        /// <summary>
+        /// Gets or sets a value indicating whether [vertical synchronize].
+        /// This option is used to reduce "Glitches" during rendering.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [vertical synchronize]; otherwise, <c>false</c>.
+        /// </value>
+        public bool VerticalSync
+        {
+            get { return _context.SwapInterval == 1; }
+            set { _context.SwapInterval = (value) ? 1 : 0; }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether [enable blending].
+        /// Blending is used to display transparent graphics.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [enable blending]; otherwise, <c>false</c>.
+        /// </value>
+        public bool EnableBlending { get; set; }
+        /// <summary>
+        /// Gets or sets a value indicating whether [fullscreen] is enabled.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [fullscreen]; otherwise, <c>false</c>.
+        /// </value>
+        public bool Fullscreen { get; set; }
+
+        /// <summary>
+        /// Gets the timer.
+        /// The timer value can be used to measure time that passed since the first call of this property.
+        /// </summary>
+        /// <value>
+        /// The timer.
+        /// </value>
+        public static double Timer
+        {
+            get
+            {
+                if (_daWatch == null)
+                {
+                    _daWatch = new Stopwatch();
+                    _daWatch.Start();
+                }
+                return ((double)_daWatch.ElapsedTicks) / ((double)Stopwatch.Frequency);
+            }
+        }
+
+        #endregion
+
+        #region Constructors
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RenderCanvasWindowImp"/> class.
+        /// </summary>
+        /// <param name="windowHandle">The window handle.</param>
         public RenderCanvasWindowImp(IntPtr windowHandle)
         {
             // _mode = GraphicsMode.Default;
@@ -73,38 +173,14 @@ namespace Fusee.Engine
             _context.SwapInterval = 1;
             _lastTimeTick = Timer;
         }
+        #endregion
 
-        public double DeltaTime
-        {
-            get
-            {
-                return _deltaFrameTime;
-            }
-        }
+        #region Members
 
-
-        public bool VerticalSync
-        {
-            get { return _context.SwapInterval == 1; }
-            set { _context.SwapInterval = (value) ? 1 : 0; }
-        }
-
-        public bool EnableBlending { get; set; }
-        public bool Fullscreen { get; set; }
-
-        public static double Timer
-        {
-            get
-            {
-                if (_daWatch == null)
-                {
-                    _daWatch = new Stopwatch();
-                    _daWatch.Start();
-                }
-                return ((double)_daWatch.ElapsedTicks) / ((double)Stopwatch.Frequency);
-            }
-        }
-
+        /// <summary>
+        /// Presents the rendered result of this instance. The rendering buffers are flushed and the deltatime is recalulated.
+        /// Call this function after rendering.
+        /// </summary>
         public void Present()
         {
             // Recalculate time tick.
@@ -116,11 +192,17 @@ namespace Fusee.Engine
             _context.SwapBuffers();
         }
 
+        /// <summary>
+        /// Runs this application instance.
+        /// </summary>
         public abstract void Run();
 
         private bool _disposed = false;
 
         //Implement IDisposable.
+        /// <summary>
+        /// Releases this instance for garbage collection. Do not call this method in frequent updates because of performance reasons.
+        /// </summary>
         public void Dispose()
         {
             Dispose(true);
@@ -150,7 +232,7 @@ namespace Fusee.Engine
             // Simply call Dispose(false).
             Dispose(false);
         }
-
+        #endregion
     }
 
     /// <summary>
@@ -158,6 +240,8 @@ namespace Fusee.Engine
     /// </summary>
     public class RenderCanvasImp : RenderCanvasImpBase, IRenderCanvasImp
     {
+        #region Fields
+
         public int Width
         {
             get { return _width; }
@@ -169,6 +253,12 @@ namespace Fusee.Engine
             }
         }
 
+        /// <summary>
+        /// Gets or sets the height in pixel units.
+        /// </summary>
+        /// <value>
+        /// The height.
+        /// </value>
         public int Height
         {
             get { return _height; }
@@ -180,23 +270,26 @@ namespace Fusee.Engine
             }
         }
 
-        private void ResizeWindow()
-        {
-            var widthH = _width / 2;
-            var heightH = _height / 2;
-
-            var scHeightH = Screen.PrimaryScreen.Bounds.Height / 2;
-            var scWidthH = Screen.PrimaryScreen.Bounds.Width / 2;
-
-            _gameWindow.ClientRectangle = new System.Drawing.Rectangle(scWidthH - widthH, scHeightH - heightH, _width, _height);
-        }
-
+        /// <summary>
+        /// Gets or sets the caption(title of the window).
+        /// </summary>
+        /// <value>
+        /// The caption.
+        /// </value>
         public string Caption
         {
             get { return (_gameWindow == null) ? "" : _gameWindow.Title; }
             set { if (_gameWindow != null) _gameWindow.Title = value; }
         }
 
+        /// <summary>
+        /// Gets the delta time.
+        /// The delta time is the time that was required to render the last frame in milliseconds.
+        /// This value can be used to determine the frames per second of the application.
+        /// </summary>
+        /// <value>
+        /// The delta time in milliseconds.
+        /// </value>
         public double DeltaTime
         {
             get
@@ -207,24 +300,51 @@ namespace Fusee.Engine
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [vertical synchronize].
+        /// This option is used to reduce "Glitches" during rendering.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [vertical synchronize]; otherwise, <c>false</c>.
+        /// </value>
         public bool VerticalSync
         {
             get { return (_gameWindow != null) && _gameWindow.Context.SwapInterval == 1; }
             set { if (_gameWindow != null) _gameWindow.Context.SwapInterval = (value) ? 1 : 0; }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [enable blending].
+        /// Blending is used to render transparent objects.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [enable blending]; otherwise, <c>false</c>.
+        /// </value>
         public bool EnableBlending
         {
             get { return _gameWindow.Blending; }
             set { _gameWindow.Blending = value; }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [fullscreen] is enabled.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [fullscreen]; otherwise, <c>false</c>.
+        /// </value>
         public bool Fullscreen
         {
             get { return (_gameWindow.WindowState == WindowState.Fullscreen); }
             set { _gameWindow.WindowState = (value) ? WindowState.Fullscreen : WindowState.Normal; }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether [focused].
+        /// This property is used to identify if this application is the active window of the user.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [focused]; otherwise, <c>false</c>.
+        /// </value>
         public bool Focused
         {
             get { return _gameWindow.Focused; }
@@ -232,6 +352,12 @@ namespace Fusee.Engine
 
         internal RenderCanvasGameWindow _gameWindow;
 
+        #endregion
+
+        #region Constructors
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RenderCanvasImp"/> class.
+        /// </summary>
         public RenderCanvasImp()
         {
             const int width = 1280;
@@ -247,28 +373,73 @@ namespace Fusee.Engine
             }
         }
 
+        #endregion
+
+        #region Members
+
+        private void ResizeWindow()
+        {
+            var widthH = _width / 2;
+            var heightH = _height / 2;
+
+            var scHeightH = Screen.PrimaryScreen.Bounds.Height / 2;
+            var scWidthH = Screen.PrimaryScreen.Bounds.Width / 2;
+
+            _gameWindow.Bounds = new System.Drawing.Rectangle(scWidthH - widthH, scHeightH - heightH, _width, _height);
+        }
+
+        /// <summary>
+        /// Presents this application instance. Call this function after rendering to show the final image. 
+        /// After Present is called the render buffers get flushed.
+        /// </summary>
         public void Present()
         {
             if (_gameWindow != null)
                 _gameWindow.SwapBuffers();
         }
 
+        /// <summary>
+        /// Implementation Tasks: Runs this application instance. This function should not be called more than once as its only for initilization purposes.
+        /// </summary>
         public void Run()
         {
             if (_gameWindow != null)
                 _gameWindow.Run(30.0, 0.0);
         }
+
+        #endregion
     }
 
     public class RenderCanvasImpBase
     {
+        #region Fields
+
         protected internal int _width;
         protected internal int _height;
 
+        #endregion
+
+        #region Events
+        /// <summary>
+        /// Occurs when [initialize].
+        /// </summary>
         public event EventHandler<InitEventArgs> Init;
+        /// <summary>
+        /// Occurs when [un load].
+        /// </summary>
         public event EventHandler<InitEventArgs> UnLoad;
+        /// <summary>
+        /// Occurs when [render].
+        /// </summary>
         public event EventHandler<RenderEventArgs> Render;
+        /// <summary>
+        /// Occurs when [resize].
+        /// </summary>
         public event EventHandler<ResizeEventArgs> Resize;
+
+        #endregion
+
+        #region Internal Members
 
         internal protected void DoInit()
         {
@@ -293,18 +464,37 @@ namespace Fusee.Engine
             if (Resize != null)
                 Resize(this, new ResizeEventArgs());
         }
+
+        #endregion
     }
 
     class RenderCanvasGameWindow : GameWindow
     {
+        #region Fields
+
         private RenderCanvasImp _renderCanvasImp;
         private double _deltaTime;
 
+        /// <summary>
+        /// Gets the delta time.
+        /// The delta time is the time that was required to render the last frame in milliseconds.
+        /// This value can be used to determine the frames per second of the application.
+        /// </summary>
+        /// <value>
+        /// The delta time in milliseconds.
+        /// </value>
         public double DeltaTime
         {
             get { return _deltaTime; }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [blending].
+        /// Blending is used to render transparent objects.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [blending]; otherwise, <c>false</c>.
+        /// </value>
         public bool Blending
         {
             get { return GL.IsEnabled(EnableCap.Blend); }
@@ -322,6 +512,16 @@ namespace Fusee.Engine
             }
         }
 
+        #endregion
+
+        #region Constructors
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RenderCanvasGameWindow"/> class.
+        /// </summary>
+        /// <param name="renderCanvasImp">The render canvas implementation.</param>
+        /// <param name="width">The width.</param>
+        /// <param name="height">The height.</param>
+        /// <param name="antiAliasing">if set to <c>true</c> [anti aliasing] is on.</param>
         public RenderCanvasGameWindow(RenderCanvasImp renderCanvasImp, int width, int height, bool antiAliasing)
             : base(width, height, new GraphicsMode(32, 24, 0, (antiAliasing) ? 8 : 0) /*GraphicsMode.Default*/, "Fusee Engine")
         {
@@ -330,6 +530,10 @@ namespace Fusee.Engine
             _renderCanvasImp._width = Width;
             _renderCanvasImp._height = Height;
         }
+
+        #endregion
+
+        #region Overrides
 
         protected override void OnLoad(EventArgs e)
         {
@@ -401,5 +605,7 @@ namespace Fusee.Engine
                 _renderCanvasImp.DoRender();
             }
         }
+
+        #endregion
     }
 }

@@ -40,16 +40,14 @@ namespace Fusee.SceneManagement
 
         #endregion
 
-        #region Methods
+        #region Overrides
 
         /// <summary>
         /// Passes spotlight's parameters to RenderContext.
         /// </summary>
         public override void SubmitWork(RenderContext renderContext)
         {
-            //TODO Warten Auf Timon und Casper
             renderContext.SetLight(_position, _direction, _color, (int)_type, _channel);
-            //Console.WriteLine("Spotlight worked");
         }
 
         #endregion

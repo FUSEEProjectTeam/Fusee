@@ -10,8 +10,13 @@ using Timer = System.Timers.Timer;
 
 namespace Fusee.Engine
 {
+    /// <summary>
+    /// Lidgren implementation of <see cref="INetworkImp"/>. 
+    /// </summary>
     public class NetworkImp : INetworkImp
     {
+        #region Fields
+
         private NetPeer _netPeer;
         private NetServer _netServer;
         private NetClient _netClient;
@@ -24,6 +29,12 @@ namespace Fusee.Engine
         private NetConfigValues _config;
         private NetPeerConfiguration _netConfig;
 
+        /// <summary>
+        /// Gets or sets the configuration of the network. <see cref="NetConfigValues" />
+        /// </summary>
+        /// <value>
+        /// The configuration.
+        /// </value>
         public NetConfigValues Config
         {
             get { return _config; }
@@ -44,12 +55,46 @@ namespace Fusee.Engine
             }
         }
 
-        public event ConnectionUpdateEvent ConnectionUpdate;
+        /// <summary>
+        /// Gets all the connections that this instance is handling.
+        /// </summary>
+        /// <value>
+        /// The connections of type <see cref="INetworkConnection" />.
+        /// </value>
         public List<INetworkConnection> Connections { get; private set; }
 
+        /// <summary>
+        /// Gets or sets the status.
+        /// </summary>
+        /// <value>
+        /// The status.
+        /// </value>
         public NetStatusValues Status { get; set; }
+        /// <summary>
+        /// Gets all the incoming Messages that are not yet viewed.
+        /// </summary>
+        /// <value>
+        /// The incoming Messages of type <see cref="INetworkMsg" />.
+        /// </value>
         public List<INetworkMsg> IncomingMsg { get; private set; }
 
+
+        #endregion
+
+        #region Events
+
+        /// <summary>
+        /// Occurs when [connection update] is triggered. <see cref="ConnectionUpdateEvent" />
+        /// </summary>
+        public event ConnectionUpdateEvent ConnectionUpdate;
+
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NetworkImp"/> class.
+        /// </summary>
         public NetworkImp()
         {
             _netConfig = new NetPeerConfiguration("FUSEE3D");
@@ -76,6 +121,14 @@ namespace Fusee.Engine
             };
         }
 
+        #endregion
+
+        #region Members
+
+        /// <summary>
+        /// Initialize system on port.
+        /// </summary>
+        /// <param name="port">The port.</param>
         public void StartPeer(int port)
         {
             // Check if already running
@@ -117,6 +170,9 @@ namespace Fusee.Engine
             }
         }
 
+        /// <summary>
+        /// Ends the peers.
+        /// </summary>
         public void EndPeers()
         {
             EndPeer(SysType.Peer);
@@ -124,6 +180,10 @@ namespace Fusee.Engine
             EndPeer(SysType.Server);
         }
 
+        /// <summary>
+        /// Ends the peer.
+        /// </summary>
+        /// <param name="sysType">Type of the system.</param>
         public void EndPeer(SysType sysType)
         {
             switch (sysType)
@@ -154,6 +214,12 @@ namespace Fusee.Engine
             }
         }
 
+        /// <summary>
+        /// Gets the local ip. Do not use this often due to performance reasons.
+        /// </summary>
+        /// <returns>
+        /// The local ip as a string.
+        /// </returns>
         public string GetLocalIp()
         {
             IPAddress ipMask;
@@ -190,11 +256,24 @@ namespace Fusee.Engine
                 ConnectionUpdate(lastStatus, newConnection);
         }
 
+        /// <summary>
+        /// Opens the connection.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <param name="ip">The ip.</param>
+        /// <returns></returns>
         public bool OpenConnection(SysType type, IPEndPoint ip)
         {
             return OpenConnection(type, ip.Address.ToString(), ip.Port);
         }
 
+        /// <summary>
+        /// Establish connection to port and host.
+        /// </summary>
+        /// <param name="type">The type of the system (only peer or client are supported).</param>
+        /// <param name="host">The host. Example: 129.12.12.12</param>
+        /// <param name="port">The port.</param>
+        /// <returns></returns>
         public bool OpenConnection(SysType type, string host, int port)
         {
             NetConnection connection = null;
@@ -217,6 +296,9 @@ namespace Fusee.Engine
                 (connection != null) && connection.Status == NetConnectionStatus.Connected;
         }
 
+        /// <summary>
+        /// Closes the connections.
+        /// </summary>
         public void CloseConnections()
         {
             CloseConnection(SysType.Peer);
@@ -224,11 +306,18 @@ namespace Fusee.Engine
             CloseConnection(SysType.Server);
         }
 
+        /// <summary>
+        /// Closes the connection.
+        /// </summary>
         public void CloseConnection()
         {
             CloseConnection(_config.SysType);
         }
 
+        /// <summary>
+        /// Closes the connection.
+        /// </summary>
+        /// <param name="sysType">Type of the system.</param>
         public void CloseConnection(SysType sysType)
         {
             switch (sysType)
@@ -255,6 +344,9 @@ namespace Fusee.Engine
             Thread.Sleep(1000);
         }
 
+        /// <summary>
+        /// Closes all network connections.
+        /// </summary>
         public void CloseDevices()
         {
             if (_netPeer != null)
@@ -276,6 +368,13 @@ namespace Fusee.Engine
             }
         }
 
+        /// <summary>
+        /// Sends a message through a channel with defined message delivery type.
+        /// </summary>
+        /// <param name="msg">The Message in byte[].</param>
+        /// <param name="msgDelivery">The <see cref="MessageDelivery" />.</param>
+        /// <param name="msgChannel">The message channel.</param>
+        /// <returns></returns>
         public bool SendMessage(byte[] msg, MessageDelivery msgDelivery, int msgChannel)
         {
             // _netConfig.RedirectPackets = true;
@@ -310,6 +409,14 @@ namespace Fusee.Engine
             return false;
         }
 
+        /// <summary>
+        /// Sends the message with options.
+        /// </summary>
+        /// <param name="msg">The message.</param>
+        /// <param name="connection">The connection.</param>
+        /// <param name="msgDelivery">The  <see cref="MessageDelivery"/>.</param>
+        /// <param name="msgChannel">The message channel.</param>
+        /// <returns></returns>
         public bool SendMessage(byte[] msg, NetConnection connection, MessageDelivery msgDelivery, int msgChannel)
         {
             // _netConfig.RedirectPackets = true;
@@ -353,6 +460,10 @@ namespace Fusee.Engine
             }
         }
 
+        /// <summary>
+        /// Sends the discovery message on defined port.
+        /// </summary>
+        /// <param name="port">The port.</param>
         public void SendDiscoveryMessage(int port)
         {
             switch (_config.SysType)
@@ -508,6 +619,9 @@ namespace Fusee.Engine
             return null;
         }
 
+        /// <summary>
+        /// Called when [update frame] occurs.
+        /// </summary>
         public void OnUpdateFrame()
         {
             NetIncomingMessage msg;
@@ -539,5 +653,7 @@ namespace Fusee.Engine
                 }
             }
         }
+
+        #endregion
     }
 }

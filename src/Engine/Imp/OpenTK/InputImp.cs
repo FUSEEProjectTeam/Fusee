@@ -4,11 +4,23 @@ using OpenTK.Input;
 
 namespace Fusee.Engine
 {
+    /// <summary>
+    /// This class accesses the underlying OpenTK adapter and is the implementation of the input interface <see cref="IInputImp" />.
+    /// </summary>
     public class InputImp : IInputImp
     {
+        #region Fields
         protected GameWindow _gameWindow;
         internal Keymapper KeyMapper;
+        #endregion
 
+        #region Constructors
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InputImp"/> class.
+        /// </summary>
+        /// <param name="renderCanvas">The render canvas.</param>
+        /// <exception cref="System.ArgumentNullException">renderCanvas</exception>
+        /// <exception cref="System.ArgumentException">renderCanvas must be of type RenderCanvasImp;renderCanvas</exception>
         public InputImp(IRenderCanvasImp renderCanvas)
         {
             if (renderCanvas == null)
@@ -33,12 +45,23 @@ namespace Fusee.Engine
 
             KeyMapper = new Keymapper();
         }
+        #endregion
 
+        #region Members
+        /// <summary>
+        /// Implement this to receive callbacks once a frame if your implementation needs
+        /// regular updates.
+        /// </summary>
+        /// <param name="time">The elapsed time since the last frame.</param>
         public void FrameTick(double time)
         {
             // do nothing
         }
 
+        /// <summary>
+        /// Sets the mouse cursor to the center of the GameWindow.
+        /// </summary>
+        /// <returns>A Point with x,y,z properties.</returns>
         public Point SetMouseToCenter()
         {
             var ctrPoint = GetMousePos();
@@ -54,17 +77,34 @@ namespace Fusee.Engine
             return ctrPoint;
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether the cursor is visible.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if the cursor is visible; otherwise, <c>false</c>.
+        /// </value>
         public bool CursorVisible
         {
             get { return _gameWindow.CursorVisible; }
             set { _gameWindow.CursorVisible = value; }
         }
 
+        /// <summary>
+        /// Sets the mouse position by using X and Y values (in pixel units).
+        /// </summary>
+        /// <param name="pos">The point containing window X and Y values.</param>
         public void SetMousePos(Point pos)
         {
             Mouse.SetPosition(pos.x, pos.y);
         }
 
+        /// <summary>
+        /// Retrieve the position(x,y values in pixel units) of the Mouse.
+        /// </summary>
+        /// <returns>
+        /// The point containing window X and Y values.
+        /// If gamewindow is null 0,0 position is returned.
+        /// </returns>
         public Point GetMousePos()
         {
             if (_gameWindow != null)
@@ -79,6 +119,9 @@ namespace Fusee.Engine
             return 0;
         }
 
+        /// <summary>
+        /// Trigger this event on any mouse button pressed down (and held).
+        /// </summary>
         public event EventHandler<MouseEventArgs> MouseButtonDown;
 
         protected void OnGameWinMouseDown(object sender, MouseButtonEventArgs mouseArgs)
@@ -108,6 +151,9 @@ namespace Fusee.Engine
             }
         }
 
+        /// <summary>
+        /// Trigger this event on any mouse button release.
+        /// </summary>
         public event EventHandler<MouseEventArgs> MouseButtonUp;
 
         protected void OnGameWinMouseUp(object sender, MouseButtonEventArgs mouseArgs)
@@ -136,7 +182,10 @@ namespace Fusee.Engine
                     });
             }
         }
-      
+
+        /// <summary>
+        /// Trigger this event once a key on the keyboard is pressed down.
+        /// </summary>
         public event EventHandler<KeyEventArgs> KeyDown;
 
         protected void OnGameWinKeyDown(object sender, KeyboardKeyEventArgs key)
@@ -154,6 +203,9 @@ namespace Fusee.Engine
             }
         }
 
+        /// <summary>
+        /// Trigger this event in your implementation once a key on the keyboard is released.
+        /// </summary>
         public event EventHandler<KeyEventArgs> KeyUp;
 
         protected void OnGameWinKeyUp(object sender, KeyboardKeyEventArgs key)
@@ -170,5 +222,6 @@ namespace Fusee.Engine
                     });
             }
         }
+        #endregion
     }
 }

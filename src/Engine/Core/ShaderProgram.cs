@@ -2,12 +2,26 @@
 
 namespace Fusee.Engine
 {
+    /// <summary>
+    /// A Wrapper of <see cref="IShaderProgramImp"/> that makes shaderprograms members accessible.
+    /// </summary>
     public class ShaderProgram
     {
+        #region Fields
+
         internal IShaderProgramImp _spi;
         internal IRenderContextImp _rci;
         internal Dictionary<string, IShaderParam> _paramsByName;
 
+        #endregion
+
+        #region Members
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ShaderProgram"/> class.
+        /// </summary>
+        /// <param name="renderContextImp">The <see cref="IRenderContextImp"/>.</param>
+        /// <param name="shaderProgramImp">The <see cref="IShaderProgramImp"/>.</param>
         public ShaderProgram(IRenderContextImp renderContextImp, IShaderProgramImp shaderProgramImp)
         {
             _spi = shaderProgramImp;
@@ -42,6 +56,11 @@ namespace Fusee.Engine
         //    return ret.Handle;
         //}
 
+        /// <summary>
+        /// Gets the shader parameter.
+        /// </summary>
+        /// <param name="paramName">Name of the parameter.</param>
+        /// <returns>A <see cref="IShaderParam"/>.</returns>
         public IShaderParam GetShaderParam(string paramName)
         {
             IShaderParam ret;
@@ -53,7 +72,7 @@ namespace Fusee.Engine
             return ret;
         }
 
-        
+        #endregion
 
         // TODO: add SetParameter methods here (remove from render context).
     }

@@ -23,7 +23,7 @@ namespace Fusee.SceneManagement
             /// </summary>
             Point,
             /// <summary>
-            /// The spot = 2
+            /// Spot = 2
             /// </summary>
             Spot,
         }

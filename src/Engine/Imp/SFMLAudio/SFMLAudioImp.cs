@@ -8,10 +8,19 @@ using SFML.Audio;
 
 namespace Fusee.Engine
 {
+    /// <summary>
+    /// This class is a container of all <see cref="AudioStream" /> instances and regulates the properties of all Sounds.
+    /// </summary>
     public class SFMLAudioImp : IAudioImp
     {
+        #region Fields
         private readonly List<AudioStream> _allStreams;
+        #endregion
 
+        #region Constructors
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SFMLAudioImp"/> class.
+        /// </summary>
         public SFMLAudioImp()
         {
             _allStreams = new List<AudioStream>();
@@ -19,19 +28,33 @@ namespace Fusee.Engine
             Listener.Direction = new Vector3F(0, 0, -0.1f);
             Listener.Position = new Vector3F(0, 0, 0.1f);
         }
+        #endregion
 
+        #region Members
+        /// <summary>
+        /// Opens the device. All <see cref="AudioStream" /> are reset. The GlobalVolume is set to 100(maximum).
+        /// </summary>
         public void OpenDevice()
         {
             _allStreams.Clear();
             Listener.GlobalVolume = 100;
         }
 
+        /// <summary>
+        /// Closes the device. All <see cref="AudioStream" /> instances get disposed.
+        /// </summary>
         public void CloseDevice()
         {
             foreach (var audioStream in _allStreams)
                audioStream.Dispose();
         }
 
+        /// <summary>
+        /// Loads a sound file from hard drive.
+        /// </summary>
+        /// <param name="fileName">Full path name of the file with datatype ending, e.g. "C\:sound.ogg". A path can be absolute or relative.</param>
+        /// <param name="streaming">if set to <c>true</c> [streaming].</param>
+        /// <returns>An IAudioStream instance is returned if the file path was correctly resolved.</returns>
         public IAudioStream LoadFile(string fileName, bool streaming)
         {
 #if MP3Warning
@@ -61,12 +84,19 @@ namespace Fusee.Engine
             return tmpAudioStream;
         }
 
+        /// <summary>
+        /// Stops the playback of all <see cref="AudioStream" /> instances.
+        /// </summary>
         public void Stop()
         {
             foreach (var audioStream in _allStreams)
                 audioStream.Stop();
         }
 
+        /// <summary>
+        /// Sets the master volume of the listener.
+        /// </summary>
+        /// <param name="val">The value (0 - 100).</param>
         public void SetVolume(float val)
         {
             var maxVal = System.Math.Min(100, val);
@@ -75,11 +105,19 @@ namespace Fusee.Engine
             Listener.GlobalVolume = maxVal;
         }
 
+        /// <summary>
+        /// Gets the master volume of the Listener.
+        /// </summary>
+        /// <returns></returns>
         public float GetVolume()
         {
             return (float) System.Math.Round(Listener.GlobalVolume, 2);
         }
 
+        /// <summary>
+        /// Sets the panning of all <see cref="AudioStream" /> instances.
+        /// </summary>
+        /// <param name="val">The value(-100 - 100).</param>
         public void SetPanning(float val)
         {
             var maxVal = System.Math.Min(100, val);
@@ -88,5 +126,6 @@ namespace Fusee.Engine
             foreach (var audioStream in _allStreams)
                 audioStream.Panning = maxVal;
         }
+        #endregion
     }
 }

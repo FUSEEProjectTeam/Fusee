@@ -16,7 +16,6 @@ namespace Fusee.SceneManagement
         private Light.LightType _type;
         private int _channel;
         #endregion
-
         #region Constructor
         /// <summary>
         /// Creates a RenderDirectionalLight needed parameters:( float3, float4, Light.Lighttype, int).
@@ -33,7 +32,7 @@ namespace Fusee.SceneManagement
             _channel = channel;
         }
         #endregion
-
+        #region Overrides
         /// <summary>
         ///  Passes directionallight's parameters to RenderContext.
         /// </summary>
@@ -43,6 +42,7 @@ namespace Fusee.SceneManagement
              renderContext.SetLight(_direction, _color, (int)_type, _channel);
              //Console.WriteLine("DirectionalLight worked");
          }
+        #endregion
 
     }
 }

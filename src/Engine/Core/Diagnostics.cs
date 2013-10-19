@@ -8,6 +8,8 @@ namespace Fusee.Engine
      /// </summary>
     public static class Diagnostics
     {
+        #region Fields
+
         [JSIgnore]
         private static Stopwatch _daWatch;
 
@@ -35,6 +37,10 @@ namespace Fusee.Engine
             }
         }
 
+        #endregion
+
+        #region Members
+
         /// <summary>
         /// Log a debug output message to the respective output console.
         /// </summary>
@@ -42,7 +48,9 @@ namespace Fusee.Engine
         [JSExternal]
         public static void Log(object o)
         {
-            Debug.Print(o.ToString());            
+            Debug.Print(o.ToString());
         }
+
+        #endregion
     }
 }
