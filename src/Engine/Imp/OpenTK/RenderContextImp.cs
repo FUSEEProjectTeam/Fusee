@@ -738,7 +738,7 @@ namespace Fusee.Engine
             GL.End();
         }
 
-         public void GetBufferContent(Rectangle quad, ITexture texId)
+        public void GetBufferContent(Rectangle quad, ITexture texId)
         {
             GL.BindTexture(TextureTarget.Texture2D, ((Texture)texId).handle);
             GL.CopyTexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, quad.Left, quad.Top, quad.Width, quad.Height, 0);
