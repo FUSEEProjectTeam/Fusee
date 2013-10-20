@@ -27,12 +27,17 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.AudioStream", t
             var playbackFile = fileName.replace(/\.[^/.]+$/, "");
             playbackFile = JSIL.Host.getAssetVal(playbackFile);
 
-            var instance = createjs.Sound.createInstance(playbackFile);
+            try {
+                var instance = createjs.Sound.createInstance(playbackFile);
+            } catch(e) {
+                var instance = null;
+            }
 
             this.StreamFileName = playbackFile;
             this.MainOutputStream = instance;
 
-            this.MainOutputStream.addEventListener("complete", this.playingComplete.bind(this));
+            if (instance)
+                this.MainOutputStream.addEventListener("complete", this.playingComplete.bind(this));
         }
     );
 
@@ -50,6 +55,9 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.AudioStream", t
     $.Method({ Static: false, Public: true }, "Play",
         new JSIL.MethodSignature(null, []),
         function Play() {
+            if (!this.MainOutputStream)
+                return;
+
             if (this.MainOutputStream.paused && this.MainOutputStream.playState == "playSucceeded")
                 this.MainOutputStream.resume();
             else
@@ -68,6 +76,9 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.AudioStream", t
     $.Method({ Static: false, Public: true }, "Pause",
         new JSIL.MethodSignature(null, []),
         function Pause() {
+            if (!this.MainOutputStream)
+                return;
+
             this.MainOutputStream.pause();
         }
     );
@@ -75,6 +86,9 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.AudioStream", t
     $.Method({ Static: false, Public: true }, "Stop",
         new JSIL.MethodSignature(null, []),
         function Stop() {
+            if (!this.MainOutputStream)
+                return;
+
             this.MainOutputStream.stop();
         }
     );
@@ -82,6 +96,9 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.AudioStream", t
     $.Method({ Static: false, Public: true }, "set_Volume",
         new JSIL.MethodSignature(null, [$.Single]),
         function set_Volume(value) {
+            if (!this.MainOutputStream)
+                return;
+
             var maxVal = System.Math.Min(100, value);
             maxVal = System.Math.Max(maxVal, 0);
 
@@ -92,6 +109,9 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.AudioStream", t
     $.Method({ Static: false, Public: true }, "get_Volume",
         new JSIL.MethodSignature($.Single, []),
         function get_Volume() {
+            if (!this.MainOutputStream)
+                return;
+
             return this.MainOutputStream.getVolume() * 100;
         }
     );
@@ -113,6 +133,9 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.AudioStream", t
     $.Method({ Static: false, Public: true }, "set_Panning",
         new JSIL.MethodSignature(null, [$.Single]),
         function set_Panning(value) {
+            if (!this.MainOutputStream)
+                return;
+
             var maxVal = System.Math.Min(100, value);
             maxVal = System.Math.Max(maxVal, -100);
 
@@ -123,6 +146,9 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.AudioStream", t
     $.Method({ Static: false, Public: true }, "get_Panning",
         new JSIL.MethodSignature($.Boolean, []),
         function get_Panning() {
+            if (!this.MainOutputStream)
+                return;
+
             return this.MainOutputStream.getPan() * 100;
         }
     );
