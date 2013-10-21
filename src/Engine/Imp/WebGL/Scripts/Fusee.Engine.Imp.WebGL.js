@@ -1215,7 +1215,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.InputImp", true
     $.Method({ Static: false, Public: true }, "OnCanvasMouseWheel",
         new JSIL.MethodSignature(null, []),
         function OnCanvasMouseWheel(event) {
-            this._currentMouseWheel += event.wheelDelta;
+            this._currentMouseWheel += event.wheelDelta * 0.005;
         }
     );
 
