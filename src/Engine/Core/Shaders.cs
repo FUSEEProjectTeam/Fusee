@@ -4,6 +4,7 @@ namespace Fusee.Engine
 {
     /// <summary>
     /// Contains all pixel and vertex shaders and a method to create a ShaderProgram in Rendercontext.
+    /// Handles the <see cref="ShaderProgram"/> creation.
     /// </summary>
     public static class Shaders
     {

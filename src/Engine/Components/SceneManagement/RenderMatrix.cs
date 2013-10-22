@@ -10,8 +10,10 @@ namespace Fusee.SceneManagement
     /// </summary>
     public class RenderMatrix : RenderJob
     {
+        #region Fields
         private float4x4 _matrix;
-
+        #endregion
+        #region Constructors
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderMatrix"/> class. Needs to be provided with a matrix that needs to be rendered.
         /// </summary>
@@ -20,13 +22,17 @@ namespace Fusee.SceneManagement
         {
             _matrix = matrix;
         }
-
+        #endregion
+        #region Overrides
         /// <summary>
-        /// Overwrites the SubmitWork method of RenderJob class. Set's the Model matrix into RendeContext. 
+        /// The SubmitWork method will be overwritten by a visited Component that "want's" to be rendered.
+        /// Therefore a RenderContext is needed.
         /// </summary>
+        /// <param name="renderContext"></param>
         public override void SubmitWork(RenderContext renderContext)
         {
             renderContext.Model = _matrix;
         }
+        #endregion
     }
 }

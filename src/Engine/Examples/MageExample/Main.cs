@@ -203,7 +203,7 @@ namespace Examples.MageExample
             _angleVelHorz = -1.0f*(float) Time.Instance.DeltaTime;
             _angleVelVert = 0.0f;
 
-            if (Input.Instance.IsButtonDown(MouseButtons.Left))
+            if (Input.Instance.IsButton(MouseButtons.Left))
             {
                 _angleVelHorz = _rotationSpeed*Input.Instance.GetAxis(InputAxis.MouseX);
                 _angleVelVert = _rotationSpeed*Input.Instance.GetAxis(InputAxis.MouseY);
@@ -212,16 +212,16 @@ namespace Examples.MageExample
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
 
-            if (Input.Instance.IsKeyDown(KeyCodes.Left))
+            if (Input.Instance.IsKey(KeyCodes.Left))
                 _angleHorz -= _rotationSpeed*(float) Time.Instance.DeltaTime;
 
-            if (Input.Instance.IsKeyDown(KeyCodes.Right))
+            if (Input.Instance.IsKey(KeyCodes.Right))
                 _angleHorz += _rotationSpeed*(float) Time.Instance.DeltaTime;
 
-            if (Input.Instance.IsKeyDown(KeyCodes.Up))
+            if (Input.Instance.IsKey(KeyCodes.Up))
                 _angleVert -= _rotationSpeed*(float) Time.Instance.DeltaTime;
 
-            if (Input.Instance.IsKeyDown(KeyCodes.Down))
+            if (Input.Instance.IsKey(KeyCodes.Down))
                 _angleVert += _rotationSpeed*(float) Time.Instance.DeltaTime;
 
             var mtxRot = float4x4.CreateRotationY(_angleHorz)*float4x4.CreateRotationX(_angleVert);

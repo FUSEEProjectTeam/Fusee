@@ -51,7 +51,7 @@ namespace Examples.Simple
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
             // move per mouse
-            if (Input.Instance.IsButtonDown(MouseButtons.Left))
+            if (Input.Instance.IsButton(MouseButtons.Left))
             {
                 _angleVelHorz = RotationSpeed*Input.Instance.GetAxis(InputAxis.MouseX);
                 _angleVelVert = RotationSpeed*Input.Instance.GetAxis(InputAxis.MouseY);
@@ -68,16 +68,16 @@ namespace Examples.Simple
             _angleVert += _angleVelVert;
 
             // move per keyboard
-            if (Input.Instance.IsKeyDown(KeyCodes.Left))
+            if (Input.Instance.IsKey(KeyCodes.Left))
                 _angleHorz -= RotationSpeed*(float) Time.Instance.DeltaTime;
 
-            if (Input.Instance.IsKeyDown(KeyCodes.Right))
+            if (Input.Instance.IsKey(KeyCodes.Right))
                 _angleHorz += RotationSpeed*(float) Time.Instance.DeltaTime;
 
-            if (Input.Instance.IsKeyDown(KeyCodes.Up))
+            if (Input.Instance.IsKey(KeyCodes.Up))
                 _angleVert -= RotationSpeed*(float) Time.Instance.DeltaTime;
 
-            if (Input.Instance.IsKeyDown(KeyCodes.Down))
+            if (Input.Instance.IsKey(KeyCodes.Down))
                 _angleVert += RotationSpeed*(float) Time.Instance.DeltaTime;
 
             var mtxRot = float4x4.CreateRotationY(_angleHorz)*float4x4.CreateRotationX(_angleVert);

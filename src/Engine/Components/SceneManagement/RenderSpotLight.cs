@@ -46,7 +46,7 @@ namespace Fusee.SceneManagement
 
         #endregion
 
-        #region Methods
+        #region Overrides
 
         /// <summary>
         /// Passes spotlight's parameters to RenderContext.
@@ -55,7 +55,6 @@ namespace Fusee.SceneManagement
         {
             renderContext.SetLight(_position, _direction, _diffuseColor, _ambientColor, _specularColor, (int)_type, _channel);
             renderContext.SetLightSpotAngle(_channel, _angle);
-            //Console.WriteLine("Spotlight worked");
         }
 
         #endregion

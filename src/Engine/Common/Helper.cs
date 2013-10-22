@@ -1,7 +1,13 @@
 ﻿﻿namespace Fusee.Engine
  {
+     /// <summary>
+     /// This Object is used by the OpenTK Graphics implementation in order to handle parameter passing between Fusee and OpenTK. 
+     /// Do not modify this object.
+     /// </summary>
      public class Helper
      {
+         #region Fields
+
          public static readonly string VertexAttribName = "fuVertex";
          public static readonly string ColorAttribName = "fuColor";
          public static readonly string NormalAttribName = "fuNormal";
@@ -12,5 +18,6 @@
          public static readonly int NormalAttribLocation = 2;
          public static readonly int UvAttribLocation = 3;
 
+        #endregion
      }
  }

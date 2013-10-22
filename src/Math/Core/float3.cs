@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using ProtoBuf;
 
 namespace Fusee.Math
 {
@@ -9,6 +10,7 @@ namespace Fusee.Math
     /// <remarks>
     /// The float3 structure is suitable for interoperation with unmanaged code requiring three consecutive floats.
     /// </remarks>
+    [ProtoContract]
     [Serializable]
     [StructLayout(LayoutKind.Sequential)]
 // ReSharper disable InconsistentNaming
@@ -20,16 +22,19 @@ namespace Fusee.Math
         /// <summary>
         /// The x component of the float3.
         /// </summary>
+        [ProtoMember(1)]
         public float x;
 
         /// <summary>
         /// The y component of the float3.
         /// </summary>
+        [ProtoMember(2)]
         public float y;
 
         /// <summary>
         /// The z component of the float3.
         /// </summary>
+        [ProtoMember(3)]
         public float z;
 
         #endregion

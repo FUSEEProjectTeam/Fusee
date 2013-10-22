@@ -8,10 +8,12 @@ using Fusee.Math;
 namespace Fusee.SceneManagement
 {
     /// <summary>
-    /// 
+    /// The SceneEntity class can contain components that do different tasks during runtime in order to create a scene. Every SceneEntity automatically has a transform component which is used for the 3D orientation. 
+    /// It is required to give a SceneEntity a name in order to use the search algorithms of <see cref="SceneManager"/> during runtime.
     /// </summary>
     public class SceneEntity
     {
+        #region Fields
         /// <summary>
         /// The name of the SceneEntity.
         /// </summary>
@@ -40,8 +42,9 @@ namespace Fusee.SceneManagement
         /// The components of the current SceneEntity. 
         /// </summary>
         private List<Component> _childComponents;
+        #endregion
 
-
+        #region Constructors
         /// <summary>
         /// Initializes a new instance of the <see cref="SceneEntity"/> class.
         /// </summary>
@@ -71,6 +74,14 @@ namespace Fusee.SceneManagement
             _parent = parent;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SceneEntity"/> class.
+        /// </summary>
+        /// <param name="_name">The _name.</param>
+        /// <param name="action">The action.</param>
+        /// <param name="parent">The parent.</param>
+        /// <param name="material">The material.</param>
+        /// <param name="_renderer">The _renderer.</param>
         public SceneEntity(string _name, ActionCode action, SceneEntity parent, Material material, Renderer _renderer)
         {
             _childComponents = new List<Component>();
@@ -88,6 +99,13 @@ namespace Fusee.SceneManagement
 
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SceneEntity"/> class.
+        /// </summary>
+        /// <param name="_name">The _name.</param>
+        /// <param name="action">The action.</param>
+        /// <param name="material">The material.</param>
+        /// <param name="_renderer">The _renderer.</param>
         public SceneEntity(string _name, ActionCode action, Material material, Renderer _renderer)
         {
             _childComponents = new List<Component>();
@@ -102,6 +120,12 @@ namespace Fusee.SceneManagement
             tag = "default";
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SceneEntity"/> class.
+        /// </summary>
+        /// <param name="_name">The _name.</param>
+        /// <param name="material">The material.</param>
+        /// <param name="_renderer">The _renderer.</param>
         public SceneEntity(string _name, Material material, Renderer _renderer)
         {
             _childComponents = new List<Component>();
@@ -114,6 +138,12 @@ namespace Fusee.SceneManagement
             tag = "default";
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SceneEntity"/> class.
+        /// </summary>
+        /// <param name="_name">The _name.</param>
+        /// <param name="action">The action.</param>
+        /// <param name="parent">The parent.</param>
         public SceneEntity(string _name, ActionCode action, SceneEntity parent)
         {
             _childComponents = new List<Component>();
@@ -128,6 +158,11 @@ namespace Fusee.SceneManagement
             _parent.AddChild(this);
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SceneEntity"/> class.
+        /// </summary>
+        /// <param name="_name">The _name.</param>
+        /// <param name="action">The action.</param>
         public SceneEntity(string _name, ActionCode action)
         {
             _childComponents = new List<Component>();
@@ -139,12 +174,13 @@ namespace Fusee.SceneManagement
             action.Init(this);
             tag = "default";
         }
+        #endregion
 
-
+        #region Members
         /// <summary>
         /// Traverses through the current SceneEntities components and through its children and their components.
         /// </summary>
-        /// <param name="sceneVisitorRendering">The scene visitor rendering.</param>
+        /// <param name="sceneVisitorRendering">The scene visitor rendering that grabs the informations from the SceneEntity that are required to render it.</param>
         public void TraverseForRendering(SceneVisitor sceneVisitorRendering)
         {
             
@@ -161,9 +197,9 @@ namespace Fusee.SceneManagement
 
 
         /// <summary>
-        /// Accepts the specified SceneVisitor.
+        /// Accepts the specified SceneVisitor in order to pass informations to it.
         /// </summary>
-        /// <param name="sv">The sv.</param>
+        /// <param name="sv">The SceneVisitor.</param>
         public void Accept(SceneVisitor sv)
         {
             sv.Visit(this);    
@@ -183,8 +219,7 @@ namespace Fusee.SceneManagement
                     renderer = (Renderer)component;  
                 }else
                 {
-                    Debug.WriteLine("A SceneEntity can only have one RendererComponent at a time.");
-                    //throw new Exception("A SceneEntity can only have one RendererComponent at a time.");
+                    throw new Exception("A SceneEntity can only have one RendererComponent at a time.");
                 }
 
             }
@@ -197,13 +232,13 @@ namespace Fusee.SceneManagement
             {
                 _childComponents.Add(component);
             }
-            //Console.WriteLine("The name of the added Component is " + type);
         }
 
         /// <summary>
-        /// Adds a child SceneEntity to the current SceneEntity.
+        /// Adds a child SceneEntity to the current SceneEntity. 
+        /// This method creates a relation between SceneEntities that is required for the transformation order.
         /// </summary>
-        /// <param name="child">The child.</param>
+        /// <param name="child">The child of type SceneEntity.</param>
         public void AddChild(SceneEntity child)
         {
             child.parent = this;
@@ -211,7 +246,8 @@ namespace Fusee.SceneManagement
         }
         // TODO: Add Find Functions, Add GetComponent/s in Children
         /// <summary>
-        /// Gets the child SceneEntities of the current SceneEntity.
+        /// Gets all child SceneEntities of the current SceneEntity. 
+        /// If no children are attached to this SceneEntity null is returned.
         /// </summary>
         /// <returns></returns>
         public SceneEntity[] GetChildren()
@@ -220,7 +256,7 @@ namespace Fusee.SceneManagement
         }
 
         /// <summary>
-        /// Gets the specified component from the SceneEntity.
+        /// Gets the specified type of Component from the SceneEntity.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
@@ -238,10 +274,10 @@ namespace Fusee.SceneManagement
 
 
         /// <summary>
-        /// Gets all specified components of the current SceneEntity.
+        /// Gets all components of specified type from this current SceneEntity.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
+        /// <typeparam name="T">This is the type of the Component. The type in this case can be any derivate of the Component class, e.g. <see cref="Renderer"/></typeparam>
+        /// <returns>On successful search a list of Components is returned.</returns>
         public T[] GetComponents<T>()
         {
             List<T> componentItems = new List<T>();
@@ -257,20 +293,20 @@ namespace Fusee.SceneManagement
 
 
         /// <summary>
-        /// Finds a SceneEntity in the scene.
+        /// Finds a SceneEntity in the scene. This method is an access point to FindSceneEntity method inside <see cref="SceneManager"/>.
         /// </summary>
         /// <param name="sceneEntityName">Name of the scene entity.</param>
-        /// <returns></returns>
+        /// <returns>On successful search the first SceneEntity with the selected name is returned.</returns>
         public  static SceneEntity FindSceneEntity(string sceneEntityName)
         {
             return SceneManager.Manager.FindSceneEntity(sceneEntityName);
         }
 
         /// <summary>
-        /// Gets or sets the parent SceneEntity.
+        /// Gets or sets the parent SceneEntity. Null is returned if this SceneEntity doesn't have a parent.
         /// </summary>
         /// <value>
-        /// The parent.
+        /// The parent. 
         /// </value>
         public SceneEntity parent
         {
@@ -280,15 +316,7 @@ namespace Fusee.SceneManagement
                     _parent = value; 
                 }
         }
-
-        /// <summary>
-        /// Removes the scene entity and all of its children from the scene.
-        /// </summary>
-        /// <param name="objectToBeDestroyed">The object to be destroyed.</param>
-        public static void DestroySceneEntity(SceneEntity objectToBeDestroyed)
-        {
-               
-        }
+        #endregion
 
     }
 }

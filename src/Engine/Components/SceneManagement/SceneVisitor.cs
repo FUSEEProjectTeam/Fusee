@@ -128,10 +128,11 @@ namespace Fusee.SceneManagement
 
 
         // Polymorphic Component Visits
-       /* virtual public void Visit(Component component)
-        {
-            Debug.WriteLine("component has been visitted");
-        }*/
+        /* virtual public void Visit(Component component)
+         {
+             Debug.WriteLine("component has been visitted");
+         }*/
+        #region Members
         /// <summary>
         /// Visits the specified cEntity to collect data if required by the current Visitor derivate.
         /// </summary>
@@ -203,7 +204,7 @@ namespace Fusee.SceneManagement
         {
 
         }
-
+        #endregion
     }
 
 }

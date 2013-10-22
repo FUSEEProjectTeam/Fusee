@@ -25,7 +25,7 @@ namespace Examples.SolarSystem
                 transform.LocalPosition -= new float3(0, 0, (Input.Instance.GetAxis(InputAxis.MouseWheel)*100));
             }
 
-            if (Input.Instance.OnKeyDown(KeyCodes.P))
+            if (Input.Instance.IsKeyDown(KeyCodes.P))
             {
                 if (perspective)
                 {
