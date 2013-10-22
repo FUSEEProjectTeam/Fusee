@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace Fusee.Math
 {
     /// <summary>
-    /// Represents a QuaternionD.
+    /// Represents a QuaternionD (double precision).
     /// </summary>
     [Serializable]
     [StructLayout(LayoutKind.Sequential)]
@@ -99,14 +99,16 @@ namespace Fusee.Math
         public double4 ToAxisAngle()
         {
             QuaternionD q = this;
+
             if (q.w > 1.0f)
                 q.Normalize();
 
-            var result = new double4 {w = 2.0f*(double) System.Math.Acos(q.w)};
+            var result = new double4 {w = 2.0f*System.Math.Acos(q.w)};
 
             // angle
-            var den = (double)System.Math.Sqrt(1.0 - q.w * q.w);
-            if (den > 0.0001f)
+            var den = System.Math.Sqrt(1.0 - q.w*q.w);
+
+            if (den > MathHelper.EpsilonDouble)
             {
                 result.xyz = q.xyz / den;
             }
@@ -132,7 +134,7 @@ namespace Fusee.Math
         {
             get
             {
-                return (double)System.Math.Sqrt(w * w + xyz.LengthSquared);
+                return System.Math.Sqrt(w * w + xyz.LengthSquared);
             }
         }
 
@@ -160,7 +162,8 @@ namespace Fusee.Math
         /// </summary>
         public void Normalize()
         {
-            double scale = 1.0f / Length;
+            if (!(Length > MathHelper.EpsilonDouble)) return;
+            var scale = 1.0f / Length;
             xyz *= scale;
             w *= scale;
         }
@@ -304,30 +307,32 @@ namespace Fusee.Math
         public static void Multiply(ref QuaternionD left, ref QuaternionD right, out QuaternionD result)
         {
             result = new QuaternionD(
-                right.w * left.xyz + left.w * right.xyz + double3.Cross(left.xyz, right.xyz),
-                left.w * right.w - double3.Dot(left.xyz, right.xyz));
+                left.w * right.x + left.x * right.w + left.y * right.z - left.z * right.y,
+                left.w * right.y + left.y * right.w + left.z * right.x - left.x * right.z,
+                left.w * right.z + left.z * right.w + left.x * right.y - left.y * right.x,
+                left.w * right.w - left.x * right.x - left.y * right.y - left.z * right.z);
         }
 
         /// <summary>
         /// Multiplies an instance by a scalar.
         /// </summary>
-        /// <param name="QuaternionD">The instance.</param>
+        /// <param name="quaternionD">The instance.</param>
         /// <param name="scale">The scalar.</param>
         /// <param name="result">A new instance containing the result of the calculation.</param>
-        public static void Multiply(ref QuaternionD QuaternionD, double scale, out QuaternionD result)
+        public static void Multiply(ref QuaternionD quaternionD, double scale, out QuaternionD result)
         {
-            result = new QuaternionD(QuaternionD.x * scale, QuaternionD.y * scale, QuaternionD.z * scale, QuaternionD.w * scale);
+            result = new QuaternionD(quaternionD.x * scale, quaternionD.y * scale, quaternionD.z * scale, quaternionD.w * scale);
         }
 
         /// <summary>
         /// Multiplies an instance by a scalar.
         /// </summary>
-        /// <param name="QuaternionD">The instance.</param>
+        /// <param name="quaternionD">The instance.</param>
         /// <param name="scale">The scalar.</param>
         /// <returns>A new instance containing the result of the calculation.</returns>
-        public static QuaternionD Multiply(QuaternionD QuaternionD, double scale)
+        public static QuaternionD Multiply(QuaternionD quaternionD, double scale)
         {
-            return new QuaternionD(QuaternionD.x * scale, QuaternionD.y * scale, QuaternionD.z * scale, QuaternionD.w * scale);
+            return new QuaternionD(quaternionD.x * scale, quaternionD.y * scale, quaternionD.z * scale, quaternionD.w * scale);
         }
 
         #endregion
@@ -378,17 +383,16 @@ namespace Fusee.Math
         public static void Invert(ref QuaternionD q, out QuaternionD result)
         {
             double lengthSq = q.LengthSquared;
-            // ReSharper disable CompareOfdoublesByEqualityOperator
-            if (lengthSq != 0.0)
+
+            if (lengthSq > MathHelper.EpsilonDouble)
             {
-                double i = 1.0f / lengthSq;
+                var i = 1.0f / lengthSq;
                 result = new QuaternionD(q.xyz * -i, q.w * i);
             }
             else
             {
                 result = q;
             }
-            // ReSharper restore CompareOfdoublesByEqualityOperator
         }
 
         #endregion
@@ -414,7 +418,13 @@ namespace Fusee.Math
         /// <param name="result">The normalized QuaternionD</param>
         public static void Normalize(ref QuaternionD q, out QuaternionD result)
         {
-            double scale = 1.0f / q.Length;
+            double scale;
+
+            if (!(q.Length > MathHelper.EpsilonFloat))
+                scale = 0;
+            else
+                scale = 1.0 / q.Length;
+
             result = new QuaternionD(q.xyz * scale, q.w * scale);
         }
 
@@ -430,19 +440,17 @@ namespace Fusee.Math
         /// <returns></returns>
         public static QuaternionD FromAxisAngle(double3 axis, double angle)
         {
-            // ReSharper disable CompareOfdoublesByEqualityOperator
-            if (axis.LengthSquared == 0.0f)
+            if (axis.LengthSquared > MathHelper.EpsilonDouble)
                 return Identity;
 
-            QuaternionD result = Identity;
+            var result = Identity;
 
             angle *= 0.5f;
             axis.Normalize();
-            result.xyz = axis * (double)System.Math.Sin(angle);
-            result.w = (double)System.Math.Cos(angle);
+            result.xyz = axis * System.Math.Sin(angle);
+            result.w = System.Math.Cos(angle);
 
             return Normalize(result);
-            // ReSharper restore CompareOfdoublesByEqualityOperator
         }
 
         #endregion
@@ -459,28 +467,19 @@ namespace Fusee.Math
         public static QuaternionD Slerp(QuaternionD q1, QuaternionD q2, double blend)
         {
             // if either input is zero, return the other.
-            if (q1.LengthSquared == 0.0f)
-            {
-                if (q2.LengthSquared == 0.0f)
-                {
-                    return Identity;
-                }
-                return q2;
-            }
-            else if (q2.LengthSquared == 0.0f)
-            {
+            if (q1.LengthSquared < MathHelper.EpsilonDouble)
+                return (!(q2.LengthSquared > MathHelper.EpsilonFloat)) ? Identity : q2;
+
+            if ((q2.LengthSquared < MathHelper.EpsilonDouble))
                 return q1;
-            }
 
+            var cosHalfAngle = q1.w * q2.w + double3.Dot(q1.xyz, q2.xyz);
 
-            double cosHalfAngle = q1.w * q2.w + double3.Dot(q1.xyz, q2.xyz);
-
+            // if angle = 0.0f, just return one input.
             if (cosHalfAngle >= 1.0f || cosHalfAngle <= -1.0f)
-            {
-                // angle = 0.0f, so just return one input.
                 return q1;
-            }
-            else if (cosHalfAngle < 0.0f)
+
+            if (cosHalfAngle < 0.0f)
             {
                 q2.xyz = -q2.xyz;
                 q2.w = -q2.w;
@@ -489,14 +488,16 @@ namespace Fusee.Math
 
             double blendA;
             double blendB;
+
             if (cosHalfAngle < 0.99f)
             {
                 // do proper slerp for big angles
-                double halfAngle = (double)System.Math.Acos(cosHalfAngle);
-                double sinHalfAngle = (double)System.Math.Sin(halfAngle);
-                double oneOverSinHalfAngle = 1.0f / sinHalfAngle;
-                blendA = (double)System.Math.Sin(halfAngle * (1.0f - blend)) * oneOverSinHalfAngle;
-                blendB = (double)System.Math.Sin(halfAngle * blend) * oneOverSinHalfAngle;
+                var halfAngle = System.Math.Acos(cosHalfAngle);
+                var sinHalfAngle = System.Math.Sin(halfAngle);
+                var oneOverSinHalfAngle = 1.0f / sinHalfAngle;
+
+                blendA = System.Math.Sin(halfAngle * (1.0f - blend)) * oneOverSinHalfAngle;
+                blendB = System.Math.Sin(halfAngle * blend) * oneOverSinHalfAngle;
             }
             else
             {
@@ -505,11 +506,9 @@ namespace Fusee.Math
                 blendB = blend;
             }
 
-            QuaternionD result = new QuaternionD(blendA * q1.xyz + blendB * q2.xyz, blendA * q1.w + blendB * q2.w);
-            if (result.LengthSquared > 0.0f)
-                return Normalize(result);
-            else
-                return Identity;
+            var result = new QuaternionD(blendA * q1.xyz + blendB * q2.xyz, blendA * q1.w + blendB * q2.w);
+
+            return result.LengthSquared > MathHelper.EpsilonDouble ? Normalize(result) : Identity;
         }
 
         #endregion
@@ -559,24 +558,24 @@ namespace Fusee.Math
         /// <summary>
         /// Multiplies an instance by a scalar.
         /// </summary>
-        /// <param name="QuaternionD">The instance.</param>
+        /// <param name="quaternionD">The instance.</param>
         /// <param name="scale">The scalar.</param>
         /// <returns>A new instance containing the result of the calculation.</returns>
-        public static QuaternionD operator *(QuaternionD QuaternionD, double scale)
+        public static QuaternionD operator *(QuaternionD quaternionD, double scale)
         {
-            Multiply(ref QuaternionD, scale, out QuaternionD);
-            return QuaternionD;
+            Multiply(ref quaternionD, scale, out quaternionD);
+            return quaternionD;
         }
 
         /// <summary>
         /// Multiplies an instance by a scalar.
         /// </summary>
-        /// <param name="QuaternionD">The instance.</param>
+        /// <param name="quaternionD">The instance.</param>
         /// <param name="scale">The scalar.</param>
         /// <returns>A new instance containing the result of the calculation.</returns>
-        public static QuaternionD operator *(double scale, QuaternionD QuaternionD)
+        public static QuaternionD operator *(double scale, QuaternionD quaternionD)
         {
-            return new QuaternionD(QuaternionD.x * scale, QuaternionD.y * scale, QuaternionD.z * scale, QuaternionD.w * scale);
+            return new QuaternionD(quaternionD.x * scale, quaternionD.y * scale, quaternionD.z * scale, quaternionD.w * scale);
         }
 
         /// <summary>
@@ -659,9 +658,7 @@ namespace Fusee.Math
         /// <returns>True if both instances are equal; false otherwise.</returns>
         public bool Equals(QuaternionD other)
         {
-            // ReSharper disable CompareOfdoublesByEqualityOperator
-            return xyz == other.xyz && w == other.w;
-            // ReSharper restore CompareOfdoublesByEqualityOperator
+            return xyz == other.xyz && (System.Math.Abs(w - other.w) < MathHelper.EpsilonDouble);
         }
 
         #endregion

@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- BeforeBuild on Non-Windows -->
+  <Target Name="BeforeBuild" Condition=" '$(OS)' != 'Windows_NT' ">
+    <Message Importance="High" Text="### BeforeBuildEvent $(TargetName): Copying necessary files ###" />
+    <MakeDir Directories="$(OutputPath)" Condition="!Exists('$(OutputPath)')" />
+    <Exec Command="cp -a $(OutputPath)../../*.dll $(OutputPath)" />
+    <Exec Command="cp -a $(SolutionDir)ExternalBinaries/SFML/*.so* $(OutputPath)" />
+  </Target> 
+  
+  <!--- AfterBuild on Non-Windows -->
+  <Target Name="AfterBuild" Condition=" '$(Configuration)' == 'Debug+Web' And '$(OS)' != 'Windows_NT' ">
+    <MakeDir Directories="$(OutputPath)Web/" Condition="!Exists('$(OutputPath)Web/')" />
+    <MakeDir Directories="$(OutputPath)Web/Assets" Condition="!Exists('$(OutputPath)Web/Assets')" />
+    <MakeDir Directories="$(OutputPath)Web/Assets/Scripts" Condition="!Exists('$(OutputPath)Web/Scripts')" />
+    <MakeDir Directories="$(OutputPath)Web/Assets/Styles" Condition="!Exists('$(OutputPath)Web/Styles')" />
+
+    <Message Importance="High" Text="### PostBuildEvent $(TargetName): JSIL CCing ###" />
+    <Exec ContinueOnError="true" Timeout="120000" Command='mono "$(SolutionDir)ExternalBinaries/JSIL/Compiler/JSILc.exe" -o "$(OutputPath)Web/Assets/Scripts" "$(TargetPath)"' />
+
+    <Message Importance="High" Text="### PostBuildEvent $(TargetName): Copying additional scripts/styles ###" />
+    <Exec Command="cp -a -u $(OutputPath)../../WebGL/Scripts/*.* $(OutputPath)Web/Assets/Scripts" />
+    <Exec Command="cp -a -u $(OutputPath)../../WebGL/Styles/*.* $(OutputPath)Web/Assets/Styles" />
+    <Exec Command="cp -a -u $(OutputPath)../../WebAudio/*.* $(OutputPath)Web/Assets/Scripts" />
+    <Exec Command="rsync -a $(OutputPath)../../WebNet/*.* $(OutputPath)Web/Assets/Scripts" />
+
+    <Message Importance="High" Text="### PostBuildEvent $(TargetName): Creating default HTML file ###" />
+    <Exec ContinueOnError="true" Timeout="120000" Command='mono "$(SolutionDir)ExternalBinaries/JSIL/Compiler/fuHTMLGen.exe" "$(OutputPath)" "$(OutputPath)Web/" "$(TargetPath)"' />
+
+    <Message Importance="High" Text="### PostBuildEvent $(TargetName): Done ###" />
+  </Target>
+</Project>

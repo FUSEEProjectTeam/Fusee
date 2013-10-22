@@ -669,40 +669,6 @@ namespace Fusee.Math
         
         #endregion
 
-        #region Obsolete Functions
-
-        #region Translation Functions
-
-        /// <summary>
-        /// Builds a translation matrix.
-        /// </summary>
-        /// <param name="trans">The translation vector.</param>
-        /// <returns>A new Matrix4 instance.</returns>
-        [Obsolete("Use CreateTranslation instead.")]
-        public static double4x4 Translation(double3 trans)
-        {
-            return Translation(trans.x, trans.y, trans.z);
-        }
-
-        /// <summary>
-        /// Build a translation matrix with the given translation
-        /// </summary>
-        /// <param name="x">X translation</param>
-        /// <param name="y">Y translation</param>
-        /// <param name="z">Z translation</param>
-        /// <returns>A Translation matrix</returns>
-        [Obsolete("Use CreateTranslation instead.")]
-        public static double4x4 Translation(double x, double y, double z)
-        {
-            double4x4 result = Identity;
-            result.Row3 = new double4(x, y, z, 1.0f);
-            return result;
-        }
-
-        #endregion
-
-        #endregion
-
         #region Scale Functions
 
         /// <summary>

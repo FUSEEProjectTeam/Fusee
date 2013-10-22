@@ -2,111 +2,120 @@
 using Fusee.Engine;
 using Fusee.Math;
 
-namespace Examples
+namespace Examples.Simple
 {
-    public class Simple : RenderCanvas 
+    [FuseeApplication(Name = "Simple Example", Description = "A very simple example.")]
+    public class Simple : RenderCanvas
     {
-        protected string _vs = @"
-/* Copies incoming vertex color without change.
-    * Applies the transformation matrix to vertex position.
-    */
-attribute vec4 fuColor;
-attribute vec3 fuVertex;
-attribute vec3 fuNormal;
-        
-varying vec4 vColor;
-        
-uniform mat4 FUSEE_MVP;
-void main()
-{
-    gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
-    vColor = fuColor; // vec4(fuNormal, 1.0);
-}";
+        // angle variables
+        private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
 
-        protected string _ps = @"
-/* Copies incoming fragment color without change. */
-#ifdef GL_ES
-precision highp float;
-#endif
-        
-varying vec4 vColor;
-        
-void main()
-{
-    gl_FragColor = vColor;
-}";
+        private const float RotationSpeed = 1f;
+        private const float Damping = 0.92f;
 
-        private static float _angleHorz = 0.0f, _angleVert = 0.0f, _angleVelHorz = 0, _angleVelVert = 0, _rotationSpeed = 10.0f, _damping = 0.95f;
-        protected Mesh _mesh;
+        // model variables
+        private Mesh _meshTea, _meshFace;
 
+        // variables for shader
+        private ShaderProgram _spColor;
+        private ShaderProgram _spTexture;
+
+        private IShaderParam _colorParam;
+        private IShaderParam _textureParam;
+
+        private ITexture _iTex;
+
+        // is called on startup
         public override void Init()
         {
-            _mesh = new Cube();
-            _angleHorz = 0;
-            _rotationSpeed = 10.0f;
-            ShaderProgram sp = RC.CreateShader(_vs, _ps);
-            RC.SetShader(sp);
-            RC.ClearColor = new float4(0.2f, 0, 0.3f, 1);
+            RC.ClearColor = new float4(1, 1, 1, 1);
+
+            // initialize the variables
+            _meshTea = MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
+            _meshFace = MeshReader.LoadMesh(@"Assets/Face.obj.model");
+
+            _spColor = MoreShaders.GetShader("simple", RC);
+            _spTexture = MoreShaders.GetShader("texture", RC);
+
+            _colorParam = _spColor.GetShaderParam("vColor");
+            _textureParam = _spTexture.GetShaderParam("texture1");
+
+            // load texture
+            var imgData = RC.LoadImage("Assets/world_map.jpg");
+            _iTex = RC.CreateTexture(imgData);
         }
 
+        // is called once a frame
         public override void RenderAFrame()
         {
-            // TODO: eliminate the need to call the base class implementation here!!!
-            base.RenderAFrame();
+            RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
-            RC.Clear(ClearFlags.Color| ClearFlags.Depth);
-
-            
-            if (In.IsButtonDown(MouseButtons.Left))
+            // move per mouse
+            if (Input.Instance.IsButton(MouseButtons.Left))
             {
-                _angleVelHorz = _rotationSpeed * In.GetAxis(InputAxis.MouseX) * (float) DeltaTime;
-                _angleVelVert = _rotationSpeed * In.GetAxis(InputAxis.MouseY) * (float) DeltaTime;
+                _angleVelHorz = RotationSpeed*Input.Instance.GetAxis(InputAxis.MouseX);
+                _angleVelVert = RotationSpeed*Input.Instance.GetAxis(InputAxis.MouseY);
             }
             else
             {
-                _angleVelHorz *= _damping;
-                _angleVelVert *= _damping;
+                var curDamp = (float) Math.Exp(-Damping*Time.Instance.DeltaTime);
+
+                _angleVelHorz *= curDamp;
+                _angleVelVert *= curDamp;
             }
+
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
 
-            if (In.IsKeyDown(KeyCodes.Left))
-            {
-                _angleHorz -= _rotationSpeed * (float)DeltaTime;
-            }
-            if (In.IsKeyDown(KeyCodes.Right))
-            {
-                _angleHorz += _rotationSpeed * (float)DeltaTime;
-            }
-            if (In.IsKeyDown(KeyCodes.Up))
-            {
-                _angleVert -= _rotationSpeed * (float)DeltaTime;
-            }
-            if (In.IsKeyDown(KeyCodes.Down))
-            {
-                _angleVert += _rotationSpeed * (float)DeltaTime;
-            }
+            // move per keyboard
+            if (Input.Instance.IsKey(KeyCodes.Left))
+                _angleHorz -= RotationSpeed*(float) Time.Instance.DeltaTime;
 
+            if (Input.Instance.IsKey(KeyCodes.Right))
+                _angleHorz += RotationSpeed*(float) Time.Instance.DeltaTime;
 
-            RC.ModelView = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz) * float4x4.LookAt(0, 1, 2, 0, 0, 0, 0, 1, 0);
+            if (Input.Instance.IsKey(KeyCodes.Up))
+                _angleVert -= RotationSpeed*(float) Time.Instance.DeltaTime;
 
-            RC.Render(_mesh);
+            if (Input.Instance.IsKey(KeyCodes.Down))
+                _angleVert += RotationSpeed*(float) Time.Instance.DeltaTime;
+
+            var mtxRot = float4x4.CreateRotationY(_angleHorz)*float4x4.CreateRotationX(_angleVert);
+            var mtxCam = float4x4.LookAt(0, 200, 500, 0, 0, 0, 0, 1, 0);
+
+            // first mesh
+            RC.ModelView = float4x4.CreateTranslation(0, -50, 0)*mtxRot*float4x4.CreateTranslation(-150, 0, 0)*mtxCam;
+
+            RC.SetShader(_spColor);
+            RC.SetShaderParam(_colorParam, new float4(0.5f, 0.8f, 0, 1));
+
+            RC.Render(_meshTea);
+
+            // second mesh
+            RC.ModelView = mtxRot*float4x4.CreateTranslation(150, 0, 0)*mtxCam;
+
+            RC.SetShader(_spTexture);
+            RC.SetShaderParamTexture(_textureParam, _iTex);
+
+            RC.Render(_meshFace);
+
+            // swap buffers
             Present();
         }
 
+        // is called when the window was resized
         public override void Resize()
         {
             RC.Viewport(0, 0, Width, Height);
 
-            float aspectRatio = Width / (float)Height;
-            RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 64);
+            var aspectRatio = Width/(float) Height;
+            RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 5000);
         }
 
         public static void Main()
         {
-            Simple app = new Simple();
+            var app = new Simple();
             app.Run();
         }
-
     }
 }

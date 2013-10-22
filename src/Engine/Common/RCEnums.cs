@@ -3,18 +3,29 @@
 namespace Fusee.Engine
 {
     // These values are binary compatible with ClearBufferMask
+    /// <summary>
+    ///Specifies the buffer to use when calling the Clear method. 
+    /// </summary>
     [Flags]
     public enum ClearFlags : int
     {
+       
         Depth = ((int)0x00000100),
+        
         Accum = ((int)0x00000200),
+      
         Stencil = ((int)0x00000400),
+       
         Color = ((int)0x00004000),
     }
 
     //[Flags]
+    /// <summary>
+    /// Specifies the possible key values on a keyboard. 
+    /// </summary>
     public enum KeyCodes : int
     {
+        
         KeyCode = 65535,
         Modifiers = -65536,
         None = 0,
@@ -24,14 +35,12 @@ namespace Fusee.Engine
         MButton = 4,
         XButton1 = 5,
         XButton2 = 6,
-        
         Back = 8,
         Tab = 9,
         LineFeed = 10,
         Clear = 12,
         Return = 13,
         Enter = 13,
-
         Shift = 16,
         Control = 17,
         Menu = 18,
@@ -50,7 +59,6 @@ namespace Fusee.Engine
         IMENonconvert = 29| LButton,
         IMEAccept = 30,
         IMEModeChange = 31,
-        
         Space = 32,
         Prior = 31,
         PageUp = 31,
@@ -114,7 +122,7 @@ namespace Fusee.Engine
         Apps = 93,
 
         Sleep = 95,
-        
+
         NumPad0 = 96,
         NumPad1 = 97,
         NumPad2 = 98,
@@ -156,7 +164,7 @@ namespace Fusee.Engine
         F22 = 133,
         F23 = 134,
         F24 = 135,
-        
+
         NumLock = 144,
         Scroll = 145,
         LShift = 160,
@@ -209,9 +217,9 @@ namespace Fusee.Engine
         Oem102 = 226,
 
         Process = 229,
-        
+
         Packet = 231,
-        
+
         Attn = 246,
         Crsel = 247,
 
@@ -222,12 +230,15 @@ namespace Fusee.Engine
         NoName = 256,
         Pa1 = 257,
         OemClear = 258,
-
         ShiftModifier = 65536,
         ControlModifier = 131072,
         AltModifier = 262144,        
     }
 
+    /// <summary>
+    /// Specifies constants that define which mouse button was pressed.
+    /// </summary>
+    [Flags]
     public enum MouseButtons : int
     {
         Unknown = 0,
@@ -237,6 +248,9 @@ namespace Fusee.Engine
     }
 
 
+    /// <summary>
+    /// Specifies the axis type. 
+    /// </summary>
     public enum InputAxis : int
     {
         Unknown,

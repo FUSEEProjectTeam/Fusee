@@ -1,4 +1,0 @@
-﻿C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\Microsoft.CppBuild.targets(299,5): warning MSB8004: Das Output-Verzeichnis endet nicht mit einem nachstehenden Schrägstrich. Der Schrägstrich wird in dieser Buildinstanz hinzugefügt, da er für die ordnungsgemäße Auswertung des Output-Verzeichnisses erforderlich ist.
-  PluginB.cpp
-     Bibliothek "C:\Program Files\MAXON\CINEMA 4D R13/plugins/ManagedPlugIn/win32\Bridge.lib" und Objekt "C:\Program Files\MAXON\CINEMA 4D R13/plugins/ManagedPlugIn/win32\Bridge.exp" werden erstellt.
-  Bridge.vcxproj -> C:\Program Files\MAXON\CINEMA 4D R13/plugins/ManagedPlugIn/win32\Bridge.dll

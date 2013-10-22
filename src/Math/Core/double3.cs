@@ -87,7 +87,9 @@ namespace Fusee.Math
 
         #region public void Add()
 
-        /// <summary>Add the Vector passed as parameter to this instance.</summary>
+        /// <summary>
+        /// Add the Vector passed as parameter to this instance.
+        /// </summary>
         /// <param name="right">Right operand. This parameter is only read from.</param>
         [Obsolete("Use static Add() method instead.")]
         public void Add(double3 right)
@@ -97,7 +99,9 @@ namespace Fusee.Math
             this.z += right.z;
         }
 
-        /// <summary>Add the Vector passed as parameter to this instance.</summary>
+        /// <summary>
+        /// Add the Vector passed as parameter to this instance.
+        /// </summary>
         /// <param name="right">Right operand. This parameter is only read from.</param>
         [Obsolete("Use static Add() method instead.")]
         public void Add(ref double3 right)
@@ -111,7 +115,9 @@ namespace Fusee.Math
 
         #region public void Sub()
 
-        /// <summary>Subtract the Vector passed as parameter from this instance.</summary>
+        /// <summary>
+        /// Subtract the Vector passed as parameter from this instance.
+        /// </summary>
         /// <param name="right">Right operand. This parameter is only read from.</param>
         [Obsolete("Use static Subtract() method instead.")]
         public void Sub(double3 right)
@@ -121,7 +127,9 @@ namespace Fusee.Math
             this.z -= right.z;
         }
 
-        /// <summary>Subtract the Vector passed as parameter from this instance.</summary>
+        /// <summary>
+        /// Subtract the Vector passed as parameter from this instance.
+        /// </summary>
         /// <param name="right">Right operand. This parameter is only read from.</param>
         [Obsolete("Use static Subtract() method instead.")]
         public void Sub(ref double3 right)
@@ -135,7 +143,9 @@ namespace Fusee.Math
 
         #region public void Mult()
 
-        /// <summary>Multiply this instance by a scalar.</summary>
+        /// <summary>
+        /// Multiply this instance by a scalar.
+        /// </summary>
         /// <param name="f">Scalar operand.</param>
         [Obsolete("Use static Multiply() method instead.")]
         public void Mult(double f)
@@ -149,7 +159,9 @@ namespace Fusee.Math
 
         #region public void Div()
 
-        /// <summary>Divide this instance by a scalar.</summary>
+        /// <summary>
+        /// Divide this instance by a scalar.
+        /// </summary>
         /// <param name="f">Scalar operand.</param>
         [Obsolete("Use static Divide() method instead.")]
         public void Div(double f)
@@ -167,8 +179,11 @@ namespace Fusee.Math
         /// <summary>
         /// Gets the length (magnitude) of the vector.
         /// </summary>
-        /// <see cref="LengthFast"/>
-        /// <seealso cref="LengthSquared"/>
+        /// <value>
+        /// The length.
+        /// </value>
+        /// <see cref="LengthFast" />
+        ///   <seealso cref="LengthSquared" />
         public double Length
         {
             get
@@ -184,12 +199,15 @@ namespace Fusee.Math
         /// <summary>
         /// Gets an approximation of the vector length (magnitude).
         /// </summary>
+        /// <value>
+        /// The length fast.
+        /// </value>
+        /// <see cref="Length" />
+        ///   <seealso cref="LengthSquared" />
         /// <remarks>
         /// This property uses an approximation of the square root function to calculate vector magnitude, with
         /// an upper error bound of 0.001.
         /// </remarks>
-        /// <see cref="Length"/>
-        /// <seealso cref="LengthSquared"/>
         public double LengthFast
         {
             get
@@ -205,12 +223,15 @@ namespace Fusee.Math
         /// <summary>
         /// Gets the square of the vector length (magnitude).
         /// </summary>
+        /// <value>
+        /// The length squared.
+        /// </value>
+        /// <see cref="Length" />
+        ///   <seealso cref="LengthFast" />
         /// <remarks>
         /// This property avoids the costly square root operation required by the Length property. This makes it more suitable
         /// for comparisons.
         /// </remarks>
-        /// <see cref="Length"/>
-        /// <seealso cref="LengthFast"/>
         public double LengthSquared
         {
             get
@@ -267,7 +288,9 @@ namespace Fusee.Math
             this.z = z * sz;
         }
 
-        /// <summary>Scales this instance by the given parameter.</summary>
+        /// <summary>
+        /// Scales this instance by the given parameter.
+        /// </summary>
         /// <param name="scale">The scaling of the individual components.</param>
         [Obsolete("Use static Multiply() method instead.")]
         public void Scale(double3 scale)
@@ -277,7 +300,9 @@ namespace Fusee.Math
             this.z *= scale.z;
         }
 
-        /// <summary>Scales this instance by the given parameter.</summary>
+        /// <summary>
+        /// Scales this instance by the given parameter.
+        /// </summary>
         /// <param name="scale">The scaling of the individual components.</param>
          [Obsolete("Use static Multiply() method instead.")]
         public void Scale(ref double3 scale)
@@ -289,15 +314,25 @@ namespace Fusee.Math
 
         #endregion public void Scale()
 
+         /// <summary>
+         /// Returns an array of doubles with the three components of the vector.
+         /// </summary>
+         /// <returns>Returns an array of doubles with the three components of the vector.</returns>
+         public double[] ToArray()
+         {
+             return new double[] { x, y, z };
+         }
+
+
         #endregion
 
         #region Static
 
         #region Fields
 
-        /// <summary>
-        /// Defines a unit-length double3 that points towards the x-axis.
-        /// </summary>
+         /// <summary>
+         /// Defines a unit-length double3 that points towards the x-axis.
+         /// </summary>
         public static readonly double3 UnitX = new double3(1, 0, 0);
 
         /// <summary>
@@ -306,7 +341,7 @@ namespace Fusee.Math
         public static readonly double3 UnitY = new double3(0, 1, 0);
 
         /// <summary>
-        /// /// Defines a unit-length double3 that points towards the z-axis.
+        /// Defines a unit-length double3 that points towards the z-axis.
         /// </summary>
         public static readonly double3 UnitZ = new double3(0, 0, 1);
 
@@ -336,7 +371,9 @@ namespace Fusee.Math
         /// </summary>
         /// <param name="a">First operand</param>
         /// <param name="b">Second operand</param>
-        /// <returns>Result of subtraction</returns>
+        /// <returns>
+        /// Result of subtraction
+        /// </returns>
         [Obsolete("Use static Subtract() method instead.")]
         public static double3 Sub(double3 a, double3 b)
         {
@@ -369,7 +406,9 @@ namespace Fusee.Math
         /// </summary>
         /// <param name="a">Vector operand</param>
         /// <param name="f">Scalar operand</param>
-        /// <returns>Result of the multiplication</returns>
+        /// <returns>
+        /// Result of the multiplication
+        /// </returns>
         [Obsolete("Use static Multiply() method instead.")]
         public static double3 Mult(double3 a, double f)
         {
@@ -402,7 +441,9 @@ namespace Fusee.Math
         /// </summary>
         /// <param name="a">Vector operand</param>
         /// <param name="f">Scalar operand</param>
-        /// <returns>Result of the division</returns>
+        /// <returns>
+        /// Result of the division
+        /// </returns>
         [Obsolete("Use static Divide() method instead.")]
         public static double3 Div(double3 a, double f)
         {
@@ -439,7 +480,9 @@ namespace Fusee.Math
         /// </summary>
         /// <param name="a">Left operand.</param>
         /// <param name="b">Right operand.</param>
-        /// <returns>Result of operation.</returns>
+        /// <returns>
+        /// Result of operation.
+        /// </returns>
         public static double3 Add(double3 a, double3 b)
         {
             Add(ref a, ref b, out a);
@@ -466,7 +509,9 @@ namespace Fusee.Math
         /// </summary>
         /// <param name="a">First operand</param>
         /// <param name="b">Second operand</param>
-        /// <returns>Result of subtraction</returns>
+        /// <returns>
+        /// Result of subtraction
+        /// </returns>
         public static double3 Subtract(double3 a, double3 b)
         {
             Subtract(ref a, ref b, out a);
@@ -493,7 +538,9 @@ namespace Fusee.Math
         /// </summary>
         /// <param name="vector">Left operand.</param>
         /// <param name="scale">Right operand.</param>
-        /// <returns>Result of the operation.</returns>
+        /// <returns>
+        /// Result of the operation.
+        /// </returns>
         public static double3 Multiply(double3 vector, double scale)
         {
             Multiply(ref vector, scale, out vector);
@@ -516,7 +563,9 @@ namespace Fusee.Math
         /// </summary>
         /// <param name="vector">Left operand.</param>
         /// <param name="scale">Right operand.</param>
-        /// <returns>Result of the operation.</returns>
+        /// <returns>
+        /// Result of the operation.
+        /// </returns>
         public static double3 Multiply(double3 vector, double3 scale)
         {
             Multiply(ref vector, ref scale, out vector);
@@ -543,7 +592,9 @@ namespace Fusee.Math
         /// </summary>
         /// <param name="vector">Left operand.</param>
         /// <param name="scale">Right operand.</param>
-        /// <returns>Result of the operation.</returns>
+        /// <returns>
+        /// Result of the operation.
+        /// </returns>
         public static double3 Divide(double3 vector, double scale)
         {
             Divide(ref vector, scale, out vector);
@@ -566,7 +617,9 @@ namespace Fusee.Math
         /// </summary>
         /// <param name="vector">Left operand.</param>
         /// <param name="scale">Right operand.</param>
-        /// <returns>Result of the operation.</returns>
+        /// <returns>
+        /// Result of the operation.
+        /// </returns>
         public static double3 Divide(double3 vector, double3 scale)
         {
             Divide(ref vector, ref scale, out vector);
@@ -593,7 +646,9 @@ namespace Fusee.Math
         /// </summary>
         /// <param name="a">First operand</param>
         /// <param name="b">Second operand</param>
-        /// <returns>The component-wise minimum</returns>
+        /// <returns>
+        /// The component-wise minimum
+        /// </returns>
         public static double3 ComponentMin(double3 a, double3 b)
         {
             a.x = a.x < b.x ? a.x : b.x;
@@ -624,7 +679,9 @@ namespace Fusee.Math
         /// </summary>
         /// <param name="a">First operand</param>
         /// <param name="b">Second operand</param>
-        /// <returns>The component-wise maximum</returns>
+        /// <returns>
+        /// The component-wise maximum
+        /// </returns>
         public static double3 ComponentMax(double3 a, double3 b)
         {
             a.x = a.x > b.x ? a.x : b.x;
@@ -655,7 +712,9 @@ namespace Fusee.Math
         /// </summary>
         /// <param name="left">Left operand</param>
         /// <param name="right">Right operand</param>
-        /// <returns>The minimum double3</returns>
+        /// <returns>
+        /// The minimum double3
+        /// </returns>
         public static double3 Min(double3 left, double3 right)
         {
             return left.LengthSquared < right.LengthSquared ? left : right;
@@ -670,7 +729,9 @@ namespace Fusee.Math
         /// </summary>
         /// <param name="left">Left operand</param>
         /// <param name="right">Right operand</param>
-        /// <returns>The minimum double3</returns>
+        /// <returns>
+        /// The minimum double3
+        /// </returns>
         public static double3 Max(double3 left, double3 right)
         {
             return left.LengthSquared >= right.LengthSquared ? left : right;
@@ -686,7 +747,9 @@ namespace Fusee.Math
         /// <param name="vec">Input vector</param>
         /// <param name="min">Minimum vector</param>
         /// <param name="max">Maximum vector</param>
-        /// <returns>The clamped vector</returns>
+        /// <returns>
+        /// The clamped vector
+        /// </returns>
         public static double3 Clamp(double3 vec, double3 min, double3 max)
         {
             vec.x = vec.x < min.x ? min.x : vec.x > max.x ? max.x : vec.x;
@@ -717,7 +780,9 @@ namespace Fusee.Math
         /// Scale a vector to unit length
         /// </summary>
         /// <param name="vec">The input vector</param>
-        /// <returns>The normalized vector</returns>
+        /// <returns>
+        /// The normalized vector
+        /// </returns>
         public static double3 Normalize(double3 vec)
         {
             double scale = 1.0f / vec.Length;
@@ -748,7 +813,9 @@ namespace Fusee.Math
         /// Scale a vector to approximately unit length
         /// </summary>
         /// <param name="vec">The input vector</param>
-        /// <returns>The normalized vector</returns>
+        /// <returns>
+        /// The normalized vector
+        /// </returns>
         public static double3 NormalizeFast(double3 vec)
         {
             double scale = MathHelper.InverseSqrtFast(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
@@ -780,7 +847,9 @@ namespace Fusee.Math
         /// </summary>
         /// <param name="left">First operand</param>
         /// <param name="right">Second operand</param>
-        /// <returns>The dot product of the two inputs</returns>
+        /// <returns>
+        /// The dot product of the two inputs
+        /// </returns>
         public static double Dot(double3 left, double3 right)
         {
             return left.x * right.x + left.y * right.y + left.z * right.z;
@@ -806,7 +875,9 @@ namespace Fusee.Math
         /// </summary>
         /// <param name="left">First operand</param>
         /// <param name="right">Second operand</param>
-        /// <returns>The cross product of the two inputs</returns>
+        /// <returns>
+        /// The cross product of the two inputs
+        /// </returns>
         public static double3 Cross(double3 left, double3 right)
         {
             double3 result;
@@ -819,7 +890,6 @@ namespace Fusee.Math
         /// </summary>
         /// <param name="left">First operand</param>
         /// <param name="right">Second operand</param>
-        /// <returns>The cross product of the two inputs</returns>
         /// <param name="result">The cross product of the two inputs</param>
         public static void Cross(ref double3 left, ref double3 right, out double3 result)
         {
@@ -838,7 +908,9 @@ namespace Fusee.Math
         /// <param name="a">First input vector</param>
         /// <param name="b">Second input vector</param>
         /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>
-        /// <returns>a when blend=0, b when blend=1, and a linear combination otherwise</returns>
+        /// <returns>
+        /// a when blend=0, b when blend=1, and a linear combination otherwise
+        /// </returns>
         public static double3 Lerp(double3 a, double3 b, double blend)
         {
             a.x = blend * (b.x - a.x) + a.x;
@@ -873,13 +945,17 @@ namespace Fusee.Math
         /// <param name="c">Third input Vector</param>
         /// <param name="u">First Barycentric Coordinate</param>
         /// <param name="v">Second Barycentric Coordinate</param>
-        /// <returns>a when u=v=0, b when u=1,v=0, c when u=0,v=1, and a linear combination of a,b,c otherwise</returns>
+        /// <returns>
+        /// a when u=v=0, b when u=1,v=0, c when u=0,v=1, and a linear combination of a,b,c otherwise
+        /// </returns>
         public static double3 BaryCentric(double3 a, double3 b, double3 c, double u, double v)
         {
             return a + u * (b - a) + v * (c - a);
         }
 
-        /// <summary>Interpolate 3 Vectors using Barycentric coordinates</summary>
+        /// <summary>
+        /// Interpolate 3 Vectors using Barycentric coordinates
+        /// </summary>
         /// <param name="a">First input Vector.</param>
         /// <param name="b">Second input Vector.</param>
         /// <param name="c">Third input Vector.</param>
@@ -905,12 +981,15 @@ namespace Fusee.Math
 
         #region Transform
 
-        /// <summary>Transform a direction vector by the given Matrix
+        /// <summary>
+        /// Transform a direction vector by the given Matrix
         /// Assumes the matrix has a bottom row of (0,0,0,1), that is the translation part is ignored.
         /// </summary>
         /// <param name="vec">The vector to transform</param>
         /// <param name="mat">The desired transformation</param>
-        /// <returns>The transformed vector</returns>
+        /// <returns>
+        /// The transformed vector
+        /// </returns>
         public static double3 TransformVector(double3 vec, double4x4 mat)
         {
             double3 v;
@@ -920,7 +999,8 @@ namespace Fusee.Math
             return v;
         }
 
-        /// <summary>Transform a direction vector by the given Matrix
+        /// <summary>
+        /// Transform a direction vector by the given Matrix
         /// Assumes the matrix has a bottom row of (0,0,0,1), that is the translation part is ignored.
         /// </summary>
         /// <param name="vec">The vector to transform</param>
@@ -941,42 +1021,52 @@ namespace Fusee.Math
                        vec.z * mat.Row2.z;
         }
 
-        /// <summary>Transform a Normal by the given Matrix</summary>
+        /// <summary>
+        /// Transform a Normal by the given Matrix
+        /// </summary>
+        /// <param name="norm">The normal to transform</param>
+        /// <param name="mat">The desired transformation</param>
+        /// <returns>
+        /// The transformed normal
+        /// </returns>
         /// <remarks>
         /// This calculates the inverse of the given matrix, use TransformNormalInverse if you
         /// already have the inverse to avoid this extra calculation
         /// </remarks>
-        /// <param name="norm">The normal to transform</param>
-        /// <param name="mat">The desired transformation</param>
-        /// <returns>The transformed normal</returns>
         public static double3 TransformNormal(double3 norm, double4x4 mat)
         {
             mat.Invert();
             return TransformNormalInverse(norm, mat);
         }
 
-        /// <summary>Transform a Normal by the given Matrix</summary>
+        /// <summary>
+        /// Transform a Normal by the given Matrix
+        /// </summary>
+        /// <param name="norm">The normal to transform</param>
+        /// <param name="mat">The desired transformation</param>
+        /// <param name="result">The transformed normal</param>
         /// <remarks>
         /// This calculates the inverse of the given matrix, use TransformNormalInverse if you
         /// already have the inverse to avoid this extra calculation
         /// </remarks>
-        /// <param name="norm">The normal to transform</param>
-        /// <param name="mat">The desired transformation</param>
-        /// <param name="result">The transformed normal</param>
         public static void TransformNormal(ref double3 norm, ref double4x4 mat, out double3 result)
         {
             double4x4 Inverse = double4x4.Invert(mat);
             double3.TransformNormalInverse(ref norm, ref Inverse, out result);
         }
 
-        /// <summary>Transform a Normal by the (transpose of the) given Matrix</summary>
+        /// <summary>
+        /// Transform a Normal by the (transpose of the) given Matrix
+        /// </summary>
+        /// <param name="norm">The normal to transform</param>
+        /// <param name="invMat">The inverse of the desired transformation</param>
+        /// <returns>
+        /// The transformed normal
+        /// </returns>
         /// <remarks>
         /// This version doesn't calculate the inverse matrix.
         /// Use this version if you already have the inverse of the desired transform to hand
         /// </remarks>
-        /// <param name="norm">The normal to transform</param>
-        /// <param name="invMat">The inverse of the desired transformation</param>
-        /// <returns>The transformed normal</returns>
         public static double3 TransformNormalInverse(double3 norm, double4x4 invMat)
         {
             double3 n;
@@ -986,14 +1076,16 @@ namespace Fusee.Math
             return n;
         }
 
-        /// <summary>Transform a Normal by the (transpose of the) given Matrix</summary>
+        /// <summary>
+        /// Transform a Normal by the (transpose of the) given Matrix
+        /// </summary>
+        /// <param name="norm">The normal to transform</param>
+        /// <param name="invMat">The inverse of the desired transformation</param>
+        /// <param name="result">The transformed normal</param>
         /// <remarks>
         /// This version doesn't calculate the inverse matrix.
         /// Use this version if you already have the inverse of the desired transform to hand
         /// </remarks>
-        /// <param name="norm">The normal to transform</param>
-        /// <param name="invMat">The inverse of the desired transformation</param>
-        /// <param name="result">The transformed normal</param>
         public static void TransformNormalInverse(ref double3 norm, ref double4x4 invMat, out double3 result)
         {
             result.x = norm.x * invMat.Row0.x +
@@ -1009,10 +1101,14 @@ namespace Fusee.Math
                        norm.z * invMat.Row2.z;
         }
 
-        /// <summary>Transform a Position by the given Matrix</summary>
+        /// <summary>
+        /// Transform a Position by the given Matrix
+        /// </summary>
         /// <param name="pos">The position to transform</param>
         /// <param name="mat">The desired transformation</param>
-        /// <returns>The transformed position</returns>
+        /// <returns>
+        /// The transformed position
+        /// </returns>
         public static double3 TransformPosition(double3 pos, double4x4 mat)
         {
             double3 p;
@@ -1022,7 +1118,9 @@ namespace Fusee.Math
             return p;
         }
 
-        /// <summary>Transform a Position by the given Matrix</summary>
+        /// <summary>
+        /// Transform a Position by the given Matrix
+        /// </summary>
         /// <param name="pos">The position to transform</param>
         /// <param name="mat">The desired transformation</param>
         /// <param name="result">The transformed position</param>
@@ -1044,10 +1142,14 @@ namespace Fusee.Math
                        mat.Row3.z;
         }
 
-        /// <summary>Transform a Vector by the given Matrix</summary>
+        /// <summary>
+        /// Transform a Vector by the given Matrix
+        /// </summary>
         /// <param name="vec">The vector to transform</param>
         /// <param name="mat">The desired transformation</param>
-        /// <returns>The transformed vector</returns>
+        /// <returns>
+        /// The transformed vector
+        /// </returns>
         public static double3 Transform(double3 vec, double4x4 mat)
         {
             double3 result;
@@ -1055,7 +1157,9 @@ namespace Fusee.Math
             return result;
         }
 
-        /// <summary>Transform a Vector by the given Matrix</summary>
+        /// <summary>
+        /// Transform a Vector by the given Matrix
+        /// </summary>
         /// <param name="vec">The vector to transform</param>
         /// <param name="mat">The desired transformation</param>
         /// <param name="result">The transformed vector</param>
@@ -1071,7 +1175,9 @@ namespace Fusee.Math
         /// </summary>
         /// <param name="vec">The vector to transform.</param>
         /// <param name="quat">The QuaternionD to rotate the vector by.</param>
-        /// <returns>The result of the operation.</returns>
+        /// <returns>
+        /// The result of the operation.
+        /// </returns>
         public static double3 Transform(double3 vec, QuaternionD quat)
         {
             double3 result;
@@ -1098,10 +1204,14 @@ namespace Fusee.Math
             double3.Add(ref vec, ref temp, out result);
         }
 
-        /// <summary>Transform a double3 by the given Matrix, and project the resulting double4 back to a double3</summary>
+        /// <summary>
+        /// Transform a double3 by the given Matrix, and project the resulting double4 back to a double3
+        /// </summary>
         /// <param name="vec">The vector to transform</param>
         /// <param name="mat">The desired transformation</param>
-        /// <returns>The transformed vector</returns>
+        /// <returns>
+        /// The transformed vector
+        /// </returns>
         public static double3 TransformPerspective(double3 vec, double4x4 mat)
         {
             double3 result;
@@ -1109,7 +1219,9 @@ namespace Fusee.Math
             return result;
         }
 
-        /// <summary>Transform a double3 by the given Matrix, and project the resulting double4 back to a double3</summary>
+        /// <summary>
+        /// Transform a double3 by the given Matrix, and project the resulting double4 back to a double3
+        /// </summary>
         /// <param name="vec">The vector to transform</param>
         /// <param name="mat">The desired transformation</param>
         /// <param name="result">The transformed vector</param>
@@ -1131,18 +1243,26 @@ namespace Fusee.Math
         /// </summary>
         /// <param name="first">The first vector.</param>
         /// <param name="second">The second vector.</param>
-        /// <returns>Angle (in radians) between the vectors.</returns>
-        /// <remarks>Note that the returned angle is never bigger than the constant Pi.</remarks>
+        /// <returns>
+        /// Angle (in radians) between the vectors.
+        /// </returns>
+        /// <remarks>
+        /// Note that the returned angle is never bigger than the constant Pi.
+        /// </remarks>
         public static double CalculateAngle(double3 first, double3 second)
         {
             return (double)System.Math.Acos((double3.Dot(first, second)) / (first.Length * second.Length));
         }
 
-        /// <summary>Calculates the angle (in radians) between two vectors.</summary>
+        /// <summary>
+        /// Calculates the angle (in radians) between two vectors.
+        /// </summary>
         /// <param name="first">The first vector.</param>
         /// <param name="second">The second vector.</param>
         /// <param name="result">Angle (in radians) between the vectors.</param>
-        /// <remarks>Note that the returned angle is never bigger than the constant Pi.</remarks>
+        /// <remarks>
+        /// Note that the returned angle is never bigger than the constant Pi.
+        /// </remarks>
         public static void CalculateAngle(ref double3 first, ref double3 second, out double result)
         {
             double temp;
@@ -1159,6 +1279,9 @@ namespace Fusee.Math
         /// <summary>
         /// Gets or sets an OpenTK.double2 with the x and y components of this instance.
         /// </summary>
+        /// <value>
+        /// The xy.
+        /// </value>
         public double2 xy { get { return new double2(x, y); } set { x = value.x; y = value.y; } }
 
         #endregion
@@ -1170,7 +1293,9 @@ namespace Fusee.Math
         /// </summary>
         /// <param name="left">The first instance.</param>
         /// <param name="right">The second instance.</param>
-        /// <returns>The result of the calculation.</returns>
+        /// <returns>
+        /// The result of the calculation.
+        /// </returns>
         public static double3 operator +(double3 left, double3 right)
         {
             left.x += right.x;
@@ -1184,7 +1309,9 @@ namespace Fusee.Math
         /// </summary>
         /// <param name="left">The first instance.</param>
         /// <param name="right">The second instance.</param>
-        /// <returns>The result of the calculation.</returns>
+        /// <returns>
+        /// The result of the calculation.
+        /// </returns>
         public static double3 operator -(double3 left, double3 right)
         {
             left.x -= right.x;
@@ -1197,7 +1324,9 @@ namespace Fusee.Math
         /// Negates an instance.
         /// </summary>
         /// <param name="vec">The instance.</param>
-        /// <returns>The result of the calculation.</returns>
+        /// <returns>
+        /// The result of the calculation.
+        /// </returns>
         public static double3 operator -(double3 vec)
         {
             vec.x = -vec.x;
@@ -1211,7 +1340,9 @@ namespace Fusee.Math
         /// </summary>
         /// <param name="vec">The instance.</param>
         /// <param name="scale">The scalar.</param>
-        /// <returns>The result of the calculation.</returns>
+        /// <returns>
+        /// The result of the calculation.
+        /// </returns>
         public static double3 operator *(double3 vec, double scale)
         {
             vec.x *= scale;
@@ -1225,7 +1356,9 @@ namespace Fusee.Math
         /// </summary>
         /// <param name="scale">The scalar.</param>
         /// <param name="vec">The instance.</param>
-        /// <returns>The result of the calculation.</returns>
+        /// <returns>
+        /// The result of the calculation.
+        /// </returns>
         public static double3 operator *(double scale, double3 vec)
         {
             vec.x *= scale;
@@ -1239,7 +1372,9 @@ namespace Fusee.Math
         /// </summary>
         /// <param name="vec">The instance.</param>
         /// <param name="scale">The scalar.</param>
-        /// <returns>The result of the calculation.</returns>
+        /// <returns>
+        /// The result of the calculation.
+        /// </returns>
         public static double3 operator /(double3 vec, double scale)
         {
             double mult = 1.0f / scale;
@@ -1254,7 +1389,9 @@ namespace Fusee.Math
         /// </summary>
         /// <param name="left">The first instance.</param>
         /// <param name="right">The second instance.</param>
-        /// <returns>True, if left equals right; false otherwise.</returns>
+        /// <returns>
+        /// True, if left equals right; false otherwise.
+        /// </returns>
         public static bool operator ==(double3 left, double3 right)
         {
             return left.Equals(right);
@@ -1265,7 +1402,9 @@ namespace Fusee.Math
         /// </summary>
         /// <param name="left">The first instance.</param>
         /// <param name="right">The second instance.</param>
-        /// <returns>True, if left does not equa lright; false otherwise.</returns>
+        /// <returns>
+        /// True, if left does not equa lright; false otherwise.
+        /// </returns>
         public static bool operator !=(double3 left, double3 right)
         {
             return !left.Equals(right);
@@ -1280,7 +1419,9 @@ namespace Fusee.Math
         /// <summary>
         /// Returns a System.String that represents the current double3.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
         public override string ToString()
         {
             return String.Format("({0}, {1}, {2})", x, y, z);
@@ -1293,7 +1434,9 @@ namespace Fusee.Math
         /// <summary>
         /// Returns the hashcode for this instance.
         /// </summary>
-        /// <returns>A System.Int32 containing the unique hashcode for this instance.</returns>
+        /// <returns>
+        /// A System.Int32 containing the unique hashcode for this instance.
+        /// </returns>
         public override int GetHashCode()
         {
             return x.GetHashCode() ^ y.GetHashCode() ^ z.GetHashCode();
@@ -1307,7 +1450,9 @@ namespace Fusee.Math
         /// Indicates whether this instance and a specified object are equal.
         /// </summary>
         /// <param name="obj">The object to compare to.</param>
-        /// <returns>True if the instances are equal; false otherwise.</returns>
+        /// <returns>
+        /// True if the instances are equal; false otherwise.
+        /// </returns>
         public override bool Equals(object obj)
         {
             if (!(obj is double3))
@@ -1324,9 +1469,13 @@ namespace Fusee.Math
 
         #region IEquatable<double3> Members
 
-        /// <summary>Indicates whether the current vector is equal to another vector.</summary>
+        /// <summary>
+        /// Indicates whether the current vector is equal to another vector.
+        /// </summary>
         /// <param name="other">A vector to compare with this vector.</param>
-        /// <returns>true if the current vector is equal to the vector parameter; otherwise, false.</returns>
+        /// <returns>
+        /// true if the current vector is equal to the vector parameter; otherwise, false.
+        /// </returns>
         public bool Equals(double3 other)
         {
             return

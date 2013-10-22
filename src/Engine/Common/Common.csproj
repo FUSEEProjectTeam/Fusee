@@ -2,7 +2,7 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{DFD770F6-4222-4255-AAE0-DCACDC7B21EB}</ProjectGuid>
@@ -10,10 +10,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Fusee.Engine</RootNamespace>
     <AssemblyName>Fusee.Engine.Common</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -23,8 +22,10 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>..\..\..\Bin\Debug\Fusee.Engine.Common.XML</DocumentationFile>
+    <NoWarn>1591</NoWarn>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\..\..\Bin\Release\</OutputPath>
@@ -34,34 +35,72 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug+Web|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\..\..\Bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisLogFile>..\..\..\Bin\Debug\Fusee.Engine.Common.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+    <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
+    <WarningLevel>4</WarningLevel>
+    <Optimize>false</Optimize>
+    <DocumentationFile>..\..\..\Bin\Debug\Fusee.Engine.Common.XML</DocumentationFile>
+    <NoWarn>1591</NoWarn>
+  </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Attributes.cs" />
+    <Compile Include="IAudioStream.cs" />
     <Compile Include="IInputImp.cs" />
+    <Compile Include="ImageData.cs" />
     <Compile Include="IMeshImp.cs" />
+    <Compile Include="INetworkConnection.cs" />
+    <Compile Include="INetworkImp.cs" />
+    <Compile Include="INetworkMsg.cs" />
     <Compile Include="InitEventArgs.cs" />
     <Compile Include="IRenderCanvasImp.cs" />
     <Compile Include="IRenderContextImp.cs" />
     <Compile Include="IShaderParam.cs" />
     <Compile Include="IShaderProgramImp.cs" />
+    <Compile Include="IAudioImp.cs" />
+    <Compile Include="ITexture.cs" />
     <Compile Include="KeyEventArgs.cs" />
+    <Compile Include="Light.cs" />
     <Compile Include="MouseEventArgs.cs" />
     <Compile Include="Point.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RCEnums.cs" />
     <Compile Include="Helper.cs" />
+    <Compile Include="Rectangle.cs" />
     <Compile Include="RenderEventArgs.cs" />
     <Compile Include="ResizeEventArgs.cs" />
+    <Compile Include="ShaderParamInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Fusee.Math.Core, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\bin\Debug\Fusee.Math.Core.dll</HintPath>
-    </Reference>
     <Reference Include="JSIL.Meta">
-      <HintPath>..\..\..\ExternalBinaries\JSIL.Meta.dll</HintPath>
+      <HintPath>..\..\..\ExternalBinaries\JSIL\Compiler\JSIL.Meta.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Drawing" />
+    <ProjectReference Include="..\..\Math\Core\Math.Core.csproj">
+      <Project>{E95FA1C8-6491-4B4B-BBE1-EDA6B16B2C6A}</Project>
+      <Name>Math.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="Clean">
+    <Exec Condition=" '$(OS)' == 'Windows_NT' And Exists('$(OutputPath)') " Command="del /q &quot;$(OutputPath)Fusee.Engine.Common.*&quot;" />
+    <Exec Condition=" '$(OS)' != 'Windows_NT' And Exists('$(OutputPath)') " Command="rm '$(OutputPath)'Fusee.Engine.Common.*" />
+    <Exec Condition=" '$(OS)' == 'Windows_NT' And Exists('$(OutputPath)') " Command="del /q &quot;$(OutputPath)JSIL.Meta.*&quot;" />
+    <Exec Condition=" '$(OS)' != 'Windows_NT' And Exists('$(OutputPath)') " Command="rm '$(OutputPath)'JSIL.Meta.*" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

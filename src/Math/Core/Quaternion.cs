@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace Fusee.Math
 {
     /// <summary>
-    /// Represents a Quaternion.
+    /// Represents a Quaternion (single precision).
     /// </summary>
     [Serializable]
     [StructLayout(LayoutKind.Sequential)]
@@ -99,6 +99,7 @@ namespace Fusee.Math
         public float4 ToAxisAngle()
         {
             Quaternion q = this;
+
             if (q.w > 1.0f)
                 q.Normalize();
 
@@ -106,7 +107,8 @@ namespace Fusee.Math
 
             // angle
             var den = (float)System.Math.Sqrt(1.0 - q.w * q.w);
-            if (den > 0.0001f)
+
+            if (den > MathHelper.EpsilonFloat)
             {
                 result.xyz = q.xyz / den;
             }
@@ -160,7 +162,8 @@ namespace Fusee.Math
         /// </summary>
         public void Normalize()
         {
-            float scale = 1.0f / Length;
+            if (!(Length > MathHelper.EpsilonFloat)) return;
+            var scale = 1.0f / Length;
             xyz *= scale;
             w *= scale;
         }
@@ -304,8 +307,10 @@ namespace Fusee.Math
         public static void Multiply(ref Quaternion left, ref Quaternion right, out Quaternion result)
         {
             result = new Quaternion(
-                right.w * left.xyz + left.w * right.xyz + float3.Cross(left.xyz, right.xyz),
-                left.w * right.w - float3.Dot(left.xyz, right.xyz));
+                left.w*right.x + left.x*right.w + left.y*right.z - left.z*right.y,
+                left.w*right.y + left.y*right.w + left.z*right.x - left.x*right.z,
+                left.w*right.z + left.z*right.w + left.x*right.y - left.y*right.x,
+                left.w*right.w - left.x*right.x - left.y*right.y - left.z*right.z);
         }
 
         /// <summary>
@@ -378,17 +383,16 @@ namespace Fusee.Math
         public static void Invert(ref Quaternion q, out Quaternion result)
         {
             float lengthSq = q.LengthSquared;
-            // ReSharper disable CompareOfFloatsByEqualityOperator
-            if (lengthSq != 0.0)
+
+            if (lengthSq > MathHelper.EpsilonFloat)
             {
-                float i = 1.0f / lengthSq;
+                var i = 1.0f / lengthSq;
                 result = new Quaternion(q.xyz * -i, q.w * i);
             }
             else
             {
                 result = q;
             }
-            // ReSharper restore CompareOfFloatsByEqualityOperator
         }
 
         #endregion
@@ -414,7 +418,13 @@ namespace Fusee.Math
         /// <param name="result">The normalized quaternion</param>
         public static void Normalize(ref Quaternion q, out Quaternion result)
         {
-            float scale = 1.0f / q.Length;
+            float scale;
+
+            if (!(q.Length > MathHelper.EpsilonFloat))
+                scale = 0;
+            else
+                scale = 1.0f / q.Length;
+           
             result = new Quaternion(q.xyz * scale, q.w * scale);
         }
 
@@ -430,11 +440,10 @@ namespace Fusee.Math
         /// <returns></returns>
         public static Quaternion FromAxisAngle(float3 axis, float angle)
         {
-            // ReSharper disable CompareOfFloatsByEqualityOperator
-            if (axis.LengthSquared == 0.0f)
+            if (axis.LengthSquared > MathHelper.EpsilonFloat)
                 return Identity;
 
-            Quaternion result = Identity;
+            var result = Identity;
 
             angle *= 0.5f;
             axis.Normalize();
@@ -442,7 +451,6 @@ namespace Fusee.Math
             result.w = (float)System.Math.Cos(angle);
 
             return Normalize(result);
-            // ReSharper restore CompareOfFloatsByEqualityOperator
         }
 
         #endregion
@@ -459,28 +467,19 @@ namespace Fusee.Math
         public static Quaternion Slerp(Quaternion q1, Quaternion q2, float blend)
         {
             // if either input is zero, return the other.
-            if (q1.LengthSquared == 0.0f)
-            {
-                if (q2.LengthSquared == 0.0f)
-                {
-                    return Identity;
-                }
-                return q2;
-            }
-            else if (q2.LengthSquared == 0.0f)
-            {
+            if (q1.LengthSquared < MathHelper.EpsilonFloat)
+                return (!(q2.LengthSquared > MathHelper.EpsilonFloat)) ? Identity : q2;
+            
+            if ((q2.LengthSquared < MathHelper.EpsilonFloat))
                 return q1;
-            }
 
+            var cosHalfAngle = q1.w * q2.w + float3.Dot(q1.xyz, q2.xyz);
 
-            float cosHalfAngle = q1.w * q2.w + float3.Dot(q1.xyz, q2.xyz);
-
+            // if angle = 0.0f, just return one input.
             if (cosHalfAngle >= 1.0f || cosHalfAngle <= -1.0f)
-            {
-                // angle = 0.0f, so just return one input.
                 return q1;
-            }
-            else if (cosHalfAngle < 0.0f)
+            
+            if (cosHalfAngle < 0.0f)
             {
                 q2.xyz = -q2.xyz;
                 q2.w = -q2.w;
@@ -489,12 +488,14 @@ namespace Fusee.Math
 
             float blendA;
             float blendB;
+
             if (cosHalfAngle < 0.99f)
             {
                 // do proper slerp for big angles
-                float halfAngle = (float)System.Math.Acos(cosHalfAngle);
-                float sinHalfAngle = (float)System.Math.Sin(halfAngle);
-                float oneOverSinHalfAngle = 1.0f / sinHalfAngle;
+                var halfAngle = (float)System.Math.Acos(cosHalfAngle);
+                var sinHalfAngle = (float)System.Math.Sin(halfAngle);
+                var oneOverSinHalfAngle = 1.0f / sinHalfAngle;
+
                 blendA = (float)System.Math.Sin(halfAngle * (1.0f - blend)) * oneOverSinHalfAngle;
                 blendB = (float)System.Math.Sin(halfAngle * blend) * oneOverSinHalfAngle;
             }
@@ -505,11 +506,164 @@ namespace Fusee.Math
                 blendB = blend;
             }
 
-            Quaternion result = new Quaternion(blendA * q1.xyz + blendB * q2.xyz, blendA * q1.w + blendB * q2.w);
-            if (result.LengthSquared > 0.0f)
-                return Normalize(result);
+            var result = new Quaternion(blendA * q1.xyz + blendB * q2.xyz, blendA * q1.w + blendB * q2.w);
+
+            return result.LengthSquared > MathHelper.EpsilonFloat ? Normalize(result) : Identity;
+        }
+
+        #endregion
+
+        #region Conversion
+
+        /// <summary>
+        /// Convert Euler angle to Quaternion rotation.
+        /// </summary>
+        /// <param name="e">Euler angle to convert.</param>
+        /// <param name="inDegrees">Whether the angles are in degrees or radians.</param>
+        /// <returns>A Quaternion representing the euler angle passed to this method.</returns>
+        public static Quaternion EulerToQuaternion(float3 e, bool inDegrees = false)
+        {
+            if (inDegrees)
+            {
+                // Converts all degrees angles to radians.
+                var rX = MathHelper.DegreesToRadians(e.x);
+                var rY = MathHelper.DegreesToRadians(e.y);
+                var rZ = MathHelper.DegreesToRadians(e.z);
+
+                e = new float3(rX, rY, rZ);
+            }
+
+            // Calculating the Sine and Cosine for each half angle.
+            var sX = (float)System.Math.Sin(e.x * 0.5f);
+            var cX = (float)System.Math.Cos(e.x * 0.5f);
+
+            var sY = (float)System.Math.Sin(e.y * 0.5f);
+            var cY = (float)System.Math.Cos(e.y * 0.5f);
+
+            var sZ = (float)System.Math.Sin(e.z * 0.5f);
+            var cZ = (float)System.Math.Cos(e.z * 0.5f);
+
+            // Formula to construct a new Quaternion based on Euler Angles.
+            var x = sX * cY * cZ - cX * sY * sZ;
+            var y = cX * sY * cZ + sX * cY * sZ;
+            var z = cX * cY * sZ - sX * sY * cZ;
+            var w = cX * cY * cZ + sX * sY * sZ;
+
+            return new Quaternion(x, y, z, w);
+        }
+
+        /// <summary>
+        /// Convert Quaternion rotation to Euler Angles.
+        /// </summary>
+        /// <param name="q">Quaternion rotation to convert.</param>
+        /// <param name="inDegrees">Whether the angles shall be in degrees or radians.</param>
+        /// <returns>An Euler angle of type float3 from the passed Quaternion rotation.</returns>
+        public static float3 QuaternionToEuler(Quaternion q, bool inDegrees = false)
+        {
+            q.Normalize();
+
+            var test = 2.0*(q.y*q.w - q.x*q.z);
+
+            float x;
+            float y;
+            float z;
+
+            if (MathHelper.Equals(test, 1.0f))
+            {
+                z = -2.0f*(float) System.Math.Atan2(q.x, q.w);
+                x = 0;
+                y = MathHelper.Pi / 2;
+            }
+            else if (MathHelper.Equals(test, -1.0f))
+            {
+                z = 2.0f*(float) System.Math.Atan2(q.x, q.w);
+                x = 0;
+                y = MathHelper.Pi/-2;
+            }
             else
-                return Identity;
+            {
+                var sqX = q.x*q.x;
+                var sqY = q.y*q.y;
+                var sqZ = q.z*q.z;
+                var sqW = q.w*q.w;
+
+                x = (float) System.Math.Atan2(2*(q.y*q.z + q.w*q.x), sqW - sqX - sqY + sqZ);
+                y = (float) System.Math.Asin(MathHelper.Clamp(test, -1.0f, 1.0f));
+                z = (float) System.Math.Atan2(2*(q.x*q.y + q.w*q.z), sqW + sqX - sqY - sqZ);
+            }
+
+            if (inDegrees)
+            {
+                x = MathHelper.RadiansToDegrees(x);
+                y = MathHelper.RadiansToDegrees(y);
+                z = MathHelper.RadiansToDegrees(z);
+            }
+
+            return new float3(x, y, z);
+        }
+
+        /// <summary>
+        /// Takes a float4x4 matric and returns quaternions.
+        /// </summary>
+        /// <returns></returns>
+        public static Quaternion LookRotation(float3 lookAt, float3 upDirection)
+        {
+            float3[] result = float3.OrthoNormalize(lookAt,upDirection);
+            upDirection = result[1];
+            lookAt = result[0];
+
+            float3 right = float3.Cross(upDirection, lookAt);
+            
+            float w = (float)System.Math.Sqrt(1.0f + right.x + upDirection.y + lookAt.z)*0.5f;
+            float w4Recip = 1.0f/(4.0f*w);
+            float x = (upDirection.z - lookAt.y)*w4Recip;
+            float y = (lookAt.x-right.z)*w4Recip;
+            float z = (right.y - upDirection.x)*w4Recip;
+            var ret = new Quaternion(x,y,z,w);
+            return ret;
+        }
+
+        /// <summary>
+        /// Convert Quaternion to rotation matrix
+        /// </summary>
+        /// <param name="q">Quaternion to convert.</param>
+        /// <returns>A matrix of type float4x4 from the passed Quaternion.</returns>
+        public static float4x4 QuaternionToMatrix(Quaternion q)
+        {
+            q.Normalize();
+
+            // be careful here: you might need a transposed matrix!
+            return new float4x4
+                       {
+                           M11 = 1 - 2*(q.y*q.y + q.z*q.z),
+                           M12 = 2*(q.x*q.y + q.z*q.w),
+                           M13 = 2*(q.x*q.z - q.y*q.w),
+                           M14 = 0,
+                           M21 = 2*(q.x*q.y - q.z*q.w),
+                           M22 = 1 - 2*(q.x*q.x + q.z*q.z),
+                           M23 = 2*(q.z*q.y + q.x*q.w),
+                           M24 = 0,
+                           M31 = 2*(q.x*q.z + q.y*q.w),
+                           M32 = 2*(q.y*q.z - q.x*q.w),
+                           M33 = 1 - 2*(q.x*q.x + q.y*q.y),
+                           M34 = 0,
+                           M41 = 0,
+                           M42 = 0,
+                           M43 = 0,
+                           M44 = 1
+                       };
+        }
+
+        /// <summary>
+        /// a with the algebraic sign of b.
+        /// </summary>
+        /// <remarks>Takes a as an absolute value and multiplies it with: +1 for any positiv number for b, -1 for any negative number for b or 0 for 0 for b.</remarks>
+        /// <param name="a">Absolut value</param>
+        /// <param name="b">A positiv/negativ number or zero.</param>
+        /// <returns>Returns a with the algebraic sign of b.</returns>
+        public static float CopySign(float a, float b)
+        {
+            return System.Math.Abs(a)*System.Math.Sign(b);
         }
 
         #endregion
@@ -659,9 +813,7 @@ namespace Fusee.Math
         /// <returns>True if both instances are equal; false otherwise.</returns>
         public bool Equals(Quaternion other)
         {
-            // ReSharper disable CompareOfFloatsByEqualityOperator
-            return xyz == other.xyz && w == other.w;
-            // ReSharper restore CompareOfFloatsByEqualityOperator
+            return xyz == other.xyz && (System.Math.Abs(w - other.w) < MathHelper.EpsilonFloat);
         }
 
         #endregion

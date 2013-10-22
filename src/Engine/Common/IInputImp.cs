@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 
 namespace Fusee.Engine
 {
@@ -14,6 +13,25 @@ namespace Fusee.Engine
         /// </summary>
         /// <param name="time">The elapsed time since the last frame.</param>
         void FrameTick(double time);
+
+        /// <summary>
+        /// Implement this to set the mouse position.
+        /// </summary>
+        /// <param name="pos">The point containing window X and Y values.</param>
+        void SetMousePos(Point pos);
+
+        /// <summary>
+        /// Sets the mouse to the center.
+        /// </summary>
+        Point SetMouseToCenter();
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the cursor is visible.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if the cursor is visible; otherwise, <c>false</c>.
+        /// </value>
+        bool CursorVisible { get; set; }
 
         /// <summary>
         /// Implement this to deliver mouse information.
@@ -46,7 +64,5 @@ namespace Fusee.Engine
         /// Trigger this event in your implementation once a key on the keyboard is released.
         /// </summary>
         event EventHandler<KeyEventArgs> KeyUp;
-
-           
     }
 }

@@ -1,4 +1,54 @@
-﻿
+﻿/*
+JSIL.ImplementExternals("System.Double", function($) {
+    $.ExternalMethod({ Static: true, Public: true }, "Parse",
+        new JSIL.MethodSignature($.Type, [$.String, $asm04.TypeRef("System.IFormatProvider")]),
+        function Parse(str, fmtProv) {
+            return Number(str);
+        }
+    );
+});
+
+
+JSIL.ImplementExternals("System.Globalization.CultureInfo", function($) {
+    $.Method({ Static: true, Public: true }, "get_InvariantCulture",
+        new JSIL.MethodSignature($.Type, []),
+        function get_InvariantCulture() {
+            return null;
+        }
+    );
+});
+*/
+
+
+
+JSIL.ImplementExternals("System.IO.StreamReader", function ($) {
+    $.Field({ Static: false, Public: false }, "_contents", $.Array, null);
+    $.Field({ Static: false, Public: false }, "_currentLine", $.Int32, null);
+
+    $.Method({ Static: false, Public: true }, ".ctor",
+        new JSIL.MethodSignature(null, [$.String]),
+            function _ctor(fileName) {
+                var httpRequest = new XMLHttpRequest();
+                httpRequest.open("GET", fileName, false);
+                httpRequest.send(null);
+                this._contents = httpRequest.responseText.split("\n");
+                this._currentLine = 0;
+            }
+    );
+
+    $.Method({ Static: false, Public: true }, "ReadLine",
+        new JSIL.MethodSignature($.String, []),
+            function ReadLine() {
+                if (this._currentLine < this._contents.length) {
+                    return this._contents[this._currentLine++];
+                } else {
+                    return null;
+                }
+            }
+  );
+
+});
+
 
 function GetElemName(element) {
     var en = parseInt(element.value);
