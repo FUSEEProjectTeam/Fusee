@@ -19,8 +19,6 @@ namespace Fusee.SceneManagement
         private SceneVisitorRendering _sceneVisitorRendering;
 
         /// <summary>
-            int length = RenderJobs.Length;
-            for (int i = 0; i < length; i++ )
         /// Gets the Singleton SceneManager instance.
         /// </summary>
         /// <value>

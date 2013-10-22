@@ -17,7 +17,8 @@ namespace Fusee.SceneManagement
         private Light.LightType _type;
         private int _channel;
         #endregion
-        
+
+        #region Members
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderPointLight"/> class. Position, color, type and channel are needed.
         /// </summary>

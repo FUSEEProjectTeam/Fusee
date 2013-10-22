@@ -16,7 +16,6 @@ namespace Fusee.Engine
         #region Private Fields
 
         private readonly IRenderContextImp _rci;
-        public Frustum frustum;
         private ShaderProgram _currentShader;
         private MatrixParamNames _currentShaderParams;
         private ShaderProgram _debugShader;
@@ -25,9 +24,6 @@ namespace Fusee.Engine
         private readonly LightParamNames[] _lightShaderParams;
         private bool _debugLinesEnabled = true;
         private bool _updatedShaderParams;
-
-            public IShaderParam FUSEE_L_SPOTANGLE;
-            public IShaderParam FUSEE_L_ACTIVE;
 
         // Settable matrices
         private float4x4 _modelView;
@@ -112,6 +108,8 @@ namespace Fusee.Engine
             public IShaderParam FUSEE_L_SPECULAR;
             public IShaderParam FUSEE_L_POSITION;
             public IShaderParam FUSEE_L_DIRECTION;
+            public IShaderParam FUSEE_L_SPOTANGLE;
+            public IShaderParam FUSEE_L_ACTIVE;
             // ReSharper restore InconsistentNaming               
 
         }
@@ -720,8 +718,8 @@ namespace Fusee.Engine
 
             _lightParams = new Light[8];
             _lightShaderParams = new LightParamNames[8];
-            _debugShader = MoreShaders.GetShader("oneColor",this);
-            _debugColor = _debugShader.GetShaderParam("Col");
+            _debugShader = MoreShaders.GetShader("color",this);
+            _debugColor = _debugShader.GetShaderParam("color");
             _updatedShaderParams = false;
         }
 
@@ -967,7 +965,7 @@ namespace Fusee.Engine
         /// <param name="color">The light color.</param>
         /// <param name="type">The type of the light. 0=directional, 1=point.</param>
         /// <param name="id">The identifier. A maximum of 8 lights is recommended due to portability.</param>
-        public void SetLight(float3 v3, float4 color, int type, int id)
+        public void SetLight(float3 v3, float4 diffuse, float4 ambient, float4 specular, int type, int id)
         {
             switch (type)
             {
@@ -997,7 +995,7 @@ namespace Fusee.Engine
         /// <param name="color">The light color.</param>
         /// <param name="type">The light type.</param>
         /// <param name="id">The identifier.A maximum of 8 lights is recommended due to portability.</param>
-        public void SetLight(float3 position, float3 direction, float4 color, int type, int id)
+        public void SetLight(float3 position, float3 direction, float4 diffuse, float4 ambient, float4 specular, int type, int id)
         {
             SetLightActive(id, type);
             SetLightAmbient(id, ambient);
@@ -1410,22 +1408,22 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
                 start /= 2;
                 end /= 2;
 
-            var oldShader = _currentShader;
+                //var oldShader = _currentShader;
                 SetShader(_debugShader);
 
                 SetShaderParam(_currentShaderParams.FUSEE_MVP, ModelViewProjection);
                 //IShaderParam col = _debugShader.GetShaderParam("Col");
                 SetShaderParam(_debugColor, color);
-            
+
                 _rci.DebugLine(start, end, color);
 
-            SetShader(oldShader);
+                // SetShader(oldShader);
+            }
         }
 
         public void GetBufferContent(Rectangle quad, ITexture texId)
         {
             _rci.GetBufferContent(quad, texId);
-            }
         }
 
         /// <summary>
@@ -1474,11 +1472,6 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
         #endregion
 
         #endregion
-
-        public void UpdateFrustum()
-        {
-            frustum.setFrustum(InvModelViewProjection);
-        }
 
     }
 

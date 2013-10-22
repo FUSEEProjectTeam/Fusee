@@ -40,8 +40,7 @@ namespace Fusee.SceneManagement
             _diffuseColor = new float4(1, 1, 1, 1);
             _channel = channel;
         }
-        #endregion
-        #region Constructors
+
         /// <summary>
         /// Creates a point light in the scene. Position, color, position, and channel is needed.
         /// It is possible to set up to 8 lights in the scene.
@@ -61,6 +60,7 @@ namespace Fusee.SceneManagement
 
         #endregion
 
+        #region Members
         /// <summary>
         /// Traverses this pointligt for rendering. The light information is passed to the SceneVisitorRendering.
         /// </summary>
