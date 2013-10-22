@@ -22,7 +22,7 @@ namespace Examples.LightTypeTest
 
         public override void Update()
         {
-            if(Input.Instance.IsButtonDown(MouseButtons.Left)){
+            if(Input.Instance.IsButton(MouseButtons.Left)){
                 float mousemoveX = (float)Input.Instance.GetAxis(InputAxis.MouseX);
                 float mousemoveY = (float)Input.Instance.GetAxis(InputAxis.MouseY);
 
@@ -32,7 +32,7 @@ namespace Examples.LightTypeTest
                 transform.LocalEulerAngles += new float3(-mousemoveY*100, 0, 0);
             }
 
-            if (Input.Instance.IsKeyDown(KeyCodes.Up))
+            if (Input.Instance.IsKey(KeyCodes.Up))
             {
                 var _timeadd = Time.Instance.TimeFlow;
                 if(Time.Instance.TimeFlow > 2)
@@ -46,7 +46,7 @@ namespace Examples.LightTypeTest
          
                 Time.Instance.TimeFlow = _timeadd;
             }
-            if (Input.Instance.IsKeyDown(KeyCodes.Down))
+            if (Input.Instance.IsKey(KeyCodes.Down))
             {
                 if(Time.Instance.TimeFlow >= 0)
                 {
@@ -69,7 +69,7 @@ namespace Examples.LightTypeTest
                 //Debug.WriteLine(Time.Instance.TimeFlow.ToString());
             }
 
-            if (Input.Instance.OnKeyDown(KeyCodes.Right))
+            if (Input.Instance.IsKeyDown(KeyCodes.Right))
             {
                 _currentTargetId++;
                 if(_currentTargetId >= _planets.Length)
@@ -80,7 +80,7 @@ namespace Examples.LightTypeTest
                 Debug.WriteLine("Current Planet: " + _target.name);
             }
 
-            if (Input.Instance.OnKeyDown(KeyCodes.Left))
+            if (Input.Instance.IsKeyDown(KeyCodes.Left))
             {
                 _currentTargetId--;
                 if (_currentTargetId <= 0)
