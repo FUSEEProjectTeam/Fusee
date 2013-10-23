@@ -893,7 +893,7 @@ namespace Fusee.Engine
                 if (_lightShaderParams[i].FUSEE_L_ACTIVE != null)
                     SetShaderParam(_lightShaderParams[i].FUSEE_L_ACTIVE, _lightParams[i].Active);
 
-                if (_lightShaderParams[i].FUSEE_L_ACTIVE != null)
+                if (_lightShaderParams[i].FUSEE_L_SPOTANGLE != null)
                     SetShaderParam(_lightShaderParams[i].FUSEE_L_SPOTANGLE, _lightParams[i].Angle);
             }
         }

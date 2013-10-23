@@ -5,6 +5,7 @@ using Fusee.SceneManagement;
 
 namespace Examples.LightTypeTest
 {
+    [FuseeApplication(Name = "LightTypeTest", Description = "Tests a spotlight with different shaders.")]
     public class LightTypeTest : RenderCanvas
     {
 
