@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using Fusee.Math;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using SharpFont;
 using PixelFormat = System.Drawing.Imaging.PixelFormat;
 
 namespace Fusee.Engine
@@ -21,9 +22,13 @@ namespace Fusee.Engine
         private int _currentTextureUnit;
         private readonly Dictionary<int, int> _shaderParam2TexUnit;
 
+        private readonly Library _sharpFont;
+        private readonly List<Face> _sharpFaces;
+
         #endregion
 
         #region Constructors
+
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderContextImp"/> class.
         /// </summary>
@@ -32,6 +37,10 @@ namespace Fusee.Engine
         {
             _currentTextureUnit = 0;
             _shaderParam2TexUnit = new Dictionary<int, int>();
+
+            // TODO: dispose at the end
+            _sharpFont = new Library();
+            _sharpFaces = new List<Face>();
         }
 
         #endregion
@@ -54,8 +63,8 @@ namespace Fusee.Engine
             //Flip y-axis, otherwise texture would be upside down
             bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
 
-            BitmapData bmpData = bmp.LockBits(new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite,
-                System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            BitmapData bmpData = bmp.LockBits(new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height),
+                ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
             int strideAbs = (bmpData.Stride < 0) ? -bmpData.Stride : bmpData.Stride;
             int bytes = (strideAbs)*bmp.Height;
 
@@ -90,8 +99,7 @@ namespace Fusee.Engine
             bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
 
             BitmapData bmpData = bmp.LockBits(new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height),
-                ImageLockMode.ReadWrite,
-                System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+                ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
             int strideAbs = (bmpData.Stride < 0) ? -bmpData.Stride : bmpData.Stride;
             int bytes = (strideAbs)*bmp.Height;
 
@@ -146,8 +154,7 @@ namespace Fusee.Engine
             bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
 
             BitmapData bmpData = bmp.LockBits(new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height),
-                ImageLockMode.ReadWrite,
-                PixelFormat.Format32bppArgb);
+                ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
             int strideAbs = (bmpData.Stride < 0) ? -bmpData.Stride : bmpData.Stride;
             int bytes = (strideAbs)*bmp.Height;
 
@@ -182,7 +189,6 @@ namespace Fusee.Engine
             ITexture texID = new Texture {handle = id};
             return texID;
         }
-
 
         /// <summary>
         /// Gets the shader parameter.
@@ -350,6 +356,101 @@ namespace Fusee.Engine
 
         #endregion
 
+        #region Text related Members
+
+        // Todo: Replace int with something like Font : IFont
+        public int LoadFont(string filename)
+        {
+            _sharpFaces.Add(_sharpFont.NewFace(filename, 0));
+            return _sharpFaces.Count - 1;
+        }
+
+        public void TextOut(IShaderParam param, string text, int fontId, uint size, float x, float y, float sx, float sy)
+        {
+            var culling = GL.IsEnabled(EnableCap.CullFace);
+            if (culling)
+                GL.Disable(EnableCap.CullFace);
+
+            var blending = GL.IsEnabled(EnableCap.Blend);
+            if (!blending)
+            {
+                GL.Enable(EnableCap.Blend);
+                GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+            }
+
+            // Texture
+            int tex;
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.GenTextures(1, out tex);
+            GL.BindTexture(TextureTarget.Texture2D, tex);
+            SetShaderParam(param, 0);
+
+            // Settings
+            GL.PixelStore(PixelStoreParameter.UnpackAlignment, 1);
+
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS,
+                (int) TextureWrapMode.ClampToEdge);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT,
+                (int) TextureWrapMode.ClampToEdge);
+
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter,
+                (int) TextureMinFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter,
+                (int) TextureMagFilter.Linear);
+
+            // Vertex Buffer
+            int vbo;
+            GL.GenBuffers(1, out vbo);
+            GL.EnableVertexAttribArray(Helper.VertexUv2DAttribLocation);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
+            GL.VertexAttribPointer(Helper.VertexUv2DAttribLocation, 4, VertexAttribPointerType.Float, false, 0,
+                IntPtr.Zero);
+
+            var face = _sharpFaces[fontId];
+            face.SetPixelSizes(0, size);
+
+            foreach (var letter in text)
+            {
+                face.LoadChar(letter, LoadFlags.Default, LoadTarget.Normal);
+                face.Glyph.RenderGlyph(RenderMode.Normal);
+
+                GlyphSlot glSlot = face.Glyph;
+
+                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Alpha, glSlot.Bitmap.Width,
+                    glSlot.Bitmap.Rows, 0, OpenTK.Graphics.OpenGL.PixelFormat.Alpha, PixelType.UnsignedByte,
+                    glSlot.Bitmap.Buffer);
+
+                var x2 = x + glSlot.BitmapLeft*sx;
+                var y2 = -y - glSlot.BitmapTop*sy;
+                var w = glSlot.Bitmap.Width*sx;
+                var h = glSlot.Bitmap.Rows*sy;
+
+                var box = new[]
+                {
+                    new float4(x2, -y2, 0, 0),
+                    new float4(x2 + w, -y2, 1, 0),
+                    new float4(x2, -y2 - h, 0, 1),
+                    new float4(x2 + w, -y2 - h, 1, 1)
+                };
+
+                const int boxBytes = 4*4*sizeof (float);
+
+                GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr) (boxBytes), box, BufferUsageHint.DynamicDraw);
+                GL.DrawArrays(BeginMode.TriangleStrip, 0, 4);
+
+                x += (glSlot.Advance.X >> 6)*sx;
+                y += (glSlot.Advance.Y >> 6)*sy;
+            }
+
+            if (culling) GL.Enable(EnableCap.CullFace);
+            if (!blending) GL.Disable(EnableCap.Blend);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+            GL.DisableVertexAttribArray(Helper.VertexUv2DAttribLocation);
+        }
+
+        #endregion
+
         #region Matrix Fields
 
         /// <summary>
@@ -439,6 +540,7 @@ namespace Fusee.Engine
         #endregion
 
         #region Rendering related Members
+
         /// <summary>
         /// Creates the shaderprogram by using a valid GLSL vertex and fragment shader code. This code is compiled at runtime.
         /// Do not use this function in frequent updates.
@@ -483,6 +585,7 @@ namespace Fusee.Engine
             GL.BindAttribLocation(program, Helper.ColorAttribLocation, Helper.ColorAttribName);
             GL.BindAttribLocation(program, Helper.UvAttribLocation, Helper.UvAttribName);
             GL.BindAttribLocation(program, Helper.NormalAttribLocation, Helper.NormalAttribName);
+            GL.BindAttribLocation(program, Helper.VertexUv2DAttribLocation, Helper.VertexUv2DAttribName);
 
             GL.LinkProgram(program); // AAAARRRRRGGGGHHHH!!!! Must be called AFTER BindAttribLocation
             return new ShaderProgramImp {Program = program};
@@ -740,8 +843,9 @@ namespace Fusee.Engine
 
         public void GetBufferContent(Rectangle quad, ITexture texId)
         {
-            GL.BindTexture(TextureTarget.Texture2D, ((Texture)texId).handle);
-            GL.CopyTexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, quad.Left, quad.Top, quad.Width, quad.Height, 0);
+            GL.BindTexture(TextureTarget.Texture2D, ((Texture) texId).handle);
+            GL.CopyTexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, quad.Left, quad.Top, quad.Width,
+                quad.Height, 0);
         }
 
         /// <summary>

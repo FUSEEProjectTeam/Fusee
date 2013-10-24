@@ -45,6 +45,12 @@ namespace Fusee.Engine
                 return spOneColor;
             }
 
+            if (name == "text")
+            {
+                var spText = rc.CreateShader(VsText, PsText);
+                return spText;
+            }
+
             var spColor = rc.CreateShader(VsSimpleColor, PsSimpleColor);
             var color = rc.GetShaderParam(spColor, "color");
             rc.SetShaderParam(color, new float4(1, 1, 1, 1));
@@ -769,6 +775,29 @@ namespace Fusee.Engine
             void main()
             {             
                 gl_FragColor = max(dot(vec3(0,0,1),normalize(vNormal)), 0.1) * color;
+            }";
+
+        private const string VsText = @"
+            attribute vec4 fuVertexUV2D;
+            varying vec2 vUV;
+
+            void main()
+            {
+                gl_Position = vec4(fuVertexUV2D.xy, 0, 1);
+                vUV = fuVertexUV2D.zw;
+            }";
+
+        private const string PsText = @"
+            #ifdef GL_ES
+                precision highp float;
+            #endif    
+  
+            varying vec2 vUV;
+            uniform sampler2D tex;
+            uniform vec4 color;
+
+            void main(void) {
+                gl_FragColor =vec4(1, 1, 1, texture2D(tex, vUV).a) * color;
             }";
     }
 }

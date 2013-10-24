@@ -101,6 +101,7 @@ namespace Fusee.Engine
         /// </remarks>
         /// <seealso cref="SetShaderParam(IShaderParam,float)"/>
         IShaderParam GetShaderParam(IShaderProgramImp shaderProgram, string paramName);
+
         /// <summary>
         /// Gets the value of a shader parameter.
         /// </summary>
@@ -187,6 +188,11 @@ namespace Fusee.Engine
         [JSChangeName("SetShaderParamInt")]
         void SetShaderParam(IShaderParam param, int val);
 
+        // TEXT
+        int LoadFont(string filename);
+        void TextOut(IShaderParam param, string text, int fontId, uint size, float x, float y, float sx, float sy);
+        // TEXT
+
         /// <summary>
         /// Creates a new texture and binds it to the shader.
         /// </summary>
@@ -236,7 +242,7 @@ namespace Fusee.Engine
         /// <param name="startPosY">The vertical start-position of the text on the image.</param>
         /// <returns>An ImageData struct containing all necessary information for further processing</returns>
         ImageData TextOnImage(ImageData imgData, String fontName, float fontSize, String text, String textColor,
-                              float startPosX, float startPosY);
+            float startPosX, float startPosY);
 
         /// <summary>
         /// Sets a Shader Parameter to a created texture.

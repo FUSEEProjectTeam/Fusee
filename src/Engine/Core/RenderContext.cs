@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using JSIL.Meta;
 using Fusee.Math;
 namespace Fusee.Engine
@@ -18,12 +19,18 @@ namespace Fusee.Engine
         private readonly IRenderContextImp _rci;
         private ShaderProgram _currentShader;
         private MatrixParamNames _currentShaderParams;
-        private ShaderProgram _debugShader;
-        private IShaderParam _debugColor;
         private readonly Light[] _lightParams;
         private readonly LightParamNames[] _lightShaderParams;
-        private bool _debugLinesEnabled = true;
         private bool _updatedShaderParams;
+
+        private ShaderProgram _debugShader;
+        private IShaderParam _debugColor;
+        private bool _debugLinesEnabled = true;
+
+        private ShaderProgram _textShader;
+        private IShaderParam _textTextureParam;
+        private IShaderParam _textColorParam;
+        private ITexture _textTexture;
 
         // Settable matrices
         private float4x4 _modelView;
@@ -71,6 +78,7 @@ namespace Fusee.Engine
         private bool _transModelViewOk;
         private bool _transProjectionOk;
         private bool _transModelViewProjectionOk;
+
 
         #endregion
 
@@ -718,9 +726,15 @@ namespace Fusee.Engine
 
             _lightParams = new Light[8];
             _lightShaderParams = new LightParamNames[8];
-            _debugShader = MoreShaders.GetShader("color",this);
-            _debugColor = _debugShader.GetShaderParam("color");
+
             _updatedShaderParams = false;
+
+            _debugShader = MoreShaders.GetShader("color", this);
+            _debugColor = _debugShader.GetShaderParam("color");
+
+            _textShader = MoreShaders.GetShader("text", this);
+            _textColorParam = _textShader.GetShaderParam("color");
+            _textTextureParam = _textShader.GetShaderParam("tex");
         }
 
         #endregion
@@ -810,6 +824,34 @@ namespace Fusee.Engine
         public void SetShaderParamTexture(IShaderParam param, ITexture texId)
         {
             _rci.SetShaderParamTexture(param, texId);
+        }
+
+        #endregion
+
+        #region Text related Members
+
+        // Todo: Check if already loaded
+        public int LoadFont(string filename)
+        {
+            if (File.Exists(filename))
+                throw new Exception("Font not found: " + filename);
+
+            return _rci.LoadFont(filename);
+        }
+
+        public void TextOut(string text, int fontId, uint size, float x, float y, float sx, float sy)
+        {
+            var curShader = _currentShader;
+            SetShader(_textShader);
+
+            //SetShaderParam(_currentShaderParams.FUSEE_MVP, ModelViewProjection);
+            SetShaderParam(_textColorParam, new float4(0, 0, 0, 1));
+            //SetShaderParamTexture(_textTextureParam, _textTexture);
+            
+            _rci.TextOut(_textTextureParam, text, fontId, size, x, y, sx, sy);
+
+            if (curShader != null)
+                SetShader(curShader);
         }
 
         #endregion
@@ -1183,6 +1225,7 @@ for (int i=0; i < MatrixParamNames.Length; i++)
 sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames[i]);
 }
 * */
+
             return sp;
         }
 
@@ -1408,16 +1451,16 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
                 start /= 2;
                 end /= 2;
 
-                //var oldShader = _currentShader;
+                var oldShader = _currentShader;
                 SetShader(_debugShader);
 
                 SetShaderParam(_currentShaderParams.FUSEE_MVP, ModelViewProjection);
-                //IShaderParam col = _debugShader.GetShaderParam("Col");
                 SetShaderParam(_debugColor, color);
 
                 _rci.DebugLine(start, end, color);
 
-                // SetShader(oldShader);
+                if (oldShader != null)
+                    SetShader(oldShader);
             }
         }
 

@@ -58,6 +58,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\ExternalBinaries\OpenTK.dll</HintPath>
     </Reference>
+    <Reference Include="SharpFont">
+      <HintPath>..\..\..\..\ExternalBinaries\SharpFont\SharpFont.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
