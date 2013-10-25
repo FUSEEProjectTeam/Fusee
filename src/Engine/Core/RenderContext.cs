@@ -831,24 +831,24 @@ namespace Fusee.Engine
         #region Text related Members
 
         // Todo: Check if already loaded
-        public int LoadFont(string filename)
+        public IFont LoadFont(string filename, uint size)
         {
-            if (File.Exists(filename))
+            if (!File.Exists(filename))
                 throw new Exception("Font not found: " + filename);
 
-            return _rci.LoadFont(filename);
+            return _rci.LoadFont(filename, size);
         }
 
-        public void TextOut(string text, int fontId, uint size, float x, float y, float sx, float sy)
+        public void TextOut(string text, IFont font, float x, float y, float sx, float sy)
         {
             var curShader = _currentShader;
             SetShader(_textShader);
 
             //SetShaderParam(_currentShaderParams.FUSEE_MVP, ModelViewProjection);
-            SetShaderParam(_textColorParam, new float4(0, 0, 0, 1));
+            SetShaderParam(_textColorParam, new float4(1, 0, 0, 1));
             //SetShaderParamTexture(_textTextureParam, _textTexture);
             
-            _rci.TextOut(_textTextureParam, text, fontId, size, x, y, sx, sy);
+            _rci.TextOut(_textTextureParam, text, font, x, y, sx, sy);
 
             if (curShader != null)
                 SetShader(curShader);

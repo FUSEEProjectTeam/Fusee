@@ -189,8 +189,8 @@ namespace Fusee.Engine
         void SetShaderParam(IShaderParam param, int val);
 
         // TEXT
-        int LoadFont(string filename);
-        void TextOut(IShaderParam param, string text, int fontId, uint size, float x, float y, float sx, float sy);
+        IFont LoadFont(string filename, uint size);
+        void TextOut(IShaderParam param, string text, IFont font, float x, float y, float sx, float sy);
         // TEXT
 
         /// <summary>

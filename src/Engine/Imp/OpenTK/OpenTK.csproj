@@ -42,6 +42,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Font.cs" />
     <Compile Include="Implementor.cs" />
     <Compile Include="InputImp.cs" />
     <Compile Include="Keymapper.cs" />
