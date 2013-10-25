@@ -581,7 +581,7 @@ namespace Fusee.Math
         /// <param name="height">The height of the projection volume.</param>
         /// <param name="zNear">The near edge of the projection volume.</param>
         /// <param name="zFar">The far edge of the projection volume.</param>
-        /// <rereturns>The resulting Matrix4 instance.</rereturns>
+        /// <returns>The resulting Matrix4 instance.</returns>
         public static float4x4 CreateOrthographic(float width, float height, float zNear, float zFar)
         {
             float4x4 result;
@@ -1478,7 +1478,7 @@ namespace Fusee.Math
         /// <summary>
         /// Returns a System.String that represents the current Matrix44.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A string.</returns>
         public override string ToString()
         {
             return String.Format("{0}\n{1}\n{2}\n{3}", Row0, Row1, Row2, Row3);

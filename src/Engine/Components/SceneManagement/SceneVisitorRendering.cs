@@ -112,7 +112,7 @@ namespace Fusee.SceneManagement
         /// <summary>
         /// Adds the transform object to the internal stack.
         /// </summary>
-        /// <param name="mtx">The MTX.</param>
+        /// <param name="transform">The transform.</param>
         private void AddTransform(Transformation transform)
         {
             if (_mtxModelViewStack.Count > 0)
@@ -219,11 +219,12 @@ namespace Fusee.SceneManagement
         }
 
         /// <summary>
-        /// Adds a <see cref="DirectionalLight"/> to the rendering queue.
+        /// Adds a <see cref="DirectionalLight" /> to the rendering queue.
         /// </summary>
         /// <param name="direction">The direction.</param>
         /// <param name="diffuse">The diffuse color.</param>
         /// <param name="ambient">The ambient color.</param>
+        /// <param name="specular">The specular color.</param>
         /// <param name="type">The type.</param>
         /// <param name="channel">The channel.</param>
         public void AddLightDirectional(float3 direction, float4 diffuse, float4 ambient, float4 specular, Light.LightType type, int channel) 
@@ -233,11 +234,13 @@ namespace Fusee.SceneManagement
         }
 
         /// <summary>
-        /// Adds a <see cref="PointLight"/> to the rendering queue.
+        /// Adds a <see cref="PointLight" /> to the rendering queue.
         /// </summary>
         /// <param name="position">The position.</param>
-        /// <param name="color">The color.</param>
-        /// <param name="type">The type.</param>
+        /// <param name="diffuse">The diffuse light color.</param>
+        /// <param name="ambient">The ambient light color.</param>
+        /// <param name="specular">The specular light color.</param>
+        /// <param name="type">The lighttype.</param>
         /// <param name="channel">The channel.</param>
         public void AddLightPoint(float3 position, float4 diffuse, float4 ambient, float4 specular, Light.LightType type, int channel) 
         {
@@ -246,12 +249,15 @@ namespace Fusee.SceneManagement
         }
 
         /// <summary>
-        /// Adds a <see cref="SpotLight"/> to the rendering queue.
+        /// Adds a <see cref="SpotLight" /> to the rendering queue.
         /// </summary>
-        /// <param name="position">The position.</param>
-        /// <param name="direction">The direction.</param>
-        /// <param name="color">The color.</param>
-        /// <param name="type">The type.</param>
+        /// <param name="position">The position of the light in the scene.</param>
+        /// <param name="direction">The direction of the light along its z-axis.</param>
+        /// <param name="diffuse">The diffuse light color.</param>
+        /// <param name="ambient">The ambient light color.</param>
+        /// <param name="specular">The specular light color.</param>
+        /// <param name="angle">The angle of the spot light.</param>
+        /// <param name="type">The lighttype.</param>
         /// <param name="channel">The channel.</param>
         public void AddLightSpot(float3 position, float3 direction, float4 diffuse, float4 ambient, float4 specular, float angle, Light.LightType type, int channel) 
         {

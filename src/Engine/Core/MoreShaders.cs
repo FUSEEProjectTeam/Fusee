@@ -8,49 +8,62 @@ namespace Fusee.Engine
     public static class MoreShaders
     {
         /// <summary>
-        ///     Creates the shader in RenderContext and returns a ShaderProgram.
+        /// Creates a simple unlit texture shader in RenderContext.
         /// </summary>
-        /// <param name="name">ShaderName.</param>
         /// <param name="rc">RenderContext.</param>
-        /// <returns></returns>
-        public static ShaderProgram GetShader(string name, RenderContext rc)
+        /// <returns>An instance of <see cref="ShaderProgram"/> to render a Texture without any lighting.</returns>
+        public static ShaderProgram GetTextureShader(RenderContext rc)
         {
-            if (name == "texture")
-            {
-                var spSimple = rc.CreateShader(VsSimpleTexture, PsSimpleTexture);
-                return spSimple;
-            }
-
-            if (name == "diffuse")
-            {
-                var spDiffuse = rc.CreateShader(VsDiffuse, PsDiffuse);
-                return spDiffuse;
-            }
-
-            if (name == "specular")
-            {
-                var spSpecular = rc.CreateShader(VsSpecular, PsSpecular);
-                return spSpecular;
-            }
-
-            if (name == "bump")
-            {
-                var spBump = rc.CreateShader(VsBump, PsBump);
-                return spBump;
-            }
-
-            if (name == "color")
-            {
-                var spOneColor = rc.CreateShader(VsSimpleColor, PsSimpleColor);
-                return spOneColor;
-            }
-
-            var spColor = rc.CreateShader(VsSimpleColor, PsSimpleColor);
-            var color = rc.GetShaderParam(spColor, "color");
-            rc.SetShaderParam(color, new float4(1, 1, 1, 1));
-
-            return spColor;
+            var spSimple = rc.CreateShader(VsSimpleTexture, PsSimpleTexture);
+            return spSimple;
         }
+
+        /// <summary>
+        /// Creates a simple diffuse texture shader in RenderContext.
+        /// </summary>
+        /// <param name="rc">RenderContext.</param>
+        /// <returns>An instance of <see cref="ShaderProgram"/> to render a Texture with diffuse lighting.</returns>
+        public static ShaderProgram GetDiffuseTextureShader(RenderContext rc)
+        {
+            var spSimple = rc.CreateShader(VsDiffuse, PsDiffuse);
+            return spSimple;
+        }
+
+        /// <summary>
+        /// Creates a diffuse color shader in RenderContext.
+        /// </summary>
+        /// <param name="rc">RenderContext.</param>
+        /// <returns>An instance of <see cref="ShaderProgram"/> to render a color with diffuse lighting.</returns>
+        public static ShaderProgram GetDiffuseColorShader(RenderContext rc)
+        {
+            var spSimple = rc.CreateShader(VsSimpleColor, PsSimpleColor);
+            return spSimple;
+        }
+
+
+        /// <summary>
+        /// Creates a specular texture shader in RenderContext.
+        /// </summary>
+        /// <param name="rc">RenderContext.</param>
+        /// <returns>An instance of <see cref="ShaderProgram"/> to render a Texture with specular lighting.</returns>
+        public static ShaderProgram GetSpecularShader(RenderContext rc)
+        {
+            var spSimple = rc.CreateShader(VsSpecular, PsSpecular);
+            return spSimple;
+        }
+
+        /// <summary>
+        /// Creates a bumpmap and diffuse texture shader in RenderContext.
+        /// </summary>
+        /// <param name="rc">RenderContext.</param>
+        /// <returns>An instance of <see cref="ShaderProgram"/> to render an object with diffuse lighting and a texture for the surface and another for the bump effect.</returns>
+        public static ShaderProgram GetBumpDiffuseShader(RenderContext rc)
+        {
+            var spSimple = rc.CreateShader(VsBump, PsBump);
+            return spSimple;
+        }
+     
+        
 
         private const string VsSimpleTexture = @"
             #ifdef GL_ES

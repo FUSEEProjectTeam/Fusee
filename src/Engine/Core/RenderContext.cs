@@ -708,7 +708,7 @@ namespace Fusee.Engine
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderContext"/> class.
         /// </summary>
-        /// <param name="rci">The <see cref="IRenderContextImp"/>.</param>
+        /// <param name="rci">The <see cref="Fusee.Engine.IRenderContextImp"/>.</param>
         public RenderContext(IRenderContextImp rci)
         {
             _rci = rci;
@@ -718,7 +718,7 @@ namespace Fusee.Engine
 
             _lightParams = new Light[8];
             _lightShaderParams = new LightParamNames[8];
-            _debugShader = MoreShaders.GetShader("color",this);
+            _debugShader = MoreShaders.GetDiffuseColorShader(this);
             _debugColor = _debugShader.GetShaderParam("color");
             _updatedShaderParams = false;
         }
@@ -766,7 +766,7 @@ namespace Fusee.Engine
         /// </remarks>
         /// <param name="imgData">An ImageData struct, containing necessary information for the upload to the graphics card.</param>
         /// <returns>
-        /// An ITexture that can be used for texturing in the shader.
+        /// An <see cref="ITexture"/> that can be used for texturing in the shader.
         /// </returns>
         public ITexture CreateTexture(ImageData imgData)
         {
@@ -777,7 +777,7 @@ namespace Fusee.Engine
         /// Creates a white Texture with 1x1 pixel size.
         /// </summary>
         /// <returns>
-        /// An ITexture that can be used for texturing in the shader.
+        /// An <see cref="ITexture"/> that can be used for texturing in the shader.
         /// </returns>
         public ITexture DisableTexture()
         {
@@ -962,7 +962,9 @@ namespace Fusee.Engine
         /// Sets the directional or point lights information.
         /// </summary>
         /// <param name="v3">The lights direction or position. This depends on the light type.</param>
-        /// <param name="color">The light color.</param>
+        /// <param name="diffuse">The diffuse light color.</param>
+        /// <param name="ambient">The ambient light color.</param>
+        /// <param name="specular">The specular light color.</param>
         /// <param name="type">The type of the light. 0=directional, 1=point.</param>
         /// <param name="id">The identifier. A maximum of 8 lights is recommended due to portability.</param>
         public void SetLight(float3 v3, float4 diffuse, float4 ambient, float4 specular, int type, int id)
@@ -992,7 +994,9 @@ namespace Fusee.Engine
         /// </summary>
         /// <param name="position">The light position.</param>
         /// <param name="direction">The light direction.</param>
-        /// <param name="color">The light color.</param>
+        /// <param name="diffuse">The diffuse light color.</param>
+        /// <param name="ambient">The ambient light color.</param>
+        /// <param name="specular">The specular light color.</param>
         /// <param name="type">The light type.</param>
         /// <param name="id">The identifier.A maximum of 8 lights is recommended due to portability.</param>
         public void SetLight(float3 position, float3 direction, float4 diffuse, float4 ambient, float4 specular, int type, int id)
@@ -1223,13 +1227,12 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
         /// <summary>
         /// Returns an identifiyer for the named (uniform) parameter used in the specified shader program.
         /// </summary>
-        /// <param name="program">The shader program using the parameter.</param>
+        /// <param name="program">The <see cref="ShaderProgram"/> using the parameter.</param>
         /// <param name="paramName">Name of the shader parameter.</param>
-        /// <returns>A handle object to identify the given parameter in subsequent calls to SetShaderParam.</returns>
+        /// <returns>A <see cref="IShaderParam"/> object to identify the given parameter in subsequent calls to SetShaderParam.</returns>
         /// <remarks>
         /// The returned handle can be used to assign values to a (uniform) shader paramter.
         /// </remarks>
-        /// <seealso cref="SetShaderParam(IShaderParam,float)"/>
         public IShaderParam GetShaderParam(ShaderProgram program, string paramName)
         {
             return _rci.GetShaderParam(program._spi, paramName);
@@ -1238,8 +1241,8 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
         /// <summary>
         /// Gets the value of a shader parameter.
         /// </summary>
-        /// <param name="program">The program.</param>
-        /// <param name="handle">The handle.</param>
+        /// <param name="program">The <see cref="ShaderProgram"/>.</param>
+        /// <param name="handle">The <see cref="IShaderParam"/>.</param>
         /// <returns>The float value.</returns>
         public float GetParamValue(ShaderProgram program, IShaderParam handle)
         {
@@ -1249,7 +1252,7 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
         /// <summary>
         /// Sets the specified shader parameter to a float value.
         /// </summary>
-        /// <param name="param">The shader parameter identifier.</param>
+        /// <param name="param">The <see cref="IShaderParam"/> identifier.</param>
         /// <param name="val">The float value that should be assigned to the shader parameter.</param>
         /// <remarks>
         /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
@@ -1265,7 +1268,7 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
         /// <summary>
         /// Sets the shader parameter to a float2 value.
         /// </summary>
-        /// <param name="param">The shader parameter identifier.</param>
+        /// <param name="param">The <see cref="IShaderParam"/> identifier.</param>
         /// <param name="val">The float2 value that should be assigned to the shader parameter.</param>
         /// <remarks>
         /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
@@ -1281,7 +1284,7 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
         /// <summary>
         /// Sets the shader parameter to a float3 value.
         /// </summary>
-        /// <param name="param">The shader parameter identifier.</param>
+        /// <param name="param">The <see cref="IShaderParam"/> identifier.</param>
         /// <param name="val">The float3 value that should be assigned to the shader parameter.</param>
         /// <remarks>
         /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
@@ -1297,7 +1300,7 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
         /// <summary>
         /// Sets the shader parameter to a float4 value.
         /// </summary>
-        /// <param name="param">The shader parameter identifier.</param>
+        /// <param name="param">The <see cref="IShaderParam"/> identifier.</param>
         /// <param name="val">The float4 value that should be assigned to the shader parameter.</param>
         /// <remarks>
         /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
@@ -1313,7 +1316,7 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
         /// <summary>
         /// Sets the shader parameter to a float4x4 matrixvalue.
         /// </summary>
-        /// <param name="param">The shader parameter identifier.</param>
+        /// <param name="param">The <see cref="IShaderParam"/> identifier.</param>
         /// <param name="val">The float4x4 matrix that should be assigned to the shader parameter.</param>
         /// <remarks>
         /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
@@ -1329,7 +1332,7 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
         /// <summary>
         /// Sets the shader parameter to a integer value.
         /// </summary>
-        /// <param name="param">The shader parameter identifier.</param>
+        /// <param name="param">The <see cref="IShaderParam"/> identifier.</param>
         /// <param name="val">The integer value that should be assigned to the shader parameter.</param>
         /// <remarks>
         /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
@@ -1389,6 +1392,12 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
             _rci.Render(m._meshImp);
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [debug lines enabled].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [debug lines enabled]; otherwise, <c>false</c>.
+        /// </value>
         public bool DebugLinesEnabled
         {
             get { return _debugLinesEnabled; }
@@ -1421,6 +1430,11 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
             }
         }
 
+        /// <summary>
+        /// Gets the content of the buffer and passes it to the <see cref="IRenderCanvasImp"/>.
+        /// </summary>
+        /// <param name="quad">The <see cref="Rectangle"/>.</param>
+        /// <param name="texId">The <see cref="ITexture"/>.</param>
         public void GetBufferContent(Rectangle quad, ITexture texId)
         {
             _rci.GetBufferContent(quad, texId);

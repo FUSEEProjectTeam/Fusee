@@ -28,6 +28,13 @@ namespace Fusee.Engine
         /// </summary>
         public int Bottom;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Rectangle"/> struct.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="top">The top.</param>
+        /// <param name="right">The right.</param>
+        /// <param name="bottom">The bottom.</param>
         public Rectangle(int left, int top, int right, int bottom)
         {
             Left = left;
@@ -36,7 +43,19 @@ namespace Fusee.Engine
             Bottom = bottom;
         }
 
+        /// <summary>
+        /// Gets the width of the rectangle.
+        /// </summary>
+        /// <value>
+        /// The width.
+        /// </value>
         public int Width { get { return Right - Left; } }
+        /// <summary>
+        /// Gets the height of the rectangle.
+        /// </summary>
+        /// <value>
+        /// The height.
+        /// </value>
         public int Height { get { return Bottom - Top; } }
     }
 }

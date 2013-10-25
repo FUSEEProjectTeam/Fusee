@@ -437,7 +437,7 @@ namespace Fusee.Math
         /// </summary>
         /// <param name="axis">The axis to rotate about</param>
         /// <param name="angle">The rotation angle in radians</param>
-        /// <returns></returns>
+        /// <returns>A QuaternionD that represents the orientation.</returns>
         public static QuaternionD FromAxisAngle(double3 axis, double angle)
         {
             if (axis.LengthSquared > MathHelper.EpsilonDouble)
@@ -609,7 +609,7 @@ namespace Fusee.Math
         /// <summary>
         /// Returns a System.String that represents the current QuaternionD.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A string.</returns>
         public override string ToString()
         {
             return String.Format("V: {0}, w: {1}", xyz, w);

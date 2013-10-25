@@ -15,8 +15,9 @@ namespace Fusee.SceneManagement
         #endregion
         #region Constructors
         /// <summary>
-        /// Initializes a new instance of the <see cref="RenderRenderer"/> class. Needs to be provided with a Renderer Component.
+        /// Initializes a new instance of the <see cref="RenderRenderer" /> class. Needs to be provided with a Renderer Component.
         /// </summary>
+        /// <param name="renderer">The renderer.</param>
         public RenderRenderer(Renderer renderer)
         {
             _renderer = renderer;
@@ -27,6 +28,7 @@ namespace Fusee.SceneManagement
         /// <summary>
         /// Overwrites the SubmitWork method of RenderJob class. Render Component will get shaders and materials and passed to the RenderContextImplementation.
         /// </summary>
+        /// <param name="renderContext">The render context.</param>
         public override void SubmitWork(RenderContext renderContext)
         {
  

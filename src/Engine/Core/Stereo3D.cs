@@ -2,6 +2,7 @@
 
 namespace Fusee.Engine
 {
+
     public enum Stereo3DEye
     {
         Left,

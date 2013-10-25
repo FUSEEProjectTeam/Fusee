@@ -35,12 +35,33 @@ namespace Fusee.SceneManagement
 
         #region Fields
 
+        /// <summary>
+        /// The <see cref="LightType"/>.
+        /// </summary>
         protected LightType _type;
+        /// <summary>
+        /// The position in the scene.
+        /// </summary>
         protected float3 _position;
+        /// <summary>
+        /// The direction of the light along the z-axis.
+        /// </summary>
         protected float3 _direction;
+        /// <summary>
+        /// The diffuse light color.
+        /// </summary>
         protected float4 _diffuseColor;
+        /// <summary>
+        /// The ambient light color.
+        /// </summary>
         protected float4 _ambientColor;
+        /// <summary>
+        /// The specular light color.
+        /// </summary>
         protected float4 _specularColor;
+        /// <summary>
+        /// The light channel (0-7).
+        /// </summary>
         protected int _channel;
         #endregion
 

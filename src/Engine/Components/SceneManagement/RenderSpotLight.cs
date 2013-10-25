@@ -25,12 +25,15 @@ namespace Fusee.SceneManagement
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RenderSpotLight"/> class. Position, direction, color, type and channel.
+        /// Initializes a new instance of the <see cref="RenderSpotLight" /> class. Position, direction, color, type and channel.
         /// </summary>
         /// <param name="position">The position of the light.</param>
         /// <param name="direction">The direction of the light.</param>
-        /// <param name="color">The lightcolor.</param>
-        /// <param name="type">The type.</param>
+        /// <param name="diffuse">The diffuse light color.</param>
+        /// <param name="ambient">The ambient light color.</param>
+        /// <param name="specular">The specular light color.</param>
+        /// <param name="angle">The angle of the spot light.</param>
+        /// <param name="type">The lighttype.</param>
         /// <param name="channel">The memory space of the light(0 - 7).</param>
         public RenderSpotLight(float3 position, float3 direction, float4 diffuse, float4 ambient, float4 specular, float angle, Light.LightType type, int channel)
         {
@@ -51,6 +54,7 @@ namespace Fusee.SceneManagement
         /// <summary>
         /// Passes spotlight's parameters to RenderContext.
         /// </summary>
+        /// <param name="renderContext">The render context.</param>
         public override void SubmitWork(RenderContext renderContext)
         {
             renderContext.SetLight(_position, _direction, _diffuseColor, _ambientColor, _specularColor, (int)_type, _channel);
