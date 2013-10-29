@@ -4,7 +4,7 @@ using Fusee.KeyFrameAnimation;
 
 namespace Fusee.KeyFrameAnimation
 {
-    public class Keyframe<TValue> //where TValue:
+    public class Keyframe<TValue>
     {
         private TValue _value;
         private float _time;

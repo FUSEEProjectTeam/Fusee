@@ -23,20 +23,18 @@ namespace Fusee.KeyFrameAnimation
         {
             TimeChanged += timeChanged;
             _lerpIt = lerpFunc;
-            if (_timeline.Any())
-            {
-                _value = _timeline.ElementAt(0).Value.Value;
-            }
-
+            AddKeyframe(0, default(TValue));
         }
 
         public Channel(LerpFunc<TValue> lerpFunc)
         {
             _lerpIt = lerpFunc;
-            if (_timeline.Any())
-            {
-                _value = _timeline.ElementAt(0).Value.Value;
-            }
+        }
+
+        public Channel(LerpFunc<TValue> lerpFunc, TValue value)
+        {
+            _lerpIt = lerpFunc;
+            AddKeyframe(0, value);
         }
 
 
@@ -55,7 +53,17 @@ namespace Fusee.KeyFrameAnimation
 
         protected override void DemandTime()
         {
-            base.Time = _timeline.ElementAt(_timeline.Count - 1).Key;
+
+            try 
+            {
+                base.Time = _timeline.ElementAt(_timeline.Count - 1).Key;
+            }
+            catch (System.ArgumentOutOfRangeException)
+            {
+                Console.WriteLine("The there are no keyframes in the timeline, requierd time will be set to 0.");
+                base.Time = 0;
+            }
+           
         }
 
 
@@ -71,7 +79,6 @@ namespace Fusee.KeyFrameAnimation
             _timeline.Add(keyframe.Time, keyframe);
         }
 
-        //Maybe we schould place here the current values of the animated Object as a startvalue, therefore we need them first.
         public void AddKeyframe(float time, TValue value)
         {
 
@@ -83,7 +90,7 @@ namespace Fusee.KeyFrameAnimation
 
         }
 
-        //Remove KEyframes 
+        //Remove Keyframes 
         public void RemoveKeyframe(float time)
         {
             _timeline.Remove(time);
@@ -95,8 +102,7 @@ namespace Fusee.KeyFrameAnimation
         {
 
             TValue keyValue;
-
-            if (_timeline != null && _timeline.Count > 1)
+            if (_timeline.Count > 1)
             {
                 keyValue = _timeline.ElementAt(0).Value.Value;
 
@@ -110,11 +116,18 @@ namespace Fusee.KeyFrameAnimation
                     }
                 }
             }
-            else
+            else 
             {
+                try
+                {
                 keyValue = _timeline.ElementAt(0).Value.Value;
+                }
+                catch(System.ArgumentOutOfRangeException )
+                {
+                    Console.WriteLine("There are no keyframes in the timeline, a standart value will be set.");
+                     keyValue = default(TValue);
+                }
             }
-
             _value = keyValue;
             return keyValue;
         }

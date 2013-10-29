@@ -20,7 +20,7 @@ namespace Examples.KeyframeAnimationTest
         private Channel<float4> _channel1;
 
         //private Channel<float> _channel1;
-        private Animation myAnim = new Animation(1);
+        private Animation myAnim = new Animation(0);
         public override void Init()
         {
             SceneManager.RC = RC;
@@ -38,7 +38,7 @@ namespace Examples.KeyframeAnimationTest
 
 
             _channel2 = new Channel<float3>(Lerp.Float3Lerp);
-            _channel1 = new Channel<float4>(Lerp.Float4Lerp);
+            _channel1 = new Channel<float4>(Lerp.Float4Lerp,new float4(0.5f,0.5f,0.5f,0.5f));
 
             /*
             _channel1.AddKeyframe(5f, 32f);
@@ -48,7 +48,7 @@ namespace Examples.KeyframeAnimationTest
             _channel1.AddKeyframe(4f, 16f);
             _channel1.AddKeyframe(0f, 8f);
             */
-
+            /*
             Keyframe<float4> key0 = new Keyframe<float4>(0, new float4(1, 0, 1, 1));
             Keyframe<float4> key1 = new Keyframe<float4>(2, new float4(0.125f, 1, 0.125f, 1));
             Keyframe<float4> key2 = new Keyframe<float4>(4, new float4(0.250f, 0.75f, 0.250f, 1));
@@ -57,7 +57,8 @@ namespace Examples.KeyframeAnimationTest
             Keyframe<float4> key5 = new Keyframe<float4>(10, new float4(1, 25, 0.125f, 1));
             Keyframe<float4> key6 = new Keyframe<float4>(0, new float4(0, 1, 0, 1));
 
-            _channel1.AddKeyframe(key0);
+            
+            _channel1.AddKeyframe(new Keyframe<float4 >(0,new float4( 1,0,1,1)));
             _channel1.AddKeyframe(key1);
             _channel1.AddKeyframe(key2);
             _channel1.AddKeyframe(key3);
@@ -74,6 +75,7 @@ namespace Examples.KeyframeAnimationTest
             Keyframe<float3> key50 = new Keyframe<float3>(12, new float3(0, 4, 60));
             Keyframe<float3> key60 = new Keyframe<float3>(0, new float3(8, 8, 8));
 
+            
             _channel2.AddKeyframe(key00);
             _channel2.AddKeyframe(key10);
             _channel2.AddKeyframe(key20);
@@ -81,7 +83,7 @@ namespace Examples.KeyframeAnimationTest
             _channel2.AddKeyframe(key40);
             _channel2.AddKeyframe(key50);
             _channel2.AddKeyframe(key60);
-
+            //*/
 
             myAnim.AddAnimation(_channel1, RC, "ClearColor");
             myAnim.AddAnimation(_channel2, Wuerfel, "transform.GlobalPosition");

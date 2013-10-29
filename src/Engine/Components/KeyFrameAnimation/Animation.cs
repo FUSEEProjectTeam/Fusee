@@ -47,7 +47,6 @@ namespace Fusse.KeyFrameAnimation
             _channels.Add(channel);
             Node channelNode = new Node(channel);
             Node channelObjektNode = new Node(channelObject);
-            //channelObjektNode.Attach(field, channelNode, "Value");
             channelNode.Attach("Value", channelObjektNode, field);
             _animHandler.AddRoot(channelNode);
             _animHandler.AddNode(channelObjektNode);
@@ -58,7 +57,6 @@ namespace Fusse.KeyFrameAnimation
         public void RemoveChannel(int channelPosition)
         {
             _channels.RemoveAt(channelPosition);
-            //TODO Implement in Xircit functionality to remove nodes
         }
 
         public void SetTick(float time)
@@ -104,9 +102,6 @@ namespace Fusse.KeyFrameAnimation
                 _time -= time;
             }
 
-
-
-
             foreach (var baseChannel in _channels)
             {
                 baseChannel.SetTick(_time);
@@ -117,7 +112,6 @@ namespace Fusse.KeyFrameAnimation
 
         public void Animate()
         {
-
             float time = (float)Time.Instance.DeltaTime;
             switch (_animMode)
             {

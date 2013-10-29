@@ -13,12 +13,9 @@ namespace Fusse.KeyFrameAnimation
 
         protected virtual void DoTick(float time)
         {
-            //if (TimeChanged != null)
-            //{
-            //    TValue currentValue = GetValueAt(time);
-            //    TimeChanged(currentValue);
-            //}
+
         }
+
         protected virtual void DemandTime()
         {
 
@@ -33,6 +30,5 @@ namespace Fusse.KeyFrameAnimation
         {
             DemandTime();
         }
-
     }
 }
