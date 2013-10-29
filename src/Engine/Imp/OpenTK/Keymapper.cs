@@ -6,6 +6,7 @@ namespace Fusee.Engine
 {
     internal class Keymapper : Dictionary<OpenTK.Input.Key, Fusee.Engine.KeyCodes>
     {
+        #region Constructors
         /// <summary>
         /// Initializes the map between KeyCodes and OpenTK.Key
         /// </summary>
@@ -99,5 +100,6 @@ namespace Fusee.Engine
             }
            */
         }
+        #endregion
     }
 }

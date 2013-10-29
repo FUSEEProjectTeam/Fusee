@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using Fusee.Engine;
 using Fusee.Math;
 using System;
@@ -6,46 +7,16 @@ using System;
 namespace Fusee.SceneManagement
 {
     /// <summary>
-    /// The SceneManager class handles the rendering of the scene
+    /// The SceneManager class handles the rendering of the scene. 
     /// </summary>
     public sealed class SceneManager
     {
-        /// <summary>
-        /// The _manager Singleton
-        /// </summary>
+        #region Fields
         private static readonly SceneManager _manager = new SceneManager();
-        /// <summary>
-        /// The _render context
-        /// </summary>
         private RenderContext _renderContext;
-        //private TraversalStateRender _traversalRender;
-
-        /// <summary>
-        /// The render jobs
-        /// </summary>
         private List<RenderJob>[] RenderJobs = new List<RenderJob>[10];
-        /// <summary>
-        /// The scene members
-        /// </summary>
         private List<SceneEntity> SceneMembers = new List<SceneEntity>();
-        /// <summary>
-        /// The _scene visitor rendering
-        /// </summary>
         private SceneVisitorRendering _sceneVisitorRendering;
-
-        /// <summary>
-        /// Prevents a default instance of the <see cref="SceneManager"/> class from being created.
-        /// </summary>
-        private SceneManager()
-        {
-            _sceneVisitorRendering = new SceneVisitorRendering(this);
-            //_traversalRender =  new TraversalStateRender(this);
-            for (int i = 0; i < RenderJobs.Length; i++ )
-            {
-                RenderJobs[i] = new List<RenderJob>();
-            }
-            
-        }
 
         /// <summary>
         /// Gets the Singleton SceneManager instance.
@@ -66,7 +37,8 @@ namespace Fusee.SceneManagement
         /// </value>
         public static RenderContext RC
         {
-            set{
+            set
+            {
                 if (_manager._renderContext == null)
                 {
                     _manager._renderContext = value;
@@ -75,9 +47,22 @@ namespace Fusee.SceneManagement
             get { return _manager._renderContext; }
         }
 
+        #endregion
 
+        #region Constructors
+        private SceneManager()
+        {
+            _sceneVisitorRendering = new SceneVisitorRendering(this);
+            for (int i = 0; i < RenderJobs.Length; i++ )
+            {
+                RenderJobs[i] = new List<RenderJob>();
+            }
+        }
+        #endregion
+
+        #region Members
         /// <summary>
-        /// Adds the scene entity to the scene.
+        /// Adds a <see cref="SceneEntity"/> to the scene.
         /// </summary>
         /// <param name="sceneEntity">The scene entity.</param>
         public void AddSceneEntity(SceneEntity sceneEntity)
@@ -86,34 +71,36 @@ namespace Fusee.SceneManagement
         }
 
         /// <summary>
-        /// Adds the camera to the rendering queue [0].
+        /// Adds the camera to the rendering queue [1].
         /// </summary>
-        /// <param name="cameramatrix">The cameramatrix.</param>
+        /// <param name="cameramatrix">The RenderCamera object that holds the Projection and Transformation matrix.</param>
         public void AddCamera(RenderCamera cameramatrix)
         {
             RenderJobs[1].Add(cameramatrix);
         }
 
         /// <summary>
-        /// Traverses the scene's entities with their corresponding components.
+        /// Traverses the scene's entities with their corresponding components in order to construct an 3D world. This function is called every frame.
         /// </summary>
-        /// <param name="renderCanvas">The render canvas.</param>
+        /// <param name="renderCanvas">The render canvas that presents the final render image.</param>
         public void Traverse(RenderCanvas renderCanvas)
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-
-            foreach (var sceneMember in SceneMembers)
+            int length = SceneMembers.Count;
+            for (int i=0;i<length; i++)
             {
-                sceneMember.Accept(_sceneVisitorRendering);
+                SceneMembers[i].Accept(_sceneVisitorRendering);
+                //sceneMember.Accept();
             }
 
             // Order: Matrix, Mesh, Renderer
-            for (int i = 1; i < RenderJobs.Length; i++ )
+            length = RenderJobs.Length;
+            for (int i = 1; i < length; i++ )
             {
 
-                
-                
-                for (int k = 0; k < RenderJobs[i].Count;k++)
+
+                int innerlength = RenderJobs[i].Count;
+                for (int k = 0; k < innerlength;k++)
                 {
 
                     
@@ -124,17 +111,21 @@ namespace Fusee.SceneManagement
                     
             }
             renderCanvas.Present();
-
-            //Console.WriteLine("Rendering at "+DeltaTime+"ms and "+(1/DeltaTime)+" FPS"); // Use this to checkout Framerate
-            foreach (var renderjob in RenderJobs)
+            length = RenderJobs.Length;
+            //Debug.WriteLine("Drawn "+RenderJobs[2].Count/3+" Objects at "+Time.Instance.FramePerSecondSmooth+" FPS!");
+            for (int j = 0; j < length;j++ )
             {
-                renderjob.Clear();
+                RenderJobs[j].Clear();
             }
         }
 
+        /// <summary>
+        /// Updates the lights information before the scene is rendered.
+        /// </summary>
         public void UpdateLights()
         {
-            for (int j = 0; j < RenderJobs[0].Count; j++)
+            int length = RenderJobs[0].Count;
+            for (int j = 0; j < length; j++)
             {
                 RenderJobs[0][j].SubmitWork(RC);
             }
@@ -151,7 +142,7 @@ namespace Fusee.SceneManagement
         }
 
         /// <summary>
-        /// Adds a light job to the light queue [1].
+        /// Adds a light job to the light queue [0].
         /// </summary>
         /// <param name="job">The job.</param>
         public void AddLightJob(RenderJob job)
@@ -159,33 +150,11 @@ namespace Fusee.SceneManagement
             RenderJobs[0].Add(job);
         }
 
-
-        // Ursprüngliche SceneEntity suche
-        /*public SceneEntity FindSceneEntity(string sceneEntityName)
-        {
-            foreach (var sceneMember in SceneMembers)
-            {
-                if(sceneMember.name == sceneEntityName)
-                {
-                    return sceneMember;
-                }
-                foreach (var child in sceneMember.GetChildren())
-                {
-                    if (child.name == sceneEntityName)
-                    {
-                        return child;
-                    }
-                }
-            }
-            return null;
-        }*/
-
-        // neue suche
         /// <summary>
         /// Finds the scene entity inside the current scene.
         /// </summary>
-        /// <param name="name">The name.</param>
-        /// <returns></returns>
+        /// <param name="name">The name of the SceneEntity that needs to be found.</param>
+        /// <returns>On successful search the first SceneEntity that has the name is returned.</returns>
         public SceneEntity FindSceneEntity(string name)
         {
             SceneVisitorSearch sceneVisitorSearch = new SceneVisitorSearch();
@@ -193,6 +162,9 @@ namespace Fusee.SceneManagement
             return result;
         }
 
+        /// <summary>
+        /// Initializes all <see cref="ActionCode"/> objects in the scene and calls their Start method once.
+        /// </summary>
         public void StartActionCode()
         {
             SceneVisitorStartAction startactions = new SceneVisitorStartAction();
@@ -201,7 +173,7 @@ namespace Fusee.SceneManagement
                 sceneMember.Accept(startactions);
             }
         }
-
+        #endregion
 
     }
 }

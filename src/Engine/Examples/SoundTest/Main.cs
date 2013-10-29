@@ -1,53 +1,13 @@
-﻿using Fusee.Engine;
+﻿using System;
+using System.Diagnostics;
+using Fusee.Engine;
 using Fusee.Math;
 
 namespace Examples.SoundTest
 {
+    [FuseeApplication(Name = "Sound Test", Description = "The name of this example says it all...")]
     public class SoundTest : RenderCanvas
     {
-        protected string Vs = @"
-            #ifndef GL_ES
-                #version 120
-            #endif            
-
-            /* Copies incoming vertex color without change.
-             * Applies the transformation matrix to vertex position.
-             */
-
-            attribute vec4 fuColor;
-            attribute vec3 fuVertex;
-            attribute vec3 fuNormal;
-        
-            varying vec4 vColor;
-            varying vec3 vNormal;
-        
-            uniform mat4 FUSEE_MVP;
-            uniform mat4 FUSEE_ITMV;
-
-            void main()
-            {
-                gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
-                vNormal = mat3(FUSEE_ITMV) * fuNormal;
-            }";
-
-        protected string Ps = @"
-            #ifndef GL_ES
-                #version 120
-            #endif
-
-            /* Copies incoming fragment color without change. */
-            #ifdef GL_ES
-                precision highp float;
-            #endif         
-        
-            uniform vec4 vColor;
-            varying vec3 vNormal;
-
-            void main()
-            {
-                gl_FragColor = vec4(0.8, 0.2, 0.2, 1) * dot(vNormal, vec3(0, 0, 1));
-            }";
-
         protected Mesh Mesh;
         private Tests _tests;
 
@@ -62,14 +22,19 @@ namespace Examples.SoundTest
         private float _timeStep;
         private float _curTime;
 
+        private IShaderParam _vColor;
+
         public override void Init()
         {
             RC.ClearColor = new float4(0, 0, 0, 1);
 
             Mesh = MeshReader.LoadMesh("Assets/Cube.obj.model");
 
-            var sp = RC.CreateShader(Vs, Ps);
+            var sp = MoreShaders.GetDiffuseColorShader(RC);
             RC.SetShader(sp);
+
+            _vColor = RC.GetShaderParam(sp, "color");
+            RC.SetShaderParam(_vColor, new float4(0.8f, 0.1f, 0.1f, 1));
 
             // sound by http://www.soundjay.com
             _audio1 = Audio.Instance.LoadFile("Assets/beep.ogg");
@@ -135,7 +100,7 @@ namespace Examples.SoundTest
                     _curTime += 2*_timeStep;
 
                     if (_testID == 8)
-                        System.Diagnostics.Debug.WriteLine("-- done --");
+                        Debug.WriteLine("-- done --");
                 }
                 else
                     _state++;
@@ -143,10 +108,10 @@ namespace Examples.SoundTest
 
             _angleHorz += 0.002f;
 
-            var mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(0);
+            var mtxRot = float4x4.CreateRotationY(_angleHorz)*float4x4.CreateRotationX(0);
             var mtxCam = float4x4.LookAt(0, 200, 400, 0, 50, 0, 0, 1, 0);
 
-            RC.ModelView = mtxRot * float4x4.CreateTranslation(-100, 0, 0) * mtxCam;
+            RC.ModelView = mtxRot*float4x4.CreateTranslation(-100, 0, 0)*mtxCam;
             RC.Render(Mesh);
 
             Present();
@@ -156,8 +121,8 @@ namespace Examples.SoundTest
         {
             RC.Viewport(0, 0, Width, Height);
 
-            var aspectRatio = Width / (float)Height;
-            RC.Projection = float4x4.CreatePerspectiveFieldOfView((float) (System.Math.PI/4f), aspectRatio, 1, 10000);
+            var aspectRatio = Width/(float) Height;
+            RC.Projection = float4x4.CreatePerspectiveFieldOfView((float) (Math.PI/4f), aspectRatio, 1, 10000);
         }
 
         public static void Main()

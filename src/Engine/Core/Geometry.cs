@@ -10,8 +10,10 @@ namespace Fusee.Engine
     /// </summary>
     public class Geometry
     {
+        #region Nested Class
         /// <summary>
-        /// 
+        /// A container that stores indices for vertices, normals and texture coordinates.
+        /// The values are used for conversion to different geometry face formats, e.g. Triangles.
         /// </summary>
         public class Face
         {
@@ -28,6 +30,9 @@ namespace Fusee.Engine
             /// </summary>
             public int[] InxTexCoord;
         }
+        #endregion
+
+        #region Fields
 
         internal List<double3> _vertices;
 
@@ -82,6 +87,10 @@ namespace Fusee.Engine
             get { return _faces; }
         }
 
+        #endregion
+
+        #region Constructors
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Geometry"/> class.
         /// </summary>
@@ -90,11 +99,15 @@ namespace Fusee.Engine
             _vertices = new List<double3>();
         }
 
+        #endregion
+
+        #region Members
+
         /// <summary>
         /// Adds a vertex.
         /// </summary>
         /// <param name="v">A 3D vector.</param>
-        /// <returns></returns>
+        /// <returns>The current vertex count.</returns>
         public int AddVertex(double3 v)
         {
             _vertices.Add(v);
@@ -105,7 +118,7 @@ namespace Fusee.Engine
         /// Adds the texture coordinates.
         /// </summary>
         /// <param name="uv">Texture coordinate</param>
-        /// <returns></returns>
+        /// <returns>The count of <see cref="TexCoords"/>.</returns>
         public int AddTexCoord(double2 uv)
         {
             if (_texCoords == null)
@@ -118,7 +131,7 @@ namespace Fusee.Engine
         /// Adds the normal.
         /// </summary>
         /// <param name="normal">The normal.</param>
-        /// <returns></returns>
+        /// <returns>The count of <see cref="Normals"/>.</returns>
         public int AddNormal(double3 normal)
         {
             if (_normals == null)
@@ -133,7 +146,7 @@ namespace Fusee.Engine
         /// <param name="vertInx">The vert inx.</param>
         /// <param name="texCoordInx">The tex coord inx.</param>
         /// <param name="normalInx">The normal inx.</param>
-        /// <returns></returns>
+        /// <returns>The face count as integer value.</returns>
         /// <exception cref="System.ArgumentNullException">vertInx</exception>
         /// <exception cref="System.ArgumentException">
         /// "Vertex index out of range: vertInx[i]"
@@ -184,7 +197,7 @@ namespace Fusee.Engine
                     throw new ArgumentException("Number of normal indices must match number of vertex indices",
                                                 "normalInx");
 
-                f.InxTexCoord = new int[normalInx.Length];
+                f.InxNormal = new int[normalInx.Length];
                 for (i = 0; i < normalInx.Length; i++)
                 {
                     if (!(0 <= normalInx[i] && normalInx[i] < _normals.Count))
@@ -200,6 +213,10 @@ namespace Fusee.Engine
             _faces.Add(f);
             return _faces.Count - 1;
         }
+
+        #endregion
+
+        #region Boolean Check Fields
 
         /// <summary>
         /// Gets a value indicating whether this instance has normals.
@@ -222,6 +239,10 @@ namespace Fusee.Engine
         {
             get { return _texCoords != null; }
         }
+
+        #endregion
+
+        #region Geometry Calculation Members
 
         /// <summary>
         /// Gets all faces containing a certain vertex.
@@ -267,9 +288,6 @@ namespace Fusee.Engine
         /// Creates normals for the entire geometry based on a given smoothing angle.
         /// </summary>
         /// <param name="smoothingAngle">The smoothing angle.</param>
-        /// <remarks>
-        /// If 
-        /// </remarks>
         public void CreateNormals(double smoothingAngle)
         {
             double cSmoothingAngle = System.Math.Cos(smoothingAngle);
@@ -334,9 +352,10 @@ namespace Fusee.Engine
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
+        
+
+        #region Structs
+
         internal struct TripleInx
         {
             /// <summary>
@@ -355,10 +374,13 @@ namespace Fusee.Engine
             }
         }
 
+        #endregion
+
+
         /// <summary>
         /// Converts the whole geomentry to a <see cref="Mesh"/>.
         /// </summary>
-        /// <returns><see cref="Mesh"/></returns>
+        /// <returns>An equivalent instance of <see cref="Mesh"/>.</returns>
         public Mesh ToMesh()
         {
             // TODO: make a big case decision based on HasTexCoords and HasNormals around the implementation and implement each case individually
@@ -436,6 +458,6 @@ namespace Fusee.Engine
             }
             return ret;
         }
-     
+        #endregion
     }
 }

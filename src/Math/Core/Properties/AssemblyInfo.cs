@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Fusee.Math.Core")]
 [assembly: AssemblyDescription("Core Math implementation for the Fusee Project")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Furtwangen University - Prof. Christoph Müller")]
-[assembly: AssemblyProduct("Fusee")]
-[assembly: AssemblyCopyright("Copyright ©  2012 The Fusee Project")]
+[assembly: AssemblyCompany("Furtwangen University")]
+[assembly: AssemblyProduct("Fusee Engine")]
+[assembly: AssemblyCopyright("Copyright © 2013 The Fusee Project")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // Sie können alle Werte angeben oder die standardmäßigen Build- und Revisionsnummern 
 // übernehmen, indem Sie "*" eingeben:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.1.0.0")]
+[assembly: AssemblyVersion("0.5.0.0")]
 [assembly: AssemblyFileVersion("0.1.0.0")]

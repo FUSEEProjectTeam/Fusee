@@ -15,7 +15,11 @@ namespace Fusee.SceneManagement
         public enum LightType
         {
             /// <summary>
-            /// Directional = 0
+            /// Disabled Light = 0
+            /// </summary>
+            Disabled,
+            /// <summary>
+            /// Directional = 1
             /// </summary>
             Directional,
             /// <summary>
@@ -23,7 +27,7 @@ namespace Fusee.SceneManagement
             /// </summary>
             Point,
             /// <summary>
-            /// The spot = 2
+            /// Spot = 2
             /// </summary>
             Spot,
         }
@@ -31,9 +35,33 @@ namespace Fusee.SceneManagement
 
         #region Fields
 
+        /// <summary>
+        /// The <see cref="LightType"/>.
+        /// </summary>
         protected LightType _type;
+        /// <summary>
+        /// The position in the scene.
+        /// </summary>
         protected float3 _position;
-        protected float4 _color;
+        /// <summary>
+        /// The direction of the light along the z-axis.
+        /// </summary>
+        protected float3 _direction;
+        /// <summary>
+        /// The diffuse light color.
+        /// </summary>
+        protected float4 _diffuseColor;
+        /// <summary>
+        /// The ambient light color.
+        /// </summary>
+        protected float4 _ambientColor;
+        /// <summary>
+        /// The specular light color.
+        /// </summary>
+        protected float4 _specularColor;
+        /// <summary>
+        /// The light channel (0-7).
+        /// </summary>
         protected int _channel;
         #endregion
 
@@ -45,7 +73,6 @@ namespace Fusee.SceneManagement
         {
             _type = LightType.Point;
             _position = new float3(0,0,0);
-            _color = new float4(0.5f, 0.5f, 0.5f, 0.5f);
             _channel = 0;
         }
         #endregion

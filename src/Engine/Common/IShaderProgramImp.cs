@@ -1,10 +1,9 @@
-﻿#pragma warning disable 1591 //disables the warning about missing XML-comments
-
-namespace Fusee.Engine
+﻿namespace Fusee.Engine
 {
+    /// <summary>
+    /// The Shaderprogram interface. It is currently in prototype state.
+    /// </summary>
     public interface IShaderProgramImp
     {
     }
 }
-
-#pragma warning restore 1591

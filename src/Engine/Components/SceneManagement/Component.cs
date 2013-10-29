@@ -24,8 +24,9 @@ namespace Fusee.SceneManagement
         }
 
        /// <summary>
-       /// Initializes a new instance of the <see cref="Component"/> class with a SceneEntity. 
+       /// Initializes a new instance of the <see cref="Component" /> class with a SceneEntity.
        /// </summary>
+       /// <param name="sceneEntity">The owner scene entity.</param>
        public Component(SceneEntity sceneEntity)
        {
           _sceneEntity = sceneEntity;

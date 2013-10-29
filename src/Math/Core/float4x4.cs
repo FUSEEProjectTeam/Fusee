@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using ProtoBuf;
 
 namespace Fusee.Math
 {
@@ -8,6 +9,7 @@ namespace Fusee.Math
     /// Represents a 4x4 Matrix
     /// </summary>
     [Serializable]
+    [ProtoContract]
     [StructLayout(LayoutKind.Sequential)]
 // ReSharper disable InconsistentNaming
     public struct float4x4 : IEquatable<float4x4>
@@ -18,21 +20,25 @@ namespace Fusee.Math
         /// <summary>
         /// Top row of the matrix
         /// </summary>
+        [ProtoMember(1)]
         public float4 Row0;
 
         /// <summary>
         /// 2nd row of the matrix
         /// </summary>
+        [ProtoMember(2)]
         public float4 Row1;
 
         /// <summary>
         /// 3rd row of the matrix
         /// </summary>
+        [ProtoMember(3)]
         public float4 Row2;
 
         /// <summary>
         /// Bottom row of the matrix
         /// </summary>
+        [ProtoMember(4)]
         public float4 Row3;
 
         /// <summary>
@@ -352,6 +358,21 @@ namespace Fusee.Math
 
         #endregion
 
+        #region public void Round()
+
+        /// <summary>
+        /// Rounds this instance to 6 digits (max float precision).
+        /// </summary>
+        public void Round()
+        {
+            Row0.Round();
+            Row1.Round();
+            Row2.Round();
+            Row3.Round();
+        }
+
+        #endregion
+
         #endregion
 
         #region Static
@@ -560,7 +581,7 @@ namespace Fusee.Math
         /// <param name="height">The height of the projection volume.</param>
         /// <param name="zNear">The near edge of the projection volume.</param>
         /// <param name="zFar">The far edge of the projection volume.</param>
-        /// <rereturns>The resulting Matrix4 instance.</rereturns>
+        /// <returns>The resulting Matrix4 instance.</returns>
         public static float4x4 CreateOrthographic(float width, float height, float zNear, float zFar)
         {
             float4x4 result;
@@ -1247,7 +1268,7 @@ namespace Fusee.Math
         #region Transform
 
         /// <summary>
-        /// Transforms a given vector by a matrix.
+        /// Transforms a given vector by a matrix via matrix*vector (Postmultiplication of the vector).
         /// </summary>
         /// <param name="matrix">A <see cref="float4x4"/> instance.</param>
         /// <param name="vector">A <see cref="float4"/> instance.</param>
@@ -1262,7 +1283,22 @@ namespace Fusee.Math
         }
 
         /// <summary>
-        /// Transforms a given 3D vector by a matrix using perspective division.
+        /// Transforms a given vector by a matrix via vector*matrix (Premultiplication of the vector).
+        /// </summary>
+        /// <param name="matrix">A <see cref="float4x4"/> instance.</param>
+        /// <param name="vector">A <see cref="float4"/> instance.</param>
+        /// <returns>A new <see cref="float4"/> instance containing the result.</returns>
+        public static float4 TransformPremult(float4 vector, float4x4 matrix)
+        {
+            return new float4(
+                ((matrix.M11 * vector.x) + (matrix.M21 * vector.y) + (matrix.M31 * vector.z) + (matrix.M41*vector.w)),
+                ((matrix.M12 * vector.x) + (matrix.M22 * vector.y) + (matrix.M32 * vector.z) + (matrix.M42*vector.w)),
+                ((matrix.M13 * vector.x) + (matrix.M23 * vector.y) + (matrix.M33 * vector.z) + (matrix.M43*vector.w)),
+                (matrix.M41 * vector.x) + (matrix.M42 * vector.y) + (matrix.M43 * vector.z) + (matrix.M44 * vector.w));
+        }
+
+        /// <summary>
+        /// Transforms a given 3D vector by a matrix using perspective division via matrix*vector (Postmultiplication of the vector).
         /// </summary>
         /// <remarks>
         /// Before the matrix multiplication the 3D vector is extended to 4D by setting its W component to 1.
@@ -1279,6 +1315,43 @@ namespace Fusee.Math
                 ((matrix.M11*vector.x) + (matrix.M12*vector.y) + (matrix.M13*vector.z) + matrix.M14)/w,
                 ((matrix.M21*vector.x) + (matrix.M22*vector.y) + (matrix.M23*vector.z) + matrix.M24)/w,
                 ((matrix.M31*vector.x) + (matrix.M32*vector.y) + (matrix.M33*vector.z) + matrix.M34)/w);
+        }
+
+        /// <summary>
+        /// Transforms a given 3D vector by a matrix using perspective division via vector*matrix (Premultiplication of the vector).
+        /// </summary>
+        /// <remarks>
+        /// Before the matrix multiplication the 3D vector is extended to 4D by setting its W component to 1.
+        /// After the matrix multiplication the resulting 4D vector is transformed to 3D by dividing X, Y, and Z by W.
+        /// (perspective division).
+        /// </remarks>
+        /// <param name="matrix">A <see cref="float4x4"/> instance.</param>
+        /// <param name="vector">A <see cref="float3"/> instance.</param>
+        /// <returns>A new <see cref="float3"/> instance containing the result.</returns>
+        public static float3 TransformPremultPD(float3 vector,float4x4 matrix)
+        {
+            float w = (matrix.M14 * vector.x) + (matrix.M24 * vector.y) + (matrix.M34 * vector.z) + matrix.M44;
+            return new float3(
+                ((matrix.M11 * vector.x) + (matrix.M21 * vector.y) + (matrix.M31 * vector.z) + matrix.M41) / w,
+                ((matrix.M12 * vector.x) + (matrix.M22 * vector.y) + (matrix.M32 * vector.z) + matrix.M42) / w,
+                ((matrix.M13 * vector.x) + (matrix.M23 * vector.y) + (matrix.M33 * vector.z) + matrix.M43) / w);
+        }
+
+        #endregion
+
+        #region Round
+
+        /// <summary>
+        /// Rounds the given matrix to 6 digits (max float precision).
+        /// </summary>
+        /// <param name="mat">The matrix to round.</param>
+        /// <returns>The rounded matrix.</returns>
+        public static float4x4 Round(float4x4 mat)
+        {
+            return new float4x4(float4.Round(mat.Row0),
+                                float4.Round(mat.Row1),
+                                float4.Round(mat.Row2),
+                                float4.Round(mat.Row3));
         }
 
         #endregion
@@ -1343,7 +1416,7 @@ namespace Fusee.Math
         }
 
         /// <summary>
-        /// Transforms a given vector by a matrix.
+        /// Transforms a given vector by a matrix via matrix*vector (Postmultiplication of the vector).
         /// </summary>
         /// <param name="matrix">A <see cref="float4x4"/> instance.</param>
         /// <param name="vector">A <see cref="float4"/> instance.</param>
@@ -1354,7 +1427,18 @@ namespace Fusee.Math
         }
 
         /// <summary>
-        /// Transforms a given threedimensional vector by a matrix.
+        /// Transforms a given vector by a matrix via vector*matrix (Premultiplication of the vector).
+        /// </summary>
+        /// <param name="matrix">A <see cref="float4x4"/> instance.</param>
+        /// <param name="vector">A <see cref="float4"/> instance.</param>
+        /// <returns>A new <see cref="float4"/> instance containing the result.</returns>
+        public static float4 operator *(float4 vector, float4x4 matrix)
+        {
+            return TransformPremult(vector, matrix);
+        }
+
+        /// <summary>
+        /// Transforms a given threedimensional vector by a matrix via matrix*vector (Postmultiplication of the vector).
         /// </summary>
         /// <remarks>
         /// Before the matrix multiplication the 3D vector is extended to 4D by setting its W component to 1.
@@ -1369,6 +1453,22 @@ namespace Fusee.Math
             return TransformPD(matrix, vector);
         }
 
+        /// <summary>
+        /// Transforms a given threedimensional vector by a matrix via vector*matrix (Premultiplication of the vector).
+        /// </summary>
+        /// <remarks>
+        /// Before the matrix multiplication the 3D vector is extended to 4D by setting its W component to 1.
+        /// After the matrix multiplication the resulting 4D vector is transformed to 3D by dividing X, Y, and Z by W.
+        /// (perspective division).
+        /// </remarks>
+        /// <param name="matrix">A <see cref="float4x4"/> instance.</param>
+        /// <param name="vector">A <see cref="float3"/> instance.</param>
+        /// <returns>A new <see cref="float4"/> instance containing the result.</returns>
+        public static float3 operator *(float3 vector,float4x4 matrix)
+        {
+            return TransformPremultPD(vector,matrix);
+        }
+
         #endregion
 
         #region Overrides
@@ -1378,7 +1478,7 @@ namespace Fusee.Math
         /// <summary>
         /// Returns a System.String that represents the current Matrix44.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A string.</returns>
         public override string ToString()
         {
             return String.Format("{0}\n{1}\n{2}\n{3}", Row0, Row1, Row2, Row3);

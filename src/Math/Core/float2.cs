@@ -1054,6 +1054,21 @@ namespace Fusee.Math
         }
 
         /// <summary>
+        /// Multiplies two instances.
+        /// </summary>
+        /// <param name="vec1">Left operand.</param>
+        /// <param name="vec2">Right operand.</param>
+        /// <returns>
+        /// Result of multiplication.
+        /// </returns>
+        public static float2 operator *(float2 vec1, float2 vec2)
+        {
+            vec1.x *= vec2.x;
+            vec1.y *= vec2.y;
+            return vec1;
+        }
+
+        /// <summary>
         /// Divides the specified instance by a scalar.
         /// </summary>
         /// <param name="vec">Left operand</param>

@@ -267,28 +267,63 @@ namespace Fusee.Math
 
         #endregion
 
+        #region Clamp
+
+        /// <summary>
+        /// Clamp a value to the given minimum and maximum vectors.
+        /// </summary>
+        /// <param name="val">Input value</param>
+        /// <param name="min">Minimum value</param>
+        /// <param name="max">Maximum value</param>
+        /// <returns>
+        /// The clamped value.
+        /// </returns>
+        public static double Clamp(double val, double min, double max)
+        {
+            return val < min ? min : val > max ? max : val;
+        }
+
+        /// <summary>
+        /// Clamp a value to the given minimum and maximum vectors.
+        /// </summary>
+        /// <param name="val">Input value.</param>
+        /// <param name="min">Minimum value.</param>
+        /// <param name="max">Maximum value.</param>
+        /// <returns>
+        /// The clamped value.
+        /// </returns>
         public static float Clamp(float val, float min, float max)
         {
-            if (val < min)
-            {
-                return min;
-            }
-            else if (val > max)
-            {
-                return max;
-            }
-            return val;
+            return val < min ? min : val > max ? max : val;
         }
 
-        public static float3 Clamp(float3 val, float min, float max)
+        #endregion
+
+        #region Equals
+
+        /// <summary>
+        /// Compares two double values for equality.
+        /// </summary>
+        /// <param name="a">The first value.</param>
+        /// <param name="b">The second value.</param>
+        /// <returns>True if the numbers are equal.</returns>
+        public static bool Equals(double a, double b)
         {
-            return new float3(Clamp(val.x, min, max), Clamp(val.x, min, max), Clamp(val.x, min, max));
+            return (System.Math.Abs(a - b) < EpsilonDouble);
         }
 
-        public static float Deg2Rad(float deg)
+        /// <summary>
+        /// Compares two float values for equality.
+        /// </summary>
+        /// <param name="a">The first value.</param>
+        /// <param name="b">The second value.</param>
+        /// <returns>True if the numbers are equal.</returns>
+        public static bool Equals(float a, float b)
         {
-            return deg * .017453292519943295f;
+            return (System.Math.Abs(a - b) < EpsilonFloat);
         }
+
+        #endregion
 
         #endregion
     } 

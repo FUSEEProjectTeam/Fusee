@@ -1,5 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
+using ProtoBuf;
 
 namespace Fusee.Math
 {
@@ -9,8 +11,9 @@ namespace Fusee.Math
     /// </remarks>
     [Serializable]
     [StructLayout(LayoutKind.Sequential)]
+    [ProtoContract]
 // ReSharper disable InconsistentNaming
-    public struct float4 : IEquatable<float4>
+    public struct float4  : IEquatable<float4>
 // ReSharper restore InconsistentNaming
     {
         #region Fields
@@ -18,21 +21,25 @@ namespace Fusee.Math
         /// <summary>
         /// The x component of the float4.
         /// </summary>
+        [ProtoMember(1)] 
         public float x;
 
         /// <summary>
         /// The y component of the float4.
         /// </summary>
+        [ProtoMember(2)] 
         public float y;
 
         /// <summary>
         /// The z component of the float4.
         /// </summary>
+        [ProtoMember(3)] 
         public float z;
 
         /// <summary>
         /// The w component of the float4.
         /// </summary>
+        [ProtoMember(4)]
         public float w;
 
         /// <summary>
@@ -74,6 +81,8 @@ namespace Fusee.Math
 
         #region Constructors
 
+
+
         /// <summary>
         /// Constructs a new float4.
         /// </summary>
@@ -81,7 +90,7 @@ namespace Fusee.Math
         /// <param name="y">The y component of the float4.</param>
         /// <param name="z">The z component of the float4.</param>
         /// <param name="w">The w component of the float4.</param>
-        public float4(float x, float y, float z, float w)
+        public float4(float x, float y, float z, float w) : this()
         {
             this.x = x;
             this.y = y;
@@ -365,9 +374,25 @@ namespace Fusee.Math
         /// <summary>
         /// XML-Comment
         /// </summary>
+        /// <returns>An float array of size 4 that cobtains the x,y,z,w components.</returns>
         public float[] ToArray()
         {
             return new float[] { x, y, z, w };
+        }
+
+        #endregion
+
+        #region public void Round()
+
+        /// <summary>
+        /// Rounds the float4 to 6 digits (max float precision).
+        /// </summary>
+        public void Round()
+        {
+            x = (float) System.Math.Round(x, 6);
+            y = (float) System.Math.Round(y, 6);
+            z = (float) System.Math.Round(z, 6);
+            w = (float) System.Math.Round(w, 6);
         }
 
         #endregion
@@ -960,6 +985,23 @@ namespace Fusee.Math
 
         #endregion
 
+        #region Round
+
+        /// <summary>
+        /// Rounds a vector to 6 digits (max float precision).
+        /// </summary>
+        /// <param name="vec">The input vector.</param>
+        /// <returns>The rounded vector.</returns>
+        public static float4 Round(float4 vec)
+        {
+            return new float4((float) System.Math.Round(vec.x, 6),
+                              (float) System.Math.Round(vec.y, 6),
+                              (float) System.Math.Round(vec.z, 6),
+                              (float) System.Math.Round(vec.w, 6));
+        }
+
+        #endregion
+
         #endregion
 
         #region Swizzle
@@ -1128,7 +1170,7 @@ namespace Fusee.Math
         /// <summary>
         /// Returns a System.String that represents the current float4.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A string.</returns>
         public override string ToString()
         {
             return String.Format("({0}, {1}, {2}, {3})", x, y, z, w);

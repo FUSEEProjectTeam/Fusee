@@ -2,77 +2,28 @@
 using System.Collections.Generic;
 using JSIL.Meta;
 using Fusee.Math;
-
 namespace Fusee.Engine
 {
     /// <summary>
     /// The render context contains all functions necessary to manipulate the underlying rendering hardware. Use this class' elements
-    /// to render geometry to the RenderCanvas associated with this context. If you are worked with OpenGL or DirectX before you will find
+    /// to render geometry to the RenderCanvas associated with this context. If you have worked with OpenGL or DirectX before you will find
     /// many similarities in this class' methods and properties.
     /// </summary>
     public class RenderContext
     {
-        private readonly IRenderContextImp _rci;
+        #region Fields
 
+        #region Private Fields
+
+        private readonly IRenderContextImp _rci;
         private ShaderProgram _currentShader;
         private MatrixParamNames _currentShaderParams;
         private ShaderProgram _debugShader;
+        private IShaderParam _debugColor;
         private readonly Light[] _lightParams;
         private readonly LightParamNames[] _lightShaderParams;
-
+        private bool _debugLinesEnabled = true;
         private bool _updatedShaderParams;
-
-        internal struct MatrixParamNames
-        {
-            // ReSharper disable InconsistentNaming
-            public IShaderParam FUSEE_M;
-            public IShaderParam FUSEE_V;
-            public IShaderParam FUSEE_MV;
-
-            public IShaderParam FUSEE_P;
-            public IShaderParam FUSEE_MVP;
-
-            public IShaderParam FUSEE_IMV;
-            public IShaderParam FUSEE_IP;
-            public IShaderParam FUSEE_IMVP;
-
-            public IShaderParam FUSEE_TMV;
-            public IShaderParam FUSEE_TP;
-            public IShaderParam FUSEE_TMVP;
-
-            public IShaderParam FUSEE_ITMV;
-            public IShaderParam FUSEE_ITP;
-            public IShaderParam FUSEE_ITMVP;
-            // ReSharper restore InconsistentNaming
-        };
-
-        internal struct LightParamNames
-        {
-            // ReSharper disable InconsistentNaming
-            public IShaderParam FUSEE_L_AMBIENT;
-            public IShaderParam FUSEE_L_DIFFUSE;
-            public IShaderParam FUSEE_L_SPECULAR;
-            public IShaderParam FUSEE_L_POSITION;
-            public IShaderParam FUSEE_L_DIRECTION;
-            // ReSharper restore InconsistentNaming
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="rci"></param>
-        public RenderContext(IRenderContextImp rci)
-        {
-            _rci = rci;
-            View = float4x4.Identity;
-            ModelView = float4x4.Identity;
-            Projection = float4x4.Identity;
-
-            _lightParams = new Light[8];
-            _lightShaderParams = new LightParamNames[8];
-            _debugShader = MoreShaders.GetShader("oneColor",this);
-            _updatedShaderParams = false;
-        }
 
         // Settable matrices
         private float4x4 _modelView;
@@ -121,121 +72,64 @@ namespace Fusee.Engine
         private bool _transProjectionOk;
         private bool _transModelViewProjectionOk;
 
+        #endregion
 
-        /// <summary>
-        /// Creates a new Image with a specified size and color.
-        /// </summary>
-        /// <param name="width">The width of the image.</param>
-        /// <param name="height">The height of the image.</param>
-        /// <param name="bgColor">The color of the image. Value must be JS compatible.</param>
-        /// <returns>An ImageData struct containing all necessary information for further processing.</returns>
-        public ImageData CreateImage(int width, int height, String bgColor)
+        #region Internal Fields
+
+        internal struct MatrixParamNames
         {
-            return _rci.CreateImage(width, height, bgColor);
+            // ReSharper disable InconsistentNaming
+            public IShaderParam FUSEE_M;
+            public IShaderParam FUSEE_V;
+            public IShaderParam FUSEE_MV;
+
+            public IShaderParam FUSEE_P;
+            public IShaderParam FUSEE_MVP;
+
+            public IShaderParam FUSEE_IMV;
+            public IShaderParam FUSEE_IP;
+            public IShaderParam FUSEE_IMVP;
+
+            public IShaderParam FUSEE_TMV;
+            public IShaderParam FUSEE_TP;
+            public IShaderParam FUSEE_TMVP;
+
+            public IShaderParam FUSEE_ITMV;
+            public IShaderParam FUSEE_ITP;
+            public IShaderParam FUSEE_ITMVP;
+            // ReSharper restore InconsistentNaming
+        };
+
+        internal struct LightParamNames
+        {
+            // ReSharper disable InconsistentNaming
+            public IShaderParam FUSEE_L_AMBIENT;
+            public IShaderParam FUSEE_L_DIFFUSE;
+            public IShaderParam FUSEE_L_SPECULAR;
+            public IShaderParam FUSEE_L_POSITION;
+            public IShaderParam FUSEE_L_DIRECTION;
+            public IShaderParam FUSEE_L_SPOTANGLE;
+            public IShaderParam FUSEE_L_ACTIVE;
+            // ReSharper restore InconsistentNaming               
+
         }
 
-        /// <summary>
-        /// Maps a specified text with on an image.
-        /// </summary>
-        /// <param name="imgData">The ImageData struct with the PixelData from the image.</param>
-        /// <param name="fontName">The name of the text-font.</param>
-        /// <param name="fontSize">The size of the text-font.</param>
-        /// <param name="text">The text that sould be mapped on the iamge.</param>
-        /// <param name="textColor">The color of the text-font.</param>
-        /// <param name="startPosX">The horizontal start-position of the text on the image.</param>
-        /// <param name="startPosY">The vertical start-position of the text on the image.</param>
-        /// <returns>An ImageData struct containing all necessary information for further processing</returns>
-        public ImageData TextOnImage(ImageData imgData, String fontName, float fontSize, String text, String textColor, float startPosX, float startPosY)
-        {
-            return _rci.TextOnImage(imgData, fontName, fontSize, text, textColor, startPosX, startPosY);
-        }
+        #endregion
 
+
+
+        #region Matrix Fields
         /// <summary>
-        /// Creates a new texture and binds it to the shader.
+        /// The View matrix used by the rendering pipeline.
         /// </summary>
+        /// <value>
+        /// The view matrix.
+        /// </value>
         /// <remarks>
-        /// Method should be called after LoadImage method to process
-        /// the BitmapData an make them available for the shader.
+        /// This matrix is also reffered often as the camera transformation(not the projection). 
+        /// It describes the orientation of the view that is used to render a scene.
+        /// You can use <see cref="Fusee.Math.float4x4.LookAt(Fusee.Math.float3, Fusee.Math.float3, Fusee.Math.float3)"/> to create a valid view matrix and analyze how it is build up.
         /// </remarks>
-        /// <param name="imgData">An ImageData struct, containing necessary information for the upload to the graphics card.</param>
-        /// <returns>
-        /// An ITexture that can be used for texturing in the shader.
-        /// </returns>
-        public ITexture CreateTexture(ImageData imgData)
-        {
-            return _rci.CreateTexture(imgData);
-        }
-
-        public ITexture DisableTexture()
-        {
-            return _rci.CreateTexture(CreateImage(1, 1, "white"));
-        }
-
-        /// <summary>
-        /// Loads an image file from disk and creates a new Bitmap-object out of it.
-        /// </summary>
-        /// <remarks>
-        /// This is the first step for the texturing Process.
-        /// The Bitmap-bits get locked in the memory and are made available for
-        /// further processing. The returned ImageData-Struct can be used in the
-        /// CreateTexture method.
-        /// </remarks>
-        /// <param name="filename">Path to the image file</param>
-        /// <returns>
-        /// An ImageData struct with all necessary information for the texture-binding process.
-        /// </returns>
-        public ImageData LoadImage(String filename)
-        {
-            return _rci.LoadImage(filename);
-        }
-
-        /// <summary>
-        /// Sets a Shader Parameter to a created texture.
-        /// </summary>
-        /// <param name="param">Shader Parameter used for texture binding.</param>
-        /// <param name="texId">An ITexture probably returned from CreateTexture() method.</param>
-        public void SetShaderParamTexture(IShaderParam param, ITexture texId)
-        {
-            _rci.SetShaderParamTexture(param, texId);
-        }
-
-        public ShaderProgram CurrentShader
-        {
-            get { return _currentShader; }
-        }
-        //directional or Point- Light
-        public void SetLight(float3 v3, float4 color, int type, int id)
-        {
-            switch (type)
-            {
-                case 0:
-                    SetLightActive(id, 1);
-                    SetLightAmbient(id, color);
-                    SetLightDiffuse(id, color);
-                    SetLightSpecular(id, color);
-                    SetLightDirection(id, v3);
-                    break;
-                case 1:
-                    SetLightActive(id, 1);
-                    SetLightAmbient(id, color);
-                    SetLightDiffuse(id, color);
-                    SetLightSpecular(id, color);
-                    SetLightPosition(id, v3);
-                    break;
-            }
-        }
-
-        //Spotlight with position AND direction
-        public void SetLight(float3 position, float3 direction, float4 color, int type, int id)
-        {
-            SetLightActive(id, 1);
-            SetLightAmbient(id, color);
-            SetLightDiffuse(id, color);
-            SetLightSpecular(id, color);
-            SetLightPosition(id, position);
-            SetLightDirection(id, direction);
-        }
-
         public float4x4 View
         {
             get { return _view; }
@@ -259,7 +153,7 @@ namespace Fusee.Engine
                 _transViewOk = false;
                 _transModelViewOk = false;
                 _transModelViewProjectionOk = false;
-                _modelView = _model * _view;
+                _modelView = _view * _model;
 
                 UpdateCurrentShader();
 
@@ -267,6 +161,15 @@ namespace Fusee.Engine
             }
         }
 
+        /// <summary>
+        /// The Model matrix used by the rendering pipeline.
+        /// </summary>
+        /// <value>
+        /// The model matrix.
+        /// </value>
+        /// <remarks>
+        /// Model coordinates are the coordinates directly taken from the model (the mesh geometry - <see cref="Fusee.Engine.Mesh"/>).
+        /// </remarks>
         public float4x4 Model
         {
 
@@ -287,7 +190,7 @@ namespace Fusee.Engine
                 _transModelOk = false;
                 _transModelViewOk = false;
                 _transModelViewProjectionOk = false;
-                _modelView = _model*_view;
+                _modelView = _model * _view;
 
                 UpdateCurrentShader();
                 _rci.ModelView = _modelView;
@@ -408,6 +311,18 @@ namespace Fusee.Engine
             }
         }
 
+        /// <summary>
+        /// Gets the inverted View matrix.
+        /// </summary>
+        /// <value>
+        /// The inverted view matrix.
+        /// </value>
+        /// <remarks>
+        /// If the View matrix is orthogonal (i.e. contains no scale component), its inverse matrix
+        /// is equal to its transpose matrix.
+        /// </remarks>
+        /// <seealso cref="Fusee.Engine.RenderContext.View"/>
+        /// <seealso cref="Fusee.Engine.RenderContext.TransView"/>
         public float4x4 InvView
         {
             get
@@ -421,6 +336,18 @@ namespace Fusee.Engine
             }
         }
 
+        /// <summary>
+        /// Gets the inverted Model matrix.
+        /// </summary>
+        /// <value>
+        /// The inverted Model matrix.
+        /// </value>
+        /// <remarks>
+        /// If the Model matrix is orthogonal (i.e. contains no scale component), its inverse matrix
+        /// is equal to its transpose matrix.
+        /// </remarks>
+        /// <seealso cref="Fusee.Engine.RenderContext.Model"/>
+        /// <seealso cref="Fusee.Engine.RenderContext.TransModel"/>
         public float4x4 InvModel
         {
             get
@@ -512,6 +439,18 @@ namespace Fusee.Engine
             }
         }
 
+        /// <summary>
+        /// The transpose of the View matrix.
+        /// </summary>
+        /// <value>
+        /// The 4x4 matrix resulting from the matrix transpose applied to the View matrix.
+        /// </value>
+        /// <remarks>
+        /// If the View matrix is orthogonal (i.e. contains no scale component), its transpose matrix
+        /// is equal to its inverse matrix.
+        /// </remarks>
+        /// <seealso cref="Fusee.Engine.RenderContext.View"/>
+        /// <seealso cref="Fusee.Engine.RenderContext.InvView"/>
         public float4x4 TransView
         {
             get
@@ -525,6 +464,18 @@ namespace Fusee.Engine
             }
         }
 
+        /// <summary>
+        /// The transpose of the Model matrix.
+        /// </summary>
+        /// <value>
+        /// The 4x4 matrix resulting from the matrix transpose applied to the Model matrix.
+        /// </value>
+        /// <remarks>
+        /// If the Model matrix is orthogonal (i.e. contains no scale component), its transpose matrix
+        /// is equal to its inverse matrix.
+        /// </remarks>
+        /// <seealso cref="Fusee.Engine.RenderContext.Model"/>
+        /// <seealso cref="Fusee.Engine.RenderContext.InvModel"/>
         public float4x4 TransModel
         {
             get
@@ -616,6 +567,19 @@ namespace Fusee.Engine
             }
         }
 
+        /// <summary>
+        /// The inverse transpose of the View matrix.
+        /// </summary>
+        /// <value>
+        /// The 4x4 matrix resulting from the matrix inversion and transpose applied to the View matrix.
+        /// </value>
+        /// <remarks>
+        /// If the View matrix is orthogonal (i.e. contains no scale component), its inverse transpose matrix
+        /// is the same as the original View matrix.
+        /// </remarks>
+        /// <seealso cref="Fusee.Engine.RenderContext.View"/>
+        /// <seealso cref="Fusee.Engine.RenderContext.InvView"/>
+        /// <seealso cref="Fusee.Engine.RenderContext.TransView"/>
         public float4x4 InvTransView
         {
             get
@@ -629,6 +593,19 @@ namespace Fusee.Engine
             }
         }
 
+        /// <summary>
+        /// The inverse transpose of the Model matrix.
+        /// </summary>
+        /// <value>
+        /// The 4x4 matrix resulting from the matrix inversion and transpose applied to the Model matrix.
+        /// </value>
+        /// <remarks>
+        /// If the Model matrix is orthogonal (i.e. contains no scale component), its inverse transpose matrix
+        /// is the same as the original Model matrix.
+        /// </remarks>
+        /// <seealso cref="Fusee.Engine.RenderContext.Model"/>
+        /// <seealso cref="Fusee.Engine.RenderContext.InvModel"/>
+        /// <seealso cref="Fusee.Engine.RenderContext.TransModel"/>
         public float4x4 InvTransModel
         {
             get
@@ -723,6 +700,122 @@ namespace Fusee.Engine
             }
         }
 
+        #endregion
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RenderContext"/> class.
+        /// </summary>
+        /// <param name="rci">The <see cref="Fusee.Engine.IRenderContextImp"/>.</param>
+        public RenderContext(IRenderContextImp rci)
+        {
+            _rci = rci;
+            View = float4x4.Identity;
+            ModelView = float4x4.Identity;
+            Projection = float4x4.Identity;
+
+            _lightParams = new Light[8];
+            _lightShaderParams = new LightParamNames[8];
+            _debugShader = MoreShaders.GetDiffuseColorShader(this);
+            _debugColor = _debugShader.GetShaderParam("color");
+            _updatedShaderParams = false;
+        }
+
+        #endregion
+
+        #region Members
+
+        #region Image data related Members
+
+        /// <summary>
+        /// Creates a new Image with a specified size and color.
+        /// </summary>
+        /// <param name="width">The width of the image.</param>
+        /// <param name="height">The height of the image.</param>
+        /// <param name="bgColor">The color of the image. Value must be JS compatible.</param>
+        /// <returns>An ImageData struct containing all necessary information for further processing.</returns>
+        public ImageData CreateImage(int width, int height, String bgColor)
+        {
+            return _rci.CreateImage(width, height, bgColor);
+        }
+
+        /// <summary>
+        /// Maps a specified text with on an image.
+        /// </summary>
+        /// <param name="imgData">The ImageData struct with the PixelData from the image.</param>
+        /// <param name="fontName">The name of the text-font.</param>
+        /// <param name="fontSize">The size of the text-font.</param>
+        /// <param name="text">The text that sould be mapped on the iamge.</param>
+        /// <param name="textColor">The color of the text-font.</param>
+        /// <param name="startPosX">The horizontal start-position of the text on the image.</param>
+        /// <param name="startPosY">The vertical start-position of the text on the image.</param>
+        /// <returns>An ImageData struct containing all necessary information for further processing</returns>
+        public ImageData TextOnImage(ImageData imgData, String fontName, float fontSize, String text, String textColor, float startPosX, float startPosY)
+        {
+            return _rci.TextOnImage(imgData, fontName, fontSize, text, textColor, startPosX, startPosY);
+        }
+
+        /// <summary>
+        /// Creates a new texture and binds it to the shader.
+        /// </summary>
+        /// <remarks>
+        /// Method should be called after LoadImage method to process
+        /// the BitmapData an make them available for the shader.
+        /// </remarks>
+        /// <param name="imgData">An ImageData struct, containing necessary information for the upload to the graphics card.</param>
+        /// <returns>
+        /// An <see cref="ITexture"/> that can be used for texturing in the shader.
+        /// </returns>
+        public ITexture CreateTexture(ImageData imgData)
+        {
+            return _rci.CreateTexture(imgData);
+        }
+
+        /// <summary>
+        /// Creates a white Texture with 1x1 pixel size.
+        /// </summary>
+        /// <returns>
+        /// An <see cref="ITexture"/> that can be used for texturing in the shader.
+        /// </returns>
+        public ITexture DisableTexture()
+        {
+            return _rci.CreateTexture(CreateImage(1, 1, "white"));
+        }
+
+        /// <summary>
+        /// Loads an image file from disk and creates a new Bitmap-object out of it.
+        /// </summary>
+        /// <remarks>
+        /// This is the first step for the texturing Process.
+        /// The Bitmap-bits get locked in the memory and are made available for
+        /// further processing. The returned ImageData-Struct can be used in the
+        /// CreateTexture method.
+        /// </remarks>
+        /// <param name="filename">Path to the image file</param>
+        /// <returns>
+        /// An ImageData struct with all necessary information for the texture-binding process.
+        /// </returns>
+        public ImageData LoadImage(String filename)
+        {
+            return _rci.LoadImage(filename);
+        }
+
+        /// <summary>
+        /// Sets a Shader Parameter to a created texture.
+        /// </summary>
+        /// <param name="param">Shader Parameter used for texture binding.</param>
+        /// <param name="texId">An ITexture probably returned from CreateTexture() method.</param>
+        public void SetShaderParamTexture(IShaderParam param, ITexture texId)
+        {
+            _rci.SetShaderParamTexture(param, texId);
+        }
+
+        #endregion
+
+        #region Private Members
+
         private void UpdateCurrentShader()
         {
             // Todo: Check if the respective matrix was changed since last accessed by the currently updated shader
@@ -796,6 +889,12 @@ namespace Fusee.Engine
 
                 if (_lightShaderParams[i].FUSEE_L_DIRECTION != null)
                     SetShaderParam(_lightShaderParams[i].FUSEE_L_DIRECTION, _lightParams[i].Direction);
+
+                if (_lightShaderParams[i].FUSEE_L_ACTIVE != null)
+                    SetShaderParam(_lightShaderParams[i].FUSEE_L_ACTIVE, _lightParams[i].Active);
+
+                if (_lightShaderParams[i].FUSEE_L_SPOTANGLE != null)
+                    SetShaderParam(_lightShaderParams[i].FUSEE_L_SPOTANGLE, _lightParams[i].Angle);
             }
         }
 
@@ -836,18 +935,119 @@ namespace Fusee.Engine
                 _lightShaderParams[i].FUSEE_L_SPECULAR = _currentShader.GetShaderParam("FUSEE_L" + i + "_SPECULAR");
                 _lightShaderParams[i].FUSEE_L_POSITION = _currentShader.GetShaderParam("FUSEE_L" + i + "_POSITION");
                 _lightShaderParams[i].FUSEE_L_DIRECTION = _currentShader.GetShaderParam("FUSEE_L" + i + "_DIRECTION");
+                _lightShaderParams[i].FUSEE_L_SPOTANGLE = _currentShader.GetShaderParam("FUSEE_L" + i + "_SPOTANGLE");
+                _lightShaderParams[i].FUSEE_L_ACTIVE = _currentShader.GetShaderParam("FUSEE_L" + i + "_ACTIVE");
             }
 
             _updatedShaderParams = true;
             UpdateCurrentShader();
         }
 
+        #endregion
+
+        #region Public Members
+
+        /// <summary>
+        /// Gets the current shader.
+        /// </summary>
+        /// <value>
+        /// The current shader.
+        /// </value>
+        public ShaderProgram CurrentShader
+        {
+            get { return _currentShader; }
+        }
+        //directional or Point- Light
+        /// <summary>
+        /// Sets the directional or point lights information.
+        /// </summary>
+        /// <param name="v3">The lights direction or position. This depends on the light type.</param>
+        /// <param name="diffuse">The diffuse light color.</param>
+        /// <param name="ambient">The ambient light color.</param>
+        /// <param name="specular">The specular light color.</param>
+        /// <param name="type">The type of the light. 0=directional, 1=point.</param>
+        /// <param name="id">The identifier. A maximum of 8 lights is recommended due to portability.</param>
+        public void SetLight(float3 v3, float4 diffuse, float4 ambient, float4 specular, int type, int id)
+        {
+            switch (type)
+            {
+                case 1:
+                    SetLightActive(id, type);
+                    SetLightAmbient(id, ambient);
+                    SetLightDiffuse(id, diffuse);
+                    SetLightSpecular(id, specular);
+                    SetLightDirection(id, v3);
+                    break;
+                case 2:
+                    SetLightActive(id, type);
+                    SetLightAmbient(id, ambient);
+                    SetLightDiffuse(id, diffuse);
+                    SetLightSpecular(id, specular);
+                    SetLightPosition(id, v3);
+                    break;
+            }
+        }
+
+        //Spotlight with position AND direction
+        /// <summary>
+        /// Sets the spotlights information.
+        /// </summary>
+        /// <param name="position">The light position.</param>
+        /// <param name="direction">The light direction.</param>
+        /// <param name="diffuse">The diffuse light color.</param>
+        /// <param name="ambient">The ambient light color.</param>
+        /// <param name="specular">The specular light color.</param>
+        /// <param name="type">The light type.</param>
+        /// <param name="id">The identifier.A maximum of 8 lights is recommended due to portability.</param>
+        public void SetLight(float3 position, float3 direction, float4 diffuse, float4 ambient, float4 specular, int type, int id)
+        {
+            SetLightActive(id, type);
+            SetLightAmbient(id, ambient);
+            SetLightDiffuse(id, diffuse);
+            SetLightSpecular(id, specular);
+            SetLightPosition(id, position);
+            SetLightDirection(id, direction);
+        }
+
+        /// <summary>
+        /// The color to use when clearing the color buffer.
+        /// </summary>
+        /// <value>
+        /// The color value is interpreted as a (Red, Green, Blue, Alpha) quadruple with
+        /// component values ranging from 0.0f to 1.0f.
+        /// </value>
+        /// <remarks>
+        /// This is the color that will be copied to all pixels in the output color buffer when Clear is called on the render context.
+        /// </remarks>
+        /// <seealso cref="Clear"/>
+        public float4 ClearColor
+        {
+            set { _rci.ClearColor = value; }
+            get { return _rci.ClearColor; }
+        }
+
+        /// <summary>
+        /// The depth value to use when clearing the color buffer.
+        /// </summary>
+        /// <value>
+        /// Typically set to the highest possible depth value. Typically ranges between 0 and 1.
+        /// </value>
+        /// <remarks>
+        /// This is the depth (z-) value that will be copied to all pixels in the depth (z-) buffer when Clear is called on the render context.
+        /// </remarks>
+        public float ClearDepth
+        {
+            set { _rci.ClearDepth = value; }
+            get { return _rci.ClearDepth; }
+        }
+
+
         /// <summary>
         /// Activates the light with the given index.
         /// </summary>
         /// <param name="lightInx">The light to activate. Can range from 0 to 7. Up to eight lights are supported.</param>
         /// <param name="active">1 - activate the light. 0 - deactiv</param>
-        public void SetLightActive(int lightInx, int active)
+        public void SetLightActive(int lightInx, float active)
         {
             _lightParams[lightInx].Active = active;
             IShaderParam sp;
@@ -952,6 +1152,21 @@ namespace Fusee.Engine
         }
 
         /// <summary>
+        /// Sets the opening angle of the spot light with the given index.
+        /// </summary>
+        /// <param name="lightInx">The light to set the direction on. Can range from 0 to 7. Up to eight lights are supported.</param>
+        /// <param name="angle">The opening angle of the spotlight in degree.</param>
+        public void SetLightSpotAngle(int lightInx, float angle)
+        {
+
+            _lightParams[lightInx].Angle = -(float)System.Math.Cos(angle);
+            IShaderParam sp;
+            string paramName = "FUSEE_L" + lightInx + "_SPOTANGLE";
+            if ((sp = _currentShader.GetShaderParam(paramName)) != null)
+                SetShaderParam(sp, _lightParams[lightInx].Angle);
+        }
+
+        /// <summary>
         /// Creates a shader object from vertex shader source code and pixel shader source code.
         /// </summary>
         /// <param name="vs">A string containing the vertex shader source.</param>
@@ -964,7 +1179,7 @@ namespace Fusee.Engine
         /// </remarks>
         public ShaderProgram CreateShader(string vs, string ps)
         {
-            var sp = new ShaderProgram(_rci, _rci.CreateShader(vs, ps)) {_spi = _rci.CreateShader(vs, ps)};
+            var sp = new ShaderProgram(_rci, _rci.CreateShader(vs, ps));
             /*
 sp.ShaderParamHandlesImp = new ShaderParamHandleImp[MatrixParamNames.Length];
 for (int i=0; i < MatrixParamNames.Length; i++)
@@ -983,12 +1198,14 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
         /// <seealso cref="Fusee.Engine.RenderContext.Render(Mesh)"/>
         public void SetShader(ShaderProgram program)
         {
-            _updatedShaderParams = false;
-
-            _currentShader = program;
-            _rci.SetShader(program._spi);
-
-            UpdateShaderParams();
+                _updatedShaderParams = false;
+                
+                if (_currentShader != program)
+                {
+                    _currentShader = program;
+                    _rci.SetShader(program._spi);
+                }
+            UpdateShaderParams();         
         }
 
         /// <summary>
@@ -1010,13 +1227,12 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
         /// <summary>
         /// Returns an identifiyer for the named (uniform) parameter used in the specified shader program.
         /// </summary>
-        /// <param name="program">The shader program using the parameter.</param>
+        /// <param name="program">The <see cref="ShaderProgram"/> using the parameter.</param>
         /// <param name="paramName">Name of the shader parameter.</param>
-        /// <returns>A handle object to identify the given parameter in subsequent calls to SetShaderParam.</returns>
+        /// <returns>A <see cref="IShaderParam"/> object to identify the given parameter in subsequent calls to SetShaderParam.</returns>
         /// <remarks>
         /// The returned handle can be used to assign values to a (uniform) shader paramter.
         /// </remarks>
-        /// <seealso cref="SetShaderParam(IShaderParam,float)"/>
         public IShaderParam GetShaderParam(ShaderProgram program, string paramName)
         {
             return _rci.GetShaderParam(program._spi, paramName);
@@ -1025,8 +1241,8 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
         /// <summary>
         /// Gets the value of a shader parameter.
         /// </summary>
-        /// <param name="program">The program.</param>
-        /// <param name="handle">The handle.</param>
+        /// <param name="program">The <see cref="ShaderProgram"/>.</param>
+        /// <param name="handle">The <see cref="IShaderParam"/>.</param>
         /// <returns>The float value.</returns>
         public float GetParamValue(ShaderProgram program, IShaderParam handle)
         {
@@ -1036,7 +1252,7 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
         /// <summary>
         /// Sets the specified shader parameter to a float value.
         /// </summary>
-        /// <param name="param">The shader parameter identifier.</param>
+        /// <param name="param">The <see cref="IShaderParam"/> identifier.</param>
         /// <param name="val">The float value that should be assigned to the shader parameter.</param>
         /// <remarks>
         /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
@@ -1052,7 +1268,7 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
         /// <summary>
         /// Sets the shader parameter to a float2 value.
         /// </summary>
-        /// <param name="param">The shader parameter identifier.</param>
+        /// <param name="param">The <see cref="IShaderParam"/> identifier.</param>
         /// <param name="val">The float2 value that should be assigned to the shader parameter.</param>
         /// <remarks>
         /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
@@ -1068,7 +1284,7 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
         /// <summary>
         /// Sets the shader parameter to a float3 value.
         /// </summary>
-        /// <param name="param">The shader parameter identifier.</param>
+        /// <param name="param">The <see cref="IShaderParam"/> identifier.</param>
         /// <param name="val">The float3 value that should be assigned to the shader parameter.</param>
         /// <remarks>
         /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
@@ -1084,7 +1300,7 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
         /// <summary>
         /// Sets the shader parameter to a float4 value.
         /// </summary>
-        /// <param name="param">The shader parameter identifier.</param>
+        /// <param name="param">The <see cref="IShaderParam"/> identifier.</param>
         /// <param name="val">The float4 value that should be assigned to the shader parameter.</param>
         /// <remarks>
         /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
@@ -1100,13 +1316,14 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
         /// <summary>
         /// Sets the shader parameter to a float4x4 matrixvalue.
         /// </summary>
-        /// <param name="param">The shader parameter identifier.</param>
+        /// <param name="param">The <see cref="IShaderParam"/> identifier.</param>
         /// <param name="val">The float4x4 matrix that should be assigned to the shader parameter.</param>
         /// <remarks>
         /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
         /// <seealso cref="GetShaderParamList"/>
+        [JSChangeName("SetShaderParamMtx4f")]
         public void SetShaderParam(IShaderParam param, float4x4 val)
         {
             _rci.SetShaderParam(param, val);
@@ -1115,7 +1332,7 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
         /// <summary>
         /// Sets the shader parameter to a integer value.
         /// </summary>
-        /// <param name="param">The shader parameter identifier.</param>
+        /// <param name="param">The <see cref="IShaderParam"/> identifier.</param>
         /// <param name="val">The integer value that should be assigned to the shader parameter.</param>
         /// <remarks>
         /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
@@ -1163,7 +1380,7 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
             if (m.Colors != null && m.Colors.Length != 0 && !m.ColorsSet)
                 _rci.SetColors(m._meshImp, m.Colors);
 
-            if (m.UVs != null && m.UVs.Length != 0 && !m.NormalsSet)
+            if (m.UVs != null && m.UVs.Length != 0 && !m.UVsSet)
                 _rci.SetUVs(m._meshImp, m.UVs);
 
             if (m.Normals != null && m.Normals.Length != 0 && !m.NormalsSet)
@@ -1175,13 +1392,52 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
             _rci.Render(m._meshImp);
         }
 
-        public void DebugLine(float3 start, float3 end, float3 color)
+        /// <summary>
+        /// Gets or sets a value indicating whether [debug lines enabled].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [debug lines enabled]; otherwise, <c>false</c>.
+        /// </value>
+        public bool DebugLinesEnabled
         {
-            SetShader(_debugShader);
-            SetShaderParam(_currentShaderParams.FUSEE_MVP, ModelViewProjection);
-            IShaderParam col = _debugShader.GetShaderParam("Col");
-            SetShaderParam(col, color);
-            _rci.DebugLine(start, end, color);
+            get { return _debugLinesEnabled; }
+            set { _debugLinesEnabled = value; }
+        }
+
+        /// <summary>
+        /// Draws a Debug Line in 3D Space by using a start and end point (float3).
+        /// </summary>
+        /// <param name="start">The startpoint of the DebugLine.</param>
+        /// <param name="end">The endpoint of the DebugLine.</param>
+        /// <param name="color">The color of the DebugLine.</param>
+        public void DebugLine(float3 start, float3 end, float4 color)
+        {
+            if (_debugLinesEnabled)
+            {
+                start /= 2;
+                end /= 2;
+
+                //var oldShader = _currentShader;
+                SetShader(_debugShader);
+
+                SetShaderParam(_currentShaderParams.FUSEE_MVP, ModelViewProjection);
+                //IShaderParam col = _debugShader.GetShaderParam("Col");
+                SetShaderParam(_debugColor, color);
+
+                _rci.DebugLine(start, end, color);
+
+                // SetShader(oldShader);
+            }
+        }
+
+        /// <summary>
+        /// Gets the content of the buffer and passes it to the <see cref="IRenderCanvasImp"/>.
+        /// </summary>
+        /// <param name="quad">The <see cref="Rectangle"/>.</param>
+        /// <param name="texId">The <see cref="ITexture"/>.</param>
+        public void GetBufferContent(Rectangle quad, ITexture texId)
+        {
+            _rci.GetBufferContent(quad, texId);
         }
 
         /// <summary>
@@ -1199,47 +1455,38 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
             _rci.Viewport(x, y, width, height);
         }
 
+        /// <summary>
+        /// Enable or disable Color channels to be written to the frame buffer (final image).
+        /// Use this function as a color channel filter for the final image.
+        /// </summary>
+        /// <param name="red">if set to <c>true</c> [red].</param>
+        /// <param name="green">if set to <c>true</c> [green].</param>
+        /// <param name="blue">if set to <c>true</c> [blue].</param>
+        /// <param name="alpha">if set to <c>true</c> [alpha].</param>
         public void ColorMask(bool red, bool green, bool blue, bool alpha)
         {
             _rci.ColorMask(red, green, blue, alpha);
         }
 
+        /// <summary>
+        /// Specify the View Frustum by settings its left,right,bottom,top,near and far planes. 
+        /// Image the View frustum as a cubical form that determines the Cameras 3D view along its far plane. 
+        /// </summary>
+        /// <param name="left">The left plane.</param>
+        /// <param name="right">The right plane.</param>
+        /// <param name="bottom">The bottom plane.</param>
+        /// <param name="top">The top plane.</param>
+        /// <param name="zNear">The z near plane.</param>
+        /// <param name="zFar">The z far plane.</param>
         public void Frustum(double left, double right, double bottom, double top, double zNear, double zFar)
         {
             _rci.Frustum(left, right, bottom, top, zNear, zFar);
         }
 
-        /// <summary>
-        /// The color to use when clearing the color buffer.
-        /// </summary>
-        /// <value>
-        /// The color value is interpreted as a (Red, Green, Blue, Alpha) quadruple with
-        /// component values ranging from 0.0f to 1.0f.
-        /// </value>
-        /// <remarks>
-        /// This is the color that will be copied to all pixels in the output color buffer when Clear is called on the render context.
-        /// </remarks>
-        /// <seealso cref="Clear"/>
-        public float4 ClearColor
-        {
-            set { _rci.ClearColor = value; }
-            get { return _rci.ClearColor; }
-        }
+        #endregion
 
-        /// <summary>
-        /// The depth value to use when clearing the color buffer.
-        /// </summary>
-        /// <value>
-        /// Typically set to the highest possible depth value. Typically ranges between 0 and 1.
-        /// </value>
-        /// <remarks>
-        /// This is the depth (z-) value that will be copied to all pixels in the depth (z-) buffer when Clear is called on the render context.
-        /// </remarks>
-        public float ClearDepth
-        {
-            set { _rci.ClearDepth = value; }
-            get { return _rci.ClearDepth; }
-        }
+        #endregion
+
     }
 
 }

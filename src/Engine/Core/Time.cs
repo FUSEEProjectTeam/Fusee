@@ -6,16 +6,11 @@ using System.Text;
 namespace Fusee.Engine
 {
     /// <summary>
-    /// The Time class provides all time information. It is accessible from everywhere.
-    /// 
-    /// E.g. : int smoothedFramerate;
-    ///
-    ///        smoothedFramerate = Time.Instance.FramePerSecondSmooth. 
-    /// 
-    ///        Time.Instance.TimeFlow = 2;                             
+    /// The Time class provides all time information. It is accessible from everywhere by calling Time.instance.                          
     /// </summary>
     public class Time
     {
+        #region Fields
 
         private static Time _instance;
         private double _deltaTime;
@@ -110,13 +105,14 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// The timeFlow modifies the speed of the time.
-        /// 
+        /// The TimeFlow modifies the speed of the time.
+        /// </summary>
+        /// <remarks>
         /// 0 the time stops.
         /// 1 normal time speed.
         /// Smaller then 1 time passes slower. 
         /// Bigger then 1 time passes faster.
-        /// </summary>
+        /// </remarks>
         public float TimeFlow
         {
             set
@@ -146,5 +142,7 @@ namespace Fusee.Engine
                 return _instance;
             }
         }
+
+        #endregion
     }
 }

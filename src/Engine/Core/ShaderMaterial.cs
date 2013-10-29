@@ -5,15 +5,25 @@ using System.Collections.Generic;
 
 namespace Fusee.Engine
 {
+    // TODO: Implement proper Material handler
+    /// <summary>
+    /// Handles settings of shaderprograms. Currently not implemented.
+    /// </summary>
     public class ShaderMaterial
     {
-        private ShaderProgram _sp;
-        private Dictionary<string, dynamic> _list;
+        #region Fields
 
+        private ShaderProgram _sp;
+        //private Dictionary<string, dynamic> _list;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ShaderMaterial"/> class.
+        /// </summary>
+        /// <param name="program">The <see cref="ShaderProgram"/>.</param>
         public ShaderMaterial(ShaderProgram program)
         {
             _sp = program;
-            _list = new Dictionary<string, dynamic>();
+            //_list = new Dictionary<string, dynamic>();
             //foreach (KeyValuePair<string, ShaderParamInfo> k in _sp._paramsByName)
             //{
             //    _list.Add(k.Key, _sp._rci.GetParamValue(program._spi, k.Value.Handle));
@@ -29,19 +39,28 @@ namespace Fusee.Engine
 //                _list[name] = value;
 //        }
 
+        /// <summary>
+        /// Gets the shaderprogram.
+        /// </summary>
+        /// <returns>A <see cref="ShaderProgram"/>.</returns>
         public ShaderProgram GetShader()
         {
             return _sp;
         }
 
+        #endregion
+
+        #region Members
+
+        /// <summary>
+        /// Updates the material.
+        /// </summary>
+        /// <param name="rc">The rc.</param>
         public void UpdateMaterial(RenderContext rc)
         {
-            //IShaderParam sp;
-            //foreach (KeyValuePair<string, dynamic> k in _list)
-            //{
-            //    if ((sp = _sp.GetShaderParam(k.Key)) != null)
-            //        rc.SetShaderParam(sp, k.Value);
-            //}
+            rc.SetShader(_sp);
         }
+
+        #endregion
     }   
 }
