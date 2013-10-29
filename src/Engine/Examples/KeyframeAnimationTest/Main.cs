@@ -25,14 +25,14 @@ namespace Examples.KeyframeAnimationTest
         {
             SceneManager.RC = RC;
             SceneEntity stativ = new SceneEntity("stativ", new ActionCode());
-            DirectionalLight dir = new DirectionalLight(new float3(0, 0, 0), new float4(1, 1, 0, 1), new float3(0, 0, 0), 0);
+            DirectionalLight dir = new DirectionalLight(new float3(0, 10, -1), new float4(1, 1, 1, 1),new float4(1, 1, 1, 1),new float4(1, 1, 1, 1), new float3(0, 0, 0), 0);
             stativ.AddComponent(dir);
             camera = new Camera(stativ);
             stativ.transform.GlobalPosition = new float3(0, 0, 100);
             SceneManager.Manager.AddSceneEntity(stativ);
             camera.Resize(Width, Height);
             Geometry wuerfelGeo = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Sphere.obj.model"));
-            Wuerfel = new SceneEntity("wuerfel", new PlanetMaterial(MoreShaders.GetShader("diffuse2", RC), "Assets/tex_cube.jpg"), new Renderer(wuerfelGeo));
+            Wuerfel = new SceneEntity("wuerfel", new Material(MoreShaders.GetSpecularShader(RC)), new Renderer(wuerfelGeo));
             SceneManager.Manager.AddSceneEntity(Wuerfel);
 
 
