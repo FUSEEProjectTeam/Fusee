@@ -17,6 +17,10 @@ namespace Fusee.Engine
         #region Private Fields
 
         private readonly IRenderContextImp _rci;
+
+        private int _viewportWidth;
+        private int _viewportHeight;
+
         private ShaderProgram _currentShader;
         private MatrixParamNames _currentShaderParams;
         private readonly Light[] _lightParams;
@@ -30,7 +34,6 @@ namespace Fusee.Engine
         private ShaderProgram _textShader;
         private IShaderParam _textTextureParam;
         private IShaderParam _textColorParam;
-        private ITexture _textTexture;
 
         // Settable matrices
         private float4x4 _modelView;
@@ -78,8 +81,7 @@ namespace Fusee.Engine
         private bool _transModelViewOk;
         private bool _transProjectionOk;
         private bool _transModelViewProjectionOk;
-
-
+        
         #endregion
 
         #region Internal Fields
@@ -123,8 +125,6 @@ namespace Fusee.Engine
         }
 
         #endregion
-
-
 
         #region Matrix Fields
         /// <summary>
@@ -709,6 +709,7 @@ namespace Fusee.Engine
         }
 
         #endregion
+
         #endregion
 
         #region Constructors
@@ -830,7 +831,6 @@ namespace Fusee.Engine
 
         #region Text related Members
 
-        // Todo: Check if already loaded
         public IFont LoadFont(string filename, uint size)
         {
             if (!File.Exists(filename))
@@ -839,18 +839,91 @@ namespace Fusee.Engine
             return _rci.LoadFont(filename, size);
         }
 
-        public void TextOut(string text, IFont font, float x, float y, float sx, float sy)
+        public IFont LoadSystemFont(string fontname, uint size)
+        {
+            var fontsFolder = Environment.GetFolderPath(Environment.SpecialFolder.Fonts);
+            var pathToFont = Path.Combine(fontsFolder, fontname + ".ttf");
+
+            if (!File.Exists(pathToFont))
+                throw new Exception("Font not found: " + fontname + ".ttf");
+
+            return _rci.LoadFont(pathToFont, size);
+        }
+
+        public void TextOut(string text, IFont font, float4 color, float x, float y)
         {
             var curShader = _currentShader;
-            SetShader(_textShader);
 
-            //SetShaderParam(_currentShaderParams.FUSEE_MVP, ModelViewProjection);
-            SetShaderParam(_textColorParam, new float4(1, 0, 0, 1));
-            //SetShaderParamTexture(_textTextureParam, _textTexture);
-            
-            _rci.TextOut(_textTextureParam, text, font, x, y, sx, sy);
+            if (_currentShader != _textShader)
+                SetShader(_textShader);
 
-            if (curShader != null)
+            SetShaderParam(_textColorParam, color);
+
+            // relative coordinates from -1 to +1
+            var scaleX = (float) 2/_viewportWidth;
+            var scaleY = (float) 2/_viewportHeight;
+
+            x = -1 + x*scaleX;
+            y = +1 - y*scaleY;
+
+            // build complete structure
+            var coords = new float3[4 * text.Length];
+            var uvs = new float2[4 * text.Length];
+            var indices = new ushort[6 * text.Length];
+
+            var charInfo = font.CharInfo;
+            var atlasWidth = font.Width;
+            var atlasHeight = font.Height;
+
+            var index = 0;
+            ushort vertex = 0;
+
+            foreach (var letter in text)
+            {
+                var x2 = x + charInfo[letter].BitmapL * scaleX;
+                var y2 = -y - charInfo[letter].BitmapT * scaleY;
+                var w = charInfo[letter].BitmapW * scaleX;
+                var h = charInfo[letter].BitmapH * scaleY;
+
+                x += charInfo[letter].AdvanceX * scaleX;
+                y += charInfo[letter].AdvanceY * scaleY;
+
+                // skip glyphs that have no pixels
+                if ((w <= MathHelper.EpsilonFloat) || (h <= MathHelper.EpsilonFloat))
+                    continue;
+
+                var bitmapW = charInfo[letter].BitmapW;
+                var bitmapH = charInfo[letter].BitmapH;
+                var texOffsetX = charInfo[letter].TexOffX;
+                var texOffsetY = charInfo[letter].TexOffY;
+
+                // vertices
+                coords[vertex] = new float3(x2, -y2 - h, 0);
+                coords[vertex + 1] = new float3(x2, -y2, 0);
+                coords[vertex + 2] = new float3(x2 + w, -y2 - h, 0);
+                coords[vertex + 3] = new float3(x2 + w, -y2, 0);
+
+                // uvs
+                uvs[vertex] = new float2(texOffsetX, texOffsetY + bitmapH / atlasHeight);
+                uvs[vertex + 1] = new float2(texOffsetX, texOffsetY);
+                uvs[vertex + 2] = new float2(texOffsetX + bitmapW / atlasWidth, texOffsetY + bitmapH / atlasHeight);
+                uvs[vertex + 3] = new float2(texOffsetX + bitmapW / atlasWidth, texOffsetY);
+
+                // indices
+                indices[index++] = (ushort)(vertex + 1);
+                indices[index++] = vertex;
+                indices[index++] = (ushort)(vertex + 2);
+
+                indices[index++] = (ushort)(vertex + 1);
+                indices[index++] = (ushort)(vertex + 2);
+                indices[index++] = (ushort)(vertex + 3);
+
+                vertex += 4;
+            }
+
+            _rci.TextOut(_textTextureParam, text, font, coords, uvs, indices, scaleX);
+
+            if (curShader != null && curShader != _textShader)
                 SetShader(curShader);
         }
 
@@ -1481,6 +1554,9 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
         /// </remarks>
         public void Viewport(int x, int y, int width, int height)
         {
+            _viewportWidth = width;
+            _viewportHeight = height;
+
             _rci.Viewport(x, y, width, height);
         }
 

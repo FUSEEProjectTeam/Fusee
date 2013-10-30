@@ -12,13 +12,11 @@
          public static readonly string ColorAttribName = "fuColor";
          public static readonly string NormalAttribName = "fuNormal";
          public static readonly string UvAttribName = "fuUV";
-         public static readonly string VertexUv2DAttribName = "fuVertexUV2D";
 
          public static readonly int VertexAttribLocation = 0;
          public static readonly int ColorAttribLocation = 1;
          public static readonly int NormalAttribLocation = 2;
          public static readonly int UvAttribLocation = 3;
-         public static readonly int VertexUv2DAttribLocation = 4;
 
          #endregion
      }

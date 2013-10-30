@@ -188,10 +188,10 @@ namespace Fusee.Engine
         [JSChangeName("SetShaderParamInt")]
         void SetShaderParam(IShaderParam param, int val);
 
-        // TEXT
         IFont LoadFont(string filename, uint size);
-        void TextOut(IShaderParam param, string text, IFont font, float x, float y, float sx, float sy);
-        // TEXT
+
+        void TextOut(IShaderParam textureParam, string text, IFont font, float3[] coords, float2[] uvs, ushort[] indices,
+            float scaleX);
 
         /// <summary>
         /// Creates a new texture and binds it to the shader.

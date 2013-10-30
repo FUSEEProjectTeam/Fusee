@@ -51,11 +51,7 @@ namespace Fusee.Engine
                 return spText;
             }
 
-            var spColor = rc.CreateShader(VsSimpleColor, PsSimpleColor);
-            var color = rc.GetShaderParam(spColor, "color");
-            rc.SetShaderParam(color, new float4(1, 1, 1, 1));
-
-            return spColor;
+            return rc.CreateShader(VsSimpleColor, PsSimpleColor);
         }
 
         private const string VsSimpleTexture = @"
@@ -778,13 +774,15 @@ namespace Fusee.Engine
             }";
 
         private const string VsText = @"
-            attribute vec4 fuVertexUV2D;
+            attribute vec3 fuVertex;
+            attribute vec2 fuUV;
+
             varying vec2 vUV;
 
             void main()
             {
-                gl_Position = vec4(fuVertexUV2D.xy, 0, 1);
-                vUV = fuVertexUV2D.zw;
+                vUV = fuUV;
+                gl_Position = vec4(fuVertex, 1);
             }";
 
         private const string PsText = @"

@@ -1,27 +1,22 @@
-﻿
+﻿using SharpFont;
+
 namespace Fusee.Engine
 {
-    class Font : IFont
+    internal class Font : IFont
     {
-        internal int Width;
-        internal int Height;
+        internal Face Face;
 
+        // texture atlas
         internal ITexture TexAtlas;
+
+        public int Width { get; internal set; }
+        public int Height { get; internal set; }
         
-        internal struct CharInfoStruct
-        {
-            internal float AdvanceX;
-            internal float AdvanceY;
+        // font settings
+        public uint FontSize {get; internal set; }
+        public bool UseKerning { get; set; }
 
-            internal float BitmapW;
-            internal float BitmapH;
-            internal float BitmapL;
-            internal float BitmapT;
-
-            internal float TexOffX;
-            internal float TexOffY;
-        }
-
-        internal CharInfoStruct[] CharInfo;
+        // char info
+        public CharInfoStruct[] CharInfo { get; internal set; }
     }
 }

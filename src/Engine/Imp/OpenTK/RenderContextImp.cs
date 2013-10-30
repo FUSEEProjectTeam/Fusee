@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Drawing.Text;
 using System.Runtime.InteropServices;
+using System.Runtime.Remoting.Metadata.W3cXsd2001;
+using System.Windows.Forms;
 using Fusee.Math;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
@@ -23,7 +26,10 @@ namespace Fusee.Engine
         private readonly Dictionary<int, int> _shaderParam2TexUnit;
 
         private readonly Library _sharpFont;
-        private readonly List<Face> _sharpFaces;
+
+        private readonly int _fontVBO;
+        private readonly int _fontUVBO;
+        private readonly int _fontIBO;
 
         #endregion
 
@@ -40,7 +46,10 @@ namespace Fusee.Engine
 
             // TODO: dispose at the end
             _sharpFont = new Library();
-            _sharpFaces = new List<Face>();
+
+            _fontVBO = GL.GenBuffer();
+            _fontUVBO = GL.GenBuffer();
+            _fontIBO = GL.GenBuffer();
         }
 
         #endregion
@@ -103,7 +112,6 @@ namespace Fusee.Engine
             int strideAbs = (bmpData.Stride < 0) ? -bmpData.Stride : bmpData.Stride;
             int bytes = (strideAbs)*bmp.Height;
 
-
             var ret = new ImageData
             {
                 PixelData = new byte[bytes],
@@ -112,8 +120,7 @@ namespace Fusee.Engine
                 Stride = bmpData.Stride
             };
 
-
-            System.Runtime.InteropServices.Marshal.Copy(bmpData.Scan0, ret.PixelData, 0, bytes);
+            Marshal.Copy(bmpData.Scan0, ret.PixelData, 0, bytes);
 
             bmp.UnlockBits(bmpData);
             return ret;
@@ -358,12 +365,13 @@ namespace Fusee.Engine
 
         #region Text related Members
 
-        public IFont LoadFont(string filename, uint size)
+        private IFont GenerateTextureAtlas(IFont font)
         {
-            var texAtlas = new Font();
+            if (font == null)
+                return null;
 
-            var face = _sharpFont.NewFace(filename, 0);
-            face.SetPixelSizes(0, size);
+            var texAtlas = ((Font) font);
+            var face = ((Font) font).Face;
 
             // get atlas texture size
             var rowW = 0;
@@ -412,19 +420,19 @@ namespace Fusee.Engine
             GL.PixelStore(PixelStoreParameter.UnpackAlignment, 1);
 
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS,
-                (int) TextureWrapMode.ClampToEdge);
+                (int)TextureWrapMode.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT,
-                (int) TextureWrapMode.ClampToEdge);
+                (int)TextureWrapMode.ClampToEdge);
 
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter,
-                (int) TextureMinFilter.Linear);
+                (int)TextureMinFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter,
-                (int) TextureMagFilter.Linear);
+                (int)TextureMagFilter.Linear);
 
-            texAtlas.TexAtlas = new Texture {handle = tex};
+            texAtlas.TexAtlas = new Texture { handle = tex };
 
             // paste the glyph images into the texture atlas
-            texAtlas.CharInfo = new Font.CharInfoStruct[256];
+            texAtlas.CharInfo = new CharInfoStruct[256];
 
             var offX = 0;
             var offY = 0;
@@ -455,89 +463,97 @@ namespace Fusee.Engine
                 texAtlas.CharInfo[i].BitmapL = face.Glyph.BitmapLeft;
                 texAtlas.CharInfo[i].BitmapT = face.Glyph.BitmapTop;
 
-                texAtlas.CharInfo[i].TexOffX = offX/(float) maxWidth;
-                texAtlas.CharInfo[i].TexOffY = offY/(float) potH;
+                texAtlas.CharInfo[i].TexOffX = offX / (float)maxWidth;
+                texAtlas.CharInfo[i].TexOffY = offY / (float)potH;
 
                 rowH = System.Math.Max(rowH, face.Glyph.Bitmap.Rows);
                 offX += face.Glyph.Bitmap.Width + 1;
             }
 
-            face.Dispose();
-
             return texAtlas;
         }
 
-        public void TextOut(IShaderParam param, string text, IFont font, float x, float y, float sx, float sy)
+        public IFont LoadFont(string filename, uint size)
         {
-            var culling = GL.IsEnabled(EnableCap.CullFace);
-            if (culling)
-                GL.Disable(EnableCap.CullFace);
-
-            var blending = GL.IsEnabled(EnableCap.Blend);
-            if (!blending)
+            var texAtlas = new Font
             {
-                GL.Enable(EnableCap.Blend);
-                GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
-            }
+                Face = _sharpFont.NewFace(filename, 0),
+                FontSize = size,
+                UseKerning = false
+            };
+
+            texAtlas.Face.SetPixelSizes(0, size);
+            return GenerateTextureAtlas(texAtlas);
+        }
+
+        public void TextOut(IShaderParam texParam, string text, IFont font, float3[] coords, float2[] uvs,
+            ushort[] indices, float sx)
+        {
+            var texAtlas = ((Font) font);
+
+            // save current state
+            GL.PushAttrib(AttribMask.EnableBit | AttribMask.ColorBufferBit);
+
+            // set state for text rendering
+            GL.Disable(EnableCap.DepthTest);
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
 
             // texture atlas
-            var texture = ((Font) font).TexAtlas;
-            SetShaderParamTexture(param, texture);
+            var texture = texAtlas.TexAtlas;
+            SetShaderParamTexture(texParam, texture);
+
+            // use kerning -> fix values
+            var fixX = 0f;
+            var fixVert = 0;
+
+            if (texAtlas.UseKerning && texAtlas.Face.HasKerning)
+                for (var c = 0; c < text.Length - 2; c++)
+                {
+                    var leftChar = texAtlas.Face.GetCharIndex(text[c]);
+                    var rightChar = texAtlas.Face.GetCharIndex(text[c + 1]);
+
+                    fixX += (texAtlas.Face.GetKerning(leftChar, rightChar, KerningMode.Default).X >> 6)*sx;
+
+                    coords[fixVert++].x += fixX;
+                    coords[fixVert++].x += fixX;
+                    coords[fixVert++].x += fixX;
+                    coords[fixVert++].x += fixX;
+                }
 
             // vertex buffer
-            var vbo = GL.GenBuffer();
+            GL.BindBuffer(BufferTarget.ArrayBuffer, _fontVBO);
 
-            GL.EnableVertexAttribArray(Helper.VertexUv2DAttribLocation);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
-            GL.VertexAttribPointer(Helper.VertexUv2DAttribLocation, 4, VertexAttribPointerType.Float, false, 0,
-                IntPtr.Zero);
+            GL.EnableVertexAttribArray(Helper.VertexAttribLocation);
+            GL.VertexAttribPointer(Helper.VertexAttribLocation, 3, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
 
-            // build complete structure
-            var coords = new float4[6*text.Length];
-            var charInfo = ((Font) font).CharInfo;
-
-            var atlasWidth = ((Font) font).Width;
-            var atlasHeight = ((Font) font).Height;
-
-            var n = 0;
-            foreach (var letter in text)
-            {
-                var x2 = x + charInfo[letter].BitmapL*sx;
-                var y2 = -y - charInfo[letter].BitmapT*sy;
-                var w = charInfo[letter].BitmapW*sx;
-                var h = charInfo[letter].BitmapH*sy;
-
-                x += charInfo[letter].AdvanceX*sx;
-                y += charInfo[letter].AdvanceY*sy;
-
-                // skipt glyphs that have no pixels
-                if ((w <= Math.MathHelper.EpsilonFloat) || (h <= Math.MathHelper.EpsilonFloat))
-                    continue;
-
-                var bitmapW = charInfo[letter].BitmapW;
-                var bitmapH = charInfo[letter].BitmapH;
-                var texOffsetX = charInfo[letter].TexOffX;
-                var texOffsetY = charInfo[letter].TexOffY;
-
-                coords[n++] = new float4(x2, -y2, texOffsetX, texOffsetY);
-                coords[n++] = new float4(x2 + w, -y2, texOffsetX + bitmapW/atlasWidth, texOffsetY);
-                coords[n++] = new float4(x2, -y2 - h, texOffsetX, texOffsetY + bitmapH/atlasHeight);
-                coords[n++] = new float4(x2 + w, -y2, texOffsetX + bitmapW/atlasWidth, texOffsetY);
-                coords[n++] = new float4(x2, -y2 - h, texOffsetX, texOffsetY + bitmapH/atlasHeight);
-                coords[n++] = new float4(x2 + w, -y2 - h, texOffsetX + bitmapW/atlasWidth,
-                    texOffsetY + bitmapH/atlasHeight);
-            }
-
-            var coordsBytes = 6*text.Length*4*sizeof (float);
-
+            var coordsBytes = 4*text.Length*3*sizeof (float);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr) (coordsBytes), coords, BufferUsageHint.DynamicDraw);
-            GL.DrawArrays(BeginMode.Triangles, 0, n);
 
-            if (culling) GL.Enable(EnableCap.CullFace);
-            if (!blending) GL.Disable(EnableCap.Blend);
+            // uv buffer
+            GL.BindBuffer(BufferTarget.ArrayBuffer, _fontUVBO);
 
+            GL.EnableVertexAttribArray(Helper.UvAttribLocation);
+            GL.VertexAttribPointer(Helper.UvAttribLocation, 2, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
+
+            var uvBytes = 4*text.Length*2*sizeof (float);
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr) (uvBytes), uvs, BufferUsageHint.DynamicDraw);
+
+            // index buffer
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, _fontIBO);
+
+            var indBytes = 6*text.Length*sizeof (ushort);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr) indBytes, indices, BufferUsageHint.DynamicDraw);
+
+            // draw
+            GL.DrawElements(BeginMode.Triangles, 6*text.Length, DrawElementsType.UnsignedShort, IntPtr.Zero);
+
+            // empty buffer
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-            GL.DisableVertexAttribArray(Helper.VertexUv2DAttribLocation);
+            GL.DisableVertexAttribArray(Helper.UvAttribLocation);
+
+            // restore state
+            GL.PopAttrib();
         }
 
         #endregion
@@ -676,7 +692,6 @@ namespace Fusee.Engine
             GL.BindAttribLocation(program, Helper.ColorAttribLocation, Helper.ColorAttribName);
             GL.BindAttribLocation(program, Helper.UvAttribLocation, Helper.UvAttribName);
             GL.BindAttribLocation(program, Helper.NormalAttribLocation, Helper.NormalAttribName);
-            GL.BindAttribLocation(program, Helper.VertexUv2DAttribLocation, Helper.VertexUv2DAttribName);
 
             GL.LinkProgram(program); // AAAARRRRRGGGGHHHH!!!! Must be called AFTER BindAttribLocation
             return new ShaderProgramImp {Program = program};
