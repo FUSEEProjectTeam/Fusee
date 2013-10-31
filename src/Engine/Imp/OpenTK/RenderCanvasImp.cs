@@ -140,7 +140,7 @@ namespace Fusee.Engine
         /// Initializes a new instance of the <see cref="RenderCanvasWindowImp"/> class.
         /// </summary>
         /// <param name="windowHandle">The window handle.</param>
-        public RenderCanvasWindowImp(IntPtr windowHandle)
+        public RenderCanvasWindowImp(IntPtr windowHandle, int width, int height)
         {
             // _mode = GraphicsMode.Default;
             bool antiAliasing = true;
@@ -149,7 +149,7 @@ namespace Fusee.Engine
             _minor = 0;
             _flags = GraphicsContextFlags.Default;
             _wi = Utilities.CreateWindowsWindowInfo(windowHandle);
-
+            
             try
             {
                 _context = new GraphicsContext(_mode, _wi, _major, _minor, _flags);
@@ -160,7 +160,7 @@ namespace Fusee.Engine
                 _mode = new GraphicsMode(32, 24, 0, (antiAliasing) ? 8 : 0);
                 _context = new GraphicsContext(_mode, _wi, _major, _minor, _flags);
             }
-
+            
             _context.MakeCurrent(_wi);
             ((IGraphicsContextInternal)_context).LoadAll();
 
@@ -172,6 +172,9 @@ namespace Fusee.Engine
             // Use VSync!
             _context.SwapInterval = 1;
             _lastTimeTick = Timer;
+
+            _width = width;
+            _height = height;
         }
         #endregion
 
