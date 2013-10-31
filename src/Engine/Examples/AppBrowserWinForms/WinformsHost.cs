@@ -24,7 +24,7 @@ namespace Examples.WinFormsFusee
         private int _mouseWheelPos;
         private bool _initialized;
 
-        public WinformsHost(Control form) : base(form.Handle)
+        public WinformsHost(Control form) : base(form.Handle, form.Width, form.Height)
         {
             if (form == null) throw new ArgumentNullException("form");
 
