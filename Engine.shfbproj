@@ -21,8 +21,11 @@
     <DocumentationSources>
       <DocumentationSource sourceFile="src\Engine\Common\Common.csproj" />
       <DocumentationSource sourceFile="src\Engine\Core\Core.csproj" />
+      <DocumentationSource sourceFile="src\Engine\Imp\Lidgren\Lidgren.csproj" />
       <DocumentationSource sourceFile="src\Math\Core\Math.Core.csproj" />
+      <DocumentationSource sourceFile="src\Engine\Imp\OpenTK\OpenTK.csproj" />
       <DocumentationSource sourceFile="src\Engine\Components\SceneManagement\SceneManagement.csproj" />
+      <DocumentationSource sourceFile="src\Engine\Imp\SFMLAudio\SFMLAudio.csproj" />
     </DocumentationSources>
     <SyntaxFilters>CSharp</SyntaxFilters>
     <SdkLinkTarget>Blank</SdkLinkTarget>
@@ -30,7 +33,7 @@
     <PresentationStyle>VS2005</PresentationStyle>
     <Preliminary>False</Preliminary>
     <NamingMethod>Guid</NamingMethod>
-    <HelpTitle>A Sandcastle Documented Class Library</HelpTitle>
+    <HelpTitle>Fusee Documentation</HelpTitle>
     <ContentPlacement>AboveNamespaces</ContentPlacement>
     <ApiFilter>
       <Filter entryType="Namespace" fullName="Fusee.Engine" isExposed="True">
@@ -57,7 +60,7 @@
     <BuildAssemblerVerbosity>OnlyWarningsAndErrors</BuildAssemblerVerbosity>
     <HelpFileFormat>HtmlHelp1, Website</HelpFileFormat>
     <IndentHtml>False</IndentHtml>
-    <FrameworkVersion>.NET Framework 4.0</FrameworkVersion>
+    <FrameworkVersion>.NET Framework 4 Platform Update 1 (KB2478063)</FrameworkVersion>
     <KeepLogFile>True</KeepLogFile>
     <DisableCodeBlockComponent>False</DisableCodeBlockComponent>
     <CppCommentsFixup>False</CppCommentsFixup>

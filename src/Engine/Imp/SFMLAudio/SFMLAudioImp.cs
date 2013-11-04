@@ -108,7 +108,7 @@ namespace Fusee.Engine
         /// <summary>
         /// Gets the master volume of the Listener.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The volume as float with 2 digit precision.</returns>
         public float GetVolume()
         {
             return (float) System.Math.Round(Listener.GlobalVolume, 2);
