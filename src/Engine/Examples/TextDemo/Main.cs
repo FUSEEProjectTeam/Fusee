@@ -30,8 +30,11 @@ namespace Examples.TextDemo
             _fontCabin12 = RC.LoadFont("Assets/Cabin.ttf", 12);
             _fontCabin20 = RC.LoadFont("Assets/Cabin.ttf", 20);
             _fontCabin30 = RC.LoadFont("Assets/Cabin.ttf", 30);
-            _fontCalibri20 = RC.LoadSystemFont("calibri", 20);
+            //_fontCalibri20 = RC.LoadSystemFont("calibri", 20);
 
+            //Width = 1680+16;
+            //Height = 617+38;
+            
             // dummy cube
             _mesh = new Cube();
         
@@ -42,7 +45,7 @@ namespace Examples.TextDemo
             //_vColor = RC.GetShaderParam(sp, "color");
 
             RC.SetShaderParam(_vColor, new float4(1, 1, 1, 1));
-
+            
             _angleHorz = 0;
         }
 
@@ -79,7 +82,7 @@ namespace Examples.TextDemo
             var col5 = new float4(0, 0, 0, 1);
 
             RC.TextOut("AVictor jagt zwölf Boxkämpfer quer über den großen Sylter Deich.", _fontCabin30, col5, 8, 290);
-            RC.TextOut("AVictor jagt zwölf Boxkämpfer quer über den großen Sylter Deich.", _fontCalibri20, col5, 8, 400);
+            //RC.TextOut("AVictor jagt zwölf Boxkämpfer quer über den großen Sylter Deich.", _fontCalibri20, col5, 8, 400);
 
             var col6 = new float4(0, 1, 1, 1);
             RC.TextOut("Aktuelle Framerate: " + Time.Instance.FramePerSecondSmooth + "fps", _fontCabin20, col6, 950, 50);

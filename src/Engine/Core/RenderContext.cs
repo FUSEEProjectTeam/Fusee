@@ -839,15 +839,13 @@ namespace Fusee.Engine
             return _rci.LoadFont(filename, size);
         }
 
+        [JSExternal]
         public IFont LoadSystemFont(string fontname, uint size)
         {
             var fontsFolder = Environment.GetFolderPath(Environment.SpecialFolder.Fonts);
             var pathToFont = Path.Combine(fontsFolder, fontname + ".ttf");
 
-            if (!File.Exists(pathToFont))
-                throw new Exception("Font not found: " + fontname + ".ttf");
-
-            return _rci.LoadFont(pathToFont, size);
+            return LoadFont(pathToFont, size);
         }
 
         public void TextOut(string text, IFont font, float4 color, float x, float y)

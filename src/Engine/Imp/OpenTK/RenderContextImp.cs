@@ -197,170 +197,6 @@ namespace Fusee.Engine
             return texID;
         }
 
-        /// <summary>
-        /// Gets the shader parameter.
-        /// The Shader parameter is used to bind values inside of shaderprograms that run on the graphics card.
-        /// Do not use this function in frequent updates as it transfers information from graphics card to the cpu which takes time.
-        /// </summary>
-        /// <param name="shaderProgram">The shader program.</param>
-        /// <param name="paramName">Name of the parameter.</param>
-        /// <returns>The Shader parameter is returned if the name is found, otherwise null.</returns>
-        public IShaderParam GetShaderParam(IShaderProgramImp shaderProgram, string paramName)
-        {
-            int h = GL.GetUniformLocation(((ShaderProgramImp) shaderProgram).Program, paramName);
-            return (h == -1) ? null : new ShaderParam {handle = h};
-        }
-
-        /// <summary>
-        /// Gets the float parameter value inside a shaderprogram by using a <see cref="IShaderParam" /> as search reference.
-        /// Do not use this function in frequent updates as it transfers information from graphics card to the cpu which takes time.
-        /// </summary>
-        /// <param name="program">The program.</param>
-        /// <param name="param">The parameter.</param>
-        /// <returns>A float number (default is 0).</returns>
-        public float GetParamValue(IShaderProgramImp program, IShaderParam param)
-        {
-            float f;
-            GL.GetUniform(((ShaderProgramImp) program).Program, ((ShaderParam) param).handle, out f);
-            return f;
-        }
-
-        /// <summary>
-        /// Gets the shader parameter list of a specific <see cref="IShaderProgramImp" />. 
-        /// </summary>
-        /// <param name="shaderProgram">The shader program.</param>
-        /// <returns>All Shader parameters of a shaderprogram are returned.</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException"></exception>
-        public IList<ShaderParamInfo> GetShaderParamList(IShaderProgramImp shaderProgram)
-        {
-            var sp = (ShaderProgramImp) shaderProgram;
-            int nParams;
-            GL.GetProgram(sp.Program, ProgramParameter.ActiveUniforms, out nParams);
-            var list = new List<ShaderParamInfo>();
-            for (int i = 0; i < nParams; i++)
-            {
-                ActiveUniformType t;
-                var ret = new ShaderParamInfo();
-                ret.Name = GL.GetActiveUniform(sp.Program, i, out ret.Size, out t);
-                ret.Handle = GetShaderParam(sp, ret.Name);
-                switch (t)
-                {
-                    case ActiveUniformType.Int:
-                        ret.Type = typeof (int);
-                        break;
-                    case ActiveUniformType.Float:
-                        ret.Type = typeof (float);
-                        break;
-                    case ActiveUniformType.FloatVec2:
-                        ret.Type = typeof (float2);
-                        break;
-                    case ActiveUniformType.FloatVec3:
-                        ret.Type = typeof (float3);
-                        break;
-                    case ActiveUniformType.FloatVec4:
-                        ret.Type = typeof (float4);
-                        break;
-                    case ActiveUniformType.FloatMat4:
-                        ret.Type = typeof (float4x4);
-                        break;
-                    case ActiveUniformType.Sampler2D:
-                        //TODO ret.Type = typeof (sampler?);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-                list.Add(ret);
-            }
-            return list;
-        }
-
-
-        /// <summary>
-        /// Sets a float shader parameter.
-        /// </summary>
-        /// <param name="param">The parameter.</param>
-        /// <param name="val">The value.</param>
-        public void SetShaderParam(IShaderParam param, float val)
-        {
-            GL.Uniform1(((ShaderParam) param).handle, val);
-        }
-
-        /// <summary>
-        /// Sets a <see cref="float2" /> shader parameter.
-        /// </summary>
-        /// <param name="param">The parameter.</param>
-        /// <param name="val">The value.</param>
-        public void SetShaderParam(IShaderParam param, float2 val)
-        {
-            GL.Uniform2(((ShaderParam) param).handle, val.x, val.y);
-        }
-
-        /// <summary>
-        /// Sets a <see cref="float3" /> shader parameter.
-        /// </summary>
-        /// <param name="param">The parameter.</param>
-        /// <param name="val">The value.</param>
-        public void SetShaderParam(IShaderParam param, float3 val)
-        {
-            GL.Uniform3(((ShaderParam) param).handle, val.x, val.y, val.z);
-        }
-
-        /// <summary>
-        /// Sets a <see cref="float4" /> shader parameter.
-        /// </summary>
-        /// <param name="param">The parameter.</param>
-        /// <param name="val">The value.</param>
-        public void SetShaderParam(IShaderParam param, float4 val)
-        {
-            GL.Uniform4(((ShaderParam) param).handle, val.x, val.y, val.z, val.w);
-        }
-
-        // TODO add vector implementations
-
-        /// <summary>
-        /// Sets a <see cref="float4x4" /> shader parameter.
-        /// </summary>
-        /// <param name="param">The parameter.</param>
-        /// <param name="val">The value.</param>
-        public void SetShaderParam(IShaderParam param, float4x4 val)
-        {
-            unsafe
-            {
-                var mF = (float*) (&val);
-                GL.UniformMatrix4(((ShaderParam) param).handle, 1, false, mF);
-            }
-        }
-
-        /// <summary>
-        /// Sets a int shader parameter.
-        /// </summary>
-        /// <param name="param">The parameter.</param>
-        /// <param name="val">The value.</param>
-        public void SetShaderParam(IShaderParam param, int val)
-        {
-            GL.Uniform1(((ShaderParam) param).handle, val);
-        }
-
-
-        /// <summary>
-        /// Sets a given Shader Parameter to a created texture
-        /// </summary>
-        /// <param name="param">Shader Parameter used for texture binding</param>
-        /// <param name="texId">An ITexture probably returned from CreateTexture method</param>
-        public void SetShaderParamTexture(IShaderParam param, ITexture texId)
-        {
-            int iParam = ((ShaderParam) param).handle;
-            int texUnit;
-            if (!_shaderParam2TexUnit.TryGetValue(iParam, out texUnit))
-            {
-                texUnit = _currentTextureUnit++;
-                _shaderParam2TexUnit[iParam] = texUnit;
-            }
-            GL.Uniform1(iParam, texUnit);
-            GL.ActiveTexture(TextureUnit.Texture0 + texUnit);
-            GL.BindTexture(TextureTarget.Texture2D, ((Texture) texId).handle);
-        }
-
         #endregion
 
         #region Text related Members
@@ -370,8 +206,8 @@ namespace Fusee.Engine
             if (font == null)
                 return null;
 
-            var texAtlas = ((Font) font);
-            var face = ((Font) font).Face;
+            var texAtlas = ((Font)font);
+            var face = texAtlas.Face;
 
             // get atlas texture size
             var rowW = 0;
@@ -489,7 +325,7 @@ namespace Fusee.Engine
         public void TextOut(IShaderParam texParam, string text, IFont font, float3[] coords, float2[] uvs,
             ushort[] indices, float sx)
         {
-            var texAtlas = ((Font) font);
+            var texAtlas = ((Font)font);
 
             // save current state
             GL.PushAttrib(AttribMask.EnableBit | AttribMask.ColorBufferBit);
@@ -513,7 +349,7 @@ namespace Fusee.Engine
                     var leftChar = texAtlas.Face.GetCharIndex(text[c]);
                     var rightChar = texAtlas.Face.GetCharIndex(text[c + 1]);
 
-                    fixX += (texAtlas.Face.GetKerning(leftChar, rightChar, KerningMode.Default).X >> 6)*sx;
+                    fixX += (texAtlas.Face.GetKerning(leftChar, rightChar, KerningMode.Default).X >> 6) * sx;
 
                     coords[fixVert++].x += fixX;
                     coords[fixVert++].x += fixX;
@@ -527,8 +363,8 @@ namespace Fusee.Engine
             GL.EnableVertexAttribArray(Helper.VertexAttribLocation);
             GL.VertexAttribPointer(Helper.VertexAttribLocation, 3, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
 
-            var coordsBytes = 4*text.Length*3*sizeof (float);
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr) (coordsBytes), coords, BufferUsageHint.DynamicDraw);
+            var coordsBytes = 4 * text.Length * 3 * sizeof(float);
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(coordsBytes), coords, BufferUsageHint.DynamicDraw);
 
             // uv buffer
             GL.BindBuffer(BufferTarget.ArrayBuffer, _fontUVBO);
@@ -536,24 +372,25 @@ namespace Fusee.Engine
             GL.EnableVertexAttribArray(Helper.UvAttribLocation);
             GL.VertexAttribPointer(Helper.UvAttribLocation, 2, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
 
-            var uvBytes = 4*text.Length*2*sizeof (float);
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr) (uvBytes), uvs, BufferUsageHint.DynamicDraw);
+            var uvBytes = 4 * text.Length * 2 * sizeof(float);
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(uvBytes), uvs, BufferUsageHint.DynamicDraw);
 
             // index buffer
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, _fontIBO);
 
-            var indBytes = 6*text.Length*sizeof (ushort);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr) indBytes, indices, BufferUsageHint.DynamicDraw);
+            var indBytes = 6 * text.Length * sizeof(ushort);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)indBytes, indices, BufferUsageHint.DynamicDraw);
 
             // draw
-            GL.DrawElements(BeginMode.Triangles, 6*text.Length, DrawElementsType.UnsignedShort, IntPtr.Zero);
+            GL.DrawElements(BeginMode.Triangles, 6 * text.Length, DrawElementsType.UnsignedShort, IntPtr.Zero);
 
             // empty buffer
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
             GL.DisableVertexAttribArray(Helper.UvAttribLocation);
 
             // restore state
-            GL.PopAttrib();
+            GL.PopAttrib(); // TODO: REPLACE
         }
 
         #endregion
@@ -646,7 +483,170 @@ namespace Fusee.Engine
 
         #endregion
 
-        #region Rendering related Members
+        #region Shader related Members
+
+        /// <summary>
+        /// Gets the shader parameter.
+        /// The Shader parameter is used to bind values inside of shaderprograms that run on the graphics card.
+        /// Do not use this function in frequent updates as it transfers information from graphics card to the cpu which takes time.
+        /// </summary>
+        /// <param name="shaderProgram">The shader program.</param>
+        /// <param name="paramName">Name of the parameter.</param>
+        /// <returns>The Shader parameter is returned if the name is found, otherwise null.</returns>
+        public IShaderParam GetShaderParam(IShaderProgramImp shaderProgram, string paramName)
+        {
+            int h = GL.GetUniformLocation(((ShaderProgramImp)shaderProgram).Program, paramName);
+            return (h == -1) ? null : new ShaderParam { handle = h };
+        }
+
+        /// <summary>
+        /// Gets the float parameter value inside a shaderprogram by using a <see cref="IShaderParam" /> as search reference.
+        /// Do not use this function in frequent updates as it transfers information from graphics card to the cpu which takes time.
+        /// </summary>
+        /// <param name="program">The program.</param>
+        /// <param name="param">The parameter.</param>
+        /// <returns>A float number (default is 0).</returns>
+        public float GetParamValue(IShaderProgramImp program, IShaderParam param)
+        {
+            float f;
+            GL.GetUniform(((ShaderProgramImp)program).Program, ((ShaderParam)param).handle, out f);
+            return f;
+        }
+
+        /// <summary>
+        /// Gets the shader parameter list of a specific <see cref="IShaderProgramImp" />. 
+        /// </summary>
+        /// <param name="shaderProgram">The shader program.</param>
+        /// <returns>All Shader parameters of a shaderprogram are returned.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException"></exception>
+        public IList<ShaderParamInfo> GetShaderParamList(IShaderProgramImp shaderProgram)
+        {
+            var sp = (ShaderProgramImp)shaderProgram;
+            int nParams;
+            GL.GetProgram(sp.Program, ProgramParameter.ActiveUniforms, out nParams);
+            var list = new List<ShaderParamInfo>();
+            for (int i = 0; i < nParams; i++)
+            {
+                ActiveUniformType t;
+                var ret = new ShaderParamInfo();
+                ret.Name = GL.GetActiveUniform(sp.Program, i, out ret.Size, out t);
+                ret.Handle = GetShaderParam(sp, ret.Name);
+                switch (t)
+                {
+                    case ActiveUniformType.Int:
+                        ret.Type = typeof(int);
+                        break;
+                    case ActiveUniformType.Float:
+                        ret.Type = typeof(float);
+                        break;
+                    case ActiveUniformType.FloatVec2:
+                        ret.Type = typeof(float2);
+                        break;
+                    case ActiveUniformType.FloatVec3:
+                        ret.Type = typeof(float3);
+                        break;
+                    case ActiveUniformType.FloatVec4:
+                        ret.Type = typeof(float4);
+                        break;
+                    case ActiveUniformType.FloatMat4:
+                        ret.Type = typeof(float4x4);
+                        break;
+                    case ActiveUniformType.Sampler2D:
+                        //TODO ret.Type = typeof (sampler?);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+                list.Add(ret);
+            }
+            return list;
+        }
+
+
+        /// <summary>
+        /// Sets a float shader parameter.
+        /// </summary>
+        /// <param name="param">The parameter.</param>
+        /// <param name="val">The value.</param>
+        public void SetShaderParam(IShaderParam param, float val)
+        {
+            GL.Uniform1(((ShaderParam)param).handle, val);
+        }
+
+        /// <summary>
+        /// Sets a <see cref="float2" /> shader parameter.
+        /// </summary>
+        /// <param name="param">The parameter.</param>
+        /// <param name="val">The value.</param>
+        public void SetShaderParam(IShaderParam param, float2 val)
+        {
+            GL.Uniform2(((ShaderParam)param).handle, val.x, val.y);
+        }
+
+        /// <summary>
+        /// Sets a <see cref="float3" /> shader parameter.
+        /// </summary>
+        /// <param name="param">The parameter.</param>
+        /// <param name="val">The value.</param>
+        public void SetShaderParam(IShaderParam param, float3 val)
+        {
+            GL.Uniform3(((ShaderParam)param).handle, val.x, val.y, val.z);
+        }
+
+        /// <summary>
+        /// Sets a <see cref="float4" /> shader parameter.
+        /// </summary>
+        /// <param name="param">The parameter.</param>
+        /// <param name="val">The value.</param>
+        public void SetShaderParam(IShaderParam param, float4 val)
+        {
+            GL.Uniform4(((ShaderParam)param).handle, val.x, val.y, val.z, val.w);
+        }
+
+        // TODO add vector implementations
+
+        /// <summary>
+        /// Sets a <see cref="float4x4" /> shader parameter.
+        /// </summary>
+        /// <param name="param">The parameter.</param>
+        /// <param name="val">The value.</param>
+        public void SetShaderParam(IShaderParam param, float4x4 val)
+        {
+            unsafe
+            {
+                var mF = (float*)(&val);
+                GL.UniformMatrix4(((ShaderParam)param).handle, 1, false, mF);
+            }
+        }
+
+        /// <summary>
+        /// Sets a int shader parameter.
+        /// </summary>
+        /// <param name="param">The parameter.</param>
+        /// <param name="val">The value.</param>
+        public void SetShaderParam(IShaderParam param, int val)
+        {
+            GL.Uniform1(((ShaderParam)param).handle, val);
+        }
+
+        /// <summary>
+        /// Sets a given Shader Parameter to a created texture
+        /// </summary>
+        /// <param name="param">Shader Parameter used for texture binding</param>
+        /// <param name="texId">An ITexture probably returned from CreateTexture method</param>
+        public void SetShaderParamTexture(IShaderParam param, ITexture texId)
+        {
+            int iParam = ((ShaderParam)param).handle;
+            int texUnit;
+            if (!_shaderParam2TexUnit.TryGetValue(iParam, out texUnit))
+            {
+                texUnit = _currentTextureUnit++;
+                _shaderParam2TexUnit[iParam] = texUnit;
+            }
+            GL.Uniform1(iParam, texUnit);
+            GL.ActiveTexture(TextureUnit.Texture0 + texUnit);
+            GL.BindTexture(TextureTarget.Texture2D, ((Texture)texId).handle);
+        }
 
         /// <summary>
         /// Creates the shaderprogram by using a valid GLSL vertex and fragment shader code. This code is compiled at runtime.
@@ -697,7 +697,6 @@ namespace Fusee.Engine
             return new ShaderProgramImp {Program = program};
         }
 
-
         /// <summary>
         /// Sets the shaderprogram onto the GL Rendercontext.
         /// </summary>
@@ -709,6 +708,10 @@ namespace Fusee.Engine
 
             GL.UseProgram(((ShaderProgramImp) program).Program);
         }
+
+        #endregion
+
+        #region Rendering related Members
 
         /// <summary>
         /// Clears the specified flags.
