@@ -9,7 +9,7 @@
         /// <summary>
         /// Creates the <see cref="NetworkImp"/>.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>An instance of <see cref="NetworkImp"/>.</returns>
         public static INetworkImp CreateNetworkImp()
         {
             return new NetworkImp();

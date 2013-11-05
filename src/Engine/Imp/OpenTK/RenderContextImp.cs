@@ -379,7 +379,7 @@ namespace Fusee.Engine
         /// The 4x4 projection matrix applied to view coordinates yielding clip space coordinates.
         /// </value>
         /// <remarks>
-        /// View coordinates are the result of the ModelView matrix multiplied to the geometry (<see cref="Fusee.Engine.RenderContext.ModelView"/>).
+        /// View coordinates are the result of the ModelView matrix multiplied to the geometry (<see cref="Fusee.Engine.RenderContextImp.ModelView"/>).
         /// The coordinate system of the view space has its origin in the camera center with the z axis aligned to the viewing direction, and the x- and
         /// y axes aligned to the viewing plane. Still, no projection from 3d space to the viewing plane has been performed. This is done by multiplying
         /// view coordinate geometry wihth the projection matrix. Typically, the projection matrix either performs a parallel projection or a perspective
@@ -738,6 +738,11 @@ namespace Fusee.Engine
             GL.End();
         }
 
+        /// <summary>
+        /// Gets the content of the buffer.
+        /// </summary>
+        /// <param name="quad">The Rectangle where the content is draw into.</param>
+        /// <param name="texId">The tex identifier.</param>
         public void GetBufferContent(Rectangle quad, ITexture texId)
         {
             GL.BindTexture(TextureTarget.Texture2D, ((Texture)texId).handle);
