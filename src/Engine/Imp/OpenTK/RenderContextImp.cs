@@ -5,8 +5,6 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Drawing.Text;
 using System.Runtime.InteropServices;
-using System.Runtime.Remoting.Metadata.W3cXsd2001;
-using System.Windows.Forms;
 using Fusee.Math;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
@@ -27,10 +25,6 @@ namespace Fusee.Engine
 
         private readonly Library _sharpFont;
 
-        private readonly int _fontVBO;
-        private readonly int _fontUVBO;
-        private readonly int _fontIBO;
-
         #endregion
 
         #region Constructors
@@ -46,10 +40,6 @@ namespace Fusee.Engine
 
             // TODO: dispose at the end
             _sharpFont = new Library();
-
-            _fontVBO = GL.GenBuffer();
-            _fontUVBO = GL.GenBuffer();
-            _fontIBO = GL.GenBuffer();
         }
 
         #endregion
@@ -326,13 +316,13 @@ namespace Fusee.Engine
         {
             var texAtlas = ((Font) font);
 
-            // use kerning -> fix values
-            var fixX = 0f;
-            var fixVert = 4;
-
             if (!texAtlas.UseKerning || !texAtlas.Face.HasKerning)
                 return vertices;
 
+            // use kerning -> fix values
+            var fixX = 0f;
+            var fixVert = 4;
+            
             for (var c = 0; c < text.Length - 1; c++)
             {
                 var leftChar = texAtlas.Face.GetCharIndex(text[c]);
