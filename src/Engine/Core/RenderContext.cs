@@ -848,24 +848,17 @@ namespace Fusee.Engine
             return LoadFont(pathToFont, size);
         }
 
-        public void TextOut(string text, IFont font, float4 color, float x, float y)
+        public Mesh GetTextMesh(string text, IFont font, float x, float y)
         {
-            var curShader = _currentShader;
-
-            if (_currentShader != _textShader)
-                SetShader(_textShader);
-
-            SetShaderParam(_textColorParam, color);
-
             // relative coordinates from -1 to +1
-            var scaleX = (float) 2/_viewportWidth;
-            var scaleY = (float) 2/_viewportHeight;
+            var scaleX = (float)2 / _viewportWidth;
+            var scaleY = (float)2 / _viewportHeight;
 
-            x = -1 + x*scaleX;
-            y = +1 - y*scaleY;
+            x = -1 + x * scaleX;
+            y = +1 - y * scaleY;
 
             // build complete structure
-            var coords = new float3[4 * text.Length];
+            var vertices = new float3[4 * text.Length];
             var uvs = new float2[4 * text.Length];
             var indices = new ushort[6 * text.Length];
 
@@ -896,10 +889,10 @@ namespace Fusee.Engine
                 var texOffsetY = charInfo[letter].TexOffY;
 
                 // vertices
-                coords[vertex] = new float3(x2, -y2 - h, 0);
-                coords[vertex + 1] = new float3(x2, -y2, 0);
-                coords[vertex + 2] = new float3(x2 + w, -y2 - h, 0);
-                coords[vertex + 3] = new float3(x2 + w, -y2, 0);
+                vertices[vertex] = new float3(x2, -y2 - h, 0);
+                vertices[vertex + 1] = new float3(x2, -y2, 0);
+                vertices[vertex + 2] = new float3(x2 + w, -y2 - h, 0);
+                vertices[vertex + 3] = new float3(x2 + w, -y2, 0);
 
                 // uvs
                 uvs[vertex] = new float2(texOffsetX, texOffsetY + bitmapH / atlasHeight);
@@ -919,10 +912,31 @@ namespace Fusee.Engine
                 vertex += 4;
             }
 
-            _rci.TextOut(_textTextureParam, text, font, coords, uvs, indices, scaleX);
+            vertices = _rci.FixTextKerning(font, vertices, text, scaleX);
+            return new Mesh {Vertices = vertices, UVs = uvs, Triangles = indices};
+        }
+
+        public void TextOut(Mesh textMesh, IFont font, float4 color)
+        {
+            var curShader = _currentShader;
+
+            if (_currentShader != _textShader)
+                SetShader(_textShader);
+
+            SetShaderParam(_textColorParam, color);
+            SetShaderParamTexture(_textTextureParam, font.TexAtlas);
+
+            _rci.PrepareTextRendering(true);
+            Render(textMesh);
+            _rci.PrepareTextRendering(false);
 
             if (curShader != null && curShader != _textShader)
-                SetShader(curShader);
+                SetShader(curShader);            
+        }
+
+        public void TextOut(string text, IFont font, float4 color, float x, float y)
+        {
+            TextOut(GetTextMesh(text, font, x, y), font, color);
         }
 
         #endregion
@@ -1589,7 +1603,6 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
         #endregion
 
         #endregion
-
     }
 
 }

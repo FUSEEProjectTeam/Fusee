@@ -188,10 +188,12 @@ namespace Fusee.Engine
         [JSChangeName("SetShaderParamInt")]
         void SetShaderParam(IShaderParam param, int val);
 
-        IFont LoadFont(string filename, uint size);
-
-        void TextOut(IShaderParam textureParam, string text, IFont font, float3[] coords, float2[] uvs, ushort[] indices,
-            float scaleX);
+        /// <summary>
+        /// Sets a Shader Parameter to a created texture.
+        /// </summary>
+        /// <param name="param">Shader Parameter used for texture binding.</param>
+        /// <param name="texId">An ITexture probably returned from CreateTexture() method.</param>
+        void SetShaderParamTexture(IShaderParam param, ITexture texId);
 
         /// <summary>
         /// Creates a new texture and binds it to the shader.
@@ -244,12 +246,13 @@ namespace Fusee.Engine
         ImageData TextOnImage(ImageData imgData, String fontName, float fontSize, String text, String textColor,
             float startPosX, float startPosY);
 
-        /// <summary>
-        /// Sets a Shader Parameter to a created texture.
-        /// </summary>
-        /// <param name="param">Shader Parameter used for texture binding.</param>
-        /// <param name="texId">An ITexture probably returned from CreateTexture() method.</param>
-        void SetShaderParamTexture(IShaderParam param, ITexture texId);
+
+        IFont LoadFont(string filename, uint size);
+
+        float3[] FixTextKerning(IFont font, float3[] vertices, string text, float scaleX);
+
+        void PrepareTextRendering(bool active);
+
 
         /// <summary>
         /// Erases the contents of the speciefied rendering buffers.
@@ -307,7 +310,7 @@ namespace Fusee.Engine
         /// <param name="triangleIndices">The triangle indices.</param>
         /// <exception cref="System.ArgumentException">triangleIndices must not be null or empty</exception>
         /// <exception cref="System.ApplicationException"></exception>
-        void SetTriangles(IMeshImp mr, short[] triangleIndices);
+        void SetTriangles(IMeshImp mr, ushort[] triangleIndices);
 
         /// <summary>
         /// Activates the passed shader program as the current shader for geometry rendering.

@@ -18,6 +18,8 @@
     public interface IFont
     {
         // texture atlas
+        ITexture TexAtlas { get; }
+
         int Width { get; }
         int Height { get; }
 

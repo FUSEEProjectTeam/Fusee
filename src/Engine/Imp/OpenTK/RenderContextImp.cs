@@ -201,6 +201,19 @@ namespace Fusee.Engine
 
         #region Text related Members
 
+        public IFont LoadFont(string filename, uint size)
+        {
+            var texAtlas = new Font
+            {
+                Face = _sharpFont.NewFace(filename, 0),
+                FontSize = size,
+                UseKerning = false
+            };
+
+            texAtlas.Face.SetPixelSizes(0, size);
+            return GenerateTextureAtlas(texAtlas);
+        }
+
         private IFont GenerateTextureAtlas(IFont font)
         {
             if (font == null)
@@ -309,88 +322,49 @@ namespace Fusee.Engine
             return texAtlas;
         }
 
-        public IFont LoadFont(string filename, uint size)
+        public float3[] FixTextKerning(IFont font, float3[] vertices, string text, float scaleX)
         {
-            var texAtlas = new Font
-            {
-                Face = _sharpFont.NewFace(filename, 0),
-                FontSize = size,
-                UseKerning = false
-            };
-
-            texAtlas.Face.SetPixelSizes(0, size);
-            return GenerateTextureAtlas(texAtlas);
-        }
-
-        public void TextOut(IShaderParam texParam, string text, IFont font, float3[] coords, float2[] uvs,
-            ushort[] indices, float sx)
-        {
-            var texAtlas = ((Font)font);
-
-            // save current state
-            GL.PushAttrib(AttribMask.EnableBit | AttribMask.ColorBufferBit);
-
-            // set state for text rendering
-            GL.Disable(EnableCap.DepthTest);
-            GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
-
-            // texture atlas
-            var texture = texAtlas.TexAtlas;
-            SetShaderParamTexture(texParam, texture);
+            var texAtlas = ((Font) font);
 
             // use kerning -> fix values
             var fixX = 0f;
-            var fixVert = 0;
+            var fixVert = 4;
 
-            if (texAtlas.UseKerning && texAtlas.Face.HasKerning)
-                for (var c = 0; c < text.Length - 2; c++)
-                {
-                    var leftChar = texAtlas.Face.GetCharIndex(text[c]);
-                    var rightChar = texAtlas.Face.GetCharIndex(text[c + 1]);
+            if (!texAtlas.UseKerning || !texAtlas.Face.HasKerning)
+                return vertices;
 
-                    fixX += (texAtlas.Face.GetKerning(leftChar, rightChar, KerningMode.Default).X >> 6) * sx;
+            for (var c = 0; c < text.Length - 1; c++)
+            {
+                var leftChar = texAtlas.Face.GetCharIndex(text[c]);
+                var rightChar = texAtlas.Face.GetCharIndex(text[c + 1]);
 
-                    coords[fixVert++].x += fixX;
-                    coords[fixVert++].x += fixX;
-                    coords[fixVert++].x += fixX;
-                    coords[fixVert++].x += fixX;
-                }
+                fixX += (texAtlas.Face.GetKerning(leftChar, rightChar, KerningMode.Default).X >> 6)*scaleX;
 
-            // vertex buffer
-            GL.BindBuffer(BufferTarget.ArrayBuffer, _fontVBO);
+                vertices[fixVert++].x += fixX;
+                vertices[fixVert++].x += fixX;
+                vertices[fixVert++].x += fixX;
+                vertices[fixVert++].x += fixX;
+            }
 
-            GL.EnableVertexAttribArray(Helper.VertexAttribLocation);
-            GL.VertexAttribPointer(Helper.VertexAttribLocation, 3, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
+            return vertices;
+        }
 
-            var coordsBytes = 4 * text.Length * 3 * sizeof(float);
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(coordsBytes), coords, BufferUsageHint.DynamicDraw);
+        public void PrepareTextRendering(bool active)
+        {
+            if (active)
+            {
+                // save current state
+                GL.PushAttrib(AttribMask.EnableBit | AttribMask.ColorBufferBit);
 
-            // uv buffer
-            GL.BindBuffer(BufferTarget.ArrayBuffer, _fontUVBO);
-
-            GL.EnableVertexAttribArray(Helper.UvAttribLocation);
-            GL.VertexAttribPointer(Helper.UvAttribLocation, 2, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
-
-            var uvBytes = 4 * text.Length * 2 * sizeof(float);
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(uvBytes), uvs, BufferUsageHint.DynamicDraw);
-
-            // index buffer
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, _fontIBO);
-
-            var indBytes = 6 * text.Length * sizeof(ushort);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)indBytes, indices, BufferUsageHint.DynamicDraw);
-
-            // draw
-            GL.DrawElements(BeginMode.Triangles, 6 * text.Length, DrawElementsType.UnsignedShort, IntPtr.Zero);
-
-            // empty buffer
-            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
-            GL.DisableVertexAttribArray(Helper.UvAttribLocation);
-
-            // restore state
-            GL.PopAttrib(); // TODO: REPLACE
+                // set state for text rendering
+                GL.Disable(EnableCap.DepthTest);
+                GL.Enable(EnableCap.Blend);
+                GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+            }
+            else
+            {
+                GL.PopAttrib();
+            }
         }
 
         #endregion
@@ -848,7 +822,7 @@ namespace Fusee.Engine
         /// <param name="triangleIndices">The triangle indices.</param>
         /// <exception cref="System.ArgumentException">triangleIndices must not be null or empty</exception>
         /// <exception cref="System.ApplicationException"></exception>
-        public void SetTriangles(IMeshImp mr, short[] triangleIndices)
+        public void SetTriangles(IMeshImp mr, ushort[] triangleIndices)
         {
             if (triangleIndices == null || triangleIndices.Length == 0)
             {

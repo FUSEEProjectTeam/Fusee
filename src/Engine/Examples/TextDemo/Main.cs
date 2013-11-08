@@ -15,7 +15,12 @@ namespace Examples.TextDemo
         private IFont _fontCabin30;
         private IFont _fontCousine20;
 
-        private IFont _fontCalibri20;
+        private Mesh _textMeshCabin12;
+        private Mesh _textMeshCabin20;
+        private Mesh _textMeshCabin30;
+        private Mesh _textMeshCabin30N;
+        private Mesh _textMeshCabin30K;
+        private Mesh _textMeshCousine20;
 
         private Mesh _mesh;
         private IShaderParam _vColor;
@@ -26,15 +31,24 @@ namespace Examples.TextDemo
         {
             RC.ClearColor = new float4(0.2f, 0.2f, 0.5f, 1);
 
+            // load fonts
             _fontCousine20 = RC.LoadFont("Assets/Cousine.ttf", 20);
             _fontCabin12 = RC.LoadFont("Assets/Cabin.ttf", 12);
             _fontCabin20 = RC.LoadFont("Assets/Cabin.ttf", 20);
             _fontCabin30 = RC.LoadFont("Assets/Cabin.ttf", 30);
-            //_fontCalibri20 = RC.LoadSystemFont("calibri", 20);
 
-            //Width = 1680+16;
-            //Height = 617+38;
-            
+            // get text as mesh
+            _textMeshCousine20 = RC.GetTextMesh("Victor jagt zwölf Boxkämpfer quer über den großen Sylter Deich.", _fontCousine20, 8, 50);
+            _textMeshCabin12 = RC.GetTextMesh("The quick brown fox jumps over the lazy dog.", _fontCabin12, 8, 180);
+            _textMeshCabin20 = RC.GetTextMesh("The quick brown fox jumps over the lazy dog.", _fontCabin20, 8, 210);
+            _textMeshCabin30 = RC.GetTextMesh("The quick brown fox jumps over the lazy dog.", _fontCabin30, 8, 250);
+
+            // with and without kerning
+            _textMeshCabin30N = RC.GetTextMesh("AVAVAVAVAVAVAVAVA", _fontCabin30, 8, 290);
+
+            _fontCabin30.UseKerning = true;
+            _textMeshCabin30K = RC.GetTextMesh("AVAVAVAVAVAVAVAVA", _fontCabin30, 8, 330);
+
             // dummy cube
             _mesh = new Cube();
         
@@ -42,8 +56,6 @@ namespace Examples.TextDemo
             RC.SetShader(sp);
 
             _vColor = sp.GetShaderParam("color");
-            //_vColor = RC.GetShaderParam(sp, "color");
-
             RC.SetShaderParam(_vColor, new float4(1, 1, 1, 1));
             
             _angleHorz = 0;
@@ -63,30 +75,27 @@ namespace Examples.TextDemo
             RC.SetShaderParam(_vColor, new float4(0.8f, 0.1f, 0.1f, 1));
             RC.Render(_mesh);
 
-            // text examples
+            // text examples: static text
             var col1 = new float4(1, 1, 1, 1);
-            RC.TextOut("Victor jagt zwölf Boxkämpfer quer über den großen Sylter Deich.", _fontCousine20, col1, 8, 50);
+            RC.TextOut(_textMeshCousine20, _fontCousine20, col1);
 
             var col2 = new float4(0.5f, 0.5f, 0.5f, 1);
-            RC.TextOut("Victor jagt zwölf Boxkämpfer quer über den großen Sylter Deich.", _fontCabin12, col2, 8, 180);
+            RC.TextOut(_textMeshCabin12, _fontCabin12, col2);
 
             var col3 = new float4(1, 1, 0, 1);
-            RC.TextOut("Victor jagt zwölf Boxkämpfer quer über den großen Sylter Deich.", _fontCabin20, col3, 8, 210);
+            RC.TextOut(_textMeshCabin20, _fontCabin20, col3);
 
-            _fontCabin30.UseKerning = false;
             var col4 = new float4(0, 0, 0, 0.3f);
+            RC.TextOut(_textMeshCabin30, _fontCabin30, col4);
 
-            RC.TextOut("AVictor jagt zwölf Boxkämpfer quer über den großen Sylter Deich.", _fontCabin30, col4, 8, 250);
-
-            _fontCabin30.UseKerning = true;
             var col5 = new float4(0, 0, 0, 1);
+            RC.TextOut(_textMeshCabin30N, _fontCabin30, col5);
+            RC.TextOut(_textMeshCabin30K, _fontCabin30, col5);
 
-            RC.TextOut("AVictor jagt zwölf Boxkämpfer quer über den großen Sylter Deich.", _fontCabin30, col5, 8, 290);
-            //RC.TextOut("AVictor jagt zwölf Boxkämpfer quer über den großen Sylter Deich.", _fontCalibri20, col5, 8, 400);
-
+            // text examples: dynamic text
             var col6 = new float4(0, 1, 1, 1);
-            RC.TextOut("Aktuelle Framerate: " + Time.Instance.FramePerSecondSmooth + "fps", _fontCabin20, col6, 950, 50);
-            RC.TextOut("Zeit seit Start: " + Math.Round(Time.Instance.TimeSinceStart, 1) + " Sek", _fontCabin20, col6, 950, 80);
+            RC.TextOut("Framerate: " + Time.Instance.FramePerSecondSmooth + "fps", _fontCabin20, col6, 950, 50);
+            RC.TextOut("Time: " + Math.Round(Time.Instance.TimeSinceStart, 1) + " seconds", _fontCabin20, col6, 950, 80);
 
             Present();
         }
