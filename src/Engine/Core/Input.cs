@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SlimDX.DirectInput;
 
 namespace Fusee.Engine
 {
@@ -11,6 +12,8 @@ namespace Fusee.Engine
         #region Fields
 
         private static Input _instance;
+        //Neu
+        List<InputDevice> devices = new List<InputDevice>();
 
         internal IInputImp InputImp
         {
@@ -40,6 +43,7 @@ namespace Fusee.Engine
         private HashSet<int> _keys;
         private HashSet<int> _keysUp;
         private HashSet<int> _keysDown;
+
 
         private HashSet<int> _buttonsPressed;
 
@@ -238,7 +242,58 @@ namespace Fusee.Engine
             _keysDown.Clear();
             _keysUp.Clear();
         }
+        //Neu
+        public void GetAllDevices ()
+        {
+            DirectInput directInput = new DirectInput();
+            foreach (DeviceInstance deviceInstance in directInput.GetDevices())
+            {
+                System.Diagnostics.Debug.WriteLine(deviceInstance.InstanceName);
+                
+            }
+        }
 
+        public void GetPressedButton (DirectInput _directInput, GameController _gameController)
+        {
+            JoystickState _joystickState = new JoystickState();
+            _joystickState = _gameController.GetState();
+
+            for (int i = 0; i < 10; i++)
+            {
+                if (_joystickState.IsPressed(i))
+                {
+                    System.Diagnostics.Debug.WriteLine(i);
+                }
+            }
+        }
+
+        //Neu
+        public enum DeviceCategory
+        {
+            Mouse,
+            Keyboard,
+            GameController,
+            Touch,
+
+        }
+        //Neu
+        public enum ControllerButton
+        {
+            A = 0,
+            B = 1,
+            C,
+            D,
+
+            R1,
+            R2,
+            L1,
+            L2,
+            //...
+
+            FirstUserButton,
+        }
+
+        
         /// <summary>
         /// Provides the Instance of the Input Class.
         /// </summary>

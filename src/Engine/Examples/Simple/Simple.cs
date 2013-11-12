@@ -1,106 +1,65 @@
 ﻿using System;
 using Fusee.Engine;
 using Fusee.Math;
+using SlimDX.DirectInput;
+using GameControllerState = SlimDX.DirectInput.JoystickState;
+
 
 namespace Examples.Simple
 {
     [FuseeApplication(Name = "Simple Example", Description = "A very simple example.")]
     public class Simple : RenderCanvas
     {
-        // angle variables
-        private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
+        private GameController gameController;
+        private DirectInput directInput;
+       
+        
 
-        private const float RotationSpeed = 1f;
-        private const float Damping = 0.92f;
 
-        // model variables
-        private Mesh _meshTea, _meshFace;
-
-        // variables for shader
-        private ShaderProgram _spColor;
-        private ShaderProgram _spTexture;
-
-        private IShaderParam _colorParam;
-        private IShaderParam _textureParam;
-
-        private ITexture _iTex;
+        //private InputDevice _device;
 
         // is called on startup
         public override void Init()
         {
-            RC.ClearColor = new float4(1, 1, 1, 1);
-
-            // initialize the variables
-            _meshTea = MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
-            _meshFace = MeshReader.LoadMesh(@"Assets/Face.obj.model");
-
-            _spColor = MoreShaders.GetShader("simple", RC);
-            _spTexture = MoreShaders.GetShader("texture", RC);
-
-            _colorParam = _spColor.GetShaderParam("vColor");
-            _textureParam = _spTexture.GetShaderParam("texture1");
-
-            // load texture
-            var imgData = RC.LoadImage("Assets/world_map.jpg");
-            _iTex = RC.CreateTexture(imgData);
+            //foreach (Device device in Input.Instance.Devices)
+            //{
+            //    if (device.Category == DeviceCategory.GameController)
+            //    {
+            //        _device = device;
+            //        break;
+            //    }
+            //}	
+           directInput = new DirectInput();
+           gameController = new GameController(directInput, 0);
+           Input.Instance.GetAllDevices();
         }
 
         // is called once a frame
         public override void RenderAFrame()
         {
-            RC.Clear(ClearFlags.Color | ClearFlags.Depth);
+            //for (int i = 0; i < 20; i++)
+            //{
+            //    if (_device.IsButtonDown(i))
+            //    {
+            //        System.Diagnostics.Debug.Write(i);
+            //    }
+            //}
 
-            // move per mouse
-            if (Input.Instance.IsButton(MouseButtons.Left))
-            {
-                _angleVelHorz = RotationSpeed*Input.Instance.GetAxis(InputAxis.MouseX);
-                _angleVelVert = RotationSpeed*Input.Instance.GetAxis(InputAxis.MouseY);
-            }
-            else
-            {
-                var curDamp = (float) Math.Exp(-Damping*Time.Instance.DeltaTime);
 
-                _angleVelHorz *= curDamp;
-                _angleVelVert *= curDamp;
-            }
 
-            _angleHorz += _angleVelHorz;
-            _angleVert += _angleVelVert;
+            //GameControllerState gameControllerState = gameController.GetState();
+            //for (int i = 0; i < 10; i++)
+            //{
+            //    if (gameControllerState.IsPressed(i) == true)
+            //    {
+            //        System.Diagnostics.Debug.Write(i);
+            //    }
+            //}
+            //System.Diagnostics.Debug.WriteLine(gameControllerState.VelocityZ);
 
-            // move per keyboard
-            if (Input.Instance.IsKey(KeyCodes.Left))
-                _angleHorz -= RotationSpeed*(float) Time.Instance.DeltaTime;
+            Input.Instance.GetPressedButton(directInput, gameController);
 
-            if (Input.Instance.IsKey(KeyCodes.Right))
-                _angleHorz += RotationSpeed*(float) Time.Instance.DeltaTime;
 
-            if (Input.Instance.IsKey(KeyCodes.Up))
-                _angleVert -= RotationSpeed*(float) Time.Instance.DeltaTime;
-
-            if (Input.Instance.IsKey(KeyCodes.Down))
-                _angleVert += RotationSpeed*(float) Time.Instance.DeltaTime;
-
-            var mtxRot = float4x4.CreateRotationY(_angleHorz)*float4x4.CreateRotationX(_angleVert);
-            var mtxCam = float4x4.LookAt(0, 200, 500, 0, 0, 0, 0, 1, 0);
-
-            // first mesh
-            RC.ModelView = float4x4.CreateTranslation(0, -50, 0)*mtxRot*float4x4.CreateTranslation(-150, 0, 0)*mtxCam;
-
-            RC.SetShader(_spColor);
-            RC.SetShaderParam(_colorParam, new float4(0.5f, 0.8f, 0, 1));
-
-            RC.Render(_meshTea);
-
-            // second mesh
-            RC.ModelView = mtxRot*float4x4.CreateTranslation(150, 0, 0)*mtxCam;
-
-            RC.SetShader(_spTexture);
-            RC.SetShaderParamTexture(_textureParam, _iTex);
-
-            RC.Render(_meshFace);
-
-            // swap buffers
-            Present();
         }
 
         // is called when the window was resized

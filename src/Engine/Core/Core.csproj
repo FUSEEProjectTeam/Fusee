@@ -59,9 +59,11 @@
     <Compile Include="Audio.cs" />
     <Compile Include="Cube.cs" />
     <Compile Include="Diagnostics.cs" />
+    <Compile Include="GameController.cs" />
     <Compile Include="Geometry.cs" />
     <Compile Include="ImpFactory.cs" />
     <Compile Include="Input.cs" />
+    <Compile Include="InputDevice.cs" />
     <Compile Include="Mesh.cs" />
     <Compile Include="MeshReader.cs" />
     <Compile Include="MoreShaders.cs" />
@@ -81,6 +83,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\ExternalBinaries\protobuf-net.dll</HintPath>
     </Reference>
+    <Reference Include="SlimDX, Version=2.0.13.43, Culture=neutral, PublicKeyToken=b1b0c32fd1ffe4f9, processorArchitecture=x86" />
     <Reference Include="System" />
     <Reference Include="JSIL.Meta">
       <HintPath>..\..\..\ExternalBinaries\JSIL\Compiler\JSIL.Meta.dll</HintPath>
