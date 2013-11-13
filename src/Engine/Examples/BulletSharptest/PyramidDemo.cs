@@ -1,0 +1,492 @@
+﻿using System;
+using System.Diagnostics;
+using Fusee.Engine;
+using BulletSharp;
+using BulletSharp.MultiThreaded;
+
+namespace Examples.BulletSharp
+{
+    public class PyramidDemo : RenderCanvas
+    {
+        Vector3 eye = new Vector3(60, 40, 20);
+        Vector3 target = new Vector3(0, 5, -4);
+
+        bool UseParallelDispatcherBenchmark = false;
+        int benchmark = 2;
+
+        float collisionRadius = 0.0f;
+        float defaultContactProcessingThreshold = 0.0f;
+
+        // Frame counting
+        Clock clock = new Clock();
+        float frameAccumulator;
+        int frameCount;
+
+        float _frameDelta;
+        public float FrameDelta
+        {
+            get { return _frameDelta; }
+        }
+        public float FramesPerSecond { get; private set; }
+
+        // Physics
+        DynamicsWorld _world;
+        public DynamicsWorld World
+        {
+            get { return _world; }
+            protected set { _world = value; }
+        }
+
+        protected CollisionConfiguration CollisionConf;
+        protected CollisionDispatcher Dispatcher;
+        protected BroadphaseInterface Broadphase;
+        protected ConstraintSolver Solver;
+        public AlignedCollisionShapeArray CollisionShapes { get; private set; }
+
+        protected BoxShape shootBoxShape;
+        protected float shootBoxInitialSpeed = 40;
+
+        protected TypedConstraint pickConstraint;
+
+        ThreadSupportInterface CreateSolverThreadSupport(int maxNumThreads)
+        {
+            //#define SEQUENTIAL
+            /* if (SEQUENTIAL)
+            {
+                SequentialThreadSupport::SequentialThreadConstructionInfo tci("solverThreads",SolverThreadFunc,SolverlsMemoryFunc);
+                SequentialThreadSupport* threadSupport = new SequentialThreadSupport(tci);
+                threadSupport->startSPU();
+            }
+            else */
+
+            Win32ThreadConstructionInfo threadConstructionInfo = new Win32ThreadConstructionInfo("solverThreads",
+                Win32ThreadFunc.SolverThreadFunc, Win32LSMemorySetupFunc.SolverLSMemoryFunc, maxNumThreads);
+            Win32ThreadSupport threadSupport = new Win32ThreadSupport(threadConstructionInfo);
+            threadSupport.StartSpu();
+            return threadSupport;
+        }
+
+        protected void OnInitializePhysics()
+        {
+            // collision configuration contains default setup for memory, collision setup
+            DefaultCollisionConstructionInfo cci = new DefaultCollisionConstructionInfo();
+            cci.DefaultMaxPersistentManifoldPoolSize = 32768;
+            CollisionConf = new DefaultCollisionConfiguration(cci);
+
+            if (UseParallelDispatcherBenchmark)
+            {
+                int maxNumOutstandingTasks = 4;
+
+                Win32ThreadConstructionInfo info = new Win32ThreadConstructionInfo("collision",
+                    Win32ThreadFunc.ProcessCollisionTask, Win32LSMemorySetupFunc.CreateCollisionLocalStoreMemory,
+                    maxNumOutstandingTasks);
+
+                Win32ThreadSupport threadSupportCollision = new Win32ThreadSupport(info);
+                Dispatcher = new SpuGatheringCollisionDispatcher(threadSupportCollision, 1, CollisionConf);
+            }
+            else
+            {
+                Dispatcher = new CollisionDispatcher(CollisionConf);
+                Dispatcher.DispatcherFlags = DispatcherFlags.DisableContactPoolDynamicAllocation;
+            }
+
+            // the maximum size of the collision world. Make sure objects stay within these boundaries
+            // Don't make the world AABB size too large, it will harm simulation quality and performance
+            Vector3 worldAabbMin = new Vector3(-1000, -1000, -1000);
+            Vector3 worldAabbMax = new Vector3(1000, 1000, 1000);
+
+            HashedOverlappingPairCache pairCache = new HashedOverlappingPairCache();
+            Broadphase = new AxisSweep3(worldAabbMin, worldAabbMax, 3500, pairCache);
+            //Broadphase = new DbvtBroadphase();
+
+            if (UseParallelDispatcherBenchmark)
+            {
+                ThreadSupportInterface thread = CreateSolverThreadSupport(4);
+                Solver = new ParallelConstraintSolver(thread);
+            }
+            else
+            {
+                Solver = new SequentialImpulseConstraintSolver();
+            }
+
+            World = new DiscreteDynamicsWorld(Dispatcher, Broadphase, Solver, CollisionConf);
+            World.Gravity = new Vector3(0, -10, 0);
+
+            if (UseParallelDispatcherBenchmark)
+            {
+                ((DiscreteDynamicsWorld)World).SimulationIslandManager.SplitIslands = false;
+            }
+            World.SolverInfo.SolverMode |= SolverModes.EnableFrictionDirectionCaching;
+            World.SolverInfo.NumIterations = 5;
+
+            if (benchmark < 5)
+            {
+                // create the ground
+                CollisionShape groundShape = new BoxShape(250, 50, 250);
+                CollisionShapes.Add(groundShape);
+                CollisionObject ground = LocalCreateRigidBody(0, Matrix.Translation(0, -50, 0), groundShape);
+                ground.UserObject = "Ground";
+            }
+
+            float cubeSize = 1.0f;
+            float spacing = cubeSize;
+            float mass = 1.0f;
+            int size = 8;
+            Vector3 localInertia;
+            Vector3 pos = new Vector3(0.0f, cubeSize * 2, 0.0f);
+            float offset = -size * (cubeSize * 2.0f + spacing) * 0.5f;
+
+            #region switchBenchmark
+            switch (benchmark)
+            {
+                case 1:
+                    // 3000
+
+                    BoxShape blockShape = new BoxShape(cubeSize - collisionRadius);
+                    mass = 2.0f;
+                    blockShape.CalculateLocalInertia(mass, out localInertia);
+
+                    for (int k = 0; k < 47; k++)
+                    {
+                        for (int j = 0; j < size; j++)
+                        {
+                            pos[2] = offset + (float)j * (cubeSize * 2.0f + spacing);
+                            for (int i = 0; i < size; i++)
+                            {
+                                pos[0] = offset + (float)i * (cubeSize * 2.0f + spacing);
+                                RigidBody cmbody = LocalCreateRigidBody(mass, Matrix.Translation(pos), blockShape);
+                            }
+                        }
+                        offset -= 0.05f * spacing * (size - 1);
+                        // spacing *= 1.01f;
+                        pos[1] += (cubeSize * 2.0f + spacing);
+                    }
+                    break;
+
+                case 2:
+                    CreatePyramid(new Vector3(-20, 0, 0), 12, new Vector3(cubeSize));
+                    CreateWall(new Vector3(-2.0f, 0.0f, 0.0f), 12, new Vector3(cubeSize));
+                    CreateWall(new Vector3(4.0f, 0.0f, 0.0f), 12, new Vector3(cubeSize));
+                    CreateWall(new Vector3(10.0f, 0.0f, 0.0f), 12, new Vector3(cubeSize));
+                    CreateTowerCircle(new Vector3(25.0f, 0.0f, 0.0f), 8, 24, new Vector3(cubeSize));
+                    break;
+
+                case 3:
+                    // TODO: Ragdolls
+                    break;
+
+                case 4:
+                    cubeSize = 1.5f;
+
+                    ConvexHullShape convexHullShape = new ConvexHullShape();
+
+                    float scaling = 1;
+
+                    convexHullShape.LocalScaling = new Vector3(scaling);
+
+                    for (int i = 0; i < Examples.BulletSharptest.Taru.Vtx.Length / 3; i++)
+                    {
+                        Vector3 vtx = new Vector3(Examples.BulletSharptest.Taru.Vtx[i * 3], Examples.BulletSharptest.Taru.Vtx[i * 3 + 1], Examples.BulletSharptest.Taru.Vtx[i * 3 + 2]);
+                        convexHullShape.AddPoint(vtx * (1.0f / scaling));
+                    }
+
+                    //this will enable polyhedral contact clipping, better quality, slightly slower
+                    convexHullShape.InitializePolyhedralFeatures();
+
+                    convexHullShape.CalculateLocalInertia(mass, out localInertia);
+
+                    for (int k = 0; k < 15; k++)
+                    {
+                        for (int j = 0; j < size; j++)
+                        {
+                            pos[2] = offset + (float)j * (cubeSize * 2.0f + spacing);
+                            for (int i = 0; i < size; i++)
+                            {
+                                pos[0] = offset + (float)i * (cubeSize * 2.0f + spacing);
+                                LocalCreateRigidBody(mass, Matrix.Translation(pos), convexHullShape);
+                            }
+                        }
+                        offset -= 0.05f * spacing * (size - 1);
+                        spacing *= 1.01f;
+                        pos[1] += (cubeSize * 2.0f + spacing);
+                    }
+                    break;
+
+                case 5:
+                    Vector3 boxSize = new Vector3(1.5f);
+                    float boxMass = 1.0f;
+                    float sphereRadius = 1.5f;
+                    float sphereMass = 1.0f;
+                    float capsuleHalf = 2.0f;
+                    float capsuleRadius = 1.0f;
+                    float capsuleMass = 1.0f;
+
+                    size = 10;
+                    int height = 10;
+
+                    cubeSize = boxSize[0];
+                    spacing = 2.0f;
+                    pos = new Vector3(0.0f, 20.0f, 0.0f);
+                    offset = -size * (cubeSize * 2.0f + spacing) * 0.5f;
+
+                    int numBodies = 0;
+
+                    Random random = new Random();
+
+                    for (int k = 0; k < height; k++)
+                    {
+                        for (int j = 0; j < size; j++)
+                        {
+                            pos[2] = offset + (float)j * (cubeSize * 2.0f + spacing);
+                            for (int i = 0; i < size; i++)
+                            {
+                                pos[0] = offset + (float)i * (cubeSize * 2.0f + spacing);
+                                Vector3 bpos = new Vector3(0, 25, 0) + new Vector3(5.0f * pos.X, pos.Y, 5.0f * pos.Z);
+                                int idx = random.Next(10);
+                                Matrix trans = Matrix.Translation(bpos);
+
+                                switch (idx)
+                                {
+                                    case 0:
+                                    case 1:
+                                    case 2:
+                                        {
+                                            float r = 0.5f * (idx + 1);
+                                            BoxShape boxShape = new BoxShape(boxSize * r);
+                                            LocalCreateRigidBody(boxMass * r, trans, boxShape);
+                                        }
+                                        break;
+
+                                    case 3:
+                                    case 4:
+                                    case 5:
+                                        {
+                                            float r = 0.5f * (idx - 3 + 1);
+                                            SphereShape sphereShape = new SphereShape(sphereRadius * r);
+                                            LocalCreateRigidBody(sphereMass * r, trans, sphereShape);
+                                        }
+                                        break;
+
+                                    case 6:
+                                    case 7:
+                                    case 8:
+                                        {
+                                            float r = 0.5f * (idx - 6 + 1);
+                                            CapsuleShape capsuleShape = new CapsuleShape(capsuleRadius * r, capsuleHalf * r);
+                                            LocalCreateRigidBody(capsuleMass * r, trans, capsuleShape);
+                                        }
+                                        break;
+                                }
+
+                                numBodies++;
+                            }
+                        }
+                        offset -= 0.05f * spacing * (size - 1);
+                        spacing *= 1.1f;
+                        pos[1] += (cubeSize * 2.0f + spacing);
+                    }
+
+                    //CreateLargeMeshBody();
+
+                    break;
+
+                case 6:
+                    boxSize = new Vector3(1.5f, 1.5f, 1.5f);
+
+                    convexHullShape = new ConvexHullShape();
+
+                    for (int i = 0; i < Examples.BulletSharptest.Taru.Vtx.Length / 3; i++)
+                    {
+                        Vector3 vtx = new Vector3(Examples.BulletSharptest.Taru.Vtx[i * 3], Examples.BulletSharptest.Taru.Vtx[i * 3 + 1], Examples.BulletSharptest.Taru.Vtx[i * 3 + 2]);
+                        convexHullShape.AddPoint(vtx);
+                    }
+
+                    convexHullShape.CalculateLocalInertia(mass, out localInertia);
+
+
+                    size = 10;
+                    height = 10;
+
+                    cubeSize = boxSize[0];
+                    spacing = 2.0f;
+                    pos = new Vector3(0.0f, 20.0f, 0.0f);
+                    offset = -size * (cubeSize * 2.0f + spacing) * 0.5f;
+
+
+                    for (int k = 0; k < height; k++)
+                    {
+                        for (int j = 0; j < size; j++)
+                        {
+                            pos[2] = offset + (float)j * (cubeSize * 2.0f + spacing);
+                            for (int i = 0; i < size; i++)
+                            {
+                                pos[0] = offset + (float)i * (cubeSize * 2.0f + spacing);
+                                Vector3 bpos = new Vector3(0, 25, 0) + new Vector3(5.0f * pos.X, pos.Y, 5.0f * pos.Z);
+
+                                LocalCreateRigidBody(mass, Matrix.Translation(bpos), convexHullShape);
+                            }
+                        }
+                        offset -= 0.05f * spacing * (size - 1);
+                        spacing *= 1.1f;
+                        pos[1] += (cubeSize * 2.0f + spacing);
+                    }
+
+                    //CreateLargeMeshBody();
+
+                    break;
+
+                case 7:
+                    // TODO
+                    //CreateTest6();
+                    //InitRays();
+                    break;
+            }
+            #endregion switchBenchmark
+        }
+
+        public void CreatePyramid(Vector3 offsetPosition, int stackSize, Vector3 boxSize)
+        {
+            float space = 0.0001f;
+            Vector3 pos = new Vector3(0.0f, boxSize[1], 0.0f);
+
+            BoxShape blockShape = new BoxShape(boxSize[0] - collisionRadius, boxSize[1] - collisionRadius, boxSize[2] - collisionRadius);
+
+            float mass = 1.0f;
+            Vector3 localInertia;
+            blockShape.CalculateLocalInertia(mass, out localInertia);
+
+            float diffX = boxSize[0] * 1.02f;
+            float diffY = boxSize[1] * 1.02f;
+            float diffZ = boxSize[2] * 1.02f;
+
+            float offsetX = -stackSize * (diffX * 2.0f + space) * 0.5f;
+            float offsetZ = -stackSize * (diffZ * 2.0f + space) * 0.5f;
+            while (stackSize > 0)
+            {
+                for (int j = 0; j < stackSize; j++)
+                {
+                    pos[2] = offsetZ + (float)j * (diffZ * 2.0f + space);
+                    for (int i = 0; i < stackSize; i++)
+                    {
+                        pos[0] = offsetX + (float)i * (diffX * 2.0f + space);
+                        RigidBody body = LocalCreateRigidBody(mass, Matrix.Translation(offsetPosition + pos), blockShape);
+                    }
+                }
+                offsetX += diffX;
+                offsetZ += diffZ;
+                pos[1] += (diffY * 2.0f + space);
+                stackSize--;
+            }
+        }
+
+        public void CreateWall(Vector3 offsetPosition, int stackSize, Vector3 boxSize)
+        {
+            BoxShape blockShape = new BoxShape(boxSize[0] - collisionRadius, boxSize[1] - collisionRadius, boxSize[2] - collisionRadius);
+
+            float mass = 1.0f;
+            Vector3 localInertia;
+            blockShape.CalculateLocalInertia(mass, out localInertia);
+
+            //	float diffX = boxSize[0] * 1.0f;
+            float diffY = boxSize[1] * 1.0f;
+            float diffZ = boxSize[2] * 1.0f;
+
+            float offset = -stackSize * (diffZ * 2.0f) * 0.5f;
+            Vector3 pos = new Vector3(0.0f, diffY, 0.0f);
+
+            while (stackSize > 0)
+            {
+                for (int i = 0; i < stackSize; i++)
+                {
+                    pos[2] = offset + (float)i * (diffZ * 2.0f);
+                    LocalCreateRigidBody(mass, Matrix.Translation(offsetPosition + pos), blockShape);
+                }
+                offset += diffZ;
+                pos[1] += (diffY * 2.0f);
+                stackSize--;
+            }
+        }
+
+        public void CreateTowerCircle(Vector3 offsetPosition, int stackSize, int rotSize, Vector3 boxSize)
+        {
+            BoxShape blockShape = new BoxShape(boxSize[0] - collisionRadius, boxSize[1] - collisionRadius, boxSize[2] - collisionRadius);
+
+            float mass = 1.0f;
+            Vector3 localInertia;
+            blockShape.CalculateLocalInertia(mass, out localInertia);
+
+            float radius = 1.3f * rotSize * boxSize[0] / (float)Math.PI;
+
+            // create active boxes
+            float posY = boxSize[1];
+            float rot = 0;
+
+            for (int i = 0; i < stackSize; i++)
+            {
+                for (int j = 0; j < rotSize; j++)
+                {
+                    Matrix trans = Matrix.Translation(0, 0, radius);
+                    trans *= Matrix.RotationY(rot);
+                    trans *= Matrix.Translation(offsetPosition + new Vector3(0, posY, 0));
+                    LocalCreateRigidBody(mass, trans, blockShape);
+
+                    rot += (2.0f * (float)Math.PI) / rotSize;
+                }
+
+                posY += boxSize[1] * 2.0f;
+                rot += (float)Math.PI / (float)rotSize;
+            }
+        }
+
+        public RigidBody LocalCreateRigidBody(float mass, Matrix startTransform, CollisionShape shape)
+        {
+            //rigidbody is dynamic if and only if mass is non zero, otherwise static
+            bool isDynamic = (mass != 0.0f);
+
+            Vector3 localInertia = Vector3.Zero;
+            if (isDynamic)
+                shape.CalculateLocalInertia(mass, out localInertia);
+
+            //using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
+
+            RigidBodyConstructionInfo rbInfo = new RigidBodyConstructionInfo(mass, null, shape, localInertia);
+            RigidBody body = new RigidBody(rbInfo);
+            rbInfo.Dispose();
+            body.ContactProcessingThreshold = defaultContactProcessingThreshold;
+            body.WorldTransform = startTransform;
+
+            World.AddRigidBody(body);
+
+            return body;
+        }
+
+        public void Run()
+        {
+            //OnInitialize();
+            OnInitializePhysics();
+
+            clock.Start();
+        }
+
+        public virtual void OnUpdate()
+        {
+            _frameDelta = clock.Update();
+            frameAccumulator += _frameDelta;
+            ++frameCount;
+            if (frameAccumulator >= 1.0f)
+            {
+                FramesPerSecond = frameCount / frameAccumulator;
+
+                frameAccumulator = 0.0f;
+                frameCount = 0;
+            }
+
+            _world.StepSimulation(_frameDelta);
+            Debug.WriteLine("benchmark:   " + benchmark);
+
+            
+        }
+
+
+    }
+}

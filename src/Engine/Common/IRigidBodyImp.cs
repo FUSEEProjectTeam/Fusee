@@ -1,0 +1,37 @@
+﻿using Fusee.Math;
+
+namespace Fusee.Engine
+{
+    public interface IRigidBodyImp
+    {
+        // IRigidBodyImp RigidBody(float mass, float3 worldTransform, /*shape, */ float3 inertia);
+        
+        float Mass { get; set; }
+        float3 Inertia { get; set; }
+
+        float4x4 WorldTransform { get; set; }
+        float3 Position { get; set; }
+        
+
+
+        void ApplyForce(float3 force, float3 relPos);      //Rel_Pos definition????
+        float3 ApplyTorque { get; set; } // als Field in bullet als void
+        void ApplyImpulse(float3 impulse, float3 relPos);  //Rel_Pos definition????
+
+        // diese drei als Field in bullet als void
+        float3 ApplyTorqueImpulse { get; set; }             
+        float3 ApplyCentralForce{ get; set; }             
+        float3 ApplyCentralImpulse { get; set; }         
+
+        //Translate RigidBody by a Vector
+        float3 LinearVelocity { get; set; }
+        float3 AngularVelocity { get; set; }
+
+        //"physic Matrial"
+        float Bounciness { get; set; }
+
+
+        object UserObject { get; set; }
+
+    }
+}

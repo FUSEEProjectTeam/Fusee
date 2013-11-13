@@ -57,12 +57,15 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="IAudioStream.cs" />
+    <Compile Include="IDynamicWorldImp.cs" />
     <Compile Include="IInputImp.cs" />
     <Compile Include="ImageData.cs" />
     <Compile Include="IMeshImp.cs" />
     <Compile Include="InitEventArgs.cs" />
+    <Compile Include="IPoint2PointConstraintImp.cs" />
     <Compile Include="IRenderCanvasImp.cs" />
     <Compile Include="IRenderContextImp.cs" />
+    <Compile Include="IRigidBodyImp.cs" />
     <Compile Include="IShaderParam.cs" />
     <Compile Include="IShaderProgramImp.cs" />
     <Compile Include="IAudioImp.cs" />
