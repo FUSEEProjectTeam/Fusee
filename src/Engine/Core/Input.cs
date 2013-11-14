@@ -14,6 +14,7 @@ namespace Fusee.Engine
         private static Input _instance;
         //Neu
         List<InputDevice> devices = new List<InputDevice>();
+        List<GameController> gameControllers = new List<GameController>();
 
         internal IInputImp InputImp
         {
@@ -252,20 +253,36 @@ namespace Fusee.Engine
                 
             }
         }
+        //neu
+        
 
-        public void GetPressedButton (DirectInput _directInput, GameController _gameController)
+        //neu 
+        public void InitializeDevices()
         {
-            JoystickState _joystickState = new JoystickState();
-            _joystickState = _gameController.GetState();
-
-            for (int i = 0; i < 10; i++)
+            DirectInput directInput = new DirectInput();
+            var devices = directInput.GetDevices(DeviceClass.GameController, DeviceEnumerationFlags.AttachedOnly);
+            
+            
+            foreach (DeviceInstance deviceInstance in devices)
             {
-                if (_joystickState.IsPressed(i))
-                {
-                    System.Diagnostics.Debug.WriteLine(i);
-                }
+                System.Diagnostics.Debug.WriteLine(deviceInstance.ProductName);
+                gameControllers.Add(new GameController(deviceInstance));
+                
             }
         }
+
+        //neu
+        public GameController getGameController (int index)
+        {
+            return gameControllers[index];
+        }
+
+
+        //neu
+        //public bool ControllerButtonPressed(int index, GameController gameController)
+        //{
+        //    if ()
+        //}
 
         //Neu
         public enum DeviceCategory
@@ -281,8 +298,9 @@ namespace Fusee.Engine
         {
             A = 0,
             B = 1,
-            C,
-            D,
+            C = 2,
+            D = 3,
+            E = 4,
 
             R1,
             R2,

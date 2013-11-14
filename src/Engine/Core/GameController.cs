@@ -7,23 +7,28 @@ namespace Fusee.Engine
     {
         // Das GamePad
         private Joystick joystick;
+        private JoystickState state;
+        private bool[] buttonsPressed;
+        
 
         // Status des GamePads
-        private JoystickState state = new JoystickState();
-        DirectInput input = new DirectInput();
+        
+        
 
-        public GameController(DirectInput directInput, int number)
+        public GameController(DeviceInstance device)
         {
+            DirectInput directInput = new DirectInput();
+             state = new JoystickState();
+            
             // Geräte suchen
-            var devices = directInput.GetDevices(DeviceClass.GameController, DeviceEnumerationFlags.AttachedOnly);
-            if (devices.Count == 0 || devices[number] == null)
-            {
-                // Kein Gamepad vorhanden
-                return;
-            }
+
+            
+            buttonsPressed = new bool[100];
+            
 
             // Gamepad erstellen
-            joystick = new Joystick(directInput, devices[number].InstanceGuid);
+            joystick = new Joystick(directInput, device.InstanceGuid);
+            
 
             
             // Den Zahlenbereich der Achsen auf -1000 bis 1000 setzen
@@ -49,6 +54,37 @@ namespace Fusee.Engine
             state = joystick.GetCurrentState();
 
             return state;
+        }
+
+        public bool isButtonDown(int buttonIndex)
+        {
+            state = this.GetState();
+
+           
+                if (state.IsPressed(buttonIndex))
+                {
+
+                    return true;
+                }
+            return false;
+        }
+
+        public bool IsButtonPressed(int buttonIndex)
+        {
+            state = this.GetState();
+
+
+            if (state.IsPressed(buttonIndex) && buttonsPressed[buttonIndex] == false)
+                {
+                    buttonsPressed[buttonIndex] = true;
+                    return true;
+                }
+
+            if (state.IsReleased(buttonIndex) && buttonsPressed[buttonIndex] == true)
+                {
+                    buttonsPressed[buttonIndex] = false;
+                }
+            return false;
         }
 
         public void Release()
