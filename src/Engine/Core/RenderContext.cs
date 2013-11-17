@@ -304,7 +304,11 @@ namespace Fusee.Engine
             {
                 if (!_modelViewProjectionOk)
                 {
-                    _modelViewProjection = float4x4.Mult(ModelView, Projection);
+                    // Row order notation
+                    // _modelViewProjection = float4x4.Mult(ModelView, Projection);
+ 
+                    // Column order notation
+                    _modelViewProjection = float4x4.Mult(Projection, ModelView);
                     _modelViewProjectionOk = true;
                 }
                 return _modelViewProjection;

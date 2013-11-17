@@ -32,12 +32,11 @@ namespace Fusee.Engine
         {
             _currentTextureUnit = 0;
             _shaderParam2TexUnit = new Dictionary<int, int>();
-            //GL.Disable(EnableCap.CullFace);
-            //GL.Disable(EnableCap.DepthTest);
-            /*
-             * GL.ClearDepth(0);
-            GL.DepthRange(1, 0);
-            GL.DepthFunc(DepthFunction.Less);*/
+            
+            // Due to the right-handed nature of OpenGL and the left-handed design of FUSEE
+            // the meaning of what's Front and Back of a face simply flips.
+            // TODO - implement this in render states!!!
+            GL.CullFace(CullFaceMode.Front);
         }
 
         #endregion
@@ -320,7 +319,11 @@ namespace Fusee.Engine
             unsafe
             {
                 var mF = (float*) (&val);
-                GL.UniformMatrix4(((ShaderParam) param).handle, 1, false, mF);
+                // Row order notation
+                // GL.UniformMatrix4(((ShaderParam) param).handle, 1, false, mF);
+
+                // Column order notation
+                GL.UniformMatrix4(((ShaderParam)param).handle, 1, true, mF);
             }
         }
 
@@ -672,18 +675,6 @@ namespace Fusee.Engine
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
         public void Render(IMeshImp mr)
         {
-
-            GL.Disable(EnableCap.CullFace);
-            
-            //GL.Enable(EnableCap.CullFace);
-            //GL.CullFace(CullFaceMode.Back);
-            
-            //GL.Enable(EnableCap.DepthTest);
-            //GL.ClearDepth(1);
-            //GL.DepthRange(0, 1);
-            //GL.DepthFunc(DepthFunction.Less);
-
-
             if (((MeshImp) mr).VertexBufferObject != 0)
             {
                 GL.EnableVertexAttribArray(Helper.VertexAttribLocation);

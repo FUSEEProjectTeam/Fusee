@@ -350,6 +350,9 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
             this.gl.enable(this.gl.CULL_FACE);
             this.gl.clearColor(0.0, 0.0, 0.2, 1.0);
             this._currentTextureUnit = 0;
+            
+            // TODO - implement this in render states!!!
+            this.gl.cullFace(this.gl.FRONT);
         }
     );
 
@@ -813,7 +816,13 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
     $.Method({ Static: false, Public: true }, "SetShaderParamMtx4f",
         new JSIL.MethodSignature(null, [$WebGLImp.TypeRef("Fusee.Engine.IShaderParam"), $asm00.TypeRef("Fusee.Math.float4x4")]),
         function SetShaderParamMtx4f(param, val) {
-            var flatMatrix = new Float32Array(val.ToArray());
+            // Row order notation
+            //   var flatMatrix = new Float32Array(val.ToArray());
+            //   this.gl.uniformMatrix4fv(param.handle, false, flatMatrix);
+            // Column order notation
+            // Other parameters than "false" for "Transpose" are forbidden...
+            var valT = $fuseeMath.Fusee.Math.float4x4.Transpose(val.MemberwiseClone());
+            var flatMatrix = new Float32Array(valT.ToArray());
             this.gl.uniformMatrix4fv(param.handle, false, flatMatrix);
         }
     );

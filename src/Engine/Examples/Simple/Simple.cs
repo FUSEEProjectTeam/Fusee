@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Fusee.Engine;
 using Fusee.Math;
 
@@ -82,13 +83,31 @@ namespace Examples.Simple
             if (Input.Instance.IsKey(KeyCodes.Down))
                 _angleVert += RotationSpeed*(float) Time.Instance.DeltaTime;
 
-            var mtxRot = float4x4.CreateRotationY(_angleHorz)*float4x4.CreateRotationX(_angleVert);
+            // Row order notation
+            var mtxRot_ROW = float4x4.CreateRotationY_ROW(_angleHorz) * float4x4.CreateRotationX_ROW(_angleVert);
+            // Column order notation
+            var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
+            //Debug.Assert(mtxRot_ROW == float4x4.Transpose(mtxRot));
+
+            // Row order notation
+            var mtxCam_ROW = float4x4.LookAt_ROW(0, 200, -500, 0, 0, 0, 0, 1, 0);
+            mtxCam_ROW = float4x4.Transpose(mtxCam_ROW);
+            // Column order notation
             var mtxCam = float4x4.LookAt(0, 200, -500, 0, 0, 0, 0, 1, 0);
+            // Debug.Assert(mtxCam_ROW == float4x4.Transpose(mtxCam));
 
             RC.SetShader(_spColor);
 
             // first mesh
-            RC.ModelView = float4x4.CreateTranslation(0, -50, 0) *  float4x4.CreateTranslation(0, 0, -150) * mtxRot * mtxCam;
+            // Row order notation
+            var modelViewMesh1_ROW = float4x4.CreateTranslation_ROW(0, -50, 0) *  float4x4.CreateTranslation_ROW(0, 0, -150) * mtxRot_ROW * mtxCam_ROW;
+            // Column order notation
+            var modelViewMesh1 = mtxCam * mtxRot * float4x4.CreateTranslation(0, 0, -150) * float4x4.CreateTranslation(0, -50, 0);
+            //Debug.Assert(modelViewMesh1_ROW == float4x4.Transpose(modelViewMesh1));
+            // RC.ModelView = float4x4.Transpose(modelViewMesh1);
+            RC.ModelView = modelViewMesh1;
+
+
             _zz += (float)(5.0 * Time.Instance.DeltaTime);
 
             RC.SetShaderParam(_colorParam, new float4(0.5f, 0.8f, 0, 1));
@@ -96,7 +115,14 @@ namespace Examples.Simple
             RC.Render(_meshTea);
 
             // second mesh
-            RC.ModelView = new float4x4(100, 0, 0, 0, 0, 100, 0, 0, 0, 0, 100, 0, 0, 0, 0, 1) * float4x4.CreateTranslation(0, 0, 150) * mtxRot * mtxCam;
+            // Row order notation
+            var modelViewMesh2_ROW = new float4x4(100, 0, 0, 0, 0, 100, 0, 0, 0, 0, 100, 0, 0, 0, 0, 1) * float4x4.CreateTranslation_ROW(0, 0, 150) * mtxRot_ROW * mtxCam_ROW;
+            // Column order notation
+            var modelViewMesh2 = mtxCam * mtxRot * float4x4.CreateTranslation(0, 0, 150) * new float4x4(100, 0, 0, 0, 0, 100, 0, 0, 0, 0, 100, 0, 0, 0, 0, 1);
+            // Debug.Assert(modelViewMesh2_ROW == float4x4.Transpose(modelViewMesh2));
+            // RC.ModelView = float4x4.Transpose(modelViewMesh2);
+            RC.ModelView = modelViewMesh2;
+
 
             // RC.SetShader(_spTexture);
             // RC.SetShaderParamTexture(_textureParam, _iTex);
@@ -117,7 +143,11 @@ namespace Examples.Simple
             RC.Viewport(0, 0, Width, Height);
 
             var aspectRatio = Width/(float) Height;
-            RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 5000);
+            var projection_ROW = float4x4.CreatePerspectiveFieldOfView_ROW(MathHelper.PiOver4, aspectRatio, 1, 5000);
+            var projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 5000);
+            // Debug.Assert(projection_ROW == float4x4.Transpose(projection));
+            // RC.Projection = float4x4.Transpose(projection);
+            RC.Projection = projection;
             // RC.Projection = float4x4.CreateOrthographic(Width, Height, 1, 5000);
         }
 
