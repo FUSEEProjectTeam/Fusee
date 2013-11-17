@@ -21,7 +21,7 @@ namespace Examples.BulletSharp
 
 
         protected CollisionConfiguration CollisionConf;
-        protected CollisionDispatcher Dispatcher;
+        protected Dispatcher Dispatcher;
         protected BroadphaseInterface Broadphase;
         protected ConstraintSolver Solver;
         public AlignedCollisionShapeArray CollisionShapes { get; private set; }
@@ -40,9 +40,12 @@ namespace Examples.BulletSharp
             Broadphase = new DbvtBroadphase();
             Solver = new SequentialImpulseConstraintSolver();
             
-            World = new DiscreteDynamicsWorld(Dispatcher, Broadphase, Solver, CollisionConf);
-            World.Gravity = new Vector3(0, -10, 0);
-
+          
+            World = new DiscreteDynamicsWorld(Dispatcher, Broadphase, Solver, CollisionConf)
+            {
+                Gravity = new Vector3(0, -9.81f  /* *10.0f */, 0)
+            };
+            World.SolverInfo.NumIterations = 8;
             Ground();
             //FallingTower();
             Constraints();
@@ -96,30 +99,30 @@ namespace Examples.BulletSharp
             Debug.WriteLine("Init Constraints");
 
             var posA = new Vector3(-10,30, 0);
-            var startTransformA = Matrix.Translation(posA.X, posA.Y, posA.Z);
+            var startTransformA = Matrix.Translation(0,20,0);
             var myMotionStateA = new DefaultMotionState(startTransformA);
             var rbInfoA = new RigidBodyConstructionInfo(1, myMotionStateA, new BoxShape(2));
             var rigidBodyA = new RigidBody(rbInfoA);
             rigidBodyA.LinearFactor = new Vector3(0,0,0); //More or Less Static
+           
             World.AddRigidBody(rigidBodyA);
 
             var posB = new Vector3(10,0, 0);
-            var startTransformB = Matrix.Translation(posB.X, posB.Y, posB.Z);
+            var startTransformB = Matrix.Translation(0,20,0);
             var myMotionStateB = new DefaultMotionState(startTransformB);
             var rbInfoB = new RigidBodyConstructionInfo(1, myMotionStateB, new BoxShape(2));
             var rigidBodyB = new RigidBody(rbInfoB);
             World.AddRigidBody(rigidBodyB);
 
-            var pivotInA = new Vector3(10, 5, 0);
-            var pivotInB = new Vector3(10, 5, 0);
+            var pivotInA = new Vector3(0, 20, 0);
+            
 
- 
-            var p2p1 = new Point2PointConstraint(rigidBodyA, rigidBodyB, pivotInA, pivotInB);
+
+            var p2p1 = new Point2PointConstraint(rigidBodyA, rigidBodyB, pivotInA, pivotInA);
             
             World.AddConstraint(p2p1);
             p2p1.SetParam(ConstraintParam.Cfm, 0.9f);
             p2p1.SetParam(ConstraintParam.Erp, 0.1f);
-
         }
 
 

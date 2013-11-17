@@ -117,10 +117,8 @@ namespace Examples.BulletSharp
 
             if (Input.Instance.IsKeyDown(KeyCodes.Down))
             {
-                Debug.WriteLine("ApplyImpulse");
-                var co = _physic.World.CollisionObjectArray[0];
-                var rb = (RigidBody)co;
-                rb.ApplyCentralImpulse(new Vector3(10,-10,0));
+                var rb = _physic.World.GetConstraint(0).RigidBodyB;
+                rb.ApplyCentralImpulse(new Vector3(0, -50, 0));
             }
 
            // if (Input.Instance.IsKeyDown(KeyCodes.Down))

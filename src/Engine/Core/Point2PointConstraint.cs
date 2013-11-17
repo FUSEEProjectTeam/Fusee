@@ -10,15 +10,48 @@ namespace Fusee.Engine
     {
         internal IPoint2PointConstraintImp _iP2PConstraintImp;
 
-        public float Test
+        public float3 PivotInA
         {
             get
             {
-                return _iP2PConstraintImp.Test;
+                return _iP2PConstraintImp.PivotInA;
             }
             set
             {
-                _iP2PConstraintImp.Test = value;
+                var o = (Point2PointConstraint)_iP2PConstraintImp.UserObject;
+                o._iP2PConstraintImp.PivotInA = value;
+            }
+            
+        }
+
+        public float3 PivotInB
+        {
+            get
+            {
+                return _iP2PConstraintImp.PivotInB;
+            }
+            set
+            {
+                var o = (Point2PointConstraint)_iP2PConstraintImp.UserObject;
+                o._iP2PConstraintImp.PivotInB = value;
+            }
+        }
+
+        public RigidBody RigidBodyA
+        {
+            get
+            {
+                var retval = _iP2PConstraintImp.RigidBodyA.UserObject;
+                return (RigidBody)retval;
+            }
+        }
+
+        public RigidBody RigidBodyB
+        {
+            get
+            {
+                var retval = _iP2PConstraintImp.RigidBodyB.UserObject;
+                return (RigidBody)retval;
             }
         }
     }

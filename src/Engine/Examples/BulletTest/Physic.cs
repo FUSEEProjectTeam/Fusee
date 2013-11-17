@@ -21,6 +21,7 @@ namespace Examples.BulletTest
             _world = new DynamicWorld();
 
             FallingTower();
+            InitPoint2PointConstraint();
 
         }
 
@@ -39,6 +40,15 @@ namespace Examples.BulletTest
                     }
                 }
             }
+        }
+
+        public void InitPoint2PointConstraint()
+        {
+            var rbA = _world.AddRigidBody(1, new float3(0, 20, 0), new float3(0, 0, 0));
+            rbA.LinearFactor = new float3(0,0,0);
+            rbA.AngularFactor = new float3(0, 0, 0);
+            var rbB = _world.AddRigidBody(1, new float3(0, 20, 0), new float3(0, 0, 0));
+            _world.AddPoint2PointConstraint(rbA, rbB, new float3(1, -1, 1), new float3(0, 10, 0));
         }
     }
 }

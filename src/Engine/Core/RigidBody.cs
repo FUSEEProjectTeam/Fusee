@@ -136,9 +136,6 @@ namespace Fusee.Engine
         }
 
 
-
-
-        #region Velocity
         public float3 LinearVelocity
         {
             get
@@ -164,7 +161,33 @@ namespace Fusee.Engine
                 o._iRigidBodyImp.AngularVelocity = value;
             }
         }
-        #endregion  Velocity
+
+
+        public float3 LinearFactor
+        {
+            get
+            {
+                return _iRigidBodyImp.LinearFactor;
+            }
+            set
+            {
+                var o = (RigidBody) _iRigidBodyImp.UserObject;
+                o._iRigidBodyImp.LinearFactor = value;
+            }
+        }
+
+        public float3 AngularFactor
+        {
+            get
+            {
+                return _iRigidBodyImp.LinearFactor;
+            }
+            set
+            {
+                var o = (RigidBody)_iRigidBodyImp.UserObject;
+                o._iRigidBodyImp.AngularFactor = value;
+            }
+        }
 
         public float Bounciness
         {

@@ -49,7 +49,7 @@ namespace Fusee.Engine
 
         public RigidBody GetRigidBody(int i)
         {
-            IRigidBodyImp rbi = _dwi.GetRigidBody(i);
+            var rbi = _dwi.GetRigidBody(i);
             var retval = (RigidBody) rbi.UserObject;
             return retval;
         }
@@ -67,6 +67,19 @@ namespace Fusee.Engine
             retval._iP2PConstraintImp = ip2pci;
             ip2pci.UserObject = retval;
             return retval;
+        }
+
+        public Point2PointConstraint GetConstraint(int i)
+        {
+            IPoint2PointConstraintImp tp2pci = _dwi.GetConstraint(i);
+            var retval = (Point2PointConstraint)tp2pci.UserObject;
+            return retval;
+        }
+
+        public int NumberConstraints()
+        {
+            var number = _dwi.NumberConstraints();
+            return number;
         }
     }
 }

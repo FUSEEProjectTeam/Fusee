@@ -198,6 +198,38 @@ namespace Fusee.Engine
             }
         }
 
+        public float3 LinearFactor
+        {
+            get
+            {
+                var retval = new float3(_rbi.LinearFactor.X, _rbi.LinearFactor.Y, _rbi.LinearFactor.Z);
+                return retval;
+            }
+            set
+            {
+                var linfac = new Vector3(value.x, value.y, value.z);
+                var o = (RigidBodyImp)_rbi.UserObject;
+                o._rbi.LinearFactor = linfac;
+            }
+        }
+
+        public float3 AngularFactor
+        {
+            get
+            {
+                var retval = new float3(_rbi.AngularFactor.X, _rbi.AngularFactor.Y, _rbi.AngularFactor.Z);
+                return retval;
+            }
+            set
+            {
+                var angfac = new Vector3(value.x, value.y, value.z);
+                var o = (RigidBodyImp)_rbi.UserObject;
+                o._rbi.LinearFactor = angfac;
+            }
+        }
+
+        
+
         
 
         public float Bounciness

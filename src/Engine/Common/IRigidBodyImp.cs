@@ -28,6 +28,9 @@ namespace Fusee.Engine
         float3 LinearVelocity { get; set; }
         float3 AngularVelocity { get; set; }
 
+        float3 LinearFactor { get; set; }
+        float3 AngularFactor { get; set; }
+
         //"physic Matrial"
         float Bounciness { get; set; }
 

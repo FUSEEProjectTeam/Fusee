@@ -115,6 +115,16 @@ namespace Fusee.Engine
             btP2PConstraint.UserObject = retval;
             return retval;
         }
-        
+
+        //TODO: What about inheritance problems -> should return any constraint type
+        public IPoint2PointConstraintImp GetConstraint(int i)
+        {
+            return (Point2PointConstraintImp)BtWorld.GetConstraint(i).UserObject;
+        }
+
+        public int NumberConstraints()
+        {
+            return BtWorld.NumConstraints;
+        }
     }
 }

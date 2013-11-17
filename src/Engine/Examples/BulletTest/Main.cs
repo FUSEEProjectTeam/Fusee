@@ -89,7 +89,7 @@ namespace Examples.BulletTest
                 _angleVert += RotationSpeed * (float)Time.Instance.DeltaTime;
            
             var mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
-            var mtxCam = mtxRot * float4x4.LookAt(0, 200, 500, 0, 0, 0, 0, 1, 0);
+            var mtxCam = mtxRot * float4x4.LookAt(0, 100, 200, 0, 0, 0, 0, 1, 0);
 
 
             for (int i = 0; i < _physic.World.NumberRigidBodies(); i++)
@@ -100,6 +100,27 @@ namespace Examples.BulletTest
                 RC.SetShaderParamTexture(_textureParam, _iTex);
                 RC.Render(_meshCube);
             }
+
+            #region RenderConstraint
+            for (int i = 0; i < _physic.World.NumberConstraints(); i++)
+            {
+                //Debug.WriteLine("Render Constraints");
+
+                var matrixA = _physic.World.GetConstraint(i).RigidBodyA.WorldTransform;
+                RC.ModelView = float4x4.Scale(0.025f) * matrixA * mtxCam;
+                RC.SetShader(_spTexture);
+                RC.SetShaderParamTexture(_textureParam, _iTex);
+                RC.Render(_meshCube);
+
+
+                var matrixB = _physic.World.GetConstraint(i).RigidBodyB.WorldTransform; 
+                RC.ModelView = float4x4.Scale(0.025f) * matrixB * mtxCam;
+                RC.SetShader(_spTexture);
+                RC.SetShaderParamTexture(_textureParam, _iTex);
+                RC.Render(_meshCube);
+
+            }
+            #endregion RenderConstraint
 
             #region RenderSimple
             //first mesh
