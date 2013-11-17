@@ -608,21 +608,6 @@ namespace Fusee.Math
         {
             result = new float4x4();
 
-            //float invRL = 1/(right - left);
-            //float invTB = 1/(top - bottom);
-            //float invFN = 1/(zFar - zNear);
-
-            //result.M11 = 2*invRL;
-            //result.M22 = 2*invTB;
-            //result.M33 = -2*invFN;
-
-            //result.M41 = -(right + left)*invRL;
-            //result.M42 = -(top + bottom)*invTB;
-            //result.M43 = -(zFar + zNear)*invFN;
-            //result.M44 = 1;
-
-            //result = new float4x4();
-
             float invRL = 1 / (right - left);
             float invTB = 1 / (top - bottom);
             float invFN = 1 / (zFar - zNear);
@@ -637,6 +622,38 @@ namespace Fusee.Math
             result.M44 = 1;
         }
 
+        /// <summary>
+        /// Creates a right handed orthographic projection matrix.
+        /// </summary>
+        /// <param name="left">The left edge of the projection volume.</param>
+        /// <param name="right">The right edge of the projection volume.</param>
+        /// <param name="bottom">The bottom edge of the projection volume.</param>
+        /// <param name="top">The top edge of the projection volume.</param>
+        /// <param name="zNear">The near edge of the projection volume.</param>
+        /// <param name="zFar">The far edge of the projection volume.</param>
+        /// <param name="result">The resulting Matrix4 instance.</param>
+        public static void CreateOrthographicOffCenterRH(float left, float right, float bottom, float top, float zNear,
+                                                         float zFar, out float4x4 result)
+        {
+            result = new float4x4();
+
+            float invRL = 1/(right - left);
+            float invTB = 1/(top - bottom);
+            float invFN = 1/(zFar - zNear);
+
+            result.M11 = 2*invRL;
+            result.M22 = 2*invTB;
+            result.M33 = -2*invFN;
+
+            result.M41 = -(right + left)*invRL;
+            result.M42 = -(top + bottom)*invTB;
+            result.M43 = -(zFar + zNear)*invFN;
+            result.M44 = 1;
+
+            result = new float4x4();
+        }
+
+      
         /// <summary>
         /// Creates a left handed orthographic projection matrix.
         /// </summary>
@@ -738,6 +755,12 @@ namespace Fusee.Math
         /// <param name="zNear">Distance to the near clip plane</param>
         /// <param name="zFar">Distance to the far clip plane</param>
         /// <param name="result">A projection matrix that transforms camera space to raster space</param>
+        /// <remarks>Generates a matrix mapping a frustum shaped volume (the viewing frustum) to
+        /// the unit cube (ranging from -1 to 1 in each dimension, also in z). The sign of the z-value is not
+        /// flipped. Given that the underlying rendering platform interprets z-values returned by the
+        /// vertex shader to be in left-handed coordinates, where increasing z-values indicate locations
+        /// further away from the view point (as BOTH, Direct3D AND OpenGL do), this type of matrix is widely
+        /// called to be a "left handed" projection matrix as it assumes a left-handed camera coordinate system.</remarks>
         /// <exception cref="System.ArgumentOutOfRangeException">
         /// Thrown under the following conditions:
         /// <list type="bullet">
@@ -758,16 +781,6 @@ namespace Fusee.Math
 
             float x = (2.0f*zNear)/(right - left);
             float y = (2.0f*zNear)/(top - bottom);
-            /* Original - probably right handed (sort of)
-            float a = (right + left)/(right - left);
-            float b = (top + bottom)/(top - bottom);
-            float c = -(zFar + zNear)/(zFar - zNear);
-            float d = -(2.0f*zFar*zNear)/(zFar - zNear);
-            result = new float4x4(x, 0, 0, 0,
-                                  0, y, 0, 0,
-                                  a, b, c, -1,
-                                  0, 0, d, 0);
-             */
             // Left Handed
             float a = (left + right) / (left - right);
             float b = (top + bottom) / (bottom - top);
@@ -781,6 +794,55 @@ namespace Fusee.Math
         }
 
         /// <summary>
+        /// Creates a right handed perspective projection matrix.
+        /// </summary>
+        /// <param name="left">Left edge of the view frustum</param>
+        /// <param name="right">Right edge of the view frustum</param>
+        /// <param name="bottom">Bottom edge of the view frustum</param>
+        /// <param name="top">Top edge of the view frustum</param>
+        /// <param name="zNear">Distance to the near clip plane</param>
+        /// <param name="zFar">Distance to the far clip plane</param>
+        /// <param name="result">A projection matrix that transforms camera space to raster space</param>
+        /// <remarks>Generates a matrix mapping a frustum shaped volume (the viewing frustum) to
+        /// the unit cube (ranging from -1 to 1 in each dimension, also in z). The sign of the z-value will be
+        /// flipped for vectors multiplied with this matrix. Given that the underlying rendering platform 
+        /// interprets z-values returned by the vertex shader to be in left-handed coordinates, where increasing 
+        /// z-values indicate locations further away from the view point (as BOTH, Direct3D AND OpenGL do), this 
+        /// type of matrix is widely called to be a "right handed" projection matrix as it assumes a right-handed 
+        /// camera coordinate system.</remarks>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// Thrown under the following conditions:
+        /// <list type="bullet">
+        /// <item>zNear is negative or zero</item>
+        /// <item>zFar is negative or zero</item>
+        /// <item>zNear is larger than zFar</item>
+        /// </list>
+        /// </exception>
+        public static void CreatePerspectiveOffCenterRH(float left, float right, float bottom, float top, float zNear,
+                                                      float zFar, out float4x4 result)
+        {
+            if (zNear <= 0)
+                throw new ArgumentOutOfRangeException("zNear");
+            if (zFar <= 0)
+                throw new ArgumentOutOfRangeException("zFar");
+            if (zNear >= zFar)
+                throw new ArgumentOutOfRangeException("zNear");
+
+            float x = (2.0f * zNear) / (right - left);
+            float y = (2.0f * zNear) / (top - bottom);
+            // Right handed
+            float a = (right + left)/(right - left);
+            float b = (top + bottom)/(top - bottom);
+            float c = -(zFar + zNear)/(zFar - zNear);
+            float d = -(2.0f*zFar*zNear)/(zFar - zNear);
+            result = new float4x4(x, 0, 0, 0,
+                                  0, y, 0, 0,
+                                  a, b, c, -1,
+                                  0, 0, d, 0);
+        }
+
+
+        /// <summary>
         /// Creates an left handed perspective projection matrix.
         /// </summary>
         /// <param name="left">Left edge of the view frustum</param>
@@ -790,12 +852,6 @@ namespace Fusee.Math
         /// <param name="zNear">Distance to the near clip plane</param>
         /// <param name="zFar">Distance to the far clip plane</param>
         /// <returns>A projection matrix that transforms camera space to raster space</returns>
-        /// <remarks>Generates a matrix mapping a frustum shaped volume (the viewing frustum) to
-        /// the unit cube (ranging from -1 to 1 in each dimension, also in z). The sign of the z-value is not
-        /// flipped. Given that the underlying rendering platform interprets z-values returned by the
-        /// vertex shader to be in left-handed coordinates, where increasing z-values indicate locations
-        /// further away from the view point (as BOTH, Direct3D AND OpenGL do), this type of matrix is widely
-        /// called to be a "left handed" projection matrix as it assumes a left-handed camera coordinate system.</remarks>
         /// <exception cref="System.ArgumentOutOfRangeException">
         /// Thrown under the following conditions:
         /// <list type="bullet">
