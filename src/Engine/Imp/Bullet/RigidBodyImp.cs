@@ -213,6 +213,9 @@ namespace Fusee.Engine
             }
         }
 
+       
+
+
         private object _userObject;
         public object UserObject
         {

@@ -31,60 +31,6 @@ namespace Examples.Simple
         public override void Init()
         {
             world = new DynamicWorld();
-
-            //create ground
-            int size = 3;
-            for (int b = -size; b < size; b++)
-            {
-                for (int c = -size; c < size; c++)
-                {
-                    world.AddRigidBody(0, new float3(b * 5, 0, c * 5), _meshFace, new float3(1, 1, 1));
-                }
-            }
-            
-            //Falling Tower
-            int k, h, j;
-            for (k = -2; k < 2; k++)
-            {
-                for (h = -2; h < 2; h++)
-                {
-                    for (j = -2; j < 2; j++)
-                    {
-                        var pos = new float3(4*h, 100+(k*4), 4*j);
-
-
-                        world.AddRigidBody(1, pos, _meshTea, new float3(1, 1, 1));//ApplyCentralForce = new float3(50,0,0);
-
-                    }
-                }
-            }
-
-            world.GetRigidBody(15).ApplyTorque = new float3(10,0,0);
-            
-            //add Boxes
-            /*    world.AddRigidBody(1, new float3(0, 100, 0), new float3(0, 0, 0));
-                world.AddRigidBody(1, new float3(0, 200, 0), new float3(0, 0, 0));
-                world.AddRigidBody(1, new float3(3, 300, 0), new float3(0, 0, 0));
-                world.AddRigidBody(1, new float3(0, 500, 0), new float3(0, 0, 0));
-            */
-
-                //Set Restitution:
-                /*world.GetRigidBody(0).Bounciness = 1.0f;
-            world.GetRigidBody(1).Bounciness = 2.0f;
-            world.GetRigidBody(2).Bounciness = 0.5f;
-            world.GetRigidBody(3).Bounciness = 0.5f;
-            world.GetRigidBody(4).Bounciness = 1.5f;*/
-
-                world.GetRigidBody(1).ApplyCentralImpulse = new float3(10, 0, 0);
-                // world.GetRigidBody(2).LinearVelocity = new float3(30,30,30);
-                // world.GetRigidBody(2).ApplyForce(new float3(0,0,500), new float3(20,0,0) );
-                // RigidBody body = idwi.GetRigidBody(0);
-                int n = world.NumberRigidBodies();
-                world.GetRigidBody(n - 1).ApplyCentralForce = new float3(20, 0, 0);
-                Debug.WriteLine("Anzahl RigidBodies/CollisionsObjects: " + n);
-
-
-
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             // initialize the variables
@@ -101,13 +47,50 @@ namespace Examples.Simple
             // load texture
             var imgData = RC.LoadImage("Assets/world_map.jpg");
             _iTex = RC.CreateTexture(imgData);
+
+            SetUpScene();
         }
 
+        public void SetUpScene()
+        {
+            /*create ground
+            int size = 2;
+            for (int b = -size; b < size; b++)
+            {
+                for (int c = -size; c < size; c++)
+                {
+                    world.AddRigidBody(0, new float3(b * 5, 0, c * 5), _meshCube, new float3(1, 1, 1));
+                }
+            }*/
+            //create Rigidbody
+            //world.AddRigidBody(0, new float3(0, 0, 0), _meshTea, new float3(1, 1, 1));
+            //create Rigidbody
+            //world.AddRigidBody(1, new float3(0, 300, 0), _meshTea, new float3(1, 1, 1));
+            
+        }
+
+        public void FallingTower()
+        {
+            for (int k = -2; k < 1; k++)
+            {
+                for (int h = -1; h < 2; h++)
+                {
+                    for (int j = -2; j < 1; j++)
+                    {
+                        var pos = new float3(4*h, 100+(k*4), 4*j);
+
+
+                        world.AddRigidBody(1, pos, new float3(1, 1, 1));//ApplyCentralForce = new float3(50,0,0);
+
+                    }
+                }
+            }
+        }
 
         public virtual void ShootBox(float3 startPos, float3 destination)
         {
 
-            world.AddRigidBody(1, startPos, _meshTea, new float3(1,1,1));
+            world.AddRigidBody(1, startPos, new float3(1,1,1));
             int n = world.NumberRigidBodies();
             world.GetRigidBody(n-1).ApplyCentralForce = new float3(20,0,0);
 
@@ -171,19 +154,19 @@ namespace Examples.Simple
       
 
             var mtxRot = float4x4.CreateRotationY(_angleHorz)*float4x4.CreateRotationX(_angleVert);
-            var mtxCam = mtxRot * float4x4.LookAt(0, 100, 200, 0, 0, 0, 0, 1, 0);
+            var mtxCam = mtxRot * float4x4.LookAt(0, 500, 1500, 0, 0, 0, 0, 1, 0);
             
             for (int i = 0; i < world.NumberRigidBodies(); i++)
             {
-                var body = world.GetRigidBody(i);
+                //var body = world.GetRigidBody(i);
                 
                 var matrix = world.GetRigidBody(i).WorldTransform;
-                RC.ModelView = float4x4.Scale(0.025f) * matrix * mtxCam;
+                RC.ModelView = /*float4x4.Scale(0.025f) **/ matrix * mtxCam;
                 
                 RC.SetShader(_spTexture);
                 RC.SetShaderParamTexture(_textureParam, _iTex);
 
-                RC.Render(_meshCube);
+                RC.Render(_meshTea);
             }
                
 

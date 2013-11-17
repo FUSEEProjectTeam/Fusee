@@ -37,52 +37,38 @@ namespace Fusee.Engine
             BtWorld.SolverInfo.NumIterations = 8;
 
         }
-
-
-        public IRigidBodyImp AddRigidBody(float mass, float3 worldTransform, IMeshImp mesh, /* shape, */ float3 inertia)
+        
+        public IRigidBodyImp AddRigidBody(float mass, float3 worldTransform, /*int[] meshTriangles, float3[] meshVertices, /* shape, */ float3 intertia)
         {
 
             Debug.WriteLine("DynamicWorldImp: AddRigidBody");
-           // worldTransform*=10.0f;
+            // worldTransform*=10.0f;
             // Use bullet to do what needs to be done:
             var btMatrix = Matrix.Translation(worldTransform.x, worldTransform.y, worldTransform.z);
             var btMotionState = new DefaultMotionState(btMatrix);
-            //var btInertia = new Vector3(inertia.x, inertia.y, inertia.z);
-            var btColShale = new BoxShape(2.5f /* * 10.0f*/);
-            var btInertia = btColShale.CalculateLocalInertia(mass);
-           // btInertia *= (10*10);
-            //TODO: Replace the static Boxshape by a individual collisionshape
+            //TODO: Replace the static Boxshape by an individual collisionshape
+            /*
+            Vector3[] btMeshVertecies = new Vector3[meshVertices.Length];
+            for (int v = 0; v < meshVertices.Length; v++)
+            {
+                btMeshVertecies[v].X = meshVertices[v].x;
+                btMeshVertecies[v].Y = meshVertices[v].y;
+                btMeshVertecies[v].Z = meshVertices[v].z;
+            }
+            var btTriangleIndexVertexArray = new TriangleIndexVertexArray(meshTriangles, btMeshVertecies);
+            GImpactMeshShape gImpactMeshShape = new GImpactMeshShape(btTriangleIndexVertexArray);
+            gImpactMeshShape.LocalScaling = new Vector3(1);
+            gImpactMeshShape.Margin = 0;
+            gImpactMeshShape.UpdateBound();
+            var btCollisionShape = gImpactMeshShape;
+            btCollisionShape.LocalScaling = new Vector3(0.5f);*/
+            //TODO Get it working ...
+            var btColShape = new BoxShape(2.5f);
             
-            #region define custom collision shape
-            /*int vLength = mesh.Vertices.Length;
-            float3[] ver = new float3[vLength];
-            ver = mesh.Vertices;
-            Vector3[] btVer = new Vector3[vLength];
-            for (int v = 0; v < vLength; v++)
-            {
-                btVer[v].X = ver[v].x;
-                btVer[v].Y = ver[v].y;
-                btVer[v].Z = ver[v].z;
-            }
+            //TODO: IF Inertia == NULL ... else ...
+            var btInertia = btColShape.CalculateLocalInertia(mass);
 
-            int iLength = mesh.Triangles.Length;
-            int[] ind = new int[iLength];
-            //ind = Convert.ToInt32[](_meshTea.Triangles);
-            for (int c = 0; c < iLength; c++)
-            {
-                ind[c] = Convert.ToInt32(mesh.Triangles[c]);
-            }
-
-            var indexVerexArray = new TriangleIndexVertexArray(ind, btVer);
-
-            GImpactMeshShape trimesh = new GImpactMeshShape(indexVerexArray);
-            trimesh.LocalScaling = new Vector3(1);
-            trimesh.Margin = 0;
-            trimesh.UpdateBound();
-            var btColShape = trimesh;*/
-            #endregion
-
-            var btRbcInfo = new RigidBodyConstructionInfo(mass /**10*/, btMotionState, btColShale, btInertia);
+            var btRbcInfo = new RigidBodyConstructionInfo(mass /**10*/, btMotionState, btColShape, btInertia);
             var btRigidBody = new RigidBody(btRbcInfo);
             btRigidBody.ContactProcessingThreshold = 0;
             BtWorld.AddRigidBody(btRigidBody);
@@ -111,18 +97,14 @@ namespace Fusee.Engine
             return number;
         }
 
-        
-
         //Constraint Test
-
-       /* public IPoint2PointConstraintImp AddPoint2PointConstrain(IRigidBodyImp rigidBodyA, IRigidBodyImp rigidBodyB, float3 pivotInA, float3 pivotInB)
+        public IPoint2PointConstraintImp AddPoint2PointConstraint(IRigidBodyImp rigidBodyA, IRigidBodyImp rigidBodyB, float3 pivotInA,
+            float3 pivotInB)
         {
-            var rigidBodyAImp = new RigidBodyImp();
-            rigidBodyAImp.UserObject = rigidBodyA.UserObject;
+            var rigidBodyAImp = (RigidBodyImp) rigidBodyA;
             var btRigidBodyA = rigidBodyAImp._rbi;
 
-            var rigidBodyBImp = new RigidBodyImp();
-            rigidBodyBImp.UserObject = rigidBodyB.UserObject;
+            var rigidBodyBImp = (RigidBodyImp) rigidBodyB;
             var btRigidBodyB = rigidBodyBImp._rbi;
 
             var btP2PConstraint = new Point2PointConstraint(btRigidBodyA, btRigidBodyB,
@@ -132,7 +114,7 @@ namespace Fusee.Engine
             retval._p2pci = btP2PConstraint;
             btP2PConstraint.UserObject = retval;
             return retval;
-        }*/
+        }
         
     }
 }

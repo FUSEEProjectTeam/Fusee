@@ -21,7 +21,8 @@ namespace Fusee.Engine
         // diese drei als Field in bullet als void
         float3 ApplyTorqueImpulse { get; set; }             
         float3 ApplyCentralForce{ get; set; }             
-        float3 ApplyCentralImpulse { get; set; }         
+        float3 ApplyCentralImpulse { get; set; }
+         
 
         //Translate RigidBody by a Vector
         float3 LinearVelocity { get; set; }
@@ -30,7 +31,7 @@ namespace Fusee.Engine
         //"physic Matrial"
         float Bounciness { get; set; }
 
-
+        
         object UserObject { get; set; }
 
     }

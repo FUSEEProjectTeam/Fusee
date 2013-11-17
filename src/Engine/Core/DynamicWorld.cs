@@ -18,12 +18,23 @@ namespace Fusee.Engine
             _dwi = ImpFactory.CreateIDynamicWorldImp();
         }
 
-        public RigidBody AddRigidBody(float mass, float3 worldTransform, Mesh mesh/* shape, */,float3 inertia)
+        public RigidBody AddRigidBody(float mass, float3 worldTransform, /*Mesh mesh/* shape,*/ float3 inertia)
         {
-          
-            /*Mesh m = mesh;
-            IMeshImp imi = m._meshImp;*/
-            IRigidBodyImp rbi = _dwi.AddRigidBody(mass, worldTransform, null, /* shape, */inertia);
+           /* Mesh theMesh = new Mesh();
+            theMesh = mesh;
+            var meshTrianglesCount = theMesh.Triangles.Length;
+            int [] meshTrianglesArray = new int[meshTrianglesCount];
+            for (int c = 0; c < meshTrianglesCount; c++)
+            {
+                meshTrianglesArray[c] = Convert.ToInt32(mesh.Triangles[c]);
+            }
+
+            int meshVerteciesCount = theMesh.Vertices.Length;
+            float3[] meshVerteciesArray = new float3[meshVerteciesCount];
+            meshVerteciesArray = mesh.Vertices;*/
+
+            IRigidBodyImp rbi = _dwi.AddRigidBody(mass, worldTransform,/* meshTrianglesArray, meshVerteciesArray, /* shape, */inertia);
+            
             var retval = new RigidBody();
             retval._iRigidBodyImp = rbi;
             rbi.UserObject = retval;
@@ -49,13 +60,13 @@ namespace Fusee.Engine
             return number;
         }
 
-       /* public Point2PointConstraint AddPoint2PointConstraint(IRigidBodyImp rigidBodyA, IRigidBodyImp rigidBodyB, float3 pivotInA, float3 pivotInB)
+        public Point2PointConstraint AddPoint2PointConstraint(RigidBody rigidBodyA, RigidBody rigidBodyB, float3 pivotInA, float3 pivotInB)
         {
-            IPoint2PointConstraintImp ip2pci = _dwi.AddPoint2PointConstraint(rigidBodyA, rigidBodyB, pivotInA, pivotInB);
+            IPoint2PointConstraintImp ip2pci = _dwi.AddPoint2PointConstraint(rigidBodyA._iRigidBodyImp, rigidBodyB._iRigidBodyImp, pivotInA, pivotInB);
             var retval = new Point2PointConstraint();
             retval._iP2PConstraintImp = ip2pci;
             ip2pci.UserObject = retval;
             return retval;
-        }*/
+        }
     }
 }

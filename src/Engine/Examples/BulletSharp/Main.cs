@@ -1,11 +1,9 @@
 using System;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
+using BulletSharp;
 using Fusee.Engine;
 using Fusee.Math;
-using BulletSharp;
 using RigidBody = BulletSharp.RigidBody;
-
 
 namespace Examples.BulletSharp
 {
@@ -18,7 +16,7 @@ namespace Examples.BulletSharp
         private const float Damping = 0.92f;
 
         // model variables
-        private Mesh _meshTea, _meshFace, _meshCube, _meshSphere;
+        private Mesh _meshTea, _meshCube;
 
         // variables for shader
         private ShaderProgram _spColor;
@@ -29,21 +27,17 @@ namespace Examples.BulletSharp
 
         private ITexture _iTex;
 
-        MyDemo MyDemo = new MyDemo();
-        MatrixConverter MatrixConverter = new MatrixConverter();
-
-        Clock Clock = new Clock();
-
-        // is called on startup
+        //Physic
+        private Physic _physic;
+       
         public override void Init()
         {
+            // is called on startup
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             // initialize the variables
             _meshTea = MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
-            _meshFace = MeshReader.LoadMesh(@"Assets/Face.obj.model");
             _meshCube = MeshReader.LoadMesh(@"Assets/Cube.obj.model");
-            _meshSphere = MeshReader.LoadMesh(@"Assets/Sphere.obj.model");
 
             _spColor = MoreShaders.GetShader("simple", RC);
             _spTexture = MoreShaders.GetShader("texture", RC);
@@ -53,28 +47,34 @@ namespace Examples.BulletSharp
 
             // load texture
             var imgData = RC.LoadImage("Assets/world_map.jpg");
-            _iTex = RC.CreateTexture(imgData);          
+            _iTex = RC.CreateTexture(imgData);
+
+            _physic = new Physic();
         }
 
-        // is called once a frame
+       
+
         public override void RenderAFrame()
         {
+            // is called once a frame
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-            //MyDemo.OnUpdate();
+            _physic.World.StepSimulation((float)Time.Instance.DeltaTime, 1 / 60, 1 / 60);
+            // move per mouse
+            if (Input.Instance.IsButtonDown(MouseButtons.Left))
+            {
+                _angleVelHorz = RotationSpeed * Input.Instance.GetAxis(InputAxis.MouseX);
+                _angleVelVert = RotationSpeed * Input.Instance.GetAxis(InputAxis.MouseY);
+            }
+            else
+            {
+                var curDamp = (float)Math.Exp(-Damping * Time.Instance.DeltaTime);
 
-            // MyDemo.World.StepSimulation(float timeSteps, int maxSubSteps, float fixedTimeSteps)
-            // timeSteps = time since the last call
-            // maxSubSteps =  maximum number of steps that Bullet is allowed to take each time you call it
-            // fixedTimeStep = the size of that internal step.
-            MyDemo.World.StepSimulation((float)Time.Instance.DeltaTime, Time.Instance.FramePerSecondSmooth);
-            //MyDemo.World.StepSimulation((float)Time.Instance.DeltaTime, 2);
-           // Debug.WriteLine("timeSptep: " +Time.Instance.DeltaTime);
+                _angleVelHorz *= curDamp;
+                _angleVelVert *= curDamp;
+            }
 
-            MyDemo.World.PerformDiscreteCollisionDetection();
-
-            //Debug.WriteLine("maxSubSteps: " + Time.Instance.FramePerSecond);
-            //Debug.WriteLine("fixedTimeStep: " + (1 / Time.Instance.FramePerSecond));
-            Debug.WriteLine("Time.Instance.FramePerSecond: " + Time.Instance.FramePerSecond);
+            _angleHorz += _angleVelHorz;
+            _angleVert += _angleVelVert;
 
             // move per mouse
             if (Input.Instance.IsButtonDown(MouseButtons.Left))
@@ -95,86 +95,110 @@ namespace Examples.BulletSharp
 
             // move per keyboard
             if (Input.Instance.IsKeyDown(KeyCodes.Left))
-                _angleHorz -= RotationSpeed * (float)Time.Instance.DeltaTime;
+            {
+                Debug.WriteLine("ApplyImpulse");
+                var rb = _physic.World.GetConstraint(0).RigidBodyB;
+                rb.ApplyCentralImpulse(new Vector3(0,-50,0));
+            }
+                //_angleHorz -= RotationSpeed * (float)Time.Instance.DeltaTime;
 
             if (Input.Instance.IsKeyDown(KeyCodes.Right))
-                _angleHorz += RotationSpeed * (float)Time.Instance.DeltaTime;
+                _physic.World.GetConstraint(0).RigidBodyA.ApplyTorque(new Vector3(30, 30, 0));
+                //_angleHorz += RotationSpeed * (float)Time.Instance.DeltaTime;
 
             if (Input.Instance.IsKeyDown(KeyCodes.Up))
-                _angleVert -= RotationSpeed * (float)Time.Instance.DeltaTime;
+            {
+                Debug.WriteLine("ApplyImpulse");
+                var co = _physic.World.CollisionObjectArray[0];
+                var rb = (RigidBody)co;
+                _physic.World.GetConstraint(0).RigidBodyA.ApplyCentralImpulse(new Vector3(0, 20, 0));
+                
+            }
 
             if (Input.Instance.IsKeyDown(KeyCodes.Down))
-                _angleVert += RotationSpeed * (float)Time.Instance.DeltaTime;
+            {
+                Debug.WriteLine("ApplyImpulse");
+                var co = _physic.World.CollisionObjectArray[0];
+                var rb = (RigidBody)co;
+                rb.ApplyCentralImpulse(new Vector3(10,-10,0));
+            }
 
-            Point pos = Input.Instance.GetMousePos();
-            
-            if (Input.Instance.OnKeyDown(KeyCodes.Space))
-                MyDemo.ShootBox(new Vector3(0, 10, 20), new Vector3(0, 1, 0));
-
+           // if (Input.Instance.IsKeyDown(KeyCodes.Down))
+                //_physic.ExitPhysics();
+           
             var mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
-            var mtxCam = mtxRot * float4x4.LookAt(0, 40, 100, 0, 0, 0, 0, 1, 0);
+            var mtxCam = mtxRot *float4x4.LookAt(0, 70, 250, 0, 0, 0, 0, 1, 0);
 
-           /* var rb = MyDemo.World.CollisionObjectArray[1];
-            var body = rb as RigidBody;
-            Matrix startTransform = Matrix.Translation(6,6,6);
-            MotionState ms = new DefaultMotionState(startTransform);
-            RigidBodyConstructionInfo conf = new RigidBodyConstructionInfo(5,ms, new BoxShape(1), new Vector3(33,33,33));
-            RigidBody myBody = new RigidBody(conf);
-            myBody.Gravity = new Vector3(0);*/
+            #region
+            for (int i = 0; i < _physic.World.CollisionObjectArray.Count; i++)
+            {
 
-            int n = MyDemo.World.CollisionObjectArray.Count;
-            var tea = MyDemo.World.CollisionObjectArray[n-1];
+                var colisionObject = _physic.World.CollisionObjectArray[i];
+                var btRigidBody = (RigidBody) colisionObject;
 
+                var converter = new Convert();
+                var matrix = converter.ConvertMatrixTof4X4(btRigidBody.WorldTransform);
+                //var matrix = _physic.World.GetRigidBody(i).WorldTransform;
+                RC.ModelView = float4x4.Scale(0.025f) * matrix * mtxCam;
+                RC.SetShader(_spTexture);
+                RC.SetShaderParamTexture(_textureParam, _iTex);
+                RC.Render(_meshCube);
+            }
+            #endregion
 
-            var ma = MatrixConverter.BtMAtrixToF3dMatrix(tea);
-            RC.ModelView = float4x4.Scale(0.05f) * ma * mtxCam;
+            #region RenderConstraint
+            for (int i = 0; i < _physic.World.NumConstraints; i++)
+            {
+                //Debug.WriteLine("Render Constraints");
+                var constraint = _physic.World.GetConstraint(i);
+                //var btRigidBody = (RigidBody) colisionObject;
+
+                var converter = new Convert();
+                var matrixA = converter.ConvertMatrixTof4X4(constraint.RigidBodyA.WorldTransform);
+                //var matrix = _physic.World.GetRigidBody(i).WorldTransform;
+                RC.ModelView = float4x4.Scale(0.025f) * matrixA * mtxCam;
+                RC.SetShader(_spTexture);
+                RC.SetShaderParamTexture(_textureParam, _iTex);
+                RC.Render(_meshCube); 
+               
+
+                var matrixB = converter.ConvertMatrixTof4X4(constraint.RigidBodyB.WorldTransform);
+                //var matrix = _physic.World.GetRigidBody(i).WorldTransform;
+                RC.ModelView = float4x4.Scale(0.025f) * matrixB * mtxCam;
+                RC.SetShader(_spTexture);
+                RC.SetShaderParamTexture(_textureParam, _iTex);
+                RC.Render(_meshCube);
+
+            }
+            #endregion RenderConstraint
+
+            #region RenderSimple
+            /* //first mesh
+            RC.ModelView = float4x4.CreateTranslation(0, -50, 0)*mtxRot*float4x4.CreateTranslation(-150, 0, 0)*mtxCam;
+
+            RC.SetShader(_spColor);
+            RC.SetShaderParam(_colorParam, new float4(0.5f, 0.8f, 0, 1));
+
+            RC.Render(_meshTea);
+
+            // second mesh
+            RC.ModelView = mtxRot*float4x4.CreateTranslation(150, 0, 0)*mtxCam;
 
             RC.SetShader(_spTexture);
             RC.SetShaderParamTexture(_textureParam, _iTex);
 
-            RC.Render(_meshTea);
-
-
-            for (int i = 0; i < 4; i++)
-            {
-                
-                var ground = (RigidBody)MyDemo.World.CollisionObjectArray[i];
-                
-                RC.ModelView = float4x4.Scale(0.099f, 0.001f, 0.099f) * float4x4.CreateTranslation(ground.WorldTransform.M41, ground.WorldTransform.M42, ground.WorldTransform.M43) * mtxCam;
-                RC.SetShader(_spColor);
-                RC.SetShaderParam(_colorParam, new float4(0.5f, 0.8f, i/10, 1));
-                RC.Render(_meshCube);
-            }
-            
-            for (int i = 4; i < MyDemo.World.CollisionObjectArray.Count-1; i++)
-            {
-                
-                var model = MyDemo.World.CollisionObjectArray[i];
-
-
-                var matrx = MatrixConverter.BtMAtrixToF3dMatrix(model);
-                RC.ModelView = float4x4.Scale(0.04f) * matrx * mtxCam;
-               
-                RC.SetShader(_spTexture);
-                RC.SetShaderParamTexture(_textureParam, _iTex);
-
-                RC.Render(_meshCube);
- 
-            }
-
-            
-          
-            // swap buffers
+            RC.Render(_meshCube);*/
+            #endregion RenderSimple
             Present();
         }
 
-        // is called when the window was resized
         public override void Resize()
         {
+            // is called when the window is resized
             RC.Viewport(0, 0, Width, Height);
 
             var aspectRatio = Width / (float)Height;
-            RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 2000);
+            RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 10000);
         }
 
         public static void Main()
@@ -184,4 +208,5 @@ namespace Examples.BulletSharp
         }
 
     }
+
 }
