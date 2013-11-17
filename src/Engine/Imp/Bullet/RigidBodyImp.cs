@@ -224,7 +224,7 @@ namespace Fusee.Engine
             {
                 var angfac = new Vector3(value.x, value.y, value.z);
                 var o = (RigidBodyImp)_rbi.UserObject;
-                o._rbi.LinearFactor = angfac;
+                o._rbi.AngularFactor = angfac;
             }
         }
 
