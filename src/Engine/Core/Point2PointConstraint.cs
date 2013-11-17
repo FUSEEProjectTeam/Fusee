@@ -37,6 +37,18 @@ namespace Fusee.Engine
             }
         }
 
+        public void SetParam(float value, int num, int axis = -1)
+        {
+            var o = (Point2PointConstraint) _iP2PConstraintImp.UserObject;
+            o._iP2PConstraintImp.SetParam(value, num, axis);
+        }
+
+        public float GetParam(int num, int axis = -1)
+        {
+            var retval = _iP2PConstraintImp.GetParam(num, axis);
+            return retval;
+        }
+
         public RigidBody RigidBodyA
         {
             get

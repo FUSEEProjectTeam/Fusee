@@ -22,7 +22,7 @@ namespace Fusee.Engine
             {
                 var pivoA = new Vector3(value.x, value.y, value.z);
                 var o = (Point2PointConstraintImp)_p2pci.UserObject;
-                _p2pci.PivotInA = pivoA;
+                o._p2pci.PivotInA = pivoA;
             }
         }
 
@@ -42,13 +42,37 @@ namespace Fusee.Engine
             
         }
 
-        public void SetParam(int num, float3 value, int axis = -1)
+        public void SetParam(float value, int num = 1, int axis = -1)
         {
+
+            var o = (Point2PointConstraintImp)_p2pci.UserObject;
+            ConstraintParam constraintParam;
+            switch (num)
+            {
+                case 1:
+                    constraintParam = ConstraintParam.Erp;
+                    break;
+                case 2:
+                    constraintParam = ConstraintParam.StopErp;
+                    break;
+                case 3:
+                    constraintParam = ConstraintParam.Cfm;
+                    break;
+                case 4:
+                    constraintParam = ConstraintParam.StopCfm;
+                    break;
+                default:
+                    constraintParam = ConstraintParam.Cfm;
+                    break;
+
+            }
+
+            o._p2pci.SetParam(constraintParam, value, axis);
         }
 
-        public float3 GetParam(int num, int axis = -1)
+        public float GetParam(int num, int axis = -1)
         {
-            var retval = new float3(0,0,0);
+            var retval = _p2pci.GetParam(num, axis);
             return retval;
         }
 

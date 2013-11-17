@@ -48,7 +48,9 @@ namespace Examples.BulletTest
             rbA.LinearFactor = new float3(0,0,0);
             rbA.AngularFactor = new float3(0, 0, 0);
             var rbB = _world.AddRigidBody(1, new float3(0, 20, 0), new float3(0, 0, 0));
-            _world.AddPoint2PointConstraint(rbA, rbB, new float3(1, -1, 1), new float3(0, 10, 0));
+            var p2p = _world.AddPoint2PointConstraint(rbA, rbB, new float3(1, -1, 1), new float3(0, 10, 0));
+            p2p.SetParam(0.9f, 1);
+            Debug.WriteLine(p2p.GetParam(4));
         }
     }
 }
