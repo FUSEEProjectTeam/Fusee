@@ -781,7 +781,7 @@ namespace Fusee.Engine
 
             void main()
             {             
-                gl_FragColor = max(dot(vec3(0,0,1),normalize(vNormal)), 0.1) * color;
+                gl_FragColor = max(dot(vec3(0,0,-1),normalize(vNormal)), 0.1) * color;
             }";
     }
 }

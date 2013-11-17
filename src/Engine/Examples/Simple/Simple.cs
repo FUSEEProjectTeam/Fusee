@@ -24,6 +24,7 @@ namespace Examples.Simple
         private IShaderParam _textureParam;
 
         private ITexture _iTex;
+        private float _zz;
 
         // is called on startup
         public override void Init()
@@ -32,8 +33,8 @@ namespace Examples.Simple
 
             // initialize the variables
             _meshTea = MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
-            _meshFace = MeshReader.LoadMesh(@"Assets/Face.obj.model");
-
+            _meshFace = new Cube();
+            
             _spColor = MoreShaders.GetDiffuseColorShader(RC);
             _spTexture = MoreShaders.GetDiffuseTextureShader(RC);
 
@@ -43,6 +44,7 @@ namespace Examples.Simple
             // load texture
             var imgData = RC.LoadImage("Assets/world_map.jpg");
             _iTex = RC.CreateTexture(imgData);
+            _zz = 0.0f;
         }
 
         // is called once a frame
@@ -81,23 +83,29 @@ namespace Examples.Simple
                 _angleVert += RotationSpeed*(float) Time.Instance.DeltaTime;
 
             var mtxRot = float4x4.CreateRotationY(_angleHorz)*float4x4.CreateRotationX(_angleVert);
-            var mtxCam = float4x4.LookAt(0, 200, 500, 0, 0, 0, 0, 1, 0);
-
-            // first mesh
-            RC.ModelView = float4x4.CreateTranslation(0, -50, 0)*mtxRot*float4x4.CreateTranslation(-150, 0, 0)*mtxCam;
+            var mtxCam = float4x4.LookAt(0, 200, -500, 0, 0, 0, 0, 1, 0);
 
             RC.SetShader(_spColor);
+
+            // first mesh
+            RC.ModelView = float4x4.CreateTranslation(0, -50, 0) *  float4x4.CreateTranslation(0, 0, -150) * mtxRot * mtxCam;
+            _zz += (float)(5.0 * Time.Instance.DeltaTime);
+
             RC.SetShaderParam(_colorParam, new float4(0.5f, 0.8f, 0, 1));
 
             RC.Render(_meshTea);
 
             // second mesh
-            RC.ModelView = mtxRot*float4x4.CreateTranslation(150, 0, 0)*mtxCam;
+            RC.ModelView = new float4x4(100, 0, 0, 0, 0, 100, 0, 0, 0, 0, 100, 0, 0, 0, 0, 1) * float4x4.CreateTranslation(0, 0, 150) * mtxRot * mtxCam;
 
-            RC.SetShader(_spTexture);
-            RC.SetShaderParamTexture(_textureParam, _iTex);
+            // RC.SetShader(_spTexture);
+            // RC.SetShaderParamTexture(_textureParam, _iTex);
+            RC.SetShaderParam(_colorParam, new float4(0.8f, 0.5f, 0, 1));
 
             RC.Render(_meshFace);
+
+
+
 
             // swap buffers
             Present();
@@ -110,6 +118,7 @@ namespace Examples.Simple
 
             var aspectRatio = Width/(float) Height;
             RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 5000);
+            // RC.Projection = float4x4.CreateOrthographic(Width, Height, 1, 5000);
         }
 
         public static void Main()

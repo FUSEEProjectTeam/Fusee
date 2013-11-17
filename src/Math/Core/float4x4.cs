@@ -562,7 +562,7 @@ namespace Fusee.Math
         #region CreateOrthographic
 
         /// <summary>
-        /// Creates an orthographic projection matrix.
+        /// Creates a left handed orthographic projection matrix.
         /// </summary>
         /// <param name="width">The width of the projection volume.</param>
         /// <param name="height">The height of the projection volume.</param>
@@ -575,7 +575,7 @@ namespace Fusee.Math
         }
 
         /// <summary>
-        /// Creates an orthographic projection matrix.
+        /// Creates a left handed orthographic projection matrix.
         /// </summary>
         /// <param name="width">The width of the projection volume.</param>
         /// <param name="height">The height of the projection volume.</param>
@@ -594,7 +594,7 @@ namespace Fusee.Math
         #region CreateOrthographicOffCenter
 
         /// <summary>
-        /// Creates an orthographic projection matrix.
+        /// Creates a left handed orthographic projection matrix.
         /// </summary>
         /// <param name="left">The left edge of the projection volume.</param>
         /// <param name="right">The right edge of the projection volume.</param>
@@ -608,22 +608,37 @@ namespace Fusee.Math
         {
             result = new float4x4();
 
-            float invRL = 1/(right - left);
-            float invTB = 1/(top - bottom);
-            float invFN = 1/(zFar - zNear);
+            //float invRL = 1/(right - left);
+            //float invTB = 1/(top - bottom);
+            //float invFN = 1/(zFar - zNear);
 
-            result.M11 = 2*invRL;
-            result.M22 = 2*invTB;
-            result.M33 = -2*invFN;
+            //result.M11 = 2*invRL;
+            //result.M22 = 2*invTB;
+            //result.M33 = -2*invFN;
 
-            result.M41 = -(right + left)*invRL;
-            result.M42 = -(top + bottom)*invTB;
-            result.M43 = -(zFar + zNear)*invFN;
+            //result.M41 = -(right + left)*invRL;
+            //result.M42 = -(top + bottom)*invTB;
+            //result.M43 = -(zFar + zNear)*invFN;
+            //result.M44 = 1;
+
+            //result = new float4x4();
+
+            float invRL = 1 / (right - left);
+            float invTB = 1 / (top - bottom);
+            float invFN = 1 / (zFar - zNear);
+
+            result.M11 = 2 * invRL;
+            result.M22 = 2 * invTB;
+            result.M33 = 2 * invFN;
+
+            result.M41 = -(right + left) * invRL;
+            result.M42 = -(top + bottom) * invTB;
+            result.M43 = -(zFar + zNear) * invFN;
             result.M44 = 1;
         }
 
         /// <summary>
-        /// Creates an orthographic projection matrix.
+        /// Creates a left handed orthographic projection matrix.
         /// </summary>
         /// <param name="left">The left edge of the projection volume.</param>
         /// <param name="right">The right edge of the projection volume.</param>
@@ -645,7 +660,7 @@ namespace Fusee.Math
         #region CreatePerspectiveFieldOfView
 
         /// <summary>
-        /// Creates a perspective projection matrix.
+        /// Creates a left handed perspective projection matrix.
         /// </summary>
         /// <param name="fovy">Angle of the field of view in the y direction (in radians)</param>
         /// <param name="aspect">Aspect ratio of the view (width / height)</param>
@@ -685,7 +700,7 @@ namespace Fusee.Math
         }
 
         /// <summary>
-        /// Creates a perspective projection matrix.
+        /// Creates a left handed perspective projection matrix.
         /// </summary>
         /// <param name="fovy">Angle of the field of view in the y direction (in radians)</param>
         /// <param name="aspect">Aspect ratio of the view (width / height)</param>
@@ -714,7 +729,7 @@ namespace Fusee.Math
         #region CreatePerspectiveOffCenter
 
         /// <summary>
-        /// Creates an perspective projection matrix.
+        /// Creates a left handed perspective projection matrix.
         /// </summary>
         /// <param name="left">Left edge of the view frustum</param>
         /// <param name="right">Right edge of the view frustum</param>
@@ -743,19 +758,30 @@ namespace Fusee.Math
 
             float x = (2.0f*zNear)/(right - left);
             float y = (2.0f*zNear)/(top - bottom);
+            /* Original - probably right handed (sort of)
             float a = (right + left)/(right - left);
             float b = (top + bottom)/(top - bottom);
             float c = -(zFar + zNear)/(zFar - zNear);
             float d = -(2.0f*zFar*zNear)/(zFar - zNear);
-
             result = new float4x4(x, 0, 0, 0,
                                   0, y, 0, 0,
                                   a, b, c, -1,
                                   0, 0, d, 0);
+             */
+            // Left Handed
+            float a = (left + right) / (left - right);
+            float b = (top + bottom) / (bottom - top);
+            float c = (zFar + zNear) / (zFar - zNear);
+            float d = -(2.0f * zFar * zNear) / (zFar - zNear);
+            result = new float4x4(x, 0, 0, 0,
+                                  0, y, 0, 0,
+                                  a, b, c, 1,
+                                  0, 0, d, 0);
+
         }
 
         /// <summary>
-        /// Creates an perspective projection matrix.
+        /// Creates an left handed perspective projection matrix.
         /// </summary>
         /// <param name="left">Left edge of the view frustum</param>
         /// <param name="right">Right edge of the view frustum</param>
@@ -764,6 +790,12 @@ namespace Fusee.Math
         /// <param name="zNear">Distance to the near clip plane</param>
         /// <param name="zFar">Distance to the far clip plane</param>
         /// <returns>A projection matrix that transforms camera space to raster space</returns>
+        /// <remarks>Generates a matrix mapping a frustum shaped volume (the viewing frustum) to
+        /// the unit cube (ranging from -1 to 1 in each dimension, also in z). The sign of the z-value is not
+        /// flipped. Given that the underlying rendering platform interprets z-values returned by the
+        /// vertex shader to be in left-handed coordinates, where increasing z-values indicate locations
+        /// further away from the view point (as BOTH, Direct3D AND OpenGL do), this type of matrix is widely
+        /// called to be a "left handed" projection matrix as it assumes a left-handed camera coordinate system.</remarks>
         /// <exception cref="System.ArgumentOutOfRangeException">
         /// Thrown under the following conditions:
         /// <list type="bullet">
@@ -932,7 +964,7 @@ namespace Fusee.Math
         /// <param name="target">Target position in world space</param>
         /// <param name="up">Up vector in world space (should not be parallel to the camera direction, that is target - eye)</param>
         /// <returns>A Matrix4 that transforms world space to camera space</returns>
-        public static float4x4 LookAt(float3 eye, float3 target, float3 up)
+/*        public static float4x4 LookAt(float3 eye, float3 target, float3 up)
         {
             var z = float3.Normalize(eye - target);
             var x = float3.Normalize(float3.Cross(up, z));
@@ -943,6 +975,20 @@ namespace Fusee.Math
                                 new float4(x.z, y.z, z.z, 0),
                                 new float4(-float3.Dot(x, eye), -float3.Dot(y, eye), -float3.Dot(z, eye), 1));
         }
+*/
+        public static float4x4 LookAt(float3 eye, float3 target, float3 up)
+        {
+            var z = float3.Normalize(target - eye);
+            var x = float3.Normalize(float3.Cross(up, z));
+            var y = float3.Cross(z, x);
+
+            return new float4x4(new float4(x.x, y.x, z.x, 0),
+                                new float4(x.y, y.y, z.y, 0),
+                                new float4(x.z, y.z, z.z, 0),
+                                new float4(-float3.Dot(x, eye), -float3.Dot(y, eye), -float3.Dot(z, eye), 1));
+        }
+
+
 
         /// <summary>
         /// Build a world space to camera space matrix

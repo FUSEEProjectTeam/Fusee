@@ -32,6 +32,12 @@ namespace Fusee.Engine
         {
             _currentTextureUnit = 0;
             _shaderParam2TexUnit = new Dictionary<int, int>();
+            //GL.Disable(EnableCap.CullFace);
+            //GL.Disable(EnableCap.DepthTest);
+            /*
+             * GL.ClearDepth(0);
+            GL.DepthRange(1, 0);
+            GL.DepthFunc(DepthFunction.Less);*/
         }
 
         #endregion
@@ -666,6 +672,18 @@ namespace Fusee.Engine
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
         public void Render(IMeshImp mr)
         {
+
+            GL.Disable(EnableCap.CullFace);
+            
+            //GL.Enable(EnableCap.CullFace);
+            //GL.CullFace(CullFaceMode.Back);
+            
+            //GL.Enable(EnableCap.DepthTest);
+            //GL.ClearDepth(1);
+            //GL.DepthRange(0, 1);
+            //GL.DepthFunc(DepthFunction.Less);
+
+
             if (((MeshImp) mr).VertexBufferObject != 0)
             {
                 GL.EnableVertexAttribArray(Helper.VertexAttribLocation);
