@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using Fusee.Engine;
 using Fusee.SceneManagement;
 using Fusee.Math;
@@ -89,16 +90,17 @@ namespace Examples.BulletTest
                 _angleVert += RotationSpeed * (float)Time.Instance.DeltaTime;
            
             var mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
-            var mtxCam = mtxRot * float4x4.LookAt(0, 100, 200, 0, 0, 0, 0, 1, 0);
+            var mtxCam = mtxRot * float4x4.LookAt(0, 500, 1500, 0, 0, 0, 0, 1, 0);
 
-
+            Debug.WriteLine(Time.Instance.FramePerSecond);
             for (int i = 0; i < _physic.World.NumberRigidBodies(); i++)
             {
-                var matrix = _physic.World.GetRigidBody(i).WorldTransform;
-                RC.ModelView = float4x4.Scale(0.025f) * matrix * mtxCam;
+                var rb = _physic.World.GetRigidBody(i);
+                var matrix = rb.WorldTransform;
+                RC.ModelView = /*float4x4.Scale(0.025f) **/ matrix * mtxCam;
                 RC.SetShader(_spTexture);
                 RC.SetShaderParamTexture(_textureParam, _iTex);
-                RC.Render(_meshCube);
+                RC.Render(rb.Mesh);
             }
 
             #region RenderConstraint
@@ -110,14 +112,14 @@ namespace Examples.BulletTest
                 RC.ModelView = float4x4.Scale(0.025f) * matrixA * mtxCam;
                 RC.SetShader(_spTexture);
                 RC.SetShaderParamTexture(_textureParam, _iTex);
-                RC.Render(_meshCube);
+                RC.Render(_physic.World.GetConstraint(i).RigidBodyA.Mesh);
 
 
                 var matrixB = _physic.World.GetConstraint(i).RigidBodyB.WorldTransform; 
                 RC.ModelView = float4x4.Scale(0.025f) * matrixB * mtxCam;
                 RC.SetShader(_spTexture);
                 RC.SetShaderParamTexture(_textureParam, _iTex);
-                RC.Render(_meshCube);
+                RC.Render(_physic.World.GetConstraint(i).RigidBodyB.Mesh);
 
             }
             #endregion RenderConstraint

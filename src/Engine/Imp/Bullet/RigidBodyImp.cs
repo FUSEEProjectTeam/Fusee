@@ -13,6 +13,7 @@ namespace Fusee.Engine
     {
 
         internal RigidBody _rbi;
+        
 
         private float _mass;
         public float Mass 
@@ -88,7 +89,7 @@ namespace Fusee.Engine
                 m.set_Rows(3, new Vector4(value.x, value.y, value.z, 1));
 
                 var o = (RigidBodyImp)_rbi.UserObject;
-                o._rbi.WorldTransform = m;// * 10.0f;
+                o._rbi.WorldTransform = m * 10.0f;
             }
         }
 
@@ -111,7 +112,7 @@ namespace Fusee.Engine
             {
                 Debug.WriteLine("ApplyTorque");
                 var o = (RigidBodyImp)_rbi.UserObject;
-                o._rbi.ApplyTorque(new Vector3(value.x /* *10*10 */, value.y/* *10*10 */, value.z/* *10*10 */));
+                o._rbi.ApplyTorque(new Vector3(value.x  *10*10 , value.y *10*10 , value.z *10*10 ));
             }
         }
 
@@ -133,8 +134,8 @@ namespace Fusee.Engine
             set
             {
                 var o = (RigidBodyImp)_rbi.UserObject;
-                o._rbi.ApplyTorqueImpulse(new Vector3(value.x /* *10 */, value.y/* *10 */, value.z/* *10 */));
-                _torqueImpulse = value;//*10;
+                o._rbi.ApplyTorqueImpulse(new Vector3(value.x  *10 , value.y *10 , value.z *10 ));
+                _torqueImpulse = value*10;
             }
         }
 
@@ -148,8 +149,8 @@ namespace Fusee.Engine
             set
             {
                 var o = (RigidBodyImp)_rbi.UserObject;
-                o._rbi.ApplyCentralForce(new Vector3(value.x/* *10 */, value.y/* *10 */, value.z/* *10 */));
-                _centralForce = value;//*10;
+                o._rbi.ApplyCentralForce(new Vector3(value.x *10 , value.y *10 , value.z *10 ));
+                _centralForce = value*10;
             }
         }
 
@@ -163,8 +164,8 @@ namespace Fusee.Engine
             set
             {
                 var o = (RigidBodyImp)_rbi.UserObject;
-                o._rbi.ApplyCentralImpulse(new Vector3(value.x/* *10 */, value.y/* *10 */, value.z/* *10 */));
-                _centralImpulse = value;//*10;
+                o._rbi.ApplyCentralImpulse(new Vector3(value.x *10 , value.y *10 , value.z *10 ));
+                _centralImpulse = value*10;
             }
         }
 

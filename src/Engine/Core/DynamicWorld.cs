@@ -18,24 +18,24 @@ namespace Fusee.Engine
             _dwi = ImpFactory.CreateIDynamicWorldImp();
         }
 
-        public RigidBody AddRigidBody(float mass, float3 worldTransform, /*Mesh mesh/* shape,*/ float3 inertia)
+        public RigidBody AddRigidBody(float mass, float3 worldTransform, Mesh mesh,/* shape,*/ float3 inertia)
         {
-           /* Mesh theMesh = new Mesh();
-            theMesh = mesh;
-            var meshTrianglesCount = theMesh.Triangles.Length;
+
+            var meshTrianglesCount = mesh.Triangles.Length;
             int [] meshTrianglesArray = new int[meshTrianglesCount];
             for (int c = 0; c < meshTrianglesCount; c++)
             {
                 meshTrianglesArray[c] = Convert.ToInt32(mesh.Triangles[c]);
             }
 
-            int meshVerteciesCount = theMesh.Vertices.Length;
+            int meshVerteciesCount = mesh.Vertices.Length;
             float3[] meshVerteciesArray = new float3[meshVerteciesCount];
-            meshVerteciesArray = mesh.Vertices;*/
+            meshVerteciesArray = mesh.Vertices;
 
-            IRigidBodyImp rbi = _dwi.AddRigidBody(mass, worldTransform,/* meshTrianglesArray, meshVerteciesArray, /* shape, */inertia);
-            
+            IRigidBodyImp rbi = _dwi.AddRigidBody(mass, worldTransform, meshTrianglesArray, meshVerteciesArray, /* shape, */inertia);
+       
             var retval = new RigidBody();
+            retval.Mesh = mesh;
             retval._iRigidBodyImp = rbi;
             rbi.UserObject = retval;
 

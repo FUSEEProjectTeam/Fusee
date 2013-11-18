@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using Fusee.Engine;
 using Fusee.Math;
 using BulletSharp;
@@ -10,10 +12,9 @@ namespace Fusee.Engine
     public class DynamicWorldImp : IDynamicWorldImp
     {
 
-
         internal DynamicsWorld BtWorld;
         internal CollisionConfiguration BtCollisionConf;
-        internal Dispatcher BtDispatcher;
+        internal CollisionDispatcher BtDispatcher;
         internal BroadphaseInterface BtBroadphase;
         internal ConstraintSolver BtSolver;
         //internal AlignedCollisionShapeArray BtCollisionShapes { get; private set; }
@@ -27,18 +28,18 @@ namespace Fusee.Engine
             BtDispatcher = new CollisionDispatcher(BtCollisionConf);
             BtBroadphase = new DbvtBroadphase();
             BtSolver = new SequentialImpulseConstraintSolver();
-            
+           
 
             BtWorld = new DiscreteDynamicsWorld(BtDispatcher, BtBroadphase, BtSolver, BtCollisionConf)
             {
-                Gravity = new Vector3(0, -9.81f  /* *10.0f */, 0)
+                Gravity = new Vector3(0, -9.81f   *10.0f , 0)
             };
 
             BtWorld.SolverInfo.NumIterations = 8;
-
+            GImpactCollisionAlgorithm.RegisterAlgorithm(BtDispatcher);
         }
         
-        public IRigidBodyImp AddRigidBody(float mass, float3 worldTransform, /*int[] meshTriangles, float3[] meshVertices, /* shape, */ float3 intertia)
+        public IRigidBodyImp AddRigidBody(float mass, float3 worldTransform, int[] meshTriangles, float3[] meshVertices, /* shape, */ float3 intertia)
         {
 
             Debug.WriteLine("DynamicWorldImp: AddRigidBody");
@@ -47,7 +48,7 @@ namespace Fusee.Engine
             var btMatrix = Matrix.Translation(worldTransform.x, worldTransform.y, worldTransform.z);
             var btMotionState = new DefaultMotionState(btMatrix);
             //TODO: Replace the static Boxshape by an individual collisionshape
-            /*
+
             Vector3[] btMeshVertecies = new Vector3[meshVertices.Length];
             for (int v = 0; v < meshVertices.Length; v++)
             {
@@ -56,23 +57,17 @@ namespace Fusee.Engine
                 btMeshVertecies[v].Z = meshVertices[v].z;
             }
             var btTriangleIndexVertexArray = new TriangleIndexVertexArray(meshTriangles, btMeshVertecies);
-            GImpactMeshShape gImpactMeshShape = new GImpactMeshShape(btTriangleIndexVertexArray);
-            gImpactMeshShape.LocalScaling = new Vector3(1);
-            gImpactMeshShape.Margin = 0;
-            gImpactMeshShape.UpdateBound();
-            var btCollisionShape = gImpactMeshShape;
-            btCollisionShape.LocalScaling = new Vector3(0.5f);*/
-            //TODO Get it working ...
-            var btColShape = new BoxShape(2.5f);
+            //TriangleMeshShape ctms = new BvhTriangleMeshShape(btTriangleIndexVertexArray, false);
+            GImpactMeshShape btGimpactMeshShape = new GImpactMeshShape(btTriangleIndexVertexArray);
+            btGimpactMeshShape.UpdateBound();//This simulates the GImpact Physics
+            CollisionShape btColShape = btGimpactMeshShape;//new ConvexTriangleMeshShape(btTriangleIndexVertexArray);
+            btColShape.Margin = 0.01f;
+            var btLocalInertia = btColShape.CalculateLocalInertia(mass);
             
-            //TODO: IF Inertia == NULL ... else ...
-            var btInertia = btColShape.CalculateLocalInertia(mass);
-
-            var btRbcInfo = new RigidBodyConstructionInfo(mass /**10*/, btMotionState, btColShape, btInertia);
+            var btRbcInfo = new RigidBodyConstructionInfo(mass * 10, btMotionState, btGimpactMeshShape, btLocalInertia);
             var btRigidBody = new RigidBody(btRbcInfo);
-            btRigidBody.ContactProcessingThreshold = 0;
-            BtWorld.AddRigidBody(btRigidBody);
 
+            BtWorld.AddRigidBody(btRigidBody);
             var retval = new RigidBodyImp();
             retval._rbi = btRigidBody;
             btRigidBody.UserObject = retval;
