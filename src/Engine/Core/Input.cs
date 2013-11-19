@@ -13,7 +13,7 @@ namespace Fusee.Engine
 
         private static Input _instance;
         //Neu
-        List<InputDevice> devices = new List<InputDevice>();
+        List<InputDevice> _devices = new List<InputDevice>();
         List<GameController> gameControllers = new List<GameController>();
 
         internal IInputImp InputImp
@@ -272,11 +272,18 @@ namespace Fusee.Engine
         }
 
         //neu
-        public GameController getGameController (int index)
+        public GameController GetGameController (int index)
         {
-            return gameControllers[index];
+            if (gameControllers.Count > index && gameControllers[index] != null)
+            {
+                return gameControllers[index];
+            }
+            
+                return gameControllers[0];
+            
         }
 
+       
 
         //neu
         //public bool ControllerButtonPressed(int index, GameController gameController)
@@ -310,6 +317,8 @@ namespace Fusee.Engine
 
             FirstUserButton,
         }
+
+      
 
         
         /// <summary>

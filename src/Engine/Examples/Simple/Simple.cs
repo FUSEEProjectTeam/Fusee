@@ -25,6 +25,12 @@ namespace Examples.Simple
         
         private float c1py = 0;
         private float c2py = 0;
+        private float c1px = 0;
+        private float c2px = 0;
+
+
+        
+
 
 
         //private InputDevice _device;
@@ -58,19 +64,17 @@ namespace Examples.Simple
         // is called once a frame
         public override void RenderAFrame()
         {
+            Input.Instance.GetGameController(0).GetZAxis();
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
+            System.Diagnostics.Debug.WriteLine(Input.Instance.GetGameController(1).GetZAxis());
+            
+            
+            c1px += Input.Instance.GetGameController(0).GetXAxis();
+            c2px += Input.Instance.GetGameController(1).GetXAxis();
 
-            if (Input.Instance.getGameController(1).isButtonDown(3))
-                c1py += 0.5f;
+            c1py += Input.Instance.GetGameController(0).GetYAxis();
+            c2py += Input.Instance.GetGameController(1).GetYAxis(); 
 
-            if (Input.Instance.getGameController(1).isButtonDown(0))
-                c1py -= 0.5f;
-
-            if (Input.Instance.getGameController(0).isButtonDown(3))
-                c2py += 0.5f;
-
-            if (Input.Instance.getGameController(0).isButtonDown(0))
-                c2py -= 0.5f;
 
             //if (Input.Instance.IsKeyDown(KeyCodes.Up))
             //    _angleVert -= RotationSpeed * (float)Time.Instance.DeltaTime;
@@ -81,7 +85,7 @@ namespace Examples.Simple
             var mtxCam = float4x4.LookAt(0, 200, 500, 0, 0, 0, 0, 1, 0);
 
             // first mesh
-            RC.ModelView = float4x4.CreateTranslation(0, -50 + c1py, 0) * float4x4.CreateTranslation(-150, 0, 0) * mtxCam;
+            RC.ModelView = float4x4.CreateTranslation(c1px, -50 + c1py, 0) * float4x4.CreateTranslation(-150, 0, 0) * mtxCam;
 
             RC.SetShader(_spColor);
             RC.SetShaderParam(_colorParam, new float4(0.5f, 0.8f, 0, 1));
@@ -89,7 +93,7 @@ namespace Examples.Simple
             RC.Render(_meshTea);
 
             // second mesh
-            RC.ModelView =  float4x4.CreateTranslation(150, 0 + c2py, 0) * mtxCam;
+            RC.ModelView =  float4x4.CreateTranslation(150 + c2px, 0 + c2py, 0) * mtxCam;
 
             RC.SetShader(_spTexture);
             RC.SetShaderParamTexture(_textureParam, _iTex);

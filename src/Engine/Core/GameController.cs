@@ -9,6 +9,8 @@ namespace Fusee.Engine
         private Joystick joystick;
         private JoystickState state;
         private bool[] buttonsPressed;
+        private float deadZone;
+        
         
 
         // Status des GamePads
@@ -19,7 +21,7 @@ namespace Fusee.Engine
         {
             DirectInput directInput = new DirectInput();
              state = new JoystickState();
-            
+            deadZone = 0.1f;
             // Geräte suchen
 
             
@@ -56,9 +58,9 @@ namespace Fusee.Engine
             return state;
         }
 
-        public bool isButtonDown(int buttonIndex)
+        public bool IsButtonDown(int buttonIndex)
         {
-            state = this.GetState();
+            state = GetState();
 
            
                 if (state.IsPressed(buttonIndex))
@@ -71,7 +73,7 @@ namespace Fusee.Engine
 
         public bool IsButtonPressed(int buttonIndex)
         {
-            state = this.GetState();
+            state = GetState();
 
 
             if (state.IsPressed(buttonIndex) && buttonsPressed[buttonIndex] == false)
@@ -80,11 +82,46 @@ namespace Fusee.Engine
                     return true;
                 }
 
-            if (state.IsReleased(buttonIndex) && buttonsPressed[buttonIndex] == true)
+            if (state.IsReleased(buttonIndex) && buttonsPressed[buttonIndex])
                 {
                     buttonsPressed[buttonIndex] = false;
                 }
             return false;
+        }
+
+        public float GetZAxis()
+        {
+            float _tmp = GetState().Z / 1000f;
+            if (_tmp > deadZone)
+                return _tmp;
+            if (_tmp < -deadZone)
+                return _tmp;
+            return 0;
+        }
+
+        public float GetYAxis()
+        {
+            float _tmp = -GetState().Y / 1000f;
+            if (_tmp > deadZone)
+                return _tmp;
+            if (_tmp < -deadZone)
+                return _tmp;
+            return 0;
+        }
+
+        public float GetXAxis()
+        {
+          float  _tmp = GetState().X / 1000f;
+          if (_tmp > deadZone)
+              return _tmp;
+          if (_tmp < -deadZone)
+              return _tmp;
+            return 0;
+        }
+
+        public void SetDeadZone (float zone)
+        {
+            deadZone = zone;
         }
 
         public void Release()
