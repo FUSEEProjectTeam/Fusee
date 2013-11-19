@@ -235,21 +235,38 @@ namespace Examples.CubeAndTiles
                 AnimCube();
             }
 
-            // set cube translation
-            var mtxObjRot = float4x4.CreateRotationY(_rotateYX[0]*_curDirXY[0])*
-                            float4x4.CreateRotationX(-_rotateYX[1]*_curDirXY[1]);
+            // colh
+            //// set cube translation
+            //var mtxObjRot = float4x4.CreateRotationY(_rotateYX[0]*_curDirXY[0])*
+            //                float4x4.CreateRotationX(-_rotateYX[1]*_curDirXY[1]);
 
-            var mtxObjOrientRot = float4x4.Transpose(Quaternion.QuaternionToMatrix(_orientQuat));
+            //var mtxObjOrientRot = float4x4.Transpose(Quaternion.QuaternionToMatrix(_orientQuat));
+
+            //// cube position
+            //var mtxObjPos = float4x4.CreateTranslation(PosCurXY[0]*CubeSize, PosCurXY[1]*CubeSize,
+            //                                           _posZ*CubeSize);
+
+            //var arAxis = float4x4.CreateTranslation(-100*_curDirXY[0], -100*_curDirXY[1], 100);
+            //var invArAxis = float4x4.CreateTranslation(100*_curDirXY[0], 100*_curDirXY[1], -100);
+
+            //// render
+            //_curLevel.RContext.ModelView = mtxObjOrientRot*arAxis*mtxObjRot*invArAxis*mtxObjPos*_curLevel.CamTrans;
+
+
+            var mtxObjRot = float4x4.CreateRotationX(-_rotateYX[1] * _curDirXY[1]) * float4x4.CreateRotationY(_rotateYX[0] * _curDirXY[0]);
+
+            var mtxObjOrientRot = Quaternion.QuaternionToMatrix(_orientQuat);
 
             // cube position
-            var mtxObjPos = float4x4.CreateTranslation(PosCurXY[0]*CubeSize, PosCurXY[1]*CubeSize,
-                                                       _posZ*CubeSize);
+            var mtxObjPos = float4x4.CreateTranslation(PosCurXY[0] * CubeSize, PosCurXY[1] * CubeSize,
+                                                       _posZ * CubeSize);
 
-            var arAxis = float4x4.CreateTranslation(-100*_curDirXY[0], -100*_curDirXY[1], 100);
-            var invArAxis = float4x4.CreateTranslation(100*_curDirXY[0], 100*_curDirXY[1], -100);
+            var arAxis = float4x4.CreateTranslation(-100 * _curDirXY[0], -100 * _curDirXY[1], 100);
+            var invArAxis = float4x4.CreateTranslation(100 * _curDirXY[0], 100 * _curDirXY[1], -100);
 
             // render
-            _curLevel.RContext.ModelView = mtxObjOrientRot*arAxis*mtxObjRot*invArAxis*mtxObjPos*_curLevel.CamTrans;
+            _curLevel.RContext.ModelView = _curLevel.CamTrans *mtxObjPos * invArAxis *  mtxObjRot * arAxis * mtxObjOrientRot ;
+ 
             _curLevel.RContext.SetShaderParam(_curLevel.VColorObj, new float4(_cubeColor, _curBright));
 
             _curLevel.RContext.Render(_cubeMesh);
