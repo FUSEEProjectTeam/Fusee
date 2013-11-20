@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 
 namespace Fusee.Math
 {
@@ -235,6 +236,25 @@ namespace Fusee.Math
         {
             const float radToDeg = 180.0f / (float)System.Math.PI;
             return radians * radToDeg;
+        }
+
+        #endregion
+
+        #region Conversion
+
+        /// <summary>
+        /// Converts a float4 to an ABGR value (Int64).
+        /// </summary>
+        /// <param name="value">The float4 to convert.</param>
+        /// <returns>The ABGR value.</returns>
+        public static uint Float4ToABGR(float4 value)
+        {
+            var r = (uint)(255 * value.x);
+            var g = (uint)(255 * value.y);
+            var b = (uint)(255 * value.z);
+            var a = (uint)(255 * value.w);
+
+            return (a << 24) + (b << 16) + (g << 8) + r;
         }
 
         #endregion

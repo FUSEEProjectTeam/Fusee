@@ -33,21 +33,26 @@ namespace Examples.TextDemo
 
             // load fonts
             _fontCousine20 = RC.LoadFont("Assets/Cousine.ttf", 20);
-            _fontCabin12 = RC.LoadFont("Assets/Cabin.ttf", 12);
+            _fontCabin12 = RC.LoadFont("Assets/Cabin.ttf", 15);
             _fontCabin20 = RC.LoadFont("Assets/Cabin.ttf", 20);
             _fontCabin30 = RC.LoadFont("Assets/Cabin.ttf", 30);
 
             // get text as mesh
-            _textMeshCousine20 = RC.GetTextMesh("Victor jagt zwölf Boxkämpfer quer über den großen Sylter Deich.", _fontCousine20, 8, 50);
-            _textMeshCabin12 = RC.GetTextMesh("The quick brown fox jumps over the lazy dog.", _fontCabin12, 8, 180);
-            _textMeshCabin20 = RC.GetTextMesh("The quick brown fox jumps over the lazy dog.", _fontCabin20, 8, 210);
-            _textMeshCabin30 = RC.GetTextMesh("The quick brown fox jumps over the lazy dog.", _fontCabin30, 8, 250);
+            var buttonColor = new float4(0.5f, 0.5f, 0.5f, 1);
+            var textColor = new float4(0, 0, 0, 1);
+
+            _textMeshCabin12 = RC.GetButton("Button", _fontCabin12, 10, 10, 100, 25, buttonColor, textColor);
+
+           // _textMeshCousine20 = RC.GetTextMesh("Victor jagt zwölf Boxkämpfer quer über den großen Sylter Deich.", _fontCousine20, 8, 50);
+           // _textMeshCabin12 = RC.GetTextMesh("The quick brown fox jumps over the lazy dog.", _fontCabin12, 8, 180);
+          //  _textMeshCabin20 = RC.GetTextMesh("The quick brown fox jumps over the lazy dog.", _fontCabin20, 8, 210);
+          //  _textMeshCabin30 = RC.GetTextMesh("The quick brown fox jumps over the lazy dog.", _fontCabin30, 8, 250);
 
             // with and without kerning
-            _textMeshCabin30N = RC.GetTextMesh("AVAVAVAVAVAVAVAVA", _fontCabin30, 8, 290);
+         //   _textMeshCabin30N = RC.GetTextMesh("AVAVAVAVAVAVAVAVA", _fontCabin30, 8, 290);
 
-            _fontCabin30.UseKerning = true;
-            _textMeshCabin30K = RC.GetTextMesh("AVAVAVAVAVAVAVAVA", _fontCabin30, 8, 330);
+         //   _fontCabin30.UseKerning = true;
+         //   _textMeshCabin30K = RC.GetTextMesh("AVAVAVAVAVAVAVAVA", _fontCabin30, 8, 330);
 
             // dummy cube
             _mesh = new Cube();
@@ -76,13 +81,13 @@ namespace Examples.TextDemo
             RC.Render(_mesh);
 
             // text examples: static text
-            var col1 = new float4(1, 1, 1, 1);
-            RC.TextOut(_textMeshCousine20, _fontCousine20, col1);
+            var col1 = new float4(0, 0, 0, 1);
+            //RC.TextOut(_textMeshCousine20, _fontCousine20, col1);
 
-            var col2 = new float4(0.5f, 0.5f, 0.5f, 1);
-            RC.TextOut(_textMeshCabin12, _fontCabin12, col2);
+          //  var col2 = new float4(0.5f, 0.5f, 0.5f, 1);
+            RC.TextOut(_textMeshCabin12, _fontCabin12);
 
-            var col3 = new float4(1, 1, 0, 1);
+           /* var col3 = new float4(1, 1, 0, 1);
             RC.TextOut(_textMeshCabin20, _fontCabin20, col3);
 
             var col4 = new float4(0, 0, 0, 0.3f);
@@ -90,7 +95,7 @@ namespace Examples.TextDemo
 
             var col5 = new float4(0, 0, 0, 1);
             RC.TextOut(_textMeshCabin30N, _fontCabin30, col5);
-            RC.TextOut(_textMeshCabin30K, _fontCabin30, col5);
+            RC.TextOut(_textMeshCabin30K, _fontCabin30, col5);*/
 
             // text examples: dynamic text
             var col6 = new float4(0, 1, 1, 1);

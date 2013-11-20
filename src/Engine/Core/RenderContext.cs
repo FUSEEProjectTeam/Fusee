@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using JSIL.Meta;
 using Fusee.Math;
@@ -10,7 +11,7 @@ namespace Fusee.Engine
     /// to render geometry to the RenderCanvas associated with this context. If you have worked with OpenGL or DirectX before you will find
     /// many similarities in this class' methods and properties.
     /// </summary>
-    public class RenderContext
+    public partial class RenderContext
     {
         #region Fields
 
@@ -30,10 +31,6 @@ namespace Fusee.Engine
         private ShaderProgram _debugShader;
         private IShaderParam _debugColor;
         private bool _debugLinesEnabled = true;
-
-        private ShaderProgram _textShader;
-        private IShaderParam _textTextureParam;
-        private IShaderParam _textColorParam;
 
         // Settable matrices
         private float4x4 _modelView;
@@ -734,7 +731,6 @@ namespace Fusee.Engine
             _debugColor = _debugShader.GetShaderParam("color");
 
             _textShader = MoreShaders.GetShader("text", this);
-            _textColorParam = _textShader.GetShaderParam("color");
             _textTextureParam = _textShader.GetShaderParam("tex");
         }
 
@@ -825,118 +821,6 @@ namespace Fusee.Engine
         public void SetShaderParamTexture(IShaderParam param, ITexture texId)
         {
             _rci.SetShaderParamTexture(param, texId);
-        }
-
-        #endregion
-
-        #region Text related Members
-
-        public IFont LoadFont(string filename, uint size)
-        {
-            if (!File.Exists(filename))
-                throw new Exception("Font not found: " + filename);
-
-            return _rci.LoadFont(filename, size);
-        }
-
-        [JSExternal]
-        public IFont LoadSystemFont(string fontname, uint size)
-        {
-            var fontsFolder = Environment.GetFolderPath(Environment.SpecialFolder.Fonts);
-            var pathToFont = Path.Combine(fontsFolder, fontname + ".ttf");
-
-            return LoadFont(pathToFont, size);
-        }
-
-        public Mesh GetTextMesh(string text, IFont font, float x, float y)
-        {
-            // relative coordinates from -1 to +1
-            var scaleX = (float)2 / _viewportWidth;
-            var scaleY = (float)2 / _viewportHeight;
-
-            x = -1 + x * scaleX;
-            y = +1 - y * scaleY;
-
-            // build complete structure
-            var vertices = new float3[4 * text.Length];
-            var uvs = new float2[4 * text.Length];
-            var indices = new ushort[6 * text.Length];
-
-            var charInfo = font.CharInfo;
-            var atlasWidth = font.Width;
-            var atlasHeight = font.Height;
-
-            var index = 0;
-            ushort vertex = 0;
-
-            foreach (var letter in text)
-            {
-                var x2 = x + charInfo[letter].BitmapL * scaleX;
-                var y2 = -y - charInfo[letter].BitmapT * scaleY;
-                var w = charInfo[letter].BitmapW * scaleX;
-                var h = charInfo[letter].BitmapH * scaleY;
-
-                x += charInfo[letter].AdvanceX * scaleX;
-                y += charInfo[letter].AdvanceY * scaleY;
-
-                // skip glyphs that have no pixels
-                if ((w <= MathHelper.EpsilonFloat) || (h <= MathHelper.EpsilonFloat))
-                    continue;
-
-                var bitmapW = charInfo[letter].BitmapW;
-                var bitmapH = charInfo[letter].BitmapH;
-                var texOffsetX = charInfo[letter].TexOffX;
-                var texOffsetY = charInfo[letter].TexOffY;
-
-                // vertices
-                vertices[vertex] = new float3(x2, -y2 - h, 0);
-                vertices[vertex + 1] = new float3(x2, -y2, 0);
-                vertices[vertex + 2] = new float3(x2 + w, -y2 - h, 0);
-                vertices[vertex + 3] = new float3(x2 + w, -y2, 0);
-
-                // uvs
-                uvs[vertex] = new float2(texOffsetX, texOffsetY + bitmapH / atlasHeight);
-                uvs[vertex + 1] = new float2(texOffsetX, texOffsetY);
-                uvs[vertex + 2] = new float2(texOffsetX + bitmapW / atlasWidth, texOffsetY + bitmapH / atlasHeight);
-                uvs[vertex + 3] = new float2(texOffsetX + bitmapW / atlasWidth, texOffsetY);
-
-                // indices
-                indices[index++] = (ushort)(vertex + 1);
-                indices[index++] = vertex;
-                indices[index++] = (ushort)(vertex + 2);
-
-                indices[index++] = (ushort)(vertex + 1);
-                indices[index++] = (ushort)(vertex + 2);
-                indices[index++] = (ushort)(vertex + 3);
-
-                vertex += 4;
-            }
-
-            vertices = _rci.FixTextKerning(font, vertices, text, scaleX);
-            return new Mesh {Vertices = vertices, UVs = uvs, Triangles = indices};
-        }
-
-        public void TextOut(Mesh textMesh, IFont font, float4 color)
-        {
-            var curShader = _currentShader;
-
-            if (_currentShader != _textShader)
-                SetShader(_textShader);
-
-            SetShaderParam(_textColorParam, color);
-            SetShaderParamTexture(_textTextureParam, font.TexAtlas);
-
-            _rci.PrepareTextRendering(true);
-            Render(textMesh);
-            _rci.PrepareTextRendering(false);
-
-            if (curShader != null && curShader != _textShader)
-                SetShader(curShader);            
-        }
-
-        public void TextOut(string text, IFont font, float4 color, float x, float y)
-        {
-            TextOut(GetTextMesh(text, font, x, y), font, color);
         }
 
         #endregion

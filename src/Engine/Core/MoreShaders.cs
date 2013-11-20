@@ -776,12 +776,16 @@ namespace Fusee.Engine
         private const string VsText = @"
             attribute vec3 fuVertex;
             attribute vec2 fuUV;
+            attribute vec4 fuColor;
 
             varying vec2 vUV;
+            varying vec4 vColor;
 
             void main()
             {
                 vUV = fuUV;
+                vColor = fuColor;
+
                 gl_Position = vec4(fuVertex, 1);
             }";
 
@@ -791,11 +795,15 @@ namespace Fusee.Engine
             #endif    
   
             varying vec2 vUV;
+            varying vec4 vColor;
+
             uniform sampler2D tex;
-            uniform vec4 color;
 
             void main(void) {
-                gl_FragColor =vec4(1, 1, 1, texture2D(tex, vUV).a) * color;
+                if (vUV.x == -1 && vUV.y == -1)
+                    gl_FragColor = vColor;
+                else
+                    gl_FragColor = vec4(1, 1, 1, texture2D(tex, vUV).a) * vColor;
             }";
     }
 }
