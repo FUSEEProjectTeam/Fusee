@@ -37,7 +37,9 @@ namespace Examples.MageExample
                 vUV = fuUV;
 
                 vNormal = normalize(mat3(FUSEE_ITMV[0].xyz, FUSEE_ITMV[1].xyz, FUSEE_ITMV[2].xyz) * fuNormal);
-                eyeVector = mat3(FUSEE_MVP[0].xyz, FUSEE_MVP[1].xyz, FUSEE_MVP[2].xyz) * -fuVertex;
+                // colh
+                // eyeVector = mat3(FUSEE_MVP[0].xyz, FUSEE_MVP[1].xyz, FUSEE_MVP[2].xyz) * -fuVertex;
+                eyeVector = mat3(FUSEE_MVP[0].xyz, FUSEE_MVP[1].xyz, FUSEE_MVP[2].xyz) * fuVertex;
       
                 endAmbient = vec4(0,0,0,0);
 
@@ -159,14 +161,14 @@ namespace Examples.MageExample
             RC.SetShader(spBody);
 
             RC.SetLightActive(0, 1);
-            RC.SetLightPosition(0, new float3(5.0f, 0.0f, -2.0f));
+            RC.SetLightPosition(0, new float3(5.0f, 0.0f, 2.0f));
             RC.SetLightAmbient(0, new float4(0.2f, 0.2f, 0.2f, 1.0f));
             RC.SetLightSpecular(0, new float4(0.1f, 0.1f, 0.1f, 1.0f));
             RC.SetLightDiffuse(0, new float4(0.8f, 0.8f, 0.8f, 1.0f));
             RC.SetLightDirection(0, new float3(-1.0f, 0.0f, 0.0f));
 
             RC.SetLightActive(1, 1);
-            RC.SetLightPosition(1, new float3(-5.0f, 0.0f, -2.0f));
+            RC.SetLightPosition(1, new float3(-5.0f, 0.0f, 2.0f));
             RC.SetLightAmbient(1, new float4(0.5f, 0.5f, 0.5f, 1.0f));
             RC.SetLightSpecular(1, new float4(0.1f, 0.1f, 0.1f, 1.0f));
             RC.SetLightDiffuse(1, new float4(1.0f, 1.0f, 1.0f, 1.0f));
@@ -224,11 +226,15 @@ namespace Examples.MageExample
             if (Input.Instance.IsKey(KeyCodes.Down))
                 _angleVert += _rotationSpeed*(float) Time.Instance.DeltaTime;
 
-            var mtxRot = float4x4.CreateRotationY(_angleHorz)*float4x4.CreateRotationX(_angleVert);
-            var mtxCam = float4x4.LookAt(0, 400, 600, 0, 0, 0, 0, 1, 0);
+            // colh
+            // var mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
+            var mtxRot = float4x4.CreateRotationX(-_angleVert) * float4x4.CreateRotationY(-_angleHorz);
+            var mtxCam = float4x4.LookAt(0, 400, -600, 0, 0, 0, 0, 1, 0);
 
-            // body
-            RC.ModelView = float4x4.CreateTranslation(0, -200f, 0)*mtxRot*mtxCam;
+            // body 
+            // colh
+            // RC.ModelView = float4x4.CreateTranslation(0, -200f, 0) * mtxRot * mtxCam;
+            RC.ModelView = mtxCam * mtxRot * float4x4.CreateTranslation(0, -200f, 0);
 
             RC.SetShaderParamTexture(_texture1ParamBody, _iTex);
             RC.SetShaderParamTexture(_texture2ParamBody, _iTex2);
@@ -237,7 +243,9 @@ namespace Examples.MageExample
             RC.Render(Body);
 
             // left and right glove
-            RC.ModelView = float4x4.CreateTranslation(0, -200f, 0)*mtxRot*mtxCam;
+            // colh
+            //RC.ModelView = float4x4.CreateTranslation(0, -200f, 0)*mtxRot*mtxCam;
+            RC.ModelView = mtxCam * mtxRot * float4x4.CreateTranslation(0, -200f, 0);
 
             RC.SetShaderParamTexture(_texture1ParamBody, _iTexGlove);
             RC.SetShaderParamTexture(_texture2ParamBody, _iTex2Glove);
