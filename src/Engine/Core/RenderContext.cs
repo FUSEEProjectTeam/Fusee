@@ -19,8 +19,8 @@ namespace Fusee.Engine
 
         private readonly IRenderContextImp _rci;
 
-        private int _viewportWidth;
-        private int _viewportHeight;
+        internal int ViewportWidth { get; private set; }
+        internal int ViewportHeight { get; private set; }
 
         private ShaderProgram _currentShader;
         private MatrixParamNames _currentShaderParams;
@@ -1450,8 +1450,8 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
         /// </remarks>
         public void Viewport(int x, int y, int width, int height)
         {
-            _viewportWidth = width;
-            _viewportHeight = height;
+            ViewportWidth = width;
+            ViewportHeight = height;
 
             _rci.Viewport(x, y, width, height);
         }

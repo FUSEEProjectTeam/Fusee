@@ -62,6 +62,7 @@
     <Compile Include="Frustum.cs" />
     <Compile Include="Geometry.cs" />
     <Compile Include="GUI\GUIButton.cs" />
+    <Compile Include="GUI\GUIElement.cs" />
     <Compile Include="ImpFactory.cs" />
     <Compile Include="Input.cs" />
     <Compile Include="Mesh.cs" />

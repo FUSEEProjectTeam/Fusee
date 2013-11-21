@@ -1,7 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Fusee.Math;
 
 namespace Fusee.Engine
 {
+    public delegate void ButtonDownEventHandler(object sender, MouseEventArgs e);
+
     /// <summary>
     /// The Input class takes care of all inputs. It is accessible from everywhere inside a Fusee project.
     /// E.g. : Input.Instance.IsButtonDown(MouseButtons.Left);
@@ -11,6 +15,8 @@ namespace Fusee.Engine
         #region Fields
 
         private static Input _instance;
+
+        private IInputImp _inputImp;
 
         internal IInputImp InputImp
         {
@@ -32,7 +38,7 @@ namespace Fusee.Engine
             }
         }
 
-        private IInputImp _inputImp;
+        public event ButtonDownEventHandler OnButtonDown;
 
         private float[] _axes;
         private float[] _axesPreviousAbsolute;
@@ -65,10 +71,6 @@ namespace Fusee.Engine
 
         #endregion
 
-        #region Constructors
-
-        #endregion
-
         #region Members
 
         private void KeyDown(object sender, KeyEventArgs kea)
@@ -93,6 +95,9 @@ namespace Fusee.Engine
 
         private void ButtonDown(object sender, MouseEventArgs mea)
         {
+            if (OnButtonDown != null)
+                OnButtonDown(this, mea);
+
             if (!_buttonsPressed.Contains((int) mea.Button))
                 _buttonsPressed.Add((int) mea.Button);
         }
@@ -187,11 +192,13 @@ namespace Fusee.Engine
         /// </summary>
         /// <param name="button">The mousebutton.</param>
         /// <returns>True, if mousebutton was pressed down once. Otherwise false.</returns>
-        public bool OnButtonDown(MouseButtons button)
-        {
-            // not implemented
-            return false;
-        }
+        /*
+            public bool OnButtonDown(MouseButtons button)
+            {
+                // not implemented
+                return false;
+            }
+        */
 
         /// <summary>
         /// Called when [button up] event is triggered.

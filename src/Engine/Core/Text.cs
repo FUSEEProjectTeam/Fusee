@@ -34,7 +34,7 @@ namespace Fusee.Engine
         /// <param name="text">The text's string.</param>
         /// <param name="font">The text's font.</param>
         /// <returns>The height of the text.</returns>
-        internal float GetTextHeight(string text, IFont font)
+        internal static float GetTextHeight(string text, IFont font)
         {
             var maxH = 0.0f;
 
@@ -51,7 +51,7 @@ namespace Fusee.Engine
         /// <param name="text">The text's string.</param>
         /// <param name="font">The text's font.</param>
         /// <returns>The width of the text.</returns>
-        internal float GetTextWidth(string text, IFont font)
+        internal static float GetTextWidth(string text, IFont font)
         {
             var maxW = 0.0f;
 
@@ -65,8 +65,8 @@ namespace Fusee.Engine
         public Mesh GetTextMesh(string text, IFont font, float x, float y, float4 color)
         {
             // relative coordinates from -1 to +1
-            var scaleX = (float)2 / _viewportWidth;
-            var scaleY = (float)2 / _viewportHeight;
+            var scaleX = (float)2 / ViewportWidth;
+            var scaleY = (float)2 / ViewportHeight;
 
             x = -1 + x * scaleX;
             y = +1 - y * scaleY;

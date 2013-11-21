@@ -27,6 +27,8 @@ namespace Examples.TextDemo
 
         private static float _angleHorz;
 
+        private GUIButton testButton;
+
         public override void Init()
         {
             RC.ClearColor = new float4(0.2f, 0.2f, 0.5f, 1);
@@ -38,15 +40,16 @@ namespace Examples.TextDemo
             _fontCabin30 = RC.LoadFont("Assets/Cabin.ttf", 30);
 
             // get text as mesh
-            var buttonColor = new float4(0.5f, 0.5f, 0.5f, 1);
+            var buttonColor = new float4(0.7f, 0.7f, 0.7f, 1);
             var textColor = new float4(0, 0, 0, 1);
 
-            _textMeshCabin12 = RC.GetButton("Button", _fontCabin12, 10, 10, 100, 25, buttonColor, textColor);
+            testButton = new GUIButton(RC, "Exit", _fontCabin12, 10, 10, 100, 25, buttonColor, textColor);
+            testButton.OnGUIButtonDown += OnGUIButtonDown;
 
            // _textMeshCousine20 = RC.GetTextMesh("Victor jagt zwölf Boxkämpfer quer über den großen Sylter Deich.", _fontCousine20, 8, 50);
            // _textMeshCabin12 = RC.GetTextMesh("The quick brown fox jumps over the lazy dog.", _fontCabin12, 8, 180);
-          //  _textMeshCabin20 = RC.GetTextMesh("The quick brown fox jumps over the lazy dog.", _fontCabin20, 8, 210);
-          //  _textMeshCabin30 = RC.GetTextMesh("The quick brown fox jumps over the lazy dog.", _fontCabin30, 8, 250);
+            _textMeshCabin20 = RC.GetTextMesh("The quick brown fox jumps over the lazy dog.", _fontCabin20, 8, 100, new float4(1, 1, 1, 1));
+            _textMeshCabin30 = RC.GetTextMesh("The quick brown fox jumps over the lazy dog.", _fontCabin30, 8, 140, new float4(0, 0, 0, 0.5f));
 
             // with and without kerning
          //   _textMeshCabin30N = RC.GetTextMesh("AVAVAVAVAVAVAVAVA", _fontCabin30, 8, 290);
@@ -85,24 +88,25 @@ namespace Examples.TextDemo
             //RC.TextOut(_textMeshCousine20, _fontCousine20, col1);
 
           //  var col2 = new float4(0.5f, 0.5f, 0.5f, 1);
-            RC.TextOut(_textMeshCabin12, _fontCabin12);
+            RC.TextOut(testButton.GUIMesh, _fontCabin12);
+            RC.TextOut(_textMeshCabin20, _fontCabin20);
+            RC.TextOut(_textMeshCabin30, _fontCabin30);
 
-           /* var col3 = new float4(1, 1, 0, 1);
-            RC.TextOut(_textMeshCabin20, _fontCabin20, col3);
-
-            var col4 = new float4(0, 0, 0, 0.3f);
-            RC.TextOut(_textMeshCabin30, _fontCabin30, col4);
-
-            var col5 = new float4(0, 0, 0, 1);
+            /*var col5 = new float4(0, 0, 0, 1);
             RC.TextOut(_textMeshCabin30N, _fontCabin30, col5);
             RC.TextOut(_textMeshCabin30K, _fontCabin30, col5);*/
 
             // text examples: dynamic text
             var col6 = new float4(0, 1, 1, 1);
-            RC.TextOut("Framerate: " + Time.Instance.FramePerSecondSmooth + "fps", _fontCabin20, col6, 950, 50);
-            RC.TextOut("Time: " + Math.Round(Time.Instance.TimeSinceStart, 1) + " seconds", _fontCabin20, col6, 950, 80);
+            RC.TextOut("Framerate: " + Time.Instance.FramePerSecondSmooth + "fps", _fontCabin20, col6, 8, 210);
+            RC.TextOut("Time: " + Math.Round(Time.Instance.TimeSinceStart, 1) + " seconds", _fontCabin20, col6, 8, 250);
 
             Present();
+        }
+
+        private void OnGUIButtonDown(object sender, EventArgs e)
+        {
+            Environment.Exit(0);
         }
 
         public override void Resize()
@@ -112,6 +116,15 @@ namespace Examples.TextDemo
 
             var aspectRatio = Width / (float)Height;
             RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 10000);
+
+            _textMeshCabin20 = RC.GetTextMesh("The quick brown fox jumps over the lazy dog.", _fontCabin20, 8, 100, new float4(1, 1, 1, 1));
+            _textMeshCabin30 = RC.GetTextMesh("The quick brown fox jumps over the lazy dog.", _fontCabin30, 8, 140, new float4(0, 0, 0, 0.5f));
+
+            var buttonColor = new float4(0.7f, 0.7f, 0.7f, 1);
+            var textColor = new float4(0, 0, 0, 1);
+
+            testButton = new GUIButton(RC, "Exit", _fontCabin12, 10, 10, 100, 25, buttonColor, textColor);
+            testButton.OnGUIButtonDown += OnGUIButtonDown;
         }
 
         public static void Main()
@@ -119,6 +132,5 @@ namespace Examples.TextDemo
             var app = new TextDemo();
             app.Run();
         }
-
     }
 }

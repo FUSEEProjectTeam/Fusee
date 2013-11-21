@@ -3,13 +3,23 @@ using Fusee.Math;
 
 namespace Fusee.Engine
 {
-    partial class RenderContext
+    public delegate void GUIButtonDownHandler(object sender, EventArgs e);
+
+    public class GUIButton : GUIElement
     {
-        public Mesh GetButton(string text, IFont font, float x, float y, float width, float height, float4 buttonColor, float4 textColor)
+        public event GUIButtonDownHandler OnGUIButtonDown;
+
+        public GUIButton(RenderContext rc, string text, IFont font, float x, float y, float width, float height, float4 buttonColor, float4 textColor)
         {
+            PosX = x;
+            PosY = y;
+
+            Width = width;
+            Height = height;
+
             // relative coordinates from -1 to +1
-            var scaleX = (float) 2/_viewportWidth;
-            var scaleY = (float) 2/_viewportHeight;
+            var scaleX = (float)2 / rc.ViewportWidth;
+            var scaleY = (float)2 / rc.ViewportHeight;
 
             var xS = -1 + x*scaleX;
             var yS = +1 - y*scaleY;
@@ -23,14 +33,14 @@ namespace Fusee.Engine
             var indices = new ushort[indCount + 6];
             var colors = new uint[vtCount + 4];
 
-            var buttonW = width*scaleX;
-            var buttonH = height*scaleY;
+            var widthS = width * scaleX;
+            var heightS = height * scaleY;
 
             // vertices
-            vertices[vtCount + 0] = new float3(xS, yS - buttonH, 0);
+            vertices[vtCount + 0] = new float3(xS, yS - heightS, 0);
             vertices[vtCount + 1] = new float3(xS, yS, 0);
-            vertices[vtCount + 2] = new float3(xS + buttonW, yS - buttonH, 0);
-            vertices[vtCount + 3] = new float3(xS + buttonW, yS, 0);
+            vertices[vtCount + 2] = new float3(xS + widthS, yS - heightS, 0);
+            vertices[vtCount + 3] = new float3(xS + widthS, yS, 0);
 
             // colors
             var colorInt = MathHelper.Float4ToABGR(buttonColor);
@@ -56,14 +66,14 @@ namespace Fusee.Engine
             indices[5] = (ushort)(vtCount + 3);
 
             // center text on button
-            var maxW = GetTextWidth(text, font);
+            var maxW = RenderContext.GetTextWidth(text, font);
             x = (float) System.Math.Round(x + (width - maxW)/2);
 
-            var maxH = GetTextHeight(text, font);
+            var maxH = RenderContext.GetTextHeight(text, font);
             y = (float) System.Math.Round(y + maxH + (height - maxH)/2);
 
             // get text mesh
-            var textMesh = GetTextMesh(text, font, x, y, new float4(0, 0, 0, 1));
+            var textMesh = rc.GetTextMesh(text, font, x, y, textColor);
 
             // combine button and text
             Array.Copy(textMesh.Vertices, vertices, textMesh.Vertices.Length);
@@ -71,7 +81,20 @@ namespace Fusee.Engine
             Array.Copy(textMesh.Triangles, 0, indices, 6, textMesh.Triangles.Length);
             Array.Copy(textMesh.Colors, colors, textMesh.Colors.Length);
 
-            return new Mesh {Vertices = vertices, UVs = uvs, Triangles = indices, Colors = colors};
+            // create final mesh
+            GUIMesh = new Mesh {Vertices = vertices, UVs = uvs, Triangles = indices, Colors = colors};
+
+            // event listener
+            Input.Instance.OnButtonDown += OnButtonDown;
+        }
+
+        private void OnButtonDown(object sender, MouseEventArgs mea)
+        {
+            var x = mea.Position.x;
+            var y = mea.Position.y;
+
+            if (x >= PosX && x <= PosX + Width && y >= PosY && y <= PosY + Height)
+                OnGUIButtonDown(this, EventArgs.Empty);
         }
     }
 }
