@@ -38,7 +38,6 @@ namespace Examples.BulletTest
             {
                 for (int c = -1; c < 2; c++)
                 {
-
                     var pos = new float3(b * size, 0, c * size);
                     _world.AddRigidBody(0, pos, mesh, new float3(1, 1, 1));
                 }
@@ -63,7 +62,6 @@ namespace Examples.BulletTest
                     {
                         var pos = new float3(4 * h, 400 + (k * 4), 4 * j);
                         _world.AddRigidBody(1, pos, mesh, new float3(1, 1, 1));
-                        
                     }
                 }
             }
@@ -78,10 +76,9 @@ namespace Examples.BulletTest
            
             var rbB = _world.AddRigidBody(1, new float3(300, 500, 0), mesh, new float3(0, 0, 0));
             var p2p = _world.AddPoint2PointConstraint(rbA, rbB, new float3(105, -150, -150), new float3(0, 100, 0));
-            p2p.SetParam(0.99f, 4);
-            Debug.WriteLine(p2p.GetParam(4));
-        }
+            p2p.SetParam(ConstraintParameter.CONSTRAINT_PARAM_CFM, 0.9f);
+            Debug.WriteLine("p2p.GetParam(ConstraintParameter.CONSTRAINT_PARAM_CFM): " + p2p.GetParam(ConstraintParameter.CONSTRAINT_PARAM_CFM));
 
-       
+        }
     }
 }

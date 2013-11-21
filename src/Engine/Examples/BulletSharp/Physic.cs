@@ -47,8 +47,12 @@ namespace Examples.BulletSharp
             };
             World.SolverInfo.NumIterations = 8;
             Ground();
-            //FallingTower();
-            Constraints();
+            FallingTower();
+            //Constraints();
+
+            
+
+            
         }
 
         public void Ground()
@@ -74,6 +78,15 @@ namespace Examples.BulletSharp
 
         public void FallingTower()
         {
+            Mesh mesh = MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
+            var vertices = new Vector3[mesh.Vertices.Length];
+            for (int i = 0; i < mesh.Vertices.Length; i++)
+            {
+                vertices[i].X = mesh.Vertices[i].x;
+                vertices[i].Y = mesh.Vertices[i].y;
+                vertices[i].Z = mesh.Vertices[i].z;
+            }
+            var btColShape = new ConvexHullShape(vertices);
             Debug.WriteLine("Init Falling Tower");
             for (int k = -2; k < 2; k++)
             {
@@ -81,10 +94,11 @@ namespace Examples.BulletSharp
                 {
                     for (int j = -2; j < 2; j++)
                     {
-                        var pos = new float3(4 * h, 100 + (k * 4), 4 * j);
+                        var pos = new float3(4 * h*20, 100*20 + (k * 4), 4 * j*20);
                         var startTransform = Matrix.Translation(pos.x, pos.y, pos.z);
                         var myMotionState = new DefaultMotionState(startTransform);
-                        var rbInfo = new RigidBodyConstructionInfo(1, myMotionState, new BoxShape(2));
+                        
+                        var rbInfo = new RigidBodyConstructionInfo(1, myMotionState, btColShape);
                         RigidBody rigidBody = new RigidBody(rbInfo);
   
                         World.AddRigidBody(rigidBody);
@@ -104,7 +118,7 @@ namespace Examples.BulletSharp
             var rbInfoA = new RigidBodyConstructionInfo(1, myMotionStateA, new BoxShape(2));
             var rigidBodyA = new RigidBody(rbInfoA);
             rigidBodyA.LinearFactor = new Vector3(0,0,0); //More or Less Static
-           
+            
             World.AddRigidBody(rigidBodyA);
 
             var posB = new Vector3(10,0, 0);
@@ -123,6 +137,9 @@ namespace Examples.BulletSharp
             World.AddConstraint(p2p1);
             p2p1.SetParam(ConstraintParam.Cfm, 0.9f);
             p2p1.SetParam(ConstraintParam.Erp, 0.1f);
+            p2p1.SetParam(1, 0.1f, 1);
+
+
         }
 
 

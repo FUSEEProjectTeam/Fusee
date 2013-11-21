@@ -92,7 +92,7 @@ namespace Examples.BulletTest
             var mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
             var mtxCam = mtxRot * float4x4.LookAt(0, 500, 1500, 0, 0, 0, 0, 1, 0);
 
-            Debug.WriteLine(Time.Instance.FramePerSecond);
+           // Debug.WriteLine(Time.Instance.FramePerSecond);
             for (int i = 0; i < _physic.World.NumberRigidBodies(); i++)
             {
                 var rb = _physic.World.GetRigidBody(i);

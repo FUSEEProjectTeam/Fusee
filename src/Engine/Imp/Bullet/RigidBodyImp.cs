@@ -7,6 +7,7 @@ using Fusee.Math;
 using BulletSharp;
 
 
+
 namespace Fusee.Engine
 {
     public class RigidBodyImp : IRigidBodyImp
@@ -91,6 +92,13 @@ namespace Fusee.Engine
                 var o = (RigidBodyImp)_rbi.UserObject;
                 o._rbi.WorldTransform = m * 10.0f;
             }
+        }
+
+        public float4 Rotation
+        {
+            get;
+           
+            set;
         }
 
         

@@ -11,6 +11,8 @@ namespace Fusee.Engine
     {
         internal Point2PointConstraint _p2pci;
 
+        
+
         public float3 PivotInA
         {
             get
@@ -42,23 +44,22 @@ namespace Fusee.Engine
             
         }
 
-        public void SetParam(float value, int num = 1, int axis = -1)
+        public void SetParam(ConstraintParameter param, float value, int axis = -1)
         {
-
             var o = (Point2PointConstraintImp)_p2pci.UserObject;
             ConstraintParam constraintParam;
-            switch (num)
+            switch (param)
             {
-                case 1:
+                case ConstraintParameter.CONSTRAINT_PARAM_ERP:
                     constraintParam = ConstraintParam.Erp;
                     break;
-                case 2:
+                case ConstraintParameter.CONSTRAINT_PARAM_STOP_ERP:
                     constraintParam = ConstraintParam.StopErp;
                     break;
-                case 3:
+                case ConstraintParameter.CONSTRAINT_PARAM_CFM:
                     constraintParam = ConstraintParam.Cfm;
                     break;
-                case 4:
+                case ConstraintParameter.CONSTRAINT_PARAM_STOP_CFM:
                     constraintParam = ConstraintParam.StopCfm;
                     break;
                 default:
@@ -70,9 +71,29 @@ namespace Fusee.Engine
             o._p2pci.SetParam(constraintParam, value, axis);
         }
 
-        public float GetParam(int num, int axis = -1)
+
+        public float GetParam(ConstraintParameter param, int axis = -1)
         {
-            var retval = _p2pci.GetParam(num, axis);
+            int constraintParam;
+            switch (param)
+            {
+                case ConstraintParameter.CONSTRAINT_PARAM_ERP:
+                    constraintParam = 1;
+                    break;
+                case ConstraintParameter.CONSTRAINT_PARAM_STOP_ERP:
+                    constraintParam = 2;
+                    break;
+                case ConstraintParameter.CONSTRAINT_PARAM_CFM:
+                    constraintParam = 3;
+                    break;
+                case ConstraintParameter.CONSTRAINT_PARAM_STOP_CFM:
+                    constraintParam = 4;
+                    break;
+                default:
+                    constraintParam = 3;
+                    break; 
+            }
+            var retval = _p2pci.GetParam(constraintParam, axis);
             return retval;
         }
 

@@ -47,8 +47,8 @@ namespace Fusee.Engine
             // Use bullet to do what needs to be done:
             var btMatrix = Matrix.Translation(worldTransform.x, worldTransform.y, worldTransform.z);
             var btMotionState = new DefaultMotionState(btMatrix);
-            //TODO: Replace the static Boxshape by an individual collisionshape
-
+            
+            //TODO:what about other collisionshape types -> what is required from the collision shape and its performance
             Vector3[] btMeshVertecies = new Vector3[meshVertices.Length];
             for (int v = 0; v < meshVertices.Length; v++)
             {

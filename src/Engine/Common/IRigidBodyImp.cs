@@ -11,7 +11,8 @@ namespace Fusee.Engine
 
         float4x4 WorldTransform { get; set; }
         float3 Position { get; set; }
-        
+        float4 Rotation { get; set; }
+        //Todo: Rotation / Orientation
 
 
         void ApplyForce(float3 force, float3 relPos);      //Rel_Pos definition????
