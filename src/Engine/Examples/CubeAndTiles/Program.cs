@@ -59,7 +59,7 @@ namespace Examples.CubeAndTiles
         private ShaderProgram _shaderProgram;
         
         private static float _angleHorz = 0.4f;
-        private static float _angleVert = -1.0f;
+        private static float _angleVert = 2.4f;
         private static float _angleVelHorz, _angleVelVert;
 
         private static bool _topView;
@@ -70,7 +70,7 @@ namespace Examples.CubeAndTiles
         // Init()
         public override void Init()
         {
-            RC.ClearColor = new float4(0, 0.2f, 0.2f, 1);
+            RC.ClearColor = new float4(0, 0, 0, 1);
             
             _shaderProgram = RC.CreateShader(Vs, Ps);
             RC.SetShader(_shaderProgram);
@@ -147,7 +147,7 @@ namespace Examples.CubeAndTiles
             _angleVert += _angleVelVert;
 
             // colh var mtxRot = float4x4.CreateRotationZ(_angleHorz)*float4x4.CreateRotationX(_angleVert);
-            var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationZ(_angleHorz);
+            var mtxRot = float4x4.CreateRotationX(-_angleVert) * float4x4.CreateRotationZ(-_angleHorz);
 
             _exampleLevel.Render(mtxRot);
 
