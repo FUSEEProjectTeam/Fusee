@@ -966,8 +966,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
         new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.RenderState"), $.Int32]),
         function SetRenderState(renderState, value) {
             var renderStateVal;
-            alert(renderState + " trennung: " + value);
-            if (value == renderState.value)
+            if ("value" in renderState)
                 renderStateVal = renderState.value;
             else
                 renderStateVal = renderState;

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using Fusee.Math;
 
 namespace Fusee.Engine
@@ -20,8 +19,8 @@ namespace Fusee.Engine
         /// </summary>
         public FillMode FillMode
         {
-            get { return (FillMode) _states[RenderState.FillMode]; }
-            set { _states[RenderState.FillMode] = (uint) value; }
+            get { return (FillMode)_states[RenderState.FillMode]; }
+            set { _states[RenderState.FillMode] = (uint)value; }
         }
 
         /// <summary>
@@ -29,7 +28,7 @@ namespace Fusee.Engine
         /// </summary>
         public Cull CullMode
         {
-            get { return (Cull) _states[RenderState.CullMode]; }
+            get { return (Cull)_states[RenderState.CullMode]; }
             set { _states[RenderState.CullMode] = (uint)value; }
         }
 
@@ -73,14 +72,7 @@ namespace Fusee.Engine
         public bool AlphaBlendEnable
         {
             get { return _states[RenderState.AlphaBlendEnable] != 0; }
-            set
-            {
-                var x = value;
-                var v =  value ? 1U : 0U;
-                _states[RenderState.AlphaBlendEnable] = value ? 1U : 0U;
-                var y = _states[RenderState.AlphaBlendEnable];
-                Debug.Assert(v == y);
-            }
+            set { _states[RenderState.AlphaBlendEnable] = value ? 1U : 0U; }
         }
 
         /// <summary>
@@ -89,7 +81,7 @@ namespace Fusee.Engine
         /// <seealso cref="AlphaBlendEnable"/>
         public BlendOperation BlendOperation
         {
-            get { return (BlendOperation) _states[RenderState.BlendOperation]; }
+            get { return (BlendOperation)_states[RenderState.BlendOperation]; }
             set { _states[RenderState.BlendOperation] = (uint)value; }
         }
 
@@ -237,22 +229,9 @@ namespace Fusee.Engine
         ///     DoSomethingWithState(state.Key, state.Value);
         /// </code>
         /// </example>
-        public KeyVal[] States
+        public IEnumerable<KeyValuePair<RenderState, uint>> States
         {
-            get
-            {
-                KeyVal[] myvals = new KeyVal[_states.Count];
-                //KeyValuePair<RenderState, uint>[] kvp = new KeyValuePair<RenderState, uint>[_states.Count];
-                int i = 0;
-                foreach (var pair in _states)
-                {
-                    var newpair = new KeyVal(pair.Key, pair.Value);
-                    myvals[i++] = newpair;
-                }
-                return myvals;
-                //    yield return new KeyValuePair<RenderState, uint>(pair.Key, pair.Value);
-                // return _states;
-            }
+            get { return _states; }
         }
 
         // Currently not supported by FUSEE:
@@ -362,16 +341,5 @@ namespace Fusee.Engine
 
 
 
-    }
-
-    public struct KeyVal
-    {
-        public RenderState Key;
-        public uint Value;
-        public KeyVal(RenderState k, uint v)
-        {
-            Key = k;
-            Value = v;
-        }
     }
 }
