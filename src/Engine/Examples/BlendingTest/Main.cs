@@ -146,7 +146,7 @@ namespace Examples.BlendingTest
             _shaderEffect.AttachToContext(RC);
 
 
-            _spColor = MoreShaders.GetShader("simple", RC);
+            _spColor = MoreShaders.GetDiffuseColorShader(RC);
             _colorParam = _spColor.GetShaderParam("vColor");
 
             /*
@@ -174,7 +174,7 @@ namespace Examples.BlendingTest
            RC.Clear(ClearFlags.Color | ClearFlags.Depth);
  
             // move per mouse
-            if (Input.Instance.IsButtonDown(MouseButtons.Left))
+            if (Input.Instance.IsButton(MouseButtons.Left))
             {
                 _angleVelHorz = RotationSpeed * Input.Instance.GetAxis(InputAxis.MouseX);
                 _angleVelVert = RotationSpeed * Input.Instance.GetAxis(InputAxis.MouseY);

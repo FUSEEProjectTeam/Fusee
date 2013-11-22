@@ -437,7 +437,7 @@ namespace Fusee.Math
         /// </summary>
         /// <param name="axis">The axis to rotate about</param>
         /// <param name="angle">The rotation angle in radians</param>
-        /// <returns></returns>
+        /// <returns>A normalized quaternion rotation.</returns>
         public static Quaternion FromAxisAngle(float3 axis, float angle)
         {
             if (axis.LengthSquared > MathHelper.EpsilonFloat)
@@ -605,7 +605,9 @@ namespace Fusee.Math
         /// <summary>
         /// Takes a float4x4 matric and returns quaternions.
         /// </summary>
-        /// <returns></returns>
+        /// <param name="lookAt">The look at.</param>
+        /// <param name="upDirection">Up direction.</param>
+        /// <returns>A Quaternion.</returns>
         public static Quaternion LookRotation(float3 lookAt, float3 upDirection)
         {
             float3[] result = float3.OrthoNormalize(lookAt,upDirection);
@@ -764,7 +766,7 @@ namespace Fusee.Math
         /// <summary>
         /// Returns a System.String that represents the current Quaternion.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A string.</returns>
         public override string ToString()
         {
             return String.Format("V: {0}, w: {1}", xyz, w);

@@ -24,7 +24,7 @@ namespace Examples.WinFormsFusee
         private int _mouseWheelPos;
         private bool _initialized;
 
-        public WinformsHost(Control form) : base(form.Handle)
+        public WinformsHost(Control form) : base(form.Handle, form.Width, form.Height)
         {
             if (form == null) throw new ArgumentNullException("form");
 
@@ -128,6 +128,18 @@ namespace Examples.WinFormsFusee
         {
             // ignore - we create our own timer.
         }
+
+        public void SetMousePos(Point pos)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Point SetMouseToCenter()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool CursorVisible { get; set; }
 
         public Point GetMousePos()
         {

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using Fusee.Math;
 
 namespace Fusee.Engine
@@ -72,7 +73,14 @@ namespace Fusee.Engine
         public bool AlphaBlendEnable
         {
             get { return _states[RenderState.AlphaBlendEnable] != 0; }
-            set { _states[RenderState.AlphaBlendEnable] = value ? 1U : 0U; }
+            set
+            {
+                var x = value;
+                var v =  value ? 1U : 0U;
+                _states[RenderState.AlphaBlendEnable] = value ? 1U : 0U;
+                var y = _states[RenderState.AlphaBlendEnable];
+                Debug.Assert(v == y);
+            }
         }
 
         /// <summary>
@@ -229,9 +237,22 @@ namespace Fusee.Engine
         ///     DoSomethingWithState(state.Key, state.Value);
         /// </code>
         /// </example>
-        public IEnumerable<KeyValuePair<RenderState, uint>> States
+        public KeyVal[] States
         {
-            get { return _states; }
+            get
+            {
+                KeyVal[] myvals = new KeyVal[_states.Count];
+                //KeyValuePair<RenderState, uint>[] kvp = new KeyValuePair<RenderState, uint>[_states.Count];
+                int i = 0;
+                foreach (var pair in _states)
+                {
+                    var newpair = new KeyVal(pair.Key, pair.Value);
+                    myvals[i++] = newpair;
+                }
+                return myvals;
+                //    yield return new KeyValuePair<RenderState, uint>(pair.Key, pair.Value);
+                // return _states;
+            }
         }
 
         // Currently not supported by FUSEE:
@@ -341,5 +362,16 @@ namespace Fusee.Engine
 
 
 
+    }
+
+    public struct KeyVal
+    {
+        public RenderState Key;
+        public uint Value;
+        public KeyVal(RenderState k, uint v)
+        {
+            Key = k;
+            Value = v;
+        }
     }
 }

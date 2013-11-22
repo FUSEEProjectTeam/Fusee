@@ -374,6 +374,7 @@ namespace Fusee.Math
         /// <summary>
         /// XML-Comment
         /// </summary>
+        /// <returns>An float array of size 4 that cobtains the x,y,z,w components.</returns>
         public float[] ToArray()
         {
             return new float[] { x, y, z, w };
@@ -1169,7 +1170,7 @@ namespace Fusee.Math
         /// <summary>
         /// Returns a System.String that represents the current float4.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A string.</returns>
         public override string ToString()
         {
             return String.Format("({0}, {1}, {2}, {3})", x, y, z, w);

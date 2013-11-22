@@ -59,6 +59,7 @@
     <Compile Include="Audio.cs" />
     <Compile Include="Cube.cs" />
     <Compile Include="Diagnostics.cs" />
+    <Compile Include="Frustum.cs" />
     <Compile Include="Geometry.cs" />
     <Compile Include="ImpFactory.cs" />
     <Compile Include="Input.cs" />
@@ -74,6 +75,7 @@
     <Compile Include="ShaderMaterial.cs" />
     <Compile Include="ShaderProgram.cs" />
     <Compile Include="Shaders.cs" />
+    <Compile Include="Stereo3D.cs" />
     <Compile Include="Time.cs" />
   </ItemGroup>
   <ItemGroup>

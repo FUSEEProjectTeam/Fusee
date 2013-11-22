@@ -21,10 +21,19 @@ namespace Fusee.Engine
     [AttributeUsage(AttributeTargets.Class)]
     public class FuseeApplicationAttribute : Attribute
     {
+        /// <summary>
+        /// The name of the currently selected application.
+        /// </summary>
         public string Name;
+        /// <summary>
+        /// The description of the currently selected application.
+        /// </summary>
         public string Description;
         // TBI: public Icon Icon;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FuseeApplicationAttribute"/> class.
+        /// </summary>
         public FuseeApplicationAttribute()
         {
             
