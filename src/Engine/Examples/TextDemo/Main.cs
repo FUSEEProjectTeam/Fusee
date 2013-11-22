@@ -45,6 +45,9 @@ namespace Examples.TextDemo
 
             testButton = new GUIButton(RC, "Exit", _fontCabin12, 10, 10, 100, 25, buttonColor, textColor);
             testButton.OnGUIButtonDown += OnGUIButtonDown;
+            testButton.OnGUIButtonUp += OnGUIButtonUp;
+            testButton.OnGUIButtonEnter += OnGUIButtonEnter;
+            testButton.OnGUIButtonLeave += OnGUIButtonLeave;
 
            // _textMeshCousine20 = RC.GetTextMesh("Victor jagt zwölf Boxkämpfer quer über den großen Sylter Deich.", _fontCousine20, 8, 50);
            // _textMeshCabin12 = RC.GetTextMesh("The quick brown fox jumps over the lazy dog.", _fontCabin12, 8, 180);
@@ -106,7 +109,24 @@ namespace Examples.TextDemo
 
         private void OnGUIButtonDown(object sender, EventArgs e)
         {
+            Debug.WriteLine("ButtonDown");
+        }
+
+        private void OnGUIButtonUp(object sender, EventArgs e)
+        {
             Environment.Exit(0);
+        }
+
+        private void OnGUIButtonEnter(object sender, EventArgs e)
+        {
+            Debug.WriteLine("Enter.");
+            //testButton.ButtonColor = new float4()
+        }
+
+        private void OnGUIButtonLeave(object sender, EventArgs e)
+        {
+            Debug.WriteLine("Leave.");
+            //testButton.ButtonColor = new float4()
         }
 
         public override void Resize()
@@ -116,15 +136,6 @@ namespace Examples.TextDemo
 
             var aspectRatio = Width / (float)Height;
             RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 10000);
-
-            _textMeshCabin20 = RC.GetTextMesh("The quick brown fox jumps over the lazy dog.", _fontCabin20, 8, 100, new float4(1, 1, 1, 1));
-            _textMeshCabin30 = RC.GetTextMesh("The quick brown fox jumps over the lazy dog.", _fontCabin30, 8, 140, new float4(0, 0, 0, 0.5f));
-
-            var buttonColor = new float4(0.7f, 0.7f, 0.7f, 1);
-            var textColor = new float4(0, 0, 0, 1);
-
-            testButton = new GUIButton(RC, "Exit", _fontCabin12, 10, 10, 100, 25, buttonColor, textColor);
-            testButton.OnGUIButtonDown += OnGUIButtonDown;
         }
 
         public static void Main()

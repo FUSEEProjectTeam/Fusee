@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using Fusee.Math;
+﻿using System.Collections.Generic;
 
 namespace Fusee.Engine
 {
-    public delegate void ButtonDownEventHandler(object sender, MouseEventArgs e);
+    public delegate void MouseEventHandler(object sender, MouseEventArgs e);
 
     /// <summary>
     /// The Input class takes care of all inputs. It is accessible from everywhere inside a Fusee project.
@@ -23,10 +21,14 @@ namespace Fusee.Engine
             set
             {
                 _inputImp = value;
+                
                 _inputImp.KeyDown += KeyDown;
                 _inputImp.KeyUp += KeyUp;
+                
                 _inputImp.MouseButtonDown += ButtonDown;
                 _inputImp.MouseButtonUp += ButtonUp;
+                _inputImp.MouseMove += MouseMove;
+
                 _axes = new float[(int) InputAxis.LastAxis];
                 _axesPreviousAbsolute = new float[(int) InputAxis.LastAxis];
 
@@ -38,7 +40,9 @@ namespace Fusee.Engine
             }
         }
 
-        public event ButtonDownEventHandler OnButtonDown;
+        public event MouseEventHandler OnMouseButtonDown;
+        public event MouseEventHandler OnMouseButtonUp;
+        public event MouseEventHandler OnMouseMove;
 
         private float[] _axes;
         private float[] _axesPreviousAbsolute;
@@ -95,8 +99,8 @@ namespace Fusee.Engine
 
         private void ButtonDown(object sender, MouseEventArgs mea)
         {
-            if (OnButtonDown != null)
-                OnButtonDown(this, mea);
+            if (OnMouseButtonDown != null)
+                OnMouseButtonDown(this, mea);
 
             if (!_buttonsPressed.Contains((int) mea.Button))
                 _buttonsPressed.Add((int) mea.Button);
@@ -104,8 +108,17 @@ namespace Fusee.Engine
 
         private void ButtonUp(object sender, MouseEventArgs mea)
         {
+            if (OnMouseButtonUp != null)
+                OnMouseButtonUp(this, mea);
+
             if (_buttonsPressed.Contains((int) mea.Button))
                 _buttonsPressed.Remove((int) mea.Button);
+        }
+
+        private void MouseMove(object sender, MouseEventArgs mea)
+        {
+            if (OnMouseMove != null)
+                OnMouseMove(this, mea);
         }
 
         /// <summary>
@@ -206,11 +219,13 @@ namespace Fusee.Engine
         /// </summary>
         /// <param name="button">The mousebutton.</param>
         /// <returns>True, if mousebutton was released. Otherwise false.</returns>
+        /*
         public bool OnButtonUp(MouseButtons button)
         {
             // not implemented
             return false;
         }
+        */
 
         internal void OnUpdateFrame(double deltaTime)
         {
