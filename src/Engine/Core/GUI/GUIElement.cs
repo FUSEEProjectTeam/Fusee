@@ -15,21 +15,14 @@ namespace Fusee.Engine
 
         protected string Text;
         protected IFont Font;
-        private float4 _textColor;
 
-        public float4 TextColor
-        {
-            get
-            {
-                return _textColor;
-            }
-            set
-            {
-                _textColor = value;
-                CreateMesh();
-            }
-        }
+        public float4 TextColor { get; set; }
 
         protected abstract void CreateMesh();
+
+        public void Refresh()
+        {
+            CreateMesh();
+        }
     }
 }

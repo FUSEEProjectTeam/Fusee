@@ -3,11 +3,14 @@ using Fusee.Math;
 
 namespace Fusee.Engine
 {
-    public delegate void GUIButtonHandler(object sender, EventArgs e);
+    public delegate void GUIButtonHandler(object sender, MouseEventArgs mea);
 
     public sealed class GUIButton : GUIElement
     {
-        private float4 _buttonColor;
+        public float4 ButtonColor { get; set; }
+
+        public int BorderWidth { get; set; }
+        public float4 BorderColor { get; set; }
 
         public event GUIButtonHandler OnGUIButtonDown;
         public event GUIButtonHandler OnGUIButtonUp;
@@ -16,21 +19,8 @@ namespace Fusee.Engine
 
         private bool _mouseOnButton;
 
-        public float4 ButtonColor
-        {
-            get
-            {
-                return _buttonColor;
-            }
-            set
-            {
-                _buttonColor = value;
-                CreateMesh();
-            }
-        }
 
-        public GUIButton(RenderContext rc, string text, IFont font, float x, float y, float width, float height,
-            float4 buttonColor, float4 textColor)
+        public GUIButton(RenderContext rc, string text, IFont font, float x, float y, float width, float height)
         {
             RContext = rc;
 
@@ -44,9 +34,12 @@ namespace Fusee.Engine
             // settings
             Text = text;
             Font = font;
-            
-            _buttonColor = buttonColor;
-            TextColor = textColor;
+
+            ButtonColor = new float4(1, 1, 1, 1);
+            TextColor = new float4(0, 0, 0, 1);
+
+            BorderWidth = 1;
+            BorderColor = new float4(0, 0, 0, 1);
 
             // event listener
             Input.Instance.OnMouseButtonDown += OnButtonDown;
@@ -64,9 +57,6 @@ namespace Fusee.Engine
             var x = PosX;
             var y = PosY;
 
-            var width = Width;
-            var height = Height;
-
             // relative coordinates from -1 to +1
             var scaleX = (float)2 / RContext.ViewportWidth;
             var scaleY = (float)2 / RContext.ViewportHeight;
@@ -74,26 +64,67 @@ namespace Fusee.Engine
             var xS = -1 + x * scaleX;
             var yS = +1 - y * scaleY;
 
+            var width = Width * scaleX;
+            var height = Height * scaleY;
+
+            var borderX = System.Math.Max(0, BorderWidth*scaleX);
+            var borderY = System.Math.Max(0, BorderWidth*scaleY);
+
             // build complete structure
             var vtCount = 4 * Text.Length;
             var indCount = 6 * Text.Length;
 
-            var vertices = new float3[vtCount + 4];
-            var uvs = new float2[vtCount + 4];
-            var indices = new ushort[indCount + 6];
-            var colors = new uint[vtCount + 4];
+            var vertices = new float3[(BorderWidth > 0) ? vtCount + 8 : vtCount + 4];
+            var uvs = new float2[(BorderWidth > 0) ? vtCount + 8 : vtCount + 4];
+            var indices = new ushort[(BorderWidth > 0) ? indCount + 12 : indCount + 6];
+            var colors = new uint[(BorderWidth > 0) ? vtCount + 8 : vtCount + 4];
 
-            var widthS = width * scaleX;
-            var heightS = height * scaleY;
+            indCount = 0;
+
+            // border
+            if (BorderWidth > 0)
+            {
+                // vertices
+                vertices[vtCount + 0] = new float3(xS, yS - height, 0);
+                vertices[vtCount + 1] = new float3(xS, yS, 0);
+                vertices[vtCount + 2] = new float3(xS + width, yS - height, 0);
+                vertices[vtCount + 3] = new float3(xS + width, yS, 0);
+
+                // colors
+                var bColorInt = MathHelper.Float4ToABGR(BorderColor);
+
+                colors[vtCount + 0] = bColorInt;
+                colors[vtCount + 1] = bColorInt;
+                colors[vtCount + 2] = bColorInt;
+                colors[vtCount + 3] = bColorInt;
+
+                // uvs
+                uvs[vtCount + 0] = new float2(-1, -1);
+                uvs[vtCount + 1] = new float2(-1, -1);
+                uvs[vtCount + 2] = new float2(-1, -1);
+                uvs[vtCount + 3] = new float2(-1, -1);
+
+                // indices
+                indices[indCount+0] = (ushort)(vtCount + 1);
+                indices[indCount+1] = (ushort)(vtCount + 0);
+                indices[indCount+2] = (ushort)(vtCount + 2);
+
+                indices[indCount+3] = (ushort)(vtCount + 1);
+                indices[indCount+4] = (ushort)(vtCount + 2);
+                indices[indCount+5] = (ushort)(vtCount + 3);
+
+                vtCount += 4;
+                indCount += 6;
+            }
 
             // vertices
-            vertices[vtCount + 0] = new float3(xS, yS - heightS, 0);
-            vertices[vtCount + 1] = new float3(xS, yS, 0);
-            vertices[vtCount + 2] = new float3(xS + widthS, yS - heightS, 0);
-            vertices[vtCount + 3] = new float3(xS + widthS, yS, 0);
+            vertices[vtCount + 0] = new float3(xS+borderX, yS - height+borderY, 0);
+            vertices[vtCount + 1] = new float3(xS + borderX, yS-borderY, 0);
+            vertices[vtCount + 2] = new float3(xS-borderX + width, yS - height+borderY, 0);
+            vertices[vtCount + 3] = new float3(xS-borderX + width, yS-borderY, 0);
 
             // colors
-            var colorInt = MathHelper.Float4ToABGR(_buttonColor);
+            var colorInt = MathHelper.Float4ToABGR(ButtonColor);
 
             colors[vtCount + 0] = colorInt;
             colors[vtCount + 1] = colorInt;
@@ -107,20 +138,20 @@ namespace Fusee.Engine
             uvs[vtCount + 3] = new float2(-1, -1);
 
             // indices
-            indices[0] = (ushort)(vtCount + 1);
-            indices[1] = (ushort)(vtCount + 0);
-            indices[2] = (ushort)(vtCount + 2);
+            indices[indCount + 0] = (ushort)(vtCount + 1);
+            indices[indCount + 1] = (ushort)(vtCount + 0);
+            indices[indCount + 2] = (ushort)(vtCount + 2);
 
-            indices[3] = (ushort)(vtCount + 1);
-            indices[4] = (ushort)(vtCount + 2);
-            indices[5] = (ushort)(vtCount + 3);
+            indices[indCount + 3] = (ushort)(vtCount + 1);
+            indices[indCount + 4] = (ushort)(vtCount + 2);
+            indices[indCount + 5] = (ushort)(vtCount + 3);
 
             // center text on button
             var maxW = RenderContext.GetTextWidth(Text, Font);
-            x = (float)System.Math.Round(x + (width - maxW) / 2);
+            x = (float)System.Math.Round(x + (Width - maxW) / 2);
 
             var maxH = RenderContext.GetTextHeight(Text, Font);
-            y = (float)System.Math.Round(y + maxH + (height - maxH) / 2);
+            y = (float)System.Math.Round(y + maxH + (Height - maxH) / 2);
 
             // get text mesh
             var textMesh = RContext.GetTextMesh(Text, Font, x, y, TextColor);
@@ -128,7 +159,7 @@ namespace Fusee.Engine
             // combine button and text
             Array.Copy(textMesh.Vertices, vertices, textMesh.Vertices.Length);
             Array.Copy(textMesh.UVs, uvs, textMesh.UVs.Length);
-            Array.Copy(textMesh.Triangles, 0, indices, 6, textMesh.Triangles.Length);
+            Array.Copy(textMesh.Triangles, 0, indices, (BorderWidth > 0) ? 12 : 6, textMesh.Triangles.Length);
             Array.Copy(textMesh.Colors, colors, textMesh.Colors.Length);
 
             // create final mesh
@@ -149,7 +180,7 @@ namespace Fusee.Engine
                 return;
 
             if (MouseOnButton(mea))
-                OnGUIButtonDown(this, EventArgs.Empty);
+                OnGUIButtonDown(this, mea);
         }
 
         private void OnButtonUp(object sender, MouseEventArgs mea)
@@ -158,7 +189,7 @@ namespace Fusee.Engine
                 return;
 
             if (MouseOnButton(mea))
-                OnGUIButtonUp(this, EventArgs.Empty);
+                OnGUIButtonUp(this, mea);
         }
 
         private void OnMouseMove(object sender, MouseEventArgs mea)
@@ -167,14 +198,14 @@ namespace Fusee.Engine
             {
                 if ((OnGUIButtonEnter == null) || (_mouseOnButton)) return;
 
-                OnGUIButtonEnter(this, EventArgs.Empty);
+                OnGUIButtonEnter(this, mea);
                 _mouseOnButton = true;
             }
             else
             {
                 if ((OnGUIButtonLeave == null) || (!_mouseOnButton)) return;
 
-                OnGUIButtonLeave(this, EventArgs.Empty);
+                OnGUIButtonLeave(this, mea);
                 _mouseOnButton = false;
             }
         }
