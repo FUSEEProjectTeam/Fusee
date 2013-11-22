@@ -119,14 +119,12 @@ namespace Examples.TextDemo
 
         private void OnGUIButtonEnter(object sender, EventArgs e)
         {
-            Debug.WriteLine("Enter.");
-            //testButton.ButtonColor = new float4()
+            testButton.TextColor = new float4(0.5f, 0, 0, 1);
         }
 
         private void OnGUIButtonLeave(object sender, EventArgs e)
         {
-            Debug.WriteLine("Leave.");
-            //testButton.ButtonColor = new float4()
+            testButton.TextColor = new float4(0, 0, 0, 1);
         }
 
         public override void Resize()
