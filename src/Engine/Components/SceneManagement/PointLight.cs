@@ -13,10 +13,12 @@ namespace Fusee.SceneManagement
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PointLight"/> class. Position, color and channel are needet.
+        /// Initializes a new instance of the <see cref="PointLight" /> class. Position, color and channel are needed.
         /// </summary>
         /// <param name="position">The position of the pointlight.</param>
-        /// <param name="color">The color of the pointlight.</param>
+        /// <param name="diffuse">The diffuse light color.</param>
+        /// <param name="ambient">The ambient light color.</param>
+        /// <param name="specular">The specular light color.</param>
         /// <param name="channel">The memory space of the light(0 - 7).</param>
         public PointLight(float3 position, float4 diffuse, float4 ambient, float4 specular, int channel)
         {

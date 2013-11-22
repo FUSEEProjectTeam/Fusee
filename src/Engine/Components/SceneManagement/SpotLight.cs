@@ -12,17 +12,23 @@ namespace Fusee.SceneManagement
 
         #region Fields 
 
+        /// <summary>
+        /// The angle of the spotlight.
+        /// </summary>
         protected float _angle;
         #endregion
 
 
         #region Constructors
         /// <summary>
-        /// Initializes a new instance of the <see cref="SpotLight"/> class. Position, direction, color and the channel are needed.
+        /// Initializes a new instance of the <see cref="SpotLight" /> class. Position, direction, color and the channel are needed.
         /// </summary>
         /// <param name="position">The position of the spotlight.</param>
         /// <param name="direction">The direction of the spotlight.</param>
-        /// <param name="color">The color of the spotlight(Red, Green, Blue, Alpha).</param>
+        /// <param name="diffuse">The diffuse light color.</param>
+        /// <param name="ambient">The ambient light color.</param>
+        /// <param name="specular">The specular light color.</param>
+        /// <param name="angle">The light angle of the spotlight.</param>
         /// <param name="channel">The memory space of the light(0 - 7).</param>
         public SpotLight(float3 position, float3 direction, float4 diffuse, float4 ambient, float4 specular, float angle, int channel) 
         {
@@ -54,9 +60,11 @@ namespace Fusee.SceneManagement
         /// Creates a spot light in the scene. Position, color, position, and channel is needed.
         /// It is possible to set up to 8 lights in the scene.
         /// </summary>
-        /// <param name="direction">Direction of the light.</param> 
-        /// <param name="color">The color of the light.</param>
-        /// <param name="position">The position in the scene.</param>
+        /// <param name="direction">Direction of the light.</param>
+        /// <param name="diffuse">The diffuse light color.</param>
+        /// <param name="ambient">The ambient light color.</param>
+        /// <param name="specular">The specular light color.</param>
+        /// <param name="position">The lights position in the scene.</param>
         /// <param name="channel">The memory space of the light.(0 - 7)</param>
         public SpotLight(float3 direction, float4 diffuse, float4 ambient, float4 specular, float3 position, int channel)
         {

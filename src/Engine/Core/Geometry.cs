@@ -107,7 +107,7 @@ namespace Fusee.Engine
         /// Adds a vertex.
         /// </summary>
         /// <param name="v">A 3D vector.</param>
-        /// <returns></returns>
+        /// <returns>The current vertex count.</returns>
         public int AddVertex(double3 v)
         {
             _vertices.Add(v);

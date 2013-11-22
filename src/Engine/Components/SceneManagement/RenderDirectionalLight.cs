@@ -24,7 +24,9 @@ namespace Fusee.SceneManagement
         /// Creates a RenderDirectionalLight needed parameters:( float3, float4, Light.Lighttype, int).
         /// </summary>
         /// <param name="direction">Direction of the light.</param>
-        /// <param name="color">Color of the light "Red Green Blue Alpha"</param>
+        /// <param name="diffuse">The diffuse light color.</param>
+        /// <param name="ambient">The ambient light color.</param>
+        /// <param name="specular">The specular light color.</param>
         /// <param name="type">The light type.</param>
         /// <param name="channel">The memory space of the light(0 - 7).</param>
         public RenderDirectionalLight(float3 direction, float4 diffuse, float4 ambient, float4 specular, Light.LightType type, int channel)
@@ -39,8 +41,9 @@ namespace Fusee.SceneManagement
         #endregion
         #region Overrides
         /// <summary>
-        ///  Passes directionallight's parameters to RenderContext.
+        /// Passes directionallight's parameters to RenderContext.
         /// </summary>
+        /// <param name="renderContext">The <see cref="RenderContext"/>.</param>
          public override void SubmitWork(RenderContext renderContext)
          {
              renderContext.SetLight(_direction, _diffuseColor, _ambientColor, _specularColor, (int)_type, _channel);

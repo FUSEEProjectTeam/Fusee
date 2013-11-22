@@ -19,9 +19,11 @@ namespace Fusee.Math
         /// </summary>
         /// <typeparam name="T">The type all the parameters and the return value are given (most likely a simple type)</typeparam>
         /// <param name="val">The value to be saturated</param>
-        /// <param name="lower"></param>
-        /// <param name="upper"></param>
-        /// <returns>The saturated value within the given bounds</returns>
+        /// <param name="lower">The lower.</param>
+        /// <param name="upper">The upper.</param>
+        /// <returns>
+        /// The saturated value within the given bounds
+        /// </returns>
         public static T Saturate<T>(T val, T lower, T upper) where T:IComparable<T>
         {
             return (lower.CompareTo(val) < 0) ? ((val.CompareTo(upper) < 0)? val : upper) : lower;

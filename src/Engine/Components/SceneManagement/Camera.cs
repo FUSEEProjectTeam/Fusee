@@ -247,26 +247,6 @@ namespace Fusee.SceneManagement
         }
 
 
-        public void DrawCameraView()
-        {
-            //globalPosition
-            float3 globalpos = SceneManager.RC.ModelView.Row3.xyz;
-
-            // Forward Direction
-            float3 forward = -SceneManager.RC.ModelView.Row2.xyz;
-            float3 farvec = forward*_far;
-            // Center Ray
-            SceneManager.RC.DebugLine(new float3(0,0,0),forward*_far,new float4(0,1,0,1));
-
-            // Far left up
-
-            // Far right up
-
-            // Far left down
-
-            // Far right down
-
-        }
         #endregion
     }
 }

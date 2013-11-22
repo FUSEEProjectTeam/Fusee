@@ -825,11 +825,11 @@ namespace Fusee.Math
         }
 
         /// <summary>
-        /// 
+        /// Orthoes the normalize.
         /// </summary>
-        /// <param name="normal"></param>
-        /// <param name="tangent"></param>
-        /// <returns></returns>
+        /// <param name="normal">The normal.</param>
+        /// <param name="tangent">The tangent.</param>
+        /// <returns>An float3 Array of size 2 with orthonormalized normal and tangent. </returns>
         public static float3[] OrthoNormalize(float3 normal, float3 tangent)
         {
             var ret = new float3[2];

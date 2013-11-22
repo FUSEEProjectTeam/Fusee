@@ -20,10 +20,12 @@ namespace Fusee.SceneManagement
 
         #region Members
         /// <summary>
-        /// Initializes a new instance of the <see cref="RenderPointLight"/> class. Position, color, type and channel are needed.
+        /// Initializes a new instance of the <see cref="RenderPointLight" /> class. Position, color, type and channel are needed.
         /// </summary>
         /// <param name="position">The position of the light.</param>
-        /// <param name="color">The color of the light (Red, Green, Blue, Alpha).</param>
+        /// <param name="diffuse">The diffuse light color.</param>
+        /// <param name="ambient">The ambient light color.</param>
+        /// <param name="specular">The specular light color.</param>
         /// <param name="type">The light type.</param>
         /// <param name="channel">The memory space of the light(0 - 7).</param>
         public RenderPointLight(float3 position, float4 diffuse, float4 ambient, float4 specular, Light.LightType type, int channel)
@@ -38,8 +40,9 @@ namespace Fusee.SceneManagement
         #endregion
         #region Overrides
         /// <summary>
-        ///  Passes pointlight's parameters to RenderContext. 
+        /// Passes pointlight's parameters to RenderContext.
         /// </summary>
+        /// <param name="renderContext">The render context.</param>
          public override void SubmitWork(RenderContext renderContext)
          {
              renderContext.SetLight(_position, _diffuseColor, _ambientColor, _specularColor, (int)_type, _channel);

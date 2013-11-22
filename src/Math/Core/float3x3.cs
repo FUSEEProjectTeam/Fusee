@@ -446,7 +446,7 @@ namespace Fusee.Math
         /// <summary>
         /// Returns a System.String that represents the current Matrix44.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A string.</returns>
         public override string ToString()
         {
             return String.Format("{0}\n{1}\n{2}", Row0, Row1, Row2);

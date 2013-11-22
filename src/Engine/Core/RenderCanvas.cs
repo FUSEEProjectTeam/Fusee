@@ -120,6 +120,10 @@ namespace Fusee.Engine
                 _networkImp = ImpFactory.CreateINetworkImp();
         }
 
+        /// <summary>
+        /// Gets the name of the app.
+        /// </summary>
+        /// <returns>Name of the app as string.</returns>
         protected string GetAppName()
         {
             Object[] attributes = GetType().GetCustomAttributes(
@@ -133,6 +137,9 @@ namespace Fusee.Engine
             return GetType().Name;
         }
 
+        /// <summary>
+        /// Inits the canvas for the rendering loop.
+        /// </summary>
         protected void InitCanvas()
         {
             InitImplementors();

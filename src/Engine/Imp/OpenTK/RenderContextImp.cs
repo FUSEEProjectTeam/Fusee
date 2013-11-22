@@ -914,6 +914,11 @@ namespace Fusee.Engine
             GL.End();
         }
 
+        /// <summary>
+        /// Gets the content of the buffer.
+        /// </summary>
+        /// <param name="quad">The Rectangle where the content is draw into.</param>
+        /// <param name="texId">The tex identifier.</param>
         public void GetBufferContent(Rectangle quad, ITexture texId)
         {
             GL.BindTexture(TextureTarget.Texture2D, ((Texture) texId).handle);

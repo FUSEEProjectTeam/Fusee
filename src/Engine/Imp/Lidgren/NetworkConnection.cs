@@ -35,6 +35,12 @@ namespace Fusee.Engine
         /// </value>
         public IPEndPoint RemoteEndPoint { internal set; get; }
 
+        /// <summary>
+        /// Gets the roundtrip time of a packet. This is the time in milliseconds that a packet requires to be send to the remote end point and back.
+        /// </summary>
+        /// <value>
+        /// The roundtrip time.
+        /// </value>
         public float RoundtripTime
         {
             get { return Connection.AverageRoundtripTime;}
@@ -65,7 +71,7 @@ namespace Fusee.Engine
         /// Sends the message as <see cref="MessageType" />.RealiableOrdered on channel 0.
         /// </summary>
         /// <param name="packet">The packet in byte[].</param>
-        /// <returns></returns>
+        /// <returns>True if the message was succesfully sent.</returns>
         public bool SendMessage(byte[] packet)
         {
             return SendMessage(packet, MessageDelivery.ReliableOrdered, 0);
@@ -77,7 +83,7 @@ namespace Fusee.Engine
         /// <param name="packet">The packet in byte[].</param>
         /// <param name="msgDelivery">The <see cref="MessageDelivery" />.</param>
         /// <param name="msgChannel">The message channel.</param>
-        /// <returns></returns>
+        /// <returns>True if the message was succesfully sent.</returns>
         public bool SendMessage(byte[] packet, MessageDelivery msgDelivery, int msgChannel)
         {
             return NetworkImp.SendMessage(packet, Connection, msgDelivery, msgChannel);

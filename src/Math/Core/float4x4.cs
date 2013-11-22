@@ -581,7 +581,7 @@ namespace Fusee.Math
         /// <param name="height">The height of the projection volume.</param>
         /// <param name="zNear">The near edge of the projection volume.</param>
         /// <param name="zFar">The far edge of the projection volume.</param>
-        /// <rereturns>The resulting Matrix4 instance.</rereturns>
+        /// <returns>The resulting Matrix4 instance.</returns>
         public static float4x4 CreateOrthographic(float width, float height, float zNear, float zFar)
         {
             float4x4 result;
@@ -1204,7 +1204,7 @@ namespace Fusee.Math
             /* calculate determinant */
             var det = mat.M11*m11 + mat.M12*m12 + mat.M13*m13 + mat.M14*m14;
 
-            if (det > 0)
+            if (det > MathHelper.EpsilonFloat || det < MathHelper.EpsilonFloat)
             {
                 det = 1/det;
 
@@ -1213,6 +1213,8 @@ namespace Fusee.Math
                                    det*m31, det*m32, det*m33, det*m34,
                                    det*m41, det*m42, det*m43, det*m44);
             }
+            else
+                mat.Transpose();
 
             return mat;
         }
@@ -1478,7 +1480,7 @@ namespace Fusee.Math
         /// <summary>
         /// Returns a System.String that represents the current Matrix44.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A string.</returns>
         public override string ToString()
         {
             return String.Format("{0}\n{1}\n{2}\n{3}", Row0, Row1, Row2, Row3);

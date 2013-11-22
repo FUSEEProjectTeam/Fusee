@@ -137,10 +137,12 @@ namespace Fusee.Engine
 
         #region Constructors
         /// <summary>
-        /// Initializes a new instance of the <see cref="RenderCanvasWindowImp"/> class.
+        /// Initializes a new instance of the <see cref="RenderCanvasWindowImp" /> class.
         /// </summary>
         /// <param name="windowHandle">The window handle.</param>
-        public RenderCanvasWindowImp(IntPtr windowHandle)
+        /// <param name="width">The width.</param>
+        /// <param name="height">The height.</param>
+        public RenderCanvasWindowImp(IntPtr windowHandle, int width, int height)
         {
             // _mode = GraphicsMode.Default;
             bool antiAliasing = true;
@@ -149,7 +151,7 @@ namespace Fusee.Engine
             _minor = 0;
             _flags = GraphicsContextFlags.Default;
             _wi = Utilities.CreateWindowsWindowInfo(windowHandle);
-
+            
             try
             {
                 _context = new GraphicsContext(_mode, _wi, _major, _minor, _flags);
@@ -160,7 +162,7 @@ namespace Fusee.Engine
                 _mode = new GraphicsMode(32, 24, 0, (antiAliasing) ? 8 : 0);
                 _context = new GraphicsContext(_mode, _wi, _major, _minor, _flags);
             }
-
+            
             _context.MakeCurrent(_wi);
             ((IGraphicsContextInternal)_context).LoadAll();
 
@@ -172,6 +174,9 @@ namespace Fusee.Engine
             // Use VSync!
             _context.SwapInterval = 1;
             _lastTimeTick = Timer;
+
+            _width = width;
+            _height = height;
         }
         #endregion
 
@@ -209,6 +214,10 @@ namespace Fusee.Engine
             GC.SuppressFinalize(this);
         }
 
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources.
+        /// </summary>
+        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (!_disposed)
@@ -227,6 +236,9 @@ namespace Fusee.Engine
         }
 
         // Use C# destructor syntax for finalization code.
+        /// <summary>
+        /// Finalizes an instance of the <see cref="RenderCanvasWindowImp"/> class.
+        /// </summary>
         ~RenderCanvasWindowImp()
         {
             // Simply call Dispose(false).
@@ -242,6 +254,12 @@ namespace Fusee.Engine
     {
         #region Fields
 
+        /// <summary>
+        /// Implementation Tasks: Gets or sets the width(pixel units) of the Canvas.
+        /// </summary>
+        /// <value>
+        /// The width.
+        /// </value>
         public int Width
         {
             get { return _width; }
@@ -410,11 +428,20 @@ namespace Fusee.Engine
         #endregion
     }
 
+    /// <summary>
+    /// OpenTK implementation of RenderCanvas for the window output.
+    /// </summary>
     public class RenderCanvasImpBase
     {
         #region Fields
 
+        /// <summary>
+        /// The _width
+        /// </summary>
         protected internal int _width;
+        /// <summary>
+        /// The _height
+        /// </summary>
         protected internal int _height;
 
         #endregion
@@ -441,24 +468,36 @@ namespace Fusee.Engine
 
         #region Internal Members
 
+        /// <summary>
+        /// Does the initialize of this instance.
+        /// </summary>
         internal protected void DoInit()
         {
             if (Init != null)
                 Init(this, new InitEventArgs());
         }
 
+        /// <summary>
+        /// Does the unload of this instance. 
+        /// </summary>
         internal protected void DoUnLoad()
         {
             if (UnLoad != null)
                 UnLoad(this, new InitEventArgs());
         }
 
+        /// <summary>
+        /// Does the render of this instance.
+        /// </summary>
         internal protected void DoRender()
         {
             if (Render != null)
                 Render(this, new RenderEventArgs());
         }
 
+        /// <summary>
+        /// Does the resize on this instance.
+        /// </summary>
         internal protected void DoResize()
         {
             if (Resize != null)
