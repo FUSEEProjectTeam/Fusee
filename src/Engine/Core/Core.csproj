@@ -61,6 +61,7 @@
     <Compile Include="Diagnostics.cs" />
     <Compile Include="DynamicWorld.cs" />
     <Compile Include="Geometry.cs" />
+    <Compile Include="HingeConstraint.cs" />
     <Compile Include="ImpFactory.cs" />
     <Compile Include="Input.cs" />
     <Compile Include="Mesh.cs" />

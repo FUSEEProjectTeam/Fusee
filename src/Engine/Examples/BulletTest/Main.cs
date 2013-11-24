@@ -97,17 +97,38 @@ namespace Examples.BulletTest
             {
                 var rb = _physic.World.GetRigidBody(i);
                 var matrix = rb.WorldTransform;
-                RC.ModelView = /*float4x4.Scale(0.025f) **/ matrix * mtxCam;
+                RC.ModelView =  matrix * mtxCam;
                 RC.SetShader(_spTexture);
                 RC.SetShaderParamTexture(_textureParam, _iTex);
                 RC.Render(rb.Mesh);
             }
-
+           
             #region RenderConstraint
-            for (int i = 0; i < _physic.World.NumberConstraints(); i++)
+            /*for (int i = 0; i < _physic.World.NumberConstraints(); i++)
             {
                 //Debug.WriteLine("Render Constraints");
 
+
+                var obj = (Point2PointConstraint)_physic.World.GetAnyConstraint(i);
+                var matrixA = obj.RigidBodyA.WorldTransform;
+                RC.ModelView = float4x4.Scale(0.025f) * matrixA * mtxCam;
+                RC.SetShader(_spTexture);
+                RC.SetShaderParamTexture(_textureParam, _iTex);
+                RC.Render(obj.RigidBodyA.Mesh);
+
+
+                var matrixB = obj.RigidBodyB.WorldTransform;
+                RC.ModelView = float4x4.Scale(0.025f) * matrixB * mtxCam;
+                RC.SetShader(_spTexture);
+                RC.SetShaderParamTexture(_textureParam, _iTex);
+                RC.Render(obj.RigidBodyB.Mesh);
+            
+            }*/
+            /*for (int i = 0; i < _physic.World.NumberConstraints(); i++)
+            {
+                //Debug.WriteLine("Render Constraints");
+
+                
                 var matrixA = _physic.World.GetConstraint(i).RigidBodyA.WorldTransform;
                 RC.ModelView = float4x4.Scale(0.025f) * matrixA * mtxCam;
                 RC.SetShader(_spTexture);
@@ -120,8 +141,8 @@ namespace Examples.BulletTest
                 RC.SetShader(_spTexture);
                 RC.SetShaderParamTexture(_textureParam, _iTex);
                 RC.Render(_physic.World.GetConstraint(i).RigidBodyB.Mesh);
-
-            }
+            
+            }*/
             #endregion RenderConstraint
 
             #region RenderSimple

@@ -24,7 +24,8 @@ namespace Examples.BulletTest
 
             //FallingTower();
             Ground();
-            InitPoint2PointConstraint();
+           // InitPoint2PointConstraint();
+            InitHingeConstraint();
 
         }
 
@@ -80,5 +81,18 @@ namespace Examples.BulletTest
             Debug.WriteLine("p2p.GetParam(ConstraintParameter.CONSTRAINT_PARAM_CFM): " + p2p.GetParam(ConstraintParameter.CONSTRAINT_PARAM_CFM));
 
         }
+
+        public void InitHingeConstraint()
+        {
+            var mesh = MeshReader.LoadMesh(@"Assets/Cube.obj.model");
+            var rbA = _world.AddRigidBody(1, new float3(400, 500, 0), mesh, new float3(0, 0, 0));
+            rbA.LinearFactor = new float3(0, 0, 0);
+            rbA.AngularFactor = new float3(0, 0, 0);
+
+            var rbB = _world.AddRigidBody(1, new float3(400,500, 0), mesh, new float3(0, 0, 0));
+
+            var hc = _world.AddHingeConstraint(rbA, rbB, new float3(100, -300, 0), new float3(0, 100, 0), new float3(1, 0, 0), new float3(1, 0, 0), false);
+        }
+
     }
 }

@@ -103,7 +103,7 @@ namespace Fusee.Engine
             var btRigidBodyB = rigidBodyBImp._rbi;
 
             var btP2PConstraint = new Point2PointConstraint(btRigidBodyA, btRigidBodyB,
-                new Vector3(pivotInA.x, pivotInA.y, pivotInA.y), new Vector3(pivotInB.x, pivotInB.y, pivotInB.y));
+                new Vector3(pivotInA.x, pivotInA.y, pivotInA.z), new Vector3(pivotInB.x, pivotInB.y, pivotInB.z));
             BtWorld.AddConstraint(btP2PConstraint);
             var retval = new Point2PointConstraintImp();
             retval._p2pci = btP2PConstraint;
@@ -116,6 +116,25 @@ namespace Fusee.Engine
         {
             return (Point2PointConstraintImp)BtWorld.GetConstraint(i).UserObject;
         }
+
+        public IHingeConstraintImp AddHingeConstraint(IRigidBodyImp rigidBodyA, IRigidBodyImp rigidBodyB, float3 pivotInA, float3 pivotInB, float3 axisInA, float3 AxisInB, bool useReferenceFrameA)
+        {
+            var rigidBodyAImp = (RigidBodyImp)rigidBodyA;
+            var btRigidBodyA = rigidBodyAImp._rbi;
+
+            var rigidBodyBImp = (RigidBodyImp)rigidBodyB;
+            var btRigidBodyB = rigidBodyBImp._rbi;
+
+            var btHingeConstraint = new HingeConstraint(btRigidBodyA, btRigidBodyB, new Vector3(pivotInA.x, pivotInA.y, pivotInA.z), new Vector3(pivotInB.x, pivotInB.y, pivotInB.z), new Vector3(axisInA.x, axisInA.y, axisInA.z), new Vector3(AxisInB.x, AxisInB.y, AxisInB.z), useReferenceFrameA);
+            BtWorld.AddConstraint(btHingeConstraint);
+
+            var retval = new HingeConstraintImp();
+            retval._hci = btHingeConstraint;
+            btHingeConstraint.UserObject = retval;
+            return retval;
+        }
+
+
 
         public int NumberConstraints()
         {

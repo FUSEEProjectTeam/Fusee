@@ -76,6 +76,16 @@ namespace Fusee.Engine
             return retval;
         }
 
+        public HingeConstraint AddHingeConstraint(RigidBody rigidBodyA, RigidBody rigidBodyB, float3 pivotInA, float3 pivotInB, float3 axisInA, float3 axisInB, bool useReferenceFrameA = false)
+        {
+            IHingeConstraintImp ip2pci = _dwi.AddHingeConstraint(rigidBodyA._iRigidBodyImp, rigidBodyB._iRigidBodyImp, pivotInA, pivotInB, axisInA, axisInB, useReferenceFrameA);
+            var retval = new HingeConstraint();
+            retval._iHConstraintImp = ip2pci;
+            ip2pci.UserObject = retval;
+            return retval;
+        }
+
+
         public int NumberConstraints()
         {
             var number = _dwi.NumberConstraints();

@@ -15,6 +15,11 @@ namespace Fusee.Engine
 
         IPoint2PointConstraintImp AddPoint2PointConstraint(IRigidBodyImp rigidBodyA, IRigidBodyImp rigidBodyB, float3 pivotInA, float3 pivotInB);
         IPoint2PointConstraintImp GetConstraint(int i);
+
+        IHingeConstraintImp AddHingeConstraint(IRigidBodyImp rigidBodyA, IRigidBodyImp rigidBodyB, float3 pivotInA, float3 pivotInB, float3 axisInA, float3 AxisInB, bool useReferenceFrameA);
+
+
+
         int NumberConstraints();
     }
 }
