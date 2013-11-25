@@ -13,34 +13,33 @@ namespace Examples.TextDemo
         private IFont _fontCabin12;
         private IFont _fontCabin20;
         private IFont _fontCabin30;
-        private IFont _fontCousine20;
 
-        private Mesh _textMeshCabin12;
         private Mesh _textMeshCabin20;
         private Mesh _textMeshCabin30;
-        private Mesh _textMeshCabin30N;
-        private Mesh _textMeshCabin30K;
-        private Mesh _textMeshCousine20;
 
         private Mesh _mesh;
         private IShaderParam _vColor;
 
         private static float _angleHorz;
 
-        private GUIButton testButton;
+        private GUIButton _testButton1;
+        private GUIButton _testButton2;
+
+        private bool _showDebug;
 
         public override void Init()
         {
+            _showDebug = false;
+
             RC.ClearColor = new float4(0.5f, 0.5f, 0.8f, 1);
 
             // load fonts
-            _fontCousine20 = RC.LoadFont("Assets/Cousine.ttf", 20);
             _fontCabin12 = RC.LoadFont("Assets/Cabin.ttf", 15);
             _fontCabin20 = RC.LoadFont("Assets/Cabin.ttf", 20);
             _fontCabin30 = RC.LoadFont("Assets/Cabin.ttf", 30);
 
-            // button
-            testButton = new GUIButton(RC, "Exit", _fontCabin12, 10, 10, 100, 25)
+            // button 1
+            _testButton1 = new GUIButton(RC, "Exit", _fontCabin12, 10, 10, 100, 25)
             {
                 ButtonColor = new float4(0.7f, 0.7f, 0.7f, 1),
                 TextColor = new float4(0, 0, 0, 1),
@@ -48,12 +47,28 @@ namespace Examples.TextDemo
                 BorderColor = new float4(0, 0, 0, 1)
             };
 
-            testButton.Refresh();
+            _testButton1.Refresh();
 
-            testButton.OnGUIButtonDown += OnGUIButtonDown;
-            testButton.OnGUIButtonUp += OnGUIButtonUp;
-            testButton.OnGUIButtonEnter += OnGUIButtonEnter;
-            testButton.OnGUIButtonLeave += OnGUIButtonLeave;
+            _testButton1.OnGUIButtonDown += OnGUIButtonDown;
+            _testButton1.OnGUIButtonUp += OnGUIButtonUp;
+            _testButton1.OnGUIButtonEnter += OnGUIButtonEnter;
+            _testButton1.OnGUIButtonLeave += OnGUIButtonLeave;
+
+            // button 2
+            _testButton2 = new GUIButton(RC, "Debug", _fontCabin12, 10, 40, 100, 25)
+            {
+                ButtonColor = new float4(0.7f, 0.7f, 0.7f, 1),
+                TextColor = new float4(0, 0, 0, 1),
+                BorderWidth = 1,
+                BorderColor = new float4(0, 0, 0, 1)
+            };
+            
+            _testButton2.Refresh();
+
+            _testButton2.OnGUIButtonDown += OnGUIButtonDown;
+            _testButton2.OnGUIButtonUp += OnGUIButtonUp;
+            _testButton2.OnGUIButtonEnter += OnGUIButtonEnter;
+            _testButton2.OnGUIButtonLeave += OnGUIButtonLeave;
 
             // text
             _textMeshCabin20 = RC.GetTextMesh("The quick brown fox jumps over the lazy dog.", _fontCabin20, 8, 100, new float4(1, 1, 1, 1));
@@ -86,41 +101,51 @@ namespace Examples.TextDemo
             RC.Render(_mesh);
 
             // button
-            RC.TextOut(testButton.GUIMesh, _fontCabin12);
+            RC.TextOut(_testButton1.GUIMesh, _fontCabin12);
+            RC.TextOut(_testButton2.GUIMesh, _fontCabin12);
 
-            // text
-            RC.TextOut(_textMeshCabin20, _fontCabin20);
-            RC.TextOut(_textMeshCabin30, _fontCabin30);
+            if (_showDebug)
+            {
+                // text
+                RC.TextOut(_textMeshCabin20, _fontCabin20);
+                RC.TextOut(_textMeshCabin30, _fontCabin30);
 
-            // text examples: dynamic text
-            var col6 = new float4(0, 1, 1, 1);
-            RC.TextOut("Framerate: " + Time.Instance.FramePerSecondSmooth + "fps", _fontCabin20, col6, 8, 210);
-            RC.TextOut("Time: " + Math.Round(Time.Instance.TimeSinceStart, 1) + " seconds", _fontCabin20, col6, 8, 250);
+                // text examples: dynamic text
+                var col6 = new float4(0, 1, 1, 1);
+                RC.TextOut("Framerate: " + Time.Instance.FramePerSecondSmooth + "fps", _fontCabin20, col6, 8, 210);
+                RC.TextOut("Time: " + Math.Round(Time.Instance.TimeSinceStart, 1) + " sec", _fontCabin20, col6, 8, 250);
+            }
 
             Present();
         }
 
-        private void OnGUIButtonDown(object sender, MouseEventArgs mea)
+        private void OnGUIButtonDown(GUIButton sender, MouseEventArgs mea)
         {
-            Debug.WriteLine("ButtonDown");
+            // not implemented
         }
 
-        private void OnGUIButtonUp(object sender, MouseEventArgs mea)
+        private void OnGUIButtonUp(GUIButton sender, MouseEventArgs mea)
         {
             if (mea.Button == MouseButtons.Left)
-                Environment.Exit(0);
+            {
+                if (sender == _testButton1)
+                    Environment.Exit(0);
+
+                if (sender == _testButton2)
+                    _showDebug = !_showDebug;
+            }
         }
 
-        private void OnGUIButtonEnter(object sender, MouseEventArgs mea)
+        private void OnGUIButtonEnter(GUIButton sender, MouseEventArgs mea)
         {
-            testButton.TextColor = new float4(0.8f, 0.1f, 0.1f, 1);
-            testButton.Refresh();
+            sender.TextColor = new float4(0.8f, 0.1f, 0.1f, 1);
+            sender.Refresh();
         }
 
-        private void OnGUIButtonLeave(object sender, MouseEventArgs mea)
+        private void OnGUIButtonLeave(GUIButton sender, MouseEventArgs mea)
         {
-            testButton.TextColor = new float4(0, 0, 0, 1);
-            testButton.Refresh();
+            sender.TextColor = new float4(0f, 0f, 0f, 1);
+            sender.Refresh();
         }
 
         public override void Resize()

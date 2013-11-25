@@ -3,7 +3,7 @@ using Fusee.Math;
 
 namespace Fusee.Engine
 {
-    public delegate void GUIButtonHandler(object sender, MouseEventArgs mea);
+    public delegate void GUIButtonHandler(GUIButton sender, MouseEventArgs mea);
 
     public sealed class GUIButton : GUIElement
     {
@@ -18,7 +18,6 @@ namespace Fusee.Engine
         public event GUIButtonHandler OnGUIButtonLeave;
 
         private bool _mouseOnButton;
-
 
         public GUIButton(RenderContext rc, string text, IFont font, float x, float y, float width, float height)
         {
