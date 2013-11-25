@@ -821,7 +821,7 @@ namespace Fusee.Engine
             uniform sampler2D tex;
 
             void main(void) {
-                if (vUV.x == -1 && vUV.y == -1)
+                if (vUV.x == -1.0 && vUV.y == -1.0)
                     gl_FragColor = vColor;
                 else
                     gl_FragColor = vec4(1, 1, 1, texture2D(tex, vUV).a) * vColor;

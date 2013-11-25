@@ -1492,6 +1492,14 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.InputImp", true
         function OnCanvasMouseMove(event) {
             this._currentMouse.x = event.clientX;
             this._currentMouse.y = event.clientY;
+            
+            if (this.MouseMove !== null) {
+                var pt = new $fuseeCommon.Fusee.Engine.Point().__Initialize__({ x: event.clientX, y: event.clientY });
+                this.MouseMove(this, (new $fuseeCommon.Fusee.Engine.MouseEventArgs()).__Initialize__({
+                    Button: $fuseeCommon.Fusee.Engine.MouseButtons.Unknown,
+                    Position: pt
+                }));
+            }
         }
     );
 
@@ -1629,6 +1637,35 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.InputImp", true
                 var eventHandler2 = eventHandler;
                 var value2 = $jsilcore.System.Delegate.Remove(eventHandler2, value);
                 eventHandler = $jsilcore.System.Threading.Interlocked.CompareExchange$b1($jsilcore.System.EventHandler$b1.Of($fuseeCommon.Fusee.Engine.MouseEventArgs))(/* ref */new JSIL.MemberReference(this, "MouseButtonUp"), value2, eventHandler2);
+            } while (eventHandler !== eventHandler2);
+        }
+    );
+
+    // MouseMove event
+    $.Field({ Static: false, Public: false }, "MouseMove", $jsilcore.TypeRef("System.EventHandler`1", [$fuseeCommon.TypeRef("Fusee.Engine.MouseEventArgs")]), function ($) {
+        return null;
+    });
+
+    $.Method({ Static: false, Public: true }, "add_MouseMove",
+        new JSIL.MethodSignature(null, [$jsilcore.TypeRef("System.EventHandler`1", [$fuseeCommon.TypeRef("Fusee.Engine.MouseEventArgs")])]),
+        function add_MouseMove(value) {
+            var eventHandler = this.MouseMove;
+            do {
+                var eventHandler2 = eventHandler;
+                var value2 = $jsilcore.System.Delegate.Combine(eventHandler2, value);
+                eventHandler = $jsilcore.System.Threading.Interlocked.CompareExchange$b1($jsilcore.System.EventHandler$b1.Of($fuseeCommon.Fusee.Engine.MouseEventArgs))(/* ref */new JSIL.MemberReference(this, "MouseMove"), value2, eventHandler2);
+            } while (eventHandler !== eventHandler2);
+        }
+    );
+
+    $.Method({ Static: false, Public: true }, "remove_MouseMove",
+        new JSIL.MethodSignature(null, [$jsilcore.TypeRef("System.EventHandler`1", [$fuseeCommon.TypeRef("Fusee.Engine.MouseEventArgs")])]),
+        function remove_MouseMove(value) {
+            var eventHandler = this.MouseMove;
+            do {
+                var eventHandler2 = eventHandler;
+                var value2 = $jsilcore.System.Delegate.Remove(eventHandler2, value);
+                eventHandler = $jsilcore.System.Threading.Interlocked.CompareExchange$b1($jsilcore.System.EventHandler$b1.Of($fuseeCommon.Fusee.Engine.MouseEventArgs))(/* ref */new JSIL.MemberReference(this, "MouseMove"), value2, eventHandler2);
             } while (eventHandler !== eventHandler2);
         }
     );

@@ -155,6 +155,9 @@ namespace Examples.TextDemo
 
             var aspectRatio = Width / (float)Height;
             RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 10000);
+
+            _testButton1.Refresh();
+            _testButton2.Refresh();
         }
 
         public static void Main()
