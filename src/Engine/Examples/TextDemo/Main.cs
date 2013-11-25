@@ -61,8 +61,8 @@ namespace Examples.TextDemo
 
             // dummy cube
             _mesh = new Cube();
-        
-            var sp = MoreShaders.GetShader("color", RC);
+
+            var sp = MoreShaders.GetDiffuseColorShader(RC);
             RC.SetShader(sp);
 
             _vColor = sp.GetShaderParam("color");

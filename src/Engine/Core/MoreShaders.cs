@@ -62,7 +62,17 @@ namespace Fusee.Engine
             var spSimple = rc.CreateShader(VsBump, PsBump);
             return spSimple;
         }
-     
+
+        /// <summary>
+        /// Creates a gui and text shader in RenderContext.
+        /// </summary>
+        /// <param name="rc">RenderContext.</param>
+        /// <returns>An instance of <see cref="ShaderProgram"/> to render GUI elements or text.</returns>
+        public static ShaderProgram GetGUIShader(RenderContext rc)
+        {
+            var spSimple = rc.CreateShader(VsText, PsText);
+            return spSimple;
+        }
         
 
         private const string VsSimpleTexture = @"

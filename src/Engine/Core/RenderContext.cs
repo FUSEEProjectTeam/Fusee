@@ -727,10 +727,10 @@ namespace Fusee.Engine
 
             _updatedShaderParams = false;
 
-	    _debugShader = MoreShaders.GetDiffuseColorShader(this);
+            _debugShader = MoreShaders.GetDiffuseColorShader(this);
             _debugColor = _debugShader.GetShaderParam("color");
 
-            _textShader = MoreShaders.GetShader("text", this);
+            _textShader = MoreShaders.GetGUIShader(this);
             _textTextureParam = _textShader.GetShaderParam("tex");
         }
 
