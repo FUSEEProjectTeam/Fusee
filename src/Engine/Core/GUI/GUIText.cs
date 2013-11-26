@@ -5,17 +5,9 @@ namespace Fusee.Engine
     public sealed class GUIText : GUIElement
     {
         public GUIText(RenderContext rc, string text, IFont font, float x, float y)
+            :base(rc, text, font, x, y, 0, 0)
         {
-            RContext = rc;
-
-            // x, y, width, height
-            PosX = x;
-            PosY = y;
-
             // settings
-            Text = text;
-            Font = font;
-
             TextColor = new float4(0, 0, 0, 1);
 
             // create Mesh

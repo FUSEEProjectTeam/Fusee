@@ -123,7 +123,7 @@ namespace Fusee.Engine
                     Object initValue;
                     if (_paramDecl.TryGetValue(paramNew.Name, out initValue))
                     {
-                        if (initValue.GetType() != paramNew.Type)
+                        if (!paramNew.Type.IsInstanceOfType(initValue))
                         {
                             throw new Exception("Error preparing effect pass " + i + ". Shader parameter " +  paramNew.Type.ToString() + " " + paramNew.Name +
                                                 " was defined with as " + initValue.GetType().ToString() + " " + paramNew.Name + " during initialization (different types).");                            
@@ -181,6 +181,8 @@ namespace Fusee.Engine
         /// <param name="mesh">The mesh to render.</param>
         public void RenderMesh(Mesh mesh)
         {
+           // var curShader = 
+
             int i = 0, nPasses = _vertexShaderSrc.Length;
             try
             {

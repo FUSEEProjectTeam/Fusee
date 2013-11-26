@@ -233,7 +233,7 @@ namespace Fusee.Engine
         ImageData CreateImage(int width, int height, String bgColor);
 
         /// <summary>
-        /// Maps a specified text with on an image.
+        /// Maps a text in a specific font on an image.
         /// </summary>
         /// <param name="imgData">The ImageData struct with the PixelData from the image.</param>
         /// <param name="fontName">The name of the text-font.</param>
@@ -246,13 +246,9 @@ namespace Fusee.Engine
         ImageData TextOnImage(ImageData imgData, String fontName, float fontSize, String text, String textColor,
             float startPosX, float startPosY);
 
-
         IFont LoadFont(string filename, uint size);
 
         float3[] FixTextKerning(IFont font, float3[] vertices, string text, float scaleX);
-
-        void PrepareTextRendering(bool active);
-
 
         /// <summary>
         /// Erases the contents of the speciefied rendering buffers.

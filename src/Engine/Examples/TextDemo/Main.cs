@@ -18,6 +18,8 @@ namespace Examples.TextDemo
         private GUIText _textMeshCabin30;
 
         private Mesh _mesh;
+
+        private ShaderProgram _shaderProgram;
         private IShaderParam _vColor;
 
         private static float _angleHorz;
@@ -88,12 +90,12 @@ namespace Examples.TextDemo
             // dummy cube
             _mesh = new Cube();
 
-            var sp = MoreShaders.GetDiffuseColorShader(RC);
-            RC.SetShader(sp);
+            _shaderProgram = MoreShaders.GetDiffuseColorShader(RC);
+            RC.SetShader(_shaderProgram);
 
-            _vColor = sp.GetShaderParam("color");
+            _vColor = _shaderProgram.GetShaderParam("color");
             RC.SetShaderParam(_vColor, new float4(1, 1, 1, 1));
-            
+            Debug.WriteLine(RC.GetRenderState(RenderState.AlphaBlendEnable));
             _angleHorz = 0;
         }
 
@@ -102,6 +104,13 @@ namespace Examples.TextDemo
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
             // dummy cube
+            RC.SetShader(_shaderProgram);           
+            RC.SetRenderState(new RenderStateSet
+            {
+                AlphaBlendEnable = false,
+                ZEnable = true
+            });
+
             _angleHorz += 0.002f;
 
             var mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(0);
@@ -112,19 +121,19 @@ namespace Examples.TextDemo
             RC.Render(_mesh);
 
             // button
-            RC.TextOut(_testButton1.GUIMesh, _fontCabin12);
-            RC.TextOut(_testButton2.GUIMesh, _fontCabin12);
+            _testButton1.GUIShader.RenderMesh(_testButton1.GUIMesh);
+            _testButton2.GUIShader.RenderMesh(_testButton2.GUIMesh);
 
             if (_showDebug)
             {
                 // text
-                RC.TextOut(_textMeshCabin20.GUIMesh, _fontCabin20);
-                RC.TextOut(_textMeshCabin30.GUIMesh, _fontCabin30);
+                _textMeshCabin20.GUIShader.RenderMesh(_textMeshCabin20.GUIMesh);
+                _textMeshCabin30.GUIShader.RenderMesh(_textMeshCabin30.GUIMesh);
 
                 // text examples: dynamic text
                 var col6 = new float4(0, 1, 1, 1);
-                RC.TextOut("Framerate: " + Time.Instance.FramePerSecondSmooth + "fps", _fontCabin20, col6, 8, 210);
-                RC.TextOut("Time: " + Math.Round(Time.Instance.TimeSinceStart, 1) + " sec", _fontCabin20, col6, 8, 250);
+                //RC.TextOut("Framerate: " + Time.Instance.FramePerSecondSmooth + "fps", _fontCabin20, col6, 8, 210);
+                //RC.TextOut("Time: " + Math.Round(Time.Instance.TimeSinceStart, 1) + " sec", _fontCabin20, col6, 8, 250);
             }
 
             Present();

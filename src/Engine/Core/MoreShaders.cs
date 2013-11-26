@@ -1,6 +1,4 @@
-﻿using Fusee.Math;
-
-namespace Fusee.Engine
+﻿namespace Fusee.Engine
 {
     /// <summary>
     ///     Contains all pixel and vertex shaders and a method to create a ShaderProgram in Rendercontext.
@@ -62,18 +60,6 @@ namespace Fusee.Engine
             var spSimple = rc.CreateShader(VsBump, PsBump);
             return spSimple;
         }
-
-        /// <summary>
-        /// Creates a gui and text shader in RenderContext.
-        /// </summary>
-        /// <param name="rc">RenderContext.</param>
-        /// <returns>An instance of <see cref="ShaderProgram"/> to render GUI elements or text.</returns>
-        public static ShaderProgram GetGUIShader(RenderContext rc)
-        {
-            var spSimple = rc.CreateShader(VsText, PsText);
-            return spSimple;
-        }
-        
 
         private const string VsSimpleTexture = @"
             #ifdef GL_ES
@@ -792,39 +778,6 @@ namespace Fusee.Engine
             void main()
             {             
                 gl_FragColor = max(dot(vec3(0,0,1),normalize(vNormal)), 0.1) * color;
-            }";
-
-        private const string VsText = @"
-            attribute vec3 fuVertex;
-            attribute vec2 fuUV;
-            attribute vec4 fuColor;
-
-            varying vec2 vUV;
-            varying vec4 vColor;
-
-            void main()
-            {
-                vUV = fuUV;
-                vColor = fuColor;
-
-                gl_Position = vec4(fuVertex, 1);
-            }";
-
-        private const string PsText = @"
-            #ifdef GL_ES
-                precision highp float;
-            #endif    
-  
-            varying vec2 vUV;
-            varying vec4 vColor;
-
-            uniform sampler2D tex;
-
-            void main(void) {
-                if (vUV.x == -1.0 && vUV.y == -1.0)
-                    gl_FragColor = vColor;
-                else
-                    gl_FragColor = vec4(1, 1, 1, texture2D(tex, vUV).a) * vColor;
             }";
     }
 }

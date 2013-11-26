@@ -339,24 +339,6 @@ namespace Fusee.Engine
             return vertices;
         }
 
-        public void PrepareTextRendering(bool active)
-        {
-            if (active)
-            {
-                // save current state
-                GL.PushAttrib(AttribMask.EnableBit | AttribMask.ColorBufferBit);
-
-                // set state for text rendering
-                GL.Disable(EnableCap.DepthTest);
-                GL.Enable(EnableCap.Blend);
-                GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
-            }
-            else
-            {
-                GL.PopAttrib();
-            }
-        }
-
         #endregion
 
         #region Matrix Fields
@@ -517,6 +499,7 @@ namespace Fusee.Engine
                         break;
                     case ActiveUniformType.Sampler2D:
                         //TODO ret.Type = typeof (sampler?);
+                        ret.Type = typeof (ITexture);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();

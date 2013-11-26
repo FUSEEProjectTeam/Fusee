@@ -20,20 +20,9 @@ namespace Fusee.Engine
         private bool _mouseOnButton;
 
         public GUIButton(RenderContext rc, string text, IFont font, float x, float y, float width, float height)
+            :base(rc, text, font, x, y, width, height)
         {
-            RContext = rc;
-
-            // x, y, width, height
-            PosX = x;
-            PosY = y;
-
-            Width = width;
-            Height = height;
-
             // settings
-            Text = text;
-            Font = font;
-
             ButtonColor = new float4(1, 1, 1, 1);
             TextColor = new float4(0, 0, 0, 1);
 

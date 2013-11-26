@@ -729,101 +729,11 @@ namespace Fusee.Engine
 
             _debugShader = MoreShaders.GetDiffuseColorShader(this);
             _debugColor = _debugShader.GetShaderParam("color");
-
-            _textShader = MoreShaders.GetGUIShader(this);
-            _textTextureParam = _textShader.GetShaderParam("tex");
         }
 
         #endregion
 
         #region Members
-
-        #region Image data related Members
-
-        /// <summary>
-        /// Creates a new Image with a specified size and color.
-        /// </summary>
-        /// <param name="width">The width of the image.</param>
-        /// <param name="height">The height of the image.</param>
-        /// <param name="bgColor">The color of the image. Value must be JS compatible.</param>
-        /// <returns>An ImageData struct containing all necessary information for further processing.</returns>
-        public ImageData CreateImage(int width, int height, String bgColor)
-        {
-            return _rci.CreateImage(width, height, bgColor);
-        }
-
-        /// <summary>
-        /// Maps a specified text with on an image.
-        /// </summary>
-        /// <param name="imgData">The ImageData struct with the PixelData from the image.</param>
-        /// <param name="fontName">The name of the text-font.</param>
-        /// <param name="fontSize">The size of the text-font.</param>
-        /// <param name="text">The text that sould be mapped on the iamge.</param>
-        /// <param name="textColor">The color of the text-font.</param>
-        /// <param name="startPosX">The horizontal start-position of the text on the image.</param>
-        /// <param name="startPosY">The vertical start-position of the text on the image.</param>
-        /// <returns>An ImageData struct containing all necessary information for further processing</returns>
-        public ImageData TextOnImage(ImageData imgData, String fontName, float fontSize, String text, String textColor, float startPosX, float startPosY)
-        {
-            return _rci.TextOnImage(imgData, fontName, fontSize, text, textColor, startPosX, startPosY);
-        }
-
-        /// <summary>
-        /// Creates a new texture and binds it to the shader.
-        /// </summary>
-        /// <remarks>
-        /// Method should be called after LoadImage method to process
-        /// the BitmapData an make them available for the shader.
-        /// </remarks>
-        /// <param name="imgData">An ImageData struct, containing necessary information for the upload to the graphics card.</param>
-        /// <returns>
-        /// An <see cref="ITexture"/> that can be used for texturing in the shader.
-        /// </returns>
-        public ITexture CreateTexture(ImageData imgData)
-        {
-            return _rci.CreateTexture(imgData);
-        }
-
-        /// <summary>
-        /// Creates a white Texture with 1x1 pixel size.
-        /// </summary>
-        /// <returns>
-        /// An <see cref="ITexture"/> that can be used for texturing in the shader.
-        /// </returns>
-        public ITexture DisableTexture()
-        {
-            return _rci.CreateTexture(CreateImage(1, 1, "white"));
-        }
-
-        /// <summary>
-        /// Loads an image file from disk and creates a new Bitmap-object out of it.
-        /// </summary>
-        /// <remarks>
-        /// This is the first step for the texturing Process.
-        /// The Bitmap-bits get locked in the memory and are made available for
-        /// further processing. The returned ImageData-Struct can be used in the
-        /// CreateTexture method.
-        /// </remarks>
-        /// <param name="filename">Path to the image file</param>
-        /// <returns>
-        /// An ImageData struct with all necessary information for the texture-binding process.
-        /// </returns>
-        public ImageData LoadImage(String filename)
-        {
-            return _rci.LoadImage(filename);
-        }
-
-        /// <summary>
-        /// Sets a Shader Parameter to a created texture.
-        /// </summary>
-        /// <param name="param">Shader Parameter used for texture binding.</param>
-        /// <param name="texId">An ITexture probably returned from CreateTexture() method.</param>
-        public void SetShaderParamTexture(IShaderParam param, ITexture texId)
-        {
-            _rci.SetShaderParamTexture(param, texId);
-        }
-
-        #endregion
 
         #region Private Members
 
@@ -958,17 +868,121 @@ namespace Fusee.Engine
 
         #region Public Members
 
+        #region Image Data related Members
+
         /// <summary>
-        /// Gets the current shader.
+        /// Creates a new Image with a specified size and color.
         /// </summary>
-        /// <value>
-        /// The current shader.
-        /// </value>
-        public ShaderProgram CurrentShader
+        /// <param name="width">The width of the image.</param>
+        /// <param name="height">The height of the image.</param>
+        /// <param name="bgColor">The color of the image. Value must be JS compatible.</param>
+        /// <returns>An ImageData struct containing all necessary information for further processing.</returns>
+        public ImageData CreateImage(int width, int height, String bgColor)
         {
-            get { return _currentShader; }
+            return _rci.CreateImage(width, height, bgColor);
         }
-        //directional or Point- Light
+
+        /// <summary>
+        /// Maps a specified text with on an image.
+        /// </summary>
+        /// <param name="imgData">The ImageData struct with the PixelData from the image.</param>
+        /// <param name="fontName">The name of the text-font.</param>
+        /// <param name="fontSize">The size of the text-font.</param>
+        /// <param name="text">The text that sould be mapped on the iamge.</param>
+        /// <param name="textColor">The color of the text-font.</param>
+        /// <param name="startPosX">The horizontal start-position of the text on the image.</param>
+        /// <param name="startPosY">The vertical start-position of the text on the image.</param>
+        /// <returns>An ImageData struct containing all necessary information for further processing</returns>
+        public ImageData TextOnImage(ImageData imgData, String fontName, float fontSize, String text, String textColor, float startPosX, float startPosY)
+        {
+            return _rci.TextOnImage(imgData, fontName, fontSize, text, textColor, startPosX, startPosY);
+        }
+
+        /// <summary>
+        /// Creates a new texture and binds it to the shader.
+        /// </summary>
+        /// <remarks>
+        /// Method should be called after LoadImage method to process
+        /// the BitmapData an make them available for the shader.
+        /// </remarks>
+        /// <param name="imgData">An ImageData struct, containing necessary information for the upload to the graphics card.</param>
+        /// <returns>
+        /// An <see cref="ITexture"/> that can be used for texturing in the shader.
+        /// </returns>
+        public ITexture CreateTexture(ImageData imgData)
+        {
+            return _rci.CreateTexture(imgData);
+        }
+
+        /// <summary>
+        /// Creates a white Texture with 1x1 pixel size.
+        /// </summary>
+        /// <returns>
+        /// An <see cref="ITexture"/> that can be used for texturing in the shader.
+        /// </returns>
+        public ITexture DisableTexture()
+        {
+            return _rci.CreateTexture(CreateImage(1, 1, "white"));
+        }
+
+        /// <summary>
+        /// Loads an image file from disk and creates a new Bitmap-object out of it.
+        /// </summary>
+        /// <remarks>
+        /// This is the first step for the texturing Process.
+        /// The Bitmap-bits get locked in the memory and are made available for
+        /// further processing. The returned ImageData-Struct can be used in the
+        /// CreateTexture method.
+        /// </remarks>
+        /// <param name="filename">Path to the image file</param>
+        /// <returns>
+        /// An ImageData struct with all necessary information for the texture-binding process.
+        /// </returns>
+        public ImageData LoadImage(String filename)
+        {
+            return _rci.LoadImage(filename);
+        }
+
+        /// <summary>
+        /// Sets a Shader Parameter to a created texture.
+        /// </summary>
+        /// <param name="param">Shader Parameter used for texture binding.</param>
+        /// <param name="texId">An ITexture probably returned from CreateTexture() method.</param>
+        public void SetShaderParamTexture(IShaderParam param, ITexture texId)
+        {
+            _rci.SetShaderParamTexture(param, texId);
+        }
+
+        #endregion
+
+        #region Text related Members
+
+        public IFont LoadFont(string filename, uint size)
+        {
+            if (!File.Exists(filename))
+                throw new Exception("Font not found: " + filename);
+
+            return _rci.LoadFont(filename, size);
+        }
+
+        [JSExternal]
+        public IFont LoadSystemFont(string fontname, uint size)
+        {
+            var fontsFolder = Environment.GetFolderPath(Environment.SpecialFolder.Fonts);
+            var pathToFont = Path.Combine(fontsFolder, fontname + ".ttf");
+
+            return LoadFont(pathToFont, size);
+        }
+
+        internal float3[] FixTextKerning(IFont font, float3[] vertices, string text, float scaleX)
+        {
+            return _rci.FixTextKerning(font, vertices, text, scaleX);
+        }
+
+        #endregion
+
+        #region Light related Members
+
         /// <summary>
         /// Sets the directional or point lights information.
         /// </summary>
@@ -999,7 +1013,6 @@ namespace Fusee.Engine
             }
         }
 
-        //Spotlight with position AND direction
         /// <summary>
         /// Sets the spotlights information.
         /// </summary>
@@ -1051,7 +1064,6 @@ namespace Fusee.Engine
             set { _rci.ClearDepth = value; }
             get { return _rci.ClearDepth; }
         }
-
 
         /// <summary>
         /// Activates the light with the given index.
@@ -1177,6 +1189,21 @@ namespace Fusee.Engine
                 SetShaderParam(sp, _lightParams[lightInx].Angle);
         }
 
+        #endregion
+
+        #region Shader related Members
+
+        /// <summary>
+        /// Gets the current shader.
+        /// </summary>
+        /// <value>
+        /// The current shader.
+        /// </value>
+        public ShaderProgram CurrentShader
+        {
+            get { return _currentShader; }
+        }
+
         /// <summary>
         /// Creates a shader object from vertex shader source code and pixel shader source code.
         /// </summary>
@@ -1191,13 +1218,14 @@ namespace Fusee.Engine
         public ShaderProgram CreateShader(string vs, string ps)
         {
             var sp = new ShaderProgram(_rci, _rci.CreateShader(vs, ps));
+
             /*
-sp.ShaderParamHandlesImp = new ShaderParamHandleImp[MatrixParamNames.Length];
-for (int i=0; i < MatrixParamNames.Length; i++)
-{
-sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames[i]);
-}
-* */
+                sp.ShaderParamHandlesImp = new ShaderParamHandleImp[MatrixParamNames.Length];
+                for (int i=0; i < MatrixParamNames.Length; i++)
+                {
+                sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames[i]);
+                }
+            */
 
             return sp;
         }
@@ -1357,20 +1385,46 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
             _rci.SetShaderParam(param, val);
         }
 
+        #endregion
+
+        #region Render releated Members
+
         /// <summary>
-        /// Erases the contents of the speciefied rendering buffers.
+        /// Apply a single render state to the render context. All subsequent rendering will be
+        /// performed using the currently set state unless it is changed to a different value.
         /// </summary>
-        /// <param name="flags">A combination of flags specifying the rendering buffers to clear.</param>
-        /// <remarks>
-        /// Calling this method erases all contents of the rendering buffers. A typical use case for this method
-        /// is to erase the contents of the color buffer and the depth buffer (z-buffer) before rendering starts
-        /// at the beginning of a rendering loop. Thus, rendering the current frame starts with an empty color and
-        /// z-buffer. <see cref="ClearFlags"/> for a list of possible buffers to clear. Make sure to use the bitwisee
-        /// or-operator (|) to combine several buffers to clear.
-        /// </remarks>
-        public void Clear(ClearFlags flags)
+        /// <param name="renderState">One of the <see cref="RenderState"/> enumaration values.</param>
+        /// <param name="value">An unsigned integer value representing the value the state should be set to.
+        ///  Depending on the renderState, this value can be interpreted as an integer value, a float value, a
+        /// boolean value, or even a color.  </param>
+        /// <remarks>This method is close to the underlying implementation layer and might be awkward to use
+        /// due to the ambiguity of the value parameter type. If you want type-safe state values and also 
+        /// want to set a couple of states at the same time, try the more 
+        /// elaborate <see cref="SetRenderState(RenderStateSet)"/> method.</remarks>
+        public void SetRenderState(RenderState renderState, uint value)
         {
-            _rci.Clear(flags);
+            _rci.SetRenderState(renderState, value);
+        }
+
+        /// <summary>
+        /// Apply a number of render states to this render context. All subsequent rendering will be
+        /// performed using the currently set state set unless one of its values it is changed. Use this 
+        /// method to change more than one render state at once. 
+        /// </summary>
+        /// <param name="renderStateSet">A set of render states with their respective values to be set.</param>
+        public void SetRenderState(RenderStateSet renderStateSet)
+        {
+            foreach (var state in renderStateSet.States)
+            {
+                var theKey = state.Key;
+                var theValue = state.Value;
+                _rci.SetRenderState(theKey, theValue);
+            }
+        }
+
+        public uint GetRenderState(RenderState renderState)
+        {
+            return _rci.GetRenderState(renderState);
         }
 
         /// <summary>
@@ -1403,6 +1457,10 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
 
             _rci.Render(m._meshImp);
         }
+
+        #endregion
+
+        #region Other Members
 
         /// <summary>
         /// Gets or sets a value indicating whether [debug lines enabled].
@@ -1440,6 +1498,22 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
                 if (oldShader != null)
                     SetShader(oldShader);
             }
+        }
+
+        /// <summary>
+        /// Erases the contents of the speciefied rendering buffers.
+        /// </summary>
+        /// <param name="flags">A combination of flags specifying the rendering buffers to clear.</param>
+        /// <remarks>
+        /// Calling this method erases all contents of the rendering buffers. A typical use case for this method
+        /// is to erase the contents of the color buffer and the depth buffer (z-buffer) before rendering starts
+        /// at the beginning of a rendering loop. Thus, rendering the current frame starts with an empty color and
+        /// z-buffer. <see cref="ClearFlags"/> for a list of possible buffers to clear. Make sure to use the bitwisee
+        /// or-operator (|) to combine several buffers to clear.
+        /// </remarks>
+        public void Clear(ClearFlags flags)
+        {
+            _rci.Clear(flags);
         }
 
         /// <summary>
@@ -1502,44 +1576,7 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
 
         #endregion
 
-
-        /// <summary>
-        /// Apply a single render state to the render context. All subsequent rendering will be
-        /// performed using the currently set state unless it is changed to a different value.
-        /// </summary>
-        /// <param name="renderState">One of the <see cref="RenderState"/> enumaration values.</param>
-        /// <param name="value">An unsigned integer value representing the value the state should be set to.
-        ///  Depending on the renderState, this value can be interpreted as an integer value, a float value, a
-        /// boolean value, or even a color.  </param>
-        /// <remarks>This method is close to the underlying implementation layer and might be awkward to use
-        /// due to the ambiguity of the value parameter type. If you want type-safe state values and also 
-        /// want to set a couple of states at the same time, try the more 
-        /// elaborate <see cref="SetRenderState(RenderStateSet)"/> method.</remarks>
-        public void SetRenderState(RenderState renderState, uint value)
-        {
-            _rci.SetRenderState(renderState, value);
-        }
-
-        /// <summary>
-        /// Apply a number of render states to this render context. All subsequent rendering will be
-        /// performed using the currently set state set unless one of its values it is changed. Use this 
-        /// method to change more than one render state at once. 
-        /// </summary>
-        /// <param name="renderStateSet">A set of render states with their respective values to be set.</param>
-        public void SetRenderState(RenderStateSet renderStateSet)
-        {
-            foreach (var state in renderStateSet.States)
-            {
-                var theKey = state.Key;
-                var theValue = state.Value;
-                _rci.SetRenderState(theKey, theValue);
-            }
-        }
-
-        public uint GetRenderState(RenderState renderState)
-        {
-            return _rci.GetRenderState(renderState);
-        }
+        #endregion
     }
 
 }
