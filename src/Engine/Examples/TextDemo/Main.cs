@@ -14,8 +14,8 @@ namespace Examples.TextDemo
         private IFont _fontCabin20;
         private IFont _fontCabin30;
 
-        private Mesh _textMeshCabin20;
-        private Mesh _textMeshCabin30;
+        private GUIText _textMeshCabin20;
+        private GUIText _textMeshCabin30;
 
         private Mesh _mesh;
         private IShaderParam _vColor;
@@ -71,8 +71,19 @@ namespace Examples.TextDemo
             _testButton2.OnGUIButtonLeave += OnGUIButtonLeave;
 
             // text
-            _textMeshCabin20 = RC.GetTextMesh("The quick brown fox jumps over the lazy dog.", _fontCabin20, 8, 100, new float4(1, 1, 1, 1));
-            _textMeshCabin30 = RC.GetTextMesh("The quick brown fox jumps over the lazy dog.", _fontCabin30, 8, 140, new float4(0, 0, 0, 0.5f));
+            _textMeshCabin20 = new GUIText(RC, "The quick brown fox jumps over the lazy dog.", _fontCabin20, 8, 100)
+            {
+                TextColor = new float4(1, 1, 1, 1)
+            };
+
+            _textMeshCabin20.Refresh();
+
+            _textMeshCabin30 = new GUIText(RC, "The quick brown fox jumps over the lazy dog.", _fontCabin30, 8, 140)
+            {
+                TextColor = new float4(0, 0, 0, 0.5f)
+            };
+
+            _textMeshCabin30.Refresh();
 
             // dummy cube
             _mesh = new Cube();
@@ -107,8 +118,8 @@ namespace Examples.TextDemo
             if (_showDebug)
             {
                 // text
-                RC.TextOut(_textMeshCabin20, _fontCabin20);
-                RC.TextOut(_textMeshCabin30, _fontCabin30);
+                RC.TextOut(_textMeshCabin20.GUIMesh, _fontCabin20);
+                RC.TextOut(_textMeshCabin30.GUIMesh, _fontCabin30);
 
                 // text examples: dynamic text
                 var col6 = new float4(0, 1, 1, 1);
@@ -121,11 +132,15 @@ namespace Examples.TextDemo
 
         private void OnGUIButtonDown(GUIButton sender, MouseEventArgs mea)
         {
-            // not implemented
+            sender.BorderWidth = 2;
+            sender.Refresh();
         }
 
         private void OnGUIButtonUp(GUIButton sender, MouseEventArgs mea)
         {
+            sender.BorderWidth = 1;
+            sender.Refresh();
+
             if (mea.Button == MouseButtons.Left)
             {
                 if (sender == _testButton1)
@@ -136,14 +151,18 @@ namespace Examples.TextDemo
             }
         }
 
-        private void OnGUIButtonEnter(GUIButton sender, MouseEventArgs mea)
+        private static void OnGUIButtonEnter(GUIButton sender, MouseEventArgs mea)
         {
+            if (Input.Instance.IsButton(MouseButtons.Left))
+                sender.BorderWidth = 2;
+
             sender.TextColor = new float4(0.8f, 0.1f, 0.1f, 1);
             sender.Refresh();
         }
 
-        private void OnGUIButtonLeave(GUIButton sender, MouseEventArgs mea)
+        private static void OnGUIButtonLeave(GUIButton sender, MouseEventArgs mea)
         {
+            sender.BorderWidth = 1;
             sender.TextColor = new float4(0f, 0f, 0f, 1);
             sender.Refresh();
         }

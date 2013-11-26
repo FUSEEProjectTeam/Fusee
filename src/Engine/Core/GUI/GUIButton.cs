@@ -146,14 +146,20 @@ namespace Fusee.Engine
             indices[indCount + 5] = (ushort)(vtCount + 3);
 
             // center text on button
-            var maxW = RenderContext.GetTextWidth(Text, Font);
+            var maxW = GUIText.GetTextWidth(Text, Font);
             x = (float)System.Math.Round(x + (Width - maxW) / 2);
 
-            var maxH = RenderContext.GetTextHeight(Text, Font);
+            var maxH = GUIText.GetTextHeight(Text, Font);
             y = (float)System.Math.Round(y + maxH + (Height - maxH) / 2);
 
             // get text mesh
-            var textMesh = RContext.GetTextMesh(Text, Font, x, y, TextColor);
+            var guiText = new GUIText(RContext, Text, Font, x, y)
+            {
+                TextColor = TextColor
+            };
+
+            guiText.Refresh();
+            var textMesh = guiText.GUIMesh;
 
             // combine button and text
             Array.Copy(textMesh.Vertices, vertices, textMesh.Vertices.Length);

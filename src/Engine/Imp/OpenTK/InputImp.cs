@@ -207,6 +207,11 @@ namespace Fusee.Engine
         /// </summary>
         public event EventHandler<MouseEventArgs> MouseMove;
 
+        /// <summary>
+        /// Called when mouse is moving.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="mouseArgs">The <see cref="MouseMoveEventArgs"/> instance containing the event data.</param>
         protected void OnGameWinMouseMove(object sender, MouseMoveEventArgs mouseArgs)
         {
             if (MouseMove != null)
