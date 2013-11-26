@@ -95,7 +95,7 @@ namespace Examples.TextDemo
 
             _vColor = _shaderProgram.GetShaderParam("color");
             RC.SetShaderParam(_vColor, new float4(1, 1, 1, 1));
-            Debug.WriteLine(RC.GetRenderState(RenderState.AlphaBlendEnable));
+
             _angleHorz = 0;
         }
 

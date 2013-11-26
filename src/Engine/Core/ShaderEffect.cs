@@ -123,7 +123,7 @@ namespace Fusee.Engine
                     Object initValue;
                     if (_paramDecl.TryGetValue(paramNew.Name, out initValue))
                     {
-                        if (!paramNew.Type.IsInstanceOfType(initValue))
+                        if (!paramNew.Type.IsAssignableFrom(initValue.GetType()))
                         {
                             throw new Exception("Error preparing effect pass " + i + ". Shader parameter " +  paramNew.Type.ToString() + " " + paramNew.Name +
                                                 " was defined with as " + initValue.GetType().ToString() + " " + paramNew.Name + " during initialization (different types).");                            
