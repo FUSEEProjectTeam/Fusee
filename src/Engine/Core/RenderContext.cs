@@ -1501,6 +1501,45 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
         #endregion
 
         #endregion
+
+
+        /// <summary>
+        /// Apply a single render state to the render context. All subsequent rendering will be
+        /// performed using the currently set state unless it is changed to a different value.
+        /// </summary>
+        /// <param name="renderState">One of the <see cref="RenderState"/> enumaration values.</param>
+        /// <param name="value">An unsigned integer value representing the value the state should be set to.
+        ///  Depending on the renderState, this value can be interpreted as an integer value, a float value, a
+        /// boolean value, or even a color.  </param>
+        /// <remarks>This method is close to the underlying implementation layer and might be awkward to use
+        /// due to the ambiguity of the value parameter type. If you want type-safe state values and also 
+        /// want to set a couple of states at the same time, try the more 
+        /// elaborate <see cref="SetRenderState(RenderStateSet)"/> method.</remarks>
+        public void SetRenderState(RenderState renderState, uint value)
+        {
+            _rci.SetRenderState(renderState, value);
+        }
+
+        /// <summary>
+        /// Apply a number of render states to this render context. All subsequent rendering will be
+        /// performed using the currently set state set unless one of its values it is changed. Use this 
+        /// method to change more than one render state at once. 
+        /// </summary>
+        /// <param name="renderStateSet">A set of render states with their respective values to be set.</param>
+        public void SetRenderState(RenderStateSet renderStateSet)
+        {
+            foreach (var state in renderStateSet.States)
+            {
+                var theKey = state.Key;
+                var theValue = state.Value;
+                _rci.SetRenderState(theKey, theValue);
+            }
+        }
+
+        public uint GetRenderState(RenderState renderState)
+        {
+            return _rci.GetRenderState(renderState);
+        }
     }
 
 }
