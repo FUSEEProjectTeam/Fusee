@@ -55,6 +55,8 @@
     <Compile Include="Point2PointConstraintImp.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RigidBodyImp.cs" />
+    <Compile Include="SliderConstraintImp.cs" />
+    <Compile Include="Translater.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

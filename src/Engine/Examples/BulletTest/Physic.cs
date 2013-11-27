@@ -24,7 +24,7 @@ namespace Examples.BulletTest
 
             //FallingTower();
             Ground();
-           // InitPoint2PointConstraint();
+            InitPoint2PointConstraint();
             InitHingeConstraint();
 
         }
@@ -46,7 +46,8 @@ namespace Examples.BulletTest
 
             //And Teapot
             Mesh meshTea = MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
-            _world.AddRigidBody(1, new float3(0, 200, 0), meshTea, new float3(1, 1, 1));
+            var kanne = _world.AddRigidBody(1, new float3(1, 500, 0), meshTea, new float3(1, 1, 1));
+            kanne.ApplyTorqueImpulse = new float3(900,0,0);
            
         }
 
@@ -71,11 +72,11 @@ namespace Examples.BulletTest
         public void InitPoint2PointConstraint()
         {
             var mesh = MeshReader.LoadMesh(@"Assets/Cube.obj.model");
-            var rbA = _world.AddRigidBody(1, new float3(400, 500, 0), mesh, new float3(0, 0, 0));
+            var rbA = _world.AddRigidBody(1, new float3(-400, 500, 0), mesh, new float3(0, 0, 0));
             rbA.LinearFactor = new float3(0,0,0);
             rbA.AngularFactor = new float3(0, 0, 0);
            
-            var rbB = _world.AddRigidBody(1, new float3(300, 500, 0), mesh, new float3(0, 0, 0));
+            var rbB = _world.AddRigidBody(1, new float3(-300, 500, 0), mesh, new float3(0, 0, 0));
             var p2p = _world.AddPoint2PointConstraint(rbA, rbB, new float3(105, -150, -150), new float3(0, 100, 0));
             p2p.SetParam(ConstraintParameter.CONSTRAINT_PARAM_CFM, 0.9f);
             Debug.WriteLine("p2p.GetParam(ConstraintParameter.CONSTRAINT_PARAM_CFM): " + p2p.GetParam(ConstraintParameter.CONSTRAINT_PARAM_CFM));

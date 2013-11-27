@@ -70,6 +70,7 @@
     <Compile Include="IShaderParam.cs" />
     <Compile Include="IShaderProgramImp.cs" />
     <Compile Include="IAudioImp.cs" />
+    <Compile Include="ISliderConstraintImp.cs" />
     <Compile Include="ITexture.cs" />
     <Compile Include="KeyEventArgs.cs" />
     <Compile Include="Light.cs" />

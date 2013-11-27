@@ -93,6 +93,7 @@ namespace Examples.BulletTest
             var mtxCam = mtxRot * float4x4.LookAt(0, 500, 1500, 0, 0, 0, 0, 1, 0);
 
            // Debug.WriteLine(Time.Instance.FramePerSecond);
+            //Render all RigidBodies
             for (int i = 0; i < _physic.World.NumberRigidBodies(); i++)
             {
                 var rb = _physic.World.GetRigidBody(i);
@@ -103,47 +104,26 @@ namespace Examples.BulletTest
                 RC.Render(rb.Mesh);
             }
            
-            #region RenderConstraint
-            /*for (int i = 0; i < _physic.World.NumberConstraints(); i++)
+            /*#region RenderConstraint
+            for (int i = 0; i < _physic.World.NumberConstraints(); i++)
             {
                 //Debug.WriteLine("Render Constraints");
-
-
-                var obj = (Point2PointConstraint)_physic.World.GetAnyConstraint(i);
-                var matrixA = obj.RigidBodyA.WorldTransform;
-                RC.ModelView = float4x4.Scale(0.025f) * matrixA * mtxCam;
-                RC.SetShader(_spTexture);
-                RC.SetShaderParamTexture(_textureParam, _iTex);
-                RC.Render(obj.RigidBodyA.Mesh);
-
-
-                var matrixB = obj.RigidBodyB.WorldTransform;
-                RC.ModelView = float4x4.Scale(0.025f) * matrixB * mtxCam;
-                RC.SetShader(_spTexture);
-                RC.SetShaderParamTexture(_textureParam, _iTex);
-                RC.Render(obj.RigidBodyB.Mesh);
-            
-            }*/
-            /*for (int i = 0; i < _physic.World.NumberConstraints(); i++)
-            {
-                //Debug.WriteLine("Render Constraints");
-
-                
+ 
                 var matrixA = _physic.World.GetConstraint(i).RigidBodyA.WorldTransform;
-                RC.ModelView = float4x4.Scale(0.025f) * matrixA * mtxCam;
+                RC.ModelView = matrixA * mtxCam;
                 RC.SetShader(_spTexture);
                 RC.SetShaderParamTexture(_textureParam, _iTex);
                 RC.Render(_physic.World.GetConstraint(i).RigidBodyA.Mesh);
 
 
                 var matrixB = _physic.World.GetConstraint(i).RigidBodyB.WorldTransform; 
-                RC.ModelView = float4x4.Scale(0.025f) * matrixB * mtxCam;
+                RC.ModelView = matrixB * mtxCam;
                 RC.SetShader(_spTexture);
                 RC.SetShaderParamTexture(_textureParam, _iTex);
                 RC.Render(_physic.World.GetConstraint(i).RigidBodyB.Mesh);
-            
-            }*/
+            }
             #endregion RenderConstraint
+            */
 
             #region RenderSimple
             //first mesh

@@ -11,6 +11,7 @@ namespace Fusee.Engine
 {
     public class DynamicWorldImp : IDynamicWorldImp
     {
+        internal Translater Translater = new Translater();
 
         internal DynamicsWorld BtWorld;
         internal CollisionConfiguration BtCollisionConf;
@@ -76,7 +77,7 @@ namespace Fusee.Engine
 
         public int StepSimulation(float timeSteps, int maxSubSteps=1, float fixedTimeSteps=1/60)
         {
-            return BtWorld.StepSimulation(timeSteps, maxSubSteps, fixedTimeSteps);
+            return BtWorld.StepSimulation(timeSteps);//, maxSubSteps, fixedTimeSteps);
         }
 
         public IRigidBodyImp GetRigidBody(int i)
@@ -114,7 +115,7 @@ namespace Fusee.Engine
         //TODO: What about inheritance problems -> should return any constraint type
         public IPoint2PointConstraintImp GetConstraint(int i)
         {
-            return (Point2PointConstraintImp)BtWorld.GetConstraint(i).UserObject;
+            return (Point2PointConstraintImp)BtWorld.GetConstraint(0).UserObject;
         }
 
         public IHingeConstraintImp AddHingeConstraint(IRigidBodyImp rigidBodyA, IRigidBodyImp rigidBodyB, float3 pivotInA, float3 pivotInB, float3 axisInA, float3 AxisInB, bool useReferenceFrameA)
@@ -134,6 +135,26 @@ namespace Fusee.Engine
             return retval;
         }
 
+        public ISliderConstraintImp AddSliderConstraint(IRigidBodyImp rigidBodyA, IRigidBodyImp rigidBodyB, float4x4 frameInA, float4x4 frameInB, bool useLinearReferenceFrameA)
+        {
+            var rigidBodyAImp = (RigidBodyImp)rigidBodyA;
+            var btRigidBodyA = rigidBodyAImp._rbi;
+
+            var rigidBodyBImp = (RigidBodyImp)rigidBodyB;
+            var btRigidBodyB = rigidBodyBImp._rbi;
+
+            var btFrameInA = Translater.Float4X4ToBtMatrix(frameInA);
+            var btFrameInB = Translater.Float4X4ToBtMatrix(frameInB);
+
+            var btSliderConstraint = new SliderConstraint(btRigidBodyA, btRigidBodyB, btFrameInA, btFrameInB, useLinearReferenceFrameA);
+
+            BtWorld.AddConstraint(btSliderConstraint);
+
+            var retval = new SliderConstraintImp();
+            retval._sci = btSliderConstraint;
+            btSliderConstraint.UserObject = retval;
+            return retval;
+        }
 
 
         public int NumberConstraints()

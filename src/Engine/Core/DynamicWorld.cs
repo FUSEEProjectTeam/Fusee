@@ -71,8 +71,8 @@ namespace Fusee.Engine
 
         public Point2PointConstraint GetConstraint(int i)
         {
-            IPoint2PointConstraintImp tp2pci = _dwi.GetConstraint(i);
-            var retval = (Point2PointConstraint)tp2pci.UserObject;
+            //Point2PointConstraint tp2pci = _dwi.GetConstraint(i).UserObject;
+            var retval = (Point2PointConstraint)_dwi.GetConstraint(i).UserObject;
             return retval;
         }
 

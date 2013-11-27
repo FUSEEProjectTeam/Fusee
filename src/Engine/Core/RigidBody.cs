@@ -15,6 +15,7 @@ namespace Fusee.Engine
         public Mesh Mesh { get; set; }
 
 
+
         public float Mass
         {
             get
