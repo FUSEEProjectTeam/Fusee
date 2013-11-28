@@ -91,7 +91,6 @@ namespace Fusee.Engine
         
         public void ApplyForce(float3 force, float3 relPos)
         {
-            Debug.WriteLine("RigidBodyImp: ApplyForce");
             var o = (RigidBodyImp)_rbi.UserObject;
             o._rbi.ApplyForce(new Vector3(force.x, force.y, force.z), new Vector3(relPos.x, relPos.y, relPos.z));
         }
@@ -105,7 +104,6 @@ namespace Fusee.Engine
             }
             set
             {
-                Debug.WriteLine("ApplyTorque");
                 var o = (RigidBodyImp)_rbi.UserObject;
                 o._rbi.ApplyTorque(new Vector3(value.x  *10*10 , value.y *10*10 , value.z *10*10 ));
             }
@@ -114,7 +112,7 @@ namespace Fusee.Engine
         public void ApplyImpulse(float3 impulse, float3 relPos)
         {
             var o = (RigidBodyImp)_rbi.UserObject;
-            //impulse *= 10;
+           // impulse *= 10;
             o._rbi.ApplyImpulse(new Vector3(impulse.x, impulse.y, impulse.z), new Vector3(relPos.x, relPos.y, relPos.z));
         }
 

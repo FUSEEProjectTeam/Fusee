@@ -78,16 +78,17 @@ namespace Examples.BulletTest
 
             // move per keyboard
             if (Input.Instance.IsKeyDown(KeyCodes.Left))
-                _angleHorz -= RotationSpeed * (float)Time.Instance.DeltaTime;
+                _physic.World.GetRigidBody(_physic.World.NumberRigidBodies() - 1).ApplyCentralImpulse = new float3(10, 0, 0);
 
             if (Input.Instance.IsKeyDown(KeyCodes.Right))
-                _angleHorz += RotationSpeed * (float)Time.Instance.DeltaTime;
+                _physic.World.GetRigidBody(_physic.World.NumberRigidBodies() - 1).ApplyCentralImpulse = new float3(-10, 0, 0);
 
             if (Input.Instance.IsKeyDown(KeyCodes.Up))
-                _angleVert -= RotationSpeed * (float)Time.Instance.DeltaTime;
+                _physic.World.GetRigidBody(_physic.World.NumberRigidBodies() - 1).ApplyCentralImpulse = new float3(0, 10, 0);
 
             if (Input.Instance.IsKeyDown(KeyCodes.Down))
-                _angleVert += RotationSpeed * (float)Time.Instance.DeltaTime;
+                _physic.World.GetRigidBody(_physic.World.NumberRigidBodies()-1).ApplyCentralImpulse = new float3(0,-10,0);
+                    // _angleVert += RotationSpeed * (float)Time.Instance.DeltaTime;
            
             var mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
             var mtxCam = mtxRot * float4x4.LookAt(0, 500, 1500, 0, 0, 0, 0, 1, 0);

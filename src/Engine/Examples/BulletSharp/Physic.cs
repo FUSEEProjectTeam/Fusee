@@ -5,6 +5,8 @@ using Fusee.Math;
 using BulletSharp;
 using Point2PointConstraint = BulletSharp.Point2PointConstraint;
 using RigidBody = BulletSharp.RigidBody;
+using SliderConstraint = BulletSharp.SliderConstraint;
+using HingeConstraint = BulletSharp.HingeConstraint;
 
 
 namespace Examples.BulletSharp
@@ -138,6 +140,10 @@ namespace Examples.BulletSharp
             p2p1.SetParam(ConstraintParam.Cfm, 0.9f);
             p2p1.SetParam(ConstraintParam.Erp, 0.1f);
             p2p1.SetParam(1, 0.1f, 1);
+
+            var hinge = new HingeConstraint(rigidBodyA, posA, posB);
+          
+            var slider = new SliderConstraint(rigidBodyA, rigidBodyB, startTransformA, startTransformB, true);
 
 
         }

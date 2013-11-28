@@ -93,6 +93,20 @@ namespace Fusee.Engine
             return number;
         }
 
+        public IPoint2PointConstraintImp AddPoint2PointConstraint(IRigidBodyImp rigidBodyA, float3 pivotInA)
+        {
+            var rigidBodyAImp = (RigidBodyImp)rigidBodyA;
+            var btRigidBodyA = rigidBodyAImp._rbi;
+
+            var btP2PConstraint = new Point2PointConstraint(btRigidBodyA, new Vector3(pivotInA.x, pivotInA.y, pivotInA.z));
+            BtWorld.AddConstraint(btP2PConstraint);
+
+            var retval = new Point2PointConstraintImp();
+            retval._p2pci = btP2PConstraint;
+            btP2PConstraint.UserObject = retval;
+            return retval;
+        }
+
         //Constraint Test
         public IPoint2PointConstraintImp AddPoint2PointConstraint(IRigidBodyImp rigidBodyA, IRigidBodyImp rigidBodyB, float3 pivotInA,
             float3 pivotInB)
@@ -118,6 +132,36 @@ namespace Fusee.Engine
             return (Point2PointConstraintImp)BtWorld.GetConstraint(0).UserObject;
         }
 
+
+        //HingeConstraint
+        public IHingeConstraintImp AddHingeConstraint(IRigidBodyImp rigidBodyA, float4x4 frameInA, bool useReferenceFrameA)
+        {
+            var rigidBodyAImp = (RigidBodyImp)rigidBodyA;
+            var btRigidBodyA = rigidBodyAImp._rbi;
+            var btFframeInA = Translater.Float4X4ToBtMatrix(frameInA);
+            var btHingeConstraint = new HingeConstraint(btRigidBodyA, btFframeInA, useReferenceFrameA);
+            BtWorld.AddConstraint(btHingeConstraint);
+
+            var retval = new HingeConstraintImp();
+            retval._hci = btHingeConstraint;
+            btHingeConstraint.UserObject = retval;
+            return retval;
+        }
+
+        public IHingeConstraintImp AddHingeConstraint(IRigidBodyImp rigidBodyA, float3 pivotInA, float3 axisInA, bool useReferenceFrameA)
+        {
+            var rigidBodyAImp = (RigidBodyImp)rigidBodyA;
+            var btRigidBodyA = rigidBodyAImp._rbi;
+
+            var btHingeConstraint = new HingeConstraint(btRigidBodyA, new Vector3(pivotInA.x, pivotInA.y, pivotInA.z), new Vector3(axisInA.x, axisInA.y, axisInA.z), useReferenceFrameA);
+            BtWorld.AddConstraint(btHingeConstraint);
+
+            var retval = new HingeConstraintImp();
+            retval._hci = btHingeConstraint;
+            btHingeConstraint.UserObject = retval;
+            return retval;
+        }
+
         public IHingeConstraintImp AddHingeConstraint(IRigidBodyImp rigidBodyA, IRigidBodyImp rigidBodyB, float3 pivotInA, float3 pivotInB, float3 axisInA, float3 AxisInB, bool useReferenceFrameA)
         {
             var rigidBodyAImp = (RigidBodyImp)rigidBodyA;
@@ -135,7 +179,29 @@ namespace Fusee.Engine
             return retval;
         }
 
-        public ISliderConstraintImp AddSliderConstraint(IRigidBodyImp rigidBodyA, IRigidBodyImp rigidBodyB, float4x4 frameInA, float4x4 frameInB, bool useLinearReferenceFrameA)
+        public IHingeConstraintImp AddHingeConstraint(IRigidBodyImp rigidBodyA, IRigidBodyImp rigidBodyB, float4x4 brAFrame, float4x4 brBFrame, bool useReferenceFrameA)
+        {
+            var rigidBodyAImp = (RigidBodyImp)rigidBodyA;
+            var btRigidBodyA = rigidBodyAImp._rbi;
+
+            var rigidBodyBImp = (RigidBodyImp)rigidBodyB;
+            var btRigidBodyB = rigidBodyBImp._rbi;
+
+            var btRbAFrame = Translater.Float4X4ToBtMatrix(brAFrame);
+            var btRbBFrame = Translater.Float4X4ToBtMatrix(brBFrame);
+
+            var btHingeConstraint = new HingeConstraint(btRigidBodyA, btRigidBodyB,btRbAFrame, btRbBFrame, useReferenceFrameA);
+            BtWorld.AddConstraint(btHingeConstraint);
+
+            var retval = new HingeConstraintImp();
+            retval._hci = btHingeConstraint;
+            btHingeConstraint.UserObject = retval;
+            return retval;
+        }
+
+
+        //SliderConstraint
+        public ISliderConstraintImp AddSliderConstraint(IRigidBodyImp rigidBodyA, IRigidBodyImp rigidBodyB, float4x4 frameInA, float4x4 frameInB, bool useLinearReferenceFrameA = false)
         {
             var rigidBodyAImp = (RigidBodyImp)rigidBodyA;
             var btRigidBodyA = rigidBodyAImp._rbi;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Fusee.Math;
 
 namespace Fusee.Engine
 {
@@ -24,6 +25,24 @@ namespace Fusee.Engine
             {
                 var retval = _iHConstraintImp.RigidBodyB.UserObject;
                 return (RigidBody)retval;
+            }
+        }
+
+        public float4x4 AFrame
+        {
+            get
+            {
+                var retval = _iHConstraintImp.FrameA;
+                return retval;
+            }
+        }
+
+        public float4x4 BFrame
+        {
+            get
+            {
+                var retval = _iHConstraintImp.FrameB;
+                return retval;
             }
         }
     }

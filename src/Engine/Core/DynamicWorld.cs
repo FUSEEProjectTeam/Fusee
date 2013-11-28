@@ -11,8 +11,7 @@ namespace Fusee.Engine
     public class DynamicWorld
     {
         internal /*readonly*/ IDynamicWorldImp _dwi;
-
-
+        
         public DynamicWorld()
         {
             _dwi = ImpFactory.CreateIDynamicWorldImp();
@@ -60,6 +59,17 @@ namespace Fusee.Engine
             return number;
         }
 
+        //P2pConstraint
+
+        public Point2PointConstraint AddPoint2PointConstraint(RigidBody rigidBodyA, float3 pivotInA)
+        {
+            IPoint2PointConstraintImp ip2pci = _dwi.AddPoint2PointConstraint(rigidBodyA._iRigidBodyImp, pivotInA);
+            var retval = new Point2PointConstraint();
+            retval._iP2PConstraintImp = ip2pci;
+            ip2pci.UserObject = retval;
+            return retval;
+        }
+
         public Point2PointConstraint AddPoint2PointConstraint(RigidBody rigidBodyA, RigidBody rigidBodyB, float3 pivotInA, float3 pivotInB)
         {
             IPoint2PointConstraintImp ip2pci = _dwi.AddPoint2PointConstraint(rigidBodyA._iRigidBodyImp, rigidBodyB._iRigidBodyImp, pivotInA, pivotInB);
@@ -76,12 +86,51 @@ namespace Fusee.Engine
             return retval;
         }
 
+        //HingeConstraint
+
+        public HingeConstraint AddHingeConstraint(RigidBody rigidBodyA, float4x4 frameInA, bool useReferenceFrameA = false)
+        {
+            IHingeConstraintImp ip2pci = _dwi.AddHingeConstraint(rigidBodyA._iRigidBodyImp, frameInA, useReferenceFrameA);
+            var retval = new HingeConstraint();
+            retval._iHConstraintImp = ip2pci;
+            ip2pci.UserObject = retval;
+            return retval;
+        }
+
+        public HingeConstraint AddHingeConstraint(RigidBody rigidBodyA, float3 pivotInA, float3 axisInA, bool useReferenceFrameA = false)
+        {
+            IHingeConstraintImp ip2pci = _dwi.AddHingeConstraint(rigidBodyA._iRigidBodyImp, pivotInA, axisInA, useReferenceFrameA);
+            var retval = new HingeConstraint();
+            retval._iHConstraintImp = ip2pci;
+            ip2pci.UserObject = retval;
+            return retval;
+        }
+
         public HingeConstraint AddHingeConstraint(RigidBody rigidBodyA, RigidBody rigidBodyB, float3 pivotInA, float3 pivotInB, float3 axisInA, float3 axisInB, bool useReferenceFrameA = false)
         {
             IHingeConstraintImp ip2pci = _dwi.AddHingeConstraint(rigidBodyA._iRigidBodyImp, rigidBodyB._iRigidBodyImp, pivotInA, pivotInB, axisInA, axisInB, useReferenceFrameA);
             var retval = new HingeConstraint();
             retval._iHConstraintImp = ip2pci;
             ip2pci.UserObject = retval;
+            return retval;
+        }
+
+        public HingeConstraint AddHingeConstraint(RigidBody rigidBodyA, RigidBody rigidBodyB, float4x4 brAFrame, float4x4 brBFrame, bool useReferenceFrameA = false)
+        {
+            IHingeConstraintImp ip2pci = _dwi.AddHingeConstraint(rigidBodyA._iRigidBodyImp, rigidBodyB._iRigidBodyImp, brAFrame, brBFrame, useReferenceFrameA);
+            var retval = new HingeConstraint();
+            retval._iHConstraintImp = ip2pci;
+            ip2pci.UserObject = retval;
+            return retval;
+        }
+
+        //SliderConstraint
+        public SliderConstraint AddSliderConstraint(RigidBody rigidBodyA, RigidBody rigidBodyB, float4x4 frameInA, float4x4 frameInB, bool useLinearReferenceFrameA = false)
+        {
+            ISliderConstraintImp isci = _dwi.AddSliderConstraint(rigidBodyA._iRigidBodyImp, rigidBodyB._iRigidBodyImp, frameInA, frameInB, useLinearReferenceFrameA);
+            var retval = new SliderConstraint();
+            retval._iSliderConstraintImp = isci;
+            isci.UserObject = retval;
             return retval;
         }
 
