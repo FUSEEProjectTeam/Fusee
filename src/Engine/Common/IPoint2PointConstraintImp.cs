@@ -3,7 +3,7 @@ using Fusee.Math;
 
 namespace Fusee.Engine
 {
-    public enum ConstraintParameter
+    public enum PointToPointFlags
     {
         CONSTRAINT_PARAM_ERP = 1,
         CONSTRAINT_PARAM_STOP_ERP = 2,
@@ -17,8 +17,8 @@ namespace Fusee.Engine
 
         float3 PivotInA { get; set; }
         float3 PivotInB { get; set; }
-        void SetParam( ConstraintParameter constraintParameter, float value, int axis = -1);
-        float GetParam(ConstraintParameter param, int axis = -1);
+        void SetParam(PointToPointFlags constraintParameter, float value, int axis = -1);
+        float GetParam(PointToPointFlags param, int axis = -1);
 
         IRigidBodyImp RigidBodyA { get; }
         IRigidBodyImp RigidBodyB { get; }

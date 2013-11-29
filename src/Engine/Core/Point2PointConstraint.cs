@@ -37,13 +37,13 @@ namespace Fusee.Engine
             }
         }
 
-        public void SetParam(ConstraintParameter param, float value, int axis = -1)
+        public void SetParam(PointToPointFlags param, float value, int axis = -1)
         {
             var o = (Point2PointConstraint) _iP2PConstraintImp.UserObject;
             o._iP2PConstraintImp.SetParam(param, value, axis);
         }
 
-        public float GetParam(ConstraintParameter param, int axis = -1)
+        public float GetParam(PointToPointFlags param, int axis = -1)
         {
             var retval = _iP2PConstraintImp.GetParam(param, axis);
             return retval;

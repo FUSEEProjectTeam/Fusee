@@ -49,6 +49,12 @@ namespace Fusee.Engine
             }
         }
 
+        
+        public void SetLimit(float low, float high, float softness = 0.9f, float biasFactor = 0.3f, float relaxationFactor = 1)
+        {
+            _hci.SetLimit(low, high, softness,biasFactor, relaxationFactor);
+        }
+
         private object _userObject;
         public object UserObject
         {

@@ -80,7 +80,7 @@ namespace Examples.BulletTest
             var rbB = _world.AddRigidBody(1, new float3(-300, 500, 0), mesh, new float3(0, 0, 0));
             var p2p = _world.AddPoint2PointConstraint(rbA, rbB, new float3(105, -150, -150), new float3(0, 100, 0));
             //var p2p = _world.AddPoint2PointConstraint(rbA, new float3(105, -200, -150));
-            p2p.SetParam(ConstraintParameter.CONSTRAINT_PARAM_CFM, 0.9f);
+            p2p.SetParam(PointToPointFlags.CONSTRAINT_PARAM_CFM, 0.9f);
         }
 
         public void InitHingeConstraint()

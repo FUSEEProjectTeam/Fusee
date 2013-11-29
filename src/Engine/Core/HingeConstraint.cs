@@ -45,5 +45,10 @@ namespace Fusee.Engine
                 return retval;
             }
         }
+
+        public void SetLimit(float low, float high, float softness = 0.9f, float biasFactor = 0.3f, float relaxationFactor = 1)
+        {
+            _iHConstraintImp.SetLimit(low, high, softness, biasFactor, relaxationFactor);
+        }
     }
 }
