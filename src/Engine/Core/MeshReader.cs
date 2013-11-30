@@ -28,7 +28,7 @@ namespace Fusee.Engine
 
         /// <summary>
         /// Parses the contents of the TextReader object passed to the method and tries to 
-        /// interpret the contents as a <a href="http://en.wikipedia.org/wiki/Wavefront_.obj_file">Wavefront obj</a> file.
+        /// interpret the contents as a <a href="http://en.wikipedia.org/wiki/Wavefront_.obj_file" target="_blank">Wavefront obj</a> file.
         /// Creates a Mesh object from the contents.
         /// </summary>
         /// <param name="tr">The initialized TextReader (can be either a StreamReader or a StringReader)</param>
@@ -70,7 +70,7 @@ namespace Fusee.Engine
 
                     g.AddNormal(new double3(Double_Parse(values[0]),
                                             Double_Parse(values[1]),
-                                            Double_Parse(values[2])));
+                                            -Double_Parse(values[2]))); // convert to lefthanded
                 }
                 else if (line.StartsWith("v"))
                 {
@@ -81,7 +81,7 @@ namespace Fusee.Engine
 
                     g.AddVertex(new double3(Double_Parse(values[0]),
                                             Double_Parse(values[1]),
-                                            Double_Parse(values[2])));
+                                            -Double_Parse(values[2]))); // convert to lefthanded
                 }
                 else if (line.StartsWith("f"))
                 {

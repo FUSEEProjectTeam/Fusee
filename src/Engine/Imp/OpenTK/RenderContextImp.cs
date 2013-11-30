@@ -36,7 +36,8 @@ namespace Fusee.Engine
             // Due to the right-handed nature of OpenGL and the left-handed design of FUSEE
             // the meaning of what's Front and Back of a face simply flips.
             // TODO - implement this in render states!!!
-            GL.CullFace(CullFaceMode.Front);
+           
+            GL.CullFace(CullFaceMode.Back);
         }
 
         #endregion

@@ -87,13 +87,24 @@ namespace Examples.WorldRendering
             {
                 _rc.SetShader(t.GetShader(_rc));
 
-                var mtxRot = float4x4.CreateRotationY(t.GetAngleX())*float4x4.CreateRotationX(-t.GetAngleY());
-                var mtxTrans = float4x4.CreateTranslation(t.GetPosX() - _globalPosX, t.GetPosY() + _globalPosY,
-                                                          t.GetPosZ() - _globalPosZ);
-                var mtxLook = float4x4.LookAt(0, 0, 0, (float) Math.Sin(_globalAngleX), 0,
-                                              (float) Math.Cos(_globalAngleX), 0, 1, 0);
+                // colh
+                //var mtxRot = float4x4.CreateRotationY(t.GetAngleX())*float4x4.CreateRotationX(-t.GetAngleY());
+                //var mtxTrans = float4x4.CreateTranslation(t.GetPosX() - _globalPosX, t.GetPosY() + _globalPosY,
+                //                                          t.GetPosZ() - _globalPosZ);
+                //var mtxLook = float4x4.LookAt(0, 0, 0, (float) Math.Sin(_globalAngleX), 0,
+                //                              (float) Math.Cos(_globalAngleX), 0, 1, 0);
 
-                _rc.ModelView = mtxRot*mtxTrans*mtxLook;
+                //_rc.ModelView = mtxRot*mtxTrans*mtxLook;
+
+                var mtxRot = float4x4.CreateRotationX(t.GetAngleY()) * float4x4.CreateRotationY(-t.GetAngleX());
+                var mtxTrans = float4x4.CreateTranslation(t.GetPosX() - _globalPosX, t.GetPosY() + _globalPosY,
+                                                          t.GetPosZ() + _globalPosZ);
+                var mtxLook = float4x4.LookAt(0, 0, 0, (float)Math.Sin(-_globalAngleX), 0,
+                                              (float)Math.Cos(-_globalAngleX), 0, 1, 0);
+
+                _rc.ModelView = mtxLook * mtxTrans * mtxRot;
+                
+                
                 _rc.Render(t.GetMesh());
             }
         }

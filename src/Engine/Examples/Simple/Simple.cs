@@ -34,6 +34,7 @@ namespace Examples.Simple
 
             // initialize the variables
             _meshTea = MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
+            // _meshFace = MeshReader.LoadMesh(@"Assets/coords.obj.model"); ;
             _meshFace = new Cube();
             
             _spColor = MoreShaders.GetDiffuseColorShader(RC);
@@ -43,7 +44,7 @@ namespace Examples.Simple
             _textureParam = _spTexture.GetShaderParam("texture1");
 
             // load texture
-            var imgData = RC.LoadImage("Assets/world_map.jpg");
+            var imgData = RC.LoadImage("Assets/coords.jpg");
             _iTex = RC.CreateTexture(imgData);
             _zz = 0.0f;
         }
@@ -100,9 +101,9 @@ namespace Examples.Simple
 
             // first mesh
             // Row order notation
-            var modelViewMesh1_ROW = float4x4.CreateTranslation_ROW(0, -50, 0) *  float4x4.CreateTranslation_ROW(0, 0, -150) * mtxRot_ROW * mtxCam_ROW;
+            var modelViewMesh1_ROW = float4x4.CreateTranslation_ROW(0, -50, 0) *  float4x4.CreateTranslation_ROW(-150, 0, 0) * mtxRot_ROW * mtxCam_ROW;
             // Column order notation
-            var modelViewMesh1 = mtxCam * mtxRot * float4x4.CreateTranslation(0, 0, -150) * float4x4.CreateTranslation(0, -50, 0);
+            var modelViewMesh1 = mtxCam * mtxRot * float4x4.CreateTranslation(-150, 0, 0) * float4x4.CreateTranslation(0, -50, 0);
             //Debug.Assert(modelViewMesh1_ROW == float4x4.Transpose(modelViewMesh1));
             // RC.ModelView = float4x4.Transpose(modelViewMesh1);
             RC.ModelView = modelViewMesh1;
@@ -116,9 +117,9 @@ namespace Examples.Simple
 
             // second mesh
             // Row order notation
-            var modelViewMesh2_ROW = new float4x4(100, 0, 0, 0, 0, 100, 0, 0, 0, 0, 100, 0, 0, 0, 0, 1) * float4x4.CreateTranslation_ROW(0, 0, 150) * mtxRot_ROW * mtxCam_ROW;
+            var modelViewMesh2_ROW = new float4x4(100, 0, 0, 0, 0, 100, 0, 0, 0, 0, 100, 0, 0, 0, 0, 1) * float4x4.CreateTranslation_ROW(150, 0, 0) * mtxRot_ROW * mtxCam_ROW;
             // Column order notation
-            var modelViewMesh2 = mtxCam * mtxRot * float4x4.CreateTranslation(0, 0, 150) * new float4x4(100, 0, 0, 0, 0, 100, 0, 0, 0, 0, 100, 0, 0, 0, 0, 1);
+            var modelViewMesh2 = mtxCam*mtxRot*float4x4.CreateTranslation(150, 0, 0) * new float4x4(100, 0, 0, 0, 0, 100, 0, 0, 0, 0, 100, 0, 0, 0, 0, 1);
             // Debug.Assert(modelViewMesh2_ROW == float4x4.Transpose(modelViewMesh2));
             // RC.ModelView = float4x4.Transpose(modelViewMesh2);
             RC.ModelView = modelViewMesh2;

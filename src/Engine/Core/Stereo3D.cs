@@ -176,7 +176,7 @@ namespace Fusee.Engine
                 vec4 colTex = texture2D(vTexture, vUV);
                 vec4 _redBalance = vec4(0.1, 0.65, 0.25, 0);
                 float _redColor = (colTex.r * _redBalance.r + colTex.g * _redBalance.g + colTex.b * _redBalance.b) * 1.5;
-                gl_FragColor = vec4(_redColor, colTex.g, colTex.b, 1) * dot(vNormal, vec3(0, 0, 1)) * 1.4;
+                gl_FragColor = vec4(_redColor, colTex.g, colTex.b, 1) * dot(vNormal, vec3(0, 0, -1)) * 1.4;
             }";
 
         #endregion
@@ -408,7 +408,7 @@ namespace Fusee.Engine
             var scaleH = _screenHeight;
 
             _rc.ModelView = float4x4.Scale(scaleW, scaleH, 1);
-            _rc.View = float4x4.LookAt(0, 0, 870, 0, 0, 0, 0, 1, 0);
+            _rc.View = float4x4.LookAt(0, 0, -870, 0, 0, 0, 0, 1, 0);
 
             _rc.Render(_planeMesh);
         }
