@@ -41,7 +41,7 @@ namespace Fusee.Engine
             return retval;
         }
 
-        public int StepSimulation(float timeSteps, int maxSubSteps, float fixedTimeSteps)
+        public int StepSimulation(float timeSteps, int maxSubSteps, float fixedTimeSteps = 1/60)
         {
             return _dwi.StepSimulation(timeSteps, maxSubSteps, fixedTimeSteps);
         }

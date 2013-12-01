@@ -75,7 +75,7 @@ namespace Fusee.Engine
             return retval;
         }
 
-        public int StepSimulation(float timeSteps, int maxSubSteps=1, float fixedTimeSteps=1/60)
+        public int StepSimulation(float timeSteps, int maxSubSteps, float fixedTimeSteps)
         {
             return BtWorld.StepSimulation(timeSteps);//, maxSubSteps, fixedTimeSteps);
         }

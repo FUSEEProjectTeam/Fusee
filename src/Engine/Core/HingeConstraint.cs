@@ -50,5 +50,12 @@ namespace Fusee.Engine
         {
             _iHConstraintImp.SetLimit(low, high, softness, biasFactor, relaxationFactor);
         }
+
+        public int GetUid()
+        {
+            var retval = _iHConstraintImp.GetUid();
+            return retval;
+
+        }
     }
 }

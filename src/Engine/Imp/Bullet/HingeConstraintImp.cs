@@ -55,6 +55,12 @@ namespace Fusee.Engine
             _hci.SetLimit(low, high, softness,biasFactor, relaxationFactor);
         }
 
+        public int GetUid()
+        {
+            var retval = _hci.Uid;
+            return retval;
+        }
+
         private object _userObject;
         public object UserObject
         {
