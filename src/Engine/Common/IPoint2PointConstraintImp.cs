@@ -11,7 +11,7 @@ namespace Fusee.Engine
         CONSTRAINT_PARAM_STOP_CFM = 4
     };
 
-    public interface IPoint2PointConstraintImp
+    public interface IPoint2PointConstraintImp : IConstraintImp
     {
 
 
@@ -20,9 +20,5 @@ namespace Fusee.Engine
         void SetParam(PointToPointFlags constraintParameter, float value, int axis = -1);
         float GetParam(PointToPointFlags param, int axis = -1);
 
-        IRigidBodyImp RigidBodyA { get; }
-        IRigidBodyImp RigidBodyB { get; }
-
-        object UserObject { get; set; }
     }
 }

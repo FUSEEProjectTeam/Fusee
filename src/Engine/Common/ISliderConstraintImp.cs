@@ -5,11 +5,8 @@ using System.Text;
 
 namespace Fusee.Engine
 {
-    public interface ISliderConstraintImp
+    public interface ISliderConstraintImp : IConstraintImp
     {
-        IRigidBodyImp RigidBodyA { get; }
-        IRigidBodyImp RigidBodyB { get; }
 
-        object UserObject { get; set; }
     }
 }

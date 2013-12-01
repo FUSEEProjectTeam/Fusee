@@ -42,8 +42,6 @@ namespace Fusee.Engine
         
         public IRigidBodyImp AddRigidBody(float mass, float3 worldTransform, int[] meshTriangles, float3[] meshVertices, /* shape, */ float3 intertia)
         {
-
-            Debug.WriteLine("DynamicWorldImp: AddRigidBody");
             // worldTransform*=10.0f;
             // Use bullet to do what needs to be done:
             var btMatrix = Matrix.Translation(worldTransform.x, worldTransform.y, worldTransform.z);

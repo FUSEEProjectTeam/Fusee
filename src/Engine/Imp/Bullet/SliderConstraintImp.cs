@@ -29,6 +29,13 @@ namespace Fusee.Engine
             }
         }
 
+        
+        public int GetUid()
+        {
+            var retval = _sci.Uid;
+            return retval;
+        }
+
         private object _userObject;
         public object UserObject
         {

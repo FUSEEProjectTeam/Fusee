@@ -14,6 +14,7 @@ namespace Fusee.Engine
         {
             get
             {
+
                 var retval = _iHConstraintImp.RigidBodyA.UserObject;
                 return (RigidBody)retval;
             }

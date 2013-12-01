@@ -115,6 +115,12 @@ namespace Fusee.Engine
             }
         }
 
+        public int GetUid()
+        {
+            var retval = _p2pci.Uid;
+            return retval;
+        }
+
         private object _userObject;
         public object UserObject
         {
