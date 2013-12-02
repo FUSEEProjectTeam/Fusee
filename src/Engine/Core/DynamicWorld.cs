@@ -134,6 +134,15 @@ namespace Fusee.Engine
             return retval;
         }
 
+        public SliderConstraint AddSliderConstraint(RigidBody rigidBodyA, float4x4 frameInA, bool useLinearReferenceFrameA = false)
+        {
+            ISliderConstraintImp isci = _dwi.AddSliderConstraint(rigidBodyA._iRigidBodyImp,frameInA, useLinearReferenceFrameA);
+            var retval = new SliderConstraint();
+            retval._iSliderConstraintImp = isci;
+            isci.UserObject = retval;
+            return retval;
+        }
+
 
         public int NumberConstraints()
         {

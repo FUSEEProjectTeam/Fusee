@@ -220,6 +220,20 @@ namespace Fusee.Engine
             return retval;
         }
 
+        public ISliderConstraintImp AddSliderConstraint(IRigidBodyImp rigidBodyA, float4x4 frameInA, bool useLinearReferenceFrameA)
+        {
+            var rigidBodyAImp = (RigidBodyImp)rigidBodyA;
+            var btRigidBodyA = rigidBodyAImp._rbi;
+            var btFrameInA = Translater.Float4X4ToBtMatrix(frameInA);
+            var btSliderConstraint = new SliderConstraint(btRigidBodyA, btFrameInA, useLinearReferenceFrameA);
+            BtWorld.AddConstraint(btSliderConstraint);
+
+            var retval = new SliderConstraintImp();
+            retval._sci = btSliderConstraint;
+            btSliderConstraint.UserObject = retval;
+            return retval;
+        }
+
 
         public int NumberConstraints()
         {
