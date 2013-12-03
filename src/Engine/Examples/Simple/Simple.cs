@@ -35,10 +35,10 @@ namespace Examples.Simple
             _meshTea = MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
             _meshFace = MeshReader.LoadMesh(@"Assets/Face.obj.model");
 
-            _spColor = MoreShaders.GetShader("simple", RC);
-            _spTexture = MoreShaders.GetShader("texture", RC);
+            _spColor = MoreShaders.GetDiffuseColorShader(RC);
+            _spTexture = MoreShaders.GetDiffuseTextureShader(RC);
 
-            _colorParam = _spColor.GetShaderParam("vColor");
+            _colorParam = _spColor.GetShaderParam("color");
             _textureParam = _spTexture.GetShaderParam("texture1");
 
             // load texture
@@ -87,7 +87,7 @@ namespace Examples.Simple
 
             // first mesh
             //RC.ModelView = float4x4.CreateTranslation(0, -50, 0)*mtxRot*float4x4.CreateTranslation(-150, 0, 0)*mtxCam;
-            RC.ModelView = new float4x4(15, 0, 0, 0, 0, 15, 0, 0, 0, 0, 15, 0, 0, 0, 0, 1) * mtxRot * float4x4.CreateTranslation(-150, 0, 0) * mtxCam;
+            RC.ModelView = mtxRot * float4x4.CreateTranslation(-150, 0, 0) * mtxCam;
 
             RC.SetShader(_spColor);
             RC.SetShaderParam(_colorParam, new float4(0.5f, 0.8f, 0, 1));

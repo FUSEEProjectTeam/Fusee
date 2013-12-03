@@ -8,6 +8,58 @@ namespace Examples.ParticleSystem
     [FuseeApplication(Name = "Particle System", Description = "A very simple example.")]
     public class ParticleSystem : RenderCanvas
     {
+        #region Shader
+
+        // At first we have to define the shader.
+        protected string VsSimpleTexture = @"
+            /* Copies incoming vertex color without change.
+             * Applies the transformation matrix to vertex position.
+             */
+
+            attribute vec4 fuColor;
+            attribute vec3 fuVertex;
+            attribute vec3 fuNormal;
+            attribute vec2 fuUV;
+
+            varying vec4 vColor;
+            varying vec3 vNormal;
+            varying vec2 vUV;
+        
+            uniform mat4 FUSEE_MVP;
+            uniform mat4 FUSEE_ITMV;
+
+            void main()
+            {
+                gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
+                vNormal = mat3(FUSEE_ITMV[0].xyz, FUSEE_ITMV[1].xyz, FUSEE_ITMV[2].xyz) * fuNormal;
+                vUV = fuUV;
+            }";
+
+        protected string PsSimpleTexture = @"
+            /* Copies incoming fragment color without change. */
+            #ifdef GL_ES
+                precision highp float;
+            #endif
+
+            // The parameter required for the texturing process
+            uniform sampler2D texture1;
+            uniform vec4 vColor;
+            varying vec3 vNormal;
+
+            // The parameter holding the UV-Coordinates of the texture
+            varying vec2 vUV;
+
+            void main()
+            {    
+              // The most basic texturing function, expecting the above mentioned parameters  
+                // max(dot(vec3(0,0,1),normalize(vNormal)), 0.1) 
+              gl_FragColor = texture2D(texture1, vUV);        
+            }";
+
+        #endregion
+
+ 
+        
         // angle variables
         private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
 
@@ -39,10 +91,10 @@ namespace Examples.ParticleSystem
             //_meshTea = new ParticleEmitter();//MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
             _meshFace = MeshReader.LoadMesh(@"Assets/Face.obj.model");
 
-            _spColor = MoreShaders.GetShader("simple", RC);
-            _spTexture = MoreShaders.GetShader("texture", RC);
+            _spColor = MoreShaders.GetDiffuseColorShader(RC);
+            _spTexture = RC.CreateShader(VsSimpleTexture, PsSimpleTexture);
 
-            _colorParam = _spColor.GetShaderParam("vColor");
+            _colorParam = _spColor.GetShaderParam("color");
             _textureParam = _spTexture.GetShaderParam("texture1");
 
             // load texture
@@ -105,9 +157,9 @@ namespace Examples.ParticleSystem
             // second mesh
             RC.ModelView = mtxRot * float4x4.CreateTranslation(150, 0, 0) * mtxCam;
 
-            RC.SetShader(_spTexture);
-            RC.SetShaderParamTexture(_textureParam, _iTex);
-
+            RC.SetShader(_spColor);
+            //RC.SetShaderParamTexture(_textureParam, _iTex);
+            RC.SetShaderParam(_colorParam, new float4(1, 1, 1, 1));
             RC.Render(_meshFace);
 
 

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using JSIL.Meta;
 using Fusee.Math;
-
 namespace Fusee.Engine
 {
     /// <summary>
@@ -17,14 +16,13 @@ namespace Fusee.Engine
         #region Private Fields
 
         private readonly IRenderContextImp _rci;
-
         private ShaderProgram _currentShader;
         private MatrixParamNames _currentShaderParams;
         private ShaderProgram _debugShader;
         private IShaderParam _debugColor;
         private readonly Light[] _lightParams;
         private readonly LightParamNames[] _lightShaderParams;
-
+        private bool _debugLinesEnabled = true;
         private bool _updatedShaderParams;
 
         // Settable matrices
@@ -110,10 +108,15 @@ namespace Fusee.Engine
             public IShaderParam FUSEE_L_SPECULAR;
             public IShaderParam FUSEE_L_POSITION;
             public IShaderParam FUSEE_L_DIRECTION;
-            // ReSharper restore InconsistentNaming
+            public IShaderParam FUSEE_L_SPOTANGLE;
+            public IShaderParam FUSEE_L_ACTIVE;
+            // ReSharper restore InconsistentNaming               
+
         }
 
         #endregion
+
+
 
         #region Matrix Fields
         /// <summary>
@@ -150,7 +153,7 @@ namespace Fusee.Engine
                 _transViewOk = false;
                 _transModelViewOk = false;
                 _transModelViewProjectionOk = false;
-                _modelView = _model * _view;
+                _modelView = _view * _model;
 
                 UpdateCurrentShader();
 
@@ -705,7 +708,7 @@ namespace Fusee.Engine
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderContext"/> class.
         /// </summary>
-        /// <param name="rci">The <see cref="IRenderContextImp"/>.</param>
+        /// <param name="rci">The <see cref="Fusee.Engine.IRenderContextImp"/>.</param>
         public RenderContext(IRenderContextImp rci)
         {
             _rci = rci;
@@ -715,8 +718,8 @@ namespace Fusee.Engine
 
             _lightParams = new Light[8];
             _lightShaderParams = new LightParamNames[8];
-            _debugShader = MoreShaders.GetShader("oneColor",this);
-            _debugColor = _debugShader.GetShaderParam("Col");
+            _debugShader = MoreShaders.GetDiffuseColorShader(this);
+            _debugColor = _debugShader.GetShaderParam("color");
             _updatedShaderParams = false;
         }
 
@@ -763,7 +766,7 @@ namespace Fusee.Engine
         /// </remarks>
         /// <param name="imgData">An ImageData struct, containing necessary information for the upload to the graphics card.</param>
         /// <returns>
-        /// An ITexture that can be used for texturing in the shader.
+        /// An <see cref="ITexture"/> that can be used for texturing in the shader.
         /// </returns>
         public ITexture CreateTexture(ImageData imgData)
         {
@@ -774,7 +777,7 @@ namespace Fusee.Engine
         /// Creates a white Texture with 1x1 pixel size.
         /// </summary>
         /// <returns>
-        /// An ITexture that can be used for texturing in the shader.
+        /// An <see cref="ITexture"/> that can be used for texturing in the shader.
         /// </returns>
         public ITexture DisableTexture()
         {
@@ -886,6 +889,12 @@ namespace Fusee.Engine
 
                 if (_lightShaderParams[i].FUSEE_L_DIRECTION != null)
                     SetShaderParam(_lightShaderParams[i].FUSEE_L_DIRECTION, _lightParams[i].Direction);
+
+                if (_lightShaderParams[i].FUSEE_L_ACTIVE != null)
+                    SetShaderParam(_lightShaderParams[i].FUSEE_L_ACTIVE, _lightParams[i].Active);
+
+                if (_lightShaderParams[i].FUSEE_L_SPOTANGLE != null)
+                    SetShaderParam(_lightShaderParams[i].FUSEE_L_SPOTANGLE, _lightParams[i].Angle);
             }
         }
 
@@ -926,6 +935,8 @@ namespace Fusee.Engine
                 _lightShaderParams[i].FUSEE_L_SPECULAR = _currentShader.GetShaderParam("FUSEE_L" + i + "_SPECULAR");
                 _lightShaderParams[i].FUSEE_L_POSITION = _currentShader.GetShaderParam("FUSEE_L" + i + "_POSITION");
                 _lightShaderParams[i].FUSEE_L_DIRECTION = _currentShader.GetShaderParam("FUSEE_L" + i + "_DIRECTION");
+                _lightShaderParams[i].FUSEE_L_SPOTANGLE = _currentShader.GetShaderParam("FUSEE_L" + i + "_SPOTANGLE");
+                _lightShaderParams[i].FUSEE_L_ACTIVE = _currentShader.GetShaderParam("FUSEE_L" + i + "_ACTIVE");
             }
 
             _updatedShaderParams = true;
@@ -951,25 +962,27 @@ namespace Fusee.Engine
         /// Sets the directional or point lights information.
         /// </summary>
         /// <param name="v3">The lights direction or position. This depends on the light type.</param>
-        /// <param name="color">The light color.</param>
+        /// <param name="diffuse">The diffuse light color.</param>
+        /// <param name="ambient">The ambient light color.</param>
+        /// <param name="specular">The specular light color.</param>
         /// <param name="type">The type of the light. 0=directional, 1=point.</param>
         /// <param name="id">The identifier. A maximum of 8 lights is recommended due to portability.</param>
-        public void SetLight(float3 v3, float4 color, int type, int id)
+        public void SetLight(float3 v3, float4 diffuse, float4 ambient, float4 specular, int type, int id)
         {
             switch (type)
             {
-                case 0:
-                    SetLightActive(id, 1);
-                    SetLightAmbient(id, color);
-                    SetLightDiffuse(id, color);
-                    SetLightSpecular(id, color);
+                case 1:
+                    SetLightActive(id, type);
+                    SetLightAmbient(id, ambient);
+                    SetLightDiffuse(id, diffuse);
+                    SetLightSpecular(id, specular);
                     SetLightDirection(id, v3);
                     break;
-                case 1:
-                    SetLightActive(id, 1);
-                    SetLightAmbient(id, color);
-                    SetLightDiffuse(id, color);
-                    SetLightSpecular(id, color);
+                case 2:
+                    SetLightActive(id, type);
+                    SetLightAmbient(id, ambient);
+                    SetLightDiffuse(id, diffuse);
+                    SetLightSpecular(id, specular);
                     SetLightPosition(id, v3);
                     break;
             }
@@ -981,15 +994,17 @@ namespace Fusee.Engine
         /// </summary>
         /// <param name="position">The light position.</param>
         /// <param name="direction">The light direction.</param>
-        /// <param name="color">The light color.</param>
+        /// <param name="diffuse">The diffuse light color.</param>
+        /// <param name="ambient">The ambient light color.</param>
+        /// <param name="specular">The specular light color.</param>
         /// <param name="type">The light type.</param>
         /// <param name="id">The identifier.A maximum of 8 lights is recommended due to portability.</param>
-        public void SetLight(float3 position, float3 direction, float4 color, int type, int id)
+        public void SetLight(float3 position, float3 direction, float4 diffuse, float4 ambient, float4 specular, int type, int id)
         {
-            SetLightActive(id, 1);
-            SetLightAmbient(id, color);
-            SetLightDiffuse(id, color);
-            SetLightSpecular(id, color);
+            SetLightActive(id, type);
+            SetLightAmbient(id, ambient);
+            SetLightDiffuse(id, diffuse);
+            SetLightSpecular(id, specular);
             SetLightPosition(id, position);
             SetLightDirection(id, direction);
         }
@@ -1137,6 +1152,21 @@ namespace Fusee.Engine
         }
 
         /// <summary>
+        /// Sets the opening angle of the spot light with the given index.
+        /// </summary>
+        /// <param name="lightInx">The light to set the direction on. Can range from 0 to 7. Up to eight lights are supported.</param>
+        /// <param name="angle">The opening angle of the spotlight in degree.</param>
+        public void SetLightSpotAngle(int lightInx, float angle)
+        {
+
+            _lightParams[lightInx].Angle = -(float)System.Math.Cos(angle);
+            IShaderParam sp;
+            string paramName = "FUSEE_L" + lightInx + "_SPOTANGLE";
+            if ((sp = _currentShader.GetShaderParam(paramName)) != null)
+                SetShaderParam(sp, _lightParams[lightInx].Angle);
+        }
+
+        /// <summary>
         /// Creates a shader object from vertex shader source code and pixel shader source code.
         /// </summary>
         /// <param name="vs">A string containing the vertex shader source.</param>
@@ -1168,15 +1198,14 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
         /// <seealso cref="Fusee.Engine.RenderContext.Render(Mesh)"/>
         public void SetShader(ShaderProgram program)
         {
-            _updatedShaderParams = false;
-
-            if (_currentShader != program)
-            {
-                _currentShader = program;
-                _rci.SetShader(program._spi);
-            }
-
-            UpdateShaderParams();
+                _updatedShaderParams = false;
+                
+                if (_currentShader != program)
+                {
+                    _currentShader = program;
+                    _rci.SetShader(program._spi);
+                }
+            UpdateShaderParams();         
         }
 
         /// <summary>
@@ -1198,13 +1227,12 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
         /// <summary>
         /// Returns an identifiyer for the named (uniform) parameter used in the specified shader program.
         /// </summary>
-        /// <param name="program">The shader program using the parameter.</param>
+        /// <param name="program">The <see cref="ShaderProgram"/> using the parameter.</param>
         /// <param name="paramName">Name of the shader parameter.</param>
-        /// <returns>A handle object to identify the given parameter in subsequent calls to SetShaderParam.</returns>
+        /// <returns>A <see cref="IShaderParam"/> object to identify the given parameter in subsequent calls to SetShaderParam.</returns>
         /// <remarks>
         /// The returned handle can be used to assign values to a (uniform) shader paramter.
         /// </remarks>
-        /// <seealso cref="SetShaderParam(IShaderParam,float)"/>
         public IShaderParam GetShaderParam(ShaderProgram program, string paramName)
         {
             return _rci.GetShaderParam(program._spi, paramName);
@@ -1213,8 +1241,8 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
         /// <summary>
         /// Gets the value of a shader parameter.
         /// </summary>
-        /// <param name="program">The program.</param>
-        /// <param name="handle">The handle.</param>
+        /// <param name="program">The <see cref="ShaderProgram"/>.</param>
+        /// <param name="handle">The <see cref="IShaderParam"/>.</param>
         /// <returns>The float value.</returns>
         public float GetParamValue(ShaderProgram program, IShaderParam handle)
         {
@@ -1224,7 +1252,7 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
         /// <summary>
         /// Sets the specified shader parameter to a float value.
         /// </summary>
-        /// <param name="param">The shader parameter identifier.</param>
+        /// <param name="param">The <see cref="IShaderParam"/> identifier.</param>
         /// <param name="val">The float value that should be assigned to the shader parameter.</param>
         /// <remarks>
         /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
@@ -1240,7 +1268,7 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
         /// <summary>
         /// Sets the shader parameter to a float2 value.
         /// </summary>
-        /// <param name="param">The shader parameter identifier.</param>
+        /// <param name="param">The <see cref="IShaderParam"/> identifier.</param>
         /// <param name="val">The float2 value that should be assigned to the shader parameter.</param>
         /// <remarks>
         /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
@@ -1256,7 +1284,7 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
         /// <summary>
         /// Sets the shader parameter to a float3 value.
         /// </summary>
-        /// <param name="param">The shader parameter identifier.</param>
+        /// <param name="param">The <see cref="IShaderParam"/> identifier.</param>
         /// <param name="val">The float3 value that should be assigned to the shader parameter.</param>
         /// <remarks>
         /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
@@ -1272,7 +1300,7 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
         /// <summary>
         /// Sets the shader parameter to a float4 value.
         /// </summary>
-        /// <param name="param">The shader parameter identifier.</param>
+        /// <param name="param">The <see cref="IShaderParam"/> identifier.</param>
         /// <param name="val">The float4 value that should be assigned to the shader parameter.</param>
         /// <remarks>
         /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
@@ -1288,7 +1316,7 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
         /// <summary>
         /// Sets the shader parameter to a float4x4 matrixvalue.
         /// </summary>
-        /// <param name="param">The shader parameter identifier.</param>
+        /// <param name="param">The <see cref="IShaderParam"/> identifier.</param>
         /// <param name="val">The float4x4 matrix that should be assigned to the shader parameter.</param>
         /// <remarks>
         /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
@@ -1304,7 +1332,7 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
         /// <summary>
         /// Sets the shader parameter to a integer value.
         /// </summary>
-        /// <param name="param">The shader parameter identifier.</param>
+        /// <param name="param">The <see cref="IShaderParam"/> identifier.</param>
         /// <param name="val">The integer value that should be assigned to the shader parameter.</param>
         /// <remarks>
         /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
@@ -1365,6 +1393,18 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether [debug lines enabled].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [debug lines enabled]; otherwise, <c>false</c>.
+        /// </value>
+        public bool DebugLinesEnabled
+        {
+            get { return _debugLinesEnabled; }
+            set { _debugLinesEnabled = value; }
+        }
+
+        /// <summary>
         /// Draws a Debug Line in 3D Space by using a start and end point (float3).
         /// </summary>
         /// <param name="start">The startpoint of the DebugLine.</param>
@@ -1372,21 +1412,29 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
         /// <param name="color">The color of the DebugLine.</param>
         public void DebugLine(float3 start, float3 end, float4 color)
         {
-            start /= 2;
-            end /= 2;
+            if (_debugLinesEnabled)
+            {
+                start /= 2;
+                end /= 2;
 
-            var oldShader = _currentShader;
-            SetShader(_debugShader);
+                //var oldShader = _currentShader;
+                SetShader(_debugShader);
 
-            SetShaderParam(_currentShaderParams.FUSEE_MVP, ModelViewProjection);
-            //IShaderParam col = _debugShader.GetShaderParam("Col");
-            SetShaderParam(_debugColor, color);
-            
-            _rci.DebugLine(start, end, color);
+                SetShaderParam(_currentShaderParams.FUSEE_MVP, ModelViewProjection);
+                //IShaderParam col = _debugShader.GetShaderParam("Col");
+                SetShaderParam(_debugColor, color);
 
-            SetShader(oldShader);
+                _rci.DebugLine(start, end, color);
+
+                // SetShader(oldShader);
+            }
         }
 
+        /// <summary>
+        /// Gets the content of the buffer and passes it to the <see cref="IRenderCanvasImp"/>.
+        /// </summary>
+        /// <param name="quad">The <see cref="Rectangle"/>.</param>
+        /// <param name="texId">The <see cref="ITexture"/>.</param>
         public void GetBufferContent(Rectangle quad, ITexture texId)
         {
             _rci.GetBufferContent(quad, texId);
@@ -1438,6 +1486,46 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
         #endregion
 
         #endregion
+
+
+
+        /// <summary>
+        /// Apply a single render state to the render context. All subsequent rendering will be
+        /// performed using the currently set state unless it is changed to a different value.
+        /// </summary>
+        /// <param name="renderState">One of the <see cref="RenderState"/> enumaration values.</param>
+        /// <param name="value">An unsigned integer value representing the value the state should be set to.
+        ///  Depending on the renderState, this value can be interpreted as an integer value, a float value, a
+        /// boolean value, or even a color.  </param>
+        /// <remarks>This method is close to the underlying implementation layer and might be awkward to use
+        /// due to the ambiguity of the value parameter type. If you want type-safe state values and also 
+        /// want to set a couple of states at the same time, try the more 
+        /// elaborate <see cref="SetRenderState(RenderStateSet)"/> method.</remarks>
+        public void SetRenderState(RenderState renderState, uint value)
+        {
+            _rci.SetRenderState(renderState, value);
+        }
+
+        /// <summary>
+        /// Apply a number of render states to this render context. All subsequent rendering will be
+        /// performed using the currently set state set unless one of its values it is changed. Use this 
+        /// method to change more than one render state at once. 
+        /// </summary>
+        /// <param name="renderStateSet">A set of render states with their respective values to be set.</param>
+        public void SetRenderState(RenderStateSet renderStateSet)
+        {
+            foreach (var state in renderStateSet.States)
+            {
+                var theKey = state.Key;
+                var theValue = state.Value;
+                _rci.SetRenderState(theKey, theValue);
+            }
+        }
+
+        public uint GetRenderState(RenderState renderState)
+        {
+            return _rci.GetRenderState(renderState);
+        }
     }
 
 }

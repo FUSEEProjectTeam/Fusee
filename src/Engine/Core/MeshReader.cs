@@ -18,7 +18,7 @@ namespace Fusee.Engine
         /// Hack needed for JSIL.
         /// </summary>
         /// <param name="s">string to parse</param>
-        /// <returns>A double nuber</returns>
+        /// <returns>A double number</returns>
         // TODO: Get rid of this hack
         [JSExternal]
         public static double Double_Parse(string s)
@@ -191,9 +191,9 @@ namespace Fusee.Engine
         /// <summary>
         /// This method is used to split string in a list of strings based on the separator passed to the method.
         /// </summary>
-        /// <param name="strIn"></param>
-        /// <param name="separator"></param>
-        /// <returns></returns>
+        /// <param name="strIn">The STR in.</param>
+        /// <param name="separator">The separator.</param>
+        /// <returns>A string with all values without the separator.</returns>
         public static string[] FilteredSplit(string strIn, char[] separator)
         {
             string[] valuesUnfiltered = strIn.Split(separator);

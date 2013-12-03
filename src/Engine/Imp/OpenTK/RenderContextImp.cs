@@ -379,7 +379,7 @@ namespace Fusee.Engine
         /// The 4x4 projection matrix applied to view coordinates yielding clip space coordinates.
         /// </value>
         /// <remarks>
-        /// View coordinates are the result of the ModelView matrix multiplied to the geometry (<see cref="Fusee.Engine.RenderContext.ModelView"/>).
+        /// View coordinates are the result of the ModelView matrix multiplied to the geometry (<see cref="Fusee.Engine.RenderContextImp.ModelView"/>).
         /// The coordinate system of the view space has its origin in the camera center with the z axis aligned to the viewing direction, and the x- and
         /// y axes aligned to the viewing plane. Still, no projection from 3d space to the viewing plane has been performed. This is done by multiplying
         /// view coordinate geometry wihth the projection matrix. Typically, the projection matrix either performs a parallel projection or a perspective
@@ -738,6 +738,11 @@ namespace Fusee.Engine
             GL.End();
         }
 
+        /// <summary>
+        /// Gets the content of the buffer.
+        /// </summary>
+        /// <param name="quad">The Rectangle where the content is draw into.</param>
+        /// <param name="texId">The tex identifier.</param>
         public void GetBufferContent(Rectangle quad, ITexture texId)
         {
             GL.BindTexture(TextureTarget.Texture2D, ((Texture)texId).handle);
@@ -751,6 +756,429 @@ namespace Fusee.Engine
         public IMeshImp CreateMeshImp()
         {
             return new MeshImp();
+        }
+
+        internal static BlendEquationMode BlendOperationToOgl(BlendOperation bo)
+        {
+            switch (bo)
+            {
+                case BlendOperation.Add:
+                    return BlendEquationMode.FuncAdd;
+                case BlendOperation.Subtract:
+                    return BlendEquationMode.FuncSubtract;
+                case BlendOperation.ReverseSubtract:
+                    return BlendEquationMode.FuncReverseSubtract;
+                case BlendOperation.Minimum:
+                    return BlendEquationMode.Min;
+                case BlendOperation.Maximum:
+                    return BlendEquationMode.Max;
+                default:
+                    throw new ArgumentOutOfRangeException("bo");
+            }
+        }
+
+        internal static BlendOperation BlendOperationFromOgl(BlendEquationMode bom)
+        {
+            switch (bom)
+            {
+                case BlendEquationMode.FuncAdd:
+                    return BlendOperation.Add;
+                case BlendEquationMode.Min:
+                    return BlendOperation.Minimum;
+                case BlendEquationMode.Max:
+                    return BlendOperation.Maximum;
+                case BlendEquationMode.FuncSubtract:
+                    return BlendOperation.Subtract;
+                case BlendEquationMode.FuncReverseSubtract:
+                    return BlendOperation.ReverseSubtract;
+                default:
+                    throw new ArgumentOutOfRangeException("bom");
+            }
+        }
+
+        internal static int BlendToOgl(Blend blend, bool isForAlpha = false)
+        {
+            switch (blend)
+            {
+                case Blend.Zero:
+                    return (int)BlendingFactorSrc.Zero;
+                case Blend.One:
+                    return (int)BlendingFactorSrc.One;
+                case Blend.SourceColor:
+                    return (int)BlendingFactorDest.SrcColor;
+                case Blend.InverseSourceColor:
+                    return (int)BlendingFactorDest.OneMinusSrcColor;
+                case Blend.SourceAlpha:
+                    return (int)BlendingFactorSrc.SrcAlpha;
+                case Blend.InverseSourceAlpha:
+                    return (int)BlendingFactorSrc.OneMinusSrcAlpha;
+                case Blend.DestinationAlpha:
+                    return (int)BlendingFactorSrc.DstAlpha;
+                case Blend.InverseDestinationAlpha:
+                    return (int)BlendingFactorSrc.OneMinusDstAlpha;
+                case Blend.DestinationColor:
+                    return (int)BlendingFactorSrc.DstColor;
+                case Blend.InverseDestinationColor:
+                    return (int)BlendingFactorSrc.OneMinusDstColor;
+                case Blend.BlendFactor:
+                    return (int)((isForAlpha) ? BlendingFactorSrc.ConstantAlpha : BlendingFactorSrc.ConstantColor);
+                case Blend.InverseBlendFactor:
+                    return (int)((isForAlpha) ? BlendingFactorSrc.OneMinusConstantAlpha : BlendingFactorSrc.OneMinusConstantColor);
+                // Ignored...
+                // case Blend.SourceAlphaSaturated:
+                //     break;
+                //case Blend.Bothsrcalpha:
+                //    break;
+                //case Blend.BothInverseSourceAlpha:
+                //    break;
+                //case Blend.SourceColor2:
+                //    break;
+                //case Blend.InverseSourceColor2:
+                //    break;
+                default:
+                    throw new ArgumentOutOfRangeException("blend");
+            }
+        }
+
+        internal static Blend BlendFromOgl(int bf)
+        {
+            switch (bf)
+            {
+                case (int)BlendingFactorSrc.Zero:
+                    return Blend.Zero;
+                case (int)BlendingFactorSrc.One:
+                    return Blend.One;
+                case (int)BlendingFactorDest.SrcColor:
+                    return Blend.SourceColor;
+                case (int)BlendingFactorDest.OneMinusSrcColor:
+                    return Blend.InverseSourceColor;
+                case (int)BlendingFactorSrc.SrcAlpha:
+                    return Blend.SourceAlpha;
+                case (int)BlendingFactorSrc.OneMinusSrcAlpha:
+                    return Blend.InverseSourceAlpha;
+                case (int)BlendingFactorSrc.DstAlpha:
+                    return Blend.DestinationAlpha;
+                case (int)BlendingFactorSrc.OneMinusDstAlpha:
+                    return Blend.InverseDestinationAlpha;
+                case (int)BlendingFactorSrc.DstColor:
+                    return Blend.DestinationColor;
+                case (int)BlendingFactorSrc.OneMinusDstColor:
+                    return Blend.InverseDestinationColor;
+                case (int)BlendingFactorSrc.ConstantAlpha:
+                case (int)BlendingFactorSrc.ConstantColor:
+                    return Blend.BlendFactor;
+                case (int)BlendingFactorSrc.OneMinusConstantAlpha:
+                case (int)BlendingFactorSrc.OneMinusConstantColor:
+                    return Blend.InverseBlendFactor;
+                default:
+                    throw new ArgumentOutOfRangeException("blend");
+            }
+        }
+
+
+        public void SetRenderState(RenderState renderState, uint value)
+        {
+            switch (renderState)
+            {
+                case RenderState.FillMode:
+                    {
+                        PolygonMode pm;
+                        switch ((FillMode)value)
+                        {
+                            case FillMode.Point:
+                                pm = PolygonMode.Point;
+                                break;
+                            case FillMode.Wireframe:
+                                pm = PolygonMode.Line;
+                                break;
+                            case FillMode.Solid:
+                                pm = PolygonMode.Fill;
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException("value");
+                        }
+                        GL.PolygonMode(MaterialFace.FrontAndBack, pm);
+                        return;
+                    }
+                case RenderState.CullMode:
+                    {
+                        switch ((Cull)value)
+                        {
+                            case Cull.None:
+                                GL.Disable(EnableCap.CullFace);
+                                GL.FrontFace(FrontFaceDirection.Ccw);
+                                break;
+                            case Cull.Clockwise:
+                                GL.Enable(EnableCap.CullFace);
+                                GL.FrontFace(FrontFaceDirection.Cw);
+                                break;
+                            case Cull.Counterclockwise:
+                                GL.Enable(EnableCap.CullFace);
+                                GL.FrontFace(FrontFaceDirection.Ccw);
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException("value");
+                        }
+                    }
+                    break;
+                case RenderState.Clipping:
+                    // clipping is always on in OpenGL - This state is simply ignored
+                    break;
+                case RenderState.ZFunc:
+                    {
+                        DepthFunction df;
+                        switch ((Compare)value)
+                        {
+                            case Compare.Never:
+                                df = DepthFunction.Never;
+                                break;
+                            case Compare.Less:
+                                df = DepthFunction.Less;
+                                break;
+                            case Compare.Equal:
+                                df = DepthFunction.Equal;
+                                break;
+                            case Compare.LessEqual:
+                                df = DepthFunction.Lequal;
+                                break;
+                            case Compare.Greater:
+                                df = DepthFunction.Greater;
+                                break;
+                            case Compare.NotEqual:
+                                df = DepthFunction.Notequal;
+                                break;
+                            case Compare.GreaterEqual:
+                                df = DepthFunction.Gequal;
+                                break;
+                            case Compare.Always:
+                                df = DepthFunction.Always;
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException("value");
+                        }
+                        GL.DepthFunc(df);
+                    }
+                    break;
+                case RenderState.ZEnable:
+                    if (value == 0)
+                        GL.Disable(EnableCap.DepthTest);
+                    else
+                        GL.Enable(EnableCap.DepthTest);
+                    break;
+                case RenderState.AlphaBlendEnable:
+                    if (value == 0)
+                        GL.Disable(EnableCap.Blend);
+                    else
+                        GL.Enable(EnableCap.Blend);
+                    break;
+                case RenderState.BlendOperation:
+                    int alphaMode;
+                    GL.GetInteger(GetPName.BlendEquationAlpha, out alphaMode);
+                    GL.BlendEquationSeparate(BlendOperationToOgl((BlendOperation)value), (BlendEquationMode)alphaMode);
+                    break;
+                case RenderState.BlendOperationAlpha:
+                    int rgbMode;
+                    GL.GetInteger(GetPName.BlendEquationRgb, out rgbMode);
+                    GL.BlendEquationSeparate((BlendEquationMode)rgbMode, BlendOperationToOgl((BlendOperation)value));
+                    break;
+                case RenderState.SourceBlend:
+                    {
+                        int rgbDst, alphaSrc, alphaDst;
+                        GL.GetInteger(GetPName.BlendDstRgb, out rgbDst);
+                        GL.GetInteger(GetPName.BlendSrcAlpha, out alphaSrc);
+                        GL.GetInteger(GetPName.BlendDstAlpha, out alphaDst);
+                        GL.BlendFuncSeparate((BlendingFactorSrc)BlendToOgl((Blend)value),
+                                             (BlendingFactorDest)rgbDst,
+                                             (BlendingFactorSrc)alphaSrc,
+                                             (BlendingFactorDest)alphaDst);
+                    }
+                    break;
+                case RenderState.DestinationBlend:
+                    {
+                        int rgbSrc, alphaSrc, alphaDst;
+                        GL.GetInteger(GetPName.BlendSrcRgb, out rgbSrc);
+                        GL.GetInteger(GetPName.BlendSrcAlpha, out alphaSrc);
+                        GL.GetInteger(GetPName.BlendDstAlpha, out alphaDst);
+                        GL.BlendFuncSeparate((BlendingFactorSrc)rgbSrc,
+                                             (BlendingFactorDest)BlendToOgl((Blend)value),
+                                             (BlendingFactorSrc)alphaSrc,
+                                             (BlendingFactorDest)alphaDst);
+                    }
+                    break;
+                case RenderState.SourceBlendAlpha:
+                    {
+                        int rgbSrc, rgbDst, alphaDst;
+                        GL.GetInteger(GetPName.BlendSrcRgb, out rgbSrc);
+                        GL.GetInteger(GetPName.BlendDstRgb, out rgbDst);
+                        GL.GetInteger(GetPName.BlendDstAlpha, out alphaDst);
+                        GL.BlendFuncSeparate((BlendingFactorSrc)rgbSrc,
+                                             (BlendingFactorDest)rgbDst,
+                                             (BlendingFactorSrc)BlendToOgl((Blend)value, true),
+                                             (BlendingFactorDest)alphaDst);
+                    }
+                    break;
+                case RenderState.DestinationBlendAlpha:
+                    {
+                        int rgbSrc, rgbDst, alphaSrc;
+                        GL.GetInteger(GetPName.BlendSrcRgb, out rgbSrc);
+                        GL.GetInteger(GetPName.BlendDstRgb, out rgbDst);
+                        GL.GetInteger(GetPName.BlendSrcAlpha, out alphaSrc);
+                        GL.BlendFuncSeparate((BlendingFactorSrc)rgbSrc,
+                                             (BlendingFactorDest)rgbDst,
+                                             (BlendingFactorSrc)alphaSrc,
+                                             (BlendingFactorDest)BlendToOgl((Blend)value, true));
+                    }
+                    break;
+                case RenderState.BlendFactor:
+                    GL.BlendColor(Color.FromArgb((int)value));
+                    break;
+                /* TODO: Implement texture wrapping rahter as a texture property than a "global" render state. This is most
+                 * convenient to implment with OpenGL/TK and easier to mimic in DirectX than the other way round.
+                case RenderState.Wrap0:
+                    break;
+                case RenderState.Wrap1:
+                    break;
+                case RenderState.Wrap2:
+                    break;
+                case RenderState.Wrap3:
+                    break;
+                */
+                default:
+                    throw new ArgumentOutOfRangeException("renderState");
+            }
+        }
+
+        public uint GetRenderState(RenderState renderState)
+        {
+            switch (renderState)
+            {
+                case RenderState.FillMode:
+                    {
+                        int pm;
+                        FillMode ret;
+                        GL.GetInteger(GetPName.PolygonMode, out pm);
+                        switch ((PolygonMode)pm)
+                        {
+                            case PolygonMode.Point:
+                                ret = FillMode.Point;
+                                break;
+                            case PolygonMode.Line:
+                                ret = FillMode.Wireframe;
+                                break;
+                            case PolygonMode.Fill:
+                                ret = FillMode.Solid;
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException("pm", "Value " + ((PolygonMode)pm) + " not handled");
+                        }
+                        return (uint)ret;
+                    }
+                case RenderState.CullMode:
+                    {
+                        int cullFace;
+                        GL.GetInteger(GetPName.CullFace, out cullFace);
+                        if (cullFace == 0)
+                            return (uint)Cull.None;
+                        int frontFace;
+                        GL.GetInteger(GetPName.FrontFace, out frontFace);
+                        if (frontFace == (int)FrontFaceDirection.Cw)
+                            return (uint)Cull.Clockwise;
+                        return (uint)Cull.Counterclockwise;
+                    }
+                case RenderState.Clipping:
+                    // clipping is always on in OpenGL - This state is simply ignored
+                    return 1; // == true
+                case RenderState.ZFunc:
+                    {
+                        int depFunc;
+                        GL.GetInteger(GetPName.DepthFunc, out depFunc);
+                        Compare ret;
+                        switch ((DepthFunction)depFunc)
+                        {
+                            case DepthFunction.Never:
+                                ret = Compare.Never;
+                                break;
+                            case DepthFunction.Less:
+                                ret = Compare.Less;
+                                break;
+                            case DepthFunction.Equal:
+                                ret = Compare.Equal;
+                                break;
+                            case DepthFunction.Lequal:
+                                ret = Compare.LessEqual;
+                                break;
+                            case DepthFunction.Greater:
+                                ret = Compare.Greater;
+                                break;
+                            case DepthFunction.Notequal:
+                                ret = Compare.NotEqual;
+                                break;
+                            case DepthFunction.Gequal:
+                                ret = Compare.GreaterEqual;
+                                break;
+                            case DepthFunction.Always:
+                                ret = Compare.Always;
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException("depFunc", "Value " + ((DepthFunction)depFunc) + " not handled");
+                        }
+                        return (uint)ret;
+                    }
+                case RenderState.ZEnable:
+                    {
+                        int depTest;
+                        GL.GetInteger(GetPName.DepthTest, out depTest);
+                        return (uint)(depTest);
+                    }
+                case RenderState.AlphaBlendEnable:
+                    {
+                        int blendEnable;
+                        GL.GetInteger(GetPName.Blend, out blendEnable);
+                        return (uint)(blendEnable);
+                    }
+                case RenderState.BlendOperation:
+                    {
+                        int rgbMode;
+                        GL.GetInteger(GetPName.BlendEquationRgb, out rgbMode);
+                        return (uint)BlendOperationFromOgl((BlendEquationMode)rgbMode);
+                    }
+                case RenderState.BlendOperationAlpha:
+                    {
+                        int alphaMode;
+                        GL.GetInteger(GetPName.BlendEquationAlpha, out alphaMode);
+                        return (uint)BlendOperationFromOgl((BlendEquationMode)alphaMode);
+                    }
+                case RenderState.SourceBlend:
+                    {
+                        int rgbSrc;
+                        GL.GetInteger(GetPName.BlendSrcRgb, out rgbSrc);
+                        return (uint)BlendFromOgl(rgbSrc);
+                    }
+                case RenderState.DestinationBlend:
+                    {
+                        int rgbDst;
+                        GL.GetInteger(GetPName.BlendSrcRgb, out rgbDst);
+                        return (uint)BlendFromOgl(rgbDst);
+                    }
+                case RenderState.SourceBlendAlpha:
+                    {
+                        int alphaSrc;
+                        GL.GetInteger(GetPName.BlendSrcAlpha, out alphaSrc);
+                        return (uint)BlendFromOgl(alphaSrc);
+                    }
+                case RenderState.DestinationBlendAlpha:
+                    {
+                        int alphaDst;
+                        GL.GetInteger(GetPName.BlendDstAlpha, out alphaDst);
+                        return (uint)BlendFromOgl(alphaDst);
+                    }
+                case RenderState.BlendFactor:
+                    int col;
+                    GL.GetInteger(GetPName.BlendColorExt, out col);
+                    return (uint)col;
+                default:
+                    throw new ArgumentOutOfRangeException("renderState");
+            }
         }
 
         /// <summary>

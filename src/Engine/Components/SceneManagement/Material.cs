@@ -11,13 +11,34 @@ namespace Fusee.SceneManagement
     public class Material
     {
         #region Fields
+        /// <summary>
+        /// The img data of the first image.
+        /// </summary>
         protected ImageData imgData;
+        /// <summary>
+        /// The img data of the second image.
+        /// </summary>
         protected ImageData imgData2;
+        /// <summary>
+        /// The <see cref="ITexture"/> for the first texture.
+        /// </summary>
         protected ITexture iTex;
+        /// <summary>
+        /// The <see cref="ITexture"/> for the second texture.
+        /// </summary>
         protected ITexture iTex2;
+        /// <summary>
+        /// The color parameter that will be passed into the shader.
+        /// </summary>
         protected IShaderParam _vColorParam;
+        /// <summary>
+        /// The texture parameter that will be passed into the shader.
+        /// </summary>
         protected IShaderParam _texture1Param;
 
+        /// <summary>
+        /// The <see cref="ShaderProgram"/> that is used to render this material.
+        /// </summary>
         public ShaderProgram sp;
         #endregion
         #region Constructors

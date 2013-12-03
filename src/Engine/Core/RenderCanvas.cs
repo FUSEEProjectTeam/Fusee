@@ -121,6 +121,10 @@ namespace Fusee.Engine
                 _audioImp = ImpFactory.CreateIAudioImp();
         }
 
+        /// <summary>
+        /// Gets the name of the app.
+        /// </summary>
+        /// <returns>Name of the app as string.</returns>
         protected string GetAppName()
         {
             FuseeApplicationAttribute fae;
@@ -138,6 +142,9 @@ namespace Fusee.Engine
             }
         }
 
+        /// <summary>
+        /// Inits the canvas for the rendering loop.
+        /// </summary>
         protected void InitCanvas()
         {
             InitImplementors();

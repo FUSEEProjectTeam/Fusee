@@ -2,15 +2,34 @@
 
 namespace Fusee.Engine
 {
+
+    /// <summary>
+    /// The enum for the eye side selection.
+    /// </summary>
     public enum Stereo3DEye
     {
+        /// <summary>
+        /// The left eye = 0.
+        /// </summary>
         Left,
+        /// <summary>
+        /// The right eye = 1.
+        /// </summary>
         Right
     }
 
+    /// <summary>
+    /// The enum for the 3D Mode selection.
+    /// </summary>
     public enum Stereo3DMode
     {
+        /// <summary>
+        /// The anaglyph mode = 0.
+        /// </summary>
         Anaglyph,
+        /// <summary>
+        /// The oculus rift mode = 1.
+        /// </summary>
         Oculus
     }
 
@@ -20,6 +39,9 @@ namespace Fusee.Engine
         internal static float Convergence = 0f;
     }
 
+    /// <summary>
+    /// Rendering of stereo 3D graphics in anaglyph or oculus rift mode.
+    /// </summary>
     public class Stereo3D
     {
         private readonly RenderContext _rc;
@@ -28,6 +50,12 @@ namespace Fusee.Engine
         private readonly Stereo3DMode _activeMode;
         private Stereo3DEye _currentEye;
 
+        /// <summary>
+        /// Gets the current eye.
+        /// </summary>
+        /// <value>
+        /// The current eye side enum. left=0, right=1.
+        /// </value>
         public Stereo3DEye CurrentEye
         {
             get { return _currentEye; }
@@ -155,6 +183,13 @@ namespace Fusee.Engine
 
         #endregion
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Stereo3D"/> class.
+        /// </summary>
+        /// <param name="rc">The <see cref="RenderContext"/>.</param>
+        /// <param name="mode">The 3D rendering mode. anaglyph=0, oculus=1.</param>
+        /// <param name="width">The width of the render output in pixels.</param>
+        /// <param name="height">The height of the render output in pixels.</param>
         public Stereo3D(RenderContext rc, Stereo3DMode mode, int width, int height)
         {
             _rc = rc;
@@ -194,6 +229,10 @@ namespace Fusee.Engine
             }
         }
 
+        /// <summary>
+        /// Prepares the specified eye side for 3D rendering.
+        /// </summary>
+        /// <param name="eye">The <see cref="Stereo3DEye"/>.</param>
         public void Prepare(Stereo3DEye eye)
         {
             _currentEye = eye;
@@ -222,6 +261,9 @@ namespace Fusee.Engine
             _rc.Clear(ClearFlags.Color | ClearFlags.Depth);
         }
 
+        /// <summary>
+        /// Saves this instance.
+        /// </summary>
         public void Save()
         {
             switch (_activeMode)
@@ -251,6 +293,9 @@ namespace Fusee.Engine
             }
         }
 
+        /// <summary>
+        /// Displays the result as rendering output on the <see cref="RenderContext"/>.
+        /// </summary>
         public void Display()
         {
             _rc.ClearColor = new float4(0, 0, 0, 0); // _clearColor
@@ -368,6 +413,14 @@ namespace Fusee.Engine
             _rc.Render(_planeMesh);
         }
 
+        /// <summary>
+        /// Aligns the <see cref="Stereo3DEye"/> to the target point.
+        /// </summary>
+        /// <param name="eye">The <see cref="Stereo3DEye"/>.</param>
+        /// <param name="eyeV">The eye vector.</param>
+        /// <param name="target">The target.</param>
+        /// <param name="up">Up vector.</param>
+        /// <returns>A Matrix that represents the current eye's orientation towards a target point.</returns>
         public float4x4 LookAt3D(Stereo3DEye eye, float3 eyeV, float3 target, float3 up)
         {
             var x = (eye == Stereo3DEye.Left)

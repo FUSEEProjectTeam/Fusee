@@ -8,13 +8,22 @@ using Fusee.Math;
 namespace Fusee.SceneManagement
 {
     /// <summary>
-    /// Renderer is derived from Component. Creates a usable ingame object.
+    /// Renderer is derived from Component. Creates a drawable ingame object.
     /// </summary>
     public class Renderer : Component
     {
         #region Fields
+        /// <summary>
+        /// The mesh.
+        /// </summary>
         public Mesh mesh;
+        /// <summary>
+        /// The material.
+        /// </summary>
         public Material material;
+        /// <summary>
+        /// The color.
+        /// </summary>
         public float4 color;
         #endregion
         #region Constructors

@@ -370,5 +370,8 @@ namespace Fusee.Engine
         /// </summary>
         /// <returns>The <see cref="IMeshImp" /> instance.</returns>
         IMeshImp CreateMeshImp();
+        void SetRenderState(RenderState renderState, uint value);
+
+        uint GetRenderState(RenderState renderState);
     }
 }

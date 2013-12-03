@@ -176,7 +176,7 @@ namespace Fusee.Engine
         /// Sends the message with <see cref="MessageDelivery"/>.RealiableOrdered on channel 0.
         /// </summary>
         /// <param name="msg">The message in byte[].</param>
-        /// <returns></returns>
+        /// <returns>True if the message arrived.</returns>
         public bool SendMessage(byte[] msg)
         {
             return SendMessage(msg, MessageDelivery.ReliableOrdered, 0);
@@ -188,7 +188,7 @@ namespace Fusee.Engine
         /// <param name="msg">The message in byte[].</param>
         /// <param name="msgDelivery">The <see cref="MessageDelivery"/>.</param>
         /// <param name="channelID">The channel identifier.</param>
-        /// <returns></returns>
+        /// <returns>True if the message arrived.</returns>
         public bool SendMessage(byte[] msg, MessageDelivery msgDelivery, int channelID)
         {
             return _networkImp.SendMessage(msg, msgDelivery, channelID);

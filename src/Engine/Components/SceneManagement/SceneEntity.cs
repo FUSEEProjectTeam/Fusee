@@ -249,7 +249,7 @@ namespace Fusee.SceneManagement
         /// Gets all child SceneEntities of the current SceneEntity. 
         /// If no children are attached to this SceneEntity null is returned.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>All child component of this <see cref="SceneEntity"/>.</returns>
         public SceneEntity[] GetChildren()
         {
             return _childSceneEntities.ToArray();
@@ -258,8 +258,8 @@ namespace Fusee.SceneManagement
         /// <summary>
         /// Gets the specified type of Component from the SceneEntity.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
+        /// <typeparam name="T">The specified type. This has to be a derivate of the <see cref="Component"/> class.</typeparam>
+        /// <returns>The first component of the specified type if one is found, otherwise null.</returns>
         public T GetComponent<T>()
         {
             foreach (var childComponent in _childComponents)
@@ -277,7 +277,7 @@ namespace Fusee.SceneManagement
         /// Gets all components of specified type from this current SceneEntity.
         /// </summary>
         /// <typeparam name="T">This is the type of the Component. The type in this case can be any derivate of the Component class, e.g. <see cref="Renderer"/></typeparam>
-        /// <returns>On successful search a list of Components is returned.</returns>
+        /// <returns>On successful search a list of Components of specified type is returned.</returns>
         public T[] GetComponents<T>()
         {
             List<T> componentItems = new List<T>();

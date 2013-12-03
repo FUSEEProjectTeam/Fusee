@@ -306,6 +306,7 @@ namespace Fusee.Math
         /// </summary>
         /// <param name="a">The first value.</param>
         /// <param name="b">The second value.</param>
+        /// <returns>True if the numbers are equal.</returns>
         public static bool Equals(double a, double b)
         {
             return (System.Math.Abs(a - b) < EpsilonDouble);
@@ -316,6 +317,7 @@ namespace Fusee.Math
         /// </summary>
         /// <param name="a">The first value.</param>
         /// <param name="b">The second value.</param>
+        /// <returns>True if the numbers are equal.</returns>
         public static bool Equals(float a, float b)
         {
             return (System.Math.Abs(a - b) < EpsilonFloat);
