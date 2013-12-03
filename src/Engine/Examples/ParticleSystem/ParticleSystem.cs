@@ -1,11 +1,12 @@
-﻿using System;
+using System;
 using Fusee.Engine;
 using Fusee.Math;
 
-namespace Examples.Simple
+
+namespace Examples.ParticleSystem
 {
-    [FuseeApplication(Name = "Simple Example", Description = "A very simple example.")]
-    public class Simple : RenderCanvas
+    [FuseeApplication(Name = "Particle System", Description = "A very simple example.")]
+    public class ParticleSystem : RenderCanvas
     {
         // angle variables
         private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
@@ -15,24 +16,27 @@ namespace Examples.Simple
 
         // model variables
         private Mesh _meshFace;
-        private Mesh _meshTea;
-        
+        //private Mesh _meshTea = new ParticleEmitter();
+
+        private ParticleEmitter _particleEmitter;
         // variables for shader
         private ShaderProgram _spColor;
         private ShaderProgram _spTexture;
 
         private IShaderParam _colorParam;
         private IShaderParam _textureParam;
-        
+
         private ITexture _iTex;
 
         // is called on startup
         public override void Init()
         {
-            RC.ClearColor = new float4(1, 1, 1, 1);
+            RC.ClearColor = new float4(0.7f, 0.7f, 1, 1);
+
+            _particleEmitter = new ParticleEmitter(1);
 
             // initialize the variables
-            _meshTea = MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
+            //_meshTea = new ParticleEmitter();//MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
             _meshFace = MeshReader.LoadMesh(@"Assets/Face.obj.model");
 
             _spColor = MoreShaders.GetShader("simple", RC);
@@ -43,6 +47,7 @@ namespace Examples.Simple
 
             // load texture
             var imgData = RC.LoadImage("Assets/world_map.jpg");
+            //var imgData = RC.LoadImage("Assets/smoke_particle.png");
             _iTex = RC.CreateTexture(imgData);
 
         }
@@ -50,17 +55,17 @@ namespace Examples.Simple
         // is called once a frame
         public override void RenderAFrame()
         {
-            
+
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
             // move per mouse
             if (Input.Instance.IsButton(MouseButtons.Left))
             {
-                _angleVelHorz = RotationSpeed*Input.Instance.GetAxis(InputAxis.MouseX);
-                _angleVelVert = RotationSpeed*Input.Instance.GetAxis(InputAxis.MouseY);
+                _angleVelHorz = RotationSpeed * Input.Instance.GetAxis(InputAxis.MouseX);
+                _angleVelVert = RotationSpeed * Input.Instance.GetAxis(InputAxis.MouseY);
             }
             else
             {
-                var curDamp = (float) Math.Exp(-Damping*Time.Instance.DeltaTime);
+                var curDamp = (float)Math.Exp(-Damping * Time.Instance.DeltaTime);
 
                 _angleVelHorz *= curDamp;
                 _angleVelVert *= curDamp;
@@ -71,31 +76,34 @@ namespace Examples.Simple
 
             // move per keyboard
             if (Input.Instance.IsKey(KeyCodes.Left))
-                _angleHorz -= RotationSpeed*(float) Time.Instance.DeltaTime;
+                _angleHorz -= RotationSpeed * (float)Time.Instance.DeltaTime;
 
             if (Input.Instance.IsKey(KeyCodes.Right))
-                _angleHorz += RotationSpeed*(float) Time.Instance.DeltaTime;
+                _angleHorz += RotationSpeed * (float)Time.Instance.DeltaTime;
 
             if (Input.Instance.IsKey(KeyCodes.Up))
-                _angleVert -= RotationSpeed*(float) Time.Instance.DeltaTime;
+                _angleVert -= RotationSpeed * (float)Time.Instance.DeltaTime;
 
             if (Input.Instance.IsKey(KeyCodes.Down))
-                _angleVert += RotationSpeed*(float) Time.Instance.DeltaTime;
+                _angleVert += RotationSpeed * (float)Time.Instance.DeltaTime;
 
-            var mtxRot = float4x4.CreateRotationY(_angleHorz)*float4x4.CreateRotationX(_angleVert);
+            var mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
             var mtxCam = float4x4.LookAt(0, 200, 500, 0, 0, 0, 0, 1, 0);
 
             // first mesh
-            //RC.ModelView = float4x4.CreateTranslation(0, -50, 0)*mtxRot*float4x4.CreateTranslation(-150, 0, 0)*mtxCam;
+            RC.ModelView = float4x4.CreateTranslation(0, -50, 0)*mtxRot*float4x4.CreateTranslation(-150, 0, 0)*mtxCam;
             RC.ModelView = new float4x4(15, 0, 0, 0, 0, 15, 0, 0, 0, 0, 15, 0, 0, 0, 0, 1) * mtxRot * float4x4.CreateTranslation(-150, 0, 0) * mtxCam;
 
-            RC.SetShader(_spColor);
-            RC.SetShaderParam(_colorParam, new float4(0.5f, 0.8f, 0, 1));
+            RC.SetShader(_spTexture);
+            RC.SetShaderParamTexture(_textureParam, _iTex);
+
+            _particleEmitter.Tick(Time.Instance.DeltaTime);
             
-            RC.Render(_meshTea);
+            RC.Render(_particleEmitter.ParticleMesh);
+            
 
             // second mesh
-            RC.ModelView = mtxRot*float4x4.CreateTranslation(150, 0, 0)*mtxCam;
+            RC.ModelView = mtxRot * float4x4.CreateTranslation(150, 0, 0) * mtxCam;
 
             RC.SetShader(_spTexture);
             RC.SetShaderParamTexture(_textureParam, _iTex);
@@ -112,13 +120,13 @@ namespace Examples.Simple
         {
             RC.Viewport(0, 0, Width, Height);
 
-            var aspectRatio = Width/(float) Height;
+            var aspectRatio = Width / (float)Height;
             RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 5000);
         }
 
         public static void Main()
         {
-            var app = new Simple();
+            var app = new ParticleSystem();
             app.Run();
         }
     }

@@ -868,7 +868,7 @@ void main()
             void main()
             {
                 gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
-                vNormal = mat3(FUSEE_ITMV[0].xyz, FUSEE_ITMV[1].xyz, FUSEE_ITMV[2].xyz) * fuNormal;
+                vNormal = normalize(mat3(FUSEE_ITMV[0].xyz, FUSEE_ITMV[1].xyz, FUSEE_ITMV[2].xyz) * fuNormal);
                 vUV = fuUV;
             }";
 
@@ -925,7 +925,7 @@ void main()
             void main()
             {
                 gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
-                vNormal = mat3(FUSEE_ITMV[0].xyz, FUSEE_ITMV[1].xyz, FUSEE_ITMV[2].xyz) * fuNormal;
+                vNormal = normalize(mat3(FUSEE_ITMV[0].xyz, FUSEE_ITMV[1].xyz, FUSEE_ITMV[2].xyz) * fuNormal);
                 vUV = fuUV;
             }";
 

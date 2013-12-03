@@ -66,6 +66,7 @@
     <Compile Include="MeshReader.cs" />
     <Compile Include="MoreShaders.cs" />
     <Compile Include="Network.cs" />
+    <Compile Include="ParticleEmitter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RenderCanvas.cs" />
     <Compile Include="RenderContext.cs" />
