@@ -1173,7 +1173,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
                 case $fuseeCommon.Fusee.Engine.Blend.InverseSourceColor.value:
                     return this.gl.ONE_MINUS_SRC_COLOR;
                 case $fuseeCommon.Fusee.Engine.Blend.SourceAlpha.value:
-                    return this.gl.SRCALPHA;
+                    return this.gl.SRC_ALPHA;
                 case $fuseeCommon.Fusee.Engine.Blend.InverseSourceAlpha.value:
                     return this.gl.ONE_MINUS_SRC_ALPHA;
                 case $fuseeCommon.Fusee.Engine.Blend.DestinationAlpha.value:
