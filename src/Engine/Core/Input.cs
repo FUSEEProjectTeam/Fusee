@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using SlimDX.DirectInput;
 
 namespace Fusee.Engine
 {
@@ -12,9 +11,8 @@ namespace Fusee.Engine
         #region Fields
 
         private static Input _instance;
-        //Neu
+
         List<InputDevice> _devices = new List<InputDevice>();
-        List<GameController> gameControllers = new List<GameController>();
 
         internal IInputImp InputImp
         {
@@ -243,45 +241,20 @@ namespace Fusee.Engine
             _keysDown.Clear();
             _keysUp.Clear();
         }
-        //Neu
-        public void GetAllDevices ()
-        {
-            DirectInput directInput = new DirectInput();
-            foreach (DeviceInstance deviceInstance in directInput.GetDevices())
-            {
-                System.Diagnostics.Debug.WriteLine(deviceInstance.InstanceName);
-                
-            }
-        }
-        //neu
-        
+
 
         //neu 
         public void InitializeDevices()
         {
-            DirectInput directInput = new DirectInput();
-            var devices = directInput.GetDevices(DeviceClass.GameController, DeviceEnumerationFlags.AttachedOnly);
-            
-            
-            foreach (DeviceInstance deviceInstance in devices)
-            {
-                System.Diagnostics.Debug.WriteLine(deviceInstance.ProductName);
-                gameControllers.Add(new GameController(deviceInstance));
-                
-            }
+            _inputImp.InitializeDevices();
         }
 
         //neu
         public GameController GetGameController (int index)
         {
-            if (gameControllers.Count > index && gameControllers[index] != null)
-            {
-                return gameControllers[index];
-            }
-            
-                return gameControllers[0];
-            
+            InputImp.GetGameController(index);
         }
+        
 
        
 
@@ -319,7 +292,7 @@ namespace Fusee.Engine
         }
 
       
-
+       
         
         /// <summary>
         /// Provides the Instance of the Input Class.
@@ -334,6 +307,11 @@ namespace Fusee.Engine
                 }
                 return _instance;
             }
+        }
+
+        public void createDevices()
+        {
+            _devices = InputDevice.getDevices();
         }
 
         #endregion

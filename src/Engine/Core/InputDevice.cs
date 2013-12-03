@@ -1,19 +1,23 @@
 ﻿using System;
 using SlimDX.DirectInput;
+using Fusee.Engine;
+using System.Collections.Generic;
 
 namespace Fusee.Engine
 {
     class InputDevice
     {
-        public InputDevice (DeviceInstance deviceInstance)
+        private IInputDeviceImp _inputdevice;
+
+
+
+
+        public static List<InputDevice> getDevices()
         {
-            
+            List<InputDevice> tempList = new List<InputDevice>();
+                
+
+            return tempList;
         }
-        private String name;
-        private Input.DeviceCategory deviceCategory;
-        //private bool isButtonDown(int iButton)
-        //{
-            
-        //}
     }
 }

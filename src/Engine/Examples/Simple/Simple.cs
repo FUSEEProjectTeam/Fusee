@@ -10,7 +10,7 @@ namespace Examples.Simple
     public class Simple : RenderCanvas
     {
         //private GameController gameController;
-
+        InputDevice x;
         // model variables
         private Mesh _meshTea, _meshFace;
 

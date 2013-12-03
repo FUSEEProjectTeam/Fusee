@@ -1,5 +1,6 @@
 ﻿using System;
 
+
 namespace Fusee.Engine
 {
     /// <summary>
@@ -64,5 +65,11 @@ namespace Fusee.Engine
         /// Trigger this event in your implementation once a key on the keyboard is released.
         /// </summary>
         event EventHandler<KeyEventArgs> KeyUp;
+
+        void InitializeDevices();
+
+
+        
+
     }
 }

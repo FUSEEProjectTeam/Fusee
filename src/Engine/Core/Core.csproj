@@ -59,7 +59,6 @@
     <Compile Include="Audio.cs" />
     <Compile Include="Cube.cs" />
     <Compile Include="Diagnostics.cs" />
-    <Compile Include="GameController.cs" />
     <Compile Include="Geometry.cs" />
     <Compile Include="ImpFactory.cs" />
     <Compile Include="Input.cs" />
