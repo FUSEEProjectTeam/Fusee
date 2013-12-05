@@ -9,7 +9,7 @@ namespace Fusee.Engine
     {
         IRigidBodyImp RigidBodyA { get; }
         IRigidBodyImp RigidBodyB { get; }
-
+        
         int GetUid();
         object UserObject { get; set; }
     }

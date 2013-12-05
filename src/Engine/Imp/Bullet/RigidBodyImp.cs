@@ -16,7 +16,7 @@ namespace Fusee.Engine
         internal RigidBody _rbi;
         internal Translater Translater = new Translater();
         
-
+         
         private float _mass;
         public float Mass 
         {
@@ -43,7 +43,7 @@ namespace Fusee.Engine
             set
             {
                 var o = (RigidBodyImp)_rbi.UserObject;
-                o._rbi.SetMassProps(_mass, new Vector3(value.x, value.y, value.z));
+                o._rbi.SetMassProps(_mass, Translater.Float3ToBtVector3(value));
                 _inertia = value;
             } 
         }
@@ -92,7 +92,7 @@ namespace Fusee.Engine
         public void ApplyForce(float3 force, float3 relPos)
         {
             var o = (RigidBodyImp)_rbi.UserObject;
-            o._rbi.ApplyForce(new Vector3(force.x, force.y, force.z), new Vector3(relPos.x, relPos.y, relPos.z));
+            o._rbi.ApplyForce(Translater.Float3ToBtVector3(force), Translater.Float3ToBtVector3(relPos));
         }
 
         private float3 _applyTorque;
@@ -105,7 +105,7 @@ namespace Fusee.Engine
             set
             {
                 var o = (RigidBodyImp)_rbi.UserObject;
-                o._rbi.ApplyTorque(new Vector3(value.x  *10*10 , value.y *10*10 , value.z *10*10 ));
+                o._rbi.ApplyTorque(Translater.Float3ToBtVector3(value*10));
             }
         }
 
@@ -113,7 +113,7 @@ namespace Fusee.Engine
         {
             var o = (RigidBodyImp)_rbi.UserObject;
            // impulse *= 10;
-            o._rbi.ApplyImpulse(new Vector3(impulse.x, impulse.y, impulse.z), new Vector3(relPos.x, relPos.y, relPos.z));
+            o._rbi.ApplyImpulse(Translater.Float3ToBtVector3(impulse), Translater.Float3ToBtVector3(relPos));
         }
 
 
@@ -127,7 +127,7 @@ namespace Fusee.Engine
             set
             {
                 var o = (RigidBodyImp)_rbi.UserObject;
-                o._rbi.ApplyTorqueImpulse(new Vector3(value.x  *10 , value.y *10 , value.z *10 ));
+                o._rbi.ApplyTorqueImpulse(Translater.Float3ToBtVector3(value * 10));
                 _torqueImpulse = value*10;
             }
         }
@@ -142,7 +142,7 @@ namespace Fusee.Engine
             set
             {
                 var o = (RigidBodyImp)_rbi.UserObject;
-                o._rbi.ApplyCentralForce(new Vector3(value.x *10 , value.y *10 , value.z *10 ));
+                o._rbi.ApplyCentralForce(Translater.Float3ToBtVector3(value * 10));
                 _centralForce = value*10;
             }
         }
@@ -157,7 +157,7 @@ namespace Fusee.Engine
             set
             {
                 var o = (RigidBodyImp)_rbi.UserObject;
-                o._rbi.ApplyCentralImpulse(new Vector3(value.x *10 , value.y *10 , value.z *10 ));
+                o._rbi.ApplyCentralImpulse(Translater.Float3ToBtVector3(value * 10));
                 _centralImpulse = value*10;
             }
         }
@@ -166,12 +166,12 @@ namespace Fusee.Engine
         {
             get
             {
-                var retval = new float3(_rbi.LinearVelocity.X, _rbi.LinearVelocity.Y, _rbi.LinearVelocity.Z);
+                var retval = Translater.BtVector3ToFloat3(_rbi.LinearVelocity);
                 return retval;
             } 
             set
             {
-                var linVel = new Vector3(value.x, value.y, value.z);
+                var linVel = Translater.Float3ToBtVector3(value);
                 var o = (RigidBodyImp) _rbi.UserObject;
                 o._rbi.LinearVelocity = linVel;
             }
@@ -181,12 +181,12 @@ namespace Fusee.Engine
         {
             get
             {
-                var retval = new float3(_rbi.AngularVelocity.X, _rbi.AngularVelocity.Y, _rbi.AngularVelocity.Z);
+                var retval = Translater.BtVector3ToFloat3(_rbi.AngularVelocity);
                 return retval;
             }
             set
             {
-                var angVel = new Vector3(value.x, value.y, value.z);
+                var angVel = Translater.Float3ToBtVector3(value);
                 var o = (RigidBodyImp)_rbi.UserObject;
                 o._rbi.AngularVelocity = angVel;
             }
@@ -196,12 +196,12 @@ namespace Fusee.Engine
         {
             get
             {
-                var retval = new float3(_rbi.LinearFactor.X, _rbi.LinearFactor.Y, _rbi.LinearFactor.Z);
+                var retval = Translater.BtVector3ToFloat3(_rbi.LinearFactor);
                 return retval;
             }
             set
             {
-                var linfac = new Vector3(value.x, value.y, value.z);
+                var linfac = Translater.Float3ToBtVector3(value);
                 var o = (RigidBodyImp)_rbi.UserObject;
                 o._rbi.LinearFactor = linfac;
             }
@@ -211,12 +211,12 @@ namespace Fusee.Engine
         {
             get
             {
-                var retval = new float3(_rbi.AngularFactor.X, _rbi.AngularFactor.Y, _rbi.AngularFactor.Z);
+                var retval = Translater.BtVector3ToFloat3(_rbi.AngularFactor);
                 return retval;
             }
             set
             {
-                var angfac = new Vector3(value.x, value.y, value.z);
+                var angfac = Translater.Float3ToBtVector3(value);
                 var o = (RigidBodyImp)_rbi.UserObject;
                 o._rbi.AngularFactor = angfac;
             }

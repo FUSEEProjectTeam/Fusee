@@ -26,5 +26,10 @@ namespace Fusee.Engine
                 return (RigidBody)retval;
             }
         }
+        public int GetUid()
+        {
+            var retval = _iSliderConstraintImp.GetUid();
+            return retval;
+        }
     }
 }

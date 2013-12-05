@@ -5,10 +5,10 @@ namespace Fusee.Engine
 {
     public enum PointToPointFlags
     {
-        CONSTRAINT_PARAM_ERP = 1,
-        CONSTRAINT_PARAM_STOP_ERP = 2,
-        CONSTRAINT_PARAM_CFM = 3,
-        CONSTRAINT_PARAM_STOP_CFM = 4
+        PointToPointFlagsErp = 1,
+        PointToPointFlagsStopErp = 2,
+        PointToPointFlagsCfm = 3,
+        PointToPointFlagsStopCfm = 4
     };
 
     public interface IPoint2PointConstraintImp : IConstraintImp

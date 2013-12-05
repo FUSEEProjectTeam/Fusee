@@ -50,16 +50,16 @@ namespace Fusee.Engine
             ConstraintParam constraintParam;
             switch (param)
             {
-                case PointToPointFlags.CONSTRAINT_PARAM_ERP:
+                case PointToPointFlags.PointToPointFlagsErp:
                     constraintParam = ConstraintParam.Erp;
                     break;
-                case PointToPointFlags.CONSTRAINT_PARAM_STOP_ERP:
+                case PointToPointFlags.PointToPointFlagsStopErp:
                     constraintParam = ConstraintParam.StopErp;
                     break;
-                case PointToPointFlags.CONSTRAINT_PARAM_CFM:
+                case PointToPointFlags.PointToPointFlagsCfm:
                     constraintParam = ConstraintParam.Cfm;
                     break;
-                case PointToPointFlags.CONSTRAINT_PARAM_STOP_CFM:
+                case PointToPointFlags.PointToPointFlagsStopCfm:
                     constraintParam = ConstraintParam.StopCfm;
                     break;
                 default:
@@ -77,16 +77,16 @@ namespace Fusee.Engine
             int constraintParam;
             switch (param)
             {
-                case PointToPointFlags.CONSTRAINT_PARAM_ERP:
+                case PointToPointFlags.PointToPointFlagsErp:
                     constraintParam = 1;
                     break;
-                case PointToPointFlags.CONSTRAINT_PARAM_STOP_ERP:
+                case PointToPointFlags.PointToPointFlagsStopErp:
                     constraintParam = 2;
                     break;
-                case PointToPointFlags.CONSTRAINT_PARAM_CFM:
+                case PointToPointFlags.PointToPointFlagsCfm:
                     constraintParam = 3;
                     break;
-                case PointToPointFlags.CONSTRAINT_PARAM_STOP_CFM:
+                case PointToPointFlags.PointToPointFlagsStopCfm:
                     constraintParam = 4;
                     break;
                 default:

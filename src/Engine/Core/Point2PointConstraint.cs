@@ -66,5 +66,11 @@ namespace Fusee.Engine
                 return (RigidBody)retval;
             }
         }
+
+        public int GetUid()
+        {
+            var retval = _iP2PConstraintImp.GetUid();
+            return retval;
+        }
     }
 }

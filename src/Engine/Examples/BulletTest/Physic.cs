@@ -24,7 +24,7 @@ namespace Examples.BulletTest
 
             //FallingTower();
             //Ground();
-            InitPoint2PointConstraint();
+            //InitPoint2PointConstraint();
             InitHingeConstraint();
             //InitSliderConstraint();
 
@@ -80,7 +80,8 @@ namespace Examples.BulletTest
             var rbB = _world.AddRigidBody(1, new float3(-300, 500, 0), mesh, new float3(0, 0, 0));
             var p2p = _world.AddPoint2PointConstraint(rbA, rbB, new float3(105, -150, -150), new float3(0, 100, 0));
             //var p2p = _world.AddPoint2PointConstraint(rbA, new float3(105, -200, -150));
-            p2p.SetParam(PointToPointFlags.CONSTRAINT_PARAM_CFM, 0.9f);
+            p2p.SetParam(PointToPointFlags.PointToPointFlagsCfm, 0.9f);
+  
         }
 
         public void InitHingeConstraint()
@@ -90,13 +91,16 @@ namespace Examples.BulletTest
             rbA.LinearFactor = new float3(0, 0, 0);
             rbA.AngularFactor = new float3(0, 0, 0);
 
-            var rbB = _world.AddRigidBody(1, new float3(400,500, 0), mesh, new float3(0, 0, 0));
+            var rbB = _world.AddRigidBody(1, new float3(200,500, 0), mesh, new float3(0, 0, 0));
 
             var frameInA = float4x4.Identity;
             frameInA.Row3 = new float4(0,50,0,1);
             var frameInB = float4x4.Identity;
-            frameInA.Row3 = new float4(0, -300, 0, 1);
-            var hc = _world.AddHingeConstraint(rbA, rbB, frameInA, frameInB);
+            frameInA.Row3 = new float4(0, -300, 1, 1);
+            
+            var hc = _world.AddHingeConstraint(rbA, rbB, new float3(100, -300, 0), new float3(0, 100, 0), new float3(0, 0, 1), new float3(0, 0, 1), false);
+
+            hc.SetLimit(-(float)Math.PI * 0.25f, (float)Math.PI * 0.25f);
         }
 
         public void InitSliderConstraint()
@@ -112,7 +116,7 @@ namespace Examples.BulletTest
             frameInA.Row3 = new float4(0,1,0,1);
             var frameInB = float4x4.Identity;
             frameInA.Row3 = new float4(0, 0, 0, 1);
-            var sc = _world.AddSliderConstraint(rbA, rbB, frameInA, frameInB, false);
+            var sc = _world.AddSliderConstraint(rbA, rbB, frameInA, frameInB, true);
 
         }
 
