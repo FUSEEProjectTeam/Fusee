@@ -60,6 +60,7 @@
     <Compile Include="Cube.cs" />
     <Compile Include="Diagnostics.cs" />
     <Compile Include="DynamicWorld.cs" />
+    <Compile Include="GearConstraint.cs" />
     <Compile Include="Geometry.cs" />
     <Compile Include="HingeConstraint.cs" />
     <Compile Include="ImpFactory.cs" />

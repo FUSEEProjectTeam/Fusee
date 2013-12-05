@@ -3,6 +3,7 @@ using System.Diagnostics;
 using Fusee.Engine;
 using Fusee.Math;
 using BulletSharp;
+using GearConstraint = BulletSharp.GearConstraint;
 using Point2PointConstraint = BulletSharp.Point2PointConstraint;
 using RigidBody = BulletSharp.RigidBody;
 using SliderConstraint = BulletSharp.SliderConstraint;
@@ -45,13 +46,13 @@ namespace Examples.BulletSharp
           
             World = new DiscreteDynamicsWorld(Dispatcher, Broadphase, Solver, CollisionConf)
             {
-                Gravity = new Vector3(0, -9.81f  /* *10.0f */, 0)
+                Gravity = new Vector3(0, -9.81f *10.0f , 0)
             };
             World.SolverInfo.NumIterations = 8;
             Ground();
-            FallingTower();
+            //FallingTower();
             //Constraints();
-
+            Tester();
             
 
             
@@ -66,7 +67,7 @@ namespace Examples.BulletSharp
                 for (int c = -size; c < size; c++)
                 {
                    
-                    var pos = new float3(b * 5, 0, c * 5);
+                    var pos = new float3(b * 10, 0, c * 10);
                     var startTransform = Matrix.Translation(pos.x, pos.y, pos.z);
                     var myMotionState = new DefaultMotionState(startTransform);
                     var rbInfo = new RigidBodyConstructionInfo(0, myMotionState, new BoxShape(2));
@@ -142,13 +143,46 @@ namespace Examples.BulletSharp
             p2p1.SetParam(1, 0.1f, 1);
             p2p1.Setting.Tau = 0.0001f; 
             
+            
+           
+
             var hinge = new HingeConstraint(rigidBodyA, posA, posB);
+          
             
             var slider = new SliderConstraint(rigidBodyA, rigidBodyB, startTransformA, startTransformB, true);
-          
+            var sl1 = new SliderConstraint(rigidBodyA, startTransformB, true);
+            var coneTwist = new ConeTwistConstraint(rigidBodyA, rigidBodyB, startTransformA, startTransformB);
+            var dof6 = new Generic6DofConstraint(rigidBodyA, rigidBodyB, startTransformA, startTransformB, false);
+            var gear = new GearConstraint(rigidBodyA, rigidBodyB, pivotInA, pivotInA, 0.5f);
+            
+        }
+
+
+        public void Tester()
+        {
+            var posA = new Vector3(0,500, 0);
+            var startTransformA = Matrix.Translation(0, 350, 0);
+            var myMotionStateA = new DefaultMotionState(startTransformA);
+            var colShape = new SphereShape(5);
+            var rbInfoA = new RigidBodyConstructionInfo(1, myMotionStateA, colShape);
+            var rigidBodyA = new RigidBody(rbInfoA);
+            _world.AddRigidBody(rigidBodyA);
+
+
+            var posB = new Vector3(20, 200, 0);
+            var startTransformB = Matrix.Translation(5, 20, 0);
+            var myMotionStateB = new DefaultMotionState(startTransformB);
+            var rbInfoB = new RigidBodyConstructionInfo(1, myMotionStateB, new BoxShape(5));
+            var rigidBodyB = new RigidBody(rbInfoB);
+            World.AddRigidBody(rigidBodyB);
+
+            //rigidBodyA.CollisionShape = new SphereShape(1);
+            //var box = new BoxShape(1);
+           // _world.CollisionObjectArray[_world.CollisionObjectArray.Count-1].se;
+
 
         }
-        
+
 
         //Manage Memory
         public void Dispose()

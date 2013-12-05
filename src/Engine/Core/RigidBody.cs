@@ -12,7 +12,7 @@ namespace Fusee.Engine
     {
         internal IRigidBodyImp _iRigidBodyImp;
 
-        public Mesh Mesh { get; set; }
+       // public Mesh Mesh { get; set; }
 
 
 

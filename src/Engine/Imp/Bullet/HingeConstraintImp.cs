@@ -14,7 +14,6 @@ namespace Fusee.Engine
         internal Translater Translater = new Translater();
         internal HingeConstraint _hci;
 
-
         public bool AngularOnly
         {
             get
@@ -42,27 +41,22 @@ namespace Fusee.Engine
                 o._hci.EnableMotor = value;
             }
         }
-
-
         public void EnableAngularMotor(bool enableMotor, float targetVelocity, float maxMotorImpulse)
         {
             var o = (HingeConstraintImp) _hci.UserObject;
             o._hci.EnableAngularMotor(enableMotor, targetVelocity, maxMotorImpulse);
         }
 
-
         public void SetMotorTarget(Quaternion qAinB, float dt)
         {
             var o = (HingeConstraintImp) _hci.UserObject;
             o._hci.SetMotorTarget(Translater.QuaternionToBtQuaternion(qAinB), dt);
         }
-
         public void SetMotorTarget(float targetAngle, float dt)
         {
             var o = (HingeConstraintImp) _hci.UserObject;
             o._hci.SetMotorTarget(targetAngle, dt);
         }
-
 
         public float MaxMotorImpulse
         {
@@ -77,8 +71,6 @@ namespace Fusee.Engine
                 o._hci.MaxMotorImpulse = value;
             }
         }
-
-
         public float MotorTargetVelocity
         {
             get
@@ -96,7 +88,6 @@ namespace Fusee.Engine
                 return retval;
             }
         }
-
         public float4x4 FrameB
         {
             get
@@ -114,7 +105,6 @@ namespace Fusee.Engine
                 return retval;
             }
         }
-
         public float4x4 FrameOffsetB
         {
             get
@@ -135,13 +125,11 @@ namespace Fusee.Engine
             var retval =  _hci.GetHingeAngle();
             return retval;
         }
-
         public float GetHingeAngle(float4x4 transA, float4x4 transB)
         {
             var retval = _hci.GetHingeAngle(Translater.Float4X4ToBtMatrix(transA), Translater.Float4X4ToBtMatrix(transB));
             return retval;
         }
-
 
         public void SetLimit(float low, float high, float softness = 0.9f, float biasFactor = 0.3f, float relaxationFactor = 1)
         {
@@ -156,8 +144,6 @@ namespace Fusee.Engine
                 return retval;
             }
         }
-
-
         public float LowerLimit
         {
             get
@@ -166,7 +152,6 @@ namespace Fusee.Engine
                 return retval;
             }
         }
-
         public float UpperLimit
         {
             get
@@ -186,7 +171,6 @@ namespace Fusee.Engine
                 return (RigidBodyImp)retval.UserObject;
             }
         }
-
         public IRigidBodyImp RigidBodyB
         {
             get
@@ -195,13 +179,11 @@ namespace Fusee.Engine
                 return (RigidBodyImp)retval.UserObject;
             }
         }
-
         public int GetUid()
         {
             var retval = _hci.Uid;
             return retval;
         }
-
         private object _userObject;
         public object UserObject
         {

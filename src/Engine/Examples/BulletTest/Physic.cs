@@ -22,12 +22,12 @@ namespace Examples.BulletTest
             Debug.WriteLine("Physic: Constructor");
             _world = new DynamicWorld();
 
-            //FallingTower();
-            //Ground();
+            FallingTower();
+            Ground();
             //InitPoint2PointConstraint();
-            InitHingeConstraint();
+            //InitHingeConstraint();
             //InitSliderConstraint();
-
+            //InitGearConstraint();
         }
 
 
@@ -35,21 +35,16 @@ namespace Examples.BulletTest
         {
             //create ground
             Mesh mesh = MeshReader.LoadMesh(@"Assets/Cube.obj.model");
-            int size = 200;
-            for (int b = -1; b < 2; b++)
+            int size = 52;
+            for (int b = -2; b < 2; b++)
             {
-                for (int c = -1; c < 2; c++)
+                for (int c = -2; c < 2; c++)
                 {
                     var pos = new float3(b * size, 0, c * size);
-                    _world.AddRigidBody(0, pos, mesh, new float3(1, 1, 1));
+                    _world.AddRigidBody(0, pos, new float3(1, 1, 1));
                 }
             }
 
-            //And Teapot
-            Mesh meshTea = MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
-            var kanne = _world.AddRigidBody(1, new float3(1, 500, 0), meshTea, new float3(1, 1, 1));
-            kanne.ApplyTorqueImpulse = new float3(900,0,0);
-           
         }
 
 
@@ -64,7 +59,7 @@ namespace Examples.BulletTest
                     for (int j = -2; j < 2; j++)
                     {
                         var pos = new float3(4 * h, 400 + (k * 4), 4 * j);
-                        _world.AddRigidBody(1, pos, mesh, new float3(1, 1, 1));
+                        _world.AddRigidBody(1, pos, new float3(1, 1, 1));
                     }
                 }
             }
@@ -73,11 +68,11 @@ namespace Examples.BulletTest
         public void InitPoint2PointConstraint()
         {
             var mesh = MeshReader.LoadMesh(@"Assets/Cube.obj.model");
-            var rbA = _world.AddRigidBody(1, new float3(-400, 500, 0), mesh, new float3(0, 0, 0));
+            var rbA = _world.AddRigidBody(1, new float3(-400, 500, 0), new float3(0, 0, 0));
             rbA.LinearFactor = new float3(0,0,0);
             rbA.AngularFactor = new float3(0, 0, 0);
            
-            var rbB = _world.AddRigidBody(1, new float3(-300, 500, 0), mesh, new float3(0, 0, 0));
+            var rbB = _world.AddRigidBody(1, new float3(-300, 500, 0), new float3(0, 0, 0));
             var p2p = _world.AddPoint2PointConstraint(rbA, rbB, new float3(105, -150, -150), new float3(0, 100, 0));
             //var p2p = _world.AddPoint2PointConstraint(rbA, new float3(105, -200, -150));
             p2p.SetParam(PointToPointFlags.PointToPointFlagsCfm, 0.9f);
@@ -87,11 +82,11 @@ namespace Examples.BulletTest
         public void InitHingeConstraint()
         {
             var mesh = MeshReader.LoadMesh(@"Assets/Cube.obj.model");
-            var rbA = _world.AddRigidBody(1, new float3(400, 500, 0), mesh, new float3(0, 0, 0));
+            var rbA = _world.AddRigidBody(1, new float3(400, 500, 0), new float3(0, 0, 0));
             rbA.LinearFactor = new float3(0, 0, 0);
             rbA.AngularFactor = new float3(0, 0, 0);
 
-            var rbB = _world.AddRigidBody(1, new float3(200,500, 0), mesh, new float3(0, 0, 0));
+            var rbB = _world.AddRigidBody(1, new float3(200,500, 0), new float3(0, 0, 0));
 
             var frameInA = float4x4.Identity;
             frameInA.Row3 = new float4(0,50,0,1);
@@ -106,11 +101,11 @@ namespace Examples.BulletTest
         public void InitSliderConstraint()
         {
             var mesh = MeshReader.LoadMesh(@"Assets/Cube.obj.model");
-            var rbA = _world.AddRigidBody(1, new float3(400, 500, 0), mesh, new float3(0, 0, 0));
+            var rbA = _world.AddRigidBody(1, new float3(400, 500, 0), new float3(0, 0, 0));
             rbA.LinearFactor = new float3(0, 0, 0);
             rbA.AngularFactor = new float3(0, 0, 0);
 
-            var rbB = _world.AddRigidBody(1, new float3(200, 500, 0), mesh, new float3(0, 0, 0));
+            var rbB = _world.AddRigidBody(1, new float3(200, 500, 0), new float3(0, 0, 0));
 
             var frameInA = float4x4.Identity;
             frameInA.Row3 = new float4(0,1,0,1);
@@ -119,6 +114,22 @@ namespace Examples.BulletTest
             var sc = _world.AddSliderConstraint(rbA, rbB, frameInA, frameInB, true);
 
         }
+
+        public void InitGearConstraint()
+        {
+            var mesh = MeshReader.LoadMesh(@"Assets/Cube.obj.model");
+            var rbA = _world.AddRigidBody(0, new float3(0, 150, 0), new float3(1, 1, 1));
+            //rbA.LinearFactor = new float3(0, 0, 0);
+            //rbA.AngularFactor = new float3(0, 0, 0);
+
+            var rbB = _world.AddRigidBody(1, new float3(0, 300, 0), new float3(1, 1, 1));
+            //rbB.LinearFactor = new float3(0,0,0);
+            ////var axisInB = new float3(0, 1, 0);
+            // var gc = _world.AddGearConstraint(rbA, rbB, axisInA, axisInB);
+        }
+
+
+
 
     }
 }

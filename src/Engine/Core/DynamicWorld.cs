@@ -17,10 +17,10 @@ namespace Fusee.Engine
             _dwi = ImpFactory.CreateIDynamicWorldImp();
         }
 
-        public RigidBody AddRigidBody(float mass, float3 worldTransform, Mesh mesh,/* shape,*/ float3 inertia)
+        public RigidBody AddRigidBody(float mass, float3 worldTransform, /* shape,*/ float3 inertia)
         {
 
-            var meshTrianglesCount = mesh.Triangles.Length;
+           /* var meshTrianglesCount = mesh.Triangles.Length;
             int [] meshTrianglesArray = new int[meshTrianglesCount];
             for (int c = 0; c < meshTrianglesCount; c++)
             {
@@ -30,11 +30,11 @@ namespace Fusee.Engine
             int meshVerteciesCount = mesh.Vertices.Length;
             float3[] meshVerteciesArray = new float3[meshVerteciesCount];
             meshVerteciesArray = mesh.Vertices;
-
-            IRigidBodyImp rbi = _dwi.AddRigidBody(mass, worldTransform, meshTrianglesArray, meshVerteciesArray, /* shape, */inertia);
+            */
+            IRigidBodyImp rbi = _dwi.AddRigidBody(mass, worldTransform, /* shape, */inertia);
        
             var retval = new RigidBody();
-            retval.Mesh = mesh;
+            //retval.Mesh = mesh;
             retval._iRigidBodyImp = rbi;
             rbi.UserObject = retval;
 
@@ -69,7 +69,6 @@ namespace Fusee.Engine
             ip2pci.UserObject = retval;
             return retval;
         }
-
         public Point2PointConstraint AddPoint2PointConstraint(RigidBody rigidBodyA, RigidBody rigidBodyB, float3 pivotInA, float3 pivotInB)
         {
             IPoint2PointConstraintImp ip2pci = _dwi.AddPoint2PointConstraint(rigidBodyA._iRigidBodyImp, rigidBodyB._iRigidBodyImp, pivotInA, pivotInB);
@@ -78,7 +77,6 @@ namespace Fusee.Engine
             ip2pci.UserObject = retval;
             return retval;
         }
-
         public Point2PointConstraint GetConstraint(int i)
         {
             //Point2PointConstraint tp2pci = _dwi.GetConstraint(i).UserObject;
@@ -87,7 +85,6 @@ namespace Fusee.Engine
         }
 
         //HingeConstraint
-
         public HingeConstraint AddHingeConstraint(RigidBody rigidBodyA, float4x4 frameInA, bool useReferenceFrameA = false)
         {
             IHingeConstraintImp ip2pci = _dwi.AddHingeConstraint(rigidBodyA._iRigidBodyImp, frameInA, useReferenceFrameA);
@@ -96,7 +93,6 @@ namespace Fusee.Engine
             ip2pci.UserObject = retval;
             return retval;
         }
-
         public HingeConstraint AddHingeConstraint(RigidBody rigidBodyA, float3 pivotInA, float3 axisInA, bool useReferenceFrameA = false)
         {
             IHingeConstraintImp ip2pci = _dwi.AddHingeConstraint(rigidBodyA._iRigidBodyImp, pivotInA, axisInA, useReferenceFrameA);
@@ -105,7 +101,6 @@ namespace Fusee.Engine
             ip2pci.UserObject = retval;
             return retval;
         }
-
         public HingeConstraint AddHingeConstraint(RigidBody rigidBodyA, RigidBody rigidBodyB, float3 pivotInA, float3 pivotInB, float3 axisInA, float3 axisInB, bool useReferenceFrameA = false)
         {
             IHingeConstraintImp ip2pci = _dwi.AddHingeConstraint(rigidBodyA._iRigidBodyImp, rigidBodyB._iRigidBodyImp, pivotInA, pivotInB, axisInA, axisInB, useReferenceFrameA);
@@ -114,7 +109,6 @@ namespace Fusee.Engine
             ip2pci.UserObject = retval;
             return retval;
         }
-
         public HingeConstraint AddHingeConstraint(RigidBody rigidBodyA, RigidBody rigidBodyB, float4x4 brAFrame, float4x4 brBFrame, bool useReferenceFrameA = false)
         {
             IHingeConstraintImp ip2pci = _dwi.AddHingeConstraint(rigidBodyA._iRigidBodyImp, rigidBodyB._iRigidBodyImp, brAFrame, brBFrame, useReferenceFrameA);
@@ -133,7 +127,6 @@ namespace Fusee.Engine
             isci.UserObject = retval;
             return retval;
         }
-
         public SliderConstraint AddSliderConstraint(RigidBody rigidBodyA, float4x4 frameInA, bool useLinearReferenceFrameA = false)
         {
             ISliderConstraintImp isci = _dwi.AddSliderConstraint(rigidBodyA._iRigidBodyImp,frameInA, useLinearReferenceFrameA);
@@ -143,6 +136,15 @@ namespace Fusee.Engine
             return retval;
         }
 
+        //GearConstraint
+        public GearConstraint AddGearConstraint(RigidBody rigidBodyA, RigidBody rigidBodyB, float3 axisInA, float3 axisInB, float ratio = 1.0f)
+        {
+            IGearConstraintImp igci = _dwi.AddGearConstraint(rigidBodyA._iRigidBodyImp, rigidBodyB._iRigidBodyImp, axisInA, axisInB, ratio);
+            var retval = new GearConstraint();
+            retval._iGearConstraintImp = igci;
+            igci.UserObject = retval;
+            return retval;
+        }
 
         public int NumberConstraints()
         {

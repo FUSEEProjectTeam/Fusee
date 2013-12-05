@@ -37,17 +37,16 @@ namespace Fusee.Engine
             };
 
             BtWorld.SolverInfo.NumIterations = 8;
-            GImpactCollisionAlgorithm.RegisterAlgorithm(BtDispatcher);
+           // GImpactCollisionAlgorithm.RegisterAlgorithm(BtDispatcher);
         }
         
-        public IRigidBodyImp AddRigidBody(float mass, float3 worldTransform, int[] meshTriangles, float3[] meshVertices, /* shape, */ float3 intertia)
+        public IRigidBodyImp AddRigidBody(float mass, float3 worldTransform,  /* shape, */ float3 intertia)
         {
-            // worldTransform*=10.0f;
             // Use bullet to do what needs to be done:
             var btMatrix = Matrix.Translation(worldTransform.x, worldTransform.y, worldTransform.z);
             var btMotionState = new DefaultMotionState(btMatrix);
             
-            //TODO:what about other collisionshape types -> what is required from the collision shape and its performance
+            /*TODO:what about other collisionshape types -> what is required from the collision shape and its performance
             Vector3[] btMeshVertecies = new Vector3[meshVertices.Length];
             for (int v = 0; v < meshVertices.Length; v++)
             {
@@ -58,12 +57,12 @@ namespace Fusee.Engine
             var btTriangleIndexVertexArray = new TriangleIndexVertexArray(meshTriangles, btMeshVertecies);
             //TriangleMeshShape ctms = new BvhTriangleMeshShape(btTriangleIndexVertexArray, false);
             GImpactMeshShape btGimpactMeshShape = new GImpactMeshShape(btTriangleIndexVertexArray);
-            btGimpactMeshShape.UpdateBound();//This simulates the GImpact Physics
-            CollisionShape btColShape = btGimpactMeshShape;//new ConvexTriangleMeshShape(btTriangleIndexVertexArray);
-            btColShape.Margin = 0.01f;
+            btGimpactMeshShape.UpdateBound();//This simulates the GImpact Physics*/
+            var btColShape = new BoxShape(25);//btGimpactMeshShape;//new ConvexTriangleMeshShape(btTriangleIndexVertexArray);
+            //btColShape.Margin = 0.01f;
             var btLocalInertia = btColShape.CalculateLocalInertia(mass);
-            
-            var btRbcInfo = new RigidBodyConstructionInfo(mass * 10, btMotionState, btGimpactMeshShape, btLocalInertia);
+
+            var btRbcInfo = new RigidBodyConstructionInfo(mass * 10, btMotionState, /*btGimpactMeshShape*/ btColShape, btLocalInertia);
             var btRigidBody = new RigidBody(btRbcInfo);
 
             BtWorld.AddRigidBody(btRigidBody);
@@ -104,8 +103,6 @@ namespace Fusee.Engine
             btP2PConstraint.UserObject = retval;
             return retval;
         }
-
-        //Constraint Test
         public IPoint2PointConstraintImp AddPoint2PointConstraint(IRigidBodyImp rigidBodyA, IRigidBodyImp rigidBodyB, float3 pivotInA,
             float3 pivotInB)
         {
@@ -145,7 +142,6 @@ namespace Fusee.Engine
             btHingeConstraint.UserObject = retval;
             return retval;
         }
-
         public IHingeConstraintImp AddHingeConstraint(IRigidBodyImp rigidBodyA, float3 pivotInA, float3 axisInA, bool useReferenceFrameA)
         {
             var rigidBodyAImp = (RigidBodyImp)rigidBodyA;
@@ -159,7 +155,6 @@ namespace Fusee.Engine
             btHingeConstraint.UserObject = retval;
             return retval;
         }
-
         public IHingeConstraintImp AddHingeConstraint(IRigidBodyImp rigidBodyA, IRigidBodyImp rigidBodyB, float3 pivotInA, float3 pivotInB, float3 axisInA, float3 AxisInB, bool useReferenceFrameA)
         {
             var rigidBodyAImp = (RigidBodyImp)rigidBodyA;
@@ -176,7 +171,6 @@ namespace Fusee.Engine
             btHingeConstraint.UserObject = retval;
             return retval;
         }
-
         public IHingeConstraintImp AddHingeConstraint(IRigidBodyImp rigidBodyA, IRigidBodyImp rigidBodyB, float4x4 brAFrame, float4x4 brBFrame, bool useReferenceFrameA)
         {
             var rigidBodyAImp = (RigidBodyImp)rigidBodyA;
@@ -219,7 +213,6 @@ namespace Fusee.Engine
             btSliderConstraint.UserObject = retval;
             return retval;
         }
-
         public ISliderConstraintImp AddSliderConstraint(IRigidBodyImp rigidBodyA, float4x4 frameInA, bool useLinearReferenceFrameA)
         {
             var rigidBodyAImp = (RigidBodyImp)rigidBodyA;
@@ -234,6 +227,27 @@ namespace Fusee.Engine
             return retval;
         }
 
+        //GearConstraint
+        public IGearConstraintImp AddGearConstraint(IRigidBodyImp rigidBodyA, IRigidBodyImp rigidBodyB, float3 axisInA, float3 axisInB, float ratio)
+        {
+            var rigidBodyAImp = (RigidBodyImp)rigidBodyA;
+            var btRigidBodyA = rigidBodyAImp._rbi;
+
+            var rigidBodyBImp = (RigidBodyImp)rigidBodyB;
+            var btRigidBodyB = rigidBodyBImp._rbi;
+
+            var btAxisInA = Translater.Float3ToBtVector3(axisInA);
+            var btAxisInB = Translater.Float3ToBtVector3(axisInB);
+
+            var btGearConstraint = new GearConstraint(btRigidBodyA, btRigidBodyB, btAxisInA, btAxisInB, ratio);
+
+            BtWorld.AddConstraint(btGearConstraint);
+
+            var retval = new GearConstraintImp();
+            retval._gci = btGearConstraint;
+            btGearConstraint.UserObject = retval;
+            return retval;
+        }
 
         public int NumberConstraints()
         {

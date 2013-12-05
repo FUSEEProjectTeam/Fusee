@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DynamicWorldImp.cs" />
+    <Compile Include="GearConstraintImp.cs" />
     <Compile Include="HingeConstraintImp.cs" />
     <Compile Include="PhysicsImplementor.cs" />
     <Compile Include="Point2PointConstraintImp.cs" />

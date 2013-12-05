@@ -81,7 +81,7 @@ namespace Examples.BulletTest
                 _physic.World.GetRigidBody(_physic.World.NumberRigidBodies() - 1).ApplyCentralImpulse = new float3(10, 0, 0);
 
             if (Input.Instance.IsKeyDown(KeyCodes.Right))
-                _physic.World.GetRigidBody(_physic.World.NumberRigidBodies() - 1).ApplyCentralImpulse = new float3(-10, 0, 0);
+                _physic.World.GetRigidBody(_physic.World.NumberRigidBodies() - 1).ApplyTorque = new float3(10,0,0);
 
             if (Input.Instance.IsKeyDown(KeyCodes.Up))
                 _physic.World.GetRigidBody(_physic.World.NumberRigidBodies() - 1).ApplyCentralImpulse = new float3(0, 10, 0);
@@ -91,7 +91,7 @@ namespace Examples.BulletTest
                     // _angleVert += RotationSpeed * (float)Time.Instance.DeltaTime;
            
             var mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
-            var mtxCam = mtxRot * float4x4.LookAt(0, 500, 1500, 0, 0, 0, 0, 1, 0);
+            var mtxCam = mtxRot * float4x4.LookAt(0, 500, 800, 0, 0, 0, 0, 1, 0);
 
            // Debug.WriteLine(Time.Instance.FramePerSecond);
             //Render all RigidBodies
@@ -99,10 +99,10 @@ namespace Examples.BulletTest
             {
                 var rb = _physic.World.GetRigidBody(i);
                 var matrix = rb.WorldTransform;
-                RC.ModelView =  matrix * mtxCam;
+                RC.ModelView =  float4x4.Scale(0.25f) * matrix * mtxCam;
                 RC.SetShader(_spTexture);
                 RC.SetShaderParamTexture(_textureParam, _iTex);
-                RC.Render(rb.Mesh);
+                RC.Render(_meshCube);
             }
            
             /*#region RenderConstraint
