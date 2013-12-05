@@ -23,7 +23,6 @@ namespace Fusee.Engine
             }
             
         }
-
         public float3 PivotInB
         {
             get
@@ -37,17 +36,24 @@ namespace Fusee.Engine
             }
         }
 
+        public void UpdateRhS(float timeStep)
+        {
+            var o = (Point2PointConstraint)_iP2PConstraintImp.UserObject;
+            o._iP2PConstraintImp.UpdateRhs(timeStep);
+        }
+
         public void SetParam(PointToPointFlags param, float value, int axis = -1)
         {
             var o = (Point2PointConstraint) _iP2PConstraintImp.UserObject;
             o._iP2PConstraintImp.SetParam(param, value, axis);
         }
-
         public float GetParam(PointToPointFlags param, int axis = -1)
         {
             var retval = _iP2PConstraintImp.GetParam(param, axis);
             return retval;
         }
+
+        
 
         public RigidBody RigidBodyA
         {
@@ -57,7 +63,6 @@ namespace Fusee.Engine
                 return (RigidBody)retval;
             }
         }
-
         public RigidBody RigidBodyB
         {
             get
@@ -66,7 +71,6 @@ namespace Fusee.Engine
                 return (RigidBody)retval;
             }
         }
-
         public int GetUid()
         {
             var retval = _iP2PConstraintImp.GetUid();

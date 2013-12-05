@@ -28,6 +28,9 @@ namespace Fusee.Engine
 
         float4x4 FrameA { get; }
         float4x4 FrameB { get; }
+        float4x4 FrameOffsetA { get; }
+        float4x4 FrameOffsetB { get; }
+
         void SetAxis(float3 axisInA);
 
         float GetHingeAngle();

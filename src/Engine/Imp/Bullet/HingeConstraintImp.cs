@@ -105,7 +105,25 @@ namespace Fusee.Engine
                 return retval;
             }
         }
-        
+
+        public float4x4 FrameOffsetA
+        {
+            get
+            {
+                var retval = Translater.BtMatrixToFloat4X4(_hci.FrameOffsetA);
+                return retval;
+            }
+        }
+
+        public float4x4 FrameOffsetB
+        {
+            get
+            {
+                var retval = Translater.BtMatrixToFloat4X4(_hci.FrameOffsetB);
+                return retval;
+            }
+        }
+
         public void SetAxis(float3 axisInA)
         {
             var o = (HingeConstraintImp) _hci.UserObject;

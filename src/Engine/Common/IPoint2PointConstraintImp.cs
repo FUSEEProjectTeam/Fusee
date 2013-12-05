@@ -17,8 +17,12 @@ namespace Fusee.Engine
 
         float3 PivotInA { get; set; }
         float3 PivotInB { get; set; }
+
+        void UpdateRhs(float timeStep);
+
         void SetParam(PointToPointFlags constraintParameter, float value, int axis = -1);
         float GetParam(PointToPointFlags param, int axis = -1);
+        
 
     }
 }

@@ -27,7 +27,6 @@ namespace Fusee.Engine
                 o._p2pci.PivotInA = pivoA;
             }
         }
-
         public float3 PivotInB
         {
             get
@@ -42,6 +41,12 @@ namespace Fusee.Engine
                 o._p2pci.PivotInB = pivoB;
             }
             
+        }
+
+        public void UpdateRhs(float timeStep)
+        {
+            var o = (Point2PointConstraintImp)_p2pci.UserObject;
+            o._p2pci.UpdateRHS(timeStep);
         }
 
         public void SetParam(PointToPointFlags param, float value, int axis = -1)
@@ -70,8 +75,6 @@ namespace Fusee.Engine
 
             o._p2pci.SetParam(constraintParam, value, axis);
         }
-
-
         public float GetParam(PointToPointFlags param, int axis = -1)
         {
             int constraintParam;
@@ -105,7 +108,6 @@ namespace Fusee.Engine
                 return (RigidBodyImp)retval.UserObject;
             }
         }
-
         public IRigidBodyImp RigidBodyB
         {
             get
@@ -114,13 +116,11 @@ namespace Fusee.Engine
                 return (RigidBodyImp)retval.UserObject;
             }
         }
-
         public int GetUid()
         {
             var retval = _p2pci.Uid;
             return retval;
         }
-
         private object _userObject;
         public object UserObject
         {

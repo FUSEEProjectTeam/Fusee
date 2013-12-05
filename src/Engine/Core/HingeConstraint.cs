@@ -10,8 +10,6 @@ namespace Fusee.Engine
     {
         internal IHingeConstraintImp _iHConstraintImp;
 
-        
-
         public bool AngularOnly
         {
             get
