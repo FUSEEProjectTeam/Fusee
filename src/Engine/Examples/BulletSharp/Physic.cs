@@ -3,6 +3,7 @@ using System.Diagnostics;
 using Fusee.Engine;
 using Fusee.Math;
 using BulletSharp;
+using ConeTwistConstraint = BulletSharp.ConeTwistConstraint;
 using GearConstraint = BulletSharp.GearConstraint;
 using Point2PointConstraint = BulletSharp.Point2PointConstraint;
 using RigidBody = BulletSharp.RigidBody;
@@ -154,7 +155,7 @@ namespace Examples.BulletSharp
             var coneTwist = new ConeTwistConstraint(rigidBodyA, rigidBodyB, startTransformA, startTransformB);
             var dof6 = new Generic6DofConstraint(rigidBodyA, rigidBodyB, startTransformA, startTransformB, false);
             var gear = new GearConstraint(rigidBodyA, rigidBodyB, pivotInA, pivotInA, 0.5f);
-            
+            coneTwist.SetMotorTargetInConstraintSpace();
         }
 
 

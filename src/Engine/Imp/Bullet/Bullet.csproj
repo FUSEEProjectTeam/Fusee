@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConeTwistConstraintImp.cs" />
     <Compile Include="DynamicWorldImp.cs" />
     <Compile Include="GearConstraintImp.cs" />
     <Compile Include="HingeConstraintImp.cs" />

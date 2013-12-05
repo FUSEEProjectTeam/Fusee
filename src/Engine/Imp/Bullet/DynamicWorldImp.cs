@@ -90,6 +90,7 @@ namespace Fusee.Engine
             return number;
         }
 
+        //Point2point
         public IPoint2PointConstraintImp AddPoint2PointConstraint(IRigidBodyImp rigidBodyA, float3 pivotInA)
         {
             var rigidBodyAImp = (RigidBodyImp)rigidBodyA;
@@ -103,8 +104,7 @@ namespace Fusee.Engine
             btP2PConstraint.UserObject = retval;
             return retval;
         }
-        public IPoint2PointConstraintImp AddPoint2PointConstraint(IRigidBodyImp rigidBodyA, IRigidBodyImp rigidBodyB, float3 pivotInA,
-            float3 pivotInB)
+        public IPoint2PointConstraintImp AddPoint2PointConstraint(IRigidBodyImp rigidBodyA, IRigidBodyImp rigidBodyB, float3 pivotInA,float3 pivotInB)
         {
             var rigidBodyAImp = (RigidBodyImp) rigidBodyA;
             var btRigidBodyA = rigidBodyAImp._rbi;
@@ -248,6 +248,45 @@ namespace Fusee.Engine
             btGearConstraint.UserObject = retval;
             return retval;
         }
+
+        //ConeTwistConstraint
+        public IConeTwistConstraintImp AddConeTwistConstraint(IRigidBodyImp rigidBodyA, float4x4 rbAFrame)
+        {
+            var rigidBodyAImp = (RigidBodyImp)rigidBodyA;
+            var btRigidBodyA = rigidBodyAImp._rbi;
+            var btRbAFrame = Translater.Float4X4ToBtMatrix(rbAFrame);
+
+            var btCTConstraint = new ConeTwistConstraint(btRigidBodyA, btRbAFrame);
+            
+            BtWorld.AddConstraint(btCTConstraint);
+
+            var retval = new ConeTwistConstraintImp();
+            retval._cti = btCTConstraint;
+            btCTConstraint.UserObject = retval;
+            return retval;
+        }
+        public IConeTwistConstraintImp AddConeTwistConstraint(IRigidBodyImp rigidBodyA, IRigidBodyImp rigidBodyB, float4x4 rbAFrame,float4x4 rbBFrame)
+        {
+            var rigidBodyAImp = (RigidBodyImp)rigidBodyA;
+            var btRigidBodyA = rigidBodyAImp._rbi;
+
+            var rigidBodyBImp = (RigidBodyImp)rigidBodyB;
+            var btRigidBodyB = rigidBodyBImp._rbi;
+
+            var btRbAFrame = Translater.Float4X4ToBtMatrix(rbAFrame);
+            var btRbBFrame = Translater.Float4X4ToBtMatrix(rbBFrame);
+
+            var btCTConstraint = new ConeTwistConstraint(btRigidBodyA, btRigidBodyB, btRbAFrame, btRbBFrame);
+
+            BtWorld.AddConstraint(btCTConstraint);
+
+            var retval = new ConeTwistConstraintImp();
+            retval._cti = btCTConstraint;
+            btCTConstraint.UserObject = retval;
+            return retval;
+        }
+
+
 
         public int NumberConstraints()
         {

@@ -146,6 +146,26 @@ namespace Fusee.Engine
             return retval;
         }
 
+        //ConeTwistConstraint
+        public ConeTwistConstraint AddConeTwistConstraint(RigidBody rigidBodyA, float4x4 rbAFrame)
+        {
+            IConeTwistConstraintImp icti = _dwi.AddConeTwistConstraint(rigidBodyA._iRigidBodyImp, rbAFrame);
+            var retval = new ConeTwistConstraint();
+            retval._iCTConstraintImp = icti;
+            icti.UserObject = retval;
+            return retval;
+        }
+        public ConeTwistConstraint AddConeTwistConstraint(RigidBody rigidBodyA, RigidBody rigidBodyB, float4x4 rbAFrame, float4x4 rbBFrame)
+        {
+            IConeTwistConstraintImp icti = _dwi.AddConeTwistConstraint(rigidBodyA._iRigidBodyImp, rigidBodyB._iRigidBodyImp, rbAFrame, rbBFrame);
+            var retval = new ConeTwistConstraint();
+            retval._iCTConstraintImp = icti;
+            icti.UserObject = retval;
+            return retval;
+        }
+
+
+
         public int NumberConstraints()
         {
             var number = _dwi.NumberConstraints();

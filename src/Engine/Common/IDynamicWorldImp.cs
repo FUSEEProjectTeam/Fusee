@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using Fusee.Math;
 using Fusee.Engine;
 
@@ -27,6 +28,9 @@ namespace Fusee.Engine
         ISliderConstraintImp AddSliderConstraint(IRigidBodyImp rigidBodyA, float4x4 frameInA, bool useLinearReferenceFrameA);
 
         IGearConstraintImp AddGearConstraint(IRigidBodyImp rigidBodyA, IRigidBodyImp rigidBodyB, float3 axisInA, float3 axisInB, float ratio);
+
+        IConeTwistConstraintImp AddConeTwistConstraint(IRigidBodyImp rigidBodyA, float4x4 rbAFrame);
+        IConeTwistConstraintImp AddConeTwistConstraint(IRigidBodyImp rigidBodyA, IRigidBodyImp rigidBodyB, float4x4 rbAFrame, float4x4 rbBFrame);
 
         int NumberConstraints();
     }
