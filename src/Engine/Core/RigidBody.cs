@@ -14,7 +14,19 @@ namespace Fusee.Engine
 
        // public Mesh Mesh { get; set; }
 
-
+        public float3 Gavity
+        {
+            get
+            {
+                var retval = _iRigidBodyImp.Gravity;
+                return retval;
+            }
+            set
+            {
+                var o = (RigidBody)_iRigidBodyImp.UserObject;
+                _iRigidBodyImp.Gravity = value;
+            }
+        }
 
         public float Mass
         {

@@ -15,8 +15,21 @@ namespace Fusee.Engine
 
         internal RigidBody _rbi;
         internal Translater Translater = new Translater();
-        
-         
+
+
+        public float3 Gravity
+        {
+            get
+            {
+                var retval = Translater.BtVector3ToFloat3(_rbi.Gravity);
+                return retval;
+            }
+            set
+            {
+                var o = (RigidBodyImp) _rbi.UserObject;
+                _rbi.Gravity = Translater.Float3ToBtVector3(value);
+            }
+        }
         private float _mass;
         public float Mass 
         {
@@ -81,13 +94,7 @@ namespace Fusee.Engine
             }
         }
 
-        public float4 Rotation
-        {
-            get;
-           
-            set;
-        }
-
+       
         
         public void ApplyForce(float3 force, float3 relPos)
         {
