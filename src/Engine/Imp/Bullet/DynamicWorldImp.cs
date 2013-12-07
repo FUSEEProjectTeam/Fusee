@@ -287,6 +287,36 @@ namespace Fusee.Engine
         }
 
 
+        //GenericoDofConstraint
+        public IGeneric6DofConstraintImp AddGeneric6DofConstraint(IRigidBodyImp rigidBodyA, float4x4 frameInA, bool useReferenceFrameA)
+        {
+            var rigidBodyAImp = (RigidBodyImp)rigidBodyA;
+            var btRigidBodyA = rigidBodyAImp._rbi;
+            var btFframeInA = Translater.Float4X4ToBtMatrix(frameInA);
+            var btGeneric6DofConstraint = new Generic6DofConstraint(btRigidBodyA, btFframeInA, useReferenceFrameA);
+            BtWorld.AddConstraint(btGeneric6DofConstraint);
+
+            var retval = new Generic6DofConstraintImp();
+            retval._g6dofci = btGeneric6DofConstraint;
+            btGeneric6DofConstraint.UserObject = retval;
+            return retval;
+        }
+        public IGeneric6DofConstraintImp AddGeneric6DofConstraint(IRigidBodyImp rigidBodyA, IRigidBodyImp rigidBodyB, float4x4 frameInA, float4x4 frameInB, bool useReferenceFrameA = false)
+        {
+            var rigidBodyAImp = (RigidBodyImp)rigidBodyA;
+            var btRigidBodyA = rigidBodyAImp._rbi;
+            var rigidBodyBImp = (RigidBodyImp)rigidBodyB;
+            var btRigidBodyB = rigidBodyAImp._rbi;
+
+            var btGeneric6DofConstraint = new Generic6DofConstraint(btRigidBodyA, btRigidBodyB, Translater.Float4X4ToBtMatrix(frameInA), Translater.Float4X4ToBtMatrix(frameInB), useReferenceFrameA);
+            BtWorld.AddConstraint(btGeneric6DofConstraint);
+
+            var retval = new Generic6DofConstraintImp();
+            retval._g6dofci = btGeneric6DofConstraint;
+            btGeneric6DofConstraint.UserObject = retval;
+            return retval;
+        }
+
 
         public int NumberConstraints()
         {

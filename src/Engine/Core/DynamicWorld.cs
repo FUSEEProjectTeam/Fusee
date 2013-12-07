@@ -165,6 +165,24 @@ namespace Fusee.Engine
         }
 
 
+        //Generic6DofConstraint
+        public Generic6DofConstraint AddGeneric6DofConstraint(RigidBody rigidBodyA, float4x4 frameInA, bool useReferenceFrameA)
+        {
+            IGeneric6DofConstraintImp ig6dofci = _dwi.AddGeneric6DofConstraint(rigidBodyA._iRigidBodyImp, frameInA, useReferenceFrameA);
+            var retval = new Generic6DofConstraint();
+            retval._IG6DofConstraintImp = ig6dofci;
+            ig6dofci.UserObject = retval;
+            return retval;
+        }
+        public Generic6DofConstraint AddGeneric6DofConstraint(RigidBody rigidBodyA, RigidBody rigidBodyB, float4x4 frameInA, float4x4 frameInB, bool useReferenceFrameA = false)
+        {
+            IGeneric6DofConstraintImp ig6dofci = _dwi.AddGeneric6DofConstraint(rigidBodyA._iRigidBodyImp, rigidBodyB._iRigidBodyImp, frameInA, frameInB, useReferenceFrameA);
+            var retval = new Generic6DofConstraint();
+            retval._IG6DofConstraintImp = ig6dofci;
+            ig6dofci.UserObject = retval;
+            return retval;
+        }
+
 
         public int NumberConstraints()
         {

@@ -61,6 +61,7 @@
     <Compile Include="IConstraintImp.cs" />
     <Compile Include="IDynamicWorldImp.cs" />
     <Compile Include="IGearConstraintImp.cs" />
+    <Compile Include="IGeneric6DofConstraintImp.cs" />
     <Compile Include="IHingeConstraintImp.cs" />
     <Compile Include="IInputImp.cs" />
     <Compile Include="ImageData.cs" />

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Security.Cryptography;
 using Fusee.Engine;
 using Fusee.Math;
 
@@ -22,12 +23,13 @@ namespace Examples.BulletTest
             Debug.WriteLine("Physic: Constructor");
             _world = new DynamicWorld();
 
-            FallingTower();
+            //FallingTower();
             Ground();
             //InitPoint2PointConstraint();
             //InitHingeConstraint();
             //InitSliderConstraint();
             //InitGearConstraint();
+            InitDfo6Constraint();
         }
 
 
@@ -128,7 +130,17 @@ namespace Examples.BulletTest
             // var gc = _world.AddGearConstraint(rbA, rbB, axisInA, axisInB);
         }
 
+        public void InitDfo6Constraint()
+        {
+            var mesh = MeshReader.LoadMesh(@"Assets/Cube.obj.model");
+            var rbA = _world.AddRigidBody(0, new float3(0, 150, 0), new float3(1, 1, 1));
+            //rbA.LinearFactor = new float3(0, 0, 0);
+            //rbA.AngularFactor = new float3(0, 0, 0);
 
+            var rbB = _world.AddRigidBody(1, new float3(0, 300, 0), new float3(1, 1, 1));
+            _world.AddGeneric6DofConstraint(rbA, rbB, rbA.WorldTransform, rbB.WorldTransform, false);
+
+        }
 
 
     }

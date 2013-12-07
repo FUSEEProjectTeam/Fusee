@@ -62,6 +62,7 @@
     <Compile Include="Diagnostics.cs" />
     <Compile Include="DynamicWorld.cs" />
     <Compile Include="GearConstraint.cs" />
+    <Compile Include="Generic6DofConstraint.cs" />
     <Compile Include="Geometry.cs" />
     <Compile Include="HingeConstraint.cs" />
     <Compile Include="ImpFactory.cs" />
