@@ -182,8 +182,6 @@ namespace Fusee.Engine
         /// <param name="mesh">The mesh to render.</param>
         public void RenderMesh(Mesh mesh)
         {
-           // var curShader = 
-
             int i = 0, nPasses = _vertexShaderSrc.Length;
             try
             {

@@ -112,7 +112,6 @@ namespace Fusee.Engine
         /// </value>
         public bool TrianglesSet { get { return (_meshImp != null) && _meshImp.TrianglesSet; } }
         #endregion
-
     }
 }
 

@@ -4,7 +4,7 @@ namespace Fusee.Engine
 {
     public sealed class GUIText : GUIElement
     {
-        public GUIText(RenderContext rc, string text, IFont font, float x, float y)
+        public GUIText(RenderContext rc, string text, IFont font, int x, int y)
             :base(rc, text, font, x, y, 0, 0)
         {
             // settings
@@ -20,8 +20,8 @@ namespace Fusee.Engine
             var scaleX = (float)2 / RContext.ViewportWidth;
             var scaleY = (float)2 / RContext.ViewportHeight;
 
-            var x = -1 + PosX * scaleX;
-            var y = +1 - PosY * scaleY;
+            var x = -1 + PosX * scaleX + OffsetX * scaleX;
+            var y = +1 - PosY * scaleY - OffsetY * scaleY;
 
             // build complete structure
             var vertices = new float3[4 * Text.Length];
@@ -98,7 +98,7 @@ namespace Fusee.Engine
         /// <param name="text">The text's string.</param>
         /// <param name="font">The text's font.</param>
         /// <returns>The height of the text.</returns>
-        internal static float GetTextHeight(string text, IFont font)
+        public static float GetTextHeight(string text, IFont font)
         {
             var maxH = 0.0f;
 
@@ -115,7 +115,7 @@ namespace Fusee.Engine
         /// <param name="text">The text's string.</param>
         /// <param name="font">The text's font.</param>
         /// <returns>The width of the text.</returns>
-        internal static float GetTextWidth(string text, IFont font)
+        public static float GetTextWidth(string text, IFont font)
         {
             var maxW = 0.0f;
 

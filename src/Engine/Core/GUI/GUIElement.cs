@@ -1,26 +1,39 @@
 ﻿using System;
+using System.Diagnostics;
 using Fusee.Math;
 
 namespace Fusee.Engine
 {
     public abstract class GUIElement
     {
-        protected RenderContext RContext;
-        
-        protected float PosX;
-        protected float PosY;
+        #region Fields
 
-        protected float Height;
-        protected float Width;
+        #region Protected Fields
+
+        protected RenderContext RContext;
+
+        protected bool Dirty;
+
+        protected int PosX;
+        protected int PosY;
+
+        protected int Height;
+        protected int Width;
 
         protected string Text;
         protected IFont Font;
 
-        public float4 TextColor { get; set; }
-        public Mesh GUIMesh { get; protected set; }
+        #endregion
+
+        #region Private Fields
+
+        private int _offsetX;
+        private int _offsetY;
+
+        private float4 _textColor;
 
         // shader
-        public ShaderEffect GUIShader;
+        private readonly ShaderEffect _guiShader;
 
         private const string GUIVS = @"
             attribute vec3 fuVertex;
@@ -55,15 +68,63 @@ namespace Fusee.Engine
                     gl_FragColor = vec4(1, 1, 1, texture2D(tex, vUV).a) * vColor;
             }";
 
+        #endregion
+
+        #region Internal Fields
+
+        protected internal int OffsetX
+        {
+            get { return _offsetX; }
+            set
+            {
+                _offsetX = value;
+                Dirty = true;
+            }
+        }
+
+        protected internal int OffsetY
+        {
+            get { return _offsetY; }
+            set
+            {
+                _offsetY = value;
+                Dirty = true;
+            }
+        }
+
+        #endregion
+
+        #region Public Fields
+
+        public float4 TextColor
+        {
+            get { return _textColor; }
+            set
+            {
+                _textColor = value;
+                Dirty = true;
+            }
+        }
+
+        public Mesh GUIMesh { get; protected set; }
+
+        #endregion
+
+        #endregion
+
         protected abstract void CreateMesh();
 
-        protected GUIElement(RenderContext rc, string text, IFont font, float x, float y, float width, float height)
+        protected GUIElement(RenderContext rc, string text, IFont font, int x, int y, int width, int height)
         {
             RContext = rc;
+            Dirty = false;
 
             // x, y, width, height
             PosX = x;
             PosY = y;
+
+            OffsetX = 0;
+            OffsetY = 0;
 
             Width = width;
             Height = height;
@@ -73,7 +134,7 @@ namespace Fusee.Engine
             Font = font;
 
             // shader
-            GUIShader = new ShaderEffect(new[]
+            _guiShader = new ShaderEffect(new[]
             {
                 new EffectPassDeclaration
                 {
@@ -90,12 +151,31 @@ namespace Fusee.Engine
             },
                 new[] {new EffectParameterDeclaration {Name = "tex", Value = Font.TexAtlas}});
 
-            GUIShader.AttachToContext(RContext);
+            _guiShader.AttachToContext(RContext);
         }
 
         public void Refresh()
         {
+            Dirty = false;
             CreateMesh();
+        }
+
+        protected virtual void PreRender()
+        {
+            if (Dirty)
+                Refresh();
+        }
+
+        public void Render()
+        {
+            PreRender();
+            _guiShader.RenderMesh(GUIMesh);
+            PostRender();
+        }
+
+        protected virtual void PostRender()
+        {
+            // nothing to do here
         }
     }
 }

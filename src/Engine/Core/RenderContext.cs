@@ -117,8 +117,7 @@ namespace Fusee.Engine
             public IShaderParam FUSEE_L_DIRECTION;
             public IShaderParam FUSEE_L_SPOTANGLE;
             public IShaderParam FUSEE_L_ACTIVE;
-            // ReSharper restore InconsistentNaming               
-
+            // ReSharper restore InconsistentNaming
         }
 
         #endregion
@@ -707,6 +706,8 @@ namespace Fusee.Engine
 
         #endregion
 
+        public List<GUIElement> GUIElements { get; set; }
+
         #endregion
 
         #region Constructors
@@ -729,6 +730,8 @@ namespace Fusee.Engine
 
             _debugShader = MoreShaders.GetDiffuseColorShader(this);
             _debugColor = _debugShader.GetShaderParam("color");
+
+            GUIElements = new List<GUIElement>();
         }
 
         #endregion
@@ -1456,6 +1459,14 @@ namespace Fusee.Engine
                 _rci.SetTriangles(m._meshImp, m.Triangles);
 
             _rci.Render(m._meshImp);
+        }
+
+        public void RenderGUI()
+        {
+            foreach (var guiElement in GUIElements)
+            {
+                guiElement.Render();
+            }
         }
 
         #endregion
