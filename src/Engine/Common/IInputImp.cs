@@ -66,10 +66,5 @@ namespace Fusee.Engine
         /// </summary>
         event EventHandler<KeyEventArgs> KeyUp;
 
-        void InitializeDevices();
-
-
-        
-
     }
 }

@@ -16,9 +16,7 @@ namespace Fusee.Engine
 
         public float getAxis(string axis)
         {
-            float x = 0;
-
-            return x;
+            return _inputDeviceImp.getAxis(axis);
         }
 
         public enum DeviceCategory
@@ -27,7 +25,6 @@ namespace Fusee.Engine
             Keyboard,
             GameController,
             Touch,
-
         }
 
     }

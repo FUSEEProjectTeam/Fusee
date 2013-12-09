@@ -10,11 +10,13 @@ namespace Fusee.Engine
 {
     public class InputDeviceImp : IInputDeviceImp
     {
-        public static List<GameController> _devices = new List<GameController>();
+        private InputDeviceImp _instance;
+        public List<GameController> _devices = new List<GameController>();
         private GameController _controller;
 
 
-            public static List<IInputDeviceImp> getDevicesByCategory(){
+
+            public List<IInputDeviceImp> getDevicesByCategory(){
                 CreateDevices();
                 List<IInputDeviceImp> _list = new List<IInputDeviceImp>();
                 foreach (GameController controller in _devices)
@@ -27,7 +29,7 @@ namespace Fusee.Engine
 
         // Status des GamePads
 
-        public static void CreateDevices()
+        public void CreateDevices()
         {
             DirectInput directInput = new DirectInput();
             var devices = directInput.GetDevices(DeviceClass.GameController, DeviceEnumerationFlags.AttachedOnly);
@@ -43,9 +45,22 @@ namespace Fusee.Engine
             _controller = cont;
         }
 
+
+        public InputDeviceImp()
+        {
+
+        }
+
+
+
         public bool isButtonPressed()
         {
             return _controller.IsButtonPressed(0);
+        }
+
+        public float getAxis(string axis)
+        {
+            return _controller.GetXAxis();
         }
 
 

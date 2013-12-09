@@ -73,7 +73,7 @@ namespace Examples.Simple
 
             
            
-            Console.Write( Input.Instance.getAxis("Vertical", 0));
+            System.Diagnostics.Debug.WriteLine( Input.Instance.getAxis("Vertical", 0));
 
             //if (Input.Instance.IsKeyDown(KeyCodes.Up))
             //    _angleVert -= RotationSpeed * (float)Time.Instance.DeltaTime;

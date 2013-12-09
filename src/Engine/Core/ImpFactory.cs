@@ -31,6 +31,9 @@ namespace Fusee.Engine
         private static Type _networkImplementor;
 
         [JSIgnore]
+        private static Type _inputDeviceImplementor;
+
+        [JSIgnore]
         private static Type RenderingImplementor
         {
             get
@@ -84,6 +87,25 @@ namespace Fusee.Engine
                     _networkImplementor = impAsm.GetType("Fusee.Engine.NetworkImplementor");
                 }
                 return _networkImplementor;
+            }
+        }
+
+        [JSIgnore]
+        private static Type InputDeviceImplementor
+        {
+            get
+            {
+                if (_inputDeviceImplementor == null)
+                {
+                    // TODO: Remove this hardcoded hack to Lidgren
+                    Assembly impAsm = Assembly.LoadFrom("Fusee.Engine.Imp.SlimDX.dll");
+
+                    if (impAsm == null)
+                        throw new Exception("Couldn't load implementor assembly (Fusee.Engine.Imp.SlimDX.dll).");
+
+                    _inputDeviceImplementor = impAsm.GetType("Fusee.Engine.InputDeviceImplementor");
+                }
+                return _inputDeviceImplementor;
             }
         }
 
@@ -167,6 +189,22 @@ namespace Fusee.Engine
                 throw new Exception("Implementor type (" + RenderingImplementor.ToString() + ") doesn't contain method CreateNetworkImp");
 
             return (INetworkImp)mi.Invoke(null, null);
+        }
+
+        /// <summary>
+        /// Creates an instance of <see cref="INetworkImp"/> by reflection of NetworkImplementor.
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="System.Exception">Implementor type ( + RenderingImplementor.ToString() + ) doesn't contain method CreateNetworkImp</exception>
+        [JSExternal]
+        public static IInputDeviceImp CreateInputDeviceImp()
+        {
+            MethodInfo mi = InputDeviceImplementor.GetMethod("CreateInputDeviceImp");
+
+            if (mi == null)
+                throw new Exception("Implementor type (" + RenderingImplementor.ToString() + ") doesn't contain method CreateNetworkImp");
+
+            return (IInputDeviceImp)mi.Invoke(null, null);
         }
 
         #endregion

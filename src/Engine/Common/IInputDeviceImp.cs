@@ -7,9 +7,11 @@ namespace Fusee.Engine
 {
     public interface IInputDeviceImp
     {
+
         List<IInputDeviceImp> getDevicesByCategory();
 
         float getAxis(string axis);
+
 
     }
 }

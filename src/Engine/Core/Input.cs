@@ -11,6 +11,7 @@ namespace Fusee.Engine
         #region Fields
 
         private static Input _instance;
+        private IInputDeviceImp _IInputDeviceImp;
 
         public static List<InputDevice> _inputDevices = new List<InputDevice>();
 
@@ -312,10 +313,11 @@ namespace Fusee.Engine
 
         public void InitializeDevices(DeviceCategory category)
         {
+
             switch (category)
             {
                 case DeviceCategory.GameController:
-                    foreach(IInputDeviceImp device in IInputDeviceImp.getDevicesByCategory(){
+                    foreach(IInputDeviceImp device in _inputDeviceImp.getDevicesByCategory()){
                         _inputDevices.Add(new InputDevice(device));
                     }
                     
@@ -336,5 +338,22 @@ namespace Fusee.Engine
         }
 
         #endregion
+        private IInputDeviceImp _inputDeviceImp;
+        internal IInputDeviceImp InputDeviceImp
+        {
+            set
+            {
+                _inputDeviceImp = value;
+            }
+        }
+
+
+
+
+
+        internal void getDevicesByCategory()
+        {
+            _inputDeviceImp.getDevicesByCategory();
+        }
     }
 }
