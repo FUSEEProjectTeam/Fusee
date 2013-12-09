@@ -12,7 +12,7 @@ namespace Fusee.Engine
 
         private static Input _instance;
 
-        List<InputDevice> _devices = new List<InputDevice>();
+        public static List<InputDevice> _inputDevices = new List<InputDevice>();
 
         internal IInputImp InputImp
         {
@@ -243,19 +243,6 @@ namespace Fusee.Engine
         }
 
 
-        //neu 
-        public void InitializeDevices()
-        {
-            _inputImp.InitializeDevices();
-        }
-
-        //neu
-        public GameController GetGameController (int index)
-        {
-            InputImp.GetGameController(index);
-        }
-        
-
        
 
         //neu
@@ -271,6 +258,7 @@ namespace Fusee.Engine
             Keyboard,
             GameController,
             Touch,
+            Kinect,
 
         }
         //Neu
@@ -309,9 +297,42 @@ namespace Fusee.Engine
             }
         }
 
-        public void createDevices()
+        public void createDevices(DeviceCategory category)
         {
-            _devices = InputDevice.getDevices();
+
+            //_devices = InputDevice.GetDevices((int) category);
+            //_inputDevices = InputDevice.getDevice(0);
+
+        }
+
+        public float getAxis(string axis, int deviceIndex)
+        {
+            return  _inputDevices[deviceIndex].getAxis(axis);
+        }
+
+        public void InitializeDevices(DeviceCategory category)
+        {
+            switch (category)
+            {
+                case DeviceCategory.GameController:
+                    foreach(IInputDeviceImp device in IInputDeviceImp.getDevicesByCategory(){
+                        _inputDevices.Add(new InputDevice(device));
+                    }
+                    
+                    break;
+                case DeviceCategory.Mouse:
+                    break;
+                case DeviceCategory.Keyboard:
+                    break;
+                case DeviceCategory.Touch:
+                    break;
+                case DeviceCategory.Kinect:
+                    break;
+                default:
+                    break;
+            }
+
+            
         }
 
         #endregion

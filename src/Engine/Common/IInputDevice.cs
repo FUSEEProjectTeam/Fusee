@@ -5,11 +5,9 @@ using System.Text;
 
 namespace Fusee.Engine
 {
-    public interface IInputDeviceImp
+    public class IInputDevice
     {
-        List<IInputDeviceImp> getDevicesByCategory();
-
-        float getAxis(string axis);
+        public static List<IInputDevice> getDevice(int deviceIndex);
 
     }
 }

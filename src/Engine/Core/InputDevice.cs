@@ -1,23 +1,34 @@
 ﻿using System;
-using SlimDX.DirectInput;
 using Fusee.Engine;
 using System.Collections.Generic;
 
 namespace Fusee.Engine
 {
-    class InputDevice
+    public class InputDevice
     {
-        private IInputDeviceImp _inputdevice;
+        private IInputDeviceImp _inputDeviceImp;
 
-
-
-
-        public static List<InputDevice> getDevices()
+        public InputDevice(IInputDeviceImp inputDeviceImp)
         {
-            List<InputDevice> tempList = new List<InputDevice>();
-                
-
-            return tempList;
+            _inputDeviceImp = inputDeviceImp;
         }
+        
+
+        public float getAxis(string axis)
+        {
+            float x = 0;
+
+            return x;
+        }
+
+        public enum DeviceCategory
+        {
+            Mouse,
+            Keyboard,
+            GameController,
+            Touch,
+
+        }
+
     }
 }

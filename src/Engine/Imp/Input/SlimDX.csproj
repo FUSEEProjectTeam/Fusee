@@ -42,7 +42,6 @@
   <ItemGroup>
     <Compile Include="GameController.cs" />
     <Compile Include="InputDeviceImp.cs" />
-    <Compile Include="InputImp.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
