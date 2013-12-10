@@ -29,7 +29,8 @@ namespace Examples.BulletTest
             //InitHingeConstraint();
             //InitSliderConstraint();
             //InitGearConstraint();
-            InitDfo6Constraint();
+            //InitDfo6Constraint();
+            Tester();
         }
 
 
@@ -139,6 +140,16 @@ namespace Examples.BulletTest
 
             var rbB = _world.AddRigidBody(1, new float3(0, 300, 0), new float3(1, 1, 1));
             _world.AddGeneric6DofConstraint(rbA, rbB, rbA.WorldTransform, rbB.WorldTransform, false);
+
+        }
+
+        public void Tester()
+        {
+            var sphere = new CollisionShapeSphere(20);
+            var rbB = _world.AddRigidBody(1, new float3(0, 300, 0), new float3(1, 1, 1));
+            //rbB.SetCollisionShape(sphere);
+            var box = new CollisionShapeBox(14.5f);
+            rbB.SetCollisionShape(box);
 
         }
 

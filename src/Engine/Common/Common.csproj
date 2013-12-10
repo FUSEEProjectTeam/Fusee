@@ -56,6 +56,9 @@
     <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="CollisionShape.cs" />
+    <Compile Include="CollisionShapeBox.cs" />
+    <Compile Include="CollisionShapeSphere.cs" />
     <Compile Include="IAudioStream.cs" />
     <Compile Include="IConeTwistConstraintImp.cs" />
     <Compile Include="IConstraintImp.cs" />

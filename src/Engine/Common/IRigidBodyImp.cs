@@ -1,4 +1,5 @@
-﻿using Fusee.Math;
+﻿using System;
+using Fusee.Math;
 
 namespace Fusee.Engine
 {
@@ -37,6 +38,7 @@ namespace Fusee.Engine
         //"physic Matrial"
         float Bounciness { get; set; }
 
+        void SetCollisionShape(CollisionShape colShape);
         
         object UserObject { get; set; }
 

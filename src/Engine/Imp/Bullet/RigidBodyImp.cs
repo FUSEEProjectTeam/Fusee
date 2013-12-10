@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
 using System.Linq.Expressions;
@@ -14,6 +15,7 @@ namespace Fusee.Engine
     {
 
         internal RigidBody _rbi;
+        internal CollisionShape btColShape;
         internal Translater Translater = new Translater();
 
 
@@ -183,7 +185,6 @@ namespace Fusee.Engine
                 o._rbi.LinearVelocity = linVel;
             }
         }
-
         public float3 AngularVelocity
         {
             get
@@ -213,7 +214,6 @@ namespace Fusee.Engine
                 o._rbi.LinearFactor = linfac;
             }
         }
-
         public float3 AngularFactor
         {
             get
@@ -229,10 +229,6 @@ namespace Fusee.Engine
             }
         }
 
-        
-
-        
-
         public float Bounciness
         {
             get
@@ -246,7 +242,32 @@ namespace Fusee.Engine
             }
         }
 
-       
+        public void SetCollisionShape(CollisionShape colShape)
+        {
+            BulletSharp.CollisionShape btShape = null;
+
+            string type = colShape.GetType().ToString();
+            Debug.WriteLine(colShape);
+            switch (type)
+            {
+                case "Fusee.Engine.CollisionShapeSphere":
+                    Debug.WriteLine("CollisionShapeSphere");
+                    CollisionShapeSphere sphere = (CollisionShapeSphere) colShape;
+                    btShape = new SphereShape(sphere.GetRadius() * 0.25f);
+                    break;
+                case "Fusee.Engine.CollisionShapeBox":
+                    CollisionShapeBox box = (CollisionShapeBox)colShape;
+                    btShape = new BoxShape(box.HalfExtents.x * 0.25f, box.HalfExtents.y * 0.25f, box.HalfExtents.z * 0.25f);
+                    break;
+                default:
+                    Debug.WriteLine("default");
+                    btShape = new EmptyShape();
+                    break;
+            }
+
+            var o = (RigidBodyImp)_rbi.UserObject;
+            o._rbi.CollisionShape = btShape;
+        }
 
 
         private object _userObject;

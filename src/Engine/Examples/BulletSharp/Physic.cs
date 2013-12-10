@@ -3,6 +3,7 @@ using System.Diagnostics;
 using Fusee.Engine;
 using Fusee.Math;
 using BulletSharp;
+using CollisionShape = BulletSharp.CollisionShape;
 using ConeTwistConstraint = BulletSharp.ConeTwistConstraint;
 using GearConstraint = BulletSharp.GearConstraint;
 using Point2PointConstraint = BulletSharp.Point2PointConstraint;
@@ -173,15 +174,17 @@ namespace Examples.BulletSharp
             var posB = new Vector3(20, 200, 0);
             var startTransformB = Matrix.Translation(5, 20, 0);
             var myMotionStateB = new DefaultMotionState(startTransformB);
-            var rbInfoB = new RigidBodyConstructionInfo(1, myMotionStateB, new BoxShape(5));
+            var rbInfoB = new RigidBodyConstructionInfo(1, myMotionStateB, new SphereShape(5));
             var rigidBodyB = new RigidBody(rbInfoB);
             World.AddRigidBody(rigidBodyB);
 
-            //rigidBodyA.CollisionShape = new SphereShape(1);
-            //var box = new BoxShape(1);
-           // _world.CollisionObjectArray[_world.CollisionObjectArray.Count-1].se;
+            var rbShape = rigidBodyB.CollisionShape.UserObject;
+            var sphere = new SphereShape(1);
+            sphere = (SphereShape)rbShape;
+            var r = sphere.Radius;
 
-
+            var shape = new BoxShape(2);
+            shape.GetPlaneEquation(1);
         }
 
 

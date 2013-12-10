@@ -213,6 +213,11 @@ namespace Fusee.Engine
             }
         }
 
-
+        public void SetCollisionShape(CollisionShape colShape)
+        {
+            var o = (RigidBody)_iRigidBodyImp.UserObject;
+            o._iRigidBodyImp.SetCollisionShape(colShape);
+            
+        }
     }
 }
