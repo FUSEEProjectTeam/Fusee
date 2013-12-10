@@ -12,8 +12,7 @@ namespace Fusee.Engine
 
         private static Input _instance;
         private IInputDeviceImp _IInputDeviceImp;
-
-        public static List<InputDevice> _inputDevices = new List<InputDevice>();
+        private List<IInputDeviceImp> _inputDevices = new List<IInputDeviceImp>();
 
         internal IInputImp InputImp
         {
@@ -298,18 +297,9 @@ namespace Fusee.Engine
             }
         }
 
-        public void createDevices(DeviceCategory category)
-        {
+        #endregion
 
-            //_devices = InputDevice.GetDevices((int) category);
-            //_inputDevices = InputDevice.getDevice(0);
-
-        }
-
-        public float getAxis(string axis, int deviceIndex)
-        {
-            return  _inputDevices[deviceIndex].getAxis(axis);
-        }
+        #region InputDevices
 
         public void InitializeDevices(DeviceCategory category)
         {
@@ -317,8 +307,9 @@ namespace Fusee.Engine
             switch (category)
             {
                 case DeviceCategory.GameController:
-                    foreach(IInputDeviceImp device in _inputDeviceImp.getDevicesByCategory()){
-                        _inputDevices.Add(new InputDevice(device));
+                    foreach(IInputDeviceImp device in _inputDeviceImp.getDevicesByCategory())
+                    {
+                        _inputDevices.Add(device);
                     }
                     
                     break;
@@ -337,7 +328,16 @@ namespace Fusee.Engine
             
         }
 
-        #endregion
+        public float getAxis(string axis, int deviceIndex)
+        {
+            return _inputDevices[deviceIndex].getAxis(axis);
+        }
+
+        public IInputDeviceImp getDevice(int deviceIndex)
+        {
+            return _inputDevices[deviceIndex];
+        }
+        
         private IInputDeviceImp _inputDeviceImp;
         internal IInputDeviceImp InputDeviceImp
         {
@@ -348,12 +348,11 @@ namespace Fusee.Engine
         }
 
 
-
-
-
         internal void getDevicesByCategory()
         {
             _inputDeviceImp.getDevicesByCategory();
         }
+
+        #endregion
     }
 }

@@ -10,7 +10,6 @@ namespace Fusee.Engine
 {
     public class InputDeviceImp : IInputDeviceImp
     {
-        private InputDeviceImp _instance;
         public List<GameController> _devices = new List<GameController>();
         private GameController _controller;
 

@@ -27,6 +27,9 @@ namespace Examples.Simple
         private float c1px = 0;
         private float c2px = 0;
 
+        private InputDevice controller1;
+        private InputDevice controller2;
+
 
         
 
@@ -56,6 +59,7 @@ namespace Examples.Simple
            //gameController = new GameController(0);
 
             Input.Instance.InitializeDevices(Input.DeviceCategory.GameController);
+            controller1 = Input.Instance.getDevice(0);
            
 
             
