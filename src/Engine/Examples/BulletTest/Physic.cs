@@ -17,7 +17,9 @@ namespace Examples.BulletTest
             set { _world = value; }
         }
 
-
+        /// <summary>
+        /// 
+        /// </summary>
         public Physic()
         {
             Debug.WriteLine("Physic: Constructor");
@@ -25,8 +27,8 @@ namespace Examples.BulletTest
 
             //FallingTower();
             Ground();
-            //InitPoint2PointConstraint();
-            //InitHingeConstraint();
+           // InitPoint2PointConstraint();
+            InitHingeConstraint();
             //InitSliderConstraint();
             //InitGearConstraint();
             //InitDfo6Constraint();
@@ -71,14 +73,17 @@ namespace Examples.BulletTest
         public void InitPoint2PointConstraint()
         {
             var mesh = MeshReader.LoadMesh(@"Assets/Cube.obj.model");
-            var rbA = _world.AddRigidBody(1, new float3(-400, 500, 0), new float3(0, 0, 0));
+            var rbA = _world.AddRigidBody(1, new float3(100, 300, 0), new float3(0, 0, 0));
             rbA.LinearFactor = new float3(0,0,0);
             rbA.AngularFactor = new float3(0, 0, 0);
            
-            var rbB = _world.AddRigidBody(1, new float3(-300, 500, 0), new float3(0, 0, 0));
-            var p2p = _world.AddPoint2PointConstraint(rbA, rbB, new float3(105, -150, -150), new float3(0, 100, 0));
+            var rbB = _world.AddRigidBody(1, new float3(100, 200, 0), new float3(0, 0, 0));
+            var p2p = _world.AddPoint2PointConstraint(rbA, rbB, new float3(-0, -70, 0), new float3(0, 10, 0));
             //var p2p = _world.AddPoint2PointConstraint(rbA, new float3(105, -200, -150));
             p2p.SetParam(PointToPointFlags.PointToPointFlagsCfm, 0.9f);
+
+            var rbC = _world.AddRigidBody(1, new float3(150, 100, 0), new float3(0, 0, 0));
+            var p2p1 = _world.AddPoint2PointConstraint(rbB, rbC, new float3(0, -70, 0), new float3(0, 10, 0));
   
         }
 
@@ -140,19 +145,22 @@ namespace Examples.BulletTest
 
             var rbB = _world.AddRigidBody(1, new float3(0, 300, 0), new float3(1, 1, 1));
             _world.AddGeneric6DofConstraint(rbA, rbB, rbA.WorldTransform, rbB.WorldTransform, false);
-
         }
 
         public void Tester()
         {
-            var sphere = new CollisionShapeSphere(20);
+            var sphere = new CollisionShapeSphere(1);
             var rbB = _world.AddRigidBody(1, new float3(0, 300, 0), new float3(1, 1, 1));
-            //rbB.SetCollisionShape(sphere);
-            var box = new CollisionShapeBox(14.5f);
-            rbB.SetCollisionShape(box);
+           // rbB.SetCollisionShape(sphere);
 
+            float3[] pos =
+            {
+                new float3(0, 0, 0),
+                new float3(1, 1, 1)
+            };
+            float[] rad = {80f, 2};
+            var shape = new CollisionShapeMultiSphere(pos, rad);
+            rbB.SetCollisionShape(shape);
         }
-
-
     }
 }

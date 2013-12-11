@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Runtime.Remoting.Messaging;
 using Fusee.Engine;
 using Fusee.Math;
 using BulletSharp;
@@ -10,7 +11,7 @@ using Point2PointConstraint = BulletSharp.Point2PointConstraint;
 using RigidBody = BulletSharp.RigidBody;
 using SliderConstraint = BulletSharp.SliderConstraint;
 using HingeConstraint = BulletSharp.HingeConstraint;
-
+using Generic6DofConstraint = BulletSharp.Generic6DofConstraint;
 
 namespace Examples.BulletSharp
 {
@@ -156,7 +157,7 @@ namespace Examples.BulletSharp
             var coneTwist = new ConeTwistConstraint(rigidBodyA, rigidBodyB, startTransformA, startTransformB);
             var dof6 = new Generic6DofConstraint(rigidBodyA, rigidBodyB, startTransformA, startTransformB, false);
             var gear = new GearConstraint(rigidBodyA, rigidBodyB, pivotInA, pivotInA, 0.5f);
-            coneTwist.SetMotorTargetInConstraintSpace();
+            
         }
 
 
@@ -179,12 +180,20 @@ namespace Examples.BulletSharp
             World.AddRigidBody(rigidBodyB);
 
             var rbShape = rigidBodyB.CollisionShape.UserObject;
-            var sphere = new SphereShape(1);
-            sphere = (SphereShape)rbShape;
-            var r = sphere.Radius;
+            
+            var cone = new ConeShape(2, 8);
+            var myVec = new Vector3[3];
 
-            var shape = new BoxShape(2);
-            shape.GetPlaneEquation(1);
+            Vector3[] pos =
+            {
+                new Vector3(0, 0, 0),
+                new Vector3(1, 1, 1)
+            };
+            float[] rad = {1.5f, 2};
+            myVec[1] = pos[1];
+            var shape = new MultiSphereShape(pos, rad);
+            
+
         }
 
 

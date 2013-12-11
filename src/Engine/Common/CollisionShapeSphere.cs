@@ -19,6 +19,9 @@ namespace Fusee.Engine
             return _radius;
         }
 
-        //void SetUnScaledRaduis(float radius)
+        private void SetUnScaledRaduis(float radius)
+        {
+
+        }
     }
 }

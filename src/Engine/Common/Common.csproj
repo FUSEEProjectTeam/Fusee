@@ -58,6 +58,10 @@
   <ItemGroup>
     <Compile Include="CollisionShape.cs" />
     <Compile Include="CollisionShapeBox.cs" />
+    <Compile Include="CollisionShapeCapsule.cs" />
+    <Compile Include="CollisionShapeCone.cs" />
+    <Compile Include="CollisionShapeCylinder.cs" />
+    <Compile Include="CollisionShapeMultiSphere.cs" />
     <Compile Include="CollisionShapeSphere.cs" />
     <Compile Include="IAudioStream.cs" />
     <Compile Include="IConeTwistConstraintImp.cs" />

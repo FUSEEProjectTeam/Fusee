@@ -13,26 +13,17 @@ namespace Fusee.Engine
 
         public CollisionShapeBox(float boxHalfExtends)
         {
-            var _boxHalfExtendsTemp = new float3(boxHalfExtends, boxHalfExtends, boxHalfExtends);
-            _boxHalfExtends = _boxHalfExtendsTemp;
+            var boxHalfExtendsTemp = new float3(boxHalfExtends, boxHalfExtends, boxHalfExtends);
+            HalfExtents = boxHalfExtendsTemp;
         }
 
         public CollisionShapeBox(float boxHalfExtendsX, float boxHalfExtendsY, float boxHalfExtendsZ)
         {
-            var _boxHalfExtendsTemp = new float3(boxHalfExtendsX, boxHalfExtendsY, boxHalfExtendsZ);
-            _boxHalfExtends = _boxHalfExtendsTemp;
+            var boxHalfExtendsTemp = new float3(boxHalfExtendsX, boxHalfExtendsY, boxHalfExtendsZ);
+            HalfExtents = boxHalfExtendsTemp;
         }
 
-      
 
-        internal float3 _boxHalfExtends;
-
-        public float3 HalfExtents
-        {
-            get
-            {
-                return _boxHalfExtends;
-            }
-        }
+        public float3 HalfExtents { get; private set; }
     }
 }
