@@ -57,8 +57,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Audio.cs" />
+    <Compile Include="BoxShape.cs" />
+    <Compile Include="CapsuleShape.cs" />
+    <Compile Include="ConeShape.cs" />
     <Compile Include="ConeTwistConstraint.cs" />
     <Compile Include="Cube.cs" />
+    <Compile Include="CylinderShape.cs" />
     <Compile Include="Diagnostics.cs" />
     <Compile Include="DynamicWorld.cs" />
     <Compile Include="GearConstraint.cs" />
@@ -70,6 +74,7 @@
     <Compile Include="Mesh.cs" />
     <Compile Include="MeshReader.cs" />
     <Compile Include="MoreShaders.cs" />
+    <Compile Include="MultiSphereShape.cs" />
     <Compile Include="Point2PointConstraint.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RenderCanvas.cs" />
@@ -79,6 +84,7 @@
     <Compile Include="ShaderProgram.cs" />
     <Compile Include="Shaders.cs" />
     <Compile Include="SliderConstraint.cs" />
+    <Compile Include="SphereShape.cs" />
     <Compile Include="Time.cs" />
   </ItemGroup>
   <ItemGroup>

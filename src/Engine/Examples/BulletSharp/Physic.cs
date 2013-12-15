@@ -4,7 +4,9 @@ using System.Runtime.Remoting.Messaging;
 using Fusee.Engine;
 using Fusee.Math;
 using BulletSharp;
+using BoxShape = BulletSharp.BoxShape;
 using CollisionShape = BulletSharp.CollisionShape;
+using ConeShape = BulletSharp.ConeShape;
 using ConeTwistConstraint = BulletSharp.ConeTwistConstraint;
 using GearConstraint = BulletSharp.GearConstraint;
 using Point2PointConstraint = BulletSharp.Point2PointConstraint;
@@ -12,6 +14,8 @@ using RigidBody = BulletSharp.RigidBody;
 using SliderConstraint = BulletSharp.SliderConstraint;
 using HingeConstraint = BulletSharp.HingeConstraint;
 using Generic6DofConstraint = BulletSharp.Generic6DofConstraint;
+using MultiSphereShape = BulletSharp.MultiSphereShape;
+using SphereShape = BulletSharp.SphereShape;
 
 namespace Examples.BulletSharp
 {
@@ -184,15 +188,22 @@ namespace Examples.BulletSharp
             var cone = new ConeShape(2, 8);
             var myVec = new Vector3[3];
 
+            
             Vector3[] pos =
             {
                 new Vector3(0, 0, 0),
                 new Vector3(1, 1, 1)
             };
+            
             float[] rad = {1.5f, 2};
             myVec[1] = pos[1];
             var shape = new MultiSphereShape(pos, rad);
-            
+
+            var empty = new EmptyShape();
+            Debug.WriteLine("AmptyMargin: " +empty.Margin);
+
+
+
 
         }
 

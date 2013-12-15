@@ -28,7 +28,7 @@ namespace Examples.BulletTest
             //FallingTower();
             Ground();
            // InitPoint2PointConstraint();
-            InitHingeConstraint();
+           // InitHingeConstraint();
             //InitSliderConstraint();
             //InitGearConstraint();
             //InitDfo6Constraint();
@@ -149,18 +149,11 @@ namespace Examples.BulletTest
 
         public void Tester()
         {
-            var sphere = new CollisionShapeSphere(1);
-            var rbB = _world.AddRigidBody(1, new float3(0, 300, 0), new float3(1, 1, 1));
-           // rbB.SetCollisionShape(sphere);
-
-            float3[] pos =
-            {
-                new float3(0, 0, 0),
-                new float3(1, 1, 1)
-            };
-            float[] rad = {80f, 2};
-            var shape = new CollisionShapeMultiSphere(pos, rad);
-            rbB.SetCollisionShape(shape);
+            var rbA = _world.AddRigidBody(1, new float3(0, 150, 0), new float3(1, 1, 1));
+            //var box = rbA.AddBoxShape(new float3(14,14,14));
+            var shape = rbA.AddCapsuleShape(2, 8);
+            Debug.WriteLine(shape.Radius);
+           
         }
     }
 }

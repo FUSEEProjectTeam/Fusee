@@ -49,16 +49,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BoxShapeImp.cs" />
+    <Compile Include="CapsuleShapeImp.cs" />
+    <Compile Include="CollisonShapeImp.cs" />
+    <Compile Include="ConeShapeImp.cs" />
     <Compile Include="ConeTwistConstraintImp.cs" />
+    <Compile Include="CylinderShapeImp.cs" />
     <Compile Include="DynamicWorldImp.cs" />
     <Compile Include="GearConstraintImp.cs" />
     <Compile Include="Generic6DofConstraintImp.cs" />
     <Compile Include="HingeConstraintImp.cs" />
+    <Compile Include="MultiSphereShapeImp.cs" />
     <Compile Include="PhysicsImplementor.cs" />
     <Compile Include="Point2PointConstraintImp.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RigidBodyImp.cs" />
     <Compile Include="SliderConstraintImp.cs" />
+    <Compile Include="SphereShapeImp.cs" />
     <Compile Include="Translater.cs" />
   </ItemGroup>
   <ItemGroup>

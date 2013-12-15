@@ -57,15 +57,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="CollisionShape.cs" />
-    <Compile Include="CollisionShapeBox.cs" />
-    <Compile Include="CollisionShapeCapsule.cs" />
-    <Compile Include="CollisionShapeCone.cs" />
-    <Compile Include="CollisionShapeCylinder.cs" />
-    <Compile Include="CollisionShapeMultiSphere.cs" />
-    <Compile Include="CollisionShapeSphere.cs" />
     <Compile Include="IAudioStream.cs" />
+    <Compile Include="IBoxShapeImp.cs" />
+    <Compile Include="ICapsuleShapeImp.cs" />
+    <Compile Include="ICollisionShapeImp.cs" />
+    <Compile Include="IConeShapeImp.cs" />
     <Compile Include="IConeTwistConstraintImp.cs" />
     <Compile Include="IConstraintImp.cs" />
+    <Compile Include="ICylinderShapeImp.cs" />
     <Compile Include="IDynamicWorldImp.cs" />
     <Compile Include="IGearConstraintImp.cs" />
     <Compile Include="IGeneric6DofConstraintImp.cs" />
@@ -73,6 +72,7 @@
     <Compile Include="IInputImp.cs" />
     <Compile Include="ImageData.cs" />
     <Compile Include="IMeshImp.cs" />
+    <Compile Include="IMultiSphereShapeImp.cs" />
     <Compile Include="InitEventArgs.cs" />
     <Compile Include="IPoint2PointConstraintImp.cs" />
     <Compile Include="IRenderCanvasImp.cs" />
@@ -82,6 +82,7 @@
     <Compile Include="IShaderProgramImp.cs" />
     <Compile Include="IAudioImp.cs" />
     <Compile Include="ISliderConstraintImp.cs" />
+    <Compile Include="ISphereShapeImp.cs" />
     <Compile Include="ITexture.cs" />
     <Compile Include="KeyEventArgs.cs" />
     <Compile Include="Light.cs" />

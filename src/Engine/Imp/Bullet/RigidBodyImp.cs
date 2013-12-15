@@ -2,6 +2,7 @@
 using System.Data;
 using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Cryptography.X509Certificates;
 using System.Xml.Schema;
@@ -241,7 +242,7 @@ namespace Fusee.Engine
             }
         }
 
-        public void SetCollisionShape(CollisionShape colShape)
+        /*public void SetCollisionShape(CollisionShape colShape)
         {
             BulletSharp.CollisionShape btShape = null;
            
@@ -296,7 +297,93 @@ namespace Fusee.Engine
             }
             var o = (RigidBodyImp)_rbi.UserObject;
             o._rbi.CollisionShape = btShape;
+        }*/
+
+        //CollisionShapes
+
+        //BoxShape
+        public IBoxShapeImp AddBoxShape(float boxHalfExtents)
+        {
+            var btBoxShape = new BoxShape(boxHalfExtents);
+            _rbi.CollisionShape = btBoxShape;
+
+            var retval = new BoxShapeImp();
+            retval.BtBoxShape = btBoxShape;
+            btBoxShape.UserObject = retval;
+            return retval;
         }
+        public IBoxShapeImp AddBoxShape(float3 boxHalfExtents)
+        {
+            var btBoxShape = new BoxShape(Translater.Float3ToBtVector3(boxHalfExtents));
+            _rbi.CollisionShape = btBoxShape;
+           
+            var retval = new BoxShapeImp();
+            retval.BtBoxShape = btBoxShape;
+            btBoxShape.UserObject = retval;
+            return retval;
+        }
+        public IBoxShapeImp AddBoxShape(float boxHalfExtentsX, float boxHalfExtentsY, float boxHalfExtentsZ)
+        {
+            var btBoxShape = new BoxShape(boxHalfExtentsX, boxHalfExtentsY, boxHalfExtentsZ);
+            _rbi.CollisionShape = btBoxShape;
+
+            var retval = new BoxShapeImp();
+            retval.BtBoxShape = btBoxShape;
+            btBoxShape.UserObject = retval;
+            return retval;
+        }
+       
+        //SphereShape
+        public ISphereShapeImp AddSphereShape(float radius)
+        {
+            var btSphereShape = new SphereShape(radius);
+            _rbi.CollisionShape = btSphereShape;
+
+            var retval = new SphereShapeImp();
+            retval.BtSphereShape = btSphereShape;
+            btSphereShape.UserObject = retval;
+            return retval;
+        }
+
+        //CapsuleShape
+        public ICapsuleShapeImp AddCapsuleShape(float radius, float height)
+        {
+            var btCapsuleShape = new CapsuleShape(radius, height);
+            _rbi.CollisionShape = btCapsuleShape;
+
+            var retval = new CapsuleShapeImp();
+            retval.BtCapsuleShape = btCapsuleShape;
+            btCapsuleShape.UserObject = retval;
+            return retval;
+        }
+
+        public IConeShapeImp AddConeShape(float radius, float height)
+        {
+            var btConeShape = new ConeShape(radius, height);
+            _rbi.CollisionShape = btConeShape;
+
+            var retval = new ConeShapeImp();
+            retval.BtConeShape = btConeShape;
+            btConeShape.UserObject = retval;
+            return retval;
+        }
+
+        public IMultiSphereShapeImp AddMultiSphereShapeImp(float3[] positions, float[] radi)
+        {
+            var btPositions = new Vector3[positions.Length];
+            for (int i = 0; i < positions.Length; i++)
+            {
+                btPositions[i] = new Vector3(positions[i].x, positions[i].y, positions[i].z);
+            }
+            var btMultiSphereShape = new MultiSphereShape(btPositions, radi);
+            _rbi.CollisionShape = btMultiSphereShape;
+
+            var retval = new MultiSphereShapeImp();
+            retval.BtMultiSphereShape = btMultiSphereShape;
+            btMultiSphereShape.UserObject = retval;
+            return retval;
+        }
+
 
         private object _userObject;
         public object UserObject
