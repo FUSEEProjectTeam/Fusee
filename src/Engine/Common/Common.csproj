@@ -56,11 +56,11 @@
     <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="CollisionShape.cs" />
     <Compile Include="IAudioStream.cs" />
     <Compile Include="IBoxShapeImp.cs" />
     <Compile Include="ICapsuleShapeImp.cs" />
     <Compile Include="ICollisionShapeImp.cs" />
+    <Compile Include="ICompoundShapeImp.cs" />
     <Compile Include="IConeShapeImp.cs" />
     <Compile Include="IConeTwistConstraintImp.cs" />
     <Compile Include="IConstraintImp.cs" />

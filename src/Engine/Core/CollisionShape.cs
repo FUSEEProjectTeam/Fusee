@@ -5,10 +5,11 @@ using System.Text;
 
 namespace Fusee.Engine
 {
-    public abstract class CollisionShape
+    public class CollisionShape
     {
         internal ICollisionShapeImp ICollisionShapeImp;
 
-        public abstract float Margin { get; set; }
+
+        public float Margin { get; set; }
     }
 }

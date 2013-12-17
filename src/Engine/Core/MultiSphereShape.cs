@@ -10,7 +10,7 @@ namespace Fusee.Engine
     {
         internal IMultiSphereShapeImp MultiSphereShapeImp;
 
-        public override float Margin
+        public float Margin
         {
             get
             {

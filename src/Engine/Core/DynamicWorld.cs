@@ -252,6 +252,15 @@ namespace Fusee.Engine
             return retval;
         }
 
+        public CompoundShape AddCompoundShape(bool enableDynamicAabbTree)
+        {
+            ICompoundShapeImp iCompoundImp = _dwi.AddCompoundShape(enableDynamicAabbTree);
+            var retval = new CompoundShape();
+            retval.CompoundShapeImp = iCompoundImp;
+            iCompoundImp.UserObject = retval;
+            return retval;
+        }
+
         #endregion CollisionShapes
 
         public int NumberConstraints()

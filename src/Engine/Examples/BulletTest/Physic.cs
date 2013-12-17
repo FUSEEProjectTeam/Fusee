@@ -155,6 +155,9 @@ namespace Examples.BulletTest
             //Debug.WriteLine(shape.Radius);
             var box = _world.AddBoxShape(5);
             Debug.WriteLine(box.HalfExtents);
+            var comp = _world.AddCompoundShape(true);
+            comp.AddChildShape(float4x4.Identity,box);
+
         }
     }
 }

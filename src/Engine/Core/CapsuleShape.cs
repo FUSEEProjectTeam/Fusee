@@ -9,7 +9,7 @@ namespace Fusee.Engine
     {
         internal ICapsuleShapeImp CapsuleShapeImp;
 
-        public override float Margin
+        public float Margin
         {
             get
             {

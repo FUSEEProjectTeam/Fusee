@@ -1,22 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Fusee.Math;
 
 namespace Fusee.Engine
 {
-    public class BoxShape : CollisionShape
+    public class CompoundShape : CollisionShape
     {
-        internal IBoxShapeImp BoxShapeImp;
+        internal ICompoundShapeImp CompoundShapeImp;
 
-        public float3 HalfExtents
+        public void AddChildShape<T>(float4x4 localTransform, T childShape)
         {
-            get
-            {
-                var retval = BoxShapeImp.HalfExtents;
-                return retval;
-            }
+
+            //CompoundShapeImp.AddChildShape(localTransform, childShape);
         }
 
         //Inherited
@@ -25,12 +23,12 @@ namespace Fusee.Engine
 
             get
             {
-                var retval = BoxShapeImp.Margin;
+                var retval = CompoundShapeImp.Margin;
                 return retval;
             }
             set
             {
-                var o = (BoxShape)BoxShapeImp.UserObject;
+                var o = (BoxShape)CompoundShapeImp.UserObject;
                 o.BoxShapeImp.Margin = value;
             }
         }

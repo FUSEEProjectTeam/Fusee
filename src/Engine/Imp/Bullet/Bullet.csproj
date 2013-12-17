@@ -52,6 +52,7 @@
     <Compile Include="BoxShapeImp.cs" />
     <Compile Include="CapsuleShapeImp.cs" />
     <Compile Include="CollisonShapeImp.cs" />
+    <Compile Include="CompoundShapeImp.cs" />
     <Compile Include="ConeShapeImp.cs" />
     <Compile Include="ConeTwistConstraintImp.cs" />
     <Compile Include="CylinderShapeImp.cs" />

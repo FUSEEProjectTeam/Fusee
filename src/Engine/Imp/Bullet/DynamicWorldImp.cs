@@ -327,7 +327,7 @@ namespace Fusee.Engine
         {
             var btBoxShape = new BoxShape(boxHalfExtents);
             BtCollisionShapes.Add(btBoxShape);
-
+            
             var retval = new BoxShapeImp();
             retval.BtBoxShape = btBoxShape;
             btBoxShape.UserObject = retval;
@@ -406,6 +406,18 @@ namespace Fusee.Engine
             btMultiSphereShape.UserObject = retval;
             return retval;
         }
+
+        public ICompoundShapeImp AddCompoundShape(bool enableDynamicAabbTree)
+        {
+            var btCompoundShape = new CompoundShape(enableDynamicAabbTree);
+            BtCollisionShapes.Add(btCompoundShape);
+
+            var retval = new CompoundShapeImp();
+            retval.BtCompoundShape = btCompoundShape;
+            btCompoundShape.UserObject = retval;
+            return retval;
+        }
+
         #endregion CollisionShapes
 
 

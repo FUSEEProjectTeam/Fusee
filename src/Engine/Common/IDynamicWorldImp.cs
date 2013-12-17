@@ -48,6 +48,8 @@ namespace Fusee.Engine
 
         IMultiSphereShapeImp AddMultiSphereShape(float3[] positions, float[] radi);
 
+        ICompoundShapeImp AddCompoundShape(bool enableDynamicAabbTree);
+
         void Test();
 
         int NumberConstraints();

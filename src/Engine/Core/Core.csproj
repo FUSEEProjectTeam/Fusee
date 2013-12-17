@@ -59,6 +59,8 @@
     <Compile Include="Audio.cs" />
     <Compile Include="BoxShape.cs" />
     <Compile Include="CapsuleShape.cs" />
+    <Compile Include="CollisionShape.cs" />
+    <Compile Include="CompoundShape.cs" />
     <Compile Include="ConeShape.cs" />
     <Compile Include="ConeTwistConstraint.cs" />
     <Compile Include="Cube.cs" />
