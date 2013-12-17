@@ -39,17 +39,7 @@ namespace Fusee.Engine
         float Bounciness { get; set; }
 
         //void SetCollisionShape(CollisionShape colShape);
-        IBoxShapeImp AddBoxShape(float boxHalfExtents);
-        IBoxShapeImp AddBoxShape(float3 boxHalfExtents);
-        IBoxShapeImp AddBoxShape(float boxHalfExtentsX, float boxHalfExtentsY, float boxHalfExtentsZ);
-
-        ISphereShapeImp AddSphereShape(float radius);
-
-        ICapsuleShapeImp AddCapsuleShape(float radius, float height);
-
-        IConeShapeImp AddConeShape(float radius, float height);
-
-        IMultiSphereShapeImp AddMultiSphereShapeImp(float3[] positions, float[] radi);
+        
 
         object UserObject { get; set; }
 

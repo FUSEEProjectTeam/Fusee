@@ -202,6 +202,7 @@ namespace Examples.BulletSharp
             var empty = new EmptyShape();
             Debug.WriteLine("AmptyMargin: " +empty.Margin);
 
+            
 
 
 

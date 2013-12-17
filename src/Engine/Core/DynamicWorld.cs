@@ -59,6 +59,7 @@ namespace Fusee.Engine
             return number;
         }
 
+        #region Constraints
         //P2pConstraint
 
         public Point2PointConstraint AddPoint2PointConstraint(RigidBody rigidBodyA, float3 pivotInA)
@@ -182,7 +183,76 @@ namespace Fusee.Engine
             ig6dofci.UserObject = retval;
             return retval;
         }
+        #endregion Constraints
+        
+        #region CollisionShapes
+        //CollisionShapes
 
+        //BoxShape
+        public BoxShape AddBoxShape(float boxHalfExtents)
+        {
+            IBoxShapeImp iBoxShapeImp = _dwi.AddBoxShape(boxHalfExtents);
+            var retval = new BoxShape();
+            retval.BoxShapeImp = iBoxShapeImp;
+            iBoxShapeImp.UserObject = retval;
+            return retval;
+        }
+        public BoxShape AddBoxShape(float boxHalfExtentsX, float boxHalfExtentsY, float boxHalfExtentsZ)
+        {
+            IBoxShapeImp iBoxShapeImp = _dwi.AddBoxShape(boxHalfExtentsX, boxHalfExtentsY, boxHalfExtentsZ);
+            var retval = new BoxShape();
+            retval.BoxShapeImp = iBoxShapeImp;
+            iBoxShapeImp.UserObject = retval;
+            return retval;
+        }
+        public BoxShape AddBoxShape(float3 boxHalfExtents)
+        {
+            IBoxShapeImp iBoxShapeImp = _dwi.AddBoxShape(boxHalfExtents);
+            var retval = new BoxShape();
+            retval.BoxShapeImp = iBoxShapeImp;
+            iBoxShapeImp.UserObject = retval;
+            return retval;
+        }
+
+        //SphereShape
+        public SphereShape AddSphereShape(float radius)
+        {
+            ISphereShapeImp iSphereShapeImp = _dwi.AddSphereShape(radius);
+            var retval = new SphereShape();
+            retval.SphereShapeImp = iSphereShapeImp;
+            iSphereShapeImp.UserObject = retval;
+            return retval;
+        }
+
+        //CapsuleShape
+        public CapsuleShape AddCapsuleShape(float radius, float height)
+        {
+            ICapsuleShapeImp iCapsuleShapeImp = _dwi.AddCapsuleShape(radius, height);
+            var retval = new CapsuleShape();
+            retval.CapsuleShapeImp = iCapsuleShapeImp;
+            iCapsuleShapeImp.UserObject = retval;
+            return retval;
+        }
+
+        public ConeShape AddConeShape(float radius, float height)
+        {
+            IConeShapeImp iConeShapeImp = _dwi.AddConeShape(radius, height);
+            var retval = new ConeShape();
+            retval.ConeShapeImp = iConeShapeImp;
+            iConeShapeImp.UserObject = retval;
+            return retval;
+        }
+
+        public MultiSphereShape AddMultiSphereShape(float3[] positions, float[] radi)
+        {
+            IMultiSphereShapeImp iMultiSphereShapeImp = _dwi.AddMultiSphereShape(positions, radi);
+            var retval = new MultiSphereShape();
+            retval.MultiSphereShapeImp = iMultiSphereShapeImp;
+            iMultiSphereShapeImp.UserObject = retval;
+            return retval;
+        }
+
+        #endregion CollisionShapes
 
         public int NumberConstraints()
         {

@@ -34,8 +34,21 @@ namespace Fusee.Engine
 
         IGeneric6DofConstraintImp AddGeneric6DofConstraint(IRigidBodyImp rigidBodyA, float4x4 frameInA, bool useReferenceFrameA);
         IGeneric6DofConstraintImp AddGeneric6DofConstraint(IRigidBodyImp rigidBodyA, IRigidBodyImp rigidBodyB, float4x4 frameInA, float4x4 frameInB, bool useReferenceFrameA = false);
-  
-        
+
+
+        IBoxShapeImp AddBoxShape(float boxHalfExtents);
+        IBoxShapeImp AddBoxShape(float3 boxHalfExtents);
+        IBoxShapeImp AddBoxShape(float boxHalfExtentsX, float boxHalfExtentsY, float boxHalfExtentsZ);
+
+        ISphereShapeImp AddSphereShape(float radius);
+
+        ICapsuleShapeImp AddCapsuleShape(float radius, float height);
+
+        IConeShapeImp AddConeShape(float radius, float height);
+
+        IMultiSphereShapeImp AddMultiSphereShape(float3[] positions, float[] radi);
+
+        void Test();
 
         int NumberConstraints();
     }

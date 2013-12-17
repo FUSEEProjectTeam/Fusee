@@ -18,7 +18,7 @@ namespace Fusee.Engine
         internal CollisionDispatcher BtDispatcher;
         internal BroadphaseInterface BtBroadphase;
         internal ConstraintSolver BtSolver;
-        //internal AlignedCollisionShapeArray BtCollisionShapes { get; private set; }
+        internal AlignedCollisionShapeArray BtCollisionShapes { get; private set; }
 
         internal DynamicWorldImp()
         {
@@ -29,8 +29,9 @@ namespace Fusee.Engine
             BtDispatcher = new CollisionDispatcher(BtCollisionConf);
             BtBroadphase = new DbvtBroadphase();
             BtSolver = new SequentialImpulseConstraintSolver();
-           
-
+            BtCollisionShapes = new AlignedCollisionShapeArray();
+            BtCollisionShapes.Add(new SphereShape(1));
+            Test();
             BtWorld = new DiscreteDynamicsWorld(BtDispatcher, BtBroadphase, BtSolver, BtCollisionConf)
             {
                 Gravity = new Vector3(0, -9.81f   *10.0f , 0)
@@ -90,6 +91,7 @@ namespace Fusee.Engine
             return number;
         }
 
+        #region Constraints
         //Point2point
         public IPoint2PointConstraintImp AddPoint2PointConstraint(IRigidBodyImp rigidBodyA, float3 pivotInA)
         {
@@ -316,8 +318,101 @@ namespace Fusee.Engine
             btGeneric6DofConstraint.UserObject = retval;
             return retval;
         }
+        #endregion Constraints
 
-        
+        #region CollisionShapes
+        //CollisionShapes
+        //BoxShape
+        public IBoxShapeImp AddBoxShape(float boxHalfExtents)
+        {
+            var btBoxShape = new BoxShape(boxHalfExtents);
+            BtCollisionShapes.Add(btBoxShape);
+
+            var retval = new BoxShapeImp();
+            retval.BtBoxShape = btBoxShape;
+            btBoxShape.UserObject = retval;
+            return retval;
+        }
+        public IBoxShapeImp AddBoxShape(float3 boxHalfExtents)
+        {
+            var btBoxShape = new BoxShape(Translater.Float3ToBtVector3(boxHalfExtents));
+            BtCollisionShapes.Add(btBoxShape);
+
+            var retval = new BoxShapeImp();
+            retval.BtBoxShape = btBoxShape;
+            btBoxShape.UserObject = retval;
+            return retval;
+        }
+        public IBoxShapeImp AddBoxShape(float boxHalfExtentsX, float boxHalfExtentsY, float boxHalfExtentsZ)
+        {
+            var btBoxShape = new BoxShape(boxHalfExtentsX, boxHalfExtentsY, boxHalfExtentsZ);
+            BtCollisionShapes.Add(btBoxShape);
+
+            var retval = new BoxShapeImp();
+            retval.BtBoxShape = btBoxShape;
+            btBoxShape.UserObject = retval;
+            return retval;
+        }
+
+        //SphereShape
+        public ISphereShapeImp AddSphereShape(float radius)
+        {
+            var btSphereShape = new SphereShape(radius);
+            BtCollisionShapes.Add(btSphereShape);
+            
+            var retval = new SphereShapeImp();
+            retval.BtSphereShape = btSphereShape;
+            btSphereShape.UserObject = retval;
+            return retval;
+        }
+
+        //CapsuleShape
+        public ICapsuleShapeImp AddCapsuleShape(float radius, float height)
+        {
+            var btCapsuleShape = new CapsuleShape(radius, height);
+            BtCollisionShapes.Add(btCapsuleShape);
+
+            var retval = new CapsuleShapeImp();
+            retval.BtCapsuleShape = btCapsuleShape;
+            btCapsuleShape.UserObject = retval;
+            return retval;
+        }
+
+        //ConeShape
+        public IConeShapeImp AddConeShape(float radius, float height)
+        {
+            var btConeShape = new ConeShape(radius, height);
+            BtCollisionShapes.Add(btConeShape);
+
+            var retval = new ConeShapeImp();
+            retval.BtConeShape = btConeShape;
+            btConeShape.UserObject = retval;
+            return retval;
+        }
+
+        //MultiSphereShape
+        public IMultiSphereShapeImp AddMultiSphereShape(float3[] positions, float[] radi)
+        {
+            var btPositions = new Vector3[positions.Length];
+            for (int i = 0; i < positions.Length; i++)
+            {
+                btPositions[i] = new Vector3(positions[i].x, positions[i].y, positions[i].z);
+            }
+            var btMultiSphereShape = new MultiSphereShape(btPositions, radi);
+            BtCollisionShapes.Add(btMultiSphereShape);
+
+            var retval = new MultiSphereShapeImp();
+            retval.BtMultiSphereShape = btMultiSphereShape;
+            btMultiSphereShape.UserObject = retval;
+            return retval;
+        }
+        #endregion CollisionShapes
+
+
+        public void Test()
+        {
+            Debug.WriteLine("TEST");
+        }
 
 
         public int NumberConstraints()

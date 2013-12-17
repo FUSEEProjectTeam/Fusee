@@ -212,53 +212,7 @@ namespace Fusee.Engine
             }
         }
 
-        //CollisionShapes
-
-        //BoxShape
-        public BoxShape AddBoxShape(float boxHalfExtents)
-        {
-            IBoxShapeImp iBoxShapeImp = _iRigidBodyImp.AddBoxShape(boxHalfExtents);
-            var retval = new BoxShape();
-            retval.BoxShapeImp = iBoxShapeImp;
-            iBoxShapeImp.UserObject = retval;
-            return retval;
-        }
-        public BoxShape AddBoxShape(float boxHalfExtentsX, float boxHalfExtentsY, float boxHalfExtentsZ)
-        {
-            IBoxShapeImp iBoxShapeImp = _iRigidBodyImp.AddBoxShape(boxHalfExtentsX, boxHalfExtentsY, boxHalfExtentsZ);
-            var retval = new BoxShape();
-            retval.BoxShapeImp = iBoxShapeImp;
-            iBoxShapeImp.UserObject = retval;
-            return retval;
-        }
-        public BoxShape AddBoxShape(float3 boxHalfExtents)
-        {
-            IBoxShapeImp iBoxShapeImp = _iRigidBodyImp.AddBoxShape(boxHalfExtents);
-            var retval = new BoxShape();
-            retval.BoxShapeImp = iBoxShapeImp;
-            iBoxShapeImp.UserObject = retval;
-            return retval;
-        }
-
-        //SphereShape
-        public SphereShape AddSphereShape(float radius)
-        {
-            ISphereShapeImp iSphereShapeImp = _iRigidBodyImp.AddSphereShape(radius);
-            var retval = new SphereShape();
-            retval.SphereShapeImp = iSphereShapeImp;
-            iSphereShapeImp.UserObject = retval;
-            return retval;
-        }
-
-        //CapsuleShape
-        public CapsuleShape AddCapsuleShape(float radius, float height)
-        {
-            ICapsuleShapeImp iCapsuleShapeImp = _iRigidBodyImp.AddCapsuleShape(radius, height);
-            var retval = new CapsuleShape();
-            retval.CapsuleShapeImp = iCapsuleShapeImp;
-            iCapsuleShapeImp.UserObject = retval;
-            return retval;
-        }
+        
 
 
 

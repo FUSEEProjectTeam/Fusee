@@ -151,9 +151,10 @@ namespace Examples.BulletTest
         {
             var rbA = _world.AddRigidBody(1, new float3(0, 150, 0), new float3(1, 1, 1));
             //var box = rbA.AddBoxShape(new float3(14,14,14));
-            var shape = rbA.AddCapsuleShape(2, 8);
-            Debug.WriteLine(shape.Radius);
-           
+            //var shape = rbA.AddCapsuleShape(2, 8);
+            //Debug.WriteLine(shape.Radius);
+            var box = _world.AddBoxShape(5);
+            Debug.WriteLine(box.HalfExtents);
         }
     }
 }
