@@ -39,7 +39,7 @@ namespace Examples.TextDemo
             // panel
             _guiPanel = new GUIPanel(RC, "Menü", _fontCabin12, 10, 10, 150, 110);
 
-            RC.GUIElements.Add(_guiPanel);
+            GUIHandler.GUIElements.Add(_guiPanel);
 
             // button 1
             _guiButton1 = new GUIButton(RC, "Exit", _fontCabin12, 25, 40, 100, 25)
@@ -118,7 +118,7 @@ namespace Examples.TextDemo
             RC.Render(_mesh);
 
             // GUI
-            RC.RenderGUI();
+            GUIHandler.RenderGUI();
 
             Present();
         }
@@ -138,15 +138,15 @@ namespace Examples.TextDemo
                     Environment.Exit(0);
 
                 if (sender == _guiButton2)
-                    if (!RC.GUIElements.Contains(_guiText1))
+                    if (!GUIHandler.GUIElements.Contains(_guiText1))
                     {
-                        RC.GUIElements.Add(_guiText2);
-                        RC.GUIElements.Add(_guiText1);
+                        GUIHandler.GUIElements.Add(_guiText2);
+                        GUIHandler.GUIElements.Add(_guiText1);
                     }
                     else
                     {
-                        RC.GUIElements.Remove(_guiText2);
-                        RC.GUIElements.Remove(_guiText1);
+                        GUIHandler.GUIElements.Remove(_guiText2);
+                        GUIHandler.GUIElements.Remove(_guiText1);
                     }
             }
         }
@@ -174,8 +174,6 @@ namespace Examples.TextDemo
             RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 10000);
 
             _guiPanel.Refresh();
-            _guiButton1.Refresh();
-            _guiButton2.Refresh();
             _guiText1.Refresh();
             _guiText2.Refresh();
         }

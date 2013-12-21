@@ -63,6 +63,7 @@
     <Compile Include="Geometry.cs" />
     <Compile Include="GUI\GUIButton.cs" />
     <Compile Include="GUI\GUIElement.cs" />
+    <Compile Include="GUI\GUIHandler.cs" />
     <Compile Include="GUI\GUIText.cs" />
     <Compile Include="GUI\GUIPanel.cs" />
     <Compile Include="ImpFactory.cs" />
