@@ -154,7 +154,20 @@ namespace Fusee.Engine
             _guiShader.AttachToContext(RContext);
         }
 
-        public void Refresh()
+        protected void CreateGUIMesh(float3[] vertices, float2[] uvs, ushort[] indices, uint[] colors)
+        {
+            if (GUIMesh == null)
+                GUIMesh = new Mesh { Vertices = vertices, UVs = uvs, Triangles = indices, Colors = colors };
+            else
+            {
+                GUIMesh.Vertices = vertices;
+                GUIMesh.UVs = uvs;
+                GUIMesh.Triangles = indices;
+                GUIMesh.Colors = colors;
+            }
+        }
+
+        public virtual void Refresh()
         {
             Dirty = false;
             CreateMesh();

@@ -197,7 +197,7 @@ namespace Fusee.Engine
             Array.Copy(textMesh.Colors, colors, textMesh.Colors.Length);
 
             // create final mesh
-            GUIMesh = new Mesh { Vertices = vertices, UVs = uvs, Triangles = indices, Colors = colors };
+            CreateGUIMesh(vertices, uvs, indices, colors);
         }
 
         private bool MouseOnButton(MouseEventArgs mea)

@@ -89,7 +89,9 @@ namespace Fusee.Engine
             }
 
             vertices = RContext.FixTextKerning(Font, vertices, Text, scaleX);
-            GUIMesh = new Mesh { Vertices = vertices, UVs = uvs, Triangles = indices, Colors = colors };
+
+            // create final mesh
+            CreateGUIMesh(vertices, uvs, indices, colors);
         }
 
         /// <summary>
