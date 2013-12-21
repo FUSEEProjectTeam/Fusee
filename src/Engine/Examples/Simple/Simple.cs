@@ -1,6 +1,7 @@
 ﻿using System;
 using Fusee.Engine;
 using Fusee.Math;
+using ProtoBufTest;
 
 namespace Examples.Simple
 {
@@ -29,7 +30,14 @@ namespace Examples.Simple
         public override void Init()
         {
             RC.ClearColor = new float4(1, 1, 1, 1);
-
+            PersonSerializer ser = new PersonSerializer();
+            Person readInMyModel;
+            var rawBytes = System.IO.File.ReadAllBytes(@"Assets/werner.bytes");
+            using (System.IO.Stream s = new System.IO.MemoryStream(rawBytes))
+            {
+                readInMyModel = ser.Deserialize(s, null, typeof(Person)) as Person;
+            }
+            Console.WriteLine(readInMyModel.Name);
             // initialize the variables
             _meshTea = MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
             _meshFace = MeshReader.LoadMesh(@"Assets/Face.obj.model");
