@@ -35,34 +35,67 @@ namespace Fusee.Engine
             set { _userObject = value; }
         }
 
-        public void AddChildShape<TShapeType>(float4x4 localTransform, TShapeType childShape) 
-            where TShapeType : ICollisionShapeImp, IBoxShapeImp, ISphereShapeImp  
+
+        public void AddChildShape(float4x4 localTransform, IBoxShapeImp shape)
         {
-            CollisionShape btCollisionShape;
-            var type = childShape.GetType().ToString();
-            switch (type)
+            Debug.WriteLine("AddBox");
+            var btHalfExtents = Translater.Float3ToBtVector3(shape.HalfExtents);
+            var btChildShape = new BoxShape(btHalfExtents);
+            var btLocalTransform = Translater.Float4X4ToBtMatrix(localTransform);
+            BtCompoundShape.AddChildShape(btLocalTransform, btChildShape);
+        }
+        public void AddChildShape(float4x4 localTransform, ISphereShapeImp shape)
+        {
+            Debug.WriteLine("AddSphere");
+            var btChildShape = new SphereShape(shape.Radius);
+            var btLocalTransform = Translater.Float4X4ToBtMatrix(localTransform);
+            BtCompoundShape.AddChildShape(btLocalTransform, btChildShape);
+        }
+        public void AddChildShape(float4x4 localTransform, ICapsuleShapeImp shape)
+        {
+            var btChildShape = new CapsuleShape(shape.Radius, shape.HalfHeight);
+            var btLocalTransform = Translater.Float4X4ToBtMatrix(localTransform);
+            BtCompoundShape.AddChildShape(btLocalTransform, btChildShape);
+        }
+        public void AddChildShape(float4x4 localTransform, IConeShapeImp shape)
+        {
+            var btChildShape = new ConeShape(shape.Radius, shape.Height);
+            var btLocalTransform = Translater.Float4X4ToBtMatrix(localTransform);
+            BtCompoundShape.AddChildShape(btLocalTransform, btChildShape);
+        }
+        public void AddChildShape(float4x4 localTransform, ICylinderShapeImp shape)
+        {
+            var btHalfExtents = Translater.Float3ToBtVector3(shape.HalfExtents);
+            var btChildShape = new CylinderShape(btHalfExtents);
+            var btLocalTransform = Translater.Float4X4ToBtMatrix(localTransform);
+            BtCompoundShape.AddChildShape(btLocalTransform, btChildShape);
+        }
+        public void AddChildShape(float4x4 localTransform, IMultiSphereShapeImp shape)
+        {
+            var btPositions = new Vector3[shape.SphereCount];
+            var btRadi = new float[shape.SphereCount];
+            for (int i = 0; i < shape.SphereCount; i++)
             {
-                case "Fusee.Engine.BoxShape":
-                    Debug.WriteLine(type);
-                    var btHalfExtents = Translater.Float3ToBtVector3(childShape.HalfExtents);
-                    btCollisionShape = new BoxShape(btHalfExtents);
-                    break;
-                case "Fusee.Engine.SphereShape":
-                    Debug.WriteLine(type);
-                    //var btHalfExtents = Translater.Float3ToBtVector3(childShape.HalfExtents);
-                    btCollisionShape = new SphereShape(childShape.Radius);
-                    break;
-                /*
-                 * TODO: For all cases
-                 * */
-                default:
-                    Debug.WriteLine("Default");
-                    btCollisionShape = new EmptyShape();
-                    break;
+                var pos = Translater.Float3ToBtVector3(shape.GetSpherePosition(i));
+                btPositions[i] = pos;
+                btRadi[i] = shape.GetSphereRadius(i);
             }
+            var btChildShape = new MultiSphereShape(btPositions, btRadi);
+            var btLocalTransform = Translater.Float4X4ToBtMatrix(localTransform);
+            BtCompoundShape.AddChildShape(btLocalTransform, btChildShape);
+        }
+        public void AddChildShape(float4x4 localTransform, IEmptyShapeImp shape)
+        {
+            var btChildShape = new EmptyShape();
+            var btLocalTransform = Translater.Float4X4ToBtMatrix(localTransform);
+            BtCompoundShape.AddChildShape(btLocalTransform, btChildShape);
+        }
 
-
-            BtCompoundShape.AddChildShape(Translater.Float4X4ToBtMatrix(localTransform), btCollisionShape);
+        public void CalculatePrincipalAxisTransform(float[] masses, float4x4 principal, float3 inertia)
+        {
+            var btPrincipal = Translater.Float4X4ToBtMatrix(principal);
+            var btInertia = Translater.Float3ToBtVector3(inertia);
+            BtCompoundShape.CalculatePrincipalAxisTransform(masses, ref btPrincipal, out btInertia);
         }
     }
 }

@@ -66,6 +66,7 @@
     <Compile Include="IConstraintImp.cs" />
     <Compile Include="ICylinderShapeImp.cs" />
     <Compile Include="IDynamicWorldImp.cs" />
+    <Compile Include="IEmptyShapeImp.cs" />
     <Compile Include="IGearConstraintImp.cs" />
     <Compile Include="IGeneric6DofConstraintImp.cs" />
     <Compile Include="IHingeConstraintImp.cs" />

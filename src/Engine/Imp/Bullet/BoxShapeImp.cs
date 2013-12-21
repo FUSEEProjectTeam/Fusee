@@ -39,7 +39,7 @@ namespace Fusee.Engine
         }
 
         private object _userObject;
-        public override object UserObject
+        public override  object UserObject
         {
             get { return _userObject; }
             set { _userObject = value; }

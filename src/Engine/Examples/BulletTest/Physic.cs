@@ -154,9 +154,12 @@ namespace Examples.BulletTest
             //var shape = rbA.AddCapsuleShape(2, 8);
             //Debug.WriteLine(shape.Radius);
             var box = _world.AddBoxShape(5);
+            var sphere = _world.AddSphereShape(2);
             Debug.WriteLine(box.HalfExtents);
             var comp = _world.AddCompoundShape(true);
             comp.AddChildShape(float4x4.Identity,box);
+            comp.AddChildShape(float4x4.Identity, sphere);
+            //comp.CalculatePrincipalAxisTransform();
 
         }
     }

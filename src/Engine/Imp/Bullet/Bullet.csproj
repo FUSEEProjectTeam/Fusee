@@ -57,6 +57,7 @@
     <Compile Include="ConeTwistConstraintImp.cs" />
     <Compile Include="CylinderShapeImp.cs" />
     <Compile Include="DynamicWorldImp.cs" />
+    <Compile Include="EmptyShapeImp.cs" />
     <Compile Include="GearConstraintImp.cs" />
     <Compile Include="Generic6DofConstraintImp.cs" />
     <Compile Include="HingeConstraintImp.cs" />
