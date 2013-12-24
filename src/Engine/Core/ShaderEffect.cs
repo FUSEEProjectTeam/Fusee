@@ -58,7 +58,7 @@ namespace Fusee.Engine
         /// <remarks>Make sure to list any parameter in any of the different passes' shaders you want to change later on in the effectParameters
         /// list. Shaders must not contain paramaeters with names listed in the effectParameters but declared with different types than those of 
         /// the respective default values given here.</remarks>
-        public ShaderEffect(EffectPassDeclaration[] effectPasses, EffectParameterDeclaration[] effectParameters)
+        public ShaderEffect(EffectPassDeclaration[] effectPasses, IEnumerable<EffectParameterDeclaration> effectParameters)
         {
             if (effectPasses == null || effectPasses.Length == 0)
                 throw new ArgumentNullException("effectPasses", "must not be null and must contain at least one pass");
@@ -78,9 +78,13 @@ namespace Fusee.Engine
             }
 
             _paramDecl = new Dictionary<string, object>();
-            foreach (var param in effectParameters)
+
+            if (effectParameters != null)
             {
-                _paramDecl.Add(param.Name, param.Value);
+                foreach (var param in effectParameters)
+                {
+                    _paramDecl.Add(param.Name, param.Value);
+                }
             }
         }
 

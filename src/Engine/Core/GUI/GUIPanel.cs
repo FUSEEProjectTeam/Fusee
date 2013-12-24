@@ -5,6 +5,8 @@ using Fusee.Math;
 
 namespace Fusee.Engine
 {
+    public delegate void GUIPanelHandler(GUIPanel sender, MouseEventArgs mea);
+
     public sealed class GUIPanel : GUIElement
     {
         #region Private Fields
@@ -13,6 +15,8 @@ namespace Fusee.Engine
 
         private int _borderWidth;
         private float4 _borderColor;
+
+        private bool _mouseOnPanel;
 
         #endregion
 
@@ -50,6 +54,11 @@ namespace Fusee.Engine
 
         public List<GUIElement> ChildElements;
 
+        public event GUIPanelHandler OnGUIPanelDown;
+        public event GUIPanelHandler OnGUIPanelUp;
+        public event GUIPanelHandler OnGUIPanelEnter;
+        public event GUIPanelHandler OnGUIPanelLeave;
+
         #endregion
 
         public GUIPanel(RenderContext rc, string text, IFont font, int x, int y, int width, int height)
@@ -64,6 +73,11 @@ namespace Fusee.Engine
             BorderWidth = 1;
             BorderColor = new float4(0.2f, 0.2f, 0.2f, 0.5f);
 
+            // event listener
+            Input.Instance.OnMouseButtonDown += OnButtonDown;
+            Input.Instance.OnMouseButtonUp += OnButtonUp;
+            Input.Instance.OnMouseMove += OnMouseMove;
+
             // create Mesh
             CreateMesh();
         }
@@ -73,125 +87,81 @@ namespace Fusee.Engine
             var x = PosX + OffsetX;
             var y = PosY + OffsetY;
 
-            // relative coordinates from -1 to +1
-            var scaleX = (float)2 / RContext.ViewportWidth;
-            var scaleY = (float)2 / RContext.ViewportHeight;
+            // GUIMesh
+            SetRectangleMesh(BorderWidth, PanelColor, BorderColor);
 
-            var xS = -1 + x * scaleX;
-            var yS = +1 - y * scaleY;
-
-            var width = Width * scaleX;
-            var height = Height * scaleY;
-
-            var borderX = System.Math.Max(0, BorderWidth*scaleX);
-            var borderY = System.Math.Max(0, BorderWidth*scaleY);
-
-            // build complete structure
-            var vtCount = 4 * Text.Length;
-            var indCount = 6 * Text.Length;
-
-            var vertices = new float3[(BorderWidth > 0) ? vtCount + 8 : vtCount + 4];
-            var uvs = new float2[(BorderWidth > 0) ? vtCount + 8 : vtCount + 4];
-            var indices = new ushort[(BorderWidth > 0) ? indCount + 12 : indCount + 6];
-            var colors = new uint[(BorderWidth > 0) ? vtCount + 8 : vtCount + 4];
-
-            indCount = 0;
-
-            // border
-            if (BorderWidth > 0)
-            {
-                // vertices
-                vertices[vtCount + 0] = new float3(xS, yS - height, 0);
-                vertices[vtCount + 1] = new float3(xS, yS, 0);
-                vertices[vtCount + 2] = new float3(xS + width, yS - height, 0);
-                vertices[vtCount + 3] = new float3(xS + width, yS, 0);
-
-                // colors
-                var bColorInt = MathHelper.Float4ToABGR(BorderColor);
-
-                colors[vtCount + 0] = bColorInt;
-                colors[vtCount + 1] = bColorInt;
-                colors[vtCount + 2] = bColorInt;
-                colors[vtCount + 3] = bColorInt;
-
-                // uvs
-                uvs[vtCount + 0] = new float2(-1, -1);
-                uvs[vtCount + 1] = new float2(-1, -1);
-                uvs[vtCount + 2] = new float2(-1, -1);
-                uvs[vtCount + 3] = new float2(-1, -1);
-
-                // indices
-                indices[indCount+0] = (ushort)(vtCount + 1);
-                indices[indCount+1] = (ushort)(vtCount + 0);
-                indices[indCount+2] = (ushort)(vtCount + 2);
-
-                indices[indCount+3] = (ushort)(vtCount + 1);
-                indices[indCount+4] = (ushort)(vtCount + 2);
-                indices[indCount+5] = (ushort)(vtCount + 3);
-
-                vtCount += 4;
-                indCount += 6;
-            }
-
-            // vertices
-            vertices[vtCount + 0] = new float3(xS+borderX, yS - height+borderY, 0);
-            vertices[vtCount + 1] = new float3(xS + borderX, yS-borderY, 0);
-            vertices[vtCount + 2] = new float3(xS-borderX + width, yS - height+borderY, 0);
-            vertices[vtCount + 3] = new float3(xS-borderX + width, yS-borderY, 0);
-
-            // colors
-            var colorInt = MathHelper.Float4ToABGR(PanelColor);
-
-            colors[vtCount + 0] = colorInt;
-            colors[vtCount + 1] = colorInt;
-            colors[vtCount + 2] = colorInt;
-            colors[vtCount + 3] = colorInt;
-
-            // uvs
-            uvs[vtCount + 0] = new float2(-1, -1);
-            uvs[vtCount + 1] = new float2(-1, -1);
-            uvs[vtCount + 2] = new float2(-1, -1);
-            uvs[vtCount + 3] = new float2(-1, -1);
-
-            // indices
-            indices[indCount + 0] = (ushort)(vtCount + 1);
-            indices[indCount + 1] = (ushort)(vtCount + 0);
-            indices[indCount + 2] = (ushort)(vtCount + 2);
-
-            indices[indCount + 3] = (ushort)(vtCount + 1);
-            indices[indCount + 4] = (ushort)(vtCount + 2);
-            indices[indCount + 5] = (ushort)(vtCount + 3);
-
-            // position text on panel
+            // TextMesh
             var maxW = GUIText.GetTextWidth(Text, Font);
             x = (int)System.Math.Round(x + (Width - maxW) / 2);
 
-            // get text mesh
-            var guiText = new GUIText(RContext, Text, Font, x, y + 20)
-            {
-                TextColor = TextColor
-            };
-
-            guiText.Refresh();
-            var textMesh = guiText.GUIMesh;
-
-            // combine panel and text
-            Array.Copy(textMesh.Vertices, vertices, textMesh.Vertices.Length);
-            Array.Copy(textMesh.UVs, uvs, textMesh.UVs.Length);
-            Array.Copy(textMesh.Triangles, 0, indices, (BorderWidth > 0) ? 12 : 6, textMesh.Triangles.Length);
-            Array.Copy(textMesh.Colors, colors, textMesh.Colors.Length);
-
-            // create final mesh
-            GUIMesh = new Mesh { Vertices = vertices, UVs = uvs, Triangles = indices, Colors = colors };
+            TextMesh = new GUIText(RContext, Text, Font, x, y + 20, TextColor).TextMesh;
         }
 
-        protected override void PostRender()
+        public override void Refresh()
         {
+            base.Refresh();
+
+            foreach (var childElement in ChildElements)
+                childElement.Refresh();
+        }
+
+        protected override void PreRender()
+        {
+            base.PreRender();
+
             foreach (var childElement in ChildElements)
             {
                 childElement.OffsetX = PosX;
                 childElement.OffsetY = PosY;
+
                 childElement.Render();
+            }
+        }
+
+        private bool MouseOnPanel(MouseEventArgs mea)
+        {
+            var x = mea.Position.x;
+            var y = mea.Position.y;
+
+            return x >= PosX + OffsetX &&
+                   x <= PosX + OffsetX + Width &&
+                   y >= PosY + OffsetY &&
+                   y <= PosY + OffsetY + Height;
+        }
+
+        private void OnButtonDown(object sender, MouseEventArgs mea)
+        {
+            if (OnGUIPanelDown == null)
+                return;
+
+            if (MouseOnPanel(mea))
+               OnGUIPanelDown(this, mea);
+        }
+
+        private void OnButtonUp(object sender, MouseEventArgs mea)
+        {
+            if (OnGUIPanelUp == null)
+                return;
+
+            if (MouseOnPanel(mea))
+                OnGUIPanelUp(this, mea);
+        }
+
+        private void OnMouseMove(object sender, MouseEventArgs mea)
+        {
+            if (MouseOnPanel(mea))
+            {
+                if ((OnGUIPanelEnter == null) || (_mouseOnPanel)) return;
+
+                OnGUIPanelEnter(this, mea);
+                _mouseOnPanel = true;
+            }
+            else
+            {
+                if ((OnGUIPanelLeave == null) || (!_mouseOnPanel)) return;
+
+                OnGUIPanelLeave(this, mea);
+                _mouseOnPanel = false;
             }
         }
     }

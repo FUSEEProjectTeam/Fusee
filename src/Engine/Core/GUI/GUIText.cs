@@ -7,10 +7,14 @@ namespace Fusee.Engine
         public GUIText(RenderContext rc, string text, IFont font, int x, int y)
             :base(rc, text, font, x, y, 0, 0)
         {
-            // settings
             TextColor = new float4(0, 0, 0, 1);
+            CreateMesh();
+        }
 
-            // create Mesh
+        public GUIText(RenderContext rc, string text, IFont font, int x, int y, float4 color)
+            : base(rc, text, font, x, y, 0, 0)
+        {
+            TextColor = color;
             CreateMesh();
         }
 
@@ -91,7 +95,7 @@ namespace Fusee.Engine
             vertices = RContext.FixTextKerning(Font, vertices, Text, scaleX);
 
             // create final mesh
-            CreateGUIMesh(vertices, uvs, indices, colors);
+            CreateTextMesh(vertices, uvs, indices, colors);
         }
 
         /// <summary>

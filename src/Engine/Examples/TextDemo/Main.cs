@@ -37,14 +37,14 @@ namespace Examples.TextDemo
             _fontCabin30 = RC.LoadFont("Assets/Cabin.ttf", 30);
 
             // panel
-            _guiPanel = new GUIPanel(RC, "Menü", _fontCabin12, 10, 10, 150, 110);
+            _guiPanel = new GUIPanel(RC, "Menu", _fontCabin12, 10, 10, 150, 110);
 
             GUIHandler.GUIElements.Add(_guiPanel);
 
             // button 1
             _guiButton1 = new GUIButton(RC, "Exit", _fontCabin12, 25, 40, 100, 25)
             {
-                ButtonColor = new float4(0.7f, 0.7f, 0.7f, 1),
+                ButtonColor = new float4(0.8f, 0.8f, 0.8f, 1f),
                 TextColor = new float4(0, 0, 0, 1),
                 BorderWidth = 1,
                 BorderColor = new float4(0, 0, 0, 1)
@@ -56,11 +56,11 @@ namespace Examples.TextDemo
             _guiButton1.OnGUIButtonLeave += OnGUIButtonLeave;
 
             _guiPanel.ChildElements.Add(_guiButton1);
-
+            
             // button 2
             _guiButton2 = new GUIButton(RC, "Debug", _fontCabin12, 25, 70, 100, 25)
             {
-                ButtonColor = new float4(0.7f, 0.7f, 0.7f, 1),
+                ButtonColor = new float4(0.8f, 0.8f, 0.8f, 1),
                 TextColor = new float4(0, 0, 0, 1),
                 BorderWidth = 1,
                 BorderColor = new float4(0, 0, 0, 1)
@@ -74,15 +74,11 @@ namespace Examples.TextDemo
             _guiPanel.ChildElements.Add(_guiButton2);
 
             // text
-            _guiText1 = new GUIText(RC, "The quick brown fox jumps over the lazy dog.", _fontCabin20, 8, 150)
-            {
-                TextColor = new float4(1, 1, 1, 1)
-            };
+            _guiText1 = new GUIText(RC, "The quick brown fox jumps over the lazy dog.", _fontCabin20, 8, 150,
+                new float4(1, 1, 1, 1));
 
-            _guiText2 = new GUIText(RC, "The quick brown fox jumps over the lazy dog.", _fontCabin30, 8, 190)
-            {
-                TextColor = new float4(0, 0, 0, 0.5f)
-            };
+            _guiText2 = new GUIText(RC, "The quick brown fox jumps over the lazy dog.", _fontCabin30, 8, 190,
+                new float4(0, 0, 0, 0.5f));
 
             // dummy cube
             _mesh = new Cube();
