@@ -7,6 +7,8 @@ namespace Examples.TextDemo
     public class TextDemo : RenderCanvas
     {
         // GUI Elements
+        private GUIHandler _guiHandler;
+
         private IFont _fontCabin12;
         private IFont _fontCabin20;
         private IFont _fontCabin30;
@@ -27,9 +29,14 @@ namespace Examples.TextDemo
 
         private static float _angleHorz;
 
+
         public override void Init()
         {
             RC.ClearColor = new float4(0.5f, 0.5f, 0.8f, 1);
+
+            // gui
+            _guiHandler = new GUIHandler();
+            _guiHandler.AttachToContext(RC);
 
             // load fonts
             _fontCabin12 = RC.LoadFont("Assets/Cabin.ttf", 15);
@@ -37,12 +44,11 @@ namespace Examples.TextDemo
             _fontCabin30 = RC.LoadFont("Assets/Cabin.ttf", 30);
 
             // panel
-            _guiPanel = new GUIPanel(RC, "Menu", _fontCabin12, 10, 10, 150, 110);
-
-            GUIHandler.GUIElements.Add(_guiPanel);
+            _guiPanel = new GUIPanel("Menu", _fontCabin12, 10, 10, 150, 110);
+            _guiHandler.Add(_guiPanel);
 
             // button 1
-            _guiButton1 = new GUIButton(RC, "Exit", _fontCabin12, 25, 40, 100, 25)
+            _guiButton1 = new GUIButton("Exit", _fontCabin12, 25, 40, 100, 25)
             {
                 ButtonColor = new float4(0.8f, 0.8f, 0.8f, 1f),
                 TextColor = new float4(0, 0, 0, 1),
@@ -58,7 +64,7 @@ namespace Examples.TextDemo
             _guiPanel.ChildElements.Add(_guiButton1);
             
             // button 2
-            _guiButton2 = new GUIButton(RC, "Debug", _fontCabin12, 25, 70, 100, 25)
+            _guiButton2 = new GUIButton("Debug", _fontCabin12, 25, 70, 100, 25)
             {
                 ButtonColor = new float4(0.8f, 0.8f, 0.8f, 1),
                 TextColor = new float4(0, 0, 0, 1),
@@ -74,11 +80,10 @@ namespace Examples.TextDemo
             _guiPanel.ChildElements.Add(_guiButton2);
 
             // text
-            _guiText1 = new GUIText(RC, "The quick brown fox jumps over the lazy dog.", _fontCabin20, 8, 150,
-                new float4(1, 1, 1, 1));
+            const string text = "The quick brown fox jumps over the lazy dog.";
 
-            _guiText2 = new GUIText(RC, "The quick brown fox jumps over the lazy dog.", _fontCabin30, 8, 190,
-                new float4(0, 0, 0, 0.5f));
+            _guiText1 = new GUIText(text, _fontCabin20, 8, 150, new float4(1, 1, 1, 1));
+            _guiText2 = new GUIText(text, _fontCabin30, 8, 190, new float4(0, 0, 0, 0.5f));
 
             // dummy cube
             _mesh = new Cube();
@@ -114,7 +119,7 @@ namespace Examples.TextDemo
             RC.Render(_mesh);
 
             // GUI
-            GUIHandler.RenderGUI();
+            _guiHandler.RenderGUI();
 
             Present();
         }
@@ -134,15 +139,15 @@ namespace Examples.TextDemo
                     Environment.Exit(0);
 
                 if (sender == _guiButton2)
-                    if (!GUIHandler.GUIElements.Contains(_guiText1))
+                    if (!_guiHandler.Contains(_guiText1))
                     {
-                        GUIHandler.GUIElements.Add(_guiText2);
-                        GUIHandler.GUIElements.Add(_guiText1);
+                        _guiHandler.Add(_guiText2);
+                        _guiHandler.Add(_guiText1);
                     }
                     else
                     {
-                        GUIHandler.GUIElements.Remove(_guiText2);
-                        GUIHandler.GUIElements.Remove(_guiText1);
+                        _guiHandler.Remove(_guiText2);
+                        _guiHandler.Remove(_guiText1);
                     }
             }
         }

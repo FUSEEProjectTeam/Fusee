@@ -61,8 +61,8 @@ namespace Fusee.Engine
 
         #endregion
 
-        public GUIPanel(RenderContext rc, string text, IFont font, int x, int y, int width, int height)
-            :base(rc, text, font, x, y, width, height)
+        public GUIPanel(string text, IFont font, int x, int y, int width, int height)
+            :base(text, font, x, y, width, height)
         {
             ChildElements = new List<GUIElement>();
 
@@ -77,9 +77,6 @@ namespace Fusee.Engine
             Input.Instance.OnMouseButtonDown += OnButtonDown;
             Input.Instance.OnMouseButtonUp += OnButtonUp;
             Input.Instance.OnMouseMove += OnMouseMove;
-
-            // create Mesh
-            CreateMesh();
         }
 
         protected override void CreateMesh()
@@ -105,16 +102,16 @@ namespace Fusee.Engine
                 childElement.Refresh();
         }
 
-        protected override void PreRender()
+        protected override void PreRender(RenderContext rc)
         {
-            base.PreRender();
+            base.PreRender(rc);
 
             foreach (var childElement in ChildElements)
             {
                 childElement.OffsetX = PosX;
                 childElement.OffsetY = PosY;
 
-                childElement.Render();
+                childElement.Render(rc);
             }
         }
 

@@ -2,21 +2,39 @@
 
 namespace Fusee.Engine
 {
-    public static class GUIHandler
+    public class GUIHandler : List<GUIElement>
     {
-        public static List<GUIElement> GUIElements { get; set; }
+        private RenderContext _renderContext;
 
-        static GUIHandler()
+        public GUIHandler()
         {
-            GUIElements = new List<GUIElement>();
+            // nothing to do
         }
 
-        public static void RenderGUI()
+        public GUIHandler(RenderContext rc)
         {
-            foreach (var guiElement in GUIElements)
-            {
-                guiElement.Render();
-            }
+            _renderContext = rc;
+        }
+
+        public void AttachToContext(RenderContext rc)
+        {
+            _renderContext = rc;
+        }
+
+        public new void Add(GUIElement item)
+        {
+            base.Add(item);
+
+            item.AttachToContext(_renderContext);
+        }
+
+        public void RenderGUI()
+        {
+            if (_renderContext == null)
+                return;
+
+            foreach (var guiElement in this)
+                guiElement.Render(_renderContext);
         }
     }
 }

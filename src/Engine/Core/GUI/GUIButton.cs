@@ -57,8 +57,8 @@ namespace Fusee.Engine
 
         #endregion
 
-        public GUIButton(RenderContext rc, string text, IFont font, int x, int y, int width, int height)
-            :base(rc, text, font, x, y, width, height)
+        public GUIButton(string text, IFont font, int x, int y, int width, int height)
+            :base(text, font, x, y, width, height)
         {
             // settings
             ButtonColor = new float4(1, 1, 1, 1);
@@ -73,9 +73,6 @@ namespace Fusee.Engine
             Input.Instance.OnMouseMove += OnMouseMove;
 
             _mouseOnButton = false;
-
-            // create Mesh
-            CreateMesh();
         }
 
         protected override void CreateMesh()

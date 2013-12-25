@@ -123,9 +123,8 @@ namespace Fusee.Engine
 
         protected abstract void CreateMesh();
 
-        protected GUIElement(RenderContext rc, string text, IFont font, int x, int y, int width, int height)
+        protected GUIElement(string text, IFont font, int x, int y, int width, int height)
         {
-            RContext = rc;
             Dirty = false;
 
             // x, y, width, height
@@ -176,9 +175,16 @@ namespace Fusee.Engine
                 }
             },
                 new[] {new EffectParameterDeclaration {Name = "tex", Value = Font.TexAtlas}});
+        }
+
+        public void AttachToContext(RenderContext rc)
+        {
+            RContext = rc;
 
             _guiShader.AttachToContext(RContext);
             _textShader.AttachToContext(RContext);
+
+            Refresh();
         }
 
         protected void SetRectangleMesh(float borderWidth, float4 rectColor, float4 borderColor)
@@ -280,19 +286,22 @@ namespace Fusee.Engine
 
         public virtual void Refresh()
         {
-            Dirty = false;
-            CreateMesh();
+            if (RContext != null)
+            {
+                Dirty = false;
+                CreateMesh();
+            }
         }
 
-        protected virtual void PreRender()
+        protected virtual void PreRender(RenderContext rc)
         {
-            if (Dirty)
-                Refresh();
+            if (RContext != rc) AttachToContext(rc);
+            if (Dirty) Refresh();
         }
 
-        public void Render()
+        public void Render(RenderContext rc)
         {
-            PreRender();
+            PreRender(rc);
 
             if (GUIMesh != null) _guiShader.RenderMesh(GUIMesh);
             if (TextMesh != null) _textShader.RenderMesh(TextMesh);

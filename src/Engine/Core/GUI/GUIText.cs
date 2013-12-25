@@ -4,18 +4,23 @@ namespace Fusee.Engine
 {
     public sealed class GUIText : GUIElement
     {
-        public GUIText(RenderContext rc, string text, IFont font, int x, int y)
-            :base(rc, text, font, x, y, 0, 0)
+        public GUIText(string text, IFont font, int x, int y)
+            :base(text, font, x, y, 0, 0)
         {
             TextColor = new float4(0, 0, 0, 1);
-            CreateMesh();
         }
 
-        public GUIText(RenderContext rc, string text, IFont font, int x, int y, float4 color)
-            : base(rc, text, font, x, y, 0, 0)
+        public GUIText(string text, IFont font, int x, int y, float4 color)
+            : base(text, font, x, y, 0, 0)
         {
             TextColor = color;
-            CreateMesh();
+        }
+
+        internal GUIText(RenderContext rc, string text, IFont font, int x, int y, float4 color)
+            : base(text, font, x, y, 0, 0)
+        {
+            TextColor = color;
+            AttachToContext(rc);
         }
 
         protected override void CreateMesh()
