@@ -12,7 +12,31 @@ using Fusse.KeyFrameAnimation;
 namespace Examples.KeyframeAnimationTest
 {
 
-    public class KeyframeDemo : RenderCanvas
+    public class A
+    {
+        public A()
+        {
+            ZahlA = 10;
+        }
+
+        public int ZahlA;
+
+
+    }
+
+    public class B
+    {
+        public B()
+        {
+            ZahlB = 15;
+        }
+
+        public int ZahlB;
+
+    }
+
+
+    public class KeyframeAnimationTest : RenderCanvas
     {
         private SceneEntity Wuerfel;
         private Camera camera;
@@ -23,6 +47,23 @@ namespace Examples.KeyframeAnimationTest
         private Animation myAnim = new Animation(0);
         public override void Init()
         {
+
+            A objektA = new A();
+            B objektB = new B();
+
+            Node NodeA = new Node(objektA);
+            Node NodeB = new Node(objektB);
+
+            Circuit CAB = new Circuit();
+
+            CAB.AddRoot(NodeA);
+            CAB.AddNode(NodeB);
+
+            NodeA.Attach("ZahlA",NodeB,"ZahlB");
+
+            CAB.Execute();
+
+
             SceneManager.RC = RC;
             SceneEntity stativ = new SceneEntity("stativ", new ActionCode());
             DirectionalLight dir = new DirectionalLight(new float3(0, 10, -1), new float4(1, 1, 1, 1),new float4(1, 1, 1, 1),new float4(1, 1, 1, 1), new float3(0, 0, 0), 0);
@@ -67,11 +108,12 @@ namespace Examples.KeyframeAnimationTest
             _channel1.AddKeyframe(key6);
             //*/
 
+
+            Keyframe<float3> key40 = new Keyframe<float3>(8, new float3(8, 0, 80));
             Keyframe<float3> key00 = new Keyframe<float3>(0, new float3(0, 0, 0));
             Keyframe<float3> key10 = new Keyframe<float3>(2, new float3(1, 2, 20));
             Keyframe<float3> key20 = new Keyframe<float3>(4, new float3(2, 4, 40));
             Keyframe<float3> key30 = new Keyframe<float3>(6, new float3(4, 4, 60));
-            Keyframe<float3> key40 = new Keyframe<float3>(8, new float3(8, 0, 80));
             Keyframe<float3> key50 = new Keyframe<float3>(12, new float3(0, 4, 60));
             Keyframe<float3> key60 = new Keyframe<float3>(0, new float3(8, 8, 8));
 
@@ -124,7 +166,7 @@ namespace Examples.KeyframeAnimationTest
 
         public static void Main()
         {
-            var app = new KeyframeDemo();
+            var app = new KeyframeAnimationTest();
             app.Run();
         }
     }

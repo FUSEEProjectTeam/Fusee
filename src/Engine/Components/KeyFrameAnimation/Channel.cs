@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Fusee.Engine;
 using Fusee.Math;
 using Fusse.KeyFrameAnimation;
 
@@ -13,12 +14,13 @@ namespace Fusee.KeyFrameAnimation
         public delegate TValue LerpFunc<TValue>(TValue firstVal, TValue secondVal, float time1, float time2);
         public delegate void SetChanelValue(TValue val);
         public event SetChanelValue TimeChanged;
-
-        private SortedList<float, Keyframe<TValue>> _timeline = new SortedList<float, Keyframe<TValue>>();
+        private List<Keyframe<TValue>> _timeline = new List<Keyframe<TValue>>();
         private LerpFunc<TValue> _lerpIt;
 
-        private TValue _value;
+        IComparer<Keyframe<TValue>> comparer = new ListSort<TValue>();
 
+
+        private TValue _value;
         public Channel(SetChanelValue timeChanged, LerpFunc<TValue> lerpFunc)
         {
             TimeChanged += timeChanged;
@@ -56,11 +58,10 @@ namespace Fusee.KeyFrameAnimation
 
             try 
             {
-                base.Time = _timeline.ElementAt(_timeline.Count - 1).Key;
+                base.Time = _timeline.ElementAt(_timeline.Count - 1).Time;
             }
             catch (System.ArgumentOutOfRangeException)
             {
-                Console.WriteLine("The there are no keyframes in the timeline, requierd time will be set to 0.");
                 base.Time = 0;
             }
            
@@ -72,28 +73,36 @@ namespace Fusee.KeyFrameAnimation
         public void AddKeyframe(Keyframe<TValue> keyframe)
         {
 
-            if (_timeline.ContainsKey(keyframe.Time))
+            if (ContainsKey(keyframe))
             {
                 RemoveKeyframe(keyframe.Time);
             }
-            _timeline.Add(keyframe.Time, keyframe);
+            _timeline.Add(keyframe);
+            _timeline.Sort(comparer);
         }
 
         public void AddKeyframe(float time, TValue value)
         {
 
-            if (_timeline.ContainsKey(time))
+            if (ContainsKey(time))
             {
                 RemoveKeyframe(time);
             }
-            _timeline.Add(time, new Keyframe<TValue>(time, value));
+            _timeline.Add(new Keyframe<TValue>(time, value));
+            _timeline.Sort(comparer);
 
         }
 
         //Remove Keyframes 
         public void RemoveKeyframe(float time)
         {
-            _timeline.Remove(time);
+            for (int i = 0; i < _timeline.Count; i++)
+            {
+                if(_timeline[i].Time == time)
+                _timeline.RemoveAt(i);
+                _timeline.Sort(comparer);
+            }
+            
         }
 
 
@@ -104,13 +113,13 @@ namespace Fusee.KeyFrameAnimation
             TValue keyValue;
             if (_timeline.Count > 1)
             {
-                keyValue = _timeline.ElementAt(0).Value.Value;
+                keyValue = _timeline.ElementAt(0).Value;
 
                 for (int next = 1; next < _timeline.Count; next++)
                 {
-                    if (_timeline.ElementAt(next).Key > time && _timeline.ElementAt(next - 1).Key < time)
+                    if (_timeline.ElementAt(next).Time > time && _timeline.ElementAt(next - 1).Time < time)
                     {
-                        keyValue = _lerpIt(_timeline.ElementAt(next - 1).Value.Value, _timeline.ElementAt(next).Value.Value, _timeline.ElementAt(next).Value.Time - _timeline.ElementAt(next - 1).Value.Time, time - _timeline.ElementAt(next - 1).Value.Time);
+                        keyValue = _lerpIt(_timeline.ElementAt(next - 1).Value, _timeline.ElementAt(next).Value, _timeline.ElementAt(next).Time - _timeline.ElementAt(next - 1).Time, time - _timeline.ElementAt(next - 1).Time);
 
                         break;
                     }
@@ -120,7 +129,7 @@ namespace Fusee.KeyFrameAnimation
             {
                 try
                 {
-                keyValue = _timeline.ElementAt(0).Value.Value;
+                keyValue = _timeline.ElementAt(0).Value;
                 }
                 catch(System.ArgumentOutOfRangeException )
                 {
@@ -131,6 +140,31 @@ namespace Fusee.KeyFrameAnimation
             _value = keyValue;
             return keyValue;
         }
+
+        private bool ContainsKey(Keyframe<TValue> keyframe)
+        {
+            for (int i = 0;i<_timeline.Count;i++)
+            {
+                if (keyframe.Time == _timeline[i].Time)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private bool ContainsKey(float time)
+        {
+            for (int i = 0; i < _timeline.Count; i++)
+            {
+                if (time == _timeline[i].Time)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
 
         public TValue Value { get { return _value; } }
     }
