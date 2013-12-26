@@ -66,6 +66,7 @@
     <Compile Include="GUI\GUIHandler.cs" />
     <Compile Include="GUI\GUIText.cs" />
     <Compile Include="GUI\GUIPanel.cs" />
+    <Compile Include="GUI\GUIImage.cs" />
     <Compile Include="ImpFactory.cs" />
     <Compile Include="Input.cs" />
     <Compile Include="Mesh.cs" />

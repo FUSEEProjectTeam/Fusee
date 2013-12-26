@@ -21,6 +21,8 @@ namespace Examples.TextDemo
 
         private GUIPanel _guiPanel;
 
+        private GUIImage _guiImage;
+
         // Cube
         private Mesh _mesh;
 
@@ -78,6 +80,13 @@ namespace Examples.TextDemo
             _guiButton2.OnGUIButtonLeave += OnGUIButtonLeave;
 
             _guiPanel.ChildElements.Add(_guiButton2);
+
+            // image
+            _guiImage = new GUIImage("Assets/Landscape.png", 200, 200, 512, 384);
+            _guiImage.BorderWidth = 3;
+            _guiImage.BorderColor = new float4(0, 0, 0, 1);
+
+            _guiHandler.Add(_guiImage);
 
             // text
             const string text = "The quick brown fox jumps over the lazy dog.";

@@ -239,10 +239,12 @@ namespace Fusee.Engine
         public void SetEffectParam(string name, object value)
         {
             EffectParam param;
-            if (_parameters.TryGetValue(name, out param))
-            {
-                param.Value = value;
-            }
+
+            if (_parameters != null)
+                if (_parameters.TryGetValue(name, out param))
+                {
+                    param.Value = value;
+                }           
         }
 
         public object GetEffectParam(string name)

@@ -77,21 +77,24 @@ namespace Fusee.Engine
             Input.Instance.OnMouseButtonDown += OnButtonDown;
             Input.Instance.OnMouseButtonUp += OnButtonUp;
             Input.Instance.OnMouseMove += OnMouseMove;
+
+            // shader
+            CreateGUIShader();
         }
 
         protected override void CreateMesh()
         {
-            var x = PosX + OffsetX;
-            var y = PosY + OffsetY;
-
             // GUIMesh
             SetRectangleMesh(BorderWidth, PanelColor, BorderColor);
 
             // TextMesh
+            var x = PosX + OffsetX;
+            var y = PosY + OffsetY;
+
             var maxW = GUIText.GetTextWidth(Text, Font);
             x = (int)System.Math.Round(x + (Width - maxW) / 2);
 
-            TextMesh = new GUIText(RContext, Text, Font, x, y + 20, TextColor).TextMesh;
+            SetTextMesh(x, y + 20);
         }
 
         public override void Refresh()

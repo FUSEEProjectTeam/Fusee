@@ -1,4 +1,5 @@
-﻿using Fusee.Math;
+﻿using System;
+using Fusee.Math;
 
 namespace Fusee.Engine
 {
@@ -21,20 +22,14 @@ namespace Fusee.Engine
         protected string Text;
         protected IFont Font;
 
-        #endregion
-
-        #region Private Fields
-
-        private int _offsetX;
-        private int _offsetY;
-
-        private float4 _textColor;
+        protected string ImgSrc;
+        protected ITexture GUITexture;
 
         // shader
-        private readonly ShaderEffect _guiShader;
-        private readonly ShaderEffect _textShader;
+        protected ShaderEffect GUIShader;
+        protected ShaderEffect TextShader;
 
-        private const string GUIVS = @"
+        protected const string GUIVS = @"
             attribute vec3 fuVertex;
             attribute vec2 fuUV;
             attribute vec4 fuColor;
@@ -50,7 +45,7 @@ namespace Fusee.Engine
                 gl_Position = vec4(fuVertex, 1);
             }";
 
-        private const string GUIPS = @"
+        protected const string GUIPS = @"
             #ifdef GL_ES
                 precision highp float;
             #endif    
@@ -62,7 +57,7 @@ namespace Fusee.Engine
                 gl_FragColor = vColor;
             }";
 
-        private const string TEXTPS = @"
+        protected const string TEXTPS = @"
             #ifdef GL_ES
                 precision highp float;
             #endif    
@@ -75,6 +70,15 @@ namespace Fusee.Engine
             void main(void) {
                 gl_FragColor = vec4(1, 1, 1, texture2D(tex, vUV).a) * vColor;
             }";
+
+        #endregion
+
+        #region Private Fields
+
+        private int _offsetX;
+        private int _offsetY;
+
+        private float4 _textColor;
 
         #endregion
 
@@ -142,7 +146,12 @@ namespace Fusee.Engine
             Font = font;
 
             // shader
-            _guiShader = new ShaderEffect(new[]
+            if (Font != null) CreateTextShader();
+        }
+
+        protected virtual void CreateGUIShader()
+        {
+            GUIShader = new ShaderEffect(new[]
             {
                 new EffectPassDeclaration
                 {
@@ -157,34 +166,117 @@ namespace Fusee.Engine
                     }
                 }
             },
-                null);
-
-            _textShader = new ShaderEffect(new[]
-            {
-                new EffectPassDeclaration
-                {
-                    VS = GUIVS,
-                    PS = TEXTPS,
-                    StateSet = new RenderStateSet
-                    {
-                        AlphaBlendEnable = true,
-                        SourceBlend = Blend.SourceAlpha,
-                        DestinationBlend = Blend.InverseSourceAlpha,
-                        ZEnable = false
-                    }
-                }
-            },
-                new[] {new EffectParameterDeclaration {Name = "tex", Value = Font.TexAtlas}});
+                null);            
         }
 
-        public void AttachToContext(RenderContext rc)
+        protected void CreateTextShader()
+        {
+            TextShader = new ShaderEffect(new[]
+                {
+                    new EffectPassDeclaration
+                    {
+                        VS = GUIVS,
+                        PS = TEXTPS,
+                        StateSet = new RenderStateSet
+                        {
+                            AlphaBlendEnable = true,
+                            SourceBlend = Blend.SourceAlpha,
+                            DestinationBlend = Blend.InverseSourceAlpha,
+                            ZEnable = false
+                        }
+                    }
+                },
+                new[] { new EffectParameterDeclaration { Name = "tex", Value = Font.TexAtlas } });            
+        }
+
+        protected internal virtual void AttachToContext(RenderContext rc)
         {
             RContext = rc;
 
-            _guiShader.AttachToContext(RContext);
-            _textShader.AttachToContext(RContext);
+            if (GUIShader != null) GUIShader.AttachToContext(RContext);
+            if (TextShader != null) TextShader.AttachToContext(RContext);
 
             Refresh();
+        }
+
+        protected void SetTextMesh(int posX, int posY)
+        {
+            // relative coordinates from -1 to +1
+            var scaleX = (float)2 / RContext.ViewportWidth;
+            var scaleY = (float)2 / RContext.ViewportHeight;
+
+            var x = -1 + posX * scaleX;
+            var y = +1 - posY * scaleY;
+
+            // build complete structure
+            var vertices = new float3[4 * Text.Length];
+            var uvs = new float2[4 * Text.Length];
+            var indices = new ushort[6 * Text.Length];
+            var colors = new uint[4 * Text.Length];
+
+            var charInfo = Font.CharInfo;
+            var atlasWidth = Font.Width;
+            var atlasHeight = Font.Height;
+
+            var index = 0;
+            ushort vertex = 0;
+
+            // now build the mesh
+            foreach (var letter in Text)
+            {
+                var x2 = x + charInfo[letter].BitmapL * scaleX;
+                var y2 = -y - charInfo[letter].BitmapT * scaleY;
+                var w = charInfo[letter].BitmapW * scaleX;
+                var h = charInfo[letter].BitmapH * scaleY;
+
+                x += charInfo[letter].AdvanceX * scaleX;
+                y += charInfo[letter].AdvanceY * scaleY;
+
+                // skip glyphs that have no pixels
+                if ((w <= MathHelper.EpsilonFloat) || (h <= MathHelper.EpsilonFloat))
+                    continue;
+
+                var bitmapW = charInfo[letter].BitmapW;
+                var bitmapH = charInfo[letter].BitmapH;
+                var texOffsetX = charInfo[letter].TexOffX;
+                var texOffsetY = charInfo[letter].TexOffY;
+
+                // vertices
+                vertices[vertex] = new float3(x2, -y2 - h, 0);
+                vertices[vertex + 1] = new float3(x2, -y2, 0);
+                vertices[vertex + 2] = new float3(x2 + w, -y2 - h, 0);
+                vertices[vertex + 3] = new float3(x2 + w, -y2, 0);
+
+                // uvs
+                uvs[vertex] = new float2(texOffsetX, texOffsetY + bitmapH / atlasHeight);
+                uvs[vertex + 1] = new float2(texOffsetX, texOffsetY);
+                uvs[vertex + 2] = new float2(texOffsetX + bitmapW / atlasWidth, texOffsetY + bitmapH / atlasHeight);
+                uvs[vertex + 3] = new float2(texOffsetX + bitmapW / atlasWidth, texOffsetY);
+
+                // colors
+                var colorInt = MathHelper.Float4ToABGR(TextColor);
+
+                colors[vertex] = colorInt;
+                colors[vertex + 1] = colorInt;
+                colors[vertex + 2] = colorInt;
+                colors[vertex + 3] = colorInt;
+
+                // indices
+                indices[index++] = (ushort)(vertex + 1);
+                indices[index++] = vertex;
+                indices[index++] = (ushort)(vertex + 2);
+
+                indices[index++] = (ushort)(vertex + 1);
+                indices[index++] = (ushort)(vertex + 2);
+                indices[index++] = (ushort)(vertex + 3);
+
+                vertex += 4;
+            }
+
+            vertices = RContext.FixTextKerning(Font, vertices, Text, scaleX);
+
+            // create final mesh
+            CreateTextMesh(vertices, uvs, indices, colors);
         }
 
         protected void SetRectangleMesh(float borderWidth, float4 rectColor, float4 borderColor)
@@ -303,8 +395,8 @@ namespace Fusee.Engine
         {
             PreRender(rc);
 
-            if (GUIMesh != null) _guiShader.RenderMesh(GUIMesh);
-            if (TextMesh != null) _textShader.RenderMesh(TextMesh);
+            if (GUIMesh != null) GUIShader.RenderMesh(GUIMesh);
+            if (TextMesh != null) TextShader.RenderMesh(TextMesh);
         }
     }
 }
