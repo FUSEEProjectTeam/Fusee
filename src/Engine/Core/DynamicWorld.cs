@@ -349,6 +349,23 @@ namespace Fusee.Engine
             return retval;
         }
 
+        public ConvexHullShape AddConvexHullShape()
+        {
+            IConvexHullShapeImp iConvexHullShapeImp = _dwi.AddConvexHullShape();
+            var retval = new ConvexHullShape();
+            retval.ConvexHullShapeImp = iConvexHullShapeImp;
+            iConvexHullShapeImp.UserObject = retval;
+            return retval;
+        }
+
+        public ConvexHullShape AddConvexHullShape(float3[] points)
+        {
+            IConvexHullShapeImp iConvexHullShapeImp = _dwi.AddConvexHullShape(points);
+            var retval = new ConvexHullShape();
+            retval.ConvexHullShapeImp = iConvexHullShapeImp;
+            iConvexHullShapeImp.UserObject = retval;
+            return retval;
+        }
         #endregion CollisionShapes
 
         public int NumberConstraints()

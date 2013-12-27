@@ -5,9 +5,13 @@ using System.Runtime.InteropServices;
 using Fusee.Engine;
 using Fusee.Math;
 using Microsoft.CSharp.RuntimeBinder;
+using System.Collections.Generic;
 
 namespace Fusee.Engine
 {
+    /// <summary>
+    /// The RigidBody class ...
+    /// </summary>
     public class RigidBody
     {
         internal IRigidBodyImp _iRigidBodyImp;
@@ -324,14 +328,6 @@ namespace Fusee.Engine
                 }
             }
         }
-
-
-        /*public void SetCollisionShape(CollisionShape colShape)
-        {
-            var o = (RigidBody)_iRigidBodyImp.UserObject;
-            o._iRigidBodyImp.SetCollisionShape(colShape);  
-        }*/
-
 
     }
 }

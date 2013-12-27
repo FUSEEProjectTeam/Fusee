@@ -333,66 +333,7 @@ namespace Fusee.Engine
             }
         }
 
-        /*public void SetCollisionShape(CollisionShape colShape)
-        {
-            BulletSharp.CollisionShape btShape = null;
-           
-            string type = colShape.GetType().ToString();
-            Debug.WriteLine(colShape);
-            switch (type)
-            {   
-                case "Fusee.Engine.CollisionShapeBox":
-                    CollisionShapeBox box = (CollisionShapeBox)colShape;
-                    var btBox = new BoxShape(box.HalfExtents.x , box.HalfExtents.y , box.HalfExtents.z );
-                    btShape = btBox;
-                    break;
-                case "Fusee.Engine.CollisionShapeCapsule":
-                    CollisionShapeCapsule capsule = (CollisionShapeCapsule)colShape;
-                    var btCapsule = new CapsuleShape(capsule.Radius, capsule.Height);
-                    btShape = btCapsule;
-                    break;
-                case "Fusee.Engine.CollisionShapeCone":
-                    CollisionShapeCone cone = (CollisionShapeCone)colShape;
-                    var btCone = new ConeShape(cone.Radius, cone.Height);
-                    btCone.ConeUpIndex = cone.UpAxis;
-                    btShape = btCone;
-                    break;
-                case "Fusee.Engine.CollisionShapeCylinder":
-                    CollisionShapeCylinder cylinder = (CollisionShapeCylinder)colShape;
-                    var btCylinder = new CylinderShape(cylinder.HalfExtents.x, cylinder.HalfExtents.y, cylinder.HalfExtents.z);
-                    btShape = btCylinder;
-                    break;
-                case "Fusee.Engine.CollisionShapeMultiSphere":
-                    CollisionShapeMultiSphere multiSphere = (CollisionShapeMultiSphere)colShape;
-
-                    var positions = new Vector3[multiSphere.SphereCount()];
-                    var radi = new float[multiSphere.SphereCount()];
-                    for (int i = 0; i < multiSphere.SphereCount(); i++)
-                    {
-                        var posI = new Vector3(multiSphere.GetSpherePosition(i).x, multiSphere.GetSpherePosition(i).y,
-                            multiSphere.GetSpherePosition(i).z);
-                        positions[i] = posI;
-                        radi[i] = multiSphere.GetSphereRadius(i);
-                    }
-                    var btMultiSphere = new MultiSphereShape(positions, radi);
-                    btShape = btMultiSphere;
-                    break;
-                case "Fusee.Engine.CollisionShapeSphere":
-                    CollisionShapeSphere sphere = (CollisionShapeSphere)colShape;
-                    btShape = new SphereShape(sphere.GetRadius());
-                    break;
-                default:
-                    Debug.WriteLine("default");
-                    btShape = new EmptyShape();
-                    break;
-            }
-            var o = (RigidBodyImp)_rbi.UserObject;
-            o._rbi.CollisionShape = btShape;
-        }*/
-
-        
-
-
+      
         private object _userObject;
         public object UserObject
         {

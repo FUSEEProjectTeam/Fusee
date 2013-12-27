@@ -10,7 +10,7 @@ namespace Fusee.Engine
     {
         internal SphereShape BtSphereShape;
 
-        public override float Margin
+        public float Margin
         {
             get
             {
@@ -20,12 +20,12 @@ namespace Fusee.Engine
             set
             {
                 var o = (SphereShapeImp)BtSphereShape.UserObject;
-                BtSphereShape.Margin = value;
+                o.BtSphereShape.Margin = value;
             }
         }
 
         private object _userObject;
-        public override object UserObject
+        public object UserObject
         {
             get { return _userObject; }
             set { _userObject = value; }
@@ -41,7 +41,7 @@ namespace Fusee.Engine
             set
             {
                 var o = (SphereShapeImp) BtSphereShape.UserObject;
-                o.BtSphereShape.SetUnscaledRadius(value);
+                BtSphereShape.SetUnscaledRadius(value);
             }
         }
 

@@ -524,6 +524,34 @@ namespace Fusee.Engine
             return retval;
         }
 
+        public IConvexHullShapeImp AddConvexHullShape()
+        {
+            var btConvexHullShape = new ConvexHullShape();
+            BtCollisionShapes.Add(btConvexHullShape);
+
+            var retval = new ConvexHullShapeImp();
+            retval.BtConvexHullShape = btConvexHullShape;
+            btConvexHullShape.UserObject = retval;
+            return retval;
+        }
+
+        public IConvexHullShapeImp AddConvexHullShape(float3[] points)
+        {
+            var btPoints = new Vector3[points.Count()];
+            for (int i = 0; i < btPoints.Count(); i++)
+            {
+                var point = Translater.Float3ToBtVector3(points[i]);
+                btPoints[i] = point;
+            }
+            var btConvexHullShape = new ConvexHullShape(btPoints);
+            BtCollisionShapes.Add(btConvexHullShape);
+
+            var retval = new ConvexHullShapeImp();
+            retval.BtConvexHullShape = btConvexHullShape;
+            btConvexHullShape.UserObject = retval;
+            return retval;
+        }
+
         #endregion CollisionShapes
 
 

@@ -6,8 +6,10 @@ using Fusee.Math;
 using BulletSharp;
 using BoxShape = BulletSharp.BoxShape;
 using CollisionShape = BulletSharp.CollisionShape;
+using CompoundShape = BulletSharp.CompoundShape;
 using ConeShape = BulletSharp.ConeShape;
 using ConeTwistConstraint = BulletSharp.ConeTwistConstraint;
+using ConvexHullShape = BulletSharp.ConvexHullShape;
 using EmptyShape = Fusee.Engine.EmptyShape;
 using GearConstraint = BulletSharp.GearConstraint;
 using Point2PointConstraint = BulletSharp.Point2PointConstraint;
@@ -184,7 +186,12 @@ namespace Examples.BulletSharp
             var rigidBodyB = new RigidBody(rbInfoB);
             World.AddRigidBody(rigidBodyB);
 
-            var rbShape = rigidBodyB.CollisionShape.UserObject;
+            var hull = new ConvexHullShape();
+            
+
+
+
+            /* var rbShape = rigidBodyB.CollisionShape.UserObject;
             
             var cone = new ConeShape(2, 8);
             var myVec = new Vector3[3];
@@ -201,12 +208,14 @@ namespace Examples.BulletSharp
             var shape = new MultiSphereShape(pos, rad);
 
             var empty = new EmptyShape();
-            Debug.WriteLine("AmptyMargin: " +empty.Margin);
-
-            
+            //Debug.WriteLine("AmptyMargin: " +empty.Margin);
 
 
-
+            var comp = new CompoundShape();
+            comp.AddChildShape(startTransformB, new SphereShape(5));
+            var list = comp.ChildList;
+            var s = list[0].Transform;
+            Debug.WriteLine("childTransform:" +s);*/
         }
 
 

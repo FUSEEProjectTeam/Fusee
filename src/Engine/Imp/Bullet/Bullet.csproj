@@ -21,6 +21,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -55,6 +57,7 @@
     <Compile Include="CompoundShapeImp.cs" />
     <Compile Include="ConeShapeImp.cs" />
     <Compile Include="ConeTwistConstraintImp.cs" />
+    <Compile Include="ConvexHullShapeImp.cs" />
     <Compile Include="CylinderShapeImp.cs" />
     <Compile Include="DynamicWorldImp.cs" />
     <Compile Include="EmptyShapeImp.cs" />

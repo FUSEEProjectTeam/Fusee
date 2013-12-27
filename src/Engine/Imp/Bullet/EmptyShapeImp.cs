@@ -20,13 +20,13 @@ namespace Fusee.Engine
             }
             set
             {
-                var o = (BoxShapeImp)BtEmptyShape.UserObject;
-                o.BtBoxShape.Margin = value;
+                var o = (EmptyShapeImp)BtEmptyShape.UserObject;
+                o.BtEmptyShape.Margin = value;
             }
         }
 
         private object _userObject;
-        public object UserObject
+        public  object UserObject
         {
             get { return _userObject; }
             set { _userObject = value; }

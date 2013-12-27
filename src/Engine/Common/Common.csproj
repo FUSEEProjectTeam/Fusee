@@ -64,6 +64,7 @@
     <Compile Include="IConeShapeImp.cs" />
     <Compile Include="IConeTwistConstraintImp.cs" />
     <Compile Include="IConstraintImp.cs" />
+    <Compile Include="IConvexHullShapeImp.cs" />
     <Compile Include="ICylinderShapeImp.cs" />
     <Compile Include="IDynamicWorldImp.cs" />
     <Compile Include="IEmptyShapeImp.cs" />

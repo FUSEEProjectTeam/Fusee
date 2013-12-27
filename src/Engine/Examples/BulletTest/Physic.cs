@@ -17,14 +17,11 @@ namespace Examples.BulletTest
             set { _world = value; }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
+
         public Physic()
         {
             Debug.WriteLine("Physic: Constructor");
             _world = new DynamicWorld();
-
             //FallingTower();
             //Ground();
            // InitPoint2PointConstraint();
@@ -32,9 +29,9 @@ namespace Examples.BulletTest
             //InitSliderConstraint();
             //InitGearConstraint();
             //InitDfo6Constraint();
-            //Tester();
+            Tester();
 
-            Wippe();
+            //Wippe();
         }
 
 
@@ -62,14 +59,19 @@ namespace Examples.BulletTest
             var boxShape = _world.AddBoxShape(25);
             var sphere = _world.AddSphereShape(50);
             var brettShape = _world.AddBoxShape(50.0f, 0.1f, 1.0f);
-           // var comp = _world.AddCompoundShape(true);
-           // var brett = _world.AddRigidBody(1, new float3(0, 55, 0), brettShape, new float3(0, 0, 0));
+            // var comp = _world.AddCompoundShape(true);
+            // var brett = _world.AddRigidBody(1, new float3(0, 55, 0), brettShape, new float3(0, 0, 0));
             var box1 = _world.AddRigidBody(1, new float3(-40, 52, 0), boxShape, new float3(0, 0, 0));
-            var box2 = _world.AddRigidBody(1, new float3(0, 102, 0), sphere, new float3(0, 0, 0));
-            var box3 = _world.AddRigidBody(1, new float3(-40, 152, 0), boxShape, new float3(0, 0, 0));
-           // var cmpRB = _world.AddRigidBody(1, new float3(0, 80, 20), comp, new float3(0, 0, 0));
-
-        }
+            var box2 = _world.AddRigidBody(1, new float3(80, 102, 0), sphere, new float3(0, 0, 0));
+            var box3 = _world.AddRigidBody(1, new float3(-60, 200, 0), boxShape, new float3(0, 0, 0));
+            // var cmpRB = _world.AddRigidBody(1, new float3(0, 80, 20), comp, new float3(0, 0, 0));
+            box3.CollisionShape = _world.AddBoxShape(8);
+            box1.CollisionShape = _world.AddSphereShape(30);
+            var shape = (SphereShape)box1.CollisionShape;
+            Debug.WriteLine(shape.Radius);
+            shape.Radius = 5;
+            Debug.WriteLine(shape.Radius);
+        } 
 
         /*public void FallingTower()
         {
@@ -163,22 +165,30 @@ namespace Examples.BulletTest
 
             var rbB = _world.AddRigidBody(1, new float3(0, 300, 0), new float3(1, 1, 1));
             _world.AddGeneric6DofConstraint(rbA, rbB, rbA.WorldTransform, rbB.WorldTransform, false);
-        }
+        }*/
 
         public void Tester()
         {
-            var rbA = _world.AddRigidBody(1, new float3(0, 150, 0), new float3(1, 1, 1));
-            //var box = rbA.AddBoxShape(new float3(14,14,14));
+            var box = _world.AddBoxShape(25);
             //var shape = rbA.AddCapsuleShape(2, 8);
             //Debug.WriteLine(shape.Radius);
-            var box = _world.AddBoxShape(5);
-            var sphere = _world.AddSphereShape(2);
-            Debug.WriteLine(box.HalfExtents);
-            var comp = _world.AddCompoundShape(true);
-            comp.AddChildShape(float4x4.Identity,box);
-            comp.AddChildShape(float4x4.Identity, sphere);
-            //comp.CalculatePrincipalAxisTransform();
+            var rbA = _world.AddRigidBody(0, new float3(0, 150, 0), box, new float3(1, 1, 1));
+            
 
-        }*/
+            var points = new float3[3];
+            //var hull = _world.AddConvexHullShape();
+            points[0] = new float3(1, 2, 3);
+            points[1] = new float3(-5, 0,7);
+            points[2] = new float3(-2, -1, 2);
+            var hull = _world.AddConvexHullShape(points);
+
+            hull.AddPoint(new float3(1,1,1));
+            var rbB = _world.AddRigidBody(1, new float3(0, 300, 0), hull, new float3(1, 1, 1));
+            Debug.WriteLine(hull.GetNumPoints());
+
+
+
+
+        }
     }
 }

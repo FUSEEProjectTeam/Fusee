@@ -56,6 +56,9 @@ namespace Fusee.Engine
 
         IEmptyShapeImp AddEmptyShape();
 
+        IConvexHullShapeImp AddConvexHullShape();
+        IConvexHullShapeImp AddConvexHullShape(float3[] points);
+
         int NumberConstraints();
     }
 }

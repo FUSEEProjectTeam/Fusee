@@ -12,7 +12,7 @@ namespace Fusee.Engine
     {
         internal MultiSphereShape BtMultiSphereShape;
 
-        public override float Margin
+        public float Margin
         {
             get
             {
@@ -21,13 +21,13 @@ namespace Fusee.Engine
             }
             set
             {
-                var o = (CapsuleShapeImp)BtMultiSphereShape.UserObject;
-                BtMultiSphereShape.Margin = value;
+                var o = (MultiSphereShapeImp)BtMultiSphereShape.UserObject;
+                o.BtMultiSphereShape.Margin = value;
             }
         }
 
         private object _userObject;
-        public override object UserObject
+        public object UserObject
         {
             get { return _userObject; }
             set { _userObject = value; }

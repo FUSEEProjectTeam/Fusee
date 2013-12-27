@@ -10,7 +10,7 @@ namespace Fusee.Engine
     public class ConeShapeImp : CollisonShapeImp, IConeShapeImp
     {
         internal ConeShape BtConeShape;
-        public override float Margin
+        public float Margin
         {
             get
             {
@@ -19,13 +19,13 @@ namespace Fusee.Engine
             }
             set
             {
-                var o = (CapsuleShapeImp)BtConeShape.UserObject;
-                BtConeShape.Margin = value;
+                var o = (ConeShapeImp)BtConeShape.UserObject;
+                o.BtConeShape.Margin = value;
             }
         }
 
         private object _userObject;
-        public override object UserObject
+        public object UserObject
         {
             get { return _userObject; }
             set { _userObject = value; }

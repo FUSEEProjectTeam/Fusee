@@ -23,8 +23,8 @@ namespace Fusee.Engine
             }
             set
             {
-                var o = (BoxShapeImp)BtCompoundShape.UserObject;
-                o.BtBoxShape.Margin = value;
+                var o = (CompoundShapeImp)BtCompoundShape.UserObject;
+                o.BtCompoundShape.Margin = value;
             }
         }
 

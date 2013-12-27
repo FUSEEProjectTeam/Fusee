@@ -63,6 +63,7 @@
     <Compile Include="CompoundShape.cs" />
     <Compile Include="ConeShape.cs" />
     <Compile Include="ConeTwistConstraint.cs" />
+    <Compile Include="ConvexHullShape.cs" />
     <Compile Include="Cube.cs" />
     <Compile Include="CylinderShape.cs" />
     <Compile Include="Diagnostics.cs" />

@@ -10,7 +10,7 @@ namespace Fusee.Engine
     public class CapsuleShapeImp : CollisonShapeImp, ICapsuleShapeImp
     {
         internal CapsuleShape BtCapsuleShape;
-        public override float Margin
+        public float Margin
         {
             get
             {
@@ -20,12 +20,12 @@ namespace Fusee.Engine
             set
             {
                 var o = (CapsuleShapeImp)BtCapsuleShape.UserObject;
-                BtCapsuleShape.Margin = value;
+                o.BtCapsuleShape.Margin = value;
             }
         }
 
         private object _userObject;
-        public override object UserObject
+        public object UserObject
         {
             get { return _userObject; }
             set { _userObject = value; }

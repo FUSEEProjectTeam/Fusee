@@ -24,7 +24,7 @@ namespace Fusee.Engine
 
 
         //Inherited
-        public override float Margin
+        public float Margin
         {
             get
             {
@@ -39,7 +39,7 @@ namespace Fusee.Engine
         }
 
         private object _userObject;
-        public override  object UserObject
+        public  object UserObject
         {
             get { return _userObject; }
             set { _userObject = value; }
