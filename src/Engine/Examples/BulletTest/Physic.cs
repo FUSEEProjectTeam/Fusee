@@ -26,13 +26,15 @@ namespace Examples.BulletTest
             _world = new DynamicWorld();
 
             //FallingTower();
-            Ground();
+            //Ground();
            // InitPoint2PointConstraint();
            // InitHingeConstraint();
             //InitSliderConstraint();
             //InitGearConstraint();
             //InitDfo6Constraint();
-            Tester();
+            //Tester();
+
+            Wippe();
         }
 
 
@@ -46,14 +48,30 @@ namespace Examples.BulletTest
                 for (int c = -2; c < 2; c++)
                 {
                     var pos = new float3(b * size, 0, c * size);
-                    _world.AddRigidBody(0, pos, new float3(1, 1, 1));
+                    //_world.AddRigidBody(0, pos, new float3(1, 1, 1));
                 }
             }
 
         }
 
+        public void Wippe()
+        {
+            var groundShape = _world.AddBoxShape(150, 25, 150);
+            var ground = _world.AddRigidBody(0, new float3(0, 0, 0), groundShape, new float3(0, 0, 0));
 
-        public void FallingTower()
+            var boxShape = _world.AddBoxShape(25);
+            var sphere = _world.AddSphereShape(50);
+            var brettShape = _world.AddBoxShape(50.0f, 0.1f, 1.0f);
+           // var comp = _world.AddCompoundShape(true);
+           // var brett = _world.AddRigidBody(1, new float3(0, 55, 0), brettShape, new float3(0, 0, 0));
+            var box1 = _world.AddRigidBody(1, new float3(-40, 52, 0), boxShape, new float3(0, 0, 0));
+            var box2 = _world.AddRigidBody(1, new float3(0, 102, 0), sphere, new float3(0, 0, 0));
+            var box3 = _world.AddRigidBody(1, new float3(-40, 152, 0), boxShape, new float3(0, 0, 0));
+           // var cmpRB = _world.AddRigidBody(1, new float3(0, 80, 20), comp, new float3(0, 0, 0));
+
+        }
+
+        /*public void FallingTower()
         {
             Mesh mesh = MeshReader.LoadMesh(@"Assets/Sphere.obj.model");
             
@@ -64,7 +82,7 @@ namespace Examples.BulletTest
                     for (int j = -2; j < 2; j++)
                     {
                         var pos = new float3(4 * h, 400 + (k * 4), 4 * j);
-                        _world.AddRigidBody(1, pos, new float3(1, 1, 1));
+                       // _world.AddRigidBody(1, pos, new float3(1, 1, 1));
                     }
                 }
             }
@@ -79,7 +97,7 @@ namespace Examples.BulletTest
            
             var rbB = _world.AddRigidBody(1, new float3(100, 200, 0), new float3(0, 0, 0));
             var p2p = _world.AddPoint2PointConstraint(rbA, rbB, new float3(-0, -70, 0), new float3(0, 10, 0));
-            //var p2p = _world.AddPoint2PointConstraint(rbA, new float3(105, -200, -150));
+            var p2p = _world.AddPoint2PointConstraint(rbA, new float3(105, -200, -150));
             p2p.SetParam(PointToPointFlags.PointToPointFlagsCfm, 0.9f);
 
             var rbC = _world.AddRigidBody(1, new float3(150, 100, 0), new float3(0, 0, 0));
@@ -161,6 +179,6 @@ namespace Examples.BulletTest
             comp.AddChildShape(float4x4.Identity, sphere);
             //comp.CalculatePrincipalAxisTransform();
 
-        }
+        }*/
     }
 }

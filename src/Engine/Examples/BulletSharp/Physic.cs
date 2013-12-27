@@ -8,6 +8,7 @@ using BoxShape = BulletSharp.BoxShape;
 using CollisionShape = BulletSharp.CollisionShape;
 using ConeShape = BulletSharp.ConeShape;
 using ConeTwistConstraint = BulletSharp.ConeTwistConstraint;
+using EmptyShape = Fusee.Engine.EmptyShape;
 using GearConstraint = BulletSharp.GearConstraint;
 using Point2PointConstraint = BulletSharp.Point2PointConstraint;
 using RigidBody = BulletSharp.RigidBody;

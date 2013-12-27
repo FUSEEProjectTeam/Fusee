@@ -40,8 +40,9 @@ namespace Fusee.Engine
             BtWorld.SolverInfo.NumIterations = 8;
            // GImpactCollisionAlgorithm.RegisterAlgorithm(BtDispatcher);
         }
-        
-        public IRigidBodyImp AddRigidBody(float mass, float3 worldTransform,  /* shape, */ float3 intertia)
+
+        public IRigidBodyImp AddRigidBody(float mass, float3 worldTransform, ICollisionShapeImp colShape, float3 intertia)
+           // where TShapeType : ICollisionShapeImp, IBoxShapeImp, ISphereShapeImp, ICapsuleShapeImp, ICompoundShapeImp
         {
             // Use bullet to do what needs to be done:
             var btMatrix = Matrix.Translation(worldTransform.x, worldTransform.y, worldTransform.z);
@@ -59,8 +60,68 @@ namespace Fusee.Engine
             //TriangleMeshShape ctms = new BvhTriangleMeshShape(btTriangleIndexVertexArray, false);
             GImpactMeshShape btGimpactMeshShape = new GImpactMeshShape(btTriangleIndexVertexArray);
             btGimpactMeshShape.UpdateBound();//This simulates the GImpact Physics*/
-            var btColShape = new BoxShape(25);//btGimpactMeshShape;//new ConvexTriangleMeshShape(btTriangleIndexVertexArray);
-            //btColShape.Margin = 0.01f;
+
+
+            //var btColShape = new BoxShape(25);//btGimpactMeshShape;//new ConvexTriangleMeshShape(btTriangleIndexVertexArray);
+            var shapeType = colShape.GetType().ToString();
+            
+            CollisionShape btColShape;
+          
+            switch (shapeType)
+            {
+                //Primitives
+                case "Fusee.Engine.BoxShapeImp":
+                    var box = (BoxShapeImp)colShape;
+                    var btBoxHalfExtents = Translater.Float3ToBtVector3(box.HalfExtents);
+                    btColShape = new BoxShape(btBoxHalfExtents);
+                    break;
+                case "Fusee.Engine.CapsuleShapeImp":
+                    var capsule = (CapsuleShapeImp)colShape;
+                    btColShape = new CapsuleShape(capsule.Radius, capsule.HalfHeight);
+                    break;
+                case "Fusee.Engine.ConeShapeImp":
+                    var cone = (ConeShapeImp)colShape;
+                    btColShape = new ConeShape(cone.Radius, cone.Height);
+                    break;
+                case "Fusee.Engine.CylinderShapeImp":
+                    var cylinider = (CylinderShapeImp)colShape;
+                    var btCylinderHalfExtents = Translater.Float3ToBtVector3(cylinider.HalfExtents);
+                    btColShape = new CylinderShape(btCylinderHalfExtents);
+                    break;
+                case "Fusee.Engine.MultiSphereShapeImp":
+                    var multiSphere = (MultiSphereShapeImp)colShape;
+                    var btPositions = new Vector3[multiSphere.SphereCount];
+                    var btRadi = new float[multiSphere.SphereCount];
+                    for (int i = 0; i < multiSphere.SphereCount; i++)
+                    {
+                        var pos = Translater.Float3ToBtVector3(multiSphere.GetSpherePosition(i));
+                        btPositions[i] = pos;
+                        btRadi[i] = multiSphere.GetSphereRadius(i);
+                    }
+                    btColShape = new MultiSphereShape(btPositions, btRadi);
+                    break;
+                case "Fusee.Engine.SphereShapeImp":
+                    var sphere = (SphereShapeImp)colShape;
+                    var btRadius = sphere.Radius;
+                    btColShape = new SphereShape(btRadius);
+                    break;
+                
+                //Misc
+                case "Fusee.Engine.CompoundShapeImp":
+                    var compShape = (CompoundShapeImp)colShape;
+                    btColShape = new CompoundShape();
+                    break;
+                case "Fusee.Engine.EmptyShapeImp":
+                    btColShape = new EmptyShape();
+                    break;
+                //Meshes
+
+                //Default
+                default:
+                    Debug.WriteLine("defaultImp");
+                    btColShape = new EmptyShape();
+                    break;
+            }
             var btLocalInertia = btColShape.CalculateLocalInertia(mass);
 
             var btRbcInfo = new RigidBodyConstructionInfo(mass * 10, btMotionState, /*btGimpactMeshShape*/ btColShape, btLocalInertia);

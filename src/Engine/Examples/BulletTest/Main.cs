@@ -95,10 +95,26 @@ namespace Examples.BulletTest
 
            // Debug.WriteLine(Time.Instance.FramePerSecond);
             //Render all RigidBodies
-            for (int i = 0; i < _physic.World.NumberRigidBodies(); i++)
+
+            var ground = _physic.World.GetRigidBody(0);
+            var ma = ground.WorldTransform;
+            RC.ModelView = /*float4x4.Scale(0.25f)**/ float4x4.Scale(1, 0.25f, 1) * ma * mtxCam;
+            RC.SetShader(_spTexture);
+            RC.SetShaderParamTexture(_textureParam, _iTex);
+            RC.Render(_meshCube);
+
+            var brett = _physic.World.GetRigidBody(1);
+            var maBr = ground.WorldTransform;
+            RC.ModelView = /*float4x4.Scale(0.25f)**/ float4x4.Scale(0.025f) * maBr * mtxCam;
+            RC.SetShader(_spTexture);
+            RC.SetShaderParamTexture(_textureParam, _iTex);
+            RC.Render(_meshCube);
+
+            for (int i = 1; i < _physic.World.NumberRigidBodies(); i++)
             {
                 var rb = _physic.World.GetRigidBody(i);
                 var matrix = rb.WorldTransform;
+                
                 RC.ModelView =  float4x4.Scale(0.25f) * matrix * mtxCam;
                 RC.SetShader(_spTexture);
                 RC.SetShaderParamTexture(_textureParam, _iTex);
