@@ -242,6 +242,97 @@ namespace Fusee.Engine
             }
         }
 
+        public ICollisionShapeImp CollisionShape
+        {
+            get
+            {
+                var type = _rbi.CollisionShape.GetType().ToString();
+                var btShape = _rbi.CollisionShape;
+                
+                switch (type)
+                {
+                        //Primitives
+                    case "BulletSharp.SphereShape":
+                        Debug.WriteLine("RigidBodyImp:" + type);
+                        var btSphere = (SphereShape) btShape;
+                        var retval = new SphereShapeImp();
+                        retval.BtSphereShape = btSphere;
+                       // retval.Radius = btSphere.Radius;
+                        retval.UserObject = retval;
+                        return retval;
+                    default:
+                        return new EmptyShapeImp();
+                }
+
+            }
+            set
+            {
+                var shape = value;
+                var shapeType = value.GetType().ToString();
+
+                CollisionShape btColShape;
+
+                switch (shapeType)
+                {
+                    //Primitives
+                    case "Fusee.Engine.BoxShapeImp":
+                        var box = (BoxShapeImp)value;
+                        var btBoxHalfExtents = Translater.Float3ToBtVector3(box.HalfExtents);
+                        btColShape = new BoxShape(btBoxHalfExtents);
+                        break;
+                    case "Fusee.Engine.CapsuleShapeImp":
+                        var capsule = (CapsuleShapeImp)value;
+                        btColShape = new CapsuleShape(capsule.Radius, capsule.HalfHeight);
+                        break;
+                    case "Fusee.Engine.ConeShapeImp":
+                        var cone = (ConeShapeImp)value;
+                        btColShape = new ConeShape(cone.Radius, cone.Height);
+                        break;
+                    case "Fusee.Engine.CylinderShapeImp":
+                        var cylinider = (CylinderShapeImp)value;
+                        var btCylinderHalfExtents = Translater.Float3ToBtVector3(cylinider.HalfExtents);
+                        btColShape = new CylinderShape(btCylinderHalfExtents);
+                        break;
+                    case "Fusee.Engine.MultiSphereShapeImp":
+                        var multiSphere = (MultiSphereShapeImp)value;
+                        var btPositions = new Vector3[multiSphere.SphereCount];
+                        var btRadi = new float[multiSphere.SphereCount];
+                        for (int i = 0; i < multiSphere.SphereCount; i++)
+                        {
+                            var pos = Translater.Float3ToBtVector3(multiSphere.GetSpherePosition(i));
+                            btPositions[i] = pos;
+                            btRadi[i] = multiSphere.GetSphereRadius(i);
+                        }
+                        btColShape = new MultiSphereShape(btPositions, btRadi);
+                        break;
+                    case "Fusee.Engine.SphereShapeImp":
+                        var sphere = (SphereShapeImp)value;
+                        var btRadius = sphere.Radius;
+                        btColShape = new SphereShape(btRadius);
+                        break;
+
+                    //Misc
+                    case "Fusee.Engine.CompoundShapeImp":
+                        var compShape = (CompoundShapeImp)value;
+                        btColShape = new CompoundShape();
+                        break;
+                    case "Fusee.Engine.EmptyShapeImp":
+                        btColShape = new EmptyShape();
+                        break;
+                    //Meshes
+
+                    //Default
+                    default:
+                        Debug.WriteLine("defaultImp");
+                        btColShape = new EmptyShape();
+                        break;
+                }
+
+                var o = (RigidBodyImp)_rbi.UserObject;
+                o._rbi.CollisionShape = btColShape;
+            }
+        }
+
         /*public void SetCollisionShape(CollisionShape colShape)
         {
             BulletSharp.CollisionShape btShape = null;

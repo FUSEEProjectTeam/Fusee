@@ -17,5 +17,7 @@ namespace Fusee.Engine
         void AddChildShape(float4x4 localTransform, IEmptyShapeImp shape);
 
         void CalculatePrincipalAxisTransform(float[] masses, float4x4 principal, float3 inertia);
+
+
     }
 }

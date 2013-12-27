@@ -284,6 +284,33 @@ namespace Fusee.Engine
             return retval;
         }
 
+        //CylinderShape
+        public CylinderShape AddCylinderShape(float halfExtents)
+        {
+            ICylinderShapeImp iCylinderShapeImp = _dwi.AddCylinderShape(halfExtents);
+            var retval = new CylinderShape();
+            retval.CylinderShapeImp = iCylinderShapeImp;
+            iCylinderShapeImp.UserObject = retval;
+            return retval;
+        }
+        public CylinderShape AddCylinderShape(float halfExtentsX, float halfExtentsY, float halfExtentsZ)
+        {
+            ICylinderShapeImp iCylinderShapeImp = _dwi.AddCylinderShape(halfExtentsX, halfExtentsY, halfExtentsZ);
+            var retval = new CylinderShape();
+            retval.CylinderShapeImp = iCylinderShapeImp;
+            iCylinderShapeImp.UserObject = retval;
+            return retval;
+        }
+        public CylinderShape AddCylinderShape(float3 halfExtents)
+        {
+            ICylinderShapeImp iCylinderShapeImp = _dwi.AddCylinderShape(halfExtents);
+            var retval = new CylinderShape();
+            retval.CylinderShapeImp = iCylinderShapeImp;
+            iCylinderShapeImp.UserObject = retval;
+            return retval;
+        }
+
+        //ConeShape
         public ConeShape AddConeShape(float radius, float height)
         {
             IConeShapeImp iConeShapeImp = _dwi.AddConeShape(radius, height);
@@ -293,6 +320,7 @@ namespace Fusee.Engine
             return retval;
         }
 
+        //MultiSphere
         public MultiSphereShape AddMultiSphereShape(float3[] positions, float[] radi)
         {
             IMultiSphereShapeImp iMultiSphereShapeImp = _dwi.AddMultiSphereShape(positions, radi);
@@ -302,12 +330,22 @@ namespace Fusee.Engine
             return retval;
         }
 
+        //CompountShape
         public CompoundShape AddCompoundShape(bool enableDynamicAabbTree)
         {
             ICompoundShapeImp iCompoundImp = _dwi.AddCompoundShape(enableDynamicAabbTree);
             var retval = new CompoundShape();
             retval.CompoundShapeImp = iCompoundImp;
             iCompoundImp.UserObject = retval;
+            return retval;
+        }
+
+        public EmptyShape AddEmptyShape()
+        {
+            IEmptyShapeImp iEmptyShapeImp = _dwi.AddEmptyShape();
+            var retval = new EmptyShape();
+            retval.EmtyShapeImp = iEmptyShapeImp;
+            iEmptyShapeImp.UserObject = retval;
             return retval;
         }
 

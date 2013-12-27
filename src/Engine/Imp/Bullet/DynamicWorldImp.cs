@@ -31,7 +31,7 @@ namespace Fusee.Engine
             BtSolver = new SequentialImpulseConstraintSolver();
             BtCollisionShapes = new AlignedCollisionShapeArray();
             BtCollisionShapes.Add(new SphereShape(1));
-            Test();
+
             BtWorld = new DiscreteDynamicsWorld(BtDispatcher, BtBroadphase, BtSolver, BtCollisionConf)
             {
                 Gravity = new Vector3(0, -9.81f   *10.0f , 0)
@@ -383,6 +383,7 @@ namespace Fusee.Engine
 
         #region CollisionShapes
         //CollisionShapes
+        //Primitives
         //BoxShape
         public IBoxShapeImp AddBoxShape(float boxHalfExtents)
         {
@@ -439,6 +440,39 @@ namespace Fusee.Engine
             return retval;
         }
 
+        //CylinderShape
+        public ICylinderShapeImp AddCylinderShape(float halfExtents)
+        {
+            var btCylinderShape = new CylinderShape(halfExtents);
+            BtCollisionShapes.Add(btCylinderShape);
+
+            var retval = new CylinderShapeImp();
+            retval.BtCylinderShape = btCylinderShape;
+            btCylinderShape.UserObject = retval;
+            return retval;
+        }
+        public ICylinderShapeImp AddCylinderShape(float3 halfExtents)
+        {
+            var btCylinderShape = new CylinderShape(Translater.Float3ToBtVector3(halfExtents));
+            BtCollisionShapes.Add(btCylinderShape);
+
+            var retval = new CylinderShapeImp();
+            retval.BtCylinderShape = btCylinderShape;
+            btCylinderShape.UserObject = retval;
+            return retval;
+        }
+        public ICylinderShapeImp AddCylinderShape(float halfExtentsX, float halfExtentsY, float halfExtentsZ)
+        {
+            var btCylinderShape = new CylinderShape(halfExtentsX, halfExtentsY, halfExtentsZ);
+            BtCollisionShapes.Add(btCylinderShape);
+
+            var retval = new CylinderShapeImp();
+            retval.BtCylinderShape = btCylinderShape;
+            btCylinderShape.UserObject = retval;
+            return retval;
+        }
+  
+
         //ConeShape
         public IConeShapeImp AddConeShape(float radius, float height)
         {
@@ -479,21 +513,24 @@ namespace Fusee.Engine
             return retval;
         }
 
-        #endregion CollisionShapes
-
-
-        public void Test()
+        public IEmptyShapeImp AddEmptyShape()
         {
-            Debug.WriteLine("TEST");
+            var btEmptyShape = new EmptyShape();
+            BtCollisionShapes.Add(btEmptyShape);
+
+            var retval = new EmptyShapeImp();
+            retval.BtEmptyShape = btEmptyShape;
+            btEmptyShape.UserObject = retval;
+            return retval;
         }
+
+        #endregion CollisionShapes
 
 
         public int NumberConstraints()
         {
             return BtWorld.NumConstraints;
         }
-
-        //CollisionShapes
 
 
     }

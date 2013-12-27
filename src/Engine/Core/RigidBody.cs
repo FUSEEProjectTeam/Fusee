@@ -212,8 +212,118 @@ namespace Fusee.Engine
             }
         }
 
-        
 
+        public CollisionShape CollisionShape
+        {
+            get
+            {
+                var shape = _iRigidBodyImp.CollisionShape;
+                var shapeType = shape.GetType().ToString();
+                Debug.WriteLine("RigidBody:" + shapeType);
+                switch (shapeType)
+                {
+                    //Primitives
+                    case "Fusee.Engine.BoxShapeImp":
+                        var box = new BoxShape();
+                        box.BoxShapeImp = (IBoxShapeImp)shape;
+                        shape.UserObject = box;
+                        return box;
+                    case "Fusee.Engine.SphereShapeImp":
+                        var sphere = new SphereShape();
+                        sphere.SphereShapeImp = (ISphereShapeImp)shape;
+                        shape.UserObject = sphere;
+                        return sphere;
+                    case "Fusee.Engine.CapsuleShapeImp":
+                        var capsule = new CapsuleShape();
+                        capsule.CapsuleShapeImp = (ICapsuleShapeImp)shape;
+                        shape.UserObject = capsule;
+                        return capsule;
+                    case "Fusee.Engine.CylinderShapeImp":
+                        var cylinder = new CylinderShape();
+                        cylinder.CylinderShapeImp = (ICylinderShapeImp)shape;
+                        shape.UserObject = cylinder;
+                        return cylinder;
+                    case "Fusee.Engine.ConeShapeImp":
+                        var cone = new ConeShape();
+                        cone.ConeShapeImp = (IConeShapeImp)shape;
+                        shape.UserObject = cone;
+                        return cone;
+                    case "Fusee.Engine.MultiSphereShape":
+                        var multiSphere = new MultiSphereShape();
+                        multiSphere.MultiSphereShapeImp = (IMultiSphereShapeImp)shape;
+                        shape.UserObject = multiSphere;
+                        return multiSphere;
+                    //Misc
+                    case "Fusee.Engine.CompoundShapeShape":
+                        var comp = new CompoundShape();
+                        comp.CompoundShapeImp = (ICompoundShapeImp)shape;
+                        shape.UserObject = comp;
+                        return comp;
+                    case "Fusee.Engine.EmptyShape":
+                        var empty = new EmptyShape();
+                        empty.EmtyShapeImp = (IEmptyShapeImp)shape;
+                        shape.UserObject = empty;
+                        return empty;
+                    //TODO: Meshes
+                    default:
+                        return new EmptyShape();
+                }
+            }
+            set
+            {
+                var shapeType = value.GetType().ToString();
+                //IRigidBodyImp rbi;
+                var o = (RigidBody)_iRigidBodyImp.UserObject;
+                switch (shapeType)
+                {
+                    //Primitives
+                    case "Fusee.Engine.BoxShape":
+                        var box = (BoxShape)value;
+                        o._iRigidBodyImp.CollisionShape = box.BoxShapeImp;
+                        break;
+                    case "Fusee.Engine.CapsuleShape":
+                        var capsule = (CapsuleShape)value;
+                        o._iRigidBodyImp.CollisionShape = capsule.CapsuleShapeImp;
+                        break;
+                    case "Fusee.Engine.ConeShape":
+                        var cone = (ConeShape)value;
+                        o._iRigidBodyImp.CollisionShape = cone.ConeShapeImp;
+                        break;
+                    case "Fusee.Engine.CylinderShape":
+                        var cylinder = (CylinderShape)value;
+                        o._iRigidBodyImp.CollisionShape = cylinder.CylinderShapeImp;
+                        break;
+                    case "Fusee.Engine.MultiSphereShape":
+                        var multiSphere = (MultiSphereShape)value;
+                        o._iRigidBodyImp.CollisionShape = multiSphere.MultiSphereShapeImp;
+                        break;
+                    case "Fusee.Engine.SphereShape":
+                        var sphere = (SphereShape)value;
+                        o._iRigidBodyImp.CollisionShape = sphere.SphereShapeImp;
+                        break;
+
+                    //Misc
+                    case "Fusee.Engine.CompoundShape":
+                        var compShape = (CompoundShape)value;
+                        o._iRigidBodyImp.CollisionShape = compShape.CompoundShapeImp;
+                        break;
+                    case "Fusee.Engine.EmptyShape":
+                        var empty = (EmptyShape)value;
+                        o._iRigidBodyImp.CollisionShape = empty.EmtyShapeImp;
+                        break;
+
+                    //TODO: Meshes
+                        
+                    //Default
+                    default:
+                        //TODO: Exeption
+                        var defaultShape = new EmptyShape();
+                        Debug.WriteLine("default");
+                        //rbi = _dwi.AddRigidBody(mass, worldTransform, defaultShape.EmtyShapeImp, inertia);
+                        break;
+                }
+            }
+        }
 
 
         /*public void SetCollisionShape(CollisionShape colShape)

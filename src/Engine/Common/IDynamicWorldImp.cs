@@ -45,13 +45,16 @@ namespace Fusee.Engine
 
         ICapsuleShapeImp AddCapsuleShape(float radius, float height);
 
+        ICylinderShapeImp AddCylinderShape(float halfExtents);
+        ICylinderShapeImp AddCylinderShape(float3 halfExtents);
+        ICylinderShapeImp AddCylinderShape(float halfExtentsX, float halfExtentsY, float halfExtentsZ);
         IConeShapeImp AddConeShape(float radius, float height);
 
         IMultiSphereShapeImp AddMultiSphereShape(float3[] positions, float[] radi);
 
         ICompoundShapeImp AddCompoundShape(bool enableDynamicAabbTree);
 
-        void Test();
+        IEmptyShapeImp AddEmptyShape();
 
         int NumberConstraints();
     }
