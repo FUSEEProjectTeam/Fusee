@@ -8,7 +8,7 @@ using Fusee.Math;
 
 namespace Fusee.Engine
 {
-    public class ConvexHullShapeImp : IConvexHullShapeImp
+    public class ConvexHullShapeImp : CollisonShapeImp, IConvexHullShapeImp
     {
         internal ConvexHullShape BtConvexHullShape;
         internal Translater Translater = new Translater();
@@ -34,6 +34,7 @@ namespace Fusee.Engine
             set { _userObject = value; }
         }
 
+        
         public void AddPoint(float3 point)
         {
             var btPoint = Translater.Float3ToBtVector3(point);

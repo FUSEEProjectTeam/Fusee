@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using BulletSharp.MultiThreaded;
 using Fusee.Engine;
 using Fusee.Math;
 using BulletSharp;
@@ -20,6 +21,7 @@ namespace Fusee.Engine
         internal ConstraintSolver BtSolver;
         internal AlignedCollisionShapeArray BtCollisionShapes { get; private set; }
 
+
         internal DynamicWorldImp()
         {
             Debug.WriteLine("DynamicWorldImp");
@@ -30,16 +32,21 @@ namespace Fusee.Engine
             BtBroadphase = new DbvtBroadphase();
             BtSolver = new SequentialImpulseConstraintSolver();
             BtCollisionShapes = new AlignedCollisionShapeArray();
-            BtCollisionShapes.Add(new SphereShape(1));
-
+            
             BtWorld = new DiscreteDynamicsWorld(BtDispatcher, BtBroadphase, BtSolver, BtCollisionConf)
             {
                 Gravity = new Vector3(0, -9.81f   *10.0f , 0)
             };
 
             BtWorld.SolverInfo.NumIterations = 8;
-           // GImpactCollisionAlgorithm.RegisterAlgorithm(BtDispatcher);
+
+            //
+
+
+
+            // GImpactCollisionAlgorithm.RegisterAlgorithm(BtDispatcher);
         }
+
 
         public IRigidBodyImp AddRigidBody(float mass, float3 worldTransform, ICollisionShapeImp colShape, float3 intertia)
            // where TShapeType : ICollisionShapeImp, IBoxShapeImp, ISphereShapeImp, ICapsuleShapeImp, ICompoundShapeImp
@@ -47,6 +54,7 @@ namespace Fusee.Engine
             // Use bullet to do what needs to be done:
             var btMatrix = Matrix.Translation(worldTransform.x, worldTransform.y, worldTransform.z);
             var btMotionState = new DefaultMotionState(btMatrix);
+            
             
             /*TODO:what about other collisionshape types -> what is required from the collision shape and its performance
             Vector3[] btMeshVertecies = new Vector3[meshVertices.Length];
@@ -71,25 +79,25 @@ namespace Fusee.Engine
             {
                 //Primitives
                 case "Fusee.Engine.BoxShapeImp":
-                    var box = (BoxShapeImp)colShape;
+                    var box = (BoxShapeImp) colShape;
                     var btBoxHalfExtents = Translater.Float3ToBtVector3(box.HalfExtents);
                     btColShape = new BoxShape(btBoxHalfExtents);
                     break;
                 case "Fusee.Engine.CapsuleShapeImp":
-                    var capsule = (CapsuleShapeImp)colShape;
+                    var capsule = (CapsuleShapeImp) colShape;
                     btColShape = new CapsuleShape(capsule.Radius, capsule.HalfHeight);
                     break;
                 case "Fusee.Engine.ConeShapeImp":
-                    var cone = (ConeShapeImp)colShape;
+                    var cone = (ConeShapeImp) colShape;
                     btColShape = new ConeShape(cone.Radius, cone.Height);
                     break;
                 case "Fusee.Engine.CylinderShapeImp":
-                    var cylinider = (CylinderShapeImp)colShape;
+                    var cylinider = (CylinderShapeImp) colShape;
                     var btCylinderHalfExtents = Translater.Float3ToBtVector3(cylinider.HalfExtents);
                     btColShape = new CylinderShape(btCylinderHalfExtents);
                     break;
                 case "Fusee.Engine.MultiSphereShapeImp":
-                    var multiSphere = (MultiSphereShapeImp)colShape;
+                    var multiSphere = (MultiSphereShapeImp) colShape;
                     var btPositions = new Vector3[multiSphere.SphereCount];
                     var btRadi = new float[multiSphere.SphereCount];
                     for (int i = 0; i < multiSphere.SphereCount; i++)
@@ -101,21 +109,35 @@ namespace Fusee.Engine
                     btColShape = new MultiSphereShape(btPositions, btRadi);
                     break;
                 case "Fusee.Engine.SphereShapeImp":
-                    var sphere = (SphereShapeImp)colShape;
+                    var sphere = (SphereShapeImp) colShape;
                     var btRadius = sphere.Radius;
                     btColShape = new SphereShape(btRadius);
                     break;
                 
                 //Misc
                 case "Fusee.Engine.CompoundShapeImp":
-                    var compShape = (CompoundShapeImp)colShape;
+                    var compShape = (CompoundShapeImp) colShape;
                     btColShape = new CompoundShape();
                     break;
                 case "Fusee.Engine.EmptyShapeImp":
                     btColShape = new EmptyShape();
                     break;
                 //Meshes
-
+                case "Fusee.Engine.ConvexHullShapeImp":
+                    var convHull = (ConvexHullShapeImp) colShape;
+                    var btPoints= new Vector3[convHull.GetNumPoints()];
+                    for (int i = 0; i < convHull.GetNumPoints(); i++)
+                    {
+                        var point = convHull.GetScaledPoint(i);
+                        btPoints[i] = Translater.Float3ToBtVector3(point);
+                    }
+                    btColShape = new ConvexHullShape(btPoints);
+                    break;
+                case "Fusee.Engine.StaticPlaneShapeImp":
+                    var staticPlane = (StaticPlaneShapeImp) colShape;
+                    var btNormal = Translater.Float3ToBtVector3(staticPlane.PlaneNormal);
+                    btColShape = new StaticPlaneShape(btNormal, staticPlane.PlaneConstant);
+                    break;
                 //Default
                 default:
                     Debug.WriteLine("defaultImp");
@@ -549,6 +571,18 @@ namespace Fusee.Engine
             var retval = new ConvexHullShapeImp();
             retval.BtConvexHullShape = btConvexHullShape;
             btConvexHullShape.UserObject = retval;
+            return retval;
+        }
+
+        public IStaticPlaneShapeImp AddStaticPlaneShape(float3 planeNormal, float planeConstant)
+        {
+            var btPlaneNormal = Translater.Float3ToBtVector3(planeNormal);
+            var btStaticPlaneShape = new StaticPlaneShape(btPlaneNormal, planeConstant);
+            BtCollisionShapes.Add(btStaticPlaneShape);
+
+            var retval = new StaticPlaneShapeImp();
+            retval.BtStaticPlaneShape = btStaticPlaneShape;
+            btStaticPlaneShape.UserObject = retval;
             return retval;
         }
 

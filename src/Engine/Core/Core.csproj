@@ -89,6 +89,7 @@
     <Compile Include="Shaders.cs" />
     <Compile Include="SliderConstraint.cs" />
     <Compile Include="SphereShape.cs" />
+    <Compile Include="StaticPlaneShape.cs" />
     <Compile Include="Time.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -251,15 +251,57 @@ namespace Fusee.Engine
                 
                 switch (type)
                 {
-                        //Primitives
+                    //Primitives
+                    case "BulletSharp.BoxShape":
+                        var btBox = (BoxShape) btShape;
+                        var box = new BoxShapeImp();
+                        box.BtBoxShape = btBox;
+                        btBox.UserObject = box;
+                        return box;
                     case "BulletSharp.SphereShape":
-                        Debug.WriteLine("RigidBodyImp:" + type);
                         var btSphere = (SphereShape) btShape;
-                        var retval = new SphereShapeImp();
-                        retval.BtSphereShape = btSphere;
-                       // retval.Radius = btSphere.Radius;
-                        retval.UserObject = retval;
-                        return retval;
+                        var sphere = new SphereShapeImp();
+                        sphere.BtSphereShape = btSphere;
+                        btSphere.UserObject = sphere;
+                        return sphere;
+                    case "BulletSharp.CapsuleShape":
+                        var btCapsule = (CapsuleShape) btShape;
+                        var capsule = new CapsuleShapeImp();
+                        capsule.BtCapsuleShape = btCapsule;
+                        btCapsule.UserObject = capsule;
+                        return capsule;
+                    case "BulletSharp.CylinderShape":
+                        var btCylinder = (CylinderShape) btShape;
+                        var cylinder = new CylinderShapeImp();
+                        cylinder.BtCylinderShape = btCylinder;
+                        btCylinder.UserObject = cylinder;
+                        return cylinder;
+                    case "BulletSharp.ConeShape":
+                        var btCone = (ConeShape) btShape;
+                        var cone = new ConeShapeImp();
+                        cone.BtConeShape = btCone;
+                        btCone.UserObject = cone;
+                        return cone;
+                    case "BulletSharp.MultiSphereShape":
+                        var btMulti = (MultiSphereShape) btShape;
+                        var multi = new MultiSphereShapeImp();
+                        multi.BtMultiSphereShape = btMulti;
+                        btMulti.UserObject = multi;
+                        return multi;
+                    //Meshes
+                    case "BulletSharp.ConvexHullShape":
+                        var btConvHull = (ConvexHullShape) btShape;
+                        var convHull = new ConvexHullShapeImp();
+                        convHull.BtConvexHullShape = btConvHull;
+                        btConvHull.UserObject = convHull;
+                        return convHull;
+                    //Misc
+                    case "BulletSharp.CompoundShape":
+                        var btComp = (CompoundShape) btShape;
+                        var comp = new CompoundShapeImp();
+                        comp.BtCompoundShape = btComp;
+                        btComp.UserObject = comp;
+                        return comp;
                     default:
                         return new EmptyShapeImp();
                 }

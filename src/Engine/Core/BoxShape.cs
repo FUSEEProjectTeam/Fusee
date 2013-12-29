@@ -20,7 +20,7 @@ namespace Fusee.Engine
         }
 
         //Inherited
-        public float Margin
+        public override float Margin
         {
 
             get

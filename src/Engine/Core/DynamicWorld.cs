@@ -17,6 +17,7 @@ namespace Fusee.Engine
             _dwi = ImpFactory.CreateIDynamicWorldImp();
         }
 
+
         public RigidBody AddRigidBody(float mass, float3 worldTransform, CollisionShape colShape, float3 inertia)
         {
 
@@ -72,6 +73,14 @@ namespace Fusee.Engine
                     break;
 
                 //Meshes
+                case "Fusee.Engine.ConvexHullShape":
+                    var convHullShape = (ConvexHullShape) colShape;
+                    rbi = _dwi.AddRigidBody(mass, worldTransform, convHullShape.ConvexHullShapeImp, inertia);
+                    break;
+                case "Fusee.Engine.StaticPlaneShape":
+                    var staticPaneShape = (StaticPlaneShape)colShape;
+                    rbi = _dwi.AddRigidBody(mass, worldTransform, staticPaneShape.StaticPlaneShapeImp, inertia);
+                    break;
 
                 //Default
                 default:
@@ -366,6 +375,16 @@ namespace Fusee.Engine
             iConvexHullShapeImp.UserObject = retval;
             return retval;
         }
+
+        public StaticPlaneShape AddStaticPlaneShape(float3 planeNormal, float planeConstant)
+        {
+            IStaticPlaneShapeImp iStaticPlaneShapeImp = _dwi.AddStaticPlaneShape(planeNormal, planeConstant);
+            var retval = new StaticPlaneShape();
+            retval.StaticPlaneShapeImp = iStaticPlaneShapeImp;
+            iStaticPlaneShapeImp.UserObject = retval;
+            return retval;
+        }
+
         #endregion CollisionShapes
 
         public int NumberConstraints()

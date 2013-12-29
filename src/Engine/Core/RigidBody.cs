@@ -222,8 +222,7 @@ namespace Fusee.Engine
             get
             {
                 var shape = _iRigidBodyImp.CollisionShape;
-                var shapeType = shape.GetType().ToString();
-                Debug.WriteLine("RigidBody:" + shapeType);
+                var shapeType = shape.GetType().ToString();          
                 switch (shapeType)
                 {
                     //Primitives
@@ -252,13 +251,24 @@ namespace Fusee.Engine
                         cone.ConeShapeImp = (IConeShapeImp)shape;
                         shape.UserObject = cone;
                         return cone;
-                    case "Fusee.Engine.MultiSphereShape":
+                    case "Fusee.Engine.MultiSphereShapeImp":
                         var multiSphere = new MultiSphereShape();
                         multiSphere.MultiSphereShapeImp = (IMultiSphereShapeImp)shape;
                         shape.UserObject = multiSphere;
                         return multiSphere;
+                    //Meshes
+                    case "Fusee.Engine.ConvexHullShapeImp":
+                        var convHull = new ConvexHullShape();
+                        convHull.ConvexHullShapeImp = (IConvexHullShapeImp) shape;
+                        shape.UserObject = convHull;
+                        return convHull;
+                    case "Fusee.Engine.StaticPlaneShapeImp":
+                        var staticPlane = new StaticPlaneShape();
+                        staticPlane.StaticPlaneShapeImp = (IStaticPlaneShapeImp)shape;
+                        shape.UserObject = staticPlane;
+                        return staticPlane;
                     //Misc
-                    case "Fusee.Engine.CompoundShapeShape":
+                    case "Fusee.Engine.CompoundShapeShapeImp":
                         var comp = new CompoundShape();
                         comp.CompoundShapeImp = (ICompoundShapeImp)shape;
                         shape.UserObject = comp;
@@ -268,7 +278,6 @@ namespace Fusee.Engine
                         empty.EmtyShapeImp = (IEmptyShapeImp)shape;
                         shape.UserObject = empty;
                         return empty;
-                    //TODO: Meshes
                     default:
                         return new EmptyShape();
                 }
@@ -305,7 +314,15 @@ namespace Fusee.Engine
                         var sphere = (SphereShape)value;
                         o._iRigidBodyImp.CollisionShape = sphere.SphereShapeImp;
                         break;
-
+                    //Meshes
+                    case "Fusee.Engine.ConvexHullShape":
+                        var convHull = (ConvexHullShape)value;
+                        o._iRigidBodyImp.CollisionShape = convHull.ConvexHullShapeImp;
+                        break;
+                    case "Fusee.Engine.StaticPlaneShape":
+                        var staticPlane = (StaticPlaneShape)value;
+                        o._iRigidBodyImp.CollisionShape = staticPlane.StaticPlaneShapeImp;
+                        break;
                     //Misc
                     case "Fusee.Engine.CompoundShape":
                         var compShape = (CompoundShape)value;
@@ -315,9 +332,7 @@ namespace Fusee.Engine
                         var empty = (EmptyShape)value;
                         o._iRigidBodyImp.CollisionShape = empty.EmtyShapeImp;
                         break;
-
-                    //TODO: Meshes
-                        
+                       
                     //Default
                     default:
                         //TODO: Exeption

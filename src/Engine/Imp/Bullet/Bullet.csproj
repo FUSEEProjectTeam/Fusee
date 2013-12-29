@@ -71,6 +71,7 @@
     <Compile Include="RigidBodyImp.cs" />
     <Compile Include="SliderConstraintImp.cs" />
     <Compile Include="SphereShapeImp.cs" />
+    <Compile Include="StaticPlaneShapeImp.cs" />
     <Compile Include="Translater.cs" />
   </ItemGroup>
   <ItemGroup>

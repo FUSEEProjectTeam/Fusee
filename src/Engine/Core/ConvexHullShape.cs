@@ -16,11 +16,17 @@ namespace Fusee.Engine
     {
         internal IConvexHullShapeImp ConvexHullShapeImp;
 
+        /// <summary>
+        /// Add a vertice to the cloud of vertices.
+        /// There can't be added any vertices to the Shape once it has been added to a rigidbody
+        /// </summary>
+        /// <param name="point"></param>
         public void AddPoint(float3 point)
         {
             var o = (ConvexHullShape)ConvexHullShapeImp.UserObject;
             o.ConvexHullShapeImp.AddPoint(point);
         }
+
 
         public float3 GetScaledPoint(int index)
         {
@@ -37,7 +43,7 @@ namespace Fusee.Engine
             return ConvexHullShapeImp.GetNumPoints();
         }
 
-        public float Margin
+        public override float Margin
         {
             get
             {

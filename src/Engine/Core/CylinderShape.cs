@@ -10,7 +10,7 @@ namespace Fusee.Engine
     {
         internal ICylinderShapeImp CylinderShapeImp;
 
-        public float Margin
+        public override float Margin
         {
             get
             {

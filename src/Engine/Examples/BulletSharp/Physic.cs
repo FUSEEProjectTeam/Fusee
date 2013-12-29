@@ -19,6 +19,7 @@ using HingeConstraint = BulletSharp.HingeConstraint;
 using Generic6DofConstraint = BulletSharp.Generic6DofConstraint;
 using MultiSphereShape = BulletSharp.MultiSphereShape;
 using SphereShape = BulletSharp.SphereShape;
+using StaticPlaneShape = BulletSharp.StaticPlaneShape;
 
 namespace Examples.BulletSharp
 {
@@ -59,7 +60,7 @@ namespace Examples.BulletSharp
                 Gravity = new Vector3(0, -9.81f *10.0f , 0)
             };
             World.SolverInfo.NumIterations = 8;
-            Ground();
+            //Ground();
             //FallingTower();
             //Constraints();
             Tester();
@@ -170,24 +171,27 @@ namespace Examples.BulletSharp
 
         public void Tester()
         {
-            var posA = new Vector3(0,500, 0);
+           /* var posA = new Vector3(0,500, 0);
             var startTransformA = Matrix.Translation(0, 350, 0);
             var myMotionStateA = new DefaultMotionState(startTransformA);
             var colShape = new SphereShape(5);
             var rbInfoA = new RigidBodyConstructionInfo(1, myMotionStateA, colShape);
             var rigidBodyA = new RigidBody(rbInfoA);
             _world.AddRigidBody(rigidBodyA);
+            */
 
 
-            var posB = new Vector3(20, 200, 0);
+
+            var plane = new StaticPlaneShape(new Vector3(0, 0, 0), 5);
+
+
+            var posB = new Vector3(30, 10, 0);
             var startTransformB = Matrix.Translation(5, 20, 0);
             var myMotionStateB = new DefaultMotionState(startTransformB);
-            var rbInfoB = new RigidBodyConstructionInfo(1, myMotionStateB, new SphereShape(5));
+            var rbInfoB = new RigidBodyConstructionInfo(1, myMotionStateB, plane);
             var rigidBodyB = new RigidBody(rbInfoB);
             World.AddRigidBody(rigidBodyB);
 
-            var hull = new ConvexHullShape();
-            
 
 
 
