@@ -43,7 +43,7 @@ namespace Fusee.Engine
             return ConvexHullShapeImp.GetNumPoints();
         }
 
-        public override float Margin
+        public virtual float Margin
         {
             get
             {

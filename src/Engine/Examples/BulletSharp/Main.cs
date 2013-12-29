@@ -58,7 +58,7 @@ namespace Examples.BulletSharp
         {
             // is called once a frame
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-            _physic.World.StepSimulation((float)Time.Instance.DeltaTime, 1 / 60, 1 / 60);
+            _physic.World.StepSimulation((float)Time.Instance.DeltaTime);
             // move per mouse
             if (Input.Instance.IsButtonDown(MouseButtons.Left))
             {
@@ -125,7 +125,7 @@ namespace Examples.BulletSharp
                 //_physic.ExitPhysics();
            
             var mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
-            var mtxCam = mtxRot *float4x4.LookAt(0, 75, 100, 0, 0, 0, 0, 1, 0);
+            var mtxCam = mtxRot *float4x4.LookAt(0, 75, 700, 0, 0, 0, 0, 1, 0);
 
             #region
             for (int i = 0; i < _physic.World.CollisionObjectArray.Count; i++)
@@ -137,7 +137,7 @@ namespace Examples.BulletSharp
                 var converter = new Convert();
                 var matrix = converter.ConvertMatrixTof4X4(btRigidBody.WorldTransform);
                 //var matrix = _physic.World.GetRigidBody(i).WorldTransform;
-                RC.ModelView = float4x4.Scale(0.05f)* matrix * mtxCam;
+                RC.ModelView = float4x4.Scale(0.25f)* matrix * mtxCam;
                 RC.SetShader(_spTexture);
                 RC.SetShaderParamTexture(_textureParam, _iTex);
                 RC.Render(_meshCube);

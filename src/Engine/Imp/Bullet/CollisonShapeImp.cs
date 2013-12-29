@@ -11,11 +11,11 @@ namespace Fusee.Engine
     {
         internal CollisionShape BtCollisionShape;
 
-        public virtual float Margin { get; set; }
+        public float Margin { get; set; }
        
 
         private object _userObject;
-        public virtual object UserObject
+        public object UserObject
         {
             get { return _userObject; }
             set { _userObject = value; }

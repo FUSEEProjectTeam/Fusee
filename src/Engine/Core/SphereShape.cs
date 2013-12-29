@@ -9,7 +9,7 @@ namespace Fusee.Engine
     {
         internal ISphereShapeImp SphereShapeImp;
 
-        public float Margin
+        public virtual float Margin
         {
             get
             {

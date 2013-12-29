@@ -8,6 +8,7 @@ namespace Fusee.Engine
 {
     public interface IBoxShapeImp : ICollisionShapeImp
     {
+        float3 LocalScaling { get; set; }
         float3 HalfExtents { get; }
     }
 }

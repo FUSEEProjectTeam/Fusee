@@ -10,6 +10,14 @@ namespace Fusee.Engine
         internal ICollisionShapeImp ICollisionShapeImp;
 
 
-        public virtual float Margin { get; set; }
+        public float Margin
+        {
+            get { return ICollisionShapeImp.Margin; }
+            set
+            {
+                var o = (CollisionShape)ICollisionShapeImp.UserObject;
+                o.ICollisionShapeImp.Margin = value; 
+            }
+        }
     }
 }

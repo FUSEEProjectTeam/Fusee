@@ -11,7 +11,23 @@ namespace Fusee.Engine
     public class BoxShapeImp : CollisonShapeImp, IBoxShapeImp
     {
         internal BoxShape BtBoxShape;
-        internal Translater Translater;
+        internal Translater Translater = new Translater();
+
+
+        public float3 LocalScaling
+        {
+            get
+            {
+                var retval = Translater.BtVector3ToFloat3(BtBoxShape.LocalScaling);
+                return retval;
+            }
+            set
+            {
+                var o = (BoxShapeImp)BtBoxShape.UserObject;
+                o.BtBoxShape.LocalScaling = Translater.Float3ToBtVector3(value);
+                //Todo: Update RigidBody Inertia refering to the CollisionPbject
+            }
+        }
 
         public float3 HalfExtents
         {
@@ -24,7 +40,7 @@ namespace Fusee.Engine
 
 
         //Inherited
-        public float Margin
+        public virtual float Margin
         {
             get
             {
@@ -39,7 +55,7 @@ namespace Fusee.Engine
         }
 
         private object _userObject;
-        public  object UserObject
+        public virtual object UserObject
         {
             get { return _userObject; }
             set { _userObject = value; }

@@ -45,7 +45,7 @@ namespace Examples.BulletTest
             //Tets Scenes
             //GroundPlane();
             GroundPlane();
-            FallingTower();
+            //FallingTower();
             //Ground();
             
             //InitPoint2PointConstraint();
@@ -53,21 +53,18 @@ namespace Examples.BulletTest
             //InitSliderConstraint();
             //InitGearConstraint();
             //InitDfo6Constraint();
-            //Tester();
+            Tester();
 
             //Wippe();
         }
 
         public void GroundPlane()
         {
-            // plane = _world.AddStaticPlaneShape(float3.UnitY, 1);
-            //var groundPlane = _world.AddRigidBody(0, new float3(0,5,0) , plane, new float3(1, 1, 1)); 
-            var groundShape = _world.AddBoxShape(100, 1, 100);
-            _world.AddRigidBody(0, new float3(0, 0, 0), groundShape, new float3(1, 1, 1));
-            //var hRB1 = _world.AddRigidBody(1, new float3(0, 100, 0), Hull, new float3(1, 1, 1));
-           // hRB1.ApplyTorqueImpulse = new float3(50,50,0);
-           // var hRB2 = _world.AddRigidBody(1, new float3(70, 100, 0), Hull, new float3(1, 1, 1));
-            //hRB2.ApplyTorqueImpulse = new float3(50, 50, 50);
+            var plane = _world.AddStaticPlaneShape(float3.UnitY, 10);
+            plane.Margin = 0.003f;
+            var groundPlane = _world.AddRigidBody(0, new float3(0,0,0) , plane, new float3(1, 1, 1)); 
+            var groundShape = _world.AddBoxShape(300, 1, 300);
+            //_world.AddRigidBody(0, new float3(0, 0, 0), groundShape, new float3(1, 1, 1));
         }
 
         public void Ground()
@@ -110,13 +107,13 @@ namespace Examples.BulletTest
 
         public void FallingTower()
         {
-            for (int k = 1; k < 4; k++)
+            for (int k = 0; k < 4; k++)
             {
                 for (int h = -2; h < 2; h++)
                 {
                     for (int j = -2; j < 2; j++)
                     {
-                        var pos = new float3(4 * h, 400 + (k * 4), 4 * j);
+                        var pos = new float3(4 * h, 300 + (k * 4), 4 * j);
   
                         var cube = _world.AddRigidBody(1, pos, MyBoxCollider, new float3(1, 1, 1));
                     }
@@ -203,25 +200,16 @@ namespace Examples.BulletTest
 
         public void Tester()
         {
-            var sphere = _world.AddSphereShape(40);
+            var box = _world.AddBoxShape(25);
+            box.Margin = 0.5f;
+            //box.LocalScaling = new float3(0.5f, 0.5f, 0.5f);
             //var shape = rbA.AddCapsuleShape(2, 8);
             //Debug.WriteLine(shape.Radius);
-            var rbA = _world.AddRigidBody(0, new float3(0, 150, 0), sphere, new float3(1, 1, 1));
-            
-            Debug.WriteLine("rbA: "+rbA.CollisionShape.GetType());
-            var points = new float3[3];
-            //var hull = _world.AddConvexHullShape();
-            points[0] = new float3(1, 2, 3);
-            points[1] = new float3(-5, 0,7);
-            points[2] = new float3(-2, -1, 2);
-            var hull = _world.AddConvexHullShape(points);
+            //var rbA = _world.AddRigidBody(0, new float3(0, 150, 0), sphere, new float3(1, 1, 1));
 
-            //hull.AddPoint(new float3(1,1,1));
-            var rbB = _world.AddRigidBody(1, new float3(0, 300, 0), hull, new float3(1, 1, 1));
-            Debug.WriteLine(hull.GetNumPoints());
-            Debug.WriteLine("rbB: "+rbB.CollisionShape.GetType());
+            var gimp = _world.AddGImpactMeshShape(BoxMesh);
+            var rbA = _world.AddRigidBody(1, new float3(0, 150, 0), gimp, new float3(1, 1, 1));
             
-
 
 
 

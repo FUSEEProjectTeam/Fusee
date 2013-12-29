@@ -99,7 +99,9 @@ namespace Examples.BulletTest
 
             var ground = _physic.World.GetRigidBody(0);
             var ma = ground.WorldTransform;
-            RC.ModelView = float4x4.Scale(1, 0.01f, 1) * ma * mtxCam;
+            //var gr = (BoxShape) ground.CollisionShape;
+
+            RC.ModelView = float4x4.Scale(4, 0.01f, 4) * ma * mtxCam;
             RC.SetShader(_spColor);
             RC.SetShaderParam(_colorParam, new float4(1.0f, 1.0f, 0, 1));
             RC.Render(_meshCube);

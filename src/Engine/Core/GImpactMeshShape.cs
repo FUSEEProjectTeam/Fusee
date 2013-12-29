@@ -5,22 +5,22 @@ using System.Text;
 
 namespace Fusee.Engine
 {
-    public class EmptyShape : CollisionShape
+    public class GImpactMeshShape : CollisionShape
     {
-        internal IEmptyShapeImp EmtyShapeImp;
-        //Inherited
+
+        internal IGImpactMeshShapeImp GImpactMeshShapeImp;
+
         public virtual float Margin
         {
-
             get
             {
-                var retval = EmtyShapeImp.Margin;
+                var retval = GImpactMeshShapeImp.Margin;
                 return retval;
             }
             set
             {
-                var o = (BoxShape)EmtyShapeImp.UserObject;
-                o.BoxShapeImp.Margin = value;
+                var o = (GImpactMeshShape)GImpactMeshShapeImp.UserObject;
+                o.GImpactMeshShapeImp.Margin = value;
             }
         }
     }

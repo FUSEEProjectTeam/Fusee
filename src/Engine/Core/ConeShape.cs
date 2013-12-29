@@ -9,7 +9,7 @@ namespace Fusee.Engine
     {
         internal IConeShapeImp ConeShapeImp;
 
-        public override float Margin
+        public virtual float Margin
         {
             get
             {

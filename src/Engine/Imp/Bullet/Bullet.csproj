@@ -63,6 +63,7 @@
     <Compile Include="EmptyShapeImp.cs" />
     <Compile Include="GearConstraintImp.cs" />
     <Compile Include="Generic6DofConstraintImp.cs" />
+    <Compile Include="GImpactMeshShapeImp.cs" />
     <Compile Include="HingeConstraintImp.cs" />
     <Compile Include="MultiSphereShapeImp.cs" />
     <Compile Include="PhysicsImplementor.cs" />

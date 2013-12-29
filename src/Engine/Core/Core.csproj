@@ -72,6 +72,7 @@
     <Compile Include="GearConstraint.cs" />
     <Compile Include="Generic6DofConstraint.cs" />
     <Compile Include="Geometry.cs" />
+    <Compile Include="GImpactMeshShape.cs" />
     <Compile Include="HingeConstraint.cs" />
     <Compile Include="ImpFactory.cs" />
     <Compile Include="Input.cs" />

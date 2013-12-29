@@ -77,11 +77,14 @@ namespace Fusee.Engine
                     var convHullShape = (ConvexHullShape) colShape;
                     rbi = _dwi.AddRigidBody(mass, worldTransform, convHullShape.ConvexHullShapeImp, inertia);
                     break;
-                case "Fusee.Engine.StaticPlaneShape":
+                case "Fusee.Engine.GImpactMeshShape":
+                    var gImpMeshShape = (GImpactMeshShape) colShape;
+                    rbi = rbi = _dwi.AddRigidBody(mass, worldTransform, gImpMeshShape.GImpactMeshShapeImp, inertia);
+                    break;
+                case "Fusee.Engine.StaticPlaneShape": //static Shape
                     var staticPaneShape = (StaticPlaneShape)colShape;
                     rbi = _dwi.AddRigidBody(mass, worldTransform, staticPaneShape.StaticPlaneShapeImp, inertia);
                     break;
-
                 //Default
                 default:
                     var defaultShape = new EmptyShape();
@@ -382,6 +385,24 @@ namespace Fusee.Engine
             var retval = new StaticPlaneShape();
             retval.StaticPlaneShapeImp = iStaticPlaneShapeImp;
             iStaticPlaneShapeImp.UserObject = retval;
+            return retval;
+        }
+
+        public GImpactMeshShape AddGImpactMeshShape(Mesh mesh)
+        {
+            int[] meshTrianglesArray = new int[mesh.Triangles.Length];
+            for (int c = 0; c < mesh.Triangles.Length; c++)
+            {
+                meshTrianglesArray[c] = Convert.ToInt32(mesh.Triangles[c]);
+            }
+
+            int meshVerteciesCount = mesh.Vertices.Length;
+            float3[] meshVerteciesArray = new float3[meshVerteciesCount];
+            meshVerteciesArray = mesh.Vertices;
+            IGImpactMeshShapeImp iGImpactMeshShapeImp = _dwi.AddGImpactMeshShape(meshTrianglesArray, mesh.Vertices);
+            var retval = new GImpactMeshShape();
+            retval.GImpactMeshShapeImp = iGImpactMeshShapeImp;
+            iGImpactMeshShapeImp.UserObject = retval;
             return retval;
         }
 

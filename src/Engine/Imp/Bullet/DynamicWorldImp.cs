@@ -32,19 +32,19 @@ namespace Fusee.Engine
             BtBroadphase = new DbvtBroadphase();
             BtSolver = new SequentialImpulseConstraintSolver();
             BtCollisionShapes = new AlignedCollisionShapeArray();
+
             
             BtWorld = new DiscreteDynamicsWorld(BtDispatcher, BtBroadphase, BtSolver, BtCollisionConf)
             {
                 Gravity = new Vector3(0, -9.81f   *10.0f , 0)
             };
 
-            BtWorld.SolverInfo.NumIterations = 8;
-
+            BtWorld.SolverInfo.NumIterations = 20;
+           // BtWorld.DispatchInfo.UseContinuous = true;
             //
+            GImpactCollisionAlgorithm.RegisterAlgorithm(BtDispatcher);
 
 
-
-            // GImpactCollisionAlgorithm.RegisterAlgorithm(BtDispatcher);
         }
 
 
@@ -74,7 +74,7 @@ namespace Fusee.Engine
             var shapeType = colShape.GetType().ToString();
             
             CollisionShape btColShape;
-          
+            
             switch (shapeType)
             {
                 //Primitives
@@ -122,6 +122,7 @@ namespace Fusee.Engine
                 case "Fusee.Engine.EmptyShapeImp":
                     btColShape = new EmptyShape();
                     break;
+
                 //Meshes
                 case "Fusee.Engine.ConvexHullShapeImp":
                     var convHull = (ConvexHullShapeImp) colShape;
@@ -133,10 +134,20 @@ namespace Fusee.Engine
                     }
                     btColShape = new ConvexHullShape(btPoints);
                     break;
-                case "Fusee.Engine.StaticPlaneShapeImp":
+                case "Fusee.Engine.StaticPlaneShapeImp":  
                     var staticPlane = (StaticPlaneShapeImp) colShape;
                     var btNormal = Translater.Float3ToBtVector3(staticPlane.PlaneNormal);
                     btColShape = new StaticPlaneShape(btNormal, staticPlane.PlaneConstant);
+                    Debug.WriteLine("Fusee.Engine.StaticPlaneShapeImp");
+                    break;
+                case "Fusee.Engine.GImpactMeshShapeImp":
+                    var gImpMesh = (GImpactMeshShapeImp)colShape;
+                    //gImpMesh.BtGImpactMeshShape.UpdateBound();
+                    var btGimp = new GImpactMeshShape(gImpMesh.BtGImpactMeshShape.MeshInterface);
+                    
+                    btGimp.UpdateBound();
+                    btColShape = btGimp;
+                    
                     break;
                 //Default
                 default:
@@ -586,6 +597,24 @@ namespace Fusee.Engine
             return retval;
         }
 
+        public IGImpactMeshShapeImp AddGImpactMeshShape(int[] meshTriangles, float3[] meshVertices)
+        {
+            Vector3[] btMeshVertices = new Vector3[meshVertices.Length];
+            for (int i = 0; i < meshVertices.Length; i++)
+            {
+                btMeshVertices[i].X = meshVertices[i].x;
+                btMeshVertices[i].Y = meshVertices[i].y;
+                btMeshVertices[i].Z = meshVertices[i].z;
+            }
+            var btTriangleIndexVertexArray = new TriangleIndexVertexArray(meshTriangles, btMeshVertices);
+            var btGimpactMeshShape = new GImpactMeshShape(btTriangleIndexVertexArray);
+            //btGimpactMeshShape.UpdateBound();
+            BtCollisionShapes.Add(btGimpactMeshShape);
+            var retval = new GImpactMeshShapeImp();
+            retval.BtGImpactMeshShape = btGimpactMeshShape;
+            btGimpactMeshShape.UserObject = retval;
+            return retval;
+        }
         #endregion CollisionShapes
 
 

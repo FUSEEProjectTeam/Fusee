@@ -295,6 +295,18 @@ namespace Fusee.Engine
                         convHull.BtConvexHullShape = btConvHull;
                         btConvHull.UserObject = convHull;
                         return convHull;
+                    case "BulletSharp.GImpactMeshShape":
+                        var btGImpactMesh = (GImpactMeshShape)btShape;
+                        var gImpactMesh = new GImpactMeshShapeImp();
+                        gImpactMesh.BtGImpactMeshShape = btGImpactMesh;
+                        btGImpactMesh.UserObject = gImpactMesh;
+                        return gImpactMesh;
+                    case "BulletSharp.StaticPlaneShape":
+                        var btStaticPlane = (StaticPlaneShape)btShape;
+                        var staticPlane = new StaticPlaneShapeImp();
+                        staticPlane.BtStaticPlaneShape = btStaticPlane;
+                        btStaticPlane.UserObject = staticPlane;
+                        return staticPlane;
                     //Misc
                     case "BulletSharp.CompoundShape":
                         var btComp = (CompoundShape) btShape;
@@ -362,6 +374,26 @@ namespace Fusee.Engine
                         btColShape = new EmptyShape();
                         break;
                     //Meshes
+                    case "Fusee.Engine.ConvexHullShapeImp":
+                        var convHull = (ConvexHullShapeImp)value;
+                        var btPoints = new Vector3[convHull.GetNumPoints()];
+                        for (int i = 0; i < btPoints.Length; i++)
+                        {
+                            btPoints[i] = Translater.Float3ToBtVector3(convHull.GetScaledPoint(i));
+                        }
+                        convHull.GetUnscaledPoints();
+                        btColShape = new ConvexHullShape(btPoints);
+                        break;
+                    case "Fusee.Engine.StaticPlaneShapeImp":
+                        var staticPlane = (StaticPlaneShapeImp)value;
+                        var btNormal = Translater.Float3ToBtVector3(staticPlane.PlaneNormal);
+                        btColShape = new StaticPlaneShape(btNormal, staticPlane.PlaneConstant);
+                        break;
+                    case "Fusee.Engine.GImpactMeshShapeImp":
+                        var gImpShape = (GImpactMeshShapeImp)value;
+                        //var btRadius = sphere.Radius;
+                        btColShape = new GImpactMeshShape(gImpShape.BtGImpactMeshShape.MeshInterface);
+                        break;
 
                     //Default
                     default:

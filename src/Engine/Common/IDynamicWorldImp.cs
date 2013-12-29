@@ -61,6 +61,8 @@ namespace Fusee.Engine
 
         IStaticPlaneShapeImp AddStaticPlaneShape(float3 planeNormal, float planeConstant);
 
+        IGImpactMeshShapeImp AddGImpactMeshShape(int[] meshTriangles, float3[]meshVertecies);
+
         int NumberConstraints();
     }
 }

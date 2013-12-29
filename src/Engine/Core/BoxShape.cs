@@ -10,6 +10,15 @@ namespace Fusee.Engine
     {
         internal IBoxShapeImp BoxShapeImp;
 
+        public float3 LocalScaling
+        {
+            get { return BoxShapeImp.LocalScaling; }
+            set
+            {
+                var o = (BoxShape)BoxShapeImp.UserObject;
+                o.BoxShapeImp.LocalScaling = value;
+            }
+        }
         public float3 HalfExtents
         {
             get
@@ -20,7 +29,7 @@ namespace Fusee.Engine
         }
 
         //Inherited
-        public override float Margin
+        public virtual float Margin
         {
 
             get
@@ -30,7 +39,7 @@ namespace Fusee.Engine
             }
             set
             {
-                var o = (BoxShape)BoxShapeImp.UserObject;
+                var o = (BoxShape) BoxShapeImp.UserObject;
                 o.BoxShapeImp.Margin = value;
             }
         }

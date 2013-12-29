@@ -61,14 +61,28 @@ namespace Examples.BulletSharp
             };
             World.SolverInfo.NumIterations = 8;
             //Ground();
-            //FallingTower();
+            //Tester();
+            Plane();
+            FallingTower();
             //Constraints();
-            Tester();
+            
             
 
             
         }
 
+        public void Plane()
+        {
+            var planeShape = new StaticPlaneShape(Vector3.UnitY, 10);
+            var pos = new float3(0,0,0);
+            var startTransform = Matrix.Translation(pos.x, pos.y, pos.z);
+            var myMotionState = new DefaultMotionState(startTransform);
+            var rbInfo = new RigidBodyConstructionInfo(0, myMotionState, planeShape);
+            RigidBody rigidBody = new RigidBody(rbInfo);
+
+            World.AddRigidBody(rigidBody);
+            
+        }
         public void Ground()
         {
             //create ground
@@ -93,26 +107,26 @@ namespace Examples.BulletSharp
         public void FallingTower()
         {
             Mesh mesh = MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
-            var vertices = new Vector3[mesh.Vertices.Length];
-            for (int i = 0; i < mesh.Vertices.Length; i++)
+            
+            Vector3[] verts =
             {
-                vertices[i].X = mesh.Vertices[i].x;
-                vertices[i].Y = mesh.Vertices[i].y;
-                vertices[i].Z = mesh.Vertices[i].z;
-            }
-            var btColShape = new ConvexHullShape(vertices);
+                new Vector3(0, -25, -25), new Vector3(25, -25, -25), new Vector3(-25, -25, 25), new Vector3(25, -25, 25),
+                new Vector3(0, 25, 0), new Vector3(25, 25, -25), new Vector3(-25, 25, 25), new Vector3(25, 25, 25)
+            };
+            var btColShape = new ConvexHullShape(verts);
             Debug.WriteLine("Init Falling Tower");
-            for (int k = -2; k < 2; k++)
+            for (int k = 1; k < 5; k++)
             {
-                for (int h = -2; h < 2; h++)
+                for (int h = -2; h < 3; h++)
                 {
-                    for (int j = -2; j < 2; j++)
+                    for (int j = -2; j < 3; j++)
                     {
-                        var pos = new float3(4 * h*20, 100*20 + (k * 4), 4 * j*20);
+                        var pos = new float3(2 * h, 400 + (k * 4), 2 * j);
+                       
                         var startTransform = Matrix.Translation(pos.x, pos.y, pos.z);
                         var myMotionState = new DefaultMotionState(startTransform);
                         
-                        var rbInfo = new RigidBodyConstructionInfo(1, myMotionState, btColShape);
+                        var rbInfo = new RigidBodyConstructionInfo(1, myMotionState, new BoxShape(25));
                         RigidBody rigidBody = new RigidBody(rbInfo);
   
                         World.AddRigidBody(rigidBody);
@@ -182,44 +196,21 @@ namespace Examples.BulletSharp
 
 
 
-            var plane = new StaticPlaneShape(new Vector3(0, 0, 0), 5);
+            var plane = new StaticPlaneShape(Vector3.UnitY, 10);
 
 
-            var posB = new Vector3(30, 10, 0);
-            var startTransformB = Matrix.Translation(5, 20, 0);
+            var posB = new Vector3(0, 0, 0);
+            var startTransformB = Matrix.Translation(0, 0, 0);
             var myMotionStateB = new DefaultMotionState(startTransformB);
-            var rbInfoB = new RigidBodyConstructionInfo(1, myMotionStateB, plane);
+            var rbInfoB = new RigidBodyConstructionInfo(0, myMotionStateB, plane);
             var rigidBodyB = new RigidBody(rbInfoB);
             World.AddRigidBody(rigidBodyB);
 
 
 
 
-            /* var rbShape = rigidBodyB.CollisionShape.UserObject;
-            
-            var cone = new ConeShape(2, 8);
-            var myVec = new Vector3[3];
 
-            
-            Vector3[] pos =
-            {
-                new Vector3(0, 0, 0),
-                new Vector3(1, 1, 1)
-            };
-            
-            float[] rad = {1.5f, 2};
-            myVec[1] = pos[1];
-            var shape = new MultiSphereShape(pos, rad);
-
-            var empty = new EmptyShape();
-            //Debug.WriteLine("AmptyMargin: " +empty.Margin);
-
-
-            var comp = new CompoundShape();
-            comp.AddChildShape(startTransformB, new SphereShape(5));
-            var list = comp.ChildList;
-            var s = list[0].Transform;
-            Debug.WriteLine("childTransform:" +s);*/
+           
         }
 
 

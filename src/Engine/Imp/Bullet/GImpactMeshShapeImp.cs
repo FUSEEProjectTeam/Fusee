@@ -7,21 +7,22 @@ using BulletSharp;
 
 namespace Fusee.Engine
 {
-    public class EmptyShapeImp : CollisonShapeImp, IEmptyShapeImp
+    public class GImpactMeshShapeImp : CollisonShapeImp , IGImpactMeshShapeImp
     {
-        internal EmptyShape BtEmptyShape;
+        internal GImpactMeshShape BtGImpactMeshShape;
+
         //Inherited
         public virtual float Margin
         {
             get
             {
-                var retval = BtEmptyShape.Margin;
+                var retval = BtGImpactMeshShape.Margin;
                 return retval;
             }
             set
             {
-                var o = (EmptyShapeImp)BtEmptyShape.UserObject;
-                o.BtEmptyShape.Margin = value;
+                var o = (GImpactMeshShapeImp)BtGImpactMeshShape.UserObject;
+                o.BtGImpactMeshShape.Margin = value;
             }
         }
 
@@ -31,6 +32,5 @@ namespace Fusee.Engine
             get { return _userObject; }
             set { _userObject = value; }
         }
-
     }
 }

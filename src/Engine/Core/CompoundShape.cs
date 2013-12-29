@@ -67,7 +67,7 @@ namespace Fusee.Engine
         }
 
         //Inherited
-        public float Margin
+        public virtual float Margin
         {
 
             get
