@@ -8,12 +8,13 @@ namespace Examples.RocketGame
     {
         public override void Init()
         {
-            // is called on startup
+            RC.ClearColor = new float4(0, 0, 0, 1);
         }
 
         public override void RenderAFrame()
         {
-            // is called once a frame
+            RC.Clear(ClearFlags.Color | ClearFlags.Depth);
+            Present();
         }
 
         public override void Resize()
