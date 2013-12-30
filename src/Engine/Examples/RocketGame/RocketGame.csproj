@@ -48,8 +48,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Object3D.cs" />
-    <Compile Include="Room.cs" />
+    <Compile Include="GameEntity.cs" />
+    <Compile Include="GameWorld.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

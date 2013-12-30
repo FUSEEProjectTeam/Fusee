@@ -3,7 +3,7 @@ using Fusee.Math;
 
 namespace Examples.RocketGame
 {
-    public class Object3D
+    public class GameEntity
     {
         private float _posX;
         private float _posY;
@@ -15,9 +15,9 @@ namespace Examples.RocketGame
         private readonly Mesh _mesh;
         private readonly ShaderMaterial _material;
 
-        public Object3D(Geometry geo, ShaderMaterial material, float posX = 0, float posY = 0, float posZ = 0, float angX = 0, float angY = 0, float angZ = 0)
+        public GameEntity(Mesh mesh, ShaderMaterial material, float posX = 0, float posY = 0, float posZ = 0, float angX = 0, float angY = 0, float angZ = 0)
         {
-            _mesh = geo.ToMesh();
+            _mesh = mesh;
             _material = material;
             PosX = posX;
             PosY = posY;
@@ -26,7 +26,8 @@ namespace Examples.RocketGame
             AngY = angY;
             AngZ = angZ;
         }
-        public Object3D(Geometry geo, ShaderMaterial material, float3 posxyz, float3 angxyz)
+
+        public GameEntity(Geometry geo, ShaderMaterial material, float3 posxyz, float3 angxyz)
         {
             _mesh = geo.ToMesh();
             _material = material;
@@ -74,6 +75,16 @@ namespace Examples.RocketGame
             set { _angZ = value; }
         }
 
+        public Mesh Mesh
+        {
+            get { return _mesh; }
+        }
+
+        public ShaderMaterial Material
+        {
+            get { return _material; }
+        }
+
 // ReSharper disable once InconsistentNaming
         public float3 PosXYZ
         {
@@ -103,6 +114,4 @@ namespace Examples.RocketGame
             }
         }
     }
-
-
 }
