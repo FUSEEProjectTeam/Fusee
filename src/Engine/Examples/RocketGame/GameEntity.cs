@@ -1,4 +1,5 @@
-﻿using Fusee.Engine;
+﻿using System;
+using Fusee.Engine;
 using Fusee.Math;
 
 namespace Examples.RocketGame
@@ -15,10 +16,13 @@ namespace Examples.RocketGame
         private readonly Mesh _mesh;
         private readonly ShaderMaterial _material;
 
-        public GameEntity(Mesh mesh, ShaderMaterial material, float posX = 0, float posY = 0, float posZ = 0, float angX = 0, float angY = 0, float angZ = 0)
+        private readonly RenderContext _rc;
+
+        public GameEntity(String meshPath, ShaderMaterial material, RenderContext rc, float posX = 0, float posY = 0, float posZ = 0, float angX = 0, float angY = 0, float angZ = 0)
         {
-            _mesh = mesh;
+            _mesh = MeshReader.LoadMesh(meshPath);
             _material = material;
+            _rc = rc;
             PosX = posX;
             PosY = posY;
             PosZ = posZ;
@@ -27,10 +31,11 @@ namespace Examples.RocketGame
             AngZ = angZ;
         }
 
-        public GameEntity(Geometry geo, ShaderMaterial material, float3 posxyz, float3 angxyz)
+        public GameEntity(String meshPath, ShaderMaterial material, RenderContext rc, float3 posxyz, float3 angxyz)
         {
-            _mesh = geo.ToMesh();
+            _mesh = MeshReader.LoadMesh(meshPath);
             _material = material;
+            _rc = rc;
             PosX = posxyz.x;
             PosY = posxyz.y;
             PosZ = posxyz.z;
@@ -80,11 +85,6 @@ namespace Examples.RocketGame
             get { return _mesh; }
         }
 
-        public ShaderMaterial Material
-        {
-            get { return _material; }
-        }
-
 // ReSharper disable once InconsistentNaming
         public float3 PosXYZ
         {
@@ -112,6 +112,23 @@ namespace Examples.RocketGame
                 _angY = value.y;
                 _angZ = value.z;
             }
+        }
+
+        public ShaderProgram GetShader()
+        {
+            _material.UpdateMaterial(_rc);
+            return _material.GetShader();
+        }
+
+        public void Render(float4x4 camMatrix)
+        {
+            _rc.SetShader(this.GetShader());
+
+            var mtxRot = float4x4.CreateRotationY(this.AngX) * float4x4.CreateRotationX(-this.AngY);
+            var mtxTrans = float4x4.CreateTranslation(this.PosX, this.PosY, this.PosZ);
+
+            _rc.ModelView = mtxRot * mtxTrans * camMatrix;
+            _rc.Render(this._mesh);
         }
     }
 }

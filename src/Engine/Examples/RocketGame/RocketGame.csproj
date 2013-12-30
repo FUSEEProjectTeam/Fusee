@@ -48,6 +48,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Shader.cs" />
+    <Compile Include="Player.cs" />
     <Compile Include="GameEntity.cs" />
     <Compile Include="GameWorld.cs" />
     <Compile Include="Main.cs" />
@@ -76,6 +78,9 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\cube.obj.model">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Assets\rocket.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
