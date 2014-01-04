@@ -1,16 +1,16 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // Allgemeine Informationen über eine Assembly werden über die folgenden 
 // Attribute gesteuert. Ändern Sie diese Attributwerte, um die Informationen zu ändern,
 // die mit einer Assembly verknüpft sind.
-[assembly: AssemblyTitle("Fusee.Engine.Imp.Lidgren")]
-[assembly: AssemblyDescription("Lidgren implementation of the render engine hardware layer")]
+[assembly: AssemblyTitle("TextDemo")]
+[assembly: AssemblyDescription("TextDemo - Example for using the Fusee Engine")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Furtwangen University")]
 [assembly: AssemblyProduct("Fusee")]
-[assembly: AssemblyCopyright("Copyright © 2013 the Fusee Project")]
+[assembly: AssemblyCopyright("Copyright (c) 2013 by the Fusee Project")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // Die folgende GUID bestimmt die ID der Typbibliothek, wenn dieses Projekt für COM verfügbar gemacht wird
-[assembly: Guid("deaa3e09-b412-40c9-8d81-95b5d7a16a9f")]
+[assembly: Guid("2326dd34-3bd8-4577-babd-6ccbc6eba906")]
 
 // Versionsinformationen für eine Assembly bestehen aus den folgenden vier Werten:
 //
@@ -29,8 +29,5 @@ using System.Runtime.InteropServices;
 //      Buildnummer
 //      Revision
 //
-// Sie können alle Werte angeben oder die standardmäßigen Build- und Revisionsnummern 
-// übernehmen, indem Sie "*" eingeben:
-// [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.5.0.0")]
-[assembly: AssemblyFileVersion("0.5.0.0")]
+[assembly: AssemblyVersion("0.1.0.0")]
+[assembly: AssemblyFileVersion("0.1.0.0")]

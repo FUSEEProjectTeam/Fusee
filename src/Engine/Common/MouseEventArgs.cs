@@ -16,6 +16,7 @@ namespace Fusee.Engine
         /// The button.
         /// </value>
         public MouseButtons Button { get; set; }
+
         /// <summary>
         /// Gets or sets the position.
         /// </summary>

@@ -43,6 +43,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Font.cs" />
     <Compile Include="Implementor.cs" />
     <Compile Include="InputImp.cs" />
     <Compile Include="Keymapper.cs" />
@@ -58,6 +59,9 @@
     <Reference Include="OpenTK, Version=1.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\ExternalBinaries\OpenTK.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpFont">
+      <HintPath>..\..\..\..\ExternalBinaries\SharpFont\SharpFont.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
