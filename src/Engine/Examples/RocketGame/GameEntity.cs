@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using Fusee.Engine;
 using Fusee.Math;
 
@@ -15,14 +14,18 @@ namespace Examples.RocketGame
         protected float Speed = 0;
 
         private readonly Mesh _mesh;
-        private readonly ShaderMaterial _material;
+
+        private ShaderProgram _shaderProgram;
+        private IShaderParam _shaderParam;
+        private ITexture _iTexture;
+        private float4 _color = new float4(0.5f,0.5f,0.5f,1);
+        private bool _isTextureShader;
 
         private readonly RenderContext _rc;
 
-        public GameEntity(String meshPath, ShaderMaterial material, RenderContext rc, float posX = 0, float posY = 0, float posZ = 0, float angX = 0, float angY = 0, float angZ = 0)
+        public GameEntity(String meshPath, RenderContext rc, float posX = 0, float posY = 0, float posZ = 0, float angX = 0, float angY = 0, float angZ = 0)
         {
             _mesh = MeshReader.LoadMesh(meshPath);
-            _material = material;
             _rc = rc;
 
             Position = float4x4.Identity;
@@ -32,12 +35,13 @@ namespace Examples.RocketGame
                         float4x4.CreateTranslation(posX, posY, posZ);
 
             UpdateNVectors();
+
+            SetDiffuseShader();
         }
 
-        public GameEntity(String meshPath, ShaderMaterial material, RenderContext rc, float3 posxyz, float3 angxyz)
+        public GameEntity(String meshPath, RenderContext rc, float3 posxyz, float3 angxyz)
         {
             _mesh = MeshReader.LoadMesh(meshPath);
-            _material = material;
             _rc = rc;
 
             Position = float4x4.Identity;
@@ -69,18 +73,38 @@ namespace Examples.RocketGame
             return new float3(Position.M41, Position.M42, Position.M43);
         }
 
-        public ShaderProgram GetShader()
+        public void SetShader(float4 color)
         {
-            _material.UpdateMaterial(_rc);
-            return _material.GetShader();
+            _color = color;
+            SetDiffuseShader();
+        }
+
+        public void SetShader(float r,float g, float b, float a=1)
+        {
+            _color = new float4(r,g,b,a);
+            SetDiffuseShader();
+        }
+
+        public void SetShader(String texturePath)
+        {
+            SetTextureShader(texturePath);
         }
 
         public void Render(float4x4 camMatrix)
         {
-            _rc.SetShader(this.GetShader());
+            _rc.SetShader(_shaderProgram);
+            if (_isTextureShader)
+            {
+                _rc.SetShaderParamTexture(_shaderParam, _iTexture);
+            }
+            else
+            {
+                _rc.SetShaderParam(_shaderParam, _color);
+            }
+            //_rc.SetShader(this.GetShader());
 
             _rc.ModelView = Position * camMatrix;
-            _rc.Render(this._mesh);
+            _rc.Render(_mesh);
         }
 
         protected void UpdateNVectors()
@@ -88,6 +112,25 @@ namespace Examples.RocketGame
             NRotXV = float3.Normalize(new float3(Position.Row0));
             NRotYV = float3.Normalize(new float3(Position.Row1));
             NRotZV = float3.Normalize(new float3(Position.Row2));
+        }
+
+        protected void SetDiffuseShader()
+        {
+            _shaderProgram = MoreShaders.GetDiffuseColorShader(_rc);
+            _shaderParam = _shaderProgram.GetShaderParam("color");
+
+            _isTextureShader = false;
+        }
+
+        protected void SetTextureShader(String texturePath)
+        {
+            _shaderProgram = MoreShaders.GetTextureShader(_rc);
+            _shaderParam = _shaderProgram.GetShaderParam("texture1");
+
+            var imgData = _rc.LoadImage(texturePath);
+            _iTexture = _rc.CreateTexture(imgData);
+
+            _isTextureShader = true;
         }
     }
 }

@@ -8,12 +8,12 @@ namespace Examples.RocketGame
     public class Player : GameEntity
     {
 
-        public Player(String meshPath, ShaderMaterial material, RenderContext rc, float posX = 0, float posY = 0, float posZ = 0, float angX = 0, float angY = 0, float angZ = 0) : base(meshPath, material, rc, posX, posY, posZ, angX, angY, angZ)
+        public Player(String meshPath, RenderContext rc, float posX = 0, float posY = 0, float posZ = 0, float angX = 0, float angY = 0, float angZ = 0) : base(meshPath, rc, posX, posY, posZ, angX, angY, angZ)
         {
 
         }
 
-        public Player(String meshPath, ShaderMaterial material, RenderContext rc, float3 posxyz, float3 angxyz) : base(meshPath, material, rc, posxyz, angxyz)
+        public Player(String meshPath, RenderContext rc, float3 posxyz, float3 angxyz) : base(meshPath, rc, posxyz, angxyz)
         {
         }
 

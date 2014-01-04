@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Fusee.Engine;
 using Fusee.Math;
 
@@ -19,11 +18,13 @@ namespace Examples.RocketGame
         {
             _rc = rc;
 
-            var material = new ShaderMaterial(_rc.CreateShader(Shader.GetVsSimpleTextureShader(), Shader.GetPsSimpleTextureShader()));
-            _player = new Player("Assets/cube.obj.model", material, _rc);
+            _player = new Player("Assets/rocket.obj.model", _rc);
+            _player.SetShader("Assets/rocket.png");
 
-            _furniture.Add(new GameEntity("Assets/cube.obj.model", material, _rc, 250, 0, 0, 0.5f, 0.5f, 0.5f));
-            _furniture.Add(new GameEntity("Assets/cube.obj.model", material, _rc, 0, 250, 0));
+            _furniture.Add(new GameEntity("Assets/cube.obj.model", _rc, 250, 0, 0, 0.5f, 0.5f, 0.5f));
+            _furniture[0].SetShader(new float4(0, 1, 0, 1));
+            _furniture.Add(new GameEntity("Assets/cube.obj.model", _rc, 0, 250));
+            _furniture[1].SetShader("Assets/tex_cube.jpg");
 
         }
 
