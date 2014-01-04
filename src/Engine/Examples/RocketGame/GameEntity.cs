@@ -101,7 +101,6 @@ namespace Examples.RocketGame
             {
                 _rc.SetShaderParam(_shaderParam, _color);
             }
-            //_rc.SetShader(this.GetShader());
 
             _rc.ModelView = Position * camMatrix;
             _rc.Render(_mesh);
