@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Fusee.Engine;
 using Fusee.Math;
 
@@ -6,12 +7,12 @@ namespace Examples.RocketGame
 {
     public class GameEntity
     {
-        private float _posX;
-        private float _posY;
-        private float _posZ;
-        private float _angX;
-        private float _angY;
-        private float _angZ;
+        protected float4x4 Position;
+        protected float2 Rotation;
+        protected float3 NRotXV;
+        protected float3 NRotYV;
+        protected float3 NRotZV;
+        protected float Speed = 0;
 
         private readonly Mesh _mesh;
         private readonly ShaderMaterial _material;
@@ -23,12 +24,14 @@ namespace Examples.RocketGame
             _mesh = MeshReader.LoadMesh(meshPath);
             _material = material;
             _rc = rc;
-            PosX = posX;
-            PosY = posY;
-            PosZ = posZ;
-            AngX = angX;
-            AngY = angY;
-            AngZ = angZ;
+
+            Position = float4x4.Identity;
+            Position = float4x4.CreateRotationX(angX) *
+                        float4x4.CreateRotationY(angY) *
+                        float4x4.CreateRotationZ(angZ) *
+                        float4x4.CreateTranslation(posX, posY, posZ);
+
+            UpdateNVectors();
         }
 
         public GameEntity(String meshPath, ShaderMaterial material, RenderContext rc, float3 posxyz, float3 angxyz)
@@ -36,82 +39,34 @@ namespace Examples.RocketGame
             _mesh = MeshReader.LoadMesh(meshPath);
             _material = material;
             _rc = rc;
-            PosX = posxyz.x;
-            PosY = posxyz.y;
-            PosZ = posxyz.z;
-            AngX = angxyz.x;
-            AngY = angxyz.y;
-            AngZ = angxyz.z;
+
+            Position = float4x4.Identity;
+            Position = float4x4.CreateRotationX(angxyz.x) *
+                        float4x4.CreateRotationY(angxyz.y) *
+                        float4x4.CreateRotationZ(angxyz.z) *
+                        float4x4.CreateTranslation(posxyz.x, posxyz.y, posxyz.z);
+
+            UpdateNVectors();
         }
 
-        public float PosX
+        public float4x4 GetPosition()
         {
-            get { return _posX; }
-            set { _posX = value; }
+            return Position;
         }
 
-        public float PosY
+        public void SetPosition(float4x4 position)
         {
-            get { return _posY; }
-            set { _posY = value; }
+            Position = position;
         }
 
-        public float PosZ
+        public void SetPosition(float3 position)
         {
-            get { return _posZ; }
-            set { _posZ = value; }
+            Position.Row3 = new float4(position, 1);
         }
 
-        public float AngX
+        public float3 GetPositionVector()
         {
-            get { return _angX; }
-            set { _angX = value; }
-        }
-
-        public float AngY
-        {
-            get { return _angY; }
-            set { _angY = value; }
-        }
-
-        public float AngZ
-        {
-            get { return _angZ; }
-            set { _angZ = value; }
-        }
-
-        public Mesh Mesh
-        {
-            get { return _mesh; }
-        }
-
-// ReSharper disable once InconsistentNaming
-        public float3 PosXYZ
-        {
-            get
-            {
-                return new float3(PosX, PosY, PosZ);
-            }
-            set
-            {
-                _posX = value.x;
-                _posY = value.y;
-                _posZ = value.z;
-            }
-        }
-// ReSharper disable once InconsistentNaming
-        public float3 AngXYZ
-        {
-            get
-            {
-                return new float3(AngX, AngY, AngZ);
-            }
-            set
-            {
-                _angX = value.x;
-                _angY = value.y;
-                _angZ = value.z;
-            }
+            return new float3(Position.M41, Position.M42, Position.M43);
         }
 
         public ShaderProgram GetShader()
@@ -124,11 +79,15 @@ namespace Examples.RocketGame
         {
             _rc.SetShader(this.GetShader());
 
-            var mtxRot = float4x4.CreateRotationY(this.AngX) * float4x4.CreateRotationX(-this.AngY);
-            var mtxTrans = float4x4.CreateTranslation(this.PosX, this.PosY, this.PosZ);
-
-            _rc.ModelView = mtxRot * mtxTrans * camMatrix;
+            _rc.ModelView = Position * camMatrix;
             _rc.Render(this._mesh);
+        }
+
+        protected void UpdateNVectors()
+        {
+            NRotXV = float3.Normalize(new float3(Position.Row0));
+            NRotYV = float3.Normalize(new float3(Position.Row1));
+            NRotZV = float3.Normalize(new float3(Position.Row2));
         }
     }
 }

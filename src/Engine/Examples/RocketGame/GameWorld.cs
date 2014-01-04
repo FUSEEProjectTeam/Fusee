@@ -22,13 +22,14 @@ namespace Examples.RocketGame
             var material = new ShaderMaterial(_rc.CreateShader(Shader.GetVsSimpleTextureShader(), Shader.GetPsSimpleTextureShader()));
             _player = new Player("Assets/cube.obj.model", material, _rc);
 
-            _furniture.Add(new GameEntity("Assets/cube.obj.model", material, _rc, 250, 0, 0));
+            _furniture.Add(new GameEntity("Assets/cube.obj.model", material, _rc, 250, 0, 0, 0.5f, 0.5f, 0.5f));
             _furniture.Add(new GameEntity("Assets/cube.obj.model", material, _rc, 0, 250, 0));
 
         }
 
         public void Render()
         {
+            _player.Move();
 
             var camMatrix = _player.GetCamMatrix();
 
