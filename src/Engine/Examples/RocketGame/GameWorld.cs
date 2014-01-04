@@ -19,6 +19,7 @@ namespace Examples.RocketGame
 
             _furniture.Add(new GameEntity("Assets/cube.obj.model", rc, 250, 0, 0, 0.5f, 0.5f, 0.5f));
             _furniture[0].SetShader(new float4(0, 1, 0, 1));
+            _furniture[0].SetScale(0.5f);
             _furniture.Add(new GameEntity("Assets/cube.obj.model", rc, 0, 250));
             _furniture[1].SetShader("Assets/tex_cube.jpg");
         }

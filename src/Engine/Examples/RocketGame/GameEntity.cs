@@ -11,6 +11,7 @@ namespace Examples.RocketGame
         protected float3 NRotXV;
         protected float3 NRotYV;
         protected float3 NRotZV;
+        protected float Scale = 1;
         protected float Speed = 0;
 
         private readonly Mesh _mesh;
@@ -68,6 +69,11 @@ namespace Examples.RocketGame
             Position.Row3 = new float4(position, 1);
         }
 
+        public void SetScale(float scale)
+        {
+            Scale = scale;
+        }
+
         public float3 GetPositionVector()
         {
             return new float3(Position.M41, Position.M42, Position.M43);
@@ -102,7 +108,7 @@ namespace Examples.RocketGame
                 _rc.SetShaderParam(_shaderParam, _color);
             }
 
-            _rc.ModelView = Position * camMatrix;
+            _rc.ModelView = Position * float4x4.Scale(Scale, Scale, Scale) * camMatrix;
             _rc.Render(_mesh);
         }
 
