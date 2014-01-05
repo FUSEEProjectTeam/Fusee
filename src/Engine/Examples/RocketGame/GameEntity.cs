@@ -13,6 +13,7 @@ namespace Examples.RocketGame
         protected float3 NRotZV;
         protected float Scale = 1;
         protected float Speed = 0;
+        protected float4x4 CorrectionMatrix;
 
         private readonly Mesh _mesh;
 
@@ -35,6 +36,8 @@ namespace Examples.RocketGame
                         float4x4.CreateRotationZ(angZ) *
                         float4x4.CreateTranslation(posX, posY, posZ);
 
+            CorrectionMatrix = float4x4.Identity;
+
             UpdateNVectors();
 
             SetDiffuseShader();
@@ -50,6 +53,8 @@ namespace Examples.RocketGame
                         float4x4.CreateRotationY(angxyz.y) *
                         float4x4.CreateRotationZ(angxyz.z) *
                         float4x4.CreateTranslation(posxyz.x, posxyz.y, posxyz.z);
+
+            CorrectionMatrix = float4x4.Identity;
 
             UpdateNVectors();
         }
@@ -72,6 +77,11 @@ namespace Examples.RocketGame
         public void SetScale(float scale)
         {
             Scale = scale;
+        }
+
+        public void SetCorrectionMatrix(float4x4 corrMatrix)
+        {
+            CorrectionMatrix = corrMatrix;
         }
 
         public float3 GetPositionVector()
@@ -108,7 +118,7 @@ namespace Examples.RocketGame
                 _rc.SetShaderParam(_shaderParam, _color);
             }
 
-            _rc.ModelView = Position * float4x4.Scale(Scale, Scale, Scale) * camMatrix;
+            _rc.ModelView = CorrectionMatrix * Position * float4x4.Scale(Scale, Scale, Scale) * camMatrix;
             _rc.Render(_mesh);
         }
 
