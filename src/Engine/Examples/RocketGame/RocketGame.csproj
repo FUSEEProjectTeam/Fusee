@@ -48,6 +48,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="GUI.cs" />
     <Compile Include="Shader.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="GameEntity.cs" />
@@ -78,6 +79,9 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\Cabin.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Assets\cube.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

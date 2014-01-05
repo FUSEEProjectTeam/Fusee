@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Fusee.Engine;
 using Fusee.Math;
 
@@ -11,11 +12,20 @@ namespace Examples.RocketGame
 
         private readonly Player _player;
 
+        private readonly GUI _gui;
+
+        private readonly RenderContext _rc;
+
+        private readonly RenderStateSet _defaultRenderStateSet = new RenderStateSet{AlphaBlendEnable = false,ZEnable = true};
 
         public GameWorld(RenderContext rc)
         {
+            _rc = rc;
             _player = new Player("Assets/rocket.obj.model", rc);
             _player.SetShader("Assets/rocket.png");
+            _player.SetCorrectionMatrix(float4x4.CreateRotationX((float) -Math.PI/2));
+
+            _gui = new GUI(rc);
 
             _furniture.Add(new GameEntity("Assets/cube.obj.model", rc, 250, 0, 0, 0.5f, 0.5f, 0.5f));
             _furniture[0].SetShader(new float4(0, 1, 0, 1));
@@ -26,6 +36,8 @@ namespace Examples.RocketGame
 
         public void Render()
         {
+            _rc.SetRenderState(_defaultRenderStateSet);
+
             _player.Move();
 
             var camMatrix = _player.GetCamMatrix();
@@ -41,6 +53,7 @@ namespace Examples.RocketGame
             }
 
             _player.Render(camMatrix);
+            _gui.Render();
         }
     }
 }
