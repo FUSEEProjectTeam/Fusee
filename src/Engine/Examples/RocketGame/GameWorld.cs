@@ -18,9 +18,21 @@ namespace Examples.RocketGame
 
         private readonly RenderStateSet _defaultRenderStateSet = new RenderStateSet{AlphaBlendEnable = false,ZEnable = true};
 
+        internal enum GameStates
+        {
+            StartScreen,
+            Running,
+            GameOver
+        }
+
+        internal int GameState;
+
         public GameWorld(RenderContext rc)
         {
             _rc = rc;
+
+            GameState = (int) GameStates.StartScreen;
+
             _player = new Player("Assets/rocket.obj.model", rc);
             _player.SetShader("Assets/rocket.png");
             _player.SetCorrectionMatrix(float4x4.CreateRotationX((float) -Math.PI/2));
