@@ -37,7 +37,7 @@ namespace Examples.RocketGame
             _player.SetShader("Assets/rocket.png");
             _player.SetCorrectionMatrix(float4x4.CreateRotationX((float) -Math.PI/2));
 
-            _gui = new GUI(rc);
+            _gui = new GUI(rc, this);
 
             _furniture.Add(new GameEntity("Assets/cube.obj.model", rc, 250, 0, 0, 0.5f, 0.5f, 0.5f));
             _furniture[0].SetShader(new float4(0, 1, 0, 1));
@@ -66,6 +66,12 @@ namespace Examples.RocketGame
 
             _player.Render(camMatrix);
             _gui.Render();
+        }
+
+        public void StartGame()
+        {
+            _gui.SetDebugMsg("Game Started");
+            GameState = (int) GameStates.Running;
         }
     }
 }
