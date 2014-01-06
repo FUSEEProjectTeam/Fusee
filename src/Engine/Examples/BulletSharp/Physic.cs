@@ -10,7 +10,6 @@ using CompoundShape = BulletSharp.CompoundShape;
 using ConeShape = BulletSharp.ConeShape;
 using ConeTwistConstraint = BulletSharp.ConeTwistConstraint;
 using ConvexHullShape = BulletSharp.ConvexHullShape;
-using EmptyShape = Fusee.Engine.EmptyShape;
 using GearConstraint = BulletSharp.GearConstraint;
 using Point2PointConstraint = BulletSharp.Point2PointConstraint;
 using RigidBody = BulletSharp.RigidBody;
@@ -115,11 +114,11 @@ namespace Examples.BulletSharp
             };
             var btColShape = new ConvexHullShape(verts);
             Debug.WriteLine("Init Falling Tower");
-            for (int k = 1; k < 5; k++)
+            for (int k = 1; k < 4; k++)
             {
-                for (int h = -2; h < 3; h++)
+                for (int h = -2; h < 2; h++)
                 {
-                    for (int j = -2; j < 3; j++)
+                    for (int j = -2; j < 2; j++)
                     {
                         var pos = new float3(2 * h, 400 + (k * 4), 2 * j);
                        

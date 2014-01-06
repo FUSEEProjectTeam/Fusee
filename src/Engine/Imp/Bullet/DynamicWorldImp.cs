@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
+using BulletSharp;
 using BulletSharp.MultiThreaded;
 using Fusee.Engine;
 using Fusee.Math;
-using BulletSharp;
+using BulletSharp.Serialize;
 
 
 namespace Fusee.Engine
@@ -34,21 +36,23 @@ namespace Fusee.Engine
             BtCollisionShapes = new AlignedCollisionShapeArray();
 
             
-            BtWorld = new DiscreteDynamicsWorld(BtDispatcher, BtBroadphase, BtSolver, BtCollisionConf)
+            /*BtWorld = new DiscreteDynamicsWorld(BtDispatcher, BtBroadphase, BtSolver, BtCollisionConf)
             {
                 Gravity = new Vector3(0, -9.81f   *10.0f , 0)
+            };*/
+            BtWorld = new DiscreteDynamicsWorld(BtDispatcher, BtBroadphase, BtSolver, BtCollisionConf)
+            {
+                Gravity = new Vector3(0, -9.81f * 10.0f, 0)
             };
+            BtWorld.SolverInfo.NumIterations = 8;
 
-            BtWorld.SolverInfo.NumIterations = 20;
-           // BtWorld.DispatchInfo.UseContinuous = true;
-            //
-            GImpactCollisionAlgorithm.RegisterAlgorithm(BtDispatcher);
+            //GImpactCollisionAlgorithm.RegisterAlgorithm(BtDispatcher);
 
 
         }
 
 
-        public IRigidBodyImp AddRigidBody(float mass, float3 worldTransform, ICollisionShapeImp colShape, float3 intertia)
+        public IRigidBodyImp AddRigidBody(float mass, float3 worldTransform, ICollisionShapeImp colShape/*, float3 intertia*/)
            // where TShapeType : ICollisionShapeImp, IBoxShapeImp, ISphereShapeImp, ICapsuleShapeImp, ICompoundShapeImp
         {
             // Use bullet to do what needs to be done:
@@ -74,7 +78,7 @@ namespace Fusee.Engine
             var shapeType = colShape.GetType().ToString();
             
             CollisionShape btColShape;
-            
+            bool isStatic = false;
             switch (shapeType)
             {
                 //Primitives
@@ -136,10 +140,15 @@ namespace Fusee.Engine
                     break;
                 case "Fusee.Engine.StaticPlaneShapeImp":  
                     var staticPlane = (StaticPlaneShapeImp) colShape;
+                    Debug.WriteLine("staticplane: " + staticPlane.Margin);
                     var btNormal = Translater.Float3ToBtVector3(staticPlane.PlaneNormal);
                     btColShape = new StaticPlaneShape(btNormal, staticPlane.PlaneConstant);
+                    Debug.WriteLine("btColshape" + btColShape.Margin);
+                    isStatic = true;
+                    //btColShape.Margin = 0.04f;
+                    //Debug.WriteLine("btColshape" + btColShape.Margin);
                     Debug.WriteLine("Fusee.Engine.StaticPlaneShapeImp");
-                    break;
+                    break;               
                 case "Fusee.Engine.GImpactMeshShapeImp":
                     var gImpMesh = (GImpactMeshShapeImp)colShape;
                     //gImpMesh.BtGImpactMeshShape.UpdateBound();
@@ -155,11 +164,18 @@ namespace Fusee.Engine
                     btColShape = new EmptyShape();
                     break;
             }
-            var btLocalInertia = btColShape.CalculateLocalInertia(mass);
 
-            var btRbcInfo = new RigidBodyConstructionInfo(mass * 10, btMotionState, /*btGimpactMeshShape*/ btColShape, btLocalInertia);
+            RigidBodyConstructionInfo btRbcInfo;
+            if (isStatic == false)
+            {
+                btRbcInfo = new RigidBodyConstructionInfo(mass*10, btMotionState, /*btGimpactMeshShape*/ btColShape);
+            }
+            else
+            {
+                var btLocalInertia = btColShape.CalculateLocalInertia(mass);
+                btRbcInfo = new RigidBodyConstructionInfo(mass*10, btMotionState, /*btGimpactMeshShape*/ btColShape);
+            }
             var btRigidBody = new RigidBody(btRbcInfo);
-
             BtWorld.AddRigidBody(btRigidBody);
             var retval = new RigidBodyImp();
             retval._rbi = btRigidBody;
@@ -589,8 +605,9 @@ namespace Fusee.Engine
         {
             var btPlaneNormal = Translater.Float3ToBtVector3(planeNormal);
             var btStaticPlaneShape = new StaticPlaneShape(btPlaneNormal, planeConstant);
+            btStaticPlaneShape.Margin = 0.04f;
             BtCollisionShapes.Add(btStaticPlaneShape);
-
+            Debug.WriteLine("btStaticPlaneShape.Margin" + btStaticPlaneShape.Margin);
             var retval = new StaticPlaneShapeImp();
             retval.BtStaticPlaneShape = btStaticPlaneShape;
             btStaticPlaneShape.UserObject = retval;

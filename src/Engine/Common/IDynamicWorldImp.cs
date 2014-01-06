@@ -9,7 +9,7 @@ namespace Fusee.Engine
     public interface IDynamicWorldImp
     {
 
-        IRigidBodyImp AddRigidBody(float mass, float3 worldTransform, ICollisionShapeImp colShape, float3 intertia);
+        IRigidBodyImp AddRigidBody(float mass, float3 worldTransform, ICollisionShapeImp colShape/*, float3 intertia*/);
            // where TShapeType : ICollisionShapeImp, IBoxShapeImp, ISphereShapeImp, ICapsuleShapeImp, ICompoundShapeImp;
         IRigidBodyImp GetRigidBody(int i);
         int StepSimulation(float timeSteps, int maxSubSteps, float fixedTimeSteps);
