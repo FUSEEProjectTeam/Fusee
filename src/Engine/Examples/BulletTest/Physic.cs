@@ -23,6 +23,14 @@ namespace Examples.BulletTest
         internal ConvexHullShape Hull;
         internal Mesh BoxMesh;
 
+        internal RigidBody _PRigidBody;
+        public RigidBody PRbBody
+        {
+            get { return _PRigidBody; }
+            set { _PRigidBody = value; }
+        }
+            
+
         public Physic()
         {
             Debug.WriteLine("Physic: Constructor");
@@ -48,7 +56,7 @@ namespace Examples.BulletTest
             FallingTower();
             //Ground();
             
-            //InitPoint2PointConstraint();
+            InitPoint2PointConstraint();
             //InitHingeConstraint();
             //InitSliderConstraint();
             //InitGearConstraint();
@@ -114,7 +122,7 @@ namespace Examples.BulletTest
                     {
                         var pos = new float3(4 * h, 300 + (k * 4), 4 * j);
   
-                        var cube = _world.AddRigidBody(1, pos, Hull);
+                        var cube = _world.AddRigidBody(1, pos, MyBoxCollider);
                     }
                 }
             }
@@ -123,16 +131,16 @@ namespace Examples.BulletTest
         public void InitPoint2PointConstraint()
         {
             
-            var rbA = _world.AddRigidBody(1, new float3(100, 300, 0), MyBoxCollider);
+            var rbA = _world.AddRigidBody(1, new float3(-250, 300, 0), MyBoxCollider);
             rbA.LinearFactor = new float3(0,0,0);
             rbA.AngularFactor = new float3(0, 0, 0);
            
-            var rbB = _world.AddRigidBody(1, new float3(100, 200, 0),MyBoxCollider);
-            var p2p = _world.AddPoint2PointConstraint(rbA, rbB, new float3(-0, -70, 0), new float3(0, 10, 0));
+            var rbB = _world.AddRigidBody(1, new float3(-200, 300, 0),MyBoxCollider);
+            var p2p = _world.AddPoint2PointConstraint(rbA, rbB, new float3(0, -70, 0), new float3(0, 50, 0));
             //var p2p = _world.AddPoint2PointConstraint(rbA, new float3(105, -200, -150));
-            p2p.SetParam(PointToPointFlags.PointToPointFlagsCfm, 0.9f);
+            p2p.SetParam(PointToPointFlags.PointToPointFlagsCfm, 0.1f);
 
-            var rbC = _world.AddRigidBody(1, new float3(150, 100, 0),MyBoxCollider);
+            var rbC = _world.AddRigidBody(1, new float3(-200, 100, 0), MyBoxCollider);
             var p2p1 = _world.AddPoint2PointConstraint(rbB, rbC, new float3(0, -70, 0), new float3(0, 10, 0));
   
         }

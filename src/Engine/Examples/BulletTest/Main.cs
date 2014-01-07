@@ -78,10 +78,13 @@ namespace Examples.BulletTest
 
             // move per keyboard
             if (Input.Instance.IsKeyDown(KeyCodes.Left))
-                _physic.World.GetRigidBody(_physic.World.NumberRigidBodies() - 1).ApplyCentralImpulse = new float3(10, 0, 0);
+            {
+                _physic.World.GetRigidBody(_physic.World.NumberRigidBodies() -1).ApplyCentralImpulse = new float3(-50, 0, 0);
+
+            }
 
             if (Input.Instance.IsKeyDown(KeyCodes.Right))
-                _physic.World.GetRigidBody(_physic.World.NumberRigidBodies() - 1).ApplyTorque = new float3(10,0,0);
+                _physic.World.GetRigidBody(_physic.World.NumberRigidBodies() - 1).ApplyCentralImpulse = new float3(10, 0, 0);
 
             if (Input.Instance.IsKeyDown(KeyCodes.Up))
                 _physic.World.GetRigidBody(_physic.World.NumberRigidBodies() - 1).ApplyCentralImpulse = new float3(0, 10, 0);
@@ -98,10 +101,8 @@ namespace Examples.BulletTest
 
 
             var ground = _physic.World.GetRigidBody(0);
-            var ma = ground.WorldTransform;
-            //var gr = (BoxShape) ground.CollisionShape;
-
-            RC.ModelView = float4x4.Scale(4, 0.01f, 4) * ma * mtxCam;
+            var ma = ground.WorldTransform;        
+            RC.ModelView = float4x4.Scale(4, 0.1f, 4) * ma * mtxCam;
             RC.SetShader(_spColor);
             RC.SetShaderParam(_colorParam, new float4(1.0f, 1.0f, 0, 1));
             RC.Render(_meshCube);
@@ -115,7 +116,7 @@ namespace Examples.BulletTest
                 RC.ModelView =  float4x4.Scale(0.25f) * matrix * mtxCam;
                 
                 RC.SetShader(_spColor);
-                RC.SetShaderParam(_colorParam, new float4(1.0f, 0.0f, 1.0f, 1));
+                RC.SetShaderParam(_colorParam, new float4(1.0f, 0.1f, 1.0f, 1));
                 RC.Render(_meshCube);
                 //RC.SetShader(_spTexture);
                 //RC.SetShaderParamTexture(_textureParam, _iTex);

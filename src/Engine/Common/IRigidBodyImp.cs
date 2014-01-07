@@ -13,9 +13,7 @@ namespace Fusee.Engine
 
         float4x4 WorldTransform { get; set; }
         float3 Position { get; set; }
-        
-        //Todo: Rotation / Orientation
-
+        Quaternion Rotation { get; }
 
         void ApplyForce(float3 force, float3 relPos);      //Rel_Pos definition????
         float3 ApplyTorque { get; set; } // als Field in bullet als void

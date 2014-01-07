@@ -46,9 +46,16 @@ namespace Fusee.Engine
             };
             BtWorld.SolverInfo.NumIterations = 8;
 
+            BtWorld.PerformDiscreteCollisionDetection();
             //GImpactCollisionAlgorithm.RegisterAlgorithm(BtDispatcher);
+           // BtWorld.SetInternalTickCallback(MyTickCallBack);
 
 
+        }
+
+        private void MyTickCallBack(DynamicsWorld world, float timeStep)
+        {
+            Debug.WriteLine("cb");
         }
 
 
@@ -57,28 +64,13 @@ namespace Fusee.Engine
         {
             // Use bullet to do what needs to be done:
             var btMatrix = Matrix.Translation(worldTransform.x, worldTransform.y, worldTransform.z);
-            var btMotionState = new DefaultMotionState(btMatrix);
+            var btMotionState = new DefaultMotionState(btMatrix); 
             
-            
-            /*TODO:what about other collisionshape types -> what is required from the collision shape and its performance
-            Vector3[] btMeshVertecies = new Vector3[meshVertices.Length];
-            for (int v = 0; v < meshVertices.Length; v++)
-            {
-                btMeshVertecies[v].X = meshVertices[v].x;
-                btMeshVertecies[v].Y = meshVertices[v].y;
-                btMeshVertecies[v].Z = meshVertices[v].z;
-            }
-            var btTriangleIndexVertexArray = new TriangleIndexVertexArray(meshTriangles, btMeshVertecies);
-            //TriangleMeshShape ctms = new BvhTriangleMeshShape(btTriangleIndexVertexArray, false);
-            GImpactMeshShape btGimpactMeshShape = new GImpactMeshShape(btTriangleIndexVertexArray);
-            btGimpactMeshShape.UpdateBound();//This simulates the GImpact Physics*/
-
-
-            //var btColShape = new BoxShape(25);//btGimpactMeshShape;//new ConvexTriangleMeshShape(btTriangleIndexVertexArray);
             var shapeType = colShape.GetType().ToString();
             
             CollisionShape btColShape;
-            bool isStatic = false;
+            
+            var isStatic = false;
             switch (shapeType)
             {
                 //Primitives
@@ -143,11 +135,9 @@ namespace Fusee.Engine
                     Debug.WriteLine("staticplane: " + staticPlane.Margin);
                     var btNormal = Translater.Float3ToBtVector3(staticPlane.PlaneNormal);
                     btColShape = new StaticPlaneShape(btNormal, staticPlane.PlaneConstant);
-                    Debug.WriteLine("btColshape" + btColShape.Margin);
                     isStatic = true;
                     //btColShape.Margin = 0.04f;
                     //Debug.WriteLine("btColshape" + btColShape.Margin);
-                    Debug.WriteLine("Fusee.Engine.StaticPlaneShapeImp");
                     break;               
                 case "Fusee.Engine.GImpactMeshShapeImp":
                     var gImpMesh = (GImpactMeshShapeImp)colShape;
@@ -168,15 +158,16 @@ namespace Fusee.Engine
             RigidBodyConstructionInfo btRbcInfo;
             if (isStatic == false)
             {
-                btRbcInfo = new RigidBodyConstructionInfo(mass*10, btMotionState, /*btGimpactMeshShape*/ btColShape);
+                var btLocalInertia = btColShape.CalculateLocalInertia(mass) * 10;
+                btRbcInfo = new RigidBodyConstructionInfo(mass*10, btMotionState, btColShape, btLocalInertia);
             }
             else
             {
-                var btLocalInertia = btColShape.CalculateLocalInertia(mass);
-                btRbcInfo = new RigidBodyConstructionInfo(mass*10, btMotionState, /*btGimpactMeshShape*/ btColShape);
+                btRbcInfo = new RigidBodyConstructionInfo(mass*10, btMotionState, btColShape, Vector3.Zero);
             }
             var btRigidBody = new RigidBody(btRbcInfo);
             BtWorld.AddRigidBody(btRigidBody);
+            btRbcInfo.Dispose();
             var retval = new RigidBodyImp();
             retval._rbi = btRigidBody;
             btRigidBody.UserObject = retval;
@@ -185,7 +176,40 @@ namespace Fusee.Engine
 
         public int StepSimulation(float timeSteps, int maxSubSteps, float fixedTimeSteps)
         {
-            return BtWorld.StepSimulation(timeSteps);//, maxSubSteps, fixedTimeSteps);
+            return BtWorld.StepSimulation(timeSteps);//, maxSubSteps, fixedTimeSteps);  
+        }
+
+        public bool CallbackFunc(ManifoldPoint cp, CollisionObject obj1, int id1, int index1, CollisionObject obj2,
+            int id2, int index2)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public void CheckCollisions()
+        {
+            Debug.WriteLine("CheckCollisions()");
+            int numManifolds = BtWorld.Dispatcher.NumManifolds;
+            for (int i = 0; i < numManifolds; i++)
+            {
+                PersistentManifold contactManifold = BtWorld.Dispatcher.GetManifoldByIndexInternal(i);
+                CollisionObject obA = contactManifold.Body0 as CollisionObject;
+                CollisionObject obB = contactManifold.Body1 as CollisionObject;
+
+                int numContacts = contactManifold.NumContacts;
+                for (int j = 0; j < numContacts; j++)
+                {
+                    ManifoldPoint pt = contactManifold.GetContactPoint(j);
+                    if (pt.Distance < 0.0f)
+                    {
+                        Vector3 ptA = pt.PositionWorldOnA;
+                        Vector3 ptB = pt.PositionWorldOnB;
+                        Vector3 normalOnB = pt.NormalWorldOnB;
+                        Debug.WriteLine(obA.CollisionShape);
+                    }
+                }
+            }
+            
         }
 
         public IRigidBodyImp GetRigidBody(int i)

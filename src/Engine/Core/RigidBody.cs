@@ -85,13 +85,28 @@ namespace Fusee.Engine
             }
         }
 
-        
+        /// <summary>
+        /// The orientation of the rigidbody in world space stored as a Quaternion.
+        /// </summary>
+        public Quaternion Rotation()
+        {
+            return _iRigidBodyImp.Rotation;
+        }
+
+        /// <summary>
+        /// Adds a force to the rigidbody. As a result the rigidbody will start moving.
+        /// </summary>
+        /// <param name="force"></param>
+        /// <param name="relPos"></param>
         public void ApplyForce(float3 force, float3 relPos)
         {
             var o = (RigidBody)_iRigidBodyImp.UserObject;
             o._iRigidBodyImp.ApplyForce(force, relPos);
         }
 
+        /// <summary>
+        /// Adds a torque to the rigidbody.
+        /// </summary>
         public float3 ApplyTorque
         {
             get

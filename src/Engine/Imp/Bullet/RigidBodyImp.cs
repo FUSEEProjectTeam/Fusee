@@ -8,7 +8,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Xml.Schema;
 using Fusee.Math;
 using BulletSharp;
-
+using Quaternion = Fusee.Math.Quaternion;
 
 
 namespace Fusee.Engine
@@ -19,6 +19,8 @@ namespace Fusee.Engine
         internal RigidBody _rbi;
         internal CollisionShape btColShape;
         internal Translater Translater = new Translater();
+
+
 
 
         public float3 Gravity
@@ -83,18 +85,23 @@ namespace Fusee.Engine
         {
             get
             {
-                var retval = new float3(_rbi.WorldTransform.M41,
-                                        _rbi.WorldTransform.M42,
-                                        _rbi.WorldTransform.M43);
+                var retval = Translater.BtVector3ToFloat3(_rbi.CenterOfMassPosition);
                 return retval;
             }
             set
             {
                 var m = new Matrix();
                 m.set_Rows(3, new Vector4(value.x, value.y, value.z, 1));
-
                 var o = (RigidBodyImp)_rbi.UserObject;
-                o._rbi.WorldTransform = m * 10.0f;
+                o._rbi.CenterOfMassTransform.set_Rows(3, new Vector4(value.x, value.y, value.z, 1) * 10);
+            }
+        }
+
+        public Quaternion Rotation
+        {
+            get
+            {
+                return Translater.BtQuaternionToQuaternion(_rbi.Orientation);
             }
         }
    

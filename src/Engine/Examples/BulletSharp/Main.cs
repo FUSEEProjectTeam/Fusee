@@ -132,8 +132,9 @@ namespace Examples.BulletSharp
             {
 
                 var colisionObject = _physic.World.CollisionObjectArray[i];
+   
                 var btRigidBody = (RigidBody) colisionObject;
-
+ 
                 var converter = new Convert();
                 var matrix = converter.ConvertMatrixTof4X4(btRigidBody.WorldTransform);
                 //var matrix = _physic.World.GetRigidBody(i).WorldTransform;
@@ -143,6 +144,9 @@ namespace Examples.BulletSharp
                 RC.Render(_meshCube);
             }
             #endregion
+
+          
+
 
             #region RenderConstraint
             for (int i = 0; i < _physic.World.NumConstraints; i++)
