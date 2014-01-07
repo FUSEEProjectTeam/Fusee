@@ -140,6 +140,8 @@ namespace Fusee.Engine
             }
         }
 
+        public object Tag { get; set; }
+
         public Mesh GUIMesh { get; protected set; }
         public Mesh TextMesh { get; protected set; }
 
