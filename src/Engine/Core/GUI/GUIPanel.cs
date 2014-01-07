@@ -61,8 +61,19 @@ namespace Fusee.Engine
 
         #endregion
 
+        public GUIPanel(string text, IFont font, int x, int y, int z, int width, int height)
+            :base(text, font, x, y, z, width, height)
+        {
+            SetupPanel();
+        }
+
         public GUIPanel(string text, IFont font, int x, int y, int width, int height)
-            :base(text, font, x, y, width, height)
+            : base(text, font, x, y, 0, width, height)
+        {
+            SetupPanel();
+        }
+
+        private void SetupPanel()
         {
             ChildElements = new List<GUIElement>();
 
@@ -90,7 +101,7 @@ namespace Fusee.Engine
             // TextMesh
             var x = PosX + OffsetX;
             var y = PosY + OffsetY;
-
+            
             var maxW = GUIText.GetTextWidth(Text, Font);
             x = (int)System.Math.Round(x + (Width - maxW) / 2);
 
@@ -113,6 +124,7 @@ namespace Fusee.Engine
             {
                 childElement.OffsetX = PosX;
                 childElement.OffsetY = PosY;
+                childElement.OffsetZ = PosZ;
 
                 childElement.Render(rc);
             }

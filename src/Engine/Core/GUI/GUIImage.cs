@@ -52,8 +52,16 @@ namespace Fusee.Engine
 
         #endregion
 
+        public GUIImage(string img, int x, int y, int z, int width, int height)
+            : base("", null, x, y, z, width, height)
+        {
+            // settings
+            ImgSrc = img;
+            BorderWidth = 0;
+        }
+
         public GUIImage(string img, int x, int y, int width, int height)
-            : base("", null, x, y, width, height)
+            : base("", null, x, y, 0, width, height)
         {
             // settings
             ImgSrc = img;

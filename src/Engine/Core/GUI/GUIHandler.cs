@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Fusee.Engine
 {
@@ -39,8 +40,22 @@ namespace Fusee.Engine
             if (_renderContext == null)
                 return;
 
-            foreach (var guiElement in this)
+            // sort list/array temporarily by ZIndex
+            var tmpArray = ToArray();
+            Array.Sort(tmpArray, (x, y) => x.ZIndex.CompareTo(y.ZIndex));
+
+            // render from background to foreground
+            int curZ = this[0].ZIndex;
+            foreach (var guiElement in tmpArray)
+            {
+                if (guiElement.ZIndex != curZ)
+                {
+                    _renderContext.Clear(ClearFlags.Depth);
+                    curZ = guiElement.ZIndex;
+                }
+
                 guiElement.Render(_renderContext);
+            }
         }
     }
 }
