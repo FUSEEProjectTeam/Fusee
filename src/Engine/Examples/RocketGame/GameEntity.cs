@@ -7,7 +7,7 @@ namespace Examples.RocketGame
     public class GameEntity
     {
         protected float4x4 Position;
-        protected float2 Rotation;
+        protected float3 Rotation;
         protected float3 NRotXV;
         protected float3 NRotYV;
         protected float3 NRotZV;

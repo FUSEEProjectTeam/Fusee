@@ -22,13 +22,32 @@ namespace Examples.RocketGame
             Rotation.x = Input.Instance.GetAxis(InputAxis.MouseX);
             Rotation.y = Input.Instance.GetAxis(InputAxis.MouseY);
 
+            if (Input.Instance.IsKey(KeyCodes.D))
+                Rotation.x = 0.01f;
+            else if (Input.Instance.IsKey(KeyCodes.A))
+                Rotation.x = -0.01f;
+            else
+                Rotation.x = 0;
 
-            if (Input.Instance.IsKeyDown(KeyCodes.W))
+            if (Input.Instance.IsKey(KeyCodes.W))
+                Rotation.y = 0.01f;
+            else if (Input.Instance.IsKey(KeyCodes.S))
+                Rotation.y = -0.01f;
+            else
+                Rotation.y = 0;
+
+            if (Input.Instance.IsKey(KeyCodes.Q))
+                Rotation.z = 0.01f;
+            else if (Input.Instance.IsKey(KeyCodes.E))
+                Rotation.z = -0.01f;
+            else
+                Rotation.z = 0;
+
+            if (Input.Instance.IsKey(KeyCodes.Up))
             {
                 Speed += 0.1f;
             }
-
-            if (Input.Instance.IsKeyDown(KeyCodes.S))
+            else
             {
                 Speed -= 0.1f;
             }
@@ -40,6 +59,7 @@ namespace Examples.RocketGame
             Position *= float4x4.CreateTranslation(-oldPos3) *
                          float4x4.CreateFromAxisAngle(NRotYV, -Rotation.x) *
                          float4x4.CreateFromAxisAngle(NRotXV, -Rotation.y) *
+                         float4x4.CreateFromAxisAngle(NRotZV, -Rotation.z) *
                          float4x4.CreateTranslation(oldPos3) *
                          float4x4.CreateTranslation(NRotZV * -Speed);
 
