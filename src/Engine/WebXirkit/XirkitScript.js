@@ -10,9 +10,6 @@ var $customMsCore = JSIL.GetAssembly("mscorlib");
 
 JSIL.DeclareNamespace("Fusee");
 JSIL.DeclareNamespace("Fusee.Xirkit");
-//JSIL.DeclareNamespace("Fusee");
-//JSIL.DeclareNamespace("Fusee.Engine");
-//JSIL.DeclareNamespace("Fusee.Engine.WebXirkit");
 
 //Strange things i try to make it run///////////////////////////////////////
 
@@ -74,7 +71,7 @@ JSIL.MakeInterface(
       $.Property({}, "Member");
   }, []);
 
-//
+// FieldAccesssor Implementation
 
 
 JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Xirkit.JsFieldAccesssor", true, [], function ($interfaceBuilder) {
@@ -90,14 +87,14 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Xirkit.JsFieldAccessso
     $.Method({ Static: false, Public: true, Virtual: true }, "Get",
         new JSIL.MethodSignature($.Object, [$.Object], []),
         function Get(o) {
-            return o[$thisType._fieldInfo.Name];
+            return o[ this._fieldInfo.Name];
         }
     );
 
     $.Method({ Static: false, Public: true, Virtual: true }, "Set",
         new JSIL.MethodSignature(null, [$.Object, ], []),
         function Set(o, val) {
-            o[$thisType._fieldInfo.Name] = val;
+            o[this._fieldInfo.Name] = val;
         }
     );
 
@@ -109,24 +106,44 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Xirkit.JsFieldAccessso
     return function (newThisType) { $thisType = newThisType; };
 });
 
+// implementation of public PinFactory Methods
 
 JSIL.ImplementExternals("Fusee.Xirkit.PinFactory", function ($) {
-    //JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Xirkit.PinFactory", true, [], function ($interfaceBuilder) {
-    //    $ = $interfaceBuilder;
 
     $.Method({ Static: true, Public: true }, "CreateOutPin",
        new JSIL.MethodSignature($fuseeXirkit.TypeRef("Fusee.Xirkit.IOutPin"), [$fuseeXirkit.TypeRef("Fusee.Xirkit.Node"), $.String], []),
          function PinFactory_CreateOutPin(n, member) {
+             // typeAndAccessor contains two entries:
+             //  typeAndAccessor.elementType;
+             //  typeAndAccessor.elementAccessor;
              var typeAndAccessor = PinFactory_GetMemberTypeAndAccessor(n, member, null);
-             // typeAndAccessor.elementType;
-             // typeAndAccessor.elementAccessor;
-             var outPin = new $WebXirkitImp.Fusee.Xirkit.JsOutPin(n, member, typeAndAccessor.elementAccessor);
+             var outPin = new $WebXirkitImp.Fusee.Xirkit.JsOutPin(n, member, typeAndAccessor.elementType, typeAndAccessor.elementAccessor);
              return outPin;
-             // fixme...
-             //var outPinGeneric = $fOutPin$b1().__Type__.MakeGenericType(JSIL.Array.New($fType(), [typeAndAccessor.elementType]));
-             //return $fIOutPin().$Cast($S03().CallStatic($fActivator(), "CreateInstance", null, outPinGeneric, JSIL.Array.New($fObjekt(), [n, member, typeAndAccessor.elementAccessor])));
          }
      );
+
+    // Pin Factory Create InPin
+    
+
+    $.Method({ Static: true, Public: true }, "CreateInPin",
+          new JSIL.MethodSignature($asm06.TypeRef("Fusee.Xirkit.IInPin"), [
+              $fuseeXirkit.TypeRef("Fusee.Xirkit.Node"), $.String,
+              $customMsCore.TypeRef("System.Type")
+          ], []),
+              function PinFactory_CreateInPin(n, member, targetType) {
+                  // typeAndAccessor contains two entries:
+                  //  typeAndAccessor.elementType;
+                  //  typeAndAccessor.elementAccessor;
+                  var typeAndAccessor = PinFactory_GetMemberTypeAndAccessor(n, member, null);
+
+                  if (typeAndAccessor.elementType != targetType) // TODO: && !CanConvert(targetType, memberType))
+                      throw new Exception("No suitable converter to create converting InPin from " + targetType.Name + " to " + typeAndAccessor.elementType.Name);
+
+                  var inPin = new $WebXirkitImp.Fusee.Xirkit.JsInPin(n, member, typeAndAccessor.elementAccessor);
+
+                  return inPin;
+              }
+    );
 
     function PinFactory_GetMemberTypeAndAccessor(n, member, pinType) {
         var t = JSIL.GetType(n.get_O());
@@ -214,20 +231,22 @@ var $JSPin = function () {
 };
 
 
+// Implemantation of OutPin
+
 JSIL.MakeClass($fuseeXirkit.TypeRef("Fusee.Xirkit.Pin"), "Fusee.Xirkit.JsOutPin", true, [], function ($interfaceBuilder) {
     $ = $interfaceBuilder;
 
     $.Method({ Static: false, Public: true }, ".ctor",
-      new JSIL.MethodSignature(null, [
-          $fuseeXirkit.TypeRef("Fusee.Xirkit.Node"), $.String,
-          $WebXirkitImp.TypeRef("Fusee.Xirkit.IJsMemberAccessor")
-      ], []),
-       function ctor(n, member, memberAccessor) {
-           var $s00 = new JSIL.ConstructorSignature($customMsCore.TypeRef("System.Collections.Generic.List`1", [$WebXirkitImp.TypeRef("Fusee.Xirkit.JsInPin")], $WebXirkitImp.TypeRef("Fusee.Xirkit.IJsMemberAccessor")), []);
-           $JSPin().prototype._ctor.call(this, n, member);
-           this._links = $s00.Construct();
-           this._memberAccessor = memberAccessor;
-       }
+           new JSIL.MethodSignature(null, [$fuseeXirkit.TypeRef("Fusee.Xirkit.Node"), $.String, $customMsCore.TypeRef("System.Type"), $WebXirkitImp.TypeRef("Fusee.Xirkit.IJsMemberAccessor")], []),
+
+           function ctor(n, member, pinType, memberAccessor)
+           {
+                var $InPinList = new JSIL.ConstructorSignature($customMsCore.TypeRef("System.Collections.Generic.List`1", [$WebXirkitImp.TypeRef("Fusee.Xirkit.JsOutPin")]), []);
+                $JSPin().prototype._ctor.call(this, n, member);
+                this._links = $InPinList.Construct();
+                this._pinType = pinType;
+                this._memberAccessor = memberAccessor;
+           }
     );
 
     $.Method({ Static: false, Public: true, Virtual: true }, "Attach",
@@ -254,15 +273,16 @@ JSIL.MakeClass($fuseeXirkit.TypeRef("Fusee.Xirkit.Pin"), "Fusee.Xirkit.JsOutPin"
     $.Method({ Static: false, Public: true, Virtual: true }, "GetPinType",
       new JSIL.MethodSignature($customMsCore.TypeRef("System.Type"), [], []),
        function GetPinType() {
-           return $thisType.T.get(this);
+           return this._pinType;
        }
     );
 
     $.Method({ Static: false, Public: true }, "GetValue",
       new JSIL.MethodSignature($fuseeXirkit.TypeRef("Fusee.Xirkit.JsOutPin"), [], []),
       function GetValue() {
-          var $im00 = this._memberAccessor.Get;
-          return $im00.Call(this._memberAccessor, null, this.get_N().get_O());
+          return this._memberAccessor.Get(this.get_N().get_O());
+          //var $im00 = this._memberAccessor.Get;
+          //return $im00.Call(this._memberAccessor, null, this.get_N().get_O());
       }
     );
 
@@ -291,6 +311,7 @@ JSIL.MakeClass($fuseeXirkit.TypeRef("Fusee.Xirkit.Pin"), "Fusee.Xirkit.JsOutPin"
     // $.Field({ Static: false, Public: false }, "_links", $customMsCore.TypeRef("System.Collections.Generic.List`1", [$fuseeXirkit.TypeRef("Fusee.Xirkit.JsInPin")]));
     $.Field({ Static: false, Public: false }, "_memberAccessor", $WebXirkitImp.TypeRef("Fusee.Xirkit.IJsMemberAccessor"));
     $.Property({ Static: false, Public: true }, "MemberAccessor", $WebXirkitImp.TypeRef("Fusee.Xirkit.IJsMemberAccessor"));
+    $.Field({ Static: false, Public: false }, "_pinType", $customMsCore.TypeRef("System.Type"));
 
     $.ImplementInterfaces(
       /* 0 */ $fuseeXirkit.TypeRef("Fusee.Xirkit.IOutPin")
@@ -301,9 +322,12 @@ JSIL.MakeClass($fuseeXirkit.TypeRef("Fusee.Xirkit.Pin"), "Fusee.Xirkit.JsOutPin"
 
 
 
+
+
+
 //InPin implementation
 
-JSIL.MakeClass($fuseeXirkit.TypeRef("Fusee.Xirkit.Pin"), "Fusee.Xirkit.JsInPin", true, function ($interfaceBuilder) {
+JSIL.MakeClass($fuseeXirkit.TypeRef("Fusee.Xirkit.Pin"), "Fusee.Xirkit.JsInPin", true, [], function ($interfaceBuilder) {
     $ = $interfaceBuilder;
 
     var $T04 = function () {
@@ -322,12 +346,17 @@ JSIL.MakeClass($fuseeXirkit.TypeRef("Fusee.Xirkit.Pin"), "Fusee.Xirkit.JsInPin",
   //  };
 
 
-    $.Method({ Static: false, Public: true }, "ctor",
-        new JSIL.MethodSignature(null, [$fuseeXirkit.TypeRef("Fusee.Xirkit.Node"), $.String, $WebXirkitImp.TypeRef("Fusee.Xirkit.JsIMemberAccessor"), []]),
-             function ctor(n, member, memberAccessor) {
-                 $JSPin().prototype._ctor.call(this, n, member);
-                 this._memberAccessor = memberAccessor;
-             }
+    $.Method({ Static: false, Public: true }, ".ctor",
+               new JSIL.MethodSignature(null,
+                   [$fuseeXirkit.TypeRef("Fusee.Xirkit.Node"),
+                       $.String,
+                       $WebXirkitImp.TypeRef("Fusee.Xirkit.IJsMemberAccessor")],
+                    []),
+
+               function ctor(n, member, memberAccessor) {
+               $JSPin().prototype._ctor.call(this, n, member);
+               this._memberAccessor = memberAccessor;
+          }
     );
 
     // wont run !!!!!!
@@ -344,12 +373,8 @@ JSIL.MakeClass($fuseeXirkit.TypeRef("Fusee.Xirkit.Pin"), "Fusee.Xirkit.JsInPin",
             }
     );
 
-
-
-
-
     $.Method({ Static: false, Public: true }, "get_MemberAccessor",
-        new JSIL.MethodSignature($WebXirkitImp.TypeRef("Fusee.Xirkit.JsIMemberAccessor", [$WebXirkitImp.TypeRef("Fusee.Xirkit.JsInPin")]), [], []),
+        new JSIL.MethodSignature($WebXirkitImp.TypeRef("Fusee.Xirkit.IJsMemberAccessor", [$WebXirkitImp.TypeRef("Fusee.Xirkit.JsInPin")]), [], []),
             function get_MemberAccessor() {
             return this._memberAccessor;
             }
@@ -363,10 +388,6 @@ JSIL.MakeClass($fuseeXirkit.TypeRef("Fusee.Xirkit.Pin"), "Fusee.Xirkit.JsInPin",
                 return $thisType.T.get(this);
             }
     );
-
-
-
-
 
 
     $.Method({ Static: false, Public: true, Virtual: true }, "remove_ReceivedValue",
@@ -383,11 +404,8 @@ JSIL.MakeClass($fuseeXirkit.TypeRef("Fusee.Xirkit.Pin"), "Fusee.Xirkit.JsInPin",
     );
 
 
-
-
-
     $.Method({ Static: false, Public: true }, "set_MemberAccessor",
-        new JSIL.MethodSignature(null, [$WebXirkitImp.TypeRef("Fusee.Xirkit.JsIMemberAccessor", [$WebXirkitImp.TypeRef("Fusee.Xirkit.JsInPin")])], []),
+        new JSIL.MethodSignature(null, [$WebXirkitImp.TypeRef("Fusee.Xirkit.IJsMemberAccessor", [$WebXirkitImp.TypeRef("Fusee.Xirkit.JsInPin")])], []),
         
           function set_MemberAccessor(value) {
               this._memberAccessor = value;
@@ -400,25 +418,19 @@ JSIL.MakeClass($fuseeXirkit.TypeRef("Fusee.Xirkit.Pin"), "Fusee.Xirkit.JsInPin",
         new JSIL.MethodSignature(null, [ $WebXirkitImp.TypeRef("Fusee.Xirkit.JsInPin")], []), 
     
         function SetValue (value) {
-            var $im00 = $asm06.Fusee.Xirkit.IMemberAccessor$b1.Of($thisType.T.get(this)).Set;
-            $im00.Call(this._memberAccessor, null, this.get_N().get_O(), value);
+            this._memberAccessor.Set(this.get_N().get_O(), value);
+            //var $im00 = $asm06.Fusee.Xirkit.IMemberAccessor$b1.Of($thisType.T.get(this)).Set;
+            //$im00.Call(this._memberAccessor, null, this.get_N().get_O(), value);
             if (this.ReceivedValue !== null) {
                 this.ReceivedValue(this, null);
             }
         }
     );
 
-
-
-
-
-
-
-
     $.Field({
         Static: false,
         Public: false
-    }, "_memberAccessor", $WebXirkitImp.TypeRef("Fusee.Xirkit.JsIMemberAccessor"));
+    }, "_memberAccessor", $WebXirkitImp.TypeRef("Fusee.Xirkit.IJsMemberAccessor"));
     
 
     $.Field({
@@ -430,15 +442,17 @@ JSIL.MakeClass($fuseeXirkit.TypeRef("Fusee.Xirkit.Pin"), "Fusee.Xirkit.JsInPin",
     $.Property({
         Static: false,
         Public: true
-    }, "MemberAccessor", $fuseeXirkit.TypeRef("Fusee.Xirkit.JsIMemberAccessor", [$WebXirkitImp.TypeRef("Fusee.Xirkit.JsInPin")]));
+    }, "MemberAccessor", $fuseeXirkit.TypeRef("Fusee.Xirkit.IJsMemberAccessor", [$WebXirkitImp.TypeRef("Fusee.Xirkit.JsInPin")]));
     
 
 
     $.ImplementInterfaces(
     /* 0 */
-    $fuseeXirkit.TypeRef("Fusee.Xirkit.JsIInPin"));
+    $fuseeXirkit.TypeRef("Fusee.Xirkit.IInPin"));
 
     return function (newThisType) {
         $thisType = newThisType;
     };
 });
+
+

@@ -63,6 +63,8 @@ namespace Examples.KeyframeAnimationTest
 
             CAB.Execute();
 
+            Console.WriteLine(objektA.ZahlA);
+
 
             SceneManager.RC = RC;
             SceneEntity stativ = new SceneEntity("stativ", new ActionCode());
