@@ -31,7 +31,6 @@ namespace Examples.TextDemo
 
         private static float _angleHorz;
 
-
         public override void Init()
         {
             RC.ClearColor = new float4(0.5f, 0.5f, 0.8f, 1);
@@ -82,9 +81,11 @@ namespace Examples.TextDemo
             _guiPanel.ChildElements.Add(_guiButton2);
 
             // image
-            _guiImage = new GUIImage("Assets/Landscape.png", 200, 200, 512, 384);
-            _guiImage.BorderWidth = 3;
-            _guiImage.BorderColor = new float4(0, 0, 0, 1);
+            _guiImage = new GUIImage("Assets/Landscape.png", 200, 200, 512, 384)
+            {
+                BorderWidth = 3,
+                BorderColor = new float4(0, 0, 0, 1)
+            };
 
             _guiHandler.Add(_guiImage);
 
@@ -117,7 +118,7 @@ namespace Examples.TextDemo
                 AlphaBlendEnable = false,
                 ZEnable = true
             });
-
+            
             _angleHorz += 0.002f;
 
             var mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(0);
@@ -183,9 +184,7 @@ namespace Examples.TextDemo
             var aspectRatio = Width / (float)Height;
             RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 10000);
 
-            _guiPanel.Refresh();
-            _guiText1.Refresh();
-            _guiText2.Refresh();
+            _guiHandler.Refresh();
         }
 
         public static void Main()
