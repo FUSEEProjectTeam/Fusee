@@ -20,6 +20,9 @@ namespace Examples.RocketGame
         private readonly GUIButton _startPanelButtonStart;
         private readonly GUIButton _startPanelButtonStuff;
 
+        private readonly float4 color1 = new float4(0.8f, 0.1f, 0.1f, 1);
+        private readonly float4 color2 = new float4(0, 0, 0, 1);
+
         public GUI(RenderContext rc, GameWorld gw)
         {
             //Basic Init
@@ -76,12 +79,12 @@ namespace Examples.RocketGame
 
         private void OnGUIButtonEnter(GUIButton sender, MouseEventArgs mea)
         {
-            sender.TextColor = new float4(0.8f, 0.1f, 0.1f, 1);
+            sender.TextColor = color1;
         }
 
         private void OnGUIButtonLeave(GUIButton sender, MouseEventArgs mea)
         {
-            sender.TextColor = new float4(0f, 0f, 0f, 1);
+            sender.TextColor = color2;
         }
 
         public void Render()
@@ -91,9 +94,9 @@ namespace Examples.RocketGame
 
         public void SetDebugMsg(string debugMsg)
         {
-            _guiHandler.Remove(_debug);
-            _debug = new GUIText(debugMsg, _fontSmall, 150, 150);
-            _guiHandler.Add(_debug);
+            //_guiHandler.Remove(_debug);
+            //_debug = new GUIText(debugMsg, _fontSmall, 150, 150);
+            //_guiHandler.Add(_debug);
         }
 
         public void ShowStartGUI()

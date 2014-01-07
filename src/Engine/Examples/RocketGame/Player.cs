@@ -19,37 +19,34 @@ namespace Examples.RocketGame
 
         public void Move()
         {
-            Rotation.x = Input.Instance.GetAxis(InputAxis.MouseX);
-            Rotation.y = Input.Instance.GetAxis(InputAxis.MouseY);
-
             if (Input.Instance.IsKey(KeyCodes.D))
-                Rotation.x = 0.01f;
+                Rotation.x = 0.05f;
             else if (Input.Instance.IsKey(KeyCodes.A))
-                Rotation.x = -0.01f;
+                Rotation.x = -0.05f;
             else
                 Rotation.x = 0;
 
             if (Input.Instance.IsKey(KeyCodes.W))
-                Rotation.y = 0.01f;
+                Rotation.y = 0.05f;
             else if (Input.Instance.IsKey(KeyCodes.S))
-                Rotation.y = -0.01f;
+                Rotation.y = -0.05f;
             else
                 Rotation.y = 0;
 
             if (Input.Instance.IsKey(KeyCodes.Q))
-                Rotation.z = 0.01f;
+                Rotation.z = 0.05f;
             else if (Input.Instance.IsKey(KeyCodes.E))
-                Rotation.z = -0.01f;
+                Rotation.z = -0.05f;
             else
                 Rotation.z = 0;
 
             if (Input.Instance.IsKey(KeyCodes.Up))
             {
-                Speed += 0.1f;
+                Speed += 0.5f;
             }
             else
             {
-                Speed -= 0.1f;
+                Speed -= 0.5f;
             }
 
             Speed = Clamp(Speed, 0.0f, 5.0f);

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using Fusee.Engine;
 using Fusee.Math;
 
@@ -19,6 +20,9 @@ namespace Examples.RocketGame
 
         private readonly RenderStateSet _defaultRenderStateSet = new RenderStateSet{AlphaBlendEnable = false,ZEnable = true};
 
+        private readonly float4 colRed = new float4(1,0,0,1);
+        private readonly float4 colGreen= new float4(0,1,0,1);
+        
         internal enum GameStates
         {
             StartScreen,
@@ -36,7 +40,7 @@ namespace Examples.RocketGame
 
             _player = new Player("Assets/rocket2.obj.model", rc);
             _player.SetShader("Assets/rocket2.jpg");
-            _player.SetCorrectionMatrix(float4x4.CreateRotationX((float) -Math.PI/2));
+            _player.SetCorrectionMatrix(float4x4.CreateRotationX((float) -Math.PI/2) * float4x4.CreateTranslation(-30,0,0));
 
             _room = new GameEntity("Assets/spacebox.obj.model", rc);
             _room.SetShader(new float4(1,0,0,1));
@@ -44,15 +48,22 @@ namespace Examples.RocketGame
 
             _gui = new GUI(rc, this);
 
-            _furniture.Add(new GameEntity("Assets/cube.obj.model", rc, 250, 0, 0, 0.5f, 0.5f, 0.5f));
-            _furniture[0].SetShader(new float4(0, 1, 0, 1));
-            _furniture[0].SetScale(0.5f);
+            _goals.Add(new GameEntity("Assets/cube.obj.model", rc, 0, 0, -800, 0.5f, 0.5f, 0.5f));
+            _goals[0].SetScale(0.5f);
+
             _furniture.Add(new GameEntity("Assets/cube.obj.model", rc, 0, 250));
-            _furniture[1].SetShader("Assets/tex_cube.jpg");
+            _furniture[0].SetShader("Assets/tex_cube.jpg");
         }
 
         public void Render()
         {
+            foreach (var gameEntity in _goals)
+            {
+                var distanceVector = _player.GetPositionVector() - gameEntity.GetPositionVector();
+                gameEntity.SetShader(distanceVector.Length < 500 ? colGreen : colRed);
+                _gui.SetDebugMsg(distanceVector.Length.ToString());
+            }
+
             _rc.SetRenderState(_defaultRenderStateSet);
 
             _player.Move();
