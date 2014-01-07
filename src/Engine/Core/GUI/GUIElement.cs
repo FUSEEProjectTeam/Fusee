@@ -1,5 +1,4 @@
-﻿using System;
-using Fusee.Math;
+﻿using Fusee.Math;
 
 namespace Fusee.Engine
 {
@@ -15,6 +14,7 @@ namespace Fusee.Engine
 
         protected int PosX;
         protected int PosY;
+        protected int PosZ;
 
         protected int Height;
         protected int Width;
@@ -77,6 +77,7 @@ namespace Fusee.Engine
 
         private int _offsetX;
         private int _offsetY;
+        private int _offsetZ;
 
         private float4 _textColor;
 
@@ -89,8 +90,10 @@ namespace Fusee.Engine
             get { return _offsetX; }
             set
             {
+                if (value != _offsetX)
+                    Dirty = true;
+
                 _offsetX = value;
-                Dirty = true;
             }
         }
 
@@ -99,9 +102,28 @@ namespace Fusee.Engine
             get { return _offsetY; }
             set
             {
+                if (value != _offsetY)
+                    Dirty = true;
+
                 _offsetY = value;
-                Dirty = true;
             }
+        }
+
+        protected internal int OffsetZ
+        {
+            get { return _offsetZ; }
+            set
+            {
+                if (value != _offsetZ)
+                    Dirty = true;
+
+                _offsetZ = value;
+            }
+        }
+
+        protected internal int ZIndex
+        {
+            get { return PosZ + _offsetZ; }
         }
 
         #endregion
@@ -127,16 +149,18 @@ namespace Fusee.Engine
 
         protected abstract void CreateMesh();
 
-        protected GUIElement(string text, IFont font, int x, int y, int width, int height)
+        protected GUIElement(string text, IFont font, int x, int y, int z, int width, int height)
         {
             Dirty = false;
 
             // x, y, width, height
             PosX = x;
             PosY = y;
+            PosZ = z;
 
             OffsetX = 0;
             OffsetY = 0;
+            OffsetZ = 0;
 
             Width = width;
             Height = height;
@@ -166,27 +190,27 @@ namespace Fusee.Engine
                     }
                 }
             },
-                null);            
+                null);
         }
 
         protected void CreateTextShader()
         {
             TextShader = new ShaderEffect(new[]
+            {
+                new EffectPassDeclaration
                 {
-                    new EffectPassDeclaration
+                    VS = GUIVS,
+                    PS = TEXTPS,
+                    StateSet = new RenderStateSet
                     {
-                        VS = GUIVS,
-                        PS = TEXTPS,
-                        StateSet = new RenderStateSet
-                        {
-                            AlphaBlendEnable = true,
-                            SourceBlend = Blend.SourceAlpha,
-                            DestinationBlend = Blend.InverseSourceAlpha,
-                            ZEnable = false
-                        }
+                        AlphaBlendEnable = true,
+                        SourceBlend = Blend.SourceAlpha,
+                        DestinationBlend = Blend.InverseSourceAlpha,
+                        ZEnable = false
                     }
-                },
-                new[] { new EffectParameterDeclaration { Name = "tex", Value = Font.TexAtlas } });            
+                }
+            },
+                new[] {new EffectParameterDeclaration {Name = "tex", Value = Font.TexAtlas}});
         }
 
         protected internal virtual void AttachToContext(RenderContext rc)
@@ -201,18 +225,22 @@ namespace Fusee.Engine
 
         protected void SetTextMesh(int posX, int posY)
         {
-            // relative coordinates from -1 to +1
-            var scaleX = (float)2 / RContext.ViewportWidth;
-            var scaleY = (float)2 / RContext.ViewportHeight;
+            if (Font == null)
+                return;
 
-            var x = -1 + posX * scaleX;
-            var y = +1 - posY * scaleY;
+            // relative coordinates from -1 to +1
+            var scaleX = (float) 2/RContext.ViewportWidth;
+            var scaleY = (float) 2/RContext.ViewportHeight;
+
+            var x = -1 + posX*scaleX;
+            var y = +1 - posY*scaleY;
 
             // build complete structure
-            var vertices = new float3[4 * Text.Length];
-            var uvs = new float2[4 * Text.Length];
-            var indices = new ushort[6 * Text.Length];
-            var colors = new uint[4 * Text.Length];
+            var vertices = new float3[4*Text.Length];
+            var uvs = new float2[4*Text.Length];
+            var indices = new ushort[6*Text.Length];
+            var colors = new uint[4*Text.Length];
+
 
             var charInfo = Font.CharInfo;
             var atlasWidth = Font.Width;
@@ -224,13 +252,13 @@ namespace Fusee.Engine
             // now build the mesh
             foreach (var letter in Text)
             {
-                var x2 = x + charInfo[letter].BitmapL * scaleX;
-                var y2 = -y - charInfo[letter].BitmapT * scaleY;
-                var w = charInfo[letter].BitmapW * scaleX;
-                var h = charInfo[letter].BitmapH * scaleY;
+                var x2 = x + charInfo[letter].BitmapL*scaleX;
+                var y2 = -y - charInfo[letter].BitmapT*scaleY;
+                var w = charInfo[letter].BitmapW*scaleX;
+                var h = charInfo[letter].BitmapH*scaleY;
 
-                x += charInfo[letter].AdvanceX * scaleX;
-                y += charInfo[letter].AdvanceY * scaleY;
+                x += charInfo[letter].AdvanceX*scaleX;
+                y += charInfo[letter].AdvanceY*scaleY;
 
                 // skip glyphs that have no pixels
                 if ((w <= MathHelper.EpsilonFloat) || (h <= MathHelper.EpsilonFloat))
@@ -248,10 +276,10 @@ namespace Fusee.Engine
                 vertices[vertex + 3] = new float3(x2 + w, -y2, 0);
 
                 // uvs
-                uvs[vertex] = new float2(texOffsetX, texOffsetY + bitmapH / atlasHeight);
+                uvs[vertex] = new float2(texOffsetX, texOffsetY + bitmapH/atlasHeight);
                 uvs[vertex + 1] = new float2(texOffsetX, texOffsetY);
-                uvs[vertex + 2] = new float2(texOffsetX + bitmapW / atlasWidth, texOffsetY + bitmapH / atlasHeight);
-                uvs[vertex + 3] = new float2(texOffsetX + bitmapW / atlasWidth, texOffsetY);
+                uvs[vertex + 2] = new float2(texOffsetX + bitmapW/atlasWidth, texOffsetY + bitmapH/atlasHeight);
+                uvs[vertex + 3] = new float2(texOffsetX + bitmapW/atlasWidth, texOffsetY);
 
                 // colors
                 var colorInt = MathHelper.Float4ToABGR(TextColor);
@@ -262,13 +290,13 @@ namespace Fusee.Engine
                 colors[vertex + 3] = colorInt;
 
                 // indices
-                indices[index++] = (ushort)(vertex + 1);
+                indices[index++] = (ushort) (vertex + 1);
                 indices[index++] = vertex;
-                indices[index++] = (ushort)(vertex + 2);
+                indices[index++] = (ushort) (vertex + 2);
 
-                indices[index++] = (ushort)(vertex + 1);
-                indices[index++] = (ushort)(vertex + 2);
-                indices[index++] = (ushort)(vertex + 3);
+                indices[index++] = (ushort) (vertex + 1);
+                indices[index++] = (ushort) (vertex + 2);
+                indices[index++] = (ushort) (vertex + 3);
 
                 vertex += 4;
             }
@@ -285,17 +313,17 @@ namespace Fusee.Engine
             var y = PosY + OffsetY;
 
             // relative coordinates from -1 to +1
-            var scaleX = (float)2 / RContext.ViewportWidth;
-            var scaleY = (float)2 / RContext.ViewportHeight;
+            var scaleX = (float) 2/RContext.ViewportWidth;
+            var scaleY = (float) 2/RContext.ViewportHeight;
 
-            var xS = -1 + x * scaleX;
-            var yS = +1 - y * scaleY;
+            var xS = -1 + x*scaleX;
+            var yS = +1 - y*scaleY;
 
-            var width = Width * scaleX;
-            var height = Height * scaleY;
+            var width = Width*scaleX;
+            var height = Height*scaleY;
 
-            var borderX = System.Math.Max(0, borderWidth * scaleX);
-            var borderY = System.Math.Max(0, borderWidth * scaleY);
+            var borderX = System.Math.Max(0, borderWidth*scaleX);
+            var borderY = System.Math.Max(0, borderWidth*scaleY);
 
             // build complete structure
             var vertices = new float3[(borderWidth > 0) ? 8 : 4];
@@ -324,36 +352,37 @@ namespace Fusee.Engine
             CreateGUIMesh(vertices, uvs, indices, colors);
         }
 
-        protected void DrawRectangle(float c1, float c2, float c3, float c4, int vtStart, int indStart, float4 color, ref float3[] vertices, ref ushort[] indices, ref uint[] colors)
+        protected void DrawRectangle(float c1, float c2, float c3, float c4, int vtStart, int indStart, float4 color,
+            ref float3[] vertices, ref ushort[] indices, ref uint[] colors)
         {
             // vertices
-            vertices[vtStart+0] = new float3(c1, c3, 0);
-            vertices[vtStart+1] = new float3(c1, c4, 0);
-            vertices[vtStart+2] = new float3(c2, c3, 0);
-            vertices[vtStart+3] = new float3(c2, c4, 0);
+            vertices[vtStart + 0] = new float3(c1, c3, 0);
+            vertices[vtStart + 1] = new float3(c1, c4, 0);
+            vertices[vtStart + 2] = new float3(c2, c3, 0);
+            vertices[vtStart + 3] = new float3(c2, c4, 0);
 
             // colors
             var colorInt = MathHelper.Float4ToABGR(color);
 
-            colors[vtStart+0] = colorInt;
-            colors[vtStart+1] = colorInt;
-            colors[vtStart+2] = colorInt;
-            colors[vtStart+3] = colorInt;
+            colors[vtStart + 0] = colorInt;
+            colors[vtStart + 1] = colorInt;
+            colors[vtStart + 2] = colorInt;
+            colors[vtStart + 3] = colorInt;
 
             // indices
-            indices[indStart+0] = (ushort)(vtStart + 1);
-            indices[indStart+1] = (ushort)(vtStart + 0);
-            indices[indStart+2] = (ushort)(vtStart + 2);
+            indices[indStart + 0] = (ushort) (vtStart + 1);
+            indices[indStart + 1] = (ushort) (vtStart + 0);
+            indices[indStart + 2] = (ushort) (vtStart + 2);
 
-            indices[indStart+3] = (ushort)(vtStart + 1);
-            indices[indStart+4] = (ushort)(vtStart + 2);
-            indices[indStart+5] = (ushort)(vtStart + 3);
+            indices[indStart + 3] = (ushort) (vtStart + 1);
+            indices[indStart + 4] = (ushort) (vtStart + 2);
+            indices[indStart + 5] = (ushort) (vtStart + 3);
         }
 
         protected void CreateGUIMesh(float3[] vertices, float2[] uvs, ushort[] indices, uint[] colors)
         {
             if (GUIMesh == null)
-                GUIMesh = new Mesh { Vertices = vertices, UVs = uvs, Triangles = indices, Colors = colors };
+                GUIMesh = new Mesh {Vertices = vertices, UVs = uvs, Triangles = indices, Colors = colors};
             else
             {
                 GUIMesh.Vertices = vertices;
@@ -366,7 +395,7 @@ namespace Fusee.Engine
         protected void CreateTextMesh(float3[] vertices, float2[] uvs, ushort[] indices, uint[] colors)
         {
             if (TextMesh == null)
-                TextMesh = new Mesh { Vertices = vertices, UVs = uvs, Triangles = indices, Colors = colors };
+                TextMesh = new Mesh {Vertices = vertices, UVs = uvs, Triangles = indices, Colors = colors};
             else
             {
                 TextMesh.Vertices = vertices;
@@ -395,8 +424,11 @@ namespace Fusee.Engine
         {
             PreRender(rc);
 
-            if (GUIMesh != null) GUIShader.RenderMesh(GUIMesh);
-            if (TextMesh != null) TextShader.RenderMesh(TextMesh);
+            if (GUIShader != null && GUIMesh != null)
+                GUIShader.RenderMesh(GUIMesh);
+
+            if (TextShader != null && TextMesh != null)
+                TextShader.RenderMesh(TextMesh);
         }
     }
 }
