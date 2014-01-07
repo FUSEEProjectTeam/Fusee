@@ -28,6 +28,12 @@ namespace Fusee.Engine
             item.AttachToContext(_renderContext);
         }
 
+        public void Refresh()
+        {
+            foreach (var guiElement in this)
+                guiElement.Refresh();      
+        }
+
         public void RenderGUI()
         {
             if (_renderContext == null)
