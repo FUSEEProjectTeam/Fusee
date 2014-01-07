@@ -11,6 +11,7 @@ namespace Examples.RocketGame
         private readonly List<GameEntity> _goals = new List<GameEntity>();
 
         private readonly Player _player;
+        private readonly GameEntity _room;
 
         private readonly GUI _gui;
 
@@ -37,6 +38,10 @@ namespace Examples.RocketGame
             _player.SetShader("Assets/rocket2.jpg");
             _player.SetCorrectionMatrix(float4x4.CreateRotationX((float) -Math.PI/2));
 
+            _room = new GameEntity("Assets/spacebox.obj.model", rc);
+            _room.SetShader(new float4(1,0,0,1));
+            _room.SetScale(4);
+
             _gui = new GUI(rc, this);
 
             _furniture.Add(new GameEntity("Assets/cube.obj.model", rc, 250, 0, 0, 0.5f, 0.5f, 0.5f));
@@ -53,6 +58,9 @@ namespace Examples.RocketGame
             _player.Move();
 
             var camMatrix = _player.GetCamMatrix();
+            
+            _room.Render(camMatrix);
+
 
             foreach (var gameEntity in _furniture)
             {
