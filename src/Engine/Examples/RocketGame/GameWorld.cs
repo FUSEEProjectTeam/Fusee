@@ -9,7 +9,7 @@ namespace Examples.RocketGame
     public class GameWorld
     {
         private readonly List<GameEntity> _furniture = new List<GameEntity>();
-        private readonly List<GameEntity> _goals = new List<GameEntity>();
+        private readonly List<Goal> _goals = new List<Goal>();
 
         private readonly Player _player;
         private readonly GameEntity _room;
@@ -20,9 +20,6 @@ namespace Examples.RocketGame
 
         private readonly RenderStateSet _defaultRenderStateSet = new RenderStateSet{AlphaBlendEnable = false,ZEnable = true};
 
-        private readonly float4 colRed = new float4(1,0,0,1);
-        private readonly float4 colGreen= new float4(0,1,0,1);
-        
         internal enum GameStates
         {
             StartScreen,
@@ -48,7 +45,7 @@ namespace Examples.RocketGame
 
             _gui = new GUI(rc, this);
 
-            _goals.Add(new GameEntity("Assets/cube.obj.model", rc, 0, 0, -800, 0.5f, 0.5f, 0.5f));
+            _goals.Add(new Goal("Assets/cube.obj.model", rc, 0, 0, -800, 0.5f, 0.5f, 0.5f));
             _goals[0].SetScale(0.5f);
 
             _furniture.Add(new GameEntity("Assets/cube.obj.model", rc, 0, 250));
@@ -57,10 +54,18 @@ namespace Examples.RocketGame
 
         public void Render()
         {
-            foreach (var gameEntity in _goals)
+            foreach (var goal in _goals)
             {
-                var distanceVector = _player.GetPositionVector() - gameEntity.GetPositionVector();
-                gameEntity.SetShader(distanceVector.Length < 500 ? colGreen : colRed);
+                var distanceVector = _player.GetPositionVector() - goal.GetPositionVector();
+                if (distanceVector.Length < 500)
+                {
+                    goal.SetActive();
+                }
+                else
+                {
+                    goal.SetInactive();
+                }
+                
                 _gui.SetDebugMsg(distanceVector.Length.ToString());
             }
 

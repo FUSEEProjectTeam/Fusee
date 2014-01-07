@@ -109,6 +109,7 @@ namespace Examples.RocketGame
         public void Render(float4x4 camMatrix)
         {
             _rc.SetShader(_shaderProgram);
+            
             if (_isTextureShader)
             {
                 _rc.SetShaderParamTexture(_shaderParam, _iTexture);
