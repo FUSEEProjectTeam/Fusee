@@ -9,10 +9,6 @@ namespace Examples.RocketGame
         private readonly GameWorld _gw;
         private readonly GUIHandler _guiHandler;
 
-        private readonly IFont _fontSmall;
-        private readonly IFont _fontMedium;
-        private readonly IFont _fontBig;
-
         private const bool DebugFlag = true;
         private GUIText _debug;
 
@@ -20,8 +16,8 @@ namespace Examples.RocketGame
         private readonly GUIButton _startPanelButtonStart;
         private readonly GUIButton _startPanelButtonStuff;
 
-        private readonly float4 color1 = new float4(0.8f, 0.1f, 0.1f, 1);
-        private readonly float4 color2 = new float4(0, 0, 0, 1);
+        private readonly float4 _color1 = new float4(0.8f, 0.1f, 0.1f, 1);
+        private readonly float4 _color2 = new float4(0, 0, 0, 1);
 
         public GUI(RenderContext rc, GameWorld gw)
         {
@@ -31,21 +27,20 @@ namespace Examples.RocketGame
             _guiHandler = new GUIHandler();
             _guiHandler.AttachToContext(rc);
 
-            _fontSmall = rc.LoadFont("Assets/Cabin.ttf", 12);
-            _fontMedium = rc.LoadFont("Assets/Cabin.ttf", 18);
-            _fontBig = rc.LoadFont("Assets/Cabin.ttf", 28);
+            IFont fontSmall = rc.LoadFont("Assets/Cabin.ttf", 12);
+            IFont fontMedium = rc.LoadFont("Assets/Cabin.ttf", 18);
 
-            _debug = new GUIText("", _fontSmall, 170, 20);
+            _debug = new GUIText("", fontSmall, 170, 20);
 
             //Start Pannel Init
 
-            _startPanel = new GUIPanel("Titelbla", _fontMedium, 10, 10, 150, 110);
-            _startPanelButtonStart = new GUIButton("Start", _fontSmall, 10, 30, 130, 30);
+            _startPanel = new GUIPanel("Titelbla", fontMedium, 10, 10, 150, 110);
+            _startPanelButtonStart = new GUIButton("Start", fontSmall, 10, 30, 130, 30);
             _startPanelButtonStart.OnGUIButtonDown += OnGUIButtonDown;
             _startPanelButtonStart.OnGUIButtonUp += OnGUIButtonUp;
             _startPanelButtonStart.OnGUIButtonEnter += OnGUIButtonEnter;
             _startPanelButtonStart.OnGUIButtonLeave += OnGUIButtonLeave;
-            _startPanelButtonStuff = new GUIButton("Stuff", _fontSmall, 10, 70, 130, 30);
+            _startPanelButtonStuff = new GUIButton("Stuff", fontSmall, 10, 70, 130, 30);
             _startPanelButtonStuff.OnGUIButtonDown += OnGUIButtonDown;
             _startPanelButtonStuff.OnGUIButtonUp += OnGUIButtonUp;
             _startPanelButtonStuff.OnGUIButtonEnter += OnGUIButtonEnter;
@@ -79,12 +74,12 @@ namespace Examples.RocketGame
 
         private void OnGUIButtonEnter(GUIButton sender, MouseEventArgs mea)
         {
-            sender.TextColor = color1;
+            sender.TextColor = _color1;
         }
 
         private void OnGUIButtonLeave(GUIButton sender, MouseEventArgs mea)
         {
-            sender.TextColor = color2;
+            sender.TextColor = _color2;
         }
 
         public void Render()

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
+using System.Globalization;
 using Fusee.Engine;
 using Fusee.Math;
 
@@ -66,7 +66,7 @@ namespace Examples.RocketGame
                     goal.SetInactive();
                 }
                 
-                _gui.SetDebugMsg(distanceVector.Length.ToString());
+                _gui.SetDebugMsg(distanceVector.Length.ToString(CultureInfo.InvariantCulture));
             }
 
             _rc.SetRenderState(_defaultRenderStateSet);
