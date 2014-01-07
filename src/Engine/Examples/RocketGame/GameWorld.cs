@@ -33,8 +33,8 @@ namespace Examples.RocketGame
 
             GameState = (int) GameStates.StartScreen;
 
-            _player = new Player("Assets/rocket.obj.model", rc);
-            _player.SetShader("Assets/rocket.png");
+            _player = new Player("Assets/rocket2.obj.model", rc);
+            _player.SetShader("Assets/rocket2.jpg");
             _player.SetCorrectionMatrix(float4x4.CreateRotationX((float) -Math.PI/2));
 
             _gui = new GUI(rc, this);
