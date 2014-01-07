@@ -57,7 +57,7 @@ namespace Examples.BulletTest
             //Ground();
             
             InitPoint2PointConstraint();
-            //InitHingeConstraint();
+            InitHingeConstraint();
             //InitSliderConstraint();
             //InitGearConstraint();
             //InitDfo6Constraint();
@@ -116,9 +116,9 @@ namespace Examples.BulletTest
         {
             for (int k = 0; k < 4; k++)
             {
-                for (int h = -2; h < 2; h++)
+                for (int h = -2; h < 10; h++)
                 {
-                    for (int j = -2; j < 2; j++)
+                    for (int j = -2; j < 8; j++)
                     {
                         var pos = new float3(4 * h, 300 + (k * 4), 4 * j);
   
@@ -137,8 +137,7 @@ namespace Examples.BulletTest
            
             var rbB = _world.AddRigidBody(1, new float3(-200, 300, 0),MyBoxCollider);
             var p2p = _world.AddPoint2PointConstraint(rbA, rbB, new float3(0, -70, 0), new float3(0, 50, 0));
-            //var p2p = _world.AddPoint2PointConstraint(rbA, new float3(105, -200, -150));
-            p2p.SetParam(PointToPointFlags.PointToPointFlagsCfm, 0.1f);
+            p2p.SetParam(PointToPointFlags.PointToPointFlagsCfm, 0.9f);
 
             var rbC = _world.AddRigidBody(1, new float3(-200, 100, 0), MyBoxCollider);
             var p2p1 = _world.AddPoint2PointConstraint(rbB, rbC, new float3(0, -70, 0), new float3(0, 10, 0));
@@ -216,10 +215,9 @@ namespace Examples.BulletTest
 
             var gimp = _world.AddGImpactMeshShape(BoxMesh);
             var rbA = _world.AddRigidBody(1, new float3(0, 150, 0), gimp);
-            
-
-
-
         }
+
+        
+
     }
 }

@@ -27,7 +27,7 @@ namespace Examples.BulletTest
         private ITexture _iTex;
 
         //Physic
-        private Physic _physic;
+        private static Physic _physic;
 
         public override void Init()
         {
@@ -177,6 +177,7 @@ namespace Examples.BulletTest
         {
             var app = new BulletTest();
             app.Run();
+            _physic.World.Dispose();
         }
 
     }

@@ -413,5 +413,10 @@ namespace Fusee.Engine
             var number = _dwi.NumberConstraints();
             return number;
         }
+
+        public void Dispose()
+        {
+            _dwi.Dispose();
+        }
     }
 }

@@ -12,6 +12,7 @@ using BulletSharp.Serialize;
 
 namespace Fusee.Engine
 {
+
     public class DynamicWorldImp : IDynamicWorldImp
     {
         internal Translater Translater = new Translater();
@@ -21,7 +22,8 @@ namespace Fusee.Engine
         internal CollisionDispatcher BtDispatcher;
         internal BroadphaseInterface BtBroadphase;
         internal ConstraintSolver BtSolver;
-        internal AlignedCollisionShapeArray BtCollisionShapes { get; private set; }
+        //internal AlignedCollisionShapeArray BtCollisionShapes { get; private set; }
+        List<CollisionShape> BtCollisionShapes = new List<CollisionShape>();
 
 
         internal DynamicWorldImp()
@@ -33,7 +35,7 @@ namespace Fusee.Engine
             BtDispatcher = new CollisionDispatcher(BtCollisionConf);
             BtBroadphase = new DbvtBroadphase();
             BtSolver = new SequentialImpulseConstraintSolver();
-            BtCollisionShapes = new AlignedCollisionShapeArray();
+            //BtCollisionShapes = new AlignedCollisionShapeArray();
 
             
             /*BtWorld = new DiscreteDynamicsWorld(BtDispatcher, BtBroadphase, BtSolver, BtCollisionConf)
@@ -664,6 +666,56 @@ namespace Fusee.Engine
             return BtWorld.NumConstraints;
         }
 
+        public void Dispose()
+        {
+            Debug.WriteLine("Dispose");
+            if (BtWorld != null)
+            {
+                //remove/dispose constraints
+                int i;
+                for (i = BtWorld.NumConstraints - 1; i >= 0; i--)
+                {
+                    TypedConstraint constraint = BtWorld.GetConstraint(i);
+                    BtWorld.RemoveConstraint(constraint);
+                    constraint.Dispose(); 
+                }
 
+                //remove the rigidbodies from the dynamics world and delete them
+                for (i = BtWorld.NumCollisionObjects - 1; i >= 0; i--)
+                {
+                    CollisionObject obj = BtWorld.CollisionObjectArray[i];
+                    RigidBody body = obj as RigidBody;
+                    if (body != null && body.MotionState != null)
+                    {
+                        body.MotionState.Dispose();
+                    }
+                    BtWorld.RemoveCollisionObject(obj);
+                    obj.Dispose();
+                }
+
+                //delete collision shapes
+                foreach (CollisionShape shape in BtCollisionShapes)
+                    shape.Dispose();
+                BtCollisionShapes.Clear();
+
+                BtWorld.Dispose();
+                BtBroadphase.Dispose();
+                BtDispatcher.Dispose();
+                BtCollisionConf.Dispose();
+            }
+
+            if (BtBroadphase != null)
+            {
+                BtBroadphase.Dispose();
+            }
+            if (BtDispatcher != null)
+            {
+                BtDispatcher.Dispose();
+            }
+            if (BtCollisionConf != null)
+            {
+                BtCollisionConf.Dispose();
+            }
+        }
     }
 }

@@ -64,5 +64,7 @@ namespace Fusee.Engine
         IGImpactMeshShapeImp AddGImpactMeshShape(int[] meshTriangles, float3[]meshVertecies);
 
         int NumberConstraints();
+
+        void Dispose();
     }
 }

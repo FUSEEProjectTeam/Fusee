@@ -42,6 +42,7 @@ namespace Examples.BulletSharp
 
        
 
+
         public Physic()
         {
             Debug.WriteLine("Physic: Constructor");
@@ -147,14 +148,15 @@ namespace Examples.BulletSharp
             rigidBodyA.LinearFactor = new Vector3(0,0,0); //More or Less Static
             
             World.AddRigidBody(rigidBodyA);
-
+            rbInfoA.Dispose();
             var posB = new Vector3(10,0, 0);
             var startTransformB = Matrix.Translation(0,20,0);
             var myMotionStateB = new DefaultMotionState(startTransformB);
             var rbInfoB = new RigidBodyConstructionInfo(1, myMotionStateB, new BoxShape(2));
             var rigidBodyB = new RigidBody(rbInfoB);
+            rbInfoB.Dispose();
             World.AddRigidBody(rigidBodyB);
-
+            
             var pivotInA = new Vector3(0, 20, 0);
             
 
