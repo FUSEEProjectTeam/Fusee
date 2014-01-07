@@ -5,19 +5,31 @@ namespace Fusee.Engine
     public sealed class GUIText : GUIElement
     {
         public GUIText(string text, IFont font, int x, int y)
-            :base(text, font, x, y, 0, 0)
+            : base(text, font, x, y, 0, 0, 0)
+        {
+            TextColor = new float4(0, 0, 0, 1);
+        }
+        
+        public GUIText(string text, IFont font, int x, int y, int z)
+            :base(text, font, x, y, z, 0, 0)
         {
             TextColor = new float4(0, 0, 0, 1);
         }
 
-        public GUIText(string text, IFont font, int x, int y, float4 color)
-            : base(text, font, x, y, 0, 0)
+        public GUIText(string text, IFont font, int x, int y, int z, float4 color)
+            : base(text, font, x, y, z, 0, 0)
         {
             TextColor = color;
         }
 
-        internal GUIText(RenderContext rc, string text, IFont font, int x, int y, float4 color)
-            : base(text, font, x, y, 0, 0)
+        public GUIText(string text, IFont font, int x, int y, float4 color)
+            : base(text, font, x, y, 0, 0, 0)
+        {
+            TextColor = color;
+        }
+
+        internal GUIText(RenderContext rc, string text, IFont font, int x, int y, int z, float4 color)
+            : base(text, font, x, y, z, 0, 0)
         {
             TextColor = color;
             AttachToContext(rc);

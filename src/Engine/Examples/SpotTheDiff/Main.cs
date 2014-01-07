@@ -1,0 +1,129 @@
+using Fusee.Engine;
+using Fusee.Math;
+
+namespace Examples.SpotTheDiff
+{
+    public class SpotTheDiff : RenderCanvas
+    {
+        private GUIHandler _guiHandler;
+        
+        private GUIImage _guiImage;
+
+        private IFont _guiFont_Cabin18;
+        private IFont _guiFont_Cabin24;
+        
+        private GUIText _guiText;
+
+        private GUIButton[] _guiUDiffs;
+        private GUIButton[] _guiBDiffs;
+
+        private GUIPanel _guiPanel;
+
+        private GUIButton _guiResetButton;
+        private GUIButton _guiSolveButton;
+
+        public override void Init()
+        {
+            // is called on startup
+            Width = 616;
+            Height = 688;
+
+            // GUIHandler
+            _guiHandler = new GUIHandler();
+            _guiHandler.AttachToContext(RC);
+
+            // font + text
+            _guiFont_Cabin18 = RC.LoadFont("Assets/Cabin.ttf", 18);
+            _guiFont_Cabin24 = RC.LoadFont("Assets/Cabin.ttf", 24);
+
+            _guiText = new GUIText("Spot all seven differences!", _guiFont_Cabin24, 310, 35);
+            _guiText.TextColor = new float4(1, 1, 1, 1);
+
+            _guiHandler.Add(_guiText);
+            
+            // image
+            _guiImage = new GUIImage("Assets/spot_the_diff.png", 0, 0, -5, 600, 650);
+            _guiHandler.Add(_guiImage);
+
+            // buttons / rectangles
+            _guiUDiffs = new GUIButton[7];
+            _guiBDiffs = new GUIButton[7];
+
+            _guiUDiffs[0] = new GUIButton(240, 3, 40, 40);
+            _guiBDiffs[0] = new GUIButton(240, 328, 40, 40);
+
+            _guiUDiffs[1] = new GUIButton(3, 270, 40, 40);
+            _guiBDiffs[1] = new GUIButton(3, 595, 40, 40);
+
+            _guiUDiffs[2] = new GUIButton(220, 255, 40, 40);
+            _guiBDiffs[2] = new GUIButton(220, 580, 40, 40);
+
+            _guiUDiffs[3] = new GUIButton(325, 170, 40, 40);
+            _guiBDiffs[3] = new GUIButton(325, 495, 40, 40);
+
+            _guiUDiffs[4] = new GUIButton(265, 110, 40, 40);
+            _guiBDiffs[4] = new GUIButton(265, 435, 40, 40);
+
+            _guiUDiffs[5] = new GUIButton(490, 215, 40, 40);
+            _guiBDiffs[5] = new GUIButton(490, 540, 40, 40);
+
+            _guiUDiffs[6] = new GUIButton(495, 280, 40, 40);
+            _guiBDiffs[6] = new GUIButton(495, 605, 40, 40);
+
+            for (int i = 0; i < 7; i++)
+            {
+                _guiUDiffs[i].ButtonColor = new float4(0, 0, 0, 0);
+                _guiBDiffs[i].ButtonColor = new float4(0, 0, 0, 0);
+
+                _guiUDiffs[i].BorderWidth = 2;
+                _guiUDiffs[i].BorderColor = new float4(0, 0, 0, 0);
+
+                _guiBDiffs[i].BorderWidth = 2;
+                _guiBDiffs[i].BorderColor = new float4(0, 0, 0, 0);
+
+                _guiHandler.Add(_guiUDiffs[i]);
+                _guiHandler.Add(_guiBDiffs[i]);
+            }
+
+            // panel
+            _guiPanel = new GUIPanel("Menu", _guiFont_Cabin18, 10, 10, 150, 110);
+            _guiHandler.Add(_guiPanel);
+
+            // two more buttons
+            _guiResetButton = new GUIButton("Reset", _guiFont_Cabin18, 25, 40, 100, 25);
+            _guiSolveButton = new GUIButton("Solve", _guiFont_Cabin18, 25, 70, 100, 25);
+
+            _guiPanel.ChildElements.Add(_guiResetButton);
+            _guiPanel.ChildElements.Add(_guiSolveButton);
+        }
+
+        public override void RenderAFrame()
+        {
+            // is called once a frame
+            RC.Clear(ClearFlags.Color | ClearFlags.Depth);
+
+            _guiHandler.RenderGUI();
+
+            Present();
+        }
+
+        public override void Resize()
+        {
+            // is called when the window is resized
+            RC.Viewport(0, 0, Width, Height);
+
+            var aspectRatio = Width / (float)Height;
+            RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 10000);
+
+            // refresh all elements
+            _guiHandler.Refresh();
+        }
+
+        public static void Main()
+        {
+            var app = new SpotTheDiff();
+            app.Run();
+        }
+
+    }
+}

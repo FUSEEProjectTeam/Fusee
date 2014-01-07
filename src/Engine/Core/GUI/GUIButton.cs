@@ -1,5 +1,4 @@
-﻿using System;
-using Fusee.Math;
+﻿using Fusee.Math;
 
 namespace Fusee.Engine
 {
@@ -57,8 +56,31 @@ namespace Fusee.Engine
 
         #endregion
 
+        public GUIButton(int x, int y, int width, int height)
+            : base("", null, x, y, 0, width, height)
+        {
+            SetupButton();
+        }
+
+        public GUIButton(int x, int y, int z, int width, int height)
+            : base("", null, x, y, z, width, height)
+        {
+            SetupButton();
+        }
+
         public GUIButton(string text, IFont font, int x, int y, int width, int height)
-            :base(text, font, x, y, width, height)
+            : base(text, font, x, y, 0, width, height)
+        {
+            SetupButton();
+        }
+
+        public GUIButton(string text, IFont font, int x, int y, int z, int width, int height)
+            :base(text, font, x, y, z, width, height)
+        {
+            SetupButton();
+        }
+
+        private void SetupButton()
         {
             // settings
             ButtonColor = new float4(1, 1, 1, 1);
@@ -86,7 +108,7 @@ namespace Fusee.Engine
             // TextMesh
             var x = PosX + OffsetX;
             var y = PosY + OffsetY;
-
+            
             var maxW = GUIText.GetTextWidth(Text, Font);
             x = (int) System.Math.Round(x + (Width - maxW)/2);
 
