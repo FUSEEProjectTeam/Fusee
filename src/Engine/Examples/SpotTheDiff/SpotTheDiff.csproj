@@ -51,7 +51,11 @@
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Assets\Cabin.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(SolutionDir)src\Engine\Common\Common.csproj">
       <Project>{DFD770F6-4222-4255-AAE0-DCACDC7B21EB}</Project>
