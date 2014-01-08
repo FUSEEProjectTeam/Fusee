@@ -136,7 +136,6 @@ namespace Fusee.Engine
             set
             {
                 _textColor = value;
-                Dirty = true;
             }
         }
 
