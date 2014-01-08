@@ -18,7 +18,7 @@ namespace Fusee.Engine
         }
 
 
-        public RigidBody AddRigidBody(float mass, float3 worldTransform, CollisionShape colShape/*, float3 inertia*/)
+        public RigidBody AddRigidBody(float mass, float3 position, Quaternion orientation, CollisionShape colShape/*, float3 inertia*/)
         {
 
            /* var meshTrianglesCount = mesh.Triangles.Length;
@@ -39,57 +39,57 @@ namespace Fusee.Engine
                 //Primitives
                 case "Fusee.Engine.BoxShape":
                     var box =(BoxShape) colShape;
-                    rbi = _dwi.AddRigidBody(mass, worldTransform, box.BoxShapeImp/*, inertia*/);
+                    rbi = _dwi.AddRigidBody(mass, position, orientation, box.BoxShapeImp/*, inertia*/);
                     break;
                 case "Fusee.Engine.CapsuleShape":
                     var capsule = (CapsuleShape)colShape;
-                    rbi = _dwi.AddRigidBody(mass, worldTransform, capsule.CapsuleShapeImp/*, inertia*/);
+                    rbi = _dwi.AddRigidBody(mass, position, orientation, capsule.CapsuleShapeImp/*, inertia*/);
                     break;
                 case "Fusee.Engine.ConeShape":
                     var cone = (ConeShape)colShape;
-                    rbi = _dwi.AddRigidBody(mass, worldTransform, cone.ConeShapeImp/*, inertia*/);
+                    rbi = _dwi.AddRigidBody(mass, position, orientation, cone.ConeShapeImp/*, inertia*/);
                     break;
                 case "Fusee.Engine.CylinderShape":
                     var cylinder = (CylinderShape)colShape;
-                    rbi = _dwi.AddRigidBody(mass, worldTransform, cylinder.CylinderShapeImp/*, inertia*/);
+                    rbi = _dwi.AddRigidBody(mass, position, orientation, cylinder.CylinderShapeImp/*, inertia*/);
                     break;
                 case "Fusee.Engine.MultiSphereShape":
                     var multiSphere = (MultiSphereShape)colShape;
-                    rbi = _dwi.AddRigidBody(mass, worldTransform, multiSphere.MultiSphereShapeImp/*, inertia*/);
+                    rbi = _dwi.AddRigidBody(mass, position, orientation, multiSphere.MultiSphereShapeImp/*, inertia*/);
                     break;
                 case "Fusee.Engine.SphereShape":
                     var sphere = (SphereShape)colShape;
-                    rbi = _dwi.AddRigidBody(mass, worldTransform, sphere.SphereShapeImp/*, inertia*/);
+                    rbi = _dwi.AddRigidBody(mass, position, orientation, sphere.SphereShapeImp/*, inertia*/);
                     break;
 
                 //Misc
                 case "Fusee.Engine.CompoundShape":
                     var compShape = (CompoundShape)colShape;
-                    rbi = _dwi.AddRigidBody(mass, worldTransform, compShape.CompoundShapeImp/*, inertia*/);
+                    rbi = _dwi.AddRigidBody(mass, position, orientation, compShape.CompoundShapeImp/*, inertia*/);
                     break;
                 case "Fusee.Engine.EmptyShape":
                     var empty = (EmptyShape)colShape;
-                    rbi = _dwi.AddRigidBody(mass, worldTransform, empty.EmtyShapeImp/*, inertia*/);
+                    rbi = _dwi.AddRigidBody(mass, position, orientation, empty.EmtyShapeImp/*, inertia*/);
                     break;
 
                 //Meshes
                 case "Fusee.Engine.ConvexHullShape":
                     var convHullShape = (ConvexHullShape) colShape;
-                    rbi = _dwi.AddRigidBody(mass, worldTransform, convHullShape.ConvexHullShapeImp/*, inertia*/);
+                    rbi = _dwi.AddRigidBody(mass, position, orientation, convHullShape.ConvexHullShapeImp/*, inertia*/);
                     break;
                 case "Fusee.Engine.GImpactMeshShape":
                     var gImpMeshShape = (GImpactMeshShape) colShape;
-                    rbi = rbi = _dwi.AddRigidBody(mass, worldTransform, gImpMeshShape.GImpactMeshShapeImp/*, inertia*/);
+                    rbi = rbi = _dwi.AddRigidBody(mass, position, orientation, gImpMeshShape.GImpactMeshShapeImp/*, inertia*/);
                     break;
                 case "Fusee.Engine.StaticPlaneShape": //static Shape
                     var staticPaneShape = (StaticPlaneShape)colShape;
-                    rbi = _dwi.AddRigidBody(mass, worldTransform, staticPaneShape.StaticPlaneShapeImp/*, inertia*/);
+                    rbi = _dwi.AddRigidBody(mass, position, orientation, staticPaneShape.StaticPlaneShapeImp/*, inertia*/);
                     break;
                 //Default
                 default:
                     var defaultShape = new EmptyShape();
                     Debug.WriteLine("default");
-                    rbi = _dwi.AddRigidBody(mass, worldTransform, defaultShape.EmtyShapeImp/*, inertia*/);
+                    rbi = _dwi.AddRigidBody(mass, position, orientation, defaultShape.EmtyShapeImp/*, inertia*/);
                     break;
             }
 

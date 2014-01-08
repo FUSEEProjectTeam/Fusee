@@ -58,7 +58,7 @@ namespace Examples.BulletTest
         {
             // is called once a frame
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-            _physic.World.StepSimulation((float) Time.Instance.DeltaTime, 1/60, 1/60);
+            _physic.World.StepSimulation((float) Time.Instance.DeltaTime, Time.Instance.FramePerSecondSmooth);
             // move per mouse
             if (Input.Instance.IsButtonDown(MouseButtons.Left))
             {
@@ -102,12 +102,12 @@ namespace Examples.BulletTest
 
             var ground = _physic.World.GetRigidBody(0);
             var ma = ground.WorldTransform;        
-            RC.ModelView = float4x4.Scale(4, 0.1f, 4) * ma * mtxCam;
+            RC.ModelView = float4x4.Scale(10, 0.001f, 10) * ma * mtxCam;
             RC.SetShader(_spColor);
             RC.SetShaderParam(_colorParam, new float4(1.0f, 1.0f, 0, 1));
             RC.Render(_meshCube);
 
-
+            Debug.WriteLine("FramePerSecond: " +Time.Instance.FramePerSecond);
             for (int i = 1; i < _physic.World.NumberRigidBodies(); i++)
             {
                 var rb = _physic.World.GetRigidBody(i);

@@ -10,6 +10,7 @@ using Fusee.Math;
 using BulletSharp.Serialize;
 
 
+
 namespace Fusee.Engine
 {
 
@@ -50,23 +51,33 @@ namespace Fusee.Engine
 
             BtWorld.PerformDiscreteCollisionDetection();
             //GImpactCollisionAlgorithm.RegisterAlgorithm(BtDispatcher);
-           // BtWorld.SetInternalTickCallback(MyTickCallBack);
+           //BtWorld.SetInternalTickCallback(MyTickCallBack);
 
 
         }
 
         private void MyTickCallBack(DynamicsWorld world, float timeStep)
         {
-            Debug.WriteLine("cb");
+            Debug.WriteLine("MyTickCallBack");
         }
 
 
-        public IRigidBodyImp AddRigidBody(float mass, float3 worldTransform, ICollisionShapeImp colShape/*, float3 intertia*/)
-           // where TShapeType : ICollisionShapeImp, IBoxShapeImp, ISphereShapeImp, ICapsuleShapeImp, ICompoundShapeImp
+        public IRigidBodyImp AddRigidBody(float mass, float3 worldTransform, Fusee.Math.Quaternion orientation,ICollisionShapeImp colShape/*, float3 intertia*/)
         {
             // Use bullet to do what needs to be done:
-            var btMatrix = Matrix.Translation(worldTransform.x, worldTransform.y, worldTransform.z);
-            var btMotionState = new DefaultMotionState(btMatrix); 
+
+            var btMatrixPosition = Matrix.Translation(worldTransform.x, worldTransform.y, worldTransform.z);
+            var btMatrixOrientation = Translater.QuaternionToBtQuaternion(orientation);
+            var qm = Matrix.RotationAxis(Translater.Float3ToBtVector3(orientation.xyz), orientation.w);
+            var btMotionstatematrix = Matrix.RotationQuaternion(btMatrixOrientation) * Matrix.Translation(worldTransform.x, worldTransform.y, worldTransform.z);
+            //Matrix.RotationQuaternion(BulletSharp.Quaternion.Identity));
+           // btMatrixOrientation = Matrix.RotationQuaternion(Translater.QuaternionToBtQuaternion(orientation));
+            var btMotionState = new DefaultMotionState(btMotionstatematrix); 
+          
+           
+               // new DefaultMotionState(//(Transform(btQuaternion(0, 0, 0, 1), btVector3(0, -1, 0)));
+
+            //var btMotionState = new DefaultMotionState(btMatrix); 
             
             var shapeType = colShape.GetType().ToString();
             
@@ -156,20 +167,13 @@ namespace Fusee.Engine
                     btColShape = new EmptyShape();
                     break;
             }
-
-            RigidBodyConstructionInfo btRbcInfo;
-            if (isStatic == false)
-            {
-                var btLocalInertia = btColShape.CalculateLocalInertia(mass) * 10;
-                btRbcInfo = new RigidBodyConstructionInfo(mass*10, btMotionState, btColShape, btLocalInertia);
-            }
-            else
-            {
-                btRbcInfo = new RigidBodyConstructionInfo(mass*10, btMotionState, btColShape, Vector3.Zero);
-            }
+            var btLocalInertia = btColShape.CalculateLocalInertia(mass) * 10;
+            RigidBodyConstructionInfo btRbcInfo = new RigidBodyConstructionInfo(mass * 10, btMotionState, btColShape, btLocalInertia);
+            
             var btRigidBody = new RigidBody(btRbcInfo);
             BtWorld.AddRigidBody(btRigidBody);
             btRbcInfo.Dispose();
+
             var retval = new RigidBodyImp();
             retval._rbi = btRigidBody;
             btRigidBody.UserObject = retval;
@@ -178,7 +182,7 @@ namespace Fusee.Engine
 
         public int StepSimulation(float timeSteps, int maxSubSteps, float fixedTimeSteps)
         {
-            return BtWorld.StepSimulation(timeSteps);//, maxSubSteps, fixedTimeSteps);  
+            return BtWorld.StepSimulation(timeSteps, maxSubSteps);//, maxSubSteps, fixedTimeSteps);  
         }
 
         public bool CallbackFunc(ManifoldPoint cp, CollisionObject obj1, int id1, int index1, CollisionObject obj2,
@@ -666,9 +670,18 @@ namespace Fusee.Engine
             return BtWorld.NumConstraints;
         }
 
+        /*This Funcion is called at:
+         * public static void Main()
+           {
+               var app = new BulletTest();
+                app.Run();
+                _physic.World.Dispose();
+           }
+         * definetly the wrong place!!!!!!!!
+         * TODO: call it at the right place
+         */
         public void Dispose()
         {
-            Debug.WriteLine("Dispose");
             if (BtWorld != null)
             {
                 //remove/dispose constraints
