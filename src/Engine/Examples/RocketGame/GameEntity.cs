@@ -71,6 +71,7 @@ namespace Examples.RocketGame
 
         public void SetPosition(float3 position)
         {
+            //urks ...
             Position.Row3 = new float4(position, 1);
         }
 
@@ -86,6 +87,7 @@ namespace Examples.RocketGame
 
         public float3 GetPositionVector()
         {
+            //urks ....
             return new float3(Position.M41, Position.M42, Position.M43);
         }
 
@@ -97,6 +99,7 @@ namespace Examples.RocketGame
 
         public void SetShader(float r,float g, float b, float a=1)
         {
+            //urks ...
             _color = new float4(r,g,b,a);
             SetDiffuseShader();
         }
@@ -125,6 +128,7 @@ namespace Examples.RocketGame
 
         protected void UpdateNVectors()
         {
+            //urks ...
             NRotXV = float3.Normalize(new float3(Position.Row0));
             NRotYV = float3.Normalize(new float3(Position.Row1));
             NRotZV = float3.Normalize(new float3(Position.Row2));
