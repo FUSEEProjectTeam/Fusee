@@ -35,9 +35,10 @@ namespace Examples.RocketGame
 
             CurrentGameState = (int) GameState.StartScreen;
 
-            _player = new Player("Assets/rocket2.obj.model", rc);
+            _player = new Player("Assets/cube.obj.model", rc);
+            _player.SetScale(0.1f);
             _player.SetShader("Assets/rocket2.jpg");
-            _player.SetCorrectionMatrix(float4x4.CreateRotationX((float) -Math.PI/2) * float4x4.CreateTranslation(-30,0,0));
+            //_player.SetCorrectionMatrix(float4x4.CreateRotationX((float) -Math.PI/2) * float4x4.CreateTranslation(-30,0,0));
 
             _room = new GameEntity("Assets/spacebox.obj.model", rc);
             _room.SetShader(new float4(1,0,0,1));

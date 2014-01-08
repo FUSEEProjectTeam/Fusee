@@ -75,11 +75,13 @@ namespace Examples.RocketGame
             Position.Row3 = new float4(position, 1);
         }
 
+        //Setscale and SetCorrectionMatrix are redundant but affect different parameters ... might wanna try to unify them
         public void SetScale(float scale)
         {
             Scale = scale;
         }
 
+        //Setscale and SetCorrectionMatrix are redundant but affect different parameters ... might wanna try to unify them
         public void SetCorrectionMatrix(float4x4 corrMatrix)
         {
             CorrectionMatrix = corrMatrix;
@@ -122,7 +124,7 @@ namespace Examples.RocketGame
                 _rc.SetShaderParam(_shaderParam, _color);
             }
 
-            _rc.ModelView = CorrectionMatrix * Position * float4x4.Scale(Scale, Scale, Scale) * camMatrix;
+            _rc.ModelView = CorrectionMatrix * float4x4.Scale(Scale, Scale, Scale) * Position * camMatrix;
             _rc.Render(_mesh);
         }
 
