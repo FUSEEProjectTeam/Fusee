@@ -7,6 +7,7 @@ namespace Examples.RocketGame
 
     public class Player : GameEntity
     {
+        private float3 _oldPos;
 
         public Player(String meshPath, RenderContext rc, float posX = 0, float posY = 0, float posZ = 0, float angX = 0, float angY = 0, float angZ = 0) : base(meshPath, rc, posX, posY, posZ, angX, angY, angZ)
         {
@@ -40,7 +41,7 @@ namespace Examples.RocketGame
             else
                 Rotation.z = 0;
 
-            if (Input.Instance.IsKey(KeyCodes.Up))
+            if (Input.Instance.IsKey(KeyCodes.Up) || Input.Instance.IsKey(KeyCodes.Space))
             {
                 Speed += 0.5f;
             }
@@ -51,13 +52,16 @@ namespace Examples.RocketGame
 
             Speed = Clamp(Speed, 0.0f, 5.0f);
 
-            var oldPos3 = new float3(Position.Row3);
+            
+            _oldPos.x = Position.Row3.x;
+            _oldPos.y = Position.Row3.y;
+            _oldPos.z = Position.Row3.z;
 
-            Position *= float4x4.CreateTranslation(-oldPos3) *
+            Position *= float4x4.CreateTranslation(-_oldPos) *
                          float4x4.CreateFromAxisAngle(NRotYV, -Rotation.x) *
                          float4x4.CreateFromAxisAngle(NRotXV, -Rotation.y) *
                          float4x4.CreateFromAxisAngle(NRotZV, -Rotation.z) *
-                         float4x4.CreateTranslation(oldPos3) *
+                         float4x4.CreateTranslation(_oldPos) *
                          float4x4.CreateTranslation(NRotZV * -Speed);
 
             UpdateNVectors();
