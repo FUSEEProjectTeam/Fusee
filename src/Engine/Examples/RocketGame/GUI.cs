@@ -12,6 +12,9 @@ namespace Examples.RocketGame
         private const bool DebugFlag = true;
         private GUIText _debug;
 
+        private IFont _fontSmall;
+        private IFont _fontMedium;
+
         private readonly GUIPanel _startPanel;
         private readonly GUIButton _startPanelButtonStart;
         private readonly GUIButton _startPanelButtonStuff;
@@ -24,23 +27,23 @@ namespace Examples.RocketGame
             //Basic Init
             _gw = gw;
 
+            _fontSmall = rc.LoadFont("Assets/Cabin.ttf", 12);
+            _fontMedium = rc.LoadFont("Assets/Cabin.ttf", 18);
+
             _guiHandler = new GUIHandler();
             _guiHandler.AttachToContext(rc);
 
-            IFont fontSmall = rc.LoadFont("Assets/Cabin.ttf", 12);
-            IFont fontMedium = rc.LoadFont("Assets/Cabin.ttf", 18);
-
-            _debug = new GUIText("", fontSmall, 170, 20);
+            _debug = new GUIText("Bla", _fontSmall, 170, 20);
 
             //Start Pannel Init
 
-            _startPanel = new GUIPanel("Titelbla", fontMedium, 10, 10, 150, 110);
-            _startPanelButtonStart = new GUIButton("Start", fontSmall, 10, 30, 130, 30);
+            _startPanel = new GUIPanel("Titelbla", _fontMedium, 10, 10, 150, 110);
+            _startPanelButtonStart = new GUIButton("Start", _fontSmall, 10, 30, 130, 30);
             _startPanelButtonStart.OnGUIButtonDown += OnGUIButtonDown;
             _startPanelButtonStart.OnGUIButtonUp += OnGUIButtonUp;
             _startPanelButtonStart.OnGUIButtonEnter += OnGUIButtonEnter;
             _startPanelButtonStart.OnGUIButtonLeave += OnGUIButtonLeave;
-            _startPanelButtonStuff = new GUIButton("Stuff", fontSmall, 10, 70, 130, 30);
+            _startPanelButtonStuff = new GUIButton("Stuff", _fontSmall, 10, 70, 130, 30);
             _startPanelButtonStuff.OnGUIButtonDown += OnGUIButtonDown;
             _startPanelButtonStuff.OnGUIButtonUp += OnGUIButtonUp;
             _startPanelButtonStuff.OnGUIButtonEnter += OnGUIButtonEnter;
@@ -90,7 +93,7 @@ namespace Examples.RocketGame
         public void SetDebugMsg(string debugMsg)
         {
             //_guiHandler.Remove(_debug);
-            //_debug = new GUIText(debugMsg, _fontSmall, 150, 150);
+            //_debug = new GUIText(debugMsg, _fontSmall, 170, 20);
             //_guiHandler.Add(_debug);
         }
 
