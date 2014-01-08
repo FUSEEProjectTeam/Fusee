@@ -90,6 +90,8 @@ namespace Fusee.Engine
 
         protected internal override void AttachToContext(RenderContext rc)
         {
+            if (RContext == rc) return;
+
             var imgData = rc.LoadImage(ImgSrc);
             GUITexture = rc.CreateTexture(imgData);
 
