@@ -20,20 +20,20 @@ namespace Examples.RocketGame
 
         private readonly RenderStateSet _defaultRenderStateSet = new RenderStateSet{AlphaBlendEnable = false,ZEnable = true};
 
-        internal enum GameStates
+        internal enum GameState
         {
             StartScreen,
             Running,
             GameOver
         }
 
-        internal int GameState;
+        internal int CurrentGameState;
 
         public GameWorld(RenderContext rc)
         {
             _rc = rc;
 
-            GameState = (int) GameStates.StartScreen;
+            CurrentGameState = (int) GameState.StartScreen;
 
             _player = new Player("Assets/rocket2.obj.model", rc);
             _player.SetShader("Assets/rocket2.jpg");
@@ -95,7 +95,7 @@ namespace Examples.RocketGame
         public void StartGame()
         {
             _gui.SetDebugMsg("Game Started");
-            GameState = (int) GameStates.Running;
+            CurrentGameState = (int) GameState.Running;
         }
     }
 }
