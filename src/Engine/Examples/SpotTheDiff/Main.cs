@@ -1,3 +1,4 @@
+using System;
 using Fusee.Engine;
 using Fusee.Math;
 
@@ -75,11 +76,17 @@ namespace Examples.SpotTheDiff
                 _guiUDiffs[i].ButtonColor = new float4(0, 0, 0, 0);
                 _guiBDiffs[i].ButtonColor = new float4(0, 0, 0, 0);
 
-                _guiUDiffs[i].BorderWidth = 2;
-                _guiUDiffs[i].BorderColor = new float4(0, 0, 0, 0);
+                _guiUDiffs[i].BorderColor = new float4(0, 0, 0, 1);
+                _guiBDiffs[i].BorderColor = new float4(0, 0, 0, 1);
 
-                _guiBDiffs[i].BorderWidth = 2;
-                _guiBDiffs[i].BorderColor = new float4(0, 0, 0, 0);
+                _guiUDiffs[i].BorderWidth = 0;
+                _guiBDiffs[i].BorderWidth = 0;
+
+                _guiUDiffs[i].Tag = _guiBDiffs[i];
+                _guiBDiffs[i].Tag = _guiUDiffs[i];
+
+                _guiBDiffs[i].OnGUIButtonDown += OnDiffButtonDown;
+                _guiUDiffs[i].OnGUIButtonDown += OnDiffButtonDown;
 
                 _guiHandler.Add(_guiUDiffs[i]);
                 _guiHandler.Add(_guiBDiffs[i]);
@@ -89,12 +96,37 @@ namespace Examples.SpotTheDiff
             _guiPanel = new GUIPanel("Menu", _guiFont_Cabin18, 10, 10, 150, 110);
             _guiHandler.Add(_guiPanel);
 
-            // two more buttons
+            // reset button
             _guiResetButton = new GUIButton("Reset", _guiFont_Cabin18, 25, 40, 100, 25);
-            _guiSolveButton = new GUIButton("Solve", _guiFont_Cabin18, 25, 70, 100, 25);
+
+            _guiResetButton.OnGUIButtonDown += OnMenuButtonDown;
 
             _guiPanel.ChildElements.Add(_guiResetButton);
+
+            // solve button
+            _guiSolveButton = new GUIButton("Solve", _guiFont_Cabin18, 25, 70, 100, 25);
+
+            _guiSolveButton.OnGUIButtonDown += OnMenuButtonDown;
+
             _guiPanel.ChildElements.Add(_guiSolveButton);
+        }
+
+        private void OnDiffButtonDown(GUIButton sender, MouseEventArgs mea)
+        {
+            sender.BorderWidth = 2;
+
+            var guiButton = sender.Tag as GUIButton;
+            if (guiButton != null) guiButton.BorderWidth = 2;
+        }
+
+        private void OnMenuButtonDown(GUIButton sender, MouseEventArgs mea)
+        {
+            var bWidth = (sender == _guiSolveButton) ? 2 : 0;
+
+            foreach (var guiButton in _guiUDiffs)
+                guiButton.BorderWidth = bWidth;
+            foreach (var guiButton in _guiBDiffs)
+                guiButton.BorderWidth = bWidth;
         }
 
         public override void RenderAFrame()

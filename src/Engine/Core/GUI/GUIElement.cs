@@ -1,4 +1,5 @@
-﻿using Fusee.Math;
+﻿using System;
+using Fusee.Math;
 
 namespace Fusee.Engine
 {
@@ -19,7 +20,6 @@ namespace Fusee.Engine
         protected int Height;
         protected int Width;
 
-        protected string Text;
         protected IFont Font;
 
         protected string ImgSrc;
@@ -28,6 +28,8 @@ namespace Fusee.Engine
         // shader
         protected ShaderEffect GUIShader;
         protected ShaderEffect TextShader;
+
+        protected IShaderParam ColorParam;
 
         protected const string GUIVS = @"
             attribute vec3 fuVertex;
@@ -66,9 +68,10 @@ namespace Fusee.Engine
             varying vec4 vColor;
 
             uniform sampler2D tex;
+            uniform vec4 uColor;
 
             void main(void) {
-                gl_FragColor = vec4(1, 1, 1, texture2D(tex, vUV).a) * vColor;
+                gl_FragColor = vec4(1, 1, 1, texture2D(tex, vUV).a) * uColor;
             }";
 
         #endregion
@@ -79,6 +82,7 @@ namespace Fusee.Engine
         private int _offsetY;
         private int _offsetZ;
 
+        private string _text;
         private float4 _textColor;
 
         #endregion
@@ -133,9 +137,15 @@ namespace Fusee.Engine
         public float4 TextColor
         {
             get { return _textColor; }
+            set { _textColor = value; }
+        }
+
+        public String Text
+        {
+            get { return _text; }
             set
             {
-                _textColor = value;
+                _text = value;
                 Dirty = true;
             }
         }
@@ -212,11 +222,16 @@ namespace Fusee.Engine
                     }
                 }
             },
-                new[] {new EffectParameterDeclaration {Name = "tex", Value = Font.TexAtlas}});
+                new[]
+                {
+                    new EffectParameterDeclaration {Name = "tex", Value = Font.TexAtlas},
+                    new EffectParameterDeclaration {Name = "uColor", Value = _textColor}
+                });
         }
 
         protected internal virtual void AttachToContext(RenderContext rc)
         {
+            if (RContext == rc) return;
             RContext = rc;
 
             if (GUIShader != null) GUIShader.AttachToContext(RContext);
@@ -241,8 +256,6 @@ namespace Fusee.Engine
             var vertices = new float3[4*Text.Length];
             var uvs = new float2[4*Text.Length];
             var indices = new ushort[6*Text.Length];
-            var colors = new uint[4*Text.Length];
-
 
             var charInfo = Font.CharInfo;
             var atlasWidth = Font.Width;
@@ -283,14 +296,6 @@ namespace Fusee.Engine
                 uvs[vertex + 2] = new float2(texOffsetX + bitmapW/atlasWidth, texOffsetY + bitmapH/atlasHeight);
                 uvs[vertex + 3] = new float2(texOffsetX + bitmapW/atlasWidth, texOffsetY);
 
-                // colors
-                var colorInt = MathHelper.Float4ToABGR(TextColor);
-
-                colors[vertex] = colorInt;
-                colors[vertex + 1] = colorInt;
-                colors[vertex + 2] = colorInt;
-                colors[vertex + 3] = colorInt;
-
                 // indices
                 indices[index++] = (ushort) (vertex + 1);
                 indices[index++] = vertex;
@@ -306,7 +311,7 @@ namespace Fusee.Engine
             vertices = RContext.FixTextKerning(Font, vertices, Text, scaleX);
 
             // create final mesh
-            CreateTextMesh(vertices, uvs, indices, colors);
+            CreateTextMesh(vertices, uvs, indices);
         }
 
         protected void SetRectangleMesh(float borderWidth, float4 rectColor, float4 borderColor)
@@ -394,16 +399,15 @@ namespace Fusee.Engine
             }
         }
 
-        protected void CreateTextMesh(float3[] vertices, float2[] uvs, ushort[] indices, uint[] colors)
+        protected void CreateTextMesh(float3[] vertices, float2[] uvs, ushort[] indices)
         {
             if (TextMesh == null)
-                TextMesh = new Mesh {Vertices = vertices, UVs = uvs, Triangles = indices, Colors = colors};
+                TextMesh = new Mesh {Vertices = vertices, UVs = uvs, Triangles = indices};
             else
             {
                 TextMesh.Vertices = vertices;
                 TextMesh.UVs = uvs;
                 TextMesh.Triangles = indices;
-                TextMesh.Colors = colors;
             }
         }
 
@@ -430,7 +434,10 @@ namespace Fusee.Engine
                 GUIShader.RenderMesh(GUIMesh);
 
             if (TextShader != null && TextMesh != null)
+            {
+                TextShader.SetEffectParam("uColor", _textColor);
                 TextShader.RenderMesh(TextMesh);
+            }
         }
     }
 }
