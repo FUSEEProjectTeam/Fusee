@@ -17,11 +17,9 @@ namespace Examples.RocketGame
 
         private readonly Mesh _mesh;
 
-        private ShaderProgram _shaderProgram;
-        private IShaderParam _shaderParam;
+        private ShaderEffect _shaderEffect;
         private ITexture _iTexture;
         private float4 _color = new float4(0.5f,0.5f,0.5f,1);
-        private bool _isTextureShader;
 
         private readonly RenderContext _rc;
 
@@ -113,19 +111,9 @@ namespace Examples.RocketGame
 
         public void Render(float4x4 camMatrix)
         {
-            _rc.SetShader(_shaderProgram);
-            
-            if (_isTextureShader)
-            {
-                _rc.SetShaderParamTexture(_shaderParam, _iTexture);
-            }
-            else
-            {
-                _rc.SetShaderParam(_shaderParam, _color);
-            }
-
             _rc.ModelView = CorrectionMatrix * float4x4.Scale(Scale, Scale, Scale) * Position * camMatrix;
-            _rc.Render(_mesh);
+
+            _shaderEffect.RenderMesh(_mesh);
         }
 
         protected void UpdateNVectors()
@@ -138,21 +126,15 @@ namespace Examples.RocketGame
 
         protected void SetDiffuseShader()
         {
-            _shaderProgram = MoreShaders.GetDiffuseColorShader(_rc);
-            _shaderParam = _shaderProgram.GetShaderParam("color");
-
-            _isTextureShader = false;
+            _shaderEffect = Shader.GetShaderEffect(_rc, _color);
         }
 
         protected void SetTextureShader(String texturePath)
         {
-            _shaderProgram = MoreShaders.GetTextureShader(_rc);
-            _shaderParam = _shaderProgram.GetShaderParam("texture1");
-
             var imgData = _rc.LoadImage(texturePath);
             _iTexture = _rc.CreateTexture(imgData);
 
-            _isTextureShader = true;
+            _shaderEffect = Shader.GetShaderEffect(_rc, _iTexture);
         }
     }
 }

@@ -49,8 +49,8 @@ namespace Examples.RocketGame
             _goals.Add(new Goal("Assets/cube.obj.model", rc, 0, 0, -800, 0.5f, 0.5f, 0.5f));
             _goals[0].SetScale(0.5f);
 
-            _furniture.Add(new GameEntity("Assets/cube.obj.model", rc, 0, 250));
-            _furniture[0].SetShader("Assets/tex_cube.jpg");
+            _furniture.Add(new GameEntity("Assets/rocket2.obj.model", rc, 0, 250));
+            _furniture[0].SetShader("Assets/rocket2.jpg");
         }
 
         public void Render()

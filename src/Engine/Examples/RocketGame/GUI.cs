@@ -92,9 +92,8 @@ namespace Examples.RocketGame
 
         public void SetDebugMsg(string debugMsg)
         {
-            //_guiHandler.Remove(_debug);
-            //_debug = new GUIText(debugMsg, _fontSmall, 170, 20);
-            //_guiHandler.Add(_debug);
+            if (_debug != null && _debug.Text != debugMsg)
+            _debug.Text = debugMsg;
         }
 
         public void ShowStartGUI()
