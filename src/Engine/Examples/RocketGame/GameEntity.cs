@@ -18,8 +18,9 @@ namespace Examples.RocketGame
         private readonly Mesh _mesh;
 
         private ShaderEffect _shaderEffect;
-        private ITexture _iTexture;
-        private float4 _color = new float4(0.5f,0.5f,0.5f,1);
+        private ITexture _iTexture1;
+        private ITexture _iTexture2;
+        private float4 _color = new float4(0.5f, 0.5f, 0.5f, 1);
 
         private readonly RenderContext _rc;
 
@@ -108,9 +109,13 @@ namespace Examples.RocketGame
         {
             SetTextureShader(texturePath);
         }
-        public void SetShader(String texturePath, float4 baseColor, float4 lineColor, float2 lineWidth)
+        public void SetShader(float4 baseColor, String colorMapTexturePath, float4 lineColor, float2 lineWidth)
         {
-            SetTextureShader(texturePath, baseColor, lineColor, lineWidth);
+            SetTextureShader(baseColor, colorMapTexturePath, lineColor, lineWidth);
+        }
+        public void SetShader(String baseTexturePath, String colorMapTexturePath, float4 lineColor, float2 lineWidth)
+        {
+            SetTextureShader(baseTexturePath, colorMapTexturePath, lineColor, lineWidth);
         }
 
         public void Render(float4x4 camMatrix)
@@ -136,16 +141,26 @@ namespace Examples.RocketGame
         protected void SetTextureShader(String texturePath)
         {
             var imgData = _rc.LoadImage(texturePath);
-            _iTexture = _rc.CreateTexture(imgData);
+            _iTexture1 = _rc.CreateTexture(imgData);
 
-            _shaderEffect = Shader.GetShaderEffect(_rc, _iTexture);
+            _shaderEffect = Shader.GetShaderEffect(_rc, _iTexture1);
         }
-        protected void SetTextureShader(String texturePath, float4 baseColor, float4 lineColor, float2 lineWidth)
+        protected void SetTextureShader(float4 baseColor, String texturePath, float4 lineColor, float2 lineWidth)
         {
             var imgData = _rc.LoadImage(texturePath);
-            _iTexture = _rc.CreateTexture(imgData);
+            _iTexture1 = _rc.CreateTexture(imgData);
 
-            _shaderEffect = Shader.GetShaderEffect(_rc, _iTexture, baseColor, lineColor, lineWidth);
+            _shaderEffect = Shader.GetShaderEffect(_rc, baseColor, _iTexture1, lineColor, lineWidth);
+        }
+        protected void SetTextureShader(String texturePath1, String texturePath2, float4 lineColor, float2 lineWidth)
+        {
+            var imgData = _rc.LoadImage(texturePath1);
+            _iTexture1 = _rc.CreateTexture(imgData);
+            imgData = _rc.LoadImage(texturePath2);
+            _iTexture2 = _rc.CreateTexture(imgData);
+
+
+            _shaderEffect = Shader.GetShaderEffect(_rc, _iTexture1, _iTexture2, lineColor, lineWidth);
         }
     }
 }
