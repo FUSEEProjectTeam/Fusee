@@ -18,8 +18,6 @@ namespace Examples.RocketGame
 
         private readonly RenderContext _rc;
 
-        private readonly RenderStateSet _defaultRenderStateSet = new RenderStateSet{AlphaBlendEnable = false,ZEnable = true};
-
         internal enum GameState
         {
             StartScreen,
@@ -70,8 +68,6 @@ namespace Examples.RocketGame
                 
                 _gui.SetDebugMsg(distanceVector.Length.ToString(CultureInfo.InvariantCulture));
             }
-
-            _rc.SetRenderState(_defaultRenderStateSet);
 
             _player.Move();
 
