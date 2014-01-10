@@ -41,7 +41,8 @@ namespace Examples.RocketGame
             _player.SetCorrectionMatrix(float4x4.CreateRotationX((float) -Math.PI/2) * float4x4.CreateTranslation(-30,0,0));
 
             _room = new GameEntity("Assets/spacebox.obj.model", rc);
-            _room.SetShader(new float4(1,0,0,1));
+            //_room.SetShader(new float4(1,0,0,1));
+            _room.SetShader("Assets/toon_generic_5_tex.png", new float4(1,0,0,1), new float4(0, 0, 0, 1), new float2(5, 5));
             _room.SetScale(4);
 
             _gui = new GUI(rc, this);
@@ -50,7 +51,7 @@ namespace Examples.RocketGame
             _goals[0].SetScale(0.5f);
 
             _furniture.Add(new GameEntity("Assets/rocket2.obj.model", rc, 0, 250));
-            _furniture[0].SetShader("Assets/rocket2.jpg");
+            _furniture[0].SetShader("Assets/toon_generic_5_tex.png", new float4(0,1,0,1), new float4(0, 0, 0, 1), new float2(5, 5));
         }
 
         public void Render()

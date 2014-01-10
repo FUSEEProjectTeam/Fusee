@@ -108,6 +108,10 @@ namespace Examples.RocketGame
         {
             SetTextureShader(texturePath);
         }
+        public void SetShader(String texturePath, float4 baseColor, float4 lineColor, float2 lineWidth)
+        {
+            SetTextureShader(texturePath, baseColor, lineColor, lineWidth);
+        }
 
         public void Render(float4x4 camMatrix)
         {
@@ -135,6 +139,13 @@ namespace Examples.RocketGame
             _iTexture = _rc.CreateTexture(imgData);
 
             _shaderEffect = Shader.GetShaderEffect(_rc, _iTexture);
+        }
+        protected void SetTextureShader(String texturePath, float4 baseColor, float4 lineColor, float2 lineWidth)
+        {
+            var imgData = _rc.LoadImage(texturePath);
+            _iTexture = _rc.CreateTexture(imgData);
+
+            _shaderEffect = Shader.GetShaderEffect(_rc, _iTexture, baseColor, lineColor, lineWidth);
         }
     }
 }

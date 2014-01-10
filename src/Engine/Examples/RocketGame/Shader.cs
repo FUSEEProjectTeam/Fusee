@@ -7,16 +7,19 @@ namespace Examples.RocketGame
     {
         public static ShaderEffect GetShaderEffect(RenderContext rc, float4 color)
         {
-            EffectPassDeclaration[] epd = {new EffectPassDeclaration
-                                        {
-                                            VS = VsSimpleColor,
-                                            PS = PsSimpleColor,
-                                            StateSet = new RenderStateSet
-                                                       {
-                                                           AlphaBlendEnable = false,
-                                                           ZEnable = true
-                                                       }
-                                        }};
+            EffectPassDeclaration[] epd =
+            {
+                new EffectPassDeclaration
+                {
+                    VS = VsSimpleColor,
+                    PS = PsSimpleColor,
+                    StateSet = new RenderStateSet
+                    {
+                        AlphaBlendEnable = false,
+                        ZEnable = true
+                    }
+                }
+            };
 
             var shaderEffect = new ShaderEffect(epd, new[]
             {
@@ -30,20 +33,61 @@ namespace Examples.RocketGame
 
         public static ShaderEffect GetShaderEffect(RenderContext rc, ITexture iTexture)
         {
-            EffectPassDeclaration[] epd = {new EffectPassDeclaration
-                                        {
-                                            VS = VsSimpleTexture,
-                                            PS = PsSimpleTexture,
-                                            StateSet = new RenderStateSet
-                                                       {
-                                                           AlphaBlendEnable = false,
-                                                           ZEnable = true
-                                                       }
-                                        }};
+            EffectPassDeclaration[] epd =
+            {
+                new EffectPassDeclaration
+                {
+                    VS = VsSimpleTexture,
+                    PS = PsSimpleTexture,
+                    StateSet = new RenderStateSet
+                    {
+                        AlphaBlendEnable = false,
+                        ZEnable = true
+                    }
+                }
+            };
 
             var shaderEffect = new ShaderEffect(epd, new[]
             {
                 new EffectParameterDeclaration {Name = "texture1", Value = iTexture} 
+            });
+
+            shaderEffect.AttachToContext(rc);
+
+            return shaderEffect;
+        }
+        public static ShaderEffect GetShaderEffect(RenderContext rc, ITexture iTexture, float4 baseColor, float4 lineColor, float2 lineWidth)
+        {
+            EffectPassDeclaration[] epd =
+            {
+                new EffectPassDeclaration
+                {
+                    VS = VsSimpleToonPass1,
+                    PS = PsSimpleToonPass1,
+                    StateSet = new RenderStateSet
+                    {
+                        AlphaBlendEnable = false,
+                        ZEnable = true
+                    }
+                },
+                new EffectPassDeclaration
+                {
+                    VS = VsSimpleToonPass2,
+                    PS = PsSimpleToonPass2,
+                    StateSet = new RenderStateSet
+                    {
+                        AlphaBlendEnable = false,
+                        ZEnable = true
+                    }
+                }
+            };
+
+            var shaderEffect = new ShaderEffect(epd, new[]
+            {
+                new EffectParameterDeclaration {Name = "uLineColor", Value = lineColor},
+                new EffectParameterDeclaration {Name = "texture1", Value = iTexture},
+                new EffectParameterDeclaration {Name = "uLineWidth", Value = lineWidth},
+                new EffectParameterDeclaration {Name = "color", Value = baseColor} 
             });
 
             shaderEffect.AttachToContext(rc);
@@ -113,6 +157,76 @@ namespace Examples.RocketGame
                 gl_FragColor = max(dot(vec3(0,0,1),normalize(vNormal)), 0.2) * texture2D(texture1, vUV);
             }";
 
+        private const string VsSimpleToonPass1 = @"
+            attribute vec4 fuColor;
+            attribute vec3 fuVertex;
+            attribute vec3 fuNormal;
+            attribute vec2 fuUV;
+                    
+            varying vec4 vColor;
+            varying vec3 vNormal;
+            varying vec2 vUV;
+        
+            uniform mat4 FUSEE_MVP;
+            uniform mat4 FUSEE_ITMV;
+
+            uniform vec2 uLineWidth;
+
+            void main()
+            {
+                vNormal = mat3(FUSEE_ITMV[0].xyz, FUSEE_ITMV[1].xyz, FUSEE_ITMV[2].xyz) * fuNormal;
+                vNormal = normalize(vNormal);
+                gl_Position = (FUSEE_MVP * vec4(fuVertex, 1.0) ) + vec4(uLineWidth * vNormal.xy, 0, 0) + vec4(0, 0, 0.06, 0);
+                vUV = fuUV;
+            }";
+
+        private const string PsSimpleToonPass1 = @"
+            #ifdef GL_ES
+                precision highp float;
+            #endif
+        
+            uniform vec4 uLineColor;
+            varying vec3 vNormal;
+
+            void main()
+            {
+                gl_FragColor = uLineColor;
+            }";
+
+        private const string VsSimpleToonPass2 = @"
+            attribute vec4 fuColor;
+            attribute vec3 fuVertex;
+            attribute vec3 fuNormal;
+            attribute vec2 fuUV;
+                    
+            varying vec3 vNormal;
+            varying vec2 vUV;
+        
+            uniform mat4 FUSEE_MVP;
+            uniform mat4 FUSEE_ITMV;
+
+            void main()
+            {
+                gl_Position = (FUSEE_MVP * vec4(fuVertex, 1.0) );
+                vNormal = normalize(mat3(FUSEE_ITMV[0].xyz, FUSEE_ITMV[1].xyz, FUSEE_ITMV[2].xyz) * fuNormal);
+                vUV = fuUV;
+            }";
+
+        private const string PsSimpleToonPass2 = @"
+            #ifdef GL_ES
+                precision highp float;
+            #endif
+        
+            uniform sampler2D texture1;
+            uniform vec4 color;
+
+            varying vec3 vNormal;
+            varying vec2 vUV;
+
+            void main()
+            {
+                gl_FragColor = vec4(texture2D(texture1, vNormal.xy * 0.5 + vec2(0.5, 0.5)).rgb * color.rgb, 0.85);
+            }";
     };
 
 }
