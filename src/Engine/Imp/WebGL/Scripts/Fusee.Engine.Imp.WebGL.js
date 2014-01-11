@@ -174,7 +174,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderCanvasImp
         new JSIL.MethodSignature(null, []),
         function _ctor() {
             this.theCanvas = document.getElementById("canvas");
-            this.gl = this.theCanvas.getContext("webgl") || this.theCanvas.getContext("experimental-webgl");
+            this.gl = this.theCanvas.getContext("webgl", { premultipliedAlpha: false }) || this.theCanvas.getContext("experimental-webgl", { premultipliedAlpha: false });
             this.currWidth = 0;
             this.currHeight = 0;
         }
@@ -450,10 +450,10 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
     $.Method({ Static: false, Public: true }, ".ctor",
         new JSIL.MethodSignature(null, [$WebGLImp.TypeRef("Fusee.Engine.RenderCanvasImp")]),
         function _ctor(renderCanvas) {
-            this.gl = document.getElementById("canvas").getContext("webgl") || document.getElementById("canvas").getContext("experimental-webgl");
+            this.gl = renderCanvas.gl;
             this.gl.enable(this.gl.DEPTH_TEST);
             this.gl.enable(this.gl.CULL_FACE);
-            this.gl.clearColor(0.0, 0.0, 0.2, 1.0);
+            // this.gl.clearColor(0.0, 0.0, 0.2, 1.0);
             this._currentTextureUnit = 0;
         }
     );
@@ -803,9 +803,13 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
     );
 
     $.Method({ Static: false, Public: true }, "Clear",
-        new JSIL.MethodSignature(null, [$asm02.TypeRef("RenderEngine.ClearFlags")]),
+        new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.ClearFlags")]),
         function Clear(flags) {
-            this.gl.clear(flags.value);
+            // ACCUM is ignored in WebGL...
+            var wglFlags  =   ((flags.value & $fuseeCommon.Fusee.Engine.ClearFlags.Depth.value) ? this.gl.DEPTH_BUFFER_BIT : 0)
+                            | ((flags.value & $fuseeCommon.Fusee.Engine.ClearFlags.Stencil.value) ? this.gl.STENCIL_BUFFER_BIT : 0)
+                            | ((flags.value & $fuseeCommon.Fusee.Engine.ClearFlags.Color.value) ? this.gl.COLOR_BUFFER_BIT : 0);
+            this.gl.clear(wglFlags);
         }
     );
 
