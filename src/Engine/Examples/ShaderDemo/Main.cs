@@ -4,6 +4,7 @@ using Fusee.Math;
 
 namespace Examples.ShaderDemo
 {
+    // ShaderDemo
     public class ShaderDemo : RenderCanvas
     {
         // angle variables
