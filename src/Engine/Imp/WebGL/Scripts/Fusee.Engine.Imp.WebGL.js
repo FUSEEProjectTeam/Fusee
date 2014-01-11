@@ -194,10 +194,24 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderCanvasImp
         }
     );
 
+    $.Method({ Static: false, Public: true }, "set_Height",
+        new JSIL.MethodSignature(null, [$.Int32]),
+        function set_Height(val) {
+            // not implemented
+        }
+    );
+
     $.Method({ Static: false, Public: true }, "get_Width",
         new JSIL.MethodSignature($.Int32, []),
         function get_Width() {
             return this.gl.drawingBufferWidth;
+        }
+    );
+
+    $.Method({ Static: false, Public: true }, "set_Width",
+        new JSIL.MethodSignature(null, [$.Int32]),
+        function set_Width(val) {
+            // not implemented
         }
     );
 
@@ -2099,6 +2113,15 @@ JSIL.ImplementExternals("Fusee.Engine.RenderContext", function($) {
         function LoadSystemFont(filename, size) {
             filename = "Assets/" + filename + ".ttf";
             return this.LoadFont(filename, size);
+        }
+    );
+});
+
+JSIL.ImplementExternals("Fusee.Engine.GUIHandler", function ($) {
+    $.Method({ Static: false, Public: true }, "SortArray",
+        new JSIL.MethodSignature(null, [$jsilcore.TypeRef("JSIL.Reference", [$jsilcore.TypeRef("System.Array", [$asm02.TypeRef("Fusee.Engine.GUIElement")])])], []),
+        function SortArray(/* ref */ elements) {
+            elements.$value.sort(function (a, b) { return JSIL.CompareValues(a.get_ZIndex(), b.get_ZIndex()) });
         }
     );
 });
