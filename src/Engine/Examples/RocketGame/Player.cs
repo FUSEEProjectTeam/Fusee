@@ -34,9 +34,9 @@ namespace Examples.RocketGame
             else
                 Rotation.y = 0;
 
-            if (Input.Instance.IsKey(KeyCodes.Q))
+            if (Input.Instance.IsKey(KeyCodes.E))
                 Rotation.z = 0.05f;
-            else if (Input.Instance.IsKey(KeyCodes.E))
+            else if (Input.Instance.IsKey(KeyCodes.Q))
                 Rotation.z = -0.05f;
             else
                 Rotation.z = 0;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using Fusee.Engine;
 using Fusee.Math;
 
@@ -21,6 +22,9 @@ namespace Examples.RocketGame
         private ITexture _iTexture1;
         private ITexture _iTexture2;
         private float4 _color = new float4(0.5f, 0.5f, 0.5f, 1);
+
+        private readonly float4 _defaultLineColor = new float4(0, 0, 0, 1);
+        private readonly float2 _defaultLineWidth = new float2(5, 5);
 
         private readonly RenderContext _rc;
 

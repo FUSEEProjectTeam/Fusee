@@ -48,8 +48,13 @@ namespace Examples.RocketGame
             _goals.Add(new Goal("Assets/cube.obj.model", rc, 0, 0, -800, 0.5f, 0.5f, 0.5f));
             _goals[0].SetScale(0.5f);
 
-            _furniture.Add(new GameEntity("Assets/rocket2.obj.model", rc, 0, 250));
+            _furniture.Add(new GameEntity("Assets/rocket2.obj.model", rc, 0, 0, 250));
             _furniture[0].SetShader("Assets/rocket2.jpg", "Assets/toon_generic_4_tex.png", new float4(0, 0, 0, 1), new float2(5, 5));
+            _furniture.Add(new GameEntity("Assets/chair.obj.model", rc, 250, 0, 500));
+            _furniture[1].SetShader("Assets/chair.png", "Assets/toon_generic_4_tex.png", new float4(0, 0, 0, 1), new float2(5, 5));
+            _furniture[1].SetScale(15);
+            _furniture.Add(new GameEntity("Assets/desk.obj.model", rc, -500, 0, 500));
+            _furniture[2].SetShader("Assets/desk.png", "Assets/toon_generic_4_tex.png", new float4(0,0,0,1), new float2(5,5));
         }
 
         public void Render()
