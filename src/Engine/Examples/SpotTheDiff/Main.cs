@@ -100,6 +100,9 @@ namespace Examples.SpotTheDiff
             _guiResetButton = new GUIButton("Reset", _guiFont_Cabin18, 25, 40, 100, 25);
 
             _guiResetButton.OnGUIButtonDown += OnMenuButtonDown;
+            _guiResetButton.OnGUIButtonUp += OnMenuButtonUp;
+            _guiResetButton.OnGUIButtonEnter += OnMenuButtonEnter;
+            _guiResetButton.OnGUIButtonLeave += OnMenuButtonLeave;
 
             _guiPanel.ChildElements.Add(_guiResetButton);
 
@@ -107,6 +110,9 @@ namespace Examples.SpotTheDiff
             _guiSolveButton = new GUIButton("Solve", _guiFont_Cabin18, 25, 70, 100, 25);
 
             _guiSolveButton.OnGUIButtonDown += OnMenuButtonDown;
+            _guiSolveButton.OnGUIButtonUp += OnMenuButtonUp;
+            _guiSolveButton.OnGUIButtonEnter += OnMenuButtonEnter;
+            _guiSolveButton.OnGUIButtonLeave += OnMenuButtonLeave;
 
             _guiPanel.ChildElements.Add(_guiSolveButton);
         }
@@ -121,12 +127,33 @@ namespace Examples.SpotTheDiff
 
         private void OnMenuButtonDown(GUIButton sender, MouseEventArgs mea)
         {
+            sender.BorderWidth = 2;
+        }
+
+        private void OnMenuButtonUp(GUIButton sender, MouseEventArgs mea)
+        {
+            sender.BorderWidth = 1;
+
             var bWidth = (sender == _guiSolveButton) ? 2 : 0;
 
             foreach (var guiButton in _guiUDiffs)
                 guiButton.BorderWidth = bWidth;
             foreach (var guiButton in _guiBDiffs)
                 guiButton.BorderWidth = bWidth;
+        }
+
+        private static void OnMenuButtonEnter(GUIButton sender, MouseEventArgs mea)
+        {
+            if (Input.Instance.IsButton(MouseButtons.Left))
+                sender.BorderWidth = 2;
+
+            sender.TextColor = new float4(0.8f, 0.1f, 0.1f, 1);
+        }
+
+        private static void OnMenuButtonLeave(GUIButton sender, MouseEventArgs mea)
+        {
+            sender.BorderWidth = 1;
+            sender.TextColor = new float4(0f, 0f, 0f, 1);
         }
 
         public override void RenderAFrame()
