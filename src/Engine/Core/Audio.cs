@@ -4,8 +4,9 @@
 namespace Fusee.Engine
 {
     /// <summary>
-    /// The Audio class provides all audio functionality. It is accessible from everywhere.
-    /// 
+    /// The Audio class provides all audio functionality. It is accessible from everywhere.                          
+    /// </summary>
+    /// <remarks>
     /// Supported file formats are: mp3, ogg, wav, flac, aiff, au, raw, paf, svx, nist, voc,
     /// ircam, w64, mat4, mat5 pvf, htk, sds, avr, sd2, caf, wve, mpc2k, rf64
     /// 
@@ -15,10 +16,11 @@ namespace Fusee.Engine
     ///
     ///        myAudio1 = Audio.Instance.LoadFile("Assets/Music.ogg"). 
     /// 
-    ///        myAudio1.play();                            
-    /// </summary>
+    ///        myAudio1.play();  
+    /// </remarks>
     public class Audio
     {
+        #region Fields
         private static Audio _instance;
 
         private IAudioImp _audioImp;
@@ -31,6 +33,10 @@ namespace Fusee.Engine
                 _audioImp.OpenDevice();
             }
         }
+
+        #endregion
+
+        #region Members
 
         internal void CloseDevice()
         {
@@ -93,5 +99,7 @@ namespace Fusee.Engine
         {
             get { return _instance ?? (_instance = new Audio()); }
         }
+
+        #endregion
     }
 }

@@ -57,6 +57,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Attributes.cs" />
+    <Compile Include="ColorUint.cs" />
     <Compile Include="IAudioStream.cs" />
     <Compile Include="IInputImp.cs" />
     <Compile Include="ImageData.cs" />
@@ -78,6 +79,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RCEnums.cs" />
     <Compile Include="Helper.cs" />
+    <Compile Include="Rectangle.cs" />
     <Compile Include="RenderEventArgs.cs" />
     <Compile Include="ResizeEventArgs.cs" />
     <Compile Include="ShaderParamInfo.cs" />

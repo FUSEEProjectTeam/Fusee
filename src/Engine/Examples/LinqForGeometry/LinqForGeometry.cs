@@ -137,7 +137,7 @@ namespace Examples.LinqForGeometry
 
             #region MeshImports
             _Geo = new Geometry();
-            //_Geo.LoadAsset("Assets/Models/Cube.obj.model");
+            _Geo.LoadAsset("Assets/Models/Cube.obj.model");
             //_Geo.LoadAsset("Assets/Models/Cube_quads.obj.model");
             //_Geo.LoadAsset("Assets/Models/Sphere.obj.model");
             //_Geo.LoadAsset("Assets/Models/Sphere_quads.obj.model");
@@ -145,7 +145,7 @@ namespace Examples.LinqForGeometry
             //_Geo.LoadAsset("Assets/Models/Cylinder.obj.model");
             //_Geo.LoadAsset("Assets/Models/Cylinder_quads.obj.model");
             //_Geo.LoadAsset("Assets/Models/SharedCorners_pro.obj.model");
-            _Geo.LoadAsset("Assets/Models/Teapot.obj.model");
+            //_Geo.LoadAsset("Assets/Models/Teapot.obj.model");
 
             // Due to copyright reasons, this file will not be delivered with the project.
             //_Geo.LoadAsset("Assets/Models/Hellknight.obj.model");
@@ -162,12 +162,12 @@ namespace Examples.LinqForGeometry
             _msDiffuse = MoreShaders.GetShader("diffuse", RC);
             _vLightShaderParam = _msDiffuse.GetShaderParam("texture1");
 
-            //ImageData imgData = RC.LoadImage("Assets/Textures/Cube_Mat_uv.jpg");
+            ImageData imgData = RC.LoadImage("Assets/Textures/Cube_Mat_uv.jpg");
             //ImageData imgData = RC.LoadImage("Assets/Textures/world_map.jpg");
             //ImageData imgData = RC.LoadImage("Assets/Textures/Teapot_Texture.jpg");
 
             // Due to copyright reasons, this file will not be delivered with the project.
-            ImageData imgData = RC.LoadImage("Assets/Textures/Hellknight.jpg");
+            //ImageData imgData = RC.LoadImage("Assets/Textures/Hellknight.jpg");
 
             _tex = RC.CreateTexture(imgData);
             #endregion TextureShader

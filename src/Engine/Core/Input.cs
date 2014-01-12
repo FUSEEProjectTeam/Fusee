@@ -1,45 +1,47 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 namespace Fusee.Engine
 {
     /// <summary>
-    /// The Input class provides takes care of al imputs. It is accessible from everywhere.
+    /// The Input class takes care of all inputs. It is accessible from everywhere inside a Fusee project.
     /// E.g. : Input.Instance.IsButtonDown(MouseButtons.Left);
     /// </summary>
     public class Input
     {
+        #region Fields
 
         private static Input _instance;
 
         internal IInputImp InputImp
         {
-            set 
-            { 
+            set
+            {
                 _inputImp = value;
                 _inputImp.KeyDown += KeyDown;
                 _inputImp.KeyUp += KeyUp;
                 _inputImp.MouseButtonDown += ButtonDown;
                 _inputImp.MouseButtonUp += ButtonUp;
-                _axes = new float[(int)InputAxis.LastAxis];
-                _axesPreviousAbsolute = new float[(int)InputAxis.LastAxis];
+                _axes = new float[(int) InputAxis.LastAxis];
+                _axesPreviousAbsolute = new float[(int) InputAxis.LastAxis];
 
-                _keysPressed = new Dictionary<int, bool>();
-                _keysDown = new Dictionary<int, bool>();
+                _keys = new HashSet<int>();
+                _keysUp = new HashSet<int>();
+                _keysDown = new HashSet<int>();
 
-                _buttonsPressed = new Dictionary<int, bool>();
+                _buttonsPressed = new HashSet<int>();
             }
         }
 
         private IInputImp _inputImp;
-        
+
         private float[] _axes;
         private float[] _axesPreviousAbsolute;
 
-        private Dictionary<int, bool> _keysDown;
-        private Dictionary<int, bool> _keysPressed;
+        private HashSet<int> _keys;
+        private HashSet<int> _keysUp;
+        private HashSet<int> _keysDown;
 
-        private Dictionary<int, bool> _buttonsPressed;
+        private HashSet<int> _buttonsPressed;
 
         /// <summary>
         /// Gets or sets a value indicating whether to fix mouse at center.
@@ -61,39 +63,44 @@ namespace Fusee.Engine
             set { _inputImp.CursorVisible = value; }
         }
 
-        /// <summary>
-        /// Create a new instance of the Input class and initialize it with an underlying InputImp instance.
-        /// </summary>
-        public Input()
-        {
-            // not implemented
-        }
+        #endregion
+
+        #region Constructors
+
+        #endregion
+
+        #region Members
 
         private void KeyDown(object sender, KeyEventArgs kea)
         {
-            if (!_keysPressed.ContainsKey((int)kea.KeyCode))
-                _keysPressed.Add((int)kea.KeyCode, true);
+            if (!_keys.Contains((int) kea.KeyCode))
+            {
+                _keys.Add((int) kea.KeyCode);
 
-            if (!_keysDown.ContainsKey((int)kea.KeyCode))
-                _keysDown.Add((int)kea.KeyCode, false);
+                if (!_keysDown.Contains((int) kea.KeyCode))
+                    _keysDown.Add((int) kea.KeyCode);
+            }
         }
 
         private void KeyUp(object sender, KeyEventArgs kea)
         {
-            if (_keysPressed.ContainsKey((int)kea.KeyCode))
-                _keysPressed.Remove((int)kea.KeyCode);
+            if (_keys.Contains((int) kea.KeyCode))
+                _keys.Remove((int) kea.KeyCode);
+
+            if (!_keysUp.Contains((int)kea.KeyCode))
+                _keysUp.Add((int)kea.KeyCode);
         }
 
         private void ButtonDown(object sender, MouseEventArgs mea)
         {
-            if (!_buttonsPressed.ContainsKey((int)mea.Button))
-                _buttonsPressed.Add((int)mea.Button, true);
+            if (!_buttonsPressed.Contains((int) mea.Button))
+                _buttonsPressed.Add((int) mea.Button);
         }
 
         private void ButtonUp(object sender, MouseEventArgs mea)
         {
-            if (_buttonsPressed.ContainsKey((int)mea.Button))
-                _buttonsPressed.Remove((int)mea.Button);
+            if (_buttonsPressed.Contains((int) mea.Button))
+                _buttonsPressed.Remove((int) mea.Button);
         }
 
         /// <summary>
@@ -105,7 +112,7 @@ namespace Fusee.Engine
         /// </returns>
         public float GetAxis(InputAxis axis)
         {
-            return _axes[(int)axis];
+            return _axes[(int) axis];
         }
 
         /// <summary>
@@ -114,7 +121,7 @@ namespace Fusee.Engine
         /// <param name="pos">A <see cref="Point"/> with x and y values.</param>
         public void SetMousePos(Point pos)
         {
-            _inputImp.SetMousePos(pos);            
+            _inputImp.SetMousePos(pos);
         }
 
         /// <summary>
@@ -133,13 +140,13 @@ namespace Fusee.Engine
         /// <returns>
         /// true if the key is pressed. Otherwise false.
         /// </returns>
-        public bool IsKeyPressed(KeyCodes key)
+        public bool IsKey(KeyCodes key)
         {
-            return _keysPressed.ContainsKey((int)key);
+            return _keys.Contains((int) key);
         }
 
         /// <summary>
-        /// Check if the user started pressing a key in the current frames.
+        /// Check if the user started pressing a key in the current frame.
         /// </summary>
         /// <param name="key">The key to check.</param>
         /// <returns>
@@ -147,7 +154,7 @@ namespace Fusee.Engine
         /// </returns>
         public bool IsKeyDown(KeyCodes key)
         {
-            return _keysDown.ContainsKey((int) key);
+            return _keysDown.Contains((int) key);
         }
 
         /// <summary>
@@ -159,39 +166,42 @@ namespace Fusee.Engine
         /// </returns>
         public bool IsKeyUp(KeyCodes key)
         {
-            // not implemented
-            return false;
+            return _keysUp.Contains((int)key);
         }
 
         /// <summary>
         /// Check if a given mouse button is pressed during the current frame.
         /// </summary>
-        /// <param name="button">the button to check.</param>
+        /// <param name="button">the mousebutton to check.</param>
         /// <returns>
-        /// true if the button is pressed. Otherwise false.
+        /// True if the mousebutton is pressed. Otherwise false.
         /// </returns>
-        public bool IsButtonDown(MouseButtons button)
+        public bool IsButton(MouseButtons button)
         {
-            return _buttonsPressed.ContainsKey((int)button);
+            return _buttonsPressed.Contains((int) button);
         }
 
+        /// <summary>
+        /// Called when [button down] event is triggered. 
+        /// Occurs when a Mouse button was pressed down once.
+        /// </summary>
+        /// <param name="button">The mousebutton.</param>
+        /// <returns>True, if mousebutton was pressed down once. Otherwise false.</returns>
         public bool OnButtonDown(MouseButtons button)
         {
-            if (_buttonsPressed.ContainsKey((int)button))
-            {
-                _buttonsPressed.Remove((int)button);
-                return true;
-            }
-            return false;  
+            // not implemented
+            return false;
         }
 
+        /// <summary>
+        /// Called when [button up] event is triggered.
+        /// Occurs when a Mouse button was released.
+        /// </summary>
+        /// <param name="button">The mousebutton.</param>
+        /// <returns>True, if mousebutton was released. Otherwise false.</returns>
         public bool OnButtonUp(MouseButtons button)
         {
-            if (!_buttonsPressed.ContainsKey((int)button))
-            {
-                _buttonsPressed.Add((int)button, true);
-                return true;
-            }
+            // not implemented
             return false;
         }
 
@@ -213,40 +223,20 @@ namespace Fusee.Engine
             if (FixMouseAtCenter)
             {
                 p = _inputImp.SetMouseToCenter();
-                
+
                 currX = p.x;
                 currY = p.y;
             }
 
-            _axesPreviousAbsolute[(int)InputAxis.MouseX] = currX;
-            _axesPreviousAbsolute[(int)InputAxis.MouseY] = currY;
-            _axesPreviousAbsolute[(int)InputAxis.MouseWheel] = currR;
+            _axesPreviousAbsolute[(int) InputAxis.MouseX] = currX;
+            _axesPreviousAbsolute[(int) InputAxis.MouseY] = currY;
+            _axesPreviousAbsolute[(int) InputAxis.MouseWheel] = currR;
+        }
 
-            // KeysDown - this is after the first frame (remove them!)
-            var keysToModify2 = new List<int>();
-
-// ReSharper disable once LoopCanBeConvertedToQuery
-            foreach (var i in _keysDown)
-            {
-                if (i.Value)
-                    keysToModify2.Add(i.Key);
-            }
-
-            foreach (var key in keysToModify2)
-                _keysDown.Remove(key);
-
-            // KeysDown - this is the first frame (set them to true!)
-            var keysToModify1 = new List<int>();
-            
-// ReSharper disable once LoopCanBeConvertedToQuery
-            foreach (var i in _keysDown)
-            {
-                if (!i.Value)
-                    keysToModify1.Add(i.Key);
-            }
-
-            foreach (var key in keysToModify1)
-                _keysDown[key] = true;
+        internal void OnLateUpdate(double deltaTime)
+        {
+            _keysDown.Clear();
+            _keysUp.Clear();
         }
 
         /// <summary>
@@ -263,5 +253,7 @@ namespace Fusee.Engine
                 return _instance;
             }
         }
+
+        #endregion
     }
 }

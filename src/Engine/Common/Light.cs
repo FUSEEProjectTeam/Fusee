@@ -23,7 +23,7 @@ namespace Fusee.Engine
     }
 
     /// <summary>
-    /// 
+    /// The container that holds all informations that are required for shader light calculation.
     /// </summary>
     public struct Light
     {
@@ -40,20 +40,24 @@ namespace Fusee.Engine
         /// </summary>
         public float4 DiffuseColor;
         /// <summary>
-        /// Represents the diffuse color.
+        /// Represents the specular color.
         /// </summary>
         public float4 SpecularColor;
         /// <summary>
-        /// Represents the specular color.
+        /// Represents the position of the light.
         /// </summary>
         public float3 Position;
         /// <summary>
-        /// Represents the position of the light.
+        /// Represents the direction of the light.
         /// </summary>
         public float3 Direction;
         /// <summary>
-        /// Represents the direction of the light.
+        /// Represents the type of the light.
         /// </summary>
         public LightType Type;
+        /// <summary>
+        /// Represents the spot angle of the light.
+        /// </summary>
+        public float Angle;
     }
 }

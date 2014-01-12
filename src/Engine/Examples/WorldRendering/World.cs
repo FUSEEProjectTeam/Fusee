@@ -43,7 +43,7 @@ namespace Examples.WorldRendering
 
         public void RenderWorld()
         {
-            if (Input.Instance.IsButtonDown(MouseButtons.Left))
+            if (Input.Instance.IsButton(MouseButtons.Left))
             {
                 foreach (var t in _objects)
                 {
@@ -52,34 +52,34 @@ namespace Examples.WorldRendering
                 }
             }
 
-            if (Input.Instance.IsKeyDown(KeyCodes.W))
+            if (Input.Instance.IsKey(KeyCodes.W))
             {
                 _globalPosX += _speed*(float) Math.Sin(_globalAngleX);
                 _globalPosZ += _speed*(float) Math.Cos(_globalAngleX);
             }
 
-            if (Input.Instance.IsKeyDown(KeyCodes.S))
+            if (Input.Instance.IsKey(KeyCodes.S))
             {
                 _globalPosX -= _speed*(float) Math.Sin(_globalAngleX);
                 _globalPosZ -= _speed*(float) Math.Cos(_globalAngleX);
             }
 
-            if (Input.Instance.IsKeyDown(KeyCodes.A))
+            if (Input.Instance.IsKey(KeyCodes.A))
             {
                 _globalPosX += _speed*(float) Math.Cos(_globalAngleX);
                 _globalPosZ -= _speed*(float) Math.Sin(_globalAngleX);
             }
 
-            if (Input.Instance.IsKeyDown(KeyCodes.D))
+            if (Input.Instance.IsKey(KeyCodes.D))
             {
                 _globalPosX -= _speed*(float) Math.Cos(_globalAngleX);
                 _globalPosZ += _speed*(float) Math.Sin(_globalAngleX);
             }
 
-            if (Input.Instance.IsKeyDown(KeyCodes.Left))
+            if (Input.Instance.IsKey(KeyCodes.Left))
                 _globalAngleX += _rotationSpeed;
 
-            if (Input.Instance.IsKeyDown(KeyCodes.Right))
+            if (Input.Instance.IsKey(KeyCodes.Right))
                 _globalAngleX -= _rotationSpeed;
 
             ////// render all objects

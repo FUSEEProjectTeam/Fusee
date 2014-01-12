@@ -6,19 +6,19 @@
     public struct ImageData
     {
         /// <summary>
-        /// The width  
+        /// The width in pixel units. 
         /// </summary>
         public int Width;
         /// <summary>
-        /// The height
+        /// The height in pixel units.
         /// </summary>
         public int Height;
         /// <summary>
-        /// Number of bytes in one row 
+        /// Number of bytes in one row. 
         /// </summary>
         public int Stride;
         /// <summary>
-        /// The pixel data array
+        /// The pixel data array.
         /// </summary>
         public byte[] PixelData;
     }

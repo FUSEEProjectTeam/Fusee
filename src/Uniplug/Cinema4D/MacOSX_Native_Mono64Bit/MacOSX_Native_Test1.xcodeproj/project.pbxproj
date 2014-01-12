@@ -1,0 +1,435 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		7B609CA91632C1620040AC86 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7B609CA81632C1620040AC86 /* main.cpp */; };
+		7B609CC61632C2E00040AC86 /* ObjectDataM.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7B609CC41632C2E00040AC86 /* ObjectDataM.cpp */; };
+		7B609CC71632C2E00040AC86 /* ObjectDataM.h in Headers */ = {isa = PBXBuildFile; fileRef = 7B609CC51632C2E00040AC86 /* ObjectDataM.h */; };
+		7BBA50F31632E93F0066F8D2 /* C4dApiWrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7BBA50F11632E93F0066F8D2 /* C4dApiWrapper.cpp */; };
+		7BBA50F41632E93F0066F8D2 /* C4DApiWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 7BBA50F21632E93F0066F8D2 /* C4DApiWrapper.h */; };
+		7BDD4AE1164096C20038DA4E /* libmono-2.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BDD4AE0164096C20038DA4E /* libmono-2.0.dylib */; };
+		7BF8F361165ED6E900C70D22 /* _api_debug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 7BF8F360165ED6E900C70D22 /* _api_debug.xcconfig */; };
+		7BF8F363165ED70C00C70D22 /* _api_release.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 7BF8F362165ED70C00C70D22 /* _api_release.xcconfig */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXBuildRule section */
+		65805F2D0851B32A0065CE1B /* PBXBuildRule */ = {
+			isa = PBXBuildRule;
+			compilerSpec = com.apple.compilers.gcc;
+			fileType = sourcecode.c;
+			isEditable = 1;
+			outputFiles = (
+			);
+		};
+/* End PBXBuildRule section */
+
+/* Begin PBXContainerItemProxy section */
+		7B7DA7B8165EE709003ABC54 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7BF8F364165ED72A00C70D22 /* _api.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 26B0356E0E672B8000A14379 /* _api_stdmem */;
+			remoteInfo = _api_stdmem;
+		};
+		7BF8F36C165ED72A00C70D22 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7BF8F364165ED72A00C70D22 /* _api.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 65B7742C083D084C00F90C2D;
+			remoteInfo = _api;
+		};
+		7BF8F36E165ED72A00C70D22 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7BF8F364165ED72A00C70D22 /* _api.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 26B036990E672B8000A14379;
+			remoteInfo = _api_stdmem;
+		};
+		7BF8F3C4165EDD1200C70D22 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7BF8F364165ED72A00C70D22 /* _api.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 65B7742B083D084C00F90C2D;
+			remoteInfo = _api;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		7B1A99A41632BC1300331960 /* MacOSX_Native_Test1.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = MacOSX_Native_Test1.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		7B609CA81632C1620040AC86 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		7B609CC41632C2E00040AC86 /* ObjectDataM.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ObjectDataM.cpp; sourceTree = "<group>"; };
+		7B609CC51632C2E00040AC86 /* ObjectDataM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObjectDataM.h; sourceTree = "<group>"; };
+		7BB01A2B1632FB4A002BF8C7 /* Mono.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Mono.framework; path = /Library/Frameworks/Mono.framework; sourceTree = "<absolute>"; };
+		7BB01A361632FC56002BF8C7 /* Mono */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = Mono; path = /Library/Frameworks/Mono.framework/Mono; sourceTree = "<absolute>"; };
+		7BB01A3D1632FC8B002BF8C7 /* Libraries */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Libraries; path = /Library/Frameworks/Mono.framework/Libraries; sourceTree = "<absolute>"; };
+		7BB028331632FCA5002BF8C7 /* Current */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Current; path = /Library/Frameworks/Mono.framework/Versions/Current; sourceTree = "<absolute>"; };
+		7BBA50F11632E93F0066F8D2 /* C4dApiWrapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = C4dApiWrapper.cpp; sourceTree = "<group>"; };
+		7BBA50F21632E93F0066F8D2 /* C4DApiWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = C4DApiWrapper.h; sourceTree = "<group>"; };
+		7BDD4AE0164096C20038DA4E /* libmono-2.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libmono-2.0.dylib"; path = "/Library/Frameworks/Mono.framework/Versions/3.0.0_64/lib/libmono-2.0.dylib"; sourceTree = "<absolute>"; };
+		7BF8F360165ED6E900C70D22 /* _api_debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = _api_debug.xcconfig; path = /Development/MAXON/CINEMA4DR13/resource/_api_lib/_api_debug.xcconfig; sourceTree = "<absolute>"; };
+		7BF8F362165ED70C00C70D22 /* _api_release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = _api_release.xcconfig; path = /Development/MAXON/CINEMA4DR13/resource/_api_lib/_api_release.xcconfig; sourceTree = "<absolute>"; };
+		7BF8F364165ED72A00C70D22 /* _api.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = _api.xcodeproj; path = /Development/MAXON/CINEMA4DR13/resource/_api_lib/_api.xcodeproj; sourceTree = "<absolute>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		65E51690083D10D0005BFD9A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7BDD4AE1164096C20038DA4E /* libmono-2.0.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		65E51686083D10D0005BFD9A = {
+			isa = PBXGroup;
+			children = (
+				7B609CAE1632C1B40040AC86 /* Resources */,
+				7B1A999C1632BBD600331960 /* Source */,
+				65E516A4083D10D1005BFD9A /* _libs */,
+				65E51694083D10D0005BFD9A /* Products */,
+				7BB01A2B1632FB4A002BF8C7 /* Mono.framework */,
+				7BB01A361632FC56002BF8C7 /* Mono */,
+				7BB01A3D1632FC8B002BF8C7 /* Libraries */,
+				7BB028331632FCA5002BF8C7 /* Current */,
+				7BDD4AE0164096C20038DA4E /* libmono-2.0.dylib */,
+			);
+			sourceTree = "<group>";
+		};
+		65E51694083D10D0005BFD9A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				7B1A99A41632BC1300331960 /* MacOSX_Native_Test1.dylib */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		65E516A4083D10D1005BFD9A /* _libs */ = {
+			isa = PBXGroup;
+			children = (
+				7BF8F364165ED72A00C70D22 /* _api.xcodeproj */,
+				7BF8F362165ED70C00C70D22 /* _api_release.xcconfig */,
+				7BF8F360165ED6E900C70D22 /* _api_debug.xcconfig */,
+			);
+			name = _libs;
+			sourceTree = "<group>";
+		};
+		7B1A999C1632BBD600331960 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				7B609CA81632C1620040AC86 /* main.cpp */,
+			);
+			name = Source;
+			sourceTree = "<group>";
+		};
+		7B609CAE1632C1B40040AC86 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				7BBA50F11632E93F0066F8D2 /* C4dApiWrapper.cpp */,
+				7BBA50F21632E93F0066F8D2 /* C4DApiWrapper.h */,
+				7B609CC41632C2E00040AC86 /* ObjectDataM.cpp */,
+				7B609CC51632C2E00040AC86 /* ObjectDataM.h */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		7BF8F365165ED72A00C70D22 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				7BF8F36D165ED72A00C70D22 /* lib_api_debug.a */,
+				7BF8F36F165ED72A00C70D22 /* lib_api_stdmem_debug.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		65E5168D083D10D0005BFD9A /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7B609CC71632C2E00040AC86 /* ObjectDataM.h in Headers */,
+				7BBA50F41632E93F0066F8D2 /* C4DApiWrapper.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		65E51692083D10D0005BFD9A /* MacOSX_Native_Test1 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 65450B66085517D80099394F /* Build configuration list for PBXNativeTarget "MacOSX_Native_Test1" */;
+			buildPhases = (
+				65E5168D083D10D0005BFD9A /* Headers */,
+				65E5168E083D10D0005BFD9A /* Sources */,
+				65E5168F083D10D0005BFD9A /* Resources */,
+				65E51690083D10D0005BFD9A /* Frameworks */,
+				65E51691083D10D0005BFD9A /* Rez */,
+			);
+			buildRules = (
+				65805F2D0851B32A0065CE1B /* PBXBuildRule */,
+			);
+			dependencies = (
+				7BF8F3C5165EDD1200C70D22 /* PBXTargetDependency */,
+				7B7DA7B9165EE709003ABC54 /* PBXTargetDependency */,
+			);
+			name = MacOSX_Native_Test1;
+			productName = "xtensions (Debug)";
+			productReference = 7B1A99A41632BC1300331960 /* MacOSX_Native_Test1.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		65E5168A083D10D0005BFD9A /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0430;
+			};
+			buildConfigurationList = 65450B6A085517D90099394F /* Build configuration list for PBXProject "MacOSX_Native_Test1" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 65E51686083D10D0005BFD9A;
+			productRefGroup = 65E51694083D10D0005BFD9A /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 7BF8F365165ED72A00C70D22 /* Products */;
+					ProjectRef = 7BF8F364165ED72A00C70D22 /* _api.xcodeproj */;
+				},
+			);
+			projectRoot = ../../..;
+			targets = (
+				65E51692083D10D0005BFD9A /* MacOSX_Native_Test1 */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		7BF8F36D165ED72A00C70D22 /* lib_api_debug.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = lib_api_debug.a;
+			remoteRef = 7BF8F36C165ED72A00C70D22 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		7BF8F36F165ED72A00C70D22 /* lib_api_stdmem_debug.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = lib_api_stdmem_debug.a;
+			remoteRef = 7BF8F36E165ED72A00C70D22 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		65E5168F083D10D0005BFD9A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7BF8F361165ED6E900C70D22 /* _api_debug.xcconfig in Resources */,
+				7BF8F363165ED70C00C70D22 /* _api_release.xcconfig in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXRezBuildPhase section */
+		65E51691083D10D0005BFD9A /* Rez */ = {
+			isa = PBXRezBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXRezBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		65E5168E083D10D0005BFD9A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7B609CA91632C1620040AC86 /* main.cpp in Sources */,
+				7B609CC61632C2E00040AC86 /* ObjectDataM.cpp in Sources */,
+				7BBA50F31632E93F0066F8D2 /* C4dApiWrapper.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		7B7DA7B9165EE709003ABC54 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = _api_stdmem;
+			targetProxy = 7B7DA7B8165EE709003ABC54 /* PBXContainerItemProxy */;
+		};
+		7BF8F3C5165EDD1200C70D22 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = _api;
+			targetProxy = 7BF8F3C4165EDD1200C70D22 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		65450B67085517D80099394F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
+				C4D_ROOTDIR = /Development/MAXON/CINEMA4DR13;
+				FRAMEWORK_SEARCH_PATHS = "$(MONO_FRAMEWORK_DIR)/Versions/3.0.0_64/lib";
+				GCC_ENABLE_CPP_RTTI = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					C4D_COCOA,
+					"MAC_OS_X_VERSION_MIN_REQUIRED=1050",
+					__MAC,
+				);
+				GCC_VERSION = 4.2;
+				HEADER_SEARCH_PATHS = (
+					"$(C4D_ROOTDIR)/resource/modules/gv/expressiontag/res/description",
+					"$(MONO_FRAMEWORK_DIR)/Versions/3.0.0/include/mono-2.0//**",
+					"$(MONO_FRAMEWORK_DIR)/Versions/3.0.0/lib/glib-2.0/include",
+					"$(C4D_ROOTDIR)/resource/_api/**",
+					"$(C4D_ROOTDIR)/resource/res/**",
+					"res/**",
+					"$(C4D_ROOTDIR)/resource/modules/objects/res/description",
+					"$(C4D_ROOTDIR)/modules/advanced\\ render/advanced\\ render/res/description",
+					"$(C4D_ROOTDIR)/modules/thinking\\ particles/thinking\\ particles/res/description",
+					"$(C4D_ROOTDIR)/modules/dynamics/res/description",
+					"$(C4D_ROOTDIR)/resource/modules/modeling/res/description",
+					"$(MONO_FRAMEWORK_DIR)/Versions/3.0.0/include/glib-2.0",
+					"$(C4D_ROOTDIR)/resource/modules/newman/res/description",
+					"$(C4D_ROOTDIR)/resource/modules/xtensions/res/description",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(C4D_ROOTDIR)/resource/_api_lib",
+					"$(MONO_FRAMEWORK_DIR)/Versions/3.0.0_64/lib",
+					"\"$(LOCAL_LIBRARY_DIR)/Frameworks/Mono.framework/Versions/3.0.0_64/lib\"",
+				);
+				MACH_O_TYPE = mh_dylib;
+				MONO_FRAMEWORK_DIR = /Library/Frameworks/Mono.framework;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = (
+					"-D_THREAD_SAFE",
+					"-I$(MONO_FRAMEWORK_DIR)/Versions/2.10.9/include/mono-1.0",
+					"-I$(MONO_FRAMEWORK_DIR)/Versions/2.10.9/include/glib-2.0",
+					"-I$(MONO_FRAMEWORK_DIR)/Versions/2.10.9/lib/glib-2.0/include",
+				);
+				OTHER_CPLUSPLUSFLAGS = (
+					"-funsafe-math-optimizations",
+					"-ffinite-math-only",
+					"-fno-signaling-nans",
+					"-fno-rounding-math",
+					"-fcx-limited-range",
+					"-ftrapping-math",
+					"$(OTHER_CFLAGS)",
+				);
+				OTHER_LDFLAGS = (
+					"$(C4D_ROOTDIR)/resource/_api_lib/lib_api_debug.a",
+					"-lmono-2.0",
+					"-lpthread",
+					"-pthread",
+					"-L$(MONO_FRAMEWORK_DIR)/Versions/Current/lib",
+					"-lm",
+					"-lgthread-2.0",
+					"-lglib-2.0",
+					"-lintl",
+				);
+				PRODUCT_NAME = MacOSX_Native_Test1;
+				SKIP_INSTALL = NO;
+				VALID_ARCHS = "i386 x86_64";
+			};
+			name = Debug;
+		};
+		65450B68085517D80099394F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				C4D_ROOTDIR = /Development/MAXON/CINEMA4DR13;
+				FRAMEWORK_SEARCH_PATHS = "";
+				GCC_VERSION = 4.2;
+				HEADER_SEARCH_PATHS = (
+					"$(C4D_ROOTDIR)/resource/modules/gv/expressiontag/res/description",
+					"$(MONO_FRAMEWORK_DIR)/Versions/2.10.9/include/mono-2.0//**",
+					"$(MONO_FRAMEWORK_DIR)/Versions/2.10.9/lib/glib-2.0/include",
+					"$(MONO_FRAMEWORK_DIR)/Versions/2.10.9/include/glib-2.0",
+					"$(C4D_ROOTDIR)/resource/_api/**",
+					"$(C4D_ROOTDIR)/resource/res/**",
+					"res/**",
+					"$(C4D_ROOTDIR)/resource/modules/objects/res/description",
+					"$(C4D_ROOTDIR)/modules/advanced\\ render/advanced\\ render/res/description",
+					"$(C4D_ROOTDIR)/modules/thinking\\ particles/thinking\\ particles/res/description",
+					"$(C4D_ROOTDIR)/modules/dynamics/res/description",
+					"$(C4D_ROOTDIR)/resource/modules/modeling/res/description",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(C4D_ROOTDIR)/resource/_api_lib",
+					"\"$(LOCAL_LIBRARY_DIR)/Frameworks/Mono.framework\"",
+					"\"$(LOCAL_LIBRARY_DIR)/Frameworks/Mono.framework/Versions/3.0.0_64/lib\"",
+				);
+				MACH_O_TYPE = mh_dylib;
+				MONO_FRAMEWORK_DIR = /Library/Frameworks/Mono.framework;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = MacOSX_Native_Test1;
+				SKIP_INSTALL = NO;
+				VALID_ARCHS = "i386 x86_64";
+			};
+			name = Release;
+		};
+		65450B6B085517D90099394F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_VERSION = 4.2;
+				HEADER_SEARCH_PATHS = "";
+				OTHER_LDFLAGS = "$(C4D_ROOTDIR)/resource/_api_lib/lib_api_debug.a";
+				PRODUCT_NAME = cinema4dsdk;
+			};
+			name = Debug;
+		};
+		65450B6C085517D90099394F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_VERSION = 4.2;
+				OTHER_LDFLAGS = "$(C4D_ROOTDIR)/resource/_api_lib/lib_api_release.a";
+				PRODUCT_NAME = cinema4dsdk;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		65450B66085517D80099394F /* Build configuration list for PBXNativeTarget "MacOSX_Native_Test1" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				65450B67085517D80099394F /* Debug */,
+				65450B68085517D80099394F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		65450B6A085517D90099394F /* Build configuration list for PBXProject "MacOSX_Native_Test1" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				65450B6B085517D90099394F /* Debug */,
+				65450B6C085517D90099394F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 65E5168A083D10D0005BFD9A /* Project object */;
+}
