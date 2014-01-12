@@ -33,9 +33,9 @@ namespace Examples.RocketGame
 
             CurrentGameState = (int) GameState.StartScreen;
 
-            _player = new Player("Assets/rocket2.obj.model", rc);
+            _player = new Player("Assets/rocket3.obj.model", rc);
             _player.SetScale(0.5f);
-            _player.SetShader("Assets/rocket2.jpg", "Assets/toon_generic_4_tex.png", new float4(0, 0, 0, 1), new float2(5, 5));
+            _player.SetShader("Assets/rocket3.png", "Assets/toon_generic_4_tex.png", new float4(0, 0, 0, 1), new float2(5, 5));
             _player.SetCorrectionMatrix(float4x4.CreateRotationX((float) -Math.PI/2) * float4x4.CreateTranslation(-30,0,0));
 
             _room = new GameEntity("Assets/spacebox.obj.model", rc);
@@ -48,8 +48,8 @@ namespace Examples.RocketGame
             _goals.Add(new Goal("Assets/cube.obj.model", rc, 0, 0, -800, 0.5f, 0.5f, 0.5f));
             _goals[0].SetScale(0.5f);
 
-            _furniture.Add(new GameEntity("Assets/rocket2.obj.model", rc, 0, 0, 250));
-            _furniture[0].SetShader("Assets/rocket2.jpg", "Assets/toon_generic_4_tex.png", new float4(0, 0, 0, 1), new float2(5, 5));
+            _furniture.Add(new GameEntity("Assets/rocket3.obj.model", rc, 0, 0, 250));
+            _furniture[0].SetShader("Assets/rocket3.png", "Assets/toon_generic_4_tex.png", new float4(0, 0, 0, 1), new float2(5, 5));
             _furniture.Add(new GameEntity("Assets/chair.obj.model", rc, 250, 0, 500));
             _furniture[1].SetShader("Assets/chair.png", "Assets/toon_generic_4_tex.png", new float4(0, 0, 0, 1), new float2(5, 5));
             _furniture[1].SetScale(15);
