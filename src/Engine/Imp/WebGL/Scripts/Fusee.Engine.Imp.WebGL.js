@@ -174,7 +174,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderCanvasImp
         new JSIL.MethodSignature(null, []),
         function _ctor() {
             this.theCanvas = document.getElementById("canvas");
-            this.gl = this.theCanvas.getContext("webgl", { premultipliedAlpha: false }) || this.theCanvas.getContext("experimental-webgl", { premultipliedAlpha: false });
+            this.gl = this.theCanvas.getContext("webgl") || this.theCanvas.getContext("experimental-webgl");
             this.currWidth = 0;
             this.currHeight = 0;
         }
@@ -453,7 +453,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
             this.gl = renderCanvas.gl;
             this.gl.enable(this.gl.DEPTH_TEST);
             this.gl.enable(this.gl.CULL_FACE);
-            // this.gl.clearColor(0.0, 0.0, 0.2, 1.0);
+            this.gl.clearColor(0.0, 0.0, 0.2, 1.0);
             this._currentTextureUnit = 0;
         }
     );
