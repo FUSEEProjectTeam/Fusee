@@ -66,8 +66,9 @@ namespace Fusee.Engine
 
         public string GetCategory()
         {
-            throw new NotImplementedException();
+            return "[Gamepad] "+_controller.GetCategory();
         }
+        
     }
 }
 

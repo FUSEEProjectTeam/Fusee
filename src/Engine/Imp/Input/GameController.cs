@@ -10,7 +10,7 @@ namespace Fusee.Engine
         private JoystickState state;
         private bool[] buttonsPressed;
         private float deadZone;
-        private int buttonCount;
+        private String deviceCategory;
         
         
 
@@ -24,15 +24,15 @@ namespace Fusee.Engine
             //buttonCount = direct
              state = new JoystickState();
             deadZone = 0.1f;
-            // Geräte suchen
-
+            // Geräte suche
+            deviceCategory = device.ProductName;
             
             buttonsPressed = new bool[100];
             
 
             // Gamepad erstellen
             joystick = new Joystick(directInput, device.InstanceGuid);
-            
+           
 
             
             // Den Zahlenbereich der Achsen auf -1000 bis 1000 setzen
@@ -56,6 +56,7 @@ namespace Fusee.Engine
             }
 
             state = joystick.GetCurrentState();
+            
 
             return state;
         }
@@ -145,6 +146,12 @@ namespace Fusee.Engine
         {
             deadZone = zone;
         }
+
+        public String GetCategory ()
+        {
+            return deviceCategory;
+        }
+
 
         public void Release()
         {

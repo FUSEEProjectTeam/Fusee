@@ -58,7 +58,7 @@ namespace Examples.Simple
 
 
 
-            System.Diagnostics.Debug.Write(Input.Instance.Devices[0].GetButtonCount());
+            //System.Diagnostics.Debug.Write(Input.Instance.GetDeviceIndices());
         }
 
         // is called once a frame
@@ -66,12 +66,6 @@ namespace Examples.Simple
         {
 
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-
-            foreach (InputDevice bla in Input.Instance.Devices)
-            {
-                if (bla.IsButtonDown(0))
-                    System.Diagnostics.Debug.Write("Heureka");
-            }
 
             
 

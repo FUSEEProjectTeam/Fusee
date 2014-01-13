@@ -49,6 +49,11 @@ namespace Fusee.Engine
             return _inputDeviceImp.GetButtonCount();
         }
 
+        public String GetCategory()
+        {
+            return _inputDeviceImp.GetCategory();
+        }
+
 
 
 
