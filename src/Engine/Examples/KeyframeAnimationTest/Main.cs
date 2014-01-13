@@ -21,7 +21,14 @@ namespace Examples.KeyframeAnimationTest
 
         public int ZahlA;
 
+        public int ZahlA1
+        {
+            get { return ZahlA; }
+            set { ZahlA = value; }
+        }
 
+
+       
     }
 
     public class B
@@ -32,6 +39,14 @@ namespace Examples.KeyframeAnimationTest
         }
 
         public int ZahlB;
+
+        public int ZahlB1
+        {
+            get { return ZahlB; }
+            set { ZahlB = value; }
+        }
+
+
 
     }
 
@@ -51,6 +66,7 @@ namespace Examples.KeyframeAnimationTest
             A objektA = new A();
             B objektB = new B();
 
+            //objektA.ZahlA1 = objektB.ZahlB1;
             Node NodeA = new Node(objektA);
             Node NodeB = new Node(objektB);
 
@@ -59,11 +75,12 @@ namespace Examples.KeyframeAnimationTest
             CAB.AddRoot(NodeA);
             CAB.AddNode(NodeB);
 
-            NodeA.Attach("ZahlA",NodeB,"ZahlB");
+            NodeA.Attach("ZahlA1", NodeB, "ZahlB1");
 
             CAB.Execute();
 
-            Console.WriteLine(objektA.ZahlA);
+
+
 
 
             SceneManager.RC = RC;
@@ -91,7 +108,7 @@ namespace Examples.KeyframeAnimationTest
             _channel1.AddKeyframe(4f, 16f);
             _channel1.AddKeyframe(0f, 8f);
             */
-            /*
+            
             Keyframe<float4> key0 = new Keyframe<float4>(0, new float4(1, 0, 1, 1));
             Keyframe<float4> key1 = new Keyframe<float4>(2, new float4(0.125f, 1, 0.125f, 1));
             Keyframe<float4> key2 = new Keyframe<float4>(4, new float4(0.250f, 0.75f, 0.250f, 1));
@@ -130,7 +147,7 @@ namespace Examples.KeyframeAnimationTest
             //*/
 
             myAnim.AddAnimation(_channel1, RC, "ClearColor");
-            myAnim.AddAnimation(_channel2, Wuerfel, "transform.GlobalPosition");
+            //myAnim.AddAnimation(_channel2, Wuerfel, "transform.GlobalPosition");
 
         }
 

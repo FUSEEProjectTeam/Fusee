@@ -71,40 +71,200 @@ JSIL.MakeInterface(
       $.Property({}, "Member");
   }, []);
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // FieldAccesssor Implementation
 
 
-JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Xirkit.JsFieldAccesssor", true, [], function ($interfaceBuilder) {
+//JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Xirkit.JsFieldAccesssor", true, [], function ($interfaceBuilder) {
+//    $ = $interfaceBuilder;
+
+//    $.Method({ Static: false, Public: true }, ".ctor",
+//        new JSIL.MethodSignature(null, [/*$customMsCore*/$customMsCore.TypeRef("System.Reflection.FieldInfo")], []),
+//        function ctor(fieldInfo) {
+//            this._fieldInfo = fieldInfo;
+//        }
+//    );
+
+//    $.Method({ Static: false, Public: true, Virtual: true }, "Get",
+//        new JSIL.MethodSignature($.Object, [$.Object], []),
+//        function Get(o) {
+//            return o[ this._fieldInfo.Name];
+//        }
+//    );
+
+//    $.Method({ Static: false, Public: true, Virtual: true }, "Set",
+//        new JSIL.MethodSignature(null, [$.Object, ], []),
+//        function Set(o, val) {
+//            o[this._fieldInfo.Name] = val;
+//        }
+//    );
+
+//    $.Field({ Static: false, Public: false, ReadOnly: true }, "_fieldInfo", $customMSCore.TypeRef("System.Reflection.FieldInfo"));
+//    $.ImplementInterfaces(
+//          /* 0 */ $WebXirkitImp.TypeRef("Fusee.Xirkit.IJsMemberAccessor")
+//    );
+
+//    return function (newThisType) { $thisType = newThisType; };
+//});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Xirkit.JsPropertyAccesssor", true, [], function ($interfaceBuilder) {
+//    $ = $interfaceBuilder;
+
+//    $.Method({ Static: false, Public: true }, ".ctor",
+//        new JSIL.MethodSignature(null, [/*$customMsCore*/$customMsCore.TypeRef("System.Reflection.PropertyInfo")], []),
+//        function ctor(propertyInfo) {
+//            this._propertyInfo = propertyInfo;
+//            this.SetImp = new Function("o", "val", "o.set_" + this._propertyInfo.Name + "(val);");
+//            this.GetImp = new Function("o", "return o.get_" + this._propertyInfo.Name + "();");
+//        }
+//    );
+
+//    $.Method({ Static: false, Public: true, Virtual: true }, "Get",
+//        new JSIL.MethodSignature($.Object, [$.Object], []),
+//        function Get(o) {
+//            return this.GetImp(o);
+//        }
+//    );
+
+//    $.Method({ Static: false, Public: true, Virtual: true }, "Set",
+//        new JSIL.MethodSignature(null, [$.Object, ], []),
+//        function Set(o, val) {
+//            this.SetImp(o, val);
+//        }
+//    );
+
+//    $.Field({ Static: false, Public: false, ReadOnly: true }, "_propertyInfo", $customMSCore.TypeRef("System.Reflection.PropertyInfo"));
+//    $.ImplementInterfaces(
+//          /* 0 */ $WebXirkitImp.TypeRef("Fusee.Xirkit.IJsMemberAccessor")
+//    );
+
+//    return function (newThisType) { $thisType = newThisType; };
+//});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Xirkit.JsAccesssor", true, [], function ($interfaceBuilder) {
     $ = $interfaceBuilder;
 
     $.Method({ Static: false, Public: true }, ".ctor",
-        new JSIL.MethodSignature(null, [/*$customMsCore*/$customMsCore.TypeRef("System.Reflection.FieldInfo")], []),
-        function ctor(fieldInfo) {
-            this._fieldInfo = fieldInfo;
+        new JSIL.MethodSignature(null, [/*$customMsCore*/$customMsCore.TypeRef("System.Reflection.MemberInfo")], []),
+        function ctor(memberInfo) {
+            this._memberInfo = memberInfo;
+            
         }
     );
 
     $.Method({ Static: false, Public: true, Virtual: true }, "Get",
         new JSIL.MethodSignature($.Object, [$.Object], []),
         function Get(o) {
-            return o[ this._fieldInfo.Name];
+            return this.GetImp(o);
         }
     );
 
     $.Method({ Static: false, Public: true, Virtual: true }, "Set",
         new JSIL.MethodSignature(null, [$.Object, ], []),
         function Set(o, val) {
-            o[this._fieldInfo.Name] = val;
+            this.SetImp(o, val);
         }
     );
 
-    $.Field({ Static: false, Public: false, ReadOnly: true }, "_fieldInfo", $customMSCore.TypeRef("System.Reflection.FieldInfo"));
+    $.Field({ Static: false, Public: false, ReadOnly: true }, "_memberInfo", $customMSCore.TypeRef("System.Reflection.MemberInfo"));
     $.ImplementInterfaces(
           /* 0 */ $WebXirkitImp.TypeRef("Fusee.Xirkit.IJsMemberAccessor")
     );
 
     return function (newThisType) { $thisType = newThisType; };
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // implementation of public PinFactory Methods
 
@@ -194,17 +354,19 @@ JSIL.ImplementExternals("Fusee.Xirkit.PinFactory", function ($) {
                 }
             } else {
                 // It's a property
-                /*
-                    if (!propertyInfo.get_CanRead()) {
-                        throw $S02().Construct(("A property named " + member + " exists but we cannot read from it"));
-                    }
-                    memberType = propertyInfo.get_PropertyType();
-                    if (!(!$S04().CallStatic($fType(), "op_Equality", null, pinType, null) && !$S04().CallStatic($fType(), "op_Equality", null, memberType, pinType))) {
-                        elementAccessor.set($thisType.InstantiatePropertyAccessor(propertyInfo, memberType));
-                    } else {
-                        elementAccessor.set($thisType.InstantiateConvertingPropertyAccessor(propertyInfo, pinType, memberType));
-                    }
-                    */
+                //This is JSil compiled and maybe won't run
+                if (propertyInfo.GetGetMethod() === null) {
+                    throw new Exception(("A property named " + member + " exists but we cannot read from it"));
+                }
+                memberType = propertyInfo.get_PropertyType();
+
+                if (pinType === null || memberType === pinType) {
+                    // No conversion
+                    elementAccessor = PinFactory_InstantiatePropertyAccessor(propertyInfo, memberType);
+                } else {
+                    // Conversion
+                    elementAccessor = PinFactory_InstantiateConvertingPropertyAccessor(propertyInfo, pinType, memberType);
+                }        
             }
             result = {
                 "elementType": memberType,
@@ -214,12 +376,87 @@ JSIL.ImplementExternals("Fusee.Xirkit.PinFactory", function ($) {
         return result;
     }
 
-    function PinFactory_InstantiateFieldAccessor(fieldInfo, memberType) {
-        var ret = new Fusee.Xirkit.JsFieldAccesssor(fieldInfo);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    function PinFactory_InstantiateFieldAccessor(memberInfo, memberType) {
+        
+        var ret = new Fusee.Xirkit.JsAccesssor(memberInfo);
+        
+        ret.SetImp = new Function("o", "val", "o." + memberInfo.Name + " = val;");
+        ret.GetImp = new Function("o", "return o." + memberInfo.Name + ";");
+        
         return ret;
     }
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     function PinFactory_InstantiateConvertingFieldAccessor(fieldInfo, pinType, memberType) {
+        throw new Exception("TODO");
+    }
+
+
+
+
+
+
+
+
+
+
+
+    function PinFactory_InstantiatePropertyAccessor(memberInfo, memberType) {
+        //var ret = new Fusee.Xirkit.JsAccesssor(memberInfo);
+        //return ret;
+        
+
+        var ret = new Fusee.Xirkit.JsAccesssor(memberInfo);
+        //ret.SetImp = new Function("o", "val", "o[\"" + this._memberInfo.Name + "\"] = val;"); ODER:
+        ret.SetImp = new Function("o", "val", "o.set_" + memberInfo.Name + "(val);");
+        ret.GetImp = new Function("o", "return o.get_" + memberInfo.Name + "();");
+
+        return ret;
+
+    }
+
+
+
+
+
+
+
+
+    function PinFactory_InstantiateConvertingPropertyAccessor(propertyInfo, pinType, memberType) {
+        throw new Exception("TODO");
     }
 
     return function (newThisType) { $thisType = newThisType; };

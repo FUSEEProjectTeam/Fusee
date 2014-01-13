@@ -83,9 +83,9 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Assets\Cube.obj.model">
+    <None Include="Assets\Cube.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Sphere.obj.model">
