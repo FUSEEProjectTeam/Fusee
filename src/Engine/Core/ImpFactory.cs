@@ -31,7 +31,7 @@ namespace Fusee.Engine
         private static Type _networkImplementor;
 
         [JSIgnore]
-        private static Type _inputDeviceImplementor;
+        private static Type _inputDriverImplementor;
 
         [JSIgnore]
         private static Type RenderingImplementor
@@ -91,21 +91,21 @@ namespace Fusee.Engine
         }
 
         [JSIgnore]
-        private static Type InputDeviceImplementor
+        private static Type InputDriverImplementor
         {
             get
             {
-                if (_inputDeviceImplementor == null)
+                if (_inputDriverImplementor == null)
                 {
-                    // TODO: Remove this hardcoded hack to Lidgren
+
                     Assembly impAsm = Assembly.LoadFrom("Fusee.Engine.Imp.SlimDX.dll");
 
                     if (impAsm == null)
                         throw new Exception("Couldn't load implementor assembly (Fusee.Engine.Imp.SlimDX.dll).");
 
-                    _inputDeviceImplementor = impAsm.GetType("Fusee.Engine.InputDeviceImplementor");
+                    _inputDriverImplementor = impAsm.GetType("Fusee.Engine.InputDriverImplementor");
                 }
-                return _inputDeviceImplementor;
+                return _inputDriverImplementor;
             }
         }
 
@@ -197,14 +197,14 @@ namespace Fusee.Engine
         /// <returns></returns>
         /// <exception cref="System.Exception">Implementor type ( + RenderingImplementor.ToString() + ) doesn't contain method CreateNetworkImp</exception>
         [JSExternal]
-        public static IInputDeviceImp CreateInputDeviceImp()
+        public static IInputDriverImp CreateIInputDriverImp()
         {
-            MethodInfo mi = InputDeviceImplementor.GetMethod("CreateInputDeviceImp");
+            MethodInfo mi = InputDriverImplementor.GetMethod("CreateInputDriverImp");
 
             if (mi == null)
-                throw new Exception("Implementor type (" + RenderingImplementor.ToString() + ") doesn't contain method CreateNetworkImp");
+                throw new Exception("Implementor type (" + RenderingImplementor.ToString() + ") doesn't contain method CreateInputDriverImp");
 
-            return (IInputDeviceImp)mi.Invoke(null, null);
+            return (IInputDriverImp)mi.Invoke(null, null);
         }
 
         #endregion

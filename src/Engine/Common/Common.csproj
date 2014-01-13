@@ -59,6 +59,7 @@
     <Compile Include="Attributes.cs" />
     <Compile Include="IAudioStream.cs" />
     <Compile Include="IInputDeviceImp.cs" />
+    <Compile Include="IInputDriverImp.cs" />
     <Compile Include="IInputImp.cs" />
     <Compile Include="ImageData.cs" />
     <Compile Include="IMeshImp.cs" />

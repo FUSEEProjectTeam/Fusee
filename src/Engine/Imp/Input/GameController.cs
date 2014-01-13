@@ -10,6 +10,7 @@ namespace Fusee.Engine
         private JoystickState state;
         private bool[] buttonsPressed;
         private float deadZone;
+        private int buttonCount;
         
         
 
@@ -20,6 +21,7 @@ namespace Fusee.Engine
         public GameController(DeviceInstance device)
         {
             DirectInput directInput = new DirectInput();
+            //buttonCount = direct
              state = new JoystickState();
             deadZone = 0.1f;
             // Geräte suchen
@@ -58,6 +60,21 @@ namespace Fusee.Engine
             return state;
         }
 
+        public int GetPressedButton()
+        {
+            int buttonIndex = -1;
+            state = GetState();
+            bool[] buttons = new bool[state.GetButtons().Length];
+            for (int i = 0; i < buttons.Length; i++)
+            {
+                if (state.IsPressed(i))
+                {
+                    buttonIndex = i;
+                }
+            }
+            return buttonIndex;
+        }
+
         public bool IsButtonDown(int buttonIndex)
         {
             state = GetState();
@@ -87,6 +104,11 @@ namespace Fusee.Engine
                     buttonsPressed[buttonIndex] = false;
                 }
             return false;
+        }
+
+        public int GetButtonCount()
+        {
+            return joystick.Capabilities.ButtonCount;
         }
 
         public float GetZAxis()

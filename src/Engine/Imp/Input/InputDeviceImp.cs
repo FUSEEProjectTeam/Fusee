@@ -10,34 +10,9 @@ namespace Fusee.Engine
 {
     public class InputDeviceImp : IInputDeviceImp
     {
-        public List<GameController> _devices = new List<GameController>();
+        
         private GameController _controller;
 
-
-
-            public List<IInputDeviceImp> getDevicesByCategory(){
-                CreateDevices();
-                List<IInputDeviceImp> _list = new List<IInputDeviceImp>();
-                foreach (GameController controller in _devices)
-                {
-                    _list.Add(new InputDeviceImp(controller));
-                }
-                return _list;
-            }
-
-
-        // Status des GamePads
-
-        public void CreateDevices()
-        {
-            DirectInput directInput = new DirectInput();
-            var devices = directInput.GetDevices(DeviceClass.GameController, DeviceEnumerationFlags.AttachedOnly);
-
-            foreach (DeviceInstance deviceInstance in devices)
-            {
-                _devices.Add(new GameController(deviceInstance));
-            }
-        }
 
         public InputDeviceImp(GameController cont)
         {
@@ -52,17 +27,47 @@ namespace Fusee.Engine
 
 
 
-        public bool isButtonPressed()
+        public bool IsButtonPressed(int buttonIndex)
         {
-            return _controller.IsButtonPressed(0);
+            return _controller.IsButtonPressed(buttonIndex);
+        }
+
+        public bool IsButtonDown(int buttonIndex)
+        {
+            return _controller.IsButtonDown(buttonIndex);
+
         }
 
         public float getAxis(string axis)
         {
-            return _controller.GetXAxis();
+            switch (axis)
+            {
+                case "horizontal":
+                    return _controller.GetXAxis();
+                case "vertical":
+                    return _controller.GetYAxis();
+                default:
+                    return 0.0f;
+
+            }
         }
 
+        public string Name { get; private set; }
 
+        public int GetPressedButton()
+        {
+            return _controller.GetPressedButton();
+        }
+
+        public int GetButtonCount()
+        {
+            return _controller.GetButtonCount();
+        }
+
+        public string GetCategory()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 

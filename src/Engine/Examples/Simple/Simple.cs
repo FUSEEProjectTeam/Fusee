@@ -41,6 +41,8 @@ namespace Examples.Simple
         public override void Init()
         {
 
+            Input.Instance.InitializeDevices();
+
             _meshTea = MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
             _meshFace = MeshReader.LoadMesh(@"Assets/Face.obj.model");
 
@@ -54,19 +56,9 @@ namespace Examples.Simple
             var imgData = RC.LoadImage("Assets/world_map.jpg");
             _iTex = RC.CreateTexture(imgData);
 
-           // Input.Instance.createDevices(Input.DeviceCategory.GameController);
-          //  System.Diagnostics.Debug.Write(Input.Instance.getAxis("Horizontal", 0));
-           //gameController = new GameController(0);
-
-            Input.Instance.InitializeDevices(Input.DeviceCategory.GameController);
-            controller1 = Input.Instance.getDevice(0);
-           
-
-            
-           
-           
 
 
+            System.Diagnostics.Debug.Write(Input.Instance.Devices[0].GetButtonCount());
         }
 
         // is called once a frame
@@ -75,9 +67,15 @@ namespace Examples.Simple
 
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
+            foreach (InputDevice bla in Input.Instance.Devices)
+            {
+                if (bla.IsButtonDown(0))
+                    System.Diagnostics.Debug.Write("Heureka");
+            }
+
             
-           
-            System.Diagnostics.Debug.WriteLine( Input.Instance.getAxis("Vertical", 0));
+
+            //System.Diagnostics.Debug.WriteLine( Input.Instance.getAxis("Vertical", 0));
 
             //if (Input.Instance.IsKeyDown(KeyCodes.Up))
             //    _angleVert -= RotationSpeed * (float)Time.Instance.DeltaTime;

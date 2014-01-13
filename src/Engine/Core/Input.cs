@@ -11,8 +11,7 @@ namespace Fusee.Engine
         #region Fields
 
         private static Input _instance;
-        private IInputDeviceImp _IInputDeviceImp;
-        private List<IInputDeviceImp> _inputDevices = new List<IInputDeviceImp>();
+
 
         internal IInputImp InputImp
         {
@@ -301,57 +300,28 @@ namespace Fusee.Engine
 
         #region InputDevices
 
-        public void InitializeDevices(DeviceCategory category)
-        {
+        public List<InputDevice> Devices = new List<InputDevice>();
+        // TODO allow adding more than one inputdriver
+        private IInputDriverImp _inputDriverImp;
 
-            switch (category)
+        public void InitializeDevices()
+        {
+            foreach (IInputDeviceImp _inputDevice in _inputDriverImp.DeviceImps())
             {
-                case DeviceCategory.GameController:
-                    foreach(IInputDeviceImp device in _inputDeviceImp.getDevicesByCategory())
-                    {
-                        _inputDevices.Add(device);
-                    }
-                    
-                    break;
-                case DeviceCategory.Mouse:
-                    break;
-                case DeviceCategory.Keyboard:
-                    break;
-                case DeviceCategory.Touch:
-                    break;
-                case DeviceCategory.Kinect:
-                    break;
-                default:
-                    break;
+                Devices.Add(new InputDevice(_inputDevice));
             }
-
-            
         }
 
-        public float getAxis(string axis, int deviceIndex)
-        {
-            return _inputDevices[deviceIndex].getAxis(axis);
-        }
-
-        public IInputDeviceImp getDevice(int deviceIndex)
-        {
-            return _inputDevices[deviceIndex];
-        }
-        
-        private IInputDeviceImp _inputDeviceImp;
-        internal IInputDeviceImp InputDeviceImp
+        internal IInputDriverImp InputDriverImp
         {
             set
             {
-                _inputDeviceImp = value;
+                // _inputDrivers.Add(value)
+                _inputDriverImp = value;
             }
         }
 
-
-        internal void getDevicesByCategory()
-        {
-            _inputDeviceImp.getDevicesByCategory();
-        }
+        
 
         #endregion
     }

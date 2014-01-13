@@ -21,7 +21,7 @@ namespace Fusee.Engine
         private IAudioImp _audioImp;
         private IInputImp _inputImp;
         internal IRenderCanvasImp _canvasImp;
-        private IInputDeviceImp _inputDeviceImp;
+        private IInputDriverImp _inputDriverImp;
 
         #endregion
 
@@ -86,10 +86,10 @@ namespace Fusee.Engine
         /// The inputdevice implementor.
         /// </value>
         [InjectMe]
-        public IInputDeviceImp InputDeviceImplementor
+        public IInputDriverImp InputDriverImplementor
         {
-            set { _inputDeviceImp = value; }
-            get { return _inputDeviceImp; }
+            set { _inputDriverImp = value; }
+            get { return _inputDriverImp; }
         }
 
         /// <summary>
@@ -133,8 +133,9 @@ namespace Fusee.Engine
 
             if (_audioImp == null)
                 _audioImp = ImpFactory.CreateIAudioImp();
-            if (_inputDeviceImp == null)
-                _inputDeviceImp = ImpFactory.CreateInputDeviceImp();
+
+            if (_inputDriverImp == null)
+                _inputDriverImp = ImpFactory.CreateIInputDriverImp();
         }
 
         protected string GetAppName()
@@ -162,7 +163,7 @@ namespace Fusee.Engine
 
             Input.Instance.InputImp = _inputImp;
             Audio.Instance.AudioImp = _audioImp;
-            Input.Instance.InputDeviceImp = _inputDeviceImp;
+            Input.Instance.InputDriverImp = _inputDriverImp;
 
             Network.Instance.NetworkImp = ImpFactory.CreateINetworkImp();
 
