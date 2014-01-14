@@ -10,7 +10,7 @@ namespace Examples.RocketGame
 
         public override void Init()
         {
-            RC.ClearColor = new float4(1, 0, 1, 1);
+            RC.ClearColor = new float4(1, 1, 1, 1);
             Room = new GameWorld(RC);
         }
 

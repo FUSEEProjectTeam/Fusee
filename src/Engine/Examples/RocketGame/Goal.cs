@@ -21,9 +21,14 @@ namespace Examples.RocketGame
             SetShader(_inactiveColor, "Assets/toon_generic_5_tex.png", new float4(0, 0, 0, 1), new float2(10, 10));
         }
 
+        public bool Activated
+        {
+            get { return _activated; }
+        }
+
         public void SetActive()
         {
-            if (!_activated)
+            if (!Activated)
             {
                 SetShader(_activeColor, "Assets/toon_generic_5_tex.png", new float4(0, 0, 0, 1), new float2(10, 10));
                 _activated = true;
@@ -32,7 +37,7 @@ namespace Examples.RocketGame
 
         public void SetInactive()
         {
-            if (_activated)
+            if (Activated)
             {
                 SetShader(_inactiveColor, "Assets/toon_generic_5_tex.png", new float4(0, 0, 0, 1), new float2(10, 10));
                 _activated = false;

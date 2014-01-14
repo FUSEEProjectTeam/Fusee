@@ -12,8 +12,10 @@ namespace Examples.RocketGame
         protected float3 NRotXV;
         protected float3 NRotYV;
         protected float3 NRotZV;
-        protected float Scale = 1;
-        protected float Speed = 0;
+        protected float ScaleX = 1;
+        protected float ScaleY = 1;
+        protected float ScaleZ = 1;
+        private float _speed = 0;
         protected float4x4 CorrectionMatrix;
 
         private readonly Mesh _mesh;
@@ -62,6 +64,12 @@ namespace Examples.RocketGame
             UpdateNVectors();
         }
 
+        public float Speed
+        {
+            get { return _speed; }
+            set { _speed = value; }
+        }
+
         public float4x4 GetPosition()
         {
             return Position;
@@ -81,7 +89,16 @@ namespace Examples.RocketGame
         //Setscale and SetCorrectionMatrix are redundant but affect different parameters ... might wanna try to unify them
         public void SetScale(float scale)
         {
-            Scale = scale;
+            ScaleX = scale;
+            ScaleY = scale;
+            ScaleZ = scale;
+        }
+
+        public void SetScale(float scaleX, float scaleY, float scaleZ)
+        {
+            ScaleX = scaleX;
+            ScaleY = scaleY;
+            ScaleZ = scaleZ;
         }
 
         //Setscale and SetCorrectionMatrix are redundant but affect different parameters ... might wanna try to unify them
@@ -124,7 +141,7 @@ namespace Examples.RocketGame
 
         public void Render(float4x4 camMatrix)
         {
-            _rc.ModelView = CorrectionMatrix * float4x4.Scale(Scale, Scale, Scale) * Position * camMatrix;
+            _rc.ModelView = CorrectionMatrix * float4x4.Scale(ScaleX, ScaleY, ScaleZ) * Position * camMatrix;
 
             _shaderEffect.RenderMesh(_mesh);
         }

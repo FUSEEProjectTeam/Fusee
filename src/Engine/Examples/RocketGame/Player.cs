@@ -11,7 +11,6 @@ namespace Examples.RocketGame
 
         public Player(String meshPath, RenderContext rc, float posX = 0, float posY = 0, float posZ = 0, float angX = 0, float angY = 0, float angZ = 0) : base(meshPath, rc, posX, posY, posZ, angX, angY, angZ)
         {
-
         }
 
         public Player(String meshPath, RenderContext rc, float3 posxyz, float3 angxyz) : base(meshPath, rc, posxyz, angxyz)
@@ -50,7 +49,7 @@ namespace Examples.RocketGame
                 Speed -= 0.5f;
             }
 
-            Speed = Clamp(Speed, 0.0f, 5.0f);
+            Speed = Clamp(Speed, 0.0f, 30.0f);
 
             
             _oldPos.x = Position.Row3.x;

@@ -1,4 +1,5 @@
-﻿using Fusee.Engine;
+﻿using System.Globalization;
+using Fusee.Engine;
 using Fusee.Math;
 
 namespace Examples.RocketGame
@@ -9,15 +10,23 @@ namespace Examples.RocketGame
         private readonly GameWorld _gw;
         private readonly GUIHandler _guiHandler;
 
-        private const bool DebugFlag = true;
+        private const bool DebugFlag = false;
         private GUIText _debug;
 
         private IFont _fontSmall;
         private IFont _fontMedium;
+        private IFont _fontBig;
 
-        private readonly GUIPanel _startPanel;
+        private readonly GUIPanel _startPanel1;
         private readonly GUIButton _startPanelButtonStart;
         private readonly GUIButton _startPanelButtonStuff;
+        private readonly GUIPanel _startPanel2;
+        private readonly GUIText _startPanel2Text;
+
+        private readonly GUIPanel _playPanel;
+        private GUIText _playScore;
+
+        private GUIText _overText;
 
         private readonly float4 _color1 = new float4(0.8f, 0.1f, 0.1f, 1);
         private readonly float4 _color2 = new float4(0, 0, 0, 1);
@@ -29,6 +38,7 @@ namespace Examples.RocketGame
 
             _fontSmall = rc.LoadFont("Assets/Cabin.ttf", 12);
             _fontMedium = rc.LoadFont("Assets/Cabin.ttf", 18);
+            _fontBig = rc.LoadFont("Assets/Cabin.ttf", 40);
 
             _guiHandler = new GUIHandler();
             _guiHandler.AttachToContext(rc);
@@ -37,7 +47,7 @@ namespace Examples.RocketGame
 
             //Start Pannel Init
 
-            _startPanel = new GUIPanel("Titelbla", _fontMedium, 10, 10, 150, 110);
+            _startPanel1 = new GUIPanel("RocketGame", _fontMedium, 10, 10, 150, 110);
             _startPanelButtonStart = new GUIButton("Start", _fontSmall, 10, 30, 130, 30);
             _startPanelButtonStart.OnGUIButtonDown += OnGUIButtonDown;
             _startPanelButtonStart.OnGUIButtonUp += OnGUIButtonUp;
@@ -48,9 +58,16 @@ namespace Examples.RocketGame
             _startPanelButtonStuff.OnGUIButtonUp += OnGUIButtonUp;
             _startPanelButtonStuff.OnGUIButtonEnter += OnGUIButtonEnter;
             _startPanelButtonStuff.OnGUIButtonLeave += OnGUIButtonLeave;
+            _startPanel1.ChildElements.Add(_startPanelButtonStart);
+            _startPanel1.ChildElements.Add(_startPanelButtonStuff);
 
-            _startPanel.ChildElements.Add(_startPanelButtonStart);
-            _startPanel.ChildElements.Add(_startPanelButtonStuff);
+            _startPanel2 = new GUIPanel("Find and activate all the red cubes!", _fontMedium, 170, 20, 300, 30);
+
+            _playPanel = new GUIPanel("Goals found:", _fontMedium, 10, 10, 150, 60);
+            _playScore = new GUIText("", _fontMedium, 48, 45, new float4(1, 0, 0, 1));
+            _playPanel.ChildElements.Add(_playScore);
+
+            _overText = new GUIText("Game Over, you Win!", _fontBig, 200,100, new float4(0,1,0,1));
 
             ShowStartGUI();
         }
@@ -61,12 +78,11 @@ namespace Examples.RocketGame
 
             if (sender == _startPanelButtonStart)
             {
-                _gw.StartGame();
+                _gw.CurrentGameState = (int) GameState.Running;
             }
             else if (sender == _startPanelButtonStuff)
             {
                 SetDebugMsg("Stuff");
-                _guiHandler.Clear();
             }
         }
         
@@ -96,11 +112,40 @@ namespace Examples.RocketGame
             _debug.Text = debugMsg;
         }
 
+        public void UpdateScore()
+        {
+            string curScore = _gw.Score.ToString(CultureInfo.InvariantCulture);
+            string maxScore = _gw.MaxScore.ToString(CultureInfo.InvariantCulture);
+
+            if (curScore.Length < 2)
+                curScore = "0" + curScore;
+            if (maxScore.Length < 2)
+                maxScore = "0" + maxScore;
+
+            _playScore.Text = curScore + "/" + maxScore;
+        }
+
         public void ShowStartGUI()
         {
             _guiHandler.Clear();
-            _guiHandler.Add(_startPanel);
+            _guiHandler.Add(_startPanel1);
+            _guiHandler.Add(_startPanel2);
             if (DebugFlag) _guiHandler.Add(_debug);
         }
+
+        public void ShowPlayGUI()
+        {
+            UpdateScore();
+            _guiHandler.Clear();
+            _guiHandler.Add(_playPanel);
+            if (DebugFlag) _guiHandler.Add(_debug);
+
+        }
+
+        public void ShowOverGUI()
+        {
+            _guiHandler.Add(_overText);
+        }
+
     }
 }
