@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Fusee.Engine
 {
@@ -316,7 +317,19 @@ namespace Fusee.Engine
             }
         }
 
-      
+        public InputDevice GetDevice(int deviceIndex)
+        {
+            try
+            {
+                return Devices[deviceIndex];
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                System.Diagnostics.Debug.WriteLine("Can not find Input Device with Device-Index " + deviceIndex + "!");
+            }
+
+            return new InputDevice();
+        }
 
         internal IInputDriverImp InputDriverImp
         {
