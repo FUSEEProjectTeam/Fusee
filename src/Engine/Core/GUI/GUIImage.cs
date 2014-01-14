@@ -92,17 +92,20 @@ namespace Fusee.Engine
         {
             if (RContext == rc) return;
 
-            var imgData = rc.LoadImage(ImgSrc);
-            GUITexture = rc.CreateTexture(imgData);
+            if (ImgSrc != null)
+            {
+                var imgData = rc.LoadImage(ImgSrc);
+                GUITexture = rc.CreateTexture(imgData);
 
-            CreateGUIShader();
+                CreateGUIShader();
+            }
 
             base.AttachToContext(rc);
         }
 
         protected override void CreateMesh()
         {
-            SetRectangleMesh(BorderWidth, new float4(0, 0, 0, 1), BorderColor);
+            SetRectangleMesh(BorderWidth, new float4(1, 1, 1, 1), BorderColor);
 
             var uvs = GUIMesh.UVs;
 
