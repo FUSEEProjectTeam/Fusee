@@ -174,7 +174,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderCanvasImp
         new JSIL.MethodSignature(null, []),
         function _ctor() {
             this.theCanvas = document.getElementById("canvas");
-            this.gl = this.theCanvas.getContext("webgl", { premultipliedAlpha: false }) || this.theCanvas.getContext("experimental-webgl", { premultipliedAlpha: false });
+            this.gl = this.theCanvas.getContext("webgl") || this.theCanvas.getContext("experimental-webgl");
             this.currWidth = 0;
             this.currHeight = 0;
         }
@@ -194,10 +194,24 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderCanvasImp
         }
     );
 
+    $.Method({ Static: false, Public: true }, "set_Height",
+        new JSIL.MethodSignature(null, [$.Int32]),
+        function set_Height(val) {
+            // not implemented
+        }
+    );
+
     $.Method({ Static: false, Public: true }, "get_Width",
         new JSIL.MethodSignature($.Int32, []),
         function get_Width() {
             return this.gl.drawingBufferWidth;
+        }
+    );
+
+    $.Method({ Static: false, Public: true }, "set_Width",
+        new JSIL.MethodSignature(null, [$.Int32]),
+        function set_Width(val) {
+            // not implemented
         }
     );
 
@@ -439,7 +453,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
             this.gl = renderCanvas.gl;
             this.gl.enable(this.gl.DEPTH_TEST);
             this.gl.enable(this.gl.CULL_FACE);
-            // this.gl.clearColor(0.0, 0.0, 0.2, 1.0);
+            this.gl.clearColor(0.0, 0.0, 0.2, 1.0);
             this._currentTextureUnit = 0;
         }
     );
@@ -2103,6 +2117,15 @@ JSIL.ImplementExternals("Fusee.Engine.RenderContext", function($) {
         function LoadSystemFont(filename, size) {
             filename = "Assets/" + filename + ".ttf";
             return this.LoadFont(filename, size);
+        }
+    );
+});
+
+JSIL.ImplementExternals("Fusee.Engine.GUIHandler", function ($) {
+    $.Method({ Static: false, Public: true }, "SortArray",
+        new JSIL.MethodSignature(null, [$jsilcore.TypeRef("JSIL.Reference", [$jsilcore.TypeRef("System.Array", [$asm02.TypeRef("Fusee.Engine.GUIElement")])])], []),
+        function SortArray(/* ref */ elements) {
+            elements.$value.sort(function (a, b) { return JSIL.CompareValues(a.get_ZIndex(), b.get_ZIndex()) });
         }
     );
 });

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using JSIL.Meta;
 
 namespace Fusee.Engine
 {
@@ -35,6 +36,12 @@ namespace Fusee.Engine
                 guiElement.Refresh();      
         }
 
+        [JSExternal]
+        private void SortArray(ref GUIElement[] elements)
+        {
+            Array.Sort(elements, (x, y) => x.ZIndex.CompareTo(y.ZIndex));
+        }
+
         public void RenderGUI()
         {
             if (_renderContext == null)
@@ -42,7 +49,7 @@ namespace Fusee.Engine
 
             // sort list/array temporarily by ZIndex
             var tmpArray = ToArray();
-            Array.Sort(tmpArray, (x, y) => x.ZIndex.CompareTo(y.ZIndex));
+            SortArray(ref tmpArray);
 
             // render from background to foreground
             int curZ = this[0].ZIndex;
