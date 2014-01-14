@@ -58,6 +58,8 @@ namespace Examples.RocketGame
 
             _goals.Add(new Goal("Assets/cube.obj.model", rc, 1500, 1500, -4950, (float)Math.PI / 4, (float)Math.PI / 4, (float)Math.PI / 4));
             _goals[0].SetScale(0.5f);
+            _goals.Add(new Goal("Assets/cube.obj.model", rc, -1200, 800, 1000, (float)Math.PI / 4, (float)Math.PI / 4, (float)Math.PI / 4));
+            _goals[1].SetScale(0.5f);
 
             _maxScore = _goals.Count;
             
