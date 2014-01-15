@@ -939,6 +939,9 @@ namespace Fusee.Engine
         /// </returns>
         public ImageData LoadImage(String filename)
         {
+            if (!File.Exists(filename))
+                throw new FileNotFoundException();
+
             return _rci.LoadImage(filename);
         }
 
