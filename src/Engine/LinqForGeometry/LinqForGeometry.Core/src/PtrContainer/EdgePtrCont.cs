@@ -1,7 +1,7 @@
 ﻿/*
     Author: Dominik Steffen
     E-Mail: dominik.steffen@hs-furtwangen.de, dominik.steffen@gmail.com
-    Bachlor Thesis Summer Semester 2013
+    Bachelor Thesis Summer Semester 2013
     'Computer Science in Media'
     Project: LinqForGeometry
     Professors:

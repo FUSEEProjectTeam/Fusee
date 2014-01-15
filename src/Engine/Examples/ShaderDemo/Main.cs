@@ -1,5 +1,4 @@
 using Fusee.Engine;
-using Fusee.SceneManagement;
 using Fusee.Math;
 
 namespace Examples.ShaderDemo
@@ -17,7 +16,7 @@ namespace Examples.ShaderDemo
         private Mesh _meshCube;
         private Mesh _meshSphere;
         private Mesh _meshTeapot;
-        private string _textCurrentMesh;
+
         // ShaderPrograms
         private ShaderProgram _currentShader;
         private ShaderProgram _shaderDiffuseColor;
@@ -26,6 +25,7 @@ namespace Examples.ShaderDemo
         private ShaderProgram _shaderDiffuseBumpTexture;
         private ShaderProgram _shaderSpecularTexture;
         private string _textShaderName = "Diffuse Color";
+
         // ShaderParams
         private IShaderParam _paramColor;
         private IShaderParam _paramTexture;
@@ -44,11 +44,11 @@ namespace Examples.ShaderDemo
         private ITexture _currentBumpTexture;
 
         // Toon Shader Effect
-        private ShaderEffect _shaderEffect = new ShaderEffect(new[]
+        private readonly ShaderEffect _shaderEffect = new ShaderEffect(new[]
+        {
+            new EffectPassDeclaration
             {
-               new EffectPassDeclaration
-                   {
-          VS = @"
+                VS = @"
             /* Copies incoming vertex color without change.
              * Applies the transformation matrix to vertex position.
              */
@@ -72,8 +72,7 @@ namespace Examples.ShaderDemo
                 gl_Position = (FUSEE_MVP * vec4(fuVertex, 1.0) ) + vec4(5.0 * vNormal.x, 5.0 * vNormal.y, 0, 0);
                 vUV = fuUV;
             }",
-
-        PS = @"
+                PS = @"
             /* Copies incoming fragment color without change. */
             #ifdef GL_ES
                 precision highp float;
@@ -86,17 +85,15 @@ namespace Examples.ShaderDemo
             {
                 gl_FragColor = vec4(0, 0, 0, 1);
             }",
-
-          StateSet = new RenderStateSet()
-               {
+                StateSet = new RenderStateSet
+                {
                     AlphaBlendEnable = false,
                     ZEnable = false
                 }
-             },
-
-         new EffectPassDeclaration
-             {
-                   VS = @"
+            },
+            new EffectPassDeclaration
+            {
+                VS = @"
             attribute vec4 fuColor;
             attribute vec3 fuVertex;
             attribute vec3 fuNormal;
@@ -115,8 +112,7 @@ namespace Examples.ShaderDemo
                 vNormal = mat3(FUSEE_ITMV[0].xyz, FUSEE_ITMV[1].xyz, FUSEE_ITMV[2].xyz) * fuNormal;
                 vUV = fuUV;
             }",
-
-        PS = @"
+                PS = @"
 
             #ifdef GL_ES
                 precision highp float;
@@ -133,9 +129,8 @@ namespace Examples.ShaderDemo
                 gl_FragColor = result;
                 // gl_FragColor = vec4(1, 0, 0, 1);
             }",
-
-         StateSet = new RenderStateSet()
-               {
+                StateSet = new RenderStateSet
+                {
                     AlphaBlendEnable = false,
                     ZEnable = true,
                     //BlendFactor = new float4(0.5f, 0.5f, 0.5f, 0.5f),
@@ -143,13 +138,12 @@ namespace Examples.ShaderDemo
                     //SourceBlend = Blend.BlendFactor,
                     //DestinationBlend = Blend.InverseBlendFactor
                 }
-             },
-            },
-
+            }
+        },
             new[]
-                {
-                    new EffectParameterDeclaration {Name = "vColor", Value = new float4(1, 0.3f, 0.7f, 1)}, 
-                }); 
+            {
+                new EffectParameterDeclaration {Name = "vColor", Value = new float4(1, 0.3f, 0.7f, 1)}
+            });
 
 
         /// GUI AREA ///
@@ -159,43 +153,45 @@ namespace Examples.ShaderDemo
         // GUI Images
         private GUIImage _guiImage;
         private GUIImage _borderImage;
+
         // Fonts
-        private IFont _guiFont_Cabin18;
-        private IFont _guiFont_Cabin24;
+        private IFont _guiFontCabin18;
+        private IFont _guiFontCabin24;
 
         // Repeatable Background Dimensions
-        private static float bg_xmax = 128;
-        private static float bg_ymax = 128;
+        private const float BgXmax = 128;
+        private const float BgYmax = 128;
 
         // Button Background Colors
-        private static float4 colorDefaultButton = new float4(1, 1, 1, 1); // White
-        private static float4 colorHighlightedButton = new float4(1, 0.588f, 0, 1); // Orange
+        private static readonly float4 ColorDefaultButton = new float4(1, 1, 1, 1); // White
+        private static readonly float4 ColorHighlightedButton = new float4(1, 0.588f, 0, 1); // Orange
+
         // Application Title Text
         private GUIText _guiText;
 
         //* Menu 1: Select Shader
         private GUIPanel _panelSelectShader;
         //** Possible Shader Buttons
-        private GUIButton btn_DiffuseColorShader;
-        private GUIButton btn_TextureShader;
-        private GUIButton btn_DiffuseTextureShader;
-        private GUIButton btn_DiffuseBumpTextureShader;
-        private GUIButton btn_SpecularTexture;
-        private GUIButton btn_Toon;
+        private GUIButton _btnDiffuseColorShader;
+        private GUIButton _btnTextureShader;
+        private GUIButton _btnDiffuseTextureShader;
+        private GUIButton _btnDiffuseBumpTextureShader;
+        private GUIButton _btnSpecularTexture;
+        private GUIButton _btnToon;
 
         //* Menu 2: Light Settings
         private GUIPanel _panelLightSettings;
         //** Possible Light Settings
-        private GUIButton btn_DirectionalLight;
-        private GUIButton btn_PointLight;
-        private GUIButton btn_SpotLight;
+        private GUIButton _btnDirectionalLight;
+        private GUIButton _btnPointLight;
+        private GUIButton _btnSpotLight;
 
         //* Menu 3: Select Mesh
         private GUIPanel _panelSelectMesh;
         //** Possible selectable Meshes
-        private GUIButton btn_Cube;
-        private GUIButton btn_Sphere;
-        private GUIButton btn_Teapot;
+        private GUIButton _btnCube;
+        private GUIButton _btnSphere;
+        private GUIButton _btnTeapot;
 
         public override void Init()
         {
@@ -209,11 +205,13 @@ namespace Examples.ShaderDemo
             _guiHandler.AttachToContext(RC);
 
             // font + text
-            _guiFont_Cabin18 = RC.LoadFont("Assets/Cabin.ttf", 18);
-            _guiFont_Cabin24 = RC.LoadFont("Assets/Cabin.ttf", 24);
+            _guiFontCabin18 = RC.LoadFont("Assets/Cabin.ttf", 18);
+            _guiFontCabin24 = RC.LoadFont("Assets/Cabin.ttf", 24);
 
-            _guiText = new GUIText("FUSEE Shader Demo", _guiFont_Cabin24, 30, Height-30);
-            _guiText.TextColor = new float4(1, 1, 1, 1);
+            _guiText = new GUIText("FUSEE Shader Demo", _guiFontCabin24, 30, Height - 30)
+            {
+                TextColor = new float4(1, 1, 1, 1)
+            };
 
             _guiHandler.Add(_guiText);
 
@@ -224,108 +222,114 @@ namespace Examples.ShaderDemo
             //_guiHandler.Add(_borderImage);
 
             //* Menu1: Select Shader
-            _panelSelectShader = new GUIPanel("Select Shader", _guiFont_Cabin24, 10, 10, 230, 230);
+            _panelSelectShader = new GUIPanel("Select Shader", _guiFontCabin24, 10, 10, 230, 230);
             _panelSelectShader.ChildElements.Add(_borderImage);
             _guiHandler.Add(_panelSelectShader);
+
             //** Possible Shader Buttons
-            btn_DiffuseColorShader = new GUIButton("Diffuse Color", _guiFont_Cabin18, 25, 40, 180, 25);
-            btn_TextureShader = new GUIButton("Texture Only", _guiFont_Cabin18, 25, 70, 180, 25);
-            btn_DiffuseTextureShader = new GUIButton("Diffuse Texture", _guiFont_Cabin18, 25, 100, 180, 25);
-            btn_DiffuseBumpTextureShader = new GUIButton("Diffuse Bump Texture", _guiFont_Cabin18, 25, 130, 180, 25);
-            btn_SpecularTexture = new GUIButton("Specular Texture", _guiFont_Cabin18, 25, 160, 180, 25);
-            btn_Toon = new GUIButton("Toon", _guiFont_Cabin18, 25, 190, 180, 25);
+            _btnDiffuseColorShader = new GUIButton("Diffuse Color", _guiFontCabin18, 25, 40, 180, 25);
+            _btnTextureShader = new GUIButton("Texture Only", _guiFontCabin18, 25, 70, 180, 25);
+            _btnDiffuseTextureShader = new GUIButton("Diffuse Texture", _guiFontCabin18, 25, 100, 180, 25);
+            _btnDiffuseBumpTextureShader = new GUIButton("Diffuse Bump Texture", _guiFontCabin18, 25, 130, 180, 25);
+            _btnSpecularTexture = new GUIButton("Specular Texture", _guiFontCabin18, 25, 160, 180, 25);
+            _btnToon = new GUIButton("Toon", _guiFontCabin18, 25, 190, 180, 25);
+
             //*** Add Handlers
-            btn_DiffuseColorShader.OnGUIButtonDown += OnMenuButtonDown;
-            btn_DiffuseColorShader.OnGUIButtonUp += OnMenuButtonUp;
-            btn_DiffuseColorShader.OnGUIButtonEnter += OnMenuButtonEnter;
-            btn_DiffuseColorShader.OnGUIButtonLeave += OnMenuButtonLeave;
+            _btnDiffuseColorShader.OnGUIButtonDown += OnMenuButtonDown;
+            _btnDiffuseColorShader.OnGUIButtonUp += OnMenuButtonUp;
+            _btnDiffuseColorShader.OnGUIButtonEnter += OnMenuButtonEnter;
+            _btnDiffuseColorShader.OnGUIButtonLeave += OnMenuButtonLeave;
 
-            btn_TextureShader.OnGUIButtonDown += OnMenuButtonDown;
-            btn_TextureShader.OnGUIButtonUp += OnMenuButtonUp;
-            btn_TextureShader.OnGUIButtonEnter += OnMenuButtonEnter;
-            btn_TextureShader.OnGUIButtonLeave += OnMenuButtonLeave;
+            _btnTextureShader.OnGUIButtonDown += OnMenuButtonDown;
+            _btnTextureShader.OnGUIButtonUp += OnMenuButtonUp;
+            _btnTextureShader.OnGUIButtonEnter += OnMenuButtonEnter;
+            _btnTextureShader.OnGUIButtonLeave += OnMenuButtonLeave;
 
-            btn_DiffuseTextureShader.OnGUIButtonDown += OnMenuButtonDown;
-            btn_DiffuseTextureShader.OnGUIButtonUp += OnMenuButtonUp;
-            btn_DiffuseTextureShader.OnGUIButtonEnter += OnMenuButtonEnter;
-            btn_DiffuseTextureShader.OnGUIButtonLeave += OnMenuButtonLeave;
+            _btnDiffuseTextureShader.OnGUIButtonDown += OnMenuButtonDown;
+            _btnDiffuseTextureShader.OnGUIButtonUp += OnMenuButtonUp;
+            _btnDiffuseTextureShader.OnGUIButtonEnter += OnMenuButtonEnter;
+            _btnDiffuseTextureShader.OnGUIButtonLeave += OnMenuButtonLeave;
 
-            btn_DiffuseBumpTextureShader.OnGUIButtonDown += OnMenuButtonDown;
-            btn_DiffuseBumpTextureShader.OnGUIButtonUp += OnMenuButtonUp;
-            btn_DiffuseBumpTextureShader.OnGUIButtonEnter += OnMenuButtonEnter;
-            btn_DiffuseBumpTextureShader.OnGUIButtonLeave += OnMenuButtonLeave;
+            _btnDiffuseBumpTextureShader.OnGUIButtonDown += OnMenuButtonDown;
+            _btnDiffuseBumpTextureShader.OnGUIButtonUp += OnMenuButtonUp;
+            _btnDiffuseBumpTextureShader.OnGUIButtonEnter += OnMenuButtonEnter;
+            _btnDiffuseBumpTextureShader.OnGUIButtonLeave += OnMenuButtonLeave;
 
-            btn_SpecularTexture.OnGUIButtonDown += OnMenuButtonDown;
-            btn_SpecularTexture.OnGUIButtonUp += OnMenuButtonUp;
-            btn_SpecularTexture.OnGUIButtonEnter += OnMenuButtonEnter;
-            btn_SpecularTexture.OnGUIButtonLeave += OnMenuButtonLeave;
+            _btnSpecularTexture.OnGUIButtonDown += OnMenuButtonDown;
+            _btnSpecularTexture.OnGUIButtonUp += OnMenuButtonUp;
+            _btnSpecularTexture.OnGUIButtonEnter += OnMenuButtonEnter;
+            _btnSpecularTexture.OnGUIButtonLeave += OnMenuButtonLeave;
 
-            btn_Toon.OnGUIButtonDown += OnMenuButtonDown;
-            btn_Toon.OnGUIButtonUp += OnMenuButtonUp;
-            btn_Toon.OnGUIButtonEnter += OnMenuButtonEnter;
-            btn_Toon.OnGUIButtonLeave += OnMenuButtonLeave;
+            _btnToon.OnGUIButtonDown += OnMenuButtonDown;
+            _btnToon.OnGUIButtonUp += OnMenuButtonUp;
+            _btnToon.OnGUIButtonEnter += OnMenuButtonEnter;
+            _btnToon.OnGUIButtonLeave += OnMenuButtonLeave;
+
             //**** Add Buttons to Panel
-            _panelSelectShader.ChildElements.Add(btn_DiffuseColorShader);
-            _panelSelectShader.ChildElements.Add(btn_TextureShader);
-            _panelSelectShader.ChildElements.Add(btn_DiffuseTextureShader);
-            _panelSelectShader.ChildElements.Add(btn_DiffuseBumpTextureShader);
-            _panelSelectShader.ChildElements.Add(btn_SpecularTexture);
-            _panelSelectShader.ChildElements.Add(btn_Toon);
+            _panelSelectShader.ChildElements.Add(_btnDiffuseColorShader);
+            _panelSelectShader.ChildElements.Add(_btnTextureShader);
+            _panelSelectShader.ChildElements.Add(_btnDiffuseTextureShader);
+            _panelSelectShader.ChildElements.Add(_btnDiffuseBumpTextureShader);
+            _panelSelectShader.ChildElements.Add(_btnSpecularTexture);
+            _panelSelectShader.ChildElements.Add(_btnToon);
+
             //* Menu3: Select Mesh
-            _panelSelectMesh = new GUIPanel("Select Mesh", _guiFont_Cabin24, 270, 10, 230, 130);
+            _panelSelectMesh = new GUIPanel("Select Mesh", _guiFontCabin24, 270, 10, 230, 130);
             _panelSelectMesh.ChildElements.Add(_borderImage);
             _guiHandler.Add(_panelSelectMesh);
+
             //** Possible Meshes
-            btn_Cube = new GUIButton("Cube", _guiFont_Cabin18, 25, 40, 180, 25);
-            btn_Sphere = new GUIButton("Sphere", _guiFont_Cabin18, 25, 70, 180, 25);
-            btn_Teapot = new GUIButton("Teapot", _guiFont_Cabin18, 25, 100, 180, 25);
-            _panelSelectMesh.ChildElements.Add(btn_Cube);
-            _panelSelectMesh.ChildElements.Add(btn_Sphere);
-            _panelSelectMesh.ChildElements.Add(btn_Teapot);
+            _btnCube = new GUIButton("Cube", _guiFontCabin18, 25, 40, 180, 25);
+            _btnSphere = new GUIButton("Sphere", _guiFontCabin18, 25, 70, 180, 25);
+            _btnTeapot = new GUIButton("Teapot", _guiFontCabin18, 25, 100, 180, 25);
+            _panelSelectMesh.ChildElements.Add(_btnCube);
+            _panelSelectMesh.ChildElements.Add(_btnSphere);
+            _panelSelectMesh.ChildElements.Add(_btnTeapot);
 
             //** Add handlers 
-            btn_Cube.OnGUIButtonDown += OnMenuButtonDown;
-            btn_Cube.OnGUIButtonUp += OnMenuButtonUp;
-            btn_Cube.OnGUIButtonEnter += OnMenuButtonEnter;
-            btn_Cube.OnGUIButtonLeave += OnMenuButtonLeave;
+            _btnCube.OnGUIButtonDown += OnMenuButtonDown;
+            _btnCube.OnGUIButtonUp += OnMenuButtonUp;
+            _btnCube.OnGUIButtonEnter += OnMenuButtonEnter;
+            _btnCube.OnGUIButtonLeave += OnMenuButtonLeave;
 
-            btn_Sphere.OnGUIButtonDown += OnMenuButtonDown;
-            btn_Sphere.OnGUIButtonUp += OnMenuButtonUp;
-            btn_Sphere.OnGUIButtonEnter += OnMenuButtonEnter;
-            btn_Sphere.OnGUIButtonLeave += OnMenuButtonLeave;
+            _btnSphere.OnGUIButtonDown += OnMenuButtonDown;
+            _btnSphere.OnGUIButtonUp += OnMenuButtonUp;
+            _btnSphere.OnGUIButtonEnter += OnMenuButtonEnter;
+            _btnSphere.OnGUIButtonLeave += OnMenuButtonLeave;
 
-            btn_Teapot.OnGUIButtonDown += OnMenuButtonDown;
-            btn_Teapot.OnGUIButtonUp += OnMenuButtonUp;
-            btn_Teapot.OnGUIButtonEnter += OnMenuButtonEnter;
-            btn_Teapot.OnGUIButtonLeave += OnMenuButtonLeave;
+            _btnTeapot.OnGUIButtonDown += OnMenuButtonDown;
+            _btnTeapot.OnGUIButtonUp += OnMenuButtonUp;
+            _btnTeapot.OnGUIButtonEnter += OnMenuButtonEnter;
+            _btnTeapot.OnGUIButtonLeave += OnMenuButtonLeave;
 
             //* Menu2: Light Settings
-            _panelLightSettings = new GUIPanel("Light Settings", _guiFont_Cabin24, 530, 10, 230, 130);
+            _panelLightSettings = new GUIPanel("Light Settings", _guiFontCabin24, 530, 10, 230, 130);
             _panelLightSettings.ChildElements.Add(_borderImage);
             _guiHandler.Add(_panelLightSettings);
+
             //** Possible Light Settings
-            btn_DirectionalLight = new GUIButton("Directional Light", _guiFont_Cabin18, 25, 40, 180, 25);
-            btn_PointLight = new GUIButton("Point Light", _guiFont_Cabin18, 25, 70, 180, 25);
-            btn_SpotLight = new GUIButton("Spot Light", _guiFont_Cabin18, 25, 100, 180, 25);
-            _panelLightSettings.ChildElements.Add(btn_DirectionalLight);
-            _panelLightSettings.ChildElements.Add(btn_PointLight);
-            _panelLightSettings.ChildElements.Add(btn_SpotLight);
+            _btnDirectionalLight = new GUIButton("Directional Light", _guiFontCabin18, 25, 40, 180, 25);
+            _btnPointLight = new GUIButton("Point Light", _guiFontCabin18, 25, 70, 180, 25);
+            _btnSpotLight = new GUIButton("Spot Light", _guiFontCabin18, 25, 100, 180, 25);
+            _panelLightSettings.ChildElements.Add(_btnDirectionalLight);
+            _panelLightSettings.ChildElements.Add(_btnPointLight);
+            _panelLightSettings.ChildElements.Add(_btnSpotLight);
 
             //*** Add Handlers
-            btn_DirectionalLight.OnGUIButtonDown += OnMenuButtonDown;
-            btn_DirectionalLight.OnGUIButtonUp += OnMenuButtonUp;
-            btn_DirectionalLight.OnGUIButtonEnter += OnMenuButtonEnter;
-            btn_DirectionalLight.OnGUIButtonLeave += OnMenuButtonLeave;
+            _btnDirectionalLight.OnGUIButtonDown += OnMenuButtonDown;
+            _btnDirectionalLight.OnGUIButtonUp += OnMenuButtonUp;
+            _btnDirectionalLight.OnGUIButtonEnter += OnMenuButtonEnter;
+            _btnDirectionalLight.OnGUIButtonLeave += OnMenuButtonLeave;
 
-            btn_PointLight.OnGUIButtonDown += OnMenuButtonDown;
-            btn_PointLight.OnGUIButtonUp += OnMenuButtonUp;
-            btn_PointLight.OnGUIButtonEnter += OnMenuButtonEnter;
-            btn_PointLight.OnGUIButtonLeave += OnMenuButtonLeave;
+            _btnPointLight.OnGUIButtonDown += OnMenuButtonDown;
+            _btnPointLight.OnGUIButtonUp += OnMenuButtonUp;
+            _btnPointLight.OnGUIButtonEnter += OnMenuButtonEnter;
+            _btnPointLight.OnGUIButtonLeave += OnMenuButtonLeave;
 
-            btn_SpotLight.OnGUIButtonDown += OnMenuButtonDown;
-            btn_SpotLight.OnGUIButtonUp += OnMenuButtonUp;
-            btn_SpotLight.OnGUIButtonEnter += OnMenuButtonEnter;
-            btn_SpotLight.OnGUIButtonLeave += OnMenuButtonLeave;
+            _btnSpotLight.OnGUIButtonDown += OnMenuButtonDown;
+            _btnSpotLight.OnGUIButtonUp += OnMenuButtonUp;
+            _btnSpotLight.OnGUIButtonEnter += OnMenuButtonEnter;
+            _btnSpotLight.OnGUIButtonLeave += OnMenuButtonLeave;
 
             // Setup 3D Scene
             // Load Images and Assign iTextures
@@ -346,6 +350,7 @@ namespace Examples.ShaderDemo
 
             _currentTexture = _texCube;
             _currentBumpTexture = _texBumpCube;
+
             // Load Meshes
             _meshCube = MeshReader.LoadMesh(@"Assets/Cube.obj.model");
             _meshSphere = MeshReader.LoadMesh(@"Assets/Sphere.obj.model");
@@ -353,7 +358,7 @@ namespace Examples.ShaderDemo
 
             // Set current Mesh and Update GUI
             _currentMesh = _meshCube;
-            btn_Cube.ButtonColor = colorHighlightedButton;
+            _btnCube.ButtonColor = ColorHighlightedButton;
 
             // Setup Shaderprograms and Update GUI
             _shaderDiffuseColor = MoreShaders.GetDiffuseColorShader(RC);
@@ -361,11 +366,13 @@ namespace Examples.ShaderDemo
             _shaderTexture = MoreShaders.GetTextureShader(RC);
             _shaderDiffuseBumpTexture = MoreShaders.GetBumpDiffuseShader(RC);
             _shaderSpecularTexture = MoreShaders.GetSpecularShader(RC);
-            btn_DiffuseColorShader.ButtonColor = colorHighlightedButton;
+            _btnDiffuseColorShader.ButtonColor = ColorHighlightedButton;
             _currentShader = _shaderDiffuseColor;
             RC.SetShader(_shaderDiffuseColor);
+
             // Setup ShaderParams
             _paramColor = _shaderDiffuseColor.GetShaderParam("color");
+
             // Setup Light and Update GUI
             RC.SetLightActive(0, 1);
             RC.SetLightPosition(0, new float3(5.0f, 0.0f, -2.0f));
@@ -374,127 +381,138 @@ namespace Examples.ShaderDemo
             RC.SetLightDiffuse(0, new float4(0.8f, 0.8f, 0.8f, 1.0f));
             RC.SetLightDirection(0, new float3(-1.0f, 0.0f, 0.0f));
             RC.SetLightSpotAngle(0, 10);
-            btn_DirectionalLight.ButtonColor = colorHighlightedButton;
+
+            _btnDirectionalLight.ButtonColor = ColorHighlightedButton;
         }
 
-     
 
         private void OnMenuButtonDown(GUIButton sender, MouseEventArgs mea)
         {
             sender.BorderWidth = 2;
             //sender.ButtonColor = colorHighlightedButton;
-            
         }
 
         private void OnMenuButtonUp(GUIButton sender, MouseEventArgs mea)
         {
             sender.BorderWidth = 1;
-            if (!isButtonSelected(sender))
+            if (!IsButtonSelected(sender))
             {
-                sender.ButtonColor = colorHighlightedButton;
+                sender.ButtonColor = ColorHighlightedButton;
             }
-            
+
             switch (sender.Text)
             {
                 case "Diffuse Color":
                     _textShaderName = sender.Text;
-                        deselectOtherButtonsFromPanel(_panelSelectShader, sender);
-                        _currentShader = _shaderDiffuseColor;
-                        _paramColor = _currentShader.GetShaderParam("color");
+                    DeselectOtherButtonsFromPanel(_panelSelectShader, sender);
+                    _currentShader = _shaderDiffuseColor;
+                    _paramColor = _currentShader.GetShaderParam("color");
                     break;
+
                 case "Texture Only":
                     _textShaderName = sender.Text;
-                    deselectOtherButtonsFromPanel(_panelSelectShader, sender);
+                    DeselectOtherButtonsFromPanel(_panelSelectShader, sender);
                     _currentShader = _shaderTexture;
                     _paramTexture = _currentShader.GetShaderParam("texture1");
                     break;
+
                 case "Diffuse Texture":
                     _textShaderName = sender.Text;
-                    deselectOtherButtonsFromPanel(_panelSelectShader, sender);
+                    DeselectOtherButtonsFromPanel(_panelSelectShader, sender);
                     _currentShader = _shaderDiffuseTexture;
                     _paramTexture = _currentShader.GetShaderParam("texture1");
                     break;
+
                 case "Diffuse Bump Texture":
                     _textShaderName = sender.Text;
-                    deselectOtherButtonsFromPanel(_panelSelectShader, sender);
+                    DeselectOtherButtonsFromPanel(_panelSelectShader, sender);
                     _currentShader = _shaderDiffuseBumpTexture;
                     _paramTexture = _currentShader.GetShaderParam("texture1");
                     _paramBumpTexture = _currentShader.GetShaderParam("normalTex");
                     _paramSpecular = _currentShader.GetShaderParam("specularLevel");
                     _paramShininess = _currentShader.GetShaderParam("shininess");
                     break;
+
                 case "Specular Texture":
                     _textShaderName = sender.Text;
-                    deselectOtherButtonsFromPanel(_panelSelectShader, sender);
+                    DeselectOtherButtonsFromPanel(_panelSelectShader, sender);
                     _currentShader = _shaderSpecularTexture;
                     _paramTexture = _currentShader.GetShaderParam("texture1");
                     _paramSpecular = _currentShader.GetShaderParam("specularLevel");
                     _paramShininess = _currentShader.GetShaderParam("shininess");
                     break;
+
                 case "Toon":
                     _textShaderName = sender.Text;
-                    deselectOtherButtonsFromPanel(_panelSelectShader, sender);
+                    DeselectOtherButtonsFromPanel(_panelSelectShader, sender);
                     break;
+
                 case "Cube":
-                    deselectOtherButtonsFromPanel(_panelSelectMesh, sender);
-                    setMesh(_meshCube);
+                    DeselectOtherButtonsFromPanel(_panelSelectMesh, sender);
+                    SetMesh(_meshCube);
                     _currentTexture = _texCube;
                     _currentBumpTexture = _texBumpCube;
-                    _textCurrentMesh = "Cube";
                     break;
+
                 case "Sphere":
-                    deselectOtherButtonsFromPanel(_panelSelectMesh, sender);
-                    setMesh(_meshSphere);
+                    DeselectOtherButtonsFromPanel(_panelSelectMesh, sender);
+                    SetMesh(_meshSphere);
                     _currentTexture = _texSphere;
                     _currentBumpTexture = _texBumpSphere;
-                    _textCurrentMesh = "Sphere";
                     break;
+
                 case "Teapot":
-                    deselectOtherButtonsFromPanel(_panelSelectMesh, sender);
-                    setMesh(_meshTeapot);
+                    DeselectOtherButtonsFromPanel(_panelSelectMesh, sender);
+                    SetMesh(_meshTeapot);
                     _currentTexture = _texTeapot;
                     _currentBumpTexture = _texBumpTeapot;
-                    _textCurrentMesh = "Teapot";
                     break;
+
                 case "Directional Light":
-                    deselectOtherButtonsFromPanel(_panelLightSettings, sender);
+                    DeselectOtherButtonsFromPanel(_panelLightSettings, sender);
                     RC.SetLightActive(0, 1);
                     break;
+
                 case "Point Light":
-                    deselectOtherButtonsFromPanel(_panelLightSettings, sender);
+                    DeselectOtherButtonsFromPanel(_panelLightSettings, sender);
                     RC.SetLightActive(0, 2);
                     break;
+
                 case "Spot Light":
-                    deselectOtherButtonsFromPanel(_panelLightSettings, sender);
+                    DeselectOtherButtonsFromPanel(_panelLightSettings, sender);
                     RC.SetLightActive(0, 3);
                     break;
             }
         }
 
-        private bool isButtonSelected(GUIButton btn)
+        private static bool IsButtonSelected(GUIButton btn)
         {
-            return btn.ButtonColor == colorHighlightedButton ? true : false;
+            return btn.ButtonColor == ColorHighlightedButton;
         }
 
-        private void deselectOtherButtonsFromPanel(GUIPanel panel, GUIButton newselected_btn)
+        private static void DeselectOtherButtonsFromPanel(GUIPanel panel, GUIButton newselectedBtn)
         {
-            for (int i = 0; i < panel.ChildElements.Count; i++)
+            foreach (var element in panel.ChildElements)
             {
-                if (panel.ChildElements[i].GetType() == typeof(GUIButton))
+                var button = element as GUIButton;
+
+                if (button != null)
                 {
-                    if (panel.ChildElements[i] == newselected_btn) { continue; }
-                    GUIButton temp = (GUIButton)panel.ChildElements[i];
-                    if (temp.ButtonColor == colorHighlightedButton)
+                    if (element == newselectedBtn)
+                        continue;
+
+                    var temp = button;
+                    if (temp.ButtonColor == ColorHighlightedButton)
                     {
-                        temp.ButtonColor = colorDefaultButton;
+                        temp.ButtonColor = ColorDefaultButton;
                     }
                 }
             }
         }
 
-        private void setMesh(Mesh newmesh)
+        private void SetMesh(Mesh newmesh)
         {
-            if (_currentMesh != newmesh)
+            if (newmesh != null && _currentMesh != newmesh)
             {
                 _currentMesh = newmesh;
             }
@@ -519,12 +537,12 @@ namespace Examples.ShaderDemo
             // move per mouse
             if (Input.Instance.IsButton(MouseButtons.Left))
             {
-                _angleVelHorz = RotationSpeed * Input.Instance.GetAxis(InputAxis.MouseX);
-                _angleVelVert = RotationSpeed * Input.Instance.GetAxis(InputAxis.MouseY);
+                _angleVelHorz = RotationSpeed*Input.Instance.GetAxis(InputAxis.MouseX);
+                _angleVelVert = RotationSpeed*Input.Instance.GetAxis(InputAxis.MouseY);
             }
             else
             {
-                var curDamp = (float)System.Math.Exp(-Damping * Time.Instance.DeltaTime);
+                var curDamp = (float) System.Math.Exp(-Damping*Time.Instance.DeltaTime);
 
                 _angleVelHorz *= curDamp;
                 _angleVelVert *= curDamp;
@@ -535,22 +553,22 @@ namespace Examples.ShaderDemo
 
             // move per keyboard
             if (Input.Instance.IsKey(KeyCodes.Left))
-                _angleHorz -= RotationSpeed * (float)Time.Instance.DeltaTime;
+                _angleHorz -= RotationSpeed*(float) Time.Instance.DeltaTime;
 
             if (Input.Instance.IsKey(KeyCodes.Right))
-                _angleHorz += RotationSpeed * (float)Time.Instance.DeltaTime;
+                _angleHorz += RotationSpeed*(float) Time.Instance.DeltaTime;
 
             if (Input.Instance.IsKey(KeyCodes.Up))
-                _angleVert -= RotationSpeed * (float)Time.Instance.DeltaTime;
+                _angleVert -= RotationSpeed*(float) Time.Instance.DeltaTime;
 
             if (Input.Instance.IsKey(KeyCodes.Down))
-                _angleVert += RotationSpeed * (float)Time.Instance.DeltaTime;
+                _angleVert += RotationSpeed*(float) Time.Instance.DeltaTime;
 
-            var mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
+            var mtxRot = float4x4.CreateRotationY(_angleHorz)*float4x4.CreateRotationX(_angleVert);
             var mtxCam = float4x4.LookAt(0, 200, 500, 0, 0, 0, 0, 1, 0);
 
             // first mesh
-            RC.ModelView = float4x4.CreateTranslation(0, -50, 0) * mtxRot * mtxCam;
+            RC.ModelView = float4x4.CreateTranslation(0, -50, 0)*mtxRot*mtxCam;
         }
 
         public override void RenderAFrame()
@@ -561,32 +579,37 @@ namespace Examples.ShaderDemo
             _guiHandler.RenderGUI();
             HandleMouseRotations();
             SetShaderValues(_currentShader);
+
             Present();
         }
 
         private void SetShaderValues(ShaderProgram sp)
         {
             RC.SetShader(sp);
-            RenderStateSet myset = new RenderStateSet()
-               {
-                   AlphaBlendEnable = false,
-                   ZEnable = true
-               };
+            var myset = new RenderStateSet
+            {
+                AlphaBlendEnable = false,
+                ZEnable = true
+            };
+
             RC.SetRenderState(myset);
             switch (_textShaderName)
             {
                 case "Diffuse Color":
-                    RC.SetShaderParam(_paramColor,new float4(1,0,0,1));
+                    RC.SetShaderParam(_paramColor, new float4(1, 0, 0, 1));
                     RC.Render(_currentMesh);
                     break;
+
                 case "Texture Only":
                     RC.SetShaderParamTexture(_paramTexture, _currentTexture);
                     RC.Render(_currentMesh);
                     break;
+
                 case "Diffuse Texture":
                     RC.SetShaderParamTexture(_paramTexture, _currentTexture);
                     RC.Render(_currentMesh);
                     break;
+
                 case "Diffuse Bump Texture":
                     RC.SetShaderParamTexture(_paramTexture, _currentTexture);
                     RC.SetShaderParamTexture(_paramBumpTexture, _currentBumpTexture);
@@ -594,12 +617,14 @@ namespace Examples.ShaderDemo
                     RC.SetShaderParam(_paramShininess, 0.5f);
                     RC.Render(_currentMesh);
                     break;
+
                 case "Specular Texture":
                     RC.SetShaderParamTexture(_paramTexture, _currentTexture);
                     RC.SetShaderParam(_paramSpecular, 64.0f);
                     RC.SetShaderParam(_paramShininess, 0.5f);
                     RC.Render(_currentMesh);
                     break;
+
                 case "Toon":
                     RC.SetRenderState(new RenderStateSet
                     {
@@ -609,15 +634,10 @@ namespace Examples.ShaderDemo
                         SourceBlend = Blend.BlendFactor,
                         DestinationBlend = Blend.InverseBlendFactor
                     });
+
                     _shaderEffect.RenderMesh(_currentMesh);
                     break;
             }
-
-        }
-
-        private void setTextureToMesh(int diffuseOrBump)
-        {
-
         }
 
         public override void Resize()
@@ -625,21 +645,21 @@ namespace Examples.ShaderDemo
             // is called when the window is resized
             RC.Viewport(0, 0, Width, Height);
 
-            var aspectRatio = Width / (float)Height;
+            var aspectRatio = Width/(float) Height;
             RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 10000);
 
             // refresh all elements
             _guiHandler.Refresh();
+
             // Repeating Texture: xmax==Maximum width size of textureimage, ymax==Maximum height size of textureimage
-            float xmax = Width / bg_xmax;
-            float ymax = Width / bg_ymax;
-            //if (btn_Cube.GUIMesh != null)
-            //{
-            //    btn_Cube.Refresh();
-            //    btn_Cube.GUIMesh.Colors = new uint[] { 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1 };
-            //}
+            float xmax = Width/BgXmax;
+            float ymax = Width/BgYmax;
+
             _guiImage.Refresh();
-            _guiImage.GUIMesh.UVs = new float2[] { new float2(0, 0), new float2(xmax, 0), new float2(0, ymax), new float2(xmax, ymax) };
+            _guiImage.GUIMesh.UVs = new[]
+            {
+                new float2(0, 0), new float2(xmax, 0), new float2(0, ymax), new float2(xmax, ymax)
+            };
         }
 
         public static void Main()
@@ -647,6 +667,5 @@ namespace Examples.ShaderDemo
             var app = new ShaderDemo();
             app.Run();
         }
-
     }
 }
