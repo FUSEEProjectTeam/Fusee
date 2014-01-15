@@ -359,6 +359,5 @@ namespace Fusee.Engine
                 }
             }
         }
-
     }
 }

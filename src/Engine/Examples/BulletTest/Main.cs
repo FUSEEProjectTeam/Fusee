@@ -96,7 +96,7 @@ namespace Examples.BulletTest
             var mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
             var mtxCam = mtxRot * float4x4.LookAt(0, 500, 800, 0, 0, 0, 0, 1, 0);
 
-           // Debug.WriteLine(Time.Instance.FramePerSecond);
+           
             //Render all RigidBodies
 
 
@@ -107,7 +107,7 @@ namespace Examples.BulletTest
             RC.SetShaderParam(_colorParam, new float4(1.0f, 1.0f, 0, 1));
             RC.Render(_meshCube);
 
-            Debug.WriteLine("FramePerSecond: " +Time.Instance.FramePerSecond);
+           // Debug.WriteLine("FramePerSecond: " +Time.Instance.FramePerSecond);
             for (int i = 1; i < _physic.World.NumberRigidBodies(); i++)
             {
                 var rb = _physic.World.GetRigidBody(i);
@@ -172,6 +172,7 @@ namespace Examples.BulletTest
             var aspectRatio = Width / (float)Height;
             RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 10000);
         }
+
 
         public static void Main()
         {

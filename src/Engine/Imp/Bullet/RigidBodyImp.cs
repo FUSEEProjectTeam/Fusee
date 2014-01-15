@@ -421,5 +421,13 @@ namespace Fusee.Engine
             get { return _userObject; }
             set { _userObject = value; }
         }
+
+
+        public void OnCollision()
+        {
+            Debug.WriteLine("Collision");
+        }
+
+
     }
 }

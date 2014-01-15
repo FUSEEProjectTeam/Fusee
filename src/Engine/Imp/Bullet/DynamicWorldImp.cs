@@ -18,7 +18,7 @@ namespace Fusee.Engine
     {
         internal Translater Translater = new Translater();
 
-        internal DynamicsWorld BtWorld;
+        internal DiscreteDynamicsWorld BtWorld;
         internal CollisionConfiguration BtCollisionConf;
         internal CollisionDispatcher BtDispatcher;
         internal BroadphaseInterface BtBroadphase;
@@ -51,14 +51,41 @@ namespace Fusee.Engine
 
             BtWorld.PerformDiscreteCollisionDetection();
             //GImpactCollisionAlgorithm.RegisterAlgorithm(BtDispatcher);
-           //BtWorld.SetInternalTickCallback(MyTickCallBack);
-
-
+            BtWorld.SetInternalTickCallback(MyTickCallBack);
+            //BtWorld.SetInternalTickCallback(TickTack);
         }
 
         private void MyTickCallBack(DynamicsWorld world, float timeStep)
         {
             Debug.WriteLine("MyTickCallBack");
+            int numManifolds = BtWorld.Dispatcher.NumManifolds;
+            //Debug.WriteLine("numManifolds: " + numManifolds);
+            for (int i = 0; i < numManifolds; i++)
+            {
+                PersistentManifold contactManifold = BtWorld.Dispatcher.GetManifoldByIndexInternal(i);
+                CollisionObject obA = (CollisionObject) contactManifold.Body0;
+                CollisionObject obB = (CollisionObject) contactManifold.Body1;
+
+                int numContacts = contactManifold.NumContacts;
+                Debug.WriteLine(numContacts);
+                for (int j = 0; j < numContacts; j++)
+                {
+                    ManifoldPoint pt = contactManifold.GetContactPoint(j);
+                    if (pt.Distance < 0.0f)
+                    {
+                        Vector3 ptA = pt.PositionWorldOnA;
+                        Vector3 ptB = pt.PositionWorldOnB;
+                        Vector3 normalOnB = pt.NormalWorldOnB;
+                        
+                        //Debug.WriteLine("ptA: " + ptA + "ptB: " + ptB);
+
+                        var rbA = (RigidBody) obA;
+
+                    }
+                }
+
+                
+            }
         }
 
 
@@ -211,7 +238,7 @@ namespace Fusee.Engine
                         Vector3 ptA = pt.PositionWorldOnA;
                         Vector3 ptB = pt.PositionWorldOnB;
                         Vector3 normalOnB = pt.NormalWorldOnB;
-                        Debug.WriteLine(obA.CollisionShape);
+                        //Debug.WriteLine(obA.CollisionShape);
                     }
                 }
             }
@@ -227,7 +254,7 @@ namespace Fusee.Engine
 
         public int NumberRigidBodies()
         {
-            var number = BtWorld.CollisionObjectArray.Count;
+            var number = BtWorld.NumCollisionObjects;
             return number;
         }
 

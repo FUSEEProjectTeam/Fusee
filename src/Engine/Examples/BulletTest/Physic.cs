@@ -57,7 +57,7 @@ namespace Examples.BulletTest
             //FallingTower();
             //Ground();
             
-            InitPoint2PointConstraint();
+            //InitPoint2PointConstraint();
           //  InitHingeConstraint();
             //InitSliderConstraint();
             //InitGearConstraint();
@@ -207,19 +207,19 @@ namespace Examples.BulletTest
 
         public void Tester()
         {
-            var box = _world.AddBoxShape(25);
-            box.Margin = 0.5f;
+            //var box = _world.AddBoxShape(25);
+            //box.Margin = 0.5f;
             //box.LocalScaling = new float3(0.5f, 0.5f, 0.5f);
             //var shape = rbA.AddCapsuleShape(2, 8);
             //Debug.WriteLine(shape.Radius);
             //var rbA = _world.AddRigidBody(0, new float3(0, 150, 0), sphere, new float3(1, 1, 1));
             Quaternion rotA = new Quaternion(0.739f, -0.204f, 0.587f, 0.257f);
-            var gimp = _world.AddGImpactMeshShape(BoxMesh);
-            var rbA = _world.AddRigidBody(1, new float3(0, 200, 0), rotA, MyBoxCollider);
-            var rbB = _world.AddRigidBody(1, new float3(60, 200, 0), rotA, MyBoxCollider);
-            var rbC = _world.AddRigidBody(1, new float3(0, 200, 70), rotA, MyBoxCollider);
-            var rbD = _world.AddRigidBody(1, new float3(0, 300, -50), rotA, MyBoxCollider);
-            var rbE = _world.AddRigidBody(1, new float3(30, 300, 0), rotA, MyBoxCollider);
+            //var gimp = _world.AddGImpactMeshShape(BoxMesh);
+            //var rbA = _world.AddRigidBody(1, new float3(0, 0, 0), rotA, MyBoxCollider);
+            var rbB = _world.AddRigidBody(1, new float3(0, 200, 0), rotA, MyBoxCollider);
+            //var rbC = _world.AddRigidBody(1, new float3(0, 200, 70), rotA, MyConvHull);
+            //var rbD = _world.AddRigidBody(1, new float3(0, 300, -50), rotA, MyBoxCollider);
+           // var rbE = _world.AddRigidBody(1, new float3(30, 300, 0), rotA, MyBoxCollider);
         }
 
         

@@ -40,5 +40,6 @@ namespace Fusee.Engine
         
         object UserObject { get; set; }
 
+        void OnCollision();
     }
 }
