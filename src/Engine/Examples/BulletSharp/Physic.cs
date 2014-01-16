@@ -32,16 +32,11 @@ namespace Examples.BulletSharp
             set { _world = value; }
         }
 
-
         protected CollisionConfiguration CollisionConf;
         protected Dispatcher Dispatcher;
         protected BroadphaseInterface Broadphase;
         protected ConstraintSolver Solver;
         public AlignedCollisionShapeArray CollisionShapes { get; private set; }
-
-
-       
-
 
         public Physic()
         {
@@ -53,7 +48,6 @@ namespace Examples.BulletSharp
             
             Broadphase = new DbvtBroadphase();
             Solver = new SequentialImpulseConstraintSolver();
-            
           
             World = new DiscreteDynamicsWorld(Dispatcher, Broadphase, Solver, CollisionConf)
             {
@@ -65,10 +59,6 @@ namespace Examples.BulletSharp
             Plane();
             FallingTower();
             //Constraints();
-            
-            
-
-            
         }
 
         public void Plane()
@@ -81,8 +71,8 @@ namespace Examples.BulletSharp
             RigidBody rigidBody = new RigidBody(rbInfo);
 
             World.AddRigidBody(rigidBody);
-            
         }
+
         public void Ground()
         {
             //create ground
@@ -158,8 +148,6 @@ namespace Examples.BulletSharp
             World.AddRigidBody(rigidBodyB);
             
             var pivotInA = new Vector3(0, 20, 0);
-            
-
 
             var p2p1 = new Point2PointConstraint(rigidBodyA, rigidBodyB, pivotInA, pivotInA);
             
@@ -168,19 +156,14 @@ namespace Examples.BulletSharp
             p2p1.SetParam(ConstraintParam.Erp, 0.1f);
             p2p1.SetParam(1, 0.1f, 1);
             p2p1.Setting.Tau = 0.0001f; 
-            
-            
-           
 
             var hinge = new HingeConstraint(rigidBodyA, posA, posB);
-          
             
             var slider = new SliderConstraint(rigidBodyA, rigidBodyB, startTransformA, startTransformB, true);
             var sl1 = new SliderConstraint(rigidBodyA, startTransformB, true);
             var coneTwist = new ConeTwistConstraint(rigidBodyA, rigidBodyB, startTransformA, startTransformB);
             var dof6 = new Generic6DofConstraint(rigidBodyA, rigidBodyB, startTransformA, startTransformB, false);
-            var gear = new GearConstraint(rigidBodyA, rigidBodyB, pivotInA, pivotInA, 0.5f);
-            
+            var gear = new GearConstraint(rigidBodyA, rigidBodyB, pivotInA, pivotInA, 0.5f);  
         }
 
 
@@ -196,22 +179,14 @@ namespace Examples.BulletSharp
             */
 
 
-
             var plane = new StaticPlaneShape(Vector3.UnitY, 10);
-
 
             var posB = new Vector3(0, 0, 0);
             var startTransformB = Matrix.Translation(0, 0, 0);
             var myMotionStateB = new DefaultMotionState(startTransformB);
             var rbInfoB = new RigidBodyConstructionInfo(0, myMotionStateB, plane);
             var rigidBodyB = new RigidBody(rbInfoB);
-            World.AddRigidBody(rigidBodyB);
-
-
-
-
-
-           
+            World.AddRigidBody(rigidBodyB);    
         }
 
 

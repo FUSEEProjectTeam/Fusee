@@ -35,6 +35,7 @@ namespace Fusee.Engine
 
         //"physic Matrial"
         float Bounciness { get; set; }
+        float Friction { get; set; }
 
         ICollisionShapeImp CollisionShape { get; set; }
         

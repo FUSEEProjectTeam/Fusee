@@ -153,6 +153,9 @@ namespace Fusee.Engine
             }
         }
 
+        /// <summary>
+        /// Adds an impulse 
+        /// </summary>
         public float3 ApplyCentralImpulse
         {
             get
@@ -232,6 +235,15 @@ namespace Fusee.Engine
             }
         }
 
+        public float Friction
+        {
+            get { return _iRigidBodyImp.Friction; }
+            set
+            {
+                var o = (RigidBody) _iRigidBodyImp.UserObject;
+                o._iRigidBodyImp.Friction = value;
+            }
+        }
 
         public CollisionShape CollisionShape
         {

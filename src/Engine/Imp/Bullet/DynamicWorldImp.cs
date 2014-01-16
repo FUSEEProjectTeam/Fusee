@@ -4,10 +4,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using BulletSharp;
-using BulletSharp.MultiThreaded;
 using Fusee.Engine;
 using Fusee.Math;
-using BulletSharp.Serialize;
+
 
 
 
@@ -48,10 +47,10 @@ namespace Fusee.Engine
                 Gravity = new Vector3(0, -9.81f * 10.0f, 0)
             };
             BtWorld.SolverInfo.NumIterations = 8;
-
+            
             BtWorld.PerformDiscreteCollisionDetection();
             //GImpactCollisionAlgorithm.RegisterAlgorithm(BtDispatcher);
-            BtWorld.SetInternalTickCallback(MyTickCallBack);
+           // BtWorld.SetInternalTickCallback(MyTickCallBack);
             //BtWorld.SetInternalTickCallback(TickTack);
         }
 
@@ -89,27 +88,23 @@ namespace Fusee.Engine
         }
 
 
-        public IRigidBodyImp AddRigidBody(float mass, float3 worldTransform, Fusee.Math.Quaternion orientation,ICollisionShapeImp colShape/*, float3 intertia*/)
+        public IRigidBodyImp AddRigidBody(float mass, float3 worldTransform, float3 orientation, ICollisionShapeImp colShape/*, float3 intertia*/)
         {
             // Use bullet to do what needs to be done:
 
-            var btMatrixPosition = Matrix.Translation(worldTransform.x, worldTransform.y, worldTransform.z);
-            var btMatrixOrientation = Translater.QuaternionToBtQuaternion(orientation);
-            var qm = Matrix.RotationAxis(Translater.Float3ToBtVector3(orientation.xyz), orientation.w);
-            var btMotionstatematrix = Matrix.RotationQuaternion(btMatrixOrientation) * Matrix.Translation(worldTransform.x, worldTransform.y, worldTransform.z);
-            //Matrix.RotationQuaternion(BulletSharp.Quaternion.Identity));
-           // btMatrixOrientation = Matrix.RotationQuaternion(Translater.QuaternionToBtQuaternion(orientation));
-            var btMotionState = new DefaultMotionState(btMotionstatematrix); 
-          
-           
-               // new DefaultMotionState(//(Transform(btQuaternion(0, 0, 0, 1), btVector3(0, -1, 0)));
 
-            //var btMotionState = new DefaultMotionState(btMatrix); 
+             var btMatrix = Matrix.RotationX(orientation.x) 
+                                    * Matrix.RotationY(orientation.y) 
+                                    * Matrix.RotationZ(orientation.z) 
+                                    * Matrix.Translation(worldTransform.x, worldTransform.y, worldTransform.z);
+            
+             var btMotionState = new DefaultMotionState(btMatrix);
+          
             
             var shapeType = colShape.GetType().ToString();
             
             CollisionShape btColShape;
-            
+
             var isStatic = false;
             switch (shapeType)
             {
@@ -153,7 +148,8 @@ namespace Fusee.Engine
                 //Misc
                 case "Fusee.Engine.CompoundShapeImp":
                     var compShape = (CompoundShapeImp) colShape;
-                    btColShape = new CompoundShape();
+                    btColShape = new CompoundShape(true);
+                    btColShape = compShape.BtCompoundShape;
                     break;
                 case "Fusee.Engine.EmptyShapeImp":
                     btColShape = new EmptyShape();
@@ -195,8 +191,10 @@ namespace Fusee.Engine
                     break;
             }
             var btLocalInertia = btColShape.CalculateLocalInertia(mass) * 10;
-            RigidBodyConstructionInfo btRbcInfo = new RigidBodyConstructionInfo(mass * 10, btMotionState, btColShape, btLocalInertia);
-            
+            RigidBodyConstructionInfo btRbcInfo = new RigidBodyConstructionInfo(mass, btMotionState, btColShape,
+                btLocalInertia);
+            btRbcInfo.Friction = 1; //Friction is set here to a as default. Otherwise there wouldn't be ANY friction
+            btRbcInfo.Restitution = 0.5f; //Restitutio is here set to 0.5 as default. Otherwise restitution would be "absorbed"
             var btRigidBody = new RigidBody(btRbcInfo);
             BtWorld.AddRigidBody(btRigidBody);
             btRbcInfo.Dispose();
@@ -210,12 +208,6 @@ namespace Fusee.Engine
         public int StepSimulation(float timeSteps, int maxSubSteps, float fixedTimeSteps)
         {
             return BtWorld.StepSimulation(timeSteps, maxSubSteps);//, maxSubSteps, fixedTimeSteps);  
-        }
-
-        public bool CallbackFunc(ManifoldPoint cp, CollisionObject obj1, int id1, int index1, CollisionObject obj2,
-            int id2, int index2)
-        {
-            throw new NotImplementedException();
         }
 
 

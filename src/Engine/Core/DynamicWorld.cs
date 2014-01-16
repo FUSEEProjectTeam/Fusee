@@ -18,7 +18,7 @@ namespace Fusee.Engine
         }
 
 
-        public RigidBody AddRigidBody(float mass, float3 position, Quaternion orientation, CollisionShape colShape/*, float3 inertia*/)
+        public RigidBody AddRigidBody(float mass, float3 position, float3 orientation, CollisionShape colShape/*, float3 inertia*/)
         {
 
            /* var meshTrianglesCount = mesh.Triangles.Length;

@@ -249,6 +249,16 @@ namespace Fusee.Engine
             }
         }
 
+        public float Friction
+        {
+            get { return _rbi.Friction; }
+            set
+            {
+                var o = (RigidBodyImp) _rbi.UserObject;
+                o._rbi.Restitution = value;
+            }
+        }
+
         public ICollisionShapeImp CollisionShape
         {
             get

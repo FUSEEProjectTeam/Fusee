@@ -15,7 +15,7 @@ namespace Examples.BulletTest
         private const float Damping = 0.92f;
 
         // model variables
-        private Mesh _meshTea, _meshCube;
+        private Mesh _meshTea, _meshCube, _meshSphere;
 
         // variables for shader
         private ShaderProgram _spColor;
@@ -37,6 +37,7 @@ namespace Examples.BulletTest
             // initialize the variables
             _meshTea = MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
             _meshCube = MeshReader.LoadMesh(@"Assets/Cube.obj.model");
+            _meshSphere = MeshReader.LoadMesh(@"Assets/Sphere.obj.model");
 
             _spColor = MoreShaders.GetShader("simple", RC);
             _spTexture = MoreShaders.GetShader("texture", RC);
@@ -84,7 +85,7 @@ namespace Examples.BulletTest
             }
 
             if (Input.Instance.IsKeyDown(KeyCodes.Right))
-                _physic.World.GetRigidBody(_physic.World.NumberRigidBodies() - 1).ApplyCentralImpulse = new float3(10, 0, 0);
+                _physic.World.GetRigidBody(_physic.World.NumberRigidBodies() - 1).ApplyTorque = new float3(10,0,0);
 
             if (Input.Instance.IsKeyDown(KeyCodes.Up))
                 _physic.World.GetRigidBody(_physic.World.NumberRigidBodies() - 1).ApplyCentralImpulse = new float3(0, 10, 0);
@@ -94,7 +95,7 @@ namespace Examples.BulletTest
                     // _angleVert += RotationSpeed * (float)Time.Instance.DeltaTime;
            
             var mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
-            var mtxCam = mtxRot * float4x4.LookAt(0, 500, 800, 0, 0, 0, 0, 1, 0);
+            var mtxCam = mtxRot * float4x4.LookAt(0, 500, 1000, 0, 0, 0, 0, 1, 0);
 
            
             //Render all RigidBodies
@@ -107,7 +108,9 @@ namespace Examples.BulletTest
             RC.SetShaderParam(_colorParam, new float4(1.0f, 1.0f, 0, 1));
             RC.Render(_meshCube);
 
-           // Debug.WriteLine("FramePerSecond: " +Time.Instance.FramePerSecond);
+           
+
+             Debug.WriteLine("FramePerSecond: " +Time.Instance.FramePerSecond);
             for (int i = 1; i < _physic.World.NumberRigidBodies(); i++)
             {
                 var rb = _physic.World.GetRigidBody(i);
