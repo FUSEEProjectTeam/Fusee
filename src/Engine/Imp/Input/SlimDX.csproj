@@ -58,7 +58,6 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GameController.cs" />
     <Compile Include="Implementor.cs" />
     <Compile Include="InputDeviceImp.cs" />
     <Compile Include="InputDriverImp.cs" />

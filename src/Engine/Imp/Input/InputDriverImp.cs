@@ -1,32 +1,31 @@
 ﻿using System.Collections.Generic;
-using Fusee.Engine;
 using SlimDX.DirectInput;
 
 namespace Fusee.Engine
 {
     class InputDriverImp : IInputDriverImp
     {
-        public List<GameController> _devices = new List<GameController>();
+        public List<DeviceInstance> Devices = new List<DeviceInstance>();
 
         public List<IInputDeviceImp> DeviceImps()
         {
             CreateDevices();
-            var list = new List<IInputDeviceImp>();
-            foreach (GameController controller in _devices)
+            var retList = new List<IInputDeviceImp>();
+            foreach (DeviceInstance instance in Devices)
             {
-                list.Add(new InputDeviceImp(controller));
+                retList.Add(new InputDeviceImp(instance));
             }
-            return list;
+            return retList;
         }
 
         public void CreateDevices()
         {
-            DirectInput directInput = new DirectInput();
+            var directInput = new DirectInput();
             var devices = directInput.GetDevices(DeviceClass.GameController, DeviceEnumerationFlags.AttachedOnly);
 
             foreach (DeviceInstance deviceInstance in devices)
             {
-                _devices.Add(new GameController(deviceInstance));
+                Devices.Add(deviceInstance);
             }
         }
     }
