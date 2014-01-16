@@ -81,7 +81,7 @@ namespace Fusee.Engine
             state = GetState();
 
            
-                if (state.IsPressed(buttonIndex))
+                if (state.IsPressed(buttonIndex))   
                 {
 
                     return true;

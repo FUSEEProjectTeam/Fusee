@@ -4,7 +4,7 @@ namespace Fusee.Engine
     public interface IInputDeviceImp
     {
 
-        float getAxis(string axis);
+        float GetAxis(string axis);
         string Name {get;}
         int GetPressedButton();
         bool IsButtonDown(int button);

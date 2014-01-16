@@ -18,7 +18,7 @@ namespace Fusee.Engine
 
         public float getAxis(string axis)
         {
-            return _inputDeviceImp.getAxis(axis);
+            return _inputDeviceImp.GetAxis(axis);
         }
 
         

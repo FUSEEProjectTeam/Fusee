@@ -312,7 +312,7 @@ namespace Fusee.Engine
             }
             for (int i = 0; i < Devices.Count; i++)
             {
-                System.Diagnostics.Debug.Write("Device @ Index:  " + i+": " + Devices[i].GetCategory());
+                System.Diagnostics.Debug.Write("Device @ Index  " + i+": " + Devices[i].GetCategory() + "\n");
             }
         }
 

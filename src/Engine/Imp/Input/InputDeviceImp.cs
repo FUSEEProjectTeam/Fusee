@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Fusee.Engine;
-using SlimDX.DirectInput;
-
-namespace Fusee.Engine
+﻿namespace Fusee.Engine
 {
     public class InputDeviceImp : IInputDeviceImp
     {
@@ -38,7 +30,7 @@ namespace Fusee.Engine
 
         }
 
-        public float getAxis(string axis)
+        public float GetAxis(string axis)
         {
             switch (axis)
             {

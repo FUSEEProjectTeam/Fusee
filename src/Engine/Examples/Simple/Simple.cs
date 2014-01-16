@@ -64,7 +64,13 @@ namespace Examples.Simple
         // is called once a frame
         public override void RenderAFrame()
         {
-
+            //System.Diagnostics.Debug.Write(Input.Instance.Devices[1].GetPressedButton());
+            foreach (InputDevice inp in Input.Instance.Devices)
+            {
+                System.Diagnostics.Debug.Write(inp.getAxis("horizontal") + "\n");
+            }
+            //System.Diagnostics.Debug.Write(Input.Instance.Devices[1].getAxis("horizontal") + "\n");
+            //System.Diagnostics.Debug.Write(Input.Instance.Devices[1].IsButtonDown(0) + "\n");
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
             
