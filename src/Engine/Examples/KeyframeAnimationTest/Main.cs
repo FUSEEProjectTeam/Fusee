@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq.Expressions;
 using Fusee.Engine;
 using Fusee.Math;
 using Fusee.KeyFrameAnimation;
@@ -14,12 +15,23 @@ namespace Examples.KeyframeAnimationTest
 
     public class A
     {
+        public String StringA;
+        public int ZahlA;
+        public float3 Koordinaten;
+        public double4x4 DieMatrix;
+
         public A()
         {
             ZahlA = 10;
+            Koordinaten = new float3(9,9,9);
+            DieMatrix = new double4x4(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16);
         }
 
-        public int ZahlA;
+        public float3 Koordinaten1
+        {
+            get { return Koordinaten; }
+            set { Koordinaten = value; }
+        }
 
         public int ZahlA1
         {
@@ -27,6 +39,11 @@ namespace Examples.KeyframeAnimationTest
             set { ZahlA = value; }
         }
 
+        public String StringA1
+        {
+            get { return StringA; }
+            set { StringA = value; }
+        }
 
        
     }
@@ -36,9 +53,15 @@ namespace Examples.KeyframeAnimationTest
         public B()
         {
             ZahlB = 15;
+            Float2B1 = new float2(3, 4);
+            flag = false;
+            Nachricht = "Es hat nicht geklappt :-( ";
         }
 
         public int ZahlB;
+        public Boolean flag;
+        public String Nachricht;
+
 
         public int ZahlB1
         {
@@ -46,8 +69,13 @@ namespace Examples.KeyframeAnimationTest
             set { ZahlB = value; }
         }
 
+        public float2 Float2B;
 
-
+        public float2 Float2B1
+        {
+            get { return Float2B; }
+            set { Float2B = value; }
+        }
     }
 
 
@@ -63,7 +91,7 @@ namespace Examples.KeyframeAnimationTest
         public override void Init()
         {
 
-            A objektA = new A();
+            A objektA = new A() {StringA = "3.1415"};
             B objektB = new B();
 
             //objektA.ZahlA1 = objektB.ZahlB1;
@@ -75,7 +103,7 @@ namespace Examples.KeyframeAnimationTest
             CAB.AddRoot(NodeA);
             CAB.AddNode(NodeB);
 
-            NodeA.Attach("ZahlA1", NodeB, "ZahlB1");
+            NodeA.Attach("DieMatrix", NodeB, "Nachricht");
 
             CAB.Execute();
 
@@ -156,32 +184,18 @@ namespace Examples.KeyframeAnimationTest
             // is called once a frame
             SceneManager.Manager.Traverse(this);
 
-            //myAnim.SetTick((float) Time.Instance.TimeSinceStart);
-            //_circuit.Execute();
-            //if (Time.Instance.RealTimeSinceStart < 15)
-            //{
             myAnim.Animate();
-            //Console.WriteLine(Wuerfel.transform.GlobalPosition);(float)Time.Instance.DeltaTime
-            //}
-            //else if(myAnim.ChannelBaseList.Count > 0) 
-            //{
-            //    myAnim.DeleteAnimation(0);
-            //    Console.WriteLine("War drin Liste: " + myAnim.ChannelBaseList.Count );
-            //}
-
-
-            //Console.WriteLine(bg._bgc);
-            //RC.ClearColor = _channel1.GetValueAt((float)Time.Instance.TimeSinceStart);
-            //Console.WriteLine("Actual time "+Time.Instance.TimeSinceStart+" Value of 'Animation' "+_channel1.GetValueAt((float)Time.Instance.TimeSinceStart));
-            //Console.WriteLine(_channel1.GetValueAt((float)Time.Instance.TimeSinceStart));
-            //_channel1.GetValueAt((float) Time.Instance.TimeSinceStart);
         }
+
+
 
         public override void Resize()
         {
             RC.Viewport(0, 0, Width, Height);
             camera.Resize(Width, Height);
         }
+
+
 
         public static void Main()
         {

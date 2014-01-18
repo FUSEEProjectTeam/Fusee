@@ -51,7 +51,5 @@ namespace Fusee.Xirkit
             return _o2p((TObj)_propertyInfo.GetValue(o, null));
         }
     }
-
-
     /* probably done by the pin */
 }

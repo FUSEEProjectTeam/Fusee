@@ -3,7 +3,7 @@ This file contains the js implementation of Xirkit of methods that cant be trans
 This file is written manually. 
 */
 
-
+var $fuseeMath = JSIL.GetAssembly("Fusee.Math.Core");
 var $WebXirkitImp = JSIL.DeclareAssembly("Fusee.Engine.WebXirkit");
 var $fuseeXirkit = JSIL.GetAssembly("Fusee.Xirkit");
 var $customMsCore = JSIL.GetAssembly("mscorlib");
@@ -12,6 +12,248 @@ JSIL.DeclareNamespace("Fusee");
 JSIL.DeclareNamespace("Fusee.Xirkit");
 
 //Strange things i try to make it run///////////////////////////////////////
+
+
+
+
+
+var PinFactory_ConvMap = null;
+
+var PinFactory_GetConvMap = function () {
+    if (PinFactory_ConvMap === null) {
+        PinFactory_ConvMap = {};
+        
+       
+
+
+        // From int
+        PinFactory_ConvMap["System.Int32"] = {};
+        PinFactory_ConvMap["System.Int32"]["System.Int32"] = "_v_";
+        PinFactory_ConvMap["System.Int32"]["System.Single"] = "_v_";
+        PinFactory_ConvMap["System.Int32"]["System.Double"] = "_v_";
+        PinFactory_ConvMap["System.Int32"]["System.Boolean"] = '(_v_ !== 0) ? true : false';
+        PinFactory_ConvMap["System.Int32"]["System.String"] = "_v_.toString()";
+        PinFactory_ConvMap["System.Int32"]["Fusee.Math.float2"] = "new $fuseeMath.Fusee.Math.float2(_v_, 0)";
+        PinFactory_ConvMap["System.Int32"]["Fusee.Math.double3"] = "new $fuseeMath.Fusee.Math.double3(_v_, 0, 0)";
+        PinFactory_ConvMap["System.Int32"]["Fusee.Math.double4"] = "new $fuseeMath.Fusee.Math.double4(_v_, 0, 0, 0)";
+        PinFactory_ConvMap["System.Int32"]["Fusee.Math.double4x4"] = "new $fuseeMath.Fusee.Math.double4x4(_v_, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)";
+        PinFactory_ConvMap["System.Int32"]["Fusee.Math.float2"] = "new $fuseeMath.Fusee.Math.float2(_v_, 0)";
+        PinFactory_ConvMap["System.Int32"]["Fusee.Math.float3"] = "new $fuseeMath.Fusee.Math.float3(_v_, 0, 0)";
+        PinFactory_ConvMap["System.Int32"]["Fusee.Math.float4"] = "new $fuseeMath.Fusee.Math.float4(_v_, 0, 0, 0)";
+        PinFactory_ConvMap["System.Int32"]["Fusee.Math.float4x4"] = "new $fuseeMath.Fusee.Math.float4x4(_v_, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)";
+        
+        // From float
+        PinFactory_ConvMap["System.Single"] = {};
+        PinFactory_ConvMap["System.Single"]["System.Int32"] = "parseInt(_v_)";
+        PinFactory_ConvMap["System.Single"]["System.Single"] = "_v_";
+        PinFactory_ConvMap["System.Single"]["System.Double"] = "_v_";
+        PinFactory_ConvMap["System.Single"]["System.Boolean"] = '(_v_ !== 0.0) ? true : false';
+        PinFactory_ConvMap["System.Single"]["System.String"] = "_v_.toString()";
+        PinFactory_ConvMap["System.Single"]["Fusee.Math.double2"] = "new $fuseeMath.Fusee.Math.double2(_v_, 0)";
+        PinFactory_ConvMap["System.Single"]["Fusee.Math.double3"] = "new $fuseeMath.Fusee.Math.double3(_v_, 0, 0)";
+        PinFactory_ConvMap["System.Single"]["Fusee.Math.double4"] = "new $fuseeMath.Fusee.Math.double4(_v_, 0, 0, 0)";
+        PinFactory_ConvMap["System.Single"]["Fusee.Math.double4x4"] = "new $fuseeMath.Fusee.Math.double4x4(_v_, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)";
+        PinFactory_ConvMap["System.Single"]["Fusee.Math.float2"] = "new $fuseeMath.Fusee.Math.float2(_v_, 0)";
+        PinFactory_ConvMap["System.Single"]["Fusee.Math.float3"] = "new $fuseeMath.Fusee.Math.float3(_v_, 0, 0)";
+        PinFactory_ConvMap["System.Single"]["Fusee.Math.float4"] = "new $fuseeMath.Fusee.Math.float4(_v_, 0, 0, 0)";
+        PinFactory_ConvMap["System.Single"]["Fusee.Math.float4x4"] = "new $fuseeMath.Fusee.Math.float4x4(_v_, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)";
+        
+        // From double
+        PinFactory_ConvMap["System.Double"] = {};
+        PinFactory_ConvMap["System.Double"]["System.Int32"] = "parseInt(_v_)";
+        PinFactory_ConvMap["System.Double"]["System.Single"] = "_v_";
+        PinFactory_ConvMap["System.Double"]["System.Double"] = "_v_";
+        PinFactory_ConvMap["System.Double"]["System.Boolean"] = '(_v_ !== 0.0) ? true : false';
+        PinFactory_ConvMap["System.Double"]["System.String"] = "_v_.toString()";
+        PinFactory_ConvMap["System.Double"]["Fusee.Math.double2"] = "new $fuseeMath.Fusee.Math.double2(_v_, 0)";
+        PinFactory_ConvMap["System.Double"]["Fusee.Math.double3"] = "new $fuseeMath.Fusee.Math.double3(_v_, 0, 0)";
+        PinFactory_ConvMap["System.Double"]["Fusee.Math.double4"] = "new $fuseeMath.Fusee.Math.double4(_v_, 0, 0, 0)";
+        PinFactory_ConvMap["System.Double"]["Fusee.Math.double4x4"] = "new $fuseeMath.Fusee.Math.double4x4(_v_, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)";
+        PinFactory_ConvMap["System.Double"]["Fusee.Math.float2"] = "new $fuseeMath.Fusee.Math.float2(_v_, 0)";
+        PinFactory_ConvMap["System.Double"]["Fusee.Math.float3"] = "new $fuseeMath.Fusee.Math.float3(_v_, 0, 0)";
+        PinFactory_ConvMap["System.Double"]["Fusee.Math.float4"] = "new $fuseeMath.Fusee.Math.float4(_v_, 0, 0, 0)";
+        PinFactory_ConvMap["System.Double"]["Fusee.Math.float4x4"] = "new $fuseeMath.Fusee.Math.float4x4(_v_, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)";
+
+        // From string
+        PinFactory_ConvMap["System.String"] = {};
+        PinFactory_ConvMap["System.String"]["System.Int32"] = "parseInt(_v_)";
+        PinFactory_ConvMap["System.String"]["System.Single"] = "parseFloat(_v_)";
+        PinFactory_ConvMap["System.String"]["System.Double"] = "parseFloat(_v_)";
+        PinFactory_ConvMap["System.String"]["System.Boolean"] = '(_v_ !== "") ? true : false';
+        PinFactory_ConvMap["System.String"]["System.String"] = "_v_";
+        PinFactory_ConvMap["System.String"]["Fusee.Math.double2"] = "new $fuseeMath.Fusee.Math.double2(parseFloat(_v_), 0)";
+        PinFactory_ConvMap["System.String"]["Fusee.Math.double3"] = "new $fuseeMath.Fusee.Math.double3(parseFloat(_v_), 0, 0)";
+        PinFactory_ConvMap["System.String"]["Fusee.Math.double4"] = "new $fuseeMath.Fusee.Math.double4(parseFloat(_v_), 0, 0, 0)";
+        PinFactory_ConvMap["System.String"]["Fusee.Math.double4x4"] = "new $fuseeMath.Fusee.Math.double4x4(parseFloat(_v_), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)";
+        PinFactory_ConvMap["System.String"]["Fusee.Math.float2"] = "new $fuseeMath.Fusee.Math.float2(parseFloat(_v_), 0)";
+        PinFactory_ConvMap["System.String"]["Fusee.Math.float3"] = "new $fuseeMath.Fusee.Math.float3(parseFloat(_v_), 0, 0)";
+        PinFactory_ConvMap["System.String"]["Fusee.Math.float4"] = "new $fuseeMath.Fusee.Math.float4(parseFloat(_v_), 0, 0, 0)";
+        PinFactory_ConvMap["System.String"]["Fusee.Math.float4x4"] = "new $fuseeMath.Fusee.Math.float4x4(parseFloat(_v_), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)";
+
+        // From Boolean
+        PinFactory_ConvMap["System.Boolean"] = {};
+        PinFactory_ConvMap["System.Boolean"]["System.Int32"] = "(_v_ === true)? 1 : 0";
+        PinFactory_ConvMap["System.Boolean"]["System.Single"] = "(_v_ === true)? 1.0 : 0.0";
+        PinFactory_ConvMap["System.Boolean"]["System.Double"] = "(_v_ === true)? 1.0 : 0.0";
+        PinFactory_ConvMap["System.Boolean"]["System.Boolean"] = "_v_";
+        PinFactory_ConvMap["System.Boolean"]["System.String"] = "(_v_ === true)? true:false";
+        PinFactory_ConvMap["System.Boolean"]["Fusee.Math.double2"] = "new $fuseeMath.Fusee.Math.double2((_v_ === true)? 1.0 : 0.0, 0)";
+        PinFactory_ConvMap["System.Boolean"]["Fusee.Math.double3"] = "new $fuseeMath.Fusee.Math.double3((_v_ === true)? 1.0 : 0.0, 0, 0)";
+        PinFactory_ConvMap["System.Boolean"]["Fusee.Math.double4"] = "new $fuseeMath.Fusee.Math.double4((_v_ === true)? 1.0 : 0.0, 0, 0, 1)";
+        PinFactory_ConvMap["System.Boolean"]["Fusee.Math.double4x4"] = "new $fuseeMath.Fusee.Math.double4x4((_v_ === true)? 1.0 : 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)";
+        PinFactory_ConvMap["System.Boolean"]["Fusee.Math.float2"] = "new $fuseeMath.Fusee.Math.float2((_v_ === true)? 1.0 : 0.0, 0)";
+        PinFactory_ConvMap["System.Boolean"]["Fusee.Math.float3"] = "new $fuseeMath.Fusee.Math.float3((_v_ === true)? 1.0 : 0.0, 0, 0)";
+        PinFactory_ConvMap["System.Boolean"]["Fusee.Math.float4"] = "new $fuseeMath.Fusee.Math.float4((_v_ === true)? 1.0 : 0.0, 0, 0, 1)";
+        PinFactory_ConvMap["System.Boolean"]["Fusee.Math.float4x4"] = "new $fuseeMath.Fusee.Math.float4x4((_v_ === true)? 1.0 : 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)";
+
+        // from float2
+        PinFactory_ConvMap["Fusee.Math.float2"] = {};
+        PinFactory_ConvMap["Fusee.Math.float2"]["System.Int32"] = "parseInt(_v_.x)";
+        PinFactory_ConvMap["Fusee.Math.float2"]["System.Single"] = "_v_.x";
+        PinFactory_ConvMap["Fusee.Math.float2"]["System.Double"] = "_v_.x";
+        PinFactory_ConvMap["Fusee.Math.float2"]["System.Boolean"] = "((_v_.x + _v_.y) > 0)? true : false";
+        PinFactory_ConvMap["Fusee.Math.float2"]["System.String"] = "(_v_.x + _v_.y).toString()";
+        PinFactory_ConvMap["Fusee.Math.float2"]["Fusee.Math.double2"] = "new $fuseeMath.Fusee.Math.double2(_v_.x, _v_.y)";
+        PinFactory_ConvMap["Fusee.Math.float2"]["Fusee.Math.double3"] = "new $fuseeMath.Fusee.Math.double3(_v_.x, _v_.y, 0)";
+        PinFactory_ConvMap["Fusee.Math.float2"]["Fusee.Math.double4"] = "new $fuseeMath.Fusee.Math.double4(_v_.x, _v_.y, 0, 0)";
+        PinFactory_ConvMap["Fusee.Math.float2"]["Fusee.Math.double4x4"] = "new $fuseeMath.Fusee.Math.double4x4(_v_.x, _v_.y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)";
+        PinFactory_ConvMap["Fusee.Math.float2"]["Fusee.Math.float2"] = "_v_";
+        PinFactory_ConvMap["Fusee.Math.float2"]["Fusee.Math.float3"] = "new $fuseeMath.Fusee.Math.float3(_v_.x, _v_.y, 0)";
+        PinFactory_ConvMap["Fusee.Math.float2"]["Fusee.Math.float4"] = "new $fuseeMath.Fusee.Math.float4(_v_.x, _v_.y, 0, 0)";
+        PinFactory_ConvMap["Fusee.Math.float2"]["Fusee.Math.float4x4"] = "new $fuseeMath.Fusee.Math.float4x4(_v_.x, _v_.y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)";
+        
+
+        // from float3
+        PinFactory_ConvMap["Fusee.Math.float3"] = {};
+        PinFactory_ConvMap["Fusee.Math.float3"]["System.Int32"] = "parseInt(_v_)";
+        PinFactory_ConvMap["Fusee.Math.float3"]["System.Single"] = "_v_.x";
+        PinFactory_ConvMap["Fusee.Math.float3"]["System.Double"] = "_v_.x";
+        PinFactory_ConvMap["Fusee.Math.float3"]["System.Boolean"] = "((_v_.x + _v_.y + _v_.z) > 0)? true : false";
+        PinFactory_ConvMap["Fusee.Math.float3"]["System.String"] = "(_v_.x + _v_.y + _v_.z).toString()";
+        PinFactory_ConvMap["Fusee.Math.float3"]["Fusee.Math.double2"] = "new $fuseeMath.Fusee.Math.double2(_v_.x, _v_.y)";
+        PinFactory_ConvMap["Fusee.Math.float3"]["Fusee.Math.double3"] = "new $fuseeMath.Fusee.Math.double3(_v_.x, _v_.y, _v_.z)";
+        PinFactory_ConvMap["Fusee.Math.float3"]["Fusee.Math.double4"] = "new $fuseeMath.Fusee.Math.double4(_v_.x, _v_.y, _v_.z, 0)";
+        PinFactory_ConvMap["Fusee.Math.float3"]["Fusee.Math.double4x4"] = "new $fuseeMath.Fusee.Math.double4x4(_v_.x, _v_.y, _v_.z, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)";
+        PinFactory_ConvMap["Fusee.Math.float3"]["Fusee.Math.float2"] = "new $fuseeMath.Fusee.Math.float2(_v_.x, _v_.y)";
+        PinFactory_ConvMap["Fusee.Math.float3"]["Fusee.Math.float3"] = "_v_"; 
+        PinFactory_ConvMap["Fusee.Math.float3"]["Fusee.Math.float4"] = "new $fuseeMath.Fusee.Math.float4(_v_.x, _v_.y, _v_.z, 0)";
+        PinFactory_ConvMap["Fusee.Math.float3"]["Fusee.Math.float4x4"] = "new $fuseeMath.Fusee.Math.float4x4(_v_.x, _v_.y, _v_.z, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)";
+        
+        // from float4
+        PinFactory_ConvMap["Fusee.Math.float4"] = {};
+        PinFactory_ConvMap["Fusee.Math.float4"]["System.Int32"] = "parseInt(_v_)";
+        PinFactory_ConvMap["Fusee.Math.float4"]["System.Single"] = "_v_.x";
+        PinFactory_ConvMap["Fusee.Math.float4"]["System.Double"] = "_v_.x";
+        PinFactory_ConvMap["Fusee.Math.float4"]["System.Boolean"] = "((_v_.x + _v_.y + _v_.z + _v_.w) > 0)? true : false";
+        PinFactory_ConvMap["Fusee.Math.float4"]["System.String"] = "(_v_.x + _v_.y + _v_.z + _v_.w).toString()";
+        PinFactory_ConvMap["Fusee.Math.float4"]["Fusee.Math.double2"] = "new $fuseeMath.Fusee.Math.double2(_v_.x, _v_.y)";
+        PinFactory_ConvMap["Fusee.Math.float4"]["Fusee.Math.double3"] = "new $fuseeMath.Fusee.Math.double3(_v_.x, _v_.y, _v_.z)";
+        PinFactory_ConvMap["Fusee.Math.float4"]["Fusee.Math.double4"] = "new $fuseeMath.Fusee.Math.double4(_v_.x, _v_.y, _v_.z, _v_.w)";
+        PinFactory_ConvMap["Fusee.Math.float4"]["Fusee.Math.double4x4"] = "new $fuseeMath.Fusee.Math.double4x4(_v_.x, _v_.y, _v_.z, _v_.w, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)";
+        PinFactory_ConvMap["Fusee.Math.float4"]["Fusee.Math.float2"] = "new $fuseeMath.Fusee.Math.float2(_v_.x, _v_.y)";
+        PinFactory_ConvMap["Fusee.Math.float4"]["Fusee.Math.float3"] = "new $fuseeMath.Fusee.Math.float3(_v_.x, _v_.y, _v_.z)";
+        PinFactory_ConvMap["Fusee.Math.float4"]["Fusee.Math.float4"] = "_v_";
+        PinFactory_ConvMap["Fusee.Math.float4"]["Fusee.Math.float4x4"] = "new $fuseeMath.Fusee.Math.float4x4(_v_.x, _v_.y, _v_.z, _v_.w, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)";
+
+        // from float4x4
+        PinFactory_ConvMap["Fusee.Math.float4x4"] = {};
+        PinFactory_ConvMap["Fusee.Math.float4x4"]["System.Int32"] = "parseInt(_v_.M11)";
+        PinFactory_ConvMap["Fusee.Math.float4x4"]["System.Single"] = "_v_.M11";
+        PinFactory_ConvMap["Fusee.Math.float4x4"]["System.Double"] = "_v_.M11";
+        PinFactory_ConvMap["Fusee.Math.float4x4"]["System.Boolean"] = "((_v_.M11 + _v_.M12 + _v_.M13 + _v_.M14 + _v_.M21 + _v_.M22 + _v_.M23 + _v_.M24 + _v_.M31 + _v_.M32 + _v_.M33 + _v_.M34 + _v_.M41 + _v_.M42 + _v_.M43 + _v_.M44) > 0)? true : false";
+        PinFactory_ConvMap["Fusee.Math.float4x4"]["System.String"] = "(_v_.M11 + _v_.M12 + _v_.M13 + _v_.M14 + _v_.M21 + _v_.M22 + _v_.M23 + _v_.M24 + _v_.M31 + _v_.M32 + _v_.M33 + _v_.M34 + _v_.M41 + _v_.M42 + _v_.M43 + _v_.M44).toString()";
+        PinFactory_ConvMap["Fusee.Math.float4x4"]["Fusee.Math.double2"] = "new $fuseeMath.Fusee.Math.double2(_v_.M11, _v_.M12)";
+        PinFactory_ConvMap["Fusee.Math.float4x4"]["Fusee.Math.double3"] = "new $fuseeMath.Fusee.Math.double3(_v_.M11, _v_.M12, _v_.M13)";
+        PinFactory_ConvMap["Fusee.Math.float4x4"]["Fusee.Math.double4"] = "new $fuseeMath.Fusee.Math.double4(_v_.M11, _v_.M12, _v_.M13, _v_.M14)";
+        PinFactory_ConvMap["Fusee.Math.float4x4"]["Fusee.Math.double4x4"] = "new $fuseeMath.Fusee.Math.double4x4(_v_.M11, _v_.M12, _v_.M13, _v_.M14, _v_.M21, _v_.M22, _v_.M23, _v_.M24, _v_.M31, _v_.M32, _v_.M33, _v_.M34, _v_.M41, _v_.M42, _v_.M43, _v_.M44)";
+        PinFactory_ConvMap["Fusee.Math.float4x4"]["Fusee.Math.float2"] = "new $fuseeMath.Fusee.Math.float2(_v_.M11, _v_.M12)";
+        PinFactory_ConvMap["Fusee.Math.float4x4"]["Fusee.Math.float3"] = "new $fuseeMath.Fusee.Math.float3(_v_.M11, _v_.M12, _v_.M13)";
+        PinFactory_ConvMap["Fusee.Math.float4x4"]["Fusee.Math.float4"] = "new $fuseeMath.Fusee.Math.float4(_v_.M11, _v_.M12, _v_.M13, _v_.M14)";
+        PinFactory_ConvMap["Fusee.Math.float4x4"]["Fusee.Math.float4x4"] = "_v_";
+
+        ////////////////////////////////////// Hier die double Matrix
+        
+
+        // from double2
+        PinFactory_ConvMap["Fusee.Math.double2"] = {};
+        PinFactory_ConvMap["Fusee.Math.double2"]["System.Int32"] = "parseInt(_v_.x)";
+        PinFactory_ConvMap["Fusee.Math.double2"]["System.Single"] = "_v_.x";
+        PinFactory_ConvMap["Fusee.Math.double2"]["System.Double"] = "_v_.x";
+        PinFactory_ConvMap["Fusee.Math.double2"]["System.Boolean"] = "((_v_.x + _v_.y) > 0)? true : false";
+        PinFactory_ConvMap["Fusee.Math.double2"]["System.String"] = "(_v_.x + _v_.y).toString()";
+        PinFactory_ConvMap["Fusee.Math.double2"]["Fusee.Math.double2"] = "_v_";
+        PinFactory_ConvMap["Fusee.Math.double2"]["Fusee.Math.double3"] = "new $fuseeMath.Fusee.Math.double3(_v_.x, _v_.y, 0)";
+        PinFactory_ConvMap["Fusee.Math.double2"]["Fusee.Math.double4"] = "new $fuseeMath.Fusee.Math.double4(_v_.x, _v_.y, 0, 0)";
+        PinFactory_ConvMap["Fusee.Math.double2"]["Fusee.Math.double4x4"] = "new $fuseeMath.Fusee.Math.double4x4(_v_.x, _v_.y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)";
+        PinFactory_ConvMap["Fusee.Math.double2"]["Fusee.Math.float2"] = "new $fuseeMath.Fusee.Math.float2(_v_.x, _v_.y)";
+        PinFactory_ConvMap["Fusee.Math.double2"]["Fusee.Math.float3"] = "new $fuseeMath.Fusee.Math.float3(_v_.x, _v_.y, 0)";
+        PinFactory_ConvMap["Fusee.Math.double2"]["Fusee.Math.float4"] = "new $fuseeMath.Fusee.Math.float4(_v_.x, _v_.y, 0, 0)";
+        PinFactory_ConvMap["Fusee.Math.double2"]["Fusee.Math.float4x4"] = "new $fuseeMath.Fusee.Math.float4x4(_v_.x, _v_.y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)";
+
+
+        // from double3
+        PinFactory_ConvMap["Fusee.Math.double3"] = {};
+        PinFactory_ConvMap["Fusee.Math.double3"]["System.Int32"] = "parseInt(_v_)";
+        PinFactory_ConvMap["Fusee.Math.double3"]["System.Single"] = "_v_.x";
+        PinFactory_ConvMap["Fusee.Math.double3"]["System.Double"] = "_v_.x";
+        PinFactory_ConvMap["Fusee.Math.double3"]["System.Boolean"] = "((_v_.x + _v_.y + _v_.z) > 0)? true : false";
+        PinFactory_ConvMap["Fusee.Math.double3"]["System.String"] = "(_v_.x + _v_.y + _v_.z).toString()";
+        PinFactory_ConvMap["Fusee.Math.double3"]["Fusee.Math.double2"] = "new $fuseeMath.Fusee.Math.double2(_v_.x, _v_.y)";
+        PinFactory_ConvMap["Fusee.Math.double3"]["Fusee.Math.double3"] = "_v_"; 
+        PinFactory_ConvMap["Fusee.Math.double3"]["Fusee.Math.double4"] = "new $fuseeMath.Fusee.Math.double4(_v_.x, _v_.y, _v_.z, 0)";
+        PinFactory_ConvMap["Fusee.Math.double3"]["Fusee.Math.double4x4"] = "new $fuseeMath.Fusee.Math.double4x4(_v_.x, _v_.y, _v_.z, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)";
+        PinFactory_ConvMap["Fusee.Math.double3"]["Fusee.Math.float2"] = "new $fuseeMath.Fusee.Math.float2(_v_.x, _v_.y)";
+        PinFactory_ConvMap["Fusee.Math.double3"]["Fusee.Math.float3"] = "new $fuseeMath.Fusee.Math.float3(_v_.x, _v_.y, _v_.z)";
+        PinFactory_ConvMap["Fusee.Math.double3"]["Fusee.Math.float4"] = "new $fuseeMath.Fusee.Math.float4(_v_.x, _v_.y, _v_.z, 0)";
+        PinFactory_ConvMap["Fusee.Math.double3"]["Fusee.Math.float4x4"] = "new $fuseeMath.Fusee.Math.float4x4(_v_.x, _v_.y, _v_.z, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)";
+
+        // from double4
+        PinFactory_ConvMap["Fusee.Math.double4"] = {};
+        PinFactory_ConvMap["Fusee.Math.double4"]["System.Int32"] = "parseInt(_v_)";
+        PinFactory_ConvMap["Fusee.Math.double4"]["System.Single"] = "_v_.x";
+        PinFactory_ConvMap["Fusee.Math.double4"]["System.Double"] = "_v_.x";
+        PinFactory_ConvMap["Fusee.Math.double4"]["System.Boolean"] = "((_v_.x + _v_.y + _v_.z + _v_.w) > 0)? true : false";
+        PinFactory_ConvMap["Fusee.Math.double4"]["System.String"] = "(_v_.x + _v_.y + _v_.z + _v_.w).toString()";
+        PinFactory_ConvMap["Fusee.Math.double4"]["Fusee.Math.double2"] = "new $fuseeMath.Fusee.Math.double2(_v_.x, _v_.y)";
+        PinFactory_ConvMap["Fusee.Math.double4"]["Fusee.Math.double3"] = "new $fuseeMath.Fusee.Math.double3(_v_.x, _v_.y, _v_.z)";
+        PinFactory_ConvMap["Fusee.Math.double4"]["Fusee.Math.double4"] = "_v_"; 
+        PinFactory_ConvMap["Fusee.Math.double4"]["Fusee.Math.double4x4"] = "new $fuseeMath.Fusee.Math.double4x4(_v_.x, _v_.y, _v_.z, _v_.w, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)";
+        PinFactory_ConvMap["Fusee.Math.double4"]["Fusee.Math.float2"] = "new $fuseeMath.Fusee.Math.float2(_v_.x, _v_.y)";
+        PinFactory_ConvMap["Fusee.Math.double4"]["Fusee.Math.float3"] = "new $fuseeMath.Fusee.Math.float3(_v_.x, _v_.y, _v_.z)";
+        PinFactory_ConvMap["Fusee.Math.double4"]["Fusee.Math.float4"] = "new $fuseeMath.Fusee.Math.float4(_v_.x, _v_.y, _v_.z, _v_.w)";
+        PinFactory_ConvMap["Fusee.Math.double4"]["Fusee.Math.float4x4"] = "new $fuseeMath.Fusee.Math.float4x4(_v_.x, _v_.y, _v_.z, _v_.w, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)";
+
+        // from double4x4
+        PinFactory_ConvMap["Fusee.Math.double4x4"] = {};
+        PinFactory_ConvMap["Fusee.Math.double4x4"]["System.Int32"] = "parseInt(_v_.M11)";
+        PinFactory_ConvMap["Fusee.Math.double4x4"]["System.Single"] = "_v_.M11";
+        PinFactory_ConvMap["Fusee.Math.double4x4"]["System.Double"] = "_v_.M11";
+        PinFactory_ConvMap["Fusee.Math.double4x4"]["System.Boolean"] = "((_v_.M11 + _v_.M12 + _v_.M13 + _v_.M14 + _v_.M21 + _v_.M22 + _v_.M23 + _v_.M24 + _v_.M31 + _v_.M32 + _v_.M33 + _v_.M34 + _v_.M41 + _v_.M42 + _v_.M43 + _v_.M44) > 0)? true : false";
+        PinFactory_ConvMap["Fusee.Math.double4x4"]["System.String"] = "(_v_.M11 + _v_.M12 + _v_.M13 + _v_.M14 + _v_.M21 + _v_.M22 + _v_.M23 + _v_.M24 + _v_.M31 + _v_.M32 + _v_.M33 + _v_.M34 + _v_.M41 + _v_.M42 + _v_.M43 + _v_.M44).toString()";
+        PinFactory_ConvMap["Fusee.Math.double4x4"]["Fusee.Math.double2"] = "new $fuseeMath.Fusee.Math.double2(_v_.M11, _v_.M12)";
+        PinFactory_ConvMap["Fusee.Math.double4x4"]["Fusee.Math.double3"] = "new $fuseeMath.Fusee.Math.double3(_v_.M11, _v_.M12, _v_.M13)";
+        PinFactory_ConvMap["Fusee.Math.double4x4"]["Fusee.Math.double4"] = "new $fuseeMath.Fusee.Math.double4(_v_.M11, _v_.M12, _v_.M13, _v_.M14)";
+        PinFactory_ConvMap["Fusee.Math.double4x4"]["Fusee.Math.double4x4"] = "_v_";
+        PinFactory_ConvMap["Fusee.Math.double4x4"]["Fusee.Math.float2"] = "new $fuseeMath.Fusee.Math.float2(_v_.M11, _v_.M12)";
+        PinFactory_ConvMap["Fusee.Math.double4x4"]["Fusee.Math.float3"] = "new $fuseeMath.Fusee.Math.float3(_v_.M11, _v_.M12, _v_.M13)";
+        PinFactory_ConvMap["Fusee.Math.double4x4"]["Fusee.Math.float4"] = "new $fuseeMath.Fusee.Math.float4(_v_.M11, _v_.M12, _v_.M13, _v_.M14)";
+        PinFactory_ConvMap["Fusee.Math.double4x4"]["Fusee.Math.float4x4"] = "new $fuseeMath.Fusee.Math.float4x4(_v_.M11, _v_.M12, _v_.M13, _v_.M14, _v_.M21, _v_.M22, _v_.M23, _v_.M24, _v_.M31, _v_.M32, _v_.M33, _v_.M34, _v_.M41, _v_.M42, _v_.M43, _v_.M44)";
+
+
+
+    }
+    PinFactory_GetConvMap = function () {
+        return PinFactory_ConvMap;
+    };
+    return PinFactory_ConvMap;
+};
+
+
+
+
+
+
+
 
 var $fOutPin$b1 = function () {
     return ($fOutPin$b1 = JSIL.Memoize($WebXirkitImp.Fusee.Xirkit.OutPin$b1))();
@@ -73,147 +315,9 @@ JSIL.MakeInterface(
 
 
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// FieldAccesssor Implementation
-
-
-//JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Xirkit.JsFieldAccesssor", true, [], function ($interfaceBuilder) {
-//    $ = $interfaceBuilder;
-
-//    $.Method({ Static: false, Public: true }, ".ctor",
-//        new JSIL.MethodSignature(null, [/*$customMsCore*/$customMsCore.TypeRef("System.Reflection.FieldInfo")], []),
-//        function ctor(fieldInfo) {
-//            this._fieldInfo = fieldInfo;
-//        }
-//    );
-
-//    $.Method({ Static: false, Public: true, Virtual: true }, "Get",
-//        new JSIL.MethodSignature($.Object, [$.Object], []),
-//        function Get(o) {
-//            return o[ this._fieldInfo.Name];
-//        }
-//    );
-
-//    $.Method({ Static: false, Public: true, Virtual: true }, "Set",
-//        new JSIL.MethodSignature(null, [$.Object, ], []),
-//        function Set(o, val) {
-//            o[this._fieldInfo.Name] = val;
-//        }
-//    );
-
-//    $.Field({ Static: false, Public: false, ReadOnly: true }, "_fieldInfo", $customMSCore.TypeRef("System.Reflection.FieldInfo"));
-//    $.ImplementInterfaces(
-//          /* 0 */ $WebXirkitImp.TypeRef("Fusee.Xirkit.IJsMemberAccessor")
-//    );
-
-//    return function (newThisType) { $thisType = newThisType; };
-//});
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Xirkit.JsPropertyAccesssor", true, [], function ($interfaceBuilder) {
-//    $ = $interfaceBuilder;
-
-//    $.Method({ Static: false, Public: true }, ".ctor",
-//        new JSIL.MethodSignature(null, [/*$customMsCore*/$customMsCore.TypeRef("System.Reflection.PropertyInfo")], []),
-//        function ctor(propertyInfo) {
-//            this._propertyInfo = propertyInfo;
-//            this.SetImp = new Function("o", "val", "o.set_" + this._propertyInfo.Name + "(val);");
-//            this.GetImp = new Function("o", "return o.get_" + this._propertyInfo.Name + "();");
-//        }
-//    );
-
-//    $.Method({ Static: false, Public: true, Virtual: true }, "Get",
-//        new JSIL.MethodSignature($.Object, [$.Object], []),
-//        function Get(o) {
-//            return this.GetImp(o);
-//        }
-//    );
-
-//    $.Method({ Static: false, Public: true, Virtual: true }, "Set",
-//        new JSIL.MethodSignature(null, [$.Object, ], []),
-//        function Set(o, val) {
-//            this.SetImp(o, val);
-//        }
-//    );
-
-//    $.Field({ Static: false, Public: false, ReadOnly: true }, "_propertyInfo", $customMSCore.TypeRef("System.Reflection.PropertyInfo"));
-//    $.ImplementInterfaces(
-//          /* 0 */ $WebXirkitImp.TypeRef("Fusee.Xirkit.IJsMemberAccessor")
-//    );
-
-//    return function (newThisType) { $thisType = newThisType; };
-//});
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//JsAccessor Implementation
 
 
 JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Xirkit.JsAccesssor", true, [], function ($interfaceBuilder) {
@@ -250,22 +354,6 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Xirkit.JsAccesssor", t
 });
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // implementation of public PinFactory Methods
 
 JSIL.ImplementExternals("Fusee.Xirkit.PinFactory", function ($) {
@@ -273,7 +361,7 @@ JSIL.ImplementExternals("Fusee.Xirkit.PinFactory", function ($) {
     $.Method({ Static: true, Public: true }, "CreateOutPin",
        new JSIL.MethodSignature($fuseeXirkit.TypeRef("Fusee.Xirkit.IOutPin"), [$fuseeXirkit.TypeRef("Fusee.Xirkit.Node"), $.String], []),
          function PinFactory_CreateOutPin(n, member) {
-             // typeAndAccessor contains two entries:
+             //  typeAndAccessor contains two entries:
              //  typeAndAccessor.elementType;
              //  typeAndAccessor.elementAccessor;
              var typeAndAccessor = PinFactory_GetMemberTypeAndAccessor(n, member, null);
@@ -284,7 +372,6 @@ JSIL.ImplementExternals("Fusee.Xirkit.PinFactory", function ($) {
 
     // Pin Factory Create InPin
     
-
     $.Method({ Static: true, Public: true }, "CreateInPin",
           new JSIL.MethodSignature($asm06.TypeRef("Fusee.Xirkit.IInPin"), [
               $fuseeXirkit.TypeRef("Fusee.Xirkit.Node"), $.String,
@@ -294,10 +381,10 @@ JSIL.ImplementExternals("Fusee.Xirkit.PinFactory", function ($) {
                   // typeAndAccessor contains two entries:
                   //  typeAndAccessor.elementType;
                   //  typeAndAccessor.elementAccessor;
-                  var typeAndAccessor = PinFactory_GetMemberTypeAndAccessor(n, member, null);
+                  var typeAndAccessor = PinFactory_GetMemberTypeAndAccessor(n, member, targetType);
 
-                  if (typeAndAccessor.elementType != targetType) // TODO: && !CanConvert(targetType, memberType))
-                      throw new Exception("No suitable converter to create converting InPin from " + targetType.Name + " to " + typeAndAccessor.elementType.Name);
+                  //if (typeAndAccessor.elementType != targetType) // TODO: && !CanConvert(targetType, memberType))
+                  //    throw new Exception("No suitable converter to create converting InPin from " + targetType.Name + " to " + typeAndAccessor.elementType.Name);
 
                   var inPin = new $WebXirkitImp.Fusee.Xirkit.JsInPin(n, member, typeAndAccessor.elementAccessor);
 
@@ -377,22 +464,6 @@ JSIL.ImplementExternals("Fusee.Xirkit.PinFactory", function ($) {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     function PinFactory_InstantiateFieldAccessor(memberInfo, memberType) {
         
         var ret = new Fusee.Xirkit.JsAccesssor(memberInfo);
@@ -404,40 +475,24 @@ JSIL.ImplementExternals("Fusee.Xirkit.PinFactory", function ($) {
     }
     
 
+    function PinFactory_InstantiateConvertingFieldAccessor(memberInfo, pinType, memberType) {
+        
+        var ret = new Fusee.Xirkit.JsAccesssor(memberInfo);
 
+        var setExpression = PinFactory_GetConvMap()[pinType.FullName][memberType.FullName];
+        var getExpression = PinFactory_GetConvMap()[memberType.FullName][pinType.FullName];
 
+        var setCommand = "o." + memberInfo.Name + " = " + setExpression.replace(/_v_/g, "val") + ";";
+        var getCommand = "return " + getExpression.replace(/_v_/g, "o." + memberInfo.Name) + ";";
 
+        ret.SetImp = new Function("o", "val", setCommand);
+        ret.GetImp = new Function("o", getCommand);
 
-
-
-
-
-
-
-
-
-
-
-
-
-    function PinFactory_InstantiateConvertingFieldAccessor(fieldInfo, pinType, memberType) {
-        throw new Exception("TODO");
+        return ret;
     }
 
 
-
-
-
-
-
-
-
-
-
     function PinFactory_InstantiatePropertyAccessor(memberInfo, memberType) {
-        //var ret = new Fusee.Xirkit.JsAccesssor(memberInfo);
-        //return ret;
-        
 
         var ret = new Fusee.Xirkit.JsAccesssor(memberInfo);
         //ret.SetImp = new Function("o", "val", "o[\"" + this._memberInfo.Name + "\"] = val;"); ODER:
@@ -448,17 +503,22 @@ JSIL.ImplementExternals("Fusee.Xirkit.PinFactory", function ($) {
 
     }
 
+    function PinFactory_InstantiateConvertingPropertyAccessor(memberInfo, pinType, memberType) {
+        
+        var ret = new Fusee.Xirkit.JsAccesssor(memberInfo);
 
+        var setExpression = PinFactory_GetConvMap()[pinType.FullName][memberType.FullName];
+        var getExpression = PinFactory_GetConvMap()[memberType.FullName][pinType.FullName];
 
+        var setCommand = "o.set_" + memberInfo.Name + "(" + setExpression.replace(/_v_/g, "val") + ");";
+        var getCommand = "return " + getExpression.replace(/_v_/g, "o.get_" + memberInfo.Name + "()") + ";";
 
+        ret.SetImp = new Function("o", "val", setCommand);
+        ret.GetImp = new Function("o", getCommand);
 
-
-
-
-    function PinFactory_InstantiateConvertingPropertyAccessor(propertyInfo, pinType, memberType) {
-        throw new Exception("TODO");
+        return ret;
     }
-
+    
     return function (newThisType) { $thisType = newThisType; };
 });
 
@@ -538,12 +598,16 @@ JSIL.MakeClass($fuseeXirkit.TypeRef("Fusee.Xirkit.Pin"), "Fusee.Xirkit.JsOutPin"
       }
     );
 
+
+
     $.Method({ Static: false, Public: true }, "set_MemberAccessor",
       new JSIL.MethodSignature(null, [$WebXirkitImp.TypeRef("Fusee.Xirkit.IJsMemberAccessor", [$fuseeXirkit.TypeRef("Fusee.Xirkit.JsOutPin")])], []),
       function set_MemberAccessor(value) {
           this._memberAccessor = value;
       }
     );
+
+
 
     // $.Field({ Static: false, Public: false }, "_links", $customMsCore.TypeRef("System.Collections.Generic.List`1", [$fuseeXirkit.TypeRef("Fusee.Xirkit.JsInPin")]));
     $.Field({ Static: false, Public: false }, "_memberAccessor", $WebXirkitImp.TypeRef("Fusee.Xirkit.IJsMemberAccessor"));
@@ -691,5 +755,4 @@ JSIL.MakeClass($fuseeXirkit.TypeRef("Fusee.Xirkit.Pin"), "Fusee.Xirkit.JsInPin",
         $thisType = newThisType;
     };
 });
-
 
