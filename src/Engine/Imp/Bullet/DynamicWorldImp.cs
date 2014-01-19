@@ -44,7 +44,7 @@ namespace Fusee.Engine
             };*/
             BtWorld = new DiscreteDynamicsWorld(BtDispatcher, BtBroadphase, BtSolver, BtCollisionConf)
             {
-                Gravity = new Vector3(0, -9.81f *15f, 0)
+                Gravity = new Vector3(0, -9.81f *15, 0)
             };
             BtWorld.SolverInfo.NumIterations = 8;
        
@@ -197,8 +197,8 @@ namespace Fusee.Engine
                 btLocalInertia);
 
             btRbcInfo.LinearSleepingThreshold *= 10.0f;
-            btRbcInfo.Friction = 1.0f; //Friction is set here to a as default. Otherwise there wouldn't be ANY friction
-            btRbcInfo.Restitution = 0.02f; //Restitutio is here set to 0.5 as default. Otherwise restitution would be "absorbed"
+           // btRbcInfo.Friction = 1.0f; //Friction is set here to a as default. Otherwise there wouldn't be ANY friction
+           // btRbcInfo.Restitution = 0.02f; //Restitutio is here set to 0.5 as default. Otherwise restitution would be "absorbed"
             var btRigidBody = new RigidBody(btRbcInfo);
             BtWorld.AddRigidBody(btRigidBody);
             btRbcInfo.Dispose();

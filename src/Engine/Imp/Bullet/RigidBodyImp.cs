@@ -255,7 +255,7 @@ namespace Fusee.Engine
             set
             {
                 var o = (RigidBodyImp) _rbi.UserObject;
-                o._rbi.Restitution = value;
+                o._rbi.Friction = value;
             }
         }
 

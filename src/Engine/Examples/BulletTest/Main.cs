@@ -1,13 +1,98 @@
 using System;
 using System.Diagnostics;
 using Fusee.Engine;
-using Fusee.SceneManagement;
+
 using Fusee.Math;
 
 namespace Examples.BulletTest
 {
     public class BulletTest : RenderCanvas
     {
+        #region shader
+        private const string Vs = @"
+            attribute vec4 fuColor;
+            attribute vec3 fuVertex;
+            attribute vec3 fuNormal;
+            attribute vec2 fuUV;
+        
+            varying vec4 vColor;
+            varying vec3 vNormal;
+            varying vec2 vUV;
+        
+            uniform mat4 FUSEE_MV;
+            uniform mat4 FUSEE_P;
+            uniform mat4 FUSEE_ITMV;
+
+            void main()
+            {
+                mat4 FUSEE_MVP = FUSEE_P * FUSEE_MV;
+                gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
+
+                vNormal = mat3(FUSEE_ITMV[0].xyz, FUSEE_ITMV[1].xyz, FUSEE_ITMV[2].xyz) * fuNormal;
+                vUV = fuUV;
+            }";
+
+        private const string Ps = @"
+            #ifdef GL_ES
+                precision highp float;
+            #endif
+        
+            
+            uniform vec4 vColor;
+            varying vec3 vNormal;
+            varying vec2 vUV;
+
+            void main()
+            {
+                
+                gl_FragColor = vColor * dot(vNormal, vec3(0, 0, 1)) *2;
+            }";
+
+
+
+        private const string Vt = @"
+            attribute vec4 fuColor;
+            attribute vec3 fuVertex;
+            attribute vec3 fuNormal;
+            attribute vec2 fuUV;
+        
+            varying vec4 vColor;
+            varying vec3 vNormal;
+            varying vec2 vUV;
+        
+            uniform mat4 FUSEE_MV;
+            uniform mat4 FUSEE_P;
+            uniform mat4 FUSEE_ITMV;
+
+            void main()
+            {
+                mat4 FUSEE_MVP = FUSEE_P * FUSEE_MV;
+                gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
+
+                vNormal = mat3(FUSEE_ITMV[0].xyz, FUSEE_ITMV[1].xyz, FUSEE_ITMV[2].xyz) * fuNormal;
+                vUV = fuUV;
+            }";
+
+        private const string Pt = @"
+            #ifdef GL_ES
+                precision highp float;
+            #endif
+        
+            
+            uniform sampler2D vTexture;
+            varying vec3 vNormal;
+            varying vec2 vUV;
+
+            void main()
+            {
+                
+                gl_FragColor = texture2D(vTexture, vUV) * dot(vNormal, vec3(0, 0, 1))*0.5;
+            }";
+        #endregion shader
+
+
+
+
         // angle variables
         private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
 
@@ -28,7 +113,7 @@ namespace Examples.BulletTest
 
         //Physic
         private static Physic _physic;
-
+        
         public override void Init()
         {
             // is called on startup
@@ -38,25 +123,26 @@ namespace Examples.BulletTest
             _meshTea = MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
             _meshCube = MeshReader.LoadMesh(@"Assets/Cube.obj.model");
             _meshSphere = MeshReader.LoadMesh(@"Assets/Sphere.obj.model");
-
-            _spColor = MoreShaders.GetShader("simple", RC);
-            _spTexture = MoreShaders.GetShader("texture", RC);
-
+            //RC.CreateShader(Vs, Ps);
+            _spColor = RC.CreateShader(Vs, Ps); //MoreShaders.GetShader("simple", RC);
+            _spTexture = RC.CreateShader(Vt, Pt);//MoreShaders.GetShader("texture", RC);
+            
             _colorParam = _spColor.GetShaderParam("vColor");
-            _textureParam = _spTexture.GetShaderParam("texture1");
+            _textureParam = _spTexture.GetShaderParam("vTexture");
 
             // load texture
             var imgData = RC.LoadImage("Assets/world_map.jpg");
             _iTex = RC.CreateTexture(imgData);
 
             _physic = new Physic();
-
+            
         }
 
-       
 
         public override void RenderAFrame()
         {
+            var rb1 = _physic.World.GetRigidBody(_physic.World.NumberRigidBodies() - 3);
+            var rb2 = _physic.World.GetRigidBody(_physic.World.NumberRigidBodies() - 1);
             // is called once a frame
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
             _physic.World.StepSimulation((float) Time.Instance.DeltaTime, Time.Instance.FramePerSecondSmooth);
@@ -77,6 +163,8 @@ namespace Examples.BulletTest
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
 
+           
+
             // move per keyboard
             if (Input.Instance.IsKeyDown(KeyCodes.NumPad1))
             {
@@ -94,13 +182,30 @@ namespace Examples.BulletTest
                 _physic.InitScene3();
             }
 
+
+            if (Input.Instance.IsKeyDown(KeyCodes.NumPad4))
+            {
+               // var rb = _physic.World.GetRigidBody(_physic.World.NumberRigidBodies() - 3);
+                rb1.ApplyCentralImpulse = new float3(-10, 0, 0);
+            }
+
+            if (Input.Instance.IsKeyDown(KeyCodes.NumPad6))
+            {
+                //var rb = _physic.World.GetRigidBody(_physic.World.NumberRigidBodies() - 3);
+                rb1.ApplyCentralImpulse = new float3(10, 0, 0);
+            }
+
             if (Input.Instance.IsKeyDown(KeyCodes.Left))
             {
-                _physic.World.GetRigidBody(_physic.World.NumberRigidBodies() -1).ApplyCentralImpulse = new float3(-50, 0, 0);
+                //_physic.World.GetRigidBody(_physic.World.NumberRigidBodies() -1).ApplyCentralImpulse = new float3(-10, 0, 0);
+                rb2.ApplyCentralImpulse = new float3(-10, 0, 0);
             }
 
             if (Input.Instance.IsKeyDown(KeyCodes.Right))
-                _physic.World.GetRigidBody(_physic.World.NumberRigidBodies() - 1).ApplyTorque = new float3(10,0,0);
+            {
+                //_physic.World.GetRigidBody(_physic.World.NumberRigidBodies() - 1).ApplyCentralImpulse = new float3(10, 0, 0);
+                rb2.ApplyCentralImpulse = new float3(10, 0, 0);
+            }
 
             if (Input.Instance.IsKeyDown(KeyCodes.Up))
                 _physic.World.GetRigidBody(_physic.World.NumberRigidBodies() - 1).ApplyCentralImpulse = new float3(0, 10, 0);
@@ -110,7 +215,7 @@ namespace Examples.BulletTest
                     // _angleVert += RotationSpeed * (float)Time.Instance.DeltaTime;
            
             var mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
-            var mtxCam = mtxRot * float4x4.LookAt(0, 500, 1000, 0, 0, 0, 0, 1, 0);
+            var mtxCam = mtxRot * float4x4.LookAt(0, 500, 800, 0, 0, 0, 0, 1, 0);
 
 
             if (Input.Instance.OnKeyDown(KeyCodes.Space))
@@ -124,17 +229,18 @@ namespace Examples.BulletTest
             //Render all RigidBodies
 
 
-            /*var ground = _physic.World.GetRigidBody(0);
-            var ma = ground.WorldTransform;        
-            RC.ModelView = float4x4.Scale(10, 0.001f, 10) * ma * mtxCam;
+            var ground = _physic.World.GetRigidBody(0);
+            var groundShape = (BoxShape) ground.CollisionShape;
+            var ma = ground.WorldTransform;
+            RC.ModelView = float4x4.Scale(groundShape.HalfExtents.x / 100, groundShape.HalfExtents.y / 100, groundShape.HalfExtents.z / 100) * ma * mtxCam;
             RC.SetShader(_spColor);
-            RC.SetShaderParam(_colorParam, new float4(1.0f, 1.0f, 0, 1));
-            RC.Render(_meshCube);*/
+            RC.SetShaderParam(_colorParam, new float4(1.0f, 0.0f, 0, 1));
+            RC.Render(_meshCube);
 
            
 
-             Debug.WriteLine("FramePerSecond: " +Time.Instance.FramePerSecond);
-            for (int i = 0; i < _physic.World.NumberRigidBodies(); i++)
+            //Debug.WriteLine("FramePerSecond: " +Time.Instance.FramePerSecond);
+            for (int i = 1; i < _physic.World.NumberRigidBodies(); i++)
             {
                 var rb = _physic.World.GetRigidBody(i);
                 var matrix = rb.WorldTransform;
@@ -144,10 +250,10 @@ namespace Examples.BulletTest
                     var shape = (BoxShape) rb.CollisionShape;
                     RC.ModelView = float4x4.Scale(shape.HalfExtents.x/100, shape.HalfExtents.y/100, shape.HalfExtents.z /100) * matrix * mtxCam;
                     RC.SetShader(_spColor);
-                    RC.SetShaderParam(_colorParam, new float4(1.0f, 1.1f, 1.0f, 1));
+                    RC.SetShaderParam(_colorParam, new float4(1.0f, 0.1f, 1.0f, 1));
                     RC.Render(_meshCube);
                 }
-                if (rb.CollisionShape.GetType().ToString() == "Fusee.Engine.SphereShape")
+                else if (rb.CollisionShape.GetType().ToString() == "Fusee.Engine.SphereShape")
                 {
                     var shape = (SphereShape) rb.CollisionShape;
                     RC.ModelView = float4x4.Scale(shape.Radius)*matrix*mtxCam;
