@@ -1,11 +1,5 @@
-﻿using System;
-using System.Data;
+﻿
 using System.Diagnostics;
-using System.Diagnostics.Eventing.Reader;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Security.Cryptography.X509Certificates;
-using System.Xml.Schema;
 using Fusee.Math;
 using BulletSharp;
 using Quaternion = Fusee.Math.Quaternion;
@@ -121,7 +115,7 @@ namespace Fusee.Engine
             set
             {
                 var o = (RigidBodyImp)_rbi.UserObject;
-                o._rbi.ApplyTorque(Translater.Float3ToBtVector3(value*10));
+                o._rbi.ApplyTorque(Translater.Float3ToBtVector3(value));
             }
         }
 
@@ -142,7 +136,7 @@ namespace Fusee.Engine
             set
             {
                 var o = (RigidBodyImp)_rbi.UserObject;
-                o._rbi.ApplyTorqueImpulse(Translater.Float3ToBtVector3(value * 10));
+                o._rbi.ApplyTorqueImpulse(Translater.Float3ToBtVector3(value));
                 _torqueImpulse = value*10;
             }
         }
@@ -157,7 +151,7 @@ namespace Fusee.Engine
             set
             {
                 var o = (RigidBodyImp)_rbi.UserObject;
-                o._rbi.ApplyCentralForce(Translater.Float3ToBtVector3(value * 10));
+                o._rbi.ApplyCentralForce(Translater.Float3ToBtVector3(value));
                 _centralForce = value;
             }
         }
@@ -172,7 +166,7 @@ namespace Fusee.Engine
             set
             {
                 var o = (RigidBodyImp)_rbi.UserObject;
-                o._rbi.ApplyCentralImpulse(Translater.Float3ToBtVector3(value * 10));
+                o._rbi.ApplyCentralImpulse(Translater.Float3ToBtVector3(value));
                 _centralImpulse = value*10;
             }
         }
@@ -186,7 +180,7 @@ namespace Fusee.Engine
             } 
             set
             {
-                var linVel = Translater.Float3ToBtVector3(value)*10;
+                var linVel = Translater.Float3ToBtVector3(value);
                 var o = (RigidBodyImp) _rbi.UserObject;
                 o._rbi.LinearVelocity = linVel;
             }

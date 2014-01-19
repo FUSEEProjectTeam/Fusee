@@ -38,18 +38,14 @@ namespace Fusee.Engine
             //BtCollisionShapes = new AlignedCollisionShapeArray();
 
             
-            /*BtWorld = new DiscreteDynamicsWorld(BtDispatcher, BtBroadphase, BtSolver, BtCollisionConf)
-            {
-                Gravity = new Vector3(0, -9.81f   *10.0f , 0)
-            };*/
             BtWorld = new DiscreteDynamicsWorld(BtDispatcher, BtBroadphase, BtSolver, BtCollisionConf)
             {
-                Gravity = new Vector3(0, -9.81f *15, 0)
+                Gravity = new Vector3(0, -9.81f, 0)
             };
             BtWorld.SolverInfo.NumIterations = 8;
        
             BtWorld.PerformDiscreteCollisionDetection();
-            //GImpactCollisionAlgorithm.RegisterAlgorithm(BtDispatcher);
+            GImpactCollisionAlgorithm.RegisterAlgorithm(BtDispatcher);
            // BtWorld.SetInternalTickCallback(MyTickCallBack);
             //BtWorld.SetInternalTickCallback(TickTack);
         }
@@ -177,7 +173,7 @@ namespace Fusee.Engine
                     break;               
                 case "Fusee.Engine.GImpactMeshShapeImp":
                     var gImpMesh = (GImpactMeshShapeImp)colShape;
-                    //gImpMesh.BtGImpactMeshShape.UpdateBound();
+                    gImpMesh.BtGImpactMeshShape.UpdateBound();
                     var btGimp = new GImpactMeshShape(gImpMesh.BtGImpactMeshShape.MeshInterface);
                     
                     btGimp.UpdateBound();
@@ -192,11 +188,11 @@ namespace Fusee.Engine
             }
             
             var btLocalInertia = btColShape.CalculateLocalInertia(mass);
-            btLocalInertia *= (10.0f*10);
+           // btLocalInertia *= (10.0f*10);
             RigidBodyConstructionInfo btRbcInfo = new RigidBodyConstructionInfo(mass, btMotionState, btColShape,
                 btLocalInertia);
 
-            btRbcInfo.LinearSleepingThreshold *= 10.0f;
+           // btRbcInfo.LinearSleepingThreshold *= 10.0f;
            // btRbcInfo.Friction = 1.0f; //Friction is set here to a as default. Otherwise there wouldn't be ANY friction
            // btRbcInfo.Restitution = 0.02f; //Restitutio is here set to 0.5 as default. Otherwise restitution would be "absorbed"
             var btRigidBody = new RigidBody(btRbcInfo);
@@ -678,7 +674,7 @@ namespace Fusee.Engine
             }
             var btTriangleIndexVertexArray = new TriangleIndexVertexArray(meshTriangles, btMeshVertices);
             var btGimpactMeshShape = new GImpactMeshShape(btTriangleIndexVertexArray);
-            //btGimpactMeshShape.UpdateBound();
+            btGimpactMeshShape.UpdateBound();
             BtCollisionShapes.Add(btGimpactMeshShape);
             var retval = new GImpactMeshShapeImp();
             retval.BtGImpactMeshShape = btGimpactMeshShape;

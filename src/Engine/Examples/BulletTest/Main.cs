@@ -45,7 +45,7 @@ namespace Examples.BulletTest
             void main()
             {
                 
-                gl_FragColor = vColor * dot(vNormal, vec3(0, 0, 1)) *2;
+                gl_FragColor = vColor * dot(vNormal, vec3(0, 0, 1)) *50;
             }";
 
 
@@ -135,7 +135,6 @@ namespace Examples.BulletTest
             _iTex = RC.CreateTexture(imgData);
 
             _physic = new Physic();
-            
         }
 
 
@@ -215,7 +214,7 @@ namespace Examples.BulletTest
                     // _angleVert += RotationSpeed * (float)Time.Instance.DeltaTime;
            
             var mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
-            var mtxCam = mtxRot * float4x4.LookAt(0, 500, 800, 0, 0, 0, 0, 1, 0);
+            var mtxCam = mtxRot * float4x4.LookAt(0, 20, 70, 0, 0, 0, 0, 1, 0);
 
 
             if (Input.Instance.OnKeyDown(KeyCodes.Space))
@@ -223,24 +222,22 @@ namespace Examples.BulletTest
                 Debug.WriteLine(Width - Input.Instance.GetMousePos().x);
                 Debug.WriteLine(Input.Instance.GetAxis(InputAxis.MouseX));
 
-                _physic.Shoot(new float3(0, 300, 700), new float3(0, 15, 0));
+                _physic.Shoot(new float3(0, 15, 15), new float3(0, 0, 0));
             }
            
             //Render all RigidBodies
 
 
-            var ground = _physic.World.GetRigidBody(0);
+            /*var ground = _physic.World.GetRigidBody(0);
             var groundShape = (BoxShape) ground.CollisionShape;
             var ma = ground.WorldTransform;
             RC.ModelView = float4x4.Scale(groundShape.HalfExtents.x / 100, groundShape.HalfExtents.y / 100, groundShape.HalfExtents.z / 100) * ma * mtxCam;
             RC.SetShader(_spColor);
-            RC.SetShaderParam(_colorParam, new float4(1.0f, 0.0f, 0, 1));
-            RC.Render(_meshCube);
-
-           
+            RC.SetShaderParam(_colorParam, new float4(0.0f, 0.0f, 1.0f, 1));
+            RC.Render(_meshCube);*/
 
             //Debug.WriteLine("FramePerSecond: " +Time.Instance.FramePerSecond);
-            for (int i = 1; i < _physic.World.NumberRigidBodies(); i++)
+            for (int i = 0; i < _physic.World.NumberRigidBodies(); i++)
             {
                 var rb = _physic.World.GetRigidBody(i);
                 var matrix = rb.WorldTransform;
@@ -250,7 +247,7 @@ namespace Examples.BulletTest
                     var shape = (BoxShape) rb.CollisionShape;
                     RC.ModelView = float4x4.Scale(shape.HalfExtents.x/100, shape.HalfExtents.y/100, shape.HalfExtents.z /100) * matrix * mtxCam;
                     RC.SetShader(_spColor);
-                    RC.SetShaderParam(_colorParam, new float4(1.0f, 0.1f, 1.0f, 1));
+                    RC.SetShaderParam(_colorParam, new float4(0.9f, 0.9f, 0.0f, 1));
                     RC.Render(_meshCube);
                 }
                 else if (rb.CollisionShape.GetType().ToString() == "Fusee.Engine.SphereShape")
@@ -261,6 +258,14 @@ namespace Examples.BulletTest
                     RC.SetShaderParamTexture(_textureParam, _iTex);
                     RC.Render(_meshSphere);
                 }
+                else if (rb.CollisionShape.GetType().ToString() == "Fusee.Engine.GImpactShape")
+                {
+                    var shape = (GImpactMeshShape)rb.CollisionShape;
+                    RC.ModelView = matrix * mtxCam;
+                    RC.SetShader(_spTexture);
+                    RC.SetShaderParamTexture(_textureParam, _iTex);
+                    RC.Render(_meshTea);
+                }
 
                 
                 //RC.SetShader(_spTexture);
@@ -268,26 +273,7 @@ namespace Examples.BulletTest
                // RC.Render(_meshCube);
             }
            
-            /*#region RenderConstraint
-            for (int i = 0; i < _physic.World.NumberConstraints(); i++)
-            {
-                //Debug.WriteLine("Render Constraints");
- 
-                var matrixA = _physic.World.GetConstraint(i).RigidBodyA.WorldTransform;
-                RC.ModelView = matrixA * mtxCam;
-                RC.SetShader(_spTexture);
-                RC.SetShaderParamTexture(_textureParam, _iTex);
-                RC.Render(_physic.World.GetConstraint(i).RigidBodyA.Mesh);
-
-
-                var matrixB = _physic.World.GetConstraint(i).RigidBodyB.WorldTransform; 
-                RC.ModelView = matrixB * mtxCam;
-                RC.SetShader(_spTexture);
-                RC.SetShaderParamTexture(_textureParam, _iTex);
-                RC.Render(_physic.World.GetConstraint(i).RigidBodyB.Mesh);
-            }
-            #endregion RenderConstraint
-            */
+            
 
             #region RenderSimple
             //first mesh

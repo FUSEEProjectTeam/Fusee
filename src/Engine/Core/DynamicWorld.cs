@@ -79,7 +79,7 @@ namespace Fusee.Engine
                     break;
                 case "Fusee.Engine.GImpactMeshShape":
                     var gImpMeshShape = (GImpactMeshShape) colShape;
-                    rbi = rbi = _dwi.AddRigidBody(mass, position, orientation, gImpMeshShape.GImpactMeshShapeImp/*, inertia*/);
+                    rbi = _dwi.AddRigidBody(mass, position, orientation, gImpMeshShape.GImpactMeshShapeImp/*, inertia*/);
                     break;
                 case "Fusee.Engine.StaticPlaneShape": //static Shape
                     var staticPaneShape = (StaticPlaneShape)colShape;

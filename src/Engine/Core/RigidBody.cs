@@ -290,6 +290,11 @@ namespace Fusee.Engine
                         convHull.ConvexHullShapeImp = (IConvexHullShapeImp) shape;
                         shape.UserObject = convHull;
                         return convHull;
+                    case "Fusee.Engine.GImpactMeshShape":
+                        var gimp = new GImpactMeshShape();
+                        gimp.GImpactMeshShapeImp = (IGImpactMeshShapeImp)shape;
+                        shape.UserObject = gimp;
+                        return gimp;
                     case "Fusee.Engine.StaticPlaneShapeImp":
                         var staticPlane = new StaticPlaneShape();
                         staticPlane.StaticPlaneShapeImp = (IStaticPlaneShapeImp)shape;
