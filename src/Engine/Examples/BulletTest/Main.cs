@@ -78,10 +78,25 @@ namespace Examples.BulletTest
             _angleVert += _angleVelVert;
 
             // move per keyboard
+            if (Input.Instance.IsKeyDown(KeyCodes.NumPad1))
+            {
+                _physic.World.Dispose();
+                _physic.InitScene1();
+            }
+            if (Input.Instance.IsKeyDown(KeyCodes.NumPad2))
+            {
+                _physic.World.Dispose();
+                _physic.InitScene2();
+            }
+            if (Input.Instance.IsKeyDown(KeyCodes.NumPad3))
+            {
+                _physic.World.Dispose();
+                _physic.InitScene3();
+            }
+
             if (Input.Instance.IsKeyDown(KeyCodes.Left))
             {
                 _physic.World.GetRigidBody(_physic.World.NumberRigidBodies() -1).ApplyCentralImpulse = new float3(-50, 0, 0);
-
             }
 
             if (Input.Instance.IsKeyDown(KeyCodes.Right))
@@ -97,30 +112,51 @@ namespace Examples.BulletTest
             var mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
             var mtxCam = mtxRot * float4x4.LookAt(0, 500, 1000, 0, 0, 0, 0, 1, 0);
 
+
+            if (Input.Instance.OnKeyDown(KeyCodes.Space))
+            {
+                Debug.WriteLine(Width - Input.Instance.GetMousePos().x);
+                Debug.WriteLine(Input.Instance.GetAxis(InputAxis.MouseX));
+
+                _physic.Shoot(new float3(0, 300, 700), new float3(0, 15, 0));
+            }
            
             //Render all RigidBodies
 
 
-            var ground = _physic.World.GetRigidBody(0);
+            /*var ground = _physic.World.GetRigidBody(0);
             var ma = ground.WorldTransform;        
             RC.ModelView = float4x4.Scale(10, 0.001f, 10) * ma * mtxCam;
             RC.SetShader(_spColor);
             RC.SetShaderParam(_colorParam, new float4(1.0f, 1.0f, 0, 1));
-            RC.Render(_meshCube);
+            RC.Render(_meshCube);*/
 
            
 
              Debug.WriteLine("FramePerSecond: " +Time.Instance.FramePerSecond);
-            for (int i = 1; i < _physic.World.NumberRigidBodies(); i++)
+            for (int i = 0; i < _physic.World.NumberRigidBodies(); i++)
             {
                 var rb = _physic.World.GetRigidBody(i);
                 var matrix = rb.WorldTransform;
                 
-                RC.ModelView =  float4x4.Scale(0.25f) * matrix * mtxCam;
+                if (rb.CollisionShape.GetType().ToString() == "Fusee.Engine.BoxShape")
+                {
+                    var shape = (BoxShape) rb.CollisionShape;
+                    RC.ModelView = float4x4.Scale(shape.HalfExtents.x/100, shape.HalfExtents.y/100, shape.HalfExtents.z /100) * matrix * mtxCam;
+                    RC.SetShader(_spColor);
+                    RC.SetShaderParam(_colorParam, new float4(1.0f, 1.1f, 1.0f, 1));
+                    RC.Render(_meshCube);
+                }
+                if (rb.CollisionShape.GetType().ToString() == "Fusee.Engine.SphereShape")
+                {
+                    var shape = (SphereShape) rb.CollisionShape;
+                    RC.ModelView = float4x4.Scale(shape.Radius)*matrix*mtxCam;
+                    RC.SetShader(_spTexture);
+                    RC.SetShaderParamTexture(_textureParam, _iTex);
+                    RC.Render(_meshSphere);
+                }
+
                 
-                RC.SetShader(_spColor);
-                RC.SetShaderParam(_colorParam, new float4(1.0f, 0.1f, 1.0f, 1));
-                RC.Render(_meshCube);
                 //RC.SetShader(_spTexture);
                 //RC.SetShaderParamTexture(_textureParam, _iTex);
                // RC.Render(_meshCube);

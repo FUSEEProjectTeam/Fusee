@@ -44,10 +44,10 @@ namespace Fusee.Engine
             };*/
             BtWorld = new DiscreteDynamicsWorld(BtDispatcher, BtBroadphase, BtSolver, BtCollisionConf)
             {
-                Gravity = new Vector3(0, -9.81f * 10.0f, 0)
+                Gravity = new Vector3(0, -9.81f *15f, 0)
             };
             BtWorld.SolverInfo.NumIterations = 8;
-            
+       
             BtWorld.PerformDiscreteCollisionDetection();
             //GImpactCollisionAlgorithm.RegisterAlgorithm(BtDispatcher);
            // BtWorld.SetInternalTickCallback(MyTickCallBack);
@@ -190,15 +190,19 @@ namespace Fusee.Engine
                     btColShape = new EmptyShape();
                     break;
             }
-            var btLocalInertia = btColShape.CalculateLocalInertia(mass) * 10;
+            
+            var btLocalInertia = btColShape.CalculateLocalInertia(mass);
+            btLocalInertia *= (10.0f*10);
             RigidBodyConstructionInfo btRbcInfo = new RigidBodyConstructionInfo(mass, btMotionState, btColShape,
                 btLocalInertia);
-            btRbcInfo.Friction = 1; //Friction is set here to a as default. Otherwise there wouldn't be ANY friction
-            btRbcInfo.Restitution = 0.5f; //Restitutio is here set to 0.5 as default. Otherwise restitution would be "absorbed"
+
+            btRbcInfo.LinearSleepingThreshold *= 10.0f;
+            btRbcInfo.Friction = 1.0f; //Friction is set here to a as default. Otherwise there wouldn't be ANY friction
+            btRbcInfo.Restitution = 0.02f; //Restitutio is here set to 0.5 as default. Otherwise restitution would be "absorbed"
             var btRigidBody = new RigidBody(btRbcInfo);
             BtWorld.AddRigidBody(btRigidBody);
             btRbcInfo.Dispose();
-
+          
             var retval = new RigidBodyImp();
             retval._rbi = btRigidBody;
             btRigidBody.UserObject = retval;

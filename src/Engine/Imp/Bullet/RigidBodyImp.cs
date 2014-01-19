@@ -93,7 +93,7 @@ namespace Fusee.Engine
                 var m = new Matrix();
                 m.set_Rows(3, new Vector4(value.x, value.y, value.z, 1));
                 var o = (RigidBodyImp)_rbi.UserObject;
-                o._rbi.CenterOfMassTransform.set_Rows(3, new Vector4(value.x, value.y, value.z, 1) * 10);
+                o._rbi.CenterOfMassTransform.set_Rows(3, new Vector4(value.x, value.y, value.z, 1));
             }
         }
 
@@ -129,7 +129,7 @@ namespace Fusee.Engine
         {
             var o = (RigidBodyImp)_rbi.UserObject;
            // impulse *= 10;
-            o._rbi.ApplyImpulse(Translater.Float3ToBtVector3(impulse), Translater.Float3ToBtVector3(relPos));
+            o._rbi.ApplyImpulse(Translater.Float3ToBtVector3(impulse)*10, Translater.Float3ToBtVector3(relPos));
         }
 
         private float3 _torqueImpulse;
@@ -158,7 +158,7 @@ namespace Fusee.Engine
             {
                 var o = (RigidBodyImp)_rbi.UserObject;
                 o._rbi.ApplyCentralForce(Translater.Float3ToBtVector3(value * 10));
-                _centralForce = value*10;
+                _centralForce = value;
             }
         }
 
@@ -186,7 +186,7 @@ namespace Fusee.Engine
             } 
             set
             {
-                var linVel = Translater.Float3ToBtVector3(value);
+                var linVel = Translater.Float3ToBtVector3(value)*10;
                 var o = (RigidBodyImp) _rbi.UserObject;
                 o._rbi.LinearVelocity = linVel;
             }

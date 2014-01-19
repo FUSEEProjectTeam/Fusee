@@ -35,10 +35,15 @@ namespace Examples.BulletTest
         public Physic()
         {
             Debug.WriteLine("Physic: Constructor");
-            _world = new DynamicWorld();
+            InitScene1();
+        }
 
-            MyBoxCollider = _world.AddBoxShape(25);
-            MySphereCollider = _world.AddSphereShape(40);
+
+        public void InitWorld()
+        {
+            _world = new DynamicWorld();
+            MyBoxCollider = _world.AddBoxShape(20);
+            MySphereCollider = _world.AddSphereShape(15);
             BoxMesh = MeshReader.LoadMesh(@"Assets/Cube.obj.model");
             var vertices = BoxMesh.Vertices;
             MyConvHull = _world.AddConvexHullShape(vertices);
@@ -48,48 +53,34 @@ namespace Examples.BulletTest
                 new float3(0, 25, 0), new float3(25, 25, -25), new float3(-25, 25, 25), new float3(25, 25, 25)
             };
             Hull = _world.AddConvexHullShape(verts);
-           
-
-
-            //Tets Scenes
-            //GroundPlane();
-            GroundPlane();
-            //FallingTower();
-            //Ground();
-            
-            //InitPoint2PointConstraint();
-          //  InitHingeConstraint();
-            //InitSliderConstraint();
-            //InitGearConstraint();
-            //InitDfo6Constraint();
-            //Tester();
-            //CompoundShape();
-            MurmelBahn();
         }
 
-        public void GroundPlane()
+        public void InitScene1()
         {
-            var plane = _world.AddStaticPlaneShape(float3.UnitY, 1);
-            var groundPlane = _world.AddRigidBody(0, new float3(0,0,0), float3.Zero, plane);
+            InitWorld();
+            GroundPlane(float3.Zero);
+            FallingTower1();
+        }
+        public void InitScene2()
+        {
+            InitWorld();
+            InitPoint2PointConstraint();
+            InitHingeConstraint();
+        }
+        public void InitScene3()
+        {
+            InitWorld();
+            GroundPlane(new float3(0,0,(float)Math.PI/6));
+            FallingTower2();
+        }
+
+        public void GroundPlane(float3 rot)
+        {
+            //var plane = _world.AddStaticPlaneShape(float3.UnitY, 1);
+            //var groundPlane = _world.AddRigidBody(0, new float3(0,0,0), float3.Zero, plane);
             //groundPlane.Bounciness = 1;
-            //var groundShape = _world.AddBoxShape(400, 1, 400);
-            // _world.AddRigidBody(0, new float3(0, 0, 0), Quaternion.Identity, groundShape);
-        }
-
-        public void Ground()
-        {
-            //create ground
-            Mesh mesh = MeshReader.LoadMesh(@"Assets/Cube.obj.model");
-            int size = 52;
-            for (int b = -2; b < 2; b++)
-            {
-                for (int c = -2; c < 2; c++)
-                {
-                    var pos = new float3(b * size, 0, c * size);
-                    _world.AddRigidBody(0, pos, float3.Zero, MyBoxCollider);
-                }
-            }
-
+            var groundShape = _world.AddBoxShape(300, 1, 300);
+            _world.AddRigidBody(0, new float3(0, 0, 0), rot, groundShape);
         }
 
         public void Wippe()
@@ -110,9 +101,9 @@ namespace Examples.BulletTest
 
         } 
 
-        public void FallingTower()
+        public void FallingTower1()
         {
-            for (int k = 0; k < 3; k++)
+            for (int k = 0; k < 4; k++)
             {
                 for (int h = -2; h < 3; h++)
                 {
@@ -121,7 +112,22 @@ namespace Examples.BulletTest
                         var pos = new float3(4 * h, 300 + (k * 4), 4 * j);
 
                         var cube = _world.AddRigidBody(1, pos, float3.Zero, MyBoxCollider);
-                        cube.Bounciness = 1;
+                    }
+                }
+            }
+        }
+
+        public void FallingTower2()
+        {
+            for (int k = 0; k < 4; k++)
+            {
+                for (int h = -2; h < 3; h++)
+                {
+                    for (int j = -2; j < 3; j++)
+                    {
+                        var pos = new float3(4 * h, 300 + (k * 4), 4 * j);
+
+                        var cube = _world.AddRigidBody(1, pos, float3.Zero, MySphereCollider);
                     }
                 }
             }
@@ -252,6 +258,14 @@ namespace Examples.BulletTest
             _world.AddRigidBody(0, new float3(-50, 50, 0), float3.Zero, MyBoxCollider);
             var sphere = _world.AddRigidBody(1, new float3(0, 300, 0), float3.Zero, MyBoxCollider);
             //sphere.Bounciness = 1;
+        }
+
+        public void Shoot(float3 camPos, float3 target)
+        {
+            var ball = _world.AddRigidBody(1, camPos, float3.Zero, MySphereCollider);
+            var impulse = target - camPos;
+            impulse.Normalize();
+            ball.ApplyCentralImpulse = impulse * 400;
         }
 
 
