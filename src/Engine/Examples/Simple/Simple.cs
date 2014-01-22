@@ -1,7 +1,7 @@
 ﻿using System;
 using Fusee.Engine;
 using Fusee.Math;
-using ProtoBufTest;
+using System.IO;
 
 namespace Examples.Simple
 {
@@ -29,18 +29,31 @@ namespace Examples.Simple
         // is called on startup
         public override void Init()
         {
+            
             RC.ClearColor = new float4(1, 1, 1, 1);
-            PersonSerializer ser = new PersonSerializer();
-            Person readInMyModel;
-            var rawBytes = System.IO.File.ReadAllBytes(@"Assets/werner.bytes");
-            using (System.IO.Stream s = new System.IO.MemoryStream(rawBytes))
-            {
-                readInMyModel = ser.Deserialize(s, null, typeof(Person)) as Person;
-            }
-            Console.WriteLine(readInMyModel.Name);
             // initialize the variables
-            _meshTea = MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
-            _meshFace = MeshReader.LoadMesh(@"Assets/Face.obj.model");
+            //_meshTea = MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
+            //_meshFace = MeshReader.LoadMesh(@"Assets/Face.obj.model");
+
+            MySerializer ser = new MySerializer();
+            
+            // Speichern
+            /*using (var file = File.Create(@"Assets/face.bin"))
+            {
+                ser.Serialize(file, _meshFace);
+            }*/
+
+
+            // Laden
+            using (var file = File.OpenRead(@"Assets/face.bin"))
+            {
+                _meshFace = ser.Deserialize(file, null, typeof(Mesh)) as Mesh;
+            }
+
+            using (var file = File.OpenRead(@"Assets/teekanne.bin"))
+            {
+               _meshTea = ser.Deserialize(file,null,typeof(Mesh)) as Mesh;
+            }
 
             _spColor = MoreShaders.GetDiffuseColorShader(RC);
             _spTexture = MoreShaders.GetDiffuseTextureShader(RC);

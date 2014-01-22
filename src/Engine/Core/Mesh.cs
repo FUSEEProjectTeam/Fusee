@@ -1,5 +1,6 @@
 ﻿using Fusee.Engine;
 using Fusee.Math;
+using ProtoBuf;
 
 namespace Fusee.Engine
 {
@@ -7,11 +8,13 @@ namespace Fusee.Engine
     /// Provides the abillity to create or interact directly with the point data.
     /// </summary>
     /// <remarks>For an example how you can use it, see <see cref="Cube"/>.</remarks>
+     
+    [ProtoContract]
     public class Mesh
     {
         #region Fields
-
         internal IMeshImp _meshImp;
+        
         private float3[] _vertices;
         /// <summary>
         /// Gets or sets the vertices.
@@ -19,6 +22,7 @@ namespace Fusee.Engine
         /// <value>
         /// The vertices.
         /// </value>
+        [ProtoMember(1)]
         public float3[] Vertices
         {
             get { return _vertices; }
@@ -31,7 +35,7 @@ namespace Fusee.Engine
         ///   <c>true</c> if vertices are set; otherwise, <c>false</c>.
         /// </value>
         public bool VerticesSet { get { return (_meshImp!= null) && _meshImp.VerticesSet; } }
-
+        
         private uint[] _colors;
         /// <summary>
         /// Gets or sets the color of a single vertex.
@@ -39,6 +43,7 @@ namespace Fusee.Engine
         /// <value>
         /// The color.
         /// </value>
+        [ProtoMember(2)]
         public uint[] Colors
         {
             get { return _colors; }
@@ -51,7 +56,7 @@ namespace Fusee.Engine
         ///   <c>true</c> if a colore is set; otherwise, <c>false</c>.
         /// </value>
         public bool ColorsSet { get { return (_meshImp != null) && _meshImp.ColorsSet; } }
-
+        
         private float3[] _normals;
         /// <summary>
         /// Gets or sets the normals.
@@ -59,6 +64,7 @@ namespace Fusee.Engine
         /// <value>
         /// The normals..
         /// </value>
+        [ProtoMember(3)]
         public float3[] Normals
         {
             get { return _normals; }
@@ -71,7 +77,7 @@ namespace Fusee.Engine
         ///   <c>true</c> if normals are set; otherwise, <c>false</c>.
         /// </value>
         public bool NormalsSet { get { return (_meshImp != null) && _meshImp.NormalsSet; } }
-
+        
         private float2[] _uvs;
         /// <summary>
         /// Gets or sets the UV-coordinates.
@@ -79,6 +85,7 @@ namespace Fusee.Engine
         /// <value>
         /// The UV-coordinates.
         /// </value>
+        [ProtoMember(4)]
         public float2[] UVs
         {
             get { return _uvs; }
@@ -91,7 +98,7 @@ namespace Fusee.Engine
         ///   <c>true</c> if UVs are set; otherwise, <c>false</c>.
         /// </value>
         public bool UVsSet { get { return (_meshImp != null) && _meshImp.UVsSet; } }
-
+        
         private short[] _triangles;
         /// <summary>
         /// Gets or sets the triangles.
@@ -99,6 +106,7 @@ namespace Fusee.Engine
         /// <value>
         /// The triangles.
         /// </value>
+        [ProtoMember(5)]
         public short[] Triangles
         {
             get { return _triangles; }

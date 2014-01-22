@@ -1,5 +1,6 @@
 ﻿using Fusee.Engine;
 using Fusee.Math;
+using System.IO;
 
 namespace Examples.MageExample
 {
@@ -148,12 +149,37 @@ namespace Examples.MageExample
         public override void Init()
         {
             RC.ClearColor = new float4(0.5f, 0.5f, 0.5f, 1);
-
+            MySerializer ser = new MySerializer();
             // load meshes
-            Body = MeshReader.LoadMesh(@"Assets/mageBodyOBJ.obj.model");
-            GloveL = MeshReader.LoadMesh(@"Assets/mageGloveLOBJ.obj.model");
-            GloveR = MeshReader.LoadMesh(@"Assets/mageGloveROBJ.obj.model");
-
+            //Body = MeshReader.LoadMesh(@"Assets/mageBodyOBJ.obj.model");
+            //GloveL = MeshReader.LoadMesh(@"Assets/mageGloveLOBJ.obj.model");
+            //GloveR = MeshReader.LoadMesh(@"Assets/mageGloveROBJ.obj.model");
+            // Laden
+            using (var file = File.OpenRead(@"Assets/body.bin"))
+            {
+                Body = ser.Deserialize(file, null, typeof(Mesh)) as Mesh;
+            }
+            using (var file = File.OpenRead(@"Assets/gloveR.bin"))
+            {
+                GloveR = ser.Deserialize(file, null, typeof(Mesh)) as Mesh;
+            }
+            using (var file = File.OpenRead(@"Assets/gloveL.bin"))
+            {
+                GloveL = ser.Deserialize(file, null, typeof(Mesh)) as Mesh;
+            }
+            // Speichern
+            //using (var file = File.Create(@"Assets/body.bin"))
+            //{
+            //    ser.Serialize(file, Body);
+            //}
+            //using (var file = File.Create(@"Assets/gloveR.bin"))
+            //{
+            //    ser.Serialize(file, GloveR);
+            //}
+            //using (var file = File.Create(@"Assets/gloveL.bin"))
+            //{
+            //    ser.Serialize(file, GloveL);
+            //}
             // set up shader, lights and textures
             var spBody = RC.CreateShader(VsBump, PsBump);
             RC.SetShader(spBody);
