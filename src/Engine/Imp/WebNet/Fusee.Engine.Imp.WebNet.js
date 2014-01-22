@@ -195,3 +195,77 @@ JSIL.ImplementExternals("Fusee.Engine.Network", function($) {
         }
     );
 });
+
+
+
+
+/* This file contains dummy sourcecode for the FUSEE network implementation.
+   Classes defined here are used and called by the JSIL cross compiled part of FUSEE.
+   Unfortunately, it is not possible to connect two or browsers right now.
+
+	Just for the records: The first version of this file was generated using 
+	JSIL v0.7.6 build 16283. From then on it was changed and maintained manually.
+*/
+
+//var $fuseeInput = JSIL.DeclareAssembly("Fusee.Engine.Imp.WebInput");
+//var $fuseeCommon = JSIL.GetAssembly("Fusee.Engine.Common");
+
+//JSIL.DeclareNamespace("Fusee");
+//JSIL.DeclareNamespace("Fusee.Engine");
+
+JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.InputDriverImp", true, [], function ($interfaceBuilder) {
+
+    $ = $interfaceBuilder;
+    $.Field({ Static: false, Public: true }, "Devices", $jsilcore.TypeRef("System.Collections.Generics.List", [$fuseeCommon.TypeRef("Fusee.Engine.DeviceInstance")]), null);
+
+    $.Method({ Static: false, Public: true }, "DeviceImps",
+        new JSIL.MethodSignature($asm04.TypeRef("System.Collections.Generic.List`1", [$asm02.TypeRef("Fusee.Engine.IInputDeviceImp")]), []), 
+        function DeviceImps() {
+            createDevices();
+            var retList = $asm04.TypeRef("System.Collections.Generic.List`1", [$asm02.TypeRef("Fusee.Engine.IInputDeviceImp")]).Construct();
+
+            for (var a$0 = this.Devices._items, i$0 = 0, l$0 = this.Devices._size; i$0 < l$0; ($temp00 = i$0, 
+                i$0 = ((i$0 + 1) | 0), $temp00)) {
+                var instance = a$0[i$0];
+                retList.Add(new (Fusee.Engine.InputDeviceImp())(instance));
+            }
+            return retList;
+        }
+    );
+
+    function createDevices() {
+
+
+    }
+
+
+    $.ImplementInterfaces(
+        $fuseeCommon.TypeRef("Fusee.Engine.IInputDriverImp")
+    );
+
+    return function (newThisType) { $thisType = newThisType; };
+});
+
+
+
+JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.InputDeviceImp", true, [], function ($interfaceBuilder) {
+
+    $ = $interfaceBuilder;
+    
+    $.Method({ Static: false, Public: true }, "GetXAxis",
+        new JSIL.MethodSignature($.Single, []),
+        function GetXAxis() {
+            var value = 0;
+            return value;
+        }
+    );
+    
+
+    $.ImplementInterfaces(
+        $fuseeCommon.TypeRef("Fusee.Engine.IInputDeviceImp")
+    );
+
+    return function (newThisType) { $thisType = newThisType; };
+});
+
+

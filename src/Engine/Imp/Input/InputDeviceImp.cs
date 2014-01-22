@@ -105,7 +105,7 @@ namespace Fusee.Engine
 
         public float GetZAxis()
         {
-            float tmp = GetState().Z / 1000f;
+            float tmp = GetState().RotationZ / 1000f;
             if (tmp > _deadZone)
                 return tmp;
             if (tmp < -_deadZone)

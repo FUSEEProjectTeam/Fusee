@@ -124,6 +124,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Input", "Input", "{78AE9C6E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SlimDX", "src\Engine\Imp\Input\SlimDX.csproj", "{A8B8F47B-5EAD-443E-A227-CBF7499E34E1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebInput", "WebInput\WebInput.csproj", "{94E609C8-3BEF-4522-812E-AD56B73536B4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -432,6 +434,21 @@ Global
 		{A8B8F47B-5EAD-443E-A227-CBF7499E34E1}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{A8B8F47B-5EAD-443E-A227-CBF7499E34E1}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{A8B8F47B-5EAD-443E-A227-CBF7499E34E1}.Release|x86.ActiveCfg = Release|Any CPU
+		{94E609C8-3BEF-4522-812E-AD56B73536B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94E609C8-3BEF-4522-812E-AD56B73536B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94E609C8-3BEF-4522-812E-AD56B73536B4}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{94E609C8-3BEF-4522-812E-AD56B73536B4}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{94E609C8-3BEF-4522-812E-AD56B73536B4}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{94E609C8-3BEF-4522-812E-AD56B73536B4}.Debug+Web|Any CPU.ActiveCfg = Debug|Any CPU
+		{94E609C8-3BEF-4522-812E-AD56B73536B4}.Debug+Web|Any CPU.Build.0 = Debug|Any CPU
+		{94E609C8-3BEF-4522-812E-AD56B73536B4}.Debug+Web|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{94E609C8-3BEF-4522-812E-AD56B73536B4}.Debug+Web|Mixed Platforms.Build.0 = Debug|Any CPU
+		{94E609C8-3BEF-4522-812E-AD56B73536B4}.Debug+Web|x86.ActiveCfg = Debug|Any CPU
+		{94E609C8-3BEF-4522-812E-AD56B73536B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94E609C8-3BEF-4522-812E-AD56B73536B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94E609C8-3BEF-4522-812E-AD56B73536B4}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{94E609C8-3BEF-4522-812E-AD56B73536B4}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{94E609C8-3BEF-4522-812E-AD56B73536B4}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -458,5 +475,6 @@ Global
 		{6518F06A-5AE6-4AA2-ABBD-0B78A8800F86} = {F0D98C24-EA02-4AA8-BFA8-DA23A62FABAE}
 		{32D5C521-6CC4-4DCF-BFA1-199043E938DC} = {F0D98C24-EA02-4AA8-BFA8-DA23A62FABAE}
 		{A8B8F47B-5EAD-443E-A227-CBF7499E34E1} = {78AE9C6E-7E62-4316-B813-FC6D8D683192}
+		{94E609C8-3BEF-4522-812E-AD56B73536B4} = {78AE9C6E-7E62-4316-B813-FC6D8D683192}
 	EndGlobalSection
 EndGlobal

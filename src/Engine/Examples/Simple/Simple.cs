@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Fusee.Engine;
 using Fusee.Math;
 
@@ -97,5 +98,12 @@ namespace Examples.Simple
             var app = new Simple();
             app.Run();
         }
+
+        public float test()
+        {
+
+            return 0.0f;
+        }
+        
     }
 }
