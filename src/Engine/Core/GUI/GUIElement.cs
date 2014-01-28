@@ -13,12 +13,10 @@ namespace Fusee.Engine
 
         protected bool Dirty;
 
-        protected int PosX;
-        protected int PosY;
-        protected int PosZ;
-
         protected int Height;
         protected int Width;
+
+        protected int PosZ;
 
         protected IFont Font;
 
@@ -77,6 +75,9 @@ namespace Fusee.Engine
         #endregion
 
         #region Private Fields
+
+        private int _posX;
+        private int _posY;
 
         private int _offsetX;
         private int _offsetY;
@@ -146,6 +147,26 @@ namespace Fusee.Engine
             set
             {
                 _text = value;
+                Dirty = true;
+            }
+        }
+
+        public int PosX
+        {
+            get { return _posX; }
+            set
+            {
+                _posX = value;
+                Dirty = true;
+            }
+        }
+
+        public int PosY
+        {
+            get { return _posY; }
+            set
+            {
+                _posY = value;
                 Dirty = true;
             }
         }

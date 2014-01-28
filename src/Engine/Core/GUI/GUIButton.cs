@@ -151,17 +151,19 @@ namespace Fusee.Engine
         {
             if (MouseOnButton(mea))
             {
-                if ((OnGUIButtonEnter == null) || (_mouseOnButton)) return;
-
-                OnGUIButtonEnter(this, mea);
+                if (_mouseOnButton) return;
                 _mouseOnButton = true;
+
+                if (OnGUIButtonEnter == null) return;
+                OnGUIButtonEnter(this, mea);
             }
             else
             {
-                if ((OnGUIButtonLeave == null) || (!_mouseOnButton)) return;
-
-                OnGUIButtonLeave(this, mea);
+                if (!_mouseOnButton) return;
                 _mouseOnButton = false;
+
+                if (OnGUIButtonLeave == null) return;
+                OnGUIButtonLeave(this, mea);
             }
         }
     }
