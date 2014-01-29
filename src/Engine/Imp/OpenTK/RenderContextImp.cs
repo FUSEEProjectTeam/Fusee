@@ -251,7 +251,7 @@ namespace Fusee.Engine
                         ret.Type = typeof (float4x4);
                         break;
                     case ActiveUniformType.Sampler2D:
-                        //TODO ret.Type = typeof (sampler?);
+                        ret.Type = typeof (ITexture);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
