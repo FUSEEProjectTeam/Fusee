@@ -26,16 +26,29 @@ namespace Examples.ParticleSystem
             varying vec2 vUV;
         
             uniform mat4 FUSEE_MVP;
+            uniform mat4 FUSEE_MV;
+            uniform mat4 FUSEE_P;
             uniform mat4 FUSEE_ITMV;
 
             void main()
             {
-                gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
+                float PI = 3.14159265358979323846264;
+                float angle = 125.0;
+                float rad_angle = angle*PI/180.0;
+
+                vec4 vPos = FUSEE_MV * vec4(fuVertex, 1.0);
+                vPos = vPos + 100*vec4(fuUV, 0, 0);                
+                gl_Position = FUSEE_P * vPos;
                 vNormal = mat3(FUSEE_ITMV[0].xyz, FUSEE_ITMV[1].xyz, FUSEE_ITMV[2].xyz) * fuNormal;
-                vUV = fuUV;
+                vUV.x = (fuUV.x == 0) ? 0 : 1;
+                vUV.y = (fuUV.y == 0) ? 0 : 1;
+
+                //vPos.x  = vPos.x*cos(rad_angle) - vPos.y*sin(rad_angle);
+               // vPos.y = vPos.y*cos(rad_angle) + vPos.x*sin(rad_angle);
+          
             }";
 
-        protected string PsSimpleTexture = @"
+        public string PsSimpleTexture = @"
             /* Copies incoming fragment color without change. */
             #ifdef GL_ES
                 precision highp float;
@@ -49,11 +62,14 @@ namespace Examples.ParticleSystem
             // The parameter holding the UV-Coordinates of the texture
             varying vec2 vUV;
 
+           const vec4 AlphaColor = vec4(1.0, 1.0, 1.0, 0.4);
+
+
             void main()
             {    
               // The most basic texturing function, expecting the above mentioned parameters  
-                // max(dot(vec3(0,0,1),normalize(vNormal)), 0.1) 
-              gl_FragColor = texture2D(texture1, vUV);        
+              // max(dot(vec3(0,0,1),normalize(vNormal)), 0.1) 
+              gl_FragColor = texture2D(texture1, vUV)*AlphaColor;        
             }";
 
         #endregion
@@ -71,22 +87,26 @@ namespace Examples.ParticleSystem
         //private Mesh _meshTea = new ParticleEmitter();
 
         private ParticleEmitter _particleEmitter;
+        private ParticleEmitter _particleEmitter2;
         // variables for shader
         private ShaderProgram _spColor;
         private ShaderProgram _spTexture;
 
         private IShaderParam _colorParam;
         private IShaderParam _textureParam;
+        private IShaderParam _alphaParam;
 
         private ITexture _iTex;
+        private float alp = 0.2f;
 
         // is called on startup
         public override void Init()
         {
             RC.ClearColor = new float4(0.7f, 0.7f, 1, 1);
 
-            _particleEmitter = new ParticleEmitter(1);
-
+            //_particleEmitter = new ParticleEmitter(500, 200, 700, 1.0f, 5.0f, 5.0f, 5.0f, 10.0, 10.0, 10.0, 0.0f, -8.5f, 0.0f);
+            _particleEmitter = new ParticleEmitter(705, 800, 1200, 1.0f, 4.0f, 4.0f, 4.0f, 0.0f, 0.0f, 5.0f, 0.0f, 0.0f, 0.0f);
+            //_particleEmitter2 = new ParticleEmitter(1200, 100000, 100000, 1.0f, 30.0f, 1.0f, 30.0f, 0.1, 0.0, 0.1, 0.0f, 0.0f, 0.0f);
             // initialize the variables
             //_meshTea = new ParticleEmitter();//MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
             _meshFace = MeshReader.LoadMesh(@"Assets/Face.obj.model");
@@ -96,11 +116,26 @@ namespace Examples.ParticleSystem
 
             _colorParam = _spColor.GetShaderParam("color");
             _textureParam = _spTexture.GetShaderParam("texture1");
+            _alphaParam = _spTexture.GetShaderParam("alpha1");
 
             // load texture
-            var imgData = RC.LoadImage("Assets/world_map.jpg");
-            //var imgData = RC.LoadImage("Assets/smoke_particle.png");
+            //var imgData = RC.LoadImage("Assets/world_map.jpg");
+            var imgData = RC.LoadImage("Assets/smoke_particle.png");
             _iTex = RC.CreateTexture(imgData);
+
+
+            RC.SetRenderState(new RenderStateSet
+            {
+                ZEnable = false,
+                AlphaBlendEnable = true,
+                //BlendFactor = new float4(0.5f, 0.5f, 0.5f, 0.5f),
+                BlendOperation = BlendOperation.Add,
+                //SourceBlend = Blend.BlendFactor,
+                //DestinationBlend = Blend.InverseBlendFactor
+                SourceBlend = Blend.SourceAlpha,
+                DestinationBlend = Blend.InverseSourceAlpha
+            });
+
 
         }
 
@@ -118,7 +153,6 @@ namespace Examples.ParticleSystem
             else
             {
                 var curDamp = (float)Math.Exp(-Damping * Time.Instance.DeltaTime);
-
                 _angleVelHorz *= curDamp;
                 _angleVelVert *= curDamp;
             }
@@ -147,21 +181,21 @@ namespace Examples.ParticleSystem
             RC.ModelView = new float4x4(15, 0, 0, 0, 0, 15, 0, 0, 0, 0, 15, 0, 0, 0, 0, 1) * mtxRot * float4x4.CreateTranslation(-150, 0, 0) * mtxCam;
 
             RC.SetShader(_spTexture);
-            RC.SetShaderParamTexture(_textureParam, _iTex);
+       RC.SetShaderParamTexture(_textureParam, _iTex);
 
             _particleEmitter.Tick(Time.Instance.DeltaTime);
-            
+           // _particleEmitter2.Tick(Time.Instance.DeltaTime);
             RC.Render(_particleEmitter.ParticleMesh);
-            
+           // RC.Render(_particleEmitter2.ParticleMesh);
 
-            // second mesh
-            RC.ModelView = mtxRot * float4x4.CreateTranslation(150, 0, 0) * mtxCam;
 
-            RC.SetShader(_spColor);
-            //RC.SetShaderParamTexture(_textureParam, _iTex);
-            RC.SetShaderParam(_colorParam, new float4(1, 1, 1, 1));
-            RC.Render(_meshFace);
-
+          // second mesh
+           RC.ModelView = mtxRot * float4x4.CreateTranslation(150, 0, 0) * mtxCam;
+           RC.ModelView = new float4x4(15, 0, 0, 0, 0, 15, 0, 0, 0, 0, 15, 0, 0, 0, 0, 1) * mtxRot * float4x4.CreateTranslation(150, 0, 0) * mtxCam;
+           RC.SetShader(_spColor);
+              //RC.SetShaderParamTexture(_textureParam, _iTex);
+           RC.SetShaderParam(_colorParam, new float4(1, 1, 1, 1));
+           RC.Render(_meshFace);
 
             // swap buffers
             Present();
