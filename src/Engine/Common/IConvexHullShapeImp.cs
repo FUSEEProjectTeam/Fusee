@@ -12,5 +12,6 @@ namespace Fusee.Engine
         float3 GetScaledPoint(int index);
         float3[] GetUnscaledPoints();
         int GetNumPoints();
+        float3 LocalScaling { get; set; }
     }
 }

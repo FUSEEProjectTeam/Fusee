@@ -23,7 +23,8 @@ namespace Examples.BulletTest
         internal SphereShape MySphereCollider;
         internal ConvexHullShape MyConvHull;
         internal ConvexHullShape Hull;
-        internal Mesh BoxMesh, TeaPotMesh;
+        
+        internal Mesh BoxMesh, TeaPotMesh, PlatonicMesh;
 
         internal RigidBody _PRigidBody;
         public RigidBody PRbBody
@@ -45,8 +46,13 @@ namespace Examples.BulletTest
             _world = new DynamicWorld();
             MyBoxCollider = _world.AddBoxShape(2);
             MySphereCollider = _world.AddSphereShape(2);
+            
             BoxMesh = MeshReader.LoadMesh(@"Assets/Cube.obj.model");
             TeaPotMesh = MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
+            PlatonicMesh = MeshReader.LoadMesh(@"Assets/Platonic.obj.model");
+            float3[] verts = PlatonicMesh.Vertices;
+
+            MyConvHull = _world.AddConvexHullShape(verts);
             var vertices = BoxMesh.Vertices;
             /*
              MyConvHull = _world.AddConvexHullShape(vertices);
@@ -61,33 +67,60 @@ namespace Examples.BulletTest
         public void InitScene1()
         {
             InitWorld();
-            GroundPlane(float3.Zero);
+            GroundPlane(float3.Zero, float3.Zero);
             FallingTower1();
         }
         public void InitScene2()
         {
             InitWorld();
+            //InitHull();
+            FallingTower3();
+            GroundPlane(new float3(30, 15, 0), new float3(0, 0, (float)Math.PI / 6));
+            GroundPlane(new float3(-20, 0, 0), float3.Zero);
+
             InitPoint2PointConstraint();
             InitHingeConstraint();
         }
         public void InitScene3()
         {
             InitWorld();
-            GroundPlane(new float3(0,0,(float)Math.PI/6));
+            GroundPlane(new float3(30, 15, 0), new float3(0,0,(float)Math.PI/6));
+            GroundPlane(new float3(-20, 0, 0), float3.Zero);
             FallingTower2();
-            //InitGImpacShape();
+            InitKegel();
         }
 
-        public void GroundPlane(float3 rot)
+        public void GroundPlane(float3 pos, float3 rot)
         {
             //var plane = _world.AddStaticPlaneShape(float3.UnitY, 1);
             //var groundPlane = _world.AddRigidBody(0, new float3(0,0,0), float3.Zero, plane);
             //groundPlane.Bounciness = 1;
-            var groundShape = _world.AddBoxShape(40, 0.1f, 40);
-            var ground = _world.AddRigidBody(0, new float3(0, 0, 0), rot, groundShape);
+            var groundShape = _world.AddBoxShape(30, 0.1f, 30);
+            var ground = _world.AddRigidBody(0, pos, rot, groundShape);
            
             ground.Bounciness = 1f;
             ground.Friction = 1;
+        }
+
+        public void InitKegel()
+        {
+            var shape = _world.AddCylinderShape(2f, 4, 2f);
+            _world.AddRigidBody(1, new float3(-20, 3, 15), float3.Zero, shape);
+            _world.AddRigidBody(1, new float3(-25, 3, 10), float3.Zero, shape);
+            _world.AddRigidBody(1, new float3(-10, 3, -5), float3.Zero, shape);
+            _world.AddRigidBody(1, new float3(-15, 3, 0), float3.Zero, shape);
+            _world.AddRigidBody(1, new float3(-10, 3, -10), float3.Zero, shape);
+            
+            
+        }
+
+        public void InitHull()
+        {
+           float3[] verts = PlatonicMesh.Vertices;
+          
+           var shape = _world.AddConvexHullShape(verts);
+           _world.AddRigidBody(1, new float3(20, 20,0), float3.Zero, shape);
+          
         }
 
         public void Wippe()
@@ -116,7 +149,7 @@ namespace Examples.BulletTest
                 {
                     for (int j = -2; j < 3; j++)
                     {
-                        var pos = new float3(4 * h, 50 + (k * 4), 4 * j);
+                        var pos = new float3((4 * h) , 80 + (k * 4), 4 * j);
 
                         var cube = _world.AddRigidBody(1, pos, float3.Zero, MyBoxCollider);
                         //cube.Bounciness = 1f;
@@ -128,13 +161,14 @@ namespace Examples.BulletTest
 
         public void FallingTower2()
         {
-            for (int k = 0; k < 4; k++)
+            for (int k = 0; k < 2; k++)
             {
-                for (int h = -2; h < 3; h++)
+                for (int h = -2; h < 2; h++)
                 {
-                    for (int j = -2; j < 3; j++)
+                    for (int j = -2; j < 5; j++)
                     {
-                        var pos = new float3(4 * h, 300 + (k * 4), 4 * j);
+
+                        var pos = new float3((4 * h)+25, 50 + (k * 4), 4 * j);
 
                         var sphere = _world.AddRigidBody(1, pos, float3.Zero, MySphereCollider);
                         sphere.Friction = 0.5f;
@@ -144,18 +178,39 @@ namespace Examples.BulletTest
             }
         }
 
+        public void FallingTower3()
+        {
+            
+           // _world.AddRigidBody(1, new float3(0, 5, 0), float3.Zero, shape);
+            for (int k = 0; k < 1; k++)
+            {
+                for (int h = -2; h < 1; h++)
+                {
+                    for (int j = -2; j < 1; j++)
+                    {
+                        var pos = new float3((4 * h) + 30, 50 + (k * 4), 4 * j);
+
+                        var sphere = _world.AddRigidBody(1, pos, float3.Zero, MyConvHull);
+                        
+                       // sphere.Friction = 0.5f;
+                       // sphere.Bounciness = 0.8f;
+                    }
+                }
+            }
+        }
+
         public void InitPoint2PointConstraint()
         {
             
-            var rbA = _world.AddRigidBody(1, new float3(-10, 15, 0), float3.Zero, MyBoxCollider);
+            var rbA = _world.AddRigidBody(1, new float3(-20, 15, 0), float3.Zero, MyBoxCollider);
             rbA.LinearFactor = new float3(0,0,0);
             rbA.AngularFactor = new float3(0, 0, 0);
 
-            var rbB = _world.AddRigidBody(1, new float3(-11, 10, 0), float3.Zero, MyBoxCollider);
+            var rbB = _world.AddRigidBody(1, new float3(-21, 10, 0), float3.Zero, MyBoxCollider);
             var p2p = _world.AddPoint2PointConstraint(rbA, rbB, new float3(0, -3f, 0), new float3(0, 2.5f, 0));
             p2p.SetParam(PointToPointFlags.PointToPointFlagsCfm, 0.9f);
 
-            var rbC = _world.AddRigidBody(1, new float3(-11, 5, 2), float3.Zero, MyBoxCollider);
+            var rbC = _world.AddRigidBody(1, new float3(-21, 5, 2), float3.Zero, MyBoxCollider);
             var p2p1 = _world.AddPoint2PointConstraint(rbB, rbC, new float3(0, -2.5f, 0), new float3(0, 2.5f, 0));
   
         }
@@ -164,11 +219,11 @@ namespace Examples.BulletTest
         {
             var rot = new float3(0, (float) Math.PI/4, 0);
             //var mesh = MeshReader.LoadMesh(@"Assets/Cube.obj.model");
-            var rbA = _world.AddRigidBody(1, new float3(10, 10, 0), float3.Zero, MyBoxCollider);
+            var rbA = _world.AddRigidBody(1, new float3(0, 15, 0), float3.Zero, MyBoxCollider);
             rbA.LinearFactor = new float3(0, 0, 0);
             rbA.AngularFactor = new float3(0, 0, 0);
 
-            var rbB = _world.AddRigidBody(1, new float3(5, 5, 0), float3.Zero, MyBoxCollider);
+            var rbB = _world.AddRigidBody(1, new float3(0, 10, 0), float3.Zero, MyBoxCollider);
             
             var hc = _world.AddHingeConstraint(rbA, rbB, new float3(0, -5, 0), new float3(0, 2, 0), new float3(0, 0, 1), new float3(0, 0, 1), false);
 

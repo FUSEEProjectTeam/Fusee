@@ -161,6 +161,7 @@ namespace Fusee.Engine
                         btPoints[i] = Translater.Float3ToBtVector3(point);
                     }
                     btColShape = new ConvexHullShape(btPoints);
+                    //btColShape.LocalScaling = new Vector3(3,3,3);
                     break;
                 case "Fusee.Engine.StaticPlaneShapeImp":  
                     var staticPlane = (StaticPlaneShapeImp) colShape;
@@ -642,6 +643,7 @@ namespace Fusee.Engine
                 btPoints[i] = point;
             }
             var btConvexHullShape = new ConvexHullShape(btPoints);
+            //btConvexHullShape.LocalScaling = new Vector3(3, 3, 3);
             BtCollisionShapes.Add(btConvexHullShape);
 
             var retval = new ConvexHullShapeImp();

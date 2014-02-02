@@ -34,7 +34,20 @@ namespace Fusee.Engine
             set { _userObject = value; }
         }
 
-        
+        public float3 LocalScaling
+        {
+            get
+            {
+                var retval = Translater.BtVector3ToFloat3(BtConvexHullShape.LocalScaling);
+                return retval;
+            }
+            set
+            {
+                var o = (ConvexHullShapeImp)BtConvexHullShape.UserObject;
+                o.BtConvexHullShape.LocalScaling = Translater.Float3ToBtVector3(value);
+            }
+        }
+
         public void AddPoint(float3 point)
         {
             var btPoint = Translater.Float3ToBtVector3(point);

@@ -56,5 +56,15 @@ namespace Fusee.Engine
                 o.ConvexHullShapeImp.Margin = value;
             }
         }
+
+        public float3 LocalScaling
+        {
+            get { return ConvexHullShapeImp.LocalScaling; }
+            set
+            {
+                var o = (ConvexHullShape)ConvexHullShapeImp.UserObject;
+                o.ConvexHullShapeImp.LocalScaling = value;
+            }
+        }
     }
 }

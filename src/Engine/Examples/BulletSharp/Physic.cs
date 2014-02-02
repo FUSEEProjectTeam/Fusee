@@ -67,10 +67,12 @@ namespace Examples.BulletSharp
             var pos = new float3(0,0,0);
             var startTransform = Matrix.Translation(pos.x, pos.y, pos.z);
             var myMotionState = new DefaultMotionState(startTransform);
-            var rbInfo = new RigidBodyConstructionInfo(0, myMotionState, planeShape);
-            RigidBody rigidBody = new RigidBody(rbInfo);
 
-            World.AddRigidBody(rigidBody);
+
+            RigidBodyConstructionInfo rbInfo = new RigidBodyConstructionInfo(0, myMotionState, planeShape);
+            RigidBody rigidBodyA = new RigidBody(rbInfo);
+            World.AddRigidBody(rigidBodyA);
+            rbInfo.Dispose;
         }
 
         public void Ground()
@@ -118,7 +120,6 @@ namespace Examples.BulletSharp
                         
                         var rbInfo = new RigidBodyConstructionInfo(1, myMotionState, new BoxShape(25));
                         RigidBody rigidBody = new RigidBody(rbInfo);
-  
                         World.AddRigidBody(rigidBody);
                     }
                 }

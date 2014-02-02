@@ -86,7 +86,48 @@ namespace Examples.BulletTest
             void main()
             {
                 
-                gl_FragColor = texture2D(vTexture, vUV) * dot(vNormal, vec3(0, 0, 1))*0.5;
+                gl_FragColor = texture2D(vTexture, vUV) * dot(vNormal, vec3(0, 0, 1))*1.5;
+            }";
+
+
+
+        private const string VLin = @"
+             attribute vec4 fuColor;
+            attribute vec3 fuVertex;
+            attribute vec3 fuNormal;
+            attribute vec2 fuUV;
+        
+            varying vec4 vColor;
+            varying vec3 vNormal;
+            varying vec2 vUV;
+        
+            uniform mat4 FUSEE_MV;
+            uniform mat4 FUSEE_P;
+            uniform mat4 FUSEE_ITMV;
+
+            void main()
+            {
+                mat4 FUSEE_MVP = FUSEE_P * FUSEE_MV;
+                gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
+
+                vNormal = mat3(FUSEE_ITMV[0].xyz, FUSEE_ITMV[1].xyz, FUSEE_ITMV[2].xyz) * fuNormal;
+                vUV = fuUV;
+            }";
+
+        private const string PLin = @"
+             #ifdef GL_ES
+                precision highp float;
+            #endif
+        
+            
+            uniform vec4 vColor;
+            varying vec3 vNormal;
+            varying vec2 vUV;
+
+            void main()
+            {
+                
+                gl_FragColor = vColor * dot(vNormal, vec3(0, 0, 1)) * 0.5;
             }";
         #endregion shader
 
@@ -100,13 +141,15 @@ namespace Examples.BulletTest
         private const float Damping = 0.92f;
 
         // model variables
-        private Mesh _meshTea, _meshCube, _meshSphere;
+        private Mesh _meshTea, _meshCube, _meshSphere, _meshCylinder, _meshPlatinic;
 
         // variables for shader
         private ShaderProgram _spColor;
         private ShaderProgram _spTexture;
+        private ShaderProgram _spLinda;
 
         private IShaderParam _colorParam;
+        private IShaderParam _colorLinda;
         private IShaderParam _textureParam;
 
         private ITexture _iTex;
@@ -123,11 +166,14 @@ namespace Examples.BulletTest
             _meshTea = MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
             _meshCube = MeshReader.LoadMesh(@"Assets/Cube.obj.model");
             _meshSphere = MeshReader.LoadMesh(@"Assets/Sphere.obj.model");
+            _meshCylinder = MeshReader.LoadMesh(@"Assets/Cylinder.obj.model");
+            _meshPlatinic = MeshReader.LoadMesh(@"Assets/Platonic.obj.model");
             //RC.CreateShader(Vs, Ps);
             _spColor = RC.CreateShader(Vs, Ps); //MoreShaders.GetShader("simple", RC);
             _spTexture = RC.CreateShader(Vt, Pt);//MoreShaders.GetShader("texture", RC);
-            
+            _spLinda = RC.CreateShader(VLin, PLin);
             _colorParam = _spColor.GetShaderParam("vColor");
+            _colorLinda = _spLinda.GetShaderParam("vColor");
             _textureParam = _spTexture.GetShaderParam("vTexture");
 
             // load texture
@@ -258,13 +304,25 @@ namespace Examples.BulletTest
                     RC.SetShaderParamTexture(_textureParam, _iTex);
                     RC.Render(_meshSphere);
                 }
-                else if (rb.CollisionShape.GetType().ToString() == "Fusee.Engine.GImpactShape")
+                else if (rb.CollisionShape.GetType().ToString() == "Fusee.Engine.CylinderShape")
                 {
-                    var shape = (GImpactMeshShape)rb.CollisionShape;
-                    RC.ModelView = matrix * mtxCam;
-                    RC.SetShader(_spTexture);
-                    RC.SetShaderParamTexture(_textureParam, _iTex);
-                    RC.Render(_meshTea);
+                    var shape = (CylinderShape)rb.CollisionShape;
+                    RC.ModelView = float4x4.Scale(4) * matrix * mtxCam;
+                    RC.SetShader(_spLinda);
+                    RC.SetShaderParam(_colorLinda, new float4(0.1f, 0.1f, 0.9f, 1));
+                    RC.Render(_meshCylinder);
+                }
+                else if (rb.CollisionShape.GetType().ToString() == "Fusee.Engine.ConvexHullShape")
+                {
+                    Debug.WriteLine("ConvexHullShape");
+                    var shape = (ConvexHullShape)rb.CollisionShape;
+                    RC.ModelView = float4x4.Scale(1.0f)*matrix * mtxCam;
+                    
+                    //RC.SetShader(_spTexture);
+                    //RC.SetShaderParamTexture(_textureParam, _iTex);
+                    RC.SetShader(_spLinda);
+                    RC.SetShaderParam(_colorLinda, new float4(2f, 2f, 2, 1));
+                    RC.Render(_meshPlatinic);
                 }
 
                 
