@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>10.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{DFFDB3A9-2429-4E47-B65C-E2C0F3F66146}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>LinqForGeometry.Core</RootNamespace>
+    <AssemblyName>LinqForGeometry.Core</AssemblyName>
+    <StartupObject>
+    </StartupObject>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>False</Optimize>
+    <OutputPath>..\..\..\Bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <Externalconsole>True</Externalconsole>
+    <DocumentationFile>..\..\..\Bin\Debug\LinqForGeometry.Core.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugType>none</DebugType>
+    <Optimize>True</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <Externalconsole>True</Externalconsole>
+    <GenerateDocumentation>True</GenerateDocumentation>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(SolutionDir)src\Math\Core\Math.Core.csproj">
+      <Project>{E95FA1C8-6491-4B4B-BBE1-EDA6B16B2C6A}</Project>
+      <Name>Math.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Core\Core.csproj">
+      <Project>{1228EB3F-8BCC-453F-8A2E-D9246495A118}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="src\Exceptions\ExcMeshLeak.cs" />
+    <Compile Include="src\GlobalInf.cs" />
+    <Compile Include="src\Importer\GeoFace.cs" />
+    <Compile Include="src\Importer\WavefrontImporter.cs" />
+    <Compile Include="src\Geometry.cs" />
+    <Compile Include="src\Handles\HandleFaceNormal.cs" />
+    <Compile Include="src\Handles\HandleVertex.cs" />
+    <Compile Include="src\Handles\HandleFace.cs" />
+    <Compile Include="src\Handles\HandleHalfEdge.cs" />
+    <Compile Include="src\Handles\HandleEdge.cs" />
+    <Compile Include="src\Handles\HandleVertexNormal.cs" />
+    <Compile Include="src\Handles\HandleVertexUV.cs" />
+    <Compile Include="src\PtrContainer\VertexPtrCont.cs" />
+    <Compile Include="src\PtrContainer\FacePtrCont.cs" />
+    <Compile Include="src\PtrContainer\HEdgePtrCont.cs" />
+    <Compile Include="src\PtrContainer\EdgePtrCont.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+</Project>
