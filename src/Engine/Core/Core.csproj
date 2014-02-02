@@ -57,8 +57,20 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Audio.cs" />
+    <Compile Include="BoxShape.cs" />
+    <Compile Include="CapsuleShape.cs" />
+    <Compile Include="CollisionShape.cs" />
+    <Compile Include="CompoundShape.cs" />
+    <Compile Include="ConeShape.cs" />
+    <Compile Include="ConeTwistConstraint.cs" />
+    <Compile Include="ConvexHullShape.cs" />
     <Compile Include="Cube.cs" />
+    <Compile Include="CylinderShape.cs" />
     <Compile Include="Diagnostics.cs" />
+    <Compile Include="DynamicWorld.cs" />
+    <Compile Include="EmptyShape.cs" />
+    <Compile Include="GearConstraint.cs" />
+    <Compile Include="Generic6DofConstraint.cs" />
     <Compile Include="Frustum.cs" />
     <Compile Include="Geometry.cs" />
     <Compile Include="GUI\GUIButton.cs" />
@@ -67,20 +79,28 @@
     <Compile Include="GUI\GUIText.cs" />
     <Compile Include="GUI\GUIPanel.cs" />
     <Compile Include="GUI\GUIImage.cs" />
+    <Compile Include="GImpactMeshShape.cs" />
+    <Compile Include="HingeConstraint.cs" />
     <Compile Include="ImpFactory.cs" />
     <Compile Include="Input.cs" />
     <Compile Include="Mesh.cs" />
     <Compile Include="MeshReader.cs" />
     <Compile Include="MoreShaders.cs" />
+    <Compile Include="MultiSphereShape.cs" />
+    <Compile Include="Point2PointConstraint.cs" />
+    <Compile Include="RigidBody.cs" />
+    <Compile Include="ShaderMaterial.cs" />
+    <Compile Include="ShaderProgram.cs" />
+    <Compile Include="Shaders.cs" />
+    <Compile Include="SliderConstraint.cs" />
+    <Compile Include="SphereShape.cs" />
+    <Compile Include="StaticPlaneShape.cs" />
     <Compile Include="Network.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RenderCanvas.cs" />
     <Compile Include="RenderContext.cs" />
     <Compile Include="RenderStateSet.cs" />
     <Compile Include="ShaderEffect.cs" />
-    <Compile Include="ShaderMaterial.cs" />
-    <Compile Include="ShaderProgram.cs" />
-    <Compile Include="Shaders.cs" />
     <Compile Include="Stereo3D.cs" />
     <Compile Include="Time.cs" />
   </ItemGroup>
