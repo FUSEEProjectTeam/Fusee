@@ -17,11 +17,12 @@ namespace Examples.CubeAndTiles
         private float _curBright;
 
         private readonly float _fieldBright;
-        private readonly float3 _fieldColor;
+        private float3 _fieldColor;
         private readonly float _randomRotZ;
 
         internal FieldTypes Type { get; private set; }
         internal FieldStates State { get; private set; }
+        internal FieldTypes TypeOld;
 
         private float4x4 _modelView;
         private bool _dirtyFlag;
@@ -32,7 +33,9 @@ namespace Examples.CubeAndTiles
             FtNull = 0,
             FtStart = 1,
             FtEnd = 3,
-            FtNormal = 2
+            FtNormal = 2,
+            FtTele = 4,
+            FtNormal2 = 5
         }
 
         public enum FieldStates
@@ -75,6 +78,14 @@ namespace Examples.CubeAndTiles
                     _fieldColor = new float3(0.8f, 0.8f, 0.8f);
                     break;
 
+                case FieldTypes.FtNormal2:
+                    _fieldColor = new float3(0.39f, 0.28f, 0.18f);
+                    break;
+
+                case FieldTypes.FtTele:
+                    _fieldColor = new float3(0.0f, 0.62f, 0.89f);
+                    break;
+
                 default:
                     _fieldColor = new float3(0.0f, 0.0f, 0.0f);
                     break;
@@ -89,6 +100,13 @@ namespace Examples.CubeAndTiles
         // methods
         public void ResetField()
         {
+
+            if (TypeOld == FieldTypes.FtNormal2 && State == FieldStates.FsDead)
+            {
+                _fieldColor = new float3(0.39f, 0.28f, 0.18f);
+                Type = FieldTypes.FtNormal2;
+            }
+
             State = FieldStates.FsLoading;
 
             _posZ = -_fieldId/2.0f;
@@ -100,12 +118,26 @@ namespace Examples.CubeAndTiles
 
         public void DeadField()
         {
-            if (State != FieldStates.FsDead)
+            if (Type != FieldTypes.FtNormal2)
             {
-                State = FieldStates.FsDead;
+                if (State != FieldStates.FsDead)
+                {
+                    State = FieldStates.FsDead;
+
+                    _posZ = 0;
+                    _veloZ = (Type == FieldTypes.FtEnd) ? -24f : -6f;
+                }
+            }
+            else
+            {
+                TypeOld = FieldTypes.FtNormal2;
 
                 _posZ = 0;
                 _veloZ = (Type == FieldTypes.FtEnd) ? -24f : -6f;
+
+                Type = FieldTypes.FtNormal;
+                _fieldColor = new float3(0.8f, 0.8f, 0.8f);
+                ResetField();
             }
         }
 

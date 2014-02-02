@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Threading;
 using Fusee.Engine;
 using Fusee.Math;
 
@@ -11,8 +13,8 @@ namespace Examples.CubeAndTiles
 
         internal RenderContext RContext { get; private set; }
 
-        private readonly Anaglyph3D _anaglyph3D;
-        internal bool UseAnaglyph3D;
+        private readonly Stereo3D _stereo3D;
+        internal bool UseStereo3D;
 
         private RollingCube _rCube;
         private Field[,] _levelFeld;
@@ -54,15 +56,15 @@ namespace Examples.CubeAndTiles
             Left,
             Right,
             Forward,
-            Backward
+            Backward,
         };
 
-        public Level(RenderContext rc, ShaderProgram sp, Anaglyph3D anaglyph3D)
-            : this(rc, sp, 0, anaglyph3D)
+        public Level(RenderContext rc, ShaderProgram sp, Stereo3D stereo3D)
+            : this(rc, sp, 0, stereo3D)
         {
         }
 
-        public Level(RenderContext rc, ShaderProgram sp, int id, Anaglyph3D anaglyph3D)
+        public Level(RenderContext rc, ShaderProgram sp, int id, Stereo3D stereo3D)
         {
             ObjRandom = new Random();
 
@@ -71,8 +73,8 @@ namespace Examples.CubeAndTiles
 
             RContext = rc;
 
-            _anaglyph3D = anaglyph3D;
-            UseAnaglyph3D = false;
+            _stereo3D = stereo3D;
+            UseStereo3D = false;
 
             ConstructLevel(id);
         }
@@ -118,7 +120,7 @@ namespace Examples.CubeAndTiles
             var sizeX = _lvlTmp[id].GetLength(1);
             var sizeY = _lvlTmp[id].GetLength(0);
 
-            _levelFeld = new Field[sizeX,sizeY];
+            _levelFeld = new Field[sizeX, sizeY];
             FieldCount = 0;
 
             for (var y = 0; y < sizeY; y++)
@@ -188,6 +190,17 @@ namespace Examples.CubeAndTiles
                 var curState = _levelFeld[curX, curY].State;
                 var curType = _levelFeld[curX, curY].Type;
 
+                if (curType == Field.FieldTypes.FtTele)
+                {
+                    foreach (var field in _levelFeld)
+                    {
+                        if (field == null) continue;
+
+                        if (field.Type == Field.FieldTypes.FtTele &&
+                            (field.CoordXY[0] != curX || field.CoordXY[1] != curY))
+                            TeleportCube(field.CoordXY[0], field.CoordXY[1]);
+                    }
+                }
                 if (curState == Field.FieldStates.FsDead)
                     DeadLevel();
 
@@ -204,7 +217,7 @@ namespace Examples.CubeAndTiles
                         if (field.State == Field.FieldStates.FsDead)
                             actualNumCount++;
 
-                        if (field.Type == Field.FieldTypes.FtNormal)
+                        if (field.Type != Field.FieldTypes.FtStart && field.Type != Field.FieldTypes.FtEnd)
                             targetNumCount++;
                     }
 
@@ -239,6 +252,11 @@ namespace Examples.CubeAndTiles
                     _rCube.MoveCube(0, -1);
                     break;
             }
+        }
+
+        public void TeleportCube(int x, int y)
+        {
+            _rCube.TeleportCube(x, y);
         }
 
         private void LoadAnimation()
@@ -284,35 +302,55 @@ namespace Examples.CubeAndTiles
 
             LoadAnimation();
 
-            var lookAt = UseAnaglyph3D
-                             ? _anaglyph3D.LookAt3D(0, 0, _camPosition, 0, 0, 0, 0, 1, 0)
-                             : float4x4.LookAt(0, 0, _camPosition, 0, 0, 0, 0, 1, 0);
+            var eyeF = new float3(0, 0, _camPosition);
+            var targetF = new float3(0, 0, 0);
+            var upF = new float3(0, 1, 0);
 
-            CamTrans = _camTranslation*mtxRot*lookAt;
-
-            for (var x = 0; x < 2; x++)
+            if (!UseStereo3D)
             {
-                if (UseAnaglyph3D)
-                    _anaglyph3D.SwitchEye();
-
-                var renderOnly = UseAnaglyph3D && _anaglyph3D.IsLeftEye;
+                // normal mode
+                var lookAt = float4x4.LookAt(eyeF, targetF, upF);
+                CamTrans = _camTranslation*mtxRot*lookAt;
 
                 RContext.SetShaderParamTexture(VTextureObj, TextureField);
 
                 foreach (var feld in _levelFeld)
                     if (feld != null)
-                        feld.Render(_objOrientation, renderOnly);
+                        feld.Render(_objOrientation);
 
                 RContext.SetShaderParamTexture(VTextureObj, TextureCube);
 
                 if (_rCube != null)
-                    _rCube.RenderCube(renderOnly);
-
-                if (!UseAnaglyph3D)
-                    break;
+                    _rCube.RenderCube();
             }
+            else
+            {
+                // 3d mode
+                _stereo3D.Prepare(Stereo3DEye.Left);
 
-            _anaglyph3D.NormalMode();
+                for (var x = 0; x < 2; x++)
+                {
+                    var lookAt = _stereo3D.LookAt3D(_stereo3D.CurrentEye, eyeF, targetF, upF);
+                    CamTrans = _camTranslation*mtxRot*lookAt;
+
+                    var renderOnly = (_stereo3D.CurrentEye == Stereo3DEye.Left);
+
+                    RContext.SetShaderParamTexture(VTextureObj, TextureField);
+
+                    foreach (var feld in _levelFeld)
+                        if (feld != null)
+                            feld.Render(_objOrientation, renderOnly);
+
+                    RContext.SetShaderParamTexture(VTextureObj, TextureCube);
+
+                    if (_rCube != null)
+                        _rCube.RenderCube(renderOnly);
+
+                    _stereo3D.Save();
+
+                    if (x == 0) _stereo3D.Prepare(Stereo3DEye.Right);
+                }
+            }
         }
 
         public void ZoomCamera(int val)

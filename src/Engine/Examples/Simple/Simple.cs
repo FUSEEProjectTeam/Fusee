@@ -6,6 +6,7 @@ using Fusee.Math;
 
 namespace Examples.Simple
 {
+    [FuseeApplication(Name = "Simple Example", Description = "A very simple example.")]
     public class Simple : RenderCanvas
     {
         // angle variables
@@ -38,10 +39,10 @@ namespace Examples.Simple
             _meshFace = MeshReader.LoadMesh(@"Assets/Face.obj.model");
             _meshCube = MeshReader.LoadMesh(@"Assets/Cube.obj.model");
 
-            _spColor = MoreShaders.GetShader("simple", RC);
-            _spTexture = MoreShaders.GetShader("texture", RC);
+            _spColor = MoreShaders.GetDiffuseColorShader(RC);
+            _spTexture = MoreShaders.GetDiffuseTextureShader(RC);
 
-            _colorParam = _spColor.GetShaderParam("vColor");
+            _colorParam = _spColor.GetShaderParam("color");
             _textureParam = _spTexture.GetShaderParam("texture1");
 
             // load texture
@@ -105,7 +106,7 @@ namespace Examples.Simple
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
             // move per mouse
-            if (Input.Instance.IsButtonDown(MouseButtons.Left))
+            if (Input.Instance.IsButton(MouseButtons.Left))
             {
                 _angleVelHorz = RotationSpeed*Input.Instance.GetAxis(InputAxis.MouseX);
                 _angleVelVert = RotationSpeed*Input.Instance.GetAxis(InputAxis.MouseY);
@@ -122,16 +123,16 @@ namespace Examples.Simple
             _angleVert += _angleVelVert;
 
             // move per keyboard
-            if (Input.Instance.IsKeyDown(KeyCodes.Left))
+            if (Input.Instance.IsKey(KeyCodes.Left))
                 _angleHorz -= RotationSpeed*(float) Time.Instance.DeltaTime;
 
-            if (Input.Instance.IsKeyDown(KeyCodes.Right))
+            if (Input.Instance.IsKey(KeyCodes.Right))
                 _angleHorz += RotationSpeed*(float) Time.Instance.DeltaTime;
 
-            if (Input.Instance.IsKeyDown(KeyCodes.Up))
+            if (Input.Instance.IsKey(KeyCodes.Up))
                 _angleVert -= RotationSpeed*(float) Time.Instance.DeltaTime;
 
-            if (Input.Instance.IsKeyDown(KeyCodes.Down))
+            if (Input.Instance.IsKey(KeyCodes.Down))
                 _angleVert += RotationSpeed*(float) Time.Instance.DeltaTime;
             /*if (Input.Instance.OnKeyDown(KeyCodes.Space))
                 ShootBox(new float3(0,100,100), new float3(0,50,0) );*/

@@ -1,5 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
+using ProtoBuf;
 
 namespace Fusee.Math
 {
@@ -9,8 +11,9 @@ namespace Fusee.Math
     /// </remarks>
     [Serializable]
     [StructLayout(LayoutKind.Sequential)]
+    [ProtoContract]
 // ReSharper disable InconsistentNaming
-    public struct float4 : IEquatable<float4>
+    public struct float4  : IEquatable<float4>
 // ReSharper restore InconsistentNaming
     {
         #region Fields
@@ -18,21 +21,25 @@ namespace Fusee.Math
         /// <summary>
         /// The x component of the float4.
         /// </summary>
+        [ProtoMember(1)] 
         public float x;
 
         /// <summary>
         /// The y component of the float4.
         /// </summary>
+        [ProtoMember(2)] 
         public float y;
 
         /// <summary>
         /// The z component of the float4.
         /// </summary>
+        [ProtoMember(3)] 
         public float z;
 
         /// <summary>
         /// The w component of the float4.
         /// </summary>
+        [ProtoMember(4)]
         public float w;
 
         /// <summary>
@@ -74,6 +81,8 @@ namespace Fusee.Math
 
         #region Constructors
 
+
+
         /// <summary>
         /// Constructs a new float4.
         /// </summary>
@@ -81,7 +90,7 @@ namespace Fusee.Math
         /// <param name="y">The y component of the float4.</param>
         /// <param name="z">The z component of the float4.</param>
         /// <param name="w">The w component of the float4.</param>
-        public float4(float x, float y, float z, float w)
+        public float4(float x, float y, float z, float w) : this()
         {
             this.x = x;
             this.y = y;
@@ -365,6 +374,7 @@ namespace Fusee.Math
         /// <summary>
         /// XML-Comment
         /// </summary>
+        /// <returns>An float array of size 4 that cobtains the x,y,z,w components.</returns>
         public float[] ToArray()
         {
             return new float[] { x, y, z, w };
@@ -1160,7 +1170,7 @@ namespace Fusee.Math
         /// <summary>
         /// Returns a System.String that represents the current float4.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A string.</returns>
         public override string ToString()
         {
             return String.Format("({0}, {1}, {2}, {3})", x, y, z, w);

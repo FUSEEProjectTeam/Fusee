@@ -10,17 +10,14 @@ namespace Fusee.SceneManagement
     /// </summary>
     class SceneVisitorSearch : SceneVisitor
     {
-        /// <summary>
-        /// The _name that will be searched for.
-        /// </summary>
+        #region Fields
         private string _name;
-        /// <summary>
-        /// The _searchresult: If a result is found returns this as reference, else null
-        /// </summary>
         private SceneEntity _searchresult;
+        #endregion
 
+        #region Overrides
         /// <summary>
-        /// Visits the specified scene entity to check its name and set _searchresult as reference if the name matches.
+        /// Visits the specified <see cref="SceneEntity"/> to check it's name and set _searchresult as reference if the name matches.
         /// </summary>
         /// <param name="sceneEntity">The scene entity.</param>
         public override void Visit(SceneEntity sceneEntity)
@@ -32,9 +29,12 @@ namespace Fusee.SceneManagement
             }
 
         }
+        #endregion
+
+        #region Members
 
         /// <summary>
-        /// Finds a scene entity by name.
+        /// Finds a <see cref="SceneEntity"/> by it's name.
         /// </summary>
         /// <param name="sceneEntities">The list of scene entities from SceneManager that will be visited.</param>
         /// <param name="name">The searched name of a SceneEntity.</param>
@@ -52,5 +52,7 @@ namespace Fusee.SceneManagement
             }
             return _searchresult;
         }
+        #endregion
+
     }
 }

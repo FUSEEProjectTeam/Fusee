@@ -9,6 +9,8 @@ namespace Fusee.Engine
     /// <remarks>For an example how you can use it, see <see cref="Cube"/>.</remarks>
     public class Mesh
     {
+        #region Fields
+
         internal IMeshImp _meshImp;
         private float3[] _vertices;
         /// <summary>
@@ -109,7 +111,7 @@ namespace Fusee.Engine
         ///   <c>true</c> if triangles are set; otherwise, <c>false</c>.
         /// </value>
         public bool TrianglesSet { get { return (_meshImp != null) && _meshImp.TrianglesSet; } }
-
+        #endregion
 
     }
 }

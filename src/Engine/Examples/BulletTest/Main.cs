@@ -192,7 +192,7 @@ namespace Examples.BulletTest
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
             _physic.World.StepSimulation((float) Time.Instance.DeltaTime, Time.Instance.FramePerSecondSmooth);
             // move per mouse
-            if (Input.Instance.IsButtonDown(MouseButtons.Left))
+            if (Input.Instance.IsButton(MouseButtons.Left))
             {
                 _angleVelHorz = RotationSpeed * Input.Instance.GetAxis(InputAxis.MouseX);
                 _angleVelVert = RotationSpeed * Input.Instance.GetAxis(InputAxis.MouseY);
@@ -263,7 +263,7 @@ namespace Examples.BulletTest
             var mtxCam = mtxRot * float4x4.LookAt(0, 20, 70, 0, 0, 0, 0, 1, 0);
 
 
-            if (Input.Instance.OnKeyDown(KeyCodes.Space))
+            if (Input.Instance.IsKey(KeyCodes.Space))
             {
                 Debug.WriteLine(Width - Input.Instance.GetMousePos().x);
                 Debug.WriteLine(Input.Instance.GetAxis(InputAxis.MouseX));

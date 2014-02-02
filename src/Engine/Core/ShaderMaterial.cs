@@ -5,11 +5,21 @@ using System.Collections.Generic;
 
 namespace Fusee.Engine
 {
+    // TODO: Implement proper Material handler
+    /// <summary>
+    /// Handles settings of shaderprograms. Currently not implemented.
+    /// </summary>
     public class ShaderMaterial
     {
+        #region Fields
+
         private ShaderProgram _sp;
         //private Dictionary<string, dynamic> _list;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ShaderMaterial"/> class.
+        /// </summary>
+        /// <param name="program">The <see cref="ShaderProgram"/>.</param>
         public ShaderMaterial(ShaderProgram program)
         {
             _sp = program;
@@ -29,14 +39,28 @@ namespace Fusee.Engine
 //                _list[name] = value;
 //        }
 
+        /// <summary>
+        /// Gets the shaderprogram.
+        /// </summary>
+        /// <returns>A <see cref="ShaderProgram"/>.</returns>
         public ShaderProgram GetShader()
         {
             return _sp;
         }
 
+        #endregion
+
+        #region Members
+
+        /// <summary>
+        /// Updates the material.
+        /// </summary>
+        /// <param name="rc">The rc.</param>
         public void UpdateMaterial(RenderContext rc)
         {
             rc.SetShader(_sp);
         }
+
+        #endregion
     }   
 }

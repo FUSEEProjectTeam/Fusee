@@ -12,10 +12,12 @@ namespace Fusee.SceneManagement
     /// </summary>
     public class RenderCamera : RenderJob
     {
+        #region Fields
         private float4x4 _matrix;
         private bool _dirty;
         private float4x4 _projection;
-
+        #endregion
+        #region Constructors
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderCamera"/> class. Needs the ViewMatrix of a Camera.
         /// </summary>
@@ -28,7 +30,8 @@ namespace Fusee.SceneManagement
             _projection = projection;
             _dirty = dirty;
         }
-
+        #endregion
+        #region Overrides
         /// <summary>
         /// Sets the ViewMatrix in the RenderContext.
         /// </summary>
@@ -42,5 +45,6 @@ namespace Fusee.SceneManagement
 
             renderContext.View=_matrix;
         }
+        #endregion
     }
 }

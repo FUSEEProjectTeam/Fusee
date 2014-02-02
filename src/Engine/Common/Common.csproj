@@ -56,6 +56,8 @@
     <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Attributes.cs" />
+    <Compile Include="ColorUint.cs" />
     <Compile Include="IAudioStream.cs" />
     <Compile Include="IBoxShapeImp.cs" />
     <Compile Include="ICapsuleShapeImp.cs" />
@@ -76,6 +78,9 @@
     <Compile Include="ImageData.cs" />
     <Compile Include="IMeshImp.cs" />
     <Compile Include="IMultiSphereShapeImp.cs" />
+    <Compile Include="INetworkConnection.cs" />
+    <Compile Include="INetworkImp.cs" />
+    <Compile Include="INetworkMsg.cs" />
     <Compile Include="InitEventArgs.cs" />
     <Compile Include="IPoint2PointConstraintImp.cs" />
     <Compile Include="IRenderCanvasImp.cs" />
@@ -95,6 +100,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RCEnums.cs" />
     <Compile Include="Helper.cs" />
+    <Compile Include="Rectangle.cs" />
     <Compile Include="RenderEventArgs.cs" />
     <Compile Include="ResizeEventArgs.cs" />
     <Compile Include="ShaderParamInfo.cs" />

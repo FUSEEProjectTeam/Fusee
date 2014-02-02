@@ -1,4 +1,5 @@
-﻿using Fusee.Engine;
+﻿using System;
+using Fusee.Engine;
 using Fusee.Math;
 
 namespace Fusee.Engine
@@ -13,8 +14,69 @@ namespace Fusee.Engine
     /// </summary>
     public class RenderCanvas
     {
+        #region Private Fields
+
         private RenderContext _rc;
+        private IRenderContextImp _renderContextImp;
+        private IAudioImp _audioImp;
+        private IInputImp _inputImp;
         internal IRenderCanvasImp _canvasImp;
+
+        #endregion
+
+        #region Implementor Fields
+
+        /// <summary>
+        /// Gets or sets the canvas implementor.
+        /// </summary>
+        /// <value>
+        /// The canvas implementor.
+        /// </value>
+        [InjectMe] 
+        public IRenderCanvasImp CanvasImplementor
+        {
+            set { _canvasImp = value; }
+            get { return _canvasImp; }
+        }
+
+        /// <summary>
+        /// Gets or sets the RenderContext implementor.
+        /// </summary>
+        /// <value>
+        /// The context implementor.
+        /// </value>
+        [InjectMe]
+        public IRenderContextImp ContextImplementor
+        {
+            set { _renderContextImp = value; }
+            get { return _renderContextImp; }
+        }
+
+        /// <summary>
+        /// Gets or sets the input implementor.
+        /// </summary>
+        /// <value>
+        /// The input implementor.
+        /// </value>
+        [InjectMe]
+        public IInputImp InputImplementor
+        {
+            set { _inputImp = value; }
+            get { return _inputImp; }
+        }
+
+        /// <summary>
+        /// Gets or sets the audio implementor.
+        /// </summary>
+        /// <value>
+        /// The audio implementor.
+        /// </value>
+        [InjectMe]
+        public IAudioImp AudioImplementor
+        {
+            set { _audioImp = value; }
+            get { return _audioImp; }
+        }
 
         /// <summary>
         /// Returns the render context object.
@@ -27,18 +89,72 @@ namespace Fusee.Engine
             get { return _rc; }
         }
 
+        #endregion
+
+        #region Constructors
+        /// <summary>
+        /// The default constructor. Creates a render canvas and initializes a couple of implemenentation instances for audio, rendering and input.
+        /// </summary>
+        public RenderCanvas()
+        {
+        }
+
+        #endregion
+
+        #region Members
         /// <summary>
         /// The RenderCanvas constructor. Depending on the implementation this constructor instantiates a 3D viewing window or connects a 3D 
         /// render context to an existing part of the application window.
         /// </summary>
-        public RenderCanvas()
+        public void InitImplementors()
         {
-            _canvasImp = ImpFactory.CreateIRenderCanvasImp();
-            _rc = new RenderContext(ImpFactory.CreateIRenderContextImp(_canvasImp));
+            if (_canvasImp == null)
+                _canvasImp = ImpFactory.CreateIRenderCanvasImp();
 
-            Input.Instance.InputImp = ImpFactory.CreateIInputImp(_canvasImp);
+            if (_renderContextImp == null)
+                _renderContextImp = ImpFactory.CreateIRenderContextImp(_canvasImp);
 
-            Audio.Instance.AudioImp = ImpFactory.CreateIAudioImp();
+            if (_inputImp == null)
+                _inputImp = ImpFactory.CreateIInputImp(_canvasImp);
+
+            if (_audioImp == null)
+                _audioImp = ImpFactory.CreateIAudioImp();
+        }
+
+        /// <summary>
+        /// Gets the name of the app.
+        /// </summary>
+        /// <returns>Name of the app as string.</returns>
+        protected string GetAppName()
+        {
+            FuseeApplicationAttribute fae;
+            Object[] attributes = GetType().GetCustomAttributes(
+                typeof(FuseeApplicationAttribute), true);
+
+            if (attributes.Length > 0)
+            {
+                fae = (FuseeApplicationAttribute) attributes[0];
+                return fae.Name;
+            }
+            else
+            {
+                return GetType().Name;
+            }
+        }
+
+        /// <summary>
+        /// Inits the canvas for the rendering loop.
+        /// </summary>
+        protected void InitCanvas()
+        {
+            InitImplementors();
+            _canvasImp.Caption = GetAppName();
+           _rc = new RenderContext(_renderContextImp);
+
+            Input.Instance.InputImp = _inputImp;
+            Audio.Instance.AudioImp = _audioImp;
+
+            Network.Instance.NetworkImp = ImpFactory.CreateINetworkImp();
 
             _canvasImp.Init += delegate(object sender, InitEventArgs args)
                                     {
@@ -52,9 +168,16 @@ namespace Fusee.Engine
 
             _canvasImp.Render += delegate(object sender, RenderEventArgs args)
                                      {
+                                         // pre-rendering
+                                         Network.Instance.OnUpdateFrame();
                                          Input.Instance.OnUpdateFrame(_canvasImp.DeltaTime);
                                          Time.Instance.DeltaTimeIncrement = _canvasImp.DeltaTime;
+
+                                         // rendering
                                          RenderAFrame();
+
+                                         // post-rendering
+                                         Input.Instance.OnLateUpdate(_canvasImp.DeltaTime);
                                      };
 
             _canvasImp.Resize += delegate(object sender, ResizeEventArgs args)
@@ -86,10 +209,15 @@ namespace Fusee.Engine
         {
         }
 
-        
+
+        /// <summary>
+        /// Used to release the ressources of all audio and network instances.
+        /// All audio and network ressources get reset.
+        /// </summary>
         public virtual void UnLoad()
         {
             Audio.Instance.CloseDevice();
+            Network.Instance.CloseDevice();
         }
 
         /// <summary>
@@ -112,8 +240,25 @@ namespace Fusee.Engine
         /// </remarks>
         public void Run()
         {
+            InitCanvas();
             _canvasImp.Run();
         }
+
+        /// <summary>
+        /// Presents the contents of the backbuffer on the visible part of this render canvas.
+        /// </summary>
+        /// <remarks>
+        /// Call this method from your rendering code implementation <see cref="RenderAFrame"/> after rendering geometry on 
+        /// the rendering context.
+        /// </remarks>
+        public void Present()
+        {
+            _canvasImp.Present();
+        }
+
+        #endregion
+
+        #region Screen related Fields
 
         /// <summary>
         /// Retrieves the width of the canvas.
@@ -121,7 +266,11 @@ namespace Fusee.Engine
         /// <value>
         /// The width in pixels.
         /// </value>
-        public int Width { get { return _canvasImp.Width; } }
+        public int Width
+        {
+            get { return _canvasImp.Width; }
+            set { _canvasImp.Width = value; }
+        }
 
         /// <summary>
         /// Retrieves the height of the canvas.
@@ -129,7 +278,11 @@ namespace Fusee.Engine
         /// <value>
         /// The height in pixels.
         /// </value>
-        public int Height { get { return _canvasImp.Height; } }
+        public int Height
+        {
+            get { return _canvasImp.Height; }
+            set { _canvasImp.Height = value; }
+        }
 
         /// <summary>
         /// Gets or sets a value indicating whether VSync is active.
@@ -144,15 +297,30 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// Presents the contents of the backbuffer on the visible part of this render canvas.
+        /// Gets or sets a value indicating whether Blending is enabled.
         /// </summary>
-        /// <remarks>
-        /// Call this method from your rendering code implementation <see cref="RenderAFrame"/> after rendering geometry on 
-        /// the rendering context.
-        /// </remarks>
-        public void Present()
+        /// <value>
+        ///   <c>true</c> if Blending is enabled; otherwise, <c>false</c>.
+        /// </value>
+        public bool Blending
         {
-            _canvasImp.Present();
+            get { return _canvasImp.EnableBlending; }
+            set { _canvasImp.EnableBlending = value; }
         }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="RenderCanvas"/> is fullscreen.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if fullscreen; otherwise, <c>false</c>.
+        /// </value>
+        public bool Fullscreen
+        {
+            get { return _canvasImp.Fullscreen; }
+            set { _canvasImp.Fullscreen = value; }
+        }
+
+        #endregion
+
      }
 }
