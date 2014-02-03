@@ -91,13 +91,12 @@ namespace Examples.LinqForGeometry
 
         private static float _angleVelHorz, _angleVelVert;
         private const float RotationSpeed = 1f;
-        private Mesh _lfgmesh, _FuseeMesh;
+        private Mesh _lfgmesh;
 
         private ShaderProgram _spColor;
         private ShaderProgram _msDiffuse;
         private IShaderParam _colorParam;
         private IShaderParam _vLightShaderParam;
-        private ImageData _imgData;
         private ITexture _tex;
 
         // The LFG object.
@@ -137,16 +136,18 @@ namespace Examples.LinqForGeometry
 
             #region MeshImports
             _Geo = new Geometry();
-            _Geo.LoadAsset("Assets/Models/Cube.obj.model");
-            //_Geo.LoadAsset("Assets/Models/Cube_quads.obj.model");
-            //_Geo.LoadAsset("Assets/Models/Sphere.obj.model");
-            //_Geo.LoadAsset("Assets/Models/Sphere_quads.obj.model");
-            //_Geo.LoadAsset("Assets/Models/SharedCorners.obj.model");
-            //_Geo.LoadAsset("Assets/Models/Cylinder.obj.model");
-            //_Geo.LoadAsset("Assets/Models/Cylinder_quads.obj.model");
-            //_Geo.LoadAsset("Assets/Models/SharedCorners_pro.obj.model");
-            //_Geo.LoadAsset("Assets/Models/Teapot.obj.model");
+            //_Geo.LoadAsset("Assets/Cube.obj.model");
+            //_Geo.LoadAsset("Assets/Cube_quads.obj.model");
+            //_Geo.LoadAsset("Assets/Sphere.obj.model");
+            //_Geo.LoadAsset("Assets/Sphere_quads.obj.model");
+            //_Geo.LoadAsset("Assets/SharedCorners.obj.model");
+            //_Geo.LoadAsset("Assets/Cylinder.obj.model");
+            //_Geo.LoadAsset("Assets/Cylinder_quads.obj.model");
+            //_Geo.LoadAsset("Assets/SharedCorners_pro.obj.model");
+            _Geo.LoadAsset("Assets/Teapot.obj.model");
 
+            // Due to copyright reasons, this file will not be delivered with the project.
+            //_Geo.LoadAsset("Assets/Hellknight.obj.model");
             #endregion MeshImports
 
             // Set the smoothing angle for the edge based vertex normal calculation
@@ -157,17 +158,22 @@ namespace Examples.LinqForGeometry
             // then please change the values in the ShaderChanger() method. These ones are just for declaration.
             #region Shaders
             #region TextureShader
+
             _msDiffuse = MoreShaders.GetDiffuseTextureShader(RC);
             _vLightShaderParam = _msDiffuse.GetShaderParam("texture1");
 
-            ImageData imgData = RC.LoadImage("Assets/Textures/Cube_Mat_uv.jpg");
-            //ImageData imgData = RC.LoadImage("Assets/Textures/world_map.jpg");
-            //ImageData imgData = RC.LoadImage("Assets/Textures/Teapot_Texture.jpg");
+            //ImageData imgData = RC.LoadImage("Assets/Cube_Mat_uv.jpg");
+            ImageData imgData = RC.LoadImage("Assets/world_map.jpg");
+            //ImageData imgData = RC.LoadImage("Assets/Teapot_Texture.jpg");
+
+            // Due to copyright reasons, this file will not be delivered with the project.
+            //ImageData imgData = RC.LoadImage("Assets/Hellknight.jpg");
 
             _tex = RC.CreateTexture(imgData);
             #endregion TextureShader
 
             #region ColorShader
+
             _spColor = MoreShaders.GetDiffuseColorShader(RC);
             _colorParam = _spColor.GetShaderParam("color");
 
@@ -423,17 +429,17 @@ namespace Examples.LinqForGeometry
             #endregion Rotation
 
             #region ActivateVertexNormals
-            if (Input.Instance.IsKey(KeyCodes.N))
+            if (Input.Instance.IsKeyDown(KeyCodes.N))
             {
                 _Geo._DoCalcVertexNormals = true;
             }
-            if (Input.Instance.IsKey(KeyCodes.M))
+            if (Input.Instance.IsKeyDown(KeyCodes.M))
             {
                 _Geo._DoCalcVertexNormals = false;
             }
             #endregion ActivateVertexNormals
 
-            if (Input.Instance.IsKey(KeyCodes.T))
+            if (Input.Instance.IsKeyDown(KeyCodes.T))
             {
                 if (_Geo.ResetGeometryToDefault())
                 {
@@ -448,17 +454,17 @@ namespace Examples.LinqForGeometry
             }
 
             #region Shader Render Settings and demo
-            if (Input.Instance.IsKey(KeyCodes.F1) && Input.Instance.IsKey(KeyCodes.LControl))
+            if (Input.Instance.IsKeyDown(KeyCodes.F1) && Input.Instance.IsKey(KeyCodes.LControl))
             {
                 _ShaderChange = true;
                 _ShaderType = 0;
             }
-            else if (Input.Instance.IsKey(KeyCodes.F2) && Input.Instance.IsKey(KeyCodes.LControl))
+            else if (Input.Instance.IsKeyDown(KeyCodes.F2) && Input.Instance.IsKey(KeyCodes.LControl))
             {
                 _ShaderChange = true;
                 _ShaderType = 1;
             }
-            else if (Input.Instance.IsKey(KeyCodes.F3) && Input.Instance.IsKey(KeyCodes.LControl))
+            else if (Input.Instance.IsKeyDown(KeyCodes.F3) && Input.Instance.IsKey(KeyCodes.LControl))
             {
                 runDemoAnimation = !runDemoAnimation;
             }

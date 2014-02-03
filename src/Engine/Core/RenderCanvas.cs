@@ -1,6 +1,4 @@
 ﻿using System;
-using Fusee.Engine;
-using Fusee.Math;
 
 namespace Fusee.Engine
 {
@@ -18,8 +16,11 @@ namespace Fusee.Engine
 
         private RenderContext _rc;
         private IRenderContextImp _renderContextImp;
-        private IAudioImp _audioImp;
+
         private IInputImp _inputImp;
+        private IAudioImp _audioImp;
+        private INetworkImp _networkImp;
+
         internal IRenderCanvasImp _canvasImp;
 
         #endregion
@@ -32,7 +33,7 @@ namespace Fusee.Engine
         /// <value>
         /// The canvas implementor.
         /// </value>
-        [InjectMe] 
+        [InjectMe]
         public IRenderCanvasImp CanvasImplementor
         {
             set { _canvasImp = value; }
@@ -92,16 +93,11 @@ namespace Fusee.Engine
         #endregion
 
         #region Constructors
-        /// <summary>
-        /// The default constructor. Creates a render canvas and initializes a couple of implemenentation instances for audio, rendering and input.
-        /// </summary>
-        public RenderCanvas()
-        {
-        }
 
         #endregion
 
         #region Members
+
         /// <summary>
         /// The RenderCanvas constructor. Depending on the implementation this constructor instantiates a 3D viewing window or connects a 3D 
         /// render context to an existing part of the application window.
@@ -119,6 +115,9 @@ namespace Fusee.Engine
 
             if (_audioImp == null)
                 _audioImp = ImpFactory.CreateIAudioImp();
+
+            if (_networkImp == null)
+                _networkImp = ImpFactory.CreateINetworkImp();
         }
 
         /// <summary>
@@ -127,19 +126,15 @@ namespace Fusee.Engine
         /// <returns>Name of the app as string.</returns>
         protected string GetAppName()
         {
-            FuseeApplicationAttribute fae;
             Object[] attributes = GetType().GetCustomAttributes(
-                typeof(FuseeApplicationAttribute), true);
+                typeof (FuseeApplicationAttribute), true);
 
             if (attributes.Length > 0)
             {
-                fae = (FuseeApplicationAttribute) attributes[0];
+                var fae = (FuseeApplicationAttribute) attributes[0];
                 return fae.Name;
             }
-            else
-            {
-                return GetType().Name;
-            }
+            return GetType().Name;
         }
 
         /// <summary>
@@ -148,42 +143,34 @@ namespace Fusee.Engine
         protected void InitCanvas()
         {
             InitImplementors();
+
             _canvasImp.Caption = GetAppName();
-           _rc = new RenderContext(_renderContextImp);
+
+            _rc = new RenderContext(_renderContextImp);
+            _rc.Viewport(0, 0, Width, Height);
 
             Input.Instance.InputImp = _inputImp;
             Audio.Instance.AudioImp = _audioImp;
+            Network.Instance.NetworkImp = _networkImp;
 
-            Network.Instance.NetworkImp = ImpFactory.CreateINetworkImp();
+            _canvasImp.Init += delegate { Init(); };
+            _canvasImp.UnLoad += delegate { UnLoad(); };
 
-            _canvasImp.Init += delegate(object sender, InitEventArgs args)
-                                    {
-                                        Init();
-                                    };
+            _canvasImp.Render += delegate
+            {
+                // pre-rendering
+                Network.Instance.OnUpdateFrame();
+                Input.Instance.OnUpdateFrame(_canvasImp.DeltaTime);
+                Time.Instance.DeltaTimeIncrement = _canvasImp.DeltaTime;
 
-            _canvasImp.UnLoad += delegate(object sender, InitEventArgs args)
-                                    {
-                                        UnLoad();
-                                    };
+                // rendering
+                RenderAFrame();
 
-            _canvasImp.Render += delegate(object sender, RenderEventArgs args)
-                                     {
-                                         // pre-rendering
-                                         Network.Instance.OnUpdateFrame();
-                                         Input.Instance.OnUpdateFrame(_canvasImp.DeltaTime);
-                                         Time.Instance.DeltaTimeIncrement = _canvasImp.DeltaTime;
+                // post-rendering
+                Input.Instance.OnLateUpdate(_canvasImp.DeltaTime);
+            };
 
-                                         // rendering
-                                         RenderAFrame();
-
-                                         // post-rendering
-                                         Input.Instance.OnLateUpdate(_canvasImp.DeltaTime);
-                                     };
-
-            _canvasImp.Resize += delegate(object sender, ResizeEventArgs args)
-                                     {
-                                         Resize();
-                                     };
+            _canvasImp.Resize += delegate { Resize(); };
         }
 
         /// <summary>
@@ -321,6 +308,5 @@ namespace Fusee.Engine
         }
 
         #endregion
-
-     }
+    }
 }

@@ -43,7 +43,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>$(SolutionDir)Bin\Release\Examples\Simple</OutputPath>
+    <OutputPath>..\..\..\..\Bin\Release\Examples\LinqForGeometry\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -56,7 +56,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>$(SolutionDir)Bin\Debug\Examples\Simple</OutputPath>
+    <OutputPath>..\..\..\..\Bin\Debug\Examples\LinqForGeometry\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -70,40 +70,40 @@
     <Compile Include="LinqForGeometry.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Assets\Textures\world_map.jpg">
+    <Content Include="Assets\world_map.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Textures\Cube_Mat_uv.jpg">
+    <Content Include="Assets\Cube_Mat_uv.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Textures\Teapot_Texture.jpg">
+    <Content Include="Assets\Teapot_Texture.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Models\Teapot.obj.model">
+    <Content Include="Assets\Teapot.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Models\Cube.obj.model">
+    <Content Include="Assets\Cube.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Models\Cube_quads.obj.model">
+    <Content Include="Assets\Cube_quads.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Models\Sphere.obj.model">
+    <Content Include="Assets\Sphere.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Models\Sphere_quads.obj.model">
+    <Content Include="Assets\Sphere_quads.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Models\Cylinder.obj.model">
+    <Content Include="Assets\Cylinder.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Models\Cylinder_quads.obj.model">
+    <Content Include="Assets\Cylinder_quads.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Models\SharedCorners.obj.model">
+    <Content Include="Assets\SharedCorners.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Models\SharedCorners_pro.obj.model">
+    <Content Include="Assets\SharedCorners_pro.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

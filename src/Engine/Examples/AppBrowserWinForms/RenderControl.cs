@@ -64,7 +64,7 @@ namespace Examples.WinFormsFusee
 
         protected override void OnResize(EventArgs e)
         {
-            int i = 44;
+            // not implemented
         }
     }
 }

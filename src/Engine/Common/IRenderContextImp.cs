@@ -101,6 +101,7 @@ namespace Fusee.Engine
         /// </remarks>
         /// <seealso cref="SetShaderParam(IShaderParam,float)"/>
         IShaderParam GetShaderParam(IShaderProgramImp shaderProgram, string paramName);
+
         /// <summary>
         /// Gets the value of a shader parameter.
         /// </summary>
@@ -188,6 +189,13 @@ namespace Fusee.Engine
         void SetShaderParam(IShaderParam param, int val);
 
         /// <summary>
+        /// Sets a Shader Parameter to a created texture.
+        /// </summary>
+        /// <param name="param">Shader Parameter used for texture binding.</param>
+        /// <param name="texId">An ITexture probably returned from CreateTexture() method.</param>
+        void SetShaderParamTexture(IShaderParam param, ITexture texId);
+
+        /// <summary>
         /// Creates a new texture and binds it to the shader.
         /// </summary>
         /// <remarks>
@@ -225,7 +233,7 @@ namespace Fusee.Engine
         ImageData CreateImage(int width, int height, String bgColor);
 
         /// <summary>
-        /// Maps a specified text with on an image.
+        /// Maps a text in a specific font on an image.
         /// </summary>
         /// <param name="imgData">The ImageData struct with the PixelData from the image.</param>
         /// <param name="fontName">The name of the text-font.</param>
@@ -236,14 +244,11 @@ namespace Fusee.Engine
         /// <param name="startPosY">The vertical start-position of the text on the image.</param>
         /// <returns>An ImageData struct containing all necessary information for further processing</returns>
         ImageData TextOnImage(ImageData imgData, String fontName, float fontSize, String text, String textColor,
-                              float startPosX, float startPosY);
+            float startPosX, float startPosY);
 
-        /// <summary>
-        /// Sets a Shader Parameter to a created texture.
-        /// </summary>
-        /// <param name="param">Shader Parameter used for texture binding.</param>
-        /// <param name="texId">An ITexture probably returned from CreateTexture() method.</param>
-        void SetShaderParamTexture(IShaderParam param, ITexture texId);
+        IFont LoadFont(string filename, uint size);
+
+        float3[] FixTextKerning(IFont font, float3[] vertices, string text, float scaleX);
 
         /// <summary>
         /// Erases the contents of the speciefied rendering buffers.
@@ -301,7 +306,7 @@ namespace Fusee.Engine
         /// <param name="triangleIndices">The triangle indices.</param>
         /// <exception cref="System.ArgumentException">triangleIndices must not be null or empty</exception>
         /// <exception cref="System.ApplicationException"></exception>
-        void SetTriangles(IMeshImp mr, short[] triangleIndices);
+        void SetTriangles(IMeshImp mr, ushort[] triangleIndices);
 
         /// <summary>
         /// Activates the passed shader program as the current shader for geometry rendering.
