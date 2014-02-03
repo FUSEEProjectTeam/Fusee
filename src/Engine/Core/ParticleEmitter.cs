@@ -81,7 +81,7 @@ namespace Fusee.Engine
         public void Tick(double deltaTime)
         {
             var vertices = new float3[customCount*4];
-            var triangles = new short[customCount*6];
+            var triangles = new ushort[customCount*6];
             var normals = new float3[customCount*4];
             var uVs = new float2[customCount*4];
 
@@ -130,12 +130,12 @@ namespace Fusee.Engine
                     normals[k*4 + 2] = new float3(0, 0, 1);
                     normals[k*4 + 3] = new float3(0, 0, 1);
 
-                    triangles[k*6 + 0] = (short) (k*4 + 0);
-                    triangles[k*6 + 1] = (short) (k*4 + 1);
-                    triangles[k*6 + 2] = (short) (k*4 + 2);
-                    triangles[k*6 + 3] = (short) (k*4 + 0);
-                    triangles[k*6 + 4] = (short) (k*4 + 2);
-                    triangles[k*6 + 5] = (short) (k*4 + 3);
+                    triangles[k*6 + 0] = (ushort) (k*4 + 0);
+                    triangles[k*6 + 1] = (ushort) (k*4 + 1);
+                    triangles[k*6 + 2] = (ushort) (k*4 + 2);
+                    triangles[k*6 + 3] = (ushort) (k*4 + 0);
+                    triangles[k*6 + 4] = (ushort) (k*4 + 2);
+                    triangles[k*6 + 5] = (ushort) (k*4 + 3);
                 }
             }
 
