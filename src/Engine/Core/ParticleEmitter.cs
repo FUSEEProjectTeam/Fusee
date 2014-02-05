@@ -70,12 +70,12 @@ namespace Fusee.Engine
                 vec2 offset = fuUV;
                 offset.x  = fuUV.x*cos(fuNormal.x) - fuUV.y*sin(fuNormal.x);
                 offset.y =  fuUV.y*cos(fuNormal.x) + fuUV.x*sin(fuNormal.x);
-                vPos = vPos + 100*vec4(offset, 0, 1.0);   //Offset  aus Partikelzentrum in Partikel-Eckpunkt          
+                vPos = vPos + vec4(100*offset, 0, 1.0);   //Offset  aus Partikelzentrum in Partikel-Eckpunkt          
                 gl_Position = FUSEE_P * vPos; //Perspektive-Projektion
                 vNormal = mat3(FUSEE_ITMV[0].xyz, FUSEE_ITMV[1].xyz, FUSEE_ITMV[2].xyz) * fuNormal;
                 vNormal = vec3(0, 0, 1);
-                vUV.x = (fuUV.x == 0) ? 0 : 1;
-                vUV.y = (fuUV.y == 0) ? 0 : 1;
+                vUV.x = (fuUV.x <= 0) ? 0 : 1;
+                vUV.y = (fuUV.y <= 0) ? 0 : 1;
 
                 vTransparency = fuNormal.y;
             }";
@@ -183,7 +183,7 @@ namespace Fusee.Engine
                 _particle.maxSize = customMaxSize;
                 _particle.minSize = customMinSize;
                 _particle.Rotation = (float)_randRot;
-                _particle.Transparency = 0.4f;
+                _particle.Transparency = 1.4f;
                 _particleList.Add(_particle);
             }
 
@@ -197,15 +197,15 @@ namespace Fusee.Engine
 
                 if (t.Life > 0)
                 {
-                    vertices[k*4 + 0] = currentPos;
-                    vertices[k*4 + 1] = currentPos;
-                    vertices[k*4 + 2] = currentPos;
-                    vertices[k*4 + 3] = currentPos;
+                    vertices[k * 4 + 0] = currentPos;
+                    vertices[k * 4 + 1] = currentPos;
+                    vertices[k * 4 + 2] = currentPos;
+                    vertices[k * 4 + 3] = currentPos;
 
-                    uVs[k*4 + 0] = new float2(currentSize, 0);
-                    uVs[k*4 + 1] = new float2(currentSize, currentSize);
-                    uVs[k*4 + 2] = new float2(0, currentSize);
-                    uVs[k*4 + 3] = new float2(0, 0);
+                    uVs[k * 4 + 0] = new float2(currentSize / 2, -currentSize / 2);
+                    uVs[k * 4 + 1] = new float2(currentSize / 2, currentSize / 2);
+                    uVs[k * 4 + 2] = new float2(-currentSize / 2, currentSize / 2);
+                    uVs[k * 4 + 3] = new float2(-currentSize / 2, -currentSize / 2);
 
                     normals[k * 4 + 0] = new float3(t.Rotation, t.Transparency, 1);
                     normals[k * 4 + 1] = new float3(t.Rotation, t.Transparency, 1);
