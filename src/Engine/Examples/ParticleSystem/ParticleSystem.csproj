@@ -82,6 +82,9 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\Cabin.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Assets\Face.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

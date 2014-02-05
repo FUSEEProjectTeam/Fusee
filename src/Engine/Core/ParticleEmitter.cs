@@ -10,14 +10,100 @@ namespace Fusee.Engine
         public float3 Velocity; // Contains the direction of movement (the vector's length ist the speed)
         public float3 Gravity;
         public int Life;
-        public float Size;
-        public ShaderProgram ParticleTexture;
-        public IShaderParam ParticleTextureParam;
-        public ITexture ParticleTex;
+        public float maxSize;
+        public float minSize;
+        public float Rotation;
+        public float Transparency;
     }
 
     public class ParticleEmitter
     {
+        #region Shader
+
+        // At first we have to define the shader.
+        public string VsSimpleTexture = @"
+            /* Copies incoming vertex color without change.
+             * Applies the transformation matrix to vertex position.
+             */
+
+            attribute vec4 fuColor;
+            attribute vec3 fuVertex;
+            attribute vec3 fuNormal;
+            attribute vec2 fuUV;
+
+            varying vec4 vColor;
+            varying vec3 vNormal;
+            varying vec2 vUV;
+            varying float vTransparency;
+        
+            uniform mat4 FUSEE_MVP;
+            uniform mat4 FUSEE_MV;
+            uniform mat4 FUSEE_P;
+            uniform mat4 FUSEE_ITMV;
+            
+            uniform float timer;
+            attribute vec4 position;
+            varying vec2 texcoord;
+            varying float fade_factor;
+
+            void main()
+            {
+                /*float PI = 3.14159265358979323846264;
+                float angle = 125.0;
+                float rad_angle = angle*PI/180.0;
+
+
+                mat3 rotation = mat3(
+                    vec3( cos(timer),  sin(timer),  0.0),
+                    vec3(-sin(timer),  cos(timer),  0.0),
+                    vec3(        0.0,         0.0,  1.0)
+                );
+                gl_Position = FUSEE_P *vec4(rotation * position.xyz, 1.0);
+                texcoord = position.xy * vec2(0.5) + vec2(0.5);
+                fade_factor = sin(timer) * 0.5 + 0.5;*/
+
+
+
+                vec4 vPos = FUSEE_MV * vec4(fuVertex, 1.0);//umwandlung in Kamerakoordinaten
+               
+                // Offset rotieren um fuNormal.x
+                vec2 offset = fuUV;
+                offset.x  = fuUV.x*cos(fuNormal.x) - fuUV.y*sin(fuNormal.x);
+                offset.y =  fuUV.y*cos(fuNormal.x) + fuUV.x*sin(fuNormal.x);
+                vPos = vPos + 100*vec4(offset, 0, 1.0);   //Offset  aus Partikelzentrum in Partikel-Eckpunkt          
+                gl_Position = FUSEE_P * vPos; //Perspektive-Projektion
+                vNormal = mat3(FUSEE_ITMV[0].xyz, FUSEE_ITMV[1].xyz, FUSEE_ITMV[2].xyz) * fuNormal;
+                vNormal = vec3(0, 0, 1);
+                vUV.x = (fuUV.x == 0) ? 0 : 1;
+                vUV.y = (fuUV.y == 0) ? 0 : 1;
+
+                vTransparency = fuNormal.y;
+            }";
+
+        public string PsSimpleTexture = @"
+            /* Copies incoming fragment color without change. */
+            #ifdef GL_ES
+                precision highp float;
+            #endif
+
+            // The parameter required for the texturing process
+            uniform sampler2D texture1;
+            uniform vec4 vColor;
+            varying vec3 vNormal;
+            varying float vTransparency;
+
+            // The parameter holding the UV-Coordinates of the texture
+            varying vec2 vUV;
+
+            void main()
+            {    
+              // The most basic texturing function, expecting the above mentioned parameters  
+              // max(dot(vec3(0,0,1),normalize(vNormal)), 0.1) 
+             vec4 AlphaColor = vec4(1.0, 1.0, 1.0, vTransparency);
+             gl_FragColor = texture2D(texture1, vUV)*AlphaColor;        
+            }";
+
+        #endregion
         public Mesh _particleMesh = new Mesh();
 
         public Mesh ParticleMesh
@@ -25,14 +111,7 @@ namespace Fusee.Engine
             get { return _particleMesh; }
         }
 
-        private int _nStartParticles;
-        // ... Rules for the particles system, e.g.
-        // Direction/Speed vector of emission
-        // Speed damping / Direction variation of particels over time
-        // Initial rotation of particles
-        // rotation damping over time
-
-        private readonly List<ParticleData> _particleList = new List<ParticleData>();
+        private List<ParticleData> _particleList = new List<ParticleData>();
         private ParticleData _particle;
         private static Random _rnd;
         private static double _randVelX;
@@ -41,32 +120,31 @@ namespace Fusee.Engine
         private static double _randPosX;
         private static double _randPosY;
         private static double _randPosZ;
+        private static double _randRot;
+        private int customCount;
+        private int customLifeMin;
+        private int customLifeMax;
+        private float customMinSize;
+        private float customMaxSize;
+        private double customRandPosX;
+        private double customRandPosY;
+        private double customRandPosZ;
+        private double customRandVelX;
+        private double customRandVelY;
+        private double customRandVelZ;
+        private float customGravityX;
+        private float customGravityY;
+        private float customGravityZ;
 
-        private readonly int customCount;
-        private readonly int customLifeMin;
-        private readonly int customLifeMax;
-        private readonly float customSize;
-        private readonly double customRandPosX;
-        private readonly double customRandPosY;
-        private readonly double customRandPosZ;
-        private readonly double customRandVelX;
-        private readonly double customRandVelY;
-        private readonly double customRandVelZ;
-        private readonly float customGravityX;
-        private readonly float customGravityY;
-        private readonly float customGravityZ;
-        public float Al = 0.2f;
-
-        //particelcount,Size,Life,randVelX,randVelY,randVelZ,gravityX, gravityY, gravityZ,
-        public ParticleEmitter(int myCount, int myLifeMin, int myLifeMax, float mySize, float myRandPosX,
-            float myRandPosY, float myRandPosZ, double myRandVelX, double myRandVelY, double myRandVelZ,
-            float myGravityX, float myGravityY, float myGravityZ)
+        //particelcount,minLife, maxLife,minSize, maxSize,randPosX,randPosY,randPosY,randVelX,randVelY,randVelZ,gravityX, gravityY, gravityZ,
+        public ParticleEmitter(int myCount, int myLifeMin, int myLifeMax, float myMinSize, float myMaxSize, float myRandPosX, float myRandPosY, float myRandPosZ, double myRandVelX, double myRandVelY, double myRandVelZ, float myGravityX, float myGravityY, float myGravityZ)
         {
             _rnd = new Random();
             customCount = myCount;
             customLifeMin = myLifeMin;
             customLifeMax = myLifeMax;
-            customSize = mySize;
+            customMinSize = myMinSize;
+            customMaxSize = myMaxSize;
             customRandPosX = myRandPosX;
             customRandPosY = myRandPosY;
             customRandPosZ = myRandPosZ;
@@ -96,12 +174,16 @@ namespace Fusee.Engine
                 _randPosX = GenRand(-customRandPosX, customRandPosX);
                 _randPosY = GenRand(-customRandPosY, customRandPosY);
                 _randPosZ = GenRand(-customRandPosZ, customRandPosZ);
+                _randRot = GenRand(0.0, 1.3);
                 _particle = new ParticleData();
-                _particle.Position = new float3((float) _randPosX, (float) _randPosY, (float) _randPosZ);
-                _particle.Velocity = new float3((float) _randVelX, (float) _randVelY, (float) _randVelZ);
+                _particle.Position = new float3((float)_randPosX, (float)_randPosY, (float)_randPosZ);
+                _particle.Velocity = new float3((float)_randVelX, (float)_randVelY, (float)_randVelZ);
                 _particle.Gravity = new float3(customGravityX, customGravityY, customGravityZ);
                 _particle.Life = GenIntRand(customLifeMin, customLifeMax);
-                _particle.Size = customSize;
+                _particle.maxSize = customMaxSize;
+                _particle.minSize = customMinSize;
+                _particle.Rotation = (float)_randRot;
+                _particle.Transparency = 0.4f;
                 _particleList.Add(_particle);
             }
 
@@ -110,7 +192,7 @@ namespace Fusee.Engine
             {
                 ParticleData t = _particleList[k];
                 float3 currentPos = t.Position;
-                float currentSize = t.Size;
+                float currentSize = t.minSize;
 
 
                 if (t.Life > 0)
@@ -125,10 +207,10 @@ namespace Fusee.Engine
                     uVs[k*4 + 2] = new float2(0, currentSize);
                     uVs[k*4 + 3] = new float2(0, 0);
 
-                    normals[k*4 + 0] = new float3(0, 0, 1);
-                    normals[k*4 + 1] = new float3(0, 0, 1);
-                    normals[k*4 + 2] = new float3(0, 0, 1);
-                    normals[k*4 + 3] = new float3(0, 0, 1);
+                    normals[k * 4 + 0] = new float3(t.Rotation, t.Transparency, 1);
+                    normals[k * 4 + 1] = new float3(t.Rotation, t.Transparency, 1);
+                    normals[k * 4 + 2] = new float3(t.Rotation, t.Transparency, 1);
+                    normals[k * 4 + 3] = new float3(t.Rotation, t.Transparency, 1);
 
                     triangles[k*6 + 0] = (ushort) (k*4 + 0);
                     triangles[k*6 + 1] = (ushort) (k*4 + 1);
@@ -148,19 +230,21 @@ namespace Fusee.Engine
             for (int i = 0; i < _particleList.Count; i++)
             {
                 ParticleData _changeParticle = _particleList[i];
-                _changeParticle.Position += (float) deltaTime*_changeParticle.Velocity;
+                _changeParticle.Position += (float)deltaTime * _changeParticle.Velocity;
                 _changeParticle.Velocity -= _changeParticle.Gravity;
                 // _changeParticle.Position *= float4x4.CreateRotationZ(0.01f);
                 //_changeParticle.Velocity *= float4x4.CreateRotationZ(360.0f);
+                //Rotation
+                _changeParticle.Rotation += 0.01f;
+
+                //Transparency
+                //_changeParticle.Transparency -= _changeParticle.Transparency/_changeParticle.Life;
 
                 //Skalierung
-                /*if (_changeParticle.Size >= 0.0f)
+                if (_changeParticle.minSize <= _changeParticle.maxSize)
                 {
-                    _changeParticle.Size -= 0.001f;
-                }*/
-
-                //Rotation
-                //_changeParticle.Size *= 0.001f;
+                    _changeParticle.minSize += _changeParticle.maxSize / _changeParticle.Life;
+                }
 
                 if (_changeParticle.Life != 0)
                 {
