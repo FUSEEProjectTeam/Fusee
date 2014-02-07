@@ -95,7 +95,7 @@
     <Reference Include="System" />
     <Reference Include="Test, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\Precompile\Release\CoreOnly\Test.dll</HintPath>
+      <HintPath>..\..\..\..\ProtoBufTest\Test.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
