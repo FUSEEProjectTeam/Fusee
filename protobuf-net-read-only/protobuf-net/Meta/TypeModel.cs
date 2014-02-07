@@ -1365,6 +1365,19 @@ namespace ProtoBuf.Meta
             }
         }
 
+        public static int GetKeyImpD(Type[] types, Type _type)
+        {
+            int answer = -1;
+            for (int i = 0; i < types.Length; i++)
+            {
+                if (types[i] == _type)
+                {
+                    answer = i;
+                    break;
+                }
+            }
+            return answer;
+        }
         /// <summary>
         /// Indicates that the given type was not expected, and cannot be processed.
         /// </summary>

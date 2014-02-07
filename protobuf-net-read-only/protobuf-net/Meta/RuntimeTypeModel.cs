@@ -1323,6 +1323,7 @@ namespace ProtoBuf.Meta
         {
 
             il = Override(type, "GetKeyImpl");
+            
             Compiler.CompilerContext ctx = new Compiler.CompilerContext(il, false, false, methodPairs, this, ilVersion, assemblyName, MapType(typeof(System.Type), true));
             
             if (types.Count <= KnownTypes_ArrayCutoff)
@@ -1353,11 +1354,71 @@ namespace ProtoBuf.Meta
             {
                 case KnownTypes_Array:
                     {
-                        il.Emit(OpCodes.Ldsfld, knownTypes);
-                        il.Emit(OpCodes.Ldarg_1);
-                        // note that Array.IndexOf is not supported under CF
-                        il.EmitCall(OpCodes.Callvirt, MapType(typeof(IList)).GetMethod(
-                            "IndexOf", new Type[] { MapType(typeof(object)) }), null);
+
+                        MethodInfo typeEqualsOperator = MapType(typeof(System.Type), true).GetMethod("op_Equality", BindingFlags.Static | BindingFlags.Public);
+                        // Preparing locals
+                        var answer = il.DeclareLocal(MapType(typeof(int)));
+                        var a = il.DeclareLocal(MapType(typeof(int)));
+
+                        // Preparing labels
+                        var loopCondition = il.DefineLabel();
+                        var loopIterator = il.DefineLabel();
+                        var returnLabel = il.DefineLabel();
+                        var loopBody = il.DefineLabel();
+
+                        // Writing body
+
+                        // answer = -1
+                        il.Emit(OpCodes.Ldc_I4_M1);
+                        il.Emit(OpCodes.Stloc, answer);
+
+                        // i = 0
+                        il.Emit(OpCodes.Ldc_I4_0);
+                        il.Emit(OpCodes.Stloc, a);
+
+                        // jump to loop condition
+                        il.Emit(OpCodes.Br_S, loopCondition);
+
+                        // begin loop body
+                        il.MarkLabel(loopBody);
+
+                        // if (obj0 != knownTypes[i]) continue
+                        //il.Emit(OpCodes.Ldarg_0); // omit if 'knownTypes' is static
+                        il.Emit(OpCodes.Ldsfld, knownTypes); // use 'Ldsfld' if 'knownTypes' is static
+                        il.Emit(OpCodes.Ldloc, a);
+                        il.Emit(OpCodes.Ldelem_Ref);
+                        il.Emit(OpCodes.Ldarg_1); // use 'Ldarg_0' if 'knownTypes' is static
+                        il.Emit(OpCodes.Call, typeEqualsOperator);
+                        il.Emit(OpCodes.Brfalse_S, loopIterator);
+
+                        // answer = i; jump to return
+                        il.Emit(OpCodes.Ldloc, a);
+                        il.Emit(OpCodes.Stloc, answer);
+                        il.Emit(OpCodes.Br_S, returnLabel);
+
+                        // begin loop iterator
+                        il.MarkLabel(loopIterator);
+
+                        // i = i + 1
+                        il.Emit(OpCodes.Ldloc, a);
+                        il.Emit(OpCodes.Ldc_I4_1);
+                        il.Emit(OpCodes.Add);
+                        il.Emit(OpCodes.Stloc, a);
+
+                        // begin loop condition
+                        il.MarkLabel(loopCondition);
+
+                        // if (i < knownTypes.Length) jump to loop body
+                        il.Emit(OpCodes.Ldloc, a);
+                        //il.Emit(OpCodes.Ldarg_0); // omit if 'knownTypes' is static
+                        il.Emit(OpCodes.Ldsfld, knownTypes); // use 'Ldsfld' if 'knownTypes' is static
+                        il.Emit(OpCodes.Ldlen);
+                        il.Emit(OpCodes.Conv_I4);
+                        il.Emit(OpCodes.Blt_S, loopBody);
+
+                        // return answer
+                        il.MarkLabel(returnLabel);
+                        il.Emit(OpCodes.Ldloc, answer);
                         if (hasInheritance)
                         {
                             il.DeclareLocal(MapType(typeof(int))); // loc-0
@@ -1466,6 +1527,19 @@ namespace ProtoBuf.Meta
             }
         }
 
+        public static int GetKeyImpD(Type[] types, Type _type)
+        {
+            int answer = -1;
+            for(int i=0; i<types.Length; i++)
+            {
+                if(types[i] == _type)
+                {
+                    answer = i;
+                    break;
+                }
+            }
+            return answer;
+        }
         private void WriteSerializers(CompilerOptions options, string assemblyName, TypeBuilder type, out int index, out bool hasInheritance, out SerializerPair[] methodPairs, out Compiler.CompilerContext.ILVersion ilVersion)
         {
             Compiler.CompilerContext ctx;
