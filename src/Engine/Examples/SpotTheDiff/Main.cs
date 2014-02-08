@@ -3,6 +3,11 @@ using Fusee.Math;
 
 namespace Examples.SpotTheDiff
 {
+    /// <summary>
+    ///     This is part of a tutorial about FUSEE's GUI system:
+    ///     https://github.com/FUSEEProjectTeam/Fusee/wiki/HowTo:-Graphical-User-Interface-(2D-Games-in-Fusee)
+    /// </summary>
+    [FuseeApplication(Name = "SpotTheDiff", Description = "Simple 2D game to showcase FUSEE's GUI system.")]
     public class SpotTheDiff : RenderCanvas
     {
         private GUIButton[] _guiBDiffs;

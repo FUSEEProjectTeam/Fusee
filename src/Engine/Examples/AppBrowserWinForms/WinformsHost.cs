@@ -16,15 +16,21 @@ namespace Examples.WinFormsFusee
     internal class WinformsHost : RenderCanvasWindowImp, IInputImp
     {
         private bool _disposed;
+
         private Control _form;
+        private readonly MainWindow _parent;
+
         private int _mouseWheelPos;
         private bool _initialized;
 
-        public WinformsHost(Control form) : base(form.Handle, form.Width, form.Height)
+        public WinformsHost(Control form, MainWindow parent)
+            : base(form.Handle, form.Width, form.Height)
         {
             if (form == null) throw new ArgumentNullException("form");
 
             _form = form;
+            _parent = parent;
+
             _mouseWheelPos = 0;
 
             form.MouseDown += delegate(object sender, System.Windows.Forms.MouseEventArgs args)
@@ -136,6 +142,26 @@ namespace Examples.WinFormsFusee
         }
 
 
+        public override int Width
+        {
+            get { return _width; }
+            set
+            {
+                _width = value + 200;
+                _parent.SetSize(_width, _height);
+            }
+        }
+
+        public override int Height
+        {
+            get { return _height; }
+            set
+            {
+                _height = value;
+                _parent.SetSize(_width, _height);
+            }
+        }
+
         public void FrameTick(double time)
         {
             // ignore - we create our own timer.
@@ -181,7 +207,7 @@ namespace Examples.WinFormsFusee
             return result;
         }
 
-        private static Fusee.Engine.Point XLatePoint(System.Drawing.Point point)
+        private static Point XLatePoint(System.Drawing.Point point)
         {
             return new Point {x = point.X, y = point.Y};
         }
@@ -189,12 +215,12 @@ namespace Examples.WinFormsFusee
         [StructLayout(LayoutKind.Sequential)]
         private struct Message
         {
-            public readonly IntPtr hWnd;
-            public readonly int msg;
-            public readonly IntPtr wParam;
-            public readonly IntPtr lParam;
-            public readonly uint time;
-            public readonly Point p;
+            private readonly IntPtr hWnd;
+            private readonly int msg;
+            private readonly IntPtr wParam;
+            private readonly IntPtr lParam;
+            private readonly uint time;
+            private readonly Point p;
         }
 
         [return: MarshalAs(UnmanagedType.Bool)]

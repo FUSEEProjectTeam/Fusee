@@ -38,10 +38,13 @@ namespace Fusee.Engine
         /// The width.
         /// </value>
         /// <exception cref="System.NotImplementedException">Cannot (yet) set width on RenderContextWindowImp</exception>
-        public int Width
+        public virtual int Width
         {
             get { return _width; }
-            set { throw new NotImplementedException("Cannot (yet) set width on RenderContextWindowImp");}
+            set
+            {
+                throw new NotImplementedException("Cannot (yet) set width on RenderContextWindowImp");
+            }
         }
         /// <summary>
         /// Gets or sets the height.
@@ -50,10 +53,13 @@ namespace Fusee.Engine
         /// The height.
         /// </value>
         /// <exception cref="System.NotImplementedException">Cannot (yet) set height on RenderContextWindowImp</exception>
-        public int Height        
+        public virtual int Height        
         {
             get { return _height; }
-            set { throw new NotImplementedException("Cannot (yet) set height on RenderContextWindowImp");}
+            set
+            {
+                throw new NotImplementedException("Cannot (yet) set height on RenderContextWindowImp");
+            }
         }
 
         /// <summary>
