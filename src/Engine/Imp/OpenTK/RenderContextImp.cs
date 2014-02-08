@@ -191,6 +191,12 @@ namespace Fusee.Engine
 
         #region Text related Members
 
+        /// <summary>
+        /// Loads a font file (*.ttf) and processes it with the given font size.
+        /// </summary>
+        /// <param name="filename">The filename.</param>
+        /// <param name="size">The size.</param>
+        /// <returns>An <see cref="IFont"/> containing all necessary information for further processing.</returns>
         public IFont LoadFont(string filename, uint size)
         {
             var texAtlas = new Font
@@ -312,6 +318,14 @@ namespace Fusee.Engine
             return texAtlas;
         }
 
+        /// <summary>
+        /// Fixes the kerning of a text (if possible).
+        /// </summary>
+        /// <param name="font">The <see cref="IFont"/> containing information about the font.</param>
+        /// <param name="vertices">The vertices.</param>
+        /// <param name="text">The text.</param>
+        /// <param name="scaleX">The scale x (OpenGL scaling factor).</param>
+        /// <returns>The fixed vertices as an array of <see cref="float3"/>.</returns>
         public float3[] FixTextKerning(IFont font, float3[] vertices, string text, float scaleX)
         {
             var texAtlas = ((Font) font);
