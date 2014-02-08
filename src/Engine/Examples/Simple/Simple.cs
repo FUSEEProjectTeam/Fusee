@@ -36,7 +36,7 @@ namespace Examples.Simple
             _meshFace = MeshReader.LoadMesh(@"Assets/Face.obj.model");
 
             _spColor = MoreShaders.GetDiffuseColorShader(RC);
-            _spTexture = MoreShaders.GetDiffuseTextureShader(RC);
+            _spTexture = MoreShaders.GetTextureShader(RC);
 
             _colorParam = _spColor.GetShaderParam("color");
             _textureParam = _spTexture.GetShaderParam("texture1");
@@ -44,7 +44,6 @@ namespace Examples.Simple
             // load texture
             var imgData = RC.LoadImage("Assets/world_map.jpg");
             _iTex = RC.CreateTexture(imgData);
-
         }
 
         // is called once a frame
@@ -86,7 +85,6 @@ namespace Examples.Simple
             var mtxCam = float4x4.LookAt(0, 200, 500, 0, 0, 0, 0, 1, 0);
 
             // first mesh
-            //RC.ModelView = float4x4.CreateTranslation(0, -50, 0)*mtxRot*float4x4.CreateTranslation(-150, 0, 0)*mtxCam;
             RC.ModelView = mtxRot * float4x4.CreateTranslation(-150, 0, 0) * mtxCam;
 
             RC.SetShader(_spColor);
