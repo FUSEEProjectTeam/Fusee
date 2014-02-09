@@ -1204,7 +1204,7 @@ namespace Fusee.Math
             /* calculate determinant */
             var det = mat.M11*m11 + mat.M12*m12 + mat.M13*m13 + mat.M14*m14;
 
-            if (det > MathHelper.EpsilonFloat || det < MathHelper.EpsilonFloat)
+            if (det > MathHelper.EpsilonFloat || det < -MathHelper.EpsilonFloat)
             {
                 det = 1/det;
 
