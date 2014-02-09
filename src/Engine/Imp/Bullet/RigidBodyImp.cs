@@ -427,9 +427,16 @@ namespace Fusee.Engine
         }
 
 
-        public void OnCollision()
+        /// <summary>
+        /// OnCollision is called once per frame for every rigidbody theis rigidbody is colliding.
+        /// Send ffrom here Massage to the Rigidbody.OnCollision(RigidBodyImp other) by an Events
+        /// </summary>
+        /// <param name="other">the other Rigidbody that is collided </param>
+        public virtual void OnCollision(IRigidBodyImp other)
         {
-            Debug.WriteLine("Collision");
+            //TODO: Event to the RigidBody.cs class 
+            var otherRb = (RigidBodyImp)other;
+            otherRb.ApplyTorqueImpulse = new float3(10,10,10);
         }
 
 

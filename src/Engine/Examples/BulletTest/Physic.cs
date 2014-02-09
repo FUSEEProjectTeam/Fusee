@@ -9,10 +9,10 @@ using Microsoft.Win32;
 
 namespace Examples.BulletTest
 {
-    class Physic
+    internal class Physic
     {
         private DynamicWorld _world;
-        
+
         public DynamicWorld World
         {
             get { return _world; }
@@ -23,21 +23,24 @@ namespace Examples.BulletTest
         internal SphereShape MySphereCollider;
         internal ConvexHullShape MyConvHull;
         internal ConvexHullShape Hull;
-        
+
         internal Mesh BoxMesh, TeaPotMesh, PlatonicMesh;
 
         internal RigidBody _PRigidBody;
+
         public RigidBody PRbBody
         {
             get { return _PRigidBody; }
             set { _PRigidBody = value; }
         }
-            
+
 
         public Physic()
         {
             Debug.WriteLine("Physic: Constructor");
-            InitScene1();
+            //InitCollisionCallback();
+            //InitScene1();
+            InitDfo6Constraint();
         }
 
 
@@ -46,7 +49,7 @@ namespace Examples.BulletTest
             _world = new DynamicWorld();
             MyBoxCollider = _world.AddBoxShape(2);
             MySphereCollider = _world.AddSphereShape(2);
-            
+
             BoxMesh = MeshReader.LoadMesh(@"Assets/Cube.obj.model");
             TeaPotMesh = MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
             PlatonicMesh = MeshReader.LoadMesh(@"Assets/Platonic.obj.model");
@@ -63,6 +66,19 @@ namespace Examples.BulletTest
             };
             Hull = _world.AddConvexHullShape(verts);*/
         }
+
+        public void InitCollisionCallback()
+        {
+            InitWorld();
+            GroundPlane(float3.Zero, float3.Zero);
+
+            var box1 = _world.AddRigidBody(1, new float3(0,20,0), float3.Zero, MyBoxCollider);
+            var box2 = _world.AddRigidBody(1, new float3(20, 20, 0), float3.Zero, MyBoxCollider);
+            var box3 = _world.AddRigidBody(1, new float3(10, 50, 0), float3.Zero, MyBoxCollider);
+        }
+
+
+
 
         public void InitScene1()
         {
@@ -149,8 +165,8 @@ namespace Examples.BulletTest
                 {
                     for (int j = -2; j < 3; j++)
                     {
-                        var pos = new float3((4 * h) , 80 + (k * 4), 4 * j);
-
+                        var pos = new float3((10 * h) , 80 + (k * 10), 10 * j);
+                        
                         var cube = _world.AddRigidBody(1, pos, float3.Zero, MyBoxCollider);
                         //cube.Bounciness = 1f;
                         cube.Friction = 1f;
@@ -262,13 +278,15 @@ namespace Examples.BulletTest
 
         public void InitDfo6Constraint()
         {
-            var mesh = MeshReader.LoadMesh(@"Assets/Cube.obj.model");
-            var rbA = _world.AddRigidBody(0, new float3(0, 150, 0), float3.Zero, MyBoxCollider);
-            //rbA.LinearFactor = new float3(0, 0, 0);
-            //rbA.AngularFactor = new float3(0, 0, 0);
-
-            var rbB = _world.AddRigidBody(1, new float3(0, 300, 0), float3.Zero, MyBoxCollider);
-            _world.AddGeneric6DofConstraint(rbA, rbB, rbA.WorldTransform, rbB.WorldTransform, false);
+            InitWorld();
+            GroundPlane(new float3(0, 0, 0), float3.Zero);
+            var rbB = _world.AddRigidBody(1, new float3(0, 25, 0), float3.Zero, MyBoxCollider);
+            var framInB = float4x4.CreateTranslation(new float3(0,-10,0));
+            var dof6 = _world.AddGeneric6DofConstraint( rbB,  framInB, false);
+            dof6.LinearLowerLimit = new float3(0,0,0);
+            dof6.LinearUpperLimit = new float3(0,0,0);
+            dof6.AngularLowerLimit = new float3(0,0,0);
+            dof6.AngularUpperLimit = new float3(0,0,0);
         }
 
         public void CompoundShape()
@@ -317,16 +335,6 @@ namespace Examples.BulletTest
            // var rbE = _world.AddRigidBody(1, new float3(30, 300, 0), rotA, MyBoxCollider);
         }
 
-        public void MurmelBahn()
-        {
-            var box = _world.AddBoxShape(70, 25, 25);
-            var rot = new float3(0.0f, 0.0f, (float)Math.PI / 4);
-
-            _world.AddRigidBody(0, new float3(50, 150, 0), rot, box);
-            _world.AddRigidBody(0, new float3(-50, 50, 0), float3.Zero, MyBoxCollider);
-            var sphere = _world.AddRigidBody(1, new float3(0, 300, 0), float3.Zero, MyBoxCollider);
-            //sphere.Bounciness = 1;
-        }
 
         public void Shoot(float3 camPos, float3 target)
         {

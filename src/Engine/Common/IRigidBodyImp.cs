@@ -41,6 +41,6 @@ namespace Fusee.Engine
         
         object UserObject { get; set; }
 
-        void OnCollision();
+        void OnCollision(IRigidBodyImp other);
     }
 }

@@ -188,6 +188,8 @@ namespace Examples.BulletTest
         {
             var rb1 = _physic.World.GetRigidBody(_physic.World.NumberRigidBodies() - 3);
             var rb2 = _physic.World.GetRigidBody(_physic.World.NumberRigidBodies() - 1);
+
+            
             // is called once a frame
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
             _physic.World.StepSimulation((float) Time.Instance.DeltaTime, Time.Instance.FramePerSecondSmooth);
@@ -253,14 +255,15 @@ namespace Examples.BulletTest
             }
 
             if (Input.Instance.IsKeyDown(KeyCodes.Up))
-                _physic.World.GetRigidBody(_physic.World.NumberRigidBodies() - 1).ApplyCentralImpulse = new float3(0, 10, 0);
+                rb2.ApplyCentralImpulse = new float3(0, 10, 0);
+               // _physic.World.GetRigidBody(_physic.World.NumberRigidBodies() - 1).ApplyCentralImpulse = new float3(0, 10, 0);
 
             if (Input.Instance.IsKeyDown(KeyCodes.Down))
                 _physic.World.GetRigidBody(_physic.World.NumberRigidBodies()-1).ApplyCentralImpulse = new float3(0,-10,0);
                     // _angleVert += RotationSpeed * (float)Time.Instance.DeltaTime;
            
             var mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
-            var mtxCam = mtxRot * float4x4.LookAt(0, 20, 70, 0, 0, 0, 0, 1, 0);
+            var mtxCam = mtxRot * float4x4.LookAt(0, 20, 150, 0, 0, 0, 0, 1, 0);
 
 
             if (Input.Instance.IsKey(KeyCodes.Space))

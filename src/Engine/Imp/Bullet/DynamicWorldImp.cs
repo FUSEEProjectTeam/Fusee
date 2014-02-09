@@ -46,40 +46,49 @@ namespace Fusee.Engine
        
             BtWorld.PerformDiscreteCollisionDetection();
             GImpactCollisionAlgorithm.RegisterAlgorithm(BtDispatcher);
-           // BtWorld.SetInternalTickCallback(MyTickCallBack);
+            BtWorld.SetInternalTickCallback(MyTickCallBack);
             //BtWorld.SetInternalTickCallback(TickTack);
         }
 
         private void MyTickCallBack(DynamicsWorld world, float timeStep)
         {
-            Debug.WriteLine("MyTickCallBack");
+            //Debug.WriteLine("MyTickCallBack");
             int numManifolds = BtWorld.Dispatcher.NumManifolds;
+            RigidBodyImp myRb;
             //Debug.WriteLine("numManifolds: " + numManifolds);
             for (int i = 0; i < numManifolds; i++)
             {
                 PersistentManifold contactManifold = BtWorld.Dispatcher.GetManifoldByIndexInternal(i);
-                CollisionObject obA = (CollisionObject) contactManifold.Body0;
-                CollisionObject obB = (CollisionObject) contactManifold.Body1;
 
                 int numContacts = contactManifold.NumContacts;
-                Debug.WriteLine(numContacts);
-                for (int j = 0; j < numContacts; j++)
+                if (numContacts > 0)
                 {
-                    ManifoldPoint pt = contactManifold.GetContactPoint(j);
-                    if (pt.Distance < 0.0f)
+                    CollisionObject obA = (CollisionObject) contactManifold.Body0;
+                    CollisionObject obB = (CollisionObject) contactManifold.Body1;
+
+                   // Debug.WriteLine(numContacts);
+                    var pnA = obA.UserObject;
+
+                    for (int j = 0; j < numContacts; j++)
                     {
-                        Vector3 ptA = pt.PositionWorldOnA;
-                        Vector3 ptB = pt.PositionWorldOnB;
-                        Vector3 normalOnB = pt.NormalWorldOnB;
-                        
-                        //Debug.WriteLine("ptA: " + ptA + "ptB: " + ptB);
+                        ManifoldPoint pt = contactManifold.GetContactPoint(j);
+                        if (pt.Distance < 0.0f)
+                        {
+                            Vector3 ptA = pt.PositionWorldOnA;
+                            Vector3 ptB = pt.PositionWorldOnB;
+                            Vector3 normalOnB = pt.NormalWorldOnB;
 
-                        var rbA = (RigidBody) obA;
-
+                            //Debug.WriteLine("distance is smaller");
+                            //Debug.WriteLine("hit");
+                            var rbA = (RigidBody) obA;
+                            var btRigidBodyA = (RigidBody)obA;
+                            var rbB = (RigidBody)obB;
+                            var btRigidBodyB = (RigidBody)obB;
+                            myRb = (RigidBodyImp)btRigidBodyA.UserObject;
+                            myRb.OnCollision(myRb);
+                        }
                     }
                 }
-
-                
             }
         }
 
@@ -283,11 +292,11 @@ namespace Fusee.Engine
             return retval;
         }
 
-        //TODO: What about inheritance problems -> should return any constraint type
+        /*//TODO: What about inheritance problems -> should return any constraint type
         public IPoint2PointConstraintImp GetConstraint(int i)
         {
             return (Point2PointConstraintImp)BtWorld.GetConstraint(0).UserObject;
-        }
+        }*/
 
 
         //HingeConstraint
@@ -470,8 +479,12 @@ namespace Fusee.Engine
             var rigidBodyBImp = (RigidBodyImp)rigidBodyB;
             var btRigidBodyB = rigidBodyAImp._rbi;
 
-            var btGeneric6DofConstraint = new Generic6DofConstraint(btRigidBodyA, btRigidBodyB, Translater.Float4X4ToBtMatrix(frameInA), Translater.Float4X4ToBtMatrix(frameInB), useReferenceFrameA);
+            Matrix matrixA = Translater.Float4X4ToBtMatrix(frameInA);
+            Matrix matrixB = Translater.Float4X4ToBtMatrix(frameInB);
+
+            var btGeneric6DofConstraint = new Generic6DofConstraint(btRigidBodyA, btRigidBodyB, matrixA, matrixB, useReferenceFrameA);
             BtWorld.AddConstraint(btGeneric6DofConstraint);
+
 
             var retval = new Generic6DofConstraintImp();
             retval._g6dofci = btGeneric6DofConstraint;

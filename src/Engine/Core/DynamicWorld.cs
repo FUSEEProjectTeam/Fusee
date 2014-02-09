@@ -140,12 +140,12 @@ namespace Fusee.Engine
             ip2pci.UserObject = retval;
             return retval;
         }
-        public Point2PointConstraint GetConstraint(int i)
+      /*  public Point2PointConstraint GetConstraint(int i)
         {
             //Point2PointConstraint tp2pci = _dwi.GetConstraint(i).UserObject;
             var retval = (Point2PointConstraint)_dwi.GetConstraint(i).UserObject;
             return retval;
-        }
+        }*/
 
         //HingeConstraint
         public HingeConstraint AddHingeConstraint(RigidBody rigidBodyA, float4x4 frameInA, bool useReferenceFrameA = false)
