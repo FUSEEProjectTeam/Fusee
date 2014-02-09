@@ -2,6 +2,11 @@
 
 namespace Fusee.Engine
 {
+    /// <summary>
+    /// Event that gets triggered on mouse movements and mouse actions.
+    /// </summary>
+    /// <param name="sender">The sender.</param>
+    /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
     public delegate void MouseEventHandler(object sender, MouseEventArgs e);
 
     /// <summary>

@@ -3,6 +3,9 @@ using Fusee.Math;
 
 namespace Fusee.Engine
 {
+    /// <summary>
+    /// This abstact class allows for creating custom <see cref="GUIElement"/>s.
+    /// </summary>
     public abstract class GUIElement
     {
         #region Fields
@@ -135,12 +138,24 @@ namespace Fusee.Engine
 
         #region Public Fields
 
+        /// <summary>
+        ///     Gets or sets the color of this element's text.
+        /// </summary>
+        /// <value>
+        ///     The color of the text.
+        /// </value>
         public float4 TextColor
         {
             get { return _textColor; }
             set { _textColor = value; }
         }
 
+        /// <summary>
+        ///     Gets or sets this element's text.
+        /// </summary>
+        /// <value>
+        ///     The text.
+        /// </value>
         public String Text
         {
             get { return _text; }
@@ -151,6 +166,12 @@ namespace Fusee.Engine
             }
         }
 
+        /// <summary>
+        ///     Gets or sets this element's x-coordinate.
+        /// </summary>
+        /// <value>
+        ///     The x-coordinate.
+        /// </value>
         public int PosX
         {
             get { return _posX; }
@@ -161,6 +182,12 @@ namespace Fusee.Engine
             }
         }
 
+        /// <summary>
+        ///     Gets or sets this element's y-coordinate.
+        /// </summary>
+        /// <value>
+        ///     The y-coordinate.
+        /// </value>
         public int PosY
         {
             get { return _posY; }
@@ -171,9 +198,32 @@ namespace Fusee.Engine
             }
         }
 
+        /// <summary>
+        ///     Gets or sets the tag.
+        /// </summary>
+        /// <value>
+        ///     The tag.
+        /// </value>
+        /// <remarks>
+        ///     The tag can be used to store information about other GUIElements
+        ///     or any other kind of information like numbers or strings.
+        /// </remarks>
         public object Tag { get; set; }
 
+        /// <summary>
+        ///     Gets the automatically generated GUI mesh.
+        /// </summary>
+        /// <value>
+        ///     The GUI mesh.
+        /// </value>
         public Mesh GUIMesh { get; protected set; }
+
+        /// <summary>
+        ///     Gets the automatically generated text mesh.
+        /// </summary>
+        /// <value>
+        ///     The text mesh.
+        /// </value>
         public Mesh TextMesh { get; protected set; }
 
         #endregion
@@ -432,6 +482,13 @@ namespace Fusee.Engine
             }
         }
 
+        /// <summary>
+        ///     Refreshes this element (is called when the properties of this element have been changed).
+        /// </summary>
+        /// <remarks>
+        ///     This should be called after the viewport / the windows has been resized. It's also possible to call the Refresh
+        ///     method of a <see cref="GUIHandler" /> object."
+        /// </remarks>
         public virtual void Refresh()
         {
             if (RContext != null)
@@ -447,6 +504,10 @@ namespace Fusee.Engine
             if (Dirty) Refresh();
         }
 
+        /// <summary>
+        ///     Renders this element onto a specifie <see cref="RenderContext" />.
+        /// </summary>
+        /// <param name="rc">The <see cref="RenderContext" />.</param>
         public void Render(RenderContext rc)
         {
             PreRender(rc);

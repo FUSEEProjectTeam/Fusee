@@ -2,6 +2,12 @@
 
 namespace Fusee.Engine
 {
+    /// <summary>
+    ///     The <see cref="GUIImage" /> class provides functionality for loading and displaying 2D images.
+    /// </summary>
+    /// <remarks>
+    ///     Images can be transparent *.png files, too.
+    /// </remarks>
     public sealed class GUIImage : GUIElement
     {
         #region Private Fields
@@ -30,6 +36,12 @@ namespace Fusee.Engine
 
         #region Public Fields
 
+        /// <summary>
+        ///     Gets or sets the width of the border.
+        /// </summary>
+        /// <value>
+        ///     The width of the border.
+        /// </value>
         public int BorderWidth
         {
             get { return _borderWidth; }
@@ -40,6 +52,12 @@ namespace Fusee.Engine
             }
         }
 
+        /// <summary>
+        ///     Gets or sets the color of the border.
+        /// </summary>
+        /// <value>
+        ///     The color of the border.
+        /// </value>
         public float4 BorderColor
         {
             get { return _borderColor; }
@@ -52,6 +70,19 @@ namespace Fusee.Engine
 
         #endregion
 
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="GUIImage" /> class.
+        /// </summary>
+        /// <param name="img">The path to the image.</param>
+        /// <param name="x">The x-coordinate.</param>
+        /// <param name="y">The y-coordinate.</param>
+        /// <param name="z">The z-index.</param>
+        /// <param name="width">The width.</param>
+        /// <param name="height">The height.</param>
+        /// <remarks>
+        ///     The z-index: lower values means further away. If two elements have the same z-index
+        ///     then they are rendered according to their order in the <see cref="GUIHandler" />.
+        /// </remarks>
         public GUIImage(string img, int x, int y, int z, int width, int height)
             : base("", null, x, y, z, width, height)
         {
@@ -60,6 +91,14 @@ namespace Fusee.Engine
             BorderWidth = 0;
         }
 
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="GUIImage" /> class.
+        /// </summary>
+        /// <param name="img">The path to the image.</param>
+        /// <param name="x">The x-coordinate.</param>
+        /// <param name="y">The y-coordinate.</param>
+        /// <param name="width">The width.</param>
+        /// <param name="height">The height.</param>
         public GUIImage(string img, int x, int y, int width, int height)
             : base("", null, x, y, 0, width, height)
         {
