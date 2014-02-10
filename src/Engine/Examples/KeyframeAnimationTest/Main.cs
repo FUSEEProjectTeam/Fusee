@@ -175,7 +175,7 @@ namespace Examples.KeyframeAnimationTest
             //*/
 
             myAnim.AddAnimation(_channel1, RC, "ClearColor");
-            //myAnim.AddAnimation(_channel2, Wuerfel, "transform.GlobalPosition");
+            myAnim.AddAnimation(_channel2, Wuerfel, "transform.GlobalPosition");
 
         }
 
