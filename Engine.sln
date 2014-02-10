@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2010
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Imp", "Imp", "{D8EA1B59-13BE-48B8-B197-5C26FAE7099F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenTK", "src\Engine\Imp\OpenTK\OpenTK.csproj", "{F7AD2BB5-D2B0-4697-BDDB-4CC26152A6B6}"
@@ -208,6 +208,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShaderDemo", "src\Engine\Ex
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SerialisationExample", "src\Engine\Examples\SerialisationExample\SerialisationExample.csproj", "{045A0640-AA3D-4E49-914B-399FE1646C95}"
+	ProjectSection(ProjectDependencies) = postProject
+		{32D5C521-6CC4-4DCF-BFA1-199043E938DC} = {32D5C521-6CC4-4DCF-BFA1-199043E938DC}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeyFrameAnimation", "src\Engine\Components\KeyFrameAnimation\KeyFrameAnimation.csproj", "{394FE54B-7891-4C5B-AF0E-8DCC9F2D3CBA}"
 EndProject
@@ -220,6 +223,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xirkit", "src\Engine\Xirkit\Xirkit.csproj", "{F091790C-ED62-44D2-8622-966030A98E0B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "src\Engine\Examples\Test\Test.csproj", "{839F4314-879B-49CE-ABFA-13D7058076AE}"
+	ProjectSection(ProjectDependencies) = postProject
+		{32D5C521-6CC4-4DCF-BFA1-199043E938DC} = {32D5C521-6CC4-4DCF-BFA1-199043E938DC}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebXirkit", "src\Engine\WebXirkit\WebXirkit.csproj", "{04AC1FCC-3B50-4CE0-94D5-A3FCE152572C}"
 EndProject
