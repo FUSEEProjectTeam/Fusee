@@ -1,10 +1,13 @@
-﻿namespace Fusee.Engine
+﻿using ProtoBuf;
+namespace Fusee.Engine
 {
     /// <summary>
     /// Interface for Mesh implementations. The implementation should handle typical mesh informations like: vertices, triangles, normals, colors, UV's.
     /// It is also required to implement a connection to the current Rendercontext in order to apply the Mesh for rendering.
     /// The Mesh should preferable use handles for its informations in order to communicate with a rendercontext. The handles are refering to so called BufferObjects.
     /// </summary>
+    
+    [ProtoContract]
     public interface IMeshImp
     {
         /// <summary>

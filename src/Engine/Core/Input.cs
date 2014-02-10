@@ -2,11 +2,16 @@
 
 namespace Fusee.Engine
 {
+    /// <summary>
+    /// Event that gets triggered on mouse movements and mouse actions.
+    /// </summary>
+    /// <param name="sender">The sender.</param>
+    /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
     public delegate void MouseEventHandler(object sender, MouseEventArgs e);
 
     /// <summary>
-    /// The Input class takes care of all inputs. It is accessible from everywhere inside a Fusee project.
-    /// E.g. : Input.Instance.IsButtonDown(MouseButtons.Left);
+    ///     The Input class takes care of all inputs. It is accessible from everywhere inside a Fusee project.
+    ///     E.g. : Input.Instance.IsButtonDown(MouseButtons.Left);
     /// </summary>
     public class Input
     {
@@ -21,10 +26,10 @@ namespace Fusee.Engine
             set
             {
                 _inputImp = value;
-                
+
                 _inputImp.KeyDown += KeyDown;
                 _inputImp.KeyUp += KeyUp;
-                
+
                 _inputImp.MouseButtonDown += ButtonDown;
                 _inputImp.MouseButtonUp += ButtonUp;
                 _inputImp.MouseMove += MouseMove;
@@ -54,18 +59,18 @@ namespace Fusee.Engine
         private HashSet<int> _buttonsPressed;
 
         /// <summary>
-        /// Gets or sets a value indicating whether to fix mouse at center.
+        ///     Gets or sets a value indicating whether to fix mouse at center.
         /// </summary>
         /// <value>
-        ///   <c>true</c> if the mouse is fixed at center; otherwise, <c>false</c>.
+        ///     <c>true</c> if the mouse is fixed at center; otherwise, <c>false</c>.
         /// </value>
         public bool FixMouseAtCenter { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the cursor is visible.
+        ///     Gets or sets a value indicating whether the cursor is visible.
         /// </summary>
         /// <value>
-        ///   <c>true</c> if the cursor is visible; otherwise, <c>false</c>.
+        ///     <c>true</c> if the cursor is visible; otherwise, <c>false</c>.
         /// </value>
         public bool CursorVisible
         {
@@ -93,8 +98,8 @@ namespace Fusee.Engine
             if (_keys.Contains((int) kea.KeyCode))
                 _keys.Remove((int) kea.KeyCode);
 
-            if (!_keysUp.Contains((int)kea.KeyCode))
-                _keysUp.Add((int)kea.KeyCode);
+            if (!_keysUp.Contains((int) kea.KeyCode))
+                _keysUp.Add((int) kea.KeyCode);
         }
 
         private void ButtonDown(object sender, MouseEventArgs mea)
@@ -122,11 +127,11 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// Returns the scalar value for the given axis. Typically these values are used as velocities.
+        ///     Returns the scalar value for the given axis. Typically these values are used as velocities.
         /// </summary>
         /// <param name="axis">The axis for which the value is to be returned.</param>
         /// <returns>
-        /// The current deflection of the given axis.
+        ///     The current deflection of the given axis.
         /// </returns>
         public float GetAxis(InputAxis axis)
         {
@@ -134,29 +139,29 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// Sets the mouse position.
+        ///     Sets the mouse position.
         /// </summary>
-        /// <param name="pos">A <see cref="Point"/> with x and y values.</param>
+        /// <param name="pos">A <see cref="Point" /> with x and y values.</param>
         public void SetMousePos(Point pos)
         {
             _inputImp.SetMousePos(pos);
         }
 
         /// <summary>
-        /// Gets the mouse position.
+        ///     Gets the mouse position.
         /// </summary>
-        /// <returns>A <see cref="Point"/> with x and y values.</returns>
+        /// <returns>A <see cref="Point" /> with x and y values.</returns>
         public Point GetMousePos()
         {
             return _inputImp.GetMousePos();
         }
 
         /// <summary>
-        /// Check if a given key is pressed during the current frame.
+        ///     Check if a given key is pressed during the current frame.
         /// </summary>
         /// <param name="key">The key to check.</param>
         /// <returns>
-        /// true if the key is pressed. Otherwise false.
+        ///     true if the key is pressed. Otherwise false.
         /// </returns>
         public bool IsKey(KeyCodes key)
         {
@@ -164,11 +169,11 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// Check if the user started pressing a key in the current frame.
+        ///     Check if the user started pressing a key in the current frame.
         /// </summary>
         /// <param name="key">The key to check.</param>
         /// <returns>
-        /// true if the user started pressing the key in the current frame. Otherwise false.
+        ///     true if the user started pressing the key in the current frame. Otherwise false.
         /// </returns>
         public bool IsKeyDown(KeyCodes key)
         {
@@ -176,36 +181,37 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// Check if the user stopped pressing a key in the current frames.
+        ///     Check if the user stopped pressing a key in the current frames.
         /// </summary>
         /// <param name="key">The key to check.</param>
         /// <returns>
-        /// true if the user stopped pressing the key in the current frame. Otherwise false.
+        ///     true if the user stopped pressing the key in the current frame. Otherwise false.
         /// </returns>
         public bool IsKeyUp(KeyCodes key)
         {
-            return _keysUp.Contains((int)key);
+            return _keysUp.Contains((int) key);
         }
 
         /// <summary>
-        /// Check if a given mouse button is pressed during the current frame.
+        ///     Check if a given mouse button is pressed during the current frame.
         /// </summary>
         /// <param name="button">the mousebutton to check.</param>
         /// <returns>
-        /// True if the mousebutton is pressed. Otherwise false.
+        ///     True if the mousebutton is pressed. Otherwise false.
         /// </returns>
         public bool IsButton(MouseButtons button)
         {
             return _buttonsPressed.Contains((int) button);
         }
 
+        /*
         /// <summary>
         /// Called when [button down] event is triggered. 
         /// Occurs when a Mouse button was pressed down once.
         /// </summary>
         /// <param name="button">The mousebutton.</param>
         /// <returns>True, if mousebutton was pressed down once. Otherwise false.</returns>
-        /*
+
             public bool OnButtonDown(MouseButtons button)
             {
                 // not implemented
@@ -213,13 +219,14 @@ namespace Fusee.Engine
             }
         */
 
+        /*
         /// <summary>
-        /// Called when [button up] event is triggered.
-        /// Occurs when a Mouse button was released.
+        ///     Called when [button up] event is triggered.
+        ///     Occurs when a Mouse button was released.
         /// </summary>
         /// <param name="button">The mousebutton.</param>
         /// <returns>True, if mousebutton was released. Otherwise false.</returns>
-        /*
+
         public bool OnButtonUp(MouseButtons button)
         {
             // not implemented
@@ -262,7 +269,7 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// Provides the Instance of the Input Class.
+        ///     Provides the Instance of the Input Class.
         /// </summary>
         public static Input Instance
         {

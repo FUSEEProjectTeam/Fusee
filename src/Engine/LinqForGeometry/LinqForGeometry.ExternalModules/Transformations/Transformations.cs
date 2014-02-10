@@ -1,7 +1,7 @@
 ﻿/*
 	Author: Dominik Steffen
 	E-Mail: dominik.steffen@hs-furtwangen.de, dominik.steffen@gmail.com
-	Bachlor Thesis Summer Semester 2013
+	Bachelor Thesis Summer Semester 2013
 	'Computer Science in Media'
 	Project: LinqForGeometry
 	Professors:
@@ -58,14 +58,13 @@ namespace LFG.ExternalModules.Transformations
         /// <param name="scalarX">Scalar amount for x.</param>
         /// <param name="scalarY">Scalar amount for y.</param>
         /// <param name="scalarZ">Scalar amount for z.</param>
-        /// <param name="scalarW">Scalar amount for w.</param>
         /// <param name="geo">Geometry geo. The geometry object you want to do the translations on.</param>
         /// <returns>Boolean - true if the operation was succesful, false if not.</returns>
         public static bool Scale(float scalarX, float scalarY, float scalarZ, ref Geometry geo)
         {
             try
             {
-                float4x4 transfMatrix = new float4x4(
+                var transfMatrix = new float4x4(
                     new float4(scalarX, 0f, 0f, 0f),
                     new float4(0f, scalarY, 0f, 0f),
                     new float4(0f, 0f, scalarZ, 0f),

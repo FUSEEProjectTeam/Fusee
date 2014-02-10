@@ -4,6 +4,12 @@ using Fusee.Math;
 
 namespace Examples.CubeAndTiles
 {
+    class Test
+    {
+        public int i;
+    }
+
+
     [FuseeApplication(Name = "Cube & Tiles", Description = "Shows an entire game including user input, object texturing, and sound.")]
     public class CubeAndTiles : RenderCanvas
     {
@@ -69,12 +75,19 @@ namespace Examples.CubeAndTiles
         // Init()
         public override void Init()
         {
+            Test tst = new Test();
+            if (tst == null)
+                Diagnostics.Log("tst is null");
+
+
             RC.ClearColor = new float4(0, 0, 0, 1);
             
             _shaderProgram = RC.CreateShader(Vs, Ps);
             RC.SetShader(_shaderProgram);
 
-            _stereo3D = new Stereo3D(RC, Stereo3DMode.Anaglyph, Width, Height);
+            _stereo3D = new Stereo3D(Stereo3DMode.Anaglyph, Width, Height);
+            _stereo3D.AttachToContext(RC);
+
             _exampleLevel = new Level(RC, _shaderProgram, _stereo3D);
         }
 

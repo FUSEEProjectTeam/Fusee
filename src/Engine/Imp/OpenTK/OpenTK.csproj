@@ -73,6 +73,8 @@
     <Exec Condition=" '$(OS)' != 'Windows_NT' And Exists('$(OutputPath)') " Command="rm '$(OutputPath)'Fusee.Engine.Imp.OpenTK.*" />
     <Exec Condition=" '$(OS)' == 'Windows_NT' And Exists('$(OutputPath)OpenTK.dll') " Command="del /q &quot;$(OutputPath)OpenTK.dll&quot;" />
     <Exec Condition=" '$(OS)' != 'Windows_NT' And Exists('$(OutputPath)OpenTK.dll') " Command="rm '$(OutputPath)'OpenTK.dll" />
+    <Exec Condition=" '$(OS)' == 'Windows_NT' And Exists('$(OutputPath)SharpFont.dll') " Command="del /q &quot;$(OutputPath)SharpFont.dll&quot;" />
+    <Exec Condition=" '$(OS)' != 'Windows_NT' And Exists('$(OutputPath)SharpFont.dll') " Command="rm '$(OutputPath)'SharpFont.dll" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

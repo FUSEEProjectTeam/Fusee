@@ -939,6 +939,9 @@ namespace Fusee.Engine
         /// </returns>
         public ImageData LoadImage(String filename)
         {
+            if (!File.Exists(filename))
+                throw new FileNotFoundException();
+
             return _rci.LoadImage(filename);
         }
 
@@ -956,6 +959,13 @@ namespace Fusee.Engine
 
         #region Text related Members
 
+        /// <summary>
+        /// Loads a font file (*.ttf) and processes it with the given font size.
+        /// </summary>
+        /// <param name="filename">The filename.</param>
+        /// <param name="size">The font size.</param>
+        /// <returns>An <see cref="IFont"/> containing all necessary information for further processing.</returns>
+        /// <exception cref="System.Exception">Font not found: "filename"</exception>
         public IFont LoadFont(string filename, uint size)
         {
             if (!File.Exists(filename))
@@ -964,6 +974,12 @@ namespace Fusee.Engine
             return _rci.LoadFont(filename, size);
         }
 
+        /// <summary>
+        /// Loads a system font from the system's font folder and processes it with the given font size.
+        /// </summary>
+        /// <param name="fontname">The name of a system font (the filename, e.g. "calibri").</param>
+        /// <param name="size">The font size.</param>
+        /// <returns>An <see cref="IFont"/> containing all necessary information for further processing.</returns>
         [JSExternal]
         public IFont LoadSystemFont(string fontname, uint size)
         {
@@ -973,6 +989,14 @@ namespace Fusee.Engine
             return LoadFont(pathToFont, size);
         }
 
+        /// <summary>
+        /// Fixes the kerning of a text (if possible).
+        /// </summary>
+        /// <param name="font">The <see cref="IFont"/> containing information about the font.</param>
+        /// <param name="vertices">The vertices.</param>
+        /// <param name="text">The text.</param>
+        /// <param name="scaleX">The scale x (OpenGL scaling factor).</param>
+        /// <returns>The fixed vertices as an array of <see cref="float3"/>.</returns>
         internal float3[] FixTextKerning(IFont font, float3[] vertices, string text, float scaleX)
         {
             return _rci.FixTextKerning(font, vertices, text, scaleX);

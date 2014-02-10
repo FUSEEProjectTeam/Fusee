@@ -1,27 +1,29 @@
-using System;
 using Fusee.Engine;
 using Fusee.Math;
 
 namespace Examples.SpotTheDiff
 {
+    /// <summary>
+    ///     This is part of a tutorial about FUSEE's GUI system:
+    ///     https://github.com/FUSEEProjectTeam/Fusee/wiki/HowTo:-Graphical-User-Interface-(2D-Games-in-Fusee)
+    /// </summary>
+    [FuseeApplication(Name = "SpotTheDiff", Description = "Simple 2D game to showcase FUSEE's GUI system.")]
     public class SpotTheDiff : RenderCanvas
     {
-        private GUIHandler _guiHandler;
-        
-        private GUIImage _guiImage;
-
-        private IFont _guiFont_Cabin18;
-        private IFont _guiFont_Cabin24;
-        
-        private GUIText _guiText;
-
-        private GUIButton[] _guiUDiffs;
         private GUIButton[] _guiBDiffs;
+        private IFont _guiFontCabin18;
+        private IFont _guiFontCabin24;
+        private GUIHandler _guiHandler;
+
+        private GUIImage _guiImage;
 
         private GUIPanel _guiPanel;
 
         private GUIButton _guiResetButton;
         private GUIButton _guiSolveButton;
+        private GUIText _guiText;
+
+        private GUIButton[] _guiUDiffs;
 
         public override void Init()
         {
@@ -34,14 +36,14 @@ namespace Examples.SpotTheDiff
             _guiHandler.AttachToContext(RC);
 
             // font + text
-            _guiFont_Cabin18 = RC.LoadFont("Assets/Cabin.ttf", 18);
-            _guiFont_Cabin24 = RC.LoadFont("Assets/Cabin.ttf", 24);
+            _guiFontCabin18 = RC.LoadFont("Assets/Cabin.ttf", 18);
+            _guiFontCabin24 = RC.LoadFont("Assets/Cabin.ttf", 24);
 
-            _guiText = new GUIText("Spot all seven differences!", _guiFont_Cabin24, 310, 35);
+            _guiText = new GUIText("Spot all seven differences!", _guiFontCabin24, 310, 35);
             _guiText.TextColor = new float4(1, 1, 1, 1);
 
             _guiHandler.Add(_guiText);
-            
+
             // image
             _guiImage = new GUIImage("Assets/spot_the_diff.png", 0, 0, -5, 600, 650);
             _guiHandler.Add(_guiImage);
@@ -93,11 +95,11 @@ namespace Examples.SpotTheDiff
             }
 
             // panel
-            _guiPanel = new GUIPanel("Menu", _guiFont_Cabin18, 10, 10, 150, 110);
+            _guiPanel = new GUIPanel("Menu", _guiFontCabin18, 10, 10, 150, 110);
             _guiHandler.Add(_guiPanel);
 
             // reset button
-            _guiResetButton = new GUIButton("Reset", _guiFont_Cabin18, 25, 40, 100, 25);
+            _guiResetButton = new GUIButton("Reset", _guiFontCabin18, 25, 40, 100, 25);
 
             _guiResetButton.OnGUIButtonDown += OnMenuButtonDown;
             _guiResetButton.OnGUIButtonUp += OnMenuButtonUp;
@@ -107,7 +109,7 @@ namespace Examples.SpotTheDiff
             _guiPanel.ChildElements.Add(_guiResetButton);
 
             // solve button
-            _guiSolveButton = new GUIButton("Solve", _guiFont_Cabin18, 25, 70, 100, 25);
+            _guiSolveButton = new GUIButton("Solve", _guiFontCabin18, 25, 70, 100, 25);
 
             _guiSolveButton.OnGUIButtonDown += OnMenuButtonDown;
             _guiSolveButton.OnGUIButtonUp += OnMenuButtonUp;
@@ -158,7 +160,6 @@ namespace Examples.SpotTheDiff
 
         public override void RenderAFrame()
         {
-            // is called once a frame
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
             _guiHandler.RenderGUI();
@@ -168,10 +169,12 @@ namespace Examples.SpotTheDiff
 
         public override void Resize()
         {
-            // is called when the window is resized
+            // var left = (int) Math.Round(Width/2.0f) - 300;
+            // var top = (int) Math.Round(Height/2.0f) - 325;
+
             RC.Viewport(0, 0, Width, Height);
 
-            var aspectRatio = Width / (float)Height;
+            var aspectRatio = Width/(float) Height;
             RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 10000);
 
             // refresh all elements
@@ -183,6 +186,5 @@ namespace Examples.SpotTheDiff
             var app = new SpotTheDiff();
             app.Run();
         }
-
     }
 }

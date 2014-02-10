@@ -174,7 +174,11 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderCanvasImp
         new JSIL.MethodSignature(null, []),
         function _ctor() {
             this.theCanvas = document.getElementById("canvas");
-            this.gl = this.theCanvas.getContext("webgl") || this.theCanvas.getContext("experimental-webgl");
+
+            var premAlpha = jsilConfig.premultipliedAlpha;
+            this.gl = this.theCanvas.getContext("webgl", { premultipliedAlpha: premAlpha }) ||
+						this.theCanvas.getContext("experimental-webgl", { premultipliedAlpha: premAlpha });
+
             this.currWidth = 0;
             this.currHeight = 0;
         }
