@@ -280,7 +280,7 @@ namespace Examples.RocketGame
 
             void main()
             {
-                gl_FragColor = vec4(texture2D(texture1, vNormal.xy * 0.5 + vec2(0.5, 0.5)).rgb * texture2D(texture2, vUV), 0.85);
+                gl_FragColor = vec4(texture2D(texture1, vNormal.xy * 0.5 + vec2(0.5, 0.5)).rgb * texture2D(texture2, vUV).rgb, 0.85);
             }";
     };
 
