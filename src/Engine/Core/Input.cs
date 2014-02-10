@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using JSIL.Meta;
 
 namespace Fusee.Engine
 {
@@ -305,6 +306,7 @@ namespace Fusee.Engine
         // TODO allow adding more than one inputdriver
         private IInputDriverImp _inputDriverImp;
 
+        [JSExternal]
         public void InitializeDevices()
         {
             foreach (IInputDeviceImp _inputDevice in _inputDriverImp.DeviceImps())
@@ -315,6 +317,7 @@ namespace Fusee.Engine
             {
                 System.Diagnostics.Debug.Write("Device @ Index:  " + i+": " + Devices[i].GetCategory());
             }
+
         }
 
         public InputDevice GetDevice(int deviceIndex)

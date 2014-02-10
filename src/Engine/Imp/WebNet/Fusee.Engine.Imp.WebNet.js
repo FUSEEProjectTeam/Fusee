@@ -221,22 +221,17 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.InputDriverImp"
     $.Method({ Static: false, Public: true }, "DeviceImps",
         new JSIL.MethodSignature($asm04.TypeRef("System.Collections.Generic.List`1", [$asm02.TypeRef("Fusee.Engine.IInputDeviceImp")]), []), 
         function DeviceImps() {
-            createDevices();
-            var retList = $asm04.TypeRef("System.Collections.Generic.List`1", [$asm02.TypeRef("Fusee.Engine.IInputDeviceImp")]).Construct();
+        //    createDevices();
+        //    var retList = $asm04.TypeRef("System.Collections.Generic.List`1", [$asm02.TypeRef("Fusee.Engine.IInputDeviceImp")]).Construct();
 
-            for (var a$0 = this.Devices._items, i$0 = 0, l$0 = this.Devices._size; i$0 < l$0; ($temp00 = i$0, 
-                i$0 = ((i$0 + 1) | 0), $temp00)) {
-                var instance = a$0[i$0];
-                retList.Add(new (Fusee.Engine.InputDeviceImp())(instance));
-            }
-            return retList;
+        //    for (var a$0 = this.Devices._items, i$0 = 0, l$0 = this.Devices._size; i$0 < l$0; ($temp00 = i$0, 
+        //        i$0 = ((i$0 + 1) | 0), $temp00)) {
+        //        var instance = a$0[i$0];
+        //        retList.Add(new (Fusee.Engine.InputDeviceImp())(instance));
+        //    }
+        //    return retList;
         }
     );
-
-    function createDevices() {
-
-
-    }
 
 
     $.ImplementInterfaces(
@@ -260,6 +255,63 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.InputDeviceImp"
         }
     );
     
+    $.Method({ Static: false, Public: true }, "GetYAxis",
+    new JSIL.MethodSignature($.Single, []),
+        function GetYAxis() {
+            //not implemented
+        }
+    );
+
+    $.Method({ Static: false, Public: true }, "GetZAxis",
+    new JSIL.MethodSignature($.Single, []),
+        function GetZAxis() {
+            //not implemented
+        }
+    );
+
+    $.Method({ Static: false, Public: true }, "GetName",
+    new JSIL.MethodSignature($.String, []),
+        function GetName() {
+            //not implemented
+        }
+    );
+
+    $.Method({ Static: false, Public: true }, "GetPressedButton",
+    new JSIL.MethodSignature($.Single, []),
+        function GetPressedButton() {
+            //not implemented
+        }
+    );
+
+    $.Method({ Static: false, Public: true }, "IsButtonDown",
+    new JSIL.MethodSignature($.Boolean, [$.Single]),
+        function IsButtonDown(button) {
+            //not implemented
+        }
+    );
+
+    $.Method({ Static: false, Public: true }, "IsButtonPressed",
+    new JSIL.MethodSignature($.Boolean, [$.Single]),
+        function IsButtonPressed(button) {
+            //not implemented
+        }
+    );
+
+    $.Method({ Static: false, Public: true }, "GetButtonCount",
+    new JSIL.MethodSignature($.Single, []),
+        function GetButtonCount() {
+            //not implemented
+        }
+    );
+
+    $.Method({ Static: false, Public: true }, "GetCategory",
+    new JSIL.MethodSignature($.String, []),
+        function GetCategory() {
+            //not implemented
+        }
+    );
+
+
 
     $.ImplementInterfaces(
         $fuseeCommon.TypeRef("Fusee.Engine.IInputDeviceImp")
@@ -269,3 +321,35 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.InputDeviceImp"
 });
 
 
+
+
+//JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.WebInputImp", true, [], function($interfaceBuilder) {
+
+//    $ = $interfaceBuilder;
+
+
+//    $.Method({ Static: false, Public: true }, "GetXAxis",
+//        new JSIL.MethodSignature($.Double, [], []),
+//        function GetXAxis() {
+//            // not implemented
+//        }
+//    );
+
+
+
+
+//    $.ImplementInterfaces(
+//        $fuseeCommon.TypeRef("Fusee.Engine.IAudioStream")
+//    );
+
+//    return function (newThisType) { $thisType = newThisType; };
+//});
+
+//JSIL.ImplementExternals("Fusee.Engine.Input", function ($) {
+//    $.Method({ Static: false, Public: true }, "InitializeDevices",
+//        new JSIL.MethodSignature($.Double, []),
+//        function InitializeDevices() {
+            
+//        }
+//    );
+//});

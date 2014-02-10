@@ -1425,6 +1425,14 @@ JSIL.ImplementExternals("Fusee.Engine.ImpFactory", function($) {
             return new $WebNetImp.Fusee.Engine.WebNetImp();
         }
     );
+
+    $.Method({ Static: true, Public: true }, "CreateIInputDriverImp()",
+        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.IInputDriverImp"), []),
+        function ImpFactory_CreateIInputDriverImp() {
+            return new $WebNetImp.Fusee.Engine.WebInputImp();
+        }
+    );
+
 });
 
 JSIL.ImplementExternals("Fusee.Engine.MeshReader", function($) {
@@ -1432,6 +1440,15 @@ JSIL.ImplementExternals("Fusee.Engine.MeshReader", function($) {
         new JSIL.MethodSignature($.Double, [$.String]),
         function Double_Parse(str) {
             return Number(str);
+        }
+    );
+});
+
+JSIL.ImplementExternals("Fusee.Engine.Input", function ($) {
+    $.Method({ Static: false, Public: true }, "InitializeDevices",
+        new JSIL.MethodSignature([], []),
+        function InitializeDevices() {
+           
         }
     );
 });
