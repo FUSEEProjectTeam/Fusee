@@ -5,11 +5,13 @@
     <ItemGroup>
       <DLLFiles Include="$(TargetDir)..\..\*.dll" />
       <SFMLFiles Include="$(SolutionDir)ExternalBinaries\SFML\*.dll" />
+      <FONTFiles Include="$(SolutionDir)ExternalBinaries\SharpFont\*.dll" />
     </ItemGroup>
 
     <Message Importance="High" Text="### BeforeBuildEvent $(TargetName): Copying necessary files ###" />
     <Copy SourceFiles="@(DLLFiles)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" />
     <Copy SourceFiles="@(SFMLFiles)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(FONTFiles)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" />
   </Target>
   
   <!--- AfterBuild on Windows -->

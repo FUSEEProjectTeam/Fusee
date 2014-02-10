@@ -101,6 +101,7 @@ namespace Fusee.Engine
         /// </remarks>
         /// <seealso cref="SetShaderParam(IShaderParam,float)"/>
         IShaderParam GetShaderParam(IShaderProgramImp shaderProgram, string paramName);
+
         /// <summary>
         /// Gets the value of a shader parameter.
         /// </summary>
@@ -188,6 +189,13 @@ namespace Fusee.Engine
         void SetShaderParam(IShaderParam param, int val);
 
         /// <summary>
+        /// Sets a Shader Parameter to a created texture.
+        /// </summary>
+        /// <param name="param">Shader Parameter used for texture binding.</param>
+        /// <param name="texId">An ITexture probably returned from CreateTexture() method.</param>
+        void SetShaderParamTexture(IShaderParam param, ITexture texId);
+
+        /// <summary>
         /// Creates a new texture and binds it to the shader.
         /// </summary>
         /// <remarks>
@@ -225,7 +233,7 @@ namespace Fusee.Engine
         ImageData CreateImage(int width, int height, String bgColor);
 
         /// <summary>
-        /// Maps a specified text with on an image.
+        /// Maps a text in a specific font on an image.
         /// </summary>
         /// <param name="imgData">The ImageData struct with the PixelData from the image.</param>
         /// <param name="fontName">The name of the text-font.</param>
@@ -236,14 +244,25 @@ namespace Fusee.Engine
         /// <param name="startPosY">The vertical start-position of the text on the image.</param>
         /// <returns>An ImageData struct containing all necessary information for further processing</returns>
         ImageData TextOnImage(ImageData imgData, String fontName, float fontSize, String text, String textColor,
-                              float startPosX, float startPosY);
+            float startPosX, float startPosY);
 
         /// <summary>
-        /// Sets a Shader Parameter to a created texture.
+        /// Loads a font file (*.ttf) and processes it with the given font size.
         /// </summary>
-        /// <param name="param">Shader Parameter used for texture binding.</param>
-        /// <param name="texId">An ITexture probably returned from CreateTexture() method.</param>
-        void SetShaderParamTexture(IShaderParam param, ITexture texId);
+        /// <param name="filename">The filename.</param>
+        /// <param name="size">The font size.</param>
+        /// <returns>An <see cref="IFont"/> containing all necessary information for further processing.</returns>
+        IFont LoadFont(string filename, uint size);
+
+        /// <summary>
+        /// Fixes the kerning of a text (if possible).
+        /// </summary>
+        /// <param name="font">The <see cref="IFont"/> containing information about the font.</param>
+        /// <param name="vertices">The vertices.</param>
+        /// <param name="text">The text.</param>
+        /// <param name="scaleX">The scale x (OpenGL scaling factor).</param>
+        /// <returns>The fixed vertices as an array of <see cref="float3"/>.</returns>
+        float3[] FixTextKerning(IFont font, float3[] vertices, string text, float scaleX);
 
         /// <summary>
         /// Erases the contents of the speciefied rendering buffers.
@@ -301,7 +320,7 @@ namespace Fusee.Engine
         /// <param name="triangleIndices">The triangle indices.</param>
         /// <exception cref="System.ArgumentException">triangleIndices must not be null or empty</exception>
         /// <exception cref="System.ApplicationException"></exception>
-        void SetTriangles(IMeshImp mr, short[] triangleIndices);
+        void SetTriangles(IMeshImp mr, ushort[] triangleIndices);
 
         /// <summary>
         /// Activates the passed shader program as the current shader for geometry rendering.
@@ -370,5 +389,8 @@ namespace Fusee.Engine
         /// </summary>
         /// <returns>The <see cref="IMeshImp" /> instance.</returns>
         IMeshImp CreateMeshImp();
+        void SetRenderState(RenderState renderState, uint value);
+
+        uint GetRenderState(RenderState renderState);
     }
 }

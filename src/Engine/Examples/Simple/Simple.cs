@@ -15,15 +15,16 @@ namespace Examples.Simple
         private const float Damping = 0.92f;
 
         // model variables
-        private Mesh _meshTea, _meshFace;
-
+        private Mesh _meshFace;
+        private Mesh _meshTea;
+        
         // variables for shader
         private ShaderProgram _spColor;
         private ShaderProgram _spTexture;
 
         private IShaderParam _colorParam;
         private IShaderParam _textureParam;
-
+        
         private ITexture _iTex;
 
         // is called on startup
@@ -36,7 +37,7 @@ namespace Examples.Simple
             _meshFace = MeshReader.LoadMesh(@"Assets/Face.obj.model");
 
             _spColor = MoreShaders.GetDiffuseColorShader(RC);
-            _spTexture = MoreShaders.GetDiffuseTextureShader(RC);
+            _spTexture = MoreShaders.GetTextureShader(RC);
 
             _colorParam = _spColor.GetShaderParam("color");
             _textureParam = _spTexture.GetShaderParam("texture1");
@@ -49,8 +50,8 @@ namespace Examples.Simple
         // is called once a frame
         public override void RenderAFrame()
         {
+            
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-
             // move per mouse
             if (Input.Instance.IsButton(MouseButtons.Left))
             {
@@ -85,11 +86,11 @@ namespace Examples.Simple
             var mtxCam = float4x4.LookAt(0, 200, 500, 0, 0, 0, 0, 1, 0);
 
             // first mesh
-            RC.ModelView = float4x4.CreateTranslation(0, -50, 0)*mtxRot*float4x4.CreateTranslation(-150, 0, 0)*mtxCam;
+            RC.ModelView = mtxRot * float4x4.CreateTranslation(-150, 0, 0) * mtxCam;
 
             RC.SetShader(_spColor);
             RC.SetShaderParam(_colorParam, new float4(0.5f, 0.8f, 0, 1));
-
+            
             RC.Render(_meshTea);
 
             // second mesh
@@ -99,6 +100,7 @@ namespace Examples.Simple
             RC.SetShaderParamTexture(_textureParam, _iTex);
 
             RC.Render(_meshFace);
+
 
             // swap buffers
             Present();

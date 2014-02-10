@@ -85,7 +85,9 @@ namespace Examples.CubeAndTiles
             _shaderProgram = RC.CreateShader(Vs, Ps);
             RC.SetShader(_shaderProgram);
 
-            _stereo3D = new Stereo3D(RC, Stereo3DMode.Anaglyph, Width, Height);
+            _stereo3D = new Stereo3D(Stereo3DMode.Anaglyph, Width, Height);
+            _stereo3D.AttachToContext(RC);
+
             _exampleLevel = new Level(RC, _shaderProgram, _stereo3D);
         }
 

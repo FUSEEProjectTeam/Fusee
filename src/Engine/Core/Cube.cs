@@ -46,7 +46,7 @@ namespace Fusee.Engine
                 new float3 {x = -0.5f, y = -0.5f, z = -0.5f}
             };
 
-            Triangles = new short[]
+            Triangles = new ushort[]
             {
                 // front face
                 0, 1, 2, 0, 2, 3,

@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
+using ProtoBuf;
 namespace Fusee.Math
 {
     /// <summary>
@@ -10,6 +11,7 @@ namespace Fusee.Math
     /// </remarks>
     [Serializable]
     [StructLayout(LayoutKind.Sequential)]
+    [ProtoContract]
     public struct float2 : IEquatable<float2>
     {
         #region Fields
@@ -17,11 +19,13 @@ namespace Fusee.Math
         /// <summary>
         /// The x component of the float2.
         /// </summary>
+        [ProtoMember(1)]
         public float x;
 
         /// <summary>
         /// The y component of the float2.
         /// </summary>
+        [ProtoMember(2)]
         public float y;
 
         #endregion
