@@ -114,8 +114,8 @@ namespace Examples.RocketGame
 
         public void UpdateScore()
         {
-            string curScore = _gw.Score.ToString(CultureInfo.InvariantCulture);
-            string maxScore = _gw.MaxScore.ToString(CultureInfo.InvariantCulture);
+            string curScore = _gw.Score.ToString();
+            string maxScore = _gw.MaxScore.ToString();
 
             if (curScore.Length < 2)
                 curScore = "0" + curScore;
