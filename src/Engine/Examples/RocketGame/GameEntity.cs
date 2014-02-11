@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Fusee.Engine;
 using Fusee.Math;
 
@@ -29,9 +30,22 @@ namespace Examples.RocketGame
 
         private readonly RenderContext _rc;
 
+        private MySerializer _ser;
+
         public GameEntity(String meshPath, RenderContext rc, float posX = 0, float posY = 0, float posZ = 0, float angX = 0, float angY = 0, float angZ = 0)
         {
-            _mesh = MeshReader.LoadMesh(meshPath);
+            if (meshPath.Contains("protobuf"))
+            {
+                _ser = new MySerializer();
+                using (var file = File.OpenRead(meshPath))
+                {
+                    _mesh = _ser.Deserialize(file, null, typeof(Mesh)) as Mesh;
+                }
+            }
+            else
+            {
+                _mesh = MeshReader.LoadMesh(meshPath);
+            }
             _rc = rc;
 
             Position = float4x4.Identity;
