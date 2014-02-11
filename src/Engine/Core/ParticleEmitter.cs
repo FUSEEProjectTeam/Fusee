@@ -48,22 +48,7 @@ namespace Fusee.Engine
 
             void main()
             {
-                /*float PI = 3.14159265358979323846264;
-                float angle = 125.0;
-                float rad_angle = angle*PI/180.0;
-
-
-                mat3 rotation = mat3(
-                    vec3( cos(timer),  sin(timer),  0.0),
-                    vec3(-sin(timer),  cos(timer),  0.0),
-                    vec3(        0.0,         0.0,  1.0)
-                );
-                gl_Position = FUSEE_P *vec4(rotation * position.xyz, 1.0);
-                texcoord = position.xy * vec2(0.5) + vec2(0.5);
-                fade_factor = sin(timer) * 0.5 + 0.5;*/
-
-
-
+     
                 vec4 vPos = FUSEE_MV * vec4(fuVertex, 1.0);//umwandlung in Kamerakoordinaten
                
                 // Offset rotieren um fuNormal.x
@@ -163,8 +148,6 @@ namespace Fusee.Engine
             var normals = new float3[customCount*4];
             var uVs = new float2[customCount*4];
 
-            //var mtxNew = float4x4.CreateRotationY(5) * float4x4.CreateRotationX(5);
-            //var myRot = float4x4.CreateRotationZ(1.0f);
             //Partikel-Daten initialisieren
             while (_particleList.Count < customCount)
             {
@@ -183,7 +166,7 @@ namespace Fusee.Engine
                 _particle.maxSize = customMaxSize;
                 _particle.minSize = customMinSize;
                 _particle.Rotation = (float)_randRot;
-                _particle.Transparency = 1.4f;
+                _particle.Transparency = 0.4f;
                 _particleList.Add(_particle);
             }
 
@@ -232,13 +215,12 @@ namespace Fusee.Engine
                 ParticleData _changeParticle = _particleList[i];
                 _changeParticle.Position += (float)deltaTime * _changeParticle.Velocity;
                 _changeParticle.Velocity -= _changeParticle.Gravity;
-                // _changeParticle.Position *= float4x4.CreateRotationZ(0.01f);
-                //_changeParticle.Velocity *= float4x4.CreateRotationZ(360.0f);
+
                 //Rotation
-                _changeParticle.Rotation += 0.01f;
+                _changeParticle.Rotation += 0.008f;
 
                 //Transparency
-                //_changeParticle.Transparency -= _changeParticle.Transparency/_changeParticle.Life;
+                _changeParticle.Transparency -= _changeParticle.Transparency/_changeParticle.Life;
 
                 //Skalierung
                 if (_changeParticle.minSize <= _changeParticle.maxSize)

@@ -52,7 +52,7 @@ namespace Examples.ParticleSystem
         {
             RC.ClearColor = new float4(0.7f, 0.7f, 1, 1);
             //particelcount,minLife, maxLife,minSize, maxSize,randPosX,randPosY,randPosY,randVelX,randVelY,randVelZ,gravityX, gravityY, gravityZ,
-            _particleEmitter = new ParticleEmitter(10, 900000, 900000, 0.7f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 5.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+            _particleEmitter = new ParticleEmitter(100, 200, 580, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 5.0f, 5.0f, 0.0f, 0.0f, 0.01f, 0.0f);
             // initialize the variables
             //_meshTea = new ParticleEmitter();//MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
             _meshFace = MeshReader.LoadMesh(@"Assets/Face.obj.model");
@@ -65,8 +65,8 @@ namespace Examples.ParticleSystem
             _alphaParam = _spTexture.GetShaderParam("alpha1");
 
             // load texture
-            var imgData = RC.LoadImage("Assets/world_map.jpg");
-            //var imgData = RC.LoadImage("Assets/smoke_particle.png");
+            //var imgData = RC.LoadImage("Assets/world_map.jpg");
+            var imgData = RC.LoadImage("Assets/smoke_particle.png");
             _iTex = RC.CreateTexture(imgData);
 
 
