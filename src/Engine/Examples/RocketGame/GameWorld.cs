@@ -50,13 +50,13 @@ namespace Examples.RocketGame
             _player.SetShader("Assets/rocket3.png", "Assets/toon_generic_4_tex.png", new float4(0, 0, 0, 1), new float2(5, 5));
             _player.SetCorrectionMatrix(float4x4.CreateRotationX((float) -Math.PI/2)*float4x4.CreateTranslation(-30, 0, 0));
 
-            _room = new GameEntity("Assets/spacebox.protobuf.model", rc, 150, 1600, -1700);
+            _room = new GameEntity("Assets/spacebox.obj.model", rc, 150, 1600, -1700);
             _room.SetShader(new float4(1, 1, 1, 1), "Assets/toon_room_7_tex.png", new float4(0, 0, 0, 1), new float2(15, 15));
             _room.SetScale(13,8,19);
 
-            _goals.Add(new Goal("Assets/cube.protobuf.model", rc, 1500, 1500, -4950, (float)Math.PI / 4, (float)Math.PI / 4, (float)Math.PI / 4));
+            _goals.Add(new Goal("Assets/cube.obj.model", rc, 1500, 1500, -4950, (float)Math.PI / 4, (float)Math.PI / 4, (float)Math.PI / 4));
             _goals[0].SetScale(0.5f);
-            _goals.Add(new Goal("Assets/cube.protobuf.model", rc, -1200, 800, 1000, (float)Math.PI / 4, (float)Math.PI / 4, (float)Math.PI / 4));
+            _goals.Add(new Goal("Assets/cube.obj.model", rc, -1200, 800, 1000, (float)Math.PI / 4, (float)Math.PI / 4, (float)Math.PI / 4));
             _goals[1].SetScale(0.5f);
 
             _maxScore = _goals.Count;
