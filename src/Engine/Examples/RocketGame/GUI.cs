@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using Fusee.Engine;
+﻿using Fusee.Engine;
 using Fusee.Math;
 
 namespace Examples.RocketGame

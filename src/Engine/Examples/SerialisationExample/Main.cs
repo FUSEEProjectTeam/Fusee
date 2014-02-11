@@ -33,11 +33,11 @@ namespace Examples.SerialisationExample
             Debug.WriteLine("Serialisation Example started. \nPress F1 to load Mesh using MeshReader. \nPress F2 to load Mesh using Protobuf.");
 
             // Example of how to save a Mesh with protobuf to file.
-            /*Mesh temp = MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
-            using (var file = File.Create(@"Assets/Teapot2.protobuf.model"))
+            Mesh temp = MeshReader.LoadMesh(@"Assets/rocket.obj.model");
+            using (var file = File.Create(@"Assets/rocket.protobuf.model"))
             {
                 _ser.Serialize(file,temp);
-            }*/
+            }
         }
 
         public override void RenderAFrame()
@@ -70,7 +70,7 @@ namespace Examples.SerialisationExample
             Debug.WriteLine("Started loading Mesh using MeshReader.");
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
             _watch.Start();
-            _currentMesh = MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
+            _currentMesh = MeshReader.LoadMesh(@"Assets/rocket.obj.model");
             _watch.Stop();
             Debug.WriteLine("Mesh loaded using MeshReader in " + _watch.ElapsedMilliseconds + "ms");
             _watch.Reset();
@@ -85,7 +85,7 @@ namespace Examples.SerialisationExample
             Debug.WriteLine("Started loading Mesh using Protobuf.");
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
             _watch.Start();
-            using (var file = File.OpenRead(@"Assets/Teapot.protobuf.model"))
+            using (var file = File.OpenRead(@"Assets/rocket.protobuf.model"))
             {
                 _currentMesh = _ser.Deserialize(file, null, typeof(Mesh)) as Mesh;
             }
