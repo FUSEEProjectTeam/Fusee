@@ -213,23 +213,52 @@ JSIL.ImplementExternals("Fusee.Engine.Network", function($) {
 //JSIL.DeclareNamespace("Fusee");
 //JSIL.DeclareNamespace("Fusee.Engine");
 
-JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.InputDriverImp", true, [], function ($interfaceBuilder) {
+JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.WebInputDriverImp", true, [], function ($interfaceBuilder) {
 
     $ = $interfaceBuilder;
-    $.Field({ Static: false, Public: true }, "Devices", $jsilcore.TypeRef("System.Collections.Generics.List", [$fuseeCommon.TypeRef("Fusee.Engine.DeviceInstance")]), null);
+    $.Field({ Static: false, Public: false }, "_devices", $jsilcore.TypeRef("System.Collections.Generics.List", [$fuseeCommon.TypeRef("Fusee.Engine.DeviceInstance")]), null);
+
+    $.Method({ Static: false, Public: true }, ".ctor",
+        new JSIL.MethodSignature(null, []),
+        function _ctor() {
+            /*
+            this._devices = // Liste anlegen
+
+            window.addEventListener("MozGamepadConnected", GamepadConnected, false);
+            window.addEventListener("MozGamepadDisconnected", GamepadDisconnected, false);
+            window.addEventListener("MozGamepadButtonDown", GamepadButtonDown, false);
+            window.addEventListener("MozGamepadButtonUp", GamepadButtonUp, false);
+            window.addEventListener("MozGamepadAxisMove", GamepadAxis, false);
+            */
+        }
+    );
+
+    /*
+    $.Method({ Static: false, Public: true }, "MozGamepadConnected",
+        new JSIL.MethodSignature(null, [$jsilcore.TypeRef("System.Object")]),
+        function MozGamepadConnected(e) {
+            _devices[e.gamepad.id] = new $fuseeNetwork.Fusee.Engine.InputDeviceImp();
+        });
+
+    $.Method({ Static: false, Public: true }, "GamepadButtonDown",
+        new JSIL.MethodSignature(null, [$jsilcore.TypeRef("System.Object")]),
+        function GamepadButtonDown(e) {
+            _devices[e.gamepad.id]._button[event.button] = // PRESSED;
+        });
+     */
 
     $.Method({ Static: false, Public: true }, "DeviceImps",
-        new JSIL.MethodSignature($asm04.TypeRef("System.Collections.Generic.List`1", [$asm02.TypeRef("Fusee.Engine.IInputDeviceImp")]), []), 
+        new JSIL.MethodSignature($asm04.TypeRef("System.Collections.Generic.List`1", [$asm02.TypeRef("Fusee.Engine.IInputDeviceImp")]), []),
         function DeviceImps() {
-        //    createDevices();
-        //    var retList = $asm04.TypeRef("System.Collections.Generic.List`1", [$asm02.TypeRef("Fusee.Engine.IInputDeviceImp")]).Construct();
+            //    createDevices();
+            //    var retList = $asm04.TypeRef("System.Collections.Generic.List`1", [$asm02.TypeRef("Fusee.Engine.IInputDeviceImp")]).Construct();
 
-        //    for (var a$0 = this.Devices._items, i$0 = 0, l$0 = this.Devices._size; i$0 < l$0; ($temp00 = i$0, 
-        //        i$0 = ((i$0 + 1) | 0), $temp00)) {
-        //        var instance = a$0[i$0];
-        //        retList.Add(new (Fusee.Engine.InputDeviceImp())(instance));
-        //    }
-        //    return retList;
+            //    for (var a$0 = this.Devices._items, i$0 = 0, l$0 = this.Devices._size; i$0 < l$0; ($temp00 = i$0, 
+            //        i$0 = ((i$0 + 1) | 0), $temp00)) {
+            //        var instance = a$0[i$0];
+            //        retList.Add(new (Fusee.Engine.InputDeviceImp())(instance));
+            //    }
+            //    return retList;
         }
     );
 
@@ -247,6 +276,10 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.InputDeviceImp"
 
     $ = $interfaceBuilder;
     
+    // TODO: Fields:
+    // Array für Buttons
+    // Array für Achsen
+
     $.Method({ Static: false, Public: true }, "GetXAxis",
         new JSIL.MethodSignature($.Single, []),
         function GetXAxis() {

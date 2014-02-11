@@ -1426,10 +1426,10 @@ JSIL.ImplementExternals("Fusee.Engine.ImpFactory", function($) {
         }
     );
 
-    $.Method({ Static: true, Public: true }, "CreateIInputDriverImp()",
+    $.Method({ Static: true, Public: true }, "CreateIInputDriverImp",
         new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.IInputDriverImp"), []),
         function ImpFactory_CreateIInputDriverImp() {
-            return new $WebNetImp.Fusee.Engine.WebInputImp();
+            return new $WebNetImp.Fusee.Engine.WebInputDriverImp();
         }
     );
 
