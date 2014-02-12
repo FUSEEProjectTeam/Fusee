@@ -59,7 +59,6 @@ namespace Fusee.Engine
             for (int i = 0; i < numManifolds; i++)
             {
                 PersistentManifold contactManifold = BtWorld.Dispatcher.GetManifoldByIndexInternal(i);
-
                 int numContacts = contactManifold.NumContacts;
                 if (numContacts > 0)
                 {
@@ -202,13 +201,9 @@ namespace Fusee.Engine
             RigidBodyConstructionInfo btRbcInfo = new RigidBodyConstructionInfo(mass, btMotionState, btColShape,
                 btLocalInertia);
 
-           // btRbcInfo.LinearSleepingThreshold *= 10.0f;
-           // btRbcInfo.Friction = 1.0f; //Friction is set here to a as default. Otherwise there wouldn't be ANY friction
-           // btRbcInfo.Restitution = 0.02f; //Restitutio is here set to 0.5 as default. Otherwise restitution would be "absorbed"
             var btRigidBody = new RigidBody(btRbcInfo);
             BtWorld.AddRigidBody(btRigidBody);
             btRbcInfo.Dispose();
-          
             var retval = new RigidBodyImp();
             retval._rbi = btRigidBody;
             btRigidBody.UserObject = retval;

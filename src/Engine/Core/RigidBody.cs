@@ -14,11 +14,13 @@ namespace Fusee.Engine
     /// </summary>
     public class RigidBody
     {
+
+        public event EventHandler WhileCollidingEvent = delegate { };
         internal IRigidBodyImp _iRigidBodyImp;
 
        // public Mesh Mesh { get; set; }
 
-        public float3 Gavity
+        public float3 Gravity
         {
             get
             {
@@ -222,16 +224,16 @@ namespace Fusee.Engine
             }
         }
 
-        public float Bounciness
+        public float Restitution
         {
             get
             {
-                return _iRigidBodyImp.Bounciness;
+                return _iRigidBodyImp.Restitution;
             }
             set
             {
                 var o = (RigidBody)_iRigidBodyImp.UserObject;
-                o._iRigidBodyImp.Bounciness = value;
+                o._iRigidBodyImp.Restitution = value;
             }
         }
 
@@ -244,6 +246,23 @@ namespace Fusee.Engine
                 o._iRigidBodyImp.Friction = value;
             }
         }
+
+        public void SetDrag(float linearDrag, float anglularDrag)
+        {
+            var o = (RigidBody) _iRigidBodyImp.UserObject;
+            o._iRigidBodyImp.SetDrag(linearDrag, anglularDrag);
+        }
+        public float LinearDrag
+        {
+            get { return _iRigidBodyImp.LinearDrag; }
+
+        }
+
+        public float AngularDrag
+        {
+            get { return _iRigidBodyImp.AngularDrag; }
+        }
+
 
         public CollisionShape CollisionShape
         {

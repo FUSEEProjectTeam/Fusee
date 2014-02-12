@@ -186,7 +186,7 @@ namespace Examples.BulletTest
 
         public override void RenderAFrame()
         {
-            var rb1 = _physic.World.GetRigidBody(_physic.World.NumberRigidBodies() - 3);
+            //var rb1 = _physic.World.GetRigidBody(_physic.World.NumberRigidBodies() - 3);
             var rb2 = _physic.World.GetRigidBody(_physic.World.NumberRigidBodies() - 1);
 
             
@@ -233,13 +233,13 @@ namespace Examples.BulletTest
             if (Input.Instance.IsKeyDown(KeyCodes.NumPad4))
             {
                // var rb = _physic.World.GetRigidBody(_physic.World.NumberRigidBodies() - 3);
-                rb1.ApplyCentralImpulse = new float3(-10, 0, 0);
+                //rb1.ApplyCentralImpulse = new float3(-10, 0, 0);
             }
 
             if (Input.Instance.IsKeyDown(KeyCodes.NumPad6))
             {
                 //var rb = _physic.World.GetRigidBody(_physic.World.NumberRigidBodies() - 3);
-                rb1.ApplyCentralImpulse = new float3(10, 0, 0);
+               // rb1.ApplyCentralImpulse = new float3(10, 0, 0);
             }
 
             if (Input.Instance.IsKeyDown(KeyCodes.Left))

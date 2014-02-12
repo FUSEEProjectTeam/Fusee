@@ -228,9 +228,9 @@ namespace Fusee.Engine
                 o._rbi.AngularFactor = angfac;
             }
         }
-        
-        
-        public float Bounciness
+
+
+        public float Restitution
         {
             get
             {
@@ -252,6 +252,24 @@ namespace Fusee.Engine
                 o._rbi.Friction = value;
             }
         }
+
+        public void SetDrag(float linearDrag, float anglularDrag)
+        {
+            var o = (RigidBodyImp) _rbi.UserObject;
+            o._rbi.SetDamping(linearDrag, anglularDrag);
+        }
+
+        public float LinearDrag
+        {
+            get { return _rbi.LinearDamping; }
+            
+        }
+
+        public float AngularDrag
+        {
+            get { return _rbi.AngularDamping; }
+        }
+
 
         public ICollisionShapeImp CollisionShape
         {
@@ -437,6 +455,7 @@ namespace Fusee.Engine
             //TODO: Event to the RigidBody.cs class 
             var otherRb = (RigidBodyImp)other;
             otherRb.ApplyTorqueImpulse = new float3(10,10,10);
+            
         }
 
 

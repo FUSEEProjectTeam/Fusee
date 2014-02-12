@@ -38,9 +38,9 @@ namespace Examples.BulletTest
         public Physic()
         {
             Debug.WriteLine("Physic: Constructor");
-            //InitCollisionCallback();
-            //InitScene1();
-            InitDfo6Constraint();
+            InitCollisionCallback();
+           //InitScene1();
+          // InitDfo6Constraint();
         }
 
 
@@ -73,8 +73,11 @@ namespace Examples.BulletTest
             GroundPlane(float3.Zero, float3.Zero);
 
             var box1 = _world.AddRigidBody(1, new float3(0,20,0), float3.Zero, MyBoxCollider);
+            box1.Gravity = new float3(0,0,0);
             var box2 = _world.AddRigidBody(1, new float3(20, 20, 0), float3.Zero, MyBoxCollider);
+            box2.Gravity = new float3(0, 0, 0);
             var box3 = _world.AddRigidBody(1, new float3(10, 50, 0), float3.Zero, MyBoxCollider);
+            box3.Gravity = new float3(0, 0, 0);
         }
 
 
@@ -114,7 +117,7 @@ namespace Examples.BulletTest
             var groundShape = _world.AddBoxShape(30, 0.1f, 30);
             var ground = _world.AddRigidBody(0, pos, rot, groundShape);
            
-            ground.Bounciness = 1f;
+            ground.Restitution = 1f;
             ground.Friction = 1;
         }
 
@@ -168,8 +171,10 @@ namespace Examples.BulletTest
                         var pos = new float3((10 * h) , 80 + (k * 10), 10 * j);
                         
                         var cube = _world.AddRigidBody(1, pos, float3.Zero, MyBoxCollider);
-                        //cube.Bounciness = 1f;
+                        //cube.Restitution = 1f;
                         cube.Friction = 1f;
+                        cube.SetDrag(0.0f, 0.05f);
+                        
                     }
                 }
             }
@@ -188,7 +193,7 @@ namespace Examples.BulletTest
 
                         var sphere = _world.AddRigidBody(1, pos, float3.Zero, MySphereCollider);
                         sphere.Friction = 0.5f;
-                        sphere.Bounciness = 0.8f;
+                        sphere.Restitution = 0.8f;
                     }
                 }
             }
