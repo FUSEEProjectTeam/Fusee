@@ -4,79 +4,80 @@ using Fusee.Math;
 
 namespace Examples.RocketGame
 {
-
     public class Player : GameEntity
     {
-        private float3 _oldPos;
+        private float3 _rotation;
+        private float3 _rotationSpeed = new float3(1, 1, 1);
+        private float _speed;
+        private float _speedModifier = 1;
+        private float SpeedMax = 30f;
 
-        public Player(String meshPath, RenderContext rc, float posX = 0, float posY = 0, float posZ = 0, float angX = 0, float angY = 0, float angZ = 0) : base(meshPath, rc, posX, posY, posZ, angX, angY, angZ)
+        public Player(String meshPath, RenderContext rc, float posX = 0, float posY = 0, float posZ = 0, float angX = 0, float angY = 0, float angZ = 0)
+            : base(meshPath, rc, posX, posY, posZ, angX, angY, angZ)
         {
         }
 
-        public Player(String meshPath, RenderContext rc, float3 posxyz, float3 angxyz) : base(meshPath, rc, posxyz, angxyz)
+        public float Speed
         {
+            get { return _speed; }
+            set { _speed = value; }
         }
 
         public void Move()
         {
             if (Input.Instance.IsKey(KeyCodes.D))
-                Rotation.x = 0.05f;
+                _rotation.x = _rotationSpeed.x * (float)Time.Instance.DeltaTime;
             else if (Input.Instance.IsKey(KeyCodes.A))
-                Rotation.x = -0.05f;
+                _rotation.x = -_rotationSpeed.x * (float)Time.Instance.DeltaTime;
             else
-                Rotation.x = 0;
+                _rotation.x = 0;
 
             if (Input.Instance.IsKey(KeyCodes.W))
-                Rotation.y = 0.05f;
+                _rotation.y = _rotationSpeed.y * (float)Time.Instance.DeltaTime;
             else if (Input.Instance.IsKey(KeyCodes.S))
-                Rotation.y = -0.05f;
+                _rotation.y = -_rotationSpeed.x * (float)Time.Instance.DeltaTime;
             else
-                Rotation.y = 0;
+                _rotation.y = 0;
 
             if (Input.Instance.IsKey(KeyCodes.E))
-                Rotation.z = 0.05f;
+                _rotation.z = _rotationSpeed.z * (float)Time.Instance.DeltaTime;
             else if (Input.Instance.IsKey(KeyCodes.Q))
-                Rotation.z = -0.05f;
+                _rotation.z = -_rotationSpeed.z * (float)Time.Instance.DeltaTime;
             else
-                Rotation.z = 0;
+                _rotation.z = 0;
 
             if (Input.Instance.IsKey(KeyCodes.Up) || Input.Instance.IsKey(KeyCodes.Space))
             {
-                Speed += 0.5f;
+                _speed += _speedModifier * (float)Time.Instance.DeltaTime;
             }
             else
             {
-                Speed -= 0.5f;
+                _speed -= _speedModifier * (float)Time.Instance.DeltaTime;
             }
 
-            Speed = Clamp(Speed, 0.0f, 30.0f);
+            _speed = Clamp(_speed, 0.0f, SpeedMax);
 
-            
-            _oldPos.x = Position.Row3.x;
-            _oldPos.y = Position.Row3.y;
-            _oldPos.z = Position.Row3.z;
-
-            Position *= float4x4.CreateTranslation(-_oldPos) *
-                         float4x4.CreateFromAxisAngle(NRotYV, -Rotation.x) *
-                         float4x4.CreateFromAxisAngle(NRotXV, -Rotation.y) *
-                         float4x4.CreateFromAxisAngle(NRotZV, -Rotation.z) *
-                         float4x4.CreateTranslation(_oldPos) *
-                         float4x4.CreateTranslation(NRotZV * -Speed);
-
-            UpdateNVectors();
-
+            Position *= float4x4.CreateTranslation(-Position.Row3.xyz) *
+                        float4x4.CreateFromAxisAngle(float3.Normalize(Position.Row1.xyz), -_rotation.x) *
+                        float4x4.CreateFromAxisAngle(float3.Normalize(Position.Row0.xyz), -_rotation.y) *
+                        float4x4.CreateFromAxisAngle(float3.Normalize(Position.Row2.xyz), -_rotation.z) *
+                        float4x4.CreateTranslation(Position.Row3.xyz) *
+                        float4x4.CreateTranslation(float3.Normalize(Position.Row2.xyz) * -_speed);
         }
 
         public float4x4 GetCamMatrix()
         {
-
-            return float4x4.LookAt(Position.M41 + (NRotZV.x * 1000), Position.M42 + (NRotZV.y * 1000), Position.M43 + (NRotZV.z * 1000),
-                                   Position.M41, Position.M42, Position.M43,
-                                   Position.M21, Position.M22, Position.M23)
-                                   * float4x4.CreateTranslation(0, -300, 0);
+            return float4x4.LookAt(Position.M41 + (float3.Normalize(Position.Row2.xyz).x),
+                                   Position.M42 + (float3.Normalize(Position.Row2.xyz).y),
+                                   Position.M43 + (float3.Normalize(Position.Row2.xyz).z),
+                                   Position.M41,
+                                   Position.M42,
+                                   Position.M43,
+                                   Position.M21,
+                                   Position.M22,
+                                   Position.M23)
+                                   * float4x4.CreateTranslation(0, -300, -1000);
         }
-
-        // PRIVATE move to static class later
 
         private static float Clamp(float value, float min, float max)
         {

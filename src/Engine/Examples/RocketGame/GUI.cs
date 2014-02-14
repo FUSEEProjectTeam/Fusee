@@ -3,14 +3,11 @@ using Fusee.Math;
 
 namespace Examples.RocketGame
 {
-// ReSharper disable once InconsistentNaming
+    // ReSharper disable once InconsistentNaming
     class GUI
     {
         private readonly GameWorld _gw;
         private readonly GUIHandler _guiHandler;
-
-        private const bool DebugFlag = false;
-        private GUIText _debug;
 
         private IFont _fontSmall;
         private IFont _fontMedium;
@@ -20,12 +17,11 @@ namespace Examples.RocketGame
         private readonly GUIButton _startPanelButtonStart;
         private readonly GUIButton _startPanelButtonStuff;
         private readonly GUIPanel _startPanel2;
-        private readonly GUIText _startPanel2Text;
 
         private readonly GUIPanel _playPanel;
         private GUIText _playScore;
 
-        private GUIText _overText;
+        private readonly GUIText _overText;
 
         private readonly float4 _color1 = new float4(0.8f, 0.1f, 0.1f, 1);
         private readonly float4 _color2 = new float4(0, 0, 0, 1);
@@ -42,10 +38,7 @@ namespace Examples.RocketGame
             _guiHandler = new GUIHandler();
             _guiHandler.AttachToContext(rc);
 
-            _debug = new GUIText("Bla", _fontSmall, 170, 20);
-
             //Start Pannel Init
-
             _startPanel1 = new GUIPanel("RocketGame", _fontMedium, 10, 10, 150, 110);
             _startPanelButtonStart = new GUIButton("Start", _fontSmall, 10, 30, 130, 30);
             _startPanelButtonStart.OnGUIButtonDown += OnGUIButtonDown;
@@ -66,7 +59,7 @@ namespace Examples.RocketGame
             _playScore = new GUIText("", _fontMedium, 48, 45, new float4(1, 0, 0, 1));
             _playPanel.ChildElements.Add(_playScore);
 
-            _overText = new GUIText("Game Over, you Win!", _fontBig, 200,100, new float4(0,1,0,1));
+            _overText = new GUIText("Game Over, you Win!", _fontBig, 200, 100, new float4(0, 1, 0, 1));
 
             ShowStartGUI();
         }
@@ -77,14 +70,10 @@ namespace Examples.RocketGame
 
             if (sender == _startPanelButtonStart)
             {
-                _gw.CurrentGameState = (int) GameState.Running;
-            }
-            else if (sender == _startPanelButtonStuff)
-            {
-                SetDebugMsg("Stuff");
+                _gw.SetGamestate((int)GameState.Running);
             }
         }
-        
+
         private void OnGUIButtonUp(GUIButton sender, MouseEventArgs mea)
         {
             sender.BorderWidth = 1;
@@ -105,16 +94,10 @@ namespace Examples.RocketGame
             _guiHandler.RenderGUI();
         }
 
-        public void SetDebugMsg(string debugMsg)
-        {
-            if (_debug != null && _debug.Text != debugMsg)
-            _debug.Text = debugMsg;
-        }
-
         public void UpdateScore()
         {
-            string curScore = _gw.Score.ToString();
-            string maxScore = _gw.MaxScore.ToString();
+            string curScore = _gw.GetScore().ToString();
+            string maxScore = _gw.GetMaxScore().ToString();
 
             if (curScore.Length < 2)
                 curScore = "0" + curScore;
@@ -129,7 +112,6 @@ namespace Examples.RocketGame
             _guiHandler.Clear();
             _guiHandler.Add(_startPanel1);
             _guiHandler.Add(_startPanel2);
-            if (DebugFlag) _guiHandler.Add(_debug);
         }
 
         public void ShowPlayGUI()
@@ -137,8 +119,6 @@ namespace Examples.RocketGame
             UpdateScore();
             _guiHandler.Clear();
             _guiHandler.Add(_playPanel);
-            if (DebugFlag) _guiHandler.Add(_debug);
-
         }
 
         public void ShowOverGUI()
@@ -146,5 +126,9 @@ namespace Examples.RocketGame
             _guiHandler.Add(_overText);
         }
 
+        public void Resize()
+        {
+            _guiHandler.Refresh();
+        }
     }
 }

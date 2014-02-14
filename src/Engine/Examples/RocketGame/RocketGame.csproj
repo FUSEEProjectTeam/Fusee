@@ -48,7 +48,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Goal.cs" />
+    <Compile Include="Target.cs" />
     <Compile Include="GUI.cs" />
     <Compile Include="Shader.cs" />
     <Compile Include="Player.cs" />

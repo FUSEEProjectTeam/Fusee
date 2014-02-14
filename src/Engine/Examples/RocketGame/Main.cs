@@ -5,29 +5,35 @@ namespace Examples.RocketGame
 {
     public class RocketGame : RenderCanvas
     {
-        protected GameWorld Room;
+        private GameWorld _gameWorld;
 
-
+        // is called on startup
         public override void Init()
         {
             RC.ClearColor = new float4(1, 1, 1, 1);
-            Room = new GameWorld(RC);
+
+            _gameWorld = new GameWorld(RC);
         }
 
+        // is called once a frame
         public override void RenderAFrame()
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-            Room.Render();
+
+            _gameWorld.RenderAFrame();
+
             Present();
         }
 
+        // is called when the window was resized
         public override void Resize()
         {
-            // is called when the window is resized
             RC.Viewport(0, 0, Width, Height);
 
             var aspectRatio = Width / (float)Height;
             RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 10000);
+
+            _gameWorld.Resize();
         }
 
         public static void Main()
