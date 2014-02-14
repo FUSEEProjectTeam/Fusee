@@ -154,6 +154,7 @@ namespace Examples.BulletTest
 
         private ITexture _iTex;
 
+
         //Physic
         private static Physic _physic;
         
@@ -274,18 +275,9 @@ namespace Examples.BulletTest
                 _physic.Shoot(new float3(0, 15, 15), new float3(0, 0, 0));
             }
            
-            //Render all RigidBodies
+           
 
-
-            /*var ground = _physic.World.GetRigidBody(0);
-            var groundShape = (BoxShape) ground.CollisionShape;
-            var ma = ground.WorldTransform;
-            RC.ModelView = float4x4.Scale(groundShape.HalfExtents.x / 100, groundShape.HalfExtents.y / 100, groundShape.HalfExtents.z / 100) * ma * mtxCam;
-            RC.SetShader(_spColor);
-            RC.SetShaderParam(_colorParam, new float4(0.0f, 0.0f, 1.0f, 1));
-            RC.Render(_meshCube);*/
-
-            //Debug.WriteLine("FramePerSecond: " +Time.Instance.FramePerSecond);
+           // Debug.WriteLine(Time.Instance.FramePerSecond);
             for (int i = 0; i < _physic.World.NumberRigidBodies(); i++)
             {
                 var rb = _physic.World.GetRigidBody(i);
@@ -317,7 +309,6 @@ namespace Examples.BulletTest
                 }
                 else if (rb.CollisionShape.GetType().ToString() == "Fusee.Engine.ConvexHullShape")
                 {
-                    Debug.WriteLine("ConvexHullShape");
                     var shape = (ConvexHullShape)rb.CollisionShape;
                     RC.ModelView = float4x4.Scale(1.0f)*matrix * mtxCam;
                     
@@ -327,11 +318,6 @@ namespace Examples.BulletTest
                     RC.SetShaderParam(_colorLinda, new float4(2f, 2f, 2, 1));
                     RC.Render(_meshPlatinic);
                 }
-
-                
-                //RC.SetShader(_spTexture);
-                //RC.SetShaderParamTexture(_textureParam, _iTex);
-               // RC.Render(_meshCube);
             }
            
             
