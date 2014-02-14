@@ -7,7 +7,7 @@ namespace Fusee.Engine
         /// <summary>
         /// Creates the audio implementation.
         /// </summary>
-        /// <returns>An instance of SFMLAudioImp is returned.</returns>
+        /// <returns>An instance of InputDriverImp is returned.</returns>
         public static IInputDriverImp CreateInputDriverImp()
         {
             return new InputDriverImp();

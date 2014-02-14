@@ -1444,15 +1444,6 @@ JSIL.ImplementExternals("Fusee.Engine.MeshReader", function($) {
     );
 });
 
-JSIL.ImplementExternals("Fusee.Engine.Input", function ($) {
-    $.Method({ Static: false, Public: true }, "InitializeDevices",
-        new JSIL.MethodSignature([], []),
-        function InitializeDevices() {
-           
-        }
-    );
-});
-
 /**
 * Provides requestAnimationFrame in a cross browser way.
 */

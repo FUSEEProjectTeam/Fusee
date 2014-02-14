@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
 using Fusee.Engine;
+using Fusee.SceneManagement;
 using Fusee.Math;
 
-
-
-namespace Examples.Simple
+namespace Examples.InputDevices
 {
-    [FuseeApplication(Name = "Simple Example", Description = "A very simple example.")]
-    public class Simple : RenderCanvas
+    public class InputDevices : RenderCanvas
     {
 
-        private Mesh _meshTea, _meshFace;
+        private Mesh _meshTea;
 
         private ShaderProgram _spColor;
         private ShaderProgram _spTexture;
@@ -20,27 +16,12 @@ namespace Examples.Simple
         private IShaderParam _textureParam;
 
         private ITexture _iTex;
-        
-        private InputDevice controller1;
-        private InputDevice controller2;
-
-        public List<int> tmplist; 
-
-
-
 
         public override void Init()
         {
-            tmplist = new List<int>();
-            tmplist.Add(1);
-
-            int x = tmplist[0];
-            tmplist[0] = 5;
-
             Input.Instance.InitializeDevices();
-
             _meshTea = MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
-            _meshFace = MeshReader.LoadMesh(@"Assets/Face.obj.model");
+
 
             _spColor = MoreShaders.GetShader("simple", RC);
             _spTexture = MoreShaders.GetShader("texture", RC);
@@ -53,13 +34,10 @@ namespace Examples.Simple
             _iTex = RC.CreateTexture(imgData);
 
 
-                
         }
 
         public override void RenderAFrame()
         {
-
-
             float y = 0;
             //Input.Instance.GetDevice(0).IsButtonDown(0)
             float z = 0;
@@ -67,10 +45,9 @@ namespace Examples.Simple
             y = 50 * Input.Instance.GetDevice(0).GetAxis(InputDevice.Axis.Vertical);
             z = 50 * Input.Instance.GetDevice(0).GetAxis(InputDevice.Axis.Z);
             x = 50 * Input.Instance.GetDevice(0).GetAxis(InputDevice.Axis.Horizontal);
-            
 
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-            
+
             //if (Input.Instance.IsKeyDown(KeyCodes.Up))
             //    _angleVert -= RotationSpeed * (float)Time.Instance.DeltaTime;
 
@@ -80,45 +57,33 @@ namespace Examples.Simple
             var mtxCam = float4x4.LookAt(0, 200, 500, 0, 0, 0, 0, 1, 0);
 
             // first mesh
-            RC.ModelView = float4x4.CreateTranslation( x, 50+y, 200+z ) * mtxCam;
+            RC.ModelView = float4x4.CreateTranslation(x, 50 + y, 200 + z) * mtxCam;
 
             RC.SetShader(_spColor);
             RC.SetShaderParam(_colorParam, new float4(0.5f, 0.8f, 0, 1));
 
             RC.Render(_meshTea);
 
-            // second mesh
-           // RC.ModelView =  float4x4.CreateTranslation(150 + c2px, 0 + c2py, 0) * mtxCam;
-
-            RC.SetShader(_spTexture);
-            RC.SetShaderParamTexture(_textureParam, _iTex);
 
             //RC.Render(_meshFace);
-           
+
             Present();
-            
         }
 
-        // is called when the window was resized
         public override void Resize()
         {
+            // is called when the window is resized
             RC.Viewport(0, 0, Width, Height);
 
-            var aspectRatio = Width/(float) Height;
-            RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 5000);
+            var aspectRatio = Width / (float)Height;
+            RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 10000);
         }
 
         public static void Main()
         {
-            var app = new Simple();
+            var app = new InputDevices();
             app.Run();
         }
 
-        public float test()
-        {
-
-            return 0.0f;
-        }
-        
     }
 }

@@ -34,7 +34,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Fusee.Engine.Imp.WebInput.js" />
-    <Content Include="input.js" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

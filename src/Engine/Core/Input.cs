@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using JSIL.Meta;
 
 namespace Fusee.Engine
@@ -302,24 +303,37 @@ namespace Fusee.Engine
 
         #region InputDevices
 
+        /// <summary>
+        /// Input devices like gamepads are managed here.
+        /// </summary>
         public List<InputDevice> Devices = new List<InputDevice>();
-        // TODO allow adding more than one inputdriver
+
         private IInputDriverImp _inputDriverImp;
 
-        [JSExternal]
+        /// <summary>
+        /// All connected input devices are added to <see cref="Devices"/> - List and the names and indices of 
+        /// the devices are printed to the debugging - console.
+        /// </summary>
         public void InitializeDevices()
         {
-            foreach (IInputDeviceImp _inputDevice in _inputDriverImp.DeviceImps())
+            List<IInputDeviceImp> tmp = _inputDriverImp.DeviceImps();
+            foreach (IInputDeviceImp _inputDevice in tmp)
             {
                 Devices.Add(new InputDevice(_inputDevice));
             }
-            for (int i = 0; i < Devices.Count; i++)
+
+            for(int i = 0; i<tmp.Count; i++)
             {
-                System.Diagnostics.Debug.Write("Device @ Index:  " + i+": " + Devices[i].GetCategory());
+                System.Diagnostics.Debug.WriteLine("Index " + i + " " + tmp[i].GetCategory());
             }
 
         }
 
+        /// <summary>
+        /// Checks if a device at the specified index exists and returns it if it exists.
+        /// </summary>
+        /// <param name="deviceIndex">The index at <see cref="Devices"/></param>
+        /// <returns>The device at the specified index </returns>
         public InputDevice GetDevice(int deviceIndex)
         {
             try
@@ -338,7 +352,6 @@ namespace Fusee.Engine
         {
             set
             {
-                // _inputDrivers.Add(value)
                 _inputDriverImp = value;
             }
         }

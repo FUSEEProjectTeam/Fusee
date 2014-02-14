@@ -33,12 +33,3 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.WebInputImp", t
 
     return function (newThisType) { $thisType = newThisType; };
 });
-
-JSIL.ImplementExternals("Fusee.Engine.Input", function ($) {
-    $.Method({ Static: false, Public: true }, "InitializeDevices",
-        new JSIL.MethodSignature($.Double, []),
-        function InitializeDevices() {
-            
-        }
-    );
-});
