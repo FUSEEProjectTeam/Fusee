@@ -15,21 +15,27 @@ namespace Examples.ParticleSystem
         private const float RotationSpeed = 1f;
         private const float Damping = 0.92f;
 
-        // model variables
-        private Mesh _meshFace;
-        //private Mesh _meshTea = new ParticleEmitter();
-
-        private ParticleEmitter _particleEmitter;
+        //particelcount,minLife, maxLife,minSize, maxSize, rotation, transparency, randPosX,randPosY,randPosY,randVelX,randVelY,randVelZ,gravityX, gravityY, gravityZ,
+        private ParticleEmitter _smokeEmitter       = new ParticleEmitter(0, 150, 600, 1.0f, 1.0f, 0.012f, 0.4f, 0.0f, 0.0f, 0.0f, 0.0f, 5.0f, 0.0f, 0.0f, 0.02f, 0.0f);
+        private ParticleEmitter _fireRedEmitter     = new ParticleEmitter(0, 150, 600, 1.0f, 1.0f, 0.012f, 0.4f, 0.0f, 0.0f, 0.0f, 0.0f, 5.0f, 0.0f, 0.0f, 0.02f, 0.0f);
+        private ParticleEmitter _fireYellowEmitter  = new ParticleEmitter(0, 150, 600, 1.0f, 1.0f, 0.012f, 0.4f, 0.0f, 0.0f, 0.0f, 0.0f, 5.0f, 0.0f, 0.0f, 0.02f, 0.0f);
+        private ParticleEmitter _starEmitter        = new ParticleEmitter(0, 150, 600, 1.0f, 1.0f, 0.012f, 0.4f, 0.0f, 0.0f, 0.0f, 0.0f, 5.0f, 0.0f, 0.0f, 0.02f, 0.0f);
 
         // variables for shader
-        private ShaderProgram _spColor;
-        private ShaderProgram _spTexture;
+        private ShaderProgram _smokeTexture;
+        private ShaderProgram _fireRedTexture;
+        private ShaderProgram _fireYellowTexture;
+        private ShaderProgram _starTexture;
 
-        private IShaderParam _colorParam;
-        private IShaderParam _textureParam;
-        private IShaderParam _alphaParam;
+        private IShaderParam _smokeParam;
+        private IShaderParam _fireRedParam;
+        private IShaderParam _fireYellowParam;
+        private IShaderParam _starParam;
 
-        private ITexture _iTex;
+        private ITexture _iSmoke;
+        private ITexture _iFireRed;
+        private ITexture _iFireYellow;
+        private ITexture _iStar;
 
         private GUIButton[] _guiBDiffs;
         private IFont _guiFontCabin18;
@@ -50,34 +56,36 @@ namespace Examples.ParticleSystem
         // is called on startup
         public override void Init()
         {
-            RC.ClearColor = new float4(0.7f, 0.7f, 1, 1);
-            //particelcount,minLife, maxLife,minSize, maxSize,randPosX,randPosY,randPosY,randVelX,randVelY,randVelZ,gravityX, gravityY, gravityZ,
-            _particleEmitter = new ParticleEmitter(100, 200, 580, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 5.0f, 5.0f, 0.0f, 0.0f, 0.01f, 0.0f);
-            // initialize the variables
-            //_meshTea = new ParticleEmitter();//MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
-            _meshFace = MeshReader.LoadMesh(@"Assets/Face.obj.model");
+            RC.ClearColor = new float4(0.2f, 0.2f, 0.2f, 1);
 
-            _spColor = MoreShaders.GetDiffuseColorShader(RC);
-            _spTexture = RC.CreateShader(_particleEmitter.VsSimpleTexture, _particleEmitter.PsSimpleTexture);
+            _smokeTexture           = RC.CreateShader(_smokeEmitter.VsSimpleTexture, _smokeEmitter.PsSimpleTexture);
+            _fireRedTexture         = RC.CreateShader(_fireRedEmitter.VsSimpleTexture, _fireRedEmitter.PsSimpleTexture);
+            _fireYellowTexture      = RC.CreateShader(_fireYellowEmitter.VsSimpleTexture, _fireYellowEmitter.PsSimpleTexture);
+            _starTexture            = RC.CreateShader(_starEmitter.VsSimpleTexture, _starEmitter.PsSimpleTexture);
 
-            _colorParam = _spColor.GetShaderParam("color");
-            _textureParam = _spTexture.GetShaderParam("texture1");
-            _alphaParam = _spTexture.GetShaderParam("alpha1");
+            _smokeParam             = _smokeTexture.GetShaderParam("texture1");
+            _fireRedParam           = _fireRedTexture.GetShaderParam("texture1");
+            _fireYellowParam        = _fireYellowTexture.GetShaderParam("texture1");
+            _starParam              = _starTexture.GetShaderParam("texture1");
 
             // load texture
-            //var imgData = RC.LoadImage("Assets/world_map.jpg");
-            var imgData = RC.LoadImage("Assets/smoke_particle.png");
-            _iTex = RC.CreateTexture(imgData);
+            var imgSmokeData        = RC.LoadImage("Assets/smoke_particle.png");
+            var imgFireRedData      = RC.LoadImage("Assets/fireRed.png");
+            var imgFireYellowData   = RC.LoadImage("Assets/fireYellowTexture.png");
+            var imgStarData         = RC.LoadImage("Assets/star.png");
+
+            _iSmoke                 = RC.CreateTexture(imgSmokeData);
+            _iFireRed               = RC.CreateTexture(imgFireRedData);
+            _iFireYellow            = RC.CreateTexture(imgFireYellowData);
+            _iStar                  = RC.CreateTexture(imgStarData);
+
 
 
             RC.SetRenderState(new RenderStateSet
             {
                 ZEnable = false,
                 AlphaBlendEnable = true,
-                //BlendFactor = new float4(0.5f, 0.5f, 0.5f, 0.5f),
                 BlendOperation = BlendOperation.Add,
-                //SourceBlend = Blend.BlendFactor,
-                //DestinationBlend = Blend.InverseBlendFactor
                 SourceBlend = Blend.SourceAlpha,
                 DestinationBlend = Blend.InverseSourceAlpha
             });
@@ -89,7 +97,7 @@ namespace Examples.ParticleSystem
             _guiFontCabin18 = RC.LoadFont("Assets/Cabin.ttf", 18);
             _guiFontCabin24 = RC.LoadFont("Assets/Cabin.ttf", 24);
 
-            _guiText = new GUIText("Fusee3D Particle System ", _guiFontCabin24, 310, 35);
+            _guiText = new GUIText("Fusee3D Particle System ", _guiFontCabin24, 510, 35);
             _guiText.TextColor = new float4(1, 1, 1, 1);
 
             _guiHandler.Add(_guiText);
@@ -97,13 +105,12 @@ namespace Examples.ParticleSystem
             _guiUDiffs = new GUIButton[7];
             _guiBDiffs = new GUIButton[7];
 
-
             // panel
             _guiPanel = new GUIPanel("Menu", _guiFontCabin18, 10, 10, 150, 150);
             _guiHandler.Add(_guiPanel);
 
             // Example 1 button
-            _guiExampleOneButton = new GUIButton("Example 1", _guiFontCabin18, 25, 40, 100, 25);
+            _guiExampleOneButton = new GUIButton("Fog", _guiFontCabin18, 25, 40, 100, 25);
 
             _guiExampleOneButton.OnGUIButtonDown += OnMenuButtonDown;
             _guiExampleOneButton.OnGUIButtonUp += OnMenuButtonUp;
@@ -113,7 +120,7 @@ namespace Examples.ParticleSystem
             _guiPanel.ChildElements.Add(_guiExampleOneButton);
 
             // Example 2 button
-            _guiExampleTwoButton = new GUIButton("Example 2", _guiFontCabin18, 25, 70, 100, 25);
+            _guiExampleTwoButton = new GUIButton("Fire", _guiFontCabin18, 25, 70, 100, 25);
 
             _guiExampleTwoButton.OnGUIButtonDown += OnMenuButtonDown;
             _guiExampleTwoButton.OnGUIButtonUp += OnMenuButtonUp;
@@ -123,7 +130,7 @@ namespace Examples.ParticleSystem
             _guiPanel.ChildElements.Add(_guiExampleTwoButton);
 
             // Example 2 button
-            _guiExampleThreeButton = new GUIButton("Example 3", _guiFontCabin18, 25, 100, 100, 25);
+            _guiExampleThreeButton = new GUIButton("Stars", _guiFontCabin18, 25, 100, 100, 25);
 
             _guiExampleThreeButton.OnGUIButtonDown += OnMenuButtonDown;
             _guiExampleThreeButton.OnGUIButtonUp += OnMenuButtonUp;
@@ -134,57 +141,53 @@ namespace Examples.ParticleSystem
 
         }
 
-        private void OnDiffButtonDown(GUIButton sender, MouseEventArgs mea)
-        {
-            /*sender.BorderWidth = 2;*/
-
-            var guiButton = sender.Tag as GUIButton;
-            if (guiButton != null) guiButton.BorderWidth = 2;
-        }
-
         private void OnMenuButtonDown(GUIButton sender, MouseEventArgs mea)
         {
             if (sender == _guiExampleOneButton)
             {
-                _particleEmitter = new ParticleEmitter(100, 150, 600, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 5.0f, 0.0f, 0.0f, 0.02f, 0.0f);
-                Console.WriteLine("Yeah Boy");
+                //particelcount,minLife, maxLife,minSize, maxSize,transparency, randPosX,randPosY,randPosY,randVelX,randVelY,randVelZ,gravityX, gravityY, gravityZ,
+                _smokeEmitter               = new ParticleEmitter(10000, 999999, 999999, 0.9f, 1.0f, 0.012f, 0.01f, 50.6f, 1.6f, 50.6f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+                //deactivate other emitter
+                _fireYellowEmitter          = null;
+                _fireRedEmitter             = null;
+                _starEmitter                = null;
+                 
+
             }
             if (sender == _guiExampleTwoButton)
             {
-                _particleEmitter = new ParticleEmitter(100, 150, 600, 0.2f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 5.0f, 0.0f, 0.0f, 0.02f, 0.0f);
-                Console.WriteLine("Yeah Girl");
+                //particelcount,minLife, maxLife,minSize, maxSize, rotation, transparency, randPosX,randPosY,randPosY,randVelX,randVelY,randVelZ,gravityX, gravityY, gravityZ,
+                _smokeEmitter               = new ParticleEmitter(600, 0, 200, 0.4f, 0.5f, 0.012f, 0.2f, 0.5f, 1.0f, 0.5f, 1.0f, 1.5f, 1.0f, 0.0f, -0.05f, 0.0f);
+                _fireYellowEmitter          = new ParticleEmitter(150, 5, 200, 0.5f, 0.9f, 0.012f, 0.1f, 1.0f, 0.5f, 1.0f, 0.025f, 0.0f, 0.025f, 0.0f, -0.03f, 0.0f);
+                _fireRedEmitter             = new ParticleEmitter(450, 0, 200, 0.3f, 0.6f, 0.012f, 0.4f, 0.5f, 0.1f, 0.5f, 0.4f, 1.5f, 0.4f, 0.0f, -0.03f, 0.0f);
+                
+                //deactivate other emitter
+                _starEmitter                = null;
             }
             if (sender == _guiExampleThreeButton)
             {
-                _particleEmitter = new ParticleEmitter(100, 150, 600, 0.6f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 5.0f, 0.0f, 0.0f, 0.02f, 0.0f);
-                Console.WriteLine("Yolo");
+                //particelcount,minLife, maxLife,minSize, maxSize,rotation,transparency, randPosX,randPosY,randPosY,randVelX,randVelY,randVelZ,gravityX, gravityY, gravityZ,                           
+                _starEmitter                = new ParticleEmitter(200, 600, 600, 0.2f, 0.2f, 0.012f, 1.0f, 0.5f, 0.0f, 0.5f, 8.2f, 8.0f, 8.2f, 0.0f, 0.032f, 0.0f);
+                //deactivate other emitter
+                _smokeEmitter               = null;
+                _fireYellowEmitter          = null;
+                _fireRedEmitter             = null;
             }
-            sender.BorderWidth = 2;
+
         }
 
         private void OnMenuButtonUp(GUIButton sender, MouseEventArgs mea)
         {
             sender.BorderWidth = 1;
-
-          /*  var bWidth = (sender == _guiSolveButton) ? 2 : 0;
-
-            foreach (var guiButton in _guiUDiffs)
-                guiButton.BorderWidth = bWidth;
-            foreach (var guiButton in _guiBDiffs)
-                guiButton.BorderWidth = bWidth;*/
         }
 
         private static void OnMenuButtonEnter(GUIButton sender, MouseEventArgs mea)
         {
-           /* if (Input.Instance.IsButton(MouseButtons.Left))
-                sender.BorderWidth = 2;*/
-
             sender.TextColor = new float4(0.8f, 0.1f, 0.1f, 1);
         }
 
         private static void OnMenuButtonLeave(GUIButton sender, MouseEventArgs mea)
         {
-           /* sender.BorderWidth = 1;*/
             sender.TextColor = new float4(0f, 0f, 0f, 1);
         }
 
@@ -225,28 +228,58 @@ namespace Examples.ParticleSystem
             var mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
             var mtxCam = float4x4.LookAt(0, 200, 500, 0, 0, 0, 0, 1, 0);
 
-            // first mesh
+
+
+
+            // mesh
             RC.ModelView = float4x4.CreateTranslation(0, -50, 0) * mtxRot * float4x4.CreateTranslation(-150, 0, 0) * mtxCam;
-            RC.ModelView = new float4x4(15, 0, 0, 0, 0, 15, 0, 0, 0, 0, 15, 0, 0, 0, 0, 1) * mtxRot * float4x4.CreateTranslation(-150, 0, 0) * mtxCam;
+            RC.ModelView = new float4x4(15, 0, 0, 0, 0, 15, 0, 0, 0, 0, 15, 0, 0, 0, 0, 1) * mtxRot * float4x4.CreateTranslation(0, 20, 0) * mtxCam;
 
-            RC.SetShader(_spTexture);
-            RC.SetShaderParamTexture(_textureParam, _iTex);
+            //smoke
+            if (_smokeEmitter != null)
+            {
+                RC.SetShader(_smokeTexture);
+                RC.SetShaderParamTexture(_smokeParam, _iSmoke);
+                _smokeEmitter.Tick(Time.Instance.DeltaTime);
+                RC.Render(_smokeEmitter.ParticleMesh);
+            }
 
-            _particleEmitter.Tick(Time.Instance.DeltaTime);
-            // _particleEmitter2.Tick(Time.Instance.DeltaTime);
-            RC.Render(_particleEmitter.ParticleMesh);
-            // RC.Render(_particleEmitter2.ParticleMesh);
+            //fireRed
+            if (_fireRedEmitter != null)
+            {
+                RC.SetShader(_fireRedTexture);
+                RC.SetShaderParamTexture(_fireRedParam, _iFireRed);
+                _fireRedEmitter.Tick(Time.Instance.DeltaTime);
+                RC.Render(_fireRedEmitter.ParticleMesh);
+            }
+            // mesh
+            RC.ModelView = float4x4.CreateTranslation(0, -50, 0) * mtxRot * float4x4.CreateTranslation(-150, 0, 0) * mtxCam;
+            RC.ModelView = new float4x4(15, 0, 0, 0, 0, 15, 0, 0, 0, 0, 15, 0, 0, 0, 0, 1) * mtxRot * float4x4.CreateTranslation(0, 0, 0) * mtxCam;
+
+            //star
+            if (_starEmitter != null)
+            {
+                RC.SetShader(_starTexture);
+                RC.SetShaderParamTexture(_starParam, _iStar);
+                _starEmitter.Tick(Time.Instance.DeltaTime);
+                RC.Render(_starEmitter.ParticleMesh);
+            }
+
+
+
+            //fireYellow
+            if (_fireYellowEmitter != null)
+            {
+                RC.SetShader(_fireYellowTexture);
+                RC.SetShaderParamTexture(_fireYellowParam, _iFireYellow);
+                _fireYellowEmitter.Tick(Time.Instance.DeltaTime);
+                RC.Render(_fireYellowEmitter.ParticleMesh);
+            }
+
+
 
             _guiHandler.RenderGUI();
-            // second mesh
-            RC.ModelView = mtxRot * float4x4.CreateTranslation(150, 0, 0) * mtxCam;
-            RC.ModelView = new float4x4(15, 0, 0, 0, 0, 15, 0, 0, 0, 0, 15, 0, 0, 0, 0, 1) * mtxRot * float4x4.CreateTranslation(150, 0, 0) * mtxCam;
-            RC.SetShader(_spColor);
-            //RC.SetShaderParamTexture(_textureParam, _iTex);
-            RC.SetShaderParam(_colorParam, new float4(1, 1, 1, 1));
-            RC.Render(_meshFace);
 
-            
             // swap buffers
             Present();
         }
