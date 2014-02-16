@@ -57,7 +57,7 @@ namespace Fusee.Engine
         IEmptyShapeImp AddEmptyShape();
 
         IConvexHullShapeImp AddConvexHullShape();
-        IConvexHullShapeImp AddConvexHullShape(float3[] points);
+        IConvexHullShapeImp AddConvexHullShape(float3[] points, bool optimized);
 
         IStaticPlaneShapeImp AddStaticPlaneShape(float3 planeNormal, float planeConstant);
 

@@ -52,8 +52,8 @@ namespace Fusee.Engine
             //BtWorld.SetInternalTickCallback(TickTack);
 
             //ManifoldPoint.ContactAdded += OnContactAdded;
-            PersistentManifold.ContactDestroyed += OnContactDestroyed;
-            PersistentManifold.ContactProcessed += OnContactProcessed;
+           // PersistentManifold.ContactDestroyed += OnContactDestroyed;
+            //PersistentManifold.ContactProcessed += OnContactProcessed;
         }
 
         public float3 Gravity
@@ -713,7 +713,7 @@ namespace Fusee.Engine
             return retval;
         }
 
-        public IConvexHullShapeImp AddConvexHullShape(float3[] points)
+        public IConvexHullShapeImp AddConvexHullShape(float3[] points, bool optimized)
         {
             var btPoints = new Vector3[points.Count()];
             for (int i = 0; i < btPoints.Count(); i++)
@@ -721,14 +721,34 @@ namespace Fusee.Engine
                 var point = Translater.Float3ToBtVector3(points[i]);
                 btPoints[i] = point;
             }
+
+
             var btConvexHullShape = new ConvexHullShape(btPoints);
             //btConvexHullShape.LocalScaling = new Vector3(3, 3, 3);
-            BtCollisionShapes.Add(btConvexHullShape);
+            if (optimized == true)
+            {
+                var btShapeHull = new ShapeHull(btConvexHullShape);
+                var margin = btConvexHullShape.Margin;
+                btShapeHull.BuildHull(margin);
+                ConvexHullShape simplifiedConvexShape = new ConvexHullShape(btShapeHull.Vertices);
+               
+                BtCollisionShapes.Add(simplifiedConvexShape);
+                
+                var retval = new ConvexHullShapeImp();
+                retval.BtConvexHullShape = simplifiedConvexShape;
+                simplifiedConvexShape.UserObject = retval;
+                return retval;
+            }
+            else
+            {
+                BtCollisionShapes.Add(btConvexHullShape);
 
-            var retval = new ConvexHullShapeImp();
-            retval.BtConvexHullShape = btConvexHullShape;
-            btConvexHullShape.UserObject = retval;
-            return retval;
+                var retval = new ConvexHullShapeImp();
+                retval.BtConvexHullShape = btConvexHullShape;
+                btConvexHullShape.UserObject = retval;
+                return retval;    
+            }
+            
         }
 
         public IStaticPlaneShapeImp AddStaticPlaneShape(float3 planeNormal, float planeConstant)

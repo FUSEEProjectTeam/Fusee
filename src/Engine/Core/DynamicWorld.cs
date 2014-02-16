@@ -375,9 +375,9 @@ namespace Fusee.Engine
             return retval;
         }
 
-        public ConvexHullShape AddConvexHullShape(float3[] points)
+        public ConvexHullShape AddConvexHullShape(float3[] points, bool optimized = true)
         {
-            IConvexHullShapeImp iConvexHullShapeImp = _dwi.AddConvexHullShape(points);
+            IConvexHullShapeImp iConvexHullShapeImp = _dwi.AddConvexHullShape(points, optimized);
             var retval = new ConvexHullShape();
             retval.ConvexHullShapeImp = iConvexHullShapeImp;
             iConvexHullShapeImp.UserObject = retval;

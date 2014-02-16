@@ -194,6 +194,7 @@ namespace Examples.BulletTest
             // is called once a frame
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
             _physic.World.StepSimulation((float) Time.Instance.DeltaTime, Time.Instance.FramePerSecondSmooth);
+            
             // move per mouse
             if (Input.Instance.IsButton(MouseButtons.Left))
             {
@@ -233,8 +234,8 @@ namespace Examples.BulletTest
 
             if (Input.Instance.IsKeyDown(KeyCodes.NumPad4))
             {
-               // var rb = _physic.World.GetRigidBody(_physic.World.NumberRigidBodies() - 3);
-                //rb1.ApplyCentralImpulse = new float3(-10, 0, 0);
+                _physic.World.Dispose();
+                _physic.InitScene4();
             }
 
             if (Input.Instance.IsKeyDown(KeyCodes.NumPad6))
@@ -277,16 +278,18 @@ namespace Examples.BulletTest
            
            
 
-           // Debug.WriteLine(Time.Instance.FramePerSecond);
+            Debug.WriteLine(Time.Instance.FramePerSecond);
             for (int i = 0; i < _physic.World.NumberRigidBodies(); i++)
             {
                 var rb = _physic.World.GetRigidBody(i);
                 var matrix = rb.WorldTransform;
-                
+                //Debug.WriteLine(rb.CollisionShape.GetType().ToString());
                 if (rb.CollisionShape.GetType().ToString() == "Fusee.Engine.BoxShape")
                 {
                     var shape = (BoxShape) rb.CollisionShape;
-                    RC.ModelView = float4x4.Scale(shape.HalfExtents.x/100, shape.HalfExtents.y/100, shape.HalfExtents.z /100) * matrix * mtxCam;
+                    RC.ModelView =
+                        float4x4.Scale(shape.HalfExtents.x/100, shape.HalfExtents.y/100, shape.HalfExtents.z/100)*matrix*
+                        mtxCam;
                     RC.SetShader(_spColor);
                     RC.SetShaderParam(_colorParam, new float4(0.9f, 0.9f, 0.0f, 1));
                     RC.Render(_meshCube);
@@ -301,24 +304,85 @@ namespace Examples.BulletTest
                 }
                 else if (rb.CollisionShape.GetType().ToString() == "Fusee.Engine.CylinderShape")
                 {
-                    var shape = (CylinderShape)rb.CollisionShape;
-                    RC.ModelView = float4x4.Scale(4) * matrix * mtxCam;
+                    var shape = (CylinderShape) rb.CollisionShape;
+                    RC.ModelView = float4x4.Scale(4)*matrix*mtxCam;
                     RC.SetShader(_spLinda);
                     RC.SetShaderParam(_colorLinda, new float4(0.1f, 0.1f, 0.9f, 1));
                     RC.Render(_meshCylinder);
                 }
                 else if (rb.CollisionShape.GetType().ToString() == "Fusee.Engine.ConvexHullShape")
                 {
-                    var shape = (ConvexHullShape)rb.CollisionShape;
-                    RC.ModelView = float4x4.Scale(1.0f)*matrix * mtxCam;
-                    
-                    //RC.SetShader(_spTexture);
-                    //RC.SetShaderParamTexture(_textureParam, _iTex);
-                    RC.SetShader(_spLinda);
-                    RC.SetShaderParam(_colorLinda, new float4(2f, 2f, 2, 1));
-                    RC.Render(_meshPlatinic);
+                    var shape = (ConvexHullShape) rb.CollisionShape;
+                    RC.ModelView = float4x4.Scale(0.05f)*matrix*mtxCam;
+                    //RC.ModelView = float4x4.Scale(1) * matrix * mtxCam;
+                    RC.SetShader(_spColor);
+                    RC.SetShaderParam(_colorParam, new float4(0.6f, 0.2f, 0.5f, 1));
+                   // RC.SetShader(_spLinda);
+                   // RC.SetShaderParam(_colorLinda, new float4(2f, 2f, 2, 1));
+                    RC.Render(_meshTea);
                 }
-            }
+                /*else if (rb.CollisionShape.GetType().ToString() == "Fusee.Engine.CompoundShape")
+                {
+                    Debug.WriteLine("CompoundShape1");
+                    var shape = (CompoundShape) rb.CollisionShape;
+                    Debug.WriteLine("CompoundShape2 " + shape.NumChildShapes());
+                    if (shape.ChildShapes != null)
+                    {
+                        for (int s = 0; s < shape.NumChildShapes(); s++)
+                        {
+                            Debug.WriteLine(s);
+                            var child = shape.ChildShapes[s];
+                            Debug.WriteLine(child.ToString());
+                            if (child.ToString() == "Fusee.Engine.BoxShape")
+                            {
+                                Debug.WriteLine(child.ToString());
+                                var shape1 = (BoxShape) child;
+
+                                RC.ModelView =
+                                    float4x4.Scale(shape1.HalfExtents.x/100, shape1.HalfExtents.y/100,
+                                        shape1.HalfExtents.z/100)*matrix*mtxCam;
+                                RC.SetShader(_spColor);
+                                RC.SetShaderParam(_colorParam, new float4(0.9f, 0.9f, 0.0f, 1));
+                                RC.Render(_meshCube);
+                            }
+                            else if (shape.ToString() == "Fusee.Engine.SphereShape")
+                            {
+                                var shape1 = (SphereShape) child;
+                                RC.ModelView = float4x4.Scale(shape1.Radius)*matrix*mtxCam;
+                                RC.SetShader(_spTexture);
+                                RC.SetShaderParamTexture(_textureParam, _iTex);
+                                RC.Render(_meshSphere);
+                            }
+                            else if (shape.ToString() == "Fusee.Engine.CylinderShape")
+                            {
+                                var shape1 = (CylinderShape) child;
+                                RC.ModelView = float4x4.Scale(4)*matrix*mtxCam;
+                                RC.SetShader(_spLinda);
+                                RC.SetShaderParam(_colorLinda, new float4(0.1f, 0.1f, 0.9f, 1));
+                                RC.Render(_meshCylinder);
+                            }
+                            else if (shape.ToString() == "Fusee.Engine.ConvexHullShape")
+                            {
+                                var shape1 = (ConvexHullShape) child;
+
+                                RC.ModelView = float4x4.Scale(1.0f)*matrix*mtxCam;
+
+
+                                RC.SetShader(_spLinda);
+                                RC.SetShaderParam(_colorLinda, new float4(2f, 2f, 2, 1));
+                                RC.Render(_meshPlatinic);
+                            }
+                        }
+                    }*/
+
+                }
+                //RC.ModelView = float4x4.Scale(0.025f) * matrix * mtxCam;
+            
+            //RC.SetShader(_spColor);
+            //RC.SetShaderParam(_colorParam, new float4(0.9f, 0.9f, 0.0f, 1));
+                    //RC.Render(_meshCube);
+                
+            
            
             
 
@@ -357,6 +421,7 @@ namespace Examples.BulletTest
             var app = new BulletTest();
             app.Run();
             _physic.World.Dispose();
+
         }
 
     }

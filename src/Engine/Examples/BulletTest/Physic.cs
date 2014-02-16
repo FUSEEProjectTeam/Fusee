@@ -23,7 +23,7 @@ namespace Examples.BulletTest
         internal SphereShape MySphereCollider;
         internal CylinderShape MyCylinderCollider;
         internal ConvexHullShape MyConvHull;
-        internal ConvexHullShape Hull;
+        internal ConvexHullShape TeaPotHull;
 
         internal Mesh BoxMesh, TeaPotMesh, PlatonicMesh;
 
@@ -40,15 +40,19 @@ namespace Examples.BulletTest
         {
             Debug.WriteLine("Physic: Constructor");
             //InitCollisionCallback();
-            //InitScene1();
+            InitScene1();
             //InitDfo6Constraint();
-            Tester();
+            //Tester();
         }
 
 
         public void InitWorld()
         {
             _world = new DynamicWorld();
+        }
+
+        public void InitColliders()
+        {
             MyBoxCollider = _world.AddBoxShape(2);
             MySphereCollider = _world.AddSphereShape(2);
             MyCylinderCollider = _world.AddCylinderShape(new float3(2, 4, 2));
@@ -58,21 +62,29 @@ namespace Examples.BulletTest
             PlatonicMesh = MeshReader.LoadMesh(@"Assets/Platonic.obj.model");
             float3[] verts = PlatonicMesh.Vertices;
 
-            MyConvHull = _world.AddConvexHullShape(verts);
-            var vertices = BoxMesh.Vertices;
+            MyConvHull = _world.AddConvexHullShape(verts, true);
+            //var vertices = BoxMesh.Vertices;
+
+            float3[] vertsTeaPot = TeaPotMesh.Vertices;
+            TeaPotHull = _world.AddConvexHullShape(vertsTeaPot, true);
+            TeaPotHull.LocalScaling = new float3(0.05f, 0.05f,0.05f);
+            //var verticesTea = TeaPotMesh.Vertices;
+
         }
+
 
         public void InitCollisionCallback()
         {
             InitWorld();
+            InitColliders();
             GroundPlane(float3.Zero, float3.Zero);
 
             var box1 = _world.AddRigidBody(1, new float3(0,20,0), float3.Zero, MyBoxCollider);
-            box1.Gravity = new float3(0,0,0);
-            var box2 = _world.AddRigidBody(1, new float3(20, 20, 0), float3.Zero, MyBoxCollider);
-            box2.Gravity = new float3(0, 0, 0);
-            var box3 = _world.AddRigidBody(1, new float3(10, 50, 0), float3.Zero, MyBoxCollider);
-            box3.Gravity = new float3(0, 0, 0);
+            
+            //var box2 = _world.AddRigidBody(1, new float3(20, 20, 0), float3.Zero, MyBoxCollider);
+            
+           // var box3 = _world.AddRigidBody(1, new float3(10, 50, 0), float3.Zero, MyBoxCollider);
+            
         }
 
 
@@ -81,27 +93,38 @@ namespace Examples.BulletTest
         public void InitScene1()
         {
             InitWorld();
+            InitColliders();
             GroundPlane(float3.Zero, float3.Zero);
             FallingTower1();
         }
         public void InitScene2()
         {
             InitWorld();
+            InitColliders();
             //InitHull();
-            FallingTower3();
+           // FallingTower3();
             GroundPlane(new float3(30, 15, 0), new float3(0, 0, (float)Math.PI / 6));
             GroundPlane(new float3(-20, 0, 0), float3.Zero);
-
+            FallingTower3();
             InitPoint2PointConstraint();
             InitHingeConstraint();
         }
         public void InitScene3()
         {
             InitWorld();
+            InitColliders();
             GroundPlane(new float3(30, 15, 0), new float3(0,0,(float)Math.PI/6));
             GroundPlane(new float3(-20, 0, 0), float3.Zero);
-            FallingTower2();
+            FallingTower3();
             InitKegel();
+        }
+
+        public void InitScene4()
+        {
+            InitWorld();
+            InitColliders();
+            GroundPlane(float3.Zero, float3.Zero);
+            FallingTeaPots();
         }
 
         public void GroundPlane(float3 pos, float3 rot)
@@ -164,10 +187,10 @@ namespace Examples.BulletTest
                     for (int j = -2; j < 4; j++)
                     {
                         var pos = new float3((4 * h) , 20 + (k * 4), 4 * j);
-                        
+
                         var cube = _world.AddRigidBody(1, pos, float3.Zero, MyBoxCollider);
-                        //cube.Restitution = 1f;
-                        cube.Friction = 1f;
+                        //MyConvHull
+                        cube.Friction = 1.0f;
                         cube.SetDrag(0.0f, 0.05f);
                     }
                 }
@@ -196,7 +219,6 @@ namespace Examples.BulletTest
         public void FallingTower3()
         {
             
-           // _world.AddRigidBody(1, new float3(0, 5, 0), float3.Zero, shape);
             for (int k = 0; k < 1; k++)
             {
                 for (int h = -2; h < 1; h++)
@@ -207,8 +229,25 @@ namespace Examples.BulletTest
 
                         var sphere = _world.AddRigidBody(1, pos, float3.Zero, MyConvHull);
                         
-                       // sphere.Friction = 0.5f;
-                       // sphere.Bounciness = 0.8f;
+                        sphere.Friction = 0.5f;
+                        sphere.Restitution = 0.2f;
+                    }
+                }
+            }
+        }
+
+        public void FallingTeaPots()
+        {
+            for (int k = 0; k < 3; k++)
+            {
+                for (int h = -2; h < 2; h++)
+                {
+                    for (int j = -2; j < 2; j++)
+                    {
+                        var pos = new float3((4*h), 20 + (k*4), 4*j);
+                        var cube = _world.AddRigidBody(1, pos, float3.Zero, TeaPotHull);
+                        cube.Friction = 1.0f;
+                        cube.SetDrag(0.0f, 0.05f);
                     }
                 }
             }
@@ -309,14 +348,17 @@ namespace Examples.BulletTest
         public void Tester()
         {
             InitWorld();
+            InitColliders();
             GroundPlane(float3.Zero, new float3(0, 0, (float)Math.PI / 6));
-            var rb1 = _world.AddRigidBody(1, new float3(0, 10, 0), float3.Zero, MyBoxCollider);
-            rb1.CollisionShape = MySphereCollider;
-            rb1.CollisionShape = MyBoxCollider;
-            rb1.CollisionShape = MyCylinderCollider;
-            rb1.CollisionShape = _world.AddConeShape(2, 3);
-            rb1.CollisionShape = _world.AddCapsuleShape(2, 5);
-            rb1.CollisionShape = MyConvHull;
+            var compound = _world.AddCompoundShape(true);
+         //   float4x4 pos4x4_1 = float4x4.CreateTranslation(new float3(0, 10, 10));
+        //    float4x4 pos4x4_2 = float4x4.CreateTranslation(new float3(10, 0, 10));
+          //  float4x4 pos4x4_3 = float4x4.CreateTranslation(new float3(0,0, 0));
+          //  compound.AddChildShape(pos4x4_1, MyBoxCollider);
+           // compound.AddChildShape(pos4x4_2, MySphereCollider);
+           // compound.AddChildShape(pos4x4_3, MyCylinderCollider);
+            var rb1 = _world.AddRigidBody(1, new float3(0, 10, 0), new float3(0, 0, -(float)Math.PI / 6), compound);
+           
             
         }
 
