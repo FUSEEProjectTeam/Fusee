@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Security;
 using System.Text;
 using BulletSharp;
 using Fusee.Engine;
@@ -43,16 +44,76 @@ namespace Fusee.Engine
                 Gravity = new Vector3(0, -9.81f, 0)
             };
             BtWorld.SolverInfo.NumIterations = 8;
-       
-            BtWorld.PerformDiscreteCollisionDetection();
+
+            //BtWorld.PerformDiscreteCollisionDetection();
+            
             GImpactCollisionAlgorithm.RegisterAlgorithm(BtDispatcher);
-            BtWorld.SetInternalTickCallback(MyTickCallBack);
+           // BtWorld.SetInternalTickCallback(MyTickCallBack);
             //BtWorld.SetInternalTickCallback(TickTack);
+
+            //ManifoldPoint.ContactAdded += OnContactAdded;
+            PersistentManifold.ContactDestroyed += OnContactDestroyed;
+            PersistentManifold.ContactProcessed += OnContactProcessed;
         }
 
-        private void MyTickCallBack(DynamicsWorld world, float timeStep)
+        public float3 Gravity
         {
-            //Debug.WriteLine("MyTickCallBack");
+            get { return Translater.BtVector3ToFloat3(BtWorld.Gravity); }
+            set { BtWorld.Gravity = Translater.Float3ToBtVector3(value); }
+        }
+
+        private void OnContactAdded(ManifoldPoint cp, CollisionObjectWrapper colObj0Wrap, int partId0, int index0,
+            CollisionObjectWrapper colObj1Wrap, int partId1, int index1)
+        {
+            Debug.WriteLine("OnContactAdded");
+            int numManifolds = BtWorld.Dispatcher.NumManifolds;
+
+            for (int i = 0; i < numManifolds; i++)
+            {
+                PersistentManifold contactManifold = BtWorld.Dispatcher.GetManifoldByIndexInternal(i);
+                int numContacts = contactManifold.NumContacts;
+                if (numContacts > 0)
+                {
+                    cp.UserPersistentData = 1;
+                    
+                    CollisionObject obA = (CollisionObject) contactManifold.Body0;
+                    CollisionObject obB = (CollisionObject) contactManifold.Body1;
+                    obA.CollisionFlags = CollisionFlags.KinematicObject;
+                    obB.CollisionFlags = CollisionFlags.NoContactResponse;
+                }
+            }
+        }
+
+        void OnContactProcessed(ManifoldPoint cp, CollisionObject body0, CollisionObject body1)
+        {
+            Debug.WriteLine("OnContactProcessed");
+            cp.UserPersistentData = 1;
+        }
+
+        void OnContactDestroyed(object userPersistantData)
+        {
+            /*int numManifolds = BtWorld.Dispatcher.NumManifolds;
+
+            for (int i = 0; i < numManifolds; i++)
+            {
+                PersistentManifold contactManifold = BtWorld.Dispatcher.GetManifoldByIndexInternal(i);
+                int numContacts = contactManifold.NumContacts;
+                if (numContacts > 0)
+                {
+                    
+
+                    CollisionObject obA = (CollisionObject)contactManifold.Body0;
+                    CollisionObject obB = (CollisionObject)contactManifold.Body1;
+                    obA.CollisionFlags = CollisionFlags.CustomMaterialCallback;
+                    obB.CollisionFlags = CollisionFlags.CustomMaterialCallback;
+                }
+            }*/
+            Debug.WriteLine("OnContactDestroyed");
+        }
+
+        private void MyTickCallBack(ManifoldPoint cp, CollisionObjectWrapper colobj0wrap, int partid0, int index0, CollisionObjectWrapper colobj1wrap, int partid1, int index1)
+        {
+            Debug.WriteLine("MyTickCallBack");
             int numManifolds = BtWorld.Dispatcher.NumManifolds;
             RigidBodyImp myRb;
             //Debug.WriteLine("numManifolds: " + numManifolds);
@@ -71,21 +132,27 @@ namespace Fusee.Engine
                     for (int j = 0; j < numContacts; j++)
                     {
                         ManifoldPoint pt = contactManifold.GetContactPoint(j);
-                        if (pt.Distance < 0.0f)
+
+
+                       /* if (pt.Distance < 0.0f)
                         {
                             Vector3 ptA = pt.PositionWorldOnA;
                             Vector3 ptB = pt.PositionWorldOnB;
                             Vector3 normalOnB = pt.NormalWorldOnB;
 
+                            BtWorld.ContactTest(obA, "message");
+                            
+{
+}
                             //Debug.WriteLine("distance is smaller");
                             //Debug.WriteLine("hit");
-                            var rbA = (RigidBody) obA;
+                            /*var rbA = (RigidBody) obA;
                             var btRigidBodyA = (RigidBody)obA;
                             var rbB = (RigidBody)obB;
                             var btRigidBodyB = (RigidBody)obB;
                             myRb = (RigidBodyImp)btRigidBodyA.UserObject;
                             myRb.OnCollision(myRb);
-                        }
+                        }*/
                     }
                 }
             }
@@ -202,6 +269,10 @@ namespace Fusee.Engine
                 btLocalInertia);
 
             var btRigidBody = new RigidBody(btRbcInfo);
+            btRigidBody.Restitution = 0.2f;
+            btRigidBody.Friction = 0.2f;
+            btRigidBody.CollisionFlags = CollisionFlags.CustomMaterialCallback;
+            
             BtWorld.AddRigidBody(btRigidBody);
             btRbcInfo.Dispose();
             var retval = new RigidBodyImp();

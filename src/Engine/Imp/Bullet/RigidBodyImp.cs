@@ -27,7 +27,7 @@ namespace Fusee.Engine
             set
             {
                 var o = (RigidBodyImp) _rbi.UserObject;
-                _rbi.Gravity = Translater.Float3ToBtVector3(value);
+                o._rbi.Gravity = Translater.Float3ToBtVector3(value);
             }
         }
         private float _mass;
@@ -338,6 +338,7 @@ namespace Fusee.Engine
                         return staticPlane;
                     //Misc
                     case "BulletSharp.CompoundShape":
+                        //Debug.WriteLine("BulletSharp.CompoundShape");
                         var btComp = (CompoundShape) btShape;
                         var comp = new CompoundShapeImp();
                         comp.BtCompoundShape = btComp;
@@ -433,6 +434,7 @@ namespace Fusee.Engine
 
                 var o = (RigidBodyImp)_rbi.UserObject;
                 o._rbi.CollisionShape = btColShape;
+
             }
         }
 

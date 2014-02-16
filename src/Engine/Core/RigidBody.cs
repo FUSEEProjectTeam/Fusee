@@ -269,7 +269,8 @@ namespace Fusee.Engine
             get
             {
                 var shape = _iRigidBodyImp.CollisionShape;
-                var shapeType = shape.GetType().ToString();          
+                var shapeType = shape.GetType().ToString();
+                //Debug.WriteLine("shapeType" + shapeType);
                 switch (shapeType)
                 {
                     //Primitives
@@ -309,7 +310,7 @@ namespace Fusee.Engine
                         convHull.ConvexHullShapeImp = (IConvexHullShapeImp) shape;
                         shape.UserObject = convHull;
                         return convHull;
-                    case "Fusee.Engine.GImpactMeshShape":
+                    case "Fusee.Engine.GImpactMeshShapeImp":
                         var gimp = new GImpactMeshShape();
                         gimp.GImpactMeshShapeImp = (IGImpactMeshShapeImp)shape;
                         shape.UserObject = gimp;
@@ -320,7 +321,8 @@ namespace Fusee.Engine
                         shape.UserObject = staticPlane;
                         return staticPlane;
                     //Misc
-                    case "Fusee.Engine.CompoundShapeShapeImp":
+                    case "Fusee.Engine.CompoundShapeImp":
+                        //Debug.WriteLine("Fusee.Engine.CompoundShapeImp");
                         var comp = new CompoundShape();
                         comp.CompoundShapeImp = (ICompoundShapeImp)shape;
                         shape.UserObject = comp;

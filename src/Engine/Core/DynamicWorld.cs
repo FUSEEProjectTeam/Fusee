@@ -17,6 +17,11 @@ namespace Fusee.Engine
             _dwi = ImpFactory.CreateIDynamicWorldImp();
         }
 
+        public float3 Gravity
+        {
+            get { return _dwi.Gravity; }
+            set { _dwi.Gravity = value; }
+        }
 
         public RigidBody AddRigidBody(float mass, float3 position, float3 orientation, CollisionShape colShape/*, float3 inertia*/)
         {

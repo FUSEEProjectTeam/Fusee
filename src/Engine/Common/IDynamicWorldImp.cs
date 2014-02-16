@@ -8,6 +8,7 @@ namespace Fusee.Engine
 {
     public interface IDynamicWorldImp
     {
+        float3 Gravity { get; set; }
 
         IRigidBodyImp AddRigidBody(float mass, float3 position, float3 orientation, ICollisionShapeImp colShape/*, float3 intertia*/);
         IRigidBodyImp GetRigidBody(int i);
