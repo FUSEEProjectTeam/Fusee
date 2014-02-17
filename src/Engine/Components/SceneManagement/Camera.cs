@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Fusee.Math;
@@ -18,7 +19,7 @@ namespace Fusee.SceneManagement
 
         private bool _projectionDirty;
         private float _fieldOfView = 45;
-        private float _near = 1f;
+        private float _near = 0.0001f;
         private float _far = 5000;
         private float _aspectRatio = 0.1f;
 
@@ -134,7 +135,7 @@ namespace Fusee.SceneManagement
         /// <param name="cameratransformation">The matrix that will become the Viewmatrix.</param>
         public Camera(Transformation cameratransformation)
         {
-            ViewMatrix = cameratransformation.Matrix;
+            ViewMatrix = cameratransformation.GlobalMatrix;
             ProjectionType(proj);
         }
 
@@ -144,9 +145,10 @@ namespace Fusee.SceneManagement
         /// <param name="owner">The SceneEntity where the Camera Component is attached to.</param>
         public Camera(SceneEntity owner)
         {
-            ViewMatrix = owner.transform.Matrix;
+            ViewMatrix = owner.transform.GlobalMatrix;
             ProjectionType(proj);
             owner.AddComponent(this);
+            SceneEntity = owner;
         }
         #endregion
         #region Public Members
@@ -241,7 +243,10 @@ namespace Fusee.SceneManagement
         public override void Accept(SceneVisitor sv)
         {
             sv.Visit((Camera)this);
+            //DrawCameraView();
         }
+
+
         #endregion
     }
 }

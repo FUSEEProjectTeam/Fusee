@@ -32,6 +32,7 @@ namespace Fusee.SceneManagement
         /// <summary>
         /// Init is called upon creation of an ActionCode Object and utilizes the access to a SceneEntitie's transform and renderer objects.
         /// </summary>
+        /// <param name="entity">The owner entity of this component.</param>
         public void Init(SceneEntity entity)
         {
             SceneEntity = entity;
@@ -42,6 +43,7 @@ namespace Fusee.SceneManagement
         /// <summary>
         /// Traverse is giving the Update routine access to the DeltaTime and the Input class and afterwards executes the Update routine.
         /// </summary>
+        /// <param name="sceneVisitorRendering">The scene visitor rendering.</param>
         public void TraverseForRendering(SceneVisitorRendering sceneVisitorRendering)
         {
             Update();

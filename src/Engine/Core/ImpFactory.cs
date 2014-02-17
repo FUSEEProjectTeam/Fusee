@@ -28,6 +28,9 @@ namespace Fusee.Engine
         private static Type _audioImplementor;
 
         [JSIgnore]
+        private static Type _physicsImplementor;
+        
+        [JSIgnore]
         private static Type _networkImplementor;
 
         [JSIgnore]
@@ -49,6 +52,26 @@ namespace Fusee.Engine
                     _renderingImplementor = impAsm.GetType("Fusee.Engine.RenderingImplementor");
                 }
                 return _renderingImplementor;
+            }
+        }
+
+        //Physic
+        [JSIgnore]
+        private static Type PhysicsImplementor
+        {
+            get
+            {
+                if (_physicsImplementor == null)
+                {
+                    // TODO: Remove this hardcoded hack to OpenTK
+
+                    Assembly impAsm = Assembly.LoadFrom("Fusee.Engine.Imp.Bullet.dll");
+                    if (impAsm == null)
+                        throw new Exception("Couldn't load implementor assembly (Fusee.Engine.Imp.Bullet.dll).");
+
+                    _physicsImplementor = impAsm.GetType("Fusee.Engine.PhysicsImplementor");
+                }
+                return _physicsImplementor;
             }
         }
 
@@ -125,6 +148,17 @@ namespace Fusee.Engine
                 throw new Exception("Implementor type (" + RenderingImplementor.ToString() + ") doesn't contain method CreateRenderCanvasImp");
 
             return (IRenderCanvasImp)mi.Invoke(null, null);
+        }
+
+        //PhysicsImp
+        [JSExternal]
+        public static IDynamicWorldImp CreateIDynamicWorldImp()
+        {
+            MethodInfo mi = PhysicsImplementor.GetMethod("CreateDynamicWorldImp");
+            if (mi == null)
+                throw new Exception("Implementor type (" + PhysicsImplementor.ToString() + ") doesn't contain method CreateDynamicWorldImp");
+
+            return (IDynamicWorldImp)mi.Invoke(null, null);
         }
 
         /// <summary>

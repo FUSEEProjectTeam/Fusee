@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 
 namespace Fusee.Math
 {
@@ -239,6 +240,25 @@ namespace Fusee.Math
 
         #endregion
 
+        #region Conversion
+
+        /// <summary>
+        /// Converts a float4 to an ABGR value (Int64).
+        /// </summary>
+        /// <param name="value">The float4 to convert.</param>
+        /// <returns>The ABGR value.</returns>
+        public static uint Float4ToABGR(float4 value)
+        {
+            var r = (uint)(255 * value.x);
+            var g = (uint)(255 * value.y);
+            var b = (uint)(255 * value.z);
+            var a = (uint)(255 * value.w);
+
+            return (a << 24) + (b << 16) + (g << 8) + r;
+        }
+
+        #endregion
+
         #region Swap
 
         /// <summary>
@@ -306,6 +326,7 @@ namespace Fusee.Math
         /// </summary>
         /// <param name="a">The first value.</param>
         /// <param name="b">The second value.</param>
+        /// <returns>True if the numbers are equal.</returns>
         public static bool Equals(double a, double b)
         {
             return (System.Math.Abs(a - b) < EpsilonDouble);
@@ -316,6 +337,7 @@ namespace Fusee.Math
         /// </summary>
         /// <param name="a">The first value.</param>
         /// <param name="b">The second value.</param>
+        /// <returns>True if the numbers are equal.</returns>
         public static bool Equals(float a, float b)
         {
             return (System.Math.Abs(a - b) < EpsilonFloat);

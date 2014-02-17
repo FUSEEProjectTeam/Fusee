@@ -107,7 +107,7 @@ namespace Fusee.Engine
         /// Adds a vertex.
         /// </summary>
         /// <param name="v">A 3D vector.</param>
-        /// <returns></returns>
+        /// <returns>The current vertex count.</returns>
         public int AddVertex(double3 v)
         {
             _vertices.Add(v);
@@ -171,9 +171,10 @@ namespace Fusee.Engine
             f.InxVert = new int[vertInx.Length];
             for(i = 0; i < vertInx.Length; i++)
             {
-                if (!(0 <= vertInx[i] && vertInx[i] < _vertices.Count))
-                    throw new ArgumentException("Vertex index out of range: " + vertInx[i], "vertInx[" + i + "]");
-                f.InxVert[i] = vertInx[i];
+                var vInx = vertInx[i];
+                if (!(0 <= vInx && vInx < _vertices.Count))
+                    throw new ArgumentException("Vertex index out of range: " + vInx, "vertInx[" + i + "]");
+                f.InxVert[i] = vInx;
             }
 
             if (texCoordInx != null)
@@ -185,9 +186,10 @@ namespace Fusee.Engine
                 f.InxTexCoord = new int[texCoordInx.Length];
                 for (i = 0; i < texCoordInx.Length; i++)
                 {
-                    if (!(0 <= texCoordInx[i] && texCoordInx[i] < _texCoords.Count))
-                        throw new ArgumentException("Texture coordinate index out of range: " + texCoordInx[i], "texCoordInx[" + i + "]");
-                    f.InxTexCoord[i] = texCoordInx[i];
+                    var tInx = texCoordInx[i];
+                    if (!(0 <= tInx && tInx < _texCoords.Count))
+                        throw new ArgumentException("Texture coordinate index out of range: " + tInx, "texCoordInx[" + i + "]");
+                    f.InxTexCoord[i] = tInx;
                 }
             }
 
@@ -200,9 +202,10 @@ namespace Fusee.Engine
                 f.InxNormal = new int[normalInx.Length];
                 for (i = 0; i < normalInx.Length; i++)
                 {
-                    if (!(0 <= normalInx[i] && normalInx[i] < _normals.Count))
-                        throw new ArgumentException("Normal index out of range: " + normalInx[i], "normalInx[" + i + "]");
-                    f.InxNormal[i] = normalInx[i];
+                    var nInx = normalInx[i];
+                    if (!(0 <= nInx && nInx < _normals.Count))
+                        throw new ArgumentException("Normal index out of range: " + nInx, "normalInx[" + i + "]");
+                    f.InxNormal[i] = nInx;
                 }
             }
 
@@ -254,11 +257,14 @@ namespace Fusee.Engine
         {
             List<int> ret = new List<int>();
             vertInFace = new List<int>();
+
             for (int iF = 0; iF < _faces.Count; iF++)
             {
-                for (int iFV = 0; iFV < _faces[iF].InxVert.Length; iFV++)
+                var inxVert = _faces[iF].InxVert;
+
+                for (int iFV = 0; iFV < inxVert.Length; iFV++)
                 {
-                    if (iV == _faces[iF].InxVert[iFV])
+                    if (iV == inxVert[iFV])
                     {
                         ret.Add(iF);
                         vertInFace.Add(iFV);
@@ -279,8 +285,11 @@ namespace Fusee.Engine
         {
             if (f.InxVert.Length < 3)
                 throw new Exception("Cannot calculate normal of degenerate face with only " + f.InxVert.Length + " vertices.");
-            double3 v1 = _vertices[f.InxVert[0]] - _vertices[f.InxVert[1]];
-            double3 v2 = _vertices[f.InxVert[0]] - _vertices[f.InxVert[2]];
+
+            var vertex0 = f.InxVert[0];
+            double3 v1 = _vertices[vertex0] - _vertices[f.InxVert[1]];
+            double3 v2 = _vertices[vertex0] - _vertices[f.InxVert[2]];
+
             return double3.Normalize(double3.Cross(v1, v2));
         }
 
@@ -387,7 +396,7 @@ namespace Fusee.Engine
 
             Dictionary<TripleInx, int> _vDict = new Dictionary<TripleInx, int>();
 
-            List<short> mTris = new List<short>();
+            List<ushort> mTris = new List<ushort>();
             List<float3> mVerts = new List<float3>();
             List<float2> mTexCoords = (HasTexCoords) ? new List<float2>() : null;
             List<float3> mNormals = (HasNormals) ? new List<float3>() : null;
@@ -440,7 +449,7 @@ namespace Fusee.Engine
             return m;
         }
 
-        private short[] Triangulate(Face f, int[] indices)
+        private IEnumerable<ushort> Triangulate(Face f, int[] indices)
         {
             if (f.InxVert.Length < 3)
                 return null;
@@ -448,13 +457,13 @@ namespace Fusee.Engine
             if (indices == null)
                 indices = f.InxVert;
 
-            short[] ret = new short[3 * (f.InxVert.Length-2)];
+            ushort[] ret = new ushort[3 * (f.InxVert.Length-2)];
             // Perform a fan triangulation
             for (int i = 2; i < f.InxVert.Length; i++ )
             {
-                ret[(i - 2)*3 + 0] = (short)indices[0];
-                ret[(i - 2)*3 + 1] = (short)indices[i - 1];
-                ret[(i - 2)*3 + 2] = (short)indices[i];
+                ret[(i - 2)*3 + 0] = (ushort)indices[0];
+                ret[(i - 2)*3 + 1] = (ushort)indices[i - 1];
+                ret[(i - 2)*3 + 2] = (ushort)indices[i];
             }
             return ret;
         }

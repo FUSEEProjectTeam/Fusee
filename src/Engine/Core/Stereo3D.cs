@@ -2,15 +2,34 @@
 
 namespace Fusee.Engine
 {
+
+    /// <summary>
+    /// The enum for the eye side selection.
+    /// </summary>
     public enum Stereo3DEye
     {
+        /// <summary>
+        /// The left eye = 0.
+        /// </summary>
         Left,
+        /// <summary>
+        /// The right eye = 1.
+        /// </summary>
         Right
     }
 
+    /// <summary>
+    /// The enum for the 3D Mode selection.
+    /// </summary>
     public enum Stereo3DMode
     {
+        /// <summary>
+        /// The anaglyph mode = 0.
+        /// </summary>
         Anaglyph,
+        /// <summary>
+        /// The oculus rift mode = 1.
+        /// </summary>
         Oculus
     }
 
@@ -20,31 +39,41 @@ namespace Fusee.Engine
         internal static float Convergence = 0f;
     }
 
+    /// <summary>
+    /// Rendering of stereo 3D graphics in anaglyph or oculus rift mode.
+    /// </summary>
     public class Stereo3D
     {
-        private readonly RenderContext _rc;
-        private readonly float4 _clearColor;
+        private RenderContext _rc;
+        private float4 _clearColor;
 
         private readonly Stereo3DMode _activeMode;
         private Stereo3DEye _currentEye;
 
+        /// <summary>
+        /// Gets the current eye.
+        /// </summary>
+        /// <value>
+        /// The current eye side enum. left=0, right=1.
+        /// </value>
         public Stereo3DEye CurrentEye
         {
             get { return _currentEye; }
         }
 
-        private readonly ShaderProgram _shaderProgram;
-        private readonly IShaderParam _shaderTexture;
+        private GUIImage _guiLImage;
+        private GUIImage _guiRImage;
 
-        private readonly Mesh _planeMesh;
+        private ShaderProgram _shaderProgram;
+        private IShaderParam _shaderTexture;
 
         private readonly int _screenWidth;
         private readonly int _screenHeight;
 
         #region Stereo3D Shaders
 
-        private readonly ITexture _contentLTex;
-        private readonly ITexture _contentRTex;
+        private ITexture _contentLTex;
+        private ITexture _contentRTex;
 
         #region OculusRift
 
@@ -54,27 +83,23 @@ namespace Fusee.Engine
         private const float K2 = 0.24f;
         private const float K3 = 0.0f;
 
-        private readonly IShaderParam _lensCenterParam;
-        private readonly IShaderParam _screenCenterParam;
-        private readonly IShaderParam _scaleParam;
-        private readonly IShaderParam _scaleInParam;
-        private readonly IShaderParam _hdmWarpParam;
+        private IShaderParam _lensCenterParam;
+        private IShaderParam _screenCenterParam;
+        private IShaderParam _scaleParam;
+        private IShaderParam _scaleInParam;
+        private IShaderParam _hdmWarpParam;
 
         private const string OculusVs = @"
             attribute vec3 fuVertex;
             attribute vec2 fuUV;
+            attribute vec4 fuColor;
 
             varying vec2 vUV;
-        
-            uniform mat4 FUSEE_MV;
-            uniform mat4 FUSEE_P;
 
             void main()
             {
-                mat4 FUSEE_MVP = FUSEE_P * FUSEE_MV;
-                gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
-
                 vUV = fuUV;
+                gl_Position = vec4(fuVertex, 1);
             }";
 
         private const string OculusPs = @"
@@ -101,7 +126,7 @@ namespace Fusee.Engine
                 vec2 tc = HmdWarp(vUV.xy);
 	            if (any(bvec2(clamp(tc,ScreenCenter-vec2(0.25,0.5), ScreenCenter+vec2(0.25,0.5)) - tc)))
 	            {
-		            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+		            gl_FragColor = vec4(0.2, 0.2, 0.2, 1.0);
 		            return;
 	            }
 
@@ -115,23 +140,15 @@ namespace Fusee.Engine
         // shader for anagylph mode
         private const string AnaglyphVs = @"
             attribute vec3 fuVertex;
-            attribute vec3 fuNormal;
             attribute vec2 fuUV;
-        
-            varying vec3 vNormal;
+            attribute vec4 fuColor;
+
             varying vec2 vUV;
-        
-            uniform mat4 FUSEE_MV;
-            uniform mat4 FUSEE_P;
-            uniform mat4 FUSEE_ITMV;
 
             void main()
             {
-                mat4 FUSEE_MVP = FUSEE_P * FUSEE_MV;
-                gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
-
-                vNormal = mat3(FUSEE_ITMV[0].xyz, FUSEE_ITMV[1].xyz, FUSEE_ITMV[2].xyz) * fuNormal;
                 vUV = fuUV;
+                gl_Position = vec4(fuVertex, 1);
             }";
 
         private const string AnaglyphPs = @"
@@ -140,7 +157,6 @@ namespace Fusee.Engine
             #endif
         
             uniform sampler2D vTexture;
-            varying vec3 vNormal;
             varying vec2 vUV;
 
             void main()
@@ -148,33 +164,52 @@ namespace Fusee.Engine
                 vec4 colTex = texture2D(vTexture, vUV);
                 vec4 _redBalance = vec4(0.1, 0.65, 0.25, 0);
                 float _redColor = (colTex.r * _redBalance.r + colTex.g * _redBalance.g + colTex.b * _redBalance.b) * 1.5;
-                gl_FragColor = vec4(_redColor, colTex.g, colTex.b, 1) * dot(vNormal, vec3(0, 0, 1)) * 1.4;
+                gl_FragColor = vec4(_redColor, colTex.g, colTex.b, 1) * 1.4;
             }";
 
         #endregion
 
         #endregion
 
-        public Stereo3D(RenderContext rc, Stereo3DMode mode, int width, int height)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Stereo3D"/> class.
+        /// </summary>
+        /// <param name="mode">The 3D rendering mode. anaglyph=0, oculus=1.</param>
+        /// <param name="width">The width of the render output in pixels.</param>
+        /// <param name="height">The height of the render output in pixels.</param>
+        public Stereo3D(Stereo3DMode mode, int width, int height)
         {
-            _rc = rc;
-            _clearColor = rc.ClearColor;
-
             _activeMode = mode;
 
             _screenWidth = width;
             _screenHeight = height;
+        }
 
-            var imgData = _rc.CreateImage(width, height, "black");
+        /// <summary>
+        /// Attaches the object to a specific <see cref="RenderContext"/> object.
+        /// </summary>
+        /// <param name="rc">The <see cref="RenderContext"/> object to be used.</param>
+        public void AttachToContext(RenderContext rc)
+        {
+            _rc = rc;
+            _clearColor = rc.ClearColor;
+
+            var imgData = _rc.CreateImage(_screenWidth, _screenHeight, "black");
             _contentLTex = _rc.CreateTexture(imgData);
             _contentRTex = _rc.CreateTexture(imgData);
 
-            _planeMesh = new Cube();
-
-            // initialize shader
-            switch (mode)
+            // initialize shader and image
+            switch (_activeMode)
             {
                 case Stereo3DMode.Oculus:
+                    _guiLImage = new GUIImage(null, 0, 0, _screenWidth/2, _screenHeight);
+                    _guiLImage.AttachToContext(rc);
+                    _guiLImage.Refresh();
+
+                    _guiRImage = new GUIImage(null, _screenWidth/2, 0, _screenWidth/2, _screenHeight);
+                    _guiRImage.AttachToContext(rc);
+                    _guiRImage.Refresh();
+
                     _shaderProgram = _rc.CreateShader(OculusVs, OculusPs);
                     _shaderTexture = _shaderProgram.GetShaderParam("vTexture");
 
@@ -190,10 +225,18 @@ namespace Fusee.Engine
                     _shaderProgram = _rc.CreateShader(AnaglyphVs, AnaglyphPs);
                     _shaderTexture = _shaderProgram.GetShaderParam("vTexture");
 
+                    _guiLImage = new GUIImage(null, 0, 0, _screenWidth, _screenHeight);
+                    _guiLImage.AttachToContext(rc);
+                    _guiLImage.Refresh();
+
                     break;
             }
         }
 
+        /// <summary>
+        /// Prepares the specified eye side for 3D rendering.
+        /// </summary>
+        /// <param name="eye">The <see cref="Stereo3DEye"/>.</param>
         public void Prepare(Stereo3DEye eye)
         {
             _currentEye = eye;
@@ -222,6 +265,9 @@ namespace Fusee.Engine
             _rc.Clear(ClearFlags.Color | ClearFlags.Depth);
         }
 
+        /// <summary>
+        /// Saves this instance.
+        /// </summary>
         public void Save()
         {
             switch (_activeMode)
@@ -241,6 +287,8 @@ namespace Fusee.Engine
                             break;
                     }
 
+                    _rc.Viewport(0, 0, _screenWidth, _screenHeight);
+
                     break;
 
                 case Stereo3DMode.Anaglyph:
@@ -251,6 +299,9 @@ namespace Fusee.Engine
             }
         }
 
+        /// <summary>
+        /// Displays the result as rendering output on the <see cref="RenderContext"/>.
+        /// </summary>
         public void Display()
         {
             _rc.ClearColor = new float4(0, 0, 0, 0); // _clearColor
@@ -263,19 +314,12 @@ namespace Fusee.Engine
                 case Stereo3DMode.Oculus:
                     _rc.SetShader(_shaderProgram);
 
-                    RenderDistortedEye(Stereo3DEye.Left, 0, 0, 0.5f, 1.0f);
-                    RenderDistortedEye(Stereo3DEye.Right, 0.5f, 0.0f, 0.5f, 1.0f);
-
-                    _rc.Viewport(0, 0, _screenWidth, _screenHeight);
+                    RenderDistortedEye(Stereo3DEye.Left);
+                    RenderDistortedEye(Stereo3DEye.Right);
 
                     break;
 
                 case Stereo3DMode.Anaglyph:
-                    _rc.Viewport(0, 0, _screenWidth, _screenHeight);
-
-                    float aspectRatio = (float) _screenWidth/_screenHeight;
-                    _rc.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 100000);
-
                     _rc.SetShader(_shaderProgram);
 
                     RenderColorMaskedEye(Stereo3DEye.Left, true, false, false, false);
@@ -292,22 +336,12 @@ namespace Fusee.Engine
 
         #region OculusRift
 
-        private void RenderDistortedEye(Stereo3DEye eye, float x, float y, float w, float h)
+        private void RenderDistortedEye(Stereo3DEye eye)
         {
-            var absX = (int) System.Math.Round(x*_screenWidth);
-            var absY = (int) System.Math.Round(y*_screenHeight);
-            var absW = (int) System.Math.Round(w*_screenWidth);
-            var absH = (int) System.Math.Round(h*_screenHeight);
-
-            _rc.Viewport(absX, absY, absW, absH);
-
-            float aspectRatio = (float) absW/absH;
-            _rc.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 100000);
-
             var scale = new float2(0.1469278f, 0.2350845f);
-            var scaleIn = new float2(4, 2.5f);
+            var scaleIn = new float2(2, 2.5f);
             var hdmWarp = new float4(K0, K1, K2, K3);
-
+            
             float2 lensCenter;
             float2 screenCenter;
 
@@ -332,22 +366,7 @@ namespace Fusee.Engine
             _rc.SetShaderParam(_scaleInParam, scaleIn);
             _rc.SetShaderParam(_hdmWarpParam, hdmWarp);
 
-            const int scaleW = 2*495;
-            const int scaleH = 2*280;
-            const int transOff = 223;
-
-            if (eye == Stereo3DEye.Left)
-            {
-                _rc.ModelView = float4x4.Scale(scaleW, scaleH, 1)*float4x4.CreateTranslation(transOff, 0, 0);
-                _rc.View = float4x4.LookAt(0, 0, 820, 0, 0, 0, 0, 1, 0);
-            }
-            else
-            {
-                _rc.ModelView = float4x4.Scale(scaleW, scaleH, 1)*float4x4.CreateTranslation(-transOff, 0, 0);
-                _rc.View = float4x4.LookAt(0, 0, 820, 0, 0, 0, 0, 1, 0);
-            }
-
-            _rc.Render(_planeMesh);
+            _rc.Render(eye == Stereo3DEye.Left ? _guiLImage.GUIMesh : _guiRImage.GUIMesh);
         }
 
         #endregion
@@ -359,15 +378,17 @@ namespace Fusee.Engine
             _rc.SetShaderParamTexture(_shaderTexture, eye == Stereo3DEye.Left ? _contentLTex : _contentRTex);
             _rc.ColorMask(red, green, blue, alpha);
 
-            var scaleW = _screenWidth;
-            var scaleH = _screenHeight;
-
-            _rc.ModelView = float4x4.Scale(scaleW, scaleH, 1);
-            _rc.View = float4x4.LookAt(0, 0, 870, 0, 0, 0, 0, 1, 0);
-
-            _rc.Render(_planeMesh);
+            _rc.Render(_guiLImage.GUIMesh);
         }
 
+        /// <summary>
+        /// Aligns the <see cref="Stereo3DEye"/> to the target point.
+        /// </summary>
+        /// <param name="eye">The <see cref="Stereo3DEye"/>.</param>
+        /// <param name="eyeV">The eye vector.</param>
+        /// <param name="target">The target.</param>
+        /// <param name="up">Up vector.</param>
+        /// <returns>A Matrix that represents the current eye's orientation towards a target point.</returns>
         public float4x4 LookAt3D(Stereo3DEye eye, float3 eyeV, float3 target, float3 up)
         {
             var x = (eye == Stereo3DEye.Left)

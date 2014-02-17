@@ -10,6 +10,9 @@ namespace Fusee.Engine
     public class InputImp : IInputImp
     {
         #region Fields
+        /// <summary>
+        /// The game window where the content will be rendered to.
+        /// </summary>
         protected GameWindow _gameWindow;
         internal Keymapper KeyMapper;
         #endregion
@@ -36,6 +39,7 @@ namespace Fusee.Engine
                 _gameWindow.Keyboard.KeyUp += OnGameWinKeyUp;
                 _gameWindow.Mouse.ButtonDown += OnGameWinMouseDown;
                 _gameWindow.Mouse.ButtonUp += OnGameWinMouseUp;
+                _gameWindow.Mouse.Move += OnGameWinMouseMove;
             }
             else
             {
@@ -111,6 +115,12 @@ namespace Fusee.Engine
             return new Point{x=0, y=0};
         }
 
+        /// <summary>
+        /// Implement this to return the absolute mouse wheel position
+        /// </summary>
+        /// <returns>
+        /// The mouse wheel position.
+        /// </returns>
         public int GetMouseWheelPos()
         {
             if (_gameWindow != null)
@@ -123,6 +133,11 @@ namespace Fusee.Engine
         /// </summary>
         public event EventHandler<MouseEventArgs> MouseButtonDown;
 
+        /// <summary>
+        /// Called when [game win mouse down].
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="mouseArgs">The <see cref="MouseButtonEventArgs"/> instance containing the event data.</param>
         protected void OnGameWinMouseDown(object sender, MouseButtonEventArgs mouseArgs)
         {
             if (MouseButtonDown != null)
@@ -155,6 +170,11 @@ namespace Fusee.Engine
         /// </summary>
         public event EventHandler<MouseEventArgs> MouseButtonUp;
 
+        /// <summary>
+        /// Called when mouse button is released.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="mouseArgs">The <see cref="MouseButtonEventArgs"/> instance containing the event data.</param>
         protected void OnGameWinMouseUp(object sender, MouseButtonEventArgs mouseArgs)
         {
             if (MouseButtonUp != null)
@@ -183,10 +203,37 @@ namespace Fusee.Engine
         }
 
         /// <summary>
+        /// Trigger this event on any mouse movement.
+        /// </summary>
+        public event EventHandler<MouseEventArgs> MouseMove;
+
+        /// <summary>
+        /// Called when mouse is moving.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="mouseArgs">The <see cref="MouseMoveEventArgs"/> instance containing the event data.</param>
+        protected void OnGameWinMouseMove(object sender, MouseMoveEventArgs mouseArgs)
+        {
+            if (MouseMove != null)
+            {
+                MouseMove(this, new MouseEventArgs
+                {
+                    Button = MouseButtons.Unknown,
+                    Position = new Point { x = mouseArgs.X, y = mouseArgs.Y }
+                });
+            }
+        }
+
+        /// <summary>
         /// Trigger this event once a key on the keyboard is pressed down.
         /// </summary>
         public event EventHandler<KeyEventArgs> KeyDown;
 
+        /// <summary>
+        /// Called when mouse button is pressed down.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="key">The <see cref="KeyboardKeyEventArgs"/> instance containing the event data.</param>
         protected void OnGameWinKeyDown(object sender, KeyboardKeyEventArgs key)
         {
             if (KeyDown != null && KeyMapper.ContainsKey(key.Key))
@@ -207,6 +254,11 @@ namespace Fusee.Engine
         /// </summary>
         public event EventHandler<KeyEventArgs> KeyUp;
 
+        /// <summary>
+        /// Called when keyboard key has been released.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="key">The <see cref="KeyboardKeyEventArgs"/> instance containing the event data.</param>
         protected void OnGameWinKeyUp(object sender, KeyboardKeyEventArgs key)
         {
             if (KeyUp != null && KeyMapper.ContainsKey(key.Key))

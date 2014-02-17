@@ -57,6 +57,11 @@ namespace Fusee.Engine
         event EventHandler<MouseEventArgs> MouseButtonUp;
 
         /// <summary>
+        /// Trigger this event on any mouse movement.
+        /// </summary>
+        event EventHandler<MouseEventArgs> MouseMove;
+
+        /// <summary>
         /// Trigger this event once a key on the keyboard is pressed down.
         /// </summary>
         event EventHandler<KeyEventArgs> KeyDown;

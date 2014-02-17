@@ -5,7 +5,7 @@ using Fusee.SceneManagement;
 namespace Examples.SolarSystem
 {
     // ReSharper disable UseObjectOrCollectionInitializer
-    [FuseeApplication(Name = "Solar System", Description = "A Sample showing how to use FUSEE's built-in scene graph management system.")]
+    [FuseeApplication(Name = "SolarSystem", Description = "A Sample showing how to use FUSEE's built-in scene graph management system.")]
     public class SolarSystem : RenderCanvas
     {
         private static float3 _earthSpeed;
@@ -16,7 +16,9 @@ namespace Examples.SolarSystem
             SceneManager.RC = RC;
 
             // Light
-            // var point = new PointLight(new float3(0, 0, 0), new float4(1, 1, 1, 1), 0);
+            var direct = new DirectionalLight(new float3(1, 1, 1), new float4(0.7f, 0.7f, 0.7f, 1),
+                                              new float4(1f, 1f, 1f, 1), new float4(0.9f, 0.9f, 0.9f, 1),
+                                              new float3(0, 0, 0), 0);
 
             // Load Meshes
             var planetMesh = MeshReader.LoadMesh(@"Assets/Sphere.obj.model");
@@ -57,31 +59,30 @@ namespace Examples.SolarSystem
 
             // Setup Space Box
             var spaceBox = new SceneEntity("Spacebox",
-                                           new PlanetMaterial(MoreShaders.GetShader("texture2", RC),
+                                           new PlanetMaterial(MoreShaders.GetTextureShader(RC),
                                                               "Assets/spaceboxTexture.png"), new Renderer(spaceBoxMesh));
             SceneManager.Manager.AddSceneEntity(spaceBox);
 
             // Setup Sun
             var planet = new SceneEntity("Sun",
-                                         new PlanetMaterial(MoreShaders.GetShader("texture2", RC), "Assets/sun.jpg"),
+                                         new PlanetMaterial(MoreShaders.GetDiffuseTextureShader(RC), "Assets/sun.jpg"),
                                          new Renderer(planetMesh));
 
             planet.transform.LocalScale = new float3(2, 2, 2);
-            // planet.AddComponent(spot);
-
             SceneManager.Manager.AddSceneEntity(planet);
 
             // Setup Earth
             planet = new SceneEntity("Earth", new PlanetAction(new float3(0, 0.69635f*365, 0)), emptyEarth,
-                                     new PlanetMaterial(MoreShaders.GetShader("texture2", RC), "Assets/earth.jpg"),
+                                     new PlanetMaterial(MoreShaders.GetDiffuseTextureShader(RC), "Assets/earth.jpg"),
                                      new Renderer(planetMesh));
 
             planet.transform.GlobalPosition = new float3(2.9f, 0, 0);
             planet.transform.GlobalScale = new float3(0.1f, 0.1f, 0.1f);
+            planet.AddComponent(direct);
 
             // Setup Moon
             planet = new SceneEntity("Moon", new PlanetAction(new float3(0, 2.7f, 0)), emptyMoon,
-                                     new PlanetMaterial(MoreShaders.GetShader("texture2", RC), "Assets/moon.jpg"),
+                                     new PlanetMaterial(MoreShaders.GetDiffuseTextureShader(RC), "Assets/moon.jpg"),
                                      new Renderer(planetMesh));
 
             planet.transform.GlobalPosition = new float3(0.5f, 0, 0);
@@ -89,7 +90,7 @@ namespace Examples.SolarSystem
 
             // Setup Mercury
             planet = new SceneEntity("Mercury", new PlanetAction(_earthSpeed*6.2234f), emptyMercury,
-                                     new PlanetMaterial(MoreShaders.GetShader("texture2", RC), "Assets/merkur.jpg"),
+                                     new PlanetMaterial(MoreShaders.GetDiffuseTextureShader(RC), "Assets/merkur.jpg"),
                                      new Renderer(planetMesh));
 
             planet.transform.GlobalPosition = new float3(2.35f, 0, 0);
@@ -98,7 +99,7 @@ namespace Examples.SolarSystem
 
             // Setup Venus
             planet = new SceneEntity("Venus", new PlanetAction(_earthSpeed*1.5021f), emptyVenus,
-                                     new PlanetMaterial(MoreShaders.GetShader("texture2", RC), "Assets/venus.jpg"),
+                                     new PlanetMaterial(MoreShaders.GetDiffuseTextureShader(RC), "Assets/venus.jpg"),
                                      new Renderer(planetMesh));
 
             planet.transform.GlobalPosition = new float3(2.6f, 0, 0);
@@ -107,7 +108,7 @@ namespace Examples.SolarSystem
 
             // Setup Mars
             planet = new SceneEntity("Mars", new PlanetAction(_earthSpeed*374.125f), emptyMars,
-                                     new PlanetMaterial(MoreShaders.GetShader("texture2", RC), "Assets/mars.jpg"),
+                                     new PlanetMaterial(MoreShaders.GetDiffuseTextureShader(RC), "Assets/mars.jpg"),
                                      new Renderer(planetMesh));
 
             planet.transform.GlobalPosition = new float3(3.25f, 0, 0);
@@ -115,7 +116,7 @@ namespace Examples.SolarSystem
 
             // Setup Jupiter
             planet = new SceneEntity("Jupiter", new PlanetAction(_earthSpeed*882.62f), emptyJupiter,
-                                     new PlanetMaterial(MoreShaders.GetShader("texture2", RC), "Assets/jupiter.jpg"),
+                                     new PlanetMaterial(MoreShaders.GetDiffuseTextureShader(RC), "Assets/jupiter.jpg"),
                                      new Renderer(planetMesh));
 
             planet.transform.GlobalPosition = new float3(4, 0, 0);
@@ -123,7 +124,7 @@ namespace Examples.SolarSystem
 
             // Setup Saturn
             planet = new SceneEntity("Saturn", new PlanetAction(_earthSpeed*820.61f), emptySaturn,
-                                     new PlanetMaterial(MoreShaders.GetShader("texture2", RC), "Assets/saturn.jpg"),
+                                     new PlanetMaterial(MoreShaders.GetDiffuseTextureShader(RC), "Assets/saturn.jpg"),
                                      new Renderer(planetMesh));
 
             planet.transform.GlobalPosition = new float3(5, 0, 0);
@@ -132,7 +133,7 @@ namespace Examples.SolarSystem
 
             // Setup Uranus
             planet = new SceneEntity("Uranus", new PlanetAction(_earthSpeed*509.30f), emptyUranus,
-                                     new PlanetMaterial(MoreShaders.GetShader("texture2", RC), "Assets/uranus.jpg"),
+                                     new PlanetMaterial(MoreShaders.GetDiffuseTextureShader(RC), "Assets/uranus.jpg"),
                                      new Renderer(planetMesh));
 
             planet.transform.GlobalPosition = new float3(6, 0, 0);
@@ -141,7 +142,7 @@ namespace Examples.SolarSystem
 
             // Setup Neptun
             planet = new SceneEntity("Neptun", new PlanetAction(_earthSpeed*544.10f), emptyNeptun,
-                                     new PlanetMaterial(MoreShaders.GetShader("texture2", RC), "Assets/neptune.jpg"),
+                                     new PlanetMaterial(MoreShaders.GetDiffuseTextureShader(RC), "Assets/neptune.jpg"),
                                      new Renderer(planetMesh));
 
             planet.transform.GlobalPosition = new float3(7, 0, 0);

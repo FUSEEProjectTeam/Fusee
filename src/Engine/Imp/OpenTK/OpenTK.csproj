@@ -21,6 +21,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DocumentationFile>..\..\..\..\Bin\Debug\Fusee.Engine.Imp.OpenTK.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>pdbonly</DebugType>
@@ -42,6 +43,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Font.cs" />
     <Compile Include="Implementor.cs" />
     <Compile Include="InputImp.cs" />
     <Compile Include="Keymapper.cs" />
@@ -58,6 +60,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\ExternalBinaries\OpenTK.dll</HintPath>
     </Reference>
+    <Reference Include="SharpFont">
+      <HintPath>..\..\..\..\ExternalBinaries\SharpFont\SharpFont.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
@@ -68,6 +73,8 @@
     <Exec Condition=" '$(OS)' != 'Windows_NT' And Exists('$(OutputPath)') " Command="rm '$(OutputPath)'Fusee.Engine.Imp.OpenTK.*" />
     <Exec Condition=" '$(OS)' == 'Windows_NT' And Exists('$(OutputPath)OpenTK.dll') " Command="del /q &quot;$(OutputPath)OpenTK.dll&quot;" />
     <Exec Condition=" '$(OS)' != 'Windows_NT' And Exists('$(OutputPath)OpenTK.dll') " Command="rm '$(OutputPath)'OpenTK.dll" />
+    <Exec Condition=" '$(OS)' == 'Windows_NT' And Exists('$(OutputPath)SharpFont.dll') " Command="del /q &quot;$(OutputPath)SharpFont.dll&quot;" />
+    <Exec Condition=" '$(OS)' != 'Windows_NT' And Exists('$(OutputPath)SharpFont.dll') " Command="rm '$(OutputPath)'SharpFont.dll" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

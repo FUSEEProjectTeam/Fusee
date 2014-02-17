@@ -1,90 +1,108 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security;
-using System.Text;
 using System.Windows.Forms;
 using Fusee.Engine;
 using KeyEventArgs = Fusee.Engine.KeyEventArgs;
-using MouseButtons = Fusee.Engine.MouseButtons;
 using MouseEventArgs = Fusee.Engine.MouseEventArgs;
 
 namespace Examples.WinFormsFusee
 {
     /// <summary>
-    /// Instances of this class act as the glue between a Windows Forms form and FUSEE when FUSEE is intended to display its contents
-    /// on the Windows form and to wire interactions to user input performed on the Windows form.
+    ///     Instances of this class act as the glue between a Windows Forms form and FUSEE when FUSEE is intended to display
+    ///     its contents
+    ///     on the Windows form and to wire interactions to user input performed on the Windows form.
     /// </summary>
-    class WinformsHost : RenderCanvasWindowImp, IInputImp
+    internal class WinformsHost : RenderCanvasWindowImp, IInputImp
     {
-        private bool _disposed = false;
+        private bool _disposed;
+
         private Control _form;
+        private readonly MainWindow _parent;
+
         private int _mouseWheelPos;
         private bool _initialized;
 
-        public WinformsHost(Control form) : base(form.Handle)
+        public WinformsHost(Control form, MainWindow parent)
+            : base(form.Handle, form.Width, form.Height)
         {
             if (form == null) throw new ArgumentNullException("form");
 
             _form = form;
+            _parent = parent;
+
             _mouseWheelPos = 0;
+
             form.MouseDown += delegate(object sender, System.Windows.Forms.MouseEventArgs args)
-                {
-                    if (MouseButtonDown != null)
-                        MouseButtonDown(this,
-                                        new MouseEventArgs
-                                            {
-                                                Button = XLateButtons(args.Button),
-                                                Position = XLatePoint(args.Location)
-                                            });
-                };
-           form.MouseUp += delegate(object sender, System.Windows.Forms.MouseEventArgs args)
-                {
-                    if (MouseButtonUp != null)
-                        MouseButtonUp(this,
-                                        new MouseEventArgs
-                                            {
-                                                Button = XLateButtons(args.Button),
-                                                Position = XLatePoint(args.Location)
-                                            });
-                };
+            {
+                if (MouseButtonDown != null)
+                    MouseButtonDown(this,
+                        new MouseEventArgs
+                        {
+                            Button = XLateButtons(args.Button),
+                            Position = XLatePoint(args.Location)
+                        });
+            };
+
+            form.MouseUp += delegate(object sender, System.Windows.Forms.MouseEventArgs args)
+            {
+                if (MouseButtonUp != null)
+                    MouseButtonUp(this,
+                        new MouseEventArgs
+                        {
+                            Button = XLateButtons(args.Button),
+                            Position = XLatePoint(args.Location)
+                        });
+            };
+
+            form.MouseMove += delegate(object sender, System.Windows.Forms.MouseEventArgs args)
+            {
+                if (MouseMove != null)
+                    MouseMove(this,
+                        new MouseEventArgs
+                        {
+                            Button = XLateButtons(args.Button),
+                            Position = XLatePoint(args.Location)
+                        });
+            };
+
             form.KeyDown += delegate(object sender, System.Windows.Forms.KeyEventArgs args)
-                {
-                    if (KeyDown != null)
-                        KeyDown(this,
-                                new KeyEventArgs
-                                    {
-                                        Alt = args.Alt,
-                                        Control = args.Control,
-                                        KeyCode = (KeyCodes) (args.KeyCode)
-                                    });
-                };
+            {
+                if (KeyDown != null)
+                    KeyDown(this,
+                        new KeyEventArgs
+                        {
+                            Alt = args.Alt,
+                            Control = args.Control,
+                            KeyCode = (KeyCodes) (args.KeyCode)
+                        });
+            };
+
             form.KeyUp += delegate(object sender, System.Windows.Forms.KeyEventArgs args)
-                {
-                    if (KeyDown != null)
-                        KeyUp(this,
-                                new KeyEventArgs
-                                {
-                                    Alt = args.Alt,
-                                    Control = args.Control,
-                                    KeyCode = (KeyCodes)(args.KeyCode)
-                                });
-                };
-            form.MouseWheel += delegate(object sender, System.Windows.Forms.MouseEventArgs args)
-                {
-                    _mouseWheelPos += args.Delta;
-                };
-            form.SizeChanged += delegate(object sender, EventArgs args)
-                {
-                    _form.Invalidate();
-                    _width = _form.Width;
-                    _height = _form.Height;
-                    DoResize();
-                    DoRender();
-                };
-            Application.Idle += OnIdle;   
+            {
+                if (KeyDown != null)
+                    KeyUp(this,
+                        new KeyEventArgs
+                        {
+                            Alt = args.Alt,
+                            Control = args.Control,
+                            KeyCode = (KeyCodes) (args.KeyCode)
+                        });
+            };
+
+            form.MouseWheel +=
+                delegate(object sender, System.Windows.Forms.MouseEventArgs args) { _mouseWheelPos += args.Delta; };
+
+            form.SizeChanged += delegate
+            {
+                _form.Invalidate();
+                _width = _form.Width;
+                _height = _form.Height;
+                DoResize();
+                DoRender();
+            };
+
+            Application.Idle += OnIdle;
         }
 
         private void OnIdle(object idleSender, EventArgs ea)
@@ -124,6 +142,26 @@ namespace Examples.WinFormsFusee
         }
 
 
+        public override int Width
+        {
+            get { return _width; }
+            set
+            {
+                _width = value + 200;
+                _parent.SetSize(_width, _height);
+            }
+        }
+
+        public override int Height
+        {
+            get { return _height; }
+            set
+            {
+                _height = value;
+                _parent.SetSize(_width, _height);
+            }
+        }
+
         public void FrameTick(double time)
         {
             // ignore - we create our own timer.
@@ -153,12 +191,13 @@ namespace Examples.WinFormsFusee
 
         public event EventHandler<MouseEventArgs> MouseButtonDown;
         public event EventHandler<MouseEventArgs> MouseButtonUp;
+        public event EventHandler<MouseEventArgs> MouseMove;
         public event EventHandler<KeyEventArgs> KeyDown;
         public event EventHandler<KeyEventArgs> KeyUp;
 
         private static Fusee.Engine.MouseButtons XLateButtons(System.Windows.Forms.MouseButtons button)
         {
-            Fusee.Engine.MouseButtons result = Fusee.Engine.MouseButtons.Unknown;
+            var result = Fusee.Engine.MouseButtons.Unknown;
             if ((button & System.Windows.Forms.MouseButtons.Left) != 0)
                 result |= Fusee.Engine.MouseButtons.Left;
             if ((button & System.Windows.Forms.MouseButtons.Right) != 0)
@@ -168,20 +207,20 @@ namespace Examples.WinFormsFusee
             return result;
         }
 
-        private static Fusee.Engine.Point XLatePoint(System.Drawing.Point point)
+        private static Point XLatePoint(System.Drawing.Point point)
         {
-            return new Point { x = point.X, y = point.Y };
+            return new Point {x = point.X, y = point.Y};
         }
 
         [StructLayout(LayoutKind.Sequential)]
         private struct Message
         {
-            public IntPtr hWnd;
-            public int msg;
-            public IntPtr wParam;
-            public IntPtr lParam;
-            public uint time;
-            public Point p;
+            private readonly IntPtr hWnd;
+            private readonly int msg;
+            private readonly IntPtr wParam;
+            private readonly IntPtr lParam;
+            private readonly uint time;
+            private readonly Point p;
         }
 
         [return: MarshalAs(UnmanagedType.Bool)]

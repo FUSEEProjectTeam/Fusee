@@ -46,6 +46,9 @@
         /// </value>
         public bool NormalsSet { get { return NormalBufferObject != 0; } }
 
+        /// <summary>
+        /// Implementation Tasks: Invalidates the colors, e.g. reset the ColorBufferObject of this instance by setting it to 0.
+        /// </summary>
         public void InvalidateColors()
         {
             ColorBufferObject = 0;

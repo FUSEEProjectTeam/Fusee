@@ -112,50 +112,63 @@ namespace Fusee.SceneManagement
         /// <summary>
         /// Adds the transform object to the internal stack.
         /// </summary>
-        /// <param name="transform">The transformation.</param>
+        /// <param name="transform">The transform.</param>
         private void AddTransform(Transformation transform)
         {
             if (_mtxModelViewStack.Count > 0)
             {
-
-
                 if (transform.GlobalMatrixDirty)
                 {
                     transform.Matrix = float4x4.Invert(_mtxModelViewStack.Peek())*transform.GlobalMatrix;
                     transform.SetGlobalMat(transform.Matrix * _mtxModelViewStack.Peek());
-                    _hasTransform.Pop();
-                    _mtxModelViewStack.Push(transform.Matrix*_mtxModelViewStack.Pop());
-                    _hasTransform.Push(true);
-
+                    _mtxModelViewStack.Push(transform.Matrix * _mtxModelViewStack.Pop());
+                    //Debug.WriteLine("Matrix: " + transform.GlobalMatrix + " Point: " + transform.GlobalPosition);
+       
+                        _hasTransform.Pop();
+                        _hasTransform.Push(true);
+          
+                    
+                    
+                    
                     if (HasRenderingTriple())
                     {
                         AddRenderJob(_mtxModelViewStack.Peek(), _meshStack.Peek(), _RendererStack.Peek());
                     }
-
                     return;
                 }
-                transform.SetGlobalMat(transform.Matrix*_mtxModelViewStack.Peek());
-                _hasTransform.Pop();
-                _mtxModelViewStack.Push(transform.Matrix*_mtxModelViewStack.Pop());
-                _hasTransform.Push(true);
 
+                transform.SetGlobalMat(transform.Matrix*_mtxModelViewStack.Peek());
+                _mtxModelViewStack.Push(transform.Matrix * _mtxModelViewStack.Pop());
+                //Debug.WriteLine("Matrix: " + transform.GlobalMatrix + " Point: " + transform.GlobalPosition);
+           
+                    _hasTransform.Pop();
+                    _hasTransform.Push(true);
+             
+                
+                
+                
+                
+                
+                
                 if (HasRenderingTriple())
                 {
                     AddRenderJob(_mtxModelViewStack.Peek(), _meshStack.Peek(), _RendererStack.Peek());
                 }
-
+                
             }else
             {
-
-
-                if(_hasTransform.Count > 0)
-                {
-                    _hasTransform.Pop();
-                }
-
-                _hasTransform.Push(true);
                 _mtxModelViewStack.Push(transform.GlobalMatrix);
-
+                //Debug.WriteLine("Matrix: " + transform.GlobalMatrix + " Point: " + transform.GlobalPosition);
+       
+                    if (_hasTransform.Count > 0)
+                    {
+                        _hasTransform.Pop();
+                    }
+                    
+                    _hasTransform.Push(true);
+                
+               
+                
                 if (HasRenderingTriple())
                 {
                     AddRenderJob(_mtxModelViewStack.Peek(), _meshStack.Peek(), _RendererStack.Peek());
@@ -186,7 +199,11 @@ namespace Fusee.SceneManagement
 
         private void Pop()
         {
-            _mtxModelViewStack.Pop();
+            if(_mtxModelViewStack.Count > 0)
+            {
+                _mtxModelViewStack.Pop();
+            }
+            
             _hasTransform.Pop();
             _hasMesh.Pop();
             _hasRenderer.Pop();
@@ -202,42 +219,49 @@ namespace Fusee.SceneManagement
         }
 
         /// <summary>
-        /// Adds a <see cref="DirectionalLight"/> to the rendering queue.
+        /// Adds a <see cref="DirectionalLight" /> to the rendering queue.
         /// </summary>
         /// <param name="direction">The direction.</param>
-        /// <param name="color">The color.</param>
+        /// <param name="diffuse">The diffuse color.</param>
+        /// <param name="ambient">The ambient color.</param>
+        /// <param name="specular">The specular color.</param>
         /// <param name="type">The type.</param>
         /// <param name="channel">The channel.</param>
-        public void AddLightDirectional(float3 direction, float4 color, Light.LightType type, int channel) 
+        public void AddLightDirectional(float3 direction, float4 diffuse, float4 ambient, float4 specular, Light.LightType type, int channel) 
         {
-            RenderDirectionalLight light = new RenderDirectionalLight(direction, color, type, channel );
+            RenderDirectionalLight light = new RenderDirectionalLight(direction, diffuse, ambient, specular, type, channel );
             _queue.AddLightJob(light);
         }
 
         /// <summary>
-        /// Adds a <see cref="PointLight"/> to the rendering queue.
+        /// Adds a <see cref="PointLight" /> to the rendering queue.
         /// </summary>
         /// <param name="position">The position.</param>
-        /// <param name="color">The color.</param>
-        /// <param name="type">The type.</param>
+        /// <param name="diffuse">The diffuse light color.</param>
+        /// <param name="ambient">The ambient light color.</param>
+        /// <param name="specular">The specular light color.</param>
+        /// <param name="type">The lighttype.</param>
         /// <param name="channel">The channel.</param>
-        public void AddLightPoint(float3 position, float4 color, Light.LightType type, int channel) 
+        public void AddLightPoint(float3 position, float4 diffuse, float4 ambient, float4 specular, Light.LightType type, int channel) 
         {
-            RenderPointLight light = new RenderPointLight(position, color, type, channel );
+            RenderPointLight light = new RenderPointLight(position, diffuse, ambient, specular, type, channel );
             _queue.AddLightJob(light);
         }
 
         /// <summary>
-        /// Adds a <see cref="SpotLight"/> to the rendering queue.
+        /// Adds a <see cref="SpotLight" /> to the rendering queue.
         /// </summary>
-        /// <param name="position">The position.</param>
-        /// <param name="direction">The direction.</param>
-        /// <param name="color">The color.</param>
-        /// <param name="type">The type.</param>
+        /// <param name="position">The position of the light in the scene.</param>
+        /// <param name="direction">The direction of the light along its z-axis.</param>
+        /// <param name="diffuse">The diffuse light color.</param>
+        /// <param name="ambient">The ambient light color.</param>
+        /// <param name="specular">The specular light color.</param>
+        /// <param name="angle">The angle of the spot light.</param>
+        /// <param name="type">The lighttype.</param>
         /// <param name="channel">The channel.</param>
-        public void AddLightSpot(float3 position, float3 direction, float4 color, Light.LightType type, int channel) 
+        public void AddLightSpot(float3 position, float3 direction, float4 diffuse, float4 ambient, float4 specular, float angle, Light.LightType type, int channel) 
         {
-            RenderSpotLight light = new RenderSpotLight(position, direction, color, type, channel );
+            RenderSpotLight light = new RenderSpotLight(position, direction, diffuse, ambient, specular, angle, type, channel );
             _queue.AddLightJob(light);
         }
 
@@ -370,7 +394,7 @@ namespace Fusee.SceneManagement
         override public void Visit(Camera camera)
         {
 
-            if (_mtxModelViewStack != null)
+            if (_mtxModelViewStack.Count > 0)
             {
                 camera.ViewMatrix = _mtxModelViewStack.Peek();
                 _queue.AddCamera(camera.SubmitWork());

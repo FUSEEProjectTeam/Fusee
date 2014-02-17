@@ -16,6 +16,7 @@ namespace Fusee.SceneManagement
         /// The SubmitWork method will be overwritten by a visited Component that "want's" to be rendered.
         /// Therefore a RenderContext is needed.
         /// </summary>
+        /// <param name="renderContext">The render context.</param>
         virtual public void SubmitWork(RenderContext renderContext)
         {
 

@@ -57,21 +57,44 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Attributes.cs" />
+    <Compile Include="ColorUint.cs" />
     <Compile Include="IAudioStream.cs" />
     <Compile Include="IInputDeviceImp.cs" />
     <Compile Include="IInputDriverImp.cs" />
+    <Compile Include="IFont.cs" />
+    <Compile Include="IBoxShapeImp.cs" />
+    <Compile Include="ICapsuleShapeImp.cs" />
+    <Compile Include="ICollisionShapeImp.cs" />
+    <Compile Include="ICompoundShapeImp.cs" />
+    <Compile Include="IConeShapeImp.cs" />
+    <Compile Include="IConeTwistConstraintImp.cs" />
+    <Compile Include="IConstraintImp.cs" />
+    <Compile Include="IConvexHullShapeImp.cs" />
+    <Compile Include="ICylinderShapeImp.cs" />
+    <Compile Include="IDynamicWorldImp.cs" />
+    <Compile Include="IEmptyShapeImp.cs" />
+    <Compile Include="IGearConstraintImp.cs" />
+    <Compile Include="IGeneric6DofConstraintImp.cs" />
+    <Compile Include="IGImpactMeshShapeImp.cs" />
+    <Compile Include="IHingeConstraintImp.cs" />
     <Compile Include="IInputImp.cs" />
     <Compile Include="ImageData.cs" />
     <Compile Include="IMeshImp.cs" />
+    <Compile Include="IMultiSphereShapeImp.cs" />
     <Compile Include="INetworkConnection.cs" />
     <Compile Include="INetworkImp.cs" />
     <Compile Include="INetworkMsg.cs" />
     <Compile Include="InitEventArgs.cs" />
+    <Compile Include="IPoint2PointConstraintImp.cs" />
     <Compile Include="IRenderCanvasImp.cs" />
     <Compile Include="IRenderContextImp.cs" />
+    <Compile Include="IRigidBodyImp.cs" />
     <Compile Include="IShaderParam.cs" />
     <Compile Include="IShaderProgramImp.cs" />
     <Compile Include="IAudioImp.cs" />
+    <Compile Include="ISliderConstraintImp.cs" />
+    <Compile Include="ISphereShapeImp.cs" />
+    <Compile Include="IStaticPlaneShapeImp.cs" />
     <Compile Include="ITexture.cs" />
     <Compile Include="KeyEventArgs.cs" />
     <Compile Include="Light.cs" />
@@ -88,6 +111,10 @@
   <ItemGroup>
     <Reference Include="JSIL.Meta">
       <HintPath>..\..\..\ExternalBinaries\JSIL\Compiler\JSIL.Meta.dll</HintPath>
+    </Reference>
+    <Reference Include="protobuf-net, Version=2.0.0.668, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ExternalBinaries\CustomProtobuf\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />

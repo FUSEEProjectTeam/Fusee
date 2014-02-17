@@ -40,7 +40,7 @@ namespace Fusee.Engine
         /// Sends the message as <see cref="MessageType"/>.RealiableOrdered on channel 0.
         /// </summary>
         /// <param name="packet">The packet in byte[].</param>
-        /// <returns></returns>
+        /// <returns>True if the message arrived.</returns>
         bool SendMessage(byte[] packet);
         /// <summary>
         /// Sends the message with options.
@@ -48,7 +48,7 @@ namespace Fusee.Engine
         /// <param name="packet">The packet in byte[].</param>
         /// <param name="msgDelivery">The <see cref="MessageDelivery"/>.</param>
         /// <param name="msgChannel">The message channel.</param>
-        /// <returns></returns>
+        /// <returns>True if the message arrived.</returns>
         bool SendMessage(byte[] packet, MessageDelivery msgDelivery, int msgChannel);
     }
 }

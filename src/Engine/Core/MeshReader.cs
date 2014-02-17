@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Fusee.Math;
 using System.IO;
 using JSIL.Meta;
@@ -18,7 +19,7 @@ namespace Fusee.Engine
         /// Hack needed for JSIL.
         /// </summary>
         /// <param name="s">string to parse</param>
-        /// <returns>A double nuber</returns>
+        /// <returns>A double number</returns>
         // TODO: Get rid of this hack
         [JSExternal]
         public static double Double_Parse(string s)
@@ -184,33 +185,21 @@ namespace Fusee.Engine
         /// <returns>The newly created Mesh object</returns>
         public static Mesh LoadMesh(string path)
         {
-            Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(path));
+            Geometry geo = ReadWavefrontObj(new StreamReader(path));
             return geo.ToMesh();
         }
 
         /// <summary>
-        /// This method is used to split string in a list of strings based on the separator passed to the method.
+        /// This method is used to split a string in a list of strings based on the separator passed to the method.
         /// </summary>
-        /// <param name="strIn"></param>
-        /// <param name="separator"></param>
-        /// <returns></returns>
+        /// <param name="strIn">The string.</param>
+        /// <param name="separator">The separator.</param>
+        /// <returns>An array of string with all separated values.</returns>
         public static string[] FilteredSplit(string strIn, char[] separator)
         {
-            string[] valuesUnfiltered = strIn.Split(separator);
-
             // Sometime if we have a white space at the beginning of the string, split
             // will return an empty string. Let's remove that.
-            List<string> listOfValues = new List<string>();
-            foreach (string str in valuesUnfiltered)
-            {
-                if (str != "")
-                {
-                    listOfValues.Add(str);
-                }
-            }
-            string[] values = listOfValues.ToArray();
-
-            return values;
+            return strIn.Split(separator).Where(str => str.Length > 0).ToArray();
         }
 
         #endregion

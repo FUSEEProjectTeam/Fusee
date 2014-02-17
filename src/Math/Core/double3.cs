@@ -1485,5 +1485,7 @@ namespace Fusee.Math
         }
 
         #endregion
+
+        public static Converter<string, double3> Parse { get; set; }
     }
 }

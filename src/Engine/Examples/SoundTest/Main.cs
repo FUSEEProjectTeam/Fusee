@@ -5,7 +5,7 @@ using Fusee.Math;
 
 namespace Examples.SoundTest
 {
-    [FuseeApplication(Name = "Sound Test", Description = "The name of this examle says it all...")]
+    [FuseeApplication(Name = "Sound Test", Description = "The name of this example says it all...")]
     public class SoundTest : RenderCanvas
     {
         protected Mesh Mesh;
@@ -30,10 +30,10 @@ namespace Examples.SoundTest
 
             Mesh = MeshReader.LoadMesh("Assets/Cube.obj.model");
 
-            var sp = MoreShaders.GetShader("simple", RC);
+            var sp = MoreShaders.GetDiffuseColorShader(RC);
             RC.SetShader(sp);
 
-            _vColor = RC.GetShaderParam(sp, "vColor");
+            _vColor = RC.GetShaderParam(sp, "color");
             RC.SetShaderParam(_vColor, new float4(0.8f, 0.1f, 0.1f, 1));
 
             // sound by http://www.soundjay.com
