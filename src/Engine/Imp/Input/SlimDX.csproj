@@ -51,7 +51,7 @@
   <ItemGroup>
     <Reference Include="SlimDX, Version=4.0.13.43, Culture=neutral, PublicKeyToken=b1b0c32fd1ffe4f9, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>D:\Programme\SlimDX SDK\Bin\net40\x86\SlimDX.dll</HintPath>
+      <HintPath>..\..\..\..\ExternalBinaries\SlimDX.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

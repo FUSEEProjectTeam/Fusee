@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Diagnostics;
 using Fusee.Engine;
 using Fusee.Math;
@@ -17,14 +17,14 @@ namespace Examples.Simple
         // model variables
         private Mesh _meshFace;
         private Mesh _meshTea;
-
+        
         // variables for shader
         private ShaderProgram _spColor;
         private ShaderProgram _spTexture;
 
         private IShaderParam _colorParam;
         private IShaderParam _textureParam;
-
+        
         private ITexture _iTex;
 
         // is called on startup
@@ -50,17 +50,17 @@ namespace Examples.Simple
         // is called once a frame
         public override void RenderAFrame()
         {
-
+            
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
             // move per mouse
             if (Input.Instance.IsButton(MouseButtons.Left))
             {
-                _angleVelHorz = RotationSpeed * Input.Instance.GetAxis(InputAxis.MouseX);
-                _angleVelVert = RotationSpeed * Input.Instance.GetAxis(InputAxis.MouseY);
+                _angleVelHorz = RotationSpeed*Input.Instance.GetAxis(InputAxis.MouseX);
+                _angleVelVert = RotationSpeed*Input.Instance.GetAxis(InputAxis.MouseY);
             }
             else
             {
-                var curDamp = (float)Math.Exp(-Damping * Time.Instance.DeltaTime);
+                var curDamp = (float) Math.Exp(-Damping*Time.Instance.DeltaTime);
 
                 _angleVelHorz *= curDamp;
                 _angleVelVert *= curDamp;
@@ -71,18 +71,18 @@ namespace Examples.Simple
 
             // move per keyboard
             if (Input.Instance.IsKey(KeyCodes.Left))
-                _angleHorz -= RotationSpeed * (float)Time.Instance.DeltaTime;
+                _angleHorz -= RotationSpeed*(float) Time.Instance.DeltaTime;
 
             if (Input.Instance.IsKey(KeyCodes.Right))
-                _angleHorz += RotationSpeed * (float)Time.Instance.DeltaTime;
+                _angleHorz += RotationSpeed*(float) Time.Instance.DeltaTime;
 
             if (Input.Instance.IsKey(KeyCodes.Up))
-                _angleVert -= RotationSpeed * (float)Time.Instance.DeltaTime;
+                _angleVert -= RotationSpeed*(float) Time.Instance.DeltaTime;
 
             if (Input.Instance.IsKey(KeyCodes.Down))
-                _angleVert += RotationSpeed * (float)Time.Instance.DeltaTime;
+                _angleVert += RotationSpeed*(float) Time.Instance.DeltaTime;
 
-            var mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
+            var mtxRot = float4x4.CreateRotationY(_angleHorz)*float4x4.CreateRotationX(_angleVert);
             var mtxCam = float4x4.LookAt(0, 200, 500, 0, 0, 0, 0, 1, 0);
 
             // first mesh
@@ -90,11 +90,11 @@ namespace Examples.Simple
 
             RC.SetShader(_spColor);
             RC.SetShaderParam(_colorParam, new float4(0.5f, 0.8f, 0, 1));
-
+            
             RC.Render(_meshTea);
 
             // second mesh
-            RC.ModelView = mtxRot * float4x4.CreateTranslation(150, 0, 0) * mtxCam;
+            RC.ModelView = mtxRot*float4x4.CreateTranslation(150, 0, 0)*mtxCam;
 
             RC.SetShader(_spTexture);
             RC.SetShaderParamTexture(_textureParam, _iTex);
@@ -111,7 +111,7 @@ namespace Examples.Simple
         {
             RC.Viewport(0, 0, Width, Height);
 
-            var aspectRatio = Width / (float)Height;
+            var aspectRatio = Width/(float) Height;
             RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 5000);
         }
 
