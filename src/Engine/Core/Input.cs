@@ -376,6 +376,17 @@ namespace Fusee.Engine
             return new InputDevice();
         }
 
+
+
+        /// <summary>
+        /// Counts the devices.
+        /// </summary>
+        /// <returns>The amount of devices</returns>
+        public int CountDevices()
+        {
+            return Devices.Count;
+        }
+
         internal IInputDriverImp InputDriverImp
         {
             set

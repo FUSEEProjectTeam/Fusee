@@ -10,12 +10,7 @@ namespace Examples.InputDevices
         private Mesh _meshTea;
 
         private ShaderProgram _spColor;
-        private ShaderProgram _spTexture;
-
         private IShaderParam _colorParam;
-        private IShaderParam _textureParam;
-
-        private ITexture _iTex;
 
         public override void Init()
         {
@@ -23,29 +18,36 @@ namespace Examples.InputDevices
             _meshTea = MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
 
 
-            _spColor = MoreShaders.GetShader("simple", RC);
-            _spTexture = MoreShaders.GetShader("texture", RC);
+            _spColor = MoreShaders.GetDiffuseColorShader(RC);
 
             _colorParam = _spColor.GetShaderParam("vColor");
-            _textureParam = _spTexture.GetShaderParam("texture1");
-
-            // load texture
-            var imgData = RC.LoadImage("Assets/world_map.jpg");
-            _iTex = RC.CreateTexture(imgData);
-
 
         }
 
         public override void RenderAFrame()
         {
             float y = 0;
-            //Input.Instance.GetDevice(0).IsButtonDown(0)
             float z = 0;
             float x = 0;
-            y = 50 * Input.Instance.GetDevice(0).GetAxis(InputDevice.Axis.Vertical);
-            z = 50 * Input.Instance.GetDevice(0).GetAxis(InputDevice.Axis.Z);
-            x = 50 * Input.Instance.GetDevice(0).GetAxis(InputDevice.Axis.Horizontal);
+            if (Input.Instance.CountDevices() != 0)
+            {
+                y = 50*Input.Instance.GetDevice(0).GetAxis(InputDevice.Axis.Vertical);
+                z = 50*Input.Instance.GetDevice(0).GetAxis(InputDevice.Axis.Z);
+                x = 50*Input.Instance.GetDevice(0).GetAxis(InputDevice.Axis.Horizontal);
+            }
 
+            else
+            {
+                if (Input.Instance.IsKeyDown(KeyCodes.Up))
+                    y++;
+                if (Input.Instance.IsKeyDown(KeyCodes.Down))
+                    y--;
+                if (Input.Instance.IsKeyDown(KeyCodes.Left))
+                    x--;
+                if (Input.Instance.IsKeyDown(KeyCodes.Right))
+                    x++;
+
+            }
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
             //if (Input.Instance.IsKeyDown(KeyCodes.Up))
@@ -63,9 +65,6 @@ namespace Examples.InputDevices
             RC.SetShaderParam(_colorParam, new float4(0.5f, 0.8f, 0, 1));
 
             RC.Render(_meshTea);
-
-
-            //RC.Render(_meshFace);
 
             Present();
         }
