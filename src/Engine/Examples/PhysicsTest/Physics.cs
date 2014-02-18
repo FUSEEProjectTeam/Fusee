@@ -7,9 +7,9 @@ using Fusee.Engine;
 using Fusee.Math;
 using Microsoft.Win32;
 
-namespace Examples.BulletTest
+namespace Examples.PhysicsTest
 {
-    class Physic
+    class Physics
     {
         private DynamicWorld _world;
         
@@ -34,7 +34,7 @@ namespace Examples.BulletTest
         }
             
 
-        public Physic()
+        public Physics()
         {
             Debug.WriteLine("Physic: Constructor");
             InitScene1();

@@ -15,24 +15,24 @@
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>..\..\..\bin\Debug\</OutputPath>
+    <OutputPath>bin\x86\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
     <NoWarn>1591</NoWarn>
+    <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\..\..\bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="JSIL.Meta, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -41,11 +41,6 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ChainedMemberAccessor.cs" />
@@ -69,14 +64,6 @@
     <ProjectReference Include="..\..\Math\Core\Math.Core.csproj">
       <Project>{E95FA1C8-6491-4B4B-BBE1-EDA6B16B2C6A}</Project>
       <Name>Math.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Common\Common.csproj">
-      <Project>{DFD770F6-4222-4255-AAE0-DCACDC7B21EB}</Project>
-      <Name>Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Core\Core.csproj">
-      <Project>{1228EB3F-8BCC-453F-8A2E-D9246495A118}</Project>
-      <Name>Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

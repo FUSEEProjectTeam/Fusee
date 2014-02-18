@@ -37,12 +37,9 @@ namespace Examples.ParticleSystem
         private ITexture _iFireYellow;
         private ITexture _iStar;
 
-        private GUIButton[] _guiBDiffs;
         private IFont _guiFontCabin18;
         private IFont _guiFontCabin24;
         private GUIHandler _guiHandler;
-
-        private GUIImage _guiImage;
 
         private GUIPanel _guiPanel;
 
@@ -50,8 +47,6 @@ namespace Examples.ParticleSystem
         private GUIButton _guiExampleTwoButton;
         private GUIButton _guiExampleThreeButton;
         private GUIText _guiText;
-
-        private GUIButton[] _guiUDiffs;
 
         // is called on startup
         public override void Init()
@@ -79,8 +74,6 @@ namespace Examples.ParticleSystem
             _iFireYellow            = RC.CreateTexture(imgFireYellowData);
             _iStar                  = RC.CreateTexture(imgStarData);
 
-
-
             RC.SetRenderState(new RenderStateSet
             {
                 ZEnable = false,
@@ -89,6 +82,7 @@ namespace Examples.ParticleSystem
                 SourceBlend = Blend.SourceAlpha,
                 DestinationBlend = Blend.InverseSourceAlpha
             });
+
             // GUIHandler
             _guiHandler = new GUIHandler();
             _guiHandler.AttachToContext(RC);
@@ -101,9 +95,6 @@ namespace Examples.ParticleSystem
             _guiText.TextColor = new float4(1, 1, 1, 1);
 
             _guiHandler.Add(_guiText);
-            // buttons / rectangles
-            _guiUDiffs = new GUIButton[7];
-            _guiBDiffs = new GUIButton[7];
 
             // panel
             _guiPanel = new GUIPanel("Menu", _guiFontCabin18, 10, 10, 150, 150);
@@ -138,7 +129,6 @@ namespace Examples.ParticleSystem
             _guiExampleThreeButton.OnGUIButtonLeave += OnMenuButtonLeave;
 
             _guiPanel.ChildElements.Add(_guiExampleThreeButton);
-
         }
 
         private void OnMenuButtonDown(GUIButton sender, MouseEventArgs mea)
@@ -154,6 +144,7 @@ namespace Examples.ParticleSystem
                  
 
             }
+
             if (sender == _guiExampleTwoButton)
             {
                 //particelcount,minLife, maxLife,minSize, maxSize, rotation, transparency, randPosX,randPosY,randPosY,randVelX,randVelY,randVelZ,gravityX, gravityY, gravityZ,
@@ -164,6 +155,7 @@ namespace Examples.ParticleSystem
                 //deactivate other emitter
                 _starEmitter                = null;
             }
+
             if (sender == _guiExampleThreeButton)
             {
                 //particelcount,minLife, maxLife,minSize, maxSize,rotation,transparency, randPosX,randPosY,randPosY,randVelX,randVelY,randVelZ,gravityX, gravityY, gravityZ,                           
@@ -173,7 +165,6 @@ namespace Examples.ParticleSystem
                 _fireYellowEmitter          = null;
                 _fireRedEmitter             = null;
             }
-
         }
 
         private void OnMenuButtonUp(GUIButton sender, MouseEventArgs mea)

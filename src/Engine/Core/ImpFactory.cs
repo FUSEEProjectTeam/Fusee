@@ -55,7 +55,7 @@ namespace Fusee.Engine
             }
         }
 
-        //Physic
+        // Physics
         [JSIgnore]
         private static Type PhysicsImplementor
         {

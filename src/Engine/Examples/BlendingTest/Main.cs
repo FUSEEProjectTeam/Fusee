@@ -1,6 +1,5 @@
 using System;
 using Fusee.Engine;
-using Fusee.SceneManagement;
 using Fusee.Math;
 
 namespace Examples.BlendingTest

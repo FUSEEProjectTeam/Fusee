@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Text;
-using System.Threading.Tasks;
+﻿using BulletSharp;
 using Fusee.Math;
-using BulletSharp;
 
 namespace Fusee.Engine
 {
     public class Translater
     {
-
         public float3 BtVector3ToFloat3(Vector3 btVector)
         {
             var retval = new float3(btVector.X, btVector.Y, btVector.Z);
@@ -26,11 +19,11 @@ namespace Fusee.Engine
 
         public float4x4 BtMatrixToFloat4X4(Matrix btMatrix)
         {
-            var retval = new float4x4 (btMatrix.M11, btMatrix.M12, btMatrix.M13, btMatrix.M14,
-                                       btMatrix.M21, btMatrix.M22, btMatrix.M23, btMatrix.M24,
-                                       btMatrix.M31, btMatrix.M32, btMatrix.M33, btMatrix.M34,
-                                       btMatrix.M41, btMatrix.M42, btMatrix.M43, btMatrix.M44
-                                       );
+            var retval = new float4x4(btMatrix.M11, btMatrix.M12, btMatrix.M13, btMatrix.M14,
+                btMatrix.M21, btMatrix.M22, btMatrix.M23, btMatrix.M24,
+                btMatrix.M31, btMatrix.M32, btMatrix.M33, btMatrix.M34,
+                btMatrix.M41, btMatrix.M42, btMatrix.M43, btMatrix.M44
+                );
             return retval;
         }
 

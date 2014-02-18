@@ -9,6 +9,7 @@
 var $WebGLImp = JSIL.DeclareAssembly("Fusee.Engine.Imp.WebGL");
 var $WebAudioImp = JSIL.GetAssembly("Fusee.Engine.Imp.WebAudio");
 var $WebNetImp = JSIL.GetAssembly("Fusee.Engine.Imp.WebNet");
+var $WebInputImp = JSIL.GetAssembly("Fusee.Engine.Imp.WebInput");
 
 var $fuseeCore = JSIL.GetAssembly("Fusee.Engine.Core");
 var $fuseeCommon = JSIL.GetAssembly("Fusee.Engine.Common");
@@ -2108,7 +2109,7 @@ JSIL.ImplementExternals("Fusee.Engine.ImpFactory", function($) {
     $.Method({ Static: true, Public: true }, "CreateIInputDriverImp",
         new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.IInputDriverImp"), []),
         function ImpFactory_CreateIInputDriverImp() {
-            return new $WebNetImp.Fusee.Engine.WebInputDriverImp();
+            return new $WebInputImp.Fusee.Engine.WebInputDriverImp();
         }
     );
 

@@ -23,7 +23,7 @@ namespace Fusee.Engine
 
         }
 
-        // <summary>
+        /// <summary>
         /// Gets the current value of one axis (i.e. joystick or trigger).
         /// </summary>
         /// <param name="axis">Specifies the desired axis, can be "horizontal", "vertical" or "z".</param>

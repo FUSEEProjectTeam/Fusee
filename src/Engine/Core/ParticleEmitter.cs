@@ -54,12 +54,12 @@ namespace Fusee.Engine
                 vec2 offset = fuUV;
                 offset.x  = fuUV.x*cos(fuNormal.x) - fuUV.y*sin(fuNormal.x);
                 offset.y =  fuUV.y*cos(fuNormal.x) + fuUV.x*sin(fuNormal.x);
-                vPos = vPos + vec4(100*offset, 0, 1.0);   //Offset  aus Partikelzentrum in Partikel-Eckpunkt          
+                vPos = vPos + vec4(100.0*offset, 0, 1.0);   //Offset  aus Partikelzentrum in Partikel-Eckpunkt          
                 gl_Position = FUSEE_P * vPos; //Perspektive-Projektion
                 vNormal = mat3(FUSEE_ITMV[0].xyz, FUSEE_ITMV[1].xyz, FUSEE_ITMV[2].xyz) * fuNormal;
                 vNormal = vec3(0, 0, 1);
-                vUV.x = (fuUV.x <= 0) ? 0 : 1;
-                vUV.y = (fuUV.y <= 0) ? 0 : 1;
+                vUV.x = (fuUV.x <= 0.0) ? 0.0 : 1.0;
+                vUV.y = (fuUV.y <= 0.0) ? 0.0 : 1.0;
 
                 vTransparency = fuNormal.y;
             }";

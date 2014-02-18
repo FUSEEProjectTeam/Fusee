@@ -1,7 +1,7 @@
 ﻿using System;
 using BulletSharp;
 
-namespace Examples.Physic
+namespace Examples.Physics
 {
 
     public class ThePhysic : System.IDisposable

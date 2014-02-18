@@ -368,15 +368,11 @@ namespace Fusee.Engine
             {
                 return Devices[deviceIndex];
             }
-            catch (ArgumentOutOfRangeException e)
+            catch (ArgumentOutOfRangeException)
             {
-                System.Diagnostics.Debug.WriteLine("Can not find Input Device with Device-Index " + deviceIndex + "!");
+                throw new Exception("Can not find Input Device with Device-Index " + deviceIndex + "!");
             }
-
-            return new InputDevice();
         }
-
-
 
         /// <summary>
         /// Counts the devices.

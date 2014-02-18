@@ -15,13 +15,11 @@ namespace Examples.InputDevices
         public override void Init()
         {
             Input.Instance.InitializeDevices();
-            _meshTea = MeshReader.LoadMesh(@"Assts/Teapot.obj.model");
 
+            _meshTea = MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
 
             _spColor = MoreShaders.GetDiffuseColorShader(RC);
-
             _colorParam = _spColor.GetShaderParam("color");
-
         }
 
         public override void RenderAFrame()

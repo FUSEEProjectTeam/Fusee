@@ -22,7 +22,7 @@
 
 using System.Diagnostics;
 
-namespace Examples.Physic
+namespace Examples.Physics
 {
     /// <summary>
     /// A mechanism for tracking elapsed time.

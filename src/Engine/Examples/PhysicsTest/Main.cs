@@ -4,9 +4,9 @@ using Fusee.Engine;
 
 using Fusee.Math;
 
-namespace Examples.BulletTest
+namespace Examples.PhysicsTest
 {
-    public class BulletTest : RenderCanvas
+    public class PhysicsTest : RenderCanvas
     {
         #region shader
         private const string Vs = @"
@@ -155,7 +155,7 @@ namespace Examples.BulletTest
         private ITexture _iTex;
 
         //Physic
-        private static Physic _physic;
+        private static Physics _physic;
         
         public override void Init()
         {
@@ -180,7 +180,7 @@ namespace Examples.BulletTest
             var imgData = RC.LoadImage("Assets/world_map.jpg");
             _iTex = RC.CreateTexture(imgData);
 
-            _physic = new Physic();
+            _physic = new Physics();
         }
 
 
@@ -365,7 +365,7 @@ namespace Examples.BulletTest
 
         public static void Main()
         {
-            var app = new BulletTest();
+            var app = new PhysicsTest();
             app.Run();
             _physic.World.Dispose();
         }
