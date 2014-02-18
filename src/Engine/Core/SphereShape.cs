@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Fusee.Math;
 
 namespace Fusee.Engine
 {
@@ -9,7 +10,7 @@ namespace Fusee.Engine
     {
         internal ISphereShapeImp SphereShapeImp;
 
-        public virtual float Margin
+        public float Margin
         {
             get
             {
@@ -22,7 +23,19 @@ namespace Fusee.Engine
                 o.SphereShapeImp.Margin = value;
             }
         }
-
+        public float3 LocalScaling
+        {
+            get
+            {
+                var retval = SphereShapeImp.LocalScaling;
+                return retval;
+            }
+            set
+            {
+                var o = (SphereShape)SphereShapeImp.UserObject;
+                o.SphereShapeImp.LocalScaling = value;
+            }
+        }
         public float Radius
         {
             get

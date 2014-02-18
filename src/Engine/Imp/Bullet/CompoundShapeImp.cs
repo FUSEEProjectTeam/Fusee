@@ -14,7 +14,7 @@ namespace Fusee.Engine
         internal CompoundShape BtCompoundShape;
         internal Translater Translater = new Translater();
         //Inherited
-        public virtual float Margin
+        public float Margin
         {
             get
             {

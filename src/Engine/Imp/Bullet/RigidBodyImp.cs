@@ -277,7 +277,10 @@ namespace Fusee.Engine
             {
                 var type = _rbi.CollisionShape.GetType().ToString();
                 var btShape = _rbi.CollisionShape;
-                
+                /*var colShape = new CollisonShapeImp();
+                colShape.BtCollisionShape = btShape;
+                btShape.UserObject = colShape;
+                return colShape;*/
                 switch (type)
                 {
                     //Primitives

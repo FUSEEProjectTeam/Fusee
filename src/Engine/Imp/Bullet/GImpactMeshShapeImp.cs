@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BulletSharp;
+using Fusee.Math;
 
 namespace Fusee.Engine
 {
@@ -12,7 +13,7 @@ namespace Fusee.Engine
         internal GImpactMeshShape BtGImpactMeshShape;
 
         //Inherited
-        public virtual float Margin
+        public float Margin
         {
             get
             {
@@ -23,6 +24,19 @@ namespace Fusee.Engine
             {
                 var o = (GImpactMeshShapeImp)BtGImpactMeshShape.UserObject;
                 o.BtGImpactMeshShape.Margin = value;
+            }
+        }
+        public float3 LocalScaling
+        {
+            get
+            {
+                var retval = Translater.BtVector3ToFloat3(BtGImpactMeshShape.LocalScaling);
+                return retval;
+            }
+            set
+            {
+                var o = (GImpactMeshShapeImp)BtGImpactMeshShape.UserObject;
+                o.BtGImpactMeshShape.LocalScaling = Translater.Float3ToBtVector3(value);
             }
         }
 

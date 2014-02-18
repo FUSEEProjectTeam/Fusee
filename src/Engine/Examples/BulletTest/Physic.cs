@@ -105,7 +105,7 @@ namespace Examples.BulletTest
            // FallingTower3();
             GroundPlane(new float3(30, 15, 0), new float3(0, 0, (float)Math.PI / 6));
             GroundPlane(new float3(-20, 0, 0), float3.Zero);
-            FallingTower3();
+            FallingPlatonics();
             InitPoint2PointConstraint();
             InitHingeConstraint();
         }
@@ -115,7 +115,7 @@ namespace Examples.BulletTest
             InitColliders();
             GroundPlane(new float3(30, 15, 0), new float3(0,0,(float)Math.PI/6));
             GroundPlane(new float3(-20, 0, 0), float3.Zero);
-            FallingTower3();
+            FallingSpheres();
             InitKegel();
         }
 
@@ -180,24 +180,28 @@ namespace Examples.BulletTest
 
         public void FallingTower1()
         {
+            int num = 0;
             for (int k = 0; k < 5; k++)
             {
-                for (int h = -2; h < 4; h++)
+                for (int h = -2; h < 5; h++)
                 {
-                    for (int j = -2; j < 4; j++)
+                    for (int j = -2; j < 5; j++)
                     {
                         var pos = new float3((4 * h) , 20 + (k * 4), 4 * j);
 
                         var cube = _world.AddRigidBody(1, pos, float3.Zero, MyBoxCollider);
-                        //MyConvHull
+                        //CollisionShape col = (CollisionShape)cube.CollisionShape;
+                        //Debug.WriteLine(col.LocalScaling);
                         cube.Friction = 1.0f;
                         cube.SetDrag(0.0f, 0.05f);
+                        num++;
                     }
                 }
             }
+            Debug.WriteLine("Number: " + num);
         }
 
-        public void FallingTower2()
+        public void FallingSpheres()
         {
             for (int k = 0; k < 2; k++)
             {
@@ -216,14 +220,14 @@ namespace Examples.BulletTest
             }
         }
 
-        public void FallingTower3()
+        public void FallingPlatonics()
         {
             
-            for (int k = 0; k < 1; k++)
+            for (int k = 0; k < 5; k++)
             {
-                for (int h = -2; h < 1; h++)
+                for (int h = -2; h < 3; h++)
                 {
-                    for (int j = -2; j < 1; j++)
+                    for (int j = -2; j <3 ; j++)
                     {
                         var pos = new float3((4 * h) + 30, 50 + (k * 4), 4 * j);
 
@@ -234,23 +238,28 @@ namespace Examples.BulletTest
                     }
                 }
             }
+
+            
         }
 
         public void FallingTeaPots()
         {
-            for (int k = 0; k < 3; k++)
+            int numTea = 0;
+            for (int k = 0; k < 5; k++)
             {
-                for (int h = -2; h < 2; h++)
+                for (int h = -2; h < 4; h++)
                 {
-                    for (int j = -2; j < 2; j++)
+                    for (int j = -2; j < 4; j++)
                     {
-                        var pos = new float3((4*h), 20 + (k*4), 4*j);
+                        var pos = new float3((10*h), 20 + (k*10), 10*j);
                         var cube = _world.AddRigidBody(1, pos, float3.Zero, TeaPotHull);
                         cube.Friction = 1.0f;
                         cube.SetDrag(0.0f, 0.05f);
+                        numTea++;
                     }
                 }
             }
+            Debug.WriteLine("NumberTea: " + numTea);
         }
 
         public void InitPoint2PointConstraint()

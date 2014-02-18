@@ -4,13 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BulletSharp;
+using Fusee.Math;
 
 namespace Fusee.Engine
 {
     public class ConeShapeImp : CollisonShapeImp, IConeShapeImp
     {
         internal ConeShape BtConeShape;
-        public virtual float Margin
+        public float Margin
         {
             get
             {
@@ -21,6 +22,19 @@ namespace Fusee.Engine
             {
                 var o = (ConeShapeImp)BtConeShape.UserObject;
                 o.BtConeShape.Margin = value;
+            }
+        }
+        public float3 LocalScaling
+        {
+            get
+            {
+                var retval = Translater.BtVector3ToFloat3(BtConeShape.LocalScaling);
+                return retval;
+            }
+            set
+            {
+                var o = (ConeShapeImp)BtConeShape.UserObject;
+                o.BtConeShape.LocalScaling = Translater.Float3ToBtVector3(value);
             }
         }
 

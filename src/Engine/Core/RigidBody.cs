@@ -270,6 +270,10 @@ namespace Fusee.Engine
             {
                 var shape = _iRigidBodyImp.CollisionShape;
                 var shapeType = shape.GetType().ToString();
+               /* var colShape = new CollisionShape();
+                colShape.ICollisionShapeImp = (ICollisionShapeImp)shape;
+                shape.UserObject = colShape;
+                return colShape;*/
                 //Debug.WriteLine("shapeType" + shapeType);
                 switch (shapeType)
                 {
@@ -335,11 +339,11 @@ namespace Fusee.Engine
                     default:
                         return new EmptyShape();
                 }
+
             }
             set
             {
                 var shapeType = value.GetType().ToString();
-                //IRigidBodyImp rbi;
                 var o = (RigidBody)_iRigidBodyImp.UserObject;
                 switch (shapeType)
                 {

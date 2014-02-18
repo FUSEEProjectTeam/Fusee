@@ -11,7 +11,7 @@ namespace Fusee.Engine
     public class CylinderShapeImp : CollisonShapeImp, ICylinderShapeImp
     {
         internal CylinderShape BtCylinderShape;
-        public virtual float Margin
+        public float Margin
         {
             get
             {
@@ -22,6 +22,20 @@ namespace Fusee.Engine
             {
                 var o = (CylinderShapeImp)BtCylinderShape.UserObject;
                 o.BtCylinderShape.Margin = value;
+            }
+        }
+
+        public float3 LocalScaling
+        {
+            get
+            {
+                var retval = Translater.BtVector3ToFloat3(BtCylinderShape.LocalScaling);
+                return retval;
+            }
+            set
+            {
+                var o = (CylinderShapeImp)BtCylinderShape.UserObject;
+                o.BtCylinderShape.LocalScaling = Translater.Float3ToBtVector3(value);
             }
         }
 

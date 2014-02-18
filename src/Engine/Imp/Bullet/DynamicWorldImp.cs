@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security;
 using System.Text;
 using BulletSharp;
+using BulletSharp.MultiThreaded;
 using Fusee.Engine;
 using Fusee.Math;
 
@@ -31,29 +32,51 @@ namespace Fusee.Engine
         {
             Debug.WriteLine("DynamicWorldImp");
 
+            //Default
             // collision configuration contains default setup for memory, collision setup
             BtCollisionConf = new DefaultCollisionConfiguration();
             BtDispatcher = new CollisionDispatcher(BtCollisionConf);
             BtBroadphase = new DbvtBroadphase();
             BtSolver = new SequentialImpulseConstraintSolver();
-            //BtCollisionShapes = new AlignedCollisionShapeArray();
-
+           // BtCollisionShapes = new AlignedCollisionShapeArray();
             
+
+           
             BtWorld = new DiscreteDynamicsWorld(BtDispatcher, BtBroadphase, BtSolver, BtCollisionConf)
             {
                 Gravity = new Vector3(0, -9.81f, 0)
             };
-            BtWorld.SolverInfo.NumIterations = 8;
+            
+            BtWorld.SolverInfo.NumIterations = 2;
 
             //BtWorld.PerformDiscreteCollisionDetection();
             
-            GImpactCollisionAlgorithm.RegisterAlgorithm(BtDispatcher);
+            //GImpactCollisionAlgorithm.RegisterAlgorithm(BtDispatcher);
            // BtWorld.SetInternalTickCallback(MyTickCallBack);
             //BtWorld.SetInternalTickCallback(TickTack);
 
             //ManifoldPoint.ContactAdded += OnContactAdded;
            // PersistentManifold.ContactDestroyed += OnContactDestroyed;
             //PersistentManifold.ContactProcessed += OnContactProcessed;
+        }
+
+
+        ThreadSupportInterface CreateSolverThreadSupport(int maxNumThreads)
+        {
+            //#define SEQUENTIAL
+            /* if (SEQUENTIAL)
+            {
+                SequentialThreadSupport::SequentialThreadConstructionInfo tci("solverThreads",SolverThreadFunc,SolverlsMemoryFunc);
+                SequentialThreadSupport* threadSupport = new SequentialThreadSupport(tci);
+                threadSupport->startSPU();
+            }
+            else */
+
+            Win32ThreadConstructionInfo threadConstructionInfo = new Win32ThreadConstructionInfo("solverThreads",
+                Win32ThreadFunc.SolverThreadFunc, Win32LSMemorySetupFunc.SolverLSMemoryFunc, maxNumThreads);
+            Win32ThreadSupport threadSupport = new Win32ThreadSupport(threadConstructionInfo);
+            threadSupport.StartSpu();
+            return threadSupport;
         }
 
         public float3 Gravity
