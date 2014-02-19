@@ -47,7 +47,7 @@ namespace Fusee.Engine
                 Gravity = new Vector3(0, -9.81f, 0)
             };
             
-            BtWorld.SolverInfo.NumIterations = 2;
+            BtWorld.SolverInfo.NumIterations = 5;
 
             //BtWorld.PerformDiscreteCollisionDetection();
             

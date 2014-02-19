@@ -189,10 +189,11 @@ namespace Examples.BulletTest
                     {
                         var pos = new float3((4 * h) , 20 + (k * 4), 4 * j);
 
+                        //MyBoxCollider.LocalScaling = new float3(0.5f, 0.5f, 0.5f);
                         var cube = _world.AddRigidBody(1, pos, float3.Zero, MyBoxCollider);
-                        //CollisionShape col = (CollisionShape)cube.CollisionShape;
-                        //Debug.WriteLine(col.LocalScaling);
+
                         cube.Friction = 1.0f;
+                        cube.Restitution = 0.8f;
                         cube.SetDrag(0.0f, 0.05f);
                         num++;
                     }

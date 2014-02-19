@@ -315,7 +315,6 @@ namespace Examples.BulletTest
                 }
                 else if (rb.CollisionShape.GetType().ToString() == "Fusee.Engine.ConvexHullShape")
                 {
-                    var shape = (ConvexHullShape) rb.CollisionShape;
                     if (currentScene == 2)
                     {
                         RC.ModelView = float4x4.Scale(1.0f)*matrix*mtxCam;

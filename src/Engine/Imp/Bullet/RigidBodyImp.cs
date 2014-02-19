@@ -350,7 +350,6 @@ namespace Fusee.Engine
                     default:
                         return new EmptyShapeImp();
                 }
-
             }
             set
             {
