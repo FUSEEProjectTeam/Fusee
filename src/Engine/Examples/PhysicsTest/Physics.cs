@@ -27,14 +27,18 @@ namespace Examples.PhysicsTest
 
         internal Mesh BoxMesh, TeaPotMesh, PlatonicMesh;
 
-        internal RigidBody _PRigidBody;
+        private int _numRB;
+        private string shapes;
 
-        public RigidBody PRbBody
+        public int GetNumRB()
         {
-            get { return _PRigidBody; }
-            set { _PRigidBody = value; }
+            return _numRB;
         }
 
+        public string GetShapes()
+        {
+            return shapes;
+        }
 
         public Physics()
         {
@@ -49,6 +53,7 @@ namespace Examples.PhysicsTest
         public void InitWorld()
         {
             _world = new DynamicWorld();
+            _numRB = 0;
         }
 
         public void InitColliders()
@@ -96,6 +101,7 @@ namespace Examples.PhysicsTest
             InitColliders();
             GroundPlane(float3.Zero, float3.Zero);
             FallingTower1();
+            shapes = "BoxShape";
         }
         public void InitScene2()
         {
@@ -108,6 +114,7 @@ namespace Examples.PhysicsTest
             FallingPlatonics();
             InitPoint2PointConstraint();
             InitHingeConstraint();
+            shapes = "BoxShape, ConvexHullShape";
         }
         public void InitScene3()
         {
@@ -117,6 +124,7 @@ namespace Examples.PhysicsTest
             GroundPlane(new float3(-20, 0, 0), float3.Zero);
             FallingSpheres();
             InitKegel();
+            shapes = "CylinderShape, SphereShape";
         }
 
         public void InitScene4()
@@ -125,6 +133,7 @@ namespace Examples.PhysicsTest
             InitColliders();
             GroundPlane(float3.Zero, float3.Zero);
             FallingTeaPots();
+            shapes = "ConvexHullShape";
         }
 
         public void GroundPlane(float3 pos, float3 rot)
@@ -137,6 +146,7 @@ namespace Examples.PhysicsTest
            
             ground.Restitution = 1f;
             ground.Friction = 1;
+            _numRB++;
         }
 
         public void InitKegel()
@@ -147,8 +157,8 @@ namespace Examples.PhysicsTest
             _world.AddRigidBody(1, new float3(-10, 3, -5), float3.Zero, shape);
             _world.AddRigidBody(1, new float3(-15, 3, 0), float3.Zero, shape);
             _world.AddRigidBody(1, new float3(-10, 3, -10), float3.Zero, shape);
-            
-            
+            _numRB += 5;
+
         }
 
         public void InitHull()
@@ -157,7 +167,8 @@ namespace Examples.PhysicsTest
           
            var shape = _world.AddConvexHullShape(verts);
            _world.AddRigidBody(1, new float3(20, 20,0), float3.Zero, shape);
-          
+            _numRB++;
+
         }
 
         public void Wippe()
@@ -180,7 +191,6 @@ namespace Examples.PhysicsTest
 
         public void FallingTower1()
         {
-            int num = 0;
             for (int k = 0; k < 5; k++)
             {
                 for (int h = -2; h < 5; h++)
@@ -195,11 +205,10 @@ namespace Examples.PhysicsTest
                         cube.Friction = 1.0f;
                         cube.Restitution = 0.8f;
                         cube.SetDrag(0.0f, 0.05f);
-                        num++;
+                        _numRB++;
                     }
                 }
             }
-            Debug.WriteLine("Number: " + num);
         }
 
         public void FallingSpheres()
@@ -216,6 +225,7 @@ namespace Examples.PhysicsTest
                         var sphere = _world.AddRigidBody(1, pos, float3.Zero, MySphereCollider);
                         sphere.Friction = 0.5f;
                         sphere.Restitution = 0.8f;
+                        _numRB++;
                     }
                 }
             }
@@ -236,6 +246,7 @@ namespace Examples.PhysicsTest
                         
                         sphere.Friction = 0.5f;
                         sphere.Restitution = 0.2f;
+                        _numRB++;
                     }
                 }
             }
@@ -245,7 +256,6 @@ namespace Examples.PhysicsTest
 
         public void FallingTeaPots()
         {
-            int numTea = 0;
             for (int k = 0; k < 5; k++)
             {
                 for (int h = -2; h < 4; h++)
@@ -256,11 +266,10 @@ namespace Examples.PhysicsTest
                         var cube = _world.AddRigidBody(1, pos, float3.Zero, TeaPotHull);
                         cube.Friction = 1.0f;
                         cube.SetDrag(0.0f, 0.05f);
-                        numTea++;
+                        _numRB++;
                     }
                 }
             }
-            Debug.WriteLine("NumberTea: " + numTea);
         }
 
         public void InitPoint2PointConstraint()
@@ -271,10 +280,12 @@ namespace Examples.PhysicsTest
             rbA.AngularFactor = new float3(0, 0, 0);
 
             var rbB = _world.AddRigidBody(1, new float3(-21, 10, 0), float3.Zero, MyBoxCollider);
+            _numRB++;
             var p2p = _world.AddPoint2PointConstraint(rbA, rbB, new float3(0, -3f, 0), new float3(0, 2.5f, 0));
             p2p.SetParam(PointToPointFlags.PointToPointFlagsCfm, 0.9f);
 
             var rbC = _world.AddRigidBody(1, new float3(-21, 5, 2), float3.Zero, MyBoxCollider);
+            _numRB++;
             var p2p1 = _world.AddPoint2PointConstraint(rbB, rbC, new float3(0, -2.5f, 0), new float3(0, 2.5f, 0));
   
         }
@@ -284,10 +295,12 @@ namespace Examples.PhysicsTest
             var rot = new float3(0, (float) Math.PI/4, 0);
             //var mesh = MeshReader.LoadMesh(@"Assets/Cube.obj.model");
             var rbA = _world.AddRigidBody(1, new float3(0, 15, 0), float3.Zero, MyBoxCollider);
+            _numRB++;
             rbA.LinearFactor = new float3(0, 0, 0);
             rbA.AngularFactor = new float3(0, 0, 0);
 
             var rbB = _world.AddRigidBody(1, new float3(0, 10, 0), float3.Zero, MyBoxCollider);
+            _numRB++;
             
             var hc = _world.AddHingeConstraint(rbA, rbB, new float3(0, -5, 0), new float3(0, 2, 0), new float3(0, 0, 1), new float3(0, 0, 1), false);
 
@@ -298,11 +311,12 @@ namespace Examples.PhysicsTest
         {
             var mesh = MeshReader.LoadMesh(@"Assets/Cube.obj.model");
             var rbA = _world.AddRigidBody(1, new float3(400, 500, 0), float3.Zero, MyBoxCollider);
+            _numRB++;
             rbA.LinearFactor = new float3(0, 0, 0);
             rbA.AngularFactor = new float3(0, 0, 0);
 
             var rbB = _world.AddRigidBody(1, new float3(200, 500, 0), float3.Zero, MyBoxCollider);
-
+            _numRB++;
             var frameInA = float4x4.Identity;
             frameInA.Row3 = new float4(0,1,0,1);
             var frameInB = float4x4.Identity;
@@ -315,10 +329,12 @@ namespace Examples.PhysicsTest
         {
             var mesh = MeshReader.LoadMesh(@"Assets/Cube.obj.model");
             var rbA = _world.AddRigidBody(0, new float3(0, 150, 0), float3.Zero, MyBoxCollider);
+            _numRB++;
             //rbA.LinearFactor = new float3(0, 0, 0);
             //rbA.AngularFactor = new float3(0, 0, 0);
 
             var rbB = _world.AddRigidBody(1, new float3(0, 300, 0), float3.Zero, MyBoxCollider);
+            _numRB++;
             //rbB.LinearFactor = new float3(0,0,0);
             ////var axisInB = new float3(0, 1, 0);
             // var gc = _world.AddGearConstraint(rbA, rbB, axisInA, axisInB);
@@ -329,6 +345,7 @@ namespace Examples.PhysicsTest
             InitWorld();
             GroundPlane(new float3(0, 0, 0), float3.Zero);
             var rbB = _world.AddRigidBody(1, new float3(0, 25, 0), float3.Zero, MyBoxCollider);
+            _numRB++;
             var framInB = float4x4.CreateTranslation(new float3(0,-10,0));
             var dof6 = _world.AddGeneric6DofConstraint( rbB,  framInB, false);
             dof6.LinearLowerLimit = new float3(0,0,0);
@@ -347,12 +364,14 @@ namespace Examples.PhysicsTest
             compShape.AddChildShape(matrixBox, box);
             compShape.AddChildShape(matrixSphere, sphere);
             var rb = _world.AddRigidBody(1, new float3(0, 150, 0), float3.Zero, compShape);
+            _numRB++;
         }
 
         public void InitGImpacShape()
         {
             var gimp = _world.AddGImpactMeshShape(TeaPotMesh);
             var rbB = _world.AddRigidBody(1, new float3(0, 10, 0), float3.Zero, gimp);
+            _numRB++;
         }
 
         public void Tester()

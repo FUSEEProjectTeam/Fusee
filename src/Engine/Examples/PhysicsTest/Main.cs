@@ -146,10 +146,10 @@ namespace Examples.PhysicsTest
         // variables for shader
         private ShaderProgram _spColor;
         private ShaderProgram _spTexture;
-        private ShaderProgram _spLinda;
+        private ShaderProgram _spCustom;
 
         private IShaderParam _colorParam;
-        private IShaderParam _colorLinda;
+        private IShaderParam _colorCustom;
         private IShaderParam _textureParam;
 
         private ITexture _iTex;
@@ -158,10 +158,16 @@ namespace Examples.PhysicsTest
         //Physic
         private static Physics _physic;
         private int currentScene = 1;
+
+        //Gui
+        private GUI _gui;
+
         public override void Init()
         {
             // is called on startup
             RC.ClearColor = new float4(1, 1, 1, 1);
+
+
 
             // initialize the variables
             _meshTea = MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
@@ -172,16 +178,20 @@ namespace Examples.PhysicsTest
             //RC.CreateShader(Vs, Ps);
             _spColor = RC.CreateShader(Vs, Ps); //MoreShaders.GetShader("simple", RC);
             _spTexture = RC.CreateShader(Vt, Pt);//MoreShaders.GetShader("texture", RC);
-            _spLinda = RC.CreateShader(VLin, PLin);
+            _spCustom = RC.CreateShader(VLin, PLin);
             _colorParam = _spColor.GetShaderParam("vColor");
-            _colorLinda = _spLinda.GetShaderParam("vColor");
+            _colorCustom = _spCustom.GetShaderParam("vColor");
             _textureParam = _spTexture.GetShaderParam("vTexture");
 
             // load texture
             var imgData = RC.LoadImage("Assets/world_map.jpg");
             _iTex = RC.CreateTexture(imgData);
 
+            
             _physic = new Physics();
+
+            _gui= new GUI(RC);
+            _gui.SetUp(_physic.GetNumRB(), _physic.GetShapes());
         }
 
 
@@ -193,6 +203,9 @@ namespace Examples.PhysicsTest
             
             // is called once a frame
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
+            float fps = Time.Instance.FramePerSecond;
+            fps = (float)Math.Round(fps, 2);
+            _gui.Render(fps);
             _physic.World.StepSimulation((float) Time.Instance.DeltaTime, (Time.Instance.FramePerSecondSmooth/60), 1/60);
             
             // move per mouse
@@ -220,24 +233,28 @@ namespace Examples.PhysicsTest
                 _physic.World.Dispose();
                 _physic.InitScene1();
                 currentScene = 1;
+                _gui.SetUp(_physic.GetNumRB(), _physic.GetShapes());
             }
             if (Input.Instance.IsKeyDown(KeyCodes.NumPad2))
             {
                 _physic.World.Dispose();
                 _physic.InitScene2();
                 currentScene = 2;
+                _gui.SetUp(_physic.GetNumRB(), _physic.GetShapes());
             }
             if (Input.Instance.IsKeyDown(KeyCodes.NumPad3))
             {
                 _physic.World.Dispose();
                 _physic.InitScene3();
                 currentScene = 3;
+                _gui.SetUp(_physic.GetNumRB(), _physic.GetShapes());
             }
             if (Input.Instance.IsKeyDown(KeyCodes.NumPad4))
             {
                 _physic.World.Dispose();
                 _physic.InitScene4();
                 currentScene = 4;
+                _gui.SetUp(_physic.GetNumRB(), _physic.GetShapes());
             }
 
             if (Input.Instance.IsKeyDown(KeyCodes.NumPad6))
@@ -292,9 +309,10 @@ namespace Examples.PhysicsTest
                     RC.ModelView =
                         float4x4.Scale(shape.HalfExtents.x/100, shape.HalfExtents.y/100, shape.HalfExtents.z/100)*matrix*
                         mtxCam;
-
+                   
                     RC.SetShader(_spColor);
                     RC.SetShaderParam(_colorParam, new float4(0.9f, 0.9f, 0.0f, 1));
+                    RC.SetRenderState(new RenderStateSet { AlphaBlendEnable = false, ZEnable = true });
                     RC.Render(_meshCube);
                 }
                 else if (rb.CollisionShape.GetType().ToString() == "Fusee.Engine.SphereShape")
@@ -303,14 +321,16 @@ namespace Examples.PhysicsTest
                     RC.ModelView = float4x4.Scale(shape.Radius)*matrix*mtxCam;
                     RC.SetShader(_spTexture);
                     RC.SetShaderParamTexture(_textureParam, _iTex);
+                    RC.SetRenderState(new RenderStateSet { AlphaBlendEnable = false, ZEnable = true });
                     RC.Render(_meshSphere);
                 }
                 else if (rb.CollisionShape.GetType().ToString() == "Fusee.Engine.CylinderShape")
                 {
                     var shape = (CylinderShape) rb.CollisionShape;
                     RC.ModelView = float4x4.Scale(4)*matrix*mtxCam;
-                    RC.SetShader(_spLinda);
-                    RC.SetShaderParam(_colorLinda, new float4(0.1f, 0.1f, 0.9f, 1));
+                    RC.SetShader(_spCustom);
+                    RC.SetShaderParam(_colorCustom, new float4(0.1f, 0.1f, 0.9f, 1));
+                    RC.SetRenderState(new RenderStateSet { AlphaBlendEnable = false, ZEnable = true });
                     RC.Render(_meshCylinder);
                 }
                 else if (rb.CollisionShape.GetType().ToString() == "Fusee.Engine.ConvexHullShape")
@@ -318,8 +338,9 @@ namespace Examples.PhysicsTest
                     if (currentScene == 2)
                     {
                         RC.ModelView = float4x4.Scale(1.0f)*matrix*mtxCam;
-                        RC.SetShader(_spLinda);
-                        RC.SetShaderParam(_colorLinda, new float4(2f, 2f, 2, 1));
+                        RC.SetShader(_spCustom);
+                        RC.SetShaderParam(_colorCustom, new float4(2f, 2f, 2, 1));
+                        RC.SetRenderState(new RenderStateSet { AlphaBlendEnable = false, ZEnable = true });
                         RC.Render(_meshPlatinic);
                     }
                     if (currentScene == 4)
@@ -327,9 +348,9 @@ namespace Examples.PhysicsTest
                         RC.ModelView = float4x4.Scale(0.05f)*matrix*mtxCam;
                         RC.SetShader(_spColor);
                         RC.SetShaderParam(_colorParam, new float4(0.6f, 0.2f, 0.5f, 1));
+                        RC.SetRenderState(new RenderStateSet { AlphaBlendEnable = false, ZEnable = true });
                         RC.Render(_meshTea);
                     }
-
                 }
             }
 
