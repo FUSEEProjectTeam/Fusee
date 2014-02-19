@@ -197,15 +197,14 @@ namespace Examples.PhysicsTest
 
         public override void RenderAFrame()
         {
-            //var rb1 = _physic.World.GetRigidBody(_physic.World.NumberRigidBodies() - 3);
             var rb2 = _physic.World.GetRigidBody(_physic.World.NumberRigidBodies() - 1);
 
-            
             // is called once a frame
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
             float fps = Time.Instance.FramePerSecond;
             fps = (float)Math.Round(fps, 2);
             _gui.Render(fps);
+            
             _physic.World.StepSimulation((float) Time.Instance.DeltaTime, (Time.Instance.FramePerSecondSmooth/60), 1/60);
             
             // move per mouse
@@ -224,8 +223,6 @@ namespace Examples.PhysicsTest
 
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
-
-           
 
             // move per keyboard
             if (Input.Instance.IsKeyDown(KeyCodes.NumPad1))
@@ -257,21 +254,13 @@ namespace Examples.PhysicsTest
                 _gui.SetUp(_physic.GetNumRB(), _physic.GetShapes());
             }
 
-            if (Input.Instance.IsKeyDown(KeyCodes.NumPad6))
-            {
-                //var rb = _physic.World.GetRigidBody(_physic.World.NumberRigidBodies() - 3);
-               // rb1.ApplyCentralImpulse = new float3(10, 0, 0);
-            }
-
             if (Input.Instance.IsKeyDown(KeyCodes.Left))
             {
-                //_physic.World.GetRigidBody(_physic.World.NumberRigidBodies() -1).ApplyCentralImpulse = new float3(-10, 0, 0);
-                rb2.ApplyCentralImpulse = new float3(-10, 0, 0);
+               rb2.ApplyCentralImpulse = new float3(-10, 0, 0);
             }
 
             if (Input.Instance.IsKeyDown(KeyCodes.Right))
             {
-                //_physic.World.GetRigidBody(_physic.World.NumberRigidBodies() - 1).ApplyCentralImpulse = new float3(10, 0, 0);
                 rb2.ApplyCentralImpulse = new float3(10, 0, 0);
             }
 
@@ -281,28 +270,19 @@ namespace Examples.PhysicsTest
 
             if (Input.Instance.IsKeyDown(KeyCodes.Down))
                 _physic.World.GetRigidBody(_physic.World.NumberRigidBodies()-1).ApplyCentralImpulse = new float3(0,-10,0);
-                    // _angleVert += RotationSpeed * (float)Time.Instance.DeltaTime;
+                    
            
             var mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
             var mtxCam = mtxRot * float4x4.LookAt(0, 20, 150, 0, 0, 0, 0, 1, 0);
 
-
-            if (Input.Instance.IsKey(KeyCodes.Space))
-            {
-                Debug.WriteLine(Width - Input.Instance.GetMousePos().x);
-                Debug.WriteLine(Input.Instance.GetAxis(InputAxis.MouseX));
-
-                _physic.Shoot(new float3(0, 15, 15), new float3(0, 0, 0));
-            }
-           
-           
+    
 
             Debug.WriteLine(Time.Instance.FramePerSecond);
             for (int i = 0; i < _physic.World.NumberRigidBodies(); i++)
             {
                 var rb = _physic.World.GetRigidBody(i);
                 var matrix = rb.WorldTransform;
-                //Debug.WriteLine(rb.CollisionShape.GetType().ToString());
+
                 if (rb.CollisionShape.GetType().ToString() == "Fusee.Engine.BoxShape")
                 {
                     var shape = (BoxShape) rb.CollisionShape;
@@ -354,24 +334,6 @@ namespace Examples.PhysicsTest
                 }
             }
 
-
-            #region RenderSimple
-            //first mesh
-            /*RC.ModelView = float4x4.CreateTranslation(0, -50, 0)*mtxRot*float4x4.CreateTranslation(-150, 0, 0)*mtxCam;
-
-            RC.SetShader(_spColor);
-            RC.SetShaderParam(_colorParam, new float4(0.5f, 0.8f, 0, 1));
-
-            RC.Render(_meshTea);
-
-            // second mesh
-            RC.ModelView = mtxRot*float4x4.CreateTranslation(150, 0, 0)*mtxCam;
-
-            RC.SetShader(_spTexture);
-            RC.SetShaderParamTexture(_textureParam, _iTex);
-
-            RC.Render(_meshCube);*/
-            #endregion RenderSimple
             Present();
         }
 
