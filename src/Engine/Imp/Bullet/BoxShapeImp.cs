@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using BulletSharp;
 using Fusee.Math;
-using BulletSharp;
 
 namespace Fusee.Engine
 {
@@ -23,7 +18,7 @@ namespace Fusee.Engine
             }
             set
             {
-                var o = (BoxShapeImp)BtBoxShape.UserObject;
+                var o = (BoxShapeImp) BtBoxShape.UserObject;
                 o.BtBoxShape.LocalScaling = Translater.Float3ToBtVector3(value);
                 //Todo: Update RigidBody Inertia refering to the CollisionPbject
             }
@@ -33,8 +28,9 @@ namespace Fusee.Engine
         {
             get
             {
-                var retval = new float3(BtBoxShape.HalfExtentsWithMargin.X, BtBoxShape.HalfExtentsWithMargin.Y, BtBoxShape.HalfExtentsWithMargin.Z);
-                return retval; 
+                var retval = new float3(BtBoxShape.HalfExtentsWithMargin.X, BtBoxShape.HalfExtentsWithMargin.Y,
+                    BtBoxShape.HalfExtentsWithMargin.Z);
+                return retval;
             }
         }
 
@@ -49,12 +45,13 @@ namespace Fusee.Engine
             }
             set
             {
-                var o = (BoxShapeImp)BtBoxShape.UserObject;
+                var o = (BoxShapeImp) BtBoxShape.UserObject;
                 o.BtBoxShape.Margin = value;
             }
         }
 
         private object _userObject;
+
         public virtual object UserObject
         {
             get { return _userObject; }

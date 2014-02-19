@@ -4,7 +4,7 @@ namespace Fusee.Engine
 {
     
     /// <summary>
-    /// This class is used to return the correct implementations of <see cref="RenderCanvasImp" />,<see cref="RenderContextImp" /> and <see cref="InputImp" />.
+    /// This class is used to return the correct implementations of <see cref="RenderCanvasImp" />, <see cref="RenderContextImp" /> and <see cref="InputImp" />.
     /// The output depends on the underlying plattform.
     /// This class is instantiated dynamically (by reflection).
     /// </summary>

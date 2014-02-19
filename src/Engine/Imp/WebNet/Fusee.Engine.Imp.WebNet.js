@@ -12,7 +12,7 @@ var $fuseeCommon = JSIL.GetAssembly("Fusee.Engine.Common");
 JSIL.DeclareNamespace("Fusee");
 JSIL.DeclareNamespace("Fusee.Engine");
 
-JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.WebNetImp", true, [], function ($interfaceBuilder) {
+JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.WebNetImp", true, [], function($interfaceBuilder) {
     $ = $interfaceBuilder;
 
     $.Method({ Static: false, Public: true }, ".ctor",
@@ -184,7 +184,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.WebNetImp", tru
         $fuseeCommon.TypeRef("Fusee.Engine.INetworkImp")
     );
 
-    return function (newThisType) { $thisType = newThisType; };
+    return function(newThisType) { $thisType = newThisType; };
 });
 
 JSIL.ImplementExternals("Fusee.Engine.Network", function($) {

@@ -1568,5 +1568,7 @@ namespace Fusee.Math
         }
 
         #endregion
+
+        public static Converter<string, float3> Parse { get; set; }
     }
 }

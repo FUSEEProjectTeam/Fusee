@@ -47,9 +47,7 @@
   <ItemGroup />
   <ItemGroup>
     <Content Include="Fusee.Engine.Imp.WebAudio.js" />
-    <Content Include="soundjs-0.5.0.min.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <Content Include="soundjs-0.5.0.min.js" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)/Microsoft.CSharp.targets" />
   <Target Name="Build">

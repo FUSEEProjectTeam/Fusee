@@ -53,9 +53,6 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="LinqForGeometry.Core">
-      <HintPath>..\Bin\Debug\LinqForGeometry.Core.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
@@ -66,6 +63,10 @@
     <ProjectReference Include="..\..\..\Math\Core\Math.Core.csproj">
       <Project>{E95FA1C8-6491-4B4B-BBE1-EDA6B16B2C6A}</Project>
       <Name>Math.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\LinqForGeometry.Core\LinqForGeometry.Core.csproj">
+      <Project>{dffdb3a9-2429-4e47-b65c-e2c0f3f66146}</Project>
+      <Name>LinqForGeometry.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

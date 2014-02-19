@@ -59,6 +59,9 @@
     <Compile Include="Attributes.cs" />
     <Compile Include="ColorUint.cs" />
     <Compile Include="IAudioStream.cs" />
+    <Compile Include="IInputDeviceImp.cs" />
+    <Compile Include="IInputDriverImp.cs" />
+    <Compile Include="IFont.cs" />
     <Compile Include="IBoxShapeImp.cs" />
     <Compile Include="ICapsuleShapeImp.cs" />
     <Compile Include="ICollisionShapeImp.cs" />
@@ -108,6 +111,10 @@
   <ItemGroup>
     <Reference Include="JSIL.Meta">
       <HintPath>..\..\..\ExternalBinaries\JSIL\Compiler\JSIL.Meta.dll</HintPath>
+    </Reference>
+    <Reference Include="protobuf-net, Version=2.0.0.668, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ExternalBinaries\CustomProtobuf\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />

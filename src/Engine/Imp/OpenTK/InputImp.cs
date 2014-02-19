@@ -39,6 +39,7 @@ namespace Fusee.Engine
                 _gameWindow.Keyboard.KeyUp += OnGameWinKeyUp;
                 _gameWindow.Mouse.ButtonDown += OnGameWinMouseDown;
                 _gameWindow.Mouse.ButtonUp += OnGameWinMouseUp;
+                _gameWindow.Mouse.Move += OnGameWinMouseMove;
             }
             else
             {
@@ -202,6 +203,28 @@ namespace Fusee.Engine
         }
 
         /// <summary>
+        /// Trigger this event on any mouse movement.
+        /// </summary>
+        public event EventHandler<MouseEventArgs> MouseMove;
+
+        /// <summary>
+        /// Called when mouse is moving.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="mouseArgs">The <see cref="MouseMoveEventArgs"/> instance containing the event data.</param>
+        protected void OnGameWinMouseMove(object sender, MouseMoveEventArgs mouseArgs)
+        {
+            if (MouseMove != null)
+            {
+                MouseMove(this, new MouseEventArgs
+                {
+                    Button = MouseButtons.Unknown,
+                    Position = new Point { x = mouseArgs.X, y = mouseArgs.Y }
+                });
+            }
+        }
+
+        /// <summary>
         /// Trigger this event once a key on the keyboard is pressed down.
         /// </summary>
         public event EventHandler<KeyEventArgs> KeyDown;
@@ -250,6 +273,8 @@ namespace Fusee.Engine
                     });
             }
         }
+
+        
         #endregion
     }
 }

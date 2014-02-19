@@ -1,5 +1,6 @@
 ﻿using System;
 
+
 namespace Fusee.Engine
 {
     /// <summary>
@@ -56,6 +57,11 @@ namespace Fusee.Engine
         event EventHandler<MouseEventArgs> MouseButtonUp;
 
         /// <summary>
+        /// Trigger this event on any mouse movement.
+        /// </summary>
+        event EventHandler<MouseEventArgs> MouseMove;
+
+        /// <summary>
         /// Trigger this event once a key on the keyboard is pressed down.
         /// </summary>
         event EventHandler<KeyEventArgs> KeyDown;
@@ -64,5 +70,6 @@ namespace Fusee.Engine
         /// Trigger this event in your implementation once a key on the keyboard is released.
         /// </summary>
         event EventHandler<KeyEventArgs> KeyUp;
+
     }
 }

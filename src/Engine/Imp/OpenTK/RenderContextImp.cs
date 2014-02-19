@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Drawing.Text;
@@ -7,6 +8,7 @@ using System.Runtime.InteropServices;
 using Fusee.Math;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using SharpFont;
 using PixelFormat = System.Drawing.Imaging.PixelFormat;
 
 namespace Fusee.Engine
@@ -21,9 +23,12 @@ namespace Fusee.Engine
         private int _currentTextureUnit;
         private readonly Dictionary<int, int> _shaderParam2TexUnit;
 
+        private readonly Library _sharpFont;
+
         #endregion
 
         #region Constructors
+
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderContextImp"/> class.
         /// </summary>
@@ -32,6 +37,9 @@ namespace Fusee.Engine
         {
             _currentTextureUnit = 0;
             _shaderParam2TexUnit = new Dictionary<int, int>();
+
+            // TODO: dispose at the end
+            _sharpFont = new Library();
         }
 
         #endregion
@@ -54,8 +62,8 @@ namespace Fusee.Engine
             //Flip y-axis, otherwise texture would be upside down
             bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
 
-            BitmapData bmpData = bmp.LockBits(new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite,
-                System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            BitmapData bmpData = bmp.LockBits(new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height),
+                ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
             int strideAbs = (bmpData.Stride < 0) ? -bmpData.Stride : bmpData.Stride;
             int bytes = (strideAbs)*bmp.Height;
 
@@ -90,11 +98,9 @@ namespace Fusee.Engine
             bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
 
             BitmapData bmpData = bmp.LockBits(new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height),
-                ImageLockMode.ReadWrite,
-                System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+                ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
             int strideAbs = (bmpData.Stride < 0) ? -bmpData.Stride : bmpData.Stride;
             int bytes = (strideAbs)*bmp.Height;
-
 
             var ret = new ImageData
             {
@@ -104,8 +110,7 @@ namespace Fusee.Engine
                 Stride = bmpData.Stride
             };
 
-
-            System.Runtime.InteropServices.Marshal.Copy(bmpData.Scan0, ret.PixelData, 0, bytes);
+            Marshal.Copy(bmpData.Scan0, ret.PixelData, 0, bytes);
 
             bmp.UnlockBits(bmpData);
             return ret;
@@ -136,7 +141,7 @@ namespace Fusee.Engine
             bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
 
             Color color = Color.FromName(textColor);
-            var font = new Font(fontName, fontSize, FontStyle.Regular, GraphicsUnit.World);
+            var font = new System.Drawing.Font(fontName, fontSize, FontStyle.Regular, GraphicsUnit.World);
 
             Graphics gfx = Graphics.FromImage(bmp);
             gfx.TextRenderingHint = TextRenderingHint.AntiAlias;
@@ -146,8 +151,7 @@ namespace Fusee.Engine
             bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
 
             BitmapData bmpData = bmp.LockBits(new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height),
-                ImageLockMode.ReadWrite,
-                PixelFormat.Format32bppArgb);
+                ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
             int strideAbs = (bmpData.Stride < 0) ? -bmpData.Stride : bmpData.Stride;
             int bytes = (strideAbs)*bmp.Height;
 
@@ -183,169 +187,170 @@ namespace Fusee.Engine
             return texID;
         }
 
+        #endregion
+
+        #region Text related Members
 
         /// <summary>
-        /// Gets the shader parameter.
-        /// The Shader parameter is used to bind values inside of shaderprograms that run on the graphics card.
-        /// Do not use this function in frequent updates as it transfers information from graphics card to the cpu which takes time.
+        /// Loads a font file (*.ttf) and processes it with the given font size.
         /// </summary>
-        /// <param name="shaderProgram">The shader program.</param>
-        /// <param name="paramName">Name of the parameter.</param>
-        /// <returns>The Shader parameter is returned if the name is found, otherwise null.</returns>
-        public IShaderParam GetShaderParam(IShaderProgramImp shaderProgram, string paramName)
+        /// <param name="filename">The filename.</param>
+        /// <param name="size">The size.</param>
+        /// <returns>An <see cref="IFont"/> containing all necessary information for further processing.</returns>
+        public IFont LoadFont(string filename, uint size)
         {
-            int h = GL.GetUniformLocation(((ShaderProgramImp) shaderProgram).Program, paramName);
-            return (h == -1) ? null : new ShaderParam {handle = h};
-        }
-
-        /// <summary>
-        /// Gets the float parameter value inside a shaderprogram by using a <see cref="IShaderParam" /> as search reference.
-        /// Do not use this function in frequent updates as it transfers information from graphics card to the cpu which takes time.
-        /// </summary>
-        /// <param name="program">The program.</param>
-        /// <param name="param">The parameter.</param>
-        /// <returns>A float number (default is 0).</returns>
-        public float GetParamValue(IShaderProgramImp program, IShaderParam param)
-        {
-            float f;
-            GL.GetUniform(((ShaderProgramImp) program).Program, ((ShaderParam) param).handle, out f);
-            return f;
-        }
-
-        /// <summary>
-        /// Gets the shader parameter list of a specific <see cref="IShaderProgramImp" />. 
-        /// </summary>
-        /// <param name="shaderProgram">The shader program.</param>
-        /// <returns>All Shader parameters of a shaderprogram are returned.</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException"></exception>
-        public IList<ShaderParamInfo> GetShaderParamList(IShaderProgramImp shaderProgram)
-        {
-            var sp = (ShaderProgramImp) shaderProgram;
-            int nParams;
-            GL.GetProgram(sp.Program, ProgramParameter.ActiveUniforms, out nParams);
-            var list = new List<ShaderParamInfo>();
-            for (int i = 0; i < nParams; i++)
+            var texAtlas = new Font
             {
-                ActiveUniformType t;
-                var ret = new ShaderParamInfo();
-                ret.Name = GL.GetActiveUniform(sp.Program, i, out ret.Size, out t);
-                ret.Handle = GetShaderParam(sp, ret.Name);
-                switch (t)
+                Face = _sharpFont.NewFace(filename, 0),
+                FontSize = size,
+                UseKerning = false
+            };
+
+            texAtlas.Face.SetPixelSizes(0, size);
+            return GenerateTextureAtlas(texAtlas);
+        }
+
+        private IFont GenerateTextureAtlas(IFont font)
+        {
+            if (font == null)
+                return null;
+
+            var texAtlas = ((Font)font);
+            var face = texAtlas.Face;
+
+            // get atlas texture size
+            var rowW = 0;
+            var rowH = 0;
+            var h = 0;
+
+            const int maxWidth = 512;
+
+            for (uint i = 32; i < 256; i++)
+            {
+                face.LoadChar(i, LoadFlags.Default, LoadTarget.Normal);
+
+                if (rowW + (face.Glyph.Advance.X >> 6) + 1 >= maxWidth)
                 {
-                    case ActiveUniformType.Int:
-                        ret.Type = typeof (int);
-                        break;
-                    case ActiveUniformType.Float:
-                        ret.Type = typeof (float);
-                        break;
-                    case ActiveUniformType.FloatVec2:
-                        ret.Type = typeof (float2);
-                        break;
-                    case ActiveUniformType.FloatVec3:
-                        ret.Type = typeof (float3);
-                        break;
-                    case ActiveUniformType.FloatVec4:
-                        ret.Type = typeof (float4);
-                        break;
-                    case ActiveUniformType.FloatMat4:
-                        ret.Type = typeof (float4x4);
-                        break;
-                    case ActiveUniformType.Sampler2D:
-                        ret.Type = typeof (ITexture);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
+                    h += rowH;
+                    rowW = 0;
+                    rowH = 0;
                 }
-                list.Add(ret);
+
+                rowW += (face.Glyph.Advance.X >> 6) + 1;
+                rowH = System.Math.Max(face.Glyph.Metrics.Height >> 6, rowH);
             }
-            return list;
-        }
 
+            // for resizing to non-power-of-two
+            var potH = (h + rowH) - 1;
 
-        /// <summary>
-        /// Sets a float shader parameter.
-        /// </summary>
-        /// <param name="param">The parameter.</param>
-        /// <param name="val">The value.</param>
-        public void SetShaderParam(IShaderParam param, float val)
-        {
-            GL.Uniform1(((ShaderParam) param).handle, val);
-        }
+            potH |= potH >> 1;
+            potH |= potH >> 2;
+            potH |= potH >> 4;
+            potH |= potH >> 8;
+            potH |= potH >> 16;
 
-        /// <summary>
-        /// Sets a <see cref="float2" /> shader parameter.
-        /// </summary>
-        /// <param name="param">The parameter.</param>
-        /// <param name="val">The value.</param>
-        public void SetShaderParam(IShaderParam param, float2 val)
-        {
-            GL.Uniform2(((ShaderParam) param).handle, val.x, val.y);
-        }
+            texAtlas.Width = maxWidth;
+            texAtlas.Height = ++potH;
 
-        /// <summary>
-        /// Sets a <see cref="float3" /> shader parameter.
-        /// </summary>
-        /// <param name="param">The parameter.</param>
-        /// <param name="val">The value.</param>
-        public void SetShaderParam(IShaderParam param, float3 val)
-        {
-            GL.Uniform3(((ShaderParam) param).handle, val.x, val.y, val.z);
-        }
+            // atlas texture
+            var tex = GL.GenTexture();
 
-        /// <summary>
-        /// Sets a <see cref="float4" /> shader parameter.
-        /// </summary>
-        /// <param name="param">The parameter.</param>
-        /// <param name="val">The value.</param>
-        public void SetShaderParam(IShaderParam param, float4 val)
-        {
-            GL.Uniform4(((ShaderParam) param).handle, val.x, val.y, val.z, val.w);
-        }
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, tex);
 
-        // TODO add vector implementations
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Alpha, maxWidth, potH, 0,
+                OpenTK.Graphics.OpenGL.PixelFormat.Alpha, PixelType.UnsignedByte, IntPtr.Zero);
 
-        /// <summary>
-        /// Sets a <see cref="float4x4" /> shader parameter.
-        /// </summary>
-        /// <param name="param">The parameter.</param>
-        /// <param name="val">The value.</param>
-        public void SetShaderParam(IShaderParam param, float4x4 val)
-        {
-            unsafe
+            // texture settings
+            GL.PixelStore(PixelStoreParameter.UnpackAlignment, 1);
+
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS,
+                (int)TextureWrapMode.ClampToEdge);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT,
+                (int)TextureWrapMode.ClampToEdge);
+
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter,
+                (int)TextureMinFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter,
+                (int)TextureMagFilter.Linear);
+
+            texAtlas.TexAtlas = new Texture { handle = tex };
+
+            // paste the glyph images into the texture atlas
+            texAtlas.CharInfo = new CharInfoStruct[256];
+
+            var offX = 0;
+            var offY = 0;
+            rowH = 0;
+
+            for (uint i = 32; i < 256; i++)
             {
-                var mF = (float*) (&val);
-                GL.UniformMatrix4(((ShaderParam) param).handle, 1, false, mF);
+                face.LoadChar(i, LoadFlags.Default, LoadTarget.Normal);
+                face.Glyph.RenderGlyph(RenderMode.Normal);
+
+                if (offX + face.Glyph.Bitmap.Width + 1 >= maxWidth)
+                {
+                    offY += rowH;
+                    rowH = 0;
+                    offX = 0;
+                }
+
+                GL.TexSubImage2D(TextureTarget.Texture2D, 0, offX, offY, face.Glyph.Bitmap.Width, face.Glyph.Bitmap.Rows,
+                    OpenTK.Graphics.OpenGL.PixelFormat.Alpha, PixelType.UnsignedByte, face.Glyph.Bitmap.Buffer);
+
+                // char informations
+                texAtlas.CharInfo[i].AdvanceX = face.Glyph.Advance.X >> 6;
+                texAtlas.CharInfo[i].AdvanceY = face.Glyph.Advance.Y >> 6;
+
+                texAtlas.CharInfo[i].BitmapW = face.Glyph.Bitmap.Width;
+                texAtlas.CharInfo[i].BitmapH = face.Glyph.Bitmap.Rows;
+
+                texAtlas.CharInfo[i].BitmapL = face.Glyph.BitmapLeft;
+                texAtlas.CharInfo[i].BitmapT = face.Glyph.BitmapTop;
+
+                texAtlas.CharInfo[i].TexOffX = offX / (float)maxWidth;
+                texAtlas.CharInfo[i].TexOffY = offY / (float)potH;
+
+                rowH = System.Math.Max(rowH, face.Glyph.Bitmap.Rows);
+                offX += face.Glyph.Bitmap.Width + 1;
             }
+
+            return texAtlas;
         }
 
         /// <summary>
-        /// Sets a int shader parameter.
+        /// Fixes the kerning of a text (if possible).
         /// </summary>
-        /// <param name="param">The parameter.</param>
-        /// <param name="val">The value.</param>
-        public void SetShaderParam(IShaderParam param, int val)
+        /// <param name="font">The <see cref="IFont"/> containing information about the font.</param>
+        /// <param name="vertices">The vertices.</param>
+        /// <param name="text">The text.</param>
+        /// <param name="scaleX">The scale x (OpenGL scaling factor).</param>
+        /// <returns>The fixed vertices as an array of <see cref="float3"/>.</returns>
+        public float3[] FixTextKerning(IFont font, float3[] vertices, string text, float scaleX)
         {
-            GL.Uniform1(((ShaderParam) param).handle, val);
-        }
+            var texAtlas = ((Font) font);
 
+            if (!texAtlas.UseKerning || !texAtlas.Face.HasKerning)
+                return vertices;
 
-        /// <summary>
-        /// Sets a given Shader Parameter to a created texture
-        /// </summary>
-        /// <param name="param">Shader Parameter used for texture binding</param>
-        /// <param name="texId">An ITexture probably returned from CreateTexture method</param>
-        public void SetShaderParamTexture(IShaderParam param, ITexture texId)
-        {
-            int iParam = ((ShaderParam) param).handle;
-            int texUnit;
-            if (!_shaderParam2TexUnit.TryGetValue(iParam, out texUnit))
+            // use kerning -> fix values
+            var fixX = 0f;
+            var fixVert = 4;
+            
+            for (var c = 0; c < text.Length - 1; c++)
             {
-                texUnit = _currentTextureUnit++;
-                _shaderParam2TexUnit[iParam] = texUnit;
+                var leftChar = texAtlas.Face.GetCharIndex(text[c]);
+                var rightChar = texAtlas.Face.GetCharIndex(text[c + 1]);
+
+                fixX += (texAtlas.Face.GetKerning(leftChar, rightChar, KerningMode.Default).X >> 6)*scaleX;
+
+                vertices[fixVert++].x += fixX;
+                vertices[fixVert++].x += fixX;
+                vertices[fixVert++].x += fixX;
+                vertices[fixVert++].x += fixX;
             }
-            GL.Uniform1(iParam, texUnit);
-            GL.ActiveTexture(TextureUnit.Texture0 + texUnit);
-            GL.BindTexture(TextureTarget.Texture2D, ((Texture) texId).handle);
+
+            return vertices;
         }
 
         #endregion
@@ -379,7 +384,7 @@ namespace Fusee.Engine
         /// The 4x4 projection matrix applied to view coordinates yielding clip space coordinates.
         /// </value>
         /// <remarks>
-        /// View coordinates are the result of the ModelView matrix multiplied to the geometry (<see cref="Fusee.Engine.RenderContextImp.ModelView"/>).
+        /// View coordinates are the result of the ModelView matrix multiplied to the geometry (<see cref="Fusee.Engine.RenderContext.ModelView"/>).
         /// The coordinate system of the view space has its origin in the camera center with the z axis aligned to the viewing direction, and the x- and
         /// y axes aligned to the viewing plane. Still, no projection from 3d space to the viewing plane has been performed. This is done by multiplying
         /// view coordinate geometry wihth the projection matrix. Typically, the projection matrix either performs a parallel projection or a perspective
@@ -438,7 +443,171 @@ namespace Fusee.Engine
 
         #endregion
 
-        #region Rendering related Members
+        #region Shader related Members
+
+        /// <summary>
+        /// Gets the shader parameter.
+        /// The Shader parameter is used to bind values inside of shaderprograms that run on the graphics card.
+        /// Do not use this function in frequent updates as it transfers information from graphics card to the cpu which takes time.
+        /// </summary>
+        /// <param name="shaderProgram">The shader program.</param>
+        /// <param name="paramName">Name of the parameter.</param>
+        /// <returns>The Shader parameter is returned if the name is found, otherwise null.</returns>
+        public IShaderParam GetShaderParam(IShaderProgramImp shaderProgram, string paramName)
+        {
+            int h = GL.GetUniformLocation(((ShaderProgramImp)shaderProgram).Program, paramName);
+            return (h == -1) ? null : new ShaderParam { handle = h };
+        }
+
+        /// <summary>
+        /// Gets the float parameter value inside a shaderprogram by using a <see cref="IShaderParam" /> as search reference.
+        /// Do not use this function in frequent updates as it transfers information from graphics card to the cpu which takes time.
+        /// </summary>
+        /// <param name="program">The program.</param>
+        /// <param name="param">The parameter.</param>
+        /// <returns>A float number (default is 0).</returns>
+        public float GetParamValue(IShaderProgramImp program, IShaderParam param)
+        {
+            float f;
+            GL.GetUniform(((ShaderProgramImp)program).Program, ((ShaderParam)param).handle, out f);
+            return f;
+        }
+
+        /// <summary>
+        /// Gets the shader parameter list of a specific <see cref="IShaderProgramImp" />. 
+        /// </summary>
+        /// <param name="shaderProgram">The shader program.</param>
+        /// <returns>All Shader parameters of a shaderprogram are returned.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException"></exception>
+        public IList<ShaderParamInfo> GetShaderParamList(IShaderProgramImp shaderProgram)
+        {
+            var sp = (ShaderProgramImp)shaderProgram;
+            int nParams;
+            GL.GetProgram(sp.Program, ProgramParameter.ActiveUniforms, out nParams);
+            var list = new List<ShaderParamInfo>();
+            for (int i = 0; i < nParams; i++)
+            {
+                ActiveUniformType t;
+                var ret = new ShaderParamInfo();
+                ret.Name = GL.GetActiveUniform(sp.Program, i, out ret.Size, out t);
+                ret.Handle = GetShaderParam(sp, ret.Name);
+                switch (t)
+                {
+                    case ActiveUniformType.Int:
+                        ret.Type = typeof(int);
+                        break;
+                    case ActiveUniformType.Float:
+                        ret.Type = typeof(float);
+                        break;
+                    case ActiveUniformType.FloatVec2:
+                        ret.Type = typeof(float2);
+                        break;
+                    case ActiveUniformType.FloatVec3:
+                        ret.Type = typeof(float3);
+                        break;
+                    case ActiveUniformType.FloatVec4:
+                        ret.Type = typeof(float4);
+                        break;
+                    case ActiveUniformType.FloatMat4:
+                        ret.Type = typeof(float4x4);
+                        break;
+                    case ActiveUniformType.Sampler2D:
+                        ret.Type = typeof (ITexture);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+                list.Add(ret);
+            }
+            return list;
+        }
+
+
+        /// <summary>
+        /// Sets a float shader parameter.
+        /// </summary>
+        /// <param name="param">The parameter.</param>
+        /// <param name="val">The value.</param>
+        public void SetShaderParam(IShaderParam param, float val)
+        {
+            GL.Uniform1(((ShaderParam)param).handle, val);
+        }
+
+        /// <summary>
+        /// Sets a <see cref="float2" /> shader parameter.
+        /// </summary>
+        /// <param name="param">The parameter.</param>
+        /// <param name="val">The value.</param>
+        public void SetShaderParam(IShaderParam param, float2 val)
+        {
+            GL.Uniform2(((ShaderParam)param).handle, val.x, val.y);
+        }
+
+        /// <summary>
+        /// Sets a <see cref="float3" /> shader parameter.
+        /// </summary>
+        /// <param name="param">The parameter.</param>
+        /// <param name="val">The value.</param>
+        public void SetShaderParam(IShaderParam param, float3 val)
+        {
+            GL.Uniform3(((ShaderParam)param).handle, val.x, val.y, val.z);
+        }
+
+        /// <summary>
+        /// Sets a <see cref="float4" /> shader parameter.
+        /// </summary>
+        /// <param name="param">The parameter.</param>
+        /// <param name="val">The value.</param>
+        public void SetShaderParam(IShaderParam param, float4 val)
+        {
+            GL.Uniform4(((ShaderParam)param).handle, val.x, val.y, val.z, val.w);
+        }
+
+        // TODO add vector implementations
+
+        /// <summary>
+        /// Sets a <see cref="float4x4" /> shader parameter.
+        /// </summary>
+        /// <param name="param">The parameter.</param>
+        /// <param name="val">The value.</param>
+        public void SetShaderParam(IShaderParam param, float4x4 val)
+        {
+            unsafe
+            {
+                var mF = (float*)(&val);
+                GL.UniformMatrix4(((ShaderParam)param).handle, 1, false, mF);
+            }
+        }
+
+        /// <summary>
+        /// Sets a int shader parameter.
+        /// </summary>
+        /// <param name="param">The parameter.</param>
+        /// <param name="val">The value.</param>
+        public void SetShaderParam(IShaderParam param, int val)
+        {
+            GL.Uniform1(((ShaderParam)param).handle, val);
+        }
+
+        /// <summary>
+        /// Sets a given Shader Parameter to a created texture
+        /// </summary>
+        /// <param name="param">Shader Parameter used for texture binding</param>
+        /// <param name="texId">An ITexture probably returned from CreateTexture method</param>
+        public void SetShaderParamTexture(IShaderParam param, ITexture texId)
+        {
+            int iParam = ((ShaderParam)param).handle;
+            int texUnit;
+            if (!_shaderParam2TexUnit.TryGetValue(iParam, out texUnit))
+            {
+                texUnit = _currentTextureUnit++;
+                _shaderParam2TexUnit[iParam] = texUnit;
+            }
+            GL.Uniform1(iParam, texUnit);
+            GL.ActiveTexture(TextureUnit.Texture0 + texUnit);
+            GL.BindTexture(TextureTarget.Texture2D, ((Texture)texId).handle);
+        }
+
         /// <summary>
         /// Creates the shaderprogram by using a valid GLSL vertex and fragment shader code. This code is compiled at runtime.
         /// Do not use this function in frequent updates.
@@ -488,7 +657,6 @@ namespace Fusee.Engine
             return new ShaderProgramImp {Program = program};
         }
 
-
         /// <summary>
         /// Sets the shaderprogram onto the GL Rendercontext.
         /// </summary>
@@ -500,6 +668,10 @@ namespace Fusee.Engine
 
             GL.UseProgram(((ShaderProgramImp) program).Program);
         }
+
+        #endregion
+
+        #region Rendering related Members
 
         /// <summary>
         /// Clears the specified flags.
@@ -636,7 +808,7 @@ namespace Fusee.Engine
         /// <param name="triangleIndices">The triangle indices.</param>
         /// <exception cref="System.ArgumentException">triangleIndices must not be null or empty</exception>
         /// <exception cref="System.ApplicationException"></exception>
-        public void SetTriangles(IMeshImp mr, short[] triangleIndices)
+        public void SetTriangles(IMeshImp mr, ushort[] triangleIndices)
         {
             if (triangleIndices == null || triangleIndices.Length == 0)
             {
@@ -745,8 +917,9 @@ namespace Fusee.Engine
         /// <param name="texId">The tex identifier.</param>
         public void GetBufferContent(Rectangle quad, ITexture texId)
         {
-            GL.BindTexture(TextureTarget.Texture2D, ((Texture)texId).handle);
-            GL.CopyTexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, quad.Left, quad.Top, quad.Width, quad.Height, 0);
+            GL.BindTexture(TextureTarget.Texture2D, ((Texture) texId).handle);
+            GL.CopyTexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, quad.Left, quad.Top, quad.Width,
+                quad.Height, 0);
         }
 
         /// <summary>

@@ -47,7 +47,7 @@
   <ItemGroup />
   <ItemGroup>
     <Content Include="Scripts\Fusee.Engine.Imp.WebGL.js" />
-    <Content Include="Scripts\SystemExternals.js" />
+    <Content Include="Scripts\opentype.js" />
     <Content Include="Styles\browser.css" />
     <Content Include="Styles\loading_rocket.png" />
   </ItemGroup>

@@ -1,6 +1,4 @@
-﻿using Fusee.Math;
-
-namespace Fusee.Engine
+﻿namespace Fusee.Engine
 {
     /// <summary>
     ///     Contains all pixel and vertex shaders and a method to create a ShaderProgram in Rendercontext.
@@ -62,8 +60,6 @@ namespace Fusee.Engine
             var spSimple = rc.CreateShader(VsBump, PsBump);
             return spSimple;
         }
-     
-        
 
         private const string VsSimpleTexture = @"
             #ifdef GL_ES
