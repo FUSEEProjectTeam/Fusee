@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Fusee.Math;
+﻿using Fusee.Math;
 
-namespace Fusse.KeyFrameAnimation
+namespace Fusee.KeyFrameAnimation
 {
     /// <summary>
     /// provides diffrent LerpFunctions that can be used in a channel. A Lerp Function represents a linear interpolataion between 2 points in a timeline.

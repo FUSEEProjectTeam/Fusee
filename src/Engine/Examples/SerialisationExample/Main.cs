@@ -9,7 +9,7 @@ namespace Examples.SerialisationExample
     [FuseeApplication(Name = "Serialisation Example", Description = "Example of Mesh loading via MeshReader and Protobuf.")]
     public class SerialisationExample : RenderCanvas
     {
-        private MySerializer _ser;
+        private FuseeSerializer _ser;
         private Stopwatch _watch;
         private Mesh _currentMesh;
 
@@ -29,7 +29,7 @@ namespace Examples.SerialisationExample
             RC.SetShader(_spColor);
             RC.SetShaderParam(_colorParam, new float4(1, 0, 0, 1));
             _watch = new Stopwatch();
-            _ser = new MySerializer();
+            _ser = new FuseeSerializer();
             Debug.WriteLine("Serialisation Example started. \nPress F1 to load Mesh using MeshReader. \nPress F2 to load Mesh using Protobuf.");
 
             // Example of how to save a Mesh with protobuf to file.

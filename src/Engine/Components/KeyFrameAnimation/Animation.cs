@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Fusee.Engine;
-using Fusee.KeyFrameAnimation;
 using Fusee.Xirkit;
 
 
-namespace Fusse.KeyFrameAnimation
+namespace Fusee.KeyFrameAnimation
 {
     /// <summary>
     /// The Animation Class is capeable of storing and handling of diffrent Types Channels.

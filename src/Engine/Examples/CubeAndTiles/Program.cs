@@ -4,12 +4,6 @@ using Fusee.Math;
 
 namespace Examples.CubeAndTiles
 {
-    class Test
-    {
-        public int i;
-    }
-
-
     [FuseeApplication(Name = "Cube & Tiles", Description = "Shows an entire game including user input, object texturing, and sound.")]
     public class CubeAndTiles : RenderCanvas
     {
@@ -75,11 +69,6 @@ namespace Examples.CubeAndTiles
         // Init()
         public override void Init()
         {
-            Test tst = new Test();
-            if (tst == null)
-                Diagnostics.Log("tst is null");
-
-
             RC.ClearColor = new float4(0, 0, 0, 1);
             
             _shaderProgram = RC.CreateShader(Vs, Ps);

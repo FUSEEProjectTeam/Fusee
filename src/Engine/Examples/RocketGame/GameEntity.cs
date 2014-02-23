@@ -19,13 +19,13 @@ namespace Examples.RocketGame
         private ITexture _iTexture2;
         private float4 _color = new float4(0.5f, 0.5f, 0.5f, 1);
 
-        private MySerializer _ser;
+        private FuseeSerializer _ser;
 
         public GameEntity(String meshPath, RenderContext rc, float posX = 0, float posY = 0, float posZ = 0, float angX = 0, float angY = 0, float angZ = 0)
         {
             if (meshPath.Contains("protobuf"))
             {
-                _ser = new MySerializer();
+                _ser = new FuseeSerializer();
                 using (var file = File.OpenRead(meshPath))
                 {
                     _mesh = _ser.Deserialize(file, null, typeof(Mesh)) as Mesh;

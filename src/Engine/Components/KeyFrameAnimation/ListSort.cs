@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Fusee.KeyFrameAnimation;
+﻿using System.Collections.Generic;
 
-namespace Fusse.KeyFrameAnimation
+namespace Fusee.KeyFrameAnimation
 {
     /// <summary>
     /// This is needed to sort the List in the Channel Class.

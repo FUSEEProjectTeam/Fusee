@@ -28,7 +28,7 @@ namespace Examples.SoundTest
         {
             RC.ClearColor = new float4(0, 0, 0, 1);
 
-            Mesh = MeshReader.LoadMesh("Assets/Cube.obj.model");
+            Mesh = new Cube();
 
             var sp = MoreShaders.GetDiffuseColorShader(RC);
             RC.SetShader(sp);
@@ -111,7 +111,7 @@ namespace Examples.SoundTest
             var mtxRot = float4x4.CreateRotationY(_angleHorz)*float4x4.CreateRotationX(0);
             var mtxCam = float4x4.LookAt(0, 200, 400, 0, 50, 0, 0, 1, 0);
 
-            RC.ModelView = mtxRot*float4x4.CreateTranslation(-100, 0, 0)*mtxCam;
+            RC.ModelView = float4x4.Scale(200,200,200)*mtxRot*float4x4.CreateTranslation(-100, 0, 0)*mtxCam;
             RC.Render(Mesh);
 
             Present();

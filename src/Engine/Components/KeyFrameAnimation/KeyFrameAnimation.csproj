@@ -8,7 +8,7 @@
     <ProjectGuid>{394FE54B-7891-4C5B-AF0E-8DCC9F2D3CBA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Fusse.KeyFrameAnimation</RootNamespace>
+    <RootNamespace>Fusee.KeyFrameAnimation</RootNamespace>
     <AssemblyName>Fusee.KeyFrameAnimation</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

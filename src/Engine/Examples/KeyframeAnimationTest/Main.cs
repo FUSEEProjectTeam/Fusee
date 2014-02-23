@@ -3,7 +3,6 @@ using Fusee.Engine;
 using Fusee.KeyFrameAnimation;
 using Fusee.Math;
 using Fusee.SceneManagement;
-using Fusse.KeyFrameAnimation;
 
 namespace Examples.KeyframeAnimationTest
 {

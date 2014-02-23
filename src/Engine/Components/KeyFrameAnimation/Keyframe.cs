@@ -1,8 +1,4 @@
-﻿using System;
-using System.Linq.Expressions;
-using Fusee.KeyFrameAnimation;
-
-namespace Fusee.KeyFrameAnimation
+﻿namespace Fusee.KeyFrameAnimation
 {
     /// <summary>
     /// This Class represents a Keyframe it has a time and a Value.
