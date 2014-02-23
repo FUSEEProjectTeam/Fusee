@@ -71,13 +71,6 @@ namespace Fusee.Engine
             TextColor = color;
         }
 
-        internal GUIText(RenderContext rc, string text, IFont font, int x, int y, int z, float4 color)
-            : base(text, font, x, y, z, 0, 0)
-        {
-            TextColor = color;
-            AttachToContext(rc);
-        }
-
         protected override void CreateMesh()
         {
             SetTextMesh(PosX + OffsetX, PosY + OffsetY);

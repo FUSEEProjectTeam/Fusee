@@ -7,7 +7,14 @@ namespace Fusee.Engine
     /// </summary>
     public class InputDevice
     {
-        private IInputDeviceImp _inputDeviceImp;
+        public enum Axis
+        {
+            Horizontal,
+            Vertical,
+            Z
+        }
+
+        private readonly IInputDeviceImp _inputDeviceImp;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InputDevice"/> class.
@@ -103,13 +110,5 @@ namespace Fusee.Engine
         {
             return _inputDeviceImp.GetCategory();
         }
-
-        public enum Axis
-        {
-            Horizontal,
-            Vertical,
-            Z
-        }
-
     }
 }

@@ -5,33 +5,31 @@ using Fusee.Math;
 namespace Fusee.Engine
 {
     /// <summary>
+    /// A container that stores indices for vertices, normals and texture coordinates.
+    /// The values are used for conversion to different geometry face formats, e.g. Triangles.
+    /// </summary>
+    public class Face
+    {
+        /// <summary>
+        /// The inx vert
+        /// </summary>
+        public int[] InxVert;
+        /// <summary>
+        /// The inx normal
+        /// </summary>
+        public int[] InxNormal;
+        /// <summary>
+        /// The inx tex coord
+        /// </summary>
+        public int[] InxTexCoord;
+    }
+
+    /// <summary>
     /// Stores threedimensional, polygonal geometry and provides methods for manipulation.
     /// To actually render the geometry in the engine, convert Geometry to <see cref="Mesh"/> objects.
     /// </summary>
     public class Geometry
     {
-        #region Nested Class
-        /// <summary>
-        /// A container that stores indices for vertices, normals and texture coordinates.
-        /// The values are used for conversion to different geometry face formats, e.g. Triangles.
-        /// </summary>
-        public class Face
-        {
-            /// <summary>
-            /// The inx vert
-            /// </summary>
-            public int[] InxVert;
-            /// <summary>
-            /// The inx normal
-            /// </summary>
-            public int[] InxNormal;
-            /// <summary>
-            /// The inx tex coord
-            /// </summary>
-            public int[] InxTexCoord;
-        }
-        #endregion
-
         #region Fields
 
         internal List<double3> _vertices;
@@ -284,7 +282,7 @@ namespace Fusee.Engine
         public double3 CalcFaceNormal(Face f)
         {
             if (f.InxVert.Length < 3)
-                throw new Exception("Cannot calculate normal of degenerate face with only " + f.InxVert.Length + " vertices.");
+                throw new FormatException("Cannot calculate normal of degenerate face with only " + f.InxVert.Length + " vertices.");
 
             var vertex0 = f.InxVert[0];
             double3 v1 = _vertices[vertex0] - _vertices[f.InxVert[1]];

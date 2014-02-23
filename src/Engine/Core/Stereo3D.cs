@@ -2,7 +2,6 @@
 
 namespace Fusee.Engine
 {
-
     /// <summary>
     /// The enum for the eye side selection.
     /// </summary>
@@ -33,7 +32,7 @@ namespace Fusee.Engine
         Oculus
     }
 
-    internal class Stereo3DParams
+    internal static class Stereo3DParams
     {
         internal static float EyeDistance = 30f;
         internal static float Convergence = 0f;

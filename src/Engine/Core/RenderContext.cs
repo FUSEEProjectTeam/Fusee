@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using JSIL.Meta;
 using Fusee.Math;
+
 namespace Fusee.Engine
 {
     /// <summary>
@@ -11,7 +11,7 @@ namespace Fusee.Engine
     /// to render geometry to the RenderCanvas associated with this context. If you have worked with OpenGL or DirectX before you will find
     /// many similarities in this class' methods and properties.
     /// </summary>
-    public partial class RenderContext
+    public class RenderContext
     {
         #region Fields
 
@@ -28,8 +28,8 @@ namespace Fusee.Engine
         private readonly LightParamNames[] _lightShaderParams;
         private bool _updatedShaderParams;
 
-        private ShaderProgram _debugShader;
-        private IShaderParam _debugColor;
+        private readonly ShaderProgram _debugShader;
+        private readonly IShaderParam _debugColor;
         private bool _debugLinesEnabled = true;
 
         // Settable matrices
@@ -83,7 +83,7 @@ namespace Fusee.Engine
 
         #region Internal Fields
 
-        internal struct MatrixParamNames
+        internal sealed class MatrixParamNames
         {
             // ReSharper disable InconsistentNaming
             public IShaderParam FUSEE_M;
@@ -724,6 +724,7 @@ namespace Fusee.Engine
             _lightParams = new Light[8];
             _lightShaderParams = new LightParamNames[8];
 
+            _currentShaderParams = new MatrixParamNames();
             _updatedShaderParams = false;
 
             _debugShader = MoreShaders.GetDiffuseColorShader(this);
@@ -969,7 +970,7 @@ namespace Fusee.Engine
         public IFont LoadFont(string filename, uint size)
         {
             if (!File.Exists(filename))
-                throw new Exception("Font not found: " + filename);
+                throw new FileNotFoundException("Font not found: " + filename);
 
             return _rci.LoadFont(filename, size);
         }

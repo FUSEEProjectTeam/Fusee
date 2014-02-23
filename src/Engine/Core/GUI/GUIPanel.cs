@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Fusee.Math;
 
 namespace Fusee.Engine
@@ -91,7 +92,7 @@ namespace Fusee.Engine
         ///     the position of the panel. This can be used to group <see cref="GUIElement" />s
         ///     together and move them (e.g. to the center of the screen) just by moving the panel.
         /// </remarks>
-        public List<GUIElement> ChildElements;
+        public Collection<GUIElement> ChildElements;
 
         /// <summary>
         ///     Occurs when mouse button is pressed on this panel.
@@ -152,7 +153,7 @@ namespace Fusee.Engine
 
         private void SetupPanel()
         {
-            ChildElements = new List<GUIElement>();
+            ChildElements = new Collection<GUIElement>();
 
             // settings
             PanelColor = new float4(0.1f, 0.1f, 0.1f, 0.5f);

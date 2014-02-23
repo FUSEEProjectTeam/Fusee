@@ -178,14 +178,14 @@ namespace Fusee.Engine
             {
                 // pre-rendering
                 Network.Instance.OnUpdateFrame();
-                Input.Instance.OnUpdateFrame(_canvasImp.DeltaTime);
+                Input.Instance.OnUpdateFrame();
                 Time.Instance.DeltaTimeIncrement = _canvasImp.DeltaTime;
 
                 // rendering
                 RenderAFrame();
 
                 // post-rendering
-                Input.Instance.OnLateUpdate(_canvasImp.DeltaTime);
+                Input.Instance.OnLateUpdate();
             };
 
             _canvasImp.Resize += delegate { Resize(); };

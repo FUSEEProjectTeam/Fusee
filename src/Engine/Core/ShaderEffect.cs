@@ -22,7 +22,7 @@ namespace Fusee.Engine
         public object Value;
     }
 
-    internal class EffectParam
+    internal sealed class EffectParam
     {
         public ShaderParamInfo Info;
         public Object Value;

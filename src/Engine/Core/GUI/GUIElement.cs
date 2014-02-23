@@ -32,7 +32,7 @@ namespace Fusee.Engine
 
         protected IShaderParam ColorParam;
 
-        protected const string GUIVS = @"
+        protected readonly string GUIVS = @"
             attribute vec3 fuVertex;
             attribute vec2 fuUV;
             attribute vec4 fuColor;
@@ -48,7 +48,7 @@ namespace Fusee.Engine
                 gl_Position = vec4(fuVertex, 1);
             }";
 
-        protected const string GUIPS = @"
+        protected readonly string GUIPS = @"
             #ifdef GL_ES
                 precision highp float;
             #endif    
@@ -60,7 +60,7 @@ namespace Fusee.Engine
                 gl_FragColor = vColor;
             }";
 
-        protected const string TEXTPS = @"
+        protected readonly string TEXTPS = @"
             #ifdef GL_ES
                 precision highp float;
             #endif    

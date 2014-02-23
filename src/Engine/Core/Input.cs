@@ -1,16 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using JSIL.Meta;
+using System.Collections.ObjectModel;
 
 namespace Fusee.Engine
 {
-    /// <summary>
-    /// Event that gets triggered on mouse movements and mouse actions.
-    /// </summary>
-    /// <param name="sender">The sender.</param>
-    /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
-    public delegate void MouseEventHandler(object sender, MouseEventArgs e);
+    public enum DeviceCategory
+    {
+        Mouse,
+        Keyboard,
+        GameController,
+        Touch,
+        Kinect,
+    }
+
+    public enum ControllerButton
+    {
+        A = 0,
+        B = 1,
+        C = 2,
+        D = 3,
+        E = 4,
+
+        R1,
+        R2,
+        L1,
+        L2,
+        //...
+
+        FirstUserButton,
+    }
 
     /// <summary>
     ///     The Input class takes care of all inputs. It is accessible from everywhere inside a Fusee project.
@@ -48,9 +66,9 @@ namespace Fusee.Engine
             }
         }
 
-        public event MouseEventHandler OnMouseButtonDown;
-        public event MouseEventHandler OnMouseButtonUp;
-        public event MouseEventHandler OnMouseMove;
+        public event EventHandler<MouseEventArgs> OnMouseButtonDown;
+        public event EventHandler<MouseEventArgs> OnMouseButtonUp;
+        public event EventHandler<MouseEventArgs> OnMouseMove;
 
         private float[] _axes;
         private float[] _axesPreviousAbsolute;
@@ -58,7 +76,6 @@ namespace Fusee.Engine
         private HashSet<int> _keys;
         private HashSet<int> _keysUp;
         private HashSet<int> _keysDown;
-
 
         private HashSet<int> _buttonsPressed;
 
@@ -238,7 +255,7 @@ namespace Fusee.Engine
         }
         */
 
-        internal void OnUpdateFrame(double deltaTime)
+        internal void OnUpdateFrame()
         {
             var p = _inputImp.GetMousePos();
 
@@ -266,65 +283,18 @@ namespace Fusee.Engine
             _axesPreviousAbsolute[(int) InputAxis.MouseWheel] = currR;
         }
 
-        internal void OnLateUpdate(double deltaTime)
+        internal void OnLateUpdate()
         {
             _keysDown.Clear();
             _keysUp.Clear();
         }
 
-
-       
-
-        //neu
-        //public bool ControllerButtonPressed(int index, GameController gameController)
-        //{
-        //    if ()
-        //}
-
-        //Neu
-        public enum DeviceCategory
-        {
-            Mouse,
-            Keyboard,
-            GameController,
-            Touch,
-            Kinect,
-
-        }
-        //Neu
-        public enum ControllerButton
-        {
-            A = 0,
-            B = 1,
-            C = 2,
-            D = 3,
-            E = 4,
-
-            R1,
-            R2,
-            L1,
-            L2,
-            //...
-
-            FirstUserButton,
-        }
-
-      
-       
-        
         /// <summary>
         ///     Provides the Instance of the Input Class.
         /// </summary>
         public static Input Instance
         {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new Input();
-                }
-                return _instance;
-            }
+            get { return _instance ?? (_instance = new Input()); }
         }
 
         #endregion
@@ -332,35 +302,29 @@ namespace Fusee.Engine
         #region InputDevices
 
         /// <summary>
-        /// Input devices like gamepads are managed here.
+        ///     Input devices like gamepads are managed here.
         /// </summary>
-        public List<InputDevice> Devices = new List<InputDevice>();
+        public Collection<InputDevice> Devices = new Collection<InputDevice>();
 
         private IInputDriverImp _inputDriverImp;
 
         /// <summary>
-        /// All connected input devices are added to <see cref="Devices"/> - List and the names and indices of 
-        /// the devices are printed to the debugging - console.
+        ///     All connected input devices are added to <see cref="Devices" /> - List and the names and indices of
+        ///     the devices are printed to the debugging - console.
         /// </summary>
         public void InitializeDevices()
         {
             List<IInputDeviceImp> tmp = _inputDriverImp.DeviceImps();
-            foreach (IInputDeviceImp _inputDevice in tmp)
+            foreach (var inputDevice in tmp)
             {
-                Devices.Add(new InputDevice(_inputDevice));
+                Devices.Add(new InputDevice(inputDevice));
             }
-
-            for(int i = 0; i<tmp.Count; i++)
-            {
-                System.Diagnostics.Debug.WriteLine("Index " + i + " " + tmp[i].GetCategory());
-            }
-
         }
 
         /// <summary>
-        /// Checks if a device at the specified index exists and returns it if it exists.
+        ///     Checks if a device at the specified index exists and returns it if it exists.
         /// </summary>
-        /// <param name="deviceIndex">The index at <see cref="Devices"/></param>
+        /// <param name="deviceIndex">The index at <see cref="Devices" /></param>
         /// <returns>The device at the specified index </returns>
         public InputDevice GetDevice(int deviceIndex)
         {
@@ -370,12 +334,12 @@ namespace Fusee.Engine
             }
             catch (ArgumentOutOfRangeException)
             {
-                throw new Exception("Can not find Input Device with Device-Index " + deviceIndex + "!");
+                throw new ArgumentOutOfRangeException("Can not find Input Device with Device-Index " + deviceIndex + "!");
             }
         }
 
         /// <summary>
-        /// Counts the devices.
+        ///     Counts the devices.
         /// </summary>
         /// <returns>The amount of devices</returns>
         public int CountDevices()
@@ -385,13 +349,8 @@ namespace Fusee.Engine
 
         internal IInputDriverImp InputDriverImp
         {
-            set
-            {
-                _inputDriverImp = value;
-            }
+            set { _inputDriverImp = value; }
         }
-
-        
 
         #endregion
     }

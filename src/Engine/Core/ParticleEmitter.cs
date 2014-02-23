@@ -4,7 +4,7 @@ using Fusee.Math;
 
 namespace Fusee.Engine
 {
-    internal struct ParticleData
+    internal sealed class ParticleData
     {
         public float3 Position;
         public float3 Velocity; 

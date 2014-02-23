@@ -1,7 +1,5 @@
-﻿// TODO: Comment stuff and remove #pragma
-#pragma warning disable 1591
-
-using System.Collections.Generic;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using JSIL.Meta;
 
@@ -46,16 +44,15 @@ namespace Fusee.Engine
             set { _networkImp.Config = value; }
         }
 
-
         /// <summary>
         /// Gets all connections of type <see cref="INetworkConnection"/>.
         /// </summary>
         /// <value>
         /// The connections.
         /// </value>
-        public List<INetworkConnection> Connections
+        public Collection<INetworkConnection> Connections
         {
-            get { return _networkImp.Connections; }
+            get { return new Collection<INetworkConnection>(_networkImp.Connections); }
         }
 
         /// <summary>
@@ -69,7 +66,6 @@ namespace Fusee.Engine
             get { return _networkImp.GetLocalIp(); }
         }
 
-
         /// <summary>
         /// Gets the incoming message's count.
         /// </summary>
@@ -80,8 +76,6 @@ namespace Fusee.Engine
         {
             get { return _networkImp.IncomingMsg.Count; }
         }
-
-
 
         /// <summary>
         /// Gets the incoming <see cref="INetworkMsg"/>.
@@ -135,7 +129,6 @@ namespace Fusee.Engine
             _networkImp.StartPeer(port);
         }
 
-
         /// <summary>
         /// Opens the connection on default port 14242 and specified host.
         /// </summary>
@@ -151,7 +144,7 @@ namespace Fusee.Engine
         /// <param name="port">The port.</param>
         public void OpenConnection(int port)
         {
-            OpenConnection("", port);
+            OpenConnection(String.Empty, port);
         }
 
         /// <summary>
@@ -246,5 +239,3 @@ namespace Fusee.Engine
 
     }
 }
-
-#pragma warning restore 1591

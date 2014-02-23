@@ -13,6 +13,7 @@ namespace Fusee.Engine
     public class Mesh
     {
         #region Fields
+
         internal IMeshImp _meshImp;
         
         private float3[] _vertices;
@@ -120,7 +121,6 @@ namespace Fusee.Engine
         /// </value>
         public bool TrianglesSet { get { return (_meshImp != null) && _meshImp.TrianglesSet; } }
         #endregion
-
     }
 }
 

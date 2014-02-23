@@ -1,4 +1,5 @@
-﻿using Fusee.Math;
+﻿using System;
+using Fusee.Math;
 
 namespace Fusee.Engine
 {
@@ -84,7 +85,7 @@ namespace Fusee.Engine
         ///     then they are rendered according to their order in the <see cref="GUIHandler" />.
         /// </remarks>
         public GUIImage(string img, int x, int y, int z, int width, int height)
-            : base("", null, x, y, z, width, height)
+            : base(String.Empty, null, x, y, z, width, height)
         {
             // settings
             ImgSrc = img;
@@ -100,7 +101,7 @@ namespace Fusee.Engine
         /// <param name="width">The width.</param>
         /// <param name="height">The height.</param>
         public GUIImage(string img, int x, int y, int width, int height)
-            : base("", null, x, y, 0, width, height)
+            : base(String.Empty, null, x, y, 0, width, height)
         {
             // settings
             ImgSrc = img;
