@@ -3,7 +3,8 @@ Fusee is licensed under the MIT license (see below).
 -------------------------------------------------------------------------------
 
 Fusee contains freely available open source software and assets. They are 
-governed by their respective license terms and conditions.
+governed by their respective license terms and conditions. As the time of
+writing, these components are released under:
 
 - OpenTK - http://www.opentk.com/ - MIT
 - JSIL - http://www.jsil.org/ - MIT/X11
@@ -30,7 +31,7 @@ governed by their respective license terms and conditions.
 
 The MIT License (MIT)
 
-Copyright (c) 2013 FuseeProjectTeam
+Copyright (c) 2014 FuseeProjectTeam
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
