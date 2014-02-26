@@ -865,7 +865,8 @@ BaseTag *
 
 %typemap(imtype) GvNode *& "IntPtr /* GvNode_imtype */"
 
-%include "c4d_graphview.h";
+%include "c4d_graphview.swig.h";
+// %include "c4d_graphview.h";
 
 //////////////////////////////////////////////////////////////////
 // "c4d_operatordata.h"
