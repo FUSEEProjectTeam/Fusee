@@ -182,6 +182,43 @@ namespace C4d
                     }
 
                 }
+                // Or is it an attributed SceneSaverPlugin?
+                else if (t.IsDefined(typeof (SceneSaverPluginAttribute), true))
+                {
+                    SceneSaverPluginAttribute attr =
+                        (SceneSaverPluginAttribute)
+                            Attribute.GetCustomAttribute(t, typeof (SceneSaverPluginAttribute), true);
+                    Logger.Debug("  Class " + t.Name + " is attributed with [SceneSaverPlugin(ID=" + attr.ID +
+                                 ", Name=\"" +
+                                 attr.Name + "\")]");
+
+                    if (InheritsFrom(t, typeof (SceneSaverData)))
+                    {
+                        // Register the object plugin
+                        string name;
+                        BaseBitmap bmp;
+                        GetPluginDescription(t, attr, out name, out bmp);
+
+                        ConstructorInfo ctor = t.GetConstructor(Type.EmptyTypes);
+                        if (ctor != null)
+                        {
+                            PluginAllocator pa = new PluginAllocator(ctor);
+                            NodeDataAllocator nda = pa.Allocate;
+                            _nodeAllocatorList.Add(nda);
+                            C4dApi.RegisterSceneSaverPlugin(attr.ID, name, attr.Info, nda, "obase", attr.Suffix);
+                        }
+                        else
+                        {
+                            Logger.Warn("Class " + t.Name + " in " + fi.Name + " is missing a parameterless constructor");
+                        }
+                    }
+                    else
+                    {
+                        Logger.Warn("  Class " + t.Name + " in " + fi.Name +
+                                    " is attributed with [ObjectPlugin] but does not inherit from ObjectData");
+                    }
+                }
+
             }
         }
 

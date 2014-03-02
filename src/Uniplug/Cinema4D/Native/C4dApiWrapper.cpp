@@ -332,9 +332,12 @@ namespace Swig {
 #include "c4d.h"
 #include "lib_ca.h"
 #include "lib_description.h"
+#include "c4d_file.h"
 #include "c4d_graphview.h"
 #include "c4d_operatordata.h"
 #include "c4d_operatorplugin.h"
+#include "c4d_filterdata.h"
+#include "c4d_filterplugin.h"
 #include "operatingsystem.h"
 #include "c4d_basetag.h"
 #include "c4d_baseselect.h" //NEU
@@ -397,6 +400,18 @@ SWIGINTERN void PointObject_SetPointAt(PointObject *self,LONG inx,Vector v){
 SWIGINTERN PointObject *PointObject_GetPointObject(BaseObject *iObj){
   return (PointObject*)iObj;
  }
+SWIGINTERN Vector PolygonObject_GetPointAt(PolygonObject *self,LONG inx){
+		return self->GetPointR()[inx];
+	}
+SWIGINTERN void PolygonObject_SetPointAt(PolygonObject *self,LONG inx,Vector v){
+		self->GetPointW()[inx] = v;
+	}
+SWIGINTERN CPolygon PolygonObject_GetPolygonAt(PolygonObject *self,LONG inx){
+		return self->GetPolygonR()[inx];
+	}
+SWIGINTERN void PolygonObject_SetPolygonAt(PolygonObject *self,LONG inx,CPolygon v){
+		self->GetPolygonW()[inx] = v;
+	}
 SWIGINTERN Tangent *SplineObject_GetTangentAt(SplineObject *self,LONG inx){
 		return (Tangent *)(self->GetTangentR() + inx);
 	}
@@ -1653,6 +1668,1061 @@ void SwigDirector_ObjectDataM::swig_init_callbacks() {
   swig_callbackGetHandle = 0;
   swig_callbackSetHandle = 0;
   swig_callbackGetDDescription__SWIG_1 = 0;
+}
+
+SwigDirector_BitmapLoaderData::SwigDirector_BitmapLoaderData() : BitmapLoaderData(), Swig::Director() {
+  swig_init_callbacks();
+}
+
+Bool SwigDirector_BitmapLoaderData::Identify(Filename const &name, UCHAR *probe, LONG size) {
+  Bool c_result = SwigValueInit< Bool >() ;
+  unsigned int jresult = 0 ;
+  void * jname = 0 ;
+  void * jprobe = 0 ;
+  int jsize  ;
+  
+  if (!swig_callbackIdentify) {
+    throw Swig::DirectorPureVirtualException("BitmapLoaderData::Identify");
+  } else {
+    jname = (Filename *) &name; 
+    jprobe = (void *) probe; 
+    jsize = size;
+    jresult = (unsigned int) swig_callbackIdentify(jname, jprobe, jsize);
+    c_result = jresult ? true : false; 
+  }
+  return c_result;
+}
+
+IMAGERESULT SwigDirector_BitmapLoaderData::Load(Filename const &name, BaseBitmap *bm, LONG frame) {
+  IMAGERESULT c_result = SwigValueInit< IMAGERESULT >() ;
+  int jresult = 0 ;
+  void * jname = 0 ;
+  void * jbm = 0 ;
+  int jframe  ;
+  
+  if (!swig_callbackLoad) {
+    throw Swig::DirectorPureVirtualException("BitmapLoaderData::Load");
+  } else {
+    jname = (Filename *) &name; 
+    jbm = (void *) bm; 
+    jframe = frame;
+    jresult = (int) swig_callbackLoad(jname, jbm, jframe);
+    c_result = (IMAGERESULT)jresult; 
+  }
+  return c_result;
+}
+
+LONG SwigDirector_BitmapLoaderData::GetSaver() {
+  LONG c_result = SwigValueInit< LONG >() ;
+  int jresult = 0 ;
+  
+  if (!swig_callbackGetSaver) {
+    return BitmapLoaderData::GetSaver();
+  } else {
+    jresult = (int) swig_callbackGetSaver();
+    c_result = (LONG)jresult; 
+  }
+  return c_result;
+}
+
+Bool SwigDirector_BitmapLoaderData::GetInformation(Filename const &name, LONG *frames, Real *fps) {
+  Bool c_result = SwigValueInit< Bool >() ;
+  unsigned int jresult = 0 ;
+  void * jname = 0 ;
+  void * jframes = 0 ;
+  void * jfps = 0 ;
+  
+  if (!swig_callbackGetInformation) {
+    return BitmapLoaderData::GetInformation(name,frames,fps);
+  } else {
+    jname = (Filename *) &name; 
+    jframes = (void *) frames; 
+    jfps = (void *) fps; 
+    jresult = (unsigned int) swig_callbackGetInformation(jname, jframes, jfps);
+    c_result = jresult ? true : false; 
+  }
+  return c_result;
+}
+
+IMAGERESULT SwigDirector_BitmapLoaderData::LoadAnimated(BitmapLoaderAnimatedData *bd, BITMAPLOADERACTION action, BaseBitmap *bm, LONG frame) {
+  IMAGERESULT c_result = SwigValueInit< IMAGERESULT >() ;
+  int jresult = 0 ;
+  void * jbd = 0 ;
+  int jaction  ;
+  void * jbm = 0 ;
+  int jframe  ;
+  
+  if (!swig_callbackLoadAnimated) {
+    return BitmapLoaderData::LoadAnimated(bd,action,bm,frame);
+  } else {
+    jbd = (void *) bd; 
+    jaction = action;
+    jbm = (void *) bm; 
+    jframe = frame;
+    jresult = (int) swig_callbackLoadAnimated(jbd, jaction, jbm, jframe);
+    c_result = (IMAGERESULT)jresult; 
+  }
+  return c_result;
+}
+
+IMAGERESULT SwigDirector_BitmapLoaderData::ExtractSound(BitmapLoaderAnimatedData *bd, BaseSound *snd) {
+  IMAGERESULT c_result = SwigValueInit< IMAGERESULT >() ;
+  int jresult = 0 ;
+  void * jbd = 0 ;
+  void * jsnd = 0 ;
+  
+  if (!swig_callbackExtractSound) {
+    return BitmapLoaderData::ExtractSound(bd,snd);
+  } else {
+    jbd = (void *) bd; 
+    jsnd = (void *) snd; 
+    jresult = (int) swig_callbackExtractSound(jbd, jsnd);
+    c_result = (IMAGERESULT)jresult; 
+  }
+  return c_result;
+}
+
+IMAGERESULT SwigDirector_BitmapLoaderData::HasSound(BitmapLoaderAnimatedData *bd) {
+  IMAGERESULT c_result = SwigValueInit< IMAGERESULT >() ;
+  int jresult = 0 ;
+  void * jbd = 0 ;
+  
+  if (!swig_callbackHasSound) {
+    return BitmapLoaderData::HasSound(bd);
+  } else {
+    jbd = (void *) bd; 
+    jresult = (int) swig_callbackHasSound(jbd);
+    c_result = (IMAGERESULT)jresult; 
+  }
+  return c_result;
+}
+
+void SwigDirector_BitmapLoaderData::swig_connect_director(SWIG_Callback0_t callbackIdentify, SWIG_Callback1_t callbackLoad, SWIG_Callback2_t callbackGetSaver, SWIG_Callback3_t callbackGetInformation, SWIG_Callback4_t callbackLoadAnimated, SWIG_Callback5_t callbackExtractSound, SWIG_Callback6_t callbackHasSound) {
+  swig_callbackIdentify = callbackIdentify;
+  swig_callbackLoad = callbackLoad;
+  swig_callbackGetSaver = callbackGetSaver;
+  swig_callbackGetInformation = callbackGetInformation;
+  swig_callbackLoadAnimated = callbackLoadAnimated;
+  swig_callbackExtractSound = callbackExtractSound;
+  swig_callbackHasSound = callbackHasSound;
+}
+
+void SwigDirector_BitmapLoaderData::swig_init_callbacks() {
+  swig_callbackIdentify = 0;
+  swig_callbackLoad = 0;
+  swig_callbackGetSaver = 0;
+  swig_callbackGetInformation = 0;
+  swig_callbackLoadAnimated = 0;
+  swig_callbackExtractSound = 0;
+  swig_callbackHasSound = 0;
+}
+
+SwigDirector_BitmapSaverData::SwigDirector_BitmapSaverData() : BitmapSaverData(), Swig::Director() {
+  swig_init_callbacks();
+}
+
+IMAGERESULT SwigDirector_BitmapSaverData::Save(Filename const &name, BaseBitmap *bm, BaseContainer *data, SAVEBIT savebits) {
+  IMAGERESULT c_result = SwigValueInit< IMAGERESULT >() ;
+  int jresult = 0 ;
+  void * jname = 0 ;
+  void * jbm = 0 ;
+  void * jdata = 0 ;
+  int jsavebits  ;
+  
+  if (!swig_callbackSave) {
+    return BitmapSaverData::Save(name,bm,data,savebits);
+  } else {
+    jname = (Filename *) &name; 
+    jbm = (void *) bm; 
+    jdata = (void *) data; 
+    jsavebits = savebits;
+    jresult = (int) swig_callbackSave(jname, jbm, jdata, jsavebits);
+    c_result = (IMAGERESULT)jresult; 
+  }
+  return c_result;
+}
+
+Bool SwigDirector_BitmapSaverData::Edit(BaseContainer *data) {
+  Bool c_result = SwigValueInit< Bool >() ;
+  unsigned int jresult = 0 ;
+  void * jdata = 0 ;
+  
+  if (!swig_callbackEdit) {
+    return BitmapSaverData::Edit(data);
+  } else {
+    jdata = (void *) data; 
+    jresult = (unsigned int) swig_callbackEdit(jdata);
+    c_result = jresult ? true : false; 
+  }
+  return c_result;
+}
+
+LONG SwigDirector_BitmapSaverData::GetMaxAlphas(BaseContainer *data) {
+  LONG c_result = SwigValueInit< LONG >() ;
+  int jresult = 0 ;
+  void * jdata = 0 ;
+  
+  if (!swig_callbackGetMaxAlphas) {
+    return BitmapSaverData::GetMaxAlphas(data);
+  } else {
+    jdata = (void *) data; 
+    jresult = (int) swig_callbackGetMaxAlphas(jdata);
+    c_result = (LONG)jresult; 
+  }
+  return c_result;
+}
+
+LONG SwigDirector_BitmapSaverData::GetMaxResolution(Bool layers) {
+  LONG c_result = SwigValueInit< LONG >() ;
+  int jresult = 0 ;
+  unsigned int jlayers  ;
+  
+  if (!swig_callbackGetMaxResolution) {
+    return BitmapSaverData::GetMaxResolution(layers);
+  } else {
+    jlayers = layers;
+    jresult = (int) swig_callbackGetMaxResolution(jlayers);
+    c_result = (LONG)jresult; 
+  }
+  return c_result;
+}
+
+IMAGERESULT SwigDirector_BitmapSaverData::Open(PluginMovieData *&md, Filename const &name, BaseBitmap *bm, BaseContainer *data, SAVEBIT savebits, LONG fps) {
+  IMAGERESULT c_result = SwigValueInit< IMAGERESULT >() ;
+  int jresult = 0 ;
+  void * jmd = 0 ;
+  void * jname = 0 ;
+  void * jbm = 0 ;
+  void * jdata = 0 ;
+  int jsavebits  ;
+  int jfps  ;
+  
+  if (!swig_callbackOpen) {
+    return BitmapSaverData::Open(md,name,bm,data,savebits,fps);
+  } else {
+    jmd = (PluginMovieData **) &md; 
+    jname = (Filename *) &name; 
+    jbm = (void *) bm; 
+    jdata = (void *) data; 
+    jsavebits = savebits;
+    jfps = fps;
+    jresult = (int) swig_callbackOpen(jmd, jname, jbm, jdata, jsavebits, jfps);
+    c_result = (IMAGERESULT)jresult; 
+  }
+  return c_result;
+}
+
+IMAGERESULT SwigDirector_BitmapSaverData::Write(PluginMovieData *md, BaseBitmap *bm) {
+  IMAGERESULT c_result = SwigValueInit< IMAGERESULT >() ;
+  int jresult = 0 ;
+  void * jmd = 0 ;
+  void * jbm = 0 ;
+  
+  if (!swig_callbackWrite) {
+    return BitmapSaverData::Write(md,bm);
+  } else {
+    jmd = (void *) md; 
+    jbm = (void *) bm; 
+    jresult = (int) swig_callbackWrite(jmd, jbm);
+    c_result = (IMAGERESULT)jresult; 
+  }
+  return c_result;
+}
+
+void SwigDirector_BitmapSaverData::Close(PluginMovieData *&md) {
+  void * jmd = 0 ;
+  
+  if (!swig_callbackClose) {
+    BitmapSaverData::Close(md);
+    return;
+  } else {
+    jmd = (PluginMovieData **) &md; 
+    swig_callbackClose(jmd);
+  }
+}
+
+IMAGERESULT SwigDirector_BitmapSaverData::AddSound(PluginMovieData *md, BaseSound *snd) {
+  IMAGERESULT c_result = SwigValueInit< IMAGERESULT >() ;
+  int jresult = 0 ;
+  void * jmd = 0 ;
+  void * jsnd = 0 ;
+  
+  if (!swig_callbackAddSound) {
+    return BitmapSaverData::AddSound(md,snd);
+  } else {
+    jmd = (void *) md; 
+    jsnd = (void *) snd; 
+    jresult = (int) swig_callbackAddSound(jmd, jsnd);
+    c_result = (IMAGERESULT)jresult; 
+  }
+  return c_result;
+}
+
+void SwigDirector_BitmapSaverData::swig_connect_director(SWIG_Callback0_t callbackSave, SWIG_Callback1_t callbackEdit, SWIG_Callback2_t callbackGetMaxAlphas, SWIG_Callback3_t callbackGetMaxResolution, SWIG_Callback4_t callbackOpen, SWIG_Callback5_t callbackWrite, SWIG_Callback6_t callbackClose, SWIG_Callback7_t callbackAddSound) {
+  swig_callbackSave = callbackSave;
+  swig_callbackEdit = callbackEdit;
+  swig_callbackGetMaxAlphas = callbackGetMaxAlphas;
+  swig_callbackGetMaxResolution = callbackGetMaxResolution;
+  swig_callbackOpen = callbackOpen;
+  swig_callbackWrite = callbackWrite;
+  swig_callbackClose = callbackClose;
+  swig_callbackAddSound = callbackAddSound;
+}
+
+void SwigDirector_BitmapSaverData::swig_init_callbacks() {
+  swig_callbackSave = 0;
+  swig_callbackEdit = 0;
+  swig_callbackGetMaxAlphas = 0;
+  swig_callbackGetMaxResolution = 0;
+  swig_callbackOpen = 0;
+  swig_callbackWrite = 0;
+  swig_callbackClose = 0;
+  swig_callbackAddSound = 0;
+}
+
+SwigDirector_SceneLoaderData::SwigDirector_SceneLoaderData() : SceneLoaderData(), Swig::Director() {
+  swig_init_callbacks();
+}
+
+Bool SwigDirector_SceneLoaderData::Init(GeListNode *node) {
+  Bool c_result = SwigValueInit< Bool >() ;
+  unsigned int jresult = 0 ;
+  void * jnode = 0 ;
+  
+  if (!swig_callbackInit) {
+    return NodeData::Init(node);
+  } else {
+    jnode = (void *) node; 
+    jresult = (unsigned int) swig_callbackInit(jnode);
+    c_result = jresult ? true : false; 
+  }
+  return c_result;
+}
+
+void SwigDirector_SceneLoaderData::Free(GeListNode *node) {
+  void * jnode = 0 ;
+  
+  if (!swig_callbackFree) {
+    NodeData::Free(node);
+    return;
+  } else {
+    jnode = (void *) node; 
+    swig_callbackFree(jnode);
+  }
+}
+
+Bool SwigDirector_SceneLoaderData::Read(GeListNode *node, HyperFile *hf, LONG level) {
+  Bool c_result = SwigValueInit< Bool >() ;
+  unsigned int jresult = 0 ;
+  void * jnode = 0 ;
+  void * jhf = 0 ;
+  int jlevel  ;
+  
+  if (!swig_callbackRead) {
+    return NodeData::Read(node,hf,level);
+  } else {
+    jnode = (void *) node; 
+    jhf = (void *) hf; 
+    jlevel = level;
+    jresult = (unsigned int) swig_callbackRead(jnode, jhf, jlevel);
+    c_result = jresult ? true : false; 
+  }
+  return c_result;
+}
+
+Bool SwigDirector_SceneLoaderData::Write(GeListNode *node, HyperFile *hf) {
+  Bool c_result = SwigValueInit< Bool >() ;
+  unsigned int jresult = 0 ;
+  void * jnode = 0 ;
+  void * jhf = 0 ;
+  
+  if (!swig_callbackWrite) {
+    return NodeData::Write(node,hf);
+  } else {
+    jnode = (void *) node; 
+    jhf = (void *) hf; 
+    jresult = (unsigned int) swig_callbackWrite(jnode, jhf);
+    c_result = jresult ? true : false; 
+  }
+  return c_result;
+}
+
+Bool SwigDirector_SceneLoaderData::Message(GeListNode *node, LONG type, void *data) {
+  Bool c_result = SwigValueInit< Bool >() ;
+  unsigned int jresult = 0 ;
+  void * jnode = 0 ;
+  int jtype  ;
+  void * jdata = 0 ;
+  
+  if (!swig_callbackMessage) {
+    return NodeData::Message(node,type,data);
+  } else {
+    jnode = (void *) node; 
+    jtype = type;
+    jdata = (void *) data; 
+    jresult = (unsigned int) swig_callbackMessage(jnode, jtype, jdata);
+    c_result = jresult ? true : false; 
+  }
+  return c_result;
+}
+
+Bool SwigDirector_SceneLoaderData::CopyTo(NodeData *dest, GeListNode *snode, GeListNode *dnode, COPYFLAGS flags, AliasTrans *trn) {
+  Bool c_result = SwigValueInit< Bool >() ;
+  unsigned int jresult = 0 ;
+  void * jdest = 0 ;
+  void * jsnode = 0 ;
+  void * jdnode = 0 ;
+  int jflags  ;
+  void * jtrn = 0 ;
+  
+  if (!swig_callbackCopyTo) {
+    return NodeData::CopyTo(dest,snode,dnode,flags,trn);
+  } else {
+    jdest = (void *) dest; 
+    jsnode = (void *) snode; 
+    jdnode = (void *) dnode; 
+    jflags = flags;
+    jtrn = (void *) trn; 
+    jresult = (unsigned int) swig_callbackCopyTo(jdest, jsnode, jdnode, jflags, jtrn);
+    c_result = jresult ? true : false; 
+  }
+  return c_result;
+}
+
+void SwigDirector_SceneLoaderData::GetBubbleHelp(GeListNode *node, String &str) {
+  void * jnode = 0 ;
+  void * jstr = 0 ;
+  
+  if (!swig_callbackGetBubbleHelp) {
+    NodeData::GetBubbleHelp(node,str);
+    return;
+  } else {
+    jnode = (void *) node; 
+    jstr = (String *) &str; 
+    swig_callbackGetBubbleHelp(jnode, jstr);
+  }
+}
+
+BaseDocument *SwigDirector_SceneLoaderData::GetDocument(GeListNode *node) {
+  BaseDocument *c_result = 0 ;
+  void * jresult = 0 ;
+  void * jnode = 0 ;
+  
+  if (!swig_callbackGetDocument) {
+    return NodeData::GetDocument(node);
+  } else {
+    jnode = (void *) node; 
+    jresult = (void *) swig_callbackGetDocument(jnode);
+    c_result = (BaseDocument *)jresult; 
+  }
+  return c_result;
+}
+
+LONG SwigDirector_SceneLoaderData::GetBranchInfo(GeListNode *node, BranchInfo *info, LONG max, GETBRANCHINFO flags) {
+  LONG c_result = SwigValueInit< LONG >() ;
+  int jresult = 0 ;
+  void * jnode = 0 ;
+  void * jinfo = 0 ;
+  int jmax  ;
+  int jflags  ;
+  
+  if (!swig_callbackGetBranchInfo) {
+    return NodeData::GetBranchInfo(node,info,max,flags);
+  } else {
+    jnode = (void *) node; 
+    jinfo = (void *) info; 
+    jmax = max;
+    jflags = flags;
+    jresult = (int) swig_callbackGetBranchInfo(jnode, jinfo, jmax, jflags);
+    c_result = (LONG)jresult; 
+  }
+  return c_result;
+}
+
+Bool SwigDirector_SceneLoaderData::IsInstanceOf(GeListNode const *node, LONG type) const {
+  Bool c_result = SwigValueInit< Bool >() ;
+  unsigned int jresult = 0 ;
+  void * jnode = 0 ;
+  int jtype  ;
+  
+  if (!swig_callbackIsInstanceOf) {
+    return NodeData::IsInstanceOf(node,type);
+  } else {
+    jnode = (void *) node; 
+    jtype = type;
+    jresult = (unsigned int) swig_callbackIsInstanceOf(jnode, jtype);
+    c_result = jresult ? true : false; 
+  }
+  return c_result;
+}
+
+Bool SwigDirector_SceneLoaderData::GetDDescription(GeListNode *node, Description *description, DESCFLAGS_DESC &flags) {
+  Bool c_result = SwigValueInit< Bool >() ;
+  unsigned int jresult = 0 ;
+  void * jnode = 0 ;
+  void * jdescription = 0 ;
+  void * jflags = 0 ;
+  
+  if (!swig_callbackGetDDescription) {
+    return NodeData::GetDDescription(node,description,flags);
+  } else {
+    jnode = (void *) node; 
+    jdescription = (void *) description; 
+    jflags = (DESCFLAGS_DESC *) &flags; 
+    jresult = (unsigned int) swig_callbackGetDDescription(jnode, jdescription, jflags);
+    c_result = jresult ? true : false; 
+  }
+  return c_result;
+}
+
+Bool SwigDirector_SceneLoaderData::GetDParameter(GeListNode *node, DescID const &id, GeData &t_data, DESCFLAGS_GET &flags) {
+  Bool c_result = SwigValueInit< Bool >() ;
+  unsigned int jresult = 0 ;
+  void * jnode = 0 ;
+  void * jid = 0 ;
+  void * jt_data = 0 ;
+  void * jflags = 0 ;
+  
+  if (!swig_callbackGetDParameter) {
+    return NodeData::GetDParameter(node,id,t_data,flags);
+  } else {
+    jnode = (void *) node; 
+    jid = (DescID *) &id; 
+    jt_data = (GeData *) &t_data; 
+    jflags = (DESCFLAGS_GET *) &flags; 
+    jresult = (unsigned int) swig_callbackGetDParameter(jnode, jid, jt_data, jflags);
+    c_result = jresult ? true : false; 
+  }
+  return c_result;
+}
+
+Bool SwigDirector_SceneLoaderData::GetDEnabling(GeListNode *node, DescID const &id, GeData const &t_data, DESCFLAGS_ENABLE flags, BaseContainer const *itemdesc) {
+  Bool c_result = SwigValueInit< Bool >() ;
+  unsigned int jresult = 0 ;
+  void * jnode = 0 ;
+  void * jid = 0 ;
+  void * jt_data = 0 ;
+  int jflags  ;
+  void * jitemdesc = 0 ;
+  
+  if (!swig_callbackGetDEnabling) {
+    return NodeData::GetDEnabling(node,id,t_data,flags,itemdesc);
+  } else {
+    jnode = (void *) node; 
+    jid = (DescID *) &id; 
+    jt_data = (GeData *) &t_data; 
+    jflags = flags;
+    jitemdesc = (void *) itemdesc; 
+    jresult = (unsigned int) swig_callbackGetDEnabling(jnode, jid, jt_data, jflags, jitemdesc);
+    c_result = jresult ? true : false; 
+  }
+  return c_result;
+}
+
+Bool SwigDirector_SceneLoaderData::SetDParameter(GeListNode *node, DescID const &id, GeData const &t_data, DESCFLAGS_SET &flags) {
+  Bool c_result = SwigValueInit< Bool >() ;
+  unsigned int jresult = 0 ;
+  void * jnode = 0 ;
+  void * jid = 0 ;
+  void * jt_data = 0 ;
+  void * jflags = 0 ;
+  
+  if (!swig_callbackSetDParameter) {
+    return NodeData::SetDParameter(node,id,t_data,flags);
+  } else {
+    jnode = (void *) node; 
+    jid = (DescID *) &id; 
+    jt_data = (GeData *) &t_data; 
+    jflags = (DESCFLAGS_SET *) &flags; 
+    jresult = (unsigned int) swig_callbackSetDParameter(jnode, jid, jt_data, jflags);
+    c_result = jresult ? true : false; 
+  }
+  return c_result;
+}
+
+Bool SwigDirector_SceneLoaderData::TranslateDescID(GeListNode *node, DescID const &id, DescID &res_id, C4DAtom *&res_at) {
+  Bool c_result = SwigValueInit< Bool >() ;
+  unsigned int jresult = 0 ;
+  void * jnode = 0 ;
+  void * jid = 0 ;
+  void * jres_id = 0 ;
+  void * jres_at = 0 ;
+  
+  if (!swig_callbackTranslateDescID) {
+    return NodeData::TranslateDescID(node,id,res_id,res_at);
+  } else {
+    jnode = (void *) node; 
+    jid = (DescID *) &id; 
+    jres_id = (DescID *) &res_id; 
+    jres_at = (C4DAtom **) &res_at; 
+    jresult = (unsigned int) swig_callbackTranslateDescID(jnode, jid, jres_id, jres_at);
+    c_result = jresult ? true : false; 
+  }
+  return c_result;
+}
+
+Bool SwigDirector_SceneLoaderData::IsDocumentRelated(GeListNode const *node, Bool &docrelated) const {
+  Bool c_result = SwigValueInit< Bool >() ;
+  unsigned int jresult = 0 ;
+  void * jnode = 0 ;
+  void * jdocrelated = 0 ;
+  
+  if (!swig_callbackIsDocumentRelated) {
+    return NodeData::IsDocumentRelated(node,docrelated);
+  } else {
+    jnode = (void *) node; 
+    jdocrelated = (Bool *) &docrelated; 
+    jresult = (unsigned int) swig_callbackIsDocumentRelated(jnode, jdocrelated);
+    c_result = jresult ? true : false; 
+  }
+  return c_result;
+}
+
+Bool SwigDirector_SceneLoaderData::Identify(BaseSceneLoader *node, Filename const &name, UCHAR *probe, LONG size) {
+  Bool c_result = SwigValueInit< Bool >() ;
+  unsigned int jresult = 0 ;
+  void * jnode = 0 ;
+  void * jname = 0 ;
+  void * jprobe = 0 ;
+  int jsize  ;
+  
+  if (!swig_callbackIdentify) {
+    throw Swig::DirectorPureVirtualException("SceneLoaderData::Identify");
+  } else {
+    jnode = (void *) node; 
+    jname = (Filename *) &name; 
+    jprobe = (void *) probe; 
+    jsize = size;
+    jresult = (unsigned int) swig_callbackIdentify(jnode, jname, jprobe, jsize);
+    c_result = jresult ? true : false; 
+  }
+  return c_result;
+}
+
+FILEERROR SwigDirector_SceneLoaderData::Load(BaseSceneLoader *node, Filename const &name, BaseDocument *doc, SCENEFILTER filterflags, String *error, BaseThread *bt) {
+  FILEERROR c_result = SwigValueInit< FILEERROR >() ;
+  int jresult = 0 ;
+  void * jnode = 0 ;
+  void * jname = 0 ;
+  void * jdoc = 0 ;
+  int jfilterflags  ;
+  void * jerror = 0 ;
+  void * jbt = 0 ;
+  
+  if (!swig_callbackLoad) {
+    throw Swig::DirectorPureVirtualException("SceneLoaderData::Load");
+  } else {
+    jnode = (void *) node; 
+    jname = (Filename *) &name; 
+    jdoc = (void *) doc; 
+    jfilterflags = filterflags;
+    jerror = (void *) error; 
+    jbt = (void *) bt; 
+    jresult = (int) swig_callbackLoad(jnode, jname, jdoc, jfilterflags, jerror, jbt);
+    c_result = (FILEERROR)jresult; 
+  }
+  return c_result;
+}
+
+void SwigDirector_SceneLoaderData::swig_connect_director(SWIG_Callback0_t callbackInit, SWIG_Callback1_t callbackFree, SWIG_Callback2_t callbackRead, SWIG_Callback3_t callbackWrite, SWIG_Callback4_t callbackMessage, SWIG_Callback5_t callbackCopyTo, SWIG_Callback6_t callbackGetBubbleHelp, SWIG_Callback7_t callbackGetDocument, SWIG_Callback8_t callbackGetBranchInfo, SWIG_Callback9_t callbackIsInstanceOf, SWIG_Callback10_t callbackGetDDescription, SWIG_Callback11_t callbackGetDParameter, SWIG_Callback12_t callbackGetDEnabling, SWIG_Callback13_t callbackSetDParameter, SWIG_Callback14_t callbackTranslateDescID, SWIG_Callback15_t callbackIsDocumentRelated, SWIG_Callback16_t callbackIdentify, SWIG_Callback17_t callbackLoad) {
+  swig_callbackInit = callbackInit;
+  swig_callbackFree = callbackFree;
+  swig_callbackRead = callbackRead;
+  swig_callbackWrite = callbackWrite;
+  swig_callbackMessage = callbackMessage;
+  swig_callbackCopyTo = callbackCopyTo;
+  swig_callbackGetBubbleHelp = callbackGetBubbleHelp;
+  swig_callbackGetDocument = callbackGetDocument;
+  swig_callbackGetBranchInfo = callbackGetBranchInfo;
+  swig_callbackIsInstanceOf = callbackIsInstanceOf;
+  swig_callbackGetDDescription = callbackGetDDescription;
+  swig_callbackGetDParameter = callbackGetDParameter;
+  swig_callbackGetDEnabling = callbackGetDEnabling;
+  swig_callbackSetDParameter = callbackSetDParameter;
+  swig_callbackTranslateDescID = callbackTranslateDescID;
+  swig_callbackIsDocumentRelated = callbackIsDocumentRelated;
+  swig_callbackIdentify = callbackIdentify;
+  swig_callbackLoad = callbackLoad;
+}
+
+void SwigDirector_SceneLoaderData::swig_init_callbacks() {
+  swig_callbackInit = 0;
+  swig_callbackFree = 0;
+  swig_callbackRead = 0;
+  swig_callbackWrite = 0;
+  swig_callbackMessage = 0;
+  swig_callbackCopyTo = 0;
+  swig_callbackGetBubbleHelp = 0;
+  swig_callbackGetDocument = 0;
+  swig_callbackGetBranchInfo = 0;
+  swig_callbackIsInstanceOf = 0;
+  swig_callbackGetDDescription = 0;
+  swig_callbackGetDParameter = 0;
+  swig_callbackGetDEnabling = 0;
+  swig_callbackSetDParameter = 0;
+  swig_callbackTranslateDescID = 0;
+  swig_callbackIsDocumentRelated = 0;
+  swig_callbackIdentify = 0;
+  swig_callbackLoad = 0;
+}
+
+SwigDirector_SceneSaverData::SwigDirector_SceneSaverData() : SceneSaverData(), Swig::Director() {
+  swig_init_callbacks();
+}
+
+Bool SwigDirector_SceneSaverData::Init(GeListNode *node) {
+  Bool c_result = SwigValueInit< Bool >() ;
+  unsigned int jresult = 0 ;
+  void * jnode = 0 ;
+  
+  if (!swig_callbackInit) {
+    return NodeData::Init(node);
+  } else {
+    jnode = (void *) node; 
+    jresult = (unsigned int) swig_callbackInit(jnode);
+    c_result = jresult ? true : false; 
+  }
+  return c_result;
+}
+
+void SwigDirector_SceneSaverData::Free(GeListNode *node) {
+  void * jnode = 0 ;
+  
+  if (!swig_callbackFree) {
+    NodeData::Free(node);
+    return;
+  } else {
+    jnode = (void *) node; 
+    swig_callbackFree(jnode);
+  }
+}
+
+Bool SwigDirector_SceneSaverData::Read(GeListNode *node, HyperFile *hf, LONG level) {
+  Bool c_result = SwigValueInit< Bool >() ;
+  unsigned int jresult = 0 ;
+  void * jnode = 0 ;
+  void * jhf = 0 ;
+  int jlevel  ;
+  
+  if (!swig_callbackRead) {
+    return NodeData::Read(node,hf,level);
+  } else {
+    jnode = (void *) node; 
+    jhf = (void *) hf; 
+    jlevel = level;
+    jresult = (unsigned int) swig_callbackRead(jnode, jhf, jlevel);
+    c_result = jresult ? true : false; 
+  }
+  return c_result;
+}
+
+Bool SwigDirector_SceneSaverData::Write(GeListNode *node, HyperFile *hf) {
+  Bool c_result = SwigValueInit< Bool >() ;
+  unsigned int jresult = 0 ;
+  void * jnode = 0 ;
+  void * jhf = 0 ;
+  
+  if (!swig_callbackWrite) {
+    return NodeData::Write(node,hf);
+  } else {
+    jnode = (void *) node; 
+    jhf = (void *) hf; 
+    jresult = (unsigned int) swig_callbackWrite(jnode, jhf);
+    c_result = jresult ? true : false; 
+  }
+  return c_result;
+}
+
+Bool SwigDirector_SceneSaverData::Message(GeListNode *node, LONG type, void *data) {
+  Bool c_result = SwigValueInit< Bool >() ;
+  unsigned int jresult = 0 ;
+  void * jnode = 0 ;
+  int jtype  ;
+  void * jdata = 0 ;
+  
+  if (!swig_callbackMessage) {
+    return NodeData::Message(node,type,data);
+  } else {
+    jnode = (void *) node; 
+    jtype = type;
+    jdata = (void *) data; 
+    jresult = (unsigned int) swig_callbackMessage(jnode, jtype, jdata);
+    c_result = jresult ? true : false; 
+  }
+  return c_result;
+}
+
+Bool SwigDirector_SceneSaverData::CopyTo(NodeData *dest, GeListNode *snode, GeListNode *dnode, COPYFLAGS flags, AliasTrans *trn) {
+  Bool c_result = SwigValueInit< Bool >() ;
+  unsigned int jresult = 0 ;
+  void * jdest = 0 ;
+  void * jsnode = 0 ;
+  void * jdnode = 0 ;
+  int jflags  ;
+  void * jtrn = 0 ;
+  
+  if (!swig_callbackCopyTo) {
+    return NodeData::CopyTo(dest,snode,dnode,flags,trn);
+  } else {
+    jdest = (void *) dest; 
+    jsnode = (void *) snode; 
+    jdnode = (void *) dnode; 
+    jflags = flags;
+    jtrn = (void *) trn; 
+    jresult = (unsigned int) swig_callbackCopyTo(jdest, jsnode, jdnode, jflags, jtrn);
+    c_result = jresult ? true : false; 
+  }
+  return c_result;
+}
+
+void SwigDirector_SceneSaverData::GetBubbleHelp(GeListNode *node, String &str) {
+  void * jnode = 0 ;
+  void * jstr = 0 ;
+  
+  if (!swig_callbackGetBubbleHelp) {
+    NodeData::GetBubbleHelp(node,str);
+    return;
+  } else {
+    jnode = (void *) node; 
+    jstr = (String *) &str; 
+    swig_callbackGetBubbleHelp(jnode, jstr);
+  }
+}
+
+BaseDocument *SwigDirector_SceneSaverData::GetDocument(GeListNode *node) {
+  BaseDocument *c_result = 0 ;
+  void * jresult = 0 ;
+  void * jnode = 0 ;
+  
+  if (!swig_callbackGetDocument) {
+    return NodeData::GetDocument(node);
+  } else {
+    jnode = (void *) node; 
+    jresult = (void *) swig_callbackGetDocument(jnode);
+    c_result = (BaseDocument *)jresult; 
+  }
+  return c_result;
+}
+
+LONG SwigDirector_SceneSaverData::GetBranchInfo(GeListNode *node, BranchInfo *info, LONG max, GETBRANCHINFO flags) {
+  LONG c_result = SwigValueInit< LONG >() ;
+  int jresult = 0 ;
+  void * jnode = 0 ;
+  void * jinfo = 0 ;
+  int jmax  ;
+  int jflags  ;
+  
+  if (!swig_callbackGetBranchInfo) {
+    return NodeData::GetBranchInfo(node,info,max,flags);
+  } else {
+    jnode = (void *) node; 
+    jinfo = (void *) info; 
+    jmax = max;
+    jflags = flags;
+    jresult = (int) swig_callbackGetBranchInfo(jnode, jinfo, jmax, jflags);
+    c_result = (LONG)jresult; 
+  }
+  return c_result;
+}
+
+Bool SwigDirector_SceneSaverData::IsInstanceOf(GeListNode const *node, LONG type) const {
+  Bool c_result = SwigValueInit< Bool >() ;
+  unsigned int jresult = 0 ;
+  void * jnode = 0 ;
+  int jtype  ;
+  
+  if (!swig_callbackIsInstanceOf) {
+    return NodeData::IsInstanceOf(node,type);
+  } else {
+    jnode = (void *) node; 
+    jtype = type;
+    jresult = (unsigned int) swig_callbackIsInstanceOf(jnode, jtype);
+    c_result = jresult ? true : false; 
+  }
+  return c_result;
+}
+
+Bool SwigDirector_SceneSaverData::GetDDescription(GeListNode *node, Description *description, DESCFLAGS_DESC &flags) {
+  Bool c_result = SwigValueInit< Bool >() ;
+  unsigned int jresult = 0 ;
+  void * jnode = 0 ;
+  void * jdescription = 0 ;
+  void * jflags = 0 ;
+  
+  if (!swig_callbackGetDDescription) {
+    return NodeData::GetDDescription(node,description,flags);
+  } else {
+    jnode = (void *) node; 
+    jdescription = (void *) description; 
+    jflags = (DESCFLAGS_DESC *) &flags; 
+    jresult = (unsigned int) swig_callbackGetDDescription(jnode, jdescription, jflags);
+    c_result = jresult ? true : false; 
+  }
+  return c_result;
+}
+
+Bool SwigDirector_SceneSaverData::GetDParameter(GeListNode *node, DescID const &id, GeData &t_data, DESCFLAGS_GET &flags) {
+  Bool c_result = SwigValueInit< Bool >() ;
+  unsigned int jresult = 0 ;
+  void * jnode = 0 ;
+  void * jid = 0 ;
+  void * jt_data = 0 ;
+  void * jflags = 0 ;
+  
+  if (!swig_callbackGetDParameter) {
+    return NodeData::GetDParameter(node,id,t_data,flags);
+  } else {
+    jnode = (void *) node; 
+    jid = (DescID *) &id; 
+    jt_data = (GeData *) &t_data; 
+    jflags = (DESCFLAGS_GET *) &flags; 
+    jresult = (unsigned int) swig_callbackGetDParameter(jnode, jid, jt_data, jflags);
+    c_result = jresult ? true : false; 
+  }
+  return c_result;
+}
+
+Bool SwigDirector_SceneSaverData::GetDEnabling(GeListNode *node, DescID const &id, GeData const &t_data, DESCFLAGS_ENABLE flags, BaseContainer const *itemdesc) {
+  Bool c_result = SwigValueInit< Bool >() ;
+  unsigned int jresult = 0 ;
+  void * jnode = 0 ;
+  void * jid = 0 ;
+  void * jt_data = 0 ;
+  int jflags  ;
+  void * jitemdesc = 0 ;
+  
+  if (!swig_callbackGetDEnabling) {
+    return NodeData::GetDEnabling(node,id,t_data,flags,itemdesc);
+  } else {
+    jnode = (void *) node; 
+    jid = (DescID *) &id; 
+    jt_data = (GeData *) &t_data; 
+    jflags = flags;
+    jitemdesc = (void *) itemdesc; 
+    jresult = (unsigned int) swig_callbackGetDEnabling(jnode, jid, jt_data, jflags, jitemdesc);
+    c_result = jresult ? true : false; 
+  }
+  return c_result;
+}
+
+Bool SwigDirector_SceneSaverData::SetDParameter(GeListNode *node, DescID const &id, GeData const &t_data, DESCFLAGS_SET &flags) {
+  Bool c_result = SwigValueInit< Bool >() ;
+  unsigned int jresult = 0 ;
+  void * jnode = 0 ;
+  void * jid = 0 ;
+  void * jt_data = 0 ;
+  void * jflags = 0 ;
+  
+  if (!swig_callbackSetDParameter) {
+    return NodeData::SetDParameter(node,id,t_data,flags);
+  } else {
+    jnode = (void *) node; 
+    jid = (DescID *) &id; 
+    jt_data = (GeData *) &t_data; 
+    jflags = (DESCFLAGS_SET *) &flags; 
+    jresult = (unsigned int) swig_callbackSetDParameter(jnode, jid, jt_data, jflags);
+    c_result = jresult ? true : false; 
+  }
+  return c_result;
+}
+
+Bool SwigDirector_SceneSaverData::TranslateDescID(GeListNode *node, DescID const &id, DescID &res_id, C4DAtom *&res_at) {
+  Bool c_result = SwigValueInit< Bool >() ;
+  unsigned int jresult = 0 ;
+  void * jnode = 0 ;
+  void * jid = 0 ;
+  void * jres_id = 0 ;
+  void * jres_at = 0 ;
+  
+  if (!swig_callbackTranslateDescID) {
+    return NodeData::TranslateDescID(node,id,res_id,res_at);
+  } else {
+    jnode = (void *) node; 
+    jid = (DescID *) &id; 
+    jres_id = (DescID *) &res_id; 
+    jres_at = (C4DAtom **) &res_at; 
+    jresult = (unsigned int) swig_callbackTranslateDescID(jnode, jid, jres_id, jres_at);
+    c_result = jresult ? true : false; 
+  }
+  return c_result;
+}
+
+Bool SwigDirector_SceneSaverData::IsDocumentRelated(GeListNode const *node, Bool &docrelated) const {
+  Bool c_result = SwigValueInit< Bool >() ;
+  unsigned int jresult = 0 ;
+  void * jnode = 0 ;
+  void * jdocrelated = 0 ;
+  
+  if (!swig_callbackIsDocumentRelated) {
+    return NodeData::IsDocumentRelated(node,docrelated);
+  } else {
+    jnode = (void *) node; 
+    jdocrelated = (Bool *) &docrelated; 
+    jresult = (unsigned int) swig_callbackIsDocumentRelated(jnode, jdocrelated);
+    c_result = jresult ? true : false; 
+  }
+  return c_result;
+}
+
+FILEERROR SwigDirector_SceneSaverData::Save(BaseSceneSaver *node, Filename const &name, BaseDocument *doc, SCENEFILTER filterflags) {
+  FILEERROR c_result = SwigValueInit< FILEERROR >() ;
+  int jresult = 0 ;
+  void * jnode = 0 ;
+  void * jname = 0 ;
+  void * jdoc = 0 ;
+  int jfilterflags  ;
+  
+  if (!swig_callbackSave) {
+    throw Swig::DirectorPureVirtualException("SceneSaverData::Save");
+  } else {
+    jnode = (void *) node; 
+    jname = (Filename *) &name; 
+    jdoc = (void *) doc; 
+    jfilterflags = filterflags;
+    jresult = (int) swig_callbackSave(jnode, jname, jdoc, jfilterflags);
+    c_result = (FILEERROR)jresult; 
+  }
+  return c_result;
+}
+
+void SwigDirector_SceneSaverData::swig_connect_director(SWIG_Callback0_t callbackInit, SWIG_Callback1_t callbackFree, SWIG_Callback2_t callbackRead, SWIG_Callback3_t callbackWrite, SWIG_Callback4_t callbackMessage, SWIG_Callback5_t callbackCopyTo, SWIG_Callback6_t callbackGetBubbleHelp, SWIG_Callback7_t callbackGetDocument, SWIG_Callback8_t callbackGetBranchInfo, SWIG_Callback9_t callbackIsInstanceOf, SWIG_Callback10_t callbackGetDDescription, SWIG_Callback11_t callbackGetDParameter, SWIG_Callback12_t callbackGetDEnabling, SWIG_Callback13_t callbackSetDParameter, SWIG_Callback14_t callbackTranslateDescID, SWIG_Callback15_t callbackIsDocumentRelated, SWIG_Callback16_t callbackSave) {
+  swig_callbackInit = callbackInit;
+  swig_callbackFree = callbackFree;
+  swig_callbackRead = callbackRead;
+  swig_callbackWrite = callbackWrite;
+  swig_callbackMessage = callbackMessage;
+  swig_callbackCopyTo = callbackCopyTo;
+  swig_callbackGetBubbleHelp = callbackGetBubbleHelp;
+  swig_callbackGetDocument = callbackGetDocument;
+  swig_callbackGetBranchInfo = callbackGetBranchInfo;
+  swig_callbackIsInstanceOf = callbackIsInstanceOf;
+  swig_callbackGetDDescription = callbackGetDDescription;
+  swig_callbackGetDParameter = callbackGetDParameter;
+  swig_callbackGetDEnabling = callbackGetDEnabling;
+  swig_callbackSetDParameter = callbackSetDParameter;
+  swig_callbackTranslateDescID = callbackTranslateDescID;
+  swig_callbackIsDocumentRelated = callbackIsDocumentRelated;
+  swig_callbackSave = callbackSave;
+}
+
+void SwigDirector_SceneSaverData::swig_init_callbacks() {
+  swig_callbackInit = 0;
+  swig_callbackFree = 0;
+  swig_callbackRead = 0;
+  swig_callbackWrite = 0;
+  swig_callbackMessage = 0;
+  swig_callbackCopyTo = 0;
+  swig_callbackGetBubbleHelp = 0;
+  swig_callbackGetDocument = 0;
+  swig_callbackGetBranchInfo = 0;
+  swig_callbackIsInstanceOf = 0;
+  swig_callbackGetDDescription = 0;
+  swig_callbackGetDParameter = 0;
+  swig_callbackGetDEnabling = 0;
+  swig_callbackSetDParameter = 0;
+  swig_callbackTranslateDescID = 0;
+  swig_callbackIsDocumentRelated = 0;
+  swig_callbackSave = 0;
 }
 
 
@@ -18430,6 +19500,4127 @@ SWIGEXPORT void SWIGSTDCALL CSharp_AutoRWLocker_Unlock(void * jarg1) {
 }
 
 
+SWIGEXPORT void * SWIGSTDCALL CSharp_MemoryFileStruct_Alloc() {
+  void * jresult ;
+  MemoryFileStruct *result = 0 ;
+  
+  result = (MemoryFileStruct *)MemoryFileStruct::Alloc();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_MemoryFileStruct_Free(void * jarg1) {
+  MemoryFileStruct **arg1 = 0 ;
+  
+  arg1 = (MemoryFileStruct **)jarg1;
+  if (!arg1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "MemoryFileStruct *& type is null", 0);
+    return ;
+  } 
+  MemoryFileStruct::Free(*arg1);
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_MemoryFileStruct_GetData__SWIG_0(void * jarg1, void * jarg2, void * jarg3, unsigned int jarg4) {
+  MemoryFileStruct *arg1 = (MemoryFileStruct *) 0 ;
+  void **arg2 = 0 ;
+  VLONG *arg3 = 0 ;
+  Bool arg4 ;
+  
+  arg1 = (MemoryFileStruct *)jarg1; 
+  arg2 = (void **)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "void *& type is null", 0);
+    return ;
+  } 
+  arg3 = (VLONG *)jarg3;
+  if (!arg3) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "VLONG & type is null", 0);
+    return ;
+  } 
+  arg4 = jarg4 ? true : false; 
+  (arg1)->GetData(*arg2,*arg3,arg4);
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_MemoryFileStruct_GetData__SWIG_1(void * jarg1, void * jarg2, void * jarg3) {
+  MemoryFileStruct *arg1 = (MemoryFileStruct *) 0 ;
+  void **arg2 = 0 ;
+  VLONG *arg3 = 0 ;
+  
+  arg1 = (MemoryFileStruct *)jarg1; 
+  arg2 = (void **)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "void *& type is null", 0);
+    return ;
+  } 
+  arg3 = (VLONG *)jarg3;
+  if (!arg3) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "VLONG & type is null", 0);
+    return ;
+  } 
+  (arg1)->GetData(*arg2,*arg3);
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_new_Filename__SWIG_0() {
+  void * jresult ;
+  Filename *result = 0 ;
+  
+  result = (Filename *)new Filename();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_new_Filename__SWIG_1(void * jarg1) {
+  void * jresult ;
+  CHAR *arg1 = (CHAR *) 0 ;
+  Filename *result = 0 ;
+  
+  arg1 = (CHAR *)jarg1; 
+  result = (Filename *)new Filename((CHAR const *)arg1);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_new_Filename__SWIG_2(char * /* constString&_ctype */ jarg1) {
+  void * jresult ;
+  String *arg1 = 0 ;
+  Filename *result = 0 ;
+  
+  if (!jarg1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return 0;
+  }
+  String arg1_str(jarg1);
+  arg1 = &arg1_str; 
+  result = (Filename *)new Filename((String const &)*arg1);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_new_Filename__SWIG_3(void * jarg1) {
+  void * jresult ;
+  Filename *arg1 = 0 ;
+  Filename *result = 0 ;
+  
+  arg1 = (Filename *)jarg1;
+  if (!arg1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  result = (Filename *)new Filename((Filename const &)*arg1);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_delete_Filename(void * jarg1) {
+  Filename *arg1 = (Filename *) 0 ;
+  
+  arg1 = (Filename *)jarg1; 
+  delete arg1;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_Filename_CopyTo(void * jarg1, void * jarg2) {
+  Filename *arg1 = (Filename *) 0 ;
+  Filename *arg2 = (Filename *) 0 ;
+  
+  arg1 = (Filename *)jarg1; 
+  arg2 = (Filename *)jarg2; 
+  ((Filename const *)arg1)->CopyTo(arg2);
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_Filename_FileSelect__SWIG_0(void * jarg1, int jarg2, int jarg3, char * /* constString&_ctype */ jarg4, char * /* constString&_ctype */ jarg5) {
+  unsigned int jresult ;
+  Filename *arg1 = (Filename *) 0 ;
+  FILESELECTTYPE arg2 ;
+  FILESELECT arg3 ;
+  String *arg4 = 0 ;
+  String *arg5 = 0 ;
+  Bool result;
+  
+  arg1 = (Filename *)jarg1; 
+  arg2 = (FILESELECTTYPE)jarg2; 
+  arg3 = (FILESELECT)jarg3; 
+  if (!jarg4) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return 0;
+  }
+  String arg4_str(jarg4);
+  arg4 = &arg4_str; 
+  if (!jarg5) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return 0;
+  }
+  String arg5_str(jarg5);
+  arg5 = &arg5_str; 
+  result = (arg1)->FileSelect(arg2,arg3,(String const &)*arg4,(String const &)*arg5);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_Filename_FileSelect__SWIG_1(void * jarg1, int jarg2, int jarg3, char * /* constString&_ctype */ jarg4) {
+  unsigned int jresult ;
+  Filename *arg1 = (Filename *) 0 ;
+  FILESELECTTYPE arg2 ;
+  FILESELECT arg3 ;
+  String *arg4 = 0 ;
+  Bool result;
+  
+  arg1 = (Filename *)jarg1; 
+  arg2 = (FILESELECTTYPE)jarg2; 
+  arg3 = (FILESELECT)jarg3; 
+  if (!jarg4) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return 0;
+  }
+  String arg4_str(jarg4);
+  arg4 = &arg4_str; 
+  result = (arg1)->FileSelect(arg2,arg3,(String const &)*arg4);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_Filename_Content(void * jarg1) {
+  unsigned int jresult ;
+  Filename *arg1 = (Filename *) 0 ;
+  Bool result;
+  
+  arg1 = (Filename *)jarg1; 
+  result = ((Filename const *)arg1)->Content();
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT char * /* String_ctype */ SWIGSTDCALL CSharp_Filename_GetString(void * jarg1) {
+  char * /* String_ctype */ jresult ;
+  Filename *arg1 = (Filename *) 0 ;
+  String result;
+  
+  arg1 = (Filename *)jarg1; 
+  result = ((Filename const *)arg1)->GetString();
+  /* <String_out> */ 
+  jresult = SWIG_csharp_string_callback((&result)->GetCStringCopy()); 
+  /* </String_out> */
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_Filename_SetString(void * jarg1, char * /* constString&_ctype */ jarg2) {
+  Filename *arg1 = (Filename *) 0 ;
+  String *arg2 = 0 ;
+  
+  arg1 = (Filename *)jarg1; 
+  if (!jarg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return ;
+  }
+  String arg2_str(jarg2);
+  arg2 = &arg2_str; 
+  (arg1)->SetString((String const &)*arg2);
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_Filename_GetDirectory(void * jarg1) {
+  void * jresult ;
+  Filename *arg1 = (Filename *) 0 ;
+  Filename result;
+  
+  arg1 = (Filename *)jarg1; 
+  result = ((Filename const *)arg1)->GetDirectory();
+  jresult = new Filename((const Filename &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_Filename_GetFile(void * jarg1) {
+  void * jresult ;
+  Filename *arg1 = (Filename *) 0 ;
+  Filename result;
+  
+  arg1 = (Filename *)jarg1; 
+  result = ((Filename const *)arg1)->GetFile();
+  jresult = new Filename((const Filename &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT char * /* String_ctype */ SWIGSTDCALL CSharp_Filename_GetFileString(void * jarg1) {
+  char * /* String_ctype */ jresult ;
+  Filename *arg1 = (Filename *) 0 ;
+  String result;
+  
+  arg1 = (Filename *)jarg1; 
+  result = ((Filename const *)arg1)->GetFileString();
+  /* <String_out> */ 
+  jresult = SWIG_csharp_string_callback((&result)->GetCStringCopy()); 
+  /* </String_out> */
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_Filename_ClearSuffix(void * jarg1) {
+  Filename *arg1 = (Filename *) 0 ;
+  
+  arg1 = (Filename *)jarg1; 
+  (arg1)->ClearSuffix();
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_Filename_ClearSuffixComplete(void * jarg1) {
+  Filename *arg1 = (Filename *) 0 ;
+  
+  arg1 = (Filename *)jarg1; 
+  (arg1)->ClearSuffixComplete();
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_Filename_SetSuffix(void * jarg1, char * /* constString&_ctype */ jarg2) {
+  Filename *arg1 = (Filename *) 0 ;
+  String *arg2 = 0 ;
+  
+  arg1 = (Filename *)jarg1; 
+  if (!jarg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return ;
+  }
+  String arg2_str(jarg2);
+  arg2 = &arg2_str; 
+  (arg1)->SetSuffix((String const &)*arg2);
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_Filename_CheckSuffix(void * jarg1, char * /* constString&_ctype */ jarg2) {
+  unsigned int jresult ;
+  Filename *arg1 = (Filename *) 0 ;
+  String *arg2 = 0 ;
+  Bool result;
+  
+  arg1 = (Filename *)jarg1; 
+  if (!jarg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return 0;
+  }
+  String arg2_str(jarg2);
+  arg2 = &arg2_str; 
+  result = ((Filename const *)arg1)->CheckSuffix((String const &)*arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_Filename_SetDirectory(void * jarg1, void * jarg2) {
+  Filename *arg1 = (Filename *) 0 ;
+  Filename *arg2 = 0 ;
+  
+  arg1 = (Filename *)jarg1; 
+  arg2 = (Filename *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return ;
+  } 
+  (arg1)->SetDirectory((Filename const &)*arg2);
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_Filename_SetFile(void * jarg1, void * jarg2) {
+  Filename *arg1 = (Filename *) 0 ;
+  Filename *arg2 = 0 ;
+  
+  arg1 = (Filename *)jarg1; 
+  arg2 = (Filename *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return ;
+  } 
+  (arg1)->SetFile((Filename const &)*arg2);
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_Filename_SetMemoryReadMode__SWIG_0(void * jarg1, void * jarg2, void * jarg3) {
+  Filename *arg1 = (Filename *) 0 ;
+  void *arg2 = (void *) 0 ;
+  VLONG arg3 ;
+  VLONG *argp3 ;
+  
+  arg1 = (Filename *)jarg1; 
+  arg2 = (void *)jarg2; 
+  argp3 = (VLONG *)jarg3; 
+  if (!argp3) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null VLONG", 0);
+    return ;
+  }
+  arg3 = *argp3; 
+  (arg1)->SetMemoryReadMode(arg2,arg3);
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_Filename_SetMemoryReadMode__SWIG_1(void * jarg1, void * jarg2) {
+  Filename *arg1 = (Filename *) 0 ;
+  void *arg2 = (void *) 0 ;
+  
+  arg1 = (Filename *)jarg1; 
+  arg2 = (void *)jarg2; 
+  (arg1)->SetMemoryReadMode(arg2);
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_Filename_SetMemoryWriteMode(void * jarg1, void * jarg2) {
+  Filename *arg1 = (Filename *) 0 ;
+  MemoryFileStruct *arg2 = (MemoryFileStruct *) 0 ;
+  
+  arg1 = (Filename *)jarg1; 
+  arg2 = (MemoryFileStruct *)jarg2; 
+  (arg1)->SetMemoryWriteMode(arg2);
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_Filename_SetIpConnection(void * jarg1, void * jarg2) {
+  Filename *arg1 = (Filename *) 0 ;
+  IpConnection *arg2 = (IpConnection *) 0 ;
+  
+  arg1 = (Filename *)jarg1; 
+  arg2 = (IpConnection *)jarg2; 
+  (arg1)->SetIpConnection(arg2);
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_Filename_GetIpConnection(void * jarg1) {
+  void * jresult ;
+  Filename *arg1 = (Filename *) 0 ;
+  IpConnection *result = 0 ;
+  
+  arg1 = (Filename *)jarg1; 
+  result = (IpConnection *)((Filename const *)arg1)->GetIpConnection();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT char * /* String_ctype */ SWIGSTDCALL CSharp_Filename_GetSuffix(void * jarg1) {
+  char * /* String_ctype */ jresult ;
+  Filename *arg1 = (Filename *) 0 ;
+  String result;
+  
+  arg1 = (Filename *)jarg1; 
+  result = ((Filename const *)arg1)->GetSuffix();
+  /* <String_out> */ 
+  jresult = SWIG_csharp_string_callback((&result)->GetCStringCopy()); 
+  /* </String_out> */
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_Open__SWIG_0(void * jarg1, void * jarg2, int jarg3, int jarg4, int jarg5, int jarg6, int jarg7) {
+  unsigned int jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  Filename *arg2 = 0 ;
+  FILEOPEN arg3 ;
+  FILEDIALOG arg4 ;
+  BYTEORDER arg5 ;
+  LONG arg6 ;
+  LONG arg7 ;
+  Bool result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  arg2 = (Filename *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  arg3 = (FILEOPEN)jarg3; 
+  arg4 = (FILEDIALOG)jarg4; 
+  arg5 = (BYTEORDER)jarg5; 
+  arg6 = (LONG)jarg6; 
+  arg7 = (LONG)jarg7; 
+  result = (arg1)->Open((Filename const &)*arg2,arg3,arg4,arg5,arg6,arg7);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_Open__SWIG_1(void * jarg1, void * jarg2, int jarg3, int jarg4, int jarg5, int jarg6) {
+  unsigned int jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  Filename *arg2 = 0 ;
+  FILEOPEN arg3 ;
+  FILEDIALOG arg4 ;
+  BYTEORDER arg5 ;
+  LONG arg6 ;
+  Bool result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  arg2 = (Filename *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  arg3 = (FILEOPEN)jarg3; 
+  arg4 = (FILEDIALOG)jarg4; 
+  arg5 = (BYTEORDER)jarg5; 
+  arg6 = (LONG)jarg6; 
+  result = (arg1)->Open((Filename const &)*arg2,arg3,arg4,arg5,arg6);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_Open__SWIG_2(void * jarg1, void * jarg2, int jarg3, int jarg4, int jarg5) {
+  unsigned int jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  Filename *arg2 = 0 ;
+  FILEOPEN arg3 ;
+  FILEDIALOG arg4 ;
+  BYTEORDER arg5 ;
+  Bool result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  arg2 = (Filename *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  arg3 = (FILEOPEN)jarg3; 
+  arg4 = (FILEDIALOG)jarg4; 
+  arg5 = (BYTEORDER)jarg5; 
+  result = (arg1)->Open((Filename const &)*arg2,arg3,arg4,arg5);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_Open__SWIG_3(void * jarg1, void * jarg2, int jarg3, int jarg4) {
+  unsigned int jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  Filename *arg2 = 0 ;
+  FILEOPEN arg3 ;
+  FILEDIALOG arg4 ;
+  Bool result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  arg2 = (Filename *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  arg3 = (FILEOPEN)jarg3; 
+  arg4 = (FILEDIALOG)jarg4; 
+  result = (arg1)->Open((Filename const &)*arg2,arg3,arg4);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_Open__SWIG_4(void * jarg1, void * jarg2, int jarg3) {
+  unsigned int jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  Filename *arg2 = 0 ;
+  FILEOPEN arg3 ;
+  Bool result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  arg2 = (Filename *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  arg3 = (FILEOPEN)jarg3; 
+  result = (arg1)->Open((Filename const &)*arg2,arg3);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_Open__SWIG_5(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  Filename *arg2 = 0 ;
+  Bool result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  arg2 = (Filename *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  result = (arg1)->Open((Filename const &)*arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_Close(void * jarg1) {
+  unsigned int jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  Bool result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  result = (arg1)->Close();
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseFile_SetOrder(void * jarg1, int jarg2) {
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  BYTEORDER arg2 ;
+  
+  arg1 = (BaseFile *)jarg1; 
+  arg2 = (BYTEORDER)jarg2; 
+  (arg1)->SetOrder(arg2);
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseFile_ReadBytes__SWIG_0(void * jarg1, void * jarg2, void * jarg3, unsigned int jarg4) {
+  void * jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  void *arg2 = (void *) 0 ;
+  VLONG arg3 ;
+  Bool arg4 ;
+  VLONG *argp3 ;
+  VLONG result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  arg2 = (void *)jarg2; 
+  argp3 = (VLONG *)jarg3; 
+  if (!argp3) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null VLONG", 0);
+    return 0;
+  }
+  arg3 = *argp3; 
+  arg4 = jarg4 ? true : false; 
+  result = (arg1)->ReadBytes(arg2,arg3,arg4);
+  jresult = new VLONG((const VLONG &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseFile_ReadBytes__SWIG_1(void * jarg1, void * jarg2, void * jarg3) {
+  void * jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  void *arg2 = (void *) 0 ;
+  VLONG arg3 ;
+  VLONG *argp3 ;
+  VLONG result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  arg2 = (void *)jarg2; 
+  argp3 = (VLONG *)jarg3; 
+  if (!argp3) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null VLONG", 0);
+    return 0;
+  }
+  arg3 = *argp3; 
+  result = (arg1)->ReadBytes(arg2,arg3);
+  jresult = new VLONG((const VLONG &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_WriteBytes(void * jarg1, void * jarg2, void * jarg3) {
+  unsigned int jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  void *arg2 = (void *) 0 ;
+  VLONG arg3 ;
+  VLONG *argp3 ;
+  Bool result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  arg2 = (void *)jarg2; 
+  argp3 = (VLONG *)jarg3; 
+  if (!argp3) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null VLONG", 0);
+    return 0;
+  }
+  arg3 = *argp3; 
+  result = (arg1)->WriteBytes((void const *)arg2,arg3);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseFile_TryReadBytes(void * jarg1, void * jarg2, void * jarg3) {
+  void * jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  void *arg2 = (void *) 0 ;
+  VLONG arg3 ;
+  VLONG *argp3 ;
+  VLONG result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  arg2 = (void *)jarg2; 
+  argp3 = (VLONG *)jarg3; 
+  if (!argp3) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null VLONG", 0);
+    return 0;
+  }
+  arg3 = *argp3; 
+  result = (arg1)->TryReadBytes(arg2,arg3);
+  jresult = new VLONG((const VLONG &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_Seek__SWIG_0(void * jarg1, void * jarg2, int jarg3) {
+  unsigned int jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  LLONG arg2 ;
+  FILESEEK arg3 ;
+  LLONG *argp2 ;
+  Bool result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  argp2 = (LLONG *)jarg2; 
+  if (!argp2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null LLONG", 0);
+    return 0;
+  }
+  arg2 = *argp2; 
+  arg3 = (FILESEEK)jarg3; 
+  result = (arg1)->Seek(arg2,arg3);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_Seek__SWIG_1(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  LLONG arg2 ;
+  LLONG *argp2 ;
+  Bool result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  argp2 = (LLONG *)jarg2; 
+  if (!argp2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null LLONG", 0);
+    return 0;
+  }
+  arg2 = *argp2; 
+  result = (arg1)->Seek(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseFile_GetPosition(void * jarg1) {
+  void * jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  LLONG result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  result = (arg1)->GetPosition();
+  jresult = new LLONG((const LLONG &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseFile_GetLength(void * jarg1) {
+  void * jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  LLONG result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  result = (arg1)->GetLength();
+  jresult = new LLONG((const LLONG &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BaseFile_GetError(void * jarg1) {
+  int jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  FILEERROR result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  result = (FILEERROR)((BaseFile const *)arg1)->GetError();
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseFile_SetError(void * jarg1, int jarg2) {
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  FILEERROR arg2 ;
+  
+  arg1 = (BaseFile *)jarg1; 
+  arg2 = (FILEERROR)jarg2; 
+  (arg1)->SetError(arg2);
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_ReadChar(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  CHAR *arg2 = (CHAR *) 0 ;
+  Bool result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  arg2 = (CHAR *)jarg2; 
+  result = (arg1)->ReadChar(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_ReadUChar(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  UCHAR *arg2 = (UCHAR *) 0 ;
+  Bool result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  arg2 = (UCHAR *)jarg2; 
+  result = (arg1)->ReadUChar(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_ReadWord(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  SWORD *arg2 = (SWORD *) 0 ;
+  Bool result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  arg2 = (SWORD *)jarg2; 
+  result = (arg1)->ReadWord(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_ReadUWord(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  UWORD *arg2 = (UWORD *) 0 ;
+  Bool result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  arg2 = (UWORD *)jarg2; 
+  result = (arg1)->ReadUWord(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_ReadLong(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  LONG *arg2 = (LONG *) 0 ;
+  Bool result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  arg2 = (LONG *)jarg2; 
+  result = (arg1)->ReadLong(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_ReadULong(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  ULONG *arg2 = (ULONG *) 0 ;
+  Bool result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  arg2 = (ULONG *)jarg2; 
+  result = (arg1)->ReadULong(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_ReadSReal(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  SReal *arg2 = (SReal *) 0 ;
+  Bool result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  arg2 = (SReal *)jarg2; 
+  result = (arg1)->ReadSReal(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_ReadLReal(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  LReal *arg2 = (LReal *) 0 ;
+  Bool result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  arg2 = (LReal *)jarg2; 
+  result = (arg1)->ReadLReal(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_ReadLLong(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  LLONG *arg2 = (LLONG *) 0 ;
+  Bool result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  arg2 = (LLONG *)jarg2; 
+  result = (arg1)->ReadLLong(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_ReadLULong(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  LULONG *arg2 = (LULONG *) 0 ;
+  Bool result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  arg2 = (LULONG *)jarg2; 
+  result = (arg1)->ReadLULong(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_ReadFilename(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  Filename *arg2 = (Filename *) 0 ;
+  Bool result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  arg2 = (Filename *)jarg2; 
+  result = (arg1)->ReadFilename(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_ReadBool(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  Bool *arg2 = (Bool *) 0 ;
+  Bool result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  arg2 = (Bool *)jarg2; 
+  result = (arg1)->ReadBool(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_ReadString(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  String *arg2 = (String *) 0 ;
+  Bool result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  arg2 = (String *)jarg2; 
+  result = (arg1)->ReadString(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_ReadSVector(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  SVector *arg2 = (SVector *) 0 ;
+  Bool result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  arg2 = (SVector *)jarg2; 
+  result = (arg1)->ReadSVector(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_ReadLVector(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  LVector *arg2 = (LVector *) 0 ;
+  Bool result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  arg2 = (LVector *)jarg2; 
+  result = (arg1)->ReadLVector(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_ReadSMatrix(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  SMatrix *arg2 = (SMatrix *) 0 ;
+  Bool result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  arg2 = (SMatrix *)jarg2; 
+  result = (arg1)->ReadSMatrix(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_ReadLMatrix(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  LMatrix *arg2 = (LMatrix *) 0 ;
+  Bool result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  arg2 = (LMatrix *)jarg2; 
+  result = (arg1)->ReadLMatrix(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_WriteChar(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  CHAR arg2 ;
+  CHAR *argp2 ;
+  Bool result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  argp2 = (CHAR *)jarg2; 
+  if (!argp2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null CHAR", 0);
+    return 0;
+  }
+  arg2 = *argp2; 
+  result = (arg1)->WriteChar(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_WriteUChar(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  UCHAR arg2 ;
+  UCHAR *argp2 ;
+  Bool result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  argp2 = (UCHAR *)jarg2; 
+  if (!argp2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null UCHAR", 0);
+    return 0;
+  }
+  arg2 = *argp2; 
+  result = (arg1)->WriteUChar(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_WriteWord(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  SWORD arg2 ;
+  SWORD *argp2 ;
+  Bool result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  argp2 = (SWORD *)jarg2; 
+  if (!argp2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null SWORD", 0);
+    return 0;
+  }
+  arg2 = *argp2; 
+  result = (arg1)->WriteWord(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_WriteUWord(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  UWORD arg2 ;
+  UWORD *argp2 ;
+  Bool result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  argp2 = (UWORD *)jarg2; 
+  if (!argp2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null UWORD", 0);
+    return 0;
+  }
+  arg2 = *argp2; 
+  result = (arg1)->WriteUWord(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_WriteLong(void * jarg1, int jarg2) {
+  unsigned int jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  LONG arg2 ;
+  Bool result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  arg2 = (LONG)jarg2; 
+  result = (arg1)->WriteLong(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_WriteULong(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  ULONG arg2 ;
+  ULONG *argp2 ;
+  Bool result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  argp2 = (ULONG *)jarg2; 
+  if (!argp2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null ULONG", 0);
+    return 0;
+  }
+  arg2 = *argp2; 
+  result = (arg1)->WriteULong(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_WriteSReal(void * jarg1, float jarg2) {
+  unsigned int jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  SReal arg2 ;
+  Bool result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  arg2 = (SReal)jarg2; 
+  result = (arg1)->WriteSReal(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_WriteLReal(void * jarg1, double jarg2) {
+  unsigned int jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  LReal arg2 ;
+  Bool result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  arg2 = (LReal)jarg2; 
+  result = (arg1)->WriteLReal(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_WriteLLong(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  LLONG arg2 ;
+  LLONG *argp2 ;
+  Bool result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  argp2 = (LLONG *)jarg2; 
+  if (!argp2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null LLONG", 0);
+    return 0;
+  }
+  arg2 = *argp2; 
+  result = (arg1)->WriteLLong(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_WriteLULong(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  LULONG arg2 ;
+  LULONG *argp2 ;
+  Bool result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  argp2 = (LULONG *)jarg2; 
+  if (!argp2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null LULONG", 0);
+    return 0;
+  }
+  arg2 = *argp2; 
+  result = (arg1)->WriteLULong(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_WriteFilename(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  Filename *arg2 = 0 ;
+  Bool result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  arg2 = (Filename *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  result = (arg1)->WriteFilename((Filename const &)*arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_WriteBool(void * jarg1, unsigned int jarg2) {
+  unsigned int jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  Bool arg2 ;
+  Bool result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  arg2 = jarg2 ? true : false; 
+  result = (arg1)->WriteBool(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_WriteString(void * jarg1, char * /* constString&_ctype */ jarg2) {
+  unsigned int jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  String *arg2 = 0 ;
+  Bool result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  if (!jarg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return 0;
+  }
+  String arg2_str(jarg2);
+  arg2 = &arg2_str; 
+  result = (arg1)->WriteString((String const &)*arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_WriteSVector(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  SVector *arg2 = 0 ;
+  Bool result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  arg2 = (SVector *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "SVector const & type is null", 0);
+    return 0;
+  } 
+  result = (arg1)->WriteSVector((SVector const &)*arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_WriteLVector(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  LVector *arg2 = 0 ;
+  Bool result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  arg2 = (LVector *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "LVector const & type is null", 0);
+    return 0;
+  } 
+  result = (arg1)->WriteLVector((LVector const &)*arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_WriteSMatrix(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  SMatrix *arg2 = 0 ;
+  Bool result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  arg2 = (SMatrix *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "SMatrix const & type is null", 0);
+    return 0;
+  } 
+  result = (arg1)->WriteSMatrix((SMatrix const &)*arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_WriteLMatrix(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  BaseFile *arg1 = (BaseFile *) 0 ;
+  LMatrix *arg2 = 0 ;
+  Bool result;
+  
+  arg1 = (BaseFile *)jarg1; 
+  arg2 = (LMatrix *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "LMatrix const & type is null", 0);
+    return 0;
+  } 
+  result = (arg1)->WriteLMatrix((LMatrix const &)*arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseFile_Alloc() {
+  void * jresult ;
+  BaseFile *result = 0 ;
+  
+  result = (BaseFile *)BaseFile::Alloc();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseFile_Free(void * jarg1) {
+  BaseFile **arg1 = 0 ;
+  
+  arg1 = (BaseFile **)jarg1;
+  if (!arg1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "BaseFile *& type is null", 0);
+    return ;
+  } 
+  BaseFile::Free(*arg1);
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_AESFile_Open__SWIG_0(void * jarg1, void * jarg2, char * jarg3, int jarg4, int jarg5, void * jarg6, int jarg7, int jarg8, int jarg9, int jarg10, int jarg11) {
+  unsigned int jresult ;
+  AESFile *arg1 = (AESFile *) 0 ;
+  Filename *arg2 = 0 ;
+  char *arg3 = (char *) 0 ;
+  LONG arg4 ;
+  LONG arg5 ;
+  ULONG arg6 ;
+  FILEOPEN arg7 ;
+  FILEDIALOG arg8 ;
+  BYTEORDER arg9 ;
+  LONG arg10 ;
+  LONG arg11 ;
+  ULONG *argp6 ;
+  Bool result;
+  
+  arg1 = (AESFile *)jarg1; 
+  arg2 = (Filename *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  arg3 = (char *)jarg3; 
+  arg4 = (LONG)jarg4; 
+  arg5 = (LONG)jarg5; 
+  argp6 = (ULONG *)jarg6; 
+  if (!argp6) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null ULONG", 0);
+    return 0;
+  }
+  arg6 = *argp6; 
+  arg7 = (FILEOPEN)jarg7; 
+  arg8 = (FILEDIALOG)jarg8; 
+  arg9 = (BYTEORDER)jarg9; 
+  arg10 = (LONG)jarg10; 
+  arg11 = (LONG)jarg11; 
+  result = (arg1)->Open((Filename const &)*arg2,(char const *)arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_AESFile_Open__SWIG_1(void * jarg1, void * jarg2, char * jarg3, int jarg4, int jarg5, void * jarg6, int jarg7, int jarg8, int jarg9, int jarg10) {
+  unsigned int jresult ;
+  AESFile *arg1 = (AESFile *) 0 ;
+  Filename *arg2 = 0 ;
+  char *arg3 = (char *) 0 ;
+  LONG arg4 ;
+  LONG arg5 ;
+  ULONG arg6 ;
+  FILEOPEN arg7 ;
+  FILEDIALOG arg8 ;
+  BYTEORDER arg9 ;
+  LONG arg10 ;
+  ULONG *argp6 ;
+  Bool result;
+  
+  arg1 = (AESFile *)jarg1; 
+  arg2 = (Filename *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  arg3 = (char *)jarg3; 
+  arg4 = (LONG)jarg4; 
+  arg5 = (LONG)jarg5; 
+  argp6 = (ULONG *)jarg6; 
+  if (!argp6) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null ULONG", 0);
+    return 0;
+  }
+  arg6 = *argp6; 
+  arg7 = (FILEOPEN)jarg7; 
+  arg8 = (FILEDIALOG)jarg8; 
+  arg9 = (BYTEORDER)jarg9; 
+  arg10 = (LONG)jarg10; 
+  result = (arg1)->Open((Filename const &)*arg2,(char const *)arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_AESFile_Open__SWIG_2(void * jarg1, void * jarg2, char * jarg3, int jarg4, int jarg5, void * jarg6, int jarg7, int jarg8, int jarg9) {
+  unsigned int jresult ;
+  AESFile *arg1 = (AESFile *) 0 ;
+  Filename *arg2 = 0 ;
+  char *arg3 = (char *) 0 ;
+  LONG arg4 ;
+  LONG arg5 ;
+  ULONG arg6 ;
+  FILEOPEN arg7 ;
+  FILEDIALOG arg8 ;
+  BYTEORDER arg9 ;
+  ULONG *argp6 ;
+  Bool result;
+  
+  arg1 = (AESFile *)jarg1; 
+  arg2 = (Filename *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  arg3 = (char *)jarg3; 
+  arg4 = (LONG)jarg4; 
+  arg5 = (LONG)jarg5; 
+  argp6 = (ULONG *)jarg6; 
+  if (!argp6) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null ULONG", 0);
+    return 0;
+  }
+  arg6 = *argp6; 
+  arg7 = (FILEOPEN)jarg7; 
+  arg8 = (FILEDIALOG)jarg8; 
+  arg9 = (BYTEORDER)jarg9; 
+  result = (arg1)->Open((Filename const &)*arg2,(char const *)arg3,arg4,arg5,arg6,arg7,arg8,arg9);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_AESFile_Open__SWIG_3(void * jarg1, void * jarg2, char * jarg3, int jarg4, int jarg5, void * jarg6, int jarg7, int jarg8) {
+  unsigned int jresult ;
+  AESFile *arg1 = (AESFile *) 0 ;
+  Filename *arg2 = 0 ;
+  char *arg3 = (char *) 0 ;
+  LONG arg4 ;
+  LONG arg5 ;
+  ULONG arg6 ;
+  FILEOPEN arg7 ;
+  FILEDIALOG arg8 ;
+  ULONG *argp6 ;
+  Bool result;
+  
+  arg1 = (AESFile *)jarg1; 
+  arg2 = (Filename *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  arg3 = (char *)jarg3; 
+  arg4 = (LONG)jarg4; 
+  arg5 = (LONG)jarg5; 
+  argp6 = (ULONG *)jarg6; 
+  if (!argp6) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null ULONG", 0);
+    return 0;
+  }
+  arg6 = *argp6; 
+  arg7 = (FILEOPEN)jarg7; 
+  arg8 = (FILEDIALOG)jarg8; 
+  result = (arg1)->Open((Filename const &)*arg2,(char const *)arg3,arg4,arg5,arg6,arg7,arg8);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_AESFile_Open__SWIG_4(void * jarg1, void * jarg2, char * jarg3, int jarg4, int jarg5, void * jarg6, int jarg7) {
+  unsigned int jresult ;
+  AESFile *arg1 = (AESFile *) 0 ;
+  Filename *arg2 = 0 ;
+  char *arg3 = (char *) 0 ;
+  LONG arg4 ;
+  LONG arg5 ;
+  ULONG arg6 ;
+  FILEOPEN arg7 ;
+  ULONG *argp6 ;
+  Bool result;
+  
+  arg1 = (AESFile *)jarg1; 
+  arg2 = (Filename *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  arg3 = (char *)jarg3; 
+  arg4 = (LONG)jarg4; 
+  arg5 = (LONG)jarg5; 
+  argp6 = (ULONG *)jarg6; 
+  if (!argp6) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null ULONG", 0);
+    return 0;
+  }
+  arg6 = *argp6; 
+  arg7 = (FILEOPEN)jarg7; 
+  result = (arg1)->Open((Filename const &)*arg2,(char const *)arg3,arg4,arg5,arg6,arg7);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_AESFile_Open__SWIG_5(void * jarg1, void * jarg2, char * jarg3, int jarg4, int jarg5, void * jarg6) {
+  unsigned int jresult ;
+  AESFile *arg1 = (AESFile *) 0 ;
+  Filename *arg2 = 0 ;
+  char *arg3 = (char *) 0 ;
+  LONG arg4 ;
+  LONG arg5 ;
+  ULONG arg6 ;
+  ULONG *argp6 ;
+  Bool result;
+  
+  arg1 = (AESFile *)jarg1; 
+  arg2 = (Filename *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  arg3 = (char *)jarg3; 
+  arg4 = (LONG)jarg4; 
+  arg5 = (LONG)jarg5; 
+  argp6 = (ULONG *)jarg6; 
+  if (!argp6) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null ULONG", 0);
+    return 0;
+  }
+  arg6 = *argp6; 
+  result = (arg1)->Open((Filename const &)*arg2,(char const *)arg3,arg4,arg5,arg6);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_AESFile_CheckEncryption(void * jarg1, void * jarg2, char * jarg3, int jarg4, int jarg5) {
+  unsigned int jresult ;
+  Filename *arg1 = 0 ;
+  Filename *arg2 = 0 ;
+  char *arg3 = (char *) 0 ;
+  LONG arg4 ;
+  LONG arg5 ;
+  Bool result;
+  
+  arg1 = (Filename *)jarg1;
+  if (!arg1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  arg2 = (Filename *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  arg3 = (char *)jarg3; 
+  arg4 = (LONG)jarg4; 
+  arg5 = (LONG)jarg5; 
+  result = AESFile::CheckEncryption((Filename const &)*arg1,(Filename const &)*arg2,(char const *)arg3,arg4,arg5);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_AESFile_Alloc() {
+  void * jresult ;
+  AESFile *result = 0 ;
+  
+  result = (AESFile *)AESFile::Alloc();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_AESFile_Free(void * jarg1) {
+  AESFile **arg1 = 0 ;
+  
+  arg1 = (AESFile **)jarg1;
+  if (!arg1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "AESFile *& type is null", 0);
+    return ;
+  } 
+  AESFile::Free(*arg1);
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_LocalFileTime_year_set(void * jarg1, void * jarg2) {
+  LocalFileTime *arg1 = (LocalFileTime *) 0 ;
+  UWORD arg2 ;
+  UWORD *argp2 ;
+  
+  arg1 = (LocalFileTime *)jarg1; 
+  argp2 = (UWORD *)jarg2; 
+  if (!argp2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null UWORD", 0);
+    return ;
+  }
+  arg2 = *argp2; 
+  if (arg1) (arg1)->year = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_LocalFileTime_year_get(void * jarg1) {
+  void * jresult ;
+  LocalFileTime *arg1 = (LocalFileTime *) 0 ;
+  UWORD result;
+  
+  arg1 = (LocalFileTime *)jarg1; 
+  result =  ((arg1)->year);
+  jresult = new UWORD((const UWORD &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_LocalFileTime_month_set(void * jarg1, void * jarg2) {
+  LocalFileTime *arg1 = (LocalFileTime *) 0 ;
+  UWORD arg2 ;
+  UWORD *argp2 ;
+  
+  arg1 = (LocalFileTime *)jarg1; 
+  argp2 = (UWORD *)jarg2; 
+  if (!argp2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null UWORD", 0);
+    return ;
+  }
+  arg2 = *argp2; 
+  if (arg1) (arg1)->month = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_LocalFileTime_month_get(void * jarg1) {
+  void * jresult ;
+  LocalFileTime *arg1 = (LocalFileTime *) 0 ;
+  UWORD result;
+  
+  arg1 = (LocalFileTime *)jarg1; 
+  result =  ((arg1)->month);
+  jresult = new UWORD((const UWORD &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_LocalFileTime_day_set(void * jarg1, void * jarg2) {
+  LocalFileTime *arg1 = (LocalFileTime *) 0 ;
+  UWORD arg2 ;
+  UWORD *argp2 ;
+  
+  arg1 = (LocalFileTime *)jarg1; 
+  argp2 = (UWORD *)jarg2; 
+  if (!argp2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null UWORD", 0);
+    return ;
+  }
+  arg2 = *argp2; 
+  if (arg1) (arg1)->day = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_LocalFileTime_day_get(void * jarg1) {
+  void * jresult ;
+  LocalFileTime *arg1 = (LocalFileTime *) 0 ;
+  UWORD result;
+  
+  arg1 = (LocalFileTime *)jarg1; 
+  result =  ((arg1)->day);
+  jresult = new UWORD((const UWORD &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_LocalFileTime_hour_set(void * jarg1, void * jarg2) {
+  LocalFileTime *arg1 = (LocalFileTime *) 0 ;
+  UWORD arg2 ;
+  UWORD *argp2 ;
+  
+  arg1 = (LocalFileTime *)jarg1; 
+  argp2 = (UWORD *)jarg2; 
+  if (!argp2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null UWORD", 0);
+    return ;
+  }
+  arg2 = *argp2; 
+  if (arg1) (arg1)->hour = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_LocalFileTime_hour_get(void * jarg1) {
+  void * jresult ;
+  LocalFileTime *arg1 = (LocalFileTime *) 0 ;
+  UWORD result;
+  
+  arg1 = (LocalFileTime *)jarg1; 
+  result =  ((arg1)->hour);
+  jresult = new UWORD((const UWORD &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_LocalFileTime_minute_set(void * jarg1, void * jarg2) {
+  LocalFileTime *arg1 = (LocalFileTime *) 0 ;
+  UWORD arg2 ;
+  UWORD *argp2 ;
+  
+  arg1 = (LocalFileTime *)jarg1; 
+  argp2 = (UWORD *)jarg2; 
+  if (!argp2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null UWORD", 0);
+    return ;
+  }
+  arg2 = *argp2; 
+  if (arg1) (arg1)->minute = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_LocalFileTime_minute_get(void * jarg1) {
+  void * jresult ;
+  LocalFileTime *arg1 = (LocalFileTime *) 0 ;
+  UWORD result;
+  
+  arg1 = (LocalFileTime *)jarg1; 
+  result =  ((arg1)->minute);
+  jresult = new UWORD((const UWORD &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_LocalFileTime_second_set(void * jarg1, void * jarg2) {
+  LocalFileTime *arg1 = (LocalFileTime *) 0 ;
+  UWORD arg2 ;
+  UWORD *argp2 ;
+  
+  arg1 = (LocalFileTime *)jarg1; 
+  argp2 = (UWORD *)jarg2; 
+  if (!argp2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null UWORD", 0);
+    return ;
+  }
+  arg2 = *argp2; 
+  if (arg1) (arg1)->second = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_LocalFileTime_second_get(void * jarg1) {
+  void * jresult ;
+  LocalFileTime *arg1 = (LocalFileTime *) 0 ;
+  UWORD result;
+  
+  arg1 = (LocalFileTime *)jarg1; 
+  result =  ((arg1)->second);
+  jresult = new UWORD((const UWORD &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_LocalFileTime_Init(void * jarg1) {
+  LocalFileTime *arg1 = (LocalFileTime *) 0 ;
+  
+  arg1 = (LocalFileTime *)jarg1; 
+  (arg1)->Init();
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_LocalFileTime_Compare(void * jarg1, void * jarg2, void * jarg3) {
+  int jresult ;
+  LocalFileTime *arg1 = (LocalFileTime *) 0 ;
+  LocalFileTime *arg2 = 0 ;
+  LocalFileTime *arg3 = 0 ;
+  LONG result;
+  
+  arg1 = (LocalFileTime *)jarg1; 
+  arg2 = (LocalFileTime *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "LocalFileTime const & type is null", 0);
+    return 0;
+  } 
+  arg3 = (LocalFileTime *)jarg3;
+  if (!arg3) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "LocalFileTime const & type is null", 0);
+    return 0;
+  } 
+  result = (arg1)->Compare((LocalFileTime const &)*arg2,(LocalFileTime const &)*arg3);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_new_LocalFileTime() {
+  void * jresult ;
+  LocalFileTime *result = 0 ;
+  
+  result = (LocalFileTime *)new LocalFileTime();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_delete_LocalFileTime(void * jarg1) {
+  LocalFileTime *arg1 = (LocalFileTime *) 0 ;
+  
+  arg1 = (LocalFileTime *)jarg1; 
+  delete arg1;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_GE_FILETIME_CREATED_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(0);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_GE_FILETIME_MODIFIED_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(1);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_GE_FILETIME_ACCESS_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BROWSEFILES_CALCSIZE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)((1 << 0));
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BROWSEFILES_SUPPRESSCACHING_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)((1 << 1));
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BrowseFiles_Init(void * jarg1, void * jarg2, int jarg3) {
+  BrowseFiles *arg1 = (BrowseFiles *) 0 ;
+  Filename *arg2 = 0 ;
+  LONG arg3 ;
+  
+  arg1 = (BrowseFiles *)jarg1; 
+  arg2 = (Filename *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return ;
+  } 
+  arg3 = (LONG)jarg3; 
+  (arg1)->Init((Filename const &)*arg2,arg3);
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BrowseFiles_GetNext(void * jarg1) {
+  unsigned int jresult ;
+  BrowseFiles *arg1 = (BrowseFiles *) 0 ;
+  Bool result;
+  
+  arg1 = (BrowseFiles *)jarg1; 
+  result = (arg1)->GetNext();
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BrowseFiles_GetSize(void * jarg1) {
+  void * jresult ;
+  BrowseFiles *arg1 = (BrowseFiles *) 0 ;
+  LLONG result;
+  
+  arg1 = (BrowseFiles *)jarg1; 
+  result = (arg1)->GetSize();
+  jresult = new LLONG((const LLONG &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BrowseFiles_IsDir(void * jarg1) {
+  unsigned int jresult ;
+  BrowseFiles *arg1 = (BrowseFiles *) 0 ;
+  Bool result;
+  
+  arg1 = (BrowseFiles *)jarg1; 
+  result = (arg1)->IsDir();
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BrowseFiles_IsHidden(void * jarg1) {
+  unsigned int jresult ;
+  BrowseFiles *arg1 = (BrowseFiles *) 0 ;
+  Bool result;
+  
+  arg1 = (BrowseFiles *)jarg1; 
+  result = (arg1)->IsHidden();
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BrowseFiles_IsBundle(void * jarg1) {
+  unsigned int jresult ;
+  BrowseFiles *arg1 = (BrowseFiles *) 0 ;
+  Bool result;
+  
+  arg1 = (BrowseFiles *)jarg1; 
+  result = (arg1)->IsBundle();
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BrowseFiles_IsReadOnly(void * jarg1) {
+  unsigned int jresult ;
+  BrowseFiles *arg1 = (BrowseFiles *) 0 ;
+  Bool result;
+  
+  arg1 = (BrowseFiles *)jarg1; 
+  result = (arg1)->IsReadOnly();
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BrowseFiles_GetFileTime(void * jarg1, int jarg2, void * jarg3) {
+  BrowseFiles *arg1 = (BrowseFiles *) 0 ;
+  LONG arg2 ;
+  LocalFileTime *arg3 = (LocalFileTime *) 0 ;
+  
+  arg1 = (BrowseFiles *)jarg1; 
+  arg2 = (LONG)jarg2; 
+  arg3 = (LocalFileTime *)jarg3; 
+  (arg1)->GetFileTime(arg2,arg3);
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BrowseFiles_GetFilename(void * jarg1) {
+  void * jresult ;
+  BrowseFiles *arg1 = (BrowseFiles *) 0 ;
+  Filename result;
+  
+  arg1 = (BrowseFiles *)jarg1; 
+  result = (arg1)->GetFilename();
+  jresult = new Filename((const Filename &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BrowseFiles_Alloc() {
+  void * jresult ;
+  BrowseFiles *result = 0 ;
+  
+  result = (BrowseFiles *)BrowseFiles::Alloc();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BrowseFiles_Free(void * jarg1) {
+  BrowseFiles **arg1 = 0 ;
+  
+  arg1 = (BrowseFiles **)jarg1;
+  if (!arg1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "BrowseFiles *& type is null", 0);
+    return ;
+  } 
+  BrowseFiles::Free(*arg1);
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BROWSEVOLUMES_VOLUME_NOT_AVAILABLE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)((1 << 7));
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BrowseVolumes_Init(void * jarg1) {
+  BrowseVolumes *arg1 = (BrowseVolumes *) 0 ;
+  
+  arg1 = (BrowseVolumes *)jarg1; 
+  (arg1)->Init();
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BrowseVolumes_GetNext(void * jarg1) {
+  unsigned int jresult ;
+  BrowseVolumes *arg1 = (BrowseVolumes *) 0 ;
+  Bool result;
+  
+  arg1 = (BrowseVolumes *)jarg1; 
+  result = (arg1)->GetNext();
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BrowseVolumes_GetFilename(void * jarg1) {
+  void * jresult ;
+  BrowseVolumes *arg1 = (BrowseVolumes *) 0 ;
+  Filename result;
+  
+  arg1 = (BrowseVolumes *)jarg1; 
+  result = (arg1)->GetFilename();
+  jresult = new Filename((const Filename &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT char * /* String_ctype */ SWIGSTDCALL CSharp_BrowseVolumes_GetVolumeName(void * jarg1, void * jarg2) {
+  char * /* String_ctype */ jresult ;
+  BrowseVolumes *arg1 = (BrowseVolumes *) 0 ;
+  LONG *arg2 = (LONG *) 0 ;
+  String result;
+  
+  arg1 = (BrowseVolumes *)jarg1; 
+  arg2 = (LONG *)jarg2; 
+  result = (arg1)->GetVolumeName(arg2);
+  /* <String_out> */ 
+  jresult = SWIG_csharp_string_callback((&result)->GetCStringCopy()); 
+  /* </String_out> */
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BrowseVolumes_Alloc() {
+  void * jresult ;
+  BrowseVolumes *result = 0 ;
+  
+  result = (BrowseVolumes *)BrowseVolumes::Alloc();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BrowseVolumes_Free(void * jarg1) {
+  BrowseVolumes **arg1 = 0 ;
+  
+  arg1 = (BrowseVolumes **)jarg1;
+  if (!arg1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "BrowseVolumes *& type is null", 0);
+    return ;
+  } 
+  BrowseVolumes::Free(*arg1);
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_FileMonitor_WatchFolder(void * jarg1, void * jarg2, void * jarg3) {
+  unsigned int jresult ;
+  Filename *arg1 = 0 ;
+  FileMonitorCallback arg2 = (FileMonitorCallback) 0 ;
+  void *arg3 = (void *) 0 ;
+  Bool result;
+  
+  arg1 = (Filename *)jarg1;
+  if (!arg1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  arg2 = (FileMonitorCallback)jarg2; 
+  arg3 = (void *)jarg3; 
+  result = FileMonitor::WatchFolder((Filename const &)*arg1,arg2,arg3);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_FileMonitor_DontWatchFolder(void * jarg1, void * jarg2, void * jarg3) {
+  unsigned int jresult ;
+  Filename *arg1 = 0 ;
+  FileMonitorCallback arg2 = (FileMonitorCallback) 0 ;
+  void *arg3 = (void *) 0 ;
+  Bool result;
+  
+  arg1 = (Filename *)jarg1;
+  if (!arg1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  arg2 = (FileMonitorCallback)jarg2; 
+  arg3 = (void *)jarg3; 
+  result = FileMonitor::DontWatchFolder((Filename const &)*arg1,arg2,arg3);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_FileMonitor_WatchFile(void * jarg1, void * jarg2, void * jarg3) {
+  unsigned int jresult ;
+  Filename *arg1 = 0 ;
+  FileMonitorCallback arg2 = (FileMonitorCallback) 0 ;
+  void *arg3 = (void *) 0 ;
+  Bool result;
+  
+  arg1 = (Filename *)jarg1;
+  if (!arg1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  arg2 = (FileMonitorCallback)jarg2; 
+  arg3 = (void *)jarg3; 
+  result = FileMonitor::WatchFile((Filename const &)*arg1,arg2,arg3);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_FileMonitor_DontWatchFile(void * jarg1, void * jarg2, void * jarg3) {
+  unsigned int jresult ;
+  Filename *arg1 = 0 ;
+  FileMonitorCallback arg2 = (FileMonitorCallback) 0 ;
+  void *arg3 = (void *) 0 ;
+  Bool result;
+  
+  arg1 = (Filename *)jarg1;
+  if (!arg1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  arg2 = (FileMonitorCallback)jarg2; 
+  arg3 = (void *)jarg3; 
+  result = FileMonitor::DontWatchFile((Filename const &)*arg1,arg2,arg3);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_new_FileMonitor() {
+  void * jresult ;
+  FileMonitor *result = 0 ;
+  
+  result = (FileMonitor *)new FileMonitor();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_delete_FileMonitor(void * jarg1) {
+  FileMonitor *arg1 = (FileMonitor *) 0 ;
+  
+  arg1 = (FileMonitor *)jarg1; 
+  delete arg1;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_WriteChar(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  CHAR arg2 ;
+  CHAR *argp2 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  argp2 = (CHAR *)jarg2; 
+  if (!argp2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null CHAR", 0);
+    return 0;
+  }
+  arg2 = *argp2; 
+  result = (arg1)->WriteChar(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_WriteUChar(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  UCHAR arg2 ;
+  UCHAR *argp2 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  argp2 = (UCHAR *)jarg2; 
+  if (!argp2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null UCHAR", 0);
+    return 0;
+  }
+  arg2 = *argp2; 
+  result = (arg1)->WriteUChar(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_WriteWord(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  SWORD arg2 ;
+  SWORD *argp2 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  argp2 = (SWORD *)jarg2; 
+  if (!argp2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null SWORD", 0);
+    return 0;
+  }
+  arg2 = *argp2; 
+  result = (arg1)->WriteWord(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_WriteUWord(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  UWORD arg2 ;
+  UWORD *argp2 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  argp2 = (UWORD *)jarg2; 
+  if (!argp2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null UWORD", 0);
+    return 0;
+  }
+  arg2 = *argp2; 
+  result = (arg1)->WriteUWord(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_WriteLong(void * jarg1, int jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  LONG arg2 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (LONG)jarg2; 
+  result = (arg1)->WriteLong(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_WriteULong(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  ULONG arg2 ;
+  ULONG *argp2 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  argp2 = (ULONG *)jarg2; 
+  if (!argp2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null ULONG", 0);
+    return 0;
+  }
+  arg2 = *argp2; 
+  result = (arg1)->WriteULong(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_WriteLLong(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  LLONG arg2 ;
+  LLONG *argp2 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  argp2 = (LLONG *)jarg2; 
+  if (!argp2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null LLONG", 0);
+    return 0;
+  }
+  arg2 = *argp2; 
+  result = (arg1)->WriteLLong(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_WriteLULong(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  LULONG arg2 ;
+  LULONG *argp2 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  argp2 = (LULONG *)jarg2; 
+  if (!argp2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null LULONG", 0);
+    return 0;
+  }
+  arg2 = *argp2; 
+  result = (arg1)->WriteLULong(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_WriteReal(void * jarg1, double jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  Real arg2 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (Real)jarg2; 
+  result = (arg1)->WriteReal(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_WriteSReal(void * jarg1, float jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  SReal arg2 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (SReal)jarg2; 
+  result = (arg1)->WriteSReal(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_WriteLReal(void * jarg1, double jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  LReal arg2 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (LReal)jarg2; 
+  result = (arg1)->WriteLReal(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_WriteBool(void * jarg1, unsigned int jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  Bool arg2 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = jarg2 ? true : false; 
+  result = (arg1)->WriteBool(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_WriteTime(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  BaseTime *arg2 = 0 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (BaseTime *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "BaseTime const & type is null", 0);
+    return 0;
+  } 
+  result = (arg1)->WriteTime((BaseTime const &)*arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_WriteVector(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  Vector *arg2 = 0 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (Vector *)jarg2; /* Vector*&_in */
+  result = (arg1)->WriteVector((Vector const &)*arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_WriteSVector(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  SVector *arg2 = 0 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (SVector *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "SVector const & type is null", 0);
+    return 0;
+  } 
+  result = (arg1)->WriteSVector((SVector const &)*arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_WriteLVector(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  LVector *arg2 = 0 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (LVector *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "LVector const & type is null", 0);
+    return 0;
+  } 
+  result = (arg1)->WriteLVector((LVector const &)*arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_WriteMatrix(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  Matrix *arg2 = 0 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (Matrix *)jarg2; /* constMatrix&_in */
+  result = (arg1)->WriteMatrix((Matrix const &)*arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_WriteSMatrix(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  SMatrix *arg2 = 0 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (SMatrix *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "SMatrix const & type is null", 0);
+    return 0;
+  } 
+  result = (arg1)->WriteSMatrix((SMatrix const &)*arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_WriteLMatrix(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  LMatrix *arg2 = 0 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (LMatrix *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "LMatrix const & type is null", 0);
+    return 0;
+  } 
+  result = (arg1)->WriteLMatrix((LMatrix const &)*arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_WriteString(void * jarg1, char * /* constString&_ctype */ jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  String *arg2 = 0 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  if (!jarg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return 0;
+  }
+  String arg2_str(jarg2);
+  arg2 = &arg2_str; 
+  result = (arg1)->WriteString((String const &)*arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_WriteFilename(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  Filename *arg2 = 0 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (Filename *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  result = (arg1)->WriteFilename((Filename const &)*arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_WriteImage__SWIG_0(void * jarg1, void * jarg2, int jarg3, void * jarg4, int jarg5) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  BaseBitmap *arg2 = (BaseBitmap *) 0 ;
+  LONG arg3 ;
+  BaseContainer *arg4 = (BaseContainer *) 0 ;
+  SAVEBIT arg5 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (BaseBitmap *)jarg2; 
+  arg3 = (LONG)jarg3; 
+  arg4 = (BaseContainer *)jarg4; 
+  arg5 = (SAVEBIT)jarg5; 
+  result = (arg1)->WriteImage(arg2,arg3,arg4,arg5);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_WriteImage__SWIG_1(void * jarg1, void * jarg2, int jarg3, void * jarg4) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  BaseBitmap *arg2 = (BaseBitmap *) 0 ;
+  LONG arg3 ;
+  BaseContainer *arg4 = (BaseContainer *) 0 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (BaseBitmap *)jarg2; 
+  arg3 = (LONG)jarg3; 
+  arg4 = (BaseContainer *)jarg4; 
+  result = (arg1)->WriteImage(arg2,arg3,arg4);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_WriteGeData(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  GeData *arg2 = 0 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (GeData *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "GeData const & type is null", 0);
+    return 0;
+  } 
+  result = (arg1)->WriteGeData((GeData const &)*arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_WriteContainer(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  BaseContainer *arg2 = 0 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (BaseContainer *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "BaseContainer const & type is null", 0);
+    return 0;
+  } 
+  result = (arg1)->WriteContainer((BaseContainer const &)*arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_WriteMemory(void * jarg1, void * jarg2, void * jarg3) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  void *arg2 = (void *) 0 ;
+  VLONG arg3 ;
+  VLONG *argp3 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (void *)jarg2; 
+  argp3 = (VLONG *)jarg3; 
+  if (!argp3) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null VLONG", 0);
+    return 0;
+  }
+  arg3 = *argp3; 
+  result = (arg1)->WriteMemory((void const *)arg2,arg3);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_WriteChannel(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  BaseChannel *arg2 = (BaseChannel *) 0 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (BaseChannel *)jarg2; 
+  result = (arg1)->WriteChannel(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_WriteArray(void * jarg1, void * jarg2, int jarg3, int jarg4, int jarg5) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  void *arg2 = (void *) 0 ;
+  HYPERFILEARRAY arg3 ;
+  LONG arg4 ;
+  LONG arg5 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (void *)jarg2; 
+  arg3 = (HYPERFILEARRAY)jarg3; 
+  arg4 = (LONG)jarg4; 
+  arg5 = (LONG)jarg5; 
+  result = (arg1)->WriteArray((void const *)arg2,arg3,arg4,arg5);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_ReadChar(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  CHAR *arg2 = (CHAR *) 0 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (CHAR *)jarg2; 
+  result = (arg1)->ReadChar(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_ReadUChar(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  UCHAR *arg2 = (UCHAR *) 0 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (UCHAR *)jarg2; 
+  result = (arg1)->ReadUChar(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_ReadWord(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  SWORD *arg2 = (SWORD *) 0 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (SWORD *)jarg2; 
+  result = (arg1)->ReadWord(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_ReadUWord(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  UWORD *arg2 = (UWORD *) 0 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (UWORD *)jarg2; 
+  result = (arg1)->ReadUWord(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_ReadLong(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  LONG *arg2 = (LONG *) 0 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (LONG *)jarg2; 
+  result = (arg1)->ReadLong(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_ReadULong(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  ULONG *arg2 = (ULONG *) 0 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (ULONG *)jarg2; 
+  result = (arg1)->ReadULong(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_ReadLLong(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  LLONG *arg2 = (LLONG *) 0 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (LLONG *)jarg2; 
+  result = (arg1)->ReadLLong(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_ReadLULong(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  LULONG *arg2 = (LULONG *) 0 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (LULONG *)jarg2; 
+  result = (arg1)->ReadLULong(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_ReadReal(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  Real *arg2 = (Real *) 0 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (Real *)jarg2; 
+  result = (arg1)->ReadReal(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_ReadSReal(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  SReal *arg2 = (SReal *) 0 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (SReal *)jarg2; 
+  result = (arg1)->ReadSReal(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_ReadLReal(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  LReal *arg2 = (LReal *) 0 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (LReal *)jarg2; 
+  result = (arg1)->ReadLReal(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_ReadBool(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  Bool *arg2 = (Bool *) 0 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (Bool *)jarg2; 
+  result = (arg1)->ReadBool(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_ReadTime(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  BaseTime *arg2 = (BaseTime *) 0 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (BaseTime *)jarg2; 
+  result = (arg1)->ReadTime(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_ReadVector(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  Vector *arg2 = (Vector *) 0 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (Vector *)jarg2; /* Vector*&_in */
+  result = (arg1)->ReadVector(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_ReadSVector(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  SVector *arg2 = (SVector *) 0 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (SVector *)jarg2; 
+  result = (arg1)->ReadSVector(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_ReadLVector(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  LVector *arg2 = (LVector *) 0 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (LVector *)jarg2; 
+  result = (arg1)->ReadLVector(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_ReadMatrix(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  Matrix *arg2 = (Matrix *) 0 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (Matrix *)jarg2; /* Matrix*&_in */
+  result = (arg1)->ReadMatrix(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_ReadSMatrix(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  SMatrix *arg2 = (SMatrix *) 0 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (SMatrix *)jarg2; 
+  result = (arg1)->ReadSMatrix(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_ReadLMatrix(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  LMatrix *arg2 = (LMatrix *) 0 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (LMatrix *)jarg2; 
+  result = (arg1)->ReadLMatrix(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_ReadString(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  String *arg2 = (String *) 0 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (String *)jarg2; 
+  result = (arg1)->ReadString(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_ReadFilename(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  Filename *arg2 = (Filename *) 0 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (Filename *)jarg2; 
+  result = (arg1)->ReadFilename(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_ReadImage(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  BaseBitmap *arg2 = (BaseBitmap *) 0 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (BaseBitmap *)jarg2; 
+  result = (arg1)->ReadImage(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_ReadGeData(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  GeData *arg2 = (GeData *) 0 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (GeData *)jarg2; 
+  result = (arg1)->ReadGeData(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_ReadContainer(void * jarg1, void * jarg2, unsigned int jarg3) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  BaseContainer *arg2 = (BaseContainer *) 0 ;
+  Bool arg3 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (BaseContainer *)jarg2; 
+  arg3 = jarg3 ? true : false; 
+  result = (arg1)->ReadContainer(arg2,arg3);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_ReadMemory(void * jarg1, void * jarg2, void * jarg3) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  void **arg2 = (void **) 0 ;
+  VLONG *arg3 = (VLONG *) 0 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (void **)jarg2; 
+  arg3 = (VLONG *)jarg3; 
+  result = (arg1)->ReadMemory(arg2,arg3);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_ReadChannel(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  BaseChannel *arg2 = (BaseChannel *) 0 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (BaseChannel *)jarg2; 
+  result = (arg1)->ReadChannel(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_ReadChannelConvert(void * jarg1, void * jarg2, int jarg3) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  GeListNode *arg2 = (GeListNode *) 0 ;
+  LONG arg3 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (GeListNode *)jarg2; 
+  arg3 = (LONG)jarg3; 
+  result = (arg1)->ReadChannelConvert(arg2,arg3);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_ReadArray(void * jarg1, void * jarg2, int jarg3, int jarg4, int jarg5) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  void *arg2 = (void *) 0 ;
+  HYPERFILEARRAY arg3 ;
+  LONG arg4 ;
+  LONG arg5 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (void *)jarg2; 
+  arg3 = (HYPERFILEARRAY)jarg3; 
+  arg4 = (LONG)jarg4; 
+  arg5 = (LONG)jarg5; 
+  result = (arg1)->ReadArray(arg2,arg3,arg4,arg5);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_HyperFile_GetError(void * jarg1) {
+  int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  FILEERROR result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  result = (FILEERROR)((HyperFile const *)arg1)->GetError();
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_HyperFile_SetError(void * jarg1, int jarg2) {
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  FILEERROR arg2 ;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (FILEERROR)jarg2; 
+  (arg1)->SetError(arg2);
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_ReadValueHeader(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  HYPERFILEVALUE *arg2 = (HYPERFILEVALUE *) 0 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (HYPERFILEVALUE *)jarg2; 
+  result = (arg1)->ReadValueHeader(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_SkipValue(void * jarg1, int jarg2) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  HYPERFILEVALUE arg2 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (HYPERFILEVALUE)jarg2; 
+  result = (arg1)->SkipValue(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_WriteChunkStart(void * jarg1, int jarg2, int jarg3) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  LONG arg2 ;
+  LONG arg3 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (LONG)jarg2; 
+  arg3 = (LONG)jarg3; 
+  result = (arg1)->WriteChunkStart(arg2,arg3);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_WriteChunkEnd(void * jarg1) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  result = (arg1)->WriteChunkEnd();
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_ReadChunkStart(void * jarg1, void * jarg2, void * jarg3) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  LONG *arg2 = (LONG *) 0 ;
+  LONG *arg3 = (LONG *) 0 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (LONG *)jarg2; 
+  arg3 = (LONG *)jarg3; 
+  result = (arg1)->ReadChunkStart(arg2,arg3);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_ReadChunkEnd(void * jarg1) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  result = (arg1)->ReadChunkEnd();
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_SkipToEndChunk(void * jarg1) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  result = (arg1)->SkipToEndChunk();
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_HyperFile_GetFileVersion(void * jarg1) {
+  int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  LONG result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  result = ((HyperFile const *)arg1)->GetFileVersion();
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_HyperFile_GetDocument(void * jarg1) {
+  void * jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  BaseDocument *result = 0 ;
+  
+  arg1 = (HyperFile *)jarg1; 
+  result = (BaseDocument *)((HyperFile const *)arg1)->GetDocument();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_HyperFile_Alloc() {
+  void * jresult ;
+  HyperFile *result = 0 ;
+  
+  result = (HyperFile *)HyperFile::Alloc();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_HyperFile_Free(void * jarg1) {
+  HyperFile **arg1 = 0 ;
+  
+  arg1 = (HyperFile **)jarg1;
+  if (!arg1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "HyperFile *& type is null", 0);
+    return ;
+  } 
+  HyperFile::Free(*arg1);
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_Open(void * jarg1, int jarg2, void * jarg3, int jarg4, int jarg5) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  LONG arg2 ;
+  Filename *arg3 = 0 ;
+  FILEOPEN arg4 ;
+  FILEDIALOG arg5 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  arg2 = (LONG)jarg2; 
+  arg3 = (Filename *)jarg3;
+  if (!arg3) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  arg4 = (FILEOPEN)jarg4; 
+  arg5 = (FILEDIALOG)jarg5; 
+  result = (arg1)->Open(arg2,(Filename const &)*arg3,arg4,arg5);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_Close(void * jarg1) {
+  unsigned int jresult ;
+  HyperFile *arg1 = (HyperFile *) 0 ;
+  Bool result;
+  
+  arg1 = (HyperFile *)jarg1; 
+  result = (arg1)->Close();
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_ReadHyperFile(void * jarg1, void * jarg2, void * jarg3, int jarg4, void * jarg5) {
+  int jresult ;
+  BaseDocument *arg1 = (BaseDocument *) 0 ;
+  GeListNode *arg2 = (GeListNode *) 0 ;
+  Filename *arg3 = 0 ;
+  LONG arg4 ;
+  String *arg5 = (String *) 0 ;
+  FILEERROR result;
+  
+  arg1 = (BaseDocument *)jarg1; 
+  arg2 = (GeListNode *)jarg2; 
+  arg3 = (Filename *)jarg3;
+  if (!arg3) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  arg4 = (LONG)jarg4; 
+  arg5 = (String *)jarg5; 
+  result = (FILEERROR)ReadHyperFile(arg1,arg2,(Filename const &)*arg3,arg4,arg5);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_WriteHyperFile(void * jarg1, void * jarg2, void * jarg3, int jarg4) {
+  int jresult ;
+  BaseDocument *arg1 = (BaseDocument *) 0 ;
+  GeListNode *arg2 = (GeListNode *) 0 ;
+  Filename *arg3 = 0 ;
+  LONG arg4 ;
+  FILEERROR result;
+  
+  arg1 = (BaseDocument *)jarg1; 
+  arg2 = (GeListNode *)jarg2; 
+  arg3 = (Filename *)jarg3;
+  if (!arg3) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  arg4 = (LONG)jarg4; 
+  result = (FILEERROR)WriteHyperFile(arg1,arg2,(Filename const &)*arg3,arg4);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_GE_FKILL_DIRECTORY_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(1);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_GE_FKILL_RECURSIVE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_GE_FKILL_FORCE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(4);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_GE_FCOPY_OVERWRITE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(1);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_GE_FCOPY_DONTCOPYREADONLY_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_GE_FILE_ATTRIBUTE_READONLY_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(0x00000001);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_GE_FILE_ATTRIBUTE_HIDDEN_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(0x00000002);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_GE_FILE_ATTRIBUTE_LOCKED_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(0x00000010);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_GE_FILE_ATTRIBUTE_OWNER_R_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(0x00000100);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_GE_FILE_ATTRIBUTE_OWNER_W_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(0x00000200);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_GE_FILE_ATTRIBUTE_OWNER_X_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(0x00000400);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_GE_FILE_ATTRIBUTE_GROUP_R_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(0x00000800);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_GE_FILE_ATTRIBUTE_GROUP_W_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(0x00001000);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_GE_FILE_ATTRIBUTE_GROUP_X_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(0x00002000);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_GE_FILE_ATTRIBUTE_PUBLIC_R_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(0x00004000);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_GE_FILE_ATTRIBUTE_PUBLIC_W_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(0x00008000);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_GE_FILE_ATTRIBUTE_PUBLIC_X_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(0x00010000);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_GE_FILE_ATTRIBUTS_UNIX_MASK_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(0x0001ff00);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_GeFExist__SWIG_0(void * jarg1, unsigned int jarg2) {
+  unsigned int jresult ;
+  Filename *arg1 = 0 ;
+  Bool arg2 ;
+  Bool result;
+  
+  arg1 = (Filename *)jarg1;
+  if (!arg1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  arg2 = jarg2 ? true : false; 
+  result = GeFExist((Filename const &)*arg1,arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_GeFExist__SWIG_1(void * jarg1) {
+  unsigned int jresult ;
+  Filename *arg1 = 0 ;
+  Bool result;
+  
+  arg1 = (Filename *)jarg1;
+  if (!arg1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  result = GeFExist((Filename const &)*arg1);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_GeSearchFile(void * jarg1, void * jarg2, void * jarg3) {
+  unsigned int jresult ;
+  Filename *arg1 = 0 ;
+  Filename *arg2 = 0 ;
+  Filename *arg3 = (Filename *) 0 ;
+  Bool result;
+  
+  arg1 = (Filename *)jarg1;
+  if (!arg1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  arg2 = (Filename *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  arg3 = (Filename *)jarg3; 
+  result = GeSearchFile((Filename const &)*arg1,(Filename const &)*arg2,arg3);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_GeFKill__SWIG_0(void * jarg1, int jarg2) {
+  unsigned int jresult ;
+  Filename *arg1 = 0 ;
+  LONG arg2 ;
+  Bool result;
+  
+  arg1 = (Filename *)jarg1;
+  if (!arg1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  arg2 = (LONG)jarg2; 
+  result = GeFKill((Filename const &)*arg1,arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_GeFKill__SWIG_1(void * jarg1) {
+  unsigned int jresult ;
+  Filename *arg1 = 0 ;
+  Bool result;
+  
+  arg1 = (Filename *)jarg1;
+  if (!arg1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  result = GeFKill((Filename const &)*arg1);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_GeFCopyFile(void * jarg1, void * jarg2, int jarg3) {
+  unsigned int jresult ;
+  Filename *arg1 = 0 ;
+  Filename *arg2 = 0 ;
+  LONG arg3 ;
+  Bool result;
+  
+  arg1 = (Filename *)jarg1;
+  if (!arg1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  arg2 = (Filename *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  arg3 = (LONG)jarg3; 
+  result = GeFCopyFile((Filename const &)*arg1,(Filename const &)*arg2,arg3);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_GeFRename(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  Filename *arg1 = 0 ;
+  Filename *arg2 = 0 ;
+  Bool result;
+  
+  arg1 = (Filename *)jarg1;
+  if (!arg1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  arg2 = (Filename *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  result = GeFRename((Filename const &)*arg1,(Filename const &)*arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_GeFMove(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  Filename *arg1 = 0 ;
+  Filename *arg2 = 0 ;
+  Bool result;
+  
+  arg1 = (Filename *)jarg1;
+  if (!arg1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  arg2 = (Filename *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  result = GeFMove((Filename const &)*arg1,(Filename const &)*arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_GeFCreateDir(void * jarg1) {
+  unsigned int jresult ;
+  Filename *arg1 = 0 ;
+  Bool result;
+  
+  arg1 = (Filename *)jarg1;
+  if (!arg1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  result = GeFCreateDir((Filename const &)*arg1);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_GeFCreateDirRec(void * jarg1) {
+  unsigned int jresult ;
+  Filename *arg1 = 0 ;
+  Bool result;
+  
+  arg1 = (Filename *)jarg1;
+  if (!arg1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  result = GeFCreateDirRec((Filename const &)*arg1);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_GeExecuteFile(void * jarg1) {
+  unsigned int jresult ;
+  Filename *arg1 = 0 ;
+  Bool result;
+  
+  arg1 = (Filename *)jarg1;
+  if (!arg1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  result = GeExecuteFile((Filename const &)*arg1);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_GeExecuteProgram(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  Filename *arg1 = 0 ;
+  Filename *arg2 = 0 ;
+  Bool result;
+  
+  arg1 = (Filename *)jarg1;
+  if (!arg1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  arg2 = (Filename *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  result = GeExecuteProgram((Filename const &)*arg1,(Filename const &)*arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_GeExecuteProgramEx(void * jarg1, void * jarg2, int jarg3, void * jarg4, void * jarg5) {
+  unsigned int jresult ;
+  Filename *arg1 = 0 ;
+  String *arg2 = (String *) 0 ;
+  LONG arg3 ;
+  GeExecuteProgramExCallback arg4 = (GeExecuteProgramExCallback) 0 ;
+  void *arg5 = (void *) 0 ;
+  Bool result;
+  
+  arg1 = (Filename *)jarg1;
+  if (!arg1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  arg2 = (String *)jarg2; 
+  arg3 = (LONG)jarg3; 
+  arg4 = (GeExecuteProgramExCallback)jarg4; 
+  arg5 = (void *)jarg5; 
+  result = GeExecuteProgramEx((Filename const &)*arg1,(String const *)arg2,arg3,arg4,arg5);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_GeFGetDiskFreeSpace(void * jarg1, void * jarg2, void * jarg3, void * jarg4) {
+  unsigned int jresult ;
+  Filename *arg1 = 0 ;
+  LULONG *arg2 = 0 ;
+  LULONG *arg3 = 0 ;
+  LULONG *arg4 = 0 ;
+  Bool result;
+  
+  arg1 = (Filename *)jarg1;
+  if (!arg1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  arg2 = (LULONG *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "LULONG & type is null", 0);
+    return 0;
+  } 
+  arg3 = (LULONG *)jarg3;
+  if (!arg3) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "LULONG & type is null", 0);
+    return 0;
+  } 
+  arg4 = (LULONG *)jarg4;
+  if (!arg4) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "LULONG & type is null", 0);
+    return 0;
+  } 
+  result = GeFGetDiskFreeSpace((Filename const &)*arg1,*arg2,*arg3,*arg4);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_GeFGetAttributes(void * jarg1) {
+  void * jresult ;
+  Filename *arg1 = 0 ;
+  ULONG result;
+  
+  arg1 = (Filename *)jarg1;
+  if (!arg1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  result = GeFGetAttributes((Filename const &)*arg1);
+  jresult = new ULONG((const ULONG &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_GeFSetAttributes__SWIG_0(void * jarg1, void * jarg2, void * jarg3) {
+  unsigned int jresult ;
+  Filename *arg1 = 0 ;
+  ULONG arg2 ;
+  ULONG arg3 ;
+  ULONG *argp2 ;
+  ULONG *argp3 ;
+  Bool result;
+  
+  arg1 = (Filename *)jarg1;
+  if (!arg1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  argp2 = (ULONG *)jarg2; 
+  if (!argp2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null ULONG", 0);
+    return 0;
+  }
+  arg2 = *argp2; 
+  argp3 = (ULONG *)jarg3; 
+  if (!argp3) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null ULONG", 0);
+    return 0;
+  }
+  arg3 = *argp3; 
+  result = GeFSetAttributes((Filename const &)*arg1,arg2,arg3);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_GeFSetAttributes__SWIG_1(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  Filename *arg1 = 0 ;
+  ULONG arg2 ;
+  ULONG *argp2 ;
+  Bool result;
+  
+  arg1 = (Filename *)jarg1;
+  if (!arg1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  argp2 = (ULONG *)jarg2; 
+  if (!argp2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null ULONG", 0);
+    return 0;
+  }
+  arg2 = *argp2; 
+  result = GeFSetAttributes((Filename const &)*arg1,arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_GeGetStartupPath() {
+  void * jresult ;
+  Filename result;
+  
+  result = GeGetStartupPath();
+  jresult = new Filename((const Filename &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_GeGetStartupApplication() {
+  void * jresult ;
+  Filename result;
+  
+  result = GeGetStartupApplication();
+  jresult = new Filename((const Filename &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_GeGetStartupWritePath() {
+  void * jresult ;
+  Filename result;
+  
+  result = GeGetStartupWritePath();
+  jresult = new Filename((const Filename &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_GeGetPluginPath() {
+  void * jresult ;
+  Filename result;
+  
+  result = GeGetPluginPath();
+  jresult = new Filename((const Filename &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_C4D_PATH_PREFS_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(1);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_C4D_PATH_RESOURCE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_C4D_PATH_LIBRARY_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(3);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_C4D_PATH_LIBRARY_USER_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(4);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_C4D_PATH_ONLINE_HELP_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(5);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_C4D_PATH_DESKTOP_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(6);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_C4D_PATH_HOME_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(7);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_C4D_PATH_STARTUPWRITE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(8);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_C4D_PATH_MYDOCUMENTS_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(9);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_C4D_PATH_APPLICATION_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(10);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_GeGetC4DPath(int jarg1) {
+  void * jresult ;
+  LONG arg1 ;
+  Filename result;
+  
+  arg1 = (LONG)jarg1; 
+  result = GeGetC4DPath(arg1);
+  jresult = new Filename((const Filename &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_GeGetFileTime(void * jarg1, int jarg2, void * jarg3) {
+  unsigned int jresult ;
+  Filename *arg1 = 0 ;
+  LONG arg2 ;
+  LocalFileTime *arg3 = (LocalFileTime *) 0 ;
+  Bool result;
+  
+  arg1 = (Filename *)jarg1;
+  if (!arg1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  arg2 = (LONG)jarg2; 
+  arg3 = (LocalFileTime *)jarg3; 
+  result = GeGetFileTime((Filename const &)*arg1,arg2,arg3);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_GeSetFileTime(void * jarg1, int jarg2, void * jarg3) {
+  unsigned int jresult ;
+  Filename *arg1 = 0 ;
+  LONG arg2 ;
+  LocalFileTime *arg3 = (LocalFileTime *) 0 ;
+  Bool result;
+  
+  arg1 = (Filename *)jarg1;
+  if (!arg1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  arg2 = (LONG)jarg2; 
+  arg3 = (LocalFileTime *)jarg3; 
+  result = GeSetFileTime((Filename const &)*arg1,arg2,(LocalFileTime const *)arg3);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_GeGetCurrentTime(void * jarg1) {
+  LocalFileTime *arg1 = (LocalFileTime *) 0 ;
+  
+  arg1 = (LocalFileTime *)jarg1; 
+  GeGetCurrentTime(arg1);
+}
+
+
+SWIGEXPORT char * /* String_ctype */ SWIGSTDCALL CSharp_DateToString(void * jarg1, unsigned int jarg2) {
+  char * /* String_ctype */ jresult ;
+  LocalFileTime *arg1 = 0 ;
+  Bool arg2 ;
+  String result;
+  
+  arg1 = (LocalFileTime *)jarg1;
+  if (!arg1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "LocalFileTime const & type is null", 0);
+    return 0;
+  } 
+  arg2 = jarg2 ? true : false; 
+  result = DateToString((LocalFileTime const &)*arg1,arg2);
+  /* <String_out> */ 
+  jresult = SWIG_csharp_string_callback((&result)->GetCStringCopy()); 
+  /* </String_out> */
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_ShowInFinder(void * jarg1, unsigned int jarg2) {
+  unsigned int jresult ;
+  Filename *arg1 = 0 ;
+  Bool arg2 ;
+  Bool result;
+  
+  arg1 = (Filename *)jarg1;
+  if (!arg1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  arg2 = jarg2 ? true : false; 
+  result = ShowInFinder((Filename const &)*arg1,arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_RequestFileFromServer(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  Filename *arg1 = 0 ;
+  Filename *arg2 = 0 ;
+  Bool result;
+  
+  arg1 = (Filename *)jarg1;
+  if (!arg1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  arg2 = (Filename *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename & type is null", 0);
+    return 0;
+  } 
+  result = RequestFileFromServer((Filename const &)*arg1,*arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
 SWIGEXPORT int SWIGSTDCALL CSharp_ID_USERDATA_get() {
   int jresult ;
   int result;
@@ -23120,24 +28311,18 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BitmapLoaderPlugin_BmGetInformation(v
 }
 
 
-SWIGEXPORT int SWIGSTDCALL CSharp_BitmapLoaderPlugin_BmLoadAnimated(void * jarg1, void * jarg2, void * jarg3, void * jarg4, int jarg5) {
+SWIGEXPORT int SWIGSTDCALL CSharp_BitmapLoaderPlugin_BmLoadAnimated(void * jarg1, void * jarg2, int jarg3, void * jarg4, int jarg5) {
   int jresult ;
   BitmapLoaderPlugin *arg1 = (BitmapLoaderPlugin *) 0 ;
   BitmapLoaderAnimatedData *arg2 = (BitmapLoaderAnimatedData *) 0 ;
   BITMAPLOADERACTION arg3 ;
   BaseBitmap *arg4 = (BaseBitmap *) 0 ;
   LONG arg5 ;
-  BITMAPLOADERACTION *argp3 ;
   IMAGERESULT result;
   
   arg1 = (BitmapLoaderPlugin *)jarg1; 
   arg2 = (BitmapLoaderAnimatedData *)jarg2; 
-  argp3 = (BITMAPLOADERACTION *)jarg3; 
-  if (!argp3) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null BITMAPLOADERACTION", 0);
-    return 0;
-  }
-  arg3 = *argp3; 
+  arg3 = (BITMAPLOADERACTION)jarg3; 
   arg4 = (BaseBitmap *)jarg4; 
   arg5 = (LONG)jarg5; 
   result = (IMAGERESULT)(arg1)->BmLoadAnimated(arg2,arg3,arg4,arg5);
@@ -34741,6 +39926,72 @@ SWIGEXPORT void SWIGSTDCALL CSharp_PolygonObject_Free(void * jarg1) {
     return ;
   } 
   PolygonObject::Free(*arg1);
+}
+
+
+SWIGEXPORT Vector_POD /* Vector_ctype_out */ SWIGSTDCALL CSharp_PolygonObject_GetPointAt(void * jarg1, int jarg2) {
+  Vector_POD /* Vector_ctype_out */ jresult ;
+  PolygonObject *arg1 = (PolygonObject *) 0 ;
+  LONG arg2 ;
+  Vector result;
+  
+  arg1 = (PolygonObject *)jarg1; 
+  arg2 = (LONG)jarg2; 
+  result = PolygonObject_GetPointAt(arg1,arg2);
+  
+  /* <Vector_out> */
+  jresult = *((Vector_POD *)&(result));
+  /* </Vector_out> */
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_PolygonObject_SetPointAt(void * jarg1, int jarg2, Vector /* Vector_ctype */ jarg3) {
+  PolygonObject *arg1 = (PolygonObject *) 0 ;
+  LONG arg2 ;
+  Vector arg3 ;
+  
+  arg1 = (PolygonObject *)jarg1; 
+  arg2 = (LONG)jarg2; 
+  
+  /* <Vector_in> */
+  arg3 = *((Vector *)&(jarg3));
+  /* </Vector_in> */
+  
+  PolygonObject_SetPointAt(arg1,arg2,arg3);
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_PolygonObject_GetPolygonAt(void * jarg1, int jarg2) {
+  void * jresult ;
+  PolygonObject *arg1 = (PolygonObject *) 0 ;
+  LONG arg2 ;
+  CPolygon result;
+  
+  arg1 = (PolygonObject *)jarg1; 
+  arg2 = (LONG)jarg2; 
+  result = PolygonObject_GetPolygonAt(arg1,arg2);
+  jresult = new CPolygon((const CPolygon &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_PolygonObject_SetPolygonAt(void * jarg1, int jarg2, void * jarg3) {
+  PolygonObject *arg1 = (PolygonObject *) 0 ;
+  LONG arg2 ;
+  CPolygon arg3 ;
+  CPolygon *argp3 ;
+  
+  arg1 = (PolygonObject *)jarg1; 
+  arg2 = (LONG)jarg2; 
+  argp3 = (CPolygon *)jarg3; 
+  if (!argp3) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null CPolygon", 0);
+    return ;
+  }
+  arg3 = *argp3; 
+  PolygonObject_SetPolygonAt(arg1,arg2,arg3);
 }
 
 
@@ -64442,6 +69693,1819 @@ SWIGEXPORT void SWIGSTDCALL CSharp_delete_OPERATORPLUGIN(void * jarg1) {
 }
 
 
+SWIGEXPORT int SWIGSTDCALL CSharp_PLUGINFLAG_BITMAPLOADER_MOVIE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)((1 << 6));
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_new_BitmapLoaderAnimatedData() {
+  void * jresult ;
+  BitmapLoaderAnimatedData *result = 0 ;
+  
+  result = (BitmapLoaderAnimatedData *)new BitmapLoaderAnimatedData();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BitmapLoaderAnimatedData_moviename_set(void * jarg1, void * jarg2) {
+  BitmapLoaderAnimatedData *arg1 = (BitmapLoaderAnimatedData *) 0 ;
+  Filename *arg2 = (Filename *) 0 ;
+  
+  arg1 = (BitmapLoaderAnimatedData *)jarg1; 
+  arg2 = (Filename *)jarg2; 
+  if (arg1) (arg1)->moviename = *arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BitmapLoaderAnimatedData_moviename_get(void * jarg1) {
+  void * jresult ;
+  BitmapLoaderAnimatedData *arg1 = (BitmapLoaderAnimatedData *) 0 ;
+  Filename *result = 0 ;
+  
+  arg1 = (BitmapLoaderAnimatedData *)jarg1; 
+  result = (Filename *)& ((arg1)->moviename);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BitmapLoaderAnimatedData_moviedata_set(void * jarg1, void * jarg2) {
+  BitmapLoaderAnimatedData *arg1 = (BitmapLoaderAnimatedData *) 0 ;
+  void **arg2 ;
+  
+  arg1 = (BitmapLoaderAnimatedData *)jarg1; 
+  arg2 = (void **)jarg2; 
+  {
+    size_t ii;
+    void * *b = (void * *) arg1->moviedata;
+    for (ii = 0; ii < (size_t)16; ii++) b[ii] = *((void * *) arg2 + ii);
+  }
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BitmapLoaderAnimatedData_moviedata_get(void * jarg1) {
+  void * jresult ;
+  BitmapLoaderAnimatedData *arg1 = (BitmapLoaderAnimatedData *) 0 ;
+  void **result = 0 ;
+  
+  arg1 = (BitmapLoaderAnimatedData *)jarg1; 
+  result = (void **)(void **) ((arg1)->moviedata);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_delete_BitmapLoaderAnimatedData(void * jarg1) {
+  BitmapLoaderAnimatedData *arg1 = (BitmapLoaderAnimatedData *) 0 ;
+  
+  arg1 = (BitmapLoaderAnimatedData *)jarg1; 
+  delete arg1;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BitmapLoaderData_Identify(void * jarg1, void * jarg2, void * jarg3, int jarg4) {
+  unsigned int jresult ;
+  BitmapLoaderData *arg1 = (BitmapLoaderData *) 0 ;
+  Filename *arg2 = 0 ;
+  UCHAR *arg3 = (UCHAR *) 0 ;
+  LONG arg4 ;
+  Bool result;
+  
+  arg1 = (BitmapLoaderData *)jarg1; 
+  arg2 = (Filename *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  arg3 = (UCHAR *)jarg3; 
+  arg4 = (LONG)jarg4; 
+  result = (arg1)->Identify((Filename const &)*arg2,arg3,arg4);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BitmapLoaderData_Load(void * jarg1, void * jarg2, void * jarg3, int jarg4) {
+  int jresult ;
+  BitmapLoaderData *arg1 = (BitmapLoaderData *) 0 ;
+  Filename *arg2 = 0 ;
+  BaseBitmap *arg3 = (BaseBitmap *) 0 ;
+  LONG arg4 ;
+  IMAGERESULT result;
+  
+  arg1 = (BitmapLoaderData *)jarg1; 
+  arg2 = (Filename *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  arg3 = (BaseBitmap *)jarg3; 
+  arg4 = (LONG)jarg4; 
+  result = (IMAGERESULT)(arg1)->Load((Filename const &)*arg2,arg3,arg4);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BitmapLoaderData_GetSaver(void * jarg1) {
+  int jresult ;
+  BitmapLoaderData *arg1 = (BitmapLoaderData *) 0 ;
+  LONG result;
+  
+  arg1 = (BitmapLoaderData *)jarg1; 
+  result = (arg1)->GetSaver();
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BitmapLoaderData_GetSaverSwigExplicitBitmapLoaderData(void * jarg1) {
+  int jresult ;
+  BitmapLoaderData *arg1 = (BitmapLoaderData *) 0 ;
+  LONG result;
+  
+  arg1 = (BitmapLoaderData *)jarg1; 
+  result = (arg1)->BitmapLoaderData::GetSaver();
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BitmapLoaderData_GetInformation(void * jarg1, void * jarg2, void * jarg3, void * jarg4) {
+  unsigned int jresult ;
+  BitmapLoaderData *arg1 = (BitmapLoaderData *) 0 ;
+  Filename *arg2 = 0 ;
+  LONG *arg3 = (LONG *) 0 ;
+  Real *arg4 = (Real *) 0 ;
+  Bool result;
+  
+  arg1 = (BitmapLoaderData *)jarg1; 
+  arg2 = (Filename *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  arg3 = (LONG *)jarg3; 
+  arg4 = (Real *)jarg4; 
+  result = (arg1)->GetInformation((Filename const &)*arg2,arg3,arg4);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BitmapLoaderData_GetInformationSwigExplicitBitmapLoaderData(void * jarg1, void * jarg2, void * jarg3, void * jarg4) {
+  unsigned int jresult ;
+  BitmapLoaderData *arg1 = (BitmapLoaderData *) 0 ;
+  Filename *arg2 = 0 ;
+  LONG *arg3 = (LONG *) 0 ;
+  Real *arg4 = (Real *) 0 ;
+  Bool result;
+  
+  arg1 = (BitmapLoaderData *)jarg1; 
+  arg2 = (Filename *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  arg3 = (LONG *)jarg3; 
+  arg4 = (Real *)jarg4; 
+  result = (arg1)->BitmapLoaderData::GetInformation((Filename const &)*arg2,arg3,arg4);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BitmapLoaderData_LoadAnimated(void * jarg1, void * jarg2, int jarg3, void * jarg4, int jarg5) {
+  int jresult ;
+  BitmapLoaderData *arg1 = (BitmapLoaderData *) 0 ;
+  BitmapLoaderAnimatedData *arg2 = (BitmapLoaderAnimatedData *) 0 ;
+  BITMAPLOADERACTION arg3 ;
+  BaseBitmap *arg4 = (BaseBitmap *) 0 ;
+  LONG arg5 ;
+  IMAGERESULT result;
+  
+  arg1 = (BitmapLoaderData *)jarg1; 
+  arg2 = (BitmapLoaderAnimatedData *)jarg2; 
+  arg3 = (BITMAPLOADERACTION)jarg3; 
+  arg4 = (BaseBitmap *)jarg4; 
+  arg5 = (LONG)jarg5; 
+  result = (IMAGERESULT)(arg1)->LoadAnimated(arg2,arg3,arg4,arg5);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BitmapLoaderData_LoadAnimatedSwigExplicitBitmapLoaderData(void * jarg1, void * jarg2, int jarg3, void * jarg4, int jarg5) {
+  int jresult ;
+  BitmapLoaderData *arg1 = (BitmapLoaderData *) 0 ;
+  BitmapLoaderAnimatedData *arg2 = (BitmapLoaderAnimatedData *) 0 ;
+  BITMAPLOADERACTION arg3 ;
+  BaseBitmap *arg4 = (BaseBitmap *) 0 ;
+  LONG arg5 ;
+  IMAGERESULT result;
+  
+  arg1 = (BitmapLoaderData *)jarg1; 
+  arg2 = (BitmapLoaderAnimatedData *)jarg2; 
+  arg3 = (BITMAPLOADERACTION)jarg3; 
+  arg4 = (BaseBitmap *)jarg4; 
+  arg5 = (LONG)jarg5; 
+  result = (IMAGERESULT)(arg1)->BitmapLoaderData::LoadAnimated(arg2,arg3,arg4,arg5);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BitmapLoaderData_ExtractSound(void * jarg1, void * jarg2, void * jarg3) {
+  int jresult ;
+  BitmapLoaderData *arg1 = (BitmapLoaderData *) 0 ;
+  BitmapLoaderAnimatedData *arg2 = (BitmapLoaderAnimatedData *) 0 ;
+  BaseSound *arg3 = (BaseSound *) 0 ;
+  IMAGERESULT result;
+  
+  arg1 = (BitmapLoaderData *)jarg1; 
+  arg2 = (BitmapLoaderAnimatedData *)jarg2; 
+  arg3 = (BaseSound *)jarg3; 
+  result = (IMAGERESULT)(arg1)->ExtractSound(arg2,arg3);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BitmapLoaderData_ExtractSoundSwigExplicitBitmapLoaderData(void * jarg1, void * jarg2, void * jarg3) {
+  int jresult ;
+  BitmapLoaderData *arg1 = (BitmapLoaderData *) 0 ;
+  BitmapLoaderAnimatedData *arg2 = (BitmapLoaderAnimatedData *) 0 ;
+  BaseSound *arg3 = (BaseSound *) 0 ;
+  IMAGERESULT result;
+  
+  arg1 = (BitmapLoaderData *)jarg1; 
+  arg2 = (BitmapLoaderAnimatedData *)jarg2; 
+  arg3 = (BaseSound *)jarg3; 
+  result = (IMAGERESULT)(arg1)->BitmapLoaderData::ExtractSound(arg2,arg3);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BitmapLoaderData_HasSound(void * jarg1, void * jarg2) {
+  int jresult ;
+  BitmapLoaderData *arg1 = (BitmapLoaderData *) 0 ;
+  BitmapLoaderAnimatedData *arg2 = (BitmapLoaderAnimatedData *) 0 ;
+  IMAGERESULT result;
+  
+  arg1 = (BitmapLoaderData *)jarg1; 
+  arg2 = (BitmapLoaderAnimatedData *)jarg2; 
+  result = (IMAGERESULT)(arg1)->HasSound(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BitmapLoaderData_HasSoundSwigExplicitBitmapLoaderData(void * jarg1, void * jarg2) {
+  int jresult ;
+  BitmapLoaderData *arg1 = (BitmapLoaderData *) 0 ;
+  BitmapLoaderAnimatedData *arg2 = (BitmapLoaderAnimatedData *) 0 ;
+  IMAGERESULT result;
+  
+  arg1 = (BitmapLoaderData *)jarg1; 
+  arg2 = (BitmapLoaderAnimatedData *)jarg2; 
+  result = (IMAGERESULT)(arg1)->BitmapLoaderData::HasSound(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_new_BitmapLoaderData() {
+  void * jresult ;
+  BitmapLoaderData *result = 0 ;
+  
+  result = (BitmapLoaderData *)new SwigDirector_BitmapLoaderData();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_delete_BitmapLoaderData(void * jarg1) {
+  BitmapLoaderData *arg1 = (BitmapLoaderData *) 0 ;
+  
+  arg1 = (BitmapLoaderData *)jarg1; 
+  delete arg1;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BitmapLoaderData_director_connect(void *objarg, SwigDirector_BitmapLoaderData::SWIG_Callback0_t callback0, SwigDirector_BitmapLoaderData::SWIG_Callback1_t callback1, SwigDirector_BitmapLoaderData::SWIG_Callback2_t callback2, SwigDirector_BitmapLoaderData::SWIG_Callback3_t callback3, SwigDirector_BitmapLoaderData::SWIG_Callback4_t callback4, SwigDirector_BitmapLoaderData::SWIG_Callback5_t callback5, SwigDirector_BitmapLoaderData::SWIG_Callback6_t callback6) {
+  BitmapLoaderData *obj = (BitmapLoaderData *)objarg;
+  SwigDirector_BitmapLoaderData *director = dynamic_cast<SwigDirector_BitmapLoaderData *>(obj);
+  if (director) {
+    director->swig_connect_director(callback0, callback1, callback2, callback3, callback4, callback5, callback6);
+  }
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_PLUGINFLAG_BITMAPSAVER_SUPPORT_8BIT_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)((1 << 1));
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_PLUGINFLAG_BITMAPSAVER_SUPPORT_16BIT_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)((1 << 2));
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_PLUGINFLAG_BITMAPSAVER_SUPPORT_32BIT_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)((1 << 0));
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_PLUGINFLAG_BITMAPSAVER_SUPPORT_8BIT_LAYERS_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)((1 << 3));
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_PLUGINFLAG_BITMAPSAVER_SUPPORT_16BIT_LAYERS_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)((1 << 4));
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_PLUGINFLAG_BITMAPSAVER_SUPPORT_32BIT_LAYERS_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)((1 << 5));
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_PLUGINFLAG_BITMAPSAVER_MOVIE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)((1 << 6));
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_PLUGINFLAG_BITMAPSAVER_SUPPORT_COLORPROFILES_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)((1 << 7));
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_PLUGINFLAG_BITMAPSAVER_ALLOWOPTIONS_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)((1 << 27));
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_PLUGINFLAG_BITMAPSAVER_FORCESUFFIX_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)((1 << 26));
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BitmapSaverData_Save(void * jarg1, void * jarg2, void * jarg3, void * jarg4, int jarg5) {
+  int jresult ;
+  BitmapSaverData *arg1 = (BitmapSaverData *) 0 ;
+  Filename *arg2 = 0 ;
+  BaseBitmap *arg3 = (BaseBitmap *) 0 ;
+  BaseContainer *arg4 = (BaseContainer *) 0 ;
+  SAVEBIT arg5 ;
+  IMAGERESULT result;
+  
+  arg1 = (BitmapSaverData *)jarg1; 
+  arg2 = (Filename *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  arg3 = (BaseBitmap *)jarg3; 
+  arg4 = (BaseContainer *)jarg4; 
+  arg5 = (SAVEBIT)jarg5; 
+  result = (IMAGERESULT)(arg1)->Save((Filename const &)*arg2,arg3,arg4,arg5);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BitmapSaverData_SaveSwigExplicitBitmapSaverData(void * jarg1, void * jarg2, void * jarg3, void * jarg4, int jarg5) {
+  int jresult ;
+  BitmapSaverData *arg1 = (BitmapSaverData *) 0 ;
+  Filename *arg2 = 0 ;
+  BaseBitmap *arg3 = (BaseBitmap *) 0 ;
+  BaseContainer *arg4 = (BaseContainer *) 0 ;
+  SAVEBIT arg5 ;
+  IMAGERESULT result;
+  
+  arg1 = (BitmapSaverData *)jarg1; 
+  arg2 = (Filename *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  arg3 = (BaseBitmap *)jarg3; 
+  arg4 = (BaseContainer *)jarg4; 
+  arg5 = (SAVEBIT)jarg5; 
+  result = (IMAGERESULT)(arg1)->BitmapSaverData::Save((Filename const &)*arg2,arg3,arg4,arg5);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BitmapSaverData_Edit(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  BitmapSaverData *arg1 = (BitmapSaverData *) 0 ;
+  BaseContainer *arg2 = (BaseContainer *) 0 ;
+  Bool result;
+  
+  arg1 = (BitmapSaverData *)jarg1; 
+  arg2 = (BaseContainer *)jarg2; 
+  result = (arg1)->Edit(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BitmapSaverData_EditSwigExplicitBitmapSaverData(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  BitmapSaverData *arg1 = (BitmapSaverData *) 0 ;
+  BaseContainer *arg2 = (BaseContainer *) 0 ;
+  Bool result;
+  
+  arg1 = (BitmapSaverData *)jarg1; 
+  arg2 = (BaseContainer *)jarg2; 
+  result = (arg1)->BitmapSaverData::Edit(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BitmapSaverData_GetMaxAlphas(void * jarg1, void * jarg2) {
+  int jresult ;
+  BitmapSaverData *arg1 = (BitmapSaverData *) 0 ;
+  BaseContainer *arg2 = (BaseContainer *) 0 ;
+  LONG result;
+  
+  arg1 = (BitmapSaverData *)jarg1; 
+  arg2 = (BaseContainer *)jarg2; 
+  result = (arg1)->GetMaxAlphas(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BitmapSaverData_GetMaxAlphasSwigExplicitBitmapSaverData(void * jarg1, void * jarg2) {
+  int jresult ;
+  BitmapSaverData *arg1 = (BitmapSaverData *) 0 ;
+  BaseContainer *arg2 = (BaseContainer *) 0 ;
+  LONG result;
+  
+  arg1 = (BitmapSaverData *)jarg1; 
+  arg2 = (BaseContainer *)jarg2; 
+  result = (arg1)->BitmapSaverData::GetMaxAlphas(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BitmapSaverData_GetMaxResolution(void * jarg1, unsigned int jarg2) {
+  int jresult ;
+  BitmapSaverData *arg1 = (BitmapSaverData *) 0 ;
+  Bool arg2 ;
+  LONG result;
+  
+  arg1 = (BitmapSaverData *)jarg1; 
+  arg2 = jarg2 ? true : false; 
+  result = (arg1)->GetMaxResolution(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BitmapSaverData_GetMaxResolutionSwigExplicitBitmapSaverData(void * jarg1, unsigned int jarg2) {
+  int jresult ;
+  BitmapSaverData *arg1 = (BitmapSaverData *) 0 ;
+  Bool arg2 ;
+  LONG result;
+  
+  arg1 = (BitmapSaverData *)jarg1; 
+  arg2 = jarg2 ? true : false; 
+  result = (arg1)->BitmapSaverData::GetMaxResolution(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BitmapSaverData_Open(void * jarg1, void * jarg2, void * jarg3, void * jarg4, void * jarg5, int jarg6, int jarg7) {
+  int jresult ;
+  BitmapSaverData *arg1 = (BitmapSaverData *) 0 ;
+  PluginMovieData **arg2 = 0 ;
+  Filename *arg3 = 0 ;
+  BaseBitmap *arg4 = (BaseBitmap *) 0 ;
+  BaseContainer *arg5 = (BaseContainer *) 0 ;
+  SAVEBIT arg6 ;
+  LONG arg7 ;
+  IMAGERESULT result;
+  
+  arg1 = (BitmapSaverData *)jarg1; 
+  arg2 = (PluginMovieData **)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "PluginMovieData *& type is null", 0);
+    return 0;
+  } 
+  arg3 = (Filename *)jarg3;
+  if (!arg3) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  arg4 = (BaseBitmap *)jarg4; 
+  arg5 = (BaseContainer *)jarg5; 
+  arg6 = (SAVEBIT)jarg6; 
+  arg7 = (LONG)jarg7; 
+  result = (IMAGERESULT)(arg1)->Open(*arg2,(Filename const &)*arg3,arg4,arg5,arg6,arg7);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BitmapSaverData_OpenSwigExplicitBitmapSaverData(void * jarg1, void * jarg2, void * jarg3, void * jarg4, void * jarg5, int jarg6, int jarg7) {
+  int jresult ;
+  BitmapSaverData *arg1 = (BitmapSaverData *) 0 ;
+  PluginMovieData **arg2 = 0 ;
+  Filename *arg3 = 0 ;
+  BaseBitmap *arg4 = (BaseBitmap *) 0 ;
+  BaseContainer *arg5 = (BaseContainer *) 0 ;
+  SAVEBIT arg6 ;
+  LONG arg7 ;
+  IMAGERESULT result;
+  
+  arg1 = (BitmapSaverData *)jarg1; 
+  arg2 = (PluginMovieData **)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "PluginMovieData *& type is null", 0);
+    return 0;
+  } 
+  arg3 = (Filename *)jarg3;
+  if (!arg3) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  arg4 = (BaseBitmap *)jarg4; 
+  arg5 = (BaseContainer *)jarg5; 
+  arg6 = (SAVEBIT)jarg6; 
+  arg7 = (LONG)jarg7; 
+  result = (IMAGERESULT)(arg1)->BitmapSaverData::Open(*arg2,(Filename const &)*arg3,arg4,arg5,arg6,arg7);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BitmapSaverData_Write(void * jarg1, void * jarg2, void * jarg3) {
+  int jresult ;
+  BitmapSaverData *arg1 = (BitmapSaverData *) 0 ;
+  PluginMovieData *arg2 = (PluginMovieData *) 0 ;
+  BaseBitmap *arg3 = (BaseBitmap *) 0 ;
+  IMAGERESULT result;
+  
+  arg1 = (BitmapSaverData *)jarg1; 
+  arg2 = (PluginMovieData *)jarg2; 
+  arg3 = (BaseBitmap *)jarg3; 
+  result = (IMAGERESULT)(arg1)->Write(arg2,arg3);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BitmapSaverData_WriteSwigExplicitBitmapSaverData(void * jarg1, void * jarg2, void * jarg3) {
+  int jresult ;
+  BitmapSaverData *arg1 = (BitmapSaverData *) 0 ;
+  PluginMovieData *arg2 = (PluginMovieData *) 0 ;
+  BaseBitmap *arg3 = (BaseBitmap *) 0 ;
+  IMAGERESULT result;
+  
+  arg1 = (BitmapSaverData *)jarg1; 
+  arg2 = (PluginMovieData *)jarg2; 
+  arg3 = (BaseBitmap *)jarg3; 
+  result = (IMAGERESULT)(arg1)->BitmapSaverData::Write(arg2,arg3);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BitmapSaverData_Close(void * jarg1, void * jarg2) {
+  BitmapSaverData *arg1 = (BitmapSaverData *) 0 ;
+  PluginMovieData **arg2 = 0 ;
+  
+  arg1 = (BitmapSaverData *)jarg1; 
+  arg2 = (PluginMovieData **)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "PluginMovieData *& type is null", 0);
+    return ;
+  } 
+  (arg1)->Close(*arg2);
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BitmapSaverData_CloseSwigExplicitBitmapSaverData(void * jarg1, void * jarg2) {
+  BitmapSaverData *arg1 = (BitmapSaverData *) 0 ;
+  PluginMovieData **arg2 = 0 ;
+  
+  arg1 = (BitmapSaverData *)jarg1; 
+  arg2 = (PluginMovieData **)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "PluginMovieData *& type is null", 0);
+    return ;
+  } 
+  (arg1)->BitmapSaverData::Close(*arg2);
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BitmapSaverData_AddSound(void * jarg1, void * jarg2, void * jarg3) {
+  int jresult ;
+  BitmapSaverData *arg1 = (BitmapSaverData *) 0 ;
+  PluginMovieData *arg2 = (PluginMovieData *) 0 ;
+  BaseSound *arg3 = (BaseSound *) 0 ;
+  IMAGERESULT result;
+  
+  arg1 = (BitmapSaverData *)jarg1; 
+  arg2 = (PluginMovieData *)jarg2; 
+  arg3 = (BaseSound *)jarg3; 
+  result = (IMAGERESULT)(arg1)->AddSound(arg2,arg3);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BitmapSaverData_AddSoundSwigExplicitBitmapSaverData(void * jarg1, void * jarg2, void * jarg3) {
+  int jresult ;
+  BitmapSaverData *arg1 = (BitmapSaverData *) 0 ;
+  PluginMovieData *arg2 = (PluginMovieData *) 0 ;
+  BaseSound *arg3 = (BaseSound *) 0 ;
+  IMAGERESULT result;
+  
+  arg1 = (BitmapSaverData *)jarg1; 
+  arg2 = (PluginMovieData *)jarg2; 
+  arg3 = (BaseSound *)jarg3; 
+  result = (IMAGERESULT)(arg1)->BitmapSaverData::AddSound(arg2,arg3);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_new_BitmapSaverData() {
+  void * jresult ;
+  BitmapSaverData *result = 0 ;
+  
+  result = (BitmapSaverData *)new SwigDirector_BitmapSaverData();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_delete_BitmapSaverData(void * jarg1) {
+  BitmapSaverData *arg1 = (BitmapSaverData *) 0 ;
+  
+  arg1 = (BitmapSaverData *)jarg1; 
+  delete arg1;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BitmapSaverData_director_connect(void *objarg, SwigDirector_BitmapSaverData::SWIG_Callback0_t callback0, SwigDirector_BitmapSaverData::SWIG_Callback1_t callback1, SwigDirector_BitmapSaverData::SWIG_Callback2_t callback2, SwigDirector_BitmapSaverData::SWIG_Callback3_t callback3, SwigDirector_BitmapSaverData::SWIG_Callback4_t callback4, SwigDirector_BitmapSaverData::SWIG_Callback5_t callback5, SwigDirector_BitmapSaverData::SWIG_Callback6_t callback6, SwigDirector_BitmapSaverData::SWIG_Callback7_t callback7) {
+  BitmapSaverData *obj = (BitmapSaverData *)objarg;
+  SwigDirector_BitmapSaverData *director = dynamic_cast<SwigDirector_BitmapSaverData *>(obj);
+  if (director) {
+    director->swig_connect_director(callback0, callback1, callback2, callback3, callback4, callback5, callback6, callback7);
+  }
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_PLUGINFLAG_SCENELOADER_MERGEORIGINAL_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)((1 << 26));
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_PLUGINFLAG_SCENEFILTER_DIALOGCONTROL_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)((1 << 27));
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_SceneLoaderData_Identify(void * jarg1, void * jarg2, void * jarg3, void * jarg4, int jarg5) {
+  unsigned int jresult ;
+  SceneLoaderData *arg1 = (SceneLoaderData *) 0 ;
+  BaseSceneLoader *arg2 = (BaseSceneLoader *) 0 ;
+  Filename *arg3 = 0 ;
+  UCHAR *arg4 = (UCHAR *) 0 ;
+  LONG arg5 ;
+  Bool result;
+  
+  arg1 = (SceneLoaderData *)jarg1; 
+  arg2 = (BaseSceneLoader *)jarg2; 
+  arg3 = (Filename *)jarg3;
+  if (!arg3) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  arg4 = (UCHAR *)jarg4; 
+  arg5 = (LONG)jarg5; 
+  result = (arg1)->Identify(arg2,(Filename const &)*arg3,arg4,arg5);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_SceneLoaderData_Load(void * jarg1, void * jarg2, void * jarg3, void * jarg4, int jarg5, void * jarg6, void * jarg7) {
+  int jresult ;
+  SceneLoaderData *arg1 = (SceneLoaderData *) 0 ;
+  BaseSceneLoader *arg2 = (BaseSceneLoader *) 0 ;
+  Filename *arg3 = 0 ;
+  BaseDocument *arg4 = (BaseDocument *) 0 ;
+  SCENEFILTER arg5 ;
+  String *arg6 = (String *) 0 ;
+  BaseThread *arg7 = (BaseThread *) 0 ;
+  FILEERROR result;
+  
+  arg1 = (SceneLoaderData *)jarg1; 
+  arg2 = (BaseSceneLoader *)jarg2; 
+  arg3 = (Filename *)jarg3;
+  if (!arg3) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  arg4 = (BaseDocument *)jarg4; 
+  arg5 = (SCENEFILTER)jarg5; 
+  arg6 = (String *)jarg6; 
+  arg7 = (BaseThread *)jarg7; 
+  result = (FILEERROR)(arg1)->Load(arg2,(Filename const &)*arg3,arg4,arg5,arg6,arg7);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_new_SceneLoaderData() {
+  void * jresult ;
+  SceneLoaderData *result = 0 ;
+  
+  result = (SceneLoaderData *)new SwigDirector_SceneLoaderData();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_delete_SceneLoaderData(void * jarg1) {
+  SceneLoaderData *arg1 = (SceneLoaderData *) 0 ;
+  
+  arg1 = (SceneLoaderData *)jarg1; 
+  delete arg1;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_SceneLoaderData_director_connect(void *objarg, SwigDirector_SceneLoaderData::SWIG_Callback0_t callback0, SwigDirector_SceneLoaderData::SWIG_Callback1_t callback1, SwigDirector_SceneLoaderData::SWIG_Callback2_t callback2, SwigDirector_SceneLoaderData::SWIG_Callback3_t callback3, SwigDirector_SceneLoaderData::SWIG_Callback4_t callback4, SwigDirector_SceneLoaderData::SWIG_Callback5_t callback5, SwigDirector_SceneLoaderData::SWIG_Callback6_t callback6, SwigDirector_SceneLoaderData::SWIG_Callback7_t callback7, SwigDirector_SceneLoaderData::SWIG_Callback8_t callback8, SwigDirector_SceneLoaderData::SWIG_Callback9_t callback9, SwigDirector_SceneLoaderData::SWIG_Callback10_t callback10, SwigDirector_SceneLoaderData::SWIG_Callback11_t callback11, SwigDirector_SceneLoaderData::SWIG_Callback12_t callback12, SwigDirector_SceneLoaderData::SWIG_Callback13_t callback13, SwigDirector_SceneLoaderData::SWIG_Callback14_t callback14, SwigDirector_SceneLoaderData::SWIG_Callback15_t callback15, SwigDirector_SceneLoaderData::SWIG_Callback16_t callback16, SwigDirector_SceneLoaderData::SWIG_Callback17_t callback17) {
+  SceneLoaderData *obj = (SceneLoaderData *)objarg;
+  SwigDirector_SceneLoaderData *director = dynamic_cast<SwigDirector_SceneLoaderData *>(obj);
+  if (director) {
+    director->swig_connect_director(callback0, callback1, callback2, callback3, callback4, callback5, callback6, callback7, callback8, callback9, callback10, callback11, callback12, callback13, callback14, callback15, callback16, callback17);
+  }
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_SceneSaverData_Save(void * jarg1, void * jarg2, void * jarg3, void * jarg4, int jarg5) {
+  int jresult ;
+  SceneSaverData *arg1 = (SceneSaverData *) 0 ;
+  BaseSceneSaver *arg2 = (BaseSceneSaver *) 0 ;
+  Filename *arg3 = 0 ;
+  BaseDocument *arg4 = (BaseDocument *) 0 ;
+  SCENEFILTER arg5 ;
+  FILEERROR result;
+  
+  arg1 = (SceneSaverData *)jarg1; 
+  arg2 = (BaseSceneSaver *)jarg2; 
+  arg3 = (Filename *)jarg3;
+  if (!arg3) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  arg4 = (BaseDocument *)jarg4; 
+  arg5 = (SCENEFILTER)jarg5; 
+  result = (FILEERROR)(arg1)->Save(arg2,(Filename const &)*arg3,arg4,arg5);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_new_SceneSaverData() {
+  void * jresult ;
+  SceneSaverData *result = 0 ;
+  
+  result = (SceneSaverData *)new SwigDirector_SceneSaverData();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_delete_SceneSaverData(void * jarg1) {
+  SceneSaverData *arg1 = (SceneSaverData *) 0 ;
+  
+  arg1 = (SceneSaverData *)jarg1; 
+  delete arg1;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_SceneSaverData_director_connect(void *objarg, SwigDirector_SceneSaverData::SWIG_Callback0_t callback0, SwigDirector_SceneSaverData::SWIG_Callback1_t callback1, SwigDirector_SceneSaverData::SWIG_Callback2_t callback2, SwigDirector_SceneSaverData::SWIG_Callback3_t callback3, SwigDirector_SceneSaverData::SWIG_Callback4_t callback4, SwigDirector_SceneSaverData::SWIG_Callback5_t callback5, SwigDirector_SceneSaverData::SWIG_Callback6_t callback6, SwigDirector_SceneSaverData::SWIG_Callback7_t callback7, SwigDirector_SceneSaverData::SWIG_Callback8_t callback8, SwigDirector_SceneSaverData::SWIG_Callback9_t callback9, SwigDirector_SceneSaverData::SWIG_Callback10_t callback10, SwigDirector_SceneSaverData::SWIG_Callback11_t callback11, SwigDirector_SceneSaverData::SWIG_Callback12_t callback12, SwigDirector_SceneSaverData::SWIG_Callback13_t callback13, SwigDirector_SceneSaverData::SWIG_Callback14_t callback14, SwigDirector_SceneSaverData::SWIG_Callback15_t callback15, SwigDirector_SceneSaverData::SWIG_Callback16_t callback16) {
+  SceneSaverData *obj = (SceneSaverData *)objarg;
+  SwigDirector_SceneSaverData *director = dynamic_cast<SwigDirector_SceneSaverData *>(obj);
+  if (director) {
+    director->swig_connect_director(callback0, callback1, callback2, callback3, callback4, callback5, callback6, callback7, callback8, callback9, callback10, callback11, callback12, callback13, callback14, callback15, callback16);
+  }
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_RegisterBitmapLoaderPlugin(int jarg1, char * /* constString&_ctype */ jarg2, int jarg3, void * jarg4) {
+  unsigned int jresult ;
+  LONG arg1 ;
+  String *arg2 = 0 ;
+  LONG arg3 ;
+  BitmapLoaderData *arg4 = (BitmapLoaderData *) 0 ;
+  Bool result;
+  
+  arg1 = (LONG)jarg1; 
+  if (!jarg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return 0;
+  }
+  String arg2_str(jarg2);
+  arg2 = &arg2_str; 
+  arg3 = (LONG)jarg3; 
+  arg4 = (BitmapLoaderData *)jarg4; 
+  result = RegisterBitmapLoaderPlugin(arg1,(String const &)*arg2,arg3,arg4);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_RegisterBitmapSaverPlugin(int jarg1, char * /* constString&_ctype */ jarg2, int jarg3, void * jarg4, char * /* constString&_ctype */ jarg5) {
+  unsigned int jresult ;
+  LONG arg1 ;
+  String *arg2 = 0 ;
+  LONG arg3 ;
+  BitmapSaverData *arg4 = (BitmapSaverData *) 0 ;
+  String *arg5 = 0 ;
+  Bool result;
+  
+  arg1 = (LONG)jarg1; 
+  if (!jarg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return 0;
+  }
+  String arg2_str(jarg2);
+  arg2 = &arg2_str; 
+  arg3 = (LONG)jarg3; 
+  arg4 = (BitmapSaverData *)jarg4; 
+  if (!jarg5) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return 0;
+  }
+  String arg5_str(jarg5);
+  arg5 = &arg5_str; 
+  result = RegisterBitmapSaverPlugin(arg1,(String const &)*arg2,arg3,arg4,(String const &)*arg5);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_RegisterSceneLoaderPlugin__SWIG_0(int jarg1, char * /* constString&_ctype */ jarg2, int jarg3, void* /* DataAllocator*_ctype */ jarg4, char * /* constString&_ctype */ jarg5, void * jarg6) {
+  unsigned int jresult ;
+  LONG arg1 ;
+  String *arg2 = 0 ;
+  LONG arg3 ;
+  DataAllocator *arg4 = (DataAllocator *) 0 ;
+  String *arg5 = 0 ;
+  void *arg6 = (void *) 0 ;
+  Bool result;
+  
+  arg1 = (LONG)jarg1; 
+  if (!jarg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return 0;
+  }
+  String arg2_str(jarg2);
+  arg2 = &arg2_str; 
+  arg3 = (LONG)jarg3; 
+  arg4 = (DataAllocator*)jarg4; /* DataAllocator*_in */
+  if (!jarg5) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return 0;
+  }
+  String arg5_str(jarg5);
+  arg5 = &arg5_str; 
+  arg6 = (void *)jarg6; 
+  result = RegisterSceneLoaderPlugin(arg1,(String const &)*arg2,arg3,arg4,(String const &)*arg5,arg6);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_RegisterSceneLoaderPlugin__SWIG_1(int jarg1, char * /* constString&_ctype */ jarg2, int jarg3, void* /* DataAllocator*_ctype */ jarg4, char * /* constString&_ctype */ jarg5) {
+  unsigned int jresult ;
+  LONG arg1 ;
+  String *arg2 = 0 ;
+  LONG arg3 ;
+  DataAllocator *arg4 = (DataAllocator *) 0 ;
+  String *arg5 = 0 ;
+  Bool result;
+  
+  arg1 = (LONG)jarg1; 
+  if (!jarg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return 0;
+  }
+  String arg2_str(jarg2);
+  arg2 = &arg2_str; 
+  arg3 = (LONG)jarg3; 
+  arg4 = (DataAllocator*)jarg4; /* DataAllocator*_in */
+  if (!jarg5) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return 0;
+  }
+  String arg5_str(jarg5);
+  arg5 = &arg5_str; 
+  result = RegisterSceneLoaderPlugin(arg1,(String const &)*arg2,arg3,arg4,(String const &)*arg5);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_RegisterSceneSaverPlugin__SWIG_0(int jarg1, char * /* constString&_ctype */ jarg2, int jarg3, void* /* DataAllocator*_ctype */ jarg4, char * /* constString&_ctype */ jarg5, char * /* constString&_ctype */ jarg6, void * jarg7) {
+  unsigned int jresult ;
+  LONG arg1 ;
+  String *arg2 = 0 ;
+  LONG arg3 ;
+  DataAllocator *arg4 = (DataAllocator *) 0 ;
+  String *arg5 = 0 ;
+  String *arg6 = 0 ;
+  void *arg7 = (void *) 0 ;
+  Bool result;
+  
+  arg1 = (LONG)jarg1; 
+  if (!jarg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return 0;
+  }
+  String arg2_str(jarg2);
+  arg2 = &arg2_str; 
+  arg3 = (LONG)jarg3; 
+  arg4 = (DataAllocator*)jarg4; /* DataAllocator*_in */
+  if (!jarg5) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return 0;
+  }
+  String arg5_str(jarg5);
+  arg5 = &arg5_str; 
+  if (!jarg6) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return 0;
+  }
+  String arg6_str(jarg6);
+  arg6 = &arg6_str; 
+  arg7 = (void *)jarg7; 
+  result = RegisterSceneSaverPlugin(arg1,(String const &)*arg2,arg3,arg4,(String const &)*arg5,(String const &)*arg6,arg7);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_RegisterSceneSaverPlugin__SWIG_1(int jarg1, char * /* constString&_ctype */ jarg2, int jarg3, void* /* DataAllocator*_ctype */ jarg4, char * /* constString&_ctype */ jarg5, char * /* constString&_ctype */ jarg6) {
+  unsigned int jresult ;
+  LONG arg1 ;
+  String *arg2 = 0 ;
+  LONG arg3 ;
+  DataAllocator *arg4 = (DataAllocator *) 0 ;
+  String *arg5 = 0 ;
+  String *arg6 = 0 ;
+  Bool result;
+  
+  arg1 = (LONG)jarg1; 
+  if (!jarg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return 0;
+  }
+  String arg2_str(jarg2);
+  arg2 = &arg2_str; 
+  arg3 = (LONG)jarg3; 
+  arg4 = (DataAllocator*)jarg4; /* DataAllocator*_in */
+  if (!jarg5) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return 0;
+  }
+  String arg5_str(jarg5);
+  arg5 = &arg5_str; 
+  if (!jarg6) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return 0;
+  }
+  String arg6_str(jarg6);
+  arg6 = &arg6_str; 
+  result = RegisterSceneSaverPlugin(arg1,(String const &)*arg2,arg3,arg4,(String const &)*arg5,(String const &)*arg6);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BITMAPLOADERPLUGIN_Identify_set(void * jarg1, char * jarg2) {
+  BITMAPLOADERPLUGIN *arg1 = (BITMAPLOADERPLUGIN *) 0 ;
+  Bool (BitmapLoaderData::*arg2)(Filename const &,UCHAR *,LONG) ;
+  
+  arg1 = (BITMAPLOADERPLUGIN *)jarg1; 
+  
+  SWIG_UnpackData(jarg2, (void *)&arg2, sizeof(arg2));
+  
+  if (arg1) (arg1)->Identify = arg2;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_BITMAPLOADERPLUGIN_Identify_get(void * jarg1) {
+  char * jresult ;
+  BITMAPLOADERPLUGIN *arg1 = (BITMAPLOADERPLUGIN *) 0 ;
+  Bool (BitmapLoaderData::*result)(Filename const &,UCHAR *,LONG);
+  
+  arg1 = (BITMAPLOADERPLUGIN *)jarg1; 
+  result = (Bool (BitmapLoaderData::*)(Filename const &,UCHAR *,LONG)) ((arg1)->Identify);
+  
+  char buf[128];
+  char *data = SWIG_PackData(buf, (void *)&result, sizeof(result));
+  *data = '\0';
+  jresult = SWIG_csharp_string_callback(buf);
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BITMAPLOADERPLUGIN_Load_set(void * jarg1, char * jarg2) {
+  BITMAPLOADERPLUGIN *arg1 = (BITMAPLOADERPLUGIN *) 0 ;
+  IMAGERESULT (BitmapLoaderData::*arg2)(Filename const &,BaseBitmap *,LONG) ;
+  
+  arg1 = (BITMAPLOADERPLUGIN *)jarg1; 
+  
+  SWIG_UnpackData(jarg2, (void *)&arg2, sizeof(arg2));
+  
+  if (arg1) (arg1)->Load = arg2;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_BITMAPLOADERPLUGIN_Load_get(void * jarg1) {
+  char * jresult ;
+  BITMAPLOADERPLUGIN *arg1 = (BITMAPLOADERPLUGIN *) 0 ;
+  IMAGERESULT (BitmapLoaderData::*result)(Filename const &,BaseBitmap *,LONG);
+  
+  arg1 = (BITMAPLOADERPLUGIN *)jarg1; 
+  result = (IMAGERESULT (BitmapLoaderData::*)(Filename const &,BaseBitmap *,LONG)) ((arg1)->Load);
+  
+  char buf[128];
+  char *data = SWIG_PackData(buf, (void *)&result, sizeof(result));
+  *data = '\0';
+  jresult = SWIG_csharp_string_callback(buf);
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BITMAPLOADERPLUGIN_GetSaver_set(void * jarg1, char * jarg2) {
+  BITMAPLOADERPLUGIN *arg1 = (BITMAPLOADERPLUGIN *) 0 ;
+  LONG (BitmapLoaderData::*arg2)(void) ;
+  
+  arg1 = (BITMAPLOADERPLUGIN *)jarg1; 
+  
+  SWIG_UnpackData(jarg2, (void *)&arg2, sizeof(arg2));
+  
+  if (arg1) (arg1)->GetSaver = arg2;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_BITMAPLOADERPLUGIN_GetSaver_get(void * jarg1) {
+  char * jresult ;
+  BITMAPLOADERPLUGIN *arg1 = (BITMAPLOADERPLUGIN *) 0 ;
+  LONG (BitmapLoaderData::*result)(void);
+  
+  arg1 = (BITMAPLOADERPLUGIN *)jarg1; 
+  result = (LONG (BitmapLoaderData::*)(void)) ((arg1)->GetSaver);
+  
+  char buf[128];
+  char *data = SWIG_PackData(buf, (void *)&result, sizeof(result));
+  *data = '\0';
+  jresult = SWIG_csharp_string_callback(buf);
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BITMAPLOADERPLUGIN_GetInformation_set(void * jarg1, char * jarg2) {
+  BITMAPLOADERPLUGIN *arg1 = (BITMAPLOADERPLUGIN *) 0 ;
+  Bool (BitmapLoaderData::*arg2)(Filename const &,LONG *,Real *) ;
+  
+  arg1 = (BITMAPLOADERPLUGIN *)jarg1; 
+  
+  SWIG_UnpackData(jarg2, (void *)&arg2, sizeof(arg2));
+  
+  if (arg1) (arg1)->GetInformation = arg2;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_BITMAPLOADERPLUGIN_GetInformation_get(void * jarg1) {
+  char * jresult ;
+  BITMAPLOADERPLUGIN *arg1 = (BITMAPLOADERPLUGIN *) 0 ;
+  Bool (BitmapLoaderData::*result)(Filename const &,LONG *,Real *);
+  
+  arg1 = (BITMAPLOADERPLUGIN *)jarg1; 
+  result = (Bool (BitmapLoaderData::*)(Filename const &,LONG *,Real *)) ((arg1)->GetInformation);
+  
+  char buf[128];
+  char *data = SWIG_PackData(buf, (void *)&result, sizeof(result));
+  *data = '\0';
+  jresult = SWIG_csharp_string_callback(buf);
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BITMAPLOADERPLUGIN_LoadAnimated_set(void * jarg1, char * jarg2) {
+  BITMAPLOADERPLUGIN *arg1 = (BITMAPLOADERPLUGIN *) 0 ;
+  IMAGERESULT (BitmapLoaderData::*arg2)(BitmapLoaderAnimatedData *,BITMAPLOADERACTION,BaseBitmap *,LONG) ;
+  
+  arg1 = (BITMAPLOADERPLUGIN *)jarg1; 
+  
+  SWIG_UnpackData(jarg2, (void *)&arg2, sizeof(arg2));
+  
+  if (arg1) (arg1)->LoadAnimated = arg2;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_BITMAPLOADERPLUGIN_LoadAnimated_get(void * jarg1) {
+  char * jresult ;
+  BITMAPLOADERPLUGIN *arg1 = (BITMAPLOADERPLUGIN *) 0 ;
+  IMAGERESULT (BitmapLoaderData::*result)(BitmapLoaderAnimatedData *,BITMAPLOADERACTION,BaseBitmap *,LONG);
+  
+  arg1 = (BITMAPLOADERPLUGIN *)jarg1; 
+  result = (IMAGERESULT (BitmapLoaderData::*)(BitmapLoaderAnimatedData *,BITMAPLOADERACTION,BaseBitmap *,LONG)) ((arg1)->LoadAnimated);
+  
+  char buf[128];
+  char *data = SWIG_PackData(buf, (void *)&result, sizeof(result));
+  *data = '\0';
+  jresult = SWIG_csharp_string_callback(buf);
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BITMAPLOADERPLUGIN_ExtractSound_set(void * jarg1, char * jarg2) {
+  BITMAPLOADERPLUGIN *arg1 = (BITMAPLOADERPLUGIN *) 0 ;
+  IMAGERESULT (BitmapLoaderData::*arg2)(BitmapLoaderAnimatedData *,BaseSound *) ;
+  
+  arg1 = (BITMAPLOADERPLUGIN *)jarg1; 
+  
+  SWIG_UnpackData(jarg2, (void *)&arg2, sizeof(arg2));
+  
+  if (arg1) (arg1)->ExtractSound = arg2;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_BITMAPLOADERPLUGIN_ExtractSound_get(void * jarg1) {
+  char * jresult ;
+  BITMAPLOADERPLUGIN *arg1 = (BITMAPLOADERPLUGIN *) 0 ;
+  IMAGERESULT (BitmapLoaderData::*result)(BitmapLoaderAnimatedData *,BaseSound *);
+  
+  arg1 = (BITMAPLOADERPLUGIN *)jarg1; 
+  result = (IMAGERESULT (BitmapLoaderData::*)(BitmapLoaderAnimatedData *,BaseSound *)) ((arg1)->ExtractSound);
+  
+  char buf[128];
+  char *data = SWIG_PackData(buf, (void *)&result, sizeof(result));
+  *data = '\0';
+  jresult = SWIG_csharp_string_callback(buf);
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BITMAPLOADERPLUGIN_HasSound_set(void * jarg1, char * jarg2) {
+  BITMAPLOADERPLUGIN *arg1 = (BITMAPLOADERPLUGIN *) 0 ;
+  IMAGERESULT (BitmapLoaderData::*arg2)(BitmapLoaderAnimatedData *) ;
+  
+  arg1 = (BITMAPLOADERPLUGIN *)jarg1; 
+  
+  SWIG_UnpackData(jarg2, (void *)&arg2, sizeof(arg2));
+  
+  if (arg1) (arg1)->HasSound = arg2;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_BITMAPLOADERPLUGIN_HasSound_get(void * jarg1) {
+  char * jresult ;
+  BITMAPLOADERPLUGIN *arg1 = (BITMAPLOADERPLUGIN *) 0 ;
+  IMAGERESULT (BitmapLoaderData::*result)(BitmapLoaderAnimatedData *);
+  
+  arg1 = (BITMAPLOADERPLUGIN *)jarg1; 
+  result = (IMAGERESULT (BitmapLoaderData::*)(BitmapLoaderAnimatedData *)) ((arg1)->HasSound);
+  
+  char buf[128];
+  char *data = SWIG_PackData(buf, (void *)&result, sizeof(result));
+  *data = '\0';
+  jresult = SWIG_csharp_string_callback(buf);
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BITMAPLOADERPLUGIN_reserved_set(void * jarg1, void * jarg2) {
+  BITMAPLOADERPLUGIN *arg1 = (BITMAPLOADERPLUGIN *) 0 ;
+  void **arg2 ;
+  
+  arg1 = (BITMAPLOADERPLUGIN *)jarg1; 
+  arg2 = (void **)jarg2; 
+  {
+    size_t ii;
+    void * *b = (void * *) arg1->reserved;
+    for (ii = 0; ii < (size_t)(32-7) *C4DPL_MEMBERMULTIPLIER; ii++) b[ii] = *((void * *) arg2 + ii);
+  }
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BITMAPLOADERPLUGIN_reserved_get(void * jarg1) {
+  void * jresult ;
+  BITMAPLOADERPLUGIN *arg1 = (BITMAPLOADERPLUGIN *) 0 ;
+  void **result = 0 ;
+  
+  arg1 = (BITMAPLOADERPLUGIN *)jarg1; 
+  result = (void **)(void **) ((arg1)->reserved);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_new_BITMAPLOADERPLUGIN() {
+  void * jresult ;
+  BITMAPLOADERPLUGIN *result = 0 ;
+  
+  result = (BITMAPLOADERPLUGIN *)new BITMAPLOADERPLUGIN();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_delete_BITMAPLOADERPLUGIN(void * jarg1) {
+  BITMAPLOADERPLUGIN *arg1 = (BITMAPLOADERPLUGIN *) 0 ;
+  
+  arg1 = (BITMAPLOADERPLUGIN *)jarg1; 
+  delete arg1;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BITMAPSAVERPLUGIN_suffix_set(void * jarg1, void * jarg2) {
+  BITMAPSAVERPLUGIN *arg1 = (BITMAPSAVERPLUGIN *) 0 ;
+  String *arg2 = (String *) 0 ;
+  
+  arg1 = (BITMAPSAVERPLUGIN *)jarg1; 
+  arg2 = (String *)jarg2; 
+  if (arg1) (arg1)->suffix = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BITMAPSAVERPLUGIN_suffix_get(void * jarg1) {
+  void * jresult ;
+  BITMAPSAVERPLUGIN *arg1 = (BITMAPSAVERPLUGIN *) 0 ;
+  String *result = 0 ;
+  
+  arg1 = (BITMAPSAVERPLUGIN *)jarg1; 
+  result = (String *) ((arg1)->suffix);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BITMAPSAVERPLUGIN_Save_set(void * jarg1, char * jarg2) {
+  BITMAPSAVERPLUGIN *arg1 = (BITMAPSAVERPLUGIN *) 0 ;
+  IMAGERESULT (BitmapSaverData::*arg2)(Filename const &,BaseBitmap *,BaseContainer *,SAVEBIT) ;
+  
+  arg1 = (BITMAPSAVERPLUGIN *)jarg1; 
+  
+  SWIG_UnpackData(jarg2, (void *)&arg2, sizeof(arg2));
+  
+  if (arg1) (arg1)->Save = arg2;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_BITMAPSAVERPLUGIN_Save_get(void * jarg1) {
+  char * jresult ;
+  BITMAPSAVERPLUGIN *arg1 = (BITMAPSAVERPLUGIN *) 0 ;
+  IMAGERESULT (BitmapSaverData::*result)(Filename const &,BaseBitmap *,BaseContainer *,SAVEBIT);
+  
+  arg1 = (BITMAPSAVERPLUGIN *)jarg1; 
+  result = (IMAGERESULT (BitmapSaverData::*)(Filename const &,BaseBitmap *,BaseContainer *,SAVEBIT)) ((arg1)->Save);
+  
+  char buf[128];
+  char *data = SWIG_PackData(buf, (void *)&result, sizeof(result));
+  *data = '\0';
+  jresult = SWIG_csharp_string_callback(buf);
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BITMAPSAVERPLUGIN_Edit_set(void * jarg1, char * jarg2) {
+  BITMAPSAVERPLUGIN *arg1 = (BITMAPSAVERPLUGIN *) 0 ;
+  Bool (BitmapSaverData::*arg2)(BaseContainer *) ;
+  
+  arg1 = (BITMAPSAVERPLUGIN *)jarg1; 
+  
+  SWIG_UnpackData(jarg2, (void *)&arg2, sizeof(arg2));
+  
+  if (arg1) (arg1)->Edit = arg2;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_BITMAPSAVERPLUGIN_Edit_get(void * jarg1) {
+  char * jresult ;
+  BITMAPSAVERPLUGIN *arg1 = (BITMAPSAVERPLUGIN *) 0 ;
+  Bool (BitmapSaverData::*result)(BaseContainer *);
+  
+  arg1 = (BITMAPSAVERPLUGIN *)jarg1; 
+  result = (Bool (BitmapSaverData::*)(BaseContainer *)) ((arg1)->Edit);
+  
+  char buf[128];
+  char *data = SWIG_PackData(buf, (void *)&result, sizeof(result));
+  *data = '\0';
+  jresult = SWIG_csharp_string_callback(buf);
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BITMAPSAVERPLUGIN_GetMaxAlphas_set(void * jarg1, char * jarg2) {
+  BITMAPSAVERPLUGIN *arg1 = (BITMAPSAVERPLUGIN *) 0 ;
+  LONG (BitmapSaverData::*arg2)(BaseContainer *) ;
+  
+  arg1 = (BITMAPSAVERPLUGIN *)jarg1; 
+  
+  SWIG_UnpackData(jarg2, (void *)&arg2, sizeof(arg2));
+  
+  if (arg1) (arg1)->GetMaxAlphas = arg2;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_BITMAPSAVERPLUGIN_GetMaxAlphas_get(void * jarg1) {
+  char * jresult ;
+  BITMAPSAVERPLUGIN *arg1 = (BITMAPSAVERPLUGIN *) 0 ;
+  LONG (BitmapSaverData::*result)(BaseContainer *);
+  
+  arg1 = (BITMAPSAVERPLUGIN *)jarg1; 
+  result = (LONG (BitmapSaverData::*)(BaseContainer *)) ((arg1)->GetMaxAlphas);
+  
+  char buf[128];
+  char *data = SWIG_PackData(buf, (void *)&result, sizeof(result));
+  *data = '\0';
+  jresult = SWIG_csharp_string_callback(buf);
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BITMAPSAVERPLUGIN_Open_set(void * jarg1, char * jarg2) {
+  BITMAPSAVERPLUGIN *arg1 = (BITMAPSAVERPLUGIN *) 0 ;
+  IMAGERESULT (BitmapSaverData::*arg2)(PluginMovieData *&,Filename const &,BaseBitmap *,BaseContainer *,SAVEBIT,LONG) ;
+  
+  arg1 = (BITMAPSAVERPLUGIN *)jarg1; 
+  
+  SWIG_UnpackData(jarg2, (void *)&arg2, sizeof(arg2));
+  
+  if (arg1) (arg1)->Open = arg2;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_BITMAPSAVERPLUGIN_Open_get(void * jarg1) {
+  char * jresult ;
+  BITMAPSAVERPLUGIN *arg1 = (BITMAPSAVERPLUGIN *) 0 ;
+  IMAGERESULT (BitmapSaverData::*result)(PluginMovieData *&,Filename const &,BaseBitmap *,BaseContainer *,SAVEBIT,LONG);
+  
+  arg1 = (BITMAPSAVERPLUGIN *)jarg1; 
+  result = (IMAGERESULT (BitmapSaverData::*)(PluginMovieData *&,Filename const &,BaseBitmap *,BaseContainer *,SAVEBIT,LONG)) ((arg1)->Open);
+  
+  char buf[128];
+  char *data = SWIG_PackData(buf, (void *)&result, sizeof(result));
+  *data = '\0';
+  jresult = SWIG_csharp_string_callback(buf);
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BITMAPSAVERPLUGIN_Write_set(void * jarg1, char * jarg2) {
+  BITMAPSAVERPLUGIN *arg1 = (BITMAPSAVERPLUGIN *) 0 ;
+  IMAGERESULT (BitmapSaverData::*arg2)(PluginMovieData *,BaseBitmap *) ;
+  
+  arg1 = (BITMAPSAVERPLUGIN *)jarg1; 
+  
+  SWIG_UnpackData(jarg2, (void *)&arg2, sizeof(arg2));
+  
+  if (arg1) (arg1)->Write = arg2;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_BITMAPSAVERPLUGIN_Write_get(void * jarg1) {
+  char * jresult ;
+  BITMAPSAVERPLUGIN *arg1 = (BITMAPSAVERPLUGIN *) 0 ;
+  IMAGERESULT (BitmapSaverData::*result)(PluginMovieData *,BaseBitmap *);
+  
+  arg1 = (BITMAPSAVERPLUGIN *)jarg1; 
+  result = (IMAGERESULT (BitmapSaverData::*)(PluginMovieData *,BaseBitmap *)) ((arg1)->Write);
+  
+  char buf[128];
+  char *data = SWIG_PackData(buf, (void *)&result, sizeof(result));
+  *data = '\0';
+  jresult = SWIG_csharp_string_callback(buf);
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BITMAPSAVERPLUGIN_Close_set(void * jarg1, char * jarg2) {
+  BITMAPSAVERPLUGIN *arg1 = (BITMAPSAVERPLUGIN *) 0 ;
+  void (BitmapSaverData::*arg2)(PluginMovieData *&) ;
+  
+  arg1 = (BITMAPSAVERPLUGIN *)jarg1; 
+  
+  SWIG_UnpackData(jarg2, (void *)&arg2, sizeof(arg2));
+  
+  if (arg1) (arg1)->Close = arg2;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_BITMAPSAVERPLUGIN_Close_get(void * jarg1) {
+  char * jresult ;
+  BITMAPSAVERPLUGIN *arg1 = (BITMAPSAVERPLUGIN *) 0 ;
+  void (BitmapSaverData::*result)(PluginMovieData *&);
+  
+  arg1 = (BITMAPSAVERPLUGIN *)jarg1; 
+  result = (void (BitmapSaverData::*)(PluginMovieData *&)) ((arg1)->Close);
+  
+  char buf[128];
+  char *data = SWIG_PackData(buf, (void *)&result, sizeof(result));
+  *data = '\0';
+  jresult = SWIG_csharp_string_callback(buf);
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BITMAPSAVERPLUGIN_AddSound_set(void * jarg1, char * jarg2) {
+  BITMAPSAVERPLUGIN *arg1 = (BITMAPSAVERPLUGIN *) 0 ;
+  IMAGERESULT (BitmapSaverData::*arg2)(PluginMovieData *,BaseSound *) ;
+  
+  arg1 = (BITMAPSAVERPLUGIN *)jarg1; 
+  
+  SWIG_UnpackData(jarg2, (void *)&arg2, sizeof(arg2));
+  
+  if (arg1) (arg1)->AddSound = arg2;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_BITMAPSAVERPLUGIN_AddSound_get(void * jarg1) {
+  char * jresult ;
+  BITMAPSAVERPLUGIN *arg1 = (BITMAPSAVERPLUGIN *) 0 ;
+  IMAGERESULT (BitmapSaverData::*result)(PluginMovieData *,BaseSound *);
+  
+  arg1 = (BITMAPSAVERPLUGIN *)jarg1; 
+  result = (IMAGERESULT (BitmapSaverData::*)(PluginMovieData *,BaseSound *)) ((arg1)->AddSound);
+  
+  char buf[128];
+  char *data = SWIG_PackData(buf, (void *)&result, sizeof(result));
+  *data = '\0';
+  jresult = SWIG_csharp_string_callback(buf);
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BITMAPSAVERPLUGIN_GetMaxResolution_set(void * jarg1, char * jarg2) {
+  BITMAPSAVERPLUGIN *arg1 = (BITMAPSAVERPLUGIN *) 0 ;
+  LONG (BitmapSaverData::*arg2)(Bool) ;
+  
+  arg1 = (BITMAPSAVERPLUGIN *)jarg1; 
+  
+  SWIG_UnpackData(jarg2, (void *)&arg2, sizeof(arg2));
+  
+  if (arg1) (arg1)->GetMaxResolution = arg2;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_BITMAPSAVERPLUGIN_GetMaxResolution_get(void * jarg1) {
+  char * jresult ;
+  BITMAPSAVERPLUGIN *arg1 = (BITMAPSAVERPLUGIN *) 0 ;
+  LONG (BitmapSaverData::*result)(Bool);
+  
+  arg1 = (BITMAPSAVERPLUGIN *)jarg1; 
+  result = (LONG (BitmapSaverData::*)(Bool)) ((arg1)->GetMaxResolution);
+  
+  char buf[128];
+  char *data = SWIG_PackData(buf, (void *)&result, sizeof(result));
+  *data = '\0';
+  jresult = SWIG_csharp_string_callback(buf);
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BITMAPSAVERPLUGIN_reserved_set(void * jarg1, void * jarg2) {
+  BITMAPSAVERPLUGIN *arg1 = (BITMAPSAVERPLUGIN *) 0 ;
+  void **arg2 ;
+  
+  arg1 = (BITMAPSAVERPLUGIN *)jarg1; 
+  arg2 = (void **)jarg2; 
+  {
+    size_t ii;
+    void * *b = (void * *) arg1->reserved;
+    for (ii = 0; ii < (size_t)(32-8) *C4DPL_MEMBERMULTIPLIER-1; ii++) b[ii] = *((void * *) arg2 + ii);
+  }
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BITMAPSAVERPLUGIN_reserved_get(void * jarg1) {
+  void * jresult ;
+  BITMAPSAVERPLUGIN *arg1 = (BITMAPSAVERPLUGIN *) 0 ;
+  void **result = 0 ;
+  
+  arg1 = (BITMAPSAVERPLUGIN *)jarg1; 
+  result = (void **)(void **) ((arg1)->reserved);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_new_BITMAPSAVERPLUGIN() {
+  void * jresult ;
+  BITMAPSAVERPLUGIN *result = 0 ;
+  
+  result = (BITMAPSAVERPLUGIN *)new BITMAPSAVERPLUGIN();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_delete_BITMAPSAVERPLUGIN(void * jarg1) {
+  BITMAPSAVERPLUGIN *arg1 = (BITMAPSAVERPLUGIN *) 0 ;
+  
+  arg1 = (BITMAPSAVERPLUGIN *)jarg1; 
+  delete arg1;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_SCENELOADERPLUGIN_Identify_set(void * jarg1, char * jarg2) {
+  SCENELOADERPLUGIN *arg1 = (SCENELOADERPLUGIN *) 0 ;
+  Bool (SceneLoaderData::*arg2)(BaseSceneLoader *,Filename const &,UCHAR *,LONG) ;
+  
+  arg1 = (SCENELOADERPLUGIN *)jarg1; 
+  
+  SWIG_UnpackData(jarg2, (void *)&arg2, sizeof(arg2));
+  
+  if (arg1) (arg1)->Identify = arg2;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_SCENELOADERPLUGIN_Identify_get(void * jarg1) {
+  char * jresult ;
+  SCENELOADERPLUGIN *arg1 = (SCENELOADERPLUGIN *) 0 ;
+  Bool (SceneLoaderData::*result)(BaseSceneLoader *,Filename const &,UCHAR *,LONG);
+  
+  arg1 = (SCENELOADERPLUGIN *)jarg1; 
+  result = (Bool (SceneLoaderData::*)(BaseSceneLoader *,Filename const &,UCHAR *,LONG)) ((arg1)->Identify);
+  
+  char buf[128];
+  char *data = SWIG_PackData(buf, (void *)&result, sizeof(result));
+  *data = '\0';
+  jresult = SWIG_csharp_string_callback(buf);
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_SCENELOADERPLUGIN_Load_set(void * jarg1, char * jarg2) {
+  SCENELOADERPLUGIN *arg1 = (SCENELOADERPLUGIN *) 0 ;
+  FILEERROR (SceneLoaderData::*arg2)(BaseSceneLoader *,Filename const &,BaseDocument *,SCENEFILTER,String *,BaseThread *) ;
+  
+  arg1 = (SCENELOADERPLUGIN *)jarg1; 
+  
+  SWIG_UnpackData(jarg2, (void *)&arg2, sizeof(arg2));
+  
+  if (arg1) (arg1)->Load = arg2;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_SCENELOADERPLUGIN_Load_get(void * jarg1) {
+  char * jresult ;
+  SCENELOADERPLUGIN *arg1 = (SCENELOADERPLUGIN *) 0 ;
+  FILEERROR (SceneLoaderData::*result)(BaseSceneLoader *,Filename const &,BaseDocument *,SCENEFILTER,String *,BaseThread *);
+  
+  arg1 = (SCENELOADERPLUGIN *)jarg1; 
+  result = (FILEERROR (SceneLoaderData::*)(BaseSceneLoader *,Filename const &,BaseDocument *,SCENEFILTER,String *,BaseThread *)) ((arg1)->Load);
+  
+  char buf[128];
+  char *data = SWIG_PackData(buf, (void *)&result, sizeof(result));
+  *data = '\0';
+  jresult = SWIG_csharp_string_callback(buf);
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_SCENELOADERPLUGIN_reserved_set(void * jarg1, void * jarg2) {
+  SCENELOADERPLUGIN *arg1 = (SCENELOADERPLUGIN *) 0 ;
+  void **arg2 ;
+  
+  arg1 = (SCENELOADERPLUGIN *)jarg1; 
+  arg2 = (void **)jarg2; 
+  {
+    size_t ii;
+    void * *b = (void * *) arg1->reserved;
+    for (ii = 0; ii < (size_t)(32-2) *C4DPL_MEMBERMULTIPLIER-0; ii++) b[ii] = *((void * *) arg2 + ii);
+  }
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_SCENELOADERPLUGIN_reserved_get(void * jarg1) {
+  void * jresult ;
+  SCENELOADERPLUGIN *arg1 = (SCENELOADERPLUGIN *) 0 ;
+  void **result = 0 ;
+  
+  arg1 = (SCENELOADERPLUGIN *)jarg1; 
+  result = (void **)(void **) ((arg1)->reserved);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_new_SCENELOADERPLUGIN() {
+  void * jresult ;
+  SCENELOADERPLUGIN *result = 0 ;
+  
+  result = (SCENELOADERPLUGIN *)new SCENELOADERPLUGIN();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_delete_SCENELOADERPLUGIN(void * jarg1) {
+  SCENELOADERPLUGIN *arg1 = (SCENELOADERPLUGIN *) 0 ;
+  
+  arg1 = (SCENELOADERPLUGIN *)jarg1; 
+  delete arg1;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_SCENESAVERPLUGIN_suffix_set(void * jarg1, void * jarg2) {
+  SCENESAVERPLUGIN *arg1 = (SCENESAVERPLUGIN *) 0 ;
+  String *arg2 = (String *) 0 ;
+  
+  arg1 = (SCENESAVERPLUGIN *)jarg1; 
+  arg2 = (String *)jarg2; 
+  if (arg1) (arg1)->suffix = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_SCENESAVERPLUGIN_suffix_get(void * jarg1) {
+  void * jresult ;
+  SCENESAVERPLUGIN *arg1 = (SCENESAVERPLUGIN *) 0 ;
+  String *result = 0 ;
+  
+  arg1 = (SCENESAVERPLUGIN *)jarg1; 
+  result = (String *) ((arg1)->suffix);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_SCENESAVERPLUGIN_Save_set(void * jarg1, char * jarg2) {
+  SCENESAVERPLUGIN *arg1 = (SCENESAVERPLUGIN *) 0 ;
+  FILEERROR (SceneSaverData::*arg2)(BaseSceneSaver *,Filename const &,BaseDocument *,SCENEFILTER) ;
+  
+  arg1 = (SCENESAVERPLUGIN *)jarg1; 
+  
+  SWIG_UnpackData(jarg2, (void *)&arg2, sizeof(arg2));
+  
+  if (arg1) (arg1)->Save = arg2;
+}
+
+
+SWIGEXPORT char * SWIGSTDCALL CSharp_SCENESAVERPLUGIN_Save_get(void * jarg1) {
+  char * jresult ;
+  SCENESAVERPLUGIN *arg1 = (SCENESAVERPLUGIN *) 0 ;
+  FILEERROR (SceneSaverData::*result)(BaseSceneSaver *,Filename const &,BaseDocument *,SCENEFILTER);
+  
+  arg1 = (SCENESAVERPLUGIN *)jarg1; 
+  result = (FILEERROR (SceneSaverData::*)(BaseSceneSaver *,Filename const &,BaseDocument *,SCENEFILTER)) ((arg1)->Save);
+  
+  char buf[128];
+  char *data = SWIG_PackData(buf, (void *)&result, sizeof(result));
+  *data = '\0';
+  jresult = SWIG_csharp_string_callback(buf);
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_SCENESAVERPLUGIN_reserved_set(void * jarg1, void * jarg2) {
+  SCENESAVERPLUGIN *arg1 = (SCENESAVERPLUGIN *) 0 ;
+  void **arg2 ;
+  
+  arg1 = (SCENESAVERPLUGIN *)jarg1; 
+  arg2 = (void **)jarg2; 
+  {
+    size_t ii;
+    void * *b = (void * *) arg1->reserved;
+    for (ii = 0; ii < (size_t)(32-1) *C4DPL_MEMBERMULTIPLIER-1; ii++) b[ii] = *((void * *) arg2 + ii);
+  }
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_SCENESAVERPLUGIN_reserved_get(void * jarg1) {
+  void * jresult ;
+  SCENESAVERPLUGIN *arg1 = (SCENESAVERPLUGIN *) 0 ;
+  void **result = 0 ;
+  
+  arg1 = (SCENESAVERPLUGIN *)jarg1; 
+  result = (void **)(void **) ((arg1)->reserved);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_new_SCENESAVERPLUGIN() {
+  void * jresult ;
+  SCENESAVERPLUGIN *result = 0 ;
+  
+  result = (SCENESAVERPLUGIN *)new SCENESAVERPLUGIN();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_delete_SCENESAVERPLUGIN(void * jarg1) {
+  SCENESAVERPLUGIN *arg1 = (SCENESAVERPLUGIN *) 0 ;
+  
+  arg1 = (SCENESAVERPLUGIN *)jarg1; 
+  delete arg1;
+}
+
+
 SWIGEXPORT int SWIGSTDCALL CSharp_PRIM_PLANE_get() {
   int jresult ;
   int result;
@@ -67368,6 +74432,10 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_GetCustomDataTypeDefault(int jarg1) {
 }
 
 
+SWIGEXPORT BaseFile * SWIGSTDCALL CSharp_AESFile_SWIGUpcast(AESFile *jarg1) {
+    return (BaseFile *)jarg1;
+}
+
 SWIGEXPORT BaseBitmap * SWIGSTDCALL CSharp_MultipassBitmap_SWIGUpcast(MultipassBitmap *jarg1) {
     return (BaseBitmap *)jarg1;
 }
@@ -67533,6 +74601,14 @@ SWIGEXPORT BaseList2D * SWIGSTDCALL CSharp_GvNodeMaster_SWIGUpcast(GvNodeMaster 
 }
 
 SWIGEXPORT NodeData * SWIGSTDCALL CSharp_GvOperatorData_SWIGUpcast(GvOperatorData *jarg1) {
+    return (NodeData *)jarg1;
+}
+
+SWIGEXPORT NodeData * SWIGSTDCALL CSharp_SceneLoaderData_SWIGUpcast(SceneLoaderData *jarg1) {
+    return (NodeData *)jarg1;
+}
+
+SWIGEXPORT NodeData * SWIGSTDCALL CSharp_SceneSaverData_SWIGUpcast(SceneSaverData *jarg1) {
     return (NodeData *)jarg1;
 }
 

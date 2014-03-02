@@ -53,9 +53,12 @@
 #include "c4d.h"
 #include "lib_ca.h"
 #include "lib_description.h"
+#include "c4d_file.h"
 #include "c4d_graphview.h"
 #include "c4d_operatordata.h"
 #include "c4d_operatorplugin.h"
+#include "c4d_filterdata.h"
+#include "c4d_filterplugin.h"
 #include "operatingsystem.h"
 #include "c4d_basetag.h"
 #include "c4d_baseselect.h" //NEU
@@ -217,8 +220,9 @@ class String;
 //
 // <polymorphic-downcasts>
 
+// for BaseTag derivatives tags
 %pragma(csharp) imclasscode=%{
-  public static BaseTag InstantiateConcreteObject(IntPtr cPtr, bool owner)
+  public static BaseTag InstantiateConcreteTag(IntPtr cPtr, bool owner)
   {
     BaseTag ret = null;
     if (cPtr == IntPtr.Zero) 
@@ -249,9 +253,48 @@ BaseTag *
 /* Insert here every other abstract type returned in the C++ API */
 {
     IntPtr cPtr = $imcall;
+    $csclassname ret = ($csclassname) $modulePINVOKE.InstantiateConcreteTag(cPtr, $owner);$excode
+    return ret;
+}
+
+// for BaseObject derivatives
+%pragma(csharp) imclasscode=%{
+  public static BaseObject InstantiateConcreteObject(IntPtr cPtr, bool owner)
+  {
+    BaseObject ret = null;
+    if (cPtr == IntPtr.Zero) 
+	{
+      return ret;
+    }
+    int type = $modulePINVOKE.C4DAtom_GetType(new HandleRef(null, cPtr));
+    switch (type) 
+	{
+       case 0:
+         ret = new BaseObject(cPtr, owner);
+         break;
+	  case 5100: // Opolygon
+		 ret = new PolygonObject(cPtr, owner);
+		 break;
+      // Repeat for every other concrete type.
+      default:
+	  //changed from the debug output to return a BaseTag object
+        ret = new BaseObject(cPtr, owner);
+        break;
+    }
+    return ret;
+  }
+%}
+
+%typemap(csout, excode=SWIGEXCODE)
+BaseObject *
+/* Insert here every other abstract type returned in the C++ API */
+{
+    IntPtr cPtr = $imcall;
     $csclassname ret = ($csclassname) $modulePINVOKE.InstantiateConcreteObject(cPtr, $owner);$excode
     return ret;
 }
+
+
 // </polymorphic-downcasts>
 
 
@@ -588,6 +631,10 @@ BaseTag *
 %include "c4d_thread.h";
 
 //////////////////////////////////////////////////////////////////
+// c4d_file.h
+%include "c4d_file.h";
+
+//////////////////////////////////////////////////////////////////
 // lib_description.h
 %ignore DescriptionLib;
 %include "lib_description.swig.h";
@@ -670,6 +717,25 @@ BaseTag *
 		self->GetPointW()[inx] = v;
 	}
 	
+}
+%extend PolygonObject
+{
+	Vector GetPointAt(LONG inx)
+	{
+		return self->GetPointR()[inx];
+	}
+	void SetPointAt(LONG inx, Vector v)
+	{
+		self->GetPointW()[inx] = v;
+	}
+	CPolygon GetPolygonAt(LONG inx)
+	{
+		return self->GetPolygonR()[inx];
+	}
+	void SetPolygonAt(LONG inx, CPolygon v)
+	{
+		self->GetPolygonW()[inx] = v;
+	}
 }
 %extend SplineObject
 {
@@ -875,6 +941,19 @@ BaseTag *
 //////////////////////////////////////////////////////////////////
 // "c4d_operatorplugin.h"
 %include "c4d_operatorplugin.h";
+
+//////////////////////////////////////////////////////////////////
+// "c4d_filterdata.h"
+%feature("director") SceneLoaderData;
+%feature("director") SceneSaverData;
+%feature("director") BitmapLoaderData;
+%feature("director") BitmapSaverData;
+%include "c4d_filterdata.h";
+
+//////////////////////////////////////////////////////////////////
+// "c4d_filterplugin.h"
+%include "c4d_filterplugin.h";
+
 
 //////////////////////////////////////////////////////////////////
 //added 23062011 by DS

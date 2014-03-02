@@ -2,7 +2,7 @@
 using Fusee.Engine;
 using Fusee.Math;
 using System.Diagnostics;
-using System;
+
 
 namespace Examples.SerialisationExample
 {

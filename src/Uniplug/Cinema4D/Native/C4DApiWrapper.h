@@ -204,5 +204,199 @@ private:
     void swig_init_callbacks();
 };
 
+class SwigDirector_BitmapLoaderData : public BitmapLoaderData, public Swig::Director {
+
+public:
+    SwigDirector_BitmapLoaderData();
+    virtual Bool Identify(Filename const &name, UCHAR *probe, LONG size);
+    virtual IMAGERESULT Load(Filename const &name, BaseBitmap *bm, LONG frame);
+    virtual LONG GetSaver();
+    virtual Bool GetInformation(Filename const &name, LONG *frames, Real *fps);
+    virtual IMAGERESULT LoadAnimated(BitmapLoaderAnimatedData *bd, BITMAPLOADERACTION action, BaseBitmap *bm, LONG frame);
+    virtual IMAGERESULT ExtractSound(BitmapLoaderAnimatedData *bd, BaseSound *snd);
+    virtual IMAGERESULT HasSound(BitmapLoaderAnimatedData *bd);
+
+    typedef unsigned int (SWIGSTDCALL* SWIG_Callback0_t)(void *, void *, int);
+    typedef int (SWIGSTDCALL* SWIG_Callback1_t)(void *, void *, int);
+    typedef int (SWIGSTDCALL* SWIG_Callback2_t)();
+    typedef unsigned int (SWIGSTDCALL* SWIG_Callback3_t)(void *, void *, void *);
+    typedef int (SWIGSTDCALL* SWIG_Callback4_t)(void *, int, void *, int);
+    typedef int (SWIGSTDCALL* SWIG_Callback5_t)(void *, void *);
+    typedef int (SWIGSTDCALL* SWIG_Callback6_t)(void *);
+    void swig_connect_director(SWIG_Callback0_t callbackIdentify, SWIG_Callback1_t callbackLoad, SWIG_Callback2_t callbackGetSaver, SWIG_Callback3_t callbackGetInformation, SWIG_Callback4_t callbackLoadAnimated, SWIG_Callback5_t callbackExtractSound, SWIG_Callback6_t callbackHasSound);
+
+private:
+    SWIG_Callback0_t swig_callbackIdentify;
+    SWIG_Callback1_t swig_callbackLoad;
+    SWIG_Callback2_t swig_callbackGetSaver;
+    SWIG_Callback3_t swig_callbackGetInformation;
+    SWIG_Callback4_t swig_callbackLoadAnimated;
+    SWIG_Callback5_t swig_callbackExtractSound;
+    SWIG_Callback6_t swig_callbackHasSound;
+    void swig_init_callbacks();
+};
+
+class SwigDirector_BitmapSaverData : public BitmapSaverData, public Swig::Director {
+
+public:
+    SwigDirector_BitmapSaverData();
+    virtual IMAGERESULT Save(Filename const &name, BaseBitmap *bm, BaseContainer *data, SAVEBIT savebits);
+    virtual Bool Edit(BaseContainer *data);
+    virtual LONG GetMaxAlphas(BaseContainer *data);
+    virtual LONG GetMaxResolution(Bool layers);
+    virtual IMAGERESULT Open(PluginMovieData *&md, Filename const &name, BaseBitmap *bm, BaseContainer *data, SAVEBIT savebits, LONG fps);
+    virtual IMAGERESULT Write(PluginMovieData *md, BaseBitmap *bm);
+    virtual void Close(PluginMovieData *&md);
+    virtual IMAGERESULT AddSound(PluginMovieData *md, BaseSound *snd);
+
+    typedef int (SWIGSTDCALL* SWIG_Callback0_t)(void *, void *, void *, int);
+    typedef unsigned int (SWIGSTDCALL* SWIG_Callback1_t)(void *);
+    typedef int (SWIGSTDCALL* SWIG_Callback2_t)(void *);
+    typedef int (SWIGSTDCALL* SWIG_Callback3_t)(unsigned int);
+    typedef int (SWIGSTDCALL* SWIG_Callback4_t)(void *, void *, void *, void *, int, int);
+    typedef int (SWIGSTDCALL* SWIG_Callback5_t)(void *, void *);
+    typedef void (SWIGSTDCALL* SWIG_Callback6_t)(void *);
+    typedef int (SWIGSTDCALL* SWIG_Callback7_t)(void *, void *);
+    void swig_connect_director(SWIG_Callback0_t callbackSave, SWIG_Callback1_t callbackEdit, SWIG_Callback2_t callbackGetMaxAlphas, SWIG_Callback3_t callbackGetMaxResolution, SWIG_Callback4_t callbackOpen, SWIG_Callback5_t callbackWrite, SWIG_Callback6_t callbackClose, SWIG_Callback7_t callbackAddSound);
+
+private:
+    SWIG_Callback0_t swig_callbackSave;
+    SWIG_Callback1_t swig_callbackEdit;
+    SWIG_Callback2_t swig_callbackGetMaxAlphas;
+    SWIG_Callback3_t swig_callbackGetMaxResolution;
+    SWIG_Callback4_t swig_callbackOpen;
+    SWIG_Callback5_t swig_callbackWrite;
+    SWIG_Callback6_t swig_callbackClose;
+    SWIG_Callback7_t swig_callbackAddSound;
+    void swig_init_callbacks();
+};
+
+class SwigDirector_SceneLoaderData : public SceneLoaderData, public Swig::Director {
+
+public:
+    SwigDirector_SceneLoaderData();
+    virtual Bool Init(GeListNode *node);
+    virtual void Free(GeListNode *node);
+    virtual Bool Read(GeListNode *node, HyperFile *hf, LONG level);
+    virtual Bool Write(GeListNode *node, HyperFile *hf);
+    virtual Bool Message(GeListNode *node, LONG type, void *data);
+    virtual Bool CopyTo(NodeData *dest, GeListNode *snode, GeListNode *dnode, COPYFLAGS flags, AliasTrans *trn);
+    virtual void GetBubbleHelp(GeListNode *node, String &str);
+    virtual BaseDocument *GetDocument(GeListNode *node);
+    virtual LONG GetBranchInfo(GeListNode *node, BranchInfo *info, LONG max, GETBRANCHINFO flags);
+    virtual Bool IsInstanceOf(GeListNode const *node, LONG type) const;
+    virtual Bool GetDDescription(GeListNode *node, Description *description, DESCFLAGS_DESC &flags);
+    virtual Bool GetDParameter(GeListNode *node, DescID const &id, GeData &t_data, DESCFLAGS_GET &flags);
+    virtual Bool GetDEnabling(GeListNode *node, DescID const &id, GeData const &t_data, DESCFLAGS_ENABLE flags, BaseContainer const *itemdesc);
+    virtual Bool SetDParameter(GeListNode *node, DescID const &id, GeData const &t_data, DESCFLAGS_SET &flags);
+    virtual Bool TranslateDescID(GeListNode *node, DescID const &id, DescID &res_id, C4DAtom *&res_at);
+    virtual Bool IsDocumentRelated(GeListNode const *node, Bool &docrelated) const;
+    virtual Bool Identify(BaseSceneLoader *node, Filename const &name, UCHAR *probe, LONG size);
+    virtual FILEERROR Load(BaseSceneLoader *node, Filename const &name, BaseDocument *doc, SCENEFILTER filterflags, String *error, BaseThread *bt);
+
+    typedef unsigned int (SWIGSTDCALL* SWIG_Callback0_t)(void *);
+    typedef void (SWIGSTDCALL* SWIG_Callback1_t)(void *);
+    typedef unsigned int (SWIGSTDCALL* SWIG_Callback2_t)(void *, void *, int);
+    typedef unsigned int (SWIGSTDCALL* SWIG_Callback3_t)(void *, void *);
+    typedef unsigned int (SWIGSTDCALL* SWIG_Callback4_t)(void *, int, void *);
+    typedef unsigned int (SWIGSTDCALL* SWIG_Callback5_t)(void *, void *, void *, int, void *);
+    typedef void (SWIGSTDCALL* SWIG_Callback6_t)(void *, void *);
+    typedef void * (SWIGSTDCALL* SWIG_Callback7_t)(void *);
+    typedef int (SWIGSTDCALL* SWIG_Callback8_t)(void *, void *, int, int);
+    typedef unsigned int (SWIGSTDCALL* SWIG_Callback9_t)(void *, int);
+    typedef unsigned int (SWIGSTDCALL* SWIG_Callback10_t)(void *, void *, void *);
+    typedef unsigned int (SWIGSTDCALL* SWIG_Callback11_t)(void *, void *, void *, void *);
+    typedef unsigned int (SWIGSTDCALL* SWIG_Callback12_t)(void *, void *, void *, int, void *);
+    typedef unsigned int (SWIGSTDCALL* SWIG_Callback13_t)(void *, void *, void *, void *);
+    typedef unsigned int (SWIGSTDCALL* SWIG_Callback14_t)(void *, void *, void *, void *);
+    typedef unsigned int (SWIGSTDCALL* SWIG_Callback15_t)(void *, void *);
+    typedef unsigned int (SWIGSTDCALL* SWIG_Callback16_t)(void *, void *, void *, int);
+    typedef int (SWIGSTDCALL* SWIG_Callback17_t)(void *, void *, void *, int, void *, void *);
+    void swig_connect_director(SWIG_Callback0_t callbackInit, SWIG_Callback1_t callbackFree, SWIG_Callback2_t callbackRead, SWIG_Callback3_t callbackWrite, SWIG_Callback4_t callbackMessage, SWIG_Callback5_t callbackCopyTo, SWIG_Callback6_t callbackGetBubbleHelp, SWIG_Callback7_t callbackGetDocument, SWIG_Callback8_t callbackGetBranchInfo, SWIG_Callback9_t callbackIsInstanceOf, SWIG_Callback10_t callbackGetDDescription, SWIG_Callback11_t callbackGetDParameter, SWIG_Callback12_t callbackGetDEnabling, SWIG_Callback13_t callbackSetDParameter, SWIG_Callback14_t callbackTranslateDescID, SWIG_Callback15_t callbackIsDocumentRelated, SWIG_Callback16_t callbackIdentify, SWIG_Callback17_t callbackLoad);
+
+private:
+    SWIG_Callback0_t swig_callbackInit;
+    SWIG_Callback1_t swig_callbackFree;
+    SWIG_Callback2_t swig_callbackRead;
+    SWIG_Callback3_t swig_callbackWrite;
+    SWIG_Callback4_t swig_callbackMessage;
+    SWIG_Callback5_t swig_callbackCopyTo;
+    SWIG_Callback6_t swig_callbackGetBubbleHelp;
+    SWIG_Callback7_t swig_callbackGetDocument;
+    SWIG_Callback8_t swig_callbackGetBranchInfo;
+    SWIG_Callback9_t swig_callbackIsInstanceOf;
+    SWIG_Callback10_t swig_callbackGetDDescription;
+    SWIG_Callback11_t swig_callbackGetDParameter;
+    SWIG_Callback12_t swig_callbackGetDEnabling;
+    SWIG_Callback13_t swig_callbackSetDParameter;
+    SWIG_Callback14_t swig_callbackTranslateDescID;
+    SWIG_Callback15_t swig_callbackIsDocumentRelated;
+    SWIG_Callback16_t swig_callbackIdentify;
+    SWIG_Callback17_t swig_callbackLoad;
+    void swig_init_callbacks();
+};
+
+class SwigDirector_SceneSaverData : public SceneSaverData, public Swig::Director {
+
+public:
+    SwigDirector_SceneSaverData();
+    virtual Bool Init(GeListNode *node);
+    virtual void Free(GeListNode *node);
+    virtual Bool Read(GeListNode *node, HyperFile *hf, LONG level);
+    virtual Bool Write(GeListNode *node, HyperFile *hf);
+    virtual Bool Message(GeListNode *node, LONG type, void *data);
+    virtual Bool CopyTo(NodeData *dest, GeListNode *snode, GeListNode *dnode, COPYFLAGS flags, AliasTrans *trn);
+    virtual void GetBubbleHelp(GeListNode *node, String &str);
+    virtual BaseDocument *GetDocument(GeListNode *node);
+    virtual LONG GetBranchInfo(GeListNode *node, BranchInfo *info, LONG max, GETBRANCHINFO flags);
+    virtual Bool IsInstanceOf(GeListNode const *node, LONG type) const;
+    virtual Bool GetDDescription(GeListNode *node, Description *description, DESCFLAGS_DESC &flags);
+    virtual Bool GetDParameter(GeListNode *node, DescID const &id, GeData &t_data, DESCFLAGS_GET &flags);
+    virtual Bool GetDEnabling(GeListNode *node, DescID const &id, GeData const &t_data, DESCFLAGS_ENABLE flags, BaseContainer const *itemdesc);
+    virtual Bool SetDParameter(GeListNode *node, DescID const &id, GeData const &t_data, DESCFLAGS_SET &flags);
+    virtual Bool TranslateDescID(GeListNode *node, DescID const &id, DescID &res_id, C4DAtom *&res_at);
+    virtual Bool IsDocumentRelated(GeListNode const *node, Bool &docrelated) const;
+    virtual FILEERROR Save(BaseSceneSaver *node, Filename const &name, BaseDocument *doc, SCENEFILTER filterflags);
+
+    typedef unsigned int (SWIGSTDCALL* SWIG_Callback0_t)(void *);
+    typedef void (SWIGSTDCALL* SWIG_Callback1_t)(void *);
+    typedef unsigned int (SWIGSTDCALL* SWIG_Callback2_t)(void *, void *, int);
+    typedef unsigned int (SWIGSTDCALL* SWIG_Callback3_t)(void *, void *);
+    typedef unsigned int (SWIGSTDCALL* SWIG_Callback4_t)(void *, int, void *);
+    typedef unsigned int (SWIGSTDCALL* SWIG_Callback5_t)(void *, void *, void *, int, void *);
+    typedef void (SWIGSTDCALL* SWIG_Callback6_t)(void *, void *);
+    typedef void * (SWIGSTDCALL* SWIG_Callback7_t)(void *);
+    typedef int (SWIGSTDCALL* SWIG_Callback8_t)(void *, void *, int, int);
+    typedef unsigned int (SWIGSTDCALL* SWIG_Callback9_t)(void *, int);
+    typedef unsigned int (SWIGSTDCALL* SWIG_Callback10_t)(void *, void *, void *);
+    typedef unsigned int (SWIGSTDCALL* SWIG_Callback11_t)(void *, void *, void *, void *);
+    typedef unsigned int (SWIGSTDCALL* SWIG_Callback12_t)(void *, void *, void *, int, void *);
+    typedef unsigned int (SWIGSTDCALL* SWIG_Callback13_t)(void *, void *, void *, void *);
+    typedef unsigned int (SWIGSTDCALL* SWIG_Callback14_t)(void *, void *, void *, void *);
+    typedef unsigned int (SWIGSTDCALL* SWIG_Callback15_t)(void *, void *);
+    typedef int (SWIGSTDCALL* SWIG_Callback16_t)(void *, void *, void *, int);
+    void swig_connect_director(SWIG_Callback0_t callbackInit, SWIG_Callback1_t callbackFree, SWIG_Callback2_t callbackRead, SWIG_Callback3_t callbackWrite, SWIG_Callback4_t callbackMessage, SWIG_Callback5_t callbackCopyTo, SWIG_Callback6_t callbackGetBubbleHelp, SWIG_Callback7_t callbackGetDocument, SWIG_Callback8_t callbackGetBranchInfo, SWIG_Callback9_t callbackIsInstanceOf, SWIG_Callback10_t callbackGetDDescription, SWIG_Callback11_t callbackGetDParameter, SWIG_Callback12_t callbackGetDEnabling, SWIG_Callback13_t callbackSetDParameter, SWIG_Callback14_t callbackTranslateDescID, SWIG_Callback15_t callbackIsDocumentRelated, SWIG_Callback16_t callbackSave);
+
+private:
+    SWIG_Callback0_t swig_callbackInit;
+    SWIG_Callback1_t swig_callbackFree;
+    SWIG_Callback2_t swig_callbackRead;
+    SWIG_Callback3_t swig_callbackWrite;
+    SWIG_Callback4_t swig_callbackMessage;
+    SWIG_Callback5_t swig_callbackCopyTo;
+    SWIG_Callback6_t swig_callbackGetBubbleHelp;
+    SWIG_Callback7_t swig_callbackGetDocument;
+    SWIG_Callback8_t swig_callbackGetBranchInfo;
+    SWIG_Callback9_t swig_callbackIsInstanceOf;
+    SWIG_Callback10_t swig_callbackGetDDescription;
+    SWIG_Callback11_t swig_callbackGetDParameter;
+    SWIG_Callback12_t swig_callbackGetDEnabling;
+    SWIG_Callback13_t swig_callbackSetDParameter;
+    SWIG_Callback14_t swig_callbackTranslateDescID;
+    SWIG_Callback15_t swig_callbackIsDocumentRelated;
+    SWIG_Callback16_t swig_callbackSave;
+    void swig_init_callbacks();
+};
+
 
 #endif
