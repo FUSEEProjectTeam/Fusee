@@ -147,6 +147,19 @@ namespace Fusee.Math
             w = v.w;
         }
 
+
+        /// <summary>
+        /// Constructs a new float4 by converting from a double4.
+        /// </summary>
+        /// <param name="d4">The double4 to copy components from.</param>
+        public float4(double4 d4)
+        {
+            x = (float) d4.x;
+            y = (float) d4.y;
+            z = (float) d4.z;
+            w = (float) d4.w;
+        }
+
         #endregion
 
         #region Public Members
@@ -1136,6 +1149,15 @@ namespace Fusee.Math
             return !left.Equals(right);
         }
 
+        /// <summary>
+        /// Explicit cast operator to cast a double4 into a float4 value.
+        /// </summary>
+        /// <param name="d4">The double4 value to cast.</param>
+        /// <returns>A float4 value.</returns>
+        public static explicit operator float4(double4 d4)
+        {
+            return new float4(d4);
+        }
         /*
         /// <summary>
         /// Returns a pointer to the first element of the specified instance.

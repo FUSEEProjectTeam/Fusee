@@ -53,9 +53,12 @@ namespace Examples.SceneViewer
                 rc.Render(rm);
             }
 
-            foreach (var child in _sc.Children)
+            if (soc.Children != null)
             {
-                VisitNode(child, rc);
+                foreach (var child in soc.Children)
+                {
+                    VisitNode(child, rc);
+                }
             }
 
             rc.ModelView = origMV;

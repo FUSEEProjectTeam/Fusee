@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using C4d;
 using Fusee.Math;
@@ -32,8 +33,14 @@ namespace FuExport
 
             Logger.Debug("Fuseefy Me!");
 
-            SceneObjectContainer root = new SceneObjectContainer()
+            SceneContainer root = new SceneContainer()
             {
+                Header = new SceneHeader()
+                {
+                    CreatedBy = "",
+                    Generator = "FUSEE Export Plugin for Cinema4D",
+                    Version = 1
+                },
                 Children = FuseefyOb(polyDoc.GetFirstObject())
             };
 
@@ -55,9 +62,12 @@ namespace FuExport
             do
             {
                 SceneObjectContainer soc = new SceneObjectContainer();
-                if (ob.GetType() == C4dApi.Opolygon)
+
+                double4x4 mtxD = ob.GetMl();
+                soc.Transform = (float4x4) mtxD;
+                PolygonObject polyOb = ob as PolygonObject;
+                if (polyOb != null)
                 {
-                    PolygonObject polyOb = (PolygonObject) ob;
                     /*double3  padr = ToPoly(op)->GetPointR();
                     CPolygon vadr = ToPoly(op)->GetPolygonR();*/
                     int nPolys = polyOb.GetPolygonCount();

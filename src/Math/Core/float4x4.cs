@@ -101,6 +101,19 @@ namespace Fusee.Math
             Row3 = new float4(m30, m31, m32, m33);
         }
 
+
+        /// <summary>
+        /// Constructs a new float4x4 by converting from a double4x4.
+        /// </summary>
+        /// <param name="d4x4">The double4x4 to copy components from.</param>
+        public float4x4(double4x4 d4x4)
+        {
+            Row0 = (float4)d4x4.Row0;
+            Row1 = (float4)d4x4.Row1;
+            Row2 = (float4)d4x4.Row2;
+            Row3 = (float4)d4x4.Row3;
+        }
+
         #endregion
 
         #region Public Members
@@ -423,7 +436,7 @@ namespace Fusee.Math
         /// Builds a rotation matrix for a rotation around the x-axis.
         /// </summary>
         /// <param name="angle">The counter-clockwise angle in radians.</param>
-        /// <param name="result">The resulting Matrix4 instance.</param>
+        /// <param name="result">The resulting float4x4 instance.</param>
         public static void CreateRotationX(float angle, out float4x4 result)
         {
             var cos = (float) System.Math.Cos(angle);
@@ -439,7 +452,7 @@ namespace Fusee.Math
         /// Builds a rotation matrix for a rotation around the x-axis.
         /// </summary>
         /// <param name="angle">The counter-clockwise angle in radians.</param>
-        /// <returns>The resulting Matrix4 instance.</returns>
+        /// <returns>The resulting float4x4 instance.</returns>
         public static float4x4 CreateRotationX(float angle)
         {
             float4x4 result;
@@ -451,7 +464,7 @@ namespace Fusee.Math
         /// Builds a rotation matrix for a rotation around the y-axis.
         /// </summary>
         /// <param name="angle">The counter-clockwise angle in radians.</param>
-        /// <param name="result">The resulting Matrix4 instance.</param>
+        /// <param name="result">The resulting float4x4 instance.</param>
         public static void CreateRotationY(float angle, out float4x4 result)
         {
             var cos = (float) System.Math.Cos(angle);
@@ -467,7 +480,7 @@ namespace Fusee.Math
         /// Builds a rotation matrix for a rotation around the y-axis.
         /// </summary>
         /// <param name="angle">The counter-clockwise angle in radians.</param>
-        /// <returns>The resulting Matrix4 instance.</returns>
+        /// <returns>The resulting float4x4 instance.</returns>
         public static float4x4 CreateRotationY(float angle)
         {
             float4x4 result;
@@ -479,7 +492,7 @@ namespace Fusee.Math
         /// Builds a rotation matrix for a rotation around the z-axis.
         /// </summary>
         /// <param name="angle">The counter-clockwise angle in radians.</param>
-        /// <param name="result">The resulting Matrix4 instance.</param>
+        /// <param name="result">The resulting float4x4 instance.</param>
         public static void CreateRotationZ(float angle, out float4x4 result)
         {
             var cos = (float) System.Math.Cos(angle);
@@ -495,7 +508,7 @@ namespace Fusee.Math
         /// Builds a rotation matrix for a rotation around the z-axis.
         /// </summary>
         /// <param name="angle">The counter-clockwise angle in radians.</param>
-        /// <returns>The resulting Matrix4 instance.</returns>
+        /// <returns>The resulting float4x4 instance.</returns>
         public static float4x4 CreateRotationZ(float angle)
         {
             float4x4 result;
@@ -513,7 +526,7 @@ namespace Fusee.Math
         /// <param name="x">X translation.</param>
         /// <param name="y">Y translation.</param>
         /// <param name="z">Z translation.</param>
-        /// <param name="result">The resulting Matrix4 instance.</param>
+        /// <param name="result">The resulting float4x4 instance.</param>
         public static void CreateTranslation(float x, float y, float z, out float4x4 result)
         {
             result = Identity;
@@ -524,7 +537,7 @@ namespace Fusee.Math
         /// Creates a translation matrix.
         /// </summary>
         /// <param name="vector">The translation vector.</param>
-        /// <param name="result">The resulting Matrix4 instance.</param>
+        /// <param name="result">The resulting float4x4 instance.</param>
         public static void CreateTranslation(ref float3 vector, out float4x4 result)
         {
             result = Identity;
@@ -537,7 +550,7 @@ namespace Fusee.Math
         /// <param name="x">X translation.</param>
         /// <param name="y">Y translation.</param>
         /// <param name="z">Z translation.</param>
-        /// <returns>The resulting Matrix4 instance.</returns>
+        /// <returns>The resulting float4x4 instance.</returns>
         public static float4x4 CreateTranslation(float x, float y, float z)
         {
             float4x4 result;
@@ -549,7 +562,7 @@ namespace Fusee.Math
         /// Creates a translation matrix.
         /// </summary>
         /// <param name="vector">The translation vector.</param>
-        /// <returns>The resulting Matrix4 instance.</returns>
+        /// <returns>The resulting float4x4 instance.</returns>
         public static float4x4 CreateTranslation(float3 vector)
         {
             float4x4 result;
@@ -558,6 +571,91 @@ namespace Fusee.Math
         }
 
         #endregion
+
+        #region CreateScale
+
+        /// <summary>
+        /// Creates a uniform scale matrix with the same scale value along all three dimensions.
+        /// </summary>
+        /// <param name="scale">The value to scale about x, y, and z.</param>
+        /// <param name="result">The resulting float4x4 instance.</param>
+        public static void CreateScale(float scale, out float4x4 result)
+        {
+            result = Identity;
+            result.M11 = scale;
+            result.M22 = scale;
+            result.M33 = scale;
+        }
+
+        /// <summary>
+        /// Creates a uniform scale matrix with the same scale value along all three dimensions.
+        /// </summary>
+        /// <param name="scale">The value to scale about x, y, and z.</param>
+        /// <returns>The resulting float4x4 instance.</returns>
+        public static float4x4 CreateScale(float scale)
+        {
+            float4x4 result;
+            CreateScale(scale, out result);
+            return result;
+        }
+
+        /// <summary>
+        /// Creates a scale matrix.
+        /// </summary>
+        /// <param name="x">X scale.</param>
+        /// <param name="y">Y scale.</param>
+        /// <param name="z">Z scale.</param>
+        /// <param name="result">The resulting float4x4 instance.</param>
+        public static void CreateScale(float x, float y, float z, out float4x4 result)
+        {
+            result = Identity;
+            result.M11= x;
+            result.M22= y;
+            result.M33= z;
+        }
+
+        /// <summary>
+        /// Creates a scale matrix.
+        /// </summary>
+        /// <param name="vector">The scale vector.</param>
+        /// <param name="result">The resulting float4x4 instance.</param>
+        public static void CreateScale(ref float3 vector, out float4x4 result)
+        {
+            result = Identity;
+            result.M11 = vector.x;
+            result.M22 = vector.y;
+            result.M33 = vector.z;
+        }
+
+        /// <summary>
+        /// Creates a scale matrix.
+        /// </summary>
+        /// <param name="x">X scale.</param>
+        /// <param name="y">Y scale.</param>
+        /// <param name="z">Z scale.</param>
+        /// <returns>The resulting float4x4 instance.</returns>
+        public static float4x4 CreateScale(float x, float y, float z)
+        {
+            float4x4 result;
+            CreateScale(x, y, z, out result);
+            return result;
+        }
+
+        /// <summary>
+        /// Creates a scale matrix.
+        /// </summary>
+        /// <param name="vector">The scale vector.</param>
+        /// <returns>The resulting float4x4 instance.</returns>
+        public static float4x4 CreateScale(float3 vector)
+        {
+            float4x4 result;
+            CreateScale(vector.x, vector.y, vector.z, out result);
+            return result;
+        }
+
+        #endregion
+
+
 
         #region CreateOrthographic
 
@@ -568,7 +666,7 @@ namespace Fusee.Math
         /// <param name="height">The height of the projection volume.</param>
         /// <param name="zNear">The near edge of the projection volume.</param>
         /// <param name="zFar">The far edge of the projection volume.</param>
-        /// <param name="result">The resulting Matrix4 instance.</param>
+        /// <param name="result">The resulting float4x4 instance.</param>
         public static void CreateOrthographic(float width, float height, float zNear, float zFar, out float4x4 result)
         {
             CreateOrthographicOffCenter(-width/2, width/2, -height/2, height/2, zNear, zFar, out result);
@@ -581,7 +679,7 @@ namespace Fusee.Math
         /// <param name="height">The height of the projection volume.</param>
         /// <param name="zNear">The near edge of the projection volume.</param>
         /// <param name="zFar">The far edge of the projection volume.</param>
-        /// <returns>The resulting Matrix4 instance.</returns>
+        /// <returns>The resulting float4x4 instance.</returns>
         public static float4x4 CreateOrthographic(float width, float height, float zNear, float zFar)
         {
             float4x4 result;
@@ -602,7 +700,7 @@ namespace Fusee.Math
         /// <param name="top">The top edge of the projection volume.</param>
         /// <param name="zNear">The near edge of the projection volume.</param>
         /// <param name="zFar">The far edge of the projection volume.</param>
-        /// <param name="result">The resulting Matrix4 instance.</param>
+        /// <param name="result">The resulting float4x4 instance.</param>
         public static void CreateOrthographicOffCenter(float left, float right, float bottom, float top, float zNear,
                                                        float zFar, out float4x4 result)
         {
@@ -631,7 +729,7 @@ namespace Fusee.Math
         /// <param name="top">The top edge of the projection volume.</param>
         /// <param name="zNear">The near edge of the projection volume.</param>
         /// <param name="zFar">The far edge of the projection volume.</param>
-        /// <returns>The resulting Matrix4 instance.</returns>
+        /// <returns>The resulting float4x4 instance.</returns>
         public static float4x4 CreateOrthographicOffCenter(float left, float right, float bottom, float top, float zNear,
                                                            float zFar)
         {
@@ -931,7 +1029,7 @@ namespace Fusee.Math
         /// <param name="eye">Eye (camera) position in world space</param>
         /// <param name="target">Target position in world space</param>
         /// <param name="up">Up vector in world space (should not be parallel to the camera direction, that is target - eye)</param>
-        /// <returns>A Matrix4 that transforms world space to camera space</returns>
+        /// <returns>A float4x4 that transforms world space to camera space</returns>
         public static float4x4 LookAt(float3 eye, float3 target, float3 up)
         {
             var z = float3.Normalize(eye - target);
@@ -956,7 +1054,7 @@ namespace Fusee.Math
         /// <param name="upX">Up vector in world space (should not be parallel to the camera direction, that is target - eye)</param>
         /// <param name="upY">Up vector in world space (should not be parallel to the camera direction, that is target - eye)</param>
         /// <param name="upZ">Up vector in world space (should not be parallel to the camera direction, that is target - eye)</param>
-        /// <returns>A Matrix4 that transforms world space to camera space</returns>
+        /// <returns>A float4x4 that transforms world space to camera space</returns>
         public static float4x4 LookAt(float eyeX, float eyeY, float eyeZ, float targetX, float targetY, float targetZ,
                                       float upX, float upY, float upZ)
         {
@@ -1471,6 +1569,15 @@ namespace Fusee.Math
             return TransformPremultPD(vector,matrix);
         }
 
+        /// <summary>
+        /// Explicit cast operator to cast a double4x4 into a float4x4 value.
+        /// </summary>
+        /// <param name="d4x4">The double4x4 value to cast.</param>
+        /// <returns>A float4x4 value.</returns>
+        public static explicit operator float4x4(double4x4 d4x4)
+        {
+            return new float4x4(d4x4);
+        }
         #endregion
 
         #region Overrides
@@ -1524,7 +1631,7 @@ namespace Fusee.Math
 
         #endregion
 
-        #region IEquatable<Matrix4> Members
+        #region IEquatable<float4x4> Members
 
         /// <summary>
         /// Indicates whether the current matrix represents an affine transformation.
@@ -1553,5 +1660,6 @@ namespace Fusee.Math
         #endregion
 
         public static Converter<string, float4x4> Parse { get; set; }
+
     }
 }
