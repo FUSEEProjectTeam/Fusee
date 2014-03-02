@@ -29,7 +29,7 @@
 //    C4D API, it is also recommended here to keep the dependency on the C4D API as samll as possible.
 //
 //  For a handfull of types some extra hand coding is done here. This happens whenever an appropriate C# type already
-//  exists (and must thus not be created and used by Swig). Examples are the C#-standard strin type (mapped from the 
+//  exists (and must thus not be created and used by Swig). Examples are the C#-standard string type (mapped from the 
 //  Maxon-C++-API-String type), or the Math.La C#- Matrix and Vector classes (mapped from the respective Maxon-C++ classes).
 //  Mapping a C++-API type to an existing C# type can be done using so called typemaps - a concept which has some learning 
 //  curve, especially with the poor documentation given (at least try to grasp the general typemap syntax from the docs).
@@ -53,9 +53,12 @@
 #include "c4d.h"
 #include "lib_ca.h"
 #include "lib_description.h"
+#include "c4d_file.h"
 #include "c4d_graphview.h"
 #include "c4d_operatordata.h"
 #include "c4d_operatorplugin.h"
+#include "c4d_filterdata.h"
+#include "c4d_filterplugin.h"
 #include "operatingsystem.h"
 #include "c4d_basetag.h"
 #include "c4d_baseselect.h" //NEU
@@ -86,7 +89,27 @@ struct Matrix_POD
 	Vector_POD off, v1, v2, v3;
 };
 
+struct SVector_POD
+{
+	float x, y, z;
+};
+
 %}
+
+////////////////////////////////////////////////////////////////////////////////////
+// DeleteMemPtr can be called from generated cs code to free 
+// pointers allocated by C4D as return arrays. This is used in CreatePhongNormals
+//
+// <void*-IntPtr mapping>
+%typemap(cstype, out="IntPtr /* void*_cstype */") void *memPtr "IntPtr /* void*_cstype */"
+%typemap(csin) void *memPtr
+  "new HandleRef(null,$csinput) /* void*_csin */"
+%inline %{
+void DeleteMemPtr(void *memPtr) {
+	DeleteMem(memPtr);
+}
+%}
+// </void*-IntPtr mapping>
 
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -217,8 +240,9 @@ class String;
 //
 // <polymorphic-downcasts>
 
+// for BaseTag derivatives tags
 %pragma(csharp) imclasscode=%{
-  public static BaseTag InstantiateConcreteObject(IntPtr cPtr, bool owner)
+  public static BaseTag InstantiateConcreteTag(IntPtr cPtr, bool owner)
   {
     BaseTag ret = null;
     if (cPtr == IntPtr.Zero) 
@@ -249,9 +273,48 @@ BaseTag *
 /* Insert here every other abstract type returned in the C++ API */
 {
     IntPtr cPtr = $imcall;
+    $csclassname ret = ($csclassname) $modulePINVOKE.InstantiateConcreteTag(cPtr, $owner);$excode
+    return ret;
+}
+
+// for BaseObject derivatives
+%pragma(csharp) imclasscode=%{
+  public static BaseObject InstantiateConcreteObject(IntPtr cPtr, bool owner)
+  {
+    BaseObject ret = null;
+    if (cPtr == IntPtr.Zero) 
+	{
+      return ret;
+    }
+    int type = $modulePINVOKE.C4DAtom_GetType(new HandleRef(null, cPtr));
+    switch (type) 
+	{
+       case 0:
+         ret = new BaseObject(cPtr, owner);
+         break;
+	  case 5100: // Opolygon
+		 ret = new PolygonObject(cPtr, owner);
+		 break;
+      // Repeat for every other concrete type.
+      default:
+	  //changed from the debug output to return a BaseTag object
+        ret = new BaseObject(cPtr, owner);
+        break;
+    }
+    return ret;
+  }
+%}
+
+%typemap(csout, excode=SWIGEXCODE)
+BaseObject *
+/* Insert here every other abstract type returned in the C++ API */
+{
+    IntPtr cPtr = $imcall;
     $csclassname ret = ($csclassname) $modulePINVOKE.InstantiateConcreteObject(cPtr, $owner);$excode
     return ret;
 }
+
+
 // </polymorphic-downcasts>
 
 
@@ -401,7 +464,7 @@ BaseTag *
 
 
 // Map Vector   TO   Fusee.Math.double3
-%typemap(cstype, out="Fusee.Math.double3 /* Vector_cstype_out */") Vector "Fusee.Math.double3 /* Vectorcstype */"
+%typemap(cstype, out="Fusee.Math.double3 /* Vector_cstype_out */") Vector "Fusee.Math.double3 /* Vector_cstype */"
 %typemap(csout, excode=SWIGEXCODE) Vector 
 %{ {  /* <Vector_csout> */
       Fusee.Math.double3 ret = $imcall;$excode
@@ -588,6 +651,10 @@ BaseTag *
 %include "c4d_thread.h";
 
 //////////////////////////////////////////////////////////////////
+// c4d_file.h
+%include "c4d_file.h";
+
+//////////////////////////////////////////////////////////////////
 // lib_description.h
 %ignore DescriptionLib;
 %include "lib_description.swig.h";
@@ -671,6 +738,25 @@ BaseTag *
 	}
 	
 }
+%extend PolygonObject
+{
+	Vector GetPointAt(LONG inx)
+	{
+		return self->GetPointR()[inx];
+	}
+	void SetPointAt(LONG inx, Vector v)
+	{
+		self->GetPointW()[inx] = v;
+	}
+	CPolygon GetPolygonAt(LONG inx)
+	{
+		return self->GetPolygonR()[inx];
+	}
+	void SetPolygonAt(LONG inx, CPolygon v)
+	{
+		self->GetPolygonW()[inx] = v;
+	}
+}
 %extend SplineObject
 {
 	Tangent *GetTangentAt(LONG inx)
@@ -696,6 +782,27 @@ BaseTag *
   return (PointObject*)iObj;
  }
 }
+%typemap(cstype, out="Fusee.Math.float3[] /* SVector*PolygonObject::CreatePhongNormals_cstype */") SVector *PolygonObject::CreatePhongNormals "Fusee.Math.float3[] /* SVector*PolygonObject::CreatePhongNormals_cstype */"
+%typemap(out) SVector *PolygonObject::CreatePhongNormals
+%{ /* <SVector*PolygonObject::CreatePhongNormals_out> */ 
+   $result = *((SVector_POD **)(&$1)); 
+   /* </SVector*PolygonObject::CreatePhongNormals_out> */%}
+%typemap(csout, excode=SWIGEXCODE) SVector *PolygonObject::CreatePhongNormals
+%{ {  /* <SVector*PolygonObject::CreatePhongNormals_csout> */
+      IntPtr p_ret = $imcall;$excode
+	  int nNormals = this.GetPolygonCount()*4;
+      Fusee.Math.float3[] ret = new Fusee.Math.float3[nNormals];
+      unsafe
+	  {
+	      for (int i = 0; i < nNormals; i++)
+		  {
+			  ret[i] = Fusee.Math.ArrayConvert.ArrayFloatTofloat3(((float *)(p_ret))+3*i);
+	      }
+	  }
+	  C4dApi.DeleteMemPtr(p_ret);
+      return ret;
+   } /* </SVector*PolygonObject::CreatePhongNormals_csout> */ %}
+
 
 %include "c4d_baseobject.h";
 
@@ -865,7 +972,8 @@ BaseTag *
 
 %typemap(imtype) GvNode *& "IntPtr /* GvNode_imtype */"
 
-%include "c4d_graphview.h";
+%include "c4d_graphview.swig.h";
+// %include "c4d_graphview.h";
 
 //////////////////////////////////////////////////////////////////
 // "c4d_operatordata.h"
@@ -874,6 +982,19 @@ BaseTag *
 //////////////////////////////////////////////////////////////////
 // "c4d_operatorplugin.h"
 %include "c4d_operatorplugin.h";
+
+//////////////////////////////////////////////////////////////////
+// "c4d_filterdata.h"
+%feature("director") SceneLoaderData;
+%feature("director") SceneSaverData;
+%feature("director") BitmapLoaderData;
+%feature("director") BitmapSaverData;
+%include "c4d_filterdata.h";
+
+//////////////////////////////////////////////////////////////////
+// "c4d_filterplugin.h"
+%include "c4d_filterplugin.h";
+
 
 //////////////////////////////////////////////////////////////////
 //added 23062011 by DS

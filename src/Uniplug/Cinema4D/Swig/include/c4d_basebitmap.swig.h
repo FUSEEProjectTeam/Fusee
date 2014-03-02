@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////
-// CINEMA 4D SDK - adopted for Swig wrapping               //
+// CINEMA 4D SDK                                           //
 /////////////////////////////////////////////////////////////
 // (c) MAXON Computer GmbH, all rights reserved            //
 /////////////////////////////////////////////////////////////
@@ -14,7 +14,7 @@
 	#include "c4d_gedata.h"
 	#include "c4d_baseplugin.h"
 	#include "c4d_filterdata.h"
-	#include "ge_mtools.h"
+	#include "c4d_misc.h"
 	#include "c4d_customdatatype.h"
 #endif
 
@@ -254,10 +254,11 @@ class MultipassBitmap : public BaseBitmap
 		static MultipassBitmap *AllocWrapper(BaseBitmap *bmp) { return C4DOS.Bm->MPB_AllocWrapper(bmp); }
 		static void Free(MultipassBitmap *&bc);
 
-		Bool GetLayers(GeTempDynArray<BaseBitmap> &list, MPB_GETLAYERS flags=MPB_GETLAYERS_IMAGE|MPB_GETLAYERS_ALPHA);
-		Bool GetLayers(GeTempDynArray<MultipassBitmap> &list, MPB_GETLAYERS flags=MPB_GETLAYERS_IMAGE|MPB_GETLAYERS_ALPHA);
+		Bool GetLayers(c4d_misc::BaseArray<BaseBitmap*> &list, MPB_GETLAYERS flags=MPB_GETLAYERS_IMAGE|MPB_GETLAYERS_ALPHA);
+		Bool GetLayers(c4d_misc::BaseArray<MultipassBitmap*> &list, MPB_GETLAYERS flags=MPB_GETLAYERS_IMAGE|MPB_GETLAYERS_ALPHA);
 
 		Bool  SetTempColorProfile(const ColorProfile *profile, Bool dithering);
+		LONG	GetUserID(void) const;
 };
 
 // parameter for Insert...
@@ -334,6 +335,7 @@ class BitmapLoaderPlugin : public BasePlugin
 		Bool BmGetInformation(const Filename &name, LONG *frames, Real *fps);
 		IMAGERESULT BmLoadAnimated(BitmapLoaderAnimatedData *bd, BITMAPLOADERACTION action, BaseBitmap *bm, LONG frame);
 		IMAGERESULT BmExtractSound(BitmapLoaderAnimatedData *bd, BaseSound *snd);
+		IMAGERESULT BmHasSound(BitmapLoaderAnimatedData *bd);
 };
 
 class BitmapSaverPlugin : public BasePlugin

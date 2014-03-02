@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using Fusee.Engine;
@@ -81,7 +82,7 @@ namespace Examples.WinFormsFusee
                     object[] attribs = type.GetCustomAttributes(true);
                     if (attribs.Length > 0)
                     {
-                        FuseeApplicationAttribute fa = (FuseeApplicationAttribute) attribs[0];
+                        var fa = (FuseeApplicationAttribute) attribs[0];
                         _apps.Add(new App
                             {
                                 Name = fa.Name,
@@ -93,9 +94,10 @@ namespace Examples.WinFormsFusee
                     }
                 }
             }
-            catch (Exception e)
+            catch
             {
                 // Couldn't load the file as a managed assembly - don't bother
+                Debug.WriteLine("Error loading a non-managed assembly.");
             }
         }
 

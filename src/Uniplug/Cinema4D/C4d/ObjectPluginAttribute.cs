@@ -36,12 +36,12 @@ namespace C4d
             {
                 return
                     /*
-                    (Hide) ?                 C4dApi.PLUGINFLAG_HIDE : 
+                    (Hide) ?                 C4dApi.PLUGINFLAG_HIDE : 0 |
                     (SmallNode) ?            PLUGINFLAG_SMALLNODE : 
                     (Coffee) ?               PLUGINFLAG_COFFEE : 
                     (HidePluginMenu) ?       PLUGINFLAG_HIDEPLUGINMENU : 
                     (RefreshAlways) ?        PLUGINFLAG_REFRESHALWAYS : #
-                     */
+                    */
                     ((Modifier) ? C4dApi.OBJECT_MODIFIER : 0) |
                     ((HierarchyModifier) ? C4dApi.OBJECT_HIERARCHYMODIFIER : 0) |
                     ((Generator) ? C4dApi.OBJECT_GENERATOR : 0) |

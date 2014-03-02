@@ -1,51 +1,76 @@
 ﻿using System;
+using System.IO;
 using System.Reflection;
 using JSIL.Meta;
 
 namespace Fusee.Engine
 {
+
     #region Documentation Header
+
     /// <summary>
-    /// The Fusee Framework.
+    ///     The Fusee Framework.
     /// </summary>
-    internal class NamespaceDoc
+    internal static class NamespaceDoc
     {
+        // documentation
     }
+
     #endregion
 
     /// <summary>
-    /// The implementation factory. Creates all the implementation specific objects and returns
-    /// their implementation agnostic interfaces. 
-    /// TODO: replace this with something more Dependency Injection Container like
+    ///     The implementation factory. Creates all the implementation specific objects and returns
+    ///     their implementation agnostic interfaces.
     /// </summary>
     public static class ImpFactory
     {
         #region Types
-        [JSIgnore] 
-        private static Type _renderingImplementor;
+
+        [JSIgnore] private static Type _renderingImplementor;
+        [JSIgnore] private static Type _audioImplementor;
+        [JSIgnore] private static Type _physicsImplementor;
+        [JSIgnore] private static Type _networkImplementor;
+        [JSIgnore] private static Type _inputDriverImplementor;
 
         [JSIgnore]
-        private static Type _audioImplementor;
+        private static Type LoadImplementorAssemblyType(string file, string type)
+        {
+            var impAsmName = AssemblyName.GetAssemblyName(file);
 
-        [JSIgnore]
-        private static Type _networkImplementor;
+            if (impAsmName.Name.Equals(Path.GetFileNameWithoutExtension(file)))
+            {
+                Assembly impAsm = Assembly.Load(impAsmName);
+
+                if (impAsm == null)
+                    throw new TypeLoadException("Couldn't load implementor assembly (" + file + ").");
+
+                return impAsm.GetType(type);
+            }
+
+            throw new FileLoadException("Implementor assembly signature was wrong (" + file + ").");
+        }
 
         [JSIgnore]
         private static Type RenderingImplementor
         {
             get
             {
-                if (_renderingImplementor == null)
-                {
-                    // TODO: Remove this hardcoded hack to OpenTK
+                return _renderingImplementor ??
+                       (_renderingImplementor =
+                           LoadImplementorAssemblyType("Fusee.Engine.Imp.OpenTK.dll",
+                               "Fusee.Engine.RenderingImplementor"));
+            }
+        }
 
-                    Assembly impAsm = Assembly.LoadFrom("Fusee.Engine.Imp.OpenTK.dll");
-                    if (impAsm == null)
-                        throw new Exception("Couldn't load implementor assembly (Fusee.Engine.Imp.OpenTK.dll).");
-
-                    _renderingImplementor = impAsm.GetType("Fusee.Engine.RenderingImplementor");
-                }
-                return _renderingImplementor;
+        [JSIgnore]
+        private static Type PhysicsImplementor
+        {
+            get
+            {
+                return _physicsImplementor ??
+                       (_physicsImplementor =
+                           LoadImplementorAssemblyType("Fusee.Engine.Imp.Bullet.dll",
+                               "Fusee.Engine.PhysicsImplementor"));
             }
         }
 
@@ -54,17 +79,10 @@ namespace Fusee.Engine
         {
             get
             {
-                if (_audioImplementor == null)
-                {
-                    // TODO: Remove this hardcoded hack to SFMLAudio
-                    Assembly impAsm = Assembly.LoadFrom("Fusee.Engine.Imp.SFMLAudio.dll");
-
-                    if (impAsm == null)
-                        throw new Exception("Couldn't load implementor assembly (Fusee.Engine.Imp.SFMLAudio.dll).");
-
-                    _audioImplementor = impAsm.GetType("Fusee.Engine.AudioImplementor");
-                }
-                return _audioImplementor;
+                return _audioImplementor ??
+                       (_audioImplementor =
+                           LoadImplementorAssemblyType("Fusee.Engine.Imp.SFMLAudio.dll",
+                               "Fusee.Engine.AudioImplementor"));
             }
         }
 
@@ -73,100 +91,127 @@ namespace Fusee.Engine
         {
             get
             {
-                if (_networkImplementor == null)
-                {
-                    // TODO: Remove this hardcoded hack to Lidgren
-                    Assembly impAsm = Assembly.LoadFrom("Fusee.Engine.Imp.Lidgren.dll");
+                return _networkImplementor ??
+                       (_networkImplementor =
+                           LoadImplementorAssemblyType("Fusee.Engine.Imp.Lidgren.dll",
+                               "Fusee.Engine.NetworkImplementor"));
+            }
+        }
 
-                    if (impAsm == null)
-                        throw new Exception("Couldn't load implementor assembly (Fusee.Engine.Imp.Lidgren.dll).");
-
-                    _networkImplementor = impAsm.GetType("Fusee.Engine.NetworkImplementor");
-                }
-                return _networkImplementor;
+        [JSIgnore]
+        private static Type InputDriverImplementor
+        {
+            get
+            {
+                return _inputDriverImplementor ??
+                       (_inputDriverImplementor =
+                           LoadImplementorAssemblyType("Fusee.Engine.Imp.SlimDX.dll",
+                               "Fusee.Engine.InputDriverImplementor"));
             }
         }
 
         #endregion
 
         #region Members
+
+        [JSIgnore]
+        private static MethodInfo CreateIImp(Type imp, string method)
+        {
+            MethodInfo mi = imp.GetMethod(method);
+
+            if (mi == null)
+                throw new MissingMethodException("Implementor type (" + imp + ") doesn't contain method " + method);
+
+            return mi;
+        }
+
         /// <summary>
-        /// Creates an instance of <see cref="IRenderCanvasImp"/> by reflection of RenderingImplementor.
+        ///     Creates an instance of <see cref="IRenderCanvasImp" /> by reflection of RenderingImplementor.
         /// </summary>
-        /// <returns>An instance of <see cref="IRenderCanvasImp"/>.</returns>
-        /// <exception cref="System.Exception">Implementor type ( + RenderingImplementor.ToString() + ) doesn't contain method CreateRenderCanvasImp</exception>
+        /// <returns>
+        ///     An instance of <see cref="IRenderCanvasImp" />.
+        /// </returns>
         [JSExternal]
         public static IRenderCanvasImp CreateIRenderCanvasImp()
         {
-            MethodInfo mi = RenderingImplementor.GetMethod("CreateRenderCanvasImp");
-            if (mi == null)
-                throw new Exception("Implementor type (" + RenderingImplementor.ToString() + ") doesn't contain method CreateRenderCanvasImp");
-
-            return (IRenderCanvasImp)mi.Invoke(null, null);
+            return (IRenderCanvasImp) CreateIImp(RenderingImplementor, "CreateRenderCanvasImp").Invoke(null, null);
         }
 
         /// <summary>
-        /// Creates an instance of <see cref="IRenderContextImp"/> by reflection of RenderingImplementor.
+        ///     Creates an instance of <see cref="IDynamicWorldImp" /> by reflection of PhysicsImplementor.
+        /// </summary>
+        /// <returns>
+        ///     An instance of <see cref="IDynamicWorldImp" />.
+        /// </returns>
+        [JSExternal]
+        public static IDynamicWorldImp CreateIDynamicWorldImp()
+        {
+            return (IDynamicWorldImp) CreateIImp(PhysicsImplementor, "CreateDynamicWorldImp").Invoke(null, null);
+        }
+
+        /// <summary>
+        ///     Creates an instance of <see cref="IRenderContextImp" /> by reflection of RenderingImplementor.
         /// </summary>
         /// <param name="renderCanvas">The render canvas.</param>
-        /// <returns></returns>
-        /// <exception cref="System.Exception">Implementor type ( + RenderingImplementor.ToString() + ) doesn't contain method CreateRenderContextImp</exception>
+        /// <returns>
+        ///     An instance of <see cref="IRenderContextImp" />.
+        /// </returns>
         [JSExternal]
         public static IRenderContextImp CreateIRenderContextImp(IRenderCanvasImp renderCanvas)
         {
-            MethodInfo mi = RenderingImplementor.GetMethod("CreateRenderContextImp");
-            if (mi == null)
-                throw new Exception("Implementor type (" + RenderingImplementor.ToString() + ") doesn't contain method CreateRenderContextImp");
-
-            return (IRenderContextImp)mi.Invoke(null, new object[] { renderCanvas });
+            return
+                (IRenderContextImp)
+                    CreateIImp(RenderingImplementor, "CreateRenderContextImp").Invoke(null, new object[] {renderCanvas});
         }
 
         /// <summary>
-        /// Creates an instance of <see cref="IInputImp"/> by reflection of RenderingImplementor.
+        ///     Creates an instance of <see cref="IInputImp" /> by reflection of RenderingImplementor.
         /// </summary>
         /// <param name="renderCanvas">The render canvas.</param>
-        /// <returns></returns>
-        /// <exception cref="System.Exception">Implementor type ( + RenderingImplementor.ToString() + ) doesn't contain method CreateInputImp</exception>
+        /// <returns>
+        ///     An instance of <see cref="IInputImp" />.
+        /// </returns>
         [JSExternal]
         public static IInputImp CreateIInputImp(IRenderCanvasImp renderCanvas)
         {
-            MethodInfo mi = RenderingImplementor.GetMethod("CreateInputImp");
-            if (mi == null)
-                throw new Exception("Implementor type (" + RenderingImplementor.ToString() + ") doesn't contain method CreateInputImp");
-
-            return (IInputImp)mi.Invoke(null, new object[] { renderCanvas });
+            return
+                (IInputImp) CreateIImp(RenderingImplementor, "CreateInputImp").Invoke(null, new object[] {renderCanvas});
         }
 
         /// <summary>
-        /// Creates an instance of <see cref="IAudioImp"/> by reflection of AudioImplementor.
+        ///     Creates an instance of <see cref="IAudioImp" /> by reflection of AudioImplementor.
         /// </summary>
-        /// <returns></returns>
-        /// <exception cref="System.Exception">Implementor type ( + AudioImplementor.ToString() + ) doesn't contain method CreateAudioImp</exception>
+        /// <returns>
+        ///     An instance of <see cref="IAudioImp" />.
+        /// </returns>
         [JSExternal]
         public static IAudioImp CreateIAudioImp()
         {
-            MethodInfo mi = AudioImplementor.GetMethod("CreateAudioImp");
-
-            if (mi == null)
-                throw new Exception("Implementor type (" + AudioImplementor.ToString() + ") doesn't contain method CreateAudioImp");
-
-            return (IAudioImp)mi.Invoke(null, null);
+            return (IAudioImp) CreateIImp(AudioImplementor, "CreateAudioImp").Invoke(null, null);
         }
 
         /// <summary>
-        /// Creates an instance of <see cref="INetworkImp"/> by reflection of NetworkImplementor.
+        ///     Creates an instance of <see cref="INetworkImp" /> by reflection of NetworkImplementor.
         /// </summary>
-        /// <returns></returns>
-        /// <exception cref="System.Exception">Implementor type ( + RenderingImplementor.ToString() + ) doesn't contain method CreateNetworkImp</exception>
+        /// <returns>
+        ///     An instance of <see cref="INetworkImp" />.
+        /// </returns>
         [JSExternal]
         public static INetworkImp CreateINetworkImp()
         {
-            MethodInfo mi = NetworkImplementor.GetMethod("CreateNetworkImp");
+            return (INetworkImp) CreateIImp(NetworkImplementor, "CreateNetworkImp").Invoke(null, null);
+        }
 
-            if (mi == null)
-                throw new Exception("Implementor type (" + RenderingImplementor.ToString() + ") doesn't contain method CreateNetworkImp");
-
-            return (INetworkImp)mi.Invoke(null, null);
+        /// <summary>
+        ///     Creates an instance of <see cref="IInputDriverImp" /> by reflection of InputDriverImplementor.
+        /// </summary>
+        /// <returns>
+        ///     An instance of <see cref="IInputDriverImp" />.
+        /// </returns>
+        [JSExternal]
+        public static IInputDriverImp CreateIInputDriverImp()
+        {
+            return (IInputDriverImp) CreateIImp(InputDriverImplementor, "CreateInputDriverImp").Invoke(null, null);
         }
 
         #endregion

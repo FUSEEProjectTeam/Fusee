@@ -87,6 +87,16 @@ namespace Fusee.Math
             z = v.z;
         }
 
+        /// <summary>
+        /// Constructs a new float3 by converting from a double3.
+        /// </summary>
+        /// <param name="d3">The double3 to copy components from.</param>
+        public float3(double3 d3)
+        {
+            x = (float) d3.x;
+            y = (float) d3.y;
+            z = (float) d3.z;
+        }
         #endregion
 
         #region Public Members
@@ -1491,6 +1501,15 @@ namespace Fusee.Math
             return !left.Equals(right);
         }
 
+        /// <summary>
+        /// Explicit cast operator to cast a double3 into a float3 value.
+        /// </summary>
+        /// <param name="d3">The double3 value to cast.</param>
+        /// <returns>A float3 value.</returns>
+        public static explicit operator float3(double3 d3)
+        {
+            return new float3(d3);
+        }
         #endregion
 
         #region Overrides
@@ -1568,5 +1587,7 @@ namespace Fusee.Math
         }
 
         #endregion
+
+        public static Converter<string, float3> Parse { get; set; }
     }
 }

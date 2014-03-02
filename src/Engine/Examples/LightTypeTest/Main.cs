@@ -18,7 +18,7 @@ namespace Examples.LightTypeTest
 
             DirectionalLight direct = new DirectionalLight(new float3(1, 1, 1), new float4(0.7f, 0.7f, 0.7f, 1), new float4(0.3f, 0.3f, 0.3f, 1), new float4(0.1f, 0.1f, 0.1f, 1), new float3(0, 0, 0), 2);
             PointLight point = new PointLight(new float3(0, 0, 0), new float4(0.7f, 0.7f, 0.7f, 1), new float4(0.3f, 0.3f, 0.3f, 1), new float4(0.1f, 0.1f, 0.1f, 1), 1);
-            SpotLight spot = new SpotLight(new float3(1, 1, 1), new float3(1, 1, 1), new float4(0.7f, 0.7f, 0.7f, 1), new float4(0.3f, 0.3f, 0.3f, 1), new float4(0.1f, 0.1f, 0.1f, 1), 10.0f , 0);
+            SpotLight spot = new SpotLight(new float3(1, 1, 1), new float3(1, 1, 1), new float4(0.7f, 0.7f, 0.7f, 1), new float4(0.3f, 0.3f, 0.3f, 1), new float4(0.1f, 0.1f, 0.1f, 1), 1.0f , 0);
 
             Geometry sphere = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Sphere.obj.model"));
             Geometry sphere2 = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Sphere.obj.model"));

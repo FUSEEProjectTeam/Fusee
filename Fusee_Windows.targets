@@ -5,11 +5,15 @@
     <ItemGroup>
       <DLLFiles Include="$(TargetDir)..\..\*.dll" />
       <SFMLFiles Include="$(SolutionDir)ExternalBinaries\SFML\*.dll" />
+      <FONTFiles Include="$(SolutionDir)ExternalBinaries\SharpFont\*.dll" />
+      <SCRIPTFiles Include="$(SolutionDir)ExternalBinaries\JSIL\Scripts\*.js" />
     </ItemGroup>
 
     <Message Importance="High" Text="### BeforeBuildEvent $(TargetName): Copying necessary files ###" />
     <Copy SourceFiles="@(DLLFiles)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" />
     <Copy SourceFiles="@(SFMLFiles)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(FONTFiles)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(SCRIPTFiles)" DestinationFolder="$(TargetDir)..\..\WebGL\Scripts" SkipUnchangedFiles="true" />
   </Target>
   
   <!--- AfterBuild on Windows -->
@@ -22,6 +26,8 @@
       <WebGLStyles Include="$(TargetDir)..\..\WebGL\Styles\*.*" />
       <WebAudioScript Include="$(TargetDir)..\..\WebAudio\*.*" />
       <WebNetScript Include="$(TargetDir)..\..\WebNet\*.*" />
+      <WebInputScript Include="$(TargetDir)..\..\WebInput\*.*" />
+      <WebXirkitScript Include="$(TargetDir)..\..\WebXirkit\*.*" />
     </ItemGroup>
 
     <MakeDir Directories="$(WebOutputDir)" Condition="!Exists('$(WebOutputDir)')" />
@@ -37,7 +43,9 @@
     <Copy SourceFiles="@(WebGLStyles)" DestinationFolder="$(WebOutputDir)Assets\Styles" SkipUnchangedFiles="true" />
     <Copy SourceFiles="@(WebAudioScript)" DestinationFolder="$(WebOutputDir)Assets\Scripts" SkipUnchangedFiles="true" />
     <Copy SourceFiles="@(WebNetScript)" DestinationFolder="$(WebOutputDir)Assets\Scripts" SkipUnchangedFiles="true" />
-
+    <Copy SourceFiles="@(WebInputScript)" DestinationFolder="$(WebOutputDir)Assets\Scripts" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(WebXirkitScript)" DestinationFolder="$(WebOutputDir)Assets\Scripts" SkipUnchangedFiles="true" />
+    
     <!-- Escaping necessary because of quotation marks! -->
     <Message Importance="High" Text="### PostBuildEvent $(TargetName): Creating default HTML file ###" />
     <Exec ContinueOnError="true" Timeout="120000" Command='"$(SolutionDir)ExternalBinaries\JSIL\Compiler\fuHTMLGen.exe" "$(TargetDir)\" "$(WebOutputDir)\" "$(TargetPath)"' />

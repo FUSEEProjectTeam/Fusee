@@ -5,8 +5,8 @@ using System.Runtime.InteropServices;
 // Allgemeine Informationen über eine Assembly werden über die folgenden 
 // Attribute gesteuert. Ändern Sie diese Attributwerte, um die Informationen zu ändern,
 // die mit einer Assembly verknüpft sind.
-[assembly: AssemblyTitle("Fusee.Engine.Imp.NAudio")]
-[assembly: AssemblyDescription("NAudio implementation of the render engine hardware layer")]
+[assembly: AssemblyTitle("Fusee.Engine.Imp.SFMLAudio")]
+[assembly: AssemblyDescription("SFMLAudio implementation of the render engine hardware layer")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Furtwangen University")]
 [assembly: AssemblyProduct("Fusee")]

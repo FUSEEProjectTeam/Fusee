@@ -1,21 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
-using Fusee.Math;
+using System.Globalization;
 using System.IO;
+using System.Linq;
+using Fusee.Math;
 using JSIL.Meta;
 
 namespace Fusee.Engine
 {
     /// <summary>
-    /// This class is used to load 3D Models in .obj format into memory.
+    ///     This class is used to load 3D Models in .obj format into memory.
     /// </summary>
-    public class MeshReader
+    public static class MeshReader
     {
         #region Members
 
         /// <summary>
-        /// Replacement for double.Parse(s, [InvariantCulture])
-        /// Hack needed for JSIL.
+        ///     Replacement for double.Parse(s, [InvariantCulture])
+        ///     Hack needed for JSIL.
         /// </summary>
         /// <param name="s">string to parse</param>
         /// <returns>A double number</returns>
@@ -23,20 +24,20 @@ namespace Fusee.Engine
         [JSExternal]
         public static double Double_Parse(string s)
         {
-            return double.Parse(s, System.Globalization.CultureInfo.InvariantCulture);
+            return double.Parse(s, CultureInfo.InvariantCulture);
         }
 
         /// <summary>
-        /// Parses the contents of the TextReader object passed to the method and tries to 
-        /// interpret the contents as a <a href="http://en.wikipedia.org/wiki/Wavefront_.obj_file" target="_blank">Wavefront obj</a> file.
-        /// Creates a Mesh object from the contents.
+        ///     Parses the contents of the TextReader object passed to the method and tries to
+        ///     interpret the contents as a <a href="http://en.wikipedia.org/wiki/Wavefront_.obj_file">Wavefront obj</a> file.
+        ///     Creates a Mesh object from the contents.
         /// </summary>
         /// <param name="tr">The initialized TextReader (can be either a StreamReader or a StringReader)</param>
         /// <returns>The newly created Mesh object</returns>
         public static Geometry ReadWavefrontObj(TextReader tr)
         {
             const int nMaxInx = 256;
-            Geometry g = new Geometry();
+            var g = new Geometry();
 
             int nFaceRefs = 0;
             int lineNumber = 1;
@@ -59,7 +60,7 @@ namespace Fusee.Engine
                     string[] values = FilteredSplit(tmp, null);
 
                     g.AddTexCoord(new double2(Double_Parse(values[0]),
-                                              Double_Parse(values[1])));
+                        Double_Parse(values[1])));
                 }
                 else if (line.StartsWith("vn"))
                 {
@@ -91,45 +92,49 @@ namespace Fusee.Engine
 
                     if (!(3 <= values.Length && values.Length < nMaxInx))
                     {
-                        throw new Exception("Error reading obj file (" + lineNumber + "). Face definition number of vertices must be within [3.." + nMaxInx + "].");                        
+                        throw new ArgumentOutOfRangeException("Error reading obj file (" + lineNumber +
+                                            "). Face definition number of vertices must be within [3.." + nMaxInx + "].");
                     }
 
-                    int[] vI = new int[values.Length];
+                    var vI = new int[values.Length];
                     int[] nI = null;
                     int[] tI = null;
                     int i = 0;
-                    foreach (string vRef in values)
+                    foreach (var vRef in values)
                     {
                         string[] vDef = vRef.Split('/');
                         if (nFaceRefs == 0)
                         {
                             if (!(1 <= vDef.Length && vDef.Length <= 3))
-                                throw new Exception("Error reading obj file (" + lineNumber + "). Face definitions must contain 1, 2 or 3 indices per vertex");
+                                throw new ArgumentOutOfRangeException("Error reading obj file (" + lineNumber +
+                                                    "). Face definitions must contain 1, 2 or 3 indices per vertex");
                             nFaceRefs = vDef.Length;
                         }
                         else
                         {
                             if (vDef.Length != nFaceRefs)
-                                throw new Exception("Error reading obj file (" + lineNumber + "). Inconsistent face definitions");
+                                throw new ArgumentOutOfRangeException("Error reading obj file (" + lineNumber +
+                                                    "). Inconsistent face definitions");
                         }
 
-                        vI[i] = int.Parse(vDef[0])-1;
+                        vI[i] = int.Parse(vDef[0]) - 1;
 
                         if (vDef.Length > 1 && !String.IsNullOrEmpty(vDef[1]))
                         {
                             if (tI == null)
                                 tI = new int[values.Length];
-                            tI[i] = int.Parse(vDef[1])-1;
+                            tI[i] = int.Parse(vDef[1]) - 1;
                         }
 
                         if (vDef.Length > 2)
                         {
                             if (String.IsNullOrEmpty(vDef[1]))
-                                throw new Exception("Error reading obj file (" + lineNumber + "). Syntax error in face definition");
+                                throw new FormatException("Error reading obj file (" + lineNumber +
+                                                    "). Syntax error in face definition");
 
                             if (nI == null)
                                 nI = new int[values.Length];
-                            nI[i] = int.Parse(vDef[2])-1;
+                            nI[i] = int.Parse(vDef[2]) - 1;
                         }
                         i++;
                     }
@@ -173,53 +178,44 @@ namespace Fusee.Engine
             }
 
             if (!g.HasNormals)
-                g.CreateNormals(80 * 3.141592 / 180.0);
+                g.CreateNormals(80*3.141592/180.0);
             return g;
         }
 
         /// <summary>
-        /// This method loads an object file and returns it as a mesh.
+        ///     This method loads an object file and returns it as a mesh.
         /// </summary>
         /// <param name="path">Path to the object to load</param>
         /// <returns>The newly created Mesh object</returns>
         public static Mesh LoadMesh(string path)
         {
-            Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader(path));
-            return geo.ToMesh();
+            using (var obj = new StreamReader(path))
+            {
+                Geometry geo = ReadWavefrontObj(obj);
+                return geo.ToMesh();
+            }
         }
 
         /// <summary>
-        /// This method is used to split string in a list of strings based on the separator passed to the method.
+        ///     This method is used to split a string in a list of strings based on the separator passed to the method.
         /// </summary>
-        /// <param name="strIn">The STR in.</param>
+        /// <param name="strIn">The string.</param>
         /// <param name="separator">The separator.</param>
-        /// <returns>A string with all values without the separator.</returns>
+        /// <returns>An array of string with all separated values.</returns>
         public static string[] FilteredSplit(string strIn, char[] separator)
         {
-            string[] valuesUnfiltered = strIn.Split(separator);
-
             // Sometime if we have a white space at the beginning of the string, split
             // will return an empty string. Let's remove that.
-            List<string> listOfValues = new List<string>();
-            foreach (string str in valuesUnfiltered)
-            {
-                if (str != "")
-                {
-                    listOfValues.Add(str);
-                }
-            }
-            string[] values = listOfValues.ToArray();
-
-            return values;
+            return strIn.Split(separator).Where(str => str.Length > 0).ToArray();
         }
 
         #endregion
     }
 }
 
+#region Unused Code
 
-
- /*
+/*
    namespace Fusee.Engine
 {
 
@@ -327,3 +323,5 @@ namespace Fusee.Engine
           sr.Close();
       }
 */
+
+#endregion

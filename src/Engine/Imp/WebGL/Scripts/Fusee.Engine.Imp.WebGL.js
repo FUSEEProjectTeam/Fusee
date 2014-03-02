@@ -9,7 +9,9 @@
 var $WebGLImp = JSIL.DeclareAssembly("Fusee.Engine.Imp.WebGL");
 var $WebAudioImp = JSIL.GetAssembly("Fusee.Engine.Imp.WebAudio");
 var $WebNetImp = JSIL.GetAssembly("Fusee.Engine.Imp.WebNet");
+var $WebInputImp = JSIL.GetAssembly("Fusee.Engine.Imp.WebInput");
 
+var $fuseeCore = JSIL.GetAssembly("Fusee.Engine.Core");
 var $fuseeCommon = JSIL.GetAssembly("Fusee.Engine.Common");
 var $fuseeMath = JSIL.GetAssembly("Fusee.Math.Core");
 
@@ -18,16 +20,20 @@ var $fuseeFirstGetShaderParamCall = false;
 JSIL.DeclareNamespace("Fusee");
 JSIL.DeclareNamespace("Fusee.Engine");
 
-JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.TheEmptyDummyClass", true, [], function($interfaceBuilder) {
-    $ = $interfaceBuilder;
+var $ColorUintCtor_U = function () {
+    return ($ColorUintCtor_U = JSIL.Memoize(new JSIL.ConstructorSignature($fuseeCommon.TypeRef("Fusee.Engine.ColorUint"), [$jsilcore.TypeRef("System.UInt32")])))();
+};
+var $ColorUintCtor_S_S_S_S = function () {
+    return ($ColorUintCtor_S_S_S_S = JSIL.Memoize(new JSIL.ConstructorSignature($jsilcore.TypeRef("Fusee.Engine.ColorUint"), [
+        $jsilcore.TypeRef("System.Single"), $jsilcore.TypeRef("System.Single"),
+        $jsilcore.TypeRef("System.Single"), $jsilcore.TypeRef("System.Single")
+    ])))();
+};
 
-    $.Field({ Static: false, Public: false }, "test", $.Object, null);
 
-    $.ImplementInterfaces(
-        $fuseeCommon.TypeRef("Fusee.Engine.IShaderProgramImp")
-    );
-
-    return function(newThisType) { $thisType = newThisType; };
+JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.TheEmptyDummyClass", true, [], function ($) {
+   $.ImplementInterfaces($fuseeCommon.TypeRef("Fusee.Engine.IShaderProgramImp"));
+     $.Field({ Static: false, Public: false }, "test", $.Object, null);
 });
 
 JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.ShaderProgramImp", true, [], function($interfaceBuilder) {
@@ -50,6 +56,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.Texture", true,
     $.Method({ Static: false, Public: true }, ".ctor",
         new JSIL.MethodSignature(null, []),
         function _ctor() {
+            // not implemented
         }
     );
 
@@ -60,10 +67,92 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.Texture", true,
     return function(newThisType) { $thisType = newThisType; };
 });
 
+JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.Font", true, [], function($interfaceBuilder) {
+    $ = $interfaceBuilder;
+
+    $.Field({ Static: false, Public: false }, "Face", $.Object, null);
+
+    // texture atlas
+    $.Field({ Static: false, Public: true }, "TexAtlas", $fuseeCommon.TypeRef("Fusee.Engine.ITexture"), null);
+
+    $.Field({ Static: false, Public: true }, "Width", $.Int32, null);
+    $.Field({ Static: false, Public: true }, "Height", $.Int32, null);
+
+    // font settings
+    $.Field({ Static: false, Public: true }, "FontSize", $.UInt32, null);
+    $.Field({ Static: false, Public: true }, "UseKerning", $.Boolean, null);
+
+    // char info
+    $.Field({ Static: false, Public: true }, "CharInfo", $jsilcore.TypeRef("System.Array", [$fuseeCommon.TypeRef("Fusee.Engine.CharInfoStruct")]), null);
+
+    $.Method({ Static: false, Public: true }, ".ctor",
+        new JSIL.MethodSignature(null, []),
+        function _ctor() {
+            // not implemented
+        }
+    );
+
+    $.Method({ Static: false, Public: true }, "get_TexAtlas",
+        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.ITexture"), []),
+        function get_TexAtlas() {
+            return this.TexAtlas;
+        }
+    );
+
+    $.Method({ Static: false, Public: true }, "get_Width",
+        new JSIL.MethodSignature($.Int32, []),
+        function get_Width() {
+            return this.Width;
+        }
+    );
+
+    $.Method({ Static: false, Public: true }, "get_Height",
+        new JSIL.MethodSignature($.Int32, []),
+        function get_Height() {
+            return this.Height;
+        }
+    );
+
+    $.Method({ Static: false, Public: true }, "get_CharInfo",
+        new JSIL.MethodSignature($jsilcore.TypeRef("System.Array", [$fuseeCommon.TypeRef("Fusee.Engine.CharInfoStruct")]), []),
+        function get_CharInfo() {
+            return this.CharInfo;
+        }
+    );
+
+    $.Method({ Static: false, Public: true }, "get_FontSize",
+        new JSIL.MethodSignature($.Int32, []),
+        function get_FontSize() {
+            return this.FontSize;
+        }
+    );
+
+    $.Method({ Static: false, Public: true }, "set_UseKerning",
+        new JSIL.MethodSignature(null, [$.Boolean]),
+        function set_UseKerning(val) {
+            this.UseKerning = val;
+        }
+    );
+
+    $.Method({ Static: false, Public: true }, "get_UseKerning",
+        new JSIL.MethodSignature($.Boolean, []),
+        function get_UseKerning() {
+            return this.UseKerning;
+        }
+    );
+
+    $.ImplementInterfaces(
+        $fuseeCommon.TypeRef("Fusee.Engine.IFont")
+    );
+
+    return function(newThisType) { $thisType = newThisType; };
+});
+
 JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.ShaderParam", true, [], function($) {
     $.Method({ Static: false, Public: true }, ".ctor",
         new JSIL.MethodSignature(null, []),
         function _ctor() {
+            // not implemented
         }
     );
 
@@ -86,7 +175,11 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderCanvasImp
         new JSIL.MethodSignature(null, []),
         function _ctor() {
             this.theCanvas = document.getElementById("canvas");
-            this.gl = this.theCanvas.getContext("webgl") || this.theCanvas.getContext("experimental-webgl");
+
+            var premAlpha = jsilConfig.premultipliedAlpha;
+            this.gl = this.theCanvas.getContext("webgl", { premultipliedAlpha: premAlpha }) ||
+						this.theCanvas.getContext("experimental-webgl", { premultipliedAlpha: premAlpha });
+
             this.currWidth = 0;
             this.currHeight = 0;
         }
@@ -106,10 +199,24 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderCanvasImp
         }
     );
 
+    $.Method({ Static: false, Public: true }, "set_Height",
+        new JSIL.MethodSignature(null, [$.Int32]),
+        function set_Height(val) {
+            // not implemented
+        }
+    );
+
     $.Method({ Static: false, Public: true }, "get_Width",
         new JSIL.MethodSignature($.Int32, []),
         function get_Width() {
             return this.gl.drawingBufferWidth;
+        }
+    );
+
+    $.Method({ Static: false, Public: true }, "set_Width",
+        new JSIL.MethodSignature(null, [$.Int32]),
+        function set_Width(val) {
+            // not implemented
         }
     );
 
@@ -334,7 +441,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderCanvasImp
     return function(newThisType) { $thisType = newThisType; };
 });
 
-JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextImp", true, [], function($interfaceBuilder) {
+JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextImp", true, [], function ($interfaceBuilder) {
     $ = $interfaceBuilder;
 
     $.Field({ Static: false, Public: false }, "gl", $.Object, null);
@@ -342,10 +449,13 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
     $.Field({ Static: false, Public: false }, "_shaderParam2TexUnit", $.Object, null);
     $.Field({ Static: false, Public: false }, "_currentShaderParamHandle", $.Int32, null);
 
+    $.Field({ Static: false, Public: false }, "_depthTest", $.Boolean, null);
+    $.Field({ Static: false, Public: false }, "_blending", $.Boolean, null);
+
     $.Method({ Static: false, Public: true }, ".ctor",
         new JSIL.MethodSignature(null, [$WebGLImp.TypeRef("Fusee.Engine.RenderCanvasImp")]),
         function _ctor(renderCanvas) {
-            this.gl = document.getElementById("canvas").getContext("webgl") || document.getElementById("canvas").getContext("experimental-webgl");
+            this.gl = renderCanvas.gl;
             this.gl.enable(this.gl.DEPTH_TEST);
             this.gl.enable(this.gl.CULL_FACE);
             this.gl.clearColor(0.0, 0.0, 0.2, 1.0);
@@ -362,14 +472,14 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
     $.Property({ Static: false, Public: true }, "ModelView");
 
     $.Method({ Static: false, Public: true }, "get_ModelView",
-        new JSIL.MethodSignature($asm00.TypeRef("Fusee.Math.float4x4"), []),
+        new JSIL.MethodSignature($fuseeMath.TypeRef("Fusee.Math.float4x4"), []),
         function get_ModelView() {
-            return $asm00.Fusee.Math.float4x4.Identity;
+            return $fuseeMath.Fusee.Math.float4x4.Identity;
         }
     );
 
     $.Method({ Static: false, Public: true }, "set_ModelView",
-        new JSIL.MethodSignature(null, [$asm00.TypeRef("Fusee.Math.float4x4")]),
+        new JSIL.MethodSignature(null, [$fuseeMath.TypeRef("Fusee.Math.float4x4")]),
         function set_ModelView(value) {
             // not implemented
         }
@@ -378,14 +488,14 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
     $.Property({ Static: false, Public: true }, "Projection");
 
     $.Method({ Static: false, Public: true }, "get_Projection",
-        new JSIL.MethodSignature($asm00.TypeRef("Fusee.Math.float4x4"), []),
+        new JSIL.MethodSignature($fuseeMath.TypeRef("Fusee.Math.float4x4"), []),
         function get_Projection() {
-            return $asm00.Fusee.Math.float4x4.Identity;
+            return $fuseeMath.Fusee.Math.float4x4.Identity;
         }
     );
 
     $.Method({ Static: false, Public: true }, "set_Projection",
-        new JSIL.MethodSignature(null, [$asm00.TypeRef("Fusee.Math.float4x4")]),
+        new JSIL.MethodSignature(null, [$fuseeMath.TypeRef("Fusee.Math.float4x4")]),
         function set_Projection(value) {
             // not implemented
         }
@@ -524,10 +634,190 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
         }
     );
 
+    $.Method({ Static: false, Public: true }, "LoadFont",
+        new JSIL.MethodSignature($WebGLImp.TypeRef("Fusee.Engine.IFont"), [$.String, $.UInt32]),
+        function LoadFont(filename, size) {
+            var texAtlas = new $WebGLImp.Fusee.Engine.Font;
+
+            texAtlas.Face = JSIL.Host.getAsset(filename);
+            texAtlas.FontSize = size;
+            texAtlas.UseKerning = false;
+
+            return this.GenerateTextureAtlas(texAtlas, size);
+        }
+    );
+
+    $.Method({ Static: false, Public: false }, "GenerateTextureAtlas",
+        new JSIL.MethodSignature($WebGLImp.TypeRef("Fusee.Engine.IFont"), [$fuseeCommon.TypeRef("Fusee.Engine.IFont"), $.Int32]),
+        function GenerateTextureAtlas(texAtlas, fontSize) {
+            if (texAtlas == null)
+                return null;
+
+            var face = texAtlas.Face;
+            var fontScale = 1 / face.unitsPerEm * fontSize;
+
+            // get atlas texture size
+            var rowW = 0;
+            var rowH = 1;
+            var h = 1;
+
+            var maxWidth = 512;
+
+            for (var i = 32; i < 256; i++) {
+                // TODO: Save the glyphs for later use
+                var glyph = face.charToGlyph(String.fromCharCode(i));
+
+                if (rowW + ~~(glyph.advanceWidth * fontScale) + 1 >= maxWidth) {
+                    h += rowH;
+                    rowW = 0;
+                    rowH = 0;
+                }
+
+                rowW += ~~(glyph.advanceWidth * fontScale) + 1;
+                rowH = System.Math.Max(~~(((glyph.yMax - glyph.yMin) * fontScale) + 1), rowH);
+
+                var test = 0;
+            }
+
+            // for resizing to non-power-of-two
+            var potH = (h + rowH) - 1;
+
+            potH |= potH >> 1;
+            potH |= potH >> 2;
+            potH |= potH >> 4;
+            potH |= potH >> 8;
+            potH |= potH >> 16;
+
+            texAtlas.Width = maxWidth;
+            texAtlas.Height = ~~++potH;
+
+            // atlas texture
+            var tex = this.gl.createTexture();
+
+            this.gl.activeTexture(this.gl.TEXTURE0);
+            this.gl.bindTexture(this.gl.TEXTURE_2D, tex);
+
+            this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.ALPHA, maxWidth, potH, 0, this.gl.ALPHA, this.gl.UNSIGNED_BYTE, null);
+
+            // texture settings
+            this.gl.pixelStorei(this.gl.UNPACK_ALIGNMENT, 1);
+
+            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
+            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
+
+            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
+            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.LINEAR);
+
+            texAtlas.TexAtlas = new $WebGLImp.Fusee.Engine.Texture();
+            texAtlas.TexAtlas.handle = tex;
+
+            // paste the glyph images into the texture atlas
+            texAtlas.CharInfo = new Array(256);
+            for (var chInfo = 0; chInfo < 256; chInfo++) {
+                texAtlas.CharInfo[chInfo] = new $fuseeCommon.Fusee.Engine.CharInfoStruct;
+            }
+
+            var offX = 0;
+            var offY = 1;
+            rowH = 1;
+
+            // webgl canvas
+            var canvas = document.createElement("canvas");
+            var ctx = canvas.getContext("2d");
+
+            for (var i = 32; i < 256; i++) {
+                var glyph = face.charToGlyph(String.fromCharCode(i));
+
+                var xMin = ~~(glyph.xMin * fontScale);
+                var yMin = ~~(glyph.yMin * fontScale);
+                var xMax = ~~(glyph.xMax * fontScale + 1);
+                var yMax = ~~(glyph.yMax * fontScale + 1);
+
+                var bmpWidth = xMax - xMin;
+                var bmpRows = yMax - yMin;
+
+                if (offX + bmpWidth + 1 >= maxWidth) {
+                    offY += rowH;
+                    rowH = 0;
+                    offX = 0;
+                }
+
+                if (bmpWidth > 0 && bmpRows > 0) {
+                    canvas.width = bmpWidth;
+                    canvas.height = bmpRows;
+
+                    var renderedGlyph = opentype.glyphToPath(glyph, -glyph.xMin, glyph.yMax, fontScale);
+                    renderedGlyph.draw(ctx);
+
+                    var bitmap = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    var alpha = new Uint8Array(canvas.width * canvas.height);
+
+                    alphaChan = 0;
+                    for (var pix = 3; pix < canvas.width * canvas.height * 4; pix += 4) {
+                        alpha[alphaChan++] = bitmap.data[pix];
+                    }
+
+                    this.gl.texSubImage2D(this.gl.TEXTURE_2D, 0, offX, offY, bmpWidth, bmpRows, this.gl.ALPHA, this.gl.UNSIGNED_BYTE, alpha);
+                }
+
+                // char informations
+                texAtlas.CharInfo[i].AdvanceX = glyph.advanceWidth * fontScale;
+                texAtlas.CharInfo[i].AdvanceY = 0;
+
+                texAtlas.CharInfo[i].BitmapW = (glyph.xMax - glyph.xMin) * fontScale;
+                texAtlas.CharInfo[i].BitmapH = (glyph.yMax - glyph.yMin) * fontScale + 2;
+
+                texAtlas.CharInfo[i].BitmapL = glyph.xMin * fontScale;
+                texAtlas.CharInfo[i].BitmapT = glyph.yMax * fontScale;
+
+                texAtlas.CharInfo[i].TexOffX = offX / maxWidth;
+                texAtlas.CharInfo[i].TexOffY = offY / potH;
+
+                rowH = System.Math.Max(rowH, bmpRows + 1);
+                offX += bmpWidth + 1;
+            }
+
+            return texAtlas;
+        }
+    );
+
+    $.Method({ Static: false, Public: false }, "FixTextKerning",
+        new JSIL.MethodSignature($jsilcore.TypeRef("System.Array", [$fuseeMath.TypeRef("Fusee.Math.float3")]),
+            [$fuseeCommon.TypeRef("Fusee.Engine.IFont"), $jsilcore.TypeRef("System.Array", [$fuseeMath.TypeRef("Fusee.Math.float3")]), $.String, $.Int32]),
+        function FixTextKerning(font, vertices, text, scaleX) {
+            var texAtlas = font;
+
+            // use kerning -> fix values
+            if (texAtlas.UseKerning) {
+                var fixX = 0;
+                var fixVert = 4;
+                var fontScale = 1 / texAtlas.Face.unitsPerEm * texAtlas.FontSize;
+
+                for (var c = 0; c < text.length - 1; c++) {
+                    var leftGlyph = texAtlas.Face.charToGlyph(text[c]);
+                    var rightGlyph = texAtlas.Face.charToGlyph(text[c + 1]);
+
+                    fixX += texAtlas.Face.getKerningValue(leftGlyph, rightGlyph) * scaleX * fontScale;
+
+                    vertices[fixVert++].x += fixX;
+                    vertices[fixVert++].x += fixX;
+                    vertices[fixVert++].x += fixX;
+                    vertices[fixVert++].x += fixX;
+                }
+            }
+
+            return vertices;
+        }
+    );
+
     $.Method({ Static: false, Public: true }, "Clear",
-        new JSIL.MethodSignature(null, [$asm02.TypeRef("RenderEngine.ClearFlags")]),
+        new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.ClearFlags")]),
         function Clear(flags) {
-            this.gl.clear(flags.value);
+            // ACCUM is ignored in WebGL...
+            var wglFlags  =   ((flags.value & $fuseeCommon.Fusee.Engine.ClearFlags.Depth.value) ? this.gl.DEPTH_BUFFER_BIT : 0)
+                            | ((flags.value & $fuseeCommon.Fusee.Engine.ClearFlags.Stencil.value) ? this.gl.STENCIL_BUFFER_BIT : 0)
+                            | ((flags.value & $fuseeCommon.Fusee.Engine.ClearFlags.Color.value) ? this.gl.COLOR_BUFFER_BIT : 0);
+            this.gl.clear(wglFlags);
         }
     );
 
@@ -581,7 +871,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
         }
     );
 
-    $debug = function(log_txt) {
+    $debug = function (log_txt) {
         if (typeof window.console != 'undefined') {
             console.log(log_txt);
         }
@@ -638,7 +928,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
 
             /* var h = this.gl.getUniformLocation(program.Program, paramName);
             if (h == null)
-                return null;
+            return null;
             var ret = new $WebGLImp.Fusee.Engine.ShaderParam();
             ret.handle = h;
             ret.id = this._currentShaderParamHandle++;
@@ -646,17 +936,16 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
         }
     );
 
-    var $T05 = function() {
-        return ($T05 = JSIL.Memoize($asm05.System.Collections.Generic.List$b1.Of($WebGLImp.Fusee.Engine.ShaderParamInfo)))();
+    var $T05 = function () {
+        return ($T05 = JSIL.Memoize($customSys.System.Collections.Generic.List$b1.Of($WebGLImp.Fusee.Engine.ShaderParamInfo)))();
     };
-
     $.Method({ Static: false, Public: true }, "GetShaderParamList",
-        new JSIL.MethodSignature($WebGLImp.TypeRef("System.Collections.Generic.IList`1", [$asm00.TypeRef("Fusee.Engine.ShaderParamInfo")]), [$asm01.TypeRef("Fusee.Engine.IShaderProgramImp")], []),
+        new JSIL.MethodSignature($WebGLImp.TypeRef("System.Collections.Generic.IList`1", [$fuseeMath.TypeRef("Fusee.Engine.ShaderParamInfo")]), [$fuseeCommon.TypeRef("Fusee.Engine.IShaderProgramImp")], []),
         function GetShaderParamList(shaderProgram) {
             var sp = shaderProgram.Program;
             var nParams = this.gl.getProgramParameter(sp, this.gl.ACTIVE_UNIFORMS);
             var list = new ($jsilcore.System.Collections.Generic.List$b1.Of($fuseeCommon.Fusee.Engine.ShaderParamInfo))();
-            //var list = $sig.get(0x1928, null, [$asm05.System.Int32], []).Construct($T05(), 10);
+            //var list = $sig.get(0x1928, null, [$customSys.System.Int32], []).Construct($T05(), 10);
 
             for (var i = 0; i < nParams; ++i) {
                 var t = this.gl.getActiveUniform(sp, i).type;
@@ -666,25 +955,29 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
                 //ret.Name = activeInfo.name;
                 ret.Name = this.gl.getActiveUniform(sp, i).name;
                 ret.Handle = this.GetShaderParam(sp, ret.Name);
+
                 switch (t) {
-                case this.gl.INT:
-                    ret.Type = $jsilcore.System.Int32.__Type__;
-                    break;
-                case this.gl.FLOAT:
-                    ret.Type = $jsilcore.System.Single.__Type__;
-                    break;
-                case this.gl.FLOAT_VEC2:
-                    ret.Type = $fuseeMath.Fusee.Math.float2.__Type__;
-                    break;
-                case this.gl.FLOAT_VEC3:
-                    ret.Type = $fuseeMath.Fusee.Math.float3.__Type__;
-                    break;
-                case this.gl.FLOAT_VEC4:
-                    ret.Type = $fuseeMath.Fusee.Math.float4.__Type__;
-                    break;
-                case this.gl.FLOAT_MAT4:
-                    ret.Type = $fuseeMath.Fusee.Math.float4x4.__Type__;
-                    break;
+                    case this.gl.INT:
+                        ret.Type = $jsilcore.System.Int32.__Type__;
+                        break;
+                    case this.gl.FLOAT:
+                        ret.Type = $jsilcore.System.Single.__Type__;
+                        break;
+                    case this.gl.FLOAT_VEC2:
+                        ret.Type = $fuseeMath.Fusee.Math.float2.__Type__;
+                        break;
+                    case this.gl.FLOAT_VEC3:
+                        ret.Type = $fuseeMath.Fusee.Math.float3.__Type__;
+                        break;
+                    case this.gl.FLOAT_VEC4:
+                        ret.Type = $fuseeMath.Fusee.Math.float4.__Type__;
+                        break;
+                    case this.gl.FLOAT_MAT4:
+                        ret.Type = $fuseeMath.Fusee.Math.float4x4.__Type__;
+                        break;
+                    case this.gl.SAMPLER_2D:
+                        ret.Type = $fuseeCommon.Fusee.Engine.ITexture.__Type__;
+                        break;
                 }
                 list.Add(ret.MemberwiseClone());
             }
@@ -744,7 +1037,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
     );
 
     $.Method({ Static: false, Public: true }, "DebugLine",
-        new JSIL.MethodSignature(null, [$asm00.TypeRef("Fusee.Math.float3"), $asm00.TypeRef("Fusee.Math.float3"), $asm00.TypeRef("Fusee.Math.float4")]),
+        new JSIL.MethodSignature(null, [$fuseeMath.TypeRef("Fusee.Math.float3"), $fuseeMath.TypeRef("Fusee.Math.float3"), $fuseeMath.TypeRef("Fusee.Math.float4")]),
         function DebugLine(start, end, color) {
             var vertices = [];
             vertices.push(start.x, start.y, start.z);
@@ -765,7 +1058,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
     );
 
     $.Method({ Static: false, Public: true }, "GetBufferContent",
-        new JSIL.MethodSignature(null, [$asm00.TypeRef("Fusee.Rectangle"), $WebGLImp.TypeRef("Fusee.Engine.ITexture")]),
+        new JSIL.MethodSignature(null, [$fuseeMath.TypeRef("Fusee.Rectangle"), $fuseeCommon.TypeRef("Fusee.Engine.ITexture")]),
         function GetBufferContent(quad, texId) {
             this.gl.bindTexture(this.gl.TEXTURE_2D, texId.handle);
             this.gl.copyTexImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, quad.Left, quad.Top, quad.Width, quad.Height, 0);
@@ -790,7 +1083,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
     );
 
     $.Method({ Static: false, Public: true }, "SetShaderParam2f",
-        new JSIL.MethodSignature(null, [$WebGLImp.TypeRef("Fusee.Engine.IShaderParam"), $asm00.TypeRef("Fusee.Math.float2")]),
+        new JSIL.MethodSignature(null, [$WebGLImp.TypeRef("Fusee.Engine.IShaderParam"), $fuseeMath.TypeRef("Fusee.Math.float2")]),
         function SetShaderParam2f(param, val) {
             var flatVector = new Float32Array(val.ToArray());
             this.gl.uniform2fv(param.handle, flatVector);
@@ -798,7 +1091,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
     );
 
     $.Method({ Static: false, Public: true }, "SetShaderParam3f",
-        new JSIL.MethodSignature(null, [$WebGLImp.TypeRef("Fusee.Engine.IShaderParam"), $asm00.TypeRef("Fusee.Math.float3")]),
+        new JSIL.MethodSignature(null, [$WebGLImp.TypeRef("Fusee.Engine.IShaderParam"), $fuseeMath.TypeRef("Fusee.Math.float3")]),
         function SetShaderParam3f(param, val) {
             var flatVector = new Float32Array(val.ToArray());
             this.gl.uniform3fv(param.handle, flatVector);
@@ -806,7 +1099,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
     );
 
     $.Method({ Static: false, Public: true }, "SetShaderParam4f",
-        new JSIL.MethodSignature(null, [$WebGLImp.TypeRef("Fusee.Engine.IShaderParam"), $asm00.TypeRef("Fusee.Math.float4")]),
+        new JSIL.MethodSignature(null, [$WebGLImp.TypeRef("Fusee.Engine.IShaderParam"), $fuseeMath.TypeRef("Fusee.Math.float4")]),
         function SetShaderParam4f(param, val) {
             var flatVector = new Float32Array(val.ToArray());
             this.gl.uniform4fv(param.handle, flatVector);
@@ -814,7 +1107,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
     );
 
     $.Method({ Static: false, Public: true }, "SetShaderParamMtx4f",
-        new JSIL.MethodSignature(null, [$WebGLImp.TypeRef("Fusee.Engine.IShaderParam"), $asm00.TypeRef("Fusee.Math.float4x4")]),
+        new JSIL.MethodSignature(null, [$WebGLImp.TypeRef("Fusee.Engine.IShaderParam"), $fuseeMath.TypeRef("Fusee.Math.float4x4")]),
         function SetShaderParamMtx4f(param, val) {
             // Row order notation
             //   var flatMatrix = new Float32Array(val.ToArray());
@@ -835,7 +1128,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
     );
 
     $.Method({ Static: false, Public: true }, "SetShaderParamTexture",
-        new JSIL.MethodSignature(null, [$WebGLImp.TypeRef("Fusee.Engine.IShaderParam"), $WebGLImp.TypeRef("Fusee.Engine.ITexture")]),
+        new JSIL.MethodSignature(null, [$WebGLImp.TypeRef("Fusee.Engine.IShaderParam"), $fuseeCommon.TypeRef("Fusee.Engine.ITexture")]),
         function SetShaderParamTexture(param, texId) {
             var iParam = param.handle;
             var texUnit = -1;
@@ -846,13 +1139,363 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
                 texUnit = this._currentTextureUnit++;
                 this._shaderParam2TexUnit[iParamStr] = texUnit;
             }
-
             this.gl.uniform1i(iParam, texUnit);
             this.gl.activeTexture(this.gl.TEXTURE0 + texUnit);
             this.gl.bindTexture(this.gl.TEXTURE_2D, texId.handle);
 
         }
     );
+
+    $.Method({ Static: false, Public: false }, "BlendOperationToOgl",
+        new JSIL.MethodSignature($.Int32, [$fuseeCommon.TypeRef("Fusee.Engine.BlendOperation")]),
+        function BlendOperationToOgl(bo) {
+            var boVal;
+            /*if ("value" in bo)
+                boVal = bo.value;
+            else */
+            boVal = bo;
+            switch (boVal) {
+                case $fuseeCommon.Fusee.Engine.BlendOperation.Add.value:
+                    return this.gl.FUNC_ADD;
+                case $fuseeCommon.Fusee.Engine.BlendOperation.Subtract.value:
+                    return this.gl.FUNC_SUBTRACT;
+                case $fuseeCommon.Fusee.Engine.BlendOperation.ReverseSubtract.value:
+                    return this.gl.FUNC_REVERSE_SUBTRACT;
+                case $fuseeCommon.Fusee.Engine.BlendOperation.Minimum.value:
+                    throw new Error("MIN blending mode not supported in WebGL!");
+                    // see http://stackoverflow.com/questions/11823742/need-glblendequationext-support-in-webgl
+                case $fuseeCommon.Fusee.Engine.BlendOperation.Maximum.value:
+                    throw new Error("MAX blending mode not supported in WebGL!");
+                default:
+                    throw new Error("Unknown value for bo: " + bo);
+            }
+        });
+
+    $.Method({ Static: false, Public: false }, "BlendOperationFromOgl",
+        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.BlendOperation"), [$.Int32]),
+        function BlendOperationFromOgl(bom) {
+            switch (bom) {
+                case this.gl.FUNC_ADD:
+                    return $fuseeCommon.Fusee.Engine.BlendOperation.Add;
+                case this.gl.FUNC_SUBTRACT:
+                    return $fuseeCommon.Fusee.Engine.BlendOperation.Subtract;
+                case this.gl.FUNC_REVERSE_SUBTRACT:
+                    return $fuseeCommon.Fusee.Engine.BlendOperation.ReverseSubtract;
+                    // MIN, MAX not supported by WebGL, see above
+                default:
+                    throw new Error("Unknown value for bom: " + bom);
+            }
+        });
+
+    $.Method({ Static: false, Public: false }, "BlendToOgl",
+        new JSIL.MethodSignature($.Int32, [$fuseeCommon.TypeRef("Fusee.Engine.Blend"), $.Boolean]),
+        function BlendToOgl(blend, isForAlpha) {
+            var blendVal;
+            /* if ("value" in blend)
+                blendVal = blend.value;
+            else */
+            blendVal = blend;
+            switch (blendVal) {
+                case $fuseeCommon.Fusee.Engine.Blend.Zero.value:
+                    return this.gl.ZERO;
+                case $fuseeCommon.Fusee.Engine.Blend.One.value:
+                    return this.gl.ONE;
+                case $fuseeCommon.Fusee.Engine.Blend.SourceColor.value:
+                    return this.gl.SRC_COLOR;
+                case $fuseeCommon.Fusee.Engine.Blend.InverseSourceColor.value:
+                    return this.gl.ONE_MINUS_SRC_COLOR;
+                case $fuseeCommon.Fusee.Engine.Blend.SourceAlpha.value:
+                    return this.gl.SRC_ALPHA;
+                case $fuseeCommon.Fusee.Engine.Blend.InverseSourceAlpha.value:
+                    return this.gl.ONE_MINUS_SRC_ALPHA;
+                case $fuseeCommon.Fusee.Engine.Blend.DestinationAlpha.value:
+                    return this.gl.DST_ALPHA;
+                case $fuseeCommon.Fusee.Engine.Blend.InverseDestinationAlpha.value:
+                    return this.gl.ONE_MINUS_DST_ALPHA;
+                case $fuseeCommon.Fusee.Engine.Blend.DestinationColor.value:
+                    return this.gl.DST_COLOR;
+                case $fuseeCommon.Fusee.Engine.Blend.InverseDestinationColor.value:
+                    return this.gl.ONE_MINUS_DST_COLOR;
+                case $fuseeCommon.Fusee.Engine.Blend.BlendFactor.value:
+                    return (isForAlpha) ? this.gl.CONSTANT_ALPHA : this.gl.CONSTANT_COLOR;
+                case $fuseeCommon.Fusee.Engine.Blend.InverseBlendFactor.value:
+                    return (isForAlpha) ? this.gl.ONE_MINUS_CONSTANT_ALPHA : this.gl.ONE_MINUS_CONSTANT_COLOR;
+                default:
+                    throw new Error("Unknown value for blend: " + blend);
+            }
+        });
+
+    $.Method({ Static: false, Public: false }, "BlendFromOgl",
+        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.Blend"), [$.Int32]),
+        function BlendFromOgl(bf) {
+            switch (bf) {
+                case this.gl.ZERO:
+                    return $fuseeCommon.Fusee.Engine.Blend.Zero;
+                case this.gl.ONE:
+                    return $fuseeCommon.Fusee.Engine.Blend.One;
+                case this.gl.SRC_COLOR:
+                    return $fuseeCommon.Fusee.Engine.Blend.SourceColor;
+                case this.gl.ONE_MINUS_SRC_COLOR:
+                    return $fuseeCommon.Fusee.Engine.Blend.InverseSourceColor;
+                case this.gl.SRCALPHA:
+                    return $fuseeCommon.Fusee.Engine.Blend.SourceAlpha;
+                case this.gl.ONE_MINUS_SRC_ALPHA:
+                    return $fuseeCommon.Fusee.Engine.Blend.InverseSourceAlpha;
+                case this.gl.DST_ALPHA:
+                    return $fuseeCommon.Fusee.Engine.Blend.DestinationAlpha;
+                case this.gl.ONE_MINUS_DST_ALPHA:
+                    return $fuseeCommon.Fusee.Engine.Blend.InverseDestinationAlpha;
+                case this.gl.DST_COLOR:
+                    return $fuseeCommon.Fusee.Engine.Blend.DestinationColor;
+                case this.gl.ONE_MINUS_DST_COLOR:
+                    return $fuseeCommon.Fusee.Engine.Blend.InverseDestinationColor;
+                case this.gl.CONSTANT_COLOR:
+                case this.gl.CONSTANT_ALPHA:
+                    return $fuseeCommon.Fusee.Engine.Blend.BlendFactor;
+                case this.gl.ONE_MINUS_CONSTANT_COLOR:
+                case this.gl.ONE_MINUS_CONSTANT_ALPHA:
+                    return $fuseeCommon.Fusee.Engine.Blend.InverseBlendFactor;
+                default:
+                    throw new Error("Unknown value for bf: " + bf);
+            }
+        });
+
+
+    $.Method({ Static: false, Public: true }, "SetRenderState",
+        new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.RenderState"), $.Int32]),
+        function SetRenderState(renderState, value) {
+            var renderStateVal;
+            if ("value" in renderState)
+                renderStateVal = renderState.value;
+            else
+                renderStateVal = renderState;
+            switch (renderStateVal) {
+                case $fuseeCommon.Fusee.Engine.RenderState.FillMode.value:
+                    {
+                        if (value != $fuseeCommon.Fusee.Engine.FillMode.Solid)
+                            throw new Error("Line or Point fill mode (glPolygonMode) not supported in WebGL!");
+                    }
+                    break;
+                case $fuseeCommon.Fusee.Engine.RenderState.CullMode.value:
+                    switch (value) {
+                        case $fuseeCommon.Fusee.Engine.Cull.None.value:
+                            this.gl.disable(this.gl.CULL_FACE);
+                            this.gl.frontFace(this.gl.CCW);
+                            break;
+                        case $fuseeCommon.Fusee.Engine.Cull.Clockwise.value:
+                            this.gl.enable(this.gl.CULL_FACE);
+                            this.gl.frontFace(this.gl.CW);
+                            break;
+                        case $fuseeCommon.Fusee.Engine.Cull.Counterclockwise.value:
+                            this.gl.enable(this.gl.CULL_FACE);
+                            this.gl.frontFace(this.gl.CCW);
+                            break;
+                        default:
+                            throw new Error("Unknwon value for RenderState.CullMode: " + value);
+                    }
+                    break;
+                case $fuseeCommon.Fusee.Engine.RenderState.Clipping.value:
+                    // clipping is always on in WebGL - This state is simply ignored
+                    break;
+                case $fuseeCommon.Fusee.Engine.RenderState.ZFunc.value:
+                    {
+                        var df;
+                        switch (value) {
+                            case $fuseeCommon.Fusee.Engine.Compare.Never.value:
+                                df = this.gl.NEVER;
+                                break;
+                            case $fuseeCommon.Fusee.Engine.Compare.Less.value:
+                                df = this.gl.LESS;
+                                break;
+                            case $fuseeCommon.Fusee.Engine.Compare.Equal.value:
+                                df = this.gl.EQUAL;
+                                break;
+                            case $fuseeCommon.Fusee.Engine.Compare.LessEqual.value:
+                                df = this.gl.LEQUAL;
+                                break;
+                            case $fuseeCommon.Fusee.Engine.Compare.Greater.value:
+                                df = this.gl.GREATER;
+                                break;
+                            case $fuseeCommon.Fusee.Engine.Compare.NotEqual.value:
+                                df = this.gl.NOTEQUAL;
+                                break;
+                            case $fuseeCommon.Fusee.Engine.Compare.GreaterEqual.value:
+                                df = this.gl.GEQUAL;
+                                break;
+                            case $fuseeCommon.Fusee.Engine.Compare.Always.value:
+                                df = this.gl.ALWAYS;
+                                break;
+                            default:
+                                throw new Error("Unknwon value for RenderState.ZFunc: " + value);
+                        }
+                        this.gl.depthFunc(df);
+                    }
+                    break;
+                case $fuseeCommon.Fusee.Engine.RenderState.ZEnable.value:
+                    if (value == 0)
+                        this.gl.disable(this.gl.DEPTH_TEST);
+                    else
+                        this.gl.enable(this.gl.DEPTH_TEST);
+                    break;
+                case $fuseeCommon.Fusee.Engine.RenderState.AlphaBlendEnable.value:
+                    if (value == 0)
+                        this.gl.disable(this.gl.BLEND);
+                    else
+                        this.gl.enable(this.gl.BLEND);
+                    break;
+                case $fuseeCommon.Fusee.Engine.RenderState.BlendOperation.value:
+                    {
+                        var alphaMode = this.gl.getParameter(this.gl.BLEND_EQUATION_ALPHA);
+                        this.gl.blendEquationSeparate(this.BlendOperationToOgl(value), alphaMode);
+                    }
+                    break;
+                case $fuseeCommon.Fusee.Engine.RenderState.BlendOperationAlpha.value:
+                    {
+                        var rgbMode = this.gl.getParameter(this.gl.BLEND_EQUATION_RGB);
+                        this.gl.blendEquationSeparate(rgbMode, this.BlendOperationToOgl(value));
+                    }
+                    break;
+                case $fuseeCommon.Fusee.Engine.RenderState.SourceBlend.value:
+                    {
+                        var rgbDst = this.gl.getParameter(this.gl.BLEND_DST_RGB);
+                        var alphaSrc = this.gl.getParameter(this.gl.BLEND_SRC_ALPHA);
+                        var alphaDst = this.gl.getParameter(this.gl.BLEND_DST_ALPHA);
+                        this.gl.blendFuncSeparate(this.BlendToOgl(value, false),
+                            rgbDst,
+                            alphaSrc,
+                            alphaDst);
+                    }
+                    break;
+                case $fuseeCommon.Fusee.Engine.RenderState.DestinationBlend.value:
+                    {
+                        var rgbSrc = this.gl.getParameter(this.gl.BLEND_SRC_RGB);
+                        var alphaSrc = this.gl.getParameter(this.gl.BLEND_SRC_ALPHA);
+                        var alphaDst = this.gl.getParameter(this.gl.BLEND_DST_ALPHA);
+                        this.gl.blendFuncSeparate(rgbSrc,
+                            this.BlendToOgl(value, false),
+                            alphaSrc,
+                            alphaDst);
+                    }
+                    break;
+                case $fuseeCommon.Fusee.Engine.RenderState.SourceBlendAlpha.value:
+                    {
+                        var rgbSrc = this.gl.getParameter(this.gl.BLEND_SRC_RGB);
+                        var rgbDst = this.gl.getParameter(this.gl.BLEND_DST_RGB);
+                        var alphaDst = this.gl.getParameter(this.gl.BLEND_DST_ALPHA);
+                        this.gl.blendFuncSeparate(rgbSrc,
+                            rgbDst,
+                            this.BlendToOgl(value, true),
+                            alphaDst);
+                    }
+                    break;
+                case $fuseeCommon.Fusee.Engine.RenderState.DestinationBlendAlpha:
+                    {
+                        var rgbSrc = this.gl.getParameter(this.gl.BLEND_SRC_RGB);
+                        var rgbDst = this.gl.getParameter(this.gl.BLEND_DST_RGB);
+                        var alphaSrc = this.gl.getParameter(this.gl.BLEND_SRC_ALPHA);
+                        this.gl.blendFuncSeparate(rgbSrc,
+                            rgbDst,
+                            alphaSrc,
+                            this.BlendToOgl(value, true));
+                    }
+                    break;
+                case $fuseeCommon.Fusee.Engine.RenderState.BlendFactor.value:
+                    var bc = $ColorUintCtor_U().Construct(value);
+                    var bc2 = bc.Tofloat4();
+                    this.gl.blendColor(bc2.x, bc2.y, bc2.z, bc2.w);
+                    break;
+                default:
+                    throw new Error("Unknown renderState to set: " + renderState);
+            }
+        });
+
+    $.Method({ Static: false, Public: true }, "GetRenderState",
+        new JSIL.MethodSignature($.Int32, [$.Int32]),
+        function GetRenderState(renderState) {
+            var renderStateVal;
+            if ("value" in renderState)
+                renderStateVal = renderState.value;
+            else
+                renderStateVal = renderState;
+            switch (renderStateVal) {
+                case $fuseeCommon.Fusee.Engine.RenderState.FillMode.value:
+                    // Only solid polygon fill is supported by WebGL
+                    return $fuseeCommon.Fusee.Engine.PolygonMode.Fill;
+                case $fuseeCommon.Fusee.Engine.RenderState.CullMode.value:
+                    {
+                        var cullFace = this.gl.getParameter(this.gl.CULL_FACE);
+                        if (cullFace == 0)
+                            return $fuseeCommon.Fusee.Engine.Cull.None;
+                        var frontFace = this.gl.getParameter(this.gl.FRONT_FACE);
+                        ;
+                        if (frontFace == this.gl.CW)
+                            return $fuseeCommon.Fusee.Engine.Cull.Clockwise;
+                        return $fuseeCommon.Fusee.Engine.Counterclockwise;
+                    }
+                case $fuseeCommon.Fusee.Engine.RenderState.Clipping.value:
+                    // clipping is always on in OpenGL - This state is simply ignored
+                    return 1;
+                    // == true
+                case $fuseeCommon.Fusee.Engine.RenderState.ZFunc.value:
+                    {
+                        var depFunc = this.gl.getParameter(this.gl.DEPTH_FUNC);
+                        var ret;
+                        switch (depFunc) {
+                            case this.gl.NEVER:
+                                ret = $fuseeCommon.Fusee.Engine.Compare.Never;
+                                break;
+                            case this.gl.LESS:
+                                ret = $fuseeCommon.Fusee.Engine.Compare.Less;
+                                break;
+                            case this.gl.EQUAL:
+                                ret = $fuseeCommon.Fusee.Engine.Compare.Equal;
+                                break;
+                            case this.gl.LEQUAL:
+                                ret = $fuseeCommon.Fusee.Engine.Compare.LessEqual;
+                                break;
+                            case this.gl.GREATER:
+                                ret = $fuseeCommon.Fusee.Engine.Compare.Greater;
+                                break;
+                            case this.gl.NOTEQUAL:
+                                ret = $fuseeCommon.Fusee.Engine.Compare.NotEqual;
+                                break;
+                            case this.gl.GEQUAL:
+                                ret = $fuseeCommon.Fusee.Engine.Compare.GreaterEqual;
+                                break;
+                            case this.gl.ALWAYS:
+                                ret = $fuseeCommon.Fusee.Engine.Compare.Always;
+                                break;
+                            default:
+                                throw new Error("Value " + depFunc + " not handled as RenderState.ZFunc return.");
+                        }
+                        return ret;
+                    }
+                case $fuseeCommon.Fusee.Engine.RenderState.ZEnable.value:
+                    return this.gl.getParameter(this.gl.DEPTH_TEST);
+                case $fuseeCommon.Fusee.Engine.RenderState.AlphaBlendEnable.value:
+                    return this.gl.getParameter(this.gl.BLEND);
+                case $fuseeCommon.Fusee.Engine.RenderState.BlendOperation.value:
+                    return this.BlendOperationFromOgl(this.gl.getParameter(this.gl.BLEND_EQUATION_RGB));
+                case $fuseeCommon.Fusee.Engine.RenderState.BlendOperationAlpha.value:
+                    return this.BlendOperationFromOgl(this.gl.getParameter(this.gl.BLEND_EQUATION_ALPHA));
+                case $fuseeCommon.Fusee.Engine.RenderState.SourceBlend.value:
+                    return this.BlendFromOgl(this.gl.getParameter(this.gl.BLEND_SRC_RGB));
+                case $fuseeCommon.Fusee.Engine.RenderState.DestinationBlend.value:
+                    return this.BlendFromOgl(this.gl.getParameter(this.gl.BLEND_DST_RGB));
+                case $fuseeCommon.Fusee.Engine.RenderState.SourceBlendAlpha.value:
+                    return this.BlendFromOgl(this.gl.getParameter(this.gl.BLEND_SRC_ALPHA));
+                case $fuseeCommon.Fusee.Engine.RenderState.DestinationBlendAlpha.value:
+                    return this.BlendFromOgl(this.gl.getParameter(this.gl.BLEND_DST_ALPHA));
+                case $fuseeCommon.Fusee.Engine.RenderState.BlendFactor.value:
+                    {
+                        var col = this.gl.getParameter(this.gl.BLEND_COLOR);
+                        var uintCol = $ColorUintCtor_S_S_S_S().Construct(col[0], col[1], col[2], col[3]);
+                        return uintCol.ToRgba();
+                    }
+                default:
+                    throw new Error("Unknown RenderState to set a value to.");
+            }
+        });
 
     $.Method({ Static: false, Public: true }, "Viewport",
         new JSIL.MethodSignature(null, [
@@ -868,7 +1511,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
         new JSIL.MethodSignature(null, [$WebGLImp.TypeRef("Fusee.Engine.IMeshImp"), $jsilcore.TypeRef("System.Array", [$.UInt32])]),
         function SetColors(mr, colors) {
             if (colors == null || colors.length == 0) {
-                throw new Exception("colors must not be null or empty");
+                throw new Error("colors must not be null or empty");
             }
 
             var vboBytes;
@@ -890,7 +1533,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
             this.gl.bufferData(this.gl.ARRAY_BUFFER, flatBuffer, this.gl.STATIC_DRAW);
             vboBytes = this.gl.getBufferParameter(this.gl.ARRAY_BUFFER, this.gl.BUFFER_SIZE);
             if (vboBytes != colsBytes)
-                throw new Exception("Problem uploading Color buffer to VBO (Colors). Tried to upload " + ColsBytes + " bytes, uploaded " + vboBytes + ".");
+                throw new Error("Problem uploading Color buffer to VBO (Colors). Tried to upload " + ColsBytes + " bytes, uploaded " + vboBytes + ".");
         }
     );
 
@@ -898,7 +1541,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
         new JSIL.MethodSignature(null, [$WebGLImp.TypeRef("Fusee.Engine.IMeshImp"), $jsilcore.TypeRef("System.Array", [$.UInt32])]),
         function SetUVs(mr, uvs) {
             if (uvs == null || uvs.length == 0) {
-                throw new Exception("UVs must not be null or empty");
+                throw new Error("UVs must not be null or empty");
             }
 
             var UvBytes;
@@ -917,15 +1560,15 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
             this.gl.bufferData(this.gl.ARRAY_BUFFER, flatBuffer, this.gl.STATIC_DRAW);
             vboBytes = this.gl.getBufferParameter(this.gl.ARRAY_BUFFER, this.gl.BUFFER_SIZE);
             if (vboBytes != UvBytes)
-                throw new Exception("Problem uploading UV buffer to VBO (UVs). Tried to upload " + UvBytes + " bytes, uploaded " + UvBytes + ".");
+                throw new Error("Problem uploading UV buffer to VBO (UVs). Tried to upload " + UvBytes + " bytes, uploaded " + UvBytes + ".");
         }
     );
 
     $.Method({ Static: false, Public: true }, "SetNormals",
-        new JSIL.MethodSignature(null, [$WebGLImp.TypeRef("Fusee.Engine.IMeshImp"), $jsilcore.TypeRef("System.Array", [$asm00.TypeRef("Fusee.Math.float3")])]),
+        new JSIL.MethodSignature(null, [$WebGLImp.TypeRef("Fusee.Engine.IMeshImp"), $jsilcore.TypeRef("System.Array", [$fuseeMath.TypeRef("Fusee.Math.float3")])]),
         function SetNormals(mr, normals) {
             if (normals == null || normals.length == 0) {
-                throw new Exception("Normals must not be null or empty");
+                throw new Error("Normals must not be null or empty");
             }
 
             var vboBytes;
@@ -945,7 +1588,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
             this.gl.bufferData(this.gl.ARRAY_BUFFER, flatBuffer, this.gl.STATIC_DRAW);
             vboBytes = this.gl.getBufferParameter(this.gl.ARRAY_BUFFER, this.gl.BUFFER_SIZE);
             if (vboBytes != normsBytes)
-                throw new Exception("Problem uploading normal buffer to VBO (normals). Tried to upload " + normsBytes + " bytes, uploaded " + vboBytes + ".");
+                throw new Error("Problem uploading normal buffer to VBO (normals). Tried to upload " + normsBytes + " bytes, uploaded " + vboBytes + ".");
         }
     );
 
@@ -953,7 +1596,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
         new JSIL.MethodSignature(null, [$WebGLImp.TypeRef("Fusee.Engine.IMeshImp"), $jsilcore.TypeRef("System.Array", [$.Int16])]),
         function SetTriangles(mr, triangleIndices) {
             if (triangleIndices == null || triangleIndices.length == 0) {
-                throw new Exception("triangleIndices must not be null or empty");
+                throw new Error("triangleIndices must not be null or empty");
             }
             mr.NElements = triangleIndices.length;
             var vboBytes;
@@ -973,15 +1616,15 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
             this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, flatBuffer, this.gl.STATIC_DRAW);
             vboBytes = this.gl.getBufferParameter(this.gl.ELEMENT_ARRAY_BUFFER, this.gl.BUFFER_SIZE);
             if (vboBytes != trisBytes)
-                throw new Exception("Problem uploading vertex buffer to VBO (offsets). Tried to upload " + normsBytes + " bytes, uploaded " + vboBytes + ".");
+                throw new Error("Problem uploading vertex buffer to VBO (offsets). Tried to upload " + normsBytes + " bytes, uploaded " + vboBytes + ".");
         }
     );
 
     $.Method({ Static: false, Public: true }, "SetVertices",
-        new JSIL.MethodSignature(null, [$WebGLImp.TypeRef("Fusee.Engine.IMeshImp"), $jsilcore.TypeRef("System.Array", [$asm00.TypeRef("Fusee.Math.float3")])]),
+        new JSIL.MethodSignature(null, [$WebGLImp.TypeRef("Fusee.Engine.IMeshImp"), $jsilcore.TypeRef("System.Array", [$fuseeMath.TypeRef("Fusee.Math.float3")])]),
         function SetVertices(mr, vertices) {
             if (vertices == null || vertices.length == 0) {
-                throw new Exception("vertices must not be null or empty");
+                throw new Error("vertices must not be null or empty");
             }
 
             var vboBytes;
@@ -1001,7 +1644,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
             this.gl.bufferData(this.gl.ARRAY_BUFFER, flatBuffer, this.gl.STATIC_DRAW);
             vboBytes = this.gl.getBufferParameter(this.gl.ARRAY_BUFFER, this.gl.BUFFER_SIZE);
             if (vboBytes != vertsBytes)
-                throw new Exception("Problem uploading normal buffer to VBO (vertices). Tried to upload " + vertsBytes + " bytes, uploaded " + vboBytes + ".");
+                throw new Error("Problem uploading normal buffer to VBO (vertices). Tried to upload " + vertsBytes + " bytes, uploaded " + vboBytes + ".");
         }
     );
 
@@ -1016,7 +1659,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
         $fuseeCommon.TypeRef("Fusee.Engine.IRenderContextImp")
     );
 
-    return function(newThisType) { $thisType = newThisType; };
+    return function (newThisType) { $thisType = newThisType; };
 });
 
 JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.MeshImp", true, [], function($interfaceBuilder) {
@@ -1218,6 +1861,14 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.InputImp", true
         function OnCanvasMouseMove(event) {
             this._currentMouse.x = event.clientX;
             this._currentMouse.y = event.clientY;
+            
+            if (this.MouseMove !== null) {
+                var pt = new $fuseeCommon.Fusee.Engine.Point().__Initialize__({ x: event.clientX, y: event.clientY });
+                this.MouseMove(this, (new $fuseeCommon.Fusee.Engine.MouseEventArgs()).__Initialize__({
+                    Button: $fuseeCommon.Fusee.Engine.MouseButtons.Unknown,
+                    Position: pt
+                }));
+            }
         }
     );
 
@@ -1359,12 +2010,41 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.InputImp", true
         }
     );
 
+    // MouseMove event
+    $.Field({ Static: false, Public: false }, "MouseMove", $jsilcore.TypeRef("System.EventHandler`1", [$fuseeCommon.TypeRef("Fusee.Engine.MouseEventArgs")]), function ($) {
+        return null;
+    });
+
+    $.Method({ Static: false, Public: true }, "add_MouseMove",
+        new JSIL.MethodSignature(null, [$jsilcore.TypeRef("System.EventHandler`1", [$fuseeCommon.TypeRef("Fusee.Engine.MouseEventArgs")])]),
+        function add_MouseMove(value) {
+            var eventHandler = this.MouseMove;
+            do {
+                var eventHandler2 = eventHandler;
+                var value2 = $jsilcore.System.Delegate.Combine(eventHandler2, value);
+                eventHandler = $jsilcore.System.Threading.Interlocked.CompareExchange$b1($jsilcore.System.EventHandler$b1.Of($fuseeCommon.Fusee.Engine.MouseEventArgs))(/* ref */new JSIL.MemberReference(this, "MouseMove"), value2, eventHandler2);
+            } while (eventHandler !== eventHandler2);
+        }
+    );
+
+    $.Method({ Static: false, Public: true }, "remove_MouseMove",
+        new JSIL.MethodSignature(null, [$jsilcore.TypeRef("System.EventHandler`1", [$fuseeCommon.TypeRef("Fusee.Engine.MouseEventArgs")])]),
+        function remove_MouseMove(value) {
+            var eventHandler = this.MouseMove;
+            do {
+                var eventHandler2 = eventHandler;
+                var value2 = $jsilcore.System.Delegate.Remove(eventHandler2, value);
+                eventHandler = $jsilcore.System.Threading.Interlocked.CompareExchange$b1($jsilcore.System.EventHandler$b1.Of($fuseeCommon.Fusee.Engine.MouseEventArgs))(/* ref */new JSIL.MemberReference(this, "MouseMove"), value2, eventHandler2);
+            } while (eventHandler !== eventHandler2);
+        }
+    );
+
     $.Method({ Static: false, Public: true }, ".ctor",
         new JSIL.MethodSignature(null, [$WebGLImp.TypeRef("Fusee.Engine.RenderCanvasImp")]),
         function _ctor(renderCanvas) {
 
             if (renderCanvas == null)
-                throw new Exception("renderCanvas must not be null");
+                throw new Error("renderCanvas must not be null");
 
             this._currentMouse = new $fuseeCommon.Fusee.Engine.Point();
             this._currentMouse.x = 0;
@@ -1434,6 +2114,14 @@ JSIL.ImplementExternals("Fusee.Engine.ImpFactory", function($) {
             return new $WebNetImp.Fusee.Engine.WebNetImp();
         }
     );
+
+    $.Method({ Static: true, Public: true }, "CreateIInputDriverImp",
+        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.IInputDriverImp"), []),
+        function ImpFactory_CreateIInputDriverImp() {
+            return new $WebInputImp.Fusee.Engine.WebInputDriverImp();
+        }
+    );
+
 });
 
 JSIL.ImplementExternals("Fusee.Engine.MeshReader", function($) {
@@ -1441,6 +2129,25 @@ JSIL.ImplementExternals("Fusee.Engine.MeshReader", function($) {
         new JSIL.MethodSignature($.Double, [$.String]),
         function Double_Parse(str) {
             return Number(str);
+        }
+    );
+});
+
+JSIL.ImplementExternals("Fusee.Engine.RenderContext", function($) {
+    $.Method({ Static: false, Public: true }, "LoadSystemFont",
+        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.IFont"), [$.String, $.UInt32]),
+        function LoadSystemFont(filename, size) {
+            filename = "Assets/" + filename + ".ttf";
+            return this.LoadFont(filename, size);
+        }
+    );
+});
+
+JSIL.ImplementExternals("Fusee.Engine.GUIHandler", function ($) {
+    $.Method({ Static: false, Public: true }, "SortArray",
+        new JSIL.MethodSignature(null, [$jsilcore.TypeRef("JSIL.Reference", [$jsilcore.TypeRef("System.Array", [$fuseeCore.TypeRef("Fusee.Engine.GUIElement")])])], []),
+        function SortArray(/* ref */ elements) {
+            elements.$value.sort(function (a, b) { return JSIL.CompareValues(a.get_ZIndex(), b.get_ZIndex()) });
         }
     );
 });

@@ -15,8 +15,9 @@ namespace Examples.Simple
         private const float Damping = 0.92f;
 
         // model variables
-        private Mesh _meshTea, _meshFace;
-
+        private Mesh _meshFace;
+        private Mesh _meshTea;
+        
         // variables for shader
         private ShaderProgram _spColor;
         private ShaderProgram _spTexture;
@@ -38,7 +39,7 @@ namespace Examples.Simple
             _meshFace = new Cube();
             
             _spColor = MoreShaders.GetDiffuseColorShader(RC);
-            _spTexture = MoreShaders.GetDiffuseTextureShader(RC);
+            _spTexture = MoreShaders.GetTextureShader(RC);
 
             _colorParam = _spColor.GetShaderParam("color");
             _textureParam = _spTexture.GetShaderParam("texture1");
@@ -52,8 +53,8 @@ namespace Examples.Simple
         // is called once a frame
         public override void RenderAFrame()
         {
+            
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-
             // move per mouse
             if (Input.Instance.IsButton(MouseButtons.Left))
             {
@@ -93,8 +94,10 @@ namespace Examples.Simple
             // Row order notation
             var mtxCam_ROW = float4x4.LookAt_ROW(0, 200, -500, 0, 0, 0, 0, 1, 0);
             mtxCam_ROW = float4x4.Transpose(mtxCam_ROW);
-            // Column order notation
             var mtxCam = float4x4.LookAt(0, 200, -500, 0, 0, 0, 0, 1, 0);
+
+            // Column order notation
+            RC.ModelView = float4x4.CreateTranslation(0, -50, 0)*mtxRot*float4x4.CreateTranslation(-150, 0, 0)*mtxCam;
             // Debug.Assert(mtxCam_ROW == float4x4.Transpose(mtxCam));
 
             RC.SetShader(_spColor);
@@ -112,7 +115,7 @@ namespace Examples.Simple
             _zz += (float)(5.0 * Time.Instance.DeltaTime);
 
             RC.SetShaderParam(_colorParam, new float4(0.5f, 0.8f, 0, 1));
-
+            
             RC.Render(_meshTea);
 
             // second mesh
@@ -130,6 +133,7 @@ namespace Examples.Simple
             RC.SetShaderParam(_colorParam, new float4(0.8f, 0.5f, 0, 1));
 
             RC.Render(_meshFace);
+
 
 
 

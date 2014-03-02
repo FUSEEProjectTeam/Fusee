@@ -1,5 +1,10 @@
-Fusee is licensed under the MIT license.
-All third-party implementations to Fusee retain their respective license.
+Fusee is licensed under the MIT license (see below).
+
+-------------------------------------------------------------------------------
+
+Fusee contains freely available open source software and assets. They are 
+governed by their respective license terms and conditions. As the time of
+writing, these components are released under:
 
 - OpenTK - http://www.opentk.com/ - MIT
 - JSIL - http://www.jsil.org/ - MIT/X11
@@ -7,11 +12,26 @@ All third-party implementations to Fusee retain their respective license.
 - SFML - http://www.sfml-dev.org/ - zlib/libpng
 - OpenAL - http://connect.creativelabs.com/openal/default.aspx - LGPL
 - libsndfile - http://www.mega-nerd.com/libsndfile/ - LGPL
+- libmpg123 - http://www.mpg123.de/ - LGPL 2.1
 - SoundJS - http://www.createjs.com/#!/SoundJS - MIT
+- protobuf - https://code.google.com/p/protobuf/ - BSD New/Simplified
+- protobuf-net - https://code.google.com/p/protobuf-net/ - Apache License 2.0
+- Bullet Physics - http://bulletphysics.org/ - zlib license
+- Lidgren - https://code.google.com/p/lidgren-network-gen3/ - MIT
+- SharpFont - https://github.com/Robmaister/SharpFont - MIT
+- FreeType - http://www.freetype.org/license.html - FTL / GPL 2.0
+- opentype.js - https://github.com/nodebox/opentype.js - MIT
+- SlimDX - http://slimdx.org/ - MIT/X11
+
+- Cabin.ttf - http://www.google.com/fonts/specimen/Cabin - SIL Open Font License 1.1
+
+
+-------------------------------------------------------------------------------
+
 
 The MIT License (MIT)
 
-Copyright (c) 2013 FuseeProjectTeam
+Copyright (c) 2014 FuseeProjectTeam
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -32,11 +52,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 
+-------------------------------------------------------------------------------
+
+
 The zlib/libpng License
 
 This software is provided 'as-is', without any express or implied warranty.
 In no event will the authors be held liable for any damages arising from the
-use of this software.Permission is granted to anyone to use this software for
+use of this software. Permission is granted to anyone to use this software for
 any purpose, including commercial applications, and to alter it and
 redistribute it freely, subject to the following restrictions:
 1. The origin of this software must not be misrepresented; you must not claim
