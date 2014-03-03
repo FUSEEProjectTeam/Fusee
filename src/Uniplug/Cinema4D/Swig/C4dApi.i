@@ -258,6 +258,9 @@ class String;
        case 1001149:
          ret = new XPressoTag(cPtr, owner);
          break;
+	   case 5616: // Ttexture
+		 ret = new TextureTag(cPtr, owner);
+		 break;
       // Repeat for every other concrete type.
       default:
 	  //changed from the debug output to return a BaseTag object
@@ -820,14 +823,24 @@ BaseObject *
 
 //////////////////////////////////////////////////////////////////
 // "c4d_basetag.h"
-
 %include "c4d_basetag.h";
 
-/////////////////////////////////////////////////////////////////
-//////////////"NEU"
 ///////////////////////////////////////////////
 // "c4d_baseselect.h"
 %include "c4d_baseselect.h";
+
+///////////////////////////////////////////////
+// "c4d_basematerial.h"
+%include "c4d_basematerial.h";
+
+///////////////////////////////////////////////
+// "c4d_basechannel.h"
+%include "c4d_basechannel.h";
+
+///////////////////////////////////////////////
+// "c4d_shader.h"
+%ignore Multipass;
+%include "c4d_shader.h";
 
 //////////////////////////////////////////////////////////////////
 // "c4d_commanddata.h"

@@ -51559,6 +51559,4736 @@ SWIGEXPORT int SWIGSTDCALL CSharp_BaseSelect_GetLastElement(void * jarg1) {
 }
 
 
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseMaterial_GetNext(void * jarg1) {
+  void * jresult ;
+  BaseMaterial *arg1 = (BaseMaterial *) 0 ;
+  BaseMaterial *result = 0 ;
+  
+  arg1 = (BaseMaterial *)jarg1; 
+  result = (BaseMaterial *)(arg1)->GetNext();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseMaterial_GetPred(void * jarg1) {
+  void * jresult ;
+  BaseMaterial *arg1 = (BaseMaterial *) 0 ;
+  BaseMaterial *result = 0 ;
+  
+  arg1 = (BaseMaterial *)jarg1; 
+  result = (BaseMaterial *)(arg1)->GetPred();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseMaterial_Update(void * jarg1, unsigned int jarg2, unsigned int jarg3) {
+  BaseMaterial *arg1 = (BaseMaterial *) 0 ;
+  Bool arg2 ;
+  Bool arg3 ;
+  
+  arg1 = (BaseMaterial *)jarg1; 
+  arg2 = jarg2 ? true : false; 
+  arg3 = jarg3 ? true : false; 
+  (arg1)->Update(arg2,arg3);
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseMaterial_GetChannel(void * jarg1, int jarg2) {
+  void * jresult ;
+  BaseMaterial *arg1 = (BaseMaterial *) 0 ;
+  LONG arg2 ;
+  BaseChannel *result = 0 ;
+  
+  arg1 = (BaseMaterial *)jarg1; 
+  arg2 = (LONG)jarg2; 
+  result = (BaseChannel *)(arg1)->GetChannel(arg2);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseMaterial_GetPreview(void * jarg1, int jarg2) {
+  void * jresult ;
+  BaseMaterial *arg1 = (BaseMaterial *) 0 ;
+  LONG arg2 ;
+  BaseBitmap *result = 0 ;
+  
+  arg1 = (BaseMaterial *)jarg1; 
+  arg2 = (LONG)jarg2; 
+  result = (BaseBitmap *)(arg1)->GetPreview(arg2);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseMaterial_Compare(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  BaseMaterial *arg1 = (BaseMaterial *) 0 ;
+  BaseMaterial *arg2 = (BaseMaterial *) 0 ;
+  Bool result;
+  
+  arg1 = (BaseMaterial *)jarg1; 
+  arg2 = (BaseMaterial *)jarg2; 
+  result = (arg1)->Compare(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT Vector_POD /* Vector_ctype_out */ SWIGSTDCALL CSharp_BaseMaterial_GetAverageColor__SWIG_0(void * jarg1, int jarg2) {
+  Vector_POD /* Vector_ctype_out */ jresult ;
+  BaseMaterial *arg1 = (BaseMaterial *) 0 ;
+  LONG arg2 ;
+  Vector result;
+  
+  arg1 = (BaseMaterial *)jarg1; 
+  arg2 = (LONG)jarg2; 
+  result = (arg1)->GetAverageColor(arg2);
+  
+  /* <Vector_out> */
+  jresult = *((Vector_POD *)&(result));
+  /* </Vector_out> */
+  
+  return jresult;
+}
+
+
+SWIGEXPORT Vector_POD /* Vector_ctype_out */ SWIGSTDCALL CSharp_BaseMaterial_GetAverageColor__SWIG_1(void * jarg1) {
+  Vector_POD /* Vector_ctype_out */ jresult ;
+  BaseMaterial *arg1 = (BaseMaterial *) 0 ;
+  Vector result;
+  
+  arg1 = (BaseMaterial *)jarg1; 
+  result = (arg1)->GetAverageColor();
+  
+  /* <Vector_out> */
+  jresult = *((Vector_POD *)&(result));
+  /* </Vector_out> */
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseMaterial_Displace(void * jarg1, void * jarg2) {
+  BaseMaterial *arg1 = (BaseMaterial *) 0 ;
+  VolumeData *arg2 = (VolumeData *) 0 ;
+  
+  arg1 = (BaseMaterial *)jarg1; 
+  arg2 = (VolumeData *)jarg2; 
+  (arg1)->Displace(arg2);
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseMaterial_ChangeNormal(void * jarg1, void * jarg2) {
+  BaseMaterial *arg1 = (BaseMaterial *) 0 ;
+  VolumeData *arg2 = (VolumeData *) 0 ;
+  
+  arg1 = (BaseMaterial *)jarg1; 
+  arg2 = (VolumeData *)jarg2; 
+  (arg1)->ChangeNormal(arg2);
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseMaterial_CalcSurface(void * jarg1, void * jarg2) {
+  BaseMaterial *arg1 = (BaseMaterial *) 0 ;
+  VolumeData *arg2 = (VolumeData *) 0 ;
+  
+  arg1 = (BaseMaterial *)jarg1; 
+  arg2 = (VolumeData *)jarg2; 
+  (arg1)->CalcSurface(arg2);
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseMaterial_CalcTransparency(void * jarg1, void * jarg2) {
+  BaseMaterial *arg1 = (BaseMaterial *) 0 ;
+  VolumeData *arg2 = (VolumeData *) 0 ;
+  
+  arg1 = (BaseMaterial *)jarg1; 
+  arg2 = (VolumeData *)jarg2; 
+  (arg1)->CalcTransparency(arg2);
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseMaterial_CalcAlpha(void * jarg1, void * jarg2) {
+  BaseMaterial *arg1 = (BaseMaterial *) 0 ;
+  VolumeData *arg2 = (VolumeData *) 0 ;
+  
+  arg1 = (BaseMaterial *)jarg1; 
+  arg2 = (VolumeData *)jarg2; 
+  (arg1)->CalcAlpha(arg2);
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseMaterial_CalcVolumetric(void * jarg1, void * jarg2) {
+  BaseMaterial *arg1 = (BaseMaterial *) 0 ;
+  VolumeData *arg2 = (VolumeData *) 0 ;
+  
+  arg1 = (BaseMaterial *)jarg1; 
+  arg2 = (VolumeData *)jarg2; 
+  (arg1)->CalcVolumetric(arg2);
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseMaterial_InitCalculation(void * jarg1, void * jarg2, int jarg3) {
+  BaseMaterial *arg1 = (BaseMaterial *) 0 ;
+  VolumeData *arg2 = (VolumeData *) 0 ;
+  INITCALCULATION arg3 ;
+  
+  arg1 = (BaseMaterial *)jarg1; 
+  arg2 = (VolumeData *)jarg2; 
+  arg3 = (INITCALCULATION)jarg3; 
+  (arg1)->InitCalculation(arg2,arg3);
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BaseMaterial_GetRenderInfo(void * jarg1) {
+  int jresult ;
+  BaseMaterial *arg1 = (BaseMaterial *) 0 ;
+  VOLUMEINFO result;
+  
+  arg1 = (BaseMaterial *)jarg1; 
+  result = (VOLUMEINFO)(arg1)->GetRenderInfo();
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseMaterial_GlMessage__SWIG_0(void * jarg1, int jarg2, void * jarg3) {
+  void * jresult ;
+  BaseMaterial *arg1 = (BaseMaterial *) 0 ;
+  LONG arg2 ;
+  void *arg3 = (void *) 0 ;
+  GL_MESSAGE result;
+  
+  arg1 = (BaseMaterial *)jarg1; 
+  arg2 = (LONG)jarg2; 
+  arg3 = (void *)jarg3; 
+  result = (arg1)->GlMessage(arg2,arg3);
+  jresult = new GL_MESSAGE((const GL_MESSAGE &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseMaterial_GlMessage__SWIG_1(void * jarg1, int jarg2) {
+  void * jresult ;
+  BaseMaterial *arg1 = (BaseMaterial *) 0 ;
+  LONG arg2 ;
+  GL_MESSAGE result;
+  
+  arg1 = (BaseMaterial *)jarg1; 
+  arg2 = (LONG)jarg2; 
+  result = (arg1)->GlMessage(arg2);
+  jresult = new GL_MESSAGE((const GL_MESSAGE &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseMaterial_HasEditorTransparency(void * jarg1) {
+  unsigned int jresult ;
+  BaseMaterial *arg1 = (BaseMaterial *) 0 ;
+  Bool result;
+  
+  arg1 = (BaseMaterial *)jarg1; 
+  result = (arg1)->HasEditorTransparency();
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseMaterial_Alloc(int jarg1) {
+  void * jresult ;
+  LONG arg1 ;
+  BaseMaterial *result = 0 ;
+  
+  arg1 = (LONG)jarg1; 
+  result = (BaseMaterial *)BaseMaterial::Alloc(arg1);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseMaterial_Free(void * jarg1) {
+  BaseMaterial **arg1 = 0 ;
+  
+  arg1 = (BaseMaterial **)jarg1;
+  if (!arg1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "BaseMaterial *& type is null", 0);
+    return ;
+  } 
+  BaseMaterial::Free(*arg1);
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_Material_GetChannelState(void * jarg1, int jarg2) {
+  unsigned int jresult ;
+  Material *arg1 = (Material *) 0 ;
+  LONG arg2 ;
+  Bool result;
+  
+  arg1 = (Material *)jarg1; 
+  arg2 = (LONG)jarg2; 
+  result = (arg1)->GetChannelState(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_Material_SetChannelState(void * jarg1, int jarg2, unsigned int jarg3) {
+  Material *arg1 = (Material *) 0 ;
+  LONG arg2 ;
+  Bool arg3 ;
+  
+  arg1 = (Material *)jarg1; 
+  arg2 = (LONG)jarg2; 
+  arg3 = jarg3 ? true : false; 
+  (arg1)->SetChannelState(arg2,arg3);
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_Material_Alloc() {
+  void * jresult ;
+  Material *result = 0 ;
+  
+  result = (Material *)Material::Alloc();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_Material_Free(void * jarg1) {
+  Material **arg1 = 0 ;
+  
+  arg1 = (Material **)jarg1;
+  if (!arg1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Material *& type is null", 0);
+    return ;
+  } 
+  Material::Free(*arg1);
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BaseShader_InitRender(void * jarg1, void * jarg2) {
+  int jresult ;
+  BaseShader *arg1 = (BaseShader *) 0 ;
+  InitRenderStruct *arg2 = 0 ;
+  INITRENDERRESULT result;
+  
+  arg1 = (BaseShader *)jarg1; 
+  arg2 = (InitRenderStruct *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "InitRenderStruct const & type is null", 0);
+    return 0;
+  } 
+  result = (INITRENDERRESULT)(arg1)->InitRender((InitRenderStruct const &)*arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseShader_FreeRender(void * jarg1) {
+  BaseShader *arg1 = (BaseShader *) 0 ;
+  
+  arg1 = (BaseShader *)jarg1; 
+  (arg1)->FreeRender();
+}
+
+
+SWIGEXPORT Vector_POD /* Vector_ctype_out */ SWIGSTDCALL CSharp_BaseShader_Sample(void * jarg1, void * jarg2) {
+  Vector_POD /* Vector_ctype_out */ jresult ;
+  BaseShader *arg1 = (BaseShader *) 0 ;
+  ChannelData *arg2 = (ChannelData *) 0 ;
+  Vector result;
+  
+  arg1 = (BaseShader *)jarg1; 
+  arg2 = (ChannelData *)jarg2; 
+  result = (arg1)->Sample(arg2);
+  
+  /* <Vector_out> */
+  jresult = *((Vector_POD *)&(result));
+  /* </Vector_out> */
+  
+  return jresult;
+}
+
+
+SWIGEXPORT Vector_POD /* Vector_ctype_out */ SWIGSTDCALL CSharp_BaseShader_SampleBump(void * jarg1, void * jarg2, int jarg3) {
+  Vector_POD /* Vector_ctype_out */ jresult ;
+  BaseShader *arg1 = (BaseShader *) 0 ;
+  ChannelData *arg2 = (ChannelData *) 0 ;
+  SAMPLEBUMP arg3 ;
+  Vector result;
+  
+  arg1 = (BaseShader *)jarg1; 
+  arg2 = (ChannelData *)jarg2; 
+  arg3 = (SAMPLEBUMP)jarg3; 
+  result = (arg1)->SampleBump(arg2,arg3);
+  
+  /* <Vector_out> */
+  jresult = *((Vector_POD *)&(result));
+  /* </Vector_out> */
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseShader_GetBitmap(void * jarg1) {
+  void * jresult ;
+  BaseShader *arg1 = (BaseShader *) 0 ;
+  BaseBitmap *result = 0 ;
+  
+  arg1 = (BaseShader *)jarg1; 
+  result = (BaseBitmap *)(arg1)->GetBitmap();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BaseShader_GetRenderInfo(void * jarg1) {
+  int jresult ;
+  BaseShader *arg1 = (BaseShader *) 0 ;
+  SHADERINFO result;
+  
+  arg1 = (BaseShader *)jarg1; 
+  result = (SHADERINFO)(arg1)->GetRenderInfo();
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseShader_Compare(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  BaseShader *arg1 = (BaseShader *) 0 ;
+  BaseShader *arg2 = (BaseShader *) 0 ;
+  Bool result;
+  
+  arg1 = (BaseShader *)jarg1; 
+  arg2 = (BaseShader *)jarg2; 
+  result = (arg1)->Compare(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseShader_GlMessage(void * jarg1, int jarg2, void * jarg3) {
+  void * jresult ;
+  BaseShader *arg1 = (BaseShader *) 0 ;
+  LONG arg2 ;
+  void *arg3 = (void *) 0 ;
+  GL_MESSAGE result;
+  
+  arg1 = (BaseShader *)jarg1; 
+  arg2 = (LONG)jarg2; 
+  arg3 = (void *)jarg3; 
+  result = (arg1)->GlMessage(arg2,arg3);
+  jresult = new GL_MESSAGE((const GL_MESSAGE &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseShader_IsColorManagementOff(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  BaseShader *arg1 = (BaseShader *) 0 ;
+  BaseDocument *arg2 = (BaseDocument *) 0 ;
+  Bool result;
+  
+  arg1 = (BaseShader *)jarg1; 
+  arg2 = (BaseDocument *)jarg2; 
+  result = (arg1)->IsColorManagementOff(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseShader_DestroyGLImage(void * jarg1, void * jarg2) {
+  BaseShader *arg1 = (BaseShader *) 0 ;
+  BaseDocument *arg2 = (BaseDocument *) 0 ;
+  
+  arg1 = (BaseShader *)jarg1; 
+  arg2 = (BaseDocument *)jarg2; 
+  (arg1)->DestroyGLImage(arg2);
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseShader_InvalidateGLImage(void * jarg1, void * jarg2) {
+  BaseShader *arg1 = (BaseShader *) 0 ;
+  BaseDocument *arg2 = (BaseDocument *) 0 ;
+  
+  arg1 = (BaseShader *)jarg1; 
+  arg2 = (BaseDocument *)jarg2; 
+  (arg1)->InvalidateGLImage(arg2);
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseShader_GetNext(void * jarg1) {
+  void * jresult ;
+  BaseShader *arg1 = (BaseShader *) 0 ;
+  BaseShader *result = 0 ;
+  
+  arg1 = (BaseShader *)jarg1; 
+  result = (BaseShader *)(arg1)->GetNext();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseShader_GetPred(void * jarg1) {
+  void * jresult ;
+  BaseShader *arg1 = (BaseShader *) 0 ;
+  BaseShader *result = 0 ;
+  
+  arg1 = (BaseShader *)jarg1; 
+  result = (BaseShader *)(arg1)->GetPred();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseShader_GetUp(void * jarg1) {
+  void * jresult ;
+  BaseShader *arg1 = (BaseShader *) 0 ;
+  BaseShader *result = 0 ;
+  
+  arg1 = (BaseShader *)jarg1; 
+  result = (BaseShader *)(arg1)->GetUp();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseShader_GetDown(void * jarg1) {
+  void * jresult ;
+  BaseShader *arg1 = (BaseShader *) 0 ;
+  BaseShader *result = 0 ;
+  
+  arg1 = (BaseShader *)jarg1; 
+  result = (BaseShader *)(arg1)->GetDown();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseShader_GetDownLast(void * jarg1) {
+  void * jresult ;
+  BaseShader *arg1 = (BaseShader *) 0 ;
+  BaseShader *result = 0 ;
+  
+  arg1 = (BaseShader *)jarg1; 
+  result = (BaseShader *)(arg1)->GetDownLast();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseShader_Alloc(int jarg1) {
+  void * jresult ;
+  LONG arg1 ;
+  BaseShader *result = 0 ;
+  
+  arg1 = (LONG)jarg1; 
+  result = (BaseShader *)BaseShader::Alloc(arg1);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseShader_Free(void * jarg1) {
+  BaseShader **arg1 = 0 ;
+  
+  arg1 = (BaseShader **)jarg1;
+  if (!arg1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "BaseShader *& type is null", 0);
+    return ;
+  } 
+  BaseShader::Free(*arg1);
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseChannel_Compare(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  BaseChannel *arg1 = (BaseChannel *) 0 ;
+  BaseChannel *arg2 = (BaseChannel *) 0 ;
+  Bool result;
+  
+  arg1 = (BaseChannel *)jarg1; 
+  arg2 = (BaseChannel *)jarg2; 
+  result = (arg1)->Compare(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BaseChannel_InitTexture(void * jarg1, void * jarg2) {
+  int jresult ;
+  BaseChannel *arg1 = (BaseChannel *) 0 ;
+  InitRenderStruct *arg2 = 0 ;
+  INITRENDERRESULT result;
+  
+  arg1 = (BaseChannel *)jarg1; 
+  arg2 = (InitRenderStruct *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "InitRenderStruct const & type is null", 0);
+    return 0;
+  } 
+  result = (INITRENDERRESULT)(arg1)->InitTexture((InitRenderStruct const &)*arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseChannel_FreeTexture(void * jarg1) {
+  BaseChannel *arg1 = (BaseChannel *) 0 ;
+  
+  arg1 = (BaseChannel *)jarg1; 
+  (arg1)->FreeTexture();
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseChannel_GetData(void * jarg1) {
+  void * jresult ;
+  BaseChannel *arg1 = (BaseChannel *) 0 ;
+  BaseContainer result;
+  
+  arg1 = (BaseChannel *)jarg1; 
+  result = (arg1)->GetData();
+  jresult = new BaseContainer((const BaseContainer &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseChannel_SetData(void * jarg1, void * jarg2) {
+  BaseChannel *arg1 = (BaseChannel *) 0 ;
+  BaseContainer *arg2 = 0 ;
+  
+  arg1 = (BaseChannel *)jarg1; 
+  arg2 = (BaseContainer *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "BaseContainer const & type is null", 0);
+    return ;
+  } 
+  (arg1)->SetData((BaseContainer const &)*arg2);
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BaseChannel_GetShaderID(void * jarg1) {
+  int jresult ;
+  BaseChannel *arg1 = (BaseChannel *) 0 ;
+  LONG result;
+  
+  arg1 = (BaseChannel *)jarg1; 
+  result = (arg1)->GetShaderID();
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseChannel_GetShader(void * jarg1) {
+  void * jresult ;
+  BaseChannel *arg1 = (BaseChannel *) 0 ;
+  BaseShader *result = 0 ;
+  
+  arg1 = (BaseChannel *)jarg1; 
+  result = (BaseShader *)(arg1)->GetShader();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseChannel_GetBitmap(void * jarg1) {
+  void * jresult ;
+  BaseChannel *arg1 = (BaseChannel *) 0 ;
+  BaseBitmap *result = 0 ;
+  
+  arg1 = (BaseChannel *)jarg1; 
+  result = (BaseBitmap *)(arg1)->GetBitmap();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT Vector_POD /* Vector_ctype_out */ SWIGSTDCALL CSharp_BaseChannel_Sample(void * jarg1, void * jarg2, void * jarg3, void * jarg4, void * jarg5, double jarg6, int jarg7, double jarg8, double jarg9) {
+  Vector_POD /* Vector_ctype_out */ jresult ;
+  BaseChannel *arg1 = (BaseChannel *) 0 ;
+  VolumeData *arg2 = (VolumeData *) 0 ;
+  Vector *arg3 = (Vector *) 0 ;
+  Vector *arg4 = (Vector *) 0 ;
+  Vector *arg5 = (Vector *) 0 ;
+  Real arg6 ;
+  LONG arg7 ;
+  Real arg8 ;
+  Real arg9 ;
+  Vector result;
+  
+  arg1 = (BaseChannel *)jarg1; 
+  arg2 = (VolumeData *)jarg2; 
+  arg3 = (Vector *)jarg3; /* Vector*&_in */
+  arg4 = (Vector *)jarg4; /* Vector*&_in */
+  arg5 = (Vector *)jarg5; /* Vector*&_in */
+  arg6 = (Real)jarg6; 
+  arg7 = (LONG)jarg7; 
+  arg8 = (Real)jarg8; 
+  arg9 = (Real)jarg9; 
+  result = (arg1)->Sample(arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9);
+  
+  /* <Vector_out> */
+  jresult = *((Vector_POD *)&(result));
+  /* </Vector_out> */
+  
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseChannel_Attach(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  BaseChannel *arg1 = (BaseChannel *) 0 ;
+  GeListNode *arg2 = (GeListNode *) 0 ;
+  Bool result;
+  
+  arg1 = (BaseChannel *)jarg1; 
+  arg2 = (GeListNode *)jarg2; 
+  result = (arg1)->Attach(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseChannel_Alloc() {
+  void * jresult ;
+  BaseChannel *result = 0 ;
+  
+  result = (BaseChannel *)BaseChannel::Alloc();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseChannel_Free(void * jarg1) {
+  BaseChannel **arg1 = 0 ;
+  
+  arg1 = (BaseChannel **)jarg1;
+  if (!arg1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "BaseChannel *& type is null", 0);
+    return ;
+  } 
+  BaseChannel::Free(*arg1);
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HandleShaderPopupI(void * jarg1, void * jarg2, int jarg3, void * jarg4) {
+  unsigned int jresult ;
+  BaseList2D *arg1 = (BaseList2D *) 0 ;
+  BaseShader **arg2 = 0 ;
+  LONG arg3 ;
+  VLONG arg4 ;
+  VLONG *argp4 ;
+  Bool result;
+  
+  arg1 = (BaseList2D *)jarg1; 
+  arg2 = (BaseShader **)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "BaseShader *& type is null", 0);
+    return 0;
+  } 
+  arg3 = (LONG)jarg3; 
+  argp4 = (VLONG *)jarg4; 
+  if (!argp4) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null VLONG", 0);
+    return 0;
+  }
+  arg4 = *argp4; 
+  result = HandleShaderPopupI(arg1,*arg2,arg3,arg4);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BuildShaderPopupMenuI(void * jarg1, void * jarg2, void * jarg3, void * jarg4) {
+  unsigned int jresult ;
+  BaseContainer *arg1 = (BaseContainer *) 0 ;
+  BaseList2D *arg2 = (BaseList2D *) 0 ;
+  BaseShader *arg3 = (BaseShader *) 0 ;
+  VLONG arg4 ;
+  VLONG *argp4 ;
+  Bool result;
+  
+  arg1 = (BaseContainer *)jarg1; 
+  arg2 = (BaseList2D *)jarg2; 
+  arg3 = (BaseShader *)jarg3; 
+  argp4 = (VLONG *)jarg4; 
+  if (!argp4) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null VLONG", 0);
+    return 0;
+  }
+  arg4 = *argp4; 
+  result = BuildShaderPopupMenuI(arg1,arg2,arg3,arg4);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HandleShaderPopup(void * jarg1, void * jarg2, int jarg3, void * jarg4) {
+  unsigned int jresult ;
+  BaseContainer *arg1 = 0 ;
+  DescID *arg2 = 0 ;
+  LONG arg3 ;
+  VLONG arg4 ;
+  VLONG *argp4 ;
+  Bool result;
+  
+  arg1 = (BaseContainer *)jarg1;
+  if (!arg1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "BaseContainer const & type is null", 0);
+    return 0;
+  } 
+  arg2 = (DescID *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "DescID const & type is null", 0);
+    return 0;
+  } 
+  arg3 = (LONG)jarg3; 
+  argp4 = (VLONG *)jarg4; 
+  if (!argp4) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null VLONG", 0);
+    return 0;
+  }
+  arg4 = *argp4; 
+  result = HandleShaderPopup((BaseContainer const &)*arg1,(DescID const &)*arg2,arg3,arg4);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BuildShaderPopupMenu(void * jarg1, void * jarg2, void * jarg3, void * jarg4) {
+  unsigned int jresult ;
+  BaseContainer *arg1 = (BaseContainer *) 0 ;
+  BaseContainer *arg2 = 0 ;
+  DescID *arg3 = 0 ;
+  VLONG arg4 ;
+  VLONG *argp4 ;
+  Bool result;
+  
+  arg1 = (BaseContainer *)jarg1; 
+  arg2 = (BaseContainer *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "BaseContainer const & type is null", 0);
+    return 0;
+  } 
+  arg3 = (DescID *)jarg3;
+  if (!arg3) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "DescID const & type is null", 0);
+    return 0;
+  } 
+  argp4 = (VLONG *)jarg4; 
+  if (!argp4) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null VLONG", 0);
+    return 0;
+  }
+  arg4 = *argp4; 
+  result = BuildShaderPopupMenu(arg1,(BaseContainer const &)*arg2,(DescID const &)*arg3,arg4);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT char * /* String_ctype */ SWIGSTDCALL CSharp_GetChannelName(int jarg1) {
+  char * /* String_ctype */ jresult ;
+  LONG arg1 ;
+  String result;
+  
+  arg1 = (LONG)jarg1; 
+  result = GetChannelName(arg1);
+  /* <String_out> */ 
+  jresult = SWIG_csharp_string_callback((&result)->GetCStringCopy()); 
+  /* </String_out> */
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEX_TILE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(0x01);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEX_MIRROR_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(0x02);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEX_ALPHA_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(0x04);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEX_BUMP_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(0x08);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_CALC_TEXINFO(int jarg1, int jarg2) {
+  int jresult ;
+  LONG arg1 ;
+  LONG arg2 ;
+  LONG result;
+  
+  arg1 = (LONG)jarg1; 
+  arg2 = (LONG)jarg2; 
+  result = CALC_TEXINFO(arg1,arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_CALC_TEXINFO_BUMP(int jarg1, int jarg2, int jarg3) {
+  int jresult ;
+  LONG arg1 ;
+  LONG arg2 ;
+  LONG arg3 ;
+  LONG result;
+  
+  arg1 = (LONG)jarg1; 
+  arg2 = (LONG)jarg2; 
+  arg3 = (LONG)jarg3; 
+  result = CALC_TEXINFO_BUMP(arg1,arg2,arg3);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MAX_MATERIALCHANNELS_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(14);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_CHANNEL_ANY_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(-1);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_CHANNEL_COLOR_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(0);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_CHANNEL_LUMINANCE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(1);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_CHANNEL_TRANSPARENCY_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_CHANNEL_REFLECTION_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(3);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_CHANNEL_ENVIRONMENT_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(4);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_CHANNEL_FOG_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(5);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_CHANNEL_BUMP_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(6);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_CHANNEL_ALPHA_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(7);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_CHANNEL_SPECULAR_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(8);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_CHANNEL_SPECULARCOLOR_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(9);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_CHANNEL_GLOW_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(10);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_CHANNEL_DISPLACEMENT_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(11);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_CHANNEL_DIFFUSION_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(12);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_CHANNEL_NORMAL_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(13);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BASECHANNEL_COLOR_EX_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(1000);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BASECHANNEL_BRIGHTNESS_EX_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(1001);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BASECHANNEL_MIXMODE_EX_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(1006);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BASECHANNEL_MIXSTRENGTH_EX_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(1007);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BASECHANNEL_TEXTURE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(1002);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BASECHANNEL_BLUR_OFFSET_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(1003);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BASECHANNEL_BLUR_STRENGTH_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(1004);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BASECHANNEL_INTERPOLATION_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(1005);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BASECHANNEL_TIME_FROM_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(1008);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BASECHANNEL_TIME_TO_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(1009);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BASECHANNEL_TIME_FPS_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(1010);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BASECHANNEL_TIME_MODE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(1011);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BASECHANNEL_TIME_TIMING_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(1012);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BASECHANNEL_TIME_START_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(1013);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BASECHANNEL_TIME_END_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(1014);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BASECHANNEL_TIME_LOOPS_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(1015);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BASECHANNEL_SHADERID_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(1016);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BASECHANNEL_SUGGESTEDFOLDER_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(1017);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT Vector_POD /* Vector_ctype_out */ SWIGSTDCALL CSharp_TransformColor(void * jarg1, int jarg2) {
+  Vector_POD /* Vector_ctype_out */ jresult ;
+  Vector *arg1 = 0 ;
+  COLORSPACETRANSFORMATION arg2 ;
+  Vector result;
+  
+  arg1 = (Vector *)jarg1; /* Vector*&_in */
+  arg2 = (COLORSPACETRANSFORMATION)jarg2; 
+  result = TransformColor((Vector const &)*arg1,arg2);
+  
+  /* <Vector_out> */
+  jresult = *((Vector_POD *)&(result));
+  /* </Vector_out> */
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_new_InitRenderStruct__SWIG_0() {
+  void * jresult ;
+  InitRenderStruct *result = 0 ;
+  
+  result = (InitRenderStruct *)new InitRenderStruct();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_new_InitRenderStruct__SWIG_1(void * jarg1) {
+  void * jresult ;
+  BaseDocument *arg1 = (BaseDocument *) 0 ;
+  InitRenderStruct *result = 0 ;
+  
+  arg1 = (BaseDocument *)jarg1; 
+  result = (InitRenderStruct *)new InitRenderStruct(arg1);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_InitRenderStruct_Init(void * jarg1, void * jarg2) {
+  InitRenderStruct *arg1 = (InitRenderStruct *) 0 ;
+  BaseDocument *arg2 = (BaseDocument *) 0 ;
+  
+  arg1 = (InitRenderStruct *)jarg1; 
+  arg2 = (BaseDocument *)jarg2; 
+  (arg1)->Init(arg2);
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_InitRenderStruct_version_set(void * jarg1, int jarg2) {
+  InitRenderStruct *arg1 = (InitRenderStruct *) 0 ;
+  LONG arg2 ;
+  
+  arg1 = (InitRenderStruct *)jarg1; 
+  arg2 = (LONG)jarg2; 
+  if (arg1) (arg1)->version = arg2;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_InitRenderStruct_version_get(void * jarg1) {
+  int jresult ;
+  InitRenderStruct *arg1 = (InitRenderStruct *) 0 ;
+  LONG result;
+  
+  arg1 = (InitRenderStruct *)jarg1; 
+  result =  ((arg1)->version);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_InitRenderStruct_time_set(void * jarg1, void * jarg2) {
+  InitRenderStruct *arg1 = (InitRenderStruct *) 0 ;
+  BaseTime *arg2 = (BaseTime *) 0 ;
+  
+  arg1 = (InitRenderStruct *)jarg1; 
+  arg2 = (BaseTime *)jarg2; 
+  if (arg1) (arg1)->time = *arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_InitRenderStruct_time_get(void * jarg1) {
+  void * jresult ;
+  InitRenderStruct *arg1 = (InitRenderStruct *) 0 ;
+  BaseTime *result = 0 ;
+  
+  arg1 = (InitRenderStruct *)jarg1; 
+  result = (BaseTime *)& ((arg1)->time);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_InitRenderStruct_fps_set(void * jarg1, int jarg2) {
+  InitRenderStruct *arg1 = (InitRenderStruct *) 0 ;
+  LONG arg2 ;
+  
+  arg1 = (InitRenderStruct *)jarg1; 
+  arg2 = (LONG)jarg2; 
+  if (arg1) (arg1)->fps = arg2;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_InitRenderStruct_fps_get(void * jarg1) {
+  int jresult ;
+  InitRenderStruct *arg1 = (InitRenderStruct *) 0 ;
+  LONG result;
+  
+  arg1 = (InitRenderStruct *)jarg1; 
+  result =  ((arg1)->fps);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_InitRenderStruct_docpath_set(void * jarg1, void * jarg2) {
+  InitRenderStruct *arg1 = (InitRenderStruct *) 0 ;
+  Filename *arg2 = (Filename *) 0 ;
+  
+  arg1 = (InitRenderStruct *)jarg1; 
+  arg2 = (Filename *)jarg2; 
+  if (arg1) (arg1)->docpath = *arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_InitRenderStruct_docpath_get(void * jarg1) {
+  void * jresult ;
+  InitRenderStruct *arg1 = (InitRenderStruct *) 0 ;
+  Filename *result = 0 ;
+  
+  arg1 = (InitRenderStruct *)jarg1; 
+  result = (Filename *)& ((arg1)->docpath);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_InitRenderStruct_matname_set(void * jarg1, void * jarg2) {
+  InitRenderStruct *arg1 = (InitRenderStruct *) 0 ;
+  String *arg2 = (String *) 0 ;
+  
+  arg1 = (InitRenderStruct *)jarg1; 
+  arg2 = (String *)jarg2; 
+  if (arg1) (arg1)->matname = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_InitRenderStruct_matname_get(void * jarg1) {
+  void * jresult ;
+  InitRenderStruct *arg1 = (InitRenderStruct *) 0 ;
+  String *result = 0 ;
+  
+  arg1 = (InitRenderStruct *)jarg1; 
+  result = (String *) ((arg1)->matname);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_InitRenderStruct_errorlist_set(void * jarg1, void * jarg2) {
+  InitRenderStruct *arg1 = (InitRenderStruct *) 0 ;
+  RootTextureString *arg2 = (RootTextureString *) 0 ;
+  
+  arg1 = (InitRenderStruct *)jarg1; 
+  arg2 = (RootTextureString *)jarg2; 
+  if (arg1) (arg1)->errorlist = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_InitRenderStruct_errorlist_get(void * jarg1) {
+  void * jresult ;
+  InitRenderStruct *arg1 = (InitRenderStruct *) 0 ;
+  RootTextureString *result = 0 ;
+  
+  arg1 = (InitRenderStruct *)jarg1; 
+  result = (RootTextureString *) ((arg1)->errorlist);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_InitRenderStruct_vd_set(void * jarg1, void * jarg2) {
+  InitRenderStruct *arg1 = (InitRenderStruct *) 0 ;
+  VolumeData *arg2 = (VolumeData *) 0 ;
+  
+  arg1 = (InitRenderStruct *)jarg1; 
+  arg2 = (VolumeData *)jarg2; 
+  if (arg1) (arg1)->vd = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_InitRenderStruct_vd_get(void * jarg1) {
+  void * jresult ;
+  InitRenderStruct *arg1 = (InitRenderStruct *) 0 ;
+  VolumeData *result = 0 ;
+  
+  arg1 = (InitRenderStruct *)jarg1; 
+  result = (VolumeData *) ((arg1)->vd);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_InitRenderStruct_doc_set(void * jarg1, void * jarg2) {
+  InitRenderStruct *arg1 = (InitRenderStruct *) 0 ;
+  BaseDocument *arg2 = (BaseDocument *) 0 ;
+  
+  arg1 = (InitRenderStruct *)jarg1; 
+  arg2 = (BaseDocument *)jarg2; 
+  if (arg1) (arg1)->doc = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_InitRenderStruct_doc_get(void * jarg1) {
+  void * jresult ;
+  InitRenderStruct *arg1 = (InitRenderStruct *) 0 ;
+  BaseDocument *result = 0 ;
+  
+  arg1 = (InitRenderStruct *)jarg1; 
+  result = (BaseDocument *) ((arg1)->doc);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_InitRenderStruct_thread_set(void * jarg1, void * jarg2) {
+  InitRenderStruct *arg1 = (InitRenderStruct *) 0 ;
+  BaseThread *arg2 = (BaseThread *) 0 ;
+  
+  arg1 = (InitRenderStruct *)jarg1; 
+  arg2 = (BaseThread *)jarg2; 
+  if (arg1) (arg1)->thread = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_InitRenderStruct_thread_get(void * jarg1) {
+  void * jresult ;
+  InitRenderStruct *arg1 = (InitRenderStruct *) 0 ;
+  BaseThread *result = 0 ;
+  
+  arg1 = (InitRenderStruct *)jarg1; 
+  result = (BaseThread *) ((arg1)->thread);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_InitRenderStruct_flags_set(void * jarg1, int jarg2) {
+  InitRenderStruct *arg1 = (InitRenderStruct *) 0 ;
+  INITRENDERFLAG arg2 ;
+  
+  arg1 = (InitRenderStruct *)jarg1; 
+  arg2 = (INITRENDERFLAG)jarg2; 
+  if (arg1) (arg1)->flags = arg2;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_InitRenderStruct_flags_get(void * jarg1) {
+  int jresult ;
+  InitRenderStruct *arg1 = (InitRenderStruct *) 0 ;
+  INITRENDERFLAG result;
+  
+  arg1 = (InitRenderStruct *)jarg1; 
+  result = (INITRENDERFLAG) ((arg1)->flags);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_InitRenderStruct_linear_workflow_set(void * jarg1, unsigned int jarg2) {
+  InitRenderStruct *arg1 = (InitRenderStruct *) 0 ;
+  Bool arg2 ;
+  
+  arg1 = (InitRenderStruct *)jarg1; 
+  arg2 = jarg2 ? true : false; 
+  if (arg1) (arg1)->linear_workflow = arg2;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_InitRenderStruct_linear_workflow_get(void * jarg1) {
+  unsigned int jresult ;
+  InitRenderStruct *arg1 = (InitRenderStruct *) 0 ;
+  Bool result;
+  
+  arg1 = (InitRenderStruct *)jarg1; 
+  result =  ((arg1)->linear_workflow);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_InitRenderStruct_document_colorprofile_set(void * jarg1, int jarg2) {
+  InitRenderStruct *arg1 = (InitRenderStruct *) 0 ;
+  LONG arg2 ;
+  
+  arg1 = (InitRenderStruct *)jarg1; 
+  arg2 = (LONG)jarg2; 
+  if (arg1) (arg1)->document_colorprofile = arg2;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_InitRenderStruct_document_colorprofile_get(void * jarg1) {
+  int jresult ;
+  InitRenderStruct *arg1 = (InitRenderStruct *) 0 ;
+  LONG result;
+  
+  arg1 = (InitRenderStruct *)jarg1; 
+  result =  ((arg1)->document_colorprofile);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_InitRenderStruct_GetThreadCount(void * jarg1) {
+  int jresult ;
+  InitRenderStruct *arg1 = (InitRenderStruct *) 0 ;
+  LONG result;
+  
+  arg1 = (InitRenderStruct *)jarg1; 
+  result = ((InitRenderStruct const *)arg1)->GetThreadCount();
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT Vector_POD /* Vector_ctype_out */ SWIGSTDCALL CSharp_InitRenderStruct_TransformColor(void * jarg1, void * jarg2) {
+  Vector_POD /* Vector_ctype_out */ jresult ;
+  InitRenderStruct *arg1 = (InitRenderStruct *) 0 ;
+  Vector *arg2 = 0 ;
+  Vector result;
+  
+  arg1 = (InitRenderStruct *)jarg1; 
+  arg2 = (Vector *)jarg2; /* Vector*&_in */
+  result = ((InitRenderStruct const *)arg1)->TransformColor((Vector const &)*arg2);
+  
+  /* <Vector_out> */
+  jresult = *((Vector_POD *)&(result));
+  /* </Vector_out> */
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_delete_InitRenderStruct(void * jarg1) {
+  InitRenderStruct *arg1 = (InitRenderStruct *) 0 ;
+  
+  arg1 = (InitRenderStruct *)jarg1; 
+  delete arg1;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_SIDE_FRONT_AND_BACK_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(0);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_SIDE_FRONT_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(1);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_SIDE_BACK_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_TexData_m_set(void * jarg1, Matrix_POD /* Matrix_ctype */ jarg2) {
+  TexData *arg1 = (TexData *) 0 ;
+  Matrix arg2 ;
+  
+  arg1 = (TexData *)jarg1; 
+  /* <Matrix_in> */ 
+  arg2 = *((Matrix *)(&jarg2)); 
+  /* </Matrix_in> */
+  if (arg1) (arg1)->m = arg2;
+}
+
+
+SWIGEXPORT Matrix_POD /* Matrix_ctype */ SWIGSTDCALL CSharp_TexData_m_get(void * jarg1) {
+  Matrix_POD /* Matrix_ctype */ jresult ;
+  TexData *arg1 = (TexData *) 0 ;
+  Matrix result;
+  
+  arg1 = (TexData *)jarg1; 
+  result =  ((arg1)->m);
+  /* <Matrix_out> */ 
+  jresult = *((Matrix_POD *)(&result)); 
+  /* </Matrix_out> */
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_TexData_im_set(void * jarg1, Matrix_POD /* Matrix_ctype */ jarg2) {
+  TexData *arg1 = (TexData *) 0 ;
+  Matrix arg2 ;
+  
+  arg1 = (TexData *)jarg1; 
+  /* <Matrix_in> */ 
+  arg2 = *((Matrix *)(&jarg2)); 
+  /* </Matrix_in> */
+  if (arg1) (arg1)->im = arg2;
+}
+
+
+SWIGEXPORT Matrix_POD /* Matrix_ctype */ SWIGSTDCALL CSharp_TexData_im_get(void * jarg1) {
+  Matrix_POD /* Matrix_ctype */ jresult ;
+  TexData *arg1 = (TexData *) 0 ;
+  Matrix result;
+  
+  arg1 = (TexData *)jarg1; 
+  result =  ((arg1)->im);
+  /* <Matrix_out> */ 
+  jresult = *((Matrix_POD *)(&result)); 
+  /* </Matrix_out> */
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_TexData_texflag_set(void * jarg1, void * jarg2) {
+  TexData *arg1 = (TexData *) 0 ;
+  CHAR arg2 ;
+  CHAR *argp2 ;
+  
+  arg1 = (TexData *)jarg1; 
+  argp2 = (CHAR *)jarg2; 
+  if (!argp2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null CHAR", 0);
+    return ;
+  }
+  arg2 = *argp2; 
+  if (arg1) (arg1)->texflag = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_TexData_texflag_get(void * jarg1) {
+  void * jresult ;
+  TexData *arg1 = (TexData *) 0 ;
+  CHAR result;
+  
+  arg1 = (TexData *)jarg1; 
+  result =  ((arg1)->texflag);
+  jresult = new CHAR((const CHAR &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_TexData_additive_set(void * jarg1, void * jarg2) {
+  TexData *arg1 = (TexData *) 0 ;
+  CHAR arg2 ;
+  CHAR *argp2 ;
+  
+  arg1 = (TexData *)jarg1; 
+  argp2 = (CHAR *)jarg2; 
+  if (!argp2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null CHAR", 0);
+    return ;
+  }
+  arg2 = *argp2; 
+  if (arg1) (arg1)->additive = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_TexData_additive_get(void * jarg1) {
+  void * jresult ;
+  TexData *arg1 = (TexData *) 0 ;
+  CHAR result;
+  
+  arg1 = (TexData *)jarg1; 
+  result =  ((arg1)->additive);
+  jresult = new CHAR((const CHAR &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_TexData_proj_set(void * jarg1, void * jarg2) {
+  TexData *arg1 = (TexData *) 0 ;
+  CHAR arg2 ;
+  CHAR *argp2 ;
+  
+  arg1 = (TexData *)jarg1; 
+  argp2 = (CHAR *)jarg2; 
+  if (!argp2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null CHAR", 0);
+    return ;
+  }
+  arg2 = *argp2; 
+  if (arg1) (arg1)->proj = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_TexData_proj_get(void * jarg1) {
+  void * jresult ;
+  TexData *arg1 = (TexData *) 0 ;
+  CHAR result;
+  
+  arg1 = (TexData *)jarg1; 
+  result =  ((arg1)->proj);
+  jresult = new CHAR((const CHAR &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_TexData_side_set(void * jarg1, void * jarg2) {
+  TexData *arg1 = (TexData *) 0 ;
+  CHAR arg2 ;
+  CHAR *argp2 ;
+  
+  arg1 = (TexData *)jarg1; 
+  argp2 = (CHAR *)jarg2; 
+  if (!argp2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null CHAR", 0);
+    return ;
+  }
+  arg2 = *argp2; 
+  if (arg1) (arg1)->side = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_TexData_side_get(void * jarg1) {
+  void * jresult ;
+  TexData *arg1 = (TexData *) 0 ;
+  CHAR result;
+  
+  arg1 = (TexData *)jarg1; 
+  result =  ((arg1)->side);
+  jresult = new CHAR((const CHAR &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_TexData_restrict_set(void * jarg1, int jarg2) {
+  TexData *arg1 = (TexData *) 0 ;
+  LONG arg2 ;
+  
+  arg1 = (TexData *)jarg1; 
+  arg2 = (LONG)jarg2; 
+  if (arg1) (arg1)->restrict = arg2;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TexData_restrict_get(void * jarg1) {
+  int jresult ;
+  TexData *arg1 = (TexData *) 0 ;
+  LONG result;
+  
+  arg1 = (TexData *)jarg1; 
+  result =  ((arg1)->restrict);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_TexData_ox_set(void * jarg1, double jarg2) {
+  TexData *arg1 = (TexData *) 0 ;
+  Real arg2 ;
+  
+  arg1 = (TexData *)jarg1; 
+  arg2 = (Real)jarg2; 
+  if (arg1) (arg1)->ox = arg2;
+}
+
+
+SWIGEXPORT double SWIGSTDCALL CSharp_TexData_ox_get(void * jarg1) {
+  double jresult ;
+  TexData *arg1 = (TexData *) 0 ;
+  Real result;
+  
+  arg1 = (TexData *)jarg1; 
+  result =  ((arg1)->ox);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_TexData_oy_set(void * jarg1, double jarg2) {
+  TexData *arg1 = (TexData *) 0 ;
+  Real arg2 ;
+  
+  arg1 = (TexData *)jarg1; 
+  arg2 = (Real)jarg2; 
+  if (arg1) (arg1)->oy = arg2;
+}
+
+
+SWIGEXPORT double SWIGSTDCALL CSharp_TexData_oy_get(void * jarg1) {
+  double jresult ;
+  TexData *arg1 = (TexData *) 0 ;
+  Real result;
+  
+  arg1 = (TexData *)jarg1; 
+  result =  ((arg1)->oy);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_TexData_lenx_set(void * jarg1, double jarg2) {
+  TexData *arg1 = (TexData *) 0 ;
+  Real arg2 ;
+  
+  arg1 = (TexData *)jarg1; 
+  arg2 = (Real)jarg2; 
+  if (arg1) (arg1)->lenx = arg2;
+}
+
+
+SWIGEXPORT double SWIGSTDCALL CSharp_TexData_lenx_get(void * jarg1) {
+  double jresult ;
+  TexData *arg1 = (TexData *) 0 ;
+  Real result;
+  
+  arg1 = (TexData *)jarg1; 
+  result =  ((arg1)->lenx);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_TexData_leny_set(void * jarg1, double jarg2) {
+  TexData *arg1 = (TexData *) 0 ;
+  Real arg2 ;
+  
+  arg1 = (TexData *)jarg1; 
+  arg2 = (Real)jarg2; 
+  if (arg1) (arg1)->leny = arg2;
+}
+
+
+SWIGEXPORT double SWIGSTDCALL CSharp_TexData_leny_get(void * jarg1) {
+  double jresult ;
+  TexData *arg1 = (TexData *) 0 ;
+  Real result;
+  
+  arg1 = (TexData *)jarg1; 
+  result =  ((arg1)->leny);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_TexData_repetitionx_set(void * jarg1, double jarg2) {
+  TexData *arg1 = (TexData *) 0 ;
+  Real arg2 ;
+  
+  arg1 = (TexData *)jarg1; 
+  arg2 = (Real)jarg2; 
+  if (arg1) (arg1)->repetitionx = arg2;
+}
+
+
+SWIGEXPORT double SWIGSTDCALL CSharp_TexData_repetitionx_get(void * jarg1) {
+  double jresult ;
+  TexData *arg1 = (TexData *) 0 ;
+  Real result;
+  
+  arg1 = (TexData *)jarg1; 
+  result =  ((arg1)->repetitionx);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_TexData_repetitiony_set(void * jarg1, double jarg2) {
+  TexData *arg1 = (TexData *) 0 ;
+  Real arg2 ;
+  
+  arg1 = (TexData *)jarg1; 
+  arg2 = (Real)jarg2; 
+  if (arg1) (arg1)->repetitiony = arg2;
+}
+
+
+SWIGEXPORT double SWIGSTDCALL CSharp_TexData_repetitiony_get(void * jarg1) {
+  double jresult ;
+  TexData *arg1 = (TexData *) 0 ;
+  Real result;
+  
+  arg1 = (TexData *)jarg1; 
+  result =  ((arg1)->repetitiony);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_TexData_mp_set(void * jarg1, void * jarg2) {
+  TexData *arg1 = (TexData *) 0 ;
+  GeListNode *arg2 = (GeListNode *) 0 ;
+  
+  arg1 = (TexData *)jarg1; 
+  arg2 = (GeListNode *)jarg2; 
+  if (arg1) (arg1)->mp = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_TexData_mp_get(void * jarg1) {
+  void * jresult ;
+  TexData *arg1 = (TexData *) 0 ;
+  GeListNode *result = 0 ;
+  
+  arg1 = (TexData *)jarg1; 
+  result = (GeListNode *) ((arg1)->mp);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_TexData_uvwind_set(void * jarg1, int jarg2) {
+  TexData *arg1 = (TexData *) 0 ;
+  LONG arg2 ;
+  
+  arg1 = (TexData *)jarg1; 
+  arg2 = (LONG)jarg2; 
+  if (arg1) (arg1)->uvwind = arg2;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TexData_uvwind_get(void * jarg1) {
+  int jresult ;
+  TexData *arg1 = (TexData *) 0 ;
+  LONG result;
+  
+  arg1 = (TexData *)jarg1; 
+  result =  ((arg1)->uvwind);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_TexData_camera_set(void * jarg1, void * jarg2) {
+  TexData *arg1 = (TexData *) 0 ;
+  BaseView *arg2 = (BaseView *) 0 ;
+  
+  arg1 = (TexData *)jarg1; 
+  arg2 = (BaseView *)jarg2; 
+  if (arg1) (arg1)->camera = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_TexData_camera_get(void * jarg1) {
+  void * jresult ;
+  TexData *arg1 = (TexData *) 0 ;
+  BaseView *result = 0 ;
+  
+  arg1 = (TexData *)jarg1; 
+  result = (BaseView *) ((arg1)->camera);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_TexData_uvbump_set(void * jarg1, void * jarg2) {
+  TexData *arg1 = (TexData *) 0 ;
+  CHAR arg2 ;
+  CHAR *argp2 ;
+  
+  arg1 = (TexData *)jarg1; 
+  argp2 = (CHAR *)jarg2; 
+  if (!argp2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null CHAR", 0);
+    return ;
+  }
+  arg2 = *argp2; 
+  if (arg1) (arg1)->uvbump = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_TexData_uvbump_get(void * jarg1) {
+  void * jresult ;
+  TexData *arg1 = (TexData *) 0 ;
+  CHAR result;
+  
+  arg1 = (TexData *)jarg1; 
+  result =  ((arg1)->uvbump);
+  jresult = new CHAR((const CHAR &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_TexData_link_set(void * jarg1, void * jarg2) {
+  TexData *arg1 = (TexData *) 0 ;
+  BaseTag *arg2 = (BaseTag *) 0 ;
+  
+  arg1 = (TexData *)jarg1; 
+  arg2 = (BaseTag *)jarg2; 
+  if (arg1) (arg1)->link = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_TexData_link_get(void * jarg1) {
+  void * jresult ;
+  TexData *arg1 = (TexData *) 0 ;
+  BaseTag *result = 0 ;
+  
+  arg1 = (TexData *)jarg1; 
+  result = (BaseTag *) ((arg1)->link);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_TexData_Alloc() {
+  void * jresult ;
+  TexData *result = 0 ;
+  
+  result = (TexData *)TexData::Alloc();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_TexData_Free(void * jarg1) {
+  TexData **arg1 = 0 ;
+  
+  arg1 = (TexData **)jarg1;
+  if (!arg1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "TexData *& type is null", 0);
+    return ;
+  } 
+  TexData::Free(*arg1);
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_TexData_Init(void * jarg1) {
+  TexData *arg1 = (TexData *) 0 ;
+  
+  arg1 = (TexData *)jarg1; 
+  (arg1)->Init();
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_new_Ray() {
+  void * jresult ;
+  Ray *result = 0 ;
+  
+  result = (Ray *)new Ray();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_Ray_p_set(void * jarg1, void * jarg2) {
+  Ray *arg1 = (Ray *) 0 ;
+  LVector arg2 ;
+  LVector *argp2 ;
+  
+  arg1 = (Ray *)jarg1; 
+  argp2 = (LVector *)jarg2; 
+  if (!argp2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null LVector", 0);
+    return ;
+  }
+  arg2 = *argp2; 
+  if (arg1) (arg1)->p = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_Ray_p_get(void * jarg1) {
+  void * jresult ;
+  Ray *arg1 = (Ray *) 0 ;
+  LVector result;
+  
+  arg1 = (Ray *)jarg1; 
+  result =  ((arg1)->p);
+  jresult = new LVector((const LVector &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_Ray_v_set(void * jarg1, void * jarg2) {
+  Ray *arg1 = (Ray *) 0 ;
+  LVector arg2 ;
+  LVector *argp2 ;
+  
+  arg1 = (Ray *)jarg1; 
+  argp2 = (LVector *)jarg2; 
+  if (!argp2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null LVector", 0);
+    return ;
+  }
+  arg2 = *argp2; 
+  if (arg1) (arg1)->v = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_Ray_v_get(void * jarg1) {
+  void * jresult ;
+  Ray *arg1 = (Ray *) 0 ;
+  LVector result;
+  
+  arg1 = (Ray *)jarg1; 
+  result =  ((arg1)->v);
+  jresult = new LVector((const LVector &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_Ray_ior_set(void * jarg1, double jarg2) {
+  Ray *arg1 = (Ray *) 0 ;
+  Real arg2 ;
+  
+  arg1 = (Ray *)jarg1; 
+  arg2 = (Real)jarg2; 
+  if (arg1) (arg1)->ior = arg2;
+}
+
+
+SWIGEXPORT double SWIGSTDCALL CSharp_Ray_ior_get(void * jarg1) {
+  double jresult ;
+  Ray *arg1 = (Ray *) 0 ;
+  Real result;
+  
+  arg1 = (Ray *)jarg1; 
+  result =  ((arg1)->ior);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_Ray_pp_set(void * jarg1, void * jarg2) {
+  Ray *arg1 = (Ray *) 0 ;
+  Vector *arg2 ;
+  
+  arg1 = (Ray *)jarg1; 
+  arg2 = (Vector *)jarg2; 
+  {
+    size_t ii;
+    Vector *b = (Vector *) arg1->pp;
+    for (ii = 0; ii < (size_t)3; ii++) b[ii] = *((Vector *) arg2 + ii);
+  }
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_Ray_pp_get(void * jarg1) {
+  void * jresult ;
+  Ray *arg1 = (Ray *) 0 ;
+  Vector *result = 0 ;
+  
+  arg1 = (Ray *)jarg1; 
+  result = (Vector *)(Vector *) ((arg1)->pp);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_Ray_vv_set(void * jarg1, void * jarg2) {
+  Ray *arg1 = (Ray *) 0 ;
+  Vector *arg2 ;
+  
+  arg1 = (Ray *)jarg1; 
+  arg2 = (Vector *)jarg2; 
+  {
+    size_t ii;
+    Vector *b = (Vector *) arg1->vv;
+    for (ii = 0; ii < (size_t)3; ii++) b[ii] = *((Vector *) arg2 + ii);
+  }
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_Ray_vv_get(void * jarg1) {
+  void * jresult ;
+  Ray *arg1 = (Ray *) 0 ;
+  Vector *result = 0 ;
+  
+  arg1 = (Ray *)jarg1; 
+  result = (Vector *)(Vector *) ((arg1)->vv);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_Ray_transport_set(void * jarg1, Vector /* Vector_ctype */ jarg2) {
+  Ray *arg1 = (Ray *) 0 ;
+  Vector arg2 ;
+  
+  arg1 = (Ray *)jarg1; 
+  
+  /* <Vector_in> */
+  arg2 = *((Vector *)&(jarg2));
+  /* </Vector_in> */
+  
+  if (arg1) (arg1)->transport = arg2;
+}
+
+
+SWIGEXPORT Vector_POD /* Vector_ctype_out */ SWIGSTDCALL CSharp_Ray_transport_get(void * jarg1) {
+  Vector_POD /* Vector_ctype_out */ jresult ;
+  Ray *arg1 = (Ray *) 0 ;
+  Vector result;
+  
+  arg1 = (Ray *)jarg1; 
+  result =  ((arg1)->transport);
+  
+  /* <Vector_out> */
+  jresult = *((Vector_POD *)&(result));
+  /* </Vector_out> */
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_delete_Ray(void * jarg1) {
+  Ray *arg1 = (Ray *) 0 ;
+  
+  arg1 = (Ray *)jarg1; 
+  delete arg1;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_L_SPLIT_BIT_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)((1 << 31));
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_new_RayHitID__SWIG_0() {
+  void * jresult ;
+  RayHitID *result = 0 ;
+  
+  result = (RayHitID *)new RayHitID();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_new_RayHitID__SWIG_1(void * jarg1) {
+  void * jresult ;
+  _DONTCONSTRUCT arg1 ;
+  _DONTCONSTRUCT *argp1 ;
+  RayHitID *result = 0 ;
+  
+  argp1 = (_DONTCONSTRUCT *)jarg1; 
+  if (!argp1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null _DONTCONSTRUCT", 0);
+    return 0;
+  }
+  arg1 = *argp1; 
+  result = (RayHitID *)new RayHitID(arg1);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_new_RayHitID__SWIG_2(void * jarg1) {
+  void * jresult ;
+  RayHitID *arg1 = 0 ;
+  RayHitID *result = 0 ;
+  
+  arg1 = (RayHitID *)jarg1;
+  if (!arg1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "RayHitID const & type is null", 0);
+    return 0;
+  } 
+  result = (RayHitID *)new RayHitID((RayHitID const &)*arg1);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_new_RayHitID__SWIG_3(void * jarg1, int jarg2, unsigned int jarg3) {
+  void * jresult ;
+  RayObject *arg1 = (RayObject *) 0 ;
+  LONG arg2 ;
+  Bool arg3 ;
+  RayHitID *result = 0 ;
+  
+  arg1 = (RayObject *)jarg1; 
+  arg2 = (LONG)jarg2; 
+  arg3 = jarg3 ? true : false; 
+  result = (RayHitID *)new RayHitID(arg1,arg2,arg3);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_RayHitID_IsEqual(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  RayHitID *arg1 = (RayHitID *) 0 ;
+  RayHitID *arg2 = 0 ;
+  Bool result;
+  
+  arg1 = (RayHitID *)jarg1; 
+  arg2 = (RayHitID *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "RayHitID const & type is null", 0);
+    return 0;
+  } 
+  result = ((RayHitID const *)arg1)->IsEqual((RayHitID const &)*arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_RayHitID_Content(void * jarg1) {
+  unsigned int jresult ;
+  RayHitID *arg1 = (RayHitID *) 0 ;
+  Bool result;
+  
+  arg1 = (RayHitID *)jarg1; 
+  result = ((RayHitID const *)arg1)->Content();
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_RayHitID_Clear(void * jarg1) {
+  RayHitID *arg1 = (RayHitID *) 0 ;
+  
+  arg1 = (RayHitID *)jarg1; 
+  (arg1)->Clear();
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_RayHitID_Set(void * jarg1, void * jarg2, int jarg3, unsigned int jarg4) {
+  RayHitID *arg1 = (RayHitID *) 0 ;
+  RayObject *arg2 = (RayObject *) 0 ;
+  LONG arg3 ;
+  Bool arg4 ;
+  
+  arg1 = (RayHitID *)jarg1; 
+  arg2 = (RayObject *)jarg2; 
+  arg3 = (LONG)jarg3; 
+  arg4 = jarg4 ? true : false; 
+  (arg1)->Set(arg2,arg3,arg4);
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_RayHitID_GetObject(void * jarg1, void * jarg2) {
+  void * jresult ;
+  RayHitID *arg1 = (RayHitID *) 0 ;
+  VolumeData *arg2 = (VolumeData *) 0 ;
+  RayObject *result = 0 ;
+  
+  arg1 = (RayHitID *)jarg1; 
+  arg2 = (VolumeData *)jarg2; 
+  result = (RayObject *)((RayHitID const *)arg1)->GetObject(arg2);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_RayHitID_GetPolygon(void * jarg1) {
+  int jresult ;
+  RayHitID *arg1 = (RayHitID *) 0 ;
+  LONG result;
+  
+  arg1 = (RayHitID *)jarg1; 
+  result = ((RayHitID const *)arg1)->GetPolygon();
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_RayHitID_GetSecond(void * jarg1) {
+  unsigned int jresult ;
+  RayHitID *arg1 = (RayHitID *) 0 ;
+  Bool result;
+  
+  arg1 = (RayHitID *)jarg1; 
+  result = ((RayHitID const *)arg1)->GetSecond();
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_RayHitID_ClearSecond(void * jarg1) {
+  RayHitID *arg1 = (RayHitID *) 0 ;
+  
+  arg1 = (RayHitID *)jarg1; 
+  (arg1)->ClearSecond();
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_RayHitID_SetSecond(void * jarg1) {
+  RayHitID *arg1 = (RayHitID *) 0 ;
+  
+  arg1 = (RayHitID *)jarg1; 
+  (arg1)->SetSecond();
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_RayHitID_SetPrivateData(void * jarg1, int jarg2, int jarg3) {
+  RayHitID *arg1 = (RayHitID *) 0 ;
+  LONG arg2 ;
+  LONG arg3 ;
+  
+  arg1 = (RayHitID *)jarg1; 
+  arg2 = (LONG)jarg2; 
+  arg3 = (LONG)jarg3; 
+  (arg1)->SetPrivateData(arg2,arg3);
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_RayHitID_GetPrivateData(void * jarg1, void * jarg2, void * jarg3) {
+  RayHitID *arg1 = (RayHitID *) 0 ;
+  LONG *arg2 = (LONG *) 0 ;
+  LONG *arg3 = (LONG *) 0 ;
+  
+  arg1 = (RayHitID *)jarg1; 
+  arg2 = (LONG *)jarg2; 
+  arg3 = (LONG *)jarg3; 
+  ((RayHitID const *)arg1)->GetPrivateData(arg2,arg3);
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_delete_RayHitID(void * jarg1) {
+  RayHitID *arg1 = (RayHitID *) 0 ;
+  
+  arg1 = (RayHitID *)jarg1; 
+  delete arg1;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_new_SurfaceIntersection__SWIG_0() {
+  void * jresult ;
+  SurfaceIntersection *result = 0 ;
+  
+  result = (SurfaceIntersection *)new SurfaceIntersection();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_new_SurfaceIntersection__SWIG_1(void * jarg1) {
+  void * jresult ;
+  _DONTCONSTRUCT arg1 ;
+  _DONTCONSTRUCT *argp1 ;
+  SurfaceIntersection *result = 0 ;
+  
+  argp1 = (_DONTCONSTRUCT *)jarg1; 
+  if (!argp1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null _DONTCONSTRUCT", 0);
+    return 0;
+  }
+  arg1 = *argp1; 
+  result = (SurfaceIntersection *)new SurfaceIntersection(arg1);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_SurfaceIntersection_op_set(void * jarg1, void * jarg2) {
+  SurfaceIntersection *arg1 = (SurfaceIntersection *) 0 ;
+  RayObject *arg2 = (RayObject *) 0 ;
+  
+  arg1 = (SurfaceIntersection *)jarg1; 
+  arg2 = (RayObject *)jarg2; 
+  if (arg1) (arg1)->op = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_SurfaceIntersection_op_get(void * jarg1) {
+  void * jresult ;
+  SurfaceIntersection *arg1 = (SurfaceIntersection *) 0 ;
+  RayObject *result = 0 ;
+  
+  arg1 = (SurfaceIntersection *)jarg1; 
+  result = (RayObject *) ((arg1)->op);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_SurfaceIntersection_id_set(void * jarg1, void * jarg2) {
+  SurfaceIntersection *arg1 = (SurfaceIntersection *) 0 ;
+  RayHitID *arg2 = (RayHitID *) 0 ;
+  
+  arg1 = (SurfaceIntersection *)jarg1; 
+  arg2 = (RayHitID *)jarg2; 
+  if (arg1) (arg1)->id = *arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_SurfaceIntersection_id_get(void * jarg1) {
+  void * jresult ;
+  SurfaceIntersection *arg1 = (SurfaceIntersection *) 0 ;
+  RayHitID *result = 0 ;
+  
+  arg1 = (SurfaceIntersection *)jarg1; 
+  result = (RayHitID *)& ((arg1)->id);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_SurfaceIntersection_p_set(void * jarg1, void * jarg2) {
+  SurfaceIntersection *arg1 = (SurfaceIntersection *) 0 ;
+  LVector arg2 ;
+  LVector *argp2 ;
+  
+  arg1 = (SurfaceIntersection *)jarg1; 
+  argp2 = (LVector *)jarg2; 
+  if (!argp2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null LVector", 0);
+    return ;
+  }
+  arg2 = *argp2; 
+  if (arg1) (arg1)->p = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_SurfaceIntersection_p_get(void * jarg1) {
+  void * jresult ;
+  SurfaceIntersection *arg1 = (SurfaceIntersection *) 0 ;
+  LVector result;
+  
+  arg1 = (SurfaceIntersection *)jarg1; 
+  result =  ((arg1)->p);
+  jresult = new LVector((const LVector &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_SurfaceIntersection_n_set(void * jarg1, void * jarg2) {
+  SurfaceIntersection *arg1 = (SurfaceIntersection *) 0 ;
+  LVector arg2 ;
+  LVector *argp2 ;
+  
+  arg1 = (SurfaceIntersection *)jarg1; 
+  argp2 = (LVector *)jarg2; 
+  if (!argp2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null LVector", 0);
+    return ;
+  }
+  arg2 = *argp2; 
+  if (arg1) (arg1)->n = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_SurfaceIntersection_n_get(void * jarg1) {
+  void * jresult ;
+  SurfaceIntersection *arg1 = (SurfaceIntersection *) 0 ;
+  LVector result;
+  
+  arg1 = (SurfaceIntersection *)jarg1; 
+  result =  ((arg1)->n);
+  jresult = new LVector((const LVector &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_SurfaceIntersection_sid_set(void * jarg1, int jarg2) {
+  SurfaceIntersection *arg1 = (SurfaceIntersection *) 0 ;
+  LONG arg2 ;
+  
+  arg1 = (SurfaceIntersection *)jarg1; 
+  arg2 = (LONG)jarg2; 
+  if (arg1) (arg1)->sid = arg2;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_SurfaceIntersection_sid_get(void * jarg1) {
+  int jresult ;
+  SurfaceIntersection *arg1 = (SurfaceIntersection *) 0 ;
+  LONG result;
+  
+  arg1 = (SurfaceIntersection *)jarg1; 
+  result =  ((arg1)->sid);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_SurfaceIntersection_par_u_set(void * jarg1, double jarg2) {
+  SurfaceIntersection *arg1 = (SurfaceIntersection *) 0 ;
+  Real arg2 ;
+  
+  arg1 = (SurfaceIntersection *)jarg1; 
+  arg2 = (Real)jarg2; 
+  if (arg1) (arg1)->par_u = arg2;
+}
+
+
+SWIGEXPORT double SWIGSTDCALL CSharp_SurfaceIntersection_par_u_get(void * jarg1) {
+  double jresult ;
+  SurfaceIntersection *arg1 = (SurfaceIntersection *) 0 ;
+  Real result;
+  
+  arg1 = (SurfaceIntersection *)jarg1; 
+  result =  ((arg1)->par_u);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_SurfaceIntersection_par_v_set(void * jarg1, double jarg2) {
+  SurfaceIntersection *arg1 = (SurfaceIntersection *) 0 ;
+  Real arg2 ;
+  
+  arg1 = (SurfaceIntersection *)jarg1; 
+  arg2 = (Real)jarg2; 
+  if (arg1) (arg1)->par_v = arg2;
+}
+
+
+SWIGEXPORT double SWIGSTDCALL CSharp_SurfaceIntersection_par_v_get(void * jarg1) {
+  double jresult ;
+  SurfaceIntersection *arg1 = (SurfaceIntersection *) 0 ;
+  Real result;
+  
+  arg1 = (SurfaceIntersection *)jarg1; 
+  result =  ((arg1)->par_v);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_delete_SurfaceIntersection(void * jarg1) {
+  SurfaceIntersection *arg1 = (SurfaceIntersection *) 0 ;
+  
+  arg1 = (SurfaceIntersection *)jarg1; 
+  delete arg1;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_version_set(void * jarg1, int jarg2) {
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  LONG arg2 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  arg2 = (LONG)jarg2; 
+  if (arg1) (arg1)->version = arg2;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BaseVolumeData_version_get(void * jarg1) {
+  int jresult ;
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  LONG result;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  result =  ((arg1)->version);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_fps_set(void * jarg1, int jarg2) {
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  LONG arg2 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  arg2 = (LONG)jarg2; 
+  if (arg1) (arg1)->fps = arg2;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BaseVolumeData_fps_get(void * jarg1) {
+  int jresult ;
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  LONG result;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  result =  ((arg1)->fps);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_ambient_set(void * jarg1, Vector /* Vector_ctype */ jarg2) {
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  Vector arg2 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  
+  /* <Vector_in> */
+  arg2 = *((Vector *)&(jarg2));
+  /* </Vector_in> */
+  
+  if (arg1) (arg1)->ambient = arg2;
+}
+
+
+SWIGEXPORT Vector_POD /* Vector_ctype_out */ SWIGSTDCALL CSharp_BaseVolumeData_ambient_get(void * jarg1) {
+  Vector_POD /* Vector_ctype_out */ jresult ;
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  Vector result;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  result =  ((arg1)->ambient);
+  
+  /* <Vector_out> */
+  jresult = *((Vector_POD *)&(result));
+  /* </Vector_out> */
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_time_set(void * jarg1, double jarg2) {
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  Real arg2 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  arg2 = (Real)jarg2; 
+  if (arg1) (arg1)->time = arg2;
+}
+
+
+SWIGEXPORT double SWIGSTDCALL CSharp_BaseVolumeData_time_get(void * jarg1) {
+  double jresult ;
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  Real result;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  result =  ((arg1)->time);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_col_set(void * jarg1, Vector /* Vector_ctype */ jarg2) {
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  Vector arg2 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  
+  /* <Vector_in> */
+  arg2 = *((Vector *)&(jarg2));
+  /* </Vector_in> */
+  
+  if (arg1) (arg1)->col = arg2;
+}
+
+
+SWIGEXPORT Vector_POD /* Vector_ctype_out */ SWIGSTDCALL CSharp_BaseVolumeData_col_get(void * jarg1) {
+  Vector_POD /* Vector_ctype_out */ jresult ;
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  Vector result;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  result =  ((arg1)->col);
+  
+  /* <Vector_out> */
+  jresult = *((Vector_POD *)&(result));
+  /* </Vector_out> */
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_trans_set(void * jarg1, Vector /* Vector_ctype */ jarg2) {
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  Vector arg2 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  
+  /* <Vector_in> */
+  arg2 = *((Vector *)&(jarg2));
+  /* </Vector_in> */
+  
+  if (arg1) (arg1)->trans = arg2;
+}
+
+
+SWIGEXPORT Vector_POD /* Vector_ctype_out */ SWIGSTDCALL CSharp_BaseVolumeData_trans_get(void * jarg1) {
+  Vector_POD /* Vector_ctype_out */ jresult ;
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  Vector result;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  result =  ((arg1)->trans);
+  
+  /* <Vector_out> */
+  jresult = *((Vector_POD *)&(result));
+  /* </Vector_out> */
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_refl_set(void * jarg1, Vector /* Vector_ctype */ jarg2) {
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  Vector arg2 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  
+  /* <Vector_in> */
+  arg2 = *((Vector *)&(jarg2));
+  /* </Vector_in> */
+  
+  if (arg1) (arg1)->refl = arg2;
+}
+
+
+SWIGEXPORT Vector_POD /* Vector_ctype_out */ SWIGSTDCALL CSharp_BaseVolumeData_refl_get(void * jarg1) {
+  Vector_POD /* Vector_ctype_out */ jresult ;
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  Vector result;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  result =  ((arg1)->refl);
+  
+  /* <Vector_out> */
+  jresult = *((Vector_POD *)&(result));
+  /* </Vector_out> */
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_alpha_set(void * jarg1, double jarg2) {
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  Real arg2 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  arg2 = (Real)jarg2; 
+  if (arg1) (arg1)->alpha = arg2;
+}
+
+
+SWIGEXPORT double SWIGSTDCALL CSharp_BaseVolumeData_alpha_get(void * jarg1) {
+  double jresult ;
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  Real result;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  result =  ((arg1)->alpha);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_tray_set(void * jarg1, void * jarg2) {
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  Ray *arg2 = (Ray *) 0 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  arg2 = (Ray *)jarg2; 
+  if (arg1) (arg1)->tray = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseVolumeData_tray_get(void * jarg1) {
+  void * jresult ;
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  Ray *result = 0 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  result = (Ray *) ((arg1)->tray);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_rray_set(void * jarg1, void * jarg2) {
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  Ray *arg2 = (Ray *) 0 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  arg2 = (Ray *)jarg2; 
+  if (arg1) (arg1)->rray = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseVolumeData_rray_get(void * jarg1) {
+  void * jresult ;
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  Ray *result = 0 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  result = (Ray *) ((arg1)->rray);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_p_set(void * jarg1, void * jarg2) {
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  LVector arg2 ;
+  LVector *argp2 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  argp2 = (LVector *)jarg2; 
+  if (!argp2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null LVector", 0);
+    return ;
+  }
+  arg2 = *argp2; 
+  if (arg1) (arg1)->p = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseVolumeData_p_get(void * jarg1) {
+  void * jresult ;
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  LVector result;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  result =  ((arg1)->p);
+  jresult = new LVector((const LVector &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_bumpn_set(void * jarg1, void * jarg2) {
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  LVector arg2 ;
+  LVector *argp2 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  argp2 = (LVector *)jarg2; 
+  if (!argp2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null LVector", 0);
+    return ;
+  }
+  arg2 = *argp2; 
+  if (arg1) (arg1)->bumpn = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseVolumeData_bumpn_get(void * jarg1) {
+  void * jresult ;
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  LVector result;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  result =  ((arg1)->bumpn);
+  jresult = new LVector((const LVector &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_ray_set(void * jarg1, void * jarg2) {
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  Ray *arg2 = (Ray *) 0 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  arg2 = (Ray *)jarg2; 
+  if (arg1) (arg1)->ray = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseVolumeData_ray_get(void * jarg1) {
+  void * jresult ;
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  Ray *result = 0 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  result = (Ray *) ((arg1)->ray);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_orign_set(void * jarg1, void * jarg2) {
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  LVector arg2 ;
+  LVector *argp2 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  argp2 = (LVector *)jarg2; 
+  if (!argp2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null LVector", 0);
+    return ;
+  }
+  arg2 = *argp2; 
+  if (arg1) (arg1)->orign = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseVolumeData_orign_get(void * jarg1) {
+  void * jresult ;
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  LVector result;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  result =  ((arg1)->orign);
+  jresult = new LVector((const LVector &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_n_set(void * jarg1, void * jarg2) {
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  LVector arg2 ;
+  LVector *argp2 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  argp2 = (LVector *)jarg2; 
+  if (!argp2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null LVector", 0);
+    return ;
+  }
+  arg2 = *argp2; 
+  if (arg1) (arg1)->n = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseVolumeData_n_get(void * jarg1) {
+  void * jresult ;
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  LVector result;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  result =  ((arg1)->n);
+  jresult = new LVector((const LVector &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_dispn_set(void * jarg1, void * jarg2) {
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  LVector arg2 ;
+  LVector *argp2 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  argp2 = (LVector *)jarg2; 
+  if (!argp2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null LVector", 0);
+    return ;
+  }
+  arg2 = *argp2; 
+  if (arg1) (arg1)->dispn = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseVolumeData_dispn_get(void * jarg1) {
+  void * jresult ;
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  LVector result;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  result =  ((arg1)->dispn);
+  jresult = new LVector((const LVector &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_dist_set(void * jarg1, double jarg2) {
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  LReal arg2 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  arg2 = (LReal)jarg2; 
+  if (arg1) (arg1)->dist = arg2;
+}
+
+
+SWIGEXPORT double SWIGSTDCALL CSharp_BaseVolumeData_dist_get(void * jarg1) {
+  double jresult ;
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  LReal result;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  result =  ((arg1)->dist);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_cosc_set(void * jarg1, double jarg2) {
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  LReal arg2 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  arg2 = (LReal)jarg2; 
+  if (arg1) (arg1)->cosc = arg2;
+}
+
+
+SWIGEXPORT double SWIGSTDCALL CSharp_BaseVolumeData_cosc_get(void * jarg1) {
+  double jresult ;
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  LReal result;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  result =  ((arg1)->cosc);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_uvw_set(void * jarg1, Vector /* Vector_ctype */ jarg2) {
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  Vector arg2 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  
+  /* <Vector_in> */
+  arg2 = *((Vector *)&(jarg2));
+  /* </Vector_in> */
+  
+  if (arg1) (arg1)->uvw = arg2;
+}
+
+
+SWIGEXPORT Vector_POD /* Vector_ctype_out */ SWIGSTDCALL CSharp_BaseVolumeData_uvw_get(void * jarg1) {
+  Vector_POD /* Vector_ctype_out */ jresult ;
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  Vector result;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  result =  ((arg1)->uvw);
+  
+  /* <Vector_out> */
+  jresult = *((Vector_POD *)&(result));
+  /* </Vector_out> */
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_delta_set(void * jarg1, Vector /* Vector_ctype */ jarg2) {
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  Vector arg2 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  
+  /* <Vector_in> */
+  arg2 = *((Vector *)&(jarg2));
+  /* </Vector_in> */
+  
+  if (arg1) (arg1)->delta = arg2;
+}
+
+
+SWIGEXPORT Vector_POD /* Vector_ctype_out */ SWIGSTDCALL CSharp_BaseVolumeData_delta_get(void * jarg1) {
+  Vector_POD /* Vector_ctype_out */ jresult ;
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  Vector result;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  result =  ((arg1)->delta);
+  
+  /* <Vector_out> */
+  jresult = *((Vector_POD *)&(result));
+  /* </Vector_out> */
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_lhit_set(void * jarg1, void * jarg2) {
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  RayHitID *arg2 = (RayHitID *) 0 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  arg2 = (RayHitID *)jarg2; 
+  if (arg1) (arg1)->lhit = *arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseVolumeData_lhit_get(void * jarg1) {
+  void * jresult ;
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  RayHitID *result = 0 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  result = (RayHitID *)& ((arg1)->lhit);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_tex_set(void * jarg1, void * jarg2) {
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  TexData *arg2 = (TexData *) 0 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  arg2 = (TexData *)jarg2; 
+  if (arg1) (arg1)->tex = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseVolumeData_tex_get(void * jarg1) {
+  void * jresult ;
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  TexData *result = 0 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  result = (TexData *) ((arg1)->tex);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_ddu_set(void * jarg1, Vector /* Vector_ctype */ jarg2) {
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  Vector arg2 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  
+  /* <Vector_in> */
+  arg2 = *((Vector *)&(jarg2));
+  /* </Vector_in> */
+  
+  if (arg1) (arg1)->ddu = arg2;
+}
+
+
+SWIGEXPORT Vector_POD /* Vector_ctype_out */ SWIGSTDCALL CSharp_BaseVolumeData_ddu_get(void * jarg1) {
+  Vector_POD /* Vector_ctype_out */ jresult ;
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  Vector result;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  result =  ((arg1)->ddu);
+  
+  /* <Vector_out> */
+  jresult = *((Vector_POD *)&(result));
+  /* </Vector_out> */
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_ddv_set(void * jarg1, Vector /* Vector_ctype */ jarg2) {
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  Vector arg2 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  
+  /* <Vector_in> */
+  arg2 = *((Vector *)&(jarg2));
+  /* </Vector_in> */
+  
+  if (arg1) (arg1)->ddv = arg2;
+}
+
+
+SWIGEXPORT Vector_POD /* Vector_ctype_out */ SWIGSTDCALL CSharp_BaseVolumeData_ddv_get(void * jarg1) {
+  Vector_POD /* Vector_ctype_out */ jresult ;
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  Vector result;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  result =  ((arg1)->ddv);
+  
+  /* <Vector_out> */
+  jresult = *((Vector_POD *)&(result));
+  /* </Vector_out> */
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_raydepth_set(void * jarg1, int jarg2) {
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  LONG arg2 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  arg2 = (LONG)jarg2; 
+  if (arg1) (arg1)->raydepth = arg2;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BaseVolumeData_raydepth_get(void * jarg1) {
+  int jresult ;
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  LONG result;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  result =  ((arg1)->raydepth);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_calc_trans_set(void * jarg1, int jarg2) {
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  LONG arg2 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  arg2 = (LONG)jarg2; 
+  if (arg1) (arg1)->calc_trans = arg2;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BaseVolumeData_calc_trans_get(void * jarg1) {
+  int jresult ;
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  LONG result;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  result =  ((arg1)->calc_trans);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_calc_refl_set(void * jarg1, int jarg2) {
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  LONG arg2 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  arg2 = (LONG)jarg2; 
+  if (arg1) (arg1)->calc_refl = arg2;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BaseVolumeData_calc_refl_get(void * jarg1) {
+  int jresult ;
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  LONG result;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  result =  ((arg1)->calc_refl);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_calc_shadow_set(void * jarg1, unsigned int jarg2) {
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  Bool arg2 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  arg2 = jarg2 ? true : false; 
+  if (arg1) (arg1)->calc_shadow = arg2;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseVolumeData_calc_shadow_get(void * jarg1) {
+  unsigned int jresult ;
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  Bool result;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  result =  ((arg1)->calc_shadow);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_calc_illum_set(void * jarg1, int jarg2) {
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  LONG arg2 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  arg2 = (LONG)jarg2; 
+  if (arg1) (arg1)->calc_illum = arg2;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BaseVolumeData_calc_illum_get(void * jarg1) {
+  int jresult ;
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  LONG result;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  result =  ((arg1)->calc_illum);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_calc_mip_set(void * jarg1, int jarg2) {
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  LONG arg2 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  arg2 = (LONG)jarg2; 
+  if (arg1) (arg1)->calc_mip = arg2;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BaseVolumeData_calc_mip_get(void * jarg1) {
+  int jresult ;
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  LONG result;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  result =  ((arg1)->calc_mip);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_pp_set(void * jarg1, void * jarg2) {
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  Vector *arg2 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  arg2 = (Vector *)jarg2; 
+  {
+    size_t ii;
+    Vector *b = (Vector *) arg1->pp;
+    for (ii = 0; ii < (size_t)3; ii++) b[ii] = *((Vector *) arg2 + ii);
+  }
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseVolumeData_pp_get(void * jarg1) {
+  void * jresult ;
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  Vector *result = 0 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  result = (Vector *)(Vector *) ((arg1)->pp);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_nn_set(void * jarg1, void * jarg2) {
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  Vector *arg2 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  arg2 = (Vector *)jarg2; 
+  {
+    size_t ii;
+    Vector *b = (Vector *) arg1->nn;
+    for (ii = 0; ii < (size_t)3; ii++) b[ii] = *((Vector *) arg2 + ii);
+  }
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseVolumeData_nn_get(void * jarg1) {
+  void * jresult ;
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  Vector *result = 0 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  result = (Vector *)(Vector *) ((arg1)->nn);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_raybits_set(void * jarg1, int jarg2) {
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  RAYBIT arg2 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  arg2 = (RAYBIT)jarg2; 
+  if (arg1) (arg1)->raybits = arg2;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BaseVolumeData_raybits_get(void * jarg1) {
+  int jresult ;
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  RAYBIT result;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  result = (RAYBIT) ((arg1)->raybits);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_xlight_set(void * jarg1, void * jarg2) {
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  RayLight *arg2 = (RayLight *) 0 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  arg2 = (RayLight *)jarg2; 
+  if (arg1) (arg1)->xlight = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseVolumeData_xlight_get(void * jarg1) {
+  void * jresult ;
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  RayLight *result = 0 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  result = (RayLight *) ((arg1)->xlight);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_op_set(void * jarg1, void * jarg2) {
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  RayObject *arg2 = (RayObject *) 0 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  arg2 = (RayObject *)jarg2; 
+  if (arg1) (arg1)->op = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseVolumeData_op_get(void * jarg1) {
+  void * jresult ;
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  RayObject *result = 0 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  result = (RayObject *) ((arg1)->op);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_recursion_id_set(void * jarg1, int jarg2) {
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  LONG arg2 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  arg2 = (LONG)jarg2; 
+  if (arg1) (arg1)->recursion_id = arg2;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BaseVolumeData_recursion_id_get(void * jarg1) {
+  int jresult ;
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  LONG result;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  result =  ((arg1)->recursion_id);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_recursion_data_set(void * jarg1, void * jarg2) {
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  void *arg2 = (void *) 0 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  arg2 = (void *)jarg2; 
+  if (arg1) (arg1)->recursion_data = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseVolumeData_recursion_data_get(void * jarg1) {
+  void * jresult ;
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  void *result = 0 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  result = (void *) ((arg1)->recursion_data);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_multipass_set(void * jarg1, void * jarg2) {
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  Multipass *arg2 = (Multipass *) 0 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  arg2 = (Multipass *)jarg2; 
+  if (arg1) (arg1)->multipass = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseVolumeData_multipass_get(void * jarg1) {
+  void * jresult ;
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  Multipass *result = 0 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  result = (Multipass *) ((arg1)->multipass);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_back_p_set(void * jarg1, Vector /* Vector_ctype */ jarg2) {
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  Vector arg2 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  
+  /* <Vector_in> */
+  arg2 = *((Vector *)&(jarg2));
+  /* </Vector_in> */
+  
+  if (arg1) (arg1)->back_p = arg2;
+}
+
+
+SWIGEXPORT Vector_POD /* Vector_ctype_out */ SWIGSTDCALL CSharp_BaseVolumeData_back_p_get(void * jarg1) {
+  Vector_POD /* Vector_ctype_out */ jresult ;
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  Vector result;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  result =  ((arg1)->back_p);
+  
+  /* <Vector_out> */
+  jresult = *((Vector_POD *)&(result));
+  /* </Vector_out> */
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_back_delta_set(void * jarg1, Vector /* Vector_ctype */ jarg2) {
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  Vector arg2 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  
+  /* <Vector_in> */
+  arg2 = *((Vector *)&(jarg2));
+  /* </Vector_in> */
+  
+  if (arg1) (arg1)->back_delta = arg2;
+}
+
+
+SWIGEXPORT Vector_POD /* Vector_ctype_out */ SWIGSTDCALL CSharp_BaseVolumeData_back_delta_get(void * jarg1) {
+  Vector_POD /* Vector_ctype_out */ jresult ;
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  Vector result;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  result =  ((arg1)->back_delta);
+  
+  /* <Vector_out> */
+  jresult = *((Vector_POD *)&(result));
+  /* </Vector_out> */
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_global_mip_set(void * jarg1, double jarg2) {
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  Real arg2 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  arg2 = (Real)jarg2; 
+  if (arg1) (arg1)->global_mip = arg2;
+}
+
+
+SWIGEXPORT double SWIGSTDCALL CSharp_BaseVolumeData_global_mip_get(void * jarg1) {
+  double jresult ;
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  Real result;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  result =  ((arg1)->global_mip);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_sid_set(void * jarg1, int jarg2) {
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  LONG arg2 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  arg2 = (LONG)jarg2; 
+  if (arg1) (arg1)->sid = arg2;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BaseVolumeData_sid_get(void * jarg1) {
+  int jresult ;
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  LONG result;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  result =  ((arg1)->sid);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_par_u_set(void * jarg1, double jarg2) {
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  Real arg2 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  arg2 = (Real)jarg2; 
+  if (arg1) (arg1)->par_u = arg2;
+}
+
+
+SWIGEXPORT double SWIGSTDCALL CSharp_BaseVolumeData_par_u_get(void * jarg1) {
+  double jresult ;
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  Real result;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  result =  ((arg1)->par_u);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_par_v_set(void * jarg1, double jarg2) {
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  Real arg2 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  arg2 = (Real)jarg2; 
+  if (arg1) (arg1)->par_v = arg2;
+}
+
+
+SWIGEXPORT double SWIGSTDCALL CSharp_BaseVolumeData_par_v_get(void * jarg1) {
+  double jresult ;
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  Real result;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  result =  ((arg1)->par_v);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_intersection_set(void * jarg1, void * jarg2) {
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  SurfaceIntersection *arg2 = (SurfaceIntersection *) 0 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  arg2 = (SurfaceIntersection *)jarg2; 
+  if (arg1) (arg1)->intersection = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseVolumeData_intersection_get(void * jarg1) {
+  void * jresult ;
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  SurfaceIntersection *result = 0 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  result = (SurfaceIntersection *) ((arg1)->intersection);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_delete_BaseVolumeData(void * jarg1) {
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  delete arg1;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_new_ChannelData__SWIG_0() {
+  void * jresult ;
+  ChannelData *result = 0 ;
+  
+  result = (ChannelData *)new ChannelData();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_new_ChannelData__SWIG_1(void * jarg1) {
+  void * jresult ;
+  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
+  ChannelData *result = 0 ;
+  
+  arg1 = (BaseVolumeData *)jarg1; 
+  result = (ChannelData *)new ChannelData(arg1);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_ChannelData_p_set(void * jarg1, Vector /* Vector_ctype */ jarg2) {
+  ChannelData *arg1 = (ChannelData *) 0 ;
+  Vector arg2 ;
+  
+  arg1 = (ChannelData *)jarg1; 
+  
+  /* <Vector_in> */
+  arg2 = *((Vector *)&(jarg2));
+  /* </Vector_in> */
+  
+  if (arg1) (arg1)->p = arg2;
+}
+
+
+SWIGEXPORT Vector_POD /* Vector_ctype_out */ SWIGSTDCALL CSharp_ChannelData_p_get(void * jarg1) {
+  Vector_POD /* Vector_ctype_out */ jresult ;
+  ChannelData *arg1 = (ChannelData *) 0 ;
+  Vector result;
+  
+  arg1 = (ChannelData *)jarg1; 
+  result =  ((arg1)->p);
+  
+  /* <Vector_out> */
+  jresult = *((Vector_POD *)&(result));
+  /* </Vector_out> */
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_ChannelData_n_set(void * jarg1, Vector /* Vector_ctype */ jarg2) {
+  ChannelData *arg1 = (ChannelData *) 0 ;
+  Vector arg2 ;
+  
+  arg1 = (ChannelData *)jarg1; 
+  
+  /* <Vector_in> */
+  arg2 = *((Vector *)&(jarg2));
+  /* </Vector_in> */
+  
+  if (arg1) (arg1)->n = arg2;
+}
+
+
+SWIGEXPORT Vector_POD /* Vector_ctype_out */ SWIGSTDCALL CSharp_ChannelData_n_get(void * jarg1) {
+  Vector_POD /* Vector_ctype_out */ jresult ;
+  ChannelData *arg1 = (ChannelData *) 0 ;
+  Vector result;
+  
+  arg1 = (ChannelData *)jarg1; 
+  result =  ((arg1)->n);
+  
+  /* <Vector_out> */
+  jresult = *((Vector_POD *)&(result));
+  /* </Vector_out> */
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_ChannelData_d_set(void * jarg1, Vector /* Vector_ctype */ jarg2) {
+  ChannelData *arg1 = (ChannelData *) 0 ;
+  Vector arg2 ;
+  
+  arg1 = (ChannelData *)jarg1; 
+  
+  /* <Vector_in> */
+  arg2 = *((Vector *)&(jarg2));
+  /* </Vector_in> */
+  
+  if (arg1) (arg1)->d = arg2;
+}
+
+
+SWIGEXPORT Vector_POD /* Vector_ctype_out */ SWIGSTDCALL CSharp_ChannelData_d_get(void * jarg1) {
+  Vector_POD /* Vector_ctype_out */ jresult ;
+  ChannelData *arg1 = (ChannelData *) 0 ;
+  Vector result;
+  
+  arg1 = (ChannelData *)jarg1; 
+  result =  ((arg1)->d);
+  
+  /* <Vector_out> */
+  jresult = *((Vector_POD *)&(result));
+  /* </Vector_out> */
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_ChannelData_t_set(void * jarg1, double jarg2) {
+  ChannelData *arg1 = (ChannelData *) 0 ;
+  Real arg2 ;
+  
+  arg1 = (ChannelData *)jarg1; 
+  arg2 = (Real)jarg2; 
+  if (arg1) (arg1)->t = arg2;
+}
+
+
+SWIGEXPORT double SWIGSTDCALL CSharp_ChannelData_t_get(void * jarg1) {
+  double jresult ;
+  ChannelData *arg1 = (ChannelData *) 0 ;
+  Real result;
+  
+  arg1 = (ChannelData *)jarg1; 
+  result =  ((arg1)->t);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_ChannelData_texflag_set(void * jarg1, int jarg2) {
+  ChannelData *arg1 = (ChannelData *) 0 ;
+  LONG arg2 ;
+  
+  arg1 = (ChannelData *)jarg1; 
+  arg2 = (LONG)jarg2; 
+  if (arg1) (arg1)->texflag = arg2;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_ChannelData_texflag_get(void * jarg1) {
+  int jresult ;
+  ChannelData *arg1 = (ChannelData *) 0 ;
+  LONG result;
+  
+  arg1 = (ChannelData *)jarg1; 
+  result =  ((arg1)->texflag);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_ChannelData_vd_set(void * jarg1, void * jarg2) {
+  ChannelData *arg1 = (ChannelData *) 0 ;
+  VolumeData *arg2 = (VolumeData *) 0 ;
+  
+  arg1 = (ChannelData *)jarg1; 
+  arg2 = (VolumeData *)jarg2; 
+  if (arg1) (arg1)->vd = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_ChannelData_vd_get(void * jarg1) {
+  void * jresult ;
+  ChannelData *arg1 = (ChannelData *) 0 ;
+  VolumeData *result = 0 ;
+  
+  arg1 = (ChannelData *)jarg1; 
+  result = (VolumeData *) ((arg1)->vd);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_ChannelData_off_set(void * jarg1, double jarg2) {
+  ChannelData *arg1 = (ChannelData *) 0 ;
+  Real arg2 ;
+  
+  arg1 = (ChannelData *)jarg1; 
+  arg2 = (Real)jarg2; 
+  if (arg1) (arg1)->off = arg2;
+}
+
+
+SWIGEXPORT double SWIGSTDCALL CSharp_ChannelData_off_get(void * jarg1) {
+  double jresult ;
+  ChannelData *arg1 = (ChannelData *) 0 ;
+  Real result;
+  
+  arg1 = (ChannelData *)jarg1; 
+  result =  ((arg1)->off);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_ChannelData_scale_set(void * jarg1, double jarg2) {
+  ChannelData *arg1 = (ChannelData *) 0 ;
+  Real arg2 ;
+  
+  arg1 = (ChannelData *)jarg1; 
+  arg2 = (Real)jarg2; 
+  if (arg1) (arg1)->scale = arg2;
+}
+
+
+SWIGEXPORT double SWIGSTDCALL CSharp_ChannelData_scale_get(void * jarg1) {
+  double jresult ;
+  ChannelData *arg1 = (ChannelData *) 0 ;
+  Real result;
+  
+  arg1 = (ChannelData *)jarg1; 
+  result =  ((arg1)->scale);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_delete_ChannelData(void * jarg1) {
+  ChannelData *arg1 = (ChannelData *) 0 ;
+  
+  arg1 = (ChannelData *)jarg1; 
+  delete arg1;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MSG_GETALLASSETS_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(112004);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MSG_SHADERV5TOV6_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(112005);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MSG_SHADERV6TOV7_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(112006);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MSG_SHADERREAD_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(112009);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MSG_RENAMETEXTURES_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(112010);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_new_AssetData(void * jarg1, void * jarg2, int jarg3) {
+  void * jresult ;
+  BaseDocument *arg1 = (BaseDocument *) 0 ;
+  RootTextureString *arg2 = (RootTextureString *) 0 ;
+  ASSETDATA_FLAG arg3 ;
+  AssetData *result = 0 ;
+  
+  arg1 = (BaseDocument *)jarg1; 
+  arg2 = (RootTextureString *)jarg2; 
+  arg3 = (ASSETDATA_FLAG)jarg3; 
+  result = (AssetData *)new AssetData(arg1,arg2,arg3);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_AssetData_doc_set(void * jarg1, void * jarg2) {
+  AssetData *arg1 = (AssetData *) 0 ;
+  BaseDocument *arg2 = (BaseDocument *) 0 ;
+  
+  arg1 = (AssetData *)jarg1; 
+  arg2 = (BaseDocument *)jarg2; 
+  if (arg1) (arg1)->doc = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_AssetData_doc_get(void * jarg1) {
+  void * jresult ;
+  AssetData *arg1 = (AssetData *) 0 ;
+  BaseDocument *result = 0 ;
+  
+  arg1 = (AssetData *)jarg1; 
+  result = (BaseDocument *) ((arg1)->doc);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_AssetData_rs_set(void * jarg1, void * jarg2) {
+  AssetData *arg1 = (AssetData *) 0 ;
+  RootTextureString *arg2 = (RootTextureString *) 0 ;
+  
+  arg1 = (AssetData *)jarg1; 
+  arg2 = (RootTextureString *)jarg2; 
+  if (arg1) (arg1)->rs = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_AssetData_rs_get(void * jarg1) {
+  void * jresult ;
+  AssetData *arg1 = (AssetData *) 0 ;
+  RootTextureString *result = 0 ;
+  
+  arg1 = (AssetData *)jarg1; 
+  result = (RootTextureString *) ((arg1)->rs);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_AssetData_flags_set(void * jarg1, int jarg2) {
+  AssetData *arg1 = (AssetData *) 0 ;
+  ASSETDATA_FLAG arg2 ;
+  
+  arg1 = (AssetData *)jarg1; 
+  arg2 = (ASSETDATA_FLAG)jarg2; 
+  if (arg1) (arg1)->flags = arg2;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_AssetData_flags_get(void * jarg1) {
+  int jresult ;
+  AssetData *arg1 = (AssetData *) 0 ;
+  ASSETDATA_FLAG result;
+  
+  arg1 = (AssetData *)jarg1; 
+  result = (ASSETDATA_FLAG) ((arg1)->flags);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_AssetData_Add(void * jarg1, void * jarg2, void * jarg3) {
+  unsigned int jresult ;
+  AssetData *arg1 = (AssetData *) 0 ;
+  Filename *arg2 = 0 ;
+  BaseList2D *arg3 = (BaseList2D *) 0 ;
+  Bool result;
+  
+  arg1 = (AssetData *)jarg1; 
+  arg2 = (Filename *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Filename const & type is null", 0);
+    return 0;
+  } 
+  arg3 = (BaseList2D *)jarg3; 
+  result = (arg1)->Add((Filename const &)*arg2,arg3);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_delete_AssetData(void * jarg1) {
+  AssetData *arg1 = (AssetData *) 0 ;
+  
+  arg1 = (AssetData *)jarg1; 
+  delete arg1;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_new_RenameTextureMessage() {
+  void * jresult ;
+  RenameTextureMessage *result = 0 ;
+  
+  result = (RenameTextureMessage *)new RenameTextureMessage();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_RenameTextureMessage_oldname_set(void * jarg1, void * jarg2) {
+  RenameTextureMessage *arg1 = (RenameTextureMessage *) 0 ;
+  Filename *arg2 = (Filename *) 0 ;
+  
+  arg1 = (RenameTextureMessage *)jarg1; 
+  arg2 = (Filename *)jarg2; 
+  if (arg1) (arg1)->oldname = *arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_RenameTextureMessage_oldname_get(void * jarg1) {
+  void * jresult ;
+  RenameTextureMessage *arg1 = (RenameTextureMessage *) 0 ;
+  Filename *result = 0 ;
+  
+  arg1 = (RenameTextureMessage *)jarg1; 
+  result = (Filename *)& ((arg1)->oldname);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_RenameTextureMessage_newname_set(void * jarg1, void * jarg2) {
+  RenameTextureMessage *arg1 = (RenameTextureMessage *) 0 ;
+  Filename *arg2 = (Filename *) 0 ;
+  
+  arg1 = (RenameTextureMessage *)jarg1; 
+  arg2 = (Filename *)jarg2; 
+  if (arg1) (arg1)->newname = *arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_RenameTextureMessage_newname_get(void * jarg1) {
+  void * jresult ;
+  RenameTextureMessage *arg1 = (RenameTextureMessage *) 0 ;
+  Filename *result = 0 ;
+  
+  arg1 = (RenameTextureMessage *)jarg1; 
+  result = (Filename *)& ((arg1)->newname);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_RenameTextureMessage_doc_set(void * jarg1, void * jarg2) {
+  RenameTextureMessage *arg1 = (RenameTextureMessage *) 0 ;
+  BaseDocument *arg2 = (BaseDocument *) 0 ;
+  
+  arg1 = (RenameTextureMessage *)jarg1; 
+  arg2 = (BaseDocument *)jarg2; 
+  if (arg1) (arg1)->doc = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_RenameTextureMessage_doc_get(void * jarg1) {
+  void * jresult ;
+  RenameTextureMessage *arg1 = (RenameTextureMessage *) 0 ;
+  BaseDocument *result = 0 ;
+  
+  arg1 = (RenameTextureMessage *)jarg1; 
+  result = (BaseDocument *) ((arg1)->doc);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_RenameTextureMessage_changecnt_set(void * jarg1, int jarg2) {
+  RenameTextureMessage *arg1 = (RenameTextureMessage *) 0 ;
+  LONG arg2 ;
+  
+  arg1 = (RenameTextureMessage *)jarg1; 
+  arg2 = (LONG)jarg2; 
+  if (arg1) (arg1)->changecnt = arg2;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_RenameTextureMessage_changecnt_get(void * jarg1) {
+  int jresult ;
+  RenameTextureMessage *arg1 = (RenameTextureMessage *) 0 ;
+  LONG result;
+  
+  arg1 = (RenameTextureMessage *)jarg1; 
+  result =  ((arg1)->changecnt);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_RenameTextureMessage_noundo_set(void * jarg1, unsigned int jarg2) {
+  RenameTextureMessage *arg1 = (RenameTextureMessage *) 0 ;
+  Bool arg2 ;
+  
+  arg1 = (RenameTextureMessage *)jarg1; 
+  arg2 = jarg2 ? true : false; 
+  if (arg1) (arg1)->noundo = arg2;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_RenameTextureMessage_noundo_get(void * jarg1) {
+  unsigned int jresult ;
+  RenameTextureMessage *arg1 = (RenameTextureMessage *) 0 ;
+  Bool result;
+  
+  arg1 = (RenameTextureMessage *)jarg1; 
+  result =  ((arg1)->noundo);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_delete_RenameTextureMessage(void * jarg1) {
+  RenameTextureMessage *arg1 = (RenameTextureMessage *) 0 ;
+  
+  arg1 = (RenameTextureMessage *)jarg1; 
+  delete arg1;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_VPFragment_id_set(void * jarg1, void * jarg2) {
+  VPFragment *arg1 = (VPFragment *) 0 ;
+  RayHitID *arg2 = (RayHitID *) 0 ;
+  
+  arg1 = (VPFragment *)jarg1; 
+  arg2 = (RayHitID *)jarg2; 
+  if (arg1) (arg1)->id = *arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_VPFragment_id_get(void * jarg1) {
+  void * jresult ;
+  VPFragment *arg1 = (VPFragment *) 0 ;
+  RayHitID *result = 0 ;
+  
+  arg1 = (VPFragment *)jarg1; 
+  result = (RayHitID *)& ((arg1)->id);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_VPFragment_subx_set(void * jarg1, void * jarg2) {
+  VPFragment *arg1 = (VPFragment *) 0 ;
+  UCHAR arg2 ;
+  UCHAR *argp2 ;
+  
+  arg1 = (VPFragment *)jarg1; 
+  argp2 = (UCHAR *)jarg2; 
+  if (!argp2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null UCHAR", 0);
+    return ;
+  }
+  arg2 = *argp2; 
+  if (arg1) (arg1)->subx = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_VPFragment_subx_get(void * jarg1) {
+  void * jresult ;
+  VPFragment *arg1 = (VPFragment *) 0 ;
+  UCHAR result;
+  
+  arg1 = (VPFragment *)jarg1; 
+  result =  ((arg1)->subx);
+  jresult = new UCHAR((const UCHAR &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_VPFragment_suby_set(void * jarg1, void * jarg2) {
+  VPFragment *arg1 = (VPFragment *) 0 ;
+  UCHAR arg2 ;
+  UCHAR *argp2 ;
+  
+  arg1 = (VPFragment *)jarg1; 
+  argp2 = (UCHAR *)jarg2; 
+  if (!argp2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null UCHAR", 0);
+    return ;
+  }
+  arg2 = *argp2; 
+  if (arg1) (arg1)->suby = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_VPFragment_suby_get(void * jarg1) {
+  void * jresult ;
+  VPFragment *arg1 = (VPFragment *) 0 ;
+  UCHAR result;
+  
+  arg1 = (VPFragment *)jarg1; 
+  result =  ((arg1)->suby);
+  jresult = new UCHAR((const UCHAR &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_VPFragment_weight_set(void * jarg1, void * jarg2) {
+  VPFragment *arg1 = (VPFragment *) 0 ;
+  SWORD arg2 ;
+  SWORD *argp2 ;
+  
+  arg1 = (VPFragment *)jarg1; 
+  argp2 = (SWORD *)jarg2; 
+  if (!argp2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null SWORD", 0);
+    return ;
+  }
+  arg2 = *argp2; 
+  if (arg1) (arg1)->weight = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_VPFragment_weight_get(void * jarg1) {
+  void * jresult ;
+  VPFragment *arg1 = (VPFragment *) 0 ;
+  SWORD result;
+  
+  arg1 = (VPFragment *)jarg1; 
+  result =  ((arg1)->weight);
+  jresult = new SWORD((const SWORD &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_VPFragment_op_set(void * jarg1, void * jarg2) {
+  VPFragment *arg1 = (VPFragment *) 0 ;
+  RayObject *arg2 = (RayObject *) 0 ;
+  
+  arg1 = (VPFragment *)jarg1; 
+  arg2 = (RayObject *)jarg2; 
+  if (arg1) (arg1)->op = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_VPFragment_op_get(void * jarg1) {
+  void * jresult ;
+  VPFragment *arg1 = (VPFragment *) 0 ;
+  RayObject *result = 0 ;
+  
+  arg1 = (VPFragment *)jarg1; 
+  result = (RayObject *) ((arg1)->op);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_VPFragment_color_set(void * jarg1, void * jarg2) {
+  VPFragment *arg1 = (VPFragment *) 0 ;
+  SVector arg2 ;
+  SVector *argp2 ;
+  
+  arg1 = (VPFragment *)jarg1; 
+  argp2 = (SVector *)jarg2; 
+  if (!argp2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null SVector", 0);
+    return ;
+  }
+  arg2 = *argp2; 
+  if (arg1) (arg1)->color = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_VPFragment_color_get(void * jarg1) {
+  void * jresult ;
+  VPFragment *arg1 = (VPFragment *) 0 ;
+  SVector result;
+  
+  arg1 = (VPFragment *)jarg1; 
+  result =  ((arg1)->color);
+  jresult = new SVector((const SVector &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_VPFragment_z_set(void * jarg1, double jarg2) {
+  VPFragment *arg1 = (VPFragment *) 0 ;
+  Real arg2 ;
+  
+  arg1 = (VPFragment *)jarg1; 
+  arg2 = (Real)jarg2; 
+  if (arg1) (arg1)->z = arg2;
+}
+
+
+SWIGEXPORT double SWIGSTDCALL CSharp_VPFragment_z_get(void * jarg1) {
+  double jresult ;
+  VPFragment *arg1 = (VPFragment *) 0 ;
+  Real result;
+  
+  arg1 = (VPFragment *)jarg1; 
+  result =  ((arg1)->z);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_VPFragment_p_set(void * jarg1, Vector /* Vector_ctype */ jarg2) {
+  VPFragment *arg1 = (VPFragment *) 0 ;
+  Vector arg2 ;
+  
+  arg1 = (VPFragment *)jarg1; 
+  
+  /* <Vector_in> */
+  arg2 = *((Vector *)&(jarg2));
+  /* </Vector_in> */
+  
+  if (arg1) (arg1)->p = arg2;
+}
+
+
+SWIGEXPORT Vector_POD /* Vector_ctype_out */ SWIGSTDCALL CSharp_VPFragment_p_get(void * jarg1) {
+  Vector_POD /* Vector_ctype_out */ jresult ;
+  VPFragment *arg1 = (VPFragment *) 0 ;
+  Vector result;
+  
+  arg1 = (VPFragment *)jarg1; 
+  result =  ((arg1)->p);
+  
+  /* <Vector_out> */
+  jresult = *((Vector_POD *)&(result));
+  /* </Vector_out> */
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_VPFragment_n_set(void * jarg1, Vector /* Vector_ctype */ jarg2) {
+  VPFragment *arg1 = (VPFragment *) 0 ;
+  Vector arg2 ;
+  
+  arg1 = (VPFragment *)jarg1; 
+  
+  /* <Vector_in> */
+  arg2 = *((Vector *)&(jarg2));
+  /* </Vector_in> */
+  
+  if (arg1) (arg1)->n = arg2;
+}
+
+
+SWIGEXPORT Vector_POD /* Vector_ctype_out */ SWIGSTDCALL CSharp_VPFragment_n_get(void * jarg1) {
+  Vector_POD /* Vector_ctype_out */ jresult ;
+  VPFragment *arg1 = (VPFragment *) 0 ;
+  Vector result;
+  
+  arg1 = (VPFragment *)jarg1; 
+  result =  ((arg1)->n);
+  
+  /* <Vector_out> */
+  jresult = *((Vector_POD *)&(result));
+  /* </Vector_out> */
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_VPFragment_next_set(void * jarg1, void * jarg2) {
+  VPFragment *arg1 = (VPFragment *) 0 ;
+  VPFragment *arg2 = (VPFragment *) 0 ;
+  
+  arg1 = (VPFragment *)jarg1; 
+  arg2 = (VPFragment *)jarg2; 
+  if (arg1) (arg1)->next = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_VPFragment_next_get(void * jarg1) {
+  void * jresult ;
+  VPFragment *arg1 = (VPFragment *) 0 ;
+  VPFragment *result = 0 ;
+  
+  arg1 = (VPFragment *)jarg1; 
+  result = (VPFragment *) ((arg1)->next);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_new_VPFragment() {
+  void * jresult ;
+  VPFragment *result = 0 ;
+  
+  result = (VPFragment *)new VPFragment();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_delete_VPFragment(void * jarg1) {
+  VPFragment *arg1 = (VPFragment *) 0 ;
+  
+  arg1 = (VPFragment *)jarg1; 
+  delete arg1;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_ShaderReadData_hf_set(void * jarg1, void * jarg2) {
+  ShaderReadData *arg1 = (ShaderReadData *) 0 ;
+  HyperFile *arg2 = (HyperFile *) 0 ;
+  
+  arg1 = (ShaderReadData *)jarg1; 
+  arg2 = (HyperFile *)jarg2; 
+  if (arg1) (arg1)->hf = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_ShaderReadData_hf_get(void * jarg1) {
+  void * jresult ;
+  ShaderReadData *arg1 = (ShaderReadData *) 0 ;
+  HyperFile *result = 0 ;
+  
+  arg1 = (ShaderReadData *)jarg1; 
+  result = (HyperFile *) ((arg1)->hf);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_ShaderReadData_oldid_set(void * jarg1, int jarg2) {
+  ShaderReadData *arg1 = (ShaderReadData *) 0 ;
+  LONG arg2 ;
+  
+  arg1 = (ShaderReadData *)jarg1; 
+  arg2 = (LONG)jarg2; 
+  if (arg1) (arg1)->oldid = arg2;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_ShaderReadData_oldid_get(void * jarg1) {
+  int jresult ;
+  ShaderReadData *arg1 = (ShaderReadData *) 0 ;
+  LONG result;
+  
+  arg1 = (ShaderReadData *)jarg1; 
+  result =  ((arg1)->oldid);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_ShaderReadData_data_set(void * jarg1, void * jarg2) {
+  ShaderReadData *arg1 = (ShaderReadData *) 0 ;
+  Real *arg2 = (Real *) 0 ;
+  
+  arg1 = (ShaderReadData *)jarg1; 
+  arg2 = (Real *)jarg2; 
+  if (arg1) (arg1)->data = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_ShaderReadData_data_get(void * jarg1) {
+  void * jresult ;
+  ShaderReadData *arg1 = (ShaderReadData *) 0 ;
+  Real *result = 0 ;
+  
+  arg1 = (ShaderReadData *)jarg1; 
+  result = (Real *) ((arg1)->data);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_ShaderReadData_oldlevel_set(void * jarg1, int jarg2) {
+  ShaderReadData *arg1 = (ShaderReadData *) 0 ;
+  LONG arg2 ;
+  
+  arg1 = (ShaderReadData *)jarg1; 
+  arg2 = (LONG)jarg2; 
+  if (arg1) (arg1)->oldlevel = arg2;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_ShaderReadData_oldlevel_get(void * jarg1) {
+  int jresult ;
+  ShaderReadData *arg1 = (ShaderReadData *) 0 ;
+  LONG result;
+  
+  arg1 = (ShaderReadData *)jarg1; 
+  result =  ((arg1)->oldlevel);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_ShaderReadData_oldctr_set(void * jarg1, void * jarg2) {
+  ShaderReadData *arg1 = (ShaderReadData *) 0 ;
+  BaseContainer *arg2 = (BaseContainer *) 0 ;
+  
+  arg1 = (ShaderReadData *)jarg1; 
+  arg2 = (BaseContainer *)jarg2; 
+  if (arg1) (arg1)->oldctr = arg2;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_ShaderReadData_oldctr_get(void * jarg1) {
+  void * jresult ;
+  ShaderReadData *arg1 = (ShaderReadData *) 0 ;
+  BaseContainer *result = 0 ;
+  
+  arg1 = (ShaderReadData *)jarg1; 
+  result = (BaseContainer *) ((arg1)->oldctr);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_new_ShaderReadData() {
+  void * jresult ;
+  ShaderReadData *result = 0 ;
+  
+  result = (ShaderReadData *)new ShaderReadData();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_delete_ShaderReadData(void * jarg1) {
+  ShaderReadData *arg1 = (ShaderReadData *) 0 ;
+  
+  arg1 = (ShaderReadData *)jarg1; 
+  delete arg1;
+}
+
+
 SWIGEXPORT void SWIGSTDCALL CSharp_RestoreLayoutSecret_subid_set(void * jarg1, int jarg2) {
   RestoreLayoutSecret *arg1 = (RestoreLayoutSecret *) 0 ;
   LONG arg2 ;
@@ -74590,6 +79320,22 @@ SWIGEXPORT BaseTag * SWIGSTDCALL CSharp_XPressoTag_SWIGUpcast(XPressoTag *jarg1)
 
 SWIGEXPORT BaseTag * SWIGSTDCALL CSharp_HNWeightTag_SWIGUpcast(HNWeightTag *jarg1) {
     return (BaseTag *)jarg1;
+}
+
+SWIGEXPORT BaseList2D * SWIGSTDCALL CSharp_BaseMaterial_SWIGUpcast(BaseMaterial *jarg1) {
+    return (BaseList2D *)jarg1;
+}
+
+SWIGEXPORT BaseMaterial * SWIGSTDCALL CSharp_Material_SWIGUpcast(Material *jarg1) {
+    return (BaseMaterial *)jarg1;
+}
+
+SWIGEXPORT BaseList2D * SWIGSTDCALL CSharp_BaseShader_SWIGUpcast(BaseShader *jarg1) {
+    return (BaseList2D *)jarg1;
+}
+
+SWIGEXPORT C4DAtom * SWIGSTDCALL CSharp_BaseChannel_SWIGUpcast(BaseChannel *jarg1) {
+    return (C4DAtom *)jarg1;
 }
 
 SWIGEXPORT BaseObject * SWIGSTDCALL CSharp_CAJointObject_SWIGUpcast(CAJointObject *jarg1) {

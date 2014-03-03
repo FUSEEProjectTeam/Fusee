@@ -15,6 +15,10 @@ namespace Examples.SceneViewer
         private Dictionary<MeshContainer, Mesh> _mm;
         private SceneContainer _sc;
 
+        private ShaderProgram _shader;
+        private IShaderParam _colorParam;
+
+
         public SceneRenderer(SceneContainer sc)
         {
             _sc = sc;
@@ -23,6 +27,14 @@ namespace Examples.SceneViewer
 
         public void Render(RenderContext rc)
         {
+            if (_shader == null)
+            {
+                _shader = MoreShaders.GetDiffuseColorShader(rc);
+                _colorParam = _shader.GetShaderParam("color");
+            }
+
+            rc.SetShader(_shader);
+
             foreach (var soc in _sc.Children)
             {
                 VisitNode(soc, rc);
@@ -34,7 +46,7 @@ namespace Examples.SceneViewer
             float4x4 origMV = rc.ModelView;
 
             rc.ModelView = rc.ModelView*soc.Transform;
-
+            rc.SetShaderParam(_colorParam, new float4(soc.Color.x, soc.Color.y, soc.Color.z, 1));
             if (soc.Mesh != null)
             {
                 Mesh rm;
