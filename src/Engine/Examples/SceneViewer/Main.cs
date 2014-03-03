@@ -28,13 +28,12 @@ namespace Examples.SceneViewer
             //TestDeserialize();
             SceneContainer scene;
             var ser = new Serializer();
-            using (var file = File.OpenRead(@"Assets/Test.fus"))
+            using (var file = File.OpenRead(@"Assets/Model.fus"))
             {
                 scene = ser.Deserialize(file, null, typeof(SceneContainer)) as SceneContainer;
             }
             _sr = new SceneRenderer(scene);
 
-            _meshTea = MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
             _spColor = MoreShaders.GetDiffuseColorShader(RC);
             _colorParam = _spColor.GetShaderParam("color");
             RC.SetShaderParam(_colorParam, new float4(1, 1, 1, 1));

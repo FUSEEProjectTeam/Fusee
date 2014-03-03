@@ -845,6 +845,12 @@ BaseObject *
 //////////////////////////////////////////////////////////////////
 // "c4d_commanddata.h"
 %feature("director") CommandData;
+%csmethodmodifiers CommandData::CommandData "private";
+%typemap(cscode) CommandData %{
+  public CommandData(bool memOwn) : this(C4dApiPINVOKE.new_CommandData(), memOwn) {
+    SwigDirectorConnect();
+  }
+%}
 %include "c4d_commanddata.h";
 
 //////////////////////////////////////////////////////////////////
@@ -899,6 +905,12 @@ BaseObject *
 //////////////////////////////////////////////////////////////////
 // "c4d_objectdata.h" (replaced by own implementation)
 %feature("director") ObjectDataM;
+%csmethodmodifiers ObjectDataM::ObjectDataM "private";
+%typemap(cscode) ObjectDataM %{
+  public ObjectDataM(bool memOwn) : this(C4dApiPINVOKE.new_ObjectDataM(), memOwn) {
+    SwigDirectorConnect();
+  }
+%}
 %include "c4d_objectdata.h" // for keeping inheritance ObjectDataM -> ObjectData
 %include "ObjectDataM.h";
 
@@ -990,7 +1002,13 @@ BaseObject *
 
 //////////////////////////////////////////////////////////////////
 // "c4d_operatordata.h"
-%include "c4d_operatordata.h";
+%feature("director") OperatorData;
+%csmethodmodifiers OperatorData::OperatorData "private";
+%typemap(cscode) OperatorData %{
+  public OperatorData(bool memOwn) : this(C4dApiPINVOKE.new_OperatorData(), memOwn) {
+    SwigDirectorConnect();
+  }
+%}%include "c4d_operatordata.h";
 
 //////////////////////////////////////////////////////////////////
 // "c4d_operatorplugin.h"
@@ -999,9 +1017,33 @@ BaseObject *
 //////////////////////////////////////////////////////////////////
 // "c4d_filterdata.h"
 %feature("director") SceneLoaderData;
+%csmethodmodifiers SceneLoaderData::SceneLoaderData "private";
+%typemap(cscode) SceneLoaderData %{
+  public SceneLoaderData(bool memOwn) : this(C4dApiPINVOKE.new_SceneLoaderData(), memOwn) {
+    SwigDirectorConnect();
+  }
+%}
 %feature("director") SceneSaverData;
+%csmethodmodifiers SceneSaverData::SceneSaverData "private";
+%typemap(cscode) SceneSaverData %{
+  public SceneSaverData(bool memOwn) : this(C4dApiPINVOKE.new_SceneSaverData(), memOwn) {
+    SwigDirectorConnect();
+  }
+%}
 %feature("director") BitmapLoaderData;
+%csmethodmodifiers BitmapLoaderData::BitmapLoaderData "private";
+%typemap(cscode) BitmapLoaderData %{
+  public BitmapLoaderData(bool memOwn) : this(C4dApiPINVOKE.new_BitmapLoaderData(), memOwn) {
+    SwigDirectorConnect();
+  }
+%}
 %feature("director") BitmapSaverData;
+%csmethodmodifiers BitmapSaverData::BitmapSaverData "private";
+%typemap(cscode) BitmapSaverData %{
+  public BitmapSaverData(bool memOwn) : this(C4dApiPINVOKE.new_BitmapSaverData(), memOwn) {
+    SwigDirectorConnect();
+  }
+%}
 %include "c4d_filterdata.h";
 
 //////////////////////////////////////////////////////////////////

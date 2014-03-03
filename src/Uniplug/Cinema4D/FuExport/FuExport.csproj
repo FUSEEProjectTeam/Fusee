@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>$(C4D_DIR)\plugins\DoubleCircle\</OutputPath>
+    <OutputPath>..\..\..\..\..\..\..\..\..\Program Files\MAXON\CINEMA 4D R14\plugins\FuExport\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -25,7 +25,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>$(C4D_DIR)\plugins\DoubleCircle\</OutputPath>
+    <OutputPath>..\..\..\..\..\..\..\..\..\Program Files\MAXON\CINEMA 4D R14\plugins\FuExport\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -53,7 +53,9 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DirCopy.cs" />
     <Compile Include="FuExport.cs" />
+    <Compile Include="FusConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="res\FuExportLogo.tif">
@@ -61,6 +63,9 @@
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy /i /e /y "$(ProjectDir)Viewer" "$(TargetDir)Viewer"</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

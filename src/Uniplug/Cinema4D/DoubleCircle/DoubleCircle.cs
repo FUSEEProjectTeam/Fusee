@@ -13,6 +13,11 @@ namespace DoubleCircle
     ]
     class DoubleCircleClass : ObjectDataM
     {
+        public DoubleCircleClass() : base(false)
+        {
+        }
+
+
         private static readonly int CIRCLEOBJECT_RAD = 10000;           // values 1000.3000 already reserved from includes
         private static readonly int CIRCLEOBJECT_NEWTAB = 10001;
         private static readonly int CIRCLEOBJECT_SUBGROUP = 10002;

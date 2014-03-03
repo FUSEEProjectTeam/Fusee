@@ -10,6 +10,11 @@ namespace RigPlugin
 
     class RigPlugin : ObjectDataM
     {
+        public RigPlugin()
+            : base(false)
+        {
+        }
+
         protected const int SKELETT_TYPE = 10000;
         const int SKELETT_BTN_CREATE = 10001;
         private const int SKELETT_OBJ_AUSWAHL = 10015;

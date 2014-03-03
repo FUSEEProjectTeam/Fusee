@@ -1,0 +1,29 @@
+<!DOCTYPE html> 
+<html>
+<head>
+	<title>Examples.SceneViewer</title>
+
+	<link rel="stylesheet" type="text/css" href="Assets/Styles/browser.css">
+	<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+
+	<script src="Assets/Config/jsil_config.js" type="text/javascript"></script>
+	<script src="Assets/Scripts/JSIL.js" type="text/javascript"></script>
+</head>
+
+<body onload="onLoad()">
+	<canvas id="canvas"></canvas>
+
+	<script type="text/javascript">
+		function runMain () {
+			$asm00.Examples.SceneViewer.SceneViewer.Main([]);
+		};
+
+		window.onresize = function(event) {
+			document.getElementById("canvas").setAttribute('width', window.innerWidth);
+			document.getElementById("canvas").setAttribute('height', window.innerHeight);
+		}
+
+		window.onresize();
+	</script>
+</body>
+</html>
