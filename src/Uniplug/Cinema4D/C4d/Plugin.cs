@@ -18,7 +18,7 @@ namespace C4d
             Logger.Loglevel = Logger.LogLevel.Debug;
             Logger.Debug("Plugin()");
 
-            _pluginInstanceList = new List<object>();
+            PluginAllocator._pluginInstanceList = _pluginInstanceList = new List<object>();
             _nodeAllocatorList = new List<NodeDataAllocator>();
         }
 

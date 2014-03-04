@@ -56,6 +56,7 @@
     <Compile Include="DirCopy.cs" />
     <Compile Include="FuExport.cs" />
     <Compile Include="FusConverter.cs" />
+    <Compile Include="SimpleHttpServer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="res\FuExportLogo.tif">

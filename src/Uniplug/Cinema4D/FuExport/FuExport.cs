@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Runtime.Remoting.Channels;
+using System.Threading;
 using C4d;
 using Fusee.Math;
 using Fusee.Serialization;
@@ -56,6 +57,23 @@ namespace FuExport
 
         }
 
+        private static FuseeHttpServer _httpServer;
+
+
+        private void StartServer(string root)
+        {
+            if (_httpServer == null)
+            {
+                _httpServer = new FuseeHttpServer(root, 4655); // HEX: FU
+                Thread thread = new Thread(new ThreadStart(_httpServer.listen));
+                thread.Start();
+            }
+            else
+            {
+                _httpServer.HtDocsRoot = root;
+            }
+        }
+
         public override bool Init(GeListNode node)
         {
             return true;
@@ -87,7 +105,8 @@ namespace FuExport
                 ser.Serialize(file, root);
             }
 
-            C4dApi.GeOpenHTML(htmlFilePath);
+            StartServer(htmlFileDir);
+            C4dApi.GeOpenHTML("http://localhost:4655/" + Path.GetFileName(htmlFilePath));
 
             return FILEERROR.FILEERROR_NONE;
         }

@@ -793,6 +793,8 @@ BaseObject *
 %typemap(csout, excode=SWIGEXCODE) SVector *PolygonObject::CreatePhongNormals
 %{ {  /* <SVector*PolygonObject::CreatePhongNormals_csout> */
       IntPtr p_ret = $imcall;$excode
+	  if (p_ret == IntPtr.Zero)
+	      return null;
 	  int nNormals = this.GetPolygonCount()*4;
       Fusee.Math.float3[] ret = new Fusee.Math.float3[nNormals];
       unsafe

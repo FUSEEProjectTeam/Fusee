@@ -62,9 +62,22 @@ namespace FuExport
                 verts.Add((float3) b);
                 verts.Add((float3) c);
 
-                normals.Add(normalsOb[iNorm++]);
-                normals.Add(normalsOb[iNorm++]);
-                normals.Add(normalsOb[iNorm++]);
+                float3 normalD;
+                if (normalsOb != null)
+                {
+                    normals.Add(normalsOb[iNorm++]);
+                    normals.Add(normalsOb[iNorm++]);
+                    normals.Add(normalsOb[iNorm++]);
+                    normalD = normalsOb[iNorm++];
+                }
+                else
+                {
+                    float3 faceNormal = CalcFaceNormal((float3) a, (float3) b, (float3) c);
+                    normals.Add(faceNormal);
+                    normals.Add(faceNormal);
+                    normals.Add(faceNormal);
+                    normalD = faceNormal;
+                }
 
                 tris.AddRange(new ushort[] {nNewVerts, (ushort) (nNewVerts + 2), (ushort) (nNewVerts + 1)});
 
@@ -72,11 +85,10 @@ namespace FuExport
                 {
                     // The Polyogon is not only a triangle, but a quad. Add the second triangle.
                     verts.Add((float3) d);
-                    normals.Add(normalsOb[iNorm]);
+                    normals.Add(normalD);
                     tris.AddRange(new ushort[] {nNewVerts, (ushort) (nNewVerts + 3), (ushort) (nNewVerts + 2)});
                     nNewVerts += 1;
                 }
-                iNorm++; // Consume the 4th normal anyway
                 nNewVerts += 3;
             }
             return new MeshContainer()
@@ -85,6 +97,13 @@ namespace FuExport
                 Vertices = verts.ToArray(),
                 Triangles = tris.ToArray(),
             };
+        }
+
+        public static float3 CalcFaceNormal(float3 vert0, float3 vert1, float3 vert2)
+        {
+            float3 v1 = vert0 - vert1;
+            float3 v2 = vert0 - vert2;
+            return float3.Normalize(float3.Cross(v1, v2));
         }
 
 
