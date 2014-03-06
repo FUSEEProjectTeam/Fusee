@@ -51,12 +51,14 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DirCopy.cs" />
     <Compile Include="FuExport.cs" />
     <Compile Include="FusConverter.cs" />
     <Compile Include="SimpleHttpServer.cs" />
+    <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="res\FuExportLogo.tif">

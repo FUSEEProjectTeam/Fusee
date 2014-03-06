@@ -10,7 +10,8 @@ using Fusee.Serialization;
 
 namespace FuExport
 {
-    [SceneSaverPlugin(1000048,
+    // Your Plugin Number for "FUSEE Scene Format Exporter" is: 1031843 
+    [SceneSaverPlugin(1031843,
         Name = "FUSEE 3D (*.fus)",
         Suffix = "fus")
     ]
@@ -30,7 +31,7 @@ namespace FuExport
 
         public override FILEERROR Save(BaseSceneSaver node, Filename name, BaseDocument doc, SCENEFILTER filterflags)
         {
-            var root = FusConverter.FuseefyScene(doc);
+            var root = new FusConverter().FuseefyScene(doc);
 
             var ser = new Serializer();
             using (var file = File.Create(name.GetString()))
@@ -44,7 +45,8 @@ namespace FuExport
     }
 
 
-    [SceneSaverPlugin(1000049,
+    // Your Plugin Number for "FUSEE HTML Exporter" is: 1031842 
+    [SceneSaverPlugin(1031842,
         Name = "FUSEE Web Viewer (*.html)",
         Suffix = "html")
     ]
@@ -97,7 +99,7 @@ namespace FuExport
 
             string sceneFilePath = Path.Combine(htmlFileDir, "Assets", "Model.fus");
 
-            var root = FusConverter.FuseefyScene(doc);
+            var root = new FusConverter().FuseefyScene(doc);
             
             var ser = new Serializer();
             using (var file = File.Create(sceneFilePath))

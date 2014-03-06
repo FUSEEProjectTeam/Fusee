@@ -326,31 +326,37 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
     return ($T01 = JSIL.Memoize($asm06.System.Collections.Generic.Dictionary$b2.Of($asm04.Fusee.Serialization.MeshContainer, $asm02.Fusee.Engine.Mesh))) ();
   };
   var $T02 = function () {
-    return ($T02 = JSIL.Memoize($asm02.Fusee.Engine.RenderContext)) ();
+    return ($T02 = JSIL.Memoize($asm04.Fusee.Serialization.SceneObjectContainer)) ();
   };
   var $T03 = function () {
-    return ($T03 = JSIL.Memoize($asm02.Fusee.Engine.MoreShaders)) ();
+    return ($T03 = JSIL.Memoize($asm02.Fusee.Engine.Mesh)) ();
   };
   var $T04 = function () {
-    return ($T04 = JSIL.Memoize($asm02.Fusee.Engine.ShaderProgram)) ();
+    return ($T04 = JSIL.Memoize($asm02.Fusee.Engine.RenderContext)) ();
   };
   var $T05 = function () {
-    return ($T05 = JSIL.Memoize($asm04.Fusee.Serialization.SceneObjectContainer)) ();
+    return ($T05 = JSIL.Memoize($asm03.Fusee.Math.float3)) ();
   };
   var $T06 = function () {
-    return ($T06 = JSIL.Memoize($asm02.Fusee.Engine.Mesh)) ();
+    return ($T06 = JSIL.Memoize($asm02.Fusee.Engine.MoreShaders)) ();
   };
   var $T07 = function () {
-    return ($T07 = JSIL.Memoize($asm03.Fusee.Math.float4x4)) ();
+    return ($T07 = JSIL.Memoize($asm02.Fusee.Engine.ShaderProgram)) ();
   };
   var $T08 = function () {
     return ($T08 = JSIL.Memoize($asm03.Fusee.Math.float4)) ();
+  };
+  var $T09 = function () {
+    return ($T09 = JSIL.Memoize($asm03.Fusee.Math.float4x4)) ();
   };
   var $S00 = function () {
     return ($S00 = JSIL.Memoize(new JSIL.ConstructorSignature($asm06.TypeRef("System.Collections.Generic.Dictionary`2", [$asm04.TypeRef("Fusee.Serialization.MeshContainer"), $asm02.TypeRef("Fusee.Engine.Mesh")]), []))) ();
   };
   var $S01 = function () {
-    return ($S01 = JSIL.Memoize(new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float4x4"), [$asm03.TypeRef("Fusee.Math.float4x4"), $asm03.TypeRef("Fusee.Math.float4x4")], []))) ();
+    return ($S01 = JSIL.Memoize(new JSIL.ConstructorSignature($asm03.TypeRef("Fusee.Math.float3"), [
+        $asm06.TypeRef("System.Single"), $asm06.TypeRef("System.Single"), 
+        $asm06.TypeRef("System.Single")
+      ]))) ();
   };
   var $S02 = function () {
     return ($S02 = JSIL.Memoize(new JSIL.ConstructorSignature($asm03.TypeRef("Fusee.Math.float4"), [
@@ -358,16 +364,39 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
         $asm06.TypeRef("System.Single"), $asm06.TypeRef("System.Single")
       ]))) ();
   };
+  var $S03 = function () {
+    return ($S03 = JSIL.Memoize(new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float4x4"), [$asm03.TypeRef("Fusee.Math.float4x4"), $asm03.TypeRef("Fusee.Math.float4x4")], []))) ();
+  };
 
   function SceneRenderer__ctor (sc) {
     this._sc = sc;
-    this._mm = $S00().Construct();
+    this._meshMap = $S00().Construct();
+  };
+
+  function SceneRenderer_get_CurCol () {
+    return this._curCol;
+  };
+
+  function SceneRenderer_MakeMesh (soc) {
+    return (new ($T03())()).__Initialize__({
+        Colors: null, 
+        Normals: soc.Mesh.Normals, 
+        UVs: soc.Mesh.UVs, 
+        Vertices: soc.Mesh.Vertices, 
+        Triangles: soc.Mesh.Triangles}
+    );
   };
 
   function SceneRenderer_Render (rc) {
     var $temp00;
+    if (rc !== this._rc) {
+      this._rc = rc;
+      this._shader = null;
+      this._colorParam = null;
+      this._curCol = $S01().Construct(0.5, 0.5, 0.5);
+    }
     if (this._shader === null) {
-      this._shader = $T03().GetDiffuseColorShader(rc);
+      this._shader = $T06().GetDiffuseColorShader(rc);
       this._colorParam = this._shader.GetShaderParam("color");
     }
     rc.SetShader(this._shader);
@@ -376,28 +405,32 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
         i$0 = ((i$0 + 1) | 0), 
         $temp00)) {
       var soc = a$0[i$0];
-      this.VisitNode(soc, rc);
+      this.VisitNode(soc);
     }
   };
 
-  function SceneRenderer_VisitNode (soc, rc) {
+  function SceneRenderer_set_CurCol (value) {
+    if (this._rc !== null) {
+      this._rc.SetShaderParam4f(this._colorParam, $S02().Construct(value.x, value.y, value.z, 1));
+    }
+    this._curCol = value.MemberwiseClone();
+  };
+
+  function SceneRenderer_VisitNode (soc) {
     var $temp00;
     var rm = new JSIL.BoxedVariable(null);
-    var origMV = rc.get_ModelView().MemberwiseClone();
-    (rc.ModelView = $S01().CallStatic($T07(), "op_Multiply", null, rc.ModelView, soc.Transform).MemberwiseClone());
-    rc.SetShaderParam4f(this._colorParam, $S02().Construct(soc.Color.x, soc.Color.y, soc.Color.z, 1));
+    var origMV = this._rc.get_ModelView().MemberwiseClone();
+    var origCol = this.get_CurCol().MemberwiseClone();
+    if (soc.Material !== null) {
+      (this.CurCol = soc.Material.DiffuseColor.MemberwiseClone());
+    }
+    (this._rc.ModelView = $S03().CallStatic($T09(), "op_Multiply", null, this._rc.ModelView, soc.Transform).MemberwiseClone());
     if (soc.Mesh !== null) {
-      if (!this._mm.TryGetValue(soc.Mesh, /* ref */ rm)) {
-        rm.set((new ($T06())()).__Initialize__({
-              Colors: null, 
-              Normals: soc.Mesh.Normals, 
-              UVs: soc.Mesh.UVs, 
-              Vertices: soc.Mesh.Vertices, 
-              Triangles: soc.Mesh.Triangles}
-          ));
-        this._mm.Add(soc.Mesh, rm.get());
+      if (!this._meshMap.TryGetValue(soc.Mesh, /* ref */ rm)) {
+        rm.set($thisType.MakeMesh(soc));
+        this._meshMap.Add(soc.Mesh, rm.get());
       }
-      rc.Render(rm.get());
+      this._rc.Render(rm.get());
     }
     if (soc.Children !== null) {
 
@@ -405,10 +438,11 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
           i$0 = ((i$0 + 1) | 0), 
           $temp00)) {
         var child = a$0[i$0];
-        this.VisitNode(child, rc);
+        this.VisitNode(child);
       }
     }
-    (rc.ModelView = origMV.MemberwiseClone());
+    (this._rc.ModelView = origMV.MemberwiseClone());
+    (this.CurCol = origCol.MemberwiseClone());
   };
 
   JSIL.MakeType({
@@ -425,20 +459,39 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
       SceneRenderer__ctor
     );
 
+    $.Method({Static:false, Public:false}, "get_CurCol", 
+      new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float3"), [], []), 
+      SceneRenderer_get_CurCol
+    );
+
+    $.Method({Static:true , Public:false}, "MakeMesh", 
+      new JSIL.MethodSignature($asm02.TypeRef("Fusee.Engine.Mesh"), [$asm04.TypeRef("Fusee.Serialization.SceneObjectContainer")], []), 
+      SceneRenderer_MakeMesh
+    );
+
     $.Method({Static:false, Public:true }, "Render", 
       new JSIL.MethodSignature(null, [$asm02.TypeRef("Fusee.Engine.RenderContext")], []), 
       SceneRenderer_Render
     );
 
+    $.Method({Static:false, Public:false}, "set_CurCol", 
+      new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float3")], []), 
+      SceneRenderer_set_CurCol
+    );
+
     $.Method({Static:false, Public:false}, "VisitNode", 
-      new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Serialization.SceneObjectContainer"), $asm02.TypeRef("Fusee.Engine.RenderContext")], []), 
+      new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Serialization.SceneObjectContainer")], []), 
       SceneRenderer_VisitNode
     );
 
-    $.Field({Static:false, Public:false}, "_mm", $asm06.TypeRef("System.Collections.Generic.Dictionary`2", [$asm04.TypeRef("Fusee.Serialization.MeshContainer"), $asm02.TypeRef("Fusee.Engine.Mesh")])); 
+    $.Field({Static:false, Public:false}, "_meshMap", $asm06.TypeRef("System.Collections.Generic.Dictionary`2", [$asm04.TypeRef("Fusee.Serialization.MeshContainer"), $asm02.TypeRef("Fusee.Engine.Mesh")])); 
     $.Field({Static:false, Public:false}, "_sc", $asm04.TypeRef("Fusee.Serialization.SceneContainer")); 
+    $.Field({Static:false, Public:false}, "_rc", $asm02.TypeRef("Fusee.Engine.RenderContext")); 
     $.Field({Static:false, Public:false}, "_shader", $asm02.TypeRef("Fusee.Engine.ShaderProgram")); 
     $.Field({Static:false, Public:false}, "_colorParam", $asm01.TypeRef("Fusee.Engine.IShaderParam")); 
+    $.Field({Static:false, Public:false}, "_curCol", $asm03.TypeRef("Fusee.Math.float3")); 
+    $.Property({Static:false, Public:false}, "CurCol", $asm03.TypeRef("Fusee.Math.float3"));
+
     return function (newThisType) { $thisType = newThisType; }; 
   });
 

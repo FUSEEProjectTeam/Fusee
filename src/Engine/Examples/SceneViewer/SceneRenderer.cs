@@ -8,72 +8,99 @@ using Fusee.Serialization;
 
 namespace Examples.SceneViewer
 {
-   
-
     public class SceneRenderer
     {
-        private Dictionary<MeshContainer, Mesh> _mm;
+        private Dictionary<MeshContainer, Mesh> _meshMap;
         private SceneContainer _sc;
 
+        private RenderContext _rc;
         private ShaderProgram _shader;
         private IShaderParam _colorParam;
+
+        private float3 _curCol;
+        float3 CurCol
+        {
+            set
+            {
+                if (_rc != null)
+                    _rc.SetShaderParam(_colorParam, new float4(value.x, value.y, value.z, 1));
+                _curCol = value;
+            }
+            get { return _curCol; }
+        }
 
 
         public SceneRenderer(SceneContainer sc)
         {
             _sc = sc;
-            _mm = new Dictionary<MeshContainer, Mesh>();
+            _meshMap = new Dictionary<MeshContainer, Mesh>();
         }
 
         public void Render(RenderContext rc)
         {
+            if (rc != _rc)
+            {
+                _rc = rc;
+                _shader = null;
+                _colorParam = null;
+                _curCol = new float3(0.5f, 0.5f, 0.5f);
+            }
             if (_shader == null)
             {
                 _shader = MoreShaders.GetDiffuseColorShader(rc);
                 _colorParam = _shader.GetShaderParam("color");
             }
-
             rc.SetShader(_shader);
 
             foreach (var soc in _sc.Children)
             {
-                VisitNode(soc, rc);
+                VisitNode(soc);
             }
         }
 
-        protected void VisitNode(SceneObjectContainer soc, RenderContext rc)
+        protected void VisitNode(SceneObjectContainer soc)
         {
-            float4x4 origMV = rc.ModelView;
+            float4x4 origMV = _rc.ModelView;
+            float3 origCol = CurCol;
 
-            rc.ModelView = rc.ModelView*soc.Transform;
-            rc.SetShaderParam(_colorParam, new float4(soc.Color.x, soc.Color.y, soc.Color.z, 1));
+            if (soc.Material != null)
+                CurCol = soc.Material.DiffuseColor;
+            _rc.ModelView = _rc.ModelView * soc.Transform;
             if (soc.Mesh != null)
             {
                 Mesh rm;
-                if (!_mm.TryGetValue(soc.Mesh, out rm))
+                if (!_meshMap.TryGetValue(soc.Mesh, out rm))
                 {
-                    rm = new Mesh()
-                    {
-                        Colors = null,
-                        Normals = soc.Mesh.Normals,
-                        UVs = soc.Mesh.UVs,
-                        Vertices = soc.Mesh.Vertices,
-                        Triangles = soc.Mesh.Triangles
-                    };
-                    _mm.Add(soc.Mesh, rm);
+                    rm = MakeMesh(soc);
+                    _meshMap.Add(soc.Mesh, rm);
                 }
-                rc.Render(rm);
+                _rc.Render(rm);
             }
 
             if (soc.Children != null)
             {
                 foreach (var child in soc.Children)
                 {
-                    VisitNode(child, rc);
+                    VisitNode(child);
                 }
             }
 
-            rc.ModelView = origMV;
+            _rc.ModelView = origMV;
+            CurCol = origCol;
+        }
+
+        private static Mesh MakeMesh(SceneObjectContainer soc)
+        {
+            Mesh rm;
+            rm = new Mesh()
+            {
+                Colors = null,
+                Normals = soc.Mesh.Normals,
+                UVs = soc.Mesh.UVs,
+                Vertices = soc.Mesh.Vertices,
+                Triangles = soc.Mesh.Triangles
+            };
+            return rm;
         }
     }
 }

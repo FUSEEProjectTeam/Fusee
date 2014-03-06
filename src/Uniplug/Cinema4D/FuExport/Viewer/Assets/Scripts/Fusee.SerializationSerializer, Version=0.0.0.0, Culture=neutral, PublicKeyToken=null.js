@@ -11,88 +11,94 @@ JSIL.DeclareNamespace("Fusee.Serialization");
     return ($T00 = JSIL.Memoize($asm06.System.Type)) ();
   };
   var $T01 = function () {
-    return ($T01 = JSIL.Memoize($asm04.Fusee.Serialization.MeshContainer)) ();
+    return ($T01 = JSIL.Memoize($asm04.Fusee.Serialization.MaterialContainer)) ();
   };
   var $T02 = function () {
-    return ($T02 = JSIL.Memoize($asm04.Fusee.Serialization.SceneContainer)) ();
+    return ($T02 = JSIL.Memoize($asm04.Fusee.Serialization.MeshContainer)) ();
   };
   var $T03 = function () {
-    return ($T03 = JSIL.Memoize($asm04.Fusee.Serialization.SceneHeader)) ();
+    return ($T03 = JSIL.Memoize($asm04.Fusee.Serialization.SceneContainer)) ();
   };
   var $T04 = function () {
-    return ($T04 = JSIL.Memoize($asm04.Fusee.Serialization.SceneObjectContainer)) ();
+    return ($T04 = JSIL.Memoize($asm04.Fusee.Serialization.SceneHeader)) ();
   };
   var $T05 = function () {
-    return ($T05 = JSIL.Memoize($asm03.Fusee.Math.float3)) ();
+    return ($T05 = JSIL.Memoize($asm04.Fusee.Serialization.SceneObjectContainer)) ();
   };
   var $T06 = function () {
-    return ($T06 = JSIL.Memoize($asm03.Fusee.Math.float2)) ();
+    return ($T06 = JSIL.Memoize($asm03.Fusee.Math.float3)) ();
   };
   var $T07 = function () {
-    return ($T07 = JSIL.Memoize($asm03.Fusee.Math.float4x4)) ();
+    return ($T07 = JSIL.Memoize($asm03.Fusee.Math.float2)) ();
   };
   var $T08 = function () {
-    return ($T08 = JSIL.Memoize($asm03.Fusee.Math.float4)) ();
+    return ($T08 = JSIL.Memoize($asm03.Fusee.Math.float4x4)) ();
   };
   var $T09 = function () {
-    return ($T09 = JSIL.Memoize($asm07.ProtoBuf.Meta.TypeModel)) ();
+    return ($T09 = JSIL.Memoize($asm03.Fusee.Math.float4)) ();
   };
   var $T0A = function () {
-    return ($T0A = JSIL.Memoize($asm06.System.Object)) ();
+    return ($T0A = JSIL.Memoize($asm07.ProtoBuf.Meta.TypeModel)) ();
   };
   var $T0B = function () {
-    return ($T0B = JSIL.Memoize($asm07.ProtoBuf.ProtoReader)) ();
+    return ($T0B = JSIL.Memoize($asm06.System.Object)) ();
   };
   var $T0C = function () {
-    return ($T0C = JSIL.Memoize($asm06.System.Int32)) ();
+    return ($T0C = JSIL.Memoize($asm07.ProtoBuf.ProtoReader)) ();
   };
   var $T0D = function () {
-    return ($T0D = JSIL.Memoize(System.Array.Of($asm06.System.Type))) ();
+    return ($T0D = JSIL.Memoize($asm06.System.Int32)) ();
   };
   var $T0E = function () {
-    return ($T0E = JSIL.Memoize(System.Array.Of($asm06.System.UInt16))) ();
+    return ($T0E = JSIL.Memoize(System.Array.Of($asm06.System.Type))) ();
   };
   var $T0F = function () {
-    return ($T0F = JSIL.Memoize($asm06.System.Collections.Generic.List$b1.Of($asm06.System.UInt16))) ();
+    return ($T0F = JSIL.Memoize($asm06.System.Single)) ();
   };
   var $T10 = function () {
-    return ($T10 = JSIL.Memoize($asm07.ProtoBuf.WireType)) ();
+    return ($T10 = JSIL.Memoize($asm07.ProtoBuf.SubItemToken)) ();
   };
   var $T11 = function () {
-    return ($T11 = JSIL.Memoize($asm07.ProtoBuf.SubItemToken)) ();
+    return ($T11 = JSIL.Memoize($asm06.System.Boolean)) ();
   };
   var $T12 = function () {
-    return ($T12 = JSIL.Memoize($asm06.System.UInt16)) ();
+    return ($T12 = JSIL.Memoize($asm06.System.String)) ();
   };
   var $T13 = function () {
-    return ($T13 = JSIL.Memoize(System.Array.Of($asm03.Fusee.Math.float2))) ();
+    return ($T13 = JSIL.Memoize(System.Array.Of($asm06.System.UInt16))) ();
   };
   var $T14 = function () {
-    return ($T14 = JSIL.Memoize($asm06.System.Collections.Generic.List$b1.Of($asm03.Fusee.Math.float2))) ();
+    return ($T14 = JSIL.Memoize($asm06.System.Collections.Generic.List$b1.Of($asm06.System.UInt16))) ();
   };
   var $T15 = function () {
-    return ($T15 = JSIL.Memoize(System.Array.Of($asm03.Fusee.Math.float3))) ();
+    return ($T15 = JSIL.Memoize($asm07.ProtoBuf.WireType)) ();
   };
   var $T16 = function () {
-    return ($T16 = JSIL.Memoize($asm06.System.Collections.Generic.List$b1.Of($asm03.Fusee.Math.float3))) ();
+    return ($T16 = JSIL.Memoize($asm06.System.UInt16)) ();
   };
   var $T17 = function () {
-    return ($T17 = JSIL.Memoize($asm06.System.Collections.Generic.List$b1.Of($asm04.Fusee.Serialization.SceneObjectContainer))) ();
+    return ($T17 = JSIL.Memoize(System.Array.Of($asm03.Fusee.Math.float2))) ();
   };
   var $T18 = function () {
-    return ($T18 = JSIL.Memoize($asm07.ProtoBuf.BclHelpers)) ();
+    return ($T18 = JSIL.Memoize($asm06.System.Collections.Generic.List$b1.Of($asm03.Fusee.Math.float2))) ();
   };
   var $T19 = function () {
-    return ($T19 = JSIL.Memoize($asm07.ProtoBuf.BclHelpers_NetObjectOptions)) ();
+    return ($T19 = JSIL.Memoize(System.Array.Of($asm03.Fusee.Math.float3))) ();
   };
   var $T1A = function () {
-    return ($T1A = JSIL.Memoize($asm06.System.String)) ();
+    return ($T1A = JSIL.Memoize($asm06.System.Collections.Generic.List$b1.Of($asm03.Fusee.Math.float3))) ();
   };
   var $T1B = function () {
-    return ($T1B = JSIL.Memoize($asm06.System.Single)) ();
+    return ($T1B = JSIL.Memoize($asm06.System.Collections.Generic.List$b1.Of($asm04.Fusee.Serialization.SceneObjectContainer))) ();
   };
   var $T1C = function () {
-    return ($T1C = JSIL.Memoize($asm07.ProtoBuf.ProtoWriter)) ();
+    return ($T1C = JSIL.Memoize($asm07.ProtoBuf.BclHelpers)) ();
+  };
+  var $T1D = function () {
+    return ($T1D = JSIL.Memoize($asm07.ProtoBuf.BclHelpers_NetObjectOptions)) ();
+  };
+  var $T1E = function () {
+    return ($T1E = JSIL.Memoize($asm07.ProtoBuf.ProtoWriter)) ();
   };
   var $S00 = function () {
     return ($S00 = JSIL.Memoize(new JSIL.MethodSignature($asm04.TypeRef("Fusee.Serialization.SceneHeader"), [$asm04.TypeRef("Fusee.Serialization.SceneHeader"), $asm07.TypeRef("ProtoBuf.ProtoReader")], []))) ();
@@ -110,103 +116,109 @@ JSIL.DeclareNamespace("Fusee.Serialization");
     return ($S04 = JSIL.Memoize(new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float4"), [$asm03.TypeRef("Fusee.Math.float4"), $asm07.TypeRef("ProtoBuf.ProtoReader")], []))) ();
   };
   var $S05 = function () {
-    return ($S05 = JSIL.Memoize(new JSIL.MethodSignature($asm04.TypeRef("Fusee.Serialization.MeshContainer"), [$asm04.TypeRef("Fusee.Serialization.MeshContainer"), $asm07.TypeRef("ProtoBuf.ProtoReader")], []))) ();
+    return ($S05 = JSIL.Memoize(new JSIL.MethodSignature($asm04.TypeRef("Fusee.Serialization.MaterialContainer"), [$asm04.TypeRef("Fusee.Serialization.MaterialContainer"), $asm07.TypeRef("ProtoBuf.ProtoReader")], []))) ();
   };
   var $S06 = function () {
-    return ($S06 = JSIL.Memoize(new JSIL.MethodSignature($asm04.TypeRef("Fusee.Serialization.SceneContainer"), [$asm04.TypeRef("Fusee.Serialization.SceneContainer"), $asm07.TypeRef("ProtoBuf.ProtoReader")], []))) ();
+    return ($S06 = JSIL.Memoize(new JSIL.MethodSignature($asm04.TypeRef("Fusee.Serialization.MeshContainer"), [$asm04.TypeRef("Fusee.Serialization.MeshContainer"), $asm07.TypeRef("ProtoBuf.ProtoReader")], []))) ();
   };
   var $S07 = function () {
-    return ($S07 = JSIL.Memoize(new JSIL.MethodSignature($asm04.TypeRef("Fusee.Serialization.SceneObjectContainer"), [$asm04.TypeRef("Fusee.Serialization.SceneObjectContainer"), $asm07.TypeRef("ProtoBuf.ProtoReader")], []))) ();
+    return ($S07 = JSIL.Memoize(new JSIL.MethodSignature($asm04.TypeRef("Fusee.Serialization.SceneContainer"), [$asm04.TypeRef("Fusee.Serialization.SceneContainer"), $asm07.TypeRef("ProtoBuf.ProtoReader")], []))) ();
   };
   var $S08 = function () {
-    return ($S08 = JSIL.Memoize(new JSIL.MethodSignature($asm06.TypeRef("System.Boolean"), [$asm06.TypeRef("System.Type"), $asm06.TypeRef("System.Type")], []))) ();
+    return ($S08 = JSIL.Memoize(new JSIL.MethodSignature($asm04.TypeRef("Fusee.Serialization.SceneObjectContainer"), [$asm04.TypeRef("Fusee.Serialization.SceneObjectContainer"), $asm07.TypeRef("ProtoBuf.ProtoReader")], []))) ();
   };
   var $S09 = function () {
-    return ($S09 = JSIL.Memoize(new JSIL.ConstructorSignature($asm06.TypeRef("System.Collections.Generic.List`1", [$asm06.TypeRef("System.UInt16")]), []))) ();
+    return ($S09 = JSIL.Memoize(new JSIL.MethodSignature($asm06.TypeRef("System.Boolean"), [$asm06.TypeRef("System.Type"), $asm06.TypeRef("System.Type")], []))) ();
   };
   var $S0A = function () {
-    return ($S0A = JSIL.Memoize(new JSIL.MethodSignature(null, [$asm06.TypeRef("System.UInt16")], []))) ();
+    return ($S0A = JSIL.Memoize(new JSIL.ConstructorSignature($asm06.TypeRef("System.Collections.Generic.List`1", [$asm06.TypeRef("System.UInt16")]), []))) ();
   };
   var $S0B = function () {
-    return ($S0B = JSIL.Memoize(new JSIL.ConstructorSignature($asm06.TypeRef("System.Collections.Generic.List`1", [$asm03.TypeRef("Fusee.Math.float2")]), []))) ();
+    return ($S0B = JSIL.Memoize(new JSIL.MethodSignature(null, [$asm06.TypeRef("System.UInt16")], []))) ();
   };
   var $S0C = function () {
-    return ($S0C = JSIL.Memoize(new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float2")], []))) ();
+    return ($S0C = JSIL.Memoize(new JSIL.ConstructorSignature($asm06.TypeRef("System.Collections.Generic.List`1", [$asm03.TypeRef("Fusee.Math.float2")]), []))) ();
   };
   var $S0D = function () {
-    return ($S0D = JSIL.Memoize(new JSIL.ConstructorSignature($asm06.TypeRef("System.Collections.Generic.List`1", [$asm03.TypeRef("Fusee.Math.float3")]), []))) ();
+    return ($S0D = JSIL.Memoize(new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float2")], []))) ();
   };
   var $S0E = function () {
-    return ($S0E = JSIL.Memoize(new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float3")], []))) ();
+    return ($S0E = JSIL.Memoize(new JSIL.ConstructorSignature($asm06.TypeRef("System.Collections.Generic.List`1", [$asm03.TypeRef("Fusee.Math.float3")]), []))) ();
   };
   var $S0F = function () {
-    return ($S0F = JSIL.Memoize(new JSIL.ConstructorSignature($asm06.TypeRef("System.Collections.Generic.List`1", [$asm04.TypeRef("Fusee.Serialization.SceneObjectContainer")]), []))) ();
+    return ($S0F = JSIL.Memoize(new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float3")], []))) ();
   };
   var $S10 = function () {
-    return ($S10 = JSIL.Memoize(new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Serialization.SceneObjectContainer")], []))) ();
+    return ($S10 = JSIL.Memoize(new JSIL.ConstructorSignature($asm06.TypeRef("System.Collections.Generic.List`1", [$asm04.TypeRef("Fusee.Serialization.SceneObjectContainer")]), []))) ();
   };
   var $S11 = function () {
-    return ($S11 = JSIL.Memoize(new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Serialization.MeshContainer"), $asm07.TypeRef("ProtoBuf.ProtoWriter")], []))) ();
+    return ($S11 = JSIL.Memoize(new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Serialization.SceneObjectContainer")], []))) ();
   };
   var $S12 = function () {
-    return ($S12 = JSIL.Memoize(new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Serialization.SceneContainer"), $asm07.TypeRef("ProtoBuf.ProtoWriter")], []))) ();
+    return ($S12 = JSIL.Memoize(new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Serialization.MaterialContainer"), $asm07.TypeRef("ProtoBuf.ProtoWriter")], []))) ();
   };
   var $S13 = function () {
-    return ($S13 = JSIL.Memoize(new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Serialization.SceneHeader"), $asm07.TypeRef("ProtoBuf.ProtoWriter")], []))) ();
+    return ($S13 = JSIL.Memoize(new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Serialization.MeshContainer"), $asm07.TypeRef("ProtoBuf.ProtoWriter")], []))) ();
   };
   var $S14 = function () {
-    return ($S14 = JSIL.Memoize(new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Serialization.SceneObjectContainer"), $asm07.TypeRef("ProtoBuf.ProtoWriter")], []))) ();
+    return ($S14 = JSIL.Memoize(new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Serialization.SceneContainer"), $asm07.TypeRef("ProtoBuf.ProtoWriter")], []))) ();
   };
   var $S15 = function () {
-    return ($S15 = JSIL.Memoize(new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float3"), $asm07.TypeRef("ProtoBuf.ProtoWriter")], []))) ();
+    return ($S15 = JSIL.Memoize(new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Serialization.SceneHeader"), $asm07.TypeRef("ProtoBuf.ProtoWriter")], []))) ();
   };
   var $S16 = function () {
-    return ($S16 = JSIL.Memoize(new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float2"), $asm07.TypeRef("ProtoBuf.ProtoWriter")], []))) ();
+    return ($S16 = JSIL.Memoize(new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Serialization.SceneObjectContainer"), $asm07.TypeRef("ProtoBuf.ProtoWriter")], []))) ();
   };
   var $S17 = function () {
-    return ($S17 = JSIL.Memoize(new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float4x4"), $asm07.TypeRef("ProtoBuf.ProtoWriter")], []))) ();
+    return ($S17 = JSIL.Memoize(new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float3"), $asm07.TypeRef("ProtoBuf.ProtoWriter")], []))) ();
   };
   var $S18 = function () {
-    return ($S18 = JSIL.Memoize(new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float4"), $asm07.TypeRef("ProtoBuf.ProtoWriter")], []))) ();
+    return ($S18 = JSIL.Memoize(new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float2"), $asm07.TypeRef("ProtoBuf.ProtoWriter")], []))) ();
+  };
+  var $S19 = function () {
+    return ($S19 = JSIL.Memoize(new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float4x4"), $asm07.TypeRef("ProtoBuf.ProtoWriter")], []))) ();
+  };
+  var $S1A = function () {
+    return ($S1A = JSIL.Memoize(new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float4"), $asm07.TypeRef("ProtoBuf.ProtoWriter")], []))) ();
   };
 
   function Serializer__ctor () {
-    $T09().prototype._ctor.call(this);
+    $T0A().prototype._ctor.call(this);
   };
 
-  function Serializer__2 (obj, protoReader) {
+  function Serializer__3 (obj, protoReader) {
     if (obj !== null) {
-      return $S00().CallStatic($thisType, "Read", null, $T03().$Cast(obj), protoReader);
+      return $S00().CallStatic($thisType, "Read", null, $T04().$Cast(obj), protoReader);
     }
-    return $S00().CallStatic($thisType, "Read", null, new ($T03())(), protoReader);
-  };
-
-  function Serializer__4 (obj, protoReader) {
-    if (obj !== null) {
-      return $S01().CallStatic($thisType, "Read", null, $T05().$Cast(obj), protoReader);
-    }
-    return $S01().CallStatic($thisType, "Read", null, new ($T05())(), protoReader);
+    return $S00().CallStatic($thisType, "Read", null, new ($T04())(), protoReader);
   };
 
   function Serializer__5 (obj, protoReader) {
     if (obj !== null) {
-      return $S02().CallStatic($thisType, "Read", null, $T06().$Cast(obj), protoReader);
+      return $S01().CallStatic($thisType, "Read", null, $T06().$Cast(obj), protoReader);
     }
-    return $S02().CallStatic($thisType, "Read", null, new ($T06())(), protoReader);
+    return $S01().CallStatic($thisType, "Read", null, new ($T06())(), protoReader);
   };
 
   function Serializer__6 (obj, protoReader) {
     if (obj !== null) {
-      return $S03().CallStatic($thisType, "Read", null, $T07().$Cast(obj), protoReader);
+      return $S02().CallStatic($thisType, "Read", null, $T07().$Cast(obj), protoReader);
     }
-    return $S03().CallStatic($thisType, "Read", null, new ($T07())(), protoReader);
+    return $S02().CallStatic($thisType, "Read", null, new ($T07())(), protoReader);
   };
 
   function Serializer__7 (obj, protoReader) {
     if (obj !== null) {
-      return $S04().CallStatic($thisType, "Read", null, $T08().$Cast(obj), protoReader);
+      return $S03().CallStatic($thisType, "Read", null, $T08().$Cast(obj), protoReader);
     }
-    return $S04().CallStatic($thisType, "Read", null, new ($T08())(), protoReader);
+    return $S03().CallStatic($thisType, "Read", null, new ($T08())(), protoReader);
+  };
+
+  function Serializer__8 (obj, protoReader) {
+    if (obj !== null) {
+      return $S04().CallStatic($thisType, "Read", null, $T09().$Cast(obj), protoReader);
+    }
+    return $S04().CallStatic($thisType, "Read", null, new ($T09())(), protoReader);
   };
 
   function Serializer_Deserialize (num, obj, protoReader) {
@@ -218,13 +230,13 @@ JSIL.DeclareNamespace("Fusee.Serialization");
         return $S06().CallStatic($thisType, "Read", null, $T02().$Cast(obj), protoReader);
 
       case 2: 
-        return $thisType._2(obj, protoReader);
+        return $S07().CallStatic($thisType, "Read", null, $T03().$Cast(obj), protoReader);
 
       case 3: 
-        return $S07().CallStatic($thisType, "Read", null, $T04().$Cast(obj), protoReader);
+        return $thisType._3(obj, protoReader);
 
       case 4: 
-        return $thisType._4(obj, protoReader);
+        return $S08().CallStatic($thisType, "Read", null, $T05().$Cast(obj), protoReader);
 
       case 5: 
         return $thisType._5(obj, protoReader);
@@ -234,6 +246,9 @@ JSIL.DeclareNamespace("Fusee.Serialization");
 
       case 7: 
         return $thisType._7(obj, protoReader);
+
+      case 8: 
+        return $thisType._8(obj, protoReader);
 
       default: 
         return null;
@@ -246,7 +261,7 @@ JSIL.DeclareNamespace("Fusee.Serialization");
 
   $loop0: 
     for (var i = 0; i < $thisType.knownTypes.length; i = ((i + 1) | 0)) {
-      if ($S08().CallStatic($T00(), "op_Equality", null, $thisType.knownTypes[i], right)) {
+      if ($S09().CallStatic($T00(), "op_Equality", null, $thisType.knownTypes[i], right)) {
         result = i;
         break $loop0;
       }
@@ -254,7 +269,95 @@ JSIL.DeclareNamespace("Fusee.Serialization");
     return result;
   };
 
-  function Serializer_Read$00 (meshContainer, protoReader) {
+  function Serializer_Read$00 (materialContainer, protoReader) {
+
+    for (var num = 0; (num = protoReader.ReadFieldHeader()) > 0; ) {
+      if (num !== 1) {
+        if (num !== 2) {
+          if (num !== 3) {
+            if (num !== 4) {
+              if (num !== 5) {
+                if (num !== 6) {
+                  if (materialContainer === null) {
+                    var expr_161 = new ($T01())();
+                    $T0C().NoteObject(expr_161, protoReader);
+                    materialContainer = expr_161;
+                  }
+                  protoReader.SkipField();
+                } else {
+                  if (materialContainer === null) {
+                    var expr_138 = new ($T01())();
+                    $T0C().NoteObject(expr_138, protoReader);
+                    materialContainer = expr_138;
+                  }
+                  var num2 = +protoReader.ReadSingle();
+                  materialContainer.SpecularShininess = +num2;
+                }
+              } else {
+                if (materialContainer === null) {
+                  var expr_106 = new ($T01())();
+                  $T0C().NoteObject(expr_106, protoReader);
+                  materialContainer = expr_106;
+                }
+                num2 = +protoReader.ReadSingle();
+                materialContainer.SpecularIntensity = +num2;
+              }
+            } else {
+              if (materialContainer === null) {
+                var expr_C2 = new ($T01())();
+                $T0C().NoteObject(expr_C2, protoReader);
+                materialContainer = expr_C2;
+              }
+              var arg_D9_0 = materialContainer.SpecularColor.MemberwiseClone();
+              var token = $T0C().StartSubItem(protoReader);
+              var arg_E5_0 = $S01().CallStatic($thisType, "Read", null, arg_D9_0, protoReader).MemberwiseClone();
+              $T0C().EndSubItem(token, protoReader);
+              var float = arg_E5_0.MemberwiseClone();
+              materialContainer.SpecularColor = float.MemberwiseClone();
+            }
+          } else {
+            if (materialContainer === null) {
+              var expr_90 = new ($T01())();
+              $T0C().NoteObject(expr_90, protoReader);
+              materialContainer = expr_90;
+            }
+            var hasSpecular = protoReader.ReadBoolean();
+            materialContainer.HasSpecular = hasSpecular;
+          }
+        } else {
+          if (materialContainer === null) {
+            var expr_5D = new ($T01())();
+            $T0C().NoteObject(expr_5D, protoReader);
+            materialContainer = expr_5D;
+          }
+          var text = protoReader.ReadString();
+          if (text !== null) {
+            materialContainer.DiffuseTexure = text;
+          }
+        }
+      } else {
+        if (materialContainer === null) {
+          var expr_19 = new ($T01())();
+          $T0C().NoteObject(expr_19, protoReader);
+          materialContainer = expr_19;
+        }
+        var arg_30_0 = materialContainer.DiffuseColor.MemberwiseClone();
+        token = $T0C().StartSubItem(protoReader);
+        var arg_3C_0 = $S01().CallStatic($thisType, "Read", null, arg_30_0, protoReader).MemberwiseClone();
+        $T0C().EndSubItem(token, protoReader);
+        float = arg_3C_0.MemberwiseClone();
+        materialContainer.DiffuseColor = float.MemberwiseClone();
+      }
+    }
+    if (materialContainer === null) {
+      var expr_189 = new ($T01())();
+      $T0C().NoteObject(expr_189, protoReader);
+      materialContainer = expr_189;
+    }
+    return materialContainer;
+  };
+
+  function Serializer_Read$01 (meshContainer, protoReader) {
 
     for (var num = 0; (num = protoReader.ReadFieldHeader()) > 0; ) {
       if (num !== 1) {
@@ -262,34 +365,34 @@ JSIL.DeclareNamespace("Fusee.Serialization");
           if (num !== 3) {
             if (num !== 4) {
               if (meshContainer === null) {
-                var expr_2E1 = new ($T01())();
-                $T0B().NoteObject(expr_2E1, protoReader);
+                var expr_2E1 = new ($T02())();
+                $T0C().NoteObject(expr_2E1, protoReader);
                 meshContainer = expr_2E1;
               }
               protoReader.SkipField();
             } else {
               if (meshContainer === null) {
-                var expr_216 = new ($T01())();
-                $T0B().NoteObject(expr_216, protoReader);
+                var expr_216 = new ($T02())();
+                $T0C().NoteObject(expr_216, protoReader);
                 meshContainer = expr_216;
               }
               var triangles = meshContainer.Triangles;
-              var list = $S09().Construct();
-              if (protoReader.get_WireType() !== $T10().String) {
+              var list = $S0A().Construct();
+              if (protoReader.get_WireType() !== $T15().String) {
                 var num2 = protoReader.get_FieldNumber();
 
                 do {
-                  $S0A().CallVirtual("Add", null, list, protoReader.ReadUInt16());
+                  $S0B().CallVirtual("Add", null, list, protoReader.ReadUInt16());
                 } while (protoReader.TryReadFieldHeader(num2));
               } else {
-                var arg_286_0 = $T0B().StartSubItem(protoReader);
+                var arg_286_0 = $T0C().StartSubItem(protoReader);
 
-                while ($T0B().HasSubValue($T10().Variant, protoReader)) {
-                  $S0A().CallVirtual("Add", null, list, protoReader.ReadUInt16());
+                while ($T0C().HasSubValue($T15().Variant, protoReader)) {
+                  $S0B().CallVirtual("Add", null, list, protoReader.ReadUInt16());
                 }
-                $T0B().EndSubItem(arg_286_0, protoReader);
+                $T0C().EndSubItem(arg_286_0, protoReader);
               }
-              var array = JSIL.Array.New($T12(), (((num2 = ((triangles !== null) ? triangles.length : 0)) + list.get_Count()) | 0));
+              var array = JSIL.Array.New($T16(), (((num2 = ((triangles !== null) ? triangles.length : 0)) + list.get_Count()) | 0));
               if (num2 !== 0) {
                 JSIL.Array.CopyTo(triangles, array, 0);
               }
@@ -301,22 +404,22 @@ JSIL.DeclareNamespace("Fusee.Serialization");
             }
           } else {
             if (meshContainer === null) {
-              var expr_163 = new ($T01())();
-              $T0B().NoteObject(expr_163, protoReader);
+              var expr_163 = new ($T02())();
+              $T0C().NoteObject(expr_163, protoReader);
               meshContainer = expr_163;
             }
             var uVs = meshContainer.UVs;
-            var list2 = $S0B().Construct();
+            var list2 = $S0C().Construct();
             num2 = protoReader.get_FieldNumber();
 
             do {
-              var arg_198_0 = new ($T06())();
-              var token = $T0B().StartSubItem(protoReader);
+              var arg_198_0 = new ($T07())();
+              var token = $T0C().StartSubItem(protoReader);
               var arg_1A5_1 = $S02().CallStatic($thisType, "Read", null, arg_198_0, protoReader).MemberwiseClone();
-              $T0B().EndSubItem(token, protoReader);
-              $S0C().CallVirtual("Add", null, list2, arg_1A5_1.MemberwiseClone());
+              $T0C().EndSubItem(token, protoReader);
+              $S0D().CallVirtual("Add", null, list2, arg_1A5_1.MemberwiseClone());
             } while (protoReader.TryReadFieldHeader(num2));
-            var array2 = JSIL.Array.New($T06(), (((num2 = ((uVs !== null) ? uVs.length : 0)) + list2.get_Count()) | 0));
+            var array2 = JSIL.Array.New($T07(), (((num2 = ((uVs !== null) ? uVs.length : 0)) + list2.get_Count()) | 0));
             if (num2 !== 0) {
               JSIL.Array.CopyTo(uVs, array2, 0);
             }
@@ -328,24 +431,24 @@ JSIL.DeclareNamespace("Fusee.Serialization");
           }
         } else {
           if (meshContainer === null) {
-            var expr_BE = new ($T01())();
-            $T0B().NoteObject(expr_BE, protoReader);
+            var expr_BE = new ($T02())();
+            $T0C().NoteObject(expr_BE, protoReader);
             meshContainer = expr_BE;
           }
           var array3 = meshContainer.Normals;
-          var list3 = $S0D().Construct();
+          var list3 = $S0E().Construct();
           num2 = protoReader.get_FieldNumber();
 
           do {
             var arg_FD_0 = list3;
-            var arg_F0_0 = new ($T05())();
-            token = $T0B().StartSubItem(protoReader);
+            var arg_F0_0 = new ($T06())();
+            token = $T0C().StartSubItem(protoReader);
             var arg_FD_1 = $S01().CallStatic($thisType, "Read", null, arg_F0_0, protoReader).MemberwiseClone();
-            $T0B().EndSubItem(token, protoReader);
-            $S0E().CallVirtual("Add", null, arg_FD_0, arg_FD_1.MemberwiseClone());
+            $T0C().EndSubItem(token, protoReader);
+            $S0F().CallVirtual("Add", null, arg_FD_0, arg_FD_1.MemberwiseClone());
           } while (protoReader.TryReadFieldHeader(num2));
           var expr_110 = array3;
-          var array4 = JSIL.Array.New($T05(), (((num2 = ((expr_110 !== null) ? expr_110.length : 0)) + list3.get_Count()) | 0));
+          var array4 = JSIL.Array.New($T06(), (((num2 = ((expr_110 !== null) ? expr_110.length : 0)) + list3.get_Count()) | 0));
           if (num2 !== 0) {
             JSIL.Array.CopyTo(array3, array4, 0);
           }
@@ -357,24 +460,24 @@ JSIL.DeclareNamespace("Fusee.Serialization");
         }
       } else {
         if (meshContainer === null) {
-          var expr_19 = new ($T01())();
-          $T0B().NoteObject(expr_19, protoReader);
+          var expr_19 = new ($T02())();
+          $T0C().NoteObject(expr_19, protoReader);
           meshContainer = expr_19;
         }
         array4 = meshContainer.Vertices;
-        list3 = $S0D().Construct();
+        list3 = $S0E().Construct();
         num2 = protoReader.get_FieldNumber();
 
         do {
           var arg_58_0 = list3;
-          var arg_4B_0 = new ($T05())();
-          token = $T0B().StartSubItem(protoReader);
+          var arg_4B_0 = new ($T06())();
+          token = $T0C().StartSubItem(protoReader);
           var arg_58_1 = $S01().CallStatic($thisType, "Read", null, arg_4B_0, protoReader).MemberwiseClone();
-          $T0B().EndSubItem(token, protoReader);
-          $S0E().CallVirtual("Add", null, arg_58_0, arg_58_1.MemberwiseClone());
+          $T0C().EndSubItem(token, protoReader);
+          $S0F().CallVirtual("Add", null, arg_58_0, arg_58_1.MemberwiseClone());
         } while (protoReader.TryReadFieldHeader(num2));
         var expr_6B = array4;
-        array3 = JSIL.Array.New($T05(), (((num2 = ((expr_6B !== null) ? expr_6B.length : 0)) + list3.get_Count()) | 0));
+        array3 = JSIL.Array.New($T06(), (((num2 = ((expr_6B !== null) ? expr_6B.length : 0)) + list3.get_Count()) | 0));
         if (num2 !== 0) {
           JSIL.Array.CopyTo(array4, array3, 0);
         }
@@ -386,44 +489,44 @@ JSIL.DeclareNamespace("Fusee.Serialization");
       }
     }
     if (meshContainer === null) {
-      var expr_309 = new ($T01())();
-      $T0B().NoteObject(expr_309, protoReader);
+      var expr_309 = new ($T02())();
+      $T0C().NoteObject(expr_309, protoReader);
       meshContainer = expr_309;
     }
     return meshContainer;
   };
 
-  function Serializer_Read$01 (sceneContainer, protoReader) {
+  function Serializer_Read$02 (sceneContainer, protoReader) {
 
     for (var num = 0; (num = protoReader.ReadFieldHeader()) > 0; ) {
       if (num !== 1) {
         if (num !== 2) {
           if (sceneContainer === null) {
-            var expr_D8 = new ($T02())();
-            $T0B().NoteObject(expr_D8, protoReader);
+            var expr_D8 = new ($T03())();
+            $T0C().NoteObject(expr_D8, protoReader);
             sceneContainer = expr_D8;
           }
           protoReader.SkipField();
         } else {
           if (sceneContainer === null) {
-            var expr_5D = new ($T02())();
-            $T0B().NoteObject(expr_5D, protoReader);
+            var expr_5D = new ($T03())();
+            $T0C().NoteObject(expr_5D, protoReader);
             sceneContainer = expr_5D;
           }
           var list = sceneContainer.Children;
           var list2 = list;
           if (list === null) {
-            list = $S0F().Construct();
+            list = $S10().Construct();
           }
           var fieldNumber = protoReader.get_FieldNumber();
 
           do {
-            $S10().CallVirtual("Add", null, list, $T04().$Cast($T18().ReadNetObject(
+            $S11().CallVirtual("Add", null, list, $T05().$Cast($T1C().ReadNetObject(
                   null, 
                   protoReader, 
-                  3, 
-                  $T04().__Type__, 
-                  $T19().$Flags("AsReference", "UseConstructor")
+                  4, 
+                  $T05().__Type__, 
+                  $T1D().$Flags("AsReference", "UseConstructor")
                 )));
           } while (protoReader.TryReadFieldHeader(fieldNumber));
           list2 = ((list2 === list) ? null : list);
@@ -433,27 +536,27 @@ JSIL.DeclareNamespace("Fusee.Serialization");
         }
       } else {
         if (sceneContainer === null) {
-          var expr_19 = new ($T02())();
-          $T0B().NoteObject(expr_19, protoReader);
+          var expr_19 = new ($T03())();
+          $T0C().NoteObject(expr_19, protoReader);
           sceneContainer = expr_19;
         }
         var arg_30_0 = sceneContainer.Header.MemberwiseClone();
-        var token = $T0B().StartSubItem(protoReader);
+        var token = $T0C().StartSubItem(protoReader);
         var arg_3C_0 = $S00().CallStatic($thisType, "Read", null, arg_30_0, protoReader).MemberwiseClone();
-        $T0B().EndSubItem(token, protoReader);
+        $T0C().EndSubItem(token, protoReader);
         var header = arg_3C_0;
         sceneContainer.Header = header.MemberwiseClone();
       }
     }
     if (sceneContainer === null) {
-      var expr_100 = new ($T02())();
-      $T0B().NoteObject(expr_100, protoReader);
+      var expr_100 = new ($T03())();
+      $T0C().NoteObject(expr_100, protoReader);
       sceneContainer = expr_100;
     }
     return sceneContainer;
   };
 
-  function Serializer_Read$02 (result, protoReader) {
+  function Serializer_Read$03 (result, protoReader) {
 
     for (var num = 0; (num = protoReader.ReadFieldHeader()) > 0; ) {
       if (num !== 1) {
@@ -480,7 +583,7 @@ JSIL.DeclareNamespace("Fusee.Serialization");
     return result;
   };
 
-  function Serializer_Read$03 (sceneObjectContainer, protoReader) {
+  function Serializer_Read$04 (sceneObjectContainer, protoReader) {
 
     for (var num = 0; (num = protoReader.ReadFieldHeader()) > 0; ) {
       if (num !== 1) {
@@ -489,85 +592,87 @@ JSIL.DeclareNamespace("Fusee.Serialization");
             if (num !== 4) {
               if (num !== 5) {
                 if (sceneObjectContainer === null) {
-                  var expr_1AA = new ($T04())();
-                  $T0B().NoteObject(expr_1AA, protoReader);
-                  sceneObjectContainer = expr_1AA;
+                  var expr_1AE = new ($T05())();
+                  $T0C().NoteObject(expr_1AE, protoReader);
+                  sceneObjectContainer = expr_1AE;
                 }
                 protoReader.SkipField();
               } else {
                 if (sceneObjectContainer === null) {
-                  var expr_16D = new ($T04())();
-                  $T0B().NoteObject(expr_16D, protoReader);
-                  sceneObjectContainer = expr_16D;
+                  var expr_12C = new ($T05())();
+                  $T0C().NoteObject(expr_12C, protoReader);
+                  sceneObjectContainer = expr_12C;
                 }
-                var arg_184_0 = sceneObjectContainer.Color.MemberwiseClone();
-                var token = $T0B().StartSubItem(protoReader);
-                var arg_190_0 = $S01().CallStatic($thisType, "Read", null, arg_184_0, protoReader).MemberwiseClone();
-                $T0B().EndSubItem(token, protoReader);
-                var color = arg_190_0;
-                sceneObjectContainer.Color = color.MemberwiseClone();
+                var list = sceneObjectContainer.Children;
+                var list2 = list;
+                if (list === null) {
+                  list = $S10().Construct();
+                }
+                var fieldNumber = protoReader.get_FieldNumber();
+
+                do {
+                  $S11().CallVirtual("Add", null, list, $T05().$Cast($T1C().ReadNetObject(
+                        null, 
+                        protoReader, 
+                        4, 
+                        $T05().__Type__, 
+                        $T1D().$Flags("AsReference", "UseConstructor")
+                      )));
+                } while (protoReader.TryReadFieldHeader(fieldNumber));
+                list2 = ((list2 === list) ? null : list);
+                if (list2 !== null) {
+                  sceneObjectContainer.Children = list2;
+                }
               }
             } else {
               if (sceneObjectContainer === null) {
-                var expr_E2 = new ($T04())();
-                $T0B().NoteObject(expr_E2, protoReader);
-                sceneObjectContainer = expr_E2;
+                var expr_DA = new ($T05())();
+                $T0C().NoteObject(expr_DA, protoReader);
+                sceneObjectContainer = expr_DA;
               }
-              var list = sceneObjectContainer.Children;
-              var list2 = list;
-              if (list === null) {
-                list = $S0F().Construct();
-              }
-              var fieldNumber = protoReader.get_FieldNumber();
-
-              do {
-                $S10().CallVirtual("Add", null, list, $T04().$Cast($T18().ReadNetObject(
-                      null, 
-                      protoReader, 
-                      3, 
-                      $T04().__Type__, 
-                      $T19().$Flags("AsReference", "UseConstructor")
-                    )));
-              } while (protoReader.TryReadFieldHeader(fieldNumber));
-              list2 = ((list2 === list) ? null : list);
-              if (list2 !== null) {
-                sceneObjectContainer.Children = list2;
+              var meshContainer = $T02().$Cast($T1C().ReadNetObject(
+                  $T0B().$Cast(sceneObjectContainer.Mesh), 
+                  protoReader, 
+                  1, 
+                  $T02().__Type__, 
+                  $T1D().$Flags("AsReference", "UseConstructor")
+                ));
+              if (meshContainer !== null) {
+                sceneObjectContainer.Mesh = meshContainer;
               }
             }
           } else {
             if (sceneObjectContainer === null) {
-              var expr_90 = new ($T04())();
-              $T0B().NoteObject(expr_90, protoReader);
+              var expr_90 = new ($T05())();
+              $T0C().NoteObject(expr_90, protoReader);
               sceneObjectContainer = expr_90;
             }
-            var meshContainer = $T01().$Cast($T18().ReadNetObject(
-                $T0A().$Cast(sceneObjectContainer.Mesh), 
-                protoReader, 
-                0, 
-                $T01().__Type__, 
-                $T19().$Flags("AsReference", "UseConstructor")
-              ));
-            if (meshContainer !== null) {
-              sceneObjectContainer.Mesh = meshContainer;
+            var arg_A7_0 = sceneObjectContainer.Material;
+            var token = $T0C().StartSubItem(protoReader);
+            var arg_B3_0 = $S05().CallStatic($thisType, "Read", null, arg_A7_0, protoReader);
+            $T0C().EndSubItem(token, protoReader);
+            var materialContainer = arg_B3_0;
+            if (materialContainer !== null) {
+              sceneObjectContainer.Material = materialContainer;
             }
           }
         } else {
           if (sceneObjectContainer === null) {
-            var expr_4C = new ($T04())();
-            $T0B().NoteObject(expr_4C, protoReader);
+            var expr_4C = new ($T05())();
+            $T0C().NoteObject(expr_4C, protoReader);
             sceneObjectContainer = expr_4C;
           }
           var arg_63_0 = sceneObjectContainer.Transform.MemberwiseClone();
-          token = $T0B().StartSubItem(protoReader);
+          token = $T0C().StartSubItem(protoReader);
           var arg_6F_0 = $S03().CallStatic($thisType, "Read", null, arg_63_0, protoReader).MemberwiseClone();
-          $T0B().EndSubItem(token, protoReader);
+          $T0C().EndSubItem(token, protoReader);
           var transform = arg_6F_0;
           sceneObjectContainer.Transform = transform.MemberwiseClone();
         }
       } else {
         if (sceneObjectContainer === null) {
-          var expr_19 = new ($T04())();
-          $T0B().NoteObject(expr_19, protoReader);
+          var expr_19 = new ($T05())();
+          $T0C().NoteObject(expr_19, protoReader);
           sceneObjectContainer = expr_19;
         }
         var text = protoReader.ReadString();
@@ -577,14 +682,14 @@ JSIL.DeclareNamespace("Fusee.Serialization");
       }
     }
     if (sceneObjectContainer === null) {
-      var expr_1D2 = new ($T04())();
-      $T0B().NoteObject(expr_1D2, protoReader);
-      sceneObjectContainer = expr_1D2;
+      var expr_1D6 = new ($T05())();
+      $T0C().NoteObject(expr_1D6, protoReader);
+      sceneObjectContainer = expr_1D6;
     }
     return sceneObjectContainer;
   };
 
-  function Serializer_Read$04 (result, protoReader) {
+  function Serializer_Read$05 (result, protoReader) {
 
     for (var num = 0; (num = protoReader.ReadFieldHeader()) > 0; ) {
       if (num !== 1) {
@@ -607,7 +712,7 @@ JSIL.DeclareNamespace("Fusee.Serialization");
     return result;
   };
 
-  function Serializer_Read$05 (result, protoReader) {
+  function Serializer_Read$06 (result, protoReader) {
 
     for (var num = 0; (num = protoReader.ReadFieldHeader()) > 0; ) {
       if (num !== 1) {
@@ -625,7 +730,7 @@ JSIL.DeclareNamespace("Fusee.Serialization");
     return result;
   };
 
-  function Serializer_Read$06 (result, protoReader) {
+  function Serializer_Read$07 (result, protoReader) {
 
     for (var num = 0; (num = protoReader.ReadFieldHeader()) > 0; ) {
       if (num !== 1) {
@@ -635,33 +740,33 @@ JSIL.DeclareNamespace("Fusee.Serialization");
               protoReader.SkipField();
             } else {
               var arg_B3_0 = result.Row3.MemberwiseClone();
-              var token = $T0B().StartSubItem(protoReader);
+              var token = $T0C().StartSubItem(protoReader);
               var arg_BF_0 = $S04().CallStatic($thisType, "Read", null, arg_B3_0, protoReader).MemberwiseClone();
-              $T0B().EndSubItem(token, protoReader);
+              $T0C().EndSubItem(token, protoReader);
               var float = arg_BF_0.MemberwiseClone();
               result.Row3 = float.MemberwiseClone();
             }
           } else {
             var arg_81_0 = result.Row2.MemberwiseClone();
-            token = $T0B().StartSubItem(protoReader);
+            token = $T0C().StartSubItem(protoReader);
             var arg_8D_0 = $S04().CallStatic($thisType, "Read", null, arg_81_0, protoReader).MemberwiseClone();
-            $T0B().EndSubItem(token, protoReader);
+            $T0C().EndSubItem(token, protoReader);
             float = arg_8D_0.MemberwiseClone();
             result.Row2 = float.MemberwiseClone();
           }
         } else {
           var arg_4F_0 = result.Row1.MemberwiseClone();
-          token = $T0B().StartSubItem(protoReader);
+          token = $T0C().StartSubItem(protoReader);
           var arg_5B_0 = $S04().CallStatic($thisType, "Read", null, arg_4F_0, protoReader).MemberwiseClone();
-          $T0B().EndSubItem(token, protoReader);
+          $T0C().EndSubItem(token, protoReader);
           float = arg_5B_0.MemberwiseClone();
           result.Row1 = float.MemberwiseClone();
         }
       } else {
         var arg_1D_0 = result.Row0.MemberwiseClone();
-        token = $T0B().StartSubItem(protoReader);
+        token = $T0C().StartSubItem(protoReader);
         var arg_29_0 = $S04().CallStatic($thisType, "Read", null, arg_1D_0, protoReader).MemberwiseClone();
-        $T0B().EndSubItem(token, protoReader);
+        $T0C().EndSubItem(token, protoReader);
         float = arg_29_0.MemberwiseClone();
         result.Row0 = float.MemberwiseClone();
       }
@@ -669,7 +774,7 @@ JSIL.DeclareNamespace("Fusee.Serialization");
     return result;
   };
 
-  function Serializer_Read$07 (result, protoReader) {
+  function Serializer_Read$08 (result, protoReader) {
 
     for (var num = 0; (num = protoReader.ReadFieldHeader()) > 0; ) {
       if (num !== 1) {
@@ -700,35 +805,39 @@ JSIL.DeclareNamespace("Fusee.Serialization");
   function Serializer_Serialize (num, obj, protoWriter) {
     switch (num) {
       case 0: 
-        $S11().CallStatic($thisType, "Write", null, $T01().$Cast(obj), protoWriter);
+        $S12().CallStatic($thisType, "Write", null, $T01().$Cast(obj), protoWriter);
         return;
 
       case 1: 
-        $S12().CallStatic($thisType, "Write", null, $T02().$Cast(obj), protoWriter);
+        $S13().CallStatic($thisType, "Write", null, $T02().$Cast(obj), protoWriter);
         return;
 
       case 2: 
-        $S13().CallStatic($thisType, "Write", null, $T03().$Cast(obj), protoWriter);
+        $S14().CallStatic($thisType, "Write", null, $T03().$Cast(obj), protoWriter);
         return;
 
       case 3: 
-        $S14().CallStatic($thisType, "Write", null, $T04().$Cast(obj), protoWriter);
+        $S15().CallStatic($thisType, "Write", null, $T04().$Cast(obj), protoWriter);
         return;
 
       case 4: 
-        $S15().CallStatic($thisType, "Write", null, $T05().$Cast(obj), protoWriter);
+        $S16().CallStatic($thisType, "Write", null, $T05().$Cast(obj), protoWriter);
         return;
 
       case 5: 
-        $S16().CallStatic($thisType, "Write", null, $T06().$Cast(obj), protoWriter);
+        $S17().CallStatic($thisType, "Write", null, $T06().$Cast(obj), protoWriter);
         return;
 
       case 6: 
-        $S17().CallStatic($thisType, "Write", null, $T07().$Cast(obj), protoWriter);
+        $S18().CallStatic($thisType, "Write", null, $T07().$Cast(obj), protoWriter);
         return;
 
       case 7: 
-        $S18().CallStatic($thisType, "Write", null, $T08().$Cast(obj), protoWriter);
+        $S19().CallStatic($thisType, "Write", null, $T08().$Cast(obj), protoWriter);
+        return;
+
+      case 8: 
+        $S1A().CallStatic($thisType, "Write", null, $T09().$Cast(obj), protoWriter);
         return;
 
       default: 
@@ -737,9 +846,45 @@ JSIL.DeclareNamespace("Fusee.Serialization");
     }
   };
 
-  function Serializer_Write$08 (meshContainer, protoWriter) {
-    if (JSIL.GetType(meshContainer) !== $T01().__Type__) {
-      $T09().ThrowUnexpectedSubtype($T01().__Type__, JSIL.GetType(meshContainer));
+  function Serializer_Write$09 (materialContainer, protoWriter) {
+    if (JSIL.GetType(materialContainer) !== $T01().__Type__) {
+      $T0A().ThrowUnexpectedSubtype($T01().__Type__, JSIL.GetType(materialContainer));
+    }
+    var arg_3E_0 = materialContainer.DiffuseColor.MemberwiseClone();
+    $T1E().WriteFieldHeader(1, $T15().String, protoWriter);
+    var token = $T1E().StartSubItem(null, protoWriter);
+    $S17().CallStatic($thisType, "Write", null, arg_3E_0, protoWriter);
+    $T1E().EndSubItem(token, protoWriter);
+    var expr_50 = materialContainer.DiffuseTexure;
+    if (expr_50 !== null) {
+      $T1E().WriteFieldHeader(2, $T15().String, protoWriter);
+      $T1E().WriteString(expr_50, protoWriter);
+    }
+    var expr_6D = materialContainer.HasSpecular;
+    if (expr_6D) {
+      $T1E().WriteFieldHeader(3, $T15().Variant, protoWriter);
+      $T1E().WriteBoolean(expr_6D, protoWriter);
+    }
+    var arg_9B_0 = materialContainer.SpecularColor.MemberwiseClone();
+    $T1E().WriteFieldHeader(4, $T15().String, protoWriter);
+    token = $T1E().StartSubItem(null, protoWriter);
+    $S17().CallStatic($thisType, "Write", null, arg_9B_0, protoWriter);
+    $T1E().EndSubItem(token, protoWriter);
+    var expr_AD = +materialContainer.SpecularIntensity;
+    if (expr_AD !== 0) {
+      $T1E().WriteFieldHeader(5, $T15().Fixed32, protoWriter);
+      $T1E().WriteSingle(expr_AD, protoWriter);
+    }
+    var expr_CF = +materialContainer.SpecularShininess;
+    if (expr_CF !== 0) {
+      $T1E().WriteFieldHeader(6, $T15().Fixed32, protoWriter);
+      $T1E().WriteSingle(expr_CF, protoWriter);
+    }
+  };
+
+  function Serializer_Write$0A (meshContainer, protoWriter) {
+    if (JSIL.GetType(meshContainer) !== $T02().__Type__) {
+      $T0A().ThrowUnexpectedSubtype($T02().__Type__, JSIL.GetType(meshContainer));
     }
     var expr_2D = meshContainer.Vertices;
     if (expr_2D !== null) {
@@ -747,10 +892,10 @@ JSIL.DeclareNamespace("Fusee.Serialization");
 
       for (var i = 0; i < array.length; i = ((i + 1) | 0)) {
         var arg_5B_0 = array[i].MemberwiseClone();
-        $T1C().WriteFieldHeader(1, $T10().String, protoWriter);
-        var token = $T1C().StartSubItem(null, protoWriter);
-        $S15().CallStatic($thisType, "Write", null, arg_5B_0, protoWriter);
-        $T1C().EndSubItem(token, protoWriter);
+        $T1E().WriteFieldHeader(1, $T15().String, protoWriter);
+        var token = $T1E().StartSubItem(null, protoWriter);
+        $S17().CallStatic($thisType, "Write", null, arg_5B_0, protoWriter);
+        $T1E().EndSubItem(token, protoWriter);
       }
     }
     var expr_7A = meshContainer.Normals;
@@ -759,10 +904,10 @@ JSIL.DeclareNamespace("Fusee.Serialization");
 
       for (i = 0; i < array.length; i = ((i + 1) | 0)) {
         var arg_A8_0 = array[i].MemberwiseClone();
-        $T1C().WriteFieldHeader(2, $T10().String, protoWriter);
-        token = $T1C().StartSubItem(null, protoWriter);
-        $S15().CallStatic($thisType, "Write", null, arg_A8_0, protoWriter);
-        $T1C().EndSubItem(token, protoWriter);
+        $T1E().WriteFieldHeader(2, $T15().String, protoWriter);
+        token = $T1E().StartSubItem(null, protoWriter);
+        $S17().CallStatic($thisType, "Write", null, arg_A8_0, protoWriter);
+        $T1E().EndSubItem(token, protoWriter);
       }
     }
     var expr_C7 = meshContainer.UVs;
@@ -771,10 +916,10 @@ JSIL.DeclareNamespace("Fusee.Serialization");
 
       for (i = 0; i < array2.length; i = ((i + 1) | 0)) {
         var arg_F5_0 = array2[i].MemberwiseClone();
-        $T1C().WriteFieldHeader(3, $T10().String, protoWriter);
-        token = $T1C().StartSubItem(null, protoWriter);
-        $S16().CallStatic($thisType, "Write", null, arg_F5_0, protoWriter);
-        $T1C().EndSubItem(token, protoWriter);
+        $T1E().WriteFieldHeader(3, $T15().String, protoWriter);
+        token = $T1E().StartSubItem(null, protoWriter);
+        $S18().CallStatic($thisType, "Write", null, arg_F5_0, protoWriter);
+        $T1E().EndSubItem(token, protoWriter);
       }
     }
     var expr_114 = meshContainer.Triangles;
@@ -783,22 +928,22 @@ JSIL.DeclareNamespace("Fusee.Serialization");
 
       for (i = 0; i < array3.length; i = ((i + 1) | 0)) {
         var arg_133_0 = array3[i];
-        $T1C().WriteFieldHeader(4, $T10().Variant, protoWriter);
-        $T1C().WriteUInt16(arg_133_0, protoWriter);
+        $T1E().WriteFieldHeader(4, $T15().Variant, protoWriter);
+        $T1E().WriteUInt16(arg_133_0, protoWriter);
       }
     }
   };
 
-  function Serializer_Write$09 (sceneContainer, protoWriter) {
+  function Serializer_Write$0B (sceneContainer, protoWriter) {
     var $temp00;
-    if (JSIL.GetType(sceneContainer) !== $T02().__Type__) {
-      $T09().ThrowUnexpectedSubtype($T02().__Type__, JSIL.GetType(sceneContainer));
+    if (JSIL.GetType(sceneContainer) !== $T03().__Type__) {
+      $T0A().ThrowUnexpectedSubtype($T03().__Type__, JSIL.GetType(sceneContainer));
     }
     var arg_3E_0 = sceneContainer.Header.MemberwiseClone();
-    $T1C().WriteFieldHeader(1, $T10().String, protoWriter);
-    var token = $T1C().StartSubItem(null, protoWriter);
-    $S13().CallStatic($thisType, "Write", null, arg_3E_0, protoWriter);
-    $T1C().EndSubItem(token, protoWriter);
+    $T1E().WriteFieldHeader(1, $T15().String, protoWriter);
+    var token = $T1E().StartSubItem(null, protoWriter);
+    $S15().CallStatic($thisType, "Write", null, arg_3E_0, protoWriter);
+    $T1E().EndSubItem(token, protoWriter);
     var expr_50 = sceneContainer.Children;
     if (expr_50 !== null) {
 
@@ -806,142 +951,144 @@ JSIL.DeclareNamespace("Fusee.Serialization");
           i$0 = ((i$0 + 1) | 0), 
           $temp00)) {
         var arg_75_0 = a$0[i$0];
-        $T1C().WriteFieldHeader(2, $T10().String, protoWriter);
-        $T18().WriteNetObject($T0A().$Cast(arg_75_0), protoWriter, 3, $T19().$Flags("AsReference", "UseConstructor"));
+        $T1E().WriteFieldHeader(2, $T15().String, protoWriter);
+        $T1C().WriteNetObject($T0B().$Cast(arg_75_0), protoWriter, 4, $T1D().$Flags("AsReference", "UseConstructor"));
       }
     }
   };
 
-  function Serializer_Write$0A (sceneHeader, writer) {
+  function Serializer_Write$0C (sceneHeader, writer) {
     var expr_07 = sceneHeader.Version;
     if (expr_07 !== 0) {
-      $T1C().WriteFieldHeader(1, $T10().Variant, writer);
-      $T1C().WriteInt32(expr_07, writer);
+      $T1E().WriteFieldHeader(1, $T15().Variant, writer);
+      $T1E().WriteInt32(expr_07, writer);
     }
     var expr_25 = sceneHeader.Generator;
     if (expr_25 !== null) {
-      $T1C().WriteFieldHeader(2, $T10().String, writer);
-      $T1C().WriteString(expr_25, writer);
+      $T1E().WriteFieldHeader(2, $T15().String, writer);
+      $T1E().WriteString(expr_25, writer);
     }
     var expr_43 = sceneHeader.CreatedBy;
     if (expr_43 !== null) {
-      $T1C().WriteFieldHeader(3, $T10().String, writer);
-      $T1C().WriteString(expr_43, writer);
+      $T1E().WriteFieldHeader(3, $T15().String, writer);
+      $T1E().WriteString(expr_43, writer);
     }
   };
 
-  function Serializer_Write$0B (sceneObjectContainer, protoWriter) {
+  function Serializer_Write$0D (sceneObjectContainer, protoWriter) {
     var $temp00;
-    if (JSIL.GetType(sceneObjectContainer) !== $T04().__Type__) {
-      $T09().ThrowUnexpectedSubtype($T04().__Type__, JSIL.GetType(sceneObjectContainer));
+    if (JSIL.GetType(sceneObjectContainer) !== $T05().__Type__) {
+      $T0A().ThrowUnexpectedSubtype($T05().__Type__, JSIL.GetType(sceneObjectContainer));
     }
     var expr_2D = sceneObjectContainer.Name;
     if (expr_2D !== null) {
-      $T1C().WriteFieldHeader(1, $T10().String, protoWriter);
-      $T1C().WriteString(expr_2D, protoWriter);
+      $T1E().WriteFieldHeader(1, $T15().String, protoWriter);
+      $T1E().WriteString(expr_2D, protoWriter);
     }
     var arg_5B_0 = sceneObjectContainer.Transform.MemberwiseClone();
-    $T1C().WriteFieldHeader(2, $T10().String, protoWriter);
-    var token = $T1C().StartSubItem(null, protoWriter);
-    $S17().CallStatic($thisType, "Write", null, arg_5B_0, protoWriter);
-    $T1C().EndSubItem(token, protoWriter);
-    var expr_6D = sceneObjectContainer.Mesh;
+    $T1E().WriteFieldHeader(2, $T15().String, protoWriter);
+    var token = $T1E().StartSubItem(null, protoWriter);
+    $S19().CallStatic($thisType, "Write", null, arg_5B_0, protoWriter);
+    $T1E().EndSubItem(token, protoWriter);
+    var expr_6D = sceneObjectContainer.Material;
     if (expr_6D !== null) {
-      $T1C().WriteFieldHeader(3, $T10().String, protoWriter);
-      $T18().WriteNetObject($T0A().$Cast(expr_6D), protoWriter, 0, $T19().$Flags("AsReference", "UseConstructor"));
+      $T1E().WriteFieldHeader(3, $T15().String, protoWriter);
+      token = $T1E().StartSubItem(expr_6D, protoWriter);
+      $S12().CallStatic($thisType, "Write", null, expr_6D, protoWriter);
+      $T1E().EndSubItem(token, protoWriter);
     }
-    var expr_91 = sceneObjectContainer.Children;
-    if (expr_91 !== null) {
+    var expr_99 = sceneObjectContainer.Mesh;
+    if (expr_99 !== null) {
+      $T1E().WriteFieldHeader(4, $T15().String, protoWriter);
+      $T1C().WriteNetObject($T0B().$Cast(expr_99), protoWriter, 1, $T1D().$Flags("AsReference", "UseConstructor"));
+    }
+    var expr_BD = sceneObjectContainer.Children;
+    if (expr_BD !== null) {
 
-      for (var a$0 = expr_91._items, i$0 = 0, l$0 = expr_91._size; i$0 < l$0; ($temp00 = i$0, 
+      for (var a$0 = expr_BD._items, i$0 = 0, l$0 = expr_BD._size; i$0 < l$0; ($temp00 = i$0, 
           i$0 = ((i$0 + 1) | 0), 
           $temp00)) {
-        var arg_B6_0 = a$0[i$0];
-        $T1C().WriteFieldHeader(4, $T10().String, protoWriter);
-        $T18().WriteNetObject($T0A().$Cast(arg_B6_0), protoWriter, 3, $T19().$Flags("AsReference", "UseConstructor"));
+        var arg_E2_0 = a$0[i$0];
+        $T1E().WriteFieldHeader(5, $T15().String, protoWriter);
+        $T1C().WriteNetObject($T0B().$Cast(arg_E2_0), protoWriter, 4, $T1D().$Flags("AsReference", "UseConstructor"));
       }
     }
-    var arg_FE_0 = sceneObjectContainer.Color.MemberwiseClone();
-    $T1C().WriteFieldHeader(5, $T10().String, protoWriter);
-    token = $T1C().StartSubItem(null, protoWriter);
-    $S15().CallStatic($thisType, "Write", null, arg_FE_0, protoWriter);
-    $T1C().EndSubItem(token, protoWriter);
   };
 
-  function Serializer_Write$0C (float, writer) {
+  function Serializer_Write$0E (float, writer) {
     var expr_07 = +float.x;
     if (expr_07 !== 0) {
-      $T1C().WriteFieldHeader(1, $T10().Fixed32, writer);
-      $T1C().WriteSingle(expr_07, writer);
+      $T1E().WriteFieldHeader(1, $T15().Fixed32, writer);
+      $T1E().WriteSingle(expr_07, writer);
     }
     var expr_2A = +float.y;
     if (expr_2A !== 0) {
-      $T1C().WriteFieldHeader(2, $T10().Fixed32, writer);
-      $T1C().WriteSingle(expr_2A, writer);
+      $T1E().WriteFieldHeader(2, $T15().Fixed32, writer);
+      $T1E().WriteSingle(expr_2A, writer);
     }
     var expr_4D = +float.z;
     if (expr_4D !== 0) {
-      $T1C().WriteFieldHeader(3, $T10().Fixed32, writer);
-      $T1C().WriteSingle(expr_4D, writer);
+      $T1E().WriteFieldHeader(3, $T15().Fixed32, writer);
+      $T1E().WriteSingle(expr_4D, writer);
     }
-  };
-
-  function Serializer_Write$0D (float, writer) {
-    var expr_07 = +float.x;
-    if (expr_07 !== 0) {
-      $T1C().WriteFieldHeader(1, $T10().Fixed32, writer);
-      $T1C().WriteSingle(expr_07, writer);
-    }
-    var expr_2A = +float.y;
-    if (expr_2A !== 0) {
-      $T1C().WriteFieldHeader(2, $T10().Fixed32, writer);
-      $T1C().WriteSingle(expr_2A, writer);
-    }
-  };
-
-  function Serializer_Write$0E (float4x, protoWriter) {
-    var arg_18_0 = float4x.Row0;
-    $T1C().WriteFieldHeader(1, $T10().String, protoWriter);
-    var token = $T1C().StartSubItem(null, protoWriter);
-    $S18().CallStatic($thisType, "Write", null, arg_18_0, protoWriter);
-    $T1C().EndSubItem(token, protoWriter);
-    var arg_3C_0 = float4x.Row1;
-    $T1C().WriteFieldHeader(2, $T10().String, protoWriter);
-    token = $T1C().StartSubItem(null, protoWriter);
-    $S18().CallStatic($thisType, "Write", null, arg_3C_0, protoWriter);
-    $T1C().EndSubItem(token, protoWriter);
-    var arg_60_0 = float4x.Row2;
-    $T1C().WriteFieldHeader(3, $T10().String, protoWriter);
-    token = $T1C().StartSubItem(null, protoWriter);
-    $S18().CallStatic($thisType, "Write", null, arg_60_0, protoWriter);
-    $T1C().EndSubItem(token, protoWriter);
-    var arg_84_0 = float4x.Row3;
-    $T1C().WriteFieldHeader(4, $T10().String, protoWriter);
-    token = $T1C().StartSubItem(null, protoWriter);
-    $S18().CallStatic($thisType, "Write", null, arg_84_0, protoWriter);
-    $T1C().EndSubItem(token, protoWriter);
   };
 
   function Serializer_Write$0F (float, writer) {
     var expr_07 = +float.x;
     if (expr_07 !== 0) {
-      $T1C().WriteFieldHeader(1, $T10().Fixed32, writer);
-      $T1C().WriteSingle(expr_07, writer);
+      $T1E().WriteFieldHeader(1, $T15().Fixed32, writer);
+      $T1E().WriteSingle(expr_07, writer);
     }
     var expr_2A = +float.y;
     if (expr_2A !== 0) {
-      $T1C().WriteFieldHeader(2, $T10().Fixed32, writer);
-      $T1C().WriteSingle(expr_2A, writer);
+      $T1E().WriteFieldHeader(2, $T15().Fixed32, writer);
+      $T1E().WriteSingle(expr_2A, writer);
+    }
+  };
+
+  function Serializer_Write$10 (float4x, protoWriter) {
+    var arg_18_0 = float4x.Row0;
+    $T1E().WriteFieldHeader(1, $T15().String, protoWriter);
+    var token = $T1E().StartSubItem(null, protoWriter);
+    $S1A().CallStatic($thisType, "Write", null, arg_18_0, protoWriter);
+    $T1E().EndSubItem(token, protoWriter);
+    var arg_3C_0 = float4x.Row1;
+    $T1E().WriteFieldHeader(2, $T15().String, protoWriter);
+    token = $T1E().StartSubItem(null, protoWriter);
+    $S1A().CallStatic($thisType, "Write", null, arg_3C_0, protoWriter);
+    $T1E().EndSubItem(token, protoWriter);
+    var arg_60_0 = float4x.Row2;
+    $T1E().WriteFieldHeader(3, $T15().String, protoWriter);
+    token = $T1E().StartSubItem(null, protoWriter);
+    $S1A().CallStatic($thisType, "Write", null, arg_60_0, protoWriter);
+    $T1E().EndSubItem(token, protoWriter);
+    var arg_84_0 = float4x.Row3;
+    $T1E().WriteFieldHeader(4, $T15().String, protoWriter);
+    token = $T1E().StartSubItem(null, protoWriter);
+    $S1A().CallStatic($thisType, "Write", null, arg_84_0, protoWriter);
+    $T1E().EndSubItem(token, protoWriter);
+  };
+
+  function Serializer_Write$11 (float, writer) {
+    var expr_07 = +float.x;
+    if (expr_07 !== 0) {
+      $T1E().WriteFieldHeader(1, $T15().Fixed32, writer);
+      $T1E().WriteSingle(expr_07, writer);
+    }
+    var expr_2A = +float.y;
+    if (expr_2A !== 0) {
+      $T1E().WriteFieldHeader(2, $T15().Fixed32, writer);
+      $T1E().WriteSingle(expr_2A, writer);
     }
     var expr_4D = +float.z;
     if (expr_4D !== 0) {
-      $T1C().WriteFieldHeader(3, $T10().Fixed32, writer);
-      $T1C().WriteSingle(expr_4D, writer);
+      $T1E().WriteFieldHeader(3, $T15().Fixed32, writer);
+      $T1E().WriteSingle(expr_4D, writer);
     }
     var expr_70 = +float.w;
     if (expr_70 !== 0) {
-      $T1C().WriteFieldHeader(4, $T10().Fixed32, writer);
-      $T1C().WriteSingle(expr_70, writer);
+      $T1E().WriteFieldHeader(4, $T15().Fixed32, writer);
+      $T1E().WriteSingle(expr_70, writer);
     }
   };
 
@@ -959,14 +1106,9 @@ JSIL.DeclareNamespace("Fusee.Serialization");
       Serializer__ctor
     );
 
-    $.Method({Static:true , Public:false}, "_2", 
+    $.Method({Static:true , Public:false}, "_3", 
       new JSIL.MethodSignature($.Object, [$.Object, $asm07.TypeRef("ProtoBuf.ProtoReader")], []), 
-      Serializer__2
-    );
-
-    $.Method({Static:true , Public:false}, "_4", 
-      new JSIL.MethodSignature($.Object, [$.Object, $asm07.TypeRef("ProtoBuf.ProtoReader")], []), 
-      Serializer__4
+      Serializer__3
     );
 
     $.Method({Static:true , Public:false}, "_5", 
@@ -982,6 +1124,11 @@ JSIL.DeclareNamespace("Fusee.Serialization");
     $.Method({Static:true , Public:false}, "_7", 
       new JSIL.MethodSignature($.Object, [$.Object, $asm07.TypeRef("ProtoBuf.ProtoReader")], []), 
       Serializer__7
+    );
+
+    $.Method({Static:true , Public:false}, "_8", 
+      new JSIL.MethodSignature($.Object, [$.Object, $asm07.TypeRef("ProtoBuf.ProtoReader")], []), 
+      Serializer__8
     );
 
     $.Method({Static:false, Public:false, Virtual:true }, "Deserialize", 
@@ -1000,43 +1147,48 @@ JSIL.DeclareNamespace("Fusee.Serialization");
       .Overrides(0, "GetKeyImpl");
 
     $.Method({Static:true , Public:false}, "Read", 
-      new JSIL.MethodSignature($asm04.TypeRef("Fusee.Serialization.MeshContainer"), [$asm04.TypeRef("Fusee.Serialization.MeshContainer"), $asm07.TypeRef("ProtoBuf.ProtoReader")], []), 
+      new JSIL.MethodSignature($asm04.TypeRef("Fusee.Serialization.MaterialContainer"), [$asm04.TypeRef("Fusee.Serialization.MaterialContainer"), $asm07.TypeRef("ProtoBuf.ProtoReader")], []), 
       Serializer_Read$00
     );
 
     $.Method({Static:true , Public:false}, "Read", 
-      new JSIL.MethodSignature($asm04.TypeRef("Fusee.Serialization.SceneContainer"), [$asm04.TypeRef("Fusee.Serialization.SceneContainer"), $asm07.TypeRef("ProtoBuf.ProtoReader")], []), 
+      new JSIL.MethodSignature($asm04.TypeRef("Fusee.Serialization.MeshContainer"), [$asm04.TypeRef("Fusee.Serialization.MeshContainer"), $asm07.TypeRef("ProtoBuf.ProtoReader")], []), 
       Serializer_Read$01
     );
 
     $.Method({Static:true , Public:false}, "Read", 
-      new JSIL.MethodSignature($asm04.TypeRef("Fusee.Serialization.SceneHeader"), [$asm04.TypeRef("Fusee.Serialization.SceneHeader"), $asm07.TypeRef("ProtoBuf.ProtoReader")], []), 
+      new JSIL.MethodSignature($asm04.TypeRef("Fusee.Serialization.SceneContainer"), [$asm04.TypeRef("Fusee.Serialization.SceneContainer"), $asm07.TypeRef("ProtoBuf.ProtoReader")], []), 
       Serializer_Read$02
     );
 
     $.Method({Static:true , Public:false}, "Read", 
-      new JSIL.MethodSignature($asm04.TypeRef("Fusee.Serialization.SceneObjectContainer"), [$asm04.TypeRef("Fusee.Serialization.SceneObjectContainer"), $asm07.TypeRef("ProtoBuf.ProtoReader")], []), 
+      new JSIL.MethodSignature($asm04.TypeRef("Fusee.Serialization.SceneHeader"), [$asm04.TypeRef("Fusee.Serialization.SceneHeader"), $asm07.TypeRef("ProtoBuf.ProtoReader")], []), 
       Serializer_Read$03
     );
 
     $.Method({Static:true , Public:false}, "Read", 
-      new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float3"), [$asm03.TypeRef("Fusee.Math.float3"), $asm07.TypeRef("ProtoBuf.ProtoReader")], []), 
+      new JSIL.MethodSignature($asm04.TypeRef("Fusee.Serialization.SceneObjectContainer"), [$asm04.TypeRef("Fusee.Serialization.SceneObjectContainer"), $asm07.TypeRef("ProtoBuf.ProtoReader")], []), 
       Serializer_Read$04
     );
 
     $.Method({Static:true , Public:false}, "Read", 
-      new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float2"), [$asm03.TypeRef("Fusee.Math.float2"), $asm07.TypeRef("ProtoBuf.ProtoReader")], []), 
+      new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float3"), [$asm03.TypeRef("Fusee.Math.float3"), $asm07.TypeRef("ProtoBuf.ProtoReader")], []), 
       Serializer_Read$05
     );
 
     $.Method({Static:true , Public:false}, "Read", 
-      new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float4x4"), [$asm03.TypeRef("Fusee.Math.float4x4"), $asm07.TypeRef("ProtoBuf.ProtoReader")], []), 
+      new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float2"), [$asm03.TypeRef("Fusee.Math.float2"), $asm07.TypeRef("ProtoBuf.ProtoReader")], []), 
       Serializer_Read$06
     );
 
     $.Method({Static:true , Public:false}, "Read", 
-      new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float4"), [$asm03.TypeRef("Fusee.Math.float4"), $asm07.TypeRef("ProtoBuf.ProtoReader")], []), 
+      new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float4x4"), [$asm03.TypeRef("Fusee.Math.float4x4"), $asm07.TypeRef("ProtoBuf.ProtoReader")], []), 
       Serializer_Read$07
+    );
+
+    $.Method({Static:true , Public:false}, "Read", 
+      new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float4"), [$asm03.TypeRef("Fusee.Math.float4"), $asm07.TypeRef("ProtoBuf.ProtoReader")], []), 
+      Serializer_Read$08
     );
 
     $.Method({Static:false, Public:false, Virtual:true }, "Serialize", 
@@ -1049,48 +1201,53 @@ JSIL.DeclareNamespace("Fusee.Serialization");
       .Overrides(0, "Serialize");
 
     $.Method({Static:true , Public:false}, "Write", 
-      new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Serialization.MeshContainer"), $asm07.TypeRef("ProtoBuf.ProtoWriter")], []), 
-      Serializer_Write$08
-    );
-
-    $.Method({Static:true , Public:false}, "Write", 
-      new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Serialization.SceneContainer"), $asm07.TypeRef("ProtoBuf.ProtoWriter")], []), 
+      new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Serialization.MaterialContainer"), $asm07.TypeRef("ProtoBuf.ProtoWriter")], []), 
       Serializer_Write$09
     );
 
     $.Method({Static:true , Public:false}, "Write", 
-      new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Serialization.SceneHeader"), $asm07.TypeRef("ProtoBuf.ProtoWriter")], []), 
+      new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Serialization.MeshContainer"), $asm07.TypeRef("ProtoBuf.ProtoWriter")], []), 
       Serializer_Write$0A
     );
 
     $.Method({Static:true , Public:false}, "Write", 
-      new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Serialization.SceneObjectContainer"), $asm07.TypeRef("ProtoBuf.ProtoWriter")], []), 
+      new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Serialization.SceneContainer"), $asm07.TypeRef("ProtoBuf.ProtoWriter")], []), 
       Serializer_Write$0B
     );
 
     $.Method({Static:true , Public:false}, "Write", 
-      new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float3"), $asm07.TypeRef("ProtoBuf.ProtoWriter")], []), 
+      new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Serialization.SceneHeader"), $asm07.TypeRef("ProtoBuf.ProtoWriter")], []), 
       Serializer_Write$0C
     );
 
     $.Method({Static:true , Public:false}, "Write", 
-      new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float2"), $asm07.TypeRef("ProtoBuf.ProtoWriter")], []), 
+      new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Serialization.SceneObjectContainer"), $asm07.TypeRef("ProtoBuf.ProtoWriter")], []), 
       Serializer_Write$0D
     );
 
     $.Method({Static:true , Public:false}, "Write", 
-      new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float4x4"), $asm07.TypeRef("ProtoBuf.ProtoWriter")], []), 
+      new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float3"), $asm07.TypeRef("ProtoBuf.ProtoWriter")], []), 
       Serializer_Write$0E
     );
 
     $.Method({Static:true , Public:false}, "Write", 
-      new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float4"), $asm07.TypeRef("ProtoBuf.ProtoWriter")], []), 
+      new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float2"), $asm07.TypeRef("ProtoBuf.ProtoWriter")], []), 
       Serializer_Write$0F
+    );
+
+    $.Method({Static:true , Public:false}, "Write", 
+      new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float4x4"), $asm07.TypeRef("ProtoBuf.ProtoWriter")], []), 
+      Serializer_Write$10
+    );
+
+    $.Method({Static:true , Public:false}, "Write", 
+      new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float4"), $asm07.TypeRef("ProtoBuf.ProtoWriter")], []), 
+      Serializer_Write$11
     );
 
     $.Field({Static:true , Public:false, ReadOnly:true }, "knownTypes", $jsilcore.TypeRef("System.Array", [$asm06.TypeRef("System.Type")])); 
     function Serializer__cctor () {
-      $thisType.knownTypes = JSIL.Array.New($T00(), [$T01().__Type__, $T02().__Type__, $T03().__Type__, $T04().__Type__, $T05().__Type__, $T06().__Type__, $T07().__Type__, $T08().__Type__]);
+      $thisType.knownTypes = JSIL.Array.New($T00(), [$T01().__Type__, $T02().__Type__, $T03().__Type__, $T04().__Type__, $T05().__Type__, $T06().__Type__, $T07().__Type__, $T08().__Type__, $T09().__Type__]);
     };
 
 

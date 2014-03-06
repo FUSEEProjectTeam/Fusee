@@ -1531,9 +1531,10 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
             }
             this.gl.bindBuffer(this.gl.ARRAY_BUFFER, mr.ColorBufferObject);
             this.gl.bufferData(this.gl.ARRAY_BUFFER, flatBuffer, this.gl.STATIC_DRAW);
-            vboBytes = this.gl.getBufferParameter(this.gl.ARRAY_BUFFER, this.gl.BUFFER_SIZE);
-            if (vboBytes != colsBytes)
-                throw new Error("Problem uploading Color buffer to VBO (Colors). Tried to upload " + ColsBytes + " bytes, uploaded " + vboBytes + ".");
+            // IE11 returns undefined, so we must believe uploading worked well
+            //vboBytes = this.gl.getBufferParameter(this.gl.ARRAY_BUFFER, this.gl.BUFFER_SIZE);
+            //if (vboBytes != colsBytes)
+            //    throw new Error("Problem uploading Color buffer to VBO (Colors). Tried to upload " + ColsBytes + " bytes, uploaded " + vboBytes + ".");
         }
     );
 
@@ -1559,8 +1560,9 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
             this.gl.bindBuffer(this.gl.ARRAY_BUFFER, mr.UVBufferObject);
             this.gl.bufferData(this.gl.ARRAY_BUFFER, flatBuffer, this.gl.STATIC_DRAW);
             vboBytes = this.gl.getBufferParameter(this.gl.ARRAY_BUFFER, this.gl.BUFFER_SIZE);
-            if (vboBytes != UvBytes)
-                throw new Error("Problem uploading UV buffer to VBO (UVs). Tried to upload " + UvBytes + " bytes, uploaded " + UvBytes + ".");
+            // IE11 returns undefined, so we must believe uploading worked well
+            //if (vboBytes != UvBytes)
+            //    throw new Error("Problem uploading UV buffer to VBO (UVs). Tried to upload " + UvBytes + " bytes, uploaded " + UvBytes + ".");
         }
     );
 
@@ -1587,8 +1589,9 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
             this.gl.bindBuffer(this.gl.ARRAY_BUFFER, mr.NormalBufferObject);
             this.gl.bufferData(this.gl.ARRAY_BUFFER, flatBuffer, this.gl.STATIC_DRAW);
             vboBytes = this.gl.getBufferParameter(this.gl.ARRAY_BUFFER, this.gl.BUFFER_SIZE);
-            if (vboBytes != normsBytes)
-                throw new Error("Problem uploading normal buffer to VBO (normals). Tried to upload " + normsBytes + " bytes, uploaded " + vboBytes + ".");
+            // IE11 returns undefined, so we must believe uploading worked well
+            //if (vboBytes != normsBytes)
+            //    throw new Error("Problem uploading normal buffer to VBO (normals). Tried to upload " + normsBytes + " bytes, uploaded " + vboBytes + ".");
         }
     );
 
@@ -1615,8 +1618,9 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
             this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, mr.ElementBufferObject);
             this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, flatBuffer, this.gl.STATIC_DRAW);
             vboBytes = this.gl.getBufferParameter(this.gl.ELEMENT_ARRAY_BUFFER, this.gl.BUFFER_SIZE);
-            if (vboBytes != trisBytes)
-                throw new Error("Problem uploading vertex buffer to VBO (offsets). Tried to upload " + normsBytes + " bytes, uploaded " + vboBytes + ".");
+            // IE11 returns undefined, so we must believe uploading worked well
+            //if (vboBytes != trisBytes)
+            //    throw new Error("Problem uploading index buffer to VBO (offsets). Tried to upload " + normsBytes + " bytes, uploaded " + vboBytes + ".");
         }
     );
 
@@ -1643,8 +1647,9 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
             this.gl.bindBuffer(this.gl.ARRAY_BUFFER, mr.VertexBufferObject);
             this.gl.bufferData(this.gl.ARRAY_BUFFER, flatBuffer, this.gl.STATIC_DRAW);
             vboBytes = this.gl.getBufferParameter(this.gl.ARRAY_BUFFER, this.gl.BUFFER_SIZE);
-            if (vboBytes != vertsBytes)
-                throw new Error("Problem uploading normal buffer to VBO (vertices). Tried to upload " + vertsBytes + " bytes, uploaded " + vboBytes + ".");
+            // IE11 returns undefined, so we must believe uploading worked well
+            //if (vboBytes != vertsBytes)
+            //    throw new Error("Problem uploading vertex buffer to VBO (vertices). Tried to upload " + vertsBytes + " bytes, uploaded " + vboBytes + ".");
         }
     );
 

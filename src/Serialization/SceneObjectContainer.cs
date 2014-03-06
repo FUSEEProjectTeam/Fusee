@@ -13,13 +13,13 @@ namespace Fusee.Serialization
         [ProtoMember(2)]
         public float4x4 Transform;
 
-        [ProtoMember(5)] 
-        public float3 Color;
-
-        [ProtoMember(3, AsReference = true)]
-        public MeshContainer Mesh;
+        [ProtoMember(3)] 
+        public MaterialContainer Material;
 
         [ProtoMember(4, AsReference = true)]
+        public MeshContainer Mesh;
+
+        [ProtoMember(5, AsReference = true)]
         public List<SceneObjectContainer> Children;
     }
 }

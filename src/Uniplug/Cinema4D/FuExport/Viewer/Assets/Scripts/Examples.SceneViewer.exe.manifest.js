@@ -14,21 +14,21 @@ var $asm0A = JSIL.GetAssembly("System.Core, Version=4.0.0.0, Culture=neutral, Pu
 var $asm0B = JSIL.GetAssembly("System.Numerics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
 var $asm0C = JSIL.GetAssembly("System.Xml, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
 var $asm0D = JSIL.GetAssembly("System.Runtime.Serialization, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
-var $asm0E = JSIL.GetAssembly("System.ServiceModel, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
-var $asm0F = JSIL.GetAssembly("JSIL.Meta, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null");
+var $asm0E = JSIL.GetAssembly("JSIL.Meta, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null");
+var $asm0F = JSIL.GetAssembly("System.ServiceModel, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
 var $asm10 = JSIL.GetAssembly("System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a");
 var $asm11 = JSIL.GetAssembly("System.Data.SqlXml, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
 var $asm12 = JSIL.GetAssembly("System.Security, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a");
 
 if (typeof (contentManifest) !== "object") { contentManifest = {}; };
 contentManifest["Examples.SceneViewer.exe"] = [
-    ["Script", "Fusee.SerializationContainer, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null.js", { "sizeBytes": 5855 }],
-    ["Script", "Examples.SceneViewer, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null.js", { "sizeBytes": 17997 }],
-    ["Script", "Fusee.SerializationSerializer, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null.js", { "sizeBytes": 43591 }],
+    ["Script", "Fusee.SerializationContainer, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null.js", { "sizeBytes": 7861 }],
+    ["Script", "Examples.SceneViewer, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null.js", { "sizeBytes": 19887 }],
+    ["Script", "Fusee.SerializationSerializer, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null.js", { "sizeBytes": 50402 }],
     ["Script", "System.Numerics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089.js", { "sizeBytes": 89277 }],
     ["Script", "Fusee.Engine.Common, Version=0.5.0.0, Culture=neutral, PublicKeyToken=null.js", { "sizeBytes": 164594 }],
-    ["Script", "System.Configuration, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a.js", { "sizeBytes": 670319 }],
     ["Script", "protobuf-net, Version=2.0.0.668, Culture=neutral, PublicKeyToken=257b51d87d2e4d67.js", { "sizeBytes": 414843 }],
+    ["Script", "System.Configuration, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a.js", { "sizeBytes": 670319 }],
     ["Script", "Fusee.Engine.Core, Version=0.5.0.0, Culture=neutral, PublicKeyToken=null.js", { "sizeBytes": 640758 }],
     ["Script", "Fusee.Math.Core, Version=0.5.0.0, Culture=neutral, PublicKeyToken=null.js", { "sizeBytes": 493234 }],
     ["Script", "System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089.js", { "sizeBytes": 3104494 }],

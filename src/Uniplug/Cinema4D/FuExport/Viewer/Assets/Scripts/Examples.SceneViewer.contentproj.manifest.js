@@ -11,8 +11,8 @@ if (typeof (contentManifest) !== "object") { contentManifest = {}; };
 contentManifest["Examples.SceneViewer.contentproj"] = [
     ["Script",	"Fusee.Engine.Imp.WebAudio.js",	{  "sizeBytes": 8151 }],
     ["Script",	"Fusee.Engine.Imp.WebNet.js",	{  "sizeBytes": 6618 }],
-    ["Script",	"Fusee.Engine.Imp.WebGL.js",	{  "sizeBytes": 101812 }],
+    ["Script",	"Fusee.Engine.Imp.WebGL.js",	{  "sizeBytes": 102238 }],
     ["Script",	"Fusee.Engine.Imp.WebInput.js",	{  "sizeBytes": 6868 }],
     ["Script",	"XirkitScript.js",	{  "sizeBytes": 43845 }],
-    ["File",	"Assets/Model.fus",	{  "sizeBytes": 760 }],
+    ["File",	"Assets/Model.fus",	{  "sizeBytes": 1829 }],
     ];

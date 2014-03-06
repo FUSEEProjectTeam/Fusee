@@ -10,10 +10,12 @@ namespace FuExport
 {
     class FusConverter
     {
+        private BaseDocument _polyDoc;
 
-        public static SceneContainer FuseefyScene(BaseDocument doc)
+        public SceneContainer FuseefyScene(BaseDocument doc)
         {
-            BaseDocument polyDoc = doc.Polygonize();
+
+            _polyDoc = doc.Polygonize();
 
             Logger.Debug("Fuseefy Me!");
 
@@ -29,7 +31,7 @@ namespace FuExport
                     Generator = "FUSEE Export Plugin for Cinema4D",
                     Version = 1
                 },
-                Children = FuseefyOb(polyDoc.GetFirstObject())
+                Children = FuseefyOb(_polyDoc.GetFirstObject())
             };
             return root;
         }
@@ -107,7 +109,7 @@ namespace FuExport
         }
 
 
-        private static float3 GetColor(BaseObject ob)
+        private MaterialContainer GetMaterial(BaseObject ob)
         {
             for (BaseTag tag = ob.GetFirstTag(); tag != null; tag = tag.GetNext())
             {
@@ -115,14 +117,69 @@ namespace FuExport
                 if (texTag == null)
                     continue;
                 BaseMaterial material = texTag.GetMaterial();
-                return (float3)material.GetAverageColor(C4dApi.CHANNEL_COLOR);
-                // BaseChannel channel = material.GetChannel()
+                // Take the first and leave. Todo: for each found material split the geometry and add a geometry/material combination
+                
+                MaterialContainer mcRet = new MaterialContainer();
+                
+                BaseChannel diffuseChannel = material.GetChannel(C4dApi.CHANNEL_COLOR);
+                if (diffuseChannel != null)
+                {
+                    mcRet.HasDiffuse = true;
+                    BaseContainer data = diffuseChannel.GetData();
+                    mcRet.DiffuseColor = (float3) data.GetVector(C4dApi.BASECHANNEL_COLOR_EX);
+                    string texture = data.GetString(C4dApi.BASECHANNEL_TEXTURE);
+                    diffuseChannel.InitTexture(new InitRenderStruct(_polyDoc));
+                    BaseBitmap bitmap = diffuseChannel.GetBitmap();
+                    if (bitmap != null)
+                    {
+                        BaseContainer compressionContainer = new BaseContainer(C4dApi.JPGSAVER_QUALITY);
+                        compressionContainer.SetReal(C4dApi.JPGSAVER_QUALITY, 70.0);
+                        bitmap.Save(new Filename("C:\\Users\\mch\\Temp\\FuseeWebPlayer\\ABitmap.jpg"), C4dApi.FILTER_JPG, compressionContainer, SAVEBIT.SAVEBIT_0);
+                    }
+                    diffuseChannel.FreeTexture();
+                }
+
+                BaseChannel specularColorChannel = material.GetChannel(C4dApi.CHANNEL_SPECULARCOLOR);
+                if (specularColorChannel != null)
+                {
+                    mcRet.HasSpecular = true;
+                    BaseContainer data = specularColorChannel.GetData();
+                    mcRet.SpecularColor = (float3) data.GetVector(C4dApi.BASECHANNEL_COLOR_EX);
+                    string texture = data.GetString(C4dApi.BASECHANNEL_TEXTURE);
+                    BaseBitmap bitmap = specularColorChannel.GetBitmap();
+                    if (bitmap != null)
+                    {
+                        BaseContainer compressionContainer = new BaseContainer(C4dApi.JPGSAVER_QUALITY);
+                        compressionContainer.SetReal(C4dApi.JPGSAVER_QUALITY, 70.0);
+                        bitmap.Save(new Filename("C:\\Users\\mch\\Temp\\FuseeWebPlayer\\ABitmapS.jpg"), C4dApi.FILTER_JPG, compressionContainer, SAVEBIT.SAVEBIT_0);
+                    }
+                }
+
+                BaseChannel specularChannel = material.GetChannel(C4dApi.CHANNEL_SPECULARCOLOR);
+                if (specularChannel != null)
+                {
+                    mcRet.HasSpecular = true;
+                    BaseContainer data = specularChannel.GetData();
+                    for (int i=0, id=0; -1 != (id = data.GetIndexId(i)); i++)
+                    {
+                        if (data.GetType(id) == C4dApi.DA_REAL)
+                        {
+                            double d = data.GetReal(id);
+                        }
+                        else if (data.GetType(id) == C4dApi.DA_VECTOR)
+                        {
+                            double3 v = data.GetVector(id);
+                        }
+                    } 
+ 
+                }
+                return mcRet;
             }
-            return new float3(0.5f, 0.5f, 0.5f);
+            return null;
         }
 
 
-        private static List<SceneObjectContainer> FuseefyOb(BaseObject ob)
+        private List<SceneObjectContainer> FuseefyOb(BaseObject ob)
         {
             if (ob == null)
                 return null;
@@ -136,7 +193,7 @@ namespace FuExport
 
                 double4x4 mtxD = ob.GetMl();
                 soc.Transform = (float4x4) mtxD;
-                soc.Color = GetColor(ob);
+                soc.Material = GetMaterial(ob);
                 soc.Mesh = GetMesh(ob);
                 soc.Children = FuseefyOb(ob.GetDown());
                 ret.Add(soc);
