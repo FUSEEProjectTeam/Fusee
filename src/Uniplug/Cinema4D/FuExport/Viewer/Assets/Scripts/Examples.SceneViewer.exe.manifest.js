@@ -22,15 +22,15 @@ var $asm12 = JSIL.GetAssembly("System.Security, Version=4.0.0.0, Culture=neutral
 
 if (typeof (contentManifest) !== "object") { contentManifest = {}; };
 contentManifest["Examples.SceneViewer.exe"] = [
-    ["Script", "Fusee.SerializationContainer, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null.js", { "sizeBytes": 7861 }],
-    ["Script", "Examples.SceneViewer, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null.js", { "sizeBytes": 19887 }],
-    ["Script", "Fusee.SerializationSerializer, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null.js", { "sizeBytes": 50402 }],
+    ["Script", "Fusee.SerializationContainer, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null.js", { "sizeBytes": 8028 }],
+    ["Script", "Examples.SceneViewer, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null.js", { "sizeBytes": 27081 }],
+    ["Script", "Fusee.SerializationSerializer, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null.js", { "sizeBytes": 50800 }],
     ["Script", "System.Numerics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089.js", { "sizeBytes": 89277 }],
-    ["Script", "Fusee.Engine.Common, Version=0.5.0.0, Culture=neutral, PublicKeyToken=null.js", { "sizeBytes": 164594 }],
-    ["Script", "protobuf-net, Version=2.0.0.668, Culture=neutral, PublicKeyToken=257b51d87d2e4d67.js", { "sizeBytes": 414843 }],
+    ["Script", "Fusee.Engine.Common, Version=0.5.0.0, Culture=neutral, PublicKeyToken=null.js", { "sizeBytes": 164929 }],
     ["Script", "System.Configuration, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a.js", { "sizeBytes": 670319 }],
-    ["Script", "Fusee.Engine.Core, Version=0.5.0.0, Culture=neutral, PublicKeyToken=null.js", { "sizeBytes": 640758 }],
-    ["Script", "Fusee.Math.Core, Version=0.5.0.0, Culture=neutral, PublicKeyToken=null.js", { "sizeBytes": 493234 }],
+    ["Script", "protobuf-net, Version=2.0.0.668, Culture=neutral, PublicKeyToken=257b51d87d2e4d67.js", { "sizeBytes": 414843 }],
+    ["Script", "Fusee.Engine.Core, Version=0.5.0.0, Culture=neutral, PublicKeyToken=null.js", { "sizeBytes": 641655 }],
+    ["Script", "Fusee.Math.Core, Version=0.5.0.0, Culture=neutral, PublicKeyToken=null.js", { "sizeBytes": 493256 }],
     ["Script", "System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089.js", { "sizeBytes": 3104494 }],
     ["Script", "System.Xml, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089.js", { "sizeBytes": 4635742 }],
     ["Script", "System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089.js", { "sizeBytes": 6702560 }],

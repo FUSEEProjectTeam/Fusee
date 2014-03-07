@@ -11446,6 +11446,9 @@ JSIL.MakeEnum(
   var $T0F = function () {
     return ($T0F = JSIL.Memoize($asm01.Fusee.Engine.IInputImp)) ();
   };
+  var $T10 = function () {
+    return ($T10 = JSIL.Memoize($asm01.Fusee.Engine.CursorType)) ();
+  };
   var $IM00 = function () {
     return ($IM00 = JSIL.Memoize($asm01.Fusee.Engine.IRenderCanvasImp.get_EnableBlending)) ();
   };
@@ -11480,25 +11483,31 @@ JSIL.MakeEnum(
     return ($IM0A = JSIL.Memoize($asm01.Fusee.Engine.IRenderCanvasImp.add_Resize)) ();
   };
   var $IM0B = function () {
-    return ($IM0B = JSIL.Memoize($asm01.Fusee.Engine.IRenderCanvasImp.Present)) ();
+    return ($IM0B = JSIL.Memoize($asm01.Fusee.Engine.IRenderCanvasImp.OpenLink)) ();
   };
   var $IM0C = function () {
-    return ($IM0C = JSIL.Memoize($asm01.Fusee.Engine.IRenderCanvasImp.Run)) ();
+    return ($IM0C = JSIL.Memoize($asm01.Fusee.Engine.IRenderCanvasImp.Present)) ();
   };
   var $IM0D = function () {
-    return ($IM0D = JSIL.Memoize($asm01.Fusee.Engine.IRenderCanvasImp.set_EnableBlending)) ();
+    return ($IM0D = JSIL.Memoize($asm01.Fusee.Engine.IRenderCanvasImp.Run)) ();
   };
   var $IM0E = function () {
-    return ($IM0E = JSIL.Memoize($asm01.Fusee.Engine.IRenderCanvasImp.set_Fullscreen)) ();
+    return ($IM0E = JSIL.Memoize($asm01.Fusee.Engine.IRenderCanvasImp.set_EnableBlending)) ();
   };
   var $IM0F = function () {
-    return ($IM0F = JSIL.Memoize($asm01.Fusee.Engine.IRenderCanvasImp.set_Height)) ();
+    return ($IM0F = JSIL.Memoize($asm01.Fusee.Engine.IRenderCanvasImp.set_Fullscreen)) ();
   };
   var $IM10 = function () {
-    return ($IM10 = JSIL.Memoize($asm01.Fusee.Engine.IRenderCanvasImp.set_VerticalSync)) ();
+    return ($IM10 = JSIL.Memoize($asm01.Fusee.Engine.IRenderCanvasImp.set_Height)) ();
   };
   var $IM11 = function () {
-    return ($IM11 = JSIL.Memoize($asm01.Fusee.Engine.IRenderCanvasImp.set_Width)) ();
+    return ($IM11 = JSIL.Memoize($asm01.Fusee.Engine.IRenderCanvasImp.set_VerticalSync)) ();
+  };
+  var $IM12 = function () {
+    return ($IM12 = JSIL.Memoize($asm01.Fusee.Engine.IRenderCanvasImp.set_Width)) ();
+  };
+  var $IM13 = function () {
+    return ($IM13 = JSIL.Memoize($asm01.Fusee.Engine.IRenderCanvasImp.SetCursor)) ();
   };
 
   function RenderCanvas__ctor () {
@@ -11615,8 +11624,12 @@ JSIL.MakeEnum(
     }
   };
 
+  function RenderCanvas_OpenLink (link) {
+    $IM0B().Call(this._canvasImp, null, link);
+  };
+
   function RenderCanvas_Present () {
-    $IM0B().Call(this._canvasImp, null);
+    $IM0C().Call(this._canvasImp, null);
   };
 
   function RenderCanvas_RenderAFrame () {
@@ -11627,7 +11640,7 @@ JSIL.MakeEnum(
 
   function RenderCanvas_Run () {
     this.InitCanvas();
-    $IM0C().Call(this._canvasImp, null);
+    $IM0D().Call(this._canvasImp, null);
   };
 
   function RenderCanvas_set_AudioImplementor (value) {
@@ -11635,7 +11648,7 @@ JSIL.MakeEnum(
   };
 
   function RenderCanvas_set_Blending (value) {
-    $IM0D().Call(this._canvasImp, null, value);
+    $IM0E().Call(this._canvasImp, null, value);
   };
 
   function RenderCanvas_set_CanvasImplementor (value) {
@@ -11647,11 +11660,11 @@ JSIL.MakeEnum(
   };
 
   function RenderCanvas_set_Fullscreen (value) {
-    $IM0E().Call(this._canvasImp, null, value);
+    $IM0F().Call(this._canvasImp, null, value);
   };
 
   function RenderCanvas_set_Height (value) {
-    $IM0F().Call(this._canvasImp, null, value);
+    $IM10().Call(this._canvasImp, null, value);
   };
 
   function RenderCanvas_set_InputDriverImplementor (value) {
@@ -11663,11 +11676,15 @@ JSIL.MakeEnum(
   };
 
   function RenderCanvas_set_VSync (value) {
-    $IM10().Call(this._canvasImp, null, value);
+    $IM11().Call(this._canvasImp, null, value);
   };
 
   function RenderCanvas_set_Width (value) {
-    $IM11().Call(this._canvasImp, null, value);
+    $IM12().Call(this._canvasImp, null, value);
+  };
+
+  function RenderCanvas_SetCursor (cursorType) {
+    $IM13().Call(this._canvasImp, null, cursorType);
   };
 
   function RenderCanvas_UnLoad () {
@@ -11764,6 +11781,11 @@ JSIL.MakeEnum(
       RenderCanvas_InitImplementors
     );
 
+    $.Method({Static:false, Public:true }, "OpenLink", 
+      new JSIL.MethodSignature(null, [$.String], []), 
+      RenderCanvas_OpenLink
+    );
+
     $.Method({Static:false, Public:true }, "Present", 
       new JSIL.MethodSignature(null, [], []), 
       RenderCanvas_Present
@@ -11832,6 +11854,11 @@ JSIL.MakeEnum(
     $.Method({Static:false, Public:true }, "set_Width", 
       new JSIL.MethodSignature(null, [$.Int32], []), 
       RenderCanvas_set_Width
+    );
+
+    $.Method({Static:false, Public:true }, "SetCursor", 
+      new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.CursorType")], []), 
+      RenderCanvas_SetCursor
     );
 
     $.Method({Static:false, Public:true , Virtual:true }, "UnLoad", 

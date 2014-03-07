@@ -237,6 +237,24 @@ namespace Fusee.Engine
         }
 
         /// <summary>
+        /// Set the cursor (the mouse pointer image) to one of the pre-defined types
+        /// </summary>
+        /// <param name="cursorType">The type of the cursor to set.</param>
+        public void SetCursor(CursorType cursorType)
+        {
+            _canvasImp.SetCursor(cursorType);
+        }
+
+        /// <summary>
+        /// Opens the given URL in the user's standard web browser. The link MUST start with "http://".
+        /// </summary>
+        /// <param name="link">The URL to open</param>
+        public void OpenLink(string link)
+        {
+            _canvasImp.OpenLink(link);
+        }
+
+        /// <summary>
         /// Runs this instance.
         /// </summary>
         /// <remarks>

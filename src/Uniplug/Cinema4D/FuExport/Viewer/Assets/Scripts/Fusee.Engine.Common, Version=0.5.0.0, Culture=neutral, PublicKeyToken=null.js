@@ -2445,6 +2445,8 @@ JSIL.MakeInterface(
     $.Method({}, "set_Fullscreen", new JSIL.MethodSignature(null, [$.Boolean], []));
     $.Method({}, "Present", new JSIL.MethodSignature(null, [], []));
     $.Method({}, "Run", new JSIL.MethodSignature(null, [], []));
+    $.Method({}, "SetCursor", new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.CursorType")], []));
+    $.Method({}, "OpenLink", new JSIL.MethodSignature(null, [$.String], []));
     $.Method({}, "add_Init", new JSIL.MethodSignature(null, [$asm06.TypeRef("System.EventHandler`1", [$asm01.TypeRef("Fusee.Engine.InitEventArgs")])], []));
     $.Method({}, "remove_Init", new JSIL.MethodSignature(null, [$asm06.TypeRef("System.EventHandler`1", [$asm01.TypeRef("Fusee.Engine.InitEventArgs")])], []));
     $.Method({}, "add_UnLoad", new JSIL.MethodSignature(null, [$asm06.TypeRef("System.EventHandler`1", [$asm01.TypeRef("Fusee.Engine.InitEventArgs")])], []));
@@ -3368,6 +3370,15 @@ JSIL.MakeEnum(
     MouseY: 2, 
     MouseWheel: 3, 
     LastAxis: 4
+  }, false
+);
+
+/* enum Fusee.Engine.CursorType */ 
+
+JSIL.MakeEnum(
+  "Fusee.Engine.CursorType", true, {
+    Standard: 0, 
+    Hand: 1
   }, false
 );
 

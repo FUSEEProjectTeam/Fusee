@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -11,6 +12,7 @@ using System.Threading;
 
 // simple HTTP explanation
 // http://www.jmarshall.com/easy/http/
+using C4d;
 
 namespace FuExport 
 {
@@ -75,7 +77,7 @@ namespace FuExport
             }
             catch (Exception e)
             {
-                Console.WriteLine("Exception: " + e.ToString());
+                Logger.Error("Exception: " + e.ToString());
                 writeFailure();
             }
             outputStream.Flush();
@@ -216,16 +218,24 @@ namespace FuExport
 
         public void listen()
         {
-            IPAddress ipAddress = IPAddress.Parse("127.0.0.1");
-            listener = new TcpListener(ipAddress, port);
-            listener.Start();
-            while (is_active)
+            try
             {
-                TcpClient s = listener.AcceptTcpClient();
-                HttpProcessor processor = new HttpProcessor(s, this);
-                Thread thread = new Thread(new ThreadStart(processor.process));
-                thread.Start();
-                Thread.Sleep(1);
+                IPAddress ipAddress = IPAddress.Parse("127.0.0.1");
+                listener = new TcpListener(ipAddress, port);
+                listener.Start();
+                while (is_active)
+                {
+                    TcpClient s = listener.AcceptTcpClient();
+                    HttpProcessor processor = new HttpProcessor(s, this);
+                    Thread thread = new Thread(processor.process);
+                    thread.Start();
+                    Thread.Sleep(1);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Just swallow everything...
+                Logger.Error("Exception occurred in Micro HttpServer: " + ex.ToString());
             }
         }
 
@@ -249,6 +259,7 @@ namespace FuExport
             _htDocsRoot = htdocsRoot;
 
             _mimeMap = new Dictionary<string, string>();
+            _mimeMap.Add(".ico", "image/x-icon");
             _mimeMap.Add(".js", "application/javascript");
             _mimeMap.Add(".mp3", "audio/mpeg");
             _mimeMap.Add(".ogg", "audio/ogg");

@@ -261,6 +261,9 @@ class String;
 	   case 5616: // Ttexture
 		 ret = new TextureTag(cPtr, owner);
 		 break;
+	   case 5671: // Tuvw
+		 ret = new UVWTag(cPtr, owner);
+		 break;
       // Repeat for every other concrete type.
       default:
 	  //changed from the debug output to return a BaseTag object

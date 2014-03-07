@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using C4d;
@@ -29,7 +30,8 @@ namespace FuExport
                 {
                     CreatedBy = userName,
                     Generator = "FUSEE Export Plugin for Cinema4D",
-                    Version = 1
+                    Version = 1,
+                    CreationDate = DateTime.Now.ToString("d-MMM-yyyy", CultureInfo.CreateSpecificCulture("en-US"))
                 },
                 Children = FuseefyOb(_polyDoc.GetFirstObject())
             };
@@ -85,7 +87,7 @@ namespace FuExport
 
                 if (c != d)
                 {
-                    // The Polyogon is not only a triangle, but a quad. Add the second triangle.
+                    // The Polyogon is not a triangle, but a quad. Add the second triangle.
                     verts.Add((float3) d);
                     normals.Add(normalD);
                     tris.AddRange(new ushort[] {nNewVerts, (ushort) (nNewVerts + 3), (ushort) (nNewVerts + 2)});
@@ -108,6 +110,32 @@ namespace FuExport
             return float3.Normalize(float3.Cross(v1, v2));
         }
 
+
+        private void VisitObject(BaseObject ob)
+        {
+            // Iterate over the object's tags
+            for (BaseTag tag = ob.GetFirstTag(); tag != null; tag = tag.GetNext())
+            {
+                TextureTag texTag = tag as TextureTag;
+                if (texTag != null)
+                {
+                    // Handle texture tag
+                    continue;
+                }
+                UVWTag uvwTag = tag as UVWTag;
+                if (uvwTag != null)
+                {
+                    // Handle UVW tag
+                    continue;
+                }
+                XPressoTag xPressoTag = tag as XPressoTag;
+                if (xPressoTag != null)
+                {
+                    // Handle XPresso tag
+                    continue;
+                }
+            }
+        }
 
         private MaterialContainer GetMaterial(BaseObject ob)
         {

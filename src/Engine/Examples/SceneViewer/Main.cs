@@ -13,19 +13,51 @@ namespace Examples.SceneViewer
 
         private const float RotationSpeed = 1f;
         private const float Damping = 0.92f;
+        private float _subtextWidth;
+        private float _subtextHeight;
 
         // model variables
         private Mesh _meshFace;
         private Mesh _meshTea;
         private SceneRenderer _sr;
-        private ShaderProgram _spColor;
+        private ShaderProgram _sColor;
         private IShaderParam _colorParam;
+
+        // GUI stuff
+        private GUIHandler _guiHandler;
+        private GUIImage _guiFuseeLogo;
+        private GUIButton _guiFuseeLink;
+        private GUIText _guiSubText;
+        private IFont _guiLatoBlack;
 
         // is called on startup
         public override void Init()
         {
             //TestSerialize();
             //TestDeserialize();
+            
+            // GUI initialization
+            _guiHandler = new GUIHandler();
+            _guiHandler.AttachToContext(RC);
+
+            _guiFuseeLink = new GUIButton(6, 6, 157, 87);
+            _guiFuseeLink.ButtonColor = new float4(0, 0, 0, 0);
+            _guiFuseeLink.BorderColor = new float4(0, 0.6f, 0.2f, 1);
+            _guiFuseeLink.BorderWidth = 0;
+            _guiFuseeLink.OnGUIButtonDown += _guiFuseeLink_OnGUIButtonDown;
+            _guiFuseeLink.OnGUIButtonEnter += _guiFuseeLink_OnGUIButtonEnter;
+            _guiFuseeLink.OnGUIButtonLeave += _guiFuseeLink_OnGUIButtonLeave;
+            _guiHandler.Add(_guiFuseeLink);
+
+            _guiFuseeLogo = new GUIImage("Assets/FuseeLogo150.png", 10, 10, -5, 150, 80);
+            _guiHandler.Add(_guiFuseeLogo);
+
+            _guiLatoBlack = RC.LoadFont("Assets/Lato-Black.ttf", 14);
+            _guiSubText = new GUIText("FUSEE 3D Scene Viewer", _guiLatoBlack, 100, 100);
+            _guiSubText.TextColor = new float4(0.05f, 0.25f, 0.15f, 0.8f);
+            _guiHandler.Add(_guiSubText);
+
+            // Scene loading
             SceneContainer scene;
             var ser = new Serializer();
             using (var file = File.OpenRead(@"Assets/Model.fus"))
@@ -33,12 +65,50 @@ namespace Examples.SceneViewer
                 scene = ser.Deserialize(file, null, typeof(SceneContainer)) as SceneContainer;
             }
             _sr = new SceneRenderer(scene);
+            _guiSubText.Text = "FUSEE 3D Scene";
+            if (scene.Header.CreatedBy != null || scene.Header.CreationDate != null)
+            {
+                _guiSubText.Text += " created";
+                if (scene.Header.CreatedBy != null)
+                {
+                    _guiSubText.Text += " by " + scene.Header.CreatedBy;
+                }
+                if (scene.Header.CreationDate != null)
+                {
+                    _guiSubText.Text += " on " + scene.Header.CreationDate;
+                }
+            }
 
-            _spColor = MoreShaders.GetDiffuseColorShader(RC);
-            _colorParam = _spColor.GetShaderParam("color");
+            _subtextWidth = GUIText.GetTextWidth(_guiSubText.Text, _guiLatoBlack);
+            _subtextHeight = GUIText.GetTextHeight(_guiSubText.Text, _guiLatoBlack);
+
+            _sColor = MoreShaders.GetDiffuseColorShader(RC);
+            RC.SetShader(_sColor);
+            _colorParam = _sColor.GetShaderParam("color");
             RC.SetShaderParam(_colorParam, new float4(1, 1, 1, 1));
             RC.ClearColor = new float4(1, 1, 1, 1);
         }
+
+        private void _guiFuseeLink_OnGUIButtonLeave(GUIButton sender, MouseEventArgs mea)
+        {
+            _guiFuseeLink.ButtonColor = new float4(0, 0, 0, 0);
+            _guiFuseeLink.BorderWidth = 0;
+            SetCursor(CursorType.Standard);
+        }
+
+
+        private void _guiFuseeLink_OnGUIButtonEnter(GUIButton sender, MouseEventArgs mea)
+        {
+            _guiFuseeLink.ButtonColor = new float4(0, 0.6f, 0.2f, 0.4f);
+            _guiFuseeLink.BorderWidth = 1;
+            SetCursor(CursorType.Hand);
+        }
+
+        void _guiFuseeLink_OnGUIButtonDown(GUIButton sender, MouseEventArgs mea)
+        {
+            OpenLink("http://fusee3d.org");
+        }
+
 
         // is called once a frame
         public override void RenderAFrame()
@@ -77,14 +147,16 @@ namespace Examples.SceneViewer
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
             var mtxCam = float4x4.LookAt(0, 200, -500, 0, 0, 0, 0, 1, 0);
 
+            
             // first mesh
-            RC.ModelView = mtxCam * mtxRot /* float4x4.CreateScale(100) * */;
-
-            RC.SetShader(_spColor);
-            RC.SetShaderParam(_colorParam, new float4(0.5f, 0.8f, 0, 1));
-
+            //RC.ModelView = mtxCam * mtxRot /* float4x4.CreateScale(100) * */;
+            //RC.SetShader(_spColor);
+            //RC.SetShaderParam(_colorParam, new float4(0.5f, 0.8f, 0, 1));
             //RC.Render(_meshTea);
+
+            RC.ModelView = mtxCam * mtxRot;
             _sr.Render(RC);
+            _guiHandler.RenderGUI();
 
             // swap buffers
               Present();
@@ -96,6 +168,10 @@ namespace Examples.SceneViewer
             RC.Viewport(0, 0, Width, Height);
             var aspectRatio = Width / (float)Height;
             RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 10000);
+
+            _guiSubText.PosX = (int)((Width - _subtextWidth) / 2);
+            _guiSubText.PosY = (int)(Height - _subtextHeight - 3);
+            _guiHandler.Refresh();        
         }
 
         private void TestSerialize()
@@ -179,6 +255,7 @@ namespace Examples.SceneViewer
             /**/            
             Diagnostics.Log(mc2.ToString());
         }
+
 
         public static void Main()
         {

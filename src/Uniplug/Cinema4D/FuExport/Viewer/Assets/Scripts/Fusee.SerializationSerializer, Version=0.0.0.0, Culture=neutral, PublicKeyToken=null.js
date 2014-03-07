@@ -562,9 +562,16 @@ JSIL.DeclareNamespace("Fusee.Serialization");
       if (num !== 1) {
         if (num !== 2) {
           if (num !== 3) {
-            protoReader.SkipField();
+            if (num !== 4) {
+              protoReader.SkipField();
+            } else {
+              var text = protoReader.ReadString();
+              if (text !== null) {
+                result.CreationDate = text;
+              }
+            }
           } else {
-            var text = protoReader.ReadString();
+            text = protoReader.ReadString();
             if (text !== null) {
               result.CreatedBy = text;
             }
@@ -972,6 +979,11 @@ JSIL.DeclareNamespace("Fusee.Serialization");
     if (expr_43 !== null) {
       $T1E().WriteFieldHeader(3, $T15().String, writer);
       $T1E().WriteString(expr_43, writer);
+    }
+    var expr_61 = sceneHeader.CreationDate;
+    if (expr_61 !== null) {
+      $T1E().WriteFieldHeader(4, $T15().String, writer);
+      $T1E().WriteString(expr_61, writer);
     }
   };
 

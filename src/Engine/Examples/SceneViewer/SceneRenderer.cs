@@ -17,6 +17,15 @@ namespace Examples.SceneViewer
         private ShaderProgram _shader;
         private IShaderParam _colorParam;
 
+        private RenderStateSet _stateSet = new RenderStateSet()
+        {
+            AlphaBlendEnable = false,
+            SourceBlend = Blend.One,
+            DestinationBlend = Blend.Zero,
+            ZEnable = true,
+            ZFunc = Compare.Less
+        };
+
         private float3 _curCol;
         float3 CurCol
         {
@@ -51,6 +60,8 @@ namespace Examples.SceneViewer
                 _colorParam = _shader.GetShaderParam("color");
             }
             rc.SetShader(_shader);
+            rc.SetRenderState(_stateSet);
+            rc.SetShaderParam(_colorParam, new float4(_curCol.x, _curCol.y, _curCol.z, 1));
 
             foreach (var soc in _sc.Children)
             {

@@ -67,7 +67,7 @@ namespace FuExport
             if (_httpServer == null)
             {
                 _httpServer = new FuseeHttpServer(root, 4655); // HEX: FU
-                Thread thread = new Thread(new ThreadStart(_httpServer.listen));
+                Thread thread = new Thread(_httpServer.listen);
                 thread.Start();
             }
             else
@@ -91,7 +91,7 @@ namespace FuExport
             DirCopy.DirectoryCopy(fuseePlayerDir, htmlFileDir, true, true);
 
 
-            string origHtmlFilePath = Path.Combine(htmlFileDir, "Examples.SceneViewer.html");
+            string origHtmlFilePath = Path.Combine(htmlFileDir, "SceneViewer.html");
             if (File.Exists(htmlFilePath))
                 File.Delete(htmlFilePath);
 

@@ -413,6 +413,39 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderCanvasImp
         }
     );
 
+
+    $.Method({ Static: false, Public: true }, "SetCursor",
+        new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.CursorType")]),
+        function SetCursor(cursor) {
+            var cursorVal;
+            if ("value" in cursor)
+                cursorVal = cursor.value;
+            else
+                cursorVal = cursor;
+            switch (cursorVal) {
+            case $fuseeCommon.Fusee.Engine.CursorType.Standard.value:
+                {
+                    document.body.style.cursor = 'auto';
+                }
+                break;
+            case $fuseeCommon.Fusee.Engine.CursorType.Hand.value:
+                {
+                    document.body.style.cursor = 'pointer';
+                }
+                break;
+            }
+        }
+    );
+
+    $.Method({ Static: false, Public: true }, "OpenLink",
+        new JSIL.MethodSignature(null, [$.String]),
+        function OpenLink(link) {
+            var win = window.open(link, '_blank');
+            win.focus();
+        }
+    );
+
+
     $.Method({ Static: false, Public: true }, "Run",
         new JSIL.MethodSignature(null, []),
         function Run() {
@@ -626,6 +659,8 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
 
             this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
             this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
+
+            this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, false);
 
             var texRet = new $WebGLImp.Fusee.Engine.Texture();
             texRet.handle = glTexOb;

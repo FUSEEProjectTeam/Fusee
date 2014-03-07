@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Security.AccessControl;
@@ -202,6 +203,18 @@ namespace Fusee.Engine
             // _context.MakeCurrent(_wi);
             _context.SwapBuffers();
         }
+
+        /// <summary>
+        /// Set the cursor (the mouse pointer image) to one of the pre-defined types
+        /// </summary>
+        /// <param name="cursorType">The type of the cursor to set.</param>
+        public abstract void SetCursor(CursorType cursorType);
+
+        /// <summary>
+        /// Opens the given URL in the user's standard web browser. The link MUST start with "http://" otherwis
+        /// </summary>
+        /// <param name="link">The URL to open</param>
+        public abstract void OpenLink(string link);
 
         /// <summary>
         /// Runs this application instance.
@@ -420,6 +433,25 @@ namespace Fusee.Engine
         {
             if (_gameWindow != null)
                 _gameWindow.SwapBuffers();
+        }
+
+        /// <summary>
+        /// Set the cursor (the mouse pointer image) to one of the pre-defined types
+        /// </summary>
+        /// <param name="cursorType">The type of the cursor to set.</param>
+        public void SetCursor(CursorType cursorType)
+        {
+            // Currently not supported by OpenTK... Too bad.
+        }
+
+        /// <summary>
+        /// Opens the given URL in the user's standard web browser. The link MUST start with "http://".
+        /// </summary>
+        /// <param name="link">The URL to open</param>
+        public void OpenLink(string link)
+        {
+            if (link.StartsWith("http://"))
+                Process.Start(link);
         }
 
         /// <summary>

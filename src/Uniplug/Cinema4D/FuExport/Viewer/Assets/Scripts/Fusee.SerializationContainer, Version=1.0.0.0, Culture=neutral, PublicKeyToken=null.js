@@ -63,6 +63,8 @@ JSIL.DeclareNamespace("Fusee.Serialization");
       .Attribute($asm07.TypeRef("ProtoBuf.ProtoMemberAttribute"), function () { return [2]; }); 
     $.Field({Static:false, Public:true }, "CreatedBy", $.String)
       .Attribute($asm07.TypeRef("ProtoBuf.ProtoMemberAttribute"), function () { return [3]; }); 
+    $.Field({Static:false, Public:true }, "CreationDate", $.String)
+      .Attribute($asm07.TypeRef("ProtoBuf.ProtoMemberAttribute"), function () { return [4]; }); 
     return function (newThisType) { $thisType = newThisType; }; 
   })
     .Attribute($asm07.TypeRef("ProtoBuf.ProtoContractAttribute"));
