@@ -222,6 +222,8 @@ class String;
 // </String-string mapping>
 
 
+
+
 ////////////////////////////////////////////////////////////////////////////////////
 // Some simple instructions to handle C4d-defined simple types as builtin C++ types
 %apply int   { LONG }
@@ -263,6 +265,9 @@ class String;
 		 break;
 	   case 5671: // Tuvw
 		 ret = new UVWTag(cPtr, owner);
+		 break;
+	   case 5673: // Tpolygonselection  WARNING!!! There is is only ONE class (SelectionTag) for three type IDs (Point, Edge, and Poly). C4D programmers, you are real men...
+		 ret = new SelectionTag(cPtr, owner);
 		 break;
       // Repeat for every other concrete type.
       default:
@@ -832,6 +837,24 @@ BaseObject *
 
 ///////////////////////////////////////////////
 // "c4d_baseselect.h"
+%extend BaseSelect
+{
+	LONG GetRangeA(LONG seg)
+	{
+		LONG ret, b;
+		if (self->GetRange(seg, 2147483647, &ret, &b))
+			return ret;
+		return -1;
+	}
+	LONG GetRangeB(LONG seg)
+	{
+		LONG a, ret;
+		if (self->GetRange(seg, 2147483647, &a, &ret))
+			return ret;
+		return -1;
+	}
+};
+
 %include "c4d_baseselect.h";
 
 ///////////////////////////////////////////////
@@ -1063,8 +1086,13 @@ BaseObject *
 
 //////////////////////////////////////////////////////////////////
 // Res file includes (for constants)
+// NOTE: These files are typically found under $(C4D)/resource/res/description.
+// These constants are most likely not found by a find-in-files on the c4dsdk.
+// Try to guess the dialog name of the res/h file and look into it to make sure
+// the data you need is included
 %include "osplineprimitive.h";
 %include "ospline.h";
+%include "ttexture.h";
 
 //////////////////////////////////////////////////////////////////
 //operatingsystem.h

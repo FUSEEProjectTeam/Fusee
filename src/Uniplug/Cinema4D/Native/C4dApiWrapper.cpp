@@ -434,6 +434,18 @@ SWIGINTERN Segment *SplineObject_GetSegmentAt(SplineObject *self,LONG inx){
 SWIGINTERN void SplineObject_SetSegmentAt(SplineObject *self,LONG inx,Segment *pT){
 		self->GetSegmentW()[inx] = *pT;
 	}
+SWIGINTERN LONG BaseSelect_GetRangeA(BaseSelect *self,LONG seg){
+		LONG ret, b;
+		if (self->GetRange(seg, 2147483647, &ret, &b))
+			return ret;
+		return -1;
+	}
+SWIGINTERN LONG BaseSelect_GetRangeB(BaseSelect *self,LONG seg){
+		LONG a, ret;
+		if (self->GetRange(seg, 2147483647, &a, &ret))
+			return ret;
+		return -1;
+	}
 SWIGINTERN Vector BrushObjectInfo_GetPointAt(BrushObjectInfo *self,LONG inx){
 		return self->m_pPoints[inx];
 	}
@@ -51559,6 +51571,34 @@ SWIGEXPORT int SWIGSTDCALL CSharp_BaseSelect_GetLastElement(void * jarg1) {
 }
 
 
+SWIGEXPORT int SWIGSTDCALL CSharp_BaseSelect_GetRangeA(void * jarg1, int jarg2) {
+  int jresult ;
+  BaseSelect *arg1 = (BaseSelect *) 0 ;
+  LONG arg2 ;
+  LONG result;
+  
+  arg1 = (BaseSelect *)jarg1; 
+  arg2 = (LONG)jarg2; 
+  result = BaseSelect_GetRangeA(arg1,arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BaseSelect_GetRangeB(void * jarg1, int jarg2) {
+  int jresult ;
+  BaseSelect *arg1 = (BaseSelect *) 0 ;
+  LONG arg2 ;
+  LONG result;
+  
+  arg1 = (BaseSelect *)jarg1; 
+  arg2 = (LONG)jarg2; 
+  result = BaseSelect_GetRangeB(arg1,arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
 SWIGEXPORT void * SWIGSTDCALL CSharp_BaseMaterial_GetNext(void * jarg1) {
   void * jresult ;
   BaseMaterial *arg1 = (BaseMaterial *) 0 ;
@@ -76471,6 +76511,556 @@ SWIGEXPORT int SWIGSTDCALL CSharp_SPLINEOBJECT_MAXIMUMLENGTH_get() {
   int result;
   
   result = (int)SPLINEOBJECT_MAXIMUMLENGTH;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_OFFSETX_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_OFFSETX;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_OFFSETY_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_OFFSETY;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_LENGTHX_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_LENGTHX;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_LENGTHY_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_LENGTHY;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_PROJECTION_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_PROJECTION;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_PROJECTION_SPHERICAL_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_PROJECTION_SPHERICAL;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_PROJECTION_CYLINDRICAL_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_PROJECTION_CYLINDRICAL;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_PROJECTION_FLAT_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_PROJECTION_FLAT;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_PROJECTION_CUBIC_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_PROJECTION_CUBIC;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_PROJECTION_FRONTAL_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_PROJECTION_FRONTAL;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_PROJECTION_SPATIAL_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_PROJECTION_SPATIAL;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_PROJECTION_UVW_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_PROJECTION_UVW;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_PROJECTION_SHRINKWRAP_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_PROJECTION_SHRINKWRAP;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_PROJECTION_CAMERAMAP_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_PROJECTION_CAMERAMAP;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_SIDE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_SIDE;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_SIDE_FRONTANDBACK_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_SIDE_FRONTANDBACK;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_SIDE_FRONT_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_SIDE_FRONT;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_SIDE_BACK_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_SIDE_BACK;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_RESTRICTION_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_RESTRICTION;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_TILE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_TILE;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_SEAMLESS_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_SEAMLESS;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_MIX_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_MIX;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_MATERIAL_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_MATERIAL;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_POSITION_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_POSITION;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_SIZE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_SIZE;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_ROTATION_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_ROTATION;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_TILESX_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_TILESX;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_TILESY_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_TILESY;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_STOPINTERACTIVEMAPPING_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_STOPINTERACTIVEMAPPING;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_CAMERA_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_CAMERA;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_CAMERA_FILMASPECT_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_CAMERA_FILMASPECT;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_CAMERA_PIXELASPECT_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_CAMERA_PIXELASPECT;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_CAMERA_CALCULATE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_CAMERA_CALCULATE;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_UVBUMP_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_UVBUMP;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_REPETITIONX_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_REPETITIONX;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_REPETITIONY_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_REPETITIONY;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_COORDINATEGROUP_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_COORDINATEGROUP;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_CAMERA_FILMPRESET_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_CAMERA_FILMPRESET;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_CAMERA_FILMPRESET_CUSTOM_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_CAMERA_FILMPRESET_CUSTOM;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_CAMERA_FILMPRESET_SQUARE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_CAMERA_FILMPRESET_SQUARE;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_CAMERA_FILMPRESET_STANDARD_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_CAMERA_FILMPRESET_STANDARD;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_CAMERA_FILMPRESET_HDTV_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_CAMERA_FILMPRESET_HDTV;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_CAMERA_FILMPRESET_35MMSTILL_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_CAMERA_FILMPRESET_35MMSTILL;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_CAMERA_FILMPRESET_WIDESCREEN_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_CAMERA_FILMPRESET_WIDESCREEN;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_CAMERA_FILMPRESET_35MM_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_CAMERA_FILMPRESET_35MM;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_CAMERA_FILMPRESET_PANAVISION_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_CAMERA_FILMPRESET_PANAVISION;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_CAMERA_PIXELPRESET_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_CAMERA_PIXELPRESET;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_CAMERA_PIXELPRESET_CUSTOM_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_CAMERA_PIXELPRESET_CUSTOM;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_CAMERA_PIXELPRESET_SQUARE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_CAMERA_PIXELPRESET_SQUARE;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_CAMERA_PIXELPRESET_D1DVNTSC_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_CAMERA_PIXELPRESET_D1DVNTSC;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_CAMERA_PIXELPRESET_D1DVPAL_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_CAMERA_PIXELPRESET_D1DVPAL;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_CAMERA_PIXELPRESET_D1DVNTSCWIDESCREEN_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_CAMERA_PIXELPRESET_D1DVNTSCWIDESCREEN;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_CAMERA_PIXELPRESET_HDVANAMORPHIC_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_CAMERA_PIXELPRESET_HDVANAMORPHIC;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_CAMERA_PIXELPRESET_D1DVPALWIDESCREEN_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_CAMERA_PIXELPRESET_D1DVPALWIDESCREEN;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_CAMERA_PIXELPRESET_ANAMORPHIC_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)TEXTURETAG_CAMERA_PIXELPRESET_ANAMORPHIC;
   jresult = result; 
   return jresult;
 }
