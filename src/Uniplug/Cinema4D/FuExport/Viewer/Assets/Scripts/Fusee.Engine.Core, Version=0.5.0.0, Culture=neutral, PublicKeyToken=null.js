@@ -1935,10 +1935,10 @@ JSIL.DeclareNamespace("Fusee.Engine");
     $.ExternalMethod({Static:true , Public:true }, "Log", 
       new JSIL.MethodSignature(null, [$.Object], [])
     )
-      .Attribute($asm0E.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
 
     $.ExternalProperty({Static:true , Public:true }, "Timer", $.Double)
-      .Attribute($asm0E.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
 
     return function (newThisType) { $thisType = newThisType; }; 
   });
@@ -5531,7 +5531,7 @@ JSIL.MakeDelegate("Fusee.Engine.GUIButtonHandler", true, []);
     $.ExternalMethod({Static:false, Public:false}, "SortArray", 
       new JSIL.MethodSignature(null, [$jsilcore.TypeRef("JSIL.Reference", [$jsilcore.TypeRef("System.Array", [$asm02.TypeRef("Fusee.Engine.GUIElement")])])], [])
     )
-      .Attribute($asm0E.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
 
     $.Field({Static:false, Public:false}, "_renderContext", $asm02.TypeRef("Fusee.Engine.RenderContext")); 
     $.ImplementInterfaces(
@@ -6896,37 +6896,37 @@ JSIL.MakeDelegate("Fusee.Engine.GUIPanelHandler", true, []);
     $.ExternalMethod({Static:true , Public:true }, "CreateIAudioImp", 
       new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IAudioImp"), [], [])
     )
-      .Attribute($asm0E.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
 
     $.ExternalMethod({Static:true , Public:true }, "CreateIDynamicWorldImp", 
       new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IDynamicWorldImp"), [], [])
     )
-      .Attribute($asm0E.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
 
     $.ExternalMethod({Static:true , Public:true }, "CreateIInputDriverImp", 
       new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IInputDriverImp"), [], [])
     )
-      .Attribute($asm0E.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
 
     $.ExternalMethod({Static:true , Public:true }, "CreateIInputImp", 
       new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IInputImp"), [$asm01.TypeRef("Fusee.Engine.IRenderCanvasImp")], [])
     )
-      .Attribute($asm0E.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
 
     $.ExternalMethod({Static:true , Public:true }, "CreateINetworkImp", 
       new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.INetworkImp"), [], [])
     )
-      .Attribute($asm0E.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
 
     $.ExternalMethod({Static:true , Public:true }, "CreateIRenderCanvasImp", 
       new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IRenderCanvasImp"), [], [])
     )
-      .Attribute($asm0E.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
 
     $.ExternalMethod({Static:true , Public:true }, "CreateIRenderContextImp", 
       new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IRenderContextImp"), [$asm01.TypeRef("Fusee.Engine.IRenderCanvasImp")], [])
     )
-      .Attribute($asm0E.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
 
     return function (newThisType) { $thisType = newThisType; }; 
   });
@@ -7875,7 +7875,7 @@ JSIL.MakeEnum(
     $.ExternalMethod({Static:true , Public:true }, "Double_Parse", 
       new JSIL.MethodSignature($.Double, [$.String], [])
     )
-      .Attribute($asm0E.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
 
     $.Method({Static:true , Public:true }, "FilteredSplit", 
       new JSIL.MethodSignature($jsilcore.TypeRef("System.Array", [$.String]), [$.String, $jsilcore.TypeRef("System.Array", [$.Char])], []), 
@@ -7922,7 +7922,7 @@ JSIL.MakeEnum(
   };
 
   function MoreShaders_GetTextureShader (rc) {
-    return rc.CreateShader("\r\n            #ifdef GL_ES\r\n                precision mediump float;\r\n            #endif\r\n\r\n            attribute vec3 fuVertex;\r\n            attribute vec3 fuNormal;\r\n            attribute vec2 fuUV;\r\n\r\n            varying vec3 vNormal;\r\n            varying vec2 vUV;\r\n\r\n            uniform mat4 FUSEE_MVP;\r\n            uniform mat4 FUSEE_ITMV;\r\n\r\n            void main(){\r\n                vUV = fuUV;\r\n                gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);\r\n                vNormal = mat3(FUSEE_ITMV[0].xyz, FUSEE_ITMV[1].xyz, FUSEE_ITMV[2].xyz) * fuNormal;\r\n            }", "\r\n            #ifdef GL_ES\r\n                precision mediump float;\r\n            #endif\r\n\r\n            uniform sampler2D texture1;\r\n            varying vec3 vNormal;\r\n            varying vec2 vUV;\r\n\r\n            void main(){\r\n                gl_FragColor = max(dot(vec3(0,0,1),normalize(vNormal)), 0.2) * texture2D(texture1, vUV);\r\n            }");
+    return rc.CreateShader("\r\n            #ifdef GL_ES\r\n                precision mediump float;\r\n            #endif\r\n\r\n            attribute vec3 fuVertex;\r\n            attribute vec3 fuNormal;\r\n            attribute vec2 fuUV;\r\n\r\n            varying vec3 vNormal;\r\n            varying vec2 vUV;\r\n\r\n            uniform mat4 FUSEE_MVP;\r\n            uniform mat4 FUSEE_ITMV;\r\n\r\n            void main(){\r\n                vUV = fuUV;\r\n                gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);\r\n                vNormal = mat3(FUSEE_ITMV[0].xyz, FUSEE_ITMV[1].xyz, FUSEE_ITMV[2].xyz) * fuNormal;\r\n            }", "\r\n            #ifdef GL_ES\r\n                precision mediump float;\r\n            #endif\r\n\r\n            uniform sampler2D texture1;\r\n            varying vec3 vNormal;\r\n            varying vec2 vUV;\r\n\r\n            void main(){\r\n                gl_FragColor = max(dot(vec3(0,0,-1),normalize(vNormal)), 0.2) * texture2D(texture1, vUV);\r\n            }");
   };
 
   JSIL.MakeStaticClass("Fusee.Engine.MoreShaders", true, [], function ($interfaceBuilder) {
@@ -7954,7 +7954,7 @@ JSIL.MakeEnum(
     );
 
     $.Constant({Static:true , Public:false}, "VsSimpleTexture", "\r\n            #ifdef GL_ES\r\n                precision mediump float;\r\n            #endif\r\n\r\n            attribute vec3 fuVertex;\r\n            attribute vec3 fuNormal;\r\n            attribute vec2 fuUV;\r\n\r\n            varying vec3 vNormal;\r\n            varying vec2 vUV;\r\n\r\n            uniform mat4 FUSEE_MVP;\r\n            uniform mat4 FUSEE_ITMV;\r\n\r\n            void main(){\r\n                vUV = fuUV;\r\n                gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);\r\n                vNormal = mat3(FUSEE_ITMV[0].xyz, FUSEE_ITMV[1].xyz, FUSEE_ITMV[2].xyz) * fuNormal;\r\n            }"); 
-    $.Constant({Static:true , Public:false}, "PsSimpleTexture", "\r\n            #ifdef GL_ES\r\n                precision mediump float;\r\n            #endif\r\n\r\n            uniform sampler2D texture1;\r\n            varying vec3 vNormal;\r\n            varying vec2 vUV;\r\n\r\n            void main(){\r\n                gl_FragColor = max(dot(vec3(0,0,1),normalize(vNormal)), 0.2) * texture2D(texture1, vUV);\r\n            }"); 
+    $.Constant({Static:true , Public:false}, "PsSimpleTexture", "\r\n            #ifdef GL_ES\r\n                precision mediump float;\r\n            #endif\r\n\r\n            uniform sampler2D texture1;\r\n            varying vec3 vNormal;\r\n            varying vec2 vUV;\r\n\r\n            void main(){\r\n                gl_FragColor = max(dot(vec3(0,0,-1),normalize(vNormal)), 0.2) * texture2D(texture1, vUV);\r\n            }"); 
     $.Constant({Static:true , Public:false}, "VsDiffuse", "\r\n            attribute vec4 fuColor;\r\n            attribute vec3 fuVertex;\r\n            attribute vec3 fuNormal;\r\n            attribute vec2 fuUV;\r\n       \r\n            uniform mat4 FUSEE_MVP;\r\n            uniform mat4 FUSEE_MV;\r\n\r\n            varying vec2 vUV;\r\n            varying vec3 vNormal;\r\n            varying vec3 vViewPos;\r\n\r\n            vec3 vPos;\r\n \r\n            void main()\r\n            {\r\n                vec4 vViewPosTemp = FUSEE_MV * vec4(fuVertex, 1);\r\n                vViewPos = vec3(vViewPosTemp)/vViewPosTemp.w;      \r\n                vUV = fuUV;\r\n                vNormal = normalize(mat3(FUSEE_MV[0].xyz, FUSEE_MV[1].xyz, FUSEE_MV[2].xyz) * fuNormal);\r\n                gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);\r\n            }"); 
     $.Constant({Static:true , Public:false}, "PsDiffuse", "\r\n            #ifdef GL_ES\r\n                precision highp float;\r\n            #endif\r\n\r\n            uniform sampler2D texture1;\r\n\r\n            uniform vec3 FUSEE_L0_POSITION;\r\n            uniform vec3 FUSEE_L1_POSITION;\r\n            uniform vec3 FUSEE_L2_POSITION;\r\n            uniform vec3 FUSEE_L3_POSITION;\r\n            uniform vec3 FUSEE_L4_POSITION;\r\n            uniform vec3 FUSEE_L5_POSITION;\r\n            uniform vec3 FUSEE_L6_POSITION;\r\n            uniform vec3 FUSEE_L7_POSITION;\r\n\r\n            uniform vec4 FUSEE_L0_DIFFUSE;\r\n            uniform vec4 FUSEE_L1_DIFFUSE;\r\n            uniform vec4 FUSEE_L2_DIFFUSE;\r\n            uniform vec4 FUSEE_L3_DIFFUSE;\r\n            uniform vec4 FUSEE_L4_DIFFUSE;\r\n            uniform vec4 FUSEE_L5_DIFFUSE;\r\n            uniform vec4 FUSEE_L6_DIFFUSE;\r\n            uniform vec4 FUSEE_L7_DIFFUSE;\r\n\r\n            uniform vec4 FUSEE_L0_AMBIENT;\r\n            uniform vec4 FUSEE_L1_AMBIENT;\r\n            uniform vec4 FUSEE_L2_AMBIENT;\r\n            uniform vec4 FUSEE_L3_AMBIENT;\r\n            uniform vec4 FUSEE_L4_AMBIENT;\r\n            uniform vec4 FUSEE_L5_AMBIENT;\r\n            uniform vec4 FUSEE_L6_AMBIENT;\r\n            uniform vec4 FUSEE_L7_AMBIENT;\r\n\r\n            uniform float FUSEE_L0_ACTIVE;\r\n            uniform float FUSEE_L1_ACTIVE;\r\n            uniform float FUSEE_L2_ACTIVE;\r\n            uniform float FUSEE_L3_ACTIVE;\r\n            uniform float FUSEE_L4_ACTIVE;\r\n            uniform float FUSEE_L5_ACTIVE;\r\n            uniform float FUSEE_L6_ACTIVE;\r\n            uniform float FUSEE_L7_ACTIVE;\r\n\r\n            uniform vec3 FUSEE_L0_DIRECTION;\r\n            uniform vec3 FUSEE_L1_DIRECTION;\r\n            uniform vec3 FUSEE_L2_DIRECTION;\r\n            uniform vec3 FUSEE_L3_DIRECTION;\r\n            uniform vec3 FUSEE_L4_DIRECTION;\r\n            uniform vec3 FUSEE_L5_DIRECTION;\r\n            uniform vec3 FUSEE_L6_DIRECTION;\r\n            uniform vec3 FUSEE_L7_DIRECTION;\r\n\r\n            uniform float FUSEE_L0_SPOTANGLE;\r\n            uniform float FUSEE_L1_SPOTANGLE;\r\n            uniform float FUSEE_L2_SPOTANGLE;\r\n            uniform float FUSEE_L3_SPOTANGLE;\r\n            uniform float FUSEE_L4_SPOTANGLE;\r\n            uniform float FUSEE_L5_SPOTANGLE;\r\n            uniform float FUSEE_L6_SPOTANGLE;\r\n            uniform float FUSEE_L7_SPOTANGLE;\r\n\r\n            uniform mat4 FUSEE_V;\r\n\r\n            varying vec3 vNormal;\r\n            varying vec2 vUV;\r\n            varying vec3 vViewPos;\r\n\r\n            void CalcDirectLight(vec4 difColor, vec4 ambColor, vec3 direction, inout vec4 intensity) {\r\n                intensity += ambColor;\r\n                intensity += max(dot(-normalize(direction),normalize(vNormal)),0.0) * difColor;\r\n            }\r\n\r\n            void CalcPointLight(vec4 difColor, vec4 ambColor, vec3 position, inout vec4 intensity) {\r\n                intensity += ambColor;\r\n                vec3 pos = position - vViewPos;\r\n                intensity += max(dot(normalize(pos),normalize(vNormal)),0.0) * difColor;   \r\n            }\r\n\r\n            void CalcSpotLight(vec4 difColor, vec4 ambColor, vec3 position, vec3 direction, float angle, inout vec4 intensity) {\r\n                intensity += ambColor;\r\n                vec3 pos = position - vViewPos;\r\n                float alpha = acos(dot(normalize(pos), normalize(-direction)));\r\n\r\n                if(alpha < angle){\r\n                    intensity += max(dot(normalize(pos),normalize(vNormal)),0.0) * difColor;  \r\n                }     \r\n            }\r\n \r\n            void main()\r\n            {\r\n                vec4 endIntensity = vec4(0,0,0,0);\r\n                if(FUSEE_L0_ACTIVE != 0.0){\r\n                    if(FUSEE_L0_ACTIVE == 1.0)\r\n                        CalcDirectLight(FUSEE_L0_DIFFUSE, FUSEE_L0_AMBIENT, FUSEE_L0_DIRECTION, endIntensity);\r\n                    if(FUSEE_L0_ACTIVE == 2.0)\r\n                        CalcPointLight(FUSEE_L0_DIFFUSE, FUSEE_L0_AMBIENT, FUSEE_L0_POSITION, endIntensity);\r\n                    if(FUSEE_L0_ACTIVE == 3.0)\r\n                        CalcSpotLight(FUSEE_L0_DIFFUSE, FUSEE_L0_AMBIENT, FUSEE_L0_POSITION, FUSEE_L0_DIRECTION, FUSEE_L0_SPOTANGLE, endIntensity);\r\n                }  \r\n\r\n                if(FUSEE_L1_ACTIVE != 0.0){\r\n                    if(FUSEE_L1_ACTIVE == 1.0)\r\n                        CalcDirectLight(FUSEE_L1_DIFFUSE, FUSEE_L1_AMBIENT, FUSEE_L1_DIRECTION, endIntensity);\r\n                    if(FUSEE_L1_ACTIVE == 2.0)\r\n                        CalcPointLight(FUSEE_L1_DIFFUSE, FUSEE_L1_AMBIENT, FUSEE_L1_POSITION, endIntensity);\r\n                    if(FUSEE_L1_ACTIVE == 3.0)\r\n                        CalcSpotLight(FUSEE_L1_DIFFUSE, FUSEE_L1_AMBIENT, FUSEE_L1_POSITION, FUSEE_L1_DIRECTION, FUSEE_L1_SPOTANGLE, endIntensity);\r\n                }  \r\n\r\n                if(FUSEE_L2_ACTIVE != 0.0){\r\n                    if(FUSEE_L2_ACTIVE == 1.0)\r\n                        CalcDirectLight(FUSEE_L2_DIFFUSE, FUSEE_L2_AMBIENT, FUSEE_L2_DIRECTION, endIntensity);\r\n                    if(FUSEE_L2_ACTIVE == 2.0)\r\n                        CalcPointLight(FUSEE_L2_DIFFUSE, FUSEE_L2_AMBIENT, FUSEE_L2_POSITION, endIntensity);\r\n                    if(FUSEE_L2_ACTIVE == 3.0)\r\n                        CalcSpotLight(FUSEE_L2_DIFFUSE, FUSEE_L2_AMBIENT, FUSEE_L2_POSITION, FUSEE_L2_DIRECTION, FUSEE_L2_SPOTANGLE, endIntensity);\r\n                }  \r\n\r\n                if(FUSEE_L3_ACTIVE != 0.0){\r\n                    if(FUSEE_L3_ACTIVE == 1.0)\r\n                        CalcDirectLight(FUSEE_L3_DIFFUSE, FUSEE_L3_AMBIENT, FUSEE_L3_DIRECTION, endIntensity);\r\n                    if(FUSEE_L3_ACTIVE == 2.0)\r\n                        CalcPointLight(FUSEE_L3_DIFFUSE, FUSEE_L3_AMBIENT, FUSEE_L3_POSITION, endIntensity);\r\n                    if(FUSEE_L3_ACTIVE == 3.0)\r\n                        CalcSpotLight(FUSEE_L3_DIFFUSE, FUSEE_L3_AMBIENT, FUSEE_L3_POSITION, FUSEE_L3_DIRECTION, FUSEE_L3_SPOTANGLE, endIntensity);\r\n                }  \r\n\r\n                if(FUSEE_L4_ACTIVE != 0.0){\r\n                    if(FUSEE_L4_ACTIVE == 1.0)\r\n                        CalcDirectLight(FUSEE_L4_DIFFUSE, FUSEE_L4_AMBIENT, FUSEE_L4_DIRECTION, endIntensity);\r\n                    if(FUSEE_L4_ACTIVE == 2.0)\r\n                        CalcPointLight(FUSEE_L4_DIFFUSE, FUSEE_L4_AMBIENT, FUSEE_L4_POSITION, endIntensity);\r\n                    if(FUSEE_L4_ACTIVE == 3.0)\r\n                        CalcSpotLight(FUSEE_L4_DIFFUSE, FUSEE_L4_AMBIENT, FUSEE_L4_POSITION, FUSEE_L4_DIRECTION, FUSEE_L4_SPOTANGLE, endIntensity);\r\n                }  \r\n\r\n                if(FUSEE_L5_ACTIVE != 0.0){\r\n                    if(FUSEE_L5_ACTIVE == 1.0)\r\n                        CalcDirectLight(FUSEE_L5_DIFFUSE, FUSEE_L5_AMBIENT, FUSEE_L5_DIRECTION, endIntensity);\r\n                    if(FUSEE_L5_ACTIVE == 2.0)\r\n                        CalcPointLight(FUSEE_L5_DIFFUSE, FUSEE_L5_AMBIENT, FUSEE_L5_POSITION, endIntensity);\r\n                    if(FUSEE_L5_ACTIVE == 3.0)\r\n                        CalcSpotLight(FUSEE_L5_DIFFUSE, FUSEE_L5_AMBIENT, FUSEE_L5_POSITION, FUSEE_L5_DIRECTION, FUSEE_L5_SPOTANGLE, endIntensity);\r\n                }  \r\n\r\n                if(FUSEE_L6_ACTIVE != 0.0){\r\n                    if(FUSEE_L6_ACTIVE == 1.0)\r\n                        CalcDirectLight(FUSEE_L6_DIFFUSE, FUSEE_L6_AMBIENT, FUSEE_L6_DIRECTION, endIntensity);\r\n                    if(FUSEE_L6_ACTIVE == 2.0)\r\n                        CalcPointLight(FUSEE_L6_DIFFUSE, FUSEE_L6_AMBIENT, FUSEE_L6_POSITION, endIntensity);\r\n                    if(FUSEE_L6_ACTIVE == 3.0)\r\n                        CalcSpotLight(FUSEE_L6_DIFFUSE, FUSEE_L6_AMBIENT, FUSEE_L6_POSITION, FUSEE_L6_DIRECTION, FUSEE_L6_SPOTANGLE, endIntensity);\r\n                }  \r\n\r\n                if(FUSEE_L7_ACTIVE != 0.0){\r\n                    if(FUSEE_L7_ACTIVE == 1.0)\r\n                        CalcDirectLight(FUSEE_L7_DIFFUSE, FUSEE_L7_AMBIENT, FUSEE_L7_DIRECTION, endIntensity);\r\n                    if(FUSEE_L7_ACTIVE == 2.0)\r\n                        CalcPointLight(FUSEE_L7_DIFFUSE, FUSEE_L7_AMBIENT, FUSEE_L7_POSITION, endIntensity);\r\n                    if(FUSEE_L7_ACTIVE == 3.0)\r\n                        CalcSpotLight(FUSEE_L7_DIFFUSE, FUSEE_L7_AMBIENT, FUSEE_L7_POSITION, FUSEE_L7_DIRECTION, FUSEE_L7_SPOTANGLE, endIntensity);\r\n                }  \r\n\r\n                gl_FragColor = texture2D(texture1, vUV) * endIntensity; \r\n            }"); 
     $.Constant({Static:true , Public:false}, "VsSpecular", "\r\n            attribute vec3 fuVertex;\r\n            attribute vec3 fuNormal;\r\n            attribute vec2 fuUV;\r\n                  \r\n            varying vec3 vNormal;\r\n            varying vec2 vUV;\r\n            varying vec3 vViewPos;\r\n\r\n            uniform mat4 FUSEE_MV; \r\n            uniform mat4 FUSEE_MVP;\r\n\r\n            uniform float FUSEE_L0_ACTIVE;\r\n            uniform float FUSEE_L1_ACTIVE;\r\n            uniform float FUSEE_L2_ACTIVE;\r\n            uniform float FUSEE_L3_ACTIVE;\r\n            uniform float FUSEE_L4_ACTIVE;\r\n            uniform float FUSEE_L5_ACTIVE;\r\n            uniform float FUSEE_L6_ACTIVE;\r\n            uniform float FUSEE_L7_ACTIVE;\r\n\r\n            void main()\r\n            {\r\n                gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);\r\n                vUV = fuUV;\r\n                vNormal = normalize(mat3(FUSEE_MV[0].xyz, FUSEE_MV[1].xyz, FUSEE_MV[2].xyz) * fuNormal);\r\n                vec4 vViewTemp = FUSEE_MV * vec4(fuVertex, 1);\r\n                vViewPos = vec3(vViewTemp)/vViewTemp.w;\r\n            }"); 
@@ -10684,7 +10684,7 @@ JSIL.MakeEnum(
     $.ExternalMethod({Static:false, Public:false}, "FirstMessage", 
       new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.INetworkMsg"), [], [])
     )
-      .Attribute($asm0E.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
 
     $.Method({Static:false, Public:true }, "get_Config", 
       new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.NetConfigValues"), [], []), 
@@ -13057,7 +13057,7 @@ JSIL.MakeEnum(
     $.ExternalMethod({Static:false, Public:true }, "LoadSystemFont", 
       new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IFont"), [$.String, $.UInt32], [])
     )
-      .Attribute($asm0E.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
 
     $.Method({Static:false, Public:true }, "Render", 
       new JSIL.MethodSignature(null, [$asm02.TypeRef("Fusee.Engine.Mesh")], []), 
@@ -13184,37 +13184,37 @@ JSIL.MakeEnum(
       new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $.Single], []), 
       RenderContext_SetShaderParam1f
     )
-      .Attribute($asm0E.TypeRef("JSIL.Meta.JSChangeName"), function () { return ["SetShaderParam1f"]; });
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSChangeName"), function () { return ["SetShaderParam1f"]; });
 
     $.Method({Static:false, Public:true }, "SetShaderParam2f", 
       new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $asm03.TypeRef("Fusee.Math.float2")], []), 
       RenderContext_SetShaderParam2f
     )
-      .Attribute($asm0E.TypeRef("JSIL.Meta.JSChangeName"), function () { return ["SetShaderParam2f"]; });
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSChangeName"), function () { return ["SetShaderParam2f"]; });
 
     $.Method({Static:false, Public:true }, "SetShaderParam3f", 
       new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $asm03.TypeRef("Fusee.Math.float3")], []), 
       RenderContext_SetShaderParam3f
     )
-      .Attribute($asm0E.TypeRef("JSIL.Meta.JSChangeName"), function () { return ["SetShaderParam3f"]; });
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSChangeName"), function () { return ["SetShaderParam3f"]; });
 
     $.Method({Static:false, Public:true }, "SetShaderParam4f", 
       new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $asm03.TypeRef("Fusee.Math.float4")], []), 
       RenderContext_SetShaderParam4f
     )
-      .Attribute($asm0E.TypeRef("JSIL.Meta.JSChangeName"), function () { return ["SetShaderParam4f"]; });
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSChangeName"), function () { return ["SetShaderParam4f"]; });
 
     $.Method({Static:false, Public:true }, "SetShaderParamMtx4f", 
       new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $asm03.TypeRef("Fusee.Math.float4x4")], []), 
       RenderContext_SetShaderParamMtx4f
     )
-      .Attribute($asm0E.TypeRef("JSIL.Meta.JSChangeName"), function () { return ["SetShaderParamMtx4f"]; });
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSChangeName"), function () { return ["SetShaderParamMtx4f"]; });
 
     $.Method({Static:false, Public:true }, "SetShaderParamI", 
       new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $.Int32], []), 
       RenderContext_SetShaderParamI
     )
-      .Attribute($asm0E.TypeRef("JSIL.Meta.JSChangeName"), function () { return ["SetShaderParamI"]; });
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSChangeName"), function () { return ["SetShaderParamI"]; });
 
     $.Method({Static:false, Public:true }, "SetShaderParamTexture", 
       new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $asm01.TypeRef("Fusee.Engine.ITexture")], []), 

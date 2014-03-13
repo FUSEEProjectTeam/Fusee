@@ -60,11 +60,13 @@ namespace Examples.SceneViewer
             // Scene loading
             SceneContainer scene;
             var ser = new Serializer();
-            using (var file = File.OpenRead(@"Assets/Model.fus"))
+            // using (var file = File.OpenRead(@"Assets/Model.fus"))
+            using (var file = File.OpenRead(@"C:\Users\mch\Temp\FuseeWebPlayer\Gnome\Assets\Model.fus"))
             {
                 scene = ser.Deserialize(file, null, typeof(SceneContainer)) as SceneContainer;
             }
-            _sr = new SceneRenderer(scene);
+            //_sr = new SceneRenderer(scene, "Assets");
+            _sr = new SceneRenderer(scene, @"C:\Users\mch\Temp\FuseeWebPlayer\Gnome\Assets");
             _guiSubText.Text = "FUSEE 3D Scene";
             if (scene.Header.CreatedBy != null || scene.Header.CreationDate != null)
             {

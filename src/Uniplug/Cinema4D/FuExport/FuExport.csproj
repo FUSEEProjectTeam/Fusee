@@ -54,9 +54,16 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CustomManifest.cs" />
     <Compile Include="DirCopy.cs" />
+    <Compile Include="FileTypes.cs" />
     <Compile Include="FuExport.cs" />
     <Compile Include="FusConverter.cs" />
+    <Compile Include="ManifestFile.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ManifestFile.tt</DependentUpon>
+    </Compile>
     <Compile Include="SimpleHttpServer.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>
@@ -64,6 +71,15 @@
     <Content Include="res\FuExportLogo.tif">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ManifestFile.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>ManifestFile.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

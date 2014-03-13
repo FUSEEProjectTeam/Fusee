@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using C4d;
@@ -13,10 +14,14 @@ namespace FuExport
     class FusConverter
     {
         private BaseDocument _polyDoc;
+        private List<string> _textureFiles = new List<string>();
+        private string _sceneRootDir;
+        private Dictionary<BaseMaterial, MaterialContainer> _materialCache;
 
-        public SceneContainer FuseefyScene(BaseDocument doc)
+        public SceneContainer FuseefyScene(BaseDocument doc, string sceneRootDir, out List<string> textureFiles)
         {
-
+            _materialCache = new Dictionary<BaseMaterial, MaterialContainer>();
+            _sceneRootDir = sceneRootDir;
             _polyDoc = doc.Polygonize();
 
             Logger.Debug("Fuseefy Me!");
@@ -24,7 +29,7 @@ namespace FuExport
             BaseContainer machineFeatures = C4dApi.GetMachineFeatures();
             GeData userNameData = machineFeatures.GetDataPointer(C4dApi.MACHINEINFO_USERNAME);
             String userName = userNameData.GetString();
-
+ 
             SceneContainer root = new SceneContainer()
             {
                 Header = new SceneHeader()
@@ -36,16 +41,30 @@ namespace FuExport
                 },
                 Children = FuseefyOb(_polyDoc.GetFirstObject())
             };
+            textureFiles = _textureFiles;
             return root;
         }
 
 
-        private static MeshContainer GetMesh(PolygonObject polyOb, float3[] normalsOb, IEnumerable<int> range)
+        private static float3 AdjustNormal(float3 normalOrig, float3 normalFace)
+        {
+            if (float3.Dot(normalOrig, normalFace) < 0)
+            {
+                return -1.0f*normalOrig;
+            }
+            else
+            {
+                return normalOrig;
+            }
+        }
+
+        private static MeshContainer GetMesh(PolygonObject polyOb, float3[] normalsOb, UVWTag uvwTag, IEnumerable<int> range)
         {
             List<float3> normals = new List<float3>();
 
             ushort nNewVerts = 0;
             List<float3> verts = new List<float3>();
+            List<float2> uvs = new List<float2>();
             List<ushort> tris = new List<ushort>();
 
             foreach (int i in range)
@@ -57,21 +76,31 @@ namespace FuExport
                 double3 c = polyOb.GetPointAt(poly.c);
                 double3 d = polyOb.GetPointAt(poly.d);
 
+                UVWStruct uvw = uvwTag.GetSlow(i);
+                float2 uvA = new float2((float)uvw.a.x, 1.0f - (float)uvw.a.y);
+                float2 uvB = new float2((float)uvw.b.x, 1.0f - (float)uvw.b.y);
+                float2 uvC = new float2((float)uvw.c.x, 1.0f - (float)uvw.c.y);
+                float2 uvD = new float2((float)uvw.d.x, 1.0f - (float)uvw.d.y);
+
                 verts.Add((float3) a);
                 verts.Add((float3) b);
                 verts.Add((float3) c);
 
+                uvs.Add(uvA);
+                uvs.Add(uvB);
+                uvs.Add(uvC);
+
+                float3 faceNormal = CalcFaceNormal((float3)a, (float3)b, (float3)c);
                 float3 normalD;
                 if (normalsOb != null)
                 {
-                    normals.Add(normalsOb[iNorm++]);
-                    normals.Add(normalsOb[iNorm++]);
-                    normals.Add(normalsOb[iNorm++]);
-                    normalD = normalsOb[iNorm++];
+                    normals.Add(AdjustNormal(normalsOb[iNorm++], faceNormal));
+                    normals.Add(AdjustNormal(normalsOb[iNorm++], faceNormal));
+                    normals.Add(AdjustNormal(normalsOb[iNorm++], faceNormal));
+                    normalD = AdjustNormal(normalsOb[iNorm++], faceNormal);
                 }
                 else
                 {
-                    float3 faceNormal = CalcFaceNormal((float3) a, (float3) b, (float3) c);
                     normals.Add(faceNormal);
                     normals.Add(faceNormal);
                     normals.Add(faceNormal);
@@ -84,6 +113,7 @@ namespace FuExport
                 {
                     // The Polyogon is not a triangle, but a quad. Add the second triangle.
                     verts.Add((float3) d);
+                    uvs.Add(uvD);
                     normals.Add(normalD);
                     tris.AddRange(new ushort[] {nNewVerts, (ushort) (nNewVerts + 3), (ushort) (nNewVerts + 2)});
                     nNewVerts += 1;
@@ -95,6 +125,7 @@ namespace FuExport
                 Normals = normals.ToArray(),
                 Vertices = verts.ToArray(),
                 Triangles = tris.ToArray(),
+                UVs = uvs.ToArray()
             };
         }
 
@@ -225,21 +256,26 @@ namespace FuExport
                         subSoc.Transform = float4x4.Identity;
                         subSoc.Material = GetMaterial(texSelItem.Value);
                         subSoc.Name = soc.Name + "_" + texSelItem.Key.GetName();
-                        subSoc.Mesh = GetMesh(polyOb, normalOb, polyInxsSubset);
+                        subSoc.Mesh = GetMesh(polyOb, normalOb, uvwTag, polyInxsSubset);
 
                         soc.Children.Add(subSoc);
                     }
                 }
 
                 // The remaining polygons directly go into the original mesh
-                soc.Mesh = GetMesh(polyOb, normalOb, polyInxs);
+                soc.Mesh = GetMesh(polyOb, normalOb, uvwTag, polyInxs);
             }
         }
 
         private MaterialContainer GetMaterial(TextureTag texTag)
         {
             BaseMaterial material = texTag.GetMaterial();
-            MaterialContainer mcRet = new MaterialContainer();
+
+            MaterialContainer mcRet;
+            if (_materialCache.TryGetValue(material, out mcRet))
+                return mcRet;
+            
+            mcRet = new MaterialContainer();
                 
             BaseChannel diffuseChannel = material.GetChannel(C4dApi.CHANNEL_COLOR);
             if (diffuseChannel != null)
@@ -248,15 +284,34 @@ namespace FuExport
                 BaseContainer data = diffuseChannel.GetData();
                 mcRet.DiffuseColor = (float3) data.GetVector(C4dApi.BASECHANNEL_COLOR_EX);
                 string texture = data.GetString(C4dApi.BASECHANNEL_TEXTURE);
-                diffuseChannel.InitTexture(new InitRenderStruct(_polyDoc));
-                BaseBitmap bitmap = diffuseChannel.GetBitmap();
-                if (bitmap != null)
+
+                if (!string.IsNullOrEmpty(texture))
                 {
-                    BaseContainer compressionContainer = new BaseContainer(C4dApi.JPGSAVER_QUALITY);
-                    compressionContainer.SetReal(C4dApi.JPGSAVER_QUALITY, 70.0);
-                    bitmap.Save(new Filename("C:\\Users\\mch\\Temp\\FuseeWebPlayer\\ABitmap.jpg"), C4dApi.FILTER_JPG, compressionContainer, SAVEBIT.SAVEBIT_0);
+                    texture = Path.GetFileNameWithoutExtension(texture);
+                    texture += ".jpg";
+                    mcRet.DiffuseTexure = texture;
+
+                    if (!_textureFiles.Contains(texture))
+                    {
+                        diffuseChannel.InitTexture(new InitRenderStruct(_polyDoc));
+                        BaseBitmap bitmap = diffuseChannel.GetBitmap();
+                        if (bitmap != null)
+                        {
+                            BaseContainer compressionContainer = new BaseContainer(C4dApi.JPGSAVER_QUALITY);
+                            compressionContainer.SetReal(C4dApi.JPGSAVER_QUALITY, 70.0);
+                            // string textureFileRel = Path.Combine("Assets", texture);
+                            string textureFileAbs = Path.Combine(_sceneRootDir, texture);
+                            bitmap.Save(new Filename(textureFileAbs), C4dApi.FILTER_JPG, compressionContainer,
+                                SAVEBIT.SAVEBIT_0);
+                            _textureFiles.Add(texture);
+                        }
+                        else
+                        {
+                            mcRet.DiffuseTexure = null;
+                        }
+                        diffuseChannel.FreeTexture();
+                    }
                 }
-                diffuseChannel.FreeTexture();
             }
 
             BaseChannel specularColorChannel = material.GetChannel(C4dApi.CHANNEL_SPECULARCOLOR);
@@ -293,6 +348,7 @@ namespace FuExport
                 } 
  
             }
+            _materialCache[material] = mcRet;
             return mcRet;
         }
 

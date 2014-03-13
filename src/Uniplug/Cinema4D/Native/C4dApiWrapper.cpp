@@ -77076,6 +77076,196 @@ SWIGEXPORT int SWIGSTDCALL CSharp_API_VERSION_get() {
 }
 
 
+SWIGEXPORT void * SWIGSTDCALL CSharp_new_UVWStruct__SWIG_0(void * jarg1) {
+  void * jresult ;
+  _DONTCONSTRUCT arg1 ;
+  _DONTCONSTRUCT *argp1 ;
+  UVWStruct *result = 0 ;
+  
+  argp1 = (_DONTCONSTRUCT *)jarg1; 
+  if (!argp1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null _DONTCONSTRUCT", 0);
+    return 0;
+  }
+  arg1 = *argp1; 
+  result = (UVWStruct *)new UVWStruct(arg1);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_new_UVWStruct__SWIG_1() {
+  void * jresult ;
+  UVWStruct *result = 0 ;
+  
+  result = (UVWStruct *)new UVWStruct();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_new_UVWStruct__SWIG_2(void * jarg1, void * jarg2, void * jarg3, void * jarg4) {
+  void * jresult ;
+  Vector *arg1 = 0 ;
+  Vector *arg2 = 0 ;
+  Vector *arg3 = 0 ;
+  Vector *arg4 = 0 ;
+  UVWStruct *result = 0 ;
+  
+  arg1 = (Vector *)jarg1; /* Vector*&_in */
+  arg2 = (Vector *)jarg2; /* Vector*&_in */
+  arg3 = (Vector *)jarg3; /* Vector*&_in */
+  arg4 = (Vector *)jarg4; /* Vector*&_in */
+  result = (UVWStruct *)new UVWStruct((Vector const &)*arg1,(Vector const &)*arg2,(Vector const &)*arg3,(Vector const &)*arg4);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_new_UVWStruct__SWIG_3(void * jarg1, void * jarg2, void * jarg3) {
+  void * jresult ;
+  Vector *arg1 = 0 ;
+  Vector *arg2 = 0 ;
+  Vector *arg3 = 0 ;
+  UVWStruct *result = 0 ;
+  
+  arg1 = (Vector *)jarg1; /* Vector*&_in */
+  arg2 = (Vector *)jarg2; /* Vector*&_in */
+  arg3 = (Vector *)jarg3; /* Vector*&_in */
+  result = (UVWStruct *)new UVWStruct((Vector const &)*arg1,(Vector const &)*arg2,(Vector const &)*arg3);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_UVWStruct_a_set(void * jarg1, Vector /* Vector_ctype */ jarg2) {
+  UVWStruct *arg1 = (UVWStruct *) 0 ;
+  Vector arg2 ;
+  
+  arg1 = (UVWStruct *)jarg1; 
+  
+  /* <Vector_in> */
+  arg2 = *((Vector *)&(jarg2));
+  /* </Vector_in> */
+  
+  if (arg1) (arg1)->a = arg2;
+}
+
+
+SWIGEXPORT Vector_POD /* Vector_ctype_out */ SWIGSTDCALL CSharp_UVWStruct_a_get(void * jarg1) {
+  Vector_POD /* Vector_ctype_out */ jresult ;
+  UVWStruct *arg1 = (UVWStruct *) 0 ;
+  Vector result;
+  
+  arg1 = (UVWStruct *)jarg1; 
+  result =  ((arg1)->a);
+  
+  /* <Vector_out> */
+  jresult = *((Vector_POD *)&(result));
+  /* </Vector_out> */
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_UVWStruct_b_set(void * jarg1, Vector /* Vector_ctype */ jarg2) {
+  UVWStruct *arg1 = (UVWStruct *) 0 ;
+  Vector arg2 ;
+  
+  arg1 = (UVWStruct *)jarg1; 
+  
+  /* <Vector_in> */
+  arg2 = *((Vector *)&(jarg2));
+  /* </Vector_in> */
+  
+  if (arg1) (arg1)->b = arg2;
+}
+
+
+SWIGEXPORT Vector_POD /* Vector_ctype_out */ SWIGSTDCALL CSharp_UVWStruct_b_get(void * jarg1) {
+  Vector_POD /* Vector_ctype_out */ jresult ;
+  UVWStruct *arg1 = (UVWStruct *) 0 ;
+  Vector result;
+  
+  arg1 = (UVWStruct *)jarg1; 
+  result =  ((arg1)->b);
+  
+  /* <Vector_out> */
+  jresult = *((Vector_POD *)&(result));
+  /* </Vector_out> */
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_UVWStruct_c_set(void * jarg1, Vector /* Vector_ctype */ jarg2) {
+  UVWStruct *arg1 = (UVWStruct *) 0 ;
+  Vector arg2 ;
+  
+  arg1 = (UVWStruct *)jarg1; 
+  
+  /* <Vector_in> */
+  arg2 = *((Vector *)&(jarg2));
+  /* </Vector_in> */
+  
+  if (arg1) (arg1)->c = arg2;
+}
+
+
+SWIGEXPORT Vector_POD /* Vector_ctype_out */ SWIGSTDCALL CSharp_UVWStruct_c_get(void * jarg1) {
+  Vector_POD /* Vector_ctype_out */ jresult ;
+  UVWStruct *arg1 = (UVWStruct *) 0 ;
+  Vector result;
+  
+  arg1 = (UVWStruct *)jarg1; 
+  result =  ((arg1)->c);
+  
+  /* <Vector_out> */
+  jresult = *((Vector_POD *)&(result));
+  /* </Vector_out> */
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_UVWStruct_d_set(void * jarg1, Vector /* Vector_ctype */ jarg2) {
+  UVWStruct *arg1 = (UVWStruct *) 0 ;
+  Vector arg2 ;
+  
+  arg1 = (UVWStruct *)jarg1; 
+  
+  /* <Vector_in> */
+  arg2 = *((Vector *)&(jarg2));
+  /* </Vector_in> */
+  
+  if (arg1) (arg1)->d = arg2;
+}
+
+
+SWIGEXPORT Vector_POD /* Vector_ctype_out */ SWIGSTDCALL CSharp_UVWStruct_d_get(void * jarg1) {
+  Vector_POD /* Vector_ctype_out */ jresult ;
+  UVWStruct *arg1 = (UVWStruct *) 0 ;
+  Vector result;
+  
+  arg1 = (UVWStruct *)jarg1; 
+  result =  ((arg1)->d);
+  
+  /* <Vector_out> */
+  jresult = *((Vector_POD *)&(result));
+  /* </Vector_out> */
+  
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_delete_UVWStruct(void * jarg1) {
+  UVWStruct *arg1 = (UVWStruct *) 0 ;
+  
+  arg1 = (UVWStruct *)jarg1; 
+  delete arg1;
+}
+
+
 SWIGEXPORT void * SWIGSTDCALL CSharp_new_ModelingCommandData__SWIG_0() {
   void * jresult ;
   ModelingCommandData *result = 0 ;

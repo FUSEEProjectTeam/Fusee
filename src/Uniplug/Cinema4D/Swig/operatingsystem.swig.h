@@ -255,17 +255,17 @@ struct C4D_BitmapFilter;
 //typedef void* UVWHandle;
 //typedef void* NormalHandle;
 //
-//// structure definitions
-//struct UVWStruct
-//{
-//	UVWStruct(_DONTCONSTRUCT dc) : a(DC), b(DC), c(DC), d(DC) { }
-//
-//	UVWStruct(void) {}
-//	UVWStruct(const Vector &t_a, const Vector &t_b, const Vector &t_c, const Vector &t_d) { a=t_a; b=t_b; c=t_c; d=t_d; }
-//	UVWStruct(const Vector &t_a, const Vector &t_b, const Vector &t_c) { a=t_a; b=t_b; c=t_c; }
-//
-//	Vector a,b,c,d;
-//};
+// structure definitions
+struct UVWStruct
+{
+	UVWStruct(_DONTCONSTRUCT dc) : a(DC), b(DC), c(DC), d(DC) { }
+
+	UVWStruct(void) {}
+	UVWStruct(const Vector &t_a, const Vector &t_b, const Vector &t_c, const Vector &t_d) { a=t_a; b=t_b; c=t_c; d=t_d; }
+	UVWStruct(const Vector &t_a, const Vector &t_b, const Vector &t_c) { a=t_a; b=t_b; c=t_c; }
+
+	Vector a,b,c,d;
+};
 //
 //struct NormalStruct
 //{
