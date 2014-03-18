@@ -32,12 +32,32 @@ public:
 			Assembly ^thisDll = Assembly::GetExecutingAssembly();
 			String ^filePath = thisDll->Location;
 			String ^dirPath = Path::GetDirectoryName(filePath);
+			String^ dllPath;
+			DirectoryInfo ^di;
+			// First TRY to look in the directory we are currently in. If the dll we are looking for is
+			// branded to 32 or 64 bit, we will find it in the right directory.
+			try
+			{
+				di = gcnew DirectoryInfo(dirPath);
+				dllPath = ScanDirectories(di, 2, dllName + ".dll");
+				if (!String::IsNullOrEmpty(dllPath))
+				{
+					return Assembly::LoadFrom(dllPath);
+				}
+			}
+			catch (Exception  ^ex)
+			{
+				int i = 44;
+			}
+
+			// We didn't find te correct dll, so we have to look broader. Go up two dir levels and
+			// try recursing again.
 			dirPath = Path::GetDirectoryName(dirPath);
 			dirPath = Path::GetDirectoryName(dirPath);
 			// int seperateCharPos = Path::GetDirectoryName(dirPath)->LastIndexOf(Path::DirectorySeparatorChar);
 			// DirectorySeparatorChar{\}
-			DirectoryInfo^di = gcnew DirectoryInfo(dirPath);
-			String^ dllPath = ScanDirectories(di, 2, dllName+".dll");
+			di = gcnew DirectoryInfo(dirPath);
+			dllPath = ScanDirectories(di, 2, dllName+".dll");
 			if(!String::IsNullOrEmpty(dllPath))
 			{
 					return Assembly::LoadFrom(dllPath);

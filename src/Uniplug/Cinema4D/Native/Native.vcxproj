@@ -127,7 +127,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(C4D_DIR)\resource\modules\gv\expressiontag\res\description;C4dApiExtensions $(MONODIR)\lib\glib-2.0\include;$(MONODIR)\include\mono-2.0;$(MONODIR)\include\glib-2.0;.\source;.\res;.\res\description;$(C4D_DIR)\resource\_api;$(C4D_DIR)\resource\_api\c4d_preview;$(C4D_DIR)\resource\_api\c4d_customgui;$(C4D_DIR)\resource\_api\c4d_libs;$(C4D_DIR)\resource\_api\c4d_gv;$(C4D_DIR)\resource\modules\Modeling\res\description;$(C4D_DIR)\resource\res\description;$(C4D_DIR)\resource\modules\objects\res\description;$(C4D_DIR)\resource\_api_maxon\source;..\Bridge\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(C4D_DIR)\resource\modules\gv\expressiontag\res\description;C4dApiExtensions;$(MONODIR)\lib\glib-2.0\include;$(MONODIR)\include\mono-2.0;$(MONODIR)\include\glib-2.0;$(MONODIR)\bin;.\source;.\res;.\res\description;$(C4D_DIR)\resource\_api;$(C4D_DIR)\resource\_api\c4d_preview;$(C4D_DIR)\resource\_api\c4d_customgui;$(C4D_DIR)\resource\_api\c4d_libs;$(C4D_DIR)\resource\_api\c4d_gv;$(C4D_DIR)\resource\modules\Modeling\res\description;$(C4D_DIR)\resource\res\description;$(C4D_DIR)\resource\modules\objects\res\description;$(C4D_DIR)\resource\_api_maxon\source;..\Bridge\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <CompileAsManaged>false</CompileAsManaged>
       <OmitFramePointers>false</OmitFramePointers>
@@ -136,6 +136,7 @@
       <ExceptionHandling>Sync</ExceptionHandling>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <FunctionLevelLinking>true</FunctionLevelLinking>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -144,6 +145,7 @@
       <AdditionalDependencies>Bridge.lib;Mono64.lib;_api_x64_Debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DelayLoadDLLs>Bridge.dll;Mono-2.0.dll</DelayLoadDLLs>
+      <IgnoreSpecificDefaultLibraries>LIBCMT;LIBCD;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
     </Link>
     <PreBuildEvent>
       <Command>lib /nologo /def:mono.def /out:mono64.lib /machine:x64</Command>

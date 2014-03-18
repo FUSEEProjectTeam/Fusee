@@ -25,106 +25,112 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
     return ($T04 = JSIL.Memoize($asm01.Fusee.Engine.CursorType)) ();
   };
   var $T05 = function () {
-    return ($T05 = JSIL.Memoize($asm02.Fusee.Engine.GUIHandler)) ();
+    return ($T05 = JSIL.Memoize($asm00.Examples.SceneViewer.SceneRenderer)) ();
   };
   var $T06 = function () {
-    return ($T06 = JSIL.Memoize($asm02.Fusee.Engine.GUIButtonHandler)) ();
+    return ($T06 = JSIL.Memoize($asm06.System.Boolean)) ();
   };
   var $T07 = function () {
-    return ($T07 = JSIL.Memoize($asm02.Fusee.Engine.GUIImage)) ();
+    return ($T07 = JSIL.Memoize($asm03.Fusee.Math.float4x4)) ();
   };
   var $T08 = function () {
-    return ($T08 = JSIL.Memoize($asm02.Fusee.Engine.RenderContext)) ();
+    return ($T08 = JSIL.Memoize($asm03.Fusee.Math.AABBf)) ();
   };
   var $T09 = function () {
-    return ($T09 = JSIL.Memoize($asm02.Fusee.Engine.GUIText)) ();
+    return ($T09 = JSIL.Memoize($asm06.System.Single)) ();
   };
   var $T0A = function () {
-    return ($T0A = JSIL.Memoize($asm02.Fusee.Engine.GUIElement)) ();
+    return ($T0A = JSIL.Memoize($asm06.System.Math)) ();
   };
   var $T0B = function () {
-    return ($T0B = JSIL.Memoize($asm05.Fusee.Serialization.Serializer)) ();
+    return ($T0B = JSIL.Memoize($asm03.Fusee.Math.float3)) ();
   };
   var $T0C = function () {
-    return ($T0C = JSIL.Memoize($asm06.System.IO.FileStream)) ();
+    return ($T0C = JSIL.Memoize($asm02.Fusee.Engine.GUIHandler)) ();
   };
   var $T0D = function () {
-    return ($T0D = JSIL.Memoize($asm06.System.IO.File)) ();
+    return ($T0D = JSIL.Memoize($asm02.Fusee.Engine.GUIButtonHandler)) ();
   };
   var $T0E = function () {
-    return ($T0E = JSIL.Memoize($asm04.Fusee.Serialization.SceneContainer)) ();
+    return ($T0E = JSIL.Memoize($asm02.Fusee.Engine.GUIImage)) ();
   };
   var $T0F = function () {
-    return ($T0F = JSIL.Memoize($asm07.ProtoBuf.Meta.TypeModel)) ();
+    return ($T0F = JSIL.Memoize($asm02.Fusee.Engine.RenderContext)) ();
   };
   var $T10 = function () {
-    return ($T10 = JSIL.Memoize($asm06.System.IDisposable)) ();
+    return ($T10 = JSIL.Memoize($asm02.Fusee.Engine.GUIText)) ();
   };
   var $T11 = function () {
-    return ($T11 = JSIL.Memoize($asm00.Examples.SceneViewer.SceneRenderer)) ();
+    return ($T11 = JSIL.Memoize($asm02.Fusee.Engine.GUIElement)) ();
   };
   var $T12 = function () {
-    return ($T12 = JSIL.Memoize($asm06.System.String)) ();
+    return ($T12 = JSIL.Memoize($asm05.Fusee.Serialization.Serializer)) ();
   };
   var $T13 = function () {
-    return ($T13 = JSIL.Memoize($asm06.System.Void)) ();
+    return ($T13 = JSIL.Memoize($asm06.System.IO.FileStream)) ();
   };
   var $T14 = function () {
-    return ($T14 = JSIL.Memoize($asm02.Fusee.Engine.MoreShaders)) ();
+    return ($T14 = JSIL.Memoize($asm06.System.IO.File)) ();
   };
   var $T15 = function () {
-    return ($T15 = JSIL.Memoize($asm02.Fusee.Engine.ShaderProgram)) ();
+    return ($T15 = JSIL.Memoize($asm04.Fusee.Serialization.SceneContainer)) ();
   };
   var $T16 = function () {
-    return ($T16 = JSIL.Memoize($asm01.Fusee.Engine.ClearFlags)) ();
+    return ($T16 = JSIL.Memoize($asm07.ProtoBuf.Meta.TypeModel)) ();
   };
   var $T17 = function () {
-    return ($T17 = JSIL.Memoize($asm02.Fusee.Engine.Input)) ();
+    return ($T17 = JSIL.Memoize($asm06.System.IDisposable)) ();
   };
   var $T18 = function () {
-    return ($T18 = JSIL.Memoize($asm01.Fusee.Engine.MouseButtons)) ();
+    return ($T18 = JSIL.Memoize($asm06.System.String)) ();
   };
   var $T19 = function () {
-    return ($T19 = JSIL.Memoize($asm01.Fusee.Engine.InputAxis)) ();
+    return ($T19 = JSIL.Memoize($asm06.System.Void)) ();
   };
   var $T1A = function () {
-    return ($T1A = JSIL.Memoize($asm06.System.Single)) ();
+    return ($T1A = JSIL.Memoize($asm02.Fusee.Engine.MoreShaders)) ();
   };
   var $T1B = function () {
-    return ($T1B = JSIL.Memoize($asm06.System.Math)) ();
+    return ($T1B = JSIL.Memoize($asm02.Fusee.Engine.ShaderProgram)) ();
   };
   var $T1C = function () {
-    return ($T1C = JSIL.Memoize($asm02.Fusee.Engine.Time)) ();
+    return ($T1C = JSIL.Memoize($asm01.Fusee.Engine.ClearFlags)) ();
   };
   var $T1D = function () {
-    return ($T1D = JSIL.Memoize($asm01.Fusee.Engine.KeyCodes)) ();
+    return ($T1D = JSIL.Memoize($asm02.Fusee.Engine.Input)) ();
   };
   var $T1E = function () {
-    return ($T1E = JSIL.Memoize($asm03.Fusee.Math.float4x4)) ();
+    return ($T1E = JSIL.Memoize($asm01.Fusee.Engine.MouseButtons)) ();
   };
   var $T1F = function () {
-    return ($T1F = JSIL.Memoize($asm02.Fusee.Engine.Diagnostics)) ();
+    return ($T1F = JSIL.Memoize($asm02.Fusee.Engine.Time)) ();
   };
   var $T20 = function () {
-    return ($T20 = JSIL.Memoize($asm06.System.Object)) ();
+    return ($T20 = JSIL.Memoize($asm01.Fusee.Engine.InputAxis)) ();
   };
   var $T21 = function () {
-    return ($T21 = JSIL.Memoize($asm04.Fusee.Serialization.MeshContainer)) ();
+    return ($T21 = JSIL.Memoize($asm01.Fusee.Engine.KeyCodes)) ();
   };
   var $T22 = function () {
-    return ($T22 = JSIL.Memoize($asm03.Fusee.Math.float3)) ();
+    return ($T22 = JSIL.Memoize($asm02.Fusee.Engine.Diagnostics)) ();
   };
   var $T23 = function () {
-    return ($T23 = JSIL.Memoize($asm06.System.UInt16)) ();
+    return ($T23 = JSIL.Memoize($asm06.System.Object)) ();
   };
   var $T24 = function () {
-    return ($T24 = JSIL.Memoize($asm04.Fusee.Serialization.SceneObjectContainer)) ();
+    return ($T24 = JSIL.Memoize($asm04.Fusee.Serialization.MeshContainer)) ();
   };
   var $T25 = function () {
-    return ($T25 = JSIL.Memoize($asm04.Fusee.Serialization.SceneHeader)) ();
+    return ($T25 = JSIL.Memoize($asm06.System.UInt16)) ();
   };
   var $T26 = function () {
-    return ($T26 = JSIL.Memoize($asm06.System.Collections.Generic.List$b1.Of($asm04.Fusee.Serialization.SceneObjectContainer))) ();
+    return ($T26 = JSIL.Memoize($asm04.Fusee.Serialization.SceneObjectContainer)) ();
+  };
+  var $T27 = function () {
+    return ($T27 = JSIL.Memoize($asm04.Fusee.Serialization.SceneHeader)) ();
+  };
+  var $T28 = function () {
+    return ($T28 = JSIL.Memoize($asm06.System.Collections.Generic.List$b1.Of($asm04.Fusee.Serialization.SceneObjectContainer))) ();
   };
   var $S00 = function () {
     return ($S00 = JSIL.Memoize(new JSIL.ConstructorSignature($asm03.TypeRef("Fusee.Math.float4"), [
@@ -133,47 +139,50 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
       ]))) ();
   };
   var $S01 = function () {
-    return ($S01 = JSIL.Memoize(new JSIL.ConstructorSignature($asm02.TypeRef("Fusee.Engine.GUIHandler"), []))) ();
+    return ($S01 = JSIL.Memoize(new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float4x4"), [$asm03.TypeRef("Fusee.Math.float4x4"), $asm03.TypeRef("Fusee.Math.float4x4")], []))) ();
   };
   var $S02 = function () {
-    return ($S02 = JSIL.Memoize(new JSIL.ConstructorSignature($asm02.TypeRef("Fusee.Engine.GUIButton"), [
+    return ($S02 = JSIL.Memoize(new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float4x4"), [$asm06.TypeRef("System.Single")], []))) ();
+  };
+  var $S03 = function () {
+    return ($S03 = JSIL.Memoize(new JSIL.ConstructorSignature($asm02.TypeRef("Fusee.Engine.GUIHandler"), []))) ();
+  };
+  var $S04 = function () {
+    return ($S04 = JSIL.Memoize(new JSIL.ConstructorSignature($asm02.TypeRef("Fusee.Engine.GUIButton"), [
         $asm06.TypeRef("System.Int32"), $asm06.TypeRef("System.Int32"), 
         $asm06.TypeRef("System.Int32"), $asm06.TypeRef("System.Int32")
       ]))) ();
   };
-  var $S03 = function () {
-    return ($S03 = JSIL.Memoize(new JSIL.ConstructorSignature($asm02.TypeRef("Fusee.Engine.GUIImage"), [
+  var $S05 = function () {
+    return ($S05 = JSIL.Memoize(new JSIL.ConstructorSignature($asm02.TypeRef("Fusee.Engine.GUIImage"), [
         $asm06.TypeRef("System.String"), $asm06.TypeRef("System.Int32"), 
         $asm06.TypeRef("System.Int32"), $asm06.TypeRef("System.Int32"), 
         $asm06.TypeRef("System.Int32"), $asm06.TypeRef("System.Int32")
       ]))) ();
   };
-  var $S04 = function () {
-    return ($S04 = JSIL.Memoize(new JSIL.ConstructorSignature($asm02.TypeRef("Fusee.Engine.GUIText"), [
+  var $S06 = function () {
+    return ($S06 = JSIL.Memoize(new JSIL.ConstructorSignature($asm02.TypeRef("Fusee.Engine.GUIText"), [
         $asm06.TypeRef("System.String"), $asm01.TypeRef("Fusee.Engine.IFont"), 
         $asm06.TypeRef("System.Int32"), $asm06.TypeRef("System.Int32")
       ]))) ();
   };
-  var $S05 = function () {
-    return ($S05 = JSIL.Memoize(new JSIL.MethodSignature($asm06.TypeRef("System.Object"), [
+  var $S07 = function () {
+    return ($S07 = JSIL.Memoize(new JSIL.MethodSignature($asm06.TypeRef("System.Object"), [
         $asm06.TypeRef("System.IO.Stream"), $asm06.TypeRef("System.Object"), 
         $asm06.TypeRef("System.Type")
       ], []))) ();
   };
-  var $S06 = function () {
-    return ($S06 = JSIL.Memoize(new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float4x4"), [$asm03.TypeRef("Fusee.Math.float4x4"), $asm03.TypeRef("Fusee.Math.float4x4")], []))) ();
-  };
-  var $S07 = function () {
-    return ($S07 = JSIL.Memoize(new JSIL.ConstructorSignature($asm03.TypeRef("Fusee.Math.float3"), [
+  var $S08 = function () {
+    return ($S08 = JSIL.Memoize(new JSIL.ConstructorSignature($asm03.TypeRef("Fusee.Math.float3"), [
         $asm06.TypeRef("System.Single"), $asm06.TypeRef("System.Single"), 
         $asm06.TypeRef("System.Single")
       ]))) ();
   };
-  var $S08 = function () {
-    return ($S08 = JSIL.Memoize(new JSIL.ConstructorSignature($asm06.TypeRef("System.Collections.Generic.List`1", [$asm04.TypeRef("Fusee.Serialization.SceneObjectContainer")]), [$asm06.TypeRef("System.Collections.Generic.IEnumerable`1", [$asm04.TypeRef("Fusee.Serialization.SceneObjectContainer")])]))) ();
-  };
   var $S09 = function () {
-    return ($S09 = JSIL.Memoize(new JSIL.MethodSignature(null, [$asm06.TypeRef("System.IO.Stream"), $asm06.TypeRef("System.Object")], []))) ();
+    return ($S09 = JSIL.Memoize(new JSIL.ConstructorSignature($asm06.TypeRef("System.Collections.Generic.List`1", [$asm04.TypeRef("Fusee.Serialization.SceneObjectContainer")]), [$asm06.TypeRef("System.Collections.Generic.IEnumerable`1", [$asm04.TypeRef("Fusee.Serialization.SceneObjectContainer")])]))) ();
+  };
+  var $S0A = function () {
+    return ($S0A = JSIL.Memoize(new JSIL.MethodSignature(null, [$asm06.TypeRef("System.IO.Stream"), $asm06.TypeRef("System.Object")], []))) ();
   };
   var $IM00 = function () {
     return ($IM00 = JSIL.Memoize($asm06.System.IDisposable.Dispose)) ();
@@ -199,49 +208,77 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
     this.SetCursor($T04().Standard);
   };
 
+  function SceneViewer_AdjustModelScaleOffset () {
+    var aABB = null;
+    var box = null;
+    if (this._sr !== null) {
+      box = (aABB = this._sr.GetAABB());
+      var arg_2A_0 = (aABB !== null);
+    } else {
+      arg_2A_0 = false;
+    }
+    if (!arg_2A_0) {
+      this._modelScaleOffset = $T07().Identity.MemberwiseClone();
+    }
+    var bbox = box.MemberwiseClone();
+    var scale = +$T0A().Max(
+      $T0A().Max(
+        bbox.get_Size().x, 
+        bbox.get_Size().y
+      ), 
+      bbox.get_Size().z
+    );
+    this._modelScaleOffset = $S01().CallStatic($T07(), "op_Multiply", null, 
+      $S02().CallStatic($T07(), "CreateScale", null, (200 / scale)), 
+      $T07().CreateTranslation($T0B().op_UnaryNegation(bbox.get_Center().MemberwiseClone()).MemberwiseClone())
+    ).MemberwiseClone();
+  };
+
   function SceneViewer_Init () {
-    this._guiHandler = $S01().Construct();
+    this._zVal = +500;
+    this._guiHandler = $S03().Construct();
     this._guiHandler.AttachToContext(this.get_RC());
-    this._guiFuseeLink = $S02().Construct(6, 6, 157, 87);
+    this._guiFuseeLink = $S04().Construct(6, 6, 157, 87);
     (this._guiFuseeLink.ButtonColor = $S00().Construct(0, 0, 0, 0));
     (this._guiFuseeLink.BorderColor = $S00().Construct(0, 0.6, 0.2, 1));
     this._guiFuseeLink.set_BorderWidth(0);
-    this._guiFuseeLink.add_OnGUIButtonDown($T06().New(this, $thisType.prototype._guiFuseeLink_OnGUIButtonDown));
-    this._guiFuseeLink.add_OnGUIButtonEnter($T06().New(this, $thisType.prototype._guiFuseeLink_OnGUIButtonEnter));
-    this._guiFuseeLink.add_OnGUIButtonLeave($T06().New(this, $thisType.prototype._guiFuseeLink_OnGUIButtonLeave));
+    this._guiFuseeLink.add_OnGUIButtonDown($T0D().New(this, $thisType.prototype._guiFuseeLink_OnGUIButtonDown));
+    this._guiFuseeLink.add_OnGUIButtonEnter($T0D().New(this, $thisType.prototype._guiFuseeLink_OnGUIButtonEnter));
+    this._guiFuseeLink.add_OnGUIButtonLeave($T0D().New(this, $thisType.prototype._guiFuseeLink_OnGUIButtonLeave));
     this._guiHandler.Add(this._guiFuseeLink);
-    this._guiFuseeLogo = $S03().Construct("Assets/FuseeLogo150.png", 10, 10, -5, 150, 80);
+    this._guiFuseeLogo = $S05().Construct("Assets/FuseeLogo150.png", 10, 10, -5, 150, 80);
     this._guiHandler.Add(this._guiFuseeLogo);
     this._guiLatoBlack = this.get_RC().LoadFont("Assets/Lato-Black.ttf", 14);
-    this._guiSubText = $S04().Construct("FUSEE 3D Scene Viewer", this._guiLatoBlack, 100, 100);
+    this._guiSubText = $S06().Construct("FUSEE 3D Scene Viewer", this._guiLatoBlack, 100, 100);
     (this._guiSubText.TextColor = $S00().Construct(0.05, 0.25, 0.15, 0.8));
     this._guiHandler.Add(this._guiSubText);
-    var ser = new ($T0B())();
-    var file = $T0D().OpenRead("Assets/Model.fus");
+    var ser = new ($T12())();
+    var file = $T14().OpenRead("Assets/Model.fus");
     try {
-      var scene = $T0E().$As($S05().CallVirtual("Deserialize", null, ser, file, null, $T0E().__Type__));
+      var scene = $T15().$As($S07().CallVirtual("Deserialize", null, ser, file, null, $T15().__Type__));
     } finally {
       if (file !== null) {
         $IM00().Call(file, null);
       }
     }
-    this._sr = new ($T11())(scene, "Assets");
+    this._sr = new ($T05())(scene, "Assets");
+    this.AdjustModelScaleOffset();
     this._guiSubText.set_Text("FUSEE 3D Scene");
     if (!((scene.Header.CreatedBy === null) && (scene.Header.CreationDate === null))) {
-      var expr_208 = this._guiSubText;
-      expr_208.set_Text(JSIL.ConcatString(expr_208.get_Text(), " created"));
+      var expr_21A = this._guiSubText;
+      expr_21A.set_Text(JSIL.ConcatString(expr_21A.get_Text(), " created"));
       if (scene.Header.CreatedBy !== null) {
-        var expr_237 = this._guiSubText;
-        expr_237.set_Text((expr_237.get_Text() + " by " + scene.Header.CreatedBy));
+        var expr_249 = this._guiSubText;
+        expr_249.set_Text((expr_249.get_Text() + " by " + scene.Header.CreatedBy));
       }
       if (scene.Header.CreationDate !== null) {
-        var expr_272 = this._guiSubText;
-        expr_272.set_Text((expr_272.get_Text() + " on " + scene.Header.CreationDate));
+        var expr_284 = this._guiSubText;
+        expr_284.set_Text((expr_284.get_Text() + " on " + scene.Header.CreationDate));
       }
     }
-    this._subtextWidth = +$T09().GetTextWidth(this._guiSubText.get_Text(), this._guiLatoBlack);
-    this._subtextHeight = +$T09().GetTextHeight(this._guiSubText.get_Text(), this._guiLatoBlack);
-    this._sColor = $T14().GetDiffuseColorShader(this.get_RC());
+    this._subtextWidth = +$T10().GetTextWidth(this._guiSubText.get_Text(), this._guiLatoBlack);
+    this._subtextHeight = +$T10().GetTextHeight(this._guiSubText.get_Text(), this._guiLatoBlack);
+    this._sColor = $T1A().GetDiffuseColorShader(this.get_RC());
     this.get_RC().SetShader(this._sColor);
     this._colorParam = this._sColor.GetShaderParam("color");
     this.get_RC().SetShaderParam4f(this._colorParam, $S00().Construct(1, 1, 1, 1));
@@ -254,37 +291,44 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
   };
 
   function SceneViewer_RenderAFrame () {
-    this.get_RC().Clear($T16().$Flags("Color", "Depth"));
-    if ($T17().get_Instance().IsButton($T18().Left)) {
-      $thisType._angleVelHorz = +(1 * $T17().get_Instance().GetAxis($T19().MouseX));
-      $thisType._angleVelVert = +(1 * $T17().get_Instance().GetAxis($T19().MouseY));
+    this.get_RC().Clear($T1C().$Flags("Color", "Depth"));
+    if ($T1D().get_Instance().IsButton($T1E().Left)) {
+      this._angleVelHorz = +((30 * $T09().$Cast($T1F().get_Instance().get_DeltaTime())) * $T1D().get_Instance().GetAxis($T20().MouseX));
+      this._angleVelVert = +((30 * $T09().$Cast($T1F().get_Instance().get_DeltaTime())) * $T1D().get_Instance().GetAxis($T20().MouseY));
     } else {
-      var curDamp = +$T1A().$Cast($T1B().Exp((-0.92000001668930054 * $T1C().get_Instance().get_DeltaTime())));
-      $thisType._angleVelHorz *= +curDamp;
-      $thisType._angleVelVert *= +curDamp;
+      var curDamp = +$T09().$Cast($T0A().Exp((-0.92000001668930054 * $T1F().get_Instance().get_DeltaTime())));
+      this._angleVelHorz *= +curDamp;
+      this._angleVelVert *= +curDamp;
     }
-    $thisType._angleHorz -= +$thisType._angleVelHorz;
-    $thisType._angleVert -= +$thisType._angleVelVert;
-    if ($T17().get_Instance().IsKey($T1D().Left)) {
-      $thisType._angleHorz -= +(1 * $T1A().$Cast($T1C().get_Instance().get_DeltaTime()));
+    if ($T1D().get_Instance().GetAxis($T20().MouseWheel) === 0) {
+      curDamp = +$T09().$Cast($T0A().Exp((-0.92000001668930054 * $T1F().get_Instance().get_DeltaTime())));
+      this._zVel *= +((curDamp * curDamp) * curDamp);
+    } else {
+      this._zVel = +((-100000 * $T1D().get_Instance().GetAxis($T20().MouseWheel)) * $T09().$Cast($T1F().get_Instance().get_DeltaTime()));
     }
-    if ($T17().get_Instance().IsKey($T1D().Right)) {
-      $thisType._angleHorz += +(1 * $T1A().$Cast($T1C().get_Instance().get_DeltaTime()));
+    this._angleHorz -= +this._angleVelHorz;
+    this._angleVert -= +this._angleVelVert;
+    this._zVal = +$T0A().Max(100, $T0A().Min((this._zVal + this._zVel), 1000));
+    if ($T1D().get_Instance().IsKey($T21().Left)) {
+      this._angleHorz -= +(1 * $T09().$Cast($T1F().get_Instance().get_DeltaTime()));
     }
-    if ($T17().get_Instance().IsKey($T1D().Up)) {
-      $thisType._angleVert -= +(1 * $T1A().$Cast($T1C().get_Instance().get_DeltaTime()));
+    if ($T1D().get_Instance().IsKey($T21().Right)) {
+      this._angleHorz += +(1 * $T09().$Cast($T1F().get_Instance().get_DeltaTime()));
     }
-    if ($T17().get_Instance().IsKey($T1D().Down)) {
-      $thisType._angleVert += +(1 * $T1A().$Cast($T1C().get_Instance().get_DeltaTime()));
+    if ($T1D().get_Instance().IsKey($T21().Up)) {
+      this._angleVert -= +(1 * $T09().$Cast($T1F().get_Instance().get_DeltaTime()));
     }
-    var mtxRot = $S06().CallStatic($T1E(), "op_Multiply", null, 
-      $T1E().CreateRotationX($thisType._angleVert), 
-      $T1E().CreateRotationY($thisType._angleHorz)
-    );
-    var mtxCam = $T1E().LookAt(
+    if ($T1D().get_Instance().IsKey($T21().Down)) {
+      this._angleVert += +(1 * $T09().$Cast($T1F().get_Instance().get_DeltaTime()));
+    }
+    var mtxRot = $S01().CallStatic($T07(), "op_Multiply", null, 
+      $T07().CreateRotationX(this._angleVert), 
+      $T07().CreateRotationY(this._angleHorz)
+    ).MemberwiseClone();
+    var mtxCam = $T07().LookAt(
       0, 
       200, 
-      -500, 
+      -this._zVal, 
       0, 
       0, 
       0, 
@@ -292,7 +336,7 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
       1, 
       0
     );
-    (this.RenderCanvas$RC.ModelView = $S06().CallStatic($T1E(), "op_Multiply", null, mtxCam, mtxRot).MemberwiseClone());
+    (this.RenderCanvas$RC.ModelView = $S01().CallStatic($T07(), "op_Multiply", null, $S01().CallStatic($T07(), "op_Multiply", null, mtxCam, mtxRot), this._modelScaleOffset).MemberwiseClone());
     this._sr.Render(this.get_RC());
     this._guiHandler.RenderGUI();
     this.Present();
@@ -305,51 +349,51 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
       this.get_Width(), 
       this.get_Height()
     );
-    var aspectRatio = +($T1A().$Cast(this.get_Width()) / $T1A().$Cast(this.get_Height()));
-    (this.RenderCanvas$RC.Projection = $T1E().CreatePerspectiveFieldOfView(0.7853982, aspectRatio, 1, 10000).MemberwiseClone());
-    this._guiSubText.set_PosX(((($T1A().$Cast(this.get_Width()) - this._subtextWidth) / 2) | 0));
-    this._guiSubText.set_PosY(((($T1A().$Cast(this.get_Height()) - this._subtextHeight) - 3) | 0));
+    var aspectRatio = +($T09().$Cast(this.get_Width()) / $T09().$Cast(this.get_Height()));
+    (this.RenderCanvas$RC.Projection = $T07().CreatePerspectiveFieldOfView(0.7853982, aspectRatio, 1, 10000).MemberwiseClone());
+    this._guiSubText.set_PosX(((($T09().$Cast(this.get_Width()) - this._subtextWidth) / 2) | 0));
+    this._guiSubText.set_PosY(((($T09().$Cast(this.get_Height()) - this._subtextHeight) - 3) | 0));
     this._guiHandler.Refresh();
   };
 
   function SceneViewer_TestDeserialize () {
-    var ser = new ($T0B())();
-    var file = $T0D().OpenRead("Assets/Test.fus");
+    var ser = new ($T12())();
+    var file = $T14().OpenRead("Assets/Test.fus");
     try {
-      var mc2 = $T0E().$As($S05().CallVirtual("Deserialize", null, ser, file, null, $T0E().__Type__));
+      var mc2 = $T15().$As($S07().CallVirtual("Deserialize", null, ser, file, null, $T15().__Type__));
     } finally {
       if (file !== null) {
         $IM00().Call(file, null);
       }
     }
-    $T1F().Log(mc2.toString());
+    $T22().Log(mc2.toString());
   };
 
   function SceneViewer_TestSerialize () {
-    var aMesh = (new ($T21())()).__Initialize__({
-        Vertices: JSIL.Array.New($T22(), [$S07().Construct(-1, -1, -1), $S07().Construct(-1, -1, 1), $S07().Construct(-1, 1, -1), $S07().Construct(1, -1, -1), $S07().Construct(1, 1, 1), $S07().Construct(-1, 1, 1), $S07().Construct(1, -1, 1), $S07().Construct(1, 1, -1)]), 
-        Normals: JSIL.Array.New($T22(), [$S07().Construct(-1, -1, -1), $S07().Construct(-1, -1, 1), $S07().Construct(-1, 1, -1), $S07().Construct(1, -1, -1), $S07().Construct(1, 1, 1), $S07().Construct(-1, 1, 1), $S07().Construct(1, -1, 1), $S07().Construct(1, 1, -1)]), 
-        Triangles: JSIL.Array.New($T23(), [0, 1, 2, 0, 2, 3, 0, 3, 1, 4, 5, 6, 4, 6, 7, 4, 7, 5])}
+    var aMesh = (new ($T24())()).__Initialize__({
+        Vertices: JSIL.Array.New($T0B(), [$S08().Construct(-1, -1, -1), $S08().Construct(-1, -1, 1), $S08().Construct(-1, 1, -1), $S08().Construct(1, -1, -1), $S08().Construct(1, 1, 1), $S08().Construct(-1, 1, 1), $S08().Construct(1, -1, 1), $S08().Construct(1, 1, -1)]), 
+        Normals: JSIL.Array.New($T0B(), [$S08().Construct(-1, -1, -1), $S08().Construct(-1, -1, 1), $S08().Construct(-1, 1, -1), $S08().Construct(1, -1, -1), $S08().Construct(1, 1, 1), $S08().Construct(-1, 1, 1), $S08().Construct(1, -1, 1), $S08().Construct(1, 1, -1)]), 
+        Triangles: JSIL.Array.New($T25(), [0, 1, 2, 0, 2, 3, 0, 3, 1, 4, 5, 6, 4, 6, 7, 4, 7, 5])}
     );
-    var aChild = (new ($T24())()).__Initialize__({
+    var aChild = (new ($T26())()).__Initialize__({
         Mesh: aMesh, 
-        Transform: $T1E().CreateTranslation(0.11, 0.11, 0).MemberwiseClone()}
+        Transform: $T07().CreateTranslation(0.11, 0.11, 0).MemberwiseClone()}
     );
-    var parent = (new ($T0E())()).__Initialize__({
-        Header: (new ($T25())()).__Initialize__({
+    var parent = (new ($T15())()).__Initialize__({
+        Header: (new ($T27())()).__Initialize__({
             Version: 1, 
             Generator: "Fusee.SceneViewer", 
             CreatedBy: "FuseeProjetTeam"}
         ), 
-        Children: $S08().Construct(JSIL.Array.New($T24(), [aChild, aChild, (new ($T24())()).__Initialize__({
+        Children: $S09().Construct(JSIL.Array.New($T26(), [aChild, aChild, (new ($T26())()).__Initialize__({
                 Mesh: aMesh, 
-                Transform: $T1E().CreateTranslation(0.22, 0.22, 0).MemberwiseClone()}
+                Transform: $T07().CreateTranslation(0.22, 0.22, 0).MemberwiseClone()}
             )]))}
     );
-    var ser = new ($T0B())();
-    var file = $T0D().Create("Assets/Test.fus");
+    var ser = new ($T12())();
+    var file = $T14().Create("Assets/Test.fus");
     try {
-      $S09().CallVirtual("Serialize", null, ser, file, parent);
+      $S0A().CallVirtual("Serialize", null, ser, file, parent);
     } finally {
       if (file !== null) {
         $IM00().Call(file, null);
@@ -386,6 +430,11 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
       SceneViewer__guiFuseeLink_OnGUIButtonLeave
     );
 
+    $.Method({Static:false, Public:true }, "AdjustModelScaleOffset", 
+      new JSIL.MethodSignature(null, [], []), 
+      SceneViewer_AdjustModelScaleOffset
+    );
+
     $.Method({Static:false, Public:true , Virtual:true }, "Init", 
       new JSIL.MethodSignature(null, [], []), 
       SceneViewer_Init
@@ -418,12 +467,15 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
 
     $.Constant({Static:true , Public:false}, "RotationSpeed", 1); 
     $.Constant({Static:true , Public:false}, "Damping", 0.92); 
-    $.Field({Static:true , Public:false}, "_angleHorz", $.Single); 
-    $.Field({Static:true , Public:false}, "_angleVert", $.Single); 
-    $.Field({Static:true , Public:false}, "_angleVelHorz", $.Single); 
-    $.Field({Static:true , Public:false}, "_angleVelVert", $.Single); 
+    $.Field({Static:false, Public:false}, "_angleHorz", $.Single); 
+    $.Field({Static:false, Public:false}, "_angleVert", $.Single); 
+    $.Field({Static:false, Public:false}, "_angleVelHorz", $.Single); 
+    $.Field({Static:false, Public:false}, "_angleVelVert", $.Single); 
+    $.Field({Static:false, Public:false}, "_zVel", $.Single); 
+    $.Field({Static:false, Public:false}, "_zVal", $.Single); 
     $.Field({Static:false, Public:false}, "_subtextWidth", $.Single); 
     $.Field({Static:false, Public:false}, "_subtextHeight", $.Single); 
+    $.Field({Static:false, Public:false}, "_modelScaleOffset", $asm03.TypeRef("Fusee.Math.float4x4")); 
     $.Field({Static:false, Public:false}, "_meshFace", $asm02.TypeRef("Fusee.Engine.Mesh")); 
     $.Field({Static:false, Public:false}, "_meshTea", $asm02.TypeRef("Fusee.Engine.Mesh")); 
     $.Field({Static:false, Public:false}, "_sr", $asm00.TypeRef("Examples.SceneViewer.SceneRenderer")); 
@@ -459,58 +511,61 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
     return ($T04 = JSIL.Memoize($asm01.Fusee.Engine.Compare)) ();
   };
   var $T05 = function () {
-    return ($T05 = JSIL.Memoize($asm02.Fusee.Engine.RenderContext)) ();
+    return ($T05 = JSIL.Memoize($asm03.Fusee.Math.float4x4)) ();
   };
   var $T06 = function () {
-    return ($T06 = JSIL.Memoize($asm06.System.Collections.Generic.Dictionary$b2.Of($asm04.Fusee.Serialization.MeshContainer, $asm02.Fusee.Engine.Mesh))) ();
+    return ($T06 = JSIL.Memoize($asm04.Fusee.Serialization.SceneObjectContainer)) ();
   };
   var $T07 = function () {
-    return ($T07 = JSIL.Memoize($asm06.System.Collections.Generic.Dictionary$b2.Of($asm04.Fusee.Serialization.MaterialContainer, $asm00.Examples.SceneViewer.SceneRenderer_SRMaterial))) ();
+    return ($T07 = JSIL.Memoize($asm03.Fusee.Math.AABBf)) ();
   };
   var $T08 = function () {
-    return ($T08 = JSIL.Memoize($asm02.Fusee.Engine.MoreShaders)) ();
+    return ($T08 = JSIL.Memoize($asm02.Fusee.Engine.RenderContext)) ();
   };
   var $T09 = function () {
-    return ($T09 = JSIL.Memoize($asm02.Fusee.Engine.ShaderProgram)) ();
+    return ($T09 = JSIL.Memoize($asm06.System.Collections.Generic.Dictionary$b2.Of($asm04.Fusee.Serialization.MeshContainer, $asm02.Fusee.Engine.Mesh))) ();
   };
   var $T0A = function () {
-    return ($T0A = JSIL.Memoize($asm00.Examples.SceneViewer.SceneRenderer_SRMaterial)) ();
+    return ($T0A = JSIL.Memoize($asm06.System.Collections.Generic.Dictionary$b2.Of($asm04.Fusee.Serialization.MaterialContainer, $asm00.Examples.SceneViewer.SceneRenderer_SRMaterial))) ();
   };
   var $T0B = function () {
-    return ($T0B = JSIL.Memoize(System.Array.Of($asm00.Examples.SceneViewer.SceneRenderer_SetParamFunc))) ();
+    return ($T0B = JSIL.Memoize($asm02.Fusee.Engine.MoreShaders)) ();
   };
   var $T0C = function () {
-    return ($T0C = JSIL.Memoize($asm00.Examples.SceneViewer.SceneRenderer_SetParamFunc)) ();
+    return ($T0C = JSIL.Memoize($asm02.Fusee.Engine.ShaderProgram)) ();
   };
   var $T0D = function () {
-    return ($T0D = JSIL.Memoize($asm06.System.Collections.Generic.List$b1.Of($asm00.Examples.SceneViewer.SceneRenderer_SetParamFunc))) ();
+    return ($T0D = JSIL.Memoize($asm00.Examples.SceneViewer.SceneRenderer_SRMaterial)) ();
   };
   var $T0E = function () {
-    return ($T0E = JSIL.Memoize($asm06.System.Collections.Generic.IEnumerable$b1.Of($asm00.Examples.SceneViewer.SceneRenderer_SetParamFunc))) ();
+    return ($T0E = JSIL.Memoize(System.Array.Of($asm00.Examples.SceneViewer.SceneRenderer_SetParamFunc))) ();
   };
   var $T0F = function () {
-    return ($T0F = JSIL.Memoize($asm04.Fusee.Serialization.MaterialContainer)) ();
+    return ($T0F = JSIL.Memoize($asm00.Examples.SceneViewer.SceneRenderer_SetParamFunc)) ();
   };
   var $T10 = function () {
-    return ($T10 = JSIL.Memoize($asm00.Examples.SceneViewer.SceneRenderer_$l$gc__DisplayClass8)) ();
+    return ($T10 = JSIL.Memoize($asm06.System.Collections.Generic.List$b1.Of($asm00.Examples.SceneViewer.SceneRenderer_SetParamFunc))) ();
   };
   var $T11 = function () {
-    return ($T11 = JSIL.Memoize($asm00.Examples.SceneViewer.SceneRenderer_$l$gc__DisplayClassa)) ();
+    return ($T11 = JSIL.Memoize($asm06.System.Collections.Generic.IEnumerable$b1.Of($asm00.Examples.SceneViewer.SceneRenderer_SetParamFunc))) ();
   };
   var $T12 = function () {
-    return ($T12 = JSIL.Memoize($asm06.System.IO.Path)) ();
+    return ($T12 = JSIL.Memoize($asm04.Fusee.Serialization.MaterialContainer)) ();
   };
   var $T13 = function () {
-    return ($T13 = JSIL.Memoize($asm01.Fusee.Engine.ImageData)) ();
+    return ($T13 = JSIL.Memoize($asm00.Examples.SceneViewer.SceneRenderer_$l$gc__DisplayClass8)) ();
   };
   var $T14 = function () {
-    return ($T14 = JSIL.Memoize($asm04.Fusee.Serialization.SceneObjectContainer)) ();
+    return ($T14 = JSIL.Memoize($asm00.Examples.SceneViewer.SceneRenderer_$l$gc__DisplayClassa)) ();
   };
   var $T15 = function () {
-    return ($T15 = JSIL.Memoize($asm02.Fusee.Engine.Mesh)) ();
+    return ($T15 = JSIL.Memoize($asm06.System.IO.Path)) ();
   };
   var $T16 = function () {
-    return ($T16 = JSIL.Memoize($asm03.Fusee.Math.float4x4)) ();
+    return ($T16 = JSIL.Memoize($asm01.Fusee.Engine.ImageData)) ();
+  };
+  var $T17 = function () {
+    return ($T17 = JSIL.Memoize($asm02.Fusee.Engine.Mesh)) ();
   };
   var $S00 = function () {
     return ($S00 = JSIL.Memoize(new JSIL.ConstructorSignature($asm06.TypeRef("System.Collections.Generic.Dictionary`2", [$asm04.TypeRef("Fusee.Serialization.MeshContainer"), $asm02.TypeRef("Fusee.Engine.Mesh")]), []))) ();
@@ -553,6 +608,27 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
     return this._curMat;
   };
 
+  function SceneRenderer_GetAABB () {
+    var $temp00;
+    var ret = null;
+    this._AABBXForm = $T05().Identity.MemberwiseClone();
+
+    for (var a$0 = this._sc.Children._items, i$0 = 0, l$0 = this._sc.Children._size; i$0 < l$0; ($temp00 = i$0, 
+        i$0 = ((i$0 + 1) | 0), 
+        $temp00)) {
+      var soc = a$0[i$0];
+      var nodeBox = this.VisitNodeAABB(soc);
+      if (nodeBox !== null) {
+        if (ret === null) {
+          ret = nodeBox;
+        } else {
+          ret = $T07().Union(ret.MemberwiseClone(), nodeBox.MemberwiseClone()).MemberwiseClone();
+        }
+      }
+    }
+    return ret;
+  };
+
   function SceneRenderer_InitShaders (rc) {
     if (rc !== this._rc) {
       this._rc = rc;
@@ -564,20 +640,20 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
       this._matMap = $S01().Construct();
     }
     if (this._colorShader === null) {
-      this._colorShader = $T08().GetDiffuseColorShader(rc);
+      this._colorShader = $T0B().GetDiffuseColorShader(rc);
       this._colorParam = this._colorShader.GetShaderParam("color");
-      var sRMaterial = new ($T0A())();
+      var sRMaterial = new ($T0D())();
       sRMaterial.Shader = this._colorShader;
-      var array = JSIL.Array.New($T0C(), 1);
+      var array = JSIL.Array.New($T0F(), 1);
       array[0] = function () {
         this._rc.SetShaderParam4f(this._colorParam, $S02().Construct(0.5, 0.5, 0.5, 1));
       }.bind(this);
-      sRMaterial.ParamSetters = $S03().Construct($T0E().$Cast(array));
+      sRMaterial.ParamSetters = $S03().Construct($T11().$Cast(array));
       var curMat = sRMaterial.MemberwiseClone();
       (this.CurMat = curMat.MemberwiseClone());
     }
     if (this._textureShader === null) {
-      this._textureShader = $T08().GetTextureShader(rc);
+      this._textureShader = $T0B().GetTextureShader(rc);
       this._textureParam = this._textureShader.GetShaderParam("texture1");
     }
     rc.SetShader(this._colorShader);
@@ -585,7 +661,7 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
   };
 
   function SceneRenderer_LookupMaterial (mc) {
-    var srMat = new JSIL.BoxedVariable(new ($T0A())());
+    var srMat = new JSIL.BoxedVariable(new ($T0D())());
     if (!this._matMap.TryGetValue(mc, /* ref */ srMat)) {
       srMat.set(this.MakeMaterial(mc).MemberwiseClone());
       this._matMap.Add(mc, srMat.get().MemberwiseClone());
@@ -594,10 +670,10 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
   };
 
   function SceneRenderer_MakeMaterial (mc) {
-    var $closure0 = new ($T10())();
+    var $closure0 = new ($T13())();
     $closure0.mc = mc;
     $closure0.$this = this;
-    var ret = new ($T0A())();
+    var ret = new ($T0D())();
     ret.ParamSetters = $S04().Construct();
     if ($closure0.mc.DiffuseTexure === null) {
       ret.Shader = this._colorShader;
@@ -605,10 +681,10 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
           this.$this._rc.SetShaderParam4f(this.$this._colorParam, $S02().Construct(this.mc.DiffuseColor.x, this.mc.DiffuseColor.y, this.mc.DiffuseColor.z, 1));
         }.bind($closure0));
     } else {
-      var $closure1 = new ($T11())();
+      var $closure1 = new ($T14())();
       $closure1.$locals9 = $closure0;
       ret.Shader = this._textureShader;
-      var texturePath = $T12().Combine(this._scenePathDirectory, $closure0.mc.DiffuseTexure);
+      var texturePath = $T15().Combine(this._scenePathDirectory, $closure0.mc.DiffuseTexure);
       var image = this._rc.LoadImage(texturePath).MemberwiseClone();
       $closure1.texHandle = this._rc.CreateTexture(image.MemberwiseClone());
       $S05().CallVirtual("Add", null, ret.ParamSetters, function () {
@@ -619,7 +695,7 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
   };
 
   function SceneRenderer_MakeMesh (soc) {
-    return (new ($T15())()).__Initialize__({
+    return (new ($T17())()).__Initialize__({
         Colors: null, 
         Normals: soc.Mesh.Normals, 
         UVs: soc.Mesh.UVs, 
@@ -636,7 +712,7 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
         i$0 = ((i$0 + 1) | 0), 
         $temp00)) {
       var soc = a$0[i$0];
-      this.VisitNode(soc);
+      this.VisitNodeRender(soc);
     }
   };
 
@@ -655,7 +731,35 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
     this._curMat = value.MemberwiseClone();
   };
 
-  function SceneRenderer_VisitNode (soc) {
+  function SceneRenderer_VisitNodeAABB (soc) {
+    var $temp00;
+    var ret = null;
+    var origMV = this._AABBXForm.MemberwiseClone();
+    this._AABBXForm = $S06().CallStatic($T05(), "op_Multiply", null, this._AABBXForm, soc.Transform).MemberwiseClone();
+    if (soc.Mesh !== null) {
+      ret = $T07().op_Multiply(this._AABBXForm, soc.Mesh.BoundingBox.MemberwiseClone()).MemberwiseClone();
+    }
+    if (soc.Children !== null) {
+
+      for (var a$0 = soc.Children._items, i$0 = 0, l$0 = soc.Children._size; i$0 < l$0; ($temp00 = i$0, 
+          i$0 = ((i$0 + 1) | 0), 
+          $temp00)) {
+        var child = a$0[i$0];
+        var nodeBox = this.VisitNodeAABB(child);
+        if (nodeBox !== null) {
+          if (ret === null) {
+            ret = nodeBox;
+          } else {
+            ret = $T07().Union(ret.MemberwiseClone(), nodeBox.MemberwiseClone()).MemberwiseClone();
+          }
+        }
+      }
+    }
+    this._AABBXForm = origMV.MemberwiseClone();
+    return ret;
+  };
+
+  function SceneRenderer_VisitNodeRender (soc) {
     var $temp00;
     var rm = new JSIL.BoxedVariable(null);
     var origMV = this._rc.get_ModelView().MemberwiseClone();
@@ -664,7 +768,7 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
       var srMat = this.LookupMaterial(soc.Material).MemberwiseClone();
       (this.CurMat = srMat.MemberwiseClone());
     }
-    (this._rc.ModelView = $S06().CallStatic($T16(), "op_Multiply", null, this._rc.ModelView, soc.Transform).MemberwiseClone());
+    (this._rc.ModelView = $S06().CallStatic($T05(), "op_Multiply", null, this._rc.ModelView, soc.Transform).MemberwiseClone());
     if (soc.Mesh !== null) {
       if (!this._meshMap.TryGetValue(soc.Mesh, /* ref */ rm)) {
         rm.set($thisType.MakeMesh(soc));
@@ -678,7 +782,7 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
           i$0 = ((i$0 + 1) | 0), 
           $temp00)) {
         var child = a$0[i$0];
-        this.VisitNode(child);
+        this.VisitNodeRender(child);
       }
     }
     (this._rc.ModelView = origMV.MemberwiseClone());
@@ -702,6 +806,11 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
     $.Method({Static:false, Public:false}, "get_CurMat", 
       new JSIL.MethodSignature($asm00.TypeRef("Examples.SceneViewer.SceneRenderer/SRMaterial"), [], []), 
       SceneRenderer_get_CurMat
+    );
+
+    $.Method({Static:false, Public:true }, "GetAABB", 
+      new JSIL.MethodSignature($asm06.TypeRef("System.Nullable`1", [$asm03.TypeRef("Fusee.Math.AABBf")]), [], []), 
+      SceneRenderer_GetAABB
     );
 
     $.Method({Static:false, Public:true }, "InitShaders", 
@@ -734,9 +843,14 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
       SceneRenderer_set_CurMat
     );
 
-    $.Method({Static:false, Public:false}, "VisitNode", 
+    $.Method({Static:false, Public:false}, "VisitNodeAABB", 
+      new JSIL.MethodSignature($asm06.TypeRef("System.Nullable`1", [$asm03.TypeRef("Fusee.Math.AABBf")]), [$asm04.TypeRef("Fusee.Serialization.SceneObjectContainer")], []), 
+      SceneRenderer_VisitNodeAABB
+    );
+
+    $.Method({Static:false, Public:false}, "VisitNodeRender", 
       new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Serialization.SceneObjectContainer")], []), 
-      SceneRenderer_VisitNode
+      SceneRenderer_VisitNodeRender
     );
 
     $.Field({Static:false, Public:false}, "_meshMap", $asm06.TypeRef("System.Collections.Generic.Dictionary`2", [$asm04.TypeRef("Fusee.Serialization.MeshContainer"), $asm02.TypeRef("Fusee.Engine.Mesh")])); 
@@ -747,6 +861,7 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
     $.Field({Static:false, Public:false}, "_colorParam", $asm01.TypeRef("Fusee.Engine.IShaderParam")); 
     $.Field({Static:false, Public:false}, "_textureShader", $asm02.TypeRef("Fusee.Engine.ShaderProgram")); 
     $.Field({Static:false, Public:false}, "_textureParam", $asm01.TypeRef("Fusee.Engine.IShaderParam")); 
+    $.Field({Static:false, Public:false}, "_AABBXForm", $asm03.TypeRef("Fusee.Math.float4x4")); 
     $.Field({Static:false, Public:false}, "_stateSet", $asm02.TypeRef("Fusee.Engine.RenderStateSet")); 
     $.Field({Static:false, Public:false}, "_curMat", $asm00.TypeRef("Examples.SceneViewer.SceneRenderer/SRMaterial")); 
     $.Field({Static:false, Public:false}, "_scenePathDirectory", $.String); 

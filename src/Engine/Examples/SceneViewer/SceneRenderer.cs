@@ -32,6 +32,7 @@ namespace Examples.SceneViewer
         private IShaderParam _colorParam;
         private ShaderProgram _textureShader;
         private IShaderParam _textureParam;
+        private float4x4 _AABBXForm;
 
         private RenderStateSet _stateSet = new RenderStateSet()
         {
@@ -105,17 +106,73 @@ namespace Examples.SceneViewer
             rc.SetRenderState(_stateSet);
         }
 
+        public AABBf? GetAABB()
+        {
+            AABBf? ret = null;
+            _AABBXForm = float4x4.Identity;
+            foreach (var soc in _sc.Children)
+            {
+                AABBf? nodeBox = VisitNodeAABB(soc);
+                if (nodeBox != null)
+                {
+                    if (ret == null)
+                    {
+                        ret = nodeBox;
+                    }
+                    else
+                    {
+                        ret = AABBf.Union((AABBf)ret, (AABBf)nodeBox);
+                    }
+                }
+            }
+            return ret;
+        }
+
+        protected AABBf? VisitNodeAABB(SceneObjectContainer soc)
+        {
+            AABBf? ret = null;
+            float4x4 origMV = _AABBXForm;
+
+            _AABBXForm = _AABBXForm * soc.Transform;
+            if (soc.Mesh != null)
+            {
+                ret = _AABBXForm * soc.Mesh.BoundingBox;
+            }
+
+            if (soc.Children != null)
+            {
+                foreach (var child in soc.Children)
+                {
+                    AABBf? nodeBox = VisitNodeAABB(child);
+                    if (nodeBox != null)
+                    {
+                        if (ret == null)
+                        {
+                            ret = nodeBox;
+                        }
+                        else
+                        {
+                            ret = AABBf.Union((AABBf)ret, (AABBf)nodeBox);
+                        }
+                    }
+                }
+            }
+            _AABBXForm = origMV;
+            return ret;
+        }
+
+
         public void Render(RenderContext rc)
         {
             InitShaders(rc);
 
             foreach (var soc in _sc.Children)
             {
-                VisitNode(soc);
+                VisitNodeRender(soc);
             }
         }
 
-        protected void VisitNode(SceneObjectContainer soc)
+        protected void VisitNodeRender(SceneObjectContainer soc)
         {
             float4x4 origMV = _rc.ModelView;
             SRMaterial origMat = CurMat;
@@ -141,7 +198,7 @@ namespace Examples.SceneViewer
             {
                 foreach (var child in soc.Children)
                 {
-                    VisitNode(child);
+                    VisitNodeRender(child);
                 }
             }
 

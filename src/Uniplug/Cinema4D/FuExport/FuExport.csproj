@@ -36,8 +36,9 @@
       <HintPath>$(C4D_DIR)\plugins\ManagedPlugIn\Win32\C4d.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Fusee.Math.Core">
-      <HintPath>..\..\..\..\bin\Debug\Fusee.Math.Core.dll</HintPath>
+    <Reference Include="Fusee.Math.Core, Version=0.5.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Bin\Debug\Fusee.Math.Core.dll</HintPath>
     </Reference>
     <Reference Include="Fusee.SerializationContainer">
       <HintPath>..\..\..\..\Bin\Debug\Fusee.SerializationContainer.dll</HintPath>

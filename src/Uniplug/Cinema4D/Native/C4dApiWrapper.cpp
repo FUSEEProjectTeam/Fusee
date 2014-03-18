@@ -79950,6 +79950,23 @@ SWIGEXPORT void SWIGSTDCALL CSharp_MessageDialog(char * /* constString&_ctype */
 }
 
 
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_QuestionDialog(char * /* constString&_ctype */ jarg1) {
+  unsigned int jresult ;
+  String *arg1 = 0 ;
+  Bool result;
+  
+  if (!jarg1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return 0;
+  }
+  String arg1_str(jarg1);
+  arg1 = &arg1_str; 
+  result = QuestionDialog((String const &)*arg1);
+  jresult = result; 
+  return jresult;
+}
+
+
 SWIGEXPORT void * SWIGSTDCALL CSharp_GetCustomDataTypeDefault(int jarg1) {
   void * jresult ;
   LONG arg1 ;

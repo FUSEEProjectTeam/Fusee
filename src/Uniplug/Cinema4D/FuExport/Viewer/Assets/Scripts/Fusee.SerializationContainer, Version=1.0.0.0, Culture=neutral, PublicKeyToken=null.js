@@ -131,6 +131,8 @@ JSIL.DeclareNamespace("Fusee.Serialization");
       .Attribute($asm07.TypeRef("ProtoBuf.ProtoMemberAttribute"), function () { return [3]; }); 
     $.Field({Static:false, Public:true }, "Triangles", $jsilcore.TypeRef("System.Array", [$.UInt16]))
       .Attribute($asm07.TypeRef("ProtoBuf.ProtoMemberAttribute"), function () { return [4]; }); 
+    $.Field({Static:false, Public:true }, "BoundingBox", $asm03.TypeRef("Fusee.Math.AABBf"))
+      .Attribute($asm07.TypeRef("ProtoBuf.ProtoMemberAttribute"), function () { return [5]; }); 
     return function (newThisType) { $thisType = newThisType; }; 
   })
     .Attribute($asm07.TypeRef("ProtoBuf.ProtoContractAttribute"));

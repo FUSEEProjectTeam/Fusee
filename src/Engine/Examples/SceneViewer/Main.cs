@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using Fusee.Engine;
 using Fusee.Math;
 using Fusee.Serialization;
@@ -9,12 +10,14 @@ namespace Examples.SceneViewer
 {
     public class SceneViewer : RenderCanvas
     {
-        private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
+        private float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
+        private float _zVel, _zVal;
 
         private const float RotationSpeed = 1f;
         private const float Damping = 0.92f;
         private float _subtextWidth;
         private float _subtextHeight;
+        private float4x4 _modelScaleOffset;
 
         // model variables
         private Mesh _meshFace;
@@ -30,6 +33,18 @@ namespace Examples.SceneViewer
         private GUIText _guiSubText;
         private IFont _guiLatoBlack;
 
+        public void AdjustModelScaleOffset()
+        {
+            AABBf? box = null;
+            if (_sr == null || (box = _sr.GetAABB()) == null)
+            {
+                _modelScaleOffset = float4x4.Identity;
+            }
+            var bbox = ((AABBf) box);
+            float scale = Math.Max(Math.Max(bbox.Size.x, bbox.Size.y), bbox.Size.z);
+            _modelScaleOffset = float4x4.CreateScale(200.0f/scale)*float4x4.CreateTranslation(-bbox.Center);
+        }
+
         // is called on startup
         public override void Init()
         {
@@ -37,6 +52,7 @@ namespace Examples.SceneViewer
             //TestDeserialize();
             
             // GUI initialization
+            _zVal = 500;
             _guiHandler = new GUIHandler();
             _guiHandler.AttachToContext(RC);
 
@@ -60,13 +76,12 @@ namespace Examples.SceneViewer
             // Scene loading
             SceneContainer scene;
             var ser = new Serializer();
-            // using (var file = File.OpenRead(@"Assets/Model.fus"))
-            using (var file = File.OpenRead(@"C:\Users\mch\Temp\FuseeWebPlayer\Gnome\Assets\Model.fus"))
+            using (var file = File.OpenRead(@"Assets/Model.fus"))
             {
                 scene = ser.Deserialize(file, null, typeof(SceneContainer)) as SceneContainer;
             }
-            //_sr = new SceneRenderer(scene, "Assets");
-            _sr = new SceneRenderer(scene, @"C:\Users\mch\Temp\FuseeWebPlayer\Gnome\Assets");
+            _sr = new SceneRenderer(scene, "Assets");
+            AdjustModelScaleOffset();
             _guiSubText.Text = "FUSEE 3D Scene";
             if (scene.Header.CreatedBy != null || scene.Header.CreationDate != null)
             {
@@ -119,8 +134,8 @@ namespace Examples.SceneViewer
             // move per mouse
             if (Input.Instance.IsButton(MouseButtons.Left))
             {
-                _angleVelHorz = RotationSpeed * Input.Instance.GetAxis(InputAxis.MouseX);
-                _angleVelVert = RotationSpeed * Input.Instance.GetAxis(InputAxis.MouseY);
+                _angleVelHorz = RotationSpeed * 30 * (float)Time.Instance.DeltaTime * Input.Instance.GetAxis(InputAxis.MouseX);
+                _angleVelVert = RotationSpeed * 30 * (float)Time.Instance.DeltaTime * Input.Instance.GetAxis(InputAxis.MouseY);
             }
             else
             {
@@ -130,8 +145,19 @@ namespace Examples.SceneViewer
                 _angleVelVert *= curDamp;
             }
 
+            if (Input.Instance.GetAxis(InputAxis.MouseWheel) == 0)
+            {
+                var curDamp = (float)Math.Exp(-Damping * Time.Instance.DeltaTime);
+                _zVel *= (curDamp * curDamp * curDamp);
+            }
+            else
+            {
+                _zVel = -100000 * Input.Instance.GetAxis(InputAxis.MouseWheel) * (float)Time.Instance.DeltaTime;
+            }
+
             _angleHorz -= _angleVelHorz;
             _angleVert -= _angleVelVert;
+            _zVal = Math.Max(100, Math.Min(_zVal + _zVel, 1000));
 
             // move per keyboard
             if (Input.Instance.IsKey(KeyCodes.Left))
@@ -147,7 +173,7 @@ namespace Examples.SceneViewer
                 _angleVert += RotationSpeed * (float)Time.Instance.DeltaTime;
 
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-            var mtxCam = float4x4.LookAt(0, 200, -500, 0, 0, 0, 0, 1, 0);
+            var mtxCam = float4x4.LookAt(0, 200, -_zVal, 0, 0, 0, 0, 1, 0);
 
             
             // first mesh
@@ -156,7 +182,7 @@ namespace Examples.SceneViewer
             //RC.SetShaderParam(_colorParam, new float4(0.5f, 0.8f, 0, 1));
             //RC.Render(_meshTea);
 
-            RC.ModelView = mtxCam * mtxRot;
+            RC.ModelView = mtxCam * mtxRot * _modelScaleOffset;
             _sr.Render(RC);
             _guiHandler.RenderGUI();
 

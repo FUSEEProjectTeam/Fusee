@@ -1147,5 +1147,6 @@ BaseObject *
 // From somewhere
 #define Texpresso												1001149
 void MessageDialog(const String &str);
+Bool QuestionDialog(const String& str);
 void GePrint(const String &str);
 BaseContainer GetCustomDataTypeDefault(LONG type);

@@ -3,6 +3,140 @@ var $asm03 = JSIL.DeclareAssembly("Fusee.Math.Core, Version=0.5.0.0, Culture=neu
 
 JSIL.DeclareNamespace("Fusee");
 JSIL.DeclareNamespace("Fusee.Math");
+/* struct Fusee.Math.AABBf */ 
+
+(function AABBf$Members () {
+  var $, $thisType;
+  var $T00 = function () {
+    return ($T00 = JSIL.Memoize($asm03.Fusee.Math.float3)) ();
+  };
+  var $T01 = function () {
+    return ($T01 = JSIL.Memoize($asm03.Fusee.Math.float4x4)) ();
+  };
+  var $T02 = function () {
+    return ($T02 = JSIL.Memoize(System.Array.Of($asm03.Fusee.Math.float3))) ();
+  };
+  var $T03 = function () {
+    return ($T03 = JSIL.Memoize($asm06.System.Int32)) ();
+  };
+  var $S00 = function () {
+    return ($S00 = JSIL.Memoize(new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float3"), [$asm03.TypeRef("Fusee.Math.float3"), $asm06.TypeRef("System.Single")], []))) ();
+  };
+  var $S01 = function () {
+    return ($S01 = JSIL.Memoize(new JSIL.ConstructorSignature($asm03.TypeRef("Fusee.Math.float3"), [
+        $asm06.TypeRef("System.Single"), $asm06.TypeRef("System.Single"), 
+        $asm06.TypeRef("System.Single")
+      ]))) ();
+  };
+  var $S02 = function () {
+    return ($S02 = JSIL.Memoize(new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float3"), [$asm03.TypeRef("Fusee.Math.float4x4"), $asm03.TypeRef("Fusee.Math.float3")], []))) ();
+  };
+
+  function AABBf__ctor (min_, max_) {
+    this.min = min_;
+    this.max = max_;
+  };
+
+  function AABBf_get_Center () {
+    return $S00().CallStatic($T00(), "op_Multiply", null, $T00().op_Addition(this.max.MemberwiseClone(), this.min.MemberwiseClone()).MemberwiseClone(), 0.5);
+  };
+
+  function AABBf_get_Size () {
+    return $T00().op_Subtraction(this.max.MemberwiseClone(), this.min.MemberwiseClone());
+  };
+
+  function AABBf_op_Multiply (m, box) {
+    var ret = new $thisType();
+    var cube = JSIL.Array.New($T00(), [$S01().Construct(box.min.x, box.min.y, box.min.z), $S01().Construct(box.min.x, box.min.y, box.max.z), $S01().Construct(box.min.x, box.max.y, box.min.z), $S01().Construct(box.min.x, box.max.y, box.max.z), $S01().Construct(box.max.x, box.min.y, box.min.z), $S01().Construct(box.max.x, box.min.y, box.max.z), $S01().Construct(box.max.x, box.max.y, box.min.z), $S01().Construct(box.max.x, box.max.y, box.max.z)]);
+
+    for (var i = 0; i < 8; i = ((i + 1) | 0)) {
+      cube[i] = $S02().CallStatic($T01(), "op_Multiply", null, m, cube[i]);
+    }
+    ret.min = cube[0].MemberwiseClone();
+    ret.max = cube[0].MemberwiseClone();
+
+    for (i = 1; i < 8; i = ((i + 1) | 0)) {
+      if (cube[i].x < ret.min.x) {
+        ret.min.x = +cube[i].x;
+      }
+      if (cube[i].y < ret.min.y) {
+        ret.min.y = +cube[i].y;
+      }
+      if (cube[i].z < ret.min.z) {
+        ret.min.z = +cube[i].z;
+      }
+      if (cube[i].x > ret.max.x) {
+        ret.max.x = +cube[i].x;
+      }
+      if (cube[i].y > ret.max.y) {
+        ret.max.y = +cube[i].y;
+      }
+      if (cube[i].z > ret.max.z) {
+        ret.max.z = +cube[i].z;
+      }
+    }
+    return ret;
+  };
+
+  function AABBf_Union (a, b) {
+    var ret = new $thisType();
+    ret.min.x = +((a.min.x < b.min.x) ? a.min.x : b.min.x);
+    ret.min.y = +((a.min.y < b.min.y) ? a.min.y : b.min.y);
+    ret.min.z = +((a.min.z < b.min.z) ? a.min.z : b.min.z);
+    ret.max.x = +((a.max.x > b.max.x) ? a.max.x : b.max.x);
+    ret.max.y = +((a.max.y > b.max.y) ? a.max.y : b.max.y);
+    ret.max.z = +((a.max.z > b.max.z) ? a.max.z : b.max.z);
+    return ret;
+  };
+
+  JSIL.MakeType({
+      BaseType: $asm06.TypeRef("System.ValueType"), 
+      Name: "Fusee.Math.AABBf", 
+      IsPublic: true, 
+      IsReferenceType: false, 
+      MaximumConstructorArguments: 2, 
+    }, function ($interfaceBuilder) {
+    $ = $interfaceBuilder;
+
+    $.Method({Static:false, Public:true }, ".ctor", 
+      new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float3"), $asm03.TypeRef("Fusee.Math.float3")], []), 
+      AABBf__ctor
+    );
+
+    $.Method({Static:false, Public:true }, "get_Center", 
+      new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float3"), [], []), 
+      AABBf_get_Center
+    );
+
+    $.Method({Static:false, Public:true }, "get_Size", 
+      new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float3"), [], []), 
+      AABBf_get_Size
+    );
+
+    $.Method({Static:true , Public:true }, "op_Multiply", 
+      new JSIL.MethodSignature($.Type, [$asm03.TypeRef("Fusee.Math.float4x4"), $.Type], []), 
+      AABBf_op_Multiply
+    );
+
+    $.Method({Static:true , Public:true }, "Union", 
+      new JSIL.MethodSignature($.Type, [$.Type, $.Type], []), 
+      AABBf_Union
+    );
+
+    $.Field({Static:false, Public:true }, "min", $asm03.TypeRef("Fusee.Math.float3"))
+      .Attribute($asm07.TypeRef("ProtoBuf.ProtoMemberAttribute"), function () { return [1]; }); 
+    $.Field({Static:false, Public:true }, "max", $asm03.TypeRef("Fusee.Math.float3"))
+      .Attribute($asm07.TypeRef("ProtoBuf.ProtoMemberAttribute"), function () { return [2]; }); 
+    $.Property({Static:false, Public:true }, "Center", $asm03.TypeRef("Fusee.Math.float3"));
+
+    $.Property({Static:false, Public:true }, "Size", $asm03.TypeRef("Fusee.Math.float3"));
+
+    return function (newThisType) { $thisType = newThisType; }; 
+  })
+    .Attribute($asm07.TypeRef("ProtoBuf.ProtoContractAttribute"));
+
+})();
+
 /* struct Fusee.Math.double2 */ 
 
 (function double2$Members () {
@@ -3567,11 +3701,10 @@ JSIL.DeclareNamespace("Fusee.Math");
       throw $S03().Construct("zNear");
     }
     var yMax = +(zNear * (Math.tan((0.5 * fovy))));
-    var yMin = +-yMax;
     $thisType.CreatePerspectiveOffCenter_ROW(
-      (yMin * aspect), 
+      (-yMax * aspect), 
       (yMax * aspect), 
-      yMin, 
+      -yMax, 
       yMax, 
       zNear, 
       zFar, 

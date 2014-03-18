@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Runtime.Remoting.Channels;
 using System.Threading;
@@ -60,10 +62,11 @@ namespace FuExport
         public FusWebExporter()
             : base(false)
         {
-
+            _newVersionExists = false;
         }
 
         private static FuseeHttpServer _httpServer;
+        private bool _newVersionExists;
 
 
         private void StartServer(string root)
@@ -82,12 +85,70 @@ namespace FuExport
 
         public override bool Init(GeListNode node)
         {
+            Thread thread = new Thread(CheckForNewVersion);
+            thread.Start();
+
             return true;
         }
 
+        public void CheckForNewVersion()
+        {
+            try
+            {
+                /*
+                 * A word on deployment: This code reads the file LastChange.txt. It should contain a date/time text in US-notation, e.g. 24-Dec-2014 20:15
+                 * 
+                 * This time is compared against the lastChanged file time of FuExport.dll. 
+                 * 
+                 * Make sure that the lastChanged file time of FuExport.dll is listed correctly in the deployed zip file. When updating the zip file contents
+                 * wie Explorer the new date is listed in explorer but when unzipping aftwrwards with 7zip the original (old) date is restored. Always zip from 
+                 * new with 7zip.
+                 * 
+                 * When deploying, make sure the new date within LastChange.txt is slightly older than the file date of the new FuExport.dll (but of course
+                 * later than the old FuExport.dll). Otherwise, this plugin will report updated versions forever.
+                 * 
+                HttpWebRequest gameFile = (HttpWebRequest)WebRequest.Create("http://fusee3d.org/C4DPluginDownload/LastChanged.txt");
+                HttpWebResponse gameFileResponse = (HttpWebResponse)gameFile.GetResponse();
+
+                Assembly thisDll = Assembly.GetExecutingAssembly();
+                DateTime localFileModifiedTime = File.GetLastWriteTime(thisDll.Location);
+                DateTime onlineFileModifiedTime = gameFileResponse.LastModified;
+                */
+                WebClient client = new WebClient();
+                Stream stream = client.OpenRead("http://fusee3d.org/C4DPluginDownload/LastChanged.txt");
+                StreamReader reader = new StreamReader(stream);
+                String content = reader.ReadToEnd();
+                DateTime onlineFileTime = DateTime.Parse(content, CultureInfo.CreateSpecificCulture("en-US"));
+
+                Assembly thisDll = Assembly.GetExecutingAssembly();
+                DateTime localFileModifiedTime = File.GetLastWriteTime(thisDll.Location);
+
+
+                _newVersionExists = (localFileModifiedTime < onlineFileTime);
+            }
+            catch (Exception ex) // Catch anything - this should in no case stop C4D from working
+            {
+                Logger.Error(ex.ToString());
+                // swallow throw;
+            }
+        }
 
         public override FILEERROR Save(BaseSceneSaver node, Filename name, BaseDocument doc, SCENEFILTER filterflags)
         {
+            if (_newVersionExists)
+            {
+                if (!C4dApi.QuestionDialog(
+                    "A newer version of the FUSEE export plugin is available at fusee3d.org/c4dexporter.\n\n" +
+                    "Would you like to \n" +
+                    " - complete this export operation using the existing plugin [Yes]\n" +
+                    "or\n" +
+                    " - cancel this export operation and download the newer version [No]?"))
+                {
+                    C4dApi.GeOpenHTML("http://fusee3d.org/c4dexporter");
+                    return FILEERROR.FILEERROR_NONE;
+                }
+                _newVersionExists = false; // stop annoying the user...
+            }
             List<string> textureFiles;
             string htmlFilePath = name.GetString();
             string htmlFileDir = Path.GetDirectoryName(htmlFilePath);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -11,6 +12,35 @@ using Fusee.Serialization;
 
 namespace FuExport
 {
+    class VertexList : Collection<float3>
+    {
+        public float3 Min;
+        public float3 Max;
+
+        public VertexList() : base()
+        {
+        }
+
+        public new void Add(float3 v)
+        {
+            if (Count == 0)
+            {
+                Min = v;
+                Max = v;
+            }
+            else
+            {
+                Min.x = (v.x < Min.x) ? v.x : Min.x;
+                Min.y = (v.y < Min.y) ? v.y : Min.y;
+                Min.z = (v.z < Min.z) ? v.z : Min.z;
+                Max.x = (v.x > Max.x) ? v.x : Max.x;
+                Max.y = (v.y > Max.y) ? v.y : Max.y;
+                Max.z = (v.z > Max.z) ? v.z : Max.z;
+            }
+            base.Add(v);
+        }
+    }
+
     class FusConverter
     {
         private BaseDocument _polyDoc;
@@ -63,7 +93,7 @@ namespace FuExport
             List<float3> normals = new List<float3>();
 
             ushort nNewVerts = 0;
-            List<float3> verts = new List<float3>();
+            VertexList verts = new VertexList();
             List<float2> uvs = new List<float2>();
             List<ushort> tris = new List<ushort>();
 
@@ -76,11 +106,19 @@ namespace FuExport
                 double3 c = polyOb.GetPointAt(poly.c);
                 double3 d = polyOb.GetPointAt(poly.d);
 
-                UVWStruct uvw = uvwTag.GetSlow(i);
-                float2 uvA = new float2((float)uvw.a.x, 1.0f - (float)uvw.a.y);
-                float2 uvB = new float2((float)uvw.b.x, 1.0f - (float)uvw.b.y);
-                float2 uvC = new float2((float)uvw.c.x, 1.0f - (float)uvw.c.y);
-                float2 uvD = new float2((float)uvw.d.x, 1.0f - (float)uvw.d.y);
+                float2 uvA = new float2(0, 0);
+                float2 uvB = new float2(0, 1);
+                float2 uvC = new float2(1, 1);
+                float2 uvD = new float2(1, 0);
+
+                if (uvwTag != null)
+                {
+                    UVWStruct uvw = uvwTag.GetSlow(i);
+                    uvA = new float2((float) uvw.a.x, 1.0f - (float) uvw.a.y);
+                    uvB = new float2((float) uvw.b.x, 1.0f - (float) uvw.b.y);
+                    uvC = new float2((float) uvw.c.x, 1.0f - (float) uvw.c.y);
+                    uvD = new float2((float) uvw.d.x, 1.0f - (float) uvw.d.y);
+                }
 
                 verts.Add((float3) a);
                 verts.Add((float3) b);
@@ -125,7 +163,8 @@ namespace FuExport
                 Normals = normals.ToArray(),
                 Vertices = verts.ToArray(),
                 Triangles = tris.ToArray(),
-                UVs = uvs.ToArray()
+                UVs = uvs.ToArray(),
+                BoundingBox = new AABBf(verts.Min, verts.Max)
             };
         }
 
@@ -299,10 +338,8 @@ namespace FuExport
                         {
                             BaseContainer compressionContainer = new BaseContainer(C4dApi.JPGSAVER_QUALITY);
                             compressionContainer.SetReal(C4dApi.JPGSAVER_QUALITY, 70.0);
-                            // string textureFileRel = Path.Combine("Assets", texture);
                             string textureFileAbs = Path.Combine(_sceneRootDir, texture);
-                            bitmap.Save(new Filename(textureFileAbs), C4dApi.FILTER_JPG, compressionContainer,
-                                SAVEBIT.SAVEBIT_0);
+                            bitmap.Save(new Filename(textureFileAbs), C4dApi.FILTER_JPG, compressionContainer, SAVEBIT.SAVEBIT_0);
                             _textureFiles.Add(texture);
                         }
                         else
@@ -320,6 +357,7 @@ namespace FuExport
                 mcRet.HasSpecular = true;
                 BaseContainer data = specularColorChannel.GetData();
                 mcRet.SpecularColor = (float3) data.GetVector(C4dApi.BASECHANNEL_COLOR_EX);
+                /*
                 string texture = data.GetString(C4dApi.BASECHANNEL_TEXTURE);
                 BaseBitmap bitmap = specularColorChannel.GetBitmap();
                 if (bitmap != null)
@@ -328,8 +366,10 @@ namespace FuExport
                     compressionContainer.SetReal(C4dApi.JPGSAVER_QUALITY, 70.0);
                     bitmap.Save(new Filename("C:\\Users\\mch\\Temp\\FuseeWebPlayer\\ABitmapS.jpg"), C4dApi.FILTER_JPG, compressionContainer, SAVEBIT.SAVEBIT_0);
                 }
+                */
             }
 
+            // Just for debugging purposes
             BaseChannel specularChannel = material.GetChannel(C4dApi.CHANNEL_SPECULARCOLOR);
             if (specularChannel != null)
             {
