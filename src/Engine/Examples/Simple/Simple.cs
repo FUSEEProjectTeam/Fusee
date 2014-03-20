@@ -97,7 +97,7 @@ namespace Examples.Simple
             var mtxCam = float4x4.LookAt(0, 200, -500, 0, 0, 0, 0, 1, 0);
 
             // Column order notation
-            RC.ModelView = float4x4.CreateTranslation(0, -50, 0)*mtxRot*float4x4.CreateTranslation(-150, 0, 0)*mtxCam;
+            //RC.ModelView = float4x4.CreateTranslation(0, -50, 0)*mtxRot*float4x4.CreateTranslation(-150, 0, 0)*mtxCam;
             // Debug.Assert(mtxCam_ROW == float4x4.Transpose(mtxCam));
 
             RC.SetShader(_spColor);

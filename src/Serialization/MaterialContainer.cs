@@ -8,31 +8,41 @@ using ProtoBuf;
 namespace Fusee.Serialization
 {
     [ProtoContract]
+    public class MatChannelContainer
+    {
+        [ProtoMember(0)]
+        public float3 Color;
+
+        [ProtoMember(1)]
+        public string Texure;
+
+        [ProtoMember(2)]
+        public float Mix;
+    }
+
+    public class SpecularChannelContainer : MatChannelContainer
+    {
+        [ProtoMember(0)]
+        public float Shininess;
+    }
+
+    [ProtoContract]
     public class MaterialContainer
     {
         #region Diffuse
+        public bool HasDiffuse { get { return Diffuse != null; }}
+
         [ProtoMember(0)] 
-        public bool HasDiffuse;
-
-        [ProtoMember(1)]
-        public float3 DiffuseColor;
-
-        [ProtoMember(2)]
-        public string DiffuseTexure;
+        public MatChannelContainer Diffuse;
         #endregion
 
         #region Specular
-        [ProtoMember(3)]
-        public bool HasSpecular;
+        public bool HasSpecular { get { return Diffuse != null; } }
 
-        [ProtoMember(4)]
-        public float3 SpecularColor;
-
-        [ProtoMember(5)]
-        public float SpecularIntensity;
-
-        [ProtoMember(6)]
-        public float SpecularShininess;
+        [ProtoMember(0)]
+        public SpecularChannelContainer Specular;
         #endregion
+
+
     }
 }
