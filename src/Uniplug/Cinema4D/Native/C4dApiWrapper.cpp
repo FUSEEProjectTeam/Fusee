@@ -77066,6 +77066,2126 @@ SWIGEXPORT int SWIGSTDCALL CSharp_TEXTURETAG_CAMERA_PIXELPRESET_ANAMORPHIC_get()
 }
 
 
+SWIGEXPORT int SWIGSTDCALL CSharp_ID_MATERIALGROUP_COLOR_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)ID_MATERIALGROUP_COLOR;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_ID_MATERIALGROUP_DIFFUSION_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)ID_MATERIALGROUP_DIFFUSION;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_ID_MATERIALGROUP_LUMINANCE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)ID_MATERIALGROUP_LUMINANCE;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_ID_MATERIALGROUP_TRANSPARENCY_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)ID_MATERIALGROUP_TRANSPARENCY;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_ID_MATERIALGROUP_REFLECTION_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)ID_MATERIALGROUP_REFLECTION;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_ID_MATERIALGROUP_ENVIRONMENT_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)ID_MATERIALGROUP_ENVIRONMENT;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_ID_MATERIALGROUP_FOG_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)ID_MATERIALGROUP_FOG;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_ID_MATERIALGROUP_BUMP_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)ID_MATERIALGROUP_BUMP;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_ID_MATERIALGROUP_ALPHA_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)ID_MATERIALGROUP_ALPHA;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_ID_MATERIALGROUP_SPECULAR_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)ID_MATERIALGROUP_SPECULAR;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_ID_MATERIALGROUP_SPECULARCOLOR_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)ID_MATERIALGROUP_SPECULARCOLOR;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_ID_MATERIALGROUP_GLOW_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)ID_MATERIALGROUP_GLOW;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_ID_MATERIALGROUP_DISPLACEMENT_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)ID_MATERIALGROUP_DISPLACEMENT;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_ID_MATERIALGROUP_NORMAL_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)ID_MATERIALGROUP_NORMAL;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_ID_MATERIALGROUP_EDITOR_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)ID_MATERIALGROUP_EDITOR;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_PAGE_EDITOR_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_PAGE_EDITOR;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_PAGE_CUSTOM_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_PAGE_CUSTOM;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_USE_COLOR_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_USE_COLOR;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_USE_DIFFUSION_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_USE_DIFFUSION;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_USE_LUMINANCE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_USE_LUMINANCE;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_USE_TRANSPARENCY_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_USE_TRANSPARENCY;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_USE_REFLECTION_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_USE_REFLECTION;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_USE_ENVIRONMENT_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_USE_ENVIRONMENT;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_USE_FOG_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_USE_FOG;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_USE_BUMP_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_USE_BUMP;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_USE_ALPHA_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_USE_ALPHA;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_USE_SPECULAR_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_USE_SPECULAR;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_USE_SPECULARCOLOR_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_USE_SPECULARCOLOR;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_USE_GLOW_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_USE_GLOW;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_USE_DISPLACEMENT_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_USE_DISPLACEMENT;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_USE_NORMAL_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_USE_NORMAL;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_DISPLAY_USE_COLOR_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_DISPLAY_USE_COLOR;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_DISPLAY_USE_DIFFUSION_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_DISPLAY_USE_DIFFUSION;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_DISPLAY_USE_LUMINANCE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_DISPLAY_USE_LUMINANCE;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_DISPLAY_USE_TRANSPARENCY_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_DISPLAY_USE_TRANSPARENCY;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_DISPLAY_USE_ENVIRONMENT_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_DISPLAY_USE_ENVIRONMENT;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_DISPLAY_USE_BUMP_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_DISPLAY_USE_BUMP;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_DISPLAY_USE_ALPHA_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_DISPLAY_USE_ALPHA;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_DISPLAY_USE_SPECULAR_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_DISPLAY_USE_SPECULAR;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_DISPLAY_USE_SPECULARCOLOR_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_DISPLAY_USE_SPECULARCOLOR;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_DISPLAY_USE_NORMAL_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_DISPLAY_USE_NORMAL;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_DISPLAY_USE_DISPLACEMENT_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_DISPLAY_USE_DISPLACEMENT;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_DISPLAY_USE_SHADER_EOGL_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_DISPLAY_USE_SHADER_EOGL;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_DISPLAY_USE_SHADER_EOGL_NAME_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_DISPLAY_USE_SHADER_EOGL_NAME;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_COLOR_COLOR_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_COLOR_COLOR;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_COLOR_BRIGHTNESS_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_COLOR_BRIGHTNESS;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_COLOR_TEXTURESTRENGTH_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_COLOR_TEXTURESTRENGTH;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_COLOR_TEXTUREMIXING_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_COLOR_TEXTUREMIXING;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_TEXTUREMIXING_NORMAL_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_TEXTUREMIXING_NORMAL;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_TEXTUREMIXING_ADD_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_TEXTUREMIXING_ADD;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_TEXTUREMIXING_SUBTRACT_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_TEXTUREMIXING_SUBTRACT;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_TEXTUREMIXING_MULTIPLY_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_TEXTUREMIXING_MULTIPLY;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_DIFFUSION_BRIGHTNESS_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_DIFFUSION_BRIGHTNESS;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_DIFFUSION_TEXTURESTRENGTH_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_DIFFUSION_TEXTURESTRENGTH;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_DIFFUSION_TEXTUREMIXING_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_DIFFUSION_TEXTUREMIXING;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_DIFFUSION_AFFECT_LUMINANCE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_DIFFUSION_AFFECT_LUMINANCE;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_DIFFUSION_AFFECT_SPECULAR_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_DIFFUSION_AFFECT_SPECULAR;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_DIFFUSION_AFFECT_REFLECTION_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_DIFFUSION_AFFECT_REFLECTION;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_LUMINANCE_COLOR_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_LUMINANCE_COLOR;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_LUMINANCE_BRIGHTNESS_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_LUMINANCE_BRIGHTNESS;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_LUMINANCE_TEXTURESTRENGTH_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_LUMINANCE_TEXTURESTRENGTH;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_LUMINANCE_TEXTUREMIXING_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_LUMINANCE_TEXTUREMIXING;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_TRANSPARENCY_COLOR_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_TRANSPARENCY_COLOR;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_TRANSPARENCY_BRIGHTNESS_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_TRANSPARENCY_BRIGHTNESS;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_TRANSPARENCY_TEXTURESTRENGTH_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_TRANSPARENCY_TEXTURESTRENGTH;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_TRANSPARENCY_TEXTUREMIXING_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_TRANSPARENCY_TEXTUREMIXING;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_TRANSPARENCY_REFRACTION_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_TRANSPARENCY_REFRACTION;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_TRANSPARENCY_FRESNEL_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_TRANSPARENCY_FRESNEL;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_TRANSPARENCY_ADDITIVE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_TRANSPARENCY_ADDITIVE;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_TRANSPARENCY_FRESNELREFLECTIVITY_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_TRANSPARENCY_FRESNELREFLECTIVITY;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_TRANSPARENCY_ABSORPTIONCOLOR_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_TRANSPARENCY_ABSORPTIONCOLOR;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_TRANSPARENCY_ABSORPTIONDISTANCE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_TRANSPARENCY_ABSORPTIONDISTANCE;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_TRANSPARENCY_EXITREFLECTIONS_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_TRANSPARENCY_EXITREFLECTIONS;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_TRANSPARENCY_EXITCOLOR_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_TRANSPARENCY_EXITCOLOR;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_TRANSPARENCY_DISPERSION_EX_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_TRANSPARENCY_DISPERSION_EX;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_TRANSPARENCY_MINSAMPLES_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_TRANSPARENCY_MINSAMPLES;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_TRANSPARENCY_MAXSAMPLES_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_TRANSPARENCY_MAXSAMPLES;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_TRANSPARENCY_ACCURACY_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_TRANSPARENCY_ACCURACY;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_REFLECTION_COLOR_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_REFLECTION_COLOR;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_REFLECTION_BRIGHTNESS_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_REFLECTION_BRIGHTNESS;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_REFLECTION_TEXTURESTRENGTH_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_REFLECTION_TEXTURESTRENGTH;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_REFLECTION_TEXTUREMIXING_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_REFLECTION_TEXTUREMIXING;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_REFLECTION_DISPERSION_EX_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_REFLECTION_DISPERSION_EX;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_REFLECTION_MINSAMPLES_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_REFLECTION_MINSAMPLES;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_REFLECTION_MAXSAMPLES_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_REFLECTION_MAXSAMPLES;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_REFLECTION_ACCURACY_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_REFLECTION_ACCURACY;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_REFLECTION_ADDITIVE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_REFLECTION_ADDITIVE;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_REFLECTION_DISTRIBUTION_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_REFLECTION_DISTRIBUTION;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_REFLECTION_DISTRIBUTION_SIMPLE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_REFLECTION_DISTRIBUTION_SIMPLE;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_REFLECTION_DISTRIBUTION_BLINN_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_REFLECTION_DISTRIBUTION_BLINN;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_REFLECTION_DISTRIBUTION_BECKMANN_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_REFLECTION_DISTRIBUTION_BECKMANN;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_REFLECTION_DISTRIBUTION_WARD_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_REFLECTION_DISTRIBUTION_WARD;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_REFLECTION_DISTRIBUTION_ANISOTROPIC_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_REFLECTION_DISTRIBUTION_ANISOTROPIC;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_REFLECTION_ANISOTROPY_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_REFLECTION_ANISOTROPY;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_REFLECTION_ORIENTATION_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_REFLECTION_ORIENTATION;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_REFLECTION_SHADER_DISPERSION_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_REFLECTION_SHADER_DISPERSION;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_REFLECTION_SHADER_ANISOTROPY_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_REFLECTION_SHADER_ANISOTROPY;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_REFLECTION_SHADER_ORIENTATION_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_REFLECTION_SHADER_ORIENTATION;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_REFLECTION_USE_BUMP_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_REFLECTION_USE_BUMP;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_ENVIRONMENT_COLOR_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_ENVIRONMENT_COLOR;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_ENVIRONMENT_BRIGHTNESS_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_ENVIRONMENT_BRIGHTNESS;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_ENVIRONMENT_TEXTURESTRENGTH_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_ENVIRONMENT_TEXTURESTRENGTH;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_ENVIRONMENT_TEXTUREMIXING_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_ENVIRONMENT_TEXTUREMIXING;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_ENVIRONMENT_TILESX_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_ENVIRONMENT_TILESX;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_ENVIRONMENT_TILESY_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_ENVIRONMENT_TILESY;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_ENVIRONMENT_EXCLUSIVE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_ENVIRONMENT_EXCLUSIVE;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_FOG_COLOR_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_FOG_COLOR;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_FOG_BRIGHTNESS_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_FOG_BRIGHTNESS;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_FOG_DISTANCE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_FOG_DISTANCE;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_BUMP_STRENGTH_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_BUMP_STRENGTH;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_BUMP_MIPFALLOFF_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_BUMP_MIPFALLOFF;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_ALPHA_COLOR_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_ALPHA_COLOR;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_ALPHA_DELTA_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_ALPHA_DELTA;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_ALPHA_INVERT_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_ALPHA_INVERT;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_ALPHA_SOFT_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_ALPHA_SOFT;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_ALPHA_IMAGEALPHA_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_ALPHA_IMAGEALPHA;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_ALPHA_PREMULTIPLIED_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_ALPHA_PREMULTIPLIED;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_SPECULAR_MODE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_SPECULAR_MODE;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_SPECULAR_MODE_PLASTIC_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_SPECULAR_MODE_PLASTIC;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_SPECULAR_MODE_METAL_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_SPECULAR_MODE_METAL;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_SPECULAR_MODE_COLORED_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_SPECULAR_MODE_COLORED;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_SPECULAR_WIDTH_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_SPECULAR_WIDTH;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_SPECULAR_HEIGHT_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_SPECULAR_HEIGHT;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_SPECULAR_FALLOFF_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_SPECULAR_FALLOFF;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_SPECULAR_INNERWIDTH_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_SPECULAR_INNERWIDTH;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_SPECULAR_COLOR_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_SPECULAR_COLOR;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_SPECULAR_BRIGHTNESS_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_SPECULAR_BRIGHTNESS;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_SPECULAR_TEXTURESTRENGTH_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_SPECULAR_TEXTURESTRENGTH;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_SPECULAR_TEXTUREMIXING_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_SPECULAR_TEXTUREMIXING;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_GLOW_COLOR_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_GLOW_COLOR;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_GLOW_BRIGHTNESS_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_GLOW_BRIGHTNESS;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_GLOW_INNERSTRENGTH_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_GLOW_INNERSTRENGTH;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_GLOW_OUTERSTRENGTH_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_GLOW_OUTERSTRENGTH;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_GLOW_RADIUS_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_GLOW_RADIUS;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_GLOW_RANDOM_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_GLOW_RANDOM;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_GLOW_FREQUENCY_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_GLOW_FREQUENCY;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_GLOW_USEMATERIALCOLOR_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_GLOW_USEMATERIALCOLOR;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_DISPLACEMENT_STRENGTH_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_DISPLACEMENT_STRENGTH;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_DISPLACEMENT_HEIGHT_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_DISPLACEMENT_HEIGHT;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_DISPLACEMENT_SUBPOLY_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_DISPLACEMENT_SUBPOLY;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_DISPLACEMENT_SUBPOLY_SUBDIVISION_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_DISPLACEMENT_SUBPOLY_SUBDIVISION;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_DISPLACEMENT_SUBPOLY_KEEPEDGES_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_DISPLACEMENT_SUBPOLY_KEEPEDGES;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_DISPLACEMENT_SUBPOLY_DISTRIBUTION_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_DISPLACEMENT_SUBPOLY_DISTRIBUTION;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_DISPLACEMENT_SUBPOLY_SMOOTH_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_DISPLACEMENT_SUBPOLY_SMOOTH;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_DISPLACEMENT_SUBPOLY_ROUND_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_DISPLACEMENT_SUBPOLY_ROUND;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_DISPLACEMENT_SUBPOLY_ROUNDCONTOUR_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_DISPLACEMENT_SUBPOLY_ROUNDCONTOUR;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_DISPLACEMENT_TYPE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_DISPLACEMENT_TYPE;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_DISPLACEMENT_TYPE_INTENSITY_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_DISPLACEMENT_TYPE_INTENSITY;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_DISPLACEMENT_TYPE_CENTEREDINTENSITY_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_DISPLACEMENT_TYPE_CENTEREDINTENSITY;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_DISPLACEMENT_TYPE_REDGREEN_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_DISPLACEMENT_TYPE_REDGREEN;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_DISPLACEMENT_TYPE_RGBTANGENT_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_DISPLACEMENT_TYPE_RGBTANGENT;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_DISPLACEMENT_TYPE_RGBWORLD_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_DISPLACEMENT_TYPE_RGBWORLD;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_DISPLACEMENT_TYPE_RGBLOCAL_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_DISPLACEMENT_TYPE_RGBLOCAL;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_DISPLACEMENT_SUBPOLY_HQREMAPPING_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_DISPLACEMENT_SUBPOLY_HQREMAPPING;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_DISPLACEMENT_SUBPOLY_MAPRESULT_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_DISPLACEMENT_SUBPOLY_MAPRESULT;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_NORMAL_STRENGTH_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_NORMAL_STRENGTH;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_NORMAL_REVERSEX_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_NORMAL_REVERSEX;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_NORMAL_REVERSEY_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_NORMAL_REVERSEY;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_NORMAL_REVERSEZ_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_NORMAL_REVERSEZ;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_NORMAL_SPACE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_NORMAL_SPACE;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_NORMAL_SPACE_TANGENT_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_NORMAL_SPACE_TANGENT;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_NORMAL_SPACE_LOCAL_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_NORMAL_SPACE_LOCAL;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_NORMAL_SPACE_WORLD_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_NORMAL_SPACE_WORLD;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_NORMAL_SWAP_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_NORMAL_SWAP;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_ILLUMINATION_MODEL_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_ILLUMINATION_MODEL;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_ILLUMINATION_MODEL_PHONG_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_ILLUMINATION_MODEL_PHONG;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_ILLUMINATION_MODEL_BLINN_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_ILLUMINATION_MODEL_BLINN;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_ILLUMINATION_MODEL_ORENNAYAR_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_ILLUMINATION_MODEL_ORENNAYAR;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_ILLUMINATION_DIFFUSEFALLOFF_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_ILLUMINATION_DIFFUSEFALLOFF;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_ILLUMINATION_DIFFUSELEVEL_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_ILLUMINATION_DIFFUSELEVEL;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_ILLUMINATION_ROUGHNESS_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_ILLUMINATION_ROUGHNESS;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_PREVIEWSIZE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_PREVIEWSIZE;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_PREVIEWSIZE_DEF_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_PREVIEWSIZE_DEF;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_PREVIEWSIZE_NO_SCALE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_PREVIEWSIZE_NO_SCALE;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_PREVIEWSIZE_64_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_PREVIEWSIZE_64;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_PREVIEWSIZE_128_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_PREVIEWSIZE_128;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_PREVIEWSIZE_256_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_PREVIEWSIZE_256;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_PREVIEWSIZE_512_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_PREVIEWSIZE_512;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_PREVIEWSIZE_1024_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_PREVIEWSIZE_1024;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_PREVIEWSIZE_2048_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_PREVIEWSIZE_2048;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_PREVIEWSIZE_4096_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_PREVIEWSIZE_4096;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_PREVIEWSIZE_8192_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_PREVIEWSIZE_8192;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_PREVIEWSIZE_16384_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_PREVIEWSIZE_16384;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_EDITORDISPLAY_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_EDITORDISPLAY;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_EDITORDISPLAY_COMBINED_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_EDITORDISPLAY_COMBINED;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_EDITORDISPLAY_COLOR_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_EDITORDISPLAY_COLOR;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_EDITORDISPLAY_DIFFUSION_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_EDITORDISPLAY_DIFFUSION;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_EDITORDISPLAY_LUMINANCE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_EDITORDISPLAY_LUMINANCE;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_EDITORDISPLAY_BUMP_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_EDITORDISPLAY_BUMP;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_EDITORDISPLAY_NORMAL_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_EDITORDISPLAY_NORMAL;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_EDITORDISPLAY_ALPHA_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_EDITORDISPLAY_ALPHA;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_EDITORDISPLAY_TRANSPARENCY_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_EDITORDISPLAY_TRANSPARENCY;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_EDITORDISPLAY_DISPLACEMENT_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_EDITORDISPLAY_DISPLACEMENT;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_EDITORDISPLAY_REFLECTION_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_EDITORDISPLAY_REFLECTION;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_EDITORDISPLAY_ENVIRONMENT_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_EDITORDISPLAY_ENVIRONMENT;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_EDITORDISPLAY_SPECULARCOLOR_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_EDITORDISPLAY_SPECULARCOLOR;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_ANIMATEPREVIEW_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_ANIMATEPREVIEW;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_COLOR_SHADER_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_COLOR_SHADER;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_DIFFUSION_SHADER_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_DIFFUSION_SHADER;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_LUMINANCE_SHADER_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_LUMINANCE_SHADER;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_TRANSPARENCY_SHADER_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_TRANSPARENCY_SHADER;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_REFLECTION_SHADER_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_REFLECTION_SHADER;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_ENVIRONMENT_SHADER_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_ENVIRONMENT_SHADER;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_BUMP_SHADER_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_BUMP_SHADER;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_ALPHA_SHADER_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_ALPHA_SHADER;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_SPECULAR_SHADER_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_SPECULAR_SHADER;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_DISPLACEMENT_SHADER_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_DISPLACEMENT_SHADER;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_NORMAL_SHADER_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_NORMAL_SHADER;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_TRANSPARENCY_DISPERSION_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_TRANSPARENCY_DISPERSION;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_REFLECTION_DISPERSION_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_REFLECTION_DISPERSION;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_SPECULARPREVIEW_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_SPECULARPREVIEW;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_ID_MATERIALGROUP_SUBPOLY_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)ID_MATERIALGROUP_SUBPOLY;
+  jresult = result; 
+  return jresult;
+}
+
+
 SWIGEXPORT int SWIGSTDCALL CSharp_API_VERSION_get() {
   int jresult ;
   int result;

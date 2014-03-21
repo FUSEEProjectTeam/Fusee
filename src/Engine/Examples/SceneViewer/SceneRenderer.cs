@@ -233,6 +233,37 @@ namespace Examples.SceneViewer
 
         private SRMaterial MakeMaterial(MaterialContainer mc)
         {
+            SRMaterial ret = new SRMaterial();
+            ret.ParamSetters = new List<SetParamFunc>();
+            if (mc.HasDiffuse)
+            {
+                if (mc.Diffuse.Texture == null)
+                {
+                    ret.Shader = _colorShader;
+                    ret.ParamSetters.Add(delegate()
+                    {
+                        _rc.SetShaderParam(_colorParam,
+                            new float4(mc.Diffuse.Color, 1));
+                    });
+                }
+                else
+                {
+                    ret.Shader = _textureShader;
+                    string texturePath = Path.Combine(_scenePathDirectory, mc.Diffuse.Texture);
+                    var image = _rc.LoadImage(texturePath);
+                    var texHandle = _rc.CreateTexture(image);
+                    ret.ParamSetters.Add(delegate()
+                    {
+                        _rc.SetShaderParamTexture(_textureParam, texHandle);
+                    });
+                }
+            }
+            return ret;
+        }
+
+        /*
+        private SRMaterial MakeMaterial(MaterialContainer mc)
+        {
             SRMaterial ret=new SRMaterial();
             ret.ParamSetters = new List<SetParamFunc>();
             if (mc.DiffuseTexure == null)
@@ -256,5 +287,6 @@ namespace Examples.SceneViewer
             }
             return ret;
         }
+        */
     }
 }

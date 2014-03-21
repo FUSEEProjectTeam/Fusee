@@ -325,6 +325,43 @@ BaseObject *
     return ret;
 }
 
+// for BaseMaterial derivatives
+%pragma(csharp) imclasscode=%{
+  public static BaseMaterial InstantiateConcreteMaterial(IntPtr cPtr, bool owner)
+  {
+    BaseMaterial ret = null;
+    if (cPtr == IntPtr.Zero) 
+	{
+      return ret;
+    }
+    int type = $modulePINVOKE.C4DAtom_GetType(new HandleRef(null, cPtr));
+    switch (type) 
+	{
+       case 0:
+         ret = new BaseMaterial(cPtr, owner);
+         break;
+	  case 5703: // Mmaterial
+		 ret = new Material(cPtr, owner);
+		 break;
+      // Repeat for every other concrete type.
+      default:
+	  //changed from the debug output to return a BaseTag object
+        ret = new BaseMaterial(cPtr, owner);
+        break;
+    }
+    return ret;
+  }
+%}
+
+%typemap(csout, excode=SWIGEXCODE)
+BaseMaterial *
+/* Insert here every other abstract type returned in the C++ API */
+{
+    IntPtr cPtr = $imcall;
+    $csclassname ret = ($csclassname) $modulePINVOKE.InstantiateConcreteMaterial(cPtr, $owner);$excode
+    return ret;
+}
+
 
 // </polymorphic-downcasts>
 
@@ -1093,6 +1130,7 @@ BaseObject *
 %include "osplineprimitive.h";
 %include "ospline.h";
 %include "ttexture.h";
+%include "mmaterial.h";
 
 //////////////////////////////////////////////////////////////////
 //operatingsystem.h

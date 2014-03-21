@@ -308,67 +308,92 @@ namespace FuExport
 
         private MaterialContainer GetMaterial(TextureTag texTag)
         {
-            BaseMaterial material = texTag.GetMaterial();
+            Material material = texTag.GetMaterial() as Material;
+            if (material == null)
+                return null;
+
+            BaseContainer materialData = material.GetData();
 
             MaterialContainer mcRet;
             if (_materialCache.TryGetValue(material, out mcRet))
                 return mcRet;
             
             mcRet = new MaterialContainer();
-                
-            BaseChannel diffuseChannel = material.GetChannel(C4dApi.CHANNEL_COLOR);
-            if (diffuseChannel != null)
+            // Just for debugging purposes
+            for (int i = 0, id = 0; -1 != (id = materialData.GetIndexId(i)); i++)
             {
-                mcRet.HasDiffuse = true;
-                BaseContainer data = diffuseChannel.GetData();
-                mcRet.DiffuseColor = (float3) data.GetVector(C4dApi.BASECHANNEL_COLOR_EX);
-                string texture = data.GetString(C4dApi.BASECHANNEL_TEXTURE);
-
-                if (!string.IsNullOrEmpty(texture))
+                if (materialData.GetType(id) == C4dApi.DA_LONG)
                 {
-                    texture = Path.GetFileNameWithoutExtension(texture);
-                    texture += ".jpg";
-                    mcRet.DiffuseTexure = texture;
-
-                    if (!_textureFiles.Contains(texture))
-                    {
-                        diffuseChannel.InitTexture(new InitRenderStruct(_polyDoc));
-                        BaseBitmap bitmap = diffuseChannel.GetBitmap();
-                        if (bitmap != null)
-                        {
-                            BaseContainer compressionContainer = new BaseContainer(C4dApi.JPGSAVER_QUALITY);
-                            compressionContainer.SetReal(C4dApi.JPGSAVER_QUALITY, 70.0);
-                            string textureFileAbs = Path.Combine(_sceneRootDir, texture);
-                            bitmap.Save(new Filename(textureFileAbs), C4dApi.FILTER_JPG, compressionContainer, SAVEBIT.SAVEBIT_0);
-                            _textureFiles.Add(texture);
-                        }
-                        else
-                        {
-                            mcRet.DiffuseTexure = null;
-                        }
-                        diffuseChannel.FreeTexture();
-                    }
+                    int iii = materialData.GetLong(id);
+                }
+                if (materialData.GetType(id) == C4dApi.DA_REAL)
+                {
+                    double d = materialData.GetReal(id);
+                }
+                else if (materialData.GetType(id) == C4dApi.DA_VECTOR)
+                {
+                    double3 v = materialData.GetVector(id);
                 }
             }
 
-            BaseChannel specularColorChannel = material.GetChannel(C4dApi.CHANNEL_SPECULARCOLOR);
-            if (specularColorChannel != null)
+            if (material.GetChannelState(C4dApi.CHANNEL_COLOR))
             {
-                mcRet.HasSpecular = true;
-                BaseContainer data = specularColorChannel.GetData();
-                mcRet.SpecularColor = (float3) data.GetVector(C4dApi.BASECHANNEL_COLOR_EX);
-                /*
-                string texture = data.GetString(C4dApi.BASECHANNEL_TEXTURE);
-                BaseBitmap bitmap = specularColorChannel.GetBitmap();
-                if (bitmap != null)
+                BaseChannel diffuseChannel = material.GetChannel(C4dApi.CHANNEL_COLOR);
+                if (diffuseChannel != null)
                 {
-                    BaseContainer compressionContainer = new BaseContainer(C4dApi.JPGSAVER_QUALITY);
-                    compressionContainer.SetReal(C4dApi.JPGSAVER_QUALITY, 70.0);
-                    bitmap.Save(new Filename("C:\\Users\\mch\\Temp\\FuseeWebPlayer\\ABitmapS.jpg"), C4dApi.FILTER_JPG, compressionContainer, SAVEBIT.SAVEBIT_0);
+                    mcRet.Diffuse = new MatChannelContainer();
+
+                    BaseContainer data = diffuseChannel.GetData();
+                    mcRet.Diffuse.Color = (float3) data.GetVector(C4dApi.BASECHANNEL_COLOR_EX);
+                    mcRet.Diffuse.Mix = (float) data.GetReal(C4dApi.BASECHANNEL_MIXSTRENGTH_EX);
+                    mcRet.Diffuse.Texture = GetTexture(data, diffuseChannel);
                 }
-                */
             }
 
+            if (material.GetChannelState(C4dApi.CHANNEL_SPECULARCOLOR))
+            {
+                BaseChannel specularChannel = material.GetChannel(C4dApi.CHANNEL_SPECULARCOLOR);
+                if (specularChannel != null)
+                {
+                    mcRet.Specular = new SpecularChannelContainer();
+
+                    BaseContainer data = specularChannel.GetData();
+                    mcRet.Specular.Color = (float3) data.GetVector(C4dApi.BASECHANNEL_COLOR_EX);
+                    mcRet.Specular.Mix = (float) data.GetReal(C4dApi.BASECHANNEL_MIXSTRENGTH_EX);
+                    mcRet.Specular.Texture = GetTexture(data, specularChannel);
+                    mcRet.Specular.Shininess = CalculateShininess((float) materialData.GetReal(C4dApi.MATERIAL_SPECULAR_WIDTH));
+                    mcRet.Specular.Intensity = (float)materialData.GetReal(C4dApi.MATERIAL_SPECULAR_HEIGHT);
+                }
+            }
+
+            if (material.GetChannelState(C4dApi.CHANNEL_LUMINANCE))
+            {
+                BaseChannel emissiveChannel = material.GetChannel(C4dApi.CHANNEL_LUMINANCE);
+                if (emissiveChannel != null)
+                {
+                    mcRet.Emissive = new MatChannelContainer();
+
+                    BaseContainer data = emissiveChannel.GetData();
+                    mcRet.Emissive.Color = (float3) data.GetVector(C4dApi.BASECHANNEL_COLOR_EX);
+                    mcRet.Emissive.Mix = (float) data.GetReal(C4dApi.BASECHANNEL_MIXSTRENGTH_EX);
+                    mcRet.Emissive.Texture = GetTexture(data, emissiveChannel);
+                }
+            }
+
+            if (material.GetChannelState(C4dApi.CHANNEL_NORMAL))
+            {
+                BaseChannel bumpChannel = material.GetChannel(C4dApi.CHANNEL_NORMAL);
+                if (bumpChannel != null)
+                {
+                    mcRet.Bump = new BumpChannelContainer();
+
+                    BaseContainer data = bumpChannel.GetData();
+                    mcRet.Bump.Intensity = (float) materialData.GetReal(C4dApi.MATERIAL_NORMAL_STRENGTH);
+                    mcRet.Bump.Texture = GetTexture(data, bumpChannel);
+                }
+            }
+
+            /*
             // Just for debugging purposes
             BaseChannel specularChannel = material.GetChannel(C4dApi.CHANNEL_SPECULARCOLOR);
             if (specularChannel != null)
@@ -388,8 +413,53 @@ namespace FuExport
                 } 
  
             }
+            */
             _materialCache[material] = mcRet;
             return mcRet;
+        }
+
+        private static float CalculateShininess(float p)
+        {
+            // The minimum shininess
+            float minS = 0.5f;
+
+            // The maximum shininess
+            float maxS = 1000;
+
+            return (float)(minS*Math.Pow(maxS/minS, 1.0 - p));
+        }
+
+        private string GetTexture(BaseContainer data, BaseChannel diffuseChannel)
+        {
+            string resultName = null;
+            string texture = data.GetString(C4dApi.BASECHANNEL_TEXTURE);
+            if (!string.IsNullOrEmpty(texture))
+            {
+                texture = Path.GetFileNameWithoutExtension(texture);
+                texture += ".jpg";
+                resultName = texture;
+
+                if (!_textureFiles.Contains(texture))
+                {
+                    diffuseChannel.InitTexture(new InitRenderStruct(_polyDoc));
+                    BaseBitmap bitmap = diffuseChannel.GetBitmap();
+                    if (bitmap != null)
+                    {
+                        BaseContainer compressionContainer = new BaseContainer(C4dApi.JPGSAVER_QUALITY);
+                        compressionContainer.SetReal(C4dApi.JPGSAVER_QUALITY, 70.0);
+                        string textureFileAbs = Path.Combine(_sceneRootDir, texture);
+                        bitmap.Save(new Filename(textureFileAbs), C4dApi.FILTER_JPG, compressionContainer,
+                            SAVEBIT.SAVEBIT_0);
+                        _textureFiles.Add(texture);
+                    }
+                    else
+                    {
+                        resultName = null;
+                    }
+                    diffuseChannel.FreeTexture();
+                }
+            }
+            return resultName;
         }
 
 
