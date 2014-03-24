@@ -1397,6 +1397,14 @@ JSIL.DeclareNamespace("Fusee.Math");
         (this.y !== other.y)) && (this.z === other.z));
   };
 
+  function double3_get_b () {
+    return +this.z;
+  };
+
+  function double3_get_g () {
+    return +this.y;
+  };
+
   function double3_get_Length () {
     return +Math.sqrt((((this.x * this.x) + (this.y * this.y)) + (this.z * this.z)));
   };
@@ -1411,6 +1419,10 @@ JSIL.DeclareNamespace("Fusee.Math");
 
   function double3_get_Parse () {
     return $thisType.double3$Parse$value;
+  };
+
+  function double3_get_r () {
+    return +this.x;
   };
 
   function double3_get_xy () {
@@ -1595,8 +1607,20 @@ JSIL.DeclareNamespace("Fusee.Math");
     this.z *= +scale.get().z;
   };
 
+  function double3_set_b (value) {
+    this.z = +value;
+  };
+
+  function double3_set_g (value) {
+    this.y = +value;
+  };
+
   function double3_set_Parse (value) {
     $thisType.double3$Parse$value = value;
+  };
+
+  function double3_set_r (value) {
+    this.x = +value;
   };
 
   function double3_set_xy (value) {
@@ -1963,6 +1987,16 @@ JSIL.DeclareNamespace("Fusee.Math");
       double3_Equals$1D
     );
 
+    $.Method({Static:false, Public:true }, "get_b", 
+      new JSIL.MethodSignature($.Double, [], []), 
+      double3_get_b
+    );
+
+    $.Method({Static:false, Public:true }, "get_g", 
+      new JSIL.MethodSignature($.Double, [], []), 
+      double3_get_g
+    );
+
     $.Method({Static:false, Public:true }, "get_Length", 
       new JSIL.MethodSignature($.Double, [], []), 
       double3_get_Length
@@ -1983,6 +2017,11 @@ JSIL.DeclareNamespace("Fusee.Math");
       double3_get_Parse
     )
       .Attribute($asm06.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute"));
+
+    $.Method({Static:false, Public:true }, "get_r", 
+      new JSIL.MethodSignature($.Double, [], []), 
+      double3_get_r
+    );
 
     $.Method({Static:false, Public:true }, "get_xy", 
       new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.double2"), [], []), 
@@ -2158,11 +2197,26 @@ JSIL.DeclareNamespace("Fusee.Math");
     )
       .Attribute($asm06.TypeRef("System.ObsoleteAttribute"), function () { return ["Use static Multiply() method instead."]; });
 
+    $.Method({Static:false, Public:true }, "set_b", 
+      new JSIL.MethodSignature(null, [$.Double], []), 
+      double3_set_b
+    );
+
+    $.Method({Static:false, Public:true }, "set_g", 
+      new JSIL.MethodSignature(null, [$.Double], []), 
+      double3_set_g
+    );
+
     $.Method({Static:true , Public:true }, "set_Parse", 
       new JSIL.MethodSignature(null, [$asm06.TypeRef("System.Converter`2", [$.String, $.Type])], []), 
       double3_set_Parse
     )
       .Attribute($asm06.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute"));
+
+    $.Method({Static:false, Public:true }, "set_r", 
+      new JSIL.MethodSignature(null, [$.Double], []), 
+      double3_set_r
+    );
 
     $.Method({Static:false, Public:true }, "set_xy", 
       new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.double2")], []), 
@@ -2346,6 +2400,12 @@ JSIL.DeclareNamespace("Fusee.Math");
     $.Property({Static:false, Public:true }, "LengthSquared", $.Double);
 
     $.Property({Static:false, Public:true }, "xy", $asm03.TypeRef("Fusee.Math.double2"));
+
+    $.Property({Static:false, Public:true }, "r", $.Double);
+
+    $.Property({Static:false, Public:true }, "g", $.Double);
+
+    $.Property({Static:false, Public:true }, "b", $.Double);
 
     $.Property({Static:true , Public:true }, "Parse", $asm06.TypeRef("System.Converter`2", [$.String, $.Type]));
 
@@ -2620,6 +2680,18 @@ JSIL.DeclareNamespace("Fusee.Math");
         (this.z !== other.z)) && (this.w === other.w));
   };
 
+  function double4_get_a () {
+    return +this.w;
+  };
+
+  function double4_get_b () {
+    return +this.z;
+  };
+
+  function double4_get_g () {
+    return +this.y;
+  };
+
   function double4_get_Length () {
     return +Math.sqrt(((((this.x * this.x) + (this.y * this.y)) + (this.z * this.z)) + (this.w * this.w)));
   };
@@ -2634,6 +2706,14 @@ JSIL.DeclareNamespace("Fusee.Math");
 
   function double4_get_Parse () {
     return $thisType.double4$Parse$value;
+  };
+
+  function double4_get_r () {
+    return +this.x;
+  };
+
+  function double4_get_rgb () {
+    return this.get_xyz();
   };
 
   function double4_get_xy () {
@@ -2864,8 +2944,28 @@ JSIL.DeclareNamespace("Fusee.Math");
     this.w *= +scale.get().w;
   };
 
+  function double4_set_a (value) {
+    this.w = +value;
+  };
+
+  function double4_set_b (value) {
+    this.z = +value;
+  };
+
+  function double4_set_g (value) {
+    this.y = +value;
+  };
+
   function double4_set_Parse (value) {
     $thisType.double4$Parse$value = value;
+  };
+
+  function double4_set_r (value) {
+    this.x = +value;
+  };
+
+  function double4_set_rgb (value) {
+    (this.xyz = value);
   };
 
   function double4_set_xy (value) {
@@ -3121,6 +3221,21 @@ JSIL.DeclareNamespace("Fusee.Math");
       double4_Equals$16
     );
 
+    $.Method({Static:false, Public:true }, "get_a", 
+      new JSIL.MethodSignature($.Double, [], []), 
+      double4_get_a
+    );
+
+    $.Method({Static:false, Public:true }, "get_b", 
+      new JSIL.MethodSignature($.Double, [], []), 
+      double4_get_b
+    );
+
+    $.Method({Static:false, Public:true }, "get_g", 
+      new JSIL.MethodSignature($.Double, [], []), 
+      double4_get_g
+    );
+
     $.Method({Static:false, Public:true }, "get_Length", 
       new JSIL.MethodSignature($.Double, [], []), 
       double4_get_Length
@@ -3141,6 +3256,16 @@ JSIL.DeclareNamespace("Fusee.Math");
       double4_get_Parse
     )
       .Attribute($asm06.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute"));
+
+    $.Method({Static:false, Public:true }, "get_r", 
+      new JSIL.MethodSignature($.Double, [], []), 
+      double4_get_r
+    );
+
+    $.Method({Static:false, Public:true }, "get_rgb", 
+      new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.double3"), [], []), 
+      double4_get_rgb
+    );
 
     $.Method({Static:false, Public:true }, "get_xy", 
       new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.double2"), [], []), 
@@ -3335,11 +3460,36 @@ JSIL.DeclareNamespace("Fusee.Math");
     )
       .Attribute($asm06.TypeRef("System.ObsoleteAttribute"), function () { return ["Use static Multiply() method instead."]; });
 
+    $.Method({Static:false, Public:true }, "set_a", 
+      new JSIL.MethodSignature(null, [$.Double], []), 
+      double4_set_a
+    );
+
+    $.Method({Static:false, Public:true }, "set_b", 
+      new JSIL.MethodSignature(null, [$.Double], []), 
+      double4_set_b
+    );
+
+    $.Method({Static:false, Public:true }, "set_g", 
+      new JSIL.MethodSignature(null, [$.Double], []), 
+      double4_set_g
+    );
+
     $.Method({Static:true , Public:true }, "set_Parse", 
       new JSIL.MethodSignature(null, [$asm06.TypeRef("System.Converter`2", [$.String, $.Type])], []), 
       double4_set_Parse
     )
       .Attribute($asm06.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute"));
+
+    $.Method({Static:false, Public:true }, "set_r", 
+      new JSIL.MethodSignature(null, [$.Double], []), 
+      double4_set_r
+    );
+
+    $.Method({Static:false, Public:true }, "set_rgb", 
+      new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.double3")], []), 
+      double4_set_rgb
+    );
 
     $.Method({Static:false, Public:true }, "set_xy", 
       new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.double2")], []), 
@@ -3467,6 +3617,16 @@ JSIL.DeclareNamespace("Fusee.Math");
     $.Property({Static:false, Public:true }, "xy", $asm03.TypeRef("Fusee.Math.double2"));
 
     $.Property({Static:false, Public:true }, "xyz", $asm03.TypeRef("Fusee.Math.double3"));
+
+    $.Property({Static:false, Public:true }, "r", $.Double);
+
+    $.Property({Static:false, Public:true }, "g", $.Double);
+
+    $.Property({Static:false, Public:true }, "b", $.Double);
+
+    $.Property({Static:false, Public:true }, "rgb", $asm03.TypeRef("Fusee.Math.double3"));
+
+    $.Property({Static:false, Public:true }, "a", $.Double);
 
     $.Property({Static:true , Public:true }, "Parse", $asm06.TypeRef("System.Converter`2", [$.String, $.Type]));
 
@@ -3661,10 +3821,11 @@ JSIL.DeclareNamespace("Fusee.Math");
       throw $S03().Construct("zNear");
     }
     var yMax = +(zNear * (Math.tan((0.5 * fovy))));
+    var yMin = +-yMax;
     $thisType.CreatePerspectiveOffCenter(
-      (-yMax * aspect), 
+      (yMin * aspect), 
       (yMax * aspect), 
-      -yMax, 
+      yMin, 
       yMax, 
       zNear, 
       zFar, 
@@ -6415,6 +6576,14 @@ JSIL.DeclareNamespace("Fusee.Math");
         ((Math.abs((this.y - other.y))) >= 1.192093E-07)) && ((Math.abs((this.z - other.z))) < 1.192093E-07));
   };
 
+  function float3_get_b () {
+    return +this.z;
+  };
+
+  function float3_get_g () {
+    return +this.y;
+  };
+
   function float3_get_Length () {
     return +$T00().$Cast(Math.sqrt((((this.x * this.x) + (this.y * this.y)) + (this.z * this.z))));
   };
@@ -6429,6 +6598,10 @@ JSIL.DeclareNamespace("Fusee.Math");
 
   function float3_get_Parse () {
     return $thisType.float3$Parse$value;
+  };
+
+  function float3_get_r () {
+    return +this.x;
   };
 
   function float3_get_xy () {
@@ -6648,8 +6821,20 @@ JSIL.DeclareNamespace("Fusee.Math");
     this.z *= +scale.get().z;
   };
 
+  function float3_set_b (value) {
+    this.z = +value;
+  };
+
+  function float3_set_g (value) {
+    this.y = +value;
+  };
+
   function float3_set_Parse (value) {
     $thisType.float3$Parse$value = value;
+  };
+
+  function float3_set_r (value) {
+    this.x = +value;
   };
 
   function float3_set_xy (value) {
@@ -7025,6 +7210,16 @@ JSIL.DeclareNamespace("Fusee.Math");
       float3_Equals$1E
     );
 
+    $.Method({Static:false, Public:true }, "get_b", 
+      new JSIL.MethodSignature($.Single, [], []), 
+      float3_get_b
+    );
+
+    $.Method({Static:false, Public:true }, "get_g", 
+      new JSIL.MethodSignature($.Single, [], []), 
+      float3_get_g
+    );
+
     $.Method({Static:false, Public:true }, "get_Length", 
       new JSIL.MethodSignature($.Single, [], []), 
       float3_get_Length
@@ -7045,6 +7240,11 @@ JSIL.DeclareNamespace("Fusee.Math");
       float3_get_Parse
     )
       .Attribute($asm06.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute"));
+
+    $.Method({Static:false, Public:true }, "get_r", 
+      new JSIL.MethodSignature($.Single, [], []), 
+      float3_get_r
+    );
 
     $.Method({Static:false, Public:true }, "get_xy", 
       new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float2"), [], []), 
@@ -7235,11 +7435,26 @@ JSIL.DeclareNamespace("Fusee.Math");
     )
       .Attribute($asm06.TypeRef("System.ObsoleteAttribute"), function () { return ["Use static Multiply() method instead."]; });
 
+    $.Method({Static:false, Public:true }, "set_b", 
+      new JSIL.MethodSignature(null, [$.Single], []), 
+      float3_set_b
+    );
+
+    $.Method({Static:false, Public:true }, "set_g", 
+      new JSIL.MethodSignature(null, [$.Single], []), 
+      float3_set_g
+    );
+
     $.Method({Static:true , Public:true }, "set_Parse", 
       new JSIL.MethodSignature(null, [$asm06.TypeRef("System.Converter`2", [$.String, $.Type])], []), 
       float3_set_Parse
     )
       .Attribute($asm06.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute"));
+
+    $.Method({Static:false, Public:true }, "set_r", 
+      new JSIL.MethodSignature(null, [$.Single], []), 
+      float3_set_r
+    );
 
     $.Method({Static:false, Public:true }, "set_xy", 
       new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float2")], []), 
@@ -7426,6 +7641,12 @@ JSIL.DeclareNamespace("Fusee.Math");
     $.Property({Static:false, Public:true }, "LengthSquared", $.Single);
 
     $.Property({Static:false, Public:true }, "xy", $asm03.TypeRef("Fusee.Math.float2"));
+
+    $.Property({Static:false, Public:true }, "r", $.Single);
+
+    $.Property({Static:false, Public:true }, "g", $.Single);
+
+    $.Property({Static:false, Public:true }, "b", $.Single);
 
     $.Property({Static:true , Public:true }, "Parse", $asm06.TypeRef("System.Converter`2", [$.String, $.Type]));
 
@@ -8268,6 +8489,18 @@ JSIL.DeclareNamespace("Fusee.Math");
         ((Math.abs((this.z - other.z))) >= 1.192093E-07)) && ((Math.abs((this.w - other.w))) < 1.192093E-07));
   };
 
+  function float4_get_a () {
+    return +this.w;
+  };
+
+  function float4_get_b () {
+    return +this.z;
+  };
+
+  function float4_get_g () {
+    return +this.y;
+  };
+
   function float4_get_Length () {
     return +$T00().$Cast(Math.sqrt(((((this.x * this.x) + (this.y * this.y)) + (this.z * this.z)) + (this.w * this.w))));
   };
@@ -8282,6 +8515,14 @@ JSIL.DeclareNamespace("Fusee.Math");
 
   function float4_get_Parse () {
     return $thisType.float4$Parse$value;
+  };
+
+  function float4_get_r () {
+    return +this.x;
+  };
+
+  function float4_get_rgb () {
+    return this.get_xyz();
   };
 
   function float4_get_xy () {
@@ -8527,8 +8768,28 @@ JSIL.DeclareNamespace("Fusee.Math");
     this.w *= +scale.get().w;
   };
 
+  function float4_set_a (value) {
+    this.w = +value;
+  };
+
+  function float4_set_b (value) {
+    this.z = +value;
+  };
+
+  function float4_set_g (value) {
+    this.y = +value;
+  };
+
   function float4_set_Parse (value) {
     $thisType.float4$Parse$value = value;
+  };
+
+  function float4_set_r (value) {
+    this.x = +value;
+  };
+
+  function float4_set_rgb (value) {
+    (this.xyz = value);
   };
 
   function float4_set_xy (value) {
@@ -8789,6 +9050,21 @@ JSIL.DeclareNamespace("Fusee.Math");
       float4_Equals$17
     );
 
+    $.Method({Static:false, Public:true }, "get_a", 
+      new JSIL.MethodSignature($.Single, [], []), 
+      float4_get_a
+    );
+
+    $.Method({Static:false, Public:true }, "get_b", 
+      new JSIL.MethodSignature($.Single, [], []), 
+      float4_get_b
+    );
+
+    $.Method({Static:false, Public:true }, "get_g", 
+      new JSIL.MethodSignature($.Single, [], []), 
+      float4_get_g
+    );
+
     $.Method({Static:false, Public:true }, "get_Length", 
       new JSIL.MethodSignature($.Single, [], []), 
       float4_get_Length
@@ -8809,6 +9085,16 @@ JSIL.DeclareNamespace("Fusee.Math");
       float4_get_Parse
     )
       .Attribute($asm06.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute"));
+
+    $.Method({Static:false, Public:true }, "get_r", 
+      new JSIL.MethodSignature($.Single, [], []), 
+      float4_get_r
+    );
+
+    $.Method({Static:false, Public:true }, "get_rgb", 
+      new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float3"), [], []), 
+      float4_get_rgb
+    );
 
     $.Method({Static:false, Public:true }, "get_xy", 
       new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float2"), [], []), 
@@ -9018,11 +9304,36 @@ JSIL.DeclareNamespace("Fusee.Math");
     )
       .Attribute($asm06.TypeRef("System.ObsoleteAttribute"), function () { return ["Use static Multiply() method instead."]; });
 
+    $.Method({Static:false, Public:true }, "set_a", 
+      new JSIL.MethodSignature(null, [$.Single], []), 
+      float4_set_a
+    );
+
+    $.Method({Static:false, Public:true }, "set_b", 
+      new JSIL.MethodSignature(null, [$.Single], []), 
+      float4_set_b
+    );
+
+    $.Method({Static:false, Public:true }, "set_g", 
+      new JSIL.MethodSignature(null, [$.Single], []), 
+      float4_set_g
+    );
+
     $.Method({Static:true , Public:true }, "set_Parse", 
       new JSIL.MethodSignature(null, [$asm06.TypeRef("System.Converter`2", [$.String, $.Type])], []), 
       float4_set_Parse
     )
       .Attribute($asm06.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute"));
+
+    $.Method({Static:false, Public:true }, "set_r", 
+      new JSIL.MethodSignature(null, [$.Single], []), 
+      float4_set_r
+    );
+
+    $.Method({Static:false, Public:true }, "set_rgb", 
+      new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float3")], []), 
+      float4_set_rgb
+    );
 
     $.Method({Static:false, Public:true }, "set_xy", 
       new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float2")], []), 
@@ -9154,6 +9465,16 @@ JSIL.DeclareNamespace("Fusee.Math");
     $.Property({Static:false, Public:true }, "xy", $asm03.TypeRef("Fusee.Math.float2"));
 
     $.Property({Static:false, Public:true }, "xyz", $asm03.TypeRef("Fusee.Math.float3"));
+
+    $.Property({Static:false, Public:true }, "r", $.Single);
+
+    $.Property({Static:false, Public:true }, "g", $.Single);
+
+    $.Property({Static:false, Public:true }, "b", $.Single);
+
+    $.Property({Static:false, Public:true }, "rgb", $asm03.TypeRef("Fusee.Math.float3"));
+
+    $.Property({Static:false, Public:true }, "a", $.Single);
 
     $.Property({Static:true , Public:true }, "Parse", $asm06.TypeRef("System.Converter`2", [$.String, $.Type]));
 

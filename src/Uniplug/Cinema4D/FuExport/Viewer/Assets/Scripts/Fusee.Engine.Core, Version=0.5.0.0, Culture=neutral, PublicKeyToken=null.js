@@ -1935,10 +1935,10 @@ JSIL.DeclareNamespace("Fusee.Engine");
     $.ExternalMethod({Static:true , Public:true }, "Log", 
       new JSIL.MethodSignature(null, [$.Object], [])
     )
-      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0E.TypeRef("JSIL.Meta.JSExternal"));
 
     $.ExternalProperty({Static:true , Public:true }, "Timer", $.Double)
-      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0E.TypeRef("JSIL.Meta.JSExternal"));
 
     return function (newThisType) { $thisType = newThisType; }; 
   });
@@ -5531,7 +5531,7 @@ JSIL.MakeDelegate("Fusee.Engine.GUIButtonHandler", true, []);
     $.ExternalMethod({Static:false, Public:false}, "SortArray", 
       new JSIL.MethodSignature(null, [$jsilcore.TypeRef("JSIL.Reference", [$jsilcore.TypeRef("System.Array", [$asm02.TypeRef("Fusee.Engine.GUIElement")])])], [])
     )
-      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0E.TypeRef("JSIL.Meta.JSExternal"));
 
     $.Field({Static:false, Public:false}, "_renderContext", $asm02.TypeRef("Fusee.Engine.RenderContext")); 
     $.ImplementInterfaces(
@@ -6896,37 +6896,37 @@ JSIL.MakeDelegate("Fusee.Engine.GUIPanelHandler", true, []);
     $.ExternalMethod({Static:true , Public:true }, "CreateIAudioImp", 
       new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IAudioImp"), [], [])
     )
-      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0E.TypeRef("JSIL.Meta.JSExternal"));
 
     $.ExternalMethod({Static:true , Public:true }, "CreateIDynamicWorldImp", 
       new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IDynamicWorldImp"), [], [])
     )
-      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0E.TypeRef("JSIL.Meta.JSExternal"));
 
     $.ExternalMethod({Static:true , Public:true }, "CreateIInputDriverImp", 
       new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IInputDriverImp"), [], [])
     )
-      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0E.TypeRef("JSIL.Meta.JSExternal"));
 
     $.ExternalMethod({Static:true , Public:true }, "CreateIInputImp", 
       new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IInputImp"), [$asm01.TypeRef("Fusee.Engine.IRenderCanvasImp")], [])
     )
-      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0E.TypeRef("JSIL.Meta.JSExternal"));
 
     $.ExternalMethod({Static:true , Public:true }, "CreateINetworkImp", 
       new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.INetworkImp"), [], [])
     )
-      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0E.TypeRef("JSIL.Meta.JSExternal"));
 
     $.ExternalMethod({Static:true , Public:true }, "CreateIRenderCanvasImp", 
       new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IRenderCanvasImp"), [], [])
     )
-      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0E.TypeRef("JSIL.Meta.JSExternal"));
 
     $.ExternalMethod({Static:true , Public:true }, "CreateIRenderContextImp", 
       new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IRenderContextImp"), [$asm01.TypeRef("Fusee.Engine.IRenderCanvasImp")], [])
     )
-      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0E.TypeRef("JSIL.Meta.JSExternal"));
 
     return function (newThisType) { $thisType = newThisType; }; 
   });
@@ -7875,7 +7875,7 @@ JSIL.MakeEnum(
     $.ExternalMethod({Static:true , Public:true }, "Double_Parse", 
       new JSIL.MethodSignature($.Double, [$.String], [])
     )
-      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0E.TypeRef("JSIL.Meta.JSExternal"));
 
     $.Method({Static:true , Public:true }, "FilteredSplit", 
       new JSIL.MethodSignature($jsilcore.TypeRef("System.Array", [$.String]), [$.String, $jsilcore.TypeRef("System.Array", [$.Char])], []), 
@@ -10684,7 +10684,7 @@ JSIL.MakeEnum(
     $.ExternalMethod({Static:false, Public:false}, "FirstMessage", 
       new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.INetworkMsg"), [], [])
     )
-      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0E.TypeRef("JSIL.Meta.JSExternal"));
 
     $.Method({Static:false, Public:true }, "get_Config", 
       new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.NetConfigValues"), [], []), 
@@ -13057,7 +13057,7 @@ JSIL.MakeEnum(
     $.ExternalMethod({Static:false, Public:true }, "LoadSystemFont", 
       new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IFont"), [$.String, $.UInt32], [])
     )
-      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0E.TypeRef("JSIL.Meta.JSExternal"));
 
     $.Method({Static:false, Public:true }, "Render", 
       new JSIL.MethodSignature(null, [$asm02.TypeRef("Fusee.Engine.Mesh")], []), 
@@ -13184,37 +13184,37 @@ JSIL.MakeEnum(
       new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $.Single], []), 
       RenderContext_SetShaderParam1f
     )
-      .Attribute($asm0F.TypeRef("JSIL.Meta.JSChangeName"), function () { return ["SetShaderParam1f"]; });
+      .Attribute($asm0E.TypeRef("JSIL.Meta.JSChangeName"), function () { return ["SetShaderParam1f"]; });
 
     $.Method({Static:false, Public:true }, "SetShaderParam2f", 
       new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $asm03.TypeRef("Fusee.Math.float2")], []), 
       RenderContext_SetShaderParam2f
     )
-      .Attribute($asm0F.TypeRef("JSIL.Meta.JSChangeName"), function () { return ["SetShaderParam2f"]; });
+      .Attribute($asm0E.TypeRef("JSIL.Meta.JSChangeName"), function () { return ["SetShaderParam2f"]; });
 
     $.Method({Static:false, Public:true }, "SetShaderParam3f", 
       new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $asm03.TypeRef("Fusee.Math.float3")], []), 
       RenderContext_SetShaderParam3f
     )
-      .Attribute($asm0F.TypeRef("JSIL.Meta.JSChangeName"), function () { return ["SetShaderParam3f"]; });
+      .Attribute($asm0E.TypeRef("JSIL.Meta.JSChangeName"), function () { return ["SetShaderParam3f"]; });
 
     $.Method({Static:false, Public:true }, "SetShaderParam4f", 
       new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $asm03.TypeRef("Fusee.Math.float4")], []), 
       RenderContext_SetShaderParam4f
     )
-      .Attribute($asm0F.TypeRef("JSIL.Meta.JSChangeName"), function () { return ["SetShaderParam4f"]; });
+      .Attribute($asm0E.TypeRef("JSIL.Meta.JSChangeName"), function () { return ["SetShaderParam4f"]; });
 
     $.Method({Static:false, Public:true }, "SetShaderParamMtx4f", 
       new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $asm03.TypeRef("Fusee.Math.float4x4")], []), 
       RenderContext_SetShaderParamMtx4f
     )
-      .Attribute($asm0F.TypeRef("JSIL.Meta.JSChangeName"), function () { return ["SetShaderParamMtx4f"]; });
+      .Attribute($asm0E.TypeRef("JSIL.Meta.JSChangeName"), function () { return ["SetShaderParamMtx4f"]; });
 
     $.Method({Static:false, Public:true }, "SetShaderParamI", 
       new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $.Int32], []), 
       RenderContext_SetShaderParamI
     )
-      .Attribute($asm0F.TypeRef("JSIL.Meta.JSChangeName"), function () { return ["SetShaderParamI"]; });
+      .Attribute($asm0E.TypeRef("JSIL.Meta.JSChangeName"), function () { return ["SetShaderParamI"]; });
 
     $.Method({Static:false, Public:true }, "SetShaderParamTexture", 
       new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $asm01.TypeRef("Fusee.Engine.ITexture")], []), 
@@ -13915,34 +13915,37 @@ JSIL.MakeEnum(
     return ($T18 = JSIL.Memoize($asm06.System.Type)) ();
   };
   var $T19 = function () {
-    return ($T19 = JSIL.Memoize(System.Array.Of($asm06.System.Object))) ();
+    return ($T19 = JSIL.Memoize($asm06.System.Single)) ();
   };
   var $T1A = function () {
-    return ($T1A = JSIL.Memoize($asm06.System.Collections.Generic.List$b1.Of($asm06.System.Int32))) ();
+    return ($T1A = JSIL.Memoize($asm06.System.Double)) ();
   };
   var $T1B = function () {
-    return ($T1B = JSIL.Memoize($asm06.System.Collections.Generic.IEnumerable$b1.Of($asm06.System.Int32))) ();
+    return ($T1B = JSIL.Memoize(System.Array.Of($asm06.System.Object))) ();
   };
   var $T1C = function () {
-    return ($T1C = JSIL.Memoize($asm02.Fusee.Engine.Mesh)) ();
+    return ($T1C = JSIL.Memoize($asm06.System.Collections.Generic.List$b1.Of($asm06.System.Int32))) ();
   };
   var $T1D = function () {
-    return ($T1D = JSIL.Memoize($asm06.System.Single)) ();
+    return ($T1D = JSIL.Memoize($asm06.System.Collections.Generic.IEnumerable$b1.Of($asm06.System.Int32))) ();
   };
   var $T1E = function () {
-    return ($T1E = JSIL.Memoize($asm03.Fusee.Math.float2)) ();
+    return ($T1E = JSIL.Memoize($asm02.Fusee.Engine.Mesh)) ();
   };
   var $T1F = function () {
-    return ($T1F = JSIL.Memoize($asm03.Fusee.Math.float3)) ();
+    return ($T1F = JSIL.Memoize($asm03.Fusee.Math.float2)) ();
   };
   var $T20 = function () {
-    return ($T20 = JSIL.Memoize($asm03.Fusee.Math.float4)) ();
+    return ($T20 = JSIL.Memoize($asm03.Fusee.Math.float3)) ();
   };
   var $T21 = function () {
-    return ($T21 = JSIL.Memoize($asm03.Fusee.Math.float4x4)) ();
+    return ($T21 = JSIL.Memoize($asm03.Fusee.Math.float4)) ();
   };
   var $T22 = function () {
-    return ($T22 = JSIL.Memoize($asm01.Fusee.Engine.ITexture)) ();
+    return ($T22 = JSIL.Memoize($asm03.Fusee.Math.float4x4)) ();
+  };
+  var $T23 = function () {
+    return ($T23 = JSIL.Memoize($asm01.Fusee.Engine.ITexture)) ();
   };
   var $S00 = function () {
     return ($S00 = JSIL.Memoize(new JSIL.ConstructorSignature($asm06.TypeRef("System.ArgumentNullException"), [$asm06.TypeRef("System.String"), $asm06.TypeRef("System.String")]))) ();
@@ -13966,25 +13969,25 @@ JSIL.MakeEnum(
     return ($S06 = JSIL.Memoize(new JSIL.ConstructorSignature($asm06.TypeRef("System.Collections.Generic.List`1", [$asm02.TypeRef("Fusee.Engine.EffectParam")]), []))) ();
   };
   var $S07 = function () {
-    return ($S07 = JSIL.Memoize(new JSIL.MethodSignature($asm06.TypeRef("System.Boolean"), [$asm06.TypeRef("System.Type")], []))) ();
+    return ($S07 = JSIL.Memoize(new JSIL.MethodSignature($asm06.TypeRef("System.Boolean"), [$asm06.TypeRef("System.Type"), $asm06.TypeRef("System.Type")], []))) ();
   };
   var $S08 = function () {
-    return ($S08 = JSIL.Memoize(new JSIL.ConstructorSignature($asm06.TypeRef("System.Exception"), [$asm06.TypeRef("System.String")]))) ();
+    return ($S08 = JSIL.Memoize(new JSIL.MethodSignature($asm06.TypeRef("System.Boolean"), [$asm06.TypeRef("System.Type")], []))) ();
   };
   var $S09 = function () {
-    return ($S09 = JSIL.Memoize(new JSIL.MethodSignature($asm06.TypeRef("System.Boolean"), [$asm06.TypeRef("System.Type"), $asm06.TypeRef("System.Type")], []))) ();
+    return ($S09 = JSIL.Memoize(new JSIL.ConstructorSignature($asm06.TypeRef("System.Exception"), [$asm06.TypeRef("System.String")]))) ();
   };
   var $S0A = function () {
-    return ($S0A = JSIL.Memoize(new JSIL.MethodSignature(null, [$asm06.TypeRef("System.Int32")], []))) ();
+    return ($S0A = JSIL.Memoize(new JSIL.MethodSignature($asm06.TypeRef("System.Boolean"), [$asm06.TypeRef("System.Type"), $asm06.TypeRef("System.Type")], []))) ();
   };
   var $S0B = function () {
-    return ($S0B = JSIL.Memoize(new JSIL.ConstructorSignature($asm06.TypeRef("System.Collections.Generic.List`1", [$asm06.TypeRef("System.Int32")]), [$asm06.TypeRef("System.Collections.Generic.IEnumerable`1", [$asm06.TypeRef("System.Int32")])]))) ();
+    return ($S0B = JSIL.Memoize(new JSIL.MethodSignature(null, [$asm06.TypeRef("System.Int32")], []))) ();
   };
   var $S0C = function () {
-    return ($S0C = JSIL.Memoize(new JSIL.MethodSignature(null, [$asm02.TypeRef("Fusee.Engine.EffectParam")], []))) ();
+    return ($S0C = JSIL.Memoize(new JSIL.ConstructorSignature($asm06.TypeRef("System.Collections.Generic.List`1", [$asm06.TypeRef("System.Int32")]), [$asm06.TypeRef("System.Collections.Generic.IEnumerable`1", [$asm06.TypeRef("System.Int32")])]))) ();
   };
   var $S0D = function () {
-    return ($S0D = JSIL.Memoize(new JSIL.MethodSignature($asm06.TypeRef("System.Boolean"), [$asm06.TypeRef("System.Type"), $asm06.TypeRef("System.Type")], []))) ();
+    return ($S0D = JSIL.Memoize(new JSIL.MethodSignature(null, [$asm02.TypeRef("Fusee.Engine.EffectParam")], []))) ();
   };
   var $IM00 = function () {
     return ($IM00 = JSIL.Memoize($asm06.System.Collections.Generic.IEnumerable$b1.Of($asm02.Fusee.Engine.EffectParameterDeclaration).GetEnumerator)) ();
@@ -14066,23 +14069,28 @@ JSIL.MakeEnum(
         while ($IM01().Call(enumerator, null)) {
           var paramNew = $IM05().Call(enumerator, null).MemberwiseClone();
           if (this._paramDecl.TryGetValue(paramNew.Name, /* ref */ initValue)) {
-            if (!$S07().CallVirtual("IsAssignableFrom", null, paramNew.Type, JSIL.GetType(initValue.get()))) {
-              throw $S08().Construct(JSIL.ConcatString.apply(null, JSIL.Array.New($T0E(), ["Error preparing effect pass ", i, ". Shader parameter ", paramNew.Type.toString(), " ", paramNew.Name, " was defined with as ", JSIL.GetType(initValue.get()).toString(), " ", paramNew.Name, " during initialization (different types)."])));
+            var initValType = JSIL.GetType(initValue.get());
+            if (!((!(!$S07().CallStatic($T18(), "op_Equality", null, paramNew.Type, $T03().__Type__) && 
+                    !$S07().CallStatic($T18(), "op_Equality", null, paramNew.Type, $T19().__Type__)) && 
+                  ($S07().CallStatic($T18(), "op_Equality", null, initValType, $T03().__Type__) || 
+                    $S07().CallStatic($T18(), "op_Equality", null, initValType, $T19().__Type__) || 
+                    $S07().CallStatic($T18(), "op_Equality", null, initValType, $T1A().__Type__))) || $S08().CallVirtual("IsAssignableFrom", null, paramNew.Type, initValType))) {
+              throw $S09().Construct(JSIL.ConcatString.apply(null, JSIL.Array.New($T0E(), ["Error preparing effect pass ", i, ". Shader parameter ", paramNew.Type.toString(), " ", paramNew.Name, " was defined as ", initValType.toString(), " ", paramNew.Name, " during initialization (different types)."])));
             }
             if (this._parameters.TryGetValue(paramNew.Name, /* ref */ paramExisting)) {
-              if (!((paramExisting.get().Info.Size === paramNew.Size) && !$S09().CallStatic($T18(), "op_Inequality", null, paramExisting.get().Info.Type, paramNew.Type))) {
-                throw $S08().Construct(JSIL.ConcatString.apply(null, JSIL.Array.New($T0E(), ["Error preparing effect pass ", i, ". Shader parameter ", paramNew.Name, " already defined with a different type in effect pass ", paramExisting.get().ShaderInxs.get_Item(0)])));
+              if (!((paramExisting.get().Info.Size === paramNew.Size) && !$S0A().CallStatic($T18(), "op_Inequality", null, paramExisting.get().Info.Type, paramNew.Type))) {
+                throw $S09().Construct(JSIL.ConcatString.apply(null, JSIL.Array.New($T0E(), ["Error preparing effect pass ", i, ". Shader parameter ", paramNew.Name, " already defined with a different type in effect pass ", paramExisting.get().ShaderInxs.get_Item(0)])));
               }
-              $S0A().CallVirtual("Add", null, paramExisting.get().ShaderInxs, i);
+              $S0B().CallVirtual("Add", null, paramExisting.get().ShaderInxs, i);
             } else {
               paramExisting.set((new ($T0F())()).__Initialize__({
                     Info: paramNew.MemberwiseClone(), 
-                    ShaderInxs: $S0B().Construct($T1B().$Cast(JSIL.Array.New($T03(), [i]))), 
+                    ShaderInxs: $S0C().Construct($T1D().$Cast(JSIL.Array.New($T03(), [i]))), 
                     Value: initValue.get()}
                 ));
               this._parameters.Add(paramNew.Name, paramExisting.get());
             }
-            $S0C().CallVirtual("Add", null, this._paramsPerPass.get_Item(i), paramExisting.get());
+            $S0D().CallVirtual("Add", null, this._paramsPerPass.get_Item(i), paramExisting.get());
           }
         }
       } finally {
@@ -14124,20 +14132,20 @@ JSIL.MakeEnum(
             i$0 = ((i$0 + 1) | 0), 
             $temp00)) {
           var param = a$0[i$0];
-          if ($S0D().CallStatic($T18(), "op_Equality", null, param.Info.Type, $T03().__Type__)) {
+          if ($S07().CallStatic($T18(), "op_Equality", null, param.Info.Type, $T03().__Type__)) {
             this._rc.SetShaderParamI(param.Info.Handle, $T03().$Cast(param.Value));
-          } else if ($S0D().CallStatic($T18(), "op_Equality", null, param.Info.Type, $T1D().__Type__)) {
-            this._rc.SetShaderParam1f(param.Info.Handle, $T1D().$Cast(param.Value));
-          } else if ($S0D().CallStatic($T18(), "op_Equality", null, param.Info.Type, $T1E().__Type__)) {
-            this._rc.SetShaderParam2f(param.Info.Handle, $T1E().$Cast(param.Value).MemberwiseClone());
-          } else if ($S0D().CallStatic($T18(), "op_Equality", null, param.Info.Type, $T1F().__Type__)) {
-            this._rc.SetShaderParam3f(param.Info.Handle, $T1F().$Cast(param.Value).MemberwiseClone());
-          } else if ($S0D().CallStatic($T18(), "op_Equality", null, param.Info.Type, $T20().__Type__)) {
-            this._rc.SetShaderParam4f(param.Info.Handle, $T20().$Cast(param.Value).MemberwiseClone());
-          } else if ($S0D().CallStatic($T18(), "op_Equality", null, param.Info.Type, $T21().__Type__)) {
-            this._rc.SetShaderParamMtx4f(param.Info.Handle, $T21().$Cast(param.Value).MemberwiseClone());
-          } else if ($S0D().CallStatic($T18(), "op_Equality", null, param.Info.Type, $T22().__Type__)) {
-            this._rc.SetShaderParamTexture(param.Info.Handle, $T22().$Cast(param.Value));
+          } else if ($S07().CallStatic($T18(), "op_Equality", null, param.Info.Type, $T19().__Type__)) {
+            this._rc.SetShaderParam1f(param.Info.Handle, $T19().$Cast(param.Value));
+          } else if ($S07().CallStatic($T18(), "op_Equality", null, param.Info.Type, $T1F().__Type__)) {
+            this._rc.SetShaderParam2f(param.Info.Handle, $T1F().$Cast(param.Value).MemberwiseClone());
+          } else if ($S07().CallStatic($T18(), "op_Equality", null, param.Info.Type, $T20().__Type__)) {
+            this._rc.SetShaderParam3f(param.Info.Handle, $T20().$Cast(param.Value).MemberwiseClone());
+          } else if ($S07().CallStatic($T18(), "op_Equality", null, param.Info.Type, $T21().__Type__)) {
+            this._rc.SetShaderParam4f(param.Info.Handle, $T21().$Cast(param.Value).MemberwiseClone());
+          } else if ($S07().CallStatic($T18(), "op_Equality", null, param.Info.Type, $T22().__Type__)) {
+            this._rc.SetShaderParamMtx4f(param.Info.Handle, $T22().$Cast(param.Value).MemberwiseClone());
+          } else if ($S07().CallStatic($T18(), "op_Equality", null, param.Info.Type, $T23().__Type__)) {
+            this._rc.SetShaderParamTexture(param.Info.Handle, $T23().$Cast(param.Value));
           }
         }
         this._rc.SetRenderState(this._states[i]);

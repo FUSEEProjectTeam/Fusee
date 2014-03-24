@@ -1,30 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
 using Fusee.Engine;
 using Fusee.Math;
 using Fusee.Serialization;
 
 namespace Examples.SceneViewer
 {
-
     public class SceneRenderer
     {
-        internal delegate void SetParamFunc();
-        internal struct SRMaterial
-        {
-            public ShaderProgram Shader;
-            public List<SetParamFunc> ParamSetters;
-            // public Dictionary<IShaderParam, object> Settings;
-        };
-
-
-
         private Dictionary<MeshContainer, Mesh> _meshMap;
-        private Dictionary<MaterialContainer, SRMaterial> _matMap;
+        private Dictionary<MaterialContainer, ShaderEffect> _matMap;
         private SceneContainer _sc;
 
         private RenderContext _rc;
@@ -43,26 +28,14 @@ namespace Examples.SceneViewer
             ZFunc = Compare.Less
         };
 
-        private SRMaterial _curMat;
+        private ShaderEffect _curMat;
         private string _scenePathDirectory;
 
-        SRMaterial CurMat
+        ShaderEffect CurMat
         {
-            set
-            {
-                if (_rc != null)
-                {
-                    _rc.SetShader(value.Shader);
-                    foreach (var paramSetter in value.ParamSetters)
-                    {
-                        paramSetter();
-                    }                    
-                }
-                _curMat = value;
-            }
+            set { _curMat = value;}
             get { return _curMat; }
         }
-
 
         public SceneRenderer(SceneContainer sc, string scenePathDirectory)
         {
@@ -80,30 +53,26 @@ namespace Examples.SceneViewer
                 _textureShader = null;
                 _textureParam = null;
                 _meshMap = new Dictionary<MeshContainer, Mesh>();
-                _matMap = new Dictionary<MaterialContainer, SRMaterial>();
-
+                _matMap = new Dictionary<MaterialContainer, ShaderEffect>();
+                _curMat = null;
             }
-            if (_colorShader == null)
+            if (_curMat == null)
             {
-                _colorShader = MoreShaders.GetDiffuseColorShader(rc);
-                _colorParam = _colorShader.GetShaderParam("color");
-                
-                var curMat = new SRMaterial()
+                _curMat = MakeMaterial(new MaterialContainer
                 {
-                    Shader = _colorShader,
-                    ParamSetters = new List<SetParamFunc>(new SetParamFunc[] {
-                        () => _rc.SetShaderParam(_colorParam, new float4(0.5f, 0.5f, 0.5f, 1))
-                    })
-                };
-                CurMat = curMat;
+                    Diffuse = new MatChannelContainer()
+                    {
+                        Color = new float3(0.5f, 0.5f, 0.5f)
+                    },
+                    Specular = new SpecularChannelContainer()
+                    {
+                        Color = new float3(1, 1, 1),
+                        Intensity = 0.5f,
+                        Shininess = 22
+                    }
+                });
+                CurMat.AttachToContext(rc);
             }
-            if (_textureShader == null)
-            {
-                _textureShader = MoreShaders.GetTextureShader(rc);
-                _textureParam = _textureShader.GetShaderParam("texture1");
-            }
-            rc.SetShader(_colorShader);
-            rc.SetRenderState(_stateSet);
         }
 
         public AABBf? GetAABB()
@@ -161,7 +130,6 @@ namespace Examples.SceneViewer
             return ret;
         }
 
-
         public void Render(RenderContext rc)
         {
             InitShaders(rc);
@@ -175,12 +143,12 @@ namespace Examples.SceneViewer
         protected void VisitNodeRender(SceneObjectContainer soc)
         {
             float4x4 origMV = _rc.ModelView;
-            SRMaterial origMat = CurMat;
+            ShaderEffect origMat = CurMat;
 
             if (soc.Material != null)
             {
-                var srMat = LookupMaterial(soc.Material);
-                CurMat = srMat;
+                var mat = LookupMaterial(soc.Material);
+                CurMat = mat;
             }
             _rc.ModelView = _rc.ModelView * soc.Transform;
             if (soc.Mesh != null)
@@ -191,7 +159,7 @@ namespace Examples.SceneViewer
                     rm = MakeMesh(soc);
                     _meshMap.Add(soc.Mesh, rm);
                 }
-                _rc.Render(rm);
+                CurMat.RenderMesh(rm);
             }
 
             if (soc.Children != null)
@@ -206,15 +174,16 @@ namespace Examples.SceneViewer
             CurMat = origMat;
         }
 
-        private SRMaterial LookupMaterial(MaterialContainer mc)
+        private ShaderEffect LookupMaterial(MaterialContainer mc)
         {
-            SRMaterial srMat;
-            if (!_matMap.TryGetValue(mc, out srMat))
+            ShaderEffect mat;
+            if (!_matMap.TryGetValue(mc, out mat))
             {
-                srMat = MakeMaterial(mc);
-                _matMap.Add(mc, srMat);
+                mat = MakeMaterial(mc);
+                mat.AttachToContext(_rc);
+                _matMap.Add(mc, mat);
             }
-            return srMat;
+            return mat;
         }
 
         private static Mesh MakeMesh(SceneObjectContainer soc)
@@ -231,62 +200,130 @@ namespace Examples.SceneViewer
             return rm;
         }
 
-        private SRMaterial MakeMaterial(MaterialContainer mc)
+        private ITexture LoadTexture(string path)
         {
-            SRMaterial ret = new SRMaterial();
-            ret.ParamSetters = new List<SetParamFunc>();
-            if (mc.HasDiffuse)
-            {
-                if (mc.Diffuse.Texture == null)
+            string texturePath = Path.Combine(_scenePathDirectory, path);
+            var image = _rc.LoadImage(texturePath);
+            return _rc.CreateTexture(image);
+        }
+
+        private ShaderEffect MakeMaterial(MaterialContainer mc)
+        {
+            ShaderCodeBuilder scb = new ShaderCodeBuilder(mc, null);
+            var effectParameters = AssembleEffectParamers(mc, scb);
+
+            ShaderEffect ret = new ShaderEffect(new []
                 {
-                    ret.Shader = _colorShader;
-                    ret.ParamSetters.Add(delegate()
+                    new EffectPassDeclaration()
                     {
-                        _rc.SetShaderParam(_colorParam,
-                            new float4(mc.Diffuse.Color, 1));
-                    });
-                }
-                else
-                {
-                    ret.Shader = _textureShader;
-                    string texturePath = Path.Combine(_scenePathDirectory, mc.Diffuse.Texture);
-                    var image = _rc.LoadImage(texturePath);
-                    var texHandle = _rc.CreateTexture(image);
-                    ret.ParamSetters.Add(delegate()
-                    {
-                        _rc.SetShaderParamTexture(_textureParam, texHandle);
-                    });
-                }
-            }
+                        VS = scb.VS,
+                        PS = scb.PS,
+                        StateSet = new RenderStateSet()
+                        {
+                            ZEnable = true,
+                            AlphaBlendEnable = false
+                        }
+                    }
+                },
+                effectParameters
+            );
             return ret;
         }
 
-        /*
-        private SRMaterial MakeMaterial(MaterialContainer mc)
+        private List<EffectParameterDeclaration> AssembleEffectParamers(MaterialContainer mc, ShaderCodeBuilder scb)
         {
-            SRMaterial ret=new SRMaterial();
-            ret.ParamSetters = new List<SetParamFunc>();
-            if (mc.DiffuseTexure == null)
+            List<EffectParameterDeclaration> effectParameters = new List<EffectParameterDeclaration>();
+
+            if (mc.HasDiffuse)
             {
-                ret.Shader = _colorShader;
-                ret.ParamSetters.Add(delegate()
+                effectParameters.Add(new EffectParameterDeclaration
                 {
-                    _rc.SetShaderParam(_colorParam, new float4(mc.DiffuseColor.x, mc.DiffuseColor.y, mc.DiffuseColor.z, 1));
+                    Name = scb.DiffuseColorName,
+                    Value = (object) mc.Diffuse.Color
+                });
+                if (mc.Diffuse.Texture != null)
+                {
+                    effectParameters.Add(new EffectParameterDeclaration
+                    {
+                        Name = scb.DiffuseMixName,
+                        Value = mc.Diffuse.Mix
+                    });
+                    effectParameters.Add(new EffectParameterDeclaration
+                    {
+                        Name = scb.DiffuseTextureName,
+                        Value = LoadTexture(mc.Diffuse.Texture)
+                    });
+                }
+            }
+
+            if (mc.HasSpecular)
+            {
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = scb.SpecularColorName,
+                    Value = (object) mc.Specular.Color
+                });
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = scb.SpecularShininessName,
+                    Value = (object) mc.Specular.Shininess
+                });
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = scb.SpecularIntensityName,
+                    Value = (object) mc.Specular.Intensity
+                });
+                if (mc.Specular.Texture != null)
+                {
+                    effectParameters.Add(new EffectParameterDeclaration
+                    {
+                        Name = scb.SpecularMixName,
+                        Value = mc.Specular.Mix
+                    });
+                    effectParameters.Add(new EffectParameterDeclaration
+                    {
+                        Name = scb.SpecularTextureName,
+                        Value = LoadTexture(mc.Specular.Texture)
+                    });
+                }
+            }
+
+            if (mc.HasEmissive)
+            {
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = scb.EmissiveColorName,
+                    Value = (object) mc.Emissive.Color
+                });
+                if (mc.Emissive.Texture != null)
+                {
+                    effectParameters.Add(new EffectParameterDeclaration
+                    {
+                        Name = scb.EmissiveMixName,
+                        Value = mc.Emissive.Mix
+                    });
+                    effectParameters.Add(new EffectParameterDeclaration
+                    {
+                        Name = scb.EmissiveTextureName,
+                        Value = LoadTexture(mc.Emissive.Texture)
+                    });
+                }
+            }
+
+            if (mc.HasBump)
+            {
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = scb.BumpIntensityName,
+                    Value = mc.Bump.Intensity
+                });
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = scb.BumpTextureName,
+                    Value = LoadTexture(mc.Bump.Texture)
                 });
             }
-            else
-            {
-                ret.Shader = _textureShader;
-                string texturePath = Path.Combine(_scenePathDirectory, mc.DiffuseTexure);
-                var image = _rc.LoadImage(texturePath);
-                var texHandle = _rc.CreateTexture(image);
-                ret.ParamSetters.Add(delegate()
-                {
-                    _rc.SetShaderParamTexture(_textureParam, texHandle);
-                });
-            }
-            return ret;
+            return effectParameters;
         }
-        */
     }
 }

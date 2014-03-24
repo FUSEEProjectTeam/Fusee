@@ -362,7 +362,7 @@ namespace FuExport
                     mcRet.Specular.Mix = (float) data.GetReal(C4dApi.BASECHANNEL_MIXSTRENGTH_EX);
                     mcRet.Specular.Texture = GetTexture(data, specularChannel);
                     mcRet.Specular.Shininess = CalculateShininess((float) materialData.GetReal(C4dApi.MATERIAL_SPECULAR_WIDTH));
-                    mcRet.Specular.Intensity = (float)materialData.GetReal(C4dApi.MATERIAL_SPECULAR_HEIGHT);
+                    mcRet.Specular.Intensity = (float) (1.5 * materialData.GetReal(C4dApi.MATERIAL_SPECULAR_HEIGHT));
                 }
             }
 
@@ -421,10 +421,10 @@ namespace FuExport
         private static float CalculateShininess(float p)
         {
             // The minimum shininess
-            float minS = 0.5f;
+            float minS = 2.0f;
 
             // The maximum shininess
-            float maxS = 1000;
+            float maxS = 5000;
 
             return (float)(minS*Math.Pow(maxS/minS, 1.0 - p));
         }

@@ -997,6 +997,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
                         break;
                     case this.gl.FLOAT:
                         ret.Type = $jsilcore.System.Single.__Type__;
+                        //ret.Type = $jsilcore.System.Double.__Type__;
                         break;
                     case this.gl.FLOAT_VEC2:
                         ret.Type = $fuseeMath.Fusee.Math.float2.__Type__;

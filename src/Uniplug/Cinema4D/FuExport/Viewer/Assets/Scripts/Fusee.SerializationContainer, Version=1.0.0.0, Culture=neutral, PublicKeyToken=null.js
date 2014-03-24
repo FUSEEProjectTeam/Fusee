@@ -3,11 +3,128 @@ var $asm04 = JSIL.DeclareAssembly("Fusee.SerializationContainer, Version=1.0.0.0
 
 JSIL.DeclareNamespace("Fusee");
 JSIL.DeclareNamespace("Fusee.Serialization");
+/* class Fusee.Serialization.MatChannelContainer */ 
+
+(function MatChannelContainer$Members () {
+  var $, $thisType;
+  function MatChannelContainer__ctor () {
+  };
+
+  JSIL.MakeType({
+      BaseType: $asm06.TypeRef("System.Object"), 
+      Name: "Fusee.Serialization.MatChannelContainer", 
+      IsPublic: true, 
+      IsReferenceType: true, 
+      MaximumConstructorArguments: 0, 
+    }, function ($interfaceBuilder) {
+    $ = $interfaceBuilder;
+
+    $.Method({Static:false, Public:true }, ".ctor", 
+      new JSIL.MethodSignature(null, [], []), 
+      MatChannelContainer__ctor
+    );
+
+    $.Field({Static:false, Public:true }, "Color", $asm03.TypeRef("Fusee.Math.float3"))
+      .Attribute($asm07.TypeRef("ProtoBuf.ProtoMemberAttribute"), function () { return [1]; }); 
+    $.Field({Static:false, Public:true }, "Texture", $.String)
+      .Attribute($asm07.TypeRef("ProtoBuf.ProtoMemberAttribute"), function () { return [2]; }); 
+    $.Field({Static:false, Public:true }, "Mix", $.Single)
+      .Attribute($asm07.TypeRef("ProtoBuf.ProtoMemberAttribute"), function () { return [3]; }); 
+    return function (newThisType) { $thisType = newThisType; }; 
+  })
+    .Attribute($asm07.TypeRef("ProtoBuf.ProtoIncludeAttribute"), function () { return [100, $asm04.Fusee.Serialization.SpecularChannelContainer.__Type__]; })
+    .Attribute($asm07.TypeRef("ProtoBuf.ProtoContractAttribute"));
+
+})();
+
+/* class Fusee.Serialization.SpecularChannelContainer */ 
+
+(function SpecularChannelContainer$Members () {
+  var $, $thisType;
+  var $T00 = function () {
+    return ($T00 = JSIL.Memoize($asm04.Fusee.Serialization.MatChannelContainer)) ();
+  };
+
+  function SpecularChannelContainer__ctor () {
+    $T00().prototype._ctor.call(this);
+  };
+
+  JSIL.MakeType({
+      BaseType: $asm04.TypeRef("Fusee.Serialization.MatChannelContainer"), 
+      Name: "Fusee.Serialization.SpecularChannelContainer", 
+      IsPublic: true, 
+      IsReferenceType: true, 
+      MaximumConstructorArguments: 0, 
+    }, function ($interfaceBuilder) {
+    $ = $interfaceBuilder;
+
+    $.Method({Static:false, Public:true }, ".ctor", 
+      new JSIL.MethodSignature(null, [], []), 
+      SpecularChannelContainer__ctor
+    );
+
+    $.Field({Static:false, Public:true }, "Shininess", $.Single)
+      .Attribute($asm07.TypeRef("ProtoBuf.ProtoMemberAttribute"), function () { return [1]; }); 
+    $.Field({Static:false, Public:true }, "Intensity", $.Single)
+      .Attribute($asm07.TypeRef("ProtoBuf.ProtoMemberAttribute"), function () { return [2]; }); 
+    return function (newThisType) { $thisType = newThisType; }; 
+  })
+    .Attribute($asm07.TypeRef("ProtoBuf.ProtoContractAttribute"));
+
+})();
+
+/* class Fusee.Serialization.BumpChannelContainer */ 
+
+(function BumpChannelContainer$Members () {
+  var $, $thisType;
+  function BumpChannelContainer__ctor () {
+  };
+
+  JSIL.MakeType({
+      BaseType: $asm06.TypeRef("System.Object"), 
+      Name: "Fusee.Serialization.BumpChannelContainer", 
+      IsPublic: true, 
+      IsReferenceType: true, 
+      MaximumConstructorArguments: 0, 
+    }, function ($interfaceBuilder) {
+    $ = $interfaceBuilder;
+
+    $.Method({Static:false, Public:true }, ".ctor", 
+      new JSIL.MethodSignature(null, [], []), 
+      BumpChannelContainer__ctor
+    );
+
+    $.Field({Static:false, Public:true }, "Texture", $.String)
+      .Attribute($asm07.TypeRef("ProtoBuf.ProtoMemberAttribute"), function () { return [1]; }); 
+    $.Field({Static:false, Public:true }, "Intensity", $.Single)
+      .Attribute($asm07.TypeRef("ProtoBuf.ProtoMemberAttribute"), function () { return [2]; }); 
+    return function (newThisType) { $thisType = newThisType; }; 
+  })
+    .Attribute($asm07.TypeRef("ProtoBuf.ProtoContractAttribute"));
+
+})();
+
 /* class Fusee.Serialization.MaterialContainer */ 
 
 (function MaterialContainer$Members () {
   var $, $thisType;
   function MaterialContainer__ctor () {
+  };
+
+  function MaterialContainer_get_HasBump () {
+    return (this.Bump !== null);
+  };
+
+  function MaterialContainer_get_HasDiffuse () {
+    return (this.Diffuse !== null);
+  };
+
+  function MaterialContainer_get_HasEmissive () {
+    return (this.Emissive !== null);
+  };
+
+  function MaterialContainer_get_HasSpecular () {
+    return (this.Specular !== null);
   };
 
   JSIL.MakeType({
@@ -24,20 +141,42 @@ JSIL.DeclareNamespace("Fusee.Serialization");
       MaterialContainer__ctor
     );
 
-    $.Field({Static:false, Public:true }, "HasDiffuse", $.Boolean)
-      .Attribute($asm07.TypeRef("ProtoBuf.ProtoMemberAttribute"), function () { return [0]; }); 
-    $.Field({Static:false, Public:true }, "DiffuseColor", $asm03.TypeRef("Fusee.Math.float3"))
+    $.Method({Static:false, Public:true }, "get_HasBump", 
+      new JSIL.MethodSignature($.Boolean, [], []), 
+      MaterialContainer_get_HasBump
+    );
+
+    $.Method({Static:false, Public:true }, "get_HasDiffuse", 
+      new JSIL.MethodSignature($.Boolean, [], []), 
+      MaterialContainer_get_HasDiffuse
+    );
+
+    $.Method({Static:false, Public:true }, "get_HasEmissive", 
+      new JSIL.MethodSignature($.Boolean, [], []), 
+      MaterialContainer_get_HasEmissive
+    );
+
+    $.Method({Static:false, Public:true }, "get_HasSpecular", 
+      new JSIL.MethodSignature($.Boolean, [], []), 
+      MaterialContainer_get_HasSpecular
+    );
+
+    $.Field({Static:false, Public:true }, "Diffuse", $asm04.TypeRef("Fusee.Serialization.MatChannelContainer"))
       .Attribute($asm07.TypeRef("ProtoBuf.ProtoMemberAttribute"), function () { return [1]; }); 
-    $.Field({Static:false, Public:true }, "DiffuseTexure", $.String)
+    $.Field({Static:false, Public:true }, "Specular", $asm04.TypeRef("Fusee.Serialization.SpecularChannelContainer"))
       .Attribute($asm07.TypeRef("ProtoBuf.ProtoMemberAttribute"), function () { return [2]; }); 
-    $.Field({Static:false, Public:true }, "HasSpecular", $.Boolean)
+    $.Field({Static:false, Public:true }, "Emissive", $asm04.TypeRef("Fusee.Serialization.MatChannelContainer"))
       .Attribute($asm07.TypeRef("ProtoBuf.ProtoMemberAttribute"), function () { return [3]; }); 
-    $.Field({Static:false, Public:true }, "SpecularColor", $asm03.TypeRef("Fusee.Math.float3"))
+    $.Field({Static:false, Public:true }, "Bump", $asm04.TypeRef("Fusee.Serialization.BumpChannelContainer"))
       .Attribute($asm07.TypeRef("ProtoBuf.ProtoMemberAttribute"), function () { return [4]; }); 
-    $.Field({Static:false, Public:true }, "SpecularIntensity", $.Single)
-      .Attribute($asm07.TypeRef("ProtoBuf.ProtoMemberAttribute"), function () { return [5]; }); 
-    $.Field({Static:false, Public:true }, "SpecularShininess", $.Single)
-      .Attribute($asm07.TypeRef("ProtoBuf.ProtoMemberAttribute"), function () { return [6]; }); 
+    $.Property({Static:false, Public:true }, "HasDiffuse", $.Boolean);
+
+    $.Property({Static:false, Public:true }, "HasSpecular", $.Boolean);
+
+    $.Property({Static:false, Public:true }, "HasEmissive", $.Boolean);
+
+    $.Property({Static:false, Public:true }, "HasBump", $.Boolean);
+
     return function (newThisType) { $thisType = newThisType; }; 
   })
     .Attribute($asm07.TypeRef("ProtoBuf.ProtoContractAttribute"));

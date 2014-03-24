@@ -51,6 +51,7 @@
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SceneRenderer.cs" />
+    <Compile Include="ShaderCodeBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\FuseeLogo150.png">
