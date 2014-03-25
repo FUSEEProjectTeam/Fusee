@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using Fusee.Math;
 using JSIL.Meta;
 
@@ -222,6 +223,8 @@ namespace Fusee.Engine
         /// An ImageData struct with all necessary information for the texture-binding process.
         /// </returns>
         ImageData LoadImage(String filename);
+
+        ImageData LoadVideoTexture(Bitmap bmp);
 
         /// <summary>
         /// Creates a new Image with a specified size and color.

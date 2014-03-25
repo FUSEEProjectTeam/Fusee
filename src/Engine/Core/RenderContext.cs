@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using JSIL.Meta;
 using Fusee.Math;
+using System.Drawing;
 
 namespace Fusee.Engine
 {
@@ -944,6 +945,11 @@ namespace Fusee.Engine
                 throw new FileNotFoundException();
 
             return _rci.LoadImage(filename);
+        }
+
+        public ImageData LoadVideoTexture(Bitmap bmp)
+        {
+            return _rci.LoadVideoTexture(bmp);
         }
 
         /// <summary>

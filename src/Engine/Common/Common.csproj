@@ -96,6 +96,7 @@
     <Compile Include="ISphereShapeImp.cs" />
     <Compile Include="IStaticPlaneShapeImp.cs" />
     <Compile Include="ITexture.cs" />
+    <Compile Include="IVideoTextureImp.cs" />
     <Compile Include="KeyEventArgs.cs" />
     <Compile Include="Light.cs" />
     <Compile Include="MouseEventArgs.cs" />

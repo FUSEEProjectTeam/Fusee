@@ -81,6 +81,30 @@ namespace Fusee.Engine
             return ret;
         }
 
+        public ImageData LoadVideoTexture(Bitmap bmp)
+        {
+            //Flip y-axis, otherwise texture would be upside down
+            bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
+
+            BitmapData bmpData = bmp.LockBits(new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height),
+                ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);
+            int strideAbs = (bmpData.Stride < 0) ? -bmpData.Stride : bmpData.Stride;
+            int bytes = (strideAbs) * bmp.Height;
+
+            var ret = new ImageData
+            {
+                PixelData = new byte[bytes],
+                Height = bmpData.Height,
+                Width = bmpData.Width,
+                Stride = bmpData.Stride
+            };
+
+            Marshal.Copy(bmpData.Scan0, ret.PixelData, 0, bytes);
+
+            bmp.UnlockBits(bmpData);
+            return ret;
+        }
+
         /// <summary>
         /// Creates a new Image with a specified size and color.
         /// </summary>
