@@ -141,7 +141,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt) </OutputFile>
-      <AdditionalLibraryDirectories>$(C4D_DIR)\resource\_api_lib;$(C4D_DIR)\;$(C4D_DIR)\plugins\ManagedPlugin\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(C4D_DIR)\resource\_api_lib;$(C4D_DIR)\;$(C4D_DIR)\plugins\ManagedPlugin\x64;$(C4D_DIR)\plugins\cinema4dsdk\obj\_api\x64_Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>Bridge.lib;Mono64.lib;_api_x64_Debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DelayLoadDLLs>Bridge.dll;Mono-2.0.dll</DelayLoadDLLs>
@@ -219,7 +219,7 @@
       <OptimizeReferences>
       </OptimizeReferences>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt) </OutputFile>
-      <AdditionalLibraryDirectories>$(C4D_DIR)\resource\_api_lib;$(C4D_DIR)\;$(C4D_DIR)\plugins\ManagedPlugin\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(C4D_DIR)\resource\_api_lib;$(C4D_DIR)\;$(C4D_DIR)\plugins\ManagedPlugin\x64;$(C4D_DIR)\plugins\cinema4dsdk\obj\_api\x64_Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>Mono64.lib;Bridge.lib;_api_x64_Release.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DelayLoadDLLs>Bridge.dll;Mono-2.0.dll</DelayLoadDLLs>

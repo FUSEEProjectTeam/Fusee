@@ -14,8 +14,7 @@ contentManifest["Examples.SceneViewer.contentproj"] = [
     ["Script",	"Fusee.Engine.Imp.WebGL.js",	{  "sizeBytes": 103435 }],
     ["Script",	"Fusee.Engine.Imp.WebInput.js",	{  "sizeBytes": 6868 }],
     ["Script",	"XirkitScript.js",	{  "sizeBytes": 43845 }],
-    ["Image",	"Assets/Earth1024_1.jpg",	{  "sizeBytes": 82643 }],
     ["Image",	"Assets/FuseeLogo150.png",	{  "sizeBytes": 19685 }],
     ["Font",	"Assets/Lato-Black.ttf",	{  "sizeBytes": 114588 }],
-    ["File",	"Assets/Model.fus",	{  "sizeBytes": 67455 }],
+    ["File",	"Assets/Model.fus",	{  "sizeBytes": 2423 }],
     ];

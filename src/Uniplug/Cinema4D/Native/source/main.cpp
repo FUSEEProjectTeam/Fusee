@@ -299,7 +299,7 @@ void PluginEnd(void)	// will be called when the plugin is unloaded from C4D
 	}
 }
 
-Bool PluginMessage(LONG id, void *data)		// allows you to receive plugin messages from C4D or other plugins - so the different plugins can communicate - i think error messages might also be catched here
+Bool PluginMessage(Int32 id, void *data)		// allows you to receive plugin messages from C4D or other plugins - so the different plugins can communicate - i think error messages might also be catched here
 {
 	switch (id)
 	{
@@ -309,7 +309,7 @@ Bool PluginMessage(LONG id, void *data)		// allows you to receive plugin message
 			char sMonoDebugOption[128] = "";
 			BOOL tryMono = false;
 			
-			LONG i;
+			Int32 i;
 			for (i=0;i<args->argc;i++)
 			{
 				if (!args->argv[i]) continue;
@@ -333,7 +333,7 @@ Bool PluginMessage(LONG id, void *data)		// allows you to receive plugin message
 				else if (!strcmp(args->argv[i],"-plugincrash"))
 				{
 					args->argv[i] = NULL;
-					*((LONG*)0) = 1234;
+					*((Int32*)0) = 1234;
 				}
 			}
 			/*

@@ -541,19 +541,28 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
     return ($T0E = JSIL.Memoize($asm06.System.Collections.Generic.Dictionary$b2.Of($asm04.Fusee.Serialization.MaterialContainer, $asm02.Fusee.Engine.ShaderEffect))) ();
   };
   var $T0F = function () {
-    return ($T0F = JSIL.Memoize($asm06.System.IO.Path)) ();
+    return ($T0F = JSIL.Memoize($asm04.Fusee.Serialization.MatChannelContainer)) ();
   };
   var $T10 = function () {
-    return ($T10 = JSIL.Memoize($asm01.Fusee.Engine.ImageData)) ();
+    return ($T10 = JSIL.Memoize($asm03.Fusee.Math.float3)) ();
   };
   var $T11 = function () {
-    return ($T11 = JSIL.Memoize($asm02.Fusee.Engine.ShaderEffect)) ();
+    return ($T11 = JSIL.Memoize($asm04.Fusee.Serialization.SpecularChannelContainer)) ();
   };
   var $T12 = function () {
-    return ($T12 = JSIL.Memoize($asm02.Fusee.Engine.EffectPassDeclaration)) ();
+    return ($T12 = JSIL.Memoize($asm02.Fusee.Engine.ShaderEffect)) ();
   };
   var $T13 = function () {
-    return ($T13 = JSIL.Memoize($asm02.Fusee.Engine.Mesh)) ();
+    return ($T13 = JSIL.Memoize($asm06.System.IO.Path)) ();
+  };
+  var $T14 = function () {
+    return ($T14 = JSIL.Memoize($asm01.Fusee.Engine.ImageData)) ();
+  };
+  var $T15 = function () {
+    return ($T15 = JSIL.Memoize($asm02.Fusee.Engine.EffectPassDeclaration)) ();
+  };
+  var $T16 = function () {
+    return ($T16 = JSIL.Memoize($asm02.Fusee.Engine.Mesh)) ();
   };
   var $S00 = function () {
     return ($S00 = JSIL.Memoize(new JSIL.ConstructorSignature($asm06.TypeRef("System.Collections.Generic.List`1", [$asm02.TypeRef("Fusee.Engine.EffectParameterDeclaration")]), []))) ();
@@ -568,7 +577,13 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
     return ($S03 = JSIL.Memoize(new JSIL.ConstructorSignature($asm06.TypeRef("System.Collections.Generic.Dictionary`2", [$asm04.TypeRef("Fusee.Serialization.MaterialContainer"), $asm02.TypeRef("Fusee.Engine.ShaderEffect")]), []))) ();
   };
   var $S04 = function () {
-    return ($S04 = JSIL.Memoize(new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float4x4"), [$asm03.TypeRef("Fusee.Math.float4x4"), $asm03.TypeRef("Fusee.Math.float4x4")], []))) ();
+    return ($S04 = JSIL.Memoize(new JSIL.ConstructorSignature($asm03.TypeRef("Fusee.Math.float3"), [
+        $asm06.TypeRef("System.Single"), $asm06.TypeRef("System.Single"), 
+        $asm06.TypeRef("System.Single")
+      ]))) ();
+  };
+  var $S05 = function () {
+    return ($S05 = JSIL.Memoize(new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float4x4"), [$asm03.TypeRef("Fusee.Math.float4x4"), $asm03.TypeRef("Fusee.Math.float4x4")], []))) ();
   };
 
   function SceneRenderer__ctor (sc, scenePathDirectory) {
@@ -688,11 +703,25 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
       this._textureParam = null;
       this._meshMap = $S02().Construct();
       this._matMap = $S03().Construct();
+      this._curMat = null;
+    }
+    if (this._curMat === null) {
+      this._curMat = this.MakeMaterial((new ($T05())()).__Initialize__({
+            Diffuse: (new ($T0F())()).__Initialize__({
+                Color: $S04().Construct(0.5, 0.5, 0.5)}
+            ), 
+            Specular: (new ($T11())()).__Initialize__({
+                Color: $S04().Construct(1, 1, 1), 
+                Intensity: 0.5, 
+                Shininess: 22}
+            )}
+        ));
+      this.get_CurMat().AttachToContext(rc);
     }
   };
 
   function SceneRenderer_LoadTexture (path) {
-    var texturePath = $T0F().Combine(this._scenePathDirectory, path);
+    var texturePath = $T13().Combine(this._scenePathDirectory, path);
     var image = this._rc.LoadImage(texturePath).MemberwiseClone();
     return this._rc.CreateTexture(image.MemberwiseClone());
   };
@@ -710,7 +739,7 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
   function SceneRenderer_MakeMaterial (mc) {
     var scb = new ($T06())(mc, null);
     var effectParameters = this.AssembleEffectParamers(mc, scb);
-    return new ($T11())(JSIL.Array.New($T12(), [(new ($T12())()).__Initialize__({
+    return new ($T12())(JSIL.Array.New($T15(), [(new ($T15())()).__Initialize__({
             VS: scb.get_VS(), 
             PS: scb.get_PS(), 
             StateSet: (new ($T02())()).__Initialize__({
@@ -721,7 +750,7 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
   };
 
   function SceneRenderer_MakeMesh (soc) {
-    return (new ($T13())()).__Initialize__({
+    return (new ($T16())()).__Initialize__({
         Colors: null, 
         Normals: soc.Mesh.Normals, 
         UVs: soc.Mesh.UVs, 
@@ -750,7 +779,7 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
     var $temp00;
     var ret = null;
     var origMV = this._AABBXForm.MemberwiseClone();
-    this._AABBXForm = $S04().CallStatic($T09(), "op_Multiply", null, this._AABBXForm, soc.Transform).MemberwiseClone();
+    this._AABBXForm = $S05().CallStatic($T09(), "op_Multiply", null, this._AABBXForm, soc.Transform).MemberwiseClone();
     if (soc.Mesh !== null) {
       ret = $T0B().op_Multiply(this._AABBXForm, soc.Mesh.BoundingBox.MemberwiseClone()).MemberwiseClone();
     }
@@ -783,7 +812,7 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
       var mat = this.LookupMaterial(soc.Material);
       this.set_CurMat(mat);
     }
-    (this._rc.ModelView = $S04().CallStatic($T09(), "op_Multiply", null, this._rc.ModelView, soc.Transform).MemberwiseClone());
+    (this._rc.ModelView = $S05().CallStatic($T09(), "op_Multiply", null, this._rc.ModelView, soc.Transform).MemberwiseClone());
     if (soc.Mesh !== null) {
       if (!this._meshMap.TryGetValue(soc.Mesh, /* ref */ rm)) {
         rm.set($thisType.MakeMesh(soc));

@@ -41,21 +41,21 @@ class Filename
 		C4D_RESERVE_PRIVATE_TYPE(String,dummy1);
 		C4D_RESERVE_PRIVATE_TYPE(void*,dummy2);
 		C4D_RESERVE_PRIVATE_TYPE(VLONG,dummy3);
-		C4D_RESERVE_PRIVATE_TYPE(LONG,dummy4);
+		C4D_RESERVE_PRIVATE_TYPE(Int32,dummy4);
 		
 	public:
 
 		#ifdef	__C4D_NO_NEW_DELETE__	
-		void* operator new(size_t,const std::nothrow_t&,int line,const CHAR *file) throw();
+		void* operator new(size_t,const std::nothrow_t&,int line,const Char *file) throw();
 		void  operator delete(void *del);
-		void  operator delete(void *del,int line, const CHAR *file);
+		void  operator delete(void *del,int line, const Char *file);
 
 		void* operator new(size_t,void *place) { return place; }
 		void  operator delete(void*, void*) {}
 		#endif
 
 		Filename(void);
-		Filename(const CHAR *string);
+		Filename(const Char *string);
 		Filename(const String &string);
 		Filename(const Filename &src);
 		~Filename(void);
@@ -105,7 +105,7 @@ class BaseFile
 		// error_dialog	: display any errors in dialogs
 		// order				:	little or big endian
 		// type,creator	: MAC file types
-		Bool Open(const Filename &name, FILEOPEN mode=FILEOPEN_READ, FILEDIALOG error_dialog=FILEDIALOG_IGNOREOPEN, BYTEORDER order=BYTEORDER_MOTOROLA, LONG type=MACTYPE_CINEMA, LONG creator=MACCREATOR_CINEMA);
+		Bool Open(const Filename &name, FILEOPEN mode=FILEOPEN_READ, FILEDIALOG error_dialog=FILEDIALOG_IGNOREOPEN, BYTEORDER order=BYTEORDER_MOTOROLA, Int32 type=MACTYPE_CINEMA, Int32 creator=MACCREATOR_CINEMA);
 		
 		// Closes a file - automatically called when BaseFile is destructed
 		Bool Close();	
@@ -138,13 +138,13 @@ class BaseFile
 		// Manually set file error
 		void SetError(FILEERROR error);  
 
-		Bool ReadChar (CHAR  *v);
-		Bool ReadUChar(UCHAR *v);
+		Bool ReadChar (Char  *v);
+		Bool ReadUChar(UChar *v);
 		Bool ReadWord (SWORD  *v);
 		Bool ReadUWord(UWORD *v);
-		Bool ReadLong (LONG  *v);
+		Bool ReadLong (Int32  *v);
 		Bool ReadULong(ULONG *v);
-		Bool ReadSReal(SReal *v);
+		Bool ReadSReal(Float32 *v);
 		Bool ReadLReal(LReal *v);
 		Bool ReadLLong(LLONG *v);
 		Bool ReadFilename(Filename *v);
@@ -155,13 +155,13 @@ class BaseFile
 		Bool ReadSMatrix(SMatrix *v);
 		Bool ReadLMatrix(LMatrix *v);
 
-		Bool WriteChar (CHAR  v);
-		Bool WriteUChar(UCHAR v);
+		Bool WriteChar (Char  v);
+		Bool WriteUChar(UChar v);
 		Bool WriteWord (SWORD  v);
 		Bool WriteUWord(UWORD v);
-		Bool WriteLong (LONG  v);
+		Bool WriteLong (Int32  v);
 		Bool WriteULong(ULONG v);
-		Bool WriteSReal(SReal v);
+		Bool WriteSReal(Float32 v);
 		Bool WriteLReal(LReal v);
 		Bool WriteLLong(LLONG v);
 		Bool WriteFilename(const Filename &v);
@@ -187,10 +187,10 @@ public:
 	// error_dialog	: display any errors in dialogs
 	// order				:	little or big endian
 	// type,creator	: MAC file types
-	Bool Open(const Filename &name, const char* key, LONG keylen, LONG blocksize, ULONG aes_flags, FILEOPEN mode=FILEOPEN_READ, FILEDIALOG error_dialog=FILEDIALOG_IGNOREOPEN, BYTEORDER order=BYTEORDER_MOTOROLA, LONG type=MACTYPE_CINEMA, LONG creator=MACCREATOR_CINEMA);
+	Bool Open(const Filename &name, const char* key, Int32 keylen, Int32 blocksize, ULONG aes_flags, FILEOPEN mode=FILEOPEN_READ, FILEDIALOG error_dialog=FILEDIALOG_IGNOREOPEN, BYTEORDER order=BYTEORDER_MOTOROLA, Int32 type=MACTYPE_CINEMA, Int32 creator=MACCREATOR_CINEMA);
 
 	// checks if encrypt is the encrypted version of decrypt
-	static Bool CheckEncryption(const Filename& encrypt, const Filename& decrypt, const char* key, LONG keylen, LONG blocksize);
+	static Bool CheckEncryption(const Filename& encrypt, const Filename& decrypt, const char* key, Int32 keylen, Int32 blocksize);
 
 	static AESFile *Alloc(void);
 	static void Free(AESFile *&fl);
@@ -214,9 +214,9 @@ class LocalFileTime
 	// > 0: t0 > t1
 	// = 0: t0 == t1
 	// < 0: t0 < t1
-	LONG	Compare( const LocalFileTime &t0, const LocalFileTime &t1 )
+	Int32	Compare( const LocalFileTime &t0, const LocalFileTime &t1 )
 	{
-		LONG	result;
+		Int32	result;
 		
 		result = t0.year - t1.year;
 		if ( result == 0 )
@@ -284,7 +284,7 @@ class BrowseFiles
 		BrowseFiles();
 		~BrowseFiles();
 	public:
-		void Init(const Filename &directory, LONG flags);
+		void Init(const Filename &directory, Int32 flags);
 		Bool GetNext(void);		
 		
 		LLONG GetSize(void);
@@ -293,7 +293,7 @@ class BrowseFiles
 		Bool IsBundle(void);
 		Bool IsReadOnly(void);
 
-		void GetFileTime(LONG mode, LocalFileTime *out);
+		void GetFileTime(Int32 mode, LocalFileTime *out);
 
 		Filename GetFilename(void);
 
@@ -312,7 +312,7 @@ class BrowseVolumes
 		void Init(void);
 		Bool GetNext(void);		
 		Filename	GetFilename(void);
-		String		GetVolumeName( LONG *out_flags );
+		String		GetVolumeName( Int32 *out_flags );
 
 		static BrowseVolumes *Alloc();
 		static void Free(BrowseVolumes *&bf);
@@ -324,15 +324,15 @@ class HyperFile
 		HyperFile();
 		~HyperFile();
 	public:
-		Bool WriteChar(CHAR  v);
-		Bool WriteUChar(UCHAR v);
+		Bool WriteChar(Char  v);
+		Bool WriteUChar(UChar v);
 		Bool WriteWord(SWORD  v);
 		Bool WriteUWord(UWORD v);
-		Bool WriteLong(LONG  v);
+		Bool WriteLong(Int32  v);
 		Bool WriteULong(ULONG v);
 		Bool WriteLLong(LLONG v);
-		Bool WriteReal(Real  v);
-		Bool WriteSReal(SReal v);
+		Bool WriteReal(Float  v);
+		Bool WriteSReal(Float32 v);
 		Bool WriteLReal(LReal v);
 		Bool WriteBool(Bool  v);
 		Bool WriteTime(const BaseTime &v);
@@ -344,22 +344,22 @@ class HyperFile
 		Bool WriteLMatrix(const LMatrix  &v);
 		Bool WriteString(const String &v);
 		Bool WriteFilename(const Filename &v);
-		Bool WriteImage(BaseBitmap *v, LONG format, BaseContainer *data, SAVEBIT savebits=SAVEBIT_ALPHA); 
+		Bool WriteImage(BaseBitmap *v, Int32 format, BaseContainer *data, SAVEBIT savebits=SAVEBIT_ALPHA); 
 		Bool WriteGeData(const GeData &v);
 		Bool WriteContainer(const BaseContainer &v);
 		Bool WriteMemory(const void *data, VLONG count);
 		Bool WriteChannel(BaseChannel *bc);
-		Bool WriteArray(const void *data, HYPERFILEARRAY datatype, LONG structure_increment, LONG count);
+		Bool WriteArray(const void *data, HYPERFILEARRAY datatype, Int32 structure_increment, Int32 count);
 
-		Bool ReadChar(CHAR *v);
-		Bool ReadUChar(UCHAR *v);
+		Bool ReadChar(Char *v);
+		Bool ReadUChar(UChar *v);
 		Bool ReadWord(SWORD *v);
 		Bool ReadUWord(UWORD *v);
-		Bool ReadLong(LONG *v);
+		Bool ReadLong(Int32 *v);
 		Bool ReadULong(ULONG *v);
 		Bool ReadLLong(LLONG *v);
-		Bool ReadReal(Real *v);
-		Bool ReadSReal(SReal *v);
+		Bool ReadReal(Float *v);
+		Bool ReadSReal(Float32 *v);
 		Bool ReadLReal(LReal *v);
 		Bool ReadBool(Bool *v);
 		Bool ReadTime(BaseTime *v);
@@ -376,31 +376,31 @@ class HyperFile
 		Bool ReadContainer(BaseContainer *v, Bool flush);
 		Bool ReadMemory(void **data, VLONG *size);
 		Bool ReadChannel(BaseChannel *bc);
-		Bool ReadChannelConvert(GeListNode *node, LONG link_id);
-		Bool ReadArray(void *data, HYPERFILEARRAY type, LONG structure_increment, LONG count);
+		Bool ReadChannelConvert(GeListNode *node, Int32 link_id);
+		Bool ReadArray(void *data, HYPERFILEARRAY type, Int32 structure_increment, Int32 count);
 
 		FILEERROR GetError() const;
 		void SetError(FILEERROR err);
 		Bool ReadValueHeader(HYPERFILEVALUE *h);
 		Bool SkipValue(HYPERFILEVALUE h); 
-		Bool WriteChunkStart(LONG id, LONG level);
+		Bool WriteChunkStart(Int32 id, Int32 level);
 		Bool WriteChunkEnd(void);
-		Bool ReadChunkStart(LONG *id, LONG *level);
+		Bool ReadChunkStart(Int32 *id, Int32 *level);
 		Bool ReadChunkEnd(void);
 		Bool SkipToEndChunk(void); 
 
-		LONG GetFileVersion() const;
+		Int32 GetFileVersion() const;
 
 		BaseDocument *GetDocument() const;
 
 		static HyperFile *Alloc(void);
 		static void Free(HyperFile *&fl);
-		Bool Open(LONG ident, const Filename &filename, FILEOPEN mode, FILEDIALOG error_dialog);
+		Bool Open(Int32 ident, const Filename &filename, FILEOPEN mode, FILEDIALOG error_dialog);
 		Bool Close();
 };
 
-FILEERROR ReadHyperFile(BaseDocument *doc, GeListNode *node, const Filename &filename, LONG ident, String *warning_string);
-FILEERROR WriteHyperFile(BaseDocument *doc, GeListNode *node, const Filename &filename, LONG ident);
+FILEERROR ReadHyperFile(BaseDocument *doc, GeListNode *node, const Filename &filename, Int32 ident, String *warning_string);
+FILEERROR WriteHyperFile(BaseDocument *doc, GeListNode *node, const Filename &filename, Int32 ident);
 
 // file IO
 #define	GE_FKILL_DIRECTORY	1
@@ -426,19 +426,19 @@ FILEERROR WriteHyperFile(BaseDocument *doc, GeListNode *node, const Filename &fi
 
 Bool GeFExist    (const Filename &name, Bool isdir=FALSE);
 Bool GeSearchFile(const Filename &directory, const Filename &name, Filename *found);
-Bool GeFKill     (const Filename &name, LONG flags=0);
-Bool GeFCopyFile (const Filename &source, const Filename &dest, LONG flags);
+Bool GeFKill     (const Filename &name, Int32 flags=0);
+Bool GeFCopyFile (const Filename &source, const Filename &dest, Int32 flags);
 Bool GeFRename   (const Filename &source, const Filename &dest);
 Bool GeFMove     (const Filename &source, const Filename &dest);
 Bool GeFCreateDir(const Filename &name);
 Bool GeFCreateDirRec(const Filename &name);
 Bool GeExecuteFile(const Filename &path);
 Bool GeExecuteProgram(const Filename &program, const Filename &file);
-typedef LONG (*GeExecuteProgramExCallback)(LONG cmd, void *userdata, const Filename &logfile);
+typedef Int32 (*GeExecuteProgramExCallback)(Int32 cmd, void *userdata, const Filename &logfile);
 // callback return values:
 // return 0 to continue
 // return 'stop' to kill the running process
-Bool GeExecuteProgramEx(const Filename &program, const String *args, LONG argcnt, GeExecuteProgramExCallback callback, void *userdata);
+Bool GeExecuteProgramEx(const Filename &program, const String *args, Int32 argcnt, GeExecuteProgramExCallback callback, void *userdata);
 Bool GeFGetDiskFreeSpace(const Filename &vol, LULONG &freecaller, LULONG &total, LULONG &freespace);
 ULONG GeFGetAttributes(const Filename &name);
 Bool GeFSetAttributes(const Filename &name, ULONG flags, ULONG mask = (ULONG)-1);
@@ -458,10 +458,10 @@ const Filename GeGetPluginPath(void);
 #define C4D_PATH_MYDOCUMENTS		9 // my documents path!
 #define C4D_PATH_APPLICATION		10 // OS Application Directory
 
-const Filename GeGetC4DPath(LONG whichpath);
+const Filename GeGetC4DPath(Int32 whichpath);
 
-Bool GeGetFileTime(const Filename &name, LONG mode, LocalFileTime *out);
-Bool GeSetFileTime(const Filename &name, LONG mode, const LocalFileTime *in);
+Bool GeGetFileTime(const Filename &name, Int32 mode, LocalFileTime *out);
+Bool GeSetFileTime(const Filename &name, Int32 mode, const LocalFileTime *in);
 void GeGetCurrentTime(LocalFileTime *out);
 
 String DateToString(const LocalFileTime &t, Bool date_only);

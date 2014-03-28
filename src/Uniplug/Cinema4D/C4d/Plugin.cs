@@ -276,6 +276,7 @@ namespace C4d
                     // TODO: Do something with the return value
                 }
             }
+
             _pluginInstanceList.RemoveAll(o => true);
             _nodeAllocatorList.RemoveAll(pa => true);
         }

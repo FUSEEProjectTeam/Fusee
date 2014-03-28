@@ -56,10 +56,13 @@ namespace FuExport
 
             Logger.Debug("Fuseefy Me!");
 
-            BaseContainer machineFeatures = C4dApi.GetMachineFeatures();
-            GeData userNameData = machineFeatures.GetDataPointer(C4dApi.MACHINEINFO_USERNAME);
-            String userName = userNameData.GetString();
- 
+            String userName;
+            using (BaseContainer machineFeatures = C4dApi.GetMachineFeatures())
+            {
+                GeData userNameData = machineFeatures.GetDataPointer(C4dApi.MACHINEINFO_USERNAME);
+                userName = userNameData.GetString();
+            }
+
             SceneContainer root = new SceneContainer()
             {
                 Header = new SceneHeader()
@@ -235,8 +238,11 @@ namespace FuExport
             // Now iterate over the textureTags 
             foreach (TextureTag texture in textureTags)
             {
-                BaseContainer texData = texture.GetData();
-                string selRef = texData.GetString(C4dApi.TEXTURETAG_RESTRICTION);
+                string selRef = "";
+                using (BaseContainer texData = texture.GetData())
+                {
+                    selRef = texData.GetString(C4dApi.TEXTURETAG_RESTRICTION);
+                }
                 if (string.IsNullOrEmpty(selRef))
                 {
                     // This material is not restricted to any polygon selection
@@ -312,84 +318,95 @@ namespace FuExport
             if (material == null)
                 return null;
 
-            BaseContainer materialData = material.GetData();
-
             MaterialContainer mcRet;
-            if (_materialCache.TryGetValue(material, out mcRet))
-                return mcRet;
-            
-            mcRet = new MaterialContainer();
-            // Just for debugging purposes
-            for (int i = 0, id = 0; -1 != (id = materialData.GetIndexId(i)); i++)
+            using (BaseContainer materialData = material.GetData())
             {
-                if (materialData.GetType(id) == C4dApi.DA_LONG)
+
+                if (_materialCache.TryGetValue(material, out mcRet))
+                    return mcRet;
+
+                mcRet = new MaterialContainer();
+                // Just for debugging purposes
+                for (int i = 0, id = 0; -1 != (id = materialData.GetIndexId(i)); i++)
                 {
-                    int iii = materialData.GetLong(id);
+                    if (materialData.GetType(id) == C4dApi.DA_LONG)
+                    {
+                        int iii = materialData.GetInt32(id);
+                    }
+                    if (materialData.GetType(id) == C4dApi.DA_REAL)
+                    {
+                        double d = materialData.GetFloat(id);
+                    }
+                    else if (materialData.GetType(id) == C4dApi.DA_VECTOR)
+                    {
+                        double3 v = materialData.GetVector(id);
+                    }
                 }
-                if (materialData.GetType(id) == C4dApi.DA_REAL)
+
+                if (material.GetChannelState(C4dApi.CHANNEL_COLOR))
                 {
-                    double d = materialData.GetReal(id);
+                    BaseChannel diffuseChannel = material.GetChannel(C4dApi.CHANNEL_COLOR);
+                    if (diffuseChannel != null)
+                    {
+                        mcRet.Diffuse = new MatChannelContainer();
+
+                        using (BaseContainer data = diffuseChannel.GetData())
+                        {
+                            mcRet.Diffuse.Color = (float3) (data.GetVector(C4dApi.BASECHANNEL_COLOR_EX) * data.GetFloat(C4dApi.BASECHANNEL_BRIGHTNESS_EX));
+                            mcRet.Diffuse.Mix = (float)data.GetFloat(C4dApi.BASECHANNEL_MIXSTRENGTH_EX);
+                            mcRet.Diffuse.Texture = GetTexture(data, diffuseChannel);
+                        }
+                    }
                 }
-                else if (materialData.GetType(id) == C4dApi.DA_VECTOR)
+
+                if (material.GetChannelState(C4dApi.CHANNEL_SPECULARCOLOR))
                 {
-                    double3 v = materialData.GetVector(id);
+                    BaseChannel specularChannel = material.GetChannel(C4dApi.CHANNEL_SPECULARCOLOR);
+                    if (specularChannel != null)
+                    {
+                        mcRet.Specular = new SpecularChannelContainer();
+
+                        using (BaseContainer data = specularChannel.GetData())
+                        {
+                            mcRet.Specular.Color = (float3)(data.GetVector(C4dApi.BASECHANNEL_COLOR_EX) * data.GetFloat(C4dApi.BASECHANNEL_BRIGHTNESS_EX));
+                            mcRet.Specular.Mix = (float)data.GetFloat(C4dApi.BASECHANNEL_MIXSTRENGTH_EX);
+                            mcRet.Specular.Texture = GetTexture(data, specularChannel);
+                            mcRet.Specular.Shininess =
+                                CalculateShininess((float)materialData.GetFloat(C4dApi.MATERIAL_SPECULAR_WIDTH));
+                            mcRet.Specular.Intensity = (float)(1.5 * materialData.GetFloat(C4dApi.MATERIAL_SPECULAR_HEIGHT));
+                        }
+                    }
                 }
-            }
 
-            if (material.GetChannelState(C4dApi.CHANNEL_COLOR))
-            {
-                BaseChannel diffuseChannel = material.GetChannel(C4dApi.CHANNEL_COLOR);
-                if (diffuseChannel != null)
+                if (material.GetChannelState(C4dApi.CHANNEL_LUMINANCE))
                 {
-                    mcRet.Diffuse = new MatChannelContainer();
+                    BaseChannel emissiveChannel = material.GetChannel(C4dApi.CHANNEL_LUMINANCE);
+                    if (emissiveChannel != null)
+                    {
+                        mcRet.Emissive = new MatChannelContainer();
 
-                    BaseContainer data = diffuseChannel.GetData();
-                    mcRet.Diffuse.Color = (float3) data.GetVector(C4dApi.BASECHANNEL_COLOR_EX);
-                    mcRet.Diffuse.Mix = (float) data.GetReal(C4dApi.BASECHANNEL_MIXSTRENGTH_EX);
-                    mcRet.Diffuse.Texture = GetTexture(data, diffuseChannel);
+                        using (BaseContainer data = emissiveChannel.GetData())
+                        {
+                            mcRet.Emissive.Color = (float3)(data.GetVector(C4dApi.BASECHANNEL_COLOR_EX) * data.GetFloat(C4dApi.BASECHANNEL_BRIGHTNESS_EX));
+                            mcRet.Emissive.Mix = (float)data.GetFloat(C4dApi.BASECHANNEL_MIXSTRENGTH_EX);
+                            mcRet.Emissive.Texture = GetTexture(data, emissiveChannel);
+                        }
+                    }
                 }
-            }
 
-            if (material.GetChannelState(C4dApi.CHANNEL_SPECULARCOLOR))
-            {
-                BaseChannel specularChannel = material.GetChannel(C4dApi.CHANNEL_SPECULARCOLOR);
-                if (specularChannel != null)
+                if (material.GetChannelState(C4dApi.CHANNEL_NORMAL))
                 {
-                    mcRet.Specular = new SpecularChannelContainer();
+                    BaseChannel bumpChannel = material.GetChannel(C4dApi.CHANNEL_NORMAL);
+                    if (bumpChannel != null)
+                    {
+                        mcRet.Bump = new BumpChannelContainer();
 
-                    BaseContainer data = specularChannel.GetData();
-                    mcRet.Specular.Color = (float3) data.GetVector(C4dApi.BASECHANNEL_COLOR_EX);
-                    mcRet.Specular.Mix = (float) data.GetReal(C4dApi.BASECHANNEL_MIXSTRENGTH_EX);
-                    mcRet.Specular.Texture = GetTexture(data, specularChannel);
-                    mcRet.Specular.Shininess = CalculateShininess((float) materialData.GetReal(C4dApi.MATERIAL_SPECULAR_WIDTH));
-                    mcRet.Specular.Intensity = (float) (1.5 * materialData.GetReal(C4dApi.MATERIAL_SPECULAR_HEIGHT));
-                }
-            }
-
-            if (material.GetChannelState(C4dApi.CHANNEL_LUMINANCE))
-            {
-                BaseChannel emissiveChannel = material.GetChannel(C4dApi.CHANNEL_LUMINANCE);
-                if (emissiveChannel != null)
-                {
-                    mcRet.Emissive = new MatChannelContainer();
-
-                    BaseContainer data = emissiveChannel.GetData();
-                    mcRet.Emissive.Color = (float3) data.GetVector(C4dApi.BASECHANNEL_COLOR_EX);
-                    mcRet.Emissive.Mix = (float) data.GetReal(C4dApi.BASECHANNEL_MIXSTRENGTH_EX);
-                    mcRet.Emissive.Texture = GetTexture(data, emissiveChannel);
-                }
-            }
-
-            if (material.GetChannelState(C4dApi.CHANNEL_NORMAL))
-            {
-                BaseChannel bumpChannel = material.GetChannel(C4dApi.CHANNEL_NORMAL);
-                if (bumpChannel != null)
-                {
-                    mcRet.Bump = new BumpChannelContainer();
-
-                    BaseContainer data = bumpChannel.GetData();
-                    mcRet.Bump.Intensity = (float) materialData.GetReal(C4dApi.MATERIAL_NORMAL_STRENGTH);
-                    mcRet.Bump.Texture = GetTexture(data, bumpChannel);
+                        using (BaseContainer data = bumpChannel.GetData())
+                        {
+                            mcRet.Bump.Intensity = (float)materialData.GetFloat(C4dApi.MATERIAL_NORMAL_STRENGTH);
+                            mcRet.Bump.Texture = GetTexture(data, bumpChannel);
+                        }
+                    }
                 }
             }
 
@@ -445,12 +462,14 @@ namespace FuExport
                     BaseBitmap bitmap = diffuseChannel.GetBitmap();
                     if (bitmap != null)
                     {
-                        BaseContainer compressionContainer = new BaseContainer(C4dApi.JPGSAVER_QUALITY);
-                        compressionContainer.SetReal(C4dApi.JPGSAVER_QUALITY, 70.0);
-                        string textureFileAbs = Path.Combine(_sceneRootDir, texture);
-                        bitmap.Save(new Filename(textureFileAbs), C4dApi.FILTER_JPG, compressionContainer,
-                            SAVEBIT.SAVEBIT_0);
-                        _textureFiles.Add(texture);
+                        using (BaseContainer compressionContainer = new BaseContainer(C4dApi.JPGSAVER_QUALITY))
+                        {
+                            compressionContainer.SetFloat(C4dApi.JPGSAVER_QUALITY, 70.0);
+                            string textureFileAbs = Path.Combine(_sceneRootDir, texture);
+                            bitmap.Save(new Filename(textureFileAbs), C4dApi.FILTER_JPG, compressionContainer,
+                                SAVEBIT.SAVEBIT_0);
+                            _textureFiles.Add(texture);
+                        }
                     }
                     else
                     {

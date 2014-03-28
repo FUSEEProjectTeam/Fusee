@@ -44,7 +44,7 @@
 // The module definition. "directors" (= two-way wrapper classes) are allowed and the overall module name is C4dApi
 %module (directors="1") C4dApi
 
-	
+
 ////////////////////////////////////////////////////////////////////////////////////
 // This code gets verbatim copied into the generated C++ bridge file (C4dApiWrapper.cpp). Header files included here
 // with the "normal" #include are not wrapped (yet), although most of them will appear in some later %include; section.
@@ -89,7 +89,7 @@ struct Matrix_POD
 	Vector_POD off, v1, v2, v3;
 };
 
-struct SVector_POD
+struct Vector32_POD
 {
 	float x, y, z;
 };
@@ -223,14 +223,44 @@ class String;
 
 
 
-
 ////////////////////////////////////////////////////////////////////////////////////
 // Some simple instructions to handle C4d-defined simple types as builtin C++ types
-%apply int   { LONG }
-%apply bool   { Bool }
-%apply double { Real }
-%apply double { LReal }
-%apply float { SReal }
+//%apply int   { Int32 }
+//%apply bool   { Bool }
+//%apply double { Real }
+//%apply double { LReal }
+//%apply float { SReal }
+
+%apply bool { Bool }
+
+%apply char { maxon::Char }
+%apply unsigned char { maxon::UChar }
+%apply short { maxon::Int16 }
+%apply unsigned short { maxon::UInt16 }
+%apply int { maxon::Int32 }
+%apply unsigned int { maxon::UInt32 }
+%apply long { maxon::Int64 }
+%apply unsigned long { maxon::UInt64 }
+%apply int { maxon::Int }
+%apply unsigned int { maxon::UInt }
+%apply float { maxon::Float32 }
+%apply double { maxon::Float }
+%apply double { maxon::Float64 }
+
+%apply char { Char }
+%apply unsigned char { UChar }
+%apply short { Int16 }
+%apply unsigned short { UInt16 }
+%apply int { Int32 }
+%apply unsigned int { UInt32 }
+%apply long { Int64 }
+%apply unsigned long { UInt64 }
+%apply int { Int }
+%apply unsigned int { UInt }
+%apply float { Float32 }
+%apply double { Float }
+%apply double { Float64 }
+
 
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -687,6 +717,7 @@ BaseMaterial *
 
 //////////////////////////////////////////////////////////////////
 // ge_prepass.h
+%rename (SERIALINFO_ENUM) SERIALINFO;
 %include "ge_prepass.swig.h";
 
 
@@ -712,7 +743,7 @@ BaseMaterial *
 //NEW
 %extend DescID
 {
-	const DescLevel &GetAt(LONG pos) const { return (*self)[pos]; }
+	const DescLevel &GetAt(Int32 pos) const { return (*self)[pos]; }
 }
 
 //////////////////////////////////////////////////////////////////
@@ -736,7 +767,7 @@ BaseMaterial *
 		return bmp;
 	}
 
-	static BaseBitmap *AutoBitmap(LONG id)
+	static BaseBitmap *AutoBitmap(Int32 id)
 	{
 		BaseBitmap *bmp = InitResourceBitmap(id);
 		return bmp;
@@ -776,11 +807,11 @@ BaseMaterial *
 // c4d_baseobject.h
 %extend PointObject
 {
-	Vector GetPointAt(LONG inx)
+	Vector GetPointAt(Int32 inx)
 	{
 		return self->GetPointR()[inx];
 	}
-	void SetPointAt(LONG inx, Vector v)
+	void SetPointAt(Int32 inx, Vector v)
 	{
 		self->GetPointW()[inx] = v;
 	}
@@ -788,38 +819,38 @@ BaseMaterial *
 }
 %extend PolygonObject
 {
-	Vector GetPointAt(LONG inx)
+	Vector GetPointAt(Int32 inx)
 	{
 		return self->GetPointR()[inx];
 	}
-	void SetPointAt(LONG inx, Vector v)
+	void SetPointAt(Int32 inx, Vector v)
 	{
 		self->GetPointW()[inx] = v;
 	}
-	CPolygon GetPolygonAt(LONG inx)
+	CPolygon GetPolygonAt(Int32 inx)
 	{
 		return self->GetPolygonR()[inx];
 	}
-	void SetPolygonAt(LONG inx, CPolygon v)
+	void SetPolygonAt(Int32 inx, CPolygon v)
 	{
 		self->GetPolygonW()[inx] = v;
 	}
 }
 %extend SplineObject
 {
-	Tangent *GetTangentAt(LONG inx)
+	Tangent *GetTangentAt(Int32 inx)
 	{
 		return (Tangent *)(self->GetTangentR() + inx);
 	}
-	void SetTangentAt(LONG inx, Tangent *pT)
+	void SetTangentAt(Int32 inx, Tangent *pT)
 	{
 		self->GetTangentW()[inx] = *pT;
 	}
-	Segment *GetSegmentAt(LONG inx)
+	Segment *GetSegmentAt(Int32 inx)
 	{
 		return (Segment *)(self->GetSegmentR() + inx);
 	}
-	void SetSegmentAt(LONG inx, Segment *pT)
+	void SetSegmentAt(Int32 inx, Segment *pT)
 	{
 		self->GetSegmentW()[inx] = *pT;
 	}
@@ -830,13 +861,13 @@ BaseMaterial *
   return (PointObject*)iObj;
  }
 }
-%typemap(cstype, out="Fusee.Math.float3[] /* SVector*PolygonObject::CreatePhongNormals_cstype */") SVector *PolygonObject::CreatePhongNormals "Fusee.Math.float3[] /* SVector*PolygonObject::CreatePhongNormals_cstype */"
-%typemap(out) SVector *PolygonObject::CreatePhongNormals
-%{ /* <SVector*PolygonObject::CreatePhongNormals_out> */ 
-   $result = *((SVector_POD **)(&$1)); 
-   /* </SVector*PolygonObject::CreatePhongNormals_out> */%}
-%typemap(csout, excode=SWIGEXCODE) SVector *PolygonObject::CreatePhongNormals
-%{ {  /* <SVector*PolygonObject::CreatePhongNormals_csout> */
+%typemap(cstype, out="Fusee.Math.float3[] /* Vector32*PolygonObject::CreatePhongNormals_cstype */") Vector32 *PolygonObject::CreatePhongNormals "Fusee.Math.float3[] /* Vector32*PolygonObject::CreatePhongNormals_cstype */"
+%typemap(out) Vector32 *PolygonObject::CreatePhongNormals
+%{ /* <Vector32*PolygonObject::CreatePhongNormals_out> */ 
+   $result = *((Vector32_POD **)(&$1)); 
+   /* </Vector32*PolygonObject::CreatePhongNormals_out> */%}
+%typemap(csout, excode=SWIGEXCODE) Vector32 *PolygonObject::CreatePhongNormals
+%{ {  /* <Vector32*PolygonObject::CreatePhongNormals_csout> */
       IntPtr p_ret = $imcall;$excode
 	  if (p_ret == IntPtr.Zero)
 	      return null;
@@ -851,7 +882,7 @@ BaseMaterial *
 	  }
 	  C4dApi.DeleteMemPtr(p_ret);
       return ret;
-   } /* </SVector*PolygonObject::CreatePhongNormals_csout> */ %}
+   } /* </Vector32*PolygonObject::CreatePhongNormals_csout> */ %}
 
 
 %include "c4d_baseobject.h";
@@ -876,16 +907,16 @@ BaseMaterial *
 // "c4d_baseselect.h"
 %extend BaseSelect
 {
-	LONG GetRangeA(LONG seg)
+	Int32 GetRangeA(Int32 seg)
 	{
-		LONG ret, b;
+		Int32 ret, b;
 		if (self->GetRange(seg, 2147483647, &ret, &b))
 			return ret;
 		return -1;
 	}
-	LONG GetRangeB(LONG seg)
+	Int32 GetRangeB(Int32 seg)
 	{
-		LONG a, ret;
+		Int32 a, ret;
 		if (self->GetRange(seg, 2147483647, &a, &ret))
 			return ret;
 		return -1;
@@ -930,34 +961,34 @@ BaseMaterial *
 %extend BrushObjectInfo
 {
 	// Replacement for m_pPoints
-	Vector GetPointAt(LONG inx)
+	Vector GetPointAt(Int32 inx)
 	{
 		return self->m_pPoints[inx];
 	}
 	// No setter because m_pPoints is const Vector*
 
 	// Replacement for m_pGlobalPoints
-	Vector GetGlobalPointAt(LONG inx)
+	Vector GetGlobalPointAt(Int32 inx)
 	{
 		return self->m_pGlobalPoints[inx];
 	}
-	void SetGlobalPointAt(LONG inx, Vector v)
+	void SetGlobalPointAt(Int32 inx, Vector v)
 	{
 		self->m_pGlobalPoints[inx] = v;
 	}
 
 	// Replacement for m_pNormals
-	Vector GetNormalAt(LONG inx)
+	Vector GetNormalAt(Int32 inx)
 	{
 		return self->m_pNormals[inx];
 	}
-	void SetNormalAt(LONG inx, Vector v)
+	void SetNormalAt(Int32 inx, Vector v)
 	{
 		self->m_pNormals[inx] = v;
 	}
 
 	// Replacement for m_pPolys
-	CPolygon GetPolyAt(LONG inx)
+	CPolygon GetPolyAt(Int32 inx)
 	{
 		return self->m_pPolys[inx];
 	}
@@ -1024,7 +1055,7 @@ BaseMaterial *
 // "c4d_graphview.h"
 %inline %{
 	// Maxon forgot to implement this. It's probably never used, but since it is declared, Swig wants to generate a wrapper for it
-	inline Bool GvBuildValuesTable(GvNode *bn, GvValue **&in_ports, LONG &nr_of_in_ports, GvPort **&out_ports, LONG &nr_of_out_ports)
+	inline Bool GvBuildValuesTable(GvNode *bn, GvValue **&in_ports, Int32 &nr_of_in_ports, GvPort **&out_ports, Int32 &nr_of_out_ports)
 	{
 		return FALSE;	
 	}
@@ -1187,4 +1218,4 @@ BaseMaterial *
 void MessageDialog(const String &str);
 Bool QuestionDialog(const String& str);
 void GePrint(const String &str);
-BaseContainer GetCustomDataTypeDefault(LONG type);
+BaseContainer GetCustomDataTypeDefault(Int32 type);

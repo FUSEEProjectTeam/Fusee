@@ -50,50 +50,50 @@ struct GvHelper
 
 class CustomDataTypeClass : public BaseData
 {
-		LONG defaultconversiontype;
+		Int32 defaultconversiontype;
 		GV_VALUE_HANDLER *valuehandler;
 
 	public:
 
-		virtual LONG GetId() = 0;
+		virtual Int32 GetId() = 0;
 
-		virtual LONG GetDataID();
-		virtual LONG GetValueID();
+		virtual Int32 GetDataID();
+		virtual Int32 GetValueID();
 
 		virtual CustomDataType*	AllocData() = 0;
 		virtual void FreeData(CustomDataType *data) = 0;
 
 		virtual Bool CopyData(const CustomDataType *src,CustomDataType *dest,AliasTrans *aliastrans) = 0;
-		virtual LONG Compare(const CustomDataType *d1,const CustomDataType *d2) = 0;
+		virtual Int32 Compare(const CustomDataType *d1,const CustomDataType *d2) = 0;
 
 		virtual Bool WriteData(const CustomDataType *d,HyperFile *hf) = 0;
-		virtual Bool ReadData(CustomDataType *d,HyperFile *hf,LONG level) = 0;
+		virtual Bool ReadData(CustomDataType *d,HyperFile *hf,Int32 level) = 0;
 
-		virtual const CHAR *GetResourceSym() = 0;
+		virtual const Char *GetResourceSym() = 0;
 		virtual CustomProperty *GetProperties();
 		virtual void GetDefaultProperties(BaseContainer &data);
 
-		virtual LONG GetConversionsFrom(LONG *&table);
-		virtual GvError ConvertFromGv(LONG src_type,const void *const src,LONG cpu_id,CustomDataType *dst);
+		virtual Int32 GetConversionsFrom(Int32 *&table);
+		virtual GvError ConvertFromGv(Int32 src_type,const void *const src,Int32 cpu_id,CustomDataType *dst);
 
-		virtual LONG GetConversionsTo(LONG *&table);
-		virtual GvError ConvertToGv(LONG dst_type,const CustomDataType *src,void *dst,LONG cpu_id);
-		virtual GvError ConvertToGeData(LONG dst_type,const CustomDataType *src,GeData &dst);
+		virtual Int32 GetConversionsTo(Int32 *&table);
+		virtual GvError ConvertToGv(Int32 dst_type,const CustomDataType *src,void *dst,Int32 cpu_id);
+		virtual GvError ConvertToGeData(Int32 dst_type,const CustomDataType *src,GeData &dst);
 
 		virtual GvValueFlags GetCalculationFlags();
-		virtual GvError Calculate(LONG calculation,const CustomDataType *src1, const CustomDataType *src2, CustomDataType *dst, Real parm1);
+		virtual GvError Calculate(Int32 calculation,const CustomDataType *src1, const CustomDataType *src2, CustomDataType *dst, Float parm1);
 
 		virtual GV_VALUE_HANDLER *GetGvValueHandler();
 
-		virtual Bool ConvertGeDataToGv(const GeData &src,void *dst,LONG cpu_id);
-		virtual Bool ConvertGvToGeData(const void *const src,LONG cpu_id,GeData &dst);
+		virtual Bool ConvertGeDataToGv(const GeData &src,void *dst,Int32 cpu_id);
+		virtual Bool ConvertGvToGeData(const void *const src,Int32 cpu_id,GeData &dst);
 
 		virtual Bool GetDescription() { return FALSE; } // to get the virtual warning
 		virtual Bool _GetDescription(const CustomDataType *data,Description &res,DESCFLAGS_DESC &flags,const BaseContainer &parentdescription,DescID *singledescid);
 		virtual Bool GetParameter(const CustomDataType *data,const DescID &id,GeData &t_data,DESCFLAGS_GET &flags);
 		virtual Bool SetDParameter(CustomDataType *data,const DescID &id,const GeData &t_data,DESCFLAGS_SET &flags);
 		virtual Bool GetEnabling(const CustomDataType *data,const DescID &id,const GeData &t_data,DESCFLAGS_ENABLE &flags,const BaseContainer *itemdesc);
-		virtual Bool InterpolateKeys(GeData &res, const GeData &t_data1,const GeData &t_data2,Real mix,LONG flags);
+		virtual Bool InterpolateKeys(GeData &res, const GeData &t_data1,const GeData &t_data2,Float mix,Int32 flags);
 
 		virtual void CheckData(const BaseContainer &bc,GeData &data);
 };
@@ -102,27 +102,27 @@ struct CUSTOMDATATYPEPLUGIN;
 
 class ResourceDataTypeClass : public BaseData
 {
-		LONG datatypeid;
+		Int32 datatypeid;
 		CUSTOMDATATYPEPLUGIN *datatype;
 
 	public:
 
-		ResourceDataTypeClass(LONG datatypeid,CUSTOMDATATYPEPLUGIN *datatype);
+		ResourceDataTypeClass(Int32 datatypeid,CUSTOMDATATYPEPLUGIN *datatype);
 
-		virtual LONG GetId() = 0;
+		virtual Int32 GetId() = 0;
 
-		virtual LONG GetCustomDataType();
+		virtual Int32 GetCustomDataType();
 		virtual CUSTOMDATATYPEPLUGIN *GetCustomDataTypePlugin();
 		virtual void GetDefaultProperties(BaseContainer &data);
 
-		virtual const CHAR *GetResourceSym();
+		virtual const Char *GetResourceSym();
 		virtual CustomProperty *GetProperties();
 
 		virtual Bool GetDescription(const CustomDataType *data,Description &res,DESCFLAGS_DESC &flags,const BaseContainer &parentdescription,DescID *singledescid);
 		virtual void CheckData(const BaseContainer &bc,GeData &data);
 };
 
-Bool RegisterCustomDataTypePlugin  (const String &str, LONG info, CustomDataTypeClass   *dat,LONG disclevel);
-Bool RegisterResourceDataTypePlugin(const String &str, LONG info, ResourceDataTypeClass *dat,LONG disclevel);
+Bool RegisterCustomDataTypePlugin  (const String &str, Int32 info, CustomDataTypeClass   *dat,Int32 disclevel);
+Bool RegisterResourceDataTypePlugin(const String &str, Int32 info, ResourceDataTypeClass *dat,Int32 disclevel);
 
 #endif

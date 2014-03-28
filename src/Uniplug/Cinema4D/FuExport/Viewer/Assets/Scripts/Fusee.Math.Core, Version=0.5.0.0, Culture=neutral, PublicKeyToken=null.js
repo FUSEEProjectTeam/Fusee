@@ -3862,10 +3862,11 @@ JSIL.DeclareNamespace("Fusee.Math");
       throw $S03().Construct("zNear");
     }
     var yMax = +(zNear * (Math.tan((0.5 * fovy))));
+    var yMin = +-yMax;
     $thisType.CreatePerspectiveOffCenter_ROW(
-      (-yMax * aspect), 
+      (yMin * aspect), 
       (yMax * aspect), 
-      -yMax, 
+      yMin, 
       yMax, 
       zNear, 
       zFar, 
