@@ -103,11 +103,14 @@ namespace FuExport
             foreach (int i in range)
             {
                 int iNorm = i*4;
-                CPolygon poly = polyOb.GetPolygonAt(i);
-                double3 a = polyOb.GetPointAt(poly.a);
-                double3 b = polyOb.GetPointAt(poly.b);
-                double3 c = polyOb.GetPointAt(poly.c);
-                double3 d = polyOb.GetPointAt(poly.d);
+                double3 a, b, c, d;
+                using (CPolygon poly = polyOb.GetPolygonAt(i))
+                {
+                    a = polyOb.GetPointAt(poly.a);
+                    b = polyOb.GetPointAt(poly.b);
+                    c = polyOb.GetPointAt(poly.c);
+                    d = polyOb.GetPointAt(poly.d);
+                }
 
                 float2 uvA = new float2(0, 0);
                 float2 uvB = new float2(0, 1);
@@ -116,11 +119,13 @@ namespace FuExport
 
                 if (uvwTag != null)
                 {
-                    UVWStruct uvw = uvwTag.GetSlow(i);
-                    uvA = new float2((float) uvw.a.x, 1.0f - (float) uvw.a.y);
-                    uvB = new float2((float) uvw.b.x, 1.0f - (float) uvw.b.y);
-                    uvC = new float2((float) uvw.c.x, 1.0f - (float) uvw.c.y);
-                    uvD = new float2((float) uvw.d.x, 1.0f - (float) uvw.d.y);
+                    using (UVWStruct uvw = uvwTag.GetSlow(i))
+                    {
+                        uvA = new float2((float) uvw.a.x, 1.0f - (float) uvw.a.y);
+                        uvB = new float2((float) uvw.b.x, 1.0f - (float) uvw.b.y);
+                        uvC = new float2((float) uvw.c.x, 1.0f - (float) uvw.c.y);
+                        uvD = new float2((float) uvw.d.x, 1.0f - (float) uvw.d.y);
+                    }
                 }
 
                 verts.Add((float3) a);
