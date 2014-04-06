@@ -12,6 +12,8 @@
         internal int ColorBufferObject;
         internal int UVBufferObject;
         internal int ElementBufferObject;
+        internal int TangentBufferObject;
+        internal int BitangentBufferObject;
         internal int NElements;
         #endregion
 

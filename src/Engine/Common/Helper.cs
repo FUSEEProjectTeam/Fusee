@@ -24,6 +24,15 @@
          /// The uv attribute name.
          /// </summary>
          public static readonly string UvAttribName = "fuUV";
+         /// <summary>
+         /// The tangent attribute name.
+         /// </summary>
+         public static readonly string TangentAttribName = "fuTangent";
+         /// <summary>
+         /// The bitangent attribute name.
+         /// </summary>
+         public static readonly string BitangentAttribName = "fuBitangent";
+
 
          /// <summary>
          /// The vertex attribute location index.
@@ -41,6 +50,14 @@
          /// The uv attribute location index.
          /// </summary>
          public static readonly int UvAttribLocation = 3;
+         /// <summary>
+         /// The tangent attribute location index.
+         /// </summary>
+         public static readonly int TangentAttribLocation = 4;
+         /// <summary>
+         /// The bitangent attribute location index.
+         /// </summary>
+         public static readonly int BitangentAttribLocation = 5;
 
          #endregion
      }

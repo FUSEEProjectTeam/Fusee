@@ -12084,10 +12084,10 @@ JSIL.MakeEnum(
     return ($IM11 = JSIL.Memoize($asm01.Fusee.Engine.IRenderContextImp.CreateMeshImp)) ();
   };
   var $IM12 = function () {
-    return ($IM12 = JSIL.Memoize($asm01.Fusee.Engine.IRenderContextImp.SetVertices)) ();
+    return ($IM12 = JSIL.Memoize($asm01.Fusee.Engine.IRenderContextImp.SetColors)) ();
   };
   var $IM13 = function () {
-    return ($IM13 = JSIL.Memoize($asm01.Fusee.Engine.IRenderContextImp.SetColors)) ();
+    return ($IM13 = JSIL.Memoize($asm01.Fusee.Engine.IRenderContextImp.SetVertices)) ();
   };
   var $IM14 = function () {
     return ($IM14 = JSIL.Memoize($asm01.Fusee.Engine.IRenderContextImp.SetUVs)) ();
@@ -12333,6 +12333,10 @@ JSIL.MakeEnum(
     return this._modelViewProjection;
   };
 
+  function RenderContext_get_NeedTangents () {
+    return true;
+  };
+
   function RenderContext_get_Projection () {
     return this._projection;
   };
@@ -12427,13 +12431,13 @@ JSIL.MakeEnum(
     if (m._meshImp === null) {
       m._meshImp = $IM11().Call(this._rci, null);
     }
-    if (!((m.get_Vertices() === null) || 
-        (m.get_Vertices().length === 0) || m.get_VerticesSet())) {
-      $IM12().Call(this._rci, null, m._meshImp, m.get_Vertices());
-    }
     if (!((m.get_Colors() === null) || 
         (m.get_Colors().length === 0) || m.get_ColorsSet())) {
-      $IM13().Call(this._rci, null, m._meshImp, m.get_Colors());
+      $IM12().Call(this._rci, null, m._meshImp, m.get_Colors());
+    }
+    if (!((m.get_Vertices() === null) || 
+        (m.get_Vertices().length === 0) || m.get_VerticesSet())) {
+      $IM13().Call(this._rci, null, m._meshImp, m.get_Vertices());
     }
     if (!((m.get_UVs() === null) || 
         (m.get_UVs().length === 0) || m.get_UVsSet())) {
@@ -12972,6 +12976,11 @@ JSIL.MakeEnum(
       RenderContext_get_ModelViewProjection
     );
 
+    $.Method({Static:false, Public:false}, "get_NeedTangents", 
+      new JSIL.MethodSignature($.Boolean, [], []), 
+      RenderContext_get_NeedTangents
+    );
+
     $.Method({Static:false, Public:true }, "get_Projection", 
       new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float4x4"), [], []), 
       RenderContext_get_Projection
@@ -13347,6 +13356,8 @@ JSIL.MakeEnum(
     $.Property({Static:false, Public:true }, "ClearDepth", $.Single);
 
     $.Property({Static:false, Public:true }, "CurrentShader", $asm02.TypeRef("Fusee.Engine.ShaderProgram"));
+
+    $.Property({Static:false, Public:false}, "NeedTangents", $.Boolean);
 
     $.Property({Static:false, Public:true }, "DebugLinesEnabled", $.Boolean);
 

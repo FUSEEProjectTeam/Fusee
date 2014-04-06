@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Fusee.SceneManagement;
 using Fusee.Serialization;
 
 namespace Examples.SceneViewer
@@ -32,7 +33,7 @@ namespace Examples.SceneViewer
             {
                 _hasVertices = _hasNormals = _hasUVs = true;
             }
-            AnalyzMaterial(mc);
+            AnalyzeMaterial(mc);
 
             StringBuilder vs = new StringBuilder();
             MeshInputDeclarations(vs);
@@ -55,7 +56,7 @@ namespace Examples.SceneViewer
             // _hasColors = (mesh.Colors != null && mesh.Colors.Length > 0);
         }
 
-        private void AnalyzMaterial(MaterialContainer mc)
+        private void AnalyzeMaterial(MaterialContainer mc)
         {
             _hasDiffuse = mc.HasDiffuse;
             if (_hasDiffuse)
@@ -74,8 +75,11 @@ namespace Examples.SceneViewer
             if (_hasVertices)
             {
                 vs.Append("  attribute vec3 fuVertex;\n");
+
                 if (_hasSpecular)
-                    vs.Append("  varying vec3 vViewPos;\n");
+                {
+                    vs.Append("  varying vec3 vViewDir;\n");
+                }
             }
 
             if (_hasNormals)
@@ -90,19 +94,16 @@ namespace Examples.SceneViewer
 
         private void MatrixDeclarations(StringBuilder vs)
         {
-            if (_hasNormals)
-                vs.Append("  uniform mat4 FUSEE_ITMV;\n");
+            // Lighting done in model space... no need to convert normals
+            // if (_hasNormals)
+            //    vs.Append("  uniform mat4 FUSEE_ITMV;\n");
 
             if (_hasSpecular)
             {
-                vs.Append("  uniform mat4 FUSEE_MV;\n");
-                vs.Append("  uniform mat4 FUSEE_P;\n");
+                vs.Append("  uniform mat4 FUSEE_IMV;\n");
             }
-            else
-            {
-                vs.Append("  uniform mat4 FUSEE_MV;\n");
-                vs.Append("  uniform mat4 FUSEE_MVP;\n");                
-            }
+            // vs.Append("  uniform mat4 FUSEE_MV;\n");
+            vs.Append("  uniform mat4 FUSEE_MVP;\n");                
         }
 
         private void VSBody(StringBuilder vs)
@@ -110,22 +111,24 @@ namespace Examples.SceneViewer
             vs.Append("\n\n  void main()\n  {\n");
             if (_hasNormals)
             {
+                // Lighting done in model space... no need to convert normals
                 if (_normalizeNormals)
-                    vs.Append("    vNormal = normalize(mat3(FUSEE_MV[0].xyz, FUSEE_MV[1].xyz, FUSEE_MV[2].xyz) * fuNormal);\n");
+                    // vs.Append("    vNormal = normalize(mat3(FUSEE_MV[0].xyz, FUSEE_MV[1].xyz, FUSEE_MV[2].xyz) * fuNormal);\n");
+                    vs.Append("    vNormal = normalize(fuNormal);\n");
                 else
-                    vs.Append("    vNormal = mat3(FUSEE_MV[0].xyz, FUSEE_MV[1].xyz, FUSEE_MV[2].xyz) * fuNormal;\n");
+                    vs.Append("    vNormal = fuNormal;\n");
             }
 
             if (_hasSpecular)
             {
-                vs.Append("    vec4 vViewPosTemp = FUSEE_MV * vec4(fuVertex, 1);\n");
-                vs.Append("    vViewPos = vec3(vViewPosTemp)/vViewPosTemp.w;\n");
-                vs.Append("    gl_Position = FUSEE_P * vViewPosTemp;\n");
+                // vs.Append("    vec4 viewDirTmp = FUSEE_IMV * vec4(0, 0, 0, 1);\n");
+                // vs.Append("    vViewDir = viewDirTmp.xyz * 1/viewDirTmp.w;\n");
+                vs.Append("    vec3 viewPos = FUSEE_IMV[3].xyz;\n");
+                vs.Append("    vViewDir = normalize(viewPos - fuVertex);\n");
+                // vs.Append("    vViewDir = vec3(0, -1, 0);\n");
             }
-            else
-            {
-                vs.Append("    gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);\n");
-            }
+
+            vs.Append("    gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);\n");
 
             if (_hasUVs)
                 vs.Append("    vUV = fuUV;\n");
@@ -145,12 +148,24 @@ namespace Examples.SceneViewer
             ChannelInputDeclaration(ps, _hasEmissive, _hasEmissiveTexture, "Emissive");
             BumpInputDeclaration(ps);
 
+            if (_hasSpecular || _hasDiffuse)
+            {
+                ps.Append("  uniform vec3 ");
+                ps.Append(LightColorName);
+                ps.Append(";\n");
+                ps.Append("  uniform float ");
+                ps.Append(LightIntensityName);
+                ps.Append(";\n");
+                ps.Append("  uniform vec3 ");
+                ps.Append(LightDirectionName);
+                ps.Append(";\n");
+            }
+            
             if (_hasSpecular)
             {
-                // shouldn't bee needed... ps.Append("  uniform mat4 FUSEE_V;\n");
-                ps.Append("  varying vec3 vViewPos;\n");
+                ps.Append("  varying vec3 vViewDir;\n");
             }
-
+ 
             if (_hasNormals)
                 ps.Append("  varying vec3 vNormal;\n");
 
@@ -217,27 +232,42 @@ namespace Examples.SceneViewer
             AddSpecularChannel(ps);
 
             ps.Append("\n    gl_FragColor = vec4(result, 1.0);\n");
+            // ps.Append("\n    gl_FragColor = vec4((Normal + 1.0) * 0.5, 1.0);\n");
             ps.Append("  }\n\n");
         }
 
         private void AddCameraVec(StringBuilder ps)
         {
-            ps.Append("    vec3 Camera = vec3(0, 0, -1.0);\n");
+            ps.Append("    vec3 Camera = vViewDir;\n");
         }
 
         private void AddLightVec(StringBuilder ps)
         {
-            ps.Append("    vec3 Light = vec3(0, 0, -1.0);\n");
-            ps.Append("    vec3 LightColor = vec3(1.0, 1.0, 1.0);\n");
+            ps.Append("    vec3 LDir = ");
+            ps.Append(LightDirectionName);
+            ps.Append(";\n");
+            ps.Append("    vec3 LColor = ");
+            ps.Append(LightColorName);
+            ps.Append(";\n");
+            ps.Append("    float LIntensity = ");
+            ps.Append(LightIntensityName);
+            ps.Append(";\n");
         }
+
         private void AddNormalVec(StringBuilder ps)
         {
             if (_hasBump)
             {
                 ps.Append("\n\n    //*********** BUMP *********\n");
-                // TODO: Got Work. We'll probably need Tangents and Bitangents?
+                // First implementation ONLY working with object space normals. See
+                // http://gamedev.stackexchange.com/a/72806/44105
+                // http://docs.cryengine.com/display/SDKDOC4/Tangent+Space+Normal+Mapping
                 // http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-13-normal-mapping/
-                ps.Append("    vec3 Normal = vNormal + BumpIntensity * texture2D(BumpTexture, vUV);\n\n");
+                ps.Append("    vec3 bv =  normalize(texture2D(BumpTexture, vUV).xyz * 2.0 - 1.0);\n");
+                ps.Append("    bv = vec3(bv.x, bv.y, -bv.z);\n");
+                ps.Append("    vec3 Normal =  normalize(bv);\n\n");
+                // ps.Append("    vec3 Normal =  normalize(vNormal);\n\n");
+                // ps.Append("    vec3 Normal =  normalize(/*vNormal +*/  BumpIntensity * texture2D(BumpTexture, vUV).xyz);\n\n");
             }
             else
             {
@@ -262,8 +292,8 @@ namespace Examples.SceneViewer
 
             ps.Append("\n\n    //*********** DIFFUSE *********\n");
             AddChannelBaseColorCalculation(ps, _hasDiffuseTexture, "Diffuse");
-            ps.Append("    float diffFactor = dot(Light, Normal);\n");
-            ps.Append("    result += DiffuseBaseColor * LightColor * max(diffFactor, 0.0);\n");
+            ps.Append("    float diffFactor = dot(LDir, Normal);\n");
+            ps.Append("    result += DiffuseBaseColor * LColor * LIntensity * max(diffFactor, 0.0);\n");
         }
 
         private void AddSpecularChannel(StringBuilder ps)
@@ -273,14 +303,14 @@ namespace Examples.SceneViewer
 
             ps.Append("\n\n    //*********** SPECULAR *********\n");
             if (!_hasDiffuse)
-                ps.Append("    float diffFactor = dot(Light, Normal);\n");
+                ps.Append("    float diffFactor = dot(LDir, Normal);\n");
 
-            ps.Append("      if (diffFactor > 0.0) {\n");
+            ps.Append("    if (diffFactor > 0.0) {\n  ");
             AddChannelBaseColorCalculation(ps, _hasSpecularTexture, "Specular");
-            ps.Append("      vec3 h = normalize(Light + Camera);\n");
+            ps.Append("      vec3 h = normalize(LDir + Camera);\n");
 
             ps.Append(
-                "      result += SpecularBaseColor * LightColor * SpecularIntensity * pow(max(0.0, dot(h, Normal)), SpecularShininess);\n");
+                "      result += SpecularBaseColor * LColor * LIntensity * SpecularIntensity * pow(max(0.0, dot(h, Normal)), SpecularShininess);\n");
             ps.Append("    }\n");
         }
 
@@ -339,5 +369,10 @@ namespace Examples.SceneViewer
         public string SpecularShininessName { get { return (_hasSpecular) ? "SpecularShininess" : null; } }
         public string SpecularIntensityName { get { return (_hasSpecular) ? "SpecularIntensity" : null; } }
         public string BumpIntensityName { get { return (_hasBump) ? "BumpIntensity" : null; } }
+
+        public static string LightDirectionName { get { return "LightDirection"; } }
+        public static string LightColorName { get { return "LightColor"; } }
+        public static string LightIntensityName { get { return "LightIntensity"; } }
+    
     }
 }

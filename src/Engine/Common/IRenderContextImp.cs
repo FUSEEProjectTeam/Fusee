@@ -392,5 +392,22 @@ namespace Fusee.Engine
         void SetRenderState(RenderState renderState, uint value);
 
         uint GetRenderState(RenderState renderState);
+
+        /*
+         * NO tangent space normal maps at this time...
+         * 
+         * http://gamedev.stackexchange.com/a/72806/44105
+         * 
+        /// <summary>
+        /// This method is a replacement for SetVertices, SetUVs and SetNormals. Taking all three
+        /// vertex information arrays a the same time, an implementation can additionally calculate
+        /// tangent and bitangent information as well. 
+        /// </summary>
+        /// <param name="meshImp">The mesh implementation to operate on.</param>
+        /// <param name="vertices">The array of vertices</param>
+        /// <param name="uVs">The texture coordinate array</param>
+        /// <param name="normals">The normals</param>
+        void SetVertexData(IMeshImp meshImp, float3[] vertices, float2[] uVs, float3[] normals);
+         * */
     }
 }

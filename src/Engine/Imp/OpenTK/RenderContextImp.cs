@@ -663,6 +663,8 @@ namespace Fusee.Engine
             GL.BindAttribLocation(program, Helper.ColorAttribLocation, Helper.ColorAttribName);
             GL.BindAttribLocation(program, Helper.UvAttribLocation, Helper.UvAttribName);
             GL.BindAttribLocation(program, Helper.NormalAttribLocation, Helper.NormalAttribName);
+            GL.BindAttribLocation(program, Helper.TangentAttribLocation, Helper.TangentAttribName);
+            GL.BindAttribLocation(program, Helper.BitangentAttribLocation, Helper.BitangentAttribName);
 
             GL.LinkProgram(program); // AAAARRRRRGGGGHHHH!!!! Must be called AFTER BindAttribLocation
             return new ShaderProgramImp {Program = program};
@@ -721,6 +723,7 @@ namespace Fusee.Engine
         }
 
 
+        
         /// <summary>
         /// Binds the normals onto the GL Rendercontext and assigns an NormalBuffer index to the passed <see cref="IMeshImp" /> instance.
         /// </summary>
@@ -779,6 +782,72 @@ namespace Fusee.Engine
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
 
+        /* Not using tangent space normal maps at the moment
+        public void SetVertexData(IMeshImp mr, float3[] vertices, float2[] uvs, float3[] normals)
+        {
+            if (vertices == null || vertices.Length == 0)
+            {
+                throw new ArgumentException("Vertices must not be null or empty");
+            }
+
+            int vboBytes;
+            int vertsBytes = vertices.Length * 3 * sizeof(float);
+            if (((MeshImp)mr).VertexBufferObject == 0)
+                GL.GenBuffers(1, out ((MeshImp)mr).VertexBufferObject);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).VertexBufferObject);
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertsBytes), vertices, BufferUsageHint.StaticDraw);
+            GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out vboBytes);
+            if (vboBytes != vertsBytes)
+                throw new ApplicationException(String.Format(
+                    "Problem uploading vertex buffer to VBO (vertices). Tried to upload {0} bytes, uploaded {1}.",
+                    vertsBytes, vboBytes));
+            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+
+
+            // normals
+            if (normals == null || normals.Length == 0)
+            {
+                throw new ArgumentException("Normals must not be null or empty");
+            }
+
+            int normsBytes = normals.Length * 3 * sizeof(float);
+            if (((MeshImp)mr).NormalBufferObject == 0)
+                GL.GenBuffers(1, out ((MeshImp)mr).NormalBufferObject);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).NormalBufferObject);
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(normsBytes), normals, BufferUsageHint.StaticDraw);
+            GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out vboBytes);
+            if (vboBytes != normsBytes)
+                throw new ApplicationException(String.Format(
+                    "Problem uploading normal buffer to VBO (normals). Tried to upload {0} bytes, uploaded {1}.",
+                    normsBytes, vboBytes));
+            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+
+            
+            // UVs
+            if (uvs == null || uvs.Length == 0)
+            {
+                throw new ArgumentException("UVs must not be null or empty");
+            }
+
+            int uvsBytes = uvs.Length * 2 * sizeof(float);
+            if (((MeshImp)mr).UVBufferObject == 0)
+                GL.GenBuffers(1, out ((MeshImp)mr).UVBufferObject);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).UVBufferObject);
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(uvsBytes), uvs, BufferUsageHint.StaticDraw);
+            GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out vboBytes);
+            if (vboBytes != uvsBytes)
+                throw new ApplicationException(String.Format(
+                    "Problem uploading uv buffer to VBO (uvs). Tried to upload {0} bytes, uploaded {1}.",
+                    uvsBytes, vboBytes));
+            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+
+            // Generate Tangents and Bitangents
+
+        }
+        */
 
         /// <summary>
         /// Binds the colors onto the GL Rendercontext and assigns an ColorBuffer index to the passed <see cref="IMeshImp" /> instance.

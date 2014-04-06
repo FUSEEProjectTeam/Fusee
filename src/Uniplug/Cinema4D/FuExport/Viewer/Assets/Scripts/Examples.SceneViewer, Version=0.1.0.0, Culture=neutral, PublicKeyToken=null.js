@@ -491,6 +491,32 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
 
 })();
 
+/* class Examples.SceneViewer.LightInfo */ 
+
+(function LightInfo$Members () {
+  var $, $thisType;
+  function LightInfo__ctor () {
+  };
+
+  JSIL.MakeType({
+      BaseType: $asm06.TypeRef("System.Object"), 
+      Name: "Examples.SceneViewer.LightInfo", 
+      IsPublic: false, 
+      IsReferenceType: true, 
+      MaximumConstructorArguments: 0, 
+    }, function ($interfaceBuilder) {
+    $ = $interfaceBuilder;
+
+    $.Method({Static:false, Public:true }, ".ctor", 
+      new JSIL.MethodSignature(null, [], []), 
+      LightInfo__ctor
+    );
+
+    return function (newThisType) { $thisType = newThisType; }; 
+  });
+
+})();
+
 /* class Examples.SceneViewer.SceneRenderer */ 
 
 (function SceneRenderer$Members () {
@@ -511,79 +537,100 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
     return ($T04 = JSIL.Memoize($asm01.Fusee.Engine.Compare)) ();
   };
   var $T05 = function () {
-    return ($T05 = JSIL.Memoize($asm04.Fusee.Serialization.MaterialContainer)) ();
+    return ($T05 = JSIL.Memoize($asm06.System.Collections.Generic.List$b1.Of($asm00.Examples.SceneViewer.LightInfo))) ();
   };
   var $T06 = function () {
-    return ($T06 = JSIL.Memoize($asm00.Examples.SceneViewer.ShaderCodeBuilder)) ();
+    return ($T06 = JSIL.Memoize($asm04.Fusee.Serialization.MaterialContainer)) ();
   };
   var $T07 = function () {
-    return ($T07 = JSIL.Memoize($asm06.System.Collections.Generic.List$b1.Of($asm02.Fusee.Engine.EffectParameterDeclaration))) ();
+    return ($T07 = JSIL.Memoize($asm00.Examples.SceneViewer.ShaderCodeBuilder)) ();
   };
   var $T08 = function () {
-    return ($T08 = JSIL.Memoize($asm02.Fusee.Engine.EffectParameterDeclaration)) ();
+    return ($T08 = JSIL.Memoize($asm06.System.Collections.Generic.List$b1.Of($asm02.Fusee.Engine.EffectParameterDeclaration))) ();
   };
   var $T09 = function () {
-    return ($T09 = JSIL.Memoize($asm03.Fusee.Math.float4x4)) ();
+    return ($T09 = JSIL.Memoize($asm02.Fusee.Engine.EffectParameterDeclaration)) ();
   };
   var $T0A = function () {
-    return ($T0A = JSIL.Memoize($asm04.Fusee.Serialization.SceneObjectContainer)) ();
+    return ($T0A = JSIL.Memoize($asm03.Fusee.Math.float3)) ();
   };
   var $T0B = function () {
-    return ($T0B = JSIL.Memoize($asm03.Fusee.Math.AABBf)) ();
+    return ($T0B = JSIL.Memoize($asm03.Fusee.Math.float4x4)) ();
   };
   var $T0C = function () {
-    return ($T0C = JSIL.Memoize($asm02.Fusee.Engine.RenderContext)) ();
+    return ($T0C = JSIL.Memoize($asm04.Fusee.Serialization.SceneObjectContainer)) ();
   };
   var $T0D = function () {
-    return ($T0D = JSIL.Memoize($asm06.System.Collections.Generic.Dictionary$b2.Of($asm04.Fusee.Serialization.MeshContainer, $asm02.Fusee.Engine.Mesh))) ();
+    return ($T0D = JSIL.Memoize($asm03.Fusee.Math.AABBf)) ();
   };
   var $T0E = function () {
-    return ($T0E = JSIL.Memoize($asm06.System.Collections.Generic.Dictionary$b2.Of($asm04.Fusee.Serialization.MaterialContainer, $asm02.Fusee.Engine.ShaderEffect))) ();
+    return ($T0E = JSIL.Memoize($asm02.Fusee.Engine.RenderContext)) ();
   };
   var $T0F = function () {
-    return ($T0F = JSIL.Memoize($asm04.Fusee.Serialization.MatChannelContainer)) ();
+    return ($T0F = JSIL.Memoize($asm06.System.Collections.Generic.Dictionary$b2.Of($asm04.Fusee.Serialization.MeshContainer, $asm02.Fusee.Engine.Mesh))) ();
   };
   var $T10 = function () {
-    return ($T10 = JSIL.Memoize($asm03.Fusee.Math.float3)) ();
+    return ($T10 = JSIL.Memoize($asm06.System.Collections.Generic.Dictionary$b2.Of($asm04.Fusee.Serialization.MaterialContainer, $asm02.Fusee.Engine.ShaderEffect))) ();
   };
   var $T11 = function () {
-    return ($T11 = JSIL.Memoize($asm04.Fusee.Serialization.SpecularChannelContainer)) ();
+    return ($T11 = JSIL.Memoize($asm04.Fusee.Serialization.MatChannelContainer)) ();
   };
   var $T12 = function () {
-    return ($T12 = JSIL.Memoize($asm02.Fusee.Engine.ShaderEffect)) ();
+    return ($T12 = JSIL.Memoize($asm04.Fusee.Serialization.SpecularChannelContainer)) ();
   };
   var $T13 = function () {
-    return ($T13 = JSIL.Memoize($asm06.System.IO.Path)) ();
+    return ($T13 = JSIL.Memoize($asm02.Fusee.Engine.ShaderEffect)) ();
   };
   var $T14 = function () {
-    return ($T14 = JSIL.Memoize($asm01.Fusee.Engine.ImageData)) ();
+    return ($T14 = JSIL.Memoize($asm06.System.IO.Path)) ();
   };
   var $T15 = function () {
-    return ($T15 = JSIL.Memoize($asm02.Fusee.Engine.EffectPassDeclaration)) ();
+    return ($T15 = JSIL.Memoize($asm01.Fusee.Engine.ImageData)) ();
   };
   var $T16 = function () {
-    return ($T16 = JSIL.Memoize($asm02.Fusee.Engine.Mesh)) ();
+    return ($T16 = JSIL.Memoize($asm02.Fusee.Engine.EffectPassDeclaration)) ();
+  };
+  var $T17 = function () {
+    return ($T17 = JSIL.Memoize($asm02.Fusee.Engine.Mesh)) ();
+  };
+  var $T18 = function () {
+    return ($T18 = JSIL.Memoize($asm00.Examples.SceneViewer.LightInfo)) ();
+  };
+  var $T19 = function () {
+    return ($T19 = JSIL.Memoize($asm03.Fusee.Math.float4)) ();
   };
   var $S00 = function () {
-    return ($S00 = JSIL.Memoize(new JSIL.ConstructorSignature($asm06.TypeRef("System.Collections.Generic.List`1", [$asm02.TypeRef("Fusee.Engine.EffectParameterDeclaration")]), []))) ();
+    return ($S00 = JSIL.Memoize(new JSIL.ConstructorSignature($asm06.TypeRef("System.Collections.Generic.List`1", [$asm00.TypeRef("Examples.SceneViewer.LightInfo")]), []))) ();
   };
   var $S01 = function () {
-    return ($S01 = JSIL.Memoize(new JSIL.MethodSignature(null, [$asm02.TypeRef("Fusee.Engine.EffectParameterDeclaration")], []))) ();
+    return ($S01 = JSIL.Memoize(new JSIL.ConstructorSignature($asm06.TypeRef("System.Collections.Generic.List`1", [$asm02.TypeRef("Fusee.Engine.EffectParameterDeclaration")]), []))) ();
   };
   var $S02 = function () {
-    return ($S02 = JSIL.Memoize(new JSIL.ConstructorSignature($asm06.TypeRef("System.Collections.Generic.Dictionary`2", [$asm04.TypeRef("Fusee.Serialization.MeshContainer"), $asm02.TypeRef("Fusee.Engine.Mesh")]), []))) ();
+    return ($S02 = JSIL.Memoize(new JSIL.MethodSignature(null, [$asm02.TypeRef("Fusee.Engine.EffectParameterDeclaration")], []))) ();
   };
   var $S03 = function () {
-    return ($S03 = JSIL.Memoize(new JSIL.ConstructorSignature($asm06.TypeRef("System.Collections.Generic.Dictionary`2", [$asm04.TypeRef("Fusee.Serialization.MaterialContainer"), $asm02.TypeRef("Fusee.Engine.ShaderEffect")]), []))) ();
-  };
-  var $S04 = function () {
-    return ($S04 = JSIL.Memoize(new JSIL.ConstructorSignature($asm03.TypeRef("Fusee.Math.float3"), [
+    return ($S03 = JSIL.Memoize(new JSIL.ConstructorSignature($asm03.TypeRef("Fusee.Math.float3"), [
         $asm06.TypeRef("System.Single"), $asm06.TypeRef("System.Single"), 
         $asm06.TypeRef("System.Single")
       ]))) ();
   };
+  var $S04 = function () {
+    return ($S04 = JSIL.Memoize(new JSIL.ConstructorSignature($asm06.TypeRef("System.Collections.Generic.Dictionary`2", [$asm04.TypeRef("Fusee.Serialization.MeshContainer"), $asm02.TypeRef("Fusee.Engine.Mesh")]), []))) ();
+  };
   var $S05 = function () {
-    return ($S05 = JSIL.Memoize(new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float4x4"), [$asm03.TypeRef("Fusee.Math.float4x4"), $asm03.TypeRef("Fusee.Math.float4x4")], []))) ();
+    return ($S05 = JSIL.Memoize(new JSIL.ConstructorSignature($asm06.TypeRef("System.Collections.Generic.Dictionary`2", [$asm04.TypeRef("Fusee.Serialization.MaterialContainer"), $asm02.TypeRef("Fusee.Engine.ShaderEffect")]), []))) ();
+  };
+  var $S06 = function () {
+    return ($S06 = JSIL.Memoize(new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float4"), [$asm03.TypeRef("Fusee.Math.float4x4"), $asm03.TypeRef("Fusee.Math.float4")], []))) ();
+  };
+  var $S07 = function () {
+    return ($S07 = JSIL.Memoize(new JSIL.ConstructorSignature($asm03.TypeRef("Fusee.Math.float4"), [
+        $asm06.TypeRef("System.Single"), $asm06.TypeRef("System.Single"), 
+        $asm06.TypeRef("System.Single"), $asm06.TypeRef("System.Single")
+      ]))) ();
+  };
+  var $S08 = function () {
+    return ($S08 = JSIL.Memoize(new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float4x4"), [$asm03.TypeRef("Fusee.Math.float4x4"), $asm03.TypeRef("Fusee.Math.float4x4")], []))) ();
   };
 
   function SceneRenderer__ctor (sc, scenePathDirectory) {
@@ -594,76 +641,91 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
         ZEnable: true, 
         ZFunc: $T04().Less}
     );
+    this._lights = $S00().Construct();
     this._sc = sc;
     this._scenePathDirectory = scenePathDirectory;
   };
 
   function SceneRenderer_AssembleEffectParamers (mc, scb) {
-    var effectParameters = $S00().Construct();
+    var effectParameters = $S01().Construct();
     if (mc.get_HasDiffuse()) {
-      $S01().CallVirtual("Add", null, effectParameters, (new ($T08())()).__Initialize__({
+      $S02().CallVirtual("Add", null, effectParameters, (new ($T09())()).__Initialize__({
             Name: scb.get_DiffuseColorName(), 
             Value: mc.Diffuse.Color.MemberwiseClone()}
         ));
       if (mc.Diffuse.Texture !== null) {
-        $S01().CallVirtual("Add", null, effectParameters, (new ($T08())()).__Initialize__({
+        $S02().CallVirtual("Add", null, effectParameters, (new ($T09())()).__Initialize__({
               Name: scb.get_DiffuseMixName(), 
               Value: mc.Diffuse.Mix}
           ));
-        $S01().CallVirtual("Add", null, effectParameters, (new ($T08())()).__Initialize__({
+        $S02().CallVirtual("Add", null, effectParameters, (new ($T09())()).__Initialize__({
               Name: scb.get_DiffuseTextureName(), 
               Value: this.LoadTexture(mc.Diffuse.Texture)}
           ));
       }
     }
     if (mc.get_HasSpecular()) {
-      $S01().CallVirtual("Add", null, effectParameters, (new ($T08())()).__Initialize__({
+      $S02().CallVirtual("Add", null, effectParameters, (new ($T09())()).__Initialize__({
             Name: scb.get_SpecularColorName(), 
             Value: mc.Specular.Color.MemberwiseClone()}
         ));
-      $S01().CallVirtual("Add", null, effectParameters, (new ($T08())()).__Initialize__({
+      $S02().CallVirtual("Add", null, effectParameters, (new ($T09())()).__Initialize__({
             Name: scb.get_SpecularShininessName(), 
             Value: mc.Specular.Shininess}
         ));
-      $S01().CallVirtual("Add", null, effectParameters, (new ($T08())()).__Initialize__({
+      $S02().CallVirtual("Add", null, effectParameters, (new ($T09())()).__Initialize__({
             Name: scb.get_SpecularIntensityName(), 
             Value: mc.Specular.Intensity}
         ));
       if (mc.Specular.Texture !== null) {
-        $S01().CallVirtual("Add", null, effectParameters, (new ($T08())()).__Initialize__({
+        $S02().CallVirtual("Add", null, effectParameters, (new ($T09())()).__Initialize__({
               Name: scb.get_SpecularMixName(), 
               Value: mc.Specular.Mix}
           ));
-        $S01().CallVirtual("Add", null, effectParameters, (new ($T08())()).__Initialize__({
+        $S02().CallVirtual("Add", null, effectParameters, (new ($T09())()).__Initialize__({
               Name: scb.get_SpecularTextureName(), 
               Value: this.LoadTexture(mc.Specular.Texture)}
           ));
       }
     }
     if (mc.get_HasEmissive()) {
-      $S01().CallVirtual("Add", null, effectParameters, (new ($T08())()).__Initialize__({
+      $S02().CallVirtual("Add", null, effectParameters, (new ($T09())()).__Initialize__({
             Name: scb.get_EmissiveColorName(), 
             Value: mc.Emissive.Color.MemberwiseClone()}
         ));
       if (mc.Emissive.Texture !== null) {
-        $S01().CallVirtual("Add", null, effectParameters, (new ($T08())()).__Initialize__({
+        $S02().CallVirtual("Add", null, effectParameters, (new ($T09())()).__Initialize__({
               Name: scb.get_EmissiveMixName(), 
               Value: mc.Emissive.Mix}
           ));
-        $S01().CallVirtual("Add", null, effectParameters, (new ($T08())()).__Initialize__({
+        $S02().CallVirtual("Add", null, effectParameters, (new ($T09())()).__Initialize__({
               Name: scb.get_EmissiveTextureName(), 
               Value: this.LoadTexture(mc.Emissive.Texture)}
           ));
       }
     }
     if (mc.get_HasBump()) {
-      $S01().CallVirtual("Add", null, effectParameters, (new ($T08())()).__Initialize__({
+      $S02().CallVirtual("Add", null, effectParameters, (new ($T09())()).__Initialize__({
             Name: scb.get_BumpIntensityName(), 
             Value: mc.Bump.Intensity}
         ));
-      $S01().CallVirtual("Add", null, effectParameters, (new ($T08())()).__Initialize__({
+      $S02().CallVirtual("Add", null, effectParameters, (new ($T09())()).__Initialize__({
             Name: scb.get_BumpTextureName(), 
             Value: this.LoadTexture(mc.Bump.Texture)}
+        ));
+    }
+    if (!(!mc.get_HasDiffuse() && !mc.get_HasSpecular())) {
+      $S02().CallVirtual("Add", null, effectParameters, (new ($T09())()).__Initialize__({
+            Name: $T07().get_LightColorName(), 
+            Value: $S03().Construct(1, 1, 1)}
+        ));
+      $S02().CallVirtual("Add", null, effectParameters, (new ($T09())()).__Initialize__({
+            Name: $T07().get_LightIntensityName(), 
+            Value: 1}
+        ));
+      $S02().CallVirtual("Add", null, effectParameters, (new ($T09())()).__Initialize__({
+            Name: $T07().get_LightDirectionName(), 
+            Value: $S03().Construct(0, 0, 1)}
         ));
     }
     return effectParameters;
@@ -676,7 +738,7 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
   function SceneRenderer_GetAABB () {
     var $temp00;
     var ret = null;
-    this._AABBXForm = $T09().Identity.MemberwiseClone();
+    this._AABBXForm = $T0B().Identity.MemberwiseClone();
 
     for (var a$0 = this._sc.Children._items, i$0 = 0, l$0 = this._sc.Children._size; i$0 < l$0; ($temp00 = i$0, 
         i$0 = ((i$0 + 1) | 0), 
@@ -687,7 +749,7 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
         if (ret === null) {
           ret = nodeBox;
         } else {
-          ret = $T0B().Union(ret.MemberwiseClone(), nodeBox.MemberwiseClone()).MemberwiseClone();
+          ret = $T0D().Union(ret.MemberwiseClone(), nodeBox.MemberwiseClone()).MemberwiseClone();
         }
       }
     }
@@ -701,17 +763,17 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
       this._colorParam = null;
       this._textureShader = null;
       this._textureParam = null;
-      this._meshMap = $S02().Construct();
-      this._matMap = $S03().Construct();
+      this._meshMap = $S04().Construct();
+      this._matMap = $S05().Construct();
       this._curMat = null;
     }
     if (this._curMat === null) {
-      this._curMat = this.MakeMaterial((new ($T05())()).__Initialize__({
-            Diffuse: (new ($T0F())()).__Initialize__({
-                Color: $S04().Construct(0.5, 0.5, 0.5)}
+      this._curMat = this.MakeMaterial((new ($T06())()).__Initialize__({
+            Diffuse: (new ($T11())()).__Initialize__({
+                Color: $S03().Construct(0.5, 0.5, 0.5)}
             ), 
-            Specular: (new ($T11())()).__Initialize__({
-                Color: $S04().Construct(1, 1, 1), 
+            Specular: (new ($T12())()).__Initialize__({
+                Color: $S03().Construct(1, 1, 1), 
                 Intensity: 0.5, 
                 Shininess: 22}
             )}
@@ -721,7 +783,7 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
   };
 
   function SceneRenderer_LoadTexture (path) {
-    var texturePath = $T13().Combine(this._scenePathDirectory, path);
+    var texturePath = $T14().Combine(this._scenePathDirectory, path);
     var image = this._rc.LoadImage(texturePath).MemberwiseClone();
     return this._rc.CreateTexture(image.MemberwiseClone());
   };
@@ -737,9 +799,9 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
   };
 
   function SceneRenderer_MakeMaterial (mc) {
-    var scb = new ($T06())(mc, null);
+    var scb = new ($T07())(mc, null);
     var effectParameters = this.AssembleEffectParamers(mc, scb);
-    return new ($T12())(JSIL.Array.New($T15(), [(new ($T15())()).__Initialize__({
+    return new ($T13())(JSIL.Array.New($T16(), [(new ($T16())()).__Initialize__({
             VS: scb.get_VS(), 
             PS: scb.get_PS(), 
             StateSet: (new ($T02())()).__Initialize__({
@@ -750,7 +812,7 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
   };
 
   function SceneRenderer_MakeMesh (soc) {
-    return (new ($T16())()).__Initialize__({
+    return (new ($T17())()).__Initialize__({
         Colors: null, 
         Normals: soc.Mesh.Normals, 
         UVs: soc.Mesh.UVs, 
@@ -771,6 +833,26 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
     }
   };
 
+  function SceneRenderer_RenderWithLights (rm, CurMat) {
+    var $temp00;
+    if (this._lights.get_Count() > 0) {
+
+      for (var a$0 = this._lights._items, i$0 = 0, l$0 = this._lights._size; i$0 < l$0; ($temp00 = i$0, 
+          i$0 = ((i$0 + 1) | 0), 
+          $temp00)) {
+        var li = a$0[i$0];
+        CurMat.RenderMesh(rm);
+      }
+    } else {
+      CurMat.SetEffectParam($T07().get_LightColorName(), $S03().Construct(1, 1, 1));
+      var lightDir = ($S06().CallStatic($T0B(), "op_Multiply", null, this._rc.get_TransModelView(), $S07().Construct(0, 0, -1, 0))).get_xyz().MemberwiseClone();
+      lightDir.Normalize();
+      CurMat.SetEffectParam($T07().get_LightDirectionName(), lightDir.MemberwiseClone());
+      CurMat.SetEffectParam($T07().get_LightIntensityName(), 1);
+      CurMat.RenderMesh(rm);
+    }
+  };
+
   function SceneRenderer_set_CurMat (value) {
     this._curMat = value;
   };
@@ -779,9 +861,9 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
     var $temp00;
     var ret = null;
     var origMV = this._AABBXForm.MemberwiseClone();
-    this._AABBXForm = $S05().CallStatic($T09(), "op_Multiply", null, this._AABBXForm, soc.Transform).MemberwiseClone();
+    this._AABBXForm = $S08().CallStatic($T0B(), "op_Multiply", null, this._AABBXForm, soc.Transform).MemberwiseClone();
     if (soc.Mesh !== null) {
-      ret = $T0B().op_Multiply(this._AABBXForm, soc.Mesh.BoundingBox.MemberwiseClone()).MemberwiseClone();
+      ret = $T0D().op_Multiply(this._AABBXForm, soc.Mesh.BoundingBox.MemberwiseClone()).MemberwiseClone();
     }
     if (soc.Children !== null) {
 
@@ -794,7 +876,7 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
           if (ret === null) {
             ret = nodeBox;
           } else {
-            ret = $T0B().Union(ret.MemberwiseClone(), nodeBox.MemberwiseClone()).MemberwiseClone();
+            ret = $T0D().Union(ret.MemberwiseClone(), nodeBox.MemberwiseClone()).MemberwiseClone();
           }
         }
       }
@@ -812,13 +894,17 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
       var mat = this.LookupMaterial(soc.Material);
       this.set_CurMat(mat);
     }
-    (this._rc.ModelView = $S05().CallStatic($T09(), "op_Multiply", null, this._rc.ModelView, soc.Transform).MemberwiseClone());
+    (this._rc.ModelView = $S08().CallStatic($T0B(), "op_Multiply", null, this._rc.ModelView, soc.Transform).MemberwiseClone());
     if (soc.Mesh !== null) {
       if (!this._meshMap.TryGetValue(soc.Mesh, /* ref */ rm)) {
         rm.set($thisType.MakeMesh(soc));
         this._meshMap.Add(soc.Mesh, rm.get());
       }
-      this.get_CurMat().RenderMesh(rm.get());
+      if (null !== this.get_CurMat().GetEffectParam($T07().get_LightDirectionName())) {
+        this.RenderWithLights(rm.get(), this.get_CurMat());
+      } else {
+        this.get_CurMat().RenderMesh(rm.get());
+      }
     }
     if (soc.Children !== null) {
 
@@ -892,6 +978,11 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
       SceneRenderer_Render
     );
 
+    $.Method({Static:false, Public:false}, "RenderWithLights", 
+      new JSIL.MethodSignature(null, [$asm02.TypeRef("Fusee.Engine.Mesh"), $asm02.TypeRef("Fusee.Engine.ShaderEffect")], []), 
+      SceneRenderer_RenderWithLights
+    );
+
     $.Method({Static:false, Public:false}, "set_CurMat", 
       new JSIL.MethodSignature(null, [$asm02.TypeRef("Fusee.Engine.ShaderEffect")], []), 
       SceneRenderer_set_CurMat
@@ -916,6 +1007,7 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
     $.Field({Static:false, Public:false}, "_textureShader", $asm02.TypeRef("Fusee.Engine.ShaderProgram")); 
     $.Field({Static:false, Public:false}, "_textureParam", $asm01.TypeRef("Fusee.Engine.IShaderParam")); 
     $.Field({Static:false, Public:false}, "_AABBXForm", $asm03.TypeRef("Fusee.Math.float4x4")); 
+    $.Field({Static:false, Public:false}, "_lights", $asm06.TypeRef("System.Collections.Generic.List`1", [$asm00.TypeRef("Examples.SceneViewer.LightInfo")])); 
     $.Field({Static:false, Public:false}, "_stateSet", $asm02.TypeRef("Fusee.Engine.RenderStateSet")); 
     $.Field({Static:false, Public:false}, "_curMat", $asm02.TypeRef("Fusee.Engine.ShaderEffect")); 
     $.Field({Static:false, Public:false}, "_scenePathDirectory", $.String); 
@@ -969,7 +1061,7 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
     } else {
       this._hasVertices = (this._hasNormals = (this._hasUVs = true));
     }
-    this.AnalyzMaterial(mc);
+    this.AnalyzeMaterial(mc);
     var vs = $S00().Construct();
     this.MeshInputDeclarations(vs);
     this.MatrixDeclarations(vs);
@@ -982,7 +1074,7 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
   };
 
   function ShaderCodeBuilder_AddCameraVec (ps) {
-    $S01().CallVirtual("Append", null, ps, "    vec3 Camera = vec3(0, 0, -1.0);\n");
+    $S01().CallVirtual("Append", null, ps, "    vec3 Camera = vViewDir;\n");
   };
 
   function ShaderCodeBuilder_AddChannelBaseColorCalculation (ps, hasChannelTexture, channelName) {
@@ -1011,8 +1103,8 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
     if (this._hasDiffuse) {
       $S01().CallVirtual("Append", null, ps, "\n\n    //*********** DIFFUSE *********\n");
       this.AddChannelBaseColorCalculation(ps, this._hasDiffuseTexture, "Diffuse");
-      $S01().CallVirtual("Append", null, ps, "    float diffFactor = dot(Light, Normal);\n");
-      $S01().CallVirtual("Append", null, ps, "    result += DiffuseBaseColor * LightColor * max(diffFactor, 0.0);\n");
+      $S01().CallVirtual("Append", null, ps, "    float diffFactor = dot(LDir, Normal);\n");
+      $S01().CallVirtual("Append", null, ps, "    result += DiffuseBaseColor * LColor * LIntensity * max(diffFactor, 0.0);\n");
     }
   };
 
@@ -1025,14 +1117,23 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
   };
 
   function ShaderCodeBuilder_AddLightVec (ps) {
-    $S01().CallVirtual("Append", null, ps, "    vec3 Light = vec3(0, 0, -1.0);\n");
-    $S01().CallVirtual("Append", null, ps, "    vec3 LightColor = vec3(1.0, 1.0, 1.0);\n");
+    $S01().CallVirtual("Append", null, ps, "    vec3 LDir = ");
+    $S01().CallVirtual("Append", null, ps, $thisType.get_LightDirectionName());
+    $S01().CallVirtual("Append", null, ps, ";\n");
+    $S01().CallVirtual("Append", null, ps, "    vec3 LColor = ");
+    $S01().CallVirtual("Append", null, ps, $thisType.get_LightColorName());
+    $S01().CallVirtual("Append", null, ps, ";\n");
+    $S01().CallVirtual("Append", null, ps, "    float LIntensity = ");
+    $S01().CallVirtual("Append", null, ps, $thisType.get_LightIntensityName());
+    $S01().CallVirtual("Append", null, ps, ";\n");
   };
 
   function ShaderCodeBuilder_AddNormalVec (ps) {
     if (this._hasBump) {
       $S01().CallVirtual("Append", null, ps, "\n\n    //*********** BUMP *********\n");
-      $S01().CallVirtual("Append", null, ps, "    vec3 Normal = vNormal + BumpIntensity * texture2D(BumpTexture, vUV);\n\n");
+      $S01().CallVirtual("Append", null, ps, "    vec3 bv =  normalize(texture2D(BumpTexture, vUV).xyz * 2.0 - 1.0);\n");
+      $S01().CallVirtual("Append", null, ps, "    bv = vec3(bv.x, bv.y, -bv.z);\n");
+      $S01().CallVirtual("Append", null, ps, "    vec3 Normal =  normalize(bv);\n\n");
     } else {
       $S01().CallVirtual("Append", null, ps, "    vec3 Normal = normalize(vNormal);\n");
     }
@@ -1042,27 +1143,17 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
     if (this._hasSpecular) {
       $S01().CallVirtual("Append", null, ps, "\n\n    //*********** SPECULAR *********\n");
       if (!this._hasDiffuse) {
-        $S01().CallVirtual("Append", null, ps, "    float diffFactor = dot(Light, Normal);\n");
+        $S01().CallVirtual("Append", null, ps, "    float diffFactor = dot(LDir, Normal);\n");
       }
       $S01().CallVirtual("Append", null, ps, "      if (diffFactor > 0.0) {\n");
       this.AddChannelBaseColorCalculation(ps, this._hasSpecularTexture, "Specular");
-      $S01().CallVirtual("Append", null, ps, "      vec3 h = normalize(Light + Camera);\n");
-      $S01().CallVirtual("Append", null, ps, "      result += SpecularBaseColor * LightColor * SpecularIntensity * pow(max(0.0, dot(h, Normal)), SpecularShininess);\n");
+      $S01().CallVirtual("Append", null, ps, "      vec3 h = normalize(LDir + Camera);\n");
+      $S01().CallVirtual("Append", null, ps, "      result += SpecularBaseColor * LColor * LIntensity * SpecularIntensity * pow(max(0.0, dot(h, Normal)), SpecularShininess);\n");
       $S01().CallVirtual("Append", null, ps, "    }\n");
     }
   };
 
-  function ShaderCodeBuilder_AnalyzeMesh (mesh) {
-    this._hasVertices = ((mesh.Vertices !== null) && 
-      (mesh.Vertices.length > 0));
-    this._hasNormals = ((mesh.Normals !== null) && 
-      (mesh.Normals.length > 0));
-    this._hasUVs = ((mesh.UVs !== null) && 
-      (mesh.UVs.length > 0));
-    this._hasColors = false;
-  };
-
-  function ShaderCodeBuilder_AnalyzMaterial (mc) {
+  function ShaderCodeBuilder_AnalyzeMaterial (mc) {
     this._hasDiffuse = mc.get_HasDiffuse();
     if (this._hasDiffuse) {
       this._hasDiffuseTexture = (mc.Diffuse.Texture !== null);
@@ -1076,6 +1167,16 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
       this._hasEmissiveTexture = (mc.Emissive.Texture !== null);
     }
     this._hasBump = mc.get_HasBump();
+  };
+
+  function ShaderCodeBuilder_AnalyzeMesh (mesh) {
+    this._hasVertices = ((mesh.Vertices !== null) && 
+      (mesh.Vertices.length > 0));
+    this._hasNormals = ((mesh.Normals !== null) && 
+      (mesh.Normals.length > 0));
+    this._hasUVs = ((mesh.UVs !== null) && 
+      (mesh.UVs.length > 0));
+    this._hasColors = false;
   };
 
   function ShaderCodeBuilder_BumpInputDeclaration (ps) {
@@ -1133,6 +1234,18 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
     return (this._hasEmissiveTexture ? "EmissiveTexture" : null);
   };
 
+  function ShaderCodeBuilder_get_LightColorName () {
+    return "LightColor";
+  };
+
+  function ShaderCodeBuilder_get_LightDirectionName () {
+    return "LightDirection";
+  };
+
+  function ShaderCodeBuilder_get_LightIntensityName () {
+    return "LightIntensity";
+  };
+
   function ShaderCodeBuilder_get_PS () {
     return this._ps;
   };
@@ -1162,23 +1275,17 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
   };
 
   function ShaderCodeBuilder_MatrixDeclarations (vs) {
-    if (this._hasNormals) {
-      $S01().CallVirtual("Append", null, vs, "  uniform mat4 FUSEE_ITMV;\n");
-    }
     if (this._hasSpecular) {
-      $S01().CallVirtual("Append", null, vs, "  uniform mat4 FUSEE_MV;\n");
-      $S01().CallVirtual("Append", null, vs, "  uniform mat4 FUSEE_P;\n");
-    } else {
-      $S01().CallVirtual("Append", null, vs, "  uniform mat4 FUSEE_MV;\n");
-      $S01().CallVirtual("Append", null, vs, "  uniform mat4 FUSEE_MVP;\n");
+      $S01().CallVirtual("Append", null, vs, "  uniform mat4 FUSEE_IMV;\n");
     }
+    $S01().CallVirtual("Append", null, vs, "  uniform mat4 FUSEE_MVP;\n");
   };
 
   function ShaderCodeBuilder_MeshInputDeclarations (vs) {
     if (this._hasVertices) {
       $S01().CallVirtual("Append", null, vs, "  attribute vec3 fuVertex;\n");
       if (this._hasSpecular) {
-        $S01().CallVirtual("Append", null, vs, "  varying vec3 vViewPos;\n");
+        $S01().CallVirtual("Append", null, vs, "  varying vec3 vViewDir;\n");
       }
     }
     if (this._hasNormals) {
@@ -1200,8 +1307,19 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
     this.SpecularInputDeclaration(ps);
     this.ChannelInputDeclaration(ps, this._hasEmissive, this._hasEmissiveTexture, "Emissive");
     this.BumpInputDeclaration(ps);
+    if (!(!this._hasSpecular && !this._hasDiffuse)) {
+      $S01().CallVirtual("Append", null, ps, "  uniform vec3 ");
+      $S01().CallVirtual("Append", null, ps, $thisType.get_LightColorName());
+      $S01().CallVirtual("Append", null, ps, ";\n");
+      $S01().CallVirtual("Append", null, ps, "  uniform float ");
+      $S01().CallVirtual("Append", null, ps, $thisType.get_LightIntensityName());
+      $S01().CallVirtual("Append", null, ps, ";\n");
+      $S01().CallVirtual("Append", null, ps, "  uniform vec3 ");
+      $S01().CallVirtual("Append", null, ps, $thisType.get_LightDirectionName());
+      $S01().CallVirtual("Append", null, ps, ";\n");
+    }
     if (this._hasSpecular) {
-      $S01().CallVirtual("Append", null, ps, "  varying vec3 vViewPos;\n");
+      $S01().CallVirtual("Append", null, ps, "  varying vec3 vViewDir;\n");
     }
     if (this._hasNormals) {
       $S01().CallVirtual("Append", null, ps, "  varying vec3 vNormal;\n");
@@ -1236,18 +1354,16 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
     $S01().CallVirtual("Append", null, vs, "\n\n  void main()\n  {\n");
     if (this._hasNormals) {
       if (this._normalizeNormals) {
-        $S01().CallVirtual("Append", null, vs, "    vNormal = normalize(mat3(FUSEE_MV[0].xyz, FUSEE_MV[1].xyz, FUSEE_MV[2].xyz) * fuNormal);\n");
+        $S01().CallVirtual("Append", null, vs, "    vNormal = normalize(fuNormal);\n");
       } else {
-        $S01().CallVirtual("Append", null, vs, "    vNormal = mat3(FUSEE_MV[0].xyz, FUSEE_MV[1].xyz, FUSEE_MV[2].xyz) * fuNormal;\n");
+        $S01().CallVirtual("Append", null, vs, "    vNormal = fuNormal;\n");
       }
     }
     if (this._hasSpecular) {
-      $S01().CallVirtual("Append", null, vs, "    vec4 vViewPosTemp = FUSEE_MV * vec4(fuVertex, 1);\n");
-      $S01().CallVirtual("Append", null, vs, "    vViewPos = vec3(vViewPosTemp)/vViewPosTemp.w;\n");
-      $S01().CallVirtual("Append", null, vs, "    gl_Position = FUSEE_P * vViewPosTemp;\n");
-    } else {
-      $S01().CallVirtual("Append", null, vs, "    gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);\n");
+      $S01().CallVirtual("Append", null, vs, "    vViewDir = FUSEE_IMV[3].xyz;\n");
+      $S01().CallVirtual("Append", null, vs, "    vViewDir = normalize(vViewDir - fuVertex);\n");
     }
+    $S01().CallVirtual("Append", null, vs, "    gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);\n");
     if (this._hasUVs) {
       $S01().CallVirtual("Append", null, vs, "    vUV = fuUV;\n");
     }
@@ -1306,14 +1422,14 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
       ShaderCodeBuilder_AddSpecularChannel
     );
 
+    $.Method({Static:false, Public:false}, "AnalyzeMaterial", 
+      new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Serialization.MaterialContainer")], []), 
+      ShaderCodeBuilder_AnalyzeMaterial
+    );
+
     $.Method({Static:false, Public:false}, "AnalyzeMesh", 
       new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Serialization.MeshContainer")], []), 
       ShaderCodeBuilder_AnalyzeMesh
-    );
-
-    $.Method({Static:false, Public:false}, "AnalyzMaterial", 
-      new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Serialization.MaterialContainer")], []), 
-      ShaderCodeBuilder_AnalyzMaterial
     );
 
     $.Method({Static:false, Public:false}, "BumpInputDeclaration", 
@@ -1367,6 +1483,21 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
     $.Method({Static:false, Public:true }, "get_EmissiveTextureName", 
       new JSIL.MethodSignature($.String, [], []), 
       ShaderCodeBuilder_get_EmissiveTextureName
+    );
+
+    $.Method({Static:true , Public:true }, "get_LightColorName", 
+      new JSIL.MethodSignature($.String, [], []), 
+      ShaderCodeBuilder_get_LightColorName
+    );
+
+    $.Method({Static:true , Public:true }, "get_LightDirectionName", 
+      new JSIL.MethodSignature($.String, [], []), 
+      ShaderCodeBuilder_get_LightDirectionName
+    );
+
+    $.Method({Static:true , Public:true }, "get_LightIntensityName", 
+      new JSIL.MethodSignature($.String, [], []), 
+      ShaderCodeBuilder_get_LightIntensityName
     );
 
     $.Method({Static:false, Public:true }, "get_PS", 
@@ -1477,6 +1608,12 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
     $.Property({Static:false, Public:true }, "SpecularIntensityName", $.String);
 
     $.Property({Static:false, Public:true }, "BumpIntensityName", $.String);
+
+    $.Property({Static:true , Public:true }, "LightDirectionName", $.String);
+
+    $.Property({Static:true , Public:true }, "LightColorName", $.String);
+
+    $.Property({Static:true , Public:true }, "LightIntensityName", $.String);
 
     return function (newThisType) { $thisType = newThisType; }; 
   });

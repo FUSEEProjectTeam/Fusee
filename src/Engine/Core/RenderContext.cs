@@ -25,6 +25,7 @@ namespace Fusee.Engine
         private ShaderProgram _currentShader;
         private MatrixParamNames _currentShaderParams;
         private readonly Light[] _lightParams;
+        // Todo: Remove multiple Lights per shader !!!
         private readonly LightParamNames[] _lightShaderParams;
         private bool _updatedShaderParams;
 
@@ -388,7 +389,7 @@ namespace Fusee.Engine
             {
                 if (!_invModelViewOk)
                 {
-                    _invModelView = float4x4.InvertAffine(ModelView);
+                    _invModelView = float4x4.Invert(ModelView);
                     _invModelViewOk = true;
                 }
                 return _invModelView;
@@ -647,7 +648,7 @@ namespace Fusee.Engine
             {
                 if (!_invTransModelViewOk)
                 {
-                    _invTransModelView = float4x4.InvertAffine(TransModelView);
+                    _invTransModelView = float4x4.Invert(TransModelView);
                     _invTransModelViewOk = true;
                 }
                 return _invTransModelView;
@@ -725,6 +726,7 @@ namespace Fusee.Engine
             ModelView = float4x4.Identity;
             Projection = float4x4.Identity;
 
+            // Todo: Remove multiple Lights per shader !!!
             _lightParams = new Light[8];
             _lightShaderParams = new LightParamNames[8];
 
@@ -798,6 +800,8 @@ namespace Fusee.Engine
             if (_currentShaderParams.FUSEE_ITMVP != null)
                 SetShaderParam(_currentShaderParams.FUSEE_ITMVP, InvTransModelViewProjection);
 
+
+            // Todo: Remove multiple Lights per shader !!!
             for (var i = 0; i < 8; i++)
             {
                 if (_lightShaderParams[i].FUSEE_L_AMBIENT != null)
@@ -853,6 +857,7 @@ namespace Fusee.Engine
             _currentShaderParams.FUSEE_ITP = _currentShader.GetShaderParam("FUSEE_ITP");
             _currentShaderParams.FUSEE_ITMVP = _currentShader.GetShaderParam("FUSEE_ITMVP");
 
+            // Todo: Remove multiple Lights per shader !!!
             for (int i = 0; i < 8; i++)
             {
                 _lightShaderParams[i].FUSEE_L_AMBIENT = _currentShader.GetShaderParam("FUSEE_L" + i + "_AMBIENT");
@@ -1416,6 +1421,7 @@ namespace Fusee.Engine
         #endregion
 
         #region Render releated Members
+        bool NeedTangents { get { return true; } }
 
         /// <summary>
         /// Apply a single render state to the render context. All subsequent rendering will be
@@ -1468,17 +1474,32 @@ namespace Fusee.Engine
             if (m._meshImp == null)
                 m._meshImp = _rci.CreateMeshImp();
 
-            if (m.Vertices != null && m.Vertices.Length != 0 && !m.VerticesSet)
-                _rci.SetVertices(m._meshImp, m.Vertices);
-
             if (m.Colors != null && m.Colors.Length != 0 && !m.ColorsSet)
                 _rci.SetColors(m._meshImp, m.Colors);
 
-            if (m.UVs != null && m.UVs.Length != 0 && !m.UVsSet)
-                _rci.SetUVs(m._meshImp, m.UVs);
+            /*
+             * Not using tangent space normals right now
+             * 
+             * if (NeedTangents
+                && (m.Vertices != null && m.UVs != null && m.Normals != null)
+                && (m.Vertices.Length != 0 && m.UVs.Length != 0 && m.Normals.Length != 0)
+                && !(m.VerticesSet && m.UVsSet && m.NormalsSet))
+            {
+                // This will set vertices, uvs and normals and also calculate tangents and bitangents
+                _rci.SetVertexData(m._meshImp, m.Vertices, m.UVs, m.Normals);
+            }
+            else*/
+            {
+                if (m.Vertices != null && m.Vertices.Length != 0 && !m.VerticesSet)
+                    _rci.SetVertices(m._meshImp, m.Vertices);
 
-            if (m.Normals != null && m.Normals.Length != 0 && !m.NormalsSet)
-                _rci.SetNormals(m._meshImp, m.Normals);
+                if (m.UVs != null && m.UVs.Length != 0 && !m.UVsSet)
+                    _rci.SetUVs(m._meshImp, m.UVs);
+
+                if (m.Normals != null && m.Normals.Length != 0 && !m.NormalsSet)
+                    _rci.SetNormals(m._meshImp, m.Normals);
+            }
+
 
             if (m.Triangles != null && m.Triangles.Length != 0 && !m.TrianglesSet)
                 _rci.SetTriangles(m._meshImp, m.Triangles);

@@ -3407,19 +3407,27 @@ JSIL.MakeEnum(
     $.Field({Static:true , Public:true , ReadOnly:true }, "ColorAttribName", $.String, "fuColor"); 
     $.Field({Static:true , Public:true , ReadOnly:true }, "NormalAttribName", $.String, "fuNormal"); 
     $.Field({Static:true , Public:true , ReadOnly:true }, "UvAttribName", $.String, "fuUV"); 
+    $.Field({Static:true , Public:true , ReadOnly:true }, "TangentAttribName", $.String, "fuTangent"); 
+    $.Field({Static:true , Public:true , ReadOnly:true }, "BitangentAttribName", $.String, "fuBitangent"); 
     $.Field({Static:true , Public:true , ReadOnly:true }, "VertexAttribLocation", $.Int32, 0); 
     $.Field({Static:true , Public:true , ReadOnly:true }, "ColorAttribLocation", $.Int32, 1); 
     $.Field({Static:true , Public:true , ReadOnly:true }, "NormalAttribLocation", $.Int32, 2); 
     $.Field({Static:true , Public:true , ReadOnly:true }, "UvAttribLocation", $.Int32, 3); 
+    $.Field({Static:true , Public:true , ReadOnly:true }, "TangentAttribLocation", $.Int32, 4); 
+    $.Field({Static:true , Public:true , ReadOnly:true }, "BitangentAttribLocation", $.Int32, 5); 
     function Helper__cctor () {
       $thisType.VertexAttribName = "fuVertex";
       $thisType.ColorAttribName = "fuColor";
       $thisType.NormalAttribName = "fuNormal";
       $thisType.UvAttribName = "fuUV";
+      $thisType.TangentAttribName = "fuTangent";
+      $thisType.BitangentAttribName = "fuBitangent";
       $thisType.VertexAttribLocation = 0;
       $thisType.ColorAttribLocation = 1;
       $thisType.NormalAttribLocation = 2;
       $thisType.UvAttribLocation = 3;
+      $thisType.TangentAttribLocation = 4;
+      $thisType.BitangentAttribLocation = 5;
     };
 
 

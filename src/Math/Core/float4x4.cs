@@ -1574,7 +1574,8 @@ namespace Fusee.Math
         public static float4x4 Invert(float4x4 mat)
         {
             if (mat == Identity || mat == Zero) return mat;
-            if (mat.IsAffine) return InvertAffine(mat);
+            // InvertAffine is broken (probably since column order notation
+            // if (mat.IsAffine) return InvertAffine(mat);
 
             mat.Transpose();
 
@@ -1677,7 +1678,10 @@ namespace Fusee.Math
             //                 new float4(mat.M13, mat.M23, mat.M33, 0),
             //                 new float4(val1, val2, val3, 1));
 
-            // Column order notation ???
+
+            throw new ApplicationException("InvertAffine is broken (probably since column order notation)");
+            // TODO: fix this!
+            //  Column order notation ???
             var val1 = -(mat.M11 * mat.M14 + mat.M21 * mat.M24 + mat.M31 * mat.M34);
             var val2 = -(mat.M12 * mat.M14 + mat.M22 * mat.M24 + mat.M32 * mat.M34);
             var val3 = -(mat.M13 * mat.M14 + mat.M23 * mat.M24 + mat.M33 * mat.M34);

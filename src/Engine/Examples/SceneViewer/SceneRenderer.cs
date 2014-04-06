@@ -6,6 +6,10 @@ using Fusee.Serialization;
 
 namespace Examples.SceneViewer
 {
+    class LightInfo // Todo: TBD...
+    {
+    }
+
     public class SceneRenderer
     {
         private Dictionary<MeshContainer, Mesh> _meshMap;
@@ -18,6 +22,8 @@ namespace Examples.SceneViewer
         private ShaderProgram _textureShader;
         private IShaderParam _textureParam;
         private float4x4 _AABBXForm;
+
+        private List<LightInfo> _lights;
 
         private RenderStateSet _stateSet = new RenderStateSet()
         {
@@ -39,6 +45,8 @@ namespace Examples.SceneViewer
 
         public SceneRenderer(SceneContainer sc, string scenePathDirectory)
         {
+            // Todo: scan for lights...
+            _lights = new List<LightInfo>();
             _sc = sc;
             _scenePathDirectory = scenePathDirectory;
         }
@@ -151,6 +159,7 @@ namespace Examples.SceneViewer
                 CurMat = mat;
             }
             _rc.ModelView = _rc.ModelView * soc.Transform;
+
             if (soc.Mesh != null)
             {
                 Mesh rm;
@@ -159,7 +168,15 @@ namespace Examples.SceneViewer
                     rm = MakeMesh(soc);
                     _meshMap.Add(soc.Mesh, rm);
                 }
-                CurMat.RenderMesh(rm);
+
+                if (null != CurMat.GetEffectParam(ShaderCodeBuilder.LightDirectionName))
+                {
+                    RenderWithLights(rm, CurMat);
+                }
+                else
+                {
+                    CurMat.RenderMesh(rm);
+                }
             }
 
             if (soc.Children != null)
@@ -172,6 +189,31 @@ namespace Examples.SceneViewer
 
             _rc.ModelView = origMV;
             CurMat = origMat;
+        }
+
+        private void RenderWithLights(Mesh rm, ShaderEffect CurMat)
+        {
+            if (_lights.Count > 0)
+            {
+                foreach (LightInfo li in _lights)
+                {
+                    // SetupLight(li);
+                    CurMat.RenderMesh(rm);
+                }
+            }
+            else
+            {
+                // No light present - switch on standard light
+                CurMat.SetEffectParam(ShaderCodeBuilder.LightColorName, new float3(1, 1, 1));
+                // float4 lightDirHom = new float4(0, 0, -1, 0);
+                float4 lightDirHom = _rc.InvModelView * new float4(0, 0, -1, 0);
+                // float4 lightDirHom = _rc.TransModelView * new float4(0, 0, -1, 0);
+                float3 lightDir = lightDirHom.xyz;
+                lightDir.Normalize();
+                CurMat.SetEffectParam(ShaderCodeBuilder.LightDirectionName, lightDir);
+                CurMat.SetEffectParam(ShaderCodeBuilder.LightIntensityName, (float)1);
+                CurMat.RenderMesh(rm);
+            }
         }
 
         private ShaderEffect LookupMaterial(MaterialContainer mc)
@@ -323,6 +365,28 @@ namespace Examples.SceneViewer
                     Value = LoadTexture(mc.Bump.Texture)
                 });
             }
+
+            // Any light calculation needed at all?
+            if (mc.HasDiffuse || mc.HasSpecular)
+            {
+                // Light calculation parameters
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = ShaderCodeBuilder.LightColorName,
+                    Value = new float3(1, 1, 1)
+                });
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = ShaderCodeBuilder.LightIntensityName,
+                    Value = (float) 1
+                });
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = ShaderCodeBuilder.LightDirectionName,
+                    Value = new float3(0, 0, 1)
+                });
+            }
+
             return effectParameters;
         }
     }

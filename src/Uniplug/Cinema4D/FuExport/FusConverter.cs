@@ -464,21 +464,26 @@ namespace FuExport
                 if (!_textureFiles.Contains(texture))
                 {
                     diffuseChannel.InitTexture(new InitRenderStruct(_polyDoc));
-                    BaseBitmap bitmap = diffuseChannel.GetBitmap();
-                    if (bitmap != null)
+                    using (BaseBitmap bitmap = diffuseChannel.GetBitmap())
                     {
-                        using (BaseContainer compressionContainer = new BaseContainer(C4dApi.JPGSAVER_QUALITY))
+                        if (bitmap != null)
                         {
-                            compressionContainer.SetFloat(C4dApi.JPGSAVER_QUALITY, 70.0);
-                            string textureFileAbs = Path.Combine(_sceneRootDir, texture);
-                            bitmap.Save(new Filename(textureFileAbs), C4dApi.FILTER_JPG, compressionContainer,
-                                SAVEBIT.SAVEBIT_0);
-                            _textureFiles.Add(texture);
+                            using (BaseContainer compressionContainer = new BaseContainer(C4dApi.JPGSAVER_QUALITY))
+                            {
+                                ColorProfile colPro = bitmap.GetColorProfile();
+                                bool bRet = bitmap.SetColorProfile(null);
+                                colPro = bitmap.GetColorProfile();
+                                compressionContainer.SetFloat(C4dApi.JPGSAVER_QUALITY, 70.0);
+                                string textureFileAbs = Path.Combine(_sceneRootDir, texture);
+                                bitmap.Save(new Filename(textureFileAbs), C4dApi.FILTER_JPG, compressionContainer,
+                                    SAVEBIT.SAVEBIT_0);
+                                _textureFiles.Add(texture);
+                            }
                         }
-                    }
-                    else
-                    {
-                        resultName = null;
+                        else
+                        {
+                            resultName = null;
+                        }
                     }
                     diffuseChannel.FreeTexture();
                 }
