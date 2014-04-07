@@ -266,7 +266,7 @@ namespace Examples.PhysicsTest
 
             if (Input.Instance.IsKeyDown(KeyCodes.Up))
                 rb2.ApplyCentralImpulse = new float3(0, 10, 0);
-               // _physic.World.GetRigidBody(_physic.World.NumberRigidBodies() - 1).ApplyCentralImpulse = new float3(0, 10, 0);
+               
 
             if (Input.Instance.IsKeyDown(KeyCodes.Down))
                 _physic.World.GetRigidBody(_physic.World.NumberRigidBodies()-1).ApplyCentralImpulse = new float3(0,-10,0);
@@ -277,7 +277,7 @@ namespace Examples.PhysicsTest
 
     
 
-            Debug.WriteLine(Time.Instance.FramePerSecond);
+           // Debug.WriteLine(Time.Instance.FramePerSecond);
             for (int i = 0; i < _physic.World.NumberRigidBodies(); i++)
             {
                 var rb = _physic.World.GetRigidBody(i);

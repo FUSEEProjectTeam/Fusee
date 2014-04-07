@@ -36,7 +36,7 @@ namespace Examples.PhysicsTest
 
             _info1 = new GUIText("Über die Tasten des Nummernblocks  " , _fontMedium, 30, 170, _color2);
             _info2 = new GUIText("(1-4) kann zwischen 4 verschiedenen ", _fontMedium, 30, 190, _color2);
-            _info3 = new GUIText("Scenen gewechselt werden", _fontMedium, 30, 210, _color2);
+            _info3 = new GUIText("Szenen gewechselt werden", _fontMedium, 30, 210, _color2);
             _fps = new GUIText("FPS", _fontMedium, 30, 55, _color2);
             _numberRb = new GUIText("Rigidbodies: ", _fontMedium, 30, 85, _color2);
             _shapeType = new GUIText("Collision Shapes: ", _fontMedium, 30, 115, _color2);

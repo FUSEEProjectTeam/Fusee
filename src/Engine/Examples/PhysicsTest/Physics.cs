@@ -161,11 +161,11 @@ namespace Examples.PhysicsTest
 
         public void FallingTower1()
         {
-            for (int k = 0; k < 5; k++)
+            for (int k = 0; k < 1; k++)
             {
-                for (int h = -2; h < 5; h++)
+                for (int h = -2; h < 1; h++)
                 {
-                    for (int j = -2; j < 5; j++)
+                    for (int j = -2; j < 1; j++)
                     {
                         var pos = new float3((4 * h) , 20 + (k * 4), 4 * j);
 
@@ -203,11 +203,11 @@ namespace Examples.PhysicsTest
         public void FallingPlatonics()
         {
             
-            for (int k = 0; k < 5; k++)
+            for (int k = 0; k < 3; k++)
             {
-                for (int h = -2; h < 3; h++)
+                for (int h = -2; h < 2; h++)
                 {
-                    for (int j = -2; j <3 ; j++)
+                    for (int j = -2; j <2 ; j++)
                     {
                         var pos = new float3((4 * h) + 30, 50 + (k * 4), 4 * j);
 
@@ -225,11 +225,11 @@ namespace Examples.PhysicsTest
 
         public void FallingTeaPots()
         {
-            for (int k = 0; k < 5; k++)
+            for (int k = 0; k < 4; k++)
             {
-                for (int h = -2; h < 4; h++)
+                for (int h = -2; h < 3; h++)
                 {
-                    for (int j = -2; j < 4; j++)
+                    for (int j = -2; j < 3; j++)
                     {
                         var pos = new float3((10*h), 20 + (k*10), 10*j);
                         var cube = _world.AddRigidBody(1, pos, float3.Zero, TeaPotHull);

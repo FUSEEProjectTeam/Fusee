@@ -49,15 +49,15 @@ namespace Fusee.Engine
             
             BtWorld.SolverInfo.NumIterations = 5;
 
-            //BtWorld.PerformDiscreteCollisionDetection();
+            BtWorld.PerformDiscreteCollisionDetection();
             
             //GImpactCollisionAlgorithm.RegisterAlgorithm(BtDispatcher);
            // BtWorld.SetInternalTickCallback(MyTickCallBack);
             //BtWorld.SetInternalTickCallback(TickTack);
 
-            //ManifoldPoint.ContactAdded += OnContactAdded;
-           // PersistentManifold.ContactDestroyed += OnContactDestroyed;
-            //PersistentManifold.ContactProcessed += OnContactProcessed;
+            ManifoldPoint.ContactAdded += OnContactAdded;
+            PersistentManifold.ContactDestroyed += OnContactDestroyed;
+            PersistentManifold.ContactProcessed += OnContactProcessed;
         }
 
 
@@ -88,7 +88,7 @@ namespace Fusee.Engine
         private void OnContactAdded(ManifoldPoint cp, CollisionObjectWrapper colObj0Wrap, int partId0, int index0,
             CollisionObjectWrapper colObj1Wrap, int partId1, int index1)
         {
-            Debug.WriteLine("OnContactAdded");
+            //Debug.WriteLine("OnContactAdded");
             int numManifolds = BtWorld.Dispatcher.NumManifolds;
 
             for (int i = 0; i < numManifolds; i++)
@@ -101,21 +101,29 @@ namespace Fusee.Engine
                     
                     CollisionObject obA = (CollisionObject) contactManifold.Body0;
                     CollisionObject obB = (CollisionObject) contactManifold.Body1;
-                    obA.CollisionFlags = CollisionFlags.KinematicObject;
-                    obB.CollisionFlags = CollisionFlags.NoContactResponse;
+                    RigidBody btRigidBodyA = (RigidBody) obA;
+                    RigidBody btRigidBodyB = (RigidBody)obB;
+                    RigidBodyImp rigidBodyA = new RigidBodyImp();
+                    RigidBodyImp rigidBodyB = new RigidBodyImp();
+                    rigidBodyA._rbi = btRigidBodyA;
+                    rigidBodyB._rbi = btRigidBodyB;
+                    rigidBodyA.OnCollision(rigidBodyB);
+
+                    //obA.CollisionFlags = CollisionFlags.KinematicObject;
+                    //obB.CollisionFlags = CollisionFlags.NoContactResponse;
                 }
             }
         }
 
         void OnContactProcessed(ManifoldPoint cp, CollisionObject body0, CollisionObject body1)
         {
-            Debug.WriteLine("OnContactProcessed");
+           // Debug.WriteLine("OnContactProcessed");
             cp.UserPersistentData = 1;
         }
 
         void OnContactDestroyed(object userPersistantData)
         {
-            /*int numManifolds = BtWorld.Dispatcher.NumManifolds;
+            int numManifolds = BtWorld.Dispatcher.NumManifolds;
 
             for (int i = 0; i < numManifolds; i++)
             {
@@ -130,8 +138,8 @@ namespace Fusee.Engine
                     obA.CollisionFlags = CollisionFlags.CustomMaterialCallback;
                     obB.CollisionFlags = CollisionFlags.CustomMaterialCallback;
                 }
-            }*/
-            Debug.WriteLine("OnContactDestroyed");
+            }
+           // Debug.WriteLine("OnContactDestroyed");
         }
 
         private void MyTickCallBack(ManifoldPoint cp, CollisionObjectWrapper colobj0wrap, int partid0, int index0, CollisionObjectWrapper colobj1wrap, int partid1, int index1)

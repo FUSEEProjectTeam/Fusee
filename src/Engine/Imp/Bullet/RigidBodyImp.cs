@@ -456,10 +456,12 @@ namespace Fusee.Engine
         /// <param name="other">the other Rigidbody that is collided </param>
         public virtual void OnCollision(IRigidBodyImp other)
         {
-            //TODO: Event to the RigidBody.cs class 
-            var otherRb = (RigidBodyImp)other;
-            otherRb.ApplyTorqueImpulse = new float3(10,10,10);
             
+            //Debug.WriteLine("RigidBodyImp.OnCollision");
+            //TODO: Event to the RigidBody.cs class 
+            //var otherRb = (RigidBodyImp)other;
+            //otherRb.ApplyTorqueImpulse = new float3(10,10,10);
+
         }
 
 
