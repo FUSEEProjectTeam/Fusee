@@ -52,7 +52,7 @@ namespace Examples.SolarSystem
             SceneManager.Manager.AddSceneEntity(worldOrigin);
 
             var cameraholder = new SceneEntity("CameraOwner", new CameraScript(), worldOrigin);
-            cameraholder.transform.GlobalPosition = new float3(0, 0, 10);
+            cameraholder.transform.GlobalPosition = new float3(0, 0, -10);
 
             _sceneCamera = new Camera(cameraholder);
             _sceneCamera.Resize(Width, Height);

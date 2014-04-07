@@ -195,7 +195,7 @@ namespace Fusee.Engine
                 _transModelOk = false;
                 _transModelViewOk = false;
                 _transModelViewProjectionOk = false;
-                _modelView = _model * _view;
+                _modelView = _view*_model;
 
                 UpdateCurrentShader();
                 _rci.ModelView = _modelView;

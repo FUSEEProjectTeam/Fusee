@@ -119,9 +119,9 @@ namespace Fusee.SceneManagement
             {
                 if (transform.GlobalMatrixDirty)
                 {
-                    transform.Matrix = float4x4.Invert(_mtxModelViewStack.Peek())*transform.GlobalMatrix;
-                    transform.SetGlobalMat(transform.Matrix * _mtxModelViewStack.Peek());
-                    _mtxModelViewStack.Push(transform.Matrix * _mtxModelViewStack.Pop());
+                    transform.Matrix = transform.GlobalMatrix*float4x4.Invert(_mtxModelViewStack.Peek());
+                    transform.SetGlobalMat(_mtxModelViewStack.Peek()*transform.Matrix);
+                    _mtxModelViewStack.Push(_mtxModelViewStack.Pop()*transform.Matrix);
                     //Debug.WriteLine("Matrix: " + transform.GlobalMatrix + " Point: " + transform.GlobalPosition);
        
                         _hasTransform.Pop();
@@ -137,8 +137,8 @@ namespace Fusee.SceneManagement
                     return;
                 }
 
-                transform.SetGlobalMat(transform.Matrix*_mtxModelViewStack.Peek());
-                _mtxModelViewStack.Push(transform.Matrix * _mtxModelViewStack.Pop());
+                transform.SetGlobalMat(_mtxModelViewStack.Peek()*transform.Matrix);
+                _mtxModelViewStack.Push(_mtxModelViewStack.Pop()*transform.Matrix);
                 //Debug.WriteLine("Matrix: " + transform.GlobalMatrix + " Point: " + transform.GlobalPosition);
            
                     _hasTransform.Pop();

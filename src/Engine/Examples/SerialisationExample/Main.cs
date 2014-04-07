@@ -17,7 +17,7 @@ namespace Examples.SerialisationExample
         private IShaderParam _colorParam;
 
         private readonly float4x4 _mtxCam = float4x4.LookAt(0, 200, 500, 0, 0, 0, 0, 1, 0);
-        private const float RotationSpeed = 1.0f;
+        private const float RotationSpeed = -1.0f;
         private float _smoothRotation = 0;
         private bool _isCurrentlyLoading = false;
 
@@ -56,7 +56,7 @@ namespace Examples.SerialisationExample
             if (_currentMesh != null)
             {
                 _smoothRotation += RotationSpeed * (float)Time.Instance.DeltaTime;
-                RC.ModelView = float4x4.CreateRotationY(_smoothRotation) * _mtxCam;
+                RC.ModelView = _mtxCam * float4x4.CreateRotationY(_smoothRotation);
                 RC.Render(_currentMesh);
             }
             Present();
