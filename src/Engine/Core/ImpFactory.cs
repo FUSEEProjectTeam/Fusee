@@ -31,6 +31,7 @@ namespace Fusee.Engine
         [JSIgnore] private static Type _physicsImplementor;
         [JSIgnore] private static Type _networkImplementor;
         [JSIgnore] private static Type _inputDriverImplementor;
+        [JSIgnore] private static Type _videoTextureImplementor;
 
         [JSIgnore]
         private static Type LoadImplementorAssemblyType(string file, string type)
@@ -107,6 +108,18 @@ namespace Fusee.Engine
                        (_inputDriverImplementor =
                            LoadImplementorAssemblyType("Fusee.Engine.Imp.SlimDX.dll",
                                "Fusee.Engine.InputDriverImplementor"));
+            }
+        }
+
+        [JSIgnore]
+        private static Type VideoTextureImplementor
+        {
+            get
+            {
+                return _videoTextureImplementor ??
+                       (_videoTextureImplementor =
+                           LoadImplementorAssemblyType("Fusee.Engine.Imp.AForge.dll",
+                               "Fusee.Engine.VideoTextureImplementor"));
             }
         }
 
@@ -212,6 +225,11 @@ namespace Fusee.Engine
         public static IInputDriverImp CreateIInputDriverImp()
         {
             return (IInputDriverImp) CreateIImp(InputDriverImplementor, "CreateInputDriverImp").Invoke(null, null);
+        }
+
+        public static IVideoTextureImp CreateIVideoTextureImp()
+        {
+            return (IVideoTextureImp)CreateIImp(VideoTextureImplementor, "CreateVideoTextureImp").Invoke(null, null);
         }
 
         #endregion

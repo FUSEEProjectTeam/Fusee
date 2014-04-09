@@ -46,6 +46,14 @@ namespace Fusee.Engine
 
         #region Image data related Members
 
+
+        public void UpdateTextureRegion(ITexture tex, ImageData img, int startX, int startY)
+        {
+            GL.BindTexture(TextureTarget.Texture2D, ((Texture)tex).handle);
+            GL.TexSubImage2D(TextureTarget.Texture2D, 0, startX, startY, img.Width, img.Height,
+                OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, img.PixelData);
+        }
+
         /// <summary>
         /// Creates a new Bitmap-Object from an image file,
         /// locks the bits in the memory and makes them available

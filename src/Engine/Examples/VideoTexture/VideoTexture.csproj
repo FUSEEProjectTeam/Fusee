@@ -107,14 +107,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="AForge.Video, Version=2.2.5.0, Culture=neutral, PublicKeyToken=cbfb6e07d173c401, processorArchitecture=MSIL" />
-    <Reference Include="AForge.Video.FFMPEG, Version=2.2.5.0, Culture=neutral, PublicKeyToken=03563089b1be05dd, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\..\..\Program Files (x86)\AForge.NET\Framework\Release\AForge.Video.FFMPEG.dll</HintPath>
+    <Reference Include="AForge.Video">
+      <HintPath>..\..\..\..\ExternalBinaries\AForge.Video.dll</HintPath>
     </Reference>
-    <Reference Include="AForge.Video.VFW, Version=2.2.4.0, Culture=neutral, PublicKeyToken=a82f807c999637c8, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\..\..\Program Files (x86)\AForge.NET\Framework\Release\AForge.Video.VFW.dll</HintPath>
+    <Reference Include="AForge.Video.FFMPEG">
+      <HintPath>..\..\..\..\ExternalBinaries\AForge.Video.FFMPEG.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />

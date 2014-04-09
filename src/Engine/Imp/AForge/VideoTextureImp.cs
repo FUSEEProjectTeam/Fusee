@@ -7,31 +7,32 @@ using System.Threading.Tasks;
 using AForge.Video;
 using AForge.Video.FFMPEG;
 
+
 namespace Fusee.Engine
 {
     public class VideoTexture : IVideoTextureImp
     {
         private VideoFileSource _source;
-        private ITexture _iTex;
-        private IRenderContextImp _renderContextImp;
+        private Bitmap _videoTexture;
 
-        public void CreateVideoTexture(String filename, ITexture iTex, IRenderContextImp renderContext)
+        public void CreateVideoTexture(String filename)
         {
             _source = new VideoFileSource(filename);
             _source.Start();
-            _source.NewFrame += SourceNewFrame;
-            _iTex = iTex;
-            _renderContextImp = renderContext;
+            _source.NewFrame += new AForge.Video.NewFrameEventHandler(SourceNewFrame);
         }
 
 
 
         private void SourceNewFrame(object sender, NewFrameEventArgs eventArgs)
         {
-            Bitmap bitmap = (Bitmap)eventArgs.Frame.Clone();
-            ImageData imgData = _renderContextImp.LoadVideoTexture(bitmap);
-            _iTex = _renderContextImp.CreateTexture(imgData);
+            _videoTexture = (Bitmap)eventArgs.Frame.Clone();
 
+        }
+
+        public Bitmap GetNewFrame()
+        {
+            return _videoTexture;
         }
     }
 }

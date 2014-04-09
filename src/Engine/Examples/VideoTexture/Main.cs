@@ -1,11 +1,11 @@
 using System;
 using System.Drawing;
-using AForge.Video;
+//using AForge.Video.FFMPEG;
+//using AForge.Video;
 using Fusee.Engine;
 using Fusee.SceneManagement;
 using Fusee.Math;
-using AForge.Video.FFMPEG;
-using AForge.Video.VFW;
+
 
 namespace Examples.VideoTexture
 {
@@ -28,7 +28,15 @@ namespace Examples.VideoTexture
         private IShaderParam _textureParam;
 
         private ITexture _iTex;
-        private VideoFileSource _videoSource;
+
+        //private VideoFileSource _video;
+
+        private Bitmap _img;
+
+   
+
+        private Fusee.Engine.VideoTexture _texture;
+
         // is called on startup
         public override void Init()
         {
@@ -40,12 +48,16 @@ namespace Examples.VideoTexture
 
             _textureParam = _spTexture.GetShaderParam("texture1");
 
+            //_video = new VideoFileSource(@"Assets/video.avi");
+
+            //_video.NewFrame += NewFrame;
+
+            _texture = new Fusee.Engine.VideoTexture();
+
+            _texture.CreateVideoTexture(@"Assets/video.avi");
+
             // create video source
-            _videoSource = new VideoFileSource(@"Assets/video.avi");
-            _videoSource.Start();
-            _videoSource.FrameIntervalFromSource = false;
-            _videoSource.FrameInterval = 100;
-            _videoSource.NewFrame += new NewFrameEventHandler(video_NewFrame);
+    
             // start the video source            
             var imgData = RC.LoadImage(@"Assets/world_map.jpg");
             _iTex = RC.CreateTexture(imgData);
@@ -53,15 +65,10 @@ namespace Examples.VideoTexture
 
         }
 
-        private void video_NewFrame(object sender, NewFrameEventArgs eventArgs)
-        {
-            // get new frame
-            Bitmap bitmap = (Bitmap)eventArgs.Frame.Clone();
-            ImageData imgData = RC.LoadVideoTexture(bitmap);
-            _iTex = RC.CreateTexture(imgData);
-            Random rand = new Random();
-            System.Diagnostics.Debug.WriteLine(bitmap.GetPixel(rand.Next(0, bitmap.Width), rand.Next(0, bitmap.Height)));
-        }
+        //private void NewFrame(object sender, NewFrameEventArgs args)
+        //{
+        //    _img = new Bitmap(args.Frame);
+        //}
 
 
         // is called once a frame
@@ -69,7 +76,12 @@ namespace Examples.VideoTexture
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
+            _img = _texture.GetNewFrame();
+            var imgData = RC.LoadVideoTexture(_img);
+            RC.UpdateTextureRegion(_iTex, imgData,0,0);
             
+
+
             // move per mouse
             if (Input.Instance.IsButton(MouseButtons.Left))
             {

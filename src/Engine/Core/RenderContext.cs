@@ -871,6 +871,11 @@ namespace Fusee.Engine
 
         #region Image Data related Members
 
+        public void UpdateTextureRegion(ITexture tex, ImageData img, int startX, int startY)
+        {
+            _rci.UpdateTextureRegion(tex,img, startX,startY);
+        }
+
         /// <summary>
         /// Creates a new Image with a specified size and color.
         /// </summary>

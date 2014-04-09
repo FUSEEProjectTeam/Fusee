@@ -24,6 +24,8 @@ namespace Fusee.Engine
         internal IRenderCanvasImp _canvasImp;
         private IInputDriverImp _inputDriverImp;
 
+        private IVideoTextureImp _videoTextureImp;
+
         #endregion
 
         #region Implementor Fields
@@ -93,6 +95,12 @@ namespace Fusee.Engine
             get { return _inputDriverImp; }
         }
 
+        public IVideoTextureImp VideoTextureImplementor
+        {
+            set { _videoTextureImp = value; }
+            get { return _videoTextureImp; }
+        }
+
         /// <summary>
         /// Returns the render context object.
         /// </summary>
@@ -135,6 +143,9 @@ namespace Fusee.Engine
 
             if (_networkImp == null)
                 _networkImp = ImpFactory.CreateINetworkImp();
+
+            if (_videoTextureImp == null)
+                _videoTextureImp = ImpFactory.CreateIVideoTextureImp();
         }
 
         /// <summary>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 
@@ -9,10 +10,24 @@ namespace Fusee.Engine
     {
         private IVideoTextureImp _videoTextureImp;
 
-
-        public void CreateVideoTexture(String filename, ITexture iTex, RenderContext renderContext)
+        internal IVideoTextureImp VideoTextureImp
         {
-            _videoTextureImp.CreateVideoTexture(filename, iTex, (IRenderContextImp)renderContext);
+            set
+            {
+                _videoTextureImp = value;
+            }
+        }
+
+
+
+        public void CreateVideoTexture(String filename)
+        {
+            _videoTextureImp.CreateVideoTexture(filename);
+        }
+
+        public Bitmap GetNewFrame()
+        {
+            return _videoTextureImp.GetNewFrame();
         }
     }
 }
