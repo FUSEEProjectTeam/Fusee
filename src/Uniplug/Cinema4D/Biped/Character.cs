@@ -5,6 +5,12 @@ namespace RigPlugin
 {
     class Character : ObjectDataM
     {
+        public Character()
+            : base(false)
+        {
+        }
+
+
         protected const int SKELETT_ARME = 10002;
         protected const int SKELETT_HAND = 10003;
         protected const int SKELETT_FINGER = 10004;

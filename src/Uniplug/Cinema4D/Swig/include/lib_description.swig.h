@@ -57,56 +57,59 @@ enum
 	DESC_NAME						= 1,					// name for parameter standalone use
 	DESC_SHORT_NAME			= 2,					// short name (only for attribute dialog)
 
-	DESC_VERSION				= 3,					// LONG: bitmask of the following values DESC_VERSION_xxx
+	DESC_VERSION				= 3,					// Int32: bitmask of the following values DESC_VERSION_xxx
 		DESC_VERSION_DEMO		= (1<<0),
 		DESC_VERSION_XL			= (1<<1),
 		DESC_VERSION_ALL		= DESC_VERSION_DEMO|DESC_VERSION_XL,
 	DESC_CHILDREN				= 4,					// BaseContainer
-	DESC_MIN						= 5,					// LONG/Real/Vector minimum INcluded
-	DESC_MAX						= 6,					// LONG/Real/Vector maximum INcluded
-	DESC_MINEX					= 7,					// Bool: TRUE == minimum EXcluded
-	DESC_MAXEX					= 8,					// Bool: TRUE == maximum EXcluded
-	DESC_STEP						= 9,					// LONG/Real/Vector
-	DESC_ANIMATE				= 10,					// LONG
+	DESC_MIN						= 5,					// Int32/Float/Vector minimum INcluded
+	DESC_MAX						= 6,					// Int32/Float/Vector maximum INcluded
+	DESC_MINEX					= 7,					// Bool: true == minimum EXcluded
+	DESC_MAXEX					= 8,					// Bool: true == maximum EXcluded
+	DESC_STEP						= 9,					// Int32/Float/Vector
+	DESC_ANIMATE				= 10,					// Int32
 		DESC_ANIMATE_OFF		= 0,
 		DESC_ANIMATE_ON			= 1,
 		DESC_ANIMATE_MIX		= 2,
-	DESC_ASKOBJECT			= 11,					// Bool: TRUE - ask object for this parameter, FALSE - look inside container
-	DESC_UNIT						= 12,					// LONG: one of the following values DESC_UNIT_xxx for DTYPE_REAL/DTYPE_VECTOR
-		DESC_UNIT_REAL			= 'frea',		//FORMAT_REAL,
-		DESC_UNIT_LONG			= 'flng',		//FORMAT_LONG,
+	DESC_ASKOBJECT			= 11,					// Bool: true - ask object for this parameter, false - look inside container
+	DESC_UNIT						= 12,					// Int32: one of the following values DESC_UNIT_xxx for DTYPE_REAL/DTYPE_VECTOR
+		DESC_UNIT_FLOAT			= 'frea',		//FORMAT_FLOAT,
+		DESC_UNIT_INT			= 'flng',		//FORMAT_INT,
 		DESC_UNIT_PERCENT		= 'fpct',		//FORMAT_PERCENT,
 		DESC_UNIT_DEGREE		= 'fdgr',		//FORMAT_DEGREE,
 		DESC_UNIT_METER			= 'fmet',		//FORMAT_METER,
 		DESC_UNIT_TIME			= 'ffrm',		//FORMAT_FRAMES,
-	DESC_PARENTGROUP		= 13,					// LONG/DescID: parent id
+	DESC_PARENTGROUP		= 13,					// Int32/DescID: parent id
 	DESC_CYCLE					= 14,					// Container: members of cycle
 	DESC_HIDE						= 15,					// Bool: indicates whether the property is hidden or not
-	DESC_DEFAULT				= 16,					// default value for LONG/Real/Vector:
+	DESC_DEFAULT				= 16,					// default value for Int32/Float/Vector:
 	DESC_ACCEPT					= 17,					// ACCEPT: for InstanceOf-Check()
 	DESC_SEPARATORLINE	= 18,
 	DESC_REFUSE					= 19,					// REFUSE: for InstanceOf-Check()
 	DESC_PARENTID				= 20,					// for indent and anim track can append the parent-name
 	DESC_CUSTOMGUI			= 21,					// customgui for this property
+
+
 	DESC_COLUMNS					= 22,					// DTYPE_GROUP: number of columns
 	DESC_LAYOUTGROUP			= 23,					// Bool: only for layout in columns, in layout groups are only groups allowed!
-	DESC_REMOVEABLE				= 24,					// Bool: TRUE allows to remove this entry
+	DESC_REMOVEABLE				= 24,					// Bool: true allows to remove this entry
 	DESC_GUIOPEN					= 25,					// Bool: default open
-	DESC_EDITABLE					= 26,					// Bool: TRUE allows to edit this entry
-	DESC_MINSLIDER				= 27,					// LONG/Real/Vector minimum INcluded
-	DESC_MAXSLIDER				= 28,					// LONG/Real/Vector maximum INcluded
+	DESC_EDITABLE					= 26,					// Bool: true allows to edit this entry
+	DESC_MINSLIDER				= 27,					// Int32/Float/Vector minimum INcluded
+	DESC_MAXSLIDER				= 28,					// Int32/Float/Vector maximum INcluded
 	DESC_GROUPSCALEV			= 29,					// Bool: allow to scale group height
 	DESC_SCALEH						= 30,					// Bool: scale element horizontal
-	DESC_LAYOUTVERSION		= 31,					// LONG: layout version
+	DESC_LAYOUTVERSION		= 31,					// Int32: layout version
 	DESC_ALIGNLEFT				= 32,					// Bool: align element left
 	DESC_FITH							= 33,					// Bool: fit element
 	DESC_NEWLINE        	= 34,					// Bool: line break
 	DESC_TITLEBAR					= 35,					// Bool: main group title bar
-	DESC_CYCLEICONS				= 36,					// Container: LONG icon ids for cycle
+	DESC_CYCLEICONS				= 36,					// Container: Int32 icon ids for cycle
 	DESC_CYCLESYMBOLS			= 37,					// Container: String identifiers for help symbol export
 	DESC_PARENT_COLLAPSE	= 38,					// parent collapse id
 	DESC_FORBID_INLINE_FOLDING = 39,		// Bool: instruct AM not to allow expanding inline objects for this property
-	DESC_FORBID_SCALING = 40,	// Bool: prevent auto scaling of the parameter with the scale tool (for DESC_UNIT_METER)
+	DESC_FORBID_SCALING		= 40,					// Bool: prevent auto scaling of the parameter with the scale tool (for DESC_UNIT_METER)
+	DESC_ANGULAR_XYZ			= 41,					// Bool: angular representation as XYZ vs. HPB
 
 	// port extension for graphview
 	DESC_INPORT					= 50,
@@ -133,28 +136,28 @@ enum
 	DESC_
 };
 
-#define CUSTOMGUI_REAL						DTYPE_REAL
-#define CUSTOMGUI_REALSLIDER			1000489
-#define CUSTOMGUI_REALSLIDERONLY	200000006
-#define CUSTOMGUI_VECTOR					DTYPE_VECTOR
-#define CUSTOMGUI_STRING					DTYPE_STRING
-#define CUSTOMGUI_STRINGMULTI			200000007
-#define CUSTOMGUI_STATICTEXT			DTYPE_STATICTEXT
-#define CUSTOMGUI_CYCLE						200000180
-#define CUSTOMGUI_CYCLEBUTTON			200000255
-#define CUSTOMGUI_LONG						DTYPE_LONG
-#define CUSTOMGUI_LONGSLIDER			1000490
-#define CUSTOMGUI_BOOL						DTYPE_BOOL
-#define CUSTOMGUI_TIME						DTYPE_TIME
-#define CUSTOMGUI_COLOR						1000492
-#define CUSTOMGUI_MATRIX					DTYPE_MATRIX
-#define CUSTOMGUI_BUTTON					DTYPE_BUTTON
-#define CUSTOMGUI_POPUP						DTYPE_POPUP
-#define CUSTOMGUI_SEPARATOR				DTYPE_SEPARATOR
-#define CUSTOMGUI_SUBDESCRIPTION	0
-#define CUSTOMGUI_PROGRESSBAR			200000265
-
-
+		#define CUSTOMGUI_REAL						DTYPE_REAL
+		#define CUSTOMGUI_REALSLIDER			1000489
+		#define CUSTOMGUI_REALSLIDERONLY	200000006
+		#define CUSTOMGUI_VECTOR					DTYPE_VECTOR
+		#define CUSTOMGUI_STRING					DTYPE_STRING
+		#define CUSTOMGUI_STRINGMULTI			200000007
+		#define CUSTOMGUI_STATICTEXT			DTYPE_STATICTEXT
+		#define CUSTOMGUI_CYCLE						200000180
+		#define CUSTOMGUI_CYCLEBUTTON			200000255
+		#define CUSTOMGUI_LONG						DTYPE_LONG
+		#define CUSTOMGUI_LONGSLIDER			1000490
+		#define CUSTOMGUI_BOOL						DTYPE_BOOL
+		#define CUSTOMGUI_TIME						DTYPE_TIME
+		#define CUSTOMGUI_COLOR						1000492
+		#define CUSTOMGUI_MATRIX					DTYPE_MATRIX
+		#define CUSTOMGUI_BUTTON					DTYPE_BUTTON
+		#define CUSTOMGUI_POPUP						DTYPE_POPUP
+		#define CUSTOMGUI_SEPARATOR				DTYPE_SEPARATOR
+		#define CUSTOMGUI_SUBDESCRIPTION	0
+		#define CUSTOMGUI_PROGRESSBAR			200000265
+		
+		
 
 #ifndef __API_INTERN__
 
@@ -178,12 +181,12 @@ enum
 
 struct DescLevel
 {
-	LONG	id;
-	LONG	dtype;
-	LONG	creator;
+	Int32	id;
+	Int32	dtype;
+	Int32	creator;
 
-	DescLevel(LONG t_id) : id(t_id), dtype(0), creator(0) { }
-	DescLevel(LONG t_id, LONG t_datatype, LONG t_creator) : id(t_id), dtype(t_datatype), creator(t_creator) { }
+	DescLevel(Int32 t_id) : id(t_id), dtype(0), creator(0) { }
+	DescLevel(Int32 t_id, Int32 t_datatype, Int32 t_creator) : id(t_id), dtype(t_datatype), creator(t_creator) { }
 
 	Bool operator == (const DescLevel &d) const;
 	Bool operator != (const DescLevel &d) const;
@@ -191,13 +194,13 @@ struct DescLevel
 
 class DescID : public iCustomDataType<DescID> // iCustomDataType is okay here since the size is the same
 {
-		LONG temp1;
-		LONG *temp2;
+		Int32 temp1;
+		Int32 *temp2;
 
 	public:
 		DescID();
 		DescID(const DescID &src);
-		DescID(LONG id1);
+		DescID(Int32 id1);
 		DescID(const DescLevel &id1);
 		DescID(const DescLevel &id1,const DescLevel &id2);
 		DescID(const DescLevel &id1,const DescLevel &id2,const DescLevel &id3);
@@ -206,17 +209,20 @@ class DescID : public iCustomDataType<DescID> // iCustomDataType is okay here si
 		void SetId(const DescLevel &subid);
 		void PushId(const DescLevel &subid);
 		void PopId();
-		const DescLevel &operator[] (LONG pos) const;
+		const DescLevel &operator[] (Int32 pos) const;
 		const DescID& operator = (const DescID &id);
 		Bool operator == (const DescID &d) const;
 		Bool operator != (const DescID &d) const;
-		const DescID operator <<(LONG shift) const;
+		const DescID operator <<(Int32 shift) const;
 
 		Bool Read(HyperFile *hf);
 		Bool Write(HyperFile *hf);
 
-		LONG GetDepth() const;
-		Bool IsPartOf(const DescID &cmp,LONG *pos) const;
+		Int32 GetDepth() const;
+		Bool IsPartOf(const DescID &cmp,Int32 *pos) const;
+
+		const DescID & operator += (const DescID &s);
+		friend const DescID operator + (const DescID &v1, const DescID &v2);
 };
 
 class Description
@@ -230,7 +236,7 @@ class Description
 		static void Free(Description *&description);
 
 		Bool LoadDescription(const BCResourceObj *bc,Bool copy);
-		Bool LoadDescription(LONG id);
+		Bool LoadDescription(Int32 id);
 		Bool LoadDescription(const String &id);
 		Bool SortGroups();
 
@@ -252,7 +258,7 @@ class Description
 		void FreeDialog(SubDialog *dlg);
 
 		Bool CreatePopupMenu(BaseContainer &menu);
-		Bool GetPopupId(LONG id,const DescID &descid);
+		Bool GetPopupId(Int32 id,const DescID &descid);
 
 		Bool CheckDescID(const DescID &searchid,const AtomArray &ops,DescID *completeid);
 		Bool GetSubDescriptionWithData(const DescID &did,const AtomArray &op,RESOURCEDATATYPEPLUGIN  *resdatatypeplugin,const BaseContainer &bc,DescID *singledescid);
@@ -279,9 +285,9 @@ class DynamicDescription
 		Bool									BrowseGetNext(void* handle,DescID *id,const BaseContainer **data);
 		void									BrowseFree(void* &handle);
 
-		Bool									FillDefaultContainer(BaseContainer &res,LONG type,const String &name);
+		Bool									FillDefaultContainer(BaseContainer &res,Int32 type,const String &name);
 
-		ULONG									GetDirty() const;
+		UInt32									GetDirty() const;
 };
 #else
 	#include "res_basecontainer.h"
@@ -300,9 +306,9 @@ class DynamicDescription
 	switch (tid[1].id) \
 	{ \
 		case 0:			v = t_data.GetVector(); flags |= DESCFLAGS_SET_PARAM_SET; break; \
-		case 1000:	v = Vector(t_data.GetReal(),vector.y,vector.z); flags |= DESCFLAGS_SET_PARAM_SET; break; \
-		case 1001:	v = Vector(vector.x,t_data.GetReal(),vector.z); flags |= DESCFLAGS_SET_PARAM_SET; break; \
-		case 1002:	v = Vector(vector.x,vector.y,t_data.GetReal()); flags |= DESCFLAGS_SET_PARAM_SET; break; \
+		case 1000:	v = Vector(t_data.GetFloat(),vector.y,vector.z); flags |= DESCFLAGS_SET_PARAM_SET; break; \
+		case 1001:	v = Vector(vector.x,t_data.GetFloat(),vector.z); flags |= DESCFLAGS_SET_PARAM_SET; break; \
+		case 1002:	v = Vector(vector.x,vector.y,t_data.GetFloat()); flags |= DESCFLAGS_SET_PARAM_SET; break; \
 	} \
 
 struct DescriptionCommand
@@ -311,17 +317,17 @@ struct DescriptionCommand
 	const BaseContainer *msg;
 	DescriptionCustomGui *descgui;
 
-	DescriptionCommand() { msg = NULL; descgui = NULL; }
+	DescriptionCommand() { msg = nullptr; descgui = nullptr; }
 };
 
 struct DescriptionPopup
 {
 	DescID id;
-	LONG   chosen;
+	Int32   chosen;
 	const BaseContainer *msg;
 	BaseContainer popup;
 
-	DescriptionPopup() { msg = NULL; chosen=0; }
+	DescriptionPopup() { msg = nullptr; chosen=0; }
 };
 
 struct DescriptionCheckDragAndDrop
@@ -330,7 +336,7 @@ struct DescriptionCheckDragAndDrop
 	GeListNode	*element;
 	Bool				result;
 
-	DescriptionCheckDragAndDrop() { result = TRUE; }
+	DescriptionCheckDragAndDrop() { result = true; }
 };
 
 struct DescriptionGetBitmap
@@ -338,8 +344,8 @@ struct DescriptionGetBitmap
 	DescID					id;
 	BaseBitmap			*bmp;
 	ICONDATAFLAGS		bmpflags;
-	
-	DescriptionGetBitmap() : id(0), bmp(NULL), bmpflags(ICONDATAFLAGS_0) {}
+
+	DescriptionGetBitmap() : id(0), bmp(nullptr), bmpflags(ICONDATAFLAGS_0) {}
 };
 
 struct DescriptionGetObjects
@@ -349,7 +355,7 @@ struct DescriptionGetObjects
 };
 
 // public stuff
-Bool Description_Register(LONG id,const String &idstr,LocalResource *res);
+Bool Description_Register(Int32 id,const String &idstr,LocalResource *res);
 
 
 // INTERNAL STUFF -- INTERNAL STUFF -- INTERNAL STUFF -- INTERNAL STUFF -- INTERNAL STUFF
@@ -360,13 +366,13 @@ Bool Description_Register(LONG id,const String &idstr,LocalResource *res);
 
 struct DescriptionLib : public C4DLibrary
 {
-	Bool (*Register )(LONG id,const String &idstr,LocalResource *res);
+	Bool (*Register )(Int32 id,const String &idstr,LocalResource *res);
 
 	Description*					(*Alloc)();
 	void									(*Free)(Description *&description);
 
 	Bool									(*LoadDescriptionBc)(Description *desc,const BCResourceObj *bc,Bool copy);
-	Bool									(*LoadDescriptionId)(Description *desc,LONG id);
+	Bool									(*LoadDescriptionId)(Description *desc,Int32 id);
 	Bool									(*LoadDescriptionStr)(Description *desc,const String *id);
 	Bool									(*SortGroups)(Description *desc);
 
@@ -384,7 +390,7 @@ struct DescriptionLib : public C4DLibrary
 	void									(*FreeDialog)(Description *desc,SubDialog *dlg);
 
 	Bool									(*CreatePopupMenu)(Description *desc,BaseContainer *menu);
-	Bool									(*GetPopupId)(Description *desc,LONG id,const DescID &descid);
+	Bool									(*GetPopupId)(Description *desc,Int32 id,const DescID &descid);
 
 	const DescID*					(*GetSingleDescID)(Description *desc);
 	void									(*SetSingleDescriptionMode)(Description *desc,const DescID &descid);
@@ -394,8 +400,8 @@ struct DescriptionLib : public C4DLibrary
 	void									(*DescID_SetId)(DescID *id,const DescLevel &subid);
 	void									(*DescID_PushId)(DescID *id,const DescLevel &subid);
 	void									(*DescID_PopId)(DescID *id);
-	const DescLevel&			(*DescID_operator1)(DescID *id,LONG pos);
-	const DescID					(*DescID_operator2)(DescID *id,LONG pos);
+	const DescLevel&			(*DescID_operator1)(DescID *id,Int32 pos);
+	const DescID					(*DescID_operator2)(DescID *id,Int32 pos);
 	void									(*DescID_CopyTo)(DescID *src,DescID *dest);
 	Bool									(*DescID_Compare)(DescID *d1,DescID *d2);
 
@@ -407,7 +413,7 @@ struct DescriptionLib : public C4DLibrary
 	void*									(DynamicDescription::*DDBrowseInit		)(void) const;
 	Bool									(DynamicDescription::*DDBrowseGetNext	)(void* handle,DescID *id,const BaseContainer **data) const;
 	void									(DynamicDescription::*DDBrowseFree		)(void* &handle) const;
-	Bool									(DynamicDescription::*FillDefaultContainer)(BaseContainer &res,LONG type,const String &name) const;
+	Bool									(DynamicDescription::*FillDefaultContainer)(BaseContainer &res,Int32 type,const String &name) const;
 
 	Bool									(*GetSubDescriptionWithData						)(Description *desc,const DescID &did,const AtomArray &op,RESOURCEDATATYPEPLUGIN *resdatatypeplugin,const BaseContainer &bc,DescID *singledescid);
 	Bool									(*CheckDescID													)(Description *desc,const DescID &searchid,const AtomArray &ops,DescID *completeid);
@@ -422,7 +428,10 @@ struct DescriptionLib : public C4DLibrary
 	Bool									(*DescID_Write)(DescID *id, HyperFile *hf);
 	Bool									(DynamicDescription::*DDSet						)(const DescID &descid,const BaseContainer &datadescription, BaseList2D *bl);
 
-	ULONG									(DynamicDescription::*GetDirty				)() const;
+	UInt32									(DynamicDescription::*GetDirty				)() const;
+
+	const DescID					(*DescID_AddTo)(DescID *d1,DescID *d2);
+	DescID								(*DescID_Add)(DescID *d1,DescID *d2);
 };
 
 String DescGenerateTitle(AtomArray *arr);

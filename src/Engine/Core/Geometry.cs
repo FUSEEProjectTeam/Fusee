@@ -285,8 +285,8 @@ namespace Fusee.Engine
                 throw new FormatException("Cannot calculate normal of degenerate face with only " + f.InxVert.Length + " vertices.");
 
             var vertex0 = f.InxVert[0];
-            double3 v1 = _vertices[vertex0] - _vertices[f.InxVert[1]];
-            double3 v2 = _vertices[vertex0] - _vertices[f.InxVert[2]];
+            double3 v1 = _vertices[vertex0] - _vertices[f.InxVert[2]];
+            double3 v2 = _vertices[vertex0] - _vertices[f.InxVert[1]];
 
             return double3.Normalize(double3.Cross(v1, v2));
         }

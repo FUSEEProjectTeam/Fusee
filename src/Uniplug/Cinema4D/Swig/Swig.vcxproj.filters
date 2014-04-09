@@ -26,16 +26,13 @@
     <ClInclude Include="include\c4d_gedata.swig.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\resource\modules\gv\expressiontag\res\description\gvdynamic.h">
+    <ClInclude Include="include\c4d_customdatatype.swig.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="c4d_customdatatype.swig.h">
+    <ClInclude Include="include\customgui_inexclude.swig.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="customgui_inexclude.swig.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="operatingsystem.swig.h">
+    <ClInclude Include="include\operatingsystem.swig.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

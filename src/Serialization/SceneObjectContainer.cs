@@ -8,12 +8,18 @@ namespace Fusee.Serialization
     public class SceneObjectContainer
     {
         [ProtoMember(1)]
+        public string Name;
+
+        [ProtoMember(2)]
         public float4x4 Transform;
 
-        [ProtoMember(2, AsReference = true)]
+        [ProtoMember(3)] 
+        public MaterialContainer Material;
+
+        [ProtoMember(4, AsReference = true)]
         public MeshContainer Mesh;
 
-        [ProtoMember(3, AsReference = true)]
+        [ProtoMember(5, AsReference = true)]
         public List<SceneObjectContainer> Children;
     }
 }

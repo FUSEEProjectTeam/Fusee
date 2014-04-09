@@ -163,7 +163,7 @@ namespace Fusee.Engine
                 vec4 colTex = texture2D(vTexture, vUV);
                 vec4 _redBalance = vec4(0.1, 0.65, 0.25, 0);
                 float _redColor = (colTex.r * _redBalance.r + colTex.g * _redBalance.g + colTex.b * _redBalance.b) * 1.5;
-                gl_FragColor = vec4(_redColor, colTex.g, colTex.b, 1) * 1.4;
+                gl_FragColor = vec4(_redColor, colTex.g, colTex.b, 1) * 1.4; // * dot(vNormal, vec3(0, 0, -1))  lefthanded change???
             }";
 
         #endregion
@@ -377,6 +377,7 @@ namespace Fusee.Engine
             _rc.SetShaderParamTexture(_shaderTexture, eye == Stereo3DEye.Left ? _contentLTex : _contentRTex);
             _rc.ColorMask(red, green, blue, alpha);
 
+			// change lookat ?? lefthanded change
             _rc.Render(_guiLImage.GUIMesh);
         }
 
@@ -397,6 +398,7 @@ namespace Fusee.Engine
             var newEye = new float3(x, eyeV.y, eyeV.z);
             var newTarget = new float3(target.x, target.y, target.z);
 
+			// change lookat ?? lefthanded change
             return float4x4.LookAt(newEye, newTarget, up);
         }
 

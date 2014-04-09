@@ -198,12 +198,14 @@ namespace Examples.CubeAndTiles
                                                            _posZ*100 - (RollingCube.CubeSize/2.0f + 15));
 
                 // set translation and color, then render
-                _modelView = mtxObjRot*mtxFieldRot*mtxObjPos;
+                // colh _modelView = mtxObjRot*mtxFieldRot*mtxObjPos;
+                _modelView = mtxObjPos * mtxFieldRot * mtxObjRot;
 
                 _dirtyFlag = false;
             }
 
-            _curLevel.RContext.ModelView = _modelView*_curLevel.CamTrans;
+            // colh _curLevel.RContext.ModelView = _modelView*_curLevel.CamTrans;
+            _curLevel.RContext.ModelView = _curLevel.CamTrans * _modelView;
 
             // TODO: SetShaderParam shouldn't set this if it's already set
             _curLevel.RContext.SetShaderParam(_curLevel.VColorObj, new float4(_fieldColor, _curBright*_fieldBright));

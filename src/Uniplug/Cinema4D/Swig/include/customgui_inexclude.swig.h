@@ -21,8 +21,8 @@ class BaseDocument;
 #define IN_EXCLUDE_DATA_SELECTION      10          // Bool - TRUE, if IN_EXCLUDE_FLAG_SEND_SELCHANGE_MSG is set
                                                    // and the object is selected in the list
 
-#define IN_EXCLUDE_FLAG_NUM_FLAGS      2000        // LONG - the number of different flags
-#define IN_EXCLUDE_FLAG_INIT_STATE     2065        // LONG - the initial state of a new inserted element
+#define IN_EXCLUDE_FLAG_NUM_FLAGS      2000        // Int32 - the number of different flags
+#define IN_EXCLUDE_FLAG_INIT_STATE     2065        // Int32 - the initial state of a new inserted element
 #define IN_EXCLUDE_FLAG_SEND_SELCHANGE_MSG    2066 // Bool - TRUE, if the selection state should be stored
                                                    // in the object's data container
 #define IN_EXCLUDE_FLAG_IMAGE_01_ON    2001        // String - image of "On" state for the column
@@ -99,22 +99,22 @@ private:
   InExcludeData();
   ~InExcludeData();
 public:
-  Bool InsertObject(BaseList2D* pObject, LONG lFlags);
-  LONG GetObjectIndex(BaseDocument *doc, BaseList2D* pObject) const;
+  Bool InsertObject(BaseList2D* pObject, Int32 lFlags);
+  Int32 GetObjectIndex(BaseDocument *doc, BaseList2D* pObject) const;
   Bool DeleteObject(BaseDocument *doc, BaseList2D* pObject) { return DeleteObject(GetObjectIndex(doc,pObject)); }
-  LONG GetFlags(LONG lIndex) const;
-  void SetFlags(LONG lIndex, LONG lFlags);
-  LONG GetFlags(BaseDocument *doc, BaseList2D* pObject) const { return GetFlags(GetObjectIndex(doc,pObject)); }
- BaseContainer* GetData(LONG lIndex) const;
+  Int32 GetFlags(Int32 lIndex) const;
+  void SetFlags(Int32 lIndex, Int32 lFlags);
+  Int32 GetFlags(BaseDocument *doc, BaseList2D* pObject) const { return GetFlags(GetObjectIndex(doc,pObject)); }
+ BaseContainer* GetData(Int32 lIndex) const;
   BaseContainer* GetData(BaseDocument *doc, BaseList2D* pObject) const { return GetData(GetObjectIndex(doc, pObject)); }
-  BaseList2D* ObjectFromIndex(BaseDocument *doc, LONG lIndex) const;
+  BaseList2D* ObjectFromIndex(BaseDocument *doc, Int32 lIndex) const;
 
    //returns a table that contains all included objects. Delete the list by calling FreeInclusionTable(table)
    //hierarchy_bit starts at 0
-  InclusionTable *BuildInclusionTable(BaseDocument *doc, LONG hierarchy_bit = NOTOK);
+  InclusionTable *BuildInclusionTable(BaseDocument *doc, Int32 hierarchy_bit = NOTOK);
 
-  Bool DeleteObject(LONG lIndex);
-  LONG GetObjectCount() const;
+  Bool DeleteObject(Int32 lIndex);
+  Int32 GetObjectCount() const;
 };
 
 class InclusionTable
@@ -125,9 +125,9 @@ private:
 
 public:
 	Bool Check(BaseList2D *op);
-	Bool Check(BaseList2D *op, LONG &flags);
-  LONG GetObjectCount();
-  BaseList2D* GetObject(LONG lIndex);
+	Bool Check(BaseList2D *op, Int32 &flags);
+  Int32 GetObjectCount();
+  BaseList2D* GetObject(Int32 lIndex);
 };
 
 void FreeInclusionTable(InclusionTable*& pTable);
@@ -164,21 +164,21 @@ public:
 
 struct CustomGuiInExcludeLib : public BaseCustomGuiLib
 {
-  Bool            (iIncludeExcludeData::*InsertObject)(BaseList2D* pObject, LONG lFlags);
-  LONG            (iIncludeExcludeData::*GetObjectIndex)(BaseDocument *doc, BaseList2D* pObject);
-  Bool            (iIncludeExcludeData::*DeleteObject)(LONG lIndex);
-  LONG            (iIncludeExcludeData::*GetObjectCount)();
-  LONG            (iIncludeExcludeData::*GetFlags)(LONG lIndex);
-  BaseList2D*     (iIncludeExcludeData::*ObjectFromIndex)(BaseDocument *doc, LONG lIndex);
-  InclusionTable* (iIncludeExcludeData::*BuildInclusionTable)(BaseDocument *doc, LONG hierarchy_bit);
+  Bool            (iIncludeExcludeData::*InsertObject)(BaseList2D* pObject, Int32 lFlags);
+  Int32            (iIncludeExcludeData::*GetObjectIndex)(BaseDocument *doc, BaseList2D* pObject);
+  Bool            (iIncludeExcludeData::*DeleteObject)(Int32 lIndex);
+  Int32            (iIncludeExcludeData::*GetObjectCount)();
+  Int32            (iIncludeExcludeData::*GetFlags)(Int32 lIndex);
+  BaseList2D*     (iIncludeExcludeData::*ObjectFromIndex)(BaseDocument *doc, Int32 lIndex);
+  InclusionTable* (iIncludeExcludeData::*BuildInclusionTable)(BaseDocument *doc, Int32 hierarchy_bit);
 
   Bool            (iInclusionTable::*Check)(BaseList2D *op);
-  LONG            (iInclusionTable::*GetObjectCountT)();
-  BaseList2D*     (iInclusionTable::*GetObject)(LONG lIndex);
+  Int32            (iInclusionTable::*GetObjectCountT)();
+  BaseList2D*     (iInclusionTable::*GetObject)(Int32 lIndex);
   void            (*LIB_FreeInclusionTable)(iInclusionTable *pTable);
-  BaseContainer*  (iIncludeExcludeData::*GetData)(LONG lIndex);
-	Bool            (iInclusionTable::*CheckFlags)(BaseList2D *op, LONG &f);
-	void            (iIncludeExcludeData::*SetFlags)(LONG lIndex, LONG lFlags);
+  BaseContainer*  (iIncludeExcludeData::*GetData)(Int32 lIndex);
+	Bool            (iInclusionTable::*CheckFlags)(BaseList2D *op, Int32 &f);
+	void            (iIncludeExcludeData::*SetFlags)(Int32 lIndex, Int32 lFlags);
 };
 
 // INTERNAL STUFF -- INTERNAL STUFF -- INTERNAL STUFF -- INTERNAL STUFF -- INTERNAL STUFF

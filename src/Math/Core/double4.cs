@@ -1259,6 +1259,55 @@ namespace Fusee.Math
 
         #endregion
 
+        #region Color
+        // ReSharper disable InconsistentNaming
+        /// <summary>
+        /// The red component (same as x)
+        /// </summary>
+        public double r
+        {
+            get { return x; }
+            set { x = value; }
+        }
+
+        /// <summary>
+        /// The green component (same as y)
+        /// </summary>
+        public double g
+        {
+            get { return y; }
+            set { y = value; }
+        }
+
+        /// <summary>
+        /// The blue component (same as z)
+        /// </summary>
+        public double b
+        {
+            get { return z; }
+            set { z = value; }
+        }
+
+        /// <summary>
+        /// The rgb component (same as xyz)
+        /// </summary>
+        public double3 rgb
+        {
+            get { return xyz; }
+            set { xyz = value; }
+        }
+
+        /// <summary>
+        /// The alpha component (same as w)
+        /// </summary>
+        public double a
+        {
+            get { return w; }
+            set { w = value; }
+        }
+        // ReSharper restore InconsistentNaming
+        #endregion
+
         #endregion
 
         #region IEquatable<double4> Members

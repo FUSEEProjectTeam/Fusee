@@ -42,6 +42,7 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MaterialContainer.cs" />
     <Compile Include="SceneContainer.cs" />
     <Compile Include="MeshContainer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

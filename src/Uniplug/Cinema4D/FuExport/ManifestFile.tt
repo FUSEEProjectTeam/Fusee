@@ -1,0 +1,17 @@
+﻿<#@ template language="C#" #>
+/* The size of these files were reduced. The following function fixes all references. */
+var $customMSCore = JSIL.GetAssembly("mscorlib");
+var $customSys = JSIL.GetAssembly("System");
+var $customSysConf = JSIL.GetAssembly("System.Configuration");
+var $customSysCore = JSIL.GetAssembly("System.Core");
+var $customSysNum = JSIL.GetAssembly("System.Numerics");
+var $customSysXml = JSIL.GetAssembly("System.Xml");
+var $customSysSec = JSIL.GetAssembly("System.Security");
+
+if (typeof (contentManifest) !== "object") { contentManifest = {}; };
+contentManifest["<#= _projName #>.contentproj"] = [
+    <# for (int i = 0; i < _fileCount; i++)
+       { #>
+["<#= _fileTypes[i] #>",	"<#= _fileNames[i] #>",	{<#= _fileFormats[i] #> "sizeBytes": <#= _fileSize[i] #> }],
+    <# } #>
+];

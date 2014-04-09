@@ -46,7 +46,8 @@ namespace Examples.CubeAndTiles
             void main()
             {
                 vec4 colTex = vColor * texture2D(vTexture, vUV);
-                gl_FragColor = dot(vColor, vec4(0, 0, 0, 1)) * colTex * dot(vNormal, vec3(0, 0, 1));
+                // colh gl_FragColor = dot(vColor, vec4(0, 0, 0, 1)) * colTex * dot(vNormal, vec3(0, 0, 1));
+                gl_FragColor = dot(vColor, vec4(0, 0, 0, 1)) * colTex * dot(vNormal, vec3(0, 0, -1));
             }";
 
         #endregion
@@ -58,7 +59,7 @@ namespace Examples.CubeAndTiles
         private ShaderProgram _shaderProgram;
         
         private static float _angleHorz = 0.4f;
-        private static float _angleVert = -1.0f;
+        private static float _angleVert = 2.4f;
         private static float _angleVelHorz, _angleVelVert;
 
         private static bool _topView;
@@ -147,7 +148,8 @@ namespace Examples.CubeAndTiles
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
 
-            var mtxRot = float4x4.CreateRotationZ(_angleHorz)*float4x4.CreateRotationX(_angleVert);
+            // colh var mtxRot = float4x4.CreateRotationZ(_angleHorz)*float4x4.CreateRotationX(_angleVert);
+            var mtxRot = float4x4.CreateRotationX(-_angleVert) * float4x4.CreateRotationZ(-_angleHorz);
 
             _exampleLevel.Render(mtxRot);
 

@@ -94,7 +94,7 @@ namespace Fusee.SceneManagement
        /// </value>
        public float3 Forward
        {
-           get { return -GlobalMatrix.Row2.xyz; }
+           get { return GlobalMatrix.Row2.xyz; }
        }
 
        /// <summary>
@@ -129,7 +129,7 @@ namespace Fusee.SceneManagement
            {
                if (_matrixDirty)
                {
-                   _transformMatrix = float4x4.Scale(_localScale) * Quaternion.QuaternionToMatrix(LocalQuaternion) * float4x4.CreateTranslation(_localPosition);
+                   _transformMatrix = float4x4.CreateTranslation(_localPosition) * Quaternion.QuaternionToMatrix(LocalQuaternion) * float4x4.Scale(_localScale);
                    _matrixDirty = false;
                }
                return _transformMatrix;
@@ -151,7 +151,7 @@ namespace Fusee.SceneManagement
            {
                if (_globalMatrixDirty)
                {
-                   _globalMatrix = float4x4.Scale(_globalScale) * Quaternion.QuaternionToMatrix(GlobalQuaternion) * float4x4.CreateTranslation(_globalPosition);
+                   _globalMatrix = float4x4.CreateTranslation(_globalPosition) * Quaternion.QuaternionToMatrix(GlobalQuaternion) * float4x4.Scale(_globalScale);
                }
                return _globalMatrix;
            }
@@ -202,13 +202,13 @@ namespace Fusee.SceneManagement
         /// <returns></returns>
         private float3 GetScaleFromMatrix(float4x4 matrix)
         {
-            return new float3(GetLengthOfVector(matrix.Row0.xyz), GetLengthOfVector(matrix.Row1.xyz), GetLengthOfVector(matrix.Row2.xyz));
+            return new float3(GetLengthOfVector(matrix.Column0.xyz), GetLengthOfVector(matrix.Column1.xyz), GetLengthOfVector(matrix.Column2.xyz));
         }
 
 
         private float3 GetPositionFromMatrix(float4x4 matrix)
         {
-            return matrix.Row3.xyz;
+            return matrix.Column3.xyz;
         }
 
 
@@ -422,7 +422,7 @@ namespace Fusee.SceneManagement
        private void UpdateLocalMembers() // Extract members from transformMatrix
       {
           
-          _quaternion = Quaternion.LookRotation(_transformMatrix.Column2.xyz, _transformMatrix.Column1.xyz);
+          _quaternion = Quaternion.LookRotation(_transformMatrix.Column2.xyz, _transformMatrix.Column2.xyz);
           //_quaternion = Quaternion.Identity;
           //Debug.WriteLine("LocalQuaternion: "+_quaternion);
           _eulerAngles = Quaternion.QuaternionToEuler(_quaternion);

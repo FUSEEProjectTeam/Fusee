@@ -70,8 +70,8 @@ namespace Fusee.Engine
                     string[] values = FilteredSplit(tmp, null);
 
                     g.AddNormal(new double3(Double_Parse(values[0]),
-                        Double_Parse(values[1]),
-                        Double_Parse(values[2])));
+                                            Double_Parse(values[1]),
+                                            -Double_Parse(values[2]))); // convert to lefthanded
                 }
                 else if (line.StartsWith("v"))
                 {
@@ -81,8 +81,8 @@ namespace Fusee.Engine
                     string[] values = FilteredSplit(tmp, null);
 
                     g.AddVertex(new double3(Double_Parse(values[0]),
-                        Double_Parse(values[1]),
-                        Double_Parse(values[2])));
+                                            Double_Parse(values[1]),
+                                            -Double_Parse(values[2]))); // convert to lefthanded
                 }
                 else if (line.StartsWith("f"))
                 {

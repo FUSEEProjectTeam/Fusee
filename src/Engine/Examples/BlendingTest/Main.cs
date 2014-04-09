@@ -102,8 +102,8 @@ namespace Examples.BlendingTest
 
             void main()
             {
-                // vec4 result = vec4(0.3, 1, 0.7, 1) * dot(vNormal, vec3(0, 0, 1));
-                vec4 result = vColor * dot(vNormal, vec3(0, 0, 1));
+                // vec4 result = vec4(0.3, 1, 0.7, 1) * dot(vNormal, vec3(0, 0, -1));
+                vec4 result = vColor * dot(vNormal, vec3(0, 0, -1));
                 result = vec4(floor(result.r * 3.0 + 0.5)/3.0, floor(result.g * 3.0 + 0.5)/3.0, floor(result.b* 3.0 + 0.5)/3.0, result.a); 
                 gl_FragColor = result;
                 // gl_FragColor = vec4(1, 0, 0, 1);
@@ -165,6 +165,7 @@ namespace Examples.BlendingTest
                     SourceBlend = Blend.BlendFactor,
                     DestinationBlend = Blend.InverseBlendFactor
                 });
+            RC.SetRenderState(RenderState.AlphaBlendEnable, (uint)0);
         }
 
         // is called once a frame
@@ -175,7 +176,7 @@ namespace Examples.BlendingTest
             // move per mouse
             if (Input.Instance.IsButton(MouseButtons.Left))
             {
-                _angleVelHorz = RotationSpeed * Input.Instance.GetAxis(InputAxis.MouseX);
+                _angleVelHorz = -RotationSpeed * Input.Instance.GetAxis(InputAxis.MouseX);
                 _angleVelVert = RotationSpeed * Input.Instance.GetAxis(InputAxis.MouseY);
             }
             else
@@ -191,10 +192,10 @@ namespace Examples.BlendingTest
 
             // move per keyboard
             if (Input.Instance.IsKeyDown(KeyCodes.Left))
-                _angleHorz -= RotationSpeed * (float)Time.Instance.DeltaTime;
+                _angleHorz += RotationSpeed * (float)Time.Instance.DeltaTime;
 
             if (Input.Instance.IsKeyDown(KeyCodes.Right))
-                _angleHorz += RotationSpeed * (float)Time.Instance.DeltaTime;
+                _angleHorz -= RotationSpeed * (float)Time.Instance.DeltaTime;
 
             if (Input.Instance.IsKeyDown(KeyCodes.Up))
                 _angleVert -= RotationSpeed * (float)Time.Instance.DeltaTime;
@@ -202,11 +203,11 @@ namespace Examples.BlendingTest
             if (Input.Instance.IsKeyDown(KeyCodes.Down))
                 _angleVert += RotationSpeed * (float)Time.Instance.DeltaTime;
 
-            var mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
+            var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
             var mtxCam = float4x4.LookAt(0, 200, 500, 0, 0, 0, 0, 1, 0);
 
             // first mesh
-            RC.ModelView = float4x4.CreateTranslation(0, -50, 0) * mtxRot* mtxCam;
+            RC.ModelView = mtxCam * mtxRot * float4x4.CreateTranslation(0, -50, 0);
 
             _shaderEffect.RenderMesh(_meshTea);
 

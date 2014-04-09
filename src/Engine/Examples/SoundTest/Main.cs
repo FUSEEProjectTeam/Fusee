@@ -108,10 +108,15 @@ namespace Examples.SoundTest
 
             _angleHorz += 0.002f;
 
-            var mtxRot = float4x4.CreateRotationY(_angleHorz)*float4x4.CreateRotationX(0);
-            var mtxCam = float4x4.LookAt(0, 200, 400, 0, 50, 0, 0, 1, 0);
+            // colh
+            //var mtxRot = float4x4.CreateRotationY(_angleHorz)*float4x4.CreateRotationX(0);
+            //var mtxCam = float4x4.LookAt(0, 200, 400, 0, 50, 0, 0, 1, 0);
+            var mtxRot = float4x4.CreateRotationX(-0) * float4x4.CreateRotationY(-_angleHorz);
+            var mtxCam = float4x4.LookAt(0, 200, -400, 0, 50, 0, 0, 1, 0);
 
-            RC.ModelView = float4x4.Scale(200,200,200)*mtxRot*float4x4.CreateTranslation(-100, 0, 0)*mtxCam;
+            // colh
+            // RC.ModelView = mtxRot * float4x4.CreateTranslation(-100, 0, 0) * mtxCam;
+            RC.ModelView = mtxCam * float4x4.CreateTranslation(-100, 0, 0) * mtxRot * float4x4.Scale(200,200,200);
             RC.Render(Mesh);
 
             Present();

@@ -16,13 +16,13 @@ class SwigDirector_CommandData : public CommandData, public Swig::Director {
 public:
     SwigDirector_CommandData();
     virtual Bool Execute(BaseDocument *doc);
-    virtual Bool ExecuteSubID(BaseDocument *doc, LONG subid);
-    virtual Bool ExecuteOptionID(BaseDocument *doc, LONG plugid, LONG subid);
-    virtual LONG GetState(BaseDocument *doc);
+    virtual Bool ExecuteSubID(BaseDocument *doc, Int32 subid);
+    virtual Bool ExecuteOptionID(BaseDocument *doc, Int32 plugid, Int32 subid);
+    virtual Int32 GetState(BaseDocument *doc);
     virtual Bool GetSubContainer(BaseDocument *doc, BaseContainer &submenu);
     virtual Bool RestoreLayout(void *secret);
     virtual String GetScriptName();
-    virtual Bool Message(LONG type, void *data);
+    virtual Bool Message(Int32 type, void *data);
 
     typedef unsigned int (SWIGSTDCALL* SWIG_Callback0_t)(void *);
     typedef unsigned int (SWIGSTDCALL* SWIG_Callback1_t)(void *, int);
@@ -56,11 +56,11 @@ public:
     virtual Bool GetDEnabling(BaseDocument *doc, BaseContainer &data, DescID const &id, GeData const &t_data, DESCFLAGS_ENABLE flags, BaseContainer const *itemdesc);
     virtual Bool SetDParameter(BaseDocument *doc, BaseContainer &data, DescID const &id, GeData const &t_data, DESCFLAGS_SET &flags);
     virtual Bool GetDDescription(BaseDocument *doc, BaseContainer &data, Description *description, DESCFLAGS_DESC &flags);
-    virtual Bool Message(BaseDocument *doc, BaseContainer &data, LONG type, void *t_data);
-    virtual Bool GetCursorInfo(BaseDocument *doc, BaseContainer &data, BaseDraw *bd, Real x, Real y, BaseContainer &bc);
+    virtual Bool Message(BaseDocument *doc, BaseContainer &data, Int32 type, void *t_data);
+    virtual Bool GetCursorInfo(BaseDocument *doc, BaseContainer &data, BaseDraw *bd, Float x, Float y, BaseContainer &bc);
     virtual Bool MouseInput(BaseDocument *doc, BaseContainer &data, BaseDraw *bd, EditorWindow *win, BaseContainer const &msg);
-    virtual Bool MouseInputStart(BaseDocument *doc, BaseContainer &data, BaseDraw *bd, EditorWindow *win, BaseContainer const &msg, LONG &flags);
-    virtual Bool MouseInputDrag(BaseDocument *doc, BaseContainer &data, BaseDraw *bd, EditorWindow *win, BaseContainer const &msg, BrushVertexData *vdata, LONG vcnt, Real x, Real y, LONG &flags);
+    virtual Bool MouseInputStart(BaseDocument *doc, BaseContainer &data, BaseDraw *bd, EditorWindow *win, BaseContainer const &msg, Int32 &flags);
+    virtual Bool MouseInputDrag(BaseDocument *doc, BaseContainer &data, BaseDraw *bd, EditorWindow *win, BaseContainer const &msg, BrushVertexData *vdata, Int32 vcnt, Float x, Float y, Int32 &flags);
     virtual Bool MouseInputEnd(BaseDocument *doc, BaseContainer &data, BaseDraw *bd, EditorWindow *win, BaseContainer const &msg);
 
     typedef unsigned int (SWIGSTDCALL* SWIG_Callback0_t)(void *, void *, void *);
@@ -99,14 +99,14 @@ public:
     SwigDirector_ObjectDataM();
     virtual Bool Init(GeListNode *node);
     virtual void Free(GeListNode *node);
-    virtual Bool Read(GeListNode *node, HyperFile *hf, LONG level);
+    virtual Bool Read(GeListNode *node, HyperFile *hf, Int32 level);
     virtual Bool Write(GeListNode *node, HyperFile *hf);
-    virtual Bool Message(GeListNode *node, LONG type, void *data);
+    virtual Bool Message(GeListNode *node, Int32 type, void *data);
     virtual Bool CopyTo(NodeData *dest, GeListNode *snode, GeListNode *dnode, COPYFLAGS flags, AliasTrans *trn);
     virtual void GetBubbleHelp(GeListNode *node, String &str);
     virtual BaseDocument *GetDocument(GeListNode *node);
-    virtual LONG GetBranchInfo(GeListNode *node, BranchInfo *info, LONG max, GETBRANCHINFO flags);
-    virtual Bool IsInstanceOf(GeListNode const *node, LONG type) const;
+    virtual Int32 GetBranchInfo(GeListNode *node, BranchInfo *info, Int32 max, GETBRANCHINFO flags);
+    virtual Bool IsInstanceOf(GeListNode const *node, Int32 type) const;
     virtual Bool GetDDescription(GeListNode *node, Description *description, DESCFLAGS_DESC &flags);
     virtual Bool GetDParameter(GeListNode *node, DescID const &id, GeData &t_data, DESCFLAGS_GET &flags);
     virtual Bool GetDEnabling(GeListNode *node, DescID const &id, GeData const &t_data, DESCFLAGS_ENABLE flags, BaseContainer const *itemdesc);
@@ -116,19 +116,19 @@ public:
     virtual void GetDimension(BaseObject *op, Vector *mp, Vector *rad);
     virtual DRAWRESULT Draw(BaseObject *op, DRAWPASS drawpass, BaseDraw *bd, BaseDrawHelp *bh);
     virtual DRAWRESULT DrawShadow(BaseObject *op, BaseDraw *bd, BaseDrawHelp *bh);
-    virtual LONG DetectHandle(BaseObject *op, BaseDraw *bd, LONG x, LONG y, QUALIFIER qualifier);
-    virtual Bool MoveHandle(BaseObject *op, BaseObject *undo, Vector const &mouse_pos, LONG hit_id, QUALIFIER qualifier, BaseDraw *bd);
+    virtual Int32 DetectHandle(BaseObject *op, BaseDraw *bd, Int32 x, Int32 y, QUALIFIER qualifier);
+    virtual Bool MoveHandle(BaseObject *op, BaseObject *undo, Vector const &mouse_pos, Int32 hit_id, QUALIFIER qualifier, BaseDraw *bd);
     virtual Bool AddToExecution(BaseObject *op, PriorityList *list);
-    virtual EXECUTIONRESULT Execute(BaseObject *op, BaseDocument *doc, BaseThread *bt, LONG priority, EXECUTIONFLAGS flags);
+    virtual EXECUTIONRESULT Execute(BaseObject *op, BaseDocument *doc, BaseThread *bt, Int32 priority, EXECUTIONFLAGS flags);
     virtual void GetModelingAxis(BaseObject *op, BaseDocument *doc, Matrix &axis);
     virtual BaseObject *GetVirtualObjects(BaseObject *op, HierarchyHelp *hh);
-    virtual Bool ModifyObject(BaseObject *mod, BaseDocument *doc, BaseObject *op, Matrix const &op_mg, Matrix const &mod_mg, Real lod, LONG flags, BaseThread *thread);
+    virtual Bool ModifyObject(BaseObject *mod, BaseDocument *doc, BaseObject *op, Matrix const &op_mg, Matrix const &mod_mg, Float lod, Int32 flags, BaseThread *thread);
     virtual void CheckDirty(BaseObject *op, BaseDocument *doc);
-    virtual SplineObject *GetContour(BaseObject *op, BaseDocument *doc, Real lod, BaseThread *bt);
-    virtual void ModifyParticles(BaseObject *op, Particle *pp, BaseParticle *ss, LONG pcnt, Real diff);
-    virtual LONG GetHandleCount(BaseObject *op);
-    virtual void GetHandle(BaseObject *op, LONG i, HandleInfo &info);
-    virtual void SetHandle(BaseObject *op, LONG i, Vector p, HandleInfo const &info);
+    virtual SplineObject *GetContour(BaseObject *op, BaseDocument *doc, Float lod, BaseThread *bt);
+    virtual void ModifyParticles(BaseObject *op, Particle *pp, BaseParticle *ss, Int32 pcnt, Float diff);
+    virtual Int32 GetHandleCount(BaseObject *op);
+    virtual void GetHandle(BaseObject *op, Int32 i, HandleInfo &info);
+    virtual void SetHandle(BaseObject *op, Int32 i, Vector p, HandleInfo const &info);
     virtual ~SwigDirector_ObjectDataM();
     virtual Bool GetDDescription(GeListNode *node, DDescriptionParams *descparams);
 
@@ -208,11 +208,11 @@ class SwigDirector_BitmapLoaderData : public BitmapLoaderData, public Swig::Dire
 
 public:
     SwigDirector_BitmapLoaderData();
-    virtual Bool Identify(Filename const &name, UCHAR *probe, LONG size);
-    virtual IMAGERESULT Load(Filename const &name, BaseBitmap *bm, LONG frame);
-    virtual LONG GetSaver();
-    virtual Bool GetInformation(Filename const &name, LONG *frames, Real *fps);
-    virtual IMAGERESULT LoadAnimated(BitmapLoaderAnimatedData *bd, BITMAPLOADERACTION action, BaseBitmap *bm, LONG frame);
+    virtual Bool Identify(Filename const &name, UChar *probe, Int32 size);
+    virtual IMAGERESULT Load(Filename const &name, BaseBitmap *bm, Int32 frame);
+    virtual Int32 GetSaver();
+    virtual Bool GetInformation(Filename const &name, Int32 *frames, Float *fps);
+    virtual IMAGERESULT LoadAnimated(BitmapLoaderAnimatedData *bd, BITMAPLOADERACTION action, BaseBitmap *bm, Int32 frame);
     virtual IMAGERESULT ExtractSound(BitmapLoaderAnimatedData *bd, BaseSound *snd);
     virtual IMAGERESULT HasSound(BitmapLoaderAnimatedData *bd);
 
@@ -242,9 +242,9 @@ public:
     SwigDirector_BitmapSaverData();
     virtual IMAGERESULT Save(Filename const &name, BaseBitmap *bm, BaseContainer *data, SAVEBIT savebits);
     virtual Bool Edit(BaseContainer *data);
-    virtual LONG GetMaxAlphas(BaseContainer *data);
-    virtual LONG GetMaxResolution(Bool layers);
-    virtual IMAGERESULT Open(PluginMovieData *&md, Filename const &name, BaseBitmap *bm, BaseContainer *data, SAVEBIT savebits, LONG fps);
+    virtual Int32 GetMaxAlphas(BaseContainer *data);
+    virtual Int32 GetMaxResolution(Bool layers);
+    virtual IMAGERESULT Open(PluginMovieData *&md, Filename const &name, BaseBitmap *bm, BaseContainer *data, SAVEBIT savebits, Int32 fps);
     virtual IMAGERESULT Write(PluginMovieData *md, BaseBitmap *bm);
     virtual void Close(PluginMovieData *&md);
     virtual IMAGERESULT AddSound(PluginMovieData *md, BaseSound *snd);
@@ -277,21 +277,21 @@ public:
     SwigDirector_SceneLoaderData();
     virtual Bool Init(GeListNode *node);
     virtual void Free(GeListNode *node);
-    virtual Bool Read(GeListNode *node, HyperFile *hf, LONG level);
+    virtual Bool Read(GeListNode *node, HyperFile *hf, Int32 level);
     virtual Bool Write(GeListNode *node, HyperFile *hf);
-    virtual Bool Message(GeListNode *node, LONG type, void *data);
+    virtual Bool Message(GeListNode *node, Int32 type, void *data);
     virtual Bool CopyTo(NodeData *dest, GeListNode *snode, GeListNode *dnode, COPYFLAGS flags, AliasTrans *trn);
     virtual void GetBubbleHelp(GeListNode *node, String &str);
     virtual BaseDocument *GetDocument(GeListNode *node);
-    virtual LONG GetBranchInfo(GeListNode *node, BranchInfo *info, LONG max, GETBRANCHINFO flags);
-    virtual Bool IsInstanceOf(GeListNode const *node, LONG type) const;
+    virtual Int32 GetBranchInfo(GeListNode *node, BranchInfo *info, Int32 max, GETBRANCHINFO flags);
+    virtual Bool IsInstanceOf(GeListNode const *node, Int32 type) const;
     virtual Bool GetDDescription(GeListNode *node, Description *description, DESCFLAGS_DESC &flags);
     virtual Bool GetDParameter(GeListNode *node, DescID const &id, GeData &t_data, DESCFLAGS_GET &flags);
     virtual Bool GetDEnabling(GeListNode *node, DescID const &id, GeData const &t_data, DESCFLAGS_ENABLE flags, BaseContainer const *itemdesc);
     virtual Bool SetDParameter(GeListNode *node, DescID const &id, GeData const &t_data, DESCFLAGS_SET &flags);
     virtual Bool TranslateDescID(GeListNode *node, DescID const &id, DescID &res_id, C4DAtom *&res_at);
     virtual Bool IsDocumentRelated(GeListNode const *node, Bool &docrelated) const;
-    virtual Bool Identify(BaseSceneLoader *node, Filename const &name, UCHAR *probe, LONG size);
+    virtual Bool Identify(BaseSceneLoader *node, Filename const &name, UChar *probe, Int32 size);
     virtual FILEERROR Load(BaseSceneLoader *node, Filename const &name, BaseDocument *doc, SCENEFILTER filterflags, String *error, BaseThread *bt);
 
     typedef unsigned int (SWIGSTDCALL* SWIG_Callback0_t)(void *);
@@ -342,14 +342,14 @@ public:
     SwigDirector_SceneSaverData();
     virtual Bool Init(GeListNode *node);
     virtual void Free(GeListNode *node);
-    virtual Bool Read(GeListNode *node, HyperFile *hf, LONG level);
+    virtual Bool Read(GeListNode *node, HyperFile *hf, Int32 level);
     virtual Bool Write(GeListNode *node, HyperFile *hf);
-    virtual Bool Message(GeListNode *node, LONG type, void *data);
+    virtual Bool Message(GeListNode *node, Int32 type, void *data);
     virtual Bool CopyTo(NodeData *dest, GeListNode *snode, GeListNode *dnode, COPYFLAGS flags, AliasTrans *trn);
     virtual void GetBubbleHelp(GeListNode *node, String &str);
     virtual BaseDocument *GetDocument(GeListNode *node);
-    virtual LONG GetBranchInfo(GeListNode *node, BranchInfo *info, LONG max, GETBRANCHINFO flags);
-    virtual Bool IsInstanceOf(GeListNode const *node, LONG type) const;
+    virtual Int32 GetBranchInfo(GeListNode *node, BranchInfo *info, Int32 max, GETBRANCHINFO flags);
+    virtual Bool IsInstanceOf(GeListNode const *node, Int32 type) const;
     virtual Bool GetDDescription(GeListNode *node, Description *description, DESCFLAGS_DESC &flags);
     virtual Bool GetDParameter(GeListNode *node, DescID const &id, GeData &t_data, DESCFLAGS_GET &flags);
     virtual Bool GetDEnabling(GeListNode *node, DescID const &id, GeData const &t_data, DESCFLAGS_ENABLE flags, BaseContainer const *itemdesc);

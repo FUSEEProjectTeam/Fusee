@@ -167,7 +167,7 @@ namespace Fusee.SceneManagement
                 float size = _near*(float) System.Math.Tan(DegreesToRadians(_fieldOfView)/2.0f);
                 float left = -size, right = size, bottom = -size/_aspectRatio, top = size/_aspectRatio;
 
-                _projMatrix = new float4x4();
+                /*_projMatrix = new float4x4();
                 
                 _projMatrix.M11 = 2*_near/(right - left);
                 _projMatrix.M12 = 0.0f;
@@ -187,8 +187,9 @@ namespace Fusee.SceneManagement
                 _projMatrix.M41 = 0.0f;
                 _projMatrix.M42 = 0.0f;
                 _projMatrix.M43 = -(2*_far*_near)/(_far - _near);
-                _projMatrix.M44 = 0.0f;
-                
+                _projMatrix.M44 = 0.0f;*/
+                _projMatrix = float4x4.CreatePerspectiveOffCenter(left, right, bottom, top, _near, _far);
+                //_projMatrix = float4x4.CreatePerspectiveFieldOfView(_fieldOfView, _aspectRatio, _near, _far);
                 _projectionDirty = true;
 
             }

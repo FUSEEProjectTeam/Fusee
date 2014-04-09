@@ -127,12 +127,27 @@ namespace Fusee.Engine
                     Object initValue;
                     if (_paramDecl.TryGetValue(paramNew.Name, out initValue))
                     {
-                        // ReSharper disable once UseMethodIsInstanceOfType
-                        if (!paramNew.Type.IsAssignableFrom(initValue.GetType()))
+                        // IsAssignableFrom the boxed initValue object will cause JSIL to give an answer based on the value of the contents
+                        // If the type originally was float but contains an integral value (e.g. 3), JSIL.GetType() will return Integer...
+                        // Thus for primitve types (float, int, ) we hack a check ourselves. For other types (float2, ..) IsAssignableFrom works well.
+
+                        // ReSharper disable UseMethodIsInstanceOfType
+                        // ReSharper disable OperatorIsCanBeUsed
+                        var initValType = initValue.GetType();
+                        if ( !( ( (paramNew.Type == typeof (int) || paramNew.Type == typeof (float)) 
+                                  &&
+                                  (initValType == typeof (int) || initValType == typeof (float) || initValType == typeof (double))
+                                )
+                                ||
+                                (paramNew.Type.IsAssignableFrom(initValType))
+                              )
+                           )
                         {
-                            throw new Exception("Error preparing effect pass " + i + ". Shader parameter " +  paramNew.Type.ToString() + " " + paramNew.Name +
-                                                " was defined with as " + initValue.GetType().ToString() + " " + paramNew.Name + " during initialization (different types).");                            
+                            throw new Exception("Error preparing effect pass " + i + ". Shader parameter " + paramNew.Type.ToString() + " " + paramNew.Name +
+                                                " was defined as " + initValType.ToString() + " " + paramNew.Name + " during initialization (different types).");                            
                         }
+                        // ReSharper restore OperatorIsCanBeUsed
+                        // ReSharper restore UseMethodIsInstanceOfType
 
                         // Parameter was declared by user and type is correct in shader - carry on.
                         EffectParam paramExisting;

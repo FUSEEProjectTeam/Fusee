@@ -123,11 +123,11 @@ namespace Examples.ShaderDemo
 
             void main()
             {
-                // vec4 result = vec4(0.3, 1, 0.7, 1) * dot(vNormal, vec3(0, 0, 1));
-                vec4 result = vColor * dot(vNormal, vec3(0, 0, 1));
+                //vec4 result = vec4(0.3, 1, 0.7, 1) * dot(vNormal, vec3(0, 0, 1));
+                vec4 result = vColor * dot(vNormal, vec3(0, 0, -1));
                 result = vec4(floor(result.r * 3.0 + 0.5)/3.0, floor(result.g * 3.0 + 0.5)/3.0, floor(result.b* 3.0 + 0.5)/3.0, result.a); 
                 gl_FragColor = result;
-                // gl_FragColor = vec4(1, 0, 0, 1);
+                //gl_FragColor = vec4(1, 0, 0, 1);
             }",
                 StateSet = new RenderStateSet
                 {
@@ -537,7 +537,7 @@ namespace Examples.ShaderDemo
             // move per mouse
             if (Input.Instance.IsButton(MouseButtons.Left))
             {
-                _angleVelHorz = RotationSpeed*Input.Instance.GetAxis(InputAxis.MouseX);
+                _angleVelHorz = -RotationSpeed*Input.Instance.GetAxis(InputAxis.MouseX);
                 _angleVelVert = RotationSpeed*Input.Instance.GetAxis(InputAxis.MouseY);
             }
             else
@@ -564,11 +564,11 @@ namespace Examples.ShaderDemo
             if (Input.Instance.IsKey(KeyCodes.Down))
                 _angleVert += RotationSpeed*(float) Time.Instance.DeltaTime;
 
-            var mtxRot = float4x4.CreateRotationY(_angleHorz)*float4x4.CreateRotationX(_angleVert);
+            var mtxRot = float4x4.CreateRotationX(_angleVert)*float4x4.CreateRotationY(_angleHorz);
             var mtxCam = float4x4.LookAt(0, 200, 500, 0, 0, 0, 0, 1, 0);
 
             // first mesh
-            RC.ModelView = float4x4.CreateTranslation(0, -50, 0)*mtxRot*mtxCam;
+            RC.ModelView = mtxCam*float4x4.CreateTranslation(0, -50, 0)*mtxRot;
         }
 
         public override void RenderAFrame()

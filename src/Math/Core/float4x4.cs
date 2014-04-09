@@ -1,13 +1,43 @@
 using System;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 using ProtoBuf;
 
 namespace Fusee.Math
 {
     /// <summary>
-    /// Represents a 4x4 Matrix
+    /// Represents a 4x4 Matrix typically used in ComputerGraphics algorithms.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// float4x4 objects represent matrices used in column-vector-notation, that means
+    /// when used in common matrix-vector-multiplication scenarios, the vector should
+    /// be multiplied from the right to the matrix (M * v). Concatenations of matrices
+    /// from left to right represent a transformation where the rightmost matrix is applied
+    /// first and the leftmost matrix is applied last, for example in (M3 * M2 * M1) * v the vector
+    /// v is first transformed by M1, then by M2 and finally by M3. The translation part of a 4x4
+    /// matrix used in homogeneus coordinate calculations can be found in the the leftmost column 
+    /// (M14 - x-translation, M24 - y-translation, M34 - z-translation).
+    /// </para>
+    /// <para>
+    /// Note that although float4x4 objects represent matrices in COLUMN-vector-NOTATION as
+    /// found in math books, the objects' contents is physically stored in ROW-major-ORDER, meaning that
+    /// in physical memory, a float4x4's components are stored contiguously in the following order: first row (M11, M12, M13, M14), 
+    /// then second row (M21, M22, M21, M24), and so on. When exchanging matrix contents with libraries like
+    /// graphics engines (OpenGL, Direct3D), physics engines, file formats, etc. make sure to convert to and 
+    /// from the given Matrix layout of the API you are exchanging data with.
+    /// </para>
+    /// <para>
+    /// float4x4 contains convenience construction methods to create matrices commonly
+    /// used in Computer Graphics. Most of these application matrices are handedness-agnostic, meaning
+    /// that the resulting matrices can be used in both, left-handed and right-handed coordinate systems.
+    /// This does not hold for LookAt and Projection matrices where the viewing direction plays a role. In
+    /// left-handed coordinate systems the viewing direction is positive, meaning positions further away have 
+    /// bigger positive z-coordinates wheras in right-handed coordinate systems positions further away have smaller
+    /// negative z-coordinates. By default, float4x4 will assume a left-handed coordinate system, but contains
+    /// convenience construction methods to also create right-handed matrices if necessary. The right-handed versions
+    /// of methods are postfixed with "RH".
+    /// </para>
+    /// </remarks> 
     [Serializable]
     [ProtoContract]
     [StructLayout(LayoutKind.Sequential)]
@@ -406,13 +436,18 @@ namespace Fusee.Math
 
             axis.Normalize();
 
-            result = new float4x4(t*axis.x*axis.x + cos, t*axis.x*axis.y - sin*axis.z, t*axis.x*axis.z + sin*axis.y,
-                                  0.0f,
-                                  t*axis.x*axis.y + sin*axis.z, t*axis.y*axis.y + cos, t*axis.y*axis.z - sin*axis.x,
-                                  0.0f,
-                                  t*axis.x*axis.z - sin*axis.y, t*axis.y*axis.z + sin*axis.x, t*axis.z*axis.z + cos,
-                                  0.0f,
-                                  0, 0, 0, 1);
+            //// Row vector notation:
+            //result = new float4x4(t*axis.x*axis.x + cos,         t*axis.x*axis.y - sin*axis.z,  t*axis.x*axis.z + sin*axis.y,  0.0f,
+            //                      t*axis.x*axis.y + sin*axis.z,  t*axis.y*axis.y + cos,         t*axis.y*axis.z - sin*axis.x,  0.0f,
+            //                      t*axis.x*axis.z - sin*axis.y,  t*axis.y*axis.z + sin*axis.x,  t*axis.z*axis.z + cos,         0.0f,
+            //                      0,                             0,                             0,                             1);
+        
+            // Column vector notation:
+            result = new float4x4(t*axis.x*axis.x + cos,         t*axis.x*axis.y + sin*axis.z,  t*axis.x*axis.z - sin*axis.y,  0.0f,
+                                  t*axis.x*axis.y - sin*axis.z,  t*axis.y*axis.y + cos,         t*axis.y*axis.z + sin*axis.x,  0.0f,
+                                  t*axis.x*axis.z + sin*axis.y,  t*axis.y*axis.z - sin*axis.x,  t*axis.z*axis.z + cos,         0.0f,
+                                  0.0f,                          0.0f,                          0.0f,                          1.0f);
+
         }
 
         /// <summary>
@@ -442,11 +477,39 @@ namespace Fusee.Math
             var cos = (float) System.Math.Cos(angle);
             var sin = (float) System.Math.Sin(angle);
 
+            // Row vector notation
+            //result.Row0 = float4.UnitX;
+            //result.Row1 = new float4(0.0f, cos, sin, 0.0f);
+            //result.Row2 = new float4(0.0f, -sin, cos, 0.0f);
+            //result.Row3 = float4.UnitW;
+
+            // Column vector notation
+            result.Row0 = float4.UnitX;
+            result.Row1 = new float4(0.0f, cos, -sin, 0.0f);
+            result.Row2 = new float4(0.0f, sin,  cos, 0.0f);
+            result.Row3 = float4.UnitW;
+        
+        }
+
+        /// <summary>
+        /// Builds a rotation matrix for a rotation around the x-axis. Only for testing and debugging purposes during the 
+        /// row notation -> column notation code transition of the math library.
+        /// </summary>
+        /// <param name="angle">The counter-clockwise angle in radians.</param>
+        /// <param name="result">The resulting Matrix4 instance.</param>
+        [Obsolete("Only for testing and debugging purposes during the row notation -> column notation code transition of the math library")]
+        public static void CreateRotationX_ROW(float angle, out float4x4 result)
+        {
+            var cos = (float)System.Math.Cos(angle);
+            var sin = (float)System.Math.Sin(angle);
+
+            // Row vector notation
             result.Row0 = float4.UnitX;
             result.Row1 = new float4(0.0f, cos, sin, 0.0f);
             result.Row2 = new float4(0.0f, -sin, cos, 0.0f);
             result.Row3 = float4.UnitW;
         }
+
 
         /// <summary>
         /// Builds a rotation matrix for a rotation around the x-axis.
@@ -460,6 +523,21 @@ namespace Fusee.Math
             return result;
         }
 
+
+        /// <summary>
+        /// Builds a rotation matrix for a rotation around the x-axis. Only for testing and debugging purposes during the 
+        /// row notation -> column notation code transition of the math library.
+        /// </summary>
+        /// <param name="angle">The counter-clockwise angle in radians.</param>
+        /// <returns>The resulting Matrix4 instance.</returns>
+        [Obsolete("Only for testing and debugging purposes during the row notation -> column notation code transition of the math library")]
+        public static float4x4 CreateRotationX_ROW(float angle)
+        {
+            float4x4 result;
+            CreateRotationX_ROW(angle, out result);
+            return result;
+        }
+
         /// <summary>
         /// Builds a rotation matrix for a rotation around the y-axis.
         /// </summary>
@@ -470,11 +548,40 @@ namespace Fusee.Math
             var cos = (float) System.Math.Cos(angle);
             var sin = (float) System.Math.Sin(angle);
 
+            // Row vector notation
+            //result.Row0 = new float4(cos, 0.0f, -sin, 0.0f);
+            //result.Row1 = float4.UnitY;
+            //result.Row2 = new float4(sin, 0.0f, cos, 0.0f);
+            //result.Row3 = float4.UnitW;
+
+            // Column vector notation
+            result.Row0 = new float4(cos, 0.0f, sin, 0.0f);
+            result.Row1 = float4.UnitY;
+            result.Row2 = new float4(-sin, 0.0f, cos, 0.0f);
+            result.Row3 = float4.UnitW;
+        }
+
+
+        /// <summary>
+        /// Builds a rotation matrix for a rotation around the y-axis. Only for testing and debugging purposes during the 
+        /// row notation -> column notation code transition of the math library.
+        /// </summary>
+        /// <param name="angle">The counter-clockwise angle in radians.</param>
+        /// <param name="result">The resulting Matrix4 instance.</param>
+        [Obsolete("Only for testing and debugging purposes during the row notation -> column notation code transition of the math library")]
+        public static void CreateRotationY_ROW(float angle, out float4x4 result)
+        {
+            var cos = (float)System.Math.Cos(angle);
+            var sin = (float)System.Math.Sin(angle);
+
+            // Row vector notation
             result.Row0 = new float4(cos, 0.0f, -sin, 0.0f);
             result.Row1 = float4.UnitY;
             result.Row2 = new float4(sin, 0.0f, cos, 0.0f);
             result.Row3 = float4.UnitW;
+
         }
+
 
         /// <summary>
         /// Builds a rotation matrix for a rotation around the y-axis.
@@ -489,6 +596,21 @@ namespace Fusee.Math
         }
 
         /// <summary>
+        /// Only for testing and debugging purposes during the row notation -> column notation code transition of the math library
+        /// </summary>
+        /// <param name="angle">the angle.</param>
+        /// <returns></returns>
+        [Obsolete("Only for testing and debugging purposes during the row notation -> column notation code transition of the math library")]
+        public static float4x4 CreateRotationY_ROW(float angle)
+        {
+            float4x4 result;
+            CreateRotationY_ROW(angle, out result);
+            return result;
+        }
+
+
+
+        /// <summary>
         /// Builds a rotation matrix for a rotation around the z-axis.
         /// </summary>
         /// <param name="angle">The counter-clockwise angle in radians.</param>
@@ -498,10 +620,18 @@ namespace Fusee.Math
             var cos = (float) System.Math.Cos(angle);
             var sin = (float) System.Math.Sin(angle);
 
-            result.Row0 = new float4(cos, sin, 0.0f, 0.0f);
-            result.Row1 = new float4(-sin, cos, 0.0f, 0.0f);
+            // Row vector notation
+            //result.Row0 = new float4(cos, sin, 0.0f, 0.0f);
+            //result.Row1 = new float4(-sin, cos, 0.0f, 0.0f);
+            //result.Row2 = float4.UnitZ;
+            //result.Row3 = float4.UnitW;
+
+            // Column vector notation
+            result.Row0 = new float4(cos, -sin, 0.0f, 0.0f);
+            result.Row1 = new float4(sin, cos, 0.0f, 0.0f);
             result.Row2 = float4.UnitZ;
             result.Row3 = float4.UnitW;
+
         }
 
         /// <summary>
@@ -519,7 +649,6 @@ namespace Fusee.Math
         #endregion
 
         #region CreateTranslation
-
         /// <summary>
         /// Creates a translation matrix.
         /// </summary>
@@ -530,6 +659,31 @@ namespace Fusee.Math
         public static void CreateTranslation(float x, float y, float z, out float4x4 result)
         {
             result = Identity;
+
+            // Row order notation
+            // result.Row3 = new float4(x, y, z, 1);
+            
+            // Column order notation
+            result.M14 = x;
+            result.M24 = y;
+            result.M34 = z;
+            
+        }
+        
+        /// <summary>
+        /// Only for testing and debugging purposes during the row notation -> column notation code transition of the math library
+        /// </summary>
+        /// <param name="x">x</param>
+        /// <param name="y">y</param>
+        /// <param name="z">z</param>
+        /// <param name="result">Translation matrix</param>
+        /// <returns></returns>
+        [Obsolete("Only for testing and debugging purposes during the row notation -> column notation code transition of the math library")]
+        public static void CreateTranslation_ROW(float x, float y, float z, out float4x4 result)
+        {
+            result = Identity;
+
+            // Row order notation
             result.Row3 = new float4(x, y, z, 1);
         }
 
@@ -541,7 +695,14 @@ namespace Fusee.Math
         public static void CreateTranslation(ref float3 vector, out float4x4 result)
         {
             result = Identity;
-            result.Row3 = new float4(vector.x, vector.y, vector.z, 1);
+
+            // Row order notation
+            // result.Row3 = new float4(vector.x, vector.y, vector.z, 1);
+
+            // Column order notation
+            result.M14 = vector.x;
+            result.M24 = vector.y;
+            result.M34 = vector.z;
         }
 
         /// <summary>
@@ -555,6 +716,21 @@ namespace Fusee.Math
         {
             float4x4 result;
             CreateTranslation(x, y, z, out result);
+            return result;
+        }
+
+        /// <summary>
+        /// Only for testing and debugging purposes during the row notation -> column notation code transition of the math library
+        /// </summary>
+        /// <param name="x">x</param>
+        /// <param name="y">y</param>
+        /// <param name="z">z</param>
+        /// <returns>A matrix</returns>
+        [Obsolete("Only for testing and debugging purposes during the row notation -> column notation code transition of the math library")]
+        public static float4x4 CreateTranslation_ROW(float x, float y, float z)
+        {
+            float4x4 result;
+            CreateTranslation_ROW(x, y, z, out result);
             return result;
         }
 
@@ -660,7 +836,7 @@ namespace Fusee.Math
         #region CreateOrthographic
 
         /// <summary>
-        /// Creates an orthographic projection matrix.
+        /// Creates a left handed orthographic projection matrix.
         /// </summary>
         /// <param name="width">The width of the projection volume.</param>
         /// <param name="height">The height of the projection volume.</param>
@@ -673,7 +849,7 @@ namespace Fusee.Math
         }
 
         /// <summary>
-        /// Creates an orthographic projection matrix.
+        /// Creates a left handed orthographic projection matrix.
         /// </summary>
         /// <param name="width">The width of the projection volume.</param>
         /// <param name="height">The height of the projection volume.</param>
@@ -692,7 +868,7 @@ namespace Fusee.Math
         #region CreateOrthographicOffCenter
 
         /// <summary>
-        /// Creates an orthographic projection matrix.
+        /// Creates a left handed orthographic projection matrix.
         /// </summary>
         /// <param name="left">The left edge of the projection volume.</param>
         /// <param name="right">The right edge of the projection volume.</param>
@@ -706,22 +882,76 @@ namespace Fusee.Math
         {
             result = new float4x4();
 
+            float invRL = 1 / (right - left);
+            float invTB = 1 / (top - bottom);
+            float invFN = 1 / (zFar - zNear);
+
+            // Row order notation
+            //result.M11 = 2 * invRL;
+            //result.M22 = 2 * invTB;
+            //result.M33 = 2 * invFN;
+
+            //result.M41 = -(right + left) * invRL;
+            //result.M42 = -(top + bottom) * invTB;
+            //result.M43 = -(zFar + zNear) * invFN;
+            //result.M44 = 1;
+
+            // Column order notation
+            result.M11 = 2 * invRL;
+            result.M22 = 2 * invTB;
+            result.M33 = 2 * invFN;
+
+            result.M14 = -(right + left) * invRL;
+            result.M24 = -(top + bottom) * invTB;
+            result.M34 = -(zFar + zNear) * invFN;
+            result.M44 = 1;
+        
+        }
+
+        /// <summary>
+        /// Creates a right handed orthographic projection matrix.
+        /// </summary>
+        /// <param name="left">The left edge of the projection volume.</param>
+        /// <param name="right">The right edge of the projection volume.</param>
+        /// <param name="bottom">The bottom edge of the projection volume.</param>
+        /// <param name="top">The top edge of the projection volume.</param>
+        /// <param name="zNear">The near edge of the projection volume.</param>
+        /// <param name="zFar">The far edge of the projection volume.</param>
+        /// <param name="result">The resulting Matrix4 instance.</param>
+        public static void CreateOrthographicOffCenterRH(float left, float right, float bottom, float top, float zNear,
+                                                         float zFar, out float4x4 result)
+        {
+            result = new float4x4();
+
             float invRL = 1/(right - left);
             float invTB = 1/(top - bottom);
             float invFN = 1/(zFar - zNear);
 
-            result.M11 = 2*invRL;
-            result.M22 = 2*invTB;
-            result.M33 = -2*invFN;
+            // Row order notation
+            //result.M11 = 2*invRL;
+            //result.M22 = 2*invTB;
+            //result.M33 = -2*invFN;
 
-            result.M41 = -(right + left)*invRL;
-            result.M42 = -(top + bottom)*invTB;
-            result.M43 = -(zFar + zNear)*invFN;
+            //result.M41 = -(right + left)*invRL;
+            //result.M42 = -(top + bottom)*invTB;
+            //result.M43 = -(zFar + zNear)*invFN;
+            //result.M44 = 1;
+
+            // Column order notation
+            result.M11 = 2 * invRL;
+            result.M22 = 2 * invTB;
+            result.M33 = -2 * invFN;
+
+            result.M14 = -(right + left) * invRL;
+            result.M24 = -(top + bottom) * invTB;
+            result.M34 = -(zFar + zNear) * invFN;
             result.M44 = 1;
+        
         }
 
+      
         /// <summary>
-        /// Creates an orthographic projection matrix.
+        /// Creates a left handed orthographic projection matrix.
         /// </summary>
         /// <param name="left">The left edge of the projection volume.</param>
         /// <param name="right">The right edge of the projection volume.</param>
@@ -743,7 +973,7 @@ namespace Fusee.Math
         #region CreatePerspectiveFieldOfView
 
         /// <summary>
-        /// Creates a perspective projection matrix.
+        /// Creates a left handed perspective projection matrix.
         /// </summary>
         /// <param name="fovy">Angle of the field of view in the y direction (in radians)</param>
         /// <param name="aspect">Aspect ratio of the view (width / height)</param>
@@ -783,7 +1013,39 @@ namespace Fusee.Math
         }
 
         /// <summary>
-        /// Creates a perspective projection matrix.
+        /// Only for testing and debugging purposes during the row notation -> column notation code transition of the math library
+        /// </summary>
+        /// <param name="fovy">fovy</param>
+        /// <param name="aspect">aspect</param>
+        /// <param name="zNear">zNear</param>
+        /// <param name="zFar">zFar</param>
+        /// <param name="result">result</param>
+        [Obsolete("Only for testing and debugging purposes during the row notation -> column notation code transition of the math library")]
+        public static void CreatePerspectiveFieldOfView_ROW(float fovy, float aspect, float zNear, float zFar,
+                                                        out float4x4 result)
+        {
+            if (fovy <= 0 || fovy > System.Math.PI)
+                throw new ArgumentOutOfRangeException("fovy");
+            if (aspect <= 0)
+                throw new ArgumentOutOfRangeException("aspect");
+            if (zNear <= 0)
+                throw new ArgumentOutOfRangeException("zNear");
+            if (zFar <= 0)
+                throw new ArgumentOutOfRangeException("zFar");
+            if (zNear >= zFar)
+                throw new ArgumentOutOfRangeException("zNear");
+
+            float yMax = zNear * (float)System.Math.Tan(0.5f * fovy);
+            float yMin = -yMax;
+            float xMin = yMin * aspect;
+            float xMax = yMax * aspect;
+
+            CreatePerspectiveOffCenter_ROW(xMin, xMax, yMin, yMax, zNear, zFar, out result);
+        }
+
+
+        /// <summary>
+        /// Creates a left handed perspective projection matrix.
         /// </summary>
         /// <param name="fovy">Angle of the field of view in the y direction (in radians)</param>
         /// <param name="aspect">Aspect ratio of the view (width / height)</param>
@@ -807,12 +1069,28 @@ namespace Fusee.Math
             return result;
         }
 
+        /// <summary>
+        /// Only for testing and debugging purposes during the row notation -> column notation code transition of the math library
+        /// </summary>
+        /// <returns></returns>
+        /// <param name="fovy">fovy</param>
+        /// <param name="aspect">aspect</param>
+        /// <param name="zNear">zNear</param>
+        /// <param name="zFar">zFar</param>
+        /// <returns>Matrix</returns>
+        [Obsolete("Only for testing and debugging purposes during the row notation -> column notation code transition of the math library")]
+        public static float4x4 CreatePerspectiveFieldOfView_ROW(float fovy, float aspect, float zNear, float zFar)
+        {
+            float4x4 result;
+            CreatePerspectiveFieldOfView_ROW(fovy, aspect, zNear, zFar, out result);
+            return result;
+        }
         #endregion
 
         #region CreatePerspectiveOffCenter
 
         /// <summary>
-        /// Creates an perspective projection matrix.
+        /// Creates a left handed perspective projection matrix.
         /// </summary>
         /// <param name="left">Left edge of the view frustum</param>
         /// <param name="right">Right edge of the view frustum</param>
@@ -821,6 +1099,12 @@ namespace Fusee.Math
         /// <param name="zNear">Distance to the near clip plane</param>
         /// <param name="zFar">Distance to the far clip plane</param>
         /// <param name="result">A projection matrix that transforms camera space to raster space</param>
+        /// <remarks>Generates a matrix mapping a frustum shaped volume (the viewing frustum) to
+        /// the unit cube (ranging from -1 to 1 in each dimension, also in z). The sign of the z-value is not
+        /// flipped. Given that the underlying rendering platform interprets z-values returned by the
+        /// vertex shader to be in left-handed coordinates, where increasing z-values indicate locations
+        /// further away from the view point (as BOTH, Direct3D AND OpenGL do), this type of matrix is widely
+        /// called to be a "left handed" projection matrix as it assumes a left-handed camera coordinate system.</remarks>
         /// <exception cref="System.ArgumentOutOfRangeException">
         /// Thrown under the following conditions:
         /// <list type="bullet">
@@ -841,19 +1125,118 @@ namespace Fusee.Math
 
             float x = (2.0f*zNear)/(right - left);
             float y = (2.0f*zNear)/(top - bottom);
+            // Left Handed
+            float a = (left + right) / (left - right);
+            float b = (top + bottom) / (bottom - top);
+            float c = (zFar + zNear) / (zFar - zNear);
+            float d = -(2.0f * zFar * zNear) / (zFar - zNear);
+
+            // Row order notation
+            //result = new float4x4(x, 0, 0, 0,
+            //                      0, y, 0, 0,
+            //                      a, b, c, 1,
+            //                      0, 0, d, 0);
+
+            // Column order notation
+            result = new float4x4(x, 0, a, 0,
+                                  0, y, b, 0,
+                                  0, 0, c, d,
+                                  0, 0, 1, 0);
+        }
+
+        /// <summary>
+        /// Only for testing and debugging purposes during the row notation -> column notation code transition of the math library
+        /// </summary>
+        /// <param name="left">left</param>
+        /// <param name="right">right</param>
+        /// <param name="bottom">bottom</param>
+        /// <param name="top">top</param>
+        /// <param name="zNear">zNear</param>
+        /// <param name="zFar">zFar</param>
+        /// <param name="result">result</param>
+        [Obsolete("Only for testing and debugging purposes during the row notation -> column notation code transition of the math library")]
+        public static void CreatePerspectiveOffCenter_ROW(float left, float right, float bottom, float top, float zNear,
+                                                      float zFar, out float4x4 result)
+        {
+            if (zNear <= 0)
+                throw new ArgumentOutOfRangeException("zNear");
+            if (zFar <= 0)
+                throw new ArgumentOutOfRangeException("zFar");
+            if (zNear >= zFar)
+                throw new ArgumentOutOfRangeException("zNear");
+
+            float x = (2.0f * zNear) / (right - left);
+            float y = (2.0f * zNear) / (top - bottom);
+            // Left Handed
+            float a = (left + right) / (left - right);
+            float b = (top + bottom) / (bottom - top);
+            float c = (zFar + zNear) / (zFar - zNear);
+            float d = -(2.0f * zFar * zNear) / (zFar - zNear);
+
+            // Row order notation
+            result = new float4x4(x, 0, 0, 0,
+                                  0, y, 0, 0,
+                                  a, b, c, 1,
+                                  0, 0, d, 0);
+        }
+
+
+        /// <summary>
+        /// Creates a right handed perspective projection matrix.
+        /// </summary>
+        /// <param name="left">Left edge of the view frustum</param>
+        /// <param name="right">Right edge of the view frustum</param>
+        /// <param name="bottom">Bottom edge of the view frustum</param>
+        /// <param name="top">Top edge of the view frustum</param>
+        /// <param name="zNear">Distance to the near clip plane</param>
+        /// <param name="zFar">Distance to the far clip plane</param>
+        /// <param name="result">A projection matrix that transforms camera space to raster space</param>
+        /// <remarks>Generates a matrix mapping a frustum shaped volume (the viewing frustum) to
+        /// the unit cube (ranging from -1 to 1 in each dimension, also in z). The sign of the z-value will be
+        /// flipped for vectors multiplied with this matrix. Given that the underlying rendering platform 
+        /// interprets z-values returned by the vertex shader to be in left-handed coordinates, where increasing 
+        /// z-values indicate locations further away from the view point (as BOTH, Direct3D AND OpenGL do), this 
+        /// type of matrix is widely called to be a "right handed" projection matrix as it assumes a right-handed 
+        /// camera coordinate system.</remarks>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// Thrown under the following conditions:
+        /// <list type="bullet">
+        /// <item>zNear is negative or zero</item>
+        /// <item>zFar is negative or zero</item>
+        /// <item>zNear is larger than zFar</item>
+        /// </list>
+        /// </exception>
+        public static void CreatePerspectiveOffCenterRH(float left, float right, float bottom, float top, float zNear,
+                                                      float zFar, out float4x4 result)
+        {
+            if (zNear <= 0)
+                throw new ArgumentOutOfRangeException("zNear");
+            if (zFar <= 0)
+                throw new ArgumentOutOfRangeException("zFar");
+            if (zNear >= zFar)
+                throw new ArgumentOutOfRangeException("zNear");
+
+            float x = (2.0f * zNear) / (right - left);
+            float y = (2.0f * zNear) / (top - bottom);
+            // Right handed
             float a = (right + left)/(right - left);
             float b = (top + bottom)/(top - bottom);
             float c = -(zFar + zNear)/(zFar - zNear);
             float d = -(2.0f*zFar*zNear)/(zFar - zNear);
-
-            result = new float4x4(x, 0, 0, 0,
-                                  0, y, 0, 0,
-                                  a, b, c, -1,
-                                  0, 0, d, 0);
+            // Row order notation
+            //result = new float4x4(x, 0, 0,  0,
+            //                      0, y, 0,  0,
+            //                      a, b, c, -1,
+            //                      0, 0, d,  0);
+            result = new float4x4(x, 0,  a, 0,
+                                  0, y,  b, 0,
+                                  0, 0,  c, d,
+                                  0, 0, -1, 0);
         }
 
+
         /// <summary>
-        /// Creates an perspective projection matrix.
+        /// Creates an left handed perspective projection matrix.
         /// </summary>
         /// <param name="left">Left edge of the view frustum</param>
         /// <param name="right">Right edge of the view frustum</param>
@@ -921,126 +1304,84 @@ namespace Fusee.Math
 
         #endregion
 
-        #region Rotation Functions
-
-        /// <summary>
-        /// Build a rotation matrix that rotates about the x-axis
-        /// </summary>
-        /// <param name="angle">angle in radians to rotate counter-clockwise around the x-axis</param>
-        /// <returns>A rotation matrix</returns>
-        [Obsolete("Use CreateRotationX instead.")]
-        public static float4x4 RotateX(float angle)
-        {
-            var cos = (float) System.Math.Cos(angle);
-            var sin = (float) System.Math.Sin(angle);
-
-            float4x4 result;
-            result.Row0 = float4.UnitX;
-            result.Row1 = new float4(0.0f, cos, sin, 0.0f);
-            result.Row2 = new float4(0.0f, -sin, cos, 0.0f);
-            result.Row3 = float4.UnitW;
-            return result;
-        }
-
-        /// <summary>
-        /// Build a rotation matrix that rotates about the y-axis
-        /// </summary>
-        /// <param name="angle">angle in radians to rotate counter-clockwise around the y-axis</param>
-        /// <returns>A rotation matrix</returns>
-        [Obsolete("Use CreateRotationY instead.")]
-        public static float4x4 RotateY(float angle)
-        {
-            var cos = (float) System.Math.Cos(angle);
-            var sin = (float) System.Math.Sin(angle);
-
-            float4x4 result;
-            result.Row0 = new float4(cos, 0.0f, -sin, 0.0f);
-            result.Row1 = float4.UnitY;
-            result.Row2 = new float4(sin, 0.0f, cos, 0.0f);
-            result.Row3 = float4.UnitW;
-            return result;
-        }
-
-        /// <summary>
-        /// Build a rotation matrix that rotates about the z-axis
-        /// </summary>
-        /// <param name="angle">angle in radians to rotate counter-clockwise around the z-axis</param>
-        /// <returns>A rotation matrix</returns>
-        [Obsolete("Use CreateRotationZ instead.")]
-        public static float4x4 RotateZ(float angle)
-        {
-            var cos = (float) System.Math.Cos(angle);
-            var sin = (float) System.Math.Sin(angle);
-
-            float4x4 result;
-            result.Row0 = new float4(cos, sin, 0.0f, 0.0f);
-            result.Row1 = new float4(-sin, cos, 0.0f, 0.0f);
-            result.Row2 = float4.UnitZ;
-            result.Row3 = float4.UnitW;
-            return result;
-        }
-
-        /// <summary>
-        /// Build a rotation matrix to rotate about the given axis
-        /// </summary>
-        /// <param name="axis">the axis to rotate about</param>
-        /// <param name="angle">angle in radians to rotate counter-clockwise (looking in the direction of the given axis)</param>
-        /// <returns>A rotation matrix</returns>
-        [Obsolete("Use CreateFromAxisAngle instead.")]
-        public static float4x4 Rotate(float3 axis, float angle)
-        {
-            var cos = (float) System.Math.Cos(-angle);
-            var sin = (float) System.Math.Sin(-angle);
-            var t = 1.0f - cos;
-
-            axis.Normalize();
-
-            float4x4 result;
-            result.Row0 = new float4(t*axis.x*axis.x + cos, t*axis.x*axis.y - sin*axis.z, t*axis.x*axis.z + sin*axis.y,
-                                     0.0f);
-            result.Row1 = new float4(t*axis.x*axis.y + sin*axis.z, t*axis.y*axis.y + cos, t*axis.y*axis.z - sin*axis.x,
-                                     0.0f);
-            result.Row2 = new float4(t*axis.x*axis.z - sin*axis.y, t*axis.y*axis.z + sin*axis.x, t*axis.z*axis.z + cos,
-                                     0.0f);
-            result.Row3 = float4.UnitW;
-            return result;
-        }
-
-        /// <summary>
-        /// Build a rotation matrix from a quaternion
-        /// </summary>
-        /// <param name="q">the quaternion</param>
-        /// <returns>A rotation matrix</returns>
-        public static float4x4 Rotate(Quaternion q)
-        {
-            float3 axis;
-            float angle;
-            q.ToAxisAngle(out axis, out angle);
-            return CreateFromAxisAngle(axis, angle);
-        }
-
-        #endregion
 
         #region Camera Helper Functions
+        /// <summary>
+        /// Build a left handed world space to camera space matrix
+        /// </summary>
+        /// <param name="eye">Eye (camera) position in world space</param>
+        /// <param name="target">Target position in world space</param>
+        /// <param name="up">Up vector in world space (should not be parallel to the camera direction, that is target - eye)</param>
+        /// <returns>A Matrix4 that transforms world space to camera space</returns>
+        public static float4x4 LookAt(float3 eye, float3 target, float3 up)
+        {
+            var z = float3.Normalize(target - eye);
+            var x = float3.Normalize(float3.Cross(up, z));
+            var y = float3.Cross(z, x);
+
+            // Row order notation
+            //return new float4x4(new float4(x.x, y.x, z.x, 0),
+            //                    new float4(x.y, y.y, z.y, 0),
+            //                    new float4(x.z, y.z, z.z, 0),
+            //                    new float4(-float3.Dot(x, eye), -float3.Dot(y, eye), -float3.Dot(z, eye), 1));
+
+            // Column order notation
+            return new float4x4(x.x, x.y, x.z, -float3.Dot(x, eye),
+                                y.x, y.y, y.z, -float3.Dot(y, eye),
+                                z.x, z.y, z.z, -float3.Dot(z, eye),
+                                0,   0,   0,   1);
+        }
 
         /// <summary>
-        /// Build a world space to camera space matrix
+        /// Only for testing and debugging purposes during the row notation -> column notation code transition of the math library
+        /// </summary>
+        /// <param name="eye">eye</param>
+        /// <param name="target">target</param>
+        /// <param name="up">up</param>
+        /// <returns>A matrix.</returns>
+        [Obsolete("Only for testing and debugging purposes during the row notation -> column notation code transition of the math library")]
+        public static float4x4 LookAt_ROW(float3 eye, float3 target, float3 up)
+        {
+            var z = float3.Normalize(target - eye);
+            var x = float3.Normalize(float3.Cross(up, z));
+            var y = float3.Cross(z, x);
+
+            // Row order notation
+            return new float4x4(new float4(x.x, y.x, z.x, 0),
+                                new float4(x.y, y.y, z.y, 0),
+                                new float4(x.z, y.z, z.z, 0),
+                                new float4(-float3.Dot(x, eye), -float3.Dot(y, eye), -float3.Dot(z, eye), 1));
+
+        }
+
+
+        /// <summary>
+        /// Build a right handed world space to camera space matrix
         /// </summary>
         /// <param name="eye">Eye (camera) position in world space</param>
         /// <param name="target">Target position in world space</param>
         /// <param name="up">Up vector in world space (should not be parallel to the camera direction, that is target - eye)</param>
         /// <returns>A float4x4 that transforms world space to camera space</returns>
-        public static float4x4 LookAt(float3 eye, float3 target, float3 up)
+        public static float4x4 LookAtRH(float3 eye, float3 target, float3 up)
         {
             var z = float3.Normalize(eye - target);
             var x = float3.Normalize(float3.Cross(up, z));
             var y = float3.Cross(z, x);
 
-            return new float4x4(new float4(x.x, y.x, z.x, 0),
-                                new float4(x.y, y.y, z.y, 0),
-                                new float4(x.z, y.z, z.z, 0),
-                                new float4(-float3.Dot(x, eye), -float3.Dot(y, eye), -float3.Dot(z, eye), 1));
+            // Row order notation
+            //return new float4x4(new float4(x.x, y.x, z.x, 0),
+            //                    new float4(x.y, y.y, z.y, 0),
+            //                    new float4(x.z, y.z, z.z, 0),
+            //                    new float4(-float3.Dot(x, eye), -float3.Dot(y, eye), -float3.Dot(z, eye), 1));
+
+            // Column order notation
+            return new float4x4(x.x, x.y, x.z, -float3.Dot(x, eye),
+                                y.x, y.y, y.z, -float3.Dot(y, eye),
+                                z.x, z.y, z.z, -float3.Dot(z, eye),
+                                0, 0, 0, 1);
         }
+        
+
 
         /// <summary>
         /// Build a world space to camera space matrix
@@ -1062,46 +1403,27 @@ namespace Fusee.Math
         }
 
         /// <summary>
-        /// Build a projection matrix
+        /// Build a row notation world space to camera space matrix. Only for testing and debugging purposes during the 
+        /// row notation -> column notation code transition of the math library.
         /// </summary>
-        /// <param name="left">Left edge of the view frustum</param>
-        /// <param name="right">Right edge of the view frustum</param>
-        /// <param name="bottom">Bottom edge of the view frustum</param>
-        /// <param name="top">Top edge of the view frustum</param>
-        /// <param name="near">Distance to the near clip plane</param>
-        /// <param name="far">Distance to the far clip plane</param>
-        /// <returns>A projection matrix that transforms camera space to raster space</returns>
-        [Obsolete("Use CreatePerspectiveOffCenter instead.")]
-        public static float4x4 Frustum(float left, float right, float bottom, float top, float near, float far)
+        /// <param name="eyeX">Eye (camera) position in world space</param>
+        /// <param name="eyeY">Eye (camera) position in world space</param>
+        /// <param name="eyeZ">Eye (camera) position in world space</param>
+        /// <param name="targetX">Target position in world space</param>
+        /// <param name="targetY">Target position in world space</param>
+        /// <param name="targetZ">Target position in world space</param>
+        /// <param name="upX">Up vector in world space (should not be parallel to the camera direction, that is target - eye)</param>
+        /// <param name="upY">Up vector in world space (should not be parallel to the camera direction, that is target - eye)</param>
+        /// <param name="upZ">Up vector in world space (should not be parallel to the camera direction, that is target - eye)</param>
+        /// <returns>A Matrix4 that transforms world space to camera space</returns>
+        [Obsolete("Only for testing and debugging purposes during the row notation -> column notation code transition of the math library")]
+        public static float4x4 LookAt_ROW(float eyeX, float eyeY, float eyeZ, float targetX, float targetY, float targetZ,
+                                      float upX, float upY, float upZ)
         {
-            float invRL = 1.0f/(right - left);
-            float invTB = 1.0f/(top - bottom);
-            float invFN = 1.0f/(far - near);
-            return new float4x4(new float4(2.0f*near*invRL, 0.0f, 0.0f, 0.0f),
-                                new float4(0.0f, 2.0f*near*invTB, 0.0f, 0.0f),
-                                new float4((right + left)*invRL, (top + bottom)*invTB, -(far + near)*invFN, -1.0f),
-                                new float4(0.0f, 0.0f, -2.0f*far*near*invFN, 0.0f));
+            return LookAt_ROW(new float3(eyeX, eyeY, eyeZ), new float3(targetX, targetY, targetZ), new float3(upX, upY, upZ));
         }
-
-        /// <summary>
-        /// Build a projection matrix
-        /// </summary>
-        /// <param name="fovy">Angle of the field of view in the y direction (in radians)</param>
-        /// <param name="aspect">Aspect ratio of the view (width / height)</param>
-        /// <param name="near">Distance to the near clip plane</param>
-        /// <param name="far">Distance to the far clip plane</param>
-        /// <returns>A projection matrix that transforms camera space to raster space</returns>
-        [Obsolete("Use CreatePerspectiveFieldOfView instead.")]
-        public static float4x4 Perspective(float fovy, float aspect, float near, float far)
-        {
-            float yMax = near*(float) System.Math.Tan(0.5f*fovy);
-            float yMin = -yMax;
-            float xMin = yMin*aspect;
-            float xMax = yMax*aspect;
-
-            return Frustum(xMin, xMax, yMin, yMax, near, far);
-        }
-
+        
+        
         #endregion
 
         #region Elementary Arithmetic Functions
@@ -1198,26 +1520,46 @@ namespace Fusee.Math
         /// <param name="result">A new instance that is the result of the multiplication</param>
         public static void MultAffine(ref float4x4 left, ref float4x4 right, out float4x4 result)
         {
+            // Row order notation
+            //result = new float4x4(
+            //    left.M11*right.M11 + left.M12*right.M21 + left.M13*right.M31,
+            //    left.M11*right.M12 + left.M12*right.M22 + left.M13*right.M32,
+            //    left.M11*right.M13 + left.M12*right.M23 + left.M13*right.M33,
+            //    0f,
+
+            //    left.M21*right.M11 + left.M22*right.M21 + left.M23*right.M31,
+            //    left.M21*right.M12 + left.M22*right.M22 + left.M23*right.M32,
+            //    left.M21*right.M13 + left.M22*right.M23 + left.M23*right.M33,
+            //    0f,
+
+            //    left.M31*right.M11 + left.M32*right.M21 + left.M33*right.M31,
+            //    left.M31*right.M12 + left.M32*right.M22 + left.M33*right.M32,
+            //    left.M31*right.M13 + left.M32*right.M23 + left.M33*right.M33,
+            //    0f,
+
+            //    left.M41*right.M11 + left.M42*right.M21 + left.M43*right.M31 + right.M41,
+            //    left.M41*right.M12 + left.M42*right.M22 + left.M43*right.M32 + right.M42,
+            //    left.M41*right.M13 + left.M42*right.M23 + left.M43*right.M33 + right.M43,
+            //    1f);
+
+            // Column order notation
             result = new float4x4(
-                left.M11*right.M11 + left.M12*right.M21 + left.M13*right.M31,
-                left.M11*right.M12 + left.M12*right.M22 + left.M13*right.M32,
-                left.M11*right.M13 + left.M12*right.M23 + left.M13*right.M33,
-                0f,
+                left.M11 * right.M11 + left.M12 * right.M21 + left.M13 * right.M31,
+                left.M11 * right.M12 + left.M12 * right.M22 + left.M13 * right.M32,
+                left.M11 * right.M13 + left.M12 * right.M23 + left.M13 * right.M33,
+                left.M11 * right.M14 + left.M12 * right.M24 + left.M13 * right.M34 + left.M14,
 
-                left.M21*right.M11 + left.M22*right.M21 + left.M23*right.M31,
-                left.M21*right.M12 + left.M22*right.M22 + left.M23*right.M32,
-                left.M21*right.M13 + left.M22*right.M23 + left.M23*right.M33,
-                0f,
+                left.M21 * right.M11 + left.M22 * right.M21 + left.M23 * right.M31,
+                left.M21 * right.M12 + left.M22 * right.M22 + left.M23 * right.M32,
+                left.M21 * right.M13 + left.M22 * right.M23 + left.M23 * right.M33,
+                left.M21 * right.M14 + left.M22 * right.M24 + left.M23 * right.M34 + left.M24,
 
-                left.M31*right.M11 + left.M32*right.M21 + left.M33*right.M31,
-                left.M31*right.M12 + left.M32*right.M22 + left.M33*right.M32,
-                left.M31*right.M13 + left.M32*right.M23 + left.M33*right.M33,
-                0f,
+                left.M31 * right.M11 + left.M32 * right.M21 + left.M33 * right.M31,
+                left.M31 * right.M12 + left.M32 * right.M22 + left.M33 * right.M32,
+                left.M31 * right.M13 + left.M32 * right.M23 + left.M33 * right.M33,
+                left.M31 * right.M14 + left.M32 * right.M24 + left.M33 * right.M34 + left.M34,
 
-                left.M41*right.M11 + left.M42*right.M21 + left.M43*right.M31 + right.M41,
-                left.M41*right.M12 + left.M42*right.M22 + left.M43*right.M32 + right.M42,
-                left.M41*right.M13 + left.M42*right.M23 + left.M43*right.M33 + right.M43,
-                1f);
+                0, 0, 0, 1);
         }
 
         #endregion
@@ -1232,7 +1574,8 @@ namespace Fusee.Math
         public static float4x4 Invert(float4x4 mat)
         {
             if (mat == Identity || mat == Zero) return mat;
-            if (mat.IsAffine) return InvertAffine(mat);
+            // InvertAffine is broken (probably since column order notation
+            // if (mat.IsAffine) return InvertAffine(mat);
 
             mat.Transpose();
 
@@ -1249,7 +1592,7 @@ namespace Fusee.Math
             var tmp10 = mat.M31*mat.M42;
             var tmp11 = mat.M32*mat.M41;
 
-            /* calculate first 8 elements (cofactors) */
+            // calculate first 8 elements (cofactors)
             var m11 = tmp0*mat.M22 + tmp3*mat.M23 + tmp4*mat.M24;
             m11 -= tmp1*mat.M22 + tmp2*mat.M23 + tmp5*mat.M24;
             var m12 = tmp1*mat.M21 + tmp6*mat.M23 + tmp9*mat.M24;
@@ -1267,7 +1610,7 @@ namespace Fusee.Math
             var m24 = tmp4*mat.M11 + tmp9*mat.M12 + tmp10*mat.M13;
             m24 -= tmp5*mat.M11 + tmp8*mat.M12 + tmp11*mat.M13;
 
-            /* calculate pairs for second 8 elements (cofactors) */
+            // calculate pairs for second 8 elements (cofactors)
             tmp0 = mat.M13*mat.M24;
             tmp1 = mat.M14*mat.M23;
             tmp2 = mat.M12*mat.M24;
@@ -1281,7 +1624,7 @@ namespace Fusee.Math
             tmp10 = mat.M11*mat.M22;
             tmp11 = mat.M12*mat.M21;
 
-            /* calculate second 8 elements (cofactors) */
+            // calculate second 8 elements (cofactors)
             var m31 = tmp0*mat.M42 + tmp3*mat.M43 + tmp4*mat.M44;
             m31 -= tmp1*mat.M42 + tmp2*mat.M43 + tmp5*mat.M44;
             var m32 = tmp1*mat.M41 + tmp6*mat.M43 + tmp9*mat.M44;
@@ -1299,7 +1642,7 @@ namespace Fusee.Math
             var m44 = tmp10*mat.M33 + tmp4*mat.M31 + tmp9*mat.M32;
             m44 -= tmp8*mat.M32 + tmp11*mat.M33 + tmp5*mat.M31;
 
-            /* calculate determinant */
+            // calculate determinant
             var det = mat.M11*m11 + mat.M12*m12 + mat.M13*m13 + mat.M14*m14;
 
             if (det > MathHelper.EpsilonFloat || det < -MathHelper.EpsilonFloat)
@@ -1324,15 +1667,31 @@ namespace Fusee.Math
         /// <returns>The inverse of the given matrix.</returns>
         public static float4x4 InvertAffine(float4x4 mat)
         {
-            var val1 = -(mat.M11*mat.M41 + mat.M12*mat.M42 + mat.M13*mat.M43);
-            var val2 = -(mat.M21*mat.M41 + mat.M22*mat.M42 + mat.M23*mat.M43);
-            var val3 = -(mat.M31*mat.M41 + mat.M32*mat.M42 + mat.M33*mat.M43);
+            // Row order notation
+            //var val1 = -(mat.M11*mat.M41 + mat.M12*mat.M42 + mat.M13*mat.M43);
+            //var val2 = -(mat.M21*mat.M41 + mat.M22*mat.M42 + mat.M23*mat.M43);
+            //var val3 = -(mat.M31*mat.M41 + mat.M32*mat.M42 + mat.M33*mat.M43);
+
+            //return
+            //    new float4x4(new float4(mat.M11, mat.M21, mat.M31, 0),
+            //                 new float4(mat.M12, mat.M22, mat.M32, 0),
+            //                 new float4(mat.M13, mat.M23, mat.M33, 0),
+            //                 new float4(val1, val2, val3, 1));
+
+
+            throw new ApplicationException("InvertAffine is broken (probably since column order notation)");
+            // TODO: fix this!
+            //  Column order notation ???
+            var val1 = -(mat.M11 * mat.M14 + mat.M21 * mat.M24 + mat.M31 * mat.M34);
+            var val2 = -(mat.M12 * mat.M14 + mat.M22 * mat.M24 + mat.M32 * mat.M34);
+            var val3 = -(mat.M13 * mat.M14 + mat.M23 * mat.M24 + mat.M33 * mat.M34);
 
             return
-                new float4x4(new float4(mat.M11, mat.M21, mat.M31, 0),
-                             new float4(mat.M12, mat.M22, mat.M32, 0),
-                             new float4(mat.M13, mat.M23, mat.M33, 0),
-                             new float4(val1, val2, val3, 1));
+                new float4x4(new float4(mat.M11, mat.M21, mat.M31, val1),
+                             new float4(mat.M12, mat.M22, mat.M32, val2),
+                             new float4(mat.M13, mat.M23, mat.M33, val3),
+                             new float4(0,       0,       0,       1));
+        
         }
 
         #endregion
@@ -1391,10 +1750,10 @@ namespace Fusee.Math
         public static float4 TransformPremult(float4 vector, float4x4 matrix)
         {
             return new float4(
-                ((matrix.M11 * vector.x) + (matrix.M21 * vector.y) + (matrix.M31 * vector.z) + (matrix.M41*vector.w)),
-                ((matrix.M12 * vector.x) + (matrix.M22 * vector.y) + (matrix.M32 * vector.z) + (matrix.M42*vector.w)),
-                ((matrix.M13 * vector.x) + (matrix.M23 * vector.y) + (matrix.M33 * vector.z) + (matrix.M43*vector.w)),
-                (matrix.M41 * vector.x) + (matrix.M42 * vector.y) + (matrix.M43 * vector.z) + (matrix.M44 * vector.w));
+                (matrix.M11 * vector.x) + (matrix.M21 * vector.y) + (matrix.M31 * vector.z) + (matrix.M41 * vector.w),
+                (matrix.M12 * vector.x) + (matrix.M22 * vector.y) + (matrix.M32 * vector.z) + (matrix.M42 * vector.w),
+                (matrix.M13 * vector.x) + (matrix.M23 * vector.y) + (matrix.M33 * vector.z) + (matrix.M43 * vector.w),
+                (matrix.M14 * vector.x) + (matrix.M24 * vector.y) + (matrix.M34 * vector.z) + (matrix.M44 * vector.w));
         }
 
         /// <summary>
@@ -1641,7 +2000,11 @@ namespace Fusee.Math
         {
             get
             {
-                return (Column3 == float4.UnitW);
+                // Row order notation
+                // return (Column3 == float4.UnitW);
+
+                // Column order notation
+                return (Row3 == float4.UnitW);
             }
         }
 

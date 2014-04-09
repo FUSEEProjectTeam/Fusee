@@ -14,6 +14,9 @@ namespace Fusee.Serialization
 
         [ProtoMember(3)] 
         public string CreatedBy;
+
+        [ProtoMember(4)]
+        public string CreationDate; 
     }
 
     [ProtoContract]

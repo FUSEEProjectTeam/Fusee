@@ -484,4 +484,14 @@ namespace Fusee.Engine
         // Just add enum symbols
         LastAxis, // Keep this the last enum entry
     }
+
+    /// <summary>
+    /// The different cursor types directly supported by render canvas implementations
+    /// Standard pointer and link-hand cursor are currently supported.
+    /// </summary>
+    public enum CursorType : int
+    {
+        Standard,
+        Hand,
+    }
 }

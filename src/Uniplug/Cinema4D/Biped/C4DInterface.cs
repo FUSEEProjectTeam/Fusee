@@ -5,6 +5,11 @@ namespace RigPlugin
 {
     class C4DInterface : ObjectDataM
     {
+        public C4DInterface()
+            : base(false)
+        {
+        }
+
         private GeListNode node; // Aktuelle Scene
         private DDescriptionParams descparams; //
 
@@ -42,7 +47,7 @@ namespace RigPlugin
         private bool Bein = false;
         private bool Schwanz = false;
 
-        public C4DInterface(GeListNode node, DDescriptionParams descparams)
+        public C4DInterface(GeListNode node, DDescriptionParams descparams) : base(false)
         {
             this.node = node;
             this.descparams = descparams;

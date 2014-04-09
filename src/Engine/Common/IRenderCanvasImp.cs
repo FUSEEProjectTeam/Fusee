@@ -75,6 +75,18 @@ namespace Fusee.Engine
         void Run();
 
         /// <summary>
+        /// Set the cursor (the mouse pointer image) to one of the pre-defined types
+        /// </summary>
+        /// <param name="cursorType">The type of the cursor to set.</param>
+        void SetCursor(CursorType cursorType);
+
+        /// <summary>
+        /// Opens the given URL in the user's standard web browser. The link MUST start with "http://".
+        /// </summary>
+        /// <param name="link">The URL to open</param>
+        void OpenLink(string link);
+
+        /// <summary>
         /// Occurs when [init] is called.
         /// Implementation Tasks: Handle the Initialization process
         /// </summary>

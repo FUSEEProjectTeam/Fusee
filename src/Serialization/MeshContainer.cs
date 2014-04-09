@@ -18,5 +18,8 @@ namespace Fusee.Serialization
 
         [ProtoMember(4)]
         public ushort[] Triangles;
+
+        [ProtoMember(5)] 
+        public AABBf BoundingBox;
     }
 }

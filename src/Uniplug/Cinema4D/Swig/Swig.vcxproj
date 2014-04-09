@@ -23,15 +23,14 @@
     <None Include="C4dApi.i" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\..\resource\modules\gv\expressiontag\res\description\gvdynamic.h" />
-    <ClInclude Include="c4d_customdatatype.swig.h" />
-    <ClInclude Include="customgui_inexclude.swig.h" />
     <ClInclude Include="include\c4d_basebitmap.swig.h" />
+    <ClInclude Include="include\c4d_customdatatype.swig.h" />
     <ClInclude Include="include\c4d_gedata.swig.h" />
+    <ClInclude Include="include\customgui_inexclude.swig.h" />
     <ClInclude Include="include\ge_prepass.swig.h" />
     <ClInclude Include="include\lib_ca.swig.h" />
     <ClInclude Include="include\lib_description.swig.h" />
-    <ClInclude Include="operatingsystem.swig.h" />
+    <ClInclude Include="include\operatingsystem.swig.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{DF2CEF11-FC94-4D78-BC42-004720BC5C87}</ProjectGuid>

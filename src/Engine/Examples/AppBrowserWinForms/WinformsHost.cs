@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Windows.Forms;
@@ -127,6 +128,28 @@ namespace Examples.WinFormsFusee
                 _disposed = true;
             }
             base.Dispose(disposing);
+        }
+
+        public override void SetCursor(CursorType cursorType)
+        {
+            switch (cursorType)
+            {
+                case CursorType.Standard:
+                    _form.Cursor = Cursors.Default;
+                    break;
+                case CursorType.Hand:
+                    _form.Cursor = Cursors.WaitCursor;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("cursorType");
+            }
+            
+        }
+
+        public override void OpenLink(string link)
+        {
+            if (link.StartsWith("http://"))
+                Process.Start(link);
         }
 
         public override void Run()

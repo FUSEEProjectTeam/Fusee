@@ -29,7 +29,7 @@
 //    C4D API, it is also recommended here to keep the dependency on the C4D API as samll as possible.
 //
 //  For a handfull of types some extra hand coding is done here. This happens whenever an appropriate C# type already
-//  exists (and must thus not be created and used by Swig). Examples are the C#-standard strin type (mapped from the 
+//  exists (and must thus not be created and used by Swig). Examples are the C#-standard string type (mapped from the 
 //  Maxon-C++-API-String type), or the Math.La C#- Matrix and Vector classes (mapped from the respective Maxon-C++ classes).
 //  Mapping a C++-API type to an existing C# type can be done using so called typemaps - a concept which has some learning 
 //  curve, especially with the poor documentation given (at least try to grasp the general typemap syntax from the docs).
@@ -44,7 +44,7 @@
 // The module definition. "directors" (= two-way wrapper classes) are allowed and the overall module name is C4dApi
 %module (directors="1") C4dApi
 
-	
+
 ////////////////////////////////////////////////////////////////////////////////////
 // This code gets verbatim copied into the generated C++ bridge file (C4dApiWrapper.cpp). Header files included here
 // with the "normal" #include are not wrapped (yet), although most of them will appear in some later %include; section.
@@ -89,7 +89,27 @@ struct Matrix_POD
 	Vector_POD off, v1, v2, v3;
 };
 
+struct Vector32_POD
+{
+	float x, y, z;
+};
+
 %}
+
+////////////////////////////////////////////////////////////////////////////////////
+// DeleteMemPtr can be called from generated cs code to free 
+// pointers allocated by C4D as return arrays. This is used in CreatePhongNormals
+//
+// <void*-IntPtr mapping>
+%typemap(cstype, out="IntPtr /* void*_cstype */") void *memPtr "IntPtr /* void*_cstype */"
+%typemap(csin) void *memPtr
+  "new HandleRef(null,$csinput) /* void*_csin */"
+%inline %{
+void DeleteMemPtr(void *memPtr) {
+	DeleteMem(memPtr);
+}
+%}
+// </void*-IntPtr mapping>
 
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -202,13 +222,45 @@ class String;
 // </String-string mapping>
 
 
+
 ////////////////////////////////////////////////////////////////////////////////////
 // Some simple instructions to handle C4d-defined simple types as builtin C++ types
-%apply int   { LONG }
-%apply bool   { Bool }
-%apply double { Real }
-%apply double { LReal }
-%apply float { SReal }
+//%apply int   { Int32 }
+//%apply bool   { Bool }
+//%apply double { Real }
+//%apply double { LReal }
+//%apply float { SReal }
+
+%apply bool { Bool }
+
+%apply char { maxon::Char }
+%apply unsigned char { maxon::UChar }
+%apply short { maxon::Int16 }
+%apply unsigned short { maxon::UInt16 }
+%apply int { maxon::Int32 }
+%apply unsigned int { maxon::UInt32 }
+%apply long { maxon::Int64 }
+%apply unsigned long { maxon::UInt64 }
+%apply int { maxon::Int }
+%apply unsigned int { maxon::UInt }
+%apply float { maxon::Float32 }
+%apply double { maxon::Float }
+%apply double { maxon::Float64 }
+
+%apply char { Char }
+%apply unsigned char { UChar }
+%apply short { Int16 }
+%apply unsigned short { UInt16 }
+%apply int { Int32 }
+%apply unsigned int { UInt32 }
+%apply long { Int64 }
+%apply unsigned long { UInt64 }
+%apply int { Int }
+%apply unsigned int { UInt }
+%apply float { Float32 }
+%apply double { Float }
+%apply double { Float64 }
+
 
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -238,6 +290,15 @@ class String;
        case 1001149:
          ret = new XPressoTag(cPtr, owner);
          break;
+	   case 5616: // Ttexture
+		 ret = new TextureTag(cPtr, owner);
+		 break;
+	   case 5671: // Tuvw
+		 ret = new UVWTag(cPtr, owner);
+		 break;
+	   case 5673: // Tpolygonselection  WARNING!!! There is is only ONE class (SelectionTag) for three type IDs (Point, Edge, and Poly). C4D programmers, you are real men...
+		 ret = new SelectionTag(cPtr, owner);
+		 break;
       // Repeat for every other concrete type.
       default:
 	  //changed from the debug output to return a BaseTag object
@@ -291,6 +352,43 @@ BaseObject *
 {
     IntPtr cPtr = $imcall;
     $csclassname ret = ($csclassname) $modulePINVOKE.InstantiateConcreteObject(cPtr, $owner);$excode
+    return ret;
+}
+
+// for BaseMaterial derivatives
+%pragma(csharp) imclasscode=%{
+  public static BaseMaterial InstantiateConcreteMaterial(IntPtr cPtr, bool owner)
+  {
+    BaseMaterial ret = null;
+    if (cPtr == IntPtr.Zero) 
+	{
+      return ret;
+    }
+    int type = $modulePINVOKE.C4DAtom_GetType(new HandleRef(null, cPtr));
+    switch (type) 
+	{
+       case 0:
+         ret = new BaseMaterial(cPtr, owner);
+         break;
+	  case 5703: // Mmaterial
+		 ret = new Material(cPtr, owner);
+		 break;
+      // Repeat for every other concrete type.
+      default:
+	  //changed from the debug output to return a BaseTag object
+        ret = new BaseMaterial(cPtr, owner);
+        break;
+    }
+    return ret;
+  }
+%}
+
+%typemap(csout, excode=SWIGEXCODE)
+BaseMaterial *
+/* Insert here every other abstract type returned in the C++ API */
+{
+    IntPtr cPtr = $imcall;
+    $csclassname ret = ($csclassname) $modulePINVOKE.InstantiateConcreteMaterial(cPtr, $owner);$excode
     return ret;
 }
 
@@ -444,7 +542,7 @@ BaseObject *
 
 
 // Map Vector   TO   Fusee.Math.double3
-%typemap(cstype, out="Fusee.Math.double3 /* Vector_cstype_out */") Vector "Fusee.Math.double3 /* Vectorcstype */"
+%typemap(cstype, out="Fusee.Math.double3 /* Vector_cstype_out */") Vector "Fusee.Math.double3 /* Vector_cstype */"
 %typemap(csout, excode=SWIGEXCODE) Vector 
 %{ {  /* <Vector_csout> */
       Fusee.Math.double3 ret = $imcall;$excode
@@ -619,6 +717,7 @@ BaseObject *
 
 //////////////////////////////////////////////////////////////////
 // ge_prepass.h
+%rename (SERIALINFO_ENUM) SERIALINFO;
 %include "ge_prepass.swig.h";
 
 
@@ -644,7 +743,7 @@ BaseObject *
 //NEW
 %extend DescID
 {
-	const DescLevel &GetAt(LONG pos) const { return (*self)[pos]; }
+	const DescLevel &GetAt(Int32 pos) const { return (*self)[pos]; }
 }
 
 //////////////////////////////////////////////////////////////////
@@ -668,7 +767,7 @@ BaseObject *
 		return bmp;
 	}
 
-	static BaseBitmap *AutoBitmap(LONG id)
+	static BaseBitmap *AutoBitmap(Int32 id)
 	{
 		BaseBitmap *bmp = InitResourceBitmap(id);
 		return bmp;
@@ -708,11 +807,11 @@ BaseObject *
 // c4d_baseobject.h
 %extend PointObject
 {
-	Vector GetPointAt(LONG inx)
+	Vector GetPointAt(Int32 inx)
 	{
 		return self->GetPointR()[inx];
 	}
-	void SetPointAt(LONG inx, Vector v)
+	void SetPointAt(Int32 inx, Vector v)
 	{
 		self->GetPointW()[inx] = v;
 	}
@@ -720,38 +819,38 @@ BaseObject *
 }
 %extend PolygonObject
 {
-	Vector GetPointAt(LONG inx)
+	Vector GetPointAt(Int32 inx)
 	{
 		return self->GetPointR()[inx];
 	}
-	void SetPointAt(LONG inx, Vector v)
+	void SetPointAt(Int32 inx, Vector v)
 	{
 		self->GetPointW()[inx] = v;
 	}
-	CPolygon GetPolygonAt(LONG inx)
+	CPolygon GetPolygonAt(Int32 inx)
 	{
 		return self->GetPolygonR()[inx];
 	}
-	void SetPolygonAt(LONG inx, CPolygon v)
+	void SetPolygonAt(Int32 inx, CPolygon v)
 	{
 		self->GetPolygonW()[inx] = v;
 	}
 }
 %extend SplineObject
 {
-	Tangent *GetTangentAt(LONG inx)
+	Tangent *GetTangentAt(Int32 inx)
 	{
 		return (Tangent *)(self->GetTangentR() + inx);
 	}
-	void SetTangentAt(LONG inx, Tangent *pT)
+	void SetTangentAt(Int32 inx, Tangent *pT)
 	{
 		self->GetTangentW()[inx] = *pT;
 	}
-	Segment *GetSegmentAt(LONG inx)
+	Segment *GetSegmentAt(Int32 inx)
 	{
 		return (Segment *)(self->GetSegmentR() + inx);
 	}
-	void SetSegmentAt(LONG inx, Segment *pT)
+	void SetSegmentAt(Int32 inx, Segment *pT)
 	{
 		self->GetSegmentW()[inx] = *pT;
 	}
@@ -762,6 +861,29 @@ BaseObject *
   return (PointObject*)iObj;
  }
 }
+%typemap(cstype, out="Fusee.Math.float3[] /* Vector32*PolygonObject::CreatePhongNormals_cstype */") Vector32 *PolygonObject::CreatePhongNormals "Fusee.Math.float3[] /* Vector32*PolygonObject::CreatePhongNormals_cstype */"
+%typemap(out) Vector32 *PolygonObject::CreatePhongNormals
+%{ /* <Vector32*PolygonObject::CreatePhongNormals_out> */ 
+   $result = *((Vector32_POD **)(&$1)); 
+   /* </Vector32*PolygonObject::CreatePhongNormals_out> */%}
+%typemap(csout, excode=SWIGEXCODE) Vector32 *PolygonObject::CreatePhongNormals
+%{ {  /* <Vector32*PolygonObject::CreatePhongNormals_csout> */
+      IntPtr p_ret = $imcall;$excode
+	  if (p_ret == IntPtr.Zero)
+	      return null;
+	  int nNormals = this.GetPolygonCount()*4;
+      Fusee.Math.float3[] ret = new Fusee.Math.float3[nNormals];
+      unsafe
+	  {
+	      for (int i = 0; i < nNormals; i++)
+		  {
+			  ret[i] = Fusee.Math.ArrayConvert.ArrayFloatTofloat3(((float *)(p_ret))+3*i);
+	      }
+	  }
+	  C4dApi.DeleteMemPtr(p_ret);
+      return ret;
+   } /* </Vector32*PolygonObject::CreatePhongNormals_csout> */ %}
+
 
 %include "c4d_baseobject.h";
 
@@ -779,18 +901,52 @@ BaseObject *
 
 //////////////////////////////////////////////////////////////////
 // "c4d_basetag.h"
-
 %include "c4d_basetag.h";
 
-/////////////////////////////////////////////////////////////////
-//////////////"NEU"
 ///////////////////////////////////////////////
 // "c4d_baseselect.h"
+%extend BaseSelect
+{
+	Int32 GetRangeA(Int32 seg)
+	{
+		Int32 ret, b;
+		if (self->GetRange(seg, 2147483647, &ret, &b))
+			return ret;
+		return -1;
+	}
+	Int32 GetRangeB(Int32 seg)
+	{
+		Int32 a, ret;
+		if (self->GetRange(seg, 2147483647, &a, &ret))
+			return ret;
+		return -1;
+	}
+};
+
 %include "c4d_baseselect.h";
+
+///////////////////////////////////////////////
+// "c4d_basematerial.h"
+%include "c4d_basematerial.h";
+
+///////////////////////////////////////////////
+// "c4d_basechannel.h"
+%include "c4d_basechannel.h";
+
+///////////////////////////////////////////////
+// "c4d_shader.h"
+%ignore Multipass;
+%include "c4d_shader.h";
 
 //////////////////////////////////////////////////////////////////
 // "c4d_commanddata.h"
 %feature("director") CommandData;
+%csmethodmodifiers CommandData::CommandData "private";
+%typemap(cscode) CommandData %{
+  public CommandData(bool memOwn) : this(C4dApiPINVOKE.new_CommandData(), memOwn) {
+    SwigDirectorConnect();
+  }
+%}
 %include "c4d_commanddata.h";
 
 //////////////////////////////////////////////////////////////////
@@ -805,34 +961,34 @@ BaseObject *
 %extend BrushObjectInfo
 {
 	// Replacement for m_pPoints
-	Vector GetPointAt(LONG inx)
+	Vector GetPointAt(Int32 inx)
 	{
 		return self->m_pPoints[inx];
 	}
 	// No setter because m_pPoints is const Vector*
 
 	// Replacement for m_pGlobalPoints
-	Vector GetGlobalPointAt(LONG inx)
+	Vector GetGlobalPointAt(Int32 inx)
 	{
 		return self->m_pGlobalPoints[inx];
 	}
-	void SetGlobalPointAt(LONG inx, Vector v)
+	void SetGlobalPointAt(Int32 inx, Vector v)
 	{
 		self->m_pGlobalPoints[inx] = v;
 	}
 
 	// Replacement for m_pNormals
-	Vector GetNormalAt(LONG inx)
+	Vector GetNormalAt(Int32 inx)
 	{
 		return self->m_pNormals[inx];
 	}
-	void SetNormalAt(LONG inx, Vector v)
+	void SetNormalAt(Int32 inx, Vector v)
 	{
 		self->m_pNormals[inx] = v;
 	}
 
 	// Replacement for m_pPolys
-	CPolygon GetPolyAt(LONG inx)
+	CPolygon GetPolyAt(Int32 inx)
 	{
 		return self->m_pPolys[inx];
 	}
@@ -845,6 +1001,12 @@ BaseObject *
 //////////////////////////////////////////////////////////////////
 // "c4d_objectdata.h" (replaced by own implementation)
 %feature("director") ObjectDataM;
+%csmethodmodifiers ObjectDataM::ObjectDataM "private";
+%typemap(cscode) ObjectDataM %{
+  public ObjectDataM(bool memOwn) : this(C4dApiPINVOKE.new_ObjectDataM(), memOwn) {
+    SwigDirectorConnect();
+  }
+%}
 %include "c4d_objectdata.h" // for keeping inheritance ObjectDataM -> ObjectData
 %include "ObjectDataM.h";
 
@@ -893,7 +1055,7 @@ BaseObject *
 // "c4d_graphview.h"
 %inline %{
 	// Maxon forgot to implement this. It's probably never used, but since it is declared, Swig wants to generate a wrapper for it
-	inline Bool GvBuildValuesTable(GvNode *bn, GvValue **&in_ports, LONG &nr_of_in_ports, GvPort **&out_ports, LONG &nr_of_out_ports)
+	inline Bool GvBuildValuesTable(GvNode *bn, GvValue **&in_ports, Int32 &nr_of_in_ports, GvPort **&out_ports, Int32 &nr_of_out_ports)
 	{
 		return FALSE;	
 	}
@@ -936,7 +1098,13 @@ BaseObject *
 
 //////////////////////////////////////////////////////////////////
 // "c4d_operatordata.h"
-%include "c4d_operatordata.h";
+%feature("director") OperatorData;
+%csmethodmodifiers OperatorData::OperatorData "private";
+%typemap(cscode) OperatorData %{
+  public OperatorData(bool memOwn) : this(C4dApiPINVOKE.new_OperatorData(), memOwn) {
+    SwigDirectorConnect();
+  }
+%}%include "c4d_operatordata.h";
 
 //////////////////////////////////////////////////////////////////
 // "c4d_operatorplugin.h"
@@ -945,9 +1113,33 @@ BaseObject *
 //////////////////////////////////////////////////////////////////
 // "c4d_filterdata.h"
 %feature("director") SceneLoaderData;
+%csmethodmodifiers SceneLoaderData::SceneLoaderData "private";
+%typemap(cscode) SceneLoaderData %{
+  public SceneLoaderData(bool memOwn) : this(C4dApiPINVOKE.new_SceneLoaderData(), memOwn) {
+    SwigDirectorConnect();
+  }
+%}
 %feature("director") SceneSaverData;
+%csmethodmodifiers SceneSaverData::SceneSaverData "private";
+%typemap(cscode) SceneSaverData %{
+  public SceneSaverData(bool memOwn) : this(C4dApiPINVOKE.new_SceneSaverData(), memOwn) {
+    SwigDirectorConnect();
+  }
+%}
 %feature("director") BitmapLoaderData;
+%csmethodmodifiers BitmapLoaderData::BitmapLoaderData "private";
+%typemap(cscode) BitmapLoaderData %{
+  public BitmapLoaderData(bool memOwn) : this(C4dApiPINVOKE.new_BitmapLoaderData(), memOwn) {
+    SwigDirectorConnect();
+  }
+%}
 %feature("director") BitmapSaverData;
+%csmethodmodifiers BitmapSaverData::BitmapSaverData "private";
+%typemap(cscode) BitmapSaverData %{
+  public BitmapSaverData(bool memOwn) : this(C4dApiPINVOKE.new_BitmapSaverData(), memOwn) {
+    SwigDirectorConnect();
+  }
+%}
 %include "c4d_filterdata.h";
 
 //////////////////////////////////////////////////////////////////
@@ -962,8 +1154,14 @@ BaseObject *
 
 //////////////////////////////////////////////////////////////////
 // Res file includes (for constants)
+// NOTE: These files are typically found under $(C4D)/resource/res/description.
+// These constants are most likely not found by a find-in-files on the c4dsdk.
+// Try to guess the dialog name of the res/h file and look into it to make sure
+// the data you need is included
 %include "osplineprimitive.h";
 %include "ospline.h";
+%include "ttexture.h";
+%include "mmaterial.h";
 
 //////////////////////////////////////////////////////////////////
 //operatingsystem.h
@@ -1018,5 +1216,6 @@ BaseObject *
 // From somewhere
 #define Texpresso												1001149
 void MessageDialog(const String &str);
+Bool QuestionDialog(const String& str);
 void GePrint(const String &str);
-BaseContainer GetCustomDataTypeDefault(LONG type);
+BaseContainer GetCustomDataTypeDefault(Int32 type);

@@ -25,6 +25,14 @@
 
 #endif
 
+void RemoveXRefData(BaseDocument *doc, BaseList2D *bl); // private
+Bool HasDocumentXRefs(BaseDocument *doc); // private
+Int32 GetDocumentXRefState(); // private
+UInt64 GetXRefID(BaseList2D *bl); // private
+Bool XRefHasParam(BaseDocument *doc, BaseList2D *bl, const DescID &id); // private
+Bool XRefGetParam(BaseDocument *doc, BaseList2D *bl, const DescID &id, GeData &dat); // private
+Bool XRefRemoveParam(BaseDocument *doc, BaseList2D *bl, const DescID &id); // private
+
 class MirrorTransformData
 {
 public:
@@ -55,7 +63,7 @@ struct JointRestState
 	JointRestState() { m_Len=0.0; }
 	Matrix m_bMg,m_bMi;	// bone rest state
 	Matrix m_oMg,m_oMi;	// object rest state
-	Real m_Len;			// bone rest length
+	Float m_Len;			// bone rest length
 };
 
 class CAWeightTag;
@@ -68,12 +76,12 @@ private:
 	~CAJointObject();
 public:
 	static CAJointObject *Alloc() { return (CAJointObject*)BaseObject::Alloc(Ojoint); }
-	static void Free(CAJointObject *&pObject) { BaseObject *op=pObject; BaseObject::Free(op); pObject=NULL; }
+	static void Free(CAJointObject *&pObject) { BaseObject *op=pObject; BaseObject::Free(op); pObject=nullptr; }
 #else
 public:
 #endif
-	void GetBone(Matrix &m, Real &len);
-	CAWeightTag *GetWeightTag(LONG &index);
+	void GetBone(Matrix &m, Float &len);
+	CAWeightTag *GetWeightTag(Int32 &index);
 };
 
 class CAWeightTag : public BaseTag
@@ -84,39 +92,39 @@ private:
 	~CAWeightTag();
 public:
 	static CAWeightTag *Alloc() { return (CAWeightTag*)BaseTag::Alloc(Tweights); }
-	static void Free(CAWeightTag *&pTag) { BaseTag *tag=pTag; BaseTag::Free(tag); pTag=NULL; }
+	static void Free(CAWeightTag *&pTag) { BaseTag *tag=pTag; BaseTag::Free(tag); pTag=nullptr; }
 #else
 public:
 #endif
 
-	BaseObject *GetJoint(LONG index, BaseDocument *doc);	// get joint object at 'index', doc can be NULL
-	LONG GetJointCount();									// get total joints
-	LONG FindJoint(BaseObject *op, BaseDocument *doc);		// return the index of this object or NOTOK if not found, doc can be NULL
+	BaseObject *GetJoint(Int32 index, BaseDocument *doc);	// get joint object at 'index', doc can be nullptr
+	Int32 GetJointCount();									// get total joints
+	Int32 FindJoint(BaseObject *op, BaseDocument *doc);		// return the index of this object or NOTOK if not found, doc can be nullptr
 
-	JointRestState GetJointRestState(LONG index);	// get the rest state for the joint at 'index'
-	void SetJointRestState(LONG index, const JointRestState &state);	// set the rest state for the joint
+	JointRestState GetJointRestState(Int32 index);	// get the rest state for the joint at 'index'
+	void SetJointRestState(Int32 index, const JointRestState &state);	// set the rest state for the joint
 
-	void GetWeightMap(LONG index, SReal *map, LONG cnt);	// fill in the weights to 'map' that must be allocated with 'cnt' (this should be the point count)
-	Bool SetWeightMap(LONG index, SReal *map, LONG cnt); // set the entire weight map using 'map'
+	void GetWeightMap(Int32 index, Float32 *map, Int32 cnt);	// fill in the weights to 'map' that must be allocated with 'cnt' (this should be the point count)
+	Bool SetWeightMap(Int32 index, Float32 *map, Int32 cnt); // set the entire weight map using 'map'
 
-	LONG GetWeightCount(LONG index);	// get total stored weights, zero weights are not stored
-	void GetIndexWeight(LONG index, LONG windex, LONG &pntindex, Real &weight);	// get the windex weight and which point index it is for plus the weight
+	Int32 GetWeightCount(Int32 index);	// get total stored weights, zero weights are not stored
+	void GetIndexWeight(Int32 index, Int32 windex, Int32 &pntindex, Float &weight);	// get the windex weight and which point index it is for plus the weight
 
-	Real GetWeight(LONG index, LONG pntindex);	// return the weight for the point pntindex
-	Bool SetWeight(LONG index, LONG pntindex, Real weight); // set the weight for pntindex
+	Float GetWeight(Int32 index, Int32 pntindex);	// return the weight for the point pntindex
+	Bool SetWeight(Int32 index, Int32 pntindex, Float weight); // set the weight for pntindex
 
-	ULONG GetWeightDirty();	// get the dirty state of the weights
+	UInt32 GetWeightDirty();	// get the dirty state of the weights
 	void WeightDirty();		// make the weights dirty
 
 	Matrix GetGeomMg();		// get the global matrix for the bind geometry (use this with the global matrices of the joints to get the local transforms)
 	void SetGeomMg(const Matrix &mg);	// set the global matrix for the bind geom
 
-	LONG AddJoint(BaseObject *op);	// add joint binding
+	Int32 AddJoint(BaseObject *op);	// add joint binding
 	void RemoveJoint(BaseObject *op); // remove joint from binding
 
-	void CalculateBoneStates(LONG index);	// calculate JointRestState bone state (m_bMg, m_bMi, m_Len) from m_oMg, use index as NOTOK to do all binds
+	void CalculateBoneStates(Int32 index);	// calculate JointRestState bone state (m_bMg, m_bMi, m_Len) from m_oMg, use index as NOTOK to do all binds
 
-	Bool TransferWeightMap(BaseDocument *doc, CAWeightTag *dst, LONG sindex, LONG dindex, LONG offset, LONG cnt, AliasTrans *trans); // transfer map sindex to dindex (or all if NOTOK) using point offset and count (or NOTOK for all indexes)
+	Bool TransferWeightMap(BaseDocument *doc, CAWeightTag *dst, Int32 sindex, Int32 dindex, Int32 offset, Int32 cnt, AliasTrans *trans); // transfer map sindex to dindex (or all if NOTOK) using point offset and count (or NOTOK for all indexes)
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -194,39 +202,39 @@ public:
 	void SetS(const Vector &s);
 	void SetR(const Vector &r);
 
-	LONG GetPointCount();
-	Bool SetPointCount(LONG cnt);
-	Vector GetPoint(LONG index);
-	void SetPoint(LONG index, const Vector &pnt);
+	Int32 GetPointCount();
+	Bool SetPointCount(Int32 cnt);
+	Vector GetPoint(Int32 index);
+	void SetPoint(Int32 index, const Vector &pnt);
 
-	LONG GetTangentCount();
-	Bool SetTangentCount(LONG cnt);
-	Vector GetTangent(LONG index);
-	void SetTangent(LONG index, const Vector &v);
+	Int32 GetTangentCount();
+	Bool SetTangentCount(Int32 cnt);
+	Vector GetTangent(Int32 index);
+	void SetTangent(Int32 index, const Vector &v);
 
-	LONG GetVertexMapTagCount();
-	LONG GetVertexMapCount(LONG tindex);
-	Bool SetVertexMapCount(LONG tindex, LONG cnt);
-	Real GetVertexMap(LONG tindex, LONG index);
-	void SetVertexMap(LONG tindex, LONG index, Real v);
+	Int32 GetVertexMapTagCount();
+	Int32 GetVertexMapCount(Int32 tindex);
+	Bool SetVertexMapCount(Int32 tindex, Int32 cnt);
+	Float GetVertexMap(Int32 tindex, Int32 index);
+	void SetVertexMap(Int32 tindex, Int32 index, Float v);
 
-	LONG GetParamCount();
-	Bool SetParamCount(LONG cnt);
-	Bool GetParam(LONG index, GeData &data, DescID &id);
-	void SetParam(LONG index, const GeData &data, const DescID &id);
+	Int32 GetParamCount();
+	Bool SetParamCount(Int32 cnt);
+	Bool GetParam(Int32 index, GeData &data, DescID &id);
+	void SetParam(Int32 index, const GeData &data, const DescID &id);
 
-	LONG GetUVTagCount();
-	LONG GetUVCount(LONG tindex);
-	Bool SetUVCount(LONG tindex, LONG cnt);
-	void GetUV(LONG tindex, LONG index, UVWStruct &uv);
-	void SetUV(LONG tindex, LONG index, const UVWStruct &uv);
+	Int32 GetUVTagCount();
+	Int32 GetUVCount(Int32 tindex);
+	Bool SetUVCount(Int32 tindex, Int32 cnt);
+	void GetUV(Int32 tindex, Int32 index, UVWStruct &uv);
+	void SetUV(Int32 tindex, Int32 index, const UVWStruct &uv);
 
-	LONG GetWeightMapTagCount();
-	LONG GetWeightMapJointCount(LONG tindex);
-	LONG GetWeightMapCount(LONG tindex, LONG jindex);
-	Bool SetWeightMapCount(LONG tindex, LONG jindex, LONG cnt);
-	Real GetWeightMap(LONG tindex, LONG jindex, LONG index);
-	void SetWeightMap(LONG tindex, LONG jindex, LONG index, Real v);
+	Int32 GetWeightMapTagCount();
+	Int32 GetWeightMapJointCount(Int32 tindex);
+	Int32 GetWeightMapCount(Int32 tindex, Int32 jindex);
+	Bool SetWeightMapCount(Int32 tindex, Int32 jindex, Int32 cnt);
+	Float GetWeightMap(Int32 tindex, Int32 jindex, Int32 index);
+	void SetWeightMap(Int32 tindex, Int32 jindex, Int32 index, Float v);
 };
 
 class CAMorph
@@ -239,16 +247,20 @@ private:
 public:
 	String GetName();
 	void SetName(const String &name);
-	LONG GetID();
+	Int32 GetID();
 	Bool CopyFrom(CAMorph *src, AliasTrans *trn, CAMORPH_COPY_FLAGS flags);
 	CAMorphNode *Find(CAPoseMorphTag *tag, BaseList2D *bl);
-	LONG GetNodeIndex(CAMorphNode *node);
-	LONG FindIndex(CAPoseMorphTag *tag, BaseList2D *bl);
-	CAMorphNode *FindFromIndex(CAPoseMorphTag *tag, LONG index);
+	Int32 GetNodeIndex(CAMorphNode *node);
+	Int32 FindIndex(CAPoseMorphTag *tag, BaseList2D *bl);
+	CAMorphNode *FindFromIndex(CAPoseMorphTag *tag, Int32 index);
 	CAMorphNode *GetFirst();
 	Bool SetMode(BaseDocument *doc, CAPoseMorphTag *tag, CAMORPH_MODE_FLAGS flags, CAMORPH_MODE mode);
 	Bool Store(BaseDocument *doc, CAPoseMorphTag *tag, CAMORPH_DATA_FLAGS flags);
 	Bool Apply(BaseDocument *doc, CAPoseMorphTag *tag, CAMORPH_DATA_FLAGS flags);
+	BaseList2D *GetTarget(BaseDocument *doc);
+	void SetTarget(CAPoseMorphTag *tag, BaseDocument *doc, BaseList2D *bl);
+	void SetStrength(Float strength);
+	Float GetStrength();
 };
 
 class CAPoseMorphTag : public BaseTag
@@ -259,24 +271,25 @@ private:
 	~CAPoseMorphTag();
 public:
 	static CAPoseMorphTag *Alloc() { return (CAPoseMorphTag*)BaseTag::Alloc(Tposemorph); }
-	static void Free(CAPoseMorphTag *&pTag) { BaseTag *tag=pTag; BaseTag::Free(tag); pTag=NULL; }
+	static void Free(CAPoseMorphTag *&pTag) { BaseTag *tag=pTag; BaseTag::Free(tag); pTag=nullptr; }
 #else
 public:
 #endif
 
-	LONG GetMorphCount();
-	CAMorph *GetMorph(LONG index);
-	DescID GetMorphID(LONG index);
-	LONG GetActiveMorphIndex();
-	LONG GetMode();
+	Int32 GetMorphCount();
+	CAMorph *GetMorph(Int32 index);
+	DescID GetMorphID(Int32 index);
+	Int32 GetActiveMorphIndex();
+	Int32 GetMode();
 	CAMorph *GetActiveMorph() { return GetMorph(GetActiveMorphIndex()); }
 	CAMorph *GetMorphBase() { return GetMorph(0); }
 	CAMorph *AddMorph();
-	void RemoveMorph(LONG index);
+	void RemoveMorph(Int32 index);
 	void InitMorphs();
-	void UpdateMorphs();
-	LONG GetMorphIndex(CAMorph *morph);
+	void UpdateMorphs(BaseDocument *doc = nullptr);
+	Int32 GetMorphIndex(CAMorph *morph);
 	Bool ExitEdit(BaseDocument *doc, Bool apply);
+	void SetActiveMorphIndex(Int32 index);
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -300,14 +313,14 @@ class BrushObjectInfo
 public:
 	BrushObjectInfo()
 	{
-		m_pObject=NULL;
-		m_pOriginObject=NULL;
-		m_pDeformObject=NULL;
-		m_pNeighbor=NULL;
-		m_pPoints=NULL;
-		m_pGlobalPoints=NULL;
-		m_pNormals=NULL;
-		m_pPolys=NULL;
+		m_pObject=nullptr;
+		m_pOriginObject=nullptr;
+		m_pDeformObject=nullptr;
+		m_pNeighbor=nullptr;
+		m_pPoints=nullptr;
+		m_pGlobalPoints=nullptr;
+		m_pNormals=nullptr;
+		m_pPolys=nullptr;
 		m_PointCount=0;
 		m_PolyCount=0;
 	}
@@ -320,14 +333,14 @@ public:
 	const Vector *m_pPoints;
 	Vector *m_pGlobalPoints,*m_pNormals;
 	const CPolygon *m_pPolys;
-	LONG m_PointCount,m_PolyCount;
+	Int32 m_PointCount,m_PolyCount;
 };
 
 class BrushVertexData
 {
 public:
-	Real m_Dist;
-	LONG m_Index;
+	Float m_Dist;
+	Int32 m_Index;
 	BrushObjectData *m_pObject;
 };
 
@@ -335,8 +348,8 @@ class BrushPixelData
 {
 public:
 	BrushObjectData *m_pObject;
-	LONG m_Index;
-	Real m_Z;
+	Int32 m_Index;
+	Float m_Z;
 	BrushPixelData *m_pNext;
 };
 
@@ -360,20 +373,20 @@ public:
 	Bool GetDEnabling(BaseDocument* doc, BaseContainer& data, const DescID& id, const GeData& t_data, DESCFLAGS_ENABLE flags, const BaseContainer* itemdesc);
 	Bool SetDParameter(BaseDocument* doc, BaseContainer& data, const DescID& id, const GeData& t_data, DESCFLAGS_SET& flags);
 	Bool GetDDescription(BaseDocument* doc, BaseContainer& data, Description* description, DESCFLAGS_DESC& flags);
-	Bool Message(BaseDocument *doc, BaseContainer &data, LONG type, void *t_data);
-	Bool GetCursorInfo(BaseDocument* doc, BaseContainer& data, BaseDraw* bd, Real x, Real y, BaseContainer& bc);
+	Bool Message(BaseDocument *doc, BaseContainer &data, Int32 type, void *t_data);
+	Bool GetCursorInfo(BaseDocument* doc, BaseContainer& data, BaseDraw* bd, Float x, Float y, BaseContainer& bc);
 	Bool MouseInput(BaseDocument* doc, BaseContainer& data, BaseDraw* bd, EditorWindow* win, const BaseContainer& msg);
-	BrushVertexData *GetSelected(BaseDocument* doc, BaseContainer& data, BaseDraw* bd, LONG &vcnt, LONG x, LONG y, Real rad, BaseObject *op);	// must call ValidateObjects before any calls to this
-	Real GetCursor(LONG &x, LONG &y);
+	BrushVertexData *GetSelected(BaseDocument* doc, BaseContainer& data, BaseDraw* bd, Int32 &vcnt, Int32 x, Int32 y, Float rad, BaseObject *op);	// must call ValidateObjects before any calls to this
+	Float GetCursor(Int32 &x, Int32 &y);
 	void GetObjectInfo(BrushObjectData *data, BrushObjectInfo &info);
 	Bool GetObjectInfo(BaseObject *op, BrushObjectInfo &info);
 	Bool ValidateObjects(BaseDocument *doc, BaseContainer& data);
-	BrushPixelData *GetObjectAt(LONG x, LONG y);	// must call ValidateObjects before any calls to this
-	Real GetFalloff(Real dst, LONG flags);	// only valid within mouseinput
+	BrushPixelData *GetObjectAt(Int32 x, Int32 y);	// must call ValidateObjects before any calls to this
+	Float GetFalloff(Float dst, Int32 flags);	// only valid within mouseinput
 	Bool GetObjects(BaseDocument *doc, AtomArray *objects);
 	Bool UpdateCache(BaseDocument *doc, BaseContainer& data, BaseDraw *bd, Bool force);
-	Real *CalcSurfaceDistances(PolygonObject *pObject, BaseSelect *selected, Neighbor *pNeighbor=NULL, Vector *pNormals=NULL, Vector *pGlobalPoints=NULL, Real *pDistance=NULL);
-	Real *CalcSurfaceDistancesFromPoint(PolygonObject *pObject, LONG pindex, Neighbor *pNeighbor=NULL, Vector *pNormals=NULL, Vector *pGlobalPoints=NULL, Real *pDistance=NULL);
+	Float *CalcSurfaceDistances(PolygonObject *pObject, BaseSelect *selected, Neighbor *pNeighbor=nullptr, Vector *pNormals=nullptr, Vector *pGlobalPoints=nullptr, Float *pDistance=nullptr);
+	Float *CalcSurfaceDistancesFromPoint(PolygonObject *pObject, Int32 pindex, Neighbor *pNeighbor=nullptr, Vector *pNormals=nullptr, Vector *pGlobalPoints=nullptr, Float *pDistance=nullptr);
 };
 
 #ifndef __API_INTERN__
@@ -397,20 +410,19 @@ public:
 	virtual Bool GetDEnabling(BaseDocument* doc, BaseContainer& data, const DescID& id, const GeData& t_data, DESCFLAGS_ENABLE flags, const BaseContainer* itemdesc);
 	virtual Bool SetDParameter(BaseDocument* doc, BaseContainer& data, const DescID& id, const GeData& t_data, DESCFLAGS_SET& flags);
 	virtual Bool GetDDescription(BaseDocument* doc, BaseContainer& data, Description* description, DESCFLAGS_DESC& flags);
-	virtual Bool Message(BaseDocument *doc, BaseContainer &data, LONG type, void *t_data);
-	virtual Bool GetCursorInfo(BaseDocument* doc, BaseContainer& data, BaseDraw* bd, Real x, Real y, BaseContainer& bc);
+	virtual Bool Message(BaseDocument *doc, BaseContainer &data, Int32 type, void *t_data);
+	virtual Bool GetCursorInfo(BaseDocument* doc, BaseContainer& data, BaseDraw* bd, Float x, Float y, BaseContainer& bc);
 	virtual Bool MouseInput(BaseDocument* doc, BaseContainer& data, BaseDraw* bd, EditorWindow* win, const BaseContainer& msg);
 
 	//////////////////////////////////////////////////////////////////////////
 
-	virtual Bool MouseInputStart(BaseDocument* doc, BaseContainer& data, BaseDraw* bd, EditorWindow* win, const BaseContainer& msg, LONG &flags) { return TRUE; }
-	virtual Bool MouseInputDrag(BaseDocument* doc, BaseContainer& data, BaseDraw* bd, EditorWindow* win, const BaseContainer& msg, BrushVertexData* vdata, LONG vcnt, Real x, Real y, LONG &flags) { return TRUE; }
-	virtual Bool MouseInputEnd(BaseDocument* doc, BaseContainer& data, BaseDraw* bd, EditorWindow* win, const BaseContainer& msg) { return TRUE; }
+	virtual Bool MouseInputStart(BaseDocument* doc, BaseContainer& data, BaseDraw* bd, EditorWindow* win, const BaseContainer& msg, Int32 &flags) { return true; }
+	virtual Bool MouseInputDrag(BaseDocument* doc, BaseContainer& data, BaseDraw* bd, EditorWindow* win, const BaseContainer& msg, BrushVertexData* vdata, Int32 vcnt, Float x, Float y, Int32 &flags) { return true; }
+	virtual Bool MouseInputEnd(BaseDocument* doc, BaseContainer& data, BaseDraw* bd, EditorWindow* win, const BaseContainer& msg) { return true; }
 
 	// Implement these methods declared in DescriptionToolData. Otherwise BrushToolData stays an abstract class and the Swig-generated instantiations result in c++ compiler errors
-	// virtual LONG			GetToolPluginId()  { return 666; } // The number of the beast
+	// virtual Int32			GetToolPluginId()  { return 666; } // The number of the beast
 	// virtual const String	GetResourceSymbol() { return "THIS SHOULD NEVER HAPPEN"; }
-
 };
 
 #endif
@@ -421,96 +433,92 @@ public:
 // INTERNAL STUFF -- INTERNAL STUFF -- INTERNAL STUFF -- INTERNAL STUFF -- INTERNAL STUFF
 // INTERNAL STUFF -- INTERNAL STUFF -- INTERNAL STUFF -- INTERNAL STUFF -- INTERNAL STUFF
 
-////////////////////////////////////////////////////////////////////////////
-//#define LIBRARY_CA		1019742
-//#define LIBRARY_BRUSH	1019809
-////////////////////////////////////////////////////////////////////////////
-//
+//////////////////////////////////////////////////////////////////////////
+#define LIBRARY_CA		1019742
+#define LIBRARY_BRUSH	1019809
+//////////////////////////////////////////////////////////////////////////
+
 //struct CALibrary : public C4DLibrary
 //{
 //	//////////////////////////////////////////////////////////////////////////
 //	// Weight Tag
 //
-//	BaseObject *(*weightGetJoint)(CAWeightTag *tag, LONG index, BaseDocument *doc);
-//	LONG (*weightGetJointCount)(CAWeightTag *tag);
-//	LONG (*weightFindJoint)(CAWeightTag *tag, BaseObject *op, BaseDocument *doc);
-//	JointRestState (*weightGetJointRestState)(CAWeightTag *tag, LONG index);
-//	void (*weightSetJointRestState)(CAWeightTag *tag, LONG index, const JointRestState &state);
-//	void (*weightGetWeightMap)(CAWeightTag *tag, LONG index, SReal *map, LONG cnt);
-//	Bool (*weightSetWeightMap)(CAWeightTag *tag, LONG index, SReal *map, LONG cnt);
-//	LONG (*weightGetWeightCount)(CAWeightTag *tag, LONG index);
-//	void (*weightGetIndexWeight)(CAWeightTag *tag, LONG index, LONG windex, LONG &pntindex, Real &weight);
-//	Real (*weightGetWeight)(CAWeightTag *tag, LONG index, LONG pntindex);
-//	Bool (*weightSetWeight)(CAWeightTag *tag, LONG index, LONG pntindex, Real weight);
-//	ULONG (*weightGetDirty)(CAWeightTag *tag);
+//	BaseObject *(*weightGetJoint)(CAWeightTag *tag, Int32 index, BaseDocument *doc);
+//	Int32 (*weightGetJointCount)(CAWeightTag *tag);
+//	Int32 (*weightFindJoint)(CAWeightTag *tag, BaseObject *op, BaseDocument *doc);
+//	JointRestState (*weightGetJointRestState)(CAWeightTag *tag, Int32 index);
+//	void (*weightSetJointRestState)(CAWeightTag *tag, Int32 index, const JointRestState &state);
+//	void (*weightGetWeightMap)(CAWeightTag *tag, Int32 index, Float32 *map, Int32 cnt);
+//	Bool (*weightSetWeightMap)(CAWeightTag *tag, Int32 index, Float32 *map, Int32 cnt);
+//	Int32 (*weightGetWeightCount)(CAWeightTag *tag, Int32 index);
+//	void (*weightGetIndexWeight)(CAWeightTag *tag, Int32 index, Int32 windex, Int32 &pntindex, Float &weight);
+//	Float (*weightGetWeight)(CAWeightTag *tag, Int32 index, Int32 pntindex);
+//	Bool (*weightSetWeight)(CAWeightTag *tag, Int32 index, Int32 pntindex, Float weight);
+//	UInt32 (*weightGetDirty)(CAWeightTag *tag);
 //	void (*weightDirty)(CAWeightTag *tag);
 //
 //	//////////////////////////////////////////////////////////////////////////
 //	// Joint Object
 //
-//	void (*jointGetBone)(CAJointObject *op, Matrix &m, Real &len);
-//	CAWeightTag *(*jointGetWeightTag)(CAJointObject *op, LONG &index);
+//	void (*jointGetBone)(CAJointObject *op, Matrix &m, Float &len);
+//	CAWeightTag *(*jointGetWeightTag)(CAJointObject *op, Int32 &index);
 //
 //	//////////////////////////////////////////////////////////////////////////
 //	// Weight Tag
 //
 //	Matrix (*weightGetGeomMg)(CAWeightTag *tag);
 //	void (*weightSetGeomMg)(CAWeightTag *tag, const Matrix &mg);
-//	LONG (*weightAddJoint)(CAWeightTag *tag, BaseObject *op);
+//	Int32 (*weightAddJoint)(CAWeightTag *tag, BaseObject *op);
 //	void (*weightRemoveJoint)(CAWeightTag *tag, BaseObject *op);
-//	void (*weightCalculateBoneStates)(CAWeightTag *tag, LONG index);
-//	Bool (*weightTransferWeightMap)(CAWeightTag *tag, BaseDocument *doc, CAWeightTag *dst, LONG sindex, LONG dindex, LONG offset, LONG cnt, AliasTrans *trans);
-//
-//	//////////////////////////////////////////////////////////////////////////
-//	
-//	void (*docGetOrderedActiveObjects)(const BaseDocument *doc, AtomArray *objs);
+//	void (*weightCalculateBoneStates)(CAWeightTag *tag, Int32 index);
+//	Bool (*weightTransferWeightMap)(CAWeightTag *tag, BaseDocument *doc, CAWeightTag *dst, Int32 sindex, Int32 dindex, Int32 offset, Int32 cnt, AliasTrans *trans);
 //
 //	//////////////////////////////////////////////////////////////////////////
 //	// Pose Morph Tag
 //
-//	LONG (*pmorphGetCount)(CAPoseMorphTag *tag);
-//	CAMorph *(*pmorphGetMorph)(CAPoseMorphTag *tag, LONG index);
-//	DescID (*pmorphGetDescID)(CAPoseMorphTag *tag, LONG index);
-//	LONG (*pmorphGetMode)(CAPoseMorphTag *tag);
-//	LONG (*pmorphGetActive)(CAPoseMorphTag *tag);
+//	Int32 (*pmorphGetCount)(CAPoseMorphTag *tag);
+//	CAMorph *(*pmorphGetMorph)(CAPoseMorphTag *tag, Int32 index);
+//	DescID (*pmorphGetDescID)(CAPoseMorphTag *tag, Int32 index);
+//	Int32 (*pmorphGetMode)(CAPoseMorphTag *tag);
+//	Int32 (*pmorphGetActive)(CAPoseMorphTag *tag);
 //	CAMorph *(*pmorphAdd)(CAPoseMorphTag *tag);
-//	void (*pmorphRemove)(CAPoseMorphTag *tag, LONG index);
+//	void (*pmorphRemove)(CAPoseMorphTag *tag, Int32 index);
 //	void (*pmorphInitMorphs)(CAPoseMorphTag *tag);
-//	void (*pmorphUpdateMorphs)(CAPoseMorphTag *tag);
-//	LONG (*pmorphGetMorphIndex)(CAPoseMorphTag *tag, CAMorph *morph);
+//	void (*pmorphUpdateMorphsEx)(CAPoseMorphTag *tag);
+//	Int32 (*pmorphGetMorphIndex)(CAPoseMorphTag *tag, CAMorph *morph);
 //	Bool (*pmorphExitEdit)(CAPoseMorphTag *tag, BaseDocument *doc, Bool apply);
 //	//////////////////////////////////////////////////////////////////////////
 //	String (*pmorphGetName)(CAMorph *morph);
-//	LONG (*pmorphGetID)(CAMorph *morph);
+//	Int32 (*pmorphGetID)(CAMorph *morph);
 //	void (*pmorphSetName)(CAMorph *morph, const String &name);
 //	Bool (*pmorphCopyFrom)(CAMorph *morph, CAMorph *src, AliasTrans *trn, CAMORPH_COPY_FLAGS flags);
 //	CAMorphNode *(*pmorphFind)(CAMorph *morph, CAPoseMorphTag *tag, BaseList2D *bl);
 //	CAMorphNode *(*pmorphGetFirst)(CAMorph *morph);
 //	Bool (*pmorphSetMode)(CAMorph *morph, BaseDocument *doc, CAPoseMorphTag *tag, CAMORPH_MODE_FLAGS flags, CAMORPH_MODE mode);
-//	LONG (*pmorphFindIndex)(CAMorph *morph, CAPoseMorphTag *tag, BaseList2D *bl);
-//	CAMorphNode *(*pmorphFindFromIndex)(CAMorph *morph, CAPoseMorphTag *tag, LONG index);
+//	Int32 (*pmorphFindIndex)(CAMorph *morph, CAPoseMorphTag *tag, BaseList2D *bl);
+//	CAMorphNode *(*pmorphFindFromIndex)(CAMorph *morph, CAPoseMorphTag *tag, Int32 index);
 //	Bool (*pmorphStore)(CAMorph *morph, BaseDocument *doc, CAPoseMorphTag *tag, CAMORPH_DATA_FLAGS flags);
 //	Bool (*pmorphApply)(CAMorph *morph, BaseDocument *doc, CAPoseMorphTag *tag, CAMORPH_DATA_FLAGS flags);
-//	LONG (*pmorphGetNodeIndex)(CAMorph *morph, CAMorphNode *node);
+//	Int32 (*pmorphGetNodeIndex)(CAMorph *morph, CAMorphNode *node);
 //	//////////////////////////////////////////////////////////////////////////
 //	CAMorphNode *(*pmorphnodeGetNext)(CAMorphNode *node);
 //	CAMorphNode *(*pmorphnodeGetPrev)(CAMorphNode *node);
 //	CAMorphNode *(*pmorphnodeGetUp)(CAMorphNode *node);
 //	CAMorphNode *(*pmorphnodeGetDown)(CAMorphNode *node);
 //	BaseList2D *(*pmorphnodeGetLink)(CAMorphNode *node, CAPoseMorphTag *tag, CAMorph *morph, BaseDocument *doc);
-//	LONG (*pmorphnodeGetPointCount)(CAMorphNode *node);
-//	Vector (*pmorphnodeGetPoint)(CAMorphNode *node, LONG index);
-//	void (*pmorphnodeSetPoint)(CAMorphNode *node, LONG index, const Vector &pnt);
-//	LONG (*pmorphGetTangentCount)(CAMorphNode *node);
-//	Vector (*pmorphGetTangent)(CAMorphNode *node, LONG index);
-//	void (*pmorphSetTangent)(CAMorphNode *node, LONG index, const Vector &v);
-//	LONG (*pmorphGetVertexMapTagCount)(CAMorphNode *node);
-//	LONG (*pmorphGetVertexMapCount)(CAMorphNode *node, LONG tindex);
-//	Real (*pmorphGetVertexMap)(CAMorphNode *node, LONG tindex, LONG index);
-//	void (*pmorphSetVertexMap)(CAMorphNode *node, LONG tindex, LONG index, Real v);
-//	Bool (*pmorphSetVertexMapCount)(CAMorphNode *node, LONG tindex, LONG cnt);
-//	Bool (*pmorphSetPointCount)(CAMorphNode *node, LONG cnt);
-//	Bool (*pmorphSetTangentCount)(CAMorphNode *node, LONG cnt);
+//	Int32 (*pmorphnodeGetPointCount)(CAMorphNode *node);
+//	Vector (*pmorphnodeGetPoint)(CAMorphNode *node, Int32 index);
+//	void (*pmorphnodeSetPoint)(CAMorphNode *node, Int32 index, const Vector &pnt);
+//	Int32 (*pmorphGetTangentCount)(CAMorphNode *node);
+//	Vector (*pmorphGetTangent)(CAMorphNode *node, Int32 index);
+//	void (*pmorphSetTangent)(CAMorphNode *node, Int32 index, const Vector &v);
+//	Int32 (*pmorphGetVertexMapTagCount)(CAMorphNode *node);
+//	Int32 (*pmorphGetVertexMapCount)(CAMorphNode *node, Int32 tindex);
+//	Float (*pmorphGetVertexMap)(CAMorphNode *node, Int32 tindex, Int32 index);
+//	void (*pmorphSetVertexMap)(CAMorphNode *node, Int32 tindex, Int32 index, Float v);
+//	Bool (*pmorphSetVertexMapCount)(CAMorphNode *node, Int32 tindex, Int32 cnt);
+//	Bool (*pmorphSetPointCount)(CAMorphNode *node, Int32 cnt);
+//	Bool (*pmorphSetTangentCount)(CAMorphNode *node, Int32 cnt);
 //	CAMORPH_DATA_FLAGS (*pmorphGetInfo)(CAMorphNode *node);
 //	Vector (*pmorphGetP)(CAMorphNode *node);
 //	Vector (*pmorphGetS)(CAMorphNode *node);
@@ -518,21 +526,36 @@ public:
 //	void (*pmorphSetP)(CAMorphNode *node, const Vector &p);
 //	void (*pmorphSetS)(CAMorphNode *node, const Vector &s);
 //	void (*pmorphSetR)(CAMorphNode *node, const Vector &r);
-//	LONG (*pmorphGetParamCount)(CAMorphNode *node);
-//	Bool (*pmorphSetParamCount)(CAMorphNode *node, LONG cnt);
-//	Bool (*pmorphGetParam)(CAMorphNode *node, LONG index, GeData &data, DescID &id);
-//	void (*pmorphSetParam)(CAMorphNode *node, LONG index, const GeData &data, const DescID &id);
-//	LONG (*pmorphGetUVTagCount)(CAMorphNode *node);
-//	LONG (*pmorphGetUVCount)(CAMorphNode *node, LONG tindex);
-//	Bool (*pmorphSetUVCount)(CAMorphNode *node, LONG tindex, LONG cnt);
-//	void (*pmorphGetUV)(CAMorphNode *node, LONG tindex, LONG index, UVWStruct &uv);
-//	void (*pmorphSetUV)(CAMorphNode *node, LONG tindex, LONG index, const UVWStruct &uv);
-//	LONG (*pmorphGetWeightMapTagCount)(CAMorphNode *node);
-//	LONG (*pmorphGetWeightMapJointCount)(CAMorphNode *node, LONG tindex);
-//	LONG (*pmorphGetWeightMapCount)(CAMorphNode *node, LONG tindex, LONG jindex);
-//	Bool (*pmorphSetWeightMapCount)(CAMorphNode *node, LONG tindex, LONG jindex, LONG cnt);
-//	Real (*pmorphGetWeightMap)(CAMorphNode *node, LONG tindex, LONG jindex, LONG index);
-//	void (*pmorphSetWeightMap)(CAMorphNode *node, LONG tindex, LONG jindex, LONG index, Real v);
+//	Int32 (*pmorphGetParamCount)(CAMorphNode *node);
+//	Bool (*pmorphSetParamCount)(CAMorphNode *node, Int32 cnt);
+//	Bool (*pmorphGetParam)(CAMorphNode *node, Int32 index, GeData &data, DescID &id);
+//	void (*pmorphSetParam)(CAMorphNode *node, Int32 index, const GeData &data, const DescID &id);
+//	Int32 (*pmorphGetUVTagCount)(CAMorphNode *node);
+//	Int32 (*pmorphGetUVCount)(CAMorphNode *node, Int32 tindex);
+//	Bool (*pmorphSetUVCount)(CAMorphNode *node, Int32 tindex, Int32 cnt);
+//	void (*pmorphGetUV)(CAMorphNode *node, Int32 tindex, Int32 index, UVWStruct &uv);
+//	void (*pmorphSetUV)(CAMorphNode *node, Int32 tindex, Int32 index, const UVWStruct &uv);
+//	Int32 (*pmorphGetWeightMapTagCount)(CAMorphNode *node);
+//	Int32 (*pmorphGetWeightMapJointCount)(CAMorphNode *node, Int32 tindex);
+//	Int32 (*pmorphGetWeightMapCount)(CAMorphNode *node, Int32 tindex, Int32 jindex);
+//	Bool (*pmorphSetWeightMapCount)(CAMorphNode *node, Int32 tindex, Int32 jindex, Int32 cnt);
+//	Float (*pmorphGetWeightMap)(CAMorphNode *node, Int32 tindex, Int32 jindex, Int32 index);
+//	void (*pmorphSetWeightMap)(CAMorphNode *node, Int32 tindex, Int32 jindex, Int32 index, Float v);
+//	//////////////////////////////////////////////////////////////////////////
+//	void (*xrefStripRefData)(BaseDocument *doc, BaseList2D *bl); // private
+//	Bool (*xrefHasRefs)(BaseDocument *doc); // private
+//	Int32 (*xrefGetState)(); // private
+//	UInt64 (*xrefGetID)(BaseList2D *bl); // private
+//	Bool (*xrefHasParam)(BaseDocument *doc, BaseList2D *bl, const DescID &id); // private
+//	Bool (*xrefGetParam)(BaseDocument *doc, BaseList2D *bl, const DescID &id, GeData &dat); // private
+//	Bool (*xrefRemoveParam)(BaseDocument *doc, BaseList2D *bl, const DescID &id); // private
+//
+//	void (*pmorphSetActiveMorphIndex)(CAPoseMorphTag *tag, Int32 index);
+//	BaseList2D *(*pmorphGetTarget)(CAMorph *morph, BaseDocument *doc);
+//	void (*pmorphSetTarget)(CAMorph *morph, CAPoseMorphTag *tag, BaseDocument *doc, BaseList2D *bl);
+//	void (*pmorphSetStrength)(CAMorph *morph, Float strength);
+//	Float (*pmorphGetStrength)(CAMorph *morph);
+//	void (*pmorphUpdateMorphs)(CAPoseMorphTag *tag, BaseDocument *doc);
 //};
 //
 //struct BrushBaseLibrary : public C4DLibrary
@@ -546,20 +569,20 @@ public:
 //	Bool (iBrushBase::*GetDEnabling)(BaseDocument* doc, BaseContainer& data, const DescID& id, const GeData& t_data, DESCFLAGS_ENABLE flags, const BaseContainer* itemdesc);
 //	Bool (iBrushBase::*SetDParameter)(BaseDocument* doc, BaseContainer& data, const DescID& id, const GeData& t_data, DESCFLAGS_SET& flags);
 //	Bool (iBrushBase::*GetDDescription)(BaseDocument* doc, BaseContainer& data, Description* description, DESCFLAGS_DESC& flags);
-//	Bool (iBrushBase::*Message)(BaseDocument *doc, BaseContainer &data, LONG type, void *t_data);
-//	Bool (iBrushBase::*GetCursorInfo)(BaseDocument* doc, BaseContainer& data, BaseDraw* bd, Real x, Real y, BaseContainer& bc);
+//	Bool (iBrushBase::*Message)(BaseDocument *doc, BaseContainer &data, Int32 type, void *t_data);
+//	Bool (iBrushBase::*GetCursorInfo)(BaseDocument* doc, BaseContainer& data, BaseDraw* bd, Float x, Float y, BaseContainer& bc);
 //	Bool (iBrushBase::*MouseInput)(BaseDocument* doc, BaseContainer& data, BaseDraw* bd, EditorWindow* win, const BaseContainer& msg);
-//	BrushVertexData *(iBrushBase::*GetSelected)(BaseDocument* doc, BaseContainer& data, BaseDraw* bd, LONG &vcnt, LONG x, LONG y, Real rad, BaseObject *op);
-//	Real (iBrushBase::*GetCursor)(LONG &x, LONG &y);
+//	BrushVertexData *(iBrushBase::*GetSelected)(BaseDocument* doc, BaseContainer& data, BaseDraw* bd, Int32 &vcnt, Int32 x, Int32 y, Float rad, BaseObject *op);
+//	Float (iBrushBase::*GetCursor)(Int32 &x, Int32 &y);
 //	void (iBrushBase::*GetObjectInfo)(BrushObjectData *data, BrushObjectInfo &info);
 //	Bool (iBrushBase::*GetObjectInfoOp)(BaseObject *op, BrushObjectInfo &info);
 //	Bool (iBrushBase::*ValidateObjects)(BaseDocument *doc, BaseContainer& data);
-//	BrushPixelData *(iBrushBase::*GetObjectAt)(LONG x, LONG y);
-//	Real (iBrushBase::*GetFalloff)(Real dst, LONG flags);
+//	BrushPixelData *(iBrushBase::*GetObjectAt)(Int32 x, Int32 y);
+//	Float (iBrushBase::*GetFalloff)(Float dst, Int32 flags);
 //	Bool (iBrushBase::*GetObjects)(BaseDocument *doc, AtomArray *objects);
 //	Bool (iBrushBase::*UpdateCache)(BaseDocument *doc, BaseContainer& data, BaseDraw *bd, Bool force);
-//	Real *(iBrushBase::*CalcSurfaceDistances)(PolygonObject *pObject, BaseSelect *selected, Neighbor *pNeighbor, Vector *pNormals, Vector *pGlobalPoints, Real *pDistance);
-//	Real *(iBrushBase::*CalcSurfaceDistancesFromPoint)(PolygonObject *pObject, LONG pindex, Neighbor *pNeighbor, Vector *pNormals, Vector *pGlobalPoints, Real *pDistance);
+//	Float *(iBrushBase::*CalcSurfaceDistances)(PolygonObject *pObject, BaseSelect *selected, Neighbor *pNeighbor, Vector *pNormals, Vector *pGlobalPoints, Float *pDistance);
+//	Float *(iBrushBase::*CalcSurfaceDistancesFromPoint)(PolygonObject *pObject, Int32 pindex, Neighbor *pNeighbor, Vector *pNormals, Vector *pGlobalPoints, Float *pDistance);
 //};
 
 // INTERNAL STUFF -- INTERNAL STUFF -- INTERNAL STUFF -- INTERNAL STUFF -- INTERNAL STUFF

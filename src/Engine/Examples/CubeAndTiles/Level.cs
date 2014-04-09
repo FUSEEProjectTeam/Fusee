@@ -98,7 +98,7 @@ namespace Examples.CubeAndTiles
             TextureCube = RContext.CreateTexture(imgData);
 
             // camera
-            _camPosition = 3000;
+            _camPosition = -3000; // colh
             _objOrientation = float4x4.CreateRotationX(MathHelper.Pi/2);
 
             // create cube and set vars
@@ -126,7 +126,9 @@ namespace Examples.CubeAndTiles
             for (var y = 0; y < sizeY; y++)
                 for (var x = 0; x < sizeX; x++)
                 {
-                    var fType = (Field.FieldTypes) _lvlTmp[id][sizeY - 1 - y, x];
+                    // colh
+                    // var fType = (Field.FieldTypes) _lvlTmp[id][sizeY - 1 - y, x];
+                    var fType = (Field.FieldTypes)_lvlTmp[id][y, x];
                     if (fType == Field.FieldTypes.FtNull) continue;
 
                     _levelFeld[x, y] = new Field(this, ++FieldCount, x, y, fType);
@@ -246,10 +248,10 @@ namespace Examples.CubeAndTiles
                     _rCube.MoveCube(+1, 0);
                     break;
                 case Directions.Forward:
-                    _rCube.MoveCube(0, +1);
+                    _rCube.MoveCube(0, -1);
                     break;
                 case Directions.Backward:
-                    _rCube.MoveCube(0, -1);
+                    _rCube.MoveCube(0, +1);
                     break;
             }
         }
@@ -310,7 +312,8 @@ namespace Examples.CubeAndTiles
             {
                 // normal mode
                 var lookAt = float4x4.LookAt(eyeF, targetF, upF);
-                CamTrans = _camTranslation*mtxRot*lookAt;
+                // colh CamTrans = _camTranslation*mtxRot*lookAt;
+                CamTrans = lookAt * mtxRot * _camTranslation;
 
                 RContext.SetShaderParamTexture(VTextureObj, TextureField);
 
@@ -331,7 +334,8 @@ namespace Examples.CubeAndTiles
                 for (var x = 0; x < 2; x++)
                 {
                     var lookAt = _stereo3D.LookAt3D(_stereo3D.CurrentEye, eyeF, targetF, upF);
-                    CamTrans = _camTranslation*mtxRot*lookAt;
+                    // colh CamTrans = _camTranslation*mtxRot*lookAt;
+                    CamTrans = lookAt * mtxRot * _camTranslation;
 
                     var renderOnly = (_stereo3D.CurrentEye == Stereo3DEye.Left);
 
@@ -355,7 +359,8 @@ namespace Examples.CubeAndTiles
 
         public void ZoomCamera(int val)
         {
-            _camPosition = Math.Min(5000, Math.Max(1500, _camPosition - val));
+            // colh _camPosition = Math.Min(5000, Math.Max(1500, _camPosition - val));
+            _camPosition = Math.Max(-5000, Math.Min(-1500, _camPosition + val));
         }
 
         private static bool OutOfBounds(int x, int y, Field[,] array)

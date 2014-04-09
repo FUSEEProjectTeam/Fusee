@@ -45,7 +45,7 @@ namespace Examples.PhysicsTest
             void main()
             {
                 
-                gl_FragColor = vColor * dot(vNormal, vec3(0, 0, 1)) *50;
+                gl_FragColor = vColor * dot(vNormal, vec3(0, 0, -1)) *50;
             }";
 
 
@@ -86,7 +86,7 @@ namespace Examples.PhysicsTest
             void main()
             {
                 
-                gl_FragColor = texture2D(vTexture, vUV) * dot(vNormal, vec3(0, 0, 1))*1.5;
+                gl_FragColor = texture2D(vTexture, vUV) * dot(vNormal, vec3(0, 0, -1))*1.5;
             }";
 
 
@@ -127,7 +127,7 @@ namespace Examples.PhysicsTest
             void main()
             {
                 
-                gl_FragColor = vColor * dot(vNormal, vec3(0, 0, 1)) * 0.5;
+                gl_FragColor = vColor * dot(vNormal, vec3(0, 0, -1)) * 0.5;
             }";
         #endregion shader
 
@@ -259,8 +259,8 @@ namespace Examples.PhysicsTest
                 _physic.World.GetRigidBody(_physic.World.NumberRigidBodies()-1).ApplyCentralImpulse = new float3(0,-10,0);
                     // _angleVert += RotationSpeed * (float)Time.Instance.DeltaTime;
            
-            var mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
-            var mtxCam = mtxRot * float4x4.LookAt(0, 20, 70, 0, 0, 0, 0, 1, 0);
+            var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
+            var mtxCam = float4x4.LookAt(0, 20, 70, 0, 0, 0, 0, 1, 0) * mtxRot;
 
 
             if (Input.Instance.IsKey(KeyCodes.Space))
@@ -286,12 +286,12 @@ namespace Examples.PhysicsTest
             for (int i = 0; i < _physic.World.NumberRigidBodies(); i++)
             {
                 var rb = _physic.World.GetRigidBody(i);
-                var matrix = rb.WorldTransform;
+                var matrix = float4x4.Transpose(rb.WorldTransform);
                 
                 if (rb.CollisionShape.GetType().ToString() == "Fusee.Engine.BoxShape")
                 {
                     var shape = (BoxShape) rb.CollisionShape;
-                    RC.ModelView = float4x4.Scale(shape.HalfExtents.x/100, shape.HalfExtents.y/100, shape.HalfExtents.z /100) * matrix * mtxCam;
+                    RC.ModelView = mtxCam * matrix * float4x4.Scale(shape.HalfExtents.x / 100, shape.HalfExtents.y / 100, shape.HalfExtents.z / 100);
                     RC.SetShader(_spColor);
                     RC.SetShaderParam(_colorParam, new float4(0.9f, 0.9f, 0.0f, 1));
                     RC.Render(_meshCube);
@@ -299,7 +299,7 @@ namespace Examples.PhysicsTest
                 else if (rb.CollisionShape.GetType().ToString() == "Fusee.Engine.SphereShape")
                 {
                     var shape = (SphereShape) rb.CollisionShape;
-                    RC.ModelView = float4x4.Scale(shape.Radius)*matrix*mtxCam;
+                    RC.ModelView = mtxCam * matrix * float4x4.Scale(shape.Radius);
                     RC.SetShader(_spTexture);
                     RC.SetShaderParamTexture(_textureParam, _iTex);
                     RC.Render(_meshSphere);
@@ -307,7 +307,7 @@ namespace Examples.PhysicsTest
                 else if (rb.CollisionShape.GetType().ToString() == "Fusee.Engine.CylinderShape")
                 {
                     var shape = (CylinderShape)rb.CollisionShape;
-                    RC.ModelView = float4x4.Scale(4) * matrix * mtxCam;
+                    RC.ModelView = mtxCam * matrix * float4x4.Scale(4);
                     RC.SetShader(_spLinda);
                     RC.SetShaderParam(_colorLinda, new float4(0.1f, 0.1f, 0.9f, 1));
                     RC.Render(_meshCylinder);
@@ -316,7 +316,7 @@ namespace Examples.PhysicsTest
                 {
                     Debug.WriteLine("ConvexHullShape");
                     var shape = (ConvexHullShape)rb.CollisionShape;
-                    RC.ModelView = float4x4.Scale(1.0f)*matrix * mtxCam;
+                    RC.ModelView = mtxCam * matrix * float4x4.Scale(1.0f);
                     
                     //RC.SetShader(_spTexture);
                     //RC.SetShaderParamTexture(_textureParam, _iTex);

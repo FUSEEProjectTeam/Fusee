@@ -92,7 +92,7 @@
             varying vec2 vUV;
 
             void main(){
-                gl_FragColor = max(dot(vec3(0,0,1),normalize(vNormal)), 0.2) * texture2D(texture1, vUV);
+                gl_FragColor = max(dot(vec3(0,0,-1),normalize(vNormal)), 0.2) * texture2D(texture1, vUV);
             }";
 
         private const string VsDiffuse = @"
@@ -777,7 +777,7 @@
 
             void main()
             {             
-                gl_FragColor = max(dot(vec3(0,0,1),normalize(vNormal)), 0.1) * color;
+                gl_FragColor = max(dot(vec3(0,0,-1),normalize(vNormal)), 0.1) * color;
             }";
     }
 }
