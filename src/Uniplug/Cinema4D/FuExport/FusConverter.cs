@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -451,7 +453,7 @@ namespace FuExport
             return (float)(minS*Math.Pow(maxS/minS, 1.0 - p));
         }
 
-        private string GetTexture(BaseContainer data, BaseChannel diffuseChannel)
+        private string GetTexture(BaseContainer data, BaseChannel matChannel)
         {
             string resultName = null;
             string texture = data.GetString(C4dApi.BASECHANNEL_TEXTURE);
@@ -463,16 +465,14 @@ namespace FuExport
 
                 if (!_textureFiles.Contains(texture))
                 {
-                    diffuseChannel.InitTexture(new InitRenderStruct(_polyDoc));
-                    using (BaseBitmap bitmap = diffuseChannel.GetBitmap())
+                    matChannel.InitTexture(new InitRenderStruct(_polyDoc));
+                    using (BaseBitmap bitmap = matChannel.GetBitmap())
                     {
                         if (bitmap != null)
                         {
                             using (BaseContainer compressionContainer = new BaseContainer(C4dApi.JPGSAVER_QUALITY))
                             {
-                                ColorProfile colPro = bitmap.GetColorProfile();
-                                bool bRet = bitmap.SetColorProfile(null);
-                                colPro = bitmap.GetColorProfile();
+                                bool bRet = bitmap.SetColorProfile(ColorProfile.GetDefaultSRGB());
                                 compressionContainer.SetFloat(C4dApi.JPGSAVER_QUALITY, 70.0);
                                 string textureFileAbs = Path.Combine(_sceneRootDir, texture);
                                 bitmap.Save(new Filename(textureFileAbs), C4dApi.FILTER_JPG, compressionContainer,
@@ -485,7 +485,7 @@ namespace FuExport
                             resultName = null;
                         }
                     }
-                    diffuseChannel.FreeTexture();
+                    matChannel.FreeTexture();
                 }
             }
             return resultName;

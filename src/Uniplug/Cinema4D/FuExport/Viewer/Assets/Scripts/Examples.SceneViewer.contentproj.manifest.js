@@ -19,7 +19,7 @@ contentManifest["Examples.SceneViewer.contentproj"] = [
     ["Image",	"Assets/Gnome_ExportBump_Normale_Quelle_4.old.jpg",	{  "sizeBytes": 98166 }],
     ["Image",	"Assets/GnomeBaked.jpg",	{  "sizeBytes": 91900 }],
     ["Font",	"Assets/Lato-Black.ttf",	{  "sizeBytes": 114588 }],
-    ["File",	"Assets/Model.fus",	{  "sizeBytes": 427453 }],
+    ["File",	"Assets/Model.fus",	{  "sizeBytes": 1984601 }],
     ["File",	"Assets/Model.orig.fus",	{  "sizeBytes": 2423 }],
     ["Image",	"Assets/NDB_Normale_Quelle_6.jpg",	{  "sizeBytes": 50180 }],
     ["Image",	"Assets/NDB_Normale_Quelle_6.unmanaged.jpg",	{  "sizeBytes": 123753 }],

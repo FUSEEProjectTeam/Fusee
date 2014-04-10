@@ -1935,10 +1935,10 @@ JSIL.DeclareNamespace("Fusee.Engine");
     $.ExternalMethod({Static:true , Public:true }, "Log", 
       new JSIL.MethodSignature(null, [$.Object], [])
     )
-      .Attribute($asm0E.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
 
     $.ExternalProperty({Static:true , Public:true }, "Timer", $.Double)
-      .Attribute($asm0E.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
 
     return function (newThisType) { $thisType = newThisType; }; 
   });
@@ -5531,7 +5531,7 @@ JSIL.MakeDelegate("Fusee.Engine.GUIButtonHandler", true, []);
     $.ExternalMethod({Static:false, Public:false}, "SortArray", 
       new JSIL.MethodSignature(null, [$jsilcore.TypeRef("JSIL.Reference", [$jsilcore.TypeRef("System.Array", [$asm02.TypeRef("Fusee.Engine.GUIElement")])])], [])
     )
-      .Attribute($asm0E.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
 
     $.Field({Static:false, Public:false}, "_renderContext", $asm02.TypeRef("Fusee.Engine.RenderContext")); 
     $.ImplementInterfaces(
@@ -6896,37 +6896,37 @@ JSIL.MakeDelegate("Fusee.Engine.GUIPanelHandler", true, []);
     $.ExternalMethod({Static:true , Public:true }, "CreateIAudioImp", 
       new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IAudioImp"), [], [])
     )
-      .Attribute($asm0E.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
 
     $.ExternalMethod({Static:true , Public:true }, "CreateIDynamicWorldImp", 
       new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IDynamicWorldImp"), [], [])
     )
-      .Attribute($asm0E.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
 
     $.ExternalMethod({Static:true , Public:true }, "CreateIInputDriverImp", 
       new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IInputDriverImp"), [], [])
     )
-      .Attribute($asm0E.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
 
     $.ExternalMethod({Static:true , Public:true }, "CreateIInputImp", 
       new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IInputImp"), [$asm01.TypeRef("Fusee.Engine.IRenderCanvasImp")], [])
     )
-      .Attribute($asm0E.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
 
     $.ExternalMethod({Static:true , Public:true }, "CreateINetworkImp", 
       new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.INetworkImp"), [], [])
     )
-      .Attribute($asm0E.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
 
     $.ExternalMethod({Static:true , Public:true }, "CreateIRenderCanvasImp", 
       new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IRenderCanvasImp"), [], [])
     )
-      .Attribute($asm0E.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
 
     $.ExternalMethod({Static:true , Public:true }, "CreateIRenderContextImp", 
       new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IRenderContextImp"), [$asm01.TypeRef("Fusee.Engine.IRenderCanvasImp")], [])
     )
-      .Attribute($asm0E.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
 
     return function (newThisType) { $thisType = newThisType; }; 
   });
@@ -7875,7 +7875,7 @@ JSIL.MakeEnum(
     $.ExternalMethod({Static:true , Public:true }, "Double_Parse", 
       new JSIL.MethodSignature($.Double, [$.String], [])
     )
-      .Attribute($asm0E.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
 
     $.Method({Static:true , Public:true }, "FilteredSplit", 
       new JSIL.MethodSignature($jsilcore.TypeRef("System.Array", [$.String]), [$.String, $jsilcore.TypeRef("System.Array", [$.Char])], []), 
@@ -10684,7 +10684,7 @@ JSIL.MakeEnum(
     $.ExternalMethod({Static:false, Public:false}, "FirstMessage", 
       new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.INetworkMsg"), [], [])
     )
-      .Attribute($asm0E.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
 
     $.Method({Static:false, Public:true }, "get_Config", 
       new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.NetConfigValues"), [], []), 
@@ -12244,7 +12244,7 @@ JSIL.MakeEnum(
 
   function RenderContext_get_InvModelView () {
     if (!this._invModelViewOk) {
-      this._invModelView = $T01().InvertAffine(this.get_ModelView().MemberwiseClone());
+      this._invModelView = $T01().Invert(this.get_ModelView().MemberwiseClone()).MemberwiseClone();
       this._invModelViewOk = true;
     }
     return this._invModelView;
@@ -12276,7 +12276,7 @@ JSIL.MakeEnum(
 
   function RenderContext_get_InvTransModelView () {
     if (!this._invTransModelViewOk) {
-      this._invTransModelView = $T01().InvertAffine(this.get_TransModelView().MemberwiseClone());
+      this._invTransModelView = $T01().Invert(this.get_TransModelView().MemberwiseClone()).MemberwiseClone();
       this._invTransModelViewOk = true;
     }
     return this._invTransModelView;
@@ -13066,7 +13066,7 @@ JSIL.MakeEnum(
     $.ExternalMethod({Static:false, Public:true }, "LoadSystemFont", 
       new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IFont"), [$.String, $.UInt32], [])
     )
-      .Attribute($asm0E.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
 
     $.Method({Static:false, Public:true }, "Render", 
       new JSIL.MethodSignature(null, [$asm02.TypeRef("Fusee.Engine.Mesh")], []), 
@@ -13193,37 +13193,37 @@ JSIL.MakeEnum(
       new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $.Single], []), 
       RenderContext_SetShaderParam1f
     )
-      .Attribute($asm0E.TypeRef("JSIL.Meta.JSChangeName"), function () { return ["SetShaderParam1f"]; });
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSChangeName"), function () { return ["SetShaderParam1f"]; });
 
     $.Method({Static:false, Public:true }, "SetShaderParam2f", 
       new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $asm03.TypeRef("Fusee.Math.float2")], []), 
       RenderContext_SetShaderParam2f
     )
-      .Attribute($asm0E.TypeRef("JSIL.Meta.JSChangeName"), function () { return ["SetShaderParam2f"]; });
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSChangeName"), function () { return ["SetShaderParam2f"]; });
 
     $.Method({Static:false, Public:true }, "SetShaderParam3f", 
       new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $asm03.TypeRef("Fusee.Math.float3")], []), 
       RenderContext_SetShaderParam3f
     )
-      .Attribute($asm0E.TypeRef("JSIL.Meta.JSChangeName"), function () { return ["SetShaderParam3f"]; });
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSChangeName"), function () { return ["SetShaderParam3f"]; });
 
     $.Method({Static:false, Public:true }, "SetShaderParam4f", 
       new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $asm03.TypeRef("Fusee.Math.float4")], []), 
       RenderContext_SetShaderParam4f
     )
-      .Attribute($asm0E.TypeRef("JSIL.Meta.JSChangeName"), function () { return ["SetShaderParam4f"]; });
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSChangeName"), function () { return ["SetShaderParam4f"]; });
 
     $.Method({Static:false, Public:true }, "SetShaderParamMtx4f", 
       new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $asm03.TypeRef("Fusee.Math.float4x4")], []), 
       RenderContext_SetShaderParamMtx4f
     )
-      .Attribute($asm0E.TypeRef("JSIL.Meta.JSChangeName"), function () { return ["SetShaderParamMtx4f"]; });
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSChangeName"), function () { return ["SetShaderParamMtx4f"]; });
 
     $.Method({Static:false, Public:true }, "SetShaderParamI", 
       new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $.Int32], []), 
       RenderContext_SetShaderParamI
     )
-      .Attribute($asm0E.TypeRef("JSIL.Meta.JSChangeName"), function () { return ["SetShaderParamI"]; });
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSChangeName"), function () { return ["SetShaderParamI"]; });
 
     $.Method({Static:false, Public:true }, "SetShaderParamTexture", 
       new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $asm01.TypeRef("Fusee.Engine.ITexture")], []), 

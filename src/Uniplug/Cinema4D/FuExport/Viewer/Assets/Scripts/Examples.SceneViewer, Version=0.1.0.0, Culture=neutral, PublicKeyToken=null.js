@@ -845,7 +845,7 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
       }
     } else {
       CurMat.SetEffectParam($T07().get_LightColorName(), $S03().Construct(1, 1, 1));
-      var lightDir = ($S06().CallStatic($T0B(), "op_Multiply", null, this._rc.get_TransModelView(), $S07().Construct(0, 0, -1, 0))).get_xyz().MemberwiseClone();
+      var lightDir = ($S06().CallStatic($T0B(), "op_Multiply", null, this._rc.get_InvModelView(), $S07().Construct(0, 0, -1, 0))).get_xyz().MemberwiseClone();
       lightDir.Normalize();
       CurMat.SetEffectParam($T07().get_LightDirectionName(), lightDir.MemberwiseClone());
       CurMat.SetEffectParam($T07().get_LightIntensityName(), 1);
@@ -1145,7 +1145,7 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
       if (!this._hasDiffuse) {
         $S01().CallVirtual("Append", null, ps, "    float diffFactor = dot(LDir, Normal);\n");
       }
-      $S01().CallVirtual("Append", null, ps, "      if (diffFactor > 0.0) {\n");
+      $S01().CallVirtual("Append", null, ps, "    if (diffFactor > 0.0) {\n  ");
       this.AddChannelBaseColorCalculation(ps, this._hasSpecularTexture, "Specular");
       $S01().CallVirtual("Append", null, ps, "      vec3 h = normalize(LDir + Camera);\n");
       $S01().CallVirtual("Append", null, ps, "      result += SpecularBaseColor * LColor * LIntensity * SpecularIntensity * pow(max(0.0, dot(h, Normal)), SpecularShininess);\n");
@@ -1360,8 +1360,8 @@ JSIL.DeclareNamespace("Examples.SceneViewer");
       }
     }
     if (this._hasSpecular) {
-      $S01().CallVirtual("Append", null, vs, "    vViewDir = FUSEE_IMV[3].xyz;\n");
-      $S01().CallVirtual("Append", null, vs, "    vViewDir = normalize(vViewDir - fuVertex);\n");
+      $S01().CallVirtual("Append", null, vs, "    vec3 viewPos = FUSEE_IMV[3].xyz;\n");
+      $S01().CallVirtual("Append", null, vs, "    vViewDir = normalize(viewPos - fuVertex);\n");
     }
     $S01().CallVirtual("Append", null, vs, "    gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);\n");
     if (this._hasUVs) {

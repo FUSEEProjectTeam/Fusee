@@ -9518,10 +9518,13 @@ JSIL.DeclareNamespace("Fusee.Math");
     return ($T07 = JSIL.Memoize($asm06.System.Object)) ();
   };
   var $T08 = function () {
-    return ($T08 = JSIL.Memoize($asm06.System.Converter$b2.Of($asm06.System.String, $asm03.Fusee.Math.float4x4))) ();
+    return ($T08 = JSIL.Memoize($asm06.System.ApplicationException)) ();
   };
   var $T09 = function () {
-    return ($T09 = JSIL.Memoize($asm06.System.String)) ();
+    return ($T09 = JSIL.Memoize($asm06.System.Converter$b2.Of($asm06.System.String, $asm03.Fusee.Math.float4x4))) ();
+  };
+  var $T0A = function () {
+    return ($T0A = JSIL.Memoize($asm06.System.String)) ();
   };
   var $S00 = function () {
     return ($S00 = JSIL.Memoize(new JSIL.ConstructorSignature($asm03.TypeRef("Fusee.Math.float4x4"), [
@@ -9560,10 +9563,13 @@ JSIL.DeclareNamespace("Fusee.Math");
       ]))) ();
   };
   var $S06 = function () {
-    return ($S06 = JSIL.Memoize(new JSIL.ConstructorSignature($asm03.TypeRef("Fusee.Math.float4x4"), [$asm03.TypeRef("Fusee.Math.double4x4")]))) ();
+    return ($S06 = JSIL.Memoize(new JSIL.ConstructorSignature($asm06.TypeRef("System.ApplicationException"), [$asm06.TypeRef("System.String")]))) ();
   };
   var $S07 = function () {
-    return ($S07 = JSIL.Memoize(new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float4"), [$asm03.TypeRef("Fusee.Math.float4"), $asm06.TypeRef("System.Single")], []))) ();
+    return ($S07 = JSIL.Memoize(new JSIL.ConstructorSignature($asm03.TypeRef("Fusee.Math.float4x4"), [$asm03.TypeRef("Fusee.Math.double4x4")]))) ();
+  };
+  var $S08 = function () {
+    return ($S08 = JSIL.Memoize(new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float4"), [$asm03.TypeRef("Fusee.Math.float4"), $asm06.TypeRef("System.Single")], []))) ();
   };
 
   function float4x4__ctor$00 (row0, row1, row2, row3) {
@@ -10076,8 +10082,6 @@ JSIL.DeclareNamespace("Fusee.Math");
   function float4x4_Invert$27 (mat) {
     if (!(!$thisType.op_Equality(mat.MemberwiseClone(), $thisType.Identity.MemberwiseClone()) && !$thisType.op_Equality(mat.MemberwiseClone(), $thisType.Zero.MemberwiseClone()))) {
       var result = mat.MemberwiseClone();
-    } else if (mat.get_IsAffine()) {
-      result = $thisType.InvertAffine(mat.MemberwiseClone());
     } else {
       mat.Transpose();
       var tmp0 = +(mat.get_M33() * mat.get_M44());
@@ -10166,10 +10170,7 @@ JSIL.DeclareNamespace("Fusee.Math");
   };
 
   function float4x4_InvertAffine (mat) {
-    var val = +-(((mat.get_M11() * mat.get_M14()) + (mat.get_M21() * mat.get_M24())) + (mat.get_M31() * mat.get_M34()));
-    var val2 = +-(((mat.get_M12() * mat.get_M14()) + (mat.get_M22() * mat.get_M24())) + (mat.get_M32() * mat.get_M34()));
-    var val3 = +-(((mat.get_M13() * mat.get_M14()) + (mat.get_M23() * mat.get_M24())) + (mat.get_M33() * mat.get_M34()));
-    return $S00().Construct($S01().Construct(mat.get_M11(), mat.get_M21(), mat.get_M31(), val), $S01().Construct(mat.get_M12(), mat.get_M22(), mat.get_M32(), val2), $S01().Construct(mat.get_M13(), mat.get_M23(), mat.get_M33(), val3), $S01().Construct(0, 0, 0, 1));
+    throw $S06().Construct("InvertAffine is broken (probably since column order notation)");
   };
 
   function float4x4_LookAt$28 (eye, target, up) {
@@ -10239,7 +10240,7 @@ JSIL.DeclareNamespace("Fusee.Math");
   };
 
   function float4x4_op_Explicit (d4x4) {
-    return $S06().Construct(d4x4);
+    return $S07().Construct(d4x4);
   };
 
   function float4x4_op_Inequality (left, right) {
@@ -10291,9 +10292,9 @@ JSIL.DeclareNamespace("Fusee.Math");
 
   function float4x4_Scale$37 (x, y, z) {
     var result = new $thisType();
-    result.Row0 = $S07().CallStatic($T00(), "op_Multiply", null, $T00().UnitX.MemberwiseClone(), x).MemberwiseClone();
-    result.Row1 = $S07().CallStatic($T00(), "op_Multiply", null, $T00().UnitY.MemberwiseClone(), y).MemberwiseClone();
-    result.Row2 = $S07().CallStatic($T00(), "op_Multiply", null, $T00().UnitZ.MemberwiseClone(), z).MemberwiseClone();
+    result.Row0 = $S08().CallStatic($T00(), "op_Multiply", null, $T00().UnitX.MemberwiseClone(), x).MemberwiseClone();
+    result.Row1 = $S08().CallStatic($T00(), "op_Multiply", null, $T00().UnitY.MemberwiseClone(), y).MemberwiseClone();
+    result.Row2 = $S08().CallStatic($T00(), "op_Multiply", null, $T00().UnitZ.MemberwiseClone(), z).MemberwiseClone();
     result.Row3 = $T00().UnitW.MemberwiseClone();
     return result;
   };
@@ -10375,7 +10376,7 @@ JSIL.DeclareNamespace("Fusee.Math");
   };
 
   function float4x4_toString () {
-    return $T09().Format("{0}\n{1}\n{2}\n{3}", JSIL.Array.New($T07(), [this.Row0, this.Row1, this.Row2, this.Row3]));
+    return $T0A().Format("{0}\n{1}\n{2}\n{3}", JSIL.Array.New($T07(), [this.Row0, this.Row1, this.Row2, this.Row3]));
   };
 
   function float4x4_Transform (matrix, vector) {
