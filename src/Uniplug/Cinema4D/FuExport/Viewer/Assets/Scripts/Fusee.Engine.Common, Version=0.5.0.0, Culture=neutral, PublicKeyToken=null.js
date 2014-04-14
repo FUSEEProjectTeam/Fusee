@@ -8,7 +8,7 @@ JSIL.DeclareNamespace("Fusee.Engine");
 (function InjectMeAttribute$Members () {
   var $, $thisType;
   var $T00 = function () {
-    return ($T00 = JSIL.Memoize($asm06.System.Attribute)) ();
+    return ($T00 = JSIL.Memoize($asm07.System.Attribute)) ();
   };
 
   function InjectMeAttribute__ctor () {
@@ -16,7 +16,7 @@ JSIL.DeclareNamespace("Fusee.Engine");
   };
 
   JSIL.MakeType({
-      BaseType: $asm06.TypeRef("System.Attribute"), 
+      BaseType: $asm07.TypeRef("System.Attribute"), 
       Name: "Fusee.Engine.InjectMeAttribute", 
       IsPublic: true, 
       IsReferenceType: true, 
@@ -34,7 +34,7 @@ JSIL.DeclareNamespace("Fusee.Engine");
 
     return function (newThisType) { $thisType = newThisType; }; 
   })
-    .Attribute($asm06.TypeRef("System.AttributeUsageAttribute"), function () { return [$asm06.System.AttributeTargets.$Flags("Field", "Parameter", "Property")]; });
+    .Attribute($asm07.TypeRef("System.AttributeUsageAttribute"), function () { return [$asm07.System.AttributeTargets.$Flags("Field", "Parameter", "Property")]; });
 
 })();
 
@@ -43,7 +43,7 @@ JSIL.DeclareNamespace("Fusee.Engine");
 (function FuseeApplicationAttribute$Members () {
   var $, $thisType;
   var $T00 = function () {
-    return ($T00 = JSIL.Memoize($asm06.System.Attribute)) ();
+    return ($T00 = JSIL.Memoize($asm07.System.Attribute)) ();
   };
 
   function FuseeApplicationAttribute__ctor () {
@@ -51,7 +51,7 @@ JSIL.DeclareNamespace("Fusee.Engine");
   };
 
   JSIL.MakeType({
-      BaseType: $asm06.TypeRef("System.Attribute"), 
+      BaseType: $asm07.TypeRef("System.Attribute"), 
       Name: "Fusee.Engine.FuseeApplicationAttribute", 
       IsPublic: true, 
       IsReferenceType: true, 
@@ -71,7 +71,7 @@ JSIL.DeclareNamespace("Fusee.Engine");
 
     return function (newThisType) { $thisType = newThisType; }; 
   })
-    .Attribute($asm06.TypeRef("System.AttributeUsageAttribute"), function () { return [$asm06.System.AttributeTargets.Class]; });
+    .Attribute($asm07.TypeRef("System.AttributeUsageAttribute"), function () { return [$asm07.System.AttributeTargets.Class]; });
 
 })();
 
@@ -80,88 +80,88 @@ JSIL.DeclareNamespace("Fusee.Engine");
 (function ColorUint$Members () {
   var $, $thisType;
   var $T00 = function () {
-    return ($T00 = JSIL.Memoize($asm06.System.Byte)) ();
+    return ($T00 = JSIL.Memoize($asm07.System.Byte)) ();
   };
   var $T01 = function () {
-    return ($T01 = JSIL.Memoize($asm06.System.Single)) ();
+    return ($T01 = JSIL.Memoize($asm07.System.Single)) ();
   };
   var $T02 = function () {
-    return ($T02 = JSIL.Memoize($asm03.Fusee.Math.float4)) ();
+    return ($T02 = JSIL.Memoize($asm04.Fusee.Math.float4)) ();
   };
   var $T03 = function () {
-    return ($T03 = JSIL.Memoize($asm03.Fusee.Math.float3)) ();
+    return ($T03 = JSIL.Memoize($asm04.Fusee.Math.float3)) ();
   };
   var $T04 = function () {
-    return ($T04 = JSIL.Memoize($asm06.System.UInt32)) ();
+    return ($T04 = JSIL.Memoize($asm07.System.UInt32)) ();
   };
   var $T05 = function () {
-    return ($T05 = JSIL.Memoize($asm06.System.Int32)) ();
+    return ($T05 = JSIL.Memoize($asm07.System.Int32)) ();
   };
   var $T06 = function () {
-    return ($T06 = JSIL.Memoize(System.Array.Of($asm06.System.Single))) ();
+    return ($T06 = JSIL.Memoize(System.Array.Of($asm07.System.Single))) ();
   };
   var $T07 = function () {
-    return ($T07 = JSIL.Memoize($asm06.System.ArgumentNullException)) ();
+    return ($T07 = JSIL.Memoize($asm07.System.ArgumentNullException)) ();
   };
   var $T08 = function () {
-    return ($T08 = JSIL.Memoize($asm06.System.ArgumentOutOfRangeException)) ();
+    return ($T08 = JSIL.Memoize($asm07.System.ArgumentOutOfRangeException)) ();
   };
   var $T09 = function () {
-    return ($T09 = JSIL.Memoize(System.Array.Of($asm06.System.Byte))) ();
+    return ($T09 = JSIL.Memoize(System.Array.Of($asm07.System.Byte))) ();
   };
   var $T0A = function () {
-    return ($T0A = JSIL.Memoize($asm06.System.Object)) ();
+    return ($T0A = JSIL.Memoize($asm07.System.Object)) ();
   };
   var $T0B = function () {
-    return ($T0B = JSIL.Memoize($asm06.System.String)) ();
+    return ($T0B = JSIL.Memoize($asm07.System.String)) ();
   };
   var $T0C = function () {
-    return ($T0C = JSIL.Memoize($asm06.System.IFormatProvider)) ();
+    return ($T0C = JSIL.Memoize($asm07.System.IFormatProvider)) ();
   };
   var $S00 = function () {
-    return ($S00 = JSIL.Memoize(new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.ColorUint"), [$asm06.TypeRef("System.Int32")], []))) ();
+    return ($S00 = JSIL.Memoize(new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.ColorUint"), [$asm07.TypeRef("System.Int32")], []))) ();
   };
   var $S01 = function () {
-    return ($S01 = JSIL.Memoize(new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.ColorUint"), [$asm06.TypeRef("System.UInt32")], []))) ();
+    return ($S01 = JSIL.Memoize(new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.ColorUint"), [$asm07.TypeRef("System.UInt32")], []))) ();
   };
   var $S02 = function () {
-    return ($S02 = JSIL.Memoize(new JSIL.ConstructorSignature($asm06.TypeRef("System.ArgumentNullException"), [$asm06.TypeRef("System.String")]))) ();
+    return ($S02 = JSIL.Memoize(new JSIL.ConstructorSignature($asm07.TypeRef("System.ArgumentNullException"), [$asm07.TypeRef("System.String")]))) ();
   };
   var $S03 = function () {
-    return ($S03 = JSIL.Memoize(new JSIL.ConstructorSignature($asm06.TypeRef("System.ArgumentOutOfRangeException"), [$asm06.TypeRef("System.String"), $asm06.TypeRef("System.String")]))) ();
+    return ($S03 = JSIL.Memoize(new JSIL.ConstructorSignature($asm07.TypeRef("System.ArgumentOutOfRangeException"), [$asm07.TypeRef("System.String"), $asm07.TypeRef("System.String")]))) ();
   };
   var $S04 = function () {
     return ($S04 = JSIL.Memoize(new JSIL.ConstructorSignature($asm01.TypeRef("Fusee.Engine.ColorUint"), [
-        $asm06.TypeRef("System.Single"), $asm06.TypeRef("System.Single"), 
-        $asm06.TypeRef("System.Single"), $asm06.TypeRef("System.Single")
+        $asm07.TypeRef("System.Single"), $asm07.TypeRef("System.Single"), 
+        $asm07.TypeRef("System.Single"), $asm07.TypeRef("System.Single")
       ]))) ();
   };
   var $S05 = function () {
     return ($S05 = JSIL.Memoize(new JSIL.ConstructorSignature($asm01.TypeRef("Fusee.Engine.ColorUint"), [
-        $asm06.TypeRef("System.Byte"), $asm06.TypeRef("System.Byte"), 
-        $asm06.TypeRef("System.Byte"), $asm06.TypeRef("System.Byte")
+        $asm07.TypeRef("System.Byte"), $asm07.TypeRef("System.Byte"), 
+        $asm07.TypeRef("System.Byte"), $asm07.TypeRef("System.Byte")
       ]))) ();
   };
   var $S06 = function () {
-    return ($S06 = JSIL.Memoize(new JSIL.ConstructorSignature($asm01.TypeRef("Fusee.Engine.ColorUint"), [$asm06.TypeRef("System.Int32")]))) ();
+    return ($S06 = JSIL.Memoize(new JSIL.ConstructorSignature($asm01.TypeRef("Fusee.Engine.ColorUint"), [$asm07.TypeRef("System.Int32")]))) ();
   };
   var $S07 = function () {
-    return ($S07 = JSIL.Memoize(new JSIL.ConstructorSignature($asm01.TypeRef("Fusee.Engine.ColorUint"), [$asm06.TypeRef("System.UInt32")]))) ();
+    return ($S07 = JSIL.Memoize(new JSIL.ConstructorSignature($asm01.TypeRef("Fusee.Engine.ColorUint"), [$asm07.TypeRef("System.UInt32")]))) ();
   };
   var $S08 = function () {
-    return ($S08 = JSIL.Memoize(new JSIL.ConstructorSignature($asm03.TypeRef("Fusee.Math.float3"), [
-        $asm06.TypeRef("System.Single"), $asm06.TypeRef("System.Single"), 
-        $asm06.TypeRef("System.Single")
+    return ($S08 = JSIL.Memoize(new JSIL.ConstructorSignature($asm04.TypeRef("Fusee.Math.float3"), [
+        $asm07.TypeRef("System.Single"), $asm07.TypeRef("System.Single"), 
+        $asm07.TypeRef("System.Single")
       ]))) ();
   };
   var $S09 = function () {
-    return ($S09 = JSIL.Memoize(new JSIL.ConstructorSignature($asm03.TypeRef("Fusee.Math.float4"), [
-        $asm06.TypeRef("System.Single"), $asm06.TypeRef("System.Single"), 
-        $asm06.TypeRef("System.Single"), $asm06.TypeRef("System.Single")
+    return ($S09 = JSIL.Memoize(new JSIL.ConstructorSignature($asm04.TypeRef("Fusee.Math.float4"), [
+        $asm07.TypeRef("System.Single"), $asm07.TypeRef("System.Single"), 
+        $asm07.TypeRef("System.Single"), $asm07.TypeRef("System.Single")
       ]))) ();
   };
   var $S0A = function () {
-    return ($S0A = JSIL.Memoize(new JSIL.MethodSignature($asm06.TypeRef("System.String"), [$asm06.TypeRef("System.IFormatProvider")], []))) ();
+    return ($S0A = JSIL.Memoize(new JSIL.MethodSignature($asm07.TypeRef("System.String"), [$asm07.TypeRef("System.IFormatProvider")], []))) ();
   };
 
   function ColorUint__ctor$00 (value) {
@@ -688,7 +688,7 @@ JSIL.DeclareNamespace("Fusee.Engine");
   };
 
   JSIL.MakeType({
-      BaseType: $asm06.TypeRef("System.ValueType"), 
+      BaseType: $asm07.TypeRef("System.ValueType"), 
       Name: "Fusee.Engine.ColorUint", 
       IsPublic: true, 
       IsReferenceType: false, 
@@ -723,12 +723,12 @@ JSIL.DeclareNamespace("Fusee.Engine");
     );
 
     $.Method({Static:false, Public:true }, ".ctor", 
-      new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float4")], []), 
+      new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float4")], []), 
       ColorUint__ctor$04
     );
 
     $.Method({Static:false, Public:true }, ".ctor", 
-      new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float3"), $.Single], []), 
+      new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float3"), $.Single], []), 
       ColorUint__ctor$05
     );
 
@@ -938,22 +938,22 @@ JSIL.DeclareNamespace("Fusee.Engine");
     );
 
     $.Method({Static:true , Public:true }, "op_Explicit", 
-      new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float3"), [$.Type], []), 
+      new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float3"), [$.Type], []), 
       ColorUint_op_Explicit$21
     );
 
     $.Method({Static:true , Public:true }, "op_Explicit", 
-      new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float4"), [$.Type], []), 
+      new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float4"), [$.Type], []), 
       ColorUint_op_Explicit$22
     );
 
     $.Method({Static:true , Public:true }, "op_Explicit", 
-      new JSIL.MethodSignature($.Type, [$asm03.TypeRef("Fusee.Math.float3")], []), 
+      new JSIL.MethodSignature($.Type, [$asm04.TypeRef("Fusee.Math.float3")], []), 
       ColorUint_op_Explicit$23
     );
 
     $.Method({Static:true , Public:true }, "op_Explicit", 
-      new JSIL.MethodSignature($.Type, [$asm03.TypeRef("Fusee.Math.float4")], []), 
+      new JSIL.MethodSignature($.Type, [$asm04.TypeRef("Fusee.Math.float4")], []), 
       ColorUint_op_Explicit$24
     );
 
@@ -1075,12 +1075,12 @@ JSIL.DeclareNamespace("Fusee.Engine");
     );
 
     $.Method({Static:false, Public:true }, "Tofloat3", 
-      new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float3"), [], []), 
+      new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float3"), [], []), 
       ColorUint_Tofloat3
     );
 
     $.Method({Static:false, Public:true }, "Tofloat4", 
-      new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float4"), [], []), 
+      new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float4"), [], []), 
       ColorUint_Tofloat4
     );
 
@@ -1100,12 +1100,12 @@ JSIL.DeclareNamespace("Fusee.Engine");
     );
 
     $.Method({Static:false, Public:true }, "ToString", 
-      new JSIL.MethodSignature($.String, [$asm06.TypeRef("System.IFormatProvider")], []), 
+      new JSIL.MethodSignature($.String, [$asm07.TypeRef("System.IFormatProvider")], []), 
       ColorUint_ToString$34
     );
 
     $.Method({Static:false, Public:true , Virtual:true }, "ToString", 
-      new JSIL.MethodSignature($.String, [$.String, $asm06.TypeRef("System.IFormatProvider")], []), 
+      new JSIL.MethodSignature($.String, [$.String, $asm07.TypeRef("System.IFormatProvider")], []), 
       ColorUint_ToString$35
     );
 
@@ -1548,14 +1548,14 @@ JSIL.DeclareNamespace("Fusee.Engine");
     $.Property({Static:false, Public:true }, "Item", $.Byte);
 
     $.ImplementInterfaces(
-      /* 0 */ $asm06.TypeRef("System.IEquatable`1", [$.Type]), 
-      /* 1 */ $asm06.TypeRef("System.IFormattable")
+      /* 0 */ $asm07.TypeRef("System.IEquatable`1", [$.Type]), 
+      /* 1 */ $asm07.TypeRef("System.IFormattable")
     );
 
     return function (newThisType) { $thisType = newThisType; }; 
   })
-    .Attribute($asm06.TypeRef("System.Reflection.DefaultMemberAttribute"), function () { return ["Item"]; })
-    .Attribute($asm08.TypeRef("System.ComponentModel.TypeConverterAttribute"), function () { return [$asm10.System.Drawing.ColorConverter.__Type__]; });
+    .Attribute($asm07.TypeRef("System.Reflection.DefaultMemberAttribute"), function () { return ["Item"]; })
+    .Attribute($asm09.TypeRef("System.ComponentModel.TypeConverterAttribute"), function () { return [$asm11.System.Drawing.ColorConverter.__Type__]; });
 
 })();
 
@@ -1597,7 +1597,7 @@ JSIL.MakeInterface(
 
 JSIL.MakeInterface(
   "Fusee.Engine.IInputDriverImp", true, [], function ($) {
-    $.Method({}, "DeviceImps", new JSIL.MethodSignature($asm06.TypeRef("System.Collections.Generic.List`1", [$asm01.TypeRef("Fusee.Engine.IInputDeviceImp")]), [], []));
+    $.Method({}, "DeviceImps", new JSIL.MethodSignature($asm07.TypeRef("System.Collections.Generic.List`1", [$asm01.TypeRef("Fusee.Engine.IInputDeviceImp")]), [], []));
   }, []);
 
 /* struct Fusee.Engine.CharInfoStruct */ 
@@ -1605,7 +1605,7 @@ JSIL.MakeInterface(
 (function CharInfoStruct$Members () {
   var $, $thisType;
   JSIL.MakeType({
-      BaseType: $asm06.TypeRef("System.ValueType"), 
+      BaseType: $asm07.TypeRef("System.ValueType"), 
       Name: "Fusee.Engine.CharInfoStruct", 
       IsPublic: true, 
       IsReferenceType: false, 
@@ -1661,9 +1661,9 @@ JSIL.MakeInterface(
 
 JSIL.MakeInterface(
   "Fusee.Engine.IBoxShapeImp", true, [], function ($) {
-    $.Method({}, "get_LocalScaling", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float3"), [], []));
-    $.Method({}, "set_LocalScaling", new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float3")], []));
-    $.Method({}, "get_HalfExtents", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float3"), [], []));
+    $.Method({}, "get_LocalScaling", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float3"), [], []));
+    $.Method({}, "set_LocalScaling", new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float3")], []));
+    $.Method({}, "get_HalfExtents", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float3"), [], []));
     $.Property({}, "LocalScaling");
     $.Property({}, "HalfExtents");
   }, [$asm01.TypeRef("Fusee.Engine.ICollisionShapeImp")]);
@@ -1684,16 +1684,16 @@ JSIL.MakeInterface(
 
 JSIL.MakeInterface(
   "Fusee.Engine.ICompoundShapeImp", true, [], function ($) {
-    $.Method({}, "AddChildShape", new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float4x4"), $asm01.TypeRef("Fusee.Engine.IBoxShapeImp")], []));
-    $.Method({}, "AddChildShape", new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float4x4"), $asm01.TypeRef("Fusee.Engine.ISphereShapeImp")], []));
-    $.Method({}, "AddChildShape", new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float4x4"), $asm01.TypeRef("Fusee.Engine.ICapsuleShapeImp")], []));
-    $.Method({}, "AddChildShape", new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float4x4"), $asm01.TypeRef("Fusee.Engine.IConeShapeImp")], []));
-    $.Method({}, "AddChildShape", new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float4x4"), $asm01.TypeRef("Fusee.Engine.ICylinderShapeImp")], []));
-    $.Method({}, "AddChildShape", new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float4x4"), $asm01.TypeRef("Fusee.Engine.IMultiSphereShapeImp")], []));
-    $.Method({}, "AddChildShape", new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float4x4"), $asm01.TypeRef("Fusee.Engine.IEmptyShapeImp")], []));
+    $.Method({}, "AddChildShape", new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float4x4"), $asm01.TypeRef("Fusee.Engine.IBoxShapeImp")], []));
+    $.Method({}, "AddChildShape", new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float4x4"), $asm01.TypeRef("Fusee.Engine.ISphereShapeImp")], []));
+    $.Method({}, "AddChildShape", new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float4x4"), $asm01.TypeRef("Fusee.Engine.ICapsuleShapeImp")], []));
+    $.Method({}, "AddChildShape", new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float4x4"), $asm01.TypeRef("Fusee.Engine.IConeShapeImp")], []));
+    $.Method({}, "AddChildShape", new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float4x4"), $asm01.TypeRef("Fusee.Engine.ICylinderShapeImp")], []));
+    $.Method({}, "AddChildShape", new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float4x4"), $asm01.TypeRef("Fusee.Engine.IMultiSphereShapeImp")], []));
+    $.Method({}, "AddChildShape", new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float4x4"), $asm01.TypeRef("Fusee.Engine.IEmptyShapeImp")], []));
     $.Method({}, "CalculatePrincipalAxisTransform", new JSIL.MethodSignature(null, [
-          $jsilcore.TypeRef("System.Array", [$.Single]), $asm03.TypeRef("Fusee.Math.float4x4"), 
-          $asm03.TypeRef("Fusee.Math.float3")
+          $jsilcore.TypeRef("System.Array", [$.Single]), $asm04.TypeRef("Fusee.Math.float4x4"), 
+          $asm04.TypeRef("Fusee.Math.float3")
         ], []));
   }, [$asm01.TypeRef("Fusee.Engine.ICollisionShapeImp")]);
 
@@ -1728,19 +1728,19 @@ JSIL.MakeInterface(
 
 JSIL.MakeInterface(
   "Fusee.Engine.IConeTwistConstraintImp", true, [], function ($) {
-    $.Method({}, "get_AFrame", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float4x4"), [], []));
-    $.Method({}, "get_BFrame", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float4x4"), [], []));
+    $.Method({}, "get_AFrame", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float4x4"), [], []));
+    $.Method({}, "get_BFrame", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float4x4"), [], []));
     $.Method({}, "CalcAngleInfo", new JSIL.MethodSignature(null, [], []));
     $.Method({}, "CalcAngleInfo2", new JSIL.MethodSignature(null, [
-          $asm03.TypeRef("Fusee.Math.float4x4"), $asm03.TypeRef("Fusee.Math.float4x4"), 
-          $asm03.TypeRef("Fusee.Math.float4x4"), $asm03.TypeRef("Fusee.Math.float4x4")
+          $asm04.TypeRef("Fusee.Math.float4x4"), $asm04.TypeRef("Fusee.Math.float4x4"), 
+          $asm04.TypeRef("Fusee.Math.float4x4"), $asm04.TypeRef("Fusee.Math.float4x4")
         ], []));
     $.Method({}, "EnableMotor", new JSIL.MethodSignature(null, [$.Boolean], []));
     $.Method({}, "get_FixThresh", new JSIL.MethodSignature($.Single, [], []));
     $.Method({}, "set_FixThresh", new JSIL.MethodSignature(null, [$.Single], []));
-    $.Method({}, "get_FrameOffsetA", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float4x4"), [], []));
-    $.Method({}, "get_FrameOffsetB", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float4x4"), [], []));
-    $.Method({}, "GetPointForAngle", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float3"), [$.Single, $.Single], []));
+    $.Method({}, "get_FrameOffsetA", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float4x4"), [], []));
+    $.Method({}, "get_FrameOffsetB", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float4x4"), [], []));
+    $.Method({}, "GetPointForAngle", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float3"), [$.Single, $.Single], []));
     $.Method({}, "get_IsPastSwingLimit", new JSIL.MethodSignature($.Boolean, [], []));
     $.Method({}, "SetAngularOnly", new JSIL.MethodSignature(null, [$.Boolean], []));
     $.Method({}, "SetDamping", new JSIL.MethodSignature(null, [$.Single], []));
@@ -1752,8 +1752,8 @@ JSIL.MakeInterface(
         ], []));
     $.Method({}, "SetMaxMotorImpulse", new JSIL.MethodSignature(null, [$.Single], []));
     $.Method({}, "SetMaxMotorImpulseNormalized", new JSIL.MethodSignature(null, [$.Single], []));
-    $.Method({}, "SetMotorTarget", new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.Quaternion")], []));
-    $.Method({}, "SetMotorTargetInConstraintSpace", new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.Quaternion")], []));
+    $.Method({}, "SetMotorTarget", new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.Quaternion")], []));
+    $.Method({}, "SetMotorTargetInConstraintSpace", new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.Quaternion")], []));
     $.Method({}, "get_SolveSwingLimit", new JSIL.MethodSignature($.Int32, [], []));
     $.Method({}, "get_SolveTwistLimit", new JSIL.MethodSignature($.Int32, [], []));
     $.Method({}, "get_SwingSpan1", new JSIL.MethodSignature($.Single, [], []));
@@ -1781,12 +1781,12 @@ JSIL.MakeInterface(
 
 JSIL.MakeInterface(
   "Fusee.Engine.IConvexHullShapeImp", true, [], function ($) {
-    $.Method({}, "AddPoint", new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float3")], []));
-    $.Method({}, "GetScaledPoint", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float3"), [$.Int32], []));
-    $.Method({}, "GetUnscaledPoints", new JSIL.MethodSignature($jsilcore.TypeRef("System.Array", [$asm03.TypeRef("Fusee.Math.float3")]), [], []));
+    $.Method({}, "AddPoint", new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float3")], []));
+    $.Method({}, "GetScaledPoint", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float3"), [$.Int32], []));
+    $.Method({}, "GetUnscaledPoints", new JSIL.MethodSignature($jsilcore.TypeRef("System.Array", [$asm04.TypeRef("Fusee.Math.float3")]), [], []));
     $.Method({}, "GetNumPoints", new JSIL.MethodSignature($.Int32, [], []));
-    $.Method({}, "get_LocalScaling", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float3"), [], []));
-    $.Method({}, "set_LocalScaling", new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float3")], []));
+    $.Method({}, "get_LocalScaling", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float3"), [], []));
+    $.Method({}, "set_LocalScaling", new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float3")], []));
     $.Property({}, "LocalScaling");
   }, [$asm01.TypeRef("Fusee.Engine.ICollisionShapeImp")]);
 
@@ -1794,7 +1794,7 @@ JSIL.MakeInterface(
 
 JSIL.MakeInterface(
   "Fusee.Engine.ICylinderShapeImp", true, [], function ($) {
-    $.Method({}, "get_HalfExtents", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float3"), [], []));
+    $.Method({}, "get_HalfExtents", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float3"), [], []));
     $.Method({}, "get_Radius", new JSIL.MethodSignature($.Single, [], []));
     $.Method({}, "get_UpAxis", new JSIL.MethodSignature($.Int32, [], []));
     $.Property({}, "HalfExtents");
@@ -1807,8 +1807,8 @@ JSIL.MakeInterface(
 JSIL.MakeInterface(
   "Fusee.Engine.IDynamicWorldImp", true, [], function ($) {
     $.Method({}, "AddRigidBody", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IRigidBodyImp"), [
-          $.Single, $asm03.TypeRef("Fusee.Math.float3"), 
-          $asm03.TypeRef("Fusee.Math.float3"), $asm01.TypeRef("Fusee.Engine.ICollisionShapeImp")
+          $.Single, $asm04.TypeRef("Fusee.Math.float3"), 
+          $asm04.TypeRef("Fusee.Math.float3"), $asm01.TypeRef("Fusee.Engine.ICollisionShapeImp")
         ], []));
     $.Method({}, "GetRigidBody", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IRigidBodyImp"), [$.Int32], []));
     $.Method({}, "StepSimulation", new JSIL.MethodSignature($.Int32, [
@@ -1816,61 +1816,61 @@ JSIL.MakeInterface(
           $.Single
         ], []));
     $.Method({}, "NumberRigidBodies", new JSIL.MethodSignature($.Int32, [], []));
-    $.Method({}, "AddPoint2PointConstraint", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IPoint2PointConstraintImp"), [$asm01.TypeRef("Fusee.Engine.IRigidBodyImp"), $asm03.TypeRef("Fusee.Math.float3")], []));
+    $.Method({}, "AddPoint2PointConstraint", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IPoint2PointConstraintImp"), [$asm01.TypeRef("Fusee.Engine.IRigidBodyImp"), $asm04.TypeRef("Fusee.Math.float3")], []));
     $.Method({}, "AddPoint2PointConstraint", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IPoint2PointConstraintImp"), [
           $asm01.TypeRef("Fusee.Engine.IRigidBodyImp"), $asm01.TypeRef("Fusee.Engine.IRigidBodyImp"), 
-          $asm03.TypeRef("Fusee.Math.float3"), $asm03.TypeRef("Fusee.Math.float3")
+          $asm04.TypeRef("Fusee.Math.float3"), $asm04.TypeRef("Fusee.Math.float3")
         ], []));
     $.Method({}, "GetConstraint", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IPoint2PointConstraintImp"), [$.Int32], []));
     $.Method({}, "AddHingeConstraint", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IHingeConstraintImp"), [
-          $asm01.TypeRef("Fusee.Engine.IRigidBodyImp"), $asm03.TypeRef("Fusee.Math.float4x4"), 
+          $asm01.TypeRef("Fusee.Engine.IRigidBodyImp"), $asm04.TypeRef("Fusee.Math.float4x4"), 
           $.Boolean
         ], []));
     $.Method({}, "AddHingeConstraint", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IHingeConstraintImp"), [
-          $asm01.TypeRef("Fusee.Engine.IRigidBodyImp"), $asm03.TypeRef("Fusee.Math.float3"), 
-          $asm03.TypeRef("Fusee.Math.float3"), $.Boolean
+          $asm01.TypeRef("Fusee.Engine.IRigidBodyImp"), $asm04.TypeRef("Fusee.Math.float3"), 
+          $asm04.TypeRef("Fusee.Math.float3"), $.Boolean
         ], []));
     $.Method({}, "AddHingeConstraint", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IHingeConstraintImp"), [
           $asm01.TypeRef("Fusee.Engine.IRigidBodyImp"), $asm01.TypeRef("Fusee.Engine.IRigidBodyImp"), 
-          $asm03.TypeRef("Fusee.Math.float3"), $asm03.TypeRef("Fusee.Math.float3"), 
-          $asm03.TypeRef("Fusee.Math.float3"), $asm03.TypeRef("Fusee.Math.float3"), 
+          $asm04.TypeRef("Fusee.Math.float3"), $asm04.TypeRef("Fusee.Math.float3"), 
+          $asm04.TypeRef("Fusee.Math.float3"), $asm04.TypeRef("Fusee.Math.float3"), 
           $.Boolean
         ], []));
     $.Method({}, "AddHingeConstraint", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IHingeConstraintImp"), [
           $asm01.TypeRef("Fusee.Engine.IRigidBodyImp"), $asm01.TypeRef("Fusee.Engine.IRigidBodyImp"), 
-          $asm03.TypeRef("Fusee.Math.float4x4"), $asm03.TypeRef("Fusee.Math.float4x4"), 
+          $asm04.TypeRef("Fusee.Math.float4x4"), $asm04.TypeRef("Fusee.Math.float4x4"), 
           $.Boolean
         ], []));
     $.Method({}, "AddSliderConstraint", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.ISliderConstraintImp"), [
           $asm01.TypeRef("Fusee.Engine.IRigidBodyImp"), $asm01.TypeRef("Fusee.Engine.IRigidBodyImp"), 
-          $asm03.TypeRef("Fusee.Math.float4x4"), $asm03.TypeRef("Fusee.Math.float4x4"), 
+          $asm04.TypeRef("Fusee.Math.float4x4"), $asm04.TypeRef("Fusee.Math.float4x4"), 
           $.Boolean
         ], []));
     $.Method({}, "AddSliderConstraint", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.ISliderConstraintImp"), [
-          $asm01.TypeRef("Fusee.Engine.IRigidBodyImp"), $asm03.TypeRef("Fusee.Math.float4x4"), 
+          $asm01.TypeRef("Fusee.Engine.IRigidBodyImp"), $asm04.TypeRef("Fusee.Math.float4x4"), 
           $.Boolean
         ], []));
     $.Method({}, "AddGearConstraint", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IGearConstraintImp"), [
           $asm01.TypeRef("Fusee.Engine.IRigidBodyImp"), $asm01.TypeRef("Fusee.Engine.IRigidBodyImp"), 
-          $asm03.TypeRef("Fusee.Math.float3"), $asm03.TypeRef("Fusee.Math.float3"), 
+          $asm04.TypeRef("Fusee.Math.float3"), $asm04.TypeRef("Fusee.Math.float3"), 
           $.Single
         ], []));
-    $.Method({}, "AddConeTwistConstraint", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IConeTwistConstraintImp"), [$asm01.TypeRef("Fusee.Engine.IRigidBodyImp"), $asm03.TypeRef("Fusee.Math.float4x4")], []));
+    $.Method({}, "AddConeTwistConstraint", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IConeTwistConstraintImp"), [$asm01.TypeRef("Fusee.Engine.IRigidBodyImp"), $asm04.TypeRef("Fusee.Math.float4x4")], []));
     $.Method({}, "AddConeTwistConstraint", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IConeTwistConstraintImp"), [
           $asm01.TypeRef("Fusee.Engine.IRigidBodyImp"), $asm01.TypeRef("Fusee.Engine.IRigidBodyImp"), 
-          $asm03.TypeRef("Fusee.Math.float4x4"), $asm03.TypeRef("Fusee.Math.float4x4")
+          $asm04.TypeRef("Fusee.Math.float4x4"), $asm04.TypeRef("Fusee.Math.float4x4")
         ], []));
     $.Method({}, "AddGeneric6DofConstraint", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IGeneric6DofConstraintImp"), [
-          $asm01.TypeRef("Fusee.Engine.IRigidBodyImp"), $asm03.TypeRef("Fusee.Math.float4x4"), 
+          $asm01.TypeRef("Fusee.Engine.IRigidBodyImp"), $asm04.TypeRef("Fusee.Math.float4x4"), 
           $.Boolean
         ], []));
     $.Method({}, "AddGeneric6DofConstraint", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IGeneric6DofConstraintImp"), [
           $asm01.TypeRef("Fusee.Engine.IRigidBodyImp"), $asm01.TypeRef("Fusee.Engine.IRigidBodyImp"), 
-          $asm03.TypeRef("Fusee.Math.float4x4"), $asm03.TypeRef("Fusee.Math.float4x4"), 
+          $asm04.TypeRef("Fusee.Math.float4x4"), $asm04.TypeRef("Fusee.Math.float4x4"), 
           $.Boolean
         ], []));
     $.Method({}, "AddBoxShape", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IBoxShapeImp"), [$.Single], []));
-    $.Method({}, "AddBoxShape", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IBoxShapeImp"), [$asm03.TypeRef("Fusee.Math.float3")], []));
+    $.Method({}, "AddBoxShape", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IBoxShapeImp"), [$asm04.TypeRef("Fusee.Math.float3")], []));
     $.Method({}, "AddBoxShape", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IBoxShapeImp"), [
           $.Single, $.Single, 
           $.Single
@@ -1878,19 +1878,19 @@ JSIL.MakeInterface(
     $.Method({}, "AddSphereShape", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.ISphereShapeImp"), [$.Single], []));
     $.Method({}, "AddCapsuleShape", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.ICapsuleShapeImp"), [$.Single, $.Single], []));
     $.Method({}, "AddCylinderShape", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.ICylinderShapeImp"), [$.Single], []));
-    $.Method({}, "AddCylinderShape", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.ICylinderShapeImp"), [$asm03.TypeRef("Fusee.Math.float3")], []));
+    $.Method({}, "AddCylinderShape", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.ICylinderShapeImp"), [$asm04.TypeRef("Fusee.Math.float3")], []));
     $.Method({}, "AddCylinderShape", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.ICylinderShapeImp"), [
           $.Single, $.Single, 
           $.Single
         ], []));
     $.Method({}, "AddConeShape", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IConeShapeImp"), [$.Single, $.Single], []));
-    $.Method({}, "AddMultiSphereShape", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IMultiSphereShapeImp"), [$jsilcore.TypeRef("System.Array", [$asm03.TypeRef("Fusee.Math.float3")]), $jsilcore.TypeRef("System.Array", [$.Single])], []));
+    $.Method({}, "AddMultiSphereShape", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IMultiSphereShapeImp"), [$jsilcore.TypeRef("System.Array", [$asm04.TypeRef("Fusee.Math.float3")]), $jsilcore.TypeRef("System.Array", [$.Single])], []));
     $.Method({}, "AddCompoundShape", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.ICompoundShapeImp"), [$.Boolean], []));
     $.Method({}, "AddEmptyShape", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IEmptyShapeImp"), [], []));
     $.Method({}, "AddConvexHullShape", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IConvexHullShapeImp"), [], []));
-    $.Method({}, "AddConvexHullShape", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IConvexHullShapeImp"), [$jsilcore.TypeRef("System.Array", [$asm03.TypeRef("Fusee.Math.float3")])], []));
-    $.Method({}, "AddStaticPlaneShape", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IStaticPlaneShapeImp"), [$asm03.TypeRef("Fusee.Math.float3"), $.Single], []));
-    $.Method({}, "AddGImpactMeshShape", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IGImpactMeshShapeImp"), [$jsilcore.TypeRef("System.Array", [$.Int32]), $jsilcore.TypeRef("System.Array", [$asm03.TypeRef("Fusee.Math.float3")])], []));
+    $.Method({}, "AddConvexHullShape", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IConvexHullShapeImp"), [$jsilcore.TypeRef("System.Array", [$asm04.TypeRef("Fusee.Math.float3")])], []));
+    $.Method({}, "AddStaticPlaneShape", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IStaticPlaneShapeImp"), [$asm04.TypeRef("Fusee.Math.float3"), $.Single], []));
+    $.Method({}, "AddGImpactMeshShape", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IGImpactMeshShapeImp"), [$jsilcore.TypeRef("System.Array", [$.Int32]), $jsilcore.TypeRef("System.Array", [$asm04.TypeRef("Fusee.Math.float3")])], []));
     $.Method({}, "NumberConstraints", new JSIL.MethodSignature($.Int32, [], []));
     $.Method({}, "Dispose", new JSIL.MethodSignature(null, [], []));
   }, []);
@@ -1911,29 +1911,29 @@ JSIL.MakeInterface(
 
 JSIL.MakeInterface(
   "Fusee.Engine.IGeneric6DofConstraintImp", true, [], function ($) {
-    $.Method({}, "get_AngularLowerLimit", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float3"), [], []));
-    $.Method({}, "set_AngularLowerLimit", new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float3")], []));
-    $.Method({}, "get_AngularUpperLimit", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float3"), [], []));
-    $.Method({}, "set_AngularUpperLimit", new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float3")], []));
+    $.Method({}, "get_AngularLowerLimit", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float3"), [], []));
+    $.Method({}, "set_AngularLowerLimit", new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float3")], []));
+    $.Method({}, "get_AngularUpperLimit", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float3"), [], []));
+    $.Method({}, "set_AngularUpperLimit", new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float3")], []));
     $.Method({}, "CalcAnchorPos", new JSIL.MethodSignature(null, [], []));
     $.Method({}, "CalculateTransforms", new JSIL.MethodSignature(null, [], []));
-    $.Method({}, "CalculateTransforms", new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float4x4"), $asm03.TypeRef("Fusee.Math.float4x4")], []));
-    $.Method({}, "get_CalculatedTransformA", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float4x4"), [], []));
-    $.Method({}, "get_CalculatedTransformB", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float4x4"), [], []));
-    $.Method({}, "get_FrameOffsetA", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float4x4"), [], []));
-    $.Method({}, "set_FrameOffsetA", new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float4x4")], []));
-    $.Method({}, "get_FrameOffsetB", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float4x4"), [], []));
-    $.Method({}, "set_FrameOffsetB", new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float4x4")], []));
+    $.Method({}, "CalculateTransforms", new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float4x4"), $asm04.TypeRef("Fusee.Math.float4x4")], []));
+    $.Method({}, "get_CalculatedTransformA", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float4x4"), [], []));
+    $.Method({}, "get_CalculatedTransformB", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float4x4"), [], []));
+    $.Method({}, "get_FrameOffsetA", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float4x4"), [], []));
+    $.Method({}, "set_FrameOffsetA", new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float4x4")], []));
+    $.Method({}, "get_FrameOffsetB", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float4x4"), [], []));
+    $.Method({}, "set_FrameOffsetB", new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float4x4")], []));
     $.Method({}, "GetAngle", new JSIL.MethodSignature($.Single, [$.Int32], []));
-    $.Method({}, "GetAxis", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float3"), [$.Int32], []));
+    $.Method({}, "GetAxis", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float3"), [$.Int32], []));
     $.Method({}, "GetRelativePivotPosition", new JSIL.MethodSignature($.Single, [$.Int32], []));
     $.Method({}, "IsLimited", new JSIL.MethodSignature($.Boolean, [$.Int32], []));
-    $.Method({}, "get_LinearLowerLimit", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float3"), [], []));
-    $.Method({}, "set_LinearLowerLimit", new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float3")], []));
-    $.Method({}, "get_LinearUpperLimit", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float3"), [], []));
-    $.Method({}, "set_LinearUpperLimit", new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float3")], []));
-    $.Method({}, "SetAxis", new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float3"), $asm03.TypeRef("Fusee.Math.float3")], []));
-    $.Method({}, "SetFrames", new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float4x4"), $asm03.TypeRef("Fusee.Math.float4x4")], []));
+    $.Method({}, "get_LinearLowerLimit", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float3"), [], []));
+    $.Method({}, "set_LinearLowerLimit", new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float3")], []));
+    $.Method({}, "get_LinearUpperLimit", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float3"), [], []));
+    $.Method({}, "set_LinearUpperLimit", new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float3")], []));
+    $.Method({}, "SetAxis", new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float3"), $asm04.TypeRef("Fusee.Math.float3")], []));
+    $.Method({}, "SetFrames", new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float4x4"), $asm04.TypeRef("Fusee.Math.float4x4")], []));
     $.Method({}, "SetLimit", new JSIL.MethodSignature(null, [
           $.Int32, $.Single, 
           $.Single
@@ -1981,18 +1981,18 @@ JSIL.MakeInterface(
           $.Boolean, $.Single, 
           $.Single
         ], []));
-    $.Method({}, "SetMotorTarget", new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.Quaternion"), $.Single], []));
+    $.Method({}, "SetMotorTarget", new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.Quaternion"), $.Single], []));
     $.Method({}, "SetMotorTarget", new JSIL.MethodSignature(null, [$.Single, $.Single], []));
     $.Method({}, "get_MaxMotorImpulse", new JSIL.MethodSignature($.Single, [], []));
     $.Method({}, "set_MaxMotorImpulse", new JSIL.MethodSignature(null, [$.Single], []));
     $.Method({}, "get_MotorTargetVelocity", new JSIL.MethodSignature($.Single, [], []));
-    $.Method({}, "get_FrameA", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float4x4"), [], []));
-    $.Method({}, "get_FrameB", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float4x4"), [], []));
-    $.Method({}, "get_FrameOffsetA", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float4x4"), [], []));
-    $.Method({}, "get_FrameOffsetB", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float4x4"), [], []));
-    $.Method({}, "SetAxis", new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float3")], []));
+    $.Method({}, "get_FrameA", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float4x4"), [], []));
+    $.Method({}, "get_FrameB", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float4x4"), [], []));
+    $.Method({}, "get_FrameOffsetA", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float4x4"), [], []));
+    $.Method({}, "get_FrameOffsetB", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float4x4"), [], []));
+    $.Method({}, "SetAxis", new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float3")], []));
     $.Method({}, "GetHingeAngle", new JSIL.MethodSignature($.Single, [], []));
-    $.Method({}, "GetHingeAngle", new JSIL.MethodSignature($.Single, [$asm03.TypeRef("Fusee.Math.float4x4"), $asm03.TypeRef("Fusee.Math.float4x4")], []));
+    $.Method({}, "GetHingeAngle", new JSIL.MethodSignature($.Single, [$asm04.TypeRef("Fusee.Math.float4x4"), $asm04.TypeRef("Fusee.Math.float4x4")], []));
     $.Method({}, "SetLimit", new JSIL.MethodSignature(null, [
           $.Single, $.Single, 
           $.Single, $.Single, 
@@ -2025,16 +2025,16 @@ JSIL.MakeInterface(
     $.Method({}, "set_CursorVisible", new JSIL.MethodSignature(null, [$.Boolean], []));
     $.Method({}, "GetMousePos", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.Point"), [], []));
     $.Method({}, "GetMouseWheelPos", new JSIL.MethodSignature($.Int32, [], []));
-    $.Method({}, "add_MouseButtonDown", new JSIL.MethodSignature(null, [$asm06.TypeRef("System.EventHandler`1", [$asm01.TypeRef("Fusee.Engine.MouseEventArgs")])], []));
-    $.Method({}, "remove_MouseButtonDown", new JSIL.MethodSignature(null, [$asm06.TypeRef("System.EventHandler`1", [$asm01.TypeRef("Fusee.Engine.MouseEventArgs")])], []));
-    $.Method({}, "add_MouseButtonUp", new JSIL.MethodSignature(null, [$asm06.TypeRef("System.EventHandler`1", [$asm01.TypeRef("Fusee.Engine.MouseEventArgs")])], []));
-    $.Method({}, "remove_MouseButtonUp", new JSIL.MethodSignature(null, [$asm06.TypeRef("System.EventHandler`1", [$asm01.TypeRef("Fusee.Engine.MouseEventArgs")])], []));
-    $.Method({}, "add_MouseMove", new JSIL.MethodSignature(null, [$asm06.TypeRef("System.EventHandler`1", [$asm01.TypeRef("Fusee.Engine.MouseEventArgs")])], []));
-    $.Method({}, "remove_MouseMove", new JSIL.MethodSignature(null, [$asm06.TypeRef("System.EventHandler`1", [$asm01.TypeRef("Fusee.Engine.MouseEventArgs")])], []));
-    $.Method({}, "add_KeyDown", new JSIL.MethodSignature(null, [$asm06.TypeRef("System.EventHandler`1", [$asm01.TypeRef("Fusee.Engine.KeyEventArgs")])], []));
-    $.Method({}, "remove_KeyDown", new JSIL.MethodSignature(null, [$asm06.TypeRef("System.EventHandler`1", [$asm01.TypeRef("Fusee.Engine.KeyEventArgs")])], []));
-    $.Method({}, "add_KeyUp", new JSIL.MethodSignature(null, [$asm06.TypeRef("System.EventHandler`1", [$asm01.TypeRef("Fusee.Engine.KeyEventArgs")])], []));
-    $.Method({}, "remove_KeyUp", new JSIL.MethodSignature(null, [$asm06.TypeRef("System.EventHandler`1", [$asm01.TypeRef("Fusee.Engine.KeyEventArgs")])], []));
+    $.Method({}, "add_MouseButtonDown", new JSIL.MethodSignature(null, [$asm07.TypeRef("System.EventHandler`1", [$asm01.TypeRef("Fusee.Engine.MouseEventArgs")])], []));
+    $.Method({}, "remove_MouseButtonDown", new JSIL.MethodSignature(null, [$asm07.TypeRef("System.EventHandler`1", [$asm01.TypeRef("Fusee.Engine.MouseEventArgs")])], []));
+    $.Method({}, "add_MouseButtonUp", new JSIL.MethodSignature(null, [$asm07.TypeRef("System.EventHandler`1", [$asm01.TypeRef("Fusee.Engine.MouseEventArgs")])], []));
+    $.Method({}, "remove_MouseButtonUp", new JSIL.MethodSignature(null, [$asm07.TypeRef("System.EventHandler`1", [$asm01.TypeRef("Fusee.Engine.MouseEventArgs")])], []));
+    $.Method({}, "add_MouseMove", new JSIL.MethodSignature(null, [$asm07.TypeRef("System.EventHandler`1", [$asm01.TypeRef("Fusee.Engine.MouseEventArgs")])], []));
+    $.Method({}, "remove_MouseMove", new JSIL.MethodSignature(null, [$asm07.TypeRef("System.EventHandler`1", [$asm01.TypeRef("Fusee.Engine.MouseEventArgs")])], []));
+    $.Method({}, "add_KeyDown", new JSIL.MethodSignature(null, [$asm07.TypeRef("System.EventHandler`1", [$asm01.TypeRef("Fusee.Engine.KeyEventArgs")])], []));
+    $.Method({}, "remove_KeyDown", new JSIL.MethodSignature(null, [$asm07.TypeRef("System.EventHandler`1", [$asm01.TypeRef("Fusee.Engine.KeyEventArgs")])], []));
+    $.Method({}, "add_KeyUp", new JSIL.MethodSignature(null, [$asm07.TypeRef("System.EventHandler`1", [$asm01.TypeRef("Fusee.Engine.KeyEventArgs")])], []));
+    $.Method({}, "remove_KeyUp", new JSIL.MethodSignature(null, [$asm07.TypeRef("System.EventHandler`1", [$asm01.TypeRef("Fusee.Engine.KeyEventArgs")])], []));
     $.Property({}, "CursorVisible");
   }, []);
 
@@ -2043,7 +2043,7 @@ JSIL.MakeInterface(
 (function ImageData$Members () {
   var $, $thisType;
   JSIL.MakeType({
-      BaseType: $asm06.TypeRef("System.ValueType"), 
+      BaseType: $asm07.TypeRef("System.ValueType"), 
       Name: "Fusee.Engine.ImageData", 
       IsPublic: true, 
       IsReferenceType: false, 
@@ -2085,7 +2085,7 @@ JSIL.MakeInterface(
 
 JSIL.MakeInterface(
   "Fusee.Engine.IMultiSphereShapeImp", true, [], function ($) {
-    $.Method({}, "GetSpherePosition", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float3"), [$.Int32], []));
+    $.Method({}, "GetSpherePosition", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float3"), [$.Int32], []));
     $.Method({}, "GetSphereRadius", new JSIL.MethodSignature($.Single, [$.Int32], []));
     $.Method({}, "get_SphereCount", new JSIL.MethodSignature($.Int32, [], []));
     $.Property({}, "SphereCount");
@@ -2095,7 +2095,7 @@ JSIL.MakeInterface(
 
 JSIL.MakeInterface(
   "Fusee.Engine.INetworkConnection", true, [], function ($) {
-    $.Method({}, "get_RemoteEndPoint", new JSIL.MethodSignature($asm08.TypeRef("System.Net.IPEndPoint"), [], []));
+    $.Method({}, "get_RemoteEndPoint", new JSIL.MethodSignature($asm09.TypeRef("System.Net.IPEndPoint"), [], []));
     $.Method({}, "get_RoundtripTime", new JSIL.MethodSignature($.Single, [], []));
     $.Method({}, "Disconnect", new JSIL.MethodSignature(null, [], []));
     $.Method({}, "Disconnect", new JSIL.MethodSignature(null, [$.String], []));
@@ -2116,7 +2116,7 @@ JSIL.MakeInterface(
   };
 
   JSIL.MakeType({
-      BaseType: $asm06.TypeRef("System.Object"), 
+      BaseType: $asm07.TypeRef("System.Object"), 
       Name: "Fusee.Engine.NetConfigValues", 
       IsPublic: true, 
       IsReferenceType: true, 
@@ -2145,7 +2145,7 @@ JSIL.MakeInterface(
 (function NetStatusValues$Members () {
   var $, $thisType;
   var $T00 = function () {
-    return ($T00 = JSIL.Memoize($asm06.System.Boolean)) ();
+    return ($T00 = JSIL.Memoize($asm07.System.Boolean)) ();
   };
 
   function NetStatusValues__ctor () {
@@ -2168,7 +2168,7 @@ JSIL.MakeInterface(
   };
 
   JSIL.MakeType({
-      BaseType: $asm06.TypeRef("System.Object"), 
+      BaseType: $asm07.TypeRef("System.Object"), 
       Name: "Fusee.Engine.NetStatusValues", 
       IsPublic: true, 
       IsReferenceType: true, 
@@ -2185,31 +2185,31 @@ JSIL.MakeInterface(
       new JSIL.MethodSignature($.Boolean, [], []), 
       NetStatusValues_get_Connected
     )
-      .Attribute($asm06.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute"));
+      .Attribute($asm07.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute"));
 
     $.Method({Static:false, Public:true }, "get_Connecting", 
       new JSIL.MethodSignature($.Boolean, [], []), 
       NetStatusValues_get_Connecting
     )
-      .Attribute($asm06.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute"));
+      .Attribute($asm07.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute"));
 
     $.Method({Static:false, Public:true }, "set_Connected", 
       new JSIL.MethodSignature(null, [$.Boolean], []), 
       NetStatusValues_set_Connected
     )
-      .Attribute($asm06.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute"));
+      .Attribute($asm07.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute"));
 
     $.Method({Static:false, Public:true }, "set_Connecting", 
       new JSIL.MethodSignature(null, [$.Boolean], []), 
       NetStatusValues_set_Connecting
     )
-      .Attribute($asm06.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute"));
+      .Attribute($asm07.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute"));
 
     $.Field({Static:false, Public:true }, "LastStatus", $asm01.TypeRef("Fusee.Engine.ConnectionStatus")); 
     $.Field({Static:false, Public:false}, "NetStatusValues$Connected$value", $.Boolean)
-      .Attribute($asm06.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute")); 
+      .Attribute($asm07.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute")); 
     $.Field({Static:false, Public:false}, "NetStatusValues$Connecting$value", $.Boolean)
-      .Attribute($asm06.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute")); 
+      .Attribute($asm07.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute")); 
     $.Property({Static:false, Public:true }, "Connected", $.Boolean);
 
     $.Property({Static:false, Public:true }, "Connecting", $.Boolean);
@@ -2242,9 +2242,9 @@ JSIL.MakeInterface(
     $.Method({}, "set_Config", new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.NetConfigValues")], []));
     $.Method({}, "get_Status", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.NetStatusValues"), [], []));
     $.Method({}, "set_Status", new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.NetStatusValues")], []));
-    $.Method({}, "get_Connections", new JSIL.MethodSignature($asm06.TypeRef("System.Collections.Generic.List`1", [$asm01.TypeRef("Fusee.Engine.INetworkConnection")]), [], []));
+    $.Method({}, "get_Connections", new JSIL.MethodSignature($asm07.TypeRef("System.Collections.Generic.List`1", [$asm01.TypeRef("Fusee.Engine.INetworkConnection")]), [], []));
     $.Method({}, "GetLocalIp", new JSIL.MethodSignature($.String, [], []));
-    $.Method({}, "get_IncomingMsg", new JSIL.MethodSignature($asm06.TypeRef("System.Collections.Generic.List`1", [$asm01.TypeRef("Fusee.Engine.INetworkMsg")]), [], []));
+    $.Method({}, "get_IncomingMsg", new JSIL.MethodSignature($asm07.TypeRef("System.Collections.Generic.List`1", [$asm01.TypeRef("Fusee.Engine.INetworkMsg")]), [], []));
     $.Method({}, "StartPeer", new JSIL.MethodSignature(null, [$.Int32], []));
     $.Method({}, "add_ConnectionUpdate", new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.ConnectionUpdateEvent")], []));
     $.Method({}, "remove_ConnectionUpdate", new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.ConnectionUpdateEvent")], []));
@@ -2332,7 +2332,7 @@ JSIL.MakeEnum(
 (function NetworkMsgType$Members () {
   var $, $thisType;
   JSIL.MakeType({
-      BaseType: $asm06.TypeRef("System.ValueType"), 
+      BaseType: $asm07.TypeRef("System.ValueType"), 
       Name: "Fusee.Engine.NetworkMsgType", 
       IsPublic: true, 
       IsReferenceType: false, 
@@ -2371,7 +2371,7 @@ JSIL.MakeInterface(
 (function InitEventArgs$Members () {
   var $, $thisType;
   var $T00 = function () {
-    return ($T00 = JSIL.Memoize($asm06.System.EventArgs)) ();
+    return ($T00 = JSIL.Memoize($asm07.System.EventArgs)) ();
   };
 
   function InitEventArgs__ctor () {
@@ -2379,7 +2379,7 @@ JSIL.MakeInterface(
   };
 
   JSIL.MakeType({
-      BaseType: $asm06.TypeRef("System.EventArgs"), 
+      BaseType: $asm07.TypeRef("System.EventArgs"), 
       Name: "Fusee.Engine.InitEventArgs", 
       IsPublic: true, 
       IsReferenceType: true, 
@@ -2412,10 +2412,10 @@ JSIL.MakeEnum(
 
 JSIL.MakeInterface(
   "Fusee.Engine.IPoint2PointConstraintImp", true, [], function ($) {
-    $.Method({}, "get_PivotInA", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float3"), [], []));
-    $.Method({}, "set_PivotInA", new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float3")], []));
-    $.Method({}, "get_PivotInB", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float3"), [], []));
-    $.Method({}, "set_PivotInB", new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float3")], []));
+    $.Method({}, "get_PivotInA", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float3"), [], []));
+    $.Method({}, "set_PivotInA", new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float3")], []));
+    $.Method({}, "get_PivotInB", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float3"), [], []));
+    $.Method({}, "set_PivotInB", new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float3")], []));
     $.Method({}, "UpdateRhs", new JSIL.MethodSignature(null, [$.Single], []));
     $.Method({}, "SetParam", new JSIL.MethodSignature(null, [
           $asm01.TypeRef("Fusee.Engine.PointToPointFlags"), $.Single, 
@@ -2447,14 +2447,14 @@ JSIL.MakeInterface(
     $.Method({}, "Run", new JSIL.MethodSignature(null, [], []));
     $.Method({}, "SetCursor", new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.CursorType")], []));
     $.Method({}, "OpenLink", new JSIL.MethodSignature(null, [$.String], []));
-    $.Method({}, "add_Init", new JSIL.MethodSignature(null, [$asm06.TypeRef("System.EventHandler`1", [$asm01.TypeRef("Fusee.Engine.InitEventArgs")])], []));
-    $.Method({}, "remove_Init", new JSIL.MethodSignature(null, [$asm06.TypeRef("System.EventHandler`1", [$asm01.TypeRef("Fusee.Engine.InitEventArgs")])], []));
-    $.Method({}, "add_UnLoad", new JSIL.MethodSignature(null, [$asm06.TypeRef("System.EventHandler`1", [$asm01.TypeRef("Fusee.Engine.InitEventArgs")])], []));
-    $.Method({}, "remove_UnLoad", new JSIL.MethodSignature(null, [$asm06.TypeRef("System.EventHandler`1", [$asm01.TypeRef("Fusee.Engine.InitEventArgs")])], []));
-    $.Method({}, "add_Render", new JSIL.MethodSignature(null, [$asm06.TypeRef("System.EventHandler`1", [$asm01.TypeRef("Fusee.Engine.RenderEventArgs")])], []));
-    $.Method({}, "remove_Render", new JSIL.MethodSignature(null, [$asm06.TypeRef("System.EventHandler`1", [$asm01.TypeRef("Fusee.Engine.RenderEventArgs")])], []));
-    $.Method({}, "add_Resize", new JSIL.MethodSignature(null, [$asm06.TypeRef("System.EventHandler`1", [$asm01.TypeRef("Fusee.Engine.ResizeEventArgs")])], []));
-    $.Method({}, "remove_Resize", new JSIL.MethodSignature(null, [$asm06.TypeRef("System.EventHandler`1", [$asm01.TypeRef("Fusee.Engine.ResizeEventArgs")])], []));
+    $.Method({}, "add_Init", new JSIL.MethodSignature(null, [$asm07.TypeRef("System.EventHandler`1", [$asm01.TypeRef("Fusee.Engine.InitEventArgs")])], []));
+    $.Method({}, "remove_Init", new JSIL.MethodSignature(null, [$asm07.TypeRef("System.EventHandler`1", [$asm01.TypeRef("Fusee.Engine.InitEventArgs")])], []));
+    $.Method({}, "add_UnLoad", new JSIL.MethodSignature(null, [$asm07.TypeRef("System.EventHandler`1", [$asm01.TypeRef("Fusee.Engine.InitEventArgs")])], []));
+    $.Method({}, "remove_UnLoad", new JSIL.MethodSignature(null, [$asm07.TypeRef("System.EventHandler`1", [$asm01.TypeRef("Fusee.Engine.InitEventArgs")])], []));
+    $.Method({}, "add_Render", new JSIL.MethodSignature(null, [$asm07.TypeRef("System.EventHandler`1", [$asm01.TypeRef("Fusee.Engine.RenderEventArgs")])], []));
+    $.Method({}, "remove_Render", new JSIL.MethodSignature(null, [$asm07.TypeRef("System.EventHandler`1", [$asm01.TypeRef("Fusee.Engine.RenderEventArgs")])], []));
+    $.Method({}, "add_Resize", new JSIL.MethodSignature(null, [$asm07.TypeRef("System.EventHandler`1", [$asm01.TypeRef("Fusee.Engine.ResizeEventArgs")])], []));
+    $.Method({}, "remove_Resize", new JSIL.MethodSignature(null, [$asm07.TypeRef("System.EventHandler`1", [$asm01.TypeRef("Fusee.Engine.ResizeEventArgs")])], []));
     $.Property({}, "Width");
     $.Property({}, "Height");
     $.Property({}, "Caption");
@@ -2468,23 +2468,23 @@ JSIL.MakeInterface(
 
 JSIL.MakeInterface(
   "Fusee.Engine.IRenderContextImp", true, [], function ($) {
-    $.Method({}, "set_ModelView", new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float4x4")], []));
-    $.Method({}, "get_ModelView", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float4x4"), [], []));
-    $.Method({}, "set_Projection", new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float4x4")], []));
-    $.Method({}, "get_Projection", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float4x4"), [], []));
-    $.Method({}, "set_ClearColor", new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float4")], []));
-    $.Method({}, "get_ClearColor", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float4"), [], []));
+    $.Method({}, "set_ModelView", new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float4x4")], []));
+    $.Method({}, "get_ModelView", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float4x4"), [], []));
+    $.Method({}, "set_Projection", new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float4x4")], []));
+    $.Method({}, "get_Projection", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float4x4"), [], []));
+    $.Method({}, "set_ClearColor", new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float4")], []));
+    $.Method({}, "get_ClearColor", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float4"), [], []));
     $.Method({}, "set_ClearDepth", new JSIL.MethodSignature(null, [$.Single], []));
     $.Method({}, "get_ClearDepth", new JSIL.MethodSignature($.Single, [], []));
     $.Method({}, "CreateShader", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IShaderProgramImp"), [$.String, $.String], []));
-    $.Method({}, "GetShaderParamList", new JSIL.MethodSignature($asm06.TypeRef("System.Collections.Generic.IList`1", [$asm01.TypeRef("Fusee.Engine.ShaderParamInfo")]), [$asm01.TypeRef("Fusee.Engine.IShaderProgramImp")], []));
+    $.Method({}, "GetShaderParamList", new JSIL.MethodSignature($asm07.TypeRef("System.Collections.Generic.IList`1", [$asm01.TypeRef("Fusee.Engine.ShaderParamInfo")]), [$asm01.TypeRef("Fusee.Engine.IShaderProgramImp")], []));
     $.Method({}, "GetShaderParam", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IShaderParam"), [$asm01.TypeRef("Fusee.Engine.IShaderProgramImp"), $.String], []));
     $.Method({}, "GetParamValue", new JSIL.MethodSignature($.Single, [$asm01.TypeRef("Fusee.Engine.IShaderProgramImp"), $asm01.TypeRef("Fusee.Engine.IShaderParam")], []));
     $.Method({}, "SetShaderParam1f", new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $.Single], []));
-    $.Method({}, "SetShaderParam2f", new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $asm03.TypeRef("Fusee.Math.float2")], []));
-    $.Method({}, "SetShaderParam3f", new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $asm03.TypeRef("Fusee.Math.float3")], []));
-    $.Method({}, "SetShaderParam4f", new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $asm03.TypeRef("Fusee.Math.float4")], []));
-    $.Method({}, "SetShaderParamMtx4f", new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $asm03.TypeRef("Fusee.Math.float4x4")], []));
+    $.Method({}, "SetShaderParam2f", new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $asm04.TypeRef("Fusee.Math.float2")], []));
+    $.Method({}, "SetShaderParam3f", new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $asm04.TypeRef("Fusee.Math.float3")], []));
+    $.Method({}, "SetShaderParam4f", new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $asm04.TypeRef("Fusee.Math.float4")], []));
+    $.Method({}, "SetShaderParamMtx4f", new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $asm04.TypeRef("Fusee.Math.float4x4")], []));
     $.Method({}, "SetShaderParamInt", new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $.Int32], []));
     $.Method({}, "SetShaderParamTexture", new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $asm01.TypeRef("Fusee.Engine.ITexture")], []));
     $.Method({}, "CreateTexture", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.ITexture"), [$asm01.TypeRef("Fusee.Engine.ImageData")], []));
@@ -2500,14 +2500,14 @@ JSIL.MakeInterface(
           $.Single
         ], []));
     $.Method({}, "LoadFont", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IFont"), [$.String, $.UInt32], []));
-    $.Method({}, "FixTextKerning", new JSIL.MethodSignature($jsilcore.TypeRef("System.Array", [$asm03.TypeRef("Fusee.Math.float3")]), [
-          $asm01.TypeRef("Fusee.Engine.IFont"), $jsilcore.TypeRef("System.Array", [$asm03.TypeRef("Fusee.Math.float3")]), 
+    $.Method({}, "FixTextKerning", new JSIL.MethodSignature($jsilcore.TypeRef("System.Array", [$asm04.TypeRef("Fusee.Math.float3")]), [
+          $asm01.TypeRef("Fusee.Engine.IFont"), $jsilcore.TypeRef("System.Array", [$asm04.TypeRef("Fusee.Math.float3")]), 
           $.String, $.Single
         ], []));
     $.Method({}, "Clear", new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.ClearFlags")], []));
-    $.Method({}, "SetVertices", new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IMeshImp"), $jsilcore.TypeRef("System.Array", [$asm03.TypeRef("Fusee.Math.float3")])], []));
-    $.Method({}, "SetNormals", new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IMeshImp"), $jsilcore.TypeRef("System.Array", [$asm03.TypeRef("Fusee.Math.float3")])], []));
-    $.Method({}, "SetUVs", new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IMeshImp"), $jsilcore.TypeRef("System.Array", [$asm03.TypeRef("Fusee.Math.float2")])], []));
+    $.Method({}, "SetVertices", new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IMeshImp"), $jsilcore.TypeRef("System.Array", [$asm04.TypeRef("Fusee.Math.float3")])], []));
+    $.Method({}, "SetNormals", new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IMeshImp"), $jsilcore.TypeRef("System.Array", [$asm04.TypeRef("Fusee.Math.float3")])], []));
+    $.Method({}, "SetUVs", new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IMeshImp"), $jsilcore.TypeRef("System.Array", [$asm04.TypeRef("Fusee.Math.float2")])], []));
     $.Method({}, "SetColors", new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IMeshImp"), $jsilcore.TypeRef("System.Array", [$.UInt32])], []));
     $.Method({}, "SetTriangles", new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IMeshImp"), $jsilcore.TypeRef("System.Array", [$.UInt16])], []));
     $.Method({}, "SetShader", new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderProgramImp")], []));
@@ -2526,8 +2526,8 @@ JSIL.MakeInterface(
         ], []));
     $.Method({}, "Render", new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IMeshImp")], []));
     $.Method({}, "DebugLine", new JSIL.MethodSignature(null, [
-          $asm03.TypeRef("Fusee.Math.float3"), $asm03.TypeRef("Fusee.Math.float3"), 
-          $asm03.TypeRef("Fusee.Math.float4")
+          $asm04.TypeRef("Fusee.Math.float3"), $asm04.TypeRef("Fusee.Math.float3"), 
+          $asm04.TypeRef("Fusee.Math.float4")
         ], []));
     $.Method({}, "GetBufferContent", new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.Rectangle"), $asm01.TypeRef("Fusee.Engine.ITexture")], []));
     $.Method({}, "CreateMeshImp", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IMeshImp"), [], []));
@@ -2543,35 +2543,35 @@ JSIL.MakeInterface(
 
 JSIL.MakeInterface(
   "Fusee.Engine.IRigidBodyImp", true, [], function ($) {
-    $.Method({}, "get_Gravity", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float3"), [], []));
-    $.Method({}, "set_Gravity", new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float3")], []));
+    $.Method({}, "get_Gravity", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float3"), [], []));
+    $.Method({}, "set_Gravity", new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float3")], []));
     $.Method({}, "get_Mass", new JSIL.MethodSignature($.Single, [], []));
     $.Method({}, "set_Mass", new JSIL.MethodSignature(null, [$.Single], []));
-    $.Method({}, "get_Inertia", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float3"), [], []));
-    $.Method({}, "set_Inertia", new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float3")], []));
-    $.Method({}, "get_WorldTransform", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float4x4"), [], []));
-    $.Method({}, "set_WorldTransform", new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float4x4")], []));
-    $.Method({}, "get_Position", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float3"), [], []));
-    $.Method({}, "set_Position", new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float3")], []));
-    $.Method({}, "get_Rotation", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.Quaternion"), [], []));
-    $.Method({}, "ApplyForce", new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float3"), $asm03.TypeRef("Fusee.Math.float3")], []));
-    $.Method({}, "get_ApplyTorque", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float3"), [], []));
-    $.Method({}, "set_ApplyTorque", new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float3")], []));
-    $.Method({}, "ApplyImpulse", new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float3"), $asm03.TypeRef("Fusee.Math.float3")], []));
-    $.Method({}, "get_ApplyTorqueImpulse", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float3"), [], []));
-    $.Method({}, "set_ApplyTorqueImpulse", new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float3")], []));
-    $.Method({}, "get_ApplyCentralForce", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float3"), [], []));
-    $.Method({}, "set_ApplyCentralForce", new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float3")], []));
-    $.Method({}, "get_ApplyCentralImpulse", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float3"), [], []));
-    $.Method({}, "set_ApplyCentralImpulse", new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float3")], []));
-    $.Method({}, "get_LinearVelocity", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float3"), [], []));
-    $.Method({}, "set_LinearVelocity", new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float3")], []));
-    $.Method({}, "get_AngularVelocity", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float3"), [], []));
-    $.Method({}, "set_AngularVelocity", new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float3")], []));
-    $.Method({}, "get_LinearFactor", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float3"), [], []));
-    $.Method({}, "set_LinearFactor", new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float3")], []));
-    $.Method({}, "get_AngularFactor", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float3"), [], []));
-    $.Method({}, "set_AngularFactor", new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float3")], []));
+    $.Method({}, "get_Inertia", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float3"), [], []));
+    $.Method({}, "set_Inertia", new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float3")], []));
+    $.Method({}, "get_WorldTransform", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float4x4"), [], []));
+    $.Method({}, "set_WorldTransform", new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float4x4")], []));
+    $.Method({}, "get_Position", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float3"), [], []));
+    $.Method({}, "set_Position", new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float3")], []));
+    $.Method({}, "get_Rotation", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.Quaternion"), [], []));
+    $.Method({}, "ApplyForce", new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float3"), $asm04.TypeRef("Fusee.Math.float3")], []));
+    $.Method({}, "get_ApplyTorque", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float3"), [], []));
+    $.Method({}, "set_ApplyTorque", new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float3")], []));
+    $.Method({}, "ApplyImpulse", new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float3"), $asm04.TypeRef("Fusee.Math.float3")], []));
+    $.Method({}, "get_ApplyTorqueImpulse", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float3"), [], []));
+    $.Method({}, "set_ApplyTorqueImpulse", new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float3")], []));
+    $.Method({}, "get_ApplyCentralForce", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float3"), [], []));
+    $.Method({}, "set_ApplyCentralForce", new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float3")], []));
+    $.Method({}, "get_ApplyCentralImpulse", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float3"), [], []));
+    $.Method({}, "set_ApplyCentralImpulse", new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float3")], []));
+    $.Method({}, "get_LinearVelocity", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float3"), [], []));
+    $.Method({}, "set_LinearVelocity", new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float3")], []));
+    $.Method({}, "get_AngularVelocity", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float3"), [], []));
+    $.Method({}, "set_AngularVelocity", new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float3")], []));
+    $.Method({}, "get_LinearFactor", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float3"), [], []));
+    $.Method({}, "set_LinearFactor", new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float3")], []));
+    $.Method({}, "get_AngularFactor", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float3"), [], []));
+    $.Method({}, "set_AngularFactor", new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float3")], []));
     $.Method({}, "get_Bounciness", new JSIL.MethodSignature($.Single, [], []));
     $.Method({}, "set_Bounciness", new JSIL.MethodSignature(null, [$.Single], []));
     $.Method({}, "get_Friction", new JSIL.MethodSignature($.Single, [], []));
@@ -2630,13 +2630,13 @@ JSIL.MakeInterface(
 
 JSIL.MakeInterface(
   "Fusee.Engine.ISliderConstraintImp", true, [], function ($) {
-    $.Method({}, "get_AnchorInA", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float3"), [], []));
-    $.Method({}, "get_AnchorInB", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float3"), [], []));
+    $.Method({}, "get_AnchorInA", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float3"), [], []));
+    $.Method({}, "get_AnchorInB", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float3"), [], []));
     $.Method({}, "get_AngularDepth", new JSIL.MethodSignature($.Single, [], []));
     $.Method({}, "get_AngularPos", new JSIL.MethodSignature($.Single, [], []));
-    $.Method({}, "CalculateTransforms", new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float4x4"), $asm03.TypeRef("Fusee.Math.float4x4")], []));
-    $.Method({}, "get_CalculatedTransformA", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float4x4"), [], []));
-    $.Method({}, "get_CalculatedTransformB", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float4x4"), [], []));
+    $.Method({}, "CalculateTransforms", new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float4x4"), $asm04.TypeRef("Fusee.Math.float4x4")], []));
+    $.Method({}, "get_CalculatedTransformA", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float4x4"), [], []));
+    $.Method({}, "get_CalculatedTransformB", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float4x4"), [], []));
     $.Method({}, "get_DampingDirAngular", new JSIL.MethodSignature($.Single, [], []));
     $.Method({}, "set_DampingDirAngular", new JSIL.MethodSignature(null, [$.Single], []));
     $.Method({}, "get_DampingDirLin", new JSIL.MethodSignature($.Single, [], []));
@@ -2649,8 +2649,8 @@ JSIL.MakeInterface(
     $.Method({}, "set_DampingOrthoAngular", new JSIL.MethodSignature(null, [$.Single], []));
     $.Method({}, "get_DampingOrthoLin", new JSIL.MethodSignature($.Single, [], []));
     $.Method({}, "set_DampingOrthoLin", new JSIL.MethodSignature(null, [$.Single], []));
-    $.Method({}, "get_FrameOffsetA", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float4x4"), [], []));
-    $.Method({}, "get_FrameOffsetB", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float4x4"), [], []));
+    $.Method({}, "get_FrameOffsetA", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float4x4"), [], []));
+    $.Method({}, "get_FrameOffsetB", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float4x4"), [], []));
     $.Method({}, "get_LinDepth", new JSIL.MethodSignature($.Single, [], []));
     $.Method({}, "get_LinPos", new JSIL.MethodSignature($.Single, [], []));
     $.Method({}, "get_LowerAngularLimit", new JSIL.MethodSignature($.Single, [], []));
@@ -2677,7 +2677,7 @@ JSIL.MakeInterface(
     $.Method({}, "set_RestitutionOrthoAngular", new JSIL.MethodSignature(null, [$.Single], []));
     $.Method({}, "get_RestitutionOrthoLin", new JSIL.MethodSignature($.Single, [], []));
     $.Method({}, "set_RestitutionOrthoLin", new JSIL.MethodSignature(null, [$.Single], []));
-    $.Method({}, "SetFrames", new JSIL.MethodSignature(null, [$asm03.TypeRef("Fusee.Math.float4x4"), $asm03.TypeRef("Fusee.Math.float4x4")], []));
+    $.Method({}, "SetFrames", new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float4x4"), $asm04.TypeRef("Fusee.Math.float4x4")], []));
     $.Method({}, "get_SoftnessDirAngular", new JSIL.MethodSignature($.Single, [], []));
     $.Method({}, "set_SoftnessDirAngular", new JSIL.MethodSignature(null, [$.Single], []));
     $.Method({}, "get_SoftnessDirLin", new JSIL.MethodSignature($.Single, [], []));
@@ -2763,7 +2763,7 @@ JSIL.MakeInterface(
 JSIL.MakeInterface(
   "Fusee.Engine.IStaticPlaneShapeImp", true, [], function ($) {
     $.Method({}, "get_PlaneConstant", new JSIL.MethodSignature($.Single, [], []));
-    $.Method({}, "get_PlaneNormal", new JSIL.MethodSignature($asm03.TypeRef("Fusee.Math.float3"), [], []));
+    $.Method({}, "get_PlaneNormal", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float3"), [], []));
     $.Property({}, "PlaneConstant");
     $.Property({}, "PlaneNormal");
   }, [$asm01.TypeRef("Fusee.Engine.ICollisionShapeImp")]);
@@ -2779,10 +2779,10 @@ JSIL.MakeInterface(
 (function KeyEventArgs$Members () {
   var $, $thisType;
   var $T00 = function () {
-    return ($T00 = JSIL.Memoize($asm06.System.EventArgs)) ();
+    return ($T00 = JSIL.Memoize($asm07.System.EventArgs)) ();
   };
   var $T01 = function () {
-    return ($T01 = JSIL.Memoize($asm06.System.Boolean)) ();
+    return ($T01 = JSIL.Memoize($asm07.System.Boolean)) ();
   };
   var $T02 = function () {
     return ($T02 = JSIL.Memoize($asm01.Fusee.Engine.KeyCodes)) ();
@@ -2825,7 +2825,7 @@ JSIL.MakeInterface(
   };
 
   JSIL.MakeType({
-      BaseType: $asm06.TypeRef("System.EventArgs"), 
+      BaseType: $asm07.TypeRef("System.EventArgs"), 
       Name: "Fusee.Engine.KeyEventArgs", 
       IsPublic: true, 
       IsReferenceType: true, 
@@ -2842,58 +2842,58 @@ JSIL.MakeInterface(
       new JSIL.MethodSignature($.Boolean, [], []), 
       KeyEventArgs_get_Alt
     )
-      .Attribute($asm06.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute"));
+      .Attribute($asm07.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute"));
 
     $.Method({Static:false, Public:true }, "get_Control", 
       new JSIL.MethodSignature($.Boolean, [], []), 
       KeyEventArgs_get_Control
     )
-      .Attribute($asm06.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute"));
+      .Attribute($asm07.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute"));
 
     $.Method({Static:false, Public:true }, "get_KeyCode", 
       new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.KeyCodes"), [], []), 
       KeyEventArgs_get_KeyCode
     )
-      .Attribute($asm06.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute"));
+      .Attribute($asm07.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute"));
 
     $.Method({Static:false, Public:true }, "get_Shift", 
       new JSIL.MethodSignature($.Boolean, [], []), 
       KeyEventArgs_get_Shift
     )
-      .Attribute($asm06.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute"));
+      .Attribute($asm07.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute"));
 
     $.Method({Static:false, Public:true }, "set_Alt", 
       new JSIL.MethodSignature(null, [$.Boolean], []), 
       KeyEventArgs_set_Alt
     )
-      .Attribute($asm06.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute"));
+      .Attribute($asm07.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute"));
 
     $.Method({Static:false, Public:true }, "set_Control", 
       new JSIL.MethodSignature(null, [$.Boolean], []), 
       KeyEventArgs_set_Control
     )
-      .Attribute($asm06.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute"));
+      .Attribute($asm07.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute"));
 
     $.Method({Static:false, Public:true }, "set_KeyCode", 
       new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.KeyCodes")], []), 
       KeyEventArgs_set_KeyCode
     )
-      .Attribute($asm06.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute"));
+      .Attribute($asm07.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute"));
 
     $.Method({Static:false, Public:true }, "set_Shift", 
       new JSIL.MethodSignature(null, [$.Boolean], []), 
       KeyEventArgs_set_Shift
     )
-      .Attribute($asm06.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute"));
+      .Attribute($asm07.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute"));
 
     $.Field({Static:false, Public:false}, "KeyEventArgs$Shift$value", $.Boolean)
-      .Attribute($asm06.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute")); 
+      .Attribute($asm07.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute")); 
     $.Field({Static:false, Public:false}, "KeyEventArgs$Alt$value", $.Boolean)
-      .Attribute($asm06.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute")); 
+      .Attribute($asm07.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute")); 
     $.Field({Static:false, Public:false}, "KeyEventArgs$Control$value", $.Boolean)
-      .Attribute($asm06.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute")); 
+      .Attribute($asm07.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute")); 
     $.Field({Static:false, Public:false}, "KeyEventArgs$KeyCode$value", $asm01.TypeRef("Fusee.Engine.KeyCodes"))
-      .Attribute($asm06.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute")); 
+      .Attribute($asm07.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute")); 
     $.Property({Static:false, Public:true }, "Shift", $.Boolean);
 
     $.Property({Static:false, Public:true }, "Alt", $.Boolean);
@@ -2922,7 +2922,7 @@ JSIL.MakeEnum(
 (function Light$Members () {
   var $, $thisType;
   JSIL.MakeType({
-      BaseType: $asm06.TypeRef("System.ValueType"), 
+      BaseType: $asm07.TypeRef("System.ValueType"), 
       Name: "Fusee.Engine.Light", 
       IsPublic: true, 
       IsReferenceType: false, 
@@ -2931,11 +2931,11 @@ JSIL.MakeEnum(
     $ = $interfaceBuilder;
 
     $.Field({Static:false, Public:true }, "Active", $.Single); 
-    $.Field({Static:false, Public:true }, "AmbientColor", $asm03.TypeRef("Fusee.Math.float4")); 
-    $.Field({Static:false, Public:true }, "DiffuseColor", $asm03.TypeRef("Fusee.Math.float4")); 
-    $.Field({Static:false, Public:true }, "SpecularColor", $asm03.TypeRef("Fusee.Math.float4")); 
-    $.Field({Static:false, Public:true }, "Position", $asm03.TypeRef("Fusee.Math.float3")); 
-    $.Field({Static:false, Public:true }, "Direction", $asm03.TypeRef("Fusee.Math.float3")); 
+    $.Field({Static:false, Public:true }, "AmbientColor", $asm04.TypeRef("Fusee.Math.float4")); 
+    $.Field({Static:false, Public:true }, "DiffuseColor", $asm04.TypeRef("Fusee.Math.float4")); 
+    $.Field({Static:false, Public:true }, "SpecularColor", $asm04.TypeRef("Fusee.Math.float4")); 
+    $.Field({Static:false, Public:true }, "Position", $asm04.TypeRef("Fusee.Math.float3")); 
+    $.Field({Static:false, Public:true }, "Direction", $asm04.TypeRef("Fusee.Math.float3")); 
     $.Field({Static:false, Public:true }, "Type", $asm01.TypeRef("Fusee.Engine.LightType")); 
     $.Field({Static:false, Public:true }, "Angle", $.Single); 
     return function (newThisType) { $thisType = newThisType; }; 
@@ -2948,7 +2948,7 @@ JSIL.MakeEnum(
 (function MouseEventArgs$Members () {
   var $, $thisType;
   var $T00 = function () {
-    return ($T00 = JSIL.Memoize($asm06.System.EventArgs)) ();
+    return ($T00 = JSIL.Memoize($asm07.System.EventArgs)) ();
   };
   var $T01 = function () {
     return ($T01 = JSIL.Memoize($asm01.Fusee.Engine.MouseButtons)) ();
@@ -2978,7 +2978,7 @@ JSIL.MakeEnum(
   };
 
   JSIL.MakeType({
-      BaseType: $asm06.TypeRef("System.EventArgs"), 
+      BaseType: $asm07.TypeRef("System.EventArgs"), 
       Name: "Fusee.Engine.MouseEventArgs", 
       IsPublic: true, 
       IsReferenceType: true, 
@@ -2995,30 +2995,30 @@ JSIL.MakeEnum(
       new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.MouseButtons"), [], []), 
       MouseEventArgs_get_Button
     )
-      .Attribute($asm06.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute"));
+      .Attribute($asm07.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute"));
 
     $.Method({Static:false, Public:true }, "get_Position", 
       new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.Point"), [], []), 
       MouseEventArgs_get_Position
     )
-      .Attribute($asm06.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute"));
+      .Attribute($asm07.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute"));
 
     $.Method({Static:false, Public:true }, "set_Button", 
       new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.MouseButtons")], []), 
       MouseEventArgs_set_Button
     )
-      .Attribute($asm06.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute"));
+      .Attribute($asm07.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute"));
 
     $.Method({Static:false, Public:true }, "set_Position", 
       new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.Point")], []), 
       MouseEventArgs_set_Position
     )
-      .Attribute($asm06.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute"));
+      .Attribute($asm07.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute"));
 
     $.Field({Static:false, Public:false}, "MouseEventArgs$Button$value", $asm01.TypeRef("Fusee.Engine.MouseButtons"))
-      .Attribute($asm06.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute")); 
+      .Attribute($asm07.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute")); 
     $.Field({Static:false, Public:false}, "MouseEventArgs$Position$value", $asm01.TypeRef("Fusee.Engine.Point"))
-      .Attribute($asm06.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute")); 
+      .Attribute($asm07.TypeRef("System.Runtime.CompilerServices.CompilerGeneratedAttribute")); 
     $.Property({Static:false, Public:true }, "Button", $asm01.TypeRef("Fusee.Engine.MouseButtons"));
 
     $.Property({Static:false, Public:true }, "Position", $asm01.TypeRef("Fusee.Engine.Point"));
@@ -3033,7 +3033,7 @@ JSIL.MakeEnum(
 (function Point$Members () {
   var $, $thisType;
   JSIL.MakeType({
-      BaseType: $asm06.TypeRef("System.ValueType"), 
+      BaseType: $asm07.TypeRef("System.ValueType"), 
       Name: "Fusee.Engine.Point", 
       IsPublic: true, 
       IsReferenceType: false, 
@@ -3390,7 +3390,7 @@ JSIL.MakeEnum(
   };
 
   JSIL.MakeType({
-      BaseType: $asm06.TypeRef("System.Object"), 
+      BaseType: $asm07.TypeRef("System.Object"), 
       Name: "Fusee.Engine.Helper", 
       IsPublic: true, 
       IsReferenceType: true, 
@@ -3446,7 +3446,7 @@ JSIL.MakeEnum(
 (function Rectangle$Members () {
   var $, $thisType;
   var $T00 = function () {
-    return ($T00 = JSIL.Memoize($asm06.System.Int32)) ();
+    return ($T00 = JSIL.Memoize($asm07.System.Int32)) ();
   };
 
   function Rectangle__ctor (left, top, right, bottom) {
@@ -3465,7 +3465,7 @@ JSIL.MakeEnum(
   };
 
   JSIL.MakeType({
-      BaseType: $asm06.TypeRef("System.ValueType"), 
+      BaseType: $asm07.TypeRef("System.ValueType"), 
       Name: "Fusee.Engine.Rectangle", 
       IsPublic: true, 
       IsReferenceType: false, 
@@ -3509,7 +3509,7 @@ JSIL.MakeEnum(
 (function RenderEventArgs$Members () {
   var $, $thisType;
   var $T00 = function () {
-    return ($T00 = JSIL.Memoize($asm06.System.EventArgs)) ();
+    return ($T00 = JSIL.Memoize($asm07.System.EventArgs)) ();
   };
 
   function RenderEventArgs__ctor () {
@@ -3517,7 +3517,7 @@ JSIL.MakeEnum(
   };
 
   JSIL.MakeType({
-      BaseType: $asm06.TypeRef("System.EventArgs"), 
+      BaseType: $asm07.TypeRef("System.EventArgs"), 
       Name: "Fusee.Engine.RenderEventArgs", 
       IsPublic: true, 
       IsReferenceType: true, 
@@ -3540,7 +3540,7 @@ JSIL.MakeEnum(
 (function ResizeEventArgs$Members () {
   var $, $thisType;
   var $T00 = function () {
-    return ($T00 = JSIL.Memoize($asm06.System.EventArgs)) ();
+    return ($T00 = JSIL.Memoize($asm07.System.EventArgs)) ();
   };
 
   function ResizeEventArgs__ctor () {
@@ -3548,7 +3548,7 @@ JSIL.MakeEnum(
   };
 
   JSIL.MakeType({
-      BaseType: $asm06.TypeRef("System.EventArgs"), 
+      BaseType: $asm07.TypeRef("System.EventArgs"), 
       Name: "Fusee.Engine.ResizeEventArgs", 
       IsPublic: true, 
       IsReferenceType: true, 
@@ -3571,7 +3571,7 @@ JSIL.MakeEnum(
 (function ShaderParamInfo$Members () {
   var $, $thisType;
   JSIL.MakeType({
-      BaseType: $asm06.TypeRef("System.ValueType"), 
+      BaseType: $asm07.TypeRef("System.ValueType"), 
       Name: "Fusee.Engine.ShaderParamInfo", 
       IsPublic: true, 
       IsReferenceType: false, 
@@ -3580,7 +3580,7 @@ JSIL.MakeEnum(
     $ = $interfaceBuilder;
 
     $.Field({Static:false, Public:true }, "Size", $.Int32); 
-    $.Field({Static:false, Public:true }, "Type", $asm06.TypeRef("System.Type")); 
+    $.Field({Static:false, Public:true }, "Type", $asm07.TypeRef("System.Type")); 
     $.Field({Static:false, Public:true }, "Name", $.String); 
     $.Field({Static:false, Public:true }, "Handle", $asm01.TypeRef("Fusee.Engine.IShaderParam")); 
     return function (newThisType) { $thisType = newThisType; }; 

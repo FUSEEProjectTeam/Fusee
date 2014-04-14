@@ -11,7 +11,7 @@ namespace Fusee.Serialization
         public string Name;
 
         [ProtoMember(2)]
-        public float4x4 Transform;
+        public TransformContainer Transform;
 
         [ProtoMember(3)] 
         public MaterialContainer Material;

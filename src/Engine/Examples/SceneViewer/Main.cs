@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using Fusee.Engine;
 using Fusee.Math;
 using Fusee.Serialization;
+using Fusee.Engine.SimpleScene;
 
 namespace Examples.SceneViewer
 {
@@ -243,7 +243,7 @@ namespace Examples.SceneViewer
             var aChild = new SceneObjectContainer()
             {
                 Mesh = aMesh,
-                Transform = float4x4.CreateTranslation(0.11f, 0.11f, 0)
+                Transform = new TransformContainer(){Rotation = new float3(0, 0, 0), Translation = new float3(0.11f, 0.11f, 0), Scale = new float3(1, 1, 1)}
             };
 
             var parent = new SceneContainer()
@@ -261,7 +261,7 @@ namespace Examples.SceneViewer
                     new SceneObjectContainer()
                     {
                         Mesh = aMesh,
-                        Transform = float4x4.CreateTranslation(0.22f, 0.22f, 0)
+                        Transform = new TransformContainer(){Rotation = new float3(0, 0, 0), Translation = new float3(0.22f, 0.22f, 0), Scale = new float3(1, 1, 1)}
                     },
                 }),
             };

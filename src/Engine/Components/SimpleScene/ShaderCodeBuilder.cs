@@ -1,8 +1,7 @@
 ﻿using System.Text;
-using Fusee.SceneManagement;
 using Fusee.Serialization;
 
-namespace Examples.SceneViewer
+namespace Fusee.Engine.SimpleScene
 {
     class ShaderCodeBuilder
     {

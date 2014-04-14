@@ -305,7 +305,12 @@ namespace FuExport
                             soc.Children = new List<SceneObjectContainer>();
 
                         SceneObjectContainer subSoc = new SceneObjectContainer();
-                        subSoc.Transform = float4x4.Identity;
+                        subSoc.Transform = new TransformContainer()
+                        {
+                            Translation = new float3(0, 0, 0),
+                            Rotation = new float3(0, 0, 0), 
+                            Scale = new float3(1, 1, 1)
+                        };
                         subSoc.Material = GetMaterial(texSelItem.Value);
                         subSoc.Name = soc.Name + "_" + texSelItem.Key.GetName();
                         subSoc.Mesh = GetMesh(polyOb, normalOb, uvwTag, polyInxsSubset);
@@ -503,14 +508,19 @@ namespace FuExport
                 SceneObjectContainer soc = new SceneObjectContainer();
 
                 soc.Name = ob.GetName();
+                float3 rotC4d = (float3) ob.GetRelRot();
+                soc.Transform = new TransformContainer{
+                    Translation = (float3) ob.GetRelPos(),
+                    Rotation = new float3(-rotC4d.y, -rotC4d.x, -rotC4d.z),
+                    Scale = (float3) ob.GetRelScale()
+                };
+                /*
                 double4x4 mtxD = ob.GetMl();
                 soc.Transform = (float4x4) mtxD;
+                */
 
                 VisitObject(ob, soc);
-                /*
-                soc.Material = GetMaterial(ob);
-                soc.Mesh = GetMesh(ob);
-                */
+
                 var childList = FuseefyOb(ob.GetDown());
                 if (childList != null)
                 {

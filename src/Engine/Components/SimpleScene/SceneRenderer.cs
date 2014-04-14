@@ -4,10 +4,20 @@ using Fusee.Engine;
 using Fusee.Math;
 using Fusee.Serialization;
 
-namespace Examples.SceneViewer
+namespace Fusee.Engine.SimpleScene
 {
     class LightInfo // Todo: TBD...
     {
+    }
+
+    public static class SceneRendererExtensions
+    {
+        public static float4x4 Matrix(this TransformContainer tcThis)
+        {
+            return float4x4.CreateTranslation(tcThis.Translation)*float4x4.CreateRotationY(tcThis.Rotation.y)*
+                   float4x4.CreateRotationX(tcThis.Rotation.x)*float4x4.CreateRotationZ(tcThis.Rotation.z)*
+                   float4x4.CreateScale(tcThis.Scale);
+        }
     }
 
     public class SceneRenderer
@@ -110,7 +120,7 @@ namespace Examples.SceneViewer
             AABBf? ret = null;
             float4x4 origMV = _AABBXForm;
 
-            _AABBXForm = _AABBXForm * soc.Transform;
+            _AABBXForm = _AABBXForm * soc.Transform.Matrix();
             if (soc.Mesh != null)
             {
                 ret = _AABBXForm * soc.Mesh.BoundingBox;
@@ -158,7 +168,7 @@ namespace Examples.SceneViewer
                 var mat = LookupMaterial(soc.Material);
                 CurMat = mat;
             }
-            _rc.ModelView = _rc.ModelView * soc.Transform;
+            _rc.ModelView = _rc.ModelView * soc.Transform.Matrix();
 
             if (soc.Mesh != null)
             {
