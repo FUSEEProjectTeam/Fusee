@@ -203,7 +203,7 @@ namespace Examples.PhysicsTest
         public void FallingPlatonics()
         {
             
-            for (int k = 0; k < 3; k++)
+            for (int k = 0; k < 1; k++)
             {
                 for (int h = -2; h < 2; h++)
                 {

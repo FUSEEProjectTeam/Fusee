@@ -61,23 +61,7 @@ namespace Fusee.Engine
         }
 
 
-        ThreadSupportInterface CreateSolverThreadSupport(int maxNumThreads)
-        {
-            //#define SEQUENTIAL
-            /* if (SEQUENTIAL)
-            {
-                SequentialThreadSupport::SequentialThreadConstructionInfo tci("solverThreads",SolverThreadFunc,SolverlsMemoryFunc);
-                SequentialThreadSupport* threadSupport = new SequentialThreadSupport(tci);
-                threadSupport->startSPU();
-            }
-            else */
-
-            Win32ThreadConstructionInfo threadConstructionInfo = new Win32ThreadConstructionInfo("solverThreads",
-                Win32ThreadFunc.SolverThreadFunc, Win32LSMemorySetupFunc.SolverLSMemoryFunc, maxNumThreads);
-            Win32ThreadSupport threadSupport = new Win32ThreadSupport(threadConstructionInfo);
-            threadSupport.StartSpu();
-            return threadSupport;
-        }
+       
 
         public float3 Gravity
         {
@@ -131,8 +115,6 @@ namespace Fusee.Engine
                 int numContacts = contactManifold.NumContacts;
                 if (numContacts > 0)
                 {
-                    
-
                     CollisionObject obA = (CollisionObject)contactManifold.Body0;
                     CollisionObject obB = (CollisionObject)contactManifold.Body1;
                     obA.CollisionFlags = CollisionFlags.CustomMaterialCallback;
@@ -164,26 +146,6 @@ namespace Fusee.Engine
                     {
                         ManifoldPoint pt = contactManifold.GetContactPoint(j);
 
-
-                       /* if (pt.Distance < 0.0f)
-                        {
-                            Vector3 ptA = pt.PositionWorldOnA;
-                            Vector3 ptB = pt.PositionWorldOnB;
-                            Vector3 normalOnB = pt.NormalWorldOnB;
-
-                            BtWorld.ContactTest(obA, "message");
-                            
-{
-}
-                            //Debug.WriteLine("distance is smaller");
-                            //Debug.WriteLine("hit");
-                            /*var rbA = (RigidBody) obA;
-                            var btRigidBodyA = (RigidBody)obA;
-                            var rbB = (RigidBody)obB;
-                            var btRigidBodyB = (RigidBody)obB;
-                            myRb = (RigidBodyImp)btRigidBodyA.UserObject;
-                            myRb.OnCollision(myRb);
-                        }*/
                     }
                 }
             }
