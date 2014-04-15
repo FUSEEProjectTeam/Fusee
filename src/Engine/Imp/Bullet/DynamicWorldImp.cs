@@ -30,7 +30,7 @@ namespace Fusee.Engine
 
         internal DynamicWorldImp()
         {
-            Debug.WriteLine("DynamicWorldImp");
+            //Debug.WriteLine("DynamicWorldImp");
 
             //Default
             // collision configuration contains default setup for memory, collision setup
@@ -55,9 +55,9 @@ namespace Fusee.Engine
            // BtWorld.SetInternalTickCallback(MyTickCallBack);
             //BtWorld.SetInternalTickCallback(TickTack);
 
-            ManifoldPoint.ContactAdded += OnContactAdded;
-            PersistentManifold.ContactDestroyed += OnContactDestroyed;
-            PersistentManifold.ContactProcessed += OnContactProcessed;
+            //ManifoldPoint.ContactAdded += OnContactAdded;
+            //PersistentManifold.ContactDestroyed += OnContactDestroyed;
+            //PersistentManifold.ContactProcessed += OnContactProcessed;
         }
 
 
@@ -92,9 +92,6 @@ namespace Fusee.Engine
                     rigidBodyA._rbi = btRigidBodyA;
                     rigidBodyB._rbi = btRigidBodyB;
                     rigidBodyA.OnCollision(rigidBodyB);
-
-                    //obA.CollisionFlags = CollisionFlags.KinematicObject;
-                    //obB.CollisionFlags = CollisionFlags.NoContactResponse;
                 }
             }
         }
@@ -108,7 +105,7 @@ namespace Fusee.Engine
         void OnContactDestroyed(object userPersistantData)
         {
             int numManifolds = BtWorld.Dispatcher.NumManifolds;
-
+            
             for (int i = 0; i < numManifolds; i++)
             {
                 PersistentManifold contactManifold = BtWorld.Dispatcher.GetManifoldByIndexInternal(i);
@@ -124,7 +121,7 @@ namespace Fusee.Engine
            // Debug.WriteLine("OnContactDestroyed");
         }
 
-        private void MyTickCallBack(ManifoldPoint cp, CollisionObjectWrapper colobj0wrap, int partid0, int index0, CollisionObjectWrapper colobj1wrap, int partid1, int index1)
+        /*private void MyTickCallBack(ManifoldPoint cp, CollisionObjectWrapper colobj0wrap, int partid0, int index0, CollisionObjectWrapper colobj1wrap, int partid1, int index1)
         {
             Debug.WriteLine("MyTickCallBack");
             int numManifolds = BtWorld.Dispatcher.NumManifolds;
@@ -149,7 +146,7 @@ namespace Fusee.Engine
                     }
                 }
             }
-        }
+        }*/
 
 
         public IRigidBodyImp AddRigidBody(float mass, float3 worldTransform, float3 orientation, ICollisionShapeImp colShape/*, float3 intertia*/)
@@ -299,7 +296,6 @@ namespace Fusee.Engine
                         Vector3 ptA = pt.PositionWorldOnA;
                         Vector3 ptB = pt.PositionWorldOnB;
                         Vector3 normalOnB = pt.NormalWorldOnB;
-                        //Debug.WriteLine(obA.CollisionShape);
                     }
                 }
             }
@@ -797,6 +793,15 @@ namespace Fusee.Engine
         {
             if (BtWorld != null)
             {
+                
+                /* for (int d = 0; d < BtWorld.Dispatcher.NumManifolds; d++)
+                {
+                    var m = BtWorld.Dispatcher.GetManifoldByIndexInternal(d);
+                    BtWorld.Dispatcher.ReleaseManifold(m);
+                    ;
+                }*/
+                
+
                 //remove/dispose constraints
                 int i;
                 for (i = BtWorld.NumConstraints - 1; i >= 0; i--)
@@ -805,6 +810,7 @@ namespace Fusee.Engine
                     BtWorld.RemoveConstraint(constraint);
                     constraint.Dispose(); 
                 }
+               
 
                 //remove the rigidbodies from the dynamics world and delete them
                 for (i = BtWorld.NumCollisionObjects - 1; i >= 0; i--)
@@ -823,6 +829,8 @@ namespace Fusee.Engine
                 foreach (CollisionShape shape in BtCollisionShapes)
                     shape.Dispose();
                 BtCollisionShapes.Clear();
+
+                
 
                 BtWorld.Dispose();
                 BtBroadphase.Dispose();
@@ -843,5 +851,6 @@ namespace Fusee.Engine
                 BtCollisionConf.Dispose();
             }
         }
+
     }
 }
