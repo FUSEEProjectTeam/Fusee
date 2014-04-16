@@ -105,7 +105,8 @@
     <Compile Include="ShaderEffect.cs" />
     <Compile Include="Stereo3D.cs" />
     <Compile Include="Time.cs" />
-    <Compile Include="VideoTexture.cs" />
+    <Compile Include="VideoManager.cs" />
+    <Compile Include="VideoStream.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="protobuf-net, Version=2.0.0.668, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">

@@ -9,8 +9,8 @@
     <ProjectGuid>{4AF0487E-4D74-4912-9619-F06F0EB4A2FB}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Examples.VideoTexture</RootNamespace>
-    <AssemblyName>Examples.VideoTexture</AssemblyName>
+    <RootNamespace>Examples.VideoTextureExample</RootNamespace>
+    <AssemblyName>Examples.VideoTextureExample</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <UseVSHostingProcess>false</UseVSHostingProcess>
@@ -35,7 +35,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\Bin\Debug\Examples\VideoTexture\</OutputPath>
+    <OutputPath>..\..\..\..\Bin\Debug\Examples\VideoTextureExample\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -107,14 +107,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="AForge.Video">
-      <HintPath>..\..\..\..\ExternalBinaries\AForge.Video.dll</HintPath>
-    </Reference>
-    <Reference Include="AForge.Video.FFMPEG">
-      <HintPath>..\..\..\..\ExternalBinaries\AForge.Video.FFMPEG.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -1,7 +1,5 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
-MinimumVisualStudioVersion = 10.0.40219.1
+# Visual Studio 2010
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Imp", "Imp", "{D8EA1B59-13BE-48B8-B197-5C26FAE7099F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenTK", "src\Engine\Imp\OpenTK\OpenTK.csproj", "{F7AD2BB5-D2B0-4697-BDDB-4CC26152A6B6}"
@@ -338,7 +336,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SceneViewer", "src\Engine\E
 		{81B3A7F0-F8E4-45D0-BE69-B869C9B1803E} = {81B3A7F0-F8E4-45D0-BE69-B869C9B1803E}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoTexture", "src\Engine\Examples\VideoTexture\VideoTexture.csproj", "{4AF0487E-4D74-4912-9619-F06F0EB4A2FB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoTextureExample", "src\Engine\Examples\VideoTexture\VideoTextureExample.csproj", "{4AF0487E-4D74-4912-9619-F06F0EB4A2FB}"
 	ProjectSection(ProjectDependencies) = postProject
 		{32D5C521-6CC4-4DCF-BFA1-199043E938DC} = {32D5C521-6CC4-4DCF-BFA1-199043E938DC}
 		{4A183140-3153-4F7E-A692-F4E3EF2CFA0A} = {4A183140-3153-4F7E-A692-F4E3EF2CFA0A}

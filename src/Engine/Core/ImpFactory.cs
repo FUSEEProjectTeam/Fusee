@@ -31,7 +31,7 @@ namespace Fusee.Engine
         [JSIgnore] private static Type _physicsImplementor;
         [JSIgnore] private static Type _networkImplementor;
         [JSIgnore] private static Type _inputDriverImplementor;
-        [JSIgnore] private static Type _videoTextureImplementor;
+        [JSIgnore] private static Type _videoManagerImplementor;
 
         [JSIgnore]
         private static Type LoadImplementorAssemblyType(string file, string type)
@@ -112,14 +112,14 @@ namespace Fusee.Engine
         }
 
         [JSIgnore]
-        private static Type VideoTextureImplementor
+        private static Type VideoManagerImplementor
         {
             get
             {
-                return _videoTextureImplementor ??
-                       (_videoTextureImplementor =
+                return _videoManagerImplementor ??
+                       (_videoManagerImplementor =
                            LoadImplementorAssemblyType("Fusee.Engine.Imp.AForge.dll",
-                               "Fusee.Engine.VideoTextureImplementor"));
+                               "Fusee.Engine.VideoManagerImplementor"));
             }
         }
 
@@ -227,9 +227,9 @@ namespace Fusee.Engine
             return (IInputDriverImp) CreateIImp(InputDriverImplementor, "CreateInputDriverImp").Invoke(null, null);
         }
 
-        public static IVideoTextureImp CreateIVideoTextureImp()
+        public static IVideoManagerImp CreateIVideoManagerImp()
         {
-            return (IVideoTextureImp)CreateIImp(VideoTextureImplementor, "CreateVideoTextureImp").Invoke(null, null);
+            return (IVideoManagerImp) CreateIImp(VideoManagerImplementor, "CreateVideoManagerImp").Invoke(null, null);
         }
 
         #endregion

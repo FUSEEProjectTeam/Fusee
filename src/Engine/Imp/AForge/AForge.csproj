@@ -33,11 +33,11 @@
   <ItemGroup>
     <Reference Include="AForge.Video, Version=2.2.5.0, Culture=neutral, PublicKeyToken=cbfb6e07d173c401, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\ExternalBinaries\AForge.Video.dll</HintPath>
+      <HintPath>..\..\..\..\ExternalBinaries\AForge\AForge.Video.dll</HintPath>
     </Reference>
     <Reference Include="AForge.Video.FFMPEG, Version=2.2.5.0, Culture=neutral, PublicKeyToken=03563089b1be05dd, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\ExternalBinaries\AForge.Video.FFMPEG.dll</HintPath>
+      <HintPath>..\..\..\..\ExternalBinaries\AForge\AForge.Video.FFMPEG.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -49,7 +49,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="VideoTextureImp.cs" />
+    <Compile Include="Implementor.cs" />
+    <Compile Include="VideoManagerImp.cs" />
+    <Compile Include="VideoStreamImp.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

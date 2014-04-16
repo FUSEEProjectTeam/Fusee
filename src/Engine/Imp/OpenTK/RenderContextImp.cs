@@ -44,7 +44,7 @@ namespace Fusee.Engine
        
             GL.CullFace(CullFaceMode.Back);
 			
-			_sharpFont = new Library();
+            //_sharpFont = new Library();
         }
 
         #endregion
