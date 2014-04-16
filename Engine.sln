@@ -350,6 +350,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MasterFuseeTest", "src\Engi
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleScene", "src\Engine\Components\SimpleScene\SimpleScene.csproj", "{10DA02FC-109F-4D71-864A-9F5B1E9A0D70}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1228EB3F-8BCC-453F-8A2E-D9246495A118} = {1228EB3F-8BCC-453F-8A2E-D9246495A118}
+		{DFD770F6-4222-4255-AAE0-DCACDC7B21EB} = {DFD770F6-4222-4255-AAE0-DCACDC7B21EB}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
