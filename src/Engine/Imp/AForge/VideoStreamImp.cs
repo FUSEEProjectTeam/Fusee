@@ -13,6 +13,7 @@ namespace Fusee.Engine
 
         public VideoStreamImp (VideoFileSource source)
         {
+       
             source.Start();
             //source.FrameInterval = 5000;
             source.NewFrame +=NextFrame;

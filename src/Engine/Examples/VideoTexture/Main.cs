@@ -55,6 +55,7 @@ namespace Examples.VideoTexture
 
 
              var imgData = _videoStream.GetCurrentFrame();
+            _iTex = RC.CreateTexture(imgData);
              RC.UpdateTextureRegion(_iTex,imgData,0,0);
 
 
