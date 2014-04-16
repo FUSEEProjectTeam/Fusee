@@ -10,7 +10,7 @@ namespace Fusee.Engine
     {
         internal ICylinderShapeImp CylinderShapeImp;
 
-        public virtual float Margin
+        public float Margin
         {
             get
             {
@@ -19,8 +19,22 @@ namespace Fusee.Engine
             }
             set
             {
-                var o = (CapsuleShape)CylinderShapeImp.UserObject;
-                o.CapsuleShapeImp.Margin = value;
+                var o = (CylinderShape)CylinderShapeImp.UserObject;
+                o.CylinderShapeImp.Margin = value;
+            }
+        }
+
+        public float3 LocalScaling
+        {
+            get
+            {
+                var retval = CylinderShapeImp.LocalScaling;
+                return retval;
+            }
+            set
+            {
+                var o = (CylinderShape)CylinderShapeImp.UserObject;
+                o.CylinderShapeImp.LocalScaling = value;
             }
         }
 

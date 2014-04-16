@@ -34,13 +34,17 @@ namespace Fusee.Engine
         float3 AngularFactor { get; set; }
 
         //"physic Matrial"
-        float Bounciness { get; set; }
+        float Restitution { get; set; }
         float Friction { get; set; }
+
+        void SetDrag(float linearDrag, float anglularDrag);
+        float LinearDrag { get; }
+        float AngularDrag { get; }
 
         ICollisionShapeImp CollisionShape { get; set; }
         
         object UserObject { get; set; }
 
-        void OnCollision();
+        void OnCollision(IRigidBodyImp other);
     }
 }

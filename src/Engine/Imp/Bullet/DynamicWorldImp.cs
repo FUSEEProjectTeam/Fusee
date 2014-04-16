@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Security;
 using System.Text;
 using BulletSharp;
+using BulletSharp.MultiThreaded;
 using Fusee.Engine;
 using Fusee.Math;
 
@@ -28,60 +30,123 @@ namespace Fusee.Engine
 
         internal DynamicWorldImp()
         {
-            Debug.WriteLine("DynamicWorldImp");
+            //Debug.WriteLine("DynamicWorldImp");
 
+            //Default
             // collision configuration contains default setup for memory, collision setup
             BtCollisionConf = new DefaultCollisionConfiguration();
             BtDispatcher = new CollisionDispatcher(BtCollisionConf);
             BtBroadphase = new DbvtBroadphase();
             BtSolver = new SequentialImpulseConstraintSolver();
-            //BtCollisionShapes = new AlignedCollisionShapeArray();
-
+           // BtCollisionShapes = new AlignedCollisionShapeArray();
             
+
+           
             BtWorld = new DiscreteDynamicsWorld(BtDispatcher, BtBroadphase, BtSolver, BtCollisionConf)
             {
                 Gravity = new Vector3(0, -9.81f, 0)
             };
-            BtWorld.SolverInfo.NumIterations = 8;
-       
+            
+            BtWorld.SolverInfo.NumIterations = 5;
+
             BtWorld.PerformDiscreteCollisionDetection();
-            GImpactCollisionAlgorithm.RegisterAlgorithm(BtDispatcher);
+            
+            //GImpactCollisionAlgorithm.RegisterAlgorithm(BtDispatcher);
            // BtWorld.SetInternalTickCallback(MyTickCallBack);
             //BtWorld.SetInternalTickCallback(TickTack);
+
+            //ManifoldPoint.ContactAdded += OnContactAdded;
+            //PersistentManifold.ContactDestroyed += OnContactDestroyed;
+            //PersistentManifold.ContactProcessed += OnContactProcessed;
         }
 
-        private void MyTickCallBack(DynamicsWorld world, float timeStep)
+
+       
+
+        public float3 Gravity
+        {
+            get { return Translater.BtVector3ToFloat3(BtWorld.Gravity); }
+            set { BtWorld.Gravity = Translater.Float3ToBtVector3(value); }
+        }
+
+        private void OnContactAdded(ManifoldPoint cp, CollisionObjectWrapper colObj0Wrap, int partId0, int index0,
+            CollisionObjectWrapper colObj1Wrap, int partId1, int index1)
+        {
+            //Debug.WriteLine("OnContactAdded");
+            int numManifolds = BtWorld.Dispatcher.NumManifolds;
+
+            for (int i = 0; i < numManifolds; i++)
+            {
+                PersistentManifold contactManifold = BtWorld.Dispatcher.GetManifoldByIndexInternal(i);
+                int numContacts = contactManifold.NumContacts;
+                if (numContacts > 0)
+                {
+                    cp.UserPersistentData = 1;
+                    
+                    CollisionObject obA = (CollisionObject) contactManifold.Body0;
+                    CollisionObject obB = (CollisionObject) contactManifold.Body1;
+                    RigidBody btRigidBodyA = (RigidBody) obA;
+                    RigidBody btRigidBodyB = (RigidBody)obB;
+                    RigidBodyImp rigidBodyA = new RigidBodyImp();
+                    RigidBodyImp rigidBodyB = new RigidBodyImp();
+                    rigidBodyA._rbi = btRigidBodyA;
+                    rigidBodyB._rbi = btRigidBodyB;
+                    rigidBodyA.OnCollision(rigidBodyB);
+                }
+            }
+        }
+
+        void OnContactProcessed(ManifoldPoint cp, CollisionObject body0, CollisionObject body1)
+        {
+           // Debug.WriteLine("OnContactProcessed");
+            cp.UserPersistentData = 1;
+        }
+
+        void OnContactDestroyed(object userPersistantData)
+        {
+            int numManifolds = BtWorld.Dispatcher.NumManifolds;
+            
+            for (int i = 0; i < numManifolds; i++)
+            {
+                PersistentManifold contactManifold = BtWorld.Dispatcher.GetManifoldByIndexInternal(i);
+                int numContacts = contactManifold.NumContacts;
+                if (numContacts > 0)
+                {
+                    CollisionObject obA = (CollisionObject)contactManifold.Body0;
+                    CollisionObject obB = (CollisionObject)contactManifold.Body1;
+                    obA.CollisionFlags = CollisionFlags.CustomMaterialCallback;
+                    obB.CollisionFlags = CollisionFlags.CustomMaterialCallback;
+                }
+            }
+           // Debug.WriteLine("OnContactDestroyed");
+        }
+
+        /*private void MyTickCallBack(ManifoldPoint cp, CollisionObjectWrapper colobj0wrap, int partid0, int index0, CollisionObjectWrapper colobj1wrap, int partid1, int index1)
         {
             Debug.WriteLine("MyTickCallBack");
             int numManifolds = BtWorld.Dispatcher.NumManifolds;
+            RigidBodyImp myRb;
             //Debug.WriteLine("numManifolds: " + numManifolds);
             for (int i = 0; i < numManifolds; i++)
             {
                 PersistentManifold contactManifold = BtWorld.Dispatcher.GetManifoldByIndexInternal(i);
-                CollisionObject obA = (CollisionObject) contactManifold.Body0;
-                CollisionObject obB = (CollisionObject) contactManifold.Body1;
-
                 int numContacts = contactManifold.NumContacts;
-                Debug.WriteLine(numContacts);
-                for (int j = 0; j < numContacts; j++)
+                if (numContacts > 0)
                 {
-                    ManifoldPoint pt = contactManifold.GetContactPoint(j);
-                    if (pt.Distance < 0.0f)
-                    {
-                        Vector3 ptA = pt.PositionWorldOnA;
-                        Vector3 ptB = pt.PositionWorldOnB;
-                        Vector3 normalOnB = pt.NormalWorldOnB;
-                        
-                        //Debug.WriteLine("ptA: " + ptA + "ptB: " + ptB);
+                    CollisionObject obA = (CollisionObject) contactManifold.Body0;
+                    CollisionObject obB = (CollisionObject) contactManifold.Body1;
 
-                        var rbA = (RigidBody) obA;
+                   // Debug.WriteLine(numContacts);
+                    var pnA = obA.UserObject;
+
+                    for (int j = 0; j < numContacts; j++)
+                    {
+                        ManifoldPoint pt = contactManifold.GetContactPoint(j);
 
                     }
                 }
-
-                
             }
-        }
+        }*/
 
 
         public IRigidBodyImp AddRigidBody(float mass, float3 worldTransform, float3 orientation, ICollisionShapeImp colShape/*, float3 intertia*/)
@@ -193,13 +258,13 @@ namespace Fusee.Engine
             RigidBodyConstructionInfo btRbcInfo = new RigidBodyConstructionInfo(mass, btMotionState, btColShape,
                 btLocalInertia);
 
-           // btRbcInfo.LinearSleepingThreshold *= 10.0f;
-           // btRbcInfo.Friction = 1.0f; //Friction is set here to a as default. Otherwise there wouldn't be ANY friction
-           // btRbcInfo.Restitution = 0.02f; //Restitutio is here set to 0.5 as default. Otherwise restitution would be "absorbed"
             var btRigidBody = new RigidBody(btRbcInfo);
+            btRigidBody.Restitution = 0.2f;
+            btRigidBody.Friction = 0.2f;
+            btRigidBody.CollisionFlags = CollisionFlags.CustomMaterialCallback;
+            
             BtWorld.AddRigidBody(btRigidBody);
             btRbcInfo.Dispose();
-          
             var retval = new RigidBodyImp();
             retval._rbi = btRigidBody;
             btRigidBody.UserObject = retval;
@@ -231,7 +296,6 @@ namespace Fusee.Engine
                         Vector3 ptA = pt.PositionWorldOnA;
                         Vector3 ptB = pt.PositionWorldOnB;
                         Vector3 normalOnB = pt.NormalWorldOnB;
-                        //Debug.WriteLine(obA.CollisionShape);
                     }
                 }
             }
@@ -283,11 +347,11 @@ namespace Fusee.Engine
             return retval;
         }
 
-        //TODO: What about inheritance problems -> should return any constraint type
+        /*//TODO: What about inheritance problems -> should return any constraint type
         public IPoint2PointConstraintImp GetConstraint(int i)
         {
             return (Point2PointConstraintImp)BtWorld.GetConstraint(0).UserObject;
-        }
+        }*/
 
 
         //HingeConstraint
@@ -470,8 +534,12 @@ namespace Fusee.Engine
             var rigidBodyBImp = (RigidBodyImp)rigidBodyB;
             var btRigidBodyB = rigidBodyAImp._rbi;
 
-            var btGeneric6DofConstraint = new Generic6DofConstraint(btRigidBodyA, btRigidBodyB, Translater.Float4X4ToBtMatrix(frameInA), Translater.Float4X4ToBtMatrix(frameInB), useReferenceFrameA);
+            Matrix matrixA = Translater.Float4X4ToBtMatrix(frameInA);
+            Matrix matrixB = Translater.Float4X4ToBtMatrix(frameInB);
+
+            var btGeneric6DofConstraint = new Generic6DofConstraint(btRigidBodyA, btRigidBodyB, matrixA, matrixB, useReferenceFrameA);
             BtWorld.AddConstraint(btGeneric6DofConstraint);
+
 
             var retval = new Generic6DofConstraintImp();
             retval._g6dofci = btGeneric6DofConstraint;
@@ -634,7 +702,7 @@ namespace Fusee.Engine
             return retval;
         }
 
-        public IConvexHullShapeImp AddConvexHullShape(float3[] points)
+        public IConvexHullShapeImp AddConvexHullShape(float3[] points, bool optimized)
         {
             var btPoints = new Vector3[points.Count()];
             for (int i = 0; i < btPoints.Count(); i++)
@@ -642,14 +710,34 @@ namespace Fusee.Engine
                 var point = Translater.Float3ToBtVector3(points[i]);
                 btPoints[i] = point;
             }
+
+
             var btConvexHullShape = new ConvexHullShape(btPoints);
             //btConvexHullShape.LocalScaling = new Vector3(3, 3, 3);
-            BtCollisionShapes.Add(btConvexHullShape);
+            if (optimized == true)
+            {
+                var btShapeHull = new ShapeHull(btConvexHullShape);
+                var margin = btConvexHullShape.Margin;
+                btShapeHull.BuildHull(margin);
+                ConvexHullShape simplifiedConvexShape = new ConvexHullShape(btShapeHull.Vertices);
+               
+                BtCollisionShapes.Add(simplifiedConvexShape);
+                
+                var retval = new ConvexHullShapeImp();
+                retval.BtConvexHullShape = simplifiedConvexShape;
+                simplifiedConvexShape.UserObject = retval;
+                return retval;
+            }
+            else
+            {
+                BtCollisionShapes.Add(btConvexHullShape);
 
-            var retval = new ConvexHullShapeImp();
-            retval.BtConvexHullShape = btConvexHullShape;
-            btConvexHullShape.UserObject = retval;
-            return retval;
+                var retval = new ConvexHullShapeImp();
+                retval.BtConvexHullShape = btConvexHullShape;
+                btConvexHullShape.UserObject = retval;
+                return retval;    
+            }
+            
         }
 
         public IStaticPlaneShapeImp AddStaticPlaneShape(float3 planeNormal, float planeConstant)
@@ -705,6 +793,15 @@ namespace Fusee.Engine
         {
             if (BtWorld != null)
             {
+                
+                /* for (int d = 0; d < BtWorld.Dispatcher.NumManifolds; d++)
+                {
+                    var m = BtWorld.Dispatcher.GetManifoldByIndexInternal(d);
+                    BtWorld.Dispatcher.ReleaseManifold(m);
+                    ;
+                }*/
+                
+
                 //remove/dispose constraints
                 int i;
                 for (i = BtWorld.NumConstraints - 1; i >= 0; i--)
@@ -713,6 +810,7 @@ namespace Fusee.Engine
                     BtWorld.RemoveConstraint(constraint);
                     constraint.Dispose(); 
                 }
+               
 
                 //remove the rigidbodies from the dynamics world and delete them
                 for (i = BtWorld.NumCollisionObjects - 1; i >= 0; i--)
@@ -731,6 +829,8 @@ namespace Fusee.Engine
                 foreach (CollisionShape shape in BtCollisionShapes)
                     shape.Dispose();
                 BtCollisionShapes.Clear();
+
+                
 
                 BtWorld.Dispose();
                 BtBroadphase.Dispose();
@@ -751,5 +851,6 @@ namespace Fusee.Engine
                 BtCollisionConf.Dispose();
             }
         }
+
     }
 }
