@@ -15,5 +15,15 @@ namespace Fusee.Engine
             return _imp.GetCurrentFrame();
         }
 
+        public void Start()
+        {
+            _imp.Start();
+        }
+
+        public void Stop ()
+        {
+            _imp.Stop();
+        }
+
     }
 }

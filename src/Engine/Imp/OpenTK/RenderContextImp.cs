@@ -54,9 +54,22 @@ namespace Fusee.Engine
 
         public void UpdateTextureRegion(ITexture tex, ImageData img, int startX, int startY)
         {
+            OpenTK.Graphics.OpenGL.PixelFormat format;
+            switch (img.PixelFormat)
+            {
+                case ImagePixelFormat.RGBA:
+                    format = OpenTK.Graphics.OpenGL.PixelFormat.Bgra;
+                    break;
+                case ImagePixelFormat.RGB:
+                    format = OpenTK.Graphics.OpenGL.PixelFormat.Bgr;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
             GL.BindTexture(TextureTarget.Texture2D, ((Texture)tex).handle);
             GL.TexSubImage2D(TextureTarget.Texture2D, 0, startX, startY, img.Width, img.Height,
-                OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, img.PixelData);
+                format, PixelType.UnsignedByte, img.PixelData);
         }
 
         /// <summary>
@@ -85,6 +98,7 @@ namespace Fusee.Engine
                 PixelData = new byte[bytes],
                 Height = bmpData.Height,
                 Width = bmpData.Width,
+                PixelFormat = ImagePixelFormat.RGBA,
                 Stride = bmpData.Stride
             };
 
@@ -94,31 +108,7 @@ namespace Fusee.Engine
             return ret;
         }
 
-        public ImageData LoadVideoTexture(Bitmap bmp)
-        {
-            //Flip y-axis, otherwise texture would be upside down
-            bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
-
-            BitmapData bmpData = bmp.LockBits(new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height),
-                ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);
-            int strideAbs = (bmpData.Stride < 0) ? -bmpData.Stride : bmpData.Stride;
-            int bytes = (strideAbs) * bmp.Height;
-
-            var ret = new ImageData
-            {
-                PixelData = new byte[bytes],
-                Height = bmpData.Height,
-                Width = bmpData.Width,
-                Stride = bmpData.Stride
-            };
-
-            Marshal.Copy(bmpData.Scan0, ret.PixelData, 0, bytes);
-
-            bmp.UnlockBits(bmpData);
-            return ret;
-        }
-
-        /// <summary>
+       /// <summary>
         /// Creates a new Image with a specified size and color.
         /// </summary>
         /// <param name="width">The width of the image.</param>
@@ -144,6 +134,7 @@ namespace Fusee.Engine
                 PixelData = new byte[bytes],
                 Height = bmpData.Height,
                 Width = bmpData.Width,
+                PixelFormat = ImagePixelFormat.RGBA,
                 Stride = bmpData.Stride
             };
 
@@ -210,10 +201,26 @@ namespace Fusee.Engine
         /// <returns>An ITexture that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
         public ITexture CreateTexture(ImageData img)
         {
+            PixelInternalFormat internalFormat;
+            OpenTK.Graphics.OpenGL.PixelFormat format;
+            switch (img.PixelFormat)
+            {
+                case ImagePixelFormat.RGBA:
+                    internalFormat = PixelInternalFormat.Rgba;
+                    format = OpenTK.Graphics.OpenGL.PixelFormat.Bgra;
+                    break;
+                case ImagePixelFormat.RGB:
+                    internalFormat = PixelInternalFormat.Rgb;
+                    format = OpenTK.Graphics.OpenGL.PixelFormat.Bgr;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
             int id = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2D, id);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, img.Width, img.Height, 0,
-                OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, img.PixelData);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0,
+                format, PixelType.UnsignedByte, img.PixelData);
 
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter,
                 (int) TextureMinFilter.Linear);

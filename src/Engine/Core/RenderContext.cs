@@ -961,11 +961,6 @@ namespace Fusee.Engine
             return _rci.LoadImage(filename);
         }
 
-        public ImageData LoadVideoTexture(Bitmap bmp)
-        {
-            return _rci.LoadVideoTexture(bmp);
-        }
-
         /// <summary>
         /// Sets a Shader Parameter to a created texture.
         /// </summary>

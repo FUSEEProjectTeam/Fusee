@@ -493,7 +493,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
             this.gl.enable(this.gl.CULL_FACE);
             this.gl.clearColor(0.0, 0.0, 0.2, 1.0);
             this._currentTextureUnit = 0;
-            
+
             // TODO - implement this in render states!!!
             this.gl.cullFace(this.gl.BACK);
         }
@@ -567,6 +567,15 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
         }
     );
     // </IRenderContextImp Properties implementation>
+
+    $.Method({ Static: false, Public: true }, "UpdateTextureRegion",
+        new JSIL.MethodSiganture(null, [$fuseeCommon.TypeRef("Fusee.Engine.ITexture"), $fuseeCommon.TypeRef("Fusee.Engine.ITexture"), $.Int32, $.Int32]),
+        function UpdateTextureRegion(tex, img, startX, startY) {
+            
+            
+        }
+
+    );
 
     $.Method({ Static: false, Public: true }, "CreateImage",
         new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.ImageData"), [$.Int32, $.Int32, $.String]),
@@ -702,14 +711,14 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
                 // TODO: Save the glyphs for later use
                 var glyph = face.charToGlyph(String.fromCharCode(i));
 
-                if (rowW + ~~(glyph.advanceWidth * fontScale) + 1 >= maxWidth) {
+                if (rowW + ~ ~(glyph.advanceWidth * fontScale) + 1 >= maxWidth) {
                     h += rowH;
                     rowW = 0;
                     rowH = 0;
                 }
 
-                rowW += ~~(glyph.advanceWidth * fontScale) + 1;
-                rowH = System.Math.Max(~~(((glyph.yMax - glyph.yMin) * fontScale) + 1), rowH);
+                rowW += ~ ~(glyph.advanceWidth * fontScale) + 1;
+                rowH = System.Math.Max(~ ~(((glyph.yMax - glyph.yMin) * fontScale) + 1), rowH);
 
                 var test = 0;
             }
@@ -724,7 +733,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
             potH |= potH >> 16;
 
             texAtlas.Width = maxWidth;
-            texAtlas.Height = ~~++potH;
+            texAtlas.Height = ~ ~ ++potH;
 
             // atlas texture
             var tex = this.gl.createTexture();
@@ -763,10 +772,10 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
             for (var i = 32; i < 256; i++) {
                 var glyph = face.charToGlyph(String.fromCharCode(i));
 
-                var xMin = ~~(glyph.xMin * fontScale);
-                var yMin = ~~(glyph.yMin * fontScale);
-                var xMax = ~~(glyph.xMax * fontScale + 1);
-                var yMax = ~~(glyph.yMax * fontScale + 1);
+                var xMin = ~ ~(glyph.xMin * fontScale);
+                var yMin = ~ ~(glyph.yMin * fontScale);
+                var xMax = ~ ~(glyph.xMax * fontScale + 1);
+                var yMax = ~ ~(glyph.yMax * fontScale + 1);
 
                 var bmpWidth = xMax - xMin;
                 var bmpRows = yMax - yMin;
@@ -849,7 +858,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
         new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.ClearFlags")]),
         function Clear(flags) {
             // ACCUM is ignored in WebGL...
-            var wglFlags  =   ((flags.value & $fuseeCommon.Fusee.Engine.ClearFlags.Depth.value) ? this.gl.DEPTH_BUFFER_BIT : 0)
+            var wglFlags = ((flags.value & $fuseeCommon.Fusee.Engine.ClearFlags.Depth.value) ? this.gl.DEPTH_BUFFER_BIT : 0)
                             | ((flags.value & $fuseeCommon.Fusee.Engine.ClearFlags.Stencil.value) ? this.gl.STENCIL_BUFFER_BIT : 0)
                             | ((flags.value & $fuseeCommon.Fusee.Engine.ClearFlags.Color.value) ? this.gl.COLOR_BUFFER_BIT : 0);
             this.gl.clear(wglFlags);
@@ -1187,7 +1196,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
         function BlendOperationToOgl(bo) {
             var boVal;
             /*if ("value" in bo)
-                boVal = bo.value;
+            boVal = bo.value;
             else */
             boVal = bo;
             switch (boVal) {
@@ -1228,7 +1237,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
         function BlendToOgl(blend, isForAlpha) {
             var blendVal;
             /* if ("value" in blend)
-                blendVal = blend.value;
+            blendVal = blend.value;
             else */
             blendVal = blend;
             switch (blendVal) {

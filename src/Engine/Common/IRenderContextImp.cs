@@ -227,8 +227,6 @@ namespace Fusee.Engine
         /// </returns>
         ImageData LoadImage(String filename);
 
-        ImageData LoadVideoTexture(Bitmap bmp);
-
         /// <summary>
         /// Creates a new Image with a specified size and color.
         /// </summary>

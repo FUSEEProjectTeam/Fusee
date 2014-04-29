@@ -33,17 +33,12 @@ namespace Examples.VideoTexture
             RC.ClearColor = new float4(0.1f, 0.1f, 0.5f, 1);
 
             _meshCube = MeshReader.LoadMesh(@"Assets/Cube.obj.model");
-          
+
             _spTexture = MoreShaders.GetTextureShader(RC);
 
             _textureParam = _spTexture.GetShaderParam("texture1");
 
             _videoStream = VideoManager.Instance.LoadVideo(@"Assets/video.avi");
-           
-            //var imgData = RC.LoadImage(@"Assets/world_map.jpg");
-            
-
-
         }
 
 
@@ -54,51 +49,61 @@ namespace Examples.VideoTexture
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
 
-             var imgData = _videoStream.GetCurrentFrame();
-             RC.UpdateTextureRegion(_iTex,imgData,0,0);
+            var imgData = _videoStream.GetCurrentFrame();
+            if (imgData.PixelData != null)
+            {
+                if (_iTex == null)
+                    _iTex = RC.CreateTexture(imgData);
+                RC.UpdateTextureRegion(_iTex, imgData, 0, 0);
+            }
 
+            // move per mouse
+            if (Input.Instance.IsButton(MouseButtons.Left))
+            {
+                _angleVelHorz = RotationSpeed * Input.Instance.GetAxis(InputAxis.MouseX);
+                _angleVelVert = RotationSpeed * Input.Instance.GetAxis(InputAxis.MouseY);
+            }
+            else
+            {
+                var curDamp = (float)Math.Exp(-Damping * Time.Instance.DeltaTime);
 
-                // move per mouse
-                if (Input.Instance.IsButton(MouseButtons.Left))
-                {
-                    _angleVelHorz = RotationSpeed*Input.Instance.GetAxis(InputAxis.MouseX);
-                    _angleVelVert = RotationSpeed*Input.Instance.GetAxis(InputAxis.MouseY);
-                }
-                else
-                {
-                    var curDamp = (float) Math.Exp(-Damping*Time.Instance.DeltaTime);
+                _angleVelHorz *= curDamp;
+                _angleVelVert *= curDamp;
+            }
 
-                    _angleVelHorz *= curDamp;
-                    _angleVelVert *= curDamp;
-                }
+            _angleHorz += _angleVelHorz;
+            _angleVert += _angleVelVert;
 
-                _angleHorz += _angleVelHorz;
-                _angleVert += _angleVelVert;
+            if (Input.Instance.IsKey(KeyCodes.P))
+                _videoStream.Stop();
+            if (Input.Instance.IsKey(KeyCodes.Space))
+                _videoStream.Start();
 
-                // move per keyboard
-                if (Input.Instance.IsKey(KeyCodes.Left))
-                    _angleHorz -= RotationSpeed*(float) Time.Instance.DeltaTime;
+            // move per keyboard
+            if (Input.Instance.IsKey(KeyCodes.Left))
+                _angleHorz -= RotationSpeed * (float)Time.Instance.DeltaTime;
 
-                if (Input.Instance.IsKey(KeyCodes.Right))
-                    _angleHorz += RotationSpeed*(float) Time.Instance.DeltaTime;
+            if (Input.Instance.IsKey(KeyCodes.Right))
+                _angleHorz += RotationSpeed * (float)Time.Instance.DeltaTime;
 
-                if (Input.Instance.IsKey(KeyCodes.Up))
-                    _angleVert -= RotationSpeed*(float) Time.Instance.DeltaTime;
+            if (Input.Instance.IsKey(KeyCodes.Up))
+                _angleVert -= RotationSpeed * (float)Time.Instance.DeltaTime;
 
-                if (Input.Instance.IsKey(KeyCodes.Down))
-                    _angleVert += RotationSpeed*(float) Time.Instance.DeltaTime;
+            if (Input.Instance.IsKey(KeyCodes.Down))
+                _angleVert += RotationSpeed * (float)Time.Instance.DeltaTime;
 
-                var mtxRot = float4x4.CreateRotationY(_angleHorz)*float4x4.CreateRotationX(_angleVert);
-                var mtxCam = float4x4.LookAt(0, 200, 500, 0, 0, 0, 0, 1, 0);
+            var mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
+            var mtxCam = float4x4.LookAt(0, 200, 500, 0, 0, 0, 0, 1, 0);
 
-                // second mesh
-                RC.ModelView = mtxRot*float4x4.CreateTranslation(0, 0, 0)*mtxCam;
+            // second mesh
+            RC.ModelView = mtxRot * float4x4.CreateTranslation(0, 0, 0) * mtxCam;
 
-                RC.SetShader(_spTexture);
+            RC.SetShader(_spTexture);
+            if (_iTex != null)
                 RC.SetShaderParamTexture(_textureParam, _iTex);
 
-                RC.Render(_meshCube);
-            
+            RC.Render(_meshCube);
+
             Present();
         }
 
