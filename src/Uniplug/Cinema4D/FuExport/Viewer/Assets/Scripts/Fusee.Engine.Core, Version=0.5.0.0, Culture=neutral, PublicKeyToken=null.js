@@ -154,28 +154,43 @@ JSIL.DeclareNamespace("Fusee.Engine");
     return ($T00 = JSIL.Memoize($asm01.Fusee.Engine.ICollisionShapeImp)) ();
   };
   var $T01 = function () {
-    return ($T01 = JSIL.Memoize($asm07.System.Single)) ();
+    return ($T01 = JSIL.Memoize($asm04.Fusee.Math.float3)) ();
+  };
+  var $T02 = function () {
+    return ($T02 = JSIL.Memoize($asm07.System.Single)) ();
   };
   var $IM00 = function () {
-    return ($IM00 = JSIL.Memoize($asm01.Fusee.Engine.ICollisionShapeImp.get_Margin)) ();
+    return ($IM00 = JSIL.Memoize($asm01.Fusee.Engine.ICollisionShapeImp.get_LocalScaling)) ();
   };
   var $IM01 = function () {
-    return ($IM01 = JSIL.Memoize($asm01.Fusee.Engine.ICollisionShapeImp.get_UserObject)) ();
+    return ($IM01 = JSIL.Memoize($asm01.Fusee.Engine.ICollisionShapeImp.get_Margin)) ();
   };
   var $IM02 = function () {
-    return ($IM02 = JSIL.Memoize($asm01.Fusee.Engine.ICollisionShapeImp.set_Margin)) ();
+    return ($IM02 = JSIL.Memoize($asm01.Fusee.Engine.ICollisionShapeImp.get_UserObject)) ();
+  };
+  var $IM03 = function () {
+    return ($IM03 = JSIL.Memoize($asm01.Fusee.Engine.ICollisionShapeImp.set_Margin)) ();
   };
 
   function CollisionShape__ctor () {
   };
 
+  function CollisionShape_get_LocalScaling () {
+    return $IM00().Call(this.ICollisionShapeImp, null);
+  };
+
   function CollisionShape_get_Margin () {
-    return +$IM00().Call(this.ICollisionShapeImp, null);
+    return +$IM01().Call(this.ICollisionShapeImp, null);
+  };
+
+  function CollisionShape_set_LocalScaling (value) {
+    var o = $thisType.$Cast($IM02().Call(this.ICollisionShapeImp, null));
+    (o.ICollisionShapeImp.LocalScaling = value);
   };
 
   function CollisionShape_set_Margin (value) {
-    var o = $thisType.$Cast($IM01().Call(this.ICollisionShapeImp, null));
-    $IM02().Call(o.ICollisionShapeImp, null, value);
+    var o = $thisType.$Cast($IM02().Call(this.ICollisionShapeImp, null));
+    $IM03().Call(o.ICollisionShapeImp, null, value);
   };
 
   JSIL.MakeType({
@@ -192,18 +207,30 @@ JSIL.DeclareNamespace("Fusee.Engine");
       CollisionShape__ctor
     );
 
-    $.Method({Static:false, Public:true }, "get_Margin", 
+    $.Method({Static:false, Public:true , Virtual:true }, "get_LocalScaling", 
+      new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float3"), [], []), 
+      CollisionShape_get_LocalScaling
+    );
+
+    $.Method({Static:false, Public:true , Virtual:true }, "get_Margin", 
       new JSIL.MethodSignature($.Single, [], []), 
       CollisionShape_get_Margin
     );
 
-    $.Method({Static:false, Public:true }, "set_Margin", 
+    $.Method({Static:false, Public:true , Virtual:true }, "set_LocalScaling", 
+      new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float3")], []), 
+      CollisionShape_set_LocalScaling
+    );
+
+    $.Method({Static:false, Public:true , Virtual:true }, "set_Margin", 
       new JSIL.MethodSignature(null, [$.Single], []), 
       CollisionShape_set_Margin
     );
 
     $.Field({Static:false, Public:false}, "ICollisionShapeImp", $asm01.TypeRef("Fusee.Engine.ICollisionShapeImp")); 
-    $.Property({Static:false, Public:true }, "Margin", $.Single);
+    $.Property({Static:false, Public:true , Virtual:true }, "Margin", $.Single);
+
+    $.Property({Static:false, Public:true , Virtual:true }, "LocalScaling", $asm04.TypeRef("Fusee.Math.float3"));
 
     return function (newThisType) { $thisType = newThisType; }; 
   });
@@ -295,7 +322,7 @@ JSIL.DeclareNamespace("Fusee.Engine");
       BoxShape_get_LocalScaling
     );
 
-    $.Method({Static:false, Public:true , Virtual:true }, "get_Margin", 
+    $.Method({Static:false, Public:true }, "get_Margin", 
       new JSIL.MethodSignature($.Single, [], []), 
       BoxShape_get_Margin
     );
@@ -305,7 +332,7 @@ JSIL.DeclareNamespace("Fusee.Engine");
       BoxShape_set_LocalScaling
     );
 
-    $.Method({Static:false, Public:true , Virtual:true }, "set_Margin", 
+    $.Method({Static:false, Public:true }, "set_Margin", 
       new JSIL.MethodSignature(null, [$.Single], []), 
       BoxShape_set_Margin
     );
@@ -315,7 +342,7 @@ JSIL.DeclareNamespace("Fusee.Engine");
 
     $.Property({Static:false, Public:true }, "HalfExtents", $asm04.TypeRef("Fusee.Math.float3"));
 
-    $.Property({Static:false, Public:true , Virtual:true }, "Margin", $.Single);
+    $.Property({Static:false, Public:true }, "Margin", $.Single);
 
     return function (newThisType) { $thisType = newThisType; }; 
   });
@@ -341,23 +368,29 @@ JSIL.DeclareNamespace("Fusee.Engine");
   var $T04 = function () {
     return ($T04 = JSIL.Memoize($asm07.System.Single)) ();
   };
+  var $T05 = function () {
+    return ($T05 = JSIL.Memoize($asm04.Fusee.Math.float3)) ();
+  };
   var $IM00 = function () {
     return ($IM00 = JSIL.Memoize($asm01.Fusee.Engine.ICapsuleShapeImp.get_HalfHeight)) ();
   };
   var $IM01 = function () {
-    return ($IM01 = JSIL.Memoize($asm01.Fusee.Engine.ICollisionShapeImp.get_Margin)) ();
+    return ($IM01 = JSIL.Memoize($asm01.Fusee.Engine.ICollisionShapeImp.get_LocalScaling)) ();
   };
   var $IM02 = function () {
-    return ($IM02 = JSIL.Memoize($asm01.Fusee.Engine.ICapsuleShapeImp.get_Radius)) ();
+    return ($IM02 = JSIL.Memoize($asm01.Fusee.Engine.ICollisionShapeImp.get_Margin)) ();
   };
   var $IM03 = function () {
-    return ($IM03 = JSIL.Memoize($asm01.Fusee.Engine.ICapsuleShapeImp.get_UpAxis)) ();
+    return ($IM03 = JSIL.Memoize($asm01.Fusee.Engine.ICapsuleShapeImp.get_Radius)) ();
   };
   var $IM04 = function () {
-    return ($IM04 = JSIL.Memoize($asm01.Fusee.Engine.ICollisionShapeImp.get_UserObject)) ();
+    return ($IM04 = JSIL.Memoize($asm01.Fusee.Engine.ICapsuleShapeImp.get_UpAxis)) ();
   };
   var $IM05 = function () {
-    return ($IM05 = JSIL.Memoize($asm01.Fusee.Engine.ICollisionShapeImp.set_Margin)) ();
+    return ($IM05 = JSIL.Memoize($asm01.Fusee.Engine.ICollisionShapeImp.get_UserObject)) ();
+  };
+  var $IM06 = function () {
+    return ($IM06 = JSIL.Memoize($asm01.Fusee.Engine.ICollisionShapeImp.set_Margin)) ();
   };
 
   function CapsuleShape__ctor () {
@@ -368,22 +401,31 @@ JSIL.DeclareNamespace("Fusee.Engine");
     return +$IM00().Call(this.CapsuleShapeImp, null);
   };
 
-  function CapsuleShape_get_Margin () {
-    return +$IM01().Call(this.CapsuleShapeImp, null);
+  function CapsuleShape_get_LocalScaling () {
+    return $IM01().Call(this.CapsuleShapeImp, null);
   };
 
-  function CapsuleShape_get_Radius () {
+  function CapsuleShape_get_Margin () {
     return +$IM02().Call(this.CapsuleShapeImp, null);
   };
 
+  function CapsuleShape_get_Radius () {
+    return +$IM03().Call(this.CapsuleShapeImp, null);
+  };
+
   function CapsuleShape_get_UpAxis () {
-    var retval = $IM03().Call(this.CapsuleShapeImp, null);
+    var retval = $IM04().Call(this.CapsuleShapeImp, null);
     return +$T04().$Cast(retval);
   };
 
+  function CapsuleShape_set_LocalScaling (value) {
+    var o = $thisType.$Cast($IM05().Call(this.CapsuleShapeImp, null));
+    (o.CapsuleShapeImp.LocalScaling = value);
+  };
+
   function CapsuleShape_set_Margin (value) {
-    var o = $thisType.$Cast($IM04().Call(this.CapsuleShapeImp, null));
-    $IM05().Call(o.CapsuleShapeImp, null, value);
+    var o = $thisType.$Cast($IM05().Call(this.CapsuleShapeImp, null));
+    $IM06().Call(o.CapsuleShapeImp, null, value);
   };
 
   JSIL.MakeType({
@@ -405,7 +447,12 @@ JSIL.DeclareNamespace("Fusee.Engine");
       CapsuleShape_get_HalfHeight
     );
 
-    $.Method({Static:false, Public:true , Virtual:true }, "get_Margin", 
+    $.Method({Static:false, Public:true }, "get_LocalScaling", 
+      new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float3"), [], []), 
+      CapsuleShape_get_LocalScaling
+    );
+
+    $.Method({Static:false, Public:true }, "get_Margin", 
       new JSIL.MethodSignature($.Single, [], []), 
       CapsuleShape_get_Margin
     );
@@ -420,13 +467,20 @@ JSIL.DeclareNamespace("Fusee.Engine");
       CapsuleShape_get_UpAxis
     );
 
-    $.Method({Static:false, Public:true , Virtual:true }, "set_Margin", 
+    $.Method({Static:false, Public:true }, "set_LocalScaling", 
+      new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float3")], []), 
+      CapsuleShape_set_LocalScaling
+    );
+
+    $.Method({Static:false, Public:true }, "set_Margin", 
       new JSIL.MethodSignature(null, [$.Single], []), 
       CapsuleShape_set_Margin
     );
 
     $.Field({Static:false, Public:false}, "CapsuleShapeImp", $asm01.TypeRef("Fusee.Engine.ICapsuleShapeImp")); 
-    $.Property({Static:false, Public:true , Virtual:true }, "Margin", $.Single);
+    $.Property({Static:false, Public:true }, "Margin", $.Single);
+
+    $.Property({Static:false, Public:true }, "LocalScaling", $asm04.TypeRef("Fusee.Math.float3"));
 
     $.Property({Static:false, Public:true }, "HalfHeight", $.Single);
 
@@ -624,18 +678,18 @@ JSIL.DeclareNamespace("Fusee.Engine");
       CompoundShape_CalculatePrincipalAxisTransform
     );
 
-    $.Method({Static:false, Public:true , Virtual:true }, "get_Margin", 
+    $.Method({Static:false, Public:true }, "get_Margin", 
       new JSIL.MethodSignature($.Single, [], []), 
       CompoundShape_get_Margin
     );
 
-    $.Method({Static:false, Public:true , Virtual:true }, "set_Margin", 
+    $.Method({Static:false, Public:true }, "set_Margin", 
       new JSIL.MethodSignature(null, [$.Single], []), 
       CompoundShape_set_Margin
     );
 
     $.Field({Static:false, Public:false}, "CompoundShapeImp", $asm01.TypeRef("Fusee.Engine.ICompoundShapeImp")); 
-    $.Property({Static:false, Public:true , Virtual:true }, "Margin", $.Single);
+    $.Property({Static:false, Public:true }, "Margin", $.Single);
 
     return function (newThisType) { $thisType = newThisType; }; 
   });
@@ -659,10 +713,13 @@ JSIL.DeclareNamespace("Fusee.Engine");
     return ($T03 = JSIL.Memoize($asm07.System.Int32)) ();
   };
   var $T04 = function () {
-    return ($T04 = JSIL.Memoize($asm07.System.Single)) ();
+    return ($T04 = JSIL.Memoize($asm04.Fusee.Math.float3)) ();
   };
   var $T05 = function () {
-    return ($T05 = JSIL.Memoize($asm02.Fusee.Engine.CapsuleShape)) ();
+    return ($T05 = JSIL.Memoize($asm07.System.Single)) ();
+  };
+  var $T06 = function () {
+    return ($T06 = JSIL.Memoize($asm02.Fusee.Engine.CapsuleShape)) ();
   };
   var $IM00 = function () {
     return ($IM00 = JSIL.Memoize($asm01.Fusee.Engine.IConeShapeImp.get_ConeUpIndex)) ();
@@ -671,19 +728,22 @@ JSIL.DeclareNamespace("Fusee.Engine");
     return ($IM01 = JSIL.Memoize($asm01.Fusee.Engine.IConeShapeImp.get_Height)) ();
   };
   var $IM02 = function () {
-    return ($IM02 = JSIL.Memoize($asm01.Fusee.Engine.ICollisionShapeImp.get_Margin)) ();
+    return ($IM02 = JSIL.Memoize($asm01.Fusee.Engine.ICollisionShapeImp.get_LocalScaling)) ();
   };
   var $IM03 = function () {
-    return ($IM03 = JSIL.Memoize($asm01.Fusee.Engine.IConeShapeImp.get_Radius)) ();
+    return ($IM03 = JSIL.Memoize($asm01.Fusee.Engine.ICollisionShapeImp.get_Margin)) ();
   };
   var $IM04 = function () {
-    return ($IM04 = JSIL.Memoize($asm01.Fusee.Engine.ICollisionShapeImp.get_UserObject)) ();
+    return ($IM04 = JSIL.Memoize($asm01.Fusee.Engine.IConeShapeImp.get_Radius)) ();
   };
   var $IM05 = function () {
-    return ($IM05 = JSIL.Memoize($asm01.Fusee.Engine.IConeShapeImp.set_ConeUpIndex)) ();
+    return ($IM05 = JSIL.Memoize($asm01.Fusee.Engine.ICollisionShapeImp.get_UserObject)) ();
   };
   var $IM06 = function () {
-    return ($IM06 = JSIL.Memoize($asm01.Fusee.Engine.ICollisionShapeImp.set_Margin)) ();
+    return ($IM06 = JSIL.Memoize($asm01.Fusee.Engine.IConeShapeImp.set_ConeUpIndex)) ();
+  };
+  var $IM07 = function () {
+    return ($IM07 = JSIL.Memoize($asm01.Fusee.Engine.ICollisionShapeImp.set_Margin)) ();
   };
 
   function ConeShape__ctor () {
@@ -698,22 +758,31 @@ JSIL.DeclareNamespace("Fusee.Engine");
     return +$IM01().Call(this.ConeShapeImp, null);
   };
 
-  function ConeShape_get_Margin () {
-    return +$IM02().Call(this.ConeShapeImp, null);
+  function ConeShape_get_LocalScaling () {
+    return $IM02().Call(this.ConeShapeImp, null);
   };
 
-  function ConeShape_get_Radius () {
+  function ConeShape_get_Margin () {
     return +$IM03().Call(this.ConeShapeImp, null);
   };
 
+  function ConeShape_get_Radius () {
+    return +$IM04().Call(this.ConeShapeImp, null);
+  };
+
   function ConeShape_set_ConeUpIndex (value) {
-    var o = $thisType.$Cast($IM04().Call(this.ConeShapeImp, null));
-    $IM05().Call(o.ConeShapeImp, null, value);
+    var o = $thisType.$Cast($IM05().Call(this.ConeShapeImp, null));
+    $IM06().Call(o.ConeShapeImp, null, value);
+  };
+
+  function ConeShape_set_LocalScaling (value) {
+    var o = $thisType.$Cast($IM05().Call(this.ConeShapeImp, null));
+    (o.ConeShapeImp.LocalScaling = value);
   };
 
   function ConeShape_set_Margin (value) {
-    var o = $T05().$Cast($IM04().Call(this.ConeShapeImp, null));
-    $IM06().Call(o.CapsuleShapeImp, null, value);
+    var o = $T06().$Cast($IM05().Call(this.ConeShapeImp, null));
+    $IM07().Call(o.CapsuleShapeImp, null, value);
   };
 
   JSIL.MakeType({
@@ -740,7 +809,12 @@ JSIL.DeclareNamespace("Fusee.Engine");
       ConeShape_get_Height
     );
 
-    $.Method({Static:false, Public:true , Virtual:true }, "get_Margin", 
+    $.Method({Static:false, Public:true }, "get_LocalScaling", 
+      new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float3"), [], []), 
+      ConeShape_get_LocalScaling
+    );
+
+    $.Method({Static:false, Public:true }, "get_Margin", 
       new JSIL.MethodSignature($.Single, [], []), 
       ConeShape_get_Margin
     );
@@ -755,13 +829,20 @@ JSIL.DeclareNamespace("Fusee.Engine");
       ConeShape_set_ConeUpIndex
     );
 
-    $.Method({Static:false, Public:true , Virtual:true }, "set_Margin", 
+    $.Method({Static:false, Public:true }, "set_LocalScaling", 
+      new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float3")], []), 
+      ConeShape_set_LocalScaling
+    );
+
+    $.Method({Static:false, Public:true }, "set_Margin", 
       new JSIL.MethodSignature(null, [$.Single], []), 
       ConeShape_set_Margin
     );
 
     $.Field({Static:false, Public:false}, "ConeShapeImp", $asm01.TypeRef("Fusee.Engine.IConeShapeImp")); 
-    $.Property({Static:false, Public:true , Virtual:true }, "Margin", $.Single);
+    $.Property({Static:false, Public:true }, "Margin", $.Single);
+
+    $.Property({Static:false, Public:true }, "LocalScaling", $asm04.TypeRef("Fusee.Math.float3"));
 
     $.Property({Static:false, Public:true }, "ConeUpIndex", $.Int32);
 
@@ -1362,7 +1443,7 @@ JSIL.DeclareNamespace("Fusee.Engine");
       ConvexHullShape_get_LocalScaling
     );
 
-    $.Method({Static:false, Public:true , Virtual:true }, "get_Margin", 
+    $.Method({Static:false, Public:true }, "get_Margin", 
       new JSIL.MethodSignature($.Single, [], []), 
       ConvexHullShape_get_Margin
     );
@@ -1387,13 +1468,13 @@ JSIL.DeclareNamespace("Fusee.Engine");
       ConvexHullShape_set_LocalScaling
     );
 
-    $.Method({Static:false, Public:true , Virtual:true }, "set_Margin", 
+    $.Method({Static:false, Public:true }, "set_Margin", 
       new JSIL.MethodSignature(null, [$.Single], []), 
       ConvexHullShape_set_Margin
     );
 
     $.Field({Static:false, Public:false}, "ConvexHullShapeImp", $asm01.TypeRef("Fusee.Engine.IConvexHullShapeImp")); 
-    $.Property({Static:false, Public:true , Virtual:true }, "Margin", $.Single);
+    $.Property({Static:false, Public:true }, "Margin", $.Single);
 
     $.Property({Static:false, Public:true }, "LocalScaling", $asm04.TypeRef("Fusee.Math.float3"));
 
@@ -1825,25 +1906,28 @@ JSIL.DeclareNamespace("Fusee.Engine");
     return ($T04 = JSIL.Memoize($asm07.System.Single)) ();
   };
   var $T05 = function () {
-    return ($T05 = JSIL.Memoize($asm02.Fusee.Engine.CapsuleShape)) ();
+    return ($T05 = JSIL.Memoize($asm04.Fusee.Math.float3)) ();
   };
   var $IM00 = function () {
     return ($IM00 = JSIL.Memoize($asm01.Fusee.Engine.ICylinderShapeImp.get_HalfExtents)) ();
   };
   var $IM01 = function () {
-    return ($IM01 = JSIL.Memoize($asm01.Fusee.Engine.ICollisionShapeImp.get_Margin)) ();
+    return ($IM01 = JSIL.Memoize($asm01.Fusee.Engine.ICollisionShapeImp.get_LocalScaling)) ();
   };
   var $IM02 = function () {
-    return ($IM02 = JSIL.Memoize($asm01.Fusee.Engine.ICylinderShapeImp.get_Radius)) ();
+    return ($IM02 = JSIL.Memoize($asm01.Fusee.Engine.ICollisionShapeImp.get_Margin)) ();
   };
   var $IM03 = function () {
-    return ($IM03 = JSIL.Memoize($asm01.Fusee.Engine.ICylinderShapeImp.get_UpAxis)) ();
+    return ($IM03 = JSIL.Memoize($asm01.Fusee.Engine.ICylinderShapeImp.get_Radius)) ();
   };
   var $IM04 = function () {
-    return ($IM04 = JSIL.Memoize($asm01.Fusee.Engine.ICollisionShapeImp.get_UserObject)) ();
+    return ($IM04 = JSIL.Memoize($asm01.Fusee.Engine.ICylinderShapeImp.get_UpAxis)) ();
   };
   var $IM05 = function () {
-    return ($IM05 = JSIL.Memoize($asm01.Fusee.Engine.ICollisionShapeImp.set_Margin)) ();
+    return ($IM05 = JSIL.Memoize($asm01.Fusee.Engine.ICollisionShapeImp.get_UserObject)) ();
+  };
+  var $IM06 = function () {
+    return ($IM06 = JSIL.Memoize($asm01.Fusee.Engine.ICollisionShapeImp.set_Margin)) ();
   };
 
   function CylinderShape__ctor () {
@@ -1854,22 +1938,31 @@ JSIL.DeclareNamespace("Fusee.Engine");
     return $IM00().Call(this.CylinderShapeImp, null);
   };
 
-  function CylinderShape_get_Margin () {
-    return +$IM01().Call(this.CylinderShapeImp, null);
+  function CylinderShape_get_LocalScaling () {
+    return $IM01().Call(this.CylinderShapeImp, null);
   };
 
-  function CylinderShape_get_Radius () {
+  function CylinderShape_get_Margin () {
     return +$IM02().Call(this.CylinderShapeImp, null);
   };
 
+  function CylinderShape_get_Radius () {
+    return +$IM03().Call(this.CylinderShapeImp, null);
+  };
+
   function CylinderShape_get_UpAxis () {
-    var retval = $IM03().Call(this.CylinderShapeImp, null);
+    var retval = $IM04().Call(this.CylinderShapeImp, null);
     return +$T04().$Cast(retval);
   };
 
+  function CylinderShape_set_LocalScaling (value) {
+    var o = $thisType.$Cast($IM05().Call(this.CylinderShapeImp, null));
+    (o.CylinderShapeImp.LocalScaling = value);
+  };
+
   function CylinderShape_set_Margin (value) {
-    var o = $T05().$Cast($IM04().Call(this.CylinderShapeImp, null));
-    $IM05().Call(o.CapsuleShapeImp, null, value);
+    var o = $thisType.$Cast($IM05().Call(this.CylinderShapeImp, null));
+    $IM06().Call(o.CylinderShapeImp, null, value);
   };
 
   JSIL.MakeType({
@@ -1891,7 +1984,12 @@ JSIL.DeclareNamespace("Fusee.Engine");
       CylinderShape_get_HalfExtents
     );
 
-    $.Method({Static:false, Public:true , Virtual:true }, "get_Margin", 
+    $.Method({Static:false, Public:true }, "get_LocalScaling", 
+      new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float3"), [], []), 
+      CylinderShape_get_LocalScaling
+    );
+
+    $.Method({Static:false, Public:true }, "get_Margin", 
       new JSIL.MethodSignature($.Single, [], []), 
       CylinderShape_get_Margin
     );
@@ -1906,13 +2004,20 @@ JSIL.DeclareNamespace("Fusee.Engine");
       CylinderShape_get_UpAxis
     );
 
-    $.Method({Static:false, Public:true , Virtual:true }, "set_Margin", 
+    $.Method({Static:false, Public:true }, "set_LocalScaling", 
+      new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float3")], []), 
+      CylinderShape_set_LocalScaling
+    );
+
+    $.Method({Static:false, Public:true }, "set_Margin", 
       new JSIL.MethodSignature(null, [$.Single], []), 
       CylinderShape_set_Margin
     );
 
     $.Field({Static:false, Public:false}, "CylinderShapeImp", $asm01.TypeRef("Fusee.Engine.ICylinderShapeImp")); 
-    $.Property({Static:false, Public:true , Virtual:true }, "Margin", $.Single);
+    $.Property({Static:false, Public:true }, "Margin", $.Single);
+
+    $.Property({Static:false, Public:true }, "LocalScaling", $asm04.TypeRef("Fusee.Math.float3"));
 
     $.Property({Static:false, Public:true }, "HalfExtents", $asm04.TypeRef("Fusee.Math.float3"));
 
@@ -1935,10 +2040,10 @@ JSIL.DeclareNamespace("Fusee.Engine");
     $.ExternalMethod({Static:true , Public:true }, "Log", 
       new JSIL.MethodSignature(null, [$.Object], [])
     )
-      .Attribute($asm10.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
 
     $.ExternalProperty({Static:true , Public:true }, "Timer", $.Double)
-      .Attribute($asm10.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
 
     return function (newThisType) { $thisType = newThisType; }; 
   });
@@ -2139,7 +2244,7 @@ JSIL.DeclareNamespace("Fusee.Engine");
     return ($S05 = JSIL.Memoize(new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IConvexHullShapeImp"), [], []))) ();
   };
   var $S06 = function () {
-    return ($S06 = JSIL.Memoize(new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IConvexHullShapeImp"), [$jsilcore.TypeRef("System.Array", [$asm04.TypeRef("Fusee.Math.float3")])], []))) ();
+    return ($S06 = JSIL.Memoize(new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IConvexHullShapeImp"), [$jsilcore.TypeRef("System.Array", [$asm04.TypeRef("Fusee.Math.float3")]), $asm07.TypeRef("System.Boolean")], []))) ();
   };
   var $S07 = function () {
     return ($S07 = JSIL.Memoize(new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.ICylinderShapeImp"), [$asm07.TypeRef("System.Single")], []))) ();
@@ -2288,25 +2393,22 @@ JSIL.DeclareNamespace("Fusee.Engine");
     return ($IM15 = JSIL.Memoize($asm01.Fusee.Engine.IDynamicWorldImp.Dispose)) ();
   };
   var $IM16 = function () {
-    return ($IM16 = JSIL.Memoize($asm01.Fusee.Engine.IConstraintImp.get_UserObject)) ();
+    return ($IM16 = JSIL.Memoize($asm01.Fusee.Engine.IDynamicWorldImp.get_Gravity)) ();
   };
   var $IM17 = function () {
-    return ($IM17 = JSIL.Memoize($asm01.Fusee.Engine.IDynamicWorldImp.GetConstraint)) ();
+    return ($IM17 = JSIL.Memoize($asm01.Fusee.Engine.IDynamicWorldImp.GetRigidBody)) ();
   };
   var $IM18 = function () {
-    return ($IM18 = JSIL.Memoize($asm01.Fusee.Engine.IDynamicWorldImp.GetRigidBody)) ();
+    return ($IM18 = JSIL.Memoize($asm01.Fusee.Engine.IRigidBodyImp.get_UserObject)) ();
   };
   var $IM19 = function () {
-    return ($IM19 = JSIL.Memoize($asm01.Fusee.Engine.IRigidBodyImp.get_UserObject)) ();
+    return ($IM19 = JSIL.Memoize($asm01.Fusee.Engine.IDynamicWorldImp.NumberConstraints)) ();
   };
   var $IM1A = function () {
-    return ($IM1A = JSIL.Memoize($asm01.Fusee.Engine.IDynamicWorldImp.NumberConstraints)) ();
+    return ($IM1A = JSIL.Memoize($asm01.Fusee.Engine.IDynamicWorldImp.NumberRigidBodies)) ();
   };
   var $IM1B = function () {
-    return ($IM1B = JSIL.Memoize($asm01.Fusee.Engine.IDynamicWorldImp.NumberRigidBodies)) ();
-  };
-  var $IM1C = function () {
-    return ($IM1C = JSIL.Memoize($asm01.Fusee.Engine.IDynamicWorldImp.StepSimulation)) ();
+    return ($IM1B = JSIL.Memoize($asm01.Fusee.Engine.IDynamicWorldImp.StepSimulation)) ();
   };
 
   function DynamicWorld__ctor () {
@@ -2385,8 +2487,8 @@ JSIL.DeclareNamespace("Fusee.Engine");
     return retval;
   };
 
-  function DynamicWorld_AddConvexHullShape$06 (points) {
-    var iConvexHullShapeImp = $S06().CallVirtual($IM07(), null, this._dwi, points);
+  function DynamicWorld_AddConvexHullShape$06 (points, optimized) {
+    var iConvexHullShapeImp = $S06().CallVirtual($IM07(), null, this._dwi, points, optimized);
     var retval = new ($T14())();
     retval.ConvexHullShapeImp = iConvexHullShapeImp;
     $IM01().Call(iConvexHullShapeImp, null, retval);
@@ -2671,25 +2773,29 @@ JSIL.DeclareNamespace("Fusee.Engine");
     $IM15().Call(this._dwi, null);
   };
 
-  function DynamicWorld_GetConstraint (i) {
-    return $T2B().$Cast($IM16().Call($IM17().Call(this._dwi, null, i), null));
+  function DynamicWorld_get_Gravity () {
+    return $IM16().Call(this._dwi, null);
   };
 
   function DynamicWorld_GetRigidBody (i) {
-    var rbi = $IM18().Call(this._dwi, null, i);
-    return $T0E().$Cast($IM19().Call(rbi, null));
+    var rbi = $IM17().Call(this._dwi, null, i);
+    return $T0E().$Cast($IM18().Call(rbi, null));
   };
 
   function DynamicWorld_NumberConstraints () {
-    return $IM1A().Call(this._dwi, null);
+    return $IM19().Call(this._dwi, null);
   };
 
   function DynamicWorld_NumberRigidBodies () {
-    return $IM1B().Call(this._dwi, null);
+    return $IM1A().Call(this._dwi, null);
+  };
+
+  function DynamicWorld_set_Gravity (value) {
+    (this._dwi.Gravity = value);
   };
 
   function DynamicWorld_StepSimulation (timeSteps, maxSubSteps, fixedTimeSteps) {
-    return $IM1C().Call(this._dwi, null, timeSteps, maxSubSteps, fixedTimeSteps);
+    return $IM1B().Call(this._dwi, null, timeSteps, maxSubSteps, fixedTimeSteps);
   };
 
   JSIL.MakeType({
@@ -2758,7 +2864,7 @@ JSIL.DeclareNamespace("Fusee.Engine");
     );
 
     $.Method({Static:false, Public:true }, "AddConvexHullShape", 
-      new JSIL.MethodSignature($asm02.TypeRef("Fusee.Engine.ConvexHullShape"), [$jsilcore.TypeRef("System.Array", [$asm04.TypeRef("Fusee.Math.float3")])], []), 
+      new JSIL.MethodSignature($asm02.TypeRef("Fusee.Engine.ConvexHullShape"), [$jsilcore.TypeRef("System.Array", [$asm04.TypeRef("Fusee.Math.float3")]), $.Boolean], []), 
       DynamicWorld_AddConvexHullShape$06
     );
 
@@ -2909,9 +3015,9 @@ JSIL.DeclareNamespace("Fusee.Engine");
       DynamicWorld_Dispose
     );
 
-    $.Method({Static:false, Public:true }, "GetConstraint", 
-      new JSIL.MethodSignature($asm02.TypeRef("Fusee.Engine.Point2PointConstraint"), [$.Int32], []), 
-      DynamicWorld_GetConstraint
+    $.Method({Static:false, Public:true }, "get_Gravity", 
+      new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float3"), [], []), 
+      DynamicWorld_get_Gravity
     );
 
     $.Method({Static:false, Public:true }, "GetRigidBody", 
@@ -2929,6 +3035,11 @@ JSIL.DeclareNamespace("Fusee.Engine");
       DynamicWorld_NumberRigidBodies
     );
 
+    $.Method({Static:false, Public:true }, "set_Gravity", 
+      new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float3")], []), 
+      DynamicWorld_set_Gravity
+    );
+
     $.Method({Static:false, Public:true }, "StepSimulation", 
       new JSIL.MethodSignature($.Int32, [
           $.Single, $.Int32, 
@@ -2938,6 +3049,8 @@ JSIL.DeclareNamespace("Fusee.Engine");
     );
 
     $.Field({Static:false, Public:false}, "_dwi", $asm01.TypeRef("Fusee.Engine.IDynamicWorldImp")); 
+    $.Property({Static:false, Public:true }, "Gravity", $asm04.TypeRef("Fusee.Math.float3"));
+
     return function (newThisType) { $thisType = newThisType; }; 
   });
 
@@ -5531,7 +5644,7 @@ JSIL.MakeDelegate("Fusee.Engine.GUIButtonHandler", true, []);
     $.ExternalMethod({Static:false, Public:false}, "SortArray", 
       new JSIL.MethodSignature(null, [$jsilcore.TypeRef("JSIL.Reference", [$jsilcore.TypeRef("System.Array", [$asm02.TypeRef("Fusee.Engine.GUIElement")])])], [])
     )
-      .Attribute($asm10.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
 
     $.Field({Static:false, Public:false}, "_renderContext", $asm02.TypeRef("Fusee.Engine.RenderContext")); 
     $.ImplementInterfaces(
@@ -6896,37 +7009,37 @@ JSIL.MakeDelegate("Fusee.Engine.GUIPanelHandler", true, []);
     $.ExternalMethod({Static:true , Public:true }, "CreateIAudioImp", 
       new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IAudioImp"), [], [])
     )
-      .Attribute($asm10.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
 
     $.ExternalMethod({Static:true , Public:true }, "CreateIDynamicWorldImp", 
       new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IDynamicWorldImp"), [], [])
     )
-      .Attribute($asm10.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
 
     $.ExternalMethod({Static:true , Public:true }, "CreateIInputDriverImp", 
       new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IInputDriverImp"), [], [])
     )
-      .Attribute($asm10.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
 
     $.ExternalMethod({Static:true , Public:true }, "CreateIInputImp", 
       new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IInputImp"), [$asm01.TypeRef("Fusee.Engine.IRenderCanvasImp")], [])
     )
-      .Attribute($asm10.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
 
     $.ExternalMethod({Static:true , Public:true }, "CreateINetworkImp", 
       new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.INetworkImp"), [], [])
     )
-      .Attribute($asm10.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
 
     $.ExternalMethod({Static:true , Public:true }, "CreateIRenderCanvasImp", 
       new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IRenderCanvasImp"), [], [])
     )
-      .Attribute($asm10.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
 
     $.ExternalMethod({Static:true , Public:true }, "CreateIRenderContextImp", 
       new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IRenderContextImp"), [$asm01.TypeRef("Fusee.Engine.IRenderCanvasImp")], [])
     )
-      .Attribute($asm10.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
 
     return function (newThisType) { $thisType = newThisType; }; 
   });
@@ -7875,7 +7988,7 @@ JSIL.MakeEnum(
     $.ExternalMethod({Static:true , Public:true }, "Double_Parse", 
       new JSIL.MethodSignature($.Double, [$.String], [])
     )
-      .Attribute($asm10.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
 
     $.Method({Static:true , Public:true }, "FilteredSplit", 
       new JSIL.MethodSignature($jsilcore.TypeRef("System.Array", [$.String]), [$.String, $jsilcore.TypeRef("System.Array", [$.Char])], []), 
@@ -8048,7 +8161,7 @@ JSIL.MakeEnum(
       MultiSphereShape__ctor
     );
 
-    $.Method({Static:false, Public:true , Virtual:true }, "get_Margin", 
+    $.Method({Static:false, Public:true }, "get_Margin", 
       new JSIL.MethodSignature($.Single, [], []), 
       MultiSphereShape_get_Margin
     );
@@ -8068,13 +8181,13 @@ JSIL.MakeEnum(
       MultiSphereShape_GetSphereRadius
     );
 
-    $.Method({Static:false, Public:true , Virtual:true }, "set_Margin", 
+    $.Method({Static:false, Public:true }, "set_Margin", 
       new JSIL.MethodSignature(null, [$.Single], []), 
       MultiSphereShape_set_Margin
     );
 
     $.Field({Static:false, Public:false}, "MultiSphereShapeImp", $asm01.TypeRef("Fusee.Engine.IMultiSphereShapeImp")); 
-    $.Property({Static:false, Public:true , Virtual:true }, "Margin", $.Single);
+    $.Property({Static:false, Public:true }, "Margin", $.Single);
 
     $.Property({Static:false, Public:true }, "SphereCount", $.Int32);
 
@@ -8280,97 +8393,106 @@ JSIL.MakeEnum(
 (function RigidBody$Members () {
   var $, $thisType;
   var $T00 = function () {
-    return ($T00 = JSIL.Memoize($asm04.Fusee.Math.float3)) ();
+    return ($T00 = JSIL.Memoize($asm07.System.EventHandler)) ();
   };
   var $T01 = function () {
-    return ($T01 = JSIL.Memoize($asm01.Fusee.Engine.IRigidBodyImp)) ();
+    return ($T01 = JSIL.Memoize($asm07.System.Delegate)) ();
   };
   var $T02 = function () {
-    return ($T02 = JSIL.Memoize($asm01.Fusee.Engine.ICollisionShapeImp)) ();
+    return ($T02 = JSIL.Memoize($asm07.System.Threading.Interlocked)) ();
   };
   var $T03 = function () {
-    return ($T03 = JSIL.Memoize($asm07.System.String)) ();
+    return ($T03 = JSIL.Memoize($asm04.Fusee.Math.float3)) ();
   };
   var $T04 = function () {
-    return ($T04 = JSIL.Memoize($asm07.System.Object)) ();
+    return ($T04 = JSIL.Memoize($asm01.Fusee.Engine.IRigidBodyImp)) ();
   };
   var $T05 = function () {
-    return ($T05 = JSIL.Memoize($asm02.Fusee.Engine.BoxShape)) ();
+    return ($T05 = JSIL.Memoize($asm01.Fusee.Engine.ICollisionShapeImp)) ();
   };
   var $T06 = function () {
-    return ($T06 = JSIL.Memoize($asm01.Fusee.Engine.IBoxShapeImp)) ();
+    return ($T06 = JSIL.Memoize($asm07.System.String)) ();
   };
   var $T07 = function () {
-    return ($T07 = JSIL.Memoize($asm02.Fusee.Engine.CollisionShape)) ();
+    return ($T07 = JSIL.Memoize($asm07.System.Object)) ();
   };
   var $T08 = function () {
-    return ($T08 = JSIL.Memoize($asm02.Fusee.Engine.SphereShape)) ();
+    return ($T08 = JSIL.Memoize($asm02.Fusee.Engine.BoxShape)) ();
   };
   var $T09 = function () {
-    return ($T09 = JSIL.Memoize($asm01.Fusee.Engine.ISphereShapeImp)) ();
+    return ($T09 = JSIL.Memoize($asm01.Fusee.Engine.IBoxShapeImp)) ();
   };
   var $T0A = function () {
-    return ($T0A = JSIL.Memoize($asm02.Fusee.Engine.CapsuleShape)) ();
+    return ($T0A = JSIL.Memoize($asm02.Fusee.Engine.CollisionShape)) ();
   };
   var $T0B = function () {
-    return ($T0B = JSIL.Memoize($asm01.Fusee.Engine.ICapsuleShapeImp)) ();
+    return ($T0B = JSIL.Memoize($asm02.Fusee.Engine.SphereShape)) ();
   };
   var $T0C = function () {
-    return ($T0C = JSIL.Memoize($asm02.Fusee.Engine.CylinderShape)) ();
+    return ($T0C = JSIL.Memoize($asm01.Fusee.Engine.ISphereShapeImp)) ();
   };
   var $T0D = function () {
-    return ($T0D = JSIL.Memoize($asm01.Fusee.Engine.ICylinderShapeImp)) ();
+    return ($T0D = JSIL.Memoize($asm02.Fusee.Engine.CapsuleShape)) ();
   };
   var $T0E = function () {
-    return ($T0E = JSIL.Memoize($asm02.Fusee.Engine.ConeShape)) ();
+    return ($T0E = JSIL.Memoize($asm01.Fusee.Engine.ICapsuleShapeImp)) ();
   };
   var $T0F = function () {
-    return ($T0F = JSIL.Memoize($asm01.Fusee.Engine.IConeShapeImp)) ();
+    return ($T0F = JSIL.Memoize($asm02.Fusee.Engine.CylinderShape)) ();
   };
   var $T10 = function () {
-    return ($T10 = JSIL.Memoize($asm02.Fusee.Engine.MultiSphereShape)) ();
+    return ($T10 = JSIL.Memoize($asm01.Fusee.Engine.ICylinderShapeImp)) ();
   };
   var $T11 = function () {
-    return ($T11 = JSIL.Memoize($asm01.Fusee.Engine.IMultiSphereShapeImp)) ();
+    return ($T11 = JSIL.Memoize($asm02.Fusee.Engine.ConeShape)) ();
   };
   var $T12 = function () {
-    return ($T12 = JSIL.Memoize($asm02.Fusee.Engine.ConvexHullShape)) ();
+    return ($T12 = JSIL.Memoize($asm01.Fusee.Engine.IConeShapeImp)) ();
   };
   var $T13 = function () {
-    return ($T13 = JSIL.Memoize($asm01.Fusee.Engine.IConvexHullShapeImp)) ();
+    return ($T13 = JSIL.Memoize($asm02.Fusee.Engine.MultiSphereShape)) ();
   };
   var $T14 = function () {
-    return ($T14 = JSIL.Memoize($asm02.Fusee.Engine.GImpactMeshShape)) ();
+    return ($T14 = JSIL.Memoize($asm01.Fusee.Engine.IMultiSphereShapeImp)) ();
   };
   var $T15 = function () {
-    return ($T15 = JSIL.Memoize($asm01.Fusee.Engine.IGImpactMeshShapeImp)) ();
+    return ($T15 = JSIL.Memoize($asm02.Fusee.Engine.ConvexHullShape)) ();
   };
   var $T16 = function () {
-    return ($T16 = JSIL.Memoize($asm02.Fusee.Engine.StaticPlaneShape)) ();
+    return ($T16 = JSIL.Memoize($asm01.Fusee.Engine.IConvexHullShapeImp)) ();
   };
   var $T17 = function () {
-    return ($T17 = JSIL.Memoize($asm01.Fusee.Engine.IStaticPlaneShapeImp)) ();
+    return ($T17 = JSIL.Memoize($asm02.Fusee.Engine.GImpactMeshShape)) ();
   };
   var $T18 = function () {
-    return ($T18 = JSIL.Memoize($asm02.Fusee.Engine.CompoundShape)) ();
+    return ($T18 = JSIL.Memoize($asm01.Fusee.Engine.IGImpactMeshShapeImp)) ();
   };
   var $T19 = function () {
-    return ($T19 = JSIL.Memoize($asm01.Fusee.Engine.ICompoundShapeImp)) ();
+    return ($T19 = JSIL.Memoize($asm02.Fusee.Engine.StaticPlaneShape)) ();
   };
   var $T1A = function () {
-    return ($T1A = JSIL.Memoize($asm02.Fusee.Engine.EmptyShape)) ();
+    return ($T1A = JSIL.Memoize($asm01.Fusee.Engine.IStaticPlaneShapeImp)) ();
   };
   var $T1B = function () {
-    return ($T1B = JSIL.Memoize($asm01.Fusee.Engine.IEmptyShapeImp)) ();
+    return ($T1B = JSIL.Memoize($asm02.Fusee.Engine.CompoundShape)) ();
   };
   var $T1C = function () {
-    return ($T1C = JSIL.Memoize($asm07.System.Single)) ();
+    return ($T1C = JSIL.Memoize($asm01.Fusee.Engine.ICompoundShapeImp)) ();
   };
   var $T1D = function () {
-    return ($T1D = JSIL.Memoize($asm09.System.Diagnostics.Debug)) ();
+    return ($T1D = JSIL.Memoize($asm02.Fusee.Engine.EmptyShape)) ();
   };
   var $T1E = function () {
-    return ($T1E = JSIL.Memoize($asm04.Fusee.Math.float4x4)) ();
+    return ($T1E = JSIL.Memoize($asm01.Fusee.Engine.IEmptyShapeImp)) ();
+  };
+  var $T1F = function () {
+    return ($T1F = JSIL.Memoize($asm09.System.Diagnostics.Debug)) ();
+  };
+  var $T20 = function () {
+    return ($T20 = JSIL.Memoize($asm07.System.Single)) ();
+  };
+  var $T21 = function () {
+    return ($T21 = JSIL.Memoize($asm04.Fusee.Math.float4x4)) ();
   };
   var $S00 = function () {
     return ($S00 = JSIL.Memoize(new JSIL.MethodSignature(null, [$asm07.TypeRef("System.String")], []))) ();
@@ -8385,25 +8507,25 @@ JSIL.MakeEnum(
     return ($IM02 = JSIL.Memoize($asm01.Fusee.Engine.IRigidBodyImp.ApplyImpulse)) ();
   };
   var $IM03 = function () {
-    return ($IM03 = JSIL.Memoize($asm01.Fusee.Engine.IRigidBodyImp.get_LinearFactor)) ();
+    return ($IM03 = JSIL.Memoize($asm01.Fusee.Engine.IRigidBodyImp.get_AngularDrag)) ();
   };
   var $IM04 = function () {
-    return ($IM04 = JSIL.Memoize($asm01.Fusee.Engine.IRigidBodyImp.get_AngularVelocity)) ();
+    return ($IM04 = JSIL.Memoize($asm01.Fusee.Engine.IRigidBodyImp.get_LinearFactor)) ();
   };
   var $IM05 = function () {
-    return ($IM05 = JSIL.Memoize($asm01.Fusee.Engine.IRigidBodyImp.get_ApplyCentralForce)) ();
+    return ($IM05 = JSIL.Memoize($asm01.Fusee.Engine.IRigidBodyImp.get_AngularVelocity)) ();
   };
   var $IM06 = function () {
-    return ($IM06 = JSIL.Memoize($asm01.Fusee.Engine.IRigidBodyImp.get_ApplyCentralImpulse)) ();
+    return ($IM06 = JSIL.Memoize($asm01.Fusee.Engine.IRigidBodyImp.get_ApplyCentralForce)) ();
   };
   var $IM07 = function () {
-    return ($IM07 = JSIL.Memoize($asm01.Fusee.Engine.IRigidBodyImp.get_ApplyTorque)) ();
+    return ($IM07 = JSIL.Memoize($asm01.Fusee.Engine.IRigidBodyImp.get_ApplyCentralImpulse)) ();
   };
   var $IM08 = function () {
-    return ($IM08 = JSIL.Memoize($asm01.Fusee.Engine.IRigidBodyImp.get_ApplyTorqueImpulse)) ();
+    return ($IM08 = JSIL.Memoize($asm01.Fusee.Engine.IRigidBodyImp.get_ApplyTorque)) ();
   };
   var $IM09 = function () {
-    return ($IM09 = JSIL.Memoize($asm01.Fusee.Engine.IRigidBodyImp.get_Bounciness)) ();
+    return ($IM09 = JSIL.Memoize($asm01.Fusee.Engine.IRigidBodyImp.get_ApplyTorqueImpulse)) ();
   };
   var $IM0A = function () {
     return ($IM0A = JSIL.Memoize($asm01.Fusee.Engine.IRigidBodyImp.get_CollisionShape)) ();
@@ -8421,34 +8543,55 @@ JSIL.MakeEnum(
     return ($IM0E = JSIL.Memoize($asm01.Fusee.Engine.IRigidBodyImp.get_Inertia)) ();
   };
   var $IM0F = function () {
-    return ($IM0F = JSIL.Memoize($asm01.Fusee.Engine.IRigidBodyImp.get_LinearVelocity)) ();
+    return ($IM0F = JSIL.Memoize($asm01.Fusee.Engine.IRigidBodyImp.get_LinearDrag)) ();
   };
   var $IM10 = function () {
-    return ($IM10 = JSIL.Memoize($asm01.Fusee.Engine.IRigidBodyImp.get_Mass)) ();
+    return ($IM10 = JSIL.Memoize($asm01.Fusee.Engine.IRigidBodyImp.get_LinearVelocity)) ();
   };
   var $IM11 = function () {
-    return ($IM11 = JSIL.Memoize($asm01.Fusee.Engine.IRigidBodyImp.get_Position)) ();
+    return ($IM11 = JSIL.Memoize($asm01.Fusee.Engine.IRigidBodyImp.get_Mass)) ();
   };
   var $IM12 = function () {
-    return ($IM12 = JSIL.Memoize($asm01.Fusee.Engine.IRigidBodyImp.get_WorldTransform)) ();
+    return ($IM12 = JSIL.Memoize($asm01.Fusee.Engine.IRigidBodyImp.get_Position)) ();
   };
   var $IM13 = function () {
-    return ($IM13 = JSIL.Memoize($asm01.Fusee.Engine.IRigidBodyImp.get_Rotation)) ();
+    return ($IM13 = JSIL.Memoize($asm01.Fusee.Engine.IRigidBodyImp.get_Restitution)) ();
   };
   var $IM14 = function () {
-    return ($IM14 = JSIL.Memoize($asm01.Fusee.Engine.IRigidBodyImp.set_Bounciness)) ();
+    return ($IM14 = JSIL.Memoize($asm01.Fusee.Engine.IRigidBodyImp.get_WorldTransform)) ();
   };
   var $IM15 = function () {
-    return ($IM15 = JSIL.Memoize($asm01.Fusee.Engine.IRigidBodyImp.set_CollisionShape)) ();
+    return ($IM15 = JSIL.Memoize($asm01.Fusee.Engine.IRigidBodyImp.get_Rotation)) ();
   };
   var $IM16 = function () {
-    return ($IM16 = JSIL.Memoize($asm01.Fusee.Engine.IRigidBodyImp.set_Friction)) ();
+    return ($IM16 = JSIL.Memoize($asm01.Fusee.Engine.IRigidBodyImp.set_CollisionShape)) ();
   };
   var $IM17 = function () {
-    return ($IM17 = JSIL.Memoize($asm01.Fusee.Engine.IRigidBodyImp.set_Mass)) ();
+    return ($IM17 = JSIL.Memoize($asm01.Fusee.Engine.IRigidBodyImp.set_Friction)) ();
+  };
+  var $IM18 = function () {
+    return ($IM18 = JSIL.Memoize($asm01.Fusee.Engine.IRigidBodyImp.set_Mass)) ();
+  };
+  var $IM19 = function () {
+    return ($IM19 = JSIL.Memoize($asm01.Fusee.Engine.IRigidBodyImp.set_Restitution)) ();
+  };
+  var $IM1A = function () {
+    return ($IM1A = JSIL.Memoize($asm01.Fusee.Engine.IRigidBodyImp.SetDrag)) ();
   };
 
   function RigidBody__ctor () {
+    this.WhileCollidingEvent = function (param0, param1) {
+    };
+  };
+
+  function RigidBody_add_WhileCollidingEvent (value) {
+    var eventHandler = this.WhileCollidingEvent;
+
+    do {
+      var eventHandler2 = eventHandler;
+      var value2 = $T01().Combine(eventHandler2, value);
+      eventHandler = $T02().CompareExchange$b1($T00())(/* ref */ new JSIL.MemberReference(this, "WhileCollidingEvent"), value2, eventHandler2);
+    } while (eventHandler !== eventHandler2);
   };
 
   function RigidBody_ApplyForce (force, relPos) {
@@ -8461,32 +8604,32 @@ JSIL.MakeEnum(
     $IM02().Call(o._iRigidBodyImp, null, impulse, relPos);
   };
 
-  function RigidBody_get_AngularFactor () {
-    return $IM03().Call(this._iRigidBodyImp, null);
+  function RigidBody_get_AngularDrag () {
+    return +$IM03().Call(this._iRigidBodyImp, null);
   };
 
-  function RigidBody_get_AngularVelocity () {
+  function RigidBody_get_AngularFactor () {
     return $IM04().Call(this._iRigidBodyImp, null);
   };
 
-  function RigidBody_get_ApplyCentralForce () {
+  function RigidBody_get_AngularVelocity () {
     return $IM05().Call(this._iRigidBodyImp, null);
   };
 
-  function RigidBody_get_ApplyCentralImpulse () {
+  function RigidBody_get_ApplyCentralForce () {
     return $IM06().Call(this._iRigidBodyImp, null);
   };
 
-  function RigidBody_get_ApplyTorque () {
+  function RigidBody_get_ApplyCentralImpulse () {
     return $IM07().Call(this._iRigidBodyImp, null);
   };
 
-  function RigidBody_get_ApplyTorqueImpulse () {
+  function RigidBody_get_ApplyTorque () {
     return $IM08().Call(this._iRigidBodyImp, null);
   };
 
-  function RigidBody_get_Bounciness () {
-    return +$IM09().Call(this._iRigidBodyImp, null);
+  function RigidBody_get_ApplyTorqueImpulse () {
+    return $IM09().Call(this._iRigidBodyImp, null);
   };
 
   function RigidBody_get_CollisionShape () {
@@ -8496,85 +8639,85 @@ JSIL.MakeEnum(
     if (text !== null) {
       switch (text) {
         case "Fusee.Engine.BoxShapeImp": 
-          var box = new ($T05())();
-          box.BoxShapeImp = $T06().$Cast(shape);
+          var box = new ($T08())();
+          box.BoxShapeImp = $T09().$Cast(shape);
           $IM0B().Call(shape, null, box);
           var result = box;
           return result;
 
         case "Fusee.Engine.SphereShapeImp": 
-          var sphere = new ($T08())();
-          sphere.SphereShapeImp = $T09().$Cast(shape);
+          var sphere = new ($T0B())();
+          sphere.SphereShapeImp = $T0C().$Cast(shape);
           $IM0B().Call(shape, null, sphere);
           result = sphere;
           return result;
 
         case "Fusee.Engine.CapsuleShapeImp": 
-          var capsule = new ($T0A())();
-          capsule.CapsuleShapeImp = $T0B().$Cast(shape);
+          var capsule = new ($T0D())();
+          capsule.CapsuleShapeImp = $T0E().$Cast(shape);
           $IM0B().Call(shape, null, capsule);
           result = capsule;
           return result;
 
         case "Fusee.Engine.CylinderShapeImp": 
-          var cylinder = new ($T0C())();
-          cylinder.CylinderShapeImp = $T0D().$Cast(shape);
+          var cylinder = new ($T0F())();
+          cylinder.CylinderShapeImp = $T10().$Cast(shape);
           $IM0B().Call(shape, null, cylinder);
           result = cylinder;
           return result;
 
         case "Fusee.Engine.ConeShapeImp": 
-          var cone = new ($T0E())();
-          cone.ConeShapeImp = $T0F().$Cast(shape);
+          var cone = new ($T11())();
+          cone.ConeShapeImp = $T12().$Cast(shape);
           $IM0B().Call(shape, null, cone);
           result = cone;
           return result;
 
         case "Fusee.Engine.MultiSphereShapeImp": 
-          var multiSphere = new ($T10())();
-          multiSphere.MultiSphereShapeImp = $T11().$Cast(shape);
+          var multiSphere = new ($T13())();
+          multiSphere.MultiSphereShapeImp = $T14().$Cast(shape);
           $IM0B().Call(shape, null, multiSphere);
           result = multiSphere;
           return result;
 
         case "Fusee.Engine.ConvexHullShapeImp": 
-          var convHull = new ($T12())();
-          convHull.ConvexHullShapeImp = $T13().$Cast(shape);
+          var convHull = new ($T15())();
+          convHull.ConvexHullShapeImp = $T16().$Cast(shape);
           $IM0B().Call(shape, null, convHull);
           result = convHull;
           return result;
 
-        case "Fusee.Engine.GImpactMeshShape": 
-          var gimp = new ($T14())();
-          gimp.GImpactMeshShapeImp = $T15().$Cast(shape);
+        case "Fusee.Engine.GImpactMeshShapeImp": 
+          var gimp = new ($T17())();
+          gimp.GImpactMeshShapeImp = $T18().$Cast(shape);
           $IM0B().Call(shape, null, gimp);
           result = gimp;
           return result;
 
         case "Fusee.Engine.StaticPlaneShapeImp": 
-          var staticPlane = new ($T16())();
-          staticPlane.StaticPlaneShapeImp = $T17().$Cast(shape);
+          var staticPlane = new ($T19())();
+          staticPlane.StaticPlaneShapeImp = $T1A().$Cast(shape);
           $IM0B().Call(shape, null, staticPlane);
           result = staticPlane;
           return result;
 
-        case "Fusee.Engine.CompoundShapeShapeImp": 
-          var comp = new ($T18())();
-          comp.CompoundShapeImp = $T19().$Cast(shape);
+        case "Fusee.Engine.CompoundShapeImp": 
+          var comp = new ($T1B())();
+          comp.CompoundShapeImp = $T1C().$Cast(shape);
           $IM0B().Call(shape, null, comp);
           result = comp;
           return result;
 
         case "Fusee.Engine.EmptyShape": 
-          var empty = new ($T1A())();
-          empty.EmtyShapeImp = $T1B().$Cast(shape);
+          var empty = new ($T1D())();
+          empty.EmtyShapeImp = $T1E().$Cast(shape);
           $IM0B().Call(shape, null, empty);
           result = empty;
           return result;
 
       }
     }
-    result = new ($T1A())();
+    result = new ($T1D())();
     return result;
   };
 
@@ -8582,7 +8725,7 @@ JSIL.MakeEnum(
     return +$IM0C().Call(this._iRigidBodyImp, null);
   };
 
-  function RigidBody_get_Gavity () {
+  function RigidBody_get_Gravity () {
     return $IM0D().Call(this._iRigidBodyImp, null);
   };
 
@@ -8590,28 +8733,46 @@ JSIL.MakeEnum(
     return $IM0E().Call(this._iRigidBodyImp, null);
   };
 
+  function RigidBody_get_LinearDrag () {
+    return +$IM0F().Call(this._iRigidBodyImp, null);
+  };
+
   function RigidBody_get_LinearFactor () {
-    return $IM03().Call(this._iRigidBodyImp, null);
+    return $IM04().Call(this._iRigidBodyImp, null);
   };
 
   function RigidBody_get_LinearVelocity () {
-    return $IM0F().Call(this._iRigidBodyImp, null);
+    return $IM10().Call(this._iRigidBodyImp, null);
   };
 
   function RigidBody_get_Mass () {
-    return +$IM10().Call(this._iRigidBodyImp, null);
+    return +$IM11().Call(this._iRigidBodyImp, null);
   };
 
   function RigidBody_get_Position () {
-    return $IM11().Call(this._iRigidBodyImp, null);
-  };
-
-  function RigidBody_get_WorldTransform () {
     return $IM12().Call(this._iRigidBodyImp, null);
   };
 
+  function RigidBody_get_Restitution () {
+    return +$IM13().Call(this._iRigidBodyImp, null);
+  };
+
+  function RigidBody_get_WorldTransform () {
+    return $IM14().Call(this._iRigidBodyImp, null);
+  };
+
+  function RigidBody_remove_WhileCollidingEvent (value) {
+    var eventHandler = this.WhileCollidingEvent;
+
+    do {
+      var eventHandler2 = eventHandler;
+      var value2 = $T01().Remove(eventHandler2, value);
+      eventHandler = $T02().CompareExchange$b1($T00())(/* ref */ new JSIL.MemberReference(this, "WhileCollidingEvent"), value2, eventHandler2);
+    } while (eventHandler !== eventHandler2);
+  };
+
   function RigidBody_Rotation () {
-    return $IM13().Call(this._iRigidBodyImp, null);
+    return $IM15().Call(this._iRigidBodyImp, null);
   };
 
   function RigidBody_set_AngularFactor (value) {
@@ -8644,11 +8805,6 @@ JSIL.MakeEnum(
     (o._iRigidBodyImp.ApplyTorqueImpulse = value);
   };
 
-  function RigidBody_set_Bounciness (value) {
-    var o = $thisType.$Cast($IM00().Call(this._iRigidBodyImp, null));
-    $IM14().Call(o._iRigidBodyImp, null, value);
-  };
-
   function RigidBody_set_CollisionShape (value) {
     var shapeType = JSIL.GetType(value).toString();
     var o = $thisType.$Cast($IM00().Call(this._iRigidBodyImp, null));
@@ -8656,67 +8812,67 @@ JSIL.MakeEnum(
     if (text !== null) {
       switch (text) {
         case "Fusee.Engine.BoxShape": 
-          var box = $T05().$Cast(value);
-          $IM15().Call(o._iRigidBodyImp, null, box.BoxShapeImp);
+          var box = $T08().$Cast(value);
+          $IM16().Call(o._iRigidBodyImp, null, box.BoxShapeImp);
           return;
 
         case "Fusee.Engine.CapsuleShape": 
-          var capsule = $T0A().$Cast(value);
-          $IM15().Call(o._iRigidBodyImp, null, capsule.CapsuleShapeImp);
+          var capsule = $T0D().$Cast(value);
+          $IM16().Call(o._iRigidBodyImp, null, capsule.CapsuleShapeImp);
           return;
 
         case "Fusee.Engine.ConeShape": 
-          var cone = $T0E().$Cast(value);
-          $IM15().Call(o._iRigidBodyImp, null, cone.ConeShapeImp);
+          var cone = $T11().$Cast(value);
+          $IM16().Call(o._iRigidBodyImp, null, cone.ConeShapeImp);
           return;
 
         case "Fusee.Engine.CylinderShape": 
-          var cylinder = $T0C().$Cast(value);
-          $IM15().Call(o._iRigidBodyImp, null, cylinder.CylinderShapeImp);
+          var cylinder = $T0F().$Cast(value);
+          $IM16().Call(o._iRigidBodyImp, null, cylinder.CylinderShapeImp);
           return;
 
         case "Fusee.Engine.MultiSphereShape": 
-          var multiSphere = $T10().$Cast(value);
-          $IM15().Call(o._iRigidBodyImp, null, multiSphere.MultiSphereShapeImp);
+          var multiSphere = $T13().$Cast(value);
+          $IM16().Call(o._iRigidBodyImp, null, multiSphere.MultiSphereShapeImp);
           return;
 
         case "Fusee.Engine.SphereShape": 
-          var sphere = $T08().$Cast(value);
-          $IM15().Call(o._iRigidBodyImp, null, sphere.SphereShapeImp);
+          var sphere = $T0B().$Cast(value);
+          $IM16().Call(o._iRigidBodyImp, null, sphere.SphereShapeImp);
           return;
 
         case "Fusee.Engine.ConvexHullShape": 
-          var convHull = $T12().$Cast(value);
-          $IM15().Call(o._iRigidBodyImp, null, convHull.ConvexHullShapeImp);
+          var convHull = $T15().$Cast(value);
+          $IM16().Call(o._iRigidBodyImp, null, convHull.ConvexHullShapeImp);
           return;
 
         case "Fusee.Engine.StaticPlaneShape": 
-          var staticPlane = $T16().$Cast(value);
-          $IM15().Call(o._iRigidBodyImp, null, staticPlane.StaticPlaneShapeImp);
+          var staticPlane = $T19().$Cast(value);
+          $IM16().Call(o._iRigidBodyImp, null, staticPlane.StaticPlaneShapeImp);
           return;
 
         case "Fusee.Engine.CompoundShape": 
-          var compShape = $T18().$Cast(value);
-          $IM15().Call(o._iRigidBodyImp, null, compShape.CompoundShapeImp);
+          var compShape = $T1B().$Cast(value);
+          $IM16().Call(o._iRigidBodyImp, null, compShape.CompoundShapeImp);
           return;
 
         case "Fusee.Engine.EmptyShape": 
-          var empty = $T1A().$Cast(value);
-          $IM15().Call(o._iRigidBodyImp, null, empty.EmtyShapeImp);
+          var empty = $T1D().$Cast(value);
+          $IM16().Call(o._iRigidBodyImp, null, empty.EmtyShapeImp);
           return;
 
       }
     }
-    var defaultShape = new ($T1A())();
-    $S00().CallStatic($T1D(), "WriteLine", null, "default");
+    var defaultShape = new ($T1D())();
+    $S00().CallStatic($T1F(), "WriteLine", null, "default");
   };
 
   function RigidBody_set_Friction (value) {
     var o = $thisType.$Cast($IM00().Call(this._iRigidBodyImp, null));
-    $IM16().Call(o._iRigidBodyImp, null, value);
+    $IM17().Call(o._iRigidBodyImp, null, value);
   };
 
-  function RigidBody_set_Gavity (value) {
+  function RigidBody_set_Gravity (value) {
     var o = $thisType.$Cast($IM00().Call(this._iRigidBodyImp, null));
     (this._iRigidBodyImp.Gravity = value);
   };
@@ -8737,7 +8893,7 @@ JSIL.MakeEnum(
   };
 
   function RigidBody_set_Mass (value) {
-    $IM17().Call(this._iRigidBodyImp, null, value);
+    $IM18().Call(this._iRigidBodyImp, null, value);
   };
 
   function RigidBody_set_Position (value) {
@@ -8745,9 +8901,19 @@ JSIL.MakeEnum(
     (o._iRigidBodyImp.Position = value);
   };
 
+  function RigidBody_set_Restitution (value) {
+    var o = $thisType.$Cast($IM00().Call(this._iRigidBodyImp, null));
+    $IM19().Call(o._iRigidBodyImp, null, value);
+  };
+
   function RigidBody_set_WorldTransform (value) {
     var o = $thisType.$Cast($IM00().Call(this._iRigidBodyImp, null));
     (o._iRigidBodyImp.WorldTransform = value);
+  };
+
+  function RigidBody_SetDrag (linearDrag, anglularDrag) {
+    var o = $thisType.$Cast($IM00().Call(this._iRigidBodyImp, null));
+    $IM1A().Call(o._iRigidBodyImp, null, linearDrag, anglularDrag);
   };
 
   JSIL.MakeType({
@@ -8764,6 +8930,11 @@ JSIL.MakeEnum(
       RigidBody__ctor
     );
 
+    $.Method({Static:false, Public:true }, "add_WhileCollidingEvent", 
+      new JSIL.MethodSignature(null, [$asm07.TypeRef("System.EventHandler")], []), 
+      RigidBody_add_WhileCollidingEvent
+    );
+
     $.Method({Static:false, Public:true }, "ApplyForce", 
       new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float3"), $asm04.TypeRef("Fusee.Math.float3")], []), 
       RigidBody_ApplyForce
@@ -8772,6 +8943,11 @@ JSIL.MakeEnum(
     $.Method({Static:false, Public:true }, "ApplyImpulse", 
       new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float3"), $asm04.TypeRef("Fusee.Math.float3")], []), 
       RigidBody_ApplyImpulse
+    );
+
+    $.Method({Static:false, Public:true }, "get_AngularDrag", 
+      new JSIL.MethodSignature($.Single, [], []), 
+      RigidBody_get_AngularDrag
     );
 
     $.Method({Static:false, Public:true }, "get_AngularFactor", 
@@ -8804,11 +8980,6 @@ JSIL.MakeEnum(
       RigidBody_get_ApplyTorqueImpulse
     );
 
-    $.Method({Static:false, Public:true }, "get_Bounciness", 
-      new JSIL.MethodSignature($.Single, [], []), 
-      RigidBody_get_Bounciness
-    );
-
     $.Method({Static:false, Public:true }, "get_CollisionShape", 
       new JSIL.MethodSignature($asm02.TypeRef("Fusee.Engine.CollisionShape"), [], []), 
       RigidBody_get_CollisionShape
@@ -8819,14 +8990,19 @@ JSIL.MakeEnum(
       RigidBody_get_Friction
     );
 
-    $.Method({Static:false, Public:true }, "get_Gavity", 
+    $.Method({Static:false, Public:true }, "get_Gravity", 
       new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float3"), [], []), 
-      RigidBody_get_Gavity
+      RigidBody_get_Gravity
     );
 
     $.Method({Static:false, Public:true }, "get_Inertia", 
       new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float3"), [], []), 
       RigidBody_get_Inertia
+    );
+
+    $.Method({Static:false, Public:true }, "get_LinearDrag", 
+      new JSIL.MethodSignature($.Single, [], []), 
+      RigidBody_get_LinearDrag
     );
 
     $.Method({Static:false, Public:true }, "get_LinearFactor", 
@@ -8849,9 +9025,19 @@ JSIL.MakeEnum(
       RigidBody_get_Position
     );
 
+    $.Method({Static:false, Public:true }, "get_Restitution", 
+      new JSIL.MethodSignature($.Single, [], []), 
+      RigidBody_get_Restitution
+    );
+
     $.Method({Static:false, Public:true }, "get_WorldTransform", 
       new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float4x4"), [], []), 
       RigidBody_get_WorldTransform
+    );
+
+    $.Method({Static:false, Public:true }, "remove_WhileCollidingEvent", 
+      new JSIL.MethodSignature(null, [$asm07.TypeRef("System.EventHandler")], []), 
+      RigidBody_remove_WhileCollidingEvent
     );
 
     $.Method({Static:false, Public:true }, "Rotation", 
@@ -8889,11 +9075,6 @@ JSIL.MakeEnum(
       RigidBody_set_ApplyTorqueImpulse
     );
 
-    $.Method({Static:false, Public:true }, "set_Bounciness", 
-      new JSIL.MethodSignature(null, [$.Single], []), 
-      RigidBody_set_Bounciness
-    );
-
     $.Method({Static:false, Public:true }, "set_CollisionShape", 
       new JSIL.MethodSignature(null, [$asm02.TypeRef("Fusee.Engine.CollisionShape")], []), 
       RigidBody_set_CollisionShape
@@ -8904,9 +9085,9 @@ JSIL.MakeEnum(
       RigidBody_set_Friction
     );
 
-    $.Method({Static:false, Public:true }, "set_Gavity", 
+    $.Method({Static:false, Public:true }, "set_Gravity", 
       new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float3")], []), 
-      RigidBody_set_Gavity
+      RigidBody_set_Gravity
     );
 
     $.Method({Static:false, Public:true }, "set_Inertia", 
@@ -8934,13 +9115,24 @@ JSIL.MakeEnum(
       RigidBody_set_Position
     );
 
+    $.Method({Static:false, Public:true }, "set_Restitution", 
+      new JSIL.MethodSignature(null, [$.Single], []), 
+      RigidBody_set_Restitution
+    );
+
     $.Method({Static:false, Public:true }, "set_WorldTransform", 
       new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float4x4")], []), 
       RigidBody_set_WorldTransform
     );
 
+    $.Method({Static:false, Public:true }, "SetDrag", 
+      new JSIL.MethodSignature(null, [$.Single, $.Single], []), 
+      RigidBody_SetDrag
+    );
+
+    $.Field({Static:false, Public:false}, "WhileCollidingEvent", $asm07.TypeRef("System.EventHandler")); 
     $.Field({Static:false, Public:false}, "_iRigidBodyImp", $asm01.TypeRef("Fusee.Engine.IRigidBodyImp")); 
-    $.Property({Static:false, Public:true }, "Gavity", $asm04.TypeRef("Fusee.Math.float3"));
+    $.Property({Static:false, Public:true }, "Gravity", $asm04.TypeRef("Fusee.Math.float3"));
 
     $.Property({Static:false, Public:true }, "Mass", $.Single);
 
@@ -8966,9 +9158,13 @@ JSIL.MakeEnum(
 
     $.Property({Static:false, Public:true }, "AngularFactor", $asm04.TypeRef("Fusee.Math.float3"));
 
-    $.Property({Static:false, Public:true }, "Bounciness", $.Single);
+    $.Property({Static:false, Public:true }, "Restitution", $.Single);
 
     $.Property({Static:false, Public:true }, "Friction", $.Single);
+
+    $.Property({Static:false, Public:true }, "LinearDrag", $.Single);
+
+    $.Property({Static:false, Public:true }, "AngularDrag", $.Single);
 
     $.Property({Static:false, Public:true }, "CollisionShape", $asm02.TypeRef("Fusee.Engine.CollisionShape"));
 
@@ -9082,9 +9278,6 @@ JSIL.MakeEnum(
   var $IM04 = function () {
     return ($IM04 = JSIL.Memoize($asm07.System.IDisposable.Dispose)) ();
   };
-  var $IM05 = function () {
-    return ($IM05 = JSIL.Memoize($asm01.Fusee.Engine.IRenderContextImp.GetShaderParam)) ();
-  };
 
   function ShaderProgram__ctor (renderContextImp, shaderProgramImp) {
     this._spi = shaderProgramImp;
@@ -9109,11 +9302,7 @@ JSIL.MakeEnum(
     if (this._paramsByName.TryGetValue(paramName, /* ref */ ret)) {
       var result = ret.get();
     } else {
-      ret.set($IM05().Call(this._rci, null, this._spi, paramName));
-      if (ret.get() !== null) {
-        this._paramsByName.set_Item(paramName, ret.get());
-      }
-      result = ret.get();
+      result = null;
     }
     return result;
   };
@@ -10273,44 +10462,59 @@ JSIL.MakeEnum(
     return ($T02 = JSIL.Memoize($asm01.Fusee.Engine.ISphereShapeImp)) ();
   };
   var $T03 = function () {
-    return ($T03 = JSIL.Memoize($asm07.System.Single)) ();
+    return ($T03 = JSIL.Memoize($asm04.Fusee.Math.float3)) ();
+  };
+  var $T04 = function () {
+    return ($T04 = JSIL.Memoize($asm07.System.Single)) ();
   };
   var $IM00 = function () {
-    return ($IM00 = JSIL.Memoize($asm01.Fusee.Engine.ICollisionShapeImp.get_Margin)) ();
+    return ($IM00 = JSIL.Memoize($asm01.Fusee.Engine.ICollisionShapeImp.get_LocalScaling)) ();
   };
   var $IM01 = function () {
-    return ($IM01 = JSIL.Memoize($asm01.Fusee.Engine.ISphereShapeImp.get_Radius)) ();
+    return ($IM01 = JSIL.Memoize($asm01.Fusee.Engine.ICollisionShapeImp.get_Margin)) ();
   };
   var $IM02 = function () {
-    return ($IM02 = JSIL.Memoize($asm01.Fusee.Engine.ICollisionShapeImp.get_UserObject)) ();
+    return ($IM02 = JSIL.Memoize($asm01.Fusee.Engine.ISphereShapeImp.get_Radius)) ();
   };
   var $IM03 = function () {
-    return ($IM03 = JSIL.Memoize($asm01.Fusee.Engine.ICollisionShapeImp.set_Margin)) ();
+    return ($IM03 = JSIL.Memoize($asm01.Fusee.Engine.ICollisionShapeImp.get_UserObject)) ();
   };
   var $IM04 = function () {
-    return ($IM04 = JSIL.Memoize($asm01.Fusee.Engine.ISphereShapeImp.set_Radius)) ();
+    return ($IM04 = JSIL.Memoize($asm01.Fusee.Engine.ICollisionShapeImp.set_Margin)) ();
+  };
+  var $IM05 = function () {
+    return ($IM05 = JSIL.Memoize($asm01.Fusee.Engine.ISphereShapeImp.set_Radius)) ();
   };
 
   function SphereShape__ctor () {
     $T00().prototype._ctor.call(this);
   };
 
-  function SphereShape_get_Margin () {
-    return +$IM00().Call(this.SphereShapeImp, null);
+  function SphereShape_get_LocalScaling () {
+    return $IM00().Call(this.SphereShapeImp, null);
   };
 
-  function SphereShape_get_Radius () {
+  function SphereShape_get_Margin () {
     return +$IM01().Call(this.SphereShapeImp, null);
   };
 
+  function SphereShape_get_Radius () {
+    return +$IM02().Call(this.SphereShapeImp, null);
+  };
+
+  function SphereShape_set_LocalScaling (value) {
+    var o = $thisType.$Cast($IM03().Call(this.SphereShapeImp, null));
+    (o.SphereShapeImp.LocalScaling = value);
+  };
+
   function SphereShape_set_Margin (value) {
-    var o = $thisType.$Cast($IM02().Call(this.SphereShapeImp, null));
-    $IM03().Call(o.SphereShapeImp, null, value);
+    var o = $thisType.$Cast($IM03().Call(this.SphereShapeImp, null));
+    $IM04().Call(o.SphereShapeImp, null, value);
   };
 
   function SphereShape_set_Radius (value) {
-    var o = $thisType.$Cast($IM02().Call(this.SphereShapeImp, null));
-    $IM04().Call(o.SphereShapeImp, null, value);
+    var o = $thisType.$Cast($IM03().Call(this.SphereShapeImp, null));
+    $IM05().Call(o.SphereShapeImp, null, value);
   };
 
   JSIL.MakeType({
@@ -10327,7 +10531,12 @@ JSIL.MakeEnum(
       SphereShape__ctor
     );
 
-    $.Method({Static:false, Public:true , Virtual:true }, "get_Margin", 
+    $.Method({Static:false, Public:true }, "get_LocalScaling", 
+      new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float3"), [], []), 
+      SphereShape_get_LocalScaling
+    );
+
+    $.Method({Static:false, Public:true }, "get_Margin", 
       new JSIL.MethodSignature($.Single, [], []), 
       SphereShape_get_Margin
     );
@@ -10337,7 +10546,12 @@ JSIL.MakeEnum(
       SphereShape_get_Radius
     );
 
-    $.Method({Static:false, Public:true , Virtual:true }, "set_Margin", 
+    $.Method({Static:false, Public:true }, "set_LocalScaling", 
+      new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float3")], []), 
+      SphereShape_set_LocalScaling
+    );
+
+    $.Method({Static:false, Public:true }, "set_Margin", 
       new JSIL.MethodSignature(null, [$.Single], []), 
       SphereShape_set_Margin
     );
@@ -10348,7 +10562,9 @@ JSIL.MakeEnum(
     );
 
     $.Field({Static:false, Public:false}, "SphereShapeImp", $asm01.TypeRef("Fusee.Engine.ISphereShapeImp")); 
-    $.Property({Static:false, Public:true , Virtual:true }, "Margin", $.Single);
+    $.Property({Static:false, Public:true }, "Margin", $.Single);
+
+    $.Property({Static:false, Public:true }, "LocalScaling", $asm04.TypeRef("Fusee.Math.float3"));
 
     $.Property({Static:false, Public:true }, "Radius", $.Single);
 
@@ -10684,7 +10900,7 @@ JSIL.MakeEnum(
     $.ExternalMethod({Static:false, Public:false}, "FirstMessage", 
       new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.INetworkMsg"), [], [])
     )
-      .Attribute($asm10.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
 
     $.Method({Static:false, Public:true }, "get_Config", 
       new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.NetConfigValues"), [], []), 
@@ -13066,7 +13282,7 @@ JSIL.MakeEnum(
     $.ExternalMethod({Static:false, Public:true }, "LoadSystemFont", 
       new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IFont"), [$.String, $.UInt32], [])
     )
-      .Attribute($asm10.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSExternal"));
 
     $.Method({Static:false, Public:true }, "Render", 
       new JSIL.MethodSignature(null, [$asm02.TypeRef("Fusee.Engine.Mesh")], []), 
@@ -13193,37 +13409,37 @@ JSIL.MakeEnum(
       new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $.Single], []), 
       RenderContext_SetShaderParam1f
     )
-      .Attribute($asm10.TypeRef("JSIL.Meta.JSChangeName"), function () { return ["SetShaderParam1f"]; });
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSChangeName"), function () { return ["SetShaderParam1f"]; });
 
     $.Method({Static:false, Public:true }, "SetShaderParam2f", 
       new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $asm04.TypeRef("Fusee.Math.float2")], []), 
       RenderContext_SetShaderParam2f
     )
-      .Attribute($asm10.TypeRef("JSIL.Meta.JSChangeName"), function () { return ["SetShaderParam2f"]; });
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSChangeName"), function () { return ["SetShaderParam2f"]; });
 
     $.Method({Static:false, Public:true }, "SetShaderParam3f", 
       new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $asm04.TypeRef("Fusee.Math.float3")], []), 
       RenderContext_SetShaderParam3f
     )
-      .Attribute($asm10.TypeRef("JSIL.Meta.JSChangeName"), function () { return ["SetShaderParam3f"]; });
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSChangeName"), function () { return ["SetShaderParam3f"]; });
 
     $.Method({Static:false, Public:true }, "SetShaderParam4f", 
       new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $asm04.TypeRef("Fusee.Math.float4")], []), 
       RenderContext_SetShaderParam4f
     )
-      .Attribute($asm10.TypeRef("JSIL.Meta.JSChangeName"), function () { return ["SetShaderParam4f"]; });
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSChangeName"), function () { return ["SetShaderParam4f"]; });
 
     $.Method({Static:false, Public:true }, "SetShaderParamMtx4f", 
       new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $asm04.TypeRef("Fusee.Math.float4x4")], []), 
       RenderContext_SetShaderParamMtx4f
     )
-      .Attribute($asm10.TypeRef("JSIL.Meta.JSChangeName"), function () { return ["SetShaderParamMtx4f"]; });
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSChangeName"), function () { return ["SetShaderParamMtx4f"]; });
 
     $.Method({Static:false, Public:true }, "SetShaderParamI", 
       new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $.Int32], []), 
       RenderContext_SetShaderParamI
     )
-      .Attribute($asm10.TypeRef("JSIL.Meta.JSChangeName"), function () { return ["SetShaderParamI"]; });
+      .Attribute($asm0F.TypeRef("JSIL.Meta.JSChangeName"), function () { return ["SetShaderParamI"]; });
 
     $.Method({Static:false, Public:true }, "SetShaderParamTexture", 
       new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $asm01.TypeRef("Fusee.Engine.ITexture")], []), 

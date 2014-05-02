@@ -401,6 +401,9 @@ SWIGINTERN BaseBitmap *BaseBitmap_AutoBitmap__SWIG_1(Int32 id){
 		BaseBitmap *bmp = InitResourceBitmap(id);
 		return bmp;
 	}
+SWIGINTERN Int64 C4DAtom_RefUID(C4DAtom *self){
+		return (Int64)self;
+	}
 SWIGINTERN Vector PointObject_GetPointAt(PointObject *self,Int32 inx){
 		return self->GetPointR()[inx];
 	}
@@ -21599,7 +21602,7 @@ SWIGEXPORT int SWIGSTDCALL CSharp_BaseFile_TryReadBytes(void * jarg1, void * jar
 }
 
 
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_Seek__SWIG_0(void * jarg1, long jarg2, int jarg3) {
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_Seek__SWIG_0(void * jarg1, long long jarg2, int jarg3) {
   unsigned int jresult ;
   BaseFile *arg1 = (BaseFile *) 0 ;
   Int64 arg2 ;
@@ -21615,7 +21618,7 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_Seek__SWIG_0(void * jarg1, l
 }
 
 
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_Seek__SWIG_1(void * jarg1, long jarg2) {
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_Seek__SWIG_1(void * jarg1, long long jarg2) {
   unsigned int jresult ;
   BaseFile *arg1 = (BaseFile *) 0 ;
   Int64 arg2 ;
@@ -21629,8 +21632,8 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_Seek__SWIG_1(void * jarg1, l
 }
 
 
-SWIGEXPORT long SWIGSTDCALL CSharp_BaseFile_GetPosition(void * jarg1) {
-  long jresult ;
+SWIGEXPORT long long SWIGSTDCALL CSharp_BaseFile_GetPosition(void * jarg1) {
+  long long jresult ;
   BaseFile *arg1 = (BaseFile *) 0 ;
   Int64 result;
   
@@ -21641,8 +21644,8 @@ SWIGEXPORT long SWIGSTDCALL CSharp_BaseFile_GetPosition(void * jarg1) {
 }
 
 
-SWIGEXPORT long SWIGSTDCALL CSharp_BaseFile_GetLength(void * jarg1) {
-  long jresult ;
+SWIGEXPORT long long SWIGSTDCALL CSharp_BaseFile_GetLength(void * jarg1) {
+  long long jresult ;
   BaseFile *arg1 = (BaseFile *) 0 ;
   Int64 result;
   
@@ -22037,7 +22040,7 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_WriteFloat64(void * jarg1, d
 }
 
 
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_WriteInt64(void * jarg1, long jarg2) {
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_WriteInt64(void * jarg1, long long jarg2) {
   unsigned int jresult ;
   BaseFile *arg1 = (BaseFile *) 0 ;
   Int64 arg2 ;
@@ -22051,7 +22054,7 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_WriteInt64(void * jarg1, lon
 }
 
 
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_WriteUInt64(void * jarg1, unsigned long jarg2) {
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_WriteUInt64(void * jarg1, unsigned long long jarg2) {
   unsigned int jresult ;
   BaseFile *arg1 = (BaseFile *) 0 ;
   UInt64 arg2 ;
@@ -22706,8 +22709,8 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BrowseFiles_GetNext(void * jarg1) {
 }
 
 
-SWIGEXPORT long SWIGSTDCALL CSharp_BrowseFiles_GetSize(void * jarg1) {
-  long jresult ;
+SWIGEXPORT long long SWIGSTDCALL CSharp_BrowseFiles_GetSize(void * jarg1) {
+  long long jresult ;
   BrowseFiles *arg1 = (BrowseFiles *) 0 ;
   Int64 result;
   
@@ -23074,7 +23077,7 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_WriteUInt32(void * jarg1, u
 }
 
 
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_WriteInt64(void * jarg1, long jarg2) {
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_WriteInt64(void * jarg1, long long jarg2) {
   unsigned int jresult ;
   HyperFile *arg1 = (HyperFile *) 0 ;
   Int64 arg2 ;
@@ -23088,7 +23091,7 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_WriteInt64(void * jarg1, lo
 }
 
 
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_WriteUInt64(void * jarg1, unsigned long jarg2) {
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_WriteUInt64(void * jarg1, unsigned long long jarg2) {
   unsigned int jresult ;
   HyperFile *arg1 = (HyperFile *) 0 ;
   UInt64 arg2 ;
@@ -27738,7 +27741,7 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_ColorProfile_OpenProfileFromFile(void
 }
 
 
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_ColorProfile_OpenProfileFromMemory(void * jarg1, void * jarg2, long jarg3) {
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_ColorProfile_OpenProfileFromMemory(void * jarg1, void * jarg2, long long jarg3) {
   unsigned int jresult ;
   ColorProfile *arg1 = (ColorProfile *) 0 ;
   void *arg2 = (void *) 0 ;
@@ -30252,7 +30255,7 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_new_GeData__SWIG_5(void * jarg1, int jarg2)
 }
 
 
-SWIGEXPORT void * SWIGSTDCALL CSharp_new_GeData__SWIG_6(long jarg1, int jarg2) {
+SWIGEXPORT void * SWIGSTDCALL CSharp_new_GeData__SWIG_6(long long jarg1, int jarg2) {
   void * jresult ;
   Int64 arg1 ;
   LLONGVALUETYPE arg2 ;
@@ -30507,8 +30510,8 @@ SWIGEXPORT int SWIGSTDCALL CSharp_GeData_GetInt32(void * jarg1) {
 }
 
 
-SWIGEXPORT long SWIGSTDCALL CSharp_GeData_GetInt64(void * jarg1) {
-  long jresult ;
+SWIGEXPORT long long SWIGSTDCALL CSharp_GeData_GetInt64(void * jarg1) {
+  long long jresult ;
   GeData *arg1 = (GeData *) 0 ;
   Int64 result;
   
@@ -37105,6 +37108,18 @@ SWIGEXPORT void SWIGSTDCALL CSharp_C4DAtom_SetHDirty(void * jarg1, int jarg2) {
 }
 
 
+SWIGEXPORT long long SWIGSTDCALL CSharp_C4DAtom_RefUID(void * jarg1) {
+  long long jresult ;
+  C4DAtom *arg1 = (C4DAtom *) 0 ;
+  Int64 result;
+  
+  arg1 = (C4DAtom *)jarg1; 
+  result = C4DAtom_RefUID(arg1);
+  jresult = result; 
+  return jresult;
+}
+
+
 SWIGEXPORT void * SWIGSTDCALL CSharp_AtomArray_Alloc() {
   void * jresult ;
   AtomArray *result = 0 ;
@@ -40772,14 +40787,14 @@ SWIGEXPORT int SWIGSTDCALL CSharp_BaseObject_GetRotationOrder(void * jarg1) {
 }
 
 
-SWIGEXPORT unsigned long SWIGSTDCALL CSharp_BaseObject_GetGUID(void * jarg1) {
-  unsigned long jresult ;
+SWIGEXPORT unsigned long long SWIGSTDCALL CSharp_BaseObject_GetGUID(void * jarg1) {
+  unsigned long long jresult ;
   BaseObject *arg1 = (BaseObject *) 0 ;
   UInt64 result;
   
   arg1 = (BaseObject *)jarg1; 
   result = (arg1)->GetGUID();
-  jresult = (unsigned long)result; 
+  jresult = result; 
   return jresult;
 }
 
@@ -44148,8 +44163,8 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseContainer_GetUInt32__SWIG_1(void 
 }
 
 
-SWIGEXPORT long SWIGSTDCALL CSharp_BaseContainer_GetInt64__SWIG_0(void * jarg1, int jarg2, long jarg3) {
-  long jresult ;
+SWIGEXPORT long long SWIGSTDCALL CSharp_BaseContainer_GetInt64__SWIG_0(void * jarg1, int jarg2, long long jarg3) {
+  long long jresult ;
   BaseContainer *arg1 = (BaseContainer *) 0 ;
   Int32 arg2 ;
   Int64 arg3 ;
@@ -44164,8 +44179,8 @@ SWIGEXPORT long SWIGSTDCALL CSharp_BaseContainer_GetInt64__SWIG_0(void * jarg1, 
 }
 
 
-SWIGEXPORT long SWIGSTDCALL CSharp_BaseContainer_GetInt64__SWIG_1(void * jarg1, int jarg2) {
-  long jresult ;
+SWIGEXPORT long long SWIGSTDCALL CSharp_BaseContainer_GetInt64__SWIG_1(void * jarg1, int jarg2) {
+  long long jresult ;
   BaseContainer *arg1 = (BaseContainer *) 0 ;
   Int32 arg2 ;
   Int64 result;
@@ -44178,8 +44193,8 @@ SWIGEXPORT long SWIGSTDCALL CSharp_BaseContainer_GetInt64__SWIG_1(void * jarg1, 
 }
 
 
-SWIGEXPORT unsigned long SWIGSTDCALL CSharp_BaseContainer_GetUInt64__SWIG_0(void * jarg1, int jarg2, unsigned long jarg3) {
-  unsigned long jresult ;
+SWIGEXPORT unsigned long long SWIGSTDCALL CSharp_BaseContainer_GetUInt64__SWIG_0(void * jarg1, int jarg2, unsigned long long jarg3) {
+  unsigned long long jresult ;
   BaseContainer *arg1 = (BaseContainer *) 0 ;
   Int32 arg2 ;
   UInt64 arg3 ;
@@ -44189,13 +44204,13 @@ SWIGEXPORT unsigned long SWIGSTDCALL CSharp_BaseContainer_GetUInt64__SWIG_0(void
   arg2 = (Int32)jarg2; 
   arg3 = (UInt64)jarg3; 
   result = ((BaseContainer const *)arg1)->GetUInt64(arg2,arg3);
-  jresult = (unsigned long)result; 
+  jresult = result; 
   return jresult;
 }
 
 
-SWIGEXPORT unsigned long SWIGSTDCALL CSharp_BaseContainer_GetUInt64__SWIG_1(void * jarg1, int jarg2) {
-  unsigned long jresult ;
+SWIGEXPORT unsigned long long SWIGSTDCALL CSharp_BaseContainer_GetUInt64__SWIG_1(void * jarg1, int jarg2) {
+  unsigned long long jresult ;
   BaseContainer *arg1 = (BaseContainer *) 0 ;
   Int32 arg2 ;
   UInt64 result;
@@ -44203,7 +44218,7 @@ SWIGEXPORT unsigned long SWIGSTDCALL CSharp_BaseContainer_GetUInt64__SWIG_1(void
   arg1 = (BaseContainer *)jarg1; 
   arg2 = (Int32)jarg2; 
   result = ((BaseContainer const *)arg1)->GetUInt64(arg2);
-  jresult = (unsigned long)result; 
+  jresult = result; 
   return jresult;
 }
 
@@ -44739,7 +44754,7 @@ SWIGEXPORT void SWIGSTDCALL CSharp_BaseContainer_SetUInt32(void * jarg1, int jar
 }
 
 
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseContainer_SetInt64(void * jarg1, int jarg2, long jarg3) {
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseContainer_SetInt64(void * jarg1, int jarg2, long long jarg3) {
   BaseContainer *arg1 = (BaseContainer *) 0 ;
   Int32 arg2 ;
   Int64 arg3 ;
@@ -44751,7 +44766,7 @@ SWIGEXPORT void SWIGSTDCALL CSharp_BaseContainer_SetInt64(void * jarg1, int jarg
 }
 
 
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseContainer_SetUInt64(void * jarg1, int jarg2, unsigned long jarg3) {
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseContainer_SetUInt64(void * jarg1, int jarg2, unsigned long long jarg3) {
   BaseContainer *arg1 = (BaseContainer *) 0 ;
   Int32 arg2 ;
   UInt64 arg3 ;
@@ -59454,14 +59469,14 @@ SWIGEXPORT int SWIGSTDCALL CSharp_GetDocumentXRefState() {
 }
 
 
-SWIGEXPORT unsigned long SWIGSTDCALL CSharp_GetXRefID(void * jarg1) {
-  unsigned long jresult ;
+SWIGEXPORT unsigned long long SWIGSTDCALL CSharp_GetXRefID(void * jarg1) {
+  unsigned long long jresult ;
   BaseList2D *arg1 = (BaseList2D *) 0 ;
   UInt64 result;
   
   arg1 = (BaseList2D *)jarg1; 
   result = GetXRefID(arg1);
-  jresult = (unsigned long)result; 
+  jresult = result; 
   return jresult;
 }
 

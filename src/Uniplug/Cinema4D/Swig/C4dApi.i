@@ -239,8 +239,8 @@ class String;
 %apply unsigned short { maxon::UInt16 }
 %apply int { maxon::Int32 }
 %apply unsigned int { maxon::UInt32 }
-%apply long { maxon::Int64 }
-%apply unsigned long { maxon::UInt64 }
+%apply long long { maxon::Int64 }
+%apply unsigned long long { maxon::UInt64 }
 %apply int { maxon::Int }
 %apply unsigned int { maxon::UInt }
 %apply float { maxon::Float32 }
@@ -253,8 +253,8 @@ class String;
 %apply unsigned short { UInt16 }
 %apply int { Int32 }
 %apply unsigned int { UInt32 }
-%apply long { Int64 }
-%apply unsigned long { UInt64 }
+%apply long long { Int64 }
+%apply unsigned long long { UInt64 }
 %apply int { Int }
 %apply unsigned int { UInt }
 %apply float { Float32 }
@@ -802,6 +802,14 @@ BaseMaterial *
 //////////////////////////////////////////////////////////////////
 // "c4d_baselist.h"
 %include "c4d_baselist.h";
+%extend C4DAtom
+{
+	virtual Int64 RefUID()
+	{
+		return (Int64)self;
+	}
+}
+
 
 //////////////////////////////////////////////////////////////////
 // c4d_baseobject.h
@@ -928,6 +936,7 @@ BaseMaterial *
 ///////////////////////////////////////////////
 // "c4d_basematerial.h"
 %include "c4d_basematerial.h";
+
 
 ///////////////////////////////////////////////
 // "c4d_basechannel.h"

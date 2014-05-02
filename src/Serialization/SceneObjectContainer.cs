@@ -13,7 +13,7 @@ namespace Fusee.Serialization
         [ProtoMember(2)]
         public TransformContainer Transform;
 
-        [ProtoMember(3)] 
+        [ProtoMember(3, AsReference = true)] 
         public MaterialContainer Material;
 
         [ProtoMember(4, AsReference = true)]

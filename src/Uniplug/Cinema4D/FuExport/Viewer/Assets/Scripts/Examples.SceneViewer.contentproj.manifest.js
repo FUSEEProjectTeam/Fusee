@@ -16,5 +16,5 @@ contentManifest["Examples.SceneViewer.contentproj"] = [
     ["Script",	"XirkitScript.js",	{  "sizeBytes": 43845 }],
     ["Image",	"Assets/FuseeLogo150.png",	{  "sizeBytes": 19685 }],
     ["Font",	"Assets/Lato-Black.ttf",	{  "sizeBytes": 114588 }],
-    ["File",	"Assets/Model.fus",	{  "sizeBytes": 2416 }],
+    ["File",	"Assets/Model.fus",	{  "sizeBytes": 2419 }],
     ];

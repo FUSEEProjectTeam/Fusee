@@ -48,11 +48,11 @@ namespace FuExport
         private BaseDocument _polyDoc;
         private List<string> _textureFiles = new List<string>();
         private string _sceneRootDir;
-        private Dictionary<BaseMaterial, MaterialContainer> _materialCache;
+        private Dictionary<long, MaterialContainer> _materialCache;
 
         public SceneContainer FuseefyScene(BaseDocument doc, string sceneRootDir, out List<string> textureFiles)
         {
-            _materialCache = new Dictionary<BaseMaterial, MaterialContainer>();
+            _materialCache = new Dictionary<long, MaterialContainer>();
             _sceneRootDir = sceneRootDir;
             _polyDoc = doc.Polygonize();
 
@@ -330,13 +330,13 @@ namespace FuExport
             if (material == null)
                 return null;
 
+            long materialUid = material.RefUID();
             MaterialContainer mcRet;
+            if (_materialCache.TryGetValue(materialUid, out mcRet))
+                return mcRet;
+
             using (BaseContainer materialData = material.GetData())
             {
-
-                if (_materialCache.TryGetValue(material, out mcRet))
-                    return mcRet;
-
                 mcRet = new MaterialContainer();
                 // Just for debugging purposes
                 for (int i = 0, id = 0; -1 != (id = materialData.GetIndexId(i)); i++)
@@ -443,7 +443,7 @@ namespace FuExport
  
             }
             */
-            _materialCache[material] = mcRet;
+            _materialCache[materialUid] = mcRet;
             return mcRet;
         }
 

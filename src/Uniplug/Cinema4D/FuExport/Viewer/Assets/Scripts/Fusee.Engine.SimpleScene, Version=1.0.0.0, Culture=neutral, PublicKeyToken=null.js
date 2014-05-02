@@ -323,10 +323,6 @@ JSIL.DeclareNamespace("Fusee.Engine.SimpleScene");
   function SceneRenderer_InitShaders (rc) {
     if (rc !== this._rc) {
       this._rc = rc;
-      this._colorShader = null;
-      this._colorParam = null;
-      this._textureShader = null;
-      this._textureParam = null;
       this._meshMap = $S04().Construct();
       this._matMap = $S05().Construct();
       this._curMat = null;
@@ -566,10 +562,6 @@ JSIL.DeclareNamespace("Fusee.Engine.SimpleScene");
     $.Field({Static:false, Public:false}, "_matMap", $asm07.TypeRef("System.Collections.Generic.Dictionary`2", [$asm05.TypeRef("Fusee.Serialization.MaterialContainer"), $asm02.TypeRef("Fusee.Engine.ShaderEffect")])); 
     $.Field({Static:false, Public:false}, "_sc", $asm05.TypeRef("Fusee.Serialization.SceneContainer")); 
     $.Field({Static:false, Public:false}, "_rc", $asm02.TypeRef("Fusee.Engine.RenderContext")); 
-    $.Field({Static:false, Public:false}, "_colorShader", $asm02.TypeRef("Fusee.Engine.ShaderProgram")); 
-    $.Field({Static:false, Public:false}, "_colorParam", $asm01.TypeRef("Fusee.Engine.IShaderParam")); 
-    $.Field({Static:false, Public:false}, "_textureShader", $asm02.TypeRef("Fusee.Engine.ShaderProgram")); 
-    $.Field({Static:false, Public:false}, "_textureParam", $asm01.TypeRef("Fusee.Engine.IShaderParam")); 
     $.Field({Static:false, Public:false}, "_AABBXForm", $asm04.TypeRef("Fusee.Math.float4x4")); 
     $.Field({Static:false, Public:false}, "_lights", $asm07.TypeRef("System.Collections.Generic.List`1", [$asm03.TypeRef("Fusee.Engine.SimpleScene.LightInfo")])); 
     $.Field({Static:false, Public:false}, "_stateSet", $asm02.TypeRef("Fusee.Engine.RenderStateSet")); 

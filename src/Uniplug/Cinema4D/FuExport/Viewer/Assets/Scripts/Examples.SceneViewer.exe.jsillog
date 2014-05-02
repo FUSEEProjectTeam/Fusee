@@ -1,18 +1,18 @@
 // JSILc v0.7.970
-// Build took 0027,19 second(s).
+// Build took 0020,05 second(s).
 // The following configuration was used when translating 'C:\Users\mch\Documents\_DEV\Fusee\Bin\Debug\Examples\SceneViewer\Examples.SceneViewer.exe':
 {"ContributingPaths":["C:\\Users\\mch\\Documents\\_DEV\\Fusee\\ExternalBinaries\\JSIL\\Compiler\\defaults.jsilconfig"],"Path":"C:\\Users\\mch\\Documents\\_DEV\\Fusee\\ExternalBinaries\\JSIL\\Compiler","SolutionBuilder":{"Configuration":null,"Platform":null,"Target":null,"LogVerbosity":null,"ExtraOutputs":[]},"AutoLoadConfigFiles":null,"UseLocalProxies":null,"ReuseTypeInfoAcrossAssemblies":null,"OutputDirectory":"C:\\Users\\mch\\Documents\\_DEV\\Fusee\\Bin\\Debug\\Examples\\SceneViewer\\Web\\Assets\\Scripts","FileOutputDirectory":null,"Profile":"Default","ProfileSettings":{"OverwriteExistingContent":true,"ContentOutputDirectory":"%outputdirectory%/Content"},"CustomVariables":{},"ApplyDefaults":null,"IncludeDependencies":null,"UseSymbols":null,"UseThreads":null,"UseDefaultProxies":null,"GenerateSkeletonsForStubbedAssemblies":null,"GenerateContentManifest":null,"RunBugChecks":null,"FilenameEscapeRegex":null,"AssemblyCollectionName":null,"FrameworkVersion":null,"Assemblies":{"Ignored":["Microsoft\\.VisualC,","Accessibility,","SMDiagnostics,","System\\.EnterpriseServices,","System\\.Security,","System\\.Runtime\\.Serialization,","System\\.Runtime\\.Serialization\\.Formatters\\.Soap,","System\\.Runtime\\.DurableInstancing,","System\\.Data\\.SqlXml,","JSIL.Meta,","Mono\\.Posix\\.*,","System\\.Web\\.*,","System\\.ServiceModel\\.*"],"Stubbed":["mscorlib,","^System,","^System\\.(.+),","^Microsoft\\.(.+),","Mono.*,","FSharp.Core"],"Proxies":[],"Redirects":{}},"CodeGenerator":{"EliminateStructCopies":null,"SimplifyOperators":null,"SimplifyLoops":null,"EliminateTemporaries":null,"EliminateRedundantControlFlow":null,"CacheMethodSignatures":null,"CacheGenericMethodSignatures":null,"CacheTypeExpressions":null,"EliminatePointlessFinallyBlocks":null,"PreferAccessorMethods":null,"HintIntegerArithmetic":null,"EnableThreadedTransforms":null,"FreezeImmutableObjects":null,"EnableUnsafeCode":null,"HoistAllocations":null,"HintDoubleArithmetic":null,"AutoGenerateEventAccessorsInSkeletons":null,"AggressivelyUseElementProxies":null}}
 // The configuration was generated from the following configuration files:
 C:\Users\mch\Documents\_DEV\Fusee\ExternalBinaries\JSIL\Compiler\defaults.jsilconfig
 // The following outputs were produced:
-Fusee.SerializationContainer, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null.js
 Examples.SceneViewer, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null.js
+Fusee.SerializationContainer, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null.js
 Fusee.Engine.SimpleScene, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null.js
 Fusee.SerializationSerializer, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null.js
 System.Numerics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089.js
 Fusee.Engine.Common, Version=0.5.0.0, Culture=neutral, PublicKeyToken=null.js
-System.Configuration, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a.js
 protobuf-net, Version=2.0.0.668, Culture=neutral, PublicKeyToken=257b51d87d2e4d67.js
+System.Configuration, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a.js
 Fusee.Engine.Core, Version=0.5.0.0, Culture=neutral, PublicKeyToken=null.js
 Fusee.Math.Core, Version=0.5.0.0, Culture=neutral, PublicKeyToken=null.js
 System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089.js
