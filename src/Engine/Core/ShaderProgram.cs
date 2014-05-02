@@ -69,10 +69,13 @@ namespace Fusee.Engine
             IShaderParam ret;
             if (_paramsByName.TryGetValue(paramName, out ret))
                 return ret;
+            else
+                return null;
+            /*
             ret = _rci.GetShaderParam(_spi, paramName);
             if (ret != null)
                 _paramsByName[paramName] = ret;
-            return ret;
+            return ret;*/
         }
 
         #endregion
