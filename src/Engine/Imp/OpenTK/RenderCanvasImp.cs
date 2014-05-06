@@ -216,6 +216,16 @@ namespace Fusee.Engine
         /// <param name="link">The URL to open</param>
         public abstract void OpenLink(string link);
 
+        public void VideoWall(int monitorsHor, int monitorsVert, bool activate = true, bool borderHidden = true)
+        {
+            // TODO: implement something useful here.
+        }
+
+        public void SetWindowSize(int width, int height, bool borderHidden = false, int posx = 0, int posy = 0)
+        {
+            // TODO: implement something useful here.
+        }
+
         /// <summary>
         /// Runs this application instance.
         /// </summary>
@@ -272,6 +282,12 @@ namespace Fusee.Engine
     public class RenderCanvasImp : RenderCanvasImpBase, IRenderCanvasImp
     {
         #region Fields
+
+        //Some tryptichon related variables.
+        private bool _videoWallMode = false;
+        private int _videoWallMonitorsHor;
+        private int _videoWallMonitorsVert;
+        private bool _windowBorderHidden = false;
 
         /// <summary>
         /// Implementation Tasks: Gets or sets the width(pixel units) of the Canvas.
@@ -387,7 +403,38 @@ namespace Fusee.Engine
             get { return _gameWindow.Focused; }
         }
 
+        // Some tryptichon related Fields.
+
+        /// <summary>
+        /// Activates (true) or deactivates (false) the video wall feature.
+        /// </summary>
+        public bool VideoWallMode
+        {
+            get { return _videoWallMode; }
+            set { _videoWallMode = value; }
+        }
+
+        /// <summary>
+        /// This represents the number of the monitors in a vertical column.
+        /// </summary>
+        public int TryptMonitorSetupVertical
+        {
+            get { return _videoWallMonitorsVert; }
+            set { _videoWallMonitorsVert = value; }
+        }
+
+        /// <summary>
+        /// This represents the number of the monitors in a horizontal row.
+        /// </summary>
+        public int TryptMonitorSetupHorizontal
+        {
+            get { return _videoWallMonitorsHor; }
+            set { _videoWallMonitorsHor = value; }
+        }
+
         internal RenderCanvasGameWindow _gameWindow;
+        private int _windowPosX;
+        private int _windowPosY;
 
         #endregion
 
@@ -397,6 +444,7 @@ namespace Fusee.Engine
         /// </summary>
         public RenderCanvasImp()
         {
+            
             const int width = 1280;
             var height = System.Math.Min(Screen.PrimaryScreen.Bounds.Height - 100, 720);
 
@@ -409,6 +457,7 @@ namespace Fusee.Engine
                 _gameWindow = new RenderCanvasGameWindow(this, width, height, false);
             }
         }
+        
 
         #endregion
 
@@ -416,13 +465,70 @@ namespace Fusee.Engine
 
         private void ResizeWindow()
         {
-            var widthH = _width / 2;
-            var heightH = _height / 2;
+            if (!_videoWallMode)
+            {
+                //var widthH = _width;
+                //var heightH = _height;
 
-            var scHeightH = Screen.PrimaryScreen.Bounds.Height / 2;
-            var scWidthH = Screen.PrimaryScreen.Bounds.Width / 2;
+                //var scHeightH = Screen.PrimaryScreen.Bounds.Height/2;
+                //var scWidthH = Screen.PrimaryScreen.Bounds.Width/2;
 
-            _gameWindow.Bounds = new System.Drawing.Rectangle(scWidthH - widthH, scHeightH - heightH, _width, _height);
+                //_gameWindow.Bounds = new System.Drawing.Rectangle(scWidthH - widthH, scHeightH - heightH, _width,_height);
+                _gameWindow.Bounds = new System.Drawing.Rectangle(_windowPosX, _windowPosY, _width, _height);
+                _gameWindow.WindowBorder = _windowBorderHidden ? WindowBorder.Hidden : WindowBorder.Resizable;
+                    
+            }
+            else
+            {
+                var oneScreenWidth = Screen.PrimaryScreen.Bounds.Width;
+                var oneScreenHeight = Screen.PrimaryScreen.Bounds.Height;
+
+                var width = oneScreenWidth*_videoWallMonitorsHor;
+                var height = oneScreenHeight*_videoWallMonitorsVert;
+
+                _gameWindow.Bounds = new System.Drawing.Rectangle(0, 0, width, height);
+                //_gameWindow.Bounds = new System.Drawing.Rectangle(0, 0, 1000, 200);
+                
+                if (_windowBorderHidden)
+                    _gameWindow.WindowBorder = WindowBorder.Hidden;
+            }
+            
+        }
+
+        /// <summary>
+        /// Changes the window of the application to video wall mode.
+        /// </summary>
+        /// <param name="val">activate (true) or not (false).</param>
+        /// <param name="monitorsHor">Number of monitors on horizontal axis.</param>
+        /// <param name="monitorsVert">Number of monitors on vertical axis.</param>
+        public void VideoWall(int monitorsHor = 1, int monitorsVert = 1, bool activate = true, bool borderHidden = false)
+        {
+            VideoWallMode = activate;
+            _videoWallMonitorsHor = monitorsHor > 0 ? monitorsHor : 1;
+            _videoWallMonitorsVert = monitorsVert > 0 ? monitorsVert : 1;
+            _windowBorderHidden = borderHidden;
+
+            ResizeWindow();
+        }
+
+        /// <summary>
+        /// Sets the size of the output window for desktop development.
+        /// </summary>
+        /// <param name="width">The width of the window.</param>
+        /// <param name="height">The height of the window.</param>
+        /// <param name="borderHidden">Show the window border or not.</param>
+        public void SetWindowSize(int width, int height, bool borderHidden = false, int posx = 0, int posy = 0)
+        {
+            _width = width;
+            _height = height;
+            _windowPosX = posx;
+            _windowPosY = posy;
+            _windowBorderHidden = borderHidden;
+
+            // Disable video wall mode for this because it would not make sense.
+            _videoWallMode = false;
+
+            ResizeWindow();
         }
 
         /// <summary>
