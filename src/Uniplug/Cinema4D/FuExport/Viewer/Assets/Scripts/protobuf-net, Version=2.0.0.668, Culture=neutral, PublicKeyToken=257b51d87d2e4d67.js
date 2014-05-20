@@ -1278,28 +1278,28 @@ JSIL.MakeInterface(
     return ($T00 = JSIL.Memoize($asm07.System.Attribute)) ();
   };
   var $T01 = function () {
-    return ($T01 = JSIL.Memoize($asm0F.System.ServiceModel.Description.OperationDescription)) ();
+    return ($T01 = JSIL.Memoize($asm10.System.ServiceModel.Description.OperationDescription)) ();
   };
   var $T02 = function () {
-    return ($T02 = JSIL.Memoize($asm0F.System.ServiceModel.Channels.BindingParameterCollection)) ();
+    return ($T02 = JSIL.Memoize($asm10.System.ServiceModel.Channels.BindingParameterCollection)) ();
   };
   var $T03 = function () {
-    return ($T03 = JSIL.Memoize($asm0F.System.ServiceModel.Dispatcher.ClientOperation)) ();
+    return ($T03 = JSIL.Memoize($asm10.System.ServiceModel.Dispatcher.ClientOperation)) ();
   };
   var $T04 = function () {
-    return ($T04 = JSIL.Memoize($asm0F.System.ServiceModel.Description.IOperationBehavior)) ();
+    return ($T04 = JSIL.Memoize($asm10.System.ServiceModel.Description.IOperationBehavior)) ();
   };
   var $T05 = function () {
     return ($T05 = JSIL.Memoize($asm08.ProtoBuf.ServiceModel.ProtoOperationBehavior)) ();
   };
   var $T06 = function () {
-    return ($T06 = JSIL.Memoize($asm0F.System.ServiceModel.Dispatcher.DispatchOperation)) ();
+    return ($T06 = JSIL.Memoize($asm10.System.ServiceModel.Dispatcher.DispatchOperation)) ();
   };
   var $IM00 = function () {
-    return ($IM00 = JSIL.Memoize($asm0F.System.ServiceModel.Description.IOperationBehavior.ApplyClientBehavior)) ();
+    return ($IM00 = JSIL.Memoize($asm10.System.ServiceModel.Description.IOperationBehavior.ApplyClientBehavior)) ();
   };
   var $IM01 = function () {
-    return ($IM01 = JSIL.Memoize($asm0F.System.ServiceModel.Description.IOperationBehavior.ApplyDispatchBehavior)) ();
+    return ($IM01 = JSIL.Memoize($asm10.System.ServiceModel.Description.IOperationBehavior.ApplyDispatchBehavior)) ();
   };
 
   function ProtoBehaviorAttribute__ctor () {
@@ -1337,31 +1337,31 @@ JSIL.MakeInterface(
     );
 
     $.Method({Static:false, Public:false, Virtual:true }, "System.ServiceModel.Description.IOperationBehavior.AddBindingParameters", 
-      new JSIL.MethodSignature(null, [$asm0F.TypeRef("System.ServiceModel.Description.OperationDescription"), $asm0F.TypeRef("System.ServiceModel.Channels.BindingParameterCollection")], []), 
+      new JSIL.MethodSignature(null, [$asm10.TypeRef("System.ServiceModel.Description.OperationDescription"), $asm10.TypeRef("System.ServiceModel.Channels.BindingParameterCollection")], []), 
       ProtoBehaviorAttribute_System_ServiceModel_Description_IOperationBehavior_AddBindingParameters
     )
       .Overrides(1, "AddBindingParameters");
 
     $.Method({Static:false, Public:false, Virtual:true }, "System.ServiceModel.Description.IOperationBehavior.ApplyClientBehavior", 
-      new JSIL.MethodSignature(null, [$asm0F.TypeRef("System.ServiceModel.Description.OperationDescription"), $asm0F.TypeRef("System.ServiceModel.Dispatcher.ClientOperation")], []), 
+      new JSIL.MethodSignature(null, [$asm10.TypeRef("System.ServiceModel.Description.OperationDescription"), $asm10.TypeRef("System.ServiceModel.Dispatcher.ClientOperation")], []), 
       ProtoBehaviorAttribute_System_ServiceModel_Description_IOperationBehavior_ApplyClientBehavior
     )
       .Overrides(1, "ApplyClientBehavior");
 
     $.Method({Static:false, Public:false, Virtual:true }, "System.ServiceModel.Description.IOperationBehavior.ApplyDispatchBehavior", 
-      new JSIL.MethodSignature(null, [$asm0F.TypeRef("System.ServiceModel.Description.OperationDescription"), $asm0F.TypeRef("System.ServiceModel.Dispatcher.DispatchOperation")], []), 
+      new JSIL.MethodSignature(null, [$asm10.TypeRef("System.ServiceModel.Description.OperationDescription"), $asm10.TypeRef("System.ServiceModel.Dispatcher.DispatchOperation")], []), 
       ProtoBehaviorAttribute_System_ServiceModel_Description_IOperationBehavior_ApplyDispatchBehavior
     )
       .Overrides(1, "ApplyDispatchBehavior");
 
     $.Method({Static:false, Public:false, Virtual:true }, "System.ServiceModel.Description.IOperationBehavior.Validate", 
-      new JSIL.MethodSignature(null, [$asm0F.TypeRef("System.ServiceModel.Description.OperationDescription")], []), 
+      new JSIL.MethodSignature(null, [$asm10.TypeRef("System.ServiceModel.Description.OperationDescription")], []), 
       ProtoBehaviorAttribute_System_ServiceModel_Description_IOperationBehavior_Validate
     )
       .Overrides(1, "Validate");
 
     $.ImplementInterfaces(
-      /* 1 */ $asm0F.TypeRef("System.ServiceModel.Description.IOperationBehavior")
+      /* 1 */ $asm10.TypeRef("System.ServiceModel.Description.IOperationBehavior")
     );
 
     return function (newThisType) { $thisType = newThisType; }; 
@@ -1386,10 +1386,10 @@ JSIL.MakeEnum(
 (function ProtoOperationBehavior$Members () {
   var $, $thisType;
   var $T00 = function () {
-    return ($T00 = JSIL.Memoize($asm0F.System.ServiceModel.Description.OperationDescription)) ();
+    return ($T00 = JSIL.Memoize($asm10.System.ServiceModel.Description.OperationDescription)) ();
   };
   var $T01 = function () {
-    return ($T01 = JSIL.Memoize($asm0F.System.ServiceModel.Description.DataContractSerializerOperationBehavior)) ();
+    return ($T01 = JSIL.Memoize($asm10.System.ServiceModel.Description.DataContractSerializerOperationBehavior)) ();
   };
   var $T02 = function () {
     return ($T02 = JSIL.Memoize($asm07.System.Type)) ();
@@ -1451,7 +1451,7 @@ JSIL.MakeEnum(
   };
 
   JSIL.MakeType({
-      BaseType: $asm0F.TypeRef("System.ServiceModel.Description.DataContractSerializerOperationBehavior"), 
+      BaseType: $asm10.TypeRef("System.ServiceModel.Description.DataContractSerializerOperationBehavior"), 
       Name: "ProtoBuf.ServiceModel.ProtoOperationBehavior", 
       IsPublic: true, 
       IsReferenceType: true, 
@@ -1460,7 +1460,7 @@ JSIL.MakeEnum(
     $ = $interfaceBuilder;
 
     $.Method({Static:false, Public:true }, ".ctor", 
-      new JSIL.MethodSignature(null, [$asm0F.TypeRef("System.ServiceModel.Description.OperationDescription")], []), 
+      new JSIL.MethodSignature(null, [$asm10.TypeRef("System.ServiceModel.Description.OperationDescription")], []), 
       ProtoOperationBehavior__ctor
     );
 
@@ -6073,67 +6073,67 @@ JSIL.MakeDelegate("ProtoBuf.Meta.BasicList/MatchPredicate", false, []);
 (function ProtoEndpointBehavior$Members () {
   var $, $thisType;
   var $T00 = function () {
-    return ($T00 = JSIL.Memoize($asm0F.System.ServiceModel.Description.ServiceEndpoint)) ();
+    return ($T00 = JSIL.Memoize($asm10.System.ServiceModel.Description.ServiceEndpoint)) ();
   };
   var $T01 = function () {
-    return ($T01 = JSIL.Memoize($asm07.System.Collections.Generic.IEnumerator$b1.Of($asm0F.System.ServiceModel.Description.OperationDescription))) ();
+    return ($T01 = JSIL.Memoize($asm07.System.Collections.Generic.IEnumerator$b1.Of($asm10.System.ServiceModel.Description.OperationDescription))) ();
   };
   var $T02 = function () {
-    return ($T02 = JSIL.Memoize($asm07.System.Collections.ObjectModel.Collection$b1.Of($asm0F.System.ServiceModel.Description.OperationDescription))) ();
+    return ($T02 = JSIL.Memoize($asm07.System.Collections.ObjectModel.Collection$b1.Of($asm10.System.ServiceModel.Description.OperationDescription))) ();
   };
   var $T03 = function () {
-    return ($T03 = JSIL.Memoize($asm0F.System.ServiceModel.Description.ContractDescription)) ();
+    return ($T03 = JSIL.Memoize($asm10.System.ServiceModel.Description.ContractDescription)) ();
   };
   var $T04 = function () {
     return ($T04 = JSIL.Memoize($asm07.System.Collections.IEnumerator)) ();
   };
   var $T05 = function () {
-    return ($T05 = JSIL.Memoize($asm0F.System.ServiceModel.Description.OperationDescription)) ();
+    return ($T05 = JSIL.Memoize($asm10.System.ServiceModel.Description.OperationDescription)) ();
   };
   var $T06 = function () {
     return ($T06 = JSIL.Memoize($asm07.System.IDisposable)) ();
   };
   var $T07 = function () {
-    return ($T07 = JSIL.Memoize($asm0F.System.ServiceModel.Description.DataContractSerializerOperationBehavior)) ();
+    return ($T07 = JSIL.Memoize($asm10.System.ServiceModel.Description.DataContractSerializerOperationBehavior)) ();
   };
   var $T08 = function () {
-    return ($T08 = JSIL.Memoize($asm0F.System.Collections.Generic.KeyedByTypeCollection$b1.Of($asm0F.System.ServiceModel.Description.IOperationBehavior))) ();
+    return ($T08 = JSIL.Memoize($asm10.System.Collections.Generic.KeyedByTypeCollection$b1.Of($asm10.System.ServiceModel.Description.IOperationBehavior))) ();
   };
   var $T09 = function () {
-    return ($T09 = JSIL.Memoize($asm07.System.Collections.ObjectModel.Collection$b1.Of($asm0F.System.ServiceModel.Description.IOperationBehavior))) ();
+    return ($T09 = JSIL.Memoize($asm07.System.Collections.ObjectModel.Collection$b1.Of($asm10.System.ServiceModel.Description.IOperationBehavior))) ();
   };
   var $T0A = function () {
     return ($T0A = JSIL.Memoize($asm08.ProtoBuf.ServiceModel.ProtoOperationBehavior)) ();
   };
   var $T0B = function () {
-    return ($T0B = JSIL.Memoize($asm0F.System.ServiceModel.Channels.BindingParameterCollection)) ();
+    return ($T0B = JSIL.Memoize($asm10.System.ServiceModel.Channels.BindingParameterCollection)) ();
   };
   var $T0C = function () {
-    return ($T0C = JSIL.Memoize($asm0F.System.ServiceModel.Dispatcher.ClientRuntime)) ();
+    return ($T0C = JSIL.Memoize($asm10.System.ServiceModel.Dispatcher.ClientRuntime)) ();
   };
   var $T0D = function () {
-    return ($T0D = JSIL.Memoize($asm0F.System.ServiceModel.Dispatcher.EndpointDispatcher)) ();
+    return ($T0D = JSIL.Memoize($asm10.System.ServiceModel.Dispatcher.EndpointDispatcher)) ();
   };
   var $S00 = function () {
-    return ($S00 = JSIL.Memoize(new JSIL.MethodSignature(null, [$asm0F.TypeRef("System.ServiceModel.Description.OperationDescription")], []))) ();
+    return ($S00 = JSIL.Memoize(new JSIL.MethodSignature(null, [$asm10.TypeRef("System.ServiceModel.Description.OperationDescription")], []))) ();
   };
   var $S01 = function () {
     return ($S01 = JSIL.Memoize(new JSIL.MethodSignature("!!0", [], ["T"]))) ();
   };
   var $S02 = function () {
-    return ($S02 = JSIL.Memoize(new JSIL.MethodSignature($asm07.TypeRef("System.Boolean"), [$asm0F.TypeRef("System.ServiceModel.Description.IOperationBehavior")], []))) ();
+    return ($S02 = JSIL.Memoize(new JSIL.MethodSignature($asm07.TypeRef("System.Boolean"), [$asm10.TypeRef("System.ServiceModel.Description.IOperationBehavior")], []))) ();
   };
   var $S03 = function () {
-    return ($S03 = JSIL.Memoize(new JSIL.MethodSignature(null, [$asm0F.TypeRef("System.ServiceModel.Description.IOperationBehavior")], []))) ();
+    return ($S03 = JSIL.Memoize(new JSIL.MethodSignature(null, [$asm10.TypeRef("System.ServiceModel.Description.IOperationBehavior")], []))) ();
   };
   var $S04 = function () {
-    return ($S04 = JSIL.Memoize(new JSIL.MethodSignature(null, [$asm0F.TypeRef("System.ServiceModel.Description.ServiceEndpoint")], []))) ();
+    return ($S04 = JSIL.Memoize(new JSIL.MethodSignature(null, [$asm10.TypeRef("System.ServiceModel.Description.ServiceEndpoint")], []))) ();
   };
   var $IM00 = function () {
     return ($IM00 = JSIL.Memoize($asm07.System.Collections.IEnumerator.MoveNext)) ();
   };
   var $IM01 = function () {
-    return ($IM01 = JSIL.Memoize($asm07.System.Collections.Generic.IEnumerator$b1.Of($asm0F.System.ServiceModel.Description.OperationDescription).get_Current)) ();
+    return ($IM01 = JSIL.Memoize($asm07.System.Collections.Generic.IEnumerator$b1.Of($asm10.System.ServiceModel.Description.OperationDescription).get_Current)) ();
   };
   var $IM02 = function () {
     return ($IM02 = JSIL.Memoize($asm07.System.IDisposable.Dispose)) ();
@@ -6158,7 +6158,7 @@ JSIL.MakeDelegate("ProtoBuf.Meta.BasicList/MatchPredicate", false, []);
   };
 
   function ProtoEndpointBehavior_ReplaceDataContractSerializerOperationBehavior$01 (description) {
-    var dataContractSerializerOperationBehavior = $S01().Call($T08().prototype, "Find$b1", [$asm0F.System.ServiceModel.Description.DataContractSerializerOperationBehavior], description.get_Behaviors());
+    var dataContractSerializerOperationBehavior = $S01().Call($T08().prototype, "Find$b1", [$asm10.System.ServiceModel.Description.DataContractSerializerOperationBehavior], description.get_Behaviors());
     if (dataContractSerializerOperationBehavior !== null) {
       $S02().CallVirtual("Remove", null, description.get_Behaviors(), dataContractSerializerOperationBehavior);
       var protoOperationBehavior = new ($T0A())(description);
@@ -6196,41 +6196,41 @@ JSIL.MakeDelegate("ProtoBuf.Meta.BasicList/MatchPredicate", false, []);
     );
 
     $.Method({Static:true , Public:false}, "ReplaceDataContractSerializerOperationBehavior", 
-      new JSIL.MethodSignature(null, [$asm0F.TypeRef("System.ServiceModel.Description.ServiceEndpoint")], []), 
+      new JSIL.MethodSignature(null, [$asm10.TypeRef("System.ServiceModel.Description.ServiceEndpoint")], []), 
       ProtoEndpointBehavior_ReplaceDataContractSerializerOperationBehavior$00
     );
 
     $.Method({Static:true , Public:false}, "ReplaceDataContractSerializerOperationBehavior", 
-      new JSIL.MethodSignature(null, [$asm0F.TypeRef("System.ServiceModel.Description.OperationDescription")], []), 
+      new JSIL.MethodSignature(null, [$asm10.TypeRef("System.ServiceModel.Description.OperationDescription")], []), 
       ProtoEndpointBehavior_ReplaceDataContractSerializerOperationBehavior$01
     );
 
     $.Method({Static:false, Public:false, Virtual:true }, "System.ServiceModel.Description.IEndpointBehavior.AddBindingParameters", 
-      new JSIL.MethodSignature(null, [$asm0F.TypeRef("System.ServiceModel.Description.ServiceEndpoint"), $asm0F.TypeRef("System.ServiceModel.Channels.BindingParameterCollection")], []), 
+      new JSIL.MethodSignature(null, [$asm10.TypeRef("System.ServiceModel.Description.ServiceEndpoint"), $asm10.TypeRef("System.ServiceModel.Channels.BindingParameterCollection")], []), 
       ProtoEndpointBehavior_System_ServiceModel_Description_IEndpointBehavior_AddBindingParameters
     )
       .Overrides(0, "AddBindingParameters");
 
     $.Method({Static:false, Public:false, Virtual:true }, "System.ServiceModel.Description.IEndpointBehavior.ApplyClientBehavior", 
-      new JSIL.MethodSignature(null, [$asm0F.TypeRef("System.ServiceModel.Description.ServiceEndpoint"), $asm0F.TypeRef("System.ServiceModel.Dispatcher.ClientRuntime")], []), 
+      new JSIL.MethodSignature(null, [$asm10.TypeRef("System.ServiceModel.Description.ServiceEndpoint"), $asm10.TypeRef("System.ServiceModel.Dispatcher.ClientRuntime")], []), 
       ProtoEndpointBehavior_System_ServiceModel_Description_IEndpointBehavior_ApplyClientBehavior
     )
       .Overrides(0, "ApplyClientBehavior");
 
     $.Method({Static:false, Public:false, Virtual:true }, "System.ServiceModel.Description.IEndpointBehavior.ApplyDispatchBehavior", 
-      new JSIL.MethodSignature(null, [$asm0F.TypeRef("System.ServiceModel.Description.ServiceEndpoint"), $asm0F.TypeRef("System.ServiceModel.Dispatcher.EndpointDispatcher")], []), 
+      new JSIL.MethodSignature(null, [$asm10.TypeRef("System.ServiceModel.Description.ServiceEndpoint"), $asm10.TypeRef("System.ServiceModel.Dispatcher.EndpointDispatcher")], []), 
       ProtoEndpointBehavior_System_ServiceModel_Description_IEndpointBehavior_ApplyDispatchBehavior
     )
       .Overrides(0, "ApplyDispatchBehavior");
 
     $.Method({Static:false, Public:false, Virtual:true }, "System.ServiceModel.Description.IEndpointBehavior.Validate", 
-      new JSIL.MethodSignature(null, [$asm0F.TypeRef("System.ServiceModel.Description.ServiceEndpoint")], []), 
+      new JSIL.MethodSignature(null, [$asm10.TypeRef("System.ServiceModel.Description.ServiceEndpoint")], []), 
       ProtoEndpointBehavior_System_ServiceModel_Description_IEndpointBehavior_Validate
     )
       .Overrides(0, "Validate");
 
     $.ImplementInterfaces(
-      /* 0 */ $asm0F.TypeRef("System.ServiceModel.Description.IEndpointBehavior")
+      /* 0 */ $asm10.TypeRef("System.ServiceModel.Description.IEndpointBehavior")
     );
 
     return function (newThisType) { $thisType = newThisType; }; 
@@ -6725,7 +6725,7 @@ JSIL.MakeEnum(
 (function ProtoBehaviorExtension$Members () {
   var $, $thisType;
   var $T00 = function () {
-    return ($T00 = JSIL.Memoize($asm0F.System.ServiceModel.Configuration.BehaviorExtensionElement)) ();
+    return ($T00 = JSIL.Memoize($asm10.System.ServiceModel.Configuration.BehaviorExtensionElement)) ();
   };
   var $T01 = function () {
     return ($T01 = JSIL.Memoize($asm08.ProtoBuf.ServiceModel.ProtoEndpointBehavior)) ();
@@ -6744,7 +6744,7 @@ JSIL.MakeEnum(
   };
 
   JSIL.MakeType({
-      BaseType: $asm0F.TypeRef("System.ServiceModel.Configuration.BehaviorExtensionElement"), 
+      BaseType: $asm10.TypeRef("System.ServiceModel.Configuration.BehaviorExtensionElement"), 
       Name: "ProtoBuf.ServiceModel.ProtoBehaviorExtension", 
       IsPublic: true, 
       IsReferenceType: true, 

@@ -27,10 +27,6 @@ namespace Fusee.Engine.SimpleScene
         private SceneContainer _sc;
 
         private RenderContext _rc;
-        private ShaderProgram _colorShader;
-        private IShaderParam _colorParam;
-        private ShaderProgram _textureShader;
-        private IShaderParam _textureParam;
         private float4x4 _AABBXForm;
 
         private List<LightInfo> _lights;
@@ -66,10 +62,6 @@ namespace Fusee.Engine.SimpleScene
             if (rc != _rc)
             {
                 _rc = rc;
-                _colorShader = null;
-                _colorParam = null;
-                _textureShader = null;
-                _textureParam = null;
                 _meshMap = new Dictionary<MeshContainer, Mesh>();
                 _matMap = new Dictionary<MaterialContainer, ShaderEffect>();
                 _curMat = null;

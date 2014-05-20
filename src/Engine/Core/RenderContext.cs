@@ -1271,13 +1271,13 @@ namespace Fusee.Engine
         /// <seealso cref="Fusee.Engine.RenderContext.Render(Mesh)"/>
         public void SetShader(ShaderProgram program)
         {
-                _updatedShaderParams = false;
+            _updatedShaderParams = false;
                 
-                if (_currentShader != program)
-                {
-                    _currentShader = program;
-                    _rci.SetShader(program._spi);
-                }
+            if (_currentShader != program)
+            {
+                _currentShader = program;
+                _rci.SetShader(program._spi);
+            }
             UpdateShaderParams();         
         }
 

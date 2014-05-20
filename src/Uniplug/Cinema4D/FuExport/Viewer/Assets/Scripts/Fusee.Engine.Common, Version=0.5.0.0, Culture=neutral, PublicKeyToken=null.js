@@ -1651,9 +1651,12 @@ JSIL.MakeInterface(
   "Fusee.Engine.ICollisionShapeImp", true, [], function ($) {
     $.Method({}, "get_Margin", new JSIL.MethodSignature($.Single, [], []));
     $.Method({}, "set_Margin", new JSIL.MethodSignature(null, [$.Single], []));
+    $.Method({}, "get_LocalScaling", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float3"), [], []));
+    $.Method({}, "set_LocalScaling", new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float3")], []));
     $.Method({}, "get_UserObject", new JSIL.MethodSignature($.Object, [], []));
     $.Method({}, "set_UserObject", new JSIL.MethodSignature(null, [$.Object], []));
     $.Property({}, "Margin");
+    $.Property({}, "LocalScaling");
     $.Property({}, "UserObject");
   }, []);
 
@@ -1806,6 +1809,8 @@ JSIL.MakeInterface(
 
 JSIL.MakeInterface(
   "Fusee.Engine.IDynamicWorldImp", true, [], function ($) {
+    $.Method({}, "get_Gravity", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float3"), [], []));
+    $.Method({}, "set_Gravity", new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float3")], []));
     $.Method({}, "AddRigidBody", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IRigidBodyImp"), [
           $.Single, $asm04.TypeRef("Fusee.Math.float3"), 
           $asm04.TypeRef("Fusee.Math.float3"), $asm01.TypeRef("Fusee.Engine.ICollisionShapeImp")
@@ -1821,7 +1826,6 @@ JSIL.MakeInterface(
           $asm01.TypeRef("Fusee.Engine.IRigidBodyImp"), $asm01.TypeRef("Fusee.Engine.IRigidBodyImp"), 
           $asm04.TypeRef("Fusee.Math.float3"), $asm04.TypeRef("Fusee.Math.float3")
         ], []));
-    $.Method({}, "GetConstraint", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IPoint2PointConstraintImp"), [$.Int32], []));
     $.Method({}, "AddHingeConstraint", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IHingeConstraintImp"), [
           $asm01.TypeRef("Fusee.Engine.IRigidBodyImp"), $asm04.TypeRef("Fusee.Math.float4x4"), 
           $.Boolean
@@ -1888,11 +1892,12 @@ JSIL.MakeInterface(
     $.Method({}, "AddCompoundShape", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.ICompoundShapeImp"), [$.Boolean], []));
     $.Method({}, "AddEmptyShape", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IEmptyShapeImp"), [], []));
     $.Method({}, "AddConvexHullShape", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IConvexHullShapeImp"), [], []));
-    $.Method({}, "AddConvexHullShape", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IConvexHullShapeImp"), [$jsilcore.TypeRef("System.Array", [$asm04.TypeRef("Fusee.Math.float3")])], []));
+    $.Method({}, "AddConvexHullShape", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IConvexHullShapeImp"), [$jsilcore.TypeRef("System.Array", [$asm04.TypeRef("Fusee.Math.float3")]), $.Boolean], []));
     $.Method({}, "AddStaticPlaneShape", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IStaticPlaneShapeImp"), [$asm04.TypeRef("Fusee.Math.float3"), $.Single], []));
     $.Method({}, "AddGImpactMeshShape", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.IGImpactMeshShapeImp"), [$jsilcore.TypeRef("System.Array", [$.Int32]), $jsilcore.TypeRef("System.Array", [$asm04.TypeRef("Fusee.Math.float3")])], []));
     $.Method({}, "NumberConstraints", new JSIL.MethodSignature($.Int32, [], []));
     $.Method({}, "Dispose", new JSIL.MethodSignature(null, [], []));
+    $.Property({}, "Gravity");
   }, []);
 
 /* interface Fusee.Engine.IEmptyShapeImp */ 
@@ -2572,15 +2577,18 @@ JSIL.MakeInterface(
     $.Method({}, "set_LinearFactor", new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float3")], []));
     $.Method({}, "get_AngularFactor", new JSIL.MethodSignature($asm04.TypeRef("Fusee.Math.float3"), [], []));
     $.Method({}, "set_AngularFactor", new JSIL.MethodSignature(null, [$asm04.TypeRef("Fusee.Math.float3")], []));
-    $.Method({}, "get_Bounciness", new JSIL.MethodSignature($.Single, [], []));
-    $.Method({}, "set_Bounciness", new JSIL.MethodSignature(null, [$.Single], []));
+    $.Method({}, "get_Restitution", new JSIL.MethodSignature($.Single, [], []));
+    $.Method({}, "set_Restitution", new JSIL.MethodSignature(null, [$.Single], []));
     $.Method({}, "get_Friction", new JSIL.MethodSignature($.Single, [], []));
     $.Method({}, "set_Friction", new JSIL.MethodSignature(null, [$.Single], []));
+    $.Method({}, "SetDrag", new JSIL.MethodSignature(null, [$.Single, $.Single], []));
+    $.Method({}, "get_LinearDrag", new JSIL.MethodSignature($.Single, [], []));
+    $.Method({}, "get_AngularDrag", new JSIL.MethodSignature($.Single, [], []));
     $.Method({}, "get_CollisionShape", new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.ICollisionShapeImp"), [], []));
     $.Method({}, "set_CollisionShape", new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.ICollisionShapeImp")], []));
     $.Method({}, "get_UserObject", new JSIL.MethodSignature($.Object, [], []));
     $.Method({}, "set_UserObject", new JSIL.MethodSignature(null, [$.Object], []));
-    $.Method({}, "OnCollision", new JSIL.MethodSignature(null, [], []));
+    $.Method({}, "OnCollision", new JSIL.MethodSignature(null, [$.Type], []));
     $.Property({}, "Gravity");
     $.Property({}, "Mass");
     $.Property({}, "Inertia");
@@ -2595,8 +2603,10 @@ JSIL.MakeInterface(
     $.Property({}, "AngularVelocity");
     $.Property({}, "LinearFactor");
     $.Property({}, "AngularFactor");
-    $.Property({}, "Bounciness");
+    $.Property({}, "Restitution");
     $.Property({}, "Friction");
+    $.Property({}, "LinearDrag");
+    $.Property({}, "AngularDrag");
     $.Property({}, "CollisionShape");
     $.Property({}, "UserObject");
   }, []);

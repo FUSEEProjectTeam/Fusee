@@ -786,16 +786,16 @@ JSIL.DeclareNamespace("Fusee.Serialization");
             if (num !== 4) {
               if (num !== 5) {
                 if (sceneObjectContainer === null) {
-                  var expr_1B1 = new ($T08())();
-                  $T0F().NoteObject(expr_1B1, protoReader);
-                  sceneObjectContainer = expr_1B1;
+                  var expr_1B9 = new ($T08())();
+                  $T0F().NoteObject(expr_1B9, protoReader);
+                  sceneObjectContainer = expr_1B9;
                 }
                 protoReader.SkipField();
               } else {
                 if (sceneObjectContainer === null) {
-                  var expr_12F = new ($T08())();
-                  $T0F().NoteObject(expr_12F, protoReader);
-                  sceneObjectContainer = expr_12F;
+                  var expr_137 = new ($T08())();
+                  $T0F().NoteObject(expr_137, protoReader);
+                  sceneObjectContainer = expr_137;
                 }
                 var list = sceneObjectContainer.Children;
                 var list2 = list;
@@ -820,9 +820,9 @@ JSIL.DeclareNamespace("Fusee.Serialization");
               }
             } else {
               if (sceneObjectContainer === null) {
-                var expr_DD = new ($T08())();
-                $T0F().NoteObject(expr_DD, protoReader);
-                sceneObjectContainer = expr_DD;
+                var expr_E5 = new ($T08())();
+                $T0F().NoteObject(expr_E5, protoReader);
+                sceneObjectContainer = expr_E5;
               }
               var meshContainer = $T05().$Cast($T1E().ReadNetObject(
                   $T0E().$Cast(sceneObjectContainer.Mesh), 
@@ -841,11 +841,13 @@ JSIL.DeclareNamespace("Fusee.Serialization");
               $T0F().NoteObject(expr_93, protoReader);
               sceneObjectContainer = expr_93;
             }
-            var arg_AA_0 = sceneObjectContainer.Material;
-            var token = $T0F().StartSubItem(protoReader);
-            var arg_B6_0 = $S07().CallStatic($thisType, "Read", null, arg_AA_0, protoReader);
-            $T0F().EndSubItem(token, protoReader);
-            var materialContainer = arg_B6_0;
+            var materialContainer = $T04().$Cast($T1E().ReadNetObject(
+                $T0E().$Cast(sceneObjectContainer.Material), 
+                protoReader, 
+                3, 
+                $T04().__Type__, 
+                $T1F().$Flags("AsReference", "UseConstructor")
+              ));
             if (materialContainer !== null) {
               sceneObjectContainer.Material = materialContainer;
             }
@@ -857,7 +859,7 @@ JSIL.DeclareNamespace("Fusee.Serialization");
             sceneObjectContainer = expr_4C;
           }
           var arg_63_0 = sceneObjectContainer.Transform;
-          token = $T0F().StartSubItem(protoReader);
+          var token = $T0F().StartSubItem(protoReader);
           var arg_6F_0 = $S0B().CallStatic($thisType, "Read", null, arg_63_0, protoReader);
           $T0F().EndSubItem(token, protoReader);
           var transformContainer = arg_6F_0;
@@ -878,9 +880,9 @@ JSIL.DeclareNamespace("Fusee.Serialization");
       }
     }
     if (sceneObjectContainer === null) {
-      var expr_1D9 = new ($T08())();
-      $T0F().NoteObject(expr_1D9, protoReader);
-      sceneObjectContainer = expr_1D9;
+      var expr_1E1 = new ($T08())();
+      $T0F().NoteObject(expr_1E1, protoReader);
+      sceneObjectContainer = expr_1E1;
     }
     return sceneObjectContainer;
   };
@@ -1286,24 +1288,22 @@ JSIL.DeclareNamespace("Fusee.Serialization");
     var expr_76 = sceneObjectContainer.Material;
     if (expr_76 !== null) {
       $T20().WriteFieldHeader(3, $T17().String, protoWriter);
-      token = $T20().StartSubItem(expr_76, protoWriter);
-      $S18().CallStatic($thisType, "Write", null, expr_76, protoWriter);
-      $T20().EndSubItem(token, protoWriter);
+      $T1E().WriteNetObject($T0E().$Cast(expr_76), protoWriter, 3, $T1F().$Flags("AsReference", "UseConstructor"));
     }
-    var expr_A2 = sceneObjectContainer.Mesh;
-    if (expr_A2 !== null) {
+    var expr_9A = sceneObjectContainer.Mesh;
+    if (expr_9A !== null) {
       $T20().WriteFieldHeader(4, $T17().String, protoWriter);
-      $T1E().WriteNetObject($T0E().$Cast(expr_A2), protoWriter, 4, $T1F().$Flags("AsReference", "UseConstructor"));
+      $T1E().WriteNetObject($T0E().$Cast(expr_9A), protoWriter, 4, $T1F().$Flags("AsReference", "UseConstructor"));
     }
-    var expr_C6 = sceneObjectContainer.Children;
-    if (expr_C6 !== null) {
+    var expr_BE = sceneObjectContainer.Children;
+    if (expr_BE !== null) {
 
-      for (var a$0 = expr_C6._items, i$0 = 0, l$0 = expr_C6._size; i$0 < l$0; ($temp00 = i$0, 
+      for (var a$0 = expr_BE._items, i$0 = 0, l$0 = expr_BE._size; i$0 < l$0; ($temp00 = i$0, 
           i$0 = ((i$0 + 1) | 0), 
           $temp00)) {
-        var arg_EB_0 = a$0[i$0];
+        var arg_E3_0 = a$0[i$0];
         $T20().WriteFieldHeader(5, $T17().String, protoWriter);
-        $T1E().WriteNetObject($T0E().$Cast(arg_EB_0), protoWriter, 7, $T1F().$Flags("AsReference", "UseConstructor"));
+        $T1E().WriteNetObject($T0E().$Cast(arg_E3_0), protoWriter, 7, $T1F().$Flags("AsReference", "UseConstructor"));
       }
     }
   };
