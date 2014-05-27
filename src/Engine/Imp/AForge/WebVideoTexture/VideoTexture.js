@@ -67,7 +67,8 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.VideoStreamImp"
            var myData = context.getImageData(0, 0, videoTexture.videoWidth, videoTexture.videoHeight);
            this._nextFrame.Width = videoTexture.width;
            this._nextFrame.Height = videoTexture.height;
-           this._nextFrame.Stride = image.width * 4; //TODO: Adjust pixel-size
+           this._nextFrame.PixelFormat = ImagePixelFormat.RGB;
+           this._nextFrame.Stride = image.width * 3; //TODO: Adjust pixel-size
            this._nextFrame.PixelData = myData.data;
        }
    );

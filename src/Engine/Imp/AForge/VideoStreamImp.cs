@@ -3,6 +3,7 @@ using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using AForge.Video;
 using AForge.Video.FFMPEG;
+using AForge.Video.DirectShow;
 
 namespace Fusee.Engine
 {
@@ -12,7 +13,10 @@ namespace Fusee.Engine
         #region Fields
         private ImageData _nextFrame;
         private VideoFileSource _source;
+        private VideoCaptureDevice _videoCaptureDevice;
         #endregion
+
+        #region Constructors
         public VideoStreamImp(VideoFileSource source)
         {
             _source = source;
@@ -20,6 +24,14 @@ namespace Fusee.Engine
             _source.PlayingFinished += PlayingFinished;
             _source.Start();
         }
+
+        public VideoStreamImp (VideoCaptureDevice videoCaptureDevice)
+        {
+            _videoCaptureDevice = videoCaptureDevice;
+            _videoCaptureDevice.NewFrame += NextFrame;
+            _videoCaptureDevice.Start();
+        }
+        #endregion
 
         #region Events
 

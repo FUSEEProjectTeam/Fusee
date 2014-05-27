@@ -10,6 +10,7 @@ var $WebGLImp = JSIL.DeclareAssembly("Fusee.Engine.Imp.WebGL");
 var $WebAudioImp = JSIL.GetAssembly("Fusee.Engine.Imp.WebAudio");
 var $WebNetImp = JSIL.GetAssembly("Fusee.Engine.Imp.WebNet");
 var $WebInputImp = JSIL.GetAssembly("Fusee.Engine.Imp.WebInput");
+var $VideoManagerImp;
 
 var $fuseeCore = JSIL.GetAssembly("Fusee.Engine.Core");
 var $fuseeCommon = JSIL.GetAssembly("Fusee.Engine.Common");
@@ -569,10 +570,24 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
     // </IRenderContextImp Properties implementation>
 
     $.Method({ Static: false, Public: true }, "UpdateTextureRegion",
-        new JSIL.MethodSiganture(null, [$fuseeCommon.TypeRef("Fusee.Engine.ITexture"), $fuseeCommon.TypeRef("Fusee.Engine.ITexture"), $.Int32, $.Int32]),
+        new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.ITexture"), $fuseeCommon.TypeRef("Fusee.Engine.ImageData"), $.Int32, $.Int32]),
         function UpdateTextureRegion(tex, img, startX, startY) {
-            
-            
+            var ubyteView = new Uint8Array(img.PixelData);
+            var format;
+            switch (img.PixelFormat) {
+                case $fuseeCommon.Fusee.Engine.ImagePixelFormat.RGBA:
+                    format = this.gl.RGBA;
+                    break;
+                case $fuseeCommon.Fusee.Engine.ImagePixelFormat.RGB:
+                    format = this.gl.RGB;
+                    break;
+            }
+    
+            //var glTexOb = this.gl.createTexture();
+            this.gl.bindTexture(this.gl.TEXTURE_2D, tex.handle);
+            this.gl.texSubImage2D(this.gl.TEXTURE_2D, 0, startX, startY, img.Width, img.Height, format,
+                this.gl.UNSIGNED_BYTE, ubyteView);
+
         }
 
     );
@@ -594,6 +609,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
 
             imageData.Width = width;
             imageData.Height = height;
+            imageData.PixelFormat = ImagePixelFormat.RGBA;
             imageData.Stride = width * 4; //TODO: Adjust pixel-size
             imageData.PixelData = myData.data;
 
@@ -656,12 +672,21 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
         new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.ITexture"), [$fuseeCommon.TypeRef("Fusee.Engine.ImageData")]),
         function CreateTexture(img) {
             var ubyteView = new Uint8Array(img.PixelData);
+            var format;
+            switch (img.PixelFormat) {
+                case $fuseeCommon.Fusee.Engine.ImagePixelFormat.RGBA:
+                    format = this.gl.RGBA;
+                    break;
+                case $fuseeCommon.Fusee.Engine.ImagePixelFormat.RGB:
+                    format = this.gl.RGB;
+                    break;
+            }
 
             var glTexOb = this.gl.createTexture();
             this.gl.bindTexture(this.gl.TEXTURE_2D, glTexOb);
             this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true);
-            this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, img.Width, img.Height, 0,
-                this.gl.RGBA, this.gl.UNSIGNED_BYTE, ubyteView);
+            this.gl.texImage2D(this.gl.TEXTURE_2D, 0, format, img.Width, img.Height, 0,
+                format, this.gl.UNSIGNED_BYTE, ubyteView);
 
             this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
             this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.LINEAR);
@@ -1813,6 +1838,110 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.MeshImp", true,
     return function(newThisType) { $thisType = newThisType; };
 });
 
+JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.VideoManagerImp", true, [], function ($interfaceBuilder) {
+    $ = $interfaceBuilder;
+
+
+    $.Method({ Static: false, Public: true }, "CreateVideoStreamImp",
+     new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.IVideoStreamImp"), [$.String]),
+     function VideoManagerImp_CreateVideoStreamImp(filename) {
+         return new $WebGLImp.Fusee.Engine.VideoStreamImp(filename);
+     }
+ );
+
+    $.ImplementInterfaces(
+        $fuseeCommon.TypeRef("Fusee.Engine.IVideoManagerImp")
+    );
+
+    return function (newThisType) { $thisType = newThisType; };
+});
+
+
+JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.VideoStreamImp", true, [], function ($interfaceBuilder) {
+    $ = $interfaceBuilder;
+
+    $.Field({ Static: false, Public: true }, "_nextFrame", $fuseeCommon.TypeRef("Fusee.Engine.ImageData"), null);
+    $.Field({ Static: false, Public: true }, "videoTexture", $.String, null);
+    $.Method({ Static: false, Public: true }, ".ctor",
+       new JSIL.MethodSignature(null, [$.String]),
+       function VideoStreamImp__ctor(source) {
+           if (source != "webcam") {
+               this.videoTexture = document.createElement('video');
+               this.videoTexture.id = "videoTexture";
+               this.videoTexture.src = source;
+               this.videoTexture.addEventListener("canplay", this.StartVideo.bind(this));
+           }
+           else {
+               this.videoTexture = document.createElement('video');
+               this.videoTexture.id = "videoTexture";
+               navigator.getUserMedia = (navigator.getUserMedia ||
+                   navigator.webkitGetUserMedia ||
+                   navigator.mozGetUserMedia ||
+                   navigator.msGetUserMedia);
+               if (navigator.getUserMedia) {
+                   navigator.getUserMedia(
+                       {
+                           video: true,
+                           audio: true
+                       },
+                       function(localMediaStream) {
+                           var url = window.URL || window.webkitURL;
+                           this.videoTexture.src = url ? window.URL.createObjectURL(localMediaStream) : localMediaStream;
+                           this.videoTexture.addEventListener("canplay", this.StartVideo.bind(this));
+                       },
+                       function(err) {
+                           console.log("The following error has occured: " + err);
+                       }
+                   );
+               }
+           }
+       }
+   );
+
+    $.Method({ Static: false, Public: true }, "StartVideo",
+        new JSIL.MethodSignature(null, []),
+        function VideoStreamImp_StartVideo() {
+            this.videoTexture.play();
+            this.videoTexture.addEventListener("timeupdate", this.NextFrame.bind(this));
+        }
+    );
+
+    $.Method({ Static: false, Public: true }, "NextFrame",
+       new JSIL.MethodSignature(null, []),
+       function VideoStreamImp_NextFrame() {
+
+           var canvas = document.createElement("canvas");
+           canvas.width = this.videoTexture.videoWidth;
+           canvas.height = this.videoTexture.videoHeight;
+           var context = canvas.getContext('2d');
+           context.drawImage(this.videoTexture, 0, 0);
+
+           var myData = context.getImageData(0, 0, this.videoTexture.videoWidth, this.videoTexture.videoHeight);
+           this._nextFrame.Width = this.videoTexture.videoWidth;
+           this._nextFrame.Height = this.videoTexture.videoHeight;
+           this._nextFrame.PixelFormat = $fuseeCommon.Fusee.Engine.ImagePixelFormat.RGBA;
+           this._nextFrame.Stride = this.videoTexture.width * 3; //TODO: Adjust pixel-size
+           this._nextFrame.PixelData = myData.data;
+       }
+   );
+
+    $.Method({ Static: false, Public: true }, "GetCurrentFrame",
+     new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.ImageData"), []),
+     function VideoStreamImp_GetCurrentFrame() {
+         return this._nextFrame;
+     }
+ );
+
+
+
+
+    $.ImplementInterfaces(
+        $fuseeCommon.TypeRef("Fusee.Engine.IVideoStreamImp")
+    );
+
+    return function (newThisType) { $thisType = newThisType; };
+});
+
 JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.InputImp", true, [], function($interfaceBuilder) {
     $ = $interfaceBuilder;
 
@@ -2169,6 +2298,13 @@ JSIL.ImplementExternals("Fusee.Engine.ImpFactory", function($) {
         new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.IInputDriverImp"), []),
         function ImpFactory_CreateIInputDriverImp() {
             return new $WebInputImp.Fusee.Engine.WebInputDriverImp();
+        }
+    );
+
+        $.Method({ Static: true, Public: true }, "CreateIVideoManagerImp",
+        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.IVideoManagerImp"), []),
+        function ImpFactory_CreateIVideoManagerImp() {
+            return new $WebGLImp.Fusee.Engine.VideoManagerImp();
         }
     );
 

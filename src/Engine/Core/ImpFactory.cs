@@ -227,6 +227,7 @@ namespace Fusee.Engine
             return (IInputDriverImp) CreateIImp(InputDriverImplementor, "CreateInputDriverImp").Invoke(null, null);
         }
 
+        [JSExternal]
         public static IVideoManagerImp CreateIVideoManagerImp()
         {
             return (IVideoManagerImp) CreateIImp(VideoManagerImplementor, "CreateVideoManagerImp").Invoke(null, null);

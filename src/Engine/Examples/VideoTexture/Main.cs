@@ -3,7 +3,7 @@ using Fusee.Engine;
 using Fusee.Math;
 
 
-namespace Examples.VideoTexture
+namespace Examples.VideoTextureExample
 {
     public class VideoTextureExample : RenderCanvas
     {
@@ -38,9 +38,8 @@ namespace Examples.VideoTexture
 
             _textureParam = _spTexture.GetShaderParam("texture1");
 
-            _videoStream = VideoManager.Instance.LoadVideo(@"Assets/video.avi");
+            _videoStream = VideoManager.Instance.LoadVideo(@"Assets/pot.webm");
         }
-
 
 
         // is called once a frame
