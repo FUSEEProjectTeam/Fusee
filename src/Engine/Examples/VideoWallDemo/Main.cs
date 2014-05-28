@@ -64,6 +64,10 @@ namespace Examples.WindowSizesDemo
             var mtxCam = float4x4.LookAt(6, 3, 3, 0, 0, 0, 0, 1, 0);
             RC.ModelView = mtxCam;
 
+            // Pull user input.
+            if (Input.Instance.IsKey(KeyCodes.Escape))
+                CloseGameWindow(); // Call to opentk to close the application. TODO: Figure out how to prevent problems with existing projects. Perhaps a boolean to overwrite or so?
+
             // Second render gui
             _guiHandler.RenderGUI();
 

@@ -227,6 +227,14 @@ namespace Fusee.Engine
         }
 
         /// <summary>
+        /// Closes the GameWindow with a call to opentk.
+        /// </summary>
+        public void CloseGameWindow()
+        {
+            // TODO: implement something useful here.
+        }
+
+        /// <summary>
         /// Runs this application instance.
         /// </summary>
         public abstract void Run();
@@ -532,6 +540,15 @@ namespace Fusee.Engine
         }
 
         /// <summary>
+        /// Closes the GameWindow with a call to opentk.
+        /// </summary>
+        public void CloseGameWindow()
+        {
+            if(_gameWindow != null)
+                _gameWindow.Exit();
+        }
+
+        /// <summary>
         /// Presents this application instance. Call this function after rendering to show the final image. 
         /// After Present is called the render buffers get flushed.
         /// </summary>
@@ -773,8 +790,8 @@ namespace Fusee.Engine
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
-            if (Keyboard[OpenTK.Input.Key.Escape])
-                this.Exit();
+            //if (Keyboard[OpenTK.Input.Key.Escape])
+                //this.Exit();
 
             if (Keyboard[OpenTK.Input.Key.F11])
                 WindowState = (WindowState != WindowState.Fullscreen) ? WindowState.Fullscreen : WindowState.Normal;

@@ -301,6 +301,14 @@ namespace Fusee.Engine
         {
             _canvasImp.SetWindowSize(width, height, borderHidden, posx, posy);
         }
+
+        /// <summary>
+        /// Closes the GameWindow with a call to opentk.
+        /// </summary>
+        public void CloseGameWindow()
+        {
+            _canvasImp.CloseGameWindow();
+        }
         #endregion
 
         #region Screen related Fields
