@@ -237,6 +237,8 @@ namespace Fusee.Engine.SimpleScene
 
         private void AddCameraVec(StringBuilder ps)
         {
+            if (!_hasSpecular)
+                return;
             ps.Append("    vec3 Camera = vViewDir;\n");
         }
 
