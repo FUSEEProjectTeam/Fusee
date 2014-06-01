@@ -86,7 +86,7 @@ namespace Fusee.Engine
             var bmp = new Bitmap(filename);
 
             //Flip y-axis, otherwise texture would be upside down
-            bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
+            bmp.RotateFlip(RotateFlipType.Rotate180FlipNone);
 
             BitmapData bmpData = bmp.LockBits(new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height),
                 ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);

@@ -628,6 +628,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
             var context = canvas.getContext("2d");
 
             context.drawImage(image, 0, 0);
+            context.rotate(180 * Math.PI / 180);
             var myData = context.getImageData(0, 0, image.width, image.height);
             var imageData = new $fuseeCommon.Fusee.Engine.ImageData();
             imageData.Width = image.width;
@@ -684,7 +685,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
 
             var glTexOb = this.gl.createTexture();
             this.gl.bindTexture(this.gl.TEXTURE_2D, glTexOb);
-            this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true);
+            //this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true);
             this.gl.texImage2D(this.gl.TEXTURE_2D, 0, format, img.Width, img.Height, 0,
                 format, this.gl.UNSIGNED_BYTE, ubyteView);
 
@@ -1916,6 +1917,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.VideoStreamImp"
            var context = canvas.getContext('2d');
            context.drawImage(this.videoTexture, 0, 0);
 
+           context.rotate(180 * Math.PI / 180);
            var myData = context.getImageData(0, 0, this.videoTexture.videoWidth, this.videoTexture.videoHeight);
            this._nextFrame.Width = this.videoTexture.videoWidth;
            this._nextFrame.Height = this.videoTexture.videoHeight;

@@ -36,7 +36,7 @@
       <HintPath>..\..\..\..\ExternalBinaries\AForge\AForge.Video.dll</HintPath>
     </Reference>
     <Reference Include="AForge.Video.DirectShow">
-      <HintPath>..\..\..\..\..\..\..\Desktop\AForge.NET Framework-2.2.5\Release\AForge.Video.DirectShow.dll</HintPath>
+      <HintPath>..\..\..\..\ExternalBinaries\AForge\AForge.Video.DirectShow.dll</HintPath>
     </Reference>
     <Reference Include="AForge.Video.FFMPEG, Version=2.2.5.0, Culture=neutral, PublicKeyToken=03563089b1be05dd, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
