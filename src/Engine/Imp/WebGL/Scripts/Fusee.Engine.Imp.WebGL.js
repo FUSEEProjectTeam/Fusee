@@ -627,8 +627,11 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
             canvas.height = image.height;
             var context = canvas.getContext("2d");
 
-            context.drawImage(image, 0, 0);
+            context.translate(canvas.width / 2, canvas.height / 2);
             context.rotate(180 * Math.PI / 180);
+            context.translate(-canvas.width / 2, -canvas.height / 2);
+            context.drawImage(image, 0, 0);
+            
             var myData = context.getImageData(0, 0, image.width, image.height);
             var imageData = new $fuseeCommon.Fusee.Engine.ImageData();
             imageData.Width = image.width;
@@ -1843,11 +1846,20 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.VideoManagerImp
     $ = $interfaceBuilder;
 
 
-    $.Method({ Static: false, Public: true }, "CreateVideoStreamImp",
+    $.Method({ Static: false, Public: true }, "CreateVideoStreamImpFromFile",
      new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.IVideoStreamImp"), [$.String]),
-     function VideoManagerImp_CreateVideoStreamImp(filename) {
+     function VideoManagerImp_CreateVideoStreamImpFromFile(filename) {
          return new $WebGLImp.Fusee.Engine.VideoStreamImp(filename);
      }
+
+ );
+
+     $.Method({ Static: false, Public: true }, "CreateVideoStreamImpFromCamera",
+     new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.IVideoStreamImp"), [$.String]),
+     function VideoManagerImp_CreateVideoStreamImpFromCamera() {
+         return new $WebGLImp.Fusee.Engine.VideoStreamImp("camera");
+     }
+
  );
 
     $.ImplementInterfaces(
@@ -1862,35 +1874,39 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.VideoStreamImp"
     $ = $interfaceBuilder;
 
     $.Field({ Static: false, Public: true }, "_nextFrame", $fuseeCommon.TypeRef("Fusee.Engine.ImageData"), null);
-    $.Field({ Static: false, Public: true }, "videoTexture", $.String, null);
+    $.Field({ Static: false, Public: true }, "_videoTexture", $.Object, null);
+    $.Field({ Static: false, Public: true }, "_canvas", $.Object, null);
     $.Method({ Static: false, Public: true }, ".ctor",
        new JSIL.MethodSignature(null, [$.String]),
        function VideoStreamImp__ctor(source) {
-           if (source != "webcam") {
-               this.videoTexture = document.createElement('video');
-               this.videoTexture.id = "videoTexture";
-               this.videoTexture.src = source;
-               this.videoTexture.addEventListener("canplay", this.StartVideo.bind(this));
+           if (source != "camera") {
+               this._canvas = document.createElement('canvas');
+               this._videoTexture = document.createElement('video');
+               this._videoTexture.id = "videoTexture";
+               this._videoTexture.src = source;
+               this._videoTexture.addEventListener("canplay", this.StartVideo.bind(this));
            }
            else {
-               this.videoTexture = document.createElement('video');
-               this.videoTexture.id = "videoTexture";
+               this._canvas = document.createElement('canvas');
+               this._videoTexture = document.createElement('video');
+               this._videoTexture.id = "videoTexture";
                navigator.getUserMedia = (navigator.getUserMedia ||
                    navigator.webkitGetUserMedia ||
                    navigator.mozGetUserMedia ||
                    navigator.msGetUserMedia);
                if (navigator.getUserMedia) {
+                   var callbackClosure = this;
                    navigator.getUserMedia(
                        {
                            video: true,
                            audio: true
                        },
-                       function(localMediaStream) {
+                       function (localMediaStream) {
                            var url = window.URL || window.webkitURL;
-                           this.videoTexture.src = url ? window.URL.createObjectURL(localMediaStream) : localMediaStream;
-                           this.videoTexture.addEventListener("canplay", this.StartVideo.bind(this));
+                           callbackClosure._videoTexture.src = url ? window.URL.createObjectURL(localMediaStream) : localMediaStream;
+                           callbackClosure._videoTexture.addEventListener("canplay", callbackClosure.StartVideo.bind(callbackClosure));
                        },
-                       function(err) {
+                       function (err) {
                            console.log("The following error has occured: " + err);
                        }
                    );
@@ -1902,8 +1918,8 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.VideoStreamImp"
     $.Method({ Static: false, Public: true }, "StartVideo",
         new JSIL.MethodSignature(null, []),
         function VideoStreamImp_StartVideo() {
-            this.videoTexture.play();
-            this.videoTexture.addEventListener("timeupdate", this.NextFrame.bind(this));
+            this._videoTexture.play();
+            this._videoTexture.addEventListener("timeupdate", this.NextFrame.bind(this));
         }
     );
 
@@ -1911,19 +1927,24 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.VideoStreamImp"
        new JSIL.MethodSignature(null, []),
        function VideoStreamImp_NextFrame() {
 
-           var canvas = document.createElement("canvas");
-           canvas.width = this.videoTexture.videoWidth;
-           canvas.height = this.videoTexture.videoHeight;
-           var context = canvas.getContext('2d');
-           context.drawImage(this.videoTexture, 0, 0);
-
+           //TODO
+           
+           this._canvas.width = this._videoTexture.videoWidth;
+           this._canvas.height = this._videoTexture.videoHeight;
+           var context = this._canvas.getContext('2d');
+           context.translate(this._canvas.width / 2, this._canvas.height / 2);
            context.rotate(180 * Math.PI / 180);
-           var myData = context.getImageData(0, 0, this.videoTexture.videoWidth, this.videoTexture.videoHeight);
-           this._nextFrame.Width = this.videoTexture.videoWidth;
-           this._nextFrame.Height = this.videoTexture.videoHeight;
-           this._nextFrame.PixelFormat = $fuseeCommon.Fusee.Engine.ImagePixelFormat.RGBA;
-           this._nextFrame.Stride = this.videoTexture.width * 3; //TODO: Adjust pixel-size
-           this._nextFrame.PixelData = myData.data;
+           context.translate(-this._canvas.width / 2, -this._canvas.height / 2);
+           context.drawImage(this._videoTexture, 0, 0);
+           
+           var myData = context.getImageData(0, 0, this._videoTexture.videoWidth, this._videoTexture.videoHeight);
+           this._nextFrame.Width = this._videoTexture.videoWidth;
+               this._nextFrame.Height = this._videoTexture.videoHeight;
+               this._nextFrame.PixelFormat = $fuseeCommon.Fusee.Engine.ImagePixelFormat.RGBA;
+               this._nextFrame.Stride = this._videoTexture.width * 3; //TODO: Adjust pixel-size
+               this._nextFrame.PixelData = myData.data;
+            
+
        }
    );
 

@@ -2,6 +2,7 @@
 {
     public interface IVideoManagerImp
     {
-        IVideoStreamImp CreateVideoStreamImp(string filename);
+        IVideoStreamImp CreateVideoStreamImpFromFile(string filename);
+        IVideoStreamImp CreateVideoStreamImpFromCamera();
     }
 }

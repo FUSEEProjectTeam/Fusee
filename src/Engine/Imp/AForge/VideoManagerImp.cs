@@ -8,18 +8,18 @@ namespace Fusee.Engine
         private VideoFileSource _source;
         private VideoCaptureDevice _videoCaptureDevice;
 
-        public IVideoStreamImp CreateVideoStreamImp(string filename)
-        {
-            if (!filename.Equals("webcam"))
-            {
+        //TODO VideoStreamFromFile, VideoStreamFromWebCam
+        public IVideoStreamImp CreateVideoStreamImpFromFile(string filename)
+        {          
                 _source = new VideoFileSource(filename);
                 return new VideoStreamImp(_source);
-            }
+        }
 
+        public  IVideoStreamImp CreateVideoStreamImpFromCamera ()
+        {
             FilterInfoCollection videosources = new FilterInfoCollection(FilterCategory.VideoInputDevice);
             _videoCaptureDevice = new VideoCaptureDevice(videosources[0].MonikerString);
             return new VideoStreamImp(_videoCaptureDevice);
-
         }
     }
 }

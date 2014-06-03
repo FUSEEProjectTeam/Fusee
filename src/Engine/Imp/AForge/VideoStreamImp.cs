@@ -65,6 +65,7 @@ namespace Fusee.Engine
         }
         #endregion
 
+        //TODO:Property
         #region Members
         public ImageData GetCurrentFrame()
         {
