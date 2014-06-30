@@ -48,6 +48,11 @@ namespace Fusee.Engine
         /// </summary>
         public void DetachFromContext()
         {
+            foreach (GUIElement element in this)
+            {
+                element.DetachFromContext();
+            }
+
             _renderContext = null;
         }
 

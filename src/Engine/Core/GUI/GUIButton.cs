@@ -188,6 +188,14 @@ namespace Fusee.Engine
             CreateGUIShader();
         }
 
+        protected internal override void DetachFromContext()
+        {
+            base.DetachFromContext();
+            Input.Instance.OnMouseButtonDown -= OnButtonDown;
+            Input.Instance.OnMouseButtonUp -= OnButtonUp;
+            Input.Instance.OnMouseMove -= OnMouseMove;
+        }
+
         protected override void CreateMesh()
         {
             // GUIMesh
