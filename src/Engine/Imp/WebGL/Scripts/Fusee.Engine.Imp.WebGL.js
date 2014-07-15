@@ -1981,8 +1981,8 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.VideoStreamImp"
                //                              this._videoTexture.src = source;
                //               this._videoTexture.addEventListener("canplay", this.StartVideo.bind(this));
            }
-           //           else {
-           this._filename = "camera";
+            else {
+               this._filename = "camera";
            //               this._canvas = document.createElement('canvas');
            //               this._videoTexture = document.createElement('video');
            //               this._videoTexture.id = "videoTexture";
@@ -2007,42 +2007,42 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.VideoStreamImp"
            //                       }
            //                   );
            //               }
-           //           }
+                      }
        }
    );
 
-    $.Method({ Static: false, Public: true }, "StartVideo",
-        new JSIL.MethodSignature(null, []),
-        function VideoStreamImp_StartVideo() {
-            this._videoTexture.play();
-            this._videoTexture.addEventListener("timeupdate", this.NextFrame.bind(this));
-        }
-    );
+//    $.Method({ Static: false, Public: true }, "StartVideo",
+//        new JSIL.MethodSignature(null, []),
+//        function VideoStreamImp_StartVideo() {
+//            this._videoTexture.play();
+//            this._videoTexture.addEventListener("timeupdate", this.NextFrame.bind(this));
+//        }
+//    );
 
-    $.Method({ Static: false, Public: true }, "NextFrame",
-       new JSIL.MethodSignature(null, []),
-       function VideoStreamImp_NextFrame() {
+//    $.Method({ Static: false, Public: true }, "NextFrame",
+//       new JSIL.MethodSignature(null, []),
+//       function VideoStreamImp_NextFrame() {
 
-           //TODO
+//           //TODO
 
-           this._canvas.width = this._videoTexture.videoWidth;
-           this._canvas.height = this._videoTexture.videoHeight;
-           var context = this._canvas.getContext('2d');
-           context.translate(this._canvas.width / 2, this._canvas.height / 2);
-           context.rotate(180 * Math.PI / 180);
-           context.translate(-this._canvas.width / 2, -this._canvas.height / 2);
-           context.drawImage(this._videoTexture, 0, 0);
+//           this._canvas.width = this._videoTexture.videoWidth;
+//           this._canvas.height = this._videoTexture.videoHeight;
+//           var context = this._canvas.getContext('2d');
+//           context.translate(this._canvas.width / 2, this._canvas.height / 2);
+//           context.rotate(180 * Math.PI / 180);
+//           context.translate(-this._canvas.width / 2, -this._canvas.height / 2);
+//           context.drawImage(this._videoTexture, 0, 0);
 
-           var myData = context.getImageData(0, 0, this._videoTexture.videoWidth, this._videoTexture.videoHeight);
-           this._nextFrame.Width = this._videoTexture.videoWidth;
-           this._nextFrame.Height = this._videoTexture.videoHeight;
-           this._nextFrame.PixelFormat = $fuseeCommon.Fusee.Engine.ImagePixelFormat.RGBA;
-           this._nextFrame.Stride = this._videoTexture.width * 3; //TODO: Adjust pixel-size
-           this._nextFrame.PixelData = myData.data;
+//           var myData = context.getImageData(0, 0, this._videoTexture.videoWidth, this._videoTexture.videoHeight);
+//           this._nextFrame.Width = this._videoTexture.videoWidth;
+//           this._nextFrame.Height = this._videoTexture.videoHeight;
+//           this._nextFrame.PixelFormat = $fuseeCommon.Fusee.Engine.ImagePixelFormat.RGBA;
+//           this._nextFrame.Stride = this._videoTexture.width * 3; //TODO: Adjust pixel-size
+//           this._nextFrame.PixelData = myData.data;
 
 
-       }
-   );
+//       }
+//   );
 
     $.Method({ Static: false, Public: true }, "GetCurrentFrame",
      new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.ImageData"), []),
