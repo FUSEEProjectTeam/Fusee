@@ -25,7 +25,7 @@ namespace Examples.VideoTextureExample
 
         private ITexture _iTex;
 
-        private VideoStream _videoStream;
+        private IVideoStreamImp _videoStream;
 
         // is called on startup
         public override void Init()
@@ -38,8 +38,8 @@ namespace Examples.VideoTextureExample
 
             _textureParam = _spTexture.GetShaderParam("texture1");
 
-            _videoStream = VideoManager.Instance.LoadVideoFromFile(@"Assets/pot.webm");
-            //_videoStream = VideoManager.Instance.LoadVideoFromCamera();
+            //_videoStream = VideoManager.Instance.LoadVideoFromFile(@"Assets/pot.webm");
+            _videoStream = VideoManager.Instance.LoadVideoFromCamera();
         }
 
 
@@ -48,14 +48,15 @@ namespace Examples.VideoTextureExample
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
+            RC.UpdateTextureFromVideoStream(_videoStream, _iTex);
 
-            var imgData = _videoStream.GetCurrentFrame();
-            if (imgData.PixelData != null)
-            {
-                if (_iTex == null)
-                    _iTex = RC.CreateTexture(imgData);
-                RC.UpdateTextureRegion(_iTex, imgData, 0, 0);
-            }
+            //var imgData = _videoStream.GetCurrentFrame();
+            //if (imgData.PixelData != null)
+            //{
+            //    if (_iTex == null)
+            //        _iTex = RC.CreateTexture(imgData);
+            //    RC.UpdateTextureRegion(_iTex, imgData, 0, 0);
+            //}
 
             // move per mouse
             if (Input.Instance.IsButton(MouseButtons.Left))

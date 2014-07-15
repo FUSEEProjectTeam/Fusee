@@ -196,6 +196,7 @@ namespace Fusee.Engine
         /// <param name="texId">An ITexture probably returned from CreateTexture() method.</param>
         void SetShaderParamTexture(IShaderParam param, ITexture texId);
 
+        void UpdateTextureFromVideoStream(IVideoStreamImp stream, ITexture tex);
 
         void UpdateTextureRegion(ITexture tex, ImageData img, int startX, int startY);
 

@@ -15,18 +15,14 @@ namespace Fusee.Engine
             set { _videoManagerImp = value; }
         }
 
-        public VideoStream LoadVideoFromFile (string filename)
+        public IVideoStreamImp LoadVideoFromFile (string filename)
         {
-            var source = new VideoStream();
-            source._imp = _videoManagerImp.CreateVideoStreamImpFromFile(filename);
-            return source;
+            return _videoManagerImp.CreateVideoStreamImpFromFile(filename);
         }
 
-        public VideoStream LoadVideoFromCamera()
+        public IVideoStreamImp LoadVideoFromCamera()
         {
-            var source = new VideoStream();
-            source._imp = _videoManagerImp.CreateVideoStreamImpFromCamera();
-            return source;
+            return _videoManagerImp.CreateVideoStreamImpFromCamera();
         }
 
         public static VideoManager Instance

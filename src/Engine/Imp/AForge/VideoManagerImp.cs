@@ -12,7 +12,8 @@ namespace Fusee.Engine
         public IVideoStreamImp CreateVideoStreamImpFromFile(string filename)
         {          
                 _source = new VideoFileSource(filename);
-                return new VideoStreamImp(_source);
+                VideoStreamImp stream = new VideoStreamImp(_source);
+                return (IVideoStreamImp) stream;
         }
 
         public  IVideoStreamImp CreateVideoStreamImpFromCamera ()

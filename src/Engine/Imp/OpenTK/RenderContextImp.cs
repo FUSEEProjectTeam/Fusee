@@ -51,7 +51,33 @@ namespace Fusee.Engine
 
         #region Image data related Members
 
+        public void UpdateTextureFromVideoStream(IVideoStreamImp stream, ITexture tex)
+        {
+            ImageData img = stream.GetCurrentFrame();
+            OpenTK.Graphics.OpenGL.PixelFormat format;
+            switch (img.PixelFormat)
+            {
+                case ImagePixelFormat.RGBA:
+                    format = OpenTK.Graphics.OpenGL.PixelFormat.Bgra;
+                    break;
+                case ImagePixelFormat.RGB:
+                    format = OpenTK.Graphics.OpenGL.PixelFormat.Bgr;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            if (img.PixelData != null)
+            {
+                if (tex == null)
+                    tex = CreateTexture(img);
 
+                GL.BindTexture(TextureTarget.Texture2D, ((Texture) tex).handle);
+                GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, img.Width, img.Height,
+                                 format, PixelType.UnsignedByte, img.PixelData);
+            }
+
+        }
+            
         public void UpdateTextureRegion(ITexture tex, ImageData img, int startX, int startY)
         {
             OpenTK.Graphics.OpenGL.PixelFormat format;
