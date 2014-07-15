@@ -187,7 +187,7 @@ namespace Examples.AudioTestEnvironment
             _sound1 = Audio.Instance.LoadFile("Assets/audio/Bounce1." + fileType, loadType);
             _sound2 = Audio.Instance.LoadFile("Assets/audio/Bounce2." + fileType, loadType);
             _sound3 = Audio.Instance.LoadFile("Assets/audio/Bounce3." + fileType, loadType);
-            _sound4 = Audio.Instance.LoadFile("Assets/audio/LaserBallMusic." + fileType, loadType);
+            _sound4 = Audio.Instance.LoadFile("Assets/audio/LaserBallMusic." + fileType, true);
         }
         #endregion
     }
