@@ -475,27 +475,29 @@ namespace Fusee.Engine
         {
             if (!_videoWallMode)
             {
-                //var widthH = _width;
-                //var heightH = _height;
-
-                //var scHeightH = Screen.PrimaryScreen.Bounds.Height/2;
-                //var scWidthH = Screen.PrimaryScreen.Bounds.Width/2;
-
-                //_gameWindow.Bounds = new System.Drawing.Rectangle(scWidthH - widthH, scHeightH - heightH, _width,_height);
-                _gameWindow.Bounds = new System.Drawing.Rectangle(_windowPosX, _windowPosY, _width, _height);
                 _gameWindow.WindowBorder = _windowBorderHidden ? WindowBorder.Hidden : WindowBorder.Resizable;
-                    
+                /* TODO: Remove this Debug Code.
+                if (_windowBorderHidden)
+                {
+                    _width += 0;
+                    _gameWindow.WindowBorder = WindowBorder.Hidden;
+                }
+                else
+                {
+                    _gameWindow.WindowBorder = WindowBorder.Resizable;
+                }
+                 */
+                _gameWindow.Bounds = new System.Drawing.Rectangle(_windowPosX, _windowPosY, _width, _height);
             }
             else
             {
-                var oneScreenWidth = Screen.PrimaryScreen.Bounds.Width;
+                var oneScreenWidth = Screen.PrimaryScreen.Bounds.Width + 16; // TODO: Fix this. This +16 is strance behavior. Border should not make an impact to the width.
                 var oneScreenHeight = Screen.PrimaryScreen.Bounds.Height;
 
                 var width = oneScreenWidth*_videoWallMonitorsHor;
                 var height = oneScreenHeight*_videoWallMonitorsVert;
 
                 _gameWindow.Bounds = new System.Drawing.Rectangle(0, 0, width, height);
-                //_gameWindow.Bounds = new System.Drawing.Rectangle(0, 0, 1000, 200);
                 
                 if (_windowBorderHidden)
                     _gameWindow.WindowBorder = WindowBorder.Hidden;
