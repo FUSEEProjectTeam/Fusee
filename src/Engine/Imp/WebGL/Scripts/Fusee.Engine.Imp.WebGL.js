@@ -482,8 +482,8 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
     $.Field({ Static: false, Public: false }, "_currentTextureUnit", $.Int32, null);
     $.Field({ Static: false, Public: false }, "_shaderParam2TexUnit", $.Object, null);
     $.Field({ Static: false, Public: false }, "_currentShaderParamHandle", $.Int32, null);
-    $.Field({ Static: false, Public: false }, "_videoTexture", $.Object, null);
-    $.Field({ Static: false, Public: false }, "_videoIsPlaying", $.Boolean, null);
+    //    $.Field({ Static: false, Public: false }, "_videoTexture", $.Object, null);
+    //    $.Field({ Static: false, Public: false }, "_videoIsPlaying", $.Boolean, null);
     $.Field({ Static: false, Public: false }, "_depthTest", $.Boolean, null);
     $.Field({ Static: false, Public: false }, "_blending", $.Boolean, null);
 
@@ -495,7 +495,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
             this.gl.enable(this.gl.CULL_FACE);
             this.gl.clearColor(0.0, 0.0, 0.2, 1.0);
             this._currentTextureUnit = 0;
-            this._videoIsPlaying = false;
+            //this._videoIsPlaying = false;
             // TODO - implement this in render states!!!
             this.gl.cullFace(this.gl.BACK);
         }
@@ -582,15 +582,14 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
               new Uint8Array([255, 0, 0, 255]));
             }
 
-            
-            if (this._videoTexture == null) {
+
+            if (stream._videoElement == null) {
                 var canvas = document.createElement("canvas");
-                this._videoTexture = document.createElement("video");
+                stream._videoElement = document.createElement("video");
                 //this._videoTexture.id = "videoTexture";
                 if (stream._filename != "camera") {
-                    this._videoTexture.src = stream._filename;
-                    this._videoTexture.loop = true;
-                    this._videoTexture.addEventListener("canplaythrough", this.StartVideo.bind(this));
+                    stream._videoElement.src = stream._filename;
+                    stream._videoElement.loop = true;
                 } else {
 
                     //this._canvas = document.createElement('canvas');
@@ -605,13 +604,12 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
                         navigator.getUserMedia(
                                 {
                                     video: true,
-                                    audio: true
+                                    audio: false //TODO Let user decide to use audio from webcam
                                 },
                                 function (localMediaStream) {
                                     var url = window.URL || window.webkitURL;
-                                    callbackClosure._videoTexture.src = url ? window.URL.createObjectURL(localMediaStream) : localMediaStream;
-                                    callbackClosure._videoTexture.addEventListener("canplaythrough", callbackClosure.StartVideo.bind(callbackClosure));
-                                },
+                                    stream._videoElement.src = url ? window.URL.createObjectURL(localMediaStream) : localMediaStream;
+                                   },
                                 function (err) {
                                     console.log("The following error has occured: " + err);
                                 }
@@ -624,10 +622,14 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
                     //              new Uint8Array([255, 0, 0, 255]));
                 }
             }
-            else {
-                if (this._videoIsPlaying) {
+                    else {
+                        if (stream._videoElement.readyState === 4) {
+                            stream._videoElement.play();
+                            stream._isPlaying = true;
+                        }
+                if (stream._isPlaying) {
                     this.gl.bindTexture(this.gl.TEXTURE_2D, tex.handle);
-                    this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, this._videoTexture);
+                    this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, stream._videoElement);
                     this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true);
                     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
                     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.LINEAR);
@@ -648,19 +650,19 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
         }
     );
 
-//    $.Method({ Static: false, Public: true }, "NextFrame",
-//       new JSIL.MethodSignature(null, []),
-//       function VideoStreamImp_NextFrame() {
+    //    $.Method({ Static: false, Public: true }, "NextFrame",
+    //       new JSIL.MethodSignature(null, []),
+    //       function VideoStreamImp_NextFrame() {
 
-//           this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, this._videoTexture);
-//           this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
-//           this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.LINEAR);
+    //           this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, this._videoTexture);
+    //           this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
+    //           this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.LINEAR);
 
-//           this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
-//           this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
+    //           this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
+    //           this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
 
-//       }
-//   );
+    //       }
+    //   );
 
     $.Method({ Static: false, Public: true }, "UpdateTextureRegion",
         new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.ITexture"), $fuseeCommon.TypeRef("Fusee.Engine.ImageData"), $.Int32, $.Int32]),
@@ -1967,86 +1969,97 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.VideoStreamImp"
     $ = $interfaceBuilder;
 
     $.Field({ Static: false, Public: true }, "_nextFrame", $fuseeCommon.TypeRef("Fusee.Engine.ImageData"), null);
-    $.Field({ Static: false, Public: true }, "_videoTexture", $.Object, null);
+    $.Field({ Static: false, Public: true }, "_videoElement", $.Object, null);
     $.Field({ Static: false, Public: true }, "_filename", $.String, null);
+    $.Field({ Static: false, Public: true }, "_isPlaying", $.Boolean, null);
     $.Field({ Static: false, Public: true }, "_canvas", $.Object, null);
     $.Method({ Static: false, Public: true }, ".ctor",
        new JSIL.MethodSignature(null, [$.String]),
        function VideoStreamImp__ctor(source) {
-           if (source != "camera") {
-               this._filename = source;
-               //                              this._canvas = document.createElement('canvas');
-               //                              this._videoTexture = document.createElement('video');
-               //                              this._videoTexture.id = "videoTexture";
-               //                              this._videoTexture.src = source;
-               //               this._videoTexture.addEventListener("canplay", this.StartVideo.bind(this));
-           }
-            else {
-               this._filename = "camera";
-           //               this._canvas = document.createElement('canvas');
-           //               this._videoTexture = document.createElement('video');
-           //               this._videoTexture.id = "videoTexture";
-           //               navigator.getUserMedia = (navigator.getUserMedia ||
-           //                   navigator.webkitGetUserMedia ||
-           //                   navigator.mozGetUserMedia ||
-           //                   navigator.msGetUserMedia);
-           //               if (navigator.getUserMedia) {
-           //                   var callbackClosure = this;
-           //                   navigator.getUserMedia(
-           //                       {
-           //                           video: true,
-           //                           audio: true
-           //                       },
-           //                       function (localMediaStream) {
-           //                           var url = window.URL || window.webkitURL;
-           //                           callbackClosure._videoTexture.src = url ? window.URL.createObjectURL(localMediaStream) : localMediaStream;
-           //                           callbackClosure._videoTexture.addEventListener("canplay", callbackClosure.StartVideo.bind(callbackClosure));
-           //                       },
-           //                       function (err) {
-           //                           console.log("The following error has occured: " + err);
-           //                       }
-           //                   );
-           //               }
-                      }
+
+           this._filename = source;
+           this._isPlaying = false;
+           this._canvas = document.createElement("canvas");
+           this._canvas.width = 1;
+           this._canvas.height = 1;
+           var context = this._canvas.getContext('2d');
+           var myData = context.getImageData(0, 0, 100, 100);
+           this._nextFrame.Width = 1;
+           this._nextFrame.Height = 1;
+           this._nextFrame.PixelFormat = $fuseeCommon.Fusee.Engine.ImagePixelFormat.RGBA;
+           this._nextFrame.Stride =1 * 3; //TODO: Adjust pixel-size
+           this._nextFrame.PixelData = myData.data;
        }
    );
 
-//    $.Method({ Static: false, Public: true }, "StartVideo",
-//        new JSIL.MethodSignature(null, []),
-//        function VideoStreamImp_StartVideo() {
-//            this._videoTexture.play();
-//            this._videoTexture.addEventListener("timeupdate", this.NextFrame.bind(this));
-//        }
-//    );
+    $.Method({ Static: false, Public: true }, "StartVideo",
+            new JSIL.MethodSignature(null, []),
+            function VideoStreamImp_StartVideo() {
+                this._videoElement.play();
+                this._videoElement.addEventListener("timeupdate", this.NextFrame.bind(this));
+            }
+        );
 
-//    $.Method({ Static: false, Public: true }, "NextFrame",
-//       new JSIL.MethodSignature(null, []),
-//       function VideoStreamImp_NextFrame() {
+    $.Method({ Static: false, Public: true }, "NextFrame",
+           new JSIL.MethodSignature(null, []),
+           function VideoStreamImp_NextFrame() {
 
-//           //TODO
+               //TODO
 
-//           this._canvas.width = this._videoTexture.videoWidth;
-//           this._canvas.height = this._videoTexture.videoHeight;
-//           var context = this._canvas.getContext('2d');
-//           context.translate(this._canvas.width / 2, this._canvas.height / 2);
-//           context.rotate(180 * Math.PI / 180);
-//           context.translate(-this._canvas.width / 2, -this._canvas.height / 2);
-//           context.drawImage(this._videoTexture, 0, 0);
+               this._canvas.width = this._videoElement.videoWidth;
+               this._canvas.height = this._videoElement.videoHeight;
+               var context = this._canvas.getContext('2d');
+               context.translate(this._canvas.width / 2, this._canvas.height / 2);
+               context.rotate(180 * Math.PI / 180);
+               context.translate(-this._canvas.width / 2, -this._canvas.height / 2);
+               context.drawImage(this._videoElement, 0, 0);
 
-//           var myData = context.getImageData(0, 0, this._videoTexture.videoWidth, this._videoTexture.videoHeight);
-//           this._nextFrame.Width = this._videoTexture.videoWidth;
-//           this._nextFrame.Height = this._videoTexture.videoHeight;
-//           this._nextFrame.PixelFormat = $fuseeCommon.Fusee.Engine.ImagePixelFormat.RGBA;
-//           this._nextFrame.Stride = this._videoTexture.width * 3; //TODO: Adjust pixel-size
-//           this._nextFrame.PixelData = myData.data;
+               var myData = context.getImageData(0, 0, this._videoElement.videoWidth, this._videoElement.videoHeight);
+               this._nextFrame.Width = this._videoElement.videoWidth;
+               this._nextFrame.Height = this._videoElement.videoHeight;
+               this._nextFrame.PixelFormat = $fuseeCommon.Fusee.Engine.ImagePixelFormat.RGBA;
+               this._nextFrame.Stride = this._videoElement.width * 3; //TODO: Adjust pixel-size
+               this._nextFrame.PixelData = myData.data;
 
 
-//       }
-//   );
+           }
+       );
 
     $.Method({ Static: false, Public: true }, "GetCurrentFrame",
      new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.ImageData"), []),
      function VideoStreamImp_GetCurrentFrame() {
+         if (this._videoElement == null) {
+             this._canvas = document.createElement('canvas');
+             this._videoElement = document.createElement('video');
+             //this._videoTexture.id = "videoTexture";
+             if (this._filename != "camera") {
+                 this._videoElement.src = this._filename;
+                 this._videoElement.addEventListener("canplay", this.StartVideo.bind(this));
+             }
+             else {
+                 navigator.getUserMedia = (navigator.getUserMedia ||
+                     navigator.webkitGetUserMedia ||
+                     navigator.mozGetUserMedia ||
+                     navigator.msGetUserMedia);
+                 if (navigator.getUserMedia) {
+                     var callbackClosure = this;
+                     navigator.getUserMedia(
+                         {
+                             video: true,
+                             audio: true
+                         },
+                         function (localMediaStream) {
+                             var url = window.URL || window.webkitURL;
+                             callbackClosure._videoElement.src = url ? window.URL.createObjectURL(localMediaStream) : localMediaStream;
+                             callbackClosure._videoElement.addEventListener("canplay", callbackClosure.StartVideo.bind(callbackClosure));
+                         },
+                         function (err) {
+                             console.log("The following error has occured: " + err);
+                         }
+                     );
+                 }
+             }
+         }
          return this._nextFrame;
      }
  );
