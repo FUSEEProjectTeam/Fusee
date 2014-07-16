@@ -87,6 +87,26 @@ namespace Fusee.Engine
         void OpenLink(string link);
 
         /// <summary>
+        /// Sets the data for a video wall.
+        /// </summary>
+        /// <param name="monitorsHor"></param>
+        /// <param name="monitorsVert"></param>
+        void VideoWall(int monitorsHor, int monitorsVert, bool activate = true, bool borderHidden = true);
+
+        /// <summary>
+        /// Sets the size of the output window for desktop development.
+        /// </summary>
+        /// <param name="width">The width of the window.</param>
+        /// <param name="height">The height of the window.</param>
+        /// <param name="borderHidden">Show the window border or not.</param>
+        void SetWindowSize(int width, int height, bool borderHidden = false, int posx = 0, int posy = 0);
+
+        /// <summary>
+        /// Closes the GameWindow with a call to opentk.
+        /// </summary>
+        void CloseGameWindow();
+
+        /// <summary>
         /// Occurs when [init] is called.
         /// Implementation Tasks: Handle the Initialization process
         /// </summary>
@@ -102,6 +122,6 @@ namespace Fusee.Engine
         /// <summary>
         /// Occurs when [Resize] is called.
         /// </summary>
-        event EventHandler<ResizeEventArgs> Resize;
+        event EventHandler<ResizeEventArgs> Resize;    
     }
 }
