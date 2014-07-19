@@ -172,7 +172,7 @@ namespace Fusee.Engine
             Network.Instance.NetworkImp = _networkImp;
 
             _canvasImp.Init += delegate { Init(); };
-            _canvasImp.UnLoad += delegate { UnLoad(); };
+            _canvasImp.UnLoad += delegate { DeInit(); };
 
             _canvasImp.Render += delegate
             {
@@ -219,7 +219,7 @@ namespace Fusee.Engine
         /// Used to release the ressources of all audio and network instances.
         /// All audio and network ressources get reset.
         /// </summary>
-        public virtual void UnLoad()
+        public virtual void DeInit()
         {
             Audio.Instance.CloseDevice();
             Network.Instance.CloseDevice();
