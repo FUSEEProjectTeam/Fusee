@@ -579,7 +579,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
                 tex.handle = glTexOb;
                 this.gl.bindTexture(this.gl.TEXTURE_2D, tex.handle);
                 this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, 1, 1, 0, this.gl.RGBA, this.gl.UNSIGNED_BYTE,
-              new Uint8Array([255, 0, 0, 255]));
+              new Uint8Array([255, 255, 255, 255]));
             }
 
 
@@ -589,7 +589,6 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
                 //this._videoTexture.id = "videoTexture";
                 if (stream._filename != "camera") {
                     stream._videoElement.src = stream._filename;
-                    stream._videoElement.loop = true;
                 } else {
 
                     //this._canvas = document.createElement('canvas');
@@ -604,12 +603,12 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
                         navigator.getUserMedia(
                                 {
                                     video: true,
-                                    audio: false //TODO Let user decide to use audio from webcam
+                                    audio: stream._useAudio ? true : false //TODO Let user decide to use audio from webcam
                                 },
                                 function (localMediaStream) {
                                     var url = window.URL || window.webkitURL;
                                     stream._videoElement.src = url ? window.URL.createObjectURL(localMediaStream) : localMediaStream;
-                                   },
+                                },
                                 function (err) {
                                     console.log("The following error has occured: " + err);
                                 }
@@ -622,14 +621,19 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
                     //              new Uint8Array([255, 0, 0, 255]));
                 }
             }
-                    else {
-                        if (stream._videoElement.readyState === 4) {
-                            stream._videoElement.play();
-                            stream._isPlaying = true;
-                        }
+            else {
+                if (stream._videoElement.readyState === 4) {
+                    stream._videoElement.play();
+                    if (stream._loopVideo)
+                        stream._videoElement.loop = true;
+                    if (!stream._useAudio)
+                        stream._videoElement.muted = true;
+                    stream._isPlaying = true;
+                }
                 if (stream._isPlaying) {
                     this.gl.bindTexture(this.gl.TEXTURE_2D, tex.handle);
-                    this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, stream._videoElement);
+                    if (!stream._videoElement.ended)
+                        this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, stream._videoElement);
                     this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true);
                     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
                     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.LINEAR);
@@ -641,28 +645,6 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
         }
     );
 
-    $.Method({ Static: false, Public: true }, "StartVideo",
-        new JSIL.MethodSignature(null, []),
-        function VideoStreamImp_StartVideo() {
-            this._videoTexture.play();
-            this._videoIsPlaying = true;
-            //this._videoTexture.addEventListener("timeupdate", this.NextFrame.bind(this));
-        }
-    );
-
-    //    $.Method({ Static: false, Public: true }, "NextFrame",
-    //       new JSIL.MethodSignature(null, []),
-    //       function VideoStreamImp_NextFrame() {
-
-    //           this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, this._videoTexture);
-    //           this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
-    //           this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.LINEAR);
-
-    //           this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
-    //           this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
-
-    //       }
-    //   );
 
     $.Method({ Static: false, Public: true }, "UpdateTextureRegion",
         new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.ITexture"), $fuseeCommon.TypeRef("Fusee.Engine.ImageData"), $.Int32, $.Int32]),
@@ -704,7 +686,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
 
             imageData.Width = width;
             imageData.Height = height;
-            imageData.PixelFormat = ImagePixelFormat.RGBA;
+            imageData.PixelFormat = $fuseeCommon.Fusee.Engine.ImagePixelFormat.RGBA;
             imageData.Stride = width * 4; //TODO: Adjust pixel-size
             imageData.PixelData = myData.data;
 
@@ -731,6 +713,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
             var imageData = new $fuseeCommon.Fusee.Engine.ImageData();
             imageData.Width = image.width;
             imageData.Height = image.height;
+            imageData.PixelFormat = $fuseeCommon.Fusee.Engine.ImagePixelFormat.RGBA;
             imageData.Stride = image.width * 4; //TODO: Adjust pixel-size
             imageData.PixelData = myData.data;
             isloaded = true;
@@ -1942,17 +1925,17 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.VideoManagerImp
 
 
     $.Method({ Static: false, Public: true }, "CreateVideoStreamImpFromFile",
-     new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.IVideoStreamImp"), [$.String]),
-     function VideoManagerImp_CreateVideoStreamImpFromFile(filename) {
-         return new $WebGLImp.Fusee.Engine.VideoStreamImp(filename);
+     new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.IVideoStreamImp"), [$.String, $.Boolean, $.Boolean]),
+     function VideoManagerImp_CreateVideoStreamImpFromFile(filename, loopVideo, useAudio) {
+         return new $WebGLImp.Fusee.Engine.VideoStreamImp(filename, loopVideo, useAudio);
      }
 
  );
 
      $.Method({ Static: false, Public: true }, "CreateVideoStreamImpFromCamera",
-     new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.IVideoStreamImp"), [$.String]),
+     new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.IVideoStreamImp"), [$.Int32, $.Boolean]),
      function VideoManagerImp_CreateVideoStreamImpFromCamera() {
-         return new $WebGLImp.Fusee.Engine.VideoStreamImp("camera");
+         return new $WebGLImp.Fusee.Engine.VideoStreamImp("camera",false, false);
      }
 
  );
@@ -1972,29 +1955,32 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.VideoStreamImp"
     $.Field({ Static: false, Public: true }, "_videoElement", $.Object, null);
     $.Field({ Static: false, Public: true }, "_filename", $.String, null);
     $.Field({ Static: false, Public: true }, "_isPlaying", $.Boolean, null);
+    $.Field({ Static: false, Public: true }, "_loopVideo", $.Boolean, null);
+    $.Field({ Static: false, Public: true }, "_useAudio", $.Boolean, null);
     $.Field({ Static: false, Public: true }, "_canvas", $.Object, null);
     $.Method({ Static: false, Public: true }, ".ctor",
-       new JSIL.MethodSignature(null, [$.String]),
-       function VideoStreamImp__ctor(source) {
+       new JSIL.MethodSignature(null, [$.String, $.Boolean, $.Boolean]),
+       function VideoStreamImp__ctor(source, loopVideo, useAudio) {
 
            this._filename = source;
            this._isPlaying = false;
+           this._loopVideo = loopVideo;
+           this._useAudio = useAudio;
            this._canvas = document.createElement("canvas");
-           this._canvas.width = 1;
-           this._canvas.height = 1;
-           var context = this._canvas.getContext('2d');
-           var myData = context.getImageData(0, 0, 100, 100);
-           this._nextFrame.Width = 1;
-           this._nextFrame.Height = 1;
-           this._nextFrame.PixelFormat = $fuseeCommon.Fusee.Engine.ImagePixelFormat.RGBA;
-           this._nextFrame.Stride =1 * 3; //TODO: Adjust pixel-size
-           this._nextFrame.PixelData = myData.data;
+
+           this._nextFrame = new $fuseeCommon.Fusee.Engine.ImageData();
+
+
        }
    );
 
     $.Method({ Static: false, Public: true }, "StartVideo",
             new JSIL.MethodSignature(null, []),
             function VideoStreamImp_StartVideo() {
+                if (!this._useAudio)
+                    this._videoElement.muted = true;
+                if (this._loopVideo)
+                    this._videoElement.loop = true;
                 this._videoElement.play();
                 this._videoElement.addEventListener("timeupdate", this.NextFrame.bind(this));
             }
@@ -2018,7 +2004,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.VideoStreamImp"
                this._nextFrame.Width = this._videoElement.videoWidth;
                this._nextFrame.Height = this._videoElement.videoHeight;
                this._nextFrame.PixelFormat = $fuseeCommon.Fusee.Engine.ImagePixelFormat.RGBA;
-               this._nextFrame.Stride = this._videoElement.width * 3; //TODO: Adjust pixel-size
+               this._nextFrame.Stride = this._videoElement.width * 4; //TODO: Adjust pixel-size
                this._nextFrame.PixelData = myData.data;
 
 
@@ -2034,6 +2020,10 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.VideoStreamImp"
              //this._videoTexture.id = "videoTexture";
              if (this._filename != "camera") {
                  this._videoElement.src = this._filename;
+                 if (!this._useAudio)
+                     this._videoElement.muted = true;
+                 if (this._loopVideo)
+                     this._videoElement.loop = true;
                  this._videoElement.addEventListener("canplay", this.StartVideo.bind(this));
              }
              else {
@@ -2046,7 +2036,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.VideoStreamImp"
                      navigator.getUserMedia(
                          {
                              video: true,
-                             audio: true
+                             audio: this._useAudio ? true : false
                          },
                          function (localMediaStream) {
                              var url = window.URL || window.webkitURL;
@@ -2064,6 +2054,17 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.VideoStreamImp"
      }
  );
 
+    $.Method({ Static: false, Public: true }, "Start",
+        new JSIL.MethodSignature(null, []),
+        function VideoStreamImp_Start() {
+            this._videoElement.play();
+        });
+
+    $.Method({ Static: false, Public: true }, "Stop",
+        new JSIL.MethodSignature(null, []),
+        function VideoStreamImp_Start() {
+            this._videoElement.pause();
+        });
 
 
 

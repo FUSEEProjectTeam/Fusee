@@ -38,8 +38,8 @@ namespace Examples.VideoTextureExample
 
             _textureParam = _spTexture.GetShaderParam("texture1");
 
-            //_videoStream = VideoManager.Instance.LoadVideoFromFile(@"Assets/pot.webm");
-            _videoStream = VideoManager.Instance.LoadVideoFromCamera();
+            _videoStream = VideoManager.Instance.LoadVideoFromFile(@"Assets/small.webm", true);
+            //_videoStream = VideoManager.Instance.LoadVideoFromCamera(0, false);
         }
 
 
@@ -57,6 +57,11 @@ namespace Examples.VideoTextureExample
             //        _iTex = RC.CreateTexture(imgData);
             //    RC.UpdateTextureRegion(_iTex, imgData, 0, 0);
             //}
+
+            if (Input.Instance.IsKey(KeyCodes.P))
+                _videoStream.Stop();
+            if (Input.Instance.IsKey(KeyCodes.Space))
+                _videoStream.Start();
 
             // move per mouse
             if (Input.Instance.IsButton(MouseButtons.Left))

@@ -17,18 +17,22 @@ namespace Fusee.Engine
         #endregion
 
         #region Constructors
-        public VideoStreamImp(VideoFileSource source)
+        public VideoStreamImp(VideoFileSource source, bool loopVideo, bool useAudio)
         {
             _source = source;
             _source.NewFrame += NextFrame;
-            _source.PlayingFinished += PlayingFinished;
+            if (loopVideo)
+                _source.PlayingFinished += PlayingFinished;
+            _source.VideoSourceError += VideoSourceError;
+            _source.WaitForStop();
             _source.Start();
         }
 
-        public VideoStreamImp (VideoCaptureDevice videoCaptureDevice)
+        public VideoStreamImp (VideoCaptureDevice videoCaptureDevice, bool useAudio)
         {
             _videoCaptureDevice = videoCaptureDevice;
             _videoCaptureDevice.NewFrame += NextFrame;
+            _videoCaptureDevice.VideoSourceError += VideoSourceError;
             _videoCaptureDevice.Start();
         }
         #endregion
@@ -58,10 +62,17 @@ namespace Fusee.Engine
         }
 
         public void PlayingFinished (object sender, ReasonToFinishPlaying reason)
-        {
-            _source.SignalToStop();
-            _source.Start();
+        {  
+            _source = new VideoFileSource(_source.Source);
             _source.NewFrame += NextFrame;
+            _source.PlayingFinished += PlayingFinished;
+            _source.Start();
+
+        }
+
+        public void VideoSourceError(object sender, VideoSourceErrorEventArgs args)
+        {
+            System.Diagnostics.Debug.WriteLine(args.Description);
         }
         #endregion
 
@@ -84,3 +95,4 @@ namespace Fusee.Engine
         #endregion
     }
 }
+
