@@ -1,4 +1,5 @@
 ﻿using System;
+using JSIL.Meta;
 
 namespace Fusee.Engine
 {
@@ -91,6 +92,7 @@ namespace Fusee.Engine
         /// </summary>
         /// <param name="monitorsHor"></param>
         /// <param name="monitorsVert"></param>
+        [JSExternal]
         void VideoWall(int monitorsHor, int monitorsVert, bool activate = true, bool borderHidden = true);
 
         /// <summary>
@@ -99,6 +101,7 @@ namespace Fusee.Engine
         /// <param name="width">The width of the window.</param>
         /// <param name="height">The height of the window.</param>
         /// <param name="borderHidden">Show the window border or not.</param>
+        [JSExternal]
         void SetWindowSize(int width, int height, bool borderHidden = false, int posx = 0, int posy = 0);
 
         /// <summary>

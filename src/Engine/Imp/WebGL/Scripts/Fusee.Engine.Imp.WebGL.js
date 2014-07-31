@@ -462,6 +462,24 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderCanvasImp
             this.frameTicker();
         }
     );
+    
+    /*
+    // TODO: This method has some problems with a type error: "Error: Type missing type ID"
+    $.Method({ Static: false, Public: true }, "SetWindowSize",
+        new JSIL.MethodSignature(null, [$.Int32, $.Int32, $.Boolean = false, $.Int32 = 0, $.Int32 = 0]),
+        function SetWindowSize(width, height, borderHidden, posx, posy) {
+            // Do nothing here because web dos nit support different window sizes for now.
+        }
+    );
+
+    // TODO: This method has some problems with a type error: "Error: Type missing type ID"
+    $.Method({ Static: false, Public: true }, "VideoWall",
+        new JSIL.MethodSignature(null, [$.Int32 = 1, $.Int32 = 1, $.Boolean = true, $.Boolean = false]),
+        function VideoWall(monitorsHor, monitorsVert, activate, borderHidden) {
+            // Do nothing here because web dos nit support video wall mode for now.
+        }
+    );
+    */
 
     $.Property({ Static: false, Public: true }, "DeltaTime");
     $.Property({ Static: false, Public: true }, "Height");
@@ -2111,6 +2129,8 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.InputImp", true
             };
         }
     );
+
+
 
     $.ImplementInterfaces(
         $fuseeCommon.TypeRef("Fusee.Engine.IInputImp")
