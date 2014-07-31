@@ -1,3 +1,5 @@
+#pragma warning disable 1591
+
 using System;
 using System.Runtime.InteropServices;
 using ProtoBuf;
@@ -1678,20 +1680,22 @@ namespace Fusee.Math
             //                 new float4(mat.M13, mat.M23, mat.M33, 0),
             //                 new float4(val1, val2, val3, 1));
 
-
             throw new ApplicationException("InvertAffine is broken (probably since column order notation)");
+
             // TODO: fix this!
             //  Column order notation ???
-            var val1 = -(mat.M11 * mat.M14 + mat.M21 * mat.M24 + mat.M31 * mat.M34);
-            var val2 = -(mat.M12 * mat.M14 + mat.M22 * mat.M24 + mat.M32 * mat.M34);
-            var val3 = -(mat.M13 * mat.M14 + mat.M23 * mat.M24 + mat.M33 * mat.M34);
 
-            return
-                new float4x4(new float4(mat.M11, mat.M21, mat.M31, val1),
-                             new float4(mat.M12, mat.M22, mat.M32, val2),
-                             new float4(mat.M13, mat.M23, mat.M33, val3),
-                             new float4(0,       0,       0,       1));
-        
+            /*
+                var val1 = -(mat.M11 * mat.M14 + mat.M21 * mat.M24 + mat.M31 * mat.M34);
+                var val2 = -(mat.M12 * mat.M14 + mat.M22 * mat.M24 + mat.M32 * mat.M34);
+                var val3 = -(mat.M13 * mat.M14 + mat.M23 * mat.M24 + mat.M33 * mat.M34);
+
+                return
+                    new float4x4(new float4(mat.M11, mat.M21, mat.M31, val1),
+                                 new float4(mat.M12, mat.M22, mat.M32, val2),
+                                 new float4(mat.M13, mat.M23, mat.M33, val3),
+                                 new float4(0,       0,       0,       1));
+            */
         }
 
         #endregion
@@ -2026,3 +2030,5 @@ namespace Fusee.Math
 
     }
 }
+
+#pragma warning restore 1591

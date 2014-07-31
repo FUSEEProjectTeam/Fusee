@@ -1,3 +1,5 @@
+#pragma warning disable 1591
+
 using System;
 using System.Runtime.InteropServices;
 
@@ -1333,3 +1335,5 @@ namespace Fusee.Math
         public static Converter<string, double4> Parse { get; set; }
     }
 }
+
+#pragma warning restore 1591

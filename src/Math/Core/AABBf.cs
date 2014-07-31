@@ -5,7 +5,7 @@ using ProtoBuf;
 namespace Fusee.Math
 {
     /// <summary>
-    /// Represents an axis aligned bounding box.
+    ///     Represents an axis aligned bounding box.
     /// </summary>
     [ProtoContract]
     [Serializable]
@@ -13,19 +13,17 @@ namespace Fusee.Math
     public struct AABBf
     {
         /// <summary>
-        /// The minimum values of the axis aligned bounding box in x, y and z direction
+        ///     The minimum values of the axis aligned bounding box in x, y and z direction
         /// </summary>
-        [ProtoMember(1)]
-        public float3 min;
+        [ProtoMember(1)] public float3 min;
 
         /// <summary>
-        /// The maximum values of the axis aligned bounding box in x, y and z direction
-        /// </summary>  
-        [ProtoMember(2)]
-        public float3 max;
+        ///     The maximum values of the axis aligned bounding box in x, y and z direction
+        /// </summary>
+        [ProtoMember(2)] public float3 max;
 
         /// <summary>
-        /// Create a new axis aligned bounding box
+        ///     Create a new axis aligned bounding box
         /// </summary>
         /// <param name="min_">the minimum x y and z values</param>
         /// <param name="max_">the maximum x y and z values</param>
@@ -36,9 +34,9 @@ namespace Fusee.Math
         }
 
         /// <summary>
-        /// Applies a tranformation on the bounding box. After the tranformation another
-        /// axis alignes bounding box results. This is done by transforming all eight 
-        /// vertices of the box and re-aligning to the axes afterwards.
+        ///     Applies a tranformation on the bounding box. After the tranformation another
+        ///     axis alignes bounding box results. This is done by transforming all eight
+        ///     vertices of the box and re-aligning to the axes afterwards.
         /// </summary>
         /// <param name="m">The transformation matrix</param>
         /// <param name="box">the box to transform</param>
@@ -54,7 +52,7 @@ namespace Fusee.Math
                 new float3(box.max.x, box.min.y, box.min.z),
                 new float3(box.max.x, box.min.y, box.max.z),
                 new float3(box.max.x, box.max.y, box.min.z),
-                new float3(box.max.x, box.max.y, box.max.z),
+                new float3(box.max.x, box.max.y, box.max.z)
             };
 
             for (int i = 0; i < 8; i++)
@@ -78,7 +76,7 @@ namespace Fusee.Math
         }
 
         /// <summary>
-        /// Calculates the bounding box around two existing bounding boxes.
+        ///     Calculates the bounding box around two existing bounding boxes.
         /// </summary>
         /// <param name="a">One of the bounding boxes to build the union from</param>
         /// <param name="b">The other bounding boxe to build the union from</param>
@@ -96,13 +94,19 @@ namespace Fusee.Math
         }
 
         /// <summary>
-        /// Returns the center of the bounding box
+        ///     Returns the center of the bounding box
         /// </summary>
-        public float3 Center { get { return (max + min)*0.5f; } }
+        public float3 Center
+        {
+            get { return (max + min)*0.5f; }
+        }
 
         /// <summary>
-        /// Returns the with, height and depth of the box in x, y and z
+        ///     Returns the with, height and depth of the box in x, y and z
         /// </summary>
-        public float3 Size { get { return (max - min); } }
+        public float3 Size
+        {
+            get { return (max - min); }
+        }
     }
 }

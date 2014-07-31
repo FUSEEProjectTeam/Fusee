@@ -4,38 +4,38 @@ using System.Runtime.InteropServices;
 namespace Fusee.Math
 {
     /// <summary>
-    /// Represents a 3x3 Matrix
+    ///     Represents a 3x3 Matrix
     /// </summary>
     [Serializable]
     [StructLayout(LayoutKind.Sequential)]
     // ReSharper disable InconsistentNaming
     public struct float3x3 : IEquatable<float3x3>
-    // ReSharper restore InconsistentNaming
+        // ReSharper restore InconsistentNaming
     {
         #region Fields
 
         /// <summary>
-        /// Top row of the matrix
+        ///     Top row of the matrix
         /// </summary>
         public float3 Row0;
 
         /// <summary>
-        /// 2nd row of the matrix
+        ///     2nd row of the matrix
         /// </summary>
         public float3 Row1;
 
         /// <summary>
-        /// 3rd row of the matrix
+        ///     3rd row of the matrix
         /// </summary>
         public float3 Row2;
 
         /// <summary>
-        /// The identity matrix
+        ///     The identity matrix
         /// </summary>
         public static float3x3 Identity = new float3x3(float3.UnitX, float3.UnitY, float3.UnitZ);
 
         /// <summary>
-        /// The zero matrix
+        ///     The zero matrix
         /// </summary>
         public static float3x3 Zero = new float3x3(0, 0, 0, 0, 0, 0, 0, 0, 0);
 
@@ -44,7 +44,7 @@ namespace Fusee.Math
         #region Constructors
 
         /// <summary>
-        /// Constructs a new instance.
+        ///     Constructs a new instance.
         /// </summary>
         /// <param name="row0">Top row of the matrix</param>
         /// <param name="row1">Second row of the matrix</param>
@@ -57,7 +57,7 @@ namespace Fusee.Math
         }
 
         /// <summary>
-        /// Constructs a new instance.
+        ///     Constructs a new instance.
         /// </summary>
         /// <param name="m00">First item of the first row of the matrix.</param>
         /// <param name="m01">Second item of the first row of the matrix.</param>
@@ -79,7 +79,7 @@ namespace Fusee.Math
         }
 
         /// <summary>
-        /// Constructs a new instance.
+        ///     Constructs a new instance.
         /// </summary>
         /// <param name="mat4">The incoming float4x4.</param>
         public float3x3(float4x4 mat4)
@@ -96,25 +96,24 @@ namespace Fusee.Math
         #region Properties
 
         /// <summary>
-        /// The determinant of this matrix
+        ///     The determinant of this matrix
         /// </summary>
         public float Determinant
         {
             get
             {
                 return
-
-                    Row0.x * Row1.y * Row2.z 
-                    + Row0.y * Row1.z * Row2.x 
-                    + Row0.z * Row1.x * Row2.y 
-                    - Row0.z * Row1.y * Row2.x
-                    - Row0.y * Row1.x * Row2.z 
-                    - Row0.x * Row1.z * Row2.y;
+                    Row0.x*Row1.y*Row2.z
+                    + Row0.y*Row1.z*Row2.x
+                    + Row0.z*Row1.x*Row2.y
+                    - Row0.z*Row1.y*Row2.x
+                    - Row0.y*Row1.x*Row2.z
+                    - Row0.x*Row1.z*Row2.y;
             }
         }
 
         /// <summary>
-        /// The first column of this matrix
+        ///     The first column of this matrix
         /// </summary>
         public float3 Column0
         {
@@ -122,7 +121,7 @@ namespace Fusee.Math
         }
 
         /// <summary>
-        /// The second column of this matrix
+        ///     The second column of this matrix
         /// </summary>
         public float3 Column1
         {
@@ -130,7 +129,7 @@ namespace Fusee.Math
         }
 
         /// <summary>
-        /// The third column of this matrix
+        ///     The third column of this matrix
         /// </summary>
         public float3 Column2
         {
@@ -138,7 +137,7 @@ namespace Fusee.Math
         }
 
         /// <summary>
-        /// Gets or sets the value at row 1, column 1 of this instance.
+        ///     Gets or sets the value at row 1, column 1 of this instance.
         /// </summary>
         public float M11
         {
@@ -147,7 +146,7 @@ namespace Fusee.Math
         }
 
         /// <summary>
-        /// Gets or sets the value at row 1, column 2 of this instance.
+        ///     Gets or sets the value at row 1, column 2 of this instance.
         /// </summary>
         public float M12
         {
@@ -156,7 +155,7 @@ namespace Fusee.Math
         }
 
         /// <summary>
-        /// Gets or sets the value at row 1, column 3 of this instance.
+        ///     Gets or sets the value at row 1, column 3 of this instance.
         /// </summary>
         public float M13
         {
@@ -165,7 +164,7 @@ namespace Fusee.Math
         }
 
         /// <summary>
-        /// Gets or sets the value at row 2, column 1 of this instance.
+        ///     Gets or sets the value at row 2, column 1 of this instance.
         /// </summary>
         public float M21
         {
@@ -174,7 +173,7 @@ namespace Fusee.Math
         }
 
         /// <summary>
-        /// Gets or sets the value at row 2, column 2 of this instance.
+        ///     Gets or sets the value at row 2, column 2 of this instance.
         /// </summary>
         public float M22
         {
@@ -183,7 +182,7 @@ namespace Fusee.Math
         }
 
         /// <summary>
-        /// Gets or sets the value at row 2, column 3 of this instance.
+        ///     Gets or sets the value at row 2, column 3 of this instance.
         /// </summary>
         public float M23
         {
@@ -192,7 +191,7 @@ namespace Fusee.Math
         }
 
         /// <summary>
-        /// Gets or sets the value at row 3, column 1 of this instance.
+        ///     Gets or sets the value at row 3, column 1 of this instance.
         /// </summary>
         public float M31
         {
@@ -201,7 +200,7 @@ namespace Fusee.Math
         }
 
         /// <summary>
-        /// Gets or sets the value at row 3, column 2 of this instance.
+        ///     Gets or sets the value at row 3, column 2 of this instance.
         /// </summary>
         public float M32
         {
@@ -210,7 +209,7 @@ namespace Fusee.Math
         }
 
         /// <summary>
-        /// Gets or sets the value at row 3, column 3 of this instance.
+        ///     Gets or sets the value at row 3, column 3 of this instance.
         /// </summary>
         public float M33
         {
@@ -225,7 +224,7 @@ namespace Fusee.Math
         #region public void Transpose()
 
         /// <summary>
-        /// Converts this instance into its transpose.
+        ///     Converts this instance into its transpose.
         /// </summary>
         public void Transpose()
         {
@@ -237,9 +236,10 @@ namespace Fusee.Math
         // ReSharper disable UnusedMember.Local
         private float[] ToArray()
         {
-            return new[] { M11, M12, M13, M21, M22, M23, M31, M32, M33 };
+            return new[] {M11, M12, M13, M21, M22, M23, M31, M32, M33};
             // return new float[] { M11, M21, M31, M12, M22, M32, M13, M23, M33 };
         }
+
         // ReSharper restore UnusedMember.Local
 
         #endregion
@@ -253,7 +253,7 @@ namespace Fusee.Math
         #region Elementary Arithmetic Functions
 
         /// <summary>
-        /// Adds two instances.
+        ///     Adds two instances.
         /// </summary>
         /// <param name="left">The left operand of the addition.</param>
         /// <param name="right">The right operand of the addition.</param>
@@ -261,12 +261,12 @@ namespace Fusee.Math
         public static float3x3 Add(float3x3 left, float3x3 right)
         {
             return new float3x3(left.M11 + right.M11, left.M12 + right.M12, left.M13 + right.M13,
-                                left.M21 + right.M21, left.M22 + right.M22, left.M23 + right.M23,
-                                left.M31 + right.M31, left.M32 + right.M32, left.M33 + right.M33);
+                left.M21 + right.M21, left.M22 + right.M22, left.M23 + right.M23,
+                left.M31 + right.M31, left.M32 + right.M32, left.M33 + right.M33);
         }
 
         /// <summary>
-        /// Substracts the right instance from the left instance.
+        ///     Substracts the right instance from the left instance.
         /// </summary>
         /// <param name="left">The left operand of the substraction.</param>
         /// <param name="right">The right operand of the substraction.</param>
@@ -274,8 +274,8 @@ namespace Fusee.Math
         public static float3x3 Substract(float3x3 left, float3x3 right)
         {
             return new float3x3(left.M11 - right.M11, left.M12 - right.M12, left.M13 - right.M13,
-                                left.M21 - right.M21, left.M22 - right.M22, left.M23 - right.M23,
-                                left.M31 - right.M31, left.M32 - right.M32, left.M33 - right.M33);
+                left.M21 - right.M21, left.M22 - right.M22, left.M23 - right.M23,
+                left.M31 - right.M31, left.M32 - right.M32, left.M33 - right.M33);
         }
 
         #endregion
@@ -283,7 +283,7 @@ namespace Fusee.Math
         #region Multiply Functions
 
         /// <summary>
-        /// Multiplies two instances.
+        ///     Multiplies two instances.
         /// </summary>
         /// <param name="left">The left operand of the multiplication.</param>
         /// <param name="right">The right operand of the multiplication.</param>
@@ -302,7 +302,7 @@ namespace Fusee.Math
         }
 
         /// <summary>
-        /// Multiplies two instances.
+        ///     Multiplies two instances.
         /// </summary>
         /// <param name="left">The left operand of the multiplication.</param>
         /// <param name="right">The right operand of the multiplication.</param>
@@ -310,17 +310,15 @@ namespace Fusee.Math
         public static void Mult(ref float3x3 left, ref float3x3 right, out float3x3 result)
         {
             result = new float3x3(
-                left.M11 * right.M11 + left.M12 * right.M21 + left.M13 * right.M31,
-                left.M11 * right.M12 + left.M12 * right.M22 + left.M13 * right.M32,
-                left.M11 * right.M13 + left.M12 * right.M23 + left.M13 * right.M33,
-
-                left.M21 * right.M11 + left.M22 * right.M21 + left.M23 * right.M31,
-                left.M21 * right.M12 + left.M22 * right.M22 + left.M23 * right.M32,
-                left.M21 * right.M13 + left.M22 * right.M23 + left.M23 * right.M33,
-
-                left.M31 * right.M11 + left.M32 * right.M21 + left.M33 * right.M31,
-                left.M31 * right.M12 + left.M32 * right.M22 + left.M33 * right.M32,
-                left.M31 * right.M13 + left.M32 * right.M23 + left.M33 * right.M33);
+                left.M11*right.M11 + left.M12*right.M21 + left.M13*right.M31,
+                left.M11*right.M12 + left.M12*right.M22 + left.M13*right.M32,
+                left.M11*right.M13 + left.M12*right.M23 + left.M13*right.M33,
+                left.M21*right.M11 + left.M22*right.M21 + left.M23*right.M31,
+                left.M21*right.M12 + left.M22*right.M22 + left.M23*right.M32,
+                left.M21*right.M13 + left.M22*right.M23 + left.M23*right.M33,
+                left.M31*right.M11 + left.M32*right.M21 + left.M33*right.M31,
+                left.M31*right.M12 + left.M32*right.M22 + left.M33*right.M32,
+                left.M31*right.M13 + left.M32*right.M23 + left.M33*right.M33);
         }
 
         #endregion
@@ -328,7 +326,7 @@ namespace Fusee.Math
         #region Transpose
 
         /// <summary>
-        /// Calculate the transpose of the given matrix
+        ///     Calculate the transpose of the given matrix
         /// </summary>
         /// <param name="mat">The matrix to transpose</param>
         /// <returns>The transpose of the given matrix</returns>
@@ -339,7 +337,7 @@ namespace Fusee.Math
 
 
         /// <summary>
-        /// Calculate the transpose of the given matrix
+        ///     Calculate the transpose of the given matrix
         /// </summary>
         /// <param name="mat">The matrix to transpose</param>
         /// <param name="result">The result of the calculation</param>
@@ -357,7 +355,7 @@ namespace Fusee.Math
         #region Operators
 
         /// <summary>
-        /// Matrix addition
+        ///     Matrix addition
         /// </summary>
         /// <param name="left">left-hand operand</param>
         /// <param name="right">right-hand operand</param>
@@ -368,7 +366,7 @@ namespace Fusee.Math
         }
 
         /// <summary>
-        /// Matrix substraction
+        ///     Matrix substraction
         /// </summary>
         /// <param name="left">left-hand operand</param>
         /// <param name="right">right-hand operand</param>
@@ -379,7 +377,7 @@ namespace Fusee.Math
         }
 
         /// <summary>
-        /// Matrix multiplication
+        ///     Matrix multiplication
         /// </summary>
         /// <param name="left">left-hand operand</param>
         /// <param name="right">right-hand operand</param>
@@ -390,33 +388,33 @@ namespace Fusee.Math
         }
 
         /// <summary>
-        /// Transforms a given vector by a matrix via matrix*vector (Postmultiplication of the vector).
+        ///     Transforms a given vector by a matrix via matrix*vector (Postmultiplication of the vector).
         /// </summary>
-        /// <param name="matrix">A <see cref="float4x4"/> instance.</param>
-        /// <param name="vector">A <see cref="float4"/> instance.</param>
-        /// <returns>A new <see cref="float4"/> instance containing the result.</returns>
+        /// <param name="matrix">A <see cref="float4x4" /> instance.</param>
+        /// <param name="vector">A <see cref="float4" /> instance.</param>
+        /// <returns>A new <see cref="float4" /> instance containing the result.</returns>
         public static float3 operator *(float3x3 matrix, float3 vector)
         {
-            return new float3(  matrix.Column0.x * vector.x + matrix.Column1.x * vector.y + matrix.Column2.x * vector.z,
-                                matrix.Column0.y * vector.x + matrix.Column1.y * vector.y + matrix.Column2.y * vector.z,
-                                matrix.Column0.z * vector.x + matrix.Column1.z * vector.y + matrix.Column2.z * vector.z);
+            return new float3(matrix.Column0.x*vector.x + matrix.Column1.x*vector.y + matrix.Column2.x*vector.z,
+                matrix.Column0.y*vector.x + matrix.Column1.y*vector.y + matrix.Column2.y*vector.z,
+                matrix.Column0.z*vector.x + matrix.Column1.z*vector.y + matrix.Column2.z*vector.z);
         }
 
         /// <summary>
-        /// Transforms a given vector by a matrix via vector*matrix (Premultiplication of the vector).
+        ///     Transforms a given vector by a matrix via vector*matrix (Premultiplication of the vector).
         /// </summary>
-        /// <param name="matrix">A <see cref="float4x4"/> instance.</param>
-        /// <param name="vector">A <see cref="float4"/> instance.</param>
-        /// <returns>A new <see cref="float4"/> instance containing the result.</returns>
-        public static float3 operator *(float3 vector,float3x3 matrix)
+        /// <param name="matrix">A <see cref="float4x4" /> instance.</param>
+        /// <param name="vector">A <see cref="float4" /> instance.</param>
+        /// <returns>A new <see cref="float4" /> instance containing the result.</returns>
+        public static float3 operator *(float3 vector, float3x3 matrix)
         {
-            return new float3(matrix.M11 * vector.x + matrix.M21 * vector.y + matrix.M31 * vector.z,
-                                matrix.M12 * vector.x + matrix.M22 * vector.y + matrix.M32 * vector.z,
-                                matrix.M13 * vector.x + matrix.M23 * vector.y + matrix.M33 * vector.z);
+            return new float3(matrix.M11*vector.x + matrix.M21*vector.y + matrix.M31*vector.z,
+                matrix.M12*vector.x + matrix.M22*vector.y + matrix.M32*vector.z,
+                matrix.M13*vector.x + matrix.M23*vector.y + matrix.M33*vector.z);
         }
 
         /// <summary>
-        /// Compares two instances for equality.
+        ///     Compares two instances for equality.
         /// </summary>
         /// <param name="left">The first instance.</param>
         /// <param name="right">The second instance.</param>
@@ -427,7 +425,7 @@ namespace Fusee.Math
         }
 
         /// <summary>
-        /// Compares two instances for inequality.
+        ///     Compares two instances for inequality.
         /// </summary>
         /// <param name="left">The first instance.</param>
         /// <param name="right">The second instance.</param>
@@ -444,7 +442,7 @@ namespace Fusee.Math
         #region public override string ToString()
 
         /// <summary>
-        /// Returns a System.String that represents the current Matrix44.
+        ///     Returns a System.String that represents the current Matrix44.
         /// </summary>
         /// <returns>A string.</returns>
         public override string ToString()
@@ -457,7 +455,7 @@ namespace Fusee.Math
         #region public override int GetHashCode()
 
         /// <summary>
-        /// Returns the hashcode for this instance.
+        ///     Returns the hashcode for this instance.
         /// </summary>
         /// <returns>A System.Int32 containing the unique hashcode for this instance.</returns>
         public override int GetHashCode()
@@ -472,7 +470,7 @@ namespace Fusee.Math
         #region public override bool Equals(object obj)
 
         /// <summary>
-        /// Indicates whether this instance and a specified object are equal.
+        ///     Indicates whether this instance and a specified object are equal.
         /// </summary>
         /// <param name="obj">The object to compare tresult.</param>
         /// <returns>True if the instances are equal; false otherwise.</returns>
@@ -481,7 +479,7 @@ namespace Fusee.Math
             if (!(obj is float3x3))
                 return false;
 
-            return Equals((float3x3)obj);
+            return Equals((float3x3) obj);
         }
 
         #endregion
@@ -493,15 +491,12 @@ namespace Fusee.Math
         #region IEquatable<Matri3x3> Members
 
         /// <summary>
-        /// Indicates whether the current matrix represents an affine transformation.
+        ///     Indicates whether the current matrix represents an affine transformation.
         /// </summary>
         /// <returns>true if the current matrix represents an affine transformation; otherwise, false.</returns>
         public bool IsAffine
         {
-            get
-            {
-                return (Column2 == float3.UnitZ);
-            }
+            get { return (Column2 == float3.UnitZ); }
         }
 
         /// <summary>Indicates whether the current matrix is equal to another matrix.</summary>
