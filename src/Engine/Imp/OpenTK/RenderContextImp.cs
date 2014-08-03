@@ -78,7 +78,7 @@ namespace Fusee.Engine
 
         }
             
-        public void UpdateTextureRegion(ITexture tex, ImageData img, int startX, int startY)
+        public void UpdateTextureRegion(ITexture tex, ImageData img, int startX, int startY, int width, int height)
         {
             OpenTK.Graphics.OpenGL.PixelFormat format;
             switch (img.PixelFormat)
@@ -94,7 +94,7 @@ namespace Fusee.Engine
             }
 
             GL.BindTexture(TextureTarget.Texture2D, ((Texture)tex).handle);
-            GL.TexSubImage2D(TextureTarget.Texture2D, 0, startX, startY, img.Width, img.Height,
+            GL.TexSubImage2D(TextureTarget.Texture2D, 0, startX, startY, width, height,
                 format, PixelType.UnsignedByte, img.PixelData);
         }
 

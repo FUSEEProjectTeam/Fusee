@@ -647,8 +647,8 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
 
 
     $.Method({ Static: false, Public: true }, "UpdateTextureRegion",
-        new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.ITexture"), $fuseeCommon.TypeRef("Fusee.Engine.ImageData"), $.Int32, $.Int32]),
-        function UpdateTextureRegion(tex, img, startX, startY) {
+        new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.ITexture"), $fuseeCommon.TypeRef("Fusee.Engine.ImageData"), $.Int32, $.Int32, $.Int32, $.Int32]),
+        function UpdateTextureRegion(tex, img, startX, startY, width, height) {
             var ubyteView = new Uint8Array(img.PixelData);
             var format;
             switch (img.PixelFormat) {
@@ -662,8 +662,9 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
 
             //var glTexOb = this.gl.createTexture();
             this.gl.bindTexture(this.gl.TEXTURE_2D, tex.handle);
-            this.gl.texSubImage2D(this.gl.TEXTURE_2D, 0, startX, startY, img.Width, img.Height, format,
+            this.gl.texSubImage2D(this.gl.TEXTURE_2D, 0, startX, startY, width, height, format,
                 this.gl.UNSIGNED_BYTE, ubyteView);
+            this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true);
 
         }
 
@@ -1995,9 +1996,6 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.VideoStreamImp"
                this._canvas.width = this._videoElement.videoWidth;
                this._canvas.height = this._videoElement.videoHeight;
                var context = this._canvas.getContext('2d');
-               context.translate(this._canvas.width / 2, this._canvas.height / 2);
-               context.rotate(180 * Math.PI / 180);
-               context.translate(-this._canvas.width / 2, -this._canvas.height / 2);
                context.drawImage(this._videoElement, 0, 0);
 
                var myData = context.getImageData(0, 0, this._videoElement.videoWidth, this._videoElement.videoHeight);

@@ -198,7 +198,7 @@ namespace Fusee.Engine
 
         void UpdateTextureFromVideoStream(IVideoStreamImp stream, ITexture tex);
 
-        void UpdateTextureRegion(ITexture tex, ImageData img, int startX, int startY);
+        void UpdateTextureRegion(ITexture tex, ImageData img, int startX, int startY, int width, int height);
 
         /// <summary>
         /// Creates a new texture and binds it to the shader.
