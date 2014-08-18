@@ -45,7 +45,7 @@ namespace CrossSL
                 }
 
                 if (result.Length > 0)
-                    result.Replace("medium", "med").NewLine();
+                    result.NewLine();
             }
 
             if (!defaultPrec || shaderType != SLShaderType.FragmentShader)

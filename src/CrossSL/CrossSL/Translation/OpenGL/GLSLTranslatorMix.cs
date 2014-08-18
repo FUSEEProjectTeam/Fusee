@@ -44,9 +44,6 @@ namespace CrossSL
                     result.Append("precision ").Append(intPrecVal.ToLower()).Append("p");
                     result.Append(" int;").NewLine();
                 }
-
-                if (result.Length > 0)
-                    result.Replace("medium", "med");
             }
 
             if (defaultPrec && shaderType == SLShaderType.FragmentShader)
