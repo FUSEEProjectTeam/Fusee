@@ -8,6 +8,9 @@ using AForge.Video.DirectShow;
 namespace Fusee.Engine
 {
 
+    /// <summary>
+    /// This class provides all fuctions to control the video playback and to obtain single images from the stream.
+    /// </summary>
     public class VideoStreamImp : IVideoStreamImp
     {
         #region Fields
@@ -39,6 +42,12 @@ namespace Fusee.Engine
 
         #region Events
 
+        /// <summary>
+        /// This event is called every time a new frame is available.
+        /// In this event the ImageData struct is updated with the PixelData from the current frame.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="eventArgs"></param>
         public void NextFrame(object sender, NewFrameEventArgs eventArgs)
         {
             Bitmap nextFrameBmp = (Bitmap)eventArgs.Frame;
@@ -61,6 +70,12 @@ namespace Fusee.Engine
             nextFrameBmp.UnlockBits(bmpData);
         }
 
+        /// <summary>
+        /// This event is called when the stream finishes and loopAudio is set to true.
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="reason"></param>
         public void PlayingFinished (object sender, ReasonToFinishPlaying reason)
         {  
             _source = new VideoFileSource(_source.Source);
@@ -70,24 +85,39 @@ namespace Fusee.Engine
 
         }
 
+        /// <summary>
+        /// This is event is called if an error with ther playback occurs.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         public void VideoSourceError(object sender, VideoSourceErrorEventArgs args)
         {
             System.Diagnostics.Debug.WriteLine(args.Description);
         }
         #endregion
 
-        //TODO:Property
         #region Members
+
+        /// <summary>
+        /// Gets the current video frame.
+        /// </summary>
+        /// <returns>An ImageData-struct containing the current video frame.</returns>
         public ImageData GetCurrentFrame()
         {
             return _nextFrame;
         }
 
+        /// <summary>
+        /// Stops the video playback.
+        /// </summary>
         public void Stop()
         {
             _source.SignalToStop();
         }
 
+        /// <summary>
+        /// Starts the video playback.
+        /// </summary>
         public void Start()
         {
             _source.Start();

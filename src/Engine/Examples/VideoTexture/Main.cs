@@ -48,8 +48,14 @@ namespace Examples.VideoTextureExample
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
+            // Use this function to update a texture from a video stream if you plan to have
+            // a web build and if you don't need to access the pixel data directly.
+            // This method is much more performant than the other one.
             RC.UpdateTextureFromVideoStream(_videoStream, _iTex);
 
+            // If you don't plan to have a web-build or if you want to have direct access to the video's
+            // pixel data, use this method. Note that this works in the web-build too, but the performance
+            // is really bad and it might cause a memory overflow in the web-build.
             //var imgData = _videoStream.GetCurrentFrame();
             //if (imgData.PixelData != null)
             //{

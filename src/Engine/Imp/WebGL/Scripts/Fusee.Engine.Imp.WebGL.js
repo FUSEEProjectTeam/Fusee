@@ -482,8 +482,6 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
     $.Field({ Static: false, Public: false }, "_currentTextureUnit", $.Int32, null);
     $.Field({ Static: false, Public: false }, "_shaderParam2TexUnit", $.Object, null);
     $.Field({ Static: false, Public: false }, "_currentShaderParamHandle", $.Int32, null);
-    //    $.Field({ Static: false, Public: false }, "_videoTexture", $.Object, null);
-    //    $.Field({ Static: false, Public: false }, "_videoIsPlaying", $.Boolean, null);
     $.Field({ Static: false, Public: false }, "_depthTest", $.Boolean, null);
     $.Field({ Static: false, Public: false }, "_blending", $.Boolean, null);
 
@@ -495,7 +493,6 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
             this.gl.enable(this.gl.CULL_FACE);
             this.gl.clearColor(0.0, 0.0, 0.2, 1.0);
             this._currentTextureUnit = 0;
-            //this._videoIsPlaying = false;
             // TODO - implement this in render states!!!
             this.gl.cullFace(this.gl.BACK);
         }
@@ -586,14 +583,9 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
             if (stream._videoElement == null) {
                 var canvas = document.createElement("canvas");
                 stream._videoElement = document.createElement("video");
-                //this._videoTexture.id = "videoTexture";
                 if (stream._filename != "camera") {
                     stream._videoElement.src = stream._filename;
                 } else {
-
-                    //this._canvas = document.createElement('canvas');
-                    //this._videoTexture = document.createElement('video');
-                    //                    this._videoTexture.id = "videoTexture";
                     navigator.getUserMedia = (navigator.getUserMedia ||
                             navigator.webkitGetUserMedia ||
                             navigator.mozGetUserMedia ||
@@ -614,11 +606,6 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
                                 }
                             );
                     }
-
-
-                    //            if (this._videoTexture.readyState === 0)
-                    //                this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, 1, 1, 0, this.gl.RGBA, this.gl.UNSIGNED_BYTE,
-                    //              new Uint8Array([255, 0, 0, 255]));
                 }
             }
             else {
@@ -660,7 +647,6 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
                     break;
             }
 
-            //var glTexOb = this.gl.createTexture();
             this.gl.bindTexture(this.gl.TEXTURE_2D, tex.handle);
             this.gl.texSubImage2D(this.gl.TEXTURE_2D, 0, startX, startY, width, height, format,
                 this.gl.UNSIGNED_BYTE, ubyteView);
@@ -2015,7 +2001,6 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.VideoStreamImp"
          if (this._videoElement == null) {
              this._canvas = document.createElement('canvas');
              this._videoElement = document.createElement('video');
-             //this._videoTexture.id = "videoTexture";
              if (this._filename != "camera") {
                  this._videoElement.src = this._filename;
                  if (!this._useAudio)

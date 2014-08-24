@@ -51,6 +51,12 @@ namespace Fusee.Engine
 
         #region Image data related Members
 
+        /// <summary>
+        /// Updates a texture with images obtained from a Video.
+        /// </summary>
+        /// <param name="stream">The Video from which the images are taken.</param>
+        /// <param name="tex">The texture to which the ImageData is bound to.</param>
+        /// <remarks>Look at the VideoTextureExample for further information.</remarks>
         public void UpdateTextureFromVideoStream(IVideoStreamImp stream, ITexture tex)
         {
             ImageData img = stream.GetCurrentFrame();
@@ -77,7 +83,17 @@ namespace Fusee.Engine
             }
 
         }
-            
+        
+        /// <summary>
+        /// Updates a specific rectangle of a texture.
+        /// </summary>
+        /// <param name="tex">The texture to which the ImageData is bound to.</param>
+        /// <param name="img">The ImageData-Struct containing information about the image. </param>
+        /// <param name="startX">The x-value of the upper left corner of th rectangle.</param>
+        /// <param name="startY">The y-value of the upper left corner of th rectangle.</param>
+        /// <param name="width">The width of the rectangle.</param>
+        /// <param name="height">The height of the rectangle.</param>
+        /// <remarks> /// <remarks>Look at the VideoTextureExample for further information.</remarks></remarks>
         public void UpdateTextureRegion(ITexture tex, ImageData img, int startX, int startY, int width, int height)
         {
             OpenTK.Graphics.OpenGL.PixelFormat format;
