@@ -74,6 +74,30 @@ namespace Fusee.Math
 
         #region Public Members
 
+        #region Trigonometry
+
+        /// <summary>
+        /// Returns the Sin of the given value as float.
+        /// </summary>
+        /// <param name="val">The value.</param>
+        /// <returns></returns>
+        public static float Sin(float val)
+        {
+            return (float)System.Math.Sin(val);
+        }
+
+        /// <summary>
+        /// Returns the Sin of the given value as float.
+        /// </summary>
+        /// <param name="val">The value.</param>
+        /// <returns></returns>
+        public static float Cos(float val)
+        {
+            return (float)System.Math.Cos(val);
+        }
+
+        #endregion
+
         #region NextPowerOfTwo
 
         /// <summary>

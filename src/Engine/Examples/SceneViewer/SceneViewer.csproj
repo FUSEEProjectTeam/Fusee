@@ -50,8 +50,6 @@
   <ItemGroup>
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SceneRenderer.cs" />
-    <Compile Include="ShaderCodeBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\FuseeLogo150.png">
@@ -83,6 +81,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Fusee.Engine.SimpleScene">
+      <HintPath>..\..\..\..\Bin\Debug\Fusee.Engine.SimpleScene.dll</HintPath>
+    </Reference>
     <Reference Include="Fusee.SerializationContainer">
       <HintPath>..\..\..\..\Bin\Debug\Fusee.SerializationContainer.dll</HintPath>
     </Reference>

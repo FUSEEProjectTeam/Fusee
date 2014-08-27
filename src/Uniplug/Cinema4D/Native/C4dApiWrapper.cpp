@@ -401,6 +401,9 @@ SWIGINTERN BaseBitmap *BaseBitmap_AutoBitmap__SWIG_1(Int32 id){
 		BaseBitmap *bmp = InitResourceBitmap(id);
 		return bmp;
 	}
+SWIGINTERN Int64 C4DAtom_RefUID(C4DAtom *self){
+		return (Int64)self;
+	}
 SWIGINTERN Vector PointObject_GetPointAt(PointObject *self,Int32 inx){
 		return self->GetPointR()[inx];
 	}
@@ -21599,7 +21602,7 @@ SWIGEXPORT int SWIGSTDCALL CSharp_BaseFile_TryReadBytes(void * jarg1, void * jar
 }
 
 
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_Seek__SWIG_0(void * jarg1, long jarg2, int jarg3) {
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_Seek__SWIG_0(void * jarg1, long long jarg2, int jarg3) {
   unsigned int jresult ;
   BaseFile *arg1 = (BaseFile *) 0 ;
   Int64 arg2 ;
@@ -21615,7 +21618,7 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_Seek__SWIG_0(void * jarg1, l
 }
 
 
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_Seek__SWIG_1(void * jarg1, long jarg2) {
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_Seek__SWIG_1(void * jarg1, long long jarg2) {
   unsigned int jresult ;
   BaseFile *arg1 = (BaseFile *) 0 ;
   Int64 arg2 ;
@@ -21629,8 +21632,8 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_Seek__SWIG_1(void * jarg1, l
 }
 
 
-SWIGEXPORT long SWIGSTDCALL CSharp_BaseFile_GetPosition(void * jarg1) {
-  long jresult ;
+SWIGEXPORT long long SWIGSTDCALL CSharp_BaseFile_GetPosition(void * jarg1) {
+  long long jresult ;
   BaseFile *arg1 = (BaseFile *) 0 ;
   Int64 result;
   
@@ -21641,8 +21644,8 @@ SWIGEXPORT long SWIGSTDCALL CSharp_BaseFile_GetPosition(void * jarg1) {
 }
 
 
-SWIGEXPORT long SWIGSTDCALL CSharp_BaseFile_GetLength(void * jarg1) {
-  long jresult ;
+SWIGEXPORT long long SWIGSTDCALL CSharp_BaseFile_GetLength(void * jarg1) {
+  long long jresult ;
   BaseFile *arg1 = (BaseFile *) 0 ;
   Int64 result;
   
@@ -22037,7 +22040,7 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_WriteFloat64(void * jarg1, d
 }
 
 
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_WriteInt64(void * jarg1, long jarg2) {
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_WriteInt64(void * jarg1, long long jarg2) {
   unsigned int jresult ;
   BaseFile *arg1 = (BaseFile *) 0 ;
   Int64 arg2 ;
@@ -22051,7 +22054,7 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_WriteInt64(void * jarg1, lon
 }
 
 
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_WriteUInt64(void * jarg1, unsigned long jarg2) {
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseFile_WriteUInt64(void * jarg1, unsigned long long jarg2) {
   unsigned int jresult ;
   BaseFile *arg1 = (BaseFile *) 0 ;
   UInt64 arg2 ;
@@ -22706,8 +22709,8 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BrowseFiles_GetNext(void * jarg1) {
 }
 
 
-SWIGEXPORT long SWIGSTDCALL CSharp_BrowseFiles_GetSize(void * jarg1) {
-  long jresult ;
+SWIGEXPORT long long SWIGSTDCALL CSharp_BrowseFiles_GetSize(void * jarg1) {
+  long long jresult ;
   BrowseFiles *arg1 = (BrowseFiles *) 0 ;
   Int64 result;
   
@@ -23074,7 +23077,7 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_WriteUInt32(void * jarg1, u
 }
 
 
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_WriteInt64(void * jarg1, long jarg2) {
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_WriteInt64(void * jarg1, long long jarg2) {
   unsigned int jresult ;
   HyperFile *arg1 = (HyperFile *) 0 ;
   Int64 arg2 ;
@@ -23088,7 +23091,7 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_WriteInt64(void * jarg1, lo
 }
 
 
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_WriteUInt64(void * jarg1, unsigned long jarg2) {
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_HyperFile_WriteUInt64(void * jarg1, unsigned long long jarg2) {
   unsigned int jresult ;
   HyperFile *arg1 = (HyperFile *) 0 ;
   UInt64 arg2 ;
@@ -27738,7 +27741,7 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_ColorProfile_OpenProfileFromFile(void
 }
 
 
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_ColorProfile_OpenProfileFromMemory(void * jarg1, void * jarg2, long jarg3) {
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_ColorProfile_OpenProfileFromMemory(void * jarg1, void * jarg2, long long jarg3) {
   unsigned int jresult ;
   ColorProfile *arg1 = (ColorProfile *) 0 ;
   void *arg2 = (void *) 0 ;
@@ -30252,7 +30255,7 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_new_GeData__SWIG_5(void * jarg1, int jarg2)
 }
 
 
-SWIGEXPORT void * SWIGSTDCALL CSharp_new_GeData__SWIG_6(long jarg1, int jarg2) {
+SWIGEXPORT void * SWIGSTDCALL CSharp_new_GeData__SWIG_6(long long jarg1, int jarg2) {
   void * jresult ;
   Int64 arg1 ;
   LLONGVALUETYPE arg2 ;
@@ -30507,8 +30510,8 @@ SWIGEXPORT int SWIGSTDCALL CSharp_GeData_GetInt32(void * jarg1) {
 }
 
 
-SWIGEXPORT long SWIGSTDCALL CSharp_GeData_GetInt64(void * jarg1) {
-  long jresult ;
+SWIGEXPORT long long SWIGSTDCALL CSharp_GeData_GetInt64(void * jarg1) {
+  long long jresult ;
   GeData *arg1 = (GeData *) 0 ;
   Int64 result;
   
@@ -37105,6 +37108,18 @@ SWIGEXPORT void SWIGSTDCALL CSharp_C4DAtom_SetHDirty(void * jarg1, int jarg2) {
 }
 
 
+SWIGEXPORT long long SWIGSTDCALL CSharp_C4DAtom_RefUID(void * jarg1) {
+  long long jresult ;
+  C4DAtom *arg1 = (C4DAtom *) 0 ;
+  Int64 result;
+  
+  arg1 = (C4DAtom *)jarg1; 
+  result = C4DAtom_RefUID(arg1);
+  jresult = result; 
+  return jresult;
+}
+
+
 SWIGEXPORT void * SWIGSTDCALL CSharp_AtomArray_Alloc() {
   void * jresult ;
   AtomArray *result = 0 ;
@@ -40772,14 +40787,14 @@ SWIGEXPORT int SWIGSTDCALL CSharp_BaseObject_GetRotationOrder(void * jarg1) {
 }
 
 
-SWIGEXPORT unsigned long SWIGSTDCALL CSharp_BaseObject_GetGUID(void * jarg1) {
-  unsigned long jresult ;
+SWIGEXPORT unsigned long long SWIGSTDCALL CSharp_BaseObject_GetGUID(void * jarg1) {
+  unsigned long long jresult ;
   BaseObject *arg1 = (BaseObject *) 0 ;
   UInt64 result;
   
   arg1 = (BaseObject *)jarg1; 
   result = (arg1)->GetGUID();
-  jresult = (unsigned long)result; 
+  jresult = result; 
   return jresult;
 }
 
@@ -44148,8 +44163,8 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseContainer_GetUInt32__SWIG_1(void 
 }
 
 
-SWIGEXPORT long SWIGSTDCALL CSharp_BaseContainer_GetInt64__SWIG_0(void * jarg1, int jarg2, long jarg3) {
-  long jresult ;
+SWIGEXPORT long long SWIGSTDCALL CSharp_BaseContainer_GetInt64__SWIG_0(void * jarg1, int jarg2, long long jarg3) {
+  long long jresult ;
   BaseContainer *arg1 = (BaseContainer *) 0 ;
   Int32 arg2 ;
   Int64 arg3 ;
@@ -44164,8 +44179,8 @@ SWIGEXPORT long SWIGSTDCALL CSharp_BaseContainer_GetInt64__SWIG_0(void * jarg1, 
 }
 
 
-SWIGEXPORT long SWIGSTDCALL CSharp_BaseContainer_GetInt64__SWIG_1(void * jarg1, int jarg2) {
-  long jresult ;
+SWIGEXPORT long long SWIGSTDCALL CSharp_BaseContainer_GetInt64__SWIG_1(void * jarg1, int jarg2) {
+  long long jresult ;
   BaseContainer *arg1 = (BaseContainer *) 0 ;
   Int32 arg2 ;
   Int64 result;
@@ -44178,8 +44193,8 @@ SWIGEXPORT long SWIGSTDCALL CSharp_BaseContainer_GetInt64__SWIG_1(void * jarg1, 
 }
 
 
-SWIGEXPORT unsigned long SWIGSTDCALL CSharp_BaseContainer_GetUInt64__SWIG_0(void * jarg1, int jarg2, unsigned long jarg3) {
-  unsigned long jresult ;
+SWIGEXPORT unsigned long long SWIGSTDCALL CSharp_BaseContainer_GetUInt64__SWIG_0(void * jarg1, int jarg2, unsigned long long jarg3) {
+  unsigned long long jresult ;
   BaseContainer *arg1 = (BaseContainer *) 0 ;
   Int32 arg2 ;
   UInt64 arg3 ;
@@ -44189,13 +44204,13 @@ SWIGEXPORT unsigned long SWIGSTDCALL CSharp_BaseContainer_GetUInt64__SWIG_0(void
   arg2 = (Int32)jarg2; 
   arg3 = (UInt64)jarg3; 
   result = ((BaseContainer const *)arg1)->GetUInt64(arg2,arg3);
-  jresult = (unsigned long)result; 
+  jresult = result; 
   return jresult;
 }
 
 
-SWIGEXPORT unsigned long SWIGSTDCALL CSharp_BaseContainer_GetUInt64__SWIG_1(void * jarg1, int jarg2) {
-  unsigned long jresult ;
+SWIGEXPORT unsigned long long SWIGSTDCALL CSharp_BaseContainer_GetUInt64__SWIG_1(void * jarg1, int jarg2) {
+  unsigned long long jresult ;
   BaseContainer *arg1 = (BaseContainer *) 0 ;
   Int32 arg2 ;
   UInt64 result;
@@ -44203,7 +44218,7 @@ SWIGEXPORT unsigned long SWIGSTDCALL CSharp_BaseContainer_GetUInt64__SWIG_1(void
   arg1 = (BaseContainer *)jarg1; 
   arg2 = (Int32)jarg2; 
   result = ((BaseContainer const *)arg1)->GetUInt64(arg2);
-  jresult = (unsigned long)result; 
+  jresult = result; 
   return jresult;
 }
 
@@ -44739,7 +44754,7 @@ SWIGEXPORT void SWIGSTDCALL CSharp_BaseContainer_SetUInt32(void * jarg1, int jar
 }
 
 
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseContainer_SetInt64(void * jarg1, int jarg2, long jarg3) {
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseContainer_SetInt64(void * jarg1, int jarg2, long long jarg3) {
   BaseContainer *arg1 = (BaseContainer *) 0 ;
   Int32 arg2 ;
   Int64 arg3 ;
@@ -44751,7 +44766,7 @@ SWIGEXPORT void SWIGSTDCALL CSharp_BaseContainer_SetInt64(void * jarg1, int jarg
 }
 
 
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseContainer_SetUInt64(void * jarg1, int jarg2, unsigned long jarg3) {
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseContainer_SetUInt64(void * jarg1, int jarg2, unsigned long long jarg3) {
   BaseContainer *arg1 = (BaseContainer *) 0 ;
   Int32 arg2 ;
   UInt64 arg3 ;
@@ -59454,14 +59469,14 @@ SWIGEXPORT int SWIGSTDCALL CSharp_GetDocumentXRefState() {
 }
 
 
-SWIGEXPORT unsigned long SWIGSTDCALL CSharp_GetXRefID(void * jarg1) {
-  unsigned long jresult ;
+SWIGEXPORT unsigned long long SWIGSTDCALL CSharp_GetXRefID(void * jarg1) {
+  unsigned long long jresult ;
   BaseList2D *arg1 = (BaseList2D *) 0 ;
   UInt64 result;
   
   arg1 = (BaseList2D *)jarg1; 
   result = GetXRefID(arg1);
-  jresult = (unsigned long)result; 
+  jresult = result; 
   return jresult;
 }
 
@@ -82400,6 +82415,936 @@ SWIGEXPORT void SWIGSTDCALL CSharp_delete_ModelingCommandData(void * jarg1) {
   
   arg1 = (ModelingCommandData *)jarg1; 
   delete arg1;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_HOOKS_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_HOOKS;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_INFO_GROUP1_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_INFO_GROUP1;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_INFO_GROUP2_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_INFO_GROUP2;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_GROUP_PROJECTSETTINGS_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_GROUP_PROJECTSETTINGS;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_GROUP_COLORPROFILE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_GROUP_COLORPROFILE;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_TIME_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_TIME;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_FPS_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_FPS;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_MINTIME_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_MINTIME;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_MAXTIME_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_MAXTIME;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_LOOPMINTIME_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_LOOPMINTIME;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_LOOPMAXTIME_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_LOOPMAXTIME;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_LOD_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_LOD;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_RENDERLOD_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_RENDERLOD;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_USEANIMATION_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_USEANIMATION;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_USEEXPRESSIONS_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_USEEXPRESSIONS;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_USEGENERATORS_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_USEGENERATORS;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_USEDEFORMERS_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_USEDEFORMERS;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_PATH_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_PATH;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_NAME_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_NAME;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_STATEX_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_STATEX;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_STATEY_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_STATEY;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_STATEZ_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_STATEZ;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_STATEW_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_STATEW;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_USERCHANGE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_USERCHANGE;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_MODE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_MODE;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_ACTION_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_ACTION;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_USERCHANGEAUTOSAVE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_USERCHANGEAUTOSAVE;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_USEMOTIONSYSTEM_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_USEMOTIONSYSTEM;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_FILEPATH_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_FILEPATH;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_INFO_PRGCREATOR_NAME_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_INFO_PRGCREATOR_NAME;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_INFO_PRGCREATOR_ID_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_INFO_PRGCREATOR_ID;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MAXON_CREATOR_ID_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MAXON_CREATOR_ID;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_INFO_PRGCREATOR_STRING_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_INFO_PRGCREATOR_STRING;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_INFO_PRGWRITER_NAME_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_INFO_PRGWRITER_NAME;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_INFO_PRGWRITER_ID_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_INFO_PRGWRITER_ID;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_INFO_PRGWRITER_STRING_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_INFO_PRGWRITER_STRING;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_INFO_AUTHOR_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_INFO_AUTHOR;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_INFO_COPYRIGHT_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_INFO_COPYRIGHT;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_INFO_README_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_INFO_README;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_INFO_FILEFORMAT_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_INFO_FILEFORMAT;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_INFO_FILEVERSION_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_INFO_FILEVERSION;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_INFO_DATECREATED_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_INFO_DATECREATED;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_INFO_DATECREATED_STRING_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_INFO_DATECREATED_STRING;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_INFO_DATESAVED_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_INFO_DATESAVED;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_INFO_DATESAVED_STRING_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_INFO_DATESAVED_STRING;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_INFO_PREVIEW_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_INFO_PREVIEW;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_COLORPROFILE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_COLORPROFILE;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_COLORPROFILE_SRGB_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_COLORPROFILE_SRGB;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_COLORPROFILE_LINEAR_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_COLORPROFILE_LINEAR;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_COLORPROFILE_DISABLED_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_COLORPROFILE_DISABLED;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_LINEARWORKFLOW_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_LINEARWORKFLOW;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_COLORINFO_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_COLORINFO;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_DEFAULTMATERIAL_COLOR_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_DEFAULTMATERIAL_COLOR;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_DEFAULTMATERIAL_TYPE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_DEFAULTMATERIAL_TYPE;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_DEFAULTMATERIAL_TYPE_WHITE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_DEFAULTMATERIAL_TYPE_WHITE;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_DEFAULTMATERIAL_TYPE_BLUE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_DEFAULTMATERIAL_TYPE_BLUE;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_DEFAULTMATERIAL_TYPE_USER_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_DEFAULTMATERIAL_TYPE_USER;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_CLIPPING_PRESET_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_CLIPPING_PRESET;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_CLIPPING_PRESET_TINY_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_CLIPPING_PRESET_TINY;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_CLIPPING_PRESET_SMALL_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_CLIPPING_PRESET_SMALL;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_CLIPPING_PRESET_MEDIUM_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_CLIPPING_PRESET_MEDIUM;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_CLIPPING_PRESET_LARGE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_CLIPPING_PRESET_LARGE;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_CLIPPING_PRESET_HUGE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_CLIPPING_PRESET_HUGE;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_CLIPPING_PRESET_CUSTOM_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_CLIPPING_PRESET_CUSTOM;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_CLIPPING_PRESET_NEAR_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_CLIPPING_PRESET_NEAR;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_CLIPPING_PRESET_FAR_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_CLIPPING_PRESET_FAR;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_DOCUNIT_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_DOCUNIT;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_SCALEDOCUMENT_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_SCALEDOCUMENT;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_PREVIEW_IMAGE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_PREVIEW_IMAGE;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_PREVIEW_COMMAND_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_PREVIEW_COMMAND;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_PREVIEW_COMMAND_AUTO_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_PREVIEW_COMMAND_AUTO;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_PREVIEW_COMMAND_PASTE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_PREVIEW_COMMAND_PASTE;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_PREVIEW_COMMAND_FROMEDITOR_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_PREVIEW_COMMAND_FROMEDITOR;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_PREVIEW_COMMAND_LOAD_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_PREVIEW_COMMAND_LOAD;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_PRESET_COMMAND_LOAD_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_PRESET_COMMAND_LOAD;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_PRESET_COMMAND_SAVE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_PRESET_COMMAND_SAVE;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_KEYFRAMESELECTIONOBJECT_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_KEYFRAMESELECTIONOBJECT;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_MULTISELECTIONWORLD_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_MULTISELECTIONWORLD;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_SELECTIONFILTER_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_SELECTIONFILTER;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_DISPLAYFILTER_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_DISPLAYFILTER;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_RESTRICTEDITORSELECTION_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_RESTRICTEDITORSELECTION;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_SENDBACKTO_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_SENDBACKTO;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_TGAFORCE_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_TGAFORCE;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_SECONDARYPATH_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_SECONDARYPATH;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_MULTISELECTIONHIGHLIGHT_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_MULTISELECTIONHIGHLIGHT;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_STICKY_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_STICKY;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_CLONING_HINT_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_CLONING_HINT;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_CLONING_HINT_DEFAULT_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_CLONING_HINT_DEFAULT;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_CLONING_HINT_EDITOR_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_CLONING_HINT_EDITOR;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_CLONING_HINT_SUBFRAME_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_CLONING_HINT_SUBFRAME;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_AXIS_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_AXIS;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT_SAVEDOC_DESTINATIONPATH_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_SAVEDOC_DESTINATIONPATH;
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DOCUMENT__get() {
+  int jresult ;
+  int result;
+  
+  result = (int)DOCUMENT_;
+  jresult = result; 
+  return jresult;
 }
 
 

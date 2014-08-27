@@ -13,11 +13,13 @@ namespace Fusee.Engine
     /// </summary>
     public class RigidBody
     {
+
+        public event EventHandler WhileCollidingEvent = delegate { };
         internal IRigidBodyImp _iRigidBodyImp;
 
        // public Mesh Mesh { get; set; }
 
-        public float3 Gavity
+        public float3 Gravity
         {
             get
             {
@@ -221,16 +223,16 @@ namespace Fusee.Engine
             }
         }
 
-        public float Bounciness
+        public float Restitution
         {
             get
             {
-                return _iRigidBodyImp.Bounciness;
+                return _iRigidBodyImp.Restitution;
             }
             set
             {
                 var o = (RigidBody)_iRigidBodyImp.UserObject;
-                o._iRigidBodyImp.Bounciness = value;
+                o._iRigidBodyImp.Restitution = value;
             }
         }
 
@@ -244,12 +246,35 @@ namespace Fusee.Engine
             }
         }
 
+        public void SetDrag(float linearDrag, float anglularDrag)
+        {
+            var o = (RigidBody) _iRigidBodyImp.UserObject;
+            o._iRigidBodyImp.SetDrag(linearDrag, anglularDrag);
+        }
+        public float LinearDrag
+        {
+            get { return _iRigidBodyImp.LinearDrag; }
+
+        }
+
+        public float AngularDrag
+        {
+            get { return _iRigidBodyImp.AngularDrag; }
+        }
+
+
+
         public CollisionShape CollisionShape
         {
             get
             {
                 var shape = _iRigidBodyImp.CollisionShape;
-                var shapeType = shape.GetType().ToString();          
+                var shapeType = shape.GetType().ToString();
+               /* var colShape = new CollisionShape();
+                colShape.ICollisionShapeImp = (ICollisionShapeImp)shape;
+                shape.UserObject = colShape;
+                return colShape;*/
+                //Debug.WriteLine("shapeType" + shapeType);
                 switch (shapeType)
                 {
                     //Primitives
@@ -289,7 +314,7 @@ namespace Fusee.Engine
                         convHull.ConvexHullShapeImp = (IConvexHullShapeImp) shape;
                         shape.UserObject = convHull;
                         return convHull;
-                    case "Fusee.Engine.GImpactMeshShape":
+                    case "Fusee.Engine.GImpactMeshShapeImp":
                         var gimp = new GImpactMeshShape();
                         gimp.GImpactMeshShapeImp = (IGImpactMeshShapeImp)shape;
                         shape.UserObject = gimp;
@@ -300,7 +325,8 @@ namespace Fusee.Engine
                         shape.UserObject = staticPlane;
                         return staticPlane;
                     //Misc
-                    case "Fusee.Engine.CompoundShapeShapeImp":
+                    case "Fusee.Engine.CompoundShapeImp":
+                        //Debug.WriteLine("Fusee.Engine.CompoundShapeImp");
                         var comp = new CompoundShape();
                         comp.CompoundShapeImp = (ICompoundShapeImp)shape;
                         shape.UserObject = comp;
@@ -313,11 +339,11 @@ namespace Fusee.Engine
                     default:
                         return new EmptyShape();
                 }
+
             }
             set
             {
                 var shapeType = value.GetType().ToString();
-                //IRigidBodyImp rbi;
                 var o = (RigidBody)_iRigidBodyImp.UserObject;
                 switch (shapeType)
                 {

@@ -12,7 +12,7 @@ namespace Fusee.Engine
     {
         internal MultiSphereShape BtMultiSphereShape;
 
-        public virtual float Margin
+        public float Margin
         {
             get
             {

@@ -11,9 +11,9 @@ namespace Fusee.Serialization
         public string Name;
 
         [ProtoMember(2)]
-        public float4x4 Transform;
+        public TransformContainer Transform;
 
-        [ProtoMember(3)] 
+        [ProtoMember(3, AsReference = true)] 
         public MaterialContainer Material;
 
         [ProtoMember(4, AsReference = true)]

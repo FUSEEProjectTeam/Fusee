@@ -8,6 +8,7 @@ namespace Fusee.Engine
 {
     public interface IDynamicWorldImp
     {
+        float3 Gravity { get; set; }
 
         IRigidBodyImp AddRigidBody(float mass, float3 position, float3 orientation, ICollisionShapeImp colShape/*, float3 intertia*/);
         IRigidBodyImp GetRigidBody(int i);
@@ -17,7 +18,7 @@ namespace Fusee.Engine
         IPoint2PointConstraintImp AddPoint2PointConstraint(IRigidBodyImp rigidBodyA, float3 pivotInA);
         IPoint2PointConstraintImp AddPoint2PointConstraint(IRigidBodyImp rigidBodyA, IRigidBodyImp rigidBodyB, float3 pivotInA, float3 pivotInB);
        
-        IPoint2PointConstraintImp GetConstraint(int i);
+        //IPoint2PointConstraintImp GetConstraint(int i);
 
         IHingeConstraintImp AddHingeConstraint(IRigidBodyImp rigidBodyA, float4x4 frameInA, bool useReferenceFrameA);
         IHingeConstraintImp AddHingeConstraint(IRigidBodyImp rigidBodyA, float3 pivotInA, float3 axisInA, bool useReferenceFrameA);
@@ -56,7 +57,7 @@ namespace Fusee.Engine
         IEmptyShapeImp AddEmptyShape();
 
         IConvexHullShapeImp AddConvexHullShape();
-        IConvexHullShapeImp AddConvexHullShape(float3[] points);
+        IConvexHullShapeImp AddConvexHullShape(float3[] points, bool optimized);
 
         IStaticPlaneShapeImp AddStaticPlaneShape(float3 planeNormal, float planeConstant);
 

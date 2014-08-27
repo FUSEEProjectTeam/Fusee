@@ -1,8 +1,12 @@
+#pragma warning disable 1591
+
 using System;
 using System.Runtime.InteropServices;
 using ProtoBuf;
 namespace Fusee.Math
 {
+    // ReSharper disable InconsistentNaming
+
     /// <summary>
     /// Represents a 2D vector using two single-precision floating-point numbers.
     /// </summary>
@@ -981,6 +985,15 @@ namespace Fusee.Math
 
         #endregion
 
+        #region Swizzle
+
+        /// <summary>
+        /// Gets or sets an OpenTK.float2 with the x and y components of this instance.
+        /// </summary>
+        public float2 xy { get { return new float2(x, y); } set { x = value.x; y = value.y; } }
+
+        #endregion
+
         #region Operators
 
         /// <summary>
@@ -1169,6 +1182,37 @@ namespace Fusee.Math
 
         #endregion
 
+        #region Color
+
+        /// <summary>
+        /// The red component (same as x)
+        /// </summary>
+        public float r
+        {
+            get { return x; }
+            set { x = value; }
+        }
+
+        /// <summary>
+        /// The green component (same as y)
+        /// </summary>
+        public float g
+        {
+            get { return y; }
+            set { y = value; }
+        }
+
+        /// <summary>
+        /// The rg component (same as xy)
+        /// </summary>
+        public float2 rg
+        {
+            get { return xy; }
+            set { xy = value; }
+        }
+
+        #endregion
+
         #endregion
 
         #region IEquatable<float2> Members
@@ -1191,4 +1235,8 @@ namespace Fusee.Math
 
         public static Converter<string, float2> Parse { get; set; }
     }
+
+    // ReSharper restore InconsistentNaming
 }
+
+#pragma warning restore 1591

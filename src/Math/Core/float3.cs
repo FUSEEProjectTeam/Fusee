@@ -1,9 +1,13 @@
-﻿using System;
+﻿#pragma warning disable 1591
+
+using System;
 using System.Runtime.InteropServices;
 using ProtoBuf;
 
 namespace Fusee.Math
 {
+    // ReSharper disable InconsistentNaming
+
     /// <summary>
     /// Represents a 3D vector using three single-precision floating-point numbers.
     /// </summary>
@@ -13,9 +17,7 @@ namespace Fusee.Math
     [ProtoContract]
     [Serializable]
     [StructLayout(LayoutKind.Sequential)]
-// ReSharper disable InconsistentNaming
     public struct float3 : IEquatable<float3>
-// ReSharper restore InconsistentNaming
     {
         #region Fields
 
@@ -1346,7 +1348,6 @@ namespace Fusee.Math
         /// <value>
         /// The xy.
         /// </value>
-// ReSharper disable InconsistentNaming
         public float2 xy
         {
             get { return new float2(x, y); }
@@ -1356,7 +1357,11 @@ namespace Fusee.Math
                 y = value.y;
             }
         }
-// ReSharper restore InconsistentNaming
+
+        /// <summary>
+        /// Gets or sets an OpenTK.float3 with the x, y and z components of this instance.
+        /// </summary>
+        public float3 xyz { get { return new float3(x, y, z); } set { x = value.x; y = value.y; z = value.z; } }
 
         #endregion
 
@@ -1442,7 +1447,7 @@ namespace Fusee.Math
         }
 
         /// <summary>
-        /// Multiplies two instances.
+        /// Multiplies two instances (componentwise).
         /// </summary>
         /// <param name="vec1">The first instance.</param>
         /// <param name="vec2">The second instance.</param>
@@ -1568,7 +1573,7 @@ namespace Fusee.Math
         #endregion
 
         #region Color
-        // ReSharper disable InconsistentNaming
+
         /// <summary>
         /// The red component (same as x)
         /// </summary>
@@ -1596,7 +1601,6 @@ namespace Fusee.Math
             set { z = value; }
         }
 
-        // ReSharper restore InconsistentNaming
         #endregion
 
         #endregion
@@ -1622,4 +1626,8 @@ namespace Fusee.Math
 
         public static Converter<string, float3> Parse { get; set; }
     }
+
+    // ReSharper restore InconsistentNaming
 }
+
+#pragma warning restore 1591

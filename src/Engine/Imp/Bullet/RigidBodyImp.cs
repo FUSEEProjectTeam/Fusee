@@ -27,7 +27,7 @@ namespace Fusee.Engine
             set
             {
                 var o = (RigidBodyImp) _rbi.UserObject;
-                _rbi.Gravity = Translater.Float3ToBtVector3(value);
+                o._rbi.Gravity = Translater.Float3ToBtVector3(value);
             }
         }
         private float _mass;
@@ -228,9 +228,9 @@ namespace Fusee.Engine
                 o._rbi.AngularFactor = angfac;
             }
         }
-        
-        
-        public float Bounciness
+
+
+        public float Restitution
         {
             get
             {
@@ -253,13 +253,34 @@ namespace Fusee.Engine
             }
         }
 
+        public void SetDrag(float linearDrag, float anglularDrag)
+        {
+            var o = (RigidBodyImp) _rbi.UserObject;
+            o._rbi.SetDamping(linearDrag, anglularDrag);
+        }
+
+        public float LinearDrag
+        {
+            get { return _rbi.LinearDamping; }
+            
+        }
+
+        public float AngularDrag
+        {
+            get { return _rbi.AngularDamping; }
+        }
+
+
         public ICollisionShapeImp CollisionShape
         {
             get
             {
                 var type = _rbi.CollisionShape.GetType().ToString();
                 var btShape = _rbi.CollisionShape;
-                
+                /*var colShape = new CollisonShapeImp();
+                colShape.BtCollisionShape = btShape;
+                btShape.UserObject = colShape;
+                return colShape;*/
                 switch (type)
                 {
                     //Primitives
@@ -320,6 +341,7 @@ namespace Fusee.Engine
                         return staticPlane;
                     //Misc
                     case "BulletSharp.CompoundShape":
+                        //Debug.WriteLine("BulletSharp.CompoundShape");
                         var btComp = (CompoundShape) btShape;
                         var comp = new CompoundShapeImp();
                         comp.BtCompoundShape = btComp;
@@ -328,7 +350,6 @@ namespace Fusee.Engine
                     default:
                         return new EmptyShapeImp();
                 }
-
             }
             set
             {
@@ -415,6 +436,7 @@ namespace Fusee.Engine
 
                 var o = (RigidBodyImp)_rbi.UserObject;
                 o._rbi.CollisionShape = btColShape;
+
             }
         }
 
@@ -427,9 +449,19 @@ namespace Fusee.Engine
         }
 
 
-        public void OnCollision()
+        /// <summary>
+        /// OnCollision is called once per frame for every rigidbody theis rigidbody is colliding.
+        /// Send ffrom here Massage to the Rigidbody.OnCollision(RigidBodyImp other) by an Events
+        /// </summary>
+        /// <param name="other">the other Rigidbody that is collided </param>
+        public virtual void OnCollision(IRigidBodyImp other)
         {
-            Debug.WriteLine("Collision");
+            
+            //Debug.WriteLine("RigidBodyImp.OnCollision");
+            //TODO: Event to the RigidBody.cs class 
+            //var otherRb = (RigidBodyImp)other;
+            //otherRb.ApplyTorqueImpulse = new float3(10,10,10);
+
         }
 
 

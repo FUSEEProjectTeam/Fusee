@@ -4,13 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BulletSharp;
+using Fusee.Math;
 
 namespace Fusee.Engine
 {
     public class CapsuleShapeImp : CollisonShapeImp, ICapsuleShapeImp
     {
         internal CapsuleShape BtCapsuleShape;
-        public virtual float Margin
+        public float Margin
         {
             get
             {
@@ -21,6 +22,20 @@ namespace Fusee.Engine
             {
                 var o = (CapsuleShapeImp)BtCapsuleShape.UserObject;
                 o.BtCapsuleShape.Margin = value;
+            }
+        }
+
+        public float3 LocalScaling
+        {
+            get
+            {
+                var retval = Translater.BtVector3ToFloat3(BtCapsuleShape.LocalScaling);
+                return retval;
+            }
+            set
+            {
+                var o = (CapsuleShapeImp)BtCapsuleShape.UserObject;
+                o.BtCapsuleShape.LocalScaling = Translater.Float3ToBtVector3(value);
             }
         }
 

@@ -311,6 +311,14 @@ namespace Fusee.Engine
             Refresh();
         }
 
+        protected internal virtual void DetachFromContext()
+        {
+            RContext = null;
+ 
+            if (GUIShader != null) GUIShader.DetachFromContext();
+            if (TextShader != null) TextShader.DetachFromContext();
+        }
+
         protected void SetTextMesh(int posX, int posY)
         {
             if (Font == null)

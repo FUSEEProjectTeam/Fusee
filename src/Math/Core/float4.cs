@@ -1,10 +1,13 @@
+#pragma warning disable 1591
+
 using System;
 using System.Runtime.InteropServices;
-using System.Runtime.Serialization;
 using ProtoBuf;
 
 namespace Fusee.Math
 {
+    // ReSharper disable InconsistentNaming
+
     /// <summary>Represents a 4D vector using four single-precision floating-point numbers.</summary>
     /// <remarks>
     /// The float4 structure is suitable for interoperation with unmanaged code requiring four consecutive floats.
@@ -12,9 +15,8 @@ namespace Fusee.Math
     [Serializable]
     [StructLayout(LayoutKind.Sequential)]
     [ProtoContract]
-// ReSharper disable InconsistentNaming
+
     public struct float4  : IEquatable<float4>
-// ReSharper restore InconsistentNaming
     {
         #region Fields
 
@@ -1022,16 +1024,12 @@ namespace Fusee.Math
         /// <summary>
         /// Gets or sets an OpenTK.float2 with the x and y components of this instance.
         /// </summary>
-// ReSharper disable InconsistentNaming
         public float2 xy { get { return new float2(x, y); } set { x = value.x; y = value.y; } }
-// ReSharper restore InconsistentNaming
 
         /// <summary>
         /// Gets or sets an OpenTK.float3 with the x, y and z components of this instance.
         /// </summary>
-// ReSharper disable InconsistentNaming
         public float3 xyz { get { return new float3(x, y, z); } set { x = value.x; y = value.y; z = value.z; } }
-// ReSharper restore InconsistentNaming
 
         #endregion
 
@@ -1094,6 +1092,21 @@ namespace Fusee.Math
             vec.z *= scale;
             vec.w *= scale;
             return vec;
+        }
+
+        /// <summary>
+        /// Multiplies two instances (componentwise).
+        /// </summary>
+        /// <param name="left">The first instance.</param>
+        /// <param name="right">The second instance.</param>
+        /// <returns>The result of the calculation.</returns>
+        public static float4 operator *(float4 left, float4 right)
+        {
+            left.x *= right.x;
+            left.y *= right.y;
+            left.z *= right.z;
+            left.w *= right.w;
+            return left;
         }
 
         /// <summary>
@@ -1235,7 +1248,7 @@ namespace Fusee.Math
         #endregion
 
         #region Color
-        // ReSharper disable InconsistentNaming
+
         /// <summary>
         /// The red component (same as x)
         /// </summary>
@@ -1264,6 +1277,15 @@ namespace Fusee.Math
         }
 
         /// <summary>
+        /// The rg component (same as xy)
+        /// </summary>
+        public float2 rg
+        {
+            get { return xy; }
+            set { xy = value; }
+        }
+
+        /// <summary>
         /// The rgb component (same as xyz)
         /// </summary>
         public float3 rgb
@@ -1280,7 +1302,7 @@ namespace Fusee.Math
             get { return w; }
             set { w = value; }
         }
-        // ReSharper restore InconsistentNaming
+
         #endregion
 
         #endregion
@@ -1303,4 +1325,8 @@ namespace Fusee.Math
 
         public static Converter<string, float4> Parse { get; set; }
     }
+
+    // ReSharper restore InconsistentNaming
 }
+
+#pragma warning restore 1591

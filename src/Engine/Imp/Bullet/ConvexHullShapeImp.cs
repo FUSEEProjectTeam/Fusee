@@ -13,7 +13,7 @@ namespace Fusee.Engine
         internal ConvexHullShape BtConvexHullShape;
         internal Translater Translater = new Translater();
 
-        public virtual float Margin
+        public float Margin
         {
             get
             {

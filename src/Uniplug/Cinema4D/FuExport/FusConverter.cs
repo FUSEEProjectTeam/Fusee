@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -46,11 +48,11 @@ namespace FuExport
         private BaseDocument _polyDoc;
         private List<string> _textureFiles = new List<string>();
         private string _sceneRootDir;
-        private Dictionary<BaseMaterial, MaterialContainer> _materialCache;
+        private Dictionary<long, MaterialContainer> _materialCache;
 
         public SceneContainer FuseefyScene(BaseDocument doc, string sceneRootDir, out List<string> textureFiles)
         {
-            _materialCache = new Dictionary<BaseMaterial, MaterialContainer>();
+            _materialCache = new Dictionary<long, MaterialContainer>();
             _sceneRootDir = sceneRootDir;
             _polyDoc = doc.Polygonize();
 
@@ -303,7 +305,12 @@ namespace FuExport
                             soc.Children = new List<SceneObjectContainer>();
 
                         SceneObjectContainer subSoc = new SceneObjectContainer();
-                        subSoc.Transform = float4x4.Identity;
+                        subSoc.Transform = new TransformContainer()
+                        {
+                            Translation = new float3(0, 0, 0),
+                            Rotation = new float3(0, 0, 0), 
+                            Scale = new float3(1, 1, 1)
+                        };
                         subSoc.Material = GetMaterial(texSelItem.Value);
                         subSoc.Name = soc.Name + "_" + texSelItem.Key.GetName();
                         subSoc.Mesh = GetMesh(polyOb, normalOb, uvwTag, polyInxsSubset);
@@ -323,13 +330,13 @@ namespace FuExport
             if (material == null)
                 return null;
 
+            long materialUid = material.RefUID();
             MaterialContainer mcRet;
+            if (_materialCache.TryGetValue(materialUid, out mcRet))
+                return mcRet;
+
             using (BaseContainer materialData = material.GetData())
             {
-
-                if (_materialCache.TryGetValue(material, out mcRet))
-                    return mcRet;
-
                 mcRet = new MaterialContainer();
                 // Just for debugging purposes
                 for (int i = 0, id = 0; -1 != (id = materialData.GetIndexId(i)); i++)
@@ -436,7 +443,7 @@ namespace FuExport
  
             }
             */
-            _materialCache[material] = mcRet;
+            _materialCache[materialUid] = mcRet;
             return mcRet;
         }
 
@@ -451,7 +458,7 @@ namespace FuExport
             return (float)(minS*Math.Pow(maxS/minS, 1.0 - p));
         }
 
-        private string GetTexture(BaseContainer data, BaseChannel diffuseChannel)
+        private string GetTexture(BaseContainer data, BaseChannel matChannel)
         {
             string resultName = null;
             string texture = data.GetString(C4dApi.BASECHANNEL_TEXTURE);
@@ -463,16 +470,14 @@ namespace FuExport
 
                 if (!_textureFiles.Contains(texture))
                 {
-                    diffuseChannel.InitTexture(new InitRenderStruct(_polyDoc));
-                    using (BaseBitmap bitmap = diffuseChannel.GetBitmap())
+                    matChannel.InitTexture(new InitRenderStruct(_polyDoc));
+                    using (BaseBitmap bitmap = matChannel.GetBitmap())
                     {
                         if (bitmap != null)
                         {
                             using (BaseContainer compressionContainer = new BaseContainer(C4dApi.JPGSAVER_QUALITY))
                             {
-                                ColorProfile colPro = bitmap.GetColorProfile();
-                                bool bRet = bitmap.SetColorProfile(null);
-                                colPro = bitmap.GetColorProfile();
+                                bool bRet = bitmap.SetColorProfile(ColorProfile.GetDefaultSRGB());
                                 compressionContainer.SetFloat(C4dApi.JPGSAVER_QUALITY, 70.0);
                                 string textureFileAbs = Path.Combine(_sceneRootDir, texture);
                                 bitmap.Save(new Filename(textureFileAbs), C4dApi.FILTER_JPG, compressionContainer,
@@ -485,7 +490,7 @@ namespace FuExport
                             resultName = null;
                         }
                     }
-                    diffuseChannel.FreeTexture();
+                    matChannel.FreeTexture();
                 }
             }
             return resultName;
@@ -503,14 +508,19 @@ namespace FuExport
                 SceneObjectContainer soc = new SceneObjectContainer();
 
                 soc.Name = ob.GetName();
+                float3 rotC4d = (float3) ob.GetRelRot();
+                soc.Transform = new TransformContainer{
+                    Translation = (float3) ob.GetRelPos(),
+                    Rotation = new float3(-rotC4d.y, -rotC4d.x, -rotC4d.z),
+                    Scale = (float3) ob.GetRelScale()
+                };
+                /*
                 double4x4 mtxD = ob.GetMl();
                 soc.Transform = (float4x4) mtxD;
+                */
 
                 VisitObject(ob, soc);
-                /*
-                soc.Material = GetMaterial(ob);
-                soc.Mesh = GetMesh(ob);
-                */
+
                 var childList = FuseefyOb(ob.GetDown());
                 if (childList != null)
                 {

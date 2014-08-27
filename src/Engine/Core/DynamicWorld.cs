@@ -17,6 +17,11 @@ namespace Fusee.Engine
             _dwi = ImpFactory.CreateIDynamicWorldImp();
         }
 
+        public float3 Gravity
+        {
+            get { return _dwi.Gravity; }
+            set { _dwi.Gravity = value; }
+        }
 
         public RigidBody AddRigidBody(float mass, float3 position, float3 orientation, CollisionShape colShape/*, float3 inertia*/)
         {
@@ -140,12 +145,12 @@ namespace Fusee.Engine
             ip2pci.UserObject = retval;
             return retval;
         }
-        public Point2PointConstraint GetConstraint(int i)
+      /*  public Point2PointConstraint GetConstraint(int i)
         {
             //Point2PointConstraint tp2pci = _dwi.GetConstraint(i).UserObject;
             var retval = (Point2PointConstraint)_dwi.GetConstraint(i).UserObject;
             return retval;
-        }
+        }*/
 
         //HingeConstraint
         public HingeConstraint AddHingeConstraint(RigidBody rigidBodyA, float4x4 frameInA, bool useReferenceFrameA = false)
@@ -370,9 +375,9 @@ namespace Fusee.Engine
             return retval;
         }
 
-        public ConvexHullShape AddConvexHullShape(float3[] points)
+        public ConvexHullShape AddConvexHullShape(float3[] points, bool optimized = true)
         {
-            IConvexHullShapeImp iConvexHullShapeImp = _dwi.AddConvexHullShape(points);
+            IConvexHullShapeImp iConvexHullShapeImp = _dwi.AddConvexHullShape(points, optimized);
             var retval = new ConvexHullShape();
             retval.ConvexHullShapeImp = iConvexHullShapeImp;
             iConvexHullShapeImp.UserObject = retval;

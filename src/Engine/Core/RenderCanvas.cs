@@ -184,7 +184,7 @@ namespace Fusee.Engine
             VideoManager.Instance.VideoManagerImp = _videoManagerImp;
 
             _canvasImp.Init += delegate { Init(); };
-            _canvasImp.UnLoad += delegate { UnLoad(); };
+            _canvasImp.UnLoad += delegate { DeInit(); };
 
             _canvasImp.Render += delegate
             {
@@ -231,7 +231,7 @@ namespace Fusee.Engine
         /// Used to release the ressources of all audio and network instances.
         /// All audio and network ressources get reset.
         /// </summary>
-        public virtual void UnLoad()
+        public virtual void DeInit()
         {
             Audio.Instance.CloseDevice();
             Network.Instance.CloseDevice();
@@ -290,7 +290,37 @@ namespace Fusee.Engine
         {
             _canvasImp.Present();
         }
+        
+        /// <summary>
+        /// Sets the data for a video wall.
+        /// </summary>
+        /// <param name="monitorsHor">Monitor count on horizontal axis.</param>
+        /// <param name="monitorsVert">Monitor count on vertical axis.</param>
+        /// <param name="val">Activate or deactivate videoWall mode.</param>
+        /// <param name="borderHidden">Activate or deactivate videoWall mode.</param>
+        public void VideoWall(int monitorsHor, int monitorsVert, bool activate = true, bool borderHidden = true)
+        {
+            _canvasImp.VideoWall(monitorsHor, monitorsVert, activate, borderHidden);
+        }
 
+        /// <summary>
+        /// Sets the size of the output window for desktop development.
+        /// </summary>
+        /// <param name="width">The width of the window.</param>
+        /// <param name="height">The height of the window.</param>
+        /// <param name="borderHidden">Show the window border or not.</param>
+        public void SetWindowSize(int width, int height, bool borderHidden = false, int posx = 0, int posy = 0)
+        {
+            _canvasImp.SetWindowSize(width, height, borderHidden, posx, posy);
+        }
+
+        /// <summary>
+        /// Closes the GameWindow with a call to opentk.
+        /// </summary>
+        public void CloseGameWindow()
+        {
+            _canvasImp.CloseGameWindow();
+        }
         #endregion
 
         #region Screen related Fields
@@ -354,7 +384,6 @@ namespace Fusee.Engine
             get { return _canvasImp.Fullscreen; }
             set { _canvasImp.Fullscreen = value; }
         }
-
         #endregion
     }
 }

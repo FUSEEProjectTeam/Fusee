@@ -73,6 +73,7 @@
     <SignManifests>false</SignManifests>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="GUI.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Physics.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -121,7 +122,9 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="Assets\Cabin.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Assets\Cube.obj.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
