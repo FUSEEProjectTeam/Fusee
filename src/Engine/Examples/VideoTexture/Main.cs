@@ -38,7 +38,7 @@ namespace Examples.VideoTextureExample
 
             _textureParam = _spTexture.GetShaderParam("texture1");
 
-            _videoStream = VideoManager.Instance.LoadVideoFromFile(@"Assets/small.webm", true);
+            _videoStream = VideoManager.Instance.LoadVideoFromFile(@"Assets/pot.webm", true);
             //_videoStream = VideoManager.Instance.LoadVideoFromCamera(0, false);
         }
 
