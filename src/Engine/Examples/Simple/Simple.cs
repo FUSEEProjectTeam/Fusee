@@ -134,10 +134,6 @@ namespace Examples.Simple
 
             RC.Render(_meshFace);
 
-
-
-
-
             // swap buffers
             Present();
         }

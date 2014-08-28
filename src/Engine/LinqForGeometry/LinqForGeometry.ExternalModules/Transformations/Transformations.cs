@@ -65,12 +65,13 @@ namespace LFG.ExternalModules.Transformations
             try
             {
                 var transfMatrix = new float4x4(
-                    new float4(scalarX, 0f, 0f, 0f),
-                    new float4(0f, scalarY, 0f, 0f),
-                    new float4(0f, 0f, scalarZ, 0f),
-                    new float4(0f, 0f, 0f, 1.0f)
-                    );
+                                                new float4(scalarX, 0f, 0f, 0f),
+                                                new float4(0f, scalarY, 0f, 0f),
+                                                new float4(0f, 0f, scalarZ, 0f),
+                                                new float4(0f, 0f, 0f, 1.0f)
+                                                );
 
+                transfMatrix.Transpose();
                 geo._LvertexVal = geo._LvertexVal.Select(tmpVertValue => transfMatrix * tmpVertValue).ToList();
 
                 return true;
@@ -96,12 +97,13 @@ namespace LFG.ExternalModules.Transformations
             try
             {
                 float4x4 transfMatrix = new float4x4(
-                        new float4(1f, 0f, 0f, tX),
-                        new float4(0f, 1f, 0f, tY),
-                        new float4(0f, 0f, 1f, tZ),
-                        new float4(0f, 0f, 0f, 1f)
-                    );
+                                                    new float4(1f, 0f, 0f, tX),
+                                                    new float4(0f, 1f, 0f, tY),
+                                                    new float4(0f, 0f, 1f, tZ),
+                                                    new float4(0f, 0f, 0f, 1f)
+                                                     );
 
+                transfMatrix.Transpose();
                 geo._LvertexVal = geo._LvertexVal.Select(tmpVertValue => transfMatrix * tmpVertValue).ToList();
 
                 return true;
@@ -128,12 +130,13 @@ namespace LFG.ExternalModules.Transformations
                 double sin = System.Math.Sin((double)alpha);
 
                 float4x4 transfMatrix = new float4x4(
-                        new float4(1f, 0f, 0f, 0f),
-                        new float4(0f, (float)cos, (float)sin, 0f),
-                        new float4(0f, (float)-sin, (float)cos, 0f),
-                        new float4(0f, 0f, 0f, 1f)
-                    );
+                                                    new float4(1f, 0f, 0f, 0f),
+                                                    new float4(0f, (float)cos, (float)sin, 0f),
+                                                    new float4(0f, (float)-sin, (float)cos, 0f),
+                                                    new float4(0f, 0f, 0f, 1f)
+                                                    );
 
+                transfMatrix.Transpose();
                 geo._LvertexVal = geo._LvertexVal.Select(tmpVertValue => transfMatrix * tmpVertValue).ToList();
 
                 return true;
@@ -160,12 +163,13 @@ namespace LFG.ExternalModules.Transformations
                 double sin = System.Math.Sin((double)alpha);
 
                 float4x4 transfMatrix = new float4x4(
-                        new float4((float)cos, 0f, (float)-sin, 0f),
-                        new float4(0f, 1f, 0f, 0f),
-                        new float4((float)sin, 0f, (float)cos, 0f),
-                        new float4(0f, 0f, 0f, 1f)
-                    );
+                                                    new float4((float)cos, 0f, (float)-sin, 0f),
+                                                    new float4(0f, 1f, 0f, 0f),
+                                                    new float4((float)sin, 0f, (float)cos, 0f),
+                                                    new float4(0f, 0f, 0f, 1f)
+                                                    );
 
+                transfMatrix.Transpose();
                 geo._LvertexVal = geo._LvertexVal.Select(tmpVertValue => transfMatrix * tmpVertValue).ToList();
 
                 return true;
@@ -192,12 +196,13 @@ namespace LFG.ExternalModules.Transformations
                 double sin = System.Math.Sin((double)alpha);
 
                 float4x4 transfMatrix = new float4x4(
-                        new float4((float)cos, (float)sin, 0f, 0f),
-                        new float4((float)-sin, (float)cos, 0f, 0f),
-                        new float4(0f, 0f, 1f, 0f),
-                        new float4(0f, 0f, 0f, 1f)
-                    );
+                                                    new float4((float)cos, (float)sin, 0f, 0f),
+                                                    new float4((float)-sin, (float)cos, 0f, 0f),
+                                                    new float4(0f, 0f, 1f, 0f),
+                                                    new float4(0f, 0f, 0f, 1f)
+                                                    );
 
+                transfMatrix.Transpose();
                 geo._LvertexVal = geo._LvertexVal.Select(tmpVertValue => transfMatrix * tmpVertValue).ToList();
                 
                 return true;

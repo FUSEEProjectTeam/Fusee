@@ -130,13 +130,14 @@ namespace Examples.LinqForGeometry
         public override void Init()
         {
             VSync = false;
+            SetWindowSize(1280, 720);
 
             // Start the application in demo mode?
             demoMode = true;
 
             #region MeshImports
             _Geo = new Geometry();
-            //_Geo.LoadAsset("Assets/Cube.obj.model");
+            _Geo.LoadAsset("Assets/Cube.obj.model");
             //_Geo.LoadAsset("Assets/Cube_quads.obj.model");
             //_Geo.LoadAsset("Assets/Sphere.obj.model");
             //_Geo.LoadAsset("Assets/Sphere_quads.obj.model");
@@ -144,10 +145,7 @@ namespace Examples.LinqForGeometry
             //_Geo.LoadAsset("Assets/Cylinder.obj.model");
             //_Geo.LoadAsset("Assets/Cylinder_quads.obj.model");
             //_Geo.LoadAsset("Assets/SharedCorners_pro.obj.model");
-            _Geo.LoadAsset("Assets/Teapot.obj.model");
-
-            // Due to copyright reasons, this file will not be delivered with the project.
-            //_Geo.LoadAsset("Assets/Hellknight.obj.model");
+            //_Geo.LoadAsset("Assets/Teapot.obj.model");
             #endregion MeshImports
 
             // Set the smoothing angle for the edge based vertex normal calculation
@@ -178,7 +176,7 @@ namespace Examples.LinqForGeometry
             _colorParam = _spColor.GetShaderParam("color");
 
             RC.SetShader(_spColor);
-            RC.SetShaderParam(_colorParam, new float4(0f, 0f, 0f, 1));
+            RC.SetShaderParam(_colorParam, new float4(0f, 0f, 0f, 1f));
             #endregion ColorShader
 
             #region LightPos
@@ -201,7 +199,7 @@ namespace Examples.LinqForGeometry
 
             RC.ClearColor = new float4(0.2f, 0.2f, 0.2f, 1f);
 
-            // TODO: For Benchmarking only.
+            // For Benchmarking only.
             _ShaderType = 1;
             runDemoAnimation = true;
             _Geo._DoCalcVertexNormals = true;
@@ -231,7 +229,7 @@ namespace Examples.LinqForGeometry
 
             // If demo time is done quit the app
             if (demoTimeOut != 0.0 && demoRunTime > demoTimeOut)
-                System.Environment.Exit(-1);
+                CloseGameWindow();
 
         }
 
@@ -478,9 +476,8 @@ namespace Examples.LinqForGeometry
         public override void Resize()
         {
             RC.Viewport(0, 0, Width, Height);
-
             var aspectRatio = Width / (float)Height;
-            RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 10000);
+            RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 5000);
         }
 
         public static void Main()
@@ -499,7 +496,7 @@ namespace Examples.LinqForGeometry
             {
                 case 0:
                     RC.SetShader(_spColor);
-                    RC.SetShaderParam(_colorParam, new float4(0.8f, 0.0f, 0, 1));
+                    RC.SetShaderParam(_colorParam, new float4(1f, 0f, 1f, 1f));
                     RC.SetLightActive(0, 0f);
                     RC.SetLightActive(1, 0f);
                     break;
@@ -553,7 +550,5 @@ namespace Examples.LinqForGeometry
                 }
             }
         }
-
-
     }
 }
