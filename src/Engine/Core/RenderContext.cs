@@ -34,6 +34,9 @@ namespace Fusee.Engine
         private readonly IShaderParam _debugColor;
         private bool _debugLinesEnabled = true;
 
+        private PickingContext _pc;
+        public bool HasPickingContext { get; private set; }
+
         // Settable matrices
         private float4x4 _modelView;
         private float4x4 _projection;
@@ -1516,6 +1519,53 @@ namespace Fusee.Engine
                 _rci.SetTriangles(m._meshImp, m.Triangles);
 
             _rci.Render(m._meshImp);
+        }
+
+        #endregion
+
+        #region Picking related Members
+
+        /// <summary>
+        /// Attaches a PickingContext to the RenderContext to use the autoTick() feature. This method is automatically called while initializing a PickingContext.
+        /// </summary>
+        /// <param name="pc">The PickingContext.</param>
+        public void AttachPickingContext(PickingContext pc)
+        {
+            _pc = pc;
+            HasPickingContext = true;
+        }
+
+        /// <summary>
+        /// This method traverses the autoTick() feature to an attached PickingContext.
+        /// </summary>
+        public void PickingContextTick()
+        {
+            _pc.Tick();
+        }
+
+        /// <summary>
+        /// This method returns the color of one or more pixels from the backbuffer.
+        /// </summary>
+        /// <param name="x">X-Coordinate</param>
+        /// <param name="y">Y-Coordinate</param>
+        /// <param name="w">Width</param>
+        /// <param name="h">Height</param>
+        /// <returns></returns>
+        public Bitmap GetPixelColor(int x, int y, int w, int h)
+        {
+            return _rci.GetPixelColor(x, y, w, h);
+        }
+
+
+        /// <summary>
+        /// This method returns depth value from the depthbuffer at a given coordinate.
+        /// </summary>
+        /// <param name="x">X-Coordinate</param>
+        /// <param name="y">Y-Coordinate</param>
+        /// <returns></returns>
+        public float GetPixelDepth(int x, int y)
+        {
+            return _rci.GetPixelDepth(x, y);
         }
 
         #endregion

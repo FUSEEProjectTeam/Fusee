@@ -414,5 +414,9 @@ namespace Fusee.Engine
         /// <param name="normals">The normals</param>
         void SetVertexData(IMeshImp meshImp, float3[] vertices, float2[] uVs, float3[] normals);
          * */
+
+        Bitmap GetPixelColor(int x, int y, int w, int h);
+
+        float GetPixelDepth(int x, int y);
     }
 }

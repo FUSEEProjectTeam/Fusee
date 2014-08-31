@@ -1554,5 +1554,28 @@ namespace Fusee.Engine
         }
 
         #endregion
+
+        #region Picking related Members
+
+        public Bitmap GetPixelColor(int x, int y, int w = 1, int h = 1)
+        {
+            System.Drawing.Rectangle rect = new System.Drawing.Rectangle(0, 0, w, h);
+            Bitmap bmp = new Bitmap(w, h);
+            BitmapData data = bmp.LockBits(rect, flags: ImageLockMode.WriteOnly, format: PixelFormat.Format24bppRgb);
+            GL.ReadPixels(x, y, w, h, OpenTK.Graphics.OpenGL.PixelFormat.Bgr, PixelType.UnsignedByte, data.Scan0);
+
+            bmp.UnlockBits(data);
+            return bmp;
+        }
+
+        public float GetPixelDepth(int x, int y)
+        {
+            var depth = new float();
+            GL.ReadPixels(x, y, 1, 1, OpenTK.Graphics.OpenGL.PixelFormat.DepthComponent, PixelType.UnsignedByte, ref depth);
+
+            return depth;
+        }
+
+        #endregion
     }
 }

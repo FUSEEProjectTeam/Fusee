@@ -289,6 +289,11 @@ namespace Fusee.Engine
         public void Present()
         {
             _canvasImp.Present();
+
+            if (_rc.HasPickingContext)
+            {
+                RC.PickingContextTick();
+            }
         }
         
         /// <summary>
