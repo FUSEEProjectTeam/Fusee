@@ -142,7 +142,7 @@ namespace Fusee.Engine
         /// <returns>The current value of the z-axis.</returns>
         public float GetZAxis()
         {
-            float tmp = GetState().RotationZ / 1000f;
+            float tmp = GetState().Z / 1000f;
             if (tmp > _deadZone)
                 return tmp;
             if (tmp < -_deadZone)

@@ -88,6 +88,7 @@
     <Compile Include="MeshReader.cs" />
     <Compile Include="MoreShaders.cs" />
     <Compile Include="MultiSphereShape.cs" />
+    <Compile Include="PickingContext.cs" />
     <Compile Include="Point2PointConstraint.cs" />
     <Compile Include="RigidBody.cs" />
     <Compile Include="ShaderMaterial.cs" />
@@ -105,6 +106,8 @@
     <Compile Include="ShaderEffect.cs" />
     <Compile Include="Stereo3D.cs" />
     <Compile Include="Time.cs" />
+    <Compile Include="VideoManager.cs" />
+    <Compile Include="VideoStream.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="protobuf-net, Version=2.0.0.668, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
@@ -115,6 +118,7 @@
     <Reference Include="JSIL.Meta">
       <HintPath>..\..\..\ExternalBinaries\JSIL\Compiler\JSIL.Meta.dll</HintPath>
     </Reference>
+    <Reference Include="System.Drawing" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="Clean">

@@ -24,6 +24,8 @@ namespace Fusee.Engine
         internal IRenderCanvasImp _canvasImp;
         private IInputDriverImp _inputDriverImp;
 
+        private IVideoManagerImp _videoManagerImp;
+
         #endregion
 
         #region Implementor Fields
@@ -93,6 +95,12 @@ namespace Fusee.Engine
             get { return _inputDriverImp; }
         }
 
+        public IVideoManagerImp VideoManagerImplementor
+        {
+            set { _videoManagerImp = value; }
+            get { return _videoManagerImp; }
+        }
+
         /// <summary>
         /// Returns the render context object.
         /// </summary>
@@ -135,6 +143,9 @@ namespace Fusee.Engine
 
             if (_networkImp == null)
                 _networkImp = ImpFactory.CreateINetworkImp();
+
+            if (_videoManagerImp == null)
+                _videoManagerImp = ImpFactory.CreateIVideoManagerImp();
         }
 
         /// <summary>
@@ -170,6 +181,7 @@ namespace Fusee.Engine
             Audio.Instance.AudioImp = _audioImp;
             Input.Instance.InputDriverImp = _inputDriverImp;
             Network.Instance.NetworkImp = _networkImp;
+            VideoManager.Instance.VideoManagerImp = _videoManagerImp;
 
             _canvasImp.Init += delegate { Init(); };
             _canvasImp.UnLoad += delegate { DeInit(); };
@@ -277,6 +289,11 @@ namespace Fusee.Engine
         public void Present()
         {
             _canvasImp.Present();
+
+            if (_rc.HasPickingContext)
+            {
+                RC.PickingContextTick();
+            }
         }
         
         /// <summary>

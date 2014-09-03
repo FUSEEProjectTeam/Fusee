@@ -6,6 +6,7 @@
       <DLLFiles Include="$(TargetDir)..\..\*.dll" />
       <SFMLFiles Include="$(SolutionDir)ExternalBinaries\SFML\*.dll" />
       <FONTFiles Include="$(SolutionDir)ExternalBinaries\SharpFont\*.dll" />
+      <AForgeFiles Include="$(SolutionDir)ExternalBinaries\AForge\*.dll"/>
       <SCRIPTFiles Include="$(SolutionDir)ExternalBinaries\JSIL\Scripts\*.js" />
     </ItemGroup>
 
@@ -13,6 +14,7 @@
     <Copy SourceFiles="@(DLLFiles)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" />
     <Copy SourceFiles="@(SFMLFiles)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" />
     <Copy SourceFiles="@(FONTFiles)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(AForgeFiles)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" />
     <Copy SourceFiles="@(SCRIPTFiles)" DestinationFolder="$(TargetDir)..\..\WebGL\Scripts" SkipUnchangedFiles="true" />
   </Target>
   

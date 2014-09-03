@@ -44,12 +44,75 @@ namespace Fusee.Engine
        
             GL.CullFace(CullFaceMode.Back);
 			
-			_sharpFont = new Library();
+            //_sharpFont = new Library();
         }
 
         #endregion
 
         #region Image data related Members
+
+        /// <summary>
+        /// Updates a texture with images obtained from a Video.
+        /// </summary>
+        /// <param name="stream">The Video from which the images are taken.</param>
+        /// <param name="tex">The texture to which the ImageData is bound to.</param>
+        /// <remarks>Look at the VideoTextureExample for further information.</remarks>
+        public void UpdateTextureFromVideoStream(IVideoStreamImp stream, ITexture tex)
+        {
+            ImageData img = stream.GetCurrentFrame();
+            OpenTK.Graphics.OpenGL.PixelFormat format;
+            switch (img.PixelFormat)
+            {
+                case ImagePixelFormat.RGBA:
+                    format = OpenTK.Graphics.OpenGL.PixelFormat.Bgra;
+                    break;
+                case ImagePixelFormat.RGB:
+                    format = OpenTK.Graphics.OpenGL.PixelFormat.Bgr;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            if (img.PixelData != null)
+            {
+                if (tex == null)
+                    tex = CreateTexture(img);
+
+                GL.BindTexture(TextureTarget.Texture2D, ((Texture) tex).handle);
+                GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, img.Width, img.Height,
+                                 format, PixelType.UnsignedByte, img.PixelData);
+            }
+
+        }
+        
+        /// <summary>
+        /// Updates a specific rectangle of a texture.
+        /// </summary>
+        /// <param name="tex">The texture to which the ImageData is bound to.</param>
+        /// <param name="img">The ImageData-Struct containing information about the image. </param>
+        /// <param name="startX">The x-value of the upper left corner of th rectangle.</param>
+        /// <param name="startY">The y-value of the upper left corner of th rectangle.</param>
+        /// <param name="width">The width of the rectangle.</param>
+        /// <param name="height">The height of the rectangle.</param>
+        /// <remarks> /// <remarks>Look at the VideoTextureExample for further information.</remarks></remarks>
+        public void UpdateTextureRegion(ITexture tex, ImageData img, int startX, int startY, int width, int height)
+        {
+            OpenTK.Graphics.OpenGL.PixelFormat format;
+            switch (img.PixelFormat)
+            {
+                case ImagePixelFormat.RGBA:
+                    format = OpenTK.Graphics.OpenGL.PixelFormat.Bgra;
+                    break;
+                case ImagePixelFormat.RGB:
+                    format = OpenTK.Graphics.OpenGL.PixelFormat.Bgr;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            GL.BindTexture(TextureTarget.Texture2D, ((Texture)tex).handle);
+            GL.TexSubImage2D(TextureTarget.Texture2D, 0, startX, startY, width, height,
+                format, PixelType.UnsignedByte, img.PixelData);
+        }
 
         /// <summary>
         /// Creates a new Bitmap-Object from an image file,
@@ -77,6 +140,7 @@ namespace Fusee.Engine
                 PixelData = new byte[bytes],
                 Height = bmpData.Height,
                 Width = bmpData.Width,
+                PixelFormat = ImagePixelFormat.RGBA,
                 Stride = bmpData.Stride
             };
 
@@ -86,7 +150,7 @@ namespace Fusee.Engine
             return ret;
         }
 
-        /// <summary>
+       /// <summary>
         /// Creates a new Image with a specified size and color.
         /// </summary>
         /// <param name="width">The width of the image.</param>
@@ -112,6 +176,7 @@ namespace Fusee.Engine
                 PixelData = new byte[bytes],
                 Height = bmpData.Height,
                 Width = bmpData.Width,
+                PixelFormat = ImagePixelFormat.RGBA,
                 Stride = bmpData.Stride
             };
 
@@ -178,10 +243,26 @@ namespace Fusee.Engine
         /// <returns>An ITexture that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
         public ITexture CreateTexture(ImageData img)
         {
+            PixelInternalFormat internalFormat;
+            OpenTK.Graphics.OpenGL.PixelFormat format;
+            switch (img.PixelFormat)
+            {
+                case ImagePixelFormat.RGBA:
+                    internalFormat = PixelInternalFormat.Rgba;
+                    format = OpenTK.Graphics.OpenGL.PixelFormat.Bgra;
+                    break;
+                case ImagePixelFormat.RGB:
+                    internalFormat = PixelInternalFormat.Rgb;
+                    format = OpenTK.Graphics.OpenGL.PixelFormat.Bgr;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
             int id = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2D, id);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, img.Width, img.Height, 0,
-                OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, img.PixelData);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0,
+                format, PixelType.UnsignedByte, img.PixelData);
 
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter,
                 (int) TextureMinFilter.Linear);
@@ -1470,6 +1551,29 @@ namespace Fusee.Engine
         public void Frustum(double left, double right, double bottom, double top, double zNear, double zFar)
         {
             GL.Frustum(left, right, bottom, top, zNear, zFar);
+        }
+
+        #endregion
+
+        #region Picking related Members
+
+        public Bitmap GetPixelColor(int x, int y, int w = 1, int h = 1)
+        {
+            System.Drawing.Rectangle rect = new System.Drawing.Rectangle(0, 0, w, h);
+            Bitmap bmp = new Bitmap(w, h);
+            BitmapData data = bmp.LockBits(rect, flags: ImageLockMode.WriteOnly, format: PixelFormat.Format24bppRgb);
+            GL.ReadPixels(x, y, w, h, OpenTK.Graphics.OpenGL.PixelFormat.Bgr, PixelType.UnsignedByte, data.Scan0);
+
+            bmp.UnlockBits(data);
+            return bmp;
+        }
+
+        public float GetPixelDepth(int x, int y)
+        {
+            var depth = new float();
+            GL.ReadPixels(x, y, 1, 1, OpenTK.Graphics.OpenGL.PixelFormat.DepthComponent, PixelType.UnsignedByte, ref depth);
+
+            return depth;
         }
 
         #endregion
