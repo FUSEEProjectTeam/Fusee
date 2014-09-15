@@ -55,21 +55,19 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="$(C4D_DIR)\resource\_api_lib\DebugWin32.props" />
+    <Import Project="$(C4D_DIR)\frameworks\cinema.framework\project\cinema.framework.includes.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="$(C4D_DIR)\resource\_api_lib\DebugWin32.props" />
-    <Import Project="$(C4D_DIR)\resource\_api_lib\DebugWin64.props" />
+    <Import Project="$(C4D_DIR)\frameworks\cinema.framework\project\cinema.framework.includes.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="$(C4D_DIR)\resource\_api_lib\ReleaseWin32.props" />
+    <Import Project="$(C4D_DIR)\frameworks\cinema.framework\project\cinema.framework.includes.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="$(C4D_DIR)\resource\_api_lib\ReleaseWin32.props" />
-    <Import Project="$(C4D_DIR)\resource\_api_lib\ReleaseWin64.props" />
+    <Import Project="$(C4D_DIR)\frameworks\cinema.framework\project\cinema.framework.includes.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -97,7 +95,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(C4D_DIR)\resource\modules\gv\expressiontag\res\description;C4dApiExtensions;$(MONODIR)\lib\glib-2.0\include;$(MONODIR)\include\mono-2.0;$(MONODIR)\include\glib-2.0;$(MONODIR)\bin;.\source;.\res;.\res\description;$(C4D_DIR)\resource\_api;$(C4D_DIR)\resource\_api\c4d_preview;$(C4D_DIR)\resource\_api\c4d_customgui;$(C4D_DIR)\resource\_api\c4d_libs;$(C4D_DIR)\resource\_api\c4d_gv;$(C4D_DIR)\resource\modules\Modeling\res\description;$(C4D_DIR)\resource\res\description;$(C4D_DIR)\resource\modules\objects\res\description;$(C4D_DIR)\resource\_api_maxon\source;..\Bridge\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(C4D_DIR)\frameworks\cinema.framework\source\description;C4dApiExtensions;$(MONODIR)\lib\glib-2.0\include;$(MONODIR)\include\mono-2.0;$(MONODIR)\include\glib-2.0;$(MONODIR)\bin;.\source;.\res;.\res\description;$(C4D_DIR)\frameworks\cinema.framework\source;$(C4D_DIR)\frameworks\cinema.framework\source\c4d_preview;$(C4D_DIR)\frameworks\cinema.framework\source\c4d_customgui;$(C4D_DIR)\frameworks\cinema.framework\source\c4d_libs;$(C4D_DIR)\frameworks\cinema.framework\source\c4d_gv;..\Bridge\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
@@ -127,7 +125,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(C4D_DIR)\resource\modules\gv\expressiontag\res\description;C4dApiExtensions;$(MONODIR)\lib\glib-2.0\include;$(MONODIR)\include\mono-2.0;$(MONODIR)\include\glib-2.0;$(MONODIR)\bin;.\source;.\res;.\res\description;$(C4D_DIR)\resource\_api;$(C4D_DIR)\resource\_api\c4d_preview;$(C4D_DIR)\resource\_api\c4d_customgui;$(C4D_DIR)\resource\_api\c4d_libs;$(C4D_DIR)\resource\_api\c4d_gv;$(C4D_DIR)\resource\modules\Modeling\res\description;$(C4D_DIR)\resource\res\description;$(C4D_DIR)\resource\modules\objects\res\description;$(C4D_DIR)\resource\_api_maxon\source;..\Bridge\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(C4D_DIR)\frameworks\cinema.framework\source\description;C4dApiExtensions;$(MONODIR)\lib\glib-2.0\include;$(MONODIR)\include\mono-2.0;$(MONODIR)\include\glib-2.0;$(MONODIR)\bin;.\source;.\res;.\res\description;$(C4D_DIR)\frameworks\cinema.framework\source;$(C4D_DIR)\frameworks\cinema.framework\source\c4d_preview;$(C4D_DIR)\frameworks\cinema.framework\source\c4d_customgui;$(C4D_DIR)\frameworks\cinema.framework\source\c4d_libs;$(C4D_DIR)\frameworks\cinema.framework\source\c4d_gv;;$(C4D_DIR)\frameworks\cinema.framework\source;..\Bridge\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <CompileAsManaged>false</CompileAsManaged>
       <OmitFramePointers>false</OmitFramePointers>
@@ -141,7 +139,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt) </OutputFile>
-      <AdditionalLibraryDirectories>$(C4D_DIR)\resource\_api_lib;$(C4D_DIR)\;$(C4D_DIR)\plugins\ManagedPlugin\x64;$(C4D_DIR)\plugins\cinema4dsdk\obj\_api\x64_Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(C4D_DIR)\frameworks\cinema.framework\source;$(C4D_DIR)\;$(C4D_DIR)\plugins\ManagedPlugin\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>Bridge.lib;Mono64.lib;_api_x64_Debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DelayLoadDLLs>Bridge.dll;Mono-2.0.dll</DelayLoadDLLs>
@@ -160,7 +158,7 @@
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>false</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(C4D_DIR)\resource\modules\gv\expressiontag\res\description;C4dApiExtensions $(MONODIR)\lib\glib-2.0\include;$(MONODIR)\include\mono-2.0;$(MONODIR)\include\glib-2.0;.\source;.\res;.\res\description;$(C4D_DIR)\resource\_api;$(C4D_DIR)\resource\_api\c4d_preview;$(C4D_DIR)\resource\_api\c4d_customgui;$(C4D_DIR)\resource\_api\c4d_libs;$(C4D_DIR)\resource\_api\c4d_gv;$(C4D_DIR)\resource\modules\Modeling\res\description;$(C4D_DIR)\resource\res\description;$(C4D_DIR)\resource\modules\objects\res\description;$(C4D_DIR)\resource\_api_maxon\source;..\Bridge\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(C4D_DIR)\frameworks\cinema.framework\source\description;C4dApiExtensions $(MONODIR)\lib\glib-2.0\include;$(MONODIR)\include\mono-2.0;$(MONODIR)\include\glib-2.0;.\source;.\res;.\res\description;$(C4D_DIR)\frameworks\cinema.framework\source;$(C4D_DIR)\frameworks\cinema.framework\source\c4d_preview;$(C4D_DIR)\frameworks\cinema.framework\source\c4d_customgui;$(C4D_DIR)\frameworks\cinema.framework\source\c4d_libs;$(C4D_DIR)\frameworks\cinema.framework\source\c4d_gv;$(C4D_DIR)\frameworks\cinema.framework\source;..\Bridge\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAsManaged>false</CompileAsManaged>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
@@ -179,7 +177,7 @@
       <OptimizeReferences>
       </OptimizeReferences>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt) </OutputFile>
-      <AdditionalLibraryDirectories>$(C4D_DIR)\resource\_api_lib;$(C4D_DIR)\;$(C4D_DIR)\plugins\ManagedPlugin\win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(C4D_DIR)\frameworks\cinema.framework\source;$(C4D_DIR)\;$(C4D_DIR)\plugins\ManagedPlugin\win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>Mono.lib;Bridge.lib;_api_Win32_Release.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DelayLoadDLLs>Bridge.dll;Mono-2.0.dll</DelayLoadDLLs>
@@ -199,7 +197,7 @@
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>false</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(C4D_DIR)\resource\modules\gv\expressiontag\res\description;C4dApiExtensions $(MONODIR)\lib\glib-2.0\include;$(MONODIR)\include\mono-2.0;$(MONODIR)\include\glib-2.0;.\source;.\res;.\res\description;$(C4D_DIR)\resource\_api;$(C4D_DIR)\resource\_api\c4d_preview;$(C4D_DIR)\resource\_api\c4d_customgui;$(C4D_DIR)\resource\_api\c4d_libs;$(C4D_DIR)\resource\_api\c4d_gv;$(C4D_DIR)\resource\modules\Modeling\res\description;$(C4D_DIR)\resource\res\description;$(C4D_DIR)\resource\modules\objects\res\description;$(C4D_DIR)\resource\_api_maxon\source;..\Bridge\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(C4D_DIR)\frameworks\cinema.framework\source\description;C4dApiExtensions $(MONODIR)\lib\glib-2.0\include;$(MONODIR)\include\mono-2.0;$(MONODIR)\include\glib-2.0;.\source;.\res;.\res\description;$(C4D_DIR)\frameworks\cinema.framework\source;$(C4D_DIR)\frameworks\cinema.framework\source\c4d_preview;$(C4D_DIR)\frameworks\cinema.framework\source\c4d_customgui;$(C4D_DIR)\frameworks\cinema.framework\source\c4d_libs;$(C4D_DIR)\frameworks\cinema.framework\source\c4d_gv;$(C4D_DIR)\frameworks\cinema.framework\source;..\Bridge\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAsManaged>false</CompileAsManaged>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>

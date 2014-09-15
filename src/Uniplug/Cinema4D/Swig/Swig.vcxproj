@@ -31,6 +31,10 @@
     <ClInclude Include="include\lib_ca.swig.h" />
     <ClInclude Include="include\lib_description.swig.h" />
     <ClInclude Include="include\operatingsystem.swig.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Swig.rc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{DF2CEF11-FC94-4D78-BC42-004720BC5C87}</ProjectGuid>
@@ -86,6 +90,7 @@
     <TargetName />
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
+    <IncludePath>$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <TargetName />
