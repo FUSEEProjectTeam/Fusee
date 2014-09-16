@@ -35,11 +35,5 @@
     <ClInclude Include="include\operatingsystem.swig.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>include</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="Swig.rc" />
   </ItemGroup>
 </Project>

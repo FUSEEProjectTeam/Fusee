@@ -31,10 +31,6 @@
     <ClInclude Include="include\lib_ca.swig.h" />
     <ClInclude Include="include\lib_description.swig.h" />
     <ClInclude Include="include\operatingsystem.swig.h" />
-    <ClInclude Include="resource.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="Swig.rc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{DF2CEF11-FC94-4D78-BC42-004720BC5C87}</ProjectGuid>
@@ -111,7 +107,7 @@
       </OutputFile>
     </Link>
     <CustomBuildStep>
-      <Command>swig -c++  -o ../Native/C4dApiWrapper.cpp -csharp -namespace C4d -dllimport Native.cdl -outdir ../C4d/C4dApi -I"include" -I"../Native/C4dApiExtensions" -I"$(C4D_DIR)\resource\_api" -I"$(C4D_DIR)\resource\_api\c4d_preview" -I"$(C4D_DIR)\resource\_api\c4d_customgui" -I"$(C4D_DIR)\resource\_api\c4d_libs" -I"$(C4D_DIR)\resource\_api\c4d_gv" -I"$(C4D_DIR)\resource\modules\Modeling\res\description" -I"$(C4D_DIR)\resource\res\description" -I"$(C4D_DIR)\resource\modules\objects\res\description" -I"$(C4D_DIR)\resource\_api_maxon\source" -I"$(C4D_DIR)\resource\modules\gv\expressiontag\res\description" "$(ProjectDir)C4dApi.i"</Command>
+      <Command>swig -c++  -o ../Native/C4dApiWrapper.cpp -csharp -namespace C4d -dllimport Native.cdl -outdir ../C4d/C4dApi -I"include" -I"../Native/C4dApiExtensions" -I"$(C4D_DIR)\frameworks\cinema.framework\source" -I"$(C4D_DIR)\frameworks\cinema.framework\source\c4d_preview" -I"$(C4D_DIR)\frameworks\cinema.framework\source\c4d_customgui" -I"$(C4D_DIR)\frameworks\cinema.framework\source\c4d_libs" -I"$(C4D_DIR)\frameworks\cinema.framework\source\c4d_gv" -I"$(C4D_DIR)\frameworks\cinema.framework\source\description" -I"$(C4D_DIR)\frameworks\cinema.framework\source\description" -I"$(C4D_DIR)\frameworks\cinema.framework\source\description" -I"$(C4D_DIR)\frameworks\cinema.framework\source" "$(ProjectDir)C4dApi.i"</Command>
       <Message>Generating C# Wrapper and Extension</Message>
       <Outputs>../Native/C4dApiWrapper.cpp</Outputs>
       <Inputs> $(ProjectDir)C4D.i</Inputs>
@@ -128,7 +124,7 @@
       </OutputFile>
     </Link>
     <CustomBuildStep>
-      <Command>swig -c++  -o ../Native/C4dApiWrapper.cpp -csharp -namespace C4d -dllimport Native.cdl64 -outdir ../C4d/C4dApi -I"include" -I"../Native/C4dApiExtensions" -I"$(C4D_DIR)\resource\_api" -I"$(C4D_DIR)\resource\_api\c4d_preview" -I"$(C4D_DIR)\resource\_api\c4d_customgui" -I"$(C4D_DIR)\resource\_api\c4d_libs" -I"$(C4D_DIR)\resource\_api\c4d_gv" -I"$(C4D_DIR)\resource\modules\Modeling\res\description" -I"$(C4D_DIR)\resource\res\description" -I"$(C4D_DIR)\resource\modules\objects\res\description" -I"$(C4D_DIR)\resource\_api_maxon\source" -I"$(C4D_DIR)\resource\modules\Modeling\res\description" -I"$(C4D_DIR)\resource\res\description" -I"$(C4D_DIR)\resource\modules\objects\res\description" -I"$(C4D_DIR)\resource\_api_maxon\source" -I"$(C4D_DIR)\resource\modules\gv\expressiontag\res\description" "$(ProjectDir)C4dApi.i"</Command>
+      <Command>swig -c++  -o ../Native/C4dApiWrapper.cpp -csharp -namespace C4d -dllimport Native.cdl64 -outdir ../C4d/C4dApi -I"include" -I"../Native/C4dApiExtensions" -I"$(C4D_DIR)\frameworks\cinema.framework\source" -I"$(C4D_DIR)\frameworks\cinema.framework\source\c4d_preview" -I"$(C4D_DIR)\frameworks\cinema.framework\source\c4d_customgui" -I"$(C4D_DIR)\frameworks\cinema.framework\source\c4d_libs" -I"$(C4D_DIR)\frameworks\cinema.framework\source\c4d_gv" -I"$(C4D_DIR)\frameworks\cinema.framework\source\description" -I"$(C4D_DIR)\frameworks\cinema.framework\source" "$(ProjectDir)C4dApi.i"</Command>
       <Message>Generating C# Wrapper and Extension</Message>
       <Outputs>../Native/C4dApiWrapper.cpp</Outputs>
       <Inputs> $(ProjectDir)C4D.i</Inputs>
@@ -149,7 +145,7 @@
       </OutputFile>
     </Link>
     <CustomBuildStep>
-      <Command>swig -c++  -o ../Native/C4dApiWrapper.cpp -csharp -namespace C4d -dllimport Native.cdl -outdir ../C4d/C4dApi -I"include" -I"../Native/C4dApiExtensions" -I"$(C4D_DIR)\resource\_api" -I"$(C4D_DIR)\resource\_api\c4d_preview" -I"$(C4D_DIR)\resource\_api\c4d_customgui" -I"$(C4D_DIR)\resource\_api\c4d_libs" -I"$(C4D_DIR)\resource\_api\c4d_gv" -I"$(C4D_DIR)\resource\modules\Modeling\res\description" -I"$(C4D_DIR)\resource\res\description" -I"$(C4D_DIR)\resource\modules\objects\res\description" -I"$(C4D_DIR)\resource\_api_maxon\source" -I"$(C4D_DIR)\resource\modules\gv\expressiontag\res\description" "$(ProjectDir)C4dApi.i"</Command>
+	  <Command>swig -c++  -o ../Native/C4dApiWrapper.cpp -csharp -namespace C4d -dllimport Native.cdl64 -outdir ../C4d/C4dApi -I"include" -I"../Native/C4dApiExtensions" -I"$(C4D_DIR)\frameworks\cinema.framework\source" -I"$(C4D_DIR)\frameworks\cinema.framework\source\c4d_preview" -I"$(C4D_DIR)\frameworks\cinema.framework\source\c4d_customgui" -I"$(C4D_DIR)\frameworks\cinema.framework\source\c4d_libs" -I"$(C4D_DIR)\frameworks\cinema.framework\source\c4d_gv" -I"$(C4D_DIR)\frameworks\cinema.framework\source\description" -I"$(C4D_DIR)\frameworks\cinema.framework\source" "$(ProjectDir)C4dApi.i"</Command>
       <Message>Generating C# Wrapper and Extension</Message>
       <Outputs>../Native/C4dApiWrapper.cpp</Outputs>
       <Inputs> $(ProjectDir)C4D.i</Inputs>
@@ -172,7 +168,7 @@
       </OutputFile>
     </Link>
     <CustomBuildStep>
-      <Command>swig -c++  -o ../Native/C4dApiWrapper.cpp -csharp -namespace C4d -dllimport Native.cdl64 -outdir ../C4d/C4dApi  -I"include" -I"../Native/C4dApiExtensions" -I"$(C4D_DIR)\resource\_api" -I"$(C4D_DIR)\resource\_api\c4d_preview" -I"$(C4D_DIR)\resource\_api\c4d_customgui" -I"$(C4D_DIR)\resource\_api\c4d_libs" -I"$(C4D_DIR)\resource\_api\c4d_gv" -I"$(C4D_DIR)\resource\modules\Modeling\res\description" -I"$(C4D_DIR)\resource\res\description" -I"$(C4D_DIR)\resource\modules\objects\res\description" -I"$(C4D_DIR)\resource\_api_maxon\source" -I"$(C4D_DIR)\resource\modules\Modeling\res\description" -I"$(C4D_DIR)\resource\res\description" -I"$(C4D_DIR)\resource\modules\objects\res\description" -I"$(C4D_DIR)\resource\_api_maxon\source" -I"$(C4D_DIR)\resource\modules\gv\expressiontag\res\description" "$(ProjectDir)C4dApi.i"</Command>
+      <Command>swig -c++  -o ../Native/C4dApiWrapper.cpp -csharp -namespace C4d -dllimport Native.cdl64 -outdir ../C4d/C4dApi -I"include" -I"../Native/C4dApiExtensions" -I"$(C4D_DIR)\frameworks\cinema.framework\source" -I"$(C4D_DIR)\frameworks\cinema.framework\source\c4d_preview" -I"$(C4D_DIR)\frameworks\cinema.framework\source\c4d_customgui" -I"$(C4D_DIR)\frameworks\cinema.framework\source\c4d_libs" -I"$(C4D_DIR)\frameworks\cinema.framework\source\c4d_gv" -I"$(C4D_DIR)\frameworks\cinema.framework\source\description" -I"$(C4D_DIR)\frameworks\cinema.framework\source" "$(ProjectDir)C4dApi.i"</Command>
       <Message>Generating C# Wrapper and Extension</Message>
       <Outputs>../Native/C4dApiWrapper.cpp</Outputs>
       <Inputs> $(ProjectDir)C4D.i</Inputs>
