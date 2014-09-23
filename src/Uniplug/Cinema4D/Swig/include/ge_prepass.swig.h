@@ -4,85 +4,90 @@
 // (c) MAXON Computer GmbH, all rights reserved            //
 /////////////////////////////////////////////////////////////
 
-#ifndef __GEPREPASS_H
-#define __GEPREPASS_H
+#ifndef GE_PREPASS_H__
+#define GE_PREPASS_H__
 
 #include "ge_math.h"
 
 #define MACTYPE_CINEMA		'C4DC'
 #define MACCREATOR_CINEMA	'C4D1'
 
-#ifdef __C4D_64BIT
-	#define MAX_IMAGE_RESOLUTION 128000	// if changed, also change MAXMIPANZ
+#ifdef MAXON_TARGET_64BIT
+#define MAX_IMAGE_RESOLUTION 128000	// if changed, also change MAXMIPANZ
 #else
-	#define MAX_IMAGE_RESOLUTION 16000
+#define MAX_IMAGE_RESOLUTION 16000
 #endif
 
-// <Added> for Swig processing
-#ifdef ENUM_END_FLAGS
-#undef ENUM_END_FLAGS
-#define ENUM_END_FLAGS(wtf)
-#endif
-
-#ifdef ENUM_END_LIST
-#undef ENUM_END_LIST
-#define ENUM_END_LIST(wtf)
-#endif
-// </Added>
+enum SERVERMESSAGE
+{
+	SERVERMESSAGE_WARNING = 1000,
+	SERVERMESSAGE_ERROR = 1001,
+	SERVERMESSAGE_INFO = 1002
+} ENUM_END_LIST(SERVERMESSAGE);
 
 enum RENDERJOBLIST
 {
 	RENDERJOBLIST_INACTIVE = 1 << 1,
-	RENDERJOBLIST_ACTIVE	 = 1 << 2,
-	RENDERJOBLIST_LOAD		 = 1 << 3,
-	RENDERJOBLIST_ALL			 = 14	// RENDERJOBLIST_INACTIVE | RENDERJOBLIST_ACTIVE | RENDERJOBLIST_LOAD
+	RENDERJOBLIST_ACTIVE = 1 << 2,
+	RENDERJOBLIST_LOAD = 1 << 3,
+	RENDERJOBLIST_ALL = 14	// RENDERJOBLIST_INACTIVE | RENDERJOBLIST_ACTIVE | RENDERJOBLIST_LOAD
 } ENUM_END_FLAGS(RENDERJOBLIST);
 
 enum MESSAGERESULT
 {
 	MESSAGERESULT_OK = 1000,
-	MESSAGERESULT_CONNECTIONERROR,
-	MESSAGERESULT_UNHANDLED,
+	MESSAGERESULT_NETWORKERROR,
+	MESSAGERESULT_UNKNOWNERROR,
 	MESSAGERESULT_MEMORYERROR
 } ENUM_END_LIST(MESSAGERESULT);
 
 enum MACHINELIST
 {
-	MACHINELIST_ONLINE	= 1 << 1,
+	MACHINELIST_ONLINE = 1 << 1,
 	MACHINELIST_OFFLINE = 1 << 0,
-	MACHINELIST_ALL			= 7,	// MACHINELIST_ONLINE | MACHINELIST_OFFLINE
+	MACHINELIST_ALL = 7,	// MACHINELIST_ONLINE | MACHINELIST_OFFLINE
 } ENUM_END_FLAGS(MACHINELIST);
 
 enum VERIFICATIONBIT
 {
-	VERIFICATIONBIT_0					 = 0,
-	VERIFICATIONBIT_ONLINE		 = 1 << 0,
-	VERIFICATIONBIT_VERIFIED	 = 1 << 1,
+	VERIFICATIONBIT_0 = 0,
+	VERIFICATIONBIT_ONLINE = 1 << 0,
+	VERIFICATIONBIT_VERIFIED = 1 << 1,
 	VERIFICATIONBIT_VERIFIEDME = 1 << 2,
-	VERIFICATIONBIT_SHARED		 = 1 << 3,
-	VERIFICATIONBIT_VERIFYING	 = 1 << 4,
+	VERIFICATIONBIT_SHARED = 1 << 3,
+	VERIFICATIONBIT_VERIFYING = 1 << 4,
 
 	// error bits - if you add an enum also add it
 	// to netrender/source/common.cpp#GetErrorVerificationBits
-	VERIFICATIONBIT_UNKNOWN							 = 1 << 5,
-	VERIFICATIONBIT_FAILED							 = 1 << 6,
+	VERIFICATIONBIT_UNKNOWN = 1 << 5,
+	VERIFICATIONBIT_FAILED = 1 << 6,
 	VERIFICATIONBIT_SECURITYTOKENCHANGED = 1 << 7,
-	VERIFICATIONBIT_WRONGBUILDID				 = 1 << 8,
-	VERIFICATIONBIT_WRONGARCHITECTURE		 = 1 << 9,
-	VERIFICATIONBIT_REMOTENOTREACHABLE	 = 1 << 10,
-	VERIFICATIONBIT_THISNOTREACHABLE		 = 1 << 11,
-	VERIFICATIONBIT_WRONGSECURITYTOKEN	 = 1 << 12,
-	VERIFICATIONBIT_DEMONOTACTIVATED		 = 1 << 13,
-	VERIFICATIONBIT_REMOVING						 = 1 << 14
+	VERIFICATIONBIT_WRONGBUILDID = 1 << 8,
+	VERIFICATIONBIT_WRONGARCHITECTURE = 1 << 9,
+	VERIFICATIONBIT_REMOTENOTREACHABLE = 1 << 10,
+	VERIFICATIONBIT_THISNOTREACHABLE = 1 << 11,
+	VERIFICATIONBIT_WRONGSECURITYTOKEN = 1 << 12,
+	VERIFICATIONBIT_DEMONOTACTIVATED = 1 << 13,
+	VERIFICATIONBIT_REMOVING = 1 << 14,
+	VERIFICATIONBIT_NORENDERSUPPORT = 1 << 15
 } ENUM_END_FLAGS(VERIFICATIONBIT);
 
 enum RENDERJOBCREATOR
 {
-	RENDERJOBCREATOR_BATCHRENDER = 1000,
-	RENDERJOBCREATOR_PICTUREVIEWER,
-	RENDERJOBCREATOR_USER,
-	RENDERJOBCREATOR_OTHER
-} ENUM_END_LIST(RENDERJOBCREATOR);
+	RENDERJOBCREATOR_BATCHRENDER = (1 << 0),
+	RENDERJOBCREATOR_PICTUREVIEWER = (1 << 1),
+	RENDERJOBCREATOR_USER = (1 << 2),
+	RENDERJOBCREATOR_WATCHDIRECTORY = (1 << 3),
+	RENDERJOBCREATOR_WATCHDIRECTORYSTARTUP = (1 << 4),
+	RENDERJOBCREATOR_OTHER = (1 << 5)
+} ENUM_END_FLAGS(RENDERJOBCREATOR);
+
+enum DETAILSELECTOR
+{
+	DETAILSELECTOR_NONE = 0,
+	DETAILSELECTOR_SELECTED = (1 << 0),
+	DETAILSELECTOR_NONSELECTED = (1 << 1)
+} ENUM_END_FLAGS(DETAILSELECTOR);
 
 enum STATUSNETSTATE
 {
@@ -95,48 +100,63 @@ enum STATUSNETSTATE
 
 #define C4DUUID_SIZE 16	// size of the uuid object
 
-// BaseBitmap::Save
-#define FILTER_TIF								1100
-#define FILTER_TGA								1101
-#define FILTER_BMP								1102
-#define FILTER_IFF								1103
-#define FILTER_JPG								1104
-#define FILTER_PICT								1105
-#define FILTER_PSD								1106
-#define FILTER_RLA								1107
-#define FILTER_RPF								1108
-#define FILTER_B3D								1109
-#define FILTER_TIF_B3D						1110
-#define FILTER_PSB								1111
-#define FILTER_AVI								1122
-#define FILTER_MOVIE							1125
-#define FILTER_QTVRSAVER_PANORAMA	1150
-#define FILTER_QTVRSAVER_OBJECT		1151
-#define FILTER_HDR								1001379
-#define	FILTER_EXR_LOAD						1016605
-#define	FILTER_EXR								1016606
-#define FILTER_PNG								1023671
-#define FILTER_IES								1024463
-#define FILTER_B3DNET							1099	// private
-#define FILTER_DPX								1023737
 
-#define AVISAVER_FCCTYPE		10000
-#define AVISAVER_FCCHANDLER	10001
-#define AVISAVER_LKEY				10002
-#define AVISAVER_LDATARATE	10003
-#define AVISAVER_LQ					10004
+/// @addtogroup FILTER
+/// @ingroup group_enumeration
+/// @{
+/// Bitmap file formats.
+#define FILTER_TIF                1100    ///< TIFF
+#define FILTER_TGA                1101    ///< TGA
+#define FILTER_BMP                1102    ///< BMP
+#define FILTER_IFF                1103    ///< IFF
+#define FILTER_JPG                1104    ///< JPEG
+#define FILTER_PICT               1105    ///< PICT
+#define FILTER_PSD                1106    ///< PSD
+#define FILTER_RLA                1107    ///< RLA
+#define FILTER_RPF                1108    ///< RPF
+#define FILTER_B3D                1109    ///< Bodypaint
+#define FILTER_TIF_B3D            1110    ///< TIFF Bodypaint
+#define FILTER_PSB                1111    ///< PSB
+#define FILTER_AVI                1122    ///< AVI Movie
+#define FILTER_MOVIE              1125    ///< Quicktime Movie
+#define FILTER_QTVRSAVER_PANORAMA 1150    ///< QTVR Panorama
+#define FILTER_QTVRSAVER_OBJECT   1151    ///< QTVR Object
+#define FILTER_HDR                1001379 ///< HDR
+#define FILTER_EXR_LOAD           1016605 ///< EXR (Load)
+#define FILTER_EXR                1016606 ///< EXR
+#define FILTER_PNG                1023671 ///< PNG
+#define FILTER_IES                1024463 ///< IES
+#define FILTER_B3DNET             1099    ///< Bodypaint NET @markPrivate
+#define FILTER_DPX                1023737 ///< DPX
+/// @}
 
-#define QTSAVER_COMPRESSOR		 10010
-#define QTSAVER_QUALITY				 10011
-#define QTSAVER_TEMPQUAL			 10012
-#define QTSAVER_FRAMERATE			 10013
-#define QTSAVER_KEYFRAMES			 10014
-#define QTSAVER_PLANES				 10015
-#define QTSAVER_DATARATE			 10016
-#define QTSAVER_FRAMEDURATION	 10017
-#define QTSAVER_MINQUALITY		 10018
-#define QTSAVER_MINTEMPQUAL		 10019
+/// @addtogroup AVISAVER
+/// @ingroup group_containerid
+/// @{
+/// Container IDs for the AVI movie saver.
+#define AVISAVER_FCCTYPE    10000
+#define AVISAVER_FCCHANDLER 10001
+#define AVISAVER_LKEY       10002
+#define AVISAVER_LDATARATE  10003
+#define AVISAVER_LQ         10004
+/// @}
+
+/// @addtogroup QTSAVER
+/// @ingroup group_containerid
+/// @{
+/// Container IDs for the QT movie saver.
+#define QTSAVER_COMPRESSOR     10010
+#define QTSAVER_QUALITY        10011
+#define QTSAVER_TEMPQUAL       10012
+#define QTSAVER_FRAMERATE      10013
+#define QTSAVER_KEYFRAMES      10014
+#define QTSAVER_PLANES         10015
+#define QTSAVER_DATARATE       10016
+#define QTSAVER_FRAMEDURATION  10017
+#define QTSAVER_MINQUALITY     10018
+#define QTSAVER_MINTEMPQUAL    10019
 #define QTSAVER_FIXEDFRAMERATE 10020
+/// @}
 
 #define JPGSAVER_QUALITY 10021
 #define IMAGESAVER_DPI	 10022
@@ -144,426 +164,515 @@ enum STATUSNETSTATE
 #define RLA_OPTIONS			 10024
 #define DPX_PLANAR			 11000
 
-
 enum RLAFLAGS
 {
-	RLAFLAGS_0							 = 0,
-	RLAFLAGS_Z							 = (1 << 0),
-	RLAFLAGS_OBJECTBUFFER		 = (1 << 2),
-	RLAFLAGS_UV							 = (1 << 3),
-	RLAFLAGS_NORMAL					 = (1 << 4),
-	RLAFLAGS_ORIGCOLOR			 = (1 << 5),
-	RLAFLAGS_COVERAGE				 = (1 << 6),
-	RLAFLAGS_OBJECTID				 = (1 << 8),
-	RLAFLAGS_COLOR					 = (1 << 9),
-	RLAFLAGS_TRANSPARENCY		 = (1 << 10),
+	RLAFLAGS_0 = 0,
+	RLAFLAGS_Z = (1 << 0),
+	RLAFLAGS_OBJECTBUFFER = (1 << 2),
+	RLAFLAGS_UV = (1 << 3),
+	RLAFLAGS_NORMAL = (1 << 4),
+	RLAFLAGS_ORIGCOLOR = (1 << 5),
+	RLAFLAGS_COVERAGE = (1 << 6),
+	RLAFLAGS_OBJECTID = (1 << 8),
+	RLAFLAGS_COLOR = (1 << 9),
+	RLAFLAGS_TRANSPARENCY = (1 << 10),
 	RLAFLAGS_SUBPIXEL_WEIGHT = (1 << 12),
-	RLAFLAGS_SUBPIXEL_MASK	 = (1 << 13)
+	RLAFLAGS_SUBPIXEL_MASK = (1 << 13)
 } ENUM_END_FLAGS(RLAFLAGS);
 
 enum ASSETDATA_FLAG
 {
-	ASSETDATA_FLAG_0								= 0,
-	ASSETDATA_FLAG_CURRENTFRAMEONLY	= (1 << 0),
-	ASSETDATA_FLAG_TEXTURES					= (1 << 1),	// only return texture assets
-	ASSETDATA_FLAG_NET							= (1 << 2)  // set if NET is collecting assets to distribute them to the clients
+	ASSETDATA_FLAG_0 = 0,
+	ASSETDATA_FLAG_CURRENTFRAMEONLY = (1 << 0),
+	ASSETDATA_FLAG_TEXTURES = (1 << 1),	// only return texture assets
+	ASSETDATA_FLAG_NET = (1 << 2)  // set if NET is collecting assets to distribute them to the clients
 } ENUM_END_FLAGS(ASSETDATA_FLAG);
 
-// savebits
+
+/// @addtogroup SAVEBIT
+/// @ingroup group_enumeration
+/// @{
+/// Flags for the opening/saving of bitmaps.
 enum SAVEBIT
 {
-	SAVEBIT_0									= 0,
-	SAVEBIT_ALPHA							= (1 << 0),
-	SAVEBIT_MULTILAYER				= (1 << 1),
-	SAVEBIT_USESELECTEDLAYERS	= (1 << 2),
-	SAVEBIT_16BITCHANNELS			= (1 << 3),
-	SAVEBIT_GREYSCALE					= (1 << 4),
-	SAVEBIT_INTERNALNET				= (1 << 5),	// private
-	SAVEBIT_DONTMERGE					= (1 << 7),	// flag to avoid merging of layers in b3d files
-	SAVEBIT_32BITCHANNELS			= (1 << 8),
-	SAVEBIT_SAVERENDERRESULT	= (1 << 9),
-	SAVEBIT_FIRSTALPHA_ONLY		= (1 << 10)	// private
+	SAVEBIT_0 = 0,        ///< None.
+	SAVEBIT_ALPHA = (1 << 0), ///< Save the alpha channel(s) in the file. (For filter plugins, do not save an alpha channel if this is not set.)
+	SAVEBIT_MULTILAYER = (1 << 1), ///< Save multiple layers.
+	SAVEBIT_USESELECTEDLAYERS = (1 << 2), ///< Use selected layers.
+	SAVEBIT_16BITCHANNELS = (1 << 3), ///< Use 16-bit channels.
+	SAVEBIT_GREYSCALE = (1 << 4), ///< Save in grayscale mode.
+	SAVEBIT_INTERNALNET = (1 << 5), ///< @markPrivate
+	SAVEBIT_DONTMERGE = (1 << 7), ///< Avoid merging of layers in Bodypaint files.
+	SAVEBIT_32BITCHANNELS = (1 << 8), ///< Use 32-bit channels.
+	SAVEBIT_SAVERENDERRESULT = (1 << 9), ///< @markPrivate
+	SAVEBIT_FIRSTALPHA_ONLY = (1 << 10) ///< @markPrivate
 } ENUM_END_FLAGS(SAVEBIT);
+/// @}
 
+/// @addtogroup SCENEFILTER
+/// @ingroup group_enumeration
+/// @{
+/// Scene filter flags for the loading, saving and merging documents.
+/// @see LoadDocument(), SaveDocument(), MergeDocument()
 enum SCENEFILTER
 {
-	SCENEFILTER_0								 = 0,
-	SCENEFILTER_OBJECTS					 = (1 << 0),
-	SCENEFILTER_MATERIALS				 = (1 << 1),
-	SCENEFILTER_DIALOGSALLOWED	 = (1 << 3),
-	SCENEFILTER_PROGRESSALLOWED	 = (1 << 4),
-	SCENEFILTER_MERGESCENE			 = (1 << 5),
-	SCENEFILTER_NONEWMARKERS		 = (1 << 6),
-	SCENEFILTER_SAVECACHES			 = (1 << 7),	// for melange export only
-	SCENEFILTER_NOUNDO					 = (1 << 8),
-	SCENEFILTER_SAVE_BINARYCACHE = (1 << 10),
-	SCENEFILTER_IDENTIFY_ONLY		 = (1 << 11)
+	SCENEFILTER_0 = 0,         ///< None.
+	SCENEFILTER_OBJECTS = (1 << 0),  ///< Load/save only the objects and associated items, such as materials used.
+	SCENEFILTER_MATERIALS = (1 << 1),  ///< Load/save only the materials.
+	SCENEFILTER_DIALOGSALLOWED = (1 << 3),  ///< Flag to inform a plugin that a dialog can be displayed. If this flag is not set then no dialogs must be opened.
+	SCENEFILTER_PROGRESSALLOWED = (1 << 4),  ///< Flag to inform a plugin that a progress bar can be displayed. The progress bar can be set by calling StatusSetBar().
+	SCENEFILTER_MERGESCENE = (1 << 5),  ///< Flag to inform a plugin that this is a merge operation, i.e. the document that is inserted to is an existing scene.
+	SCENEFILTER_NONEWMARKERS = (1 << 6),  ///< Objects loaded from disk will keep their markers (GeMarker).
+	SCENEFILTER_SAVECACHES = (1 << 7),  ///< For @em melange export only. Caches of objects will also be written (only supported by @CDDDD format). This is equals to the global option <i>"Save Polygon Objects for Melange Exchange"</i>.
+	SCENEFILTER_NOUNDO = (1 << 8),  ///< Use together with ::SCENEFILTER_MERGESCENE to avoid that undos are created for the merge operation.
+	SCENEFILTER_SAVE_BINARYCACHE = (1 << 10), ///< Save the binary compiled shaders with the scene (only for @CDDDD format).
+	SCENEFILTER_IDENTIFY_ONLY = (1 << 11), ///< Do not load the whole document, identify it only.
+	SCENEFILTER_ONLY_RENDERDATA = (1 << 12), ///< Only load render settings. If this flag is set, SCENEFILTER_OBJECTS and SCENEFILTER_MATERIALS are ignored.
+	SCENEFILTER_IGNOREMISSINGPLUGINSINNONACTIVERENDERDATA = (1 << 13) ///< Ignore all missing plugins which are part of a non-active render data
 } ENUM_END_FLAGS(SCENEFILTER);
+/// @}
 
 // GeOutString
 enum GEMB
 {
-	GEMB_OK								= 0x0000,
-	GEMB_OKCANCEL					= 0x0001,
-	GEMB_ABORTRETRYIGNORE	= 0x0002,
-	GEMB_YESNOCANCEL			= 0x0003,
-	GEMB_YESNO						= 0x0004,
-	GEMB_RETRYCANCEL			= 0x0005,
-	GEMB_FORCEDIALOG			= 0x8000,
-	GEMB_ICONSTOP					= 0x0010,
-	GEMB_ICONQUESTION			= 0x0020,
-	GEMB_ICONEXCLAMATION	= 0x0030,
-	GEMB_ICONASTERISK			= 0x0040,
-	GEMB_MULTILINE				= 0x0080
+	GEMB_OK = 0x0000,
+	GEMB_OKCANCEL = 0x0001,
+	GEMB_ABORTRETRYIGNORE = 0x0002,
+	GEMB_YESNOCANCEL = 0x0003,
+	GEMB_YESNO = 0x0004,
+	GEMB_RETRYCANCEL = 0x0005,
+	GEMB_FORCEDIALOG = 0x8000,
+	GEMB_ICONSTOP = 0x0010,
+	GEMB_ICONQUESTION = 0x0020,
+	GEMB_ICONEXCLAMATION = 0x0030,
+	GEMB_ICONASTERISK = 0x0040,
+	GEMB_MULTILINE = 0x0080
 } ENUM_END_FLAGS(GEMB);
 
 enum GEMB_R
 {
 	GEMB_R_UNDEFINED = 0,
-	GEMB_R_OK				 = 1,
-	GEMB_R_CANCEL		 = 2,
-	GEMB_R_ABORT		 = 3,
-	GEMB_R_RETRY		 = 4,
-	GEMB_R_IGNORE		 = 5,
-	GEMB_R_YES			 = 6,
-	GEMB_R_NO				 = 7
+	GEMB_R_OK = 1,
+	GEMB_R_CANCEL = 2,
+	GEMB_R_ABORT = 3,
+	GEMB_R_RETRY = 4,
+	GEMB_R_IGNORE = 5,
+	GEMB_R_YES = 6,
+	GEMB_R_NO = 7
 } ENUM_END_LIST(GEMB_R);
 
 enum MOUSEDRAGRESULT
 {
-	MOUSEDRAGRESULT_ESCAPE	 = 1,
+	MOUSEDRAGRESULT_ESCAPE = 1,
 	MOUSEDRAGRESULT_FINISHED = 2,
 	MOUSEDRAGRESULT_CONTINUE = 3
 } ENUM_END_LIST(MOUSEDRAGRESULT);
 
 enum MOUSEDRAGFLAGS
 {
-	MOUSEDRAGFLAGS_0										 = 0,
-	MOUSEDRAGFLAGS_DONTHIDEMOUSE				 = (1 << 0),	// mousepointer should be visible
-	MOUSEDRAGFLAGS_NOMOVE								 = (1 << 1),	// mousedrag returns if no mousemove was done
-	MOUSEDRAGFLAGS_EVERYPACKET					 = (1 << 2),	// receive every packet of the queue, otherwise only data of the last packet
+	MOUSEDRAGFLAGS_0 = 0,
+	MOUSEDRAGFLAGS_DONTHIDEMOUSE = (1 << 0),	// mousepointer should be visible
+	MOUSEDRAGFLAGS_NOMOVE = (1 << 1),	// mousedrag returns if no mousemove was done
+	MOUSEDRAGFLAGS_EVERYPACKET = (1 << 2),	// receive every packet of the queue, otherwise only data of the last packet
 	MOUSEDRAGFLAGS_COMPENSATEVIEWPORTORG = (1 << 3),	// compensates the viewport origin during drag
-	MOUSEDRAGFLAGS_AIRBRUSH							 = (1 << 4)
+	MOUSEDRAGFLAGS_AIRBRUSH = (1 << 4)
 } ENUM_END_FLAGS(MOUSEDRAGFLAGS);
 
+
+/// @addtogroup INITRENDERRESULT
+/// @ingroup group_enumeration
+/// @{
+/// Results for the InitRender() calls in the rendering API.
 enum INITRENDERRESULT
 {
-	INITRENDERRESULT_OK						= 0,
-	INITRENDERRESULT_OUTOFMEMORY	= -100,
-	INITRENDERRESULT_ASSETMISSING	= -101,
-	INITRENDERRESULT_UNKNOWNERROR	= -102,
-	INITRENDERRESULT_THREADEDLOCK	= -103
+	INITRENDERRESULT_OK = 0,    ///< Everything is OK, there was no error.
+	INITRENDERRESULT_OUTOFMEMORY = -100, ///< Not enough memory.
+	INITRENDERRESULT_ASSETMISSING = -101, ///< Assets (textures etc.) are missing.
+	INITRENDERRESULT_UNKNOWNERROR = -102, ///< Unknown error.
+	INITRENDERRESULT_THREADEDLOCK = -103  ///< Thread lock.
 } ENUM_END_LIST(INITRENDERRESULT);
+/// @}
 
+/// @addtogroup RENDERRESULT
+/// @ingroup group_enumeration
+/// @{
+/// Results for the render calls in the rendering API.
 enum RENDERRESULT
 {
-	RENDERRESULT_OK									 = 0,
-	RENDERRESULT_OUTOFMEMORY				 = 1,
-	RENDERRESULT_ASSETMISSING				 = 2,
-	RENDERRESULT_SAVINGFAILED				 = 5,
-	RENDERRESULT_USERBREAK					 = 6,
-	RENDERRESULT_GICACHEMISSING			 = 7,
-	RENDERRESULT_NOMACHINE					 = 9,			// can only happen during team rendering
+	RENDERRESULT_OK = 0, ///< Function was successful.
+	RENDERRESULT_OUTOFMEMORY = 1, ///< Not enough memory.
+	RENDERRESULT_ASSETMISSING = 2, ///< Assets (textures etc.) are missing.
+	RENDERRESULT_SAVINGFAILED = 5, ///< Failed to save.
+	RENDERRESULT_USERBREAK = 6, ///< User stopped the processing.
+	RENDERRESULT_GICACHEMISSING = 7, ///< GI cache is missing.
+	RENDERRESULT_NOMACHINE = 9, ///< Machine was not found. Can only happen during Team Rendering.
 
-	RENDERRESULT_PROJECTNOTFOUND		 = 1000,	// can only be returned by the app during command line rendering
-	RENDERRESULT_ERRORLOADINGPROJECT = 1001,	// can only be returned by the app during command line rendering
-	RENDERRESULT_NOOUTPUTSPECIFIED	 = 1002		// can only be returned by the app during command line rendering
+	RENDERRESULT_PROJECTNOTFOUND = 1000, ///< Project was not found. Can only be returned by @CDDDD during command line rendering.
+	RENDERRESULT_ERRORLOADINGPROJECT = 1001, ///< There was an error while loading the project. Can only be returned by @CDDDD during command line rendering.
+	RENDERRESULT_NOOUTPUTSPECIFIED = 1002  ///< Output was not specified. Can only be returned by @CDDDD during command line rendering.
 } ENUM_END_LIST(RENDERRESULT);
+/// @}
 
+/// @addtogroup BITDEPTH
+/// @ingroup group_enumeration
+/// @{
+
+/// Number of color info bits.
 #define BITDEPTH_SHIFT 4
 
-#define BITDEPTH_MAXMODES	3
+/// Number of color modes.
+#define BITDEPTH_MAXMODES   3
 
+/// ::UChar (8-bit).
 #define BITDEPTH_UCHAR 0
+
+/// ::UInt16 (16-bit).
 #define BITDEPTH_UWORD 1
+
+/// ::Float (32-bit).
 #define BITDEPTH_FLOAT 2
 
-// color mode for bitmaps
-// the most common values are COLORMODE_RGB for 24-bit RGB values and COLORMODE_GRAY for 8-bit greyscale values
+/// @}
+
+/// @addtogroup COLORMODE
+/// @ingroup group_enumeration
+/// @{
+/// The color mode for @link BaseBitmap bitmaps@endlink.
+/// The most common values are ::COLORMODE_RGB for 24-bit RGB values and ::COLORMODE_GRAY for 8-bit grayscale values.
 enum COLORMODE
 {
-	COLORMODE_ILLEGAL	= 0,
+	// 8-bit modes.
 
-	COLORMODE_ALPHA		= 1,	// only alpha channel
-	COLORMODE_GRAY		= 2,
-	COLORMODE_AGRAY		= 3,
-	COLORMODE_RGB			= 4,
-	COLORMODE_ARGB		= 5,
-	COLORMODE_CMYK		= 6,
-	COLORMODE_ACMYK		= 7,
-	COLORMODE_MASK		= 8,	// gray map as mask
-	COLORMODE_AMASK		= 9,	// gray map as mask
+	COLORMODE_ILLEGAL = 0, ///< Illegal 8-bit mode.
 
-	// 16 bit modes
-	COLORMODE_ILLEGALw = (BITDEPTH_UWORD << BITDEPTH_SHIFT),
+	COLORMODE_ALPHA = 1, ///< Only 8-bit alpha channel.
+	COLORMODE_GRAY = 2, ///< 8-bit grayscale channel.
+	COLORMODE_AGRAY = 3, ///< 8-bit grayscale channel with 8-bit alpha.
+	COLORMODE_RGB = 4, ///< 8-bit RGB channels.
+	COLORMODE_ARGB = 5, ///< 8-bit RGB channels with 8-bit alpha.
+	COLORMODE_CMYK = 6, ///< 8-bit CMYK channel.
+	COLORMODE_ACMYK = 7, ///< 8-bit CMYK channel with 8-bit alpha.
+	COLORMODE_MASK = 8, ///< 8-bit grayscale map as mask.
+	COLORMODE_AMASK = 9, ///< 8-bit grayscale map as mask with 8-bit alpha.
 
-	COLORMODE_GRAYw		 = (COLORMODE_GRAY | (BITDEPTH_UWORD << BITDEPTH_SHIFT)),
-	COLORMODE_AGRAYw	 = (COLORMODE_AGRAY | (BITDEPTH_UWORD << BITDEPTH_SHIFT)),
-	COLORMODE_RGBw		 = (COLORMODE_RGB | (BITDEPTH_UWORD << BITDEPTH_SHIFT)),
-	COLORMODE_ARGBw		 = (COLORMODE_ARGB | (BITDEPTH_UWORD << BITDEPTH_SHIFT)),
-	COLORMODE_MASKw		 = (COLORMODE_MASK | (BITDEPTH_UWORD << BITDEPTH_SHIFT)),
+	// 16-bit modes.
 
-	// 32 bit modes
-	COLORMODE_ILLEGALf = (BITDEPTH_FLOAT << BITDEPTH_SHIFT),
+	COLORMODE_ILLEGALw = (BITDEPTH_UWORD << BITDEPTH_SHIFT),                     ///< Illegal 16-bit mode.
 
-	COLORMODE_GRAYf		 = (COLORMODE_GRAY | (BITDEPTH_FLOAT << BITDEPTH_SHIFT)),
-	COLORMODE_AGRAYf	 = (COLORMODE_AGRAY | (BITDEPTH_FLOAT << BITDEPTH_SHIFT)),
-	COLORMODE_RGBf		 = (COLORMODE_RGB | (BITDEPTH_FLOAT << BITDEPTH_SHIFT)),
-	COLORMODE_ARGBf		 = (COLORMODE_ARGB | (BITDEPTH_FLOAT << BITDEPTH_SHIFT)),
-	COLORMODE_MASKf		 = (COLORMODE_MASK | (BITDEPTH_FLOAT << BITDEPTH_SHIFT))
+	COLORMODE_GRAYw = (COLORMODE_GRAY | (BITDEPTH_UWORD << BITDEPTH_SHIFT)),  ///< 16-bit grayscale channel.
+	COLORMODE_AGRAYw = (COLORMODE_AGRAY | (BITDEPTH_UWORD << BITDEPTH_SHIFT)), ///< 16-bit grayscale channel with 16-bit alpha.
+	COLORMODE_RGBw = (COLORMODE_RGB | (BITDEPTH_UWORD << BITDEPTH_SHIFT)),   ///< 16-bit RGB channels.
+	COLORMODE_ARGBw = (COLORMODE_ARGB | (BITDEPTH_UWORD << BITDEPTH_SHIFT)),  ///< 16-bit RGB channels with 16-bit alpha.
+	COLORMODE_MASKw = (COLORMODE_MASK | (BITDEPTH_UWORD << BITDEPTH_SHIFT)),  ///< 16-bit grayscale map as mask.
+
+	// 32-bit modes.
+
+	COLORMODE_ILLEGALf = (BITDEPTH_FLOAT << BITDEPTH_SHIFT),                     ///< Illegal 32-bit mode.
+
+	COLORMODE_GRAYf = (COLORMODE_GRAY | (BITDEPTH_FLOAT << BITDEPTH_SHIFT)),  ///< Floating point grayscale channel.
+	COLORMODE_AGRAYf = (COLORMODE_AGRAY | (BITDEPTH_FLOAT << BITDEPTH_SHIFT)), ///< Floating point grayscale channel with floating point alpha.
+	COLORMODE_RGBf = (COLORMODE_RGB | (BITDEPTH_FLOAT << BITDEPTH_SHIFT)),   ///< Floating point RGB channels.
+	COLORMODE_ARGBf = (COLORMODE_ARGB | (BITDEPTH_FLOAT << BITDEPTH_SHIFT)),  ///< Floating point RGB channels with floating point alpha.
+	COLORMODE_MASKf = (COLORMODE_MASK | (BITDEPTH_FLOAT << BITDEPTH_SHIFT))   ///< Floating point grayscale map as mask.
 } ENUM_END_FLAGS(COLORMODE);
+/// @}
 
 enum COLORSPACETRANSFORMATION
 {
-	COLORSPACETRANSFORMATION_NONE						= 0,
-	COLORSPACETRANSFORMATION_LINEAR_TO_SRGB	= 1,
-	COLORSPACETRANSFORMATION_SRGB_TO_LINEAR	= 2,
+	COLORSPACETRANSFORMATION_NONE = 0,
+	COLORSPACETRANSFORMATION_LINEAR_TO_SRGB = 1,
+	COLORSPACETRANSFORMATION_SRGB_TO_LINEAR = 2,
 
-	COLORSPACETRANSFORMATION_LINEAR_TO_VIEW	= 10,
-	COLORSPACETRANSFORMATION_SRGB_TO_VIEW		= 11
+	COLORSPACETRANSFORMATION_LINEAR_TO_VIEW = 10,
+	COLORSPACETRANSFORMATION_SRGB_TO_VIEW = 11
 } ENUM_END_LIST(COLORSPACETRANSFORMATION);
 
+
+/// @addtogroup PIXELCNT
+/// @ingroup group_enumeration
+/// @{
+/// Flags for BaseBitmap::GetPixelCnt() / BaseBitmap::SetPixelCnt()
 enum PIXELCNT
 {
-	PIXELCNT_0									 = 0,
-	PIXELCNT_DITHERING					 = (1 << 0),	// allow dithering
-	PIXELCNT_B3DLAYERS					 = (1 << 1),	// merge b3d layers (multipassbmp)
-	PIXELCNT_APPLYALPHA					 = (1 << 2),	// apply alpha layers to the result (paintlayer)
-	PIXELCNT_INTERNAL_SETLINE		 = (1 << 29),	// PRIVATE! internal setline indicator
-	PIXELCNT_INTERNAL_ALPHAVALUE = (1 << 30)	// PRIVATE! get also the alphavalue (rgba 32 bit)
+	PIXELCNT_0 = 0,         ///< None.
+	PIXELCNT_DITHERING = (1 << 0),  ///< Allow dithering.
+	PIXELCNT_B3DLAYERS = (1 << 1),  ///< Merge Bodypaint layers (MultipassBitmap).
+	PIXELCNT_APPLYALPHA = (1 << 2),  ///< Apply alpha layers to the result (PaintLayer).
+	PIXELCNT_INTERNAL_SETLINE = (1 << 29), ///< Internal SetLine indicator. @markPrivate
+	PIXELCNT_INTERNAL_ALPHAVALUE = (1 << 30)  ///< Get also the alpha value (rgba <i>32</i>-bit). @markPrivate
 } ENUM_END_FLAGS(PIXELCNT);
+/// @}
 
+
+/// @addtogroup INITBITMAPFLAGS
+/// @ingroup group_enumeration
+/// @{
+/// Flags used for the initialization of @link BaseBitmap bitmaps@endlink.
+/// @see BaseBitmap::Init(Int32 x, Int32 y, Int32 depth = 24, INITBITMAPFLAGS flags = INITBITMAPFLAGS_0)
 enum INITBITMAPFLAGS
 {
-	INITBITMAPFLAGS_0					= 0,
-	INITBITMAPFLAGS_GRAYSCALE	= (1 << 0),
-	INITBITMAPFLAGS_SYSTEM		= (1 << 1)
+	INITBITMAPFLAGS_0 = 0,        ///< None.
+	INITBITMAPFLAGS_GRAYSCALE = (1 << 0), ///< Initializes as grayscale bitmap.
+	INITBITMAPFLAGS_SYSTEM = (1 << 1)  ///< @markPrivate
 } ENUM_END_FLAGS(INITBITMAPFLAGS);
+/// @}
 
+/// @addtogroup MPB_GETLAYERS
+/// @ingroup group_enumeration
+/// @{
+/// Flags for MultipassBitmap::GetLayers()
 enum MPB_GETLAYERS
 {
-	MPB_GETLAYERS_0			= 0,
-	MPB_GETLAYERS_ALPHA	= (1 << 1),
-	MPB_GETLAYERS_IMAGE	= (1 << 2)
+	MPB_GETLAYERS_0 = 0,        ///< None.
+	MPB_GETLAYERS_ALPHA = (1 << 1), ///< Get alpha layers.
+	MPB_GETLAYERS_IMAGE = (1 << 2)  ///< Get image layers.
 } ENUM_END_FLAGS(MPB_GETLAYERS);
+/// @}
 
+/// @addtogroup MPBTYPE
+/// @ingroup group_containerid
+/// @{
+/// Container IDs for MultipassBitmap::GetParameter() / MultipassBitmap::SetParameter()
 enum MPBTYPE
 {
-	MPBTYPE_SHOW			 = 1000,	// Bool, get, set
-	MPBTYPE_SAVE			 = 1001,	// Bool, get, set
-	MPBTYPE_PERCENT		 = 1002,	// Float, get, set
-	MPBTYPE_BLENDMODE	 = 1003,	// Int32, get, set
-	MPBTYPE_COLORMODE	 = 1004,	// Int32, get, set
-	MPBTYPE_BITMAPTYPE = 1005,	// Int32, get
-	MPBTYPE_NAME			 = 1006,	// String, get, set
-	MPBTYPE_DPI				 = 1007,	// Int32, get, set
-	MPBTYPE_USERID		 = 1008,	// Int32, get, set
-	MPBTYPE_USERSUBID	 = 1009,	// Int32, get, set
-	MPBTYPE_FORCEBLEND = 1010		// Int32, get, set		(special mode used to force blend layers)
+	MPBTYPE_SHOW = 1000, ///< ::Bool Get/Set. Determines if this layer will be shown in the external render window. (The @CDDDD renderer modifies this value itself.)
+	MPBTYPE_SAVE = 1001, ///< ::Bool Get/Set. Determines if the layer is saved with the image or not if ::SAVEBIT_USESELECTEDLAYERS is used.
+	MPBTYPE_PERCENT = 1002, ///< ::Float Get/Set. The blend parameter, between @em 0.0 and @em 1.0.
+	MPBTYPE_BLENDMODE = 1003, ///< ::Int32 Get/Set. The blend mode (LAYER_NORMAL, LAYER_DISSOLVE etc. from @em bplayer.h).
+	MPBTYPE_COLORMODE = 1004, ///< ::Int32 Get/Set. The color mode: @enumerateEnum{::COLORMODE}
+	MPBTYPE_BITMAPTYPE = 1005, ///< ::Int32 Get. The bitmap type (cannot be set with MultipassBitmap::SetParameter()).
+	MPBTYPE_NAME = 1006, ///< String Get/Set. The layer name.
+	MPBTYPE_DPI = 1007, ///< ::Int32 Get/Set. The resolution in DPI. @markPrivate
+	MPBTYPE_USERID = 1008, ///< ::Int32 Get/Set. The user ID for the layer. In the renderer this is @em VPBUFFER_XXX.
+	MPBTYPE_USERSUBID = 1009, ///< ::Int32 Get/Set. The ser sub-ID for the layer. In the renderer this is used for blend channels for instance.
+	MPBTYPE_FORCEBLEND = 1010  ///< ::Int32 Get/Set. The special mode used to force blend layers.
 } ENUM_END_LIST(MPBTYPE);
+/// @}
+
 
 enum LENGTHUNIT
 {
 	LENGTHUNIT_PIXEL = 0,
-	LENGTHUNIT_KM		 = 1,
-	LENGTHUNIT_M		 = 2,
-	LENGTHUNIT_CM		 = 3,
-	LENGTHUNIT_MM		 = 4,
-	LENGTHUNIT_UM		 = 5,
-	LENGTHUNIT_NM		 = 6,
-	LENGTHUNIT_MILE	 = 7,
-	LENGTHUNIT_YARD	 = 8,
-	LENGTHUNIT_FEET	 = 9,
-	LENGTHUNIT_INCH	 = 10
+	LENGTHUNIT_KM = 1,
+	LENGTHUNIT_M = 2,
+	LENGTHUNIT_CM = 3,
+	LENGTHUNIT_MM = 4,
+	LENGTHUNIT_UM = 5,
+	LENGTHUNIT_NM = 6,
+	LENGTHUNIT_MILE = 7,
+	LENGTHUNIT_YARD = 8,
+	LENGTHUNIT_FEET = 9,
+	LENGTHUNIT_INCH = 10
 } ENUM_END_LIST(LENGTHUNIT);
 
 enum SPLINETYPE
 {
-	SPLINETYPE_LINEAR	 = 0,
-	SPLINETYPE_CUBIC	 = 1,
-	SPLINETYPE_AKIMA	 = 2,
+	SPLINETYPE_LINEAR = 0,
+	SPLINETYPE_CUBIC = 1,
+	SPLINETYPE_AKIMA = 2,
 	SPLINETYPE_BSPLINE = 3,
-	SPLINETYPE_BEZIER	 = 4
+	SPLINETYPE_BEZIER = 4
 } ENUM_END_LIST(SPLINETYPE);
 
 // particle bits
 enum PARTICLEFLAGS
 {
-	PARTICLEFLAGS_0				= 0,
-	PARTICLEFLAGS_VISIBLE	= (1 << 0),
-	PARTICLEFLAGS_ALIVE		= (1 << 1)
+	PARTICLEFLAGS_0 = 0,
+	PARTICLEFLAGS_VISIBLE = (1 << 0),
+	PARTICLEFLAGS_ALIVE = (1 << 1)
 } ENUM_END_FLAGS(PARTICLEFLAGS);
 
 // baselist N-bits
 enum NBIT
 {
-	NBIT_0					 = 0,
+	NBIT_0 = 0,
 
-	NBIT_TL1_FOLD		 = 1,
-	NBIT_TL2_FOLD		 = 2,
-	NBIT_TL3_FOLD		 = 3,
-	NBIT_TL4_FOLD		 = 4,
+	NBIT_TL1_FOLD = 1,
+	NBIT_TL2_FOLD = 2,
+	NBIT_TL3_FOLD = 3,
+	NBIT_TL4_FOLD = 4,
 
-	NBIT_TL1_SELECT	 = 5,
-	NBIT_TL2_SELECT	 = 6,
-	NBIT_TL3_SELECT	 = 7,
-	NBIT_TL4_SELECT	 = 8,
+	NBIT_TL1_SELECT = 5,
+	NBIT_TL2_SELECT = 6,
+	NBIT_TL3_SELECT = 7,
+	NBIT_TL4_SELECT = 8,
 
-	NBIT_TL1_TDRAW	 = 9,
-	NBIT_TL2_TDRAW	 = 10,
-	NBIT_TL3_TDRAW	 = 11,
-	NBIT_TL4_TDRAW	 = 12,
+	NBIT_TL1_TDRAW = 9,
+	NBIT_TL2_TDRAW = 10,
+	NBIT_TL3_TDRAW = 11,
+	NBIT_TL4_TDRAW = 12,
 
 	NBIT_CKEY_ACTIVE = 13,	// active point of animation path in editor
 
-	NBIT_OM1_FOLD		 = 14,
-	NBIT_OM2_FOLD		 = 15,
-	NBIT_OM3_FOLD		 = 16,
-	NBIT_OM4_FOLD		 = 17,
+	NBIT_OM1_FOLD = 14,
+	NBIT_OM2_FOLD = 15,
+	NBIT_OM3_FOLD = 16,
+	NBIT_OM4_FOLD = 17,
 
 	// defines if the tracks of the object are shown
-	NBIT_TL1_FOLDTR						= 18,
-	NBIT_TL2_FOLDTR						= 19,
-	NBIT_TL3_FOLDTR						= 20,
-	NBIT_TL4_FOLDTR						= 21,
+	NBIT_TL1_FOLDTR = 18,
+	NBIT_TL2_FOLDTR = 19,
+	NBIT_TL3_FOLDTR = 20,
+	NBIT_TL4_FOLDTR = 21,
 
-	NBIT_TL1_FOLDFC						= 22,
-	NBIT_TL2_FOLDFC						= 23,
-	NBIT_TL3_FOLDFC						= 24,
-	NBIT_TL4_FOLDFC						= 25,
+	NBIT_TL1_FOLDFC = 22,
+	NBIT_TL2_FOLDFC = 23,
+	NBIT_TL3_FOLDFC = 24,
+	NBIT_TL4_FOLDFC = 25,
 
-	NBIT_SOURCEOPEN						= 26,
+	NBIT_SOURCEOPEN = 26,
 
-	NBIT_TL1_HIDE							= 27,
-	NBIT_TL2_HIDE							= 28,
-	NBIT_TL3_HIDE							= 29,
-	NBIT_TL4_HIDE							= 30,
+	NBIT_TL1_HIDE = 27,
+	NBIT_TL2_HIDE = 28,
+	NBIT_TL3_HIDE = 29,
+	NBIT_TL4_HIDE = 30,
 
-	NBIT_SOLO_ANIM						= 31,
-	NBIT_SOLO_LAYER						= 32,
+	NBIT_SOLO_ANIM = 31,
+	NBIT_SOLO_LAYER = 32,
 
-	NBIT_TL1_SELECT2					= 33,
-	NBIT_TL2_SELECT2					= 34,
-	NBIT_TL3_SELECT2					= 35,
-	NBIT_TL4_SELECT2					= 36,
+	NBIT_TL1_SELECT2 = 33,
+	NBIT_TL2_SELECT2 = 34,
+	NBIT_TL3_SELECT2 = 35,
+	NBIT_TL4_SELECT2 = 36,
 
-	NBIT_SOLO_MOTION					= 37,
+	NBIT_SOLO_MOTION = 37,
 
-	NBIT_CKEY_LOCK_T					= 38,
-	NBIT_CKEY_LOCK_V					= 39,
-	NBIT_CKEY_MUTE						= 40,
-	NBIT_CKEY_CLAMP						= 41,
+	NBIT_CKEY_LOCK_T = 38,
+	NBIT_CKEY_LOCK_V = 39,
+	NBIT_CKEY_MUTE = 40,
+	NBIT_CKEY_CLAMP = 41,
 
-	NBIT_CKEY_BREAK						= 42,
+	NBIT_CKEY_BREAK = 42,
 	NBIT_CKEY_KEEPVISUALANGLE = 43,
 
-	NBIT_CKEY_LOCK_O					= 44,
-	NBIT_CKEY_LOCK_L					= 45,
-	NBIT_CKEY_AUTO						= 46,
-	NBIT_CKEY_ZERO_O_OLD			= 48,
-	NBIT_CKEY_ZERO_L_OLD			= 49,
+	NBIT_CKEY_LOCK_O = 44,
+	NBIT_CKEY_LOCK_L = 45,
+	NBIT_CKEY_AUTO = 46,
+	NBIT_CKEY_ZERO_O_OLD = 48,
+	NBIT_CKEY_ZERO_L_OLD = 49,
 
-	NBIT_TL1_FCSELECT					= 50,
-	NBIT_TL2_FCSELECT					= 51,
-	NBIT_TL3_FCSELECT					= 52,
-	NBIT_TL4_FCSELECT					= 53,
+	NBIT_TL1_FCSELECT = 50,
+	NBIT_TL2_FCSELECT = 51,
+	NBIT_TL3_FCSELECT = 52,
+	NBIT_TL4_FCSELECT = 53,
 
-	NBIT_CKEY_BREAKDOWN				= 54,
+	NBIT_CKEY_BREAKDOWN = 54,
 
-	NBIT_TL1_FOLDMOTION				= 55,
-	NBIT_TL2_FOLDMOTION				= 56,
-	NBIT_TL3_FOLDMOTION				= 57,
-	NBIT_TL4_FOLDMOTION				= 58,
+	NBIT_TL1_FOLDMOTION = 55,
+	NBIT_TL2_FOLDMOTION = 56,
+	NBIT_TL3_FOLDMOTION = 57,
+	NBIT_TL4_FOLDMOTION = 58,
 
-	NBIT_TL1_SELECTMOTION			= 59,
-	NBIT_TL2_SELECTMOTION			= 60,
-	NBIT_TL3_SELECTMOTION			= 61,
-	NBIT_TL4_SELECTMOTION			= 62,
+	NBIT_TL1_SELECTMOTION = 59,
+	NBIT_TL2_SELECTMOTION = 60,
+	NBIT_TL3_SELECTMOTION = 61,
+	NBIT_TL4_SELECTMOTION = 62,
 
-	NBIT_OHIDE								= 63,	// Hide object in OM
-	NBIT_TL_TBAKE							= 64,
+	NBIT_OHIDE = 63,	// Hide object in OM
+	NBIT_TL_TBAKE = 64,
 
-	NBIT_TL1_FOLDSM						= 66,
-	NBIT_TL2_FOLDSM						= 67,
-	NBIT_TL3_FOLDSM						= 68,
-	NBIT_TL4_FOLDSM						= 69,
+	NBIT_TL1_FOLDSM = 66,
+	NBIT_TL2_FOLDSM = 67,
+	NBIT_TL3_FOLDSM = 68,
+	NBIT_TL4_FOLDSM = 69,
 
-	NBIT_SUBOBJECT						= 70,
-	NBIT_LINK_ACTIVE					= 71,
-	NBIT_THIDE								= 72,	// hide in TL
-	NBIT_SUBOBJECT_AM					= 74,
-	NBIT_PROTECTION						= 75,	// psr protected
-	NBIT_NOANIM								= 76,	// no animation
-	NBIT_NOSELECT							= 77,	// no selection
-	NBIT_EHIDE								= 78,	// hide in viewport
-	NBIT_REF									= 79,	// x-ref
-	NBIT_REF_NO_DD						= 80,	// x-ref private
-	NBIT_REF_OHIDE						= 81,	// x-ref private
-	NBIT_NO_DD								= 82,	// disallow duplication/d&d
+	NBIT_SUBOBJECT = 70,
+	NBIT_LINK_ACTIVE = 71,
+	NBIT_THIDE = 72,	// hide in TL
+	NBIT_SUBOBJECT_AM = 74,
+	NBIT_PROTECTION = 75,	// psr protected
+	NBIT_NOANIM = 76,	// no animation
+	NBIT_NOSELECT = 77,	// no selection
+	NBIT_EHIDE = 78,	// hide in viewport
+	NBIT_REF = 79,	// x-ref
+	NBIT_REF_NO_DD = 80,	// x-ref private
+	NBIT_REF_OHIDE = 81,	// x-ref private
+	NBIT_NO_DD = 82,	// disallow duplication/d&d
+	NBIT_HIDEEXCEPTVIEWSELECT = 83,	// Hide in viewport except to viewport select
 
-	NBIT_MAX									= 83,
-	NBIT_PRIVATE_MASK1				= -1,
-	NBIT_PRIVATE_MASK2				= -2,
-	NBIT_PRIVATE_MASK3				= -3,
-	NBIT_PRIVATE_MASK4				= -4
+	NBIT_MAX = 84,
+	NBIT_PRIVATE_MASK1 = -1,
+	NBIT_PRIVATE_MASK2 = -2,
+	NBIT_PRIVATE_MASK3 = -3,
+	NBIT_PRIVATE_MASK4 = -4
 } ENUM_END_LIST(NBIT);
 
 enum CREATEJOBRESULT
 {
-	CREATEJOBRESULT_OK							= 0,
-	CREATEJOBRESULT_OUTOFMEMORY			= 1,
-	CREATEJOBRESULT_ASSETMISSING		= 2,
-	CREATEJOBRESULT_SAVINGFAILED		= 3,
-	CREATEJOBRESULT_REPOSITORYERROR	= 4
+	CREATEJOBRESULT_OK = 0,
+	CREATEJOBRESULT_OUTOFMEMORY = 1,
+	CREATEJOBRESULT_ASSETMISSING = 2,
+	CREATEJOBRESULT_SAVINGFAILED = 3,
+	CREATEJOBRESULT_REPOSITORYERROR = 4
 } ENUM_END_FLAGS(CREATEJOBRESULT);
 
 enum NBITCONTROL
 {
-	NBITCONTROL_SET							= 1,
-	NBITCONTROL_CLEAR						= 2,
-	NBITCONTROL_TOGGLE					= 3,
-	NBITCONTROL_PRIVATE_NODIRTY	= 0xf0
+	NBITCONTROL_SET = 1,
+	NBITCONTROL_CLEAR = 2,
+	NBITCONTROL_TOGGLE = 3,
+	NBITCONTROL_PRIVATE_NODIRTY = 0xf0
 } ENUM_END_FLAGS(NBITCONTROL);
 
-// baselist bits
-#define BIT_ACTIVE	(1 << 1)
-#define BIT_ACTIVE2	(1 << 29)
+/// @addtogroup BIT
+/// @ingroup group_enumeration
+/// @{
 
-// material bits
-#define BIT_MATMARK				(1 << 2)	// marked material
-#define BIT_ENABLEPAINT		(1 << 3)	// enable painting
-#define BIT_RECALCPREVIEW	(1 << 5)	// recalculate preview
-#define BIT_MFOLD					(1 << 6)	// folded in material manager
-#define BIT_BP_FOLDLAYERS	(1 << 9)	// fold layers in material manger
+/// @name Baselist bits
+/// @{
+#define BIT_ACTIVE	(1 << 1)  ///< Active.
+#define BIT_ACTIVE2	(1 << 29) ///< @markPrivate
+/// @}
 
-// object bits
-#define BIT_IGNOREDRAW										 (1 << 2)		// ignore object during draw
-#define BIT_OFOLD													 (1 << 6)		// folded in object manager
-#define BIT_CONTROLOBJECT									 (1 << 9)		// control object
-#define BIT_RECMARK												 (1 << 11)	// help bit for recursive operations
-#define BIT_IGNOREDRAWBOX									 (1 << 12)	// ignore box drawing object
-#define BIT_EDITOBJECT										 (1 << 13)	// edit object from sds
-#define BIT_ACTIVESELECTIONDRAW						 (1 << 15)	// draw active selection
-#define BIT_TEMPDRAW_VISIBLE_CACHECHILD		 (1 << 16)	// private, temp bits for faster redraw
-#define BIT_TEMPDRAW_VISIBLE_DEFCACHECHILD (1 << 17)	// private, temp bits for faster redraw
-#define BIT_TEMPDRAW_VISIBLE_CHILD				 (1 << 18)	// private, temp bits for faster redraw
-#define BIT_HIGHLIGHT											 (1 << 20)	// object highlighted in viewport
-#define BIT_FORCE_UNOPTIMIZED							 (1 << 21)	// do not optimize the points of a polygon object during OGl redraw
+/// @name Material bits
+/// @{
+#define BIT_MATMARK				(1 << 2)	///< Marked material.
+#define BIT_ENABLEPAINT		(1 << 3)	///< Enable painting.
+#define BIT_RECALCPREVIEW	(1 << 5)	///< Recalculate preview.
+#define BIT_MFOLD					(1 << 6)	///< Folded in material manager.
+#define BIT_BP_FOLDLAYERS	(1 << 9)	///< Fold layers in material manager.
+/// @}
 
-// track bits
-#define BIT_TRACKPROCESSED				(1 << 16)	// track has been processed, avoid recursions
-#define BIT_ANIM_OFF							(1 << 17)	// is sequence inactive
-#define BIT_ANIM_SOLO							(1 << 18)
-#define BIT_ANIM_CONSTANTVELOCITY	(1 << 19)
+/// @name Object bits
+/// @{
+#define BIT_IGNOREDRAW										 (1 << 2)		///< Ignore object during draw.
+#define BIT_OFOLD													 (1 << 6)		///< Folded in object manager.
+#define BIT_CONTROLOBJECT									 (1 << 9)		///< Internal bit set by generators.
+#define BIT_RECMARK												 (1 << 11)	///< Help bit for recursive operations. @markPrivate
+#define BIT_IGNOREDRAWBOX									 (1 << 12)	///< Ignore object drawing box.
+#define BIT_EDITOBJECT										 (1 << 13)	///< Edit object from SDS. @markPrivate
+#define BIT_ACTIVESELECTIONDRAW						 (1 << 15)	///< Draw active selection.
+#define BIT_TEMPDRAW_VISIBLE_CACHECHILD		 (1 << 16)	///< @markPrivate. Temp bit for faster redraw.
+#define BIT_TEMPDRAW_VISIBLE_DEFCACHECHILD (1 << 17)	///< @markPrivate. Temp bit for faster redraw.
+#define BIT_TEMPDRAW_VISIBLE_CHILD				 (1 << 18)	///< @markPrivate. Temp bit for faster redraw.
+#define BIT_HIGHLIGHT											 (1 << 20)	///< Object highlighted in viewport. @markPrivate
+#define BIT_FORCE_UNOPTIMIZED							 (1 << 21)	///< Do not optimize the points of a polygon object during OpenGL redraw. @markPrivate
+/// @}
 
-// videopost bits
-#define BIT_VPDISABLED (1 << 2)	// videopost effect is disabled
+/// @name Track bits
+/// @{
+#define BIT_TRACKPROCESSED				(1 << 16)	///< Track has been processed, avoid recursions.
+#define BIT_ANIM_OFF							(1 << 17)	///< Inactive sequence.
+#define BIT_ANIM_SOLO							(1 << 18)	///< Solo track.
+#define BIT_ANIM_CONSTANTVELOCITY	(1 << 19)	///< Constant velocity.
+/// @}
 
-// document bits
-#define BIT_DOCUMENT_CHECKREWIND (1 << 2)	// doc needs to check for a rewind
+/// @name Videopost bits
+/// @{
+#define BIT_VPDISABLED (1 << 2)	///< Videopost is disabled.
+/// @}
 
-// renderdata bits
-#define BIT_ACTIVERENDERDATA (1 << 28)
+/// @name Document bits
+/// @{
+#define BIT_DOCUMENT_CHECKREWIND (1 << 2)	///< Document needs to check for a rewind.
+/// @}
+
+/// @name Renderdata bits
+/// @{
+#define BIT_ACTIVERENDERDATA (1 << 28) ///< Active render data.
+/// @}
+
+/// @}
 
 // object info
 #define OBJECT_MODIFIER					 (1 << 0)
@@ -798,7 +907,7 @@ enum NBITCONTROL
 #define Xreference				1027315
 #define Xxmbreflection		1027741
 #define	Xterrainmask			1026277
-
+#define Xcloth						1031432
 
 // tags
 #define Tpoint						5600
@@ -812,7 +921,7 @@ enum NBITCONTROL
 #define	Tparticle					5630
 #define	Tmotionblur				5636
 #define	Tcompositing			5637
-#define	Twww							5647
+#define	Tannotation				1030659
 #define	Tsavetemp					5650
 #define Tpolygon					5604
 #define	Tuvw							5671
@@ -833,8 +942,8 @@ enum NBITCONTROL
 #define Tsticktexture			5690
 #define	Tplugin						5691
 #define	Tstop							5693
-#define Tbase							5694	// for instanceof
-#define Tvariable					5695	// for instanceof
+#define Tbase							5694	/// For InstanceOf
+#define Tvariable					5695	/// For InstanceOf
 #define Tvibrate					5698
 #define Taligntospline		5699
 #define Taligntopath			5700
@@ -852,15 +961,17 @@ enum NBITCONTROL
 #define Tposemorph				1024237
 #define Tpython						1022749
 #define Tsculpt						1023800
-#define Tmotioncam				1027742	// Motion Camera Tag
-#define Tmorphcam					1027743	// Morph Camera Tag
-#define	Tcrane						1028270	// Camera Crane Tag
-#define Tarchigrass				1028463	// Architectural Grass Tag
-#define Tsculptnormals		1027660 // Private for sculpting
+#define Tmotioncam				1027742	/// Motion Camera Tag
+#define Tmorphcam					1027743	/// Morph Camera Tag
+#define	Tcrane						1028270	/// Camera Crane Tag
+#define Tarchigrass				1028463	/// Architectural Grass Tag
+#define Tsculptnormals		1027660 /// Private for sculpting
+#define Tsplinenormal			440000173 /// Spline normals tag
+#define Tinteraction			440000164 /// Interaction Tag
 
 // new anim system
-#define NLAbase	5349	// nla system
-#define CTbase	5350	// anim system
+#define NLAbase	5349	/// NLA system
+#define CTbase	5350	/// Anim system
 #define CSbase	5351
 #define CKbase	5352
 
@@ -1014,8 +1125,9 @@ enum NBITCONTROL
 #define WPREF_CAMERAROTATION_CAMERA	4
 #define WPREF_CAMERAROTATION_CUSTOM	5
 
-#define WPREF_DOLLYTOCURSOR	1021													// Int32
-#define WPREF_SYNCVIEWPORTS	1022													// BOOL 440000085 // BOOL
+#define WPREF_DOLLYTOCURSOR					1021	// Int32
+#define WPREF_SYNCVIEWPORTS					1022	// BOOL 440000085 // BOOL
+#define WPREF_SCRIPTWORDWRAP				1023	// Bool
 
 #define WPREF_OPENGL_PERSPECT												 1024	// BOOL
 #define WPREF_OPENGL_TEXTURE_FILTERING							 1025	// Int32
@@ -1041,6 +1153,7 @@ enum NBITCONTROL
 #define WPREF_NAV_LOCK_POI										1033	// Bool
 #define WPREF_OPENGL_POLYLINES								1034	// Bool: use polylines
 #define WPREF_OPENGL_LIGHTING									1035	// Bool: use opengl lighting
+#define WPREF_NAV_TRACKBALL										1036  // Bool: trackball camera rotation
 #define WPREF_OPENGL_GLPOINTS									1037	// Bool: allow real gl points
 #define WPREF_OPENGL_HIGHENDSHADING						1038	// Bool
 #define WPREF_NAV_VIEW_TRANSITION							1039	// Bool
@@ -1151,6 +1264,7 @@ enum NBITCONTROL
 #define WPREF_LOCKINTERFACE							 21078						// Bool
 #define WPREF_TOOLCURSOR_BASIC					 21079						// Bool
 #define WPREF_TOOLCURSOR_ADV						 21080						// Bool
+#define WPREF_LOWERPROCESSPRIORITY			 21081						// Bool
 
 #define WPREF_ONLINEUPDATER_AUTO_CHECK						 40000	// bool
 #define WPREF_ONLINEUPDATER_CHECKSUM							 40001	// private
@@ -1165,11 +1279,39 @@ enum NBITCONTROL
 #define WPREF_ONLINEUPDATER_REMOVE_FILES					 40013	// bool
 #define WPREF_ONLINEUPDATER_SHOW_DEVELOPER_UPDATES 40015	// bool
 
-#define	WPREF_PV_RENDER_VIEW 430000690										// Int32 - the index id of the PictureViewer dialog that receives render output
-#define	WPREF_PV_RECENT			 465001804										//for recent files in PV
+#define	WPREF_PV_RENDER_VIEW		430000690									// Int32 - the index id of the PictureViewer dialog that receives render output
+#define	WPREF_PV_RECENT					465001804									//for recent files in PV
 
-#define		PVPREFSDIALOG_ID		 465001700
-#define		SCULPTPREFSDIALOG_ID 1027830
+#define		PVPREFSDIALOG_ID			465001700
+#define		SCULPTPREFSDIALOG_ID	1027830
+#define		TLPREFSDIALOG_ID			465001501
+#define		PHPREFSDIALOG_ID			1031908
+
+//timeline and keyframe pref ids
+enum
+{
+	WPREFS_HIGHLIGHT = 1000,
+	WPREFS_HIGHLIGHTCURVE,
+	WPREFS_CURSORINDICATOR,
+	WPREFS_MINIMUM_OLD,
+	WPREFS_MINIMUMWIDTH,
+	WPREFS_SHOWLAYERCOL,
+	WPREFS_TRACKCOLOR,
+	WPREFS_TRACKCOLNO,
+	WPREFS_TRACKCOLPRS,
+	WPREFS_TRACKCOLORG,
+	WPREFS_SHOWTRACKSTARTEND,
+	WPREFS_SUMMARY,
+	WPREFS_HLEAUTOVALUE,
+	WPREFS_INTERACTIVEUPDATE,
+	WPREFS_CLIPTRANSITIONIME,
+	WPREFS_KEYSDOPESHEET,
+	WPREFS_KEYSYMBOLS,
+	WPREFS_SHOWBRANCHES,
+	WPREFS_SHOWVECTRACK,
+	WPREFS_KEYFRAMEDOTS,					//bool - Legacy keyframe dots
+	WPREFS_DOTSKILLTRACKS					//bool - Keyframe dots kill tracks with no keyframes on them
+};
 
 enum
 {
@@ -1187,14 +1329,20 @@ enum
 
 enum
 {
+	WPREFS_PHMAXCACHEMEM = 1000,
+	WPREFS_PHSYSRESERVEMEM,
+};
+
+enum
+{
 	WPREF_NET_NAME = 1000,
 	WPREF_NET_SHARE,
 	WPREF_NET_THREADCUSTOM,
 	WPREF_NET_RENDERTHREADS,
 	WPREF_NET_SECURITYTOKEN,
 	WPREF_NET_ALLOWRESTARTOFC4D,
-	WPREF_NET_SERVER_PORTNUMBER,
-	WPREF_NET_SERVER_REPOSITORYPATH,
+	WPREF_NET_SERVICEPORTNUMBER,
+	WPREF_NET_SERVICEREPOSITORYPATH,
 	WPREF_NET_USEBONJOUR,
 	WPREF_NET_USEENCRYPTION,
 	WPREF_NET_HANDLEWARNINGASERROR,
@@ -1204,7 +1352,7 @@ enum
 	WPREF_NET_EXCLUDECLIENTONRENDERINGERROR,
 	WPREF_NET_RENDERINGTIMEOUT,
 	WPREF_NET_ENABLETEAMRENDER,
-	EX_WPREF_NET_WEBSERVERPORT,
+	WPREF_NET_WEBSERVERPORT,
 
 	// stored in prefs but not visible
 	WPREF_NET_SHOWBUCKETMACHINECOLOR,
@@ -1216,7 +1364,30 @@ enum
 	WPREF_NET_MACHINEICONSIZE,
 	// ------------------------------
 
-	WPREF_NET_ENABLERENDERINGTIMEOUT
+	WPREF_NET_ENABLERENDERINGTIMEOUT,
+	WPREF_NET_FETCHASSETSALWAYSFROMSERVER,
+
+	WPREF_NET_ASSETCHUNKSIZE,
+	WPREF_NET_WAKEONLANFOROFFLINEMACHINES
+};
+
+enum {
+	/// Bool. Set to true if Metrics collection of information is enabled.
+	WPREF_COMMUNICATION_METRICS_ENABLE,
+	/// Bool. Set to true if Metrics collection of commands is enabled.
+	WPREF_COMMUNICATION_METRICS_ENABLE_COMMANDS,
+	/// Bool. Set to true if Metrics collection of user preferences is enabled.
+	WPREF_COMMUNICATION_METRICS_ENABLE_PREFERENCES,
+	/// Bool. Set to true if Metrics collection of system information is enabled.
+	WPREF_COMMUNICATION_METRICS_ENABLE_SYSTEM_INFO,
+	/// Bool. Set to true if the license has been accepted.
+	WPREF_COMMUNICATION_METRICS_LICENSE_ACCEPTED,
+	/// Bool. Set to true if the license has not been accepted nor denied and the decision will be later.
+	WPREF_COMMUNICATION_METRICS_ASK_ME_LATER,
+	/// Bool. Set to true if an User ID has been retrieved and data has been sent.
+	WPREF_COMMUNICATION_METRICS_ACTIVE,
+
+	WPREF_COMMUNICATION_METRICS_DUMMY
 };
 
 // mouse cursors
@@ -1308,286 +1479,332 @@ enum
 
 enum EVENT
 {
-	EVENT_0								 = 0,
-	EVENT_FORCEREDRAW			 = (1 << 0),
-	EVENT_ANIMATE					 = (1 << 1),
-	EVENT_NOEXPRESSION		 = (1 << 2),
-	EVENT_GLHACK					 = (1 << 3),
+	EVENT_0 = 0,
+	EVENT_FORCEREDRAW = (1 << 0),
+	EVENT_ANIMATE = (1 << 1),
+	EVENT_NOEXPRESSION = (1 << 2),
+	EVENT_GLHACK = (1 << 3),
 	EVENT_CAMERAEXPRESSION = (1 << 4)
 } ENUM_END_FLAGS(EVENT);
 
-// draw flags
+/// @addtogroup DRAWFLAGS
+/// @ingroup group_enumeration
+/// @{
 enum DRAWFLAGS
 {
-	DRAWFLAGS_0														= 0,
-	DRAWFLAGS_NO_THREAD										= (1 << 1),
-	DRAWFLAGS_NO_REDUCTION								= (1 << 2),
-	DRAWFLAGS_NO_ANIMATION								= (1 << 8),
-	DRAWFLAGS_ONLY_ACTIVE_VIEW						= (1 << 10),
-	DRAWFLAGS_NO_EXPRESSIONS							= (1 << 12),
-	DRAWFLAGS_INDRAG											= (1 << 13),
-	DRAWFLAGS_NO_HIGHLIGHT_PLANE					= (1 << 14),
-	DRAWFLAGS_FORCEFULLREDRAW							= (1 << 15),
-	DRAWFLAGS_ONLY_CAMERAEXPRESSION				= (1 << 16),
-	DRAWFLAGS_INMOVE											= (1 << 17),
-	DRAWFLAGS_ONLY_BASEDRAW								= (1 << 22),	// draw specific BaseDraw only
+	DRAWFLAGS_0 = 0,         ///< None.
+	DRAWFLAGS_NO_THREAD = (1 << 1),  ///< Synchronous call.
+	DRAWFLAGS_NO_REDUCTION = (1 << 2),  ///< Ignore redraw limit.
+	DRAWFLAGS_NO_ANIMATION = (1 << 8),  ///< Ignore all animation.
+	DRAWFLAGS_ONLY_ACTIVE_VIEW = (1 << 10), ///< Only redraw the active view.
+	DRAWFLAGS_NO_EXPRESSIONS = (1 << 12), ///< Ignore expressions.
+	DRAWFLAGS_INDRAG = (1 << 13), ///< In drag.
+	DRAWFLAGS_NO_HIGHLIGHT_PLANE = (1 << 14), ///< The entire view is drawn, not just the highlight plane.
+	DRAWFLAGS_FORCEFULLREDRAW = (1 << 15), ///< Force full redraw.
+	DRAWFLAGS_ONLY_CAMERAEXPRESSION = (1 << 16), ///< Camera expression.
+	DRAWFLAGS_INMOVE = (1 << 17), ///< In move.
+	DRAWFLAGS_ONLY_BASEDRAW = (1 << 22), ///< Draw specific basedraw only.
 
-	DRAWFLAGS_ONLY_HIGHLIGHT							= (1 << 18),
-	DRAWFLAGS_STATICBREAK									= (1 << 19),	// only use in combination with DRAWFLAGS_NO_THREAD
+	DRAWFLAGS_ONLY_HIGHLIGHT = (1 << 18), ///< Only highlights.
+	DRAWFLAGS_STATICBREAK = (1 << 19), ///< If the display is done in the main thread (@CDDDD only does this during animation playback) this allows that a special thread is used that polls the escape key. @note Use only in combination with ::DRAWFLAGS_NO_THREAD.
 
-	DRAWFLAGS_PRIVATE_NO_WAIT_GL_FINISHED	= (1 << 3),
-	DRAWFLAGS_PRIVATE_ONLYBACKGROUND			= (1 << 4),
-	DRAWFLAGS_PRIVATE_NOBLIT							= (1 << 9),
-	DRAWFLAGS_PRIVATE_OPENGLHACK					= (1 << 11),
-	DRAWFLAGS_PRIVATE_ONLY_PREPARE				= (1 << 21),
-	DRAWFLAGS_PRIVATE_NO_3DCLIPPING				= (1 << 24)
+	DRAWFLAGS_PRIVATE_NO_WAIT_GL_FINISHED = (1 << 3),  ///< @markPrivate
+	DRAWFLAGS_PRIVATE_ONLYBACKGROUND = (1 << 4),  ///< @markPrivate
+	DRAWFLAGS_PRIVATE_NOBLIT = (1 << 9),  ///< @markPrivate
+	DRAWFLAGS_PRIVATE_OPENGLHACK = (1 << 11), ///< @markPrivate
+	DRAWFLAGS_PRIVATE_ONLY_PREPARE = (1 << 21), ///< @markPrivate
+	DRAWFLAGS_PRIVATE_NO_3DCLIPPING = (1 << 24)  ///< @markPrivate
 } ENUM_END_FLAGS(DRAWFLAGS);
+/// @}
 
-// animate scene/object flags
+
+/// @addtogroup ANIMATEFLAGS
+/// @ingroup group_enumeration
+/// @{
+/// Animate objects flags.
+/// @see BaseDocument::AnimateObject(), AnimateNLA()
 enum ANIMATEFLAGS
 {
-	ANIMATEFLAGS_0						= 0,
-	ANIMATEFLAGS_NO_PARTICLES	= (1 << 2),
-	ANIMATEFLAGS_NO_CHILDREN	= (1 << 6),
-	ANIMATEFLAGS_INRENDER			= (1 << 7),
-	ANIMATEFLAGS_NO_MINMAX		= (1 << 8),	// private
-	ANIMATEFLAGS_NO_NLA				= (1 << 9),	// private
-	ANIMATEFLAGS_NLA_SUM			= (1 << 10)	// private
+	ANIMATEFLAGS_0 = 0,        ///< None.
+	ANIMATEFLAGS_NO_PARTICLES = (1 << 2), ///< Ignore particles.
+	ANIMATEFLAGS_NO_CHILDREN = (1 << 6), ///< Do not animate children.
+	ANIMATEFLAGS_INRENDER = (1 << 7), ///< Prepare to render scene.
+	ANIMATEFLAGS_NO_MINMAX = (1 << 8), ///< @markPrivate
+	ANIMATEFLAGS_NO_NLA = (1 << 9), ///< @markPrivate
+	ANIMATEFLAGS_NLA_SUM = (1 << 10) ///< @markPrivate
 } ENUM_END_FLAGS(ANIMATEFLAGS);
+/// @}
 
+
+/// @addtogroup SAVEDOCUMENTFLAGS
+/// @ingroup group_enumeration
+/// @{
+/// Flags for saving documents.
+/// @see SaveDocument()
 enum SAVEDOCUMENTFLAGS
 {
-	SAVEDOCUMENTFLAGS_0										= 0,
-	SAVEDOCUMENTFLAGS_DIALOGSALLOWED			= (1 << 0),
-	SAVEDOCUMENTFLAGS_SAVEAS							= (1 << 1),
-	SAVEDOCUMENTFLAGS_DONTADDTORECENTLIST	= (1 << 2),
-	SAVEDOCUMENTFLAGS_AUTOSAVE						= (1 << 3),
-	SAVEDOCUMENTFLAGS_SAVECACHES					= (1 << 4),
-	SAVEDOCUMENTFLAGS_EXPORTDIALOG				= (1 << 5),
-	SAVEDOCUMENTFLAGS_CRASHSITUATION			= (1 << 6),
-	SAVEDOCUMENTFLAGS_NO_SHADERCACHE			= (1 << 7)
+	SAVEDOCUMENTFLAGS_0 = 0,        ///< None.
+	SAVEDOCUMENTFLAGS_DIALOGSALLOWED = (1 << 0), ///< Flag to inform that a dialog can be displayed. If this flag not set then no dialogs must be opened.
+	SAVEDOCUMENTFLAGS_SAVEAS = (1 << 1), ///< Forces a "Save As" and opens the file requester.
+	SAVEDOCUMENTFLAGS_DONTADDTORECENTLIST = (1 << 2), ///< Do not add the saved document to the recent file list.
+	SAVEDOCUMENTFLAGS_AUTOSAVE = (1 << 3), ///< Sets the @em Autosave mode. Files are not added to the recent file list and the document change star will not be reset.
+	SAVEDOCUMENTFLAGS_SAVECACHES = (1 << 4), ///< For @em melange export only. Caches of objects will also be written (only supported by @CDDDD file format).
+	SAVEDOCUMENTFLAGS_EXPORTDIALOG = (1 << 5), ///< Opens the Export settings dialog.
+	SAVEDOCUMENTFLAGS_CRASHSITUATION = (1 << 6), ///< This flag is passed to the @CDDDD if a crash occurred.
+	SAVEDOCUMENTFLAGS_NO_SHADERCACHE = (1 << 7)  ///< Disables the ::SCENEFILTER_SAVE_BINARYCACHE flag.
 } ENUM_END_FLAGS(SAVEDOCUMENTFLAGS);
+/// @}
 
+
+/// @addtogroup COPYFLAGS
+/// @ingroup group_enumeration
+/// @{
+/// Flags for the copy of @CDDDD objects.
 enum COPYFLAGS
 {
-	COPYFLAGS_0																 = 0,
-	COPYFLAGS_NO_HIERARCHY										 = (1 << 2),
-	COPYFLAGS_NO_ANIMATION										 = (1 << 3),
-	COPYFLAGS_NO_BITS													 = (1 << 4),
-	COPYFLAGS_NO_MATERIALPREVIEW							 = (1 << 5),
-	COPYFLAGS_NO_BRANCHES											 = (1 << 7),
-	COPYFLAGS_DOCUMENT												 = (1 << 10),	// this flag is read-only, set when a complete document is copied
-	COPYFLAGS_NO_NGONS												 = (1 << 11),
-	COPYFLAGS_CACHE_BUILD											 = (1 << 13),	// this flags is read-only, set when a cache is built
-	COPYFLAGS_RECURSIONCHECK									 = (1 << 14),
+	COPYFLAGS_0 = 0,         ///< None.
+	COPYFLAGS_NO_HIERARCHY = (1 << 2),  ///< Copy without children.
+	COPYFLAGS_NO_ANIMATION = (1 << 3),  ///< Copy without tracks, sequences or keys.
+	COPYFLAGS_NO_BITS = (1 << 4),  ///< Do not copy BaseList2D bits.
+	COPYFLAGS_NO_MATERIALPREVIEW = (1 << 5),  ///< Do not create a new material preview.
+	COPYFLAGS_NO_BRANCHES = (1 << 7),  ///< Do not copy branches, for example tags on an object. Automatically implies ::COPYFLAGS_NO_ANIMATION, as animation is a branch.
+	COPYFLAGS_DOCUMENT = (1 << 10), ///< This is a read-only flag that is set when a complete document is copied.
+	COPYFLAGS_NO_NGONS = (1 << 11), ///< Do not copy N-gons.
+	COPYFLAGS_CACHE_BUILD = (1 << 13), ///< This is a read-only flag that is set when a cache is built.
+	COPYFLAGS_RECURSIONCHECK = (1 << 14), ///< Checks and avoids instances to cause recursions.
 
-	COPYFLAGS_PRIVATE_IDENTMARKER							 = (1 << 0),	// private
-	COPYFLAGS_PRIVATE_NO_INTERNALS						 = (1 << 8),	// private
-	COPYFLAGS_PRIVATE_NO_PLUGINLAYER					 = (1 << 9),	// private
-	COPYFLAGS_PRIVATE_UNDO										 = (1 << 12),	// private
-	COPYFLAGS_PRIVATE_CONTAINER_COPY_DIRTY		 = (1 << 15),	// private
-	COPYFLAGS_PRIVATE_CONTAINER_COPY_IDENTICAL = (1 << 16),	// private
-	COPYFLAGS_PRIVATE_NO_TAGS									 = (1 << 17),	// private
-	COPYFLAGS_PRIVATE_DELETE									 = (1 << 18),	// private
-	COPYFLAGS_PRIVATE_BODYPAINT_NODATA				 = (1 << 29),	// private
-	COPYFLAGS_PRIVATE_BODYPAINT_CONVERTLAYER	 = (1 << 30)	// private
+	COPYFLAGS_PRIVATE_IDENTMARKER = (1 << 0),  ///< @markPrivate
+	COPYFLAGS_PRIVATE_NO_INTERNALS = (1 << 8),  ///< @markPrivate
+	COPYFLAGS_PRIVATE_NO_PLUGINLAYER = (1 << 9),  ///< @markPrivate
+	COPYFLAGS_PRIVATE_UNDO = (1 << 12), ///< @markPrivate
+	COPYFLAGS_PRIVATE_CONTAINER_COPY_DIRTY = (1 << 15), ///< @markPrivate
+	COPYFLAGS_PRIVATE_CONTAINER_COPY_IDENTICAL = (1 << 16), ///< @markPrivate
+	COPYFLAGS_PRIVATE_NO_TAGS = (1 << 17), ///< @markPrivate
+	COPYFLAGS_PRIVATE_DELETE = (1 << 18), ///< @markPrivate
+	COPYFLAGS_PRIVATE_BODYPAINT_NODATA = (1 << 29), ///< @markPrivate
+	COPYFLAGS_PRIVATE_BODYPAINT_CONVERTLAYER = (1 << 30)  ///< @markPrivate
 } ENUM_END_FLAGS(COPYFLAGS);
+/// @}
 
+/// @addtogroup UNDOTYPE
+/// @ingroup group_enumeration
+/// @{
+/// Type list for document undos.
+/// @see BaseDocument::AddUndo(UNDOTYPE type, void* data, Bool allowFromThread = false), BaseDocument::FindUndoPtr(BaseList2D* bl, UNDOTYPE type)
 enum UNDOTYPE
 {
-	UNDOTYPE_0													= 0,
+	UNDOTYPE_0 = 0,    ///< None.
 
-	UNDOTYPE_CHANGE											= 40,	// complete with children
-	UNDOTYPE_CHANGE_NOCHILDREN					= 41,	// complete without children
-	UNDOTYPE_CHANGE_SMALL								= 42,	// object itself without branches
-	UNDOTYPE_CHANGE_SELECTION						= 43,	// modeling point/polygon/edge selection
+	UNDOTYPE_CHANGE = 40,   ///< Any change to an object, including hierarchy modifications; modification in positioning (object has been moved from A to B), substructures etc. (Needs to be called <b>before</b> the change.)
+	UNDOTYPE_CHANGE_NOCHILDREN = 41,   ///< Same as UNDOTYPE_CHANGE, but without child modifications. (Needs to be called <b>before</b> the change.)
+	UNDOTYPE_CHANGE_SMALL = 42,   ///< Change to local data only (e.g. data container). No substructures (e.g. no tags on an object) and no children. (Needs to be called <b>before</b> the change.)
+	UNDOTYPE_CHANGE_SELECTION = 43,   ///< Change to point/poly/edge selection only. (Needs to be called <b>before</b> the change.)
 
-	UNDOTYPE_NEW												= 44,	// new object, call InitUndo after object is inserted
-	UNDOTYPE_DELETE											= 45,	// delete object, call InitUndo before object is deleted
+	UNDOTYPE_NEW = 44,   ///< New object/material/tag etc. was created. (Needs to be called <b>after</b> action.)
+	UNDOTYPE_DELETE = 45,   ///< Object/node/tag etc. to be deleted. (Needs to be called <b>before</b> action.)
 
-	UNDOTYPE_ACTIVATE										= 46,
-	UNDOTYPE_DEACTIVATE									= 47,
+	UNDOTYPE_ACTIVATE = 46,   ///< Automatically managed by BaseDocument::SetActiveObject(), BaseDocument::SetActiveTag(), BaseDocument::SetActiveMaterial() etc. No need to use manually.
+	UNDOTYPE_DEACTIVATE = 47,   ///< Automatically managed by BaseDocument::SetActiveObject(), BaseDocument::SetActiveTag(), BaseDocument::SetActiveMaterial() etc. No need to use manually.
 
-	UNDOTYPE_BITS												= 48,
-	UNDOTYPE_HIERARCHY_PSR							= 49,	// hierarchical placement and PSR values
+	UNDOTYPE_BITS = 48,   ///< Change to object bits, e.g. selection status. (Needs to be called <b>before</b> the change.)
+	UNDOTYPE_HIERARCHY_PSR = 49,   ///< Change in hierarchical placement and PSR values. (Needs to be called <b>before</b> the change.)
 
-	UNDOTYPE_PRIVATE_STRING							= 9996,
-	UNDOTYPE_PRIVATE_MULTISELECTIONAXIS	= 9997,
-	UNDOTYPE_START											= 9998,	// private
-	UNDOTYPE_END												= 9999	// private
+	UNDOTYPE_PRIVATE_STRING = 9996, ///< @markPrivate
+	UNDOTYPE_PRIVATE_MULTISELECTIONAXIS = 9997, ///< @markPrivate
+	UNDOTYPE_START = 9998, ///< @markPrivate
+	UNDOTYPE_END = 9999  ///< @markPrivate
 } ENUM_END_LIST(UNDOTYPE);
+/// @}
 
-// handle types
+/// @addtogroup DRAWHANDLE
+/// @ingroup group_enumeration
+/// @{
+/// Handle types.
+/// @see BaseDraw::DrawHandle2D(), BaseDraw::DrawHandle()
 enum DRAWHANDLE
 {
-	DRAWHANDLE_MINI					= 0,
-	DRAWHANDLE_SMALL				= 1,
-	DRAWHANDLE_MIDDLE				= 2,
-	DRAWHANDLE_BIG					= 3,
-	DRAWHANDLE_CUSTOM				= 4,
-	DRAWHANDLE_POINTSIZE		= 5,
-	DRAWHANDLE_SELPOINTSIZE	= 6
+	DRAWHANDLE_MINI = 0, ///< Tiny point.
+	DRAWHANDLE_SMALL = 1, ///< Small point.
+	DRAWHANDLE_MIDDLE = 2, ///< Medium point.
+	DRAWHANDLE_BIG = 3, ///< Handle used by object generators and deformers.
+	DRAWHANDLE_CUSTOM = 4, ///< Custom handle.
+	DRAWHANDLE_POINTSIZE = 5, ///< Use the point size to draw the handle.
+	DRAWHANDLE_SELPOINTSIZE = 6  ///< Use the size of selected points to draw the handle.
 } ENUM_END_LIST(DRAWHANDLE);
+/// @}
 
+/// @addtogroup DRAW_ALPHA
+/// @ingroup group_enumeration
+/// @{
 enum DRAW_ALPHA
 {
-	DRAW_ALPHA_NONE							 = 10,
-	DRAW_ALPHA_INVERTED					 = 11,
-	DRAW_ALPHA_NORMAL						 = 12,	// generates alpha channel from the image's alpha channel. If no alpha channel exists, the alpha value is set to 100%
-	DRAW_ALPHA_FROM_IMAGE				 = 13,	// generates the alpha channel from the RGB image information
-	DRAW_ALPHA_NORMAL_FROM_IMAGE = 14		// generates alpha channel from the image's alpha channel. If no alpha channel exists, the alpha value is generated from the RGB imaged
+	DRAW_ALPHA_NONE = 10, ///< No alpha.
+	DRAW_ALPHA_INVERTED = 11, ///< Generates inverted alpha.
+	DRAW_ALPHA_NORMAL = 12, ///< Generates alpha channel from the image's alpha channel. If no alpha channel exists, the alpha value is set to 100%
+	DRAW_ALPHA_FROM_IMAGE = 13, ///< Generates the alpha channel from the RGB image information.
+	DRAW_ALPHA_NORMAL_FROM_IMAGE = 14  ///< Generates alpha channel from the image's alpha channel. If no alpha channel exists, the alpha value is generated from the RGB imaged.
 } ENUM_END_LIST(DRAW_ALPHA);
+/// @}
 
+/// @addtogroup DRAW_TEXTUREFLAGS
+/// @ingroup group_enumeration
+/// @{
 enum DRAW_TEXTUREFLAGS
 {
-	DRAW_TEXTUREFLAGS_0	= 0x0,
+	DRAW_TEXTUREFLAGS_0 = 0x0,                                ///< None.
 
-	// flags for DrawTexture and SetTexture
-	DRAW_TEXTUREFLAGS_COLOR_IMAGE_TO_LINEAR	= 0x00000001,	// convert from embedded profile to linear
-	DRAW_TEXTUREFLAGS_COLOR_SRGB_TO_LINEAR	= 0x00000002,	// convert from SRGB to linear
-	DRAW_TEXTUREFLAGS_COLOR_IMAGE_TO_SRGB		= 0x00000003,	// convert from embedded profile to SRGB
-	DRAW_TEXTUREFLAGS_COLOR_LINEAR_TO_SRGB	= 0x00000004,	// convert from linear to SRGB
-	DRAW_TEXTUREFLAGS_COLOR_CORRECTION_MASK	= 0x0000000f,	// color correction mask
+	DRAW_TEXTUREFLAGS_COLOR_IMAGE_TO_LINEAR = 0x00000001, ///< Converts the embedded color profile to linear color space.
+	DRAW_TEXTUREFLAGS_COLOR_SRGB_TO_LINEAR = 0x00000002, ///< Converts from sRGB color space to linear color space.
+	DRAW_TEXTUREFLAGS_COLOR_IMAGE_TO_SRGB = 0x00000003, ///< Converts the embedded color profile to sRGB color space.
+	DRAW_TEXTUREFLAGS_COLOR_LINEAR_TO_SRGB = 0x00000004, ///< Converts from linear color space to sRGB color space.
+	DRAW_TEXTUREFLAGS_COLOR_CORRECTION_MASK = 0x0000000f, ///< Color correction mask.
 
-	DRAW_TEXTUREFLAGS_USE_PROFILE_COLOR			= 0x00000010,
-	DRAW_TEXTUREFLAGS_ALLOW_FLOATINGPOINT		= 0x00000020,	//  allow floating point textures (if supported)
+	DRAW_TEXTUREFLAGS_USE_PROFILE_COLOR = 0x00000010, ///< Use color profile color.
+	DRAW_TEXTUREFLAGS_ALLOW_FLOATINGPOINT = 0x00000020, ///< Allow floating point textures (if supported).
+	DRAW_TEXTUREFLAGS_TILE = 0x00000040, ///< Allow tiling with BaseDraw::DrawTexture() (overriden in BaseDraw::SetTexture()).
 
-	// interpolation flags
-	DRAW_TEXTUREFLAGS_INTERPOLATION_NEAREST				= 0x00100000,
-	DRAW_TEXTUREFLAGS_INTERPOLATION_LINEAR				= 0x00200000,
-	DRAW_TEXTUREFLAGS_INTERPOLATION_LINEAR_MIPMAP	= 0x00400000,
-	DRAW_TEXTUREFLAGS_INTERPOLATION_MASK					= 0x00f00000
+	DRAW_TEXTUREFLAGS_INTERPOLATION_NEAREST = 0x00100000, ///< Nearest texture interpolation.
+	DRAW_TEXTUREFLAGS_INTERPOLATION_LINEAR = 0x00200000, ///< Linear texture interpolation.
+	DRAW_TEXTUREFLAGS_INTERPOLATION_LINEAR_MIPMAP = 0x00400000, ///< MIP map texture interpolation.
+	DRAW_TEXTUREFLAGS_INTERPOLATION_MASK = 0x00f00000  ///< Texture interpolation mask.
 
 } ENUM_END_FLAGS(DRAW_TEXTUREFLAGS);
+/// @}
 
 enum TOOLDRAW
 {
-	TOOLDRAW_0					= 0,
-	TOOLDRAW_HANDLES		= (1 << 0),
-	TOOLDRAW_AXIS				= (1 << 1),
-	TOOLDRAW_HIGHLIGHTS	= (1 << 2)
+	TOOLDRAW_0 = 0,
+	TOOLDRAW_HANDLES = (1 << 0),
+	TOOLDRAW_AXIS = (1 << 1),
+	TOOLDRAW_HIGHLIGHTS = (1 << 2)
 } ENUM_END_FLAGS(TOOLDRAW);
 
 enum TOOLDRAWFLAGS
 {
-	TOOLDRAWFLAGS_0					= 0,
-	TOOLDRAWFLAGS_INVERSE_Z	= (1 << 0),
-	TOOLDRAWFLAGS_HIGHLIGHT	= (1 << 1)
+	TOOLDRAWFLAGS_0 = 0,
+	TOOLDRAWFLAGS_INVERSE_Z = (1 << 0),
+	TOOLDRAWFLAGS_HIGHLIGHT = (1 << 1)
 } ENUM_END_FLAGS(TOOLDRAWFLAGS);
 
 // viewport colors
-#define VIEWCOLOR_C4DBACKGROUND				0
-#define VIEWCOLOR_FILMFORMAT					1
-#define VIEWCOLOR_HORIZON							2
-#define VIEWCOLOR_GRID_MAJOR					3
-#define VIEWCOLOR_GRID_MINOR					4
-#define VIEWCOLOR_SPLINESTART					5
-#define VIEWCOLOR_SPLINEEND						6
-#define VIEWCOLOR_CAMERA							7
-#define VIEWCOLOR_PARTICLE						8
-#define VIEWCOLOR_PMODIFIER						9
-#define DELME_VIEWCOLOR_BONE					10
-#define VIEWCOLOR_MODIFIER						11
-#define VIEWCOLOR_ACTIVEPOINT					12
-#define VIEWCOLOR_INACTIVEPOINT				13
-#define VIEWCOLOR_TANGENT							14
-#define VIEWCOLOR_ACTIVEPOLYGON				15
-#define VIEWCOLOR_INACTIVEPOLYGON			16
-#define VIEWCOLOR_TEXTURE							17
-#define VIEWCOLOR_TEXTUREAXIS					18
-#define VIEWCOLOR_ACTIVEBOX						19
-#define VIEWCOLOR_ANIMPATH						20
-#define VIEWCOLOR_XAXIS								21
-#define VIEWCOLOR_YAXIS								22
-#define VIEWCOLOR_ZAXIS								23
-#define VIEWCOLOR_WXAXIS							24
-#define VIEWCOLOR_WYAXIS							25
-#define VIEWCOLOR_WZAXIS							26
-#define VIEWCOLOR_SELECT_AXIS					27
-#define VIEWCOLOR_LAYER0							28
-#define VIEWCOLOR_LAYER1							29
-#define VIEWCOLOR_LAYER2							30
-#define VIEWCOLOR_LAYER3							31
-#define VIEWCOLOR_LAYER4							32
-#define VIEWCOLOR_LAYER5							33
-#define VIEWCOLOR_LAYER6							34
-#define VIEWCOLOR_LAYER7							35
-#define VIEWCOLOR_VERTEXSTART					36
-#define VIEWCOLOR_VERTEXEND						37
-#define VIEWCOLOR_UVMESH_GREYED				38
-#define VIEWCOLOR_UVMESH_APOLY				39
-#define VIEWCOLOR_UVMESH_IAPOLY				40
-#define VIEWCOLOR_UVMESH_APOINT				41
-#define VIEWCOLOR_UVMESH_IAPOINT			42
-#define VIEWCOLOR_NORMAL							43
-#define VIEWCOLOR_ACTIVECHILDBOX			44
-#define VIEWCOLOR_ACTIVEPOLYBOX				45
-#define VIEWCOLOR_ACTIVEPOLYCHILDBOX	46
-#define VIEWCOLOR_SELECTION_PREVIEW		47
-#define VIEWCOLOR_MEASURETOOL					48
-//#define VIEWCOLOR_AXIS_BAND						49
-#define VIEWCOLOR_SHADEDWIRE					50
-#define VIEWCOLOR_NGONLINE						51
-#define VIEWCOLOR_FRONTFACING					52
-#define VIEWCOLOR_BACKFACING					53
-#define VIEWCOLOR_MINSOFTSELECT				54
-#define VIEWCOLOR_MAXSOFTSELECT				55
-#define VIEWCOLOR_MINHNWEIGHT					56
-#define VIEWCOLOR_ZEROHNWEIGHT				57
-#define VIEWCOLOR_MAXHNWEIGHT					58
-#define VIEWCOLOR_IRR									59
-#define VIEWCOLOR_OBJECTHIGHLIGHT			60
-#define VIEWCOLOR_OBJECTSELECT				61
-#define VIEWCOLOR_C4DBACKGROUND_GRAD1	62
-#define VIEWCOLOR_C4DBACKGROUND_GRAD2	63
-#define VIEWCOLOR_BRUSHPREVIEW				64
-#define VIEWCOLOR_SPLINEHULL					65
-#define VIEWCOLOR_TOOLHANDLE					66
-#define VIEWCOLOR_ACTIVETOOLHANDLE		67
+#define VIEWCOLOR_C4DBACKGROUND								0
+#define VIEWCOLOR_FILMFORMAT									1
+#define VIEWCOLOR_HORIZON											2
+#define VIEWCOLOR_GRID_MAJOR									3
+#define VIEWCOLOR_GRID_MINOR									4
+#define VIEWCOLOR_SPLINESTART									5
+#define VIEWCOLOR_SPLINEEND										6
+#define VIEWCOLOR_CAMERA											7
+#define VIEWCOLOR_PARTICLE										8
+#define VIEWCOLOR_PMODIFIER										9
+#define DELME_VIEWCOLOR_BONE									10
+#define VIEWCOLOR_MODIFIER										11
+#define VIEWCOLOR_ACTIVEPOINT									12
+#define VIEWCOLOR_INACTIVEPOINT								13
+#define VIEWCOLOR_TANGENT											14
+#define VIEWCOLOR_ACTIVEPOLYGON								15
+#define VIEWCOLOR_INACTIVEPOLYGON							16
+#define VIEWCOLOR_TEXTURE											17
+#define VIEWCOLOR_TEXTUREAXIS									18
+#define VIEWCOLOR_ACTIVEBOX										19
+#define VIEWCOLOR_ANIMPATH										20
+#define VIEWCOLOR_XAXIS												21
+#define VIEWCOLOR_YAXIS												22
+#define VIEWCOLOR_ZAXIS												23
+#define VIEWCOLOR_WXAXIS											24
+#define VIEWCOLOR_WYAXIS											25
+#define VIEWCOLOR_WZAXIS											26
+#define VIEWCOLOR_SELECT_AXIS									27
+#define VIEWCOLOR_LAYER0											28
+#define VIEWCOLOR_LAYER1											29
+#define VIEWCOLOR_LAYER2											30
+#define VIEWCOLOR_LAYER3											31
+#define VIEWCOLOR_LAYER4											32
+#define VIEWCOLOR_LAYER5											33
+#define VIEWCOLOR_LAYER6											34
+#define VIEWCOLOR_LAYER7											35
+#define VIEWCOLOR_VERTEXSTART									36
+#define VIEWCOLOR_VERTEXEND										37
+#define VIEWCOLOR_UVMESH_GREYED								38
+#define VIEWCOLOR_UVMESH_APOLY								39
+#define VIEWCOLOR_UVMESH_IAPOLY								40
+#define VIEWCOLOR_UVMESH_APOINT								41
+#define VIEWCOLOR_UVMESH_IAPOINT							42
+#define VIEWCOLOR_NORMAL											43
+#define VIEWCOLOR_ACTIVECHILDBOX							44
+#define VIEWCOLOR_ACTIVEPOLYBOX								45
+#define VIEWCOLOR_ACTIVEPOLYCHILDBOX					46
+#define VIEWCOLOR_SELECTION_PREVIEW						47
+#define VIEWCOLOR_MEASURETOOL									48
+//#define VIEWCOLOR_AXIS_BAND										49
+#define VIEWCOLOR_SHADEDWIRE									50
+#define VIEWCOLOR_NGONLINE										51
+#define VIEWCOLOR_FRONTFACING									52
+#define VIEWCOLOR_BACKFACING									53
+#define VIEWCOLOR_MINSOFTSELECT								54
+#define VIEWCOLOR_MAXSOFTSELECT								55
+#define VIEWCOLOR_MINHNWEIGHT									56
+#define VIEWCOLOR_ZEROHNWEIGHT								57
+#define VIEWCOLOR_MAXHNWEIGHT									58
+#define VIEWCOLOR_IRR													59
+#define VIEWCOLOR_OBJECTHIGHLIGHT							60
+#define VIEWCOLOR_OBJECTSELECT								61
+#define VIEWCOLOR_C4DBACKGROUND_GRAD1					62
+#define VIEWCOLOR_C4DBACKGROUND_GRAD2					63
+#define VIEWCOLOR_BRUSHPREVIEW								64
+#define VIEWCOLOR_SPLINEHULL									65
+#define VIEWCOLOR_TOOLHANDLE									66
+#define VIEWCOLOR_ACTIVETOOLHANDLE						67
+#define VIEWCOLOR_TOOLHANDLEHIGHLIGHT					68
+#define VIEWCOLOR_TOOLHANDLE2									69
+#define VIEWCOLOR_TOOLHANDLEHIGHLIGHT2				70
+#define VIEWCOLOR_ACTIVETOOLHANDLE2						71
+#define VIEWCOLOR_TOOLSELECTION								72
+#define VIEWCOLOR_BASEGRID										73
 
-#define VIEWCOLOR_MAXCOLORS	68
+#define VIEWCOLOR_MAXCOLORS	74
 
 enum DIRTYFLAGS
 {
-	DIRTYFLAGS_0					 = 0,
-	DIRTYFLAGS_MATRIX			 = (1 << 1),	// object matrix changed
-	DIRTYFLAGS_DATA				 = (1 << 2),	// object internal data changed
-	DIRTYFLAGS_SELECT			 = (1 << 3),	// object selections changed
-	DIRTYFLAGS_CACHE			 = (1 << 4),	// object caches changed
-	DIRTYFLAGS_CHILDREN		 = (1 << 5),
+	DIRTYFLAGS_0 = 0,
+	DIRTYFLAGS_MATRIX = (1 << 1),	// object matrix changed
+	DIRTYFLAGS_DATA = (1 << 2),	// object internal data changed
+	DIRTYFLAGS_SELECT = (1 << 3),	// object selections changed
+	DIRTYFLAGS_CACHE = (1 << 4),	// object caches changed
+	DIRTYFLAGS_CHILDREN = (1 << 5),
 	DIRTYFLAGS_DESCRIPTION = (1 << 6),	// description changed
 
 	// basedocument
-	DIRTYFLAGS_SELECTION_OBJECTS	 = (1 << 20),
-	DIRTYFLAGS_SELECTION_TAGS			 = (1 << 21),
+	DIRTYFLAGS_SELECTION_OBJECTS = (1 << 20),
+	DIRTYFLAGS_SELECTION_TAGS = (1 << 21),
 	DIRTYFLAGS_SELECTION_MATERIALS = (1 << 22),
 
-	DIRTYFLAGS_ALL								 = -1
+	DIRTYFLAGS_ALL = -1
 } ENUM_END_FLAGS(DIRTYFLAGS);
 
 enum HDIRTY_ID
 {
-	HDIRTY_ID_ANIMATION				 = 0,
-	HDIRTY_ID_OBJECT					 = 1,
-	HDIRTY_ID_OBJECT_MATRIX		 = 2,
+	HDIRTY_ID_ANIMATION = 0,
+	HDIRTY_ID_OBJECT = 1,
+	HDIRTY_ID_OBJECT_MATRIX = 2,
 	HDIRTY_ID_OBJECT_HIERARCHY = 3,
-	HDIRTY_ID_TAG							 = 4,
-	HDIRTY_ID_MATERIAL				 = 5,
-	HDIRTY_ID_SHADER					 = 6,
-	HDIRTY_ID_RENDERSETTINGS	 = 7,
-	HDIRTY_ID_VP							 = 8,
-	HDIRTY_ID_FILTER					 = 9,
-	HDIRTY_ID_NBITS						 = 10,
+	HDIRTY_ID_TAG = 4,
+	HDIRTY_ID_MATERIAL = 5,
+	HDIRTY_ID_SHADER = 6,
+	HDIRTY_ID_RENDERSETTINGS = 7,
+	HDIRTY_ID_VP = 8,
+	HDIRTY_ID_FILTER = 9,
+	HDIRTY_ID_NBITS = 10,
 	HDIRTY_ID_MAX
 } ENUM_END_LIST(HDIRTY_ID);
 
 enum HDIRTYFLAGS
 {
-	HDIRTYFLAGS_0					= 0,
-	HDIRTYFLAGS_ANIMATION			= (1 << 0),
-	HDIRTYFLAGS_OBJECT				= (1 << 1),
-	HDIRTYFLAGS_OBJECT_MATRIX		= (1 << 2),
-	HDIRTYFLAGS_OBJECT_HIERARCHY	= (1 << 3),
+	HDIRTYFLAGS_0 = 0,
+	HDIRTYFLAGS_ANIMATION = (1 << 0),
+	HDIRTYFLAGS_OBJECT = (1 << 1),
+	HDIRTYFLAGS_OBJECT_MATRIX = (1 << 2),
+	HDIRTYFLAGS_OBJECT_HIERARCHY = (1 << 3),
 	HDIRTYFLAGS_TAG = (1 << 4),
 	HDIRTYFLAGS_MATERIAL = (1 << 5),
 	HDIRTYFLAGS_SHADER = (1 << 6),
@@ -1596,88 +1813,103 @@ enum HDIRTYFLAGS
 	HDIRTYFLAGS_FILTER = (1 << 9),
 	HDIRTYFLAGS_NBITS = (1 << 10),
 
-	HDIRTYFLAGS_ALL							 = -1
+	HDIRTYFLAGS_ALL = -1
 } ENUM_END_FLAGS(HDIRTYFLAGS);
 
 enum ROTATIONORDER
 {
-	ROTATIONORDER_YXZGLOBAL	=	0,
-	ROTATIONORDER_YZXGLOBAL	=	1,
-	ROTATIONORDER_ZYXGLOBAL	=	2,
-	ROTATIONORDER_ZXYGLOBAL	=	3,
-	ROTATIONORDER_XZYGLOBAL	=	4,
-	ROTATIONORDER_XYZGLOBAL	=	5,
+	ROTATIONORDER_YXZGLOBAL = 0,
+	ROTATIONORDER_YZXGLOBAL = 1,
+	ROTATIONORDER_ZYXGLOBAL = 2,
+	ROTATIONORDER_ZXYGLOBAL = 3,
+	ROTATIONORDER_XZYGLOBAL = 4,
+	ROTATIONORDER_XYZGLOBAL = 5,
 
-	ROTATIONORDER_YXZLOCAL	= 3,
-	ROTATIONORDER_YZXLOCAL	= 4,
-	ROTATIONORDER_ZYXLOCAL	= 5,
-	ROTATIONORDER_ZXYLOCAL	= 0,
-	ROTATIONORDER_XZYLOCAL	= 1,
-	ROTATIONORDER_XYZLOCAL	= 2,
+	ROTATIONORDER_YXZLOCAL = 3,
+	ROTATIONORDER_YZXLOCAL = 4,
+	ROTATIONORDER_ZYXLOCAL = 5,
+	ROTATIONORDER_ZXYLOCAL = 0,
+	ROTATIONORDER_XZYLOCAL = 1,
+	ROTATIONORDER_XYZLOCAL = 2,
 
-	ROTATIONORDER_HPB				= 6,
-	ROTATIONORDER_DEFAULT		= 6	// HPB is default
+	ROTATIONORDER_HPB = 6,
+	ROTATIONORDER_DEFAULT = 6	// HPB is default
 } ENUM_END_LIST(ROTATIONORDER);
 
+
+/// @addtogroup BUILDFLAGS
+/// @ingroup group_enumeration
+/// @{
+/// Flags for building documents and objects.
+/// @see Hierarchy::Run(), BaseDocument::ExecutePasses(), HierarchyHelp::GetBuildFlags(void)
 enum BUILDFLAGS
 {
-	BUILDFLAGS_0								= 0,
-	BUILDFLAGS_INTERNALRENDERER	= (1 << 1),
-	BUILDFLAGS_EXTERNALRENDERER	= (1 << 2),
-	BUILDFLAGS_ISOPARM					= (1 << 3)
+	BUILDFLAGS_0 = 0,        ///< None.
+	BUILDFLAGS_INTERNALRENDERER = (1 << 1), ///< Rendering in the editor.
+	BUILDFLAGS_EXTERNALRENDERER = (1 << 2), ///< Rendering externally.
+	BUILDFLAGS_ISOPARM = (1 << 3)  ///< Generate isoparm objects.
 } ENUM_END_FLAGS(BUILDFLAGS);
+/// @}
 
+/// @addtogroup EXECUTIONFLAGS
+/// @ingroup group_enumeration
+/// @{
+/// Flags for the execution of a certain point in the pipeline.
+/// @see PriorityList::Add(), ObjectData::Execute(), TagData::Execute(), SceneHookData::Execute()
 enum EXECUTIONFLAGS
 {
-	EXECUTIONFLAGS_0						 = 0,
-	EXECUTIONFLAGS_ANIMATION		 = (1 << 1),
-	EXECUTIONFLAGS_EXPRESSION		 = (1 << 2),
-	EXECUTIONFLAGS_CACHEBUILDING = (1 << 3),
-	EXECUTIONFLAGS_CAMERAONLY		 = (1 << 4),
-	EXECUTIONFLAGS_INDRAG				 = (1 << 5),
-	EXECUTIONFLAGS_INMOVE				 = (1 << 6),
-	EXECUTIONFLAGS_RENDER				 = (1 << 7)
+	EXECUTIONFLAGS_0 = 0,        ///< None.
+	EXECUTIONFLAGS_ANIMATION = (1 << 1), ///< Animation is calculated.
+	EXECUTIONFLAGS_EXPRESSION = (1 << 2), ///< Expressions are calculated.
+	EXECUTIONFLAGS_CACHEBUILDING = (1 << 3), ///< Cache building is done.
+	EXECUTIONFLAGS_CAMERAONLY = (1 << 4), ///< Only camera dependent expressions shall be executed.
+	EXECUTIONFLAGS_INDRAG = (1 << 5), ///< Pipeline is done within scrubbing.
+	EXECUTIONFLAGS_INMOVE = (1 << 6), ///< Pipeline is done within moving.
+	EXECUTIONFLAGS_RENDER = (1 << 7)  ///< The external renderer (Picture Viewer) is running.
 } ENUM_END_FLAGS(EXECUTIONFLAGS);
+/// @}
 
 enum SCENEHOOKDRAW
 {
-	SCENEHOOKDRAW_0													 = 0,
-	SCENEHOOKDRAW_DRAW_PASS									 = (1 << 0),
+	SCENEHOOKDRAW_0 = 0,
+	SCENEHOOKDRAW_DRAW_PASS = (1 << 0),
 	SCENEHOOKDRAW_HIGHLIGHT_PASS_BEFORE_TOOL = (1 << 1),
-	SCENEHOOKDRAW_HIGHLIGHT_PASS						 = (1 << 2),
-	SCENEHOOKDRAW_HIGHLIGHT_PASS_INV				 = (1 << 3),
-	SCENEHOOKDRAW_DRAW_PASS_AFTER_CLEAR			 = (1 << 4)
+	SCENEHOOKDRAW_HIGHLIGHT_PASS = (1 << 2),
+	SCENEHOOKDRAW_HIGHLIGHT_PASS_INV = (1 << 3),
+	SCENEHOOKDRAW_DRAW_PASS_AFTER_CLEAR = (1 << 4)
 } ENUM_END_FLAGS(SCENEHOOKDRAW);
 
 // flags for GetDescription
 enum DESCFLAGS_DESC
 {
-	DESCFLAGS_DESC_0									 = 0,
+	DESCFLAGS_DESC_0 = 0,
 	DESCFLAGS_DESC_RESOLVEMULTIPLEDATA = (1 << 0),
-	DESCFLAGS_DESC_LOADED							 = (1 << 1),
-	DESCFLAGS_DESC_RECURSIONLOCK			 = (1 << 2),
-	DESCFLAGS_DESC_DONTLOADDEFAULT		 = (1 << 3),	// internal: used for old plugintools
-	DESCFLAGS_DESC_MAPTAGS						 = (1 << 4),
-	DESCFLAGS_DESC_NEEDDEFAULTVALUE		 = (1 << 5)		// DESC_DEFAULT needed
+	DESCFLAGS_DESC_LOADED = (1 << 1),
+	DESCFLAGS_DESC_RECURSIONLOCK = (1 << 2),
+	DESCFLAGS_DESC_DONTLOADDEFAULT = (1 << 3),	// internal: used for old plugintools
+	DESCFLAGS_DESC_MAPTAGS = (1 << 4),
+	DESCFLAGS_DESC_NEEDDEFAULTVALUE = (1 << 5),	// DESC_DEFAULT needed
+	DESCFLAGS_DESC_TRISTATE = (1 << 6), // internal: set when two or more objects are shown
+	DESCFLAGS_DESC_EXPORTHELPSYMBOLSMODE = (1 << 7),	// internal: used for help file symbol generator export
 } ENUM_END_FLAGS(DESCFLAGS_DESC);
 
 // flags for GetDParameter/SetDParameter
 enum DESCFLAGS_GET
 {
-	DESCFLAGS_GET_0											= 0,
-	DESCFLAGS_GET_PARAM_GET							= (1 << 1),
-	DESCFLAGS_GET_NO_GLOBALDATA					= (1 << 4),
-	DESCFLAGS_GET_NO_GEDATADEFAULTVALUE	= (1 << 5)
+	DESCFLAGS_GET_0 = 0,
+	DESCFLAGS_GET_PARAM_GET = (1 << 1),
+	DESCFLAGS_GET_NO_GLOBALDATA = (1 << 4),
+	DESCFLAGS_GET_NO_GEDATADEFAULTVALUE = (1 << 5)
 } ENUM_END_FLAGS(DESCFLAGS_GET);
 
 enum DESCFLAGS_SET
 {
-	DESCFLAGS_SET_0											= 0,
-	DESCFLAGS_SET_PARAM_SET							= (1 << 1),
-	DESCFLAGS_SET_USERINTERACTION				= (1 << 2),
-	DESCFLAGS_SET_DONTCHECKMINMAX				= (1 << 3),
-	DESCFLAGS_SET_DONTAFFECTINHERITANCE	= (1 << 6),	// for render settings and post effects only (SetParameter)
-	DESCFLAGS_SET_FORCESET							= (1 << 7)	// SetParameter: force the set value without GetParameter/Compare, use only for calls where you for sure changed the value!
+	DESCFLAGS_SET_0 = 0,
+	DESCFLAGS_SET_PARAM_SET = (1 << 1),
+	DESCFLAGS_SET_USERINTERACTION = (1 << 2),
+	DESCFLAGS_SET_DONTCHECKMINMAX = (1 << 3),
+	DESCFLAGS_SET_DONTAFFECTINHERITANCE = (1 << 6),	// for render settings and post effects only (SetParameter)
+	DESCFLAGS_SET_FORCESET = (1 << 7)	// SetParameter: force the set value without GetParameter/Compare, use only for calls where you for sure changed the value!
 } ENUM_END_FLAGS(DESCFLAGS_SET);
 
 enum DESCFLAGS_ENABLE
@@ -1687,10 +1919,10 @@ enum DESCFLAGS_ENABLE
 
 enum HIERARCHYCLONEFLAGS
 {
-	HIERARCHYCLONEFLAGS_0				 = 0,
-	HIERARCHYCLONEFLAGS_ASIS		 = (1 << 0),
-	HIERARCHYCLONEFLAGS_ASPOLY	 = (1 << 1),
-	HIERARCHYCLONEFLAGS_ASLINE	 = (1 << 2),
+	HIERARCHYCLONEFLAGS_0 = 0,
+	HIERARCHYCLONEFLAGS_ASIS = (1 << 0),
+	HIERARCHYCLONEFLAGS_ASPOLY = (1 << 1),
+	HIERARCHYCLONEFLAGS_ASLINE = (1 << 2),
 	HIERARCHYCLONEFLAGS_ASSPLINE = (1 << 3)
 } ENUM_END_FLAGS(HIERARCHYCLONEFLAGS);
 
@@ -1698,111 +1930,125 @@ enum HIERARCHYCLONEFLAGS
 enum CHECKVALUEFORMAT
 {
 	CHECKVALUEFORMAT_NOTHING = 0,
-	CHECKVALUEFORMAT_DEGREE	 = 1,
+	CHECKVALUEFORMAT_DEGREE = 1,
 	CHECKVALUEFORMAT_PERCENT = 2,
-	CHECKVALUEFORMAT_METER	 = 3,
-	CHECKVALUEFORMAT_INT		 = 5
+	CHECKVALUEFORMAT_METER = 3,
+	CHECKVALUEFORMAT_INT = 5
 } ENUM_END_LIST(CHECKVALUEFORMAT);
 
 enum CHECKVALUERANGE
 {
-	CHECKVALUERANGE_GREATER					= 0,
-	CHECKVALUERANGE_GREATEROREQUAL	= 1,
-	CHECKVALUERANGE_LESS						= 2,
-	CHECKVALUERANGE_LESSOREQUAL			= 3,
-	CHECKVALUERANGE_BETWEEN					= 4,
-	CHECKVALUERANGE_BETWEENOREQUAL	= 5,
-	CHECKVALUERANGE_BETWEENOREQUALX	= 6,
-	CHECKVALUERANGE_BETWEENOREQUALY	= 7,
-	CHECKVALUERANGE_DIFFERENT				= 8
+	CHECKVALUERANGE_GREATER = 0,
+	CHECKVALUERANGE_GREATEROREQUAL = 1,
+	CHECKVALUERANGE_LESS = 2,
+	CHECKVALUERANGE_LESSOREQUAL = 3,
+	CHECKVALUERANGE_BETWEEN = 4,
+	CHECKVALUERANGE_BETWEENOREQUAL = 5,
+	CHECKVALUERANGE_BETWEENOREQUALX = 6,
+	CHECKVALUERANGE_BETWEENOREQUALY = 7,
+	CHECKVALUERANGE_DIFFERENT = 8
 } ENUM_END_LIST(CHECKVALUERANGE);
 
 // paintmesh bits
 enum PAINTMESHFLAGS
 {
-	PAINTMESHFLAGS_0				= 0,
+	PAINTMESHFLAGS_0 = 0,
 
-	PAINTMESHFLAGS_QUAD			= (1 << 1),		// polygon is quadrangle
-	PAINTMESHFLAGS_SEL			= (1 << 6),		// polygon selected
+	PAINTMESHFLAGS_QUAD = (1 << 1),		// polygon is quadrangle
+	PAINTMESHFLAGS_SEL = (1 << 6),		// polygon selected
 
-	PAINTMESHFLAGS_SELA			= (1 << 2),		// point a selected
-	PAINTMESHFLAGS_SELB			= (1 << 3),		// point b selected
-	PAINTMESHFLAGS_SELC			= (1 << 4),		// point c selected
-	PAINTMESHFLAGS_SELD			= (1 << 5),		// point d selected
+	PAINTMESHFLAGS_SELA = (1 << 2),		// point a selected
+	PAINTMESHFLAGS_SELB = (1 << 3),		// point b selected
+	PAINTMESHFLAGS_SELC = (1 << 4),		// point c selected
+	PAINTMESHFLAGS_SELD = (1 << 5),		// point d selected
 
-	PAINTMESHFLAGS_TA				= (1 << 7),		// temporary selection for link mode
-	PAINTMESHFLAGS_TB				= (1 << 8),		// temporary selection for link mode
-	PAINTMESHFLAGS_TC				= (1 << 9),		// temporary selection for link mode
-	PAINTMESHFLAGS_TD				= (1 << 10),	// temporary selection for link mode
+	PAINTMESHFLAGS_TA = (1 << 7),		// temporary selection for link mode
+	PAINTMESHFLAGS_TB = (1 << 8),		// temporary selection for link mode
+	PAINTMESHFLAGS_TC = (1 << 9),		// temporary selection for link mode
+	PAINTMESHFLAGS_TD = (1 << 10),	// temporary selection for link mode
 
 	PAINTMESHFLAGS_INACTIVE = (1 << 11),	// no draw no change possible
 
-	PAINTMESHFLAGS_EDGEA		= (1 << 12),	// edge a is ngonline
-	PAINTMESHFLAGS_EDGEB		= (1 << 13),	// edge b is ngonline
-	PAINTMESHFLAGS_EDGEC		= (1 << 14),	// edge c is ngonline
-	PAINTMESHFLAGS_EDGED		= (1 << 15)		// edge d is ngonline
+	PAINTMESHFLAGS_EDGEA = (1 << 12),	// edge a is ngonline
+	PAINTMESHFLAGS_EDGEB = (1 << 13),	// edge b is ngonline
+	PAINTMESHFLAGS_EDGEC = (1 << 14),	// edge c is ngonline
+	PAINTMESHFLAGS_EDGED = (1 << 15)		// edge d is ngonline
 } ENUM_END_FLAGS(PAINTMESHFLAGS);
 
 enum GETBRANCHINFO
 {
-	GETBRANCHINFO_0								 = 0,
+	GETBRANCHINFO_0 = 0,
 	GETBRANCHINFO_ONLYWITHCHILDREN = (1 << 1),
-	GETBRANCHINFO_GELISTNODES			 = (1 << 3),
-	GETBRANCHINFO_ONLYMODIFIABLE	 = (1 << 4)
+	GETBRANCHINFO_GELISTNODES = (1 << 3),
+	GETBRANCHINFO_ONLYMODIFIABLE = (1 << 4)
 } ENUM_END_FLAGS(GETBRANCHINFO);
 
 enum BRANCHINFOFLAGS
 {
-	BRANCHINFOFLAGS_0							 = 0,
-	BRANCHINFOFLAGS_ANIMATE				 = (1 << 0),
+	BRANCHINFOFLAGS_0 = 0,
+	BRANCHINFOFLAGS_ANIMATE = (1 << 0),
 	BRANCHINFOFLAGS_HIDEINTIMELINE = (1 << 4),
 } ENUM_END_FLAGS(BRANCHINFOFLAGS);
 
+/// @addtogroup GETACTIVEOBJECTFLAGS
+/// @ingroup group_enumeration
+/// @{
+/// Flags for BaseDocument::GetActiveObjects().
 enum GETACTIVEOBJECTFLAGS
 {
-	GETACTIVEOBJECTFLAGS_0							= 0,
-	GETACTIVEOBJECTFLAGS_CHILDREN				= (1 << 0),
-	GETACTIVEOBJECTFLAGS_SELECTIONORDER	= (1 << 1)
+	GETACTIVEOBJECTFLAGS_0 = 0,
+	GETACTIVEOBJECTFLAGS_CHILDREN = (1 << 0),
+	GETACTIVEOBJECTFLAGS_SELECTIONORDER = (1 << 1)
 } ENUM_END_FLAGS(GETACTIVEOBJECTFLAGS);
+/// @}
 
+/// @addtogroup DRAWPASS
+/// @ingroup group_enumeration
+/// @{
 enum DRAWPASS
 {
-	DRAWPASS_OBJECT			= 0,
-	DRAWPASS_BOX				= 1,
-	DRAWPASS_HANDLES		= 2,
-	DRAWPASS_HIGHLIGHTS	= 3,
-	DRAWPASS_XRAY				= 4
+	DRAWPASS_OBJECT = 0, ///< Object pass.
+	DRAWPASS_BOX = 1, ///< Box pass.
+	DRAWPASS_HANDLES = 2, ///< Handle pass.
+	DRAWPASS_HIGHLIGHTS = 3, ///< Highlight pass.
+	DRAWPASS_XRAY = 4  ///< X-Ray pass.
 } ENUM_END_LIST(DRAWPASS);
+/// @}
 
-// im-/export formats
-#define FORMAT_PREF	1000
-#define FORMAT_WAV	1018
-#define FORMAT_L4D	1020
-#define FORMAT_P4D	1022
+/// @addtogroup FORMAT
+/// @ingroup group_enumeration
+/// @{
+/// Import/export formats.
 
-#define FORMAT_C4DIMPORT	 1001025
-#define FORMAT_C4DEXPORT	 1001026
-#define FORMAT_XMLIMPORT	 1001027
-#define FORMAT_XMLEXPORT	 1001028
-#define FORMAT_C4D4IMPORT	 1001029
-#define FORMAT_C4D5IMPORT	 1001030
-#define FORMAT_VRML1IMPORT 1001031
-#define FORMAT_VRML1EXPORT 1001032
-#define FORMAT_VRML2IMPORT 1001033
-#define FORMAT_VRML2EXPORT 1001034
-#define FORMAT_DXFIMPORT	 1001035
-#define FORMAT_DXFEXPORT	 1001036
-#define FORMAT_3DSIMPORT	 1001037
-#define FORMAT_3DSEXPORT	 1001038
-#define FORMAT_OBJIMPORT	 1001039
-#define FORMAT_OBJEXPORT	 1001040
-#define FORMAT_Q3DIMPORT	 1001041
-#define FORMAT_Q3DEXPORT	 1001042
-#define FORMAT_LWSIMPORT	 1001043
-#define FORMAT_LWOIMPORT	 1001044
-#define FORMAT_AIIMPORT		 1001045
-#define FORMAT_DEMIMPORT	 1001046
-#define FORMAT_D3DEXPORT	 1001047
+#define FORMAT_PREF	1000 ///< Preference.
+#define FORMAT_WAV	1018 ///< @markTODO
+#define FORMAT_L4D	1020 ///< Layout.
+#define FORMAT_P4D	1022 ///< @markTODO
+
+#define FORMAT_C4DIMPORT	 1001025 ///< @CDDDD import.
+#define FORMAT_C4DEXPORT	 1001026 ///< @CDDDD export.
+#define FORMAT_XMLIMPORT	 1001027 ///< @CDDDD XML import.
+#define FORMAT_XMLEXPORT	 1001028 ///< @CDDDD XML export.
+#define FORMAT_C4D4IMPORT	 1001029 ///< @CDDDD R4 import.
+#define FORMAT_C4D5IMPORT	 1001030 ///< @CDDDD R5 import.
+#define FORMAT_VRML1IMPORT 1001031 ///< VRML 1 import.
+#define FORMAT_VRML1EXPORT 1001032 ///< VRML 1 export.
+#define FORMAT_VRML2IMPORT 1001033 ///< VRML 2 import.
+#define FORMAT_VRML2EXPORT 1001034 ///< VRML 2 export.
+#define FORMAT_DXFIMPORT	 1001035 ///< DXF import.
+#define FORMAT_DXFEXPORT	 1001036 ///< DXF export.
+#define FORMAT_3DSIMPORT	 1001037 ///< 3DS import.
+#define FORMAT_3DSEXPORT	 1001038 ///< 3DS export.
+#define FORMAT_OBJIMPORT	 1001039 ///< OBJ import.
+#define FORMAT_OBJEXPORT	 1001040 ///< OBJ export.
+#define FORMAT_Q3DIMPORT	 1001041 ///< QuickDraw 3D import.
+#define FORMAT_Q3DEXPORT	 1001042 ///< QuickDraw 3D export.
+#define FORMAT_LWSIMPORT	 1001043 ///< LWS import.
+#define FORMAT_LWOIMPORT	 1001044 ///< LWO import.
+#define FORMAT_AIIMPORT		 1001045 ///< AI import.
+#define FORMAT_DEMIMPORT	 1001046 ///< DEM import.
+#define FORMAT_D3DEXPORT	 1001047 ///< Direct3D import.
+/// @}
 
 #define HIGHLIGHT_TRANSPARENCY -140
 
@@ -1814,35 +2060,42 @@ enum DRAWPASS
 #define DELETE_GL_HAS_ROOT 1
 #define DELETE_GL_IS_ROOT	 2
 
+
+/// @addtogroup SAVEPROJECT
+/// @ingroup group_enumeration
+/// @{
+/// Flags for SaveProject().
 enum SAVEPROJECT
 {
-	SAVEPROJECT_0													  = 0,
-	SAVEPROJECT_ASSETS											= (1 << 1),	// Pass if the assets will be taken into account
-	SAVEPROJECT_SCENEFILE										= (1 << 2),	// Pass if the scene will be taken into account
-	SAVEPROJECT_DIALOGSALLOWED							= (1 << 3),	// Show dialogs like error messages, a file selection for missing assets or alerts if necessary
-	SAVEPROJECT_SHOWMISSINGASSETDIALOG			= (1 << 4),	// If an asset is missing show a warning dialog - flag can be set without SAVEPROJECT_DIALOGSALLOWED
-	SAVEPROJECT_ADDTORECENTLIST							= (1 << 5),	// Add document to the recent list
-	SAVEPROJECT_DONTCOPYFILES								= (1 << 6),	// Does the same as without this flag but doesn't copy the files to the destination - used to simulate the function
-	SAVEPROJECT_PROGRESSALLOWED							= (1 << 7),	// Show the progress bar in the main window
-	SAVEPROJECT_DONTTOUCHDOCUMENT						= (1 << 8),	// Document will be in the same state as before the call was made
-	SAVEPROJECT_DONTFAILONMISSINGASSETS			= (1 << 9),	// If this flag is passed, the function does not fail anymore when assets are missing.
-	SAVEPROJECT_ISNET												= (1 << 10), // Private - is set only if the net module is collecting assets
-	SAVEPROJECT_USEDOCUMENTNAMEASFILENAME		= (1 << 11)
+	SAVEPROJECT_0 = 0,         ///< None.
+	SAVEPROJECT_ASSETS = (1 << 1),  ///< Pass if the assets will be taken into account.
+	SAVEPROJECT_SCENEFILE = (1 << 2),  ///< Pass if the scene will be taken into account.
+	SAVEPROJECT_DIALOGSALLOWED = (1 << 3),  ///< Show dialogs like error messages, a file selection for missing assets or alerts if necessary.
+	SAVEPROJECT_SHOWMISSINGASSETDIALOG = (1 << 4),  ///< If an asset is missing show a warning dialog. Flag can be set without ::SAVEPROJECT_DIALOGSALLOWED.
+	SAVEPROJECT_ADDTORECENTLIST = (1 << 5),  ///< Add document to the recent list.
+	SAVEPROJECT_DONTCOPYFILES = (1 << 6),  ///< Does the same as without this flag but does not copy the files to the destination. Flag used to simulate the function.
+	SAVEPROJECT_PROGRESSALLOWED = (1 << 7),  ///< Show the progress bar in the main window.
+	SAVEPROJECT_DONTTOUCHDOCUMENT = (1 << 8),  ///< Document will be in the same state as before the call was made.
+	SAVEPROJECT_DONTFAILONMISSINGASSETS = (1 << 9),  ///< If this flag is passed, the function does not fail anymore when assets are missing.
+	SAVEPROJECT_ISNET = (1 << 10), ///< @markPrivate. Set only if NET module is collecting assets.
+	SAVEPROJECT_USEDOCUMENTNAMEASFILENAME = (1 << 11), ///< Use the document name as the file name to save as project.
+	SAVEPROJECT_DONTCLEARSUGGESTEDFOLDER = (1 << 12)  ///< Don't change asset paths of nodes
 } ENUM_END_FLAGS(SAVEPROJECT);
+/// @}
 
 enum ICONDATAFLAGS
 {
-	ICONDATAFLAGS_0									= 0,
-	ICONDATAFLAGS_APPLYCOLORPROFILE	= (1 << 0),
-	ICONDATAFLAGS_DISABLED					= (1 << 1)
+	ICONDATAFLAGS_0 = 0,
+	ICONDATAFLAGS_APPLYCOLORPROFILE = (1 << 0),
+	ICONDATAFLAGS_DISABLED = (1 << 1)
 }
 ENUM_END_FLAGS(ICONDATAFLAGS);
 
 // userarea flags
 enum USERAREAFLAGS
 {
-	USERAREA_0					 = (0),
-	USERAREA_TABSTOP		 = (1 << 0),
+	USERAREA_0 = (0),
+	USERAREA_TABSTOP = (1 << 0),
 	USERAREA_HANDLEFOCUS = (1 << 1),
 	USERAREA_COREMESSAGE = (1 << 2),
 	USERAREA_SYNCMESSAGE = (1 << 3),
@@ -1874,6 +2127,7 @@ enum USERAREAFLAGS
 #define	RESOURCEIMAGE_KEYFRAME_BUTTON_UP				 440000141
 #define	RESOURCEIMAGE_KEYFRAME_BUTTON_OVER			 440000142
 #define	RESOURCEIMAGE_KEYFRAME_BUTTON_DOWN			 440000143
+#define RESOURCEIMAGE_KEYFRAME_BUTTON_EDGE			 440000178
 #define RESOURCEIMAGE_PIN												 9000
 #define RESOURCEIMAGE_SUBGROUP									 12678
 #define RESOURCEIMAGE_UNLOCKED									 12679
@@ -2038,240 +2292,252 @@ enum USERAREAFLAGS
 
 #ifndef __API_INTERN__
 
-	#define HOTKEY_CAMERA_MOVE	 13563
-	#define HOTKEY_CAMERA_SCALE	 13564
-	#define HOTKEY_CAMERA_ROTATE 13565
+#define HOTKEY_CAMERA_MOVE	 13563
+#define HOTKEY_CAMERA_SCALE	 13564
+#define HOTKEY_CAMERA_ROTATE 13565
 
-	#define HOTKEY_OBJECT_MOVE	 13566
-	#define HOTKEY_OBJECT_SCALE	 13567
-	#define HOTKEY_OBJECT_ROTATE 13568
+#define HOTKEY_OBJECT_MOVE	 13566
+#define HOTKEY_OBJECT_SCALE	 13567
+#define HOTKEY_OBJECT_ROTATE 13568
 
-	#define HOTKEY_MODEL_SCALE 13569
-	#define HOTKEY_ZOOM				 13570
-	#define HOTKEY_SELECT_FREE 13571
-	#define HOTKEY_SELECT_LIVE 13572
-	#define HOTKEY_SELECT_RECT 13573
+#define HOTKEY_MODEL_SCALE 13569
+#define HOTKEY_ZOOM				 13570
+#define HOTKEY_SELECT_FREE 13571
+#define HOTKEY_SELECT_LIVE 13572
+#define HOTKEY_SELECT_RECT 13573
 
-	#define HOTKEY_PARENT_MOVE 440000088
+#define HOTKEY_PARENT_MOVE 440000088
 
-	#define IDM_UNDO			 12105
-	#define IDM_REDO			 12297
-	#define IDM_CUT				 12106
-	#define IDM_COPY			 12107
-	#define IDM_PASTE			 12108
-	#define IDM_DELETE		 12109
-	#define IDM_SELECTALL	 12112
-	#define IDM_SELECTNONE 12113
-	#define IDM_INVERSION	 12374
-	#define IDM_KEY_LAST	 12415
-	#define IDM_KEY_NEXT	 12416
+#define IDM_UNDO			 12105
+#define IDM_REDO			 12297
+#define IDM_CUT				 12106
+#define IDM_COPY			 12107
+#define IDM_PASTE			 12108
+#define IDM_DELETE		 12109
+#define IDM_SELECTALL	 12112
+#define IDM_SELECTNONE 12113
+#define IDM_INVERSION	 12374
+#define IDM_KEY_LAST	 12415
+#define IDM_KEY_NEXT	 12416
 
 #endif
 
-// predefined calling points for tags and scene hooks
-#define	EXECUTIONPRIORITY_INITIAL				1000
-#define EXECUTIONPRIORITY_ANIMATION			2000
-#define EXECUTIONPRIORITY_ANIMATION_NLA	2010
-#define EXECUTIONPRIORITY_EXPRESSION		3000
-#define EXECUTIONPRIORITY_DYNAMICS			4000
-#define EXECUTIONPRIORITY_GENERATOR			5000
+/// @addtogroup EXECUTIONPRIORITY
+/// @ingroup group_enumeration
+/// @{
+/// Predefined calling points for tags and scene hooks.
+/// @see PriorityList::Add(), ObjectData::Execute(), TagData::Execute(), SceneHookData::Execute()
+#define EXECUTIONPRIORITY_INITIAL       1000 ///< Initial.
+#define EXECUTIONPRIORITY_ANIMATION     2000 ///< Animation.
+#define EXECUTIONPRIORITY_ANIMATION_NLA 2010 ///< NLA.
+#define EXECUTIONPRIORITY_EXPRESSION    3000 ///< Expression.
+#define EXECUTIONPRIORITY_DYNAMICS      4000 ///< Dynamics.
+#define EXECUTIONPRIORITY_GENERATOR     5000 ///< Generators.
+/// @}
 
 enum EXECUTIONRESULT
 {
-	EXECUTIONRESULT_OK					= 0,
-	EXECUTIONRESULT_USERBREAK		= 1,
-	EXECUTIONRESULT_OUTOFMEMORY	= 2
+	EXECUTIONRESULT_OK = 0,
+	EXECUTIONRESULT_USERBREAK = 1,
+	EXECUTIONRESULT_OUTOFMEMORY = 2
 } ENUM_END_LIST(EXECUTIONRESULT);
 
 enum
 {
-	DLG_OK		 = 1,
+	DLG_OK = 1,
 	DLG_CANCEL = 2
 };
 
+
+/// @addtogroup IMAGERESULT
+/// @ingroup group_enumeration
+/// @{
+/// Results for image initialization, open, save etc.
 enum IMAGERESULT
 {
-	IMAGERESULT_OK						=  1,
-	IMAGERESULT_NOTEXISTING		= -1,
-	IMAGERESULT_WRONGTYPE			= -2,
-	IMAGERESULT_OUTOFMEMORY		= -3,
-	IMAGERESULT_FILEERROR			= -4,
-	IMAGERESULT_FILESTRUCTURE	= -5,
-	IMAGERESULT_MISC_ERROR		= -6,
-	IMAGERESULT_PARAM_ERROR		= -7
+	IMAGERESULT_OK = 1, ///< Image loaded/created.
+	IMAGERESULT_NOTEXISTING = -1, ///< Image does not exist.
+	IMAGERESULT_WRONGTYPE = -2, ///< Image has the wrong type.
+	IMAGERESULT_OUTOFMEMORY = -3, ///< Not enough memory.
+	IMAGERESULT_FILEERROR = -4, ///< File error.
+	IMAGERESULT_FILESTRUCTURE = -5, ///< Invalid file structure.
+	IMAGERESULT_MISC_ERROR = -6, ///< Unknown error.
+	IMAGERESULT_PARAM_ERROR = -7  ///< Parameter error.
 } ENUM_END_LIST(IMAGERESULT);
+/// @}
+
 
 enum STRINGENCODING
 {
-	STRINGENCODING_XBIT		 = 0,
-	STRINGENCODING_8BIT		 = 1,
-	STRINGENCODING_7BIT		 = 2,
+	STRINGENCODING_XBIT = 0,
+	STRINGENCODING_8BIT = 1,
+	STRINGENCODING_7BIT = 2,
 	STRINGENCODING_7BITHEX = 3,
-	STRINGENCODING_UTF8		 = 4,
-	STRINGENCODING_HTML		 = 5
+	STRINGENCODING_UTF8 = 4,
+	STRINGENCODING_HTML = 5
 } ENUM_END_LIST(STRINGENCODING);
 
 enum THREADMODE
 {
-	THREADMODE_SYNCHRONOUS = 0,
-	THREADMODE_ASYNC			 = 1
+	THREADMODE_DEPRECATED_SYNCHRONOUS = 0,
+	THREADMODE_ASYNC = 1
 } ENUM_END_LIST(THREADMODE);
 
 enum THREADPRIORITY
 {
-	THREADPRIORITY_NORMAL	= 0,
-	THREADPRIORITY_ABOVE	= 1000,
-	THREADPRIORITY_BELOW	= 1001,
-	THREADPRIORITY_LOWEST	= 1002
+	THREADPRIORITY_NORMAL = 0,
+	THREADPRIORITY_ABOVE = 1000,
+	THREADPRIORITY_BELOW = 1001,
+	THREADPRIORITY_LOWEST = 1002
 } ENUM_END_LIST(THREADPRIORITY);
 
 enum HYPERFILEARRAY
 {
-	HYPERFILEARRAY_CHAR	 = 1,
-	HYPERFILEARRAY_WORD	 = 2,
-	HYPERFILEARRAY_LONG	 = 3,
+	HYPERFILEARRAY_CHAR = 1,
+	HYPERFILEARRAY_WORD = 2,
+	HYPERFILEARRAY_LONG = 3,
 	HYPERFILEARRAY_LLONG = 4,
 	HYPERFILEARRAY_SREAL = 5,
 	HYPERFILEARRAY_LREAL = 6,
-	HYPERFILEARRAY_REAL	 = 7
+	HYPERFILEARRAY_REAL = 7
 } ENUM_END_LIST(HYPERFILEARRAY);
 
 enum FILEERROR
 {
-	FILEERROR_NONE				=  0,	// no error
-	FILEERROR_OPEN				= -1,	// problems opening the file
-	FILEERROR_CLOSE				= -2,	// problems closing the file
-	FILEERROR_READ				= -3,	// problems reading the file
-	FILEERROR_WRITE				= -4,	// problems writing the file
-	FILEERROR_SEEK				= -5,	// problems seeking the file
-	FILEERROR_INVALID			= -6,	// invalid parameter or operation (e.g. writing in read-mode)
-	FILEERROR_OUTOFMEMORY	= -7,	// not enough memory
-	FILEERROR_USERBREAK		= -8,	// user break
+	FILEERROR_NONE = 0,	// no error
+	FILEERROR_OPEN = -1,	// problems opening the file
+	FILEERROR_CLOSE = -2,	// problems closing the file
+	FILEERROR_READ = -3,	// problems reading the file
+	FILEERROR_WRITE = -4,	// problems writing the file
+	FILEERROR_SEEK = -5,	// problems seeking the file
+	FILEERROR_INVALID = -6,	// invalid parameter or operation (e.g. writing in read-mode)
+	FILEERROR_OUTOFMEMORY = -7,	// not enough memory
+	FILEERROR_USERBREAK = -8,	// user break
 
 	// the following values can only occur in HyperFiles
-	FILEERROR_WRONG_VALUE		 = -100,	// other value detected than expected
-	FILEERROR_CHUNK_NUMBER	 = -102,	// wrong number of chunks or sub chunks detected
+	FILEERROR_WRONG_VALUE = -100,	// other value detected than expected
+	FILEERROR_CHUNK_NUMBER = -102,	// wrong number of chunks or sub chunks detected
 	FILEERROR_VALUE_NO_CHUNK = -103,	// there was a value without any enclosing START/STOP chunks
-	FILEERROR_FILE_END			 = -104,	// the file end was reached without finishing reading
-	FILEERROR_UNKNOWN_VALUE	 = -105		// unknown value detected
+	FILEERROR_FILE_END = -104,	// the file end was reached without finishing reading
+	FILEERROR_UNKNOWN_VALUE = -105		// unknown value detected
 } ENUM_END_LIST(FILEERROR);
 
 enum FILEOPEN
 {
-	FILEOPEN_APPEND				= 0,
-	FILEOPEN_READ					= 1,
-	FILEOPEN_WRITE				= 2,
-	FILEOPEN_READWRITE		= 3,
-	FILEOPEN_READ_NOCACHE	= 4,
-	FILEOPEN_SHAREDREAD		= 5,
-	FILEOPEN_SHAREDWRITE	= 6
+	FILEOPEN_APPEND = 0,
+	FILEOPEN_READ = 1,
+	FILEOPEN_WRITE = 2,
+	FILEOPEN_READWRITE = 3,
+	FILEOPEN_READ_NOCACHE = 4,
+	FILEOPEN_SHAREDREAD = 5,
+	FILEOPEN_SHAREDWRITE = 6
 } ENUM_END_LIST(FILEOPEN);
 
 enum LOCATION
 {
-	LOCATION_DISK					= 1,	// real storage
+	LOCATION_DISK = 1,	// real storage
 	LOCATION_IPCONNECTION = 2,	// target is ip connection
-	LOCATION_MEMORY				= 3		// target is a memory location
+	LOCATION_MEMORY = 3		// target is a memory location
 } ENUM_END_LIST(LOCATION);
 
 enum FILESEEK
 {
-	FILESEEK_START		= 0,
-	FILESEEK_RELATIVE	= 2
+	FILESEEK_START = 0,
+	FILESEEK_RELATIVE = 2
 } ENUM_END_LIST(FILESEEK);
 
 enum FILEDIALOG
 {
-	FILEDIALOG_NONE				= 0,
-	FILEDIALOG_ANY				= 1,
-	FILEDIALOG_IGNOREOPEN	= 2
+	FILEDIALOG_NONE = 0,
+	FILEDIALOG_ANY = 1,
+	FILEDIALOG_IGNOREOPEN = 2
 } ENUM_END_LIST(FILEDIALOG);
 
 enum FILESELECT
 {
-	FILESELECT_LOAD			 = 0,
-	FILESELECT_SAVE			 = 1,
+	FILESELECT_LOAD = 0,
+	FILESELECT_SAVE = 1,
 	FILESELECT_DIRECTORY = 2
 } ENUM_END_LIST(FILESELECT);
 
 enum FILESELECTTYPE
 {
-	FILESELECTTYPE_ANYTHING	 = 0,
-	FILESELECTTYPE_IMAGES		 = 1,
-	FILESELECTTYPE_SCENES		 = 2,
-	FILESELECTTYPE_COFFEE		 = 3,
+	FILESELECTTYPE_ANYTHING = 0,
+	FILESELECTTYPE_IMAGES = 1,
+	FILESELECTTYPE_SCENES = 2,
+	FILESELECTTYPE_COFFEE = 3,
 	FILESELECTTYPE_BODYPAINT = 4
 } ENUM_END_LIST(FILESELECTTYPE);
 
 enum OPERATINGSYSTEM
 {
-	OPERATINGSYSTEM_WIN	 = 1,
-	OPERATINGSYSTEM_OSX	 = 2,
+	OPERATINGSYSTEM_WIN = 1,
+	OPERATINGSYSTEM_OSX = 2,
 	OPERATINGSYSTEM_UNIX = 3
 } ENUM_END_LIST(OPERATINGSYSTEM);
 
 enum BYTEORDER
 {
 	BYTEORDER_MOTOROLA = 1,
-	BYTEORDER_INTEL		 = 2
+	BYTEORDER_INTEL = 2
 } ENUM_END_LIST(BYTEORDER);
 
 enum HYPERFILEVALUE
 {
-	HYPERFILEVALUE_NONE							 =  0,
+	HYPERFILEVALUE_NONE = 0,
 
-	HYPERFILEVALUE_START						 =  1,
-	HYPERFILEVALUE_STOP							 =  2,
-	HYPERFILEVALUE_CSTOP						 =  3,
-	HYPERFILEVALUE_CHAR							 = 11,
-	HYPERFILEVALUE_UCHAR						 = 12,
-	HYPERFILEVALUE_INT16						 = 13,
-	HYPERFILEVALUE_UINT16						 = 14,
-	HYPERFILEVALUE_INT32						 = 15,
-	HYPERFILEVALUE_UINT32						 = 16,
-	HYPERFILEVALUE_INT64						 = 17,
-	HYPERFILEVALUE_UINT64						 = 18,
-	HYPERFILEVALUE_FLOAT						 = 19,
-	HYPERFILEVALUE_FLOAT64					 = 20,
-	HYPERFILEVALUE_BOOL							 = 21,
-	HYPERFILEVALUE_TIME							 = 22,
-	HYPERFILEVALUE_VECTOR						 = 23,
-	HYPERFILEVALUE_VECTOR64					 = 24,
-	HYPERFILEVALUE_MATRIX						 = 25,
-	HYPERFILEVALUE_MATRIX64					 = 26,
-	HYPERFILEVALUE_VECTOR32					 = 27,
-	HYPERFILEVALUE_MATRIX32					 = 28,
-	HYPERFILEVALUE_FLOAT32					 = 29,
+	HYPERFILEVALUE_START = 1,
+	HYPERFILEVALUE_STOP = 2,
+	HYPERFILEVALUE_CSTOP = 3,
+	HYPERFILEVALUE_CHAR = 11,
+	HYPERFILEVALUE_UCHAR = 12,
+	HYPERFILEVALUE_INT16 = 13,
+	HYPERFILEVALUE_UINT16 = 14,
+	HYPERFILEVALUE_INT32 = 15,
+	HYPERFILEVALUE_UINT32 = 16,
+	HYPERFILEVALUE_INT64 = 17,
+	HYPERFILEVALUE_UINT64 = 18,
+	HYPERFILEVALUE_FLOAT = 19,
+	HYPERFILEVALUE_FLOAT64 = 20,
+	HYPERFILEVALUE_BOOL = 21,
+	HYPERFILEVALUE_TIME = 22,
+	HYPERFILEVALUE_VECTOR = 23,
+	HYPERFILEVALUE_VECTOR64 = 24,
+	HYPERFILEVALUE_MATRIX = 25,
+	HYPERFILEVALUE_MATRIX64 = 26,
+	HYPERFILEVALUE_VECTOR32 = 27,
+	HYPERFILEVALUE_MATRIX32 = 28,
+	HYPERFILEVALUE_FLOAT32 = 29,
 
-	HYPERFILEVALUE_MEMORY						 = 128,
-	HYPERFILEVALUE_IMAGE						 = 129,
-	HYPERFILEVALUE_STRING						 = 130,
-	HYPERFILEVALUE_FILENAME					 = 131,
-	HYPERFILEVALUE_CONTAINER				 = 132,
-	HYPERFILEVALUE_ALIASLINK				 = 138,
-	HYPERFILEVALUE_LMEMORY					 = 139,
-	HYPERFILEVALUE_VECTOR_ARRAY_EX	 = 133,
-	HYPERFILEVALUE_POLYGON_ARRAY_EX	 = 134,
-	HYPERFILEVALUE_UINT16_ARRAY_EX	 = 135,
+	HYPERFILEVALUE_MEMORY = 128,
+	HYPERFILEVALUE_IMAGE = 129,
+	HYPERFILEVALUE_STRING = 130,
+	HYPERFILEVALUE_FILENAME = 131,
+	HYPERFILEVALUE_CONTAINER = 132,
+	HYPERFILEVALUE_ALIASLINK = 138,
+	HYPERFILEVALUE_LMEMORY = 139,
+	HYPERFILEVALUE_VECTOR_ARRAY_EX = 133,
+	HYPERFILEVALUE_POLYGON_ARRAY_EX = 134,
+	HYPERFILEVALUE_UINT16_ARRAY_EX = 135,
 	HYPERFILEVALUE_PARTICLE_ARRAY_EX = 136,
-	HYPERFILEVALUE_SREAL_ARRAY_EX		 = 137,
-	HYPERFILEVALUE_ARRAY						 = 140,
-	HYPERFILEVALUE_UUID							 = 141
+	HYPERFILEVALUE_SREAL_ARRAY_EX = 137,
+	HYPERFILEVALUE_ARRAY = 140,
+	HYPERFILEVALUE_UUID = 141
 } ENUM_END_LIST(HYPERFILEVALUE);
 
 enum FINDANIM
 {
 	FINDANIM_EXACT = 0,
-	FINDANIM_LEFT	 = 1,
+	FINDANIM_LEFT = 1,
 	FINDANIM_RIGHT = 2
 } ENUM_END_LIST(FINDANIM);
 
 enum CCURVE
 {
-	CCURVE_CURVE		 = 1,
-	CCURVE_HLE_BASE	 = 2,
+	CCURVE_CURVE = 1,
+	CCURVE_HLE_BASE = 2,
 	CCURVE_HLE_CURVE = 3,
-	CCURVE_SS_CURVE	 = 4,
+	CCURVE_SS_CURVE = 4,
 
 	// multiple Snapshots
 	CCURVE_SS_CURVE2 = 5,
@@ -2281,192 +2547,206 @@ enum CCURVE
 
 	// Scale and Move HLE Curve
 	CCURVE_HLE_SCALE = 9,
-	CCURVE_HLE_MOVE	 = 10
+	CCURVE_HLE_MOVE = 10
 } ENUM_END_LIST(CCURVE);
 
 enum CLOOP
 {
-	CLOOP_OFF					 = 0,
-	CLOOP_CONSTANT		 = 1,
-	CLOOP_CONTINUE		 = 2,
-	CLOOP_REPEAT			 = 3,
+	CLOOP_OFF = 0,
+	CLOOP_CONSTANT = 1,
+	CLOOP_CONTINUE = 2,
+	CLOOP_REPEAT = 3,
 	CLOOP_OFFSETREPEAT = 4,
-	CLOOP_OSCILLATE		 = 5
+	CLOOP_OSCILLATE = 5
 } ENUM_END_LIST(CLOOP);
 
 enum CINTERPOLATION
 {
 	CINTERPOLATION_SPLINE = 1,
 	CINTERPOLATION_LINEAR = 2,
-	CINTERPOLATION_STEP		= 3,
+	CINTERPOLATION_STEP = 3,
 
-	CINTERPOLATION_DUMMY	= 4
+	CINTERPOLATION_DUMMY = 4
 } ENUM_END_LIST(CINTERPOLATION);
 
 enum CLIPBOARDTYPE
 {
-	CLIPBOARDTYPE_EMPTY	 =0,
-	CLIPBOARDTYPE_STRING =1,
-	CLIPBOARDTYPE_BITMAP =2
+	CLIPBOARDTYPE_EMPTY = 0,
+	CLIPBOARDTYPE_STRING = 1,
+	CLIPBOARDTYPE_BITMAP = 2
 } ENUM_END_LIST(CLIPBOARDTYPE);
 
 enum EDGESELECTIONTYPE
 {
 	EDGESELECTIONTYPE_SELECTION = 0,
-	EDGESELECTIONTYPE_HIDDEN		= 1,
-	EDGESELECTIONTYPE_PHONG			= 2
+	EDGESELECTIONTYPE_HIDDEN = 1,
+	EDGESELECTIONTYPE_PHONG = 2
 } ENUM_END_LIST(EDGESELECTIONTYPE);
 
 enum REGISTRYTYPE
 {
-	REGISTRYTYPE_ANY							=  0,
-	REGISTRYTYPE_WINDOW						=  1,
-	REGISTRYTYPE_OBJECT						=  2,
-	REGISTRYTYPE_TRACK_EX					=  3,
-	REGISTRYTYPE_SEQUENCE_EX			=  4,
-	REGISTRYTYPE_KEY_EX						=  5,
-	REGISTRYTYPE_TAG							=  6,
-	REGISTRYTYPE_MATERIAL					=  7,
-	REGISTRYTYPE_SHADER						=  8,
-	REGISTRYTYPE_COFFEE_EXT				=  9,
-	REGISTRYTYPE_SOUND						=	10,
-	REGISTRYTYPE_LAYOUT						=	11,
-	REGISTRYTYPE_BITMAPFILTER			=	12,
-	REGISTRYTYPE_VIDEOPOST				=	13,
-	REGISTRYTYPE_SCENEHOOK				=	14,
-	REGISTRYTYPE_NODE							=	15,
-	REGISTRYTYPE_DESCRIPTION			=	16,
-	REGISTRYTYPE_LIBRARY					=	17,
-	REGISTRYTYPE_CUSTOMDATATYPE		=	18,
-	REGISTRYTYPE_RESOURCEDATATYPE	=	19,
-	REGISTRYTYPE_SCENELOADER			=	20,
-	REGISTRYTYPE_SCENESAVER				=	21,
-	REGISTRYTYPE_SNHOOK						=	22,
-	REGISTRYTYPE_CTRACK						= 23,
-	REGISTRYTYPE_CSEQ							= 24,
-	REGISTRYTYPE_CKEY							= 25,
-	REGISTRYTYPE_PAINTER					=	26,
-	REGISTRYTYPE_GV_VALUE					= 27,
-	REGISTRYTYPE_GV_VALGROUP			= 28,
-	REGISTRYTYPE_GV_OPGROUP				= 29,
-	REGISTRYTYPE_GV_OPCLASS				= 30,
-	REGISTRYTYPE_GV_DATA					= 31,
-	REGISTRYTYPE_GADGETS					= 32,
-	REGISTRYTYPE_PREFS						= 33
+	REGISTRYTYPE_ANY = 0,
+	REGISTRYTYPE_WINDOW = 1,
+	REGISTRYTYPE_OBJECT = 2,
+	REGISTRYTYPE_TRACK_EX = 3,
+	REGISTRYTYPE_SEQUENCE_EX = 4,
+	REGISTRYTYPE_KEY_EX = 5,
+	REGISTRYTYPE_TAG = 6,
+	REGISTRYTYPE_MATERIAL = 7,
+	REGISTRYTYPE_SHADER = 8,
+	REGISTRYTYPE_COFFEE_EXT = 9,
+	REGISTRYTYPE_SOUND = 10,
+	REGISTRYTYPE_LAYOUT = 11,
+	REGISTRYTYPE_BITMAPFILTER = 12,
+	REGISTRYTYPE_VIDEOPOST = 13,
+	REGISTRYTYPE_SCENEHOOK = 14,
+	REGISTRYTYPE_NODE = 15,
+	REGISTRYTYPE_DESCRIPTION = 16,
+	REGISTRYTYPE_LIBRARY = 17,
+	REGISTRYTYPE_CUSTOMDATATYPE = 18,
+	REGISTRYTYPE_RESOURCEDATATYPE = 19,
+	REGISTRYTYPE_SCENELOADER = 20,
+	REGISTRYTYPE_SCENESAVER = 21,
+	REGISTRYTYPE_SNHOOK = 22,
+	REGISTRYTYPE_CTRACK = 23,
+	REGISTRYTYPE_CSEQ = 24,
+	REGISTRYTYPE_CKEY = 25,
+	REGISTRYTYPE_PAINTER = 26,
+	REGISTRYTYPE_GV_VALUE = 27,
+	REGISTRYTYPE_GV_VALGROUP = 28,
+	REGISTRYTYPE_GV_OPGROUP = 29,
+	REGISTRYTYPE_GV_OPCLASS = 30,
+	REGISTRYTYPE_GV_DATA = 31,
+	REGISTRYTYPE_GADGETS = 32,
+	REGISTRYTYPE_PREFS = 33
 } ENUM_END_LIST(REGISTRYTYPE);
 
 enum MODELINGCOMMANDMODE
 {
-	MODELINGCOMMANDMODE_ALL							 = 0,
-	MODELINGCOMMANDMODE_POINTSELECTION	 = 1,
+	MODELINGCOMMANDMODE_ALL = 0,
+	MODELINGCOMMANDMODE_POINTSELECTION = 1,
 	MODELINGCOMMANDMODE_POLYGONSELECTION = 2,
-	MODELINGCOMMANDMODE_EDGESELECTION		 = 3
+	MODELINGCOMMANDMODE_EDGESELECTION = 3
 } ENUM_END_LIST(MODELINGCOMMANDMODE);
 
 enum MODELINGCOMMANDFLAGS
 {
-	MODELINGCOMMANDFLAGS_0					= 0,
-	MODELINGCOMMANDFLAGS_CREATEUNDO	= (1 << 0)
+	MODELINGCOMMANDFLAGS_0 = 0,
+	MODELINGCOMMANDFLAGS_CREATEUNDO = (1 << 0)
 } ENUM_END_FLAGS(MODELINGCOMMANDFLAGS);
 
 enum PLUGINTYPE
 {
-	PLUGINTYPE_ANY								=  0,
+	PLUGINTYPE_ANY = 0,
 
-	PLUGINTYPE_SHADER							=  1,
-	PLUGINTYPE_MATERIAL						=  2,
-	PLUGINTYPE_COFFEEMESSAGE			=  3,
-	PLUGINTYPE_COMMAND						=  4,
-	PLUGINTYPE_OBJECT							=  5,
-	PLUGINTYPE_TAG								=  6,
-	PLUGINTYPE_BITMAPFILTER				=  7,
-	PLUGINTYPE_VIDEOPOST					=  8,
-	PLUGINTYPE_TOOL								=  9,
-	PLUGINTYPE_SCENEHOOK					= 10,
-	PLUGINTYPE_NODE								= 11,
-	PLUGINTYPE_LIBRARY						= 12,
-	PLUGINTYPE_BITMAPLOADER				= 13,
-	PLUGINTYPE_BITMAPSAVER				= 14,
-	PLUGINTYPE_SCENELOADER				= 15,
-	PLUGINTYPE_SCENESAVER					= 16,
-	PLUGINTYPE_COREMESSAGE				= 17,
-	PLUGINTYPE_CUSTOMGUI					= 18,
-	PLUGINTYPE_CUSTOMDATATYPE			= 19,
-	PLUGINTYPE_RESOURCEDATATYPE		= 20,
-	PLUGINTYPE_MANAGERINFORMATION	= 21,
-	PLUGINTYPE_CTRACK							= 32,
-	PLUGINTYPE_FALLOFF						= 33,
-	PLUGINTYPE_VMAPTRANSFER				= 34,
-	PLUGINTYPE_PREFS							= 35,
-	PLUGINTYPE_SNAP								= 36
+	PLUGINTYPE_SHADER = 1,
+	PLUGINTYPE_MATERIAL = 2,
+	PLUGINTYPE_COFFEEMESSAGE = 3,
+	PLUGINTYPE_COMMAND = 4,
+	PLUGINTYPE_OBJECT = 5,
+	PLUGINTYPE_TAG = 6,
+	PLUGINTYPE_BITMAPFILTER = 7,
+	PLUGINTYPE_VIDEOPOST = 8,
+	PLUGINTYPE_TOOL = 9,
+	PLUGINTYPE_SCENEHOOK = 10,
+	PLUGINTYPE_NODE = 11,
+	PLUGINTYPE_LIBRARY = 12,
+	PLUGINTYPE_BITMAPLOADER = 13,
+	PLUGINTYPE_BITMAPSAVER = 14,
+	PLUGINTYPE_SCENELOADER = 15,
+	PLUGINTYPE_SCENESAVER = 16,
+	PLUGINTYPE_COREMESSAGE = 17,
+	PLUGINTYPE_CUSTOMGUI = 18,
+	PLUGINTYPE_CUSTOMDATATYPE = 19,
+	PLUGINTYPE_RESOURCEDATATYPE = 20,
+	PLUGINTYPE_MANAGERINFORMATION = 21,
+	PLUGINTYPE_CTRACK = 32,
+	PLUGINTYPE_FALLOFF = 33,
+	PLUGINTYPE_VMAPTRANSFER = 34,
+	PLUGINTYPE_PREFS = 35,
+	PLUGINTYPE_SNAP = 36
 } ENUM_END_LIST(PLUGINTYPE);
 
+/// @addtogroup DRAWRESULT
+/// @ingroup group_enumeration
+/// @{
 enum DRAWRESULT
 {
-	DRAWRESULT_ERROR = 0,
-	DRAWRESULT_OK		 = 1,
-	DRAWRESULT_SKIP	 = 2
+	DRAWRESULT_ERROR = 0, ///< There was an error while drawing.
+	DRAWRESULT_OK = 1, ///< Something was drawn.
+	DRAWRESULT_SKIP = 2  ///< There was nothing to draw in this pass.
 } ENUM_END_LIST(DRAWRESULT);
+/// @}
 
+/// @addtogroup DISPLAYMODE
+/// @ingroup group_enumeration
+///@{
 enum DISPLAYMODE
 {
-	DISPLAYMODE_UNKNOWN					= -1,
-	DISPLAYMODE_GOURAUD					= 0,
-	DISPLAYMODE_QUICK						= 1,
-	DISPLAYMODE_WIRE						= 2,
-	DISPLAYMODE_ISOPARM					= 3,
-	DISPLAYMODE_SHADEDBOX				= 4,
-	DISPLAYMODE_BOX							= 5,
-	DISPLAYMODE_SKELETON				= 6,
-	DISPLAYMODE_GOURAUDWIRE			= 7,
-	DISPLAYMODE_GOURAUDISOPARM	= 8,
-	DISPLAYMODE_QUICKWIRE				= 9,
-	DISPLAYMODE_QUICKISOPARM		= 10,
-	DISPLAYMODE_FLATWIRE				= 11,
-	DISPLAYMODE_FLATISOPARM			= 12,
-	DISPLAYMODE_FLATBOX					= 13,
-	DISPLAYMODE_HIDDENWIRE			= 14,
-	DISPLAYMODE_HIDDENISOPARM		= 15,
-	DISPLAYMODE_HIDDENBOX				= 16,
-	DISPLAYMODE_SHADEDBOXWIRE		= 17,
-	DISPLAYMODE_QUICKBOXWIRE		= 18,
-	DISPLAYMODE_QUICKBOX				= 19,
+	DISPLAYMODE_UNKNOWN = -1, ///< Unknown.
+	DISPLAYMODE_GOURAUD = 0,  ///< Gouraud shading.
+	DISPLAYMODE_QUICK = 1,  ///< Quick shading.
+	DISPLAYMODE_WIRE = 2,  ///< Wireframe.
+	DISPLAYMODE_ISOPARM = 3,  ///< Isoparm.
+	DISPLAYMODE_SHADEDBOX = 4,  ///< Shaded box.
+	DISPLAYMODE_BOX = 5,  ///< Box.
+	DISPLAYMODE_SKELETON = 6,  ///< Skeleton.
+	DISPLAYMODE_GOURAUDWIRE = 7,  ///< Gouraud wireframe.
+	DISPLAYMODE_GOURAUDISOPARM = 8,  ///< Gouraud isoparm.
+	DISPLAYMODE_QUICKWIRE = 9,  ///< Quick wireframe.
+	DISPLAYMODE_QUICKISOPARM = 10, ///< Quick isoparm.
+	DISPLAYMODE_FLATWIRE = 11, ///< Flat wireframe.
+	DISPLAYMODE_FLATISOPARM = 12, ///< Flat isoparm.
+	DISPLAYMODE_FLATBOX = 13, ///< Flat box.
+	DISPLAYMODE_HIDDENWIRE = 14, ///< Hidden line wireframe.
+	DISPLAYMODE_HIDDENISOPARM = 15, ///< Hidden line isoparm.
+	DISPLAYMODE_HIDDENBOX = 16, ///< Hidden line box.
+	DISPLAYMODE_SHADEDBOXWIRE = 17, ///< Shaded box wireframe.
+	DISPLAYMODE_QUICKBOXWIRE = 18, ///< Quick shaded box wireframe.
+	DISPLAYMODE_QUICKBOX = 19, ///< Quick shaded box.
 
-	DISPLAYMODE_PRIVATE_ISOLINE	= 100,
-	DISPLAYMODE_PRIVATE_FLAT		= 1100,
-	DISPLAYMODE_PRIVATE_HIDDEN	= 1400
+	DISPLAYMODE_PRIVATE_ISOLINE = 100,  ///< @markPrivate
+	DISPLAYMODE_PRIVATE_FLAT = 1100, ///< @markPrivate
+	DISPLAYMODE_PRIVATE_HIDDEN = 1400  ///< @markPrivate
 } ENUM_END_LIST(DISPLAYMODE);
+/// @}
 
+/// @addtogroup DOCUMENTSETTINGS
+/// @ingroup group_enumeration
+///@{
+/// Container IDs for the document settings.
+/// @see BaseDocument::GetData(), BaseDocument::SetData(), BaseDocument::GetSettingsInstance()
 enum DOCUMENTSETTINGS
 {
-	DOCUMENTSETTINGS_GENERAL				 = 0,
-	DOCUMENTSETTINGS_MODELING				 = 1,
-	DOCUMENTSETTINGS_DOCUMENT				 = 2,
-	DOCUMENTSETTINGS_ANIMATIONSYSTEM = 7,
-	DOCUMENTSETTINGS_TOOLS					 = 8
+	DOCUMENTSETTINGS_GENERAL = 0, ///< General settings.
+	DOCUMENTSETTINGS_MODELING = 1, ///< Modeler settings. (See MDATA options.)
+	DOCUMENTSETTINGS_DOCUMENT = 2, ///< Document settings.
+	DOCUMENTSETTINGS_ANIMATIONSYSTEM = 7, ///< Timeline settings. @markPrivate
+	DOCUMENTSETTINGS_TOOLS = 8  ///< Tools settings. (Unused)
 } ENUM_END_LIST(DOCUMENTSETTINGS);
+/// @}
 
 enum SERIALINFO
 {
-	SERIALINFO_CINEMA4D			= 0,
-	SERIALINFO_MULTILICENSE	= 2
+	SERIALINFO_CINEMA4D = 0,
+	SERIALINFO_MULTILICENSE = 2
 } ENUM_END_LIST(SERIALINFO);
 
 enum VERSIONTYPE
 {
-	VERSIONTYPE_PRIME								 = 0,
-	VERSIONTYPE_BODYPAINT						 = 1,
-	VERSIONTYPE_STUDIO							 = 2,
-	VERSIONTYPE_VISUALIZE						 = 3,
-	VERSIONTYPE_BROADCAST						 = 4,
-	VERSIONTYPE_BENCHMARK						 = 5,
-	VERSIONTYPE_UPDATER							 = 6,
-	VERSIONTYPE_INSTALLER						 = 7,
-	VERSIONTYPE_NET_CLIENT					 = 8,
-	VERSIONTYPE_NET_SERVER_3				 = 9,
+	VERSIONTYPE_PRIME = 0,
+	VERSIONTYPE_BODYPAINT = 1,
+	VERSIONTYPE_STUDIO = 2,
+	VERSIONTYPE_VISUALIZE = 3,
+	VERSIONTYPE_BROADCAST = 4,
+	VERSIONTYPE_BENCHMARK = 5,
+	VERSIONTYPE_UPDATER = 6,
+	VERSIONTYPE_INSTALLER = 7,
+	VERSIONTYPE_NET_CLIENT = 8,
+	VERSIONTYPE_NET_SERVER_3 = 9,
 	VERSIONTYPE_NET_SERVER_UNLIMITED = 10,
-	VERSIONTYPE_UNKNOWN							 = 11,	// unknown
-	VERSIONTYPE_LICENSESERVER				 = 12
+	VERSIONTYPE_UNKNOWN = 11,	// unknown
+	VERSIONTYPE_LICENSESERVER = 12
 } ENUM_END_LIST(VERSIONTYPE);
 
 enum LAYERSETMODE
@@ -2480,15 +2760,15 @@ enum LAYERSETMODE
 
 enum SYSTEMINFO
 {
-	SYSTEMINFO_0									= 0,
-	SYSTEMINFO_COMMANDLINE				= (1 << 1),	// application runs in command line mode
-	SYSTEMINFO_DEMO								= (1 << 2),	// (deprecated)
-	SYSTEMINFO_SAVABLEDEMO				= (1 << 3),	// savable demo
-	SYSTEMINFO_SAVABLEDEMO_ACTIVE	= (1 << 4),	// activated savable demo, SYSTEMINFO_SAVABLEDEMO is still set
-	SYSTEMINFO_OPENGL							= (1 << 5),	// OpenGL is activated and loaded correctly
-	SYSTEMINFO_STUDENT						= (1 << 6),	// activated student version, this is always set along with SYSTEMINFO_SAVABLEDEMO
-	SYSTEMINFO_LITE								= (1 << 7),	// light version, cannot load any plugins
-	SYSTEMINFO_LITE_ACTIVE				= (1 << 8)	// light version is registered
+	SYSTEMINFO_0 = 0,
+	SYSTEMINFO_COMMANDLINE = (1 << 1),	// application runs in command line mode
+	SYSTEMINFO_SAVABLEDEMO = (1 << 3),	// savable demo
+	SYSTEMINFO_SAVABLEDEMO_ACTIVE = (1 << 4),	// activated savable demo, SYSTEMINFO_SAVABLEDEMO is still set
+	SYSTEMINFO_OPENGL = (1 << 5),	// OpenGL is activated and loaded correctly
+	SYSTEMINFO_STUDENT = (1 << 6),	// activated student version, this is always set along with SYSTEMINFO_SAVABLEDEMO
+	SYSTEMINFO_LITE = (1 << 7),	// light version, cannot load any plugins
+	SYSTEMINFO_LITE_ACTIVE = (1 << 8),	// light version is registered
+	SYSTEMINFO_CINEWARE = (1 << 9)	// CineWare
 } ENUM_END_FLAGS(SYSTEMINFO);
 
 #define ID_MT_SOURCECOUNTER	465001520	//Int32
@@ -2498,19 +2778,19 @@ enum SYSTEMINFO
 
 enum SELECTIONFILTERBIT
 {
-	SELECTIONFILTERBIT_0					= 0,
-	SELECTIONFILTERBIT_NULL				= (1 << 0),
-	SELECTIONFILTERBIT_POLYGON		= (1 << 1),
-	SELECTIONFILTERBIT_SPLINE			= (1 << 2),
-	SELECTIONFILTERBIT_GENERATOR	= (1 << 3),
+	SELECTIONFILTERBIT_0 = 0,
+	SELECTIONFILTERBIT_NULL = (1 << 0),
+	SELECTIONFILTERBIT_POLYGON = (1 << 1),
+	SELECTIONFILTERBIT_SPLINE = (1 << 2),
+	SELECTIONFILTERBIT_GENERATOR = (1 << 3),
 	SELECTIONFILTERBIT_HYPERNURBS = (1 << 4),
-	SELECTIONFILTERBIT_DEFORMER		= (1 << 6),
-	SELECTIONFILTERBIT_CAMERA			= (1 << 7),
-	SELECTIONFILTERBIT_LIGHT			= (1 << 8),
-	SELECTIONFILTERBIT_SCENE			= (1 << 9),
-	SELECTIONFILTERBIT_PARTICLE		= (1 << 10),
-	SELECTIONFILTERBIT_OTHER			= (1 << 11),
-	SELECTIONFILTERBIT_JOINT			= (1 << 25)
+	SELECTIONFILTERBIT_DEFORMER = (1 << 6),
+	SELECTIONFILTERBIT_CAMERA = (1 << 7),
+	SELECTIONFILTERBIT_LIGHT = (1 << 8),
+	SELECTIONFILTERBIT_SCENE = (1 << 9),
+	SELECTIONFILTERBIT_PARTICLE = (1 << 10),
+	SELECTIONFILTERBIT_OTHER = (1 << 11),
+	SELECTIONFILTERBIT_JOINT = (1 << 25)
 } ENUM_END_FLAGS(SELECTIONFILTERBIT);
 
 enum OBJECTSTATE
@@ -2520,116 +2800,149 @@ enum OBJECTSTATE
 	OBJECTSTATE_DEFORM = 2
 } ENUM_END_LIST(OBJECTSTATE);
 
-// display filter	(nullptr to OTHER match SELECTIONFILTERBIT_)
+
+/// @addtogroup DISPLAYFILTER
+/// @ingroup group_enumeration
+/// @{
+/// @see BaseDraw::GetDisplayFilter().
+/// @note ::DISPLAYFILTER_NULL to ::DISPLAYFILTER_OTHER match ::SELECTIONFILTERBIT.
 enum DISPLAYFILTER
 {
-	DISPLAYFILTER_0									 = 0,
-	DISPLAYFILTER_NULL							 = (1 << 0),
-	DISPLAYFILTER_POLYGON						 = (1 << 1),
-	DISPLAYFILTER_SPLINE						 = (1 << 2),
-	DISPLAYFILTER_GENERATOR					 = (1 << 3),
-	DISPLAYFILTER_HYPERNURBS				 = (1 << 4),
-	DISPLAYFILTER_UNUSED1						 = (1 << 5),
-	DISPLAYFILTER_DEFORMER					 = (1 << 6),
-	DISPLAYFILTER_CAMERA						 = (1 << 7),
-	DISPLAYFILTER_LIGHT							 = (1 << 8),
-	DISPLAYFILTER_SCENE							 = (1 << 9),
-	DISPLAYFILTER_PARTICLE					 = (1 << 10),
-	DISPLAYFILTER_OTHER							 = (1 << 11),
-	DISPLAYFILTER_GRID							 = (1 << 13),
-	DISPLAYFILTER_HORIZON						 = (1 << 14),
-	DISPLAYFILTER_WORLDAXIS					 = (1 << 15),
-	DISPLAYFILTER_BOUNDS						 = (1 << 16),
-	DISPLAYFILTER_HUD								 = (1 << 17),
-	DISPLAYFILTER_SDS								 = (1 << 18),
-	DISPLAYFILTER_HIGHLIGHTING			 = (1 << 19),
-	DISPLAYFILTER_MULTIAXIS					 = (1 << 20),
-	DISPLAYFILTER_OBJECTHANDLES			 = (1 << 21),
-	DISPLAYFILTER_HANDLEBANDS				 = (1 << 22),
-	DISPLAYFILTER_SDSCAGE						 = (1 << 23),
-	DISPLAYFILTER_NGONLINES					 = (1 << 24),
-	DISPLAYFILTER_JOINT							 = (1 << 25),
-	DISPLAYFILTER_OBJECTHIGHLIGHTING = (1 << 26),
-	DISPLAYFILTER_GUIDELINES				 = (1 << 27),
-	DISPLAYFILTER_POI								 = (1 << 28),
-	DISPLAYFILTER_GRADIENT					 = (1 << 29)
+	DISPLAYFILTER_0 = 0,         ///< None.
+	DISPLAYFILTER_NULL = (1 << 0),  ///< Null.
+	DISPLAYFILTER_POLYGON = (1 << 1),  ///< Polygon.
+	DISPLAYFILTER_SPLINE = (1 << 2),  ///< Spline.
+	DISPLAYFILTER_GENERATOR = (1 << 3),  ///< Generator.
+	DISPLAYFILTER_HYPERNURBS = (1 << 4),  ///< HyperNURBS.
+	DISPLAYFILTER_UNUSED1 = (1 << 5),  ///< Unused.
+	DISPLAYFILTER_DEFORMER = (1 << 6),  ///< Deformer.
+	DISPLAYFILTER_CAMERA = (1 << 7),  ///< Camera.
+	DISPLAYFILTER_LIGHT = (1 << 8),  ///< Light.
+	DISPLAYFILTER_SCENE = (1 << 9),  ///< Scene.
+	DISPLAYFILTER_PARTICLE = (1 << 10), ///< %Particle.
+	DISPLAYFILTER_OTHER = (1 << 11), ///< Other.
+	DISPLAYFILTER_GRID = (1 << 13), ///< Grid
+	DISPLAYFILTER_HORIZON = (1 << 14), ///< Horizon.
+	DISPLAYFILTER_WORLDAXIS = (1 << 15), ///< World Axis.
+	DISPLAYFILTER_BOUNDS = (1 << 16), ///< Bounding-Box.
+	DISPLAYFILTER_HUD = (1 << 17), ///< HUD.
+	DISPLAYFILTER_SDS = (1 << 18), ///< HN Mesh.
+	DISPLAYFILTER_HIGHLIGHTING = (1 << 19), ///< Highlight Select.
+	DISPLAYFILTER_MULTIAXIS = (1 << 20), ///< Multi-Select Axes.
+	DISPLAYFILTER_OBJECTHANDLES = (1 << 21), ///< Highlight Handles.
+	DISPLAYFILTER_HANDLEBANDS = (1 << 22), ///< Axis bands.
+	DISPLAYFILTER_SDSCAGE = (1 << 23), ///< HN cage.
+	DISPLAYFILTER_NGONLINES = (1 << 24), ///< N-gon lines.
+	DISPLAYFILTER_JOINT = (1 << 25), ///< Joint objects.
+	DISPLAYFILTER_OBJECTHIGHLIGHTING = (1 << 26), ///< @markPrivate
+	DISPLAYFILTER_GUIDELINES = (1 << 27), ///< Axis Guidelines.
+	DISPLAYFILTER_POI = (1 << 28), ///< Navigation cross.
+	DISPLAYFILTER_GRADIENT = (1 << 29), ///< %Gradient.
+	DISPLAYFILTER_BASEGRID = (1 << 30)  ///< Base grid.
 } ENUM_END_FLAGS(DISPLAYFILTER);
+/// @}
 
+/// @addtogroup DISPLAYEDITSTATE
+/// @ingroup group_enumeration
+/// @{
+/// @see BaseDraw::GetEditState().
 enum DISPLAYEDITSTATE
 {
-	DISPLAYEDITSTATE_0				= 0,
-	DISPLAYEDITSTATE_SDS			= (1 << 0),
-	DISPLAYEDITSTATE_DEFORM		= (1 << 1),
+	DISPLAYEDITSTATE_0 = 0,        ///< None.
+	DISPLAYEDITSTATE_SDS = (1 << 0), ///< SDS edit state.
+	DISPLAYEDITSTATE_DEFORM = (1 << 1), ///< Deformed edit state.
 
-	DISPLAYEDITSTATE_DOCUMENT	= -1
+	DISPLAYEDITSTATE_DOCUMENT = -1        ///< Document edit state.
 } ENUM_END_FLAGS(DISPLAYEDITSTATE);
+/// @}
 
 enum THREADTYPE
 {
-	THREADTYPE_0							= 0,
-	THREADTYPE_EDITORREDRAW		= (1 << 0),
-	THREADTYPE_RENDEREDITOR		= (1 << 1),
-	THREADTYPE_RENDEREXTERNAL	= (1 << 2)
+	THREADTYPE_0 = 0,
+	THREADTYPE_EDITORREDRAW = (1 << 0),
+	THREADTYPE_RENDEREDITOR = (1 << 1),
+	THREADTYPE_RENDEREXTERNAL = (1 << 2)
 } ENUM_END_FLAGS(THREADTYPE);
 
 enum RENDERPROGRESSTYPE
 {
-	RENDERPROGRESSTYPE_BEFORERENDERING		= 0,
-	RENDERPROGRESSTYPE_DURINGRENDERING		= 1,
-	RENDERPROGRESSTYPE_AFTERRENDERING			= 2,
-	RENDERPROGRESSTYPE_GLOBALILLUMINATION	= 3
+	RENDERPROGRESSTYPE_BEFORERENDERING = 0,
+	RENDERPROGRESSTYPE_DURINGRENDERING = 1,
+	RENDERPROGRESSTYPE_AFTERRENDERING = 2,
+	RENDERPROGRESSTYPE_GLOBALILLUMINATION = 3
 } ENUM_END_LIST(RENDERPROGRESSTYPE);
 
 enum RDATA_SAVECALLBACK_CMD
 {
-	RDATA_SAVECALLBACK_CMD_OPEN	 = 1,
+	RDATA_SAVECALLBACK_CMD_OPEN = 1,
 	RDATA_SAVECALLBACK_CMD_WRITE = 2,
 	RDATA_SAVECALLBACK_CMD_CLOSE = 3
 } ENUM_END_LIST(RDATA_SAVECALLBACK_CMD);
 
 enum VPGETINFO
 {
-	VPGETINFO_XRESOLUTION	= 0,
-	VPGETINFO_YRESOLUTION	= 1,
-	VPGETINFO_BITDEPTH		= 2,
-	VPGETINFO_CPP					= 3,
-	VPGETINFO_VISIBLE			= 4,
-	VPGETINFO_LINEOFFSET	= 5	// offset of component in line
+	VPGETINFO_XRESOLUTION = 0,
+	VPGETINFO_YRESOLUTION = 1,
+	VPGETINFO_BITDEPTH = 2,
+	VPGETINFO_CPP = 3,
+	VPGETINFO_VISIBLE = 4,
+	VPGETINFO_LINEOFFSET = 5	// offset of component in line
 } ENUM_END_LIST(VPGETINFO);
 
+/// @addtogroup DRAWOBJECT
+/// @ingroup group_enumeration
+// @{
 enum DRAWOBJECT
 {
-	DRAWOBJECT_0								= 0,
-	DRAWOBJECT_FORCELINES				= (1 << 0),
-	DRAWOBJECT_NOBACKCULL				= (1 << 1),
-	DRAWOBJECT_LOCALMATRIX			= (1 << 2),
-	DRAWOBJECT_EDITMODE					= (1 << 3),
-	DRAWOBJECT_FORCEBASE				= (1 << 9),
-	DRAWOBJECT_FORCEPOINTS			= (1 << 10),
-	DRAWOBJECT_NO_EOGL					= (1 << 11),
-	DRAWOBJECT_USE_OBJECT_COLOR = (1 << 12),
-	DRAWOBJECT_USE_CUSTOM_COLOR = (1 << 13),
-	DRAWOBJECT_XRAY_ON					= (1 << 14),
-	DRAWOBJECT_XRAY_OFF					= (1 << 15),
-	DRAWOBJECT_IMMEDIATELY			= (1 << 16),
-	DRAWOBJECT_Z_OFFSET					= (1 << 17),	// don't change the Z offset during DrawObject
-	DRAWOBJECT_PRIVATE_ANY			= (1 << 30)
+	DRAWOBJECT_0 = 0,         ///< None.
+	DRAWOBJECT_FORCELINES = (1 << 0),  ///< Force wireframe display, independent of view settings.
+	DRAWOBJECT_NOBACKCULL = (1 << 1),  ///< Force no backface culling, independent of view settings.
+	DRAWOBJECT_LOCALMATRIX = (1 << 2),  ///< Object drawn will be drawn relative to the currently processed object (used when called from the draw method in a base object).
+	DRAWOBJECT_EDITMODE = (1 << 3),  ///< Object is drawn in edit-mode style.
+	DRAWOBJECT_FORCEBASE = (1 << 9),  ///< The draw call is only executed for the base class, and thus not for the instanciated object, if passed to BaseDraw::DrawObject() and the object type is an instance of either Opoint or Opolygon.
+	///< This way, you can do a draw call without running into a recursion if you are in your from points/polygons derived object.
+	DRAWOBJECT_FORCEPOINTS = (1 << 10), ///< Force points display.
+	DRAWOBJECT_NO_EOGL = (1 << 11), ///< No Extended OpenGL.
+	DRAWOBJECT_USE_OBJECT_COLOR = (1 << 12), ///< Use the object's color.
+	DRAWOBJECT_USE_CUSTOM_COLOR = (1 << 13), ///< Use a custom color.
+	DRAWOBJECT_XRAY_ON = (1 << 14), ///< Enables X-Ray mode.
+	DRAWOBJECT_XRAY_OFF = (1 << 15), ///< Disables X-Ray mode.
+	DRAWOBJECT_IMMEDIATELY = (1 << 16), ///< Draws an object immedialtely. Usally all objects are collected in a Z-depth sorted list before drawing. This flag is used for objects which are immediately deleted after drawing.\n
+	///< @code
+	///< DRAWRESULT MyObject::Draw()
+	///< {
+	///<   ...
+	///<
+	///<   cube = BaseObject::Alloc(cube)
+	///<   DrawObject(cube, DRAWOBJECT_IMMEDIATELY)
+	///<   BaseObejct::Free(cube)
+	///<
+	///<   ...
+	///< }
+	///< @endcode
+	DRAWOBJECT_Z_OFFSET = (1 << 17), ///< Do not change the Z offset during BaseDraww::DrawObject().
+	DRAWOBJECT_PRIVATE_ANY = (1 << 30)  ///< @markPrivate
 } ENUM_END_FLAGS(DRAWOBJECT);
+// @}
 
+/// @addtogroup RENDERFLAGS
+/// @ingroup group_enumeration
+// @{
 enum RENDERFLAGS
 {
-	RENDERFLAGS_0										 = 0,
-	RENDERFLAGS_EXTERNAL						 = (1 << 0),
-	RENDERFLAGS_NODOCUMENTCLONE			 = (1 << 1),
-	RENDERFLAGS_SHOWERRORS					 = (1 << 2),
-	RENDERFLAGS_PREVIEWRENDER				 = (1 << 3),
-	RENDERFLAGS_IRR									 = (1 << 4),	// Render in Interactive Render Region
-	RENDERFLAGS_CREATE_PICTUREVIEWER = (1 << 5),	// Render in Picture Viewer
-	RENDERFLAGS_OPEN_PICTUREVIEWER	 = (1 << 6),
-	RENDERFLAGS_KEEP_CONTEXT				 = (1 << 7),	// private
-	RENDERFLAGS_BATCHRENDER					 = (1 << 8),	// Render in Batch Render - private
-	RENDERFLAGS_NET									 = (1 << 9)		// Use NET System for rendering
+	RENDERFLAGS_0 = 0,        ///< None.
+	RENDERFLAGS_EXTERNAL = (1 << 0), ///< External render.
+	RENDERFLAGS_NODOCUMENTCLONE = (1 << 1), ///< Set this flag to avoid an automatic clone of the scene sent to RenderDocument().
+	RENDERFLAGS_SHOWERRORS = (1 << 2), ///< Show error messages.
+	RENDERFLAGS_PREVIEWRENDER = (1 << 3), ///< Preview render.
+	RENDERFLAGS_IRR = (1 << 4), ///< Interactive region render.
+	RENDERFLAGS_CREATE_PICTUREVIEWER = (1 << 5), ///< Renders in a new Picture Viewer.
+	RENDERFLAGS_OPEN_PICTUREVIEWER = (1 << 6), ///< Opens the Picture Viewer.
+	RENDERFLAGS_KEEP_CONTEXT = (1 << 7), ///< @markPrivate
+	RENDERFLAGS_BATCHRENDER = (1 << 8), ///< Render in Batch Render. @markPrivate
+	RENDERFLAGS_NET = (1 << 9)  ///< Use NET System for rendering.
 } ENUM_END_FLAGS(RENDERFLAGS);
+/// @}
 
 enum WRITEMODE
 {
@@ -2640,75 +2953,85 @@ enum WRITEMODE
 
 enum NETRENDERFLAGS
 {
-	NETRENDERFLAGS_0														 = 0,
-	NETRENDERFLAGS_OPEN_PICTUREVIEWER						 = (1 << 0),
-	NETRENDERFLAGS_SHOWERRORS										 = (1 << 2),
-	NETRENDERFLAGS_DELETEAFTERRENDERING					 = (1 << 3),
+	NETRENDERFLAGS_0 = 0,
+	NETRENDERFLAGS_OPEN_PICTUREVIEWER = (1 << 0),
+	NETRENDERFLAGS_SHOWERRORS = (1 << 2),
+	NETRENDERFLAGS_DELETEAFTERRENDERING = (1 << 3),
 	NETRENDERFLAGS_NOPEERTOPEERASSETDISTRIBUTION = (1 << 4),
-	NETRENDERFLAGS_NOREQUESTONDEMAND						 = (1 << 5),
+	NETRENDERFLAGS_NOREQUESTONDEMAND = (1 << 5),
 	NETRENDERFLAGS_EXCLUDECLIENTONRENDERINGERROR = (1 << 6),
-	NETRENDERFLAGS_SAVERESULTSINREPOSITORY			 = (1 << 7),
-	NETRENDERFLAGS_ASSEMBLEB3DFILESIMMEDIATLEY	 = (1 << 8),
-	NETRENDERFLAGS_NOWRITETEST									 = (1 << 9)
+	NETRENDERFLAGS_SAVERESULTSINREPOSITORY = (1 << 7),
+	NETRENDERFLAGS_ASSEMBLEB3DFILESIMMEDIATLEY = (1 << 8),
+	NETRENDERFLAGS_NOWRITETEST = (1 << 9)
 } ENUM_END_FLAGS(NETRENDERFLAGS);
 
 enum CHECKISRUNNING
 {
-	CHECKISRUNNING_ANIMATIONRUNNING				= 0,
-	CHECKISRUNNING_VIEWDRAWING						= 1,
-	CHECKISRUNNING_EDITORRENDERING				= 2,
-	CHECKISRUNNING_EXTERNALRENDERING			= 3,
-	CHECKISRUNNING_PAINTERUPDATING				= 4,
-	CHECKISRUNNING_MATERIALPREVIEWRUNNING	= 5,
-	CHECKISRUNNING_EVENTSYSTEM						= 6
+	CHECKISRUNNING_ANIMATIONRUNNING = 0,
+	CHECKISRUNNING_VIEWDRAWING = 1,
+	CHECKISRUNNING_EDITORRENDERING = 2,
+	CHECKISRUNNING_EXTERNALRENDERING = 3,
+	CHECKISRUNNING_PAINTERUPDATING = 4,
+	CHECKISRUNNING_MATERIALPREVIEWRUNNING = 5,
+	CHECKISRUNNING_EVENTSYSTEM = 6,
+	CHECKISRUNNING_BAKING = 7
 } ENUM_END_LIST(CHECKISRUNNING);
 
 enum BAKE_TEX_ERR
 {
-	BAKE_TEX_ERR_NONE								= 0,
-	BAKE_TEX_ERR_NO_DOC							= 3000,	// no document
-	BAKE_TEX_ERR_NO_MEM							= 3001,	// no more memory available
-	BAKE_TEX_ERR_NO_RENDER_DOC			= 3002,	// no render document
-	BAKE_TEX_ERR_NO_TEXTURE_TAG			= 3003,	// textag is nullptr or not in doc
-	BAKE_TEX_ERR_NO_OBJECT					= 3004,	// one of the tags is not assigned to an object or to another object
-	BAKE_TEX_ERR_NO_UVW_TAG					= 3005,	// UVW Tag is missing
-	BAKE_TEX_ERR_TEXTURE_MISSING		= 3006,	// no texture
-	BAKE_TEX_ERR_WRONG_BITMAP				= 3007,	// MultipassBitmap was used, but it has the wrong type or wrong resolution
-	BAKE_TEX_ERR_USERBREAK					= 3008,	// user break
-	BAKE_TEX_ERR_NO_OPTIMAL_MAPPING	= 3009,	// optimal mapping failed
-	BAKE_TEX_ERR_NO_SOURCE_UVW_TAG	= 3010	// UVW Tag for the source object is missing
+	BAKE_TEX_ERR_NONE = 0,
+	BAKE_TEX_ERR_NO_DOC = 3000,	// no document
+	BAKE_TEX_ERR_NO_MEM = 3001,	// no more memory available
+	BAKE_TEX_ERR_NO_RENDER_DOC = 3002,	// no render document
+	BAKE_TEX_ERR_NO_TEXTURE_TAG = 3003,	// textag is nullptr or not in doc
+	BAKE_TEX_ERR_NO_OBJECT = 3004,	// one of the tags is not assigned to an object or to another object
+	BAKE_TEX_ERR_NO_UVW_TAG = 3005,	// UVW Tag is missing
+	BAKE_TEX_ERR_TEXTURE_MISSING = 3006,	// no texture
+	BAKE_TEX_ERR_WRONG_BITMAP = 3007,	// MultipassBitmap was used, but it has the wrong type or wrong resolution
+	BAKE_TEX_ERR_USERBREAK = 3008,	// user break
+	BAKE_TEX_ERR_NO_OPTIMAL_MAPPING = 3009,	// optimal mapping failed
+	BAKE_TEX_ERR_NO_SOURCE_UVW_TAG = 3010	// UVW Tag for the source object is missing
 } ENUM_END_LIST(BAKE_TEX_ERR);
 
 enum GL_MESSAGE
 {
-	GL_MESSAGE_OK							 = 1,
-	GL_MESSAGE_ERROR					 = 0,
+	GL_MESSAGE_OK = 1,
+	GL_MESSAGE_ERROR = 0,
 	GL_MESSAGE_FORCE_EMULATION = 2
 } ENUM_END_LIST(GL_MESSAGE);
 
+/// @addtogroup VIEWPORT_PICK_FLAGS
+/// @ingroup group_enumeration
+/// @{
 enum VIEWPORT_PICK_FLAGS
 {
-	VIEWPORT_PICK_FLAGS_0													= 0,
-	VIEWPORT_PICK_FLAGS_ALLOW_OGL									= (1 << 0),
-	VIEWPORT_PICK_FLAGS_DONT_STOP_THREADS					= (1 << 1),
-	VIEWPORT_PICK_FLAGS_USE_SEL_FILTER						= (1 << 2),
-	VIEWPORT_PICK_FLAGS_OGL_ONLY_TOPMOST					= (1 << 3),	// use this only when you don't need the object pointer, does only work with OpenGL
-	VIEWPORT_PICK_FLAGS_OGL_ONLY_VISIBLE					= (1 << 4),	// this has only an effect when the PickObject functions are called that take ViewportPixel as argument
-	VIEWPORT_PICK_FLAGS_OGL_IGNORE_Z							= (1 << 5),	// set this if you are only interested if (and which) an object was hit, not its Z position
-	VIEWPORT_PICK_FLAGS_OGL_ONLY_TOPMOST_WITH_OBJ	= (1 << 6)	// only returns the topmost object with its Z position
+	VIEWPORT_PICK_FLAGS_0 = 0,        ///< None.
+	VIEWPORT_PICK_FLAGS_ALLOW_OGL = (1 << 0), ///< Allow OpenGL.
+	VIEWPORT_PICK_FLAGS_DONT_STOP_THREADS = (1 << 1), ///< Do not stop threads.
+	VIEWPORT_PICK_FLAGS_USE_SEL_FILTER = (1 << 2), ///< Use selection filter.
+	VIEWPORT_PICK_FLAGS_OGL_ONLY_TOPMOST = (1 << 3), ///< Picks only topmost object. Use this only when the object pointer is not needed. Only works with OpenGL.
+	VIEWPORT_PICK_FLAGS_OGL_ONLY_VISIBLE = (1 << 4), ///< Picks only visible. Only has an effect when calling PickObject() methods that take ViewportPixel as argument . Only works with OpenGL.
+	VIEWPORT_PICK_FLAGS_OGL_IGNORE_Z = (1 << 5), ///< Picks ignore Z position. Set this to only check if an object (and which) was hit, not its Z position. Only works with OpenGL.
+	VIEWPORT_PICK_FLAGS_OGL_ONLY_TOPMOST_WITH_OBJ = (1 << 6)  ///< Picks only topmost object but returns the topmost object with its Z position. Only works with OpenGL.
 } ENUM_END_FLAGS(VIEWPORT_PICK_FLAGS);
+/// @}
 
-// HandleShaderPopup
-#define SHADERPOPUP_SETSHADER				 99989
-#define SHADERPOPUP_SETFILENAME			 99990
-#define SHADERPOPUP_LOADIMAGE				 99991
-#define SHADERPOPUP_EDITPARAMS			 99999
-#define SHADERPOPUP_RELOADIMAGE			 99998
-#define SHADERPOPUP_EDITIMAGE				 99997
-#define SHADERPOPUP_COPYCHANNEL			 99995
-#define SHADERPOPUP_PASTECHANNEL		 99994
-#define SHADERPOPUP_CREATENEWTEXTURE 99993
-#define SHADERPOPUP_CLEARSHADER			 99992
+/// @addtogroup SHADERPOPUP
+/// @ingroup group_enumeration
+/// @{
+
+#define SHADERPOPUP_SETSHADER        99989 ///< Set a shader . @formatParam{param} points to a BaseShader. (param = reinterpret_cast<Int32>(shader))
+#define SHADERPOPUP_SETFILENAME      99990 ///< Set a bitmap. @formatParam{param} points to a Filename. (param = reinterpret_cast<Int32>(&fn))
+#define SHADERPOPUP_LOADIMAGE        99991 ///< Open file dialog and set user result.
+#define SHADERPOPUP_EDITPARAMS       99999 ///< Edit shaders in the Attribute Manager.
+#define SHADERPOPUP_RELOADIMAGE      99998 ///< Reload the image. (Only works for a single bitmap shader.)
+#define SHADERPOPUP_EDITIMAGE        99997 ///< Edit image in external application. (Only works for a single bitmap shader.)
+#define SHADERPOPUP_COPYCHANNEL      99995 ///< Copy the shader to the copy buffer. (Only works for a single shader.)
+#define SHADERPOPUP_PASTECHANNEL     99994 ///< Paste the copy buffer. (Works for multiple shaders.)
+#define SHADERPOPUP_CREATENEWTEXTURE 99993 ///< Create a new BodyPaint texture. (Only works for a single shader.)
+#define SHADERPOPUP_CLEARSHADER      99992 ///< lear the shaders.
+
+// @}
 
 #define DEFAULTFILENAME_SHADER_SURFACES	1001
 #define DEFAULTFILENAME_SHADER_EFFECTS	1002
@@ -2718,9 +3041,9 @@ enum VIEWPORT_PICK_FLAGS
 enum BACKGROUNDHANDLERCOMMAND
 {
 	BACKGROUNDHANDLERCOMMAND_ISRUNNING = 100,
-	BACKGROUNDHANDLERCOMMAND_STOP			 = 101,
-	BACKGROUNDHANDLERCOMMAND_START		 = 102,
-	BACKGROUNDHANDLERCOMMAND_REMOVE		 = 103
+	BACKGROUNDHANDLERCOMMAND_STOP = 101,
+	BACKGROUNDHANDLERCOMMAND_START = 102,
+	BACKGROUNDHANDLERCOMMAND_REMOVE = 103
 } ENUM_END_LIST(BACKGROUNDHANDLERCOMMAND);
 
 #define BACKGROUNDHANDLER_PRIORITY_RENDERACTIVEMATERIAL		 5000
@@ -2731,14 +3054,14 @@ enum BACKGROUNDHANDLERCOMMAND
 
 enum BACKGROUNDHANDLERFLAGS
 {
-	BACKGROUNDHANDLERFLAGS_0									= 0,
-	BACKGROUNDHANDLERFLAGS_VIEWREDRAW					= (1 << 0),
-	BACKGROUNDHANDLERFLAGS_EDITORRENDDER			= (1 << 1),
-	BACKGROUNDHANDLERFLAGS_MATERIALPREVIEW		= (1 << 2),
-	BACKGROUNDHANDLERFLAGS_RENDEREXTERNAL			= (1 << 3),
-	BACKGROUNDHANDLERFLAGS_PRIVATE_VIEWREDRAW	= (1 << 4),
+	BACKGROUNDHANDLERFLAGS_0 = 0,
+	BACKGROUNDHANDLERFLAGS_VIEWREDRAW = (1 << 0),
+	BACKGROUNDHANDLERFLAGS_EDITORRENDDER = (1 << 1),
+	BACKGROUNDHANDLERFLAGS_MATERIALPREVIEW = (1 << 2),
+	BACKGROUNDHANDLERFLAGS_RENDEREXTERNAL = (1 << 3),
+	BACKGROUNDHANDLERFLAGS_PRIVATE_VIEWREDRAW = (1 << 4),
 
-	BACKGROUNDHANDLERFLAGS_SHUTDOWN						= -1
+	BACKGROUNDHANDLERFLAGS_SHUTDOWN = -1
 } ENUM_END_FLAGS(BACKGROUNDHANDLERFLAGS);
 
 #define BACKGROUNDHANDLER_TYPECLASS_C4D	1000
@@ -2746,123 +3069,156 @@ enum BACKGROUNDHANDLERFLAGS
 // Identify File
 enum IDENTIFYFILE
 {
-	IDENTIFYFILE_0						 = 0,
-	IDENTIFYFILE_SCENE				 = (1 << 0),
-	IDENTIFYFILE_IMAGE				 = (1 << 1),
-	IDENTIFYFILE_MOVIE				 = (1 << 2),
+	IDENTIFYFILE_0 = 0,
+	IDENTIFYFILE_SCENE = (1 << 0),
+	IDENTIFYFILE_IMAGE = (1 << 1),
+	IDENTIFYFILE_MOVIE = (1 << 2),
 	IDENTIFYFILE_SKIPQUICKTIME = (1 << 3),
-	IDENTIFYFILE_SCRIPT				 = (1 << 4),
-	IDENTIFYFILE_COFFEE				 = (1 << 5),
-	IDENTIFYFILE_SOUND				 = (1 << 6),
-	IDENTIFYFILE_LAYOUT				 = (1 << 7),
-	IDENTIFYFILE_PYTHON				 = (1 << 8)
+	IDENTIFYFILE_SCRIPT = (1 << 4),
+	IDENTIFYFILE_COFFEE = (1 << 5),
+	IDENTIFYFILE_SOUND = (1 << 6),
+	IDENTIFYFILE_LAYOUT = (1 << 7),
+	IDENTIFYFILE_PYTHON = (1 << 8)
 } ENUM_END_FLAGS(IDENTIFYFILE);
 
 enum CALCHARDSHADOW
 {
-	CALCHARDSHADOW_0								 = 0,
-	CALCHARDSHADOW_TRANSPARENCY			 = (1 << 0),
-	CALCHARDSHADOW_SPECIALGISHADOW	 = (1 << 29),
+	CALCHARDSHADOW_0 = 0,
+	CALCHARDSHADOW_TRANSPARENCY = (1 << 0),
+	CALCHARDSHADOW_SPECIALGISHADOW = (1 << 29),
 	CALCHARDSHADOW_SPECIALSELFSHADOW = (1 << 30)
 } ENUM_END_FLAGS(CALCHARDSHADOW);
 
 enum ILLUMINATEFLAGS
 {
-	ILLUMINATEFLAGS_0																 = 0,
-	ILLUMINATEFLAGS_SHADOW													 = (1 << 0),
-	ILLUMINATEFLAGS_NOENVIRONMENT										 = (1 << 1),
-	ILLUMINATEFLAGS_DISABLESHADOWMAP_CORRECTION			 = (1 << 20),
+	ILLUMINATEFLAGS_0 = 0,
+	ILLUMINATEFLAGS_SHADOW = (1 << 0),
+	ILLUMINATEFLAGS_NOENVIRONMENT = (1 << 1),
+	ILLUMINATEFLAGS_DISABLESHADOWMAP_CORRECTION = (1 << 20),
 	ILLUMINATEFLAGS_DISABLESHADOWCASTERMP_CORRECTION = (1 << 21),
-	ILLUMINATEFLAGS_LIGHTDIRNORMALS									 = (1 << 22),
-	ILLUMINATEFLAGS_NODISTANCEFALLOFF								 = (1 << 23),
-	ILLUMINATEFLAGS_NOGRAIN													 = (1 << 24),
-	ILLUMINATEFLAGS_BACKLIGHT												 = (1 << 25)
+	ILLUMINATEFLAGS_LIGHTDIRNORMALS = (1 << 22),
+	ILLUMINATEFLAGS_NODISTANCEFALLOFF = (1 << 23),
+	ILLUMINATEFLAGS_NOGRAIN = (1 << 24),
+	ILLUMINATEFLAGS_BACKLIGHT = (1 << 25)
 } ENUM_END_FLAGS(ILLUMINATEFLAGS);
 
 enum RAYBIT
 {
-	RAYBIT_0								 = 0,
-	RAYBIT_REFLECTION				 = (1 << 0),	// ray chain contains a reflection ray
-	RAYBIT_TRANSPARENCY			 = (1 << 1),	// ray chain contains a transparency ray (note: refractions are not contained)
-	RAYBIT_REFRACTION				 = (1 << 2),	// ray chain contains a refraction ray
-	RAYBIT_CUSTOM						 = (1 << 3),	// ray chain contains a custom ray
+	RAYBIT_0 = 0,
+	RAYBIT_REFLECTION = (1 << 0),	// ray chain contains a reflection ray
+	RAYBIT_TRANSPARENCY = (1 << 1),	// ray chain contains a transparency ray (note: refractions are not contained)
+	RAYBIT_REFRACTION = (1 << 2),	// ray chain contains a refraction ray
+	RAYBIT_CUSTOM = (1 << 3),	// ray chain contains a custom ray
 
-	RAYBIT_CURR_REFLECTION	 = (1 << 4),	// current ray is a reflection ray
+	RAYBIT_CURR_REFLECTION = (1 << 4),	// current ray is a reflection ray
 	RAYBIT_CURR_TRANSPARENCY = (1 << 5),	// current ray is a transparency ray
-	RAYBIT_CURR_REFRACTION	 = (1 << 6),	// current ray is a refraction ray
-	RAYBIT_CURR_CUSTOM			 = (1 << 7),	// current ray is a custom ray
+	RAYBIT_CURR_REFRACTION = (1 << 6),	// current ray is a refraction ray
+	RAYBIT_CURR_CUSTOM = (1 << 7),	// current ray is a custom ray
 
-	RAYBIT_VOLUMETRICLIGHT	 = (1 << 8),	// current ray is used to calculate a volumetric light
-	RAYBIT_ALLOWVLMIX				 = (1 << 9),	// custom mixing of visible light sources allowed for this ray; bit must be deleted by shader if used
+	RAYBIT_VOLUMETRICLIGHT = (1 << 8),	// current ray is used to calculate a volumetric light
+	RAYBIT_ALLOWVLMIX = (1 << 9),	// custom mixing of visible light sources allowed for this ray; bit must be deleted by shader if used
 
-	RAYBIT_GI								 = (1 << 10),	// current ray is a Global Illumination ray
-	RAYBIT_BLURRY						 = (1 << 11),	// current ray is a blurry ray
-	RAYBIT_SSS							 = (1 << 12),	// current ray is a subsurface ray
+	RAYBIT_GI = (1 << 10),	// current ray is a Global Illumination ray
+	RAYBIT_BLURRY = (1 << 11),	// current ray is a blurry ray
+	RAYBIT_SSS = (1 << 12),	// current ray is a subsurface ray
 
-	RAYBIT_AO								 = (1 << 13),	// current ray is an Ambient Occlusion ray
-	RAYBIT_COMPOSITING			 = (1 << 14)	// current ray is a compositing ray
+	RAYBIT_AO = (1 << 13),	// current ray is an Ambient Occlusion ray
+	RAYBIT_COMPOSITING = (1 << 14)	// current ray is a compositing ray
 } ENUM_END_FLAGS(RAYBIT);
+
+
+/// @addtogroup VOLUMEINFO
+/// @ingroup group_enumeration
+/// @{
 
 enum VOLUMEINFO
 {
-	VOLUMEINFO_0									= 0,
-	VOLUMEINFO_REFLECTION					= 0x00000002,	// shader calculates reflections
-	VOLUMEINFO_TRANSPARENCY				= 0x00000004,	// shader calculates transparency
-	VOLUMEINFO_ALPHA							= 0x00000008,	// shader calculates alpha
-	VOLUMEINFO_CHANGENORMAL				= 0x00002000,	// shader calculates bump mapping
-	VOLUMEINFO_DISPLACEMENT				= 0x00004000,	// shader calculates displacement mapping
-	VOLUMEINFO_ENVREQUIRED				= 0x00100000,	// shader needs environment reflection data
-	VOLUMEINFO_DUDVREQUIRED				= 0x00200000,	// shader needs du/dv bump mapping data
-	VOLUMEINFO_MIPSAT							= 0x02000000,	// shader requires MIP/SAT data
-	VOLUMEINFO_VOLUMETRIC					= 0x20000000,	// shader is a volumetric shader
-	VOLUMEINFO_TRANSFORM					= 0x00000010,	// shader needs back-transformed data
-	VOLUMEINFO_EVALUATEPROJECTION	= 0x04000000,	// shader requires texture tag projections
-	VOLUMEINFO_PRIVATE_GLOW				= 0x10000000,	// shader calculates glow (private)
-	VOLUMEINFO_INITCALCULATION		= -1	// shader needs initcalculation call
+	VOLUMEINFO_0 = 0,          /// None.
+	VOLUMEINFO_REFLECTION = 0x00000002, /// Shader calculates reflections
+	VOLUMEINFO_TRANSPARENCY = 0x00000004, /// Shader calculates transparency
+	VOLUMEINFO_ALPHA = 0x00000008, /// Shader calculates alpha
+	VOLUMEINFO_CHANGENORMAL = 0x00002000, /// Shader calculates bump mapping
+	VOLUMEINFO_DISPLACEMENT = 0x00004000, /// Shader calculates displacement mapping
+	VOLUMEINFO_ENVREQUIRED = 0x00100000, /// Shader needs environment reflection data
+	VOLUMEINFO_DUDVREQUIRED = 0x00200000, /// Shader needs du/dv bump mapping data
+	VOLUMEINFO_MIPSAT = 0x02000000, /// Shader requires MIP/SAT data
+	VOLUMEINFO_VOLUMETRIC = 0x20000000, /// Shader is a volumetric shader
+	VOLUMEINFO_TRANSFORM = 0x00000010, /// Shader needs back-transformed data.
+	VOLUMEINFO_EVALUATEPROJECTION = 0x04000000, /// Shader requires texture tag projections.
+	VOLUMEINFO_PRIVATE_GLOW = 0x10000000, /// Shader calculates glow. @markPrivate.
+	VOLUMEINFO_INITCALCULATION = -1  /// Shader needs BaseVolumeData::InitCalculation() / BaseMaterial::InitCalculation() call.
 } ENUM_END_FLAGS(VOLUMEINFO);
+
+/// @}
 
 enum VIDEOPOSTINFO
 {
-	VIDEOPOSTINFO_0											 = 0,
-	VIDEOPOSTINFO_STOREFRAGMENTS				 = (1 << 0),	// VP needs fragment information for whole image at VP_INNER/VP_RENDER
-	VIDEOPOSTINFO_EXECUTELINE						 = (1 << 4),	// line override
-	VIDEOPOSTINFO_EXECUTEPIXEL					 = (1 << 5),	// pixel override
-	VIDEOPOSTINFO_REQUEST_MOTIONMATRIX	 = (1 << 6),
+	VIDEOPOSTINFO_0 = 0,
+	VIDEOPOSTINFO_STOREFRAGMENTS = (1 << 0),	// VP needs fragment information for whole image at VP_INNER/VP_RENDER
+	VIDEOPOSTINFO_EXECUTELINE = (1 << 4),	// line override
+	VIDEOPOSTINFO_EXECUTEPIXEL = (1 << 5),	// pixel override
+	VIDEOPOSTINFO_REQUEST_MOTIONMATRIX = (1 << 6),
 	VIDEOPOSTINFO_REQUEST_MOTIONGEOMETRY = (1 << 7),
-	VIDEOPOSTINFO_CALCVOLUMETRIC				 = (1 << 8),
-	VIDEOPOSTINFO_CALCSHADOW						 = (1 << 9),
-	VIDEOPOSTINFO_CUSTOMLENS						 = (1 << 10),
-	VIDEOPOSTINFO_GLOBALILLUMINATION		 = (1 << 11),	// post effect is GI hook
-	VIDEOPOSTINFO_CAUSTICS							 = (1 << 12),	// post effect is Caustics hook
-	VIDEOPOSTINFO_CUSTOMLENS_EXTENDED		 = (1 << 13),	// post effect is extended lens for physical render
-	VIDEOPOSTINFO_NETFRAME							 = (1 << 14),	// post effect is Net Frame hook
-	VIDEOPOSTINFO_NETRUNONSERVER				 = (1 << 15),	// post effect can be run on the Net Server
-	VIDEOPOSTINFO_NETCREATEBUFFER				 = (1 << 16),	// post effect creates a buffer for Net Client
+	VIDEOPOSTINFO_CALCVOLUMETRIC = (1 << 8),
+	VIDEOPOSTINFO_CALCSHADOW = (1 << 9),
+	VIDEOPOSTINFO_CUSTOMLENS = (1 << 10),
+	VIDEOPOSTINFO_GLOBALILLUMINATION = (1 << 11),	// post effect is GI hook
+	VIDEOPOSTINFO_CAUSTICS = (1 << 12),	// post effect is Caustics hook
+	VIDEOPOSTINFO_CUSTOMLENS_EXTENDED = (1 << 13),	// post effect is extended lens for physical render
+	VIDEOPOSTINFO_NETFRAME = (1 << 14),	// post effect is Net Frame hook
+	VIDEOPOSTINFO_NETRUNONSERVER = (1 << 15),	// post effect can be run on the Net Server
+	VIDEOPOSTINFO_NETCREATEBUFFER = (1 << 16),	// post effect creates a buffer for Net Client
 } ENUM_END_FLAGS(VIDEOPOSTINFO);
 
+
+/// @addtogroup SHADERINFO
+/// @ingroup group_enumeration
+/// @{
+
+/// Information flags for BaseShader::GetRenderInfo()
 enum SHADERINFO
 {
-	SHADERINFO_0								 = 0,
-	SHADERINFO_TRANSFORM				 = 0x00000004,	// channel shader needs back-transformed data
-	SHADERINFO_BUMP_SUPPORT			 = 0x00000010,	// channel shader supports new bump system (strongly recommended for all shader but simple 2d (UV) samplers)
-	SHADERINFO_ALPHA_SUPPORT		 = 0x00000020,	// channel shader supports alpha output
-	SHADERINFO_REFLECTIONS			 = 0x00000040,	// channel shader computes reflections
-	SHADERINFO_DUDVREQUIRED			 = 0x00000080,	// channel shader needs du/dv bump mapping data
-	SHADERINFO_DYNAMICSUBSHADERS = 0x00000100		// channel shader has a dynamic list of sub shaders in its descriptions
+	SHADERINFO_0 = 0,          ///< None.
+	SHADERINFO_TRANSFORM = 0x00000004, ///< Channel needs back-transformed data. (Required for BaseVolumeData::back_p.)
+	SHADERINFO_BUMP_SUPPORT = 0x00000010, ///< Channel shader supports the new bump system. This is strongly recommended for all shaders except simple 2D (UV) samplers.
+	SHADERINFO_ALPHA_SUPPORT = 0x00000020, ///< Channel shader supports alpha output.
+	SHADERINFO_REFLECTIONS = 0x00000040, ///< Channel shader computes reflections.
+	SHADERINFO_DUDVREQUIRED = 0x00000080, ///< Channel shader needs du/dv bump mapping data. See BaseVolumeData::ddu and BaseVolumeData::ddv.
+	SHADERINFO_DYNAMICSUBSHADERS = 0x00000100  ///< Channel shader has a dynamic list of subshaders in its description.
 } ENUM_END_FLAGS(SHADERINFO);
 
+/// @}
+
+
+/// @addtogroup SAMPLEBUMP
+/// @ingroup group_enumeration
+/// @{
+
+/// Flags for sampling bump mapping in the rendering API.
 enum SAMPLEBUMP
 {
-	SAMPLEBUMP_0					= 0,
-	SAMPLEBUMP_MIPFALLOFF	= (1 << 0)
+	SAMPLEBUMP_0 = 0,       ///< None.
+	SAMPLEBUMP_MIPFALLOFF = (1 << 0) ///< Additional bump change over distance is considered.
 };
 
+/// @}
+
+
+/// @addtogroup INITCALCULATION
+/// @ingroup group_enumeration
+/// @{
+
+/// Material calculation types for the rendering API.
+/// @see BaseMaterial::InitCalculation() / MaterialData::InitCalculation()
 enum INITCALCULATION
 {
-	INITCALCULATION_SURFACE			 = 0,
-	INITCALCULATION_TRANSPARENCY = 1,
-	INITCALCULATION_DISPLACEMENT = 3
+	INITCALCULATION_SURFACE = 0, ///< Specifies that the ::INITCALCULATION has been called during rendering for surface calculation.
+	INITCALCULATION_TRANSPARENCY = 1, ///< Specifies that the ::INITCALCULATION has been called during rendering for shadow rays computation.
+	INITCALCULATION_DISPLACEMENT = 3  ///< Specifies that the ::INITCALCULATION has been called before rendering for displace calculation.
 } ENUM_END_LIST(INITCALCULATION);
+
+/// @}
+
 
 // COFFEE Scripts
 #define ID_SCRIPTFOLDER	1026688
@@ -2900,8 +3256,8 @@ enum INITCALCULATION
 
 enum MULTIPASSCHANNEL
 {
-	MULTIPASSCHANNEL_0							 = 0,
-	MULTIPASSCHANNEL_IMAGELAYER			 = (1 << 0),
+	MULTIPASSCHANNEL_0 = 0,
+	MULTIPASSCHANNEL_IMAGELAYER = (1 << 0),
 	MULTIPASSCHANNEL_MATERIALCHANNEL = (1 << 1)
 } ENUM_END_LIST(MULTIPASSCHANNEL);
 
@@ -2922,18 +3278,18 @@ enum DLG_TYPE
 
 enum MULTIMSG_ROUTE
 {
-	MULTIMSG_ROUTE_NONE			 = 0,
-	MULTIMSG_ROUTE_UP				 = 1,
-	MULTIMSG_ROUTE_ROOT			 = 2,
-	MULTIMSG_ROUTE_DOWN			 = 3,
+	MULTIMSG_ROUTE_NONE = 0,
+	MULTIMSG_ROUTE_UP = 1,
+	MULTIMSG_ROUTE_ROOT = 2,
+	MULTIMSG_ROUTE_DOWN = 3,
 	MULTIMSG_ROUTE_BROADCAST = 4
 } ENUM_END_LIST(MULTIMSG_ROUTE);
 
 enum VPGETFRAGMENTS
 {
-	VPGETFRAGMENTS_0	 = 0,
+	VPGETFRAGMENTS_0 = 0,
 	VPGETFRAGMENTS_Z_P = (1 << 0),
-	VPGETFRAGMENTS_N	 = (1 << 1)
+	VPGETFRAGMENTS_N = (1 << 1)
 } ENUM_END_FLAGS(VPGETFRAGMENTS);
 
 #define MSG_GICSEX					 1000969
@@ -2942,18 +3298,19 @@ enum VPGETFRAGMENTS
 #define VPglobalillumination 1021096
 #define VPGIShadingChain		 1026950
 #define VPAOShadingChain		 1029427
+#define VPbirender					 1028868
 
 enum SIGNALMODE
 {
-	SIGNALMODE_DEFAULT	= 0,
-	SIGNALMODE_RESERVED	= 1
+	SIGNALMODE_DEFAULT = 0,
+	SIGNALMODE_RESERVED = 1
 } ENUM_END_LIST(SIGNALMODE);
 
 enum QUALIFIER
 {
-	QUALIFIER_0				 = 0,
-	QUALIFIER_SHIFT		 = (1 << 0),
-	QUALIFIER_CTRL		 = (1 << 1),
+	QUALIFIER_0 = 0,
+	QUALIFIER_SHIFT = (1 << 0),
+	QUALIFIER_CTRL = (1 << 1),
 	QUALIFIER_MOUSEHIT = (1 << 10)
 } ENUM_END_FLAGS(QUALIFIER);
 
@@ -2967,7 +3324,11 @@ enum QUALIFIER
 #define CODEEDITOR_GETERROR_POS		 'resp'
 #define CODEEDITOR_EXECUTE				 'exec'
 #define CODEEDITOR_DISABLEUNDO		 'dsud'
+#define CODEEDITOR_STOREUNDO			 'stun'
+#define CODEEDITOR_RESTOREUNDO		 'reun'
+#define CODEEDITOR_GETID					 'reid'
 
+#define BASECONTAINER_TEMPORARY			440000180
 
 enum
 {
@@ -3043,55 +3404,55 @@ enum
 
 enum
 {
-	LV_GETLINECOUNT						 = 1,	// request the number of lines of the listview
-	LV_GETCOLUMNCOUNT					 = 2,	// request the number of columns of listview
-	LV_GETLINEHEIGHT					 = 3,	// ask for the line height of the specific 'line'
-	LV_GETCOLUMNWIDTH					 = 4,	// ask for the width of the specific 'column' in 'line'
-	LV_GETCOLUMTYPE						 = 5,	// ask for the type of the column in 'line',
-	LV_COLUMN_TEXT						 = C4D_FOUR_BYTE(0, 't', 'x', 't'),
-	LV_COLUMN_EDITTEXT				 = C4D_FOUR_BYTE(0, 'e', 'd', 't'),
-	LV_COLUMN_BMP							 = C4D_FOUR_BYTE(0, 'b', 'm', 'p'),
-	LV_COLUMN_CHECKBOX				 = C4D_FOUR_BYTE(0, 'c', 'h', 'k'),
-	LV_COLUMN_BUTTON					 = C4D_FOUR_BYTE(0, 'b', 't', 'n'),
-	LV_COLUMN_USERDRAW				 = C4D_FOUR_BYTE(0, 'u', 's', 'r'),
-	LV_COLUMN_COLORVIEW				 = C4D_FOUR_BYTE(0, 'c', 'l', 'v'),
+	LV_GETLINECOUNT = 1,	// request the number of lines of the listview
+	LV_GETCOLUMNCOUNT = 2,	// request the number of columns of listview
+	LV_GETLINEHEIGHT = 3,	// ask for the line height of the specific 'line'
+	LV_GETCOLUMNWIDTH = 4,	// ask for the width of the specific 'column' in 'line'
+	LV_GETCOLUMTYPE = 5,	// ask for the type of the column in 'line',
+	LV_COLUMN_TEXT = C4D_FOUR_BYTE(0, 't', 'x', 't'),
+	LV_COLUMN_EDITTEXT = C4D_FOUR_BYTE(0, 'e', 'd', 't'),
+	LV_COLUMN_BMP = C4D_FOUR_BYTE(0, 'b', 'm', 'p'),
+	LV_COLUMN_CHECKBOX = C4D_FOUR_BYTE(0, 'c', 'h', 'k'),
+	LV_COLUMN_BUTTON = C4D_FOUR_BYTE(0, 'b', 't', 'n'),
+	LV_COLUMN_USERDRAW = C4D_FOUR_BYTE(0, 'u', 's', 'r'),
+	LV_COLUMN_COLORVIEW = C4D_FOUR_BYTE(0, 'c', 'l', 'v'),
 
-	LV_GETCOLUMDATA						 = 6,		// ask for the data of the column in 'line',
-	LV_GETLINESELECTED				 = 7,		// ask if the line is selected
-	LV_GETCOLSPACE						 = 8,		// ask for space in pixels between two columns
-	LV_GETLINESPACE						 = 9,		// ask for space in pixels between two lines
-	LV_GETFIXEDLAYOUT					 = 10,	// ask for fixed layout: false...indiv. layout, true...fixed layout
-	LV_DESTROYLISTVIEW				 = 11,	// destroy listview and all data
-	LV_INITCACHE							 = 12,	// (internal) before call the listview
-	LV_NOAUTOCOLUMN						 = 13,	// ask for fast layout: false...eachline is ask for the width, true...only the first line is asked for the columnwidth -> huge speedup
+	LV_GETCOLUMDATA = 6,		// ask for the data of the column in 'line',
+	LV_GETLINESELECTED = 7,		// ask if the line is selected
+	LV_GETCOLSPACE = 8,		// ask for space in pixels between two columns
+	LV_GETLINESPACE = 9,		// ask for space in pixels between two lines
+	LV_GETFIXEDLAYOUT = 10,	// ask for fixed layout: false...indiv. layout, true...fixed layout
+	LV_DESTROYLISTVIEW = 11,	// destroy listview and all data
+	LV_INITCACHE = 12,	// (internal) before call the listview
+	LV_NOAUTOCOLUMN = 13,	// ask for fast layout: false...eachline is ask for the width, true...only the first line is asked for the columnwidth -> huge speedup
 
-	LV_LMOUSEDOWN							 = 50,	// mouse down at line, col,
-	LV_ACTION									 = 51,	// gadget command, col, data1 = msg,
-	LV_USERDRAW								 = 52,
-	LV_REDRAW									 = 53,	// redraw the listview (supermessage)
-	LV_DATACHANGED						 = 54,	// layout data has changed
-	LV_SHOWLINE								 = 55,	// scroll line into the visible area
-	LV_DRAGRECEIVE						 = 56,	// drag receive
-	LV_RMOUSEDOWN							 = 57,	// mouse down at line, col,
+	LV_LMOUSEDOWN = 50,	// mouse down at line, col,
+	LV_ACTION = 51,	// gadget command, col, data1 = msg,
+	LV_USERDRAW = 52,
+	LV_REDRAW = 53,	// redraw the listview (supermessage)
+	LV_DATACHANGED = 54,	// layout data has changed
+	LV_SHOWLINE = 55,	// scroll line into the visible area
+	LV_DRAGRECEIVE = 56,	// drag receive
+	LV_RMOUSEDOWN = 57,	// mouse down at line, col,
 
 	LV_SIMPLE_SELECTIONCHANGED = 100,	// simplelistview: selection changed
-	LV_SIMPLE_CHECKBOXCHANGED	 = 101,	// simplelistview: checkbox changed
-	LV_SIMPLE_FOCUSITEM				 = 102,	// simplelistview: set focus to item
-	LV_SIMPLE_BUTTONCLICK			 = 103,	// simplelistview: button click
-	LV_SIMPLE_ITEM_ID					 = 1,
-	LV_SIMPLE_COL_ID					 = 2,
-	LV_SIMPLE_DATA						 = 3,
-	LV_SIMPLE_DOUBLECLICK			 = 104,	// doubleclick occured
-	LV_SIMPLE_FOCUSITEM_NC		 = 105,	// focus item, but no change
-	LV_SIMPLE_RMOUSE					 = 106,
-	LV_SIMPLE_USERDRAW				 = 107,
+	LV_SIMPLE_CHECKBOXCHANGED = 101,	// simplelistview: checkbox changed
+	LV_SIMPLE_FOCUSITEM = 102,	// simplelistview: set focus to item
+	LV_SIMPLE_BUTTONCLICK = 103,	// simplelistview: button click
+	LV_SIMPLE_ITEM_ID = 1,
+	LV_SIMPLE_COL_ID = 2,
+	LV_SIMPLE_DATA = 3,
+	LV_SIMPLE_DOUBLECLICK = 104,	// doubleclick occured
+	LV_SIMPLE_FOCUSITEM_NC = 105,	// focus item, but no change
+	LV_SIMPLE_RMOUSE = 106,
+	LV_SIMPLE_USERDRAW = 107,
 
 	// result types
-	LV_RES_INT		= 'long',
+	LV_RES_INT = 'long',
 	LV_RES_BITMAP = C4D_FOUR_BYTE(0, 'b', 'm', 'p'),
 	LV_RES_STRING = 'strg',
 	LV_RES_VECTOR = C4D_FOUR_BYTE(0, 'v', 'e', 'c'),
-	LV_RES_NIL		= C4D_FOUR_BYTE(0, 'n', 'i', 'l'),
+	LV_RES_NIL = C4D_FOUR_BYTE(0, 'n', 'i', 'l'),
 
 	LV__
 };
@@ -3100,95 +3461,100 @@ enum
 enum GlVertexBufferSubBufferType { VBArrayBuffer = 0, VBElementArrayBuffer16 = 1, VBElementArrayBuffer32 = 2 };
 enum GlVertexBufferAccessFlags { VBReadWrite = 0, VBReadOnly = 1, VBWriteOnly = 2 };
 
-	#if defined __PC
+#if defined MAXON_TARGET_WINDOWS
 typedef	UINT C4DGLuint;
 typedef INT C4DGLint;
-	#elif defined __MAC
+#elif defined MAXON_TARGET_OSX
 typedef unsigned int C4DGLuint;
 typedef int	C4DGLint;
-	#elif defined __LINUX
+#elif defined MAXON_TARGET_LINUX
 typedef	UINT C4DGLuint;
 typedef INT C4DGLint;
-	#endif
+#endif
 
 typedef Int GlProgramParameter;
-	#define C4D_GL_VARS_DEFINED
+#define C4D_GL_VARS_DEFINED
 #endif
 
 #ifndef _C4D_GL_H_
 enum GlProgramType { VertexProgram = 1, FragmentProgram = 2, CompiledProgram = 3, GeometryProgram = 4 };
-enum GlUniformParamType { UniformFloat1					 = 0, UniformFloat2 = 1, UniformFloat3 = 2, UniformFloat4 = 3,
-													UniformInt1						 = 4, UniformInt2 = 5, UniformInt3 = 6, UniformInt4 = 7,
-													UniformUint1					 = 8, UniformUint2 = 9, UniforUint3 = 10, UniformUint4 = 11,
-													UniformFloatMatrix2		 = 12, UniformFloatMatrix3 = 13, UniformFloatMatrix4 = 14,
-													UniformTexture1D			 = 15, UniformTexture2D = 16, UniformTexture3D = 17, UniformTextureCube = 18,
-													UniformTexture1Di			 = 19, UniformTexture2Di = 20, UniformTexture3Di = 21, UniformTextureCubei = 22,
-													UniformTexture1Du			 = 23, UniformTexture2Du = 24, UniformTexture3Du = 25, UniformTextureCubeu = 26,
-													UniformTexture1DArray	 = 27, UniformTexture2DArray = 28,
-													UniformTexture1DArrayi = 29, UniformTexture2DArrayi = 30,
-													UniformTexture1DArrayu = 31, UniformTexture2DArrayu = 32 };
+enum GlUniformParamType {
+	UniformFloat1 = 0, UniformFloat2 = 1, UniformFloat3 = 2, UniformFloat4 = 3,
+	UniformInt1 = 4, UniformInt2 = 5, UniformInt3 = 6, UniformInt4 = 7,
+	UniformUint1 = 8, UniformUint2 = 9, UniforUint3 = 10, UniformUint4 = 11,
+	UniformFloatMatrix2 = 12, UniformFloatMatrix3 = 13, UniformFloatMatrix4 = 14,
+	UniformTexture1D = 15, UniformTexture2D = 16, UniformTexture3D = 17, UniformTextureCube = 18,
+	UniformTexture1Di = 19, UniformTexture2Di = 20, UniformTexture3Di = 21, UniformTextureCubei = 22,
+	UniformTexture1Du = 23, UniformTexture2Du = 24, UniformTexture3Du = 25, UniformTextureCubeu = 26,
+	UniformTexture1DArray = 27, UniformTexture2DArray = 28,
+	UniformTexture1DArrayi = 29, UniformTexture2DArrayi = 30,
+	UniformTexture1DArrayu = 31, UniformTexture2DArrayu = 32
+};
 #endif
 
 typedef UChar PIX;
 
 enum NOTIFY_EVENT
 {
-	NOTIFY_EVENT_NONE				 = -1,
-	NOTIFY_EVENT_ALL				 = 10,
-	NOTIFY_EVENT_ANY				 = 11,
+	NOTIFY_EVENT_NONE = -1,
+	NOTIFY_EVENT_ALL = 10,
+	NOTIFY_EVENT_ANY = 11,
 	//////////////////////////////////////////////////////////////////////////
-	NOTIFY_EVENT_PRE_DEFORM	 = 100,
+	NOTIFY_EVENT_PRE_DEFORM = 100,
 	NOTIFY_EVENT_POST_DEFORM = 101,
-	NOTIFY_EVENT_UNDO				 = 102,
-	NOTIFY_EVENT_MESSAGE		 = 103,	// NotifyEventMsg
-	NOTIFY_EVENT_FREE				 = 104,
+	NOTIFY_EVENT_UNDO = 102,
+	NOTIFY_EVENT_MESSAGE = 103,	// NotifyEventMsg
+	NOTIFY_EVENT_FREE = 104,
 	//////////////////////////////////////////////////////////////////////////
-	NOTIFY_EVENT_COPY				 = 107,
-	NOTIFY_EVENT_CACHE			 = 108,
-	NOTIFY_EVENT_REMOVE			 = 109,
-	NOTIFY_EVENT_CLONE			 = 110,
+	NOTIFY_EVENT_COPY = 107,
+	NOTIFY_EVENT_CACHE = 108,
+	NOTIFY_EVENT_REMOVE = 109,
+	NOTIFY_EVENT_CLONE = 110,
+	NOTIFY_EVENT_INSERT = 111,
+	NOTIFY_EVENT_SELECTIONBIT = 112,
+	NOTIFY_EVENT_HIGHLIGHTBIT = 113,
 	//////////////////////////////////////////////////////////////////////////
-	NOTIFY_EVENT_SETNAME		 = 200,
+	NOTIFY_EVENT_SETNAME = 200,
 	//////////////////////////////////////////////////////////////////////////
-	NOTIFY_EVENT_0					 = 0
+	NOTIFY_EVENT_0 = 0
 } ENUM_END_LIST(NOTIFY_EVENT);
 
 enum NOTIFY_EVENT_FLAG
 {
-	NOTIFY_EVENT_FLAG_REMOVED				 = (1 << 0),	// PRIVATE
+	NOTIFY_EVENT_FLAG_REMOVED = (1 << 0),	// PRIVATE
 	//////////////////////////////////////////////////////////////////////////
-	NOTIFY_EVENT_FLAG_COPY_UNDO			 = (1 << 10),
-	NOTIFY_EVENT_FLAG_COPY_CACHE		 = (1 << 11),
+	NOTIFY_EVENT_FLAG_COPY_UNDO = (1 << 10),
+	NOTIFY_EVENT_FLAG_COPY_CACHE = (1 << 11),
 	NOTIFY_EVENT_FLAG_COPY_DUPLICATE = (1 << 12),
-	NOTIFY_EVENT_FLAG_ONCE					 = (1 << 13),
-	NOTIFY_EVENT_FLAG_COPY					 = ((1 << 10) | (1 << 11) | (1 << 12)),
+	NOTIFY_EVENT_FLAG_ONCE = (1 << 13),
+	NOTIFY_EVENT_FLAG_COPY = ((1 << 10) | (1 << 11) | (1 << 12)),
 	//////////////////////////////////////////////////////////////////////////
-	NOTIFY_EVENT_FLAG_0							 =0
+	NOTIFY_EVENT_FLAG_0 = 0
 } ENUM_END_FLAGS(NOTIFY_EVENT_FLAG);
 
 enum DESCIDSTATE
 {
-	DESCIDSTATE_0			 = 0,
+	DESCIDSTATE_0 = 0,
 	DESCIDSTATE_LOCKED = 1 << 0,
 	DESCIDSTATE_HIDDEN = 1 << 1
 } ENUM_END_FLAGS(DESCIDSTATE);
 
 enum BASEDRAW_HOOK_MESSAGE
 {
-	BASEDRAW_MESSAGE_ADAPTVIEW				= 1,
-	BASEDRAW_MESSAGE_SET_SCENE_CAMERA	= 2,
-	BASEDRAW_MESSAGE_DELETEBASEDRAW		= 3
+	BASEDRAW_MESSAGE_ADAPTVIEW = 1,
+	BASEDRAW_MESSAGE_SET_SCENE_CAMERA = 2,
+	BASEDRAW_MESSAGE_DELETEBASEDRAW = 3
 } ENUM_END_LIST(BASEDRAW_HOOK_MESSAGE);
 
 enum CINEMAINFO
 {
-	CINEMAINFO_TABLETT			 = 4,
-	CINEMAINFO_OPENGL				 = 7,
+	CINEMAINFO_TABLETT = 4,
+	CINEMAINFO_OPENGL = 7,
 	CINEMAINFO_TABLETT_HIRES = 8,
-	CINEMAINFO_FORBID_GUI		 = 9,
-	CINEMAINFO_FORBID_OGL		 = 10,
-	CINEMAINFO_LISTEN				 = 11,
-	CINEMAINFO_WATCH_PID		 = 12,
+	CINEMAINFO_FORBID_GUI = 9,
+	CINEMAINFO_FORBID_OGL = 10,
+	CINEMAINFO_LISTEN = 11,
+	CINEMAINFO_WATCH_PID = 12,
 	CINEMAINFO_SETFOREGROUND = 13
 } ENUM_END_FLAGS(CINEMAINFO);
 
@@ -3196,7 +3562,7 @@ enum CINEMAINFO
 enum PROTOCOL
 {
 	PROTOCOL_ZERO = 0,
-	PROTOCOL_IPV4	=	1000,
+	PROTOCOL_IPV4 = 1000,
 	PROTOCOL_IPV6
 } ENUM_END_LIST(PROTOCOL);
 
@@ -3209,24 +3575,25 @@ enum PROXYTYPE
 
 enum RESOLVERESULT
 {
-	RESOLVERESULT_OK				=0,
-	RESOLVERESULT_RETRY			=2,	// temporary failure, a retry might succeed
-	RESOLVERESULT_SETUP			=3,	// internal failure (should not happen though)
-	RESOLVERESULT_UNKNOWN		=4,	// unknown error while resolving address
-	RESOLVERESULT_ERRINT		=5,	// the interface family is not supported
-	RESOLVERESULT_NONAME		=6,	// could not resolve request, no name found
-	RESOLVERESULT_SERVICE		=7,	// internal failure (pServicename parameter not supported)
-	RESOLVERESULT_SOCKETTYPE=8,	// internal failure (ai_socktype not supported)
-	RESOLVERESULT_UNKNOWNINT=9	// could resolve name but not for the requested interface
+	RESOLVERESULT_OK = 0,
+	RESOLVERESULT_UNKNOWN = 1,	// unknown error while resolving address
 } ENUM_END_LIST(RESOLVERESULT);
 
 enum SERVERJOBLIST
 {
-	SERVERJOBLIST_INACTIVE=1000,
+	SERVERJOBLIST_INACTIVE = 1000,
 	SERVERJOBLIST_ACTIVE,
 	SERVERJOBLIST_DOWNLOAD,
 	SERVERJOBLIST_ALL
 } ENUM_END_LIST(SERVERJOBLIST);
+
+enum EDITION
+{
+	EDITION_C4D = (1 << 0),
+	EDITION_NETCLIENT = (1 << 1),
+	EDITION_NETSERVER = (1 << 2),
+	EDITION_NET = (1 << 1) | (1 << 2),
+} ENUM_END_FLAGS(EDITION);
 
 enum JOBCOMMAND
 {
@@ -3258,7 +3625,7 @@ enum JOBSTATE
 	JOBSTATE_PREPARING_OK,
 
 	JOBSTATE_RENDER_RUNNING,
-	JOBSTATE_RENDER_PAUSED,
+	EX_JOBSTATE_RENDER_PAUSED,			// currently not used
 	JOBSTATE_RENDER_OK,
 	JOBSTATE_RENDER_FAILED,
 
@@ -3274,57 +3641,58 @@ enum JOBSTATE
 	JOBSTATE_ASSEMBLE_OK,
 	JOBSTATE_ASSEMBLE_FAILED,
 
-	JOBSTATE_STOPPED
+	JOBSTATE_STOPPED,
+	JOBSTATE_QUEUED
 } ENUM_END_LIST(JOBSTATE);
 
 enum ZEROCONFMACHINESTATE
 {
-	ZEROCONFMACHINESTATE_ONLINE	 = 1,
+	ZEROCONFMACHINESTATE_ONLINE = 1,
 	ZEROCONFMACHINESTATE_OFFLINE = 2,
 	ZEROCONFMACHINESTATE_REMOVED = 3,
-	ZEROCONFMACHINESTATE_UPDATE	 = 4,
+	ZEROCONFMACHINESTATE_UPDATE = 4,
 } ENUM_END_LIST(ZEROCONFMACHINESTATE);
 
 enum ZEROCONFACTION
 {
-	ZEROCONFACTION_0			 = 0,
+	ZEROCONFACTION_0 = 0,
 	ZEROCONFACTION_RESOLVE = (1 << 0),
 	ZEROCONFACTION_MONITOR = (1 << 1)
 } ENUM_END_FLAGS(ZEROCONFACTION);
 
 enum ZEROCONFERROR
 {
-	ZEROCONFERROR_NOERROR										= 0,
-	ZEROCONFERROR_UNKNOWN										= -65537,	/* 0xFFFE FFFF */
-	ZEROCONFERROR_NOSUCHNAME								= -65538,
-	ZEROCONFERROR_NOMEMORY									= -65539,
-	ZEROCONFERROR_BADPARAM									= -65540,
-	ZEROCONFERROR_BADREFERENCE							= -65541,
-	ZEROCONFERROR_BADSTATE									= -65542,
-	ZEROCONFERROR_BADFLAGS									= -65543,
-	ZEROCONFERROR_UNSUPPORTED								= -65544,
-	ZEROCONFERROR_NOTINITIALIZED						= -65545,
-	ZEROCONFERROR_ALREADYREGISTERED					= -65547,
-	ZEROCONFERROR_NAMECONFLICT							= -65548,
-	ZEROCONFERROR_INVALID										= -65549,
-	ZEROCONFERROR_FIREWALL									= -65550,
-	ZEROCONFERROR_INCOMPATIBLE							= -65551,	/* Client Library Incompatible with daemon */
-	ZEROCONFERROR_BADINTERFACEINDEX					= -65552,
-	ZEROCONFERROR_REFUSED										= -65553,
-	ZEROCONFERROR_NOSUCHRECORD							= -65554,
-	ZEROCONFERROR_NOAUTH										= -65555,
-	ZEROCONFERROR_NOSUCHKEY									= -65556,
-	ZEROCONFERROR_NATTRAVERSAL							= -65557,
-	ZEROCONFERROR_DOUBLENAT									= -65558,
-	ZEROCONFERROR_BADTIME										= -65559,	/* Codes up to here existed in Tiger */
-	ZEROCONFERROR_BADSIG										= -65560,
-	ZEROCONFERROR_BADKEY										= -65561,
-	ZEROCONFERROR_TRANSIENT									= -65562,
-	ZEROCONFERROR_SERVICENOTRUNNING					= -65563,	/* Background daemon not running */
+	ZEROCONFERROR_NOERROR = 0,
+	ZEROCONFERROR_UNKNOWN = -65537,	/* 0xFFFE FFFF */
+	ZEROCONFERROR_NOSUCHNAME = -65538,
+	ZEROCONFERROR_NOMEMORY = -65539,
+	ZEROCONFERROR_BADPARAM = -65540,
+	ZEROCONFERROR_BADREFERENCE = -65541,
+	ZEROCONFERROR_BADSTATE = -65542,
+	ZEROCONFERROR_BADFLAGS = -65543,
+	ZEROCONFERROR_UNSUPPORTED = -65544,
+	ZEROCONFERROR_NOTINITIALIZED = -65545,
+	ZEROCONFERROR_ALREADYREGISTERED = -65547,
+	ZEROCONFERROR_NAMECONFLICT = -65548,
+	ZEROCONFERROR_INVALID = -65549,
+	ZEROCONFERROR_FIREWALL = -65550,
+	ZEROCONFERROR_INCOMPATIBLE = -65551,	/* Client Library Incompatible with daemon */
+	ZEROCONFERROR_BADINTERFACEINDEX = -65552,
+	ZEROCONFERROR_REFUSED = -65553,
+	ZEROCONFERROR_NOSUCHRECORD = -65554,
+	ZEROCONFERROR_NOAUTH = -65555,
+	ZEROCONFERROR_NOSUCHKEY = -65556,
+	ZEROCONFERROR_NATTRAVERSAL = -65557,
+	ZEROCONFERROR_DOUBLENAT = -65558,
+	ZEROCONFERROR_BADTIME = -65559,	/* Codes up to here existed in Tiger */
+	ZEROCONFERROR_BADSIG = -65560,
+	ZEROCONFERROR_BADKEY = -65561,
+	ZEROCONFERROR_TRANSIENT = -65562,
+	ZEROCONFERROR_SERVICENOTRUNNING = -65563,	/* Background daemon not running */
 	ZEROCONFERROR_NATPORTMAPPINGUNSUPPORTED = -65564,	/* NAT doesnt't support NAT_PMP or UPNP */
-	ZEROCONFERROR_NATPORTMAPPINGDISABLED		= -65565,	/* NAT supports NAT-PMP or UPNP but it's disabled by the administrator */
-	ZEROCONFERROR_NOROUTER									= -65566,	/* No router currently configured (probably no network connectivity) */
-	ZEROCONFERROR_POLLINGMODE								= -65567
+	ZEROCONFERROR_NATPORTMAPPINGDISABLED = -65565,	/* NAT supports NAT-PMP or UPNP but it's disabled by the administrator */
+	ZEROCONFERROR_NOROUTER = -65566,	/* No router currently configured (probably no network connectivity) */
+	ZEROCONFERROR_POLLINGMODE = -65567
 } ENUM_END_LIST(ZEROCONFERROR);
 
 #define RENDERSETTING_STATICTAB_OUTPUT			 1
@@ -3335,4 +3703,4 @@ enum ZEROCONFERROR
 #define RENDERSETTING_STATICTAB_STEREO			 6
 #define RENDERSETTING_STATICTAB_NET					 7
 
-#endif
+#endif // GE_PREPASS_H__

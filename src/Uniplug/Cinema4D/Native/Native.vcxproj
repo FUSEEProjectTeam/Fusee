@@ -34,7 +34,7 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -139,8 +139,8 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt) </OutputFile>
-      <AdditionalLibraryDirectories>$(C4D_DIR)\frameworks\cinema.framework\source;$(C4D_DIR)\;$(C4D_DIR)\plugins\ManagedPlugin\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Bridge.lib;Mono64.lib;_api_x64_Debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(C4D_DIR)\frameworks\cinema.framework\source;$(C4D_DIR)\;$(C4D_DIR)\plugins\ManagedPlugin\x64;$(C4D_DIR)\plugins\examples\cinema4dsdk\_obj\cinema.framework\x64_Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Bridge.lib;Mono64.lib;cinema.framework_Debug_64bit.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DelayLoadDLLs>Bridge.dll;Mono-2.0.dll</DelayLoadDLLs>
       <IgnoreSpecificDefaultLibraries>LIBCMT;LIBCD;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>

@@ -100,16 +100,16 @@ struct Vector32_POD
 // DeleteMemPtr can be called from generated cs code to free 
 // pointers allocated by C4D as return arrays. This is used in CreatePhongNormals
 //
-// <void*-IntPtr mapping>
-%typemap(cstype, out="IntPtr /* void*_cstype */") void *memPtr "IntPtr /* void*_cstype */"
+// <void*-global::System.IntPtr mapping>
+%typemap(cstype, out="global::System.IntPtr /* void*_cstype */") void *memPtr "global::System.IntPtr /* void*_cstype */"
 %typemap(csin) void *memPtr
-  "new HandleRef(null,$csinput) /* void*_csin */"
+  "new global::System.Runtime.InteropServices.HandleRef(null,$csinput) /* void*_csin */"
 %inline %{
 void DeleteMemPtr(void *memPtr) {
 	DeleteMem(memPtr);
 }
 %}
-// </void*-IntPtr mapping>
+// </void*-global::System.IntPtr mapping>
 
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -274,14 +274,14 @@ class String;
 
 // for BaseTag derivatives tags
 %pragma(csharp) imclasscode=%{
-  public static BaseTag InstantiateConcreteTag(IntPtr cPtr, bool owner)
+  public static BaseTag InstantiateConcreteTag(global::System.IntPtr cPtr, bool owner)
   {
     BaseTag ret = null;
-    if (cPtr == IntPtr.Zero) 
+    if (cPtr == global::System.IntPtr.Zero) 
 	{
       return ret;
     }
-    int type = $modulePINVOKE.C4DAtom_GetType(new HandleRef(null, cPtr));
+    int type = $modulePINVOKE.C4DAtom_GetType(new global::System.Runtime.InteropServices.HandleRef(null, cPtr));
     switch (type) 
 	{
        case 0:
@@ -313,21 +313,21 @@ class String;
 BaseTag *
 /* Insert here every other abstract type returned in the C++ API */
 {
-    IntPtr cPtr = $imcall;
+    global::System.IntPtr cPtr = $imcall;
     $csclassname ret = ($csclassname) $modulePINVOKE.InstantiateConcreteTag(cPtr, $owner);$excode
     return ret;
 }
 
 // for BaseObject derivatives
 %pragma(csharp) imclasscode=%{
-  public static BaseObject InstantiateConcreteObject(IntPtr cPtr, bool owner)
+  public static BaseObject InstantiateConcreteObject(global::System.IntPtr cPtr, bool owner)
   {
     BaseObject ret = null;
-    if (cPtr == IntPtr.Zero) 
+    if (cPtr == global::System.IntPtr.Zero) 
 	{
       return ret;
     }
-    int type = $modulePINVOKE.C4DAtom_GetType(new HandleRef(null, cPtr));
+    int type = $modulePINVOKE.C4DAtom_GetType(new global::System.Runtime.InteropServices.HandleRef(null, cPtr));
     switch (type) 
 	{
        case 0:
@@ -350,21 +350,21 @@ BaseTag *
 BaseObject *
 /* Insert here every other abstract type returned in the C++ API */
 {
-    IntPtr cPtr = $imcall;
+    global::System.IntPtr cPtr = $imcall;
     $csclassname ret = ($csclassname) $modulePINVOKE.InstantiateConcreteObject(cPtr, $owner);$excode
     return ret;
 }
 
 // for BaseMaterial derivatives
 %pragma(csharp) imclasscode=%{
-  public static BaseMaterial InstantiateConcreteMaterial(IntPtr cPtr, bool owner)
+  public static BaseMaterial InstantiateConcreteMaterial(global::System.IntPtr cPtr, bool owner)
   {
     BaseMaterial ret = null;
-    if (cPtr == IntPtr.Zero) 
+    if (cPtr == global::System.IntPtr.Zero) 
 	{
       return ret;
     }
-    int type = $modulePINVOKE.C4DAtom_GetType(new HandleRef(null, cPtr));
+    int type = $modulePINVOKE.C4DAtom_GetType(new global::System.Runtime.InteropServices.HandleRef(null, cPtr));
     switch (type) 
 	{
        case 0:
@@ -387,7 +387,7 @@ BaseObject *
 BaseMaterial *
 /* Insert here every other abstract type returned in the C++ API */
 {
-    IntPtr cPtr = $imcall;
+    global::System.IntPtr cPtr = $imcall;
     $csclassname ret = ($csclassname) $modulePINVOKE.InstantiateConcreteMaterial(cPtr, $owner);$excode
     return ret;
 }
@@ -436,15 +436,15 @@ BaseMaterial *
         %typemap(ctype) TYPE, TYPE& "void*" 
         %typemap(in) TYPE  %{ $1 = (TYPE)$input; %} 
         %typemap(in) TYPE& %{ $1 = (TYPE*)&$input; %} 
-        %typemap(imtype, out="IntPtr") TYPE, TYPE& "CSTYPE" 
-        %typemap(cstype, out="IntPtr") TYPE, TYPE& "CSTYPE" 
+        %typemap(imtype, out="global::System.IntPtr") TYPE, TYPE& "CSTYPE" 
+        %typemap(cstype, out="global::System.IntPtr") TYPE, TYPE& "CSTYPE" 
         %typemap(csin) TYPE, TYPE& "$csinput" 
 %enddef 
 %define %cs_callback2(TYPE, CTYPE, CSTYPE) 
         %typemap(ctype) TYPE "CTYPE" 
         %typemap(in) TYPE %{ $1 = (TYPE)$input; %} 
-        %typemap(imtype, out="IntPtr") TYPE "CSTYPE" 
-        %typemap(cstype, out="IntPtr") TYPE "CSTYPE" 
+        %typemap(imtype, out="global::System.IntPtr") TYPE "CSTYPE" 
+        %typemap(cstype, out="global::System.IntPtr") TYPE "CSTYPE" 
         %typemap(csin) TYPE "$csinput" 
 %enddef 
 // </map-functionpointers-to-delegates>
@@ -508,7 +508,7 @@ BaseMaterial *
 // Map Vector* and &   TO   ref Fusee.Math.double3
 %typemap(cstype, out="$csclassname") Vector *, Vector & "ref Fusee.Math.double3 /* Vector*&_cstype */"
 %typemap(csin) Vector *, Vector & "ref $csinput /* Vector*&_csin */"
-%typemap(imtype, out="IntPtr") Vector *, Vector & "ref Fusee.Math.double3 /* Vector*&_imtype */"
+%typemap(imtype, out="global::System.IntPtr") Vector *, Vector & "ref Fusee.Math.double3 /* Vector*&_imtype */"
 %typemap(in) Vector *, Vector & "$1 = ($1_ltype)$input; /* Vector*&_in */"
 %typemap(csdirectorin, 
    pre="    Fusee.Math.double3 vec_$iminput;\n"
@@ -523,10 +523,10 @@ BaseMaterial *
 // Map const Vector &  TO  Fusee.Math.double3
 %typemap(cstype, out="Fusee.Math.double3 /* constVector&_cstype_out */") const Vector & "Fusee.Math.double3 /* constVector&_cstype */"
 %typemap(csin) const Vector & "ref $csinput /* constVector&_csin */"
-%typemap(imtype, out="IntPtr /* constVector&_imtype_out */") const Vector & "ref Fusee.Math.double3 /* constVector&_imtype */"
+%typemap(imtype, out="global::System.IntPtr /* constVector&_imtype_out */") const Vector & "ref Fusee.Math.double3 /* constVector&_imtype */"
 %typemap(csout, excode=SWIGEXCODE) const Vector &
 %{ {  /* <constVector&_csout> */
-      IntPtr p_ret = $imcall;$excode
+      global::System.IntPtr p_ret = $imcall;$excode
       Fusee.Math.double3 ret;
       unsafe {ret = Fusee.Math.ArrayConvert.ArrayDoubleTodouble3((double *)p_ret);}
       return ret;
@@ -604,8 +604,8 @@ BaseMaterial *
         "        /* Matrix*&_csin_post */",
    terminator="} } /* Matrix*&_csin_terminator */"
   ) Matrix *, Matrix &
-  "(IntPtr) pdbl_$csinput /* Matrix*&_csin */"
-%typemap(imtype, out="IntPtr") Matrix *, Matrix & "IntPtr /* Matrix*&_imtype */"
+  "(global::System.IntPtr) pdbl_$csinput /* Matrix*&_csin */"
+%typemap(imtype, out="global::System.IntPtr") Matrix *, Matrix & "global::System.IntPtr /* Matrix*&_imtype */"
 %typemap(in) Matrix *, Matrix & "$1 = ($1_ltype)$input; /* Matrix*&_in */"
 %typemap(csdirectorin, 
    pre="    Fusee.Math.double4x4 mtx_$iminput;\n"
@@ -636,7 +636,7 @@ BaseMaterial *
        "    /* Matrix_csin_pre */", 
    terminator="} } /* Matrix_csin_terminator */"
   ) Matrix
-  "(IntPtr) pdbl_$csinput /*  Matrix_csin */"
+  "(global::System.IntPtr) pdbl_$csinput /*  Matrix_csin */"
 %typemap(csout, excode=SWIGEXCODE) Matrix 
 %{ {  /* <Matrix_csout> */
       C34M ret_c34m = $imcall;$excode
@@ -644,7 +644,7 @@ BaseMaterial *
 	  unsafe {ret = Fusee.Math.ArrayConvert.ArrayDoubleC4DLayoutTodouble4x4(ret_c34m.m);}
       return ret;
    } /* </Matrix_csout> */ %}
-%typemap(imtype, out="C34M /* Matrix_imtype_out */") Matrix "IntPtr /* Matrix_imtype */"
+%typemap(imtype, out="C34M /* Matrix_imtype_out */") Matrix "global::System.IntPtr /* Matrix_imtype */"
 // %typemap(in) Matrix "$1 = ($1_ltype)$input; /* Matrix_in */"
 %typemap(csdirectorin, 
    pre="    Fusee.Math.double4x4 mtx_$iminput;\n"
@@ -688,15 +688,15 @@ BaseMaterial *
         "        /* constMatrix&_csin_post */",
    terminator="} } /* constMatrix&_csin_terminator */"
   ) const Matrix&
-  "(IntPtr) pdbl_$csinput /* constMatrix&_csin */"
+  "(global::System.IntPtr) pdbl_$csinput /* constMatrix&_csin */"
 %typemap(csout, excode=SWIGEXCODE) const Matrix&
 %{ {  /* <constMatrix&_csout> */
-      IntPtr p_ret = $imcall;$excode
+      global::System.IntPtr p_ret = $imcall;$excode
       Fusee.Math.double4x4 ret;
       unsafe {ret = Fusee.Math.ArrayConvert.ArrayDoubleC4DLayoutTodouble4x4((double *)p_ret);}
       return ret;
    } /* </constMatrix&_csout> */ %}
-%typemap(imtype, out="IntPtr /* constMatrix&_imtype_out */") const Matrix& "IntPtr /* constMatrix&_imtype */"
+%typemap(imtype, out="global::System.IntPtr /* constMatrix&_imtype_out */") const Matrix& "global::System.IntPtr /* constMatrix&_imtype */"
 %typemap(in) const Matrix& "$1 = ($1_ltype)$input; /* constMatrix&_in */"
 %typemap(csdirectorin, 
    pre="    Fusee.Math.double4x4 mtx_$iminput;\n"
@@ -718,8 +718,9 @@ BaseMaterial *
 //////////////////////////////////////////////////////////////////
 // ge_prepass.h
 %rename (SERIALINFO_ENUM) SERIALINFO;
+%ignore ToString;
+%ignore MaxonConvert;
 %include "ge_prepass.swig.h";
-
 
 //////////////////////////////////////////////////////////////////
 // c4d_general.h
@@ -787,8 +788,8 @@ BaseMaterial *
 %typemap(ctype) DataAllocator*, DataAllocator*& "void* /* DataAllocator*_ctype */" 
 %typemap(in) DataAllocator*  %{ $1 = (DataAllocator*)$input; /* DataAllocator*_in */%} 
 %typemap(in) DataAllocator*& %{ $1 = (DataAllocator**)&$input;  /* DataAllocator*&_in */%} 
-%typemap(imtype, out="IntPtr") DataAllocator*, DataAllocator*& "NodeDataAllocator /* DataAllocator*_imtype */" 
-%typemap(cstype, out="IntPtr") DataAllocator*, DataAllocator*& "NodeDataAllocator /* DataAllocator*_cstype */" 
+%typemap(imtype, out="global::System.IntPtr") DataAllocator*, DataAllocator*& "NodeDataAllocator /* DataAllocator*_imtype */" 
+%typemap(cstype, out="global::System.IntPtr") DataAllocator*, DataAllocator*& "NodeDataAllocator /* DataAllocator*_cstype */" 
 %typemap(csin) DataAllocator*, DataAllocator*& "$csinput /* DataAllocator*_csin */" 
 // %enddef 
 
@@ -876,8 +877,8 @@ BaseMaterial *
    /* </Vector32*PolygonObject::CreatePhongNormals_out> */%}
 %typemap(csout, excode=SWIGEXCODE) Vector32 *PolygonObject::CreatePhongNormals
 %{ {  /* <Vector32*PolygonObject::CreatePhongNormals_csout> */
-      IntPtr p_ret = $imcall;$excode
-	  if (p_ret == IntPtr.Zero)
+      global::System.IntPtr p_ret = $imcall;$excode
+	  if (p_ret == global::System.IntPtr.Zero)
 	      return null;
 	  int nNormals = this.GetPolygonCount()*4;
       Fusee.Math.float3[] ret = new Fusee.Math.float3[nNormals];
@@ -1075,32 +1076,32 @@ BaseMaterial *
 %typemap(cstype) GvPort *& "ref GvPort /* GvPort_cstype */"
 
 %typemap(csin, 
-   pre="    IntPtr p_$csinput;\n"
+   pre="    global::System.IntPtr p_$csinput;\n"
        "    unsafe { void *pp_$csinput = &p_$csinput;"
        "    /* GvPort_csin_pre */", 
    post="        $csinput = new GvPort(p_$csinput, false);\n"
         "        /* GvPort_csin_post */",
    terminator="} /* GvPort_csin_terminator */"
   ) GvPort *&
-  "(IntPtr) pp_$csinput /* GvPort_csin */"
+  "(global::System.IntPtr) pp_$csinput /* GvPort_csin */"
 
-%typemap(imtype) GvPort *& "IntPtr /* GvPort_imtype */"
+%typemap(imtype) GvPort *& "global::System.IntPtr /* GvPort_imtype */"
 
 //////////////////////////////////////////////////////////////////
 // "GvNode changes"
 %typemap(cstype) GvNode *& "ref GvNode /* GvNode_cstype */"
 
 %typemap(csin, 
-   pre="    IntPtr p_$csinput;\n"
+   pre="    global::System.IntPtr p_$csinput;\n"
        "    unsafe { void *pp_$csinput = &p_$csinput;"
        "    /* GvNode_csin_pre */", 
    post="        $csinput = new GvNode(p_$csinput, false);\n"
         "        /* GvNode_csin_post */",
    terminator="} /* GvNode_csin_terminator */"
   ) GvNode *&
-  "(IntPtr) pp_$csinput /* GvNode_csin */"
+  "(global::System.IntPtr) pp_$csinput /* GvNode_csin */"
 
-%typemap(imtype) GvNode *& "IntPtr /* GvNode_imtype */"
+%typemap(imtype) GvNode *& "global::System.IntPtr /* GvNode_imtype */"
 
 %include "c4d_graphview.swig.h";
 // %include "c4d_graphview.h";
