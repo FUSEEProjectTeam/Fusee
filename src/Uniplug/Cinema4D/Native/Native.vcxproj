@@ -34,6 +34,7 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
+    <CLRSupport>false</CLRSupport>
     <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -71,25 +72,26 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <TargetExt>.cdl</TargetExt>
-    <OutDir>$(C4D_DIR)\plugins\ManagedPlugIn</OutDir>
     <TargetName>$(ProjectName)</TargetName>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <TargetExt>.cdl</TargetExt>
+	<TargetExt>.cdl</TargetExt>
     <OutDir>$(C4D_DIR)\plugins\ManagedPlugIn</OutDir>
-    <IntDir>$(SolutionDir)obj\$(ProjectName)\$(PlatformName)_$(Configuration)\</IntDir>
-    <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <TargetExt>.cdl64</TargetExt>
-    <OutDir>$(C4D_DIR)\plugins\ManagedPlugIn</OutDir>
     <TargetName>$(ProjectName)</TargetName>
+    <TargetExt>.cdl64</TargetExt>
+	<OutDir>$(C4D_DIR)\plugins\ManagedPlugIn</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+	<TargetExt>.cdl</TargetExt>
+    <OutDir>$(C4D_DIR)\plugins\ManagedPlugIn</OutDir>
+    <IntDir>$(SolutionDir)obj\$(ProjectName)\$(PlatformName)_$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(C4D_DIR)\plugins\ManagedPlugIn</OutDir>
-    <TargetExt>.cdl64</TargetExt>
     <LinkIncremental>true</LinkIncremental>
+    <TargetExt>.cdl64</TargetExt>
+	<OutDir>$(C4D_DIR)\plugins\ManagedPlugIn</OutDir>
+	<IntDir>$(SolutionDir)obj\$(ProjectName)\$(PlatformName)_$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -99,7 +101,7 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <AdditionalUsingDirectories>
       </AdditionalUsingDirectories>
       <CompileAsManaged>false</CompileAsManaged>
@@ -125,31 +127,30 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(C4D_DIR)\frameworks\cinema.framework\source\description;C4dApiExtensions;$(MONODIR)\lib\glib-2.0\include;$(MONODIR)\include\mono-2.0;$(MONODIR)\include\glib-2.0;$(MONODIR)\bin;.\source;.\res;.\res\description;$(C4D_DIR)\frameworks\cinema.framework\source;$(C4D_DIR)\frameworks\cinema.framework\source\c4d_preview;$(C4D_DIR)\frameworks\cinema.framework\source\c4d_customgui;$(C4D_DIR)\frameworks\cinema.framework\source\c4d_libs;$(C4D_DIR)\frameworks\cinema.framework\source\c4d_gv;;$(C4D_DIR)\frameworks\cinema.framework\source;..\Bridge\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <CompileAsManaged>false</CompileAsManaged>
-      <OmitFramePointers>false</OmitFramePointers>
-      <PreprocessorDefinitions>WIN64;__PC;_DEBUG;_WINDOWS;__C4D_64BIT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(C4D_DIR)\resource\modules\gv\expressiontag\res\description;C4dApiExtensions;$(MONODIR)\include\mono-2.0;$(MONODIR)\include\glib-2.0;$(MONODIR)\lib\glib-2.0\include;.\source;.\res;.\res\description;$(C4D_DIR)\resource\_api;$(C4D_DIR)\resource\_api\c4d_preview;$(C4D_DIR)\resource\_api\c4d_customgui;$(C4D_DIR)\resource\_api\c4d_libs;$(C4D_DIR)\resource\_api\c4d_gv;$(C4D_DIR)\resource\modules\Modeling\res\description;$(C4D_DIR)\resource\res\description;$(C4D_DIR)\resource\modules\objects\res\description;$(C4D_DIR)\resource\_api_maxon\source;..\Bridge\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MinimalRebuild>false</MinimalRebuild>
-      <ExceptionHandling>Sync</ExceptionHandling>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <AdditionalUsingDirectories>
+      </AdditionalUsingDirectories>
+      <CompileAsManaged>false</CompileAsManaged>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ObjectFileName>$(IntDir)obj\</ObjectFileName>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt) </OutputFile>
-      <AdditionalLibraryDirectories>$(C4D_DIR)\frameworks\cinema.framework\source;$(C4D_DIR)\;$(C4D_DIR)\plugins\ManagedPlugin\x64;$(C4D_DIR)\plugins\examples\cinema4dsdk\_obj\cinema.framework\x64_Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Bridge.lib;Mono64.lib;cinema.framework_Debug_64bit.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(C4D_DIR)\plugins\Fusee\bin\Release;$(C4D_DIR)\plugins\Fusee\bin\Debug;$(C4D_DIR)\plugins\examples\cinema4dsdk\_obj\cinema.framework\x64_Debug;$(C4D_DIR)\;$(C4D_DIR)\plugins\ManagedPlugin\x64;$(MONODIR)\lib\glib-2.0\include;$(MONODIR)\include\mono-2.0;$(MONODIR)\include\glib-2.0;$(MONODIR)\bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Mono64.lib;Bridge.lib;cinema.framework_Debug_64bit.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DelayLoadDLLs>Bridge.dll;Mono-2.0.dll</DelayLoadDLLs>
-      <IgnoreSpecificDefaultLibraries>LIBCMT;LIBCD;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
     </Link>
     <PreBuildEvent>
-      <Command>lib /nologo /def:mono.def /out:mono64.lib /machine:x64</Command>
+      <Command>lib /nologo /def:mono.def /out:mono.lib /machine:x86</Command>
     </PreBuildEvent>
     <PreBuildEvent>
-      <Message>Creating Monox64</Message>
+      <Message>Creating mono.lib</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -202,13 +203,12 @@
       <CompileAsManaged>false</CompileAsManaged>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
-      <OmitFramePointers>false</OmitFramePointers>
+      <PreprocessorDefinitions>WIN32;__PC;_NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>
       </StringPooling>
       <MinimalRebuild>false</MinimalRebuild>
       <ExceptionHandling>Sync</ExceptionHandling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <PreprocessorDefinitions>WIN64;__PC;_NDEBUG;_WINDOWS;__C4D_64BIT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -217,22 +217,18 @@
       <OptimizeReferences>
       </OptimizeReferences>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt) </OutputFile>
-      <AdditionalLibraryDirectories>$(C4D_DIR)\resource\_api_lib;$(C4D_DIR)\;$(C4D_DIR)\plugins\ManagedPlugin\x64;$(C4D_DIR)\plugins\cinema4dsdk\obj\_api\x64_Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Mono64.lib;Bridge.lib;_api_x64_Release.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(C4D_DIR)\frameworks\cinema.framework\source;$(C4D_DIR)\;$(C4D_DIR)\plugins\ManagedPlugin\win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Mono.lib;Bridge.lib;_api_Win32_Release.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DelayLoadDLLs>Bridge.dll;Mono-2.0.dll</DelayLoadDLLs>
       <FixedBaseAddress>
       </FixedBaseAddress>
-      <ShowProgress>LinkVerbose</ShowProgress>
-      <IgnoreAllDefaultLibraries>
-      </IgnoreAllDefaultLibraries>
-      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
     </Link>
     <PreBuildEvent>
-      <Command>lib /nologo /def:mono.def /out:mono64.lib /machine:x64</Command>
+      <Command>lib /nologo /def:mono.def /out:mono.lib /machine:x86</Command>
     </PreBuildEvent>
     <PreBuildEvent>
-      <Message>Creating Monox64</Message>
+      <Message>Creating Mono.lib</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

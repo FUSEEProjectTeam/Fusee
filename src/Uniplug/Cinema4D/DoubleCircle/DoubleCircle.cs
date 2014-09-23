@@ -27,13 +27,13 @@ namespace DoubleCircle
         {
 	        BaseContainer data = GetDataInstance(node);
 
-	        data.SetReal(CIRCLEOBJECT_RAD, 200.0);
-	        data.SetLong(C4dApi.PRIM_PLANE, 0);
+	        data.SetFloat(CIRCLEOBJECT_RAD, 200.0);
+            data.SetInt32(C4dApi.PRIM_PLANE, 0);
 	        data.SetBool(C4dApi.PRIM_REVERSE, false);
-	        data.SetLong(C4dApi.SPLINEOBJECT_INTERPOLATION, C4dApi.SPLINEOBJECT_INTERPOLATION_ADAPTIVE);
-	        data.SetLong(C4dApi.SPLINEOBJECT_SUB, 8);
-	        data.SetReal(C4dApi.SPLINEOBJECT_ANGLE, 5.0 * Math.PI / 180.0);
-	        data.SetReal(C4dApi.SPLINEOBJECT_MAXIMUMLENGTH, 5.0);
+	        data.SetInt32(C4dApi.SPLINEOBJECT_INTERPOLATION, C4dApi.SPLINEOBJECT_INTERPOLATION_ADAPTIVE);
+	        data.SetInt32(C4dApi.SPLINEOBJECT_SUB, 8);
+            data.SetFloat(C4dApi.SPLINEOBJECT_ANGLE, 5.0 * Math.PI / 180.0);
+            data.SetFloat(C4dApi.SPLINEOBJECT_MAXIMUMLENGTH, 5.0);
 
             return true;
         }
@@ -51,8 +51,8 @@ namespace DoubleCircle
         static double3 GetRTHandle(BaseObject op, int id)
         {
 	        BaseContainer data = GetDataInstance(op);
-	        double rad	  = data.GetReal(CIRCLEOBJECT_RAD);
-	        int plane  = data.GetLong(C4dApi.PRIM_PLANE);
+	        double rad	  = data.GetFloat(CIRCLEOBJECT_RAD);
+	        int plane  = data.GetInt32(C4dApi.PRIM_PLANE);
 	        return SwapPoint(new double3(rad,0.0,0.0),plane);
         }
 
@@ -95,11 +95,11 @@ namespace DoubleCircle
             BaseContainer dst = op.GetDataInstance();
 	
             double3 handle_dir = new double3(1.0,0.0,0.0); 
-            handle_dir = SwapPoint(handle_dir,src.GetLong(C4dApi.PRIM_PLANE));
+            handle_dir = SwapPoint(handle_dir,src.GetInt32(C4dApi.PRIM_PLANE));
 	
             double val = double3.Dot(tm.Offset, handle_dir);
 
-            dst.SetReal(CIRCLEOBJECT_RAD, M.Saturate(src.GetReal(CIRCLEOBJECT_RAD)+val, 0.0, C4dApi.MAXRANGE));
+            dst.SetFloat(CIRCLEOBJECT_RAD, M.Saturate(src.GetFloat(CIRCLEOBJECT_RAD)+val, 0.0, C4dApi.MAXRANGE));
             return true;
         }
 
@@ -230,17 +230,17 @@ namespace DoubleCircle
         public override SplineObject GetContour(BaseObject op, BaseDocument doc, double lod, BaseThread bt)
         {
             BaseContainer bc = op.GetDataInstance();
-            SplineObject bp = GenerateCircle(bc.GetReal(CIRCLEOBJECT_RAD));
+            SplineObject bp = GenerateCircle(bc.GetFloat(CIRCLEOBJECT_RAD));
             if (bp == null) 
                 return null;
             BaseContainer bb = bp.GetDataInstance();
 
-            bb.SetLong(C4dApi.SPLINEOBJECT_INTERPOLATION, bc.GetLong(C4dApi.SPLINEOBJECT_INTERPOLATION));
-            bb.SetLong(C4dApi.SPLINEOBJECT_SUB, bc.GetLong(C4dApi.SPLINEOBJECT_SUB));
-            bb.SetReal(C4dApi.SPLINEOBJECT_ANGLE, bc.GetReal(C4dApi.SPLINEOBJECT_ANGLE));
-            bb.SetReal(C4dApi.SPLINEOBJECT_MAXIMUMLENGTH, bc.GetReal(C4dApi.SPLINEOBJECT_MAXIMUMLENGTH));
+            bb.SetInt32(C4dApi.SPLINEOBJECT_INTERPOLATION, bc.GetInt32(C4dApi.SPLINEOBJECT_INTERPOLATION));
+            bb.SetInt32(C4dApi.SPLINEOBJECT_SUB, bc.GetInt32(C4dApi.SPLINEOBJECT_SUB));
+            bb.SetFloat(C4dApi.SPLINEOBJECT_ANGLE, bc.GetFloat(C4dApi.SPLINEOBJECT_ANGLE));
+            bb.SetFloat(C4dApi.SPLINEOBJECT_MAXIMUMLENGTH, bc.GetFloat(C4dApi.SPLINEOBJECT_MAXIMUMLENGTH));
 
-            OrientObject(bp, bc.GetLong(C4dApi.PRIM_PLANE), bc.GetBool(C4dApi.PRIM_REVERSE));
+            OrientObject(bp, bc.GetInt32(C4dApi.PRIM_PLANE), bc.GetBool(C4dApi.PRIM_REVERSE));
 
             return bp;
         }      
@@ -253,15 +253,15 @@ namespace DoubleCircle
             switch (id[0].id)
             {
                 case SPLINEOBJECT_SUB:		
-	                inter=data.GetLong(SPLINEOBJECT_INTERPOLATION);
+	                inter=data.GetInt32(SPLINEOBJECT_INTERPOLATION);
 	                return inter==SPLINEOBJECT_INTERPOLATION_NATURAL || inter==SPLINEOBJECT_INTERPOLATION_UNIFORM;
 
                 case SPLINEOBJECT_ANGLE:	
-	                inter = data.GetLong(SPLINEOBJECT_INTERPOLATION);
+	                inter = data.GetInt32(SPLINEOBJECT_INTERPOLATION);
 	                return inter==SPLINEOBJECT_INTERPOLATION_ADAPTIVE || inter==SPLINEOBJECT_INTERPOLATION_SUBDIV;
 
                 case SPLINEOBJECT_MAXIMUMLENGTH:	
-	                return data.GetLong(SPLINEOBJECT_INTERPOLATION)==SPLINEOBJECT_INTERPOLATION_SUBDIV;
+	                return data.GetInt32(SPLINEOBJECT_INTERPOLATION)==SPLINEOBJECT_INTERPOLATION_SUBDIV;
             }
             return true;
         }     
@@ -286,7 +286,7 @@ namespace DoubleCircle
             DescID cid = new DescID(new DescLevel(CIRCLEOBJECT_RAD, C4dApi.DTYPE_LONG, 0));               // The ID of the radius value (CIRCLEOBJECT_RAD)
             BaseContainer bcRadius = C4dApi.GetCustomDataTypeDefault(C4dApi.DTYPE_REAL);                  // The type of the radius value (REAL)
             bcRadius.SetString(C4dApi.DESC_NAME, "Radius");                                               // The user interface name (Radius)
-            bcRadius.SetLong(C4dApi.DESC_DEFAULT, 44);                                                    // The default value (44, but overridden to 200 in the Init method)
+            bcRadius.SetInt32(C4dApi.DESC_DEFAULT, 44);                                                    // The default value (44, but overridden to 200 in the Init method)
             // Create the new radius value as a child of the "Objekt" Tab (ID_OBJECTPROPERTIES)
             if (!descparams.Desc.SetParameter(cid, bcRadius, new DescID(new DescLevel(C4dApi.ID_OBJECTPROPERTIES))))
                 return true;
