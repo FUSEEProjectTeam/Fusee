@@ -1,6 +1,9 @@
 using System;
+using System.IO;
 using Fusee.Engine;
+using Fusee.Engine.SimpleScene;
 using Fusee.Math;
+using Fusee.Serialization;
 
 namespace Examples.HandOnCanvas
 {
@@ -14,7 +17,7 @@ namespace Examples.HandOnCanvas
         private const float Damping = 1f;
 
         // model variables
-        private Mesh _meshTea;
+        private Mesh _meshHand;
 
         // variables for shader
         private ShaderEffect _shaderEffect;
@@ -132,7 +135,16 @@ namespace Examples.HandOnCanvas
         {
             InitShader();
             RC.ClearColor = new float4(1f, 1f, 1f, 0.0f);
-            _meshTea = MeshReader.LoadMesh(@"Assets/handhipolynorm.obj.model");
+            // _meshHand = MeshReader.LoadMesh(@"Assets/handhipolynorm.obj.model");
+
+            SceneContainer scene;
+            var ser = new Serializer();
+            using (var file = File.OpenRead(@"Assets/HandIndexCenter.fus"))
+            {
+                scene = ser.Deserialize(file, null, typeof(SceneContainer)) as SceneContainer;
+                _meshHand = SceneRenderer.MakeMesh(scene.Children[0]);
+            }
+
         }
 
         // is called once a frame
@@ -162,7 +174,7 @@ namespace Examples.HandOnCanvas
                 (float) (MaxRotChange*Math.Abs(Input.Instance.GetAxis(InputAxis.MouseX))*Time.Instance.DeltaTime);
             float angleHorzDelta =
                 Math.Min(
-                    Math.Max(RotationSpeed*-Input.Instance.GetAxis(InputAxis.MouseX) - _angleHorz, -curMaxRotChange),
+                    Math.Max(RotationSpeed*Input.Instance.GetAxis(InputAxis.MouseX) - _angleHorz, -curMaxRotChange),
                     curMaxRotChange);
             _angleHorz = (float) Math.Max(-0.5f*Math.PI, Math.Min(_angleHorz + angleHorzDelta, 0.5f*Math.PI));
 
@@ -170,27 +182,31 @@ namespace Examples.HandOnCanvas
                 (float) (MaxRotChange*Math.Abs(Input.Instance.GetAxis(InputAxis.MouseY))*Time.Instance.DeltaTime);
             float angleVertDelta =
                 Math.Min(
-                    Math.Max(RotationSpeed*-Input.Instance.GetAxis(InputAxis.MouseY) - _angleVert, -curMaxRotChange),
+                    Math.Max(RotationSpeed*Input.Instance.GetAxis(InputAxis.MouseY) - _angleVert, -curMaxRotChange),
                     curMaxRotChange);
-            _angleVert = (float) Math.Max(-0.7f*Math.PI, Math.Min(_angleVert + angleVertDelta, 0.2f*Math.PI));
+            //_angleVert = (float) Math.Max(-0.7f*Math.PI, Math.Min(_angleVert + angleVertDelta, 0.2f*Math.PI));
+            _angleVert = (float)Math.Max(-0.2f * Math.PI, Math.Min(_angleVert + angleVertDelta, 0.7f * Math.PI));
 
             /* float angleVertDelta = 
                 Math.Min(Math.Max(_angleVert - RotationSpeed * -Input.Instance.GetAxis(InputAxis.MouseX), -_maxRotChange), _maxRotChange);
             _angleVert += angleVertDelta;*/
 
-            var mtxRot = float4x4.CreateRotationY(_angleHorz)*float4x4.CreateRotationX(_angleVert);
-            var mtxCam = float4x4.LookAt(0, 0, CamDist, 0, 0, 0, 0, 1, 0);
+            // RH var mtxRot = float4x4.CreateRotationY(_angleHorz)*float4x4.CreateRotationX(_angleVert);
+            var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
+            var mtxCam = float4x4.LookAt(0, 0, -CamDist, 0, 0, 0, 0, 1, 0);
 
             var curDamp = (float) Math.Exp(-Damping*Time.Instance.DeltaTime);
             _angleHorz *= curDamp;
             _angleVert *= curDamp;
 
-            // first mesh
-            RC.ModelView = float4x4.CreateRotationX((float) (-0.3*Math.PI))*
-                           new float4x4(HandScale, 0, 0, 0, 0, HandScale, 0, 0, 0, 0, HandScale, 0, 0, 0, 0, 1)*mtxRot*
-                           float4x4.CreateTranslation(mousePosWorld)*mtxCam;
+            // first mesh RH
+            //RC.ModelView = float4x4.CreateRotationX((float) (-0.3*Math.PI))*
+            //               new float4x4(HandScale, 0, 0, 0, 0, HandScale, 0, 0, 0, 0, HandScale, 0, 0, 0, 0, 1)*mtxRot*
+            //               float4x4.CreateTranslation(mousePosWorld)*mtxCam;
 
-            _shaderEffect.RenderMesh(_meshTea);
+            RC.ModelView = mtxCam * float4x4.CreateTranslation(mousePosWorld) * mtxRot * new float4x4(HandScale, 0, 0, 0, 0, HandScale, 0, 0, 0, 0, HandScale, 0, 0, 0, 0, 1) * float4x4.CreateRotationX((float)(0.3 * Math.PI));
+
+            _shaderEffect.RenderMesh(_meshHand);
 
             // swap buffers
             Present();
