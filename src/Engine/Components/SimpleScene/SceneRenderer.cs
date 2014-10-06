@@ -230,7 +230,7 @@ namespace Fusee.Engine.SimpleScene
             return mat;
         }
 
-        private static Mesh MakeMesh(SceneObjectContainer soc)
+        public static Mesh MakeMesh(SceneObjectContainer soc)
         {
             Mesh rm;
             rm = new Mesh()

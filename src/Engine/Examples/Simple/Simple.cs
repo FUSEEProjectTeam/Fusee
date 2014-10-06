@@ -130,7 +130,7 @@ namespace Examples.Simple
 
             // RC.SetShader(_spTexture);
             // RC.SetShaderParamTexture(_textureParam, _iTex);
-            RC.SetShaderParam(_colorParam, new float4(0.8f, 0.5f, 0, 1));
+            RC.SetShaderParam(_colorParam, new float4(0, 0.5f, 0.8f, 1));
 
             RC.Render(_meshFace);
 

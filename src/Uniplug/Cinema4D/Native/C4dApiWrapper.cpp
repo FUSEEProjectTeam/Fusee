@@ -5570,16 +5570,6 @@ SWIGEXPORT int SWIGSTDCALL CSharp_Xterrainmask_get() {
 }
 
 
-SWIGEXPORT int SWIGSTDCALL CSharp_Xcloth_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)(1031432);
-  jresult = result; 
-  return jresult;
-}
-
-
 SWIGEXPORT int SWIGSTDCALL CSharp_Tpoint_get() {
   int jresult ;
   int result;
@@ -5690,11 +5680,11 @@ SWIGEXPORT int SWIGSTDCALL CSharp_Tcompositing_get() {
 }
 
 
-SWIGEXPORT int SWIGSTDCALL CSharp_Tannotation_get() {
+SWIGEXPORT int SWIGSTDCALL CSharp_Twww_get() {
   int jresult ;
   int result;
   
-  result = (int)(1030659);
+  result = (int)(5647);
   jresult = result; 
   return jresult;
 }
@@ -6135,26 +6125,6 @@ SWIGEXPORT int SWIGSTDCALL CSharp_Tsculptnormals_get() {
   int result;
   
   result = (int)(1027660);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_Tsplinenormal_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)(440000173);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_Tinteraction_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)(440000164);
   jresult = result; 
   return jresult;
 }
@@ -7590,16 +7560,6 @@ SWIGEXPORT int SWIGSTDCALL CSharp_WPREF_SYNCVIEWPORTS_get() {
 }
 
 
-SWIGEXPORT int SWIGSTDCALL CSharp_WPREF_SCRIPTWORDWRAP_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)(1023);
-  jresult = result; 
-  return jresult;
-}
-
-
 SWIGEXPORT int SWIGSTDCALL CSharp_WPREF_OPENGL_PERSPECT_get() {
   int jresult ;
   int result;
@@ -7815,16 +7775,6 @@ SWIGEXPORT int SWIGSTDCALL CSharp_WPREF_OPENGL_LIGHTING_get() {
   int result;
   
   result = (int)(1035);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_WPREF_NAV_TRACKBALL_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)(1036);
   jresult = result; 
   return jresult;
 }
@@ -8850,16 +8800,6 @@ SWIGEXPORT int SWIGSTDCALL CSharp_WPREF_TOOLCURSOR_ADV_get() {
 }
 
 
-SWIGEXPORT int SWIGSTDCALL CSharp_WPREF_LOWERPROCESSPRIORITY_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)(21081);
-  jresult = result; 
-  return jresult;
-}
-
-
 SWIGEXPORT int SWIGSTDCALL CSharp_WPREF_ONLINEUPDATER_AUTO_CHECK_get() {
   int jresult ;
   int result;
@@ -9020,236 +8960,6 @@ SWIGEXPORT int SWIGSTDCALL CSharp_SCULPTPREFSDIALOG_ID_get() {
 }
 
 
-SWIGEXPORT int SWIGSTDCALL CSharp_TLPREFSDIALOG_ID_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)(465001501);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_PHPREFSDIALOG_ID_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)(1031908);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_WPREFS_HIGHLIGHT_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)WPREFS_HIGHLIGHT;
-  jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_WPREFS_HIGHLIGHTCURVE_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)WPREFS_HIGHLIGHTCURVE;
-  jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_WPREFS_CURSORINDICATOR_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)WPREFS_CURSORINDICATOR;
-  jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_WPREFS_MINIMUM_OLD_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)WPREFS_MINIMUM_OLD;
-  jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_WPREFS_MINIMUMWIDTH_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)WPREFS_MINIMUMWIDTH;
-  jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_WPREFS_SHOWLAYERCOL_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)WPREFS_SHOWLAYERCOL;
-  jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_WPREFS_TRACKCOLOR_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)WPREFS_TRACKCOLOR;
-  jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_WPREFS_TRACKCOLNO_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)WPREFS_TRACKCOLNO;
-  jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_WPREFS_TRACKCOLPRS_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)WPREFS_TRACKCOLPRS;
-  jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_WPREFS_TRACKCOLORG_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)WPREFS_TRACKCOLORG;
-  jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_WPREFS_SHOWTRACKSTARTEND_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)WPREFS_SHOWTRACKSTARTEND;
-  jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_WPREFS_SUMMARY_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)WPREFS_SUMMARY;
-  jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_WPREFS_HLEAUTOVALUE_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)WPREFS_HLEAUTOVALUE;
-  jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_WPREFS_INTERACTIVEUPDATE_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)WPREFS_INTERACTIVEUPDATE;
-  jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_WPREFS_CLIPTRANSITIONIME_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)WPREFS_CLIPTRANSITIONIME;
-  jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_WPREFS_KEYSDOPESHEET_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)WPREFS_KEYSDOPESHEET;
-  jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_WPREFS_KEYSYMBOLS_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)WPREFS_KEYSYMBOLS;
-  jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_WPREFS_SHOWBRANCHES_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)WPREFS_SHOWBRANCHES;
-  jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_WPREFS_SHOWVECTRACK_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)WPREFS_SHOWVECTRACK;
-  jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_WPREFS_KEYFRAMEDOTS_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)WPREFS_KEYFRAMEDOTS;
-  jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_WPREFS_DOTSKILLTRACKS_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)WPREFS_DOTSKILLTRACKS;
-  jresult = (int)result; 
-  return jresult;
-}
-
-
 SWIGEXPORT int SWIGSTDCALL CSharp_WPREFS_PVMEMORY_get() {
   int jresult ;
   int result;
@@ -9305,26 +9015,6 @@ SWIGEXPORT int SWIGSTDCALL CSharp_WPREFS_SCULPTMEMORY_get() {
   int result;
   
   result = (int)WPREFS_SCULPTMEMORY;
-  jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_WPREFS_PHMAXCACHEMEM_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)WPREFS_PHMAXCACHEMEM;
-  jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_WPREFS_PHSYSRESERVEMEM_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)WPREFS_PHSYSRESERVEMEM;
   jresult = (int)result; 
   return jresult;
 }
@@ -9390,21 +9080,21 @@ SWIGEXPORT int SWIGSTDCALL CSharp_WPREF_NET_ALLOWRESTARTOFC4D_get() {
 }
 
 
-SWIGEXPORT int SWIGSTDCALL CSharp_WPREF_NET_SERVICEPORTNUMBER_get() {
+SWIGEXPORT int SWIGSTDCALL CSharp_WPREF_NET_SERVER_PORTNUMBER_get() {
   int jresult ;
   int result;
   
-  result = (int)WPREF_NET_SERVICEPORTNUMBER;
+  result = (int)WPREF_NET_SERVER_PORTNUMBER;
   jresult = (int)result; 
   return jresult;
 }
 
 
-SWIGEXPORT int SWIGSTDCALL CSharp_WPREF_NET_SERVICEREPOSITORYPATH_get() {
+SWIGEXPORT int SWIGSTDCALL CSharp_WPREF_NET_SERVER_REPOSITORYPATH_get() {
   int jresult ;
   int result;
   
-  result = (int)WPREF_NET_SERVICEREPOSITORYPATH;
+  result = (int)WPREF_NET_SERVER_REPOSITORYPATH;
   jresult = (int)result; 
   return jresult;
 }
@@ -9500,11 +9190,11 @@ SWIGEXPORT int SWIGSTDCALL CSharp_WPREF_NET_ENABLETEAMRENDER_get() {
 }
 
 
-SWIGEXPORT int SWIGSTDCALL CSharp_WPREF_NET_WEBSERVERPORT_get() {
+SWIGEXPORT int SWIGSTDCALL CSharp_EX_WPREF_NET_WEBSERVERPORT_get() {
   int jresult ;
   int result;
   
-  result = (int)WPREF_NET_WEBSERVERPORT;
+  result = (int)EX_WPREF_NET_WEBSERVERPORT;
   jresult = (int)result; 
   return jresult;
 }
@@ -9585,116 +9275,6 @@ SWIGEXPORT int SWIGSTDCALL CSharp_WPREF_NET_ENABLERENDERINGTIMEOUT_get() {
   int result;
   
   result = (int)WPREF_NET_ENABLERENDERINGTIMEOUT;
-  jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_WPREF_NET_FETCHASSETSALWAYSFROMSERVER_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)WPREF_NET_FETCHASSETSALWAYSFROMSERVER;
-  jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_WPREF_NET_ASSETCHUNKSIZE_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)WPREF_NET_ASSETCHUNKSIZE;
-  jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_WPREF_NET_WAKEONLANFOROFFLINEMACHINES_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)WPREF_NET_WAKEONLANFOROFFLINEMACHINES;
-  jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_WPREF_COMMUNICATION_METRICS_ENABLE_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)WPREF_COMMUNICATION_METRICS_ENABLE;
-  jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_WPREF_COMMUNICATION_METRICS_ENABLE_COMMANDS_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)WPREF_COMMUNICATION_METRICS_ENABLE_COMMANDS;
-  jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_WPREF_COMMUNICATION_METRICS_ENABLE_PREFERENCES_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)WPREF_COMMUNICATION_METRICS_ENABLE_PREFERENCES;
-  jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_WPREF_COMMUNICATION_METRICS_ENABLE_SYSTEM_INFO_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)WPREF_COMMUNICATION_METRICS_ENABLE_SYSTEM_INFO;
-  jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_WPREF_COMMUNICATION_METRICS_LICENSE_ACCEPTED_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)WPREF_COMMUNICATION_METRICS_LICENSE_ACCEPTED;
-  jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_WPREF_COMMUNICATION_METRICS_ASK_ME_LATER_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)WPREF_COMMUNICATION_METRICS_ASK_ME_LATER;
-  jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_WPREF_COMMUNICATION_METRICS_ACTIVE_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)WPREF_COMMUNICATION_METRICS_ACTIVE;
-  jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_WPREF_COMMUNICATION_METRICS_DUMMY_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)WPREF_COMMUNICATION_METRICS_DUMMY;
   jresult = (int)result; 
   return jresult;
 }
@@ -11150,71 +10730,11 @@ SWIGEXPORT int SWIGSTDCALL CSharp_VIEWCOLOR_ACTIVETOOLHANDLE_get() {
 }
 
 
-SWIGEXPORT int SWIGSTDCALL CSharp_VIEWCOLOR_TOOLHANDLEHIGHLIGHT_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)(68);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_VIEWCOLOR_TOOLHANDLE2_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)(69);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_VIEWCOLOR_TOOLHANDLEHIGHLIGHT2_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)(70);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_VIEWCOLOR_ACTIVETOOLHANDLE2_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)(71);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_VIEWCOLOR_TOOLSELECTION_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)(72);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_VIEWCOLOR_BASEGRID_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)(73);
-  jresult = result; 
-  return jresult;
-}
-
-
 SWIGEXPORT int SWIGSTDCALL CSharp_VIEWCOLOR_MAXCOLORS_get() {
   int jresult ;
   int result;
   
-  result = (int)(74);
+  result = (int)(68);
   jresult = result; 
   return jresult;
 }
@@ -11795,16 +11315,6 @@ SWIGEXPORT int SWIGSTDCALL CSharp_RESOURCEIMAGE_KEYFRAME_BUTTON_DOWN_get() {
   int result;
   
   result = (int)(440000143);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_RESOURCEIMAGE_KEYFRAME_BUTTON_EDGE_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)(440000178);
   jresult = result; 
   return jresult;
 }
@@ -14240,16 +13750,6 @@ SWIGEXPORT int SWIGSTDCALL CSharp_VPAOShadingChain_get() {
 }
 
 
-SWIGEXPORT int SWIGSTDCALL CSharp_VPbirender_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)(1028868);
-  jresult = result; 
-  return jresult;
-}
-
-
 SWIGEXPORT char SWIGSTDCALL CSharp_CODEEDITOR_SETMODE_get() {
   char jresult ;
   char result;
@@ -14345,46 +13845,6 @@ SWIGEXPORT char SWIGSTDCALL CSharp_CODEEDITOR_DISABLEUNDO_get() {
   char result;
   
   result = (char)('dsud');
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT char SWIGSTDCALL CSharp_CODEEDITOR_STOREUNDO_get() {
-  char jresult ;
-  char result;
-  
-  result = (char)('stun');
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT char SWIGSTDCALL CSharp_CODEEDITOR_RESTOREUNDO_get() {
-  char jresult ;
-  char result;
-  
-  result = (char)('reun');
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT char SWIGSTDCALL CSharp_CODEEDITOR_GETID_get() {
-  char jresult ;
-  char result;
-  
-  result = (char)('reid');
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_BASECONTAINER_TEMPORARY_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)(440000180);
   jresult = result; 
   return jresult;
 }
@@ -19544,36 +19004,6 @@ SWIGEXPORT int SWIGSTDCALL CSharp_OPENGL_DRIVER_OUTDATED_get() {
 }
 
 
-SWIGEXPORT int SWIGSTDCALL CSharp_OPENGL_SUPPORT_PRIMITIVERESTARTINDEX_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)(1048);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_OPENGL_SUPPORT_GEOMETRYSHADER_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)(1049);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_OPENGL_SUPPORT_OSX_10_7_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)(1050);
-  jresult = result; 
-  return jresult;
-}
-
-
 SWIGEXPORT int SWIGSTDCALL CSharp_MACHINEINFO_OSTYPE_get() {
   int jresult ;
   int result;
@@ -21236,11 +20666,11 @@ SWIGEXPORT void SWIGSTDCALL CSharp_GeSignal_Free(void * jarg1) {
 }
 
 
-SWIGEXPORT int SWIGSTDCALL CSharp_GeGetCurrentThreadCount() {
+SWIGEXPORT int SWIGSTDCALL CSharp_GeGetCPUCount() {
   int jresult ;
   Int32 result;
   
-  result = GeGetCurrentThreadCount();
+  result = GeGetCPUCount();
   jresult = result; 
   return jresult;
 }
@@ -21540,27 +20970,7 @@ SWIGEXPORT void SWIGSTDCALL CSharp_MemoryFileStruct_Free(void * jarg1) {
 }
 
 
-SWIGEXPORT void SWIGSTDCALL CSharp_MemoryFileStruct_GetData__SWIG_0(void * jarg1, void * jarg2, void * jarg3) {
-  MemoryFileStruct *arg1 = (MemoryFileStruct *) 0 ;
-  void **arg2 = 0 ;
-  Int *arg3 = 0 ;
-  
-  arg1 = (MemoryFileStruct *)jarg1; 
-  arg2 = (void **)jarg2;
-  if (!arg2) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "void *& type is null", 0);
-    return ;
-  } 
-  arg3 = (Int *)jarg3;
-  if (!arg3) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Int & type is null", 0);
-    return ;
-  } 
-  ((MemoryFileStruct const *)arg1)->GetData(*arg2,*arg3);
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_MemoryFileStruct_GetData__SWIG_1(void * jarg1, void * jarg2, void * jarg3, unsigned int jarg4) {
+SWIGEXPORT void SWIGSTDCALL CSharp_MemoryFileStruct_GetData__SWIG_0(void * jarg1, void * jarg2, void * jarg3, unsigned int jarg4) {
   MemoryFileStruct *arg1 = (MemoryFileStruct *) 0 ;
   void **arg2 = 0 ;
   Int *arg3 = 0 ;
@@ -21579,6 +20989,26 @@ SWIGEXPORT void SWIGSTDCALL CSharp_MemoryFileStruct_GetData__SWIG_1(void * jarg1
   } 
   arg4 = jarg4 ? true : false; 
   (arg1)->GetData(*arg2,*arg3,arg4);
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_MemoryFileStruct_GetData__SWIG_1(void * jarg1, void * jarg2, void * jarg3) {
+  MemoryFileStruct *arg1 = (MemoryFileStruct *) 0 ;
+  void **arg2 = 0 ;
+  Int *arg3 = 0 ;
+  
+  arg1 = (MemoryFileStruct *)jarg1; 
+  arg2 = (void **)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "void *& type is null", 0);
+    return ;
+  } 
+  arg3 = (Int *)jarg3;
+  if (!arg3) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Int & type is null", 0);
+    return ;
+  } 
+  (arg1)->GetData(*arg2,*arg3);
 }
 
 
@@ -21865,21 +21295,7 @@ SWIGEXPORT void SWIGSTDCALL CSharp_Filename_SetFile(void * jarg1, void * jarg2) 
 }
 
 
-SWIGEXPORT void SWIGSTDCALL CSharp_Filename_SetMemoryReadMode__SWIG_0(void * jarg1, void * jarg2, int jarg3, unsigned int jarg4) {
-  Filename *arg1 = (Filename *) 0 ;
-  void *arg2 = (void *) 0 ;
-  Int arg3 ;
-  Bool arg4 ;
-  
-  arg1 = (Filename *)jarg1; 
-  arg2 = (void *)jarg2; 
-  arg3 = (Int)jarg3; 
-  arg4 = jarg4 ? true : false; 
-  (arg1)->SetMemoryReadMode(arg2,arg3,arg4);
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_Filename_SetMemoryReadMode__SWIG_1(void * jarg1, void * jarg2, int jarg3) {
+SWIGEXPORT void SWIGSTDCALL CSharp_Filename_SetMemoryReadMode__SWIG_0(void * jarg1, void * jarg2, int jarg3) {
   Filename *arg1 = (Filename *) 0 ;
   void *arg2 = (void *) 0 ;
   Int arg3 ;
@@ -21891,7 +21307,7 @@ SWIGEXPORT void SWIGSTDCALL CSharp_Filename_SetMemoryReadMode__SWIG_1(void * jar
 }
 
 
-SWIGEXPORT void SWIGSTDCALL CSharp_Filename_SetMemoryReadMode__SWIG_2(void * jarg1, void * jarg2) {
+SWIGEXPORT void SWIGSTDCALL CSharp_Filename_SetMemoryReadMode__SWIG_1(void * jarg1, void * jarg2) {
   Filename *arg1 = (Filename *) 0 ;
   void *arg2 = (void *) 0 ;
   
@@ -21911,13 +21327,23 @@ SWIGEXPORT void SWIGSTDCALL CSharp_Filename_SetMemoryWriteMode(void * jarg1, voi
 }
 
 
-SWIGEXPORT void * SWIGSTDCALL CSharp_Filename_GetMemoryModeI(void * jarg1) {
-  void * jresult ;
+SWIGEXPORT void SWIGSTDCALL CSharp_Filename_SetIpConnection(void * jarg1, void * jarg2) {
   Filename *arg1 = (Filename *) 0 ;
-  MemoryFileStruct *result = 0 ;
+  IpConnection *arg2 = (IpConnection *) 0 ;
   
   arg1 = (Filename *)jarg1; 
-  result = (MemoryFileStruct *)((Filename const *)arg1)->GetMemoryModeI();
+  arg2 = (IpConnection *)jarg2; 
+  (arg1)->SetIpConnection(arg2);
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_Filename_GetIpConnection(void * jarg1) {
+  void * jresult ;
+  Filename *arg1 = (Filename *) 0 ;
+  IpConnection *result = 0 ;
+  
+  arg1 = (Filename *)jarg1; 
+  result = (IpConnection *)((Filename const *)arg1)->GetIpConnection();
   jresult = (void *)result; 
   return jresult;
 }
@@ -25274,16 +24700,6 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_GeGetPluginPath() {
   Filename result;
   
   result = GeGetPluginPath();
-  jresult = new Filename((const Filename &)result); 
-  return jresult;
-}
-
-
-SWIGEXPORT void * SWIGSTDCALL CSharp_GeGetPluginResourcePath() {
-  void * jresult ;
-  Filename result;
-  
-  result = GeGetPluginResourcePath();
   jresult = new Filename((const Filename &)result); 
   return jresult;
 }
@@ -32977,139 +32393,6 @@ SWIGEXPORT void SWIGSTDCALL CSharp_delete_ObjectTransformMsgData(void * jarg1) {
 }
 
 
-SWIGEXPORT void SWIGSTDCALL CSharp_InvokeScriptData_functionName_set(void * jarg1, char * /* constString&_ctype */ jarg2) {
-  InvokeScriptData *arg1 = (InvokeScriptData *) 0 ;
-  String *arg2 = 0 ;
-  
-  arg1 = (InvokeScriptData *)jarg1; 
-  if (!jarg2) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
-    return ;
-  }
-  String arg2_str(jarg2);
-  arg2 = &arg2_str; 
-  if (arg1) (arg1)->functionName = *arg2;
-}
-
-
-SWIGEXPORT char * /* constString&_ctype */ SWIGSTDCALL CSharp_InvokeScriptData_functionName_get(void * jarg1) {
-  char * /* constString&_ctype */ jresult ;
-  InvokeScriptData *arg1 = (InvokeScriptData *) 0 ;
-  String *result = 0 ;
-  
-  arg1 = (InvokeScriptData *)jarg1; 
-  result = (String *) & ((arg1)->functionName);
-  jresult = SWIG_csharp_string_callback(result->GetCStringCopy()); 
-  return jresult;
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_InvokeScriptData_arg1_set(void * jarg1, void * jarg2) {
-  InvokeScriptData *arg1 = (InvokeScriptData *) 0 ;
-  GeData *arg2 = (GeData *) 0 ;
-  
-  arg1 = (InvokeScriptData *)jarg1; 
-  arg2 = (GeData *)jarg2; 
-  if (arg1) (arg1)->arg1 = *arg2;
-}
-
-
-SWIGEXPORT void * SWIGSTDCALL CSharp_InvokeScriptData_arg1_get(void * jarg1) {
-  void * jresult ;
-  InvokeScriptData *arg1 = (InvokeScriptData *) 0 ;
-  GeData *result = 0 ;
-  
-  arg1 = (InvokeScriptData *)jarg1; 
-  result = (GeData *)& ((arg1)->arg1);
-  jresult = (void *)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_InvokeScriptData_arg2_set(void * jarg1, void * jarg2) {
-  InvokeScriptData *arg1 = (InvokeScriptData *) 0 ;
-  GeData *arg2 = (GeData *) 0 ;
-  
-  arg1 = (InvokeScriptData *)jarg1; 
-  arg2 = (GeData *)jarg2; 
-  if (arg1) (arg1)->arg2 = *arg2;
-}
-
-
-SWIGEXPORT void * SWIGSTDCALL CSharp_InvokeScriptData_arg2_get(void * jarg1) {
-  void * jresult ;
-  InvokeScriptData *arg1 = (InvokeScriptData *) 0 ;
-  GeData *result = 0 ;
-  
-  arg1 = (InvokeScriptData *)jarg1; 
-  result = (GeData *)& ((arg1)->arg2);
-  jresult = (void *)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_InvokeScriptData_arg3_set(void * jarg1, void * jarg2) {
-  InvokeScriptData *arg1 = (InvokeScriptData *) 0 ;
-  GeData *arg2 = (GeData *) 0 ;
-  
-  arg1 = (InvokeScriptData *)jarg1; 
-  arg2 = (GeData *)jarg2; 
-  if (arg1) (arg1)->arg3 = *arg2;
-}
-
-
-SWIGEXPORT void * SWIGSTDCALL CSharp_InvokeScriptData_arg3_get(void * jarg1) {
-  void * jresult ;
-  InvokeScriptData *arg1 = (InvokeScriptData *) 0 ;
-  GeData *result = 0 ;
-  
-  arg1 = (InvokeScriptData *)jarg1; 
-  result = (GeData *)& ((arg1)->arg3);
-  jresult = (void *)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_InvokeScriptData_result_set(void * jarg1, void * jarg2) {
-  InvokeScriptData *arg1 = (InvokeScriptData *) 0 ;
-  GeData *arg2 = (GeData *) 0 ;
-  
-  arg1 = (InvokeScriptData *)jarg1; 
-  arg2 = (GeData *)jarg2; 
-  if (arg1) (arg1)->result = *arg2;
-}
-
-
-SWIGEXPORT void * SWIGSTDCALL CSharp_InvokeScriptData_result_get(void * jarg1) {
-  void * jresult ;
-  InvokeScriptData *arg1 = (InvokeScriptData *) 0 ;
-  GeData *result = 0 ;
-  
-  arg1 = (InvokeScriptData *)jarg1; 
-  result = (GeData *)& ((arg1)->result);
-  jresult = (void *)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void * SWIGSTDCALL CSharp_new_InvokeScriptData() {
-  void * jresult ;
-  InvokeScriptData *result = 0 ;
-  
-  result = (InvokeScriptData *)new InvokeScriptData();
-  jresult = (void *)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_delete_InvokeScriptData(void * jarg1) {
-  InvokeScriptData *arg1 = (InvokeScriptData *) 0 ;
-  
-  arg1 = (InvokeScriptData *)jarg1; 
-  delete arg1;
-}
-
-
 SWIGEXPORT void SWIGSTDCALL CSharp_ToolAskMsgData_version_set(void * jarg1, int jarg2) {
   ToolAskMsgData *arg1 = (ToolAskMsgData *) 0 ;
   Int32 arg2 ;
@@ -34279,116 +33562,6 @@ SWIGEXPORT int SWIGSTDCALL CSharp_MSG_DESCRIPTION_IMPEXPORT_INIT_get() {
 }
 
 
-SWIGEXPORT int SWIGSTDCALL CSharp_MSG_DESCRIPTION_TEXT_STOREUNDO_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)(440000181);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_MSG_DESCRIPTION_TEXT_RESTOREUNDO_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)(440000182);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_MSG_DESCRIPTION_TEXT_COMPILE_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)(440000194);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_MSG_DESCRIPTION_TEXT_SAVE_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)(440000195);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_MULTLINEEDITTEXT_UNDO_CONTAINER_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)(440000196);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_MULTLINEEDITTEXT_UNDO_CONTAINER_TEXT_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)(0);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_MULTLINEEDITTEXT_UNDO_CONTAINER_LEVEL_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)(1);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_MULTLINEEDITTEXT_UNDO_CONTAINER_SIZE_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)(2);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_MULTLINEEDITTEXT_UNDO_CONTAINER_FLAGS_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)(3);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_MULTLINEEDITTEXT_UNDO_CONTAINER_SAVED_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)(4);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_MULTLINEEDITTEXT_UNDO_CONTAINER_STACK_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)(100);
-  jresult = result; 
-  return jresult;
-}
-
-
 SWIGEXPORT int SWIGSTDCALL CSharp_MSG_MOVE_FINISHED_get() {
   int jresult ;
   int result;
@@ -35064,36 +34237,6 @@ SWIGEXPORT int SWIGSTDCALL CSharp_MSG_ADAPTVIEW_END_get() {
   int result;
   
   result = (int)(1028479);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_MSG_DISABLE_SYMMETRY_OBJECTS_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)(440000146);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_MSG_ENABLE_SYMMETRY_OBJECTS_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)(440000147);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_MSG_INVOKE_SCRIPT_FUNCTION_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)(440000184);
   jresult = result; 
   return jresult;
 }
@@ -35878,90 +35021,6 @@ SWIGEXPORT void SWIGSTDCALL CSharp_delete_GetRealCameraData(void * jarg1) {
   GetRealCameraData *arg1 = (GetRealCameraData *) 0 ;
   
   arg1 = (GetRealCameraData *)jarg1; 
-  delete arg1;
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_MultilineEditTextStoreUndo_undoData_set(void * jarg1, void * jarg2) {
-  MultilineEditTextStoreUndo *arg1 = (MultilineEditTextStoreUndo *) 0 ;
-  BaseContainer *arg2 = (BaseContainer *) 0 ;
-  
-  arg1 = (MultilineEditTextStoreUndo *)jarg1; 
-  arg2 = (BaseContainer *)jarg2; 
-  if (arg1) (arg1)->undoData = *arg2;
-}
-
-
-SWIGEXPORT void * SWIGSTDCALL CSharp_MultilineEditTextStoreUndo_undoData_get(void * jarg1) {
-  void * jresult ;
-  MultilineEditTextStoreUndo *arg1 = (MultilineEditTextStoreUndo *) 0 ;
-  BaseContainer *result = 0 ;
-  
-  arg1 = (MultilineEditTextStoreUndo *)jarg1; 
-  result = (BaseContainer *)& ((arg1)->undoData);
-  jresult = (void *)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_MultilineEditTextStoreUndo_id_set(void * jarg1, void * jarg2) {
-  MultilineEditTextStoreUndo *arg1 = (MultilineEditTextStoreUndo *) 0 ;
-  DescID *arg2 = (DescID *) 0 ;
-  
-  arg1 = (MultilineEditTextStoreUndo *)jarg1; 
-  arg2 = (DescID *)jarg2; 
-  if (arg1) (arg1)->id = (DescID const *)arg2;
-}
-
-
-SWIGEXPORT void * SWIGSTDCALL CSharp_MultilineEditTextStoreUndo_id_get(void * jarg1) {
-  void * jresult ;
-  MultilineEditTextStoreUndo *arg1 = (MultilineEditTextStoreUndo *) 0 ;
-  DescID *result = 0 ;
-  
-  arg1 = (MultilineEditTextStoreUndo *)jarg1; 
-  result = (DescID *) ((arg1)->id);
-  jresult = (void *)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_MultilineEditTextStoreUndo_flags_set(void * jarg1, int jarg2) {
-  MultilineEditTextStoreUndo *arg1 = (MultilineEditTextStoreUndo *) 0 ;
-  MULTILINEEDITTEXTMESSAGEFLAGS arg2 ;
-  
-  arg1 = (MultilineEditTextStoreUndo *)jarg1; 
-  arg2 = (MULTILINEEDITTEXTMESSAGEFLAGS)jarg2; 
-  if (arg1) (arg1)->flags = arg2;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_MultilineEditTextStoreUndo_flags_get(void * jarg1) {
-  int jresult ;
-  MultilineEditTextStoreUndo *arg1 = (MultilineEditTextStoreUndo *) 0 ;
-  MULTILINEEDITTEXTMESSAGEFLAGS result;
-  
-  arg1 = (MultilineEditTextStoreUndo *)jarg1; 
-  result = (MULTILINEEDITTEXTMESSAGEFLAGS) ((arg1)->flags);
-  jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void * SWIGSTDCALL CSharp_new_MultilineEditTextStoreUndo() {
-  void * jresult ;
-  MultilineEditTextStoreUndo *result = 0 ;
-  
-  result = (MultilineEditTextStoreUndo *)new MultilineEditTextStoreUndo();
-  jresult = (void *)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_delete_MultilineEditTextStoreUndo(void * jarg1) {
-  MultilineEditTextStoreUndo *arg1 = (MultilineEditTextStoreUndo *) 0 ;
-  
-  arg1 = (MultilineEditTextStoreUndo *)jarg1; 
   delete arg1;
 }
 
@@ -38992,30 +38051,6 @@ SWIGEXPORT void SWIGSTDCALL CSharp_GeListHead_Free(void * jarg1) {
 }
 
 
-SWIGEXPORT void * SWIGSTDCALL CSharp_BaseList2D_Alloc(int jarg1) {
-  void * jresult ;
-  Int32 arg1 ;
-  BaseList2D *result = 0 ;
-  
-  arg1 = (Int32)jarg1; 
-  result = (BaseList2D *)BaseList2D::Alloc(arg1);
-  jresult = (void *)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseList2D_Free(void * jarg1) {
-  BaseList2D **arg1 = 0 ;
-  
-  arg1 = (BaseList2D **)jarg1;
-  if (!arg1) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "BaseList2D *& type is null", 0);
-    return ;
-  } 
-  BaseList2D::Free(*arg1);
-}
-
-
 SWIGEXPORT void * SWIGSTDCALL CSharp_BaseList2D_GetNext(void * jarg1) {
   void * jresult ;
   BaseList2D *arg1 = (BaseList2D *) 0 ;
@@ -39847,6 +38882,30 @@ SWIGEXPORT int SWIGSTDCALL CSharp_BaseList2D_GetDescIDState(void * jarg1, void *
 }
 
 
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseList2D_Alloc(int jarg1) {
+  void * jresult ;
+  Int32 arg1 ;
+  BaseList2D *result = 0 ;
+  
+  arg1 = (Int32)jarg1; 
+  result = (BaseList2D *)BaseList2D::Alloc(arg1);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseList2D_Free(void * jarg1) {
+  BaseList2D **arg1 = 0 ;
+  
+  arg1 = (BaseList2D **)jarg1;
+  if (!arg1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "BaseList2D *& type is null", 0);
+    return ;
+  } 
+  BaseList2D::Free(*arg1);
+}
+
+
 SWIGEXPORT void * SWIGSTDCALL CSharp_AllocListHead() {
   void * jresult ;
   GeListHead *result = 0 ;
@@ -40501,18 +39560,6 @@ SWIGEXPORT Vector_POD /* Vector_ctype_out */ SWIGSTDCALL CSharp_Tangent_vr_get(v
   jresult = *((Vector_POD *)&(result));
   /* </Vector_out> */
   
-  return jresult;
-}
-
-
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_Tangent_IsBroken(void * jarg1) {
-  unsigned int jresult ;
-  Tangent *arg1 = (Tangent *) 0 ;
-  Bool result;
-  
-  arg1 = (Tangent *)jarg1; 
-  result = ((Tangent const *)arg1)->IsBroken();
-  jresult = result; 
   return jresult;
 }
 
@@ -46311,32 +45358,6 @@ SWIGEXPORT void SWIGSTDCALL CSharp_BaseContainer_Sort(void * jarg1) {
 }
 
 
-SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDrawHelp_Alloc(void * jarg1, void * jarg2) {
-  void * jresult ;
-  BaseDraw *arg1 = (BaseDraw *) 0 ;
-  BaseDocument *arg2 = (BaseDocument *) 0 ;
-  BaseDrawHelp *result = 0 ;
-  
-  arg1 = (BaseDraw *)jarg1; 
-  arg2 = (BaseDocument *)jarg2; 
-  result = (BaseDrawHelp *)BaseDrawHelp::Alloc(arg1,arg2);
-  jresult = (void *)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseDrawHelp_Free(void * jarg1) {
-  BaseDrawHelp **arg1 = 0 ;
-  
-  arg1 = (BaseDrawHelp **)jarg1;
-  if (!arg1) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "BaseDrawHelp *& type is null", 0);
-    return ;
-  } 
-  BaseDrawHelp::Free(*arg1);
-}
-
-
 SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDrawHelp_GetDocument(void * jarg1) {
   void * jresult ;
   BaseDrawHelp *arg1 = (BaseDrawHelp *) 0 ;
@@ -46373,16 +45394,6 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDrawHelp_GetMg(void * jarg1) {
 }
 
 
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseDrawHelp_SetMg(void * jarg1, void * jarg2) {
-  BaseDrawHelp *arg1 = (BaseDrawHelp *) 0 ;
-  Matrix *arg2 = 0 ;
-  
-  arg1 = (BaseDrawHelp *)jarg1; 
-  arg2 = (Matrix *)jarg2; /* constMatrix&_in */
-  (arg1)->SetMg((Matrix const &)*arg2);
-}
-
-
 SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDrawHelp_GetDisplay(void * jarg1) {
   void * jresult ;
   BaseDrawHelp *arg1 = (BaseDrawHelp *) 0 ;
@@ -46402,6 +45413,16 @@ SWIGEXPORT void SWIGSTDCALL CSharp_BaseDrawHelp_SetDisplay(void * jarg1, void * 
   arg1 = (BaseDrawHelp *)jarg1; 
   arg2 = (BaseContainer *)jarg2; 
   (arg1)->SetDisplay(arg2);
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseDrawHelp_SetMg(void * jarg1, void * jarg2) {
+  BaseDrawHelp *arg1 = (BaseDrawHelp *) 0 ;
+  Matrix *arg2 = 0 ;
+  
+  arg1 = (BaseDrawHelp *)jarg1; 
+  arg2 = (Matrix *)jarg2; /* constMatrix&_in */
+  (arg1)->SetMg((Matrix const &)*arg2);
 }
 
 
@@ -46438,6 +45459,32 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseDrawHelp_IsHighlight(void * jarg1
   result = ((BaseDrawHelp const *)arg1)->IsHighlight();
   jresult = result; 
   return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDrawHelp_Alloc(void * jarg1, void * jarg2) {
+  void * jresult ;
+  BaseDraw *arg1 = (BaseDraw *) 0 ;
+  BaseDocument *arg2 = (BaseDocument *) 0 ;
+  BaseDrawHelp *result = 0 ;
+  
+  arg1 = (BaseDraw *)jarg1; 
+  arg2 = (BaseDocument *)jarg2; 
+  result = (BaseDrawHelp *)BaseDrawHelp::Alloc(arg1,arg2);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseDrawHelp_Free(void * jarg1) {
+  BaseDrawHelp **arg1 = 0 ;
+  
+  arg1 = (BaseDrawHelp **)jarg1;
+  if (!arg1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "BaseDrawHelp *& type is null", 0);
+    return ;
+  } 
+  BaseDrawHelp::Free(*arg1);
 }
 
 
@@ -46765,6 +45812,20 @@ SWIGEXPORT void SWIGSTDCALL CSharp_BaseView_GetSafeFrame(void * jarg1, void * ja
 }
 
 
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseView_GetViewParameter(void * jarg1, void * jarg2, void * jarg3, void * jarg4) {
+  BaseView *arg1 = (BaseView *) 0 ;
+  Vector *arg2 = (Vector *) 0 ;
+  Vector *arg3 = (Vector *) 0 ;
+  Vector *arg4 = (Vector *) 0 ;
+  
+  arg1 = (BaseView *)jarg1; 
+  arg2 = (Vector *)jarg2; /* Vector*&_in */
+  arg3 = (Vector *)jarg3; /* Vector*&_in */
+  arg4 = (Vector *)jarg4; /* Vector*&_in */
+  ((BaseView const *)arg1)->GetViewParameter(arg2,arg3,arg4);
+}
+
+
 SWIGEXPORT Matrix_POD /* Matrix_ctype */ SWIGSTDCALL CSharp_BaseView_GetMg(void * jarg1) {
   Matrix_POD /* Matrix_ctype */ jresult ;
   BaseView *arg1 = (BaseView *) 0 ;
@@ -46834,6 +45895,18 @@ SWIGEXPORT void SWIGSTDCALL CSharp_BaseView_SetPlanarRotation(void * jarg1, doub
   arg1 = (BaseView *)jarg1; 
   arg2 = (Float)jarg2; 
   (arg1)->SetPlanarRotation(arg2);
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BaseView_GetProjection(void * jarg1) {
+  int jresult ;
+  BaseView *arg1 = (BaseView *) 0 ;
+  Int32 result;
+  
+  arg1 = (BaseView *)jarg1; 
+  result = (arg1)->GetProjection();
+  jresult = result; 
+  return jresult;
 }
 
 
@@ -47089,42 +46162,78 @@ SWIGEXPORT Vector_POD /* Vector_ctype_out */ SWIGSTDCALL CSharp_BaseView_CW_V(vo
 }
 
 
-SWIGEXPORT Vector_POD /* Vector_ctype_out */ SWIGSTDCALL CSharp_BaseView_WS_V(void * jarg1, void * jarg2, void * jarg3) {
-  Vector_POD /* Vector_ctype_out */ jresult ;
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseView_BackfaceCulling(void * jarg1, void * jarg2, void * jarg3) {
+  unsigned int jresult ;
   BaseView *arg1 = (BaseView *) 0 ;
   Vector *arg2 = 0 ;
   Vector *arg3 = 0 ;
-  Vector result;
+  Bool result;
   
   arg1 = (BaseView *)jarg1; 
   arg2 = (Vector *)jarg2; /* Vector*&_in */
   arg3 = (Vector *)jarg3; /* Vector*&_in */
-  result = (arg1)->WS_V((Vector const &)*arg2,(Vector const &)*arg3);
-  
-  /* <Vector_out> */
-  jresult = *((Vector_POD *)&(result));
-  /* </Vector_out> */
-  
+  result = (arg1)->BackfaceCulling((Vector const &)*arg2,(Vector const &)*arg3);
+  jresult = result; 
   return jresult;
 }
 
 
-SWIGEXPORT Vector_POD /* Vector_ctype_out */ SWIGSTDCALL CSharp_BaseView_SW_V(void * jarg1, void * jarg2, void * jarg3) {
-  Vector_POD /* Vector_ctype_out */ jresult ;
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseView_ZSensitiveNear(void * jarg1) {
+  unsigned int jresult ;
   BaseView *arg1 = (BaseView *) 0 ;
-  Vector *arg2 = 0 ;
-  Vector *arg3 = 0 ;
-  Vector result;
+  Bool result;
   
   arg1 = (BaseView *)jarg1; 
-  arg2 = (Vector *)jarg2; /* Vector*&_in */
-  arg3 = (Vector *)jarg3; /* Vector*&_in */
-  result = (arg1)->SW_V((Vector const &)*arg2,(Vector const &)*arg3);
+  result = (arg1)->ZSensitiveNear();
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT double SWIGSTDCALL CSharp_BaseView_ZSensitiveNearClipping(void * jarg1) {
+  double jresult ;
+  BaseView *arg1 = (BaseView *) 0 ;
+  Float result;
   
-  /* <Vector_out> */
-  jresult = *((Vector_POD *)&(result));
-  /* </Vector_out> */
+  arg1 = (BaseView *)jarg1; 
+  result = (arg1)->ZSensitiveNearClipping();
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseView_GetStereoInfo(void * jarg1) {
+  void * jresult ;
+  BaseView *arg1 = (BaseView *) 0 ;
+  StereoCameraInfo *result = 0 ;
   
+  arg1 = (BaseView *)jarg1; 
+  result = (StereoCameraInfo *)((BaseView const *)arg1)->GetStereoInfo();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseView_ZSensitiveFar(void * jarg1) {
+  unsigned int jresult ;
+  BaseView *arg1 = (BaseView *) 0 ;
+  Bool result;
+  
+  arg1 = (BaseView *)jarg1; 
+  result = (arg1)->ZSensitiveFar();
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT double SWIGSTDCALL CSharp_BaseView_ZSensitiveFarClipping(void * jarg1) {
+  double jresult ;
+  BaseView *arg1 = (BaseView *) 0 ;
+  Float result;
+  
+  arg1 = (BaseView *)jarg1; 
+  result = (arg1)->ZSensitiveFarClipping();
+  jresult = result; 
   return jresult;
 }
 
@@ -47188,54 +46297,6 @@ SWIGEXPORT double SWIGSTDCALL CSharp_BaseView_WP_W(void * jarg1, void * jarg2, u
   arg2 = (Vector *)jarg2; /* Vector*&_in */
   arg3 = jarg3 ? true : false; 
   result = (arg1)->WP_W((Vector const &)*arg2,arg3);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseView_ZSensitiveNear(void * jarg1) {
-  unsigned int jresult ;
-  BaseView *arg1 = (BaseView *) 0 ;
-  Bool result;
-  
-  arg1 = (BaseView *)jarg1; 
-  result = (arg1)->ZSensitiveNear();
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT double SWIGSTDCALL CSharp_BaseView_ZSensitiveNearClipping(void * jarg1) {
-  double jresult ;
-  BaseView *arg1 = (BaseView *) 0 ;
-  Float result;
-  
-  arg1 = (BaseView *)jarg1; 
-  result = (arg1)->ZSensitiveNearClipping();
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseView_ZSensitiveFar(void * jarg1) {
-  unsigned int jresult ;
-  BaseView *arg1 = (BaseView *) 0 ;
-  Bool result;
-  
-  arg1 = (BaseView *)jarg1; 
-  result = (arg1)->ZSensitiveFar();
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT double SWIGSTDCALL CSharp_BaseView_ZSensitiveFarClipping(void * jarg1) {
-  double jresult ;
-  BaseView *arg1 = (BaseView *) 0 ;
-  Float result;
-  
-  arg1 = (BaseView *)jarg1; 
-  result = (arg1)->ZSensitiveFarClipping();
   jresult = result; 
   return jresult;
 }
@@ -47369,60 +46430,6 @@ SWIGEXPORT Vector_POD /* Vector_ctype_out */ SWIGSTDCALL CSharp_BaseView_Project
 }
 
 
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseView_BackfaceCulling(void * jarg1, void * jarg2, void * jarg3) {
-  unsigned int jresult ;
-  BaseView *arg1 = (BaseView *) 0 ;
-  Vector *arg2 = 0 ;
-  Vector *arg3 = 0 ;
-  Bool result;
-  
-  arg1 = (BaseView *)jarg1; 
-  arg2 = (Vector *)jarg2; /* Vector*&_in */
-  arg3 = (Vector *)jarg3; /* Vector*&_in */
-  result = (arg1)->BackfaceCulling((Vector const &)*arg2,(Vector const &)*arg3);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_BaseView_GetProjection(void * jarg1) {
-  int jresult ;
-  BaseView *arg1 = (BaseView *) 0 ;
-  Int32 result;
-  
-  arg1 = (BaseView *)jarg1; 
-  result = (arg1)->GetProjection();
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void * SWIGSTDCALL CSharp_BaseView_GetStereoInfo(void * jarg1) {
-  void * jresult ;
-  BaseView *arg1 = (BaseView *) 0 ;
-  StereoCameraInfo *result = 0 ;
-  
-  arg1 = (BaseView *)jarg1; 
-  result = (StereoCameraInfo *)((BaseView const *)arg1)->GetStereoInfo();
-  jresult = (void *)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseView_GetViewParameter(void * jarg1, void * jarg2, void * jarg3, void * jarg4) {
-  BaseView *arg1 = (BaseView *) 0 ;
-  Vector *arg2 = (Vector *) 0 ;
-  Vector *arg3 = (Vector *) 0 ;
-  Vector *arg4 = (Vector *) 0 ;
-  
-  arg1 = (BaseView *)jarg1; 
-  arg2 = (Vector *)jarg2; /* Vector*&_in */
-  arg3 = (Vector *)jarg3; /* Vector*&_in */
-  arg4 = (Vector *)jarg4; /* Vector*&_in */
-  ((BaseView const *)arg1)->GetViewParameter(arg2,arg3,arg4);
-}
-
-
 SWIGEXPORT int SWIGSTDCALL CSharp_DRAW_GET_VIEWMATRIX_PROJECTION_get() {
   int jresult ;
   int result;
@@ -47499,6 +46506,26 @@ SWIGEXPORT void SWIGSTDCALL CSharp_BaseDraw_Free(void * jarg1) {
 }
 
 
+SWIGEXPORT int SWIGSTDCALL CSharp_BaseDraw_GetFrameScreen(void * jarg1, void * jarg2, void * jarg3, void * jarg4, void * jarg5) {
+  int jresult ;
+  BaseDraw *arg1 = (BaseDraw *) 0 ;
+  Int32 *arg2 = (Int32 *) 0 ;
+  Int32 *arg3 = (Int32 *) 0 ;
+  Int32 *arg4 = (Int32 *) 0 ;
+  Int32 *arg5 = (Int32 *) 0 ;
+  Int32 result;
+  
+  arg1 = (BaseDraw *)jarg1; 
+  arg2 = (Int32 *)jarg2; 
+  arg3 = (Int32 *)jarg3; 
+  arg4 = (Int32 *)jarg4; 
+  arg5 = (Int32 *)jarg5; 
+  result = (arg1)->GetFrameScreen(arg2,arg3,arg4,arg5);
+  jresult = result; 
+  return jresult;
+}
+
+
 SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseDraw_HasCameraLink(void * jarg1) {
   unsigned int jresult ;
   BaseDraw *arg1 = (BaseDraw *) 0 ;
@@ -47507,20 +46534,6 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseDraw_HasCameraLink(void * jarg1) 
   arg1 = (BaseDraw *)jarg1; 
   result = (arg1)->HasCameraLink();
   jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDraw_GetSceneCamera(void * jarg1, void * jarg2) {
-  void * jresult ;
-  BaseDraw *arg1 = (BaseDraw *) 0 ;
-  BaseDocument *arg2 = (BaseDocument *) 0 ;
-  BaseObject *result = 0 ;
-  
-  arg1 = (BaseDraw *)jarg1; 
-  arg2 = (BaseDocument *)jarg2; 
-  result = (BaseObject *)(arg1)->GetSceneCamera((BaseDocument const *)arg2);
-  jresult = (void *)result; 
   return jresult;
 }
 
@@ -47547,6 +46560,20 @@ SWIGEXPORT void SWIGSTDCALL CSharp_BaseDraw_SetSceneCamera__SWIG_1(void * jarg1,
 }
 
 
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDraw_GetSceneCamera(void * jarg1, void * jarg2) {
+  void * jresult ;
+  BaseDraw *arg1 = (BaseDraw *) 0 ;
+  BaseDocument *arg2 = (BaseDocument *) 0 ;
+  BaseObject *result = 0 ;
+  
+  arg1 = (BaseDraw *)jarg1; 
+  arg2 = (BaseDocument *)jarg2; 
+  result = (BaseObject *)(arg1)->GetSceneCamera((BaseDocument const *)arg2);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
 SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDraw_GetEditorCamera(void * jarg1) {
   void * jresult ;
   BaseDraw *arg1 = (BaseDraw *) 0 ;
@@ -47555,6 +46582,44 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDraw_GetEditorCamera(void * jarg1) {
   arg1 = (BaseDraw *)jarg1; 
   result = (BaseObject *)(arg1)->GetEditorCamera();
   jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BaseDraw_GetDisplayFilter(void * jarg1) {
+  int jresult ;
+  BaseDraw *arg1 = (BaseDraw *) 0 ;
+  DISPLAYFILTER result;
+  
+  arg1 = (BaseDraw *)jarg1; 
+  result = (DISPLAYFILTER)(arg1)->GetDisplayFilter();
+  jresult = (int)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BaseDraw_GetEditState(void * jarg1) {
+  int jresult ;
+  BaseDraw *arg1 = (BaseDraw *) 0 ;
+  DISPLAYEDITSTATE result;
+  
+  arg1 = (BaseDraw *)jarg1; 
+  result = (DISPLAYEDITSTATE)(arg1)->GetEditState();
+  jresult = (int)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseDraw_IsViewOpen(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  BaseDraw *arg1 = (BaseDraw *) 0 ;
+  BaseDocument *arg2 = (BaseDocument *) 0 ;
+  Bool result;
+  
+  arg1 = (BaseDraw *)jarg1; 
+  arg2 = (BaseDocument *)jarg2; 
+  result = (arg1)->IsViewOpen(arg2);
+  jresult = result; 
   return jresult;
 }
 
@@ -47618,6 +46683,38 @@ SWIGEXPORT void SWIGSTDCALL CSharp_BaseDraw_InitializeView(void * jarg1, void * 
   arg3 = (BaseObject *)jarg3; 
   arg4 = jarg4 ? true : false; 
   (arg1)->InitializeView(arg2,arg3,arg4);
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseDraw_AddMessageHook(void * jarg1, void * jarg2) {
+  BaseDraw *arg1 = (BaseDraw *) 0 ;
+  BaseDrawMessageHook arg2 ;
+  BaseDrawMessageHook *argp2 ;
+  
+  arg1 = (BaseDraw *)jarg1; 
+  argp2 = (BaseDrawMessageHook *)jarg2; 
+  if (!argp2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null BaseDrawMessageHook", 0);
+    return ;
+  }
+  arg2 = *argp2; 
+  (arg1)->AddMessageHook(arg2);
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseDraw_AddToPostPass(void * jarg1, void * jarg2, void * jarg3) {
+  unsigned int jresult ;
+  BaseDraw *arg1 = (BaseDraw *) 0 ;
+  BaseObject *arg2 = (BaseObject *) 0 ;
+  BaseDrawHelp *arg3 = (BaseDrawHelp *) 0 ;
+  Bool result;
+  
+  arg1 = (BaseDraw *)jarg1; 
+  arg2 = (BaseObject *)jarg2; 
+  arg3 = (BaseDrawHelp *)jarg3; 
+  result = (arg1)->AddToPostPass(arg2,arg3);
+  jresult = result; 
+  return jresult;
 }
 
 
@@ -47703,6 +46800,24 @@ SWIGEXPORT int SWIGSTDCALL CSharp_BaseDraw_GetTransparency(void * jarg1) {
 }
 
 
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseDraw_PointInRange(void * jarg1, void * jarg2, int jarg3, int jarg4) {
+  unsigned int jresult ;
+  BaseDraw *arg1 = (BaseDraw *) 0 ;
+  Vector *arg2 = 0 ;
+  Int32 arg3 ;
+  Int32 arg4 ;
+  Bool result;
+  
+  arg1 = (BaseDraw *)jarg1; 
+  arg2 = (Vector *)jarg2; /* Vector*&_in */
+  arg3 = (Int32)jarg3; 
+  arg4 = (Int32)jarg4; 
+  result = (arg1)->PointInRange((Vector const &)*arg2,arg3,arg4);
+  jresult = result; 
+  return jresult;
+}
+
+
 SWIGEXPORT void SWIGSTDCALL CSharp_BaseDraw_SetPen__SWIG_0(void * jarg1, void * jarg2, int jarg3) {
   BaseDraw *arg1 = (BaseDraw *) 0 ;
   Vector *arg2 = 0 ;
@@ -47732,46 +46847,6 @@ SWIGEXPORT void SWIGSTDCALL CSharp_BaseDraw_SetPointSize(void * jarg1, double ja
   arg1 = (BaseDraw *)jarg1; 
   arg2 = (Float)jarg2; 
   (arg1)->SetPointSize(arg2);
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseDraw_SetLightList(void * jarg1, int jarg2) {
-  BaseDraw *arg1 = (BaseDraw *) 0 ;
-  Int32 arg2 ;
-  
-  arg1 = (BaseDraw *)jarg1; 
-  arg2 = (Int32)jarg2; 
-  (arg1)->SetLightList(arg2);
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_BDRAW_SETLIGHTLIST_NOLIGHTS_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)(-1);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_BDRAW_SETLIGHTLIST_SCENELIGHTS_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)(0);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_BDRAW_SETLIGHTLIST_QUICKSHADING_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)(1);
-  jresult = result; 
-  return jresult;
 }
 
 
@@ -47807,6 +46882,22 @@ SWIGEXPORT Vector_POD /* Vector_ctype_out */ SWIGSTDCALL CSharp_BaseDraw_Convert
   jresult = *((Vector_POD *)&(result));
   /* </Vector_out> */
   
+  return jresult;
+}
+
+
+SWIGEXPORT double SWIGSTDCALL CSharp_BaseDraw_SimpleShade(void * jarg1, void * jarg2, void * jarg3) {
+  double jresult ;
+  BaseDraw *arg1 = (BaseDraw *) 0 ;
+  Vector *arg2 = 0 ;
+  Vector *arg3 = 0 ;
+  Float result;
+  
+  arg1 = (BaseDraw *)jarg1; 
+  arg2 = (Vector *)jarg2; /* Vector*&_in */
+  arg3 = (Vector *)jarg3; /* Vector*&_in */
+  result = (arg1)->SimpleShade((Vector const &)*arg2,(Vector const &)*arg3);
+  jresult = result; 
   return jresult;
 }
 
@@ -47903,6 +46994,16 @@ SWIGEXPORT void SWIGSTDCALL CSharp_BaseDraw_SetMatrix_Matrix__SWIG_1(void * jarg
 }
 
 
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseDraw_SetClipPlaneOffset(void * jarg1, double jarg2) {
+  BaseDraw *arg1 = (BaseDraw *) 0 ;
+  Float arg2 ;
+  
+  arg1 = (BaseDraw *)jarg1; 
+  arg2 = (Float)jarg2; 
+  (arg1)->SetClipPlaneOffset(arg2);
+}
+
+
 SWIGEXPORT int SWIGSTDCALL CSharp_NOCLIP_D_get() {
   int jresult ;
   int result;
@@ -47920,6 +47021,36 @@ SWIGEXPORT int SWIGSTDCALL CSharp_NOCLIP_Z_get() {
   result = (int)(2);
   jresult = result; 
   return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseDraw_LineStripBegin(void * jarg1) {
+  BaseDraw *arg1 = (BaseDraw *) 0 ;
+  
+  arg1 = (BaseDraw *)jarg1; 
+  (arg1)->LineStripBegin();
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseDraw_LineStrip(void * jarg1, void * jarg2, void * jarg3, int jarg4) {
+  BaseDraw *arg1 = (BaseDraw *) 0 ;
+  Vector *arg2 = 0 ;
+  Vector *arg3 = 0 ;
+  Int32 arg4 ;
+  
+  arg1 = (BaseDraw *)jarg1; 
+  arg2 = (Vector *)jarg2; /* Vector*&_in */
+  arg3 = (Vector *)jarg3; /* Vector*&_in */
+  arg4 = (Int32)jarg4; 
+  (arg1)->LineStrip((Vector const &)*arg2,(Vector const &)*arg3,arg4);
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseDraw_LineStripEnd(void * jarg1) {
+  BaseDraw *arg1 = (BaseDraw *) 0 ;
+  
+  arg1 = (BaseDraw *)jarg1; 
+  (arg1)->LineStripEnd();
 }
 
 
@@ -48407,83 +47538,15 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseDraw_DrawScene(void * jarg1, int 
 }
 
 
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseDraw_LineStripBegin(void * jarg1) {
+SWIGEXPORT int SWIGSTDCALL CSharp_BaseDraw_GetReductionMode(void * jarg1) {
+  int jresult ;
   BaseDraw *arg1 = (BaseDraw *) 0 ;
+  DISPLAYMODE result;
   
   arg1 = (BaseDraw *)jarg1; 
-  (arg1)->LineStripBegin();
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseDraw_LineStripEnd(void * jarg1) {
-  BaseDraw *arg1 = (BaseDraw *) 0 ;
-  
-  arg1 = (BaseDraw *)jarg1; 
-  (arg1)->LineStripEnd();
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseDraw_LineStrip(void * jarg1, void * jarg2, void * jarg3, int jarg4) {
-  BaseDraw *arg1 = (BaseDraw *) 0 ;
-  Vector *arg2 = 0 ;
-  Vector *arg3 = 0 ;
-  Int32 arg4 ;
-  
-  arg1 = (BaseDraw *)jarg1; 
-  arg2 = (Vector *)jarg2; /* Vector*&_in */
-  arg3 = (Vector *)jarg3; /* Vector*&_in */
-  arg4 = (Int32)jarg4; 
-  (arg1)->LineStrip((Vector const &)*arg2,(Vector const &)*arg3,arg4);
-}
-
-
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseDraw_InitDrawXORPolyLine(void * jarg1) {
-  unsigned int jresult ;
-  BaseDraw *arg1 = (BaseDraw *) 0 ;
-  Bool result;
-  
-  arg1 = (BaseDraw *)jarg1; 
-  result = (arg1)->InitDrawXORPolyLine();
-  jresult = result; 
+  result = (DISPLAYMODE)((BaseDraw const *)arg1)->GetReductionMode();
+  jresult = (int)result; 
   return jresult;
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseDraw_FreeDrawXORPolyLine(void * jarg1) {
-  BaseDraw *arg1 = (BaseDraw *) 0 ;
-  
-  arg1 = (BaseDraw *)jarg1; 
-  (arg1)->FreeDrawXORPolyLine();
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseDraw_DrawXORPolyLine(void * jarg1, void * jarg2, int jarg3) {
-  BaseDraw *arg1 = (BaseDraw *) 0 ;
-  Float32 *arg2 = (Float32 *) 0 ;
-  Int32 arg3 ;
-  
-  arg1 = (BaseDraw *)jarg1; 
-  arg2 = (Float32 *)jarg2; 
-  arg3 = (Int32)jarg3; 
-  (arg1)->DrawXORPolyLine((Float32 const *)arg2,arg3);
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseDraw_BeginDrawXORPolyLine(void * jarg1) {
-  BaseDraw *arg1 = (BaseDraw *) 0 ;
-  
-  arg1 = (BaseDraw *)jarg1; 
-  (arg1)->BeginDrawXORPolyLine();
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseDraw_EndDrawXORPolyLine(void * jarg1, unsigned int jarg2) {
-  BaseDraw *arg1 = (BaseDraw *) 0 ;
-  Bool arg2 ;
-  
-  arg1 = (BaseDraw *)jarg1; 
-  arg2 = jarg2 ? true : false; 
-  (arg1)->EndDrawXORPolyLine(arg2);
 }
 
 
@@ -48559,6 +47622,96 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDraw_GetHighlightFramebuffer__SWIG_2(vo
   arg1 = (BaseDraw *)jarg1; 
   result = (GlFrameBuffer *)(arg1)->GetHighlightFramebuffer();
   jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseDraw_InitDrawXORPolyLine(void * jarg1) {
+  unsigned int jresult ;
+  BaseDraw *arg1 = (BaseDraw *) 0 ;
+  Bool result;
+  
+  arg1 = (BaseDraw *)jarg1; 
+  result = (arg1)->InitDrawXORPolyLine();
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseDraw_FreeDrawXORPolyLine(void * jarg1) {
+  BaseDraw *arg1 = (BaseDraw *) 0 ;
+  
+  arg1 = (BaseDraw *)jarg1; 
+  (arg1)->FreeDrawXORPolyLine();
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseDraw_DrawXORPolyLine(void * jarg1, void * jarg2, int jarg3) {
+  BaseDraw *arg1 = (BaseDraw *) 0 ;
+  Float32 *arg2 = (Float32 *) 0 ;
+  Int32 arg3 ;
+  
+  arg1 = (BaseDraw *)jarg1; 
+  arg2 = (Float32 *)jarg2; 
+  arg3 = (Int32)jarg3; 
+  (arg1)->DrawXORPolyLine((Float32 const *)arg2,arg3);
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseDraw_BeginDrawXORPolyLine(void * jarg1) {
+  BaseDraw *arg1 = (BaseDraw *) 0 ;
+  
+  arg1 = (BaseDraw *)jarg1; 
+  (arg1)->BeginDrawXORPolyLine();
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseDraw_EndDrawXORPolyLine(void * jarg1, unsigned int jarg2) {
+  BaseDraw *arg1 = (BaseDraw *) 0 ;
+  Bool arg2 ;
+  
+  arg1 = (BaseDraw *)jarg1; 
+  arg2 = jarg2 ? true : false; 
+  (arg1)->EndDrawXORPolyLine(arg2);
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseDraw_SetLightList(void * jarg1, int jarg2) {
+  BaseDraw *arg1 = (BaseDraw *) 0 ;
+  Int32 arg2 ;
+  
+  arg1 = (BaseDraw *)jarg1; 
+  arg2 = (Int32)jarg2; 
+  (arg1)->SetLightList(arg2);
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BDRAW_SETLIGHTLIST_NOLIGHTS_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(-1);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BDRAW_SETLIGHTLIST_SCENELIGHTS_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(0);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BDRAW_SETLIGHTLIST_QUICKSHADING_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(1);
+  jresult = result; 
   return jresult;
 }
 
@@ -48643,36 +47796,6 @@ SWIGEXPORT int SWIGSTDCALL CSharp_DRAW_PARAMETER_SETZ_get() {
 }
 
 
-SWIGEXPORT int SWIGSTDCALL CSharp_DRAW_PARAMETER_OGL_CULLING_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)(10);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_DRAW_PARAMETER_USE_Z_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)(11);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_DRAW_PARAMETER_OGL_PRIMITIVERESTARTINDEX_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)(14);
-  jresult = result; 
-  return jresult;
-}
-
-
 SWIGEXPORT int SWIGSTDCALL CSharp_DRAW_Z_LOWEREQUAL_get() {
   int jresult ;
   int result;
@@ -48723,6 +47846,16 @@ SWIGEXPORT int SWIGSTDCALL CSharp_DRAW_Z_LOWER_get() {
 }
 
 
+SWIGEXPORT int SWIGSTDCALL CSharp_DRAW_PARAMETER_OGL_CULLING_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(10);
+  jresult = result; 
+  return jresult;
+}
+
+
 SWIGEXPORT int SWIGSTDCALL CSharp_DRAW_PARAMETER_OGL_CULLING_OFF_get() {
   int jresult ;
   int result;
@@ -48763,6 +47896,26 @@ SWIGEXPORT int SWIGSTDCALL CSharp_DRAW_PARAMETER_OGL_CULLING_FRONT_AND_BACK_get(
 }
 
 
+SWIGEXPORT int SWIGSTDCALL CSharp_DRAW_PARAMETER_USE_Z_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(11);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_DRAW_PARAMETER_OGL_PRIMITIVERESTARTINDEX_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)(14);
+  jresult = result; 
+  return jresult;
+}
+
+
 SWIGEXPORT int SWIGSTDCALL CSharp_DRAWPORT_TYPE_SOFTWARE_get() {
   int jresult ;
   int result;
@@ -48783,234 +47936,6 @@ SWIGEXPORT int SWIGSTDCALL CSharp_DRAWPORT_TYPE_OGL_HQ_get() {
 }
 
 
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseDraw_AddMessageHook(void * jarg1, void * jarg2) {
-  BaseDraw *arg1 = (BaseDraw *) 0 ;
-  BaseDrawMessageHook arg2 ;
-  BaseDrawMessageHook *argp2 ;
-  
-  arg1 = (BaseDraw *)jarg1; 
-  argp2 = (BaseDrawMessageHook *)jarg2; 
-  if (!argp2) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null BaseDrawMessageHook", 0);
-    return ;
-  }
-  arg2 = *argp2; 
-  (arg1)->AddMessageHook(arg2);
-}
-
-
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseDraw_AddToPostPass(void * jarg1, void * jarg2, void * jarg3) {
-  unsigned int jresult ;
-  BaseDraw *arg1 = (BaseDraw *) 0 ;
-  BaseObject *arg2 = (BaseObject *) 0 ;
-  BaseDrawHelp *arg3 = (BaseDrawHelp *) 0 ;
-  Bool result;
-  
-  arg1 = (BaseDraw *)jarg1; 
-  arg2 = (BaseObject *)jarg2; 
-  arg3 = (BaseDrawHelp *)jarg3; 
-  result = (arg1)->AddToPostPass(arg2,arg3);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_BaseDraw_GetDisplayFilter(void * jarg1) {
-  int jresult ;
-  BaseDraw *arg1 = (BaseDraw *) 0 ;
-  DISPLAYFILTER result;
-  
-  arg1 = (BaseDraw *)jarg1; 
-  result = (DISPLAYFILTER)(arg1)->GetDisplayFilter();
-  jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_BaseDraw_GetReductionMode(void * jarg1) {
-  int jresult ;
-  BaseDraw *arg1 = (BaseDraw *) 0 ;
-  DISPLAYMODE result;
-  
-  arg1 = (BaseDraw *)jarg1; 
-  result = (DISPLAYMODE)((BaseDraw const *)arg1)->GetReductionMode();
-  jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_BaseDraw_GetDrawPass(void * jarg1) {
-  int jresult ;
-  BaseDraw *arg1 = (BaseDraw *) 0 ;
-  DRAWPASS result;
-  
-  arg1 = (BaseDraw *)jarg1; 
-  result = (DRAWPASS)((BaseDraw const *)arg1)->GetDrawPass();
-  jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseDraw_GetDrawStatistics(void * jarg1, void * jarg2) {
-  unsigned int jresult ;
-  BaseDraw *arg1 = (BaseDraw *) 0 ;
-  BaseContainer *arg2 = 0 ;
-  Bool result;
-  
-  arg1 = (BaseDraw *)jarg1; 
-  arg2 = (BaseContainer *)jarg2;
-  if (!arg2) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "BaseContainer & type is null", 0);
-    return 0;
-  } 
-  result = ((BaseDraw const *)arg1)->GetDrawStatistics(*arg2);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_BaseDraw_GetEditState(void * jarg1) {
-  int jresult ;
-  BaseDraw *arg1 = (BaseDraw *) 0 ;
-  DISPLAYEDITSTATE result;
-  
-  arg1 = (BaseDraw *)jarg1; 
-  result = (DISPLAYEDITSTATE)(arg1)->GetEditState();
-  jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDraw_GetEditorWindow(void * jarg1) {
-  void * jresult ;
-  BaseDraw *arg1 = (BaseDraw *) 0 ;
-  EditorWindow *result = 0 ;
-  
-  arg1 = (BaseDraw *)jarg1; 
-  result = (EditorWindow *)(arg1)->GetEditorWindow();
-  jresult = (void *)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseDraw_GetGridStep(void * jarg1, void * jarg2, void * jarg3) {
-  BaseDraw *arg1 = (BaseDraw *) 0 ;
-  Float *arg2 = 0 ;
-  Float *arg3 = 0 ;
-  
-  arg1 = (BaseDraw *)jarg1; 
-  arg2 = (Float *)jarg2;
-  if (!arg2) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Float & type is null", 0);
-    return ;
-  } 
-  arg3 = (Float *)jarg3;
-  if (!arg3) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Float & type is null", 0);
-    return ;
-  } 
-  (arg1)->GetGridStep(*arg2,*arg3);
-}
-
-
-SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDraw_GetViewMatrix(void * jarg1, int jarg2) {
-  void * jresult ;
-  BaseDraw *arg1 = (BaseDraw *) 0 ;
-  Int32 arg2 ;
-  Matrix4d *result = 0 ;
-  
-  arg1 = (BaseDraw *)jarg1; 
-  arg2 = (Int32)jarg2; 
-  result = (Matrix4d *) &(arg1)->GetViewMatrix(arg2);
-  jresult = (void *)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseDraw_IsViewOpen(void * jarg1, void * jarg2) {
-  unsigned int jresult ;
-  BaseDraw *arg1 = (BaseDraw *) 0 ;
-  BaseDocument *arg2 = (BaseDocument *) 0 ;
-  Bool result;
-  
-  arg1 = (BaseDraw *)jarg1; 
-  arg2 = (BaseDocument *)jarg2; 
-  result = (arg1)->IsViewOpen(arg2);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseDraw_OverrideCamera(void * jarg1, void * jarg2) {
-  BaseDraw *arg1 = (BaseDraw *) 0 ;
-  StereoCameraInfo *arg2 = (StereoCameraInfo *) 0 ;
-  
-  arg1 = (BaseDraw *)jarg1; 
-  arg2 = (StereoCameraInfo *)jarg2; 
-  (arg1)->OverrideCamera(arg2);
-}
-
-
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseDraw_PointInRange(void * jarg1, void * jarg2, int jarg3, int jarg4) {
-  unsigned int jresult ;
-  BaseDraw *arg1 = (BaseDraw *) 0 ;
-  Vector *arg2 = 0 ;
-  Int32 arg3 ;
-  Int32 arg4 ;
-  Bool result;
-  
-  arg1 = (BaseDraw *)jarg1; 
-  arg2 = (Vector *)jarg2; /* Vector*&_in */
-  arg3 = (Int32)jarg3; 
-  arg4 = (Int32)jarg4; 
-  result = (arg1)->PointInRange((Vector const &)*arg2,arg3,arg4);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseDraw_SetClipPlaneOffset(void * jarg1, double jarg2) {
-  BaseDraw *arg1 = (BaseDraw *) 0 ;
-  Float arg2 ;
-  
-  arg1 = (BaseDraw *)jarg1; 
-  arg2 = (Float)jarg2; 
-  (arg1)->SetClipPlaneOffset(arg2);
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseDraw_SetTexture(void * jarg1, void * jarg2, unsigned int jarg3, int jarg4, int jarg5) {
-  BaseDraw *arg1 = (BaseDraw *) 0 ;
-  BaseBitmap *arg2 = (BaseBitmap *) 0 ;
-  Bool arg3 ;
-  DRAW_ALPHA arg4 ;
-  DRAW_TEXTUREFLAGS arg5 ;
-  
-  arg1 = (BaseDraw *)jarg1; 
-  arg2 = (BaseBitmap *)jarg2; 
-  arg3 = jarg3 ? true : false; 
-  arg4 = (DRAW_ALPHA)jarg4; 
-  arg5 = (DRAW_TEXTUREFLAGS)jarg5; 
-  (arg1)->SetTexture(arg2,arg3,arg4,arg5);
-}
-
-
-SWIGEXPORT double SWIGSTDCALL CSharp_BaseDraw_SimpleShade(void * jarg1, void * jarg2, void * jarg3) {
-  double jresult ;
-  BaseDraw *arg1 = (BaseDraw *) 0 ;
-  Vector *arg2 = 0 ;
-  Vector *arg3 = 0 ;
-  Float result;
-  
-  arg1 = (BaseDraw *)jarg1; 
-  arg2 = (Vector *)jarg2; /* Vector*&_in */
-  arg3 = (Vector *)jarg3; /* Vector*&_in */
-  result = (arg1)->SimpleShade((Vector const &)*arg2,(Vector const &)*arg3);
-  jresult = result; 
-  return jresult;
-}
-
-
 SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseDraw_TestBreak(void * jarg1) {
   unsigned int jresult ;
   BaseDraw *arg1 = (BaseDraw *) 0 ;
@@ -49023,62 +47948,14 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseDraw_TestBreak(void * jarg1) {
 }
 
 
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseDraw_IsOpenGL(void * jarg1) {
-  unsigned int jresult ;
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDraw_GetOITInfo(void * jarg1) {
+  void * jresult ;
   BaseDraw *arg1 = (BaseDraw *) 0 ;
-  Bool result;
+  OITInfo *result = 0 ;
   
   arg1 = (BaseDraw *)jarg1; 
-  result = (arg1)->IsOpenGL();
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseDraw_IsEnhancedOpenGL(void * jarg1) {
-  unsigned int jresult ;
-  BaseDraw *arg1 = (BaseDraw *) 0 ;
-  Bool result;
-  
-  arg1 = (BaseDraw *)jarg1; 
-  result = (arg1)->IsEnhancedOpenGL();
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseDraw_DrawFullscreenPolygon(void * jarg1, int jarg2, void * jarg3) {
-  unsigned int jresult ;
-  BaseDraw *arg1 = (BaseDraw *) 0 ;
-  Int32 arg2 ;
-  GlVertexBufferVectorInfo **arg3 = (GlVertexBufferVectorInfo **) 0 ;
-  Bool result;
-  
-  arg1 = (BaseDraw *)jarg1; 
-  arg2 = (Int32)jarg2; 
-  arg3 = (GlVertexBufferVectorInfo **)jarg3; 
-  result = (arg1)->DrawFullscreenPolygon(arg2,(GlVertexBufferVectorInfo const *const *)arg3);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_BaseDraw_GetFrameScreen(void * jarg1, void * jarg2, void * jarg3, void * jarg4, void * jarg5) {
-  int jresult ;
-  BaseDraw *arg1 = (BaseDraw *) 0 ;
-  Int32 *arg2 = (Int32 *) 0 ;
-  Int32 *arg3 = (Int32 *) 0 ;
-  Int32 *arg4 = (Int32 *) 0 ;
-  Int32 *arg5 = (Int32 *) 0 ;
-  Int32 result;
-  
-  arg1 = (BaseDraw *)jarg1; 
-  arg2 = (Int32 *)jarg2; 
-  arg3 = (Int32 *)jarg3; 
-  arg4 = (Int32 *)jarg4; 
-  arg5 = (Int32 *)jarg5; 
-  result = (arg1)->GetFrameScreen(arg2,arg3,arg4,arg5);
-  jresult = result; 
+  result = (OITInfo *) &(arg1)->GetOITInfo();
+  jresult = (void *)result; 
   return jresult;
 }
 
@@ -49119,6 +47996,22 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseDraw_GetFullscreenPolygonVectors(
 }
 
 
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseDraw_DrawFullscreenPolygon(void * jarg1, int jarg2, void * jarg3) {
+  unsigned int jresult ;
+  BaseDraw *arg1 = (BaseDraw *) 0 ;
+  Int32 arg2 ;
+  GlVertexBufferVectorInfo **arg3 = (GlVertexBufferVectorInfo **) 0 ;
+  Bool result;
+  
+  arg1 = (BaseDraw *)jarg1; 
+  arg2 = (Int32)jarg2; 
+  arg3 = (GlVertexBufferVectorInfo **)jarg3; 
+  result = (arg1)->DrawFullscreenPolygon(arg2,(GlVertexBufferVectorInfo const *const *)arg3);
+  jresult = result; 
+  return jresult;
+}
+
+
 SWIGEXPORT int SWIGSTDCALL CSharp_BaseDraw_GetGlLightCount(void * jarg1) {
   int jresult ;
   BaseDraw *arg1 = (BaseDraw *) 0 ;
@@ -49145,15 +48038,105 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDraw_GetGlLight(void * jarg1, int jarg2
 }
 
 
-SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDraw_GetOITInfo(void * jarg1) {
-  void * jresult ;
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseDraw_GetDrawStatistics(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
   BaseDraw *arg1 = (BaseDraw *) 0 ;
-  OITInfo *result = 0 ;
+  BaseContainer *arg2 = 0 ;
+  Bool result;
   
   arg1 = (BaseDraw *)jarg1; 
-  result = (OITInfo *) &(arg1)->GetOITInfo();
+  arg2 = (BaseContainer *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "BaseContainer & type is null", 0);
+    return 0;
+  } 
+  result = ((BaseDraw const *)arg1)->GetDrawStatistics(*arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BaseDraw_GetDrawPass(void * jarg1) {
+  int jresult ;
+  BaseDraw *arg1 = (BaseDraw *) 0 ;
+  DRAWPASS result;
+  
+  arg1 = (BaseDraw *)jarg1; 
+  result = (DRAWPASS)((BaseDraw const *)arg1)->GetDrawPass();
+  jresult = (int)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDraw_GetViewMatrix(void * jarg1, int jarg2) {
+  void * jresult ;
+  BaseDraw *arg1 = (BaseDraw *) 0 ;
+  Int32 arg2 ;
+  Matrix4d *result = 0 ;
+  
+  arg1 = (BaseDraw *)jarg1; 
+  arg2 = (Int32)jarg2; 
+  result = (Matrix4d *) &(arg1)->GetViewMatrix(arg2);
   jresult = (void *)result; 
   return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDraw_GetEditorWindow(void * jarg1) {
+  void * jresult ;
+  BaseDraw *arg1 = (BaseDraw *) 0 ;
+  EditorWindow *result = 0 ;
+  
+  arg1 = (BaseDraw *)jarg1; 
+  result = (EditorWindow *)(arg1)->GetEditorWindow();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseDraw_SetTexture(void * jarg1, void * jarg2, unsigned int jarg3, int jarg4, int jarg5) {
+  BaseDraw *arg1 = (BaseDraw *) 0 ;
+  BaseBitmap *arg2 = (BaseBitmap *) 0 ;
+  Bool arg3 ;
+  DRAW_ALPHA arg4 ;
+  DRAW_TEXTUREFLAGS arg5 ;
+  
+  arg1 = (BaseDraw *)jarg1; 
+  arg2 = (BaseBitmap *)jarg2; 
+  arg3 = jarg3 ? true : false; 
+  arg4 = (DRAW_ALPHA)jarg4; 
+  arg5 = (DRAW_TEXTUREFLAGS)jarg5; 
+  (arg1)->SetTexture(arg2,arg3,arg4,arg5);
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseDraw_OverrideCamera(void * jarg1, void * jarg2) {
+  BaseDraw *arg1 = (BaseDraw *) 0 ;
+  StereoCameraInfo *arg2 = (StereoCameraInfo *) 0 ;
+  
+  arg1 = (BaseDraw *)jarg1; 
+  arg2 = (StereoCameraInfo *)jarg2; 
+  (arg1)->OverrideCamera(arg2);
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseDraw_GetGridStep(void * jarg1, void * jarg2, void * jarg3) {
+  BaseDraw *arg1 = (BaseDraw *) 0 ;
+  Float *arg2 = 0 ;
+  Float *arg3 = 0 ;
+  
+  arg1 = (BaseDraw *)jarg1; 
+  arg2 = (Float *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Float & type is null", 0);
+    return ;
+  } 
+  arg3 = (Float *)jarg3;
+  if (!arg3) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Float & type is null", 0);
+    return ;
+  } 
+  (arg1)->GetGridStep(*arg2,*arg3);
 }
 
 
@@ -49312,118 +48295,6 @@ SWIGEXPORT void SWIGSTDCALL CSharp_ViewportSelect_Free(void * jarg1) {
     return ;
   } 
   ViewportSelect::Free(*arg1);
-}
-
-
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_ViewportSelect_Init__SWIG_0(void * jarg1, int jarg2, int jarg3, void * jarg4, void * jarg5, int jarg6, unsigned int jarg7, void * jarg8) {
-  unsigned int jresult ;
-  ViewportSelect *arg1 = (ViewportSelect *) 0 ;
-  Int32 arg2 ;
-  Int32 arg3 ;
-  BaseDraw *arg4 = (BaseDraw *) 0 ;
-  BaseObject *arg5 = (BaseObject *) 0 ;
-  Int32 arg6 ;
-  Bool arg7 ;
-  VIEWPORTSELECTFLAGS arg8 ;
-  VIEWPORTSELECTFLAGS *argp8 ;
-  Bool result;
-  
-  arg1 = (ViewportSelect *)jarg1; 
-  arg2 = (Int32)jarg2; 
-  arg3 = (Int32)jarg3; 
-  arg4 = (BaseDraw *)jarg4; 
-  arg5 = (BaseObject *)jarg5; 
-  arg6 = (Int32)jarg6; 
-  arg7 = jarg7 ? true : false; 
-  argp8 = (VIEWPORTSELECTFLAGS *)jarg8; 
-  if (!argp8) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null VIEWPORTSELECTFLAGS", 0);
-    return 0;
-  }
-  arg8 = *argp8; 
-  result = (arg1)->Init(arg2,arg3,arg4,arg5,arg6,arg7,arg8);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_ViewportSelect_Init__SWIG_1(void * jarg1, int jarg2, int jarg3, void * jarg4, void * jarg5, int jarg6, unsigned int jarg7) {
-  unsigned int jresult ;
-  ViewportSelect *arg1 = (ViewportSelect *) 0 ;
-  Int32 arg2 ;
-  Int32 arg3 ;
-  BaseDraw *arg4 = (BaseDraw *) 0 ;
-  BaseObject *arg5 = (BaseObject *) 0 ;
-  Int32 arg6 ;
-  Bool arg7 ;
-  Bool result;
-  
-  arg1 = (ViewportSelect *)jarg1; 
-  arg2 = (Int32)jarg2; 
-  arg3 = (Int32)jarg3; 
-  arg4 = (BaseDraw *)jarg4; 
-  arg5 = (BaseObject *)jarg5; 
-  arg6 = (Int32)jarg6; 
-  arg7 = jarg7 ? true : false; 
-  result = (arg1)->Init(arg2,arg3,arg4,arg5,arg6,arg7);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_ViewportSelect_Init__SWIG_2(void * jarg1, int jarg2, int jarg3, void * jarg4, void * jarg5, int jarg6, unsigned int jarg7, void * jarg8) {
-  unsigned int jresult ;
-  ViewportSelect *arg1 = (ViewportSelect *) 0 ;
-  Int32 arg2 ;
-  Int32 arg3 ;
-  BaseDraw *arg4 = (BaseDraw *) 0 ;
-  AtomArray *arg5 = (AtomArray *) 0 ;
-  Int32 arg6 ;
-  Bool arg7 ;
-  VIEWPORTSELECTFLAGS arg8 ;
-  VIEWPORTSELECTFLAGS *argp8 ;
-  Bool result;
-  
-  arg1 = (ViewportSelect *)jarg1; 
-  arg2 = (Int32)jarg2; 
-  arg3 = (Int32)jarg3; 
-  arg4 = (BaseDraw *)jarg4; 
-  arg5 = (AtomArray *)jarg5; 
-  arg6 = (Int32)jarg6; 
-  arg7 = jarg7 ? true : false; 
-  argp8 = (VIEWPORTSELECTFLAGS *)jarg8; 
-  if (!argp8) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null VIEWPORTSELECTFLAGS", 0);
-    return 0;
-  }
-  arg8 = *argp8; 
-  result = (arg1)->Init(arg2,arg3,arg4,arg5,arg6,arg7,arg8);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_ViewportSelect_Init__SWIG_3(void * jarg1, int jarg2, int jarg3, void * jarg4, void * jarg5, int jarg6, unsigned int jarg7) {
-  unsigned int jresult ;
-  ViewportSelect *arg1 = (ViewportSelect *) 0 ;
-  Int32 arg2 ;
-  Int32 arg3 ;
-  BaseDraw *arg4 = (BaseDraw *) 0 ;
-  AtomArray *arg5 = (AtomArray *) 0 ;
-  Int32 arg6 ;
-  Bool arg7 ;
-  Bool result;
-  
-  arg1 = (ViewportSelect *)jarg1; 
-  arg2 = (Int32)jarg2; 
-  arg3 = (Int32)jarg3; 
-  arg4 = (BaseDraw *)jarg4; 
-  arg5 = (AtomArray *)jarg5; 
-  arg6 = (Int32)jarg6; 
-  arg7 = jarg7 ? true : false; 
-  result = (arg1)->Init(arg2,arg3,arg4,arg5,arg6,arg7);
-  jresult = result; 
-  return jresult;
 }
 
 
@@ -49708,6 +48579,118 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_ViewportSelect_PickObject__SWIG_5(voi
   arg13 = (LassoSelection *)jarg13; 
   arg14 = (C4DObjectList *)jarg14; 
   result = ViewportSelect::PickObject(arg1,arg2,arg3,arg4,arg5,arg6,*arg7,*arg8,*arg9,*arg10,*arg11,arg12,arg13,arg14);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_ViewportSelect_Init__SWIG_0(void * jarg1, int jarg2, int jarg3, void * jarg4, void * jarg5, int jarg6, unsigned int jarg7, void * jarg8) {
+  unsigned int jresult ;
+  ViewportSelect *arg1 = (ViewportSelect *) 0 ;
+  Int32 arg2 ;
+  Int32 arg3 ;
+  BaseDraw *arg4 = (BaseDraw *) 0 ;
+  BaseObject *arg5 = (BaseObject *) 0 ;
+  Int32 arg6 ;
+  Bool arg7 ;
+  VIEWPORTSELECTFLAGS arg8 ;
+  VIEWPORTSELECTFLAGS *argp8 ;
+  Bool result;
+  
+  arg1 = (ViewportSelect *)jarg1; 
+  arg2 = (Int32)jarg2; 
+  arg3 = (Int32)jarg3; 
+  arg4 = (BaseDraw *)jarg4; 
+  arg5 = (BaseObject *)jarg5; 
+  arg6 = (Int32)jarg6; 
+  arg7 = jarg7 ? true : false; 
+  argp8 = (VIEWPORTSELECTFLAGS *)jarg8; 
+  if (!argp8) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null VIEWPORTSELECTFLAGS", 0);
+    return 0;
+  }
+  arg8 = *argp8; 
+  result = (arg1)->Init(arg2,arg3,arg4,arg5,arg6,arg7,arg8);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_ViewportSelect_Init__SWIG_1(void * jarg1, int jarg2, int jarg3, void * jarg4, void * jarg5, int jarg6, unsigned int jarg7) {
+  unsigned int jresult ;
+  ViewportSelect *arg1 = (ViewportSelect *) 0 ;
+  Int32 arg2 ;
+  Int32 arg3 ;
+  BaseDraw *arg4 = (BaseDraw *) 0 ;
+  BaseObject *arg5 = (BaseObject *) 0 ;
+  Int32 arg6 ;
+  Bool arg7 ;
+  Bool result;
+  
+  arg1 = (ViewportSelect *)jarg1; 
+  arg2 = (Int32)jarg2; 
+  arg3 = (Int32)jarg3; 
+  arg4 = (BaseDraw *)jarg4; 
+  arg5 = (BaseObject *)jarg5; 
+  arg6 = (Int32)jarg6; 
+  arg7 = jarg7 ? true : false; 
+  result = (arg1)->Init(arg2,arg3,arg4,arg5,arg6,arg7);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_ViewportSelect_Init__SWIG_2(void * jarg1, int jarg2, int jarg3, void * jarg4, void * jarg5, int jarg6, unsigned int jarg7, void * jarg8) {
+  unsigned int jresult ;
+  ViewportSelect *arg1 = (ViewportSelect *) 0 ;
+  Int32 arg2 ;
+  Int32 arg3 ;
+  BaseDraw *arg4 = (BaseDraw *) 0 ;
+  AtomArray *arg5 = (AtomArray *) 0 ;
+  Int32 arg6 ;
+  Bool arg7 ;
+  VIEWPORTSELECTFLAGS arg8 ;
+  VIEWPORTSELECTFLAGS *argp8 ;
+  Bool result;
+  
+  arg1 = (ViewportSelect *)jarg1; 
+  arg2 = (Int32)jarg2; 
+  arg3 = (Int32)jarg3; 
+  arg4 = (BaseDraw *)jarg4; 
+  arg5 = (AtomArray *)jarg5; 
+  arg6 = (Int32)jarg6; 
+  arg7 = jarg7 ? true : false; 
+  argp8 = (VIEWPORTSELECTFLAGS *)jarg8; 
+  if (!argp8) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null VIEWPORTSELECTFLAGS", 0);
+    return 0;
+  }
+  arg8 = *argp8; 
+  result = (arg1)->Init(arg2,arg3,arg4,arg5,arg6,arg7,arg8);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_ViewportSelect_Init__SWIG_3(void * jarg1, int jarg2, int jarg3, void * jarg4, void * jarg5, int jarg6, unsigned int jarg7) {
+  unsigned int jresult ;
+  ViewportSelect *arg1 = (ViewportSelect *) 0 ;
+  Int32 arg2 ;
+  Int32 arg3 ;
+  BaseDraw *arg4 = (BaseDraw *) 0 ;
+  AtomArray *arg5 = (AtomArray *) 0 ;
+  Int32 arg6 ;
+  Bool arg7 ;
+  Bool result;
+  
+  arg1 = (ViewportSelect *)jarg1; 
+  arg2 = (Int32)jarg2; 
+  arg3 = (Int32)jarg3; 
+  arg4 = (BaseDraw *)jarg4; 
+  arg5 = (AtomArray *)jarg5; 
+  arg6 = (Int32)jarg6; 
+  arg7 = jarg7 ? true : false; 
+  result = (arg1)->Init(arg2,arg3,arg4,arg5,arg6,arg7);
   jresult = result; 
   return jresult;
 }
@@ -50291,23 +49274,7 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_ViewportSelect_DrawHandle__SWIG_1(voi
 }
 
 
-SWIGEXPORT void SWIGSTDCALL CSharp_ViewportSelect_ShowHotspot__SWIG_0(void * jarg1, int jarg2, int jarg3, int jarg4, unsigned int jarg5) {
-  EditorWindow *arg1 = (EditorWindow *) 0 ;
-  Int32 arg2 ;
-  Int32 arg3 ;
-  Int32 arg4 ;
-  Bool arg5 ;
-  
-  arg1 = (EditorWindow *)jarg1; 
-  arg2 = (Int32)jarg2; 
-  arg3 = (Int32)jarg3; 
-  arg4 = (Int32)jarg4; 
-  arg5 = jarg5 ? true : false; 
-  ViewportSelect::ShowHotspot(arg1,arg2,arg3,arg4,arg5);
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_ViewportSelect_ShowHotspot__SWIG_1(void * jarg1, void * jarg2, int jarg3, int jarg4) {
+SWIGEXPORT void SWIGSTDCALL CSharp_ViewportSelect_ShowHotspot__SWIG_0(void * jarg1, void * jarg2, int jarg3, int jarg4) {
   ViewportSelect *arg1 = (ViewportSelect *) 0 ;
   EditorWindow *arg2 = (EditorWindow *) 0 ;
   Int32 arg3 ;
@@ -50328,6 +49295,22 @@ SWIGEXPORT void SWIGSTDCALL CSharp_ViewportSelect_SetBrushRadius(void * jarg1, i
   arg1 = (ViewportSelect *)jarg1; 
   arg2 = (Int32)jarg2; 
   (arg1)->SetBrushRadius(arg2);
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_ViewportSelect_ShowHotspot__SWIG_1(void * jarg1, int jarg2, int jarg3, int jarg4, unsigned int jarg5) {
+  EditorWindow *arg1 = (EditorWindow *) 0 ;
+  Int32 arg2 ;
+  Int32 arg3 ;
+  Int32 arg4 ;
+  Bool arg5 ;
+  
+  arg1 = (EditorWindow *)jarg1; 
+  arg2 = (Int32)jarg2; 
+  arg3 = (Int32)jarg3; 
+  arg4 = (Int32)jarg4; 
+  arg5 = jarg5 ? true : false; 
+  ViewportSelect::ShowHotspot(arg1,arg2,arg3,arg4,arg5);
 }
 
 
@@ -50389,28 +49372,6 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_MultipassObject_GetPred(void * jarg1) {
 }
 
 
-SWIGEXPORT void * SWIGSTDCALL CSharp_RenderData_Alloc() {
-  void * jresult ;
-  RenderData *result = 0 ;
-  
-  result = (RenderData *)RenderData::Alloc();
-  jresult = (void *)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_RenderData_Free(void * jarg1) {
-  RenderData **arg1 = 0 ;
-  
-  arg1 = (RenderData **)jarg1;
-  if (!arg1) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "RenderData *& type is null", 0);
-    return ;
-  } 
-  RenderData::Free(*arg1);
-}
-
-
 SWIGEXPORT void * SWIGSTDCALL CSharp_RenderData_GetNext(void * jarg1) {
   void * jresult ;
   RenderData *arg1 = (RenderData *) 0 ;
@@ -50435,18 +49396,6 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_RenderData_GetPred(void * jarg1) {
 }
 
 
-SWIGEXPORT void * SWIGSTDCALL CSharp_RenderData_GetUp(void * jarg1) {
-  void * jresult ;
-  RenderData *arg1 = (RenderData *) 0 ;
-  RenderData *result = 0 ;
-  
-  arg1 = (RenderData *)jarg1; 
-  result = (RenderData *)(arg1)->GetUp();
-  jresult = (void *)result; 
-  return jresult;
-}
-
-
 SWIGEXPORT void * SWIGSTDCALL CSharp_RenderData_GetDown(void * jarg1) {
   void * jresult ;
   RenderData *arg1 = (RenderData *) 0 ;
@@ -50454,6 +49403,18 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_RenderData_GetDown(void * jarg1) {
   
   arg1 = (RenderData *)jarg1; 
   result = (RenderData *)(arg1)->GetDown();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_RenderData_GetUp(void * jarg1) {
+  void * jresult ;
+  RenderData *arg1 = (RenderData *) 0 ;
+  RenderData *result = 0 ;
+  
+  arg1 = (RenderData *)jarg1; 
+  result = (RenderData *)(arg1)->GetUp();
   jresult = (void *)result; 
   return jresult;
 }
@@ -50549,25 +49510,25 @@ SWIGEXPORT void SWIGSTDCALL CSharp_RenderData_InsertMultipass__SWIG_1(void * jar
 }
 
 
-SWIGEXPORT void * SWIGSTDCALL CSharp_LayerObject_Alloc() {
+SWIGEXPORT void * SWIGSTDCALL CSharp_RenderData_Alloc() {
   void * jresult ;
-  LayerObject *result = 0 ;
+  RenderData *result = 0 ;
   
-  result = (LayerObject *)LayerObject::Alloc();
+  result = (RenderData *)RenderData::Alloc();
   jresult = (void *)result; 
   return jresult;
 }
 
 
-SWIGEXPORT void SWIGSTDCALL CSharp_LayerObject_Free(void * jarg1) {
-  LayerObject **arg1 = 0 ;
+SWIGEXPORT void SWIGSTDCALL CSharp_RenderData_Free(void * jarg1) {
+  RenderData **arg1 = 0 ;
   
-  arg1 = (LayerObject **)jarg1;
+  arg1 = (RenderData **)jarg1;
   if (!arg1) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "LayerObject *& type is null", 0);
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "RenderData *& type is null", 0);
     return ;
   } 
-  LayerObject::Free(*arg1);
+  RenderData::Free(*arg1);
 }
 
 
@@ -50595,18 +49556,6 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_LayerObject_GetPred(void * jarg1) {
 }
 
 
-SWIGEXPORT void * SWIGSTDCALL CSharp_LayerObject_GetUp(void * jarg1) {
-  void * jresult ;
-  LayerObject *arg1 = (LayerObject *) 0 ;
-  LayerObject *result = 0 ;
-  
-  arg1 = (LayerObject *)jarg1; 
-  result = (LayerObject *)(arg1)->GetUp();
-  jresult = (void *)result; 
-  return jresult;
-}
-
-
 SWIGEXPORT void * SWIGSTDCALL CSharp_LayerObject_GetDown(void * jarg1) {
   void * jresult ;
   LayerObject *arg1 = (LayerObject *) 0 ;
@@ -50614,6 +49563,18 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_LayerObject_GetDown(void * jarg1) {
   
   arg1 = (LayerObject *)jarg1; 
   result = (LayerObject *)(arg1)->GetDown();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_LayerObject_GetUp(void * jarg1) {
+  void * jresult ;
+  LayerObject *arg1 = (LayerObject *) 0 ;
+  LayerObject *result = 0 ;
+  
+  arg1 = (LayerObject *)jarg1; 
+  result = (LayerObject *)(arg1)->GetUp();
   jresult = (void *)result; 
   return jresult;
 }
@@ -50628,6 +49589,28 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_LayerObject_GetDownLast(void * jarg1) {
   result = (LayerObject *)(arg1)->GetDownLast();
   jresult = (void *)result; 
   return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_LayerObject_Alloc() {
+  void * jresult ;
+  LayerObject *result = 0 ;
+  
+  result = (LayerObject *)LayerObject::Alloc();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_LayerObject_Free(void * jarg1) {
+  LayerObject **arg1 = 0 ;
+  
+  arg1 = (LayerObject **)jarg1;
+  if (!arg1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "LayerObject *& type is null", 0);
+    return ;
+  } 
+  LayerObject::Free(*arg1);
 }
 
 
@@ -51045,36 +50028,6 @@ SWIGEXPORT void SWIGSTDCALL CSharp_delete_PickSessionDataStruct(void * jarg1) {
 }
 
 
-SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDocument_Alloc() {
-  void * jresult ;
-  BaseDocument *result = 0 ;
-  
-  result = (BaseDocument *)BaseDocument::Alloc();
-  jresult = (void *)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_Free(void * jarg1) {
-  BaseDocument **arg1 = 0 ;
-  
-  arg1 = (BaseDocument **)jarg1;
-  if (!arg1) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "BaseDocument *& type is null", 0);
-    return ;
-  } 
-  BaseDocument::Free(*arg1);
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_Flush(void * jarg1) {
-  BaseDocument *arg1 = (BaseDocument *) 0 ;
-  
-  arg1 = (BaseDocument *)jarg1; 
-  (arg1)->Flush();
-}
-
-
 SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDocument_GetNext(void * jarg1) {
   void * jresult ;
   BaseDocument *arg1 = (BaseDocument *) 0 ;
@@ -51143,28 +50096,6 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDocument_GetSettingsInstance(void * jar
 }
 
 
-SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDocument_GetNetRenderDocumentContext(void * jarg1) {
-  void * jresult ;
-  BaseDocument *arg1 = (BaseDocument *) 0 ;
-  NetRenderDocumentContext *result = 0 ;
-  
-  arg1 = (BaseDocument *)jarg1; 
-  result = (NetRenderDocumentContext *)((BaseDocument const *)arg1)->GetNetRenderDocumentContext();
-  jresult = (void *)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_SetNetRenderDocumentContext(void * jarg1, void * jarg2) {
-  BaseDocument *arg1 = (BaseDocument *) 0 ;
-  NetRenderDocumentContext *arg2 = (NetRenderDocumentContext *) 0 ;
-  
-  arg1 = (BaseDocument *)jarg1; 
-  arg2 = (NetRenderDocumentContext *)jarg2; 
-  (arg1)->SetNetRenderDocumentContext(arg2);
-}
-
-
 SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDocument_GetFirstObject(void * jarg1) {
   void * jresult ;
   BaseDocument *arg1 = (BaseDocument *) 0 ;
@@ -51201,33 +50132,27 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDocument_GetFirstRenderData(void * jarg
 }
 
 
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_InsertObject__SWIG_0(void * jarg1, void * jarg2, void * jarg3, void * jarg4, unsigned int jarg5) {
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_InsertRenderData(void * jarg1, void * jarg2, void * jarg3, void * jarg4) {
   BaseDocument *arg1 = (BaseDocument *) 0 ;
-  BaseObject *arg2 = (BaseObject *) 0 ;
-  BaseObject *arg3 = (BaseObject *) 0 ;
-  BaseObject *arg4 = (BaseObject *) 0 ;
-  Bool arg5 ;
+  RenderData *arg2 = (RenderData *) 0 ;
+  RenderData *arg3 = (RenderData *) 0 ;
+  RenderData *arg4 = (RenderData *) 0 ;
   
   arg1 = (BaseDocument *)jarg1; 
-  arg2 = (BaseObject *)jarg2; 
-  arg3 = (BaseObject *)jarg3; 
-  arg4 = (BaseObject *)jarg4; 
-  arg5 = jarg5 ? true : false; 
-  (arg1)->InsertObject(arg2,arg3,arg4,arg5);
+  arg2 = (RenderData *)jarg2; 
+  arg3 = (RenderData *)jarg3; 
+  arg4 = (RenderData *)jarg4; 
+  (arg1)->InsertRenderData(arg2,arg3,arg4);
 }
 
 
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_InsertObject__SWIG_1(void * jarg1, void * jarg2, void * jarg3, void * jarg4) {
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_InsertRenderDataLast(void * jarg1, void * jarg2) {
   BaseDocument *arg1 = (BaseDocument *) 0 ;
-  BaseObject *arg2 = (BaseObject *) 0 ;
-  BaseObject *arg3 = (BaseObject *) 0 ;
-  BaseObject *arg4 = (BaseObject *) 0 ;
+  RenderData *arg2 = (RenderData *) 0 ;
   
   arg1 = (BaseDocument *)jarg1; 
-  arg2 = (BaseObject *)jarg2; 
-  arg3 = (BaseObject *)jarg3; 
-  arg4 = (BaseObject *)jarg4; 
-  (arg1)->InsertObject(arg2,arg3,arg4);
+  arg2 = (RenderData *)jarg2; 
+  (arg1)->InsertRenderDataLast(arg2);
 }
 
 
@@ -51267,27 +50192,45 @@ SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_InsertMaterial__SWIG_2(void * ja
 }
 
 
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_InsertRenderData(void * jarg1, void * jarg2, void * jarg3, void * jarg4) {
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_InsertObject__SWIG_0(void * jarg1, void * jarg2, void * jarg3, void * jarg4, unsigned int jarg5) {
   BaseDocument *arg1 = (BaseDocument *) 0 ;
-  RenderData *arg2 = (RenderData *) 0 ;
-  RenderData *arg3 = (RenderData *) 0 ;
-  RenderData *arg4 = (RenderData *) 0 ;
+  BaseObject *arg2 = (BaseObject *) 0 ;
+  BaseObject *arg3 = (BaseObject *) 0 ;
+  BaseObject *arg4 = (BaseObject *) 0 ;
+  Bool arg5 ;
   
   arg1 = (BaseDocument *)jarg1; 
-  arg2 = (RenderData *)jarg2; 
-  arg3 = (RenderData *)jarg3; 
-  arg4 = (RenderData *)jarg4; 
-  (arg1)->InsertRenderData(arg2,arg3,arg4);
+  arg2 = (BaseObject *)jarg2; 
+  arg3 = (BaseObject *)jarg3; 
+  arg4 = (BaseObject *)jarg4; 
+  arg5 = jarg5 ? true : false; 
+  (arg1)->InsertObject(arg2,arg3,arg4,arg5);
 }
 
 
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_InsertRenderDataLast(void * jarg1, void * jarg2) {
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_InsertObject__SWIG_1(void * jarg1, void * jarg2, void * jarg3, void * jarg4) {
   BaseDocument *arg1 = (BaseDocument *) 0 ;
-  RenderData *arg2 = (RenderData *) 0 ;
+  BaseObject *arg2 = (BaseObject *) 0 ;
+  BaseObject *arg3 = (BaseObject *) 0 ;
+  BaseObject *arg4 = (BaseObject *) 0 ;
   
   arg1 = (BaseDocument *)jarg1; 
-  arg2 = (RenderData *)jarg2; 
-  (arg1)->InsertRenderDataLast(arg2);
+  arg2 = (BaseObject *)jarg2; 
+  arg3 = (BaseObject *)jarg3; 
+  arg4 = (BaseObject *)jarg4; 
+  (arg1)->InsertObject(arg2,arg3,arg4);
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDocument_GetActiveRenderData(void * jarg1) {
+  void * jresult ;
+  BaseDocument *arg1 = (BaseDocument *) 0 ;
+  RenderData *result = 0 ;
+  
+  arg1 = (BaseDocument *)jarg1; 
+  result = (RenderData *)(arg1)->GetActiveRenderData();
+  jresult = (void *)result; 
+  return jresult;
 }
 
 
@@ -51322,18 +50265,6 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDocument_GetActiveTag(void * jarg1) {
   
   arg1 = (BaseDocument *)jarg1; 
   result = (BaseTag *)(arg1)->GetActiveTag();
-  jresult = (void *)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDocument_GetActiveRenderData(void * jarg1) {
-  void * jresult ;
-  BaseDocument *arg1 = (BaseDocument *) 0 ;
-  RenderData *result = 0 ;
-  
-  arg1 = (BaseDocument *)jarg1; 
-  result = (RenderData *)(arg1)->GetActiveRenderData();
   jresult = (void *)result; 
   return jresult;
 }
@@ -51407,20 +50338,6 @@ SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_GetActiveObjectsFilter(void * ja
 }
 
 
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_GetActiveMaterials(void * jarg1, void * jarg2) {
-  BaseDocument *arg1 = (BaseDocument *) 0 ;
-  AtomArray *arg2 = 0 ;
-  
-  arg1 = (BaseDocument *)jarg1; 
-  arg2 = (AtomArray *)jarg2;
-  if (!arg2) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "AtomArray & type is null", 0);
-    return ;
-  } 
-  ((BaseDocument const *)arg1)->GetActiveMaterials(*arg2);
-}
-
-
 SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_GetActiveTags(void * jarg1, void * jarg2) {
   BaseDocument *arg1 = (BaseDocument *) 0 ;
   AtomArray *arg2 = 0 ;
@@ -51432,6 +50349,20 @@ SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_GetActiveTags(void * jarg1, void
     return ;
   } 
   ((BaseDocument const *)arg1)->GetActiveTags(*arg2);
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_GetActiveMaterials(void * jarg1, void * jarg2) {
+  BaseDocument *arg1 = (BaseDocument *) 0 ;
+  AtomArray *arg2 = 0 ;
+  
+  arg1 = (BaseDocument *)jarg1; 
+  arg2 = (AtomArray *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "AtomArray & type is null", 0);
+    return ;
+  } 
+  ((BaseDocument const *)arg1)->GetActiveMaterials(*arg2);
 }
 
 
@@ -51471,28 +50402,6 @@ SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_SetActiveObject__SWIG_1(void * j
 }
 
 
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_SetActiveMaterial__SWIG_0(void * jarg1, void * jarg2, int jarg3) {
-  BaseDocument *arg1 = (BaseDocument *) 0 ;
-  BaseMaterial *arg2 = (BaseMaterial *) 0 ;
-  Int32 arg3 ;
-  
-  arg1 = (BaseDocument *)jarg1; 
-  arg2 = (BaseMaterial *)jarg2; 
-  arg3 = (Int32)jarg3; 
-  (arg1)->SetActiveMaterial(arg2,arg3);
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_SetActiveMaterial__SWIG_1(void * jarg1, void * jarg2) {
-  BaseDocument *arg1 = (BaseDocument *) 0 ;
-  BaseMaterial *arg2 = (BaseMaterial *) 0 ;
-  
-  arg1 = (BaseDocument *)jarg1; 
-  arg2 = (BaseMaterial *)jarg2; 
-  (arg1)->SetActiveMaterial(arg2);
-}
-
-
 SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_SetActiveTag__SWIG_0(void * jarg1, void * jarg2, int jarg3) {
   BaseDocument *arg1 = (BaseDocument *) 0 ;
   BaseTag *arg2 = (BaseTag *) 0 ;
@@ -51512,6 +50421,28 @@ SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_SetActiveTag__SWIG_1(void * jarg
   arg1 = (BaseDocument *)jarg1; 
   arg2 = (BaseTag *)jarg2; 
   (arg1)->SetActiveTag(arg2);
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_SetActiveMaterial__SWIG_0(void * jarg1, void * jarg2, int jarg3) {
+  BaseDocument *arg1 = (BaseDocument *) 0 ;
+  BaseMaterial *arg2 = (BaseMaterial *) 0 ;
+  Int32 arg3 ;
+  
+  arg1 = (BaseDocument *)jarg1; 
+  arg2 = (BaseMaterial *)jarg2; 
+  arg3 = (Int32)jarg3; 
+  (arg1)->SetActiveMaterial(arg2,arg3);
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_SetActiveMaterial__SWIG_1(void * jarg1, void * jarg2) {
+  BaseDocument *arg1 = (BaseDocument *) 0 ;
+  BaseMaterial *arg2 = (BaseMaterial *) 0 ;
+  
+  arg1 = (BaseDocument *)jarg1; 
+  arg2 = (BaseMaterial *)jarg2; 
+  (arg1)->SetActiveMaterial(arg2);
 }
 
 
@@ -51544,6 +50475,68 @@ SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_SetSelection__SWIG_1(void * jarg
   arg1 = (BaseDocument *)jarg1; 
   arg2 = (BaseList2D *)jarg2; 
   (arg1)->SetSelection(arg2);
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_Flush(void * jarg1) {
+  BaseDocument *arg1 = (BaseDocument *) 0 ;
+  
+  arg1 = (BaseDocument *)jarg1; 
+  (arg1)->Flush();
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDocument_GetHighest(void * jarg1, int jarg2, unsigned int jarg3) {
+  void * jresult ;
+  BaseDocument *arg1 = (BaseDocument *) 0 ;
+  Int32 arg2 ;
+  Bool arg3 ;
+  BaseObject *result = 0 ;
+  
+  arg1 = (BaseDocument *)jarg1; 
+  arg2 = (Int32)jarg2; 
+  arg3 = jarg3 ? true : false; 
+  result = (BaseObject *)(arg1)->GetHighest(arg2,arg3);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDocument_SearchMaterial(void * jarg1, char * /* constString&_ctype */ jarg2) {
+  void * jresult ;
+  BaseDocument *arg1 = (BaseDocument *) 0 ;
+  String *arg2 = 0 ;
+  BaseMaterial *result = 0 ;
+  
+  arg1 = (BaseDocument *)jarg1; 
+  if (!jarg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return 0;
+  }
+  String arg2_str(jarg2);
+  arg2 = &arg2_str; 
+  result = (BaseMaterial *)(arg1)->SearchMaterial((String const &)*arg2);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDocument_SearchMaterialInc(void * jarg1, char * /* constString&_ctype */ jarg2) {
+  void * jresult ;
+  BaseDocument *arg1 = (BaseDocument *) 0 ;
+  String *arg2 = 0 ;
+  BaseMaterial *result = 0 ;
+  
+  arg1 = (BaseDocument *)jarg1; 
+  if (!jarg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
+    return 0;
+  }
+  String arg2_str(jarg2);
+  arg2 = &arg2_str; 
+  result = (BaseMaterial *)(arg1)->SearchMaterialInc((String const &)*arg2);
+  jresult = (void *)result; 
+  return jresult;
 }
 
 
@@ -51585,40 +50578,28 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDocument_SearchObjectInc(void * jarg1, 
 }
 
 
-SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDocument_SearchMaterial(void * jarg1, char * /* constString&_ctype */ jarg2) {
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDocument_GetHelperAxis(void * jarg1) {
   void * jresult ;
   BaseDocument *arg1 = (BaseDocument *) 0 ;
-  String *arg2 = 0 ;
-  BaseMaterial *result = 0 ;
+  BaseObject *result = 0 ;
   
   arg1 = (BaseDocument *)jarg1; 
-  if (!jarg2) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
-    return 0;
-  }
-  String arg2_str(jarg2);
-  arg2 = &arg2_str; 
-  result = (BaseMaterial *)(arg1)->SearchMaterial((String const &)*arg2);
+  result = (BaseObject *)(arg1)->GetHelperAxis();
   jresult = (void *)result; 
   return jresult;
 }
 
 
-SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDocument_SearchMaterialInc(void * jarg1, char * /* constString&_ctype */ jarg2) {
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDocument_GetAllTextures(void * jarg1, void * jarg2) {
   void * jresult ;
   BaseDocument *arg1 = (BaseDocument *) 0 ;
-  String *arg2 = 0 ;
-  BaseMaterial *result = 0 ;
+  AtomArray *arg2 = (AtomArray *) 0 ;
+  BaseContainer result;
   
   arg1 = (BaseDocument *)jarg1; 
-  if (!jarg2) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "null string", 0);
-    return 0;
-  }
-  String arg2_str(jarg2);
-  arg2 = &arg2_str; 
-  result = (BaseMaterial *)(arg1)->SearchMaterialInc((String const &)*arg2);
-  jresult = (void *)result; 
+  arg2 = (AtomArray *)jarg2; 
+  result = (arg1)->GetAllTextures((AtomArray const *)arg2);
+  jresult = new BaseContainer((const BaseContainer &)result); 
   return jresult;
 }
 
@@ -51714,54 +50695,6 @@ SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_SetLOD(void * jarg1, double jarg
   arg1 = (BaseDocument *)jarg1; 
   arg2 = (Float)jarg2; 
   (arg1)->SetLOD(arg2);
-}
-
-
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseDocument_GetRenderLod(void * jarg1) {
-  unsigned int jresult ;
-  BaseDocument *arg1 = (BaseDocument *) 0 ;
-  Bool result;
-  
-  arg1 = (BaseDocument *)jarg1; 
-  result = (arg1)->GetRenderLod();
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_SetRenderLod(void * jarg1, unsigned int jarg2) {
-  BaseDocument *arg1 = (BaseDocument *) 0 ;
-  Bool arg2 ;
-  
-  arg1 = (BaseDocument *)jarg1; 
-  arg2 = jarg2 ? true : false; 
-  (arg1)->SetRenderLod(arg2);
-}
-
-
-SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDocument_GetTime(void * jarg1) {
-  void * jresult ;
-  BaseDocument *arg1 = (BaseDocument *) 0 ;
-  BaseTime result;
-  
-  arg1 = (BaseDocument *)jarg1; 
-  result = (arg1)->GetTime();
-  jresult = new BaseTime((const BaseTime &)result); 
-  return jresult;
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_SetTime(void * jarg1, void * jarg2) {
-  BaseDocument *arg1 = (BaseDocument *) 0 ;
-  BaseTime *arg2 = 0 ;
-  
-  arg1 = (BaseDocument *)jarg1; 
-  arg2 = (BaseTime *)jarg2;
-  if (!arg2) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "BaseTime const & type is null", 0);
-    return ;
-  } 
-  (arg1)->SetTime((BaseTime const &)*arg2);
 }
 
 
@@ -51919,6 +50852,54 @@ SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_SetLoopMaxTime(void * jarg1, voi
 }
 
 
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseDocument_GetRenderLod(void * jarg1) {
+  unsigned int jresult ;
+  BaseDocument *arg1 = (BaseDocument *) 0 ;
+  Bool result;
+  
+  arg1 = (BaseDocument *)jarg1; 
+  result = (arg1)->GetRenderLod();
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_SetRenderLod(void * jarg1, unsigned int jarg2) {
+  BaseDocument *arg1 = (BaseDocument *) 0 ;
+  Bool arg2 ;
+  
+  arg1 = (BaseDocument *)jarg1; 
+  arg2 = jarg2 ? true : false; 
+  (arg1)->SetRenderLod(arg2);
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDocument_GetTime(void * jarg1) {
+  void * jresult ;
+  BaseDocument *arg1 = (BaseDocument *) 0 ;
+  BaseTime result;
+  
+  arg1 = (BaseDocument *)jarg1; 
+  result = (arg1)->GetTime();
+  jresult = new BaseTime((const BaseTime &)result); 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_SetTime(void * jarg1, void * jarg2) {
+  BaseDocument *arg1 = (BaseDocument *) 0 ;
+  BaseTime *arg2 = 0 ;
+  
+  arg1 = (BaseDocument *)jarg1; 
+  arg2 = (BaseTime *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "BaseTime const & type is null", 0);
+    return ;
+  } 
+  (arg1)->SetTime((BaseTime const &)*arg2);
+}
+
+
 SWIGEXPORT int SWIGSTDCALL CSharp_BaseDocument_GetMode(void * jarg1) {
   int jresult ;
   BaseDocument *arg1 = (BaseDocument *) 0 ;
@@ -51941,18 +50922,6 @@ SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_SetMode(void * jarg1, int jarg2)
 }
 
 
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseDocument_IsEditMode(void * jarg1) {
-  unsigned int jresult ;
-  BaseDocument *arg1 = (BaseDocument *) 0 ;
-  Bool result;
-  
-  arg1 = (BaseDocument *)jarg1; 
-  result = (arg1)->IsEditMode();
-  jresult = result; 
-  return jresult;
-}
-
-
 SWIGEXPORT int SWIGSTDCALL CSharp_BaseDocument_GetAction(void * jarg1) {
   int jresult ;
   BaseDocument *arg1 = (BaseDocument *) 0 ;
@@ -51972,6 +50941,18 @@ SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_SetAction(void * jarg1, int jarg
   arg1 = (BaseDocument *)jarg1; 
   arg2 = (Int32)jarg2; 
   (arg1)->SetAction(arg2);
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseDocument_IsEditMode(void * jarg1) {
+  unsigned int jresult ;
+  BaseDocument *arg1 = (BaseDocument *) 0 ;
+  Bool result;
+  
+  arg1 = (BaseDocument *)jarg1; 
+  result = (arg1)->IsEditMode();
+  jresult = result; 
+  return jresult;
 }
 
 
@@ -52187,6 +51168,50 @@ SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_Record(void * jarg1) {
 }
 
 
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_AnimateObject(void * jarg1, void * jarg2, void * jarg3, int jarg4) {
+  BaseDocument *arg1 = (BaseDocument *) 0 ;
+  BaseList2D *arg2 = (BaseList2D *) 0 ;
+  BaseTime *arg3 = 0 ;
+  ANIMATEFLAGS arg4 ;
+  
+  arg1 = (BaseDocument *)jarg1; 
+  arg2 = (BaseList2D *)jarg2; 
+  arg3 = (BaseTime *)jarg3;
+  if (!arg3) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "BaseTime const & type is null", 0);
+    return ;
+  } 
+  arg4 = (ANIMATEFLAGS)jarg4; 
+  (arg1)->AnimateObject(arg2,(BaseTime const &)*arg3,arg4);
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDocument_Polygonize__SWIG_0(void * jarg1, unsigned int jarg2) {
+  void * jresult ;
+  BaseDocument *arg1 = (BaseDocument *) 0 ;
+  Bool arg2 ;
+  BaseDocument *result = 0 ;
+  
+  arg1 = (BaseDocument *)jarg1; 
+  arg2 = jarg2 ? true : false; 
+  result = (BaseDocument *)(arg1)->Polygonize(arg2);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDocument_Polygonize__SWIG_1(void * jarg1) {
+  void * jresult ;
+  BaseDocument *arg1 = (BaseDocument *) 0 ;
+  BaseDocument *result = 0 ;
+  
+  arg1 = (BaseDocument *)jarg1; 
+  result = (BaseDocument *)(arg1)->Polygonize();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
 SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDocument_GetActiveBaseDraw(void * jarg1) {
   void * jresult ;
   BaseDocument *arg1 = (BaseDocument *) 0 ;
@@ -52237,147 +51262,33 @@ SWIGEXPORT int SWIGSTDCALL CSharp_BaseDocument_GetBaseDrawCount(void * jarg1) {
 }
 
 
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_ForceCreateBaseDraw(void * jarg1) {
-  BaseDocument *arg1 = (BaseDocument *) 0 ;
-  
-  arg1 = (BaseDocument *)jarg1; 
-  (arg1)->ForceCreateBaseDraw();
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_BaseDocument_GetDrawTime(void * jarg1) {
+SWIGEXPORT int SWIGSTDCALL CSharp_BaseDocument_GetSplinePlane(void * jarg1) {
   int jresult ;
   BaseDocument *arg1 = (BaseDocument *) 0 ;
   Int32 result;
   
   arg1 = (BaseDocument *)jarg1; 
-  result = (arg1)->GetDrawTime();
+  result = (arg1)->GetSplinePlane();
   jresult = result; 
   return jresult;
 }
 
 
-SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDocument_GetPickSession(void * jarg1) {
-  void * jresult ;
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_SetRewind__SWIG_0(void * jarg1, int jarg2) {
   BaseDocument *arg1 = (BaseDocument *) 0 ;
-  PickSessionDataStruct *result = 0 ;
+  Int32 arg2 ;
   
   arg1 = (BaseDocument *)jarg1; 
-  result = (PickSessionDataStruct *)((BaseDocument const *)arg1)->GetPickSession();
-  jresult = (void *)result; 
-  return jresult;
+  arg2 = (Int32)jarg2; 
+  (arg1)->SetRewind(arg2);
 }
 
 
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_StartPickSession(void * jarg1, void * jarg2) {
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_SetRewind__SWIG_1(void * jarg1) {
   BaseDocument *arg1 = (BaseDocument *) 0 ;
-  PickSessionDataStruct *arg2 = (PickSessionDataStruct *) 0 ;
   
   arg1 = (BaseDocument *)jarg1; 
-  arg2 = (PickSessionDataStruct *)jarg2; 
-  (arg1)->StartPickSession(arg2);
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_StopPickSession(void * jarg1, unsigned int jarg2) {
-  BaseDocument *arg1 = (BaseDocument *) 0 ;
-  Bool arg2 ;
-  
-  arg1 = (BaseDocument *)jarg1; 
-  arg2 = jarg2 ? true : false; 
-  (arg1)->StopPickSession(arg2);
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_AnimateObject(void * jarg1, void * jarg2, void * jarg3, int jarg4) {
-  BaseDocument *arg1 = (BaseDocument *) 0 ;
-  BaseList2D *arg2 = (BaseList2D *) 0 ;
-  BaseTime *arg3 = 0 ;
-  ANIMATEFLAGS arg4 ;
-  
-  arg1 = (BaseDocument *)jarg1; 
-  arg2 = (BaseList2D *)jarg2; 
-  arg3 = (BaseTime *)jarg3;
-  if (!arg3) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "BaseTime const & type is null", 0);
-    return ;
-  } 
-  arg4 = (ANIMATEFLAGS)jarg4; 
-  (arg1)->AnimateObject(arg2,(BaseTime const &)*arg3,arg4);
-}
-
-
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseDocument_ExecutePasses(void * jarg1, void * jarg2, unsigned int jarg3, unsigned int jarg4, unsigned int jarg5, int jarg6) {
-  unsigned int jresult ;
-  BaseDocument *arg1 = (BaseDocument *) 0 ;
-  BaseThread *arg2 = (BaseThread *) 0 ;
-  Bool arg3 ;
-  Bool arg4 ;
-  Bool arg5 ;
-  BUILDFLAGS arg6 ;
-  Bool result;
-  
-  arg1 = (BaseDocument *)jarg1; 
-  arg2 = (BaseThread *)jarg2; 
-  arg3 = jarg3 ? true : false; 
-  arg4 = jarg4 ? true : false; 
-  arg5 = jarg5 ? true : false; 
-  arg6 = (BUILDFLAGS)jarg6; 
-  result = (arg1)->ExecutePasses(arg2,arg3,arg4,arg5,arg6);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDocument_Polygonize__SWIG_0(void * jarg1, unsigned int jarg2) {
-  void * jresult ;
-  BaseDocument *arg1 = (BaseDocument *) 0 ;
-  Bool arg2 ;
-  BaseDocument *result = 0 ;
-  
-  arg1 = (BaseDocument *)jarg1; 
-  arg2 = jarg2 ? true : false; 
-  result = (BaseDocument *)(arg1)->Polygonize(arg2);
-  jresult = (void *)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDocument_Polygonize__SWIG_1(void * jarg1) {
-  void * jresult ;
-  BaseDocument *arg1 = (BaseDocument *) 0 ;
-  BaseDocument *result = 0 ;
-  
-  arg1 = (BaseDocument *)jarg1; 
-  result = (BaseDocument *)(arg1)->Polygonize();
-  jresult = (void *)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseDocument_CollectSounds(void * jarg1, void * jarg2, void * jarg3, void * jarg4) {
-  unsigned int jresult ;
-  BaseDocument *arg1 = (BaseDocument *) 0 ;
-  BaseSound *arg2 = (BaseSound *) 0 ;
-  BaseTime *arg3 = 0 ;
-  BaseTime *arg4 = 0 ;
-  Bool result;
-  
-  arg1 = (BaseDocument *)jarg1; 
-  arg2 = (BaseSound *)jarg2; 
-  arg3 = (BaseTime *)jarg3;
-  if (!arg3) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "BaseTime const & type is null", 0);
-    return 0;
-  } 
-  arg4 = (BaseTime *)jarg4;
-  if (!arg4) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "BaseTime const & type is null", 0);
-    return 0;
-  } 
-  result = (arg1)->CollectSounds(arg2,(BaseTime const &)*arg3,(BaseTime const &)*arg4);
-  jresult = result; 
-  return jresult;
+  (arg1)->SetRewind();
 }
 
 
@@ -52395,183 +51306,25 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDocument_FindSceneHook(void * jarg1, in
 }
 
 
-SWIGEXPORT int SWIGSTDCALL CSharp_BaseDocument_GetSplinePlane(void * jarg1) {
-  int jresult ;
-  BaseDocument *arg1 = (BaseDocument *) 0 ;
-  Int32 result;
-  
-  arg1 = (BaseDocument *)jarg1; 
-  result = (arg1)->GetSplinePlane();
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDocument_GetLayerObjectRoot(void * jarg1) {
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDocument_Alloc() {
   void * jresult ;
-  BaseDocument *arg1 = (BaseDocument *) 0 ;
-  GeListHead *result = 0 ;
+  BaseDocument *result = 0 ;
   
-  arg1 = (BaseDocument *)jarg1; 
-  result = (GeListHead *)(arg1)->GetLayerObjectRoot();
+  result = (BaseDocument *)BaseDocument::Alloc();
   jresult = (void *)result; 
   return jresult;
 }
 
 
-SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDocument_GetAllTextures__SWIG_0(void * jarg1, void * jarg2) {
-  void * jresult ;
-  BaseDocument *arg1 = (BaseDocument *) 0 ;
-  AtomArray *arg2 = (AtomArray *) 0 ;
-  BaseContainer result;
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_Free(void * jarg1) {
+  BaseDocument **arg1 = 0 ;
   
-  arg1 = (BaseDocument *)jarg1; 
-  arg2 = (AtomArray *)jarg2; 
-  result = (arg1)->GetAllTextures((AtomArray const *)arg2);
-  jresult = new BaseContainer((const BaseContainer &)result); 
-  return jresult;
-}
-
-
-SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDocument_GetAllTextures__SWIG_1(void * jarg1, unsigned int jarg2, void * jarg3) {
-  void * jresult ;
-  BaseDocument *arg1 = (BaseDocument *) 0 ;
-  Bool arg2 ;
-  AtomArray *arg3 = (AtomArray *) 0 ;
-  BaseContainer result;
-  
-  arg1 = (BaseDocument *)jarg1; 
-  arg2 = jarg2 ? true : false; 
-  arg3 = (AtomArray *)jarg3; 
-  result = (arg1)->GetAllTextures(arg2,(AtomArray const *)arg3);
-  jresult = new BaseContainer((const BaseContainer &)result); 
-  return jresult;
-}
-
-
-SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDocument_GetHighest(void * jarg1, int jarg2, unsigned int jarg3) {
-  void * jresult ;
-  BaseDocument *arg1 = (BaseDocument *) 0 ;
-  Int32 arg2 ;
-  Bool arg3 ;
-  BaseObject *result = 0 ;
-  
-  arg1 = (BaseDocument *)jarg1; 
-  arg2 = (Int32)jarg2; 
-  arg3 = jarg3 ? true : false; 
-  result = (BaseObject *)(arg1)->GetHighest(arg2,arg3);
-  jresult = (void *)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDocument_GetDocPreviewBitmap(void * jarg1) {
-  void * jresult ;
-  BaseDocument *arg1 = (BaseDocument *) 0 ;
-  BaseBitmap *result = 0 ;
-  
-  arg1 = (BaseDocument *)jarg1; 
-  result = (BaseBitmap *)(arg1)->GetDocPreviewBitmap();
-  jresult = (void *)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_GetHighlightedObjects(void * jarg1, void * jarg2) {
-  BaseDocument *arg1 = (BaseDocument *) 0 ;
-  AtomArray *arg2 = 0 ;
-  
-  arg1 = (BaseDocument *)jarg1; 
-  arg2 = (AtomArray *)jarg2;
-  if (!arg2) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "AtomArray & type is null", 0);
+  arg1 = (BaseDocument **)jarg1;
+  if (!arg1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "BaseDocument *& type is null", 0);
     return ;
   } 
-  ((BaseDocument const *)arg1)->GetHighlightedObjects(*arg2);
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_SetHighlightedObject__SWIG_0(void * jarg1, void * jarg2, int jarg3) {
-  BaseDocument *arg1 = (BaseDocument *) 0 ;
-  BaseObject *arg2 = (BaseObject *) 0 ;
-  Int32 arg3 ;
-  
-  arg1 = (BaseDocument *)jarg1; 
-  arg2 = (BaseObject *)jarg2; 
-  arg3 = (Int32)jarg3; 
-  (arg1)->SetHighlightedObject(arg2,arg3);
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_SetHighlightedObject__SWIG_1(void * jarg1, void * jarg2) {
-  BaseDocument *arg1 = (BaseDocument *) 0 ;
-  BaseObject *arg2 = (BaseObject *) 0 ;
-  
-  arg1 = (BaseDocument *)jarg1; 
-  arg2 = (BaseObject *)jarg2; 
-  (arg1)->SetHighlightedObject(arg2);
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_SetHighlightedObjects__SWIG_0(void * jarg1, void * jarg2, int jarg3) {
-  BaseDocument *arg1 = (BaseDocument *) 0 ;
-  AtomArray *arg2 = 0 ;
-  Int32 arg3 ;
-  
-  arg1 = (BaseDocument *)jarg1; 
-  arg2 = (AtomArray *)jarg2;
-  if (!arg2) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "AtomArray & type is null", 0);
-    return ;
-  } 
-  arg3 = (Int32)jarg3; 
-  (arg1)->SetHighlightedObjects(*arg2,arg3);
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_SetHighlightedObjects__SWIG_1(void * jarg1, void * jarg2) {
-  BaseDocument *arg1 = (BaseDocument *) 0 ;
-  AtomArray *arg2 = 0 ;
-  
-  arg1 = (BaseDocument *)jarg1; 
-  arg2 = (AtomArray *)jarg2;
-  if (!arg2) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "AtomArray & type is null", 0);
-    return ;
-  } 
-  (arg1)->SetHighlightedObjects(*arg2);
-}
-
-
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseDocument_GetDefaultKey(void * jarg1, void * jarg2, void * jarg3) {
-  unsigned int jresult ;
-  BaseDocument *arg1 = (BaseDocument *) 0 ;
-  CKey *arg2 = (CKey *) 0 ;
-  Bool *arg3 = 0 ;
-  Bool result;
-  
-  arg1 = (BaseDocument *)jarg1; 
-  arg2 = (CKey *)jarg2; 
-  arg3 = (Bool *)jarg3;
-  if (!arg3) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Bool & type is null", 0);
-    return 0;
-  } 
-  result = ((BaseDocument const *)arg1)->GetDefaultKey(arg2,*arg3);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_SetDefaultKey(void * jarg1, void * jarg2, unsigned int jarg3) {
-  BaseDocument *arg1 = (BaseDocument *) 0 ;
-  CKey *arg2 = (CKey *) 0 ;
-  Bool arg3 ;
-  
-  arg1 = (BaseDocument *)jarg1; 
-  arg2 = (CKey *)jarg2; 
-  arg3 = jarg3 ? true : false; 
-  (arg1)->SetDefaultKey(arg2,arg3);
+  BaseDocument::Free(*arg1);
 }
 
 
@@ -52601,25 +51354,21 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseDocument_IsCacheBuilt__SWIG_1(voi
 }
 
 
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseDocument_IsAxisEnabled(void * jarg1) {
-  unsigned int jresult ;
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_ForceCreateBaseDraw(void * jarg1) {
   BaseDocument *arg1 = (BaseDocument *) 0 ;
-  Bool result;
   
   arg1 = (BaseDocument *)jarg1; 
-  result = (arg1)->IsAxisEnabled();
-  jresult = result; 
-  return jresult;
+  (arg1)->ForceCreateBaseDraw();
 }
 
 
-SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDocument_GetHelperAxis(void * jarg1) {
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDocument_GetLayerObjectRoot(void * jarg1) {
   void * jresult ;
   BaseDocument *arg1 = (BaseDocument *) 0 ;
-  BaseObject *result = 0 ;
+  GeListHead *result = 0 ;
   
   arg1 = (BaseDocument *)jarg1; 
-  result = (BaseObject *)(arg1)->GetHelperAxis();
+  result = (GeListHead *)(arg1)->GetLayerObjectRoot();
   jresult = (void *)result; 
   return jresult;
 }
@@ -52693,6 +51442,146 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseDocument_ReceiveNewTexture(void *
 }
 
 
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseDocument_CollectSounds(void * jarg1, void * jarg2, void * jarg3, void * jarg4) {
+  unsigned int jresult ;
+  BaseDocument *arg1 = (BaseDocument *) 0 ;
+  BaseSound *arg2 = (BaseSound *) 0 ;
+  BaseTime *arg3 = 0 ;
+  BaseTime *arg4 = 0 ;
+  Bool result;
+  
+  arg1 = (BaseDocument *)jarg1; 
+  arg2 = (BaseSound *)jarg2; 
+  arg3 = (BaseTime *)jarg3;
+  if (!arg3) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "BaseTime const & type is null", 0);
+    return 0;
+  } 
+  arg4 = (BaseTime *)jarg4;
+  if (!arg4) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "BaseTime const & type is null", 0);
+    return 0;
+  } 
+  result = (arg1)->CollectSounds(arg2,(BaseTime const &)*arg3,(BaseTime const &)*arg4);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_RecordZero(void * jarg1) {
+  BaseDocument *arg1 = (BaseDocument *) 0 ;
+  
+  arg1 = (BaseDocument *)jarg1; 
+  (arg1)->RecordZero();
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_RecordNoEvent(void * jarg1) {
+  BaseDocument *arg1 = (BaseDocument *) 0 ;
+  
+  arg1 = (BaseDocument *)jarg1; 
+  (arg1)->RecordNoEvent();
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_BaseDocument_GetDrawTime(void * jarg1) {
+  int jresult ;
+  BaseDocument *arg1 = (BaseDocument *) 0 ;
+  Int32 result;
+  
+  arg1 = (BaseDocument *)jarg1; 
+  result = (arg1)->GetDrawTime();
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseDocument_ExecutePasses(void * jarg1, void * jarg2, unsigned int jarg3, unsigned int jarg4, unsigned int jarg5, int jarg6) {
+  unsigned int jresult ;
+  BaseDocument *arg1 = (BaseDocument *) 0 ;
+  BaseThread *arg2 = (BaseThread *) 0 ;
+  Bool arg3 ;
+  Bool arg4 ;
+  Bool arg5 ;
+  BUILDFLAGS arg6 ;
+  Bool result;
+  
+  arg1 = (BaseDocument *)jarg1; 
+  arg2 = (BaseThread *)jarg2; 
+  arg3 = jarg3 ? true : false; 
+  arg4 = jarg4 ? true : false; 
+  arg5 = jarg5 ? true : false; 
+  arg6 = (BUILDFLAGS)jarg6; 
+  result = (arg1)->ExecutePasses(arg2,arg3,arg4,arg5,arg6);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDocument_GetPickSession(void * jarg1) {
+  void * jresult ;
+  BaseDocument *arg1 = (BaseDocument *) 0 ;
+  PickSessionDataStruct *result = 0 ;
+  
+  arg1 = (BaseDocument *)jarg1; 
+  result = (PickSessionDataStruct *)((BaseDocument const *)arg1)->GetPickSession();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_StartPickSession(void * jarg1, void * jarg2) {
+  BaseDocument *arg1 = (BaseDocument *) 0 ;
+  PickSessionDataStruct *arg2 = (PickSessionDataStruct *) 0 ;
+  
+  arg1 = (BaseDocument *)jarg1; 
+  arg2 = (PickSessionDataStruct *)jarg2; 
+  (arg1)->StartPickSession(arg2);
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_StopPickSession(void * jarg1, unsigned int jarg2) {
+  BaseDocument *arg1 = (BaseDocument *) 0 ;
+  Bool arg2 ;
+  
+  arg1 = (BaseDocument *)jarg1; 
+  arg2 = jarg2 ? true : false; 
+  (arg1)->StopPickSession(arg2);
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseDocument_GetDefaultKey(void * jarg1, void * jarg2, void * jarg3) {
+  unsigned int jresult ;
+  BaseDocument *arg1 = (BaseDocument *) 0 ;
+  CKey *arg2 = (CKey *) 0 ;
+  Bool *arg3 = 0 ;
+  Bool result;
+  
+  arg1 = (BaseDocument *)jarg1; 
+  arg2 = (CKey *)jarg2; 
+  arg3 = (Bool *)jarg3;
+  if (!arg3) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Bool & type is null", 0);
+    return 0;
+  } 
+  result = ((BaseDocument const *)arg1)->GetDefaultKey(arg2,*arg3);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_SetDefaultKey(void * jarg1, void * jarg2, unsigned int jarg3) {
+  BaseDocument *arg1 = (BaseDocument *) 0 ;
+  CKey *arg2 = (CKey *) 0 ;
+  Bool arg3 ;
+  
+  arg1 = (BaseDocument *)jarg1; 
+  arg2 = (CKey *)jarg2; 
+  arg3 = jarg3 ? true : false; 
+  (arg1)->SetDefaultKey(arg2,arg3);
+}
+
+
 SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_SendInfo(void * jarg1, int jarg2, int jarg3, void * jarg4, void * jarg5, unsigned int jarg6) {
   BaseDocument *arg1 = (BaseDocument *) 0 ;
   Int32 arg2 ;
@@ -52715,37 +51604,93 @@ SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_SendInfo(void * jarg1, int jarg2
 }
 
 
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_RecordZero(void * jarg1) {
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_SetHighlightedObject__SWIG_0(void * jarg1, void * jarg2, int jarg3) {
   BaseDocument *arg1 = (BaseDocument *) 0 ;
+  BaseObject *arg2 = (BaseObject *) 0 ;
+  Int32 arg3 ;
   
   arg1 = (BaseDocument *)jarg1; 
-  (arg1)->RecordZero();
+  arg2 = (BaseObject *)jarg2; 
+  arg3 = (Int32)jarg3; 
+  (arg1)->SetHighlightedObject(arg2,arg3);
 }
 
 
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_RecordNoEvent(void * jarg1) {
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_SetHighlightedObject__SWIG_1(void * jarg1, void * jarg2) {
   BaseDocument *arg1 = (BaseDocument *) 0 ;
+  BaseObject *arg2 = (BaseObject *) 0 ;
   
   arg1 = (BaseDocument *)jarg1; 
-  (arg1)->RecordNoEvent();
+  arg2 = (BaseObject *)jarg2; 
+  (arg1)->SetHighlightedObject(arg2);
 }
 
 
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_SetRewind__SWIG_0(void * jarg1, int jarg2) {
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_SetHighlightedObjects__SWIG_0(void * jarg1, void * jarg2, int jarg3) {
   BaseDocument *arg1 = (BaseDocument *) 0 ;
-  Int32 arg2 ;
+  AtomArray *arg2 = 0 ;
+  Int32 arg3 ;
   
   arg1 = (BaseDocument *)jarg1; 
-  arg2 = (Int32)jarg2; 
-  (arg1)->SetRewind(arg2);
+  arg2 = (AtomArray *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "AtomArray & type is null", 0);
+    return ;
+  } 
+  arg3 = (Int32)jarg3; 
+  (arg1)->SetHighlightedObjects(*arg2,arg3);
 }
 
 
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_SetRewind__SWIG_1(void * jarg1) {
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_SetHighlightedObjects__SWIG_1(void * jarg1, void * jarg2) {
   BaseDocument *arg1 = (BaseDocument *) 0 ;
+  AtomArray *arg2 = 0 ;
   
   arg1 = (BaseDocument *)jarg1; 
-  (arg1)->SetRewind();
+  arg2 = (AtomArray *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "AtomArray & type is null", 0);
+    return ;
+  } 
+  (arg1)->SetHighlightedObjects(*arg2);
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseDocument_GetHighlightedObjects(void * jarg1, void * jarg2) {
+  BaseDocument *arg1 = (BaseDocument *) 0 ;
+  AtomArray *arg2 = 0 ;
+  
+  arg1 = (BaseDocument *)jarg1; 
+  arg2 = (AtomArray *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "AtomArray & type is null", 0);
+    return ;
+  } 
+  ((BaseDocument const *)arg1)->GetHighlightedObjects(*arg2);
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseDocument_IsAxisEnabled(void * jarg1) {
+  unsigned int jresult ;
+  BaseDocument *arg1 = (BaseDocument *) 0 ;
+  Bool result;
+  
+  arg1 = (BaseDocument *)jarg1; 
+  result = (arg1)->IsAxisEnabled();
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseDocument_GetDocPreviewBitmap(void * jarg1) {
+  void * jresult ;
+  BaseDocument *arg1 = (BaseDocument *) 0 ;
+  BaseBitmap *result = 0 ;
+  
+  arg1 = (BaseDocument *)jarg1; 
+  result = (BaseBitmap *)(arg1)->GetDocPreviewBitmap();
+  jresult = (void *)result; 
+  return jresult;
 }
 
 
@@ -52900,16 +51845,6 @@ SWIGEXPORT void SWIGSTDCALL CSharp_SetActiveDocument(void * jarg1) {
   
   arg1 = (BaseDocument *)jarg1; 
   SetActiveDocument(arg1);
-}
-
-
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_CloseAllDocuments() {
-  unsigned int jresult ;
-  Bool result;
-  
-  result = CloseAllDocuments();
-  jresult = result; 
-  return jresult;
 }
 
 
@@ -53458,6 +52393,16 @@ SWIGEXPORT void SWIGSTDCALL CSharp_SetDocumentTime(void * jarg1, void * jarg2) {
     return ;
   } 
   SetDocumentTime(arg1,(BaseTime const &)*arg2);
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_CloseAllDocuments() {
+  unsigned int jresult ;
+  Bool result;
+  
+  result = CloseAllDocuments();
+  jresult = result; 
+  return jresult;
 }
 
 
@@ -55235,30 +54180,6 @@ SWIGEXPORT int SWIGSTDCALL CSharp_BaseSelect_GetRangeB(void * jarg1, int jarg2) 
 }
 
 
-SWIGEXPORT void * SWIGSTDCALL CSharp_BaseMaterial_Alloc(int jarg1) {
-  void * jresult ;
-  Int32 arg1 ;
-  BaseMaterial *result = 0 ;
-  
-  arg1 = (Int32)jarg1; 
-  result = (BaseMaterial *)BaseMaterial::Alloc(arg1);
-  jresult = (void *)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseMaterial_Free(void * jarg1) {
-  BaseMaterial **arg1 = 0 ;
-  
-  arg1 = (BaseMaterial **)jarg1;
-  if (!arg1) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "BaseMaterial *& type is null", 0);
-    return ;
-  } 
-  BaseMaterial::Free(*arg1);
-}
-
-
 SWIGEXPORT void * SWIGSTDCALL CSharp_BaseMaterial_GetNext(void * jarg1) {
   void * jresult ;
   BaseMaterial *arg1 = (BaseMaterial *) 0 ;
@@ -55305,6 +54226,80 @@ SWIGEXPORT void * SWIGSTDCALL CSharp_BaseMaterial_GetChannel(void * jarg1, int j
   arg2 = (Int32)jarg2; 
   result = (BaseChannel *)(arg1)->GetChannel(arg2);
   jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseMaterial_GetPreview(void * jarg1, int jarg2) {
+  void * jresult ;
+  BaseMaterial *arg1 = (BaseMaterial *) 0 ;
+  Int32 arg2 ;
+  BaseBitmap *result = 0 ;
+  
+  arg1 = (BaseMaterial *)jarg1; 
+  arg2 = (Int32)jarg2; 
+  result = (BaseBitmap *)(arg1)->GetPreview(arg2);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseMaterial_GetRayIllumination(void * jarg1) {
+  void * jresult ;
+  BaseMaterial *arg1 = (BaseMaterial *) 0 ;
+  RayIllumination *result = 0 ;
+  
+  arg1 = (BaseMaterial *)jarg1; 
+  result = (RayIllumination *)(arg1)->GetRayIllumination();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseMaterial_Compare(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  BaseMaterial *arg1 = (BaseMaterial *) 0 ;
+  BaseMaterial *arg2 = (BaseMaterial *) 0 ;
+  Bool result;
+  
+  arg1 = (BaseMaterial *)jarg1; 
+  arg2 = (BaseMaterial *)jarg2; 
+  result = (arg1)->Compare(arg2);
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT Vector_POD /* Vector_ctype_out */ SWIGSTDCALL CSharp_BaseMaterial_GetAverageColor__SWIG_0(void * jarg1, int jarg2) {
+  Vector_POD /* Vector_ctype_out */ jresult ;
+  BaseMaterial *arg1 = (BaseMaterial *) 0 ;
+  Int32 arg2 ;
+  Vector result;
+  
+  arg1 = (BaseMaterial *)jarg1; 
+  arg2 = (Int32)jarg2; 
+  result = (arg1)->GetAverageColor(arg2);
+  
+  /* <Vector_out> */
+  jresult = *((Vector_POD *)&(result));
+  /* </Vector_out> */
+  
+  return jresult;
+}
+
+
+SWIGEXPORT Vector_POD /* Vector_ctype_out */ SWIGSTDCALL CSharp_BaseMaterial_GetAverageColor__SWIG_1(void * jarg1) {
+  Vector_POD /* Vector_ctype_out */ jresult ;
+  BaseMaterial *arg1 = (BaseMaterial *) 0 ;
+  Vector result;
+  
+  arg1 = (BaseMaterial *)jarg1; 
+  result = (arg1)->GetAverageColor();
+  
+  /* <Vector_out> */
+  jresult = *((Vector_POD *)&(result));
+  /* </Vector_out> */
+  
   return jresult;
 }
 
@@ -55407,80 +54402,6 @@ SWIGEXPORT void SWIGSTDCALL CSharp_BaseMaterial_InitCalculation(void * jarg1, vo
 }
 
 
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseMaterial_Compare(void * jarg1, void * jarg2) {
-  unsigned int jresult ;
-  BaseMaterial *arg1 = (BaseMaterial *) 0 ;
-  BaseMaterial *arg2 = (BaseMaterial *) 0 ;
-  Bool result;
-  
-  arg1 = (BaseMaterial *)jarg1; 
-  arg2 = (BaseMaterial *)jarg2; 
-  result = (arg1)->Compare(arg2);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void * SWIGSTDCALL CSharp_BaseMaterial_GetPreview(void * jarg1, int jarg2) {
-  void * jresult ;
-  BaseMaterial *arg1 = (BaseMaterial *) 0 ;
-  Int32 arg2 ;
-  BaseBitmap *result = 0 ;
-  
-  arg1 = (BaseMaterial *)jarg1; 
-  arg2 = (Int32)jarg2; 
-  result = (BaseBitmap *)(arg1)->GetPreview(arg2);
-  jresult = (void *)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void * SWIGSTDCALL CSharp_BaseMaterial_GetRayIllumination(void * jarg1) {
-  void * jresult ;
-  BaseMaterial *arg1 = (BaseMaterial *) 0 ;
-  RayIllumination *result = 0 ;
-  
-  arg1 = (BaseMaterial *)jarg1; 
-  result = (RayIllumination *)(arg1)->GetRayIllumination();
-  jresult = (void *)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT Vector_POD /* Vector_ctype_out */ SWIGSTDCALL CSharp_BaseMaterial_GetAverageColor__SWIG_0(void * jarg1, int jarg2) {
-  Vector_POD /* Vector_ctype_out */ jresult ;
-  BaseMaterial *arg1 = (BaseMaterial *) 0 ;
-  Int32 arg2 ;
-  Vector result;
-  
-  arg1 = (BaseMaterial *)jarg1; 
-  arg2 = (Int32)jarg2; 
-  result = (arg1)->GetAverageColor(arg2);
-  
-  /* <Vector_out> */
-  jresult = *((Vector_POD *)&(result));
-  /* </Vector_out> */
-  
-  return jresult;
-}
-
-
-SWIGEXPORT Vector_POD /* Vector_ctype_out */ SWIGSTDCALL CSharp_BaseMaterial_GetAverageColor__SWIG_1(void * jarg1) {
-  Vector_POD /* Vector_ctype_out */ jresult ;
-  BaseMaterial *arg1 = (BaseMaterial *) 0 ;
-  Vector result;
-  
-  arg1 = (BaseMaterial *)jarg1; 
-  result = (arg1)->GetAverageColor();
-  
-  /* <Vector_out> */
-  jresult = *((Vector_POD *)&(result));
-  /* </Vector_out> */
-  
-  return jresult;
-}
-
-
 SWIGEXPORT int SWIGSTDCALL CSharp_BaseMaterial_GetRenderInfo(void * jarg1) {
   int jresult ;
   BaseMaterial *arg1 = (BaseMaterial *) 0 ;
@@ -55489,18 +54410,6 @@ SWIGEXPORT int SWIGSTDCALL CSharp_BaseMaterial_GetRenderInfo(void * jarg1) {
   arg1 = (BaseMaterial *)jarg1; 
   result = (VOLUMEINFO)(arg1)->GetRenderInfo();
   jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseMaterial_HasEditorTransparency(void * jarg1) {
-  unsigned int jresult ;
-  BaseMaterial *arg1 = (BaseMaterial *) 0 ;
-  Bool result;
-  
-  arg1 = (BaseMaterial *)jarg1; 
-  result = (arg1)->HasEditorTransparency();
-  jresult = result; 
   return jresult;
 }
 
@@ -55535,25 +54444,39 @@ SWIGEXPORT int SWIGSTDCALL CSharp_BaseMaterial_GlMessage__SWIG_1(void * jarg1, i
 }
 
 
-SWIGEXPORT void * SWIGSTDCALL CSharp_Material_Alloc() {
-  void * jresult ;
-  Material *result = 0 ;
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseMaterial_HasEditorTransparency(void * jarg1) {
+  unsigned int jresult ;
+  BaseMaterial *arg1 = (BaseMaterial *) 0 ;
+  Bool result;
   
-  result = (Material *)Material::Alloc();
+  arg1 = (BaseMaterial *)jarg1; 
+  result = (arg1)->HasEditorTransparency();
+  jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseMaterial_Alloc(int jarg1) {
+  void * jresult ;
+  Int32 arg1 ;
+  BaseMaterial *result = 0 ;
+  
+  arg1 = (Int32)jarg1; 
+  result = (BaseMaterial *)BaseMaterial::Alloc(arg1);
   jresult = (void *)result; 
   return jresult;
 }
 
 
-SWIGEXPORT void SWIGSTDCALL CSharp_Material_Free(void * jarg1) {
-  Material **arg1 = 0 ;
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseMaterial_Free(void * jarg1) {
+  BaseMaterial **arg1 = 0 ;
   
-  arg1 = (Material **)jarg1;
+  arg1 = (BaseMaterial **)jarg1;
   if (!arg1) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Material *& type is null", 0);
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "BaseMaterial *& type is null", 0);
     return ;
   } 
-  Material::Free(*arg1);
+  BaseMaterial::Free(*arg1);
 }
 
 
@@ -55583,193 +54506,25 @@ SWIGEXPORT void SWIGSTDCALL CSharp_Material_SetChannelState(void * jarg1, int ja
 }
 
 
-SWIGEXPORT void * SWIGSTDCALL CSharp_Material_AddReflectionLayer(void * jarg1) {
+SWIGEXPORT void * SWIGSTDCALL CSharp_Material_Alloc() {
   void * jresult ;
-  Material *arg1 = (Material *) 0 ;
-  ReflectionLayer *result = 0 ;
+  Material *result = 0 ;
   
-  arg1 = (Material *)jarg1; 
-  result = (ReflectionLayer *)(arg1)->AddReflectionLayer();
+  result = (Material *)Material::Alloc();
   jresult = (void *)result; 
   return jresult;
 }
 
 
-SWIGEXPORT void * SWIGSTDCALL CSharp_Material_GetReflectionLayerID(void * jarg1, int jarg2) {
-  void * jresult ;
-  Material *arg1 = (Material *) 0 ;
-  Int32 arg2 ;
-  ReflectionLayer *result = 0 ;
+SWIGEXPORT void SWIGSTDCALL CSharp_Material_Free(void * jarg1) {
+  Material **arg1 = 0 ;
   
-  arg1 = (Material *)jarg1; 
-  arg2 = (Int32)jarg2; 
-  result = (ReflectionLayer *)(arg1)->GetReflectionLayerID(arg2);
-  jresult = (void *)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void * SWIGSTDCALL CSharp_Material_GetReflectionLayerIndex(void * jarg1, int jarg2) {
-  void * jresult ;
-  Material *arg1 = (Material *) 0 ;
-  Int32 arg2 ;
-  ReflectionLayer *result = 0 ;
-  
-  arg1 = (Material *)jarg1; 
-  arg2 = (Int32)jarg2; 
-  result = (ReflectionLayer *)(arg1)->GetReflectionLayerIndex(arg2);
-  jresult = (void *)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void * SWIGSTDCALL CSharp_Material_GetReflectionLayerTrans(void * jarg1) {
-  void * jresult ;
-  Material *arg1 = (Material *) 0 ;
-  ReflectionLayer *result = 0 ;
-  
-  arg1 = (Material *)jarg1; 
-  result = (ReflectionLayer *)(arg1)->GetReflectionLayerTrans();
-  jresult = (void *)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_Material_GetReflectionLayerCount(void * jarg1) {
-  int jresult ;
-  Material *arg1 = (Material *) 0 ;
-  Int32 result;
-  
-  arg1 = (Material *)jarg1; 
-  result = (arg1)->GetReflectionLayerCount();
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_Material_RemoveReflectionLayerID(void * jarg1, int jarg2) {
-  Material *arg1 = (Material *) 0 ;
-  Int32 arg2 ;
-  
-  arg1 = (Material *)jarg1; 
-  arg2 = (Int32)jarg2; 
-  (arg1)->RemoveReflectionLayerID(arg2);
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_Material_RemoveReflectionLayerIndex(void * jarg1, int jarg2) {
-  Material *arg1 = (Material *) 0 ;
-  Int32 arg2 ;
-  
-  arg1 = (Material *)jarg1; 
-  arg2 = (Int32)jarg2; 
-  (arg1)->RemoveReflectionLayerIndex(arg2);
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_Material_RemoveReflectionAllLayers(void * jarg1) {
-  Material *arg1 = (Material *) 0 ;
-  
-  arg1 = (Material *)jarg1; 
-  (arg1)->RemoveReflectionAllLayers();
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_Material_GetAllReflectionShaders(void * jarg1, void * jarg2) {
-  Material *arg1 = (Material *) 0 ;
-  maxon::BaseArray< BaseShader * > *arg2 = 0 ;
-  
-  arg1 = (Material *)jarg1; 
-  arg2 = (maxon::BaseArray< BaseShader * > *)jarg2;
-  if (!arg2) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "maxon::BaseArray< BaseShader * > & type is null", 0);
-    return ;
-  } 
-  (arg1)->GetAllReflectionShaders(*arg2);
-}
-
-
-SWIGEXPORT void * SWIGSTDCALL CSharp_BaseShader_Alloc(int jarg1) {
-  void * jresult ;
-  Int32 arg1 ;
-  BaseShader *result = 0 ;
-  
-  arg1 = (Int32)jarg1; 
-  result = (BaseShader *)BaseShader::Alloc(arg1);
-  jresult = (void *)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseShader_Free(void * jarg1) {
-  BaseShader **arg1 = 0 ;
-  
-  arg1 = (BaseShader **)jarg1;
+  arg1 = (Material **)jarg1;
   if (!arg1) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "BaseShader *& type is null", 0);
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Material *& type is null", 0);
     return ;
   } 
-  BaseShader::Free(*arg1);
-}
-
-
-SWIGEXPORT void * SWIGSTDCALL CSharp_BaseShader_GetNext(void * jarg1) {
-  void * jresult ;
-  BaseShader *arg1 = (BaseShader *) 0 ;
-  BaseShader *result = 0 ;
-  
-  arg1 = (BaseShader *)jarg1; 
-  result = (BaseShader *)(arg1)->GetNext();
-  jresult = (void *)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void * SWIGSTDCALL CSharp_BaseShader_GetPred(void * jarg1) {
-  void * jresult ;
-  BaseShader *arg1 = (BaseShader *) 0 ;
-  BaseShader *result = 0 ;
-  
-  arg1 = (BaseShader *)jarg1; 
-  result = (BaseShader *)(arg1)->GetPred();
-  jresult = (void *)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void * SWIGSTDCALL CSharp_BaseShader_GetUp(void * jarg1) {
-  void * jresult ;
-  BaseShader *arg1 = (BaseShader *) 0 ;
-  BaseShader *result = 0 ;
-  
-  arg1 = (BaseShader *)jarg1; 
-  result = (BaseShader *)(arg1)->GetUp();
-  jresult = (void *)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void * SWIGSTDCALL CSharp_BaseShader_GetDown(void * jarg1) {
-  void * jresult ;
-  BaseShader *arg1 = (BaseShader *) 0 ;
-  BaseShader *result = 0 ;
-  
-  arg1 = (BaseShader *)jarg1; 
-  result = (BaseShader *)(arg1)->GetDown();
-  jresult = (void *)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void * SWIGSTDCALL CSharp_BaseShader_GetDownLast(void * jarg1) {
-  void * jresult ;
-  BaseShader *arg1 = (BaseShader *) 0 ;
-  BaseShader *result = 0 ;
-  
-  arg1 = (BaseShader *)jarg1; 
-  result = (BaseShader *)(arg1)->GetDownLast();
-  jresult = (void *)result; 
-  return jresult;
+  Material::Free(*arg1);
 }
 
 
@@ -55875,38 +54630,6 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseShader_Compare(void * jarg1, void
 }
 
 
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseShader_IsColorManagementOff(void * jarg1, void * jarg2) {
-  unsigned int jresult ;
-  BaseShader *arg1 = (BaseShader *) 0 ;
-  BaseDocument *arg2 = (BaseDocument *) 0 ;
-  Bool result;
-  
-  arg1 = (BaseShader *)jarg1; 
-  arg2 = (BaseDocument *)jarg2; 
-  result = (arg1)->IsColorManagementOff(arg2);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void * SWIGSTDCALL CSharp_BaseShader_GetSubsurfaceShader(void * jarg1, void * jarg2) {
-  void * jresult ;
-  BaseShader *arg1 = (BaseShader *) 0 ;
-  Float *arg2 = 0 ;
-  BaseShader *result = 0 ;
-  
-  arg1 = (BaseShader *)jarg1; 
-  arg2 = (Float *)jarg2;
-  if (!arg2) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Float & type is null", 0);
-    return 0;
-  } 
-  result = (BaseShader *)(arg1)->GetSubsurfaceShader(*arg2);
-  jresult = (void *)result; 
-  return jresult;
-}
-
-
 SWIGEXPORT int SWIGSTDCALL CSharp_BaseShader_GlMessage(void * jarg1, int jarg2, void * jarg3) {
   int jresult ;
   BaseShader *arg1 = (BaseShader *) 0 ;
@@ -55919,6 +54642,20 @@ SWIGEXPORT int SWIGSTDCALL CSharp_BaseShader_GlMessage(void * jarg1, int jarg2, 
   arg3 = (void *)jarg3; 
   result = (GL_MESSAGE)(arg1)->GlMessage(arg2,arg3);
   jresult = (int)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseShader_IsColorManagementOff(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  BaseShader *arg1 = (BaseShader *) 0 ;
+  BaseDocument *arg2 = (BaseDocument *) 0 ;
+  Bool result;
+  
+  arg1 = (BaseShader *)jarg1; 
+  arg2 = (BaseDocument *)jarg2; 
+  result = (arg1)->IsColorManagementOff(arg2);
+  jresult = result; 
   return jresult;
 }
 
@@ -55943,25 +54680,119 @@ SWIGEXPORT void SWIGSTDCALL CSharp_BaseShader_InvalidateGLImage(void * jarg1, vo
 }
 
 
-SWIGEXPORT void * SWIGSTDCALL CSharp_BaseChannel_Alloc() {
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseShader_GetSubsurfaceShader(void * jarg1, void * jarg2) {
   void * jresult ;
-  BaseChannel *result = 0 ;
+  BaseShader *arg1 = (BaseShader *) 0 ;
+  Float *arg2 = 0 ;
+  BaseShader *result = 0 ;
   
-  result = (BaseChannel *)BaseChannel::Alloc();
+  arg1 = (BaseShader *)jarg1; 
+  arg2 = (Float *)jarg2;
+  if (!arg2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Float & type is null", 0);
+    return 0;
+  } 
+  result = (BaseShader *)(arg1)->GetSubsurfaceShader(*arg2);
   jresult = (void *)result; 
   return jresult;
 }
 
 
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseChannel_Free(void * jarg1) {
-  BaseChannel **arg1 = 0 ;
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseShader_GetNext(void * jarg1) {
+  void * jresult ;
+  BaseShader *arg1 = (BaseShader *) 0 ;
+  BaseShader *result = 0 ;
   
-  arg1 = (BaseChannel **)jarg1;
+  arg1 = (BaseShader *)jarg1; 
+  result = (BaseShader *)(arg1)->GetNext();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseShader_GetPred(void * jarg1) {
+  void * jresult ;
+  BaseShader *arg1 = (BaseShader *) 0 ;
+  BaseShader *result = 0 ;
+  
+  arg1 = (BaseShader *)jarg1; 
+  result = (BaseShader *)(arg1)->GetPred();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseShader_GetUp(void * jarg1) {
+  void * jresult ;
+  BaseShader *arg1 = (BaseShader *) 0 ;
+  BaseShader *result = 0 ;
+  
+  arg1 = (BaseShader *)jarg1; 
+  result = (BaseShader *)(arg1)->GetUp();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseShader_GetDown(void * jarg1) {
+  void * jresult ;
+  BaseShader *arg1 = (BaseShader *) 0 ;
+  BaseShader *result = 0 ;
+  
+  arg1 = (BaseShader *)jarg1; 
+  result = (BaseShader *)(arg1)->GetDown();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseShader_GetDownLast(void * jarg1) {
+  void * jresult ;
+  BaseShader *arg1 = (BaseShader *) 0 ;
+  BaseShader *result = 0 ;
+  
+  arg1 = (BaseShader *)jarg1; 
+  result = (BaseShader *)(arg1)->GetDownLast();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseShader_Alloc(int jarg1) {
+  void * jresult ;
+  Int32 arg1 ;
+  BaseShader *result = 0 ;
+  
+  arg1 = (Int32)jarg1; 
+  result = (BaseShader *)BaseShader::Alloc(arg1);
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseShader_Free(void * jarg1) {
+  BaseShader **arg1 = 0 ;
+  
+  arg1 = (BaseShader **)jarg1;
   if (!arg1) {
-    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "BaseChannel *& type is null", 0);
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "BaseShader *& type is null", 0);
     return ;
   } 
-  BaseChannel::Free(*arg1);
+  BaseShader::Free(*arg1);
+}
+
+
+SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseChannel_Compare(void * jarg1, void * jarg2) {
+  unsigned int jresult ;
+  BaseChannel *arg1 = (BaseChannel *) 0 ;
+  BaseChannel *arg2 = (BaseChannel *) 0 ;
+  Bool result;
+  
+  arg1 = (BaseChannel *)jarg1; 
+  arg2 = (BaseChannel *)jarg2; 
+  result = (arg1)->Compare(arg2);
+  jresult = result; 
+  return jresult;
 }
 
 
@@ -56085,20 +54916,6 @@ SWIGEXPORT Vector_POD /* Vector_ctype_out */ SWIGSTDCALL CSharp_BaseChannel_Samp
 }
 
 
-SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseChannel_Compare(void * jarg1, void * jarg2) {
-  unsigned int jresult ;
-  BaseChannel *arg1 = (BaseChannel *) 0 ;
-  BaseChannel *arg2 = (BaseChannel *) 0 ;
-  Bool result;
-  
-  arg1 = (BaseChannel *)jarg1; 
-  arg2 = (BaseChannel *)jarg2; 
-  result = (arg1)->Compare(arg2);
-  jresult = result; 
-  return jresult;
-}
-
-
 SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseChannel_Attach(void * jarg1, void * jarg2) {
   unsigned int jresult ;
   BaseChannel *arg1 = (BaseChannel *) 0 ;
@@ -56110,6 +54927,28 @@ SWIGEXPORT unsigned int SWIGSTDCALL CSharp_BaseChannel_Attach(void * jarg1, void
   result = (arg1)->Attach(arg2);
   jresult = result; 
   return jresult;
+}
+
+
+SWIGEXPORT void * SWIGSTDCALL CSharp_BaseChannel_Alloc() {
+  void * jresult ;
+  BaseChannel *result = 0 ;
+  
+  result = (BaseChannel *)BaseChannel::Alloc();
+  jresult = (void *)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void SWIGSTDCALL CSharp_BaseChannel_Free(void * jarg1) {
+  BaseChannel **arg1 = 0 ;
+  
+  arg1 = (BaseChannel **)jarg1;
+  if (!arg1) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "BaseChannel *& type is null", 0);
+    return ;
+  } 
+  BaseChannel::Free(*arg1);
 }
 
 
@@ -59619,164 +58458,6 @@ SWIGEXPORT Vector_POD /* Vector_ctype_out */ SWIGSTDCALL CSharp_BaseVolumeData_c
   jresult = *((Vector_POD *)&(result));
   /* </Vector_out> */
   
-  return jresult;
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_tile_x1_set(void * jarg1, int jarg2) {
-  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
-  Int32 arg2 ;
-  
-  arg1 = (BaseVolumeData *)jarg1; 
-  arg2 = (Int32)jarg2; 
-  if (arg1) (arg1)->tile_x1 = arg2;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_BaseVolumeData_tile_x1_get(void * jarg1) {
-  int jresult ;
-  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
-  Int32 result;
-  
-  arg1 = (BaseVolumeData *)jarg1; 
-  result =  ((arg1)->tile_x1);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_tile_x2_set(void * jarg1, int jarg2) {
-  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
-  Int32 arg2 ;
-  
-  arg1 = (BaseVolumeData *)jarg1; 
-  arg2 = (Int32)jarg2; 
-  if (arg1) (arg1)->tile_x2 = arg2;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_BaseVolumeData_tile_x2_get(void * jarg1) {
-  int jresult ;
-  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
-  Int32 result;
-  
-  arg1 = (BaseVolumeData *)jarg1; 
-  result =  ((arg1)->tile_x2);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_tile_y1_set(void * jarg1, int jarg2) {
-  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
-  Int32 arg2 ;
-  
-  arg1 = (BaseVolumeData *)jarg1; 
-  arg2 = (Int32)jarg2; 
-  if (arg1) (arg1)->tile_y1 = arg2;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_BaseVolumeData_tile_y1_get(void * jarg1) {
-  int jresult ;
-  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
-  Int32 result;
-  
-  arg1 = (BaseVolumeData *)jarg1; 
-  result =  ((arg1)->tile_y1);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_tile_y2_set(void * jarg1, int jarg2) {
-  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
-  Int32 arg2 ;
-  
-  arg1 = (BaseVolumeData *)jarg1; 
-  arg2 = (Int32)jarg2; 
-  if (arg1) (arg1)->tile_y2 = arg2;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_BaseVolumeData_tile_y2_get(void * jarg1) {
-  int jresult ;
-  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
-  Int32 result;
-  
-  arg1 = (BaseVolumeData *)jarg1; 
-  result =  ((arg1)->tile_y2);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_tile_index_set(void * jarg1, int jarg2) {
-  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
-  Int32 arg2 ;
-  
-  arg1 = (BaseVolumeData *)jarg1; 
-  arg2 = (Int32)jarg2; 
-  if (arg1) (arg1)->tile_index = arg2;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_BaseVolumeData_tile_index_get(void * jarg1) {
-  int jresult ;
-  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
-  Int32 result;
-  
-  arg1 = (BaseVolumeData *)jarg1; 
-  result =  ((arg1)->tile_index);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_rtex_set(void * jarg1, void * jarg2) {
-  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
-  TexEntry **arg2 ;
-  
-  arg1 = (BaseVolumeData *)jarg1; 
-  arg2 = (TexEntry **)jarg2; 
-  {
-    size_t ii;
-    TexEntry * *b = (TexEntry * *) arg1->rtex;
-    for (ii = 0; ii < (size_t)4; ii++) b[ii] = *((TexEntry * *) arg2 + ii);
-  }
-}
-
-
-SWIGEXPORT void * SWIGSTDCALL CSharp_BaseVolumeData_rtex_get(void * jarg1) {
-  void * jresult ;
-  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
-  TexEntry **result = 0 ;
-  
-  arg1 = (BaseVolumeData *)jarg1; 
-  result = (TexEntry **)(TexEntry **) ((arg1)->rtex);
-  jresult = result; 
-  return jresult;
-}
-
-
-SWIGEXPORT void SWIGSTDCALL CSharp_BaseVolumeData_rtex_count_set(void * jarg1, int jarg2) {
-  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
-  Int32 arg2 ;
-  
-  arg1 = (BaseVolumeData *)jarg1; 
-  arg2 = (Int32)jarg2; 
-  if (arg1) (arg1)->rtex_count = arg2;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_BaseVolumeData_rtex_count_get(void * jarg1) {
-  int jresult ;
-  BaseVolumeData *arg1 = (BaseVolumeData *) 0 ;
-  Int32 result;
-  
-  arg1 = (BaseVolumeData *)jarg1; 
-  result =  ((arg1)->rtex_count);
-  jresult = result; 
   return jresult;
 }
 
@@ -81854,11 +80535,11 @@ SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_DISPLAY_USE_ALPHA_get() {
 }
 
 
-SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_DISPLAY_USE_REFLECTANCE_get() {
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_DISPLAY_USE_SPECULAR_get() {
   int jresult ;
   int result;
   
-  result = (int)MATERIAL_DISPLAY_USE_REFLECTANCE;
+  result = (int)MATERIAL_DISPLAY_USE_SPECULAR;
   jresult = (int)result; 
   return jresult;
 }
@@ -81989,106 +80670,6 @@ SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_TEXTUREMIXING_MULTIPLY_get() {
   int result;
   
   result = (int)MATERIAL_TEXTUREMIXING_MULTIPLY;
-  jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_COLOR_MODEL_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)MATERIAL_COLOR_MODEL;
-  jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_COLOR_MODEL_LAMBERTIAN_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)MATERIAL_COLOR_MODEL_LAMBERTIAN;
-  jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_COLOR_MODEL_ORENNAYAR_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)MATERIAL_COLOR_MODEL_ORENNAYAR;
-  jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_ILLUMINATION_MODEL_EX_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)MATERIAL_ILLUMINATION_MODEL_EX;
-  jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_ILLUMINATION_MODEL_EX_PHONG_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)MATERIAL_ILLUMINATION_MODEL_EX_PHONG;
-  jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_ILLUMINATION_MODEL_EX_BLINN_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)MATERIAL_ILLUMINATION_MODEL_EX_BLINN;
-  jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_ILLUMINATION_MODEL_EX_ORENNAYAR_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)MATERIAL_ILLUMINATION_MODEL_EX_ORENNAYAR;
-  jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_COLOR_DIFFUSEFALLOFF_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)MATERIAL_COLOR_DIFFUSEFALLOFF;
-  jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_COLOR_DIFFUSELEVEL_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)MATERIAL_COLOR_DIFFUSELEVEL;
-  jresult = (int)result; 
-  return jresult;
-}
-
-
-SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_COLOR_ROUGHNESS_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)MATERIAL_COLOR_ROUGHNESS;
   jresult = (int)result; 
   return jresult;
 }
@@ -83124,16 +81705,6 @@ SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_DISPLACEMENT_SUBPOLY_MAPRESULT_get() 
 }
 
 
-SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_DISPLACEMENT_SUBPOLY_PREBUILD_get() {
-  int jresult ;
-  int result;
-  
-  result = (int)MATERIAL_DISPLACEMENT_SUBPOLY_PREBUILD;
-  jresult = (int)result; 
-  return jresult;
-}
-
-
 SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_NORMAL_STRENGTH_get() {
   int jresult ;
   int result;
@@ -83219,6 +81790,76 @@ SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_NORMAL_SWAP_get() {
   int result;
   
   result = (int)MATERIAL_NORMAL_SWAP;
+  jresult = (int)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_ILLUMINATION_MODEL_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_ILLUMINATION_MODEL;
+  jresult = (int)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_ILLUMINATION_MODEL_PHONG_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_ILLUMINATION_MODEL_PHONG;
+  jresult = (int)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_ILLUMINATION_MODEL_BLINN_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_ILLUMINATION_MODEL_BLINN;
+  jresult = (int)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_ILLUMINATION_MODEL_ORENNAYAR_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_ILLUMINATION_MODEL_ORENNAYAR;
+  jresult = (int)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_ILLUMINATION_DIFFUSEFALLOFF_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_ILLUMINATION_DIFFUSEFALLOFF;
+  jresult = (int)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_ILLUMINATION_DIFFUSELEVEL_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_ILLUMINATION_DIFFUSELEVEL;
+  jresult = (int)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_ILLUMINATION_ROUGHNESS_get() {
+  int jresult ;
+  int result;
+  
+  result = (int)MATERIAL_ILLUMINATION_ROUGHNESS;
   jresult = (int)result; 
   return jresult;
 }
@@ -83444,11 +82085,11 @@ SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_EDITORDISPLAY_DISPLACEMENT_get() {
 }
 
 
-SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_EDITORDISPLAY_REFLECTANCE_get() {
+SWIGEXPORT int SWIGSTDCALL CSharp_MATERIAL_EDITORDISPLAY_REFLECTION_get() {
   int jresult ;
   int result;
   
-  result = (int)MATERIAL_EDITORDISPLAY_REFLECTANCE;
+  result = (int)MATERIAL_EDITORDISPLAY_REFLECTION;
   jresult = (int)result; 
   return jresult;
 }
