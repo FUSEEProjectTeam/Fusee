@@ -35,7 +35,7 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
     <CLRSupport>false</CLRSupport>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -73,25 +73,25 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <TargetName>$(ProjectName)</TargetName>
-    <TargetExt>.cdl</TargetExt>
+	<TargetExt>.cdl</TargetExt>
     <OutDir>$(C4D_DIR)\plugins\ManagedPlugIn</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetName>$(ProjectName)</TargetName>
     <TargetExt>.cdl64</TargetExt>
-    <OutDir>$(C4D_DIR)\plugins\ManagedPlugIn</OutDir>
+	<OutDir>$(C4D_DIR)\plugins\ManagedPlugIn</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <TargetExt>.cdl</TargetExt>
+	<TargetExt>.cdl</TargetExt>
     <OutDir>$(C4D_DIR)\plugins\ManagedPlugIn</OutDir>
     <IntDir>$(SolutionDir)obj\$(ProjectName)\$(PlatformName)_$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>true</LinkIncremental>
     <TargetExt>.cdl64</TargetExt>
-    <OutDir>$(C4D_DIR)\plugins\ManagedPlugIn</OutDir>
-    <IntDir>$(SolutionDir)obj\$(ProjectName)\$(PlatformName)_$(Configuration)\</IntDir>
+	<OutDir>$(C4D_DIR)\plugins\ManagedPlugIn</OutDir>
+	<IntDir>$(SolutionDir)obj\$(ProjectName)\$(PlatformName)_$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -127,7 +127,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>C4dApiExtensions;$(MONODIR)\include\mono-2.0;$(MONODIR)\include\glib-2.0;$(MONODIR)\lib\glib-2.0\include;.\source;.\res;.\res\description;..\Bridge\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(C4D_DIR)\resource\modules\gv\expressiontag\res\description;C4dApiExtensions;$(MONODIR)\include\mono-2.0;$(MONODIR)\include\glib-2.0;$(MONODIR)\lib\glib-2.0\include;.\source;.\res;.\res\description;$(C4D_DIR)\resource\_api;$(C4D_DIR)\resource\_api\c4d_preview;$(C4D_DIR)\resource\_api\c4d_customgui;$(C4D_DIR)\resource\_api\c4d_libs;$(C4D_DIR)\resource\_api\c4d_gv;$(C4D_DIR)\resource\modules\Modeling\res\description;$(C4D_DIR)\resource\res\description;$(C4D_DIR)\resource\modules\objects\res\description;$(C4D_DIR)\resource\_api_maxon\source;..\Bridge\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
