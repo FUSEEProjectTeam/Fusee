@@ -1,16 +1,53 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Windows.Forms;
 using Fusee.Engine;
 using Fusee.Engine.SimpleScene;
 using Fusee.Math;
 using Fusee.Serialization;
 using Microsoft.Kinect;
+using MouseButtons = Fusee.Engine.MouseButtons;
+using MouseEventArgs = Fusee.Engine.MouseEventArgs;
 
 namespace Examples.HandOnCanvasKinect2
 {
     public class HandOnCanvasKinect2 : RenderCanvas
     {
+        #region Adjustable parameters
+        // Controls the filter value used for de-jittering. Keep betwenn 0 (no filtering - raw values) and 1 (maximum filtering)
+        private float _filterAlpha = 0.8f;
+
+        // Controls the hand's velocity (used to drive the torque applied to the displayed object)
+        private float _handVelFactor  = 0.0001f;
+        
+        // Controls how the hand position is spread over the screen space. Smaller values mean 
+        // users must move their real hand less to move the virtual hand more.
+        private float _handPosXYFactor = 0.5f;
+
+        // Controls the depth range of the hand movement in world coordinates. Bigger values mean 
+        // the distance between the virtual hand's nearest and farthest possible points becomes bigger.
+        private float _handPosZRange = 600.0f;
+
+        // Controls the depht offset of the hand (distance to camera) in world coordinates
+        private float _handPosZOffset = 500.0f;
+
+        // Controls the scale applied to the hand's model.
+        private float _handScale = 0.5f;
+
+        // Controls the width of the black line outlining the hand
+        private float _handLineWidth = 1.7f;
+
+        // Controls the distance in world coordinates of the hand to the camera
+        private float _handCamDist = 500.0f;
+        
+        // Assumes a "virtual screen size"
+        private float _squareScreenPxls = 2048.0f;
+
+
+        #endregion Adjustable parameters
+
+
         // angle variables
         private float _angleHorz, _angleVert;
 
@@ -40,13 +77,35 @@ namespace Examples.HandOnCanvasKinect2
         private float3 _handPos;
         private float3 _handVel;
         private float3 _handPosLast;
-        private HandState _rightHandState;
         private float _handPitch;
         private float _handYaw;
         private const float InferredZPositionClamp = 0.1f;
         private float3 _pHand;
         private float3 _pTip;
-        private float _filterAlpha = 0.5f;
+
+        // Filtered hand state tracking
+        // "fuzzy" values ranging between 0..1 showing the respective state
+        private float _handOpen;
+        private float _handClosed;
+        private float _handIndexed;
+
+        private HandState FilteredState
+        {
+            get
+            {
+                if (_handOpen > _handClosed && _handOpen > _handIndexed)
+                {
+                    return HandState.Open;
+                }
+                if (_handIndexed > _handClosed && _handIndexed > _handOpen)
+                {
+                    return HandState.Lasso;
+                }
+                return HandState.Closed;
+            }
+        }
+           
+        
         // </Kinect>
 
         // GUI
@@ -59,12 +118,6 @@ namespace Examples.HandOnCanvasKinect2
         private float _subtextHeight;
         private float _angleVelHorz;
         private float _angleVelVert;
-
-
-        private const float LineWidth = 1.7f;
-        private const float CamDist = 500.0f;
-        private const float SquareScreenPxls = 2048.0f;
-        private const float HandScale = 0.5f;
 
         private void _guiFuseeLink_OnGUIButtonLeave(GUIButton sender, MouseEventArgs mea)
         {
@@ -210,6 +263,7 @@ namespace Examples.HandOnCanvasKinect2
         // is called on startup
         public override void Init()
         {
+            this.SetWindowSize(SystemInformation.PrimaryMonitorSize.Width, SystemInformation.PrimaryMonitorSize.Height, true);
             InitShader();
             RC.ClearColor = new float4(1f, 1f, 1f, 0.0f);
             // _meshHand = MeshReader.LoadMesh(@"Assets/handhipolynorm.obj.model");
@@ -333,7 +387,32 @@ namespace Examples.HandOnCanvasKinect2
                 {
                     if (body.IsTracked)
                     {
-                        _rightHandState = body.HandRightState;
+                        // Hand state filtering
+                        var currentState = body.HandRightState;
+                        float handOpenRaw = 0;
+                        float handClosedRaw = 0;
+                        float handIndexedRaw  = 0;
+
+                        switch (currentState)
+                        {
+                            case HandState.Unknown:
+                            case HandState.NotTracked:
+                            case HandState.Open:
+                                handOpenRaw = 1;
+                                break;
+                            case HandState.Closed:
+                                handClosedRaw = 1;
+                                break;
+                            case HandState.Lasso:
+                                handIndexedRaw = 1;
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException();
+                        }
+                        _handOpen = _handOpen * _filterAlpha + (1.0f - _filterAlpha) * handOpenRaw;
+                        _handClosed = _handClosed * _filterAlpha + (1.0f - _filterAlpha) * handClosedRaw;
+                        _handIndexed = _handIndexed * _filterAlpha + (1.0f - _filterAlpha) * handIndexedRaw;
+
                         IReadOnlyDictionary<JointType, Joint> joints = body.Joints;
 
                         CameraSpacePoint positionHand = joints[JointType.HandRight].Position;
@@ -363,7 +442,7 @@ namespace Examples.HandOnCanvasKinect2
                         DepthSpacePoint depthSpacePoint = _coordinateMapper.MapCameraPointToDepthSpace(positionHand);
                         _handPosLast = _handPos;
                         _handPos = new float3(depthSpacePoint.X * Width / _jointSpaceWidth, depthSpacePoint.Y * Height / _jointSpaceHeight, positionHand.Z);
-                        _handVel = 0.0001f * (_handPos - _handPosLast);
+                        _handVel = _handVelFactor * (_handPos - _handPosLast);
 
                         //    HandTipRight,
                         //    ThumbRight,
@@ -389,10 +468,10 @@ namespace Examples.HandOnCanvasKinect2
                 _shaderEffect.SetEffectParam("uLineColor", new float4(0, 0, 0, 1));
             }
             _shaderEffect.SetEffectParam("uLineWidth",
-                new float2(lineWidthFactor*LineWidth/_normWidth, lineWidthFactor*LineWidth/_normHeight));
+                new float2(lineWidthFactor*_handLineWidth/_normWidth, lineWidthFactor*_handLineWidth/_normHeight));
 
             // Handcontrol
-            if (_rightHandState == HandState.Closed)
+            if (FilteredState == HandState.Closed)
             {
                 _angleVelHorz = RotationSpeed * _handVel.x; //(float)Time.Instance.DeltaTime *
                 _angleVelVert = RotationSpeed * _handVel.y; //(float)Time.Instance.DeltaTime *
@@ -417,16 +496,16 @@ namespace Examples.HandOnCanvasKinect2
 
             // Hand
             mtxRot = float4x4.CreateRotationY(_handYaw) * float4x4.CreateRotationX(_handPitch);
-            mtxCam = float4x4.LookAt(0, 0, -CamDist, 0, 0, 0, 0, 1, 0);
+            mtxCam = float4x4.LookAt(0, 0, -_handCamDist, 0, 0, 0, 0, 1, 0);
 
             float3 hndPoint = _handPos;
-            var handWorldPos = new float3(hndPoint.x - 0.5f * Width, 0.5f * Height - hndPoint.y, 0);
-            handWorldPos = 2 * CamDist / SquareScreenPxls * handWorldPos;
-            handWorldPos.z = 600.0f * (0.8f - hndPoint.z);
+            var handWorldPos = new float3(hndPoint.x - _handPosXYFactor * Width, _handPosXYFactor * Height - hndPoint.y, 0);
+            handWorldPos = 2 * _handCamDist / _squareScreenPxls * handWorldPos;
+            handWorldPos.z = _handPosZOffset -  _handPosZRange * hndPoint.z;
 
-            RC.ModelView = mtxCam * float4x4.CreateTranslation(handWorldPos) * mtxRot * new float4x4(HandScale, 0, 0, 0, 0, HandScale, 0, 0, 0, 0, HandScale, 0, 0, 0, 0, 1);
+            RC.ModelView = mtxCam * float4x4.CreateTranslation(handWorldPos) * mtxRot * new float4x4(_handScale, 0, 0, 0, 0, _handScale, 0, 0, 0, 0, _handScale, 0, 0, 0, 0, 1);
 
-            switch (_rightHandState)
+            switch (FilteredState)
             {
                 case HandState.Unknown:
                 case HandState.NotTracked:
@@ -455,13 +534,13 @@ namespace Examples.HandOnCanvasKinect2
             RC.Viewport(0, 0, Width, Height);
 
             // var aspectRatio = Width / (float)Height;
-            _normWidth = Width/SquareScreenPxls;
-            _normHeight = Height/SquareScreenPxls;
+            _normWidth = Width/_squareScreenPxls;
+            _normHeight = Height/_squareScreenPxls;
 
             RC.Projection = float4x4.CreatePerspectiveOffCenter(-_normWidth, _normWidth, -_normHeight, _normHeight, 1,
                 10000);
 
-            _shaderEffect.SetEffectParam("uLineWidth", new float2(LineWidth/_normWidth, LineWidth/_normHeight));
+            _shaderEffect.SetEffectParam("uLineWidth", new float2(_handLineWidth/_normWidth, _handLineWidth/_normHeight));
 
             _guiSubText.PosX = (int)((Width - _subtextWidth) / 2);
             _guiSubText.PosY = (int)(Height - _subtextHeight - 3);
