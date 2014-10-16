@@ -164,7 +164,7 @@ namespace Examples.CubeAndTiles
             RC.Viewport(0, 0, Width, Height);
 
             var aspectRatio = Width/(float) Height;
-            RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 10000);
+            RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 20, 10000);
         }
 
         public static void Main()

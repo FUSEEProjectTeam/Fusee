@@ -12,13 +12,13 @@ YourManagedPlugin -  the managed code plugin doing the actual XPresso export.
 How to build the solution
 -------------------------
 PREREQUISITES
-1. Swig (2.0.4) must be self-built with patch 3305130 (C# csdirectorin pre/post attribute support) applied and the path to swig.exe must be part of the system path - see App. 1 below.
+1. Swig (3.0.x) must be installed (obsolete: self-built with patch 3305130 (C# csdirectorin pre/post attribute support) applied) and the path to swig.exe must be part of the system path - see App. 1 below.)
 2. Cinema4D must be installed and the path to the installation directory must be set in the system variable C4D_DIR
 3. Mono (Latest Stable Version: 2.10.2) must be installed and the path to the installation must be set in the system variable MONODIR
 4. The mono installation's bin dir (e.g. C:\Programme\Mono-2.10.2\bin) must be added to the system path
 
 
-Make sure you are bulding one of the [Debug|Release] [Win32|X64] Solution Configurations.
+Make sure you are bulding one of the [Debug|(not recommended:Release)] [(obsolete: Win32)|X64] Solution Configurations.
 
 The Swig project contains no source code, only the Swig input file (C4dApi.i). This is used in the project's Custom Build Step (Projet Properties -> Custom Build Step -> Command Line). There are two prerequisites to buld the Swig project:
 1. The directory Projects/Managed/C4dApi must exist (you must create it by hand, if you build for the first time) and be empty (you must empty it by hand each time you build).
@@ -60,8 +60,8 @@ Swig director handling generates dynamic_cast<> expressions. While the visual C+
 
 
 
-App. 1: Why and how to build my own Swig
-----------------------------------------
+App. 1: Why and how to build my own Swig (obsolete)
+---------------------------------------------------
 Edit March 2014: The patch linked below went into the Swig release branch. So currently there's no need to build Swig by hand any more.
 We are using Swig in a way where we want the wrapped C# methods to have parameters making use of the C# "ref" or "out" keywords a lot (See C# documentation). Unfortunately this leads to problems if the containing classes are used as so called "directors" (see Swig documentation). The generated C# code then provokes compiler errors. The problem is described under
 http://permalink.gmane.org/gmane.comp.programming.swig/16385 and solved in a patch under
