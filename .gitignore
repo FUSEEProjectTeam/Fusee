@@ -5,6 +5,8 @@ C4dApiWrapper.cpp
 C4dApiWrapper.h
 mono.exp
 mono.lib
+mono64.exp
+mono64.lib
 *.tlog
 *.scc
 *.orig
