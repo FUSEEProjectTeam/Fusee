@@ -2,6 +2,7 @@
 [Tt]mp/
 C4dApi/
 C4dApiWrapper.cpp
+C4dApiWrapper.h
 mono.exp
 mono.lib
 *.tlog
