@@ -85,6 +85,7 @@
     <TargetName>$(ProjectName)</TargetName>
     <TargetExt>.cdl64</TargetExt>
     <OutDir>$(C4D_DIR)\plugins\ManagedPlugIn</OutDir>
+    <IntDir>..\..\..\..\Tmp\Obj\$(ProjectName)\$(PlatformName)_$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>true</LinkIncremental>
@@ -132,7 +133,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(C4D_DIR)\resource\modules\gv\expressiontag\res\description;C4dApiExtensions;$(MONODIR)\include\mono-2.0;$(MONODIR)\include\glib-2.0;$(MONODIR)\lib\glib-2.0\include;.\source;.\res;.\res\description;$(C4D_DIR)\resource\_api;$(C4D_DIR)\resource\_api\c4d_preview;$(C4D_DIR)\resource\_api\c4d_customgui;$(C4D_DIR)\resource\_api\c4d_libs;$(C4D_DIR)\resource\_api\c4d_gv;$(C4D_DIR)\resource\modules\Modeling\res\description;$(C4D_DIR)\resource\res\description;$(C4D_DIR)\resource\modules\objects\res\description;$(C4D_DIR)\resource\_api_maxon\source;..\Bridge\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C4dApiExtensions;$(MONODIR)\include\mono-2.0;$(MONODIR)\include\glib-2.0;$(MONODIR)\lib\glib-2.0\include;.\source;.\res;.\res\description;..\Bridge\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
