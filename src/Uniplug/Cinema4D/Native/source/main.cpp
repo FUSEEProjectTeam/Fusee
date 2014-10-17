@@ -100,7 +100,7 @@ Bool PluginStart(void)			// the main function C4D calls to start the plugin - ne
 	String str = "Test";
 	Bool b = str.Content();
 
-	MessageDialog("'Cinema 4D' - Started with plugin in developement");					// The message in the popup window
+	// MessageDialog("'Cinema 4D' - Started with plugin in developement");					// The message in the popup window
 
 	pluginStarted = true;
 
