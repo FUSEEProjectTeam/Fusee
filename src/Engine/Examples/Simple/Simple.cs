@@ -39,15 +39,16 @@ namespace Examples.Simple
             _meshFace = new Cube();
             
             _spColor = MoreShaders.GetDiffuseColorShader(RC);
-            _spTexture = MoreShaders.GetTextureShader(RC);
+            // _spTexture = MoreShaders.GetTextureShader(RC);
 
             _colorParam = _spColor.GetShaderParam("color");
-            _textureParam = _spTexture.GetShaderParam("texture1");
+            // _textureParam = _spTexture.GetShaderParam("texture1");
 
             // load texture
-            var imgData = RC.LoadImage("Assets/coords.jpg");
-            _iTex = RC.CreateTexture(imgData);
+            // var imgData = RC.LoadImage("Assets/coords.jpg");
+            // _iTex = RC.CreateTexture(imgData);
             _zz = 0.0f;
+
         }
 
         // is called once a frame
@@ -130,7 +131,7 @@ namespace Examples.Simple
 
             // RC.SetShader(_spTexture);
             // RC.SetShaderParamTexture(_textureParam, _iTex);
-            RC.SetShaderParam(_colorParam, new float4(0, 0.5f, 0.8f, 1));
+            RC.SetShaderParam(_colorParam, new float4(1, 0, 0, 1));
 
             RC.Render(_meshFace);
 
