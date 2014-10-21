@@ -9,12 +9,15 @@ namespace Fusee.Serialization
 {
     [ProtoContract]
     [ProtoInclude(100, typeof(AnimationKeyContainerDouble))]
-    [ProtoInclude(101, typeof(AnimationKeyContainerFloat))]
-    [ProtoInclude(102, typeof(AnimationKeyContainerFloat3))]
+    [ProtoInclude(101, typeof(AnimationKeyContainerInt))]
+    [ProtoInclude(102, typeof(AnimationKeyContainerFloat))]
+    [ProtoInclude(103, typeof(AnimationKeyContainerFloat2))]
+    [ProtoInclude(104, typeof(AnimationKeyContainerFloat3))]
+    [ProtoInclude(105, typeof(AnimationKeyContainerFloat4))]
     public class AnimationKeyContainerBase
     {
         [ProtoMember(1)] 
-        public int Time;
+        public float Time;
     }
 
     [ProtoContract]
@@ -25,10 +28,24 @@ namespace Fusee.Serialization
     }
 
     [ProtoContract]
+    public class AnimationKeyContainerInt: AnimationKeyContainerBase
+    {
+        [ProtoMember(1)]
+        public int Value;
+    }
+
+    [ProtoContract]
     public class AnimationKeyContainerFloat : AnimationKeyContainerBase
     {
         [ProtoMember(1)]
         public float Value;
+    }
+
+    [ProtoContract]
+    public class AnimationKeyContainerFloat2 : AnimationKeyContainerBase
+    {
+        [ProtoMember(1)]
+        public float2 Value;
     }
 
     [ProtoContract]
@@ -37,7 +54,13 @@ namespace Fusee.Serialization
         [ProtoMember(1)] 
         public float3 Value;
     }
-    //...
+
+    [ProtoContract]
+    public class AnimationKeyContainerFloat4 : AnimationKeyContainerBase
+    {
+        [ProtoMember(1)]
+        public float4 Value;
+    }
 
 
     [ProtoContract]

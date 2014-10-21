@@ -59,31 +59,7 @@ namespace Fusee.Engine.SimpleScene
             _lights = new List<LightInfo>();
             _sc = sc;
             _scenePathDirectory = scenePathDirectory;
-            foreach (AnimationTrackContainer animTrackContainer in sc.AnimationTracks)
-            {
-                Type t = animTrackContainer.KeyType;            
-                if(typeof(float3).IsAssignableFrom(t))
-                {
-                    Channel<float3> channel = new Channel<float3>(Lerp.Float3Lerp);
-                    foreach(AnimationKeyContainerFloat3 key in animTrackContainer.KeyFrames)
-                    {
-                        channel.AddKeyframe(new Keyframe<float3>(key.Time, key.Value));
-                    }
-                    _animation.AddAnimation(channel, animTrackContainer.SceneObject, animTrackContainer.Property);
-                }
-                else if (typeof(float).IsAssignableFrom(t))
-                {
-                    Channel<float> channel = new Channel<float>(Lerp.FloatLerp);
-                    foreach(AnimationKeyContainerFloat key in animTrackContainer.KeyFrames)
-                    {
-                        channel.AddKeyframe(new Keyframe<float>(key.Time, key.Value));
-                    }
-                    _animation.AddAnimation(channel, animTrackContainer.SceneObject, animTrackContainer.Property);
-                }
-                //TODO : Add cases for each channel type
-            }
-
-
+            InitAnimations(_sc);
         }
 
         public void InitShaders(RenderContext rc)
@@ -112,6 +88,65 @@ namespace Fusee.Engine.SimpleScene
                 });
                 CurMat.AttachToContext(rc);
             }
+        }
+
+        public void InitAnimations(SceneContainer sc)
+        {
+            foreach (AnimationTrackContainer animTrackContainer in sc.AnimationTracks)
+            {
+                Type t = animTrackContainer.KeyType;
+                if (typeof(int).IsAssignableFrom(t))
+                {
+                    Channel<int> channel = new Channel<int>(Lerp.IntLerp);
+                    foreach (AnimationKeyContainerInt key in animTrackContainer.KeyFrames)
+                    {
+                        channel.AddKeyframe(new Keyframe<int>(key.Time, key.Value));
+                    }
+                    _animation.AddAnimation(channel, animTrackContainer.SceneObject, animTrackContainer.Property);
+                }
+                else if (typeof(float).IsAssignableFrom(t))
+                {
+                    Channel<float> channel = new Channel<float>(Lerp.FloatLerp);
+                    foreach (AnimationKeyContainerFloat key in animTrackContainer.KeyFrames)
+                    {
+                        channel.AddKeyframe(new Keyframe<float>(key.Time, key.Value));
+                    }
+                    _animation.AddAnimation(channel, animTrackContainer.SceneObject, animTrackContainer.Property);
+                }
+                else if (typeof(float2).IsAssignableFrom(t))
+                {
+                    Channel<float2> channel = new Channel<float2>(Lerp.Float2Lerp);
+                    foreach (AnimationKeyContainerFloat2 key in animTrackContainer.KeyFrames)
+                    {
+                        channel.AddKeyframe(new Keyframe<float2>(key.Time, key.Value));
+                    }
+                    _animation.AddAnimation(channel, animTrackContainer.SceneObject, animTrackContainer.Property);
+                }
+                else if (typeof(float3).IsAssignableFrom(t))
+                {
+                    Channel<float3> channel = new Channel<float3>(Lerp.Float3Lerp);
+                    foreach (AnimationKeyContainerFloat3 key in animTrackContainer.KeyFrames)
+                    {
+                        channel.AddKeyframe(new Keyframe<float3>(key.Time, key.Value));
+                    }
+                    _animation.AddAnimation(channel, animTrackContainer.SceneObject, animTrackContainer.Property);
+                }
+                else if (typeof(float4).IsAssignableFrom(t))
+                {
+                    Channel<float4> channel = new Channel<float4>(Lerp.Float4Lerp);
+                    foreach (AnimationKeyContainerFloat4 key in animTrackContainer.KeyFrames)
+                    {
+                        channel.AddKeyframe(new Keyframe<float4>(key.Time, key.Value));
+                    }
+                    _animation.AddAnimation(channel, animTrackContainer.SceneObject, animTrackContainer.Property);
+                }
+                //TODO : Add cases for each type
+            }
+        }
+
+        public void Animate()
+        {
+            _animation.Animate();
         }
 
         public AABBf? GetAABB()
@@ -172,7 +207,6 @@ namespace Fusee.Engine.SimpleScene
         public void Render(RenderContext rc)
         {
             InitShaders(rc);
-
             foreach (var soc in _sc.Children)
             {
                 VisitNodeRender(soc);
