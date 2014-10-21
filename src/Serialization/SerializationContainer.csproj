@@ -39,6 +39,7 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AnimationTrackContainer.cs" />
     <Compile Include="MaterialContainer.cs" />
     <Compile Include="SceneContainer.cs" />
     <Compile Include="MeshContainer.cs" />

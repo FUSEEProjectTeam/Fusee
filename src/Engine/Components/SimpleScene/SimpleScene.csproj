@@ -65,6 +65,10 @@
       <Project>{1228eb3f-8bcc-453f-8a2e-d9246495a118}</Project>
       <Name>Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\KeyFrameAnimation\KeyFrameAnimation.csproj">
+      <Project>{394fe54b-7891-4c5b-af0e-8dcc9f2d3cba}</Project>
+      <Name>KeyFrameAnimation</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

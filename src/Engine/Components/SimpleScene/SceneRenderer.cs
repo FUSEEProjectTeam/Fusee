@@ -3,6 +3,8 @@ using System.IO;
 using Fusee.Engine;
 using Fusee.Math;
 using Fusee.Serialization;
+using Fusee.KeyFrameAnimation;
+using System;
 
 namespace Fusee.Engine.SimpleScene
 {
@@ -31,6 +33,8 @@ namespace Fusee.Engine.SimpleScene
 
         private List<LightInfo> _lights;
 
+        private Animation _animation;
+
         private RenderStateSet _stateSet = new RenderStateSet()
         {
             AlphaBlendEnable = false,
@@ -55,6 +59,31 @@ namespace Fusee.Engine.SimpleScene
             _lights = new List<LightInfo>();
             _sc = sc;
             _scenePathDirectory = scenePathDirectory;
+            foreach (AnimationTrackContainer animTrackContainer in sc.AnimationTracks)
+            {
+                Type t = animTrackContainer.KeyType;            
+                if(typeof(float3).IsAssignableFrom(t))
+                {
+                    Channel<float3> channel = new Channel<float3>(Lerp.Float3Lerp);
+                    foreach(AnimationKeyContainerFloat3 key in animTrackContainer.KeyFrames)
+                    {
+                        channel.AddKeyframe(new Keyframe<float3>(key.Time, key.Value));
+                    }
+                    _animation.AddAnimation(channel, animTrackContainer.SceneObject, animTrackContainer.Property);
+                }
+                else if (typeof(float).IsAssignableFrom(t))
+                {
+                    Channel<float> channel = new Channel<float>(Lerp.FloatLerp);
+                    foreach(AnimationKeyContainerFloat key in animTrackContainer.KeyFrames)
+                    {
+                        channel.AddKeyframe(new Keyframe<float>(key.Time, key.Value));
+                    }
+                    _animation.AddAnimation(channel, animTrackContainer.SceneObject, animTrackContainer.Property);
+                }
+                //TODO : Add cases for each channel type
+            }
+
+
         }
 
         public void InitShaders(RenderContext rc)

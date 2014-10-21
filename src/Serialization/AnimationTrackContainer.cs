@@ -9,7 +9,8 @@ namespace Fusee.Serialization
 {
     [ProtoContract]
     [ProtoInclude(100, typeof(AnimationKeyContainerDouble))]
-    [ProtoInclude(101, typeof(AnimationKeyContainerFloat3))]
+    [ProtoInclude(101, typeof(AnimationKeyContainerFloat))]
+    [ProtoInclude(102, typeof(AnimationKeyContainerFloat3))]
     public class AnimationKeyContainerBase
     {
         [ProtoMember(1)] 
@@ -21,6 +22,13 @@ namespace Fusee.Serialization
     {
         [ProtoMember(1)]
         public Double Value;
+    }
+
+    [ProtoContract]
+    public class AnimationKeyContainerFloat : AnimationKeyContainerBase
+    {
+        [ProtoMember(1)]
+        public float Value;
     }
 
     [ProtoContract]
@@ -44,7 +52,7 @@ namespace Fusee.Serialization
         // e.g. Transform Translation
 
         [ProtoMemberAttribute(3, AsReference = true)] 
-        public Type ValueType;
+        public Type KeyType;
 
         [ProtoMemberAttribute(4, AsReference = true)]
         public List<AnimationKeyContainerBase> KeyFrames;
