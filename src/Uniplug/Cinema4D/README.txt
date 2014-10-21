@@ -16,7 +16,8 @@ PREREQUISITES
 2. Cinema4D must be installed and the path to the installation directory must be set in the system variable C4D_DIR
 3. Mono (Latest Stable Version: 2.10.2) must be installed and the path to the installation must be set in the system variable MONODIR
 4. The mono installation's bin dir (e.g. C:\Programme\Mono-2.10.2\bin) must be added to the system path
-
+5. You have to build at least the SerializationContainer project from the Engine solution (the main Fusee solution) in the root directory.
+6. You have to build the Cinema 4D SDK (default location: C:\Program Files\MAXON\CINEMA 4D R16\plugins\examples\cinema4dsdk)
 
 Make sure you are bulding one of the [Debug|(not recommended:Release)] [(obsolete: Win32)|X64] Solution Configurations.
 
@@ -36,7 +37,7 @@ Now you can build the rest of the solution the normal way: just by clicking Buil
 
 Make sure to repeat this process (inlcuding manually emptying the C4dApi file folder) every time you added definitions to the Swig control file (C4dApi.h).
 
-Maually rebuild the entire solution project-by-project in the order following order: Swig, C4D, Bridge, Native, XPressoXPort. You need to rebuild whenever changing the configuration (Debug/Release/64/32).
+Manually rebuild the entire solution project-by-project in the order following order: Swig, C4D, Bridge, Native, XPressoXPort. You need to rebuild whenever changing the configuration (Debug/Release/64/32).
 
 
 
