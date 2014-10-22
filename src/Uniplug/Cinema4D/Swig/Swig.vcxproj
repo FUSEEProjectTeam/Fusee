@@ -24,6 +24,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\c4d_basebitmap.swig.h" />
+    <ClInclude Include="include\c4d_canimation.swig.h" />
     <ClInclude Include="include\c4d_customdatatype.swig.h" />
     <ClInclude Include="include\c4d_gedata.swig.h" />
     <ClInclude Include="include\customgui_inexclude.swig.h" />
