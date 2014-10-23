@@ -49,6 +49,7 @@ namespace FuExport
         private List<string> _textureFiles = new List<string>();
         private string _sceneRootDir;
         private Dictionary<long, MaterialContainer> _materialCache;
+        private List<AnimationTrackContainer> _tracks = new List<AnimationTrackContainer>();
 
         public SceneContainer FuseefyScene(BaseDocument doc, string sceneRootDir, out List<string> textureFiles)
         {
@@ -563,33 +564,32 @@ namespace FuExport
                         key = curve.GetKey(i);
                         time = key.GetTime();
 
-
                         switch (lv1.id)
                         {
                             case 903: // should be replaced with "ID_BASEOBJECT_REL_POSITION"
                                 switch (lv2.id)
                                 {
-                                    case 1000: builder.AddTranslationValue("x", time.GetFrame(25), key.GetValue()); break;
-                                    case 1001: builder.AddTranslationValue("y", time.GetFrame(25), key.GetValue()); break;
-                                    case 1002: builder.AddTranslationValue("z", time.GetFrame(25), key.GetValue()); break;
+                                    case 1000: builder.AddTranslationValue("x", (float)time.Get(), key.GetValue()); break;
+                                    case 1001: builder.AddTranslationValue("y", (float)time.Get(), key.GetValue()); break;
+                                    case 1002: builder.AddTranslationValue("z", (float)time.Get(), key.GetValue()); break;
                                 }
                                 break;
 
                             case 904: // should be replaced with "ID_BASEOBJECT_REL_ROTATION"
                                 switch (lv2.id)
                                 {
-                                    case 1000: builder.AddRotationValue("x", time.GetFrame(25), key.GetValue()); break;
-                                    case 1001: builder.AddRotationValue("y", time.GetFrame(25), key.GetValue()); break;
-                                    case 1002: builder.AddRotationValue("z", time.GetFrame(25), key.GetValue()); break;
+                                    case 1000: builder.AddRotationValue("x", (float)time.Get(), key.GetValue()); break;
+                                    case 1001: builder.AddRotationValue("y", (float)time.Get(), key.GetValue()); break;
+                                    case 1002: builder.AddRotationValue("z", (float)time.Get(), key.GetValue()); break;
                                 }
                                 break;
 
                             case 905: // should be replaced with "ID_BASEOBJECT_REL_SCALE"
                                 switch (lv2.id)
                                 {
-                                    case 1000: builder.AddScaleValue("x", time.GetFrame(25), key.GetValue()); break;
-                                    case 1001: builder.AddScaleValue("y", time.GetFrame(25), key.GetValue()); break;
-                                    case 1002: builder.AddScaleValue("z", time.GetFrame(25), key.GetValue()); break;
+                                    case 1000: builder.AddScaleValue("x", (float)time.Get(), key.GetValue()); break;
+                                    case 1001: builder.AddScaleValue("y", (float)time.Get(), key.GetValue()); break;
+                                    case 1002: builder.AddScaleValue("z", (float)time.Get(), key.GetValue()); break;
                                 }
                                 break;
                         }

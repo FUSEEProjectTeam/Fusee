@@ -64,7 +64,7 @@ namespace FuExport
             return ret;
         }
 
-        public void AddTranslationValue(string id, int time, double value)
+        public void AddTranslationValue(string id, float time, double value)
         {
             if (TranslationKeys == null)
                 TranslationKeys = new Dictionary<float, float3>();
@@ -98,7 +98,7 @@ namespace FuExport
 
         }
 
-        public void AddRotationValue(string id, int time, double value)
+        public void AddRotationValue(string id, float time, double value)
         {
             if (RotationKeys == null)
                 RotationKeys = new Dictionary<float, float3>();
@@ -131,7 +131,7 @@ namespace FuExport
 
         }
 
-        public void AddScaleValue(string id, int time, double value)
+        public void AddScaleValue(string id, float time, double value)
         {
             if (ScaleKeys == null)
                 ScaleKeys = new Dictionary<float, float3>();
@@ -165,32 +165,35 @@ namespace FuExport
 
         public void BuildTracks(SceneObjectContainer soc, List<AnimationTrackContainer> list)
         {
-            list.Add(new AnimationTrackContainer()
-            {
-                SceneObject = soc,
-                Property = "Transform.Translation",
-                KeyType = typeof(float3),
-                KeyFrames = BuildTranslationKeys()
+            if (TranslationKeys != null) 
+                list.Add(new AnimationTrackContainer()
+                {
+                    SceneObject = soc,
+                    Property = "transform.GlobalPosition",
+                    KeyType = typeof(float3),
+                    KeyFrames = BuildTranslationKeys()
 
-            });
+                });
 
-            list.Add(new AnimationTrackContainer()
-            {
-                SceneObject = soc,
-                Property = "Transform.Rotation",
-                KeyType = typeof(float3),
-                KeyFrames = BuildRotationKeys()
+            if(RotationKeys != null)
+                list.Add(new AnimationTrackContainer()
+                {
+                    SceneObject = soc,
+                    Property = "Transform.Rotation",
+                    KeyType = typeof(float3),
+                    KeyFrames = BuildRotationKeys()
 
-            });
+                });
 
-            list.Add(new AnimationTrackContainer()
-            {
-                SceneObject = soc,
-                Property = "Transform.Scale",
-                KeyType = typeof(float3),
-                KeyFrames = BuildScaleKeys()
+            if(ScaleKeys != null)
+                list.Add(new AnimationTrackContainer()
+                {
+                    SceneObject = soc,
+                    Property = "Transform.Scale",
+                    KeyType = typeof(float3),
+                    KeyFrames = BuildScaleKeys()
 
-            });
+                });
         }
 
 

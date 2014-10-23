@@ -35,11 +35,5 @@
     <ClInclude Include="include\operatingsystem.swig.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\c4d_canimation.swig.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\c4d_basetime.swig.h">
-      <Filter>include</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>
