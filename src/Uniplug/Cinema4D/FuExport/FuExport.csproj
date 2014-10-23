@@ -66,6 +66,7 @@
       <DependentUpon>ManifestFile.tt</DependentUpon>
     </Compile>
     <Compile Include="SimpleHttpServer.cs" />
+    <Compile Include="TrackBuilder.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
