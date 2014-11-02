@@ -107,11 +107,11 @@ namespace FuExport
             if (RotationKeys.TryGetValue(time, out tmp))
             {
                 if (id == "x")
-                    tmp.x = (float)value;
+                    tmp.y = -(float)value;
                 if (id == "y")
-                    tmp.y = (float)value;
+                    tmp.x = -(float)value;
                 if (id == "z")
-                    tmp.z = (float)value;
+                    tmp.z = -(float)value;
 
                 RotationKeys[time] = tmp;
             }
@@ -119,11 +119,11 @@ namespace FuExport
             else
             {
                 if (id == "x")
-                    tmp = new float3((float)value, 0, 0);
+                    tmp = new float3(0, -(float)value, 0);
                 if (id == "y")
-                    tmp = new float3(0, (float)value, 0);
+                    tmp = new float3(-(float)value, 0, 0);
                 if (id == "z")
-                    tmp = new float3(0, 0, (float)value);
+                    tmp = new float3( 0, 0, -(float)value);
 
                 RotationKeys.Add(time, tmp);
 
@@ -169,7 +169,7 @@ namespace FuExport
                 list.Add(new AnimationTrackContainer()
                 {
                     SceneObject = soc,
-                    Property = "transform.GlobalPosition",
+                    Property = "Transform.Translation",
                     KeyType = typeof(float3),
                     KeyFrames = BuildTranslationKeys()
 

@@ -92,6 +92,8 @@ namespace Fusee.Engine.SimpleScene
 
         public void InitAnimations(SceneContainer sc)
         {
+            
+            _animation = new Animation(0);
             foreach (AnimationTrackContainer animTrackContainer in sc.AnimationTracks)
             {
                 Type t = animTrackContainer.KeyType;

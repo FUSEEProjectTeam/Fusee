@@ -75,8 +75,10 @@ namespace FuExport
                     Version = 1,
                     CreationDate = DateTime.Now.ToString("d-MMM-yyyy", CultureInfo.CreateSpecificCulture("en-US"))
                 },
-                Children = FuseefyOb(_polyDoc.GetFirstObject())
+                Children = FuseefyOb(_polyDoc.GetFirstObject(), doc),
+                AnimationTracks = _tracks
             };
+
             textureFiles = _textureFiles;
             return root;
         }
@@ -498,7 +500,7 @@ namespace FuExport
         }
 
 
-        private List<SceneObjectContainer> FuseefyOb(BaseObject ob)
+        private List<SceneObjectContainer> FuseefyOb(BaseObject ob, BaseDocument doc)
         {
             if (ob == null)
                 return null;
@@ -519,11 +521,13 @@ namespace FuExport
                 double4x4 mtxD = ob.GetMl();
                 soc.Transform = (float4x4) mtxD;
                 */
+                // Search for the unpolygonized objects holding the animationtracks
+                BaseObject _unpolyOb = doc.SearchObject(ob.GetName());
+                SaveTracks(_unpolyOb, soc);
 
-                SaveTracks(ob, soc);
                 VisitObject(ob, soc);
 
-                var childList = FuseefyOb(ob.GetDown());
+                var childList = FuseefyOb(ob.GetDown(), doc);
                 if (childList != null)
                 {
                     if (soc.Children == null)
@@ -543,7 +547,7 @@ namespace FuExport
 
         private void SaveTracks(BaseObject ob, SceneObjectContainer soc)
         {
-
+            
             var builder = new TrackBuilder();
             CTrack track = ob.GetFirstCTrack();
             while (track != null)
