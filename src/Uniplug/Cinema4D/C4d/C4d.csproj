@@ -78,2126 +78,724 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="C34M.cs" />
+    <Compile Include="C4dApi\AESFile.cs" />
+    <Compile Include="C4dApi\AliasTrans.cs" />
+    <Compile Include="C4dApi\ANIMATEFLAGS.cs" />
+    <Compile Include="C4dApi\AssetData.cs" />
+    <Compile Include="C4dApi\ASSETDATA_FLAG.cs" />
+    <Compile Include="C4dApi\AssetEntry.cs" />
+    <Compile Include="C4dApi\AtomArray.cs" />
+    <Compile Include="C4dApi\AutoBitmap.cs" />
+    <Compile Include="C4dApi\AutoLock.cs" />
+    <Compile Include="C4dApi\AutoLocker.cs" />
+    <Compile Include="C4dApi\AutoRWLock.cs" />
+    <Compile Include="C4dApi\AutoRWLocker.cs" />
+    <Compile Include="C4dApi\AutoSpinLock.cs" />
+    <Compile Include="C4dApi\BACKGROUNDHANDLERCOMMAND.cs" />
+    <Compile Include="C4dApi\BACKGROUNDHANDLERFLAGS.cs" />
+    <Compile Include="C4dApi\BAKE_TEX_ERR.cs" />
+    <Compile Include="C4dApi\BaseBitmap.cs" />
+    <Compile Include="C4dApi\BaseBitmapLink.cs" />
+    <Compile Include="C4dApi\BaseChannel.cs" />
+    <Compile Include="C4dApi\BaseContainer.cs" />
+    <Compile Include="C4dApi\BaseDocument.cs" />
+    <Compile Include="C4dApi\BaseDraw.cs" />
+    <Compile Include="C4dApi\BaseDrawHelp.cs" />
+    <Compile Include="C4dApi\BASEDRAW_HOOK_MESSAGE.cs" />
+    <Compile Include="C4dApi\BaseFile.cs" />
+    <Compile Include="C4dApi\BaseLink.cs" />
+    <Compile Include="C4dApi\BaseList2D.cs" />
+    <Compile Include="C4dApi\BaseMaterial.cs" />
+    <Compile Include="C4dApi\BaseObject.cs" />
+    <Compile Include="C4dApi\BaseSceneHook.cs" />
+    <Compile Include="C4dApi\BaseSceneLoader.cs" />
+    <Compile Include="C4dApi\BaseSceneSaver.cs" />
+    <Compile Include="C4dApi\BaseSelect.cs" />
+    <Compile Include="C4dApi\BaseSelectData.cs" />
+    <Compile Include="C4dApi\BaseShader.cs" />
+    <Compile Include="C4dApi\BaseTag.cs" />
+    <Compile Include="C4dApi\BaseThread.cs" />
+    <Compile Include="C4dApi\BaseTime.cs" />
+    <Compile Include="C4dApi\BaseView.cs" />
+    <Compile Include="C4dApi\BaseVolumeData.cs" />
+    <Compile Include="C4dApi\BDSetSceneCameraMsg.cs" />
+    <Compile Include="C4dApi\BITMAPLOADERACTION.cs" />
+    <Compile Include="C4dApi\BitmapLoaderAnimatedData.cs" />
+    <Compile Include="C4dApi\BitmapLoaderData.cs" />
+    <Compile Include="C4dApi\BitmapLoaderPlugin.cs" />
+    <Compile Include="C4dApi\BitmapSaverData.cs" />
+    <Compile Include="C4dApi\BitmapSaverPlugin.cs" />
+    <Compile Include="C4dApi\BITMAP_UPDATEREGION.cs" />
+    <Compile Include="C4dApi\BranchInfo.cs" />
+    <Compile Include="C4dApi\BRANCHINFOFLAGS.cs" />
+    <Compile Include="C4dApi\BrowseContainer.cs" />
+    <Compile Include="C4dApi\BrowseFiles.cs" />
+    <Compile Include="C4dApi\BrowseVolumes.cs" />
+    <Compile Include="C4dApi\BrushBase.cs" />
+    <Compile Include="C4dApi\BrushObjectInfo.cs" />
+    <Compile Include="C4dApi\BrushPixelData.cs" />
+    <Compile Include="C4dApi\BrushToolData.cs" />
+    <Compile Include="C4dApi\BrushVertexData.cs" />
+    <Compile Include="C4dApi\BUILDFLAGS.cs" />
+    <Compile Include="C4dApi\BYTEORDER.cs" />
+    <Compile Include="C4dApi\C4dApi.cs" />
+    <Compile Include="C4dApi\C4dApiPINVOKE.cs" />
+    <Compile Include="C4dApi\C4DAtom.cs" />
+    <Compile Include="C4dApi\C4DAtomGoal.cs" />
+    <Compile Include="C4dApi\C4DThread.cs" />
+    <Compile Include="C4dApi\C4D_GvCalcTable.cs" />
+    <Compile Include="C4dApi\CAJointObject.cs" />
+    <Compile Include="C4dApi\CALCHARDSHADOW.cs" />
+    <Compile Include="C4dApi\CameraObject.cs" />
+    <Compile Include="C4dApi\CAMorph.cs" />
+    <Compile Include="C4dApi\CAMorphNode.cs" />
+    <Compile Include="C4dApi\CAMORPH_COPY_FLAGS.cs" />
+    <Compile Include="C4dApi\CAMORPH_DATA_FLAGS.cs" />
+    <Compile Include="C4dApi\CAMORPH_MODE.cs" />
+    <Compile Include="C4dApi\CAMORPH_MODE_FLAGS.cs" />
+    <Compile Include="C4dApi\CAnimInfo.cs" />
+    <Compile Include="C4dApi\CAPoseMorphTag.cs" />
+    <Compile Include="C4dApi\CAWeightTag.cs" />
+    <Compile Include="C4dApi\CCurve.cs" />
+    <Compile Include="C4dApi\CCURVE_ENUM.cs" />
+    <Compile Include="C4dApi\ChannelData.cs" />
+    <Compile Include="C4dApi\CHECKISRUNNING.cs" />
+    <Compile Include="C4dApi\CHECKVALUEFORMAT.cs" />
+    <Compile Include="C4dApi\CHECKVALUERANGE.cs" />
+    <Compile Include="C4dApi\CINEMAINFO.cs" />
+    <Compile Include="C4dApi\CINTERPOLATION.cs" />
+    <Compile Include="C4dApi\CKey.cs" />
+    <Compile Include="C4dApi\CLine.cs" />
+    <Compile Include="C4dApi\CLIPBOARDTYPE.cs" />
+    <Compile Include="C4dApi\CLOOP.cs" />
+    <Compile Include="C4dApi\COLORMODE.cs" />
+    <Compile Include="C4dApi\ColorProfile.cs" />
+    <Compile Include="C4dApi\ColorProfileConvert.cs" />
+    <Compile Include="C4dApi\COLORSPACETRANSFORMATION.cs" />
+    <Compile Include="C4dApi\CommandData.cs" />
+    <Compile Include="C4dApi\CommandInformationData.cs" />
+    <Compile Include="C4dApi\COPYFLAGS.cs" />
+    <Compile Include="C4dApi\CPolygon.cs" />
+    <Compile Include="C4dApi\CREATEJOBRESULT.cs" />
+    <Compile Include="C4dApi\CTrack.cs" />
+    <Compile Include="C4dApi\CustomDataType.cs" />
+    <Compile Include="C4dApi\CustomDataTypeClass.cs" />
+    <Compile Include="C4dApi\CustomGuiInExcludeLib.cs" />
+    <Compile Include="C4dApi\DDescriptionParams.cs" />
+    <Compile Include="C4dApi\DebugTimer.cs" />
+    <Compile Include="C4dApi\DEFAULTVALUETYPE.cs" />
+    <Compile Include="C4dApi\DESCFLAGS_DESC.cs" />
+    <Compile Include="C4dApi\DESCFLAGS_ENABLE.cs" />
+    <Compile Include="C4dApi\DESCFLAGS_GET.cs" />
+    <Compile Include="C4dApi\DESCFLAGS_SET.cs" />
+    <Compile Include="C4dApi\DescID.cs" />
+    <Compile Include="C4dApi\DescIdInfoArray.cs" />
+    <Compile Include="C4dApi\DESCIDINFOFLAGS.cs" />
+    <Compile Include="C4dApi\DESCIDSTATE.cs" />
+    <Compile Include="C4dApi\DescLevel.cs" />
+    <Compile Include="C4dApi\Description.cs" />
+    <Compile Include="C4dApi\DescriptionCheckDragAndDrop.cs" />
+    <Compile Include="C4dApi\DescriptionCheckUpdate.cs" />
+    <Compile Include="C4dApi\DescriptionCommand.cs" />
+    <Compile Include="C4dApi\DescriptionGetBitmap.cs" />
+    <Compile Include="C4dApi\DescriptionGetObjects.cs" />
+    <Compile Include="C4dApi\DescriptionImExportInit.cs" />
+    <Compile Include="C4dApi\DescriptionInitUndo.cs" />
+    <Compile Include="C4dApi\DescriptionInlineObjectMsg.cs" />
+    <Compile Include="C4dApi\DescriptionPopup.cs" />
+    <Compile Include="C4dApi\DescriptionPostSetValue.cs" />
+    <Compile Include="C4dApi\DescriptionValidate.cs" />
+    <Compile Include="C4dApi\DETAILSELECTOR.cs" />
+    <Compile Include="C4dApi\DIRTYFLAGS.cs" />
+    <Compile Include="C4dApi\DISPLAYEDITSTATE.cs" />
+    <Compile Include="C4dApi\DISPLAYFILTER.cs" />
+    <Compile Include="C4dApi\DISPLAYMODE.cs" />
+    <Compile Include="C4dApi\DLG_TYPE.cs" />
+    <Compile Include="C4dApi\DocumentImported.cs" />
+    <Compile Include="C4dApi\DocumentInfoClipData.cs" />
+    <Compile Include="C4dApi\DocumentInfoData.cs" />
+    <Compile Include="C4dApi\DocumentInfoMakeProj.cs" />
+    <Compile Include="C4dApi\DOCUMENTSETTINGS.cs" />
+    <Compile Include="C4dApi\DragAndDrop.cs" />
+    <Compile Include="C4dApi\DRAWFLAGS.cs" />
+    <Compile Include="C4dApi\DRAWHANDLE.cs" />
+    <Compile Include="C4dApi\DRAWOBJECT.cs" />
+    <Compile Include="C4dApi\DRAWPASS.cs" />
+    <Compile Include="C4dApi\DRAWRESULT.cs" />
+    <Compile Include="C4dApi\DRAW_ALPHA.cs" />
+    <Compile Include="C4dApi\DRAW_TEXTUREFLAGS.cs" />
+    <Compile Include="C4dApi\DynamicDescription.cs" />
+    <Compile Include="C4dApi\EDGESELECTIONTYPE.cs" />
+    <Compile Include="C4dApi\EDITION.cs" />
+    <Compile Include="C4dApi\EVENT.cs" />
+    <Compile Include="C4dApi\EXECUTIONFLAGS.cs" />
+    <Compile Include="C4dApi\EXECUTIONRESULT.cs" />
+    <Compile Include="C4dApi\FILEDIALOG.cs" />
+    <Compile Include="C4dApi\FILEERROR.cs" />
+    <Compile Include="C4dApi\FileMonitor.cs" />
+    <Compile Include="C4dApi\Filename.cs" />
+    <Compile Include="C4dApi\FILEOPEN.cs" />
+    <Compile Include="C4dApi\FILESEEK.cs" />
+    <Compile Include="C4dApi\FILESELECT.cs" />
+    <Compile Include="C4dApi\FILESELECTTYPE.cs" />
+    <Compile Include="C4dApi\FINDANIM.cs" />
+    <Compile Include="C4dApi\GeData.cs" />
+    <Compile Include="C4dApi\GeDebugDisableFPExceptions.cs" />
+    <Compile Include="C4dApi\GeListHead.cs" />
+    <Compile Include="C4dApi\GeListNode.cs" />
+    <Compile Include="C4dApi\GeMarker.cs" />
+    <Compile Include="C4dApi\GEMB.cs" />
+    <Compile Include="C4dApi\GEMB_R.cs" />
+    <Compile Include="C4dApi\GeRWSpinlock.cs" />
+    <Compile Include="C4dApi\GeSignal.cs" />
+    <Compile Include="C4dApi\GeSpinlock.cs" />
+    <Compile Include="C4dApi\GETACTIVEOBJECTFLAGS.cs" />
+    <Compile Include="C4dApi\GETBRANCHINFO.cs" />
+    <Compile Include="C4dApi\GetCustomIconData.cs" />
+    <Compile Include="C4dApi\GetRealCameraData.cs" />
+    <Compile Include="C4dApi\GlProgramType.cs" />
+    <Compile Include="C4dApi\GlUniformParamType.cs" />
+    <Compile Include="C4dApi\GlVertexBufferAccessFlags.cs" />
+    <Compile Include="C4dApi\GlVertexBufferSubBufferType.cs" />
+    <Compile Include="C4dApi\GL_MESSAGE.cs" />
+    <Compile Include="C4dApi\GvAnimHook.cs" />
+    <Compile Include="C4dApi\GvAnimHookType.cs" />
+    <Compile Include="C4dApi\GvBodyDefaultSize.cs" />
+    <Compile Include="C4dApi\GvCalc.cs" />
+    <Compile Include="C4dApi\GvCalcFlags.cs" />
+    <Compile Include="C4dApi\GvCalcHook.cs" />
+    <Compile Include="C4dApi\GvCalcHookType.cs" />
+    <Compile Include="C4dApi\GvCalcState.cs" />
+    <Compile Include="C4dApi\GvCalcTable.cs" />
+    <Compile Include="C4dApi\GvCalcTime.cs" />
+    <Compile Include="C4dApi\GvConnMode.cs" />
+    <Compile Include="C4dApi\GvDataInfo.cs" />
+    <Compile Include="C4dApi\GvDataOptions.cs" />
+    <Compile Include="C4dApi\GvDestination.cs" />
+    <Compile Include="C4dApi\GvDrawHook.cs" />
+    <Compile Include="C4dApi\GvDrawState.cs" />
+    <Compile Include="C4dApi\GvDropHook.cs" />
+    <Compile Include="C4dApi\GvDynamicData.cs" />
+    <Compile Include="C4dApi\GvError.cs" />
+    <Compile Include="C4dApi\GvFileIdent.cs" />
+    <Compile Include="C4dApi\GvGuiConfigIDs.cs" />
+    <Compile Include="C4dApi\GvHelper.cs" />
+    <Compile Include="C4dApi\GvHook.cs" />
+    <Compile Include="C4dApi\GvInit.cs" />
+    <Compile Include="C4dApi\GvInsertMode.cs" />
+    <Compile Include="C4dApi\GvLayoutType.cs" />
+    <Compile Include="C4dApi\GvMasterConfigIDs.cs" />
+    <Compile Include="C4dApi\GvMenuHook.cs" />
+    <Compile Include="C4dApi\GvMessage.cs" />
+    <Compile Include="C4dApi\GvMessHook.cs" />
+    <Compile Include="C4dApi\GvNode.cs" />
+    <Compile Include="C4dApi\GvNodeGUI.cs" />
+    <Compile Include="C4dApi\GvNodeMaster.cs" />
+    <Compile Include="C4dApi\GvOperatorData.cs" />
+    <Compile Include="C4dApi\GvOperatorDescription.cs" />
+    <Compile Include="C4dApi\GvOperatorDescriptionFlags.cs" />
+    <Compile Include="C4dApi\GvOperatorFlags.cs" />
+    <Compile Include="C4dApi\GvOperatorType.cs" />
+    <Compile Include="C4dApi\GvOpSetDataMode.cs" />
+    <Compile Include="C4dApi\GvPort.cs" />
+    <Compile Include="C4dApi\GvPortDescFlags.cs" />
+    <Compile Include="C4dApi\GvPortDescInfo.cs" />
+    <Compile Include="C4dApi\GvPortDescription.cs" />
+    <Compile Include="C4dApi\GvPortFlags.cs" />
+    <Compile Include="C4dApi\GvPortID.cs" />
+    <Compile Include="C4dApi\GvPortInfo.cs" />
+    <Compile Include="C4dApi\GvPortIO.cs" />
+    <Compile Include="C4dApi\GvPortList.cs" />
+    <Compile Include="C4dApi\GvPortListEntry.cs" />
+    <Compile Include="C4dApi\GvPortsDescInfo.cs" />
+    <Compile Include="C4dApi\GvPortsInfo.cs" />
+    <Compile Include="C4dApi\GvQuery.cs" />
+    <Compile Include="C4dApi\GvRun.cs" />
+    <Compile Include="C4dApi\GvRunId.cs" />
+    <Compile Include="C4dApi\GvState.cs" />
+    <Compile Include="C4dApi\GvValue.cs" />
+    <Compile Include="C4dApi\GvValueFlags.cs" />
+    <Compile Include="C4dApi\GvValuesInfo.cs" />
+    <Compile Include="C4dApi\GvWorld.cs" />
+    <Compile Include="C4dApi\GvWorldConfigIDs.cs" />
+    <Compile Include="C4dApi\GvWrapper.cs" />
+    <Compile Include="C4dApi\HANDLECONSTRAINTTYPE.cs" />
+    <Compile Include="C4dApi\HandleInfo.cs" />
+    <Compile Include="C4dApi\HDIRTYFLAGS.cs" />
+    <Compile Include="C4dApi\HDIRTY_ID.cs" />
+    <Compile Include="C4dApi\Hierarchy.cs" />
+    <Compile Include="C4dApi\HIERARCHYCLONEFLAGS.cs" />
+    <Compile Include="C4dApi\HierarchyHelp.cs" />
+    <Compile Include="C4dApi\HNData.cs" />
+    <Compile Include="C4dApi\HNSubdiv.cs" />
+    <Compile Include="C4dApi\HNWeightTag.cs" />
+    <Compile Include="C4dApi\HyperFile.cs" />
+    <Compile Include="C4dApi\HYPERFILEARRAY.cs" />
+    <Compile Include="C4dApi\HYPERFILEVALUE.cs" />
+    <Compile Include="C4dApi\ICONDATAFLAGS.cs" />
+    <Compile Include="C4dApi\iCustomDataType_inex.cs" />
+    <Compile Include="C4dApi\IDENTIFYFILE.cs" />
+    <Compile Include="C4dApi\iIncludeExcludeData.cs" />
+    <Compile Include="C4dApi\iInclusionTable.cs" />
+    <Compile Include="C4dApi\iInExcludeCustomGui.cs" />
+    <Compile Include="C4dApi\ILLUMINATEFLAGS.cs" />
+    <Compile Include="C4dApi\IMAGERESULT.cs" />
+    <Compile Include="C4dApi\InclusionTable.cs" />
+    <Compile Include="C4dApi\InExcludeCustomGui.cs" />
+    <Compile Include="C4dApi\InExcludeData.cs" />
+    <Compile Include="C4dApi\INITBITMAPFLAGS.cs" />
+    <Compile Include="C4dApi\INITCALCULATION.cs" />
+    <Compile Include="C4dApi\INITRENDERFLAG.cs" />
+    <Compile Include="C4dApi\INITRENDERRESULT.cs" />
+    <Compile Include="C4dApi\InitRenderStruct.cs" />
+    <Compile Include="C4dApi\InvokeScriptData.cs" />
+    <Compile Include="C4dApi\JOBCOMMAND.cs" />
+    <Compile Include="C4dApi\JOBSTATE.cs" />
+    <Compile Include="C4dApi\JointRestState.cs" />
+    <Compile Include="C4dApi\LassoSelection.cs" />
+    <Compile Include="C4dApi\LayerData.cs" />
+    <Compile Include="C4dApi\LayerObject.cs" />
+    <Compile Include="C4dApi\LAYERSETMODE.cs" />
+    <Compile Include="C4dApi\LENGTHUNIT.cs" />
+    <Compile Include="C4dApi\LineObject.cs" />
+    <Compile Include="C4dApi\LLONGVALUETYPE.cs" />
+    <Compile Include="C4dApi\LocalFileTime.cs" />
+    <Compile Include="C4dApi\LOCATION.cs" />
+    <Compile Include="C4dApi\MACHINELIST.cs" />
+    <Compile Include="C4dApi\MarkMaterials.cs" />
+    <Compile Include="C4dApi\Material.cs" />
+    <Compile Include="C4dApi\MaterialDragAndDrop.cs" />
+    <Compile Include="C4dApi\MAXONCONVERTMODE.cs" />
+    <Compile Include="C4dApi\MemoryFileStruct.cs" />
+    <Compile Include="C4dApi\MessageFilter.cs" />
+    <Compile Include="C4dApi\MESSAGERESULT.cs" />
+    <Compile Include="C4dApi\MessageScaleDocument.cs" />
+    <Compile Include="C4dApi\MirrorTransformData.cs" />
+    <Compile Include="C4dApi\ModelingCommandData.cs" />
+    <Compile Include="C4dApi\MODELINGCOMMANDFLAGS.cs" />
+    <Compile Include="C4dApi\MODELINGCOMMANDMODE.cs" />
+    <Compile Include="C4dApi\MOUSEDRAGFLAGS.cs" />
+    <Compile Include="C4dApi\MOUSEDRAGRESULT.cs" />
+    <Compile Include="C4dApi\MovieLoader.cs" />
+    <Compile Include="C4dApi\MovieSaver.cs" />
+    <Compile Include="C4dApi\MPBTYPE.cs" />
+    <Compile Include="C4dApi\MPB_GETLAYERS.cs" />
+    <Compile Include="C4dApi\MPThreadPool.cs" />
+    <Compile Include="C4dApi\MSG_DOCUMENTINFO_TYPE_BEFOREMERGE_RESULT.cs" />
+    <Compile Include="C4dApi\MULTILINEEDITTEXTMESSAGEFLAGS.cs" />
+    <Compile Include="C4dApi\MultilineEditTextStoreUndo.cs" />
+    <Compile Include="C4dApi\MULTIMSG_ROUTE.cs" />
+    <Compile Include="C4dApi\MultipassBitmap.cs" />
+    <Compile Include="C4dApi\MULTIPASSCHANNEL.cs" />
+    <Compile Include="C4dApi\MultipassObject.cs" />
+    <Compile Include="C4dApi\NBIT.cs" />
+    <Compile Include="C4dApi\NBITCONTROL.cs" />
+    <Compile Include="C4dApi\Neighbor.cs" />
+    <Compile Include="C4dApi\NETRENDERFLAGS.cs" />
+    <Compile Include="C4dApi\NgonNeighbor.cs" />
+    <Compile Include="C4dApi\NodeData.cs" />
+    <Compile Include="C4dApi\NormalTag.cs" />
+    <Compile Include="C4dApi\NotifyEventCopy.cs" />
+    <Compile Include="C4dApi\NotifyEventData.cs" />
+    <Compile Include="C4dApi\NotifyEventMsg.cs" />
+    <Compile Include="C4dApi\NOTIFY_EVENT.cs" />
+    <Compile Include="C4dApi\NOTIFY_EVENT_FLAG.cs" />
+    <Compile Include="C4dApi\ObjectColorProperties.cs" />
+    <Compile Include="C4dApi\ObjectData.cs" />
+    <Compile Include="C4dApi\ObjectDataM.cs" />
+    <Compile Include="C4dApi\ObjectSelectionData.cs" />
+    <Compile Include="C4dApi\OBJECTSTATE.cs" />
+    <Compile Include="C4dApi\ObjectTransformMsgData.cs" />
+    <Compile Include="C4dApi\OITInfo.cs" />
+    <Compile Include="C4dApi\OITMODE.cs" />
+    <Compile Include="C4dApi\OPERATINGSYSTEM.cs" />
+    <Compile Include="C4dApi\OPERATORPLUGIN.cs" />
+    <Compile Include="C4dApi\PAINTMESHFLAGS.cs" />
+    <Compile Include="C4dApi\Parser.cs" />
+    <Compile Include="C4dApi\ParserCache.cs" />
+    <Compile Include="C4dApi\PARTICLEFLAGS.cs" />
+    <Compile Include="C4dApi\PickSessionDataStruct.cs" />
+    <Compile Include="C4dApi\PIXELCNT.cs" />
+    <Compile Include="C4dApi\PLUGINTYPE.cs" />
+    <Compile Include="C4dApi\PointObject.cs" />
+    <Compile Include="C4dApi\PointTag.cs" />
+    <Compile Include="C4dApi\PolygonObject.cs" />
+    <Compile Include="C4dApi\PolygonTag.cs" />
+    <Compile Include="C4dApi\PolyInfo.cs" />
+    <Compile Include="C4dApi\PolyTriangulate.cs" />
+    <Compile Include="C4dApi\PolyWeight.cs" />
+    <Compile Include="C4dApi\PriorityList.cs" />
+    <Compile Include="C4dApi\PROTOCOL.cs" />
+    <Compile Include="C4dApi\PROXYTYPE.cs" />
+    <Compile Include="C4dApi\QUALIFIER.cs" />
+    <Compile Include="C4dApi\Ray.cs" />
+    <Compile Include="C4dApi\RAYBIT.cs" />
+    <Compile Include="C4dApi\RayHitID.cs" />
+    <Compile Include="C4dApi\RayIllumination.cs" />
+    <Compile Include="C4dApi\RDATA_SAVECALLBACK_CMD.cs" />
+    <Compile Include="C4dApi\RedirectMsgData.cs" />
+    <Compile Include="C4dApi\Registry.cs" />
+    <Compile Include="C4dApi\REGISTRYTYPE.cs" />
+    <Compile Include="C4dApi\RenameTextureMessage.cs" />
+    <Compile Include="C4dApi\RenderData.cs" />
+    <Compile Include="C4dApi\RENDERFLAGS.cs" />
+    <Compile Include="C4dApi\RENDERJOBCREATOR.cs" />
+    <Compile Include="C4dApi\RENDERJOBLIST.cs" />
+    <Compile Include="C4dApi\RenderNotificationData.cs" />
+    <Compile Include="C4dApi\RENDERPROGRESSTYPE.cs" />
+    <Compile Include="C4dApi\RENDERRESULT.cs" />
+    <Compile Include="C4dApi\RENDERTARGET.cs" />
+    <Compile Include="C4dApi\RESOLVERESULT.cs" />
+    <Compile Include="C4dApi\ResourceDataTypeClass.cs" />
+    <Compile Include="C4dApi\RestoreLayoutSecret.cs" />
+    <Compile Include="C4dApi\Result.cs" />
+    <Compile Include="C4dApi\RetrievePrivateData.cs" />
+    <Compile Include="C4dApi\RLAFLAGS.cs" />
+    <Compile Include="C4dApi\ROTATIONORDER.cs" />
+    <Compile Include="C4dApi\Safety.cs" />
+    <Compile Include="C4dApi\SAMPLEBUMP.cs" />
+    <Compile Include="C4dApi\SAVEBIT.cs" />
+    <Compile Include="C4dApi\SAVEDOCUMENTFLAGS.cs" />
+    <Compile Include="C4dApi\SAVEPROJECT.cs" />
+    <Compile Include="C4dApi\SCENEFILTER.cs" />
+    <Compile Include="C4dApi\SCENEHOOKDRAW.cs" />
+    <Compile Include="C4dApi\SceneLoaderData.cs" />
+    <Compile Include="C4dApi\SCENELOADERPLUGIN.cs" />
+    <Compile Include="C4dApi\SceneSaverData.cs" />
+    <Compile Include="C4dApi\SCENESAVERPLUGIN.cs" />
+    <Compile Include="C4dApi\Segment.cs" />
+    <Compile Include="C4dApi\SegmentTag.cs" />
+    <Compile Include="C4dApi\SELECTIONFILTERBIT.cs" />
+    <Compile Include="C4dApi\SelectionTag.cs" />
+    <Compile Include="C4dApi\Semaphore.cs" />
+    <Compile Include="C4dApi\SerialInfo.cs" />
+    <Compile Include="C4dApi\SERIALINFO_ENUM.cs" />
+    <Compile Include="C4dApi\SERVERJOBLIST.cs" />
+    <Compile Include="C4dApi\SERVERMESSAGE.cs" />
+    <Compile Include="C4dApi\SHADERINFO.cs" />
+    <Compile Include="C4dApi\ShaderReadData.cs" />
+    <Compile Include="C4dApi\SIGNALMODE.cs" />
+    <Compile Include="C4dApi\SplineLengthData.cs" />
+    <Compile Include="C4dApi\SplineObject.cs" />
+    <Compile Include="C4dApi\SPLINETYPE.cs" />
+    <Compile Include="C4dApi\STATUSNETSTATE.cs" />
+    <Compile Include="C4dApi\StickTextureTag.cs" />
+    <Compile Include="C4dApi\STRINGENCODING.cs" />
+    <Compile Include="C4dApi\StringUndo.cs" />
+    <Compile Include="C4dApi\SurfaceIntersection.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_BitmapLoaderData__f_p_BitmapLoaderAnimatedData_enum_BITMAPLOADERACTION_p_BaseBitmap_Int32__IMAGERESULT.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_BitmapLoaderData__f_p_BitmapLoaderAnimatedData_p_BaseSound__IMAGERESULT.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_BitmapLoaderData__f_p_BitmapLoaderAnimatedData__IMAGERESULT.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_BitmapLoaderData__f_r_q_const__Filename_p_BaseBitmap_Int32__IMAGERESULT.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_BitmapLoaderData__f_r_q_const__Filename_p_Int32_p_Float__Bool.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_BitmapLoaderData__f_r_q_const__Filename_p_UChar_Int32__Bool.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_BitmapLoaderData__f_void__Int32.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_BitmapSaverData__f_Bool__Int32.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_BitmapSaverData__f_p_BaseContainer__Bool.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_BitmapSaverData__f_p_BaseContainer__Int32.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_BitmapSaverData__f_p_PluginMovieData_p_BaseBitmap__IMAGERESULT.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_BitmapSaverData__f_p_PluginMovieData_p_BaseSound__IMAGERESULT.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_BitmapSaverData__f_r_p_PluginMovieData_r_q_const__Filename_p_BaseBitmap_p_BaseContainer_enum_SAVEBIT_Int32__IMAGERESULT.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_BitmapSaverData__f_r_p_PluginMovieData__void.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_BitmapSaverData__f_r_q_const__Filename_p_BaseBitmap_p_BaseContainer_enum_SAVEBIT__IMAGERESULT.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_Bool__Bool.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_enum_GvPortIO_Int32_p_GvPortDescription__Bool.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_enum_GvPortIO_r_GvPortList__void.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_enum_GvPortIO_r_q_const__DescID__Int32.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_GvPortIO_Int32__DescID.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_Int32_GvLayoutType__p_BaseBitmap.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_Int32_Int32_Int32_Int32__Bool.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_Int32_Int32_Int32__Bool.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_Int32_p_void_enum_GvOpSetDataMode__Bool.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_Int32__String.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_p_BaseDraw_p_BaseDrawHelp_p_BaseThread_Int32_p_void_UInt32__Bool.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_p_GvCalc_p_GvRun__Bool.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_p_GvCalc__void.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_p_GvNodeGUI_Int32_Int32_Int32_Int32_r_q_const__BaseContainer__Bool.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_p_GvNodeGUI_p_GeUserArea_Int32_Int32_Int32_Int32__void.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_p_GvNodeGUI__Bool.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_p_GvOperatorDescription__Bool.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_p_GvPort_p_GvRun_Bool__Bool.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_p_GvPort_p_GvRun_p_GvCalc__Bool.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_p_GvQuery__Bool.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_p_GvRun__Bool.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_p_Int32_p_Int32__void.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_r_BaseContainer_Int32_Int32__Int32.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_r_BaseContainer_Int32__Int32.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_r_BaseContainer_r_BaseContainer_Int32_enum_GvPortIO_Int32__Int32.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode__Bool.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode__String.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode__Vector.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode__void.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_iIncludeExcludeData__f_Int32_Int32__void.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_iIncludeExcludeData__f_Int32__Bool.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_iIncludeExcludeData__f_Int32__Int32.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_iIncludeExcludeData__f_Int32__p_BaseContainer.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_iIncludeExcludeData__f_p_BaseDocument_Int32__p_BaseList2D.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_iIncludeExcludeData__f_p_BaseDocument_Int32__p_InclusionTable.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_iIncludeExcludeData__f_p_BaseDocument_p_BaseList2D__Int32.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_iIncludeExcludeData__f_p_BaseList2D_Int32__Bool.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_iIncludeExcludeData__f___Int32.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_iInclusionTable__f_Int32__p_BaseList2D.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_iInclusionTable__f_p_BaseList2D_r_Int32__Bool.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_iInclusionTable__f_p_BaseList2D__Bool.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_iInclusionTable__f___Int32.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_SceneLoaderData__f_p_BaseSceneLoader_r_q_const__Filename_p_BaseDocument_enum_SCENEFILTER_p_String_p_BaseThread__FILEERROR.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_SceneLoaderData__f_p_BaseSceneLoader_r_q_const__Filename_p_UChar_Int32__Bool.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_m_SceneSaverData__f_p_BaseSceneSaver_r_q_const__Filename_p_BaseDocument_enum_SCENEFILTER__FILEERROR.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_BackgroundHandler.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_BaseDrawMessageHook.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_BaseParticle.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_BaseSound.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_BaseVideoPost.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_BCResourceObj.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_Bool.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_BrowserPopupCallback.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_BrushObjectData.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_C4DGLuint.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_C4DObjectList.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_C4DPL_CommandLineArgs.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_C4DUuid.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_Char.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_ConstNormalHandle.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_ConstUVWHandle.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_CUSTOMDATATYPEPLUGIN.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_CustomProperty.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_DescEntry.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_DESCFLAGS_DESC.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_DESCFLAGS_ENABLE.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_DESCFLAGS_GET.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_DESCFLAGS_SET.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_DescIdInfo.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_DescriptionCustomGui.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_EditorWindow.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_Float.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_Float32.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_Float64.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_f_Int32_p_q_const__PickSessionDataStruct__void.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_f_Int32_p_void_r_q_const__Filename__Int32.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_f_p_BaseDocument_Int32__p_BaseList2D.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_f_p_GvCalcTable_p_GvRun_Int32__p_GvNode.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_f_p_GvCalcTable_p_GvRun_p_GvNode__Bool.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_f_p_GvCalcTable_p_GvRun__Int32.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_f_p_GvCalcTable_p_GvRun__void.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_f_p_iInclusionTable__void.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_f_r_GvAnimHook__Bool.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_f_r_GvCalcHook__Bool.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_f_r_GvDrawHook__void.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_f_r_GvDropHook__Bool.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_f_r_GvMenuHook__Bool.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_f_r_GvMessHook__Bool.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_f_r_q_const__Filename_Int_p_void__Int32.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_GeClipMap.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_GeDialog.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_GEMB_R.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_GeModalDialog.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_GeUserArea.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_GlFrameBuffer.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_GlLight.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_GlVertexBufferAttributeInfo.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_GvCopyBuffer.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_GvShape.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_GV_DATA_HANDLER.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_GV_OPCLASS_HANDLER.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_GV_OPGROUP_HANDLER.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_GV_VALGROUP_HANDLER.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_GV_VALUE_HANDLER.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_HYPERFILEVALUE.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_IconData.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_Int.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_Int16.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_Int32.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_Int64.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_LENGTHUNIT.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_LocalResource.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_Matrix32.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_Matrix4d.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_Matrix64.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_maxon__BaseArrayT_AssetEntry_t.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_maxon__BaseArrayT_BaseBitmap_p_t.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_maxon__BaseArrayT_BaseShader_p_t.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_maxon__BaseArrayT_MultipassBitmap_p_t.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_Multipass.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_NetRenderDocumentContext.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_NetRenderService.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_NgonBase.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_NODEPLUGIN.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_NormalHandle.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_NormalStruct.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_PaintBitmap.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_Particle.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_Pgon.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_PluginMovieData.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_PopupEditTextCallback.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_ProgressHook.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_AESFile.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_AliasTrans.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_AtomArray.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_BaseBitmap.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_BaseBitmapLink.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_BaseChannel.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_BaseContainer.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_BaseDocument.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_BaseDraw.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_BaseDrawHelp.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_BaseFile.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_BaseLink.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_BaseList2D.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_BaseMaterial.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_BaseObject.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_BasePlugin.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_BaseSelect.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_BaseShader.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_BaseTag.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_BitmapLoaderPlugin.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_BrowseFiles.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_BrowseVolumes.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_BrushBase.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_C4DAtom.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_C4DThread.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_CAJointObject.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_CameraObject.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_CAPoseMorphTag.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_CAWeightTag.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_Char.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_CKey.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_ColorProfile.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_ColorProfileConvert.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_CPolygon.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_CTrack.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_CustomDataType.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_DescID.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_Description.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_Float32.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_GeData.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_GeListHead.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_GeMarker.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_GeSignal.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_GlVertexBufferVectorInfo.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_GvCalcTable.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_GvCopyBuffer.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_GvDataInfo.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_GvInit.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_GvNodeGUI.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_GvNodeMaster.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_GvPort.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_GvPortList.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_GvQuery.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_GvShape.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_GvValue.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_HNWeightTag.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_HyperFile.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_InclusionTable.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_Int32.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_LassoSelection.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_LayerObject.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_LineObject.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_Material.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_MemoryFileStruct.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_MovieLoader.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_MovieSaver.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_MultipassBitmap.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_NgonNeighbor.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_NormalTag.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_Parser.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_ParserCache.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_PluginMovieData.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_PolygonObject.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_PolyTriangulate.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_PolyWeight.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_p_GlVertexBufferAttributeInfo.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_p_GlVertexBufferVectorInfo.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_p_GvPort.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_p_GvValue.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_p_Int32.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_p_ViewportPixel.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_RenderData.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_SelectionTag.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_Semaphore.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_SplineLengthData.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_SplineObject.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_StickTextureTag.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_String.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_TexData.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_TexEntry.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_TextureTag.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_UChar.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_UInt16.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_UVWTag.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_VariableTag.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_Vector.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_VertexMapTag.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_ViewportSelect.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_void.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_p_XPressoTag.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_RayLight.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_RayObject.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_ReflectionLayer.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_Render.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_RESOURCEDATATYPEPLUGIN.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_RootTextureString.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_SplineData.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_StereoCameraInfo.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_String.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_SubDialog.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_UChar.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_UInt16.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_UInt32.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_UInt64.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_UnitScaleData.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_UVWHandle.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_va_list.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_Vector.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_Vector32.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_Vector4d32.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_Vector64.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_VIEWPORTSELECTFLAGS.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_void.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_VolumeData.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p_WriteProgressHook.cs" />
+    <Compile Include="C4dApi\SWIGTYPE_p__DONTCONSTRUCT.cs" />
+    <Compile Include="C4dApi\SYSTEMINFO.cs" />
+    <Compile Include="C4dApi\TagModifyMsgData.cs" />
+    <Compile Include="C4dApi\Tangent.cs" />
+    <Compile Include="C4dApi\TangentTag.cs" />
+    <Compile Include="C4dApi\TexData.cs" />
+    <Compile Include="C4dApi\TextureTag.cs" />
+    <Compile Include="C4dApi\THREADMODE.cs" />
+    <Compile Include="C4dApi\THREADPRIORITY.cs" />
+    <Compile Include="C4dApi\THREADTYPE.cs" />
+    <Compile Include="C4dApi\ToolAskMsgData.cs" />
+    <Compile Include="C4dApi\TOOLDRAW.cs" />
+    <Compile Include="C4dApi\TOOLDRAWFLAGS.cs" />
+    <Compile Include="C4dApi\ToolResizeData.cs" />
+    <Compile Include="C4dApi\ToolTransformMsgData.cs" />
+    <Compile Include="C4dApi\TOOLTRANSFORM_FLAG.cs" />
+    <Compile Include="C4dApi\UNDOTYPE.cs" />
+    <Compile Include="C4dApi\USERAREAFLAGS.cs" />
+    <Compile Include="C4dApi\UVWStruct.cs" />
+    <Compile Include="C4dApi\UVWTag.cs" />
+    <Compile Include="C4dApi\VariableChanged.cs" />
+    <Compile Include="C4dApi\VariableTag.cs" />
+    <Compile Include="C4dApi\VERIFICATIONBIT.cs" />
+    <Compile Include="C4dApi\VERSIONTYPE.cs" />
+    <Compile Include="C4dApi\VertexMapTag.cs" />
+    <Compile Include="C4dApi\VIDEOPOSTINFO.cs" />
+    <Compile Include="C4dApi\ViewportPixel.cs" />
+    <Compile Include="C4dApi\ViewportSelect.cs" />
+    <Compile Include="C4dApi\VIEWPORT_PICK_FLAGS.cs" />
+    <Compile Include="C4dApi\VOIDVALUETYPE.cs" />
+    <Compile Include="C4dApi\VOLUMEINFO.cs" />
+    <Compile Include="C4dApi\VPFragment.cs" />
+    <Compile Include="C4dApi\VPGETFRAGMENTS.cs" />
+    <Compile Include="C4dApi\VPGETINFO.cs" />
+    <Compile Include="C4dApi\WRITEMODE.cs" />
+    <Compile Include="C4dApi\XPressoTag.cs" />
+    <Compile Include="C4dApi\ZEROCONFACTION.cs" />
+    <Compile Include="C4dApi\ZEROCONFERROR.cs" />
+    <Compile Include="C4dApi\ZEROCONFMACHINESTATE.cs" />
     <Compile Include="PluginAllocator.cs" />
     <Compile Include="PluginBaseAttribute.cs" />
-    <Compile Include="C4dApi\AESFile.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\AliasTrans.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\ANIMATEFLAGS.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\AssetData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\ASSETDATA_FLAG.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\AssetEntry.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\AtomArray.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\AutoBitmap.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\AutoLock.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\AutoLocker.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\AutoRWLock.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\AutoRWLocker.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\AutoSpinLock.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\BACKGROUNDHANDLERCOMMAND.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\BACKGROUNDHANDLERFLAGS.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\BAKE_TEX_ERR.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\BaseBitmap.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\BaseBitmapLink.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\BaseChannel.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\BaseContainer.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\BaseDocument.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\BaseDraw.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\BaseDrawHelp.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\BASEDRAW_HOOK_MESSAGE.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\BaseFile.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\BaseLink.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\BaseList2D.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\BaseMaterial.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\BaseObject.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\BaseSceneHook.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\BaseSceneLoader.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\BaseSceneSaver.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\BaseSelect.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\BaseSelectData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\BaseShader.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\BaseTag.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\BaseThread.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\BaseTime.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\BaseView.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\BaseVolumeData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\BDSetSceneCameraMsg.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\BITMAPLOADERACTION.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\BitmapLoaderAnimatedData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\BitmapLoaderData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\BitmapLoaderPlugin.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\BitmapSaverData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\BitmapSaverPlugin.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\BITMAP_UPDATEREGION.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\BranchInfo.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\BRANCHINFOFLAGS.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\BrowseContainer.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\BrowseFiles.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\BrowseVolumes.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\BrushBase.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\BrushObjectInfo.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\BrushPixelData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\BrushToolData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\BrushVertexData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\BUILDFLAGS.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\BYTEORDER.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\C4dApi.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\C4dApiPINVOKE.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\C4DAtom.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\C4DAtomGoal.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\C4DThread.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\C4D_GvCalcTable.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\CAJointObject.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\CALCHARDSHADOW.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\CameraObject.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\CAMorph.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\CAMorphNode.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\CAMORPH_COPY_FLAGS.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\CAMORPH_DATA_FLAGS.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\CAMORPH_MODE.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\CAMORPH_MODE_FLAGS.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\CAnimInfo.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\CAPoseMorphTag.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\CAWeightTag.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\CCurve.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\CCURVE_ENUM.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\ChannelData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\CHECKISRUNNING.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\CHECKVALUEFORMAT.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\CHECKVALUERANGE.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\CINEMAINFO.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\CINTERPOLATION.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\CKey.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\CLine.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\CLIPBOARDTYPE.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\CLOOP.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\COLORMODE.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\ColorProfile.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\ColorProfileConvert.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\COLORSPACETRANSFORMATION.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\CommandData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\CommandInformationData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\COPYFLAGS.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\CPolygon.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\CREATEJOBRESULT.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\CTrack.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\CustomDataType.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\CustomDataTypeClass.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\CustomGuiInExcludeLib.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\DDescriptionParams.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\DebugTimer.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\DEFAULTVALUETYPE.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\DESCFLAGS_DESC.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\DESCFLAGS_ENABLE.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\DESCFLAGS_GET.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\DESCFLAGS_SET.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\DescID.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\DescIdInfoArray.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\DESCIDINFOFLAGS.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\DESCIDSTATE.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\DescLevel.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\Description.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\DescriptionCheckDragAndDrop.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\DescriptionCheckUpdate.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\DescriptionCommand.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\DescriptionGetBitmap.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\DescriptionGetObjects.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\DescriptionImExportInit.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\DescriptionInitUndo.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\DescriptionInlineObjectMsg.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\DescriptionPopup.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\DescriptionPostSetValue.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\DescriptionValidate.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\DIRTYFLAGS.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\DISPLAYEDITSTATE.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\DISPLAYFILTER.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\DISPLAYMODE.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\DLG_TYPE.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\DocumentImported.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\DocumentInfoClipData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\DocumentInfoData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\DocumentInfoMakeProj.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\DOCUMENTSETTINGS.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\DragAndDrop.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\DRAWFLAGS.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\DRAWHANDLE.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\DRAWOBJECT.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\DRAWPASS.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\DRAWRESULT.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\DRAW_ALPHA.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\DRAW_TEXTUREFLAGS.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\DynamicDescription.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\EDGESELECTIONTYPE.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\EVENT.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\EXECUTIONFLAGS.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\EXECUTIONRESULT.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\FILEDIALOG.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\FILEERROR.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\FileMonitor.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\Filename.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\FILEOPEN.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\FILESEEK.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\FILESELECT.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\FILESELECTTYPE.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\FINDANIM.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GeData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GeDebugDisableFPExceptions.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GeListHead.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GeListNode.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GeMarker.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GEMB.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GEMB_R.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GeRWSpinlock.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GeSignal.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GeSpinlock.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GETACTIVEOBJECTFLAGS.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GETBRANCHINFO.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GetCustomIconData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GetRealCameraData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GlProgramType.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GlUniformParamType.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GlVertexBufferAccessFlags.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GlVertexBufferSubBufferType.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GL_MESSAGE.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvAnimHook.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvAnimHookType.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvBodyDefaultSize.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvCalc.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvCalcFlags.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvCalcHook.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvCalcHookType.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvCalcState.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvCalcTable.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvCalcTime.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvConnMode.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvDataInfo.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvDataOptions.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvDestination.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvDrawHook.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvDrawState.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvDropHook.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvDynamicData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvError.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvFileIdent.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvGuiConfigIDs.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvHelper.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvHook.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvInit.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvInsertMode.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvLayoutType.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvMasterConfigIDs.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvMenuHook.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvMessage.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvMessHook.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvNode.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvNodeGUI.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvNodeMaster.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvOperatorData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvOperatorDescription.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvOperatorDescriptionFlags.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvOperatorFlags.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvOperatorType.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvOpSetDataMode.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvPort.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvPortDescFlags.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvPortDescInfo.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvPortDescription.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvPortFlags.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvPortID.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvPortInfo.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvPortIO.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvPortList.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvPortListEntry.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvPortsDescInfo.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvPortsInfo.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvQuery.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvRun.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvRunId.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvState.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvValue.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvValueFlags.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvValuesInfo.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvWorld.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvWorldConfigIDs.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\GvWrapper.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\HANDLECONSTRAINTTYPE.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\HandleInfo.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\HDIRTYFLAGS.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\HDIRTY_ID.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\Hierarchy.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\HIERARCHYCLONEFLAGS.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\HierarchyHelp.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\HNData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\HNSubdiv.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\HNWeightTag.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\HyperFile.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\HYPERFILEARRAY.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\HYPERFILEVALUE.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\ICONDATAFLAGS.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\iCustomDataType_inex.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\IDENTIFYFILE.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\iIncludeExcludeData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\iInclusionTable.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\iInExcludeCustomGui.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\ILLUMINATEFLAGS.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\IMAGERESULT.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\InclusionTable.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\InExcludeCustomGui.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\InExcludeData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\INITBITMAPFLAGS.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\INITCALCULATION.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\INITRENDERFLAG.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\INITRENDERRESULT.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\InitRenderStruct.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\JOBCOMMAND.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\JOBSTATE.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\JointRestState.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\LassoSelection.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\LayerData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\LayerObject.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\LAYERSETMODE.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\LENGTHUNIT.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\LineObject.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\LLONGVALUETYPE.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\LocalFileTime.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\LOCATION.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\MACHINELIST.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\MarkMaterials.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\Material.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\MaterialDragAndDrop.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\MemoryFileStruct.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\MessageFilter.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\MESSAGERESULT.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\MessageScaleDocument.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\MirrorTransformData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\ModelingCommandData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\MODELINGCOMMANDFLAGS.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\MODELINGCOMMANDMODE.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\MOUSEDRAGFLAGS.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\MOUSEDRAGRESULT.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\MovieLoader.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\MovieSaver.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\MPBTYPE.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\MPB_GETLAYERS.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\MPThreadPool.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\MSG_DOCUMENTINFO_TYPE_BEFOREMERGE_RESULT.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\MULTIMSG_ROUTE.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\MultipassBitmap.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\MULTIPASSCHANNEL.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\MultipassObject.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\NBIT.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\NBITCONTROL.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\Neighbor.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\NETRENDERFLAGS.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\NgonNeighbor.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\NodeData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\NormalTag.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\NotifyEventCopy.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\NotifyEventData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\NotifyEventMsg.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\NOTIFY_EVENT.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\NOTIFY_EVENT_FLAG.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\ObjectColorProperties.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\ObjectData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\ObjectDataM.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\ObjectSelectionData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\OBJECTSTATE.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\ObjectTransformMsgData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\OITInfo.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\OITMODE.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\OPERATINGSYSTEM.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\OPERATORPLUGIN.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\PAINTMESHFLAGS.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\Parser.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\ParserCache.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\PARTICLEFLAGS.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\PickSessionDataStruct.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\PIXELCNT.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\PLUGINTYPE.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\PointObject.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\PointTag.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\PolygonObject.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\PolygonTag.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\PolyInfo.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\PolyTriangulate.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\PolyWeight.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\PriorityList.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\PROTOCOL.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\PROXYTYPE.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\QUALIFIER.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\Ray.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\RAYBIT.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\RayHitID.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\RayIllumination.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\RDATA_SAVECALLBACK_CMD.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\RedirectMsgData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\Registry.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\REGISTRYTYPE.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\RenameTextureMessage.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\RenderData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\RENDERFLAGS.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\RENDERJOBCREATOR.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\RENDERJOBLIST.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\RenderNotificationData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\RENDERPROGRESSTYPE.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\RENDERRESULT.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\RENDERTARGET.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\RESOLVERESULT.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\ResourceDataTypeClass.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\RestoreLayoutSecret.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\Result.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\RetrievePrivateData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\RLAFLAGS.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\ROTATIONORDER.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\Safety.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SAMPLEBUMP.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SAVEBIT.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SAVEDOCUMENTFLAGS.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SAVEPROJECT.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SCENEFILTER.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SCENEHOOKDRAW.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SceneLoaderData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SCENELOADERPLUGIN.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SceneSaverData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SCENESAVERPLUGIN.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\Segment.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SegmentTag.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SELECTIONFILTERBIT.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SelectionTag.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\Semaphore.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SerialInfo.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SERIALINFO_ENUM.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SERVERJOBLIST.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SHADERINFO.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\ShaderReadData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SIGNALMODE.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SplineLengthData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SplineObject.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SPLINETYPE.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\STATUSNETSTATE.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\StickTextureTag.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\STRINGENCODING.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\StringUndo.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SurfaceIntersection.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_BitmapLoaderData__f_p_BitmapLoaderAnimatedData_enum_BITMAPLOADERACTION_p_BaseBitmap_Int32__IMAGERESULT.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_BitmapLoaderData__f_p_BitmapLoaderAnimatedData_p_BaseSound__IMAGERESULT.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_BitmapLoaderData__f_p_BitmapLoaderAnimatedData__IMAGERESULT.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_BitmapLoaderData__f_r_q_const__Filename_p_BaseBitmap_Int32__IMAGERESULT.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_BitmapLoaderData__f_r_q_const__Filename_p_Int32_p_Float__Bool.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_BitmapLoaderData__f_r_q_const__Filename_p_UChar_Int32__Bool.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_BitmapLoaderData__f_void__Int32.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_BitmapSaverData__f_Bool__Int32.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_BitmapSaverData__f_p_BaseContainer__Bool.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_BitmapSaverData__f_p_BaseContainer__Int32.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_BitmapSaverData__f_p_PluginMovieData_p_BaseBitmap__IMAGERESULT.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_BitmapSaverData__f_p_PluginMovieData_p_BaseSound__IMAGERESULT.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_BitmapSaverData__f_r_p_PluginMovieData_r_q_const__Filename_p_BaseBitmap_p_BaseContainer_enum_SAVEBIT_Int32__IMAGERESULT.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_BitmapSaverData__f_r_p_PluginMovieData__void.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_BitmapSaverData__f_r_q_const__Filename_p_BaseBitmap_p_BaseContainer_enum_SAVEBIT__IMAGERESULT.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_Bool__Bool.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_enum_GvPortIO_Int32_p_GvPortDescription__Bool.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_enum_GvPortIO_r_GvPortList__void.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_enum_GvPortIO_r_q_const__DescID__Int32.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_GvPortIO_Int32__DescID.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_Int32_GvLayoutType__p_BaseBitmap.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_Int32_Int32_Int32_Int32__Bool.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_Int32_Int32_Int32__Bool.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_Int32_p_void_enum_GvOpSetDataMode__Bool.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_Int32__String.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_p_BaseDraw_p_BaseDrawHelp_p_BaseThread_Int32_p_void_UInt32__Bool.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_p_GvCalc_p_GvRun__Bool.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_p_GvCalc__void.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_p_GvNodeGUI_Int32_Int32_Int32_Int32_r_q_const__BaseContainer__Bool.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_p_GvNodeGUI_p_GeUserArea_Int32_Int32_Int32_Int32__void.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_p_GvNodeGUI__Bool.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_p_GvOperatorDescription__Bool.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_p_GvPort_p_GvRun_Bool__Bool.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_p_GvPort_p_GvRun_p_GvCalc__Bool.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_p_GvQuery__Bool.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_p_GvRun__Bool.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_p_Int32_p_Int32__void.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_r_BaseContainer_Int32_Int32__Int32.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_r_BaseContainer_Int32__Int32.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode_r_BaseContainer_r_BaseContainer_Int32_enum_GvPortIO_Int32__Int32.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode__Bool.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode__String.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode__Vector.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_GvOperatorData__f_p_GvNode__void.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_iIncludeExcludeData__f_Int32_Int32__void.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_iIncludeExcludeData__f_Int32__Bool.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_iIncludeExcludeData__f_Int32__Int32.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_iIncludeExcludeData__f_Int32__p_BaseContainer.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_iIncludeExcludeData__f_p_BaseDocument_Int32__p_BaseList2D.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_iIncludeExcludeData__f_p_BaseDocument_Int32__p_InclusionTable.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_iIncludeExcludeData__f_p_BaseDocument_p_BaseList2D__Int32.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_iIncludeExcludeData__f_p_BaseList2D_Int32__Bool.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_iIncludeExcludeData__f___Int32.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_iInclusionTable__f_Int32__p_BaseList2D.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_iInclusionTable__f_p_BaseList2D_r_Int32__Bool.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_iInclusionTable__f_p_BaseList2D__Bool.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_iInclusionTable__f___Int32.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_SceneLoaderData__f_p_BaseSceneLoader_r_q_const__Filename_p_BaseDocument_enum_SCENEFILTER_p_String_p_BaseThread__FILEERROR.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_SceneLoaderData__f_p_BaseSceneLoader_r_q_const__Filename_p_UChar_Int32__Bool.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_m_SceneSaverData__f_p_BaseSceneSaver_r_q_const__Filename_p_BaseDocument_enum_SCENEFILTER__FILEERROR.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_BackgroundHandler.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_BaseDrawMessageHook.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_BaseParticle.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_BaseSound.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_BaseVideoPost.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_BCResourceObj.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_Bool.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_BrowserPopupCallback.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_BrushObjectData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_C4DGLuint.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_C4DObjectList.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_C4DPL_CommandLineArgs.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_C4DUuid.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_Char.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_ConstNormalHandle.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_ConstUVWHandle.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_CUSTOMDATATYPEPLUGIN.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_CustomProperty.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_DescEntry.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_DESCFLAGS_DESC.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_DESCFLAGS_ENABLE.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_DESCFLAGS_GET.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_DESCFLAGS_SET.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_DescIdInfo.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_DescriptionCustomGui.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_EditorWindow.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_Float.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_Float32.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_Float64.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_f_Int32_p_q_const__PickSessionDataStruct__void.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_f_Int32_p_void_r_q_const__Filename__Int32.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_f_p_BaseDocument_Int32__p_BaseList2D.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_f_p_GvCalcTable_p_GvRun_Int32__p_GvNode.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_f_p_GvCalcTable_p_GvRun_p_GvNode__Bool.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_f_p_GvCalcTable_p_GvRun__Int32.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_f_p_GvCalcTable_p_GvRun__void.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_f_p_iInclusionTable__void.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_f_r_GvAnimHook__Bool.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_f_r_GvCalcHook__Bool.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_f_r_GvDrawHook__void.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_f_r_GvDropHook__Bool.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_f_r_GvMenuHook__Bool.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_f_r_GvMessHook__Bool.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_f_r_q_const__Filename_Int_p_void__Int32.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_GeClipMap.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_GeDialog.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_GEMB_R.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_GeModalDialog.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_GeUserArea.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_GlFrameBuffer.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_GlLight.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_GlVertexBufferAttributeInfo.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_GvCopyBuffer.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_GvShape.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_GV_DATA_HANDLER.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_GV_OPCLASS_HANDLER.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_GV_OPGROUP_HANDLER.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_GV_VALGROUP_HANDLER.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_GV_VALUE_HANDLER.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_HYPERFILEVALUE.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_IconData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_Int.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_Int16.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_Int32.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_Int64.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_IpConnection.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_LENGTHUNIT.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_LocalResource.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_Matrix32.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_Matrix4d.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_Matrix64.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_maxon__BaseArrayT_AssetEntry_t.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_maxon__BaseArrayT_BaseBitmap_p_t.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_maxon__BaseArrayT_MultipassBitmap_p_t.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_Multipass.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_NetRenderService.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_NgonBase.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_NODEPLUGIN.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_NormalHandle.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_NormalStruct.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_PaintBitmap.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_Particle.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_Pgon.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_PluginMovieData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_PopupEditTextCallback.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_ProgressHook.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_AESFile.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_AliasTrans.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_AtomArray.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_BaseBitmap.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_BaseBitmapLink.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_BaseChannel.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_BaseContainer.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_BaseDocument.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_BaseDraw.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_BaseDrawHelp.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_BaseFile.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_BaseLink.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_BaseList2D.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_BaseMaterial.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_BaseObject.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_BasePlugin.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_BaseSelect.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_BaseShader.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_BaseTag.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_BitmapLoaderPlugin.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_BrowseFiles.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_BrowseVolumes.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_BrushBase.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_C4DAtom.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_C4DThread.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_CAJointObject.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_CameraObject.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_CAPoseMorphTag.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_CAWeightTag.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_Char.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_CKey.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_ColorProfile.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_ColorProfileConvert.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_CPolygon.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_CTrack.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_CustomDataType.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_DescID.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_Description.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_Float32.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_GeData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_GeListHead.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_GeMarker.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_GeSignal.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_GlVertexBufferVectorInfo.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_GvCalcTable.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_GvCopyBuffer.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_GvDataInfo.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_GvInit.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_GvNodeGUI.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_GvNodeMaster.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_GvPort.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_GvPortList.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_GvQuery.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_GvShape.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_GvValue.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_HNWeightTag.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_HyperFile.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_InclusionTable.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_Int32.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_LassoSelection.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_LayerObject.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_LineObject.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_Material.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_MemoryFileStruct.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_MovieLoader.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_MovieSaver.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_MultipassBitmap.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_NgonNeighbor.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_NormalTag.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_Parser.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_ParserCache.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_PluginMovieData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_PolygonObject.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_PolyTriangulate.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_PolyWeight.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_p_GlVertexBufferAttributeInfo.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_p_GlVertexBufferVectorInfo.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_p_GvPort.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_p_GvValue.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_p_Int32.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_p_ViewportPixel.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_RenderData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_SelectionTag.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_Semaphore.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_SplineLengthData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_SplineObject.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_StickTextureTag.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_String.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_TexData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_TextureTag.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_UChar.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_UInt16.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_UVWTag.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_VariableTag.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_Vector.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_VertexMapTag.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_ViewportSelect.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_void.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_p_XPressoTag.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_RayLight.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_RayObject.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_Render.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_RESOURCEDATATYPEPLUGIN.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_RootTextureString.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_SplineData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_StereoCameraInfo.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_String.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_SubDialog.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_UChar.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_UInt16.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_UInt32.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_UInt64.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_UnitScaleData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_UVWHandle.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_va_list.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_Vector.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_Vector32.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_Vector4d32.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_Vector64.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_VIEWPORTSELECTFLAGS.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_void.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_VolumeData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p_WriteProgressHook.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SWIGTYPE_p__DONTCONSTRUCT.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\SYSTEMINFO.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\TagModifyMsgData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\Tangent.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\TangentTag.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\TexData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\TextureTag.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\THREADMODE.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\THREADPRIORITY.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\THREADTYPE.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\ToolAskMsgData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\TOOLDRAW.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\TOOLDRAWFLAGS.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\ToolResizeData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\ToolTransformMsgData.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\TOOLTRANSFORM_FLAG.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\UNDOTYPE.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\USERAREAFLAGS.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\UVWStruct.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\UVWTag.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\VariableChanged.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\VariableTag.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\VERIFICATIONBIT.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\VERSIONTYPE.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\VertexMapTag.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\VIDEOPOSTINFO.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\ViewportPixel.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\ViewportSelect.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\VIEWPORT_PICK_FLAGS.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\VOIDVALUETYPE.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\VOLUMEINFO.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\VPFragment.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\VPGETFRAGMENTS.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\VPGETINFO.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\WRITEMODE.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\XPressoTag.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\ZEROCONFACTION.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\ZEROCONFERROR.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
-    <Compile Include="C4dApi\ZEROCONFMACHINESTATE.cs">
-      <AutoGen>true</AutoGen>
-    </Compile>
     <Compile Include="CommandPluginAttribute.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="MyCommandData.cs" />
@@ -2212,9 +810,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="C4dApi\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
