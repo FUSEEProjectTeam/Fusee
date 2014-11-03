@@ -3,7 +3,7 @@ The solution contains five projects:
 Swig         -  the project creating c# wrappers from the original MAXON C4D C++ API
 Native       -  the native C++ Cinema4D PlugIn. Also contains the C++ part for the SWIG generated API wrappers
 Bridge       -  the mixed mode (native and managed C++) dll API that connects the Managed PlugIn to the Native one.
-C4D          -  the managed code master plugin that searches recursively for managed plugins with funcionality. This project also 
+C4D          -  the managed code master plugin that searches recursively for managed plugins with funcionality. This project also
                 contains all the managed wrapper classes around the unmanaged C4D API
 YourManagedPlugin -  the managed code plugin doing the actual XPresso export.
 
@@ -14,15 +14,16 @@ How to build the solution
 PREREQUISITES
 1. Swig (3.0.x) must be installed (obsolete: self-built with patch 3305130 (C# csdirectorin pre/post attribute support) applied) and the path to swig.exe must be part of the system path - see App. 1 below.)
 2. Cinema4D must be installed and the path to the installation directory must be set in the system variable C4D_DIR
-3. Mono (Latest Stable Version: 2.10.2) must be installed and the path to the installation must be set in the system variable MONODIR
+3. Mono (Latest Stable Version: Win 3.2.3, OSX and Linux 3.10.0) must be installed and the path to the installation must be set in the system variable MONODIR
 4. The mono installation's bin dir (e.g. C:\Programme\Mono-2.10.2\bin) must be added to the system path
-
+5. You have to build at least the SerializationContainer project from the Engine solution (the main Fusee solution) in the root directory.
+6. You have to build the Cinema 4D SDK (default location: C:\Program Files\MAXON\CINEMA 4D R16\plugins\examples\cinema4dsdk)
 
 Make sure you are bulding one of the [Debug|(not recommended:Release)] [(obsolete: Win32)|X64] Solution Configurations.
 
 The Swig project contains no source code, only the Swig input file (C4dApi.i). This is used in the project's Custom Build Step (Projet Properties -> Custom Build Step -> Command Line). There are two prerequisites to buld the Swig project:
-1. The directory Projects/Managed/C4dApi must exist (you must create it by hand, if you build for the first time) and be empty (you must empty it by hand each time you build).
-2. swig.exe must be in the common search path (Control panel -> System -> Advanced -> Advanced Tab -> Environmant Variables -> Path) 
+1. The directory Uniplug/Cinema4D/C4d/C4dApi must exist (you must create it by hand, if you build for the first time) and be empty (you must empty it by hand each time you are changing swig significantly).
+2. swig.exe must be in the common search path (Control panel -> System -> Advanced -> Advanced Tab -> Environmant Variables -> Path)
 
 Building the Swig project yields two results:
 1. The directory Projects/Managed/C4dApi will be filled with *.cs files. These files contain the C# versions of the classes and functions of the C4D Api. Only those mentioned in the C4dApi.i swig control file will be wrapped.
@@ -30,13 +31,13 @@ Building the Swig project yields two results:
 2. The file Projects\Native\C4DApiWrapper.cpp will be generated. This file contains all the C++ Bridge code directly called by the C# wrappers. This code mainly contains all the parameter marshalling (conversion) of the types used in the different programming environments (e.g. convert System.String in C# into C4d's String class in C++ and vice versa).
 
 
-All the generated .cs files will be compiled and built under the "Managed" project. Unfortunately Visual Studio does not automatically recognize that new files have been added by building the Swig project. So before building Managed, you need to unload and reload the Manged project (right-click on "Managed" in the Solution Explorer). After unloading and reloading the Managed project will contain a folder called "C4dApi" resembling the contents of the file folder. 
+All the generated .cs files will be compiled and built under the "Managed" (named: C4d) project. Unfortunately Visual Studio does not automatically recognize that new files have been added by building the Swig project. So before building Managed, you need to unload and reload the Manged project (right-click on "Managed" in the Solution Explorer). After unloading and reloading the Managed project will contain a folder called "C4dApi" resembling the contents of the file folder.
 
 Now you can build the rest of the solution the normal way: just by clicking Build -> Build Solution or hitting F6.
 
 Make sure to repeat this process (inlcuding manually emptying the C4dApi file folder) every time you added definitions to the Swig control file (C4dApi.h).
 
-Maually rebuild the entire solution project-by-project in the order following order: Swig, C4D, Bridge, Native, XPressoXPort. You need to rebuild whenever changing the configuration (Debug/Release/64/32).
+Manually rebuild the entire solution project-by-project in the order following order: Swig, C4D, Bridge, Native, Different Managed Plugins. You need to rebuild whenever changing the configuration (Debug/Release/64/32).
 
 
 
@@ -56,7 +57,7 @@ http://origin-download.mono-project.com/sources/mono/
 Note that the document describes a different process for building directly from GIT sources (which was not tested for Uniplug C4D).
 The ./configure; make; make install; mantra described in the document only yields Mono with the .NET 2.0 profile (see /usr/local/lib/mono). In addition we need to "make PROFILE=new_4_5 install" as described at
 https://stackoverflow.com/questions/23745781/mono-64-bit-on-mac-missing-4-5
-Swig director handling generates dynamic_cast<> expressions. While the visual C++ compiler seems to swallow those dynamic_casts without problems the Apple LLVM compiler requires rtti (runtime-type-information) support for the Native project as well as for the CINEMA 4D API (_api.xcodeproj) projects. . 
+Swig director handling generates dynamic_cast<> expressions. While the visual C++ compiler seems to swallow those dynamic_casts without problems the Apple LLVM compiler requires rtti (runtime-type-information) support for the Native project as well as for the CINEMA 4D API (_api.xcodeproj) projects. .
 
 
 
@@ -77,8 +78,3 @@ Unless the patch becomes part of the official Swig distribution we need to manua
 8. Open Swig.sln with Visual Studio (v10) and build Swig.
 9. Copy the self built Swig.exe from Homebrew/Debug to the Swig root directory.
 NOTE: The above steps will become obsolete as soon as the patch made it into the official distribution. Hopefully this will happen soon.
-
-
-
-
-

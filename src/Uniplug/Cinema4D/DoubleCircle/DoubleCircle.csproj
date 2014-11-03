@@ -33,7 +33,7 @@
   <ItemGroup>
     <Reference Include="C4d, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(C4D_DIR)\plugins\ManagedPlugIn\Win32\C4d.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\..\Program Files\MAXON\CINEMA 4D R16\plugins\ManagedPlugIn\x64\C4d.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Fusee.Math.Core">

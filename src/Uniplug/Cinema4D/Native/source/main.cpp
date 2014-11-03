@@ -33,12 +33,12 @@ public:
 
 bool FileExists(TCHAR *pFilename) 
 { 
-	struct stat stFileInfo; 
+	struct _stat64i32 stFileInfo; 
 	bool bReturn; 
 	int intStat; 
 
 	// Attempt to get the file attributes 
-	intStat = stat(pFilename,&stFileInfo); 
+	intStat = _tstat(pFilename,  &stFileInfo);
 	if(intStat == 0) 
 	{ 
 		// We were able to get the file attributes 
@@ -72,8 +72,34 @@ MonoObject *pluginobject = NULL;
 MonoDomain *domain = NULL;
 PluginB *g_pi = NULL;
 
+
+char *GetMBString(LPCTSTR s)
+{
+#ifdef UNICODE
+	char *ret = new char [1024];
+	size_t nConverted = 0;
+	wcstombs_s(&nConverted, ret, 1024, s, _TRUNCATE);
+	return ret;
+#else
+	return s;
+#endif
+}
+
+void ReleaseMBString(char *s)
+{
+#ifdef UNICODE
+	delete s;
+#else
+	;
+#endif
+}
+
+
 Bool PluginStart(void)			// the main function C4D calls to start the plugin - nearly as a main
 {
+	String str = "Test";
+	Bool b = str.Content();
+
 	// MessageDialog("'Cinema 4D' - Started with plugin in developement");					// The message in the popup window
 
 	pluginStarted = true;
@@ -102,7 +128,7 @@ Bool PluginStart(void)			// the main function C4D calls to start the plugin - ne
 	}
 
 	// Add either "\\x64" or "\\Win32" to the path
-	TCHAR pPlatformDirName[512] = "";
+	TCHAR pPlatformDirName[512] = _T("");
 	_tcscpy(pPlatformDirName, pDirName);
 	_tcscat_s(pPlatformDirName, pDir);
 
@@ -114,7 +140,7 @@ Bool PluginStart(void)			// the main function C4D calls to start the plugin - ne
 	BOOL tryMono = true;
 
 	// First try: see if there's a file named "msdotnet.cfg" - the user wants to use MS.Net
-	TCHAR pRuntimeIndicator[512] = "";
+	TCHAR pRuntimeIndicator[512] = _T("");
 	_tcscpy(pRuntimeIndicator, pDirName);
 	_tcscat_s(pRuntimeIndicator, _T("\\msdotnet.cfg"));
 	if (FileExists(pRuntimeIndicator))
@@ -156,7 +182,7 @@ Bool PluginStart(void)			// the main function C4D calls to start the plugin - ne
 		else
 		{
 			// User wants to use mono. See if it's really present -  WAS "c" instead of mono..
-			if (NULL == LoadLibrary("mono-2.0.dll"))
+			if (NULL == LoadLibrary(_T("mono-2.0.dll")))
 			{
 				GePrint("Cannot find mono-2.0.dll - starting MS .Net as managed runtime instead"); 
 				useMono = false;
@@ -176,7 +202,7 @@ Bool PluginStart(void)			// the main function C4D calls to start the plugin - ne
 		// TODO: call mono_jit_parse_options(--debugger-agent="transport=dt_socket,address=$ADDRESS:$PORT");
 		MonoAssembly *assembly;
  
-		TCHAR dllPath[512] = "";
+		TCHAR dllPath[512] = _T("");
 		_tcscpy(dllPath, pPlatformDirName);
 		_tcscat(dllPath, _T("\\C4d.dll"));
 
@@ -209,7 +235,10 @@ Bool PluginStart(void)			// the main function C4D calls to start the plugin - ne
 				mono_set_dirs(fusee_mono_libdir, fusee_mono_etcdir);
 				mono_debug_init (MONO_DEBUG_FORMAT_MONO);
 
-				domain = mono_jit_init(dllPath);
+
+				char *dllPathMB1 = GetMBString(dllPath);
+				domain = mono_jit_init(dllPathMB1);
+				ReleaseMBString(dllPathMB1);
 			}
 			
 			//TODO: Use System Variable here instead of full path
@@ -220,7 +249,10 @@ Bool PluginStart(void)			// the main function C4D calls to start the plugin - ne
 			mono_set_dirs("C:\\Program Files (x86)\\Mono-2.10.2\\lib","C:\\Program Files (x86)\\Mono-2.10.2\\etc");
 			mono_debug_init (MONO_DEBUG_FORMAT_MONO);
 
-			domain = mono_jit_init(dllPath);
+			char *dllPathMB2 = GetMBString(dllPath);
+			domain = mono_jit_init(dllPathMB2);
+			ReleaseMBString(dllPathMB2);
+
 
 #ifndef __MAC
 			// At this point (under Windows) the unmanaged exception handler should be installed 
@@ -237,21 +269,27 @@ Bool PluginStart(void)			// the main function C4D calls to start the plugin - ne
 		else
 		{
 			// just init mono. No debugger required
-			domain = mono_jit_init(dllPath);
+
+			char *dllPathMB3 = GetMBString(dllPath);
+			domain = mono_jit_init(dllPathMB3);
+			ReleaseMBString(dllPathMB3);
 			GePrint("Just initialized 'Mono' - No special debugger activated");
 		}
 
-		assembly = mono_domain_assembly_open (domain, dllPath);
+		char *dllPathMB4 = GetMBString(dllPath);
+		assembly = mono_domain_assembly_open(domain, dllPathMB4);
+		ReleaseMBString(dllPathMB4);
+
 		MonoImage *image = mono_assembly_get_image(assembly);
-		MonoMethodDesc *descStart =  mono_method_desc_new(_T("C4d.Plugin:Start()"), false);
-		MonoMethodDesc *descEnd =  mono_method_desc_new(_T("C4d.Plugin:End()"), false);
-		MonoMethodDesc *descMessage =  mono_method_desc_new(_T("C4d.Plugin:Message()"), false);
+		MonoMethodDesc *descStart =  mono_method_desc_new("C4d.Plugin:Start()", false);
+		MonoMethodDesc *descEnd =  mono_method_desc_new("C4d.Plugin:End()", false);
+		MonoMethodDesc *descMessage =  mono_method_desc_new("C4d.Plugin:Message()", false);
 
 		methodStart = mono_method_desc_search_in_image(descStart, image);
 		methodEnd = mono_method_desc_search_in_image(descEnd, image);
 		methodMessage = mono_method_desc_search_in_image(descMessage, image);
 
-		pluginclass = mono_class_from_name (image, _T("C4d"),  _T("Plugin"));
+		pluginclass = mono_class_from_name (image, "C4d",  "Plugin");
 
 		// Plugin plugin = new Plugin()
 		pluginobject = mono_object_new (domain, pluginclass);

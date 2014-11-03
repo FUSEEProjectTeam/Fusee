@@ -1,9 +1,17 @@
 ## FUSEE Custom
 [Tt]mp/
 C4dApi/
+C4dApiWrapper.cpp
+C4dApiWrapper.h
+mono.exp
+mono.lib
+mono64.exp
+mono64.lib
 *.tlog
 *.scc
 *.orig
+
+
 
 ##
 ## .gitignore from https://github.com/github/gitignore/blob/master/CSharp.gitignore

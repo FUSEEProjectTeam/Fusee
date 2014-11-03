@@ -71,9 +71,6 @@
 #include "c4d_customdatatype.h"//neu
 #include "customgui_inexclude.h"//neu
 
-
-
-
 // POD (plain old datatype = no construcors or methods) version of C4D's Vector.
 // We need this type as return values for swig-generated C++ stubs. If we use
 // the original UDT (user defined type = constructors and methods) Vector type we'll get 
@@ -718,10 +715,19 @@ BaseMaterial *
 %}
 
 //////////////////////////////////////////////////////////////////
+// c4d_canimation.swig.h
+%include "c4d_canimation.h";
+
+//////////////////////////////////////////////////////////////////
+// ge_prepass.h
+%rename (SERIALINFO_ENUM) SERIALINFO;
+%rename (CCURVE_ENUM) CCURVE;
+%ignore ToString;
+%ignore MaxonConvert;
+%include "ge_prepass.swig.h";
+
 // c4d_bastetime.swig.h
 %include "c4d_basetime.h"
-
-
 //////////////////////////////////////////////////////////////////
 // c4d_general.h
 %include "c4d_general.h";
@@ -811,18 +817,7 @@ BaseMaterial *
 	}
 }
 
-//////////////////////////////////////////////////////////////////
-// c4d_canimation.swig.h
-%include "c4d_canimation.h";
 
-//////////////////////////////////////////////////////////////////
-// ge_prepass.h
-%rename (SERIALINFO_ENUM) SERIALINFO;
-%rename (CCURVE_ENUM) CCURVE;
-%include "ge_prepass.swig.h";
-
-
-//////////////////////////////////////////////////////////////////
 // c4d_baseobject.h
 %extend PointObject
 {
