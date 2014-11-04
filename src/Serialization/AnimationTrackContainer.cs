@@ -72,7 +72,6 @@ namespace Fusee.Serialization
 
         [ProtoMember(2)] 
         public string Property;
-        // e.g. Transform Translation
 
         [ProtoMemberAttribute(3, AsReference = true)] 
         public Type KeyType;

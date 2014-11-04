@@ -18,11 +18,11 @@ namespace Examples.AnimationExportTest
 
         public override void Init()
         {
-            RC.ClearColor = new float4(0.1f, 0.1f, 0.5f, 1);
+            RC.ClearColor = new float4(0.5f, 0.5f, 0.5f, 1);
 
             SceneContainer scene;
             var ser = new Serializer();
-            using (var file = File.OpenRead(@"Assets/AnimationTest.fus"))
+            using (var file = File.OpenRead(@"Assets/Robo.fus"))
             {
                 scene = ser.Deserialize(file, null, typeof(SceneContainer)) as SceneContainer;
             }
@@ -64,7 +64,7 @@ namespace Examples.AnimationExportTest
 
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
             var mtxCam = float4x4.LookAt(0, 200, -500, 0, 0, 0, 0, 1, 0);
-            RC.ModelView = mtxCam * mtxRot;
+            RC.ModelView = mtxCam * mtxRot * float4x4.CreateScale(0.5f,0.5f,0.5f);
 
             _sr.Animate();
             _sr.Render(RC);
