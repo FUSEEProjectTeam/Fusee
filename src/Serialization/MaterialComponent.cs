@@ -41,7 +41,7 @@ namespace Fusee.Serialization
     }
 
     [ProtoContract]
-    public class MaterialContainer
+    public class MaterialComponent : SceneComponentContainer
     {
         #region Diffuse
         public bool HasDiffuse { get { return Diffuse != null; }}

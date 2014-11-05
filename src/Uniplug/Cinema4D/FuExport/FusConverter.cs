@@ -48,11 +48,11 @@ namespace FuExport
         private BaseDocument _polyDoc;
         private List<string> _textureFiles = new List<string>();
         private string _sceneRootDir;
-        private Dictionary<long, MaterialContainer> _materialCache;
+        private Dictionary<long, MaterialComponent> _materialCache;
 
         public SceneContainer FuseefyScene(BaseDocument doc, string sceneRootDir, out List<string> textureFiles)
         {
-            _materialCache = new Dictionary<long, MaterialContainer>();
+            _materialCache = new Dictionary<long, MaterialComponent>();
             _sceneRootDir = sceneRootDir;
             _polyDoc = doc.Polygonize();
 
@@ -93,7 +93,19 @@ namespace FuExport
             }
         }
 
-        private static MeshContainer GetMesh(PolygonObject polyOb, float3[] normalsOb, UVWTag uvwTag, IEnumerable<int> range)
+        private static void AddComponent(SceneNodeContainer snc, SceneComponentContainer scc)
+        {
+            if (scc == null || snc == null)
+                return;
+
+            if (snc.Components == null)
+            {
+                snc.Components = new List<SceneComponentContainer>();
+            }
+            snc.Components.Add(scc);
+        }
+
+        private static MeshComponent GetMesh(PolygonObject polyOb, float3[] normalsOb, UVWTag uvwTag, IEnumerable<int> range)
         {
             List<float3> normals = new List<float3>();
 
@@ -168,7 +180,7 @@ namespace FuExport
                 }
                 nNewVerts += 3;
             }
-            return new MeshContainer()
+            return new MeshComponent()
             {
                 Normals = normals.ToArray(),
                 Vertices = verts.ToArray(),
@@ -194,7 +206,7 @@ namespace FuExport
         /// </summary>
         /// <param name="ob"></param>
         /// <param name="soc"></param>
-        private void VisitObject(BaseObject ob, SceneObjectContainer soc)
+        private void VisitObject(BaseObject ob, SceneNodeContainer snc)
         {
             Collection<TextureTag> textureTags = new Collection<TextureTag>();
             Dictionary<string,  SelectionTag> selectionTags = new Dictionary<string, SelectionTag>();
@@ -268,7 +280,7 @@ namespace FuExport
             // At this point we have the last texture tag not restricted to a seletion. This will become the Material of this FuseeObjectContainer
             // no matter if this object contains geometry or not
             if (lastUnselectedTag != null)
-                soc.Material = GetMaterial(lastUnselectedTag);
+                AddComponent(snc, GetMaterial(lastUnselectedTag));
 
             // Further processing only needs to take place if the object contains any geometry at all.
             PolygonObject polyOb = ob as PolygonObject;
@@ -301,43 +313,63 @@ namespace FuExport
                     // Now generate Polygons for this subset
                     if (polyInxsSubset.Count > 0)
                     {
-                        if (soc.Children == null)
-                            soc.Children = new List<SceneObjectContainer>();
+                        if (snc.Children == null)
+                            snc.Children = new List<SceneNodeContainer>();
 
-                        SceneObjectContainer subSoc = new SceneObjectContainer();
-                        subSoc.Transform = new TransformContainer()
+                        SceneNodeContainer subSnc = new SceneNodeContainer();
+                        subSnc.Transform = new TransformContainer()
                         {
                             Translation = new float3(0, 0, 0),
                             Rotation = new float3(0, 0, 0), 
                             Scale = new float3(1, 1, 1)
                         };
-                        subSoc.Material = GetMaterial(texSelItem.Value);
-                        subSoc.Name = soc.Name + "_" + texSelItem.Key.GetName();
-                        subSoc.Mesh = GetMesh(polyOb, normalOb, uvwTag, polyInxsSubset);
+                        AddComponent(subSnc, GetMaterial(texSelItem.Value));
+                        subSnc.Name = snc.Name + "_" + texSelItem.Key.GetName();
+                        AddComponent(subSnc, GetMesh(polyOb, normalOb, uvwTag, polyInxsSubset));
 
-                        soc.Children.Add(subSoc);
+                        snc.Children.Add(subSnc);
                     }
                 }
 
                 // The remaining polygons directly go into the original mesh
-                soc.Mesh = GetMesh(polyOb, normalOb, uvwTag, polyInxs);
+                AddComponent(snc, GetMesh(polyOb, normalOb, uvwTag, polyInxs));
+            }
+            else if (ob.GetType() == C4dApi.Olight)
+            {
+                using (BaseContainer lightData = ob.GetData())
+                // Just for debugging purposes
+                for (int i = 0, id = 0; -1 != (id = lightData.GetIndexId(i)); i++)
+                {
+                    if (lightData.GetType(id) == C4dApi.DA_LONG)
+                    {
+                        int iii = lightData.GetInt32(id);
+                    }
+                    if (lightData.GetType(id) == C4dApi.DA_REAL)
+                    {
+                        double d = lightData.GetFloat(id);
+                    }
+                    else if (lightData.GetType(id) == C4dApi.DA_VECTOR)
+                    {
+                        double3 v = lightData.GetVector(id);
+                    }
+                };
             }
         }
 
-        private MaterialContainer GetMaterial(TextureTag texTag)
+        private MaterialComponent GetMaterial(TextureTag texTag)
         {
             Material material = texTag.GetMaterial() as Material;
             if (material == null)
                 return null;
 
             long materialUid = material.RefUID();
-            MaterialContainer mcRet;
+            MaterialComponent mcRet;
             if (_materialCache.TryGetValue(materialUid, out mcRet))
                 return mcRet;
 
             using (BaseContainer materialData = material.GetData())
             {
-                mcRet = new MaterialContainer();
+                mcRet = new MaterialComponent();
                 // Just for debugging purposes
                 for (int i = 0, id = 0; -1 != (id = materialData.GetIndexId(i)); i++)
                 {
@@ -497,43 +529,43 @@ namespace FuExport
         }
 
 
-        private List<SceneObjectContainer> FuseefyOb(BaseObject ob)
+        private List<SceneNodeContainer> FuseefyOb(BaseObject ob)
         {
             if (ob == null)
                 return null;
 
-            List<SceneObjectContainer> ret = new List<SceneObjectContainer>();
+            List<SceneNodeContainer> ret = new List<SceneNodeContainer>();
             do
             {
-                SceneObjectContainer soc = new SceneObjectContainer();
+                SceneNodeContainer snc = new SceneNodeContainer();
 
-                soc.Name = ob.GetName();
+                snc.Name = ob.GetName();
                 float3 rotC4d = (float3) ob.GetRelRot();
-                soc.Transform = new TransformContainer{
+                snc.Transform = new TransformContainer{
                     Translation = (float3) ob.GetRelPos(),
                     Rotation = new float3(-rotC4d.y, -rotC4d.x, -rotC4d.z),
                     Scale = (float3) ob.GetRelScale()
                 };
                 /*
                 double4x4 mtxD = ob.GetMl();
-                soc.Transform = (float4x4) mtxD;
+                snc.Transform = (float4x4) mtxD;
                 */
 
-                VisitObject(ob, soc);
+                VisitObject(ob, snc);
 
                 var childList = FuseefyOb(ob.GetDown());
                 if (childList != null)
                 {
-                    if (soc.Children == null)
+                    if (snc.Children == null)
                     {
-                        soc.Children = childList;
+                        snc.Children = childList;
                     }
                     else
                     {
-                        soc.Children.AddRange(childList);
+                        snc.Children.AddRange(childList);
                     }
                 }
-                ret.Add(soc);
+                ret.Add(snc);
                 ob = ob.GetNext();
             } while (ob != null);
             return ret;

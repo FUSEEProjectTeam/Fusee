@@ -22,8 +22,8 @@ namespace Fusee.Engine.SimpleScene
 
     public class SceneRenderer
     {
-        private Dictionary<MeshContainer, Mesh> _meshMap;
-        private Dictionary<MaterialContainer, ShaderEffect> _matMap;
+        private Dictionary<MeshComponent, Mesh> _meshMap;
+        private Dictionary<MaterialComponent, ShaderEffect> _matMap;
         private SceneContainer _sc;
 
         private RenderContext _rc;
@@ -62,13 +62,13 @@ namespace Fusee.Engine.SimpleScene
             if (rc != _rc)
             {
                 _rc = rc;
-                _meshMap = new Dictionary<MeshContainer, Mesh>();
-                _matMap = new Dictionary<MaterialContainer, ShaderEffect>();
+                _meshMap = new Dictionary<MeshComponent, Mesh>();
+                _matMap = new Dictionary<MaterialComponent, ShaderEffect>();
                 _curMat = null;
             }
             if (_curMat == null)
             {
-                _curMat = MakeMaterial(new MaterialContainer
+                _curMat = MakeMaterial(new MaterialComponent
                 {
                     Diffuse = new MatChannelContainer()
                     {
@@ -107,20 +107,21 @@ namespace Fusee.Engine.SimpleScene
             return ret;
         }
 
-        protected AABBf? VisitNodeAABB(SceneObjectContainer soc)
+        protected AABBf? VisitNodeAABB(SceneNodeContainer sbc)
         {
             AABBf? ret = null;
             float4x4 origMV = _AABBXForm;
 
-            _AABBXForm = _AABBXForm * soc.Transform.Matrix();
-            if (soc.Mesh != null)
+            _AABBXForm = _AABBXForm * sbc.Transform.Matrix();
+            SceneNodeContainer snc = sbc as SceneNodeContainer;
+            if (snc != null && snc.GetMesh() != null)
             {
-                ret = _AABBXForm * soc.Mesh.BoundingBox;
+                ret = _AABBXForm * snc.GetMesh().BoundingBox;
             }
 
-            if (soc.Children != null)
+            if (sbc.Children != null)
             {
-                foreach (var child in soc.Children)
+                foreach (var child in sbc.Children)
                 {
                     AABBf? nodeBox = VisitNodeAABB(child);
                     if (nodeBox != null)
@@ -144,46 +145,51 @@ namespace Fusee.Engine.SimpleScene
         {
             InitShaders(rc);
 
-            foreach (var soc in _sc.Children)
+            foreach (var sbc in _sc.Children)
             {
-                VisitNodeRender(soc);
+                VisitNodeRender(sbc);
             }
         }
 
-        protected void VisitNodeRender(SceneObjectContainer soc)
+        protected void VisitNodeRender(SceneNodeContainer sbc)
         {
             float4x4 origMV = _rc.ModelView;
             ShaderEffect origMat = CurMat;
 
-            if (soc.Material != null)
+            _rc.ModelView = _rc.ModelView * sbc.Transform.Matrix();
+
+            SceneNodeContainer soc = sbc as SceneNodeContainer;
+            if (soc != null)
             {
-                var mat = LookupMaterial(soc.Material);
-                CurMat = mat;
+                if (soc.GetMaterial() != null)
+                {
+                    var mat = LookupMaterial(soc.GetMaterial());
+                    CurMat = mat;
+                }
+
+                if (soc.GetMesh() != null)
+                {
+                    Mesh rm;
+                    if (!_meshMap.TryGetValue(soc.GetMesh(), out rm))
+                    {
+                        rm = MakeMesh(soc);
+                        _meshMap.Add(soc.GetMesh(), rm);
+                    }
+
+                    if (null != CurMat.GetEffectParam(ShaderCodeBuilder.LightDirectionName))
+                    {
+                        RenderWithLights(rm, CurMat);
+                    }
+                    else
+                    {
+                        CurMat.RenderMesh(rm);
+                    }
+                }
             }
-            _rc.ModelView = _rc.ModelView * soc.Transform.Matrix();
 
-            if (soc.Mesh != null)
+            if (sbc.Children != null)
             {
-                Mesh rm;
-                if (!_meshMap.TryGetValue(soc.Mesh, out rm))
-                {
-                    rm = MakeMesh(soc);
-                    _meshMap.Add(soc.Mesh, rm);
-                }
-
-                if (null != CurMat.GetEffectParam(ShaderCodeBuilder.LightDirectionName))
-                {
-                    RenderWithLights(rm, CurMat);
-                }
-                else
-                {
-                    CurMat.RenderMesh(rm);
-                }
-            }
-
-            if (soc.Children != null)
-            {
-                foreach (var child in soc.Children)
+                foreach (var child in sbc.Children)
                 {
                     VisitNodeRender(child);
                 }
@@ -218,7 +224,7 @@ namespace Fusee.Engine.SimpleScene
             }
         }
 
-        private ShaderEffect LookupMaterial(MaterialContainer mc)
+        private ShaderEffect LookupMaterial(MaterialComponent mc)
         {
             ShaderEffect mat;
             if (!_matMap.TryGetValue(mc, out mat))
@@ -230,16 +236,17 @@ namespace Fusee.Engine.SimpleScene
             return mat;
         }
 
-        public static Mesh MakeMesh(SceneObjectContainer soc)
+        public static Mesh MakeMesh(SceneNodeContainer soc)
         {
+            MeshComponent mc = soc.GetMesh();
             Mesh rm;
             rm = new Mesh()
             {
                 Colors = null,
-                Normals = soc.Mesh.Normals,
-                UVs = soc.Mesh.UVs,
-                Vertices = soc.Mesh.Vertices,
-                Triangles = soc.Mesh.Triangles
+                Normals = mc.Normals,
+                UVs = mc.UVs,
+                Vertices = mc.Vertices,
+                Triangles = mc.Triangles
             };
             return rm;
         }
@@ -251,7 +258,7 @@ namespace Fusee.Engine.SimpleScene
             return _rc.CreateTexture(image);
         }
 
-        private ShaderEffect MakeMaterial(MaterialContainer mc)
+        private ShaderEffect MakeMaterial(MaterialComponent mc)
         {
             ShaderCodeBuilder scb = new ShaderCodeBuilder(mc, null);
             var effectParameters = AssembleEffectParamers(mc, scb);
@@ -274,7 +281,7 @@ namespace Fusee.Engine.SimpleScene
             return ret;
         }
 
-        private List<EffectParameterDeclaration> AssembleEffectParamers(MaterialContainer mc, ShaderCodeBuilder scb)
+        private List<EffectParameterDeclaration> AssembleEffectParamers(MaterialComponent mc, ShaderCodeBuilder scb)
         {
             List<EffectParameterDeclaration> effectParameters = new List<EffectParameterDeclaration>();
 
