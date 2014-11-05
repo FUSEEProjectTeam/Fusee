@@ -902,8 +902,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
                     canvas.width = bmpWidth;
                     canvas.height = bmpRows;
 
-                    var renderedGlyph = opentype.glyphToPath(glyph, -glyph.xMin, glyph.yMax, fontScale);
-                    renderedGlyph.draw(ctx);
+                    glyph.draw(ctx, -xMin, yMax, fontSize);
 
                     var bitmap = ctx.getImageData(0, 0, canvas.width, canvas.height);
                     var alpha = new Uint8Array(canvas.width * canvas.height);
