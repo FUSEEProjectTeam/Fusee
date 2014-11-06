@@ -392,13 +392,15 @@ var assetLoaders = {
     });
   },
    "Font": function loadFont (filename, data, onError, onDoneLoading) {
-    opentype.loadFont(jsilConfig.fileRoot + filename, function (font) {
+    loadBinaryFileAsync(jsilConfig.fileRoot + filename, function (result, error) {
+      if ((result !== null) && (!error)) {
         $jsilbrowserstate.allAssetNames.push(filename);
-        allAssets[getAssetName(filename)] = font;
+        allAssets[getAssetName(filename)] = opentype.parse(result.buffer);
         onDoneLoading(null);
-      }, function (error) {
+      } else {
         onError(error);
-      });
+      }
+    });
   },
   "SoundBank": function loadSoundBank (filename, data, onError, onDoneLoading) {
     loadTextAsync(jsilConfig.contentRoot + filename, function (result, error) {

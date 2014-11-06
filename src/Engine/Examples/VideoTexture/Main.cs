@@ -72,7 +72,7 @@ namespace Examples.VideoTextureExample
             // move per mouse
             if (Input.Instance.IsButton(MouseButtons.Left))
             {
-                _angleVelHorz = RotationSpeed * Input.Instance.GetAxis(InputAxis.MouseX);
+                _angleVelHorz = -RotationSpeed * Input.Instance.GetAxis(InputAxis.MouseX);
                 _angleVelVert = RotationSpeed * Input.Instance.GetAxis(InputAxis.MouseY);
             }
             else
@@ -104,11 +104,11 @@ namespace Examples.VideoTextureExample
             if (Input.Instance.IsKey(KeyCodes.Down))
                 _angleVert += RotationSpeed * (float)Time.Instance.DeltaTime;
 
-            var mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
+            var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
             var mtxCam = float4x4.LookAt(0, 200, 500, 0, 0, 0, 0, 1, 0);
 
             // second mesh
-            RC.ModelView = mtxRot * float4x4.CreateTranslation(0, 0, 0) * mtxCam;
+            RC.ModelView = mtxCam * mtxRot;
 
             RC.SetShader(_spTexture);
             if (_iTex != null)

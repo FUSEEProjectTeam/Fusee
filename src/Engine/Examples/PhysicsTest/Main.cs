@@ -166,8 +166,6 @@ namespace Examples.PhysicsTest
             // is called on startup
             RC.ClearColor = new float4(1, 1, 1, 1);
 
-
-
             // initialize the variables
             _meshTea = MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
             _meshCube = MeshReader.LoadMesh(@"Assets/Cube.obj.model");
