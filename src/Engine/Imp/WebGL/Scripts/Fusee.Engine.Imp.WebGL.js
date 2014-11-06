@@ -710,7 +710,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
             var context = canvas.getContext("2d");
 
             context.translate(canvas.width / 2, canvas.height / 2);
-            context.rotate(180 * Math.PI / 180);
+            context.scale(1, -1);
             context.translate(-canvas.width / 2, -canvas.height / 2);
             context.drawImage(image, 0, 0);
 
