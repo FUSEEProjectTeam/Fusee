@@ -19,16 +19,14 @@ namespace Examples.PhysicsTest
             varying vec3 vNormal;
             varying vec2 vUV;
         
-            uniform mat4 FUSEE_MV;
+            // uniform mat4 FUSEE_MV;
             uniform mat4 FUSEE_MVP;
-            //uniform mat4 FUSEE_ITMV;
+            uniform mat4 FUSEE_ITMV;
 
             void main()
             {
-                //mat4 FUSEE_MVP = FUSEE_P * FUSEE_MV;
                 gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
-
-                vNormal = mat3(FUSEE_MV[0].xyz, FUSEE_MV[1].xyz, FUSEE_MV[2].xyz) * fuNormal;
+                vNormal = normalize(mat3(FUSEE_ITMV[0].xyz, FUSEE_ITMV[1].xyz, FUSEE_ITMV[2].xyz) * fuNormal);
                 vUV = fuUV;
             }";
 
@@ -44,8 +42,7 @@ namespace Examples.PhysicsTest
 
             void main()
             {
-                
-                gl_FragColor = vColor * dot(vNormal, vec3(0, 0, -1)) *50;
+                gl_FragColor = vColor * dot(vNormal, vec3(0, 0, -1));
             }";
 
 
@@ -60,16 +57,15 @@ namespace Examples.PhysicsTest
             varying vec3 vNormal;
             varying vec2 vUV;
         
-            uniform mat4 FUSEE_MV;
+            //uniform mat4 FUSEE_MV;
             uniform mat4 FUSEE_MVP;
-            //uniform mat4 FUSEE_ITMV;
+            uniform mat4 FUSEE_ITMV;
 
             void main()
             {
                 // mat4 FUSEE_MVP = FUSEE_P * FUSEE_MV;
                 gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
-
-                vNormal = mat3(FUSEE_MV[0].xyz, FUSEE_MV[1].xyz, FUSEE_MV[2].xyz) * fuNormal;
+                vNormal = normalize(mat3(FUSEE_ITMV[0].xyz, FUSEE_ITMV[1].xyz, FUSEE_ITMV[2].xyz) * fuNormal);
                 vUV = fuUV;
             }";
 
@@ -86,7 +82,7 @@ namespace Examples.PhysicsTest
             void main()
             {
                 
-                gl_FragColor = texture2D(vTexture, vUV) * dot(vNormal, vec3(0, 0, -1))*1.5;
+                gl_FragColor = texture2D(vTexture, vUV) * dot(vNormal, vec3(0, 0, -1));
             }";
 
 
@@ -141,7 +137,7 @@ namespace Examples.PhysicsTest
         private const float Damping = 0.92f;
 
         // model variables
-        private Mesh _meshTea, _meshCube, _meshSphere, _meshCylinder, _meshPlatinic;
+        private Mesh _meshTea, _meshCube, _meshSphere, _meshCylinder, _meshPlatonic;
 
         // variables for shader
         private ShaderProgram _spColor;
@@ -164,6 +160,9 @@ namespace Examples.PhysicsTest
 
         public override void Init()
         {
+            _angleHorz = 0.2f;
+            _angleVert = 0.2f;
+
             // is called on startup
             RC.ClearColor = new float4(1, 1, 1, 1);
 
@@ -174,7 +173,7 @@ namespace Examples.PhysicsTest
             _meshCube = MeshReader.LoadMesh(@"Assets/Cube.obj.model");
             _meshSphere = MeshReader.LoadMesh(@"Assets/Sphere.obj.model");
             _meshCylinder = MeshReader.LoadMesh(@"Assets/Cylinder.obj.model");
-            _meshPlatinic = MeshReader.LoadMesh(@"Assets/Platonic.obj.model");
+            _meshPlatonic = MeshReader.LoadMesh(@"Assets/Platonic.obj.model");
             //RC.CreateShader(Vs, Ps);
             _spColor = RC.CreateShader(Vs, Ps); //MoreShaders.GetShader("simple", RC);
             _spTexture = RC.CreateShader(Vt, Pt);//MoreShaders.GetShader("texture", RC);
@@ -210,7 +209,7 @@ namespace Examples.PhysicsTest
             // move per mouse
             if (Input.Instance.IsButton(MouseButtons.Left))
             {
-                _angleVelHorz = RotationSpeed * Input.Instance.GetAxis(InputAxis.MouseX);
+                _angleVelHorz = -RotationSpeed * Input.Instance.GetAxis(InputAxis.MouseX);
                 _angleVelVert = RotationSpeed * Input.Instance.GetAxis(InputAxis.MouseY);
             }
             else
@@ -285,7 +284,8 @@ namespace Examples.PhysicsTest
                 var rb = _physic.World.GetRigidBody(i);
                 var matrix = float4x4.Transpose(rb.WorldTransform);
 
-                if (rb.CollisionShape.GetType().ToString() == "Fusee.Engine.BoxShape")
+                // if (rb.CollisionShape.GetType().ToString() == "Fusee.Engine.BoxShape")
+                if (rb.CollisionShape is Fusee.Engine.BoxShape)
                 {
                     var shape = (BoxShape) rb.CollisionShape;
                     RC.ModelView = mtxCam * matrix * float4x4.Scale(shape.HalfExtents.x / 100, shape.HalfExtents.y / 100, shape.HalfExtents.z / 100);
@@ -296,7 +296,7 @@ namespace Examples.PhysicsTest
                     RC.SetRenderState(new RenderStateSet { AlphaBlendEnable = false, ZEnable = true });
                     RC.Render(_meshCube);
                 }
-                else if (rb.CollisionShape.GetType().ToString() == "Fusee.Engine.SphereShape")
+                else if (rb.CollisionShape is SphereShape)
                 {
                     var shape = (SphereShape) rb.CollisionShape;
                     RC.ModelView = mtxCam * matrix * float4x4.Scale(shape.Radius);
@@ -305,7 +305,7 @@ namespace Examples.PhysicsTest
                     RC.SetRenderState(new RenderStateSet { AlphaBlendEnable = false, ZEnable = true });
                     RC.Render(_meshSphere);
                 }
-                else if (rb.CollisionShape.GetType().ToString() == "Fusee.Engine.CylinderShape")
+                else if (rb.CollisionShape is CylinderShape)
                 {
                     var shape = (CylinderShape) rb.CollisionShape;
                     RC.ModelView = mtxCam * matrix * float4x4.Scale(4);
@@ -314,7 +314,7 @@ namespace Examples.PhysicsTest
                     RC.SetRenderState(new RenderStateSet { AlphaBlendEnable = false, ZEnable = true });
                     RC.Render(_meshCylinder);
                 }
-                else if (rb.CollisionShape.GetType().ToString() == "Fusee.Engine.ConvexHullShape")
+                else if (rb.CollisionShape is ConvexHullShape)
                 {
                     if (currentScene == 2)
                     {
@@ -322,7 +322,7 @@ namespace Examples.PhysicsTest
                         RC.SetShader(_spCustom);
                         RC.SetShaderParam(_colorCustom, new float4(2f, 2f, 2, 1));
                         RC.SetRenderState(new RenderStateSet { AlphaBlendEnable = false, ZEnable = true });
-                        RC.Render(_meshPlatinic);
+                        RC.Render(_meshPlatonic);
                     }
                     if (currentScene == 4)
                     {

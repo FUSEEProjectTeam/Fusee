@@ -205,7 +205,7 @@ namespace Examples.SceneViewer
         private void TestSerialize()
         {
             /**/
-            var aMesh = new MeshContainer
+            var aMesh = new MeshComponent
             {
                 Vertices = new[]
                 {
@@ -240,11 +240,11 @@ namespace Examples.SceneViewer
                 }
             };
 
-            var aChild = new SceneObjectContainer()
+            var aChild = new SceneNodeContainer()
             {
-                Mesh = aMesh,
                 Transform = new TransformContainer(){Rotation = new float3(0, 0, 0), Translation = new float3(0.11f, 0.11f, 0), Scale = new float3(1, 1, 1)}
             };
+            aChild.AddComponent(aMesh);
 
             var parent = new SceneContainer()
             {
@@ -252,17 +252,12 @@ namespace Examples.SceneViewer
                 {
                     Version = 1,
                     Generator = "Fusee.SceneViewer",
-                    CreatedBy = "FuseeProjetTeam"
+                    CreatedBy = "FuseeProjectTeam"
                 },
-                Children = new List<SceneObjectContainer>(new SceneObjectContainer[]
+                Children = new List<SceneNodeContainer>(new SceneNodeContainer[]
                 {
                     aChild,
                     aChild,
-                    new SceneObjectContainer()
-                    {
-                        Mesh = aMesh,
-                        Transform = new TransformContainer(){Rotation = new float3(0, 0, 0), Translation = new float3(0.22f, 0.22f, 0), Scale = new float3(1, 1, 1)}
-                    },
                 }),
             };
             var ser = new Serializer();

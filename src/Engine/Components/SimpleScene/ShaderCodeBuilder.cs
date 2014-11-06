@@ -21,7 +21,7 @@ namespace Fusee.Engine.SimpleScene
         };
         */
 
-        public ShaderCodeBuilder(MaterialContainer mc, MeshContainer mesh)
+        public ShaderCodeBuilder(MaterialComponent mc, MeshComponent mesh)
         {
             float f1 = 1;
             f1.GetType();
@@ -46,7 +46,7 @@ namespace Fusee.Engine.SimpleScene
             _ps = ps.ToString();
         }
 
-        private void AnalyzeMesh(MeshContainer mesh)
+        private void AnalyzeMesh(MeshComponent mesh)
         {
             _hasVertices = (mesh.Vertices != null && mesh.Vertices.Length > 0);
             _hasNormals = (mesh.Normals != null && mesh.Normals.Length > 0);
@@ -55,7 +55,7 @@ namespace Fusee.Engine.SimpleScene
             // _hasColors = (mesh.Colors != null && mesh.Colors.Length > 0);
         }
 
-        private void AnalyzeMaterial(MaterialContainer mc)
+        private void AnalyzeMaterial(MaterialComponent mc)
         {
             _hasDiffuse = mc.HasDiffuse;
             if (_hasDiffuse)

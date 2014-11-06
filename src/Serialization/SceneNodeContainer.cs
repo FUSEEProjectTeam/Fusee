@@ -5,7 +5,7 @@ using ProtoBuf;
 namespace Fusee.Serialization
 {
     [ProtoContract]
-    public class SceneObjectContainer
+    public class SceneNodeContainer
     {
         [ProtoMember(1)]
         public string Name;
@@ -13,13 +13,10 @@ namespace Fusee.Serialization
         [ProtoMember(2)]
         public TransformContainer Transform;
 
-        [ProtoMember(3, AsReference = true)] 
-        public MaterialContainer Material;
+        [ProtoMember(3, AsReference = true)]
+        public List<SceneComponentContainer> Components;
 
         [ProtoMember(4, AsReference = true)]
-        public MeshContainer Mesh;
-
-        [ProtoMember(5, AsReference = true)]
-        public List<SceneObjectContainer> Children;
+        public List<SceneNodeContainer> Children;
     }
 }

@@ -1,40 +1,34 @@
-﻿using System.Collections.Generic;
+﻿
+using System;
+using System.Collections.Generic;
 using System.IO;
 using Fusee.Engine;
+using Fusee.KeyFrameAnimation;
 using Fusee.Math;
 using Fusee.Serialization;
-using Fusee.KeyFrameAnimation;
-using System;
-
 namespace Fusee.Engine.SimpleScene
 {
     class LightInfo // Todo: TBD...
     {
     }
-
     public static class SceneRendererExtensions
     {
         public static float4x4 Matrix(this TransformContainer tcThis)
         {
-            return float4x4.CreateTranslation(tcThis.Translation)*float4x4.CreateRotationY(tcThis.Rotation.y)*
-                   float4x4.CreateRotationX(tcThis.Rotation.x)*float4x4.CreateRotationZ(tcThis.Rotation.z)*
-                   float4x4.CreateScale(tcThis.Scale);
+            return float4x4.CreateTranslation(tcThis.Translation) * float4x4.CreateRotationY(tcThis.Rotation.y) *
+            float4x4.CreateRotationX(tcThis.Rotation.x) * float4x4.CreateRotationZ(tcThis.Rotation.z) *
+            float4x4.CreateScale(tcThis.Scale);
         }
     }
-
     public class SceneRenderer
     {
-        private Dictionary<MeshContainer, Mesh> _meshMap;
-        private Dictionary<MaterialContainer, ShaderEffect> _matMap;
+        private Dictionary<MeshComponent, Mesh> _meshMap;
+        private Dictionary<MaterialComponent, ShaderEffect> _matMap;
         private SceneContainer _sc;
-
         private RenderContext _rc;
         private float4x4 _AABBXForm;
-
         private List<LightInfo> _lights;
-
         private Animation _animation;
-
         private RenderStateSet _stateSet = new RenderStateSet()
         {
             AlphaBlendEnable = false,
@@ -43,16 +37,13 @@ namespace Fusee.Engine.SimpleScene
             ZEnable = true,
             ZFunc = Compare.Less
         };
-
         private ShaderEffect _curMat;
         private string _scenePathDirectory;
-
         ShaderEffect CurMat
         {
-            set { _curMat = value;}
+            set { _curMat = value; }
             get { return _curMat; }
         }
-
         public SceneRenderer(SceneContainer sc, string scenePathDirectory)
         {
             // Todo: scan for lights...
@@ -61,19 +52,18 @@ namespace Fusee.Engine.SimpleScene
             _scenePathDirectory = scenePathDirectory;
             InitAnimations(_sc);
         }
-
         public void InitShaders(RenderContext rc)
         {
             if (rc != _rc)
             {
                 _rc = rc;
-                _meshMap = new Dictionary<MeshContainer, Mesh>();
-                _matMap = new Dictionary<MaterialContainer, ShaderEffect>();
+                _meshMap = new Dictionary<MeshComponent, Mesh>();
+                _matMap = new Dictionary<MaterialComponent, ShaderEffect>();
                 _curMat = null;
             }
             if (_curMat == null)
             {
-                _curMat = MakeMaterial(new MaterialContainer
+                _curMat = MakeMaterial(new MaterialComponent
                 {
                     Diffuse = new MatChannelContainer()
                     {
@@ -92,57 +82,59 @@ namespace Fusee.Engine.SimpleScene
 
         public void InitAnimations(SceneContainer sc)
         {
-            
+
             _animation = new Animation(0);
-            foreach (AnimationTrackContainer animTrackContainer in sc.AnimationTracks)
-            {
-                Type t = animTrackContainer.KeyType;
-                if (typeof(int).IsAssignableFrom(t))
+            if(sc.AnimationTracks != null){
+                foreach (AnimationTrackContainer animTrackContainer in sc.AnimationTracks)
                 {
-                    Channel<int> channel = new Channel<int>(Lerp.IntLerp);
-                    foreach (AnimationKeyContainerInt key in animTrackContainer.KeyFrames)
+                    Type t = animTrackContainer.KeyType;
+                    if (typeof (int).IsAssignableFrom(t))
                     {
-                        channel.AddKeyframe(new Keyframe<int>(key.Time, key.Value));
+                        Channel<int> channel = new Channel<int>(Lerp.IntLerp);
+                        foreach (AnimationKeyContainerInt key in animTrackContainer.KeyFrames)
+                        {
+                            channel.AddKeyframe(new Keyframe<int>(key.Time, key.Value));
+                        }
+                        _animation.AddAnimation(channel, animTrackContainer.SceneObject, animTrackContainer.Property);
                     }
-                    _animation.AddAnimation(channel, animTrackContainer.SceneObject, animTrackContainer.Property);
-                }
-                else if (typeof(float).IsAssignableFrom(t))
-                {
-                    Channel<float> channel = new Channel<float>(Lerp.FloatLerp);
-                    foreach (AnimationKeyContainerFloat key in animTrackContainer.KeyFrames)
+                    else if (typeof (float).IsAssignableFrom(t))
                     {
-                        channel.AddKeyframe(new Keyframe<float>(key.Time, key.Value));
+                        Channel<float> channel = new Channel<float>(Lerp.FloatLerp);
+                        foreach (AnimationKeyContainerFloat key in animTrackContainer.KeyFrames)
+                        {
+                            channel.AddKeyframe(new Keyframe<float>(key.Time, key.Value));
+                        }
+                        _animation.AddAnimation(channel, animTrackContainer.SceneObject, animTrackContainer.Property);
                     }
-                    _animation.AddAnimation(channel, animTrackContainer.SceneObject, animTrackContainer.Property);
-                }
-                else if (typeof(float2).IsAssignableFrom(t))
-                {
-                    Channel<float2> channel = new Channel<float2>(Lerp.Float2Lerp);
-                    foreach (AnimationKeyContainerFloat2 key in animTrackContainer.KeyFrames)
+                    else if (typeof (float2).IsAssignableFrom(t))
                     {
-                        channel.AddKeyframe(new Keyframe<float2>(key.Time, key.Value));
+                        Channel<float2> channel = new Channel<float2>(Lerp.Float2Lerp);
+                        foreach (AnimationKeyContainerFloat2 key in animTrackContainer.KeyFrames)
+                        {
+                            channel.AddKeyframe(new Keyframe<float2>(key.Time, key.Value));
+                        }
+                        _animation.AddAnimation(channel, animTrackContainer.SceneObject, animTrackContainer.Property);
                     }
-                    _animation.AddAnimation(channel, animTrackContainer.SceneObject, animTrackContainer.Property);
-                }
-                else if (typeof(float3).IsAssignableFrom(t))
-                {
-                    Channel<float3> channel = new Channel<float3>(Lerp.Float3Lerp);
-                    foreach (AnimationKeyContainerFloat3 key in animTrackContainer.KeyFrames)
+                    else if (typeof (float3).IsAssignableFrom(t))
                     {
-                        channel.AddKeyframe(new Keyframe<float3>(key.Time, key.Value));
+                        Channel<float3> channel = new Channel<float3>(Lerp.Float3Lerp);
+                        foreach (AnimationKeyContainerFloat3 key in animTrackContainer.KeyFrames)
+                        {
+                            channel.AddKeyframe(new Keyframe<float3>(key.Time, key.Value));
+                        }
+                        _animation.AddAnimation(channel, animTrackContainer.SceneObject, animTrackContainer.Property);
                     }
-                    _animation.AddAnimation(channel, animTrackContainer.SceneObject, animTrackContainer.Property);
-                }
-                else if (typeof(float4).IsAssignableFrom(t))
-                {
-                    Channel<float4> channel = new Channel<float4>(Lerp.Float4Lerp);
-                    foreach (AnimationKeyContainerFloat4 key in animTrackContainer.KeyFrames)
+                    else if (typeof (float4).IsAssignableFrom(t))
                     {
-                        channel.AddKeyframe(new Keyframe<float4>(key.Time, key.Value));
+                        Channel<float4> channel = new Channel<float4>(Lerp.Float4Lerp);
+                        foreach (AnimationKeyContainerFloat4 key in animTrackContainer.KeyFrames)
+                        {
+                            channel.AddKeyframe(new Keyframe<float4>(key.Time, key.Value));
+                        }
+                        _animation.AddAnimation(channel, animTrackContainer.SceneObject, animTrackContainer.Property);
                     }
-                    _animation.AddAnimation(channel, animTrackContainer.SceneObject, animTrackContainer.Property);
+                    //TODO : Add cases for each type
                 }
-                //TODO : Add cases for each type
             }
         }
 
@@ -150,7 +142,6 @@ namespace Fusee.Engine.SimpleScene
         {
             _animation.Animate();
         }
-
         public AABBf? GetAABB()
         {
             AABBf? ret = null;
@@ -172,21 +163,19 @@ namespace Fusee.Engine.SimpleScene
             }
             return ret;
         }
-
-        protected AABBf? VisitNodeAABB(SceneObjectContainer soc)
+        protected AABBf? VisitNodeAABB(SceneNodeContainer sbc)
         {
             AABBf? ret = null;
             float4x4 origMV = _AABBXForm;
-
-            _AABBXForm = _AABBXForm * soc.Transform.Matrix();
-            if (soc.Mesh != null)
+            _AABBXForm = _AABBXForm * sbc.Transform.Matrix();
+            SceneNodeContainer snc = sbc as SceneNodeContainer;
+            if (snc != null && snc.GetMesh() != null)
             {
-                ret = _AABBXForm * soc.Mesh.BoundingBox;
+                ret = _AABBXForm * snc.GetMesh().BoundingBox;
             }
-
-            if (soc.Children != null)
+            if (sbc.Children != null)
             {
-                foreach (var child in soc.Children)
+                foreach (var child in sbc.Children)
                 {
                     AABBf? nodeBox = VisitNodeAABB(child);
                     if (nodeBox != null)
@@ -205,59 +194,55 @@ namespace Fusee.Engine.SimpleScene
             _AABBXForm = origMV;
             return ret;
         }
-
         public void Render(RenderContext rc)
         {
             InitShaders(rc);
-            foreach (var soc in _sc.Children)
+            foreach (var sbc in _sc.Children)
             {
-                VisitNodeRender(soc);
+                VisitNodeRender(sbc);
             }
         }
-
-        protected void VisitNodeRender(SceneObjectContainer soc)
+        protected void VisitNodeRender(SceneNodeContainer sbc)
         {
             float4x4 origMV = _rc.ModelView;
             ShaderEffect origMat = CurMat;
-
-            if (soc.Material != null)
+            _rc.ModelView = _rc.ModelView * sbc.Transform.Matrix();
+            SceneNodeContainer soc = sbc as SceneNodeContainer;
+            if (soc != null)
             {
-                var mat = LookupMaterial(soc.Material);
-                CurMat = mat;
+                if (soc.GetMaterial() != null)
+                {
+                    var mat = LookupMaterial(soc.GetMaterial());
+                    CurMat = mat;
+                }
+                if (soc.GetMesh() != null)
+                {
+                    Mesh rm;
+                    if (!_meshMap.TryGetValue(soc.GetMesh(), out rm))
+                    {
+                        rm = MakeMesh(soc);
+                        _meshMap.Add(soc.GetMesh(), rm);
+                    }
+                    if (null != CurMat.GetEffectParam(ShaderCodeBuilder.LightDirectionName))
+                    {
+                        RenderWithLights(rm, CurMat);
+                    }
+                    else
+                    {
+                        CurMat.RenderMesh(rm);
+                    }
+                }
             }
-            _rc.ModelView = _rc.ModelView * soc.Transform.Matrix();
-
-            if (soc.Mesh != null)
+            if (sbc.Children != null)
             {
-                Mesh rm;
-                if (!_meshMap.TryGetValue(soc.Mesh, out rm))
-                {
-                    rm = MakeMesh(soc);
-                    _meshMap.Add(soc.Mesh, rm);
-                }
-
-                if (null != CurMat.GetEffectParam(ShaderCodeBuilder.LightDirectionName))
-                {
-                    RenderWithLights(rm, CurMat);
-                }
-                else
-                {
-                    CurMat.RenderMesh(rm);
-                }
-            }
-
-            if (soc.Children != null)
-            {
-                foreach (var child in soc.Children)
+                foreach (var child in sbc.Children)
                 {
                     VisitNodeRender(child);
                 }
             }
-
             _rc.ModelView = origMV;
             CurMat = origMat;
         }
-
         private void RenderWithLights(Mesh rm, ShaderEffect CurMat)
         {
             if (_lights.Count > 0)
@@ -282,8 +267,7 @@ namespace Fusee.Engine.SimpleScene
                 CurMat.RenderMesh(rm);
             }
         }
-
-        private ShaderEffect LookupMaterial(MaterialContainer mc)
+        private ShaderEffect LookupMaterial(MaterialComponent mc)
         {
             ShaderEffect mat;
             if (!_matMap.TryGetValue(mc, out mat))
@@ -294,34 +278,31 @@ namespace Fusee.Engine.SimpleScene
             }
             return mat;
         }
-
-        public static Mesh MakeMesh(SceneObjectContainer soc)
+        public static Mesh MakeMesh(SceneNodeContainer soc)
         {
+            MeshComponent mc = soc.GetMesh();
             Mesh rm;
             rm = new Mesh()
             {
                 Colors = null,
-                Normals = soc.Mesh.Normals,
-                UVs = soc.Mesh.UVs,
-                Vertices = soc.Mesh.Vertices,
-                Triangles = soc.Mesh.Triangles
+                Normals = mc.Normals,
+                UVs = mc.UVs,
+                Vertices = mc.Vertices,
+                Triangles = mc.Triangles
             };
             return rm;
         }
-
         private ITexture LoadTexture(string path)
         {
             string texturePath = Path.Combine(_scenePathDirectory, path);
             var image = _rc.LoadImage(texturePath);
             return _rc.CreateTexture(image);
         }
-
-        private ShaderEffect MakeMaterial(MaterialContainer mc)
+        private ShaderEffect MakeMaterial(MaterialComponent mc)
         {
             ShaderCodeBuilder scb = new ShaderCodeBuilder(mc, null);
             var effectParameters = AssembleEffectParamers(mc, scb);
-
-            ShaderEffect ret = new ShaderEffect(new []
+            ShaderEffect ret = new ShaderEffect(new[]
                 {
                     new EffectPassDeclaration()
                     {
@@ -339,16 +320,15 @@ namespace Fusee.Engine.SimpleScene
             return ret;
         }
 
-        private List<EffectParameterDeclaration> AssembleEffectParamers(MaterialContainer mc, ShaderCodeBuilder scb)
+        private List<EffectParameterDeclaration> AssembleEffectParamers(MaterialComponent mc, ShaderCodeBuilder scb)
         {
             List<EffectParameterDeclaration> effectParameters = new List<EffectParameterDeclaration>();
-
             if (mc.HasDiffuse)
             {
                 effectParameters.Add(new EffectParameterDeclaration
                 {
                     Name = scb.DiffuseColorName,
-                    Value = (object) mc.Diffuse.Color
+                    Value = (object)mc.Diffuse.Color
                 });
                 if (mc.Diffuse.Texture != null)
                 {
@@ -364,23 +344,22 @@ namespace Fusee.Engine.SimpleScene
                     });
                 }
             }
-
             if (mc.HasSpecular)
             {
                 effectParameters.Add(new EffectParameterDeclaration
                 {
                     Name = scb.SpecularColorName,
-                    Value = (object) mc.Specular.Color
+                    Value = (object)mc.Specular.Color
                 });
                 effectParameters.Add(new EffectParameterDeclaration
                 {
                     Name = scb.SpecularShininessName,
-                    Value = (object) mc.Specular.Shininess
+                    Value = (object)mc.Specular.Shininess
                 });
                 effectParameters.Add(new EffectParameterDeclaration
                 {
                     Name = scb.SpecularIntensityName,
-                    Value = (object) mc.Specular.Intensity
+                    Value = (object)mc.Specular.Intensity
                 });
                 if (mc.Specular.Texture != null)
                 {
@@ -396,13 +375,12 @@ namespace Fusee.Engine.SimpleScene
                     });
                 }
             }
-
             if (mc.HasEmissive)
             {
                 effectParameters.Add(new EffectParameterDeclaration
                 {
                     Name = scb.EmissiveColorName,
-                    Value = (object) mc.Emissive.Color
+                    Value = (object)mc.Emissive.Color
                 });
                 if (mc.Emissive.Texture != null)
                 {
@@ -418,7 +396,6 @@ namespace Fusee.Engine.SimpleScene
                     });
                 }
             }
-
             if (mc.HasBump)
             {
                 effectParameters.Add(new EffectParameterDeclaration
@@ -432,7 +409,6 @@ namespace Fusee.Engine.SimpleScene
                     Value = LoadTexture(mc.Bump.Texture)
                 });
             }
-
             // Any light calculation needed at all?
             if (mc.HasDiffuse || mc.HasSpecular)
             {
@@ -445,7 +421,7 @@ namespace Fusee.Engine.SimpleScene
                 effectParameters.Add(new EffectParameterDeclaration
                 {
                     Name = ShaderCodeBuilder.LightIntensityName,
-                    Value = (float) 1
+                    Value = (float)1
                 });
                 effectParameters.Add(new EffectParameterDeclaration
                 {
@@ -453,7 +429,6 @@ namespace Fusee.Engine.SimpleScene
                     Value = new float3(0, 0, 1)
                 });
             }
-
             return effectParameters;
         }
     }

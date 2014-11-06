@@ -68,7 +68,7 @@ namespace Fusee.Serialization
     {
 
         [ProtoMember(1, AsReference = true)]
-        public SceneObjectContainer SceneObject;
+        public SceneNodeContainer SceneObject;
 
         [ProtoMember(2)] 
         public string Property;

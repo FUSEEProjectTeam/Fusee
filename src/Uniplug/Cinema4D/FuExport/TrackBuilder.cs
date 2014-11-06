@@ -163,12 +163,12 @@ namespace FuExport
 
         }
 
-        public void BuildTracks(SceneObjectContainer soc, List<AnimationTrackContainer> list)
+        public void BuildTracks(SceneNodeContainer snc, List<AnimationTrackContainer> list)
         {
             if (TranslationKeys != null) 
                 list.Add(new AnimationTrackContainer()
                 {
-                    SceneObject = soc,
+                    SceneObject = snc,
                     Property = "Transform.Translation",
                     KeyType = typeof(float3),
                     KeyFrames = BuildTranslationKeys()
@@ -178,7 +178,7 @@ namespace FuExport
             if(RotationKeys != null)
                 list.Add(new AnimationTrackContainer()
                 {
-                    SceneObject = soc,
+                    SceneObject = snc,
                     Property = "Transform.Rotation",
                     KeyType = typeof(float3),
                     KeyFrames = BuildRotationKeys()
@@ -188,7 +188,7 @@ namespace FuExport
             if(ScaleKeys != null)
                 list.Add(new AnimationTrackContainer()
                 {
-                    SceneObject = soc,
+                    SceneObject = snc,
                     Property = "Transform.Scale",
                     KeyType = typeof(float3),
                     KeyFrames = BuildScaleKeys()

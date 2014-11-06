@@ -26,7 +26,7 @@ namespace Fusee.Serialization
         public SceneHeader Header;
         
         [ProtoMember(2, AsReference = true)]
-        public List<SceneObjectContainer> Children;
+        public List<SceneNodeContainer> Children;
 
         [ProtoMember(3, AsReference = true)]
         public List<AnimationTrackContainer> AnimationTracks;

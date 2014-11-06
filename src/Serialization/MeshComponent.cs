@@ -5,7 +5,7 @@ using ProtoBuf;
 namespace Fusee.Serialization
 {
     [ProtoContract]
-    public class MeshContainer
+    public class MeshComponent : SceneComponentContainer
     {
         [ProtoMember(1)]
         public float3[] Vertices;
