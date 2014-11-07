@@ -55,7 +55,7 @@
     </ProjectReference>
     <ProjectReference Include="..\..\Xirkit\Xirkit.csproj">
       <Project>{f091790c-ed62-44d2-8622-966030a98e0b}</Project>
-      <Name>Xirkit %28Xirkit\Xirkit%29</Name>
+      <Name>Xirkit</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

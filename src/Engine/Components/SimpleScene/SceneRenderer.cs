@@ -10,16 +10,6 @@ namespace Fusee.Engine.SimpleScene
     {
     }
 
-    public static class SceneRendererExtensions
-    {
-        public static float4x4 Matrix(this TransformContainer tcThis)
-        {
-            return float4x4.CreateTranslation(tcThis.Translation)*float4x4.CreateRotationY(tcThis.Rotation.y)*
-                   float4x4.CreateRotationX(tcThis.Rotation.x)*float4x4.CreateRotationZ(tcThis.Rotation.z)*
-                   float4x4.CreateScale(tcThis.Scale);
-        }
-    }
-
     public class SceneRenderer
     {
         private Dictionary<MeshComponent, Mesh> _meshMap;

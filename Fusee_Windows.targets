@@ -30,6 +30,7 @@
       <WebNetScript Include="$(TargetDir)..\..\WebNet\*.*" />
       <WebInputScript Include="$(TargetDir)..\..\WebInput\*.*" />
       <WebXirkitScript Include="$(TargetDir)..\..\WebXirkit\*.*" />
+      <WebSimpleSceneScript Include="$(TargetDir)..\..\WebSimpleScene\*.*" />
     </ItemGroup>
 
     <MakeDir Directories="$(WebOutputDir)" Condition="!Exists('$(WebOutputDir)')" />
@@ -47,6 +48,7 @@
     <Copy SourceFiles="@(WebNetScript)" DestinationFolder="$(WebOutputDir)Assets\Scripts" SkipUnchangedFiles="true" />
     <Copy SourceFiles="@(WebInputScript)" DestinationFolder="$(WebOutputDir)Assets\Scripts" SkipUnchangedFiles="true" />
     <Copy SourceFiles="@(WebXirkitScript)" DestinationFolder="$(WebOutputDir)Assets\Scripts" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(WebSimpleSceneScript)" DestinationFolder="$(WebOutputDir)Assets\Scripts" SkipUnchangedFiles="true" />
     
     <!-- Escaping necessary because of quotation marks! -->
     <Message Importance="High" Text="### PostBuildEvent $(TargetName): Creating default HTML file ###" />

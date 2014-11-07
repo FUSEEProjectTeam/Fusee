@@ -2487,6 +2487,18 @@ window.requestAnimFrame = (function() {
         };
 })();
 
+
+JSIL.ImplementExternals("Fusee.Engine.Diagnostics", function ($) {
+    $.Method({ Static: true, Public: true }, "Log",
+        new JSIL.MethodSignature(null, [$.Object]),
+        function Log(o) {
+            if (typeof window.console != 'undefined') {
+                console.log(o);
+            }
+        }
+    );
+});
+
 /**
 * Provides cancelAnimationFrame in a cross browser way.
 */
