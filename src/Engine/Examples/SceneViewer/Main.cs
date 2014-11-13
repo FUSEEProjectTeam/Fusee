@@ -76,7 +76,7 @@ namespace Examples.SceneViewer
             // Scene loading
             SceneContainer scene;
             var ser = new Serializer();
-            using (var file = File.OpenRead(@"Assets/Robo.fus"))
+            using (var file = File.OpenRead(@"Assets/WeightTest.fus"))
             {
                 scene = ser.Deserialize(file, null, typeof(SceneContainer)) as SceneContainer;
             }

@@ -102,6 +102,9 @@
     <None Include="Assets\Robo.fus">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Assets\WeightTest.fus">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)/Microsoft.CSharp.targets" />
   <PropertyGroup>

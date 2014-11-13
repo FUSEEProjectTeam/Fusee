@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using C4d;
@@ -12,22 +13,21 @@ namespace FuExport
     {
         private BaseDocument _doc;
         private List<WeightObject> _weightObjects;
-        private Dictionary<CAJointObject, SceneNodeContainer> _jointObjects;
+        private Dictionary<long, SceneNodeContainer> _jointObjects;
 
         public WeightManager(BaseDocument document)
         {
             _doc = document;
             _weightObjects = new List<WeightObject>();
-            _jointObjects = new Dictionary<CAJointObject, SceneNodeContainer>();
+            _jointObjects = new Dictionary<long, SceneNodeContainer>();
         }
 
         public void CheckOnJoint(SceneNodeContainer snc, BaseObject bo)
         {
-            if (bo.IsInstanceOf(1019362))
+            CAJointObject jo = bo as CAJointObject;
+            if (jo != null)
             {
-                CAJointObject jo = bo as CAJointObject;
-                if(jo != null)
-                    _jointObjects.Add(jo, snc);
+                _jointObjects.Add(jo.RefUID(), snc);
             }
         }
 
@@ -63,7 +63,6 @@ namespace FuExport
                 BaseObject = bo,
                 WeightTag = weightTag,
                 WeightMap = weightMap
-
             });
 
         }
@@ -74,11 +73,12 @@ namespace FuExport
             {
                 WeightComponent wComponent = new WeightComponent();
                 wComponent.Name = wObject.WeightTag.GetName();
+                wComponent.Joints = new List<SceneNodeContainer>();
                 for (int i = 0; i < wObject.WeightTag.GetJointCount(); i++)
                 {
                     CAJointObject joint = wObject.WeightTag.GetJoint(i, _doc) as CAJointObject;
                     SceneNodeContainer jointSnc = new SceneNodeContainer();
-                    if (_jointObjects.TryGetValue(joint, out jointSnc))
+                    if (_jointObjects.TryGetValue(joint.RefUID(), out jointSnc))
                     {
                         wComponent.Joints.Add(jointSnc);                   
                     }                   
