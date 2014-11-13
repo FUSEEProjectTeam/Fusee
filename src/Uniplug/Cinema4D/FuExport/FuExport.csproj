@@ -68,6 +68,7 @@
     <Compile Include="SimpleHttpServer.cs" />
     <Compile Include="TrackBuilder.cs" />
     <Compile Include="Utils.cs" />
+    <Compile Include="WeightManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="res\FuExportLogo.tif">

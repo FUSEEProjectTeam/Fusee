@@ -76,7 +76,7 @@ namespace Examples.SceneViewer
             // Scene loading
             SceneContainer scene;
             var ser = new Serializer();
-            using (var file = File.OpenRead(@"Assets/Model.fus"))
+            using (var file = File.OpenRead(@"Assets/Robo.fus"))
             {
                 scene = ser.Deserialize(file, null, typeof(SceneContainer)) as SceneContainer;
             }
@@ -182,8 +182,9 @@ namespace Examples.SceneViewer
             //RC.SetShaderParam(_colorParam, new float4(0.5f, 0.8f, 0, 1));
             //RC.Render(_meshTea);
 
-            RC.ModelView = mtxCam * mtxRot * _modelScaleOffset;
+            RC.ModelView = mtxCam * mtxRot * float4x4.CreateScale(0.6f, 0.6f, 0.6f); //* _modelScaleOffset * ;
             _sr.Render(RC);
+            _sr.Animate();
             _guiHandler.RenderGUI();
 
             // swap buffers

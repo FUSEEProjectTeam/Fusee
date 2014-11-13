@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Globalization;
@@ -51,14 +52,16 @@ namespace FuExport
 
         private Dictionary<long, MaterialComponent> _materialCache;
         private List<AnimationTrackContainer> _tracks = new List<AnimationTrackContainer>();
+        private WeightManager _weightManager;
 
         public SceneContainer FuseefyScene(BaseDocument doc, string sceneRootDir, out List<string> textureFiles)
         {
-
+            
             _materialCache = new Dictionary<long, MaterialComponent>();
             _sceneRootDir = sceneRootDir;
             _doc = doc;
             _polyDoc = doc.Polygonize();
+            _weightManager = new WeightManager(_polyDoc);
 
             Logger.Debug("Fuseefy Me!");
 
@@ -83,6 +86,8 @@ namespace FuExport
                 AnimationTracks = _tracks
             };
 
+            // CreateWeightMap has to be called after creating the object-tree
+            _weightManager.CreateWeightMap();
             textureFiles = _textureFiles;
             return root;
         }
@@ -132,7 +137,7 @@ namespace FuExport
                     c = polyOb.GetPointAt(poly.c);
                     d = polyOb.GetPointAt(poly.d);
                 }
-
+                
                 float2 uvA = new float2(0, 0);
                 float2 uvB = new float2(0, 1);
                 float2 uvC = new float2(1, 1);
@@ -187,7 +192,7 @@ namespace FuExport
                 }
                 nNewVerts += 3;
             }
-
+            Debug.WriteLine(verts.Count);
             return new MeshComponent()
             {
                 Normals = normals.ToArray(),
@@ -220,10 +225,18 @@ namespace FuExport
             Collection<TextureTag> textureTags = new Collection<TextureTag>();
             Dictionary<string,  SelectionTag> selectionTags = new Dictionary<string, SelectionTag>();
             UVWTag uvwTag = null;
+            CAWeightTag weightTag = null;
 
             // Iterate over the object's tags
             for (BaseTag tag = ob.GetFirstTag(); tag != null; tag = tag.GetNext())
             {
+                // CAWeightTag - Save data to create the weight list later
+                CAWeightTag wTag = tag as CAWeightTag;
+                if (wTag != null)
+                {
+                    weightTag = wTag;
+                }
+
                 // TextureTag (Material - there might be more than one)
                 TextureTag tex = tag as TextureTag;
                 if (tex != null)
@@ -338,6 +351,7 @@ namespace FuExport
                         AddComponent(subSnc, GetMaterial(texSelItem.Value));
                         subSnc.Name = snc.Name + "_" + texSelItem.Key.GetName();
                         AddComponent(subSnc, GetMesh(polyOb, normalOb, uvwTag, polyInxsSubset));
+                        _weightManager.AddWeightData(subSnc, ob, polyOb, weightTag, polyInxsSubset);
 
 
                         snc.Children.Add(subSnc);
@@ -347,6 +361,7 @@ namespace FuExport
                 // The remaining polygons directly go into the original mesh
 
                 AddComponent(snc, GetMesh(polyOb, normalOb, uvwTag, polyInxs));
+                _weightManager.AddWeightData(snc, ob, polyOb, weightTag, polyInxs);
             }
             else if (ob.GetType() == C4dApi.Olight)
             {
@@ -570,10 +585,10 @@ namespace FuExport
 
                 snc.Transform = (float4x4) mtxD;
                 */
-                // Search for the unpolygonized objects holding the animationtracks
+                // Search for unpolygonized objects holding the animationtracks
                 BaseObject _unpolyOb = _doc.SearchObject(ob.GetName());
                 SaveTracks(_unpolyOb, snc);
-
+                _weightManager.CheckOnJoint(snc,ob);
 
                 VisitObject(ob, snc);
 

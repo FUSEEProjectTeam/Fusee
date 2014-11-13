@@ -51,7 +51,7 @@
 %{
 /* Includes the header in the wrapper code */
 #include "c4d.h"
-#include "lib_ca.h"
+
 #include "lib_description.h"
 #include "c4d_file.h"
 #include "c4d_graphview.h"
@@ -61,6 +61,7 @@
 #include "c4d_filterplugin.h"
 #include "operatingsystem.h"
 #include "c4d_basetag.h"
+#include "lib_ca.h"
 #include "c4d_baseselect.h" //NEU
 #include "c4d_basebitmap.h"
 #include "c4d_nodedata.h"
@@ -299,6 +300,9 @@ class String;
 	   case 5673: // Tpolygonselection  WARNING!!! There is is only ONE class (SelectionTag) for three type IDs (Point, Edge, and Poly). C4D programmers, you are real men...
 		 ret = new SelectionTag(cPtr, owner);
 		 break;
+	   case 1019365:
+		 ret = new CAWeightTag(cPtr, owner);
+		 break;
       // Repeat for every other concrete type.
       default:
 	  //changed from the debug output to return a BaseTag object
@@ -335,6 +339,9 @@ BaseTag *
          break;
 	  case 5100: // Opolygon
 		 ret = new PolygonObject(cPtr, owner);
+		 break;
+	  case 1019362: // Ojoint
+		 ret = new CAJointObject(cPtr, owner);
 		 break;
       // Repeat for every other concrete type.
       default:
