@@ -44,6 +44,10 @@ namespace Fusee.Engine.SimpleScene
         {
             return (LightComponent)GetComponent<LightComponent>(snc, inx);
         }
+        public static WeightComponent GetWeights(this SceneNodeContainer snc, int inx = 0)
+        {
+            return (WeightComponent)GetComponent<WeightComponent>(snc, inx);
+        }
 
         public static void AddComponent(this SceneNodeContainer snc, SceneComponentContainer scc)
         {
