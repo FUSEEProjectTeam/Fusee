@@ -142,7 +142,7 @@ namespace Examples.HandOnCanvas
             using (var file = File.OpenRead(@"Assets/HandIndexCenter.fus"))
             {
                 scene = ser.Deserialize(file, null, typeof(SceneContainer)) as SceneContainer;
-                _meshHand = SceneRenderer.MakeMesh(scene.Children[0]);
+                _meshHand = SceneRenderer.MakeMesh(scene.Children[0].GetMesh());
             }
 
         }

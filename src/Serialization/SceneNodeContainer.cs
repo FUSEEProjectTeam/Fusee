@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Fusee.Math;
 using ProtoBuf;
 
 namespace Fusee.Serialization
