@@ -1514,6 +1514,11 @@ namespace Fusee.Engine
                     _rci.SetNormals(m._meshImp, m.Normals);
             }
 
+            if (m.BoneIndices != null && m.BoneIndices.Length != 0 && !m.BoneIndicesSet)
+                _rci.SetBoneIndices(m._meshImp, m.BoneIndices);
+
+            if (m.BoneWeights != null && m.BoneWeights.Length != 0 && !m.BoneWeightsSet)
+                _rci.SetBoneWeights(m._meshImp, m.BoneWeights);
 
             if (m.Triangles != null && m.Triangles.Length != 0 && !m.TrianglesSet)
                 _rci.SetTriangles(m._meshImp, m.Triangles);

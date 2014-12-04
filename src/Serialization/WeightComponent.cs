@@ -11,7 +11,7 @@ namespace Fusee.Serialization
     public class WeightComponent : SceneComponentContainer
     {
         [ProtoMember(1)]
-        public List<JointWeightWrapper> Weights;
+        public List<JointWeightColumn> WeightMap;
 
         [ProtoMember(2, AsReference = true)]
         public List<SceneNodeContainer> Joints;
@@ -20,7 +20,7 @@ namespace Fusee.Serialization
     }
 
     [ProtoContract]
-    public class JointWeightWrapper
+    public class JointWeightColumn
     {
         [ProtoMember(1)]
         public List<double> JointWeights { get; set; }

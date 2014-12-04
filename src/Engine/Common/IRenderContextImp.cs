@@ -328,6 +328,24 @@ namespace Fusee.Engine
         void SetTriangles(IMeshImp mr, ushort[] triangleIndices);
 
         /// <summary>
+        /// Binds the boneindices onto the GL Rendercontext and assigns an ElementBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="boneIndices">The boneindices.</param>
+        /// <exception cref="System.ArgumentException">boneIndices must not be null or empty</exception>
+        /// <exception cref="System.ApplicationException"></exception>
+        void SetBoneIndices(IMeshImp mr, float4[] boneIndices);
+
+        /// <summary>
+        /// Binds the boneweights onto the GL Rendercontext and assigns an ElementBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="boneWeights">The boneweights.</param>
+        /// <exception cref="System.ArgumentException">boneWeights must not be null or empty</exception>
+        /// <exception cref="System.ApplicationException"></exception>
+        void SetBoneWeights(IMeshImp mr, float4[] boneWeights);
+
+        /// <summary>
         /// Activates the passed shader program as the current shader for geometry rendering.
         /// </summary>
         /// <param name="shaderProgramImp">The shader to apply to mesh geometry subsequently passed to the RenderContext</param>

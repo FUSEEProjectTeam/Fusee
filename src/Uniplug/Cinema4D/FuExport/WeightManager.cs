@@ -36,10 +36,10 @@ namespace FuExport
             if (weightTag == null)
                 return;
 
-            List<JointWeightWrapper> weightMap = new List<JointWeightWrapper>();
+            List<JointWeightColumn> weightMap = new List<JointWeightColumn>();
             for (int i = 0; i < weightTag.GetJointCount(); i++)
             {
-                JointWeightWrapper jointWeightWrapper = new JointWeightWrapper()
+                JointWeightColumn jointWeightWrapper = new JointWeightColumn()
                 {
                     JointWeights = new List<double>()
                 };
@@ -51,7 +51,15 @@ namespace FuExport
                         jointWeightWrapper.JointWeights.Add(weightTag.GetWeight(i, poly.a));
                         jointWeightWrapper.JointWeights.Add(weightTag.GetWeight(i, poly.b));
                         jointWeightWrapper.JointWeights.Add(weightTag.GetWeight(i, poly.c));
-                        jointWeightWrapper.JointWeights.Add(weightTag.GetWeight(i, poly.d));
+
+                        double3 c = polyOb.GetPointAt(poly.c);
+                        double3 d = polyOb.GetPointAt(poly.d);
+
+                        if (c != d)
+                        {
+                            // The Polyogon is not a triangle, but a quad. Add the second triangle.
+                            jointWeightWrapper.JointWeights.Add(weightTag.GetWeight(i, poly.d));
+                        }       
                     }
                 }
                 weightMap.Add(jointWeightWrapper);
@@ -77,7 +85,7 @@ namespace FuExport
                 for (int i = 0; i < wObject.WeightTag.GetJointCount(); i++)
                 {
                     CAJointObject joint = wObject.WeightTag.GetJoint(i, _doc) as CAJointObject;
-                    SceneNodeContainer jointSnc = new SceneNodeContainer();
+                    SceneNodeContainer jointSnc;
                     if (_jointObjects.TryGetValue(joint.RefUID(), out jointSnc))
                     {
                         wComponent.Joints.Add(jointSnc);                   
@@ -96,7 +104,7 @@ namespace FuExport
 
             public CAWeightTag WeightTag { get; set; }
 
-            public List<JointWeightWrapper> WeightMap { get; set; } 
+            public List<JointWeightColumn> WeightMap { get; set; } 
         }
     }
 }

@@ -226,40 +226,12 @@ namespace Fusee.Engine.SimpleScene
                     }
                     if (null != CurMat.GetEffectParam(ShaderCodeBuilder.LightDirectionName))
                     {
-                        //WeightComponent wc = soc.GetWeights();
-                        //if (wc != null)
-                        //    for (int i = 0; i < rm.Vertices.Length; i++)
-                        //    {
-                                
-                        //        float4x4 moveMatrix = float4x4.Identity;
-                        //        for (int j = 0; j < wc.Joints.Count; j++)
-                        //        {
-                        //            Debug.Write((float)wc.Weights[j].JointWeights[i]);
-                        //            //moveMatrix *= float4x4.CreateTranslation(wc.Joints[j].Transform.Translation);
-                        //            //Debug.WriteLine(soc.Transform.Rotation);
-                        //            //soc.Transform.Rotation = wc.Joints[j].Transform.Rotation;//*float4x4.CreateRotationY(45);
-                        //            //float3 rot = soc.Transform.Rotation;//* (float) wc.Weights[j].JointWeights[i];
-                        //            float3 rot = wc.Joints[j].Transform.Rotation;
-                        //            moveMatrix *= float4x4.CreateRotationY(rot.y*(float)wc.Weights[j].JointWeights[i]) *
-                        //                           float4x4.CreateRotationX(rot.x * (float)wc.Weights[j].JointWeights[i]) *
-                        //                           float4x4.CreateRotationZ(rot.z * (float)wc.Weights[j].JointWeights[i]);
-
-                        //            //moveMatrix *= float4x4.CreateTranslation(-wc.Joints[j].Transform.Translation);
-                        //        }
-                        //        Debug.WriteLine("");
-
-                        //        rm.Vertices[i] = soc.GetMesh().Vertices[i] * moveMatrix;
-                        //    }
                         RenderWithLights(rm, CurMat);
                     }
                     else
                     {
                         CurMat.RenderMesh(rm);
                     }
-                    //else
-                    //{
-                    //    CurMat.RenderMesh(rm);
-                    //}
                 }
             }
             if (sbc.Children != null)
@@ -272,6 +244,7 @@ namespace Fusee.Engine.SimpleScene
             _rc.ModelView = origMV;
             CurMat = origMat;
         }
+
         private void RenderWithLights(Mesh rm, ShaderEffect CurMat)
         {
             if (_lights.Count > 0)
@@ -310,15 +283,55 @@ namespace Fusee.Engine.SimpleScene
         public static Mesh MakeMesh(SceneNodeContainer soc)
         {
             MeshComponent mc = soc.GetMesh();
+            WeightComponent wc = soc.GetWeights();
             Mesh rm;
-            rm = new Mesh()
+
+            if (wc == null)
+                rm = new Mesh()
+                {
+                    Colors = null,
+                    Normals = mc.Normals,
+                    UVs = mc.UVs,
+                    Vertices = mc.Vertices,
+                    Triangles = mc.Triangles
+                };
+            else // Create Mesh with weightdata
             {
-                Colors = null,
-                Normals = mc.Normals,
-                UVs = mc.UVs,
-                Vertices = mc.Vertices,
-                Triangles = mc.Triangles
-            };
+
+                // invert weightmap to handle it easier
+                float[,] invertedWeightMap = new float[wc.WeightMap[0].JointWeights.Count, wc.Joints.Count];
+                for (int i = 0; i < wc.WeightMap.Count; i++)
+                {
+                    for (int j = 0; j < wc.WeightMap[i].JointWeights.Count; j++)
+                    {
+                        invertedWeightMap[j, i] = (float) wc.WeightMap[i].JointWeights[j];
+                    }
+                }
+
+                float4[] boneWeights = new float4[invertedWeightMap.Length];
+                float4[] boneIndices = new float4[invertedWeightMap.Length];
+
+                for (int i = 0; i < invertedWeightMap.GetLength(0); i++)
+                {
+                    for (int j = 0; j < invertedWeightMap.GetLength(1); i++)
+                    {
+                        
+                    }
+                }
+
+                rm = new Mesh()
+                {
+                    Colors = null,
+                    Normals = mc.Normals,
+                    UVs = mc.UVs,
+                    BoneIndices = boneIndices,
+                    BoneWeights = boneWeights,
+                    Vertices = mc.Vertices,
+                    Triangles = mc.Triangles
+                }; 
+            }
+
+
             return rm;
         }
         private ITexture LoadTexture(string path)

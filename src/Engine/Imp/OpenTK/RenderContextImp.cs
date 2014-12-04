@@ -745,6 +745,8 @@ namespace Fusee.Engine
             GL.BindAttribLocation(program, Helper.UvAttribLocation, Helper.UvAttribName);
             GL.BindAttribLocation(program, Helper.NormalAttribLocation, Helper.NormalAttribName);
             GL.BindAttribLocation(program, Helper.TangentAttribLocation, Helper.TangentAttribName);
+            GL.BindAttribLocation(program, Helper.BoneIndexAttribLocation, Helper.BoneIndexAttribName);
+            GL.BindAttribLocation(program, Helper.BoneWeightAttribLocation, Helper.BoneWeightAttribName);
             GL.BindAttribLocation(program, Helper.BitangentAttribLocation, Helper.BitangentAttribName);
 
             GL.LinkProgram(program); // AAAARRRRRGGGGHHHH!!!! Must be called AFTER BindAttribLocation
@@ -831,6 +833,64 @@ namespace Fusee.Engine
                 throw new ApplicationException(String.Format(
                     "Problem uploading normal buffer to VBO (normals). Tried to upload {0} bytes, uploaded {1}.",
                     normsBytes, vboBytes));
+            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+        }
+
+        /// <summary>
+        /// Binds the boneindices onto the GL Rendercontext and assigns an BondeIndexBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="boneIndices">The boneindices.</param>
+        /// <exception cref="System.ArgumentException">BoneIndices must not be null or empty</exception>
+        /// <exception cref="System.ApplicationException"></exception>
+        public void SetBoneIndices(IMeshImp mr, float4[] boneIndices)
+        {
+            if (boneIndices == null || boneIndices.Length == 0)
+            {
+                throw new ArgumentException("BoneIndices must not be null or empty");
+            }
+
+            int vboBytes;
+            int indicesBytes = boneIndices.Length * 4 * sizeof(float);
+            if (((MeshImp)mr).BoneIndexBufferObject == 0)
+                GL.GenBuffers(1, out ((MeshImp)mr).BoneIndexBufferObject);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BoneIndexBufferObject);
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(indicesBytes), boneIndices, BufferUsageHint.StaticDraw);
+            GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out vboBytes);
+            if (vboBytes != indicesBytes)
+                throw new ApplicationException(String.Format(
+                    "Problem uploading boneindices buffer to VBO (boneindices). Tried to upload {0} bytes, uploaded {1}.",
+                    indicesBytes, vboBytes));
+            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+        }
+
+        /// <summary>
+        /// Binds the boneweights onto the GL Rendercontext and assigns an BondeWeightBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="boneWeights">The boneweights.</param>
+        /// <exception cref="System.ArgumentException">BoneWeights must not be null or empty</exception>
+        /// <exception cref="System.ApplicationException"></exception>
+        public void SetBoneWeights(IMeshImp mr, float4[] boneWeights)
+        {
+            if (boneWeights == null || boneWeights.Length == 0)
+            {
+                throw new ArgumentException("BoneWeights must not be null or empty");
+            }
+
+            int vboBytes;
+            int weightsBytes = boneWeights.Length * 4 * sizeof(float);
+            if (((MeshImp)mr).BoneWeightBufferObject == 0)
+                GL.GenBuffers(1, out ((MeshImp)mr).BoneWeightBufferObject);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BoneWeightBufferObject);
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(weightsBytes), boneWeights, BufferUsageHint.StaticDraw);
+            GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out vboBytes);
+            if (vboBytes != weightsBytes)
+                throw new ApplicationException(String.Format(
+                    "Problem uploading boneweights buffer to VBO (boneweights). Tried to upload {0} bytes, uploaded {1}.",
+                    weightsBytes, vboBytes));
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
 
