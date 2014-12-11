@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Fusee.Engine;
 using Fusee.Math;
@@ -156,7 +157,206 @@ namespace Examples.Simple
         public static void Main()
         {
             var app = new Simple();
+            var mdrc = new MyDummyRenderContext();
+            mdrc.SetShaderParam(null, float4x4.Identity);
             app.Run();
         }
+
+
+        class MyDummyRenderContext : IRenderContextImp
+        {
+            public float4x4 ModelView { get; set; }
+            public float4x4 Projection { get; set; }
+            public float4 ClearColor { get; set; }
+            public float ClearDepth { get; set; }
+            public IShaderProgramImp CreateShader(string vs, string ps)
+            {
+                throw new NotImplementedException();
+            }
+
+            public IList<ShaderParamInfo> GetShaderParamList(IShaderProgramImp shaderProgram)
+            {
+                throw new NotImplementedException();
+            }
+
+            public IShaderParam GetShaderParam(IShaderProgramImp shaderProgram, string paramName)
+            {
+                throw new NotImplementedException();
+            }
+
+            public float GetParamValue(IShaderProgramImp shaderProgram, IShaderParam param)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void SetShaderParam(IShaderParam param, float val)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void SetShaderParam(IShaderParam param, float2 val)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void SetShaderParam(IShaderParam param, float3 val)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void SetShaderParam(IShaderParam param, float4 val)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void SetShaderParam(IShaderParam param, float4x4 val)
+            {
+                Diagnostics.Log("Because I'm happy...");
+            }
+
+            public void SetShaderParam(IShaderParam param, int val)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void SetShaderParamTexture(IShaderParam param, ITexture texId)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void UpdateTextureFromVideoStream(IVideoStreamImp stream, ITexture tex)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void UpdateTextureRegion(ITexture tex, ImageData img, int startX, int startY, int width, int height)
+            {
+                throw new NotImplementedException();
+            }
+
+            public ITexture CreateTexture(ImageData imageData)
+            {
+                throw new NotImplementedException();
+            }
+
+            public ImageData LoadImage(string filename)
+            {
+                throw new NotImplementedException();
+            }
+
+            public ImageData CreateImage(int width, int height, string bgColor)
+            {
+                throw new NotImplementedException();
+            }
+
+            public ImageData TextOnImage(ImageData imgData, string fontName, float fontSize, string text, string textColor, float startPosX,
+                float startPosY)
+            {
+                throw new NotImplementedException();
+            }
+
+            public IFont LoadFont(string filename, uint size)
+            {
+                throw new NotImplementedException();
+            }
+
+            public float3[] FixTextKerning(IFont font, float3[] vertices, string text, float scaleX)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void Clear(ClearFlags flags)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void SetVertices(IMeshImp mesh, float3[] vertices)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void SetNormals(IMeshImp mr, float3[] normals)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void SetUVs(IMeshImp mr, float2[] uvs)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void SetColors(IMeshImp mr, uint[] colors)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void SetTriangles(IMeshImp mr, ushort[] triangleIndices)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void SetShader(IShaderProgramImp shaderProgramImp)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void Viewport(int x, int y, int width, int height)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void ColorMask(bool red, bool green, bool blue, bool alpha)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void Frustum(double left, double right, double bottom, double top, double zNear, double zFar)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void Render(IMeshImp mr)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void DebugLine(float3 start, float3 end, float4 color)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void GetBufferContent(Rectangle quad, ITexture texId)
+            {
+                throw new NotImplementedException();
+            }
+
+            public IMeshImp CreateMeshImp()
+            {
+                throw new NotImplementedException();
+            }
+
+            public void SetRenderState(RenderState renderState, uint value)
+            {
+                throw new NotImplementedException();
+            }
+
+            public uint GetRenderState(RenderState renderState)
+            {
+                throw new NotImplementedException();
+            }
+
+            public ImageData GetPixelColor(int x, int y, int w, int h)
+            {
+                throw new NotImplementedException();
+            }
+
+            public float GetPixelDepth(int x, int y)
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+
+
     }
 }

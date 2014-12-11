@@ -96,6 +96,14 @@
       <Project>{E95FA1C8-6491-4B4B-BBE1-EDA6B16B2C6A}</Project>
       <Name>Math.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Serialization\SerializationContainer.csproj">
+      <Project>{B7FAC89A-4E75-4EAC-BBC3-BBDB89C94B8A}</Project>
+      <Name>SerializationContainer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Components\SimpleScene\SimpleScene.csproj">
+      <Project>{10DA02FC-109F-4D71-864A-9F5B1E9A0D70}</Project>
+      <Name>SimpleScene</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Fusee.Engine.SimpleScene, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">

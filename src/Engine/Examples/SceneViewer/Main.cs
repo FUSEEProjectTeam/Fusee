@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -9,7 +10,6 @@ using Fusee.Engine.SimpleScene;
 
 namespace Examples.SceneViewer
 {
-
 
     public class SceneViewer : RenderCanvas
     {
@@ -53,6 +53,8 @@ namespace Examples.SceneViewer
         // is called on startup
         public override void Init()
         {
+            TestDictionaryNoCast();
+            TestDictionaryDoCast();
             //TestSerialize();
             //TestDeserialize();
             
@@ -117,6 +119,68 @@ namespace Examples.SceneViewer
             RC.SetShaderParam(_colorParam, new float4(1, 1, 1, 1));
             RC.ClearColor = new float4(1, 1, 1, 1);
         }
+
+        private void TestDictionaryNoCast()
+        {
+            Dictionary<string, int> dict = new Dictionary<string, int>();
+            dict["one"] = 1;
+            dict["two"] = 2;
+            dict["three"] = 3;
+
+            foreach (KeyValuePair<string, int> pair in dict)
+            {
+                Diagnostics.Log("Key: " + pair.Key + ", Value: " + pair.Value);
+            }
+        }
+
+        private void TestDictionaryDoCast()
+        {
+            Dictionary<string, int> dict = new Dictionary<string, int>();
+            dict["one"] = 1;
+            dict["two"] = 2;
+            dict["three"] = 3;
+
+            IEnumerable enuObject = dict;
+            foreach (object pairOb in enuObject)
+            {
+                KeyValuePair<string, int> pair = (KeyValuePair<string, int>) pairOb;
+                Diagnostics.Log("Key: " + pair.Key + ", Value: " + pair.Value);
+            }
+        }
+
+
+        /*
+        IEnumerable enuObject = (IEnumerable) dict;
+        DoTheTest(enuObject);
+
+            foreach (KeyValuePair<string, int> pair in dict)
+            {
+                Diagnostics.Log("Key: " + pair.Key + ", Value: " + pair.Value);
+            }
+            */
+
+        /*
+            IEnumerable enuObject = dict;
+            IEnumerable<KeyValuePair<string, int>> enuTypeSafe = (IEnumerable<KeyValuePair<string, int>>)enuObject;
+
+            foreach (KeyValuePair<string, int> pair in enuTypeSafe)
+            {
+                Diagnostics.Log("Key: " + pair.Key + "Value: " + pair.Value);
+            }
+            */
+
+
+        public void DoTheTest(IEnumerable enuObject)
+        {
+            foreach (object pairOb in enuObject)
+            {
+                KeyValuePair<string, int> pair = (KeyValuePair<string, int>) pairOb;
+                Diagnostics.Log("Key: " + pair.Key + ", Value: " + pair.Value);
+            }
+        }
+
+
+
 
         private void _guiFuseeLink_OnGUIButtonLeave(GUIButton sender, MouseEventArgs mea)
         {
@@ -189,7 +253,7 @@ namespace Examples.SceneViewer
 
             
             // first mesh
-            //RC.ModelView = mtxCam * mtxRot /* float4x4.CreateScale(100) * */;
+            //RC.Model = mtxCam * mtxRot /* float4x4.CreateScale(100) * */;
             //RC.SetShader(_spColor);
             //RC.SetShaderParam(_colorParam, new float4(0.5f, 0.8f, 0, 1));
             //RC.Render(_meshTea);

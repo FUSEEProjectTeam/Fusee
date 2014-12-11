@@ -1,4 +1,7 @@
-﻿namespace Fusee.Engine
+﻿using System;
+using System.Drawing;
+
+namespace Fusee.Engine
 {
     /// <summary>
     /// The Enumerator specifying the PixelFormat of an Image.
@@ -41,5 +44,19 @@
         /// The pixel data array.
         /// </summary>
         public byte[] PixelData;
+
+        public ColorUint GetPixel(int x, int y)
+        {
+            if (PixelFormat == ImagePixelFormat.RGB)
+            {
+                int iPix = y*Stride + 3*x;
+                return new ColorUint(PixelData, iPix, true);
+            }
+            else
+            {
+                int iPix = y * Stride + 4 * x;
+                return new ColorUint(PixelData, iPix, false);
+            }
+        }
     }
 }

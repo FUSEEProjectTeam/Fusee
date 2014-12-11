@@ -200,7 +200,7 @@ namespace Examples.HandOnCanvas
             _angleVert *= curDamp;
 
             // first mesh RH
-            //RC.ModelView = float4x4.CreateRotationX((float) (-0.3*Math.PI))*
+            //RC.Model = float4x4.CreateRotationX((float) (-0.3*Math.PI))*
             //               new float4x4(HandScale, 0, 0, 0, 0, HandScale, 0, 0, 0, 0, HandScale, 0, 0, 0, 0, 1)*mtxRot*
             //               float4x4.CreateTranslation(mousePosWorld)*mtxCam;
 

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Fusee.Engine;
 using Fusee.Math;
 using Fusee.Serialization;
 
@@ -108,11 +107,11 @@ namespace Fusee.Engine.SimpleScene
         #region State
         public class RendererState : VisitorState
         {
-            private CollapsingStateStack<float4x4> _modelView = new CollapsingStateStack<float4x4>();
-            public float4x4 ModelView
+            private CollapsingStateStack<float4x4> _model = new CollapsingStateStack<float4x4>();
+            public float4x4 Model
             {
-                set { _modelView.Tos = value; }
-                get { return _modelView.Tos; }
+                set { _model.Tos = value; }
+                get { return _model.Tos; }
             }
 
             private StateStack<ShaderEffect> _effect = new StateStack<ShaderEffect>();
@@ -124,12 +123,14 @@ namespace Fusee.Engine.SimpleScene
 
             public RendererState()
             {
-                RegisterState(_modelView);
+                RegisterState(_model);
                 RegisterState(_effect);
             }
         };
 
         private RendererState _state;
+        private float4x4 _view;
+
         #endregion
 
         #region Initialization Construction Startup
@@ -180,8 +181,8 @@ namespace Fusee.Engine.SimpleScene
         [VisitMethod]
         public void RenderNode(SceneNodeContainer node)
         {
-            _state.ModelView *= node.Transform.Matrix();
-            _rc.ModelView = _state.ModelView;
+            _state.Model *= node.Transform.Matrix();
+            _rc.Model = _view * _state.Model;
         }
 
         [VisitMethod]
@@ -211,8 +212,30 @@ namespace Fusee.Engine.SimpleScene
                 _state.Effect.RenderMesh(rm);
             }
         }
-        
         #endregion
+
+        #region HierarchyLevel
+        protected override void InitState()
+        {
+            _state.Clear();
+            _state.Model = float4x4.Identity;
+            _view = _rc.ModelView;
+
+            _state.Effect = _defaultEffect;
+        }
+
+        protected override void PushState()
+        {
+            _state.Push();
+        }
+
+        protected override void PopState()
+        {
+            _state.Pop();
+            _rc.ModelView = _view * _state.Model;
+        }
+        #endregion
+
 
         private void RenderWithLights(Mesh rm, ShaderEffect effect)
         {
@@ -240,27 +263,6 @@ namespace Fusee.Engine.SimpleScene
         }
 
 
-        #region HierarchyLevel
-
-        protected override void InitState()
-        {
-            _state.Clear();
-            _state.ModelView = _rc.ModelView;
-
-            _state.Effect = _defaultEffect;
-        }
-
-        protected override void PushState()
-        {
-            _state.Push();
-        }
-
-        protected override void PopState()
-        {
-            _state.Pop();
-            _rc.ModelView = _state.ModelView;
-        }
-        #endregion
 
 
         #region RenderContext/Asset Setup

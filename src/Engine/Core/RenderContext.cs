@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using JSIL.Meta;
 using Fusee.Math;
-using System.Drawing;
 
 namespace Fusee.Engine
 {
@@ -1435,7 +1434,6 @@ namespace Fusee.Engine
         #endregion
 
         #region Render releated Members
-        bool NeedTangents { get { return true; } }
 
         /// <summary>
         /// Apply a single render state to the render context. All subsequent rendering will be
@@ -1550,12 +1548,11 @@ namespace Fusee.Engine
         /// <param name="y">Y-Coordinate</param>
         /// <param name="w">Width</param>
         /// <param name="h">Height</param>
-        /// <returns></returns>
-        public Bitmap GetPixelColor(int x, int y, int w, int h)
+        /// <returns>The requested rectangular area</returns>
+        public ImageData GetPixelColor(int x, int y, int w, int h)
         {
             return _rci.GetPixelColor(x, y, w, h);
         }
-
 
         /// <summary>
         /// This method returns depth value from the depthbuffer at a given coordinate.

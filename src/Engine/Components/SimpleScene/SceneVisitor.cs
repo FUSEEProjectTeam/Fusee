@@ -431,20 +431,18 @@ namespace Fusee.Engine.SimpleScene
         private void DoTraverseNoComponents(SceneNodeContainer node)
         {
             CurrentNode = node;
+            PushState();
+
             DoVisitNode(node);
 
             // DO NOT visit components
 
-            if (node.Children == null)
+            if (node.Children != null)
             {
-                CurrentNode = null;
-                return;
-            }
-
-            PushState();
-            foreach (var child in node.Children)
-            {
-                DoTraverseNoComponents(child);
+                foreach (var child in node.Children)
+                {
+                    DoTraverseNoComponents(child);
+                }
             }
             PopState();
             CurrentNode = null;
@@ -453,20 +451,18 @@ namespace Fusee.Engine.SimpleScene
         private void DoTraverse(SceneNodeContainer node)
         {
             CurrentNode = node;
+            PushState();
+            
             DoVisitNode(node);
 
             DoVisitComponents(node);
 
-            if (node.Children == null)
+            if (node.Children != null)
             {
-                CurrentNode = null;
-                return;
-            }
-
-            PushState();
-            foreach (var child in node.Children)
-            {
-                DoTraverse(child);
+                foreach (var child in node.Children)
+                {
+                    DoTraverse(child);
+                }
             }
             PopState();
             CurrentNode = null;
