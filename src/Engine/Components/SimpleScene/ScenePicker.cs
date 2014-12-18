@@ -5,60 +5,38 @@ using System.Linq;
 using System.Text;
 using Fusee.Math;
 using Fusee.Serialization;
+using ProtoBuf;
 
 namespace Fusee.Engine.SimpleScene
 {
-    /*
-    public static class ScenePickerExtensions
-    {
-        // Unfortunate construct, but there seems no other way. What we really needed here is a MixIn to make 
-        // a SceneNodeContainer or SceneContainer implement IEnumerable (afterwards). All C# offers us is to 
-        // define ExtensionMethods returning an IEnumerable<>.
-        // Thus we need some class to implement that. Here it is - tada:
-        internal class PickEnumerable : IEnumerable<PickResult>
-        {
-            internal IEnumerator<SceneNodeContainer> _rootList;
-            public IEnumerator<PickResult> GetEnumerator() { return new ScenePicker(_rootList); }
-            IEnumerator IEnumerable.GetEnumerator() { return GetEnumerator(); }
-        }
-
-        public static IEnumerable<PickResult> Pick(this SceneNodeContainer root)
-        {
-            return new PickEnumerable { _rootList = SceneVisitorHelpers.SingleRootEnum(root) };
-        }
-
-        public static IEnumerable<PickResult> FindNodes<TNode>(this SceneNodeContainer root, Predicate<TNode> match) where TNode : SceneNodeContainer
-        {
-            return new PickEnumerable> {_rootList = SceneVisitorHelpers.SingleRootEnum(root)};
-        }
-
-
-    }
-
     public struct PickResult
     {
         public SceneNodeContainer Node;
         public MeshComponent Mesh;
         public int Triangle;
-        public float2 BaryCoord;
+        public float WA, WB, WC;
 
-        public T InterpolatedValue<T>(T v0, T v1, T v2)
-        { throw new NotImplementedException(); }
+        // TODO: Implement
         public float3 WorldPos
         { get { throw new NotImplementedException(); } }
 
+        // TODO: Implement
         public float3 ModelPos
         { get { throw new NotImplementedException(); } }
 
+        // TODO: Implement
         public float4 ScreenPos
         { get { throw new NotImplementedException();} }
-    }
+     }
 
-    public class ScenePicker : SceneVisitor
+
+    public class ScenePicker : Viserator<PickResult, ScenePicker.PickingState>
     {
         public class PickingState : VisitorState
         {
             private CollapsingStateStack<float4x4> _model = new CollapsingStateStack<float4x4>();
+            private CollapsingStateStack<float4x4> _view = new CollapsingStateStack<float4x4>();
+            private CollapsingStateStack<float4x4> _projection = new CollapsingStateStack<float4x4>();
 
             public float4x4 Model
             {
@@ -66,51 +44,66 @@ namespace Fusee.Engine.SimpleScene
                 get { return _model.Tos; }
             }
 
+            public float4x4 View
+            {
+                set { _view.Tos = value; }
+                get { return _view.Tos; }
+            }
+
+            public float4x4 Projection
+            {
+                set { _projection.Tos =  value; }
+                get { return _projection.Tos; }
+            }
+
             public PickingState()
             {
                 RegisterState(_model);
+                RegisterState(_view);
+                RegisterState(_projection);
             }
         }
 
-        private PickingState _state;
-        private float4x4 _view;
-        private float4x4 _projection;
-
-        public ScenePicker(IEnumerable<SceneNodeContainer> rootList)
+        public ScenePicker(IEnumerator<SceneNodeContainer> rootList)
+            : base(rootList)
         {
+            State.Model = float4x4.Identity;
         }
-
-        protected override void InitState()
-        {
-            _state.Clear();
-            _state.Model = float4x4.Identity;
-        }
-
-        protected override void PushState()
-        {
-            _state.Push();
-        }
-
-        protected override void PopState()
-        {
-            _state.Pop();
-        }
-
-
 
         #region Visitors
         [VisitMethod]
-        public void PickNode(SceneNodeContainer node)
+        public void PickTransform(TransformComponent transform)
         {
-            _state.Model *= node.Transform.Matrix();
+            State.Model *= transform.Matrix();
         }
 
         [VisitMethod]
         public void PickMesh(MeshComponent meshComponent)
         {
             Mesh rm;
+
+            // TODO: DO THE PICK TEST HERE
+            // foreach triangle
+            //   if (triangle is hit by pickpos)
+            //   {
+            //      YieldOnCurrentNode = true;
+            //     _current = new PickResult
+            //     {
+            //         Mesh = meshComponent,
+            //         Node = CurrentNode,
+            //         Triangle = TODO,
+            //         WA = TODO,
+            //         WB = TODO,
+            //         WC = TODO
+            //     };
+            /// }
         }
         #endregion
 
-    }*/
+        private PickResult _current;
+        public override PickResult Current
+        {
+            get { return _current; }
+        }
+    }
 }

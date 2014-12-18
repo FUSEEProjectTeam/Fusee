@@ -283,9 +283,8 @@ namespace Fusee.Engine.SimpleScene
     ///          set { _intState.Tos = value; }
     ///     }
     /// 
-    ///     TestState()
+    ///     TestState() : base()
     ///     {
-    ///        base();
     ///        RegisterState(_stringState);
     ///        RegisterState(_intState);
     ///     }
@@ -357,53 +356,65 @@ namespace Fusee.Engine.SimpleScene
         }
     }
 
-    class TestState : VisitorState
+    /// <summary>
+    /// A standard state for typical traversals mimicking rendering activities. Keeps track of the main matrices
+    /// as well as selected render states.
+    /// </summary>
+    public class StandardState : VisitorState
     {
-        private CollapsingStateStack<string> _stringState;
+        private CollapsingStateStack<float4x4> _model = new CollapsingStateStack<float4x4>();
+        private CollapsingStateStack<float4x4> _view = new CollapsingStateStack<float4x4>();
+        private CollapsingStateStack<float4x4> _projection = new CollapsingStateStack<float4x4>();
 
-        public string StringState
+        /// <summary>
+        /// Gets or sets the top of the Model matrix stack. The Model matrix transforms model coordinates into world coordinates.
+        /// </summary>
+        /// <value>
+        /// The Model matrix.
+        /// </value>
+        public float4x4 Model
         {
-            get { return _stringState.Tos; }
-            set { _stringState.Tos = value; }
+            set { _model.Tos = value; }
+            get { return _model.Tos; }
         }
 
-    }
-
-    /*
-    class TestScratchCode
-    {
-        public delegate void StateMapper<TState, TComponent>(TState state, TComponent comp) where TState : IStateStack where TComponent : SceneComponentContainer;
-        class VisitingEnumerable<TState> : SceneVisitor
+        /// <summary>
+        /// Gets or sets the top of the View matrix stack. The View matrix transforms world coordinates into view coordinates.
+        /// The View matrix contains a camera's extrinsic parameters (position and orientation).
+        /// </summary>
+        /// <value>
+        /// The View matrix.
+        /// </value>
+        public float4x4 View
         {
-            public VisitingEnumerable(TState state, StateMapper<TState []> )
-
+            set { _view.Tos = value; }
+            get { return _view.Tos; }
         }
 
-        public void TestPicking(SceneContainer scene)
+        /// <summary>
+        /// Gets or sets the top of the Projection matrix stack. The Projection matrix transforms view coordinates into projection coordinates.
+        /// The Projection matrix contains a camera's intrinsic parameters (field-of-view/focal length for perspective projections).
+        /// </summary>
+        /// <value>
+        /// The Projection matrix
+        /// </value>
+        public float4x4 Projection
         {
-
-
-            var Picker = new VisitingEnumerable(new { ModelView = new CollapsingStateStack<float4x4>() } , new [] { (state, MeshComponent m) => {} })
+            set { _projection.Tos = value; }
+            get { return _projection.Tos; }
         }
-        
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StandardState"/> class.
+        /// </summary>
+        public StandardState()
+        {
+            RegisterState(_model);
+            RegisterState(_view);
+            RegisterState(_projection);
+        }
     }
 
 
-/*
-   // <StateItem>
-    class MyState : SomeStateBase
-    {
-        public StateItem<float4x4> World = new StateItem<float4x4>();
-        public StateItem<MaterialComponent> Material = new StateItem<MaterialComponent>(); 
 
-    }
-
-
-    interface IStateItem<TItem> : IStateStack
-    {
-        TItem Tos { set; get; }
-    }
-    // </StateItem>
-    */
 }

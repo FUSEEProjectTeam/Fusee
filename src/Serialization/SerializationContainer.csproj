@@ -46,7 +46,7 @@
     <Compile Include="MeshComponent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SceneNodeContainer.cs" />
-    <Compile Include="TransformContainer.cs" />
+    <Compile Include="TransformComponent.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Math\Core\Math.Core.csproj">

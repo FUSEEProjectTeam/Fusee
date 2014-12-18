@@ -43,9 +43,9 @@ namespace Fusee.Engine.SimpleScene
 
         #region Visitors
         [VisitMethod]
-        public void OnNode(SceneNodeContainer node)
+        public void OnTransform(TransformComponent transform)
         {
-            _state.ModelView *= node.Transform.Matrix();
+            _state.ModelView *= transform.Matrix();
         }
  
         [VisitMethod]
@@ -179,9 +179,9 @@ namespace Fusee.Engine.SimpleScene
         #region Visitors
 
         [VisitMethod]
-        public void RenderNode(SceneNodeContainer node)
+        public void RenderTransform(TransformComponent transform)
         {
-            _state.Model *= node.Transform.Matrix();
+            _state.Model *= transform.Matrix();
             _rc.Model = _view * _state.Model;
         }
 
@@ -535,7 +535,8 @@ namespace Fusee.Engine.SimpleScene
             AABBf? ret = null;
             float4x4 origMV = _AABBXForm;
 
-            _AABBXForm = _AABBXForm * node.Transform.Matrix();
+            // _AABBXForm = _AABBXForm * node.Transform.Matrix();
+            throw new NotImplementedException("correctly handle transform");
             if (node.GetMesh() != null)
             {
                 ret = _AABBXForm * node.GetMesh().BoundingBox;
@@ -578,7 +579,8 @@ namespace Fusee.Engine.SimpleScene
             float4x4 origMV = _rc.ModelView;
             ShaderEffect origMat = CurMat;
 
-            _rc.ModelView = _rc.ModelView * node.Transform.Matrix();
+            throw new NotImplementedException("correctly handle transform");
+            // _rc.ModelView = _rc.ModelView * node.Transform.Matrix();
 
             if (node.GetMaterial() != null)
             {

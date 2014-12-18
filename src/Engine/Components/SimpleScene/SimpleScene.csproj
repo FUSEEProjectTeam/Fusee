@@ -55,6 +55,7 @@
     <Compile Include="SceneRenderer.cs" />
     <Compile Include="SceneVisitor.cs" />
     <Compile Include="ShaderCodeBuilder.cs" />
+    <Compile Include="Viserator.cs" />
     <Compile Include="VisitorState.cs" />
   </ItemGroup>
   <ItemGroup>

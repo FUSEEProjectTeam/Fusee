@@ -318,9 +318,11 @@ namespace Examples.SceneViewer
 
             var aChild = new SceneNodeContainer()
             {
-                Transform = new TransformContainer(){Rotation = new float3(0, 0, 0), Translation = new float3(0.11f, 0.11f, 0), Scale = new float3(1, 1, 1)}
+                Components = new List<SceneComponentContainer>(new SceneComponentContainer[]{
+                    new TransformComponent() {Rotation = new float3(0, 0, 0), Translation = new float3(0.11f, 0.11f, 0), Scale = new float3(1, 1, 1)},
+                    aMesh
+                })
             };
-            aChild.AddComponent(aMesh);
 
             var parent = new SceneContainer()
             {

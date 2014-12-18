@@ -317,12 +317,12 @@ namespace FuExport
                             snc.Children = new List<SceneNodeContainer>();
 
                         SceneNodeContainer subSnc = new SceneNodeContainer();
-                        subSnc.Transform = new TransformContainer()
+                        AddComponent(subSnc, new TransformComponent()
                         {
                             Translation = new float3(0, 0, 0),
                             Rotation = new float3(0, 0, 0), 
                             Scale = new float3(1, 1, 1)
-                        };
+                        });
                         AddComponent(subSnc, GetMaterial(texSelItem.Value));
                         subSnc.Name = snc.Name + "_" + texSelItem.Key.GetName();
                         AddComponent(subSnc, GetMesh(polyOb, normalOb, uvwTag, polyInxsSubset));
@@ -541,15 +541,11 @@ namespace FuExport
 
                 snc.Name = ob.GetName();
                 float3 rotC4d = (float3) ob.GetRelRot();
-                snc.Transform = new TransformContainer{
+                AddComponent(snc, new TransformComponent{
                     Translation = (float3) ob.GetRelPos(),
                     Rotation = new float3(-rotC4d.y, -rotC4d.x, -rotC4d.z),
                     Scale = (float3) ob.GetRelScale()
-                };
-                /*
-                double4x4 mtxD = ob.GetMl();
-                snc.Transform = (float4x4) mtxD;
-                */
+                });
 
                 VisitObject(ob, snc);
 

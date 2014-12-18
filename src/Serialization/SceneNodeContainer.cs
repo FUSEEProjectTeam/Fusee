@@ -9,13 +9,10 @@ namespace Fusee.Serialization
         [ProtoMember(1)]
         public string Name;
 
-        [ProtoMember(2)]
-        public TransformContainer Transform;
-
-        [ProtoMember(3, AsReference = true)]
+        [ProtoMember(2, AsReference = true)]
         public List<SceneComponentContainer> Components;
 
-        [ProtoMember(4, AsReference = true)]
+        [ProtoMember(3, AsReference = true)]
         public List<SceneNodeContainer> Children;
     }
 }

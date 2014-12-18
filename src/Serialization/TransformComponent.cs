@@ -8,7 +8,7 @@ using ProtoBuf;
 namespace Fusee.Serialization
 {
     [ProtoContract]
-    public class TransformContainer
+    public class TransformComponent : SceneComponentContainer
     {
         [ProtoMember(1)]
         public float3 Translation;

@@ -7,7 +7,7 @@ namespace Fusee.Engine.SimpleScene
 {
     static public class ContainerExtensions
     {
-        public static float4x4 Matrix(this TransformContainer tcThis)
+        public static float4x4 Matrix(this TransformComponent tcThis)
         {
             return float4x4.CreateTranslation(tcThis.Translation) * float4x4.CreateRotationY(tcThis.Rotation.y) *
                    float4x4.CreateRotationX(tcThis.Rotation.x) * float4x4.CreateRotationZ(tcThis.Rotation.z) *

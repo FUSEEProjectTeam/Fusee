@@ -131,10 +131,10 @@ namespace Fusee.Engine.SimpleScene
         {
             if (state == null)
                 throw new ArgumentNullException("state", "Always use a State. If necessary use an EmptyState.");
-            _stateStack = state;
+            _state = state;
         }
 
-        private IStateStack _stateStack = new EmptyState();
+        private IStateStack _state = new EmptyState();
         */
 
         /// <summary>
@@ -145,7 +145,7 @@ namespace Fusee.Engine.SimpleScene
         /// </summary>
         protected virtual void InitState()
         {
-            // _stateStack.Clear();
+            // _state.Clear();
         }
 
         /// <summary>
@@ -155,7 +155,7 @@ namespace Fusee.Engine.SimpleScene
         /// </summary>
         protected virtual void PushState()
         {
-            // _stateStack.Push();
+            // _state.Push();
         }
 
         /// <summary>
@@ -165,7 +165,7 @@ namespace Fusee.Engine.SimpleScene
         /// </summary>
         protected virtual void PopState()
         {
-            // _stateStack.Pop();
+            // _state.Pop();
         }
         /// <summary>
         /// Returns currently visited node during a traversal.
@@ -234,8 +234,11 @@ namespace Fusee.Engine.SimpleScene
             _curNodeEnumerator = nodes;
         }
 
-        // This method îs the try to implement a re-entrant (in terms of yield, not multi-threading)
-        // non-recursive traversal over combined node and component trees.
+        /// <summary>
+        /// This method implements a re-entrant (in terms of yield, not multi-threading) non-recursive traversal over combined node and component trees.
+        /// Call this method in derived classes implementing enumerators, like in the various find extension methods or the <see cref="Viserator{TItem, TState}"/>
+        /// </summary>
+        /// <returns><c>true</c> if the enumerator was successfully advanced to the next element; <c>false</c> if the enumerator has passed the end of node-component-tree.</returns>
         protected bool EnumMoveNext()
         {
             YieldOnCurrentNode = false;
