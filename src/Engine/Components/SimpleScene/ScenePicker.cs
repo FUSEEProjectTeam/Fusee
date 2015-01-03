@@ -84,26 +84,22 @@ namespace Fusee.Engine.SimpleScene
 
             // TODO: DO THE PICK TEST HERE
             // foreach triangle
+            // {
             //   if (triangle is hit by pickpos)
             //   {
-            //      YieldOnCurrentNode = true;
-            //     _current = new PickResult
-            //     {
-            //         Mesh = meshComponent,
-            //         Node = CurrentNode,
-            //         Triangle = TODO,
-            //         WA = TODO,
-            //         WB = TODO,
-            //         WC = TODO
-            //     };
-            /// }
+            //     YieldItem(new PickResult
+            //          {
+            //              Mesh = meshComponent,
+            //              Node = CurrentNode,
+            //              Triangle = TODO,
+            //              WA = TODO,
+            //              WB = TODO,
+            //              WC = TODO
+            //          });
+            //   }
+            // }
         }
         #endregion
-
-        private PickResult _current;
-        public override PickResult Current
-        {
-            get { return _current; }
-        }
+ 
     }
 }

@@ -43,16 +43,16 @@ namespace Fusee.Engine.SimpleScene
     abstract public class ViseratorBase<TItem> : SceneVisitor, IEnumerator<TItem>
     {
         private IEnumerator<SceneNodeContainer> _rootList;
+        private Queue<TItem> _itemQueue = new Queue<TItem>(1);
 
         // unfortunate Two-step instantiation forced by C#'s poor generic constraint system which doesn't allow to constraint a parameter-taking constructor
-
         // Step 1: Create the instance
-        internal ViseratorBase()
+        public ViseratorBase()
         {
         }
 
         // Step2: initialize the instance
-        internal void Init(IEnumerator<SceneNodeContainer> rootList)
+        virtual internal void Init(IEnumerator<SceneNodeContainer> rootList)
         {
             _rootList = rootList;
             EnumInit(_rootList);
@@ -65,6 +65,8 @@ namespace Fusee.Engine.SimpleScene
 
         public bool MoveNext()
         {
+            if (_itemQueue.Count > 0)
+                return true;
             return EnumMoveNext();
         }
 
@@ -73,11 +75,20 @@ namespace Fusee.Engine.SimpleScene
             EnumInit(_rootList);
         }
 
-        public abstract TItem Current { get; }
+        public TItem Current
+        {
+            get { return _itemQueue.Dequeue(); }
+        }
 
         object IEnumerator.Current
         {
             get { return Current; }
+        }
+
+        protected void YieldItem(TItem item)
+        {
+            YieldOnCurrentComponent = true;
+            _itemQueue.Enqueue(item);
         }
     }
 
@@ -93,7 +104,7 @@ namespace Fusee.Engine.SimpleScene
     /// should be promoted to the outside of the traversal. Typically the result is derived from the state at a certain
     /// time during traversal and some additional information of the tree object currently visited.
     /// <para />
-    /// To implement your own Viserator you should consider which state information the Viserator shoudl keep track of.
+    /// To implement your own Viserator you should consider which state information the Viserator must keep track of.
     /// Either you assemble your own State type by deriving from <see cref="VisitorState"/> or choose to use one of 
     /// the standard state types like <see cref="StandardState"/>. Then you need to derive your own class from Viserator<TItem, TState>
     /// with the TState replaced by your choice of State and TItem replaced by the type of the items you want your Viserator to yield
@@ -107,11 +118,11 @@ namespace Fusee.Engine.SimpleScene
     {
         protected TState State;
 
-        internal Viserator()
+        public Viserator()
         {
         }
 
-        protected void Init(IEnumerator<SceneNodeContainer> rootList)
+        internal override void Init(IEnumerator<SceneNodeContainer> rootList)
         {
             State = new TState();
             base.Init(rootList);

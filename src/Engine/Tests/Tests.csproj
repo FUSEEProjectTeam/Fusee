@@ -53,8 +53,6 @@
   <ItemGroup>
     <Compile Include="Math\Core\CoreTest.cs" />
     <Compile Include="Math\Core\Double2Test.cs" />
-    <Compile Include="Scene\Core\CoreTest.cs" />
-    <Compile Include="Scene\Core\FinderTests.cs" />
     <Compile Include="Scene\Core\SimpleSceneTests.cs" />
     <Compile Include="Tests.cs" />
   </ItemGroup>

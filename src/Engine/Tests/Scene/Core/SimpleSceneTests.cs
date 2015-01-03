@@ -18,23 +18,36 @@ namespace Tests.Scene.Core
 
         public class MySceneVisitor : SceneVisitor
         {
+            public bool MeshSeen;
+            public int MeshVerts;
+            public int MeshTris;
+
+            public bool MaterialSeen;
+            public float3 MaterialColor;
+
+            public bool NodeSeen;
+            public string NodeName;
+
             [VisitMethod]
             void HowzitMesh(MeshComponent mesh)
             {
-                Diagnostics.Log("Here's a mesh with " + mesh.Vertices.Length + " vertices shaping " + mesh.Triangles.Length + " triangles.");
+                MeshSeen = true;
+                MeshVerts = mesh.Vertices.Length;
+                MeshTris = mesh.Triangles.Length;
             }
 
             [VisitMethod]
             void GDayMaterial(MaterialComponent material)
             {
-                float3 col = material.Diffuse.Color;
-                Diagnostics.Log("Here's a material showing (" + col.r + ", " + col.g + ", " + col.b + ").");
+                MaterialSeen = true;
+                MaterialColor = material.Diffuse.Color;
             }
 
             [VisitMethod]
             void HelloNode(SceneNodeContainer node)
             {
-                Diagnostics.Log("A node called " + node.Name + ".");
+                NodeSeen = true;
+                NodeName = node.Name;
             }
         }
 
@@ -83,6 +96,7 @@ namespace Tests.Scene.Core
                 Components = new List<SceneComponentContainer>(new SceneComponentContainer[]
                 {
                     new TransformComponent { Rotation = new float3(0, 0, 0), Translation = new float3(0.22f, 0.221f, 0), Scale = new float3(1, 1, 1) },
+                    new MaterialComponent { Diffuse = new MatChannelContainer{ Color = new float3(0.1f, 0.2f, 0.4f)}}, 
                     aMesh
                 })
             };
@@ -131,31 +145,66 @@ namespace Tests.Scene.Core
         }
 
 
-        public static void SimpleVisitorTest()
+        [Test]
+        public static void BasicVisitorTest()
         {
             var root = CreateTestHierarchy();
             MySceneVisitor visitor = new MySceneVisitor();
             visitor.Traverse(root);
+
+            Assert.IsTrue(visitor.MeshSeen);
+            Assert.AreEqual(18, visitor.MeshTris);
+            Assert.AreEqual(8, visitor.MeshVerts);
+
+            Assert.IsTrue(visitor.MaterialSeen);
+            Assert.AreEqual(0.1f, visitor.MaterialColor.r);
+            Assert.AreEqual(0.2f, visitor.MaterialColor.g);
+            Assert.AreEqual(0.4f, visitor.MaterialColor.b);
+
+            Assert.IsTrue(visitor.NodeSeen);
+            StringAssert.AreEqualIgnoringCase("Test", visitor.NodeName);
         }
 
-
-        public static void EnumeratorTests()
+        [Test]
+        public static void BasicEnumeratorTests()
         {
             var root = CreateTestHierarchy();
 
             // Enumerate all nodes called "Test"
+            int nNodes = 0;
+            foreach (SceneNodeContainer node in root.FindNodes(node => node.Name == "Test"))
+            {
+                StringAssert.AreEqualIgnoringCase("Test", node.Name);
+                nNodes++;
+            }
+            Assert.AreEqual(2, nNodes);
+
+
+            // Enumerate all nodes called "Test". Start directly on the child list.
+            nNodes = 0;
             foreach (SceneNodeContainer node in root.Children.FindNodes(node => node.Name == "Test"))
             {
-                Diagnostics.Log("Got a node with " + (node.Children == null ? 0 : node.Children.Count) + " children and " + (node.Components == null ? 0 : node.Components.Count) + " components.");
+                StringAssert.AreEqualIgnoringCase("Test", node.Name);
+                nNodes++;
             }
+            Assert.AreEqual(2, nNodes);
+
+
 
             SceneNodeContainer firstTest = root.FindNodes(node => node.Name == "Test").FirstOrDefault();
+            Assert.NotNull(firstTest);
+
+            SceneNodeContainer firstPest = root.FindNodes(node => node.Name == "Pest").FirstOrDefault();
+            Assert.IsNull(firstPest);
 
             // Enumerate all components containing a Mesh component with more than 10 vertices
+            nNodes = 0;
             foreach (var m in root.FindComponents<MeshComponent>(mesh => mesh.Triangles.Length > 10))
             {
-                Diagnostics.Log("Got a mesh with " + m.Triangles.Length + " triangle indices.");
+                Assert.IsTrue(m.Triangles.Length > 10);
+                nNodes++;
             }
+            Assert.AreEqual(2, nNodes);
 
 
             /*
@@ -193,10 +242,6 @@ namespace Tests.Scene.Core
         public class TestViserator : Viserator<Tri, StandardState>
         {
             private Tri _t;
-            public override Tri Current
-            {
-                get { return _t; }
-            }
 
             protected override void InitState()
             {
@@ -216,8 +261,7 @@ namespace Tests.Scene.Core
                     float4 b = mvp * new float4(mc.Vertices[mc.Triangles[1]], 1);
                     float4 c = mvp * new float4(mc.Vertices[mc.Triangles[2]], 1);
 
-                    _t = new Tri {A = a.xy/a.w, B = b.xy/b.w, C = c.xy/c.w};
-                    YieldOnCurrentComponent = true;
+                    YieldItem(new Tri {A = a.xy/a.w, B = b.xy/b.w, C = c.xy/c.w});
                 }
             }
 
@@ -229,13 +273,18 @@ namespace Tests.Scene.Core
 
         }
 
-        public static void ViseratorTests()
+        [Test]
+        public static void BasicViseratorTest()
         {
+            int nTris = 0;
             var root = CreateTestHierarchy();
             foreach (var tri in root.Viserate<TestViserator, Tri>())
             {
-               Diagnostics.Log("{a:" + tri.A + "; b:" + tri.B + "; c:" + tri.C + "}");
+                nTris++;
+                // TODO: Better check stack pushing and popping
+                string ts = "{a:" + tri.A + "; b:" + tri.B + "; c:" + tri.C + "}";
             }
+            Assert.AreEqual(2, nTris);
         }
     }
 }

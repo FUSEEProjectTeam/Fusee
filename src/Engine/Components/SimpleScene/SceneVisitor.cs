@@ -15,9 +15,9 @@ namespace Fusee.Engine.SimpleScene
 
     internal static class SceneVisitorHelpers
     {
-        internal delegate void VisitNodeMethod(SceneNodeContainer node);
+        internal delegate void VisitNodeMethod(SceneVisitor visitor, SceneNodeContainer node);
 
-        internal delegate void VisitComponentMethod(SceneComponentContainer component);
+        internal delegate void VisitComponentMethod(SceneVisitor visitor, SceneComponentContainer component);
 
         internal static IEnumerator<SceneNodeContainer> SingleRootEnum(SceneNodeContainer root)
         {
@@ -28,15 +28,15 @@ namespace Fusee.Engine.SimpleScene
     internal class VisitorCallerFactory
     {
         //[JSExternal]
-        public static SceneVisitorHelpers.VisitComponentMethod MakeComponentVisitor(SceneVisitor visitor, MethodInfo info)
+        public static SceneVisitorHelpers.VisitComponentMethod MakeComponentVisitor(MethodInfo info)
         {
-            return delegate(SceneComponentContainer component) { info.Invoke(visitor, new object[] { component }); };
+            return delegate(SceneVisitor visitor, SceneComponentContainer component) { info.Invoke(visitor, new object[] { component }); };
         }
 
         // [JSExternal]
-        public static SceneVisitorHelpers.VisitNodeMethod MakeNodeVistor(SceneVisitor visitor, MethodInfo info)
+        public static SceneVisitorHelpers.VisitNodeMethod MakeNodeVistor(MethodInfo info)
         {
-            return delegate(SceneNodeContainer node) { info.Invoke(visitor, new object[] { node }); };
+            return delegate(SceneVisitor visitor, SceneNodeContainer node) { info.Invoke(visitor, new object[] { node }); };
         }
 
     }
@@ -388,11 +388,11 @@ namespace Fusee.Engine.SimpleScene
                 Type paramType = parameters[0].ParameterType;
                 if (typeof(SceneComponentContainer).IsAssignableFrom(paramType))
                 {
-                    _visitors.Components[paramType] = VisitorCallerFactory.MakeComponentVisitor(this, methodInfo);
+                    _visitors.Components[paramType] = VisitorCallerFactory.MakeComponentVisitor(methodInfo);
                 }
                 else if (typeof(SceneNodeContainer).IsAssignableFrom(paramType))
                 {
-                    _visitors.Nodes[paramType] = VisitorCallerFactory.MakeNodeVistor(this, methodInfo);
+                    _visitors.Nodes[paramType] = VisitorCallerFactory.MakeNodeVistor(methodInfo);
                 }
             }
             _visitorMap.Add(myType, _visitors);
@@ -490,7 +490,7 @@ namespace Fusee.Engine.SimpleScene
             SceneVisitorHelpers.VisitComponentMethod visitComponent;
             if (_visitors.Components.TryGetValue(component.GetType(), out visitComponent))
             {
-                visitComponent(component);
+                visitComponent(this, component);
             }
         }
 
@@ -499,7 +499,7 @@ namespace Fusee.Engine.SimpleScene
             SceneVisitorHelpers.VisitNodeMethod visitNode;
             if (_visitors.Nodes.TryGetValue(node.GetType(), out visitNode))
             {
-                visitNode(node);
+                visitNode(this, node);
             }
         }
     }

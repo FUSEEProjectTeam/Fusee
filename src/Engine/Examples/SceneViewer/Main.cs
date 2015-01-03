@@ -87,13 +87,6 @@ namespace Examples.SceneViewer
                 _scene = ser.Deserialize(file, null, typeof(SceneContainer)) as SceneContainer;
             }
 
-            // Scene Visitor Test
-            // new SimpleSceneTest.MySceneVisitor().Traverse(scene.Children);
-
-            // SimpleSceneTest.SimpleVisitorTest();
-            // SimpleSceneTest.EnumeratorTests();
-            SimpleSceneTest.JSILReflectionInvocationTest();
-
             _sr = new SceneRenderer(_scene, "Assets");
             AdjustModelScaleOffset();
             _guiSubText.Text = "FUSEE 3D Scene";
