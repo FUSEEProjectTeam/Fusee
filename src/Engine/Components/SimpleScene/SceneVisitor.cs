@@ -27,13 +27,13 @@ namespace Fusee.Engine.SimpleScene
 
     internal class VisitorCallerFactory
     {
-        //[JSExternal]
+        [JSExternal]
         public static SceneVisitorHelpers.VisitComponentMethod MakeComponentVisitor(MethodInfo info)
         {
             return delegate(SceneVisitor visitor, SceneComponentContainer component) { info.Invoke(visitor, new object[] { component }); };
         }
 
-        // [JSExternal]
+        [JSExternal]
         public static SceneVisitorHelpers.VisitNodeMethod MakeNodeVistor(MethodInfo info)
         {
             return delegate(SceneVisitor visitor, SceneNodeContainer node) { info.Invoke(visitor, new object[] { node }); };

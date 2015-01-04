@@ -121,6 +121,7 @@ namespace Fusee.Engine
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
         /// <seealso cref="GetShaderParamList"/>
+        [JSChangeName("SetShaderParam1f")]
         void SetShaderParam(IShaderParam param, float val);
 
         /// <summary>
@@ -133,6 +134,7 @@ namespace Fusee.Engine
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
         /// <seealso cref="GetShaderParamList"/>
+        [JSChangeName("SetShaderParam2f")]
         void SetShaderParam(IShaderParam param, float2 val);
 
         /// <summary>
@@ -145,6 +147,7 @@ namespace Fusee.Engine
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
         /// <seealso cref="GetShaderParamList"/>
+        [JSChangeName("SetShaderParam3f")]
         void SetShaderParam(IShaderParam param, float3 val);
 
         /// <summary>
@@ -157,6 +160,7 @@ namespace Fusee.Engine
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
         /// <seealso cref="GetShaderParamList"/>
+        [JSChangeName("SetShaderParam4f")]
         void SetShaderParam(IShaderParam param, float4 val);
 
         /// <summary>
@@ -169,6 +173,7 @@ namespace Fusee.Engine
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
         /// <seealso cref="GetShaderParamList"/>
+        [JSChangeName("SetShaderParamfloat4x4")]
         void SetShaderParam(IShaderParam param, float4x4 val);
 
         /// <summary>
@@ -181,6 +186,7 @@ namespace Fusee.Engine
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
         /// <seealso cref="GetShaderParamList"/>
+        [JSChangeName("SetShaderParamI")]
         void SetShaderParam(IShaderParam param, int val);
 
         /// <summary>

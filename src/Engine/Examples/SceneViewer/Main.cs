@@ -53,11 +53,6 @@ namespace Examples.SceneViewer
         // is called on startup
         public override void Init()
         {
-            TestDictionaryNoCast();
-            TestDictionaryDoCast();
-            //TestSerialize();
-            //TestDeserialize();
-            
             // GUI initialization
             _zVal = 500;
             _guiHandler = new GUIHandler();
@@ -113,64 +108,6 @@ namespace Examples.SceneViewer
             RC.ClearColor = new float4(1, 1, 1, 1);
         }
 
-        private void TestDictionaryNoCast()
-        {
-            Dictionary<string, int> dict = new Dictionary<string, int>();
-            dict["one"] = 1;
-            dict["two"] = 2;
-            dict["three"] = 3;
-
-            foreach (KeyValuePair<string, int> pair in dict)
-            {
-                Diagnostics.Log("Key: " + pair.Key + ", Value: " + pair.Value);
-            }
-        }
-
-        private void TestDictionaryDoCast()
-        {
-            Dictionary<string, int> dict = new Dictionary<string, int>();
-            dict["one"] = 1;
-            dict["two"] = 2;
-            dict["three"] = 3;
-
-            IEnumerable enuObject = dict;
-            foreach (object pairOb in enuObject)
-            {
-                KeyValuePair<string, int> pair = (KeyValuePair<string, int>) pairOb;
-                Diagnostics.Log("Key: " + pair.Key + ", Value: " + pair.Value);
-            }
-        }
-
-
-        /*
-        IEnumerable enuObject = (IEnumerable) dict;
-        DoTheTest(enuObject);
-
-            foreach (KeyValuePair<string, int> pair in dict)
-            {
-                Diagnostics.Log("Key: " + pair.Key + ", Value: " + pair.Value);
-            }
-            */
-
-        /*
-            IEnumerable enuObject = dict;
-            IEnumerable<KeyValuePair<string, int>> enuTypeSafe = (IEnumerable<KeyValuePair<string, int>>)enuObject;
-
-            foreach (KeyValuePair<string, int> pair in enuTypeSafe)
-            {
-                Diagnostics.Log("Key: " + pair.Key + "Value: " + pair.Value);
-            }
-            */
-
-
-        public void DoTheTest(IEnumerable enuObject)
-        {
-            foreach (object pairOb in enuObject)
-            {
-                KeyValuePair<string, int> pair = (KeyValuePair<string, int>) pairOb;
-                Diagnostics.Log("Key: " + pair.Key + ", Value: " + pair.Value);
-            }
-        }
 
 
 
@@ -353,6 +290,9 @@ namespace Examples.SceneViewer
 
         public static void Main()
         {
+            Tests.Scene.Core.VisitorTests.BasicVisitorTest();
+            Tests.Scene.Core.VisitorTests.BasicEnumeratorTests();
+            Tests.Scene.Core.VisitorTests.BasicViseratorTest();
             var app = new SceneViewer();
             app.Run();
         }

@@ -1232,14 +1232,14 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
         }
     );
 
-    $.Method({ Static: false, Public: true, Virtual: true }, "SetShaderParam",
+    $.Method({ Static: false, Public: true, Virtual: true }, "SetShaderParam1f",
       new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $.Single]),
         function SetShaderParam1f(param, val) {
             this.gl.uniform1f(param.handle, val);
         }
     );
 
-    $.Method({ Static: false, Public: true, Virtual: true }, "SetShaderParam",
+    $.Method({ Static: false, Public: true, Virtual: true }, "SetShaderParam2f",
       new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $fuseeMath.TypeRef("Fusee.Math.float2")]),
         function SetShaderParam2f(param, val) {
             var flatVector = new Float32Array(val.ToArray());
@@ -1247,7 +1247,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
         }
     );
 
-    $.Method({ Static: false, Public: true, Virtual: true }, "SetShaderParam",
+    $.Method({ Static: false, Public: true, Virtual: true }, "SetShaderParam3f",
        new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $fuseeMath.TypeRef("Fusee.Math.float3")]),
           function SetShaderParam3f(param, val) {
             var flatVector = new Float32Array(val.ToArray());
@@ -1255,7 +1255,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
         }
     );
 
-    $.Method({ Static: false, Public: true, Virtual: true }, "SetShaderParam",
+    $.Method({ Static: false, Public: true, Virtual: true }, "SetShaderParam4f",
       new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $fuseeMath.TypeRef("Fusee.Math.float4")]),
         function SetShaderParam4f(param, val) {
             var flatVector = new Float32Array(val.ToArray());
@@ -1263,7 +1263,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
         }
     );
 
-    $.Method({ Static: false, Public: true, Virtual: true }, "SetShaderParam",
+    $.Method({ Static: false, Public: true, Virtual: true }, "SetShaderParamfloat4x4",
       new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $fuseeMath.TypeRef("Fusee.Math.float4x4")]),
         function SetShaderParamfloat4x4(param, val) {
             // Row order notation
@@ -1277,9 +1277,9 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
         }
     );
 
-    $.Method({ Static: false, Public: true, Virtual: true }, "SetShaderParam",
+    $.Method({ Static: false, Public: true, Virtual: true }, "SetShaderParamI",
       new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $.Int32]),
-        function SetShaderParamInt(param, val) {
+        function SetShaderParamI(param, val) {
             this.gl.uniform1i(param.handle, val);
         }
     );

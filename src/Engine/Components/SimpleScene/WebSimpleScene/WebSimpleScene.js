@@ -2,7 +2,7 @@
 var $customMsCore = JSIL.GetAssembly("mscorlib");
 var $fuseeSimpleScene = JSIL.GetAssembly("Fusee.Engine.SimpleScene");
 
-JSIL.ImplementExternals("Fusee.Engine.SimpleScene.VisitorCallerFactory_NONO", function ($)
+JSIL.ImplementExternals("Fusee.Engine.SimpleScene.VisitorCallerFactory", function ($)
 {
     // Hand coded replacements saving some levels of indirection. 
     // One call to GetMethodImplementation, one nesting of function calls and wrapping 
