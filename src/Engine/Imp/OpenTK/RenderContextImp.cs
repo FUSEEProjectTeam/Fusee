@@ -632,6 +632,48 @@ namespace Fusee.Engine
         }
 
         /// <summary>
+        /// Sets a <see cref="float4x4[]" /> shader parameter.
+        /// </summary>
+        /// <param name="param">The parameter.</param>
+        /// <param name="val">The value.</param>
+        public void SetShaderParam(IShaderParam param, float4x4[] mtxArray)
+        {
+
+            //GL.Uniform1(((ShaderParam)param).handle, 16 * nItems, pFlt)
+
+            float4[] tmpArray = new float4[mtxArray.Length * 4];
+            for (int i = 0; i < mtxArray.Length; i++)
+            {
+                tmpArray[i*4] = mtxArray[i].Row0;
+                tmpArray[i * 4 + 1] = mtxArray[i].Row1;
+                tmpArray[i * 4 + 2] = mtxArray[i].Row2;
+                tmpArray[i * 4 + 3] = mtxArray[i].Row3;
+            }
+
+            //int nItems = mtxArray.Length;
+            unsafe
+            {
+                //fixed (float4x4* pMtx = &mtxArray[0])
+                //{
+                //    float* pFlt = (float*)pMtx;
+                //    //for (int i = 0; i < nItems; i++)
+                //    //{          
+                //       // GL.buff
+                //        GL.Uniform4(((ShaderParam)param).handle, 16 * nItems, pFlt);
+                //        GL.UniformMatrix4(((ShaderParam)param).handle, nItems, true, pFlt);
+                //    //}
+                //}
+
+                fixed (float4* pMtx = &tmpArray[0])
+                {
+                    float* pFlt = (float*)pMtx;
+                    //GL.Uniform1(((ShaderParam)param).handle, 16 * nItems, pFlt);
+                    GL.Uniform4(((ShaderParam)param).handle, tmpArray.Length, pFlt);
+                }
+            }
+        }
+
+        /// <summary>
         /// Sets a int shader parameter.
         /// </summary>
         /// <param name="param">The parameter.</param>
@@ -1083,6 +1125,20 @@ namespace Fusee.Engine
                 GL.EnableVertexAttribArray(Helper.NormalAttribLocation);
                 GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp) mr).NormalBufferObject);
                 GL.VertexAttribPointer(Helper.NormalAttribLocation, 3, VertexAttribPointerType.Float, false, 0,
+                    IntPtr.Zero);
+            }
+            if (((MeshImp)mr).BoneIndexBufferObject != 0)
+            {
+                GL.EnableVertexAttribArray(Helper.BoneIndexAttribLocation);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BoneIndexBufferObject);
+                GL.VertexAttribPointer(Helper.BoneIndexAttribLocation, 4, VertexAttribPointerType.Float, false, 0,
+                    IntPtr.Zero);
+            }
+            if (((MeshImp)mr).BoneWeightBufferObject != 0)
+            {
+                GL.EnableVertexAttribArray(Helper.BoneWeightAttribLocation);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BoneWeightBufferObject);
+                GL.VertexAttribPointer(Helper.BoneWeightAttribLocation, 4, VertexAttribPointerType.Float, false, 0,
                     IntPtr.Zero);
             }
             if (((MeshImp) mr).ElementBufferObject != 0)

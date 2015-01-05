@@ -176,6 +176,21 @@ namespace Fusee.Engine
         [JSChangeName("SetShaderParamMtx4f")]
         void SetShaderParam(IShaderParam param, float4x4 val);
 
+
+        /// <summary>
+        /// Sets the shader parameter to a float4x4 matrixarray.
+        /// </summary>
+        /// <param name="param">The shader parameter identifier.</param>
+        /// <param name="val">The float4x4 matrix array that should be assigned to the shader parameter.</param>
+        /// <remarks>
+        /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
+        /// a given uniform parameter name used in a shader program.
+        /// </remarks>
+        /// <seealso cref="GetShaderParamList"/>
+        [JSChangeName("SetShaderParamMtx4fArray")]
+        void SetShaderParam(IShaderParam param, float4x4[] val);
+
+
         /// <summary>
         /// Sets the shader parameter to a integer value.
         /// </summary>

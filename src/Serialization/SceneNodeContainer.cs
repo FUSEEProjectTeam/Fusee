@@ -18,5 +18,8 @@ namespace Fusee.Serialization
 
         [ProtoMember(4, AsReference = true)]
         public List<SceneNodeContainer> Children;
+
+        [ProtoMember(5)]
+        public bool IsBone;
     }
 }

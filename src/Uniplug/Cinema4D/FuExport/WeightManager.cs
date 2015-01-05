@@ -11,13 +11,14 @@ namespace FuExport
 {
     public class WeightManager
     {
-        private BaseDocument _doc;
+        private BaseDocument _doc, _polyDoc;
         private List<WeightObject> _weightObjects;
         private Dictionary<long, SceneNodeContainer> _jointObjects;
 
-        public WeightManager(BaseDocument document)
+        public WeightManager(BaseDocument document, BaseDocument polyDoc)
         {
             _doc = document;
+            _polyDoc = polyDoc;
             _weightObjects = new List<WeightObject>();
             _jointObjects = new Dictionary<long, SceneNodeContainer>();
         }
@@ -27,6 +28,7 @@ namespace FuExport
             CAJointObject jo = bo as CAJointObject;
             if (jo != null)
             {
+                snc.IsBone = true;
                 _jointObjects.Add(jo.RefUID(), snc);
             }
         }
@@ -88,10 +90,10 @@ namespace FuExport
                     SceneNodeContainer jointSnc;
                     if (_jointObjects.TryGetValue(joint.RefUID(), out jointSnc))
                     {
-                        wComponent.Joints.Add(jointSnc);                   
+                        wComponent.Joints.Add(jointSnc);
                     }                   
                 }
-                wComponent.Weights = wObject.WeightMap;
+                wComponent.WeightMap = wObject.WeightMap;
                 wObject.SceneNodeContainer.Components.Add(wComponent);
             }
         }

@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Threading;
 using Fusee.Engine;
 using Fusee.KeyFrameAnimation;
 using Fusee.Math;
@@ -25,6 +27,7 @@ namespace Fusee.Engine.SimpleScene
     {
         private Dictionary<MeshComponent, Mesh> _meshMap;
         private Dictionary<MaterialComponent, ShaderEffect> _matMap;
+        private Dictionary<SceneNodeContainer, float4x4> _boneMap;
         private SceneContainer _sc;
         private RenderContext _rc;
         private float4x4 _AABBXForm;
@@ -60,6 +63,7 @@ namespace Fusee.Engine.SimpleScene
                 _rc = rc;
                 _meshMap = new Dictionary<MeshComponent, Mesh>();
                 _matMap = new Dictionary<MaterialComponent, ShaderEffect>();
+                _boneMap = new Dictionary<SceneNodeContainer, float4x4>();
                 _curMat = null;
             }
             if (_curMat == null)
@@ -203,11 +207,27 @@ namespace Fusee.Engine.SimpleScene
                 VisitNodeRender(sbc);
             }
         }
+
+        private float4 tmp;
+
         protected void VisitNodeRender(SceneNodeContainer sbc)
         {
             float4x4 origMV = _rc.ModelView;
             ShaderEffect origMat = CurMat;
             _rc.ModelView = _rc.ModelView * sbc.Transform.Matrix();
+
+            if (sbc.IsBone)
+            {
+                SceneNodeContainer bone = sbc as SceneNodeContainer;
+                float4x4 transform;
+
+                if (!_boneMap.TryGetValue(bone, out transform))
+                    _boneMap.Add(bone, _rc.Model);
+                else
+                    _boneMap[bone] = _rc.Model;
+            }
+
+
             SceneNodeContainer soc = sbc as SceneNodeContainer;
             if (soc != null)
             {
@@ -216,6 +236,39 @@ namespace Fusee.Engine.SimpleScene
                     var mat = LookupMaterial(soc.GetMaterial());
                     CurMat = mat;
                 }
+                ////new
+                if (soc.GetWeights() != null)
+                {
+                    float4x4[] boneArray = new float4x4[soc.GetWeights().Joints.Count()];
+                    for (int i = 0; i < soc.GetWeights().Joints.Count(); i++)
+                    {
+                        boneArray[i] = _boneMap[soc.GetWeights().Joints[i]];
+                    }
+
+                    _rc.Bones = boneArray;
+                }
+
+                //if (soc.GetWeights() != null)
+                //{
+                //    float4x4[] boneArray = new float4x4[soc.GetWeights().Joints.Count()];
+                //    for (int i = 0; i < soc.GetWeights().Joints.Count(); i++)
+                //    {
+                //        if (boneArray[i].Column3.w == 0)
+                //            boneArray[i] = _rc.ModelView;
+                        
+                //        boneArray[i] *= soc.GetWeights().Joints[i].Transform.Matrix();
+                //        if (soc.GetWeights().Joints[i].Children != null)
+                //            foreach (var child in soc.GetWeights().Joints[i].Children)
+                //            {
+                //                if (boneArray[soc.GetWeights().Joints.IndexOf(child)].Column3.w == 0)
+                //                    boneArray[soc.GetWeights().Joints.IndexOf(child)] = _rc.ModelView;
+                //                boneArray[soc.GetWeights().Joints.IndexOf(child)] *= boneArray[i];
+                //            }
+
+                //    }
+                //    _rc.Bones = boneArray;
+                //}
+
                 if (soc.GetMesh() != null)
                 {
                     Mesh rm;
@@ -308,15 +361,66 @@ namespace Fusee.Engine.SimpleScene
                     }
                 }
 
-                float4[] boneWeights = new float4[invertedWeightMap.Length];
-                float4[] boneIndices = new float4[invertedWeightMap.Length];
+                float4[] boneWeights = new float4[invertedWeightMap.GetLength(0)];
+                float4[] boneIndices = new float4[invertedWeightMap.GetLength(0)];
 
                 for (int i = 0; i < invertedWeightMap.GetLength(0); i++)
                 {
-                    for (int j = 0; j < invertedWeightMap.GetLength(1); i++)
+                    boneWeights[i] = new float4(0,0,0,0);
+                    boneIndices[i] = new float4(0,0,0,0);
+
+                    var tempDictionary = new Dictionary<int, float>();
+
+                    for (int j = 0; j < invertedWeightMap.GetLength(1); j++)
                     {
-                        
+                        if (j < 4)
+                        {
+                            tempDictionary.Add(j, invertedWeightMap[i, j]);
+                        }
+                        else
+                        {
+                            float tmpWeight = invertedWeightMap[i, j];
+                            var keyAndValue = tempDictionary.OrderBy(kvp => kvp.Value).First();
+                            if (tmpWeight > keyAndValue.Value)
+                            {
+                                tempDictionary.Remove(keyAndValue.Key);
+                                tempDictionary.Add(j, tmpWeight);
+                            }
+                        }
                     }
+
+                    if (tempDictionary.Count != 0)
+                    {
+                        var keyValuePair = tempDictionary.First();
+                        boneIndices[i].x = keyValuePair.Key;
+                        boneWeights[i].x = keyValuePair.Value;
+                        tempDictionary.Remove(keyValuePair.Key);
+                    }
+                    if (tempDictionary.Count != 0)
+                    {
+                        var keyValuePair = tempDictionary.First();
+                        boneIndices[i].y = keyValuePair.Key;
+                        boneWeights[i].y = keyValuePair.Value;
+                        tempDictionary.Remove(keyValuePair.Key);
+                    }
+                    if (tempDictionary.Count != 0)
+                    {
+                        var keyValuePair = tempDictionary.First();
+                        boneIndices[i].z = keyValuePair.Key;
+                        boneWeights[i].z = keyValuePair.Value;
+                        tempDictionary.Remove(keyValuePair.Key);
+                    }
+                    if (tempDictionary.Count != 0)
+                    {
+                        var keyValuePair = tempDictionary.First();
+                        boneIndices[i].w = keyValuePair.Key;
+                        boneWeights[i].w = keyValuePair.Value;
+                        tempDictionary.Remove(keyValuePair.Key);
+                    }
+
+                    // TODO: RUNDUNGSFEHLER BEIM NORMALISIEREN UMGEHEN
+                    //boneWeights[i].Normalize();
+
                 }
 
                 rm = new Mesh()
@@ -344,11 +448,15 @@ namespace Fusee.Engine.SimpleScene
         {
             ShaderCodeBuilder scb = new ShaderCodeBuilder(mc, null);
             var effectParameters = AssembleEffectParamers(mc, scb);
+
             ShaderEffect ret = new ShaderEffect(new[]
                 {
                     new EffectPassDeclaration()
                     {
-                        VS = scb.VS,
+
+
+                        //VS = scb.VS,
+                        VS = VsBones,
                         PS = scb.PS,
                         StateSet = new RenderStateSet()
                         {
@@ -473,5 +581,93 @@ namespace Fusee.Engine.SimpleScene
             }
             return effectParameters;
         }
+
+
+        public string VsBones =
+            "attribute vec3 fuVertex; " +
+            "attribute vec3 fuNormal;" +
+            "attribute vec2 fuUV;  " +
+            "attribute vec4 fuBoneIndex;" +
+            "attribute vec4 fuBoneWeight;" +
+            "uniform mat4 FUSEE_IMV; " +
+            "uniform mat4 FUSEE_MVP;" +
+            "uniform vec4 FUSEE_BONES[100];" +
+            "varying vec3 vViewDir; " +
+            "varying vec3 vNormal; " +
+            "varying vec2 vUV;  " +
+
+            "void CalcBoneMatrix(in float ind, in vec4[100] Bones, inout mat4 result){" + 
+            //    "mat4 ret;" + 
+                "int index = int(ind);" +
+                "result[0] = Bones[index*4];" +
+                "result[1] = Bones[index*4+1];" +
+                "result[2] = Bones[index*4+2];" +
+                "result[3] = Bones[index*4+3];" +
+                //"result = ret;" +
+            "}" +
+
+            "void main() " +
+            "{ " +
+            "vec4 newVertex;" +
+            "vec4 newNormal;" +
+            "int index;" +
+            //"index = int(fuBoneIndex.x);" +
+
+            //"newVertex = vec4(fuVertex, 0.0);" +
+            //"newNormal = vec4(fuNormal, 0.0);" +
+            //"if(fuBoneWeight.x == 0.0){" +
+            //"if(fuBoneIndex == 0){" +
+            "mat4 boneMatrix;" +
+            "CalcBoneMatrix(fuBoneIndex.x, FUSEE_BONES, boneMatrix);" +
+            "newVertex = (boneMatrix * vec4(fuVertex, 0.0)) * fuBoneWeight.x ;" +
+            "newNormal = (boneMatrix * vec4(fuNormal, 0.0)) * fuBoneWeight.x;" +
+
+            "CalcBoneMatrix(fuBoneIndex.y, FUSEE_BONES, boneMatrix);" +
+            "newVertex = (boneMatrix * vec4(fuVertex, 0.0)) * fuBoneWeight.y + newVertex;" +
+            "newNormal = (boneMatrix * vec4(fuNormal, 0.0)) * fuBoneWeight.y + newNormal;" +
+
+            "CalcBoneMatrix(fuBoneIndex.z, FUSEE_BONES, boneMatrix);" +
+            "newVertex = (boneMatrix * vec4(fuVertex, 0.0)) * fuBoneWeight.z + newVertex;" +
+            "newNormal = (boneMatrix * vec4(fuNormal, 0.0)) * fuBoneWeight.z + newNormal;" +
+
+            "CalcBoneMatrix(fuBoneIndex.w, FUSEE_BONES, boneMatrix);" +
+            "newVertex = (boneMatrix * vec4(fuVertex, 0.0)) * fuBoneWeight.w + newVertex;" +
+            "newNormal = (boneMatrix * vec4(fuNormal, 0.0)) * fuBoneWeight.w + newNormal;" +
+
+
+            "vNormal = normalize(vec3(newNormal)); " +
+            "vec3 viewPos = FUSEE_IMV[3].xyz; " +
+            "vViewDir = normalize(viewPos - vec3(newVertex)); " +
+            "gl_Position = FUSEE_MVP * vec4(vec3(newVertex), 1.0); " +
+            "vUV = fuUV;" +
+            " } ";
+
+        public string VsTest =
+            "attribute vec3 fuVertex; " +
+            "attribute vec3 fuNormal;" +
+            "attribute vec2 fuUV;" +
+            "attribute vec4 fuBoneIndex;" +
+            "attribute vec4 fuBoneWeight;" +
+            "uniform mat4 FUSEE_BONES[4];" +
+            "uniform mat4 FUSEE_IMV; " +
+            "uniform mat4 FUSEE_MVP;" +
+            "varying vec3 vViewDir; " +
+            "varying vec3 vNormal; " +
+            "varying vec2 vUV;  " +
+            "void main() " +
+            "{  " +
+            "vec4 newVertex;" +
+            "vec4 newNormal;" +
+            "int index;" +
+            "index = int(fuBoneIndex.x); " +
+            "vNormal = normalize(vec3(fuNormal)); " +
+            "vec3 viewPos = FUSEE_IMV[3].xyz; " +
+            "vec3 testVertexPos = fuVertex - vec3(0,0,0);" +
+            "if(FUSEE_BONES[0][0].x == 1.0){" +
+            "testVertexPos = fuVertex-vec3(0,200,0);}" + 
+            "vViewDir = normalize(viewPos - testVertexPos); " +
+            "gl_Position = FUSEE_MVP * vec4(testVertexPos, 1.0); " +
+            "vUV = fuUV; " +
+            "} ";
     }
 }

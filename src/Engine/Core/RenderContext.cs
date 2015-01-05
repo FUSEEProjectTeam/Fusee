@@ -42,6 +42,20 @@ namespace Fusee.Engine
         private float4x4 _projection;
         private float4x4 _view;
         private float4x4 _model;
+        private float4x4[] _bones;
+
+        public float4x4[] Bones
+        {
+            get
+            {
+                return _bones;
+            }
+            set
+            {
+                _bones = value;
+                UpdateCurrentShader();
+            }
+        }
 
         // Derived matrices
         private float4x4 _modelViewProjection;
@@ -109,6 +123,8 @@ namespace Fusee.Engine
             public IShaderParam FUSEE_ITMV;
             public IShaderParam FUSEE_ITP;
             public IShaderParam FUSEE_ITMVP;
+
+            public IShaderParam FUSEE_BONES;
             // ReSharper restore InconsistentNaming
         };
 
@@ -829,6 +845,10 @@ namespace Fusee.Engine
                 if (_lightShaderParams[i].FUSEE_L_SPOTANGLE != null)
                     SetShaderParam(_lightShaderParams[i].FUSEE_L_SPOTANGLE, _lightParams[i].Angle);
             }
+
+            if (_currentShaderParams.FUSEE_BONES != null && Bones != null)
+                SetShaderParam(_currentShaderParams.FUSEE_BONES, Bones);
+
         }
 
         private void UpdateShaderParams()
@@ -860,7 +880,15 @@ namespace Fusee.Engine
             _currentShaderParams.FUSEE_ITMV = _currentShader.GetShaderParam("FUSEE_ITMV");
             _currentShaderParams.FUSEE_ITP = _currentShader.GetShaderParam("FUSEE_ITP");
             _currentShaderParams.FUSEE_ITMVP = _currentShader.GetShaderParam("FUSEE_ITMVP");
-
+   
+            // Todo: Remove multiple Bones per shader !!!
+            //for (int i = 0; i < 10; i++)
+            //{
+            //    if (_currentShaderParams.FUSEE_BONES == null)
+            //        _currentShaderParams.FUSEE_BONES = new IShaderParam[10];
+            _currentShaderParams.FUSEE_BONES = _currentShader.GetShaderParam("FUSEE_BONES");
+           // }
+            
             // Todo: Remove multiple Lights per shader !!!
             for (int i = 0; i < 8; i++)
             {
@@ -872,6 +900,8 @@ namespace Fusee.Engine
                 _lightShaderParams[i].FUSEE_L_SPOTANGLE = _currentShader.GetShaderParam("FUSEE_L" + i + "_SPOTANGLE");
                 _lightShaderParams[i].FUSEE_L_ACTIVE = _currentShader.GetShaderParam("FUSEE_L" + i + "_ACTIVE");
             }
+
+
 
             _updatedShaderParams = true;
             UpdateCurrentShader();
@@ -1412,6 +1442,22 @@ namespace Fusee.Engine
         /// <seealso cref="GetShaderParamList"/>
         [JSChangeName("SetShaderParamMtx4f")]
         public void SetShaderParam(IShaderParam param, float4x4 val)
+        {
+            _rci.SetShaderParam(param, val);
+        }
+
+        /// <summary>
+        /// Sets the shader parameter to a float4x4 matrixvalue.
+        /// </summary>
+        /// <param name="param">The <see cref="IShaderParam"/> identifier.</param>
+        /// <param name="val">The float4x4 matrix that should be assigned to the shader parameter.</param>
+        /// <remarks>
+        /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
+        /// a given uniform parameter name used in a shader program.
+        /// </remarks>
+        /// <seealso cref="GetShaderParamList"/>
+        [JSChangeName("SetShaderParamMtx4fArray")]
+        public void SetShaderParam(IShaderParam param, float4x4[] val)
         {
             _rci.SetShaderParam(param, val);
         }

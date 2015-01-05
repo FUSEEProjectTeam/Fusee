@@ -76,12 +76,12 @@ namespace Examples.SceneViewer
             // Scene loading
             SceneContainer scene;
             var ser = new Serializer();
-            using (var file = File.OpenRead(@"Assets/WeightTest.fus"))
+            using (var file = File.OpenRead(@"Assets/WeightTest5.fus"))
             {
                 scene = ser.Deserialize(file, null, typeof(SceneContainer)) as SceneContainer;
             }
             _sr = new SceneRenderer(scene, "Assets");
-            AdjustModelScaleOffset();
+            //AdjustModelScaleOffset();
             _guiSubText.Text = "FUSEE 3D Scene";
             if (scene.Header.CreatedBy != null || scene.Header.CreationDate != null)
             {

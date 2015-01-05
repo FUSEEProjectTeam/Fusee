@@ -15,7 +15,6 @@ namespace Fusee.Serialization
 
         [ProtoMember(2, AsReference = true)]
         public List<SceneNodeContainer> Joints;
-
    
     }
 
