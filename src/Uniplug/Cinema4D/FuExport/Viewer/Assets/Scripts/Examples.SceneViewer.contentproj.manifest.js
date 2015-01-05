@@ -9,12 +9,13 @@ var $customSysSec = JSIL.GetAssembly("System.Security");
 
 if (typeof (contentManifest) !== "object") { contentManifest = {}; };
 contentManifest["Examples.SceneViewer.contentproj"] = [
-    ["Script",	"Fusee.Engine.Imp.WebAudio.js",	{  "sizeBytes": 8151 }],
-    ["Script",	"Fusee.Engine.Imp.WebNet.js",	{  "sizeBytes": 6618 }],
-    ["Script",	"Fusee.Engine.Imp.WebGL.js",	{  "sizeBytes": 116378 }],
+    ["Script",	"Fusee.Engine.Imp.WebAudio.js",	{  "sizeBytes": 8173 }],
+    ["Script",	"Fusee.Engine.Imp.WebNet.js",	{  "sizeBytes": 6742 }],
+    ["Script",	"Fusee.Engine.Imp.WebGL.js",	{  "sizeBytes": 116867 }],
     ["Script",	"Fusee.Engine.Imp.WebInput.js",	{  "sizeBytes": 6868 }],
     ["Script",	"XirkitScript.js",	{  "sizeBytes": 43845 }],
+    ["Script",	"WebSimpleScene.js",	{  "sizeBytes": 1558 }],
     ["Image",	"Assets/FuseeLogo150.png",	{  "sizeBytes": 19685 }],
     ["Font",	"Assets/Lato-Black.ttf",	{  "sizeBytes": 114588 }],
-    ["File",	"Assets/Model.fus",	{  "sizeBytes": 2426 }],
+    ["File",	"Assets/Model.fus",	{  "sizeBytes": 2415 }],
     ];

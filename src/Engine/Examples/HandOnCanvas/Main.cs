@@ -144,7 +144,6 @@ namespace Examples.HandOnCanvas
                 scene = ser.Deserialize(file, null, typeof(SceneContainer)) as SceneContainer;
                 _meshHand = SceneRenderer.MakeMesh(scene.Children[0].GetMesh());
             }
-
         }
 
         // is called once a frame

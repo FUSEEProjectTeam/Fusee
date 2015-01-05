@@ -29,38 +29,41 @@ JSIL.Browser.CanvasService = function () {
 
 JSIL.Browser.CanvasService.prototype.applySize = function (element, desiredWidth, desiredHeight, isViewport) {
   if (typeof (desiredWidth) !== "number")
-    desiredWidth = element.width;
+    desiredWidth = element.width | 0;
   if (typeof (desiredHeight) !== "number")
-    desiredHeight = element.height;
+    desiredHeight = element.height | 0;
 
   var scaleFactor = jsilConfig.viewportScale;
   if (typeof (scaleFactor) !== "number")
-    scaleFactor = 1.0;
+    scaleFactor = +1.0;
 
   var width, height;
   if (isViewport) {
-    width = Math.ceil(desiredWidth * scaleFactor);
-    height = Math.ceil(desiredHeight * scaleFactor);
+    width = Math.ceil(+desiredWidth * +scaleFactor) | 0;
+    height = Math.ceil(+desiredHeight * +scaleFactor) | 0;
   } else {
-    width = desiredWidth;
-    height = desiredHeight;
+    width = desiredWidth | 0;
+    height = desiredHeight | 0;
   }
 
   element.actualWidth = desiredWidth;
   element.actualHeight = desiredHeight;
 
   if (element.width !== width)
-    element.width = width;
+    element.width = width | 0;
 
   if (element.height !== height)
-    element.height = height;
+    element.height = height | 0;
 }
 
 JSIL.Browser.CanvasService.prototype.get = function (desiredWidth, desiredHeight) {
   var e = document.getElementById("canvas");
 
-  if (arguments.length === 2)
-    this.applySize(e, desiredWidth, desiredHeight, true);
+  if (
+    (typeof (desiredWidth) !== "undefined") &&
+    (typeof (desiredHeight) !== "undefined")
+  )  
+    this.applySize(e, desiredWidth | 0, desiredHeight | 0, true);
   
   return e;
 };
@@ -68,7 +71,7 @@ JSIL.Browser.CanvasService.prototype.get = function (desiredWidth, desiredHeight
 JSIL.Browser.CanvasService.prototype.create = function (desiredWidth, desiredHeight) {
   var e = document.createElement("canvas");
   
-  this.applySize(e, desiredWidth, desiredHeight, false);
+  this.applySize(e, desiredWidth | 0, desiredHeight | 0, false);
   
   return e;
 };
@@ -1057,7 +1060,6 @@ function beginLoading () {
   var progressBar = document.getElementById("progressBar");
   var loadButton = document.getElementById("loadButton");
   var fullscreenButton = document.getElementById("fullscreenButton");
-  var quitButton = document.getElementById("quitButton");
   var loadingProgress = document.getElementById("loadingProgress");
   var stats = document.getElementById("stats");
   
@@ -1103,7 +1105,6 @@ function browserFinishedLoadingCallback (loadFailures) {
   var progressBar = document.getElementById("progressBar");
   var loadButton = document.getElementById("loadButton");
   var fullscreenButton = document.getElementById("fullscreenButton");
-  var quitButton = document.getElementById("quitButton");
   var loadingProgress = document.getElementById("loadingProgress");
   var stats = document.getElementById("stats");
   
@@ -1116,9 +1117,6 @@ function browserFinishedLoadingCallback (loadFailures) {
     JSIL.Host.logWriteLine("done.");
   }
   try {     
-    if (quitButton)
-      quitButton.style.display = "";
-
     if (fullscreenButton && canGoFullscreen)
       fullscreenButton.style.display = "";
 
@@ -1146,11 +1144,6 @@ function browserFinishedLoadingCallback (loadFailures) {
     if (loadingProgress)
       loadingProgress.style.display = "none";
   }
-};
-
-function quitGame () {
-  Microsoft.Xna.Framework.Game.ForceQuit();
-  document.getElementById("quitButton").style.display = "none";
 };
 
 var canGoFullscreen = false;
@@ -1307,20 +1300,12 @@ function onLoad () {
 
   var log = document.getElementById("log");
   var loadButton = document.getElementById("loadButton");
-  var quitButton = document.getElementById("quitButton");
   var loadingProgress = document.getElementById("loadingProgress");
   var fullscreenButton = document.getElementById("fullscreenButton");
   var statsElement = document.getElementById("stats");
 
   if (log)
     log.value = "";
-  
-  if (quitButton) {
-    quitButton.style.display = "none";
-    quitButton.addEventListener(
-      "click", quitGame, true
-    );
-  }
 
   if (statsElement)
     statsElement.style.display = "none";

@@ -215,7 +215,7 @@ namespace FuExport
             var externalFiles = new[]
             {
                 "Fusee.Engine.Imp.WebAudio", "Fusee.Engine.Imp.WebNet", "Fusee.Engine.Imp.WebGL",
-                "Fusee.Engine.Imp.WebInput", "XirkitScript", 
+                "Fusee.Engine.Imp.WebInput", "XirkitScript", "WebSimpleScene"
             };
 
             foreach (var extFile in externalFiles)
