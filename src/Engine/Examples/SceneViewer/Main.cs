@@ -290,9 +290,6 @@ namespace Examples.SceneViewer
 
         public static void Main()
         {
-            Tests.Scene.Core.VisitorTests.BasicVisitorTest();
-            Tests.Scene.Core.VisitorTests.BasicEnumeratorTests();
-            Tests.Scene.Core.VisitorTests.BasicViseratorTest();
             var app = new SceneViewer();
             app.Run();
         }

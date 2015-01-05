@@ -1,6 +1,6 @@
 ﻿
 
-namespace Tests.Math.Core
+namespace Fusee.Tests.Math.Core
 {
     class CoreTest
     {

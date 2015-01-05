@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using Fusee.Engine.SimpleScene;
 using Fusee.Math;
 using Fusee.Serialization;
 using NUnit.Framework;
 
-namespace Tests.Scene.Core
+namespace Fusee.Tests.Scene.Core
 {
     [TestFixture]
     public class VisitorTests

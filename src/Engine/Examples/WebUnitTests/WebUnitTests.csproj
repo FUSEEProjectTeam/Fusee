@@ -6,11 +6,11 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{4C480760-C3E5-4F3A-93D4-7B0E5CF45C82}</ProjectGuid>
+    <ProjectGuid>{8E5841A2-2C85-4104-9EFD-F6360E42DE5D}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Examples.SceneViewer</RootNamespace>
-    <AssemblyName>Examples.SceneViewer</AssemblyName>
+    <RootNamespace>Examples.WebUnitTests</RootNamespace>
+    <AssemblyName>Examples.WebUnitTests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <UseVSHostingProcess>false</UseVSHostingProcess>
@@ -20,7 +20,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\Bin\Debug\Examples\SceneViewer\</OutputPath>
+    <OutputPath>..\..\..\..\Bin\Debug\Examples\WebUnitTests\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -29,7 +29,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\..\..\Bin\Release\Examples\SceneViewer\</OutputPath>
+    <OutputPath>..\..\..\..\Bin\Release\Examples\WebUnitTests\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -42,7 +42,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\Bin\Debug\Examples\SceneViewer\</OutputPath>
+    <OutputPath>..\..\..\..\Bin\Debug\Examples\WebUnitTests\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -52,15 +52,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Assets\FuseeLogo150.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Model.fus">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Web\SceneViewer.html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <Folder Include="Assets\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(SolutionDir)src\Engine\Common\Common.csproj">
@@ -77,26 +69,19 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Fusee.Engine.SimpleScene">
-      <HintPath>..\..\..\..\Bin\Debug\Fusee.Engine.SimpleScene.dll</HintPath>
-    </Reference>
-    <Reference Include="Fusee.SerializationContainer">
-      <HintPath>..\..\..\..\Bin\Debug\Fusee.SerializationContainer.dll</HintPath>
-    </Reference>
-    <Reference Include="Fusee.SerializationSerializer">
-      <HintPath>..\..\..\..\Bin\Debug\Fusee.SerializationSerializer.dll</HintPath>
-    </Reference>
-    <Reference Include="protobuf-net">
-      <HintPath>..\..\..\..\ExternalBinaries\protobuf\protobuf-net.dll</HintPath>
+    <Reference Include="Fusee.Tests">
+      <HintPath>..\..\..\..\Bin\Debug\Tests\Fusee.Tests.exe</HintPath>
     </Reference>
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\Lato-Black.ttf">
+    <Content Include="Web\Assets\Scripts\nunit.framework.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    </Content>
+    <Content Include="Web\Examples.WebUnitTests.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)/Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
