@@ -1,6 +1,5 @@
 using System.Windows.Forms;
 using Fusee.Engine;
-using Fusee.SceneManagement;
 using Fusee.Math;
 
 namespace Examples.WindowSizesDemo
