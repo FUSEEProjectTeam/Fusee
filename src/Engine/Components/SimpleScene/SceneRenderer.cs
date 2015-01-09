@@ -454,8 +454,8 @@ namespace Fusee.Engine.SimpleScene
                     {
 
 
-                        //VS = scb.VS,
-                        VS = VsBones,
+                        VS = scb.VS,
+                        //VS = VsBones,
                         PS = scb.PS,
                         StateSet = new RenderStateSet()
                         {
