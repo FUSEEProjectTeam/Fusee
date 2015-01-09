@@ -268,6 +268,20 @@ namespace Fusee.Math
 
         #endregion
 
+        #region public float Length1
+
+        /// <summary>
+        /// Gets the length in 1-norm.
+        /// </summary>
+        /// <see cref="LengthFast"/>
+        /// <seealso cref="LengthSquared"/>
+        public float Length1
+        {        
+            get { return (float) System.Math.Abs(x) + System.Math.Abs(y) + System.Math.Abs(z) + System.Math.Abs(w); }
+        }
+
+        #endregion
+
         #region public float LengthFast
 
         /// <summary>
@@ -318,6 +332,23 @@ namespace Fusee.Math
         public void Normalize()
         {
             float scale = 1.0f / this.Length;
+            x *= scale;
+            y *= scale;
+            z *= scale;
+            w *= scale;
+        }
+
+        #endregion
+
+        #region public void Normalize1()
+
+        /// <summary>
+        /// Scales the float4 to unit length in 1-norm.
+        /// </summary>
+        public void Normalize1()
+        {
+            float scale = 1.0f / this.Length1;
+
             x *= scale;
             y *= scale;
             z *= scale;

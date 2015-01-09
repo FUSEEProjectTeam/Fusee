@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -88,7 +89,7 @@ namespace Fusee.Engine.SimpleScene
         public void InitAnimations(SceneContainer sc)
         {
 
-            _animation = new Animation();
+            _animation = new Animation(1);
             if(sc.AnimationTracks != null){
                 foreach (AnimationTrackContainer animTrackContainer in sc.AnimationTracks)
                 {
@@ -208,13 +209,11 @@ namespace Fusee.Engine.SimpleScene
             }
         }
 
-        private float4 tmp;
-
         protected void VisitNodeRender(SceneNodeContainer sbc)
         {
-            float4x4 origMV = _rc.ModelView;
+            float4x4 origMV = _rc.Model;
             ShaderEffect origMat = CurMat;
-            _rc.ModelView = _rc.ModelView * sbc.Transform.Matrix();
+            _rc.Model = _rc.Model * sbc.Transform.Matrix();
 
             if (sbc.IsBone)
             {
@@ -242,7 +241,8 @@ namespace Fusee.Engine.SimpleScene
                     float4x4[] boneArray = new float4x4[soc.GetWeights().Joints.Count()];
                     for (int i = 0; i < soc.GetWeights().Joints.Count(); i++)
                     {
-                        boneArray[i] = _boneMap[soc.GetWeights().Joints[i]];
+                        float4x4 tmp = soc.GetWeights().BindingMatrices[i];
+                        boneArray[i] = _boneMap[soc.GetWeights().Joints[i]] * tmp;
                     }
 
                     _rc.Bones = boneArray;
@@ -294,7 +294,8 @@ namespace Fusee.Engine.SimpleScene
                     VisitNodeRender(child);
                 }
             }
-            _rc.ModelView = origMV;
+
+            _rc.Model = origMV;
             CurMat = origMat;
         }
 
@@ -418,9 +419,7 @@ namespace Fusee.Engine.SimpleScene
                         tempDictionary.Remove(keyValuePair.Key);
                     }
 
-                    // TODO: RUNDUNGSFEHLER BEIM NORMALISIEREN UMGEHEN
-                    //boneWeights[i].Normalize();
-
+                    boneWeights[i].Normalize1();
                 }
 
                 rm = new Mesh()
@@ -590,20 +589,23 @@ namespace Fusee.Engine.SimpleScene
             "attribute vec4 fuBoneIndex;" +
             "attribute vec4 fuBoneWeight;" +
             "uniform mat4 FUSEE_IMV; " +
-            "uniform mat4 FUSEE_MVP;" +
+            "uniform mat4 FUSEE_P;" +
+            "uniform mat4 FUSEE_V;" +
+            "uniform mat4 FUSEE_M;" +
+            "uniform mat4 FUSEE_IV;" +
             "uniform vec4 FUSEE_BONES[100];" +
             "varying vec3 vViewDir; " +
             "varying vec3 vNormal; " +
             "varying vec2 vUV;  " +
 
-            "void CalcBoneMatrix(in float ind, in vec4[100] Bones, inout mat4 result){" + 
+            "void CalcBoneMatrix(in float ind, in vec4[100] Bones, inout mat4 result){" +
             //    "mat4 ret;" + 
-                "int index = int(ind);" +
-                "result[0] = Bones[index*4];" +
-                "result[1] = Bones[index*4+1];" +
-                "result[2] = Bones[index*4+2];" +
-                "result[3] = Bones[index*4+3];" +
-                //"result = ret;" +
+            "int index = int(ind);" +
+            "result[0] = Bones[index*4];" +
+            "result[1] = Bones[index*4+1];" +
+            "result[2] = Bones[index*4+2];" +
+            "result[3] = Bones[index*4+3];" +
+            //"result = ret;" +
             "}" +
 
             "void main() " +
@@ -611,63 +613,36 @@ namespace Fusee.Engine.SimpleScene
             "vec4 newVertex;" +
             "vec4 newNormal;" +
             "int index;" +
-            //"index = int(fuBoneIndex.x);" +
 
-            //"newVertex = vec4(fuVertex, 0.0);" +
-            //"newNormal = vec4(fuNormal, 0.0);" +
-            //"if(fuBoneWeight.x == 0.0){" +
-            //"if(fuBoneIndex == 0){" +
+            
             "mat4 boneMatrix;" +
             "CalcBoneMatrix(fuBoneIndex.x, FUSEE_BONES, boneMatrix);" +
-            "newVertex = (boneMatrix * vec4(fuVertex, 0.0)) * fuBoneWeight.x ;" +
+            "vec3 ver = fuVertex + vec3(0,0,0);" +
+            "newVertex = (boneMatrix *  vec4(ver, 1.0) ) * fuBoneWeight.x ;" +
             "newNormal = (boneMatrix * vec4(fuNormal, 0.0)) * fuBoneWeight.x;" +
 
+            //"ver = fuVertex + vec3(0,100,0);" +
             "CalcBoneMatrix(fuBoneIndex.y, FUSEE_BONES, boneMatrix);" +
-            "newVertex = (boneMatrix * vec4(fuVertex, 0.0)) * fuBoneWeight.y + newVertex;" +
+            "newVertex = (boneMatrix * vec4(ver, 1.0)) * fuBoneWeight.y + newVertex;" +
             "newNormal = (boneMatrix * vec4(fuNormal, 0.0)) * fuBoneWeight.y + newNormal;" +
 
+            //"ver = fuVertex + vec3(0,0,0);" +
             "CalcBoneMatrix(fuBoneIndex.z, FUSEE_BONES, boneMatrix);" +
-            "newVertex = (boneMatrix * vec4(fuVertex, 0.0)) * fuBoneWeight.z + newVertex;" +
+            "newVertex = (boneMatrix * vec4(ver, 1.0)) * fuBoneWeight.z + newVertex;" +
             "newNormal = (boneMatrix * vec4(fuNormal, 0.0)) * fuBoneWeight.z + newNormal;" +
 
+            //"ver = fuVertex + vec3(0,-100,0);" +
             "CalcBoneMatrix(fuBoneIndex.w, FUSEE_BONES, boneMatrix);" +
-            "newVertex = (boneMatrix * vec4(fuVertex, 0.0)) * fuBoneWeight.w + newVertex;" +
+            "newVertex = (boneMatrix * vec4(ver, 1.0)) * fuBoneWeight.w + newVertex;" +
             "newNormal = (boneMatrix * vec4(fuNormal, 0.0)) * fuBoneWeight.w + newNormal;" +
 
 
             "vNormal = normalize(vec3(newNormal)); " +
             "vec3 viewPos = FUSEE_IMV[3].xyz; " +
             "vViewDir = normalize(viewPos - vec3(newVertex)); " +
-            "gl_Position = FUSEE_MVP * vec4(vec3(newVertex), 1.0); " +
+            "gl_Position = FUSEE_P *FUSEE_V* vec4(vec3(newVertex), 1.0); " +
             "vUV = fuUV;" +
             " } ";
 
-        public string VsTest =
-            "attribute vec3 fuVertex; " +
-            "attribute vec3 fuNormal;" +
-            "attribute vec2 fuUV;" +
-            "attribute vec4 fuBoneIndex;" +
-            "attribute vec4 fuBoneWeight;" +
-            "uniform mat4 FUSEE_BONES[4];" +
-            "uniform mat4 FUSEE_IMV; " +
-            "uniform mat4 FUSEE_MVP;" +
-            "varying vec3 vViewDir; " +
-            "varying vec3 vNormal; " +
-            "varying vec2 vUV;  " +
-            "void main() " +
-            "{  " +
-            "vec4 newVertex;" +
-            "vec4 newNormal;" +
-            "int index;" +
-            "index = int(fuBoneIndex.x); " +
-            "vNormal = normalize(vec3(fuNormal)); " +
-            "vec3 viewPos = FUSEE_IMV[3].xyz; " +
-            "vec3 testVertexPos = fuVertex - vec3(0,0,0);" +
-            "if(FUSEE_BONES[0][0].x == 1.0){" +
-            "testVertexPos = fuVertex-vec3(0,200,0);}" + 
-            "vViewDir = normalize(viewPos - testVertexPos); " +
-            "gl_Position = FUSEE_MVP * vec4(testVertexPos, 1.0); " +
-            "vUV = fuUV; " +
-            "} ";
     }
 }

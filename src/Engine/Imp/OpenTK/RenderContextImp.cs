@@ -639,35 +639,20 @@ namespace Fusee.Engine
         public void SetShaderParam(IShaderParam param, float4x4[] mtxArray)
         {
 
-            //GL.Uniform1(((ShaderParam)param).handle, 16 * nItems, pFlt)
-
             float4[] tmpArray = new float4[mtxArray.Length * 4];
             for (int i = 0; i < mtxArray.Length; i++)
             {
-                tmpArray[i*4] = mtxArray[i].Row0;
-                tmpArray[i * 4 + 1] = mtxArray[i].Row1;
-                tmpArray[i * 4 + 2] = mtxArray[i].Row2;
-                tmpArray[i * 4 + 3] = mtxArray[i].Row3;
+                tmpArray[i*4] = mtxArray[i].Column0;
+                tmpArray[i * 4 + 1] = mtxArray[i].Column1;
+                tmpArray[i * 4 + 2] = mtxArray[i].Column2;
+                tmpArray[i * 4 + 3] = mtxArray[i].Column3;
             }
 
-            //int nItems = mtxArray.Length;
             unsafe
             {
-                //fixed (float4x4* pMtx = &mtxArray[0])
-                //{
-                //    float* pFlt = (float*)pMtx;
-                //    //for (int i = 0; i < nItems; i++)
-                //    //{          
-                //       // GL.buff
-                //        GL.Uniform4(((ShaderParam)param).handle, 16 * nItems, pFlt);
-                //        GL.UniformMatrix4(((ShaderParam)param).handle, nItems, true, pFlt);
-                //    //}
-                //}
-
                 fixed (float4* pMtx = &tmpArray[0])
                 {
                     float* pFlt = (float*)pMtx;
-                    //GL.Uniform1(((ShaderParam)param).handle, 16 * nItems, pFlt);
                     GL.Uniform4(((ShaderParam)param).handle, tmpArray.Length, pFlt);
                 }
             }

@@ -37,8 +37,9 @@ namespace FuExport
         {
             if (weightTag == null)
                 return;
-
+            
             List<JointWeightColumn> weightMap = new List<JointWeightColumn>();
+            List<float4x4> bindingMatrices = new List<float4x4>();
             for (int i = 0; i < weightTag.GetJointCount(); i++)
             {
                 JointWeightColumn jointWeightWrapper = new JointWeightColumn()
@@ -65,6 +66,11 @@ namespace FuExport
                     }
                 }
                 weightMap.Add(jointWeightWrapper);
+
+                // Add Binding Matrix
+                JointRestState jointRestState = weightTag.GetJointRestState(i);
+                float4x4 mat = (float4x4) (jointRestState.m_oMi * weightTag.GetGeomMg());
+                bindingMatrices.Add(mat);
             }
 
             _weightObjects.Add(new WeightObject()
@@ -72,8 +78,11 @@ namespace FuExport
                 SceneNodeContainer = snc,
                 BaseObject = bo,
                 WeightTag = weightTag,
-                WeightMap = weightMap
+                WeightMap = weightMap,
+                BindingMatrices = bindingMatrices
             });
+
+            
 
         }
 
@@ -94,6 +103,7 @@ namespace FuExport
                     }                   
                 }
                 wComponent.WeightMap = wObject.WeightMap;
+                wComponent.BindingMatrices = wObject.BindingMatrices;
                 wObject.SceneNodeContainer.Components.Add(wComponent);
             }
         }
@@ -106,7 +116,9 @@ namespace FuExport
 
             public CAWeightTag WeightTag { get; set; }
 
-            public List<JointWeightColumn> WeightMap { get; set; } 
+            public List<JointWeightColumn> WeightMap { get; set; }
+
+            public List<float4x4> BindingMatrices { get; set; } 
         }
     }
 }

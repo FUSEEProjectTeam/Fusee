@@ -76,7 +76,7 @@ namespace Examples.SceneViewer
             // Scene loading
             SceneContainer scene;
             var ser = new Serializer();
-            using (var file = File.OpenRead(@"Assets/WeightTest5.fus"))
+            using (var file = File.OpenRead(@"Assets/WeightTest.fus"))
             {
                 scene = ser.Deserialize(file, null, typeof(SceneContainer)) as SceneContainer;
             }
@@ -173,7 +173,7 @@ namespace Examples.SceneViewer
                 _angleVert += RotationSpeed * (float)Time.Instance.DeltaTime;
 
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-            var mtxCam = float4x4.LookAt(0, 200, -_zVal, 0, 0, 0, 0, 1, 0);
+            var mtxCam = float4x4.LookAt(0, 0, -_zVal, 0, 0, 0, 0, 1, 0);
 
             
             // first mesh
@@ -182,7 +182,7 @@ namespace Examples.SceneViewer
             //RC.SetShaderParam(_colorParam, new float4(0.5f, 0.8f, 0, 1));
             //RC.Render(_meshTea);
 
-            RC.ModelView = mtxCam * mtxRot * float4x4.CreateScale(0.6f, 0.6f, 0.6f); //* _modelScaleOffset * ;
+            RC.View = mtxCam*mtxRot; //* _modelScaleOffset * ;
             _sr.Render(RC);
             _sr.Animate();
             _guiHandler.RenderGUI();
