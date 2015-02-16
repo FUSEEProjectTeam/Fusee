@@ -147,7 +147,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt) </OutputFile>
-      <AdditionalLibraryDirectories>$(C4D_DIR)\plugins\Fusee\bin\Release;$(C4D_DIR)\plugins\Fusee\bin\Debug;$(C4D_DIR)\plugins\examples\cinema4dsdk\_obj\cinema.framework\x64_Debug;$(C4D_DIR)\;$(C4D_DIR)\plugins\ManagedPlugin\x64;$(MONODIR)\lib\glib-2.0\include;$(MONODIR)\include\mono-2.0;$(MONODIR)\include\glib-2.0;$(MONODIR)\bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(C4D_DIR)\plugins\Fusee\bin\Release;$(C4D_DIR)\plugins\Fusee\bin\Debug;$(C4D_DIR)\plugins\cinema4dsdk\_obj\cinema.framework\x64_Debug;$(C4D_DIR)\;$(C4D_DIR)\plugins\ManagedPlugin\x64;$(MONODIR)\lib\glib-2.0\include;$(MONODIR)\include\mono-2.0;$(MONODIR)\include\glib-2.0;$(MONODIR)\bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>Mono64.lib;Bridge.lib;cinema.framework_Debug_64bit.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DelayLoadDLLs>Bridge.dll;Mono-2.0.dll</DelayLoadDLLs>
