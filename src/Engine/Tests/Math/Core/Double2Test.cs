@@ -1,8 +1,7 @@
-﻿
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using Fusee.Math;
 
-namespace Tests.Math.Core
+namespace Fusee.Tests.Math.Core
 {
     [TestFixture]
     class Double2Test

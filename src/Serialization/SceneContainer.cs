@@ -28,7 +28,5 @@ namespace Fusee.Serialization
         [ProtoMember(2, AsReference = true)]
         public List<SceneNodeContainer> Children;
 
-        [ProtoMember(3, AsReference = true)]
-        public List<AnimationTrackContainer> AnimationTracks;
     }
 }

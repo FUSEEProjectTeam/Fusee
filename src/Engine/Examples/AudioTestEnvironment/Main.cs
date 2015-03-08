@@ -19,7 +19,7 @@ namespace Examples.AudioTestEnvironment
     };
 
     [FuseeApplication(Name = "Audio Test Environment", Description = "This is an audio test environment to test for different bugs and options.")]
-    public class AudioTest : RenderCanvas
+    public class AudioTestEnvironment : RenderCanvas
     {
         private AudioFileFormat _fileFormat;
         private LoadMethod _streamOrLoad;
@@ -105,7 +105,7 @@ namespace Examples.AudioTestEnvironment
 
         public static void Main()
         {
-            var app = new AudioTest();
+            var app = new AudioTestEnvironment();
             app.Run();
         }
 

@@ -28,7 +28,8 @@ namespace FuExport
             CAJointObject jo = bo as CAJointObject;
             if (jo != null)
             {
-                snc.IsBone = true;
+                //snc.IsBone = true;
+                snc.AddComponent(new BoneComponent());
                 _jointObjects.Add(jo.RefUID(), snc);
             }
         }
@@ -104,7 +105,10 @@ namespace FuExport
                 }
                 wComponent.WeightMap = wObject.WeightMap;
                 wComponent.BindingMatrices = wObject.BindingMatrices;
-                wObject.SceneNodeContainer.Components.Add(wComponent);
+                int inxMesh = wObject.SceneNodeContainer.GetIndexOf<MeshComponent>();
+                if (inxMesh == -1)
+                    inxMesh = 0;
+                wObject.SceneNodeContainer.Components.Insert(inxMesh, wComponent);
             }
         }
 

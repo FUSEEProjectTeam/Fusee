@@ -16,6 +16,23 @@ namespace FuExport
 
         public Dictionary<float, float3> ScaleKeys { get; set; }
 
+
+        private List<AnimationKeyContainerBase> BuildFloat3Keys(Dictionary<float, float3> dictionary)
+        {
+            List<AnimationKeyContainerBase> ret = new List<AnimationKeyContainerBase>();
+
+            foreach (var pair in dictionary)
+            {
+                ret.Add(new AnimationKeyContainerFloat3()
+                {
+                    Time = pair.Key,
+                    Value = pair.Value
+                });
+            }
+
+            return ret;
+        }
+
         private List<AnimationKeyContainerBase> BuildTranslationKeys()
         {
             List<AnimationKeyContainerBase> ret = new List<AnimationKeyContainerBase>();
@@ -165,33 +182,38 @@ namespace FuExport
 
         public void BuildTracks(SceneNodeContainer snc, List<AnimationTrackContainer> list)
         {
+            TransformComponent transform = snc.GetTransform();
+
+            if (transform == null)
+                return;
+
             if (TranslationKeys != null) 
                 list.Add(new AnimationTrackContainer()
                 {
-                    SceneObject = snc,
-                    Property = "Transform.Translation",
+                    SceneComponent = transform,
+                    Property = "Translation",
                     KeyType = typeof(float3),
-                    KeyFrames = BuildTranslationKeys()
+                    KeyFrames = BuildFloat3Keys(TranslationKeys)
 
                 });
 
             if(RotationKeys != null)
                 list.Add(new AnimationTrackContainer()
                 {
-                    SceneObject = snc,
-                    Property = "Transform.Rotation",
+                    SceneComponent = transform,
+                    Property = "Rotation",
                     KeyType = typeof(float3),
-                    KeyFrames = BuildRotationKeys()
+                    KeyFrames = BuildFloat3Keys(RotationKeys)
 
                 });
 
             if(ScaleKeys != null)
                 list.Add(new AnimationTrackContainer()
                 {
-                    SceneObject = snc,
-                    Property = "Transform.Scale",
+                    SceneComponent = transform,
+                    Property = "Scale",
                     KeyType = typeof(float3),
-                    KeyFrames = BuildScaleKeys()
+                    KeyFrames = BuildFloat3Keys(ScaleKeys)
 
                 });
         }

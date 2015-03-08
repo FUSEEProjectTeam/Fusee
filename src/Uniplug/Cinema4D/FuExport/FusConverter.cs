@@ -46,6 +46,7 @@ namespace FuExport
 
     class FusConverter
     {
+
         private BaseDocument _doc, _polyDoc;
         private List<string> _textureFiles = new List<string>();
         private string _sceneRootDir;
@@ -53,10 +54,11 @@ namespace FuExport
         private Dictionary<long, MaterialComponent> _materialCache;
         private List<AnimationTrackContainer> _tracks = new List<AnimationTrackContainer>();
         private WeightManager _weightManager;
+        private bool _animationsPresent;
 
         public SceneContainer FuseefyScene(BaseDocument doc, string sceneRootDir, out List<string> textureFiles)
         {
-            
+            _animationsPresent = false;
             _materialCache = new Dictionary<long, MaterialComponent>();
             _sceneRootDir = sceneRootDir;
             _doc = doc;
@@ -82,8 +84,9 @@ namespace FuExport
                     CreationDate = DateTime.Now.ToString("d-MMM-yyyy", CultureInfo.CreateSpecificCulture("en-US"))
                 },
 
+
                 Children = FuseefyOb(_polyDoc.GetFirstObject(), _doc.GetFirstObject()),
-                AnimationTracks = _tracks
+                //AnimationTracks = _tracks
             };
 
             // CreateWeightMap has to be called after creating the object-tree
@@ -211,6 +214,7 @@ namespace FuExport
         }
 
         /// <summary>
+
         /// This method tries to make the best out of C4Ds seldom relationship between objects with
         /// multiple materials which can or can not be restricted to polygon selections and one or more UV sets.
         /// But there are unhandled cases:
@@ -220,12 +224,14 @@ namespace FuExport
         /// <param name="ob"></param>
         /// <param name="soc"></param>
 
+
         private void VisitObject(BaseObject ob, BaseObject unpolyObject, SceneNodeContainer snc)
         {
             Collection<TextureTag> textureTags = new Collection<TextureTag>();
             Dictionary<string,  SelectionTag> selectionTags = new Dictionary<string, SelectionTag>();
             UVWTag uvwTag = null;
             CAWeightTag weightTag = null;
+
 
             // Iterate over the object's tags
             for (BaseTag tag = ob.GetFirstTag(); tag != null; tag = tag.GetNext())
@@ -276,6 +282,7 @@ namespace FuExport
 
             TextureTag lastUnselectedTag = null;
             Collection<KeyValuePair<SelectionTag, TextureTag>> texSelList = new Collection<KeyValuePair<SelectionTag, TextureTag>>(); // Abused KeyValuePair. Should have been Pair...
+
             // Now iterate over the textureTags
             foreach (TextureTag texture in textureTags)
             {
@@ -341,12 +348,14 @@ namespace FuExport
                             snc.Children = new List<SceneNodeContainer>();
 
                         SceneNodeContainer subSnc = new SceneNodeContainer();
-                        subSnc.Transform = new TransformContainer()
+
+                        AddComponent(subSnc, new TransformComponent()
                         {
                             Translation = new float3(0, 0, 0),
                             Rotation = new float3(0, 0, 0),
                             Scale = new float3(1, 1, 1)
-                        };
+
+                        });
 
                         AddComponent(subSnc, GetMaterial(texSelItem.Value));
                         subSnc.Name = snc.Name + "_" + texSelItem.Key.GetName();
@@ -503,6 +512,8 @@ namespace FuExport
                     {
                         double3 v = data.GetVector(id);
                     }
+
+
                 }
 
             }
@@ -560,8 +571,10 @@ namespace FuExport
             return resultName;
         }
 
-
-        private List<SceneNodeContainer> FuseefyOb(BaseObject ob, BaseObject unpolyObject)        {
+        private List<SceneNodeContainer> FuseefyOb(BaseObject ob, BaseObject unpolyObject)
+        {
+            bool isAnimRoot = false;
+            
             if (ob == null)
                 return null;
 
@@ -574,22 +587,23 @@ namespace FuExport
 
                 snc.Name = ob.GetName();
                 float3 rotC4d = (float3) ob.GetRelRot();
-
-                snc.Transform = new TransformContainer{
+                AddComponent(snc, new TransformComponent
+                {
                     Translation = (float3) ob.GetRelPos(),
                     Rotation = new float3(-rotC4d.y, -rotC4d.x, -rotC4d.z),
                     Scale = (float3) ob.GetRelScale()
-                };
-                /*
-                double4x4 mtxD = ob.GetMl();
-
-                snc.Transform = (float4x4) mtxD;
-                */
+                });
                 // Search for unpolygonized objects holding the animationtracks
-                SaveTracks(unpolyObject, snc);
+                if (SaveTracks(unpolyObject, snc))
+                {
+                    _animationsPresent = true;
+                    isAnimRoot = true;
+                }
                 _weightManager.CheckOnJoint(snc, unpolyObject);
 
+                
                 VisitObject(ob, unpolyObject, snc);
+
 
                 // Hope the hierarchy of polygonized objects is the same as the normal one
                 var childList = FuseefyOb(ob.GetDown(), unpolyObject.GetDown());
@@ -598,14 +612,21 @@ namespace FuExport
 
                     if (snc.Children == null)
                     {
-
                         snc.Children = childList;
                     }
                     else
                     {
-
                         snc.Children.AddRange(childList);
                     }
+                }
+
+                if (isAnimRoot)
+                {
+                    AnimationComponent ac = new AnimationComponent();
+                    ac.AnimationTracks = new List<AnimationTrackContainer>(_tracks);
+                    snc.AddComponent(ac);
+                    _animationsPresent = false;
+                    _tracks.Clear();
                 }
                 ret.Add(snc);
                 ob = ob.GetNext();
@@ -614,11 +635,16 @@ namespace FuExport
             return ret;
         }
 
-        private void SaveTracks(BaseObject ob, SceneNodeContainer snc)
+        private bool SaveTracks(BaseObject ob, SceneNodeContainer snc)
         {
 
             var builder = new TrackBuilder();
             CTrack track = ob.GetFirstCTrack();
+
+            // First occurence of animation tracks?
+            if (track == null)
+                return false;
+
             while (track != null)
             {
                 DescID testID = track.GetDescriptionID();
@@ -673,7 +699,10 @@ namespace FuExport
             }
 
             builder.BuildTracks(snc, _tracks);
-
+            
+            if (_animationsPresent)
+                return false;
+            return true;
         }
     }
 }

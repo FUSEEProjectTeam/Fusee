@@ -55,6 +55,7 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ContainerExtensions.cs" />
     <Compile Include="CustomManifest.cs" />
     <Compile Include="DirCopy.cs" />
     <Compile Include="FileTypes.cs" />

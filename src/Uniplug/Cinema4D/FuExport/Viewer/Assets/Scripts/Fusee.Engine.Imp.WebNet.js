@@ -8,6 +8,7 @@
 
 var $fuseeNetwork = JSIL.DeclareAssembly("Fusee.Engine.Imp.WebNet");
 var $fuseeCommon = JSIL.GetAssembly("Fusee.Engine.Common");
+var $jsilSystem = JSIL.GetAssembly("System");
 
 JSIL.DeclareNamespace("Fusee");
 JSIL.DeclareNamespace("Fusee.Engine");
@@ -30,7 +31,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.WebNetImp", tru
     );
 
     $.Method({ Static: false, Public: true }, "CloseConnection",
-        new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.SysType")], []),
+        new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.SysType")], []),
         function CloseConnection$01(sysType) {
             // not implemented
         }
@@ -51,7 +52,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.WebNetImp", tru
     );
 
     $.Method({ Static: false, Public: true }, "EndPeer",
-        new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.SysType")], []),
+        new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.SysType")], []),
         function EndPeer(sysType) {
             // not implemented
         }
@@ -65,21 +66,21 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.WebNetImp", tru
     );
 
     $.Method({ Static: false, Public: true }, "get_Config",
-        new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.NetConfigValues"), [], []),
+        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.NetConfigValues"), [], []),
         function get_Config() {
             return this;
         }
     );
 
     $.Method({ Static: false, Public: true }, "get_IncomingMsg",
-        new JSIL.MethodSignature($asm05.TypeRef("System.Collections.Generic.List`1", [$asm01.TypeRef("Fusee.Engine.INetworkMsg")]), [], []),
+        new JSIL.MethodSignature($jsilcore.TypeRef("System.Collections.Generic.List`1", [$fuseeCommon.TypeRef("Fusee.Engine.INetworkMsg")]), [], []),
         function get_IncomingMsg() {
             return null;
         }
     );
 
     $.Method({ Static: false, Public: true }, "get_Status",
-        new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.NetStatusValues"), [], []),
+        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.NetStatusValues"), [], []),
         function get_Status() {
             return null;
         }
@@ -93,7 +94,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.WebNetImp", tru
     );
 
     $.Method({ Static: false, Public: true }, "OpenConnection",
-        new JSIL.MethodSignature($.Boolean, [$asm01.TypeRef("Fusee.Engine.SysType"), $asm06.TypeRef("System.Net.IPEndPoint")], []),
+        new JSIL.MethodSignature($.Boolean, [$fuseeCommon.TypeRef("Fusee.Engine.SysType"), $jsilSystem.TypeRef("System.Net.IPEndPoint")], []),
         function OpenConnection$02(type, ip) {
             return false;
         }
@@ -101,7 +102,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.WebNetImp", tru
 
     $.Method({ Static: false, Public: true }, "OpenConnection",
         new JSIL.MethodSignature($.Boolean, [
-            $asm01.TypeRef("Fusee.Engine.SysType"), $.String,
+            $fuseeCommon.TypeRef("Fusee.Engine.SysType"), $.String,
             $.Int32
         ], []),
         function OpenConnection$03(type, host, port) {
@@ -152,14 +153,14 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.WebNetImp", tru
     );
 
     $.Method({ Static: false, Public: true }, "set_Config",
-        new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.NetConfigValues")], []),
+        new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.NetConfigValues")], []),
         function set_Config(value) {
             // not implemented
         }
     );
 
     $.Method({ Static: false, Public: false }, "set_IncomingMsg",
-        new JSIL.MethodSignature(null, [$asm05.TypeRef("System.Collections.Generic.List`1", [$asm01.TypeRef("Fusee.Engine.INetworkMsg")])], []),
+        new JSIL.MethodSignature(null, [$jsilcore.TypeRef("System.Collections.Generic.List`1", [$fuseeCommon.TypeRef("Fusee.Engine.INetworkMsg")])], []),
         function set_IncomingMsg(value) {
             // not implemented
         }
@@ -167,7 +168,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.WebNetImp", tru
 
 
     $.Method({ Static: false, Public: true }, "set_Status",
-        new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.NetStatusValues")], []),
+        new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.NetStatusValues")], []),
         function set_Status(value) {
             // not implemented
         }
@@ -189,7 +190,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.WebNetImp", tru
 
 JSIL.ImplementExternals("Fusee.Engine.Network", function($) {
     $.Method({ Static: false, Public: false }, "FirstMessage",
-        new JSIL.MethodSignature($asm01.TypeRef("Fusee.Engine.INetworkMsg"), []),
+        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.INetworkMsg"), []),
         function FirstMessage() {
             return null;
         }

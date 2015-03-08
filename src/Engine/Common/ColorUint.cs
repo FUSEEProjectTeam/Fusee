@@ -333,12 +333,15 @@ namespace Fusee.Engine
         {
             if (values == null)
                 throw new ArgumentNullException("values");
-            if (values.Length != 4)
-                throw new ArgumentOutOfRangeException("values", "There must be four and only four input values for ColorUint.");
+            if (values.Length != 3 && values.Length != 4)
+                throw new ArgumentOutOfRangeException("values", "There must be three or four input values for ColorUint.");
             this.R = ColorUint.ToByte(values[0]);
             this.G = ColorUint.ToByte(values[1]);
             this.B = ColorUint.ToByte(values[2]);
-            this.A = ColorUint.ToByte(values[3]);
+            if (values.Length > 3)
+                this.A = ColorUint.ToByte(values[3]);
+            else
+                this.A = byte.MaxValue;
         }
 
         /// <summary>
@@ -349,13 +352,38 @@ namespace Fusee.Engine
         {
             if (values == null)
                 throw new ArgumentNullException("values");
-            if (values.Length != 4)
-                throw new ArgumentOutOfRangeException("values", "There must be four and only four input values for ColorUint.");
+            if (values.Length != 3 && values.Length != 4)
+                throw new ArgumentOutOfRangeException("values", "There must be three or four input values for ColorUint.");
             this.R = values[0];
             this.G = values[1];
             this.B = values[2];
-            this.A = values[3];
+            if (values.Length > 3)
+                this.A = values[3];
+            else
+                this.A = byte.MaxValue;
         }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:Fusee.Engine.ColorUint" /> struct.
+        /// </summary>
+        /// <param name="copyFrom">The array to copy from.</param>
+        /// <param name="index">The index where to start copying color data.</param>
+        /// <param name="noAlpha">if set to <c>true</c> do not copy any alpha value.</param>
+        public ColorUint(byte[] copyFrom, int index, bool noAlpha = true)
+        {
+            if (copyFrom == null)
+                throw new ArgumentNullException("copyFrom");
+            if (copyFrom.Length < index + (noAlpha?3:4))
+                throw new ArgumentOutOfRangeException("copyFrom", "Not enough pixel data to copy from given index.");
+            this.R = copyFrom[index + 0];
+            this.G = copyFrom[index + 1];
+            this.B = copyFrom[index + 2];
+            if (noAlpha)
+                this.A = byte.MaxValue;
+            else
+                this.A = copyFrom[index + 3];
+        }
+
 
         /// <summary>
         /// Performs an explicit conversion from <see cref="T:Fusee.Engine.ColorUint"/> to <see cref="T:Fusee.Math.float3"/>.

@@ -213,7 +213,7 @@ namespace Fusee.Engine
                         _rc.Render(cps.Mesh);
                     }
 
-                    Bitmap pickColor = _rc.GetPixelColor(_x, _y, _w, _h);
+                    ImageData pickColor = _rc.GetPixelColor(_x, _y, _w, _h);
 
                     var x = pickColor.Width;
                     var y = pickColor.Height;

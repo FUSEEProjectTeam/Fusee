@@ -59,10 +59,6 @@
       <Project>{394FE54B-7891-4C5B-AF0E-8DCC9F2D3CBA}</Project>
       <Name>KeyFrameAnimation</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Components\SceneManagement\SceneManagement.csproj">
-      <Project>{81B3A7F0-F8E4-45D0-BE69-B869C9B1803E}</Project>
-      <Name>SceneManagement</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Core\Core.csproj">
       <Project>{1228EB3F-8BCC-453F-8A2E-D9246495A118}</Project>
       <Name>Core</Name>

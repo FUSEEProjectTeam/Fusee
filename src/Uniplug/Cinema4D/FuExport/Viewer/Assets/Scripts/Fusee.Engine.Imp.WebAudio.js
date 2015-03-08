@@ -174,8 +174,8 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.WebAudioImp", t
     );
 
     $.Method({ Static: false, Public: true }, "LoadFile",
-        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.IAudioStream"), [$.String]),
-        function WebAudioImp_LoadFile(fileName) {
+        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.IAudioStream"), [$.String, $.Boolean]),
+        function WebAudioImp_LoadFile(fileName, streaming) {
             var tmp = new $WebAudioImp.Fusee.Engine.AudioStream(fileName);
             this.AllStreams[this.LoadedStreams] = tmp;
             ++this.LoadedStreams;

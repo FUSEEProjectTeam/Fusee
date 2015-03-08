@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using Fusee.Engine;
-using Fusee.SceneManagement;
 using Fusee.Math;
 
 namespace Examples.InputDevices

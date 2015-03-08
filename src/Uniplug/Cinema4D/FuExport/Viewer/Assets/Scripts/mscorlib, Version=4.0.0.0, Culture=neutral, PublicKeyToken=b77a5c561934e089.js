@@ -10952,11 +10952,17 @@ JSIL.MakeInterface(
 
 (function Enumerator$Members () {
   var $, $thisType;
-  JSIL.MakeStruct($customMSCore.TypeRef("System.ValueType"), "System.Collections.Generic.Dictionary`2/Enumerator", false, ["TKey", "TValue"], function ($interfaceBuilder) {
+  JSIL.MakeStruct($customMSCore.TypeRef("System.ValueType"), "System.Collections.Generic.Dictionary`2+Enumerator", false, ["TKey", "TValue"], function ($interfaceBuilder) {
     $ = $interfaceBuilder;
 
+    $.ExternalMethod({Static:false, Public:true , Virtual:true }, "MoveNext", 
+      JSIL.MethodSignature.Return($.Boolean)
+    )
+      .Attribute($asm0E.TypeRef("__DynamicallyInvokableAttribute"));	
+	
+	
     $.ImplementInterfaces(
-      /* 0 */ $customMSCore.TypeRef("System.Collections.Generic.IEnumerator`1", [$customMSCore.TypeRef("System.Collections.Generic.KeyValuePair`2", [new JSIL.GenericParameter("TKey", "System.Collections.Generic.Dictionary`2/Enumerator"), new JSIL.GenericParameter("TValue", "System.Collections.Generic.Dictionary`2/Enumerator")])]), 
+      /* 0 */ $customMSCore.TypeRef("System.Collections.Generic.IEnumerator`1", [$customMSCore.TypeRef("System.Collections.Generic.KeyValuePair`2", [new JSIL.GenericParameter("TKey", "System.Collections.Generic.Dictionary`2+Enumerator"), new JSIL.GenericParameter("TValue", "System.Collections.Generic.Dictionary`2+Enumerator")])]), 
       /* 1 */ $customMSCore.TypeRef("System.IDisposable"), 
       /* 2 */ $customMSCore.TypeRef("System.Collections.IDictionaryEnumerator"), 
       /* 3 */ $customMSCore.TypeRef("System.Collections.IEnumerator")

@@ -173,7 +173,7 @@ namespace Fusee.Engine
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
         /// <seealso cref="GetShaderParamList"/>
-        [JSChangeName("SetShaderParamMtx4f")]
+        [JSChangeName("SetShaderParamfloat4x4")]
         void SetShaderParam(IShaderParam param, float4x4 val);
 
 
@@ -201,7 +201,7 @@ namespace Fusee.Engine
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
         /// <seealso cref="GetShaderParamList"/>
-        [JSChangeName("SetShaderParamInt")]
+        [JSChangeName("SetShaderParamI")]
         void SetShaderParam(IShaderParam param, int val);
 
         /// <summary>
@@ -448,7 +448,7 @@ namespace Fusee.Engine
         void SetVertexData(IMeshImp meshImp, float3[] vertices, float2[] uVs, float3[] normals);
          * */
 
-        Bitmap GetPixelColor(int x, int y, int w, int h);
+        ImageData GetPixelColor(int x, int y, int w, int h);
 
         float GetPixelDepth(int x, int y);
     }

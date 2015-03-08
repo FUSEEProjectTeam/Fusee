@@ -1,7 +1,8 @@
 ﻿
-using Tests.Math.Core;
 
-namespace Tests
+using Fusee.Tests.Math.Core;
+
+namespace Fusee.Tests
 {
     class Tests
     {

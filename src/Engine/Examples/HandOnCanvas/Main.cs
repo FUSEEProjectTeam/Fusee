@@ -142,9 +142,8 @@ namespace Examples.HandOnCanvas
             using (var file = File.OpenRead(@"Assets/HandIndexCenter.fus"))
             {
                 scene = ser.Deserialize(file, null, typeof(SceneContainer)) as SceneContainer;
-                _meshHand = SceneRenderer.MakeMesh(scene.Children[0]);
+                _meshHand = SceneRenderer.MakeMesh(scene.Children[0].GetMesh());
             }
-
         }
 
         // is called once a frame
@@ -200,7 +199,7 @@ namespace Examples.HandOnCanvas
             _angleVert *= curDamp;
 
             // first mesh RH
-            //RC.ModelView = float4x4.CreateRotationX((float) (-0.3*Math.PI))*
+            //RC.Model = float4x4.CreateRotationX((float) (-0.3*Math.PI))*
             //               new float4x4(HandScale, 0, 0, 0, 0, HandScale, 0, 0, 0, 0, HandScale, 0, 0, 0, 0, 1)*mtxRot*
             //               float4x4.CreateTranslation(mousePosWorld)*mtxCam;
 

@@ -13,7 +13,7 @@ namespace Fusee.Xirkit
 
     static class PinFactory
     {
-       [JSExternal]
+        [JSExternal]
         public static IOutPin CreateOutPin(Node n, String member)
         {
             // The code below mainly does something like a
@@ -34,7 +34,7 @@ namespace Fusee.Xirkit
             return (IOutPin)Activator.CreateInstance(outPinGeneric, new object[] { n, member, elementAccessor });
         }
 
-       [JSExternal]
+        [JSExternal]
         public static IInPin CreateInPin(Node n, string member, Type targetType)
         {
             // The code below mainly does something like a
@@ -59,7 +59,7 @@ namespace Fusee.Xirkit
         }
 
 
-       [JSExternal]
+        [JSExternal]
         public static void ReAttachInPin(Node n, IInPin ip)
         {
             string member = ip.Member;
@@ -84,14 +84,14 @@ namespace Fusee.Xirkit
             op.GetType().GetProperty("MemberAccessor").SetValue(op, elementAccessor, null);
         }
 
-       [JSIgnore]
+        [JSIgnore]
         private static Type GetMemberTypeAndAccessor(Node n, string member, out object elementAccessor)
         {
             return GetMemberTypeAndAccessor(n, member, null, out elementAccessor);
         }
 
 
-       [JSIgnore]
+        [JSIgnore]
         private static Type GetMemberTypeAndAccessor(Node n, string member, Type pinType, out object elementAccessor)
         {
             Type t = n.O.GetType();
@@ -174,7 +174,7 @@ namespace Fusee.Xirkit
         // To toy around with different element accessor implementations, create your own versions of 
         // IMemberAccessor<T> derivatives and change the instantiation code below.
 
-       [JSIgnore]
+        [JSIgnore]
         private static object InstantiatePropertyAccessor(PropertyInfo propertyInfo, Type memberType)
         {
             // Perform  <code> return new PropertyAccessor<t>(fieldInfo); </code> with a dynamic t (t known at runtime, not at compile time) 
@@ -185,7 +185,7 @@ namespace Fusee.Xirkit
             return elementAccessor;
         }
 
-       [JSIgnore]
+        [JSIgnore]
         private static object InstantiateFieldAccessor(FieldInfo fieldInfo, Type memberType)
         {
             // Perform  <code> return new FieldAccessor<t>(fieldInfo); </code> with a dynamic t (t known at runtime, not at compile time) 
@@ -196,10 +196,10 @@ namespace Fusee.Xirkit
         }
 
 
-       [JSIgnore]
+        [JSIgnore]
         private static Dictionary<Type, Dictionary<Type, Delegate>> _convMap = null;
 
-       [JSIgnore]
+        [JSIgnore]
         private static void InitConvMap()
         {
             // Look at http://msdn.microsoft.com/de-de/library/bb882516.aspx or 
