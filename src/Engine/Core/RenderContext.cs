@@ -885,7 +885,7 @@ namespace Fusee.Engine
             //{
             //    if (_currentShaderParams.FUSEE_BONES == null)
             //        _currentShaderParams.FUSEE_BONES = new IShaderParam[10];
-            _currentShaderParams.FUSEE_BONES = _currentShader.GetShaderParam("FUSEE_BONES");
+            _currentShaderParams.FUSEE_BONES = _currentShader.GetShaderParam("FUSEE_BONES[0]");
            // }
             
             // Todo: Remove multiple Lights per shader !!!
