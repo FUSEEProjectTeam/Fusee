@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Drawing.Text;
@@ -529,45 +528,72 @@ namespace Fusee.Engine
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         public IList<ShaderParamInfo> GetShaderParamList(IShaderProgramImp shaderProgram)
         {
-            var sp = (ShaderProgramImp)shaderProgram;
+            var sProg = (ShaderProgramImp)shaderProgram;
+            var paramList = new List<ShaderParamInfo>();
+
             int nParams;
-            GL.GetProgram(sp.Program, ProgramParameter.ActiveUniforms, out nParams);
-            var list = new List<ShaderParamInfo>();
-            for (int i = 0; i < nParams; i++)
+            GL.GetProgram(sProg.Program, GetProgramParameterName.ActiveUniforms, out nParams);
+
+            for (var i = 0; i < nParams; i++)
             {
-                ActiveUniformType t;
-                var ret = new ShaderParamInfo();
-                ret.Name = GL.GetActiveUniform(sp.Program, i, out ret.Size, out t);
-                ret.Handle = GetShaderParam(sp, ret.Name);
-                switch (t)
+                ActiveUniformType uType;
+
+                var sParam = new ShaderParamInfo();
+                sParam.Name = GL.GetActiveUniform(sProg.Program, i, out sParam.Size, out uType);
+                sParam.Handle = GetShaderParam(sProg, sParam.Name);
+
+                switch (uType)
                 {
                     case ActiveUniformType.Int:
-                        ret.Type = typeof(int);
+                        sParam.Type = typeof (int);
                         break;
+
                     case ActiveUniformType.Float:
-                        ret.Type = typeof(float);
+                        sParam.Type = typeof (float);
                         break;
+
                     case ActiveUniformType.FloatVec2:
-                        ret.Type = typeof(float2);
+                        sParam.Type = typeof (float2);
                         break;
+
                     case ActiveUniformType.FloatVec3:
-                        ret.Type = typeof(float3);
+                        sParam.Type = typeof (float3);
                         break;
+
                     case ActiveUniformType.FloatVec4:
-                        ret.Type = typeof(float4);
+                        sParam.Type = typeof (float4);
                         break;
+
                     case ActiveUniformType.FloatMat4:
-                        ret.Type = typeof(float4x4);
+                        sParam.Type = typeof (float4x4);
                         break;
+
                     case ActiveUniformType.Sampler2D:
-                        ret.Type = typeof (ITexture);
+                        sParam.Type = typeof (ITexture);
                         break;
+
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
-                list.Add(ret);
+
+                // remove [0] if array
+                var baseName = sParam.Name;
+
+                if (baseName.Contains("[0]"))
+                    baseName = baseName.Remove(baseName.IndexOf('['));
+
+                sParam.Name = baseName;
+                paramList.Add(sParam);
+
+                // add all elements if array
+                for (var j = 1; j < sParam.Size; j++)
+                {
+                    sParam.Name = baseName + "[" + j + "]";
+                    paramList.Add(sParam);
+                }
             }
-            return list;
+
+            return paramList;
         }
 
 

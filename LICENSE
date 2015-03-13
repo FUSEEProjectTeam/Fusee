@@ -6,7 +6,7 @@ Fusee contains freely available open source software and assets. They are
 governed by their respective license terms and conditions. As the time of
 writing, these components are released under:
 
-- OpenTK - http://www.opentk.com/ - MIT
+- OpenTK - http://www.opentk.com/ - MIT - 12/02/2015
 - JSIL - http://www.jsil.org/ - MIT/X11
 - NUnit - http://www.nunit.org/ - based on zlib/libpng
 - SFML - http://www.sfml-dev.org/ - zlib/libpng
@@ -31,7 +31,7 @@ writing, these components are released under:
 
 The MIT License (MIT)
 
-Copyright (c) 2014 FuseeProjectTeam
+Copyright (c) 2015 FuseeProjectTeam
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
