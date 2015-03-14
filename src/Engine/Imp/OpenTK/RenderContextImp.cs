@@ -579,7 +579,7 @@ namespace Fusee.Engine
                 // remove [0] if array
                 var baseName = sParam.Name;
 
-                if (baseName.Contains("[0]"))
+                if (baseName.Contains("[0]") && !baseName.Contains("]."))
                     baseName = baseName.Remove(baseName.IndexOf('['));
 
                 sParam.Name = baseName;

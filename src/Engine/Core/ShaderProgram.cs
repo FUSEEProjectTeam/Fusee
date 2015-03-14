@@ -68,7 +68,7 @@ namespace Fusee.Engine
         {
             IShaderParam ret;
 
-            if (paramName.Contains("[0]"))
+            if (paramName.Contains("[0]") && !paramName.Contains("]."))
                 paramName = paramName.Remove(paramName.IndexOf('['));
 
             return _paramsByName.TryGetValue(paramName, out ret) ? ret : null;
