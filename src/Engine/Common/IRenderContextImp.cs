@@ -164,7 +164,19 @@ namespace Fusee.Engine
         void SetShaderParam(IShaderParam param, float4 val);
 
         /// <summary>
-        /// Sets the shader parameter to a float4x4 matrixvalue.
+        /// Sets the shader parameter to a float4 array.
+        /// </summary>
+        /// <param name="param">The <see cref="IShaderParam"/> identifier.</param>
+        /// <param name="val">The float4 array that should be assigned to the shader array parameter.</param>
+        /// <remarks>
+        /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
+        /// a given uniform parameter name used in a shader program.
+        /// </remarks>
+        /// <seealso cref="GetShaderParamList"/>
+        void SetShaderParam(IShaderParam param, float4[] val);
+
+        /// <summary>
+        /// Sets the shader parameter to a float4x4 matrix value.
         /// </summary>
         /// <param name="param">The shader parameter identifier.</param>
         /// <param name="val">The float4x4 matrix that should be assigned to the shader parameter.</param>
@@ -178,10 +190,10 @@ namespace Fusee.Engine
 
 
         /// <summary>
-        /// Sets the shader parameter to a float4x4 matrixarray.
+        /// Sets the shader parameter to a float4x4 matrix array.
         /// </summary>
         /// <param name="param">The shader parameter identifier.</param>
-        /// <param name="val">The float4x4 matrix array that should be assigned to the shader parameter.</param>
+        /// <param name="val">The float4x4 matrix array that should be assigned to the shader array parameter.</param>
         /// <remarks>
         /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
         /// a given uniform parameter name used in a shader program.
@@ -203,6 +215,7 @@ namespace Fusee.Engine
         /// <seealso cref="GetShaderParamList"/>
         [JSChangeName("SetShaderParamI")]
         void SetShaderParam(IShaderParam param, int val);
+
 
         /// <summary>
         /// Sets a Shader Parameter to a created texture.
@@ -432,7 +445,7 @@ namespace Fusee.Engine
         uint GetRenderState(RenderState renderState);
 
         /*
-         * NO tangent space normal maps at this time...
+         * TODO: NO tangent space normal maps at this time...
          * 
          * http://gamedev.stackexchange.com/a/72806/44105
          * 

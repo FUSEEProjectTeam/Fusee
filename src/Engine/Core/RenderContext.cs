@@ -847,7 +847,6 @@ namespace Fusee.Engine
 
             if (_currentShaderParams.FUSEE_BONES != null && Bones != null)
                 SetShaderParam(_currentShaderParams.FUSEE_BONES, Bones);
-
         }
 
         private void UpdateShaderParams()
@@ -899,8 +898,6 @@ namespace Fusee.Engine
                 _lightShaderParams[i].FUSEE_L_SPOTANGLE = _currentShader.GetShaderParam("FUSEE_L" + i + "_SPOTANGLE");
                 _lightShaderParams[i].FUSEE_L_ACTIVE = _currentShader.GetShaderParam("FUSEE_L" + i + "_ACTIVE");
             }
-
-
 
             _updatedShaderParams = true;
             UpdateCurrentShader();
@@ -1417,7 +1414,7 @@ namespace Fusee.Engine
         /// Sets the shader parameter to a float4 value.
         /// </summary>
         /// <param name="param">The <see cref="IShaderParam"/> identifier.</param>
-        /// <param name="val">The float4 value that should be assigned to the shader parameter.</param>
+        /// <param name="val">The float4 value that should be assigned to the shader array parameter.</param>
         /// <remarks>
         /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
         /// a given uniform parameter name used in a shader program.
@@ -1430,7 +1427,23 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// Sets the shader parameter to a float4x4 matrixvalue.
+        /// Sets the shader parameter to a float4 array.
+        /// </summary>
+        /// <param name="param">The <see cref="IShaderParam"/> identifier.</param>
+        /// <param name="val">The float4 array that should be assigned to the shader array parameter.</param>
+        /// <remarks>
+        /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
+        /// a given uniform parameter name used in a shader program.
+        /// </remarks>
+        /// <seealso cref="GetShaderParamList"/>
+        [JSChangeName("SetShaderParam4fArray")]
+        public void SetShaderParam(IShaderParam param, float4[] val)
+        {
+            _rci.SetShaderParam(param, val);
+        }
+
+        /// <summary>
+        /// Sets the shader parameter to a float4x4 matrix value.
         /// </summary>
         /// <param name="param">The <see cref="IShaderParam"/> identifier.</param>
         /// <param name="val">The float4x4 matrix that should be assigned to the shader parameter.</param>
@@ -1446,10 +1459,10 @@ namespace Fusee.Engine
         }
 
         /// <summary>
-        /// Sets the shader parameter to a float4x4 matrixvalue.
+        /// Sets the shader parameter to a float4x4 matrix array.
         /// </summary>
         /// <param name="param">The <see cref="IShaderParam"/> identifier.</param>
-        /// <param name="val">The float4x4 matrix that should be assigned to the shader parameter.</param>
+        /// <param name="val">The float4x4 matrix array that should be assigned to the shader array parameter.</param>
         /// <remarks>
         /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
         /// a given uniform parameter name used in a shader program.
