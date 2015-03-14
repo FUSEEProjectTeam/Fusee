@@ -6,62 +6,47 @@
     public static class MoreShaders
     {
         /// <summary>
+        /// Creates a simple unlit color shader in RenderContext.
+        /// </summary>
+        /// <param name="rc">RenderContext.</param>
+        /// <returns>An instance of <see cref="ShaderProgram"/> to render a Texture without any lighting.</returns>
+        public static ShaderProgram GetColorShader(RenderContext rc)
+        {
+            return rc.CreateShader(_vsSimpleColor, _psSimpleColor);
+        }
+
+        private const string _vsSimpleColor = @"
+            attribute vec3 fuVertex;
+            uniform mat4 FUSEE_MVP;
+
+            void main()
+            {
+                gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
+            }";
+
+        private const string _psSimpleColor = @"
+            #ifdef GL_ES
+                precision highp float;
+            #endif
+
+            uniform vec4 color;
+
+            void main()
+            {
+                gl_FragColor = color;
+            }";
+
+        /// <summary>
         /// Creates a simple unlit texture shader in RenderContext.
         /// </summary>
         /// <param name="rc">RenderContext.</param>
         /// <returns>An instance of <see cref="ShaderProgram"/> to render a Texture without any lighting.</returns>
         public static ShaderProgram GetTextureShader(RenderContext rc)
         {
-            var spSimple = rc.CreateShader(VsSimpleTexture, PsSimpleTexture);
-            return spSimple;
+            return rc.CreateShader(_vsSimpleTexture, _psSimpleTexture);
         }
 
-        /// <summary>
-        /// Creates a simple diffuse texture shader in RenderContext.
-        /// </summary>
-        /// <param name="rc">RenderContext.</param>
-        /// <returns>An instance of <see cref="ShaderProgram"/> to render a Texture with diffuse lighting.</returns>
-        public static ShaderProgram GetDiffuseTextureShader(RenderContext rc)
-        {
-            var spSimple = rc.CreateShader(_vsDiffuse, _psDiffuse);
-            return spSimple;
-        }
-
-        /// <summary>
-        /// Creates a diffuse color shader in RenderContext.
-        /// </summary>
-        /// <param name="rc">RenderContext.</param>
-        /// <returns>An instance of <see cref="ShaderProgram"/> to render a color with diffuse lighting.</returns>
-        public static ShaderProgram GetDiffuseColorShader(RenderContext rc)
-        {
-            var spSimple = rc.CreateShader(_vsSimpleColor, _psSimpleColor);
-            return spSimple;
-        }
-
-
-        /// <summary>
-        /// Creates a specular texture shader in RenderContext.
-        /// </summary>
-        /// <param name="rc">RenderContext.</param>
-        /// <returns>An instance of <see cref="ShaderProgram"/> to render a Texture with specular lighting.</returns>
-        public static ShaderProgram GetSpecularShader(RenderContext rc)
-        {
-            var spSimple = rc.CreateShader(_vsSpecular, _psSpecular);
-            return spSimple;
-        }
-
-        /// <summary>
-        /// Creates a bumpmap and diffuse texture shader in RenderContext.
-        /// </summary>
-        /// <param name="rc">RenderContext.</param>
-        /// <returns>An instance of <see cref="ShaderProgram"/> to render an object with diffuse lighting and a texture for the surface and another for the bump effect.</returns>
-        public static ShaderProgram GetBumpDiffuseShader(RenderContext rc)
-        {
-            var spSimple = rc.CreateShader(_vsBump, _psBump);
-            return spSimple;
-        }
-
-        private const string VsSimpleTexture = @"
+        private const string _vsSimpleTexture = @"
             #ifdef GL_ES
                 precision mediump float;
             #endif
@@ -82,7 +67,7 @@
                 vNormal = mat3(FUSEE_ITMV[0].xyz, FUSEE_ITMV[1].xyz, FUSEE_ITMV[2].xyz) * fuNormal;
             }";
 
-        private const string PsSimpleTexture = @"
+        private const string _psSimpleTexture = @"
             #ifdef GL_ES
                 precision mediump float;
             #endif
@@ -94,6 +79,16 @@
             void main(){
                 gl_FragColor = max(dot(vec3(0,0,-1),normalize(vNormal)), 0.2) * texture2D(texture1, vUV);
             }";
+
+        /// <summary>
+        /// Creates a simple diffuse texture shader in RenderContext.
+        /// </summary>
+        /// <param name="rc">RenderContext.</param>
+        /// <returns>An instance of <see cref="ShaderProgram"/> to render a Texture with diffuse lighting.</returns>
+        public static ShaderProgram GetDiffuseTextureShader(RenderContext rc)
+        {
+            return rc.CreateShader(_vsDiffuse, _psDiffuse);
+        }
 
         private const string _vsDiffuse = @"
             attribute vec4 fuColor;
@@ -191,6 +186,27 @@
 
                 gl_FragColor = texture2D(texture1, vUV) * endInt; 
             }";
+
+        /// <summary>
+        /// Creates a diffuse color shader in RenderContext.
+        /// </summary>
+        /// <param name="rc">RenderContext.</param>
+        /// <returns>An instance of <see cref="ShaderProgram"/> to render a color with diffuse lighting.</returns>
+        public static ShaderProgram GetDiffuseColorShader(RenderContext rc)
+        {
+            return rc.CreateShader(_vsSimpleColor, _psSimpleColor);
+        }
+
+
+        /// <summary>
+        /// Creates a specular texture shader in RenderContext.
+        /// </summary>
+        /// <param name="rc">RenderContext.</param>
+        /// <returns>An instance of <see cref="ShaderProgram"/> to render a Texture with specular lighting.</returns>
+        public static ShaderProgram GetSpecularShader(RenderContext rc)
+        {
+            return rc.CreateShader(_vsSpecular, _psSpecular);
+        }
 
         private const string _vsSpecular = @"
             attribute vec3 fuVertex;
@@ -315,6 +331,16 @@
                 gl_FragColor = texture2D(texture1, vUV) * endInt;
             }";
 
+        /// <summary>
+        /// Creates a bumpmap and diffuse texture shader in RenderContext.
+        /// </summary>
+        /// <param name="rc">RenderContext.</param>
+        /// <returns>An instance of <see cref="ShaderProgram"/> to render an object with diffuse lighting and a texture for the surface and another for the bump effect.</returns>
+        public static ShaderProgram GetBumpDiffuseShader(RenderContext rc)
+        {
+            return rc.CreateShader(_vsBump, _psBump);
+        }
+
         private const string _vsBump = @"
             attribute vec3 fuVertex;
             attribute vec3 fuNormal;
@@ -340,7 +366,6 @@
             }";
 
         private const string _psBump = @"
-            /* Copies incoming fragment color without change. */
             #ifdef GL_ES
                 precision highp float;
             #endif
@@ -455,34 +480,6 @@
                 }
 
                 gl_FragColor = texture2D(texture1, vUV) * endInt; 
-            }";
-
-        private const string _vsSimpleColor = @"
-            attribute vec3 fuVertex;
-            attribute vec3 fuNormal;       
-        
-            varying vec3 vNormal;
-        
-            uniform mat4 FUSEE_MVP;
-            uniform mat4 FUSEE_ITMV;
-
-            void main()
-            {
-                gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
-                vNormal = mat3(FUSEE_ITMV[0].xyz, FUSEE_ITMV[1].xyz, FUSEE_ITMV[2].xyz) * fuNormal;
-            }";
-
-        private const string _psSimpleColor = @"
-            #ifdef GL_ES
-                precision highp float;
-            #endif    
-  
-            uniform vec4 color;
-            varying vec3 vNormal;
-
-            void main()
-            {             
-                gl_FragColor = max(dot(vec3(0,0,-1),normalize(vNormal)), 0.1) * color;
             }";
     }
 }
