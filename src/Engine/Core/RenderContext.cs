@@ -23,10 +23,11 @@ namespace Fusee.Engine
         internal int ViewportHeight { get; private set; }
 
         private ShaderProgram _currentShader;
-        private MatrixParamNames _currentShaderParams;
+        private readonly MatrixParamNames _currentShaderParams;
+
         private readonly Light[] _lightParams;
-        // Todo: Remove multiple Lights per shader !!!
         private readonly LightParamNames[] _lightShaderParams;
+
         private bool _updatedShaderParams;
 
         private readonly ShaderProgram _debugShader;
@@ -130,13 +131,13 @@ namespace Fusee.Engine
         internal struct LightParamNames
         {
             // ReSharper disable InconsistentNaming
-            public IShaderParam FUSEE_L_AMBIENT;
-            public IShaderParam FUSEE_L_DIFFUSE;
-            public IShaderParam FUSEE_L_SPECULAR;
-            public IShaderParam FUSEE_L_POSITION;
-            public IShaderParam FUSEE_L_DIRECTION;
-            public IShaderParam FUSEE_L_SPOTANGLE;
-            public IShaderParam FUSEE_L_ACTIVE;
+            public IShaderParam AMBIENT;
+            public IShaderParam DIFFUSE;
+            public IShaderParam SPECULAR;
+            public IShaderParam POSITION;
+            public IShaderParam DIRECTION;
+            public IShaderParam SPOTANGLE;
+            public IShaderParam ACTIVE;
             // ReSharper restore InconsistentNaming
         }
 
@@ -823,26 +824,26 @@ namespace Fusee.Engine
             // Todo: Remove multiple Lights per shader !!!
             for (var i = 0; i < 8; i++)
             {
-                if (_lightShaderParams[i].FUSEE_L_AMBIENT != null)
-                    SetShaderParam(_lightShaderParams[i].FUSEE_L_AMBIENT, _lightParams[i].AmbientColor);
+                if (_lightShaderParams[i].AMBIENT != null)
+                    SetShaderParam(_lightShaderParams[i].AMBIENT, _lightParams[i].AmbientColor);
 
-                if (_lightShaderParams[i].FUSEE_L_DIFFUSE != null)
-                    SetShaderParam(_lightShaderParams[i].FUSEE_L_DIFFUSE, _lightParams[i].DiffuseColor);
+                if (_lightShaderParams[i].DIFFUSE != null)
+                    SetShaderParam(_lightShaderParams[i].DIFFUSE, _lightParams[i].DiffuseColor);
 
-                if (_lightShaderParams[i].FUSEE_L_SPECULAR != null)
-                    SetShaderParam(_lightShaderParams[i].FUSEE_L_SPECULAR, _lightParams[i].SpecularColor);
+                if (_lightShaderParams[i].SPECULAR != null)
+                    SetShaderParam(_lightShaderParams[i].SPECULAR, _lightParams[i].SpecularColor);
 
-                if (_lightShaderParams[i].FUSEE_L_POSITION != null)
-                    SetShaderParam(_lightShaderParams[i].FUSEE_L_POSITION, _lightParams[i].Position);
+                if (_lightShaderParams[i].POSITION != null)
+                    SetShaderParam(_lightShaderParams[i].POSITION, _lightParams[i].Position);
 
-                if (_lightShaderParams[i].FUSEE_L_DIRECTION != null)
-                    SetShaderParam(_lightShaderParams[i].FUSEE_L_DIRECTION, _lightParams[i].Direction);
+                if (_lightShaderParams[i].DIRECTION != null)
+                    SetShaderParam(_lightShaderParams[i].DIRECTION, _lightParams[i].Direction);
 
-                if (_lightShaderParams[i].FUSEE_L_ACTIVE != null)
-                    SetShaderParam(_lightShaderParams[i].FUSEE_L_ACTIVE, _lightParams[i].Active);
+                if (_lightShaderParams[i].ACTIVE != null)
+                    SetShaderParam(_lightShaderParams[i].ACTIVE, _lightParams[i].Active);
 
-                if (_lightShaderParams[i].FUSEE_L_SPOTANGLE != null)
-                    SetShaderParam(_lightShaderParams[i].FUSEE_L_SPOTANGLE, _lightParams[i].Angle);
+                if (_lightShaderParams[i].SPOTANGLE != null)
+                    SetShaderParam(_lightShaderParams[i].SPOTANGLE, _lightParams[i].Angle);
             }
 
             if (_currentShaderParams.FUSEE_BONES != null && Bones != null)
@@ -886,17 +887,16 @@ namespace Fusee.Engine
             //        _currentShaderParams.FUSEE_BONES = new IShaderParam[10];
             _currentShaderParams.FUSEE_BONES = _currentShader.GetShaderParam("FUSEE_BONES[0]");
            // }
-            
-            // Todo: Remove multiple Lights per shader !!!
+
             for (int i = 0; i < 8; i++)
             {
-                _lightShaderParams[i].FUSEE_L_AMBIENT = _currentShader.GetShaderParam("FUSEE_L" + i + "_AMBIENT");
-                _lightShaderParams[i].FUSEE_L_DIFFUSE = _currentShader.GetShaderParam("FUSEE_L" + i + "_DIFFUSE");
-                _lightShaderParams[i].FUSEE_L_SPECULAR = _currentShader.GetShaderParam("FUSEE_L" + i + "_SPECULAR");
-                _lightShaderParams[i].FUSEE_L_POSITION = _currentShader.GetShaderParam("FUSEE_L" + i + "_POSITION");
-                _lightShaderParams[i].FUSEE_L_DIRECTION = _currentShader.GetShaderParam("FUSEE_L" + i + "_DIRECTION");
-                _lightShaderParams[i].FUSEE_L_SPOTANGLE = _currentShader.GetShaderParam("FUSEE_L" + i + "_SPOTANGLE");
-                _lightShaderParams[i].FUSEE_L_ACTIVE = _currentShader.GetShaderParam("FUSEE_L" + i + "_ACTIVE");
+                _lightShaderParams[i].AMBIENT = _currentShader.GetShaderParam("FUSEE_LIGHTS[" + i + "].ambient");
+                _lightShaderParams[i].DIFFUSE = _currentShader.GetShaderParam("FUSEE_LIGHTS[" + i + "].diffuse");
+                _lightShaderParams[i].SPECULAR = _currentShader.GetShaderParam("FUSEE_LIGHTS[" + i + "].specular");
+                _lightShaderParams[i].POSITION = _currentShader.GetShaderParam("FUSEE_LIGHTS[" + i + "].position");
+                _lightShaderParams[i].DIRECTION = _currentShader.GetShaderParam("FUSEE_LIGHTS[" + i + "].direction");
+                _lightShaderParams[i].SPOTANGLE = _currentShader.GetShaderParam("FUSEE_LIGHTS[" + i + "].spotAngle");
+                _lightShaderParams[i].ACTIVE = _currentShader.GetShaderParam("FUSEE_LIGHTS[" + i + "].active");
             }
 
             _updatedShaderParams = true;
