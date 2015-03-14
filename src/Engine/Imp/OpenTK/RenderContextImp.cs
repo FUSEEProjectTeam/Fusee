@@ -583,12 +583,16 @@ namespace Fusee.Engine
                     baseName = baseName.Remove(baseName.IndexOf('['));
 
                 sParam.Name = baseName;
+                sParam.Handle = GetShaderParam(sProg, sParam.Name);
+
                 paramList.Add(sParam);
 
                 // add all elements if array
                 for (var j = 1; j < sParam.Size; j++)
                 {
                     sParam.Name = baseName + "[" + j + "]";
+                    sParam.Handle = GetShaderParam(sProg, sParam.Name);
+
                     paramList.Add(sParam);
                 }
             }
@@ -654,6 +658,20 @@ namespace Fusee.Engine
 
                 // Column order notation
                 GL.UniformMatrix4(((ShaderParam)param).handle, 1, true, mF);
+            }
+        }
+
+        /// <summary>
+        ///     Sets a <see cref="float4" /> array shader parameter.
+        /// </summary>
+        /// <param name="param">The parameter.</param>
+        /// <param name="val">The value.</param>
+        public unsafe void SetShaderParam(IShaderParam param, float4[] val)
+        {
+            fixed (float4* pFlt4 = &val[0])
+            {
+                var pFlt = (float*) pFlt4;
+                GL.Uniform4(((ShaderParam) param).handle, val.Length, pFlt);
             }
         }
 
