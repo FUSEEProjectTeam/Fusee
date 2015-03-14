@@ -36,13 +36,13 @@ namespace Fusee.Engine
         {
             _currentTextureUnit = 0;
             _shaderParam2TexUnit = new Dictionary<int, int>();
-            
+
             // Due to the right-handed nature of OpenGL and the left-handed design of FUSEE
             // the meaning of what's Front and Back of a face simply flips.
             // TODO - implement this in render states!!!
-       
+
             GL.CullFace(CullFaceMode.Back);
-			
+
             _sharpFont = new Library();
         }
 
@@ -78,11 +78,11 @@ namespace Fusee.Engine
 
                 GL.BindTexture(TextureTarget.Texture2D, ((Texture) tex).handle);
                 GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, img.Width, img.Height,
-                                 format, PixelType.UnsignedByte, img.PixelData);
+                    format, PixelType.UnsignedByte, img.PixelData);
             }
 
         }
-        
+
         /// <summary>
         /// Updates a specific rectangle of a texture.
         /// </summary>
@@ -108,7 +108,7 @@ namespace Fusee.Engine
                     throw new ArgumentOutOfRangeException();
             }
 
-            GL.BindTexture(TextureTarget.Texture2D, ((Texture)tex).handle);
+            GL.BindTexture(TextureTarget.Texture2D, ((Texture) tex).handle);
             GL.TexSubImage2D(TextureTarget.Texture2D, 0, startX, startY, width, height,
                 format, PixelType.UnsignedByte, img.PixelData);
         }
@@ -149,7 +149,7 @@ namespace Fusee.Engine
             return ret;
         }
 
-       /// <summary>
+        /// <summary>
         /// Creates a new Image with a specified size and color.
         /// </summary>
         /// <param name="width">The width of the image.</param>
@@ -300,7 +300,7 @@ namespace Fusee.Engine
             if (font == null)
                 return null;
 
-            var texAtlas = ((Font)font);
+            var texAtlas = ((Font) font);
             var face = texAtlas.Face;
 
             // get atlas texture size
@@ -350,16 +350,16 @@ namespace Fusee.Engine
             GL.PixelStore(PixelStoreParameter.UnpackAlignment, 1);
 
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS,
-                (int)TextureWrapMode.ClampToEdge);
+                (int) TextureWrapMode.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT,
-                (int)TextureWrapMode.ClampToEdge);
+                (int) TextureWrapMode.ClampToEdge);
 
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter,
-                (int)TextureMinFilter.Linear);
+                (int) TextureMinFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter,
-                (int)TextureMagFilter.Linear);
+                (int) TextureMagFilter.Linear);
 
-            texAtlas.TexAtlas = new Texture { handle = tex };
+            texAtlas.TexAtlas = new Texture {handle = tex};
 
             // paste the glyph images into the texture atlas
             texAtlas.CharInfo = new CharInfoStruct[256];
@@ -393,8 +393,8 @@ namespace Fusee.Engine
                 texAtlas.CharInfo[i].BitmapL = face.Glyph.BitmapLeft;
                 texAtlas.CharInfo[i].BitmapT = face.Glyph.BitmapTop;
 
-                texAtlas.CharInfo[i].TexOffX = offX / (float)maxWidth;
-                texAtlas.CharInfo[i].TexOffY = offY / (float)potH;
+                texAtlas.CharInfo[i].TexOffX = offX/(float) maxWidth;
+                texAtlas.CharInfo[i].TexOffY = offY/(float) potH;
 
                 rowH = System.Math.Max(rowH, face.Glyph.Bitmap.Rows);
                 offX += face.Glyph.Bitmap.Width + 1;
@@ -421,7 +421,7 @@ namespace Fusee.Engine
             // use kerning -> fix values
             var fixX = 0f;
             var fixVert = 4;
-            
+
             for (var c = 0; c < text.Length - 1; c++)
             {
                 var leftChar = texAtlas.Face.GetCharIndex(text[c]);
@@ -502,8 +502,8 @@ namespace Fusee.Engine
         /// <returns>The Shader parameter is returned if the name is found, otherwise null.</returns>
         public IShaderParam GetShaderParam(IShaderProgramImp shaderProgram, string paramName)
         {
-            int h = GL.GetUniformLocation(((ShaderProgramImp)shaderProgram).Program, paramName);
-            return (h == -1) ? null : new ShaderParam { handle = h };
+            int h = GL.GetUniformLocation(((ShaderProgramImp) shaderProgram).Program, paramName);
+            return (h == -1) ? null : new ShaderParam {handle = h};
         }
 
         /// <summary>
@@ -516,7 +516,7 @@ namespace Fusee.Engine
         public float GetParamValue(IShaderProgramImp program, IShaderParam param)
         {
             float f;
-            GL.GetUniform(((ShaderProgramImp)program).Program, ((ShaderParam)param).handle, out f);
+            GL.GetUniform(((ShaderProgramImp) program).Program, ((ShaderParam) param).handle, out f);
             return f;
         }
 
@@ -528,7 +528,7 @@ namespace Fusee.Engine
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         public IList<ShaderParamInfo> GetShaderParamList(IShaderProgramImp shaderProgram)
         {
-            var sProg = (ShaderProgramImp)shaderProgram;
+            var sProg = (ShaderProgramImp) shaderProgram;
             var paramList = new List<ShaderParamInfo>();
 
             int nParams;
@@ -608,7 +608,7 @@ namespace Fusee.Engine
         /// <param name="val">The value.</param>
         public void SetShaderParam(IShaderParam param, float val)
         {
-            GL.Uniform1(((ShaderParam)param).handle, val);
+            GL.Uniform1(((ShaderParam) param).handle, val);
         }
 
         /// <summary>
@@ -618,7 +618,7 @@ namespace Fusee.Engine
         /// <param name="val">The value.</param>
         public void SetShaderParam(IShaderParam param, float2 val)
         {
-            GL.Uniform2(((ShaderParam)param).handle, val.x, val.y);
+            GL.Uniform2(((ShaderParam) param).handle, val.x, val.y);
         }
 
         /// <summary>
@@ -628,7 +628,7 @@ namespace Fusee.Engine
         /// <param name="val">The value.</param>
         public void SetShaderParam(IShaderParam param, float3 val)
         {
-            GL.Uniform3(((ShaderParam)param).handle, val.x, val.y, val.z);
+            GL.Uniform3(((ShaderParam) param).handle, val.x, val.y, val.z);
         }
 
         /// <summary>
@@ -638,7 +638,7 @@ namespace Fusee.Engine
         /// <param name="val">The value.</param>
         public void SetShaderParam(IShaderParam param, float4 val)
         {
-            GL.Uniform4(((ShaderParam)param).handle, val.x, val.y, val.z, val.w);
+            GL.Uniform4(((ShaderParam) param).handle, val.x, val.y, val.z, val.w);
         }
 
         // TODO add vector implementations
@@ -652,12 +652,12 @@ namespace Fusee.Engine
         {
             unsafe
             {
-                var mF = (float*)(&val);
+                var mF = (float*) (&val);
                 // Row order notation
                 // GL.UniformMatrix4(((ShaderParam) param).handle, 1, false, mF);
 
                 // Column order notation
-                GL.UniformMatrix4(((ShaderParam)param).handle, 1, true, mF);
+                GL.UniformMatrix4(((ShaderParam) param).handle, 1, true, mF);
             }
         }
 
@@ -668,38 +668,29 @@ namespace Fusee.Engine
         /// <param name="val">The value.</param>
         public unsafe void SetShaderParam(IShaderParam param, float4[] val)
         {
-            fixed (float4* pFlt4 = &val[0])
-            {
-                var pFlt = (float*) pFlt4;
-                GL.Uniform4(((ShaderParam) param).handle, val.Length, pFlt);
-            }
+            fixed (float4* pFlt = &val[0])
+                GL.Uniform4(((ShaderParam) param).handle, val.Length, (float*) pFlt);
         }
 
         /// <summary>
-        /// Sets a <see cref="float4x4[]" /> shader parameter.
+        /// Sets a <see cref="float4x4" /> array shader parameter.
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IShaderParam param, float4x4[] mtxArray)
+        public unsafe void SetShaderParam(IShaderParam param, float4x4[] val)
         {
+            var tmpArray = new float4[val.Length*4];
 
-            float4[] tmpArray = new float4[mtxArray.Length * 4];
-            for (int i = 0; i < mtxArray.Length; i++)
+            for (var i = 0; i < val.Length; i++)
             {
-                tmpArray[i*4] = mtxArray[i].Column0;
-                tmpArray[i * 4 + 1] = mtxArray[i].Column1;
-                tmpArray[i * 4 + 2] = mtxArray[i].Column2;
-                tmpArray[i * 4 + 3] = mtxArray[i].Column3;
+                tmpArray[i*4] = val[i].Column0;
+                tmpArray[i*4 + 1] = val[i].Column1;
+                tmpArray[i*4 + 2] = val[i].Column2;
+                tmpArray[i*4 + 3] = val[i].Column3;
             }
 
-            unsafe
-            {
-                fixed (float4* pMtx = &tmpArray[0])
-                {
-                    float* pFlt = (float*)pMtx;
-                    GL.Uniform4(((ShaderParam)param).handle, tmpArray.Length, pFlt);
-                }
-            }
+            fixed (float4* pMtx = &tmpArray[0])
+                GL.UniformMatrix4(((ShaderParam) param).handle, val.Length, false, (float*) pMtx);
         }
 
         /// <summary>
