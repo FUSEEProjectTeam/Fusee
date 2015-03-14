@@ -8,6 +8,7 @@ namespace Fusee.Engine.SimpleScene
         private bool _hasVertices, _hasNormals, _hasUVs, _hasColors;
         private bool _hasDiffuse, _hasSpecular, _hasEmissive, _hasBump;
         private bool _hasDiffuseTexture, _hasSpecularTexture, _hasEmissiveTexture;
+        private bool _hasWeightMap;
         private bool _normalizeNormals;
 
         /*
@@ -21,8 +22,11 @@ namespace Fusee.Engine.SimpleScene
         };
         */
 
-        public ShaderCodeBuilder(MaterialComponent mc, MeshComponent mesh)
+        public ShaderCodeBuilder(MaterialComponent mc, MeshComponent mesh, WeightComponent wc = null)
         {
+            if (wc == null)
+                _hasWeightMap = true;
+
             float f1 = 1;
             f1.GetType();
             _normalizeNormals = true;
@@ -81,6 +85,12 @@ namespace Fusee.Engine.SimpleScene
                 }
             }
 
+            if (_hasWeightMap)
+            {
+                vs.Append("  attribute vec4 fuBoneIndex;\n");
+                vs.Append("  attribute vec4 fuBoneWeight;\n");
+            }
+
             if (_hasNormals)
                 vs.Append("  attribute vec3 fuNormal;\n  varying vec3 vNormal;\n");
 
@@ -102,7 +112,18 @@ namespace Fusee.Engine.SimpleScene
                 vs.Append("  uniform mat4 FUSEE_IMV;\n");
             }
             // vs.Append("  uniform mat4 FUSEE_MV;\n");
-            vs.Append("  uniform mat4 FUSEE_MVP;\n");                
+            if(_hasWeightMap){
+                vs.Append("uniform mat4 FUSEE_P;\n");
+                vs.Append("uniform mat4 FUSEE_V;\n");
+            }
+            else
+            {
+                vs.Append("  uniform mat4 FUSEE_MVP;\n");
+            }
+                
+            if(_hasWeightMap)
+                vs.Append("  uniform mat4 FUSEE_BONES[25];\n");
+ 
         }
 
         private void VSBody(StringBuilder vs)
@@ -110,12 +131,33 @@ namespace Fusee.Engine.SimpleScene
             vs.Append("\n\n  void main()\n  {\n");
             if (_hasNormals)
             {
-                // Lighting done in model space... no need to convert normals
-                if (_normalizeNormals)
-                    // vs.Append("    vNormal = normalize(mat3(FUSEE_MV[0].xyz, FUSEE_MV[1].xyz, FUSEE_MV[2].xyz) * fuNormal);\n");
-                    vs.Append("    vNormal = normalize(fuNormal);\n");
+                if (_hasWeightMap){
+                    vs.Append("    vec4 newVertex;\n");
+                    vs.Append("    vec4 newNormal;\n");
+
+                    vs.Append("    newVertex = (FUSEE_BONES[int(fuBoneIndex.x)] * vec4(fuVertex, 1.0) ) * fuBoneWeight.x ;\n");
+                    vs.Append("    newNormal = (FUSEE_BONES[int(fuBoneIndex.x)] * vec4(fuNormal, 0.0)) * fuBoneWeight.x;\n");
+
+                    vs.Append("    newVertex = (FUSEE_BONES[int(fuBoneIndex.y)] * vec4(fuVertex, 1.0)) * fuBoneWeight.y + newVertex;\n");
+                    vs.Append("    newNormal = (FUSEE_BONES[int(fuBoneIndex.y)] * vec4(fuNormal, 0.0)) * fuBoneWeight.y + newNormal;\n");
+
+                    vs.Append("    newVertex = (FUSEE_BONES[int(fuBoneIndex.z)] * vec4(fuVertex, 1.0)) * fuBoneWeight.z + newVertex;\n");
+                    vs.Append("    newNormal = (FUSEE_BONES[int(fuBoneIndex.z)] * vec4(fuNormal, 0.0)) * fuBoneWeight.z + newNormal;\n");
+
+                    vs.Append("    newVertex = (FUSEE_BONES[int(fuBoneIndex.w)] * vec4(fuVertex, 1.0)) * fuBoneWeight.w + newVertex;\n");
+                    vs.Append("    newNormal = (FUSEE_BONES[int(fuBoneIndex.w)] * vec4(fuNormal, 0.0)) * fuBoneWeight.w + newNormal;\n");
+
+                    vs.Append("    vNormal = normalize(vec3(newNormal));\n");
+                }                   
                 else
-                    vs.Append("    vNormal = fuNormal;\n");
+                {
+                    // Lighting done in model space... no need to convert normals
+                    if (_normalizeNormals)
+                        // vs.Append("    vNormal = normalize(mat3(FUSEE_MV[0].xyz, FUSEE_MV[1].xyz, FUSEE_MV[2].xyz) * fuNormal);\n");
+                        vs.Append("    vNormal = normalize(fuNormal);\n");
+                    else
+                        vs.Append("    vNormal = fuNormal;\n");
+                }
             }
 
             if (_hasSpecular)
@@ -123,11 +165,19 @@ namespace Fusee.Engine.SimpleScene
                 // vs.Append("    vec4 viewDirTmp = FUSEE_IMV * vec4(0, 0, 0, 1);\n");
                 // vs.Append("    vViewDir = viewDirTmp.xyz * 1/viewDirTmp.w;\n");
                 vs.Append("    vec3 viewPos = FUSEE_IMV[3].xyz;\n");
-                vs.Append("    vViewDir = normalize(viewPos - fuVertex);\n");
+
+                if (_hasWeightMap)
+                    vs.Append("    vViewDir = normalize(viewPos - vec3(newVertex));\n");
+                else
+                    vs.Append("    vViewDir = normalize(viewPos - fuVertex);\n");
                 // vs.Append("    vViewDir = vec3(0, -1, 0);\n");
             }
 
-            vs.Append("    gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);\n");
+            if (_hasWeightMap)
+                vs.Append("    gl_Position = FUSEE_P * FUSEE_V * vec4(vec3(newVertex), 1.0);\n ");
+            else
+                vs.Append("    gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);\n");
+            
 
             if (_hasUVs)
                 vs.Append("    vUV = fuUV;\n");
