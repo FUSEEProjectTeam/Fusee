@@ -45,7 +45,7 @@ namespace Examples.WindowSizesDemo
 
             // Add something to render.
             _cube = new Cube();
-            _spcolor = MoreShaders.GetDiffuseColorShader(RC);
+            _spcolor = Shaders.GetDiffuseColorShader(RC);
             _colorParam = _spcolor.GetShaderParam("color");
         }
 
@@ -55,7 +55,7 @@ namespace Examples.WindowSizesDemo
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
             
             // First render 3d elements
-            RC.SetShader(MoreShaders.GetDiffuseColorShader(RC));
+            RC.SetShader(Shaders.GetDiffuseColorShader(RC));
             RC.SetShaderParam(_colorParam, new float4(0.8f, 0.5f, 0, 1));
             RC.Render(_cube);
 

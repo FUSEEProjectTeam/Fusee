@@ -753,7 +753,7 @@ namespace Fusee.Engine
             _currentShaderParams = new MatrixParamNames();
             _updatedShaderParams = false;
 
-            _debugShader = MoreShaders.GetColorShader(this);
+            _debugShader = Shaders.GetColorShader(this);
             _debugColor = _debugShader.GetShaderParam("color");
         }
 

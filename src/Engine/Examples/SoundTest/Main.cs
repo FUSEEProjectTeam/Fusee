@@ -30,7 +30,7 @@ namespace Examples.SoundTest
 
             Mesh = new Cube();
 
-            var sp = MoreShaders.GetDiffuseColorShader(RC);
+            var sp = Shaders.GetDiffuseColorShader(RC);
             RC.SetShader(sp);
 
             _vColor = RC.GetShaderParam(sp, "color");

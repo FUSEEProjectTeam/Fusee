@@ -18,7 +18,7 @@ namespace Examples.InputDevices
 
             _meshTea = MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
 
-            _spColor = MoreShaders.GetDiffuseColorShader(RC);
+            _spColor = Shaders.GetDiffuseColorShader(RC);
             _colorParam = _spColor.GetShaderParam("color");
         }
 

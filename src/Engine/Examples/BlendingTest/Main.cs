@@ -145,7 +145,7 @@ namespace Examples.BlendingTest
             _shaderEffect.AttachToContext(RC);
 
 
-            _spColor = MoreShaders.GetDiffuseColorShader(RC);
+            _spColor = Shaders.GetDiffuseColorShader(RC);
             _colorParam = _spColor.GetShaderParam("vColor");
 
             /*

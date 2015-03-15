@@ -113,7 +113,7 @@ namespace Examples.SceneViewer
             _subtextWidth = GUIText.GetTextWidth(_guiSubText.Text, _guiLatoBlack);
             _subtextHeight = GUIText.GetTextHeight(_guiSubText.Text, _guiLatoBlack);
 
-            _sColor = MoreShaders.GetDiffuseColorShader(RC);
+            _sColor = Shaders.GetDiffuseColorShader(RC);
             RC.SetShader(_sColor);
             _colorParam = _sColor.GetShaderParam("color");
             RC.SetShaderParam(_colorParam, new float4(1, 1, 1, 1));

@@ -51,27 +51,27 @@ namespace Examples.LightTypeTest
             scenecamera = new Camera(cameraholder);
             scenecamera.Resize(Width, Height);
 
-            SceneEntity _spaceBox = new SceneEntity("Spacebox", new DiffuseMaterial(MoreShaders.GetDiffuseTextureShader(RC), "Assets/sky.jpg"), new Renderer(spacebox));
+            SceneEntity _spaceBox = new SceneEntity("Spacebox", new DiffuseMaterial(Shaders.GetDiffuseTextureShader(RC), "Assets/sky.jpg"), new Renderer(spacebox));
             SceneManager.Manager.AddSceneEntity(_spaceBox);
 
             //Sphere
-            _object = new SceneEntity("Sphere1", new ActionCode(), _emptySphere, new SpecularMaterial(MoreShaders.GetSpecularShader(RC), "Assets/metall2.jpg"), new Renderer(sphere));
+            _object = new SceneEntity("Sphere1", new ActionCode(), _emptySphere, new SpecularMaterial(Shaders.GetSpecularShader(RC), "Assets/metall2.jpg"), new Renderer(sphere));
             _object.transform.GlobalPosition = new float3(2, 0, 0);
             _object.transform.GlobalScale = new float3(0.5f, 0.5f, 0.5f);
 
             // LightObject
-            _object = new SceneEntity("DirLight", new RotateAction(new float3(0, 20, 0)), _emptyLight, new DiffuseMaterial(MoreShaders.GetDiffuseTextureShader(RC), "Assets/metall2.jpg"), new Renderer(lamp));
+            _object = new SceneEntity("DirLight", new RotateAction(new float3(0, 20, 0)), _emptyLight, new DiffuseMaterial(Shaders.GetDiffuseTextureShader(RC), "Assets/metall2.jpg"), new Renderer(lamp));
             _object.transform.GlobalPosition = new float3(0, 0, 0);
             _object.transform.GlobalScale = new float3(0.7f, 0.7f, 0.7f);
             _object.AddComponent(spot);
 
-            SceneEntity _object2 = new SceneEntity("FlyingLight", new RotatingLightAction(new float3(0, 0, 0)), _object, new DiffuseMaterial(MoreShaders.GetDiffuseTextureShader(RC), "Assets/metall2.jpg"), new Renderer(sphere2));
+            SceneEntity _object2 = new SceneEntity("FlyingLight", new RotatingLightAction(new float3(0, 0, 0)), _object, new DiffuseMaterial(Shaders.GetDiffuseTextureShader(RC), "Assets/metall2.jpg"), new Renderer(sphere2));
             _object2.transform.GlobalPosition = new float3(0, 3, 0);
             //_object2.transform.GlobalScale = new float3(1, 1, 1);
             //_object2.AddComponent(point);
 
             //Cube
-            _object = new SceneEntity("Cube1", new ActionCode(), _emptyCube, new BumpMaterial(MoreShaders.GetBumpDiffuseShader(RC), "Assets/metall2.jpg", "Assets/normal2.jpg"), new Renderer(cube));
+            _object = new SceneEntity("Cube1", new ActionCode(), _emptyCube, new BumpMaterial(Shaders.GetBumpDiffuseShader(RC), "Assets/metall2.jpg", "Assets/normal2.jpg"), new Renderer(cube));
             _object.transform.GlobalPosition = new float3(5, 0, 0);
             //_object.transform.GlobalScale = new float3(0.01f, 0.01f, 0.01f);
 

@@ -27,7 +27,7 @@ namespace Examples.KeyframeAnimationTest
             SceneManager.Manager.AddSceneEntity(stativ);
             _camera.Resize(Width, Height);
             Geometry wuerfelGeo = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Sphere.obj.model"));
-            _wuerfel = new SceneEntity("wuerfel", new Material(MoreShaders.GetSpecularShader(RC)),
+            _wuerfel = new SceneEntity("wuerfel", new Material(Shaders.GetSpecularShader(RC)),
                 new Renderer(wuerfelGeo));
             SceneManager.Manager.AddSceneEntity(_wuerfel);
 
