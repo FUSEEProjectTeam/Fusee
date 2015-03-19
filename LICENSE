@@ -2,29 +2,28 @@ Fusee is licensed under the MIT license (see below).
 
 -------------------------------------------------------------------------------
 
-Fusee contains freely available open source software and assets. They are 
+Fusee contains freely available open source software and assets. They are
 governed by their respective license terms and conditions. As the time of
 writing, these components are released under:
 
-- OpenTK - http://www.opentk.com/ - MIT
-- JSIL - http://www.jsil.org/ - MIT/X11
-- NUnit - http://www.nunit.org/ - based on zlib/libpng
-- SFML - http://www.sfml-dev.org/ - zlib/libpng
-- OpenAL - http://connect.creativelabs.com/openal/default.aspx - LGPL
-- libsndfile - http://www.mega-nerd.com/libsndfile/ - LGPL
-- libmpg123 - http://www.mpg123.de/ - LGPL 2.1
-- SoundJS - http://www.createjs.com/#!/SoundJS - MIT
-- protobuf - https://code.google.com/p/protobuf/ - BSD New/Simplified
-- protobuf-net - https://code.google.com/p/protobuf-net/ - Apache License 2.0
+- Aforge - http://www.aforgenet.com/
 - Bullet Physics - http://bulletphysics.org/ - zlib license
-- Lidgren - https://code.google.com/p/lidgren-network-gen3/ - MIT
-- SharpFont - https://github.com/Robmaister/SharpFont - MIT
-- FreeType - http://www.freetype.org/license.html - FTL / GPL 2.0
-- opentype.js - https://github.com/nodebox/opentype.js - MIT
-- SlimDX - http://slimdx.org/ - MIT/X11
-
 - Cabin.ttf - http://www.google.com/fonts/specimen/Cabin - SIL Open Font License 1.1
-
+- FreeType - http://www.freetype.org/license.html - FTL / GPL 2.0
+- JSIL - http://www.jsil.org/ - MIT/X11
+- Libsndfile - http://www.mega-nerd.com/libsndfile/ - LGPL
+- Libmpg123 - http://www.mpg123.de/ - LGPL 2.1
+- Lidgren - https://code.google.com/p/lidgren-network-gen3/ - MIT
+- NUnit - http://www.nunit.org/ - based on zlib/libpng
+- OpenAL - http://connect.creativelabs.com/openal/default.aspx - LGPL
+- OpenTK - http://www.opentk.com/ - MIT
+- Opentype.js - https://github.com/nodebox/opentype.js - MIT
+- Protobuf - https://code.google.com/p/protobuf/ - BSD New/Simplified
+- Protobuf-net - https://code.google.com/p/protobuf-net/ - Apache License 2.0
+- SFML - http://www.sfml-dev.org/ - zlib/libpng
+- SlimDX - http://slimdx.org/ - MIT/X11
+- SharpFont - https://github.com/Robmaister/SharpFont - MIT
+- SoundJS - http://www.createjs.com/#!/SoundJS - MIT
 
 -------------------------------------------------------------------------------
 
