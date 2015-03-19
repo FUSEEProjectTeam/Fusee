@@ -41,10 +41,10 @@
       <HintPath>$(C4D_DIR)\plugins\ManagedPlugIn\x64\Fusee.Math.Core.dll</HintPath>
     </Reference>
     <Reference Include="Fusee.SerializationContainer">
-      <HintPath>$(C4D_DIR)\plugins\ManagedPlugIn\x64\Fusee.SerializationContainer.dll</HintPath>
+      <HintPath>..\..\..\..\Bin\Debug\Fusee.SerializationContainer.dll</HintPath>
     </Reference>
     <Reference Include="Fusee.SerializationSerializer">
-      <HintPath>$(C4D_DIR)\plugins\ManagedPlugIn\x64\Fusee.SerializationSerializer.dll</HintPath>
+      <HintPath>..\..\..\..\Bin\Debug\Fusee.SerializationSerializer.dll</HintPath>
     </Reference>
     <Reference Include="protobuf-net">
       <HintPath>..\..\..\..\ExternalBinaries\protobuf\protobuf-net.dll</HintPath>

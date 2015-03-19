@@ -60,7 +60,7 @@ namespace RigPlugin
             BaseContainer bcButton = C4dApi.GetCustomDataTypeDefault(C4dApi.DTYPE_BUTTON);
 
             //Erstellt einen GUI (Button)
-            bcButton.SetLong(C4dApi.DESC_CUSTOMGUI, C4dApi.DTYPE_BUTTON);
+            bcButton.SetInt64(C4dApi.DESC_CUSTOMGUI, C4dApi.DTYPE_BUTTON);
 
             //Erstellt das Label für den Button
             bcButton.SetString(C4dApi.DESC_NAME, "Wichtung setzen");
@@ -99,9 +99,9 @@ namespace RigPlugin
             DescID cid = new DescID(new DescLevel(SKELETT_TRENNER, C4dApi.DTYPE_SEPARATOR, 0));
 
             BaseContainer bcTrenner = C4dApi.GetCustomDataTypeDefault(C4dApi.DTYPE_SEPARATOR);
-            bcTrenner.SetLong(C4dApi.DESC_CUSTOMGUI, C4dApi.DTYPE_SEPARATOR);
+            bcTrenner.SetInt64(C4dApi.DESC_CUSTOMGUI, C4dApi.DTYPE_SEPARATOR);
             bcTrenner.SetBool(C4dApi.DESC_SEPARATORLINE, true);
-            bcTrenner.SetLong(C4dApi.DESC_ANIMATE, C4dApi.DESC_ANIMATE_OFF);
+            bcTrenner.SetInt64(C4dApi.DESC_ANIMATE, C4dApi.DESC_ANIMATE_OFF);
             bcTrenner.SetBool(C4dApi.DESC_REMOVEABLE, false);
             bcTrenner.SetString(C4dApi.DESC_NAME, "");
             bcTrenner.SetString(C4dApi.DESC_SHORT_NAME, "");
@@ -135,16 +135,16 @@ namespace RigPlugin
             BaseContainer bcArme = C4dApi.GetCustomDataTypeDefault(C4dApi.DTYPE_REAL);
             bcArme.SetString(C4dApi.DESC_NAME, "Arme");
             //Definiert den minimalen Wert
-            bcArme.SetLong(C4dApi.DESC_MIN, 0);
+            bcArme.SetInt64(C4dApi.DESC_MIN, 0);
             //Definiert den maximalen Wert
-            bcArme.SetLong(C4dApi.DESC_MAX, 2);
+            bcArme.SetInt64(C4dApi.DESC_MAX, 2);
 
             bool temp = dataKoerper.GetBool(SKELETT_OBERKOERPER_BOX);
 
-            if (dataKoerper.GetLong(SKELETT_TYPE) == 3)
+            if (dataKoerper.GetInt64(SKELETT_TYPE) == 3)
             {
                 temp = false;
-                bcArme.SetLong(C4dApi.DESC_DEFAULT, 0);
+                bcArme.SetInt64(C4dApi.DESC_DEFAULT, 0);
             }
 
             if (temp == true)
@@ -172,16 +172,16 @@ namespace RigPlugin
             BaseContainer bcHand = C4dApi.GetCustomDataTypeDefault(C4dApi.DTYPE_LONG);
             bcHand.SetString(C4dApi.DESC_NAME, "Hände");
             //Definiert den minimalen Wert
-            bcHand.SetLong(C4dApi.DESC_MIN, 0);
+            bcHand.SetInt64(C4dApi.DESC_MIN, 0);
             //Definiert den maximalen Wert
 
             if (Hand == true)
             {
 
-                //C4dApi.GePrint("anzahl Arme = " + dataKoerper.GetLong(SKELETT_ARME));
-                if (dataKoerper.GetLong(SKELETT_ARME) > 0)
+                //C4dApi.GePrint("anzahl Arme = " + dataKoerper.GetInt64(SKELETT_ARME));
+                if (dataKoerper.GetInt64(SKELETT_ARME) > 0)
                 {
-                    bcHand.SetLong(C4dApi.DESC_MAX, dataKoerper.GetLong(SKELETT_ARME));
+                    bcHand.SetInt64(C4dApi.DESC_MAX, dataKoerper.GetInt64(SKELETT_ARME));
                     bcHand.SetBool(C4dApi.DESC_HIDE, false);
                 }
                 else
@@ -209,12 +209,12 @@ namespace RigPlugin
             BaseContainer bcFinger = C4dApi.GetCustomDataTypeDefault(C4dApi.DTYPE_LONG);
             bcFinger.SetString(C4dApi.DESC_NAME, "Finger");
             //Definiert den minimalen Wert
-            bcFinger.SetLong(C4dApi.DESC_MIN, 0);
+            bcFinger.SetInt64(C4dApi.DESC_MIN, 0);
             //Definiert den maximalen Wert
-            bcFinger.SetLong(C4dApi.DESC_MAX, 5);
+            bcFinger.SetInt64(C4dApi.DESC_MAX, 5);
             if (Hand == true)
             {
-                if (dataKoerper.GetLong(SKELETT_HAND) > 0)
+                if (dataKoerper.GetInt64(SKELETT_HAND) > 0)
                 {
                     bcFinger.SetBool(C4dApi.DESC_HIDE, false);
                 }
@@ -239,9 +239,9 @@ namespace RigPlugin
             DescID cid = new DescID(new DescLevel(SKELETT_TRENNER_OBERKOERPER, C4dApi.DTYPE_SEPARATOR, 0));
 
             BaseContainer bcTrennerOberKoerper = C4dApi.GetCustomDataTypeDefault(C4dApi.DTYPE_SEPARATOR);
-            bcTrennerOberKoerper.SetLong(C4dApi.DESC_CUSTOMGUI, C4dApi.DTYPE_SEPARATOR);
+            bcTrennerOberKoerper.SetInt64(C4dApi.DESC_CUSTOMGUI, C4dApi.DTYPE_SEPARATOR);
             bcTrennerOberKoerper.SetBool(C4dApi.DESC_SEPARATORLINE, true);
-            bcTrennerOberKoerper.SetLong(C4dApi.DESC_ANIMATE, C4dApi.DESC_ANIMATE_OFF);
+            bcTrennerOberKoerper.SetInt64(C4dApi.DESC_ANIMATE, C4dApi.DESC_ANIMATE_OFF);
             bcTrennerOberKoerper.SetBool(C4dApi.DESC_REMOVEABLE, false);
             bcTrennerOberKoerper.SetString(C4dApi.DESC_NAME, "");
             bcTrennerOberKoerper.SetString(C4dApi.DESC_SHORT_NAME, "");
@@ -269,21 +269,21 @@ namespace RigPlugin
             BaseContainer bcBeine = C4dApi.GetCustomDataTypeDefault(C4dApi.DTYPE_LONG);
             bcBeine.SetString(C4dApi.DESC_NAME, "Beine");
             //Definiert den minimalen Wert
-            bcBeine.SetLong(C4dApi.DESC_MIN, 0);
+            bcBeine.SetInt64(C4dApi.DESC_MIN, 0);
             //Definiert den maximalen Wert
 
 
             bool temp2 = dataKoerper.GetBool(SKELETT_UNTERKOERPER_BOX);
-            if (temp2 == true && dataKoerper.GetLong(SKELETT_TYPE) == 3)//Schaltung zwischen 4 Beiner und Menschen Ist der Type ein 4 Beiner so ist die Maximal zahl der Beine 4
+            if (temp2 == true && dataKoerper.GetInt64(SKELETT_TYPE) == 3)//Schaltung zwischen 4 Beiner und Menschen Ist der Type ein 4 Beiner so ist die Maximal zahl der Beine 4
             {
-                bcBeine.SetLong(C4dApi.DESC_MAX, 4);
+                bcBeine.SetInt64(C4dApi.DESC_MAX, 4);
                 bcBeine.SetBool(C4dApi.DESC_HIDE, false);
                 Bein = true;
                 Schwanz = true;
             }
-            else if (temp2 == true && dataKoerper.GetLong(SKELETT_TYPE) != 3)//Schaltung zwischen 4 Beiner und Menschen Ist der Type ein Mensch so ist die Maximal zahl der Beine 2
+            else if (temp2 == true && dataKoerper.GetInt64(SKELETT_TYPE) != 3)//Schaltung zwischen 4 Beiner und Menschen Ist der Type ein Mensch so ist die Maximal zahl der Beine 2
             {
-                bcBeine.SetLong(C4dApi.DESC_MAX, 2);
+                bcBeine.SetInt64(C4dApi.DESC_MAX, 2);
                 bcBeine.SetBool(C4dApi.DESC_HIDE, false);
                 Bein = true;
             }
@@ -307,14 +307,14 @@ namespace RigPlugin
 
             bcFuesse.SetString(C4dApi.DESC_NAME, "Füße");
             //Definiert den minimalen Wert
-            bcFuesse.SetLong(C4dApi.DESC_MIN, 0);
+            bcFuesse.SetInt64(C4dApi.DESC_MIN, 0);
             //Definiert den maximalen Wert
-            bcFuesse.SetLong(C4dApi.DESC_MAX, 2);
+            bcFuesse.SetInt64(C4dApi.DESC_MAX, 2);
             if (Bein == true && Schwanz == false)
             {
-                if (dataKoerper.GetLong(SKELETT_BEINE) > 0)
+                if (dataKoerper.GetInt64(SKELETT_BEINE) > 0)
                 {
-                    bcFuesse.SetLong(C4dApi.DESC_MAX, 2);
+                    bcFuesse.SetInt64(C4dApi.DESC_MAX, 2);
                     bcFuesse.SetBool(C4dApi.DESC_HIDE, false);
                 }
                 else
@@ -324,9 +324,9 @@ namespace RigPlugin
             }
             else if (Bein == true && Schwanz == true)
             {
-                if (dataKoerper.GetLong(SKELETT_BEINE) > 0)
+                if (dataKoerper.GetInt64(SKELETT_BEINE) > 0)
                 {
-                    bcFuesse.SetLong(C4dApi.DESC_MAX, 4);
+                    bcFuesse.SetInt64(C4dApi.DESC_MAX, 4);
                     bcFuesse.SetBool(C4dApi.DESC_HIDE, false);
                 }
                 else
@@ -353,13 +353,13 @@ namespace RigPlugin
             BaseContainer bcZehen = C4dApi.GetCustomDataTypeDefault(C4dApi.DTYPE_LONG);
             bcZehen.SetString(C4dApi.DESC_NAME, "Zehen");
             //Definiert den minimalen Wert
-            bcZehen.SetLong(C4dApi.DESC_MIN, 0);
+            bcZehen.SetInt64(C4dApi.DESC_MIN, 0);
             //Definiert den maximalen Wert
-            bcZehen.SetLong(C4dApi.DESC_MAX, 5);
+            bcZehen.SetInt64(C4dApi.DESC_MAX, 5);
             BaseContainer dataUnterKoerper = GetDataInstance(node);
-            if (Bein == true && dataUnterKoerper.GetLong(SKELETT_TYPE) != 3)//Überprüfung auf 4 Beiner, ist es kein 4 Beiner so wird das Feld Zehen eingeblendet
+            if (Bein == true && dataUnterKoerper.GetInt64(SKELETT_TYPE) != 3)//Überprüfung auf 4 Beiner, ist es kein 4 Beiner so wird das Feld Zehen eingeblendet
             {
-                if (dataKoerper.GetLong(SKELETT_FUESSE) > 0)
+                if (dataKoerper.GetInt64(SKELETT_FUESSE) > 0)
                 {
                     bcZehen.SetBool(C4dApi.DESC_HIDE, false);
                 }
@@ -386,9 +386,9 @@ namespace RigPlugin
             BaseContainer bcRueckenWirbel = C4dApi.GetCustomDataTypeDefault(C4dApi.DTYPE_LONG);
             bcRueckenWirbel.SetString(C4dApi.DESC_NAME, "Rückenwirbel Knochen");
             //Definiert den minimalen Wert
-            bcRueckenWirbel.SetLong(C4dApi.DESC_MIN, 0);
+            bcRueckenWirbel.SetInt64(C4dApi.DESC_MIN, 0);
             //Definiert den maximalen Wert
-            bcRueckenWirbel.SetLong(C4dApi.DESC_MAX, 30);
+            bcRueckenWirbel.SetInt64(C4dApi.DESC_MAX, 30);
             if (Schwanz == true)
             {
                 bcRueckenWirbel.SetBool(C4dApi.DESC_HIDE, false);
@@ -413,9 +413,9 @@ namespace RigPlugin
             BaseContainer bcHalsWirbel = C4dApi.GetCustomDataTypeDefault(C4dApi.DTYPE_LONG);
             bcHalsWirbel.SetString(C4dApi.DESC_NAME, "Halswirbel Knochen");
             //Definiert den minimalen Wert
-            bcHalsWirbel.SetLong(C4dApi.DESC_MIN, 0);
+            bcHalsWirbel.SetInt64(C4dApi.DESC_MIN, 0);
             //Definiert den maximalen Wert
-            bcHalsWirbel.SetLong(C4dApi.DESC_MAX, 15);
+            bcHalsWirbel.SetInt64(C4dApi.DESC_MAX, 15);
             if (Schwanz == true)
             {
                 bcHalsWirbel.SetBool(C4dApi.DESC_HIDE, false);
@@ -440,9 +440,9 @@ namespace RigPlugin
             BaseContainer bcSchwanz = C4dApi.GetCustomDataTypeDefault(C4dApi.DTYPE_LONG);
             bcSchwanz.SetString(C4dApi.DESC_NAME, "Schwanz Knochen");
             //Definiert den minimalen Wert
-            bcSchwanz.SetLong(C4dApi.DESC_MIN, 0);
+            bcSchwanz.SetInt64(C4dApi.DESC_MIN, 0);
             //Definiert den maximalen Wert
-            bcSchwanz.SetLong(C4dApi.DESC_MAX, 5);
+            bcSchwanz.SetInt64(C4dApi.DESC_MAX, 5);
             if (Schwanz == true)
             {
                 bcSchwanz.SetBool(C4dApi.DESC_HIDE, false);
@@ -465,9 +465,9 @@ namespace RigPlugin
             DescID cid = new DescID(new DescLevel(SKELETT_TRENNER_BEINE_WIRBEL, C4dApi.DTYPE_SEPARATOR, 0));
 
             BaseContainer bcTrennerBeineWirbel = C4dApi.GetCustomDataTypeDefault(C4dApi.DTYPE_SEPARATOR);
-            bcTrennerBeineWirbel.SetLong(C4dApi.DESC_CUSTOMGUI, C4dApi.DTYPE_SEPARATOR);
+            bcTrennerBeineWirbel.SetInt64(C4dApi.DESC_CUSTOMGUI, C4dApi.DTYPE_SEPARATOR);
             bcTrennerBeineWirbel.SetBool(C4dApi.DESC_SEPARATORLINE, true);
-            bcTrennerBeineWirbel.SetLong(C4dApi.DESC_ANIMATE, C4dApi.DESC_ANIMATE_OFF);
+            bcTrennerBeineWirbel.SetInt64(C4dApi.DESC_ANIMATE, C4dApi.DESC_ANIMATE_OFF);
             bcTrennerBeineWirbel.SetBool(C4dApi.DESC_REMOVEABLE, false);
             bcTrennerBeineWirbel.SetString(C4dApi.DESC_NAME, "");
             bcTrennerBeineWirbel.SetString(C4dApi.DESC_SHORT_NAME, "");
@@ -483,9 +483,9 @@ namespace RigPlugin
             DescID cid = new DescID(new DescLevel(SKELETT_TRENNER_WIRBEL_SCHWANZ, C4dApi.DTYPE_SEPARATOR, 0));
 
             BaseContainer bcTrennerWirbelSchwanz = C4dApi.GetCustomDataTypeDefault(C4dApi.DTYPE_SEPARATOR);
-            bcTrennerWirbelSchwanz.SetLong(C4dApi.DESC_CUSTOMGUI, C4dApi.DTYPE_SEPARATOR);
+            bcTrennerWirbelSchwanz.SetInt64(C4dApi.DESC_CUSTOMGUI, C4dApi.DTYPE_SEPARATOR);
             bcTrennerWirbelSchwanz.SetBool(C4dApi.DESC_SEPARATORLINE, true);
-            bcTrennerWirbelSchwanz.SetLong(C4dApi.DESC_ANIMATE, C4dApi.DESC_ANIMATE_OFF);
+            bcTrennerWirbelSchwanz.SetInt64(C4dApi.DESC_ANIMATE, C4dApi.DESC_ANIMATE_OFF);
             bcTrennerWirbelSchwanz.SetBool(C4dApi.DESC_REMOVEABLE, false);
             bcTrennerWirbelSchwanz.SetString(C4dApi.DESC_NAME, "");
             bcTrennerWirbelSchwanz.SetString(C4dApi.DESC_SHORT_NAME, "");
@@ -501,9 +501,9 @@ namespace RigPlugin
             DescID cid = new DescID(new DescLevel(SKELETT_TRENNER_SCHWANZ_OBJAUSWAHL, C4dApi.DTYPE_SEPARATOR, 0));
 
             BaseContainer bcTrennerSchwanzAuswahl = C4dApi.GetCustomDataTypeDefault(C4dApi.DTYPE_SEPARATOR);
-            bcTrennerSchwanzAuswahl.SetLong(C4dApi.DESC_CUSTOMGUI, C4dApi.DTYPE_SEPARATOR);
+            bcTrennerSchwanzAuswahl.SetInt64(C4dApi.DESC_CUSTOMGUI, C4dApi.DTYPE_SEPARATOR);
             bcTrennerSchwanzAuswahl.SetBool(C4dApi.DESC_SEPARATORLINE, true);
-            bcTrennerSchwanzAuswahl.SetLong(C4dApi.DESC_ANIMATE, C4dApi.DESC_ANIMATE_OFF);
+            bcTrennerSchwanzAuswahl.SetInt64(C4dApi.DESC_ANIMATE, C4dApi.DESC_ANIMATE_OFF);
             bcTrennerSchwanzAuswahl.SetBool(C4dApi.DESC_REMOVEABLE, false);
             bcTrennerSchwanzAuswahl.SetString(C4dApi.DESC_NAME, "");
             bcTrennerSchwanzAuswahl.SetString(C4dApi.DESC_SHORT_NAME, "");
@@ -533,7 +533,7 @@ namespace RigPlugin
             }
 
             BaseContainer dataKoerper = GetDataInstance(node); //Speichert alle elemente von der Liste in den Container
-            if (dataKoerper.GetLong(SKELETT_TYPE) != 3)//Ist die ID 3 so wurde ein 4 Beiner ausgewählt, da diese keine Arme haben wird der Komplette Block für die Arme im Intrface ausgeblendet
+            if (dataKoerper.GetInt64(SKELETT_TYPE) != 3)//Ist die ID 3 so wurde ein 4 Beiner ausgewählt, da diese keine Arme haben wird der Komplette Block für die Arme im Intrface ausgeblendet
             {
                 if (this.getTorso() == true)
                 {
@@ -627,7 +627,7 @@ namespace RigPlugin
             BaseContainer bcButton = C4dApi.GetCustomDataTypeDefault(C4dApi.DTYPE_BUTTON);
 
             //Erstellt einen GUI (Button)
-            bcButton.SetLong(C4dApi.DESC_CUSTOMGUI, C4dApi.DTYPE_BUTTON);
+            bcButton.SetInt64(C4dApi.DESC_CUSTOMGUI, C4dApi.DTYPE_BUTTON);
 
             //Erstellt das Label für den Button
             bcButton.SetString(C4dApi.DESC_NAME, "Erstellen");

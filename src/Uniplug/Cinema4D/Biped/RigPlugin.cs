@@ -54,7 +54,7 @@ namespace RigPlugin
                     }
                     else
                     {
-                        long skelett = b.GetLong(SKELETT_TYPE);
+                        long skelett = b.GetInt64(SKELETT_TYPE);
                         if (skelett == 3)
                         {
                             this.makeAnimalJoints(node, desc);
