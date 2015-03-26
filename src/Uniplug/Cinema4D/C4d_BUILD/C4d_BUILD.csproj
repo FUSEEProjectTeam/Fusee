@@ -35,6 +35,12 @@
   <PropertyGroup>
     <PostBuildEvent>$(ProjectDir)\c4d_build.cmd $(ConfigurationName) $(PlatformName) $(SolutionDir)\C4d\</PostBuildEvent>
   </PropertyGroup>
+  <ItemGroup>
+    <None Include="C4d_build.cmd" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="README.txt" />
+  </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
