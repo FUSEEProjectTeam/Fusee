@@ -272,7 +272,6 @@ namespace Fusee.Engine
             }
         }
 
-        // Use C# destructor syntax for finalization code.
         /// <summary>
         /// Finalizes an instance of the <see cref="RenderCanvasWindowImp"/> class.
         /// </summary>
@@ -452,7 +451,6 @@ namespace Fusee.Engine
         /// </summary>
         public RenderCanvasImp()
         {
-            
             const int width = 1280;
             var height = System.Math.Min(Screen.PrimaryScreen.Bounds.Height - 100, 720);
 
@@ -465,7 +463,11 @@ namespace Fusee.Engine
                 _gameWindow = new RenderCanvasGameWindow(this, width, height, false);
             }
         }
-        
+
+        public void Dispose()
+        {
+            _gameWindow.Dispose();
+        }
 
         #endregion
 
@@ -476,17 +478,6 @@ namespace Fusee.Engine
             if (!_videoWallMode)
             {
                 _gameWindow.WindowBorder = _windowBorderHidden ? WindowBorder.Hidden : WindowBorder.Resizable;
-                /* TODO: Remove this Debug Code.
-                if (_windowBorderHidden)
-                {
-                    _width += 0;
-                    _gameWindow.WindowBorder = WindowBorder.Hidden;
-                }
-                else
-                {
-                    _gameWindow.WindowBorder = WindowBorder.Resizable;
-                }
-                 */
                 _gameWindow.Bounds = new System.Drawing.Rectangle(_windowPosX, _windowPosY, _width, _height);
             }
             else
@@ -502,7 +493,6 @@ namespace Fusee.Engine
                 if (_windowBorderHidden)
                     _gameWindow.WindowBorder = WindowBorder.Hidden;
             }
-            
         }
 
         /// <summary>
@@ -728,7 +718,7 @@ namespace Fusee.Engine
             : base(width, height, new GraphicsMode(32, 24, 0, (antiAliasing) ? 8 : 0) /*GraphicsMode.Default*/, "Fusee Engine")
         {
             _renderCanvasImp = renderCanvasImp;
-
+            
             _renderCanvasImp._width = Width;
             _renderCanvasImp._height = Height;
         }
@@ -739,7 +729,7 @@ namespace Fusee.Engine
 
         protected override void OnLoad(EventArgs e)
         {
-            // Check for necessary capabilities:
+            // Check for necessary capabilities
             string version = GL.GetString(StringName.Version);
 
             int major = (int)version[0];
@@ -766,10 +756,8 @@ namespace Fusee.Engine
         protected override void OnUnload(EventArgs e)
         {
             _renderCanvasImp.DoUnLoad();
-            // if (_renderCanvasImp != null)
-            //     _renderCanvasImp.Dispose();      
+            _renderCanvasImp.Dispose();
         }
-
 
         protected override void OnResize(EventArgs e)
         {
@@ -802,10 +790,9 @@ namespace Fusee.Engine
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             _deltaTime = e.Time;
+
             if (_renderCanvasImp != null)
-            {
                 _renderCanvasImp.DoRender();
-            }
         }
 
         #endregion
