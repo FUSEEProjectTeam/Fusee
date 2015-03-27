@@ -155,9 +155,9 @@ namespace RigPlugin
         }
         private void AddArms(BaseObject parentJoint, BaseObject mirrorJoint = null)
         {
-            this.arms = this.b.GetLong(SKELETT_ARME);
-            this.hands = this.b.GetLong(SKELETT_HAND);
-            this.finger = this.b.GetLong(SKELETT_FINGER);
+            this.arms = this.b.GetInt64(SKELETT_ARME);
+            this.hands = this.b.GetInt64(SKELETT_HAND);
+            this.finger = this.b.GetInt64(SKELETT_FINGER);
 
             if (this.arms > 0)
             {
@@ -203,10 +203,10 @@ namespace RigPlugin
 
         private void AddFeet(BaseObject parentJoint, BaseObject mirrorJoint = null)
         {
-            this.feet = this.b.GetLong(SKELETT_FUESSE);
-            this.toes = this.b.GetLong(SKELETT_ZEHEN);
-            this.legs = this.b.GetLong(SKELETT_BEINE);
-            //this.tail = this.b.GetLong(SKELETT_SCHWANZ); (Animal Klasse)
+            this.feet = this.b.GetInt64(SKELETT_FUESSE);
+            this.toes = this.b.GetInt64(SKELETT_ZEHEN);
+            this.legs = this.b.GetInt64(SKELETT_BEINE);
+            //this.tail = this.b.GetInt64(SKELETT_SCHWANZ); (Animal Klasse)
 
             if (this.legs > 0)
             {

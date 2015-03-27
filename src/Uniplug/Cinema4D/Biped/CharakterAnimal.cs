@@ -32,28 +32,28 @@ namespace RigPlugin
              * Standard BaseObject vom Typ Joint erstellen, diese sind bei Menschen immer aktiv
              */
             //Rückenknochen
-            BaseObject[] jointSpineArr = this.allocBonesSwing("Spine", this.myMesh, this.b.GetLong(SKELETT_RUECKENWIRBEL), new double3(50, -2, 0));
+            BaseObject[] jointSpineArr = this.allocBonesSwing("Spine", this.myMesh, this.b.GetInt64(SKELETT_RUECKENWIRBEL), new double3(50, -2, 0));
             //Nackenknochen
-            BaseObject jointNeck = this.allocBonesCurveY("Neck", jointSpineArr[0], this.b.GetLong(SKELETT_HALSWIRBEL), new double3(-100, 0, 0));
+            BaseObject jointNeck = this.allocBonesCurveY("Neck", jointSpineArr[0], this.b.GetInt64(SKELETT_HALSWIRBEL), new double3(-100, 0, 0));
             //Kopf
             BaseObject jointHead = this.allocJoint("Head", jointNeck, new double3(-100,0,0));
             this.wtag.AddJoint(jointHead);
 
 
-            if (this.b.GetLong(SKELETT_BEINE) > 0)
+            if (this.b.GetInt64(SKELETT_BEINE) > 0)
             {
                 this.addLegsFront(jointSpineArr[0]);
-                if (this.b.GetLong(SKELETT_BEINE) >= 3)
+                if (this.b.GetInt64(SKELETT_BEINE) >= 3)
                 {
                     this.addLegsBack(jointSpineArr[1]);
                 }
             }
             
             //Schwanz
-            if (this.b.GetLong(SKELETT_RUECKENWIRBEL) > 0 && this.b.GetLong(SKELETT_SCHWANZ) > 0)
+            if (this.b.GetInt64(SKELETT_RUECKENWIRBEL) > 0 && this.b.GetInt64(SKELETT_SCHWANZ) > 0)
             {
                 BaseObject parent = jointSpineArr[1];
-                for (int i = 0; i < this.b.GetLong(SKELETT_SCHWANZ); i++)
+                for (int i = 0; i < this.b.GetInt64(SKELETT_SCHWANZ); i++)
                 {
                     BaseObject jointTail = this.allocJoint("Tail_" + i, parent, new double3(100, -50, 0));
                     this.wtag.AddJoint(jointTail);
@@ -104,13 +104,13 @@ namespace RigPlugin
             this.wtag.AddJoint(jointFL_Leg4);
 
             //Vorderer Fuß
-            if (this.b.GetLong(SKELETT_FUESSE) > 0)
+            if (this.b.GetInt64(SKELETT_FUESSE) > 0)
             {
                 BaseObject jointFL_Feet = this.allocJoint("Feet", jointFL_Leg4, new double3(-50, 0, 0));
                 this.wtag.AddJoint(jointFL_Feet);
             }
 
-            if (this.b.GetLong(SKELETT_BEINE) > 1)
+            if (this.b.GetInt64(SKELETT_BEINE) > 1)
             {
                 //Vorderbeine
                 BaseObject jointFR_Leg = this.allocJoint("Leg_FR_1", parent, new double3(0, 0, 50));
@@ -125,7 +125,7 @@ namespace RigPlugin
 
                 this.wtag.AddJoint(jointFR_Leg4);
 
-                if (this.b.GetLong(SKELETT_FUESSE) > 1)
+                if (this.b.GetInt64(SKELETT_FUESSE) > 1)
                 {
                     //Vorderer Fuß
                     BaseObject jointFR_Feet = this.allocJoint("Feet", jointFR_Leg4, new double3(-50, 0, 0));
@@ -148,13 +148,13 @@ namespace RigPlugin
             this.wtag.AddJoint(jointBL_Leg3);
 
             //Hinterer Fuß
-            if (this.b.GetLong(SKELETT_FUESSE) > 2)
+            if (this.b.GetInt64(SKELETT_FUESSE) > 2)
             {
                 BaseObject jointBL_Feet = this.allocJoint("Feet_BL", jointBL_Leg3, new double3(-50, 0, 0));
                 this.wtag.AddJoint(jointBL_Feet);
             }
 
-            if (this.b.GetLong(SKELETT_BEINE) > 3)
+            if (this.b.GetInt64(SKELETT_BEINE) > 3)
             {
                 BaseObject jointBR_Leg = this.allocJoint("Leg_BR_1", parent, new double3(0, 0, 50));
                 BaseObject jointBR_Leg1 = this.allocJoint("Leg_BR_2", jointBR_Leg, new double3(-100, -150, 0));
@@ -166,7 +166,7 @@ namespace RigPlugin
                 this.wtag.AddJoint(jointBR_Leg2);
                 this.wtag.AddJoint(jointBR_Leg3);
 
-                if (this.b.GetLong(SKELETT_FUESSE) > 3)
+                if (this.b.GetInt64(SKELETT_FUESSE) > 3)
                 {
                     //Vorderer Fuß
                     BaseObject jointBR_Feet = this.allocJoint("Feet", jointBR_Leg3, new double3(-50, 0, 0));
