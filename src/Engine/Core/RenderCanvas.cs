@@ -135,8 +135,8 @@ namespace Fusee.Engine
             if (_inputImp == null)
                 _inputImp = ImpFactory.CreateIInputImp(_canvasImp);
 
-            if (_audioImp == null)
-                _audioImp = ImpFactory.CreateIAudioImp();
+            //if (_audioImp == null)
+            //    _audioImp = ImpFactory.CreateIAudioImp();
 
             if (_inputDriverImp == null)
                 _inputDriverImp = ImpFactory.CreateIInputDriverImp();
@@ -178,7 +178,7 @@ namespace Fusee.Engine
             _rc.Viewport(0, 0, Width, Height);
 
             Input.Instance.InputImp = _inputImp;
-            Audio.Instance.AudioImp = _audioImp;
+            //Audio.Instance.AudioImp = _audioImp;
             Input.Instance.InputDriverImp = _inputDriverImp;
             Network.Instance.NetworkImp = _networkImp;
             VideoManager.Instance.VideoManagerImp = _videoManagerImp;
