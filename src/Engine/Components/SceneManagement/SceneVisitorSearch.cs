@@ -23,7 +23,7 @@ namespace Fusee.SceneManagement
         public override void Visit(SceneEntity sceneEntity)
         {
 
-            if (sceneEntity.name == _name)
+            if (sceneEntity.Name == _name)
             {
                 _searchresult = sceneEntity;
             }

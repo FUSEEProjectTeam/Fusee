@@ -5,7 +5,7 @@ using Fusee.Math;
 
 namespace Examples.SoundTest
 {
-    [FuseeApplication(Name = "Sound Test", Description = "The name of this example says it all...")]
+    [FuseeApplication(Name = "Sound Test", Description = "A sample application showing FUSEE's audio support.")]
     public class SoundTest : RenderCanvas
     {
         protected Mesh Mesh;

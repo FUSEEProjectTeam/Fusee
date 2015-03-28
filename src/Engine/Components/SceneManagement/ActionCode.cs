@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
-using Fusee.Engine;
-
-namespace Fusee.SceneManagement
+﻿namespace Fusee.SceneManagement
 {
     /// <summary>
     /// Provides scene management functionality for 3D graphics rendering and object relationships.
@@ -29,6 +23,7 @@ namespace Fusee.SceneManagement
         #endregion
 
         #region Public Members
+
         /// <summary>
         /// Init is called upon creation of an ActionCode Object and utilizes the access to a SceneEntitie's transform and renderer objects.
         /// </summary>
@@ -36,8 +31,8 @@ namespace Fusee.SceneManagement
         public void Init(SceneEntity entity)
         {
             SceneEntity = entity;
-            transform = SceneEntity.transform;
-            renderer = SceneEntity.renderer;
+            transform = SceneEntity.Transform;
+            renderer = SceneEntity.Renderer;
         }
 
         /// <summary>
@@ -52,6 +47,7 @@ namespace Fusee.SceneManagement
         #endregion
 
         #region Overrideable Functions
+
         /// <summary>
         /// Start is called only once. At the time of the call other objects inside the scene are already initialized.
         /// </summary>
@@ -67,14 +63,16 @@ namespace Fusee.SceneManagement
         {
             
         }
+
         /// <summary>
         /// Accept is called by the current visitor. This function is currently used for traversal and search algorithms by the SceneManager object. 
         /// </summary>
         /// <param name="sv">The visitor that is currently traversing the scene.</param>
         public override void Accept(SceneVisitor sv)
         {
-            sv.Visit((ActionCode)this);
+            sv.Visit(this);
         }
+
         #endregion
     }   
 }

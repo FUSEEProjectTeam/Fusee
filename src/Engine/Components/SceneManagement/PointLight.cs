@@ -82,7 +82,7 @@ namespace Fusee.SceneManagement
         {
             if (SceneEntity != null)
             {
-                _position = SceneEntity.transform.GlobalPosition * SceneManager.RC.View;
+                _position = SceneEntity.Transform.GlobalPosition * SceneManager.RContext.View;
             }
             sv.Visit((PointLight)this);
         }

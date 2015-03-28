@@ -1332,6 +1332,12 @@ namespace Fusee.Math
 
         #endregion
 
+        /// <summary>
+        /// Gets or sets the Converter object. Has the ability to convert a string to a double4.
+        /// </summary>
+        /// <value>
+        /// The parse property.
+        /// </value>
         public static Converter<string, double4> Parse { get; set; }
     }
 }

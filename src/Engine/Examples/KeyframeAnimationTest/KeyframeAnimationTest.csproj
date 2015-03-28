@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SphereMaterial.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\Common.csproj">
@@ -83,6 +84,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)/Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
@@ -94,5 +98,5 @@
     <Exec Condition=" '$(OS)' != 'Windows_NT' And Exists('$(OutputPath)') " Command="rm '$(OutputPath)' -r -f" />
   </Target>
   <Import Project="$(SolutionDir)/Fusee_Windows.targets" Condition="'$(PostBuildEvent)' == '' And '$(OS)' == 'Windows_NT' " />
-  <Import Project="$(SolutionDir)/Fusee_Linux.targets" Condition="'$(PostBuildEvent)' == '' And '$(OS)' != 'Windows_NT' " />
+  <Import Project="$(SolutionDir)/Fusee_Unix.targets" Condition="'$(PostBuildEvent)' == '' And '$(OS)' != 'Windows_NT' " />
 </Project>

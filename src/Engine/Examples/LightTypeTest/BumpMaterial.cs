@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Fusee.Engine;
-using Fusee.Math;
+﻿using Fusee.Engine;
 using Fusee.SceneManagement;
 
 namespace Examples.LightTypeTest
@@ -21,17 +16,19 @@ namespace Examples.LightTypeTest
             sp = shaderProgram;
         }
 
-        public BumpMaterial(ShaderProgram shaderProgram, string texturepath, string texturepath2)
+        public BumpMaterial(RenderContext rc, ShaderProgram shaderProgram, string texturepath, string texturepath2)
         {
             sp = shaderProgram;
+
             NormalTextureparam = sp.GetShaderParam("normalTex");
             Textureparam = sp.GetShaderParam("texture1");
             SpecularLevel = sp.GetShaderParam("specularLevel");
             Shininess = sp.GetShaderParam("shininess");
-            ImageData image = SceneManager.RC.LoadImage(texturepath);
-            ImageData image2 = SceneManager.RC.LoadImage(texturepath2);
-            Tex = SceneManager.RC.CreateTexture(image);
-            NormalTex = SceneManager.RC.CreateTexture(image2);
+
+            ImageData image = rc.LoadImage(texturepath);
+            ImageData image2 = rc.LoadImage(texturepath2);
+            Tex = rc.CreateTexture(image);
+            NormalTex = rc.CreateTexture(image2);
         }
 
         public override void Update(RenderContext renderContext)
@@ -41,7 +38,6 @@ namespace Examples.LightTypeTest
             renderContext.SetShaderParamTexture(NormalTextureparam, NormalTex);
             renderContext.SetShaderParam(Shininess, 16.0f);
             renderContext.SetShaderParam(SpecularLevel, 256.0f);
-
         }
     }
 }

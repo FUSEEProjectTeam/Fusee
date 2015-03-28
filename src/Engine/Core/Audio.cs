@@ -89,6 +89,11 @@ namespace Fusee.Engine
             _audioImp.SetPanning(val);
         }
 
+        internal void Dispose()
+        {
+            _instance = null;
+        }
+
         /// <summary>
         /// Provides the Instance of the Audio Class.
         /// </summary>

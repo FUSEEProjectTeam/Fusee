@@ -478,7 +478,7 @@ namespace Fusee.Engine
             if (!_videoWallMode)
             {
                 _gameWindow.WindowBorder = _windowBorderHidden ? WindowBorder.Hidden : WindowBorder.Resizable;
-                _gameWindow.Bounds = new System.Drawing.Rectangle(_windowPosX, _windowPosY, _width, _height);
+                _gameWindow.ClientRectangle = new System.Drawing.Rectangle(_windowPosX, _windowPosY, _width, _height);
             }
             else
             {

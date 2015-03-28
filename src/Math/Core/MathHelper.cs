@@ -144,6 +144,16 @@ namespace Fusee.Math
             return System.Math.Pow(2, System.Math.Ceiling(System.Math.Log((double)n, 2)));
         }
 
+        /// <summary>
+        /// Determines whether the specified value is a power of two.
+        /// </summary>
+        /// <param name="val">The value.</param>
+        /// <returns></returns>
+        public static bool IsPowerOfTwo(int val)
+        {
+            return (val & (val - 1)) == 0;
+        }
+
         #endregion
 
         #region Factorial

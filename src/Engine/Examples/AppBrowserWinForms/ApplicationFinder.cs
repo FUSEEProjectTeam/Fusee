@@ -23,7 +23,6 @@ namespace Examples.WinFormsFusee
             public Type TypeDesc;
         }
 
-
         private string _searchRoot;
 
         public string SearchRoot
@@ -46,14 +45,16 @@ namespace Examples.WinFormsFusee
 
         private void ScanDirectory(DirectoryInfo dir)
         {
-            foreach (FileInfo file in dir.GetFiles("*.dll"))
-            {
-                ScanFile(file);
-            }
+            //foreach (FileInfo file in dir.GetFiles("*.dll"))
+            //{
+            //    ScanFile(file);
+            //}
+
             foreach (FileInfo file in dir.GetFiles("*.exe"))
             {
                 ScanFile(file);
             }
+
             foreach (DirectoryInfo subdir in dir.GetDirectories())
             {
                 ScanDirectory(subdir);
@@ -97,7 +98,7 @@ namespace Examples.WinFormsFusee
             catch
             {
                 // Couldn't load the file as a managed assembly - don't bother
-                Debug.WriteLine("Error loading a non-managed assembly.");
+                Debug.WriteLine("Error loading a non-managed assembly");
             }
         }
 
@@ -124,7 +125,7 @@ namespace Examples.WinFormsFusee
         public RenderCanvas Instantiate(int i)
         {
             Directory.SetCurrentDirectory(_apps[i].DirectoryName);
-            return (RenderCanvas) Activator.CreateInstance(_apps[i].TypeDesc);
+            return (RenderCanvas)Activator.CreateInstance(_apps[i].TypeDesc);
         }
     }
 }

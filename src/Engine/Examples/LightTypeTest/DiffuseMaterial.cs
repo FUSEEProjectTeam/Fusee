@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Fusee.Engine;
-using Fusee.Math;
+﻿using Fusee.Engine;
 using Fusee.SceneManagement;
 
 namespace Examples.LightTypeTest
@@ -18,19 +13,19 @@ namespace Examples.LightTypeTest
             sp = shaderProgram;
         }
 
-        public DiffuseMaterial(ShaderProgram shaderProgram, string texturepath)
+        public DiffuseMaterial(RenderContext rc, ShaderProgram shaderProgram, string texturepath)
         {
             sp = shaderProgram;
             Textureparam = sp.GetShaderParam("texture1");
-            ImageData Image = SceneManager.RC.LoadImage(texturepath);
-            Tex = SceneManager.RC.CreateTexture(Image);
+
+            ImageData image = rc.LoadImage(texturepath);
+            Tex = rc.CreateTexture(image);
         }
 
         public override void Update(RenderContext renderContext)
         {
             renderContext.SetShader(sp);
             renderContext.SetShaderParamTexture(Textureparam, Tex);
-
         }
     }
 }

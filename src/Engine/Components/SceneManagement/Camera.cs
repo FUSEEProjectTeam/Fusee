@@ -145,7 +145,7 @@ namespace Fusee.SceneManagement
         /// <param name="owner">The SceneEntity where the Camera Component is attached to.</param>
         public Camera(SceneEntity owner)
         {
-            ViewMatrix = owner.transform.GlobalMatrix;
+            ViewMatrix = owner.Transform.GlobalMatrix;
             ProjectionType(proj);
             owner.AddComponent(this);
             SceneEntity = owner;

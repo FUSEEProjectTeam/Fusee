@@ -3,7 +3,7 @@ using Fusee.Math;
 
 namespace Examples.MageExample
 {
-    [FuseeApplication(Name = "Mage Example", Description = "Sample displaying a more complex character.")]
+    [FuseeApplication(Name = "Mage Example", Description = "A sample application showing a more complex 3D model.")]
     public class MageExample : RenderCanvas
     {
         #region Shader
@@ -199,29 +199,29 @@ gl_FragColor = texture2D(texture1, vUV) * endIntensity;
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
             // mouse and input control
-            _angleVelHorz = -1.0f * (float)Time.Instance.DeltaTime;
+            _angleVelHorz = -1.0f*(float) Time.Instance.DeltaTime;
             _angleVelVert = 0.0f;
 
             if (Input.Instance.IsButton(MouseButtons.Left))
             {
-                _angleVelHorz = _rotationSpeed * Input.Instance.GetAxis(InputAxis.MouseX);
-                _angleVelVert = _rotationSpeed * Input.Instance.GetAxis(InputAxis.MouseY);
+                _angleVelHorz = _rotationSpeed*Input.Instance.GetAxis(InputAxis.MouseX);
+                _angleVelVert = _rotationSpeed*Input.Instance.GetAxis(InputAxis.MouseY);
             }
 
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
 
             if (Input.Instance.IsKey(KeyCodes.Left))
-                _angleHorz -= _rotationSpeed * (float)Time.Instance.DeltaTime;
+                _angleHorz -= _rotationSpeed*(float) Time.Instance.DeltaTime;
 
             if (Input.Instance.IsKey(KeyCodes.Right))
-                _angleHorz += _rotationSpeed * (float)Time.Instance.DeltaTime;
+                _angleHorz += _rotationSpeed*(float) Time.Instance.DeltaTime;
 
             if (Input.Instance.IsKey(KeyCodes.Up))
-                _angleVert -= _rotationSpeed * (float)Time.Instance.DeltaTime;
+                _angleVert -= _rotationSpeed*(float) Time.Instance.DeltaTime;
 
             if (Input.Instance.IsKey(KeyCodes.Down))
-                _angleVert += _rotationSpeed * (float)Time.Instance.DeltaTime;
+                _angleVert += _rotationSpeed*(float) Time.Instance.DeltaTime;
 
             // colh
             // var mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
@@ -259,7 +259,7 @@ gl_FragColor = texture2D(texture1, vUV) * endIntensity;
         {
             RC.Viewport(0, 0, Width, Height);
 
-            var aspectRatio = Width / (float)Height;
+            var aspectRatio = Width/(float) Height;
             RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 10000);
         }
 

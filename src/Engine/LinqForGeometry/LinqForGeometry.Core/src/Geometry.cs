@@ -1051,7 +1051,6 @@ namespace LinqForGeometry.Core
         /// Iterator.
         /// Circulate around a given vertex and enumerate all faces adjacent to the center vertex.
         /// </summary>
-        /// <param name="hv">A handle to a vertex to use as a 'center' vertex.</param>
         /// <param name="vertexHandle">Handle to the vertex to do this operation on.</param>
         /// <returns>An Enumerable of HalfEdge handles to be used in loops, etc.</returns>
         public IEnumerable<HandleFace> EnVertexAdjacentFaces(HandleVertex vertexHandle)

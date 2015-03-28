@@ -127,4 +127,7 @@
   <data name="MainWindow_label1_Click_1_Select_the_directory_where_FUSEE_App_browser_should_look_for_Apps__Subdirectories_are_included_in_the_search_" xml:space="preserve">
     <value>Select the directory where FUSEE App browser should look for Apps. Subdirectories are included in the search.</value>
   </data>
+  <data name="MainWindow_CloseCurrentApp_Loading___" xml:space="preserve">
+    <value>Loading...</value>
+  </data>
 </root>

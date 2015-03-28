@@ -1624,6 +1624,12 @@ namespace Fusee.Math
 
         #endregion
 
+        /// <summary>
+        /// Gets or sets the Converter object. Has the ability to convert a string to a float3.
+        /// </summary>
+        /// <value>
+        /// The parse property.
+        /// </value>
         public static Converter<string, float3> Parse { get; set; }
     }
 

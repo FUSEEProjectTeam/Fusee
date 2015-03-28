@@ -80,7 +80,7 @@ namespace Examples.SolarSystem
                 _target = SceneEntity.FindSceneEntity(_planets[_currentTargetId]);
             }
 
-            transform.GlobalPosition = _target.transform.GlobalPosition;
+            transform.GlobalPosition = _target.Transform.GlobalPosition;
         }
     }
 }

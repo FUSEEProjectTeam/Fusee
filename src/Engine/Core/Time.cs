@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
@@ -13,6 +14,7 @@ namespace Fusee.Engine
         #region Fields
 
         private static Time _instance;
+
         private double _deltaTime;
         private double _time;
         private float _timeFlow;
@@ -133,16 +135,14 @@ namespace Fusee.Engine
         /// </summary>
         public static Time Instance
         {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new Time();
-                }
-                return _instance;
-            }
+            get { return _instance ?? (_instance = new Time()); }
         }
 
         #endregion
+
+        internal void Dispose()
+        {
+            _instance = null;
+        }
     }
 }

@@ -3,6 +3,8 @@ using Fusee.Math;
 
 namespace Examples.RocketGame
 {
+    [FuseeApplication(Name = "RocketGame",
+        Description = "Shows an entire game including user input, object texturing, and a GUI.")]
     public class RocketGame : RenderCanvas
     {
         private GameWorld _gameWorld;

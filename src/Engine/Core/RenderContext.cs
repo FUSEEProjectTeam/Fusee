@@ -928,23 +928,13 @@ namespace Fusee.Engine
         /// the BitmapData an make them available for the shader.
         /// </remarks>
         /// <param name="imgData">An ImageData struct, containing necessary information for the upload to the graphics card.</param>
+        /// <param name="repeat">Indicating if the texture should be clamped or repeated.</param>
         /// <returns>
         /// An <see cref="ITexture"/> that can be used for texturing in the shader.
         /// </returns>
-        public ITexture CreateTexture(ImageData imgData)
+        public ITexture CreateTexture(ImageData imgData, bool repeat = false)
         {
-            return _rci.CreateTexture(imgData);
-        }
-
-        /// <summary>
-        /// Creates a white Texture with 1x1 pixel size.
-        /// </summary>
-        /// <returns>
-        /// An <see cref="ITexture"/> that can be used for texturing in the shader.
-        /// </returns>
-        public ITexture DisableTexture()
-        {
-            return _rci.CreateTexture(CreateImage(1, 1, "white"));
+            return _rci.CreateTexture(imgData, repeat);
         }
 
         /// <summary>

@@ -8,7 +8,6 @@ namespace Examples.SolarSystem
     {
         private SceneEntity _earth;
         private readonly float3 _rotationSpeed;
-        // private Transformation _moonPos;
 
         public MoonAction(float3 rotationspeed)
         {
@@ -18,14 +17,12 @@ namespace Examples.SolarSystem
         public override void Start()
         {
             _earth = SceneEntity.FindSceneEntity("Earth");
-            transform.LocalPosition = _earth.transform.GlobalPosition;
-
-            // _moonPos = SceneEntity.FindSceneEntity("Moon").transform;
+            transform.LocalPosition = _earth.Transform.GlobalPosition;
         }
 
         public override void Update()
         {
-            transform.LocalPosition = _earth.transform.GlobalPosition;
+            transform.LocalPosition = _earth.Transform.GlobalPosition;
             transform.LocalEulerAngles += _rotationSpeed*(float) Time.Instance.DeltaTime;
 
             // this can be activated for testing purposes

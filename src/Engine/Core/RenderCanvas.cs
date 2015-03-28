@@ -235,6 +235,11 @@ namespace Fusee.Engine
         {
             Audio.Instance.CloseDevice();
             Network.Instance.CloseDevice();
+
+            Audio.Instance.Dispose();
+            Time.Instance.Dispose();
+            Input.Instance.Dispose();
+            Network.Instance.Dispose();
         }
 
         /// <summary>

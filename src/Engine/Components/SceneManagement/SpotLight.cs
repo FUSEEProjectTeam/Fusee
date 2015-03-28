@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using Fusee.Math;
-using System;
 
 namespace Fusee.SceneManagement
 {
@@ -15,11 +14,13 @@ namespace Fusee.SceneManagement
         /// <summary>
         /// The angle of the spotlight.
         /// </summary>
-        protected float _angle;
+        private readonly float _angle;
+
         #endregion
 
 
         #region Constructors
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SpotLight" /> class. Position, direction, color and the channel are needed.
         /// </summary>
@@ -46,7 +47,7 @@ namespace Fusee.SceneManagement
         /// Initializes a new instance of the <see cref="SpotLight"/> class. Only the channel is needed.
         /// </summary>
         /// <param name="channel">The memory space of the light(0 - 7).</param>
-        public SpotLight( int channel) 
+        public SpotLight (int channel) 
         {
             _type = LightType.Spot;
             _position = new float3(0,0,0);
@@ -54,8 +55,7 @@ namespace Fusee.SceneManagement
             _diffuseColor = new float4(1, 1, 1, 1);
             _channel = channel;
         }
-        #endregion
-        #region Constructors
+
         /// <summary>
         /// Creates a spot light in the scene. Position, color, position, and channel is needed.
         /// It is possible to set up to 8 lights in the scene.
@@ -65,7 +65,7 @@ namespace Fusee.SceneManagement
         /// <param name="ambient">The ambient light color.</param>
         /// <param name="specular">The specular light color.</param>
         /// <param name="position">The lights position in the scene.</param>
-        /// <param name="channel">The memory space of the light.(0 - 7)</param>
+        /// <param name="channel">The memory space of the light (0 - 7).</param>
         public SpotLight(float3 direction, float4 diffuse, float4 ambient, float4 specular, float3 position, int channel)
         {
             _direction = direction;
@@ -87,7 +87,7 @@ namespace Fusee.SceneManagement
         /// <param name="sceneVisitorRendering">The SceneVisitorRendering instance.</param>
         public void TraverseForRendering(SceneVisitorRendering sceneVisitorRendering)
         {
-            sceneVisitorRendering.AddLightSpot(_position, _direction, _diffuseColor, _ambientColor, _specularColor, _angle, _type, _channel );
+            sceneVisitorRendering.AddLightSpot(_position, _direction, _diffuseColor, _ambientColor, _specularColor, _angle, _type, _channel);
         }
 
         #endregion
@@ -101,10 +101,11 @@ namespace Fusee.SceneManagement
         {
             if (SceneEntity != null)
             {
-                _position = SceneEntity.transform.GlobalPosition * SceneManager.RC.View;
-                _direction = SceneEntity.transform.Forward * new float3x3(SceneManager.RC.View);
+                _position = SceneEntity.Transform.GlobalPosition * SceneManager.RContext.View;
+                _direction = SceneEntity.Transform.Forward * new float3x3(SceneManager.RContext.View);
             }
-            sv.Visit((SpotLight)this);
+
+            sv.Visit(this);
         }
         #endregion
     }

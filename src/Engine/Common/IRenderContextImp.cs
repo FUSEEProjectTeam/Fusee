@@ -208,10 +208,11 @@ namespace Fusee.Engine
         /// the BitmapData an make them available for the shader.
         /// </remarks>
         /// <param name="imageData">An ImageData struct, containing necessary information for the upload to the graphics card.</param>
+        /// <param name="repeat">Indicating if the texture should be clamped or repeated.</param>
         /// <returns>
         /// An ITexture that can be used for texturing in the shader.
         /// </returns>
-        ITexture CreateTexture(ImageData imageData);
+        ITexture CreateTexture(ImageData imageData, bool repeat);
 
         /// <summary>
         /// Loads an image file from disk and creates a new Bitmap-object out of it.

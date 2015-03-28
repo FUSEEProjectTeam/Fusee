@@ -7,7 +7,7 @@ namespace Examples.SpotTheDiff
     ///     This is part of a tutorial about FUSEE's GUI system:
     ///     https://github.com/FUSEEProjectTeam/Fusee/wiki/HowTo:-Graphical-User-Interface-(2D-Games-in-Fusee)
     /// </summary>
-    [FuseeApplication(Name = "SpotTheDiff", Description = "Simple 2D game to showcase FUSEE's GUI system.")]
+    [FuseeApplication(Name = "SpotTheDiff", Description = "A simple 2D game showing FUSEE's GUI system.")]
     public class SpotTheDiff : RenderCanvas
     {
         private GUIButton[] _guiBDiffs;
@@ -28,8 +28,8 @@ namespace Examples.SpotTheDiff
         public override void Init()
         {
             // is called on startup
-            Width = 616;
-            Height = 688;
+            Width = 600;
+            Height = 650;
 
             // GUIHandler
             _guiHandler = new GUIHandler();

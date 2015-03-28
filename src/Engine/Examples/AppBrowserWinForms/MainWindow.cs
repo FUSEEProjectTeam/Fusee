@@ -8,8 +8,6 @@ namespace Examples.WinFormsFusee
 {
     public partial class MainWindow : Form
     {
-        // private RenderControl _renderControl;
-
         private int _currentInx;
         private RenderCanvas _currentApp;
         private RenderControl _currentControl;
@@ -39,6 +37,8 @@ namespace Examples.WinFormsFusee
         {
             Width = 1440;
             Height = 602;
+
+            splitContainer1.Panel2.Update();
 
             //
             //  STEP ONE - Create the Winforms Control
@@ -85,18 +85,24 @@ namespace Examples.WinFormsFusee
 
         private void CloseCurrentApp()
         {
-            richTextBox1.Text = "";
+            richTextBox1.Text = Resources.MainWindow_CloseCurrentApp_Loading___;
+
+            if (_currentApp != null)
+            {
+                _currentApp.DeInit();
+            }
 
             // Clean up
-            _currentApp = null;
+            _currentApp = null;          
 
             if (_currentControl != null)
             {
                 _currentControl.HandleCreated -= renderControl_HandleCreated;
-                splitContainer1.Panel2.Controls.Remove(_currentControl);
                 _currentControl.Dispose();
+                splitContainer1.Panel2.Controls.Remove(_currentControl);
                 _currentControl = null;
             }
+
             if (_currentHost != null)
             {
                 _currentHost.Dispose();
@@ -105,9 +111,8 @@ namespace Examples.WinFormsFusee
 
             // Just in case...
             GC.Collect();
-            GC.WaitForFullGCComplete();
+            GC.WaitForPendingFinalizers();
         }
-
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -197,8 +202,8 @@ namespace Examples.WinFormsFusee
 
         public void SetSize(int width, int height)
         {
-            Width = width;
-            Height = height;
+            Width = width + (Width - ClientSize.Width);
+            Height = height + (Height - ClientSize.Height);
         }
     }
 }

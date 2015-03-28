@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
-using Fusee.Math;
-
-
+﻿using Fusee.Math;
 
 namespace Fusee.SceneManagement
 {
@@ -63,7 +57,7 @@ namespace Fusee.SceneManagement
        /// <param name="entity">The SceneEntity that will be set in Transform.</param>
        public Transformation(SceneEntity entity)
        {
-           if (entity.parent == null)
+           if (entity.Parent == null)
            {
                _hasParent = false;
            }
@@ -105,20 +99,10 @@ namespace Fusee.SceneManagement
        /// </value>
        public SceneEntity Parent
        {
-           set
-           {
-               if (value == null)
-               {
-                   _hasParent = false;
-               }
-               else
-               {
-                   _hasParent = true;
-               }
+           set {
+               _hasParent = value != null;
            }
        }
-
-
 
        /// <summary>
        /// Gets or sets the float4x4 local transformMatrix.

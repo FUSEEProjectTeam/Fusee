@@ -135,7 +135,9 @@ namespace Fusee.Engine
             if (ImgSrc != null)
             {
                 var imgData = rc.LoadImage(ImgSrc);
-                GUITexture = rc.CreateTexture(imgData);
+
+                GUITexture = rc.CreateTexture(imgData,
+                    MathHelper.IsPowerOfTwo(imgData.Width) && MathHelper.IsPowerOfTwo(imgData.Height));
 
                 CreateGUIShader();
             }

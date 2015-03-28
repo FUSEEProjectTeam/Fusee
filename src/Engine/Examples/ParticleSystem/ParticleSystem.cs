@@ -2,24 +2,30 @@ using System;
 using Fusee.Engine;
 using Fusee.Math;
 
-
 namespace Examples.ParticleSystem
 {
-    [FuseeApplication(Name = "Particle System", Description = "A very simple example.")]
+    [FuseeApplication(Name = "ParticleSystem", Description = "A sample application showing FUSEE's ParticleSystem.")]
     public class ParticleSystem : RenderCanvas
     {
-
         // angle variables
         private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
 
         private const float RotationSpeed = 1f;
         private const float Damping = 0.92f;
 
-        //particelcount,minLife, maxLife,minSize, maxSize, rotation, transparency, randPosX,randPosY,randPosY,randVelX,randVelY,randVelZ,gravityX, gravityY, gravityZ,
-        private ParticleEmitter _smokeEmitter       = new ParticleEmitter(0, 150, 600, 1.0f, 1.0f, 0.012f, 0.4f, 0.0f, 0.0f, 0.0f, 0.0f, 5.0f, 0.0f, 0.0f, 0.02f, 0.0f);
-        private ParticleEmitter _fireRedEmitter     = new ParticleEmitter(0, 150, 600, 1.0f, 1.0f, 0.012f, 0.4f, 0.0f, 0.0f, 0.0f, 0.0f, 5.0f, 0.0f, 0.0f, 0.02f, 0.0f);
-        private ParticleEmitter _fireYellowEmitter  = new ParticleEmitter(0, 150, 600, 1.0f, 1.0f, 0.012f, 0.4f, 0.0f, 0.0f, 0.0f, 0.0f, 5.0f, 0.0f, 0.0f, 0.02f, 0.0f);
-        private ParticleEmitter _starEmitter        = new ParticleEmitter(0, 150, 600, 1.0f, 1.0f, 0.012f, 0.4f, 0.0f, 0.0f, 0.0f, 0.0f, 5.0f, 0.0f, 0.0f, 0.02f, 0.0f);
+        // particelCount, minLife, maxLife, minSize, maxSize, rotation, transparency, randPosX, randPosY,
+        //    randPosY, randVelX, randVelY, randVelZ, gravityX, gravityY, gravityZ
+        private ParticleEmitter _smokeEmitter = new ParticleEmitter(0, 150, 600, 1.0f, 1.0f, 0.012f, 0.4f, 0.0f, 0.0f,
+            0.0f, 0.0f, 5.0f, 0.0f, 0.0f, 0.02f, 0.0f);
+
+        private ParticleEmitter _fireRedEmitter = new ParticleEmitter(0, 150, 600, 1.0f, 1.0f, 0.012f, 0.4f, 0.0f, 0.0f,
+            0.0f, 0.0f, 5.0f, 0.0f, 0.0f, 0.02f, 0.0f);
+
+        private ParticleEmitter _fireYellowEmitter = new ParticleEmitter(0, 150, 600, 1.0f, 1.0f, 0.012f, 0.4f, 0.0f,
+            0.0f, 0.0f, 0.0f, 5.0f, 0.0f, 0.0f, 0.02f, 0.0f);
+
+        private ParticleEmitter _starEmitter = new ParticleEmitter(0, 150, 600, 1.0f, 1.0f, 0.012f, 0.4f, 0.0f, 0.0f,
+            0.0f, 0.0f, 5.0f, 0.0f, 0.0f, 0.02f, 0.0f);
 
         // variables for shader
         private ShaderProgram _smokeTexture;
@@ -53,26 +59,26 @@ namespace Examples.ParticleSystem
         {
             RC.ClearColor = new float4(0.2f, 0.2f, 0.2f, 1);
 
-            _smokeTexture           = RC.CreateShader(_smokeEmitter.VsSimpleTexture, _smokeEmitter.PsSimpleTexture);
-            _fireRedTexture         = RC.CreateShader(_fireRedEmitter.VsSimpleTexture, _fireRedEmitter.PsSimpleTexture);
-            _fireYellowTexture      = RC.CreateShader(_fireYellowEmitter.VsSimpleTexture, _fireYellowEmitter.PsSimpleTexture);
-            _starTexture            = RC.CreateShader(_starEmitter.VsSimpleTexture, _starEmitter.PsSimpleTexture);
+            _smokeTexture = RC.CreateShader(_smokeEmitter.VsSimpleTexture, _smokeEmitter.PsSimpleTexture);
+            _fireRedTexture = RC.CreateShader(_fireRedEmitter.VsSimpleTexture, _fireRedEmitter.PsSimpleTexture);
+            _fireYellowTexture = RC.CreateShader(_fireYellowEmitter.VsSimpleTexture, _fireYellowEmitter.PsSimpleTexture);
+            _starTexture = RC.CreateShader(_starEmitter.VsSimpleTexture, _starEmitter.PsSimpleTexture);
 
-            _smokeParam             = _smokeTexture.GetShaderParam("texture1");
-            _fireRedParam           = _fireRedTexture.GetShaderParam("texture1");
-            _fireYellowParam        = _fireYellowTexture.GetShaderParam("texture1");
-            _starParam              = _starTexture.GetShaderParam("texture1");
+            _smokeParam = _smokeTexture.GetShaderParam("texture1");
+            _fireRedParam = _fireRedTexture.GetShaderParam("texture1");
+            _fireYellowParam = _fireYellowTexture.GetShaderParam("texture1");
+            _starParam = _starTexture.GetShaderParam("texture1");
 
             // load texture
-            var imgSmokeData        = RC.LoadImage("Assets/smoke_particle.png");
-            var imgFireRedData      = RC.LoadImage("Assets/fireRed.png");
-            var imgFireYellowData   = RC.LoadImage("Assets/fireYellowTexture.png");
-            var imgStarData         = RC.LoadImage("Assets/star.png");
+            var imgSmokeData = RC.LoadImage("Assets/smoke_particle.png");
+            var imgFireRedData = RC.LoadImage("Assets/fireRed.png");
+            var imgFireYellowData = RC.LoadImage("Assets/fireYellowTexture.png");
+            var imgStarData = RC.LoadImage("Assets/star.png");
 
-            _iSmoke                 = RC.CreateTexture(imgSmokeData);
-            _iFireRed               = RC.CreateTexture(imgFireRedData);
-            _iFireYellow            = RC.CreateTexture(imgFireYellowData);
-            _iStar                  = RC.CreateTexture(imgStarData);
+            _iSmoke = RC.CreateTexture(imgSmokeData);
+            _iFireRed = RC.CreateTexture(imgFireRedData);
+            _iFireYellow = RC.CreateTexture(imgFireYellowData);
+            _iStar = RC.CreateTexture(imgStarData);
 
             RC.SetRenderState(new RenderStateSet
             {
@@ -136,34 +142,37 @@ namespace Examples.ParticleSystem
             if (sender == _guiExampleOneButton)
             {
                 //particelcount,minLife, maxLife,minSize, maxSize,transparency, randPosX,randPosY,randPosY,randVelX,randVelY,randVelZ,gravityX, gravityY, gravityZ,
-                _smokeEmitter               = new ParticleEmitter(10000, 999999, 999999, 0.9f, 1.0f, 0.012f, 0.01f, 50.6f, 1.6f, 50.6f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+                _smokeEmitter = new ParticleEmitter(10000, 999999, 999999, 0.9f, 1.0f, 0.012f, 0.01f, 50.6f, 1.6f, 50.6f,
+                    0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
                 //deactivate other emitter
-                _fireYellowEmitter          = null;
-                _fireRedEmitter             = null;
-                _starEmitter                = null;
-                 
-
+                _fireYellowEmitter = null;
+                _fireRedEmitter = null;
+                _starEmitter = null;
             }
 
             if (sender == _guiExampleTwoButton)
             {
                 //particelcount,minLife, maxLife,minSize, maxSize, rotation, transparency, randPosX,randPosY,randPosY,randVelX,randVelY,randVelZ,gravityX, gravityY, gravityZ,
-                _smokeEmitter               = new ParticleEmitter(600, 0, 200, 0.4f, 0.5f, 0.012f, 0.2f, 0.5f, 1.0f, 0.5f, 1.0f, 1.5f, 1.0f, 0.0f, -0.05f, 0.0f);
-                _fireYellowEmitter          = new ParticleEmitter(150, 5, 200, 0.5f, 0.9f, 0.012f, 0.1f, 1.0f, 0.5f, 1.0f, 0.025f, 0.0f, 0.025f, 0.0f, -0.03f, 0.0f);
-                _fireRedEmitter             = new ParticleEmitter(450, 0, 200, 0.3f, 0.6f, 0.012f, 0.4f, 0.5f, 0.1f, 0.5f, 0.4f, 1.5f, 0.4f, 0.0f, -0.03f, 0.0f);
-                
+                _smokeEmitter = new ParticleEmitter(600, 0, 200, 0.4f, 0.5f, 0.012f, 0.2f, 0.5f, 1.0f, 0.5f, 1.0f, 1.5f,
+                    1.0f, 0.0f, -0.05f, 0.0f);
+                _fireYellowEmitter = new ParticleEmitter(150, 5, 200, 0.5f, 0.9f, 0.012f, 0.1f, 1.0f, 0.5f, 1.0f, 0.025f,
+                    0.0f, 0.025f, 0.0f, -0.03f, 0.0f);
+                _fireRedEmitter = new ParticleEmitter(450, 0, 200, 0.3f, 0.6f, 0.012f, 0.4f, 0.5f, 0.1f, 0.5f, 0.4f,
+                    1.5f, 0.4f, 0.0f, -0.03f, 0.0f);
+
                 //deactivate other emitter
-                _starEmitter                = null;
+                _starEmitter = null;
             }
 
             if (sender == _guiExampleThreeButton)
             {
                 //particelcount,minLife, maxLife,minSize, maxSize,rotation,transparency, randPosX,randPosY,randPosY,randVelX,randVelY,randVelZ,gravityX, gravityY, gravityZ,                           
-                _starEmitter                = new ParticleEmitter(200, 600, 600, 0.2f, 0.2f, 0.012f, 1.0f, 0.5f, 0.0f, 0.5f, 8.2f, 8.0f, 8.2f, 0.0f, 0.032f, 0.0f);
+                _starEmitter = new ParticleEmitter(200, 600, 600, 0.2f, 0.2f, 0.012f, 1.0f, 0.5f, 0.0f, 0.5f, 8.2f, 8.0f,
+                    8.2f, 0.0f, 0.032f, 0.0f);
                 //deactivate other emitter
-                _smokeEmitter               = null;
-                _fireYellowEmitter          = null;
-                _fireRedEmitter             = null;
+                _smokeEmitter = null;
+                _fireYellowEmitter = null;
+                _fireRedEmitter = null;
             }
         }
 
@@ -185,17 +194,16 @@ namespace Examples.ParticleSystem
         // is called once a frame
         public override void RenderAFrame()
         {
-
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
             // move per mouse
             if (Input.Instance.IsButton(MouseButtons.Left))
             {
-                _angleVelHorz = RotationSpeed * Input.Instance.GetAxis(InputAxis.MouseX);
-                _angleVelVert = RotationSpeed * Input.Instance.GetAxis(InputAxis.MouseY);
+                _angleVelHorz = RotationSpeed*Input.Instance.GetAxis(InputAxis.MouseX);
+                _angleVelVert = RotationSpeed*Input.Instance.GetAxis(InputAxis.MouseY);
             }
             else
             {
-                var curDamp = (float)Math.Exp(-Damping * Time.Instance.DeltaTime);
+                var curDamp = (float) Math.Exp(-Damping*Time.Instance.DeltaTime);
                 _angleVelHorz *= curDamp;
                 _angleVelVert *= curDamp;
             }
@@ -205,26 +213,25 @@ namespace Examples.ParticleSystem
 
             // move per keyboard
             if (Input.Instance.IsKey(KeyCodes.Left))
-                _angleHorz -= RotationSpeed * (float)Time.Instance.DeltaTime;
+                _angleHorz -= RotationSpeed*(float) Time.Instance.DeltaTime;
 
             if (Input.Instance.IsKey(KeyCodes.Right))
-                _angleHorz += RotationSpeed * (float)Time.Instance.DeltaTime;
+                _angleHorz += RotationSpeed*(float) Time.Instance.DeltaTime;
 
             if (Input.Instance.IsKey(KeyCodes.Up))
-                _angleVert -= RotationSpeed * (float)Time.Instance.DeltaTime;
+                _angleVert -= RotationSpeed*(float) Time.Instance.DeltaTime;
 
             if (Input.Instance.IsKey(KeyCodes.Down))
-                _angleVert += RotationSpeed * (float)Time.Instance.DeltaTime;
+                _angleVert += RotationSpeed*(float) Time.Instance.DeltaTime;
 
-            var mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
+            var mtxRot = float4x4.CreateRotationY(_angleHorz)*float4x4.CreateRotationX(_angleVert);
             var mtxCam = float4x4.LookAt(0, 200, 500, 0, 0, 0, 0, 1, 0);
 
 
-
-
             // mesh
-            RC.ModelView = float4x4.CreateTranslation(0, -50, 0) * mtxRot * float4x4.CreateTranslation(-150, 0, 0) * mtxCam;
-            RC.ModelView = new float4x4(15, 0, 0, 0, 0, 15, 0, 0, 0, 0, 15, 0, 0, 0, 0, 1) * mtxRot * float4x4.CreateTranslation(0, 20, 0) * mtxCam;
+            RC.ModelView = float4x4.CreateTranslation(0, -50, 0)*mtxRot*float4x4.CreateTranslation(-150, 0, 0)*mtxCam;
+            RC.ModelView = new float4x4(15, 0, 0, 0, 0, 15, 0, 0, 0, 0, 15, 0, 0, 0, 0, 1)*mtxRot*
+                           float4x4.CreateTranslation(0, 20, 0)*mtxCam;
 
             //smoke
             if (_smokeEmitter != null)
@@ -244,8 +251,9 @@ namespace Examples.ParticleSystem
                 RC.Render(_fireRedEmitter.ParticleMesh);
             }
             // mesh
-            RC.ModelView = float4x4.CreateTranslation(0, -50, 0) * mtxRot * float4x4.CreateTranslation(-150, 0, 0) * mtxCam;
-            RC.ModelView = new float4x4(15, 0, 0, 0, 0, 15, 0, 0, 0, 0, 15, 0, 0, 0, 0, 1) * mtxRot * float4x4.CreateTranslation(0, 0, 0) * mtxCam;
+            RC.ModelView = float4x4.CreateTranslation(0, -50, 0)*mtxRot*float4x4.CreateTranslation(-150, 0, 0)*mtxCam;
+            RC.ModelView = new float4x4(15, 0, 0, 0, 0, 15, 0, 0, 0, 0, 15, 0, 0, 0, 0, 1)*mtxRot*
+                           float4x4.CreateTranslation(0, 0, 0)*mtxCam;
 
             //star
             if (_starEmitter != null)
@@ -257,7 +265,6 @@ namespace Examples.ParticleSystem
             }
 
 
-
             //fireYellow
             if (_fireYellowEmitter != null)
             {
@@ -266,7 +273,6 @@ namespace Examples.ParticleSystem
                 _fireYellowEmitter.Tick(Time.Instance.DeltaTime);
                 RC.Render(_fireYellowEmitter.ParticleMesh);
             }
-
 
 
             _guiHandler.RenderGUI();
@@ -280,7 +286,7 @@ namespace Examples.ParticleSystem
         {
             RC.Viewport(0, 0, Width, Height);
 
-            var aspectRatio = Width / (float)Height;
+            var aspectRatio = Width/(float) Height;
             RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 5000);
             // refresh all elements
             _guiHandler.Refresh();

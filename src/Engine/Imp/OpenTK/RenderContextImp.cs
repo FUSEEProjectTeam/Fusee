@@ -75,7 +75,7 @@ namespace Fusee.Engine
             if (img.PixelData != null)
             {
                 if (tex == null)
-                    tex = CreateTexture(img);
+                    tex = CreateTexture(img, false);
 
                 GL.BindTexture(TextureTarget.Texture2D, ((Texture) tex).handle);
                 GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, img.Width, img.Height,
@@ -240,8 +240,9 @@ namespace Fusee.Engine
         /// Creates a new Texture and binds it to the shader.
         /// </summary>
         /// <param name="img">A given ImageData object, containing all necessary information for the upload to the graphics card.</param>
+        /// <param name="repeat">Indicating if the texture should be clamped or repeated.</param>
         /// <returns>An ITexture that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
-        public ITexture CreateTexture(ImageData img)
+        public ITexture CreateTexture(ImageData img, bool repeat)
         {
             PixelInternalFormat internalFormat;
             OpenTK.Graphics.OpenGL.PixelFormat format;
@@ -269,7 +270,13 @@ namespace Fusee.Engine
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter,
                 (int) TextureMinFilter.Linear);
 
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS,
+                (repeat) ? (int) TextureWrapMode.Repeat : (int) TextureWrapMode.ClampToEdge);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT,
+                (repeat) ? (int) TextureWrapMode.Repeat : (int) TextureWrapMode.ClampToEdge);
+
             ITexture texID = new Texture {handle = id};
+
             return texID;
         }
 
@@ -462,7 +469,7 @@ namespace Fusee.Engine
                 }
             }
         }
-
+        
         /// <summary>
         /// The projection matrix used by the rendering pipeline
         /// </summary>
@@ -470,7 +477,7 @@ namespace Fusee.Engine
         /// The 4x4 projection matrix applied to view coordinates yielding clip space coordinates.
         /// </value>
         /// <remarks>
-        /// View coordinates are the result of the ModelView matrix multiplied to the geometry (<see cref="Fusee.Engine.RenderContext.ModelView"/>).
+        /// View coordinates are the result of the ModelView matrix multiplied to the geometry (<see cref="Fusee.Engine.RenderContextImp.ModelView"/>).
         /// The coordinate system of the view space has its origin in the camera center with the z axis aligned to the viewing direction, and the x- and
         /// y axes aligned to the viewing plane. Still, no projection from 3d space to the viewing plane has been performed. This is done by multiplying
         /// view coordinate geometry wihth the projection matrix. Typically, the projection matrix either performs a parallel projection or a perspective
@@ -1207,6 +1214,20 @@ namespace Fusee.Engine
         }
 
 
+        /// <summary>
+        /// Sets the RenderState object onto the current OpenGL based RenderContext.
+        /// </summary>
+        /// <param name="renderState">State of the render(enum).</param>
+        /// <param name="value">The value. See <see cref="Fusee.Engine.RenderState"/> for detailed information. </param>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// value
+        /// or
+        /// value
+        /// or
+        /// value
+        /// or
+        /// renderState
+        /// </exception>
         public void SetRenderState(RenderState renderState, uint value)
         {
             switch (renderState)
@@ -1379,6 +1400,18 @@ namespace Fusee.Engine
             }
         }
 
+        /// <summary>
+        /// Gets the current RenderState that is applied to the current OpenGL based RenderContext.
+        /// </summary>
+        /// <param name="renderState">State of the render. See <see cref="Fusee.Engine.RenderState"/> for further information.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// pm;Value  + ((PolygonMode)pm) +  not handled
+        /// or
+        /// depFunc;Value  + ((DepthFunction)depFunc) +  not handled
+        /// or
+        /// renderState
+        /// </exception>
         public uint GetRenderState(RenderState renderState)
         {
             switch (renderState)

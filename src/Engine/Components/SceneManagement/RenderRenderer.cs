@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Fusee.Engine;
+﻿using Fusee.Engine;
 
 namespace Fusee.SceneManagement
 {
@@ -11,9 +8,13 @@ namespace Fusee.SceneManagement
     public class RenderRenderer : RenderJob
     {
         #region Fields
-        private Renderer _renderer;
+
+        private readonly Renderer _renderer;
+
         #endregion
+
         #region Constructors
+
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderRenderer" /> class. Needs to be provided with a Renderer Component.
         /// </summary>
@@ -21,9 +22,10 @@ namespace Fusee.SceneManagement
         public RenderRenderer(Renderer renderer)
         {
             _renderer = renderer;
-            //_uColor = null;
         }
+
         #endregion
+
         #region Overrides
         /// <summary>
         /// Overwrites the SubmitWork method of RenderJob class. Render Component will get shaders and materials and passed to the RenderContextImplementation.
@@ -31,10 +33,10 @@ namespace Fusee.SceneManagement
         /// <param name="renderContext">The render context.</param>
         public override void SubmitWork(RenderContext renderContext)
         {
- 
             _renderer.material.Update(renderContext);
             SceneManager.Manager.UpdateLights();
         }
+
         #endregion
     }
 }
