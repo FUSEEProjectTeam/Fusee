@@ -221,7 +221,7 @@ namespace Fusee.Engine
             // TODO: implement something useful here.
         }
 
-        public void SetWindowSize(int width, int height, bool borderHidden = false, int posx = 0, int posy = 0)
+        public void SetWindowSize(int width, int height, int posx = 0, int posy = 0, bool borderHidden = false)
         {
             // TODO: implement something useful here.
         }
@@ -478,7 +478,7 @@ namespace Fusee.Engine
             if (!_videoWallMode)
             {
                 _gameWindow.WindowBorder = _windowBorderHidden ? WindowBorder.Hidden : WindowBorder.Resizable;
-                _gameWindow.ClientRectangle = new System.Drawing.Rectangle(_windowPosX, _windowPosY, _width, _height);
+                _gameWindow.Bounds = new System.Drawing.Rectangle(_windowPosX, _windowPosY, _width, _height);
             }
             else
             {
@@ -516,13 +516,17 @@ namespace Fusee.Engine
         /// </summary>
         /// <param name="width">The width of the window.</param>
         /// <param name="height">The height of the window.</param>
+        /// <param name="posx">The x position of the window.</param>
+        /// <param name="posy">The y position of the window.</param>
         /// <param name="borderHidden">Show the window border or not.</param>
-        public void SetWindowSize(int width, int height, bool borderHidden = false, int posx = 0, int posy = 0)
+        public void SetWindowSize(int width, int height, int posx = -1, int posy = -1, bool borderHidden = false)
         {
             _width = width;
             _height = height;
-            _windowPosX = posx;
-            _windowPosY = posy;
+
+            _windowPosX = (posx == -1) ? Screen.PrimaryScreen.Bounds.Width/2 - width/2 : posx;
+            _windowPosY = (posy == -1) ? Screen.PrimaryScreen.Bounds.Height/2 - height/2 : posy;
+
             _windowBorderHidden = borderHidden;
 
             // Disable video wall mode for this because it would not make sense.

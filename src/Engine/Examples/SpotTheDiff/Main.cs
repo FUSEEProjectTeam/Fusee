@@ -28,8 +28,7 @@ namespace Examples.SpotTheDiff
         public override void Init()
         {
             // is called on startup
-            Width = 600;
-            Height = 650;
+            SetWindowSize(600, 650);
 
             // GUIHandler
             _guiHandler = new GUIHandler();

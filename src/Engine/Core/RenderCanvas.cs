@@ -318,10 +318,12 @@ namespace Fusee.Engine
         /// </summary>
         /// <param name="width">The width of the window.</param>
         /// <param name="height">The height of the window.</param>
+        /// <param name="posx">The x position of the window.</param>
+        /// <param name="posy">The y position of the window.</param>
         /// <param name="borderHidden">Show the window border or not.</param>
-        public void SetWindowSize(int width, int height, bool borderHidden = false, int posx = 0, int posy = 0)
+        public void SetWindowSize(int width, int height, int posx = -1, int posy = -1, bool borderHidden = false)
         {
-            _canvasImp.SetWindowSize(width, height, borderHidden, posx, posy);
+            _canvasImp.SetWindowSize(width, height, posx, posy, borderHidden);
         }
 
         /// <summary>
