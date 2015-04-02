@@ -139,6 +139,42 @@ namespace Fusee.Engine
         }
 
         /// <summary>
+        ///     Gets the width of the application's window.
+        /// </summary>
+        /// <returns>Width of the application's window as int.</returns>
+        protected int GetWindowWidth()
+        {
+            Object[] attributes = GetType().GetCustomAttributes(
+                typeof (FuseeApplicationAttribute), true);
+
+            if (attributes.Length > 0)
+            {
+                var fae = (FuseeApplicationAttribute) attributes[0];
+                return fae.Width;
+            }
+
+            return -1;
+        }
+
+        /// <summary>
+        ///     Gets the height of the application's window.
+        /// </summary>
+        /// <returns>Height of the application's window as int.</returns>
+        protected int GetWindowHeight()
+        {
+            Object[] attributes = GetType().GetCustomAttributes(
+                typeof(FuseeApplicationAttribute), true);
+
+            if (attributes.Length > 0)
+            {
+                var fae = (FuseeApplicationAttribute)attributes[0];
+                return fae.Height;
+            }
+
+            return -1;
+        }
+
+        /// <summary>
         ///     Inits the canvas for the rendering loop.
         /// </summary>
         protected void InitCanvas()
@@ -146,6 +182,12 @@ namespace Fusee.Engine
             InitImplementors();
 
             CanvasImplementor.Caption = GetAppName();
+
+            var windowWidth = GetWindowWidth();
+            var windowHeight = GetWindowHeight();
+
+            if (windowWidth != -1 && windowHeight != -1)
+                SetWindowSize(windowWidth, windowHeight);
 
             RC = new RenderContext(ContextImplementor);
             RC.Viewport(0, 0, Width, Height);
