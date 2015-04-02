@@ -40,7 +40,7 @@ namespace Fusee.Engine
 
         internal void CloseDevice()
         {
-            //_audioImp.CloseDevice();
+            _audioImp.CloseDevice();
         }
 
         /// <summary>
