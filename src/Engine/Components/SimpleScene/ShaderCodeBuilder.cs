@@ -24,7 +24,7 @@ namespace Fusee.Engine.SimpleScene
 
         public ShaderCodeBuilder(MaterialComponent mc, MeshComponent mesh, WeightComponent wc = null)
         {
-            if (wc == null)
+            if (wc != null)
                 _hasWeightMap = true;
 
             float f1 = 1;

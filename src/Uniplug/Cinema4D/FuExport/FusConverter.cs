@@ -62,8 +62,7 @@ namespace FuExport
             _materialCache = new Dictionary<long, MaterialComponent>();
             _sceneRootDir = sceneRootDir;
             _doc = doc;
-            _polyDoc = doc.Polygonize();
-            _weightManager = new WeightManager(_doc, _polyDoc);
+            _weightManager = new WeightManager(_doc);
 
             Logger.Debug("Fuseefy Me!");
 
@@ -84,9 +83,7 @@ namespace FuExport
                     CreationDate = DateTime.Now.ToString("d-MMM-yyyy", CultureInfo.CreateSpecificCulture("en-US"))
                 },
 
-
-                Children = FuseefyOb(_polyDoc.GetFirstObject(), _doc.GetFirstObject()),
-                //AnimationTracks = _tracks
+                Children = FuseefyOb( _doc.GetFirstObject()),
             };
 
             // CreateWeightMap has to be called after creating the object-tree
@@ -225,7 +222,7 @@ namespace FuExport
         /// <param name="soc"></param>
 
 
-        private void VisitObject(BaseObject ob, BaseObject unpolyObject, SceneNodeContainer snc)
+        private void VisitObject(BaseObject ob, SceneNodeContainer snc)
         {
             Collection<TextureTag> textureTags = new Collection<TextureTag>();
             Dictionary<string,  SelectionTag> selectionTags = new Dictionary<string, SelectionTag>();
@@ -240,7 +237,7 @@ namespace FuExport
                 CAWeightTag wTag = tag as CAWeightTag;
                 if (wTag != null)
                 {
-                    weightTag = unpolyObject.GetTag(wTag.GetRealType()) as CAWeightTag;
+                    weightTag = wTag;
                 }
 
                 // TextureTag (Material - there might be more than one)
@@ -314,6 +311,11 @@ namespace FuExport
 
             // Further processing only needs to take place if the object contains any geometry at all.
             PolygonObject polyOb = ob as PolygonObject;
+
+            // Check whether the object contains an unpolygonized mesh
+            if(polyOb == null)
+                polyOb = ob.GetCache(null) as PolygonObject;
+
             if (polyOb != null)
             {
                 float3[] normalOb = polyOb.CreatePhongNormals();
@@ -360,8 +362,7 @@ namespace FuExport
                         AddComponent(subSnc, GetMaterial(texSelItem.Value));
                         subSnc.Name = snc.Name + "_" + texSelItem.Key.GetName();
                         AddComponent(subSnc, GetMesh(polyOb, normalOb, uvwTag, polyInxsSubset));
-                        _weightManager.AddWeightData(subSnc, ob, polyOb, weightTag, polyInxsSubset);
-
+                        _weightManager.AddWeightData(subSnc, polyOb, weightTag, polyInxsSubset);
 
                         snc.Children.Add(subSnc);
                     }
@@ -370,7 +371,7 @@ namespace FuExport
                 // The remaining polygons directly go into the original mesh
 
                 AddComponent(snc, GetMesh(polyOb, normalOb, uvwTag, polyInxs));
-                _weightManager.AddWeightData(snc, ob, polyOb, weightTag, polyInxs);
+                _weightManager.AddWeightData(snc, polyOb, weightTag, polyInxs);
             }
             else if (ob.GetType() == C4dApi.Olight)
             {
@@ -571,7 +572,7 @@ namespace FuExport
             return resultName;
         }
 
-        private List<SceneNodeContainer> FuseefyOb(BaseObject ob, BaseObject unpolyObject)
+        private List<SceneNodeContainer> FuseefyOb(BaseObject ob)
         {
             bool isAnimRoot = false;
             
@@ -594,19 +595,19 @@ namespace FuExport
                     Scale = (float3) ob.GetRelScale()
                 });
                 // Search for unpolygonized objects holding the animationtracks
-                if (SaveTracks(unpolyObject, snc))
+                if (SaveTracks(ob, snc))
                 {
                     _animationsPresent = true;
                     isAnimRoot = true;
                 }
-                _weightManager.CheckOnJoint(snc, unpolyObject);
+                _weightManager.CheckOnJoint(snc, ob);
 
                 
-                VisitObject(ob, unpolyObject, snc);
+                VisitObject(ob, snc);
 
 
                 // Hope the hierarchy of polygonized objects is the same as the normal one
-                var childList = FuseefyOb(ob.GetDown(), unpolyObject.GetDown());
+                var childList = FuseefyOb(ob.GetDown());
                 if (childList != null)
                 {
 
@@ -630,7 +631,6 @@ namespace FuExport
                 }
                 ret.Add(snc);
                 ob = ob.GetNext();
-                unpolyObject = unpolyObject.GetNext();
             } while (ob != null);
             return ret;
         }

@@ -498,6 +498,7 @@ namespace Fusee.Engine.SimpleScene
 
         private ShaderEffect MakeMaterial(MaterialComponent mc)
         {
+
             WeightComponent wc = CurrentNode.GetWeights();
             ShaderCodeBuilder scb = new ShaderCodeBuilder(mc, null, wc); // TODO, CurrentNode.GetWeights() != null);
             var effectParameters = AssembleEffectParamers(mc, scb);

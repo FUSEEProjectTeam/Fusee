@@ -11,14 +11,13 @@ namespace FuExport
 {
     public class WeightManager
     {
-        private BaseDocument _doc, _polyDoc;
+        private BaseDocument _doc;
         private List<WeightObject> _weightObjects;
         private Dictionary<long, SceneNodeContainer> _jointObjects;
 
-        public WeightManager(BaseDocument document, BaseDocument polyDoc)
+        public WeightManager(BaseDocument document)
         {
             _doc = document;
-            _polyDoc = polyDoc;
             _weightObjects = new List<WeightObject>();
             _jointObjects = new Dictionary<long, SceneNodeContainer>();
         }
@@ -28,17 +27,16 @@ namespace FuExport
             CAJointObject jo = bo as CAJointObject;
             if (jo != null)
             {
-                //snc.IsBone = true;
                 snc.AddComponent(new BoneComponent());
                 _jointObjects.Add(jo.RefUID(), snc);
             }
         }
 
-        public void AddWeightData(SceneNodeContainer snc, BaseObject bo, PolygonObject polyOb, CAWeightTag weightTag, IEnumerable<int> range)
+        public void AddWeightData(SceneNodeContainer snc, PolygonObject polyOb, CAWeightTag weightTag, IEnumerable<int> range)
         {
-            if (weightTag == null)
+            if (weightTag == null || polyOb == null)
                 return;
-            
+
             List<JointWeightColumn> weightMap = new List<JointWeightColumn>();
             List<float4x4> bindingMatrices = new List<float4x4>();
             for (int i = 0; i < weightTag.GetJointCount(); i++)
@@ -77,14 +75,10 @@ namespace FuExport
             _weightObjects.Add(new WeightObject()
             {
                 SceneNodeContainer = snc,
-                BaseObject = bo,
                 WeightTag = weightTag,
                 WeightMap = weightMap,
                 BindingMatrices = bindingMatrices
-            });
-
-            
-
+            });     
         }
 
         public void CreateWeightMap()
@@ -115,8 +109,6 @@ namespace FuExport
         private class WeightObject
         {
             public SceneNodeContainer SceneNodeContainer { get; set; }
-
-            public BaseObject BaseObject { get; set; }
 
             public CAWeightTag WeightTag { get; set; }
 
