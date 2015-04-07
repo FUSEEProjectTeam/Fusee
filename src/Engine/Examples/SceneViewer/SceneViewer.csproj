@@ -92,9 +92,6 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\KeyframeTest.fus">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="Assets\Lato-Black.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

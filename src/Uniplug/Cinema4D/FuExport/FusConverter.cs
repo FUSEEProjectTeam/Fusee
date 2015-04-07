@@ -238,6 +238,7 @@ namespace FuExport
                 if (wTag != null)
                 {
                     weightTag = wTag;
+                    continue;
                 }
 
                 // TextureTag (Material - there might be more than one)
@@ -313,7 +314,7 @@ namespace FuExport
             PolygonObject polyOb = ob as PolygonObject;
 
             // Check whether the object contains an unpolygonized mesh
-            if(polyOb == null)
+            if (polyOb == null)
                 polyOb = ob.GetCache(null) as PolygonObject;
 
             if (polyOb != null)
