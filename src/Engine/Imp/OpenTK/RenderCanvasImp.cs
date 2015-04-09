@@ -149,24 +149,22 @@ namespace Fusee.Engine
         /// <param name="windowHandle">The window handle.</param>
         /// <param name="width">The width.</param>
         /// <param name="height">The height.</param>
-        public RenderCanvasWindowImp(IntPtr windowHandle, int width, int height)
+        protected RenderCanvasWindowImp(IntPtr windowHandle, int width, int height)
         {
-            // _mode = GraphicsMode.Default;
-            bool antiAliasing = true;
-            _mode = new GraphicsMode(32, 24, 0, (antiAliasing) ? 8 : 0);
             _major = 1;
             _minor = 0;
+
             _flags = GraphicsContextFlags.Default;
             _wi = Utilities.CreateWindowsWindowInfo(windowHandle);
             
             try
             {
+                _mode = new GraphicsMode(32, 24, 0, 8);
                 _context = new GraphicsContext(_mode, _wi, _major, _minor, _flags);
             }
             catch
             {
-                antiAliasing = false;
-                _mode = new GraphicsMode(32, 24, 0, (antiAliasing) ? 8 : 0);
+                _mode = new GraphicsMode(32, 24, 0, 0);
                 _context = new GraphicsContext(_mode, _wi, _major, _minor, _flags);
             }
             
