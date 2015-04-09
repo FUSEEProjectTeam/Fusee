@@ -23,7 +23,7 @@ namespace Examples.WinFormsFusee
             _appFinder.PerformSearch();
 
             var width = (int)(Screen.PrimaryScreen.WorkingArea.Width * 0.8f);
-            const int height = 602;
+            var height = (int)(Screen.PrimaryScreen.WorkingArea.Height * 0.8f);
 
             SetSize(width, height);
             StartPosition = FormStartPosition.CenterScreen;
@@ -41,8 +41,11 @@ namespace Examples.WinFormsFusee
 
         private void StartCurrentApp()
         {
-            Width = (int) (Screen.PrimaryScreen.WorkingArea.Width*0.8f);
-            Height = 602;
+            Width = (int)(Screen.PrimaryScreen.WorkingArea.Width * 0.8f);
+            Height = (int)(Screen.PrimaryScreen.WorkingArea.Height * 0.8f);
+
+            Left = Screen.PrimaryScreen.Bounds.Width/2 - Width/2;
+            Top = Screen.PrimaryScreen.Bounds.Height/2 - Height/2;
 
             splitContainer1.Panel2.Update();
 

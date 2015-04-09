@@ -97,8 +97,10 @@ namespace Examples.WinFormsFusee
             form.SizeChanged += delegate
             {
                 _form.Invalidate();
-                _width = _form.Width;
-                _height = _form.Height;
+
+                base.Width = _form.Width;
+                base.Height = _form.Height;
+
                 DoResize();
                 DoRender();
             };
@@ -157,9 +159,12 @@ namespace Examples.WinFormsFusee
             if (!_initialized)
             {
                 DoInit();
-                _width = _form.Width;
-                _height = _form.Height;
+
+                base.Width = _form.Width;
+                base.Height = _form.Height;
+
                 DoResize();
+
                 _initialized = true;
             }
         }
@@ -167,21 +172,41 @@ namespace Examples.WinFormsFusee
 
         public override int Width
         {
-            get { return _width; }
+            get { return BaseWidth; }
             set
             {
-                _width = value + 200;
-                _parent.SetSize(_width, _height);
+                BaseWidth = value + 200;
+                _parent.SetSize(BaseWidth, BaseHeight);
             }
         }
 
         public override int Height
         {
-            get { return _height; }
+            get { return base.Height; }
             set
             {
-                _height = value;
-                _parent.SetSize(_width, _height);
+                BaseHeight = value;
+                _parent.SetSize(BaseWidth, BaseHeight);
+            }
+        }
+
+        public override int Top
+        {
+            get { return BaseTop; }
+            set
+            {
+                BaseTop = value - 50;
+                _parent.SetDesktopLocation(BaseLeft, BaseTop);
+            }
+        }
+
+        public override int Left
+        {
+            get { return BaseLeft; }
+            set
+            {
+                BaseLeft = value - 100;
+                _parent.SetDesktopLocation(BaseLeft, BaseTop);
             }
         }
 

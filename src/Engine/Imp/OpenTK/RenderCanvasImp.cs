@@ -41,12 +41,13 @@ namespace Fusee.Engine
         /// <exception cref="System.NotImplementedException">Cannot (yet) set width on RenderContextWindowImp</exception>
         public virtual int Width
         {
-            get { return _width; }
+            get { return BaseWidth; }
             set
             {
                 throw new NotImplementedException("Cannot (yet) set width on RenderContextWindowImp");
             }
         }
+
         /// <summary>
         /// Gets or sets the height.
         /// </summary>
@@ -56,10 +57,42 @@ namespace Fusee.Engine
         /// <exception cref="System.NotImplementedException">Cannot (yet) set height on RenderContextWindowImp</exception>
         public virtual int Height        
         {
-            get { return _height; }
+            get { return BaseHeight; }
             set
             {
                 throw new NotImplementedException("Cannot (yet) set height on RenderContextWindowImp");
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the left position.
+        /// </summary>
+        /// <value>
+        /// The left position.
+        /// </value>
+        /// <exception cref="System.NotImplementedException">Cannot (yet) set position on RenderContextWindowImp</exception>
+        public virtual int Left
+        {
+            get { return BaseLeft; }
+            set
+            {
+                throw new NotImplementedException("Cannot (yet) set position on RenderContextWindowImp");
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the top position.
+        /// </summary>
+        /// <value>
+        /// The top position.
+        /// </value>
+        /// <exception cref="System.NotImplementedException">Cannot (yet) set position on RenderContextWindowImp</exception>
+        public virtual int Top
+        {
+            get { return BaseTop; }
+            set
+            {
+                throw new NotImplementedException("Cannot (yet) set position on RenderContextWindowImp");
             }
         }
 
@@ -70,6 +103,7 @@ namespace Fusee.Engine
         /// The caption.
         /// </value>
         public string Caption { get; set; }
+
         private double _lastTimeTick;
         private double _deltaFrameTime;
         private static Stopwatch _daWatch;
@@ -180,8 +214,8 @@ namespace Fusee.Engine
             _context.SwapInterval = 1;
             _lastTimeTick = Timer;
 
-            _width = width;
-            _height = height;
+            BaseWidth = width;
+            BaseHeight = height;
         }
         #endregion
 
@@ -221,7 +255,13 @@ namespace Fusee.Engine
 
         public void SetWindowSize(int width, int height, int posx = 0, int posy = 0, bool borderHidden = false)
         {
-            // TODO: implement something useful here.
+            Width = width;
+            Height = height;
+
+            Left = (posx == -1) ? Screen.PrimaryScreen.Bounds.Width / 2 - width / 2 : posx;
+            Top = (posy == -1) ? Screen.PrimaryScreen.Bounds.Height / 2 - height / 2 : posy;
+
+            // TODO: border settings
         }
 
         /// <summary>
@@ -311,11 +351,11 @@ namespace Fusee.Engine
         /// </value>
         public int Width
         {
-            get { return _width; }
+            get { return BaseWidth; }
             set
             {
                 _gameWindow.Width = value;
-                _width = value;
+                BaseWidth = value;
                 ResizeWindow();
             }
         }
@@ -328,11 +368,11 @@ namespace Fusee.Engine
         /// </value>
         public int Height
         {
-            get { return _height; }
+            get { return BaseHeight; }
             set
             {
                 _gameWindow.Height = value;
-                _height = value;
+                BaseHeight = value;
                 ResizeWindow();
             }
         }
@@ -447,8 +487,6 @@ namespace Fusee.Engine
         }
 
         internal RenderCanvasGameWindow _gameWindow;
-        private int _windowPosX;
-        private int _windowPosY;
 
         #endregion
 
@@ -485,7 +523,7 @@ namespace Fusee.Engine
             if (!_videoWallMode)
             {
                 _gameWindow.WindowBorder = _windowBorderHidden ? WindowBorder.Hidden : WindowBorder.Resizable;
-                _gameWindow.Bounds = new System.Drawing.Rectangle(_windowPosX, _windowPosY, _width, _height);
+                _gameWindow.Bounds = new System.Drawing.Rectangle(BaseLeft, BaseTop, BaseWidth, BaseHeight);
             }
             else
             {
@@ -528,11 +566,11 @@ namespace Fusee.Engine
         /// <param name="borderHidden">Show the window border or not.</param>
         public void SetWindowSize(int width, int height, int posx = -1, int posy = -1, bool borderHidden = false)
         {
-            _width = width;
-            _height = height;
+            BaseWidth = width;
+            BaseHeight = height;
 
-            _windowPosX = (posx == -1) ? Screen.PrimaryScreen.Bounds.Width/2 - width/2 : posx;
-            _windowPosY = (posy == -1) ? Screen.PrimaryScreen.Bounds.Height/2 - height/2 : posy;
+            BaseLeft = (posx == -1) ? Screen.PrimaryScreen.Bounds.Width/2 - width/2 : posx;
+            BaseTop = (posy == -1) ? Screen.PrimaryScreen.Bounds.Height/2 - height/2 : posy;
 
             _windowBorderHidden = borderHidden;
 
@@ -600,13 +638,24 @@ namespace Fusee.Engine
         #region Fields
 
         /// <summary>
-        /// The _width
+        /// The Width
         /// </summary>
-        protected internal int _width;
+        protected internal int BaseWidth;
+
         /// <summary>
-        /// The _height
+        /// The Height
         /// </summary>
-        protected internal int _height;
+        protected internal int BaseHeight;
+
+        /// <summary>
+        /// The Top Position
+        /// </summary>
+        protected internal int BaseTop;
+
+        /// <summary>
+        /// The Left Position
+        /// </summary>
+        protected internal int BaseLeft;
 
         #endregion
 
@@ -730,8 +779,8 @@ namespace Fusee.Engine
         {
             _renderCanvasImp = renderCanvasImp;
             
-            _renderCanvasImp._width = Width;
-            _renderCanvasImp._height = Height;
+            _renderCanvasImp.BaseWidth = Width;
+            _renderCanvasImp.BaseHeight = Height;
         }
 
         #endregion
@@ -774,8 +823,8 @@ namespace Fusee.Engine
         {
             if (_renderCanvasImp != null)
             {
-                _renderCanvasImp._width = Width;
-                _renderCanvasImp._height = Height;
+                _renderCanvasImp.BaseWidth = Width;
+                _renderCanvasImp.BaseHeight = Height;
                 _renderCanvasImp.DoResize();
             }
 
