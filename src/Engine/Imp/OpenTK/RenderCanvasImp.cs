@@ -263,11 +263,20 @@ namespace Fusee.Engine
                 {
                     // Free other state (managed objects).
                 }
+
                 // Free your own state (unmanaged objects).
-                _context.Dispose();
-                _context = null;
-                _wi.Dispose();
-                _wi = null;
+                if (_context != null)
+                {
+                    _context.Dispose();
+                    _context = null;
+                }
+
+                if (_wi != null)
+                {
+                    _wi.Dispose();
+                    _wi = null;
+                }
+
                 _disposed = true;
             }
         }
