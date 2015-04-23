@@ -169,13 +169,12 @@ namespace Examples.WinFormsFusee
             }
         }
 
-
         public override int Width
         {
             get { return BaseWidth; }
             set
             {
-                BaseWidth = value + 200;
+                BaseWidth = value;
                 _parent.SetSize(BaseWidth, BaseHeight);
             }
         }
@@ -195,7 +194,7 @@ namespace Examples.WinFormsFusee
             get { return BaseTop; }
             set
             {
-                BaseTop = value - 50;
+                BaseTop = value;
                 _parent.SetDesktopLocation(BaseLeft, BaseTop);
             }
         }
@@ -205,7 +204,7 @@ namespace Examples.WinFormsFusee
             get { return BaseLeft; }
             set
             {
-                BaseLeft = value - 100;
+                BaseLeft = value;
                 _parent.SetDesktopLocation(BaseLeft, BaseTop);
             }
         }

@@ -38,14 +38,10 @@ namespace Fusee.Engine
         /// <value>
         /// The width.
         /// </value>
-        /// <exception cref="System.NotImplementedException">Cannot (yet) set width on RenderContextWindowImp</exception>
         public virtual int Width
         {
             get { return BaseWidth; }
-            set
-            {
-                throw new NotImplementedException("Cannot (yet) set width on RenderContextWindowImp");
-            }
+            set { BaseWidth = value; }
         }
 
         /// <summary>
@@ -54,14 +50,10 @@ namespace Fusee.Engine
         /// <value>
         /// The height.
         /// </value>
-        /// <exception cref="System.NotImplementedException">Cannot (yet) set height on RenderContextWindowImp</exception>
         public virtual int Height        
         {
             get { return BaseHeight; }
-            set
-            {
-                throw new NotImplementedException("Cannot (yet) set height on RenderContextWindowImp");
-            }
+            set { BaseHeight = value; }
         }
 
         /// <summary>
@@ -70,14 +62,10 @@ namespace Fusee.Engine
         /// <value>
         /// The left position.
         /// </value>
-        /// <exception cref="System.NotImplementedException">Cannot (yet) set position on RenderContextWindowImp</exception>
         public virtual int Left
         {
             get { return BaseLeft; }
-            set
-            {
-                throw new NotImplementedException("Cannot (yet) set position on RenderContextWindowImp");
-            }
+            set { BaseLeft = value; }
         }
 
         /// <summary>
@@ -86,14 +74,10 @@ namespace Fusee.Engine
         /// <value>
         /// The top position.
         /// </value>
-        /// <exception cref="System.NotImplementedException">Cannot (yet) set position on RenderContextWindowImp</exception>
         public virtual int Top
         {
             get { return BaseTop; }
-            set
-            {
-                throw new NotImplementedException("Cannot (yet) set position on RenderContextWindowImp");
-            }
+            set { BaseTop = value; }
         }
 
         /// <summary>
@@ -123,7 +107,6 @@ namespace Fusee.Engine
                 return _deltaFrameTime;
             }
         }
-
 
         /// <summary>
         /// Gets or sets a value indicating whether [vertical synchronize].
