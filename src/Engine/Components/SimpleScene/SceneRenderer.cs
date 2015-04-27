@@ -6,6 +6,11 @@ using Fusee.Serialization;
 
 namespace Fusee.Engine.SimpleScene
 {
+
+    /// <summary>
+    /// Axis-Aligned Bounding Box Calculator. Use instances of this class to calculate axis-aligned bounding boxes
+    /// on scenes, list of scene nodes or individual scene nodes. Calculations always include any child nodes.
+    /// </summary>
     public class AABBCalculator : SceneVisitor
     {
         public class AABBState : VisitorState
@@ -23,31 +28,67 @@ namespace Fusee.Engine.SimpleScene
             }
         }
 
-        private SceneContainer _sc;
+        //private SceneContainer _sc;
+        private IEnumerable<SceneNodeContainer> _sncList;
         private AABBState _state = new AABBState();
         private bool _boxValid;
         private AABBf _result;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AABBCalculator"/> class.
+        /// </summary>
+        /// <param name="sc">The scene container to calculate an axis-aligned bounding box for.</param>
         public AABBCalculator(SceneContainer sc)
         {
-            _sc = sc;
+            _sncList = sc.Children;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AABBCalculator"/> class.
+        /// </summary>
+        /// <param name="sncList">The list of scene nodes to calculate an axis-aligned bounding box for.</param>
+        public AABBCalculator(IEnumerable<SceneNodeContainer> sncList)
+        {
+            _sncList = sncList;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AABBCalculator"/> class.
+        /// </summary>
+        /// <param name="snc">A single scene node to calculate an axis-aligned bounding box for.</param>
+        public AABBCalculator(SceneNodeContainer snc)
+        {
+            _sncList = SceneVisitorHelpers.SingleRootEnumerable(snc);
+        }
+
+        /// <summary>
+        /// Performs the calculation and returns the resulting box on the object(s) passed in the constructor. Any calculation
+        /// always includes a full traversal over all child nodes.
+        /// </summary>
+        /// <returns>The resulting axis-aligned bounding box.</returns>
         public AABBf? GetBox()
         {
-            Traverse(_sc.Children);
+            Traverse(_sncList);
             if (_boxValid)
                 return _result;
             return null;
         }
 
         #region Visitors
+        /// <summary>
+        /// Do not call. Used for internal traversal purposes only
+        /// </summary>
+        /// <param name="transform">The transform component.</param>
         [VisitMethod]
         public void OnTransform(TransformComponent transform)
         {
             _state.ModelView *= transform.Matrix();
         }
- 
+
+        /// <summary>
+        /// Do not call. Used for internal traversal purposes only
+        /// </summary>
+        /// <param name="meshComponent">The mesh component.</param>
         [VisitMethod]
         public void OnMesh(MeshComponent meshComponent)
         {
@@ -89,7 +130,11 @@ namespace Fusee.Engine.SimpleScene
     {
     }
 
-    
+
+    /// <summary>
+    /// Use a Scene Renderer to traverse a scene hierarchy (made out of scene nodes and components) in order
+    /// to have each visited element contribute to the result rendered against a given render context.
+    /// </summary>
     public class SceneRenderer : SceneVisitor
     {
         #region Traversal information
