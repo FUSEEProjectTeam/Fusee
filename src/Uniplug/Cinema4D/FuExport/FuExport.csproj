@@ -31,18 +31,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="C4d, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(C4d_DIR)\plugins\ManagedPlugIn\x64\C4d.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Fusee.Math.Core, Version=0.5.0.0, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Bin\Debug\Fusee.Math.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Fusee.SerializationContainer">
-      <HintPath>..\..\..\..\Bin\Debug\Fusee.SerializationContainer.dll</HintPath>
-    </Reference>
     <Reference Include="Fusee.SerializationSerializer">
       <HintPath>..\..\..\..\Bin\Debug\Fusee.SerializationSerializer.dll</HintPath>
     </Reference>
@@ -84,6 +72,20 @@
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>ManifestFile.cs</LastGenOutput>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Math\Core\Math.Core.csproj">
+      <Project>{e95fa1c8-6491-4b4b-bbe1-eda6b16b2c6a}</Project>
+      <Name>Math.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Serialization\SerializationContainer.csproj">
+      <Project>{b7fac89a-4e75-4eac-bbc3-bbdb89c94b8a}</Project>
+      <Name>SerializationContainer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\C4d\C4d.csproj">
+      <Project>{6bc54c31-aa63-4f56-9675-df866a64cc03}</Project>
+      <Name>C4d</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

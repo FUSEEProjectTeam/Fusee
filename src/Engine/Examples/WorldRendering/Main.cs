@@ -1,10 +1,10 @@
-﻿using System.IO;
-using Fusee.Engine;
+﻿using Fusee.Engine;
 using Fusee.Math;
 
 namespace Examples.WorldRendering
 {
-    [FuseeApplication(Name = "World Rendering", Description = "Shows some application of texture functionality inlcuding text rendering.")]
+    [FuseeApplication(Name = "World Rendering",
+        Description = "A sample application showing texture functionality inlcuding text on texture rendering.")]
     public class WorldRendering : RenderCanvas
     {
         #region Shader
@@ -66,7 +66,7 @@ namespace Examples.WorldRendering
             _world = new World(RC);
 
             // load mesh as geometry
-            var geo1 = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Cube.obj.model"));
+            var geo1 = MeshReader.LoadGeometry("Assets/Cube.obj.model");
 
             // create and set shader
             var sp = RC.CreateShader(VsSimpleTexture, PsSimpleTexture);

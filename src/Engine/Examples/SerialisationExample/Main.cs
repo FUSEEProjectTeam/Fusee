@@ -1,12 +1,12 @@
-﻿using System.IO;
+﻿using System.Diagnostics;
+using System.IO;
 using Fusee.Engine;
 using Fusee.Math;
-using System.Diagnostics;
-
 
 namespace Examples.SerialisationExample
 {
-    [FuseeApplication(Name = "Serialisation Example", Description = "Example of Mesh loading via MeshReader and Protobuf.")]
+    [FuseeApplication(Name = "Serialisation Example",
+        Description = "A sample application to show a new way of mesh loading via MeshReader and protobuf.")]
     public class SerialisationExample : RenderCanvas
     {
         private FuseeSerializer _ser;
@@ -18,8 +18,8 @@ namespace Examples.SerialisationExample
 
         private readonly float4x4 _mtxCam = float4x4.LookAt(0, 200, 500, 0, 0, 0, 0, 1, 0);
         private const float RotationSpeed = -1.0f;
-        private float _smoothRotation = 0;
-        private bool _isCurrentlyLoading = false;
+        private float _smoothRotation;
+        private bool _isCurrentlyLoading;
 
         public override void Init()
         {
@@ -30,7 +30,8 @@ namespace Examples.SerialisationExample
             RC.SetShaderParam(_colorParam, new float4(1, 0, 0, 1));
             _watch = new Stopwatch();
             _ser = new FuseeSerializer();
-            Debug.WriteLine("Serialisation Example started. \nPress F1 to load Mesh using MeshReader. \nPress F2 to load Mesh using Protobuf.");
+            Debug.WriteLine(
+                "Serialisation Example started. \nPress F1 to load Mesh using MeshReader. \nPress F2 to load Mesh using Protobuf.");
 
             // Example of how to save a Mesh with protobuf to file.
             /*Mesh temp = MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
@@ -55,7 +56,7 @@ namespace Examples.SerialisationExample
 
             if (_currentMesh != null)
             {
-                _smoothRotation += RotationSpeed * (float)Time.Instance.DeltaTime;
+                _smoothRotation += RotationSpeed*(float) Time.Instance.DeltaTime;
                 RC.ModelView = _mtxCam * float4x4.CreateRotationY(_smoothRotation);
                 RC.Render(_currentMesh);
             }
@@ -87,7 +88,7 @@ namespace Examples.SerialisationExample
             _watch.Start();
             using (var file = File.OpenRead(@"Assets/Teapot.protobuf.model"))
             {
-                _currentMesh = _ser.Deserialize(file, null, typeof(Mesh)) as Mesh;
+                _currentMesh = _ser.Deserialize(file, null, typeof (Mesh)) as Mesh;
             }
             _watch.Stop();
             Debug.WriteLine("Mesh loaded using protobuf in " + _watch.ElapsedMilliseconds + "ms");
@@ -100,7 +101,7 @@ namespace Examples.SerialisationExample
             // is called when the window is resized
             RC.Viewport(0, 0, Width, Height);
 
-            var aspectRatio = Width / (float)Height;
+            var aspectRatio = Width/(float) Height;
             RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 10000);
         }
 
@@ -109,6 +110,5 @@ namespace Examples.SerialisationExample
             var app = new SerialisationExample();
             app.Run();
         }
-
     }
 }

@@ -1,15 +1,19 @@
-﻿using System.IO;
-using Fusee.Engine;
+﻿using Fusee.Engine;
 using Fusee.KeyFrameAnimation;
 using Fusee.Math;
 using Fusee.SceneManagement;
 
 namespace Examples.KeyframeAnimationTest
 {
+    [FuseeApplication(Name = "KeyframeAnimation",
+        Description = "A sample application to show FUSEE's KeyFrameAnimation system.")]
     public class KeyframeAnimationTest : RenderCanvas
     {
-        private SceneEntity _wuerfel;
+        private SceneManager _sceneManager;
+        private SceneEntity _sphere;
+
         private Camera _camera;
+
         private Channel<float3> _channel2;
         private Channel<float4> _channel1;
 
@@ -17,19 +21,32 @@ namespace Examples.KeyframeAnimationTest
 
         public override void Init()
         {
-            SceneManager.RC = RC;
-            var stativ = new SceneEntity("stativ", new ActionCode());
+            _sceneManager = new SceneManager();
+            _sceneManager.AttachToContext(RC);
+
             var dir = new DirectionalLight(new float3(0, 10, -1), new float4(1, 1, 1, 1), new float4(1, 1, 1, 1),
                 new float4(1, 1, 1, 1), new float3(0, 0, 0), 0);
+
+            var stativ = new SceneEntity("stativ", new ActionCode())
+            {
+                Transform =
+                {
+                    GlobalPosition = new float3(0, 0, 100)
+                }
+            };
+
             stativ.AddComponent(dir);
+
+            _sceneManager.AddSceneEntity(stativ);
+
             _camera = new Camera(stativ);
-            stativ.transform.GlobalPosition = new float3(0, 0, 100);
-            SceneManager.Manager.AddSceneEntity(stativ);
             _camera.Resize(Width, Height);
-            Geometry wuerfelGeo = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Sphere.obj.model"));
-            _wuerfel = new SceneEntity("wuerfel", new Material(Shaders.GetSpecularShader(RC)),
-                new Renderer(wuerfelGeo));
-            SceneManager.Manager.AddSceneEntity(_wuerfel);
+
+            Geometry sohGeo = MeshReader.LoadGeometry("Assets/Sphere.obj.model");
+            _sphere = new SceneEntity("sphere", new SphereMaterial(MoreShaders.GetDiffuseColorShader(RC)),
+                new Renderer(sohGeo));
+
+            _sceneManager.AddSceneEntity(_sphere);
 
             _channel2 = new Channel<float3>(Lerp.Float3Lerp);
             _channel1 = new Channel<float4>(Lerp.Float4Lerp, new float4(0.5f, 0.5f, 0.5f, 0.5f));
@@ -67,12 +84,12 @@ namespace Examples.KeyframeAnimationTest
             _channel2.AddKeyframe(key60);
 
             _myAnim.AddAnimation(_channel1, RC, "ClearColor");
-            _myAnim.AddAnimation(_channel2, _wuerfel, "transform.GlobalPosition");
+            _myAnim.AddAnimation(_channel2, _sphere, "Transform.GlobalPosition");
         }
 
         public override void RenderAFrame()
         {
-            SceneManager.Manager.Traverse(this);
+            _sceneManager.Traverse(this);
 
             _myAnim.Animate();
         }

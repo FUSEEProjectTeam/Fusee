@@ -13,14 +13,14 @@ namespace Examples.SolarSystem
             sp = shaderProgram;
         }
 
-        public PlanetMaterial(ShaderProgram shaderProgram, string texturePath)
+        public PlanetMaterial(RenderContext rc, ShaderProgram shaderProgram, string texturePath)
         {
             sp = shaderProgram;
 
             TextureParam = sp.GetShaderParam("texture1");
 
-            var image = SceneManager.RC.LoadImage(texturePath);
-            Tex = SceneManager.RC.CreateTexture(image);
+            var image = rc.LoadImage(texturePath);
+            Tex = rc.CreateTexture(image);
         }
 
         public override void Update(RenderContext renderContext)

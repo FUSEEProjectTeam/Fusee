@@ -229,6 +229,11 @@ namespace Fusee.Engine
             get { return _instance ?? (_instance = new Network()); }
         }
 
+        internal void Dispose()
+        {
+            _instance = null;
+        }
+
         [JSExternal]
         private INetworkMsg FirstMessage()
         {
@@ -236,6 +241,5 @@ namespace Fusee.Engine
         }
 
         #endregion
-
     }
 }

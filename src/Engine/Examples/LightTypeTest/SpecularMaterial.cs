@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Fusee.Engine;
-using Fusee.Math;
+﻿using Fusee.Engine;
 using Fusee.SceneManagement;
 
 namespace Examples.LightTypeTest
@@ -19,14 +14,15 @@ namespace Examples.LightTypeTest
             sp = shaderProgram;
         }
 
-        public SpecularMaterial(ShaderProgram shaderProgram, string texturepath)
+        public SpecularMaterial(RenderContext rc, ShaderProgram shaderProgram, string texturepath)
         {
             sp = shaderProgram;
             Textureparam = sp.GetShaderParam("texture1");
             SpecularLevel = sp.GetShaderParam("specularLevel");
             Shininess = sp.GetShaderParam("shininess");
-            ImageData Image = SceneManager.RC.LoadImage(texturepath);
-            Tex = SceneManager.RC.CreateTexture(Image);
+
+            ImageData image = rc.LoadImage(texturepath);
+            Tex = rc.CreateTexture(image);
         }
 
         public override void Update(RenderContext renderContext)
@@ -35,7 +31,6 @@ namespace Examples.LightTypeTest
             renderContext.SetShaderParamTexture(Textureparam, Tex);
             renderContext.SetShaderParam(Shininess, 16.0f);
             renderContext.SetShaderParam(SpecularLevel, 256.0f);
-
         }
     }
 }

@@ -2,36 +2,34 @@ Fusee is licensed under the MIT license (see below).
 
 -------------------------------------------------------------------------------
 
-Fusee contains freely available open source software and assets. They are 
-governed by their respective license terms and conditions. As the time of
-writing, these components are released under:
+Fusee contains freely available open source software and assets. They are governed
+by their respective license terms and conditions. As the time of writing, these
+components are released under:
 
-- OpenTK - http://www.opentk.com/ - MIT - 12/02/2015
-- JSIL - http://www.jsil.org/ - MIT/X11
-- NUnit - http://www.nunit.org/ - based on zlib/libpng
-- SFML - http://www.sfml-dev.org/ - zlib/libpng
-- OpenAL - http://connect.creativelabs.com/openal/default.aspx - LGPL
-- libsndfile - http://www.mega-nerd.com/libsndfile/ - LGPL
-- libmpg123 - http://www.mpg123.de/ - LGPL 2.1
-- SoundJS - http://www.createjs.com/#!/SoundJS - MIT
-- protobuf - https://code.google.com/p/protobuf/ - BSD New/Simplified
-- protobuf-net - https://code.google.com/p/protobuf-net/ - Apache License 2.0
-- Bullet Physics - http://bulletphysics.org/ - zlib license
-- Lidgren - https://code.google.com/p/lidgren-network-gen3/ - MIT
-- SharpFont - https://github.com/Robmaister/SharpFont - MIT
-- FreeType - http://www.freetype.org/license.html - FTL / GPL 2.0
-- opentype.js - https://github.com/nodebox/opentype.js - MIT
-- SlimDX - http://slimdx.org/ - MIT/X11
-
+- Aforge - http://www.aforgenet.com/ - LGPL v3 / GPL v3 | Version: 2.2.5
+- Bullet Physics - http://bulletphysics.org/ - zlib license | Version:
 - Cabin.ttf - http://www.google.com/fonts/specimen/Cabin - SIL Open Font License 1.1
-
+- FreeType - http://www.freetype.org/license.html - FTL / GPL 2.0 | Version: 2.5.5
+- JSIL - http://www.jsil.org/ - MIT/X11 | Version: git commit 736344
+- Libsndfile - http://www.mega-nerd.com/libsndfile/ - LGPL | Version:
+- Libmpg123 - http://www.mpg123.de/ - LGPL 2.1 | Version:
+- Lidgren - https://github.com/lidgren/lidgren-network-gen3 - MIT | Version: git commit 5df02d
+- NUnit - http://www.nunit.org/ - based on zlib/libpng | Version: 3.0.0 Under Development
+- OpenTK - http://www.opentk.com/ - MIT | Version: git commit 95d677
+- Opentype.js - https://github.com/nodebox/opentype.js - MIT | Version: git commit effe26
+- Protobuf - https://code.google.com/p/protobuf/ - BSD New/Simplified | Version:
+- Protobuf-net - https://code.google.com/p/protobuf-net/ - Apache License 2.0 | Version:
+- SFML - http://www.sfml-dev.org/ - zlib/libpng | Version:
+- SlimDX - http://slimdx.org/ - MIT/X11 | Version:
+- SharpFont - https://github.com/Robmaister/SharpFont - MIT | Version: git commit 7f0e43
+- SoundJS - http://www.createjs.com/#!/SoundJS - MIT | Version: 0.6.0
 
 -------------------------------------------------------------------------------
 
 
 The MIT License (MIT)
 
-Copyright (c) 2015 FuseeProjectTeam
+Copyright (c) 2014 FuseeProjectTeam
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -69,3 +67,92 @@ required.
 2. Altered source versions must be plainly marked as such, and must not be
 misrepresented as being the original software.
 3. This notice may not be removed or altered from any source distribution.
+
+-------------------------------------------------------------------------------
+
+-----------------------------------------------------------
+SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
+-----------------------------------------------------------
+
+PREAMBLE
+The goals of the Open Font License (OFL) are to stimulate worldwide
+development of collaborative font projects, to support the font creation
+efforts of academic and linguistic communities, and to provide a free and
+open framework in which fonts may be shared and improved in partnership
+with others.
+
+The OFL allows the licensed fonts to be used, studied, modified and
+redistributed freely as long as they are not sold by themselves. The
+fonts, including any derivative works, can be bundled, embedded,
+redistributed and/or sold with any software provided that any reserved
+names are not used by derivative works. The fonts and derivatives,
+however, cannot be released under any other type of license. The
+requirement for fonts to remain under this license does not apply
+to any document created using the fonts or their derivatives.
+
+DEFINITIONS
+"Font Software" refers to the set of files released by the Copyright
+Holder(s) under this license and clearly marked as such. This may
+include source files, build scripts and documentation.
+
+"Reserved Font Name" refers to any names specified as such after the
+copyright statement(s).
+
+"Original Version" refers to the collection of Font Software components as
+distributed by the Copyright Holder(s).
+
+"Modified Version" refers to any derivative made by adding to, deleting,
+or substituting -- in part or in whole -- any of the components of the
+Original Version, by changing formats or by porting the Font Software to a
+new environment.
+
+"Author" refers to any designer, engineer, programmer, technical
+writer or other person who contributed to the Font Software.
+
+PERMISSION & CONDITIONS
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of the Font Software, to use, study, copy, merge, embed, modify,
+redistribute, and sell modified and unmodified copies of the Font
+Software, subject to the following conditions:
+
+1) Neither the Font Software nor any of its individual components,
+in Original or Modified Versions, may be sold by itself.
+
+2) Original or Modified Versions of the Font Software may be bundled,
+redistributed and/or sold with any software, provided that each copy
+contains the above copyright notice and this license. These can be
+included either as stand-alone text files, human-readable headers or
+in the appropriate machine-readable metadata fields within text or
+binary files as long as those fields can be easily viewed by the user.
+
+3) No Modified Version of the Font Software may use the Reserved Font
+Name(s) unless explicit written permission is granted by the corresponding
+Copyright Holder. This restriction only applies to the primary font name as
+presented to the users.
+
+4) The name(s) of the Copyright Holder(s) or the Author(s) of the Font
+Software shall not be used to promote, endorse or advertise any
+Modified Version, except to acknowledge the contribution(s) of the
+Copyright Holder(s) and the Author(s) or with their explicit written
+permission.
+
+5) The Font Software, modified or unmodified, in part or in whole,
+must be distributed entirely under this license, and must not be
+distributed under any other license. The requirement for fonts to
+remain under this license does not apply to any document created
+using the Font Software.
+
+TERMINATION
+This license becomes null and void if any of the above conditions are
+not met.
+
+DISCLAIMER
+THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
+OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL THE
+COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
+DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
+OTHER DEALINGS IN THE FONT SOFTWARE.

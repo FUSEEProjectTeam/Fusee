@@ -1519,6 +1519,12 @@ namespace Fusee.Math
 
         #endregion
 
+        /// <summary>
+        /// Gets or sets the Converter object. Has the ability to convert a string to a double3.
+        /// </summary>
+        /// <value>
+        /// The parse property.
+        /// </value>
         public static Converter<string, double3> Parse { get; set; }
     }
 }

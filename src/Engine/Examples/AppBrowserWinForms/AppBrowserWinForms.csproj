@@ -63,21 +63,29 @@
     <Compile Include="WinformsHost.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\Face.obj.model">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Assets\Teapot.obj.model">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\Common\Common.csproj">
       <Project>{DFD770F6-4222-4255-AAE0-DCACDC7B21EB}</Project>
       <Name>Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Components\KeyFrameAnimation\KeyFrameAnimation.csproj">
+      <Project>{394fe54b-7891-4c5b-af0e-8dcc9f2d3cba}</Project>
+      <Name>KeyFrameAnimation</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Core\Core.csproj">
       <Project>{1228EB3F-8BCC-453F-8A2E-D9246495A118}</Project>
       <Name>Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Imp\OpenTK\OpenTK.csproj">
+      <Project>{f7ad2bb5-d2b0-4697-bddb-4cc26152a6b6}</Project>
+      <Name>OpenTK</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\LinqForGeometry\LinqForGeometry.Core\LinqForGeometry.Core.csproj">
+      <Project>{dffdb3a9-2429-4e47-b65c-e2c0f3f66146}</Project>
+      <Name>LinqForGeometry.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\LinqForGeometry\LinqForGeometry.ExternalModules\LinqForGeometry.ExternalModules.csproj">
+      <Project>{f8bd0fda-0ebd-44f1-967e-607b7279e10f}</Project>
+      <Name>LinqForGeometry.ExternalModules</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -90,9 +98,8 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Fusee.Engine.Imp.OpenTK, Version=0.5.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Bin\Debug\Fusee.Engine.Imp.OpenTK.dll</HintPath>
+    <Reference Include="FuseeSerializer">
+      <HintPath>..\..\..\..\ExternalBinaries\protobuf\FuseeSerializer.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
@@ -117,5 +124,5 @@
     <Exec Condition=" '$(OS)' != 'Windows_NT' And Exists('$(OutputPath)') " Command="rm '$(OutputPath)' -r -f" />
   </Target>
   <Import Project="$(SolutionDir)/Fusee_Windows.targets" Condition="'$(PostBuildEvent)' == '' And '$(OS)' == 'Windows_NT' " />
-  <Import Project="$(SolutionDir)/Fusee_Linux.targets" Condition="'$(PostBuildEvent)' == '' And '$(OS)' != 'Windows_NT' " />
+  <Import Project="$(SolutionDir)/Fusee_Unix.targets" Condition="'$(PostBuildEvent)' == '' And '$(OS)' != 'Windows_NT' " />
 </Project>

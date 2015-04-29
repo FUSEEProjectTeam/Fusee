@@ -3,7 +3,8 @@ using Fusee.Math;
 
 namespace Examples.ShaderDemo
 {
-    // ShaderDemo
+    [FuseeApplication(Name = "ShaderDemo",
+        Description = "A sample application showing different kinds of built-in shaders.")]
     public class ShaderDemo : RenderCanvas
     {
         // angle variables

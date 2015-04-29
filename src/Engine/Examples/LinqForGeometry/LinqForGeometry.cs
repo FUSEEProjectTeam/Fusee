@@ -9,8 +9,6 @@
 	Mr. Prof. W. Walter
 */
 
-using System;
-using System.Diagnostics;
 using Fusee.Engine;
 using Fusee.Math;
 using Geometry = LinqForGeometry.Core.Geometry;
@@ -25,6 +23,8 @@ namespace Examples.LinqForGeometry
     /// You want to use the transformation algorithms fusee provides to manipulate data.
     /// The here shown transformation algorithms are not ment to be used every frame in an engine. They are just examples for whats possible with the data structure.
     /// </summary>
+    [FuseeApplication(Name = "LinqForGeometry",
+        Description = "A sample application showing FUSEE's LingForGeometry data structure.")]
     public class LinqForGeometry : RenderCanvas
     {
         #region ShaderDefinition

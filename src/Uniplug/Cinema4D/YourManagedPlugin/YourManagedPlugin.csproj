@@ -22,26 +22,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>$(C4D_DIR)\plugins\XPressoXport\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="C4d, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\..\Program Files\MAXON\CINEMA 4D R16\plugins\ManagedPlugIn\x64\C4d.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Fusee.Math.Conversion">
-      <HintPath>..\..\..\..\..\..\..\..\Program Files\MAXON\CINEMA 4D R16\plugins\ManagedPlugIn\x64\Fusee.Math.Conversion.dll</HintPath>
-    </Reference>
-    <Reference Include="Fusee.Math.Core">
-      <HintPath>..\..\..\..\Bin\Debug\Fusee.Math.Core.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -58,6 +39,20 @@
     <Content Include="res\YourLogoPattern.tif">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Math\Conversion\Conversion.csproj">
+      <Project>{23be5303-b821-4a19-9a9c-c498b3d1f0ad}</Project>
+      <Name>Conversion</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Math\Core\Math.Core.csproj">
+      <Project>{e95fa1c8-6491-4b4b-bbe1-eda6b16b2c6a}</Project>
+      <Name>Math.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\C4d\C4d.csproj">
+      <Project>{6bc54c31-aa63-4f56-9675-df866a64cc03}</Project>
+      <Name>C4d</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

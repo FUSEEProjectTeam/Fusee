@@ -289,6 +289,11 @@ namespace Fusee.Engine
             _keysUp.Clear();
         }
 
+        internal void Dispose()
+        {
+            _instance = null;
+        }
+
         /// <summary>
         ///     Provides the Instance of the Input Class.
         /// </summary>

@@ -34,7 +34,7 @@ namespace Examples.VideoTextureExample
 
             _meshCube = MeshReader.LoadMesh(@"Assets/Cube.obj.model");
 
-            _spTexture = MoreShaders.GetTextureShader(RC);
+            _spTexture = Shaders.GetTextureShader(RC);
 
             _textureParam = _spTexture.GetShaderParam("texture1");
 

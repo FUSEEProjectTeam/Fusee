@@ -4,7 +4,8 @@ using Fusee.Math;
 
 namespace Examples.CubeAndTiles
 {
-    [FuseeApplication(Name = "Cube & Tiles", Description = "Shows an entire game including user input, object texturing, and sound.")]
+    [FuseeApplication(Name = "Cube & Tiles",
+        Description = "Shows an entire game including user input, object texturing, and sound.")]
     public class CubeAndTiles : RenderCanvas
     {
         #region CubeAndTiles Shader
