@@ -41,8 +41,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="sfmlNET.Audio">
-      <HintPath>..\..\..\..\ExternalBinaries\SFML\sfmlNET.Audio.dll</HintPath>
+    <Reference Include="sfmlnet-audio-2">
+      <HintPath>..\..\..\..\ExternalBinaries\SFML\sfmlnet-audio-2.dll</HintPath>
+    </Reference>
+    <Reference Include="sfmlnet-system-2">
+      <HintPath>..\..\..\..\ExternalBinaries\SFML\sfmlnet-system-2.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

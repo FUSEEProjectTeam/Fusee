@@ -1,10 +1,9 @@
-﻿#define MP3Warning
-
+﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using SFML.Audio;
+using SFML.System;
 
 namespace Fusee.Engine
 {
@@ -25,8 +24,8 @@ namespace Fusee.Engine
         {
             _allStreams = new List<AudioStream>();
 
-            Listener.Direction = new Vector3F(0, 0, -0.1f);
-            Listener.Position = new Vector3F(0, 0, 0.1f);
+            Listener.Direction = new Vector3f(0, 0, -0.1f);
+            Listener.Position = new Vector3f(0, 0, 0.1f);
         }
         #endregion
 
@@ -57,11 +56,8 @@ namespace Fusee.Engine
         /// <returns>An IAudioStream instance is returned if the file path was correctly resolved.</returns>
         public IAudioStream LoadFile(string fileName, bool streaming)
         {
-#if MP3Warning
             if (Path.GetExtension(fileName) == ".mp3")
-                Debug.WriteLine(
-                    "Warning: Using mp3 files requires a lot of memory and might require a license. Please consider using ogg files instead.");
-#endif
+                throw new Exception("MP3 files are not supported. Please consider using OGG files instead.");
 
             // sound already loaded?
             SoundBuffer tmpSndBuffer = null;

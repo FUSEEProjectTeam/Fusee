@@ -1,4 +1,5 @@
 ﻿using SFML.Audio;
+using SFML.System;
 
 namespace Fusee.Engine
 {
@@ -202,7 +203,7 @@ namespace Fusee.Engine
             var maxVal = System.Math.Min(100, val);
             maxVal = System.Math.Max(maxVal, -100);
 
-            var tmpPos = new Vector3F(maxVal, 0, 0);
+            var tmpPos = new Vector3f(maxVal, 0, 0);
 
             if (IsStream)
                 _outputStream.Position = tmpPos;
