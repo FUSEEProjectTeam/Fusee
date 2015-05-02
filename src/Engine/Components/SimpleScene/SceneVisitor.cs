@@ -23,6 +23,12 @@ namespace Fusee.Engine.SimpleScene
         {
             yield return root;
         }
+
+        internal static IEnumerable<SceneNodeContainer> SingleRootEnumerable(SceneNodeContainer root)
+        {
+            yield return root;
+        }
+    
     }
 
     internal class VisitorCallerFactory
