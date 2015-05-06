@@ -879,14 +879,9 @@ namespace Fusee.Engine
             _currentShaderParams.FUSEE_ITMV = _currentShader.GetShaderParam("FUSEE_ITMV");
             _currentShaderParams.FUSEE_ITP = _currentShader.GetShaderParam("FUSEE_ITP");
             _currentShaderParams.FUSEE_ITMVP = _currentShader.GetShaderParam("FUSEE_ITMVP");
-   
-            // Todo: Remove multiple Bones per shader !!!
-            //for (int i = 0; i < 10; i++)
-            //{
-            //    if (_currentShaderParams.FUSEE_BONES == null)
-            //        _currentShaderParams.FUSEE_BONES = new IShaderParam[10];
+            
+            // Bones
             _currentShaderParams.FUSEE_BONES = _currentShader.GetShaderParam("FUSEE_BONES[0]");
-           // }
 
             for (int i = 0; i < 8; i++)
             {

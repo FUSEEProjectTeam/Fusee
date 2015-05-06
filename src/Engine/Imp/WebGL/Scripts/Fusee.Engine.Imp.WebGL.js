@@ -1309,24 +1309,25 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
         }
     );
 
- $.Method({ Static: false, Public: true, Virtual: true }, "SetShaderParamI",
-new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $.Int32]),
-function SetShaderParamI(param, val) {
-this.gl.uniform1i(param.handle, val);
-}
-);
+     $.Method({ Static: false, Public: true, Virtual: true }, "SetShaderParamI",
+        new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $.Int32]),
+        function SetShaderParamI(param, val) {
+        this.gl.uniform1i(param.handle, val);
+        }
+    );
+
     $.Method({ Static: false, Public: true }, "SetShaderParamMtx4fArray",
-        new JSIL.MethodSignature(null, [$WebGLImp.TypeRef("Fusee.Engine.IShaderParam"), $jsilcore.TypeRef("System.Array", [$fuseeMath.TypeRef("Fusee.Math.float4x4")])]),
+        new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $jsilcore.TypeRef("System.Array", [$fuseeMath.TypeRef("Fusee.Math.float4x4")])]),
         function SetShaderParamMtx4fArray(param, val) {
             // Row order notation
             //   var flatMatrix = new Float32Array(val.ToArray());
             //   this.gl.uniformMatrix4fv(param.handle, false, flatMatrix);
             // Column order notation
             // Other parameters than "false" for "Transpose" are forbidden...
-            //var valT = $fuseeMath.Fusee.Math.float4x4.Transpose(val.MemberwiseClone());
-            //var flatMatrix = new Float32Array(valT.ToArray());
-            //this.gl.uniformMatrix4fv(param.handle, false, flatMatrix);
-            alert("JESUS!");
+            var valT = $fuseeMath.Fusee.Math.float4x4.Transpose(val.MemberwiseClone());
+            var flatMatrix = new Float32Array(valT.ToArray());
+            this.gl.uniformMatrix4fv(param.handle, false, flatMatrix);
+            //alert("JESUS!");
         }
     );
     $.Method({ Static: false, Public: true }, "SetShaderParamTexture",
@@ -1863,7 +1864,7 @@ this.gl.uniform1i(param.handle, val);
     );
 
     $.Method({ Static: false, Public: true }, "SetBoneIndices",
-        new JSIL.MethodSignature(null, [$WebGLImp.TypeRef("Fusee.Engine.IMeshImp"), $jsilcore.TypeRef("System.Array", [$fuseeMath.TypeRef("Fusee.Math.float4")])]),
+        new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.IMeshImp"), $jsilcore.TypeRef("System.Array", [$fuseeMath.TypeRef("Fusee.Math.float4")])]),
         function SetBoneIndices(mr, boneIndices) {
             if (boneIndices == null || boneIndices.length == 0) {
                 throw new Error("boneIndices must not be null or empty");
@@ -1893,7 +1894,7 @@ this.gl.uniform1i(param.handle, val);
     );
 
     $.Method({ Static: false, Public: true }, "SetBoneWeights",
-        new JSIL.MethodSignature(null, [$WebGLImp.TypeRef("Fusee.Engine.IMeshImp"), $jsilcore.TypeRef("System.Array", [$fuseeMath.TypeRef("Fusee.Math.float4")])]),
+        new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.IMeshImp"), $jsilcore.TypeRef("System.Array", [$fuseeMath.TypeRef("Fusee.Math.float4")])]),
         function SetBoneWeights(mr, boneWeights) {
             if (boneWeights == null || boneWeights.length == 0) {
                 throw new Error("boneWeights must not be null or empty");
