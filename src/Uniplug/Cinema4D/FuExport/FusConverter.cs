@@ -547,7 +547,7 @@ namespace FuExport
 
                 if (!_textureFiles.Contains(texture))
                 {
-                    matChannel.InitTexture(new InitRenderStruct(_polyDoc));
+                    matChannel.InitTexture(new InitRenderStruct(_doc));
                     using (BaseBitmap bitmap = matChannel.GetBitmap())
                     {
                         if (bitmap != null)
