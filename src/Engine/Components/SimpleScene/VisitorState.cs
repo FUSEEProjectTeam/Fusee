@@ -133,7 +133,9 @@ namespace Fusee.Engine.SimpleScene
         /// If the stack depth grows bigger, the stack automatically doubles its capacity internally.</param>
         public CollapsingStateStack(int capacity = _defaultCapacity)
         {
+            // The _impStack keeps the actual top-of-stack values. 
             _impStack = new StateStack<T>(capacity);
+            // The _countStack keeps the number of "Push" operations that occured between two Tos alterations
             _countStack = new StateStack<int>(capacity);
         }
 
@@ -200,7 +202,11 @@ namespace Fusee.Engine.SimpleScene
             {
                 if (_countStack.Tos > 0)
                 {
+                    // delete one "Push" without Tos alteration because we are just about to alter the Tos
+                    _countStack.Tos--;
+                    // Do a real push on values
                     _impStack.Push();
+                    // Also push the count stack and reset it to zero to start counting Pushes without Tos alteration again
                     _countStack.Push();
                     _countStack.Tos = 0;
                 }

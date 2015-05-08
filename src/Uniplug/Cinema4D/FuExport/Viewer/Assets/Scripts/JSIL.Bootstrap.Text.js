@@ -359,8 +359,30 @@ JSIL.StringFromByteArray = function (bytes, startIndex, length) {
   if (arguments.length < 3)
     length = bytes.length;
 
-  for (var i = 0; i < length; i++)
-    result += String.fromCharCode(bytes[i + startIndex]);
+  for (var i = 0; i < length; i++) {
+    var ch = bytes[i + startIndex] | 0;
+    
+    result += String.fromCharCode(ch);
+  }
+
+  return result;
+};
+
+JSIL.StringFromNullTerminatedByteArray = function (bytes, startIndex, length) {
+  var result = "";
+
+  if (arguments.length < 2)
+    startIndex = 0;
+  if (arguments.length < 3)
+    length = bytes.length;
+
+  for (var i = 0; i < length; i++) {
+    var ch = bytes[i + startIndex] | 0;
+    if (ch === 0)
+      break;
+
+    result += String.fromCharCode(ch);
+  }
 
   return result;
 };
@@ -377,6 +399,21 @@ JSIL.StringFromCharArray = function (chars, startIndex, length) {
   } else {
     return chars.join("");
   }
+};
+
+JSIL.StringFromNullTerminatedPointer = function (chars) {
+  var result = "";
+
+  var i = 0;
+  while (true) {
+    var ch = chars.getElement(i++) | 0;
+    if (ch === 0)
+      break;
+
+    result += String.fromCharCode(ch);
+  }
+
+  return result;
 };
 
 JSIL.ImplementExternals(
@@ -400,6 +437,21 @@ JSIL.ImplementExternals(
     );
 
     $.Method({Static: false, Public: true }, ".ctor",
+      new JSIL.MethodSignature(null, [$jsilcore.TypeRef("JSIL.Pointer", [$jsilcore.TypeRef("System.SByte")])], [], $jsilcore),
+      function (bytes) {
+        return new String(JSIL.StringFromNullTerminatedPointer(bytes));
+      }
+    );
+
+    $.Method({Static: false, Public: true }, ".ctor",
+      new JSIL.MethodSignature(null, [$jsilcore.TypeRef("JSIL.Pointer", [$jsilcore.TypeRef("System.Char")])], [], $jsilcore),
+      function (chars) {
+        // FIXME: Is this correct? Do char pointers yield integers or string literals?
+        return new String(JSIL.StringFromNullTerminatedPointer(chars));
+      }
+    );
+
+    $.Method({Static: false, Public: true }, ".ctor",
       new JSIL.MethodSignature(null, ["System.Char", "System.Int32"], [], $jsilcore),
       function (ch, length) {
         var arr = new Array(length);
@@ -417,6 +469,13 @@ JSIL.ImplementExternals(
     );
 
     var compareInternal = function (lhs, rhs, comparison) {
+      if (lhs == null && rhs == null)
+        return 0;
+      else if (lhs == null)
+        return -1;
+      else if (rhs == null)
+        return 1;
+        
       switch (comparison.valueOf()) {
         case 1: // System.StringComparison.CurrentCultureIgnoreCase:
         case 3: // System.StringComparison.InvariantCultureIgnoreCase:
@@ -488,9 +547,6 @@ JSIL.ImplementExternals(
       }
     );
 
-    //                             index   alignment      valueFormat    escape
-    var formatRegex = new RegExp("{([0-9]*)(?:,([-0-9]*))?(?::([^}]*))?}|{{|}}|{|}", "g");
-
     $.Method({Static:true , Public:true }, "Format", 
       new JSIL.MethodSignature($jsilcore.TypeRef("System.String"), [$jsilcore.TypeRef("System.Array") /* AnyType[] */ ], []),
       function (format) {
@@ -499,51 +555,20 @@ JSIL.ImplementExternals(
         if (arguments.length === 1)
           return format;
 
-        var match = null;
         var values = Array.prototype.slice.call(arguments, 1);
 
         if ((values.length == 1) && JSIL.IsArray(values[0]))
           values = values[0];
 
-        var matcher = function (match, index, alignment, valueFormat, offset, str) {
-          if (match === "{{")
-            return "{";
-          else if (match === "}}")
-            return "}";
-          else if ((match === "{") || (match === "}"))
-            throw new System.FormatException("Input string was not in a correct format.");
-
-          index = parseInt(index);
-
-          var value = values[index];
-
-          if (alignment || valueFormat) {
-            return JSIL.NumberToFormattedString(value, alignment, valueFormat);
-
-          } else {
-
-            if (typeof (value) === "boolean") {
-              if (value)
-                return "True";
-              else
-                return "False";
-            } else if (value === null) {
-              return "";
-            } else {
-              return String(value);
-            }
-          }
-        };
-
-        return format.replace(formatRegex, matcher);
+        return JSIL.$FormatStringImpl(format, values);
       }
     );
 
     $.Method({Static:true, Public:true }, "IndexOfAny", 
       new JSIL.MethodSignature($jsilcore.TypeRef("System.Int32"), [$jsilcore.TypeRef("System.Array", [$jsilcore.System.Char]), $jsilcore.TypeRef("System.Int32")], []),
-      function (str, chars) {
+      function (str, chars, startIndex) {
         var result = null;
-        for (var i = 0; i < chars.length; i++) {
+        for (var i = startIndex || 0; i < chars.length; i++) {
           var index = str.indexOf(chars[i]);
           if ((result === null) || (index < result))
             result = index;
@@ -554,7 +579,7 @@ JSIL.ImplementExternals(
         else
           return result;
       }
-    );
+    ); 
 
     $.Method({Static:true , Public:true }, "IsNullOrEmpty", 
       new JSIL.MethodSignature($jsilcore.TypeRef("System.Boolean"), [$jsilcore.TypeRef("System.String")], []),
@@ -1460,6 +1485,7 @@ JSIL.ImplementExternals("System.Text.StringBuilder", function ($) {
     (JSIL.MethodSignature.Void), 
     function _ctor () {
       this._str = "";
+      this._capacity = 0;
     }
   );
 
@@ -1467,6 +1493,7 @@ JSIL.ImplementExternals("System.Text.StringBuilder", function ($) {
     (new JSIL.MethodSignature(null, [$.Int32], [])), 
     function _ctor (capacity) {
       this._str = "";
+      this._capacity = capacity;
     }
   );
 
@@ -1474,6 +1501,7 @@ JSIL.ImplementExternals("System.Text.StringBuilder", function ($) {
     (new JSIL.MethodSignature(null, [$.String], [])), 
     function _ctor (value) {
       this._str = value;
+      this._capacity = value.length;
     }
   );
 
@@ -1481,6 +1509,7 @@ JSIL.ImplementExternals("System.Text.StringBuilder", function ($) {
     (new JSIL.MethodSignature(null, [$.String, $.Int32], [])), 
     function _ctor (value, capacity) {
       this._str = value;
+      this._capacity = capacity;
     }
   );
 
@@ -1502,10 +1531,14 @@ JSIL.ImplementExternals("System.Text.StringBuilder", function ($) {
       }
 
     }
+
+    self._capacity = Math.max(self._capacity, self._str.length);
   };
 
   var appendNumber = function (self, num) {
     self._str += String(num);
+
+    self._capacity = Math.max(self._capacity, self._str.length);
   };
 
   $.Method({Static:false, Public:true }, "Append", 
@@ -1523,6 +1556,8 @@ JSIL.ImplementExternals("System.Text.StringBuilder", function ($) {
     function Append (value, startIndex, charCount) {
       for (var i = 0; i < charCount; i++)
         this._str += value[startIndex + i];
+
+      this._capacity = Math.max(this._capacity, this._str.length);
     }
   );
 
@@ -1555,6 +1590,7 @@ JSIL.ImplementExternals("System.Text.StringBuilder", function ($) {
     (new JSIL.MethodSignature($.Type, [$.Boolean], [])), 
     function Append (value) {
       this._str += (value ? "True" : "False");
+      this._capacity = Math.max(this._capacity, this._str.length);
     }
   );
 
@@ -1640,6 +1676,8 @@ JSIL.ImplementExternals("System.Text.StringBuilder", function ($) {
     function Append (value) {
       for (var i = 0; i < value.length; i++)
         this._str += value[i];
+
+      this._capacity = Math.max(this._capacity, this._str.length);
     }
   );
 
@@ -1712,12 +1750,28 @@ JSIL.ImplementExternals("System.Text.StringBuilder", function ($) {
     }
   );
 
+  $.Method({Static:false, Public:true }, "set_Capacity", 
+    (new JSIL.MethodSignature(null, [$.Int32], [])), 
+    function set_Capacity (value) {
+      // FIXME: What happens if value is lower than the length of the current contents?
+      this._capacity = Math.max(value | 0, this._str.length);
+    }
+  );
+
+  $.Method({Static:false, Public:true }, "get_Capacity", 
+    (new JSIL.MethodSignature($.Int32, [], [])), 
+    function get_Capacity () {
+      return this._capacity;
+    }
+  );
+
   var replace = function (self, oldText, newText, startIndex, count) {
     var prefix = self._str.substr(0, startIndex);
     var suffix = self._str.substr(startIndex + count);
     var region = self._str.substr(startIndex, count);
     var result = prefix + region.split(oldText).join(newText) + suffix;
     self._str = result;
+    self._capacity = Math.max(self._capacity, self._str.length);
     return self;
   };
 
@@ -1776,6 +1830,16 @@ JSIL.ImplementExternals("System.Text.StringBuilder", function ($) {
     (new JSIL.MethodSignature($.Char, [$.Int32], [])), 
     function get_Chars (i) {
       return this._str[i];
+    }
+  );
+
+  $.Method({Static:false, Public:true }, "set_Chars", 
+    (new JSIL.MethodSignature(null, [$.Int32, $.Char], [])), 
+    function set_Chars (i, value) {
+      this._str = 
+        this._str.substr(0, i) +
+        value +
+        this._str.substr(i + 1);
     }
   );
 
@@ -2109,6 +2173,20 @@ JSIL.ImplementExternals("System.Char", function ($) {
         (charCode === 0x20) ||
         (charCode === 0xA0) || 
         (charCode === 0x85));
+    }
+  );
+  
+  $.Method({Static:true , Public:true }, "ToLowerInvariant", 
+    new JSIL.MethodSignature($.Char, [$.Char], []), 
+    function ToLowerInvariant (c) {
+      return c.toLowerCase();
+    }
+  );
+  
+  $.Method({Static:true , Public:true }, "ToUpperInvariant", 
+    new JSIL.MethodSignature($.Char, [$.Char], []), 
+    function ToLowerInvariant (c) {
+      return c.toUpperCase();
     }
   );
 });

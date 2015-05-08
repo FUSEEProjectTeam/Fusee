@@ -6,7 +6,6 @@ var jsilConfig = {
 	localStorage: true,
 	readOnlyStorage: true,
 	contentRoot: "./",
-	xna: "3",
 
 	showProgressBar: true,
 	premultipliedAlpha: true,
