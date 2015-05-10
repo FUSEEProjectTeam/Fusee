@@ -244,15 +244,18 @@ namespace Fusee.Engine.SimpleScene
 
         private void AddLightVec(StringBuilder ps)
         {
-            ps.Append("    vec3 LDir = ");
-            ps.Append(LightDirectionName);
-            ps.Append(";\n");
-            ps.Append("    vec3 LColor = ");
-            ps.Append(LightColorName);
-            ps.Append(";\n");
-            ps.Append("    float LIntensity = ");
-            ps.Append(LightIntensityName);
-            ps.Append(";\n");
+            if (_hasDiffuse || _hasSpecular)
+            {
+                ps.Append("    vec3 LDir = ");
+                ps.Append(LightDirectionName);
+                ps.Append(";\n");
+                ps.Append("    vec3 LColor = ");
+                ps.Append(LightColorName);
+                ps.Append(";\n");
+                ps.Append("    float LIntensity = ");
+                ps.Append(LightIntensityName);
+                ps.Append(";\n");
+            }
         }
 
         private void AddNormalVec(StringBuilder ps)

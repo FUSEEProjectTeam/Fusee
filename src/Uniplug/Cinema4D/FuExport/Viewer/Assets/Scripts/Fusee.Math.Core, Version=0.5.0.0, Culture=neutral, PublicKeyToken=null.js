@@ -1519,8 +1519,8 @@ JSIL.DeclareNamespace("Fusee.Math");
   };
 
   function double3_Cross$12 ($left, $right) {
-    var right = new JSIL.BoxedVariable($right);
-    var left = new JSIL.BoxedVariable($left);
+    var right = new JSIL.BoxedVariable($right.MemberwiseClone());
+    var left = new JSIL.BoxedVariable($left.MemberwiseClone());
     var result = new JSIL.BoxedVariable(new $thisType());
     $thisType.Cross(/* ref */ left, /* ref */ right, /* ref */ result);
     return result.get();
@@ -4150,10 +4150,11 @@ JSIL.DeclareNamespace("Fusee.Math");
       throw $S03().Construct("zNear");
     }
     var num = +zNear * (Math.tan((0.5 * +fovy)));
+    var num2 = -num;
     $thisType.CreatePerspectiveOffCenter(
-      -num * +aspect, 
+      num2 * +aspect, 
       num * +aspect, 
-      -num, 
+      num2, 
       num, 
       zNear, 
       zFar, 
@@ -4190,10 +4191,11 @@ JSIL.DeclareNamespace("Fusee.Math");
       throw $S03().Construct("zNear");
     }
     var num = +zNear * (Math.tan((0.5 * +fovy)));
+    var num2 = -num;
     $thisType.CreatePerspectiveOffCenter_ROW(
-      -num * +aspect, 
+      num2 * +aspect, 
       num * +aspect, 
-      -num, 
+      num2, 
       num, 
       zNear, 
       zFar, 
@@ -4252,9 +4254,11 @@ JSIL.DeclareNamespace("Fusee.Math");
     if (+zNear >= +zFar) {
       throw $S03().Construct("zNear");
     }
+    var m = +(((2 * +zNear) / (+right - +left)));
     var m2 = +(((2 * +zNear) / (+top - +bottom)));
+    var m3 = +(((+left + +right) / (+left - +right)));
     var m4 = +(((+top + +bottom) / (+bottom - +top)));
-    result.set($S02().Construct(+(((2 * +zNear) / (+right - +left))), 0, 0, 0, 0, m2, 0, 0, +(((+left + +right) / (+left - +right))), m4, +(((+zFar + +zNear) / (+zFar - +zNear))), 1, 0, 0, +((-((2 * +zFar) * +zNear) / (+zFar - +zNear))), 0));
+    result.set($S02().Construct(m, 0, 0, 0, 0, m2, 0, 0, m3, m4, +(((+zFar + +zNear) / (+zFar - +zNear))), 1, 0, 0, +((-((2 * +zFar) * +zNear) / (+zFar - +zNear))), 0));
   };
 
   function double4x4_CreatePerspectiveOffCenterRH (left, right, bottom, top, zNear, zFar, /* ref */ result) {
@@ -12323,7 +12327,7 @@ JSIL.DeclareNamespace("Fusee.Math");
   };
 
   function QuaternionD_Normalize$11 ($q) {
-    var q = new JSIL.BoxedVariable($q.MemberwiseClone());
+    var q = new JSIL.BoxedVariable($q);
     var result = new JSIL.BoxedVariable(new $thisType());
     $thisType.Normalize(/* ref */ q, /* ref */ result);
     return result.get();

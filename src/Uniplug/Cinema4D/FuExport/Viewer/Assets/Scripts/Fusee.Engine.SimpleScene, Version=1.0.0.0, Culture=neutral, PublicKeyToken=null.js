@@ -3821,12 +3821,12 @@ JSIL.MakeDelegate("Fusee.Engine.SimpleScene.SceneVisitorHelpers+VisitComponentMe
     $.ExternalMethod({Static:true , Public:true }, "MakeComponentVisitor", 
       new JSIL.MethodSignature($asm03.TypeRef("Fusee.Engine.SimpleScene.SceneVisitorHelpers+VisitComponentMethod"), [$asm07.TypeRef("System.Reflection.MethodInfo")])
     )
-      .Attribute($asm11.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm10.TypeRef("JSIL.Meta.JSExternal"));
 
     $.ExternalMethod({Static:true , Public:true }, "MakeNodeVistor", 
       new JSIL.MethodSignature($asm03.TypeRef("Fusee.Engine.SimpleScene.SceneVisitorHelpers+VisitNodeMethod"), [$asm07.TypeRef("System.Reflection.MethodInfo")])
     )
-      .Attribute($asm11.TypeRef("JSIL.Meta.JSExternal"));
+      .Attribute($asm10.TypeRef("JSIL.Meta.JSExternal"));
 
     return function (newThisType) { $thisType = newThisType; }; 
   });
@@ -4034,15 +4034,17 @@ JSIL.MakeDelegate("Fusee.Engine.SimpleScene.SceneVisitorHelpers+VisitComponentMe
   };
 
   function ShaderCodeBuilder_AddLightVec (ps) {
-    $S01().CallVirtual("Append", null, ps, "    vec3 LDir = ");
-    $S01().CallVirtual("Append", null, ps, $thisType.get_LightDirectionName());
-    $S01().CallVirtual("Append", null, ps, ";\n");
-    $S01().CallVirtual("Append", null, ps, "    vec3 LColor = ");
-    $S01().CallVirtual("Append", null, ps, $thisType.get_LightColorName());
-    $S01().CallVirtual("Append", null, ps, ";\n");
-    $S01().CallVirtual("Append", null, ps, "    float LIntensity = ");
-    $S01().CallVirtual("Append", null, ps, $thisType.get_LightIntensityName());
-    $S01().CallVirtual("Append", null, ps, ";\n");
+    if (!(!this._hasDiffuse && !this._hasSpecular)) {
+      $S01().CallVirtual("Append", null, ps, "    vec3 LDir = ");
+      $S01().CallVirtual("Append", null, ps, $thisType.get_LightDirectionName());
+      $S01().CallVirtual("Append", null, ps, ";\n");
+      $S01().CallVirtual("Append", null, ps, "    vec3 LColor = ");
+      $S01().CallVirtual("Append", null, ps, $thisType.get_LightColorName());
+      $S01().CallVirtual("Append", null, ps, ";\n");
+      $S01().CallVirtual("Append", null, ps, "    float LIntensity = ");
+      $S01().CallVirtual("Append", null, ps, $thisType.get_LightIntensityName());
+      $S01().CallVirtual("Append", null, ps, ";\n");
+    }
   };
 
   function ShaderCodeBuilder_AddNormalVec (ps) {

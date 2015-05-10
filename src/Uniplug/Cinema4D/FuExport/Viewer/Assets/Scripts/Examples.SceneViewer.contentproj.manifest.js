@@ -17,5 +17,5 @@ contentManifest["Examples.SceneViewer.contentproj"] = [
     ["Script",	"WebSimpleScene.js",	{  "sizeBytes": 1558 }],
     ["Image",	"Assets/FuseeLogo150.png",	{  "sizeBytes": 19685 }],
     ["Font",	"Assets/Lato-Black.ttf",	{  "sizeBytes": 114588 }],
-    ["File",	"Assets/Model.fus",	{  "sizeBytes": 2415 }],
+    ["File",	"Assets/Model.fus",	{  "sizeBytes": 1000 }],
     ];
