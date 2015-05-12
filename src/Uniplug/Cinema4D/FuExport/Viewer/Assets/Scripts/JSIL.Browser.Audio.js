@@ -383,7 +383,7 @@ function loadNullSound (audioInfo, filename, data, onError, onDoneLoading) {
 
 function loadWebkitSound (audioInfo, filename, data, onError, onDoneLoading) {
   var handleError = function (text) {
-    JSIL.Host.warning("Error while loading '" + filename + "': " + text);
+    JSIL.WarningFormat("Error while loading '{0}': {1}", [filename, text]);
     return loadNullSound(audioInfo, filename, data, onError, onDoneLoading);
   };
 
@@ -421,7 +421,7 @@ function loadWebkitSound (audioInfo, filename, data, onError, onDoneLoading) {
 
 function loadStreamingSound (audioInfo, filename, data, onError, onDoneLoading) {
   var handleError = function (text) {
-    JSIL.Host.warning(text);
+    JSIL.WarningFormat("Error while loading '{0}': {1}", [filename, text]);
     return loadNullSound(audioInfo, filename, data, onError, onDoneLoading);
   };
 
@@ -450,7 +450,7 @@ function loadStreamingSound (audioInfo, filename, data, onError, onDoneLoading) 
 
 function loadBufferedHTML5Sound (audioInfo, filename, data, onError, onDoneLoading) {
   var handleError = function (text) {
-    JSIL.Host.warning(text);
+    JSIL.WarningFormat("Error while loading '{0}': {1}", [filename, text]);
     return loadNullSound(audioInfo, filename, data, onError, onDoneLoading);
   };
 
@@ -492,7 +492,7 @@ function loadBufferedHTML5Sound (audioInfo, filename, data, onError, onDoneLoadi
 
 function loadHTML5Sound (audioInfo, filename, data, onError, onDoneLoading) {
   var handleError = function (text) {
-    JSIL.Host.warning(text);
+    JSIL.WarningFormat("Error while loading '{0}': {1}", [filename, text]);
     return loadNullSound(audioInfo, filename, data, onError, onDoneLoading);
   };
 
@@ -558,7 +558,7 @@ function loadSoundGeneric (audioInfo, filename, data, onError, onDoneLoading) {
 };
 
 function initSoundLoader () {
-  var audioContextCtor = window.webkitAudioContext || window.mozAudioContext || window.AudioContext;
+  var audioContextCtor = window.mozAudioContext || window.AudioContext;
 
   var audioInfo = JSIL.CreateDictionaryObject($blobBuilderInfo);
 
@@ -627,19 +627,14 @@ function initSoundLoader () {
 				mimeType = format.mimetype;
 			}
 
-			if (i > 0)
-				compl = compl + "|";
+			mimeType = this.getMimeType(extension, mimeType);
 
-			compl = compl + jsilConfig.contentRoot.replace(/^(?:\.\/)+/, "") + filename + extension;
+			if (this.canPlayType(mimeType)) {
+			  if (outMimeType)
+			    outMimeType[0] = mimeType;
 
-			//mimeType = this.getMimeType(extension, mimeType);
-
-			//if (this.canPlayType(mimeType)) {
-			//  if (outMimeType)
-			//    outMimeType[0] = mimeType;
-
-			//  return jsilConfig.contentRoot + filename + extension;
-			//}
+			  return jsilConfig.contentRoot + filename + extension;
+			}
 		}
 
 		return compl;

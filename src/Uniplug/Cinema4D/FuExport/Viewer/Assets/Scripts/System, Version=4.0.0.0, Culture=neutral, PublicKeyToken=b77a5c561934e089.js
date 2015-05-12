@@ -5197,6 +5197,37 @@ JSIL.DeclareNamespace("System.Diagnostics");
   JSIL.MakeStaticClass("System.Diagnostics.Debug", true, [], function ($interfaceBuilder) {
     $ = $interfaceBuilder;
 
+	$.ExternalMethod({Static:true , Public:true }, "WriteLine", 
+      JSIL.MethodSignature.Action($.String)
+    )
+      .Attribute($asm04.TypeRef("System.Diagnostics.ConditionalAttribute"), function () { return ["DEBUG"]; })
+      .Attribute($asm06.TypeRef("__DynamicallyInvokableAttribute"));
+
+    $.ExternalMethod({Static:true , Public:true }, "WriteLine", 
+      JSIL.MethodSignature.Action($.Object)
+    )
+      .Attribute($asm04.TypeRef("System.Diagnostics.ConditionalAttribute"), function () { return ["DEBUG"]; })
+      .Attribute($asm06.TypeRef("__DynamicallyInvokableAttribute"));
+
+    $.ExternalMethod({Static:true , Public:true }, "WriteLine", 
+      new JSIL.MethodSignature(null, [$.String, $.String])
+    )
+      .Attribute($asm04.TypeRef("System.Diagnostics.ConditionalAttribute"), function () { return ["DEBUG"]; });
+
+    $.ExternalMethod({Static:true , Public:true }, "WriteLine", 
+      new JSIL.MethodSignature(null, [$.Object, $.String])
+    )
+      .Attribute($asm04.TypeRef("System.Diagnostics.ConditionalAttribute"), function () { return ["DEBUG"]; });
+
+    $.ExternalMethod({Static:true , Public:true }, "WriteLine", 
+      new JSIL.MethodSignature(null, [$.String, $jsilcore.TypeRef("System.Array", [$.Object])])
+    )
+      .Attribute($asm04.TypeRef("System.Diagnostics.ConditionalAttribute"), function () { return ["DEBUG"]; })
+      .Attribute($asm06.TypeRef("__DynamicallyInvokableAttribute"))
+      .Parameter(1, "args", function (_) {
+          _.Attribute($asm04.TypeRef("System.ParamArrayAttribute"))
+        });
+	
     return function (newThisType) { $thisType = newThisType; }; 
   })
     .Attribute($customSys.TypeRef("__DynamicallyInvokableAttribute"));

@@ -848,7 +848,11 @@ function finishLoading () {
         var cb = item[2];
 
         // Ensure that we initialize the JSIL runtime before constructing asset objects.
-        if ((item[0] != "Script") && (item[0] != "Library")) {
+        if (
+          (item[0] != "Script") && 
+          (item[0] != "Library") &&
+          (item[0] != "NativeLibrary")
+        ) {
           initIfNeeded();
         }
 
@@ -985,8 +989,12 @@ function pollAssetQueue () {
 
       switch (lhs[0]) {
         case "Library":
+        case "NativeLibrary":
           lhsTypeIndex = 0;
           break;
+        case "NativeLibrary":
+          lhsTypeIndex = 0;
+          break;        
         case "Script":
           lhsTypeIndex = 1;
           break;        
@@ -994,8 +1002,12 @@ function pollAssetQueue () {
 
       switch (rhs[0]) {
         case "Library":
+        case "NativeLibrary":
           rhsTypeIndex = 0;
           break;
+        case "NativeLibrary":
+          rhsTypeIndex = 0;
+          break;        
         case "Script":
           rhsTypeIndex = 1;
           break;

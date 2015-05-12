@@ -12,7 +12,8 @@
     throw new Error("JSIL.js loaded twice");
 
   var JSIL = {
-    __FullName__: "JSIL"
+    __FullName__: "JSIL",
+    __NativeModules__: {}
   };
 
   Object.defineProperty(
@@ -140,6 +141,44 @@ var $jsilloaderstate = {
     this.loadScript(libraryRoot + "JSIL.Shell.Loaders.js");
   };
 
+  var priorModule = JSIL.GlobalNamespace.Module;
+
+  JSIL.BeginLoadNativeLibrary = function (name) {
+    var priorModule = JSIL.GlobalNamespace.Module;
+    JSIL.GlobalNamespace.Module = Object.create(null);
+  };
+
+  JSIL.EndLoadNativeLibrary = function (name) {
+    var key = name;
+    var lastIndex = Math.max(key.lastIndexOf("/"), key.lastIndexOf("\\"));
+    if (lastIndex >= 0)
+      key = key.substr(lastIndex + 1);
+
+    // HACK
+    key = key.replace(".emjs", ".dll").replace(".js", ".dll").toLowerCase();
+
+    if (JSIL.__NativeModules__[key])
+      throw new Error("A module named '" + key + "' is already loaded.");
+
+    var module;
+    if (typeof(JSIL.GlobalNamespace.Module) == "function") {
+      // compiled with emcc -s MODULARIZE=1
+      module = JSIL.GlobalNamespace.Module();
+    } else {
+      module = JSIL.GlobalNamespace.Module;
+    }
+
+    // HACK: FIXME: We need a global module to use as a fallback for scenarios
+    //  where we don't know which module a call is interacting with
+    if (!JSIL.__NativeModules__["__global__"])
+      JSIL.__NativeModules__["__global__"] = module;
+
+    JSIL.__NativeModules__[key] = module;
+
+    JSIL.GlobalNamespace.Module = priorModule;
+    priorModule = null;
+  };
+
 
   var environments = {
     "browser": Environment_Browser,
@@ -192,7 +231,7 @@ var $jsilloaderstate = {
   environment.loadScript(libraryRoot + "Polyfills.js");
     
   // fusee custom
-  environment.loadScript(libraryRoot + "soundjs-0.5.0.min.js");
+  environment.loadScript(libraryRoot + "soundjs.min.js");
   environment.loadScript(libraryRoot + "opentype.js");
 
   environment.loadScript(libraryRoot + "mersenne.js");
@@ -211,6 +250,7 @@ var $jsilloaderstate = {
   environment.loadScript(libraryRoot + "JSIL.Core.Reflection.js");
   environment.loadScript(libraryRoot + "JSIL.References.js");
   environment.loadScript(libraryRoot + "JSIL.Unsafe.js");
+  environment.loadScript(libraryRoot + "JSIL.PInvoke.js");
   environment.loadScript(libraryRoot + "JSIL.Bootstrap.js");
   environment.loadScript(libraryRoot + "JSIL.Bootstrap.Int64.js");
   environment.loadScript(libraryRoot + "JSIL.Bootstrap.DateTime.js");
