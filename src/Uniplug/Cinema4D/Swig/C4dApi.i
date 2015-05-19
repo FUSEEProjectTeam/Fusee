@@ -718,6 +718,7 @@ BaseMaterial *
 //////////////////////////////////////////////////////////////////
 // ge_prepass.h
 %rename (SERIALINFO_ENUM) SERIALINFO;
+%rename (CCURVE_ENUM) CCURVE;
 %ignore ToString;
 %ignore MaxonConvert;
 %include "ge_prepass.swig.h";
