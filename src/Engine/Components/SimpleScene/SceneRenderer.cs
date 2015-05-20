@@ -327,8 +327,6 @@ namespace Fusee.Engine.SimpleScene
                 boneArray[i] = _boneMap[weight.Joints[i]] * tmp;
             }
             _rc.Bones = boneArray;
-
-
         }
 
 

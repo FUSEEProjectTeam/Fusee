@@ -7,16 +7,16 @@ using Fusee.Xirkit;
 namespace Fusee.KeyFrameAnimation
 {
     /// <summary>
-    /// The Animation Class is capeable of storing and handling of diffrent Types Channels.
+    /// The Animation Class is capable of storing and handling different types of Channels.
     /// </summary>
     public class Animation
     {
         /// <summary>
-        /// The _channels List stores all Animation Channels that are deriffed from the ChannelBase Class.
+        /// The _channels List stores all Animation Channels that are derived from the ChannelBase Class.
         /// </summary>
         private List<ChannelBase> _channels = new List<ChannelBase>();
         /// <summary>
-        /// The _anim handler is a Xirkit Circuit that Connects the the Calculatet values to the corosponding Object.
+        /// The _anim handler is a Xirkit Circuit connecting the calculated values to the corresponding Object.
         /// </summary>
         private Circuit _animHandler = new Circuit();
 

@@ -9,6 +9,7 @@ namespace Fusee.Engine.SimpleScene
         private bool _hasDiffuse, _hasSpecular, _hasEmissive, _hasBump;
         private bool _hasDiffuseTexture, _hasSpecularTexture, _hasEmissiveTexture;
         private bool _hasWeightMap;
+        private int _nBones;
         private bool _normalizeNormals;
 
         /*
@@ -25,7 +26,14 @@ namespace Fusee.Engine.SimpleScene
         public ShaderCodeBuilder(MaterialComponent mc, MeshComponent mesh, WeightComponent wc = null)
         {
             if (wc != null)
+            {
                 _hasWeightMap = true;
+                _nBones = wc.Joints.Count;
+            }
+            else
+            {
+                _nBones = 0;
+            }
 
             float f1 = 1;
             f1.GetType();
@@ -122,7 +130,7 @@ namespace Fusee.Engine.SimpleScene
             }
                 
             if(_hasWeightMap)
-                vs.Append("  uniform mat4 FUSEE_BONES[25];\n");
+                vs.Append("  uniform mat4 FUSEE_BONES[" + _nBones + "];\n");
  
         }
 
