@@ -51,8 +51,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Math\Core\CoreTest.cs" />
-    <Compile Include="Math\Core\Double2Test.cs" />
+    <Compile Include="Math\Core\QuaternionTests.cs" />
     <Compile Include="Scene\Core\SimpleSceneTests.cs" />
     <Compile Include="Tests.cs" />
   </ItemGroup>

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using Fusee.Engine;
 
 namespace Fusee.KeyFrameAnimation
 {
@@ -173,7 +175,6 @@ namespace Fusee.KeyFrameAnimation
         /// <returns>The calculated value</returns>
         public TValue GetValueAt(float time)
         {
-
             TValue keyValue;
             if (_timeline.Count > 1)
             {
@@ -181,25 +182,17 @@ namespace Fusee.KeyFrameAnimation
 
                 for (int next = 1; next < _timeline.Count; next++)
                 {
-                    if (_timeline.ElementAt(next).Time > time && _timeline.ElementAt(next - 1).Time < time)
+                    if (_timeline.ElementAt(next - 1).Time <= time &&  time < _timeline.ElementAt(next).Time)
                     {
                         keyValue = _lerpIt(_timeline.ElementAt(next - 1).Value, _timeline.ElementAt(next).Value, _timeline.ElementAt(next).Time - _timeline.ElementAt(next - 1).Time, time - _timeline.ElementAt(next - 1).Time);
-
                         break;
                     }
                 }
             }
             else 
             {
-                try
-                {
-                keyValue = _timeline.ElementAt(0).Value;
-                }
-                catch(System.ArgumentOutOfRangeException )
-                {
-                    Console.WriteLine("There are no keyframes in the timeline, a standart value will be set.");
-                     keyValue = default(TValue);
-                }
+                Diagnostics.Log("Timeline is empty. Using default value");
+                keyValue = default(TValue);
             }
             _value = keyValue;
             return keyValue;

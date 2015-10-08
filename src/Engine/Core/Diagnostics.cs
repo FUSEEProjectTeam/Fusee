@@ -48,7 +48,10 @@ namespace Fusee.Engine
         [JSExternal]
         public static void Log(object o)
         {
-            Debug.Print(o.ToString());
+            if (o == null)
+                Debug.Print("<null>");
+            else
+                Debug.Print(o.ToString());
         }
 
         #endregion

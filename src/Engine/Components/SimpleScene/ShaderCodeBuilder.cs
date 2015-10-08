@@ -155,7 +155,12 @@ namespace Fusee.Engine.SimpleScene
                     vs.Append("    newVertex = (FUSEE_BONES[int(fuBoneIndex.w)] * vec4(fuVertex, 1.0)) * fuBoneWeight.w + newVertex;\n");
                     vs.Append("    newNormal = (FUSEE_BONES[int(fuBoneIndex.w)] * vec4(fuNormal, 0.0)) * fuBoneWeight.w + newNormal;\n");
 
-                    vs.Append("    vNormal = normalize(vec3(newNormal));\n");
+                    // At this point the normal is in World space - transform back to model space
+                    // TODO: Is it a hack to invert Model AND View? SHould we rather only invert MODEL (and NOT VIEW)??
+                    vs.Append("    vNormal = vec3(FUSEE_IMV * newNormal);\n");
+
+                    if (_normalizeNormals)
+                        vs.Append("    vNormal = normalize(vNormal);\n");
                 }                   
                 else
                 {

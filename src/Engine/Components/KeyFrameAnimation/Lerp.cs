@@ -3,7 +3,7 @@
 namespace Fusee.KeyFrameAnimation
 {
     /// <summary>
-    /// provides diffrent LerpFunctions that can be used in a channel. A Lerp Function represents a linear interpolataion between 2 points in a timeline.
+    /// provides different LerpFunctions that can be used in a channel. A Lerp Function represents a linear interpolataion between 2 points in a timeline.
     /// </summary>
     public static class Lerp
     {
