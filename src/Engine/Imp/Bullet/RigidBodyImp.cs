@@ -84,10 +84,10 @@ namespace Fusee.Engine
             }
             set
             {
-                var m = new Matrix();
-                m.set_Rows(3, new Vector4(value.x, value.y, value.z, 1));
                 var o = (RigidBodyImp)_rbi.UserObject;
-                o._rbi.CenterOfMassTransform.set_Rows(3, new Vector4(value.x, value.y, value.z, 1));
+                var transform = _rbi.CenterOfMassTransform;
+                transform.Origin = new Vector3(value.x, value.y, value.z);
+                o._rbi.CenterOfMassTransform = transform;
             }
         }
 
