@@ -62,21 +62,29 @@ namespace Fusee.Serialization
         public float4 Value;
     }
 
+    public enum LerpType
+    {
+        Lerp,
+        Slerp,  
+    }
+
 
     [ProtoContract]
     public class AnimationTrackContainer
     {
-
         [ProtoMember(1, AsReference = true)]
         public SceneComponentContainer SceneComponent;
 
         [ProtoMember(2)] 
         public string Property;
 
-        [ProtoMemberAttribute(3, AsReference = true)] 
+        [ProtoMember(3, AsReference = true)] 
         public Type KeyType;
 
-        [ProtoMemberAttribute(4, AsReference = true)]
+        [ProtoMember(5)]
+        public LerpType LerpType = LerpType.Lerp;
+
+        [ProtoMember(4, AsReference = true)]
         public List<AnimationKeyContainerBase> KeyFrames;
     }
 }

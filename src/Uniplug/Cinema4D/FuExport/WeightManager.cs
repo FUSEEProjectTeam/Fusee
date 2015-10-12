@@ -22,14 +22,16 @@ namespace FuExport
             _jointObjects = new Dictionary<long, SceneNodeContainer>();
         }
 
-        public void CheckOnJoint(SceneNodeContainer snc, BaseObject bo)
+        public bool CheckOnJoint(BaseObject bo, SceneNodeContainer snc)
         {
             CAJointObject jo = bo as CAJointObject;
             if (jo != null)
             {
                 snc.AddComponent(new BoneComponent());
                 _jointObjects.Add(jo.RefUID(), snc);
+                return true;
             }
+            return false;
         }
 
         public void AddWeightData(SceneNodeContainer snc, PolygonObject polyOb, CAWeightTag weightTag, IEnumerable<int> range)

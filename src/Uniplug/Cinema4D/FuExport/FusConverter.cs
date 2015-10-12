@@ -595,13 +595,19 @@ namespace FuExport
                     Rotation = new float3(-rotC4d.y, -rotC4d.x, -rotC4d.z),
                     Scale = (float3) ob.GetRelScale()
                 });
+
+                // See if this is a joint - if so, store it for later reference and also pass the information on 
+                // to SaveTracks to make it Slerp the rotations (instead of lerp)
+                bool isJoint = _weightManager.CheckOnJoint(ob, snc);
+                bool hasQuaternionTag = CheckOnQuaternionTag(ob);
+                
+
                 // Search for unpolygonized objects holding the animationtracks
-                if (SaveTracks(ob, snc))
+                if (SaveTracks(ob, snc, isJoint || hasQuaternionTag))
                 {
                     _animationsPresent = true;
                     isAnimRoot = true;
                 }
-                _weightManager.CheckOnJoint(snc, ob);
 
                 
                 VisitObject(ob, snc);
@@ -636,10 +642,65 @@ namespace FuExport
             return ret;
         }
 
-        private bool SaveTracks(BaseObject ob, SceneNodeContainer snc)
+        private bool CheckOnQuaternionTag(BaseObject ob)
+        {
+            // Iterate over the object's tags
+            for (BaseTag tag = ob.GetFirstTag(); tag != null; tag = tag.GetNext())
+            {
+                // In their sheer wisdom, the elders of the C4D SDK decided to not have a class of its own for the quaternion tag.
+                // Neither will the world need a constant declaration for the type...
+                int tagType = tag.GetType();
+                if (tagType == 100001740)
+                {
+                    BaseContainer data = tag.GetData();
+                    int ii = data.GetInt32(1001);  // QUAT_INTER (from tquaterninon.h)
+                    switch (ii)
+                    {
+                        case 1002: // INTER_SLERP, "Linear"
+                            break;
+                        case 1003: // INTER_SQUAD, "Spline"
+                            break;
+                        case 1004: // INTER_LOSCH, "Losch"
+                            break;
+                    }
+                    return true;
+
+                    /*
+                    for (int i = 0, id = 0; -1 != (id = data.GetIndexId(i)); i++)
+                    {
+                        if (data.GetType(id) == C4dApi.DA_LONG)
+                        {
+                            int ii = data.GetInt32(id);
+                            switch (ii)
+                            {
+                                case 1002: // INTER_SLERP,
+                                    break;
+                                case 1003: // INTER_SQUAD,
+                                    break;
+                                case 1004: // INTER_LOSCH,
+                                    break;
+                            }
+                        }
+                        if (data.GetType(id) == C4dApi.DA_REAL)
+                        {
+                            double d = data.GetFloat(id);
+                        }
+                        else if (data.GetType(id) == C4dApi.DA_VECTOR)
+                        {
+                            double3 v = data.GetVector(id);
+                        }
+                    }
+                    */
+                }
+            }
+            return false;
+        }
+
+        private bool SaveTracks(BaseObject ob, SceneNodeContainer snc, bool slerpRotation)
         {
 
             var builder = new TrackBuilder();
+            builder.LerpType = (slerpRotation) ? LerpType.Slerp : LerpType.Lerp;
             CTrack track = ob.GetFirstCTrack();
 
             // First occurence of animation tracks?

@@ -16,6 +16,8 @@ namespace FuExport
 
         public Dictionary<float, float3> ScaleKeys { get; set; }
 
+        public LerpType LerpType { get; set; }
+
 
         private List<AnimationKeyContainerBase> BuildFloat3Keys(Dictionary<float, float3> dictionary)
         {
@@ -183,7 +185,7 @@ namespace FuExport
         public void BuildTracks(SceneNodeContainer snc, List<AnimationTrackContainer> list)
         {
             TransformComponent transform = snc.GetTransform();
-
+            
             if (transform == null)
                 return;
 
@@ -194,7 +196,6 @@ namespace FuExport
                     Property = "Translation",
                     KeyType = typeof(float3),
                     KeyFrames = BuildFloat3Keys(TranslationKeys)
-
                 });
 
             if(RotationKeys != null)
@@ -203,8 +204,8 @@ namespace FuExport
                     SceneComponent = transform,
                     Property = "Rotation",
                     KeyType = typeof(float3),
+                    LerpType = this.LerpType,
                     KeyFrames = BuildFloat3Keys(RotationKeys)
-
                 });
 
             if(ScaleKeys != null)
@@ -214,7 +215,6 @@ namespace FuExport
                     Property = "Scale",
                     KeyType = typeof(float3),
                     KeyFrames = BuildFloat3Keys(ScaleKeys)
-
                 });
         }
 

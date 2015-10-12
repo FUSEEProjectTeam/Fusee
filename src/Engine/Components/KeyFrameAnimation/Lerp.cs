@@ -45,7 +45,7 @@ namespace Fusee.KeyFrameAnimation
         }
 
         /// <summary>
-        /// Lerp Function for Float3.
+        /// Lerp Function for float3 values. Linearly interpolates the three components independently.
         /// </summary>
         public static float3 Float3Lerp(float3 val1, float3 val2, float time1, float time2)
         {
@@ -54,6 +54,20 @@ namespace Fusee.KeyFrameAnimation
             values.y = val1.y + ((val2.y - val1.y) / time1) * time2;
             values.z = val1.z + ((val2.z - val1.z) / time1) * time2;
             return values;
+        }
+
+        /// <summary>
+        /// Slerp Function for float3 using quaternion interpolation. Useful if the given float3 values contain euler angles in Pitch(x)/Yaw(y)/Roll(z) order.
+        /// The euler angle set returned by this method is on the shortest spherical path between the two parameter euler angle sets.
+        /// Note that using linear interpolation <see cref="Float3Lerp"/> of angle values will NOT yield in a path lying on a great circle between the two parameters. Instead, using
+        /// linear interpolation, the interpolated values will describe a curve called loxodrome which spirals around the poles (due to gimbal lock). 
+        /// </summary>
+        public static float3 Float3QuaternionSlerp(float3 val1, float3 val2, float time1, float time2)
+        {
+            Quaternion q1 = Quaternion.EulerToQuaternion(val1);
+            Quaternion q2 = Quaternion.EulerToQuaternion(val2);
+            Quaternion res = Quaternion.Slerp(q1, q2, time2 / time1);
+            return Quaternion.QuaternionToEuler(res);
         }
 
         /// <summary>

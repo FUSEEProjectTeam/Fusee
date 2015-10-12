@@ -239,85 +239,26 @@ namespace Fusee.Engine.SimpleScene
                         }
                         else if (typeof(float3).IsAssignableFrom(t))
                         {
-                            // HACK: TODO: Handle rotations gracefully
-                            if (animTrackContainer.Property == "Rotation")
+                            Channel<float3>.LerpFunc lerpFunc;
+                            switch (animTrackContainer.LerpType)
                             {
-                                // Channel<float3> channel = new Channel<float3>(Lerp.Float3Lerp);
-                                Channel<float3> channel = new Channel<float3>((ea1, ea2, time1, time2) =>
-                                {
-                                    //return ea1;
-
-
-                                    //Quaternion q1 = Quaternion.EulerToQuaternion(ea1);
-                                    //var ea1back = Quaternion.QuaternionToEuler(q1);
-                                    // if (!(    (-MathHelper.PiOver2 <= ea1.x && ea1.x <= MathHelper.PiOver2)) )
-                                    //       && (-MathHelper.PiOver2 <= ea1.y && ea1.y <= MathHelper.PiOver2)
-                                    //       && (-MathHelper.PiOver2 <= ea1.z && ea1.z <= MathHelper.PiOver2)))
-                                    //    Diagnostics.Log("PITCH OUT OF PI/2 BOUNDS ");
-                                    //Diagnostics.Log("Qdiff: " + (ea1 - ea1back));*/
-
-                                    //return ea1back;
-
-
-
-
-                                    Quaternion q1 = Quaternion.EulerToQuaternion(ea1);
-                                    Quaternion q2 = Quaternion.EulerToQuaternion(ea2);
-                                    Quaternion res = Quaternion.Slerp(q1, q2, time2 / time1);
-                                    return Quaternion.QuaternionToEuler(res);
-
-                                    //return (ea1 + (ea2 - ea1)*(time2/time1));
-                                });
-
-                                // DEBUG QUATERNION LERP
-                                int iXM, iYM, iZM;
-                                AnimationKeyContainerFloat3 keyZero = (AnimationKeyContainerFloat3)animTrackContainer.KeyFrames[0];
-                                float3 valZero = keyZero.Value;
-                                AnimationKeyContainerFloat3 keyOne = (AnimationKeyContainerFloat3)animTrackContainer.KeyFrames[1];
-                                float3 valOne = keyOne.Value;
-                                float xRotMax = System.Math.Abs(valOne.x - valZero.x), yRotMax = System.Math.Abs(valOne.y - valZero.y), zRotMax = System.Math.Abs(valOne.z - valZero.z);
-                                valZero = valOne;
-                                for (int i = 2; i < animTrackContainer.KeyFrames.Count; i++)
-                                {
-                                    keyOne = (AnimationKeyContainerFloat3)animTrackContainer.KeyFrames[i];
-                                    valOne = keyOne.Value;
-
-                                    float xRotCur = System.Math.Abs(valOne.x - valZero.x), yRotCur = System.Math.Abs(valOne.y - valZero.y), zRotCur = System.Math.Abs(valOne.z - valZero.z);
-                                    if (xRotCur > xRotMax) { xRotMax = xRotCur; iXM = i; }
-                                    if (yRotCur > yRotMax) { yRotMax = yRotCur; iYM = i; }
-                                    if (zRotCur > zRotMax) { zRotMax = zRotCur; iZM = i; }
-
-                                    valZero = valOne;
-                                }
-                                // END DEBUG CODE
-
-                                foreach (AnimationKeyContainerFloat3 key in animTrackContainer.KeyFrames)
-                                {
-                                    // channel.AddKeyframe(new Keyframe<float3>(key.Time, CleanRotation(key.Value)));
-                                    channel.AddKeyframe(new Keyframe<float3>(key.Time, key.Value));
-                                }
-
-                                // DEBUG QUATERNION LERP
-                                var controlledNode = sc.Children.FindNodesWhereComponent<TransformComponent>(
-                                    scc => scc == animTrackContainer.SceneComponent)
-                                    .FirstOrDefault();
-                                // Diagnostics.Log(controlledNode == null? "<null>" : controlledNode.Name);
-                                //if (controlledNode.Name!= null && controlledNode.Name == "HipR")
-                                // END DEBUG CODE */
-
-                                    _animation.AddAnimation(channel, animTrackContainer.SceneComponent,
-                                    animTrackContainer.Property);
+                                case LerpType.Lerp:
+                                    lerpFunc = Lerp.Float3Lerp;
+                                    break;
+                                case LerpType.Slerp:
+                                    lerpFunc = Lerp.Float3QuaternionSlerp;
+                                    break;
+                                default:
+                                    throw new InvalidEnumArgumentException(nameof(animTrackContainer.LerpType), (int)animTrackContainer.LerpType, typeof(LerpType));
                             }
-                            else
+
+                            Channel<float3> channel = new Channel<float3>(lerpFunc);
+                            foreach (AnimationKeyContainerFloat3 key in animTrackContainer.KeyFrames)
                             {
-                                Channel<float3> channel = new Channel<float3>(Lerp.Float3Lerp);
-                                foreach (AnimationKeyContainerFloat3 key in animTrackContainer.KeyFrames)
-                                {
-                                    channel.AddKeyframe(new Keyframe<float3>(key.Time, key.Value));
-                                }
-                                _animation.AddAnimation(channel, animTrackContainer.SceneComponent,
-                                    animTrackContainer.Property);
+                                channel.AddKeyframe(new Keyframe<float3>(key.Time, key.Value));
                             }
+                            _animation.AddAnimation(channel, animTrackContainer.SceneComponent,
+                                animTrackContainer.Property);
                         }
                         else if (typeof(float4).IsAssignableFrom(t))
                         {
@@ -333,44 +274,6 @@ namespace Fusee.Engine.SimpleScene
                     }
                 }
             }
-        }
-
-        private float3 CleanRotation(float3 euler)
-        {
-            // First of all skip "unnecessary" full revolutions (TODO: fix this later if keys get bigger than full revolutions)
-            while (-MathHelper.Pi > euler.x) euler.x += 2.0f * MathHelper.Pi;
-            while ( euler.x > MathHelper.Pi) euler.x -= 2.0f * MathHelper.Pi;
-
-            while (-MathHelper.Pi > euler.y) euler.y += 2.0f * MathHelper.Pi;
-            while ( euler.y > MathHelper.Pi) euler.y -= 2.0f * MathHelper.Pi;
-
-            while (-MathHelper.Pi > euler.z) euler.z += 2.0f * MathHelper.Pi;
-            while ( euler.z > MathHelper.Pi) euler.z -= 2.0f * MathHelper.Pi;
-
-
-            // Then make sure that the pitch is within [-90, 90]
-            if (euler.x > MathHelper.PiOver2 || euler.x < -MathHelper.PiOver2)
-            {
-                // First fix the pitch (take the opposite angle of 180°
-                if (euler.x > MathHelper.PiOver2)
-                    euler.x = MathHelper.Pi - euler.x;
-                else
-                    euler.x = euler.x + MathHelper.Pi;
-
-                // Then perform a half turn on both Yaw and Roll. Choose the direction maintaining angle magnitudes < 180
-                if (euler.y > 0)
-                    euler.y -= MathHelper.Pi;
-                else
-                    euler.y += MathHelper.Pi;
-
-                if (euler.z > 0)
-                    euler.z -= MathHelper.Pi;
-                else
-                    euler.z += MathHelper.Pi;
-
-            }
-
-            return euler;
         }
 
         public void Animate()
