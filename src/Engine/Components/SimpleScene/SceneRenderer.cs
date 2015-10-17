@@ -249,7 +249,8 @@ namespace Fusee.Engine.SimpleScene
                                     lerpFunc = Lerp.Float3QuaternionSlerp;
                                     break;
                                 default:
-                                    throw new InvalidEnumArgumentException(nameof(animTrackContainer.LerpType), (int)animTrackContainer.LerpType, typeof(LerpType));
+                                    // C# 6throw new InvalidEnumArgumentException(nameof(animTrackContainer.LerpType), (int)animTrackContainer.LerpType, typeof(LerpType));
+                                    throw new InvalidEnumArgumentException("animTrackContainer.LerpType", (int)animTrackContainer.LerpType, typeof(LerpType));
                             }
 
                             Channel<float3> channel = new Channel<float3>(lerpFunc);
@@ -460,6 +461,36 @@ namespace Fusee.Engine.SimpleScene
             }
             else // Create Mesh with weightdata
             {
+                float4[] boneWeights = new float4[wc.WeightMap.Count];
+                float4[] boneIndices = new float4[wc.WeightMap.Count];
+
+                // Iterate over the vertices
+                for (int iVert = 0; iVert < wc.WeightMap.Count; iVert++)
+                {
+                    int nJoints = System.Math.Min(4, wc.WeightMap[iVert].VertexWeights.Count);
+                    for (int iJoint = 0; iJoint < nJoints; iJoint++)
+                    {
+                        boneWeights[iVert][iJoint] =  wc.WeightMap[iVert].VertexWeights[iJoint].Weight;
+                        boneIndices[iVert][iJoint] =  wc.WeightMap[iVert].VertexWeights[iJoint].JointIndex;
+                    }
+                    boneWeights[iVert].Normalize1();
+                }
+
+                rm = new Mesh()
+                {
+                    Colors = null,
+                    Normals = mc.Normals,
+                    UVs = mc.UVs,
+                    BoneIndices = boneIndices,
+                    BoneWeights = boneWeights,
+                    Vertices = mc.Vertices,
+                    Triangles = mc.Triangles
+                };
+
+
+
+
+                /*
                 // invert weightmap to handle it easier
                 float[,] invertedWeightMap = new float[wc.WeightMap[0].JointWeights.Count, wc.Joints.Count];
                 for (int i = 0; i < wc.WeightMap.Count; i++)
@@ -473,22 +504,39 @@ namespace Fusee.Engine.SimpleScene
                 float4[] boneWeights = new float4[invertedWeightMap.GetLength(0)];
                 float4[] boneIndices = new float4[invertedWeightMap.GetLength(0)];
 
-                for (int i = 0; i < invertedWeightMap.GetLength(0); i++)
+                // Contents of the invertedWeightMap:
+                // ----------------------------------
+                // Imagine the weight table as seen in 3d modelling programs, i.e. cinema4d;
+                // wij are values in the range between 0..1 and specify to which percentage 
+                // the vertex (i) is controlled by the bone (j).
+                //
+                //            bone 0   bone 1   bone 2   bone 3   ....  -> indexed by j
+                // vertex 0:   w00      w01      w02      w03
+                // vertex 1:   w10      w11      w12      w13
+                // vertex 2:   w20      w21      w22      w23
+                // vertex 3:   w30      w31      w32      w33
+                //   ...
+                //  indexed 
+                //   by i
+
+                // Iterate over the vertices
+                for (int iVert = 0; iVert < invertedWeightMap.GetLength(0); iVert++)
                 {
-                    boneWeights[i] = new float4(0, 0, 0, 0);
-                    boneIndices[i] = new float4(0, 0, 0, 0);
+                    boneWeights[iVert] = new float4(0, 0, 0, 0);
+                    boneIndices[iVert] = new float4(0, 0, 0, 0);
 
                     var tempDictionary = new Dictionary<int, float>();
 
+                    // For the given vertex i, see which bones control us
                     for (int j = 0; j < invertedWeightMap.GetLength(1); j++)
                     {
                         if (j < 4)
                         {
-                            tempDictionary.Add(j, invertedWeightMap[i, j]);
+                            tempDictionary.Add(j, invertedWeightMap[iVert, j]);
                         }
                         else
                         {
-                            float tmpWeight = invertedWeightMap[i, j];
+                            float tmpWeight = invertedWeightMap[iVert, j];
                             var keyAndValue = tempDictionary.OrderBy(kvp => kvp.Value).First();
                             if (tmpWeight > keyAndValue.Value)
                             {
@@ -501,33 +549,33 @@ namespace Fusee.Engine.SimpleScene
                     if (tempDictionary.Count != 0)
                     {
                         var keyValuePair = tempDictionary.First();
-                        boneIndices[i].x = keyValuePair.Key;
-                        boneWeights[i].x = keyValuePair.Value;
+                        boneIndices[iVert].x = keyValuePair.Key;
+                        boneWeights[iVert].x = keyValuePair.Value;
                         tempDictionary.Remove(keyValuePair.Key);
                     }
                     if (tempDictionary.Count != 0)
                     {
                         var keyValuePair = tempDictionary.First();
-                        boneIndices[i].y = keyValuePair.Key;
-                        boneWeights[i].y = keyValuePair.Value;
+                        boneIndices[iVert].y = keyValuePair.Key;
+                        boneWeights[iVert].y = keyValuePair.Value;
                         tempDictionary.Remove(keyValuePair.Key);
                     }
                     if (tempDictionary.Count != 0)
                     {
                         var keyValuePair = tempDictionary.First();
-                        boneIndices[i].z = keyValuePair.Key;
-                        boneWeights[i].z = keyValuePair.Value;
+                        boneIndices[iVert].z = keyValuePair.Key;
+                        boneWeights[iVert].z = keyValuePair.Value;
                         tempDictionary.Remove(keyValuePair.Key);
                     }
                     if (tempDictionary.Count != 0)
                     {
                         var keyValuePair = tempDictionary.First();
-                        boneIndices[i].w = keyValuePair.Key;
-                        boneWeights[i].w = keyValuePair.Value;
+                        boneIndices[iVert].w = keyValuePair.Key;
+                        boneWeights[iVert].w = keyValuePair.Value;
                         tempDictionary.Remove(keyValuePair.Key);
                     }
 
-                    boneWeights[i].Normalize1();
+                    boneWeights[iVert].Normalize1();
                 }
 
                 rm = new Mesh()
@@ -540,6 +588,7 @@ namespace Fusee.Engine.SimpleScene
                     Vertices = mc.Vertices,
                     Triangles = mc.Triangles
                 };
+                */
             }
 
 
@@ -1011,6 +1060,7 @@ namespace Fusee.Engine.SimpleScene
             }
             return mat;
         }
+
         public static Mesh MakeMesh(SceneNodeContainer soc)
         {
             MeshComponent mc = soc.GetMesh();
@@ -1028,74 +1078,19 @@ namespace Fusee.Engine.SimpleScene
                 };
             else // Create Mesh with weightdata
             {
-                // invert weightmap to handle it easier
-                float[,] invertedWeightMap = new float[wc.WeightMap[0].JointWeights.Count, wc.Joints.Count];
-                for (int i = 0; i < wc.WeightMap.Count; i++)
+                float4[] boneWeights = new float4[wc.WeightMap.Count];
+                float4[] boneIndices = new float4[wc.WeightMap.Count];
+
+                // Iterate over the vertices
+                for (int iVert = 0; iVert < wc.WeightMap.Count; iVert++)
                 {
-                    for (int j = 0; j < wc.WeightMap[i].JointWeights.Count; j++)
+                    int nJoints = System.Math.Min(4, wc.WeightMap[iVert].VertexWeights.Count);
+                    for (int iJoint = 0; iJoint < nJoints; iJoint++)
                     {
-                        invertedWeightMap[j, i] = (float) wc.WeightMap[i].JointWeights[j];
+                        boneWeights[iVert][iJoint] = wc.WeightMap[iVert].VertexWeights[iJoint].Weight;
+                        boneIndices[iVert][iJoint] = wc.WeightMap[iVert].VertexWeights[iJoint].JointIndex;
                     }
-                }
-
-                float4[] boneWeights = new float4[invertedWeightMap.GetLength(0)];
-                float4[] boneIndices = new float4[invertedWeightMap.GetLength(0)];
-
-                for (int i = 0; i < invertedWeightMap.GetLength(0); i++)
-                {
-                    boneWeights[i] = new float4(0,0,0,0);
-                    boneIndices[i] = new float4(0,0,0,0);
-
-                    var tempDictionary = new Dictionary<int, float>();
-
-                    for (int j = 0; j < invertedWeightMap.GetLength(1); j++)
-                    {
-                        if (j < 4)
-                        {
-                            tempDictionary.Add(j, invertedWeightMap[i, j]);
-                        }
-                        else
-                        {
-                            float tmpWeight = invertedWeightMap[i, j];
-                            var keyAndValue = tempDictionary.OrderBy(kvp => kvp.Value).First();
-                            if (tmpWeight > keyAndValue.Value)
-                            {
-                                tempDictionary.Remove(keyAndValue.Key);
-                                tempDictionary.Add(j, tmpWeight);
-                            }
-                        }
-                    }
-
-                    if (tempDictionary.Count != 0)
-                    {
-                        var keyValuePair = tempDictionary.First();
-                        boneIndices[i].x = keyValuePair.Key;
-                        boneWeights[i].x = keyValuePair.Value;
-                        tempDictionary.Remove(keyValuePair.Key);
-                    }
-                    if (tempDictionary.Count != 0)
-                    {
-                        var keyValuePair = tempDictionary.First();
-                        boneIndices[i].y = keyValuePair.Key;
-                        boneWeights[i].y = keyValuePair.Value;
-                        tempDictionary.Remove(keyValuePair.Key);
-                    }
-                    if (tempDictionary.Count != 0)
-                    {
-                        var keyValuePair = tempDictionary.First();
-                        boneIndices[i].z = keyValuePair.Key;
-                        boneWeights[i].z = keyValuePair.Value;
-                        tempDictionary.Remove(keyValuePair.Key);
-                    }
-                    if (tempDictionary.Count != 0)
-                    {
-                        var keyValuePair = tempDictionary.First();
-                        boneIndices[i].w = keyValuePair.Key;
-                        boneWeights[i].w = keyValuePair.Value;
-                        tempDictionary.Remove(keyValuePair.Key);
-                    }
-
-                    boneWeights[i].Normalize1();
+                    boneWeights[iVert].Normalize1();
                 }
 
                 rm = new Mesh()
@@ -1107,7 +1102,7 @@ namespace Fusee.Engine.SimpleScene
                     BoneWeights = boneWeights,
                     Vertices = mc.Vertices,
                     Triangles = mc.Triangles
-                }; 
+                };
             }
 
 
