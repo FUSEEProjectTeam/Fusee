@@ -3,6 +3,9 @@
   <ItemGroup>
     <ClCompile Include="C4dApiWrapper.cpp" />
     <ClCompile Include="source\main.cpp" />
+    <ClCompile Include="C4dApiExtensions\TagDataM.cpp">
+      <Filter>C4dApiExtensions</Filter>
+    </ClCompile>
     <ClCompile Include="C4dApiExtensions\ObjectDataM.cpp">
       <Filter>C4dApiExtensions</Filter>
     </ClCompile>
@@ -17,6 +20,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="C4dApiExtensions\ObjectDataM.h">
+      <Filter>C4dApiExtensions</Filter>
+    </ClInclude>
+    <ClInclude Include="C4dApiExtensions\DDescriptionParams.h">
+      <Filter>C4dApiExtensions</Filter>
+    </ClInclude>
+    <ClInclude Include="C4dApiExtensions\TagDataM.h">
       <Filter>C4dApiExtensions</Filter>
     </ClInclude>
   </ItemGroup>

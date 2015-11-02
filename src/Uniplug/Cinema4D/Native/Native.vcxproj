@@ -21,6 +21,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{021EB697-2611-4E9F-ADA6-07D14F5538DD}</ProjectGuid>
     <RootNamespace>pluginTemplate</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -35,7 +36,7 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <CLRSupport>false</CLRSupport>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -147,7 +148,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt) </OutputFile>
-      <AdditionalLibraryDirectories>$(C4D_DIR)\plugins\Fusee\bin\Release;$(C4D_DIR)\plugins\Fusee\bin\Debug;$(C4D_DIR)\plugins\cinema4dsdk\_obj\cinema.framework\x64_Debug;$(C4D_DIR)\;$(C4D_DIR)\plugins\ManagedPlugin\x64;$(MONODIR)\lib\glib-2.0\include;$(MONODIR)\include\mono-2.0;$(MONODIR)\include\glib-2.0;$(MONODIR)\bin;%(AdditionalLibraryDirectories);$(C4D_DIR)\plugins\examples\cinema4dsdk\_obj\cinema.framework\x64_Debug</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(C4D_DIR)\plugins\Fusee\bin\Release;$(C4D_DIR)\plugins\Fusee\bin\Debug;$(C4D_DIR)\;$(C4D_DIR)\plugins\ManagedPlugin\x64;$(MONODIR)\lib\glib-2.0\include;$(MONODIR)\include\mono-2.0;$(MONODIR)\include\glib-2.0;$(MONODIR)\bin;%(AdditionalLibraryDirectories);$(C4D_DIR)\plugins\examples\cinema4dsdk\_obj\cinema.framework\x64_Debug</AdditionalLibraryDirectories>
       <AdditionalDependencies>Mono64.lib;Bridge.lib;cinema.framework_Debug_64bit.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DelayLoadDLLs>Bridge.dll;Mono-2.0.dll</DelayLoadDLLs>
@@ -239,6 +240,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="C4dApiExtensions\ObjectDataM.cpp" />
+    <ClCompile Include="C4dApiExtensions\TagDataM.cpp" />
     <ClCompile Include="C4dApiWrapper.cpp" />
     <ClCompile Include="source\main.cpp" />
   </ItemGroup>
@@ -246,7 +248,9 @@
     <None Include="mono.def" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="C4dApiExtensions\DDescriptionParams.h" />
     <ClInclude Include="C4dApiExtensions\ObjectDataM.h" />
+    <ClInclude Include="C4dApiExtensions\TagDataM.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

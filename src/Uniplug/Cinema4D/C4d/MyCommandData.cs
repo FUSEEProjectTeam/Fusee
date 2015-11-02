@@ -27,7 +27,7 @@ namespace C4d
             {
                 for (BaseTag tag = ob.GetFirstTag(); tag != null; tag = tag.GetNext())
                 {
-                    int tagType = tag.GetType();
+                    int tagType = tag.GetTypeC4D();
                     if (tagType == C4dApi.Texpresso)
                     {
                         C4dApi.GePrint("XPresso-Tag gefunden");

@@ -233,6 +233,15 @@ namespace FuExport
             // Iterate over the object's tags
             for (BaseTag tag = ob.GetFirstTag(); tag != null; tag = tag.GetNext())
             {
+                // GeneralTag
+                if (1036156 == tag.GetTypeC4D())
+                {
+                    var di = tag.GetDataInstance();
+                    int anInt = di.GetInt32(10000);
+                    string aStr = di.GetString(10001);
+                    Logger.Debug("Found a GeneralTag with TheInt=" + anInt + " and TheString = \"" + aStr + "\"");
+                }
+
                 // CAWeightTag - Save data to create the weight list later
                 CAWeightTag wTag = tag as CAWeightTag;
                 if (wTag != null)
@@ -258,14 +267,14 @@ namespace FuExport
                     }
                     else
                     {
-                        Logger.Error("Object " + ob.GetName() + " contains more than one texture tags. Cannot handle this. Only the first texture tag will be recognized.");
+                        Logger.Error("Object " + ob.GetName() + " contains more than one uv-coordinates-tag. Cannot handle this. Only the first texture tag will be recognized.");
                     }
                     continue;
                 }
                 // Selection tag. Only recognize the polygon selections as they might be referenced in a TextureTag
                 SelectionTag selection = tag as SelectionTag;
                 string selTagName = tag.GetName();
-                if (selection != null && selection.GetType() == C4dApi.Tpolygonselection && !string.IsNullOrEmpty(selTagName))    // One Type and three TypeIDs - You C4D programmer guys really suck
+                if (selection != null && selection.GetTypeC4D() == C4dApi.Tpolygonselection && !string.IsNullOrEmpty(selTagName))    // One Type and three TypeIDs - You C4D programmer guys really suck
                 {
                     selectionTags[selTagName] = selection;
                 }
@@ -374,21 +383,21 @@ namespace FuExport
                 AddComponent(snc, GetMesh(polyOb, normalOb, uvwTag, polyInxs));
                 _weightManager.AddWeightData(snc, polyOb, weightTag, polyInxs);
             }
-            else if (ob.GetType() == C4dApi.Olight)
+            else if (ob.GetTypeC4D() == C4dApi.Olight)
             {
                 using (BaseContainer lightData = ob.GetData())
                 // Just for debugging purposes
                 for (int i = 0, id = 0; -1 != (id = lightData.GetIndexId(i)); i++)
                 {
-                    if (lightData.GetType(id) == C4dApi.DA_LONG)
+                    if (lightData.GetTypeC4D(id) == C4dApi.DA_LONG)
                     {
                         int iii = lightData.GetInt32(id);
                     }
-                    if (lightData.GetType(id) == C4dApi.DA_REAL)
+                    if (lightData.GetTypeC4D(id) == C4dApi.DA_REAL)
                     {
                         double d = lightData.GetFloat(id);
                     }
-                    else if (lightData.GetType(id) == C4dApi.DA_VECTOR)
+                    else if (lightData.GetTypeC4D(id) == C4dApi.DA_VECTOR)
                     {
                         double3 v = lightData.GetVector(id);
                     }
@@ -416,15 +425,15 @@ namespace FuExport
                 // Just for debugging purposes
                 for (int i = 0, id = 0; -1 != (id = materialData.GetIndexId(i)); i++)
                 {
-                    if (materialData.GetType(id) == C4dApi.DA_LONG)
+                    if (materialData.GetTypeC4D(id) == C4dApi.DA_LONG)
                     {
                         int iii = materialData.GetInt32(id);
                     }
-                    if (materialData.GetType(id) == C4dApi.DA_REAL)
+                    if (materialData.GetTypeC4D(id) == C4dApi.DA_REAL)
                     {
                         double d = materialData.GetFloat(id);
                     }
-                    else if (materialData.GetType(id) == C4dApi.DA_VECTOR)
+                    else if (materialData.GetTypeC4D(id) == C4dApi.DA_VECTOR)
                     {
                         double3 v = materialData.GetVector(id);
                     }
@@ -649,7 +658,7 @@ namespace FuExport
             {
                 // In their sheer wisdom, the elders of the C4D SDK decided to not have a class of its own for the quaternion tag.
                 // Neither will the world need a constant declaration for the type...
-                int tagType = tag.GetType();
+                int tagType = tag.GetTypeC4D();
                 if (tagType == 100001740)
                 {
                     BaseContainer data = tag.GetData();

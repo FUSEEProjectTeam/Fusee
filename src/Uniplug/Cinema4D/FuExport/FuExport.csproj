@@ -49,6 +49,7 @@
     <Compile Include="FileTypes.cs" />
     <Compile Include="FuExport.cs" />
     <Compile Include="FusConverter.cs" />
+    <Compile Include="ManagedTagBase.cs" />
     <Compile Include="ManifestFile.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

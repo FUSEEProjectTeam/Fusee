@@ -115,7 +115,7 @@ namespace RigPlugin
                     //}
                     BaseTag btA = doc2.GetActiveTag();
                     C4dApi.GePrint("TypeName : "+btA.GetTypeName() +" Name "+btA.GetName());
-                    if (btA.GetType() == C4dApi.Tpolygonselection)
+                    if (btA.GetTypeC4D() == C4dApi.Tpolygonselection)
                     {
                         for (int j = 0; j < wtagGlob.GetJointCount(); j++)
                         {
