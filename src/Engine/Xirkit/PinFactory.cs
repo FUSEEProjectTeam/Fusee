@@ -196,7 +196,7 @@ namespace Fusee.Xirkit
         }
 
 
-        [JSIgnore]
+        // [JSIgnore] (ignoring it will generate an exception in JSIl-generated PinFactory constructor)
         private static Dictionary<Type, Dictionary<Type, Delegate>> _convMap = null;
 
         [JSIgnore]

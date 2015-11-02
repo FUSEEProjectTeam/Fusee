@@ -8,7 +8,10 @@
       <SFMLWinFiles Include="$(SolutionDir)ExternalBinaries\SFML\Windows\*.dll" />
       <FONTFiles Include="$(SolutionDir)ExternalBinaries\SharpFont\*.dll" />
       <AForgeFiles Include="$(SolutionDir)ExternalBinaries\AForge\*.dll"/>
-      <SCRIPTFiles Include="$(SolutionDir)ExternalBinaries\JSIL\Scripts\*.js" />
+      <SCRIPT1Files Include="$(SolutionDir)ExternalBinaries\JSIL\Scripts\*.js" />
+      <SCRIPT2Files Include="$(SolutionDir)ExternalBinaries\JSIL\Scripts\IgnoredBCL\*.js" />
+      <SCRIPT3Files Include="$(SolutionDir)ExternalBinaries\JSIL\Scripts\StubbedBCL\*.js" />
+      <SCRIPT4Files Include="$(SolutionDir)ExternalBinaries\JSIL\Scripts\TranslatedBCL\*.js" />
     </ItemGroup>
 
     <Message Importance="High" Text="### BeforeBuildEvent $(TargetName): Copying necessary files ###" />
@@ -17,7 +20,10 @@
     <Copy SourceFiles="@(SFMLWinFiles)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" />
     <Copy SourceFiles="@(FONTFiles)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" />
     <Copy SourceFiles="@(AForgeFiles)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="@(SCRIPTFiles)" DestinationFolder="$(TargetDir)..\..\WebGL\Scripts" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(SCRIPT1Files)" DestinationFolder="$(TargetDir)..\..\WebGL\Scripts" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(SCRIPT2Files)" DestinationFolder="$(TargetDir)..\..\WebGL\Scripts\IgnoredBCL" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(SCRIPT3Files)" DestinationFolder="$(TargetDir)..\..\WebGL\Scripts\StubbedBCL" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(SCRIPT4Files)" DestinationFolder="$(TargetDir)..\..\WebGL\Scripts\TranslatedBCL" SkipUnchangedFiles="true" />
   </Target>
   
   <!--- AfterBuild on Windows -->
@@ -26,7 +32,10 @@
       <WebOutputDir>$(TargetDir)Web\</WebOutputDir>
     </PropertyGroup>
     <ItemGroup>
-      <WebGLScripts Include="$(TargetDir)..\..\WebGL\Scripts\*.*" />
+      <WebGL1Scripts Include="$(TargetDir)..\..\WebGL\Scripts\*.*" />
+      <WebGL2Scripts Include="$(TargetDir)..\..\WebGL\Scripts\IgnoredBCL\*.*" />
+      <WebGL3Scripts Include="$(TargetDir)..\..\WebGL\Scripts\StubbedBCL\*.*" />
+      <WebGL4Scripts Include="$(TargetDir)..\..\WebGL\Scripts\TranslatedBCL\*.*" />
       <WebGLStyles Include="$(TargetDir)..\..\WebGL\Styles\*.*" />
       <WebAudioScript Include="$(TargetDir)..\..\WebAudio\*.*" />
       <WebNetScript Include="$(TargetDir)..\..\WebNet\*.*" />
@@ -38,13 +47,19 @@
     <MakeDir Directories="$(WebOutputDir)" Condition="!Exists('$(WebOutputDir)')" />
     <MakeDir Directories="$(WebOutputDir)\Assets" Condition="!Exists('$(WebOutputDir)Assets')" />
     <MakeDir Directories="$(WebOutputDir)\Assets\Scripts" Condition="!Exists('$(WebOutputDir)Scripts')" />
+    <MakeDir Directories="$(WebOutputDir)\Assets\Scripts\IgnoredBCL" Condition="!Exists('$(WebOutputDir)Scripts\IgnoredBCL')" />
+    <MakeDir Directories="$(WebOutputDir)\Assets\Scripts\StubbedBCL" Condition="!Exists('$(WebOutputDir)Scripts\StubbedBCL')" />
+    <MakeDir Directories="$(WebOutputDir)\Assets\Scripts\TranslatedBCL" Condition="!Exists('$(WebOutputDir)Scripts\TranslatedBCL')" />
     <MakeDir Directories="$(WebOutputDir)\Assets\Styles" Condition="!Exists('$(WebOutputDir)Styles')" />
 
     <Message Importance="High" Text="### PostBuildEvent $(TargetName): JSIL CCing ###" />
     <Exec ContinueOnError="true" Timeout="120000" Command='"$(SolutionDir)ExternalBinaries\JSIL\Compiler\JSILc.exe" -o "$(WebOutputDir)Assets\Scripts" "$(TargetPath)"' />
     
     <Message Importance="High" Text="### PostBuildEvent $(TargetName): Copying additional scripts/styles ###" />
-    <Copy SourceFiles="@(WebGLScripts)" DestinationFolder="$(WebOutputDir)Assets\Scripts" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(WebGL1Scripts)" DestinationFolder="$(WebOutputDir)Assets\Scripts" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(WebGL2Scripts)" DestinationFolder="$(WebOutputDir)Assets\Scripts\IgnoredBCL" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(WebGL3Scripts)" DestinationFolder="$(WebOutputDir)Assets\Scripts\StubbedBCL" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(WebGL4Scripts)" DestinationFolder="$(WebOutputDir)Assets\Scripts\TranslatedBCL" SkipUnchangedFiles="true" />
     <Copy SourceFiles="@(WebGLStyles)" DestinationFolder="$(WebOutputDir)Assets\Styles" SkipUnchangedFiles="true" />
     <Copy SourceFiles="@(WebAudioScript)" DestinationFolder="$(WebOutputDir)Assets\Scripts" SkipUnchangedFiles="true" />
     <Copy SourceFiles="@(WebNetScript)" DestinationFolder="$(WebOutputDir)Assets\Scripts" SkipUnchangedFiles="true" />
