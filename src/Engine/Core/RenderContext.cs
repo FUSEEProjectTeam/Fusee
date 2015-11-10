@@ -25,8 +25,10 @@ namespace Fusee.Engine
         private ShaderProgram _currentShader;
         private readonly MatrixParamNames _currentShaderParams;
 
+        /* Removed Light support
         private readonly Light[] _lightParams;
         private readonly LightParamNames[] _lightShaderParams;
+        */
 
         private bool _updatedShaderParams;
 
@@ -746,10 +748,11 @@ namespace Fusee.Engine
             ModelView = float4x4.Identity;
             Projection = float4x4.Identity;
 
+            /* Removed Light support
             // Todo: Remove multiple Lights per shader !!!
             _lightParams = new Light[8];
             _lightShaderParams = new LightParamNames[8];
-
+            */
             _currentShaderParams = new MatrixParamNames();
             _updatedShaderParams = false;
 
@@ -820,7 +823,12 @@ namespace Fusee.Engine
             if (_currentShaderParams.FUSEE_ITMVP != null)
                 SetShaderParam(_currentShaderParams.FUSEE_ITMVP, InvTransModelViewProjection);
 
+            // Bones (if any)
+            if (_currentShaderParams.FUSEE_BONES != null && Bones != null)
+                SetShaderParam(_currentShaderParams.FUSEE_BONES, Bones);
 
+            
+            /* Removed light support
             // Todo: Remove multiple Lights per shader !!!
             for (var i = 0; i < 8; i++)
             {
@@ -845,9 +853,8 @@ namespace Fusee.Engine
                 if (_lightShaderParams[i].SPOTANGLE != null)
                     SetShaderParam(_lightShaderParams[i].SPOTANGLE, _lightParams[i].Angle);
             }
+            */
 
-            if (_currentShaderParams.FUSEE_BONES != null && Bones != null)
-                SetShaderParam(_currentShaderParams.FUSEE_BONES, Bones);
         }
 
         private void UpdateShaderParams()
@@ -883,6 +890,7 @@ namespace Fusee.Engine
             // Bones
             _currentShaderParams.FUSEE_BONES = _currentShader.GetShaderParam("FUSEE_BONES[0]");
 
+            /* Removed Light support
             for (int i = 0; i < 8; i++)
             {
                 _lightShaderParams[i].AMBIENT = _currentShader.GetShaderParam("FUSEE_LIGHTS[" + i + "].ambient");
@@ -893,6 +901,7 @@ namespace Fusee.Engine
                 _lightShaderParams[i].SPOTANGLE = _currentShader.GetShaderParam("FUSEE_LIGHTS[" + i + "].spotAngle");
                 _lightShaderParams[i].ACTIVE = _currentShader.GetShaderParam("FUSEE_LIGHTS[" + i + "].active");
             }
+            */
 
             _updatedShaderParams = true;
             UpdateCurrentShader();
@@ -1130,12 +1139,15 @@ namespace Fusee.Engine
         /// <param name="active">1 - activate the light. 0 - deactiv</param>
         public void SetLightActive(int lightInx, float active)
         {
+            throw new NotImplementedException("Removed Single Pass Light Support");
+            /*
             _lightParams[lightInx].Active = active;
             IShaderParam sp;
             string paramName = "FUSEE_L" + lightInx + "_ACTIVE";
 
             if ((sp = _currentShader.GetShaderParam(paramName)) != null)
                 SetShaderParam(sp, _lightParams[lightInx].Active);
+           */
         }
 
         /// <summary>
@@ -1151,11 +1163,14 @@ namespace Fusee.Engine
         /// </remarks>
         public void SetLightAmbient(int lightInx, float4 ambientColor)
         {
+            throw new NotImplementedException("Removed Single Pass Light Support");
+            /*
             _lightParams[lightInx].AmbientColor = ambientColor;
             IShaderParam sp;
             string paramName = "FUSEE_L" + lightInx + "_AMBIENT";
             if ((sp = _currentShader.GetShaderParam(paramName)) != null)
                 SetShaderParam(sp, _lightParams[lightInx].AmbientColor);
+            */
         }
 
         /// <summary>
@@ -1173,11 +1188,14 @@ namespace Fusee.Engine
         /// </remarks>
         public void SetLightDiffuse(int lightInx, float4 diffuseColor)
         {
+            throw new NotImplementedException("Removed Single Pass Light Support");
+            /*
             _lightParams[lightInx].DiffuseColor = diffuseColor;
             IShaderParam sp;
             string paramName = "FUSEE_L" + lightInx + "_DIFFUSE";
             if ((sp = _currentShader.GetShaderParam(paramName)) != null)
                 SetShaderParam(sp, _lightParams[lightInx].DiffuseColor);
+            */
         }
 
         /// <summary>
@@ -1197,11 +1215,13 @@ namespace Fusee.Engine
         /// </remarks>
         public void SetLightSpecular(int lightInx, float4 specularColor)
         {
+            /*
             _lightParams[lightInx].SpecularColor = specularColor;
             IShaderParam sp;
             string paramName = "FUSEE_L" + lightInx + "_SPECULAR";
             if ((sp = _currentShader.GetShaderParam(paramName)) != null)
                 SetShaderParam(sp, _lightParams[lightInx].SpecularColor);
+           */
         }
 
         /// <summary>
@@ -1211,11 +1231,14 @@ namespace Fusee.Engine
         /// <param name="position">The position of the light in 3D space.</param>
         public void SetLightPosition(int lightInx, float3 position)
         {
+            throw new NotImplementedException("Removed Single Pass Light Support");
+            /*
             _lightParams[lightInx].Position = position;
             IShaderParam sp;
             string paramName = "FUSEE_L" + lightInx + "_POSITION";
             if ((sp = _currentShader.GetShaderParam(paramName)) != null)
                 SetShaderParam(sp, _lightParams[lightInx].Position);
+            */
         }
 
         /// <summary>
@@ -1225,11 +1248,14 @@ namespace Fusee.Engine
         /// <param name="direction">The direction vector into which the light emits rays.</param>
         public void SetLightDirection(int lightInx, float3 direction)
         {
+            throw new NotImplementedException("Removed Single Pass Light Support");
+            /*
             _lightParams[lightInx].Direction = direction;
             IShaderParam sp;
             string paramName = "FUSEE_L" + lightInx + "_DIRECTION";
             if ((sp = _currentShader.GetShaderParam(paramName)) != null)
                 SetShaderParam(sp, _lightParams[lightInx].Direction);
+            */
         }
 
         /// <summary>
@@ -1239,12 +1265,14 @@ namespace Fusee.Engine
         /// <param name="angle">The opening angle of the spotlight in degree.</param>
         public void SetLightSpotAngle(int lightInx, float angle)
         {
-
+            throw new NotImplementedException("Removed Single Pass Light Support");
+            /*
             _lightParams[lightInx].Angle = -(float)System.Math.Cos(angle);
             IShaderParam sp;
             string paramName = "FUSEE_L" + lightInx + "_SPOTANGLE";
             if ((sp = _currentShader.GetShaderParam(paramName)) != null)
                 SetShaderParam(sp, _lightParams[lightInx].Angle);
+            */
         }
 
         #endregion

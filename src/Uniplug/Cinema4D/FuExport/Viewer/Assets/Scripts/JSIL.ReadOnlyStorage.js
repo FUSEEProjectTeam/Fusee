@@ -1,3 +1,4 @@
+﻿/* It is auto-generated file. Do not modify it. */
 "use strict";
 
 if (typeof (JSIL) === "undefined")
@@ -37,7 +38,7 @@ JSIL.MakeClass($jsilstorage.TypeRef("VirtualVolume"), "ReadOnlyStorageVolume", t
   $.RawMethod(false, "setFileBytes", function (name, value) {
     if (this.readOnly)
       throw new Error("Volume is read-only");
-    
+
     this.fileBytes[name] = value;
   });
 

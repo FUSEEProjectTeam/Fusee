@@ -1,3 +1,4 @@
+﻿/* It is auto-generated file. Do not modify it. */
 "use strict";
 
 //
@@ -20,7 +21,6 @@
     globalNamespace, "JSIL",
     {
       value: JSIL,
-      configurable: false,
       enumerable: true,
       writable: false
     }
@@ -32,7 +32,7 @@
     globalNamespace.jsilConfig = {};
 
   if (typeof (globalNamespace.contentManifest) !== "object")
-    globalNamespace.contentManifest = {}; 
+    globalNamespace.contentManifest = {};
 })(this);
 
 contentManifest["JSIL"] = [];
@@ -68,10 +68,19 @@ var $jsilloaderstate = {
       }
     }
 
+    var libraryPrefix;
+    if (config.bclMode === "translated") {
+      libraryPrefix = "TranslatedBCL/";
+    } else if (config.bclMode === "stubbed") {
+      libraryPrefix = "StubbedBCL/";
+    } else {
+      libraryPrefix = "IgnoredBCL/";
+    }
+
     contentManifest["JSIL"].push(["Library", "JSIL.Storage.js"]);
-    contentManifest["JSIL"].push(["Library", "JSIL.IO.js"]);
-    contentManifest["JSIL"].push(["Library", "JSIL.JSON.js"]);  
-    contentManifest["JSIL"].push(["Library", "JSIL.XML.js"]);
+    contentManifest["JSIL"].push(["Library", libraryPrefix + "JSIL.IO.js"]);
+    contentManifest["JSIL"].push(["Library", "JSIL.JSON.js"]);
+    contentManifest["JSIL"].push(["Library", libraryPrefix + "JSIL.XML.js"]);
   };
 
   Environment_Browser.prototype.getUserSetting = function (key) {
@@ -122,13 +131,25 @@ var $jsilloaderstate = {
     var self = this;
     this.config = config;
 
+    var libraryPrefix;
+    if (config.bclMode === "translated") {
+      libraryPrefix = "TranslatedBCL/";
+    } else if (config.bclMode === "stubbed") {
+      libraryPrefix = "StubbedBCL/";
+    } else {
+      libraryPrefix = "IgnoredBCL/";
+    }
+
     contentManifest["JSIL"].push(["Library", "JSIL.Storage.js"]);
-    contentManifest["JSIL"].push(["Library", "JSIL.IO.js"]);
-    contentManifest["JSIL"].push(["Library", "JSIL.XML.js"]);
+    contentManifest["JSIL"].push(["Library", libraryPrefix + "JSIL.IO.js"]);
+    contentManifest["JSIL"].push(["Library", libraryPrefix + "JSIL.XML.js"]);
   };
 
   Environment_SpidermonkeyShell.prototype.getUserSetting = function (key) {
     // FIXME
+    if (typeof (jsilEnvironmentSettings) === "object" && key in jsilEnvironmentSettings) {
+      return jsilEnvironmentSettings[key];
+    }
     return false;
   };
 
@@ -206,7 +227,7 @@ var $jsilloaderstate = {
 
   if (typeof (config.libraryRoot) === "undefined")
     config.libraryRoot = "../Libraries/";
-  
+
   var libraryRoot = config.libraryRoot;
   var manifestRoot = (config.manifestRoot = config.manifestRoot || "");
   config.scriptRoot = config.scriptRoot || "";
@@ -229,7 +250,7 @@ var $jsilloaderstate = {
     environment.loadScript(libraryRoot + "gamepad.js");
 
   environment.loadScript(libraryRoot + "Polyfills.js");
-    
+
   // fusee custom
   environment.loadScript(libraryRoot + "soundjs.min.js");
   environment.loadScript(libraryRoot + "opentype.js");
@@ -245,22 +266,38 @@ var $jsilloaderstate = {
   environment.loadScript(libraryRoot + "JSIL.Host.js");
 
   environment.loadEnvironmentScripts();
-  
+
   environment.loadScript(libraryRoot + "JSIL.Core.Types.js");
   environment.loadScript(libraryRoot + "JSIL.Core.Reflection.js");
   environment.loadScript(libraryRoot + "JSIL.References.js");
   environment.loadScript(libraryRoot + "JSIL.Unsafe.js");
   environment.loadScript(libraryRoot + "JSIL.PInvoke.js");
-  environment.loadScript(libraryRoot + "JSIL.Bootstrap.js");
+
+  if (!config.bclMode) {
+    config.bclMode = environment.getUserSetting("bclMode");
+  }
+
+  if (config.bclMode === "translated") {
+    environment.loadScript(libraryRoot + "TranslatedBCL/JSIL.Bootstrap.js");
+  } else if (config.bclMode === "stubbed") {
+    environment.loadScript(libraryRoot + "StubbedBCL/JSIL.Bootstrap.js");
+  } else {
+    environment.loadScript(libraryRoot + "IgnoredBCL/JSIL.Bootstrap.js");
+  }
+
+  environment.loadScript(libraryRoot + "JSIL.mscorlib.js");
   environment.loadScript(libraryRoot + "JSIL.Bootstrap.Int64.js");
   environment.loadScript(libraryRoot + "JSIL.Bootstrap.DateTime.js");
   environment.loadScript(libraryRoot + "JSIL.Bootstrap.Text.js");
   environment.loadScript(libraryRoot + "JSIL.Bootstrap.Resources.js");
   environment.loadScript(libraryRoot + "JSIL.Bootstrap.Linq.js");
   environment.loadScript(libraryRoot + "JSIL.Bootstrap.Async.js");
-  
+
+  if (config.xml || environment.getUserSetting("xml"))
+    environment.loadScript(libraryRoot + "JSIL.XML.js");
+
   if (config.interpreter || environment.getUserSetting("interpreter"))
-    environment.loadScript(libraryRoot + "JSIL.ExpressionInterpreter.js");  
+    environment.loadScript(libraryRoot + "JSIL.ExpressionInterpreter.js");
 
   if (config.testFixture || environment.getUserSetting("testFixture"))
     environment.loadScript(libraryRoot + "JSIL.TestFixture.js");
@@ -272,7 +309,7 @@ var $jsilloaderstate = {
   config.autoPlay = config.autoPlay || environment.getUserSetting("autoPlay") || config.replayURI || config.replayName || false;
 
   if (
-    config.record || 
+    config.record ||
     config.replayURI ||
     config.replayName
   ) {

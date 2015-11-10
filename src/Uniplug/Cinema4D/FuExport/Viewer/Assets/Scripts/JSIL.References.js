@@ -1,171 +1,181 @@
+﻿/* It is auto-generated file. Do not modify it. */
 "use strict";
 
 if (typeof (JSIL) === "undefined")
-  throw new Error("JSIL.Core is required");
+    throw new Error("JSIL.Core is required");
 
-if (!$jsilcore)  
-  throw new Error("JSIL.Core is required");
+if (!$jsilcore)
+    throw new Error("JSIL.Core is required");
 
 JSIL.MakeClass("System.Object", "JSIL.Reference", true, [], function ($) {
-  var types = {};
+    var types = {};
 
-  var checkType = function Reference_CheckType (value) {
-    var type = this;
+    $.SetValue("__IsReference__", true);
 
-    var isReference = JSIL.Reference.$Is(value, true);
-    if (!isReference)
-      return false;
+    var checkType = function Reference_CheckType(value) {
+        var type = this;
 
-    var typeProto = Object.getPrototypeOf(type);
-    if (
-      (typeProto === JSIL.GenericParameter.prototype) ||
-      (typeProto === JSIL.PositionalGenericParameter.prototype)
-    ) {
-      return true;
-    }
+        var isReference = JSIL.Reference.$Is(value, true);
+        if (!isReference)
+            return false;
 
-    var refValue = value.get();
+        var typeProto = Object.getPrototypeOf(type);
+        if (
+          (typeProto === JSIL.GenericParameter.prototype) ||
+          (typeProto === JSIL.PositionalGenericParameter.prototype)
+        ) {
+            return true;
+        }
 
-    if ((type.__IsReferenceType__) && (refValue === null))
-      return true;
+        var refValue = value.get();
 
-    return type.$Is(refValue, false);
-  };
+        if ((type.__IsReferenceType__) && (refValue === null))
+            return true;
 
-  var of = function Reference_Of (type) {
-    if (typeof (type) === "undefined")
-      JSIL.RuntimeError("Undefined reference type");
+        return type.$Is(refValue, false);
+    };
 
-    var typeObject = JSIL.ResolveTypeReference(type)[1];
-    
-    var elementName = JSIL.GetTypeName(typeObject);
-    var compositePublicInterface = types[elementName];
+    var of = function Reference_Of(type) {
+        if (typeof (type) === "undefined")
+            JSIL.RuntimeError("Undefined reference type");
 
-    if (typeof (compositePublicInterface) === "undefined") {
-      var typeName = "ref " + elementName;
+        var typeObject = JSIL.ResolveTypeReference(type)[1];
 
-      var compositeTypeObject = JSIL.CreateDictionaryObject($.Type);
-      compositePublicInterface = JSIL.CreateDictionaryObject(JSIL.Reference);
+        var elementName = JSIL.GetTypeName(typeObject);
+        var compositePublicInterface = types[elementName];
 
-      JSIL.SetValueProperty(compositePublicInterface, "__Type__", compositeTypeObject);
-      JSIL.SetValueProperty(compositeTypeObject, "__PublicInterface__", compositePublicInterface);
-      
-      compositeTypeObject.__IsByRef__ = true;
-      compositeTypeObject.__ReferentType__ = type;
+        if (typeof (compositePublicInterface) === "undefined") {
+            var typeName = "ref " + elementName;
 
-      var toStringImpl = function (context) {
-        return "ref " + typeObject.toString(context);
-      };
+            var compositeTypeObject = JSIL.CreateDictionaryObject($.Type);
+            compositePublicInterface = JSIL.CreateDictionaryObject(JSIL.Reference);
 
-      compositePublicInterface.prototype = JSIL.MakeProto(JSIL.Reference, compositeTypeObject, typeName, true, typeObject.__Context__);
+            JSIL.SetValueProperty(compositePublicInterface, "__Type__", compositeTypeObject);
+            JSIL.SetValueProperty(compositeTypeObject, "__PublicInterface__", compositePublicInterface);
 
-      JSIL.SetValueProperty(compositePublicInterface, "CheckType", checkType.bind(type));
+            compositeTypeObject.__IsByRef__ = true;
+            compositeTypeObject.__ReferentType__ = type;
 
-      JSIL.SetValueProperty(compositePublicInterface, "toString", function ReferencePublicInterface_ToString () {
-        return "<JSIL.Reference.Of(" + typeObject.toString() + ") Public Interface>";
-      });
-      JSIL.SetValueProperty(compositePublicInterface.prototype, "toString", toStringImpl);
-      JSIL.SetValueProperty(compositeTypeObject, "toString", toStringImpl);
+            var toStringImpl = function (context) {
+                return "ref " + typeObject.toString(context);
+            };
 
-      JSIL.SetValueProperty(compositePublicInterface, "__FullName__", typeName);
-      JSIL.SetValueProperty(compositeTypeObject, "__FullName__", typeName);
-      
-      JSIL.SetTypeId(
-        compositePublicInterface, compositeTypeObject, (
-          $.Type.__TypeId__ + "[" + JSIL.HashTypeArgumentArray([typeObject], typeObject.__Context__) + "]"
-        )
-      );
+            compositePublicInterface.prototype = JSIL.MakeProto(JSIL.Reference, compositeTypeObject, typeName, true, typeObject.__Context__);
 
-      types[elementName] = compositePublicInterface;
-    }
+            JSIL.SetValueProperty(compositePublicInterface, "CheckType", checkType.bind(type));
 
-    return compositePublicInterface;
-  };
+            JSIL.SetValueProperty(compositePublicInterface, "toString", function ReferencePublicInterface_ToString() {
+                return "<JSIL.Reference.Of(" + typeObject.toString() + ") Public Interface>";
+            });
+            JSIL.SetValueProperty(compositePublicInterface.prototype, "toString", toStringImpl);
+            JSIL.SetValueProperty(compositeTypeObject, "toString", toStringImpl);
 
-  $.RawMethod(true, "Of$NoInitialize", of);
-  $.RawMethod(true, "Of", of);
+            JSIL.SetValueProperty(compositePublicInterface, "__FullName__", typeName);
+            JSIL.SetValueProperty(compositeTypeObject, "__FullName__", typeName);
 
-  $.RawMethod(false, "get_value",
-    function Reference_GetValue () {
-      JSIL.RuntimeError("Use of old-style reference.value");
-    }
-  );
+            JSIL.SetTypeId(
+              compositePublicInterface, compositeTypeObject, (
+                $.Type.__TypeId__ + "[" + JSIL.HashTypeArgumentArray([typeObject], typeObject.__Context__) + "]"
+              )
+            );
 
-  $.RawMethod(false, "set_value",
-    function Reference_SetValue (value) {
-      JSIL.RuntimeError("Use of old-style reference.value = x");
-    }
-  );
+            JSIL.MakeCastMethods(
+              compositePublicInterface, compositeTypeObject, "reference"
+            );
 
-  $.Property({Static: false, Public: true }, "value");
+            types[elementName] = compositePublicInterface;
+        }
+
+        return compositePublicInterface;
+    };
+
+    $.RawMethod(true, "Of$NoInitialize", of);
+    $.RawMethod(true, "Of", of);
+
+    $.RawMethod(false, "get_value",
+      function Reference_GetValue() {
+          JSIL.RuntimeError("Use of old-style reference.value");
+      }
+    );
+
+    $.RawMethod(false, "set_value",
+      function Reference_SetValue(value) {
+          JSIL.RuntimeError("Use of old-style reference.value = x");
+      }
+    );
+
+    $.Property({ Static: false, Public: true }, "value");
 });
-
 JSIL.MakeClass("JSIL.Reference", "JSIL.BoxedVariable", true, [], function ($) {
-  $.RawMethod(false, ".ctor",
-    function BoxedVariable_ctor (value) {
-      this.$value = value;
-    }
-  );
+    $.RawMethod(false, ".ctor",
+      function BoxedVariable_ctor(value) {
+          this.$value = value;
+      }
+    );
 
-  $.RawMethod(false, "get",
-    function BoxedVariable_Get () {
-      return this.$value;
-    }
-  );
+    $.RawMethod(false, "get",
+      function BoxedVariable_Get() {
+          return this.$value;
+      }
+    );
 
-  $.RawMethod(false, "set",
-    function BoxedVariable_Set (value) {
-      return this.$value = value;
-    }
-  );
+    $.RawMethod(false, "set",
+      function BoxedVariable_Set(value) {
+          return this.$value = value;
+      }
+    );
 });
-
 JSIL.MakeClass("JSIL.Reference", "JSIL.MemberReference", true, [], function ($) {
-  $.RawMethod(false, ".ctor",
-    function MemberReference_ctor (object, memberName) {
-      this.object = object;
-      this.memberName = memberName;
-    }
-  );
+    $.RawMethod(false, ".ctor",
+      function MemberReference_ctor(object, memberName) {
+          this.object = object;
+          this.memberName = memberName;
+      }
+    );
 
-  $.RawMethod(false, "get",
-    function MemberReference_Get () {
-      return this.object[this.memberName];
-    }
-  );
+    $.RawMethod(false, "get",
+      function MemberReference_Get() {
+          return this.object[this.memberName];
+      }
+    );
 
-  $.RawMethod(false, "set",
-    function MemberReference_Set (value) {
-      return this.object[this.memberName] = value;
-    }
-  );
+    $.RawMethod(false, "set",
+      function MemberReference_Set(value) {
+          return this.object[this.memberName] = value;
+      }
+    );
 });
-
 JSIL.MakeClass("JSIL.Reference", "JSIL.ArrayElementReference", true, [], function ($) {
-  $.RawMethod(false, ".ctor",
-    function ArrayElementReference_ctor (array, index) {
-      this.array = array;
-      this.index = index | 0;
-    }
-  );
+    $.RawMethod(false, ".ctor",
+      function ArrayElementReference_ctor(array, index) {
+          this.array = array;
+          this.index = index | 0;
+      }
+    );
 
-  $.RawMethod(false, "get",
-    function ArrayElementReference_Get () {
-      return this.array[this.index];
-    }
-  );
+    $.RawMethod(false, "get",
+      function ArrayElementReference_Get() {
+          return this.array[this.index];
+      }
+    );
 
-  $.RawMethod(false, "set",
-    function ArrayElementReference_Set (value) {
-      return this.array[this.index] = value;
-    }
-  );
+    $.RawMethod(false, "set",
+      function ArrayElementReference_Set(value) {
+          return this.array[this.index] = value;
+      }
+    );
 
-  $.RawMethod(false, "retarget",
-    function ArrayElementReference_Retarget (array, index) {
-      this.array = array;
-      this.index = index | 0;
-      return this;
-    }
-  );
+    $.RawMethod(false, "retarget",
+      function ArrayElementReference_Retarget(array, index) {
+          this.array = array;
+          this.index = index | 0;
+          return this;
+      }
+    );
 });
+
+
+
+
+
+

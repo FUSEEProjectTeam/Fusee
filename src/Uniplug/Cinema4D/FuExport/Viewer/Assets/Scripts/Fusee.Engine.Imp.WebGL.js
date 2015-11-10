@@ -1018,6 +1018,8 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
             this.gl.bindAttribLocation(program, $fuseeCommon.Fusee.Engine.Helper.ColorAttribLocation, $fuseeCommon.Fusee.Engine.Helper.ColorAttribName);
             this.gl.bindAttribLocation(program, $fuseeCommon.Fusee.Engine.Helper.UvAttribLocation, $fuseeCommon.Fusee.Engine.Helper.UvAttribName);
             this.gl.bindAttribLocation(program, $fuseeCommon.Fusee.Engine.Helper.NormalAttribLocation, $fuseeCommon.Fusee.Engine.Helper.NormalAttribName);
+            this.gl.bindAttribLocation(program, $fuseeCommon.Fusee.Engine.Helper.BoneIndexAttribLocation, $fuseeCommon.Fusee.Engine.Helper.BoneIndexAttribName);
+            this.gl.bindAttribLocation(program, $fuseeCommon.Fusee.Engine.Helper.BoneWeightAttribLocation, $fuseeCommon.Fusee.Engine.Helper.BoneWeightAttribName);
 
             // Must happen AFTER the bindAttribLocation calls
             this.gl.linkProgram(program);
@@ -1106,12 +1108,14 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
             //var list = $sig.get(0x1928, null, [$customSys.System.Int32], []).Construct($T05(), 10);
 
             for (var i = 0; i < nParams; ++i) {
-                var t = this.gl.getActiveUniform(sp, i).type;
+                var activeUniform = this.gl.getActiveUniform(sp, i);
+                var t = activeUniform.type;
                 var ret = new ($fuseeCommon.Fusee.Engine.ShaderParamInfo)();
 
                 //var activeInfo = this.gl.getActiveUniform(sp,i);
                 //ret.Name = activeInfo.name;
-                ret.Name = this.gl.getActiveUniform(sp, i).name;
+                ret.Name = activeUniform.name;
+                ret.Size = activeUniform.size;
                 ret.Handle = this.GetShaderParam(sp, ret.Name);
 
                 switch (t) {
@@ -1171,6 +1175,18 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
                 this.gl.vertexAttribPointer($fuseeCommon.Fusee.Engine.Helper.UvAttribLocation, 2, this.gl.FLOAT, false, 0, 0);
             }
 
+            if (mr.BoneIndexBufferObject != null) {
+                this.gl.enableVertexAttribArray($fuseeCommon.Fusee.Engine.Helper.BoneIndexAttribLocation);
+                this.gl.bindBuffer(this.gl.ARRAY_BUFFER, mr.BoneIndexBufferObject);
+                this.gl.vertexAttribPointer($fuseeCommon.Fusee.Engine.Helper.BoneIndexAttribLocation, 4, this.gl.FLOAT, false, 0, 0);
+            }
+
+            if (mr.BoneWeightBufferObject != null) {
+                this.gl.enableVertexAttribArray($fuseeCommon.Fusee.Engine.Helper.BoneWeightAttribLocation);
+                this.gl.bindBuffer(this.gl.ARRAY_BUFFER, mr.BoneWeightBufferObject);
+                this.gl.vertexAttribPointer($fuseeCommon.Fusee.Engine.Helper.BoneWeightAttribLocation, 4, this.gl.FLOAT, false, 0, 0);
+            }
+
             if (mr.ElementBufferObject != null) {
                 this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, mr.ElementBufferObject);
                 this.gl.drawElements(this.gl.TRIANGLES, mr.NElements, this.gl.UNSIGNED_SHORT, 0);
@@ -1191,6 +1207,14 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
 
             if (mr.UVBufferObject != null) {
                 this.gl.disableVertexAttribArray($fuseeCommon.Fusee.Engine.Helper.UvAttribLocation);
+            }
+
+            if (mr.BoneIndexBufferObject != null) {
+                this.gl.disableVertexAttribArray($fuseeCommon.Fusee.Engine.Helper.BoneIndexAttribLocation);
+            }
+
+            if (mr.BoneWeightBufferObject != null) {
+                this.gl.disableVertexAttribArray($fuseeCommon.Fusee.Engine.Helper.BoneWeightAttribLocation);
             }
         }
     );
@@ -1217,14 +1241,17 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
     );
 
     $.Method({ Static: false, Public: true }, "GetBufferContent",
+
         new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.Rectangle"), $fuseeCommon.TypeRef("Fusee.Engine.ITexture")]),
         function GetBufferContent(rect, texId) {
             this.gl.bindTexture(this.gl.TEXTURE_2D, texId.handle);
+
             this.gl.copyTexImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, rect.Left, rect.Top, rect.Width, rect.Height, 0);
         }
     );
 
     $.Method({ Static: false, Public: true }, "SetShader",
+
         new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.IShaderProgramImp")]),
         function SetShader(program) {
             this._currentTextureUnit = 0;
@@ -1234,12 +1261,14 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
         }
     );
 
+
     $.Method({ Static: false, Public: true, Virtual: true }, "SetShaderParam1f",
       new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $.Single]),
         function SetShaderParam1f(param, val) {
             this.gl.uniform1f(param.handle, val);
         }
     );
+
 
     $.Method({ Static: false, Public: true, Virtual: true }, "SetShaderParam2f",
       new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $fuseeMath.TypeRef("Fusee.Math.float2")]),
@@ -1249,6 +1278,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
         }
     );
 
+
     $.Method({ Static: false, Public: true, Virtual: true }, "SetShaderParam3f",
        new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $fuseeMath.TypeRef("Fusee.Math.float3")]),
           function SetShaderParam3f(param, val) {
@@ -1256,6 +1286,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
             this.gl.uniform3fv(param.handle, flatVector);
         }
     );
+
 
     $.Method({ Static: false, Public: true, Virtual: true }, "SetShaderParam4f",
       new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $fuseeMath.TypeRef("Fusee.Math.float4")]),
@@ -1265,13 +1296,11 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
         }
     );
 
+
     $.Method({ Static: false, Public: true, Virtual: true }, "SetShaderParamfloat4x4",
       new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $fuseeMath.TypeRef("Fusee.Math.float4x4")]),
         function SetShaderParamfloat4x4(param, val) {
-            // Row order notation
-            //   var flatMatrix = new Float32Array(val.ToArray());
-            //   this.gl.uniformMatrix4fv(param.handle, false, flatMatrix);
-            // Column order notation
+            // Column order notation:
             // Other parameters than "false" for "Transpose" are forbidden...
             var valT = $fuseeMath.Fusee.Math.float4x4.Transpose(val.MemberwiseClone());
             var flatMatrix = new Float32Array(valT.ToArray());
@@ -1279,14 +1308,32 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
         }
     );
 
-    $.Method({ Static: false, Public: true, Virtual: true }, "SetShaderParamI",
-      new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $.Int32]),
+     $.Method({ Static: false, Public: true, Virtual: true }, "SetShaderParamI",
+        new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $.Int32]),
         function SetShaderParamI(param, val) {
-            this.gl.uniform1i(param.handle, val);
+        this.gl.uniform1i(param.handle, val);
         }
     );
 
+    $.Method({ Static: false, Public: true }, "SetShaderParamMtx4fArray",
+        new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $jsilcore.TypeRef("System.Array", [$fuseeMath.TypeRef("Fusee.Math.float4x4")])]),
+        function SetShaderParamMtx4fArray(param, val) {
+
+            var flatMatrixArray = new Float32Array(val.length * 16);
+
+            for (var i = 0; i < val.length; i++) {
+                flatMatrixArray.set(val[i].Column0.ToArray(), i * 16 + 0);
+                flatMatrixArray.set(val[i].Column1.ToArray(), i * 16 + 4);
+                flatMatrixArray.set(val[i].Column2.ToArray(), i * 16 + 8);
+                flatMatrixArray.set(val[i].Column3.ToArray(), i * 16 + 12);
+            }
+
+            // var valT = $fuseeMath.Fusee.Math.float4x4.Transpose(val.MemberwiseClone());
+            this.gl.uniformMatrix4fv(param.handle, false, flatMatrixArray);
+        }
+    );
     $.Method({ Static: false, Public: true }, "SetShaderParamTexture",
+
         new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.IShaderParam"), $fuseeCommon.TypeRef("Fusee.Engine.ITexture")]),
         function SetShaderParamTexture(param, texId) {
             var iParam = param.handle;
@@ -1421,6 +1468,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
 
 
     $.Method({ Static: false, Public: true }, "SetRenderState",
+
         new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.RenderState"), $.UInt32]),
         function SetRenderState(renderState, value) {
             var renderStateVal;
@@ -1667,6 +1715,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
     );
 
     $.Method({ Static: false, Public: true }, "SetColors",
+
         new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.IMeshImp"), $jsilcore.TypeRef("System.Array", [$.UInt32])]),
         function SetColors(mr, colors) {
             if (colors == null || colors.length == 0) {
@@ -1698,6 +1747,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
     );
 
     $.Method({ Static: false, Public: true }, "SetUVs",
+
         new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.IMeshImp"), $jsilcore.TypeRef("System.Array", [$fuseeMath.TypeRef("Fusee.Math.float2")])]),
         function SetUVs(mr, uvs) {
             if (uvs == null || uvs.length == 0) {
@@ -1726,6 +1776,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
     );
 
     $.Method({ Static: false, Public: true }, "SetNormals",
+
         new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.IMeshImp"), $jsilcore.TypeRef("System.Array", [$fuseeMath.TypeRef("Fusee.Math.float3")])]),
         function SetNormals(mr, normals) {
             if (normals == null || normals.length == 0) {
@@ -1755,6 +1806,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
     );
 
     $.Method({ Static: false, Public: true }, "SetTriangles",
+
         new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.IMeshImp"), $jsilcore.TypeRef("System.Array", [$.UInt16])]),
         function SetTriangles(mr, triangleIndices) {
             if (triangleIndices == null || triangleIndices.length == 0) {
@@ -1784,6 +1836,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
     );
 
     $.Method({ Static: false, Public: true }, "SetVertices",
+
         new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.IMeshImp"), $jsilcore.TypeRef("System.Array", [$fuseeMath.TypeRef("Fusee.Math.float3")])]),
         function SetVertices(mr, vertices) {
             if (vertices == null || vertices.length == 0) {
@@ -1812,7 +1865,68 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
         }
     );
 
+    $.Method({ Static: false, Public: true }, "SetBoneIndices",
+        new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.IMeshImp"), $jsilcore.TypeRef("System.Array", [$fuseeMath.TypeRef("Fusee.Math.float4")])]),
+        function SetBoneIndices(mr, boneIndices) {
+            if (boneIndices == null || boneIndices.length == 0) {
+                throw new Error("boneIndices must not be null or empty");
+            }
+
+            var vboBytes;
+            var boneIndicesBytes = boneIndices.length * 4 * 4;
+            if (mr.BoneIndexBufferObject == null)
+                mr.BoneIndexBufferObject = this.gl.createBuffer();
+
+            var nFloats = boneIndices.length * 4;
+            var flatBuffer = new Float32Array(nFloats);
+            for (var i = 0; i < boneIndices.length; i++) {
+                flatBuffer[4 * i] = boneIndices[i].x;
+                flatBuffer[4 * i + 1] = boneIndices[i].y;
+                flatBuffer[4 * i + 2] = boneIndices[i].z;
+                flatBuffer[4 * i + 3] = boneIndices[i].w;
+            }
+
+            this.gl.bindBuffer(this.gl.ARRAY_BUFFER, mr.BoneIndexBufferObject);
+            this.gl.bufferData(this.gl.ARRAY_BUFFER, flatBuffer, this.gl.STATIC_DRAW);
+            vboBytes = this.gl.getBufferParameter(this.gl.ARRAY_BUFFER, this.gl.BUFFER_SIZE);
+            // IE11 returns undefined, so we must believe uploading worked well
+            //if (vboBytes != vertsBytes)
+            //    throw new Error("Problem uploading vertex buffer to VBO (vertices). Tried to upload " + vertsBytes + " bytes, uploaded " + vboBytes + ".");
+        }
+    );
+
+    $.Method({ Static: false, Public: true }, "SetBoneWeights",
+        new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.IMeshImp"), $jsilcore.TypeRef("System.Array", [$fuseeMath.TypeRef("Fusee.Math.float4")])]),
+        function SetBoneWeights(mr, boneWeights) {
+            if (boneWeights == null || boneWeights.length == 0) {
+                throw new Error("boneWeights must not be null or empty");
+            }
+
+            var vboBytes;
+            var boneWeightsBytes = boneWeights.length * 4 * 4;
+            if (mr.BoneWeightBufferObject == null)
+                mr.BoneWeightBufferObject = this.gl.createBuffer();
+
+            var nFloats = boneWeights.length * 4;
+            var flatBuffer = new Float32Array(nFloats);
+            for (var i = 0; i < boneWeights.length; i++) {
+                flatBuffer[4 * i + 0] = boneWeights[i].x;
+                flatBuffer[4 * i + 1] = boneWeights[i].y;
+                flatBuffer[4 * i + 2] = boneWeights[i].z;
+                flatBuffer[4 * i + 3] = boneWeights[i].w;
+            }
+
+            this.gl.bindBuffer(this.gl.ARRAY_BUFFER, mr.BoneWeightBufferObject);
+            this.gl.bufferData(this.gl.ARRAY_BUFFER, flatBuffer, this.gl.STATIC_DRAW);
+            vboBytes = this.gl.getBufferParameter(this.gl.ARRAY_BUFFER, this.gl.BUFFER_SIZE);
+            // IE11 returns undefined, so we must believe uploading worked well
+            //if (vboBytes != vertsBytes)
+            //    throw new Error("Problem uploading vertex buffer to VBO (vertices). Tried to upload " + vertsBytes + " bytes, uploaded " + vboBytes + ".");
+        }
+    );
+
     $.Method({ Static: false, Public: true }, "CreateMeshImp",
+
         new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.IMeshImp"), []),
         function CreateMeshImp() {
             return new $WebGLImp.Fusee.Engine.MeshImp();
@@ -1834,6 +1948,8 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.MeshImp", true,
     $.Field({ Static: false, Public: true }, "UVBufferObject", $.Object, null);
     $.Field({ Static: false, Public: true }, "ColorBufferObject", $.Object, null);
     $.Field({ Static: false, Public: true }, "ElementBufferObject", $.Object, null);
+    $.Field({ Static: false, Public: true }, "BoneIndexBufferObject", $.Object, null);
+    $.Field({ Static: false, Public: true }, "BoneWeightBufferObject", $.Object, null);
     $.Field({ Static: false, Public: true }, "NElements", $.Int32, null);
 
     $.Method({ Static: false, Public: true }, ".ctor",
@@ -1878,6 +1994,20 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.MeshImp", true,
         }
     );
 
+    $.Method({ Static: false, Public: true }, "get_BoneIndicesSet",
+        new JSIL.MethodSignature($.Boolean, []),
+        function get_BoneIndicesSet() {
+            return this.BoneIndexBufferObject != null;
+        }
+    );
+
+    $.Method({ Static: false, Public: true }, "get_BoneWeightsSet",
+        new JSIL.MethodSignature($.Boolean, []),
+        function get_BoneWeightsSet() {
+            return this.BoneWeightBufferObject != null;
+        }
+    );
+
     $.Method({ Static: false, Public: true }, "InvalidateColors",
         new JSIL.MethodSignature(null, []),
         function InvalidateColors() {
@@ -1914,11 +2044,27 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.MeshImp", true,
         }
     );
 
+    $.Method({ Static: false, Public: true }, "InvalidateBoneIndices",
+        new JSIL.MethodSignature(null, []),
+        function InvalidateBoneIndices() {
+            this.BoneIndexBufferObject = null;
+        }
+    );
+
+    $.Method({ Static: false, Public: true }, "InvalidateBoneWeights",
+        new JSIL.MethodSignature(null, []),
+        function InvalidateBoneWeights() {
+            this.BoneWeightBufferObject = null;
+        }
+    );
+
     $.Property({ Static: false, Public: true }, "ColorsSet");
     $.Property({ Static: false, Public: true }, "NormalsSet");
     $.Property({ Static: false, Public: true }, "UVsSet");
     $.Property({ Static: false, Public: true }, "TrianglesSet");
     $.Property({ Static: false, Public: true }, "VerticesSet");
+    $.Property({ Static: false, Public: true }, "BoneIndicesSet");
+    $.Property({ Static: false, Public: true }, "BoneWeightsSet");
 
     $.ImplementInterfaces(
         $fuseeCommon.TypeRef("Fusee.Engine.IMeshImp")

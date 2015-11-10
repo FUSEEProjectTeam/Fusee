@@ -1,14 +1,100 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reflection;
 using Fusee.Engine;
 using Fusee.Math;
 
 namespace Examples.Simple
 {
+    public class TestClass
+    {
+        public int AnInt;
+        public string AString;
+        private float _afloatp ;
+
+        public float AFloatP
+        {
+            get { return _afloatp; }
+            set { _afloatp = value; }
+        }
+    }
+
+    public struct TestStruct
+    {
+        public int AnInt;
+        public string AString;
+        private float _afloatp;
+
+        public float AFloatP
+        {
+            get { return _afloatp; }
+            set { _afloatp = value; }
+        }
+    }
+
+    public class TestClassG<T>
+    {
+        public int AnInt;
+        public T ATField;
+        private float _aT;
+
+        public float ATProp
+        {
+            get { return _aT; }
+            set { _aT = value; }
+        }
+    }
+
+    public struct TestStructG<T>
+    {
+        public int AnInt;
+        public T ATField;
+        private float _aT;
+
+        public float ATProp
+        {
+            get { return _aT; }
+            set { _aT = value; }
+        }
+    }
+
+
     [FuseeApplication(Name = "Simple Example", Description = "A very simple example.")]
     public class Simple : RenderCanvas
     {
+        private static void ReflectionTest()
+        {
+            ReflectObject(new TestClass());
+            ReflectObject(new TestStruct());
+            ReflectObject(new TestClassG<float3>());
+            ReflectObject(new TestStructG<float3>());
+        }
+
+        private static void ReflectObject(object o)
+        {
+            Type t = o.GetType();
+            Diagnostics.Log(t.Name + ((t.IsClass) ? " is a class" : " seems to be a value type, a struct maybe, or an interface?"));
+            foreach (MemberInfo m in t.GetMembers())
+            {
+                Diagnostics.Log("Inspecting member " + m.Name);
+                PropertyInfo propertyInfo = t.GetProperty(m.Name);
+                if (propertyInfo != null)
+                {
+                    Diagnostics.Log(" It's a property with { " + ((propertyInfo.GetGetMethod() != null) ? "get" : "") +
+                                    ", " + ((propertyInfo.GetSetMethod() != null) ? "set" : "") + " }");
+                }
+                else
+                {
+                    FieldInfo fieldInfo = t.GetField(m.Name);
+                    if (fieldInfo != null)
+                        Diagnostics.Log(" It's a field");
+                    else
+                        Diagnostics.Log(" It's something different");
+                }
+            }
+        }
+
         // angle variables
         private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
 
@@ -31,6 +117,8 @@ namespace Examples.Simple
         // is called on startup
         public override void Init()
         {
+            ReflectionTest();
+
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             // initialize the variables

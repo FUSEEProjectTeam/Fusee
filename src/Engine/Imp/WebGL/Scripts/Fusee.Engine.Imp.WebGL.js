@@ -1108,12 +1108,14 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
             //var list = $sig.get(0x1928, null, [$customSys.System.Int32], []).Construct($T05(), 10);
 
             for (var i = 0; i < nParams; ++i) {
-                var t = this.gl.getActiveUniform(sp, i).type;
+                var activeUniform = this.gl.getActiveUniform(sp, i);
+                var t = activeUniform.type;
                 var ret = new ($fuseeCommon.Fusee.Engine.ShaderParamInfo)();
 
                 //var activeInfo = this.gl.getActiveUniform(sp,i);
                 //ret.Name = activeInfo.name;
-                ret.Name = this.gl.getActiveUniform(sp, i).name;
+                ret.Name = activeUniform.name;
+                ret.Size = activeUniform.size;
                 ret.Handle = this.GetShaderParam(sp, ret.Name);
 
                 switch (t) {
@@ -1298,10 +1300,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
     $.Method({ Static: false, Public: true, Virtual: true }, "SetShaderParamfloat4x4",
       new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $fuseeMath.TypeRef("Fusee.Math.float4x4")]),
         function SetShaderParamfloat4x4(param, val) {
-            // Row order notation
-            //   var flatMatrix = new Float32Array(val.ToArray());
-            //   this.gl.uniformMatrix4fv(param.handle, false, flatMatrix);
-            // Column order notation
+            // Column order notation:
             // Other parameters than "false" for "Transpose" are forbidden...
             var valT = $fuseeMath.Fusee.Math.float4x4.Transpose(val.MemberwiseClone());
             var flatMatrix = new Float32Array(valT.ToArray());
@@ -1319,15 +1318,18 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.RenderContextIm
     $.Method({ Static: false, Public: true }, "SetShaderParamMtx4fArray",
         new JSIL.MethodSignature(null, [$asm01.TypeRef("Fusee.Engine.IShaderParam"), $jsilcore.TypeRef("System.Array", [$fuseeMath.TypeRef("Fusee.Math.float4x4")])]),
         function SetShaderParamMtx4fArray(param, val) {
-            // Row order notation
-            //   var flatMatrix = new Float32Array(val.ToArray());
-            //   this.gl.uniformMatrix4fv(param.handle, false, flatMatrix);
-            // Column order notation
-            // Other parameters than "false" for "Transpose" are forbidden...
-            var valT = $fuseeMath.Fusee.Math.float4x4.Transpose(val.MemberwiseClone());
-            var flatMatrix = new Float32Array(valT.ToArray());
-            this.gl.uniformMatrix4fv(param.handle, false, flatMatrix);
-            //alert("JESUS!");
+
+            var flatMatrixArray = new Float32Array(val.length * 16);
+
+            for (var i = 0; i < val.length; i++) {
+                flatMatrixArray.set(val[i].Column0.ToArray(), i * 16 + 0);
+                flatMatrixArray.set(val[i].Column1.ToArray(), i * 16 + 4);
+                flatMatrixArray.set(val[i].Column2.ToArray(), i * 16 + 8);
+                flatMatrixArray.set(val[i].Column3.ToArray(), i * 16 + 12);
+            }
+
+            // var valT = $fuseeMath.Fusee.Math.float4x4.Transpose(val.MemberwiseClone());
+            this.gl.uniformMatrix4fv(param.handle, false, flatMatrixArray);
         }
     );
     $.Method({ Static: false, Public: true }, "SetShaderParamTexture",

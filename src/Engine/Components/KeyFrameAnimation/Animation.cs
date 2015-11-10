@@ -171,7 +171,7 @@ namespace Fusee.KeyFrameAnimation
         public void Animate()
         {
             // DEBUG QUATERNION LERP
-            // float time = 0.001f; 
+            // float time = 0.1f; 
             float time = (float)Time.Instance.DeltaTime;
             switch (_animMode)
             {

@@ -1,3 +1,4 @@
+﻿/* It is auto-generated file. Do not modify it. */
 JSIL.loadGlobalScript = function (uri, onComplete, dllName) {
   var anchor = document.createElement("a");
   anchor.href = uri;
@@ -10,7 +11,7 @@ JSIL.loadGlobalScript = function (uri, onComplete, dllName) {
   var scriptTag = document.createElement("script");
 
   JSIL.Browser.RegisterOneShotEventListener(
-    scriptTag, "load", true, 
+    scriptTag, "load", true,
     function ScriptTag_Load (e) {
       if (dllName)
         JSIL.EndLoadNativeLibrary(dllName);
@@ -21,9 +22,9 @@ JSIL.loadGlobalScript = function (uri, onComplete, dllName) {
       done = true;
       onComplete(scriptTag, null);
     }
-  ); 
+  );
   JSIL.Browser.RegisterOneShotEventListener(
-    scriptTag, "error", true, 
+    scriptTag, "error", true,
     function ScriptTag_Error (e) {
       if (dllName)
         JSIL.EndLoadNativeLibrary(dllName);
@@ -122,7 +123,7 @@ function doXHR (uri, asBinary, onComplete) {
           response: response,
           status: status,
           statusText: statusText
-        }, 
+        },
         statusText || status
       );
     } else {
@@ -141,7 +142,7 @@ function doXHR (uri, asBinary, onComplete) {
 
     isDone = true;
     releaseEventListeners();
-    
+
     onComplete(null, error);
   };
 
@@ -182,7 +183,7 @@ function doXHR (uri, asBinary, onComplete) {
             bytes = new Uint8Array(buffer);
           } else if (
             (typeof (VBArray) !== "undefined") &&
-            ("responseBody" in req) && 
+            ("responseBody" in req) &&
             ((ieResponseBody = new VBArray(req.responseBody).toArray()) != null)
           ) {
             bytes = ieResponseBody;
@@ -290,7 +291,7 @@ function postProcessResultOpera (bytes) {
 };
 
 function loadBinaryFileAsync (uri, onComplete) {
-  var postProcessResult = postProcessResultNormal;  
+  var postProcessResult = postProcessResultNormal;
   if (window.navigator.userAgent.indexOf("Opera/") >= 0) {
     postProcessResult = postProcessResultOpera;
   }
@@ -311,7 +312,7 @@ var finishLoadingScript = function (state, path, onError, dllName) {
 
     if (error) {
       var errorText = "Network request failed: " + stringifyLoadError(error);
-      
+
       state.assetLoadFailures.push(
         [path, errorText]
       );
@@ -324,7 +325,7 @@ var finishLoadingScript = function (state, path, onError, dllName) {
       }
 
       onError(errorText);
-    }          
+    }
   }, dllName);
 };
 
@@ -359,14 +360,14 @@ var assetLoaders = {
   "NativeLibrary": function loadNativeLibrary (filename, data, onError, onDoneLoading, state) {
     if (state.jsilInitialized)
       throw new Error("A script was loaded after JSIL initialization");
-    
+
     var uri = jsilConfig.libraryRoot + filename;
     loadScriptInternal(uri, onError, onDoneLoading, state, filename);
   },
   "Script": function loadScript (filename, data, onError, onDoneLoading, state) {
     if (state.jsilInitialized)
       throw new Error("A script was loaded after JSIL initialization");
-    
+
     var uri = jsilConfig.scriptRoot + filename;
     loadScriptInternal(uri, onError, onDoneLoading, state);
   },
@@ -407,7 +408,7 @@ var assetLoaders = {
       if ((result !== null) && (!error)) {
         $jsilbrowserstate.allFileNames.push(filename);
         allFiles[filename.toLowerCase()] = result;
-        onDoneLoading(null); 
+        onDoneLoading(null);
       } else {
         onError(error);
       }
@@ -458,8 +459,8 @@ var assetLoaders = {
           dict = allManifestResources[data.assembly] = Object.create(null);
 
         dict[filename.toLowerCase()] = result;
-        
-        onDoneLoading(null); 
+
+        onDoneLoading(null);
       } else {
         onError(error);
       }
@@ -475,11 +476,11 @@ function $makeXNBAssetLoader (key, typeName) {
           $jsilbrowserstate.allAssetNames.push(filename);
           var key = getAssetName(filename, false);
           var assetName = getAssetName(filename, true);
-          var parsedTypeName = JSIL.ParseTypeName(typeName);    
+          var parsedTypeName = JSIL.ParseTypeName(typeName);
           var type = JSIL.GetTypeInternal(parsedTypeName, JSIL.GlobalNamespace, true);
           allAssets[key] = JSIL.CreateInstanceOfType(type, "_ctor", [assetName, result]);
         };
-        onDoneLoading(finisher); 
+        onDoneLoading(finisher);
       } else {
         onError(error);
       }

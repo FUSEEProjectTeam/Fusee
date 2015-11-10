@@ -1,3 +1,4 @@
+﻿/* It is auto-generated file. Do not modify it. */
 "use strict";
 
 var test = window.test = Object.create(null);
@@ -22,7 +23,7 @@ JSIL.TestFixture.RecordErrorService.prototype.error = function (exception) {
   } catch (_exc) {
   }
 
-  test.exceptions.push([exceptionTimestamp, exceptionMessage]);  
+  test.exceptions.push([exceptionTimestamp, exceptionMessage]);
 };
 
 

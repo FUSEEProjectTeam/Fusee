@@ -1,3 +1,4 @@
+﻿/* It is auto-generated file. Do not modify it. */
 "use strict";
 
 var currentLogLine = null;
@@ -62,17 +63,17 @@ JSIL.Browser.CanvasService.prototype.get = function (desiredWidth, desiredHeight
   if (
     (typeof (desiredWidth) !== "undefined") &&
     (typeof (desiredHeight) !== "undefined")
-  )  
+  )
     this.applySize(e, desiredWidth | 0, desiredHeight | 0, true);
-  
+
   return e;
 };
 
 JSIL.Browser.CanvasService.prototype.create = function (desiredWidth, desiredHeight) {
   var e = document.createElement("canvas");
-  
+
   this.applySize(e, desiredWidth | 0, desiredHeight | 0, false);
-  
+
   return e;
 };
 
@@ -152,7 +153,7 @@ JSIL.Browser.LogService.prototype.write = function (text) {
   if (!log) {
     if (window.console && window.console.log)
       window.console.log(text);
-    
+
     return;
   }
 
@@ -206,11 +207,11 @@ JSIL.Browser.WarningService.prototype.write = function (text) {
 
 
 JSIL.Browser.TickSchedulerService = function () {
-  var forceSetTimeout = false || 
+  var forceSetTimeout = false ||
     (document.location.search.indexOf("forceSetTimeout") >= 0);
 
   var requestAnimationFrame = window.requestAnimationFrame ||
-    window.mozRequestAnimationFrame || 
+    window.mozRequestAnimationFrame ||
     window.webkitRequestAnimationFrame ||
     window.msRequestAnimationFrame ||
     window.oRequestAnimationFrame;
@@ -290,15 +291,15 @@ JSIL.Browser.WindowService.prototype.getNavigatorUserAgent = function () {
 };
 
 JSIL.Browser.WindowService.prototype.getNavigatorLanguage = function () {
-  return this.window.navigator.language || 
-    this.window.navigator.userLanguage || 
-    this.window.navigator.systemLanguage || 
+  return this.window.navigator.language ||
+    this.window.navigator.userLanguage ||
+    this.window.navigator.systemLanguage ||
     null;
 };
 
 JSIL.Browser.WindowService.prototype.getPerformanceUsedJSHeapSize = function () {
   if (
-    (typeof (this.window.performance) !== "undefined") && 
+    (typeof (this.window.performance) !== "undefined") &&
     (typeof (this.window.performance.memory) !== "undefined")
   ) {
     return this.window.performance.memory.usedJSHeapSize;
@@ -432,22 +433,22 @@ JSIL.Host.translateFilename = function (filename) {
   var root = JSIL.Host.getRootDirectory().toLowerCase().replace(slashRe, "/");
   var _fileRoot = jsilConfig.fileRoot.toLowerCase().replace(slashRe, "/");
   var _filename = filename.replace(slashRe, "/").toLowerCase();
-  
+
   while (_filename[0] === "/")
     _filename = _filename.substr(1);
 
   if (_filename.indexOf(root) === 0)
     _filename = _filename.substr(root.length);
-  
+
   while (_filename[0] === "/")
     _filename = _filename.substr(1);
 
   if (_filename.indexOf(_fileRoot) === 0)
     _filename = _filename.substr(_fileRoot.length);
-  
+
   while (_filename[0] === "/")
     _filename = _filename.substr(1);
-  
+
   return _filename;
 }
 JSIL.Host.getImage = function (filename) {
@@ -484,7 +485,7 @@ JSIL.Host.getAssetVal = function (key) {
 JSIL.Host.getAsset = function (filename, stripRoot) {
   if (filename === null)
     throw new System.Exception("Filename was null");
-  
+
   if (stripRoot === true) {
     var backslashRe = /\\/g;
 
@@ -596,8 +597,8 @@ function initBrowserHooks () {
 
       evt.preventDefault();
       var keyCode = evt.keyCode;
-      var codes = keyMappings[keyCode] || [keyCode];        
-      
+      var codes = keyMappings[keyCode] || [keyCode];
+
       pressKeys(codes);
     }, true
   );
@@ -608,8 +609,8 @@ function initBrowserHooks () {
         evt.preventDefault();
 
       var keyCode = evt.keyCode;
-      var codes = keyMappings[keyCode] || [keyCode];        
-      
+      var codes = keyMappings[keyCode] || [keyCode];
+
       releaseKeys(codes);
     }, true
   );
@@ -648,7 +649,7 @@ function initBrowserHooks () {
     );
 
     canvas.addEventListener(
-      "mousedown", function (evt) {     
+      "mousedown", function (evt) {
         mapMouseCoords(evt);
 
         var button = evt.button;
@@ -662,7 +663,7 @@ function initBrowserHooks () {
     canvas.addEventListener(
       "mouseup", function (evt) {
         mapMouseCoords(evt);
-        
+
         var button = evt.button;
         $jsilbrowserstate.heldButtons = $jsilbrowserstate.heldButtons.filter(function (element, index, array) {
           (element !== button);
@@ -702,7 +703,7 @@ function initBrowserHooks () {
 function getAssetName (filename, preserveCase) {
   var backslashRe = /\\/g;
   filename = filename.replace(backslashRe, "/");
-  
+
   var doubleSlashRe = /\/\//g;
   while (filename.indexOf("//") >= 0)
     filename = filename.replace(doubleSlashRe, "/");
@@ -734,7 +735,7 @@ function updateProgressBar (prefix, suffix, bytesLoaded, bytesTotal) {
   var loadingProgress = document.getElementById("loadingProgress");
   var progressBar = document.getElementById("progressBar");
   var progressText = document.getElementById("progressText");
-  
+
   var w = 0;
   if (loadingProgress) {
     w = (bytesLoaded * loadingProgress.clientWidth) / (bytesTotal);
@@ -849,7 +850,7 @@ function finishLoading () {
 
         // Ensure that we initialize the JSIL runtime before constructing asset objects.
         if (
-          (item[0] != "Script") && 
+          (item[0] != "Script") &&
           (item[0] != "Library") &&
           (item[0] != "NativeLibrary")
         ) {
@@ -893,9 +894,9 @@ function finishLoading () {
   }
 };
 
-function pollAssetQueue () {      
+function pollAssetQueue () {
   var state = this;
-  
+
   var w = 0;
   updateProgressBar("Downloading: ", "kb", state.bytesLoaded / 1024, state.assetBytes / 1024);
 
@@ -945,13 +946,13 @@ function pollAssetQueue () {
       }
 
       JSIL.Host.logWriteLine("The asset '" + assetPath + "' could not be loaded: " + errorText);
-    };    
+    };
   };
 
   while ((state.assetsLoading < maxAssetsLoading) && (state.loadIndex < state.assetCount)) {
     try {
       var assetSpec = state.assets[state.loadIndex];
-    
+
       var assetType = assetSpec[0];
       var assetPath = assetSpec[1];
       var assetData = assetSpec[2] || null;
@@ -961,9 +962,9 @@ function pollAssetQueue () {
       if (assetData !== null)
         sizeBytes = assetData.sizeBytes || 1;
 
-      var stepCallback = makeStepCallback(state, assetType, sizeBytes, state.loadIndex, assetPath); 
-      var errorCallback = makeErrorCallback(assetPath, assetSpec);    
-      
+      var stepCallback = makeStepCallback(state, assetType, sizeBytes, state.loadIndex, assetPath);
+      var errorCallback = makeErrorCallback(assetPath, assetSpec);
+
       if (typeof (assetLoader) !== "function") {
         errorCallback("No asset loader registered for type '" + assetType + "'.");
       } else {
@@ -975,7 +976,7 @@ function pollAssetQueue () {
       state.loadIndex += 1;
     }
   }
-    
+
   if (state.assetsLoaded >= state.assetCount) {
     window.clearInterval(state.interval);
     state.interval = null;
@@ -994,10 +995,10 @@ function pollAssetQueue () {
           break;
         case "NativeLibrary":
           lhsTypeIndex = 0;
-          break;        
+          break;
         case "Script":
           lhsTypeIndex = 1;
-          break;        
+          break;
       }
 
       switch (rhs[0]) {
@@ -1007,7 +1008,7 @@ function pollAssetQueue () {
           break;
         case "NativeLibrary":
           rhsTypeIndex = 0;
-          break;        
+          break;
         case "Script":
           rhsTypeIndex = 1;
           break;
@@ -1074,7 +1075,7 @@ function beginLoading () {
   var fullscreenButton = document.getElementById("fullscreenButton");
   var loadingProgress = document.getElementById("loadingProgress");
   var stats = document.getElementById("stats");
-  
+
   if (progressBar)
     progressBar.style.width = "0px";
   if (loadButton)
@@ -1108,7 +1109,7 @@ function beginLoading () {
 
     }
   }
-  
+
   JSIL.Host.logWrite("Loading data ... ");
   loadAssets(allAssetsToLoad, browserFinishedLoadingCallback);
 };
@@ -1119,7 +1120,7 @@ function browserFinishedLoadingCallback (loadFailures) {
   var fullscreenButton = document.getElementById("fullscreenButton");
   var loadingProgress = document.getElementById("loadingProgress");
   var stats = document.getElementById("stats");
-  
+
   $jsilbrowserstate.isLoading = false;
   $jsilbrowserstate.isLoaded = true;
 
@@ -1128,7 +1129,7 @@ function browserFinishedLoadingCallback (loadFailures) {
   } else {
     JSIL.Host.logWriteLine("done.");
   }
-  try {     
+  try {
     if (fullscreenButton && canGoFullscreen)
       fullscreenButton.style.display = "";
 
@@ -1149,7 +1150,7 @@ function browserFinishedLoadingCallback (loadFailures) {
       }
     }
 
-    // Main doesn't block since we're using the browser's event loop          
+    // Main doesn't block since we're using the browser's event loop
   } finally {
     $jsilbrowserstate.isMainRunning = false;
 
@@ -1198,8 +1199,8 @@ function generateHTML () {
     progressDiv.innerHTML = (
       '  <div id="progressBar"></div>' +
       '  <span id="progressText"></span>'
-    );        
-  }  
+    );
+  }
 };
 
 function setupStats () {
@@ -1225,13 +1226,13 @@ function setupStats () {
         '<span id="replayState"></span><br>';
 
       if (!jsilConfig.fastReplay) {
-        statsHtml += 
+        statsHtml +=
           '<input type="checkbox" id="fastReplay" name="fastReplay"> <label for="fastReplay">Fast Playback</label>';
       }
     }
 
     if (jsilConfig.record) {
-      statsHtml += 
+      statsHtml +=
         '<br><span id="recordState"></span><br>' +
         '<button id="saveRecording">Save Recording</button>';
     }
@@ -1273,7 +1274,7 @@ function setupStats () {
         e.textContent = effectiveFramerate.toFixed(2);
 
         var cacheSizeMb = (cacheSize / (1024 * 1024)).toFixed(1);
-        
+
         if (isWebGL) {
           e = document.getElementById("usingWebGL");
           e.title = "Using WebGL for rendering";
@@ -1299,13 +1300,13 @@ function setupStats () {
 
   JSIL.Host.registerService("performanceReporter", {
     report: performanceReporterFunction
-  });  
+  });
 };
 
 function onLoad () {
   registerErrorHandler();
 
-  initBrowserHooks();  
+  initBrowserHooks();
 
   generateHTML();
   setupStats();
@@ -1333,11 +1334,11 @@ function onLoad () {
     if (jsilConfig.getFullscreenElement)
       fullscreenElement = jsilConfig.getFullscreenElement();
 
-    var reqFullscreen = fullscreenElement.requestFullScreenWithKeys || 
+    var reqFullscreen = fullscreenElement.requestFullScreenWithKeys ||
       fullscreenElement.mozRequestFullScreenWithKeys ||
       fullscreenElement.webkitRequestFullScreenWithKeys ||
-      fullscreenElement.requestFullscreen || 
-      fullscreenElement.mozRequestFullScreen || 
+      fullscreenElement.requestFullscreen ||
+      fullscreenElement.mozRequestFullScreen ||
       fullscreenElement.webkitRequestFullScreen ||
       null;
 
@@ -1349,13 +1350,13 @@ function onLoad () {
       };
 
       var onFullscreenChange = function () {
-        var isFullscreen = document.fullscreen || 
+        var isFullscreen = document.fullscreen ||
           document.fullScreen ||
-          document.mozFullScreen || 
+          document.mozFullScreen ||
           document.webkitIsFullScreen ||
-          fullscreenElement.fullscreen || 
+          fullscreenElement.fullscreen ||
           fullscreenElement.fullScreen ||
-          fullscreenElement.mozFullScreen || 
+          fullscreenElement.mozFullScreen ||
           fullscreenElement.webkitIsFullScreen ||
           false;
 
@@ -1392,12 +1393,12 @@ function onLoad () {
       );
     }
   };
-  
+
   if (loadButton && !jsilConfig.autoPlay) {
     loadButton.addEventListener(
       "click", beginLoading, true
     );
-  
+
     if (loadingProgress)
       loadingProgress.style.display = "none";
   } else {
@@ -1407,7 +1408,7 @@ function onLoad () {
 
 function registerErrorHandler () {
   var oldErrorHandler = window.onerror;
-  
+
   window.onerror = function JSIL_OnUnhandledException (errorMsg, url, lineNumber) {
     JSIL.Host.logWriteLine("Unhandled exception at " + url + " line " + lineNumber + ":");
     JSIL.Host.logWriteLine(errorMsg);
@@ -1423,7 +1424,7 @@ function stringifyLoadError (error) {
   if (error && error.statusText)
     return error.statusText;
   else if (
-    error && 
+    error &&
     (typeof (error) === "object") &&
     (error.toString().indexOf("[object") === 0)
   )
@@ -1443,11 +1444,11 @@ function showSaveRecordingDialog () {
     var dialog = document.createElement("div");
     dialog.id = "saveRecordingDialog";
 
-    dialog.innerHTML = 
+    dialog.innerHTML =
       '<label for="recordingName">Recording Name:</label> ' +
       '<input type="text" id="recordingName" value="test" style="background: white; color: black"><br>' +
       '<a id="saveRecordingToLocalStorage" href="#" style="color: black">Save to Local Storage</a> | ' +
-      '<a id="saveRecordingAsFile" download="test.replay" target="_blank" href="#" style="color: black">Download</a> | ' + 
+      '<a id="saveRecordingAsFile" download="test.replay" target="_blank" href="#" style="color: black">Download</a> | ' +
       '<a id="cancelSaveRecording" href="#" style="color: black">Close</a>';
 
     dialog.style.position = "absolute";
@@ -1517,7 +1518,7 @@ function hideSaveRecordingDialog (evt) {
   try {
     Microsoft.Xna.Framework.Game.ForceUnpause();
   } catch (exc) {
-  }  
+  }
 };
 
 JSIL.Browser.OneShotEventListenerCount = 0;

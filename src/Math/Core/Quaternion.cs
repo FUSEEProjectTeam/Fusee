@@ -615,7 +615,7 @@ namespace Fusee.Math
         {
             q.Normalize();
 
-            var test = 2.0*(q.x*q.y + q.z*q.w);
+            float test = 2.0f*(q.x*q.y + q.z*q.w);
 
             float x;
             float y;

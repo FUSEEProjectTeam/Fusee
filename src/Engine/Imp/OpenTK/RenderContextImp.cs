@@ -545,65 +545,46 @@ namespace Fusee.Engine
             {
                 ActiveUniformType uType;
 
-                var sParam = new ShaderParamInfo();
-                sParam.Name = GL.GetActiveUniform(sProg.Program, i, out sParam.Size, out uType);
-                sParam.Handle = GetShaderParam(sProg, sParam.Name);
+                var paramInfo = new ShaderParamInfo();
+                paramInfo.Name = GL.GetActiveUniform(sProg.Program, i, out paramInfo.Size, out uType);
+                paramInfo.Handle = GetShaderParam(sProg, paramInfo.Name);
 
                 switch (uType)
                 {
                     case ActiveUniformType.Int:
-                        sParam.Type = typeof (int);
+                        paramInfo.Type = typeof (int);
                         break;
 
                     case ActiveUniformType.Float:
-                        sParam.Type = typeof (float);
+                        paramInfo.Type = typeof (float);
                         break;
 
                     case ActiveUniformType.FloatVec2:
-                        sParam.Type = typeof (float2);
+                        paramInfo.Type = typeof (float2);
                         break;
 
                     case ActiveUniformType.FloatVec3:
-                        sParam.Type = typeof (float3);
+                        paramInfo.Type = typeof (float3);
                         break;
 
                     case ActiveUniformType.FloatVec4:
-                        sParam.Type = typeof (float4);
+                        paramInfo.Type = typeof (float4);
                         break;
 
                     case ActiveUniformType.FloatMat4:
-                        sParam.Type = typeof (float4x4);
+                        paramInfo.Type = typeof (float4x4);
                         break;
 
                     case ActiveUniformType.Sampler2D:
-                        sParam.Type = typeof (ITexture);
+                        paramInfo.Type = typeof (ITexture);
                         break;
 
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
 
-                // remove [0] if array
-                var baseName = sParam.Name;
-
-                if (baseName.Contains("[0]") && !baseName.Contains("]."))
-                    baseName = baseName.Remove(baseName.IndexOf('['));
-
-                sParam.Name = baseName;
-                sParam.Handle = GetShaderParam(sProg, sParam.Name);
-
-                paramList.Add(sParam);
-
-                // add all elements if array
-                for (var j = 1; j < sParam.Size; j++)
-                {
-                    sParam.Name = baseName + "[" + j + "]";
-                    sParam.Handle = GetShaderParam(sProg, sParam.Name);
-
-                    paramList.Add(sParam);
-                }
+                paramList.Add(paramInfo);
             }
-
             return paramList;
         }
 

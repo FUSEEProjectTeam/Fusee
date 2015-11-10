@@ -46,7 +46,7 @@ namespace FuExport
         public string SomeString;
     }
 
-
+    /*
     // [TagType(1036156)]
     public class ManagedTagBase<TData> : BaseTag where TData : class, new()
     {
@@ -83,7 +83,7 @@ namespace FuExport
             }
         }
     }
-
+    */
 
     // Your Plugin Number for "FUSEE General Tag" is: 1036156 
     // [TagPlugin(1036156, "General FUSEE export settings", "FuExportLogo.tif", Visible = true)]

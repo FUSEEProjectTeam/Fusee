@@ -42,13 +42,14 @@
     <Reference Include="Fusee.SerializationContainer">
       <HintPath>..\..\..\Bin\Debug\Fusee.SerializationContainer.dll</HintPath>
     </Reference>
-    <Reference Include="nunit.framework">
-      <HintPath>..\..\..\ExternalBinaries\nunit.framework.dll</HintPath>
-    </Reference>
     <ProjectReference Include="..\..\Math\Core\Math.Core.csproj">
       <Project>{E95FA1C8-6491-4B4B-BBE1-EDA6B16B2C6A}</Project>
       <Name>Math.Core</Name>
     </ProjectReference>
+    <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ExternalBinaries\nunit.framework.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Math\Core\QuaternionTests.cs" />

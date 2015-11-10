@@ -201,7 +201,7 @@ namespace Examples.SceneViewer
             //RC.Render(_meshTea);
 
 
-            RC.ModelView = mtxCam*mtxRot; //* _modelScaleOffset * ;
+            RC.ModelView = mtxCam * mtxRot *  _modelScaleOffset;
             _sr.Render(RC);
             _sr.Animate();
             _guiHandler.RenderGUI();

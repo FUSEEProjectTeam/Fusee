@@ -14,7 +14,7 @@ namespace Fusee.Engine
 
         internal IShaderProgramImp _spi;
         internal IRenderContextImp _rci;
-        internal Dictionary<string, IShaderParam> _paramsByName;
+        internal Dictionary<string, ShaderParamInfo> _paramsByName;
 
         #endregion
 
@@ -29,56 +29,33 @@ namespace Fusee.Engine
         {
             _spi = shaderProgramImp;
             _rci = renderContextImp;
-            _paramsByName = new Dictionary<string, IShaderParam>();
+            _paramsByName = new Dictionary<string, ShaderParamInfo>();
             foreach (ShaderParamInfo info in _rci.GetShaderParamList(_spi))
             {
-                _paramsByName.Add(info.Name, info.Handle);
+                _paramsByName.Add(info.Name, info);
             }
-            //_paramsByName = new Dictionary<string, ShaderParamInfo>();
-            //foreach (ShaderParamInfo info in _rci.GetShaderParamList(_spi))
-            //{
-            //    ShaderParamInfo newInfo = new ShaderParamInfo()
-            //                                  {
-            //                                      Handle = info.Handle,
-            //                                      Name = info.Name,
-            //                                      Type = info.Type,
-            //                                      Size = info.Size,
-            //                                  };
-            //    _paramsByName.Add(info.Name, newInfo);
-            //}
         }
-        
-        //public IShaderParam GetShaderParam(string paramName)
-        //{
-        //    ShaderParamInfo ret;
-        //    if (_paramsByName.TryGetValue(paramName, out ret))
-        //        return ret.Handle;
-        //    //ret = _rci.GetShaderParam(_spi, paramName);
-        //    //if (ret != null)
-        //        _paramsByName[paramName] = ret;
-        //    return ret.Handle;
-        //}
+
+        /// <summary>
+        /// Retrieves an identifier for the shader parameter name.
+        /// </summary>
+        /// <param name="paramName">Name of the parameter.</param>
+        /// <returns>A <see cref="IShaderParam"/> if paramName is declared and used as a uniform parameter within the shader program. Otherwise null</returns>
+        public IShaderParam GetShaderParam(string paramName)
+        {
+            return GetShaderParamInfo(paramName).Handle;
+        }
 
         /// <summary>
         /// Gets the shader parameter.
         /// </summary>
         /// <param name="paramName">Name of the parameter.</param>
-        /// <returns>A <see cref="IShaderParam"/>.</returns>
-        public IShaderParam GetShaderParam(string paramName)
+        /// <returns>A <see cref="ShaderParamInfo"/> object if paramName is declared and used as a uniform parameter within the shader program. Otherwise the Handle field of the returndes struct is null</returns>
+        public ShaderParamInfo GetShaderParamInfo(string paramName)
         {
-            IShaderParam ret;
-
-            if (paramName.Contains("[0]") && !paramName.Contains("]."))
-                paramName = paramName.Remove(paramName.IndexOf('['));
-
-            return _paramsByName.TryGetValue(paramName, out ret) ? ret : null;
-
-            /*
-                ret = _rci.GetShaderParam(_spi, paramName);
-                if (ret != null)
-                    _paramsByName[paramName] = ret;
-                return ret;
-             */
+            ShaderParamInfo ret;
+            _paramsByName.TryGetValue(paramName, out ret);
+            return ret;
         }
 
         #endregion

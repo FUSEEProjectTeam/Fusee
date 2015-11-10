@@ -432,9 +432,13 @@ JSIL.ImplementExternals("Fusee.Xirkit.PinFactory", function ($)
     {
         
         var ret = new Fusee.Xirkit.JsAccesssor(memberInfo);
-        
-        ret.SetImp = new Function("o", "val", "o." + memberInfo.Name + " = val;");
-        ret.GetImp = new Function("o", "return o." + memberInfo.Name + ";");
+
+        //
+        // ret.SetImp = new Function("o", "val", "o." + memberInfo.Name + " = val;");
+        // ret.GetImp = new Function("o", "return o." + memberInfo.Name + ";");
+
+        ret.SetImp = new Function("o", "val", "o." + memberInfo.get_Name() + " = val;");
+        ret.GetImp = new Function("o", "return o." + memberInfo.get_Name() + ";");
         
         return ret;
     }
@@ -460,8 +464,10 @@ JSIL.ImplementExternals("Fusee.Xirkit.PinFactory", function ($)
     {
 
         var ret = new Fusee.Xirkit.JsAccesssor(memberInfo);
-        ret.SetImp = new Function("o", "val", "o.set_" + memberInfo.Name + "(val);");
-        ret.GetImp = new Function("o", "return o.get_" + memberInfo.Name + "();");
+        //ret.SetImp = new Function("o", "val", "o.set_" + memberInfo.Name + "(val);");
+        //ret.GetImp = new Function("o", "return o.get_" + memberInfo.Name + "();");
+        ret.SetImp = new Function("o", "val", "o.set_" + memberInfo.get_Name() + "(val);");
+        ret.GetImp = new Function("o", "return o.get_" + memberInfo.get_Name() + "();");
 
         return ret;
 

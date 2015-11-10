@@ -1,3 +1,4 @@
+﻿/* It is auto-generated file. Do not modify it. */
 "use strict";
 
 if (typeof (JSIL) === "undefined")
@@ -108,7 +109,7 @@ JSIL.Replay.Recorder = function () {
 
 JSIL.Replay.Recorder.prototype.createServiceProxies = function () {
   var servicesToProxy = [
-    "time", "keyboard", "mouse", "pageVisibility", 
+    "time", "keyboard", "mouse", "pageVisibility",
     "window", "history", "gamepad"
   ];
 
@@ -136,7 +137,7 @@ JSIL.Replay.Recorder.prototype.pushFrame = function () {
     this.serviceProxies[key].setCurrentFrame(this.replay.frameCount - 1);
 
   if (
-    ((this.replay.frameCount % 5) === 0) && 
+    ((this.replay.frameCount % 5) === 0) &&
     (typeof (document) !== "undefined")
   ) {
     var statusSpan = document.getElementById("recordState");
@@ -439,7 +440,7 @@ JSIL.Replay.Player.prototype.onPlaybackEnded = function () {
 
     var standardDeviation = Math.sqrt(deviationSum / samples.length);
 
-    var result = {      
+    var result = {
       sum: roundTo4(sum),
       count: samples.length,
       min: roundTo4(min),
@@ -531,9 +532,9 @@ JSIL.Replay.Playback.ServiceProxy.prototype.findKeyframe = function (name) {
     var keyframe = keyframeList[pivot];
 
     if (
-      (keyframe[0] > this.frameIndex) || 
+      (keyframe[0] > this.frameIndex) ||
       (
-        (keyframe[0] >= this.frameIndex) && 
+        (keyframe[0] >= this.frameIndex) &&
         (keyframe[1] > this.callIndex)
       )
     ) {

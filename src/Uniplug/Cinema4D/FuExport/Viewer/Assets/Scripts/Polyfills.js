@@ -1,3 +1,4 @@
+﻿/* It is auto-generated file. Do not modify it. */
 if (typeof (Object.create) !== "function") {
   throw new Error("JSIL requires support for ES5 Object.create");
 }
@@ -10,12 +11,12 @@ if (typeof (Function.prototype.bind) !== "function") {
   // Implementation from https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Function/bind
   Function.prototype.bind = function( obj ) {
     var slice = [].slice,
-        args = slice.call(arguments, 1), 
-        self = this, 
-        nop = function () {}, 
+        args = slice.call(arguments, 1),
+        self = this,
+        nop = function () {},
         bound = function () {
-          return self.apply( this instanceof nop ? this : ( obj || {} ), 
-                              args.concat( slice.call(arguments) ) );    
+          return self.apply( this instanceof nop ? this : ( obj || {} ),
+                              args.concat( slice.call(arguments) ) );
         };
 
     nop.prototype = self.prototype;
@@ -51,7 +52,7 @@ if (typeof (Math.fround) === "function") {
 }
 
 if (typeof (Math.imul) === "function") {
-} else { 
+} else {
   (function () {
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/imul
 
@@ -64,7 +65,7 @@ if (typeof (Math.imul) === "function") {
       // the final |0 converts the unsigned value into a signed value
       return (
         (al * bl) + (
-          ((ah * bl + al * bh) << 16) 
+          ((ah * bl + al * bh) << 16)
           >>> 0
         ) | 0
       );
