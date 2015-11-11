@@ -1,3 +1,4 @@
+﻿/* It is auto-generated file. Do not modify it. */
 function initTouchEvents () {
   JSIL.Host.hasTouchEvents = (typeof (TouchEvent) !== "undefined");
   JSIL.Host.isTouchInUse = false;
@@ -34,7 +35,7 @@ function initTouchEvents () {
   window.addEventListener("touchend", function (evt) {
     if (jsilConfig.touch)
       evt.preventDefault();
-    
+
     setTouchInUse();
 
     JSIL.Host.currentNativeTouches = evt.touches;

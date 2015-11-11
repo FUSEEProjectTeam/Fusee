@@ -24,7 +24,7 @@ namespace Examples.SerialisationExample
         public override void Init()
         {
             RC.ClearColor = new float4(1, 1, 1, 1);
-            _spColor = MoreShaders.GetDiffuseColorShader(RC);
+            _spColor = Shaders.GetDiffuseColorShader(RC);
             _colorParam = _spColor.GetShaderParam("color");
             RC.SetShader(_spColor);
             RC.SetShaderParam(_colorParam, new float4(1, 0, 0, 1));

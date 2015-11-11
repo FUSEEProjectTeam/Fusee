@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Drawing.Text;
@@ -37,13 +36,13 @@ namespace Fusee.Engine
         {
             _currentTextureUnit = 0;
             _shaderParam2TexUnit = new Dictionary<int, int>();
-            
+
             // Due to the right-handed nature of OpenGL and the left-handed design of FUSEE
             // the meaning of what's Front and Back of a face simply flips.
             // TODO - implement this in render states!!!
-       
+
             GL.CullFace(CullFaceMode.Back);
-			
+
             _sharpFont = new Library();
         }
 
@@ -79,11 +78,11 @@ namespace Fusee.Engine
 
                 GL.BindTexture(TextureTarget.Texture2D, ((Texture) tex).handle);
                 GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, img.Width, img.Height,
-                                 format, PixelType.UnsignedByte, img.PixelData);
+                    format, PixelType.UnsignedByte, img.PixelData);
             }
 
         }
-        
+
         /// <summary>
         /// Updates a specific rectangle of a texture.
         /// </summary>
@@ -109,7 +108,7 @@ namespace Fusee.Engine
                     throw new ArgumentOutOfRangeException();
             }
 
-            GL.BindTexture(TextureTarget.Texture2D, ((Texture)tex).handle);
+            GL.BindTexture(TextureTarget.Texture2D, ((Texture) tex).handle);
             GL.TexSubImage2D(TextureTarget.Texture2D, 0, startX, startY, width, height,
                 format, PixelType.UnsignedByte, img.PixelData);
         }
@@ -150,7 +149,7 @@ namespace Fusee.Engine
             return ret;
         }
 
-       /// <summary>
+        /// <summary>
         /// Creates a new Image with a specified size and color.
         /// </summary>
         /// <param name="width">The width of the image.</param>
@@ -308,7 +307,7 @@ namespace Fusee.Engine
             if (font == null)
                 return null;
 
-            var texAtlas = ((Font)font);
+            var texAtlas = ((Font) font);
             var face = texAtlas.Face;
 
             // get atlas texture size
@@ -358,16 +357,16 @@ namespace Fusee.Engine
             GL.PixelStore(PixelStoreParameter.UnpackAlignment, 1);
 
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS,
-                (int)TextureWrapMode.ClampToEdge);
+                (int) TextureWrapMode.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT,
-                (int)TextureWrapMode.ClampToEdge);
+                (int) TextureWrapMode.ClampToEdge);
 
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter,
-                (int)TextureMinFilter.Linear);
+                (int) TextureMinFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter,
-                (int)TextureMagFilter.Linear);
+                (int) TextureMagFilter.Linear);
 
-            texAtlas.TexAtlas = new Texture { handle = tex };
+            texAtlas.TexAtlas = new Texture {handle = tex};
 
             // paste the glyph images into the texture atlas
             texAtlas.CharInfo = new CharInfoStruct[256];
@@ -401,8 +400,8 @@ namespace Fusee.Engine
                 texAtlas.CharInfo[i].BitmapL = face.Glyph.BitmapLeft;
                 texAtlas.CharInfo[i].BitmapT = face.Glyph.BitmapTop;
 
-                texAtlas.CharInfo[i].TexOffX = offX / (float)maxWidth;
-                texAtlas.CharInfo[i].TexOffY = offY / (float)potH;
+                texAtlas.CharInfo[i].TexOffX = offX/(float) maxWidth;
+                texAtlas.CharInfo[i].TexOffY = offY/(float) potH;
 
                 rowH = System.Math.Max(rowH, face.Glyph.Bitmap.Rows);
                 offX += face.Glyph.Bitmap.Width + 1;
@@ -429,7 +428,7 @@ namespace Fusee.Engine
             // use kerning -> fix values
             var fixX = 0f;
             var fixVert = 4;
-            
+
             for (var c = 0; c < text.Length - 1; c++)
             {
                 var leftChar = texAtlas.Face.GetCharIndex(text[c]);
@@ -510,8 +509,8 @@ namespace Fusee.Engine
         /// <returns>The Shader parameter is returned if the name is found, otherwise null.</returns>
         public IShaderParam GetShaderParam(IShaderProgramImp shaderProgram, string paramName)
         {
-            int h = GL.GetUniformLocation(((ShaderProgramImp)shaderProgram).Program, paramName);
-            return (h == -1) ? null : new ShaderParam { handle = h };
+            int h = GL.GetUniformLocation(((ShaderProgramImp) shaderProgram).Program, paramName);
+            return (h == -1) ? null : new ShaderParam {handle = h};
         }
 
         /// <summary>
@@ -524,7 +523,7 @@ namespace Fusee.Engine
         public float GetParamValue(IShaderProgramImp program, IShaderParam param)
         {
             float f;
-            GL.GetUniform(((ShaderProgramImp)program).Program, ((ShaderParam)param).handle, out f);
+            GL.GetUniform(((ShaderProgramImp) program).Program, ((ShaderParam) param).handle, out f);
             return f;
         }
 
@@ -536,45 +535,57 @@ namespace Fusee.Engine
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         public IList<ShaderParamInfo> GetShaderParamList(IShaderProgramImp shaderProgram)
         {
-            var sp = (ShaderProgramImp)shaderProgram;
+            var sProg = (ShaderProgramImp) shaderProgram;
+            var paramList = new List<ShaderParamInfo>();
+
             int nParams;
-            GL.GetProgram(sp.Program, ProgramParameter.ActiveUniforms, out nParams);
-            var list = new List<ShaderParamInfo>();
-            for (int i = 0; i < nParams; i++)
+            GL.GetProgram(sProg.Program, GetProgramParameterName.ActiveUniforms, out nParams);
+
+            for (var i = 0; i < nParams; i++)
             {
-                ActiveUniformType t;
-                var ret = new ShaderParamInfo();
-                ret.Name = GL.GetActiveUniform(sp.Program, i, out ret.Size, out t);
-                ret.Handle = GetShaderParam(sp, ret.Name);
-                switch (t)
+                ActiveUniformType uType;
+
+                var paramInfo = new ShaderParamInfo();
+                paramInfo.Name = GL.GetActiveUniform(sProg.Program, i, out paramInfo.Size, out uType);
+                paramInfo.Handle = GetShaderParam(sProg, paramInfo.Name);
+
+                switch (uType)
                 {
                     case ActiveUniformType.Int:
-                        ret.Type = typeof(int);
+                        paramInfo.Type = typeof (int);
                         break;
+
                     case ActiveUniformType.Float:
-                        ret.Type = typeof(float);
+                        paramInfo.Type = typeof (float);
                         break;
+
                     case ActiveUniformType.FloatVec2:
-                        ret.Type = typeof(float2);
+                        paramInfo.Type = typeof (float2);
                         break;
+
                     case ActiveUniformType.FloatVec3:
-                        ret.Type = typeof(float3);
+                        paramInfo.Type = typeof (float3);
                         break;
+
                     case ActiveUniformType.FloatVec4:
-                        ret.Type = typeof(float4);
+                        paramInfo.Type = typeof (float4);
                         break;
+
                     case ActiveUniformType.FloatMat4:
-                        ret.Type = typeof(float4x4);
+                        paramInfo.Type = typeof (float4x4);
                         break;
+
                     case ActiveUniformType.Sampler2D:
-                        ret.Type = typeof (ITexture);
+                        paramInfo.Type = typeof (ITexture);
                         break;
+
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
-                list.Add(ret);
+
+                paramList.Add(paramInfo);
             }
-            return list;
+            return paramList;
         }
 
 
@@ -585,7 +596,7 @@ namespace Fusee.Engine
         /// <param name="val">The value.</param>
         public void SetShaderParam(IShaderParam param, float val)
         {
-            GL.Uniform1(((ShaderParam)param).handle, val);
+            GL.Uniform1(((ShaderParam) param).handle, val);
         }
 
         /// <summary>
@@ -595,7 +606,7 @@ namespace Fusee.Engine
         /// <param name="val">The value.</param>
         public void SetShaderParam(IShaderParam param, float2 val)
         {
-            GL.Uniform2(((ShaderParam)param).handle, val.x, val.y);
+            GL.Uniform2(((ShaderParam) param).handle, val.x, val.y);
         }
 
         /// <summary>
@@ -605,7 +616,7 @@ namespace Fusee.Engine
         /// <param name="val">The value.</param>
         public void SetShaderParam(IShaderParam param, float3 val)
         {
-            GL.Uniform3(((ShaderParam)param).handle, val.x, val.y, val.z);
+            GL.Uniform3(((ShaderParam) param).handle, val.x, val.y, val.z);
         }
 
         /// <summary>
@@ -615,7 +626,7 @@ namespace Fusee.Engine
         /// <param name="val">The value.</param>
         public void SetShaderParam(IShaderParam param, float4 val)
         {
-            GL.Uniform4(((ShaderParam)param).handle, val.x, val.y, val.z, val.w);
+            GL.Uniform4(((ShaderParam) param).handle, val.x, val.y, val.z, val.w);
         }
 
         // TODO add vector implementations
@@ -629,13 +640,45 @@ namespace Fusee.Engine
         {
             unsafe
             {
-                var mF = (float*)(&val);
+                var mF = (float*) (&val);
                 // Row order notation
                 // GL.UniformMatrix4(((ShaderParam) param).handle, 1, false, mF);
 
                 // Column order notation
-                GL.UniformMatrix4(((ShaderParam)param).handle, 1, true, mF);
+                GL.UniformMatrix4(((ShaderParam) param).handle, 1, true, mF);
             }
+        }
+
+        /// <summary>
+        ///     Sets a <see cref="float4" /> array shader parameter.
+        /// </summary>
+        /// <param name="param">The parameter.</param>
+        /// <param name="val">The value.</param>
+        public unsafe void SetShaderParam(IShaderParam param, float4[] val)
+        {
+            fixed (float4* pFlt = &val[0])
+                GL.Uniform4(((ShaderParam) param).handle, val.Length, (float*) pFlt);
+        }
+
+        /// <summary>
+        /// Sets a <see cref="float4x4" /> array shader parameter.
+        /// </summary>
+        /// <param name="param">The parameter.</param>
+        /// <param name="val">The value.</param>
+        public unsafe void SetShaderParam(IShaderParam param, float4x4[] val)
+        {
+            var tmpArray = new float4[val.Length*4];
+
+            for (var i = 0; i < val.Length; i++)
+            {
+                tmpArray[i*4] = val[i].Column0;
+                tmpArray[i*4 + 1] = val[i].Column1;
+                tmpArray[i*4 + 2] = val[i].Column2;
+                tmpArray[i*4 + 3] = val[i].Column3;
+            }
+
+            fixed (float4* pMtx = &tmpArray[0])
+                GL.UniformMatrix4(((ShaderParam) param).handle, val.Length, false, (float*) pMtx);
         }
 
         /// <summary>
@@ -752,6 +795,8 @@ namespace Fusee.Engine
             GL.BindAttribLocation(program, Helper.UvAttribLocation, Helper.UvAttribName);
             GL.BindAttribLocation(program, Helper.NormalAttribLocation, Helper.NormalAttribName);
             GL.BindAttribLocation(program, Helper.TangentAttribLocation, Helper.TangentAttribName);
+            GL.BindAttribLocation(program, Helper.BoneIndexAttribLocation, Helper.BoneIndexAttribName);
+            GL.BindAttribLocation(program, Helper.BoneWeightAttribLocation, Helper.BoneWeightAttribName);
             GL.BindAttribLocation(program, Helper.BitangentAttribLocation, Helper.BitangentAttribName);
 
             GL.LinkProgram(program); // AAAARRRRRGGGGHHHH!!!! Must be called AFTER BindAttribLocation
@@ -838,6 +883,64 @@ namespace Fusee.Engine
                 throw new ApplicationException(String.Format(
                     "Problem uploading normal buffer to VBO (normals). Tried to upload {0} bytes, uploaded {1}.",
                     normsBytes, vboBytes));
+            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+        }
+
+        /// <summary>
+        /// Binds the boneindices onto the GL Rendercontext and assigns an BondeIndexBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="boneIndices">The boneindices.</param>
+        /// <exception cref="System.ArgumentException">BoneIndices must not be null or empty</exception>
+        /// <exception cref="System.ApplicationException"></exception>
+        public void SetBoneIndices(IMeshImp mr, float4[] boneIndices)
+        {
+            if (boneIndices == null || boneIndices.Length == 0)
+            {
+                throw new ArgumentException("BoneIndices must not be null or empty");
+            }
+
+            int vboBytes;
+            int indicesBytes = boneIndices.Length * 4 * sizeof(float);
+            if (((MeshImp)mr).BoneIndexBufferObject == 0)
+                GL.GenBuffers(1, out ((MeshImp)mr).BoneIndexBufferObject);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BoneIndexBufferObject);
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(indicesBytes), boneIndices, BufferUsageHint.StaticDraw);
+            GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out vboBytes);
+            if (vboBytes != indicesBytes)
+                throw new ApplicationException(String.Format(
+                    "Problem uploading boneindices buffer to VBO (boneindices). Tried to upload {0} bytes, uploaded {1}.",
+                    indicesBytes, vboBytes));
+            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+        }
+
+        /// <summary>
+        /// Binds the boneweights onto the GL Rendercontext and assigns an BondeWeightBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="boneWeights">The boneweights.</param>
+        /// <exception cref="System.ArgumentException">BoneWeights must not be null or empty</exception>
+        /// <exception cref="System.ApplicationException"></exception>
+        public void SetBoneWeights(IMeshImp mr, float4[] boneWeights)
+        {
+            if (boneWeights == null || boneWeights.Length == 0)
+            {
+                throw new ArgumentException("BoneWeights must not be null or empty");
+            }
+
+            int vboBytes;
+            int weightsBytes = boneWeights.Length * 4 * sizeof(float);
+            if (((MeshImp)mr).BoneWeightBufferObject == 0)
+                GL.GenBuffers(1, out ((MeshImp)mr).BoneWeightBufferObject);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BoneWeightBufferObject);
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(weightsBytes), boneWeights, BufferUsageHint.StaticDraw);
+            GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out vboBytes);
+            if (vboBytes != weightsBytes)
+                throw new ApplicationException(String.Format(
+                    "Problem uploading boneweights buffer to VBO (boneweights). Tried to upload {0} bytes, uploaded {1}.",
+                    weightsBytes, vboBytes));
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
 
@@ -1030,6 +1133,20 @@ namespace Fusee.Engine
                 GL.EnableVertexAttribArray(Helper.NormalAttribLocation);
                 GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp) mr).NormalBufferObject);
                 GL.VertexAttribPointer(Helper.NormalAttribLocation, 3, VertexAttribPointerType.Float, false, 0,
+                    IntPtr.Zero);
+            }
+            if (((MeshImp)mr).BoneIndexBufferObject != 0)
+            {
+                GL.EnableVertexAttribArray(Helper.BoneIndexAttribLocation);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BoneIndexBufferObject);
+                GL.VertexAttribPointer(Helper.BoneIndexAttribLocation, 4, VertexAttribPointerType.Float, false, 0,
+                    IntPtr.Zero);
+            }
+            if (((MeshImp)mr).BoneWeightBufferObject != 0)
+            {
+                GL.EnableVertexAttribArray(Helper.BoneWeightAttribLocation);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BoneWeightBufferObject);
+                GL.VertexAttribPointer(Helper.BoneWeightAttribLocation, 4, VertexAttribPointerType.Float, false, 0,
                     IntPtr.Zero);
             }
             if (((MeshImp) mr).ElementBufferObject != 0)

@@ -132,6 +132,21 @@ namespace Examples.HandOnCanvas
             _shaderEffect.AttachToContext(RC);
         }
 
+
+        public Mesh MakeMesh(MeshComponent mc)
+        {
+            Mesh rm;
+            rm = new Mesh()
+            {
+                Colors = null,
+                Normals = mc.Normals,
+                UVs = mc.UVs,
+                Vertices = mc.Vertices,
+                Triangles = mc.Triangles
+            };
+            return rm;
+        }
+
         // is called on startup
         public override void Init()
         {
@@ -144,7 +159,7 @@ namespace Examples.HandOnCanvas
             using (var file = File.OpenRead(@"Assets/HandIndexCenter.fus"))
             {
                 scene = ser.Deserialize(file, null, typeof(SceneContainer)) as SceneContainer;
-                _meshHand = SceneRenderer.MakeMesh(scene.Children[0].GetMesh());
+                _meshHand = MakeMesh(scene.Children[0].GetMesh());
             }
         }
 

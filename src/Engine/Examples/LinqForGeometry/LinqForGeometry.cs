@@ -157,7 +157,7 @@ namespace Examples.LinqForGeometry
             #region Shaders
             #region TextureShader
 
-            _msDiffuse = MoreShaders.GetDiffuseTextureShader(RC);
+            _msDiffuse = Shaders.GetDiffuseTextureShader(RC);
             _vLightShaderParam = _msDiffuse.GetShaderParam("texture1");
 
             //ImageData imgData = RC.LoadImage("Assets/Cube_Mat_uv.jpg");
@@ -172,7 +172,7 @@ namespace Examples.LinqForGeometry
 
             #region ColorShader
 
-            _spColor = MoreShaders.GetDiffuseColorShader(RC);
+            _spColor = Shaders.GetDiffuseColorShader(RC);
             _colorParam = _spColor.GetShaderParam("color");
 
             RC.SetShader(_spColor);

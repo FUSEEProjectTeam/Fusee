@@ -1,9 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
+
+using System.Linq;
+using System.Threading;
+using Fusee.Engine;using Fusee.KeyFrameAnimation;
 using Fusee.Math;
 using Fusee.Serialization;
-
 namespace Fusee.Engine.SimpleScene
 {
 
@@ -137,9 +142,12 @@ namespace Fusee.Engine.SimpleScene
     /// </summary>
     public class SceneRenderer : SceneVisitor
     {
+
         #region Traversal information
         private Dictionary<MeshComponent, Mesh> _meshMap;
         private Dictionary<MaterialComponent, ShaderEffect> _matMap;
+        private Dictionary<SceneNodeContainer, float4x4> _boneMap;
+        private Animation _animation;
         private SceneContainer _sc;
 
         private RenderContext _rc;
@@ -152,6 +160,7 @@ namespace Fusee.Engine.SimpleScene
         #region State
         public class RendererState : VisitorState
         {
+
             private CollapsingStateStack<float4x4> _model = new CollapsingStateStack<float4x4>();
             public float4x4 Model
             {
@@ -185,6 +194,92 @@ namespace Fusee.Engine.SimpleScene
             _sc = sc;
             _scenePathDirectory = scenePathDirectory;
             _state = new RendererState();
+            InitAnimations(_sc);
+        }
+        public void InitAnimations(SceneContainer sc)
+        {
+            _animation = new Animation();
+
+            foreach (AnimationComponent ac in sc.Children.FindComponents<AnimationComponent>(c => true))
+            {
+                if (ac.AnimationTracks != null)
+                {
+                    foreach (AnimationTrackContainer animTrackContainer in ac.AnimationTracks)
+                    {
+                        Type t = animTrackContainer.KeyType;
+                        if (typeof(int).IsAssignableFrom(t))
+                        {
+                            Channel<int> channel = new Channel<int>(Lerp.IntLerp);
+                            foreach (AnimationKeyContainerInt key in animTrackContainer.KeyFrames)
+                            {
+                                channel.AddKeyframe(new Keyframe<int>(key.Time, key.Value));
+                            }
+                            _animation.AddAnimation(channel, animTrackContainer.SceneComponent,
+                                animTrackContainer.Property);
+                        }
+                        else if (typeof(float).IsAssignableFrom(t))
+                        {
+                            Channel<float> channel = new Channel<float>(Lerp.FloatLerp);
+                            foreach (AnimationKeyContainerFloat key in animTrackContainer.KeyFrames)
+                            {
+                                channel.AddKeyframe(new Keyframe<float>(key.Time, key.Value));
+                            }
+                            _animation.AddAnimation(channel, animTrackContainer.SceneComponent,
+                                animTrackContainer.Property);
+                        }
+                        else if (typeof(float2).IsAssignableFrom(t))
+                        {
+                            Channel<float2> channel = new Channel<float2>(Lerp.Float2Lerp);
+                            foreach (AnimationKeyContainerFloat2 key in animTrackContainer.KeyFrames)
+                            {
+                                channel.AddKeyframe(new Keyframe<float2>(key.Time, key.Value));
+                            }
+                            _animation.AddAnimation(channel, animTrackContainer.SceneComponent,
+                                animTrackContainer.Property);
+                        }
+                        else if (typeof(float3).IsAssignableFrom(t))
+                        {
+                            Channel<float3>.LerpFunc lerpFunc;
+                            switch (animTrackContainer.LerpType)
+                            {
+                                case LerpType.Lerp:
+                                    lerpFunc = Lerp.Float3Lerp;
+                                    break;
+                                case LerpType.Slerp:
+                                    lerpFunc = Lerp.Float3QuaternionSlerp;
+                                    break;
+                                default:
+                                    // C# 6throw new InvalidEnumArgumentException(nameof(animTrackContainer.LerpType), (int)animTrackContainer.LerpType, typeof(LerpType));
+                                    throw new InvalidEnumArgumentException("animTrackContainer.LerpType", (int)animTrackContainer.LerpType, typeof(LerpType));
+                            }
+                            Channel<float3> channel = new Channel<float3>(lerpFunc);
+                            foreach (AnimationKeyContainerFloat3 key in animTrackContainer.KeyFrames)
+                            {
+                                channel.AddKeyframe(new Keyframe<float3>(key.Time, key.Value));
+                            }
+                            _animation.AddAnimation(channel, animTrackContainer.SceneComponent,
+                                animTrackContainer.Property);
+                        }
+                        else if (typeof(float4).IsAssignableFrom(t))
+                        {
+                            Channel<float4> channel = new Channel<float4>(Lerp.Float4Lerp);
+                            foreach (AnimationKeyContainerFloat4 key in animTrackContainer.KeyFrames)
+                            {
+                                channel.AddKeyframe(new Keyframe<float4>(key.Time, key.Value));
+                            }
+                            _animation.AddAnimation(channel, animTrackContainer.SceneComponent,
+                                animTrackContainer.Property);
+                        }
+                        //TODO : Add cases for each type
+                    }
+                }
+            }
+        }
+
+        public void Animate()
+        {
+            if (_animation.ChannelBaseList.Count != 0)
+                _animation.Animate();
         }
 
         public void SetContext(RenderContext rc)
@@ -197,6 +292,7 @@ namespace Fusee.Engine.SimpleScene
                 _rc = rc;
                 _meshMap = new Dictionary<MeshComponent, Mesh>();
                 _matMap = new Dictionary<MaterialComponent, ShaderEffect>();
+                _boneMap = new Dictionary<SceneNodeContainer, float4x4>();
                 _defaultEffect = MakeMaterial(new MaterialComponent
                 {
                     Diffuse = new MatChannelContainer()
@@ -222,6 +318,30 @@ namespace Fusee.Engine.SimpleScene
         }
 
         #region Visitors
+
+        [VisitMethod]
+        public void RenderBone(BoneComponent bone)
+        {
+            SceneNodeContainer boneContainer = CurrentNode;
+            float4x4 transform;
+            if (!_boneMap.TryGetValue(boneContainer, out transform))
+                _boneMap.Add(boneContainer, _rc.Model);
+            else
+                _boneMap[boneContainer] = _rc.Model;
+        }
+
+        [VisitMethod]
+        public void RenderWeight(WeightComponent weight)
+        {
+            float4x4[] boneArray = new float4x4[weight.Joints.Count()];
+            for (int i = 0; i < weight.Joints.Count(); i++)
+            {
+                float4x4 tmp = weight.BindingMatrices[i];
+                boneArray[i] = _boneMap[weight.Joints[i]] * tmp;
+            }
+            _rc.Bones = boneArray;
+        }
+
 
         [VisitMethod]
         public void RenderTransform(TransformComponent transform)
@@ -323,17 +443,174 @@ namespace Fusee.Engine.SimpleScene
             return mat;
         }
 
-        public static Mesh MakeMesh(MeshComponent mc)
+        public Mesh MakeMesh(MeshComponent mc)
         {
+            WeightComponent wc = CurrentNode.GetWeights();
             Mesh rm;
-            rm = new Mesh()
+            if (wc == null)
             {
-                Colors = null,
-                Normals = mc.Normals,
-                UVs = mc.UVs,
-                Vertices = mc.Vertices,
-                Triangles = mc.Triangles
-            };
+                rm = new Mesh()
+                {
+                    Colors = null,
+                    Normals = mc.Normals,
+                    UVs = mc.UVs,
+                    Vertices = mc.Vertices,
+                    Triangles = mc.Triangles
+                };
+            }
+            else // Create Mesh with weightdata
+            {
+                float4[] boneWeights = new float4[wc.WeightMap.Count];
+                float4[] boneIndices = new float4[wc.WeightMap.Count];
+
+                // Iterate over the vertices
+                for (int iVert = 0; iVert < wc.WeightMap.Count; iVert++)
+                {
+                    int nJoints = System.Math.Min(4, wc.WeightMap[iVert].VertexWeights.Count);
+                    for (int iJoint = 0; iJoint < nJoints; iJoint++)
+                    {
+                        // boneWeights[iVert][iJoint] = wc.WeightMap[iVert].VertexWeights[iJoint].Weight;
+                        // boneIndices[iVert][iJoint] = wc.WeightMap[iVert].VertexWeights[iJoint].JointIndex;
+                        // Darn JSIL cannot handle float4 indexer. Map [0..3] to [x..z] by hand
+                        switch (iJoint)
+                        {
+                            case 0:
+                                boneWeights[iVert].x = wc.WeightMap[iVert].VertexWeights[iJoint].Weight;
+                                boneIndices[iVert].x = wc.WeightMap[iVert].VertexWeights[iJoint].JointIndex;
+                                break;
+                            case 1:
+                                boneWeights[iVert].y = wc.WeightMap[iVert].VertexWeights[iJoint].Weight;
+                                boneIndices[iVert].y = wc.WeightMap[iVert].VertexWeights[iJoint].JointIndex;
+                                break;
+                            case 2:
+                                boneWeights[iVert].z = wc.WeightMap[iVert].VertexWeights[iJoint].Weight;
+                                boneIndices[iVert].z = wc.WeightMap[iVert].VertexWeights[iJoint].JointIndex;
+                                break;
+                            case 3:
+                                boneWeights[iVert].w = wc.WeightMap[iVert].VertexWeights[iJoint].Weight;
+                                boneIndices[iVert].w = wc.WeightMap[iVert].VertexWeights[iJoint].JointIndex;
+                                break;
+                        }
+                    }
+                    boneWeights[iVert].Normalize1();
+                }
+
+                rm = new Mesh()
+                {
+                    Colors = null,
+                    Normals = mc.Normals,
+                    UVs = mc.UVs,
+                    BoneIndices = boneIndices,
+                    BoneWeights = boneWeights,
+                    Vertices = mc.Vertices,
+                    Triangles = mc.Triangles
+                };
+
+
+
+
+                /*
+                // invert weightmap to handle it easier
+                float[,] invertedWeightMap = new float[wc.WeightMap[0].JointWeights.Count, wc.Joints.Count];
+                for (int i = 0; i < wc.WeightMap.Count; i++)
+                {
+                    for (int j = 0; j < wc.WeightMap[i].JointWeights.Count; j++)
+                    {
+                        invertedWeightMap[j, i] = (float) wc.WeightMap[i].JointWeights[j];
+                    }
+                }
+
+                float4[] boneWeights = new float4[invertedWeightMap.GetLength(0)];
+                float4[] boneIndices = new float4[invertedWeightMap.GetLength(0)];
+
+                // Contents of the invertedWeightMap:
+                // ----------------------------------
+                // Imagine the weight table as seen in 3d modelling programs, i.e. cinema4d;
+                // wij are values in the range between 0..1 and specify to which percentage 
+                // the vertex (i) is controlled by the bone (j).
+                //
+                //            bone 0   bone 1   bone 2   bone 3   ....  -> indexed by j
+                // vertex 0:   w00      w01      w02      w03
+                // vertex 1:   w10      w11      w12      w13
+                // vertex 2:   w20      w21      w22      w23
+                // vertex 3:   w30      w31      w32      w33
+                //   ...
+                //  indexed 
+                //   by i
+
+                // Iterate over the vertices
+                for (int iVert = 0; iVert < invertedWeightMap.GetLength(0); iVert++)
+                {
+                    boneWeights[iVert] = new float4(0, 0, 0, 0);
+                    boneIndices[iVert] = new float4(0, 0, 0, 0);
+
+                    var tempDictionary = new Dictionary<int, float>();
+
+                    // For the given vertex i, see which bones control us
+                    for (int j = 0; j < invertedWeightMap.GetLength(1); j++)
+                    {
+                        if (j < 4)
+                        {
+                            tempDictionary.Add(j, invertedWeightMap[iVert, j]);
+                        }
+                        else
+                        {
+                            float tmpWeight = invertedWeightMap[iVert, j];
+                            var keyAndValue = tempDictionary.OrderBy(kvp => kvp.Value).First();
+                            if (tmpWeight > keyAndValue.Value)
+                            {
+                                tempDictionary.Remove(keyAndValue.Key);
+                                tempDictionary.Add(j, tmpWeight);
+                            }
+                        }
+                    }
+
+                    if (tempDictionary.Count != 0)
+                    {
+                        var keyValuePair = tempDictionary.First();
+                        boneIndices[iVert].x = keyValuePair.Key;
+                        boneWeights[iVert].x = keyValuePair.Value;
+                        tempDictionary.Remove(keyValuePair.Key);
+                    }
+                    if (tempDictionary.Count != 0)
+                    {
+                        var keyValuePair = tempDictionary.First();
+                        boneIndices[iVert].y = keyValuePair.Key;
+                        boneWeights[iVert].y = keyValuePair.Value;
+                        tempDictionary.Remove(keyValuePair.Key);
+                    }
+                    if (tempDictionary.Count != 0)
+                    {
+                        var keyValuePair = tempDictionary.First();
+                        boneIndices[iVert].z = keyValuePair.Key;
+                        boneWeights[iVert].z = keyValuePair.Value;
+                        tempDictionary.Remove(keyValuePair.Key);
+                    }
+                    if (tempDictionary.Count != 0)
+                    {
+                        var keyValuePair = tempDictionary.First();
+                        boneIndices[iVert].w = keyValuePair.Key;
+                        boneWeights[iVert].w = keyValuePair.Value;
+                        tempDictionary.Remove(keyValuePair.Key);
+                    }
+
+                    boneWeights[iVert].Normalize1();
+                }
+
+                rm = new Mesh()
+                {
+                    Colors = null,
+                    Normals = mc.Normals,
+                    UVs = mc.UVs,
+                    BoneIndices = boneIndices,
+                    BoneWeights = boneWeights,
+                    Vertices = mc.Vertices,
+                    Triangles = mc.Triangles
+                };
+                */
+            }
+
+
             return rm;
         }
 
@@ -346,7 +623,9 @@ namespace Fusee.Engine.SimpleScene
 
         private ShaderEffect MakeMaterial(MaterialComponent mc)
         {
-            ShaderCodeBuilder scb = new ShaderCodeBuilder(mc, null);
+
+            WeightComponent wc = CurrentNode.GetWeights();
+            ShaderCodeBuilder scb = new ShaderCodeBuilder(mc, null, wc); // TODO, CurrentNode.GetWeights() != null);
             var effectParameters = AssembleEffectParamers(mc, scb);
 
             ShaderEffect ret = new ShaderEffect(new []
@@ -354,6 +633,7 @@ namespace Fusee.Engine.SimpleScene
                     new EffectPassDeclaration()
                     {
                         VS = scb.VS,
+                        //VS = VsBones,
                         PS = scb.PS,
                         StateSet = new RenderStateSet()
                         {
@@ -485,383 +765,6 @@ namespace Fusee.Engine.SimpleScene
             return effectParameters;
         }
         #endregion
-    }
-
-
-    public class SceneRendererOld
-    {
-        private Dictionary<MeshComponent, Mesh> _meshMap;
-        private Dictionary<MaterialComponent, ShaderEffect> _matMap;
-        private SceneContainer _sc;
-
-        private RenderContext _rc;
-        private float4x4 _AABBXForm;
-
-        private List<LightInfo> _lights;
-
-        private RenderStateSet _stateSet = new RenderStateSet()
-        {
-            AlphaBlendEnable = false,
-            SourceBlend = Blend.One,
-            DestinationBlend = Blend.Zero,
-            ZEnable = true,
-            ZFunc = Compare.Less
-        };
-
-        private ShaderEffect _curMat;
-        private string _scenePathDirectory;
-
-        ShaderEffect CurMat
-        {
-            set { _curMat = value;}
-            get { return _curMat; }
-        }
-
-        public SceneRendererOld(SceneContainer sc, string scenePathDirectory)
-        {
-            // Todo: scan for lights...
-            _lights = new List<LightInfo>();
-            _sc = sc;
-            _scenePathDirectory = scenePathDirectory;
-        }
-
-        public void InitShaders(RenderContext rc)
-        {
-            if (rc != _rc)
-            {
-                _rc = rc;
-                _meshMap = new Dictionary<MeshComponent, Mesh>();
-                _matMap = new Dictionary<MaterialComponent, ShaderEffect>();
-                _curMat = null;
-            }
-            if (_curMat == null)
-            {
-                _curMat = MakeMaterial(new MaterialComponent
-                {
-                    Diffuse = new MatChannelContainer()
-                    {
-                        Color = new float3(0.5f, 0.5f, 0.5f)
-                    },
-                    Specular = new SpecularChannelContainer()
-                    {
-                        Color = new float3(1, 1, 1),
-                        Intensity = 0.5f,
-                        Shininess = 22
-                    }
-                });
-                CurMat.AttachToContext(rc);
-            }
-        }
-
-        public AABBf? GetAABB()
-        {
-            AABBf? ret = null;
-            _AABBXForm = float4x4.Identity;
-            foreach (var soc in _sc.Children)
-            {
-                AABBf? nodeBox = VisitNodeAABB(soc);
-                if (nodeBox != null)
-                {
-                    if (ret == null)
-                    {
-                        ret = nodeBox;
-                    }
-                    else
-                    {
-                        ret = AABBf.Union((AABBf)ret, (AABBf)nodeBox);
-                    }
-                }
-            }
-            return ret;
-        }
-
-        protected AABBf? VisitNodeAABB(SceneNodeContainer node)
-        {
-            AABBf? ret = null;
-            float4x4 origMV = _AABBXForm;
-
-            // _AABBXForm = _AABBXForm * node.Transform.Matrix();
-            throw new NotImplementedException("correctly handle transform");
-            if (node.GetMesh() != null)
-            {
-                ret = _AABBXForm * node.GetMesh().BoundingBox;
-            }
-
-            if (node.Children != null)
-            {
-                foreach (var child in node.Children)
-                {
-                    AABBf? nodeBox = VisitNodeAABB(child);
-                    if (nodeBox != null)
-                    {
-                        if (ret == null)
-                        {
-                            ret = nodeBox;
-                        }
-                        else
-                        {
-                            ret = AABBf.Union((AABBf)ret, (AABBf)nodeBox);
-                        }
-                    }
-                }
-            }
-            _AABBXForm = origMV;
-            return ret;
-        }
-
-        public void Render(RenderContext rc)
-        {
-            InitShaders(rc);
-
-            foreach (var sbc in _sc.Children)
-            {
-                VisitNodeRender(sbc);
-            }
-        }
-
-        protected void VisitNodeRender(SceneNodeContainer node)
-        {
-            float4x4 origMV = _rc.ModelView;
-            ShaderEffect origMat = CurMat;
-
-            throw new NotImplementedException("correctly handle transform");
-            // _rc.ModelView = _rc.ModelView * node.Transform.Matrix();
-
-            if (node.GetMaterial() != null)
-            {
-                var mat = LookupMaterial(node.GetMaterial());
-                CurMat = mat;
-            }
-
-            if (node.GetMesh() != null)
-            {
-                Mesh rm;
-                if (!_meshMap.TryGetValue(node.GetMesh(), out rm))
-                {
-                    rm = MakeMesh(node);
-                    _meshMap.Add(node.GetMesh(), rm);
-                }
-
-                if (null != CurMat.GetEffectParam(ShaderCodeBuilder.LightDirectionName))
-                {
-                    RenderWithLights(rm, CurMat);
-                }
-                else
-                {
-                    CurMat.RenderMesh(rm);
-                }
-            }
-
-            if (node.Children != null)
-            {
-                foreach (var child in node.Children)
-                {
-                    VisitNodeRender(child);
-                }
-            }
-
-            _rc.ModelView = origMV;
-            CurMat = origMat;
-        }
-
-        private void RenderWithLights(Mesh rm, ShaderEffect CurMat)
-        {
-            if (_lights.Count > 0)
-            {
-                foreach (LightInfo li in _lights)
-                {
-                    // SetupLight(li);
-                    CurMat.RenderMesh(rm);
-                }
-            }
-            else
-            {
-                // No light present - switch on standard light
-                CurMat.SetEffectParam(ShaderCodeBuilder.LightColorName, new float3(1, 1, 1));
-                // float4 lightDirHom = new float4(0, 0, -1, 0);
-                float4 lightDirHom = _rc.InvModelView * new float4(0, 0, -1, 0);
-                // float4 lightDirHom = _rc.TransModelView * new float4(0, 0, -1, 0);
-                float3 lightDir = lightDirHom.xyz;
-                lightDir.Normalize();
-                CurMat.SetEffectParam(ShaderCodeBuilder.LightDirectionName, lightDir);
-                CurMat.SetEffectParam(ShaderCodeBuilder.LightIntensityName, (float)1);
-                CurMat.RenderMesh(rm);
-            }
-        }
-
-        private ShaderEffect LookupMaterial(MaterialComponent mc)
-        {
-            ShaderEffect mat;
-            if (!_matMap.TryGetValue(mc, out mat))
-            {
-                mat = MakeMaterial(mc);
-                mat.AttachToContext(_rc);
-                _matMap.Add(mc, mat);
-            }
-            return mat;
-        }
-
-        public static Mesh MakeMesh(SceneNodeContainer soc)
-        {
-            MeshComponent mc = soc.GetMesh();
-            Mesh rm;
-            rm = new Mesh()
-            {
-                Colors = null,
-                Normals = mc.Normals,
-                UVs = mc.UVs,
-                Vertices = mc.Vertices,
-                Triangles = mc.Triangles
-            };
-            return rm;
-        }
-
-        private ITexture LoadTexture(string path)
-        {
-            string texturePath = Path.Combine(_scenePathDirectory, path);
-            var image = _rc.LoadImage(texturePath);
-            return _rc.CreateTexture(image);
-        }
-
-        private ShaderEffect MakeMaterial(MaterialComponent mc)
-        {
-            ShaderCodeBuilder scb = new ShaderCodeBuilder(mc, null);
-            var effectParameters = AssembleEffectParamers(mc, scb);
-
-            ShaderEffect ret = new ShaderEffect(new []
-                {
-                    new EffectPassDeclaration()
-                    {
-                        VS = scb.VS,
-                        PS = scb.PS,
-                        StateSet = new RenderStateSet()
-                        {
-                            ZEnable = true,
-                            AlphaBlendEnable = false
-                        }
-                    }
-                },
-                effectParameters
-            );
-            return ret;
-        }
-
-        private List<EffectParameterDeclaration> AssembleEffectParamers(MaterialComponent mc, ShaderCodeBuilder scb)
-        {
-            List<EffectParameterDeclaration> effectParameters = new List<EffectParameterDeclaration>();
-
-            if (mc.HasDiffuse)
-            {
-                effectParameters.Add(new EffectParameterDeclaration
-                {
-                    Name = scb.DiffuseColorName,
-                    Value = (object) mc.Diffuse.Color
-                });
-                if (mc.Diffuse.Texture != null)
-                {
-                    effectParameters.Add(new EffectParameterDeclaration
-                    {
-                        Name = scb.DiffuseMixName,
-                        Value = mc.Diffuse.Mix
-                    });
-                    effectParameters.Add(new EffectParameterDeclaration
-                    {
-                        Name = scb.DiffuseTextureName,
-                        Value = LoadTexture(mc.Diffuse.Texture)
-                    });
-                }
-            }
-
-            if (mc.HasSpecular)
-            {
-                effectParameters.Add(new EffectParameterDeclaration
-                {
-                    Name = scb.SpecularColorName,
-                    Value = (object) mc.Specular.Color
-                });
-                effectParameters.Add(new EffectParameterDeclaration
-                {
-                    Name = scb.SpecularShininessName,
-                    Value = (object) mc.Specular.Shininess
-                });
-                effectParameters.Add(new EffectParameterDeclaration
-                {
-                    Name = scb.SpecularIntensityName,
-                    Value = (object) mc.Specular.Intensity
-                });
-                if (mc.Specular.Texture != null)
-                {
-                    effectParameters.Add(new EffectParameterDeclaration
-                    {
-                        Name = scb.SpecularMixName,
-                        Value = mc.Specular.Mix
-                    });
-                    effectParameters.Add(new EffectParameterDeclaration
-                    {
-                        Name = scb.SpecularTextureName,
-                        Value = LoadTexture(mc.Specular.Texture)
-                    });
-                }
-            }
-
-            if (mc.HasEmissive)
-            {
-                effectParameters.Add(new EffectParameterDeclaration
-                {
-                    Name = scb.EmissiveColorName,
-                    Value = (object) mc.Emissive.Color
-                });
-                if (mc.Emissive.Texture != null)
-                {
-                    effectParameters.Add(new EffectParameterDeclaration
-                    {
-                        Name = scb.EmissiveMixName,
-                        Value = mc.Emissive.Mix
-                    });
-                    effectParameters.Add(new EffectParameterDeclaration
-                    {
-                        Name = scb.EmissiveTextureName,
-                        Value = LoadTexture(mc.Emissive.Texture)
-                    });
-                }
-            }
-
-            if (mc.HasBump)
-            {
-                effectParameters.Add(new EffectParameterDeclaration
-                {
-                    Name = scb.BumpIntensityName,
-                    Value = mc.Bump.Intensity
-                });
-                effectParameters.Add(new EffectParameterDeclaration
-                {
-                    Name = scb.BumpTextureName,
-                    Value = LoadTexture(mc.Bump.Texture)
-                });
-            }
-
-            // Any light calculation needed at all?
-            if (mc.HasDiffuse || mc.HasSpecular)
-            {
-                // Light calculation parameters
-                effectParameters.Add(new EffectParameterDeclaration
-                {
-                    Name = ShaderCodeBuilder.LightColorName,
-                    Value = new float3(1, 1, 1)
-                });
-                effectParameters.Add(new EffectParameterDeclaration
-                {
-                    Name = ShaderCodeBuilder.LightIntensityName,
-                    Value = (float) 1
-                });
-                effectParameters.Add(new EffectParameterDeclaration
-                {
-                    Name = ShaderCodeBuilder.LightDirectionName,
-                    Value = new float3(0, 0, 1)
-                });
-            }
-
-            return effectParameters;
-        }
+ 
     }
 }

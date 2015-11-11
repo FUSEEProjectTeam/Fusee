@@ -39,6 +39,9 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AnimationComponent.cs" />
+    <Compile Include="AnimationTrackContainer.cs" />
+    <Compile Include="BoneComponent.cs" />
     <Compile Include="LightComponent.cs" />
     <Compile Include="MaterialComponent.cs" />
     <Compile Include="SceneComponentContainer.cs" />
@@ -46,6 +49,7 @@
     <Compile Include="MeshComponent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SceneNodeContainer.cs" />
+    <Compile Include="WeightComponent.cs" />
     <Compile Include="TransformComponent.cs" />
   </ItemGroup>
   <ItemGroup>

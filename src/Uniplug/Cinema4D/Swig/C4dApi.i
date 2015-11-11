@@ -51,7 +51,7 @@
 %{
 /* Includes the header in the wrapper code */
 #include "c4d.h"
-#include "lib_ca.h"
+
 #include "lib_description.h"
 #include "c4d_file.h"
 #include "c4d_graphview.h"
@@ -61,15 +61,41 @@
 #include "c4d_filterplugin.h"
 #include "operatingsystem.h"
 #include "c4d_basetag.h"
+#include "lib_ca.h"
 #include "c4d_baseselect.h" //NEU
 #include "c4d_basebitmap.h"
 #include "c4d_nodedata.h"
 #include "gvdynamic.h"
 #include "gvobject.h"
 #include "gvmath.h"
+#include "DDescriptionParams.h"
 #include "ObjectDataM.h"
+#include "TagDataM.h"
 #include "c4d_customdatatype.h"//neu
 #include "customgui_inexclude.h"//neu
+
+// <Redirect new and delete to C4D versions>
+// This leads to every new and delete inside Native dll to use the maxon:: allocate and deallocate functions.
+// We need this at places where a C# plugin creates objects -leading to C++ objects being created under the hood- and passes them to c4d -- expecting
+// c4d to delete them whenever it feels it's appropriate. Unfortunately the c4d sdk is full of such protocols: All the plugin types work this way.
+// Thus we need a symmetrical way of allocation and deallocation. Using the standard new and the maxon-deallocation will lead to problems.
+
+// Unfortunately it was observed that the following delete operator is NOT used in situations where the managed plugin already ended, but there
+// were still C# instances, keeping C++ allocated objects around. When the GC collected these objects, the NORMAL delete was used instead of the
+// maxon:: delete leading to crashes. This effect could be cured by forcing the GC to perform a collect in the plugins' end method. Just to make sure
+// this happens in Plugin.End() as well as in PluginB::End(). TODO: Check on MAC!
+#include "defaultallocator.h"
+void * operator new(std::size_t n) throw(std::bad_alloc)
+{
+	return maxon::DefaultAllocator::Alloc((maxon::Int32) n, C4D_MISC_ALLOC_LOCATION);
+}
+void operator delete(void * p) throw()
+{
+   DeleteObj(p);
+}
+// </Redirect new and delete to C4D versions>
+
+
 
 // POD (plain old datatype = no construcors or methods) version of C4D's Vector.
 // We need this type as return values for swig-generated C++ stubs. If we use
@@ -111,6 +137,10 @@ void DeleteMemPtr(void *memPtr) {
 %}
 // </void*-global::System.IntPtr mapping>
 
+
+///////////////////////////////////////////////////////////////////////////////////
+// Rename the unfortunate C4D "GetType" because it clashes with .NET's Object.GetType
+%rename(GetTypeC4D) GetType;
 
 ////////////////////////////////////////////////////////////////////////////////////
 // The following code is about the C#-Std string mapping to the Cinema4D String classes
@@ -281,7 +311,7 @@ class String;
 	{
       return ret;
     }
-    int type = $modulePINVOKE.C4DAtom_GetType(new global::System.Runtime.InteropServices.HandleRef(null, cPtr));
+    int type = $modulePINVOKE.C4DAtom_GetTypeC4D(new global::System.Runtime.InteropServices.HandleRef(null, cPtr));
     switch (type) 
 	{
        case 0:
@@ -298,6 +328,9 @@ class String;
 		 break;
 	   case 5673: // Tpolygonselection  WARNING!!! There is is only ONE class (SelectionTag) for three type IDs (Point, Edge, and Poly). C4D programmers, you are real men...
 		 ret = new SelectionTag(cPtr, owner);
+		 break;
+	   case 1019365:
+		 ret = new CAWeightTag(cPtr, owner);
 		 break;
       // Repeat for every other concrete type.
       default:
@@ -327,7 +360,7 @@ BaseTag *
 	{
       return ret;
     }
-    int type = $modulePINVOKE.C4DAtom_GetType(new global::System.Runtime.InteropServices.HandleRef(null, cPtr));
+    int type = $modulePINVOKE.C4DAtom_GetTypeC4D(new global::System.Runtime.InteropServices.HandleRef(null, cPtr));
     switch (type) 
 	{
        case 0:
@@ -335,6 +368,9 @@ BaseTag *
          break;
 	  case 5100: // Opolygon
 		 ret = new PolygonObject(cPtr, owner);
+		 break;
+	  case 1019362: // Ojoint
+		 ret = new CAJointObject(cPtr, owner);
 		 break;
       // Repeat for every other concrete type.
       default:
@@ -364,7 +400,7 @@ BaseObject *
 	{
       return ret;
     }
-    int type = $modulePINVOKE.C4DAtom_GetType(new global::System.Runtime.InteropServices.HandleRef(null, cPtr));
+    int type = $modulePINVOKE.C4DAtom_GetTypeC4D(new global::System.Runtime.InteropServices.HandleRef(null, cPtr));
     switch (type) 
 	{
        case 0:
@@ -714,6 +750,9 @@ BaseMaterial *
 	inline void blDelete_cs(GeListNode *v) { if (v) C4DOS.Bl->Free(v); }
 %}
 
+//////////////////////////////////////////////////////////////////
+// c4d_canimation.swig.h
+%include "c4d_canimation.h";
 
 //////////////////////////////////////////////////////////////////
 // ge_prepass.h
@@ -723,6 +762,8 @@ BaseMaterial *
 %ignore MaxonConvert;
 %include "ge_prepass.swig.h";
 
+// c4d_bastetime.swig.h
+%include "c4d_basetime.h"
 //////////////////////////////////////////////////////////////////
 // c4d_general.h
 %include "c4d_general.h";
@@ -800,6 +841,10 @@ BaseMaterial *
 // obase.h
 %include "obase.h";
 
+//////////////////////////////////////////////////////////////////
+// tbase.h
+%include "tbase.h";
+
 
 //////////////////////////////////////////////////////////////////
 // "c4d_baselist.h"
@@ -813,7 +858,6 @@ BaseMaterial *
 }
 
 
-//////////////////////////////////////////////////////////////////
 // c4d_baseobject.h
 %extend PointObject
 {
@@ -1007,6 +1051,22 @@ BaseMaterial *
 }
 %feature("director") BaseTag;
 %include "lib_ca.swig.h";
+
+//////////////////////////////////////////////////////////////////
+// "DDescriptionParams.h" (used by ObjectDataM and TagDataM - see below)
+%include "DDescriptionParams.h";
+
+//////////////////////////////////////////////////////////////////
+// "c4d_tagdata.h" (replaced by own implementation)
+%feature("director") TagDataM;
+%csmethodmodifiers TagDataM::TagDataM "private";
+%typemap(cscode) TagDataM %{
+  public TagDataM(bool memOwn) : this(C4dApiPINVOKE.new_TagDataM(), memOwn) {
+    SwigDirectorConnect();
+  }
+%}
+%include "c4d_tagdata.h" // for keeping inheritance TagDataM -> TagData
+%include "TagDataM.h";
 
 
 //////////////////////////////////////////////////////////////////

@@ -86,7 +86,6 @@
     <Compile Include="InputDevice.cs" />
     <Compile Include="Mesh.cs" />
     <Compile Include="MeshReader.cs" />
-    <Compile Include="MoreShaders.cs" />
     <Compile Include="MultiSphereShape.cs" />
     <Compile Include="PickingContext.cs" />
     <Compile Include="Point2PointConstraint.cs" />

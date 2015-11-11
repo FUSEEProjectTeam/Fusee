@@ -43,18 +43,22 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ContainerExtensions.cs" />
     <Compile Include="CustomManifest.cs" />
     <Compile Include="DirCopy.cs" />
     <Compile Include="FileTypes.cs" />
     <Compile Include="FuExport.cs" />
     <Compile Include="FusConverter.cs" />
+    <Compile Include="ManagedTagBase.cs" />
     <Compile Include="ManifestFile.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>ManifestFile.tt</DependentUpon>
     </Compile>
     <Compile Include="SimpleHttpServer.cs" />
+    <Compile Include="TrackBuilder.cs" />
     <Compile Include="Utils.cs" />
+    <Compile Include="WeightManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="res\FuExportLogo.tif">

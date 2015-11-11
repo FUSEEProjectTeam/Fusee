@@ -362,11 +362,11 @@ namespace Examples.ShaderDemo
             _btnCube.ButtonColor = ColorHighlightedButton;
 
             // Setup Shaderprograms and Update GUI
-            _shaderDiffuseColor = MoreShaders.GetDiffuseColorShader(RC);
-            _shaderDiffuseTexture = MoreShaders.GetDiffuseTextureShader(RC);
-            _shaderTexture = MoreShaders.GetTextureShader(RC);
-            _shaderDiffuseBumpTexture = MoreShaders.GetBumpDiffuseShader(RC);
-            _shaderSpecularTexture = MoreShaders.GetSpecularShader(RC);
+            _shaderDiffuseColor = Shaders.GetDiffuseColorShader(RC);
+            _shaderDiffuseTexture = Shaders.GetDiffuseTextureShader(RC);
+            _shaderTexture = Shaders.GetTextureShader(RC);
+            _shaderDiffuseBumpTexture = Shaders.GetBumpDiffuseShader(RC);
+            _shaderSpecularTexture = Shaders.GetSpecularShader(RC);
             _btnDiffuseColorShader.ButtonColor = ColorHighlightedButton;
             _currentShader = _shaderDiffuseColor;
             RC.SetShader(_shaderDiffuseColor);

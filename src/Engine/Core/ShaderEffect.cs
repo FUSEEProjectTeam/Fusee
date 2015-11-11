@@ -234,6 +234,10 @@ namespace Fusee.Engine
                         {
                             _rc.SetShaderParam(param.Info.Handle, (float4x4)param.Value);
                         }
+                        else if (param.Info.Type == typeof(float4x4[]))
+                        {
+                            _rc.SetShaderParam(param.Info.Handle, (float4x4[])param.Value);
+                        }
                         else if (param.Info.Type == typeof(ITexture))
                         {
                             _rc.SetShaderParamTexture(param.Info.Handle, (ITexture) param.Value);

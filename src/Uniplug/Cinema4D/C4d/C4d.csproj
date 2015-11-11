@@ -78,12 +78,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="C34M.cs" />
-    <Compile Include="PluginAllocator.cs" />
-    <Compile Include="PluginBaseAttribute.cs" />
     <Compile Include="C4dApi\*.cs">
       <AutoGen>true</AutoGen>
       <!--Visible>false</Visible-->
     </Compile>
+    <Compile Include="PluginAllocator.cs" />
+    <Compile Include="PluginBaseAttribute.cs" />
     <Compile Include="CommandPluginAttribute.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="MyCommandData.cs" />
@@ -92,6 +92,7 @@
     <Compile Include="PluginAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SceneSaverPluginAttribute.cs" />
+    <Compile Include="TagPluginAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="res\CSharp.tif">

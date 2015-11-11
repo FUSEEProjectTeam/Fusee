@@ -32,6 +32,14 @@
          /// The bitangent attribute name.
          /// </summary>
          public static readonly string BitangentAttribName = "fuBitangent";
+         /// <summary>
+         /// The boneweight attribute name.
+         /// </summary>
+         public static readonly string BoneWeightAttribName = "fuBoneWeight";
+         /// <summary>
+         /// The boneindex attribute name.
+         /// </summary>
+         public static readonly string BoneIndexAttribName = "fuBoneIndex";
 
 
          /// <summary>
@@ -58,6 +66,14 @@
          /// The bitangent attribute location index.
          /// </summary>
          public static readonly int BitangentAttribLocation = 5;
+         /// <summary>
+         /// The boneweight attribute location index.
+         /// </summary>
+         public static readonly int BoneWeightAttribLocation = 6;
+         /// <summary>
+         /// The boneindex attribute location index.
+         /// </summary>
+         public static readonly int BoneIndexAttribLocation = 7;
 
          #endregion
      }

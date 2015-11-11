@@ -1,3 +1,4 @@
+﻿/* It is auto-generated file. Do not modify it. */
 var assetLoaders = {
   "Library": function loadLibrary (filename, data) {
     var uri = JSIL.Shell.GetURIForFile(jsilConfig.libraryRoot, filename);
@@ -17,7 +18,7 @@ var assetLoaders = {
 
 JSIL.Shell.GetURIForFile = function (root, filename) {
     if (
-        (filename.indexOf(":") > 0) || 
+        (filename.indexOf(":") > 0) ||
         (filename[0] == "/")
     )
         return filename;

@@ -268,6 +268,20 @@ namespace Fusee.Math
 
         #endregion
 
+        #region public float Length1
+
+        /// <summary>
+        /// Gets the length in 1-norm.
+        /// </summary>
+        /// <see cref="LengthFast"/>
+        /// <seealso cref="LengthSquared"/>
+        public float Length1
+        {        
+            get { return (float) System.Math.Abs(x) + System.Math.Abs(y) + System.Math.Abs(z) + System.Math.Abs(w); }
+        }
+
+        #endregion
+
         #region public float LengthFast
 
         /// <summary>
@@ -318,6 +332,23 @@ namespace Fusee.Math
         public void Normalize()
         {
             float scale = 1.0f / this.Length;
+            x *= scale;
+            y *= scale;
+            z *= scale;
+            w *= scale;
+        }
+
+        #endregion
+
+        #region public void Normalize1()
+
+        /// <summary>
+        /// Scales the float4 to unit length in 1-norm.
+        /// </summary>
+        public void Normalize1()
+        {
+            float scale = 1.0f / this.Length1;
+
             x *= scale;
             y *= scale;
             z *= scale;
@@ -1330,6 +1361,46 @@ namespace Fusee.Math
         /// The parse property.
         /// </value>
         public static Converter<string, float4> Parse { get; set; }
+
+        public float this[int i]
+        {
+            set
+            {
+                switch (i)
+                {
+                    case 0:
+                        x = value;
+                        break;
+                    case 1:
+                        y = value;
+                        break;
+                    case 2:
+                        z = value;
+                        break;
+                    case 3:
+                        w = value;
+                        break;
+                    default:
+                        throw new IndexOutOfRangeException("float4 cannot be indexed with an index of " + i);
+                }
+            }
+            get 
+            {
+                switch (i)
+                {
+                    case 0:
+                        return x;
+                    case 1:
+                        return y;
+                    case 2:
+                        return z;
+                    case 3:
+                        return w;
+                    default:
+                        throw new IndexOutOfRangeException("float4 cannot be indexed with an index of " + i);
+                }
+            }
+        }
     }
 
     // ReSharper restore InconsistentNaming

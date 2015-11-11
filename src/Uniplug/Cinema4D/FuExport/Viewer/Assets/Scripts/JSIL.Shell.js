@@ -1,3 +1,4 @@
+﻿/* It is auto-generated file. Do not modify it. */
 "use strict";
 
 
@@ -78,7 +79,7 @@ function reportException (e) {
 function loadAssets (assets) {
   for (var i = 0, l = assets.length; i < l; i++) {
     var assetSpec = assets[i];
-  
+
     var assetType = assetSpec[0];
     var assetPath = assetSpec[1];
     var assetData = assetSpec[2] || null;
@@ -163,7 +164,7 @@ JSIL.Shell.TestPrologue = function (timeoutDuration, assemblyName, typeName, met
     if (!testAssembly)
       throw new Error("No assembly named '" + assemblyName + "'");
 
-    var parsedTypeName = JSIL.ParseTypeName(typeName);    
+    var parsedTypeName = JSIL.ParseTypeName(typeName);
     var testType = JSIL.GetTypeInternal(parsedTypeName, testAssembly, true);
     var testTypePublicInterface = testType.__PublicInterface__;
 
@@ -173,7 +174,7 @@ JSIL.Shell.TestPrologue = function (timeoutDuration, assemblyName, typeName, met
       throw new Error("No method named '" + methodName + "'");
 
     testMethod.call(testTypePublicInterface, args);
-    
+
     var ended = dateNow();
     return (ended - started);
   };

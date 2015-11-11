@@ -146,7 +146,7 @@ namespace Fusee.Tests.Scene.Core
             MySceneVisitor visitor = new MySceneVisitor();
             visitor.Traverse(root);
 
-            Assert.IsTrue(visitor.MeshSeen);
+            Assert.IsFalse(visitor.MeshSeen);
             Assert.AreEqual(18, visitor.MeshTris);
             Assert.AreEqual(8, visitor.MeshVerts);
 

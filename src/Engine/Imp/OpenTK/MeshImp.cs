@@ -11,6 +11,8 @@
         internal int NormalBufferObject;
         internal int ColorBufferObject;
         internal int UVBufferObject;
+        internal int BoneIndexBufferObject;
+        internal int BoneWeightBufferObject;
         internal int ElementBufferObject;
         internal int TangentBufferObject;
         internal int BitangentBufferObject;
@@ -79,6 +81,37 @@
             UVBufferObject = 0;
         }
 
+        /// <summary>
+        /// Gets a value indicating whether [boneindices set].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [boneindices set]; otherwise, <c>false</c>.
+        /// </value>
+        public bool BoneIndicesSet { get { return BoneIndexBufferObject != 0; } }
+
+        /// <summary>
+        /// Invalidates the BoneIndices.
+        /// </summary>
+        public void InvalidateBoneIndices()
+        {
+            BoneIndexBufferObject = 0;
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether [boneweights set].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [boneweights set]; otherwise, <c>false</c>.
+        /// </value>
+        public bool BoneWeightsSet { get { return BoneWeightBufferObject != 0; } }
+
+        /// <summary>
+        /// Invalidates the BoneWeight's.
+        /// </summary>
+        public void InvalidateBoneWeights()
+        {
+            BoneWeightBufferObject = 0;
+        }
         /// <summary>
         /// Invalidates the triangles.
         /// </summary>

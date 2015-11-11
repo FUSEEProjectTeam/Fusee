@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Globalization;
@@ -45,16 +46,23 @@ namespace FuExport
 
     class FusConverter
     {
-        private BaseDocument _polyDoc;
+
+        private BaseDocument _doc, _polyDoc;
         private List<string> _textureFiles = new List<string>();
         private string _sceneRootDir;
+
         private Dictionary<long, MaterialComponent> _materialCache;
+        private List<AnimationTrackContainer> _tracks = new List<AnimationTrackContainer>();
+        private WeightManager _weightManager;
+        private bool _animationsPresent;
 
         public SceneContainer FuseefyScene(BaseDocument doc, string sceneRootDir, out List<string> textureFiles)
         {
+            _animationsPresent = false;
             _materialCache = new Dictionary<long, MaterialComponent>();
             _sceneRootDir = sceneRootDir;
-            _polyDoc = doc.Polygonize();
+            _doc = doc;
+            _weightManager = new WeightManager(_doc);
 
             Logger.Debug("Fuseefy Me!");
 
@@ -74,8 +82,12 @@ namespace FuExport
                     Version = 1,
                     CreationDate = DateTime.Now.ToString("d-MMM-yyyy", CultureInfo.CreateSpecificCulture("en-US"))
                 },
-                Children = FuseefyOb(_polyDoc.GetFirstObject())
+
+                Children = FuseefyOb( _doc.GetFirstObject()),
             };
+
+            // CreateWeightMap has to be called after creating the object-tree
+            _weightManager.CreateWeightMap();
             textureFiles = _textureFiles;
             return root;
         }
@@ -125,7 +137,7 @@ namespace FuExport
                     c = polyOb.GetPointAt(poly.c);
                     d = polyOb.GetPointAt(poly.d);
                 }
-
+                
                 float2 uvA = new float2(0, 0);
                 float2 uvB = new float2(0, 1);
                 float2 uvC = new float2(1, 1);
@@ -180,6 +192,7 @@ namespace FuExport
                 }
                 nNewVerts += 3;
             }
+            Debug.WriteLine(verts.Count);
             return new MeshComponent()
             {
                 Normals = normals.ToArray(),
@@ -198,7 +211,8 @@ namespace FuExport
         }
 
         /// <summary>
-        /// This method tries to make the best out of C4Ds seldom relationship between objects with 
+
+        /// This method tries to make the best out of C4Ds seldom relationship between objects with
         /// multiple materials which can or can not be restricted to polygon selections and one or more UV sets.
         /// But there are unhandled cases:
         /// Multple UV tags are not supported. Overlapping polygon selections are probably handled differently.
@@ -206,15 +220,36 @@ namespace FuExport
         /// </summary>
         /// <param name="ob"></param>
         /// <param name="soc"></param>
+
+
         private void VisitObject(BaseObject ob, SceneNodeContainer snc)
         {
             Collection<TextureTag> textureTags = new Collection<TextureTag>();
             Dictionary<string,  SelectionTag> selectionTags = new Dictionary<string, SelectionTag>();
             UVWTag uvwTag = null;
+            CAWeightTag weightTag = null;
 
-            // Iterate over the object's tags 
+
+            // Iterate over the object's tags
             for (BaseTag tag = ob.GetFirstTag(); tag != null; tag = tag.GetNext())
             {
+                // GeneralTag
+                if (1036156 == tag.GetTypeC4D())
+                {
+                    var di = tag.GetDataInstance();
+                    int anInt = di.GetInt32(10000);
+                    string aStr = di.GetString(10001);
+                    Logger.Debug("Found a GeneralTag with TheInt=" + anInt + " and TheString = \"" + aStr + "\"");
+                }
+
+                // CAWeightTag - Save data to create the weight list later
+                CAWeightTag wTag = tag as CAWeightTag;
+                if (wTag != null)
+                {
+                    weightTag = wTag;
+                    continue;
+                }
+
                 // TextureTag (Material - there might be more than one)
                 TextureTag tex = tag as TextureTag;
                 if (tex != null)
@@ -232,14 +267,14 @@ namespace FuExport
                     }
                     else
                     {
-                        Logger.Error("Object " + ob.GetName() + " contains more than one texture tags. Cannot handle this. Only the first texture tag will be recognized.");
+                        Logger.Error("Object " + ob.GetName() + " contains more than one uv-coordinates-tag. Cannot handle this. Only the first texture tag will be recognized.");
                     }
                     continue;
                 }
                 // Selection tag. Only recognize the polygon selections as they might be referenced in a TextureTag
                 SelectionTag selection = tag as SelectionTag;
                 string selTagName = tag.GetName();
-                if (selection != null && selection.GetType() == C4dApi.Tpolygonselection && !string.IsNullOrEmpty(selTagName))    // One Type and three TypeIDs - You C4D programmer guys really suck
+                if (selection != null && selection.GetTypeC4D() == C4dApi.Tpolygonselection && !string.IsNullOrEmpty(selTagName))    // One Type and three TypeIDs - You C4D programmer guys really suck
                 {
                     selectionTags[selTagName] = selection;
                 }
@@ -254,7 +289,8 @@ namespace FuExport
 
             TextureTag lastUnselectedTag = null;
             Collection<KeyValuePair<SelectionTag, TextureTag>> texSelList = new Collection<KeyValuePair<SelectionTag, TextureTag>>(); // Abused KeyValuePair. Should have been Pair...
-            // Now iterate over the textureTags 
+
+            // Now iterate over the textureTags
             foreach (TextureTag texture in textureTags)
             {
                 string selRef = "";
@@ -280,10 +316,16 @@ namespace FuExport
             // At this point we have the last texture tag not restricted to a seletion. This will become the Material of this FuseeObjectContainer
             // no matter if this object contains geometry or not
             if (lastUnselectedTag != null)
+
                 AddComponent(snc, GetMaterial(lastUnselectedTag));
 
             // Further processing only needs to take place if the object contains any geometry at all.
             PolygonObject polyOb = ob as PolygonObject;
+
+            // Check whether the object contains an unpolygonized mesh
+            if (polyOb == null)
+                polyOb = ob.GetCache(null) as PolygonObject;
+
             if (polyOb != null)
             {
                 float3[] normalOb = polyOb.CreatePhongNormals();
@@ -313,48 +355,56 @@ namespace FuExport
                     // Now generate Polygons for this subset
                     if (polyInxsSubset.Count > 0)
                     {
+
                         if (snc.Children == null)
                             snc.Children = new List<SceneNodeContainer>();
 
                         SceneNodeContainer subSnc = new SceneNodeContainer();
+
                         AddComponent(subSnc, new TransformComponent()
                         {
                             Translation = new float3(0, 0, 0),
-                            Rotation = new float3(0, 0, 0), 
+                            Rotation = new float3(0, 0, 0),
                             Scale = new float3(1, 1, 1)
+
                         });
+
                         AddComponent(subSnc, GetMaterial(texSelItem.Value));
                         subSnc.Name = snc.Name + "_" + texSelItem.Key.GetName();
                         AddComponent(subSnc, GetMesh(polyOb, normalOb, uvwTag, polyInxsSubset));
+                        _weightManager.AddWeightData(subSnc, polyOb, weightTag, polyInxsSubset);
 
                         snc.Children.Add(subSnc);
                     }
                 }
 
                 // The remaining polygons directly go into the original mesh
+
                 AddComponent(snc, GetMesh(polyOb, normalOb, uvwTag, polyInxs));
+                _weightManager.AddWeightData(snc, polyOb, weightTag, polyInxs);
             }
-            else if (ob.GetType() == C4dApi.Olight)
+            else if (ob.GetTypeC4D() == C4dApi.Olight)
             {
                 using (BaseContainer lightData = ob.GetData())
                 // Just for debugging purposes
                 for (int i = 0, id = 0; -1 != (id = lightData.GetIndexId(i)); i++)
                 {
-                    if (lightData.GetType(id) == C4dApi.DA_LONG)
+                    if (lightData.GetTypeC4D(id) == C4dApi.DA_LONG)
                     {
                         int iii = lightData.GetInt32(id);
                     }
-                    if (lightData.GetType(id) == C4dApi.DA_REAL)
+                    if (lightData.GetTypeC4D(id) == C4dApi.DA_REAL)
                     {
                         double d = lightData.GetFloat(id);
                     }
-                    else if (lightData.GetType(id) == C4dApi.DA_VECTOR)
+                    else if (lightData.GetTypeC4D(id) == C4dApi.DA_VECTOR)
                     {
                         double3 v = lightData.GetVector(id);
                     }
                 };
             }
         }
+
 
         private MaterialComponent GetMaterial(TextureTag texTag)
         {
@@ -363,25 +413,27 @@ namespace FuExport
                 return null;
 
             long materialUid = material.RefUID();
+
             MaterialComponent mcRet;
             if (_materialCache.TryGetValue(materialUid, out mcRet))
                 return mcRet;
 
             using (BaseContainer materialData = material.GetData())
             {
+
                 mcRet = new MaterialComponent();
                 // Just for debugging purposes
                 for (int i = 0, id = 0; -1 != (id = materialData.GetIndexId(i)); i++)
                 {
-                    if (materialData.GetType(id) == C4dApi.DA_LONG)
+                    if (materialData.GetTypeC4D(id) == C4dApi.DA_LONG)
                     {
                         int iii = materialData.GetInt32(id);
                     }
-                    if (materialData.GetType(id) == C4dApi.DA_REAL)
+                    if (materialData.GetTypeC4D(id) == C4dApi.DA_REAL)
                     {
                         double d = materialData.GetFloat(id);
                     }
-                    else if (materialData.GetType(id) == C4dApi.DA_VECTOR)
+                    else if (materialData.GetTypeC4D(id) == C4dApi.DA_VECTOR)
                     {
                         double3 v = materialData.GetVector(id);
                     }
@@ -471,8 +523,10 @@ namespace FuExport
                     {
                         double3 v = data.GetVector(id);
                     }
-                } 
- 
+
+
+                }
+
             }
             */
             _materialCache[materialUid] = mcRet;
@@ -502,7 +556,7 @@ namespace FuExport
 
                 if (!_textureFiles.Contains(texture))
                 {
-                    matChannel.InitTexture(new InitRenderStruct(_polyDoc));
+                    matChannel.InitTexture(new InitRenderStruct(_doc));
                     using (BaseBitmap bitmap = matChannel.GetBitmap())
                     {
                         if (bitmap != null)
@@ -528,30 +582,51 @@ namespace FuExport
             return resultName;
         }
 
-
         private List<SceneNodeContainer> FuseefyOb(BaseObject ob)
         {
+            bool isAnimRoot = false;
+            
             if (ob == null)
                 return null;
 
             List<SceneNodeContainer> ret = new List<SceneNodeContainer>();
             do
             {
+
                 SceneNodeContainer snc = new SceneNodeContainer();
+
 
                 snc.Name = ob.GetName();
                 float3 rotC4d = (float3) ob.GetRelRot();
-                AddComponent(snc, new TransformComponent{
+                AddComponent(snc, new TransformComponent
+                {
                     Translation = (float3) ob.GetRelPos(),
                     Rotation = new float3(-rotC4d.y, -rotC4d.x, -rotC4d.z),
                     Scale = (float3) ob.GetRelScale()
                 });
 
+                // See if this is a joint - if so, store it for later reference and also pass the information on 
+                // to SaveTracks to make it Slerp the rotations (instead of lerp)
+                bool isJoint = _weightManager.CheckOnJoint(ob, snc);
+                bool hasQuaternionTag = CheckOnQuaternionTag(ob);
+                
+
+                // Search for unpolygonized objects holding the animationtracks
+                if (SaveTracks(ob, snc, isJoint || hasQuaternionTag))
+                {
+                    _animationsPresent = true;
+                    isAnimRoot = true;
+                }
+
+                
                 VisitObject(ob, snc);
 
+
+                // Hope the hierarchy of polygonized objects is the same as the normal one
                 var childList = FuseefyOb(ob.GetDown());
                 if (childList != null)
                 {
+
                     if (snc.Children == null)
                     {
                         snc.Children = childList;
@@ -561,10 +636,144 @@ namespace FuExport
                         snc.Children.AddRange(childList);
                     }
                 }
+
+                if (isAnimRoot)
+                {
+                    AnimationComponent ac = new AnimationComponent();
+                    ac.AnimationTracks = new List<AnimationTrackContainer>(_tracks);
+                    snc.AddComponent(ac);
+                    _animationsPresent = false;
+                    _tracks.Clear();
+                }
                 ret.Add(snc);
                 ob = ob.GetNext();
             } while (ob != null);
             return ret;
+        }
+
+        private bool CheckOnQuaternionTag(BaseObject ob)
+        {
+            // Iterate over the object's tags
+            for (BaseTag tag = ob.GetFirstTag(); tag != null; tag = tag.GetNext())
+            {
+                // In their sheer wisdom, the elders of the C4D SDK decided to not have a class of its own for the quaternion tag.
+                // Neither will the world need a constant declaration for the type...
+                int tagType = tag.GetTypeC4D();
+                if (tagType == 100001740)
+                {
+                    BaseContainer data = tag.GetData();
+                    int ii = data.GetInt32(1001);  // QUAT_INTER (from tquaterninon.h)
+                    switch (ii)
+                    {
+                        case 1002: // INTER_SLERP, "Linear"
+                            break;
+                        case 1003: // INTER_SQUAD, "Spline"
+                            break;
+                        case 1004: // INTER_LOSCH, "Losch"
+                            break;
+                    }
+                    return true;
+
+                    /*
+                    for (int i = 0, id = 0; -1 != (id = data.GetIndexId(i)); i++)
+                    {
+                        if (data.GetType(id) == C4dApi.DA_LONG)
+                        {
+                            int ii = data.GetInt32(id);
+                            switch (ii)
+                            {
+                                case 1002: // INTER_SLERP,
+                                    break;
+                                case 1003: // INTER_SQUAD,
+                                    break;
+                                case 1004: // INTER_LOSCH,
+                                    break;
+                            }
+                        }
+                        if (data.GetType(id) == C4dApi.DA_REAL)
+                        {
+                            double d = data.GetFloat(id);
+                        }
+                        else if (data.GetType(id) == C4dApi.DA_VECTOR)
+                        {
+                            double3 v = data.GetVector(id);
+                        }
+                    }
+                    */
+                }
+            }
+            return false;
+        }
+
+        private bool SaveTracks(BaseObject ob, SceneNodeContainer snc, bool slerpRotation)
+        {
+
+            var builder = new TrackBuilder();
+            builder.LerpType = (slerpRotation) ? LerpType.Slerp : LerpType.Lerp;
+            CTrack track = ob.GetFirstCTrack();
+
+            // First occurence of animation tracks?
+            if (track == null)
+                return false;
+
+            while (track != null)
+            {
+                DescID testID = track.GetDescriptionID();
+                DescLevel lv1 = testID.GetAt(0);
+                DescLevel lv2 = testID.GetAt(1);
+
+                CCurve curve = track.GetCurve();
+                if (curve != null)
+                {
+                    int keyCount = curve.GetKeyCount();
+
+                    CKey key = null;
+                    BaseTime time;
+                    for (int i = 0; i < keyCount; i++)
+                    {
+                        key = curve.GetKey(i);
+                        time = key.GetTime();
+
+                        switch (lv1.id)
+                        {
+                            case 903: // should be replaced with "ID_BASEOBJECT_REL_POSITION"
+                                switch (lv2.id)
+                                {
+                                    case 1000: builder.AddTranslationValue("x", (float)time.Get(), key.GetValue()); break;
+                                    case 1001: builder.AddTranslationValue("y", (float)time.Get(), key.GetValue()); break;
+                                    case 1002: builder.AddTranslationValue("z", (float)time.Get(), key.GetValue()); break;
+                                }
+                                break;
+
+                            case 904: // should be replaced with "ID_BASEOBJECT_REL_ROTATION"
+                                switch (lv2.id)
+                                {
+                                    case 1000: builder.AddRotationValue("x", (float)time.Get(), key.GetValue()); break;
+                                    case 1001: builder.AddRotationValue("y", (float)time.Get(), key.GetValue()); break;
+                                    case 1002: builder.AddRotationValue("z", (float)time.Get(), key.GetValue()); break;
+                                }
+                                break;
+
+                            case 905: // should be replaced with "ID_BASEOBJECT_REL_SCALE"
+                                switch (lv2.id)
+                                {
+                                    case 1000: builder.AddScaleValue("x", (float)time.Get(), key.GetValue()); break;
+                                    case 1001: builder.AddScaleValue("y", (float)time.Get(), key.GetValue()); break;
+                                    case 1002: builder.AddScaleValue("z", (float)time.Get(), key.GetValue()); break;
+                                }
+                                break;
+                        }
+
+                    }
+                }
+                track = track.GetNext();
+            }
+
+            builder.BuildTracks(snc, _tracks);
+            
+            if (_animationsPresent)
+                return false;
+            return true;
         }
     }
 }

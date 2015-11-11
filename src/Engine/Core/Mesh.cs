@@ -99,7 +99,49 @@ namespace Fusee.Engine
         ///   <c>true</c> if UVs are set; otherwise, <c>false</c>.
         /// </value>
         public bool UVsSet { get { return (_meshImp != null) && _meshImp.UVsSet; } }
-        
+
+        private float4[] _boneWeights;
+        /// <summary>
+        /// Gets or sets the boneweights.
+        /// </summary>
+        /// <value>
+        /// The boneweights.
+        /// </value>
+        [ProtoMember(5)]
+        public float4[] BoneWeights
+        {
+            get { return _boneWeights; }
+            set { if (_meshImp != null) _meshImp.InvalidateBoneWeights(); _boneWeights = value; }
+        }
+        /// <summary>
+        /// Gets a value indicating whether boneweights are set.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if boneweights are set; otherwise, <c>false</c>.
+        /// </value>
+        public bool BoneWeightsSet { get { return (_meshImp != null) && _meshImp.BoneWeightsSet; } }
+
+        private float4[] _boneIndices;
+        /// <summary>
+        /// Gets or sets the boneindices.
+        /// </summary>
+        /// <value>
+        /// The boneindices.
+        /// </value>
+        [ProtoMember(6)]
+        public float4[] BoneIndices
+        {
+            get { return _boneIndices; }
+            set { if (_meshImp != null) _meshImp.InvalidateBoneIndices(); _boneIndices = value; }
+        }
+        /// <summary>
+        /// Gets a value indicating whether boneindices are set.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if boneindices are set; otherwise, <c>false</c>.
+        /// </value>
+        public bool BoneIndicesSet { get { return (_meshImp != null) && _meshImp.BoneIndicesSet; } }
+
         private ushort[] _triangles;
         /// <summary>
         /// Gets or sets the triangles.
@@ -107,7 +149,7 @@ namespace Fusee.Engine
         /// <value>
         /// The triangles.
         /// </value>
-        [ProtoMember(5)]
+        [ProtoMember(7)]
         public ushort[] Triangles
         {
             get { return _triangles; }

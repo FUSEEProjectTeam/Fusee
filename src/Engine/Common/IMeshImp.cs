@@ -74,5 +74,31 @@ namespace Fusee.Engine
         /// Implementation Tasks: Invalidates the UV's, e.g. reset the UVBufferObject of this instance by setting it to 0.
         /// </summary>
         void InvalidateUVs();
+
+        /// <summary>
+        /// Implementation Tasks: Invalidates the boneweights of the mesh, e.g. reset the BoneWeightsBufferObject of this instance by setting it to 0.
+        /// </summary>
+        void InvalidateBoneWeights();
+
+        /// <summary>
+        /// Implementation Tasks: Gets a value indicating whether [boneweights set].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if BoneWeightsBufferObject is not 0; otherwise, <c>false</c>.
+        /// </value>
+        bool BoneWeightsSet { get; }
+
+        /// <summary>
+        /// Implementation Tasks: Invalidates the boneindices of the mesh, e.g. reset the BoneIndicesBufferObject of this instance by setting it to 0.
+        /// </summary>
+        void InvalidateBoneIndices();
+
+        /// <summary>
+        /// Implementation Tasks: Gets a value indicating whether [boneindices set].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if BoneIndicesBufferObject is not 0; otherwise, <c>false</c>.
+        /// </value>
+        bool BoneIndicesSet { get; }
     }
 }

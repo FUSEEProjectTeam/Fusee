@@ -164,7 +164,19 @@ namespace Fusee.Engine
         void SetShaderParam(IShaderParam param, float4 val);
 
         /// <summary>
-        /// Sets the shader parameter to a float4x4 matrixvalue.
+        /// Sets the shader parameter to a float4 array.
+        /// </summary>
+        /// <param name="param">The <see cref="IShaderParam"/> identifier.</param>
+        /// <param name="val">The float4 array that should be assigned to the shader array parameter.</param>
+        /// <remarks>
+        /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
+        /// a given uniform parameter name used in a shader program.
+        /// </remarks>
+        /// <seealso cref="GetShaderParamList"/>
+        void SetShaderParam(IShaderParam param, float4[] val);
+
+        /// <summary>
+        /// Sets the shader parameter to a float4x4 matrix value.
         /// </summary>
         /// <param name="param">The shader parameter identifier.</param>
         /// <param name="val">The float4x4 matrix that should be assigned to the shader parameter.</param>
@@ -175,6 +187,21 @@ namespace Fusee.Engine
         /// <seealso cref="GetShaderParamList"/>
         [JSChangeName("SetShaderParamfloat4x4")]
         void SetShaderParam(IShaderParam param, float4x4 val);
+
+
+        /// <summary>
+        /// Sets the shader parameter to a float4x4 matrix array.
+        /// </summary>
+        /// <param name="param">The shader parameter identifier.</param>
+        /// <param name="val">The float4x4 matrix array that should be assigned to the shader array parameter.</param>
+        /// <remarks>
+        /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
+        /// a given uniform parameter name used in a shader program.
+        /// </remarks>
+        /// <seealso cref="GetShaderParamList"/>
+        [JSChangeName("SetShaderParamMtx4fArray")]
+        void SetShaderParam(IShaderParam param, float4x4[] val);
+
 
         /// <summary>
         /// Sets the shader parameter to a integer value.
@@ -188,6 +215,7 @@ namespace Fusee.Engine
         /// <seealso cref="GetShaderParamList"/>
         [JSChangeName("SetShaderParamI")]
         void SetShaderParam(IShaderParam param, int val);
+
 
         /// <summary>
         /// Sets a Shader Parameter to a created texture.
@@ -329,6 +357,24 @@ namespace Fusee.Engine
         void SetTriangles(IMeshImp mr, ushort[] triangleIndices);
 
         /// <summary>
+        /// Binds the boneindices onto the GL Rendercontext and assigns an ElementBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="boneIndices">The boneindices.</param>
+        /// <exception cref="System.ArgumentException">boneIndices must not be null or empty</exception>
+        /// <exception cref="System.ApplicationException"></exception>
+        void SetBoneIndices(IMeshImp mr, float4[] boneIndices);
+
+        /// <summary>
+        /// Binds the boneweights onto the GL Rendercontext and assigns an ElementBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="boneWeights">The boneweights.</param>
+        /// <exception cref="System.ArgumentException">boneWeights must not be null or empty</exception>
+        /// <exception cref="System.ApplicationException"></exception>
+        void SetBoneWeights(IMeshImp mr, float4[] boneWeights);
+
+        /// <summary>
         /// Activates the passed shader program as the current shader for geometry rendering.
         /// </summary>
         /// <param name="shaderProgramImp">The shader to apply to mesh geometry subsequently passed to the RenderContext</param>
@@ -400,7 +446,7 @@ namespace Fusee.Engine
         uint GetRenderState(RenderState renderState);
 
         /*
-         * NO tangent space normal maps at this time...
+         * TODO: NO tangent space normal maps at this time...
          * 
          * http://gamedev.stackexchange.com/a/72806/44105
          * 

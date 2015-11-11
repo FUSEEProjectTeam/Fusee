@@ -177,10 +177,46 @@ namespace C4d
                     else
                     {
                         Logger.Warn("  Class " + t.Name + " in " + fi.Name +
-                                    " is attributed with [ObjectPlugin] but does not inherit from ObjectData");
+                                    " is attributed with [ObjectPlugin] but does not inherit from ObjectDataM");
                     }
 
                 }
+                // Or is it an attributed TagPlugin ?
+                else if (t.IsDefined(typeof(TagPluginAttribute), true))
+                {
+                    TagPluginAttribute attr = (TagPluginAttribute)Attribute.GetCustomAttribute(t, typeof(TagPluginAttribute), true);
+                    Logger.Debug("  Class " + t.Name + " is attributed with [TagPlugin(ID=" + attr.ID + ", Name=\"" +
+                                 attr.Name + "\")]");
+
+                    if (InheritsFrom(t, typeof(TagDataM)))
+                    {
+                        // Register the tag plugin
+                        string name;
+                        BaseBitmap bmp;
+                        GetPluginDescription(t, attr, out name, out bmp);
+
+                        ConstructorInfo ctor = t.GetConstructor(Type.EmptyTypes);
+                        if (ctor != null)
+                        {
+                            PluginAllocator pa = new PluginAllocator(ctor);
+                            NodeDataAllocator nda = pa.Allocate;
+                            _nodeAllocatorList.Add(nda);
+                            // C4dApi.RegisterTagPlugin(attr.ID, name, attr.Info, nda, "tbase", bmp, 0);
+                            C4dApi.RegisterTagPlugin(attr.ID, name, attr.Info, nda, "", bmp, 0);
+                        }
+                        else
+                        {
+                            Logger.Warn("Class " + t.Name + " in " + fi.Name + " is missing a parameterless constructor");
+                        }
+                    }
+                    else
+                    {
+                        Logger.Warn("  Class " + t.Name + " in " + fi.Name +
+                                    " is attributed with [TagPlugin] but does not inherit from TagDataM");
+                    }
+
+                }
+
                 // Or is it an attributed SceneSaverPlugin?
                 else if (t.IsDefined(typeof (SceneSaverPluginAttribute), true))
                 {
@@ -279,6 +315,12 @@ namespace C4d
 
             _pluginInstanceList.RemoveAll(o => true);
             _nodeAllocatorList.RemoveAll(pa => true);
+
+            // Have the gc run before C4D kicks out the entire plugin. This prevents Swigged C# objects from keeping pointers to C++ allocated memory.
+            // Wouldn't be a problem, but after the native part of the plugin is unloaded from C4d, these C# objects are still alive and, when garbage-collected, 
+            // the standard delete is used on their C++ counterparts. Since these c++ objects were allocated using maxon:: new (see new and delete overrides in C4dApi.i) this will crash.
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
         }
 
 

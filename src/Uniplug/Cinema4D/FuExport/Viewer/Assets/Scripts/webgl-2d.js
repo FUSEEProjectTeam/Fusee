@@ -1,3 +1,4 @@
+﻿/* It is auto-generated file. Do not modify it. */
 /**
  *  WebGL-2D.js - HTML5 Canvas2D API in a WebGL context
  *
@@ -323,7 +324,7 @@
           } catch (exc) {
             if (console)
               console.warn("Failed to initialize webgl-2d context. Library disabled. ", exc);
-            
+
             initFailure = true;
             return null;
           }
@@ -1033,10 +1034,10 @@
     // Since we're using premultiplied alpha we need to premultiply the color values.
     var updateColorPremultiplied = function (shaderProgram, colorUnpremultiplied) {
       gl.uniform4f(
-        shaderProgram.uColor, 
-        colorUnpremultiplied[0] * colorUnpremultiplied[3], 
-        colorUnpremultiplied[1] * colorUnpremultiplied[3], 
-        colorUnpremultiplied[2] * colorUnpremultiplied[3], 
+        shaderProgram.uColor,
+        colorUnpremultiplied[0] * colorUnpremultiplied[3],
+        colorUnpremultiplied[1] * colorUnpremultiplied[3],
+        colorUnpremultiplied[2] * colorUnpremultiplied[3],
         colorUnpremultiplied[3]
       );
     };
@@ -1131,7 +1132,7 @@
       gl.transform.apply(this, arguments);
     };
 
-    gl.fillRect = function fillRect(x, y, width, height) {      
+    gl.fillRect = function fillRect(x, y, width, height) {
       var transform = gl2d.transform;
       var shaderProgram = gl2d.initShaders(transform.c_stack+2,0);
 

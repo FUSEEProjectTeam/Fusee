@@ -1,10 +1,11 @@
+﻿/* It is auto-generated file. Do not modify it. */
 /** @license gamepad.js, See README for copyright and usage instructions.
 */
 (function() {
     var getField = function() {
         return navigator.webkitGamepads || navigator.mozGamepads || navigator.gamepads;
     };
-    
+
     var getFunction = function () {
       return navigator.webkitGetGamepads || navigator.mozGetGamepads || navigator.getGamepads;
     };
@@ -78,7 +79,7 @@
         var mozConnectHandler = function(e) {
             if (!navigator.mozGamepads)
               navigator.mozGamepads = [];
-            
+
             navigator.mozGamepads[e.gamepad.index] = e.gamepad;
         }
         var mozDisconnectHandler = function(e) {
@@ -141,7 +142,7 @@
     }
     Gamepad.getStates = function() {
         var rawPads = Gamepad.getRawState();
-        
+
         var len = rawPads.length;
         for (var i = 0; i < len; ++i) {
             mapIndividualPad(rawPads, i);
@@ -157,7 +158,7 @@
     };
     Gamepad.getState = function(i) {
         var rawPads = Gamepad.getRawState();
-        
+
         mapIndividualPad(rawPads, i);
         return curData[i];
     };

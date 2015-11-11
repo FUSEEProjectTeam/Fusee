@@ -22,7 +22,7 @@ namespace Examples.PickingSimple
             _meshTea = MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
             _meshCube = MeshReader.LoadMesh(@"Assets/Cube.obj.model");
 
-            _spColor = MoreShaders.GetDiffuseColorShader(RC);
+            _spColor = Shaders.GetDiffuseColorShader(RC);
             _colorParam = _spColor.GetShaderParam("color");
         }
 

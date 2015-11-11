@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace Fusee.Math
@@ -485,19 +486,34 @@ namespace Fusee.Math
         {
             // if either input is zero, return the other.
             if (q1.LengthSquared < MathHelper.EpsilonFloat)
-                return (!(q2.LengthSquared > MathHelper.EpsilonFloat)) ? Identity : q2;
+            {
+                if (q2.LengthSquared < MathHelper.EpsilonFloat)
+                {
+                    // Console.WriteLine("q1 and q2 have zero length");
+                    return Identity;
+                }
+                // Console.WriteLine("q1 has zero length");
+                return q2;
+            }
 
             if ((q2.LengthSquared < MathHelper.EpsilonFloat))
+            {
+                // Console.WriteLine("q2 has zero length");
                 return q1;
+            }
 
             var cosHalfAngle = q1.w*q2.w + float3.Dot(q1.xyz, q2.xyz);
 
             // if angle = 0.0f, just return one input.
             if (cosHalfAngle >= 1.0f || cosHalfAngle <= -1.0f)
+            {
+                // Console.WriteLine("cosHalfAngle outside [-1, 1]");
                 return q1;
+            }
 
             if (cosHalfAngle < 0.0f)
             {
+                // Console.WriteLine("cosHalfAngle < 0");
                 q2.xyz = -q2.xyz;
                 q2.w = -q2.w;
                 cosHalfAngle = -cosHalfAngle;
@@ -506,8 +522,13 @@ namespace Fusee.Math
             float blendA;
             float blendB;
 
-            if (cosHalfAngle < 0.99f)
+            // A proper slerp requires a division by the sine of the halfAngle.
+            // If halfAngle is small, its sine possibly gets close towards zero
+            // thus causing calculation errors with single precision float.
+            // The following requires halfAngle to be at least 0.5 degrees.
+            if (cosHalfAngle < 0.99995f)
             {
+                // Console.WriteLine("Proper Slerp for big angle: " + MathHelper.RadiansToDegrees((float)System.Math.Acos(cosHalfAngle))+ "°");
                 // do proper slerp for big angles
                 var halfAngle = (float) System.Math.Acos(cosHalfAngle);
                 var sinHalfAngle = (float) System.Math.Sin(halfAngle);
@@ -518,6 +539,7 @@ namespace Fusee.Math
             }
             else
             {
+                // Console.WriteLine("Simple lerp for small angle: " + MathHelper.RadiansToDegrees((float)System.Math.Acos(cosHalfAngle)) + "°");
                 // do lerp if angle is really small.
                 blendA = 1.0f - blend;
                 blendB = blend;
@@ -538,6 +560,10 @@ namespace Fusee.Math
         /// <param name="e">Euler angle to convert.</param>
         /// <param name="inDegrees">Whether the angles are in degrees or radians.</param>
         /// <returns>A Quaternion representing the euler angle passed to this method.</returns>
+        /// <remarks>The euler angle is assumed to be in common aviation order where the y axis is up. Thus x is pitch/attitude, 
+        /// y is yaw/heading, and z is roll/bank. In practice x is never out of [-PI/2, PI/2] while y and z may well be in
+        /// the range of [-PI, PI]</remarks>
+        /// <seealso cref="http://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToQuaternion/index.htm"/>
         public static Quaternion EulerToQuaternion(float3 e, bool inDegrees = false)
         {
             if (inDegrees)
@@ -550,36 +576,46 @@ namespace Fusee.Math
                 e = new float3(rX, rY, rZ);
             }
 
+            // y angle (YAW/HEADING) needs to be reversed. Probably due to left-handedness
+            e.y = MathHelper.TwoPi - e.y;
+
             // Calculating the Sine and Cosine for each half angle.
-            var sX = (float) System.Math.Sin(e.x*0.5f);
-            var cX = (float) System.Math.Cos(e.x*0.5f);
+            // YAW/HEADING
+            var s1 = (float) System.Math.Sin(e.y*0.5f);
+            var c1 = (float) System.Math.Cos(e.y*0.5f);
 
-            var sY = (float) System.Math.Sin(e.y*0.5f);
-            var cY = (float) System.Math.Cos(e.y*0.5f);
+            // PITCH/ATTITUDE
+            var s2 = (float) System.Math.Sin(e.x*0.5f);
+            var c2 = (float) System.Math.Cos(e.x*0.5f);
 
-            var sZ = (float) System.Math.Sin(e.z*0.5f);
-            var cZ = (float) System.Math.Cos(e.z*0.5f);
+            // ROLL/BANK
+            var s3 = (float) System.Math.Sin(e.z*0.5f);
+            var c3 = (float) System.Math.Cos(e.z*0.5f);
 
             // Formula to construct a new Quaternion based on Euler Angles.
-            var x = sX*cY*cZ - cX*sY*sZ;
-            var y = cX*sY*cZ + sX*cY*sZ;
-            var z = cX*cY*sZ - sX*sY*cZ;
-            var w = cX*cY*cZ + sX*sY*sZ;
+            var x = s1*s2*c3 + c1*c2*s3;
+            var y = s1*c2*c3 + c1*s2*s3;
+            var z = c1*s2*c3 - s1*c2*s3;
+            var w = c1*c2*c3 - s1*s2*s3;
 
             return new Quaternion(x, y, z, w);
         }
+
 
         /// <summary>
         ///     Convert Quaternion rotation to Euler Angles.
         /// </summary>
         /// <param name="q">Quaternion rotation to convert.</param>
         /// <param name="inDegrees">Whether the angles shall be in degrees or radians.</param>
-        /// <returns>An Euler angle of type float3 from the passed Quaternion rotation.</returns>
+        /// <remarks>The euler angle is assumed to be in common aviation order where the y axis is up. Thus x is pitch/attitude, 
+        /// y is yaw/heading, and z is roll/bank. In practice x is never out of [-PI/2, PI/2] while y and z may well be in
+        /// the range of [-PI, PI]</remarks>
+        /// <seealso cref="http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToEuler/index.htm"/>
         public static float3 QuaternionToEuler(Quaternion q, bool inDegrees = false)
         {
             q.Normalize();
 
-            var test = 2.0*(q.y*q.w - q.x*q.z);
+            float test = 2.0f*(q.x*q.y + q.z*q.w);
 
             float x;
             float y;
@@ -588,14 +624,14 @@ namespace Fusee.Math
             if (MathHelper.Equals(test, 1.0f))
             {
                 z = -2.0f*(float) System.Math.Atan2(q.x, q.w);
-                x = 0;
-                y = MathHelper.Pi/2;
+                y = 0;
+                x = MathHelper.Pi/2;
             }
             else if (MathHelper.Equals(test, -1.0f))
             {
                 z = 2.0f*(float) System.Math.Atan2(q.x, q.w);
-                x = 0;
-                y = MathHelper.Pi/-2;
+                y = 0;
+                x = MathHelper.Pi/-2;
             }
             else
             {
@@ -604,11 +640,14 @@ namespace Fusee.Math
                 var sqZ = q.z*q.z;
                 var sqW = q.w*q.w;
 
-                x = (float) System.Math.Atan2(2*(q.y*q.z + q.w*q.x), sqW - sqX - sqY + sqZ);
-                y = (float) System.Math.Asin(MathHelper.Clamp(test, -1.0f, 1.0f));
-                z = (float) System.Math.Atan2(2*(q.x*q.y + q.w*q.z), sqW + sqX - sqY - sqZ);
+                y = (float) System.Math.Atan2(2*(q.y*q.w - q.x*q.z), 1 - 2*sqY - 2*sqZ);
+                x = (float) System.Math.Asin(MathHelper.Clamp(test, -1.0f, 1.0f));
+                z = (float) System.Math.Atan2(2*(q.x*q.w - q.y*q.z), 1 - 2*sqX - 2*sqZ);
             }
 
+            // y angle (YAW/HEADING) needs to be reversed. Probably due to left-handedness
+            y = MathHelper.TwoPi - y;
+                                   
             if (inDegrees)
             {
                 x = MathHelper.RadiansToDegrees(x);

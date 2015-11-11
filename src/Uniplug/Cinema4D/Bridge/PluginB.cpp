@@ -160,6 +160,12 @@ bool PluginB::Start()
 void PluginB::End()
 {
 	_pImpl->_mk->End();
+	_pImpl->_mk = nullptr;
+
+	// Should have happened in Plugin::End already, but just in case it didn't, repeat it here
+	// In addition, this shoould collect the Plugin instance itself.
+	GC::Collect();
+	GC::WaitForPendingFinalizers();
 }
 
 bool PluginB::Message(int id)

@@ -41,6 +41,7 @@ namespace Examples.SceneViewer
         {
             AABBf? box = null;
 
+
             if (_scene == null || (box = box = new AABBCalculator(_scene).GetBox()) == null)
             {
                 _modelScaleOffset = float4x4.Identity;
@@ -53,6 +54,7 @@ namespace Examples.SceneViewer
         // is called on startup
         public override void Init()
         {
+
             // GUI initialization
             _zVal = 500;
             _guiHandler = new GUIHandler();
@@ -76,24 +78,34 @@ namespace Examples.SceneViewer
             _guiHandler.Add(_guiSubText);
 
             // Scene loading
+
             var ser = new Serializer();
+
             using (var file = File.OpenRead(@"Assets/Model.fus"))
             {
+
                 _scene = ser.Deserialize(file, null, typeof(SceneContainer)) as SceneContainer;
             }
 
+
             _sr = new SceneRenderer(_scene, "Assets");
+
             AdjustModelScaleOffset();
             _guiSubText.Text = "FUSEE 3D Scene";
+
             if (_scene.Header.CreatedBy != null || _scene.Header.CreationDate != null)
             {
                 _guiSubText.Text += " created";
+
                 if (_scene.Header.CreatedBy != null)
                 {
+
                     _guiSubText.Text += " by " + _scene.Header.CreatedBy;
                 }
+
                 if (_scene.Header.CreationDate != null)
                 {
+
                     _guiSubText.Text += " on " + _scene.Header.CreationDate;
                 }
             }
@@ -101,7 +113,7 @@ namespace Examples.SceneViewer
             _subtextWidth = GUIText.GetTextWidth(_guiSubText.Text, _guiLatoBlack);
             _subtextHeight = GUIText.GetTextHeight(_guiSubText.Text, _guiLatoBlack);
 
-            _sColor = MoreShaders.GetDiffuseColorShader(RC);
+            _sColor = Shaders.GetDiffuseColorShader(RC);
             RC.SetShader(_sColor);
             _colorParam = _sColor.GetShaderParam("color");
             RC.SetShaderParam(_colorParam, new float4(1, 1, 1, 1));
@@ -188,8 +200,10 @@ namespace Examples.SceneViewer
             //RC.SetShaderParam(_colorParam, new float4(0.5f, 0.8f, 0, 1));
             //RC.Render(_meshTea);
 
-            RC.ModelView = mtxCam * mtxRot * _modelScaleOffset;
+
+            RC.ModelView = mtxCam * mtxRot *  _modelScaleOffset;
             _sr.Render(RC);
+            _sr.Animate();
             _guiHandler.RenderGUI();
 
             // swap buffers
@@ -248,11 +262,13 @@ namespace Examples.SceneViewer
 
             var aChild = new SceneNodeContainer()
             {
+
                 Components = new List<SceneComponentContainer>(new SceneComponentContainer[]{
                     new TransformComponent() {Rotation = new float3(0, 0, 0), Translation = new float3(0.11f, 0.11f, 0), Scale = new float3(1, 1, 1)},
                     aMesh
                 })
             };
+
 
             var parent = new SceneContainer()
             {

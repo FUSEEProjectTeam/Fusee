@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using Fusee.Engine;
 
 namespace Fusee.KeyFrameAnimation
 {
@@ -20,7 +22,7 @@ namespace Fusee.KeyFrameAnimation
         /// <param name="time1">The time1.</param>
         /// <param name="time2">The time2.</param>
         /// <returns></returns>
-        public delegate TValue LerpFunc<TValue>(TValue firstVal, TValue secondVal, float time1, float time2);
+        public delegate TValue LerpFunc(TValue firstVal, TValue secondVal, float time1, float time2);
         /// <summary>
         /// A delegate function for setting a value.
         /// </summary>
@@ -33,16 +35,16 @@ namespace Fusee.KeyFrameAnimation
         /// <summary>
         /// The _timeline contains a List of Keyframes.
         /// </summary>
-        private List<Keyframe<TValue>> _timeline = new List<Keyframe<TValue>>();
+        private readonly List<Keyframe<TValue>> _timeline = new List<Keyframe<TValue>>();
         /// <summary>
         /// The _lerpit
         /// </summary>
-        private LerpFunc<TValue> _lerpIt;
+        private readonly LerpFunc _lerpIt;
 
         /// <summary>
         /// The comparer is needed for sorting the _timeline.
         /// </summary>
-        IComparer<Keyframe<TValue>> comparer = new ListSort<TValue>();
+        readonly IComparer<Keyframe<TValue>> _comparer = new ListSort<TValue>();
 
 
         /// <summary>
@@ -54,7 +56,7 @@ namespace Fusee.KeyFrameAnimation
         /// </summary>
         /// <param name="timeChanged">The time changed.</param>
         /// <param name="lerpFunc">The lerp function.</param>
-        public Channel(SetChanelValue timeChanged, LerpFunc<TValue> lerpFunc)
+        public Channel(SetChanelValue timeChanged, LerpFunc lerpFunc)
         {
             TimeChanged += timeChanged;
             _lerpIt = lerpFunc;
@@ -65,7 +67,7 @@ namespace Fusee.KeyFrameAnimation
         /// Initializes a new instance of the <see cref="Channel{TValue}"/> class. Adds the right Lerpfunction.
         /// </summary>
         /// <param name="lerpFunc">The right lerpfunction.</param>
-        public Channel(LerpFunc<TValue> lerpFunc)
+        public Channel(LerpFunc lerpFunc)
         {
             _lerpIt = lerpFunc;
         }
@@ -75,7 +77,7 @@ namespace Fusee.KeyFrameAnimation
         /// </summary>
         /// <param name="lerpFunc">The right lerpfunction.</param>
         /// <param name="value">The value of the firs keyframe.</param>
-        public Channel(LerpFunc<TValue> lerpFunc, TValue value)
+        public Channel(LerpFunc lerpFunc, TValue value)
         {
             _lerpIt = lerpFunc;
             AddKeyframe(0, value);
@@ -117,7 +119,6 @@ namespace Fusee.KeyFrameAnimation
         }
 
 
-
         //Add Keyframes 
         /// <summary>
         /// Adds a keyframe to the channel.
@@ -131,7 +132,7 @@ namespace Fusee.KeyFrameAnimation
                 RemoveKeyframe(keyframe.Time);
             }
             _timeline.Add(keyframe);
-            _timeline.Sort(comparer);
+            _timeline.Sort(_comparer);
         }
 
         /// <summary>
@@ -147,7 +148,7 @@ namespace Fusee.KeyFrameAnimation
                 RemoveKeyframe(time);
             }
             _timeline.Add(new Keyframe<TValue>(time, value));
-            _timeline.Sort(comparer);
+            _timeline.Sort(_comparer);
 
         }
 
@@ -160,8 +161,8 @@ namespace Fusee.KeyFrameAnimation
             for (int i = 0; i < _timeline.Count; i++)
             {
                 if(_timeline[i].Time == time)
-                _timeline.RemoveAt(i);
-                _timeline.Sort(comparer);
+                    _timeline.RemoveAt(i);
+                _timeline.Sort(_comparer);
             }
             
         }
@@ -173,7 +174,6 @@ namespace Fusee.KeyFrameAnimation
         /// <returns>The calculated value</returns>
         public TValue GetValueAt(float time)
         {
-
             TValue keyValue;
             if (_timeline.Count > 1)
             {
@@ -181,25 +181,17 @@ namespace Fusee.KeyFrameAnimation
 
                 for (int next = 1; next < _timeline.Count; next++)
                 {
-                    if (_timeline.ElementAt(next).Time > time && _timeline.ElementAt(next - 1).Time < time)
+                    if (_timeline.ElementAt(next - 1).Time <= time &&  time < _timeline.ElementAt(next).Time)
                     {
                         keyValue = _lerpIt(_timeline.ElementAt(next - 1).Value, _timeline.ElementAt(next).Value, _timeline.ElementAt(next).Time - _timeline.ElementAt(next - 1).Time, time - _timeline.ElementAt(next - 1).Time);
-
                         break;
                     }
                 }
             }
             else 
             {
-                try
-                {
-                keyValue = _timeline.ElementAt(0).Value;
-                }
-                catch(System.ArgumentOutOfRangeException )
-                {
-                    Console.WriteLine("There are no keyframes in the timeline, a standart value will be set.");
-                     keyValue = default(TValue);
-                }
+                Diagnostics.Log("Timeline is empty. Using default value");
+                keyValue = default(TValue);
             }
             _value = keyValue;
             return keyValue;
@@ -229,14 +221,7 @@ namespace Fusee.KeyFrameAnimation
         /// <returns>true = there is a keyframe with the same key | false = there no keyframe with the same key</returns>
         private bool ContainsKey(float time)
         {
-            for (int i = 0; i < _timeline.Count; i++)
-            {
-                if (time == _timeline[i].Time)
-                {
-                    return true;
-                }
-            }
-            return false;
+            return _timeline.Any(t => time == t.Time);
         }
 
 

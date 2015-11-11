@@ -1,3 +1,4 @@
+﻿/* It is auto-generated file. Do not modify it. */
 "use strict";
 
 if (typeof (JSIL) === "undefined")
@@ -86,7 +87,7 @@ JSIL.MakeClass($jsilstorage.TypeRef("VirtualVolume"), "LocalStorageVolume", true
     }
   });
 
-  $.RawMethod(false, "setFileBytes", function (name, value) {    
+  $.RawMethod(false, "setFileBytes", function (name, value) {
     var key = getKey(this.name) + "_blobs_" + name;
 
     // JSON.stringify turns typed arrays into dictionaries :|

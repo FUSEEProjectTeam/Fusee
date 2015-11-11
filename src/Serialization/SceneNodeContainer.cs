@@ -14,5 +14,5 @@ namespace Fusee.Serialization
 
         [ProtoMember(3, AsReference = true)]
         public List<SceneNodeContainer> Children;
-    }
+     }
 }
