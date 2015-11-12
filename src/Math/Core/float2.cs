@@ -13,7 +13,6 @@ namespace Fusee.Math
     /// <remarks>
     /// The float2 structure is suitable for interoperation with unmanaged code requiring two consecutive floats.
     /// </remarks>
-    [Serializable]
     [StructLayout(LayoutKind.Sequential)]
     [ProtoContract]
     public struct float2 : IEquatable<float2>

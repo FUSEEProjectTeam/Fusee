@@ -410,7 +410,7 @@ namespace Fusee.Xirkit
         }
 
        [JSIgnore]
-        private static void AddConverter<TParm, TRet>(Converter<TParm, TRet> c)
+        private static void AddConverter<TParm, TRet>(Math.Converter<TParm, TRet> c)
         {
             Delegate d = (Delegate)c;
 

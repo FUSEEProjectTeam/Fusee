@@ -4,6 +4,15 @@ using System.Diagnostics;
 namespace Fusee.Math
 {
     /// <summary>
+    /// Converter type replacement for System.Converter. Enables this Assembly to be portable
+    /// </summary>
+    /// <typeparam name="TInput">The type of the input.</typeparam>
+    /// <typeparam name="TOutput">The type of the output.</typeparam>
+    /// <param name="input">The input.</param>
+    /// <returns></returns>
+    public delegate TOutput Converter<in TInput, out TOutput>(TInput input);
+
+    /// <summary>
     /// Class contining mainly static helper functions
     /// </summary>
     public class MathHelper

@@ -15,7 +15,6 @@ namespace Fusee.Math
     /// The float3 structure is suitable for interoperation with unmanaged code requiring three consecutive floats.
     /// </remarks>
     [ProtoContract]
-    [Serializable]
     [StructLayout(LayoutKind.Sequential)]
     public struct float3 : IEquatable<float3>
     {

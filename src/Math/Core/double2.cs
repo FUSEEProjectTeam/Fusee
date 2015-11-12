@@ -10,7 +10,6 @@ namespace Fusee.Math
     /// <remarks>
     /// The double2 structure is suitable for interoperation with unmanaged code requiring two consecutive doubles.
     /// </remarks>
-    [Serializable]
     [StructLayout(LayoutKind.Sequential)]
     public struct double2 : IEquatable<double2>
     {
@@ -1172,7 +1171,6 @@ namespace Fusee.Math
         }
 
         #endregion
-
 
         /// <summary>
         /// Gets or sets the Converter object. Has the ability to convert a string to a double2.

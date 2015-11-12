@@ -86,10 +86,12 @@
     <Reference Include="Fusee.SerializationContainer">
       <HintPath>..\..\..\..\Bin\Debug\Fusee.SerializationContainer.dll</HintPath>
     </Reference>
-    <Reference Include="Fusee.SerializationSerializer">
+    <Reference Include="Fusee.SerializationSerializer, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\Bin\Debug\Fusee.SerializationSerializer.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="protobuf-net">
+    <Reference Include="protobuf-net, Version=2.0.0.668, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\ExternalBinaries\protobuf\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="System" />

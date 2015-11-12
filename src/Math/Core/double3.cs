@@ -10,7 +10,6 @@ namespace Fusee.Math
     /// <remarks>
     /// The double3 structure is suitable for interoperation with unmanaged code requiring three consecutive doubles.
     /// </remarks>
-    [Serializable]
     [StructLayout(LayoutKind.Sequential)]
     public struct double3 : IEquatable<double3>
     {

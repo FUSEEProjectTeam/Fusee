@@ -5,11 +5,11 @@
     <MinimumVisualStudioVersion>10.0</MinimumVisualStudioVersion>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{E95FA1C8-6491-4B4B-BBE1-EDA6B16B2C6A}</ProjectGuid>
+    <ProjectGuid>{8EE002C1-E15C-4297-8013-5005D65E33D9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Fusee.Math</RootNamespace>
-    <AssemblyName>Fusee.Math.Core</AssemblyName>
+    <RootNamespace>Fusee.Jometri</RootNamespace>
+    <AssemblyName>Fusee.Jometri</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -20,45 +20,27 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\Bin\Debug\</OutputPath>
-    <BaseIntermediateOutputPath>..\..\..\Tmp\Obj\Math.Core\$(Configuration)\</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
+    <OutputPath>..\Bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\..\..\Bin\Debug\Fusee.Math.Core.xml</DocumentationFile>
+    <DocumentationFile>..\Bin\Debug\Fusee.Jometri.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\..\Bin\Release\</OutputPath>
-    <BaseIntermediateOutputPath>..\..\..\Tmp\Obj\Math.Core\$(Configuration)\</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
+    <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AABBf.cs" />
-    <Compile Include="double2.cs" />
-    <Compile Include="double3.cs" />
-    <Compile Include="double4.cs" />
-    <Compile Include="double4x4.cs" />
-    <Compile Include="float2.cs" />
-    <Compile Include="float3.cs" />
-    <Compile Include="float3x3.cs" />
-    <Compile Include="float4.cs" />
-    <Compile Include="float4x4.cs" />
-    <Compile Include="M.cs" />
-    <Compile Include="QuaternionD.cs" />
-    <Compile Include="MathHelper.cs" />
-    <Compile Include="Quaternion.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="protobuf-net">
-      <HintPath>..\..\..\ExternalBinaries\protobuf\protobuf-net.dll</HintPath>
-    </Reference>
+    <Compile Include="Class1.cs" />
+    <Compile Include="Geometry.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

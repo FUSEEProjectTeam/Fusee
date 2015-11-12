@@ -40,7 +40,6 @@ namespace Fusee.Math
     /// of methods are postfixed with "RH".
     /// </para>
     /// </remarks> 
-    [Serializable]
     [ProtoContract]
     [StructLayout(LayoutKind.Sequential)]
     // ReSharper disable InconsistentNaming

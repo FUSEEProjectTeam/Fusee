@@ -11,7 +11,6 @@ namespace Fusee.Math
     /// <remarks>
     /// The double4 structure is suitable for interoperation with unmanaged code requiring four consecutive doubles.
     /// </remarks>
-    [Serializable]
     [StructLayout(LayoutKind.Sequential)]
     public struct double4 : IEquatable<double4>
     {

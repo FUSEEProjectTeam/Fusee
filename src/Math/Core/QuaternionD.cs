@@ -6,7 +6,6 @@ namespace Fusee.Math
     /// <summary>
     ///     Represents a QuaternionD (double precision).
     /// </summary>
-    [Serializable]
     [StructLayout(LayoutKind.Sequential)]
     public struct QuaternionD : IEquatable<QuaternionD>
     {

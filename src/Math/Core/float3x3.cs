@@ -6,7 +6,6 @@ namespace Fusee.Math
     /// <summary>
     ///     Represents a 3x3 Matrix
     /// </summary>
-    [Serializable]
     [StructLayout(LayoutKind.Sequential)]
     // ReSharper disable InconsistentNaming
     public struct float3x3 : IEquatable<float3x3>

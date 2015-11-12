@@ -40,7 +40,6 @@ namespace Fusee.Math
     /// of methods are postfixed with "RH".
     /// </para>
     /// </remarks> 
-    [Serializable]
     [ProtoContract]
     [StructLayout(LayoutKind.Sequential)]
 // ReSharper disable InconsistentNaming
@@ -1680,7 +1679,7 @@ namespace Fusee.Math
             //                 new float4(mat.M13, mat.M23, mat.M33, 0),
             //                 new float4(val1, val2, val3, 1));
 
-            throw new ApplicationException("InvertAffine is broken (probably since column order notation)");
+            throw new Exception("InvertAffine is broken (probably since column order notation)");
 
             // TODO: fix this!
             //  Column order notation ???
