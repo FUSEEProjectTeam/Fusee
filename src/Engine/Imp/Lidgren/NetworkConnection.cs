@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using Lidgren.Network;
 
 namespace Fusee.Engine
@@ -22,7 +23,7 @@ namespace Fusee.Engine
 
                 if (value != null)
                     if (value.RemoteEndPoint != null)
-                        RemoteEndPoint = value.RemoteEndPoint;
+                        _remoteEndPoint = value.RemoteEndPoint;
             }
             get { return _connection; }
         }
@@ -33,7 +34,44 @@ namespace Fusee.Engine
         /// <value>
         /// The remote end point.
         /// </value>
-        public IPEndPoint RemoteEndPoint { internal set; get; }
+        IPEndpointData INetworkConnection.RemoteEndPoint
+        {
+            get
+            {
+                return new IPEndpointData { Address = IPToLong(_remoteEndPoint.Address.ToString()), Port = _remoteEndPoint.Port};
+            }
+        }
+
+        internal IPEndPoint _remoteEndPoint; /// { internal set; get; }
+
+        private static long IPToLong(string ipAddress)
+        {
+            System.Net.IPAddress ip;
+            if (System.Net.IPAddress.TryParse(ipAddress, out ip))
+#pragma warning disable CS0675 // Bitwise-or operator used on a sign-extended operand
+                return (((long)ip.GetAddressBytes()[0] << 24) | ((int)ip.GetAddressBytes()[1] << 16) | ((int)ip.GetAddressBytes()[2] << 8) | ip.GetAddressBytes()[3]);
+#pragma warning restore CS0675 // Bitwise-or operator used on a sign-extended operand
+            else return 0;
+        }
+
+        private static string LongToIP(long ipAddress)
+        {
+            System.Net.IPAddress tmpIp;
+            if (System.Net.IPAddress.TryParse(ipAddress.ToString(), out tmpIp))
+            {
+                try
+                {
+                    Byte[] bytes = tmpIp.GetAddressBytes();
+                    long addr = (long)BitConverter.ToInt32(bytes, 0);
+                    return new System.Net.IPAddress(addr).ToString();
+                }
+                catch (Exception e) { return e.Message; }
+            }
+            else return String.Empty;
+        }
+
+
+
 
         /// <summary>
         /// Gets the roundtrip time of a packet. This is the time in milliseconds that a packet requires to be send to the remote end point and back.
@@ -45,7 +83,6 @@ namespace Fusee.Engine
         {
             get { return Connection.AverageRoundtripTime;}
         }
-
         #endregion
 
         #region Members

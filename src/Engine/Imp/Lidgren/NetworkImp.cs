@@ -587,7 +587,7 @@ namespace Fusee.Engine
                     return new NetworkMessage
                         {
                             Type = (MessageType) msg.MessageType,
-                            Sender = new NetworkConnection {RemoteEndPoint = msg.SenderEndPoint},
+                            Sender = new NetworkConnection {_remoteEndPoint = msg.SenderEndPoint},
                             Message = new NetworkMsgType {MsgType = MsgDataTypes.String, ReadString = discoveryID}
                         };
 
