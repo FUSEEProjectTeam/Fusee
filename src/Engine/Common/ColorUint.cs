@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Drawing;
 using System.Runtime.InteropServices;
 using Fusee.Math;
 
@@ -12,11 +11,10 @@ namespace Fusee.Engine
     /// Seen as a 32 bit unsigned integer, each color is in the form AARRGGBB - so the 
     /// most signifcant byte is Alpha and the least significatn byte is the blue channel
     /// </summary>
-    [TypeConverter(typeof (ColorConverter))]
-    [Serializable]
     [StructLayout(LayoutKind.Sequential, Size = 4)]
     public struct ColorUint : IEquatable<ColorUint>, IFormattable
     {
+#pragma warning disable 1591
         public static readonly ColorUint Zero = FromBgra(0);
         public static readonly ColorUint Transparent = FromBgra(0x00FFFFFFU);
         public static readonly ColorUint AntiqueWhite	= FromBgra(0xFFFAEBD7U);
@@ -158,6 +156,7 @@ namespace Fusee.Engine
         public static readonly ColorUint WhiteSmoke	= FromBgra(0xFFF5F5F5U);
         public static readonly ColorUint Yellow	= FromBgra(0xFFFFFF00U);
         public static readonly ColorUint YellowGreen	= FromBgra(0xFF9ACD32U);
+#pragma warning restore 1591
 
         /// <summary>
         /// The red component of the color.

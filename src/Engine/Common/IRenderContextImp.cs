@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using Fusee.Math;
 using JSIL.Meta;
 
@@ -224,8 +223,22 @@ namespace Fusee.Engine
         /// <param name="texId">An ITexture probably returned from CreateTexture() method.</param>
         void SetShaderParamTexture(IShaderParam param, ITexture texId);
 
+        /// <summary>
+        /// Updates the texture from video the given video stream.
+        /// </summary>
+        /// <param name="stream">The video stream to retrieve an individual image.</param>
+        /// <param name="tex">The texture to fill with the image from the video.</param>
         void UpdateTextureFromVideoStream(IVideoStreamImp stream, ITexture tex);
 
+        /// <summary>
+        /// Updates the given region of a texture with te passed image data.
+        /// </summary>
+        /// <param name="tex">The tex.</param>
+        /// <param name="img">The img.</param>
+        /// <param name="startX">The start x.</param>
+        /// <param name="startY">The start y.</param>
+        /// <param name="width">The width.</param>
+        /// <param name="height">The height.</param>
         void UpdateTextureRegion(ITexture tex, ImageData img, int startX, int startY, int width, int height);
 
         /// <summary>
@@ -317,7 +330,6 @@ namespace Fusee.Engine
         /// <param name="mesh">The <see cref="IMeshImp" /> instance.</param>
         /// <param name="vertices">The vertices.</param>
         /// <exception cref="System.ArgumentException">Vertices must not be null or empty</exception>
-        /// <exception cref="System.ApplicationException"></exception>
         void SetVertices(IMeshImp mesh, float3[] vertices);
 
         /// <summary>
@@ -326,7 +338,6 @@ namespace Fusee.Engine
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
         /// <param name="normals">The normals.</param>
         /// <exception cref="System.ArgumentException">Normals must not be null or empty</exception>
-        /// <exception cref="System.ApplicationException"></exception>
         void SetNormals(IMeshImp mr, float3[] normals);
 
         /// <summary>
@@ -335,7 +346,6 @@ namespace Fusee.Engine
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
         /// <param name="uvs">The UV's.</param>
         /// <exception cref="System.ArgumentException">UVs must not be null or empty</exception>
-        /// <exception cref="System.ApplicationException"></exception>
         void SetUVs(IMeshImp mr, float2[] uvs);
 
         /// <summary>
@@ -344,7 +354,6 @@ namespace Fusee.Engine
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
         /// <param name="colors">The colors.</param>
         /// <exception cref="System.ArgumentException">colors must not be null or empty</exception>
-        /// <exception cref="System.ApplicationException"></exception>
         void SetColors(IMeshImp mr, uint[] colors);
 
         /// <summary>
@@ -353,7 +362,6 @@ namespace Fusee.Engine
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
         /// <param name="triangleIndices">The triangle indices.</param>
         /// <exception cref="System.ArgumentException">triangleIndices must not be null or empty</exception>
-        /// <exception cref="System.ApplicationException"></exception>
         void SetTriangles(IMeshImp mr, ushort[] triangleIndices);
 
         /// <summary>
@@ -362,7 +370,6 @@ namespace Fusee.Engine
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
         /// <param name="boneIndices">The boneindices.</param>
         /// <exception cref="System.ArgumentException">boneIndices must not be null or empty</exception>
-        /// <exception cref="System.ApplicationException"></exception>
         void SetBoneIndices(IMeshImp mr, float4[] boneIndices);
 
         /// <summary>
@@ -371,7 +378,6 @@ namespace Fusee.Engine
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
         /// <param name="boneWeights">The boneweights.</param>
         /// <exception cref="System.ArgumentException">boneWeights must not be null or empty</exception>
-        /// <exception cref="System.ApplicationException"></exception>
         void SetBoneWeights(IMeshImp mr, float4[] boneWeights);
 
         /// <summary>
@@ -434,6 +440,11 @@ namespace Fusee.Engine
         /// <param name="color">The color of the DebugLine.</param>
         void DebugLine(float3 start, float3 end, float4 color);
 
+        /// <summary>
+        /// Gets the content of the buffer.
+        /// </summary>
+        /// <param name="quad">The quad.</param>
+        /// <param name="texId">The tex identifier.</param>
         void GetBufferContent(Rectangle quad, ITexture texId);
 
         /// <summary>
@@ -441,8 +452,18 @@ namespace Fusee.Engine
         /// </summary>
         /// <returns>The <see cref="IMeshImp" /> instance.</returns>
         IMeshImp CreateMeshImp();
+        /// <summary>
+        /// Sets the specified render state to the given setting.
+        /// </summary>
+        /// <param name="renderState">The render state to set.</param>
+        /// <param name="value">The new value of the render state.</param>
         void SetRenderState(RenderState renderState, uint value);
 
+        /// <summary>
+        /// Retrieves the value of the giben render state.
+        /// </summary>
+        /// <param name="renderState">The render state to retrieve.</param>
+        /// <returns>the current value of the render state.</returns>
         uint GetRenderState(RenderState renderState);
 
         /*
@@ -462,8 +483,22 @@ namespace Fusee.Engine
         void SetVertexData(IMeshImp meshImp, float3[] vertices, float2[] uVs, float3[] normals);
          * */
 
+        /// <summary>
+        /// Retriebes a sub-image of the giben region.
+        /// </summary>
+        /// <param name="x">The x value of the start of the region.</param>
+        /// <param name="y">The y value of the start of the region.</param>
+        /// <param name="w">The width to copy.</param>
+        /// <param name="h">The height to copy.</param>
+        /// <returns></returns>
         ImageData GetPixelColor(int x, int y, int w, int h);
 
+        /// <summary>
+        /// Retrieves the Z-value at the given pixel position.
+        /// </summary>
+        /// <param name="x">The x value.</param>
+        /// <param name="y">The y value.</param>
+        /// <returns>The Z value at (x, y).</returns>
         float GetPixelDepth(int x, int y);
     }
 }

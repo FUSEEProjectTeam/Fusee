@@ -1,7 +1,21 @@
-﻿using System.Net;
-
+﻿
 namespace Fusee.Engine
 {
+    /// <summary>
+    /// Struct holding all data necessary to describe an IP connection.
+    /// </summary>
+    public struct IPEndpointData
+    {
+        /// <summary>
+        /// The IP address as a long value.
+        /// </summary>
+        public long Address;
+        /// <summary>
+        /// The port of the IP connection.
+        /// </summary>
+        public int Port;
+    }
+
     /// <summary>
     /// Interface for a network connection object.
     /// </summary>
@@ -16,7 +30,7 @@ namespace Fusee.Engine
         /// <value>
         /// The remote end point.
         /// </value>
-        IPEndPoint RemoteEndPoint { get; }
+        IPEndpointData RemoteEndPoint { get; }
 
         /// <summary>
         /// Gets the roundtrip time of a packet. This is the time in milliseconds that a packet requires to be send to the remote end point and back.

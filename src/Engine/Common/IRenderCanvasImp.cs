@@ -3,6 +3,9 @@ using JSIL.Meta;
 
 namespace Fusee.Engine
 {
+    /// <summary>
+    /// Implementation agnostic representation of a render canvas.
+    /// </summary>
     public interface IRenderCanvasImp
     {
         /// <summary>
@@ -90,8 +93,10 @@ namespace Fusee.Engine
         /// <summary>
         /// Sets the data for a video wall.
         /// </summary>
-        /// <param name="monitorsHor"></param>
-        /// <param name="monitorsVert"></param>
+        /// <param name="monitorsHor">Monitor width in pixels.</param>
+        /// <param name="monitorsVert">Monitor height in pixels.</param>
+        /// <param name="activate">Activates the window if set to true.</param>
+        /// <param name="borderHidden">Hides the window border if set to true.</param>
         [JSExternal]
         void VideoWall(int monitorsHor, int monitorsVert, bool activate = true, bool borderHidden = true);
 

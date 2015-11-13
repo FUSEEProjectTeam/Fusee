@@ -1,6 +1,4 @@
-﻿using System;
-using System.Drawing;
-
+﻿
 namespace Fusee.Engine
 {
     /// <summary>
@@ -45,6 +43,12 @@ namespace Fusee.Engine
         /// </summary>
         public byte[] PixelData;
 
+        /// <summary>
+        /// Gets the pixel color at the specified position.
+        /// </summary>
+        /// <param name="x">The x-coordinate (in pixels).</param>
+        /// <param name="y">The y-coordinate (in pixels).</param>
+        /// <returns>The color at the given position.</returns>
         public ColorUint GetPixel(int x, int y)
         {
             if (PixelFormat == ImagePixelFormat.RGB)

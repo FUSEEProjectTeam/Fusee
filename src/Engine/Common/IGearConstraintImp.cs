@@ -5,6 +5,9 @@ using System.Text;
 
 namespace Fusee.Engine
 {
+    /// <summary>
+    /// Implementation agnostic representation of a gear constraint.
+    /// </summary>
     public interface IGearConstraintImp : IConstraintImp
     {
     }

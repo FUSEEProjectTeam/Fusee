@@ -9,6 +9,7 @@ namespace Fusee.Engine
     public enum RenderState
     {
         // Butter and bread states
+#pragma warning disable 1591
         FillMode = 8,
         CullMode = 22,
         Clipping = 136,
@@ -125,6 +126,7 @@ namespace Fusee.Engine
         Wrap15 = 205,
         SeparateAlphaBlendEnable = 206,
        */
+#pragma warning restore 1591
     }
 
 
@@ -133,14 +135,16 @@ namespace Fusee.Engine
     /// </summary>
     public enum BlendOperation
     {
+#pragma warning disable 1591
         Add = 1,
         Subtract = 2,
         ReverseSubtract = 3,
         Minimum = 4,
         Maximum = 5,
+#pragma warning restore 1591
     }
 
-    /* TODO: Implement texture wrapping rahter as a texture property than a "global" render state. This is most
+    /* TODO: Implement texture wrapping rather as a texture property than a "global" render state. This is most
      * convenient to implment with OpenGL/TK and easier to mimic in DirectX than the other way round.
     /// <summary>
     /// Bitwise combinations of these values specify if texure wrapping along the given texture coordinate axes is performed. 
@@ -166,6 +170,7 @@ namespace Fusee.Engine
     /// </summary>
     public enum Compare
     {
+#pragma warning disable 1591
         Never = 1,
         Less = 2,
         Equal = 3,
@@ -174,6 +179,7 @@ namespace Fusee.Engine
         NotEqual = 6,
         GreaterEqual = 7,
         Always = 8,
+#pragma warning restore 1591
     }
 
     /// <summary>
@@ -183,9 +189,11 @@ namespace Fusee.Engine
     /// </summary>
     public enum Cull
     {
+#pragma warning disable 1591
         None = 1,
         Clockwise = 2,
         Counterclockwise = 3,
+#pragma warning restore 1591
     }
     
     /// <summary>
@@ -193,6 +201,7 @@ namespace Fusee.Engine
     /// </summary>
     public enum Blend
     {
+#pragma warning disable 1591
         Zero = 1,
         One = 2,
         SourceColor = 3,
@@ -212,16 +221,20 @@ namespace Fusee.Engine
         // BothInverseSourceAlpha = 13,
         // SourceColor2 = 16,
         // InverseSourceColor2 = 17,
+#pragma warning restore 1591
     }
 
-    /// <summary>
-    /// Specifies the fill mode to use by the rasterizer. Options are Point (renders vertices as single pixels), Wireframe (renders only triangles' edges as lines), or Solid (fills all pixels covered by triangles).
-    /// </summary>
+        /// <summary>
+        /// Specifies the fill mode to use by the rasterizer. Options are Point (renders vertices as single pixels), Wireframe (renders only triangles' edges as lines), or Solid (fills all pixels covered by triangles).
+        /// </summary>
     public enum FillMode
     {
+#pragma warning disable 1591
         Point = 1,
+
         Wireframe = 2,
         Solid = 3,
+#pragma warning restore 1591
     }
     // These values are binary compatible with ClearBufferMask
     /// <summary>
@@ -230,14 +243,12 @@ namespace Fusee.Engine
     [Flags]
     public enum ClearFlags : int
     {
-       
+#pragma warning disable 1591
         Depth = ((int)0x00000100),
-        
         Accum = ((int)0x00000200),
-      
         Stencil = ((int)0x00000400),
-       
         Color = ((int)0x00004000),
+#pragma warning restore 1591
     }
 
     //[Flags]
@@ -246,7 +257,7 @@ namespace Fusee.Engine
     /// </summary>
     public enum KeyCodes : int
     {
-        
+#pragma warning disable 1591
         KeyCode = 65535,
         Modifiers = -65536,
         None = 0,
@@ -453,7 +464,8 @@ namespace Fusee.Engine
         OemClear = 258,
         ShiftModifier = 65536,
         ControlModifier = 131072,
-        AltModifier = 262144,        
+        AltModifier = 262144,
+#pragma warning restore 1591
     }
 
     /// <summary>
@@ -462,10 +474,12 @@ namespace Fusee.Engine
     [Flags]
     public enum MouseButtons : int
     {
+#pragma warning disable 1591
         Unknown = 0,
         Left = 1,
         Right = 2,
         Middle = 4,
+#pragma warning restore 1591
     }
 
 
@@ -474,6 +488,7 @@ namespace Fusee.Engine
     /// </summary>
     public enum InputAxis : int
     {
+#pragma warning disable 1591
         Unknown,
         MouseX,
         MouseY,
@@ -483,6 +498,7 @@ namespace Fusee.Engine
         // keep enum values contiguous - don't define your own numbers here
         // Just add enum symbols
         LastAxis, // Keep this the last enum entry
+#pragma warning restore 1591
     }
 
     /// <summary>
@@ -491,7 +507,9 @@ namespace Fusee.Engine
     /// </summary>
     public enum CursorType : int
     {
+#pragma warning disable 1591
         Standard,
         Hand,
+#pragma warning restore 1591
     }
 }

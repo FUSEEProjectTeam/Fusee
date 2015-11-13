@@ -561,8 +561,10 @@ namespace Fusee.Math
         /// <returns>A Quaternion representing the euler angle passed to this method.</returns>
         /// <remarks>The euler angle is assumed to be in common aviation order where the y axis is up. Thus x is pitch/attitude, 
         /// y is yaw/heading, and z is roll/bank. In practice x is never out of [-PI/2, PI/2] while y and z may well be in
-        /// the range of [-PI, PI]</remarks>
-        /// <seealso cref="http://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToQuaternion/index.htm"/>
+        /// the range of [-PI, PI].
+        /// 
+        /// See also <a href="http://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToQuaternion/index.htm">the euclideanspace website</a>.
+        /// </remarks>
         public static Quaternion EulerToQuaternion(float3 e, bool inDegrees = false)
         {
             if (inDegrees)
@@ -608,8 +610,10 @@ namespace Fusee.Math
         /// <param name="inDegrees">Whether the angles shall be in degrees or radians.</param>
         /// <remarks>The euler angle is assumed to be in common aviation order where the y axis is up. Thus x is pitch/attitude, 
         /// y is yaw/heading, and z is roll/bank. In practice x is never out of [-PI/2, PI/2] while y and z may well be in
-        /// the range of [-PI, PI]</remarks>
-        /// <seealso cref="http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToEuler/index.htm"/>
+        /// the range of [-PI, PI].
+        /// 
+        /// See also <a href="http://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToQuaternion/index.htm">the euclideanspace website</a>.
+        /// </remarks>
         public static float3 QuaternionToEuler(Quaternion q, bool inDegrees = false)
         {
             q.Normalize();

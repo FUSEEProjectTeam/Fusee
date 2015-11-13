@@ -1,6 +1,9 @@
 ﻿
 namespace Fusee.Engine
 {
+    /// <summary>
+    /// Abstracts the platform/device dependent implementation of an input device.
+    /// </summary>
     public interface IInputDeviceImp
     {
         /// <summary>

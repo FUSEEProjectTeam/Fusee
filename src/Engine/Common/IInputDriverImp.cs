@@ -12,6 +12,10 @@ namespace Fusee.Engine
     /// </summary>
     public interface IInputDriverImp
     {
+        /// <summary>
+        /// Retrieves a list of device implementations ("drivers").
+        /// </summary>
+        /// <returns>The list of devices.</returns>
         List<IInputDeviceImp> DeviceImps();
     }
 }

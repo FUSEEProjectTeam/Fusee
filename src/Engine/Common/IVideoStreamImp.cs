@@ -6,8 +6,18 @@
     /// </summary>
     public interface IVideoStreamImp
     {
+        /// <summary>
+        /// Gets the current frame.
+        /// </summary>
+        /// <returns></returns>
         ImageData GetCurrentFrame();
+        /// <summary>
+        /// Starts this stream.
+        /// </summary>
         void Start();
+        /// <summary>
+        /// Stops this stream.
+        /// </summary>
         void Stop();
         
     }
