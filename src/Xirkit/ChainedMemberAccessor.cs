@@ -1,9 +1,15 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Reflection;
+using Fusee.Math;
 
 namespace Fusee.Xirkit
 {
+    /// <summary>
+    /// Class used inside Xirkit to accces (read and write) nested members that are referenced
+    /// by a chain of properties/fields separated by the object-access operator '.' (dot).
+    /// </summary>
+    /// <typeparam name="TPin">The type of the pin (the type to the outside world).</typeparam>
+    /// <typeparam name="TObj">The type of the object referenced by the innermost member of the access chain.</typeparam>
     [DebuggerDisplay("{_miList[0].Name}...{_miList[_miList.Length-1].Name}")]
     public class ChainedMemberAccessor<TPin, TObj> : IMemberAccessor<TPin>
     {
@@ -18,6 +24,12 @@ namespace Fusee.Xirkit
         private PrePost[] _pre;
         private PrePost[] _post;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ChainedMemberAccessor{TPin, TObj}"/> class.
+        /// </summary>
+        /// <param name="miList">A list of member info objects (sorted from outermost to innermost member along the access chain).</param>
+        /// <param name="p2o">A converter converting from the pin type to and from the original type accessed by the pin.</param>
+        /// <param name="o2p">A converter converting from the innermost type referenced by access chain to the outside pin type.</param>
         public ChainedMemberAccessor(MemberInfo[] miList, Converter<TPin, TObj> p2o, Converter<TObj, TPin> o2p)
         {
             _miList = miList;
@@ -45,6 +57,11 @@ namespace Fusee.Xirkit
 
         }
 
+        /// <summary>
+        /// Assigns the value given in val to the object acessed by this member accessor.
+        /// </summary>
+        /// <param name="o">The object to which the access chain belongs to.</param>
+        /// <param name="val">The value to be written to the end of the access chain starting in o.</param>
         public void Set(object o, TPin val)
         {
             _oList[0] = o;
@@ -56,6 +73,11 @@ namespace Fusee.Xirkit
                 _post[i](i);
         }
 
+        /// <summary>
+        /// Retrieves the value of the innermost member along the access chain from the specified object.
+        /// </summary>
+        /// <param name="o">The object to retrieve a value from.</param>
+        /// <returns>The value contained in the given object at the end of the access chain starting in o.</returns>
         public TPin Get(object o)
         {
             _oList[0] = o;

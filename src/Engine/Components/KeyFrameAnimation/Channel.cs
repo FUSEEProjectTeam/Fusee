@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using Fusee.Engine;
+// using Fusee.Engine;
 
 namespace Fusee.KeyFrameAnimation
 {
@@ -190,7 +190,7 @@ namespace Fusee.KeyFrameAnimation
             }
             else 
             {
-                Diagnostics.Log("Timeline is empty. Using default value");
+                // Diagnostics.Log("Timeline is empty. Using default value");
                 keyValue = default(TValue);
             }
             _value = keyValue;

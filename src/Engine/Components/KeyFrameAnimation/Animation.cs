@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Fusee.Engine;
+// using Fusee.Engine;
 using Fusee.Xirkit;
 
 
@@ -118,61 +118,16 @@ namespace Fusee.KeyFrameAnimation
             }
         }
 
+
         /// <summary>
         /// Animates all channels. The time is set by the user.
         /// </summary>
         /// <param name="time">The time that the user set's.</param>
         public void Animate(float time)
         {
-
-
-            switch (_animMode)
-            {
-                case 0:
-                    if (_time >= _maxDuration)
-                    {
-                        _time = 0;
-                    }
-                    break;
-                case 1:
-                    if (_time + time > _maxDuration || _time + time < 0)
-                    {
-                        _direction = !_direction;
-                    }
-                    break;
-                default:
-                    if (_time >= _maxDuration)
-                    {
-                        _time = 0;
-                    }
-                    break;
-            }
-
-            if (_direction)
-            {
-                _time += time;
-            }
-            else
-            {
-                _time -= time;
-            }
-
-            foreach (var baseChannel in _channels)
-            {
-                baseChannel.SetTick(_time);
-            }
-
-            _animHandler.Execute();
-        }
-
-        /// <summary>
-        /// Animates all channels. The Time of the Animation is from the Time Singelton of FUSEE
-        /// </summary>
-        public void Animate()
-        {
             // DEBUG QUATERNION LERP
             // float time = 0.1f; 
-            float time = (float)Time.Instance.DeltaTime;
+            //  float time = (float)Time.Instance.DeltaTime;
             switch (_animMode)
             {
                 case 0:
@@ -218,9 +173,10 @@ namespace Fusee.KeyFrameAnimation
         /// <param name="pos">The position.</param>
         public void DeleteAnimation(int pos)
         {
-            _animHandler.DeleteRoot(pos);
-            _animHandler.DeleteNode(pos);
-            _channels.RemoveAt(pos);
+            throw new NotImplementedException("This method is defunkt since a user has no idea of what to specify at pos");
+            //_animHandler.DeleteRoot(pos);
+            //_animHandler.DeleteNode(pos);
+            //_channels.RemoveAt(pos);
         }
     }
 }

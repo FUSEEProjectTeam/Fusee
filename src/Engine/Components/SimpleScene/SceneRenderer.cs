@@ -279,7 +279,10 @@ namespace Fusee.Engine.SimpleScene
         public void Animate()
         {
             if (_animation.ChannelBaseList.Count != 0)
-                _animation.Animate();
+            {
+                // Set the animation time here!
+                _animation.Animate((float)Time.Instance.DeltaTime);
+            }
         }
 
         public void SetContext(RenderContext rc)
