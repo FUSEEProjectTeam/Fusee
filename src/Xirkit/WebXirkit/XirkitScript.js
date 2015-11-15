@@ -329,7 +329,7 @@ JSIL.ImplementExternals("Fusee.Xirkit.PinFactory", function ($)
         var t = JSIL.GetType(n.get_O());
         var elementAccessor = null;
         var result = null;
-        if ((member.indexOf(".") != -1))
+        if ((member.indexOf(".") !== -1))
         {
 
             var memberName = member.split(".");

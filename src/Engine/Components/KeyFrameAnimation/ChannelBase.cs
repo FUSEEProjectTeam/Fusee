@@ -3,7 +3,7 @@
     /// <summary>
     /// 
     /// </summary>
-    public class ChannelBase
+    public abstract class ChannelBase
     {
         /// <summary>
         /// The _time in the BaseChannel
@@ -15,31 +15,15 @@
         /// </summary>
         public float Time { get { return _time; } set { _time = value; } }
 
-        protected virtual void DoTick(float time)
-        {
-
-        }
-
-        protected virtual void DemandTime()
-        {
-
-        }
-
-
         /// <summary>
         /// Executes DoTick.
         /// </summary>
         /// <param name="time">The time will be pasted to DoTick.</param>
-        public void SetTick(float time)
-        {
-            DoTick(time);
-        }
+        public abstract void SetTick(float time);
+
         /// <summary>
         /// Executes DemandTime.
         /// </summary>
-        public void NeedTime()
-        {
-            DemandTime();
-        }
+        public abstract  float Duration { get; }
     }
 }

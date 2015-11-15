@@ -78,14 +78,11 @@ namespace Fusee.KeyFrameAnimation
         /// <param name="channel">The channel that will be added.</param>
         /// <param name="channelObject">The Object that will be wired with the channel.</param>
         /// <param name="field">The full name of the Field or Property of the Objekt that will be handled by this Animation.</param>
-        public void AddAnimation<TValue>(Channel<TValue> channel, Object channelObject, String field)
+        public void AddAnimation<TValue>(Channel<TValue> channel, object channelObject, string field)
         {
-            channel.NeedTime();
-
-            if (_maxDuration == null || _maxDuration < channel.Time)
-            {
-                _maxDuration = channel.Time;
-            }
+            // Adjust overall animation duration so that the newly added channel's duration is not shortened
+            if (_maxDuration < channel.Duration)
+                _maxDuration = channel.Duration;
 
             _channels.Add(channel);
             Node channelNode = new Node(channel);

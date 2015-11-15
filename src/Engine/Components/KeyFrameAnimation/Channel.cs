@@ -16,7 +16,6 @@ namespace Fusee.KeyFrameAnimation
         /// <summary>
         /// A function that returns a generic Type. The Functions can be seen in Lerp.cs
         /// </summary>
-        /// <typeparam name="TValue">The type of the Keyframe.</typeparam>
         /// <param name="firstVal">The first value.</param>
         /// <param name="secondVal">The second value.</param>
         /// <param name="time1">The time1.</param>
@@ -88,7 +87,7 @@ namespace Fusee.KeyFrameAnimation
         /// Overrides the Base Channel Class.
         /// </summary>
         /// <param name="time">The time.</param>
-        protected override void DoTick(float time)
+        public override void SetTick(float time)
         {
             if (TimeChanged != null)
             {
@@ -101,27 +100,16 @@ namespace Fusee.KeyFrameAnimation
             }
         }
 
-        /// <summary>
-        /// Set's the maximum time of the channel in the baseclass if theres no keyframe the time is 0.
-        /// </summary>
-        protected override void DemandTime()
+        public override float Duration
         {
-
-            try 
+            get
             {
-                base.Time = _timeline.ElementAt(_timeline.Count - 1).Time;
+                return (_timeline.Count > 0) ? _timeline.ElementAt(_timeline.Count - 1).Time : 0.0f;
             }
-            catch (System.ArgumentOutOfRangeException)
-            {
-                base.Time = 0;
-            }
-           
         }
 
-
-        //Add Keyframes 
         /// <summary>
-        /// Adds a keyframe to the channel.
+        /// Adds a keyframe to this channel.
         /// </summary>
         /// <param name="keyframe">The keyframe.</param>
         public void AddKeyframe(Keyframe<TValue> keyframe)
