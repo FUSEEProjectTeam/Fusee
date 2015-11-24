@@ -1,0 +1,57 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <!-- List of custom categories. Items here occur in the "Build Action" dropdown of the property page of all files listed in a project -->
+    <AvailableItemName Include="FUSEE_External_JavaScript">
+       <InProject>false</InProject>
+    </AvailableItemName>
+  </ItemGroup>
+
+  
+  <!-- ############# Overriding build dependencies ################################################### -->
+  <PropertyGroup>
+    <BuildDependsOn>
+      FuseeBeforeBuild;
+      $(BuildDependsOn);
+      FuseeCopyExternalJavaScript
+    </BuildDependsOn>
+  </PropertyGroup>
+
+  <!-- Add FUSEE targets/tasks to be performed BEFORE the normal build here -->
+  <Target Name="FuseeBeforeBuild">
+    <!--  -->
+  </Target>
+
+  <!-- Add FUSEE tasks to be performed AFTER the normal build (csc etc) here -->
+  <Target Name="FuseeCopyExternalJavaScript" 
+      Inputs="@(FUSEE_External_JavaScript)"
+      Outputs="@(FUSEE_External_JavaScript -> '$(OutputPath)Scripts\%(Filename)%(Extension)')">
+    <!-- $(TargetDir) is the full absolute path to the $(OutputPath) defined in the project file... -->
+    <Message Importance="High" Text="@(FUSEE_External_JavaScript) -> $(TargetDir)Scripts\%(Filename)%(Extension)" />
+    <Copy 
+        SourceFiles="@(FUSEE_External_JavaScript)" 
+        DestinationFolder="$(TargetDir)Scripts\" />
+  </Target>
+
+
+  <!-- ############# Overriding clean dependencies ################################################### -->
+  <PropertyGroup>
+    <CleanDependsOn>
+      FuseeBeforeClean;
+      $(CleanDependsOn);
+      FuseeCleanExternalJavaScript
+    </CleanDependsOn>
+  </PropertyGroup>
+
+  <!-- Add FUSEE targets/tasks to be performed BEFORE the normal clean here -->
+  <Target Name="FuseeBeforeClean">
+    <!--  -->
+  </Target>
+
+  <!-- Add FUSEE tasks to be performed AFTER the normal clean here -->
+  <Target Name="FuseeCleanExternalJavaScript">
+    <!-- NOTE: Importance not High(!) output only in verbose msbuild -->
+    <Message Text="Deleting @(FUSEE_External_JavaScript -> '$(OutputPath)Scripts\%(Filename)%(Extension)')" />
+    <Delete Files="@(FUSEE_External_JavaScript -> '$(OutputPath)Scripts\%(Filename)%(Extension)')" />
+  </Target>
+
+</Project>

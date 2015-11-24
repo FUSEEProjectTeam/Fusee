@@ -1,5 +1,5 @@
 ﻿
-namespace Fusee.Engine
+namespace Fusee.Engine.Common
 {
     /// <summary>
     /// Abstracts the platform/device dependent implementation of an input device.

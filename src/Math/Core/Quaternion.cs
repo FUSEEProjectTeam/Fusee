@@ -2,7 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-namespace Fusee.Math
+namespace Fusee.Math.Core
 {
     /// <summary>
     ///     Represents a Quaternion (single precision).

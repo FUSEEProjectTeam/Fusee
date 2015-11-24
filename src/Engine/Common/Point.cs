@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace Fusee.Engine
+namespace Fusee.Engine.Common
 {
     /// <summary>
     /// Sets a point in 3D space.

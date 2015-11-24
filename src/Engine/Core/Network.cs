@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Fusee.Engine.Common;
 using JSIL.Meta;
 
-namespace Fusee.Engine
+namespace Fusee.Engine.Core
 {
     /// <summary>
     /// Core network object. Handles all connections by accessing underlying interface implementations.

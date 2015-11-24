@@ -1,4 +1,4 @@
-﻿namespace Fusee.Engine
+﻿namespace Fusee.Engine.Core
 {
     /// <summary>
     ///     Contains all pixel and vertex shaders and a method to create a ShaderProgram in Rendercontext.

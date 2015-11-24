@@ -1,9 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using Fusee.Engine.Common;
 using JSIL.Meta;
 
-namespace Fusee.Engine
+namespace Fusee.Engine.Core
 {
 
     #region Documentation Header

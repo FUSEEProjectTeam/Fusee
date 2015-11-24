@@ -2,10 +2,10 @@
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using Fusee.Math;
+using Fusee.Math.Core;
 using JSIL.Meta;
 
-namespace Fusee.Engine
+namespace Fusee.Engine.Core
 {
     /// <summary>
     ///     This class is used to load 3D Models in .obj format into memory.
@@ -229,7 +229,7 @@ namespace Fusee.Engine
 #region Unused Code
 
 /*
-   namespace Fusee.Engine
+   namespace Fusee.Engine.Core
 {
 
   /// <summary>

@@ -1,4 +1,4 @@
-﻿namespace Fusee.Engine
+﻿namespace Fusee.Engine.Common
 {
     /// <summary>
     /// The Shaderprogram interface. It is currently in prototype state.

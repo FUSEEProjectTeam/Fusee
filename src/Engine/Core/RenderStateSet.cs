@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
-using Fusee.Math;
+using Fusee.Engine.Common;
+using Fusee.Math.Core;
 
-namespace Fusee.Engine
+namespace Fusee.Engine.Core
 {
     /// <summary>
     /// Use instances of this class to store a set of render states that need to be applied as a whole. 

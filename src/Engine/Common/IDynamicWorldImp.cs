@@ -1,9 +1,9 @@
 ﻿using System;
-using Fusee.Math;
+using Fusee.Math.Core;
 using Fusee.Engine;
 
 
-namespace Fusee.Engine
+namespace Fusee.Engine.Common
 {
     /// <summary>
     /// Implementation agnostic representation of a dynamic worl. The dynamic world is the root object of 

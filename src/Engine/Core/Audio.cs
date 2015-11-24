@@ -1,7 +1,9 @@
 ﻿// Fusee uses the OpenAL library. See http://www.openal.org for details.
 // OpenAL is used under the terms of the LGPL, version x.
 
-namespace Fusee.Engine
+using Fusee.Engine.Common;
+
+namespace Fusee.Engine.Core
 {
     /// <summary>
     /// The Audio class provides all audio functionality. It is accessible from everywhere.                          

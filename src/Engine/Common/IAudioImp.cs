@@ -1,4 +1,4 @@
-﻿namespace Fusee.Engine
+﻿namespace Fusee.Engine.Common
 {
     /// <summary>
     /// Interface for the Audio implementation. The implementation of this interface is responsible for management of all <see cref="IAudioStream" /> instances.

@@ -1,6 +1,6 @@
-﻿using Fusee.Math;
+﻿using Fusee.Math.Core;
 
-namespace Fusee.Engine
+namespace Fusee.Engine.Core
 {
     /// <summary>
     /// Creates a simple cube geomentry straight from the code.

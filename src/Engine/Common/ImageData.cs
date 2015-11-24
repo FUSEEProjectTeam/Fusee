@@ -1,5 +1,5 @@
 ﻿
-namespace Fusee.Engine
+namespace Fusee.Engine.Common
 {
     /// <summary>
     /// The Enumerator specifying the PixelFormat of an Image.

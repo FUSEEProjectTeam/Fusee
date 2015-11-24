@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Fusee.Math;
+using Fusee.Math.Core;
 
-namespace Fusee.Engine
+namespace Fusee.Engine.Core
 {
     internal sealed class ParticleData
     {

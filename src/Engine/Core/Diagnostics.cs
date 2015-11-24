@@ -1,7 +1,7 @@
 ﻿using JSIL.Meta;
 using System.Diagnostics;
 
-namespace Fusee.Engine
+namespace Fusee.Engine.Core
 {
      /// <summary>
      /// Contains some mostly static functions for diagnostic purposes.

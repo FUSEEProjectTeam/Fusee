@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
-namespace Fusee.Engine
+namespace Fusee.Engine.Core
 {
     /// <summary>
     /// The Time class provides all time information. It is accessible from everywhere by calling Time.instance.                          

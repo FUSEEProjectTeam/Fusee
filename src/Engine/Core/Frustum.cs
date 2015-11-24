@@ -3,9 +3,9 @@
 //using System.Diagnostics;
 //using System.Linq;
 //using System.Text;
-//using Fusee.Math;
+//using Fusee.Math.Core;
 
-//namespace Fusee.Engine
+//namespace Fusee.Engine.Core
 //{
 //    // This is currently not used (WIP)
 //    public class Frustum

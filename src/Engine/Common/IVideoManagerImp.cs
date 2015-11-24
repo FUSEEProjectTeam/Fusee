@@ -1,4 +1,4 @@
-﻿namespace Fusee.Engine
+﻿namespace Fusee.Engine.Common
 {
     /// <summary>
     /// The interface for VideoManager implementations. This interface should contain all functions

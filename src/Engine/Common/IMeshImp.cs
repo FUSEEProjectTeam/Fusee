@@ -1,5 +1,5 @@
 ﻿using ProtoBuf;
-namespace Fusee.Engine
+namespace Fusee.Engine.Common
 {
     /// <summary>
     /// Interface for Mesh implementations. The implementation should handle typical mesh informations like: vertices, triangles, normals, colors, UV's.

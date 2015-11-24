@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Fusee.Math;
+using Fusee.Math.Core;
 using JSIL.Meta;
 
-namespace Fusee.Engine
+namespace Fusee.Engine.Common
 {
     /// <summary>
     /// The render context interface contains all functions necessary to manipulate the underlying rendering hardware. Use this class' elements
@@ -33,7 +33,7 @@ namespace Fusee.Engine
         /// The 4x4 projection matrix applied to view coordinates yielding clip space coordinates.
         /// </value>
         /// <remarks>
-        /// View coordinates are the result of the ModelView matrix multiplied to the geometry (<see cref="Fusee.Engine.IRenderContextImp.ModelView"/>).
+        /// View coordinates are the result of the ModelView matrix multiplied to the geometry (<see cref="IRenderContextImp.ModelView"/>).
         /// The coordinate system of the view space has its origin in the camera center with the z axis aligned to the viewing direction, and the x- and
         /// y axes aligned to the viewing plane. Still, no projection from 3d space to the viewing plane has been performed. This is done by multiplying
         /// view coordinate geometry wihth the projection matrix. Typically, the projection matrix either performs a parallel projection or a perspective
@@ -73,7 +73,7 @@ namespace Fusee.Engine
         /// <returns>A shader program object identifying the combination of the given vertex and pixel shader.</returns>
         /// <remarks>
         /// Currently only shaders in GLSL (or rather GLSL/ES) source language(s) are supported.
-        /// The result is already compiled to code executable on the GPU. <see cref="Fusee.Engine.IRenderContextImp.SetShader"/>
+        /// The result is already compiled to code executable on the GPU. <see cref="IRenderContextImp.SetShader"/>
         /// to activate the result as the current shader used for rendering geometry passed to the RenderContext.
         /// </remarks>
         IShaderProgramImp CreateShader(string vs, string ps);
@@ -484,13 +484,13 @@ namespace Fusee.Engine
          * */
 
         /// <summary>
-        /// Retriebes a sub-image of the giben region.
+        /// Retrieves a sub-image of the giben region.
         /// </summary>
         /// <param name="x">The x value of the start of the region.</param>
         /// <param name="y">The y value of the start of the region.</param>
         /// <param name="w">The width to copy.</param>
         /// <param name="h">The height to copy.</param>
-        /// <returns></returns>
+        /// <returns>The specified sub-image</returns>
         ImageData GetPixelColor(int x, int y, int w, int h);
 
         /// <summary>

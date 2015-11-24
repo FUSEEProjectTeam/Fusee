@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using JSIL.Meta;
 
-namespace Fusee.Engine
+namespace Fusee.Engine.Core
 {
     /// <summary>
     ///     A <see cref="GUIHandler"/> is a <see cref="T:System.Collections.Generic.List`1" /> of different

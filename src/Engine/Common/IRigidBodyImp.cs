@@ -1,7 +1,7 @@
 ﻿using System;
-using Fusee.Math;
+using Fusee.Math.Core;
 
-namespace Fusee.Engine
+namespace Fusee.Engine.Common
 {
     /// <summary>
     /// Implementation agnostic representation of the base class of all rigid body implementations.
@@ -62,13 +62,6 @@ namespace Fusee.Engine
         /// <param name="relPos">The relative position.</param>
         void ApplyForce(float3 force, float3 relPos);      //Rel_Pos definition????
         /// <summary>
-        /// Gets or sets the apply torque.
-        /// </summary>
-        /// <value>
-        /// The apply torque.
-        /// </value>
-        float3 ApplyTorque { get; set; } // als Field in bullet als void
-        /// <summary>
         /// Applies the impulse.
         /// </summary>
         /// <param name="impulse">The impulse.</param>
@@ -76,29 +69,30 @@ namespace Fusee.Engine
         void ApplyImpulse(float3 impulse, float3 relPos);  //Rel_Pos definition????
 
 
-        // diese drei als Field in bullet als void
         /// <summary>
-        /// Gets or sets the apply torque impulse.
+        /// Applies the specified torque on this rigigd body instance.
         /// </summary>
-        /// <value>
-        /// The apply torque impulse.
-        /// </value>
-        float3 ApplyTorqueImpulse { get; set; }
-        /// <summary>
-        /// Gets or sets the apply central force.
-        /// </summary>
-        /// <value>
-        /// The apply central force.
-        /// </value>
-        float3 ApplyCentralForce { get; set; }
-        /// <summary>
-        /// Gets or sets the apply central impulse.
-        /// </summary>
-        /// <value>
-        /// The apply central impulse.
-        /// </value>
-        float3 ApplyCentralImpulse { get; set; }
+        /// <param name="torque">The torque.</param>
+        void ApplyTorque(float3 torque);
 
+
+        /// <summary>
+        /// Applies the specified torque impulse on this rigid body instance.
+        /// </summary>
+        /// <param name="torqueImpulse">The torque impulse.</param>
+        void ApplyTorqueImpulse(float3 torqueImpulse);
+
+        /// <summary>
+        /// Applies the central force apply central force.
+        /// </summary>
+        /// <param name="centralForce">The central force.</param>
+        void ApplyCentralForce(float3 centralForce);
+
+        /// <summary>
+        /// Applies the given impulse on the center of this rigid body instance.
+        /// </summary>
+        /// <param name="centralImpulse">The central impulse.</param>
+        void ApplyCentralImpulse(float3 centralImpulse);
 
         //Translate RigidBody by a Vector
         /// <summary>

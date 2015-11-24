@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Fusee.Engine
+namespace Fusee.Engine.Common
 {
 
     /// <summary>

@@ -1,6 +1,6 @@
-﻿using Fusee.Math;
+﻿using Fusee.Math.Core;
 
-namespace Fusee.Engine
+namespace Fusee.Engine.Common
 {
     /// <summary>
     /// Specifies the type of the light.

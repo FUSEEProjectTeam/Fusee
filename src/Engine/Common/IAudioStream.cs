@@ -1,4 +1,4 @@
-﻿namespace Fusee.Engine
+﻿namespace Fusee.Engine.Common
 {
     /// <summary>
     ///     Loaded files with

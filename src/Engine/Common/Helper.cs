@@ -1,4 +1,4 @@
-﻿﻿namespace Fusee.Engine
+﻿﻿namespace Fusee.Engine.Common
  {
      /// <summary>
      /// This Object is used by the OpenTK Graphics implementation in order to handle parameter passing between Fusee and OpenTK. 

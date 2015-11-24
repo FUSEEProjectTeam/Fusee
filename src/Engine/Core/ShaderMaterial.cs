@@ -1,9 +1,9 @@
 ﻿using System;
-using Fusee.Math;
+using Fusee.Math.Core;
 using Fusee.Engine;
 using System.Collections.Generic;
 
-namespace Fusee.Engine
+namespace Fusee.Engine.Core
 {
     // TODO: Implement proper Material handler
     /// <summary>

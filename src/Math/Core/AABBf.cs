@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using ProtoBuf;
 
-namespace Fusee.Math
+namespace Fusee.Math.Core
 {
     /// <summary>
     ///     Represents an axis aligned bounding box.

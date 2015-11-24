@@ -1,0 +1,5 @@
+Adding custom properties to Visual Studio property window:
+
+https://lehmamic.wordpress.com/2013/07/10/extending-cs-file-properties-in-a-vspackage/
+
+http://stackoverflow.com/questions/14444111/extending-the-property-window-in-visual-studio/14459097#14459097

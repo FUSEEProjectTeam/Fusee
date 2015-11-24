@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using System.Collections.Generic;
-using Fusee.Math;
+using Fusee.Math.Core;
 using JSIL.Meta;
 
 namespace Fusee.Xirkit
@@ -410,7 +410,7 @@ namespace Fusee.Xirkit
         }
 
        [JSIgnore]
-        private static void AddConverter<TParm, TRet>(Math.Converter<TParm, TRet> c)
+        private static void AddConverter<TParm, TRet>(Converter<TParm, TRet> c)
         {
             Delegate d = (Delegate)c;
 

@@ -1,6 +1,7 @@
-﻿using Fusee.Math;
+﻿using Fusee.Engine.Common;
+using Fusee.Math.Core;
 
-namespace Fusee.Engine
+namespace Fusee.Engine.Core
 {
     /// <summary>
     /// The enum for the eye side selection.

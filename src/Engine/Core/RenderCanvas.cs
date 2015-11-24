@@ -1,6 +1,7 @@
 ﻿using System;
+using Fusee.Engine.Common;
 
-namespace Fusee.Engine
+namespace Fusee.Engine.Core
 {
     /// <summary>
     ///     A render canvas object references the physical output screen space real estate (e.g. the rendering window).

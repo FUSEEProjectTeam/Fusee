@@ -4,7 +4,7 @@ using System;
 using System.Runtime.InteropServices;
 using ProtoBuf;
 
-namespace Fusee.Math
+namespace Fusee.Math.Core
 {
     /// <summary>
     /// Represents a 4x4 Matrix typically used in ComputerGraphics algorithms.
@@ -1613,7 +1613,7 @@ namespace Fusee.Math
         /// <summary>
         /// Transforms a given vector by a matrix via matrix*vector (Postmultiplication of the vector).
         /// </summary>
-        /// <param name="matrix">A <see cref="Fusee.Math.double4x4"/> instance.</param>
+        /// <param name="matrix">A <see cref="double4x4"/> instance.</param>
         /// <param name="vector">A <see cref="double4"/> instance.</param>
         /// <returns>A new <see cref="double4"/> instance containing the result.</returns>
         public static double4 Transform(double4x4 matrix, double4 vector)
@@ -1628,7 +1628,7 @@ namespace Fusee.Math
         /// <summary>
         /// Transforms a given vector by a matrix via vector*matrix (Premultiplication of the vector).
         /// </summary>
-        /// <param name="matrix">A <see cref="Fusee.Math.double4x4"/> instance.</param>
+        /// <param name="matrix">A <see cref="double4x4"/> instance.</param>
         /// <param name="vector">A <see cref="double4"/> instance.</param>
         /// <returns>A new <see cref="double4"/> instance containing the result.</returns>
         public static double4 TransformPremult(double4 vector, double4x4 matrix)
@@ -1648,7 +1648,7 @@ namespace Fusee.Math
         /// After the matrix multiplication the resulting 4D vector is transformed to 3D by dividing X, Y, and Z by W.
         /// (perspective division).
         /// </remarks>
-        /// <param name="matrix">A <see cref="Fusee.Math.double4x4"/> instance.</param>
+        /// <param name="matrix">A <see cref="double4x4"/> instance.</param>
         /// <param name="vector">A <see cref="double3"/> instance.</param>
         /// <returns>A new <see cref="double3"/> instance containing the result.</returns>
         public static double3 TransformPD(double4x4 matrix, double3 vector)
@@ -1668,7 +1668,7 @@ namespace Fusee.Math
         /// After the matrix multiplication the resulting 4D vector is transformed to 3D by dividing X, Y, and Z by W.
         /// (perspective division).
         /// </remarks>
-        /// <param name="matrix">A <see cref="Fusee.Math.double4x4"/> instance.</param>
+        /// <param name="matrix">A <see cref="double4x4"/> instance.</param>
         /// <param name="vector">A <see cref="double3"/> instance.</param>
         /// <returns>A new <see cref="double3"/> instance containing the result.</returns>
         public static double3 TransformPremultPD(double3 vector, double4x4 matrix)
@@ -1743,7 +1743,7 @@ namespace Fusee.Math
         /// <summary>
         /// Transforms a given vector by a matrix via matrix*vector (Postmultiplication of the vector).
         /// </summary>
-        /// <param name="matrix">A <see cref="Fusee.Math.double4x4"/> instance.</param>
+        /// <param name="matrix">A <see cref="double4x4"/> instance.</param>
         /// <param name="vector">A <see cref="double4"/> instance.</param>
         /// <returns>A new <see cref="double4"/> instance containing the result.</returns>
         public static double4 operator *(double4x4 matrix, double4 vector)
@@ -1754,7 +1754,7 @@ namespace Fusee.Math
         /// <summary>
         /// Transforms a given vector by a matrix via vector*matrix (Premultiplication of the vector).
         /// </summary>
-        /// <param name="matrix">A <see cref="Fusee.Math.double4x4"/> instance.</param>
+        /// <param name="matrix">A <see cref="double4x4"/> instance.</param>
         /// <param name="vector">A <see cref="double4"/> instance.</param>
         /// <returns>A new <see cref="double4"/> instance containing the result.</returns>
         public static double4 operator *(double4 vector, double4x4 matrix)
@@ -1770,7 +1770,7 @@ namespace Fusee.Math
         /// After the matrix multiplication the resulting 4D vector is transformed to 3D by dividing X, Y, and Z by W.
         /// (perspective division).
         /// </remarks>
-        /// <param name="matrix">A <see cref="Fusee.Math.double4x4"/> instance.</param>
+        /// <param name="matrix">A <see cref="double4x4"/> instance.</param>
         /// <param name="vector">A <see cref="double3"/> instance.</param>
         /// <returns>A new <see cref="double4"/> instance containing the result.</returns>
         public static double3 operator *(double4x4 matrix, double3 vector)
@@ -1786,7 +1786,7 @@ namespace Fusee.Math
         /// After the matrix multiplication the resulting 4D vector is transformed to 3D by dividing X, Y, and Z by W.
         /// (perspective division).
         /// </remarks>
-        /// <param name="matrix">A <see cref="Fusee.Math.double4x4"/> instance.</param>
+        /// <param name="matrix">A <see cref="double4x4"/> instance.</param>
         /// <param name="vector">A <see cref="double3"/> instance.</param>
         /// <returns>A new <see cref="double4"/> instance containing the result.</returns>
         public static double3 operator *(double3 vector, double4x4 matrix)

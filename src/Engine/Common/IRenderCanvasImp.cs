@@ -1,7 +1,7 @@
 ﻿using System;
 using JSIL.Meta;
 
-namespace Fusee.Engine
+namespace Fusee.Engine.Common
 {
     /// <summary>
     /// Implementation agnostic representation of a render canvas.
@@ -90,6 +90,7 @@ namespace Fusee.Engine
         /// <param name="link">The URL to open</param>
         void OpenLink(string link);
 
+        /*
         /// <summary>
         /// Sets the data for a video wall.
         /// </summary>
@@ -99,6 +100,7 @@ namespace Fusee.Engine
         /// <param name="borderHidden">Hides the window border if set to true.</param>
         [JSExternal]
         void VideoWall(int monitorsHor, int monitorsVert, bool activate = true, bool borderHidden = true);
+        */
 
         /// <summary>
         /// Sets the size of the output window for desktop development.

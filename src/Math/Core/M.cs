@@ -1,6 +1,6 @@
 using System;
 
-namespace Fusee.Math
+namespace Fusee.Math.Core
 {
     /// <summary>
     ///     Provides additional mathematical function needed for 3D graphics.

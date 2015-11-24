@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Fusee.Engine
+namespace Fusee.Engine.Common
 {
     /// <summary>
     /// The render state enumeration. This is used in render context implementations to identify the render state to set.

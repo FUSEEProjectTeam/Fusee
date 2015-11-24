@@ -2,7 +2,7 @@
 
 using System;
 using System.Runtime.InteropServices;
-namespace Fusee.Math
+namespace Fusee.Math.Core
 {
     /// <summary>
     /// Represents a 2D vector using two double-precision floating-point numbers.

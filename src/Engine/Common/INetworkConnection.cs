@@ -1,5 +1,5 @@
 ﻿
-namespace Fusee.Engine
+namespace Fusee.Engine.Common
 {
     /// <summary>
     /// Struct holding all data necessary to describe an IP connection.

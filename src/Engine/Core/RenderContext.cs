@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Fusee.Engine.Common;
 using JSIL.Meta;
-using Fusee.Math;
+using Fusee.Math.Core;
 
-namespace Fusee.Engine
+namespace Fusee.Engine.Core
 {
     /// <summary>
     /// The render context contains all functions necessary to manipulate the underlying rendering hardware. Use this class' elements
@@ -36,7 +37,6 @@ namespace Fusee.Engine
         private readonly IShaderParam _debugColor;
         private bool _debugLinesEnabled = true;
 
-        private PickingContext _pc;
         public bool HasPickingContext { get; private set; }
 
         // Settable matrices
@@ -155,7 +155,7 @@ namespace Fusee.Engine
         /// <remarks>
         /// This matrix is also reffered often as the camera transformation(not the projection). 
         /// It describes the orientation of the view that is used to render a scene.
-        /// You can use <see cref="Fusee.Math.float4x4.LookAt(Fusee.Math.float3, Fusee.Math.float3, Fusee.Math.float3)"/> to create a valid view matrix and analyze how it is build up.
+        /// You can use <see cref="float4x4.LookAt(float3, float3, float3)"/> to create a valid view matrix and analyze how it is build up.
         /// </remarks>
         public float4x4 View
         {
@@ -195,7 +195,7 @@ namespace Fusee.Engine
         /// The model matrix.
         /// </value>
         /// <remarks>
-        /// Model coordinates are the coordinates directly taken from the model (the mesh geometry - <see cref="Fusee.Engine.Mesh"/>).
+        /// Model coordinates are the coordinates directly taken from the model (the mesh geometry - <see cref="Mesh"/>).
         /// </remarks>
         public float4x4 Model
         {
@@ -232,7 +232,7 @@ namespace Fusee.Engine
         /// The 4x4 ModelView matrix defining the transformation applied to model coordinates yielding view coordinates.
         /// </value>
         /// <remarks>
-        /// Model coordinates are the coordinates directly taken from the model (the mesh geometry - <see cref="Fusee.Engine.Mesh"/>). The rendering pipeline
+        /// Model coordinates are the coordinates directly taken from the model (the mesh geometry - <see cref="Mesh"/>). The rendering pipeline
         /// transforms these coordinates into View coordinates. Further down the pipeline the coordinates will be transformed to screen coordinates to allow the
         /// geometry to be rendered to pixel positions on the screen. The ModelView matrix defines the transformations performed on the original model coordinates
         /// to yield view coordinates. In most cases the matrix is a composition of several translations, rotations, and scale operations.
@@ -283,7 +283,7 @@ namespace Fusee.Engine
         /// The 4x4 projection matrix applied to view coordinates yielding clip space coordinates.
         /// </value>
         /// <remarks>
-        /// View coordinates are the result of the ModelView matrix multiplied to the geometry (<see cref="Fusee.Engine.RenderContext.ModelView"/>).
+        /// View coordinates are the result of the ModelView matrix multiplied to the geometry (<see cref="RenderContext.ModelView"/>).
         /// The coordinate system of the view space has its origin in the camera center with the z axis aligned to the viewing direction, and the x- and
         /// y axes aligned to the viewing plane. Still, no projection from 3d space to the viewing plane has been performed. This is done by multiplying
         /// view coordinate geometry wihth the projection matrix. Typically, the projection matrix either performs a parallel projection or a perspective
@@ -323,7 +323,7 @@ namespace Fusee.Engine
         /// The 4x4 matrix resulting from the matrix multiplaction of the ModelView and the Projection matrix.
         /// </value>
         /// <remarks>
-        /// <see cref="Fusee.Engine.RenderContext.ModelView"/> and <see cref="Fusee.Engine.RenderContext.Projection"/>.
+        /// <see cref="RenderContext.ModelView"/> and <see cref="RenderContext.Projection"/>.
         /// </remarks>
         public float4x4 ModelViewProjection
         {
@@ -352,8 +352,8 @@ namespace Fusee.Engine
         /// If the View matrix is orthogonal (i.e. contains no scale component), its inverse matrix
         /// is equal to its transpose matrix.
         /// </remarks>
-        /// <seealso cref="Fusee.Engine.RenderContext.View"/>
-        /// <seealso cref="Fusee.Engine.RenderContext.TransView"/>
+        /// <seealso cref="RenderContext.View"/>
+        /// <seealso cref="RenderContext.TransView"/>
         public float4x4 InvView
         {
             get
@@ -377,8 +377,8 @@ namespace Fusee.Engine
         /// If the Model matrix is orthogonal (i.e. contains no scale component), its inverse matrix
         /// is equal to its transpose matrix.
         /// </remarks>
-        /// <seealso cref="Fusee.Engine.RenderContext.Model"/>
-        /// <seealso cref="Fusee.Engine.RenderContext.TransModel"/>
+        /// <seealso cref="RenderContext.Model"/>
+        /// <seealso cref="RenderContext.TransModel"/>
         public float4x4 InvModel
         {
             get
@@ -403,8 +403,8 @@ namespace Fusee.Engine
         /// If the ModelView matrix is orthogonal (i.e. contains no scale component), its inverse matrix
         /// is equal to its transpose matrix.
         /// </remarks>
-        /// <seealso cref="Fusee.Engine.RenderContext.ModelView"/>
-        /// <seealso cref="Fusee.Engine.RenderContext.TransModelView"/>
+        /// <seealso cref="RenderContext.ModelView"/>
+        /// <seealso cref="RenderContext.TransModelView"/>
         public float4x4 InvModelView
         {
             get
@@ -429,8 +429,8 @@ namespace Fusee.Engine
         /// If the Projection matrix is orthogonal (i.e. contains no scale component), its inverse matrix
         /// is equal to its transpose matrix.
         /// </remarks>
-        /// <seealso cref="Fusee.Engine.RenderContext.Projection"/>
-        /// <seealso cref="Fusee.Engine.RenderContext.TransProjection"/>
+        /// <seealso cref="RenderContext.Projection"/>
+        /// <seealso cref="RenderContext.TransProjection"/>
         public float4x4 InvProjection
         {
             get
@@ -455,8 +455,8 @@ namespace Fusee.Engine
         /// If the ModelViewProjection matrix is orthogonal (i.e. contains no scale component), its inverse matrix
         /// is equal to its transpose matrix.
         /// </remarks>
-        /// <seealso cref="Fusee.Engine.RenderContext.ModelViewProjection"/>
-        /// <seealso cref="Fusee.Engine.RenderContext.TransModelViewProjection"/>
+        /// <seealso cref="RenderContext.ModelViewProjection"/>
+        /// <seealso cref="RenderContext.TransModelViewProjection"/>
         public float4x4 InvModelViewProjection
         {
             get
@@ -480,8 +480,8 @@ namespace Fusee.Engine
         /// If the View matrix is orthogonal (i.e. contains no scale component), its transpose matrix
         /// is equal to its inverse matrix.
         /// </remarks>
-        /// <seealso cref="Fusee.Engine.RenderContext.View"/>
-        /// <seealso cref="Fusee.Engine.RenderContext.InvView"/>
+        /// <seealso cref="RenderContext.View"/>
+        /// <seealso cref="RenderContext.InvView"/>
         public float4x4 TransView
         {
             get
@@ -505,8 +505,8 @@ namespace Fusee.Engine
         /// If the Model matrix is orthogonal (i.e. contains no scale component), its transpose matrix
         /// is equal to its inverse matrix.
         /// </remarks>
-        /// <seealso cref="Fusee.Engine.RenderContext.Model"/>
-        /// <seealso cref="Fusee.Engine.RenderContext.InvModel"/>
+        /// <seealso cref="RenderContext.Model"/>
+        /// <seealso cref="RenderContext.InvModel"/>
         public float4x4 TransModel
         {
             get
@@ -531,8 +531,8 @@ namespace Fusee.Engine
         /// If the ModelView matrix is orthogonal (i.e. contains no scale component), its transpose matrix
         /// is equal to its inverse matrix.
         /// </remarks>
-        /// <seealso cref="Fusee.Engine.RenderContext.ModelView"/>
-        /// <seealso cref="Fusee.Engine.RenderContext.InvModelView"/>
+        /// <seealso cref="RenderContext.ModelView"/>
+        /// <seealso cref="RenderContext.InvModelView"/>
         public float4x4 TransModelView
         {
             get
@@ -557,8 +557,8 @@ namespace Fusee.Engine
         /// If the Projection matrix is orthogonal (i.e. contains no scale component), its transpose matrix
         /// is equal to its inverse matrix.
         /// </remarks>
-        /// <seealso cref="Fusee.Engine.RenderContext.Projection"/>
-        /// <seealso cref="Fusee.Engine.RenderContext.InvProjection"/>
+        /// <seealso cref="RenderContext.Projection"/>
+        /// <seealso cref="RenderContext.InvProjection"/>
         public float4x4 TransProjection
         {
             get
@@ -583,8 +583,8 @@ namespace Fusee.Engine
         /// If the ModelViewProjection matrix is orthogonal (i.e. contains no scale component), its transpose matrix
         /// is equal to its inverse matrix.
         /// </remarks>
-        /// <seealso cref="Fusee.Engine.RenderContext.ModelViewProjection"/>
-        /// <seealso cref="Fusee.Engine.RenderContext.InvModelViewProjection"/>
+        /// <seealso cref="RenderContext.ModelViewProjection"/>
+        /// <seealso cref="RenderContext.InvModelViewProjection"/>
         public float4x4 TransModelViewProjection
         {
             get
@@ -608,9 +608,9 @@ namespace Fusee.Engine
         /// If the View matrix is orthogonal (i.e. contains no scale component), its inverse transpose matrix
         /// is the same as the original View matrix.
         /// </remarks>
-        /// <seealso cref="Fusee.Engine.RenderContext.View"/>
-        /// <seealso cref="Fusee.Engine.RenderContext.InvView"/>
-        /// <seealso cref="Fusee.Engine.RenderContext.TransView"/>
+        /// <seealso cref="RenderContext.View"/>
+        /// <seealso cref="RenderContext.InvView"/>
+        /// <seealso cref="RenderContext.TransView"/>
         public float4x4 InvTransView
         {
             get
@@ -634,9 +634,9 @@ namespace Fusee.Engine
         /// If the Model matrix is orthogonal (i.e. contains no scale component), its inverse transpose matrix
         /// is the same as the original Model matrix.
         /// </remarks>
-        /// <seealso cref="Fusee.Engine.RenderContext.Model"/>
-        /// <seealso cref="Fusee.Engine.RenderContext.InvModel"/>
-        /// <seealso cref="Fusee.Engine.RenderContext.TransModel"/>
+        /// <seealso cref="RenderContext.Model"/>
+        /// <seealso cref="RenderContext.InvModel"/>
+        /// <seealso cref="RenderContext.TransModel"/>
         public float4x4 InvTransModel
         {
             get
@@ -661,9 +661,9 @@ namespace Fusee.Engine
         /// If the ModelView matrix is orthogonal (i.e. contains no scale component), its inverse transpose matrix
         /// is the same as the original ModelView matrix.
         /// </remarks>
-        /// <seealso cref="Fusee.Engine.RenderContext.ModelView"/>
-        /// <seealso cref="Fusee.Engine.RenderContext.InvModelView"/>
-        /// <seealso cref="Fusee.Engine.RenderContext.TransModelView"/>
+        /// <seealso cref="RenderContext.ModelView"/>
+        /// <seealso cref="RenderContext.InvModelView"/>
+        /// <seealso cref="RenderContext.TransModelView"/>
         public float4x4 InvTransModelView
         {
             get
@@ -688,9 +688,9 @@ namespace Fusee.Engine
         /// If the Projection matrix is orthogonal (i.e. contains no scale component), its inverse transpose matrix
         /// is the same as the original Projection matrix.
         /// </remarks>
-        /// <seealso cref="Fusee.Engine.RenderContext.Projection"/>
-        /// <seealso cref="Fusee.Engine.RenderContext.InvProjection"/>
-        /// <seealso cref="Fusee.Engine.RenderContext.TransProjection"/>
+        /// <seealso cref="RenderContext.Projection"/>
+        /// <seealso cref="RenderContext.InvProjection"/>
+        /// <seealso cref="RenderContext.TransProjection"/>
         public float4x4 InvTransProjection
         {
             get
@@ -715,9 +715,9 @@ namespace Fusee.Engine
         /// If the ModelViewProjection matrix is orthogonal (i.e. contains no scale component), its inverse transpose matrix
         /// is the same as the original ModelViewProjection matrix.
         /// </remarks>
-        /// <seealso cref="Fusee.Engine.RenderContext.ModelViewProjection"/>
-        /// <seealso cref="Fusee.Engine.RenderContext.InvModelViewProjection"/>
-        /// <seealso cref="Fusee.Engine.RenderContext.TransModelViewProjection"/>
+        /// <seealso cref="RenderContext.ModelViewProjection"/>
+        /// <seealso cref="RenderContext.InvModelViewProjection"/>
+        /// <seealso cref="RenderContext.TransModelViewProjection"/>
         public float4x4 InvTransModelViewProjection
         {
             get
@@ -740,7 +740,7 @@ namespace Fusee.Engine
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderContext"/> class.
         /// </summary>
-        /// <param name="rci">The <see cref="Fusee.Engine.IRenderContextImp"/>.</param>
+        /// <param name="rci">The <see cref="IRenderContextImp"/>.</param>
         public RenderContext(IRenderContextImp rci)
         {
             _rci = rci;
@@ -1298,7 +1298,7 @@ namespace Fusee.Engine
         /// <returns>A shader program object identifying the combination of the given vertex and pixel shader.</returns>
         /// <remarks>
         /// Currently only shaders in GLSL (or rather GLSL/ES) source language(s) are supported.
-        /// The result is already compiled to code executable on the GPU. <see cref="Fusee.Engine.RenderContext.SetShader(ShaderProgram)"/>
+        /// The result is already compiled to code executable on the GPU. <see cref="RenderContext.SetShader(ShaderProgram)"/>
         /// to activate the result as the current shader used for rendering geometry passed to the RenderContext.
         /// </remarks>
         public ShaderProgram CreateShader(string vs, string ps)
@@ -1320,8 +1320,8 @@ namespace Fusee.Engine
         /// Activates the passed shader program as the current shader for geometry rendering.
         /// </summary>
         /// <param name="program">The shader to apply to mesh geometry subsequently passed to the RenderContext</param>
-        /// <seealso cref="Fusee.Engine.RenderContext.CreateShader"/>
-        /// <seealso cref="Fusee.Engine.RenderContext.Render(Mesh)"/>
+        /// <seealso cref="RenderContext.CreateShader"/>
+        /// <seealso cref="RenderContext.Render(Mesh)"/>
         public void SetShader(ShaderProgram program)
         {
             _updatedShaderParams = false;
@@ -1598,26 +1598,7 @@ namespace Fusee.Engine
 
         #endregion
 
-        #region Picking related Members
-
-        /// <summary>
-        /// Attaches a PickingContext to the RenderContext to use the autoTick() feature. This method is automatically called while initializing a PickingContext.
-        /// </summary>
-        /// <param name="pc">The PickingContext.</param>
-        public void AttachPickingContext(PickingContext pc)
-        {
-            _pc = pc;
-            HasPickingContext = true;
-        }
-
-        /// <summary>
-        /// This method traverses the autoTick() feature to an attached PickingContext.
-        /// </summary>
-        public void PickingContextTick()
-        {
-            _pc.Tick();
-        }
-
+        #region Other Members
         /// <summary>
         /// This method returns the color of one or more pixels from the backbuffer.
         /// </summary>
@@ -1641,10 +1622,6 @@ namespace Fusee.Engine
         {
             return _rci.GetPixelDepth(x, y);
         }
-
-        #endregion
-
-        #region Other Members
 
         /// <summary>
         /// Gets or sets a value indicating whether [debug lines enabled].

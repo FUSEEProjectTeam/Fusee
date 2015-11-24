@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace Fusee.Math
+namespace Fusee.Math.Core
 {
     /// <summary>
     ///     Represents a 3x3 Matrix

@@ -1,4 +1,4 @@
-﻿namespace Fusee.Engine
+﻿namespace Fusee.Engine.Common
 {
     /// <summary>
     ///     A struct for saving character information needed for proccesing a font.

@@ -1,7 +1,7 @@
 using System;
 using System.Diagnostics;
 
-namespace Fusee.Math
+namespace Fusee.Math.Core
 {
     /// <summary>
     /// Converter type replacement for System.Converter. Enables this Assembly to be portable

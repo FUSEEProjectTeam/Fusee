@@ -1,8 +1,9 @@
 ﻿using Fusee.Engine;
-using Fusee.Math;
+using Fusee.Engine.Common;
+using Fusee.Math.Core;
 using ProtoBuf;
 
-namespace Fusee.Engine
+namespace Fusee.Engine.Core
 {
     /// <summary>
     /// Provides the abillity to create or interact directly with the point data.

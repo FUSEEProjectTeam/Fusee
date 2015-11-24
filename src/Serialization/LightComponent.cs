@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using Fusee.Math;
+﻿using Fusee.Math.Core;
 using ProtoBuf;
 
 namespace Fusee.Serialization

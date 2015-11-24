@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Fusee.Math;
+﻿using Fusee.Engine.Common;
+using Fusee.Math.Core;
 
-namespace Fusee.Engine
+namespace Fusee.Engine.Core.Core
 {
     /// <summary>
     /// This is the fastest kind of arbitrary shape. 

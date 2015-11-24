@@ -1,6 +1,6 @@
-﻿using Fusee.Math;
+﻿using Fusee.Math.Core;
 
-namespace Fusee.Engine
+namespace Fusee.Engine.Common
 {
     /// <summary>
     /// Implementation agnostic representation of a slider constraint (linear joint).

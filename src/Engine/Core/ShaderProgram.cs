@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using Fusee.Engine.Common;
 
-namespace Fusee.Engine
+namespace Fusee.Engine.Core
 {
     /// <summary>
     /// Instances of this class represent a pair of a Vertex and a Pixel shader code, both compiled an 

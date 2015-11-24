@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Fusee.Math;
+﻿using Fusee.Math.Core;
 using ProtoBuf;
 
 namespace Fusee.Serialization

@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Configuration;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
-using Fusee.Engine;
-using Fusee.Math;
-using System.Collections.Generic;
+using Fusee.Engine.Common;
+using Fusee.Engine.Core;
+using Fusee.Engine.Core.Core;
+using Fusee.Math.Core;
 
-namespace Fusee.Engine
+namespace Fusee.Engine.Core
 {
     /// <summary>
     /// The RigidBody class ...

@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
+﻿using Fusee.Engine.Common;
 
-namespace Fusee.Engine
+namespace Fusee.Engine.Core
 {
     public class VideoStream
     {

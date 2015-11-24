@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Fusee.Engine
+namespace Fusee.Engine.Common
 {
     /// <summary>
     /// Argument Container for Resize event of <see cref="IRenderCanvasImp"/>.

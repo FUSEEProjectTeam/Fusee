@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Dynamic;
-using Fusee.Math;
+using Fusee.Engine.Common;
+using Fusee.Math.Core;
 
-namespace Fusee.Engine
+namespace Fusee.Engine.Core
 {
     /// <summary>
     /// An effect pass declaration contains the vertex and pixel shader source code as well as a <see cref="RenderStateSet"/>

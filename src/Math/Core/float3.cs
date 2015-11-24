@@ -4,7 +4,7 @@ using System;
 using System.Runtime.InteropServices;
 using ProtoBuf;
 
-namespace Fusee.Math
+namespace Fusee.Math.Core
 {
     // ReSharper disable InconsistentNaming
 

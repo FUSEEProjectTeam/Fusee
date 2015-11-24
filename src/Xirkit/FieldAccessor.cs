@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
 using System;
-using Fusee.Math;
+using Fusee.Math.Core;
 
 namespace Fusee.Xirkit
 {

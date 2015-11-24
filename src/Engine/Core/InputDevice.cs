@@ -1,6 +1,7 @@
 ﻿using System;
+using Fusee.Engine.Common;
 
-namespace Fusee.Engine
+namespace Fusee.Engine.Core
 {
     /// <summary>
     /// Represents one instance of an input device other than keyboard or mouse

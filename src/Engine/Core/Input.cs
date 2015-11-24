@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Fusee.Engine.Common;
 
-namespace Fusee.Engine
+namespace Fusee.Engine.Core
 {
     public enum DeviceCategory
     {

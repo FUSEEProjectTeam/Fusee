@@ -1,7 +1,7 @@
 ﻿using System;
 
 
-namespace Fusee.Engine
+namespace Fusee.Engine.Common
 {
     /// <summary>
     /// To be implemented on certain platforms
