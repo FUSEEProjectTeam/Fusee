@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -129,6 +130,9 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <returns>An ImageData object with all necessary information for the texture-binding process.</returns>
         public ImageData LoadImage(String filename)
         {
+            if (!File.Exists(filename))
+                throw new FileNotFoundException();
+
             var bmp = new Bitmap(filename);
 
             //Flip y-axis, otherwise texture would be upside down
@@ -296,6 +300,9 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <returns>An <see cref="IFont"/> containing all necessary information for further processing.</returns>
         public IFont LoadFont(string filename, uint size)
         {
+            if (!File.Exists(filename))
+                throw new FileNotFoundException("Font not found: " + filename);
+
             var texAtlas = new Font
             {
                 Face = _sharpFont.NewFace(filename, 0),

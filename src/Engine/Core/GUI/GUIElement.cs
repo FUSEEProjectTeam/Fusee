@@ -2,7 +2,7 @@
 using Fusee.Engine.Common;
 using Fusee.Math.Core;
 
-namespace Fusee.Engine.Core
+namespace Fusee.Engine.Core.GUI
 {
     /// <summary>
     /// This abstact class allows for creating custom <see cref="GUIElement"/>s.

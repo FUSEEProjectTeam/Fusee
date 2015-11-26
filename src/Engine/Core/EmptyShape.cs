@@ -1,27 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Fusee.Engine.Common;
+﻿using Fusee.Engine.Common;
 
 namespace Fusee.Engine.Core
 {
     public class EmptyShape : CollisionShape
     {
-        internal IEmptyShapeImp EmtyShapeImp;
+        internal IEmptyShapeImp _emtyShapeImp;
         //Inherited
-        public virtual float Margin
+        public override float Margin
         {
 
             get
             {
-                var retval = EmtyShapeImp.Margin;
+                var retval = _emtyShapeImp.Margin;
                 return retval;
             }
             set
             {
-                var o = (BoxShape)EmtyShapeImp.UserObject;
-                o.BoxShapeImp.Margin = value;
+                var o = (BoxShape)_emtyShapeImp.UserObject;
+                o._boxShapeImp.Margin = value;
             }
         }
     }

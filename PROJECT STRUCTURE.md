@@ -94,7 +94,7 @@ _Log-Libs_ should cross-compile with JSIL in a straight-forward way.
 
 _Imp-Libs_ are typically *not* cross-compiled at all. Instead, a hand-coded javascript implementation
 must be provided for each _Imp-Lib_ exposing the required functionality in a way that can 
-be handled by a browser. In some cases it might work well to build a specific
+be handled by a browser. 
 
 Additionally, _Log-Libs_ sometimes contain parts that need special hand-coded implementations in
 javascript. This can occur if hand-coded javascript turns out to be faster than JSIL-compiled code, 
@@ -102,6 +102,7 @@ or in the very rare cases where JSIL is not capable of translating the logic. In
 members (mostly methods) that need hand-coded javacript implementations are decorated with the
 `[JSExternal]` attribute in the C# source. These libraries can then be accompanied by a hand-coded 
 .js file containing implementations for the  members declared `[JSExternal]`.
+
 
 
 FUSEE Project Conventions
@@ -187,7 +188,7 @@ Fusee.SomeNamespace.SomeSubNamespace.dll (and most likely Fusee.SomeNamespace.So
 
 ### Implementation variants of _Imp-Libs_ for different platforms
 Generally implementation libraries should reside below some Imp directory and thus both, the project file as well as the built dll file name (and the name space) will contain
-"Imp" in their respective name. Below the Imp there might be a number of subdirectories
+"Imp" in their respective name. Below "Imp" there might be a number of subdirectories
 for the different platforms. Common platform names are
 
  - Desktop (for desktop platforms (Windows, MacOS, Linux)
@@ -279,14 +280,16 @@ All items below Fusee/src:
  - Uniplug (`Fusee.Uniplug`)
  
 
-Solutions and Project Dependencies
-----------------------------------
+Solutions and Projects
+----------------------
 
 ### Solutions
 There may be more than one solution referencing a subset of FUSEE projects. Solutions frequently used for 
 different purposes may be placed in the FUSEE development root folder. Solution names should start with Fusee
 and then a dot-separated specification of the purpose. This could be the name of a root project, e.g. 
 Fusee.Engine.sln. Solutions should reside directly in the "_[FuseeRoot]_/src" directory.
+
+### JavaScript Imp-Libs
 
 
 ### References and Dependencies
@@ -299,6 +302,7 @@ favored over project references. The benefits of solution references are
  - No debug/release mismatches with common output directories.
  - Automatic project dependencies/build order management.
 
-Since _Imp-Libs_ must *not* be referenced directly by _Log-Libs_ but often _Log-Libs_ use functionality
-implemented in _Imp-Libs_, solutions must explicitely define dependencies that are injected at run-time.
-Visual Studion cannot keep track of dependencies resulting from injection. 
+All FUSEE projects build their assembly output to a common place below the "_[FuseeRoot]_/bin" directory. Make sure that FUSEE projects referencing other FUSEE projects have the `Copy Local` flag set to **false** (in the Properties window for that reference). Otherwise multithreaded rebuilding the solution will be messed up: Projects clean up their dependencies while other projects build at the same time and need a referenced assembly that was just deleted by the cleaning thread.
+
+Make sure to ***not*** have _Log-Libs_ directly reference _Imp-Libs_. Obviously, _Log-Libs_ use functionality implemented in _Imp-Libs_ but these dependcies are injected at run-time (look for the `InjectMe` attribute in FUSEE code). Make sure that FUSEE solutions explicitely define injected dependencies since Visual Studion cannot keep track of dependencies resulting from run-time injection.
+

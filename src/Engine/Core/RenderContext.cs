@@ -132,6 +132,7 @@ namespace Fusee.Engine.Core
 
         internal struct LightParamNames
         {
+            /*
             // ReSharper disable InconsistentNaming
             public IShaderParam AMBIENT;
             public IShaderParam DIFFUSE;
@@ -141,6 +142,7 @@ namespace Fusee.Engine.Core
             public IShaderParam SPOTANGLE;
             public IShaderParam ACTIVE;
             // ReSharper restore InconsistentNaming
+            */
         }
 
         #endregion
@@ -983,9 +985,6 @@ namespace Fusee.Engine.Core
         /// </returns>
         public ImageData LoadImage(String filename)
         {
-            if (!File.Exists(filename))
-                throw new FileNotFoundException();
-
             return _rci.LoadImage(filename);
         }
 
@@ -1012,12 +1011,10 @@ namespace Fusee.Engine.Core
         /// <exception cref="System.Exception">Font not found: "filename"</exception>
         public IFont LoadFont(string filename, uint size)
         {
-            if (!File.Exists(filename))
-                throw new FileNotFoundException("Font not found: " + filename);
-
             return _rci.LoadFont(filename, size);
         }
 
+        /* NOT PORTABLE
         /// <summary>
         /// Loads a system font from the system's font folder and processes it with the given font size.
         /// </summary>
@@ -1032,6 +1029,7 @@ namespace Fusee.Engine.Core
 
             return LoadFont(pathToFont, size);
         }
+        */
 
         /// <summary>
         /// Fixes the kerning of a text (if possible).

@@ -7,8 +7,11 @@ namespace Fusee.Engine.Imp.Input.Desktop
     /// <summary>
     /// Slim DX specific implementation for the <see cref="IInputDriverImp"/>.
     /// </summary>
-    class InputDriverImp : IInputDriverImp
+    public class InputDriverImp : IInputDriverImp
     {
+        /// <summary>
+        /// The list of devices.
+        /// </summary>
         public List<DeviceInstance> Devices = new List<DeviceInstance>();
 
         /// <summary>

@@ -1,21 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
+using Fusee.Base.Common;
 using Fusee.Engine.Common;
 using Fusee.Math.Core;
 
-
-namespace Fusee.Engine.Core.Core
+namespace Fusee.Engine.Core
 {
     public class DynamicWorld
     {
         internal /*readonly*/ IDynamicWorldImp _dwi;
         
-        public DynamicWorld()
+        public DynamicWorld([InjectMe] IDynamicWorldImp dynamicWorld)
         {
-            _dwi = ImpFactory.CreateIDynamicWorldImp();
+            _dwi = dynamicWorld;
         }
 
         public float3 Gravity
@@ -45,57 +42,57 @@ namespace Fusee.Engine.Core.Core
                 //Primitives
                 case "Fusee.Engine.BoxShape":
                     var box =(BoxShape) colShape;
-                    rbi = _dwi.AddRigidBody(mass, position, orientation, box.BoxShapeImp/*, inertia*/);
+                    rbi = _dwi.AddRigidBody(mass, position, orientation, box._boxShapeImp/*, inertia*/);
                     break;
                 case "Fusee.Engine.CapsuleShape":
                     var capsule = (CapsuleShape)colShape;
-                    rbi = _dwi.AddRigidBody(mass, position, orientation, capsule.CapsuleShapeImp/*, inertia*/);
+                    rbi = _dwi.AddRigidBody(mass, position, orientation, capsule._capsuleShapeImp/*, inertia*/);
                     break;
                 case "Fusee.Engine.ConeShape":
                     var cone = (ConeShape)colShape;
-                    rbi = _dwi.AddRigidBody(mass, position, orientation, cone.ConeShapeImp/*, inertia*/);
+                    rbi = _dwi.AddRigidBody(mass, position, orientation, cone._coneShapeImp/*, inertia*/);
                     break;
                 case "Fusee.Engine.CylinderShape":
                     var cylinder = (CylinderShape)colShape;
-                    rbi = _dwi.AddRigidBody(mass, position, orientation, cylinder.CylinderShapeImp/*, inertia*/);
+                    rbi = _dwi.AddRigidBody(mass, position, orientation, cylinder._cylinderShapeImp/*, inertia*/);
                     break;
                 case "Fusee.Engine.MultiSphereShape":
                     var multiSphere = (MultiSphereShape)colShape;
-                    rbi = _dwi.AddRigidBody(mass, position, orientation, multiSphere.MultiSphereShapeImp/*, inertia*/);
+                    rbi = _dwi.AddRigidBody(mass, position, orientation, multiSphere._multiSphereShapeImp/*, inertia*/);
                     break;
                 case "Fusee.Engine.SphereShape":
                     var sphere = (SphereShape)colShape;
-                    rbi = _dwi.AddRigidBody(mass, position, orientation, sphere.SphereShapeImp/*, inertia*/);
+                    rbi = _dwi.AddRigidBody(mass, position, orientation, sphere._sphereShapeImp/*, inertia*/);
                     break;
 
                 //Misc
                 case "Fusee.Engine.CompoundShape":
                     var compShape = (CompoundShape)colShape;
-                    rbi = _dwi.AddRigidBody(mass, position, orientation, compShape.CompoundShapeImp/*, inertia*/);
+                    rbi = _dwi.AddRigidBody(mass, position, orientation, compShape._compoundShapeImp/*, inertia*/);
                     break;
                 case "Fusee.Engine.EmptyShape":
                     var empty = (EmptyShape)colShape;
-                    rbi = _dwi.AddRigidBody(mass, position, orientation, empty.EmtyShapeImp/*, inertia*/);
+                    rbi = _dwi.AddRigidBody(mass, position, orientation, empty._emtyShapeImp/*, inertia*/);
                     break;
 
                 //Meshes
                 case "Fusee.Engine.ConvexHullShape":
                     var convHullShape = (ConvexHullShape) colShape;
-                    rbi = _dwi.AddRigidBody(mass, position, orientation, convHullShape.ConvexHullShapeImp/*, inertia*/);
+                    rbi = _dwi.AddRigidBody(mass, position, orientation, convHullShape._convexHullShapeImp/*, inertia*/);
                     break;
                 case "Fusee.Engine.GImpactMeshShape":
                     var gImpMeshShape = (GImpactMeshShape) colShape;
-                    rbi = _dwi.AddRigidBody(mass, position, orientation, gImpMeshShape.GImpactMeshShapeImp/*, inertia*/);
+                    rbi = _dwi.AddRigidBody(mass, position, orientation, gImpMeshShape._gImpactMeshShapeImp/*, inertia*/);
                     break;
                 case "Fusee.Engine.StaticPlaneShape": //static Shape
                     var staticPaneShape = (StaticPlaneShape)colShape;
-                    rbi = _dwi.AddRigidBody(mass, position, orientation, staticPaneShape.StaticPlaneShapeImp/*, inertia*/);
+                    rbi = _dwi.AddRigidBody(mass, position, orientation, staticPaneShape._staticPlaneShapeImp/*, inertia*/);
                     break;
                 //Default
                 default:
                     var defaultShape = new EmptyShape();
                     Debug.WriteLine("default");
-                    rbi = _dwi.AddRigidBody(mass, position, orientation, defaultShape.EmtyShapeImp/*, inertia*/);
+                    rbi = _dwi.AddRigidBody(mass, position, orientation, defaultShape._emtyShapeImp/*, inertia*/);
                     break;
             }
 
@@ -261,7 +258,7 @@ namespace Fusee.Engine.Core.Core
         {
             IBoxShapeImp iBoxShapeImp = _dwi.AddBoxShape(boxHalfExtents);
             var retval = new BoxShape();
-            retval.BoxShapeImp = iBoxShapeImp;
+            retval._boxShapeImp = iBoxShapeImp;
             iBoxShapeImp.UserObject = retval;
             return retval;
         }
@@ -269,7 +266,7 @@ namespace Fusee.Engine.Core.Core
         {
             IBoxShapeImp iBoxShapeImp = _dwi.AddBoxShape(boxHalfExtentsX, boxHalfExtentsY, boxHalfExtentsZ);
             var retval = new BoxShape();
-            retval.BoxShapeImp = iBoxShapeImp;
+            retval._boxShapeImp = iBoxShapeImp;
             iBoxShapeImp.UserObject = retval;
             return retval;
         }
@@ -277,7 +274,7 @@ namespace Fusee.Engine.Core.Core
         {
             IBoxShapeImp iBoxShapeImp = _dwi.AddBoxShape(boxHalfExtents);
             var retval = new BoxShape();
-            retval.BoxShapeImp = iBoxShapeImp;
+            retval._boxShapeImp = iBoxShapeImp;
             iBoxShapeImp.UserObject = retval;
             return retval;
         }
@@ -287,7 +284,7 @@ namespace Fusee.Engine.Core.Core
         {
             ISphereShapeImp iSphereShapeImp = _dwi.AddSphereShape(radius);
             var retval = new SphereShape();
-            retval.SphereShapeImp = iSphereShapeImp;
+            retval._sphereShapeImp = iSphereShapeImp;
             iSphereShapeImp.UserObject = retval;
             return retval;
         }
@@ -297,7 +294,7 @@ namespace Fusee.Engine.Core.Core
         {
             ICapsuleShapeImp iCapsuleShapeImp = _dwi.AddCapsuleShape(radius, height);
             var retval = new CapsuleShape();
-            retval.CapsuleShapeImp = iCapsuleShapeImp;
+            retval._capsuleShapeImp = iCapsuleShapeImp;
             iCapsuleShapeImp.UserObject = retval;
             return retval;
         }
@@ -307,7 +304,7 @@ namespace Fusee.Engine.Core.Core
         {
             ICylinderShapeImp iCylinderShapeImp = _dwi.AddCylinderShape(halfExtents);
             var retval = new CylinderShape();
-            retval.CylinderShapeImp = iCylinderShapeImp;
+            retval._cylinderShapeImp = iCylinderShapeImp;
             iCylinderShapeImp.UserObject = retval;
             return retval;
         }
@@ -315,7 +312,7 @@ namespace Fusee.Engine.Core.Core
         {
             ICylinderShapeImp iCylinderShapeImp = _dwi.AddCylinderShape(halfExtentsX, halfExtentsY, halfExtentsZ);
             var retval = new CylinderShape();
-            retval.CylinderShapeImp = iCylinderShapeImp;
+            retval._cylinderShapeImp = iCylinderShapeImp;
             iCylinderShapeImp.UserObject = retval;
             return retval;
         }
@@ -323,7 +320,7 @@ namespace Fusee.Engine.Core.Core
         {
             ICylinderShapeImp iCylinderShapeImp = _dwi.AddCylinderShape(halfExtents);
             var retval = new CylinderShape();
-            retval.CylinderShapeImp = iCylinderShapeImp;
+            retval._cylinderShapeImp = iCylinderShapeImp;
             iCylinderShapeImp.UserObject = retval;
             return retval;
         }
@@ -333,7 +330,7 @@ namespace Fusee.Engine.Core.Core
         {
             IConeShapeImp iConeShapeImp = _dwi.AddConeShape(radius, height);
             var retval = new ConeShape();
-            retval.ConeShapeImp = iConeShapeImp;
+            retval._coneShapeImp = iConeShapeImp;
             iConeShapeImp.UserObject = retval;
             return retval;
         }
@@ -343,7 +340,7 @@ namespace Fusee.Engine.Core.Core
         {
             IMultiSphereShapeImp iMultiSphereShapeImp = _dwi.AddMultiSphereShape(positions, radi);
             var retval = new MultiSphereShape();
-            retval.MultiSphereShapeImp = iMultiSphereShapeImp;
+            retval._multiSphereShapeImp = iMultiSphereShapeImp;
             iMultiSphereShapeImp.UserObject = retval;
             return retval;
         }
@@ -353,7 +350,7 @@ namespace Fusee.Engine.Core.Core
         {
             ICompoundShapeImp iCompoundImp = _dwi.AddCompoundShape(enableDynamicAabbTree);
             var retval = new CompoundShape();
-            retval.CompoundShapeImp = iCompoundImp;
+            retval._compoundShapeImp = iCompoundImp;
             iCompoundImp.UserObject = retval;
             return retval;
         }
@@ -362,7 +359,7 @@ namespace Fusee.Engine.Core.Core
         {
             IEmptyShapeImp iEmptyShapeImp = _dwi.AddEmptyShape();
             var retval = new EmptyShape();
-            retval.EmtyShapeImp = iEmptyShapeImp;
+            retval._emtyShapeImp = iEmptyShapeImp;
             iEmptyShapeImp.UserObject = retval;
             return retval;
         }
@@ -371,7 +368,7 @@ namespace Fusee.Engine.Core.Core
         {
             IConvexHullShapeImp iConvexHullShapeImp = _dwi.AddConvexHullShape();
             var retval = new ConvexHullShape();
-            retval.ConvexHullShapeImp = iConvexHullShapeImp;
+            retval._convexHullShapeImp = iConvexHullShapeImp;
             iConvexHullShapeImp.UserObject = retval;
             return retval;
         }
@@ -380,7 +377,7 @@ namespace Fusee.Engine.Core.Core
         {
             IConvexHullShapeImp iConvexHullShapeImp = _dwi.AddConvexHullShape(points, optimized);
             var retval = new ConvexHullShape();
-            retval.ConvexHullShapeImp = iConvexHullShapeImp;
+            retval._convexHullShapeImp = iConvexHullShapeImp;
             iConvexHullShapeImp.UserObject = retval;
             return retval;
         }
@@ -389,7 +386,7 @@ namespace Fusee.Engine.Core.Core
         {
             IStaticPlaneShapeImp iStaticPlaneShapeImp = _dwi.AddStaticPlaneShape(planeNormal, planeConstant);
             var retval = new StaticPlaneShape();
-            retval.StaticPlaneShapeImp = iStaticPlaneShapeImp;
+            retval._staticPlaneShapeImp = iStaticPlaneShapeImp;
             iStaticPlaneShapeImp.UserObject = retval;
             return retval;
         }
@@ -407,7 +404,7 @@ namespace Fusee.Engine.Core.Core
             meshVerteciesArray = mesh.Vertices;
             IGImpactMeshShapeImp iGImpactMeshShapeImp = _dwi.AddGImpactMeshShape(meshTrianglesArray, mesh.Vertices);
             var retval = new GImpactMeshShape();
-            retval.GImpactMeshShapeImp = iGImpactMeshShapeImp;
+            retval._gImpactMeshShapeImp = iGImpactMeshShapeImp;
             iGImpactMeshShapeImp.UserObject = retval;
             return retval;
         }

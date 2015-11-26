@@ -2,14 +2,15 @@
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
+    <RootNamespace>Fusee.Xirkit</RootNamespace>
+    <AssemblyName>Fusee.Xirkit</AssemblyName>
+    <FuseeBuildRoot Condition=" '$(FuseeBuildRoot)' == '' ">..\..</FuseeBuildRoot>
     <MinimumVisualStudioVersion>10.0</MinimumVisualStudioVersion>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{F091790C-ED62-44D2-8622-966030A98E0B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Fusee.Xirkit</RootNamespace>
-    <AssemblyName>Fusee.Xirkit</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -20,34 +21,38 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\Bin\Debug\</OutputPath>
-    <BaseIntermediateOutputPath>..\..\Tmp\Obj\Xirkit\$(Configuration)\</BaseIntermediateOutputPath>
+    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\</OutputPath>
+    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\..\Bin\Debug\Fusee.Xirkit.xml</DocumentationFile>
+    <DocumentationFile>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\$(AssemblyName).xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\Bin\Release\</OutputPath>
-    <BaseIntermediateOutputPath>..\..\Tmp\Obj\Xirkit\$(Configuration)\</BaseIntermediateOutputPath>
+    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\</OutputPath>
+    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\$(AssemblyName).xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="JSIL.Meta, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\ExternalBinaries\JSIL\Compiler\JSIL.Meta.dll</HintPath>
+      <HintPath>..\..\ext\JSIL\Compiler\JSIL.Meta.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Animation.cs" />
     <Compile Include="ChainedMemberAccessor.cs" />
+    <Compile Include="Channel.cs" />
+    <Compile Include="ChannelBase.cs" />
     <Compile Include="Circuit.cs" />
     <Compile Include="FieldAccessor.cs" />
     <Compile Include="ICalculationPerformer.cs">
@@ -57,17 +62,21 @@
     <Compile Include="IMemberAccessor.cs" />
     <Compile Include="InPin.cs" />
     <Compile Include="IOutPin.cs" />
+    <Compile Include="Keyframe.cs" />
+    <Compile Include="Lerp.cs" />
+    <Compile Include="ListSort.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="OutPin.cs" />
     <Compile Include="Pin.cs" />
     <Compile Include="PinFactory.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyAccessor.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Math\Core\Fusee.Math.Core.csproj">
       <Project>{E95FA1C8-6491-4B4B-BBE1-EDA6B16B2C6A}</Project>
       <Name>Fusee.Math.Core</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

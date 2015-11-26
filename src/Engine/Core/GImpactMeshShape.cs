@@ -1,27 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Fusee.Engine.Common;
+﻿using Fusee.Engine.Common;
 
 namespace Fusee.Engine.Core
 {
     public class GImpactMeshShape : CollisionShape
     {
 
-        internal IGImpactMeshShapeImp GImpactMeshShapeImp;
+        internal IGImpactMeshShapeImp _gImpactMeshShapeImp;
 
-        public virtual float Margin
+        public override float Margin
         {
             get
             {
-                var retval = GImpactMeshShapeImp.Margin;
+                var retval = _gImpactMeshShapeImp.Margin;
                 return retval;
             }
             set
             {
-                var o = (GImpactMeshShape)GImpactMeshShapeImp.UserObject;
-                o.GImpactMeshShapeImp.Margin = value;
+                var o = (GImpactMeshShape)_gImpactMeshShapeImp.UserObject;
+                o._gImpactMeshShapeImp.Margin = value;
             }
         }
     }

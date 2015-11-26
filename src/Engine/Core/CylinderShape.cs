@@ -1,41 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Fusee.Engine.Common;
+﻿using Fusee.Engine.Common;
 using Fusee.Math.Core;
 
 namespace Fusee.Engine.Core
 {
     public class CylinderShape : CollisionShape
     {
-        internal ICylinderShapeImp CylinderShapeImp;
+        internal ICylinderShapeImp _cylinderShapeImp;
 
-        public float Margin
+        public override float Margin
         {
             get
             {
-                var retval = CylinderShapeImp.Margin;
+                var retval = _cylinderShapeImp.Margin;
                 return retval;
             }
             set
             {
-                var o = (CylinderShape)CylinderShapeImp.UserObject;
-                o.CylinderShapeImp.Margin = value;
+                var o = (CylinderShape)_cylinderShapeImp.UserObject;
+                o._cylinderShapeImp.Margin = value;
             }
         }
 
-        public float3 LocalScaling
+        public override float3 LocalScaling
         {
             get
             {
-                var retval = CylinderShapeImp.LocalScaling;
+                var retval = _cylinderShapeImp.LocalScaling;
                 return retval;
             }
             set
             {
-                var o = (CylinderShape)CylinderShapeImp.UserObject;
-                o.CylinderShapeImp.LocalScaling = value;
+                var o = (CylinderShape)_cylinderShapeImp.UserObject;
+                o._cylinderShapeImp.LocalScaling = value;
             }
         }
 
@@ -43,7 +39,7 @@ namespace Fusee.Engine.Core
         {
             get
             {
-                var retval = CylinderShapeImp.HalfExtents;
+                var retval = _cylinderShapeImp.HalfExtents;
                 return retval;
             }
         }
@@ -52,7 +48,7 @@ namespace Fusee.Engine.Core
         {
             get
             {
-                var retval = CylinderShapeImp.Radius;
+                var retval = _cylinderShapeImp.Radius;
                 return retval;
             }
         }
@@ -61,7 +57,7 @@ namespace Fusee.Engine.Core
         {
             get
             {
-                var retval = CylinderShapeImp.UpAxis;
+                var retval = _cylinderShapeImp.UpAxis;
                 return retval;
             }
         }

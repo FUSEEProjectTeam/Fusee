@@ -1,39 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Fusee.Engine.Common;
+﻿using Fusee.Engine.Common;
 using Fusee.Math.Core;
 
 namespace Fusee.Engine.Core
 {
     public class MultiSphereShape : CollisionShape
     {
-        internal IMultiSphereShapeImp MultiSphereShapeImp;
+        internal IMultiSphereShapeImp _multiSphereShapeImp;
 
-        public float Margin
+        public override float Margin
         {
             get
             {
-                var retval = MultiSphereShapeImp.Margin;
+                var retval = _multiSphereShapeImp.Margin;
                 return retval;
             }
             set
             {
-                var o = (CapsuleShape)MultiSphereShapeImp.UserObject;
-                o.CapsuleShapeImp.Margin = value;
+                var o = (CapsuleShape)_multiSphereShapeImp.UserObject;
+                o._capsuleShapeImp.Margin = value;
             }
         }
 
         public float3 GetSpherePosition(int index)
         {
-            var retval = MultiSphereShapeImp.GetSpherePosition(index);
+            var retval = _multiSphereShapeImp.GetSpherePosition(index);
             return retval;
         }
 
         public float GetSphereRadius(int index)
         {
-            var retval = MultiSphereShapeImp.GetSphereRadius(index);
+            var retval = _multiSphereShapeImp.GetSphereRadius(index);
             return retval;
         }
 
@@ -41,7 +37,7 @@ namespace Fusee.Engine.Core
         {
             get
             {
-                var retval = MultiSphereShapeImp.SphereCount;
+                var retval = _multiSphereShapeImp.SphereCount;
                 return retval;
             }
         }

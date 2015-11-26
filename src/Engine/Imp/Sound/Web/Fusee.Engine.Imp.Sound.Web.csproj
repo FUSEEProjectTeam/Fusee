@@ -20,8 +20,8 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\..\Bin\Debug\</OutputPath>
-    <BaseIntermediateOutputPath>..\..\..\..\..\Tmp\Obj\Fusee.Engine.Imp.Sound.Web\$(Configuration)\</BaseIntermediateOutputPath>
+    <OutputPath>..\..\..\..\..\bin\Debug\</OutputPath>
+    <BaseIntermediateOutputPath>..\..\..\..\..\tmp\Obj\Fusee.Engine.Imp.Sound.Web\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -30,8 +30,8 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\..\..\..\Bin\Release\</OutputPath>
-    <BaseIntermediateOutputPath>..\..\..\..\..\Tmp\Obj\Fusee.Engine.Imp.Sound.Web\$(Configuration)\</BaseIntermediateOutputPath>
+    <OutputPath>..\..\..\..\..\bin\Release\</OutputPath>
+    <BaseIntermediateOutputPath>..\..\..\..\..\tmp\Obj\Fusee.Engine.Imp.Sound.Web\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>

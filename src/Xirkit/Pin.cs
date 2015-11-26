@@ -1,6 +1,4 @@
 ﻿using System.Diagnostics;
-using System;
-using System.Reflection;
 
 namespace Fusee.Xirkit
 {

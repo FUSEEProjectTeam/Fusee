@@ -1,41 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Fusee.Engine.Common;
+﻿using Fusee.Engine.Common;
 using Fusee.Math.Core;
 
 namespace Fusee.Engine.Core
 {
     public class CapsuleShape : CollisionShape
     {
-        internal ICapsuleShapeImp CapsuleShapeImp;
+        internal ICapsuleShapeImp _capsuleShapeImp;
 
-        public float Margin
+        public override float Margin
         {
             get
             {
-                var retval = CapsuleShapeImp.Margin;
+                var retval = _capsuleShapeImp.Margin;
                 return retval;
             }
             set
             {
-                var o = (CapsuleShape)CapsuleShapeImp.UserObject;
-                o.CapsuleShapeImp.Margin = value;
+                var o = (CapsuleShape)_capsuleShapeImp.UserObject;
+                o._capsuleShapeImp.Margin = value;
             }
         }
 
-        public float3 LocalScaling
+        public override float3 LocalScaling
         {
             get
             {
-                var retval = CapsuleShapeImp.LocalScaling;
+                var retval = _capsuleShapeImp.LocalScaling;
                 return retval;
             }
             set
             {
-                var o = (CapsuleShape)CapsuleShapeImp.UserObject;
-                o.CapsuleShapeImp.LocalScaling = value;
+                var o = (CapsuleShape)_capsuleShapeImp.UserObject;
+                o._capsuleShapeImp.LocalScaling = value;
             }
         }
 
@@ -43,7 +39,7 @@ namespace Fusee.Engine.Core
         {
             get
             {
-                var retval = CapsuleShapeImp.HalfHeight;
+                var retval = _capsuleShapeImp.HalfHeight;
                 return retval;
             }
         }
@@ -52,7 +48,7 @@ namespace Fusee.Engine.Core
         {
             get
             {
-                var retval = CapsuleShapeImp.Radius;
+                var retval = _capsuleShapeImp.Radius;
                 return retval;
             }
         }
@@ -61,7 +57,7 @@ namespace Fusee.Engine.Core
         {
             get
             {
-                var retval = CapsuleShapeImp.UpAxis;
+                var retval = _capsuleShapeImp.UpAxis;
                 return retval;
             }
         }

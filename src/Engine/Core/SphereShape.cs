@@ -1,53 +1,49 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Fusee.Engine.Common;
+﻿using Fusee.Engine.Common;
 using Fusee.Math.Core;
 
 namespace Fusee.Engine.Core
 {
     public class SphereShape : CollisionShape
     {
-        internal ISphereShapeImp SphereShapeImp;
+        internal ISphereShapeImp _sphereShapeImp;
 
-        public float Margin
+        public override float Margin
         {
             get
             {
-                var retval = SphereShapeImp.Margin;
+                var retval = _sphereShapeImp.Margin;
                 return retval;
             }
             set
             {
-                var o = (SphereShape)SphereShapeImp.UserObject;
-                o.SphereShapeImp.Margin = value;
+                var o = (SphereShape)_sphereShapeImp.UserObject;
+                o._sphereShapeImp.Margin = value;
             }
         }
-        public float3 LocalScaling
+        public override float3 LocalScaling
         {
             get
             {
-                var retval = SphereShapeImp.LocalScaling;
+                var retval = _sphereShapeImp.LocalScaling;
                 return retval;
             }
             set
             {
-                var o = (SphereShape)SphereShapeImp.UserObject;
-                o.SphereShapeImp.LocalScaling = value;
+                var o = (SphereShape)_sphereShapeImp.UserObject;
+                o._sphereShapeImp.LocalScaling = value;
             }
         }
         public float Radius
         {
             get
             {
-                var retval = SphereShapeImp.Radius;
+                var retval = _sphereShapeImp.Radius;
                 return retval;
             }
             set
             {
-                var o = (SphereShape) SphereShapeImp.UserObject;
-                o.SphereShapeImp.Radius = value;
+                var o = (SphereShape) _sphereShapeImp.UserObject;
+                o._sphereShapeImp.Radius = value;
             }
         }
         

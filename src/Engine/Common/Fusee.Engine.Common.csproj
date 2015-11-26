@@ -2,14 +2,15 @@
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
+    <RootNamespace>Fusee.Engine.Common</RootNamespace>
+    <AssemblyName>Fusee.Engine.Common</AssemblyName>
+    <FuseeBuildRoot Condition=" '$(FuseeBuildRoot)' == '' ">..\..\..</FuseeBuildRoot>
     <MinimumVisualStudioVersion>10.0</MinimumVisualStudioVersion>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{DFD770F6-4222-4255-AAE0-DCACDC7B21EB}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Fusee.Engine.Common</RootNamespace>
-    <AssemblyName>Fusee.Engine.Common</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -20,33 +21,34 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\Bin\Debug\</OutputPath>
-    <BaseIntermediateOutputPath>..\..\..\Tmp\Obj\Fusee.Common\$(Configuration)\</BaseIntermediateOutputPath>
+    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\</OutputPath>
+    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\..\..\Bin\Debug\Fusee.Engine.Common.xml</DocumentationFile>
+    <DocumentationFile>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\$(AssemblyName).xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\..\Bin\Release\</OutputPath>
-    <BaseIntermediateOutputPath>..\..\..\Tmp\Obj\Fusee.Common\$(Configuration)\</BaseIntermediateOutputPath>
+    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\</OutputPath>
+    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\$(AssemblyName).xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug+Web|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\..\..\Bin\Debug\</OutputPath>
-    <BaseIntermediateOutputPath>..\..\..\Tmp\Obj\Fusee.Common\$(Configuration)\</BaseIntermediateOutputPath>
+    <OutputPath>..\..\..\bin\Debug\</OutputPath>
+    <BaseIntermediateOutputPath>..\..\..\tmp\Obj\Fusee.Common\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
-    <CodeAnalysisLogFile>..\..\..\Bin\Debug\Fusee.Engine.Common.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisLogFile>..\..\..\bin\Debug\Fusee.Engine.Common.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
     <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
     <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
     <ErrorReport>prompt</ErrorReport>
@@ -57,7 +59,7 @@
     <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
     <WarningLevel>4</WarningLevel>
     <Optimize>false</Optimize>
-    <DocumentationFile>..\..\..\Bin\Debug\Fusee.Engine.Common.XML</DocumentationFile>
+    <DocumentationFile>..\..\..\bin\Debug\Fusee.Engine.Common.XML</DocumentationFile>
     <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
@@ -116,17 +118,20 @@
     <Compile Include="ShaderParamInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Fusee.Math.Core">
-      <HintPath>..\..\..\Bin\Debug\Fusee.Math.Core.dll</HintPath>
-    </Reference>
     <Reference Include="JSIL.Meta">
-      <HintPath>..\..\..\ExternalBinaries\JSIL\Compiler\JSIL.Meta.dll</HintPath>
+      <HintPath>..\..\..\ext\JSIL\Compiler\JSIL.Meta.dll</HintPath>
     </Reference>
     <Reference Include="protobuf-net, Version=2.0.0.668, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\ExternalBinaries\protobuf\protobuf-net.dll</HintPath>
+      <HintPath>..\..\..\ext\protobuf\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Math\Core\Fusee.Math.Core.csproj">
+      <Project>{e95fa1c8-6491-4b4b-bbe1-eda6b16b2c6a}</Project>
+      <Name>Fusee.Math.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

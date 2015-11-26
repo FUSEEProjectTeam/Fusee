@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using Fusee.Engine.Common;
 using JSIL.Meta;
 
-namespace Fusee.Engine.Core
+namespace Fusee.Engine.Core.GUI
 {
     /// <summary>
     ///     A <see cref="GUIHandler"/> is a <see cref="T:System.Collections.Generic.List`1" /> of different

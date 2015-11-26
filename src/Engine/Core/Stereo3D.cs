@@ -1,4 +1,5 @@
 ﻿using Fusee.Engine.Common;
+using Fusee.Engine.Core.GUI;
 using Fusee.Math.Core;
 
 namespace Fusee.Engine.Core

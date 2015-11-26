@@ -2,7 +2,7 @@
 using Fusee.Engine.Common;
 using Fusee.Math.Core;
 
-namespace Fusee.Engine.Core
+namespace Fusee.Engine.Core.GUI
 {
     /// <summary>
     ///     A delegation for the event listeners of a <see cref="GUIButton" />.

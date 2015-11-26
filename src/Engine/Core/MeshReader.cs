@@ -185,11 +185,11 @@ namespace Fusee.Engine.Core
         /// <summary>
         ///     This method loads an object file and returns it as a geometry.
         /// </summary>
-        /// <param name="path">Path to the object to load</param>
+        /// <param name="stream">Stream to read from.</param>
         /// <returns>The newly created Mesh object</returns>
-        public static Geometry LoadGeometry(string path)
+        public static Geometry LoadGeometry(Stream stream)
         {
-            using (var obj = new StreamReader(path))
+            using (var obj = new StreamReader(stream))
             {
                 return ReadWavefrontObj(obj);
             }
@@ -198,11 +198,11 @@ namespace Fusee.Engine.Core
         /// <summary>
         ///     This method loads an object file and returns it as a mesh.
         /// </summary>
-        /// <param name="path">Path to the object to load</param>
+        /// <param name="stream">Stream to read from.</param>
         /// <returns>The newly created Mesh object</returns>
-        public static Mesh LoadMesh(string path)
+        public static Mesh LoadMesh(Stream stream)
         {
-            using (var obj = new StreamReader(path))
+            using (var obj = new StreamReader(stream))
             {
                 Geometry geo = ReadWavefrontObj(obj);
                 return geo.ToMesh();

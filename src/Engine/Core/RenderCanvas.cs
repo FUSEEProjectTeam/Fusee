@@ -1,4 +1,5 @@
 ﻿using System;
+using Fusee.Base.Common;
 using Fusee.Engine.Common;
 
 namespace Fusee.Engine.Core
@@ -92,7 +93,7 @@ namespace Fusee.Engine.Core
         #endregion
 
         #region Members
-
+        /*
         /// <summary>
         ///     The RenderCanvas constructor. Depending on the implementation this constructor instantiates a 3D viewing window or
         ///     connects a 3D
@@ -121,6 +122,7 @@ namespace Fusee.Engine.Core
             if (VideoManagerImplementor == null)
                 VideoManagerImplementor = ImpFactory.CreateIVideoManagerImp();
         }
+        */
 
         /// <summary>
         ///     Gets the name of the app.
@@ -180,8 +182,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         protected void InitCanvas()
         {
-            InitImplementors();
-
+            // InitImplementors();
             CanvasImplementor.Caption = GetAppName();
 
             var windowWidth = GetWindowWidth();
@@ -310,13 +311,9 @@ namespace Fusee.Engine.Core
         public void Present()
         {
             CanvasImplementor.Present();
-
-            if (RC.HasPickingContext)
-            {
-                RC.PickingContextTick();
-            }
         }
 
+        /*
         /// <summary>
         ///     Sets the data for a video wall.
         /// </summary>
@@ -328,6 +325,7 @@ namespace Fusee.Engine.Core
         {
             CanvasImplementor.VideoWall(monitorsHor, monitorsVert, activate, borderHidden);
         }
+        */
 
         /// <summary>
         ///     Sets the size of the output window for desktop development.

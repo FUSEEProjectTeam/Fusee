@@ -1,7 +1,8 @@
 ﻿using System;
+using Fusee.Engine.Common;
 using Fusee.Math.Core;
 
-namespace Fusee.Engine.Core
+namespace Fusee.Engine.Core.GUI
 {
     /// <summary>
     ///     The <see cref="GUIImage" /> class provides functionality for loading and displaying 2D images.

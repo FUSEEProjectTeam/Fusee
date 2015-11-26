@@ -1,35 +1,43 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
+    <RootNamespace>Fusee.Engine.Imp.Graphics.Desktop</RootNamespace>
+    <AssemblyName>Fusee.Engine.Imp.Graphics.Desktop</AssemblyName>
+    <FuseeBuildRoot Condition=" '$(FuseeBuildRoot)' == '' ">..\..\..\..\..</FuseeBuildRoot>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{F7AD2BB5-D2B0-4697-BDDB-4CC26152A6B6}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Fusee.Engine.Imp.Graphics.Desktop</RootNamespace>
-    <AssemblyName>Fusee.Engine.Imp.Graphics.Desktop</AssemblyName>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\..\Bin\Debug\</OutputPath>
+    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\</OutputPath>
+    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
     <DefineConstants>TRACE;DEBUG;PLATFORM_DESKTOP</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>..\..\..\..\..\Bin\Debug\Fusee.Engine.Imp.Graphics.Desktop.xml</DocumentationFile>
+    <DocumentationFile>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\$(AssemblyName).xml</DocumentationFile>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\..\..\..\Bin\Release\</OutputPath>
+    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\</OutputPath>
+    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
     <DefineConstants>TRACE;PLATFORM_DESKTOP</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\$(AssemblyName).xml</DocumentationFile>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -37,10 +45,10 @@
   <ItemGroup>
     <Reference Include="OpenTK, Version=1.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\ExternalBinaries\OpenTK.dll</HintPath>
+      <HintPath>..\..\..\..\..\ext\OpenTK.dll</HintPath>
     </Reference>
     <Reference Include="SharpFont">
-      <HintPath>..\..\..\..\..\ExternalBinaries\SharpFont\SharpFont.dll</HintPath>
+      <HintPath>..\..\..\..\..\ext\SharpFont\SharpFont.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
@@ -50,22 +58,27 @@
     <ProjectReference Include="..\..\..\..\Math\Core\Fusee.Math.Core.csproj">
       <Project>{e95fa1c8-6491-4b4b-bbe1-eda6b16b2c6a}</Project>
       <Name>Fusee.Math.Core</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Common\Fusee.Engine.Common.csproj">
       <Project>{dfd770f6-4222-4255-aae0-dcacdc7b21eb}</Project>
       <Name>Fusee.Engine.Common</Name>
+      <Private>False</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <FUSEE_Unmanaged_Library Include="$(FuseeBuildRoot)\ext\SharpFont\freetype6.dll" />
   </ItemGroup>
   <Import Project="Fusee.Engine.Imp.Graphics.DesktopAndroid.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="Clean">
+  <!-- Target Name="Clean">
     <Exec Condition=" '$(OS)' == 'Windows_NT' And Exists('$(OutputPath)') " Command="del /q &quot;$(OutputPath)Fusee.Engine.Imp.OpenTK.*&quot;" />
     <Exec Condition=" '$(OS)' != 'Windows_NT' And Exists('$(OutputPath)') " Command="rm '$(OutputPath)'Fusee.Engine.Imp.OpenTK.*" />
     <Exec Condition=" '$(OS)' == 'Windows_NT' And Exists('$(OutputPath)OpenTK.dll') " Command="del /q &quot;$(OutputPath)OpenTK.dll&quot;" />
     <Exec Condition=" '$(OS)' != 'Windows_NT' And Exists('$(OutputPath)OpenTK.dll') " Command="rm '$(OutputPath)'OpenTK.dll" />
     <Exec Condition=" '$(OS)' == 'Windows_NT' And Exists('$(OutputPath)SharpFont.dll') " Command="del /q &quot;$(OutputPath)SharpFont.dll&quot;" />
     <Exec Condition=" '$(OS)' != 'Windows_NT' And Exists('$(OutputPath)SharpFont.dll') " Command="rm '$(OutputPath)'SharpFont.dll" />
-  </Target>
+  </Target -->
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

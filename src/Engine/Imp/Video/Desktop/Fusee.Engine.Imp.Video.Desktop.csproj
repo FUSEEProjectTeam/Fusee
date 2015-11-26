@@ -1,6 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
+    <RootNamespace>Fusee.Engine.Imp.Video.Desktop</RootNamespace>
+    <AssemblyName>Fusee.Engine.Imp.Video.Desktop</AssemblyName>
+    <FuseeBuildRoot Condition=" '$(FuseeBuildRoot)' == '' ">..\..\..\..\..</FuseeBuildRoot>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
@@ -8,43 +11,45 @@
     <ProjectGuid>{86AD9C76-6743-434C-A48D-BE8DA9C62779}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Fusee.Engine.Imp.Video.Desktop</RootNamespace>
-    <AssemblyName>Fusee.Engine.Imp.Video.Desktop</AssemblyName>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\..\Bin\Debug\</OutputPath>
-    <BaseIntermediateOutputPath>..\..\..\..\..\Tmp\Obj\Fusee.Engine.Imp.Video.Web\$(Configuration)\</BaseIntermediateOutputPath>
+    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\</OutputPath>
+    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
-    <DefineConstants>DEBUG;TRACE;PLATFORM_DESKTOP</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;PLATFORM_DESKTOP</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\..\..\..\..\Bin\Debug\Fusee.Engine.Imp.Video.Desktop.xml</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DocumentationFile>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\$(AssemblyName).xml</DocumentationFile>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\..\..\..\Bin\Release\</OutputPath>
-    <BaseIntermediateOutputPath>..\..\..\..\..\Tmp\Obj\Fusee.Engine.Imp.Video.Web\$(Configuration)\</BaseIntermediateOutputPath>
+    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\</OutputPath>
+    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
     <DefineConstants>TRACE;PLATFORM_DESKTOP</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\$(AssemblyName).xml</DocumentationFile>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AForge.Video, Version=2.2.5.0, Culture=neutral, PublicKeyToken=cbfb6e07d173c401, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\ExternalBinaries\AForge\AForge.Video.dll</HintPath>
+      <HintPath>..\..\..\..\..\ext\AForge\AForge.Video.dll</HintPath>
     </Reference>
     <Reference Include="AForge.Video.DirectShow">
-      <HintPath>..\..\..\..\..\ExternalBinaries\AForge\AForge.Video.DirectShow.dll</HintPath>
+      <HintPath>..\..\..\..\..\ext\AForge\AForge.Video.DirectShow.dll</HintPath>
     </Reference>
     <Reference Include="AForge.Video.FFMPEG, Version=2.2.5.0, Culture=neutral, PublicKeyToken=03563089b1be05dd, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\ExternalBinaries\AForge\AForge.Video.FFMPEG.dll</HintPath>
+      <HintPath>..\..\..\..\..\ext\AForge\AForge.Video.FFMPEG.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -60,6 +65,7 @@
     <ProjectReference Include="..\..\..\Common\Fusee.Engine.Common.csproj">
       <Project>{DFD770F6-4222-4255-AAE0-DCACDC7B21EB}</Project>
       <Name>Fusee.Engine.Common</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

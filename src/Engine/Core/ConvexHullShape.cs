@@ -1,7 +1,7 @@
 ﻿using Fusee.Engine.Common;
 using Fusee.Math.Core;
 
-namespace Fusee.Engine.Core.Core
+namespace Fusee.Engine.Core
 {
     /// <summary>
     /// This is the fastest kind of arbitrary shape. 
@@ -11,59 +11,33 @@ namespace Fusee.Engine.Core.Core
     /// </summary>
     public class ConvexHullShape : CollisionShape
     {
-        internal IConvexHullShapeImp ConvexHullShapeImp;
+        internal IConvexHullShapeImp _convexHullShapeImp;
 
         /// <summary>
-        /// Add a vertice to the cloud of vertices.
+        /// Add a vertex to the cloud of vertices.
         /// There can't be added any vertices to the Shape once it has been added to a rigidbody
         /// </summary>
-        /// <param name="point"></param>
+        /// <param name="point">The vertex to add.</param>
         public void AddPoint(float3 point)
         {
-            var o = (ConvexHullShape)ConvexHullShapeImp.UserObject;
-            o.ConvexHullShapeImp.AddPoint(point);
+            var o = (ConvexHullShape)_convexHullShapeImp.UserObject;
+            o._convexHullShapeImp.AddPoint(point);
         }
 
 
         public float3 GetScaledPoint(int index)
         {
-            return ConvexHullShapeImp.GetScaledPoint(index);
+            return _convexHullShapeImp.GetScaledPoint(index);
         }
 
         public float3[] GetUnscaledPoints()
         {
-            return ConvexHullShapeImp.GetUnscaledPoints();
+            return _convexHullShapeImp.GetUnscaledPoints();
         }
 
         public int GetNumPoints()
         {
-            return ConvexHullShapeImp.GetNumPoints();
-        }
-
-        public float Margin
-        {
-            get
-            {
-                var retval = ConvexHullShapeImp.Margin;
-                return retval;
-            }
-            set
-            {
-                var o = (ConvexHullShape)ConvexHullShapeImp.UserObject;
-                o.ConvexHullShapeImp.Margin = value;
-            }
-        }
-
-
-
-        public float3 LocalScaling
-        {
-            get { return ConvexHullShapeImp.LocalScaling; }
-            set
-            {
-                var o = (ConvexHullShape)ConvexHullShapeImp.UserObject;
-                o.ConvexHullShapeImp.LocalScaling = value;
-            }
+            return _convexHullShapeImp.GetNumPoints();
         }
     }
 }

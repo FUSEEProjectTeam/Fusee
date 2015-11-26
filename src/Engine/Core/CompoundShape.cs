@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using Fusee.Engine.Common;
+﻿using Fusee.Engine.Common;
 using Fusee.Math.Core;
 
 namespace Fusee.Engine.Core
 {
     public class CompoundShape : CollisionShape
     {
-        internal ICompoundShapeImp CompoundShapeImp;
+        internal ICompoundShapeImp _compoundShapeImp;
 
         /*public void AddChildShape(float4x4 localTransform, CollisionShape childShape)
         {
@@ -22,64 +17,64 @@ namespace Fusee.Engine.Core
                     Debug.WriteLine(type);
                     var b = new BoxShape();
                     b = (BoxShape) childShape;
-                    var shape = b.BoxShapeImp;
-                    CompoundShapeImp.AddChildShape(localTransform, shape);
+                    var shape = b._boxShapeImp;
+                    _compoundShapeImp.AddChildShape(localTransform, shape);
                     break;
                 default:
                     Debug.WriteLine("default");
                     var empty = new BoxShape();
-                    CompoundShapeImp.AddChildShape(localTransform, empty.BoxShapeImp);
+                    _compoundShapeImp.AddChildShape(localTransform, empty._boxShapeImp);
                     break;
             }
         }*/
 
         public void AddChildShape(float4x4 localTransform, BoxShape childShape)
         {
-            CompoundShapeImp.AddChildShape(localTransform, childShape.BoxShapeImp);
+            _compoundShapeImp.AddChildShape(localTransform, childShape._boxShapeImp);
         }
         public void AddChildShape(float4x4 localTransform, SphereShape childShape)
         {
-            CompoundShapeImp.AddChildShape(localTransform, childShape.SphereShapeImp);
+            _compoundShapeImp.AddChildShape(localTransform, childShape._sphereShapeImp);
         }
         public void AddChildShape(float4x4 localTransform, CapsuleShape childShape)
         {
-            CompoundShapeImp.AddChildShape(localTransform, childShape.CapsuleShapeImp);
+            _compoundShapeImp.AddChildShape(localTransform, childShape._capsuleShapeImp);
         }
         public void AddChildShape(float4x4 localTransform, ConeShape childShape)
         {
-            CompoundShapeImp.AddChildShape(localTransform, childShape.ConeShapeImp);
+            _compoundShapeImp.AddChildShape(localTransform, childShape._coneShapeImp);
         }
         public void AddChildShape(float4x4 localTransform, CylinderShape childShape)
         {
-            CompoundShapeImp.AddChildShape(localTransform, childShape.CylinderShapeImp);
+            _compoundShapeImp.AddChildShape(localTransform, childShape._cylinderShapeImp);
         }
         public void AddChildShape(float4x4 localTransform, MultiSphereShape childShape)
         {
-            CompoundShapeImp.AddChildShape(localTransform, childShape.MultiSphereShapeImp);
+            _compoundShapeImp.AddChildShape(localTransform, childShape._multiSphereShapeImp);
         }
         public void AddChildShape(float4x4 localTransform, EmptyShape childShape)
         {
-            CompoundShapeImp.AddChildShape(localTransform, childShape.EmtyShapeImp);
+            _compoundShapeImp.AddChildShape(localTransform, childShape._emtyShapeImp);
         }
 
         public void CalculatePrincipalAxisTransform(float[] masses, float4x4 principal, float3 inertia)
         {
-            CompoundShapeImp.CalculatePrincipalAxisTransform(masses, principal, inertia);
+            _compoundShapeImp.CalculatePrincipalAxisTransform(masses, principal, inertia);
         }
 
         //Inherited
-        public float Margin
+        public override float Margin
         {
 
             get
             {
-                var retval = CompoundShapeImp.Margin;
+                var retval = _compoundShapeImp.Margin;
                 return retval;
             }
             set
             {
-                var o = (BoxShape)CompoundShapeImp.UserObject;
-                o.BoxShapeImp.Margin = value;
+                var o = (BoxShape)_compoundShapeImp.UserObject;
+                o._boxShapeImp.Margin = value;
             }
         }
     }

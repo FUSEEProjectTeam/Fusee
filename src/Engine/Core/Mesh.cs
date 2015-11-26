@@ -1,5 +1,4 @@
-﻿using Fusee.Engine;
-using Fusee.Engine.Common;
+﻿using Fusee.Engine.Common;
 using Fusee.Math.Core;
 using ProtoBuf;
 

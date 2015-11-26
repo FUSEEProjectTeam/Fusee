@@ -2,14 +2,15 @@
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
+    <RootNamespace>Fusee.Engine.Core</RootNamespace>
+    <AssemblyName>Fusee.Engine.Core</AssemblyName>
+    <FuseeBuildRoot Condition=" '$(FuseeBuildRoot)' == '' ">..\..\..</FuseeBuildRoot>
     <MinimumVisualStudioVersion>10.0</MinimumVisualStudioVersion>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{1228EB3F-8BCC-453F-8A2E-D9246495A118}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Fusee.Engine.Core</RootNamespace>
-    <AssemblyName>Fusee.Engine.Core</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -20,24 +21,24 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\Bin\Debug\</OutputPath>
-    <BaseIntermediateOutputPath>..\..\..\Tmp\Obj\Engine.Core\$(Configuration)\</BaseIntermediateOutputPath>
+    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\</OutputPath>
+    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\..\..\Bin\Debug\Fusee.Engine.Core.xml</DocumentationFile>
-    <NoWarn>1591</NoWarn>
+    <DocumentationFile>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\$(AssemblyName).xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\..\Bin\Release\</OutputPath>
-    <BaseIntermediateOutputPath>..\..\..\Tmp\Obj\Engine.Core\$(Configuration)\</BaseIntermediateOutputPath>
+    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\</OutputPath>
+    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\$(AssemblyName).xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Audio.cs" />
@@ -50,7 +51,6 @@
     <Compile Include="ConvexHullShape.cs" />
     <Compile Include="Cube.cs" />
     <Compile Include="CylinderShape.cs" />
-    <Compile Include="Diagnostics.cs" />
     <Compile Include="DynamicWorld.cs" />
     <Compile Include="EmptyShape.cs" />
     <Compile Include="GearConstraint.cs" />
@@ -65,7 +65,6 @@
     <Compile Include="GUI\GUIImage.cs" />
     <Compile Include="GImpactMeshShape.cs" />
     <Compile Include="HingeConstraint.cs" />
-    <Compile Include="ImpFactory.cs" />
     <Compile Include="Input.cs" />
     <Compile Include="InputDevice.cs" />
     <Compile Include="Mesh.cs" />
@@ -73,6 +72,9 @@
     <Compile Include="MultiSphereShape.cs" />
     <Compile Include="Point2PointConstraint.cs" />
     <Compile Include="RigidBody.cs" />
+    <Compile Include="ScenePicker.cs" />
+    <Compile Include="SceneRenderer.cs" />
+    <Compile Include="ShaderCodeBuilder.cs" />
     <Compile Include="ShaderMaterial.cs" />
     <Compile Include="ShaderProgram.cs" />
     <Compile Include="Shaders.cs" />
@@ -94,21 +96,48 @@
   <ItemGroup>
     <Reference Include="protobuf-net, Version=2.0.0.668, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\ExternalBinaries\protobuf\protobuf-net.dll</HintPath>
+      <HintPath>..\..\..\ext\protobuf\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="JSIL.Meta">
-      <HintPath>..\..\..\ExternalBinaries\JSIL\Compiler\JSIL.Meta.dll</HintPath>
+      <HintPath>..\..\..\ext\JSIL\Compiler\JSIL.Meta.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Base\Common\Fusee.Base.Common.csproj">
+      <Project>{5906abe0-1d62-4f9a-9aba-b7d301615bb0}</Project>
+      <Name>Fusee.Base.Common</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Base\Core\Fusee.Base.Core.csproj">
+      <Project>{7e0c9336-7a38-4c87-97e2-a8d2a90aa29d}</Project>
+      <Name>Fusee.Base.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Serialization\Fusee.Serialization.csproj">
+      <Project>{b7fac89a-4e75-4eac-bbc3-bbdb89c94b8a}</Project>
+      <Name>Fusee.Serialization</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Xene\Fusee.Xene.csproj">
+      <Project>{10da02fc-109f-4d71-864a-9f5b1e9a0d70}</Project>
+      <Name>Fusee.Xene</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Xirkit\Fusee.Xirkit.csproj">
+      <Project>{f091790c-ed62-44d2-8622-966030a98e0b}</Project>
+      <Name>Fusee.Xirkit</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\Common\Fusee.Engine.Common.csproj">
       <Project>{DFD770F6-4222-4255-AAE0-DCACDC7B21EB}</Project>
       <Name>Fusee.Engine.Common</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Math\Core\Fusee.Math.Core.csproj">
       <Project>{E95FA1C8-6491-4B4B-BBE1-EDA6B16B2C6A}</Project>
       <Name>Fusee.Math.Core</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />

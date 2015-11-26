@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Reflection;
-using Fusee.Engine;
-using Fusee.Math;
+using Fusee.Engine.Common;
+using Fusee.Engine.Core;
+using Fusee.Math.Core;
 
 namespace Examples.Simple
 {

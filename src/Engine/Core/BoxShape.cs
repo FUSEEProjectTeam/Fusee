@@ -1,47 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Fusee.Engine.Common;
+﻿using Fusee.Engine.Common;
 using Fusee.Math.Core;
 
 namespace Fusee.Engine.Core
 {
     public class BoxShape : CollisionShape
     {
-        internal IBoxShapeImp BoxShapeImp;
+        internal IBoxShapeImp _boxShapeImp;
 
-        public float3 LocalScaling
+        public override float3 LocalScaling
         {
-            get { return BoxShapeImp.LocalScaling; }
+            get { return _boxShapeImp.LocalScaling; }
             set
             {
-                var o = (BoxShape)BoxShapeImp.UserObject;
-                o.BoxShapeImp.LocalScaling = value;
+                var o = (BoxShape)_boxShapeImp.UserObject;
+                o._boxShapeImp.LocalScaling = value;
             }
         }
         public float3 HalfExtents
         {
             get
             {
-                var retval = BoxShapeImp.HalfExtents;
+                var retval = _boxShapeImp.HalfExtents;
                 return retval;
             }
         }
 
         //Inherited
-        public float Margin
+        public override float Margin
         {
 
             get
             {
-                var retval = BoxShapeImp.Margin;
+                var retval = _boxShapeImp.Margin;
                 return retval;
             }
             set
             {
-                var o = (BoxShape) BoxShapeImp.UserObject;
-                o.BoxShapeImp.Margin = value;
+                var o = (BoxShape) _boxShapeImp.UserObject;
+                o._boxShapeImp.Margin = value;
             }
         }
     }

@@ -11,10 +11,10 @@ namespace Fusee.Engine.Imp.Sound.Desktop
         /// <summary>
         /// Creates the audio implementation.
         /// </summary>
-        /// <returns>An instance of SFMLAudioImp is returned.</returns>
+        /// <returns>An instance of AudioImp is returned.</returns>
         public static IAudioImp CreateAudioImp()
         {
-            return new SFMLAudioImp();
+            return new AudioImp();
         }
     }
 }

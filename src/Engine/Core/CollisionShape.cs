@@ -5,26 +5,26 @@ namespace Fusee.Engine.Core
 {
     public class CollisionShape
     {
-        internal ICollisionShapeImp ICollisionShapeImp;
+        internal ICollisionShapeImp _collisionShapeImp;
         
 
         public virtual float Margin
         {
-            get { return ICollisionShapeImp.Margin; }
+            get { return _collisionShapeImp.Margin; }
             set
             {
-                var o = (CollisionShape)ICollisionShapeImp.UserObject;
-                o.ICollisionShapeImp.Margin = value; 
+                var o = (CollisionShape)_collisionShapeImp.UserObject;
+                o._collisionShapeImp.Margin = value; 
             }
         }
 
         public virtual float3 LocalScaling
         {
-            get { return ICollisionShapeImp.LocalScaling; }
+            get { return _collisionShapeImp.LocalScaling; }
             set
             {
-                var o = (CollisionShape)ICollisionShapeImp.UserObject;
-                o.ICollisionShapeImp.LocalScaling = value;
+                var o = (CollisionShape)_collisionShapeImp.UserObject;
+                o._collisionShapeImp.LocalScaling = value;
             }
         }
     }

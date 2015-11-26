@@ -1,6 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
+    <RootNamespace>Fusee.Engine.Imp.Sound.Desktop</RootNamespace>
+    <AssemblyName>Fusee.Engine.Imp.Sound.Desktop</AssemblyName>
+    <FuseeBuildRoot Condition=" '$(FuseeBuildRoot)' == '' ">..\..\..\..\..</FuseeBuildRoot>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
@@ -8,38 +11,40 @@
     <ProjectGuid>{0A06B3EA-5934-4373-854A-B4D6E7E1FE16}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Fusee.Engine.Imp.Sound.Desktop</RootNamespace>
-    <AssemblyName>Fusee.Engine.Imp.Sound.Desktop</AssemblyName>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\..\Bin\Debug\</OutputPath>
-    <BaseIntermediateOutputPath>..\..\..\..\..\Tmp\Obj\Fusee.Engine.Imp.Sound.Web\$(Configuration)\</BaseIntermediateOutputPath>
+    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\</OutputPath>
+    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;PLATFORM_DESKTOP</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\..\..\..\..\Bin\Debug\Fusee.Engine.Imp.Sound.Desktop.xml</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DocumentationFile>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\$(AssemblyName).xml</DocumentationFile>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\..\..\..\Bin\Release\</OutputPath>
-    <BaseIntermediateOutputPath>..\..\..\..\..\Tmp\Obj\Fusee.Engine.Imp.Sound.Web\$(Configuration)\</BaseIntermediateOutputPath>
+    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\</OutputPath>
+    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;PLATFORM_DESKTOP</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\$(AssemblyName).xml</DocumentationFile>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="sfmlnet-audio-2">
-      <HintPath>..\..\..\..\..\ExternalBinaries\SFML\sfmlnet-audio-2.dll</HintPath>
+      <HintPath>..\..\..\..\..\ext\SFML\sfmlnet-audio-2.dll</HintPath>
     </Reference>
     <Reference Include="sfmlnet-system-2">
-      <HintPath>..\..\..\..\..\ExternalBinaries\SFML\sfmlnet-system-2.dll</HintPath>
+      <HintPath>..\..\..\..\..\ext\SFML\sfmlnet-system-2.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -47,13 +52,14 @@
   <ItemGroup>
     <Compile Include="AudioStream.cs" />
     <Compile Include="Implementor.cs" />
-    <Compile Include="SFMLAudioImp.cs" />
+    <Compile Include="AudioImp.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\Fusee.Engine.Common.csproj">
       <Project>{DFD770F6-4222-4255-AAE0-DCACDC7B21EB}</Project>
       <Name>Fusee.Engine.Common</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

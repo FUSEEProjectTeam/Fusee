@@ -1,41 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Fusee.Engine.Common;
+﻿using Fusee.Engine.Common;
 using Fusee.Math.Core;
 
 namespace Fusee.Engine.Core
 {
     public class ConeShape : CollisionShape
     {
-        internal IConeShapeImp ConeShapeImp;
+        internal IConeShapeImp _coneShapeImp;
 
-        public float Margin
+        public override float Margin
         {
             get
             {
-                var retval = ConeShapeImp.Margin;
+                var retval = _coneShapeImp.Margin;
                 return retval;
             }
             set
             {
-                var o = (CapsuleShape)ConeShapeImp.UserObject;
-                o.CapsuleShapeImp.Margin = value;
+                var o = (ConeShape)_coneShapeImp.UserObject;
+                o._coneShapeImp.Margin = value;
             }
         }
 
-        public float3 LocalScaling
+        public override float3 LocalScaling
         {
             get
             {
-                var retval = ConeShapeImp.LocalScaling;
+                var retval = _coneShapeImp.LocalScaling;
                 return retval;
             }
             set
             {
-                var o = (ConeShape) ConeShapeImp.UserObject;
-                o.ConeShapeImp.LocalScaling = value;
+                var o = (ConeShape) _coneShapeImp.UserObject;
+                o._coneShapeImp.LocalScaling = value;
             }
         }
 
@@ -43,13 +39,13 @@ namespace Fusee.Engine.Core
         {
             get
             {
-                var retval = ConeShapeImp.ConeUpIndex;
+                var retval = _coneShapeImp.ConeUpIndex;
                 return retval;
             }
             set
             {
-                var o = (ConeShape) ConeShapeImp.UserObject;
-                o.ConeShapeImp.ConeUpIndex = value;
+                var o = (ConeShape) _coneShapeImp.UserObject;
+                o._coneShapeImp.ConeUpIndex = value;
             }
         }
 
@@ -57,7 +53,7 @@ namespace Fusee.Engine.Core
         {
             get
             {
-                var retval = ConeShapeImp.Height;
+                var retval = _coneShapeImp.Height;
                 return retval;
             }
         }
@@ -66,7 +62,7 @@ namespace Fusee.Engine.Core
         {
             get
             {
-                var retval = ConeShapeImp.Radius;
+                var retval = _coneShapeImp.Radius;
                 return retval;
             }
         }

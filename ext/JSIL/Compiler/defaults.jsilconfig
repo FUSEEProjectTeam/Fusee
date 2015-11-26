@@ -1,0 +1,37 @@
+﻿{
+  "OutputDirectory": "%configdirectory%",
+  "ProxyWarnings": false,
+  "Assemblies": {
+    "Stubbed": [
+      "^mscorlib,",
+      "^System,",
+      "^System\\.(.+),",
+      "^Microsoft\\.(.+),",
+      "Mono.*,",
+      "FSharp.Core",
+	  "nunit\\.framework,"
+    ],
+    "Ignored": [
+      "Microsoft\\.VisualC,",
+      "Accessibility,",
+      "SMDiagnostics,",
+      "System\\.EnterpriseServices,",
+      "System\\.Security,",
+      "System\\.Runtime\\.Serialization,",	  
+      "System\\.Runtime\\.Serialization\\.Formatters\\.Soap,",
+      "System\\.Runtime\\.DurableInstancing,",
+      "System\\.Data\\.SqlXml,",
+      "JSIL.Meta,",
+      "Mono\\.Posix\\.*,",
+	  "System\\.Web\\.*,",
+	  "System\\.ServiceModel\\.*",
+	  "^mscorlib, Version=2",
+	  "System, Version=2",
+	  "^System\\.(.+), Version=2"
+    ]
+  },
+  "ProfileSettings": {
+    "OverwriteExistingContent": true,
+    "ContentOutputDirectory": "%outputdirectory%/Content"
+  }
+}

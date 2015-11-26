@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using Fusee.Engine.Common;
-using Fusee.Engine.Core;
-using Fusee.Engine.Core.Core;
 using Fusee.Math.Core;
 
 namespace Fusee.Engine.Core
@@ -108,17 +106,10 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Adds a torque to the rigidbody.
         /// </summary>
-        public float3 ApplyTorque
+        public void ApplyTorque(float3 torque)
         {
-            get
-            {
-                return _iRigidBodyImp.ApplyTorque;
-            }
-            set
-            {
-                var o = (RigidBody)_iRigidBodyImp.UserObject;
-                o._iRigidBodyImp.ApplyTorque = value;
-            }
+            var o = (RigidBody)_iRigidBodyImp.UserObject;
+            o._iRigidBodyImp.ApplyTorque(torque);
         }
 
         public void ApplyImpulse(float3 impulse, float3 relPos)
@@ -127,46 +118,25 @@ namespace Fusee.Engine.Core
             o._iRigidBodyImp.ApplyImpulse(impulse, relPos);
         }
 
-        public float3 ApplyTorqueImpulse
+        public void ApplyTorqueImpulse(float3 torqueImpulse)
         {
-            get
-            {
-                return _iRigidBodyImp.ApplyTorqueImpulse;
-            }
-            set
-            {
-                var o = (RigidBody)_iRigidBodyImp.UserObject;
-                o._iRigidBodyImp.ApplyTorqueImpulse = value;
-            }
+            var o = (RigidBody)_iRigidBodyImp.UserObject;
+            o._iRigidBodyImp.ApplyTorqueImpulse(torqueImpulse);
         }
 
-        public float3 ApplyCentralForce
+        public void ApplyCentralForce(float3 centralForce)
         {
-            get
-            {
-                return _iRigidBodyImp.ApplyCentralForce;
-            }
-            set
-            {
-                var o = (RigidBody)_iRigidBodyImp.UserObject;
-                o._iRigidBodyImp.ApplyCentralForce = value;
-            }
+            var o = (RigidBody)_iRigidBodyImp.UserObject;
+            o._iRigidBodyImp.ApplyCentralForce(centralForce);
         }
 
         /// <summary>
         /// Adds an impulse 
         /// </summary>
-        public float3 ApplyCentralImpulse
+        public void ApplyCentralImpulse(float3  centralImpulse)
         {
-            get
-            {
-                return _iRigidBodyImp.ApplyCentralImpulse;
-            }
-            set
-            {
-                var o = (RigidBody)_iRigidBodyImp.UserObject;
-                o._iRigidBodyImp.ApplyCentralImpulse = value;
-            }
+            var o = (RigidBody)_iRigidBodyImp.UserObject;
+            o._iRigidBodyImp.ApplyCentralImpulse(centralImpulse);
         }
 
         public float3 LinearVelocity
@@ -270,69 +240,69 @@ namespace Fusee.Engine.Core
                 var shape = _iRigidBodyImp.CollisionShape;
                 var shapeType = shape.GetType().ToString();
                /* var colShape = new CollisionShape();
-                colShape.ICollisionShapeImp = (ICollisionShapeImp)shape;
+                colShape._collisionShapeImp = (_collisionShapeImp)shape;
                 shape.UserObject = colShape;
                 return colShape;*/
                 //Debug.WriteLine("shapeType" + shapeType);
                 switch (shapeType)
                 {
                     //Primitives
-                    case "Fusee.Engine.BoxShapeImp":
+                    case "Fusee.Engine._boxShapeImp":
                         var box = new BoxShape();
-                        box.BoxShapeImp = (IBoxShapeImp)shape;
+                        box._boxShapeImp = (IBoxShapeImp)shape;
                         shape.UserObject = box;
                         return box;
-                    case "Fusee.Engine.SphereShapeImp":
+                    case "Fusee.Engine._sphereShapeImp":
                         var sphere = new SphereShape();
-                        sphere.SphereShapeImp = (ISphereShapeImp)shape;
+                        sphere._sphereShapeImp = (ISphereShapeImp)shape;
                         shape.UserObject = sphere;
                         return sphere;
-                    case "Fusee.Engine.CapsuleShapeImp":
+                    case "Fusee.Engine._capsuleShapeImp":
                         var capsule = new CapsuleShape();
-                        capsule.CapsuleShapeImp = (ICapsuleShapeImp)shape;
+                        capsule._capsuleShapeImp = (ICapsuleShapeImp)shape;
                         shape.UserObject = capsule;
                         return capsule;
-                    case "Fusee.Engine.CylinderShapeImp":
+                    case "Fusee.Engine._cylinderShapeImp":
                         var cylinder = new CylinderShape();
-                        cylinder.CylinderShapeImp = (ICylinderShapeImp)shape;
+                        cylinder._cylinderShapeImp = (ICylinderShapeImp)shape;
                         shape.UserObject = cylinder;
                         return cylinder;
-                    case "Fusee.Engine.ConeShapeImp":
+                    case "Fusee.Engine._coneShapeImp":
                         var cone = new ConeShape();
-                        cone.ConeShapeImp = (IConeShapeImp)shape;
+                        cone._coneShapeImp = (IConeShapeImp)shape;
                         shape.UserObject = cone;
                         return cone;
-                    case "Fusee.Engine.MultiSphereShapeImp":
+                    case "Fusee.Engine._multiSphereShapeImp":
                         var multiSphere = new MultiSphereShape();
-                        multiSphere.MultiSphereShapeImp = (IMultiSphereShapeImp)shape;
+                        multiSphere._multiSphereShapeImp = (IMultiSphereShapeImp)shape;
                         shape.UserObject = multiSphere;
                         return multiSphere;
                     //Meshes
-                    case "Fusee.Engine.ConvexHullShapeImp":
+                    case "Fusee.Engine._convexHullShapeImp":
                         var convHull = new ConvexHullShape();
-                        convHull.ConvexHullShapeImp = (IConvexHullShapeImp) shape;
+                        convHull._convexHullShapeImp = (IConvexHullShapeImp) shape;
                         shape.UserObject = convHull;
                         return convHull;
-                    case "Fusee.Engine.GImpactMeshShapeImp":
+                    case "Fusee.Engine._gImpactMeshShapeImp":
                         var gimp = new GImpactMeshShape();
-                        gimp.GImpactMeshShapeImp = (IGImpactMeshShapeImp)shape;
+                        gimp._gImpactMeshShapeImp = (IGImpactMeshShapeImp)shape;
                         shape.UserObject = gimp;
                         return gimp;
-                    case "Fusee.Engine.StaticPlaneShapeImp":
+                    case "Fusee.Engine._staticPlaneShapeImp":
                         var staticPlane = new StaticPlaneShape();
-                        staticPlane.StaticPlaneShapeImp = (IStaticPlaneShapeImp)shape;
+                        staticPlane._staticPlaneShapeImp = (IStaticPlaneShapeImp)shape;
                         shape.UserObject = staticPlane;
                         return staticPlane;
                     //Misc
-                    case "Fusee.Engine.CompoundShapeImp":
-                        //Debug.WriteLine("Fusee.Engine.CompoundShapeImp");
+                    case "Fusee.Engine._compoundShapeImp":
+                        //Debug.WriteLine("Fusee.Engine._compoundShapeImp");
                         var comp = new CompoundShape();
-                        comp.CompoundShapeImp = (ICompoundShapeImp)shape;
+                        comp._compoundShapeImp = (ICompoundShapeImp)shape;
                         shape.UserObject = comp;
                         return comp;
                     case "Fusee.Engine.EmptyShape":
                         var empty = new EmptyShape();
-                        empty.EmtyShapeImp = (IEmptyShapeImp)shape;
+                        empty._emtyShapeImp = (IEmptyShapeImp)shape;
                         shape.UserObject = empty;
                         return empty;
                     default:
@@ -349,45 +319,45 @@ namespace Fusee.Engine.Core
                     //Primitives
                     case "Fusee.Engine.BoxShape":
                         var box = (BoxShape)value;
-                        o._iRigidBodyImp.CollisionShape = box.BoxShapeImp;
+                        o._iRigidBodyImp.CollisionShape = box._boxShapeImp;
                         break;
                     case "Fusee.Engine.CapsuleShape":
                         var capsule = (CapsuleShape)value;
-                        o._iRigidBodyImp.CollisionShape = capsule.CapsuleShapeImp;
+                        o._iRigidBodyImp.CollisionShape = capsule._capsuleShapeImp;
                         break;
                     case "Fusee.Engine.ConeShape":
                         var cone = (ConeShape)value;
-                        o._iRigidBodyImp.CollisionShape = cone.ConeShapeImp;
+                        o._iRigidBodyImp.CollisionShape = cone._coneShapeImp;
                         break;
                     case "Fusee.Engine.CylinderShape":
                         var cylinder = (CylinderShape)value;
-                        o._iRigidBodyImp.CollisionShape = cylinder.CylinderShapeImp;
+                        o._iRigidBodyImp.CollisionShape = cylinder._cylinderShapeImp;
                         break;
                     case "Fusee.Engine.MultiSphereShape":
                         var multiSphere = (MultiSphereShape)value;
-                        o._iRigidBodyImp.CollisionShape = multiSphere.MultiSphereShapeImp;
+                        o._iRigidBodyImp.CollisionShape = multiSphere._multiSphereShapeImp;
                         break;
                     case "Fusee.Engine.SphereShape":
                         var sphere = (SphereShape)value;
-                        o._iRigidBodyImp.CollisionShape = sphere.SphereShapeImp;
+                        o._iRigidBodyImp.CollisionShape = sphere._sphereShapeImp;
                         break;
                     //Meshes
                     case "Fusee.Engine.ConvexHullShape":
                         var convHull = (ConvexHullShape)value;
-                        o._iRigidBodyImp.CollisionShape = convHull.ConvexHullShapeImp;
+                        o._iRigidBodyImp.CollisionShape = convHull._convexHullShapeImp;
                         break;
                     case "Fusee.Engine.StaticPlaneShape":
                         var staticPlane = (StaticPlaneShape)value;
-                        o._iRigidBodyImp.CollisionShape = staticPlane.StaticPlaneShapeImp;
+                        o._iRigidBodyImp.CollisionShape = staticPlane._staticPlaneShapeImp;
                         break;
                     //Misc
                     case "Fusee.Engine.CompoundShape":
                         var compShape = (CompoundShape)value;
-                        o._iRigidBodyImp.CollisionShape = compShape.CompoundShapeImp;
+                        o._iRigidBodyImp.CollisionShape = compShape._compoundShapeImp;
                         break;
                     case "Fusee.Engine.EmptyShape":
                         var empty = (EmptyShape)value;
-                        o._iRigidBodyImp.CollisionShape = empty.EmtyShapeImp;
+                        o._iRigidBodyImp.CollisionShape = empty._emtyShapeImp;
                         break;
                        
                     //Default
@@ -395,7 +365,7 @@ namespace Fusee.Engine.Core
                         //TODO: Exeption
                         var defaultShape = new EmptyShape();
                         Debug.WriteLine("default");
-                        //rbi = _dwi.AddRigidBody(mass, worldTransform, defaultShape.EmtyShapeImp, inertia);
+                        //rbi = _dwi.AddRigidBody(mass, worldTransform, defaultShape._emtyShapeImp, inertia);
                         break;
                 }
             }

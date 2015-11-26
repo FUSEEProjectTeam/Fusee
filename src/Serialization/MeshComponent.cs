@@ -3,6 +3,9 @@ using ProtoBuf;
 
 namespace Fusee.Serialization
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [ProtoContract]
     public class MeshComponent : SceneComponentContainer
     {
