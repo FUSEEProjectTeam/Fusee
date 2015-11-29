@@ -2,14 +2,15 @@
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
+    <RootNamespace>Fusee.Engine.Imp.Graphics.Web</RootNamespace>
+    <AssemblyName>Fusee.Engine.Imp.Graphics.Web</AssemblyName>
+    <FuseeBuildRoot Condition=" '$(FuseeBuildRoot)' == '' ">..\..\..\..\..</FuseeBuildRoot>
     <MinimumVisualStudioVersion>10.0</MinimumVisualStudioVersion>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{82A2D997-B7AC-41D9-A166-65FCFED2114D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Fusee.Engine.Imp.Graphics.Web</RootNamespace>
-    <AssemblyName>Fusee.Engine.Imp.Graphics.Web</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -20,37 +21,55 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\..\bin\Debug\</OutputPath>
-    <BaseIntermediateOutputPath>..\..\..\..\..\tmp\Obj\Fusee.Engine.Imp.Graphics.Web\$(Configuration)\</BaseIntermediateOutputPath>
+    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\</OutputPath>
+    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;PLATFORM_WEB</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\..\..\..\bin\Release\</OutputPath>
-    <BaseIntermediateOutputPath>..\..\..\..\..\tmp\Obj\Fusee.Engine.Imp.Graphics.Web\$(Configuration)\</BaseIntermediateOutputPath>
+    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\</OutputPath>
+    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;PLATFORM_WEB</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <FUSEE_External_JavaScript Include="Fusee.Engine.Imp.Graphics.Web.js" />
-    <FUSEE_External_JavaScript Include="opentype.js" />
-    <FUSEE_External_JavaScript Include="SystemExternals.js" />
+    <Compile Include="Font.cs" />
+    <Compile Include="InputImp.cs" />
+    <Compile Include="MeshImp.cs" />
+    <Compile Include="RenderCanvasImp.cs" />
+    <Compile Include="RenderContextImp.cs" />
+    <Compile Include="ShaderParam.cs" />
+    <Compile Include="ShaderProgramImp.cs" />
+    <Compile Include="Texture.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <FUSEE_External_JavaScript Include="Scripts\Fusee.Engine.Imp.Graphics.Web.js" />
+    <FUSEE_External_JavaScript Include="Scripts\opentype.js" />
+    <FUSEE_External_JavaScript Include="Scripts\SystemExternals.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Math\Core\Fusee.Math.Core.csproj">
+      <Project>{E95FA1C8-6491-4B4B-BBE1-EDA6B16B2C6A}</Project>
+      <Name>Fusee.Math.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Common\Fusee.Engine.Common.csproj">
+      <Project>{dfd770f6-4222-4255-aae0-dcacdc7b21eb}</Project>
+      <Name>Fusee.Engine.Common</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="JSIL.Meta">
+      <HintPath>..\..\..\..\..\ext\JSIL\Compiler\JSIL.Meta.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
-  <!-- Override "BuildDependsOn" keeps the standard .csproj build from creating an empty DLL. We need to do
-       this before importing FuseeBuildAction.targets because there we'll overwrite BuildDependsOn again with
-	   the javascript copying tasks -->
-  <PropertyGroup>
-    <BuildDependsOn />
-  </PropertyGroup>
-  <Import Project="..\..\..\..\FuseeBuildActions.target.xml" />
-  <!-- Override the standard build action -->
-  <Target Name="Build"  DependsOnTargets="$(BuildDependsOn)"/>
- 
+  <Import Project="$(FuseeBuildRoot)\src\FuseeBuildActions.target.xml" />
 </Project>

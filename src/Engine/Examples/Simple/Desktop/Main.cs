@@ -1,6 +1,6 @@
 ﻿using Fusee.Base.Core;
 
-namespace Examples.Simple
+namespace Fusee.Engine.Examples.Simple.Desktop
 {
     class SimpleApp
     {
@@ -9,7 +9,7 @@ namespace Examples.Simple
             // Inject Fusee.Engine.Base InjectMe dependencies
             IO.IOImp = new Fusee.Base.Imp.Desktop.IOImp();
 
-            var app = new Simple();
+            var app = new global::Examples.Simple.Simple();
 
             // Inject Fusee.Engine InjectMe dependencies (hard coded)
             app.CanvasImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasImp();

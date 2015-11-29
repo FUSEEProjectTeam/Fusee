@@ -75,6 +75,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Examples.Simpl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Base.Imp.Desktop", "Base\Imp\DesktopWeb\Fusee.Base.Imp.Desktop.csproj", "{4B5EC54F-E0FB-4AA8-85E7-EB84843D5C7C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Examples.Simple.Web", "Engine\Examples\Simple\Web\Fusee.Engine.Examples.Simple.Web.csproj", "{DB21584F-4EA6-486A-9BDB-77D372CF1D64}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Engine\Imp\Graphics\DesktopAndroid\Fusee.Engine.Imp.Graphics.DesktopAndroid.projitems*{253263c9-9c67-44a5-94d3-51c586bbdaec}*SharedItemsImports = 13
@@ -218,6 +220,12 @@ Global
 		{4B5EC54F-E0FB-4AA8-85E7-EB84843D5C7C}.Debug+Web|x86.Build.0 = Debug|Any CPU
 		{4B5EC54F-E0FB-4AA8-85E7-EB84843D5C7C}.Release|x86.ActiveCfg = Release|Any CPU
 		{4B5EC54F-E0FB-4AA8-85E7-EB84843D5C7C}.Release|x86.Build.0 = Release|Any CPU
+		{DB21584F-4EA6-486A-9BDB-77D372CF1D64}.Debug|x86.ActiveCfg = Debug|x86
+		{DB21584F-4EA6-486A-9BDB-77D372CF1D64}.Debug|x86.Build.0 = Debug|x86
+		{DB21584F-4EA6-486A-9BDB-77D372CF1D64}.Debug+Web|x86.ActiveCfg = Debug|x86
+		{DB21584F-4EA6-486A-9BDB-77D372CF1D64}.Debug+Web|x86.Build.0 = Debug|x86
+		{DB21584F-4EA6-486A-9BDB-77D372CF1D64}.Release|x86.ActiveCfg = Release|x86
+		{DB21584F-4EA6-486A-9BDB-77D372CF1D64}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -253,5 +261,6 @@ Global
 		{76BEC6C3-C4F0-4208-BBC5-4F318D8940A6} = {86C1CD6F-F5D8-4183-9032-3E323C33672C}
 		{A8C041C0-3A74-4976-9060-70E2A865D521} = {76BEC6C3-C4F0-4208-BBC5-4F318D8940A6}
 		{4B5EC54F-E0FB-4AA8-85E7-EB84843D5C7C} = {A134FDBF-E063-415F-94F3-BF51C36AAB57}
+		{DB21584F-4EA6-486A-9BDB-77D372CF1D64} = {76BEC6C3-C4F0-4208-BBC5-4F318D8940A6}
 	EndGlobalSection
 EndGlobal
