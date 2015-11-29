@@ -62,11 +62,29 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <FUSEE_Native_Library Include="$(FuseeBuildRoot)\ext\SFML\Windows\csfml-audio-2.dll">
+      <Link>Natives\csfml-audio-2.dll</Link>
+    </FUSEE_Native_Library>
+    <FUSEE_Native_Library Include="$(FuseeBuildRoot)\ext\SFML\Windows\csfml-system-2.dll">
+      <Link>Natives\csfml-system-2.dll</Link>
+    </FUSEE_Native_Library>
+    <FUSEE_Native_Library Include="$(FuseeBuildRoot)\ext\SFML\Windows\csfml-window-2.dll">
+      <Link>Natives\csfml-window-2.dll</Link>
+    </FUSEE_Native_Library>
+    <FUSEE_Native_Library Include="$(FuseeBuildRoot)\ext\SFML\Windows\libsndfile-1.dll">
+      <Link>Natives\libsndfile-1.dll</Link>
+    </FUSEE_Native_Library>
+    <FUSEE_Native_Library Include="$(FuseeBuildRoot)\ext\SFML\Windows\openal32.dll">
+      <Link>Natives\openal32.dll</Link>
+    </FUSEE_Native_Library>
+    <FUSEE_Native_Library Include="$(FuseeBuildRoot)\ext\SFML\Windows\sfml-audio-2.dll">
+      <Link>Natives\sfml-audio-2.dll</Link>
+    </FUSEE_Native_Library>
+    <FUSEE_Native_Library Include="$(FuseeBuildRoot)\ext\SFML\Windows\sfml-system-2.dll">
+      <Link>Natives\sfml-system-2.dll</Link>
+    </FUSEE_Native_Library>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="Clean">
-    <Exec Condition=" '$(OS)' == 'Windows_NT' And Exists('$(OutputPath)') " Command="del /q &quot;$(OutputPath)Fusee.Engine.Imp.SFMLAudio.*&quot;" />
-    <Exec Condition=" '$(OS)' != 'Windows_NT' And Exists('$(OutputPath)') " Command="rm '$(OutputPath)'Fusee.Engine.Imp.SFMLAudio.*" />
-    <Exec Condition=" '$(OS)' == 'Windows_NT' And Exists('$(OutputPath)sfmlNET.Audio.dll') " Command="del /q &quot;$(OutputPath)sfmlNET.Audio.dll&quot;" />
-    <Exec Condition=" '$(OS)' != 'Windows_NT' And Exists('$(OutputPath)sfmlNET.Audio.dll') " Command="rm '$(OutputPath)'sfmlNET.Audio.dll" />
-  </Target>
+  <Import Project="$(FuseeBuildRoot)\src\FuseeBuildActions.target.xml" />
 </Project>

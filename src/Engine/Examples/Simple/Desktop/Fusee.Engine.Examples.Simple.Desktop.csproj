@@ -18,7 +18,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\Simple</OutputPath>
+    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\Simple\Desktop</OutputPath>
     <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
     <DefineConstants>TRACE;DEBUG;PLATFORM_DESKTOP</DefineConstants>
@@ -30,14 +30,14 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\Simple</OutputPath>
+    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\Simple\Desktop</OutputPath>
     <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
     <DefineConstants>TRACE;PLATFORM_DESKTOP</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
-  </PropertyGroup>  
+  </PropertyGroup>
   <PropertyGroup>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
@@ -88,6 +88,10 @@
       <Project>{f548d04a-7f67-4f5c-971c-794ab05b5fc3}</Project>
       <Name>Fusee.Engine.Imp.Input.Desktop</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Imp\Network\Desktop\Fusee.Engine.Imp.Network.Desktop.csproj">
+      <Project>{8ce7ce74-06b0-46b8-a48a-21f821287449}</Project>
+      <Name>Fusee.Engine.Imp.Network.Desktop</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Imp\Sound\Desktop\Fusee.Engine.Imp.Sound.Desktop.csproj">
       <Project>{0a06b3ea-5934-4373-854a-b4d6e7e1fe16}</Project>
       <Name>Fusee.Engine.Imp.Sound.Desktop</Name>
@@ -105,6 +109,7 @@
     <Reference Include="System" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)/Microsoft.CSharp.targets" />
+  <Import Project="$(FuseeBuildRoot)\src\FuseeBuildActions.target.xml" />
   <PropertyGroup>
     <PostBuildEvent>
     </PostBuildEvent>

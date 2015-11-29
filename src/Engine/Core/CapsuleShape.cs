@@ -3,10 +3,19 @@ using Fusee.Math.Core;
 
 namespace Fusee.Engine.Core
 {
+    /// <summary>
+    /// A capsule shaped collision object.
+    /// </summary>
     public class CapsuleShape : CollisionShape
     {
         internal ICapsuleShapeImp _capsuleShapeImp;
 
+        /// <summary>
+        /// Retrieves or sets the margin.
+        /// </summary>
+        /// <value>
+        /// The size of the collision shape's margin.
+        /// </value>
         public override float Margin
         {
             get
@@ -21,6 +30,12 @@ namespace Fusee.Engine.Core
             }
         }
 
+        /// <summary>
+        /// Retrieves or sets the local scaling.
+        /// </summary>
+        /// <value>
+        /// The local scaling.
+        /// </value>
         public override float3 LocalScaling
         {
             get
@@ -35,6 +50,12 @@ namespace Fusee.Engine.Core
             }
         }
 
+        /// <summary>
+        /// Gets the half of this capsule's height.
+        /// </summary>
+        /// <value>
+        /// Half of the height.
+        /// </value>
         public float HalfHeight
         {
             get
@@ -44,6 +65,12 @@ namespace Fusee.Engine.Core
             }
         }
 
+        /// <summary>
+        /// Gets this capsules radius.
+        /// </summary>
+        /// <value>
+        /// The radius.
+        /// </value>
         public float Radius
         {
             get
@@ -53,6 +80,12 @@ namespace Fusee.Engine.Core
             }
         }
 
+        /// <summary>
+        /// Gets the up axis of the capsule.
+        /// </summary>
+        /// <value>
+        /// The up axis.
+        /// </value>
         public float UpAxis
         {
             get

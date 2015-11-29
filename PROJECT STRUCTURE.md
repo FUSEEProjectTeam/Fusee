@@ -302,7 +302,9 @@ favored over project references. The benefits of solution references are
  - No debug/release mismatches with common output directories.
  - Automatic project dependencies/build order management.
 
-All FUSEE projects build their assembly output to a common place below the "_[FuseeRoot]_/bin" directory. Make sure that FUSEE projects referencing other FUSEE projects have the `Copy Local` flag set to **false** (in the Properties window for that reference). Otherwise multithreaded rebuilding the solution will be messed up: Projects clean up their dependencies while other projects build at the same time and need a referenced assembly that was just deleted by the cleaning thread.
+All FUSEE DLL projects build their assembly output to a common place below the "_[FuseeRoot]_/bin" directory. Make sure that FUSEE DLL projects referencing other FUSEE projects have the `Copy Local` flag set to **false** (in the Properties window for that reference). Otherwise multithreaded rebuilding the solution will be messed up: Projects clean up their dependencies while other projects build at the same time and need a referenced assembly that was just deleted by the cleaning thread.
+
+**This does not hold for FUSEE EXE projects!** Make sure that projects creating .exe files do indeed have the `Copy Local` flag set to **true**. This way, all necessary content is copied to the output folder of the executable.   
 
 Make sure to ***not*** have _Log-Libs_ directly reference _Imp-Libs_. Obviously, _Log-Libs_ use functionality implemented in _Imp-Libs_ but these dependcies are injected at run-time (look for the `InjectMe` attribute in FUSEE code). Make sure that FUSEE solutions explicitely define injected dependencies since Visual Studion cannot keep track of dependencies resulting from run-time injection.
 

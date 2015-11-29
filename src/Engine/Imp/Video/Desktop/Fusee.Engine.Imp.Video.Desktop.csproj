@@ -68,5 +68,29 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <FUSEE_Native_Library Include="$(FuseeBuildRoot)\ext\AForge\avdevice-53.dll">
+      <Link>Natives\avdevice-53.dll</Link>
+    </FUSEE_Native_Library>
+    <FUSEE_Native_Library Include="$(FuseeBuildRoot)\ext\AForge\avfilter-2.dll">
+      <Link>Natives\avfilter-2.dll</Link>
+    </FUSEE_Native_Library>
+    <FUSEE_Native_Library Include="$(FuseeBuildRoot)\ext\AForge\avformat-53.dll">
+      <Link>Natives\avformat-53.dll</Link>
+    </FUSEE_Native_Library>
+    <FUSEE_Native_Library Include="$(FuseeBuildRoot)\ext\AForge\avutil-51.dll">
+      <Link>Natives\avutil-51.dll</Link>
+    </FUSEE_Native_Library>
+    <FUSEE_Native_Library Include="$(FuseeBuildRoot)\ext\AForge\postproc-52.dll">
+      <Link>Natives\postproc-52.dll</Link>
+    </FUSEE_Native_Library>
+    <FUSEE_Native_Library Include="$(FuseeBuildRoot)\ext\AForge\swresample-0.dll">
+      <Link>Natives\swresample-0.dll</Link>
+    </FUSEE_Native_Library>
+    <FUSEE_Native_Library Include="$(FuseeBuildRoot)\ext\AForge\swscale-2.dll  ">
+      <Link>Natives\swscale-2.dll</Link>
+    </FUSEE_Native_Library>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(FuseeBuildRoot)\src\FuseeBuildActions.target.xml" />
 </Project>

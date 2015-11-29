@@ -83,7 +83,7 @@
     <FUSEE_External_JavaScript Include="Fusee.Xirkit.Ext.js" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
-  <Import Project="..\FuseeBuildActions.target.xml" />
+  <Import Project="$(FuseeBuildRoot)\src\FuseeBuildActions.target.xml" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <ItemGroup>

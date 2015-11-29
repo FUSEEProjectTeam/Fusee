@@ -3,11 +3,23 @@ using Fusee.Math.Core;
 
 namespace Fusee.Engine.Core
 {
+    /// <summary>
+    /// Base class for various collision shape types.
+    /// </summary>
     public class CollisionShape
     {
+        /// <summary>
+        /// The implementation object.
+        /// </summary>
         internal ICollisionShapeImp _collisionShapeImp;
-        
 
+
+        /// <summary>
+        /// Retrieves or sets the margin.
+        /// </summary>
+        /// <value>
+        /// The size of the collision shape's margin.
+        /// </value>
         public virtual float Margin
         {
             get { return _collisionShapeImp.Margin; }
@@ -18,6 +30,12 @@ namespace Fusee.Engine.Core
             }
         }
 
+        /// <summary>
+        /// Retrieves or sets the local scaling.
+        /// </summary>
+        /// <value>
+        /// The local scaling.
+        /// </value>
         public virtual float3 LocalScaling
         {
             get { return _collisionShapeImp.LocalScaling; }

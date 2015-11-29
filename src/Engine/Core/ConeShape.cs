@@ -3,10 +3,19 @@ using Fusee.Math.Core;
 
 namespace Fusee.Engine.Core
 {
+    /// <summary>
+    ///  Defines a cone-shaped collision object
+    /// </summary>
     public class ConeShape : CollisionShape
     {
         internal IConeShapeImp _coneShapeImp;
 
+        /// <summary>
+        /// Retrieves or sets the margin.
+        /// </summary>
+        /// <value>
+        /// The size of the collision shape's margin.
+        /// </value>
         public override float Margin
         {
             get
@@ -21,6 +30,12 @@ namespace Fusee.Engine.Core
             }
         }
 
+        /// <summary>
+        /// Retrieves or sets the local scaling.
+        /// </summary>
+        /// <value>
+        /// The local scaling.
+        /// </value>
         public override float3 LocalScaling
         {
             get
@@ -35,6 +50,12 @@ namespace Fusee.Engine.Core
             }
         }
 
+        /// <summary>
+        /// Gets or sets the index of the cone's up axis
+        /// </summary>
+        /// <value>
+        /// The index of cone's up axis.
+        /// </value>
         public int ConeUpIndex
         {
             get
@@ -49,6 +70,12 @@ namespace Fusee.Engine.Core
             }
         }
 
+        /// <summary>
+        /// Gets the cone's height along the up axis.
+        /// </summary>
+        /// <value>
+        /// The height.
+        /// </value>
         public float Height
         {
             get
@@ -58,6 +85,12 @@ namespace Fusee.Engine.Core
             }
         }
 
+        /// <summary>
+        /// Gets the cone's radius.
+        /// </summary>
+        /// <value>
+        /// The radius.
+        /// </value>
         public float Radius
         {
             get

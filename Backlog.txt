@@ -6,7 +6,7 @@ DONE:	Xirkit -> from Engine to ..
 DONE:	Xirkit -> Portable
 DONE:	KeyframeAnimation -> Portable
 DONE:	Remove Scenemanagement Code
-		Invent a convention for how to handle 
+DONE:   Invent a convention for how to handle 
 				namespaces / class names
 				file names
 				folders
@@ -15,16 +15,20 @@ DONE:	Remove Scenemanagement Code
 				handwritten js projects in terms of script names and source directories
 				additional dll versions for different platforms (like shared implementation dlls - probably RenderContextImp for OpenTK/Desktop vs OpenTK/Android)
 			that makes sense and holds for eternity.
-		Create "Core" or "Common" on Fusee level (not below Engine) containing common base functionality (like Diagnostic.Log...)
-		Engine.Core -> Portable
-		SimpleScene -> Portable
+DONE:	Create "Core" or "Common" on Fusee level (not below Engine) containing common base functionality (like Diagnostic.Log...)
+DONE:	Engine.Core -> Portable
+DONE:	SimpleScene -> Portable
+DONE:	Transform Examples to portable DLLs
+		Remove all warnings
+		Add Simple, fix asset handling
+		Fix Rebuild All
+WORK:	Create standard .Net and standard .js host apps (containing main, perhaps providing libraries)
+		Use JSIL to translate a csproj at a time (with each .csproj triggering its own x-compilation as a post build event)
+		
 		Jometri integration (portable)
 		Try JSIL's PackedArray (= js typed array or arraybuffer) implementation on Mesh (and probably also MeshContainer/Component)
 		Rewrite asset system to NOT use JSIL's XNA-mimicking asset system. Instead directly use XHTMLRequest (or some JSIL in-between lighter than XNA-assets)
 		Use arraybuffer loading on XHTMLRequests loading mesh data (if possible - problem is that only parts of .fus should be read as arraybuffers, other parts rather not)
-		Create standard .Net and standard .js host apps (containing main, perhaps providing libraries)
-		Transform Examples to portable DLLs
-		Use JSIL to translate a csproj at a time (with each .csproj triggering its own x-compilation as a post build event)
 		Minimize mscorlib with current JSIL-on-board functionality (instead of providing our own JSIL)
 		Completely remove FUSEE/JSIL (or replace it by a non-altered version of standard JSIL)
 		Refactor fuGen (and others) such that it contains no knowledge about the project structure (e.g. does not contain any reference to xirkit, simplescene etc. in its code)

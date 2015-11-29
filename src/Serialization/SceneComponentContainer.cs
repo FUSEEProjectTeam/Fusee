@@ -20,6 +20,9 @@ namespace Fusee.Serialization
     // TODO: Find out if unsetting this NO_RUNTIME option will result in a Protobuf-net.dll capable of being x-compiled with JSIL.
 
 
+    /// <summary>
+    /// Base class for components. Each node (<see cref="SceneNodeContainer"/>) contains a list of components of various types.
+    /// </summary>
     [ProtoContract]
 
     [ProtoInclude(100, typeof(TransformComponent))]
@@ -31,6 +34,9 @@ namespace Fusee.Serialization
     [ProtoInclude(106, typeof(BoneComponent))]
     public class SceneComponentContainer
     {
+        /// <summary>
+        /// The name of this component.
+        /// </summary>
         [ProtoMember(1)]
         public string Name;
     }

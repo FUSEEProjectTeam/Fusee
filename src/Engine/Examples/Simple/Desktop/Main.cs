@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Reflection;
-using Fusee.Base.Core;
-using Fusee.Engine;
-using Fusee.Math;
+﻿using Fusee.Base.Core;
 
 namespace Examples.Simple
 {
@@ -22,8 +16,8 @@ namespace Examples.Simple
             app.ContextImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderContextImp(app.CanvasImplementor);
             app.InputImplementor = new Fusee.Engine.Imp.Graphics.Desktop.InputImp(app.CanvasImplementor);
             app.AudioImplementor = new Fusee.Engine.Imp.Sound.Desktop.AudioImp();
+            app.NetworkImplementor = new Fusee.Engine.Imp.Network.Desktop.NetworkImp();
             // app.InputDriverImplementor = new Fusee.Engine.Imp.Input.Desktop.InputDriverImp();
-            // app.NetworkImplementor = ImpFactory.CreateINetworkImp();
             // app.VideoManagerImplementor = ImpFactory.CreateIVideoManagerImp();
 
             // Start the app
