@@ -49,12 +49,14 @@ namespace Fusee.Engine.Imp.Graphics.Web
         }
 
         [JSExternal]
+        [JSChangeName("SetShaderParam1f")]
         public void SetShaderParam(IShaderParam param, float val)
         {
             throw new System.NotImplementedException();
         }
 
         [JSExternal]
+        [JSChangeName("SetShaderParamI")]
         public void SetShaderParam(IShaderParam param, int val)
         {
             throw new System.NotImplementedException();
@@ -236,36 +238,42 @@ namespace Fusee.Engine.Imp.Graphics.Web
         }
 
         [JSExternal]
+        [JSChangeName("SetShaderParamMtx4fArray")]
         public void SetShaderParam(IShaderParam param, float4x4[] val)
         {
             throw new System.NotImplementedException();
         }
 
         [JSExternal]
+        [JSChangeName("SetShaderParamfloat4x4")]
         public void SetShaderParam(IShaderParam param, float4x4 val)
         {
             throw new System.NotImplementedException();
         }
 
         [JSExternal]
+        [JSChangeName("SetShaderParam4fArray")]
         public void SetShaderParam(IShaderParam param, float4[] val)
         {
             throw new System.NotImplementedException();
         }
 
         [JSExternal]
+        [JSChangeName("SetShaderParam4f")]
         public void SetShaderParam(IShaderParam param, float4 val)
         {
             throw new System.NotImplementedException();
         }
 
         [JSExternal]
+        [JSChangeName("SetShaderParam3f")]
         public void SetShaderParam(IShaderParam param, float3 val)
         {
             throw new System.NotImplementedException();
         }
 
         [JSExternal]
+        [JSChangeName("SetShaderParam2f")]
         public void SetShaderParam(IShaderParam param, float2 val)
         {
             throw new System.NotImplementedException();

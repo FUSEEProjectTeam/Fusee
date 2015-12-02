@@ -84,22 +84,6 @@
       <Project>{f7ad2bb5-d2b0-4697-bddb-4cc26152a6b6}</Project>
       <Name>Fusee.Engine.Imp.Graphics.Desktop</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Imp\Input\Desktop\Fusee.Engine.Imp.Input.Desktop.csproj">
-      <Project>{f548d04a-7f67-4f5c-971c-794ab05b5fc3}</Project>
-      <Name>Fusee.Engine.Imp.Input.Desktop</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Imp\Network\Desktop\Fusee.Engine.Imp.Network.Desktop.csproj">
-      <Project>{8ce7ce74-06b0-46b8-a48a-21f821287449}</Project>
-      <Name>Fusee.Engine.Imp.Network.Desktop</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Imp\Sound\Desktop\Fusee.Engine.Imp.Sound.Desktop.csproj">
-      <Project>{0a06b3ea-5934-4373-854a-b4d6e7e1fe16}</Project>
-      <Name>Fusee.Engine.Imp.Sound.Desktop</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Imp\Video\Desktop\Fusee.Engine.Imp.Video.Desktop.csproj">
-      <Project>{86ad9c76-6743-434c-a48d-be8da9c62779}</Project>
-      <Name>Fusee.Engine.Imp.Video.Desktop</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Core\Fusee.Engine.Examples.Simple.Core.csproj">
       <Project>{c4157bcb-d3a0-45c6-a84b-735fbd8c7aa8}</Project>
       <Name>Fusee.Engine.Examples.Simple.Core</Name>

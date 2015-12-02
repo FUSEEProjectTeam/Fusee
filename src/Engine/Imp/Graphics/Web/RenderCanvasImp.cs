@@ -10,6 +10,12 @@ namespace Fusee.Engine.Imp.Graphics.Web
     public class RenderCanvasImp : IRenderCanvasImp
     {
         [JSExternal]
+        public RenderCanvasImp()
+        {
+            throw new NotImplementedException();
+        }
+
+        [JSExternal]
         public int Width { get; set; }
         [JSExternal]
         public int Height { get; set; }

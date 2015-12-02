@@ -251,10 +251,6 @@ var $jsilloaderstate = {
 
   environment.loadScript(libraryRoot + "Polyfills.js");
 
-  // fusee custom
-  environment.loadScript(libraryRoot + "soundjs.min.js");
-  environment.loadScript(libraryRoot + "opentype.js");
-
   environment.loadScript(libraryRoot + "mersenne.js");
 
   if (config.typedObjects || false) {

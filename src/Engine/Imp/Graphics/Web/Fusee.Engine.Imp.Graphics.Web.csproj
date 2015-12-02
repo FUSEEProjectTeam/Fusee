@@ -49,7 +49,7 @@
     <Compile Include="Texture.cs" />
   </ItemGroup>
   <ItemGroup>
-    <FUSEE_External_JavaScript Include="Scripts\Fusee.Engine.Imp.Graphics.Web.js" />
+    <FUSEE_External_JavaScript Include="Scripts\Fusee.Engine.Imp.Graphics.Web.Ext.js" />
     <FUSEE_External_JavaScript Include="Scripts\opentype.js" />
     <FUSEE_External_JavaScript Include="Scripts\SystemExternals.js" />
   </ItemGroup>

@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using JSIL.Meta;
 
@@ -18,7 +20,18 @@ namespace Fusee.Engine.Core
         private INetworkImp _networkImp;
         internal INetworkImp NetworkImp
         {
-            set { _networkImp = value; }
+            set
+            {
+                if (value == null)
+                {
+                    Diagnostics.Log("WARNING: No Network implementation set. To enable Network functionality inject an appropriate implementation of INetworkImp in your platform specific application main module.");
+                    _networkImp = new DummyNetworkImp();
+                }
+                else
+                {
+                    _networkImp = value;
+                }
+            }
         }
 
         /// <summary>
@@ -230,11 +243,18 @@ namespace Fusee.Engine.Core
             get { return _instance ?? (_instance = new Network()); }
         }
 
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources.
+        /// </summary>
         internal void Dispose()
         {
             _instance = null;
         }
 
+        /// <summary>
+        /// Firsts the message.
+        /// </summary>
+        /// <returns></returns>
         [JSExternal]
         private INetworkMsg FirstMessage()
         {
@@ -242,5 +262,107 @@ namespace Fusee.Engine.Core
         }
 
         #endregion
+    }
+
+    /// <summary>
+    /// Dummy implementation without functinoality
+    /// </summary>
+    internal class DummyNetworkImp : INetworkImp
+    {
+        /// <summary>
+        /// Gets or sets the configuration.
+        /// </summary>
+        /// <value>
+        /// The configuration.
+        /// </value>
+        public NetConfigValues Config { get; set; }
+        /// <summary>
+        /// Gets or sets the status.
+        /// </summary>
+        /// <value>
+        /// The status.
+        /// </value>
+        public NetStatusValues Status { get; set; }
+        public List<INetworkConnection> Connections { get; }
+        /// <summary>
+        /// Gets the local ip.
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="System.NotImplementedException"></exception>
+        public string GetLocalIp()
+        {
+            return "";
+        }
+
+        /// <summary>
+        /// Gets the incoming MSG.
+        /// </summary>
+        /// <value>
+        /// The incoming MSG.
+        /// </value>
+        public List<INetworkMsg> IncomingMsg { get; }
+        /// <summary>
+        /// Starts the peer.
+        /// </summary>
+        /// <param name="port">The port.</param>
+        /// <exception cref="System.NotImplementedException"></exception>
+        public void StartPeer(int port)
+        {
+        }
+
+        /// <summary>
+        /// Occurs when [connection update].
+        /// </summary>
+        public event ConnectionUpdateEvent ConnectionUpdate;
+        public bool OpenConnection(SysType type, string host, int port)
+        {
+            return false;
+        }
+
+        /// <summary>
+        /// Closes the connection.
+        /// </summary>
+        /// <exception cref="System.NotImplementedException"></exception>
+        public void CloseConnection()
+        {
+        }
+
+        /// <summary>
+        /// Sends the message.
+        /// </summary>
+        /// <param name="msg">The MSG.</param>
+        /// <param name="msgDelivery">The MSG delivery.</param>
+        /// <param name="msgChannel">The MSG channel.</param>
+        /// <returns></returns>
+        /// <exception cref="System.NotImplementedException"></exception>
+        public bool SendMessage(byte[] msg, MessageDelivery msgDelivery, int msgChannel)
+        {
+            return false;
+        }
+
+        /// <summary>
+        /// Sends the discovery message.
+        /// </summary>
+        /// <param name="port">The port.</param>
+        /// <exception cref="System.NotImplementedException"></exception>
+        public void SendDiscoveryMessage(int port)
+        {
+        }
+
+        /// <summary>
+        /// Called when [update frame].
+        /// </summary>
+        /// <exception cref="System.NotImplementedException"></exception>
+        public void OnUpdateFrame()
+        {
+        }
+
+        /// <summary>
+        /// Closes the devices.
+        /// </summary>
+        /// <exception cref="System.NotImplementedException"></exception>
+        public void CloseDevices()
+        {
+        }
     }
 }

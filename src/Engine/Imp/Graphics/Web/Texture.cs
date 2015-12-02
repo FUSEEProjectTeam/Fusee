@@ -8,5 +8,10 @@ namespace Fusee.Engine.Imp.Graphics.Web
 {
     class Texture : ITexture
     {
+        [JSExternal]
+        public Texture()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

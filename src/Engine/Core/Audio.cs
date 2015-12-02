@@ -1,6 +1,7 @@
 ﻿// Fusee uses the OpenAL library. See http://www.openal.org for details.
 // OpenAL is used under the terms of the LGPL, version x.
 
+using Fusee.Base.Core;
 using Fusee.Engine.Common;
 
 namespace Fusee.Engine.Core
@@ -31,8 +32,16 @@ namespace Fusee.Engine.Core
         {
             set
             {
-                _audioImp = value;
-                _audioImp.OpenDevice();
+                if (value == null)
+                {
+                    Diagnostics.Log("WARNING: No Audio implementation set. To enable Audio functionality inject an appropriate implementation of IAudioImp in your platform specific application main module.");
+                    _audioImp = new DummyAudioImp();
+                }
+                else
+                {
+                    _audioImp = value;
+                    _audioImp.OpenDevice();
+                }
             }
         }
 
@@ -108,5 +117,124 @@ namespace Fusee.Engine.Core
         }
 
         #endregion
+    }
+
+    /// <summary>
+    /// Dummy implementation with no functionality
+    /// </summary>
+    internal class DummyAudioImp : IAudioImp
+    {
+        /// <summary>
+        /// Opens the device.
+        /// </summary>
+        public void OpenDevice()
+        {
+        }
+
+        /// <summary>
+        /// Closes the device.
+        /// </summary>
+        public void CloseDevice()
+        {
+        }
+
+        /// <summary>
+        /// Loads the file.
+        /// </summary>
+        /// <param name="fileName">Name of the file.</param>
+        /// <param name="streaming">if set to <c>true</c> [streaming].</param>
+        /// <returns></returns>
+        public IAudioStream LoadFile(string fileName, bool streaming)
+        {
+            return new DummyAudioStream();
+        }
+
+        /// <summary>
+        /// Stops this instance.
+        /// </summary>
+        public void Stop()
+        {
+        }
+
+        /// <summary>
+        /// Sets the volume.
+        /// </summary>
+        /// <param name="volume">The volume.</param>
+        public void SetVolume(float volume)
+        {
+        }
+
+        /// <summary>
+        /// Gets the volume.
+        /// </summary>
+        /// <returns></returns>
+        public float GetVolume()
+        {
+            return 0;
+        }
+
+        /// <summary>
+        /// Sets the panning.
+        /// </summary>
+        /// <param name="val">The value.</param>
+        public void SetPanning(float val)
+        {
+        }
+    }
+
+    /// <summary>
+    /// Dummy audio stream implementation with no functionality.
+    /// </summary>
+    internal class DummyAudioStream : IAudioStream
+    {
+        /// <summary>
+        /// Gets or sets the volume.
+        /// </summary>
+        /// <value>
+        /// The volume.
+        /// </value>
+        public float Volume { get; set; }
+        /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="DummyAudioStream"/> is loop.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if loop; otherwise, <c>false</c>.
+        /// </value>
+        public bool Loop { get; set; }
+        /// <summary>
+        /// Gets or sets the panning.
+        /// </summary>
+        /// <value>
+        /// The panning.
+        /// </value>
+        public float Panning { get; set; }
+        /// <summary>
+        /// Plays this stream.
+        /// </summary>
+        public void Play()
+        {
+        }
+
+        /// <summary>
+        /// Plays this stream as a loop.
+        /// </summary>
+        /// <param name="loop">if set to <c>true</c> [loop].</param>
+        public void Play(bool loop)
+        {
+        }
+
+        /// <summary>
+        /// Pauses this instance.
+        /// </summary>
+        public void Pause()
+        {
+        }
+
+        /// <summary>
+        /// Stops this instance.
+        /// </summary>
+        public void Stop()
+        {
+        }
     }
 }

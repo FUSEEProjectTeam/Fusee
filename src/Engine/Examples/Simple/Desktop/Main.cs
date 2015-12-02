@@ -2,7 +2,7 @@
 
 namespace Fusee.Engine.Examples.Simple.Desktop
 {
-    class SimpleApp
+    class Simple
     {
         public static void Main()
         {
@@ -15,8 +15,8 @@ namespace Fusee.Engine.Examples.Simple.Desktop
             app.CanvasImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasImp();
             app.ContextImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderContextImp(app.CanvasImplementor);
             app.InputImplementor = new Fusee.Engine.Imp.Graphics.Desktop.InputImp(app.CanvasImplementor);
-            app.AudioImplementor = new Fusee.Engine.Imp.Sound.Desktop.AudioImp();
-            app.NetworkImplementor = new Fusee.Engine.Imp.Network.Desktop.NetworkImp();
+            // app.AudioImplementor = new Fusee.Engine.Imp.Sound.Desktop.AudioImp();
+            // app.NetworkImplementor = new Fusee.Engine.Imp.Network.Desktop.NetworkImp();
             // app.InputDriverImplementor = new Fusee.Engine.Imp.Input.Desktop.InputDriverImp();
             // app.VideoManagerImplementor = ImpFactory.CreateIVideoManagerImp();
 

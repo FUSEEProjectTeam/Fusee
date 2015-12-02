@@ -2,7 +2,7 @@
 
 namespace Fusee.Engine.Examples.Simple.Web
 {
-    class SimpleApp
+    class Simple
     {
         public static void Main()
         {
@@ -16,8 +16,8 @@ namespace Fusee.Engine.Examples.Simple.Web
             app.CanvasImplementor = new Fusee.Engine.Imp.Graphics.Web.RenderCanvasImp();
             app.ContextImplementor = new Fusee.Engine.Imp.Graphics.Web.RenderContextImp(app.CanvasImplementor);
             app.InputImplementor = new Fusee.Engine.Imp.Graphics.Web.InputImp(app.CanvasImplementor);
-            app.AudioImplementor = new Fusee.Engine.Imp.Sound.Web.AudioImp();
-            app.NetworkImplementor = new Fusee.Engine.Imp.Network.Web.NetworkImp();
+            // app.AudioImplementor = new Fusee.Engine.Imp.Sound.Web.AudioImp();
+            // app.NetworkImplementor = new Fusee.Engine.Imp.Network.Web.NetworkImp();
             // app.InputDriverImplementor = new Fusee.Engine.Imp.Input.Web.InputDriverImp();
             // app.VideoManagerImplementor = ImpFactory.CreateIVideoManagerImp();
 

@@ -9,6 +9,12 @@ namespace Fusee.Engine.Imp.Sound.Web
     class AudioStream : IAudioStream
     {
         [JSExternal]
+        public AudioStream(string file)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        [JSExternal]
         public float Volume { get; set; }
         [JSExternal]
         public bool Loop { get; set; }

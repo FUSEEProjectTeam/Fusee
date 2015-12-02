@@ -22,10 +22,13 @@ namespace Fusee.Base.Core
         public static IIOImp IOImp { set; get; }
 
         /// <summary>
-        /// Opens a file and returns its contents as a <see cref="Stream"/>.
+        /// Opens a file and returns its contents as a <see cref="Stream" />.
         /// </summary>
         /// <param name="path">The path to the file to open.</param>
-        /// <returns>A stream</returns>
+        /// <param name="mode">The mode.</param>
+        /// <returns>
+        /// A stream
+        /// </returns>
         /// <exception>
         /// Exceptions thrown by this method depend on the underlying 
         /// platform dependent implementation.

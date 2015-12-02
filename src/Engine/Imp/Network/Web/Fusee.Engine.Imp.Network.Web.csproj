@@ -44,7 +44,7 @@
     <Compile Include="NetworkMessage.cs" />
   </ItemGroup>
   <ItemGroup>
-    <FUSEE_External_JavaScript Include="Scripts\Fusee.Engine.Imp.Network.Web.js" />
+    <FUSEE_External_JavaScript Include="Scripts\Fusee.Engine.Imp.Network.Web.Ext.js" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\Fusee.Engine.Common.csproj">

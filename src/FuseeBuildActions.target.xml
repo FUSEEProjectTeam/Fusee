@@ -1,177 +1,309 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <ItemGroup>
-    <!-- List of custom categories. Items here occur in the "Build Action" dropdown of the property page of all files listed in a project -->
-	
-    <!--  FUSEE_External_JavaScript - marks JavaScript files that need to be copied to the output directory  -->
-	<AvailableItemName Include="FUSEE_External_JavaScript">
-       <InProject>false</InProject>
-    </AvailableItemName>
+	<ItemGroup>
+		<!-- List of custom categories. Items here occur in the "Build Action" dropdown of the property page of all files listed in a project -->
 
-	<!--  FUSEE_Native_Library - marks unmanaged DLL files typically included from [FUSEE_ROOT]\ext. 
-	   Add those files in .csproj directly - never from withtin Visual Studio as it will copy the DLLs  -->
-    <AvailableItemName Include="FUSEE_Native_Library">
-       <InProject>false</InProject>
-    </AvailableItemName>
-  </ItemGroup>
+		<!--  FUSEE_External_JavaScript - marks JavaScript files that need to be copied to the output directory  -->
+		<AvailableItemName Include="FUSEE_External_JavaScript">
+			<InProject>false</InProject>
+		</AvailableItemName>
 
-  
-<!-- IMPORTANT!!! Set OutputRoot if not set yet. This works only inside the FUSEE project!!! -->
-<!-- When using this targets file from elsewhere without previously setting OUtputRoot, the FUSEE build directory will be polluted !!! -->
-<PropertyGroup>
-	<OutputRoot Condition=" '$(OutputRoot)' == '' ">$(MSBuildThisFileDirectory)..\bin\$(Configuration)\</OutputRoot>
-	<FuseeRoot  Condition=" '$(FuseeRoot)' == '' ">$(MSBuildThisFileDirectory)..\</FuseeRoot>
-</PropertyGroup>
+		<!-- FUSEE_Native_Library - marks unmanaged DLL files typically included from [FUSEE_ROOT]\ext. 
+			 Add those files by manually editing the respective .csproj directly - never use "Add item..." 
+			 from withtin Visual Studio as it will copy the DLLs -->
+		<AvailableItemName Include="FUSEE_Native_Library">
+			<InProject>false</InProject>
+		</AvailableItemName>
+	</ItemGroup>
 
-<!-- ############# Overriding build dependencies ################################################### -->
-  <PropertyGroup>
-    <BuildDependsOn>
-      FuseeBeforeBuild;
-      $(BuildDependsOn);
-      FuseeCopyExternalJavaScript;
-      FuseeResolveDependingJavaScript;
-	  FuseeCopyNativeLibrary;
-	  FuseeResolveNativeDependencies
-    </BuildDependsOn>
-  </PropertyGroup>
+	<!-- IMPORTANT!!! Set OutputRoot if not set yet. This works only inside the FUSEE project!!! -->
+	<!-- When using this targets file from elsewhere without previously setting OUtputRoot, the FUSEE build directory will be polluted !!! -->
+	<PropertyGroup>
+		<OutputRoot Condition=" '$(OutputRoot)' == '' ">$(MSBuildThisFileDirectory)..\bin\$(Configuration)\</OutputRoot>
+		<FuseeRoot  Condition=" '$(FuseeRoot)' == '' ">$(MSBuildThisFileDirectory)..\</FuseeRoot>
+	</PropertyGroup>
 
-  <!-- Add FUSEE targets/tasks to be performed BEFORE the normal build here -->
-  <Target Name="FuseeBeforeBuild">
-    <!--  -->
-  </Target>
+	<!-- ################################################################
+	               TASKS TO PERFORM AT BUILD 
+	     ################################################################ 	-->
+	<!-- "Recursively" override BuildDependsOn including a couple of tasks after the "normal" VS/C# build   -->
+	  <PropertyGroup>
+		<BuildDependsOn>
+		  FuseeBeforeBuild;
+		  $(BuildDependsOn);
+		  FuseeCopyExternalJavaScript;
+		  FuseeResolveJavaScriptDependencies;
+		  FuseeJSILCompile;
+		  FuseeCopyJSILJavaScript;
+		  FuseeCopyWebAssetsStylesNHtml;
+		  FuseeWebTools;
+		  FuseeCopyNativeLibrary;
+		  FuseeResolveNativeDependencies
+		</BuildDependsOn>
+	  </PropertyGroup>
+
+	  <!-- Add FUSEE targets/tasks to be performed BEFORE the normal build here -->
+	  <Target Name="FuseeBeforeBuild">
+		<!--  -->
+	  </Target>
    
-  <!-- Add FUSEE tasks to be performed AFTER the normal build (csc etc) here -->
+	<!-- Add FUSEE tasks to be performed AFTER the normal build (csc etc) here -->
+	
+	<!-- ================================================================================================================
+	FuseeCopyExternalJavaScript: copies itmes marked with the "FUSEE_External_JavaScript" item name (or "build action" as
+	represented in Visual Studio's property sheet) to the Scripts output (bin) folder. 
+	BEHOLD the '->' !!!! In the Outputs parameter this is a list transformation (google 'msbuild list transformation'). 
+	In the Text parameter its just OUTPUT TEXT, NOTHING ELSE!!!!!!
+	The Batching of the Message task (google 'msbuild task batching') is due to the % signs, NOT due to the '->' text.
+	-->
+	<Target Name="FuseeCopyExternalJavaScript" 
+			Inputs="@(FUSEE_External_JavaScript)"
+			Outputs="@(FUSEE_External_JavaScript -> '$(OutputPath)$(AssemblyName).Scripts\%(Filename)%(Extension)')">
+		<Message Importance="High" Text="[external javascript] @(FUSEE_External_JavaScript) -> $(OutputPath)$(AssemblyName).Scripts\%(Filename)%(Extension)" />
+		<Copy 
+				SourceFiles="@(FUSEE_External_JavaScript)" 
+				DestinationFolder="$(OutputPath)$(AssemblyName).Scripts\" />
+	</Target>
+
+	
+	<!-- ================================================================================================================
+	FuseeResolveJavaScriptDependencies: Checks for any referenced managed dll if there is a <dllname>.Scripts folder below Libraries
+	containing any java script containing implementation attributed with [JSExternal] in the the managed reference.
+	If so, copy the contents of the .Scripts folder to the output path.
+	NOTE: This is a four-step task. Some of these pre-tasks are re-used in other tasks...
+		1. Set the script destination output (FuseeAssembleFuseeJavaScriptDependency)
+		2. Get a list of referenced assemblies (FuseeGetReferencedAssemblies)
+		3. Generate the list of .js files to copy () 
+		4. Actually copy the files incrementally using Input and Output lists 
+	NOTE: The task is only performed for projects creating a Dll OR for projects with the FuseeWebOutputPath set. This keeps
+	   output directories for normal .exe files free from unnecessary *.Scripts subfolders
+	TODO: expand this to ordinary file references - currently only ProjectReferences are supported. A first try was buggy due to
+	%(Reference.Filename) containing NOT the filename but filename+version.
+	-->
+	<Target Name="FuseeSetScriptDestination">
+		<!-- define a destination where the dependent scripts should go. If FuseeWebOutputPath is defined, this is a web project and we want the
+			 scripts to go into an Assets\Scripts subfolder. If FUseeWebOutputPath is not defined, this project itself is some dll (possibly referencing other dlls).
+			 Then the scripts of all depending dlls should go to to subfolder called "<dll-name>.Scripts" -->
+		<PropertyGroup>
+			<FuseeScriptDestination Condition=" '$(FuseeWebOutputPath)' == '' ">$(OutputPath)$(AssemblyName).Scripts\</FuseeScriptDestination>
+			<FuseeScriptDestination Condition=" '$(FuseeWebOutputPath)' != '' ">$(FuseeWebOutputPath)Assets\Scripts\</FuseeScriptDestination>
+		</PropertyGroup>
+		<Message Text="FuseeScriptDestination = $(FuseeScriptDestination)" />
+	</Target>
+
+	<Target Name="FuseeGetReferencedAssemblies">
+		<!-- Ask the referenced .csproj to reveil the name of the generated output. Undefine $(Platform) (such that (Platform == '') is true) to have the .csproj choose its default platform. 
+		 store the result as item(s) under @(FuseeReferencedAssemblies) -->
+		<MSBuild Projects="@(ProjectReference)" Targets="GetTargetPath" Properties="Configuration=$(Configuration)" RemoveProperties="Platform">
+			<Output TaskParameter="TargetOutputs" ItemName="FuseeReferencedAssemblies" />
+		</MSBuild>
+	</Target>
+
+	<Target Name="FuseeAssembleFuseeJavaScriptDependency"
+			DependsOnTargets="FuseeGetReferencedAssemblies">
+		<Message Text="Checking if reference %(ProjectReference.Filename)%(ProjectReference.Extension) has external java script implementations." />
+		<Message Importance="High" Condition="Exists('%(FuseeReferencedAssemblies.RootDir)%(FuseeReferencedAssemblies.Directory)%(FuseeReferencedAssemblies.Filename).Scripts')" 
+		                                        Text="%(FuseeReferencedAssemblies.RootDir)%(FuseeReferencedAssemblies.Directory)%(FuseeReferencedAssemblies.Filename).Scripts has external java script implementations." />
+		<!-- Now gather all referenced scripts below any (existing) "<referenced-dll-name>.Scripts" subfolder for all referenced projects -->
+		<ItemGroup>
+			<FuseeJavaScriptDependency  Include="%(FuseeReferencedAssemblies.RootDir)%(FuseeReferencedAssemblies.Directory)%(FuseeReferencedAssemblies.Filename).Scripts\*.*"/>
+		</ItemGroup>
+	</Target>
+
+	<Target Name="FuseeResolveJavaScriptDependencies" 
+			DependsOnTargets="FuseeSetScriptDestination;FuseeAssembleFuseeJavaScriptDependency"
+			Inputs="@(FuseeJavaScriptDependency -> %(FuseeJavaScriptDependency.FullPath))"
+			Outputs="@(FuseeJavaScriptDependency -> $(FuseeScriptDestination)%(FuseeJavaScriptDependency.Filename)%(FuseeJavaScriptDependency.Extension))"
+			Condition=" '$(OutputType)' == 'Library' Or '$(FuseeWebOutputPath)' != '' ">
+		<!-- Copy all referenced scripts to the "<dll-name>.Scripts" or the Assets.Scripts subfolder of this assembly -->
+		<Copy SourceFiles="%(FuseeJavaScriptDependency.FullPath)" DestinationFolder="$(FuseeScriptDestination)" ContinueOnError="true"/>
+		<Message Condition="Exists('%(FuseeJavaScriptDependency.FullPath)')" Importance="High" Text="[external javascript dependency] %(FuseeJavaScriptDependency.FullPath) -> $(FuseeScriptDestination)%(Filename)%(Extension)" />
+	</Target>
+	
+	<!-- ================================================================================================================
+	Run the JSIL cross compiler on any assembly created from a .csproj where the FuseeWebOutputPath is set.
+	-->
+	<Target Name="FuseeJSILCompile" Condition=" '$(FuseeWebOutputPath)' != '' ">
+		<Message Importance="High" Text="[JSILc x-compile] $(TargetPath)" />
+		<Exec ContinueOnError="true" Timeout="120000" Command='"$(FuseeRoot)ext\JSIL\Compiler\JSILc.exe" -o "$(FuseeWebOutputPath)Assets\Scripts" "$(TargetPath)"' />
+	</Target>
   
-  <!-- FuseeCopyExternalJavaScript: copies itmes marked with the "FUSEE_External_JavaScript" item name (or "build action" as
-       represented in Visual Studio's property sheet) to the Scripts output (bin) folder. 
-       BEHOLD the '->' !!!! In the Outputs parameter this is a list transformation (google 'msbuild list transformation'). 
-       In the Text parameter its just OUTPUT TEXT, NOTHING ELSE!!!!!!
-       The Batching of the Message task (google 'msbuild task batching') is due to the % signs, NOT due to the '->' text.
-       -->
-  <Target Name="FuseeCopyExternalJavaScript" 
-      Inputs="@(FUSEE_External_JavaScript)"
-      Outputs="@(FUSEE_External_JavaScript -> '$(OutputPath)$(AssemblyName).Scripts\%(Filename)%(Extension)')">
-    <Message Importance="High" Text="[external javascript] @(FUSEE_External_JavaScript) -> $(OutputPath)$(AssemblyName).Scripts\%(Filename)%(Extension)" />
-    <Copy 
-        SourceFiles="@(FUSEE_External_JavaScript)" 
-        DestinationFolder="$(OutputPath)$(AssemblyName).Scripts\" />
-  </Target>
+	<!-- ================================================================================================================
+	Copy the java script files shipped with JSIL (probably modified for FUSEE purposes) to the FuseeWebOutputPath (if set)
+	-->
+	<Target Name="FuseeCopyJSILJavaScript" Condition=" '$(FuseeWebOutputPath)' != '' ">
+		<ItemGroup>
+			<FuseeJsilScript Include="$(FuseeRoot)ext\JSIL\Scripts\**\*.js" />
+		</ItemGroup>
+		<Copy SourceFiles="%(FuseeJsilScript.FullPath)" DestinationFolder="$(FuseeWebOutputPath)\Assets\Scripts\%(RecursiveDir)" ContinueOnError="true"/>
+		<Message Condition="Exists('%(FuseeJsilScript.FullPath)')" Importance="High" Text="[JSIL built-in script] %(FuseeJsilScript.FullPath) -> $(FuseeWebOutputPath)\Assets\Scripts\%(RecursiveDir)%(Filename)%(Extension)" />
+	</Target>
+  
+	<!-- ================================================================================================================
+	Copy the assets and styles and any html (TODO) (everything under "Assets") to the web output for web projects 
+	(FuseeWebOutputPath is set)
+	-->
+	<Target Name="FuseeCopyWebAssetsStylesNHtml" Condition=" '$(FuseeWebOutputPath)' != '' ">
+		<ItemGroup>
+			<FuseeWebAsset Include="$(OutputPath)Assets\**\*" />
+		</ItemGroup>
+		<Copy SourceFiles="%(FuseeWebAsset.FullPath)" DestinationFolder="$(FuseeWebOutputPath)\Assets\%(RecursiveDir)" ContinueOnError="true"/>
+		<Message Condition="Exists('%(FuseeWebAsset.FullPath)')" Importance="High" Text="[web asset] %(FuseeWebAsset.FullPath) -> $(FuseeWebOutputPath)\Assets\%(RecursiveDir)%(Filename)%(Extension)" />
+	</Target>
+  
+	<!-- ================================================================================================================
+	Run the FUSEE web tools generating necessary .js manifests, html file etc. for web projects (FuseeWebOutputPath is set)
+  First we need to get the assembly names of the referenced dlls (FuseeGetReferencedAssemblies)
+  From there we look into all <dll-name>.Scripts subdirectories and gather the scripts found there
+  After that we strip off the directory names. Since the depending java scripts are copied "recursively" we might
+  end up with a list containing a lot of duplicates. So we need to remove duplicate entries (RemoveDuplicates).
+	-->
+	<Target Name="FuseeWebTools" 
+			Condition=" '$(FuseeWebOutputPath)' != '' "
+			DependsOnTargets="FuseeGetReferencedAssemblies">
+		<ItemGroup>
+			<FuseeScriptAddToManifest Include="$(FuseeRoot)bin\$(Configuration)\Libraries\%(FuseeReferencedAssemblies.Filename).Scripts\*.*"/>
+		</ItemGroup>
+		<!-- Message Importance="High" Text="     FuseeScriptAddToManifest: @(FuseeScriptAddToManifest)" /-->
+		<ItemGroup>
+			<FuseeScriptAddToManifestName Include="@(FuseeScriptAddToManifest->'%(filename)')"/>
+		</ItemGroup>
+		<!-- Message Importance="High" Text="     FuseeScriptAddToManifestName: @(FuseeScriptAddToManifestName)" / -->
+		<RemoveDuplicates
+			Inputs="@(FuseeScriptAddToManifestName)">
+        <Output
+            TaskParameter="Filtered"
+            ItemName="FuseeScriptAddToManifestNameFiltered"/>
+		</RemoveDuplicates>
+		<!-- Message Importance="High" Text="     FuseeScriptAddToManifestNameFiltered: @(FuseeScriptAddToManifestNameFiltered)" / -->
+		<PropertyGroup>
+		<!-- FuseeScriptListToAdd>@(FuseeScriptAddToManifest->'%(filename)')</FuseeScriptListToAdd-->
+			<FuseeScriptListToAdd>@(FuseeScriptAddToManifestNameFiltered)</FuseeScriptListToAdd>
+		</PropertyGroup>
+		<Message Importance="High" Text="[fusee web tool] Creating default $(AssemblyName).html, $(AssemblyName).contentproj.manifest.js and Config/jsil_config.js "/>
+		<Message Importance="High" Text="                 command line: &quot;$(FuseeRoot)bin\$(Configuration)\Tools\fuGen.exe&quot; &quot;$(TargetDir)\&quot; &quot;$(FuseeWebOutputPath)\&quot; &quot;$(TargetPath)&quot; &quot;$(FuseeScriptListToAdd)&quot;" />
+		<!-- Message Importance="High" Text="     External Scripts to add: @(FuseeScriptAddToManifest->'%(filename)%(extension)')" /-->
+		<!-- Message Importance="High" Text="     External Scripts to add: %(FuseeScriptAddToManifest.directory)%(FuseeScriptAddToManifest.filename)%(FuseeScriptAddToManifest.extension)" /-->
+		<Exec ContinueOnError="true" Timeout="120000" Command='"$(FuseeRoot)bin\$(Configuration)\Tools\fuGen.exe" "$(TargetDir)\" "$(FuseeWebOutputPath)\" "$(TargetPath)" "$(FuseeScriptListToAdd)"' />
+	</Target>
+
+	<!-- ================================================================================================================
+	FuseeCopyNativeLibrary: copies items marked with the "FUSEE_Native_Library" item name (or "build action" as
+	represented in Visual Studio's property sheet) to a subfolder below the Libraries output (bin) folder. The subfolder
+	is named after the Assembly Name of the generated dll/exe file. This way the FuseeResolveNativeDependencies can 
+	handle unmanaged dependencies on a per-managed-assembly-level. Similar to FuseeCopyExternalJavaScript.
+	-->
+	<Target Name="FuseeCopyNativeLibrary" 
+			Inputs="@(FUSEE_Native_Library)"
+			Outputs="@(FUSEE_Native_Library -> '$(OutputPath)$(AssemblyName).Natives\%(Filename)%(Extension)')">
+	<Message Importance="High" Text="[native library] @(FUSEE_Native_Library) -> $(OutputPath)$(AssemblyName).Natives\%(Filename)%(Extension)" />
+	<Copy 
+			SourceFiles="@(FUSEE_Native_Library)" 
+			DestinationFolder="$(OutputPath)$(AssemblyName).Natives\" />
+	</Target>
+
+	<!-- ================================================================================================================
+	FuseeResolveNativeDependencies: Checks for any referenced managed dll if there is a <dllname>.Natives folder below Libraries
+	containing any java script containing implementation attributed with [JSExternal] in the the managed reference.
+	If so, copy the contents of the .Natives folder to the output path.
+	NOTE: This is a four-step task. Some of these pre-tasks are re-used in other tasks...
+		1. Set the natives destination output (FuseeSetNativeDestination)
+		2. Get a list of referenced assemblies (FuseeGetReferencedAssemblies)
+		3. Generate the list of .dll files to copy (FuseeAssembleFuseeNativeDependency) 
+		4. Actually copy the files incrementally using Input and Output lists (FuseeResolveNativeDependencies)
+	TODO: expand this to ordinary file references - currently only ProjectReferences are supported. A first try was buggy due to
+	%(Reference.Filename) containing NOT the filename but filename+version.
+    -->
+	<Target Name="FuseeSetNativeDestination">
+		<!-- define a destination where the dependent native dlls should go. If we are creating a library (dll) all indirectly referenced
+		     native dlls should go into a <dll-name>.Natives folder. If we are creating an exe all dlls should go directly to the output folder-->
+		<PropertyGroup>
+			<FuseeNativeDestination Condition=" '$(OutputType)' == 'Library' ">$(OutputPath)$(AssemblyName).Natives\</FuseeNativeDestination>
+			<FuseeNativeDestination Condition=" '$(OutputType)' != 'Library' ">$(OutputPath)</FuseeNativeDestination>
+		</PropertyGroup>
+		<Message Text="FuseeNativeDestination = $(FuseeNativeDestination)" />
+	</Target>
+
+	<Target Name="FuseeAssembleFuseeNativeDependency"
+			DependsOnTargets="FuseeGetReferencedAssemblies">
+		<Message Text="Checking if reference %(ProjectReference.Filename)%(ProjectReference.Extension) references native dlls." />
+		<Message Importance="High" Condition="Exists('%(FuseeReferencedAssemblies.RootDir)%(FuseeReferencedAssemblies.Directory)%(FuseeReferencedAssemblies.Filename).Natives')" 
+		                                        Text="%(FuseeReferencedAssemblies.RootDir)%(FuseeReferencedAssemblies.Directory)%(FuseeReferencedAssemblies.Filename).Natives contains native dlls." />
+		<!-- Now gather all referenced Natives below any (existing) "<referenced-dll-name>.Natives" subfolder for all referenced projects -->
+		<ItemGroup>
+			<FuseeNativeDependency  Include="%(FuseeReferencedAssemblies.RootDir)%(FuseeReferencedAssemblies.Directory)%(FuseeReferencedAssemblies.Filename).Natives\*.*"/>
+		</ItemGroup>
+	</Target>
+
+	<Target Name="FuseeResolveNativeDependencies" 
+			DependsOnTargets="FuseeSetNativeDestination;FuseeAssembleFuseeNativeDependency"
+			Inputs="@(FuseeNativeDependency -> %(FuseeNativeDependency.FullPath))"
+			Outputs="@(FuseeNativeDependency -> $(FuseeNativeDestination)%(FuseeNativeDependency.Filename)%(FuseeNativeDependency.Extension))">
+		<!-- Copy all referenced Natives to the "<dll-name>.Natives" of this assembly -->
+		<Copy SourceFiles="%(FuseeNativeDependency.FullPath)" DestinationFolder="$(FuseeNativeDestination)" ContinueOnError="true"/>
+		<Message Condition="Exists('%(FuseeNativeDependency.FullPath)')" Importance="High" Text="[external native dependency] %(FuseeNativeDependency.FullPath) -> $(FuseeScriptDestination)%(Filename)%(Extension)" />
+	</Target>
+
+
 	   
-  <!-- Target Name="FuseeCopyExternalJavaScript"
-       Inputs="@(FUSEE_External_JavaScript)"
-       Outputs="@(FUSEE_External_JavaScript -> '$(OutputRoot)Scripts\%(Filename)%(Extension)')">
-    <Message Importance="High" Text="@(FUSEE_External_JavaScript) -> $(OutputRoot)Scripts\%(Filename)%(Extension)" />
-    <Copy
-        SourceFiles="@(FUSEE_External_JavaScript)"
-        DestinationFolder="$(OutputRoot)Scripts\" />
-  </Target-->
+	<!-- ################################################################
+	               TASKS TO PERFORM AT CLEAN 
+	     ################################################################ 	-->
 
-  <!-- FuseeCopyNativeLibrary: copies items marked with the "FUSEE_Native_Library" item name (or "build action" as
-       represented in Visual Studio's property sheet) to a subfolder below the Libraries output (bin) folder. The subfolder
-	   is named after the Assembly Name of the generated dll/exe file. This way the FuseeResolveNativeDependencies can 
-	   handle unmanaged dependencies on a per-managed-assembly-level. -->
-  <Target Name="FuseeCopyNativeLibrary" 
-      Inputs="@(FUSEE_Native_Library)"
-      Outputs="@(FUSEE_Native_Library -> '$(OutputPath)$(AssemblyName).Natives\%(Filename)%(Extension)')">
-    <Message Importance="High" Text="[native library] @(FUSEE_Native_Library) -> $(OutputPath)$(AssemblyName).Natives\%(Filename)%(Extension)" />
-    <Copy 
-        SourceFiles="@(FUSEE_Native_Library)" 
-        DestinationFolder="$(OutputPath)$(AssemblyName).Natives\" />
-  </Target>
+	<PropertyGroup>
+		<CleanDependsOn>
+			FuseeCleanNativeDependencies;
+			FuseeCleanNativeLibrary;
+			FuseeJSILClean;
+			FuseeCleanDependingJavaScript;
+			FuseeCleanExternalJavaScript;
+			$(CleanDependsOn);
+		</CleanDependsOn>
+	</PropertyGroup>
 
-  
-  
-  <!-- FuseeResolveDependingJavaScript: Checks for any referenced managed dll if there is a <dllname>.Scripts folder below Libraries
-       containing any java script containing implementation attributed with [JSExternal] in the the managed reference . 
-	   If so, copy the contents of the .Scripts folder to the output path 
-       TODO: expand this to ordinary file references - currently only ProjectReferences are supported. A first try was buggy due to
-             %(Reference.Filename) containing NOT the filename but filename+version.
-       -->
-  <Target Name="FuseeResolveDependingJavaScript">
-    <Message Condition="Exists('$(FuseeRoot)bin\$(Configuration)\Libraries\%(ProjectReference.Filename).Scripts')" 
-                                            Text="%(ProjectReference.Filename)%(ProjectReference.Extension) has external java script implementations." />
-    <ItemGroup>
-      <FuseeExternalScript  Include="$(FuseeRoot)bin\$(Configuration)\Libraries\%(ProjectReference.Filename).Scripts\*.*"/>
-    </ItemGroup>
-    <Copy SourceFiles="%(FuseeExternalScript.FullPath)" DestinationFolder="$(OutputPath)" ContinueOnError="true"/>
-    <Message Condition="Exists('%(FuseeExternalScript.FullPath)')" Importance="High" Text="[external javascript dependency] %(FuseeExternalScript.FullPath) -> $(OutputPath)%(Filename)%(Extension)" />
-  </Target>
-  
-  
-  
-  <!-- FuseeResolveNativeDependencies: Checks for any referenced managed dll if there is a <dllname>.Natives folder below Libraries
-       containing any native (==unmanaged) dlls the managed referenced dll needs. If so, copy the contents of the .Natives folder to the output path 
-       TODO: expand this to ordinary file references - currently only ProjectReferences are supported. A first try was buggy due to
-             %(Reference.Filename) containing NOT the filename but filename+version.
-       -->
-  <Target Name="FuseeResolveNativeDependencies">
-    <Message Condition="Exists('$(FuseeRoot)bin\$(Configuration)\Libraries\%(ProjectReference.Filename).Natives')" 
-                                            Text="%(ProjectReference.Filename)%(ProjectReference.Extension) has native dependencies." />
-    <ItemGroup>
-      <FuseeUnmanagedDependency  Include="$(FuseeRoot)bin\$(Configuration)\Libraries\%(ProjectReference.Filename).Natives\*.*"/>
-    </ItemGroup>
-    <Copy SourceFiles="%(FuseeUnmanagedDependency.FullPath)" DestinationFolder="$(OutputPath)" ContinueOnError="true"/>
-    <Message Condition="Exists('%(FuseeUnmanagedDependency.FullPath)')" Importance="High" Text="[native dependency] %(FuseeUnmanagedDependency.FullPath) -> $(OutputPath)%(Filename)%(Extension)" />
-  </Target>
+	<!-- Add FUSEE tasks to be performed AFTER the normal clean here -->
+	<Target Name="FuseeCleanExternalJavaScript">
+		<!-- NOTE: Importance not High(!) output only in verbose msbuild -->
+		<Message Text="[external javascript] Deleting $(OutputPath)$(AssemblyName).Scripts\ and all of its contents" />
+		<RemoveDir Directories="$(OutputPath)$(AssemblyName).Scripts\" />
+	</Target>
+	<!-- Target Name="FuseeCleanExternalJavaScript">
+		<Message Text="Deleting @(FUSEE_External_JavaScript -> '$(OutputRoot)Scripts\%(Filename)%(Extension)')" />
+		<Delete Files="@(FUSEE_External_JavaScript -> '$(OutputRoot)Scripts\%(Filename)%(Extension)')" />
+	</Target-->
 
-
-  <!-- ############# Overriding clean dependencies ################################################### -->
-  <PropertyGroup>
-    <CleanDependsOn>
-      FuseeBeforeClean;
-      $(CleanDependsOn);
-      FuseeCleanExternalJavaScript;
-      FuseeCleanDependingJavaScript;
-	  FuseeCleanNativeLibrary;
-	  FuseeCleanNativeDependencies
-    </CleanDependsOn>
-  </PropertyGroup>
-
-  <!-- Add FUSEE targets/tasks to be performed BEFORE the normal clean here -->
-  <Target Name="FuseeBeforeClean">
-    <!--  -->
-  </Target>
-
-  <!-- Add FUSEE tasks to be performed AFTER the normal clean here -->
-   <Target Name="FuseeCleanExternalJavaScript">
-    <!-- NOTE: Importance not High(!) output only in verbose msbuild -->
-    <Message Text="[external javascript] Deleting $(OutputPath)$(AssemblyName).Scripts\ and all of its contents" />
-    <RemoveDir Directories="$(OutputPath)$(AssemblyName).Scripts\" />
-  </Target>
-  <!-- Target Name="FuseeCleanExternalJavaScript">
-    <Message Text="Deleting @(FUSEE_External_JavaScript -> '$(OutputRoot)Scripts\%(Filename)%(Extension)')" />
-    <Delete Files="@(FUSEE_External_JavaScript -> '$(OutputRoot)Scripts\%(Filename)%(Extension)')" />
-  </Target-->
-
-   <Target Name="FuseeCleanNativeLibrary">
-    <!-- NOTE: Importance not High(!) output only in verbose msbuild -->
-    <Message Text="[native library] Deleting $(OutputPath)$(AssemblyName).Natives\ and all of its contents" />
-    <RemoveDir Directories="$(OutputPath)$(AssemblyName).Natives\" />
-  </Target>
+	<Target Name="FuseeCleanNativeLibrary">
+		<!-- NOTE: Importance not High(!) output only in verbose msbuild -->
+		<Message Text="[native library] Deleting $(OutputPath)$(AssemblyName).Natives\ and all of its contents" />
+		<RemoveDir Directories="$(OutputPath)$(AssemblyName).Natives\" />
+	</Target>
 
   
-   <Target Name="FuseeCleanDependingJavaScript">
-	<Message Condition="Exists('$(FuseeRoot)bin\$(Configuration)\Libraries\%(ProjectReference.Filename).Scripts')"
+	<Target Name="FuseeCleanDependingJavaScript"  Condition=" '$(FuseeWebOutputPath)' != '' ">
+		<Message Condition="Exists('$(FuseeRoot)bin\$(Configuration)\Libraries\%(ProjectReference.Filename).Scripts')"
 										   Text="Removing external javascript dependencies for %(ProjectReference.Filename)%(ProjectReference.Extension)." />
-	<ItemGroup>
- 	  <FuseeExternalScript  Include="$(FuseeRoot)bin\$(Configuration)\Libraries\%(ProjectReference.Filename).Scripts\*.*"/>
-	</ItemGroup>
-	<Message Condition="Exists('%(FuseeExternalScript.FullPath)')" Importance="High" Text="[external javascript dependency] removed $(OutputPath)%(FuseeExternalScript.Filename)%(FuseeExternalScript.Extension)" />
-       <Delete Files="@(FuseeExternalScript)"/>
-  </Target>
- 
-  
-  
-  <Target Name="FuseeCleanNativeDependencies">
-	<Message Condition="Exists('$(FuseeRoot)bin\$(Configuration)\Libraries\%(ProjectReference.Filename).Natives')"
-										   Text="Removing native dependencies for %(ProjectReference.Filename)%(ProjectReference.Extension)." />
-	<ItemGroup>
- 	  <FuseeUnmanagedDependency  Include="$(FuseeRoot)bin\$(Configuration)\Libraries\%(ProjectReference.Filename).Natives\*.*"/>
-	</ItemGroup>
-	<Message Condition="Exists('%(FuseeUnmanagedDependency.FullPath)')" Importance="High" Text="[native dependency] removed $(OutputPath)%(FuseeUnmanagedDependency.Filename)%(FuseeUnmanagedDependency.Extension)" />
-       <Delete Files="@(FuseeUnmanagedDependency)"/>
-  </Target>
+		<ItemGroup>
+			<FuseeExternalScript  Include="$(FuseeRoot)bin\$(Configuration)\Libraries\%(ProjectReference.Filename).Scripts\*.*"/>
+		</ItemGroup>
+		<Message Condition="Exists('%(FuseeExternalScript.FullPath)')" Importance="High" Text="[external javascript dependency] removed $(FuseeWebOutputPath)Assets\Scripts\%(FuseeExternalScript.Filename)%(FuseeExternalScript.Extension)" />
+		<Delete Files="$(FuseeWebOutputPath)Assets\Scripts\%(FuseeExternalScript.Filename)%(FuseeExternalScript.Extension)" />
+	</Target>
 
-  <!-- ############# Adding dependent native DLL copying ############################################# -->
+
+	<!-- since we cannot specify in- and out-lists generated by JSIL, all we can do here is delete the entire Scripts folder (which renders FuseeCleanDependingJavaScript somewhat unnecessary -->
+	<Target Name="FuseeJSILClean"  Condition=" '$(FuseeWebOutputPath)' != '' ">
+		<Message Importance="High" Text="[JSILc x-compile] removed $(FuseeWebOutputPath)\Assets\Scripts\ and all of its contents" />
+		<RemoveDir Directories="$(FuseeWebOutputPath)\Assets\Scripts\" />
+	</Target>
   
-  
+	<Target Name="FuseeCleanNativeDependencies">
+		<Message Condition="Exists('$(FuseeRoot)bin\$(Configuration)\Libraries\%(ProjectReference.Filename).Natives')"
+										   Text="Removing native dependencies for %(ProjectReference.Filename)%(ProjectReference.Extension)." />
+		<ItemGroup>
+			<FuseeUnmanagedDependency  Include="$(FuseeRoot)bin\$(Configuration)\Libraries\%(ProjectReference.Filename).Natives\*.*"/>
+		</ItemGroup>
+		<Message Condition="Exists('%(FuseeUnmanagedDependency.FullPath)')" Importance="High" Text="[native dependency] removed $(OutputPath)%(FuseeUnmanagedDependency.Filename)%(FuseeUnmanagedDependency.Extension)" />
+		<Delete Files="$(OutputPath)%(FuseeUnmanagedDependency.Filename)%(FuseeUnmanagedDependency.Extension)"/>
+	<!-- Delete Files="@(FuseeUnmanagedDependency)"/ -->
+	</Target>		 
+		 
 </Project>

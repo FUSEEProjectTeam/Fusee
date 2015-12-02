@@ -68,6 +68,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{86C1CD6F-F5D8-4183-9032-3E323C33672C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Examples.Simple.Core", "Engine\Examples\Simple\Core\Fusee.Engine.Examples.Simple.Core.csproj", "{C4157BCB-D3A0-45C6-A84B-735FBD8C7AA8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{97C823BE-0447-46CC-80E7-CB88B19FBCAA} = {97C823BE-0447-46CC-80E7-CB88B19FBCAA}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Simple", "Simple", "{76BEC6C3-C4F0-4208-BBC5-4F318D8940A6}"
 EndProject
@@ -76,6 +79,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Base.Imp.Desktop", "Base\Imp\DesktopWeb\Fusee.Base.Imp.Desktop.csproj", "{4B5EC54F-E0FB-4AA8-85E7-EB84843D5C7C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Examples.Simple.Web", "Engine\Examples\Simple\Web\Fusee.Engine.Examples.Simple.Web.csproj", "{DB21584F-4EA6-486A-9BDB-77D372CF1D64}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{0C344D5F-BE70-4828-B95A-1D313B894BC3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fuGen", "Tools\fuGen\fuGen.csproj", "{97C823BE-0447-46CC-80E7-CB88B19FBCAA}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -226,6 +233,12 @@ Global
 		{DB21584F-4EA6-486A-9BDB-77D372CF1D64}.Debug+Web|x86.Build.0 = Debug|x86
 		{DB21584F-4EA6-486A-9BDB-77D372CF1D64}.Release|x86.ActiveCfg = Release|x86
 		{DB21584F-4EA6-486A-9BDB-77D372CF1D64}.Release|x86.Build.0 = Release|x86
+		{97C823BE-0447-46CC-80E7-CB88B19FBCAA}.Debug|x86.ActiveCfg = Debug|x86
+		{97C823BE-0447-46CC-80E7-CB88B19FBCAA}.Debug|x86.Build.0 = Debug|x86
+		{97C823BE-0447-46CC-80E7-CB88B19FBCAA}.Debug+Web|x86.ActiveCfg = Debug|x86
+		{97C823BE-0447-46CC-80E7-CB88B19FBCAA}.Debug+Web|x86.Build.0 = Debug|x86
+		{97C823BE-0447-46CC-80E7-CB88B19FBCAA}.Release|x86.ActiveCfg = Release|x86
+		{97C823BE-0447-46CC-80E7-CB88B19FBCAA}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -262,5 +275,6 @@ Global
 		{A8C041C0-3A74-4976-9060-70E2A865D521} = {76BEC6C3-C4F0-4208-BBC5-4F318D8940A6}
 		{4B5EC54F-E0FB-4AA8-85E7-EB84843D5C7C} = {A134FDBF-E063-415F-94F3-BF51C36AAB57}
 		{DB21584F-4EA6-486A-9BDB-77D372CF1D64} = {76BEC6C3-C4F0-4208-BBC5-4F318D8940A6}
+		{97C823BE-0447-46CC-80E7-CB88B19FBCAA} = {0C344D5F-BE70-4828-B95A-1D313B894BC3}
 	EndGlobalSection
 EndGlobal

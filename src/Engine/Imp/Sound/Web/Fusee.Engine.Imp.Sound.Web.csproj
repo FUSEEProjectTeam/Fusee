@@ -55,7 +55,7 @@
     <Compile Include="AudioImp.cs" />
   </ItemGroup>
   <ItemGroup>
-    <FUSEE_External_JavaScript Include="Scripts\Fusee.Engine.Imp.Sound.Web.js" />
+    <FUSEE_External_JavaScript Include="Scripts\Fusee.Engine.Imp.Sound.Web.Ext.js" />
     <FUSEE_External_JavaScript Include="Scripts\soundjs.min.js" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />

@@ -19,7 +19,7 @@ JSIL.ImplementExternals("System.Globalization.CultureInfo", function($) {
 });
 */
 
-
+/*
 JSIL.ImplementExternals("System.IO.StreamReader", function ($) {
     $.Field({ Static: false, Public: false }, "_contents", $.Array, null);
     $.Field({ Static: false, Public: false }, "_currentLine", $.Int32, null);
@@ -47,7 +47,7 @@ JSIL.ImplementExternals("System.IO.StreamReader", function ($) {
   );
 
 });
-
+*/
 
 function GetElemName(element) {
     var en = parseInt(element.value);

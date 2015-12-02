@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -219,7 +220,16 @@ namespace Fusee.Engine.Core
         {
             // Sometime if we have a white space at the beginning of the string, split
             // will return an empty string. Let's remove that.
-            return strIn.Split(separator).Where(str => str.Length > 0).ToArray();
+            List<string> ret = new List<string>();
+            foreach (string s in strIn.Split(separator))
+            {
+                if (!string.IsNullOrEmpty(s))
+                {
+                    ret.Add(s);
+                }
+            }
+            return ret.ToArray();
+            // JSIL crashes with that... sigh.. .return strIn.Split(separator).Where(str => str.Length > 0).ToArray();
         }
 
         #endregion

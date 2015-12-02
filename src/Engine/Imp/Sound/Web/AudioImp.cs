@@ -12,6 +12,12 @@ namespace Fusee.Engine.Imp.Sound.Web
     public class AudioImp : IAudioImp
     {
         [JSExternal]
+        public AudioImp()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        [JSExternal]
         public void OpenDevice()
         {
             throw new System.NotImplementedException();

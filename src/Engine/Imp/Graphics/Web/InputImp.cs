@@ -9,6 +9,7 @@ namespace Fusee.Engine.Imp.Graphics.Web
 {
     public class InputImp : IInputImp
     {
+        [JSExternal]
         public InputImp(IRenderCanvasImp canvasImplementor)
         {
             throw new NotImplementedException();

@@ -9,6 +9,12 @@ namespace Fusee.Engine.Imp.Graphics.Web
     public class MeshImp : IMeshImp
     {
         [JSExternal]
+        public MeshImp()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        [JSExternal]
         public void InvalidateVertices()
         {
             throw new System.NotImplementedException();

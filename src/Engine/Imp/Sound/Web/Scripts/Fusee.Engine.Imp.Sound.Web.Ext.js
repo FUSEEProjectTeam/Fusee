@@ -6,15 +6,18 @@
 	JSIL v0.6.0 build 16283. From then on it was changed and maintained manually.
 */
 
-var $WebAudioImp = JSIL.DeclareAssembly("Fusee.Engine.Imp.WebAudio");
+var $WebAudioImp = JSIL.GetAssembly("Fusee.Engine.Imp.Sound.Web");
 var $fuseeCommon = JSIL.GetAssembly("Fusee.Engine.Common");
 
 JSIL.DeclareNamespace("Fusee");
 JSIL.DeclareNamespace("Fusee.Engine");
+JSIL.DeclareNamespace("Fusee.Engine.Imp");
+JSIL.DeclareNamespace("Fusee.Engine.Imp.Sound");
+JSIL.DeclareNamespace("Fusee.Engine.Imp.Sound.Web");
 
-JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.AudioStream", true, [], function($interfaceBuilder) {
-    $ = $interfaceBuilder;
 
+JSIL.ImplementExternals("Fusee.Engine.Imp.Sound.Web.AudioStream", function ($)
+{
     $.Field({ Static: false, Public: false }, "MainOutputStream", $.Object);
     $.Field({ Static: false, Public: false }, "StreamFileName", $.String);
 
@@ -153,30 +156,25 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.AudioStream", t
         }
     );
 
-    $.ImplementInterfaces(
-        $fuseeCommon.TypeRef("Fusee.Engine.IAudioStream")
-    );
-
     return function(newThisType) { $thisType = newThisType; };
 });
 
-JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.WebAudioImp", true, [], function($interfaceBuilder) {
-    $ = $interfaceBuilder;
-
-    $.Field({ Static: false, Public: false }, "AllStreams", $jsilcore.TypeRef("System.Array", [$fuseeCommon.TypeRef("Fusee.Engine.IAudioStream")]));
+JSIL.ImplementExternals("Fusee.Engine.Imp.Sound.Web.AudioImp", function ($)
+{
+    $.Field({ Static: false, Public: false }, "AllStreams", $jsilcore.TypeRef("System.Array", [$fuseeCommon.TypeRef("Fusee.Engine.Common.IAudioStream")]));
     $.Field({ Static: false, Public: false }, "LoadedStreams", $.Int32);
 
     $.Method({ Static: false, Public: true }, ".ctor",
         new JSIL.MethodSignature(null, []),
         function WebAudioImp__ctor() {
-            this.AllStreams = JSIL.Array.New($fuseeCommon.Fusee.Engine.IAudioStream, 128);
+            this.AllStreams = JSIL.Array.New($fuseeCommon.Fusee.Engine.Common.IAudioStream, 128);
         }
     );
 
     $.Method({ Static: false, Public: true }, "LoadFile",
-        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.IAudioStream"), [$.String, $.Boolean]),
+        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.Common.IAudioStream"), [$.String, $.Boolean]),
         function WebAudioImp_LoadFile(fileName, streaming) {
-            var tmp = new $WebAudioImp.Fusee.Engine.AudioStream(fileName);
+            var tmp = new $WebAudioImp.Fusee.Engine.Common.AudioStream(fileName);
             this.AllStreams[this.LoadedStreams] = tmp;
             ++this.LoadedStreams;
             return tmp;
@@ -230,10 +228,6 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.WebAudioImp", t
             for (var x = 0; x < this.LoadedStreams; x++)
                 this.AllStreams[x].Panning = maxVal;
         }
-    );
-
-    $.ImplementInterfaces(
-        $fuseeCommon.TypeRef("Fusee.Engine.IAudioImp")
     );
 
     return function(newThisType) { $thisType = newThisType; };

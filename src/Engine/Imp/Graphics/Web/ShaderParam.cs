@@ -8,5 +8,10 @@ namespace Fusee.Engine.Imp.Graphics.Web
 {
     public class ShaderParam : IShaderParam
     {
+        [JSExternal]
+        public ShaderParam()
+        {
+            
+        }
     }
 }

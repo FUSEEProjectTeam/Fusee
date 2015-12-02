@@ -172,6 +172,7 @@ namespace Fusee.Engine.Common
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
         /// <seealso cref="GetShaderParamList"/>
+        [JSChangeName("SetShaderParam4fArray")]
         void SetShaderParam(IShaderParam param, float4[] val);
 
         /// <summary>
