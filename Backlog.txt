@@ -18,12 +18,16 @@ DONE:   Invent a convention for how to handle
 DONE:	Create "Core" or "Common" on Fusee level (not below Engine) containing common base functionality (like Diagnostic.Log...)
 DONE:	Engine.Core -> Portable
 DONE:	SimpleScene -> Portable
-DONE:	Transform Examples to portable DLLs
-		Remove all warnings
-		Add Simple, fix asset handling
-		Fix Rebuild All
+DONE	Fix Rebuild All
 WORK:	Create standard .Net and standard .js host apps (containing main, perhaps providing libraries)
+		Add Simple, fix asset handling
+		Transform Examples to portable DLLs
+		Remove all warnings
 		Use JSIL to translate a csproj at a time (with each .csproj triggering its own x-compilation as a post build event)
+		Fix Light position when applying bone animation (without normal map).
+		Fix RC Model/View/ModelView behaviour (1. View-only: awkward, 2. Model!=Id & View!=Id: Hierarchy broken.
+		
+
 		
 		Jometri integration (portable)
 		Try JSIL's PackedArray (= js typed array or arraybuffer) implementation on Mesh (and probably also MeshContainer/Component)

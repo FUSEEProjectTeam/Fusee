@@ -3,8 +3,9 @@ This file contains the js implementation of Xirkit of methods that cant be trans
 This file is written manually. 
 */
 
+var $WebXirkitImp = JSIL.DeclareAssembly("Fusee.Xirkit.Ext");
+
 var $fuseeMath = JSIL.GetAssembly("Fusee.Math.Core");
-var $WebXirkitImp = JSIL.DeclareAssembly("Fusee.Engine.WebXirkit");
 var $fuseeXirkit = JSIL.GetAssembly("Fusee.Xirkit");
 var $customMsCore = JSIL.GetAssembly("mscorlib");
 

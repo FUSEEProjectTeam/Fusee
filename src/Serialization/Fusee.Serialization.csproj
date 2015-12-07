@@ -48,7 +48,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\ext\protobuf\protobuf-net.dll</HintPath>
     </Reference>
-    <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AnimationComponent.cs" />
@@ -79,34 +78,23 @@
       SerializationCompileSerializer
     </BuildDependsOn>
   </PropertyGroup>
-  
   <!-- This target calls the protobuf precompiler. Note that the filename is hardwired and no item list is taken -->
   <Target Name="SerializationCompileSerializer" Inputs="$(OutputPath)$(AssemblyName).dll" Outputs="$(OutputPath)Fusee.SerializationSerializer.dll">
-      <Message Importance="High" Text="$(FuseeBuildRoot)\ext\protobuf\PrecompileTool\precompile &quot;$(OutputPath)$(AssemblyName).dll&quot; -o:&quot;$(OutputPath)Fusee.SerializationSerializer.dll&quot; -t:Fusee.Serialization.Serializer" />
-	  <Exec Command="$(FuseeBuildRoot)\ext\protobuf\PrecompileTool\precompile &quot;$(OutputPath)$(AssemblyName).dll&quot; -o:&quot;$(OutputPath)Fusee.SerializationSerializer.dll&quot; -t:Fusee.Serialization.Serializer"
-		  WorkingDirectory="$(MSBuildProjectDirectory)"
-	  />
-     <Message Importance="High" Text="$(AssemblyName).dll -> $(OutputPath)SerializationSerializer.dll" />
+    <Message Importance="High" Text="$(FuseeBuildRoot)\ext\protobuf\PrecompileTool\precompile &quot;$(OutputPath)$(AssemblyName).dll&quot; -o:&quot;$(OutputPath)Fusee.SerializationSerializer.dll&quot; -t:Fusee.Serialization.Serializer" />
+    <Exec Command="$(FuseeBuildRoot)\ext\protobuf\PrecompileTool\precompile &quot;$(OutputPath)$(AssemblyName).dll&quot; -o:&quot;$(OutputPath)Fusee.SerializationSerializer.dll&quot; -t:Fusee.Serialization.Serializer" WorkingDirectory="$(MSBuildProjectDirectory)" />
+    <Message Importance="High" Text="$(AssemblyName).dll -&gt; $(OutputPath)SerializationSerializer.dll" />
   </Target>
-
-   <PropertyGroup>
+  <PropertyGroup>
     <CleanDependsOn>
       <!-- SerializationBeforeClean; -->
       $(CleanDependsOn);
       SerializationCompileClean
     </CleanDependsOn>
   </PropertyGroup>
-  
   <Target Name="SerializationCompileClean">
     <Message Importance="High" Text="Deleting $(OutputPath)SerializationSerializer.dll" />
     <Delete Files="$(OutputPath)SerializationSerializer.dll" />
   </Target>
-  
-  
-  
-  
-  
-  
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

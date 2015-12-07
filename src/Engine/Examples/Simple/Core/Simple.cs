@@ -9,6 +9,7 @@ using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Math;
 using Fusee.Math.Core;
+using Fusee.Serialization;
 
 namespace Examples.Simple
 {
@@ -16,50 +17,38 @@ namespace Examples.Simple
     [FuseeApplication(Name = "Simple Example", Description = "A very simple example.")]
     public class Simple : RenderCanvas
     {
-        private static void ReflectionTest()
-        {
-        }
-
         // angle variables
-        private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
+        private static float _angleHorz = MathHelper.PiOver4, _angleVert, _angleVelHorz, _angleVelVert;
 
         private const float RotationSpeed = 1f;
         private const float Damping = 0.92f;
 
-        // model variables
-        private Mesh _meshFace;
-        private Mesh _meshTea;
+        private SceneContainer _rocketScene;
+        private SceneRenderer _sceneRenderer;
         
-        // variables for shader
-        private ShaderProgram _spColor;
-        private ShaderProgram _spTexture;
-
-        private IShaderParam _colorParam;
-        private IShaderParam _textureParam;
-
-        private ITexture _iTex;
-
-        // is called on startup
+        // Init is called on startup. 
         public override void Init()
         {
-            ReflectionTest();
-
+            // Set the clear color for the backbuffer to white (100% intentsity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
 
-            // initialize the variables
-            _meshTea = MeshReader.LoadMesh(IO.StreamFromFile(@"Assets/Teapot.obj.model", FileMode.Open));
-            _meshFace = new Cube();
-            
-            _spColor = Shaders.GetDiffuseColorShader(RC);
-            _colorParam = _spColor.GetShaderParam("color");
+            // Load the rocket model
+            var ser = new Serializer();
+            _rocketScene = ser.Deserialize(IO.StreamFromFile(@"Assets/RocketModel.fus", FileMode.Open), null, typeof(SceneContainer)) as SceneContainer;
+
+            // Wrap a SceneRenderer around the model.
+            _sceneRenderer = new SceneRenderer(_rocketScene, "Assets");
         }
 
-        // is called once a frame
+        // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-            
+
+            // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-            // move per mouse
+            
+            
+            // Mouse movement
             if (Input.Instance.IsButton(MouseButtons.Left))
             {
                 _angleVelHorz = -RotationSpeed*Input.Instance.GetAxis(InputAxis.MouseX);
@@ -76,7 +65,7 @@ namespace Examples.Simple
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
 
-            // move per keyboard
+            // Keyboard movement
             if (Input.Instance.IsKey(KeyCodes.Left))
                 _angleHorz += RotationSpeed*(float) Time.Instance.DeltaTime;
 
@@ -89,41 +78,32 @@ namespace Examples.Simple
             if (Input.Instance.IsKey(KeyCodes.Down))
                 _angleVert -= RotationSpeed*(float) Time.Instance.DeltaTime;
 
+            // Create the camera matrix and set it as the current ModelView transformation
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-            var mtxCam = float4x4.LookAt(0, 200, -500, 0, 0, 0, 0, 1, 0);
+            var mtxCam = float4x4.LookAt(0, 20, -600, 0, 150, 0, 0, 1, 0);
+            RC.ModelView = mtxCam * mtxRot;
 
-            RC.SetShader(_spColor);
+            // Render the scene loaded in Init()
+            _sceneRenderer.Render(RC);
 
-            // render first mesh
-            var modelViewMesh1 = mtxCam * mtxRot * float4x4.CreateTranslation(-150, 0, 0) * float4x4.CreateTranslation(0, -50, 0);
-            RC.ModelView = modelViewMesh1;
-            RC.SetShaderParam(_colorParam, new float4(0.5f, 0.8f, 0, 1));
-            RC.Render(_meshTea);
-
-            // render second mesh
-            var modelViewMesh2 = mtxCam*mtxRot*float4x4.CreateTranslation(150, 0, 0) * new float4x4(100, 0, 0, 0, 0, 100, 0, 0, 0, 0, 100, 0, 0, 0, 0, 1);
-            RC.ModelView = modelViewMesh2;
-            RC.SetShaderParam(_colorParam, new float4(1, 0, 0, 1));
-            RC.Render(_meshFace);
-
-            // swap buffers
+            // Swap buffers: Show the contents of the backbuffer (containing the currently rerndered farame) on the front buffer.
             Present();
         }
 
-        // is called when the window was resized
+        // Is called when the window was resized
         public override void Resize()
         {
+            // Set the new rendering area to the entire new windows size
             RC.Viewport(0, 0, Width, Height);
 
+            // Create a new projection matrix generating undistorted images on the new aspect ratio.
             var aspectRatio = Width/(float) Height;
-            var projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 5000);
-            RC.Projection = projection;
-        }
 
-        public static void Main()
-        {
-            var app = new Simple();
-            app.Run();
+            // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculate based on the aspect ratio
+            // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
+            // Back clipping happens at 2000 (Objects further away from the camera than 2000 world units get clipped)
+            var projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 20000);
+            RC.Projection = projection;
         }
     }
 }

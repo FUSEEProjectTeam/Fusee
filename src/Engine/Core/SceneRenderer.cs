@@ -470,29 +470,38 @@ namespace Fusee.Engine.Core
                 // Iterate over the vertices
                 for (int iVert = 0; iVert < wc.WeightMap.Count; iVert++)
                 {
-                    int nJoints = System.Math.Min(4, wc.WeightMap[iVert].VertexWeights.Count);
+                    VertexWeightList vwl = wc.WeightMap[iVert];
+
+                    // Security guard. Sometimes a vertex has no weight. This should be fixed in the model. But
+                    // let's just not crash here. Instead of having a completely unweighted vertex, bind it to
+                    // the root bone (index 0).
+                    if (vwl == null)
+                        vwl = new VertexWeightList();
+                    if (vwl.VertexWeights == null)
+                        vwl.VertexWeights = new List<VertexWeight>(new[] {new VertexWeight {JointIndex = 0, Weight = 1.0f}});
+                    int nJoints = System.Math.Min(4, vwl.VertexWeights.Count);
                     for (int iJoint = 0; iJoint < nJoints; iJoint++)
                     {
-                        // boneWeights[iVert][iJoint] = wc.WeightMap[iVert].VertexWeights[iJoint].Weight;
-                        // boneIndices[iVert][iJoint] = wc.WeightMap[iVert].VertexWeights[iJoint].JointIndex;
-                        // Darn JSIL cannot handle float4 indexer. Map [0..3] to [x..z] by hand
+                        // boneWeights[iVert][iJoint] = vwl.VertexWeights[iJoint].Weight;
+                        // boneIndices[iVert][iJoint] = vwl.VertexWeights[iJoint].JointIndex;
+                        // JSIL cannot handle float4 indexer. Map [0..3] to [x..z] by hand
                         switch (iJoint)
                         {
                             case 0:
-                                boneWeights[iVert].x = wc.WeightMap[iVert].VertexWeights[iJoint].Weight;
-                                boneIndices[iVert].x = wc.WeightMap[iVert].VertexWeights[iJoint].JointIndex;
+                                boneWeights[iVert].x = vwl.VertexWeights[iJoint].Weight;
+                                boneIndices[iVert].x = vwl.VertexWeights[iJoint].JointIndex;
                                 break;
                             case 1:
-                                boneWeights[iVert].y = wc.WeightMap[iVert].VertexWeights[iJoint].Weight;
-                                boneIndices[iVert].y = wc.WeightMap[iVert].VertexWeights[iJoint].JointIndex;
+                                boneWeights[iVert].y = vwl.VertexWeights[iJoint].Weight;
+                                boneIndices[iVert].y = vwl.VertexWeights[iJoint].JointIndex;
                                 break;
                             case 2:
-                                boneWeights[iVert].z = wc.WeightMap[iVert].VertexWeights[iJoint].Weight;
-                                boneIndices[iVert].z = wc.WeightMap[iVert].VertexWeights[iJoint].JointIndex;
+                                boneWeights[iVert].z = vwl.VertexWeights[iJoint].Weight;
+                                boneIndices[iVert].z = vwl.VertexWeights[iJoint].JointIndex;
                                 break;
                             case 3:
-                                boneWeights[iVert].w = wc.WeightMap[iVert].VertexWeights[iJoint].Weight;
-                                boneIndices[iVert].w = wc.WeightMap[iVert].VertexWeights[iJoint].JointIndex;
+                                boneWeights[iVert].w = vwl.VertexWeights[iJoint].Weight;
+                                boneIndices[iVert].w = vwl.VertexWeights[iJoint].JointIndex;
                                 break;
                         }
                     }

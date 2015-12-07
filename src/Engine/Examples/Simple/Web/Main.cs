@@ -1,4 +1,6 @@
-﻿using Fusee.Base.Core;
+﻿using System.Collections;
+using System.Collections.Generic;
+using Fusee.Base.Core;
 
 namespace Fusee.Engine.Examples.Simple.Web
 {
@@ -6,6 +8,15 @@ namespace Fusee.Engine.Examples.Simple.Web
     {
         public static void Main()
         {
+            //var daStack = new Stack<int>();
+            //daStack.Push(2);
+            //daStack.Push(3);
+            //daStack.Push(4);
+            //daStack.Push(5);
+            // var eni = daStack.GetEnumerator();
+            // eni.MoveNext();
+            // var ons = eni.Current;
+
             // Inject Fusee.Engine.Base InjectMe dependencies
             // We're using *Desktop*.IOImp here because JSIL can (still) xcompile it.
             IO.IOImp = new Fusee.Base.Imp.Desktop.IOImp();
