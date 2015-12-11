@@ -366,8 +366,7 @@ JSIL.Audio.NullInstance.prototype = JSIL.CreatePrototypeObject(JSIL.Audio.Instan
 
 function finishLoadingSound (filename, createInstance) {
   $jsilbrowserstate.allAssetNames.push(filename);
-  allAssets[getAssetName(filename)] = null;
-
+  allAssets[getAssetName(filename)] = createInstance(false);
   //var asset = new CallbackSoundAsset(getAssetName(filename, true), createInstance);
   //allAssets[getAssetName(filename)] = asset;
 };
@@ -520,41 +519,17 @@ function loadHTML5Sound (audioInfo, filename, data, onError, onDoneLoading) {
   onDoneLoading(finisher);
 }
 
-function loadJSSoundComplete(evt, data) {
-  if (evt.src == data.a) {
-    data.b(data.c);
-  }
-}
-
-function loadSoundJSSound (audioInfo, filename, data, onError, onDoneLoading) {
-  var handleError = function (text) {
-    JSIL.Host.warning(new Error(text));
-	return handleError("Error while loading '" + filename + "'.");
-  };
-
-  var uri = audioInfo.selectUri(filename, data);
-  if (uri == null)
-    return handleError("No supported formats for '" + filename + "'.");
-
-  var createInstance = null;
-
-   var finisher = finishLoadingSound.bind(
-    null, filename, createInstance
-  );
-
-  filename = filename.replace(/\.[^/.]+$/, "");
-  $jsilbrowserstate.allAssetNames.push(filename);
-  allAssets[filename] = uri;
-
-  createjs.Sound.on("fileload", loadJSSoundComplete, this, false, {a:uri, b:onDoneLoading, c:finisher});
-  createjs.Sound.registerSound(uri);
-}
-
 function loadSoundGeneric (audioInfo, filename, data, onError, onDoneLoading) {
   if (audioInfo.disableSound) {
     return loadNullSound(audioInfo, filename, data, onError, onDoneLoading);
+  } else if (data.stream) {
+    return loadStreamingSound(audioInfo, filename, data, onError, onDoneLoading);
+  } else if (audioInfo.hasAudioContext) {
+    return loadWebkitSound(audioInfo, filename, data, onError, onDoneLoading);
+  } else if (audioInfo.hasObjectURL && (audioInfo.hasBlobBuilder || audioInfo.hasBlobCtor)) {
+    return loadBufferedHTML5Sound(audioInfo, filename, data, onError, onDoneLoading);
   } else {
-    return loadSoundJSSound(audioInfo, filename, data, onError, onDoneLoading);
+    return loadHTML5Sound(audioInfo, filename, data, onError, onDoneLoading);
   }
 };
 
@@ -611,35 +586,28 @@ function initSoundLoader () {
   };
 
   audioInfo.selectUri = function (filename, data, outMimeType) {
-    var compl = "";
+    for (var i = 0; i < data.formats.length; i++) {
+      var format = data.formats[i];
+      var extension, mimeType = null;
 
-	if (data.formats === undefined)
-	{
-		return jsilConfig.contentRoot.replace(/^(?:\.\/)+/, "") + filename;
-	} else {
-		for (var i = 0; i < data.formats.length; i++) {
-			var format = data.formats[i];
-			var extension, mimeType = null;
+      if (typeof (format) === "string") {
+        extension = format;
+      } else {
+        extension = format.extension;
+        mimeType = format.mimetype;
+      }
 
-			if (typeof (format) === "string") {
-				extension = format;
-			} else {
-				extension = format.extension;
-				mimeType = format.mimetype;
-			}
+      mimeType = this.getMimeType(extension, mimeType);
 
-			mimeType = this.getMimeType(extension, mimeType);
+      if (this.canPlayType(mimeType)) {
+        if (outMimeType)
+          outMimeType[0] = mimeType;
 
-			if (this.canPlayType(mimeType)) {
-			  if (outMimeType)
-			    outMimeType[0] = mimeType;
+        return jsilConfig.contentRoot + filename + extension;
+      }
+    }
 
-			  return jsilConfig.contentRoot + filename + extension;
-			}
-		}
-
-		return compl;
-	}
+    return null;
   };
 
   if (audioInfo.hasAudioContext) {

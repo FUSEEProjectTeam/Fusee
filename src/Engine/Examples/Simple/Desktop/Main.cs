@@ -2,14 +2,14 @@
 
 namespace Fusee.Engine.Examples.Simple.Desktop
 {
-    class Simple
+    public class Simple
     {
         public static void Main()
         {
             // Inject Fusee.Engine.Base InjectMe dependencies
             IO.IOImp = new Fusee.Base.Imp.Desktop.IOImp();
 
-            var app = new global::Examples.Simple.Simple();
+            var app = new Core.Simple();
 
             // Inject Fusee.Engine InjectMe dependencies (hard coded)
             app.CanvasImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasImp();

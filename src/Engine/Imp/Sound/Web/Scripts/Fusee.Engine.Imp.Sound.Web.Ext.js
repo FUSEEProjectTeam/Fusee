@@ -4,6 +4,8 @@
 
 	Just for the records: The first version of this file was generated using 
 	JSIL v0.6.0 build 16283. From then on it was changed and maintained manually.
+
+    This implementation relys on JSIL.Browser.Audio.js
 */
 
 var $WebAudioImp = JSIL.GetAssembly("Fusee.Engine.Imp.Sound.Web");
@@ -20,38 +22,20 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Sound.Web.AudioStream", function ($)
 {
     $.Field({ Static: false, Public: false }, "MainOutputStream", $.Object);
     $.Field({ Static: false, Public: false }, "StreamFileName", $.String);
-
-    $.Property({ Static: false, Public: false }, "Loop", $.Boolean);
-    $.Property({ Static: false, Public: false }, "Panning", $.Single);
+    $.Field({ Static: false, Public: false }, "_loop", $.Boolean);
+    $.Field({ Static: false, Public: false }, "_bufferSourceProbablyCreated", $.Boolean);
 
     $.Method({ Static: false, Public: true }, ".ctor",
         new JSIL.MethodSignature(null, [$.String]),
         function _ctor(fileName) {
-            var playbackFile = fileName.replace(/\.[^/.]+$/, "");
-            playbackFile = JSIL.Host.getAssetVal(playbackFile);
+            // var playbackFile = fileName.replace(/\.[^/.]+$/, "");
+            // playbackFile = JSIL.Host.getAssetVal(playbackFile);
+            var instance = JSIL.Host.getAsset(fileName);
 
-            try {
-                var instance = createjs.Sound.createInstance(playbackFile);
-            } catch(e) {
-                var instance = null;
-            }
-
-            this.StreamFileName = playbackFile;
+            this.StreamFileName = fileName;
             this.MainOutputStream = instance;
-
-            if (instance)
-                this.MainOutputStream.addEventListener("complete", this.playingComplete.bind(this));
-        }
-    );
-
-    $.Method({ Static: false, Public: false }, "playingComplete",
-        new JSIL.MethodSignature(null, [$.Object]),
-        function playingComplete(event) {
-            if (event.type == "complete")
-                if (this.AudioStream$Loop$value) {
-                    var self = this;
-                    window.setTimeout(function() { self.MainOutputStream.play(); }, 1);
-                }
+            this._loop = false;
+            this._bufferSourceProbablyCreated = false;
         }
     );
 
@@ -61,10 +45,21 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Sound.Web.AudioStream", function ($)
             if (!this.MainOutputStream)
                 return;
 
-            if (this.MainOutputStream.paused && this.MainOutputStream.playState == "playSucceeded")
+            if (this.MainOutputStream.isPaused)
+            {
                 this.MainOutputStream.resume();
+                // HACK around JSIL.Browser.Audio.js crashing if loop is set and no bufferSource created yet.
+                // after resume we can be sure that the buffer is created and can safely set the loop property.
+                this.MainOutputStream.set_loop(this._loop);
+            }
             else
+            {
                 this.MainOutputStream.play();
+                // HACK around JSIL.Browser.Audio.js crashing if loop is set and no bufferSource created yet.
+                // after resume we can be sure that the buffer is created and can safely set the loop property.
+                this.MainOutputStream.set_loop(this._loop);
+            }
+            this._bufferSourceProbablyCreated = true;
         }
     );
 
@@ -92,7 +87,8 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Sound.Web.AudioStream", function ($)
             if (!this.MainOutputStream)
                 return;
 
-            this.MainOutputStream.stop();
+            if (this.MainOutputStream.isPlaying)
+                this.MainOutputStream.stop();
         }
     );
 
@@ -105,7 +101,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Sound.Web.AudioStream", function ($)
             var maxVal = System.Math.Min(100, value);
             maxVal = System.Math.Max(maxVal, 0);
 
-            this.MainOutputStream.setVolume(maxVal / 100);
+            this.MainOutputStream.set_volume(maxVal / 100);
         }
     );
 
@@ -113,23 +109,35 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Sound.Web.AudioStream", function ($)
         new JSIL.MethodSignature($.Single, []),
         function get_Volume() {
             if (!this.MainOutputStream)
-                return;
+                return 0;
 
-            return this.MainOutputStream.getVolume() * 100;
+            return this.MainOutputStream.get_volume() * 100;
         }
     );
 
     $.Method({ Static: false, Public: true }, "set_Loop",
         new JSIL.MethodSignature(null, [$.Boolean]),
         function set_Loop(value) {
-            this.AudioStream$Loop$value = value;
+            // HACK around JSIL.Browser.Audio.js crashing if loop is set and no bufferSource created yet.
+            // We just store the loop property here and set it right after play() or resume().
+            this._loop = value;
+
+            if (!this.MainOutputStream) 
+                return;
+
+            // unfortunately isPlaying yields false for looping sounds when repeating (only true for the first time)
+            // if (!this.MainOutputStream.get_isPlaying())
+            if (!this._bufferSourceProbablyCreated)
+                return;
+
+            this.MainOutputStream.set_loop(value);
         }
     );
 
     $.Method({ Static: false, Public: true }, "get_Loop",
         new JSIL.MethodSignature($.Boolean, []),
         function get_Loop() {
-            return this.AudioStream$Loop$value;
+            return this._loop;
         }
     );
 
@@ -142,17 +150,17 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Sound.Web.AudioStream", function ($)
             var maxVal = System.Math.Min(100, value);
             maxVal = System.Math.Max(maxVal, -100);
 
-            this.MainOutputStream.setPan(maxVal / 100);
+            this.MainOutputStream.set_pan(maxVal / 100);
         }
     );
 
     $.Method({ Static: false, Public: true }, "get_Panning",
-        new JSIL.MethodSignature($.Boolean, []),
+        new JSIL.MethodSignature($.Single, []),
         function get_Panning() {
             if (!this.MainOutputStream)
                 return;
 
-            return this.MainOutputStream.getPan() * 100;
+            return this.MainOutputStream.get_pan() * 100;
         }
     );
 
@@ -163,18 +171,23 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Sound.Web.AudioImp", function ($)
 {
     $.Field({ Static: false, Public: false }, "AllStreams", $jsilcore.TypeRef("System.Array", [$fuseeCommon.TypeRef("Fusee.Engine.Common.IAudioStream")]));
     $.Field({ Static: false, Public: false }, "LoadedStreams", $.Int32);
+    $.Field({ Static: false, Public: false }, "_globalVolume", $.Single);
+    $.Field({ Static: false, Public: false }, "_globalPanning", $.Single);
 
     $.Method({ Static: false, Public: true }, ".ctor",
         new JSIL.MethodSignature(null, []),
         function WebAudioImp__ctor() {
             this.AllStreams = JSIL.Array.New($fuseeCommon.Fusee.Engine.Common.IAudioStream, 128);
+            this._globalVolume = 100;
+            this._globalPanning = 0;
+            this.LoadedStreams = 0;
         }
     );
 
     $.Method({ Static: false, Public: true }, "LoadFile",
         new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.Common.IAudioStream"), [$.String, $.Boolean]),
         function WebAudioImp_LoadFile(fileName, streaming) {
-            var tmp = new $WebAudioImp.Fusee.Engine.Common.AudioStream(fileName);
+            var tmp = new $WebAudioImp.Fusee.Engine.Imp.Sound.Web.AudioStream(fileName);
             this.AllStreams[this.LoadedStreams] = tmp;
             ++this.LoadedStreams;
             return tmp;
@@ -198,14 +211,15 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Sound.Web.AudioImp", function ($)
     $.Method({ Static: false, Public: true }, "Stop",
         new JSIL.MethodSignature(null, []),
         function WebAudioImp_Stop() {
-            createjs.Sound.stop();
+            for (var x = 0; x < this.LoadedStreams; x++)
+                this.AllStreams[x].Stop();
         }
     );
 
     $.Method({ Static: false, Public: true }, "GetVolume",
         new JSIL.MethodSignature($.Single, []),
         function WebAudioImp_GetVolume() {
-            return createjs.Sound.getVolume() * 100;
+            return this._globalVolume;
         }
     );
 
@@ -214,8 +228,17 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Sound.Web.AudioImp", function ($)
         function WebAudioImp_SetVolume(value) {
             var maxVal = System.Math.Min(100, value);
             maxVal = System.Math.Max(maxVal, 0);
+            this._globalVolume = maxVal;
 
-            createjs.Sound.setVolume(maxVal / 100);
+            for (var x = 0; x < this.LoadedStreams; x++)
+                this.AllStreams[x].set_Volume(maxVal);
+        }
+    );
+
+    $.Method({ Static: false, Public: true }, "GetPanning",
+        new JSIL.MethodSignature($.Single, []),
+        function WebAudioImp_GetPanning() {
+            return this._globalPanning;
         }
     );
 
@@ -224,9 +247,10 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Sound.Web.AudioImp", function ($)
         function WebAudioImp_SetPanning(value) {
             var maxVal = System.Math.Min(100, value);
             maxVal = System.Math.Max(maxVal, -100);
+            this._globalPanning = maxVal;
 
             for (var x = 0; x < this.LoadedStreams; x++)
-                this.AllStreams[x].Panning = maxVal;
+                this.AllStreams[x].set_Panning(maxVal);
         }
     );
 

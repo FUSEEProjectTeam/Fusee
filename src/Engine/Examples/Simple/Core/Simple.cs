@@ -11,7 +11,7 @@ using Fusee.Math;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 
-namespace Examples.Simple
+namespace Fusee.Engine.Examples.Simple.Core
 {
  
     [FuseeApplication(Name = "Simple Example", Description = "A very simple example.")]
@@ -56,7 +56,7 @@ namespace Examples.Simple
             }
             else
             {
-                var curDamp = (float) Math.Exp(-Damping*Time.Instance.DeltaTime);
+                var curDamp = (float) System.Math.Exp(-Damping*Time.Instance.DeltaTime);
 
                 _angleVelHorz *= curDamp;
                 _angleVelVert *= curDamp;

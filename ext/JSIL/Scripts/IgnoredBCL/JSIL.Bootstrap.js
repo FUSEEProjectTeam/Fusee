@@ -686,6 +686,8 @@ JSIL.GetEnumerator = function (enumerable, elementType, fallbackMethodInvoke) {
   var result = null;
   if (JSIL.IsArray(enumerable))
     result = JSIL.MakeArrayEnumerator(enumerable, elementType);
+  else if (enumerable.__IsArray__)
+    result = JSIL.MakeArrayEnumerator(enumerable.Items, elementType);
   else if (typeof (enumerable) === "string")
     result = JSIL.MakeArrayEnumerator(enumerable, elementType);
   else if ((fallbackMethodInvoke !== true) && tIEnumerable$b1 && tIEnumerable$b1.$Is(enumerable))
@@ -724,6 +726,62 @@ JSIL.ParseDataURL = function (dataUrl) {
 
   return [mimeType, bytes];
 };
+JSIL.MakeIConvertibleMethods = function ($) {
+  var $T01 = function () {
+    return ($T01 = JSIL.Memoize($jsilcore.System.Convert))();
+  };
+
+  var $TypeCode = function () {
+    return ($TypeCode = JSIL.Memoize($jsilcore.System.Type.GetTypeCode($.Type)))();
+  };
+
+  var types = [
+    $.Boolean, $.Char,
+    $.SByte, $.Byte, $.Int16, $.UInt16, $.Int32, $.UInt32, $.Int64, $.UInt64,
+    $.Single, $.Double,
+    $jsilcore.TypeRef("System.Decimal"),
+    $jsilcore.TypeRef("System.DateTime"),
+    $.String
+  ];
+
+  var signatures = [];
+
+  var createSignature = function (i) {
+    return function () {
+      return (signatures[i] = JSIL.Memoize(new JSIL.MethodSignature(types[i], [$.Type])))();
+    }
+  };
+
+  var createConvertFunction = function (i, name) {
+    return function (formatProvider) {
+      return signatures[i]().CallStatic($T01(), "To" + name, null, this);
+    }
+  };
+
+  for (var i = 0; i < types.length; i++) {
+    signatures.push(createSignature(i));
+
+    var typeRef = types[i];
+    var typeName = typeRef.typeName.substr(typeRef.typeName.indexOf(".") + 1);
+
+    if (typeRef !== $.String) {
+      $.Method({ Static: false, Public: false, Virtual: true }, "System.IConvertible.To" + typeName, new JSIL.MethodSignature(typeRef, [$jsilcore.TypeRef("System.IFormatProvider")], []),
+          createConvertFunction(i, typeName))
+        .Overrides($jsilcore.TypeRef("System.IConvertible"), "To" + typeName);
+    } else {
+      $.Method({ Static: false, Public: true, Virtual: true }, "ToString", new JSIL.MethodSignature($.String, [$jsilcore.TypeRef("System.IFormatProvider")], []),
+          createConvertFunction(i, typeName));
+    }
+  }
+
+  $.Method({ Static: false, Public: true, Virtual: true }, "GetTypeCode", new JSIL.MethodSignature($jsilcore.TypeRef("System.TypeCode"), [], []),
+    function IConvertible_GetTypeCode() {
+      return $TypeCode();
+    });
+
+  $.ImplementInterfaces($jsilcore.TypeRef("System.IConvertible"));
+}
+
 
 JSIL.MakeClass("System.Object", "JSIL.ArrayEnumerator", true, ["T"], function ($) {
   var T = new JSIL.GenericParameter("T", "JSIL.ArrayEnumerator");
@@ -798,95 +856,6 @@ JSIL.MakeClass("System.Object", "JSIL.ArrayEnumerator", true, ["T"], function ($
     /* 2 */ $jsilcore.TypeRef("System.Collections.Generic.IEnumerator`1", [new JSIL.GenericParameter("T", "JSIL.ArrayEnumerator")])
   );
 });
-JSIL.MakeClass("System.Object", "JSIL.ArrayInterfaceOverlay", true, ["T"], function ($) {
-  var T = new JSIL.GenericParameter("T", "JSIL.ArrayInterfaceOverlay");
-
-  $.RawMethod(false, ".ctor",
-    function (array) {
-      this._array = array;
-    }
-  );
-
-  $.RawMethod(false, "$overlayToArray",
-    function (T) {
-      // We don't want to allow conversion to an unrelated array type.
-      // FIXME: Covariance? Contravariance?
-      if (T.__IsArray__ && (T.__ElementType__ === this.T))
-        return this._array;
-      else
-        return null;
-    }
-  );
-
-  $.Method({ Static: false, Public: false }, null,
-    new JSIL.MethodSignature($jsilcore.TypeRef("System.Collections.IEnumerator"), [], []),
-    function () {
-      return JSIL.GetEnumerator(this._array, this.T);
-    }
-  )
-    .Overrides("System.Collections.IEnumerable", "GetEnumerator");
-
-  $.Method({ Static: false, Public: true }, "GetEnumerator",
-    new JSIL.MethodSignature($jsilcore.TypeRef("System.Collections.Generic.IEnumerator`1", [T]), [], []),
-    function () {
-      return JSIL.GetEnumerator(this._array, this.T);
-    }
-  )
-    .Overrides("System.Collections.Generic.IEnumerable`1", "GetEnumerator");
-
-  // FIXME: Implement actual members of IList.
-
-  $.Method({ Static: false, Public: true }, "CopyTo",
-    new JSIL.MethodSignature(null, [$jsilcore.TypeRef("System.Array", [T]), $.Int32], []),
-    function CopyTo(array, arrayIndex) {
-      JSIL.Array.CopyTo(this._array, array, arrayIndex);
-    }
-  );
-
-  $.Method({ Static: false, Public: true }, "get_Count",
-    new JSIL.MethodSignature($.Int32, [], []),
-    function get_Count() {
-      return this._array.length;
-    }
-  );
-
-  $.Method({ Static: false, Public: true }, "get_Item",
-    new JSIL.MethodSignature(T, [$.Int32], []),
-    function get_Item(index) {
-      return this._array[index];
-    }
-  );
-
-  $.Method({ Static: false, Public: true }, "set_Item",
-    new JSIL.MethodSignature(null, [$.Int32, T], []),
-    function set_Item(index, value) {
-      this._array[index] = value;
-    }
-  );
-
-  $.Method({ Static: false, Public: true }, "Contains",
-    new JSIL.MethodSignature($.Boolean, [T], []),
-    function Contains(value) {
-      return JSIL.Array.IndexOf(this._array, 0, this._array.length, value) >= 0;
-    }
-  );
-
-  $.Method({ Static: false, Public: true }, "IndexOf",
-    new JSIL.MethodSignature($.Int32, [T], []),
-    function IndexOf(value) {
-      return JSIL.Array.IndexOf(this._array, 0, this._array.length, value);
-    }
-  );
-
-  $.ImplementInterfaces(
-    /* 0 */ $jsilcore.TypeRef("System.Collections.IEnumerable"),
-    /* 1 */ $jsilcore.TypeRef("System.Collections.Generic.IEnumerable`1", [T]),
-    /* 2 */ $jsilcore.TypeRef("System.Collections.ICollection"),
-    /* 3 */ $jsilcore.TypeRef("System.Collections.Generic.ICollection`1", [T]),
-    /* 4 */ $jsilcore.TypeRef("System.Collections.IList"),
-    /* 5 */ $jsilcore.TypeRef("System.Collections.Generic.IList`1", [T])
-  );
-});
 
 ﻿$jsilcore.$MakeParseExternals = function ($, type, parse, tryParse) {
   $.Method({ Static: true, Public: true }, "Parse",
@@ -945,46 +914,49 @@ $jsilcore.$TryParseBoolean = function (text, result) {
 JSIL.ImplementExternals(
   "System.Boolean", function ($) {
     $.RawMethod(true, "CheckType", function (value) {
-      return (value === false) || (value === true);
+      return (value === false) || (value === true) || JSIL.Box.IsBoxedOfType(value, $.Type);
     });
 
     $jsilcore.$MakeParseExternals($, $.Boolean, $jsilcore.$ParseBoolean, $jsilcore.$TryParseBoolean);
   }
 );
-JSIL.MakeNumericType(Boolean, "System.Boolean", true);
+JSIL.MakeNumericType(Boolean, "System.Boolean", true, null, JSIL.MakeIConvertibleMethods);
 JSIL.ImplementExternals(
   "System.Char", function ($) {
     $.RawMethod(true, "CheckType", function (value) {
-      return (typeof (value) === "string") && (value.length == 1);
+      return ((typeof (value) === "string") && (value.length == 1)) || JSIL.Box.IsBoxedOfType(value, $.Type);
     });
 
     $.Constant({ Public: true, Static: true }, "MaxValue", "\uffff");
     $.Constant({ Public: true, Static: true }, "MinValue", "\0");
   }
 );
-JSIL.MakeNumericType(String, "System.Char", true);
+JSIL.MakeNumericType(String, "System.Char", true, null, JSIL.MakeIConvertibleMethods);
 JSIL.ImplementExternals(
   "System.Byte", function ($) {
     $.RawMethod(true, "CheckType", function (value) {
-      return (typeof (value) === "number") && (value >= 0) && (value <= 255);
+      return ((typeof (value) === "number") && (value >= 0) && (value <= 255))
+        || JSIL.Box.IsBoxedOfType(value, $.Type);
     });
 
     $.Constant({ Public: true, Static: true }, "MinValue", 0);
     $.Constant({ Public: true, Static: true }, "MaxValue", 255);
   }
 );
-JSIL.MakeNumericType(Number, "System.Byte", true, "Uint8Array");
+JSIL.MakeNumericType(Number, "System.Byte", true, "Uint8Array", JSIL.MakeIConvertibleMethods);
+
 JSIL.ImplementExternals(
   "System.SByte", function ($) {
     $.RawMethod(true, "CheckType", function (value) {
-      return (typeof (value) === "number") && (value >= -128) && (value <= 127);
+      return ((typeof (value) === "number") && (value >= -128) && (value <= 127)) || JSIL.Box.IsBoxedOfType(value, $.Type);
     });
 
     $.Constant({ Public: true, Static: true }, "MinValue", -128);
     $.Constant({ Public: true, Static: true }, "MaxValue", 127);
   }
 );
-JSIL.MakeNumericType(Number, "System.SByte", true, "Int8Array");
+JSIL.MakeNumericType(Number, "System.SByte", true, "Int8Array", JSIL.MakeIConvertibleMethods);
+
 ﻿
 $jsilcore.$ParseInt = function (text, style) {
   var temp = new JSIL.BoxedVariable(null);
@@ -1012,7 +984,7 @@ $jsilcore.$TryParseInt = function (text, style, result) {
 JSIL.ImplementExternals(
   "System.UInt16", function ($) {
     $.RawMethod(true, "CheckType", function (value) {
-      return (typeof (value) === "number") && (value >= 0);
+      return ((typeof (value) === "number") && (value >= 0)) || JSIL.Box.IsBoxedOfType(value, $.Type);
     });
 
     $jsilcore.$MakeParseExternals($, $.UInt16, $jsilcore.$ParseInt, $jsilcore.$TryParseInt);
@@ -1021,12 +993,13 @@ JSIL.ImplementExternals(
     $.Constant({ Public: true, Static: true }, "MinValue", 0);
   }
 );
-JSIL.MakeNumericType(Number, "System.UInt16", true, "Uint16Array");
+JSIL.MakeNumericType(Number, "System.UInt16", true, "Uint16Array", JSIL.MakeIConvertibleMethods);
+
 ﻿
 JSIL.ImplementExternals(
   "System.Int16", function ($) {
     $.RawMethod(true, "CheckType", function (value) {
-      return (typeof (value) === "number");
+      return (typeof (value) === "number") || JSIL.Box.IsBoxedOfType(value, $.Type);
     });
 
     $jsilcore.$MakeParseExternals($, $.Int16, $jsilcore.$ParseInt, $jsilcore.$TryParseInt);
@@ -1035,12 +1008,13 @@ JSIL.ImplementExternals(
     $.Constant({ Public: true, Static: true }, "MinValue", -32768);
   }
 );
-JSIL.MakeNumericType(Number, "System.Int16", true, "Int16Array");
+JSIL.MakeNumericType(Number, "System.Int16", true, "Int16Array", JSIL.MakeIConvertibleMethods);
+
 ﻿
 JSIL.ImplementExternals(
   "System.UInt32", function ($) {
     $.RawMethod(true, "CheckType", function (value) {
-      return (typeof (value) === "number") && (value >= 0);
+      return ((typeof (value) === "number") && (value >= 0)) || JSIL.Box.IsBoxedOfType(value, $.Type);
     });
 
     $jsilcore.$MakeParseExternals($, $.UInt32, $jsilcore.$ParseInt, $jsilcore.$TryParseInt);
@@ -1049,12 +1023,13 @@ JSIL.ImplementExternals(
     $.Constant({ Public: true, Static: true }, "MinValue", 0);
   }
 );
-JSIL.MakeNumericType(Number, "System.UInt32", true, "Uint32Array");
+JSIL.MakeNumericType(Number, "System.UInt32", true, "Uint32Array", JSIL.MakeIConvertibleMethods);
+
 ﻿
 JSIL.ImplementExternals(
   "System.Int32", function ($) {
     $.RawMethod(true, "CheckType", function (value) {
-      return (typeof (value) === "number");
+      return (typeof (value) === "number") || JSIL.Box.IsBoxedOfType(value, $.Type);
     });
 
     $jsilcore.$MakeParseExternals($, $.Int32, $jsilcore.$ParseInt, $jsilcore.$TryParseInt);
@@ -1063,7 +1038,8 @@ JSIL.ImplementExternals(
     $.Constant({ Public: true, Static: true }, "MinValue", -2147483648);
   }
 );
-JSIL.MakeNumericType(Number, "System.Int32", true, "Int32Array");
+JSIL.MakeNumericType(Number, "System.Int32", true, "Int32Array", JSIL.MakeIConvertibleMethods);
+
 ﻿
 $jsilcore.$ParseFloat = function (text, style) {
   var temp = new JSIL.BoxedVariable(null);
@@ -1104,7 +1080,7 @@ $jsilcore.$TryParseFloat = function (text, style, result) {
 JSIL.ImplementExternals(
   "System.Single", function ($) {
     $.RawMethod(true, "CheckType", function (value) {
-      return (typeof (value) === "number");
+      return (typeof (value) === "number") || JSIL.Box.IsBoxedOfType(value, $.Type);
     });
 
     $jsilcore.$MakeParseExternals($, $.Single, $jsilcore.$ParseFloat, $jsilcore.$TryParseFloat);
@@ -1117,12 +1093,13 @@ JSIL.ImplementExternals(
     $.Constant({ Public: true, Static: true }, "NaN", NaN);
   }
 );
-JSIL.MakeNumericType(Number, "System.Single", false, "Float32Array");
+JSIL.MakeNumericType(Number, "System.Single", false, "Float32Array", JSIL.MakeIConvertibleMethods);
+
 ﻿
 JSIL.ImplementExternals(
   "System.Double", function ($) {
     $.RawMethod(true, "CheckType", function (value) {
-      return (typeof (value) === "number");
+      return (typeof (value) === "number") || JSIL.Box.IsBoxedOfType(value, $.Type);
     });
 
     $jsilcore.$MakeParseExternals($, $.Double, $jsilcore.$ParseFloat, $jsilcore.$TryParseFloat);
@@ -1135,7 +1112,7 @@ JSIL.ImplementExternals(
     $.Constant({ Public: true, Static: true }, "NaN", NaN);
   }
 );
-JSIL.MakeNumericType(Number, "System.Double", false, "Float64Array");
+JSIL.MakeNumericType(Number, "System.Double", false, "Float64Array", JSIL.MakeIConvertibleMethods);
 
 ﻿
 JSIL.ImplementExternals("System.Array", function ($) {
@@ -1231,7 +1208,7 @@ JSIL.ImplementExternals("System.Array", function ($) {
     function Sort(array) {
       sortImpl(array, 0, array.length, JSIL.CompareValues);
     }
-  )
+  );
 
   $.Method({ Static: true, Public: true }, "Sort",
     new JSIL.MethodSignature(null, [
@@ -1444,35 +1421,7 @@ JSIL.ImplementExternals("System.Delegate", function ($) {
       if (typeof (delegatePublicInterface.New) !== "function")
         JSIL.Host.abort(new Error("Invalid delegate type"));
 
-      if (!method.IsStatic && firstArgument == null && delegateType.GetMethod("Invoke").GetParameters().length == method.GetParameters().length + 1) {
-        //TODO: Check that first delegate Invoke parameter is assignable to method.DeclaringType
-        return delegatePublicInterface.New(
-          null,
-          function () {
-            var realFirstAgument = arguments[0];
-            var impl = JSIL.$GetMethodImplementation(method, firstArgument);
-
-            if (!impl) {
-              throw new System.Exception("Method has no implementation");
-            } else if (typeof (impl) === "function") {
-              var f = delegatePublicInterface.New(realFirstAgument, impl, function () { return null; });
-              return f.apply(null, Array.prototype.slice.call(arguments, 1));
-            } else {
-              throw new Error("Unexpected JSIL.$GetMethodImplementation result");
-            }
-          },
-          function () { return method; });
-      }
-
-      var impl = JSIL.$GetMethodImplementation(method, firstArgument);
-
-      if (!impl) {
-        throw new System.Exception("Method has no implementation");
-      } else if (typeof (impl) === "function") {
-        return delegatePublicInterface.New(firstArgument, impl, function () { return method; });
-      } else {
-        throw new Error("Unexpected JSIL.$GetMethodImplementation result");
-      }
+      return delegatePublicInterface.New(firstArgument, null, JSIL.MethodPointerInfo.FromMethodInfo(method));
     }
   );
 
@@ -1504,14 +1453,12 @@ JSIL.ImplementExternals("System.Delegate", function ($) {
       if (this.__isMulticast__) {
         return this.get_Method();
       }
-      if (!this.__isMethodInfoResolved__) {
-        var methodInfo = this.__methodInfoResolver__();
+      if (this.__methodPointerInfo__) {
         // TODO: find better solution for resolving MethodInfo in class by MethodInfo in base class.
         // Currently it will not find proper derived implementation MethodInfo for virtual method and interface methods.
-        JSIL.SetValueProperty(this, "__methodInfo__", methodInfo);
-        this.__isMethodInfoResolved__ = true;
+        return  this.__methodPointerInfo__.resolveMethodInfo();
       }
-      return this.__methodInfo__;
+      return null;
     }
   );
 });
@@ -1710,6 +1657,22 @@ JSIL.MakeStruct("System.ValueType", "System.Decimal", true, [], function ($) {
   $.Field({ Static: false, Public: false }, "value", mscorlib.TypeRef("System.Double"), function () {
     return 0;
   });
+
+  var $formatSignature = function () {
+    return ($formatSignature = JSIL.Memoize(new JSIL.MethodSignature($jsilcore.TypeRef("System.String"), [
+        $jsilcore.TypeRef("System.String"), $jsilcore.TypeRef("System.Double"),
+        $jsilcore.TypeRef("System.IFormatProvider")
+    ])))();
+  };
+
+  $.RawMethod(
+    true, "$ToString",
+    function $ToString(self, format, formatProvider) {
+      return $formatSignature().CallStatic($jsilcore.JSIL.System.NumberFormatter, "NumberToString", null, format, decimalToNumber(self), formatProvider).toString();
+    }
+  );
+
+  JSIL.MakeIConvertibleMethods($);
 });
 
 // HACK: Unfortunately necessary :-(
@@ -2285,316 +2248,34 @@ JSIL.ImplementExternals("System.Math", function ($) {
 JSIL.MakeStaticClass("System.Math", true, [], function ($) {
 });
 
+JSIL.MakeInterface(
+  "System.IConvertible", true, [], function ($) {
+      $.Method({}, "GetTypeCode", new JSIL.MethodSignature($jsilcore.TypeRef("System.TypeCode"), [], []));
+      $.Method({}, "ToBoolean", new JSIL.MethodSignature($.Boolean, [$jsilcore.TypeRef("System.IFormatProvider")], []));
+      $.Method({}, "ToChar", new JSIL.MethodSignature($.Char, [$jsilcore.TypeRef("System.IFormatProvider")], []));
+      $.Method({}, "ToSByte", new JSIL.MethodSignature($.SByte, [$jsilcore.TypeRef("System.IFormatProvider")], []));
+      $.Method({}, "ToByte", new JSIL.MethodSignature($.Byte, [$jsilcore.TypeRef("System.IFormatProvider")], []));
+      $.Method({}, "ToInt16", new JSIL.MethodSignature($.Int16, [$jsilcore.TypeRef("System.IFormatProvider")], []));
+      $.Method({}, "ToUInt16", new JSIL.MethodSignature($.UInt16, [$jsilcore.TypeRef("System.IFormatProvider")], []));
+      $.Method({}, "ToInt32", new JSIL.MethodSignature($.Int32, [$jsilcore.TypeRef("System.IFormatProvider")], []));
+      $.Method({}, "ToUInt32", new JSIL.MethodSignature($.UInt32, [$jsilcore.TypeRef("System.IFormatProvider")], []));
+      $.Method({}, "ToInt64", new JSIL.MethodSignature($.Int64, [$jsilcore.TypeRef("System.IFormatProvider")], []));
+      $.Method({}, "ToUInt64", new JSIL.MethodSignature($.UInt64, [$jsilcore.TypeRef("System.IFormatProvider")], []));
+      $.Method({}, "ToSingle", new JSIL.MethodSignature($.Single, [$jsilcore.TypeRef("System.IFormatProvider")], []));
+      $.Method({}, "ToDouble", new JSIL.MethodSignature($.Double, [$jsilcore.TypeRef("System.IFormatProvider")], []));
+      $.Method({}, "ToDecimal", new JSIL.MethodSignature($jsilcore.TypeRef("System.Decimal"), [$jsilcore.TypeRef("System.IFormatProvider")], []));
+      $.Method({}, "ToDateTime", new JSIL.MethodSignature($jsilcore.TypeRef("System.DateTime"), [$jsilcore.TypeRef("System.IFormatProvider")], []));
+      $.Method({}, "ToString", new JSIL.MethodSignature($.String, [$jsilcore.TypeRef("System.IFormatProvider")], []));
+      $.Method({}, "ToType", new JSIL.MethodSignature($.Object, [$jsilcore.TypeRef("System.Type"), $jsilcore.TypeRef("System.IFormatProvider")], []));
+  }, [],
+  function (input) {
+    return typeof(input) === "string";
+  },
+  function (interfaceTypeObject, signature, thisReference) {
+    return JSIL.GetType(thisReference).__PublicInterface__.prototype[signature.methodKey];
+  });
 ﻿
 ﻿JSIL.ImplementExternals("System.Convert", function ($) {
-  $.Method({ Static: true, Public: true }, "ChangeType",
-    (new JSIL.MethodSignature($.Object, [$.Object, $jsilcore.TypeRef("System.Type")], [])),
-    function ChangeType(value, conversionType) {
-      // FIXME: Actually compatible?
-      if (value && $jsilcore.System.IConvertible.$Is(value)) {
-        // FIXME: provider
-        return $jsilcore.System.IConvertible.ToType.Call(value, null, conversionType, null);
-      } else {
-        return conversionType.__PublicInterface__.$As(value);
-      }
-    }
-  );
-
-  var returnSame = function (value) {
-    return value;
-  };
-
-  var returnValueOf = function (value) {
-    return value.valueOf();
-  };
-
-  var makeAdapter = function (adapter) {
-    if (!adapter)
-      JSIL.RuntimeError("No adapter provided");
-
-    return function (value) {
-      return adapter(value);
-    };
-  };
-
-  var boolToInt = function (b) {
-    return b ? 1 : 0;
-  };
-
-  var boolToString = function (b) {
-    return b ? "True" : "False";
-  };
-
-  var makeConvertMethods = function (typeName, to, from) {
-    // FIXME: We currently ignore the format provider argument
-    // FIXME: Range checks/clipping/saturation are not performed for the integer types
-
-    var methodName = "To" + typeName;
-
-    var descriptor = { Static: true, Public: true };
-    var tFormatProvider = $jsilcore.TypeRef("System.IFormatProvider");
-
-    var toType = JSIL.ResolveTypeReference(to)[0];
-
-    var makeSignature = function (argType, formatProvider) {
-      if (formatProvider)
-        return new JSIL.MethodSignature(to, [argType, tFormatProvider], []);
-      else
-        return new JSIL.MethodSignature(to, [argType], []);
-    };
-
-    if (from.boolean) {
-      $.Method(descriptor, methodName, makeSignature($.Boolean), from.boolean);
-
-      $.Method(descriptor, methodName, makeSignature($.Boolean, true), from.boolean);
-    }
-
-    $.Method(descriptor, methodName, makeSignature($.SByte), from.int);
-    $.Method(descriptor, methodName, makeSignature($.Int16), from.int);
-    $.Method(descriptor, methodName, makeSignature($.Int32), from.int);
-
-    $.Method(descriptor, methodName, makeSignature($.SByte, true), from.int);
-    $.Method(descriptor, methodName, makeSignature($.Int16, true), from.int);
-    $.Method(descriptor, methodName, makeSignature($.Int32, true), from.int);
-
-    $.Method(descriptor, methodName, makeSignature($.Byte), from.uint);
-    $.Method(descriptor, methodName, makeSignature($.UInt16), from.uint);
-    $.Method(descriptor, methodName, makeSignature($.UInt32), from.uint);
-
-    $.Method(descriptor, methodName, makeSignature($.Byte, true), from.uint);
-    $.Method(descriptor, methodName, makeSignature($.UInt16, true), from.uint);
-    $.Method(descriptor, methodName, makeSignature($.UInt32, true), from.uint);
-
-    if (from.int64) {
-      $.Method(descriptor, methodName, makeSignature($.Int64), from.int64);
-      $.Method(descriptor, methodName, makeSignature($.Int64, true), from.int64);
-    }
-
-    if (from.uint64) {
-      $.Method(descriptor, methodName, makeSignature($.UInt64), from.uint64);
-      $.Method(descriptor, methodName, makeSignature($.UInt64, true), from.uint64);
-    }
-
-    if (from.float) {
-      $.Method(descriptor, methodName, makeSignature($.Single), from.float);
-      $.Method(descriptor, methodName, makeSignature($.Double), from.float);
-
-      $.Method(descriptor, methodName, makeSignature($.Single, true), from.float);
-      $.Method(descriptor, methodName, makeSignature($.Double, true), from.float);
-    }
-
-    if (from.string) {
-      $.Method(descriptor, methodName, makeSignature($.String), from.string);
-
-      $.Method(descriptor, methodName, makeSignature($.String, true), from.string);
-    }
-
-    var fromObject = function Convert_FromObject(value) {
-      if (value === null) {
-        if (to === $.String) {
-          return $jsilcore.System.String.Empty;
-        }
-
-        return JSIL.DefaultValue(toType);
-      }
-
-      if ($jsilcore.System.IConvertible.$Is(value)) {
-        var conversionMethod = $jsilcore.System.IConvertible["To" + typeName];
-
-        if (conversionMethod) {
-          return conversionMethod.Call(value, null, null);
-        }
-      }
-
-      if (to === $.String) {
-        return value.toString();
-      }
-
-      if ($jsilcore.System.String.$Is(value))
-        return from.string(value);
-      else if (from.int64 && $jsilcore.System.Int64.$Is(value))
-        return from.int64(value);
-      else if (from.uint64 && $jsilcore.System.UInt64.$Is(value))
-        return from.uint64(value);
-      else if ($jsilcore.System.Int32.$Is(value))
-        return from.int(value);
-      else if ($jsilcore.System.UInt32.$Is(value))
-        return from.uint(value);
-      else if ($jsilcore.System.Boolean.$Is(value))
-        return from.boolean(value);
-      else if ($jsilcore.System.Double.$Is(value))
-        return from.float(value);
-      else
-        throw new System.NotImplementedException(
-          "Conversion from type '" + JSIL.GetType(value) + "' to type '" + typeName + "' not implemented."
-        );
-    };
-
-    $.Method(descriptor, methodName, makeSignature($.Object), fromObject);
-    $.Method(descriptor, methodName, makeSignature($.Object, true), fromObject);
-  };
-
-  makeConvertMethods("Boolean", $.Boolean, {
-    boolean: returnSame,
-    uint: makeAdapter(Boolean),
-    int: makeAdapter(Boolean),
-    float: makeAdapter(Boolean),
-    int64: makeAdapter(Boolean),
-    uint64: makeAdapter(Boolean),
-    string: makeAdapter($jsilcore.$ParseBoolean)
-  });
-
-  makeConvertMethods("Byte", $.Byte, {
-    boolean: boolToInt,
-    uint: returnSame,
-    int: returnSame,
-    float: returnSame,
-    int64: returnValueOf,
-    uint64: returnValueOf,
-    string: makeAdapter($jsilcore.$ParseInt)
-  });
-
-  makeConvertMethods("SByte", $.SByte, {
-    boolean: boolToInt,
-    uint: returnSame,
-    int: returnSame,
-    float: returnSame,
-    int64: returnValueOf,
-    uint64: returnValueOf,
-    string: makeAdapter($jsilcore.$ParseInt)
-  });
-
-  makeConvertMethods("UInt16", $.UInt16, {
-    boolean: boolToInt,
-    uint: returnSame,
-    int: returnSame,
-    float: returnSame,
-    int64: returnValueOf,
-    uint64: returnValueOf,
-    string: makeAdapter($jsilcore.$ParseInt)
-  });
-
-  makeConvertMethods("Int16", $.Int16, {
-    boolean: boolToInt,
-    uint: returnSame,
-    int: returnSame,
-    float: returnSame,
-    int64: returnValueOf,
-    uint64: returnValueOf,
-    string: makeAdapter($jsilcore.$ParseInt)
-  });
-
-  makeConvertMethods("UInt32", $.UInt32, {
-    boolean: boolToInt,
-    uint: returnSame,
-    int: returnSame,
-    float: returnSame,
-    int64: returnValueOf,
-    uint64: returnValueOf,
-    string: makeAdapter($jsilcore.$ParseInt)
-  });
-
-  makeConvertMethods("Int32", $.Int32, {
-    boolean: boolToInt,
-    uint: returnSame,
-    int: returnSame,
-    float: returnSame,
-    int64: returnValueOf,
-    uint64: returnValueOf,
-    string: makeAdapter($jsilcore.$ParseInt)
-  });
-
-  var boolToUInt64 = function (b) {
-    return $jsilcore.System.UInt64.FromInt32(b ? 1 : 0);
-  };
-
-  var intToUInt64 = function (i) {
-    return $jsilcore.System.UInt64.FromInt32(i);
-  };
-
-  var uintToUInt64 = function (u) {
-    return $jsilcore.System.UInt64.FromUInt32(u);
-  };
-
-  var parseUInt64 = function (text) {
-    return $jsilcore.System.UInt64.Parse(text);
-  };
-
-  makeConvertMethods("UInt64", $.UInt64, {
-    boolean: boolToUInt64,
-    uint: uintToUInt64,
-    int: intToUInt64,
-    string: parseUInt64
-  });
-
-  var boolToInt64 = function (b) {
-    return $jsilcore.System.Int64.FromInt32(b ? 1 : 0);
-  }
-
-  var intToInt64 = function (i) {
-    return $jsilcore.System.Int64.FromInt32(i);
-  };
-
-  var uintToInt64 = function (u) {
-    return $jsilcore.System.Int64.FromUInt32(u);
-  };
-
-  var parseInt64 = function (text) {
-    return $jsilcore.System.Int64.Parse(text);
-  };
-
-  var intToChar = function (i) {
-    return String.fromCharCode(i | 0);
-  };
-
-  var valueOfToChar = function (obj) {
-    return String.fromCharCode(obj.valueOf() | 0);
-  };
-
-  makeConvertMethods("Int64", $.Int64, {
-    boolean: boolToInt64,
-    uint: uintToInt64,
-    int: intToInt64,
-    string: parseInt64
-  });
-
-  makeConvertMethods("Single", $.Single, {
-    boolean: boolToInt,
-    uint: returnSame,
-    int: returnSame,
-    float: returnSame,
-    int64: returnValueOf,
-    uint64: returnValueOf,
-    string: makeAdapter($jsilcore.$ParseFloat)
-  });
-
-  makeConvertMethods("Double", $.Double, {
-    boolean: boolToInt,
-    uint: returnSame,
-    int: returnSame,
-    float: returnSame,
-    int64: returnValueOf,
-    uint64: returnValueOf,
-    string: makeAdapter($jsilcore.$ParseFloat)
-  });
-
-  makeConvertMethods("Char", $.Char, {
-    uint: intToChar,
-    int: intToChar,
-    int64: valueOfToChar,
-    uint64: valueOfToChar
-  });
-
-  makeConvertMethods("String", $.String, {
-    boolean: boolToString,
-    uint: makeAdapter(String),
-    int: makeAdapter(String),
-    float: makeAdapter(String),
-    int64: makeAdapter(String),
-    uint64: makeAdapter(String),
-    string: returnSame
-  });
-
   var base64IgnoredCodepoints = [
     9, 10, 13, 32
   ];
@@ -2769,10 +2450,6 @@ JSIL.MakeStaticClass("System.Math", true, [], function ($) {
     }
   );
 });
-
-JSIL.MakeStaticClass("System.Convert", true, [], function ($) {
-});
-
 $jsilcore.SerializationScratchBuffers = null;
 
 $jsilcore.GetSerializationScratchBuffers = function () {
@@ -6029,27 +5706,6 @@ JSIL.MakeInterface(
       $.Property({}, "AsyncWaitHandle");
       $.Property({}, "AsyncState");
       $.Property({}, "CompletedSynchronously");
-  }, []);
-
-JSIL.MakeInterface(
-  "System.IConvertible", true, [], function ($) {
-      $.Method({}, "GetTypeCode", new JSIL.MethodSignature($jsilcore.TypeRef("System.TypeCode"), [], []));
-      $.Method({}, "ToBoolean", new JSIL.MethodSignature($.Boolean, [$jsilcore.TypeRef("System.IFormatProvider")], []));
-      $.Method({}, "ToChar", new JSIL.MethodSignature($.Char, [$jsilcore.TypeRef("System.IFormatProvider")], []));
-      $.Method({}, "ToSByte", new JSIL.MethodSignature($.SByte, [$jsilcore.TypeRef("System.IFormatProvider")], []));
-      $.Method({}, "ToByte", new JSIL.MethodSignature($.Byte, [$jsilcore.TypeRef("System.IFormatProvider")], []));
-      $.Method({}, "ToInt16", new JSIL.MethodSignature($.Int16, [$jsilcore.TypeRef("System.IFormatProvider")], []));
-      $.Method({}, "ToUInt16", new JSIL.MethodSignature($.UInt16, [$jsilcore.TypeRef("System.IFormatProvider")], []));
-      $.Method({}, "ToInt32", new JSIL.MethodSignature($.Int32, [$jsilcore.TypeRef("System.IFormatProvider")], []));
-      $.Method({}, "ToUInt32", new JSIL.MethodSignature($.UInt32, [$jsilcore.TypeRef("System.IFormatProvider")], []));
-      $.Method({}, "ToInt64", new JSIL.MethodSignature($.Int64, [$jsilcore.TypeRef("System.IFormatProvider")], []));
-      $.Method({}, "ToUInt64", new JSIL.MethodSignature($.UInt64, [$jsilcore.TypeRef("System.IFormatProvider")], []));
-      $.Method({}, "ToSingle", new JSIL.MethodSignature($.Single, [$jsilcore.TypeRef("System.IFormatProvider")], []));
-      $.Method({}, "ToDouble", new JSIL.MethodSignature($.Double, [$jsilcore.TypeRef("System.IFormatProvider")], []));
-      $.Method({}, "ToDecimal", new JSIL.MethodSignature($jsilcore.TypeRef("System.Decimal"), [$jsilcore.TypeRef("System.IFormatProvider")], []));
-      $.Method({}, "ToDateTime", new JSIL.MethodSignature($jsilcore.TypeRef("System.DateTime"), [$jsilcore.TypeRef("System.IFormatProvider")], []));
-      $.Method({}, "ToString", new JSIL.MethodSignature($.String, [$jsilcore.TypeRef("System.IFormatProvider")], []));
-      $.Method({}, "ToType", new JSIL.MethodSignature($.Object, [$jsilcore.TypeRef("System.Type"), $jsilcore.TypeRef("System.IFormatProvider")], []));
   }, []);
 
 JSIL.MakeInterface(

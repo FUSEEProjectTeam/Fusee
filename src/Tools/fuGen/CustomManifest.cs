@@ -70,10 +70,20 @@ namespace Fusee.Tools.fuGen
 
                     if (!doubleExt)
                     {
-                        fileNamesList.Add("Assets/" + pathExt + Path.GetFileName(filePath));
-                        fileFormatsList.Add(" ");
+                        if ((fType == "Sound"))
+                        {
+                            string fileName1 = Path.GetFileNameWithoutExtension(filePath);
+                            string ext1 = Path.GetExtension(filePath);
+                            fileNamesList.Add("Assets/" + pathExt + fileName1);
+                            fileFormatsList.Add(" \"formats\": [\"" + ext1 + "\"],	");
+                        }
+                        else
+                        {
+                            fileNamesList.Add("Assets/" + pathExt + Path.GetFileName(filePath));
+                            fileFormatsList.Add(" ");
                     }
                 }
+            }
 
             // Convert to Array
             _fileCount = fileNamesList.Count;

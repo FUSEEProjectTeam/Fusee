@@ -9,9 +9,7 @@ namespace Fusee.Engine.Core
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Cube" /> class.
-        /// Cube is a derivate of the <see cref="Mesh" /> class.
-        /// The default cube is 1 unit big and contains various default vertex colors.
-        /// The vertex colors are only visible during rendering when a vertexcolor shader is applied on the Mesh.
+        /// The default cube is 1 unit big.
         /// </summary>
         public Cube()
         {

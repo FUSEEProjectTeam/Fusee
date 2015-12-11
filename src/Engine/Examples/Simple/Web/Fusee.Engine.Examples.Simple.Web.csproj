@@ -29,6 +29,12 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
+  <!-- Debug settings normally in .csproj.user -->
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <StartAction>Program</StartAction>
+    <StartProgram>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)$(FuseeBuildRoot)'))\bin\$(Configuration)\Tools\fuHttp.exe</StartProgram>
+    <StartArguments>"$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)$(FuseeWebOutputPath)'))$(AssemblyName).html"</StartArguments>
+  </PropertyGroup>  
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
@@ -42,19 +48,15 @@
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
+  <!-- Debug settings normally in .csproj.user -->
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <StartAction>Program</StartAction>
+    <StartProgram>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)$(FuseeBuildRoot)'))\bin\$(Configuration)\Tools\fuHttp.exe</StartProgram>
+    <StartArguments>"$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)$(FuseeWebOutputPath)'))$(AssemblyName).html"</StartArguments>
+  </PropertyGroup>  
   <PropertyGroup>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
-  <!--PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug+Web|AnyCPU'">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\bin\Debug\Examples\Simple\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup -->
   <ItemGroup>
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -68,7 +70,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <FUSEE_External_JavaScript Include="$(FuseeBuildRoot)\ext\JSIL\FrameworkScripts\System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089.js">
+    <!--FUSEE_External_JavaScript Include="$(FuseeBuildRoot)\ext\JSIL\FrameworkScripts\System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089.js">
       <Link>FrameworkScripts\System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089.js</Link>
     </FUSEE_External_JavaScript>
     <FUSEE_External_JavaScript Include="$(FuseeBuildRoot)\ext\JSIL\FrameworkScripts\System.Configuration, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a.js">
@@ -82,6 +84,9 @@
     </FUSEE_External_JavaScript>
     <FUSEE_External_JavaScript Include="$(FuseeBuildRoot)\ext\JSIL\FrameworkScripts\mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089.js">
       <Link>FrameworkScripts\mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089.js</Link>
+    </FUSEE_External_JavaScript-->
+    <FUSEE_External_JavaScript Include="$(FuseeBuildRoot)\ext\JSIL\FrameworkScripts\opentype.js">
+      <Link>FrameworkScripts\opentype.js</Link>
     </FUSEE_External_JavaScript>
   </ItemGroup>
   <ItemGroup>
