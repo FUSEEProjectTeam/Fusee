@@ -1,45 +1,263 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using Fusee.Engine.Common;
 
 namespace Fusee.Engine.Core
 {
-    public enum DeviceCategory
+
+    /// <summary>
+    /// Parameters sent with a <see cref="InputDriver.DeviceConnected"/> or <see cref="InputDriver.DeviceDisconnected"/>  event.
+    /// </summary>
+    public class DeviceConnectionArgs : EventArgs
     {
-        Mouse,
-        Keyboard,
-        GameController,
-        Touch,
-        Kinect,
+        /// <summary>
+        /// The input device (such as a game pad) that was just connected or disconnected.
+        /// </summary>
+        public InputDevice InputDevice;
     }
 
-    public enum ControllerButton
+    /// <summary>
+    /// Handles and manages all input devices. Input is 
+    /// </summary>
+    public class Input
     {
-        A = 0,
-        B = 1,
-        C = 2,
-        D = 3,
-        E = 4,
+        private readonly Dictionary<string, IInputDriverImp> _inputDrivers;
+        public IEnumerable<IInputDriverImp> InputDrivers => _inputDrivers.Values;
 
-        R1,
-        R2,
-        L1,
-        L2,
-        //...
+        private readonly Dictionary<string, InputDevice> _inputDevices;
+        public IEnumerable<InputDevice> InputDevices => _inputDevices.Values;
 
-        FirstUserButton,
+
+        // Two-phased creation. First check if a match is given, then create.
+        // This allows for preparing steps if a match is detected before the creation occurs.
+        private class SpecialDeviceCreator
+        {
+            public Func<IInputDeviceImp, bool> Match;
+            public Func<IInputDeviceImp, InputDevice> Creator;
+        }
+        private readonly List<SpecialDeviceCreator> _specialDeviceCreators;
+
+        /// <summary>
+        /// Gets the input devices of a certain type. Shortcut for
+        /// <code>InputDevices.OfType&lt;TDevice&gt;()</code>
+        /// </summary>
+        /// <typeparam name="TDevice">The type of the devices to find.</typeparam>
+        /// <returns>The input devices of the specified type</returns>
+        public IEnumerable<TDevice> GetInputDevices<TDevice>() where TDevice : InputDevice => _inputDevices.Values.OfType<TDevice>();
+
+        /// <summary>
+        /// Gets the first input device of a certain type. Shortcut for
+        /// <code>InputDevices.OfType&lt;TDevice&gt;().FirstOrDefault()</code>
+        /// </summary>
+        /// <typeparam name="TDevice">The type of the device to find.</typeparam>
+        /// <returns>The first device matching the given type, or null if no such device is currently present.</returns>
+        public TDevice GetInputDevice<TDevice>() where TDevice : InputDevice => _inputDevices.Values.OfType<TDevice>().FirstOrDefault();
+
+        /// <summary>
+        /// Retrieves the first mouse device (if present).
+        /// </summary>
+        /// <value>
+        /// The mouse (or null).
+        /// </value>
+        public MouseDevice Mouse => GetInputDevice<MouseDevice>();
+
+        /// <summary>
+        /// Retrieves the first keyboard device (if present).
+        /// </summary>
+        /// <value>
+        /// The keyboard (or null).
+        /// </value>
+        public KeyboardDevice Keyboard => GetInputDevice<KeyboardDevice>();
+
+        /// <summary>
+        /// Retrieves the first touch device (if present).
+        /// </summary>
+        /// <value>
+        /// The touch device (or null).
+        /// </value>
+        public TouchDevice Touch => GetInputDevice<TouchDevice>();
+
+        /// <summary>
+        /// Occurs when a device such as a gamepad is connected.
+        /// </summary>
+        public event EventHandler<DeviceConnectionArgs> DeviceConnected;
+
+
+        /// <summary>
+        /// Occurs when a device such as a gamepad is disconnected.
+        /// </summary>
+        public event EventHandler<DeviceConnectionArgs> DeviceDisconnected;
+
+        private Input()
+        {
+            _inputDrivers = new Dictionary<string, IInputDriverImp>();
+            _inputDevices = new Dictionary<string, InputDevice>();
+            _specialDeviceCreators = new List<SpecialDeviceCreator>();
+
+            // Register devices usually present.
+            // Users can register additional devices (should be done before)
+            RegisterInputDeviceType(imp => imp.Category == DeviceCategory.Mouse,    imp => new MouseDevice(imp));
+            RegisterInputDeviceType(imp => imp.Category == DeviceCategory.Keyboard, imp => new KeyboardDevice(imp));
+            RegisterInputDeviceType(imp => imp.Category == DeviceCategory.Touch,    imp => new TouchDevice(imp));
+        }
+
+        private static Input _instance;
+
+        /// <summary>
+        ///     Provides the singleton Instance of the Input Class.
+        /// </summary>
+        public static Input Instance => _instance ?? (_instance = new Input());
+
+        public void RegisterInputDeviceType(Func<IInputDeviceImp, bool> match, Func<IInputDeviceImp, InputDevice> creator) 
+        {
+            if (match == null) throw new ArgumentNullException(nameof(match));
+            if (creator == null) throw new ArgumentNullException(nameof(creator));
+
+            _specialDeviceCreators.Add(new SpecialDeviceCreator {Match = match, Creator = creator});
+
+            // Reconnect any existing devices matching the predicate
+            List<string> matchingDevices = (from device in _inputDevices.Values where device.DeviceImp != null && match(device.DeviceImp) select device.Id).ToList();
+
+            foreach (var devId in matchingDevices)
+            {
+                InputDevice dev = _inputDevices[devId];
+
+                // Set device to disconnected state
+                dev.Disconnect();
+
+                // Inform interested users about disconnection
+                DeviceDisconnected?.Invoke(this, new DeviceConnectionArgs { InputDevice = dev });
+
+                IInputDeviceImp inputDeviceImp = dev.DeviceImp;
+
+                // Remove device from the list
+                _inputDevices.Remove(devId);
+
+                dev = creator(inputDeviceImp);
+                _inputDevices[devId] = dev;
+
+                // no need to call reconnect since device is constructed from scratch
+
+                // Inform interested users about the newly connected device.
+                DeviceConnected?.Invoke(this, new DeviceConnectionArgs { InputDevice = dev });
+            }
+        }
+
+        private InputDevice CreateInputDevice(IInputDeviceImp imp)
+        {
+            // First see if a special device can be found to handle this
+            foreach (var sdc in _specialDeviceCreators)
+            {
+                if (sdc.Match(imp))
+                {
+                    InputDevice ret = sdc.Creator(imp);
+                    if (ret != null)
+                        return ret;
+                }
+            }
+
+            // Fallback - we don't know any special device, create a generic one around the device implementation.
+            return new InputDevice(imp);
+        }
+
+        public void AddInputDriverImp(IInputDriverImp inputDriver)
+        {
+            if (inputDriver == null)
+                throw new ArgumentNullException(nameof(inputDriver));
+
+            foreach (var deviceImp in inputDriver.Devices)
+            {
+                _inputDevices[inputDriver.DriverId + "_" + deviceImp.Id] = CreateInputDevice(deviceImp);
+            }
+
+            inputDriver.DeviceDisconnected += OnDeviceImpDisconnected;
+            inputDriver.NewDeviceConnected += OnNewDeviceImpConnected;
+
+            _inputDrivers[inputDriver.DriverId] = inputDriver;
+        }
+
+        private void OnNewDeviceImpConnected(object sender, NewDeviceImpConnectedArgs args)
+        {
+            if (sender == null) throw new ArgumentNullException(nameof(sender));
+
+            IInputDriverImp driver = sender as IInputDriverImp;
+            if (driver == null) throw new InvalidOperationException("Device connecting from unknown driver " + sender.ToString());
+
+            if (args == null || args.InputDeviceImp == null)
+                throw new ArgumentNullException(nameof(args), "Device or InputDeviceImp must not be null");
+
+            string deviceKey = driver.DriverId + "_" + args.InputDeviceImp.Id;
+            InputDevice existingDevice;
+            if (_inputDevices.TryGetValue(deviceKey, out existingDevice))
+            {
+                existingDevice.Reconnect(args.InputDeviceImp);
+            }
+            else
+            {
+                existingDevice = CreateInputDevice(args.InputDeviceImp);
+                _inputDevices[deviceKey] = existingDevice;
+            }
+
+            // Bubble up event to user code
+            DeviceConnected?.Invoke(this, new DeviceConnectionArgs { InputDevice = existingDevice });
+        }
+
+        private void OnDeviceImpDisconnected(object sender, DeviceImpDisconnectedArgs args)
+        {
+            if (sender == null) throw new ArgumentNullException(nameof(sender));
+            IInputDriverImp driver = sender as IInputDriverImp;
+            if (driver == null) throw new InvalidOperationException("Device disconnecting from unknown driver " + sender.ToString());
+
+            string deviceKey = driver.DriverId + "_" + args.Id;
+            InputDevice existingDevice;
+            if (_inputDevices.TryGetValue(deviceKey, out existingDevice))
+            {
+                existingDevice.Disconnect();
+            }
+            else
+            {
+                throw new InvalidOperationException("Driver " + driver.DriverId + " trying to disconnect unknown device " + args.Id);
+            }
+
+            // Bubble up event to user code
+            DeviceDisconnected?.Invoke(this, new DeviceConnectionArgs { InputDevice = existingDevice });
+        }
+
+
+        public void PreRender()
+        {
+            foreach (var inputDevice in InputDevices)
+            {
+                inputDevice.PreRender();
+            }
+        }
+
+        public void PostRender()
+        {
+            foreach (var inputDevice in InputDevices)
+            {
+                inputDevice.PostRender();
+            }
+        }
+
+        public void Dispose()
+        {
+        }
     }
+
+
 
     /// <summary>
     ///     The Input class takes care of all inputs. It is accessible from everywhere inside a Fusee project.
     ///     E.g. : Input.Instance.IsButtonDown(MouseButtons.Left);
     /// </summary>
-    public class Input
+    public class InputOld
     {
         #region Fields
 
-        private static Input _instance;
+        private static InputOld _instance;
 
         private IInputImp _inputImp;
 
@@ -56,8 +274,8 @@ namespace Fusee.Engine.Core
                 _inputImp.MouseButtonUp += ButtonUp;
                 _inputImp.MouseMove += MouseMove;
 
-                _axes = new float[(int) InputAxis.LastAxis];
-                _axesPreviousAbsolute = new float[(int) InputAxis.LastAxis];
+                _axes = new float[(int)MouseAxes.Wheel + 1];
+                _axesPreviousAbsolute = new float[(int)MouseAxes.Wheel + 1];
 
                 _keys = new HashSet<int>();
                 _keysUp = new HashSet<int>();
@@ -106,22 +324,22 @@ namespace Fusee.Engine.Core
 
         private void KeyDown(object sender, KeyEventArgs kea)
         {
-            if (!_keys.Contains((int) kea.KeyCode))
+            if (!_keys.Contains((int)kea.KeyCode))
             {
-                _keys.Add((int) kea.KeyCode);
+                _keys.Add((int)kea.KeyCode);
 
-                if (!_keysDown.Contains((int) kea.KeyCode))
-                    _keysDown.Add((int) kea.KeyCode);
+                if (!_keysDown.Contains((int)kea.KeyCode))
+                    _keysDown.Add((int)kea.KeyCode);
             }
         }
 
         private void KeyUp(object sender, KeyEventArgs kea)
         {
-            if (_keys.Contains((int) kea.KeyCode))
-                _keys.Remove((int) kea.KeyCode);
+            if (_keys.Contains((int)kea.KeyCode))
+                _keys.Remove((int)kea.KeyCode);
 
-            if (!_keysUp.Contains((int) kea.KeyCode))
-                _keysUp.Add((int) kea.KeyCode);
+            if (!_keysUp.Contains((int)kea.KeyCode))
+                _keysUp.Add((int)kea.KeyCode);
         }
 
         private void ButtonDown(object sender, MouseEventArgs mea)
@@ -129,8 +347,8 @@ namespace Fusee.Engine.Core
             if (OnMouseButtonDown != null)
                 OnMouseButtonDown(this, mea);
 
-            if (!_buttonsPressed.Contains((int) mea.Button))
-                _buttonsPressed.Add((int) mea.Button);
+            if (!_buttonsPressed.Contains((int)mea.Button))
+                _buttonsPressed.Add((int)mea.Button);
         }
 
         private void ButtonUp(object sender, MouseEventArgs mea)
@@ -138,8 +356,8 @@ namespace Fusee.Engine.Core
             if (OnMouseButtonUp != null)
                 OnMouseButtonUp(this, mea);
 
-            if (_buttonsPressed.Contains((int) mea.Button))
-                _buttonsPressed.Remove((int) mea.Button);
+            if (_buttonsPressed.Contains((int)mea.Button))
+                _buttonsPressed.Remove((int)mea.Button);
         }
 
         private void MouseMove(object sender, MouseEventArgs mea)
@@ -155,9 +373,9 @@ namespace Fusee.Engine.Core
         /// <returns>
         ///     The current deflection of the given axis.
         /// </returns>
-        public float GetAxis(InputAxis axis)
+        public float GetAxis(MouseAxes axis)
         {
-            return _axes[(int) axis];
+            return _axes[(int)axis];
         }
 
         /// <summary>
@@ -187,7 +405,7 @@ namespace Fusee.Engine.Core
         /// </returns>
         public bool IsKey(KeyCodes key)
         {
-            return _keys.Contains((int) key);
+            return _keys.Contains((int)key);
         }
 
         /// <summary>
@@ -199,7 +417,7 @@ namespace Fusee.Engine.Core
         /// </returns>
         public bool IsKeyDown(KeyCodes key)
         {
-            return _keysDown.Contains((int) key);
+            return _keysDown.Contains((int)key);
         }
 
         /// <summary>
@@ -211,7 +429,7 @@ namespace Fusee.Engine.Core
         /// </returns>
         public bool IsKeyUp(KeyCodes key)
         {
-            return _keysUp.Contains((int) key);
+            return _keysUp.Contains((int)key);
         }
 
         /// <summary>
@@ -223,7 +441,7 @@ namespace Fusee.Engine.Core
         /// </returns>
         public bool IsButton(MouseButtons button)
         {
-            return _buttonsPressed.Contains((int) button);
+            return _buttonsPressed.Contains((int)button);
         }
 
         /*
@@ -266,9 +484,9 @@ namespace Fusee.Engine.Core
 
             const float deltaFix = 0.005f;
 
-            _axes[(int) InputAxis.MouseX] = (currX - _axesPreviousAbsolute[(int) InputAxis.MouseX])*deltaFix;
-            _axes[(int) InputAxis.MouseY] = (currY - _axesPreviousAbsolute[(int) InputAxis.MouseY])*deltaFix;
-            _axes[(int) InputAxis.MouseWheel] = (currR - _axesPreviousAbsolute[(int) InputAxis.MouseWheel])*deltaFix;
+            _axes[(int)MouseAxes.X] = (currX - _axesPreviousAbsolute[(int)MouseAxes.X]) * deltaFix;
+            _axes[(int)MouseAxes.Y] = (currY - _axesPreviousAbsolute[(int)MouseAxes.Y]) * deltaFix;
+            _axes[(int)MouseAxes.Wheel] = (currR - _axesPreviousAbsolute[(int)MouseAxes.Wheel]) * deltaFix;
 
             // Fix to Center
             if (FixMouseAtCenter)
@@ -279,9 +497,9 @@ namespace Fusee.Engine.Core
                 currY = p.y;
             }
 
-            _axesPreviousAbsolute[(int) InputAxis.MouseX] = currX;
-            _axesPreviousAbsolute[(int) InputAxis.MouseY] = currY;
-            _axesPreviousAbsolute[(int) InputAxis.MouseWheel] = currR;
+            _axesPreviousAbsolute[(int)MouseAxes.X] = currX;
+            _axesPreviousAbsolute[(int)MouseAxes.Y] = currY;
+            _axesPreviousAbsolute[(int)MouseAxes.Wheel] = currR;
         }
 
         internal void OnLateUpdate()
@@ -298,9 +516,9 @@ namespace Fusee.Engine.Core
         /// <summary>
         ///     Provides the Instance of the Input Class.
         /// </summary>
-        public static Input Instance
+        public static InputOld Instance
         {
-            get { return _instance ?? (_instance = new Input()); }
+            get { return _instance ?? (_instance = new InputOld()); }
         }
 
         #endregion
@@ -312,7 +530,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         public Collection<InputDevice> Devices = new Collection<InputDevice>();
 
-        private IInputDriverImp _inputDriverImp;
+        private IInputDriverImp  _inputDriverImp;
 
         /// <summary>
         ///     All connected input devices are added to <see cref="Devices" /> - List and the names and indices of
@@ -320,8 +538,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         public void InitializeDevices()
         {
-            List<IInputDeviceImp> tmp = _inputDriverImp.DeviceImps();
-            foreach (var inputDevice in tmp)
+            foreach (var inputDevice in _inputDriverImp.Devices)
             {
                 Devices.Add(new InputDevice(inputDevice));
             }
@@ -340,7 +557,7 @@ namespace Fusee.Engine.Core
             }
             catch (ArgumentOutOfRangeException)
             {
-                throw new ArgumentOutOfRangeException("Can not find Input Device with Device-Index " + deviceIndex + "!");
+                throw new ArgumentOutOfRangeException("Can not find Input Device with Device Index " + deviceIndex + "!");
             }
         }
 
@@ -360,4 +577,7 @@ namespace Fusee.Engine.Core
 
         #endregion
     }
+
+
 }
+

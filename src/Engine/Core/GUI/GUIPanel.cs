@@ -9,7 +9,19 @@ namespace Fusee.Engine.Core.GUI
     /// </summary>
     /// <param name="sender">The sender.</param>
     /// <param name="mea">The <see cref="MouseEventArgs" /> instance containing the event data.</param>
-    public delegate void GUIPanelHandler(GUIPanel sender, MouseEventArgs mea);
+    public delegate void GUIPanelHandler(GUIPanel sender, GUIPanelEventArgs mea);
+
+    /// <summary>
+    /// Better than nothing.
+    /// </summary>
+    public class GUIPanelEventArgs
+    {
+        public int mouseX;
+        public int mouseY;
+    }
+
+    /// <summary>
+
 
     /// <summary>
     ///     A panel which groups other GUIElements together and give them a headline.
@@ -163,9 +175,8 @@ namespace Fusee.Engine.Core.GUI
             BorderColor = new float4(0.2f, 0.2f, 0.2f, 0.5f);
 
             // event listener
-            Input.Instance.OnMouseButtonDown += OnButtonDown;
-            Input.Instance.OnMouseButtonUp += OnButtonUp;
-            Input.Instance.OnMouseMove += OnMouseMove;
+            Input.Instance.Mouse.ButtonValueChanged += OnMouseButton;
+            Input.Instance.Mouse.AxisValueChanged += OnMouseMove;
 
             // shader
             CreateGUIShader();
@@ -215,44 +226,34 @@ namespace Fusee.Engine.Core.GUI
             }
         }
 
-        private bool MouseOnPanel(MouseEventArgs mea)
+        private bool MouseOnPanel()
         {
-            var x = mea.Position.x;
-            var y = mea.Position.y;
-
+            int x = Input.Instance.Mouse.PositionInt.x;
+            int y = Input.Instance.Mouse.PositionInt.y;
             return x >= PosX + OffsetX &&
                    x <= PosX + OffsetX + Width &&
                    y >= PosY + OffsetY &&
                    y <= PosY + OffsetY + Height;
         }
 
-        private void OnButtonDown(object sender, MouseEventArgs mea)
+        private void OnMouseButton(object sender, ButtonValueChangedArgs bvca)
         {
-            if (OnGUIPanelDown == null)
-                return;
-
-            if (MouseOnPanel(mea))
-                OnGUIPanelDown(this, mea);
+            if (MouseOnPanel())
+                if (bvca.Pressed)
+                    OnGUIPanelDown?.Invoke(this, new GUIPanelEventArgs { mouseX = Input.Instance.Mouse.PositionInt.x, mouseY = Input.Instance.Mouse.PositionInt.y });
+                else
+                    OnGUIPanelUp?.Invoke(this, new GUIPanelEventArgs { mouseX = Input.Instance.Mouse.PositionInt.x, mouseY = Input.Instance.Mouse.PositionInt.y });
         }
 
-        private void OnButtonUp(object sender, MouseEventArgs mea)
+        private void OnMouseMove(object sender, AxisValueChangedArgs avca)
         {
-            if (OnGUIPanelUp == null)
-                return;
-
-            if (MouseOnPanel(mea))
-                OnGUIPanelUp(this, mea);
-        }
-
-        private void OnMouseMove(object sender, MouseEventArgs mea)
-        {
-            if (MouseOnPanel(mea))
+            if (MouseOnPanel())
             {
                 if (_mouseOnPanel) return;
                 _mouseOnPanel = true;
 
                 if (OnGUIPanelEnter == null) return;
-                OnGUIPanelEnter(this, mea);
+                OnGUIPanelEnter(this, new GUIPanelEventArgs { mouseX = Input.Instance.Mouse.PositionInt.x, mouseY = Input.Instance.Mouse.PositionInt.y });
             }
             else
             {
@@ -260,7 +261,7 @@ namespace Fusee.Engine.Core.GUI
                 _mouseOnPanel = false;
 
                 if (OnGUIPanelLeave == null) return;
-                OnGUIPanelLeave(this, mea);
+                OnGUIPanelLeave(this, new GUIPanelEventArgs { mouseX = Input.Instance.Mouse.PositionInt.x, mouseY = Input.Instance.Mouse.PositionInt.y });
             }
         }
     }

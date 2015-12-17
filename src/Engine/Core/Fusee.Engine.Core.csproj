@@ -68,8 +68,10 @@
     <Compile Include="HingeConstraint.cs" />
     <Compile Include="Input.cs" />
     <Compile Include="InputDevice.cs" />
+    <Compile Include="KeyboardDevice.cs" />
     <Compile Include="Mesh.cs" />
     <Compile Include="MeshReader.cs" />
+    <Compile Include="MouseDevice.cs" />
     <Compile Include="MultiSphereShape.cs" />
     <Compile Include="Point2PointConstraint.cs" />
     <Compile Include="RigidBody.cs" />
@@ -91,6 +93,7 @@
     <Compile Include="ShaderEffect.cs" />
     <Compile Include="Stereo3D.cs" />
     <Compile Include="Time.cs" />
+    <Compile Include="TouchDevice.cs" />
     <Compile Include="VideoManager.cs" />
     <Compile Include="VideoStream.cs" />
   </ItemGroup>

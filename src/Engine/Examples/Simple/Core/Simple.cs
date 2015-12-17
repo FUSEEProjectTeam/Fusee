@@ -49,10 +49,10 @@ namespace Fusee.Engine.Examples.Simple.Core
             
             
             // Mouse movement
-            if (Input.Instance.IsButton(MouseButtons.Left))
+            if (Input.Instance.Mouse.LeftButton)
             {
-                _angleVelHorz = -RotationSpeed*Input.Instance.GetAxis(InputAxis.MouseX);
-                _angleVelVert = -RotationSpeed*Input.Instance.GetAxis(InputAxis.MouseY);
+                _angleVelHorz = -RotationSpeed*Input.Instance.Mouse.XVel;
+                _angleVelVert = -RotationSpeed*Input.Instance.Mouse.YVel;
             }
             else
             {
@@ -66,16 +66,16 @@ namespace Fusee.Engine.Examples.Simple.Core
             _angleVert += _angleVelVert;
 
             // Keyboard movement
-            if (Input.Instance.IsKey(KeyCodes.Left))
+            if (Input.Instance.Keyboard[KeyCodes.Left])
                 _angleHorz += RotationSpeed*(float) Time.Instance.DeltaTime;
 
-            if (Input.Instance.IsKey(KeyCodes.Right))
+            if (Input.Instance.Keyboard[KeyCodes.Right])
                 _angleHorz -= RotationSpeed*(float) Time.Instance.DeltaTime;
 
-            if (Input.Instance.IsKey(KeyCodes.Up))
+            if (Input.Instance.Keyboard[KeyCodes.Up])
                 _angleVert += RotationSpeed*(float) Time.Instance.DeltaTime;
 
-            if (Input.Instance.IsKey(KeyCodes.Down))
+            if (Input.Instance.Keyboard[KeyCodes.Down])
                 _angleVert -= RotationSpeed*(float) Time.Instance.DeltaTime;
 
             // Create the camera matrix and set it as the current ModelView transformation
@@ -99,9 +99,9 @@ namespace Fusee.Engine.Examples.Simple.Core
             // Create a new projection matrix generating undistorted images on the new aspect ratio.
             var aspectRatio = Width/(float) Height;
 
-            // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculate based on the aspect ratio
+            // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
             // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
-            // Back clipping happens at 2000 (Objects further away from the camera than 2000 world units get clipped)
+            // Back clipping happens at 2000 (Anything further away from the camera than 2000 world units gets clipped, polygons will be cut)
             var projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 20000);
             RC.Projection = projection;
         }

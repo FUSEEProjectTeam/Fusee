@@ -486,18 +486,13 @@ namespace Fusee.Engine.Common
     /// <summary>
     /// Specifies the axis type. 
     /// </summary>
-    public enum InputAxis : int
+    public enum MouseAxes : int
     {
 #pragma warning disable 1591
         Unknown,
-        MouseX,
-        MouseY,
-        MouseWheel,
-      
-        // <---- NEW VALUES GO HERE
-        // keep enum values contiguous - don't define your own numbers here
-        // Just add enum symbols
-        LastAxis, // Keep this the last enum entry
+        X,
+        Y,
+        Wheel,
 #pragma warning restore 1591
     }
 
