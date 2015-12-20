@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Math.Core;
 
@@ -437,23 +438,39 @@ namespace Fusee.Engine.Core
         /// Registers a calculated axis exhibiting the derivative after the time (Velocity) of the value on the specified original axis.
         /// </summary>
         /// <param name="origAxisId">The original axis identifier.</param>
+        /// <param name="scale">A scale factor to apply to the calculated (derived) value.</param>
+        /// <param name="min">The minimum value reached by the new axis.</param>
+        /// <param name="max">The maximum value reached by the new axis.</param>
         /// <param name="derivedAxisId">The derived axis identifier. Note this value must be bigger than all existing axis Ids. Leave this value
         /// zero to have a new identifier calculated automatically.</param>
         /// <param name="name">The name of the new axis.</param>
         /// <param name="direction">The direction of the new axis.</param>
-        /// <returns>The axis description of the newly created calculated axis.</returns>
+        /// <returns>
+        /// The axis description of the newly created calculated axis.
+        /// </returns>
         /// <remarks>
-        ///   A derived axis is helpful if you have a device delivering absolute positional values but you need the current
-        ///   speed of the axis. Imagine a mouse where the speed of the mouse over the screen is important rather than the absolute
-        ///   position.
+        /// A derived axis is helpful if you have a device delivering absolute positional values but you need the current
+        /// speed of the axis. Imagine a mouse where the speed of the mouse over the screen is important rather than the absolute
+        /// position.
         /// </remarks>
-        public AxisDescription RegisterDerivedAxis(int origAxisId, int derivedAxisId = 0, string name = null, AxisDirection direction = AxisDirection.Unknown)
+        public AxisDescription RegisterDerivedAxis(int origAxisId,
+            int derivedAxisId = 0, string name = null, AxisDirection direction = AxisDirection.Unknown)
         {
             AxisDescription origAxisDesc;
             if (!_axes.TryGetValue(origAxisId, out origAxisDesc))
             {
                 throw new InvalidOperationException($"Axis Id {origAxisId} is not known. Cannot register derived axis based on unknown axis.");
             }
+
+                //switch (origAxisDesc.Bounded)
+                //{
+                //    case AxisBoundedType.Constant:
+                //        scale = 1.0f / (origAxisDesc.MaxValueOrAxis - origAxisDesc.MinValueOrAxis);
+                //        break;
+                //    case AxisBoundedType.OtherAxis:
+                //        scale = 1.0f / (GetAxis((int)origAxisDesc.MaxValueOrAxis) - GetAxis((int)origAxisDesc.MinValueOrAxis));
+                //        break;
+                //}
 
             float closureLastValue = GetAxis(origAxisId);
             AxisValueCalculator calculator = delegate (float deltaTime)
@@ -474,11 +491,11 @@ namespace Fusee.Engine.Core
             {
                 Id = id,
                 Name = name ?? origAxisDesc.Name + " Velocity",
-                Bounded = origAxisDesc.Bounded,
                 Direction = (direction == AxisDirection.Unknown) ? origAxisDesc.Direction : direction,
                 Nature = AxisNature.Speed,
-                MaxValue = (origAxisDesc.Bounded) ? 1.0f : float.NaN,
-                MinValue = (origAxisDesc.Bounded) ? -1.0f : float.NaN
+                Bounded = AxisBoundedType.Unbound,
+                MaxValueOrAxis = float.NaN,
+                MinValueOrAxis = float.NaN
             };
 
             RegisterCalculatedAxis(calculatedAxisDesc, calculator);
@@ -490,38 +507,35 @@ namespace Fusee.Engine.Core
         /// The time it takes to change the value can be set.
         /// </summary>
         /// <param name="origButtonId">The original button identifier.</param>
+        /// <param name="direction">The direction the new axis is heading towards.</param>
         /// <param name="rampUpTime">The time it takes to change the value from 0 to 1 (in seconds).</param>
         /// <param name="rampDownTime">The time it takes to change the value from 1 to 0 (in seconds).</param>
         /// <param name="buttonAxisId">The new identifier of the button axis. Note this value must be bigger than all existing axis Ids. Leave this value
         /// zero to have a new identifier calculated automatically.</param>
         /// <param name="name">The name of the new axis.</param>
-        /// <param name="direction">The direction the new axis is heading towards.</param>
         /// <returns>The axis description of the newly created calculated axis.</returns>
         /// <remarks>
         ///   Button axes are useful to simulate a trigger or thrust panel with the help of individual buttons. There is a user-defineable acceleration and 
         ///   deceleration period, so a simulation resulting on this input delivers a feeling of inertance.
         /// </remarks>
-        public AxisDescription RegisterButtonAxis(int origButtonId, float rampUpTime = 0.2f, float rampDownTime = 0.2f, int buttonAxisId = 0, string name = null,
-                                                          AxisDirection direction = AxisDirection.Unknown)
+        public AxisDescription RegisterSingleButtonAxis(int origButtonId, AxisDirection direction = AxisDirection.Unknown, float rampUpTime = 0.2f, float rampDownTime = 0.2f, int buttonAxisId = 0, string name = null)
         {
             ButtonDescription origButtonDesc;
             if (!_buttons.TryGetValue(origButtonId, out origButtonDesc))
             {
-                throw new InvalidOperationException(
-                    $"Button Id {origButtonId} is not known. Cannot register button axis based on unknown button.");
+                throw new InvalidOperationException($"Button Id {origButtonId} is not known. Cannot register button axis based on unknown button.");
             }
 
             // Ramp cannot be 90° as this would require special case handling
             if (rampUpTime <= float.MinValue)
-                rampUpTime = 2 * float.MinValue;
+                rampUpTime = 2*float.MinValue;
             if (rampDownTime <= float.MinValue)
-                rampDownTime = 2 * float.MinValue;
-
+                rampDownTime = 2*float.MinValue;
 
             bool closureLastBtnState = GetButton(origButtonId);
             float closureLastAxisValue = 0;
             float closureAnimDirection = 0;
-            AxisValueCalculator calculator = delegate (float deltaTime)
+            AxisValueCalculator calculator = delegate(float deltaTime)
             {
                 float ret;
                 bool newBtnState = GetButton(origButtonId);
@@ -534,7 +548,7 @@ namespace Fusee.Engine.Core
 
                 if (closureAnimDirection > 0)
                 {
-                    ret = closureLastAxisValue + deltaTime / rampUpTime;
+                    ret = closureLastAxisValue + deltaTime/rampUpTime;
                     if (ret >= 1)
                     {
                         closureAnimDirection = 0;
@@ -543,7 +557,7 @@ namespace Fusee.Engine.Core
                 }
                 else if (closureAnimDirection < 0)
                 {
-                    ret = closureLastAxisValue - deltaTime / rampDownTime;
+                    ret = closureLastAxisValue - deltaTime/rampDownTime;
                     if (ret < 0)
                     {
                         closureAnimDirection = 0;
@@ -565,13 +579,7 @@ namespace Fusee.Engine.Core
 
             var calculatedAxisDesc = new AxisDescription
             {
-                Id = id,
-                Name = name ?? origButtonDesc.Name + " Axis",
-                Bounded = true,
-                Direction = direction,
-                Nature = AxisNature.Speed,
-                MaxValue = 1.0f,
-                MinValue = 0.0f
+                Id = id, Name = name ?? origButtonDesc.Name + " Axis", Bounded = AxisBoundedType.Constant, Direction = direction, Nature = AxisNature.Speed, MaxValueOrAxis = 1.0f, MinValueOrAxis = 0.0f
             };
 
             RegisterCalculatedAxis(calculatedAxisDesc, calculator);
@@ -582,14 +590,14 @@ namespace Fusee.Engine.Core
         /// Registers a calculated axis from two buttons. The axis' value changes between -1 and 1 as the user hits the button or releases it.
         /// The time it takes to change the value can be set.
         /// </summary>
-        /// <param name="origButtonIdPositive">The original button identifier for positive movements.</param>
         /// <param name="origButtonIdNegative">The original button identifier for negative movements.</param>
+        /// <param name="origButtonIdPositive">The original button identifier for positive movements.</param>
+        /// <param name="direction">The direction the new axis is heading towards.</param>
         /// <param name="rampUpTime">The time it takes to change the value from 0 to 1 (or -1) (in seconds) when one of the buttons is pushed.</param>
         /// <param name="rampDownTime">The time it takes to change the value from -1 of 1 back to 0 (in seconds) when a pushed button is released.</param>
         /// <param name="buttonAxisId">The new identifier of the button axis. Note this value must be bigger than all existing axis Ids. Leave this value
         /// zero to have a new identifier calculated automatically.</param>
         /// <param name="name">The name of the new axis.</param>
-        /// <param name="direction">The direction the new axis is heading towards.</param>
         /// <returns>
         /// The axis description of the newly created calculated axis.
         /// </returns>
@@ -600,43 +608,40 @@ namespace Fusee.Engine.Core
         /// will stop the animation and keep the value at its current amount.
         /// There is a user-defineable acceleration and deceleration period, so a simulation resulting on this input delivers a feeling of inertance.
         /// </remarks>
-        public AxisDescription RegisterButtonAxis(int origButtonIdPositive, int origButtonIdNegative, float rampUpTime = 0.2f, float rampDownTime = 0.2f, 
-                                                 int buttonAxisId = 0, string name = null, AxisDirection direction = AxisDirection.Unknown)
+        public AxisDescription RegisterTwoButtonAxis(int origButtonIdNegative, int origButtonIdPositive, AxisDirection direction = AxisDirection.Unknown, float rampUpTime = 0.3f, float rampDownTime = 0.7f, int buttonAxisId = 0, string name = null)
         {
             ButtonDescription origButtonDescPos;
             if (!_buttons.TryGetValue(origButtonIdPositive, out origButtonDescPos))
             {
-                throw new InvalidOperationException(
-                    $"Button Id {origButtonIdPositive} is not known. Cannot register button axis based on unknown button.");
+                throw new InvalidOperationException($"Button Id {origButtonIdPositive} is not known. Cannot register button axis based on unknown button.");
             }
 
             ButtonDescription origButtonDescNeg;
             if (!_buttons.TryGetValue(origButtonIdNegative, out origButtonDescNeg))
             {
-                throw new InvalidOperationException(
-                    $"Button Id {origButtonIdNegative} is not known. Cannot register button axis based on unknown button.");
+                throw new InvalidOperationException($"Button Id {origButtonIdNegative} is not known. Cannot register button axis based on unknown button.");
             }
 
 
             // Ramp cannot be 90° as this would require special case handling
             if (rampUpTime <= float.MinValue)
-                rampUpTime = 2 * float.MinValue;
+                rampUpTime = 2*float.MinValue;
             if (rampDownTime <= float.MinValue)
-                rampDownTime = 2 * float.MinValue;
+                rampDownTime = 2*float.MinValue;
 
 
             bool closureLastBtnStatePos = GetButton(origButtonIdPositive);
             bool closureLastBtnStateNeg = GetButton(origButtonIdNegative);
             float closureLastAxisValue = 0;
             float closureAnimDirection = 0;
-            AxisValueCalculator calculator = delegate (float deltaTime)
+            AxisValueCalculator calculator = delegate(float deltaTime)
             {
                 float ret;
                 bool newBtnStatePos = GetButton(origButtonIdPositive);
                 if (newBtnStatePos != closureLastBtnStatePos)
                 {
                     // The state of the button has changed
-                    closureAnimDirection = (newBtnStatePos ? 0 : 1) - (closureLastBtnStateNeg ? 0 : 1);
+                    closureAnimDirection = (newBtnStatePos ? 1 : 0) - (closureLastBtnStatePos ? 1 : 0);
                     closureLastBtnStatePos = newBtnStatePos;
                 }
 
@@ -644,7 +649,7 @@ namespace Fusee.Engine.Core
                 if (newBtnStateNeg != closureLastBtnStateNeg)
                 {
                     // The state of the button has changed
-                    closureAnimDirection = M.Saturate(closureAnimDirection + (newBtnStateNeg ? 0 : 1) - (closureLastBtnStateNeg ? 0 : 1), -1, 1);
+                    closureAnimDirection = - ((newBtnStateNeg ? 1 : 0) - (closureLastBtnStateNeg ? 1 : 0));
                     closureLastBtnStateNeg = newBtnStateNeg;
                 }
 
@@ -660,7 +665,7 @@ namespace Fusee.Engine.Core
 
                 if (closureAnimDirection > 0)
                 {
-                    ret = closureLastAxisValue + deltaTime / animTime;
+                    ret = closureLastAxisValue + deltaTime/animTime;
                     if (ret >= animGoal)
                     {
                         closureAnimDirection = 0;
@@ -669,7 +674,7 @@ namespace Fusee.Engine.Core
                 }
                 else if (closureAnimDirection < 0)
                 {
-                    ret = closureLastAxisValue - deltaTime / animTime;
+                    ret = closureLastAxisValue - deltaTime/animTime;
                     if (ret <= animGoal)
                     {
                         closureAnimDirection = 0;
@@ -691,18 +696,13 @@ namespace Fusee.Engine.Core
 
             var calculatedAxisDesc = new AxisDescription
             {
-                Id = id,
-                Name = name ?? origButtonDescPos.Name + " " + origButtonDescNeg.Name + " Axis",
-                Bounded = true,
-                Direction = direction,
-                Nature = AxisNature.Speed,
-                MaxValue = 1.0f,
-                MinValue = -1.0f
+                Id = id, Name = name ?? origButtonDescPos.Name + " " + origButtonDescNeg.Name + " Axis", Bounded = AxisBoundedType.Constant, Direction = direction, Nature = AxisNature.Speed, MaxValueOrAxis = 1.0f, MinValueOrAxis = -1.0f
             };
 
             RegisterCalculatedAxis(calculatedAxisDesc, calculator);
             return calculatedAxisDesc;
         }
+
         #endregion
 
         /*
@@ -761,7 +761,7 @@ namespace Fusee.Engine.Core
                     else
                         _buttonsUp.Add(buttonId);
 
-                    ButtonValueChanged?.Invoke(this, new ButtonValueChangedArgs { Button = _buttons[buttonId], Pressed = curVal });
+                    ButtonValueChanged?.Invoke(this, new ButtonValueChangedArgs {Button = _buttons[buttonId], Pressed = curVal});
                     _buttonsToPoll[buttonId] = curVal;
                 }
             }

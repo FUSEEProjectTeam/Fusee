@@ -97,7 +97,7 @@ namespace Fusee.Engine.Core
             _specialDeviceCreators = new List<SpecialDeviceCreator>();
 
             // Register devices usually present.
-            // Users can register additional devices (should be done before)
+            // Users can register additional devices.
             RegisterInputDeviceType(imp => imp.Category == DeviceCategory.Mouse,    imp => new MouseDevice(imp));
             RegisterInputDeviceType(imp => imp.Category == DeviceCategory.Keyboard, imp => new KeyboardDevice(imp));
             RegisterInputDeviceType(imp => imp.Category == DeviceCategory.Touch,    imp => new TouchDevice(imp));

@@ -266,7 +266,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
     public class MouseDeviceImp : IInputDeviceImp
     {
         private GameWindow _gameWindow;
-        private ButtonImpDescription[] _buttonDescs;
+        private ButtonImpDescription _btnLeftDesc, _btnRightDesc, _btnMiddleDesc;
 
         public MouseDeviceImp(GameWindow gameWindow)
         {
@@ -274,35 +274,32 @@ namespace Fusee.Engine.Imp.Graphics.Android
             _gameWindow.Mouse.ButtonDown += OnGameWinMouseDown;
             _gameWindow.Mouse.ButtonUp += OnGameWinMouseUp;
 
-            _buttonDescs = new ButtonImpDescription[]
+            _btnLeftDesc = new ButtonImpDescription
             {
-                new ButtonImpDescription
+                ButtonDesc = new ButtonDescription
                 {
-                    ButtonDesc = new ButtonDescription
-                    {
-                        Name = "Left",
-                        Id = (int)MouseButtons.Left
-                    },
-                    PollButton = false
+                    Name = "Left",
+                    Id = (int) MouseButtons.Left
                 },
-                new ButtonImpDescription
+                PollButton = false
+            };
+            _btnMiddleDesc = new ButtonImpDescription
+            {
+                ButtonDesc = new ButtonDescription
                 {
-                    ButtonDesc = new ButtonDescription
-                    {
-                        Name = "Middle",
-                        Id = (int)MouseButtons.Middle
-                    },
-                    PollButton = false
+                    Name = "Middle",
+                    Id = (int) MouseButtons.Middle
                 },
-                new ButtonImpDescription
+                PollButton = false
+            };
+            _btnRightDesc = new ButtonImpDescription
+            {
+                ButtonDesc = new ButtonDescription
                 {
-                    ButtonDesc = new ButtonDescription
-                    {
-                        Name = "Right",
-                        Id = (int)MouseButtons.Right
-                    },
-                    PollButton = false
-                }
+                    Name = "Right",
+                    Id = (int) MouseButtons.Right
+                },
+                PollButton = false
             };
         }
 
@@ -311,10 +308,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// </summary>
         public int AxesCount
         {
-            get
-            {
-                return 3;
-            }
+            get { return 6; }
         }
 
         /// <summary>
@@ -329,12 +323,12 @@ namespace Fusee.Engine.Imp.Graphics.Android
                     AxisDesc = new AxisDescription
                     {
                         Name = "X",
-                        Id = (int)MouseAxes.X,
+                        Id = (int) MouseAxes.X,
                         Direction = AxisDirection.X,
                         Nature = AxisNature.Position,
-                        Bounded = true,
-                        MinValue = 0,
-                        MaxValue = _gameWindow.Width
+                        Bounded = AxisBoundedType.OtherAxis,
+                        MinValueOrAxis = (int) MouseAxes.MinX,
+                        MaxValueOrAxis = (int) MouseAxes.MaxX
                     },
                     PollAxis = true
                 };
@@ -343,12 +337,12 @@ namespace Fusee.Engine.Imp.Graphics.Android
                     AxisDesc = new AxisDescription
                     {
                         Name = "Y",
-                        Id = (int)MouseAxes.Y,
+                        Id = (int) MouseAxes.Y,
                         Direction = AxisDirection.Y,
                         Nature = AxisNature.Position,
-                        Bounded = true,
-                        MinValue = 0,
-                        MaxValue = _gameWindow.Height
+                        Bounded = AxisBoundedType.OtherAxis,
+                        MinValueOrAxis = (int)MouseAxes.MinY,
+                        MaxValueOrAxis = (int)MouseAxes.MaxY
                     },
                     PollAxis = true
                 };
@@ -357,12 +351,68 @@ namespace Fusee.Engine.Imp.Graphics.Android
                     AxisDesc = new AxisDescription
                     {
                         Name = "Wheel",
-                        Id = (int)MouseAxes.Wheel,
+                        Id = (int) MouseAxes.Wheel,
                         Direction = AxisDirection.Z,
                         Nature = AxisNature.Position,
-                        Bounded = false,
-                        MinValue = float.NaN,
-                        MaxValue = float.NaN
+                        Bounded = AxisBoundedType.Unbound,
+                        MinValueOrAxis = float.NaN,
+                        MaxValueOrAxis = float.NaN
+                    },
+                    PollAxis = true
+                };
+                yield return new AxisImpDescription
+                {
+                    AxisDesc = new AxisDescription
+                    {
+                        Name = "MinX",
+                        Id = (int)MouseAxes.MinX,
+                        Direction = AxisDirection.X,
+                        Nature = AxisNature.Position,
+                        Bounded = AxisBoundedType.Unbound,
+                        MinValueOrAxis = float.NaN,
+                        MaxValueOrAxis = float.NaN
+                    },
+                    PollAxis = true
+                };
+                yield return new AxisImpDescription
+                {
+                    AxisDesc = new AxisDescription
+                    {
+                        Name = "MaxX",
+                        Id = (int)MouseAxes.MaxX,
+                        Direction = AxisDirection.X,
+                        Nature = AxisNature.Position,
+                        Bounded = AxisBoundedType.Unbound,
+                        MinValueOrAxis = float.NaN,
+                        MaxValueOrAxis = float.NaN
+                    },
+                    PollAxis = true
+                };
+                yield return new AxisImpDescription
+                {
+                    AxisDesc = new AxisDescription
+                    {
+                        Name = "MinY",
+                        Id = (int)MouseAxes.MinY,
+                        Direction = AxisDirection.Y,
+                        Nature = AxisNature.Position,
+                        Bounded = AxisBoundedType.Unbound,
+                        MinValueOrAxis = float.NaN,
+                        MaxValueOrAxis = float.NaN
+                    },
+                    PollAxis = true
+                };
+                yield return new AxisImpDescription
+                {
+                    AxisDesc = new AxisDescription
+                    {
+                        Name = "MaxY",
+                        Id = (int)MouseAxes.MaxY,
+                        Direction = AxisDirection.Y,
+                        Nature = AxisNature.Position,
+                        Bounded = AxisBoundedType.Unbound,
+                        MinValueOrAxis = float.NaN,
+                        MaxValueOrAxis = float.NaN
                     },
                     PollAxis = true
                 };
@@ -377,7 +427,15 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <summary>
         /// A mouse exposes three buttons: left, middle and right.
         /// </summary>
-        public IEnumerable<ButtonImpDescription> ButtonImpDesc => _buttonDescs;
+        public IEnumerable<ButtonImpDescription> ButtonImpDesc
+        {
+            get
+            {
+                yield return _btnLeftDesc;
+                yield return _btnMiddleDesc;
+                yield return _btnRightDesc;
+            }
+        }
 
         /// <summary>
         /// Returns <see cref="DeviceCategory.Mouse"/>, just because it's a mouse.
@@ -414,12 +472,20 @@ namespace Fusee.Engine.Imp.Graphics.Android
         {
             switch (iAxisId)
             {
-                case (int)MouseAxes.X:
+                case (int) MouseAxes.X:
                     return _gameWindow.Mouse.X;
-                case (int)MouseAxes.Y:
+                case (int) MouseAxes.Y:
                     return _gameWindow.Mouse.Y;
-                case (int)MouseAxes.Wheel:
+                case (int) MouseAxes.Wheel:
                     return _gameWindow.Mouse.WheelPrecise;
+                case (int)MouseAxes.MinX:
+                    return 0;
+                case (int)MouseAxes.MaxX:
+                    return _gameWindow.Width;
+                case (int)MouseAxes.MinY:
+                    return 0;
+                case (int)MouseAxes.MaxY:
+                    return _gameWindow.Height;
             }
             throw new InvalidOperationException($"Unknown axis {iAxisId}. Cannot get value for unknown axis.");
         }
@@ -432,7 +498,8 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <returns>No return, always throws.</returns>
         public bool GetButton(int iButtonId)
         {
-            throw new InvalidOperationException($"Unsopported axis {iButtonId}. This device does not support any to-be polled axes at all.");
+            throw new InvalidOperationException(
+                $"Unsopported axis {iButtonId}. This device does not support any to-be polled axes at all.");
         }
 
         /// <summary>
@@ -444,25 +511,26 @@ namespace Fusee.Engine.Imp.Graphics.Android
         {
             if (ButtonValueChanged != null)
             {
-                int mbInx = -1;
-
+                ButtonDescription btnDesc;
                 switch (mouseArgs.Button)
                 {
                     case MouseButton.Left:
-                        mbInx = (int)MouseButtons.Left;
+                        btnDesc = _btnLeftDesc.ButtonDesc;
                         break;
                     case MouseButton.Middle:
-                        mbInx = (int)MouseButtons.Middle;
+                        btnDesc = _btnMiddleDesc.ButtonDesc;
                         break;
                     case MouseButton.Right:
-                        mbInx = (int)MouseButtons.Right;
+                        btnDesc = _btnRightDesc.ButtonDesc;
                         break;
+                    default:
+                        return;
                 }
 
                 ButtonValueChanged(this, new ButtonValueChangedArgs
                 {
                     Pressed = true,
-                    Button = _buttonDescs[mbInx].ButtonDesc
+                    Button = btnDesc
                 });
             }
         }
@@ -476,30 +544,30 @@ namespace Fusee.Engine.Imp.Graphics.Android
         {
             if (ButtonValueChanged != null)
             {
-                int mbInx = -1;
-
+                ButtonDescription btnDesc;
                 switch (mouseArgs.Button)
                 {
                     case MouseButton.Left:
-                        mbInx = 0;
+                        btnDesc = _btnLeftDesc.ButtonDesc;
                         break;
                     case MouseButton.Middle:
-                        mbInx = 1;
+                        btnDesc = _btnMiddleDesc.ButtonDesc;
                         break;
                     case MouseButton.Right:
-                        mbInx = 2;
+                        btnDesc = _btnRightDesc.ButtonDesc;
                         break;
+                    default:
+                        return;
                 }
 
                 ButtonValueChanged(this, new ButtonValueChangedArgs
                 {
                     Pressed = false,
-                    Button = _buttonDescs[mbInx].ButtonDesc
+                    Button = btnDesc
                 });
             }
         }
     }
-
 
 
     /// <summary>

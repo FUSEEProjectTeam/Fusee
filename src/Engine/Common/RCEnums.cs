@@ -493,6 +493,10 @@ namespace Fusee.Engine.Common
         X,
         Y,
         Wheel,
+        MinX,
+        MaxX,
+        MinY,
+        MaxY,
 #pragma warning restore 1591
     }
 

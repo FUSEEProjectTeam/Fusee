@@ -90,6 +90,27 @@ namespace Fusee.Engine.Common
 
 
     /// <summary>
+    /// Symbolic value describing if and how the values produced by this axis are bound.
+    /// </summary>
+    public enum AxisBoundedType
+    {
+        /// <summary>
+        /// The axis values are not bound.
+        /// </summary>
+        Unbound,
+        /// <summary>
+        /// The axis values are bound by constant values. The values can be read from <see cref="AxisDescription.MaxValueOrAxis"/> 
+        /// and <see cref="AxisDescription.MinValueOrAxis"/>.
+        /// </summary>
+        Constant,
+        /// <summary>
+        /// This axis' values are bound by the values from other axes (and may possibly change over time). The bounding axes'
+        /// Ids can be read from <see cref="AxisDescription.MaxValueOrAxis"/> and <see cref="AxisDescription.MinValueOrAxis"/> (cast to integer).
+        /// </summary>
+        OtherAxis,
+    }
+
+    /// <summary>
     /// A structure describing an input device's axis.
     /// </summary>
     public struct AxisDescription
@@ -100,35 +121,36 @@ namespace Fusee.Engine.Common
         public string Name;
         /// <summary>
         /// The identifier of the axis. Use this identifier to query values.
-        /// </summary>
-        /// <remards>
-        /// The id of an axis might be different than the order of occurrence (inddex) of the axis
+        /// An axis' Id might be different than the order of occurrence (index) of the axis
         /// when enumerated from the device.
-        /// </remards>
+        /// </summary>
         public int Id;
-
         /// <summary>
         /// The direction of the axis (used with devices exhibiting two- or more-dimensional input such as joysticks on gamepads, mouse, etc).
         /// </summary>
         public AxisDirection Direction;
-
         /// <summary>
         /// The nature of the axis.
         /// </summary>
         public AxisNature Nature;
         /// <summary>
-        /// Indicating if the axis' values are within a defined range.
-        /// If Bounded is true, <see cref="MinValue"/> and <see cref="MaxValue"/> contain valid values.
+        /// Indicating if the axis' values are within a defined range. Depending on this value 
+        /// <see cref="MinValueOrAxis"/> and <see cref="MaxValueOrAxis"/> contain either constant range bounds 
+        /// or other axes' Ids delivering the (possibly changing) range values.
         /// </summary>
-        public bool Bounded;
+        public AxisBoundedType Bounded;
         /// <summary>
-        /// The maximum value returned by the axis. Only valid if <see cref="Bounded"/> is true.
+        /// The minimum value returned by the axis. If <see cref="Bounded"/> is <see cref="AxisBoundedType.Constant"/> this field contains constant value.
+        /// If <see cref="Bounded"/> is <see cref="AxisBoundedType.OtherAxis"/> this field contains the Id of the axis keeping the (possibly changing) minimum value.
+        /// In this case cast this value to integer before passing it to InputDevice methods.
         /// </summary>
-        public float MaxValue;
+        public float MinValueOrAxis;
         /// <summary>
-        /// The minimum value returned by the axis. Only valid if <see cref="Bounded"/> is true.
+        /// The maximum value returned by the axis. If <see cref="Bounded"/> is <see cref="AxisBoundedType.Constant"/> this field contains constant value.
+        /// If <see cref="Bounded"/> is <see cref="AxisBoundedType.OtherAxis"/> this field contains the Id of the axis keeping the (possibly changing) maximum value.
+        /// In this case cast this value to integer before passing it to InputDevice methods.
         /// </summary>
-        public float MinValue;
+        public float MaxValueOrAxis;
     }
 
     /// <summary>
