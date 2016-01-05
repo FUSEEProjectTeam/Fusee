@@ -40,7 +40,7 @@ namespace Fusee.Engine.Common
     /// <remarks>
     /// An input "device" is considered a physical device such as keyboard, mouse, gamepad, kinect, etc.
     /// </remarks>
-    public interface IInputDriverImp
+    public interface IInputDriverImp : IDisposable
     {
         /// <summary>
         /// Retrieves a list of devices supported by this input driver.

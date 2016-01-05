@@ -10,7 +10,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Font.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Implementor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)InputImp.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Keymapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MeshImp.cs" />

@@ -10,6 +10,10 @@ namespace Fusee.Engine.Imp.Graphics.Web
     public class RenderCanvasImp : IRenderCanvasImp
     {
         [JSExternal]
+        // The webgl canvas. Will be set in the c# constructor
+        internal object _canvas;
+
+        [JSExternal]
         public RenderCanvasImp()
         {
             throw new NotImplementedException();
@@ -22,7 +26,7 @@ namespace Fusee.Engine.Imp.Graphics.Web
         [JSExternal]
         public string Caption { get; set; }
         [JSExternal]
-        public double DeltaTime { get; }
+        public float DeltaTime { get; }
         [JSExternal]
         public bool VerticalSync { get; set; }
         [JSExternal]

@@ -21,8 +21,6 @@ namespace Fusee.Engine.Imp.Graphics.Android
     /// Inherit from this class, make sure to call the constructor with the window handle to render on, implement the
     /// Run method and call the DoInit, DoUnload, DoRender and DoResize methods at appropriate incidences. Make sure
     /// that _width and _height are set to the new window size before calling DoResize.
-    /// In addition you might have your connectivity class as well implement the <see cref="IInputImp"/> interface because
-    /// often mouse and keyboard input are tied to the windows output.
     /// </summary>
     public abstract class RenderCanvasWindowImp : RenderCanvasImpBase, IRenderCanvasImp, IDisposable
     {
@@ -93,8 +91,8 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// </value>
         public string Caption { get; set; }
 
-        private double _lastTimeTick;
-        private double _deltaFrameTime;
+        private float _lastTimeTick;
+        private float _deltaFrameTime;
         private static Stopwatch _daWatch;
 
         /// <summary>
@@ -105,7 +103,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <value>
         /// The delta time in milliseconds.
         /// </value>
-        public double DeltaTime
+        public float DeltaTime
         {
             get
             {
@@ -149,7 +147,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <value>
         /// The timer.
         /// </value>
-        public static double Timer
+        public static float Timer
         {
             get
             {
@@ -158,7 +156,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
                     _daWatch = new Stopwatch();
                     _daWatch.Start();
                 }
-                return ((double)_daWatch.ElapsedTicks) / ((double)Stopwatch.Frequency);
+                return ((float)_daWatch.ElapsedTicks) / ((float)Stopwatch.Frequency);
             }
         }
 
@@ -216,7 +214,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         public void Present()
         {
             // Recalculate time tick.
-            double newTick = Timer;
+            float newTick = Timer;
             _deltaFrameTime = newTick - _lastTimeTick;
             _lastTimeTick = newTick;
 
@@ -389,7 +387,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <value>
         /// The delta time in milliseconds.
         /// </value>
-        public double DeltaTime
+        public float DeltaTime
         {
             get
             {
@@ -721,7 +719,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         #region Fields
 
         private RenderCanvasImp _renderCanvasImp;
-        private double _deltaTime;
+        private float _deltaTime;
 
         /// <summary>
         /// Gets the delta time.
@@ -731,7 +729,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <value>
         /// The delta time in milliseconds.
         /// </value>
-        public double DeltaTime
+        public float DeltaTime
         {
             get { return _deltaTime; }
         }
@@ -845,7 +843,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
-            _deltaTime = e.Time;
+            _deltaTime = (float)e.Time;
 
             if (_renderCanvasImp != null)
                 _renderCanvasImp.DoRender();

@@ -183,6 +183,10 @@ namespace Fusee.Engine.Common
         public bool PollButton;
     }
 
+    /// <summary>
+    /// Information about a button exhibited by a device. Contains the Name of the button and the Id that
+    /// can be used to access the button state. 
+    /// </summary>
     public struct ButtonDescription
     {
         /// <summary>
@@ -193,29 +197,12 @@ namespace Fusee.Engine.Common
         /// The identifier of the button. Use this identifier to query button state.
         /// </summary>
         /// <remards>
-        /// The id of a button might be different than the order of occurrence (inddex) of the button
+        /// The id of a button might be different than the order of occurrence (index) of the button
         /// when enumerated from the device.
         /// </remards>
         public int Id;
     }
 
-
-    public enum ControllerButton
-    {
-        A = 0,
-        B = 1,
-        C = 2,
-        D = 3,
-        E = 4,
-
-        R1,
-        R2,
-        L1,
-        L2,
-        //...
-
-        FirstUserButton,
-    }
 
     /// <summary>
     /// Event arguments sent with value changing events for input axes.

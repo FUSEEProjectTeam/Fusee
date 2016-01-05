@@ -70,7 +70,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <FUSEE_External_JavaScript Include="$(FuseeBuildRoot)\ext\JSIL\FrameworkScripts\System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089.js">
+    <!-- FUSEE_External_JavaScript Include="$(FuseeBuildRoot)\ext\JSIL\FrameworkScripts\System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089.js">
       <Link>FrameworkScripts\System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089.js</Link>
     </FUSEE_External_JavaScript>
     <FUSEE_External_JavaScript Include="$(FuseeBuildRoot)\ext\JSIL\FrameworkScripts\System.Configuration, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a.js">
@@ -84,7 +84,7 @@
     </FUSEE_External_JavaScript>
     <FUSEE_External_JavaScript Include="$(FuseeBuildRoot)\ext\JSIL\FrameworkScripts\mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089.js">
       <Link>FrameworkScripts\mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089.js</Link>
-    </FUSEE_External_JavaScript>
+    </FUSEE_External_JavaScript -->
     <FUSEE_External_JavaScript Include="$(FuseeBuildRoot)\ext\JSIL\FrameworkScripts\opentype.js">
       <Link>FrameworkScripts\opentype.js</Link>
     </FUSEE_External_JavaScript>

@@ -282,7 +282,7 @@ namespace Fusee.Engine.Core
             if (_animation.ChannelBaseList.Count != 0)
             {
                 // Set the animation time here!
-                _animation.Animate((float)Time.Instance.DeltaTime);
+                _animation.Animate(Time.DeltaTime);
             }
         }
 

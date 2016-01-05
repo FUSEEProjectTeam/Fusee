@@ -60,12 +60,12 @@ namespace Fusee.Engine.Core
         /// Gets the value at the (calculated) axis controlled with the Up/Down cursor keys.
         /// </summary>
         /// <returns>The  axis' value in the range between [-1, 1]</returns>
-        public float GetUpDown() => GetAxis(_upDownAxis);
+        public float UpDownAxis => GetAxis(_upDownAxis);
         /// <summary>
         /// Gets the value at the (calculated) axis controlled with the Left/Right cursor keys.
         /// </summary>
         /// <returns>The  axis' value in the range between [-1, 1]</returns>
-        public float GetLeftRight() => GetAxis(_leftRightAxis);
+        public float LeftRightAxis => GetAxis(_leftRightAxis);
 
         /// <summary>
         /// Gets the value at the (calculated) axis controlled with the A and the D key.
@@ -73,7 +73,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <returns>The  axis' value in the range between [-1, 1]</returns>
         // ReSharper disable once InconsistentNaming
-        public float GetAD() => GetAxis(_adAxis);
+        public float ADAxis => GetAxis(_adAxis);
 
         /// <summary>
         /// Gets the value at the (calculated) axis controlled with the A and the D key.
@@ -81,6 +81,6 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <returns>The  axis' value in the range between [-1, 1]</returns>
         // ReSharper disable once InconsistentNaming
-        public float GetWS() => GetAxis(_wsAxis);
+        public float WSAxis => GetAxis(_wsAxis);
     }
 }

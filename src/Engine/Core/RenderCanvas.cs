@@ -34,15 +34,6 @@ namespace Fusee.Engine.Core
         public IRenderContextImp ContextImplementor { set; get; }
 
         /// <summary>
-        ///     Gets or sets the input implementor.
-        /// </summary>
-        /// <value>
-        ///     The input implementor.
-        /// </value>
-        [InjectMe]
-        public IInputImp InputImplementor { set; get; }
-
-        /// <summary>
         ///     Gets or sets the audio implementor.
         /// </summary>
         /// <value>

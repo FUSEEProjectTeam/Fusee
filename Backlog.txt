@@ -19,14 +19,18 @@ DONE:	Create "Core" or "Common" on Fusee level (not below Engine) containing com
 DONE:	Engine.Core -> Portable
 DONE:	SimpleScene -> Portable
 DONE:	Fix Rebuild All
-WORK:	Create standard .Net and standard .js host apps (containing main, perhaps providing libraries)
+DONE:	Create standard .Net and standard .js host apps (containing main, perhaps providing libraries)
+WORK:	Unify keyboard/mouse and gamepad input
+		Add Touch input
+		Restructure input (move keyboard/mouse out of Graphics)
+		Clean-up gamepad input (implement new interfaces, 
 		Transform Examples to portable DLLs
 		Remove all warnings
 		Rewrite asset system NOT using JSIL's XNA-mimicking asset system. Instead directly use XHTMLRequest (or some JSIL in-between lighter than XNA-assets)
 				in conjunction with soundjs/opentype handling
 				let users decide to load assets in advance / on demand / progressively
 		Remove soundjs.min.js and opentype.js from JSIL.js; 
-				Remove soundjs dependency from JSIL.Browser.Audio.js. 
+DONE:			Remove soundjs dependency from JSIL.Browser.Audio.js. 
 				Put opentype and soundjs to Engine/Imp/Web/Graphics|Sound
 		Use JSIL to translate a csproj at a time (with each .csproj triggering its own x-compilation as a post build event)
 		Fix Light position when applying bone animation (without normal map).

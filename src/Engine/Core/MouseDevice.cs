@@ -22,9 +22,9 @@ namespace Fusee.Engine.Core
         /// <param name="inpDeviceImp">The platform dependent connector to the underlying physical device.</param>
         public MouseDevice(IInputDeviceImp inpDeviceImp) : base(inpDeviceImp)
         {
-            _xVelId = RegisterDerivedAxis((int) MouseAxes.X).Id;
-            _yVelId = RegisterDerivedAxis((int) MouseAxes.Y).Id;
-            _wheelVelId = RegisterDerivedAxis((int) MouseAxes.Wheel).Id;
+            _xVelId = RegisterVelocityAxis((int) MouseAxes.X).Id;
+            _yVelId = RegisterVelocityAxis((int) MouseAxes.Y).Id;
+            _wheelVelId = RegisterVelocityAxis((int) MouseAxes.Wheel).Id;
         }
 
         /// <summary>

@@ -38,7 +38,7 @@ namespace Fusee.Engine.Common
         /// <value>
         /// The delta time.
         /// </value>
-        double DeltaTime { get; }
+        float DeltaTime { get; }
 
         /// <summary>
         /// Implementation Tasks: Gets or sets a value indicating whether vertical synchronization is enabled.

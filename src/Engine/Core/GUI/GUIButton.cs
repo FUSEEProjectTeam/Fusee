@@ -188,8 +188,8 @@ namespace Fusee.Engine.Core.GUI
             BorderColor = new float4(0, 0, 0, 1);
 
             // event listener
-            Input.Instance.Mouse.ButtonValueChanged += OnMouseButton;
-            Input.Instance.Mouse.AxisValueChanged += OnMouseMove;
+            Input.Mouse.ButtonValueChanged += OnMouseButton;
+            Input.Mouse.AxisValueChanged += OnMouseMove;
 
             _mouseOnButton = false;
 
@@ -200,8 +200,8 @@ namespace Fusee.Engine.Core.GUI
         protected internal override void DetachFromContext()
         {
             base.DetachFromContext();
-            Input.Instance.Mouse.ButtonValueChanged -= OnMouseButton;
-            Input.Instance.Mouse.AxisValueChanged -= OnMouseMove;
+            Input.Mouse.ButtonValueChanged -= OnMouseButton;
+            Input.Mouse.AxisValueChanged -= OnMouseMove;
         }
 
         protected override void CreateMesh()
@@ -224,8 +224,8 @@ namespace Fusee.Engine.Core.GUI
 
         private bool MouseOnButton()
         {
-            int x = Input.Instance.Mouse.PositionInt.x;
-            int y = Input.Instance.Mouse.PositionInt.y;
+            int x = Input.Mouse.PositionInt.x;
+            int y = Input.Mouse.PositionInt.y;
             return x >= PosX + OffsetX &&
                    x <= PosX + OffsetX + Width &&
                    y >= PosY + OffsetY &&
@@ -236,9 +236,9 @@ namespace Fusee.Engine.Core.GUI
         {
             if (MouseOnButton())
                 if (bvca.Pressed)
-                    OnGUIButtonDown?.Invoke(this, new GUIButtonEventArgs { mouseX = Input.Instance.Mouse.PositionInt.x , mouseY = Input.Instance.Mouse.PositionInt.y });
+                    OnGUIButtonDown?.Invoke(this, new GUIButtonEventArgs { mouseX = Input.Mouse.PositionInt.x , mouseY = Input.Mouse.PositionInt.y });
                 else
-                    OnGUIButtonUp?.Invoke(this, new GUIButtonEventArgs { mouseX = Input.Instance.Mouse.PositionInt.x, mouseY = Input.Instance.Mouse.PositionInt.y });
+                    OnGUIButtonUp?.Invoke(this, new GUIButtonEventArgs { mouseX = Input.Mouse.PositionInt.x, mouseY = Input.Mouse.PositionInt.y });
         }
 
         private void OnMouseMove(object sender, AxisValueChangedArgs bvca)
@@ -249,7 +249,7 @@ namespace Fusee.Engine.Core.GUI
                 _mouseOnButton = true;
 
                 if (OnGUIButtonEnter == null) return;
-                OnGUIButtonEnter(this, new GUIButtonEventArgs { mouseX = Input.Instance.Mouse.PositionInt.x, mouseY = Input.Instance.Mouse.PositionInt.y });
+                OnGUIButtonEnter(this, new GUIButtonEventArgs { mouseX = Input.Mouse.PositionInt.x, mouseY = Input.Mouse.PositionInt.y });
             }
             else
             {
@@ -257,7 +257,7 @@ namespace Fusee.Engine.Core.GUI
                 _mouseOnButton = false;
 
                 if (OnGUIButtonLeave == null) return;
-                OnGUIButtonLeave(this, new GUIButtonEventArgs { mouseX = Input.Instance.Mouse.PositionInt.x, mouseY = Input.Instance.Mouse.PositionInt.y });
+                OnGUIButtonLeave(this, new GUIButtonEventArgs { mouseX = Input.Mouse.PositionInt.x, mouseY = Input.Mouse.PositionInt.y });
             }
         }
     }

@@ -18,25 +18,59 @@ namespace Fusee.Engine.Core
         public InputDevice InputDevice;
     }
 
+    // Two-phased creation. First check if a match is given, then create.
+    // This allows for preparing steps if a match is detected before the creation occurs.
+    public delegate bool MatchFunc(IInputDeviceImp device);
+    public delegate InputDevice CreatorFunc(IInputDeviceImp device);
+
+    class SpecialDeviceCreator
+    {
+        public MatchFunc Match;
+        public CreatorFunc Creator;
+    }
+
     /// <summary>
-    /// Handles and manages all input devices. Input is 
+    /// Handles and manages all input devices. Input is a staticton (a singleton with an additional
+    /// static interface). 
     /// </summary>
+    /// <remarks>
+    /// Use the input instanmce in cases where you actually need an 
+    /// object to pass around (although there is no such use case in FUSEE code at all).
+    /// Use the static access in all other cases to reduce typing Input.Instance
+    /// over and over again. Use <code>using static Fusee.Engine.Core.Input</code> to
+    /// directly access <see cref="Keyboard"/>, <see cref="Mouse"/> and <see cref="Touch"/>
+    /// without even typing a namespace or classname.
+    /// </remarks>
     public class Input
     {
         private readonly Dictionary<string, IInputDriverImp> _inputDrivers;
+        /// <summary>
+        /// Retrieves the the input driver implementations currently registered.
+        /// </summary>
+        /// <value>
+        /// The input driver implmementations.
+        /// </value>
+        /// <remarks>
+        /// This is an instance method. Use <see cref="Drivers"/> for a static-over-singleton access
+        /// to the same functionality.
+        /// </remarks>
         public IEnumerable<IInputDriverImp> InputDrivers => _inputDrivers.Values;
+        /// <summary>
+        /// Retrieves the the input driver implementations currently registered.
+        /// </summary>
+        /// <value>
+        /// The input driver implmementations.
+        /// </value>
+        /// <remarks>
+        /// This is a static method. Use <see cref="InputDrivers"/> for an insatnce method 
+        /// to the same functionality.
+        /// </remarks>
+        public static IEnumerable<IInputDriverImp> Drivers => Instance._inputDrivers.Values;
 
         private readonly Dictionary<string, InputDevice> _inputDevices;
         public IEnumerable<InputDevice> InputDevices => _inputDevices.Values;
+        public static IEnumerable<InputDevice> Devices => Instance._inputDevices.Values;
 
-
-        // Two-phased creation. First check if a match is given, then create.
-        // This allows for preparing steps if a match is detected before the creation occurs.
-        private class SpecialDeviceCreator
-        {
-            public Func<IInputDeviceImp, bool> Match;
-            public Func<IInputDeviceImp, InputDevice> Creator;
-        }
         private readonly List<SpecialDeviceCreator> _specialDeviceCreators;
 
         /// <summary>
@@ -45,7 +79,22 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <typeparam name="TDevice">The type of the devices to find.</typeparam>
         /// <returns>The input devices of the specified type</returns>
+        /// <remarks>
+        /// This is an instance method. Use <see cref="GetDevices{TDevice}"/> for a static-over-singleton access
+        /// to the same functionality.
+        /// </remarks>
         public IEnumerable<TDevice> GetInputDevices<TDevice>() where TDevice : InputDevice => _inputDevices.Values.OfType<TDevice>();
+        /// <summary>
+        /// Gets the input devices of a certain type. Shortcut for
+        /// <code>InputDevices.OfType&lt;TDevice&gt;()</code>
+        /// </summary>
+        /// <typeparam name="TDevice">The type of the devices to find.</typeparam>
+        /// <returns>The input devices of the specified type</returns>
+        /// <remarks>
+        /// This is a static method. Use <see cref="GetInputDevices{TDevice}"/> for an insatnce method 
+        /// to the same functionality.
+        /// </remarks>
+        public static IEnumerable<TDevice> GetDevices<TDevice>() where TDevice : InputDevice => Instance.GetInputDevices<TDevice>();
 
         /// <summary>
         /// Gets the first input device of a certain type. Shortcut for
@@ -53,7 +102,22 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <typeparam name="TDevice">The type of the device to find.</typeparam>
         /// <returns>The first device matching the given type, or null if no such device is currently present.</returns>
-        public TDevice GetInputDevice<TDevice>() where TDevice : InputDevice => _inputDevices.Values.OfType<TDevice>().FirstOrDefault();
+        /// <remarks>
+        /// This is an instance method. Use <see cref="GetDevice{TDevice}"/> for a static-over-singleton access
+        /// to the same functionality.
+        /// </remarks>
+       public TDevice GetInputDevice<TDevice>() where TDevice : InputDevice => _inputDevices.Values.OfType<TDevice>().FirstOrDefault();
+        /// <summary>
+        /// Gets the first input device of a certain type. Shortcut for
+        /// <code>InputDevices.OfType&lt;TDevice&gt;().FirstOrDefault()</code>
+        /// </summary>
+        /// <typeparam name="TDevice">The type of the device to find.</typeparam>
+        /// <returns>The first device matching the given type, or null if no such device is currently present.</returns>
+        /// <remarks>
+        /// This is a static method. Use <see cref="GetInputDevice{TDevice}"/> for an insatnce method 
+        /// to the same functionality.
+        /// </remarks>
+        public static TDevice GetDevice<TDevice>() where TDevice : InputDevice => Instance.GetInputDevice<TDevice>();
 
         /// <summary>
         /// Retrieves the first mouse device (if present).
@@ -61,7 +125,22 @@ namespace Fusee.Engine.Core
         /// <value>
         /// The mouse (or null).
         /// </value>
-        public MouseDevice Mouse => GetInputDevice<MouseDevice>();
+        /// <remarks>
+        /// This is an instance property. Use <see cref="Mouse"/> for a static-over-singleton access
+        /// to the same functionality.
+        /// </remarks>
+        public MouseDevice MouseInput => GetInputDevice<MouseDevice>();
+        /// <summary>
+        /// Retrieves the first mouse device (if present).
+        /// </summary>
+        /// <value>
+        /// The mouse (or null).
+        /// </value>
+        /// <remarks>
+        /// This is a static property. Use <see cref="MouseInput}"/> for an insatnce property 
+        /// to the same functionality.
+        /// </remarks>
+        public static MouseDevice Mouse => Instance.MouseInput;
 
         /// <summary>
         /// Retrieves the first keyboard device (if present).
@@ -69,7 +148,22 @@ namespace Fusee.Engine.Core
         /// <value>
         /// The keyboard (or null).
         /// </value>
-        public KeyboardDevice Keyboard => GetInputDevice<KeyboardDevice>();
+        /// <remarks>
+        /// This is an instance property. Use <see cref="Keyboard"/> for a static-over-singleton access
+        /// to the same functionality.
+        /// </remarks>
+        public KeyboardDevice KeyboardInput => GetInputDevice<KeyboardDevice>();
+        /// <summary>
+        /// Retrieves the first keyboard device (if present).
+        /// </summary>
+        /// <value>
+        /// The keyboard (or null).
+        /// </value>
+        /// <remarks>
+        /// This is a static property. Use <see cref="KeyboardInput}"/> for an insatnce property 
+        /// to the same functionality.
+        /// </remarks>
+        public static KeyboardDevice Keyboard => Instance.KeyboardInput;
 
         /// <summary>
         /// Retrieves the first touch device (if present).
@@ -77,18 +171,90 @@ namespace Fusee.Engine.Core
         /// <value>
         /// The touch device (or null).
         /// </value>
-        public TouchDevice Touch => GetInputDevice<TouchDevice>();
+        /// <remarks>
+        /// This is an instance property. Use <see cref="Touch"/> for a static-over-singleton access
+        /// to the same functionality.
+        /// </remarks>
+        public TouchDevice TouchInput => GetInputDevice<TouchDevice>();
+        /// <summary>
+        /// Retrieves the first touch device (if present).
+        /// </summary>
+        /// <value>
+        /// The touch device (or null).
+        /// </value>
+        /// <remarks>
+        /// This is a static property. Use <see cref="TouchInput}"/> for an insatnce property 
+        /// to the same functionality.
+        /// </remarks>
+        public static TouchDevice Touch => Instance.TouchInput;
+
 
         /// <summary>
         /// Occurs when a device such as a gamepad is connected.
         /// </summary>
-        public event EventHandler<DeviceConnectionArgs> DeviceConnected;
-
+        /// <remarks>
+        /// This is an instance event. Use <see cref="DeviceConnected"/> for a static-over-singleton access
+        /// to the same functionality.
+        /// </remarks>
+        public event EventHandler<DeviceConnectionArgs> InputDeviceConnected;
+        /// <summary>
+        /// Occurs when a device such as a gamepad is connected.
+        /// </summary>
+        /// <remarks>
+        /// This is a static event. Use <see cref="DeviceConnected}"/> for an insatnce property 
+        /// to the same functionality.
+        /// </remarks>
+        public static event EventHandler<DeviceConnectionArgs> DeviceConnected
+        {
+            add
+            {
+                lock (Instance.InputDeviceConnected)
+                {
+                    Instance.InputDeviceConnected += value;
+                }
+            }
+            remove
+            {
+                lock (Instance.InputDeviceConnected)
+                {
+                    Instance.InputDeviceConnected -= value;
+                }
+            }
+        }
 
         /// <summary>
         /// Occurs when a device such as a gamepad is disconnected.
         /// </summary>
-        public event EventHandler<DeviceConnectionArgs> DeviceDisconnected;
+        /// <remarks>
+        /// This is an instance event. Use <see cref="DeviceConnected"/> for a static-over-singleton access
+        /// to the same functionality.
+        /// </remarks>
+        public event EventHandler<DeviceConnectionArgs> InputDeviceDisconnected;
+        /// <summary>
+        /// Occurs when a device such as a gamepad is disconnected.
+        /// </summary>
+        /// <remarks>
+        /// This is a static event. Use <see cref="DeviceConnected}"/> for an insatnce property 
+        /// to the same functionality.
+        /// </remarks>
+        public static event EventHandler<DeviceConnectionArgs> DeviceDisconnected
+        {
+            add
+            {
+                lock (Instance.InputDeviceDisconnected)
+                {
+                    Instance.InputDeviceDisconnected += value;
+                }
+            }
+            remove
+            {
+                lock (Instance.InputDeviceDisconnected)
+                {
+                    Instance.InputDeviceDisconnected -= value;
+                }
+            }
+        }
+
 
         private Input()
         {
@@ -98,10 +264,13 @@ namespace Fusee.Engine.Core
 
             // Register devices usually present.
             // Users can register additional devices.
-            RegisterInputDeviceType(imp => imp.Category == DeviceCategory.Mouse,    imp => new MouseDevice(imp));
-            RegisterInputDeviceType(imp => imp.Category == DeviceCategory.Keyboard, imp => new KeyboardDevice(imp));
-            RegisterInputDeviceType(imp => imp.Category == DeviceCategory.Touch,    imp => new TouchDevice(imp));
+            RegisterInputDeviceType(new MatchFunc(delegate(IInputDeviceImp imp) { return imp.Category == DeviceCategory.Mouse; }),  new CreatorFunc(delegate(IInputDeviceImp imp) { return new MouseDevice(imp);}));
+            RegisterInputDeviceType(new MatchFunc(delegate (IInputDeviceImp imp) { return imp.Category == DeviceCategory.Keyboard; }), new CreatorFunc(delegate (IInputDeviceImp imp) { return new KeyboardDevice(imp); }));
+            RegisterInputDeviceType(new MatchFunc(delegate (IInputDeviceImp imp) { return imp.Category == DeviceCategory.Touch; }), new CreatorFunc(delegate (IInputDeviceImp imp) { return new TouchDevice(imp); }));
+            // RegisterInputDeviceType(imp => imp.Category == DeviceCategory.Keyboard, imp => new KeyboardDevice(imp));
+            // RegisterInputDeviceType(imp => imp.Category == DeviceCategory.Touch,    imp => new TouchDevice(imp));
         }
+
 
         private static Input _instance;
 
@@ -110,7 +279,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         public static Input Instance => _instance ?? (_instance = new Input());
 
-        public void RegisterInputDeviceType(Func<IInputDeviceImp, bool> match, Func<IInputDeviceImp, InputDevice> creator) 
+        public void RegisterInputDeviceType(MatchFunc match, CreatorFunc creator) 
         {
             if (match == null) throw new ArgumentNullException(nameof(match));
             if (creator == null) throw new ArgumentNullException(nameof(creator));
@@ -118,7 +287,12 @@ namespace Fusee.Engine.Core
             _specialDeviceCreators.Add(new SpecialDeviceCreator {Match = match, Creator = creator});
 
             // Reconnect any existing devices matching the predicate
-            List<string> matchingDevices = (from device in _inputDevices.Values where device.DeviceImp != null && match(device.DeviceImp) select device.Id).ToList();
+            // List<string> matchingDevices = (from device in _inputDevices.Values where device.DeviceImp != null && match(device.DeviceImp) select device.Id).ToList();
+            List<string> matchingDevices = new List<string>();
+            foreach (var device in _inputDevices.Values)
+            {
+                if (device.DeviceImp != null && match(device.DeviceImp)) matchingDevices.Add(device.Id);
+            }
 
             foreach (var devId in matchingDevices)
             {
@@ -128,7 +302,7 @@ namespace Fusee.Engine.Core
                 dev.Disconnect();
 
                 // Inform interested users about disconnection
-                DeviceDisconnected?.Invoke(this, new DeviceConnectionArgs { InputDevice = dev });
+                InputDeviceDisconnected?.Invoke(this, new DeviceConnectionArgs { InputDevice = dev });
 
                 IInputDeviceImp inputDeviceImp = dev.DeviceImp;
 
@@ -141,7 +315,7 @@ namespace Fusee.Engine.Core
                 // no need to call reconnect since device is constructed from scratch
 
                 // Inform interested users about the newly connected device.
-                DeviceConnected?.Invoke(this, new DeviceConnectionArgs { InputDevice = dev });
+                InputDeviceConnected?.Invoke(this, new DeviceConnectionArgs { InputDevice = dev });
             }
         }
 
@@ -162,6 +336,16 @@ namespace Fusee.Engine.Core
             return new InputDevice(imp);
         }
 
+        /// <summary>
+        /// Adds an input driver implementation to the internal list. The input driver is queried about connected
+        /// devices. All new devices will then show up in the <see cref="Devices"/> (or <see cref="InputDevices"/>).
+        /// list (in addition to the already listed devices.
+        /// </summary>
+        /// <param name="inputDriver">The new input driver to add.</param>
+        /// <remarks>
+        /// This is an instance method. Use <see cref="AddDriverImp"/> for a static-over-singleton access
+        /// to the same functionality.
+        /// </remarks>
         public void AddInputDriverImp(IInputDriverImp inputDriver)
         {
             if (inputDriver == null)
@@ -177,6 +361,19 @@ namespace Fusee.Engine.Core
 
             _inputDrivers[inputDriver.DriverId] = inputDriver;
         }
+        /// <summary>
+        /// Adds an input driver implementation to the internal list. The input driver is queried about connected
+        /// devices. All new devices will then show up in the <see cref="Devices"/> (or <see cref="InputDevices"/>).
+        /// list (in addition to the already listed devices.
+        /// </summary>
+        /// <param name="inputDriver">The new input driver to add.</param>
+        /// <remarks>
+        /// This is a static method. Use <see cref="AddInputDriverImp}"/> for an insatnce property 
+        /// to the same functionality.
+        /// </remarks>
+        public static void AddDriverImp(IInputDriverImp inputDriver) => Instance.AddInputDriverImp(inputDriver);
+
+
 
         private void OnNewDeviceImpConnected(object sender, NewDeviceImpConnectedArgs args)
         {
@@ -201,7 +398,7 @@ namespace Fusee.Engine.Core
             }
 
             // Bubble up event to user code
-            DeviceConnected?.Invoke(this, new DeviceConnectionArgs { InputDevice = existingDevice });
+            InputDeviceConnected?.Invoke(this, new DeviceConnectionArgs { InputDevice = existingDevice });
         }
 
         private void OnDeviceImpDisconnected(object sender, DeviceImpDisconnectedArgs args)
@@ -222,10 +419,13 @@ namespace Fusee.Engine.Core
             }
 
             // Bubble up event to user code
-            DeviceDisconnected?.Invoke(this, new DeviceConnectionArgs { InputDevice = existingDevice });
+            InputDeviceDisconnected?.Invoke(this, new DeviceConnectionArgs { InputDevice = existingDevice });
         }
 
-
+        /// <summary>
+        /// Should be called from the main (rendering-) loop. Typically not to be called by user code unless
+        /// users implement their own rendering/application loop.
+        /// </summary>
         public void PreRender()
         {
             foreach (var inputDevice in InputDevices)
@@ -233,7 +433,10 @@ namespace Fusee.Engine.Core
                 inputDevice.PreRender();
             }
         }
-
+        /// <summary>
+        /// Should be called from the main (rendering-) loop. Typically not to be called by user code unless
+        /// users implement their own rendering/application loop.
+        /// </summary>
         public void PostRender()
         {
             foreach (var inputDevice in InputDevices)
@@ -242,13 +445,28 @@ namespace Fusee.Engine.Core
             }
         }
 
+        /// <summary>
+        /// Should be called from the application framework before the application stops. Typically not to be called by user code unless
+        /// users implement their own application framework.
+        /// </summary>
         public void Dispose()
         {
+            foreach (var device in _inputDevices.Values)
+            {
+                InputDeviceDisconnected?.Invoke(this, new DeviceConnectionArgs {InputDevice = device});
+                device.Disconnect();
+            }
+            _inputDevices.Clear();
+            foreach (var driver in _inputDrivers.Values)
+            {
+                driver.Dispose();
+            }
+            _inputDrivers.Clear();
         }
     }
 
 
-
+    /*
     /// <summary>
     ///     The Input class takes care of all inputs. It is accessible from everywhere inside a Fusee project.
     ///     E.g. : Input.Instance.IsButtonDown(MouseButtons.Left);
@@ -444,7 +662,7 @@ namespace Fusee.Engine.Core
             return _buttonsPressed.Contains((int)button);
         }
 
-        /*
+        
         /// <summary>
         /// Called when [button down] event is triggered. 
         /// Occurs when a Mouse button was pressed down once.
@@ -457,9 +675,7 @@ namespace Fusee.Engine.Core
                 // not implemented
                 return false;
             }
-        */
 
-        /*
         /// <summary>
         ///     Called when [button up] event is triggered.
         ///     Occurs when a Mouse button was released.
@@ -472,7 +688,6 @@ namespace Fusee.Engine.Core
             // not implemented
             return false;
         }
-        */
 
         internal void OnUpdateFrame()
         {
@@ -577,7 +792,7 @@ namespace Fusee.Engine.Core
 
         #endregion
     }
-
+    */
 
 }
 

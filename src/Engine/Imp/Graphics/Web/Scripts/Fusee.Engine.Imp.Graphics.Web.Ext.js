@@ -151,20 +151,20 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.ShaderParam", function ($
 JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderCanvasImp", function ($)
 {
     $.Field({ Static: false, Public: false }, "gl", $.Object, null);
-    $.Field({ Static: false, Public: true }, "theCanvas", $.Object, null);
-    $.Field({ Static: false, Public: false }, "deltaTime", $.Double, null);
-    $.Field({ Static: false, Public: false }, "lastFrame", $.Double, null);
+    $.Field({ Static: false, Public: true }, "_canvas", $.Object, null);
+    $.Field({ Static: false, Public: false }, "deltaTime", $.Single, null);
+    $.Field({ Static: false, Public: false }, "lastFrame", $.Single, null);
     $.Field({ Static: false, Public: false }, "currWidth", $.Int32, null);
     $.Field({ Static: false, Public: false }, "currHeight", $.Int32, null);
 
     $.Method({ Static: false, Public: true }, ".ctor",
         new JSIL.MethodSignature(null, []),
         function _ctor() {
-            this.theCanvas = document.getElementById("canvas");
+            this._canvas = document.getElementById("canvas");
 
             var premAlpha = jsilConfig.premultipliedAlpha;
-            this.gl = this.theCanvas.getContext("webgl", { premultipliedAlpha: premAlpha }) ||
-						this.theCanvas.getContext("experimental-webgl", { premultipliedAlpha: premAlpha });
+            this.gl = this._canvas.getContext("webgl", { premultipliedAlpha: premAlpha }) ||
+						this._canvas.getContext("experimental-webgl", { premultipliedAlpha: premAlpha });
 
             this.currWidth = 0;
             this.currHeight = 0;
@@ -172,7 +172,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderCanvasImp", functio
     );
 
     $.Method({ Static: false, Public: true }, "get_DeltaTime",
-        new JSIL.MethodSignature($.Double, []),
+        new JSIL.MethodSignature($.Single, []),
         function get_DeltaTime() {
             return this.deltaTime / 1000.0;
         }
@@ -227,34 +227,6 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderCanvasImp", functio
         }
     );
 
-    //$.Field({ Static: false, Public: false }, "Init", $jsilcore.TypeRef("System.EventHandler`1", [$fuseeCommon.TypeRef("Fusee.Engine.Common.MouseEventArgs")]), function($) {
-    //    return null;
-    //});
-
-    //$.Method({ Static: false, Public: true }, "add_Init",
-    //    new JSIL.MethodSignature(null, [$jsilcore.TypeRef("System.EventHandler`1", [$fuseeCommon.TypeRef("Fusee.Engine.Common.InitEventArgs")])]),
-    //    function add_Init(value) {
-    //        var eventHandler = this.Init;
-    //        do {
-    //            var eventHandler2 = eventHandler;
-    //            var value2 = $jsilcore.System.Delegate.Combine(eventHandler2, value);
-    //            eventHandler = $jsilcore.System.Threading.Interlocked.CompareExchange$b1($jsilcore.System.EventHandler$b1.Of($fuseeCommon.Fusee.Engine.Common.InitEventArgs))(/* ref */new JSIL.MemberReference(this, "Init"), value2, eventHandler2);
-    //        } while (eventHandler !== eventHandler2);
-    //    }
-    //);
-
-    //$.Method({ Static: false, Public: true }, "remove_Init",
-    //    new JSIL.MethodSignature(null, [$jsilcore.TypeRef("System.EventHandler`1", [$fuseeCommon.TypeRef("Fusee.Engine.Common.InitEventArgs")])]),
-    //    function remove_Init(value) {
-    //        var eventHandler = this.Init;
-    //        do {
-    //            var eventHandler2 = eventHandler;
-    //            var value2 = $jsilcore.System.Delegate.Remove(eventHandler2, value);
-    //            eventHandler = $jsilcore.System.Threading.Interlocked.CompareExchange$b1($jsilcore.System.EventHandler$b1.Of($fuseeCommon.Fusee.Engine.Common.InitEventArgs))(/* ref */new JSIL.MemberReference(this, "Init"), value2, eventHandler2);
-    //        } while (eventHandler !== eventHandler2);
-    //    }
-    //);
-
     $.Method({ Static: false, Public: true }, "DoInit",
         new JSIL.MethodSignature(null, []),
         function DoInit() {
@@ -264,33 +236,6 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderCanvasImp", functio
         }
     );
 
-    //$.Field({ Static: false, Public: false }, "UnLoad", $jsilcore.TypeRef("System.EventHandler`1", [$fuseeCommon.TypeRef("Fusee.Engine.Common.MouseEventArgs")]), function($) {
-    //    return null;
-    //});
-
-    //$.Method({ Static: false, Public: true }, "add_UnLoad",
-    //    new JSIL.MethodSignature(null, [$jsilcore.TypeRef("System.EventHandler`1", [$fuseeCommon.TypeRef("Fusee.Engine.Common.InitEventArgs")])]),
-    //    function add_UnLoad(value) {
-    //        var eventHandler = this.UnLoad;
-    //        do {
-    //            var eventHandler2 = eventHandler;
-    //            var value2 = $jsilcore.System.Delegate.Combine(eventHandler2, value);
-    //            eventHandler = $jsilcore.System.Threading.Interlocked.CompareExchange$b1($jsilcore.System.EventHandler$b1.Of($fuseeCommon.Fusee.Engine.Common.InitEventArgs))(/* ref */new JSIL.MemberReference(this, "UnLoad"), value2, eventHandler2);
-    //        } while (eventHandler !== eventHandler2);
-    //    }
-    //);
-
-    //$.Method({ Static: false, Public: true }, "remove_UnLoad",
-    //    new JSIL.MethodSignature(null, [$jsilcore.TypeRef("System.EventHandler`1", [$fuseeCommon.TypeRef("Fusee.Engine.Common.InitEventArgs")])]),
-    //    function remove_UnLoad(value) {
-    //        var eventHandler = this.UnLoad;
-    //        do {
-    //            var eventHandler2 = eventHandler;
-    //            var value2 = $jsilcore.System.Delegate.Remove(eventHandler2, value);
-    //            eventHandler = $jsilcore.System.Threading.Interlocked.CompareExchange$b1($jsilcore.System.EventHandler$b1.Of($fuseeCommon.Fusee.Engine.Common.InitEventArgs))(/* ref */new JSIL.MemberReference(this, "UnLoad"), value2, eventHandler2);
-    //        } while (eventHandler !== eventHandler2);
-    //    }
-    //);
 
     $.Method({ Static: false, Public: true }, "DoUnLoad",
         new JSIL.MethodSignature(null, []),
@@ -301,33 +246,6 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderCanvasImp", functio
         }
     );
 
-    //$.Field({ Static: false, Public: false }, "Render", $jsilcore.TypeRef("System.EventHandler`1", [$fuseeCommon.TypeRef("Fusee.Engine.Common.MouseEventArgs")]), function($) {
-    //    return null;
-    //});
-
-    //$.Method({ Static: false, Public: true }, "add_Render",
-    //    new JSIL.MethodSignature(null, [$jsilcore.TypeRef("System.EventHandler`1", [$fuseeCommon.TypeRef("Fusee.Engine.RenderEventArgs")])]),
-    //    function add_Render(value) {
-    //        var eventHandler = this.Render;
-    //        do {
-    //            var eventHandler2 = eventHandler;
-    //            var value2 = $jsilcore.System.Delegate.Combine(eventHandler2, value);
-    //            eventHandler = $jsilcore.System.Threading.Interlocked.CompareExchange$b1($jsilcore.System.EventHandler$b1.Of($fuseeCommon.Fusee.Engine.RenderEventArgs))(/* ref */new JSIL.MemberReference(this, "Render"), value2, eventHandler2);
-    //        } while (eventHandler !== eventHandler2);
-    //    }
-    //);
-
-    //$.Method({ Static: false, Public: true }, "remove_Render",
-    //    new JSIL.MethodSignature(null, [$jsilcore.TypeRef("System.EventHandler`1", [$fuseeCommon.TypeRef("Fusee.Engine.RenderEventArgs")])]),
-    //    function remove_Render(value) {
-    //        var eventHandler = this.Render;
-    //        do {
-    //            var eventHandler2 = eventHandler;
-    //            var value2 = $jsilcore.System.Delegate.Remove(eventHandler2, value);
-    //            eventHandler = $jsilcore.System.Threading.Interlocked.CompareExchange$b1($jsilcore.System.EventHandler$b1.Of($fuseeCommon.Fusee.Engine.RenderEventArgs))(/* ref */new JSIL.MemberReference(this, "Render"), value2, eventHandler2);
-    //        } while (eventHandler !== eventHandler2);
-    //    }
-    //);
 
     $.Method({ Static: false, Public: true }, "DoRender",
         new JSIL.MethodSignature(null, []),
@@ -337,34 +255,6 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderCanvasImp", functio
             }
         }
     );
-
-    //$.Field({ Static: false, Public: false }, "Resize", $jsilcore.TypeRef("System.EventHandler`1", [$fuseeCommon.TypeRef("Fusee.Engine.Common.ResizeEventArgs")]), function ($) {
-    //    return null;
-    //});
-
-    //$.Method({ Static: false, Public: true }, "add_Resize",
-    //    new JSIL.MethodSignature(null, [$jsilcore.TypeRef("System.EventHandler`1", [$fuseeCommon.TypeRef("Fusee.Engine.Common.ResizeEventArgs")])]),
-    //    function add_Resize(value) {
-    //        var eventHandler = this.Resize;
-    //        do {
-    //            var eventHandler2 = eventHandler;
-    //            var value2 = $jsilcore.System.Delegate.Combine(eventHandler2, value);
-    //            eventHandler = $jsilcore.System.Threading.Interlocked.CompareExchange$b1($jsilcore.System.EventHandler$b1.Of($fuseeCommon.Fusee.Engine.Common.ResizeEventArgs))(/* ref */new JSIL.MemberReference(this, "Resize"), value2, eventHandler2);
-    //        } while (eventHandler !== eventHandler2);
-    //    }
-    //);
-
-    //$.Method({ Static: false, Public: true }, "remove_Resize",
-    //    new JSIL.MethodSignature(null, [$jsilcore.TypeRef("System.EventHandler`1", [$fuseeCommon.TypeRef("Fusee.Engine.Common.ResizeEventArgs")])]),
-    //    function remove_Resize(value) {
-    //        var eventHandler = this.Resize;
-    //        do {
-    //            var eventHandler2 = eventHandler;
-    //            var value2 = $jsilcore.System.Delegate.Remove(eventHandler2, value);
-    //            eventHandler = $jsilcore.System.Threading.Interlocked.CompareExchange$b1($jsilcore.System.EventHandler$b1.Of($fuseeCommon.Fusee.Engine.Common.ResizeEventArgs))(/* ref */new JSIL.MemberReference(this, "Resize"), value2, eventHandler2);
-    //        } while (eventHandler !== eventHandler2);
-    //    }
-    //);
 
     $.Method({ Static: false, Public: true }, "DoResize",
         new JSIL.MethodSignature(null, []),
@@ -395,7 +285,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderCanvasImp", functio
             this.DoRender();
             this.deltaTime = now - this.lastFrame;
             this.lastFrame = now;
-            window.requestAnimFrame(this.frameTicker.bind(this), this.theCanvas);
+            window.requestAnimFrame(this.frameTicker.bind(this), this._canvas);
         }
     );
 
@@ -439,8 +329,8 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderCanvasImp", functio
             this.deltaTime = 0.0;
 
             // canvas initialization is now in the constructor:
-            // this.theCanvas = document.getElementById("canvas");
-            // this.gl = this.theCanvas.getContext("experimental-webgl");
+            // this._canvas = document.getElementById("canvas");
+            // this.gl = this._canvas.getContext("experimental-webgl");
 
             this.DoInit();
             this.currWidth = 0;
@@ -2203,365 +2093,126 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.VideoStreamImp"
     return function (newThisType) { $thisType = newThisType; };
 });
 
-JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.InputImp", function($) {
 
-    $.Field({ Static: false, Public: true }, "_currentMouse", $fuseeCommon.TypeRef("Fusee.Engine.Common.Point"), null);
-    $.Field({ Static: false, Public: true }, "_mouseDown", $.Boolean, null);
-    $.Field({ Static: false, Public: true }, "_currentMouseWheel", $.Int32, null);
 
-    $.Method({ Static: false, Public: true }, "OnCanvasMouseDown",
-        new JSIL.MethodSignature(null, []),
-        function OnCanvasMouseDown(event) {
-            var mb = $fuseeCommon.Fusee.Engine.Common.MouseButtons.Unknown;
-            switch (event.button) {
-            case 0:
-                mb = $fuseeCommon.Fusee.Engine.Common.MouseButtons.Left;
-                break;
-            case 1:
-                mb = $fuseeCommon.Fusee.Engine.Common.MouseButtons.Middle;
-                break;
-            case 2:
-                mb = $fuseeCommon.Fusee.Engine.Common.MouseButtons.Right;
-                break;
-            }
+JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.KeyboardDeviceImp", function($) {
 
-            if (this.MouseButtonDown !== null) {
-                var pt = new $fuseeCommon.Fusee.Engine.Common.Point().__Initialize__({ x: event.clientX, y: event.clientY });
-                this.MouseButtonDown(this, (new $fuseeCommon.Fusee.Engine.Common.MouseEventArgs()).__Initialize__({
-                    Button: mb,
-                    Position: pt
-                }));
-            }
-        }
-    );
-
-    $.Method({ Static: false, Public: true }, "OnCanvasMouseUp",
-        new JSIL.MethodSignature(null, []),
-        function OnCanvasMouseUp(event) {
-            var mb = $fuseeCommon.Fusee.Engine.Common.MouseButtons.Unknown;
-            switch (event.button) {
-            case 0:
-                mb = $fuseeCommon.Fusee.Engine.Common.MouseButtons.Left;
-                break;
-            case 1:
-                mb = $fuseeCommon.Fusee.Engine.Common.MouseButtons.Middle;
-                break;
-            case 2:
-                mb = $fuseeCommon.Fusee.Engine.Common.MouseButtons.Right;
-                break;
-            }
-
-            if (this.MouseButtonUp !== null) {
-                var pt = new $fuseeCommon.Fusee.Engine.Common.Point().__Initialize__({ x: event.clientX, y: event.clientY });
-                this.MouseButtonUp(this, (new $fuseeCommon.Fusee.Engine.Common.MouseEventArgs()).__Initialize__({
-                    Button: mb,
-                    Position: pt
-                }));
-            }
-        }
-    );
-
-    $.Method({ Static: false, Public: true }, "OnCanvasKeyDown",
-        new JSIL.MethodSignature(null, []),
-        function OnCanvasKeyDown(event) {
-            if (this.KeyDown !== null) {
-                this.KeyDown(this, (new $fuseeCommon.Fusee.Engine.Common.KeyEventArgs()).__Initialize__({
-                    Shift: event.shiftKey,
-                    Alt: event.altKey,
-                    Control: event.ctrlKey,
-                    KeyCode: event.keyCode
-                }));
-            }
-        }
-    );
-
-    $.Method({ Static: false, Public: true }, "OnCanvasKeyUp",
-        new JSIL.MethodSignature(null, []),
-        function OnCanvasKeyUp(event) {
-            if (this.KeyUp !== null) {
-                this.KeyUp(this, (new $fuseeCommon.Fusee.Engine.Common.KeyEventArgs()).__Initialize__({
-                    Shift: event.shiftKey,
-                    Alt: event.altKey,
-                    Control: event.ctrlKey,
-                    KeyCode: event.keyCode
-                }));
-            }
-        }
-    );
-
-    $.Method({ Static: false, Public: true }, "OnCanvasMouseMove",
-        new JSIL.MethodSignature(null, []),
-        function OnCanvasMouseMove(event) {
-            this._currentMouse.x = event.clientX;
-            this._currentMouse.y = event.clientY;
-            
-            if (this.MouseMove !== null) {
-                var pt = new $fuseeCommon.Fusee.Engine.Common.Point().__Initialize__({ x: event.clientX, y: event.clientY });
-                this.MouseMove(this, (new $fuseeCommon.Fusee.Engine.Common.MouseEventArgs()).__Initialize__({
-                    Button: $fuseeCommon.Fusee.Engine.Common.MouseButtons.Unknown,
-                    Position: pt
-                }));
-            }
-        }
-    );
-
-    $.Method({ Static: false, Public: true }, "OnCanvasMouseWheel",
-        new JSIL.MethodSignature(null, []),
-        function OnCanvasMouseWheel(event) {
-            this._currentMouseWheel += event.wheelDelta * 0.005;
-        }
-    );
-
-    // IInputImp implementation
-    $.Method({ Static: false, Public: true }, "GetMouseWheelPos",
-        new JSIL.MethodSignature($.Int32, []),
-        function GetMouseWheelPos(event) {
-            return this._currentMouseWheel;
-        }
-    );
-
-    $.Method({ Static: false, Public: true }, "GetMousePos",
-        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.Common.Point"), []),
-        function GetMousePos(event) {
-            return this._currentMouse.MemberwiseClone();
-        }
-    );
-
-    // already implemented in C#
-    //// KeyDown event
-    //$.Field({ Static: false, Public: false }, "KeyDown", $jsilcore.TypeRef("System.EventHandler`1", [$fuseeCommon.TypeRef("Fusee.Engine.Common.KeyEventArgs")]), function($) {
-    //    return null;
-    //});
-
-    //$.Method({ Static: false, Public: true }, "add_KeyDown",
-    //    new JSIL.MethodSignature(null, [$jsilcore.TypeRef("System.EventHandler`1", [$fuseeCommon.TypeRef("Fusee.Engine.Common.KeyEventArgs")])]),
-    //    function add_KeyDown(value) {
-    //        var eventHandler = this.KeyDown;
-    //        do {
-    //            var eventHandler2 = eventHandler;
-    //            var value2 = $jsilcore.System.Delegate.Combine(eventHandler2, value);
-    //            eventHandler = $jsilcore.System.Threading.Interlocked.CompareExchange$b1($jsilcore.System.EventHandler$b1.Of($fuseeCommon.Fusee.Engine.Common.KeyEventArgs))(/* ref */new JSIL.MemberReference(this, "KeyDown"), value2, eventHandler2);
-    //        } while (eventHandler !== eventHandler2);
-    //    }
-    //);
-
-    //$.Method({ Static: false, Public: true }, "remove_KeyDown",
-    //    new JSIL.MethodSignature(null, [$jsilcore.TypeRef("System.EventHandler`1", [$fuseeCommon.TypeRef("Fusee.Engine.Common.KeyEventArgs")])]),
-    //    function remove_KeyDown(value) {
-    //        var eventHandler = this.KeyDown;
-    //        do {
-    //            var eventHandler2 = eventHandler;
-    //            var value2 = $jsilcore.System.Delegate.Remove(eventHandler2, value);
-    //            eventHandler = $jsilcore.System.Threading.Interlocked.CompareExchange$b1($jsilcore.System.EventHandler$b1.Of($fuseeCommon.Fusee.Engine.Common.KeyEventArgs))(/* ref */new JSIL.MemberReference(this, "KeyDown"), value2, eventHandler2);
-    //        } while (eventHandler !== eventHandler2);
-    //    }
-    //);
-
-    //// KeyUp event
-    //$.Field({ Static: false, Public: false }, "KeyUp", $jsilcore.TypeRef("System.EventHandler`1", [$fuseeCommon.TypeRef("Fusee.Engine.Common.KeyEventArgs")]), function($) {
-    //    return null;
-    //});
-
-    //$.Method({ Static: false, Public: true }, "add_KeyUp",
-    //    new JSIL.MethodSignature(null, [$jsilcore.TypeRef("System.EventHandler`1", [$fuseeCommon.TypeRef("Fusee.Engine.Common.KeyEventArgs")])]),
-    //    function add_KeyUp(value) {
-    //        var eventHandler = this.KeyUp;
-    //        do {
-    //            var eventHandler2 = eventHandler;
-    //            var value2 = $jsilcore.System.Delegate.Combine(eventHandler2, value);
-    //            eventHandler = $jsilcore.System.Threading.Interlocked.CompareExchange$b1($jsilcore.System.EventHandler$b1.Of($fuseeCommon.Fusee.Engine.Common.KeyEventArgs))(/* ref */new JSIL.MemberReference(this, "KeyUp"), value2, eventHandler2);
-    //        } while (eventHandler !== eventHandler2);
-    //    }
-    //);
-
-    //$.Method({ Static: false, Public: true }, "remove_KeyUp",
-    //    new JSIL.MethodSignature(null, [$jsilcore.TypeRef("System.EventHandler`1", [$fuseeCommon.TypeRef("Fusee.Engine.Common.KeyEventArgs")])]),
-    //    function remove_KeyUp(value) {
-    //        var eventHandler = this.KeyUp;
-    //        do {
-    //            var eventHandler2 = eventHandler;
-    //            var value2 = $jsilcore.System.Delegate.Remove(eventHandler2, value);
-    //            eventHandler = $jsilcore.System.Threading.Interlocked.CompareExchange$b1($jsilcore.System.EventHandler$b1.Of($fuseeCommon.Fusee.Engine.Common.KeyEventArgs))(/* ref */new JSIL.MemberReference(this, "KeyUp"), value2, eventHandler2);
-    //        } while (eventHandler !== eventHandler2);
-    //    }
-    //);
-
-    //// MouseButtonDown event
-    //$.Field({ Static: false, Public: false }, "MouseButtonDown", $jsilcore.TypeRef("System.EventHandler`1", [$fuseeCommon.TypeRef("Fusee.Engine.Common.MouseEventArgs")]), function($) {
-    //    return null;
-    //});
-
-    //$.Method({ Static: false, Public: true }, "add_MouseButtonDown",
-    //    new JSIL.MethodSignature(null, [$jsilcore.TypeRef("System.EventHandler`1", [$fuseeCommon.TypeRef("Fusee.Engine.Common.MouseEventArgs")])]),
-    //    function add_MouseButtonDown(value) {
-    //        var eventHandler = this.MouseButtonDown;
-    //        do {
-    //            var eventHandler2 = eventHandler;
-    //            var value2 = $jsilcore.System.Delegate.Combine(eventHandler2, value);
-    //            eventHandler = $jsilcore.System.Threading.Interlocked.CompareExchange$b1($jsilcore.System.EventHandler$b1.Of($fuseeCommon.Fusee.Engine.Common.MouseEventArgs))(/* ref */new JSIL.MemberReference(this, "MouseButtonDown"), value2, eventHandler2);
-    //        } while (eventHandler !== eventHandler2);
-    //    }
-    //);
-
-    //$.Method({ Static: false, Public: true }, "remove_MouseButtonDown",
-    //    new JSIL.MethodSignature(null, [$jsilcore.TypeRef("System.EventHandler`1", [$fuseeCommon.TypeRef("Fusee.Engine.Common.MouseEventArgs")])]),
-    //    function remove_MouseButtonDown(value) {
-    //        var eventHandler = this.MouseButtonDown;
-    //        do {
-    //            var eventHandler2 = eventHandler;
-    //            var value2 = $jsilcore.System.Delegate.Remove(eventHandler2, value);
-    //            eventHandler = $jsilcore.System.Threading.Interlocked.CompareExchange$b1($jsilcore.System.EventHandler$b1.Of($fuseeCommon.Fusee.Engine.Common.MouseEventArgs))(/* ref */new JSIL.MemberReference(this, "MouseButtonDown"), value2, eventHandler2);
-    //        } while (eventHandler !== eventHandler2);
-    //    }
-    //);
-
-    //// MouseButtonUp event
-    //$.Field({ Static: false, Public: false }, "MouseButtonUp", $jsilcore.TypeRef("System.EventHandler`1", [$fuseeCommon.TypeRef("Fusee.Engine.Common.MouseEventArgs")]), function($) {
-    //    return null;
-    //});
-
-    //$.Method({ Static: false, Public: true }, "add_MouseButtonUp",
-    //    new JSIL.MethodSignature(null, [$jsilcore.TypeRef("System.EventHandler`1", [$fuseeCommon.TypeRef("Fusee.Engine.Common.MouseEventArgs")])]),
-    //    function add_MouseButtonUp(value) {
-    //        var eventHandler = this.MouseButtonUp;
-    //        do {
-    //            var eventHandler2 = eventHandler;
-    //            var value2 = $jsilcore.System.Delegate.Combine(eventHandler2, value);
-    //            eventHandler = $jsilcore.System.Threading.Interlocked.CompareExchange$b1($jsilcore.System.EventHandler$b1.Of($fuseeCommon.Fusee.Engine.Common.MouseEventArgs))(/* ref */new JSIL.MemberReference(this, "MouseButtonUp"), value2, eventHandler2);
-    //        } while (eventHandler !== eventHandler2);
-    //    }
-    //);
-
-    //$.Method({ Static: false, Public: true }, "remove_MouseButtonUp",
-    //    new JSIL.MethodSignature(null, [$jsilcore.TypeRef("System.EventHandler`1", [$fuseeCommon.TypeRef("Fusee.Engine.Common.MouseEventArgs")])]),
-    //    function remove_MouseButtonUp(value) {
-    //        var eventHandler = this.MouseButtonUp;
-    //        do {
-    //            var eventHandler2 = eventHandler;
-    //            var value2 = $jsilcore.System.Delegate.Remove(eventHandler2, value);
-    //            eventHandler = $jsilcore.System.Threading.Interlocked.CompareExchange$b1($jsilcore.System.EventHandler$b1.Of($fuseeCommon.Fusee.Engine.Common.MouseEventArgs))(/* ref */new JSIL.MemberReference(this, "MouseButtonUp"), value2, eventHandler2);
-    //        } while (eventHandler !== eventHandler2);
-    //    }
-    //);
-
-    //// MouseMove event
-    //$.Field({ Static: false, Public: false }, "MouseMove", $jsilcore.TypeRef("System.EventHandler`1", [$fuseeCommon.TypeRef("Fusee.Engine.Common.MouseEventArgs")]), function ($) {
-    //    return null;
-    //});
-
-    //$.Method({ Static: false, Public: true }, "add_MouseMove",
-    //    new JSIL.MethodSignature(null, [$jsilcore.TypeRef("System.EventHandler`1", [$fuseeCommon.TypeRef("Fusee.Engine.Common.MouseEventArgs")])]),
-    //    function add_MouseMove(value) {
-    //        var eventHandler = this.MouseMove;
-    //        do {
-    //            var eventHandler2 = eventHandler;
-    //            var value2 = $jsilcore.System.Delegate.Combine(eventHandler2, value);
-    //            eventHandler = $jsilcore.System.Threading.Interlocked.CompareExchange$b1($jsilcore.System.EventHandler$b1.Of($fuseeCommon.Fusee.Engine.Common.MouseEventArgs))(/* ref */new JSIL.MemberReference(this, "MouseMove"), value2, eventHandler2);
-    //        } while (eventHandler !== eventHandler2);
-    //    }
-    //);
-
-    //$.Method({ Static: false, Public: true }, "remove_MouseMove",
-    //    new JSIL.MethodSignature(null, [$jsilcore.TypeRef("System.EventHandler`1", [$fuseeCommon.TypeRef("Fusee.Engine.Common.MouseEventArgs")])]),
-    //    function remove_MouseMove(value) {
-    //        var eventHandler = this.MouseMove;
-    //        do {
-    //            var eventHandler2 = eventHandler;
-    //            var value2 = $jsilcore.System.Delegate.Remove(eventHandler2, value);
-    //            eventHandler = $jsilcore.System.Threading.Interlocked.CompareExchange$b1($jsilcore.System.EventHandler$b1.Of($fuseeCommon.Fusee.Engine.Common.MouseEventArgs))(/* ref */new JSIL.MemberReference(this, "MouseMove"), value2, eventHandler2);
-    //        } while (eventHandler !== eventHandler2);
-    //    }
-    //);
-
-    $.Method({ Static: false, Public: true }, ".ctor",
-        new JSIL.MethodSignature(null, [$WebGLImp.TypeRef("Fusee.Engine.Common.IRenderCanvasImp")]),
-        function _ctor(renderCanvas) {
-
-            if (renderCanvas == null)
-                throw new Error("renderCanvas must not be null");
-
-            this._currentMouse = new $fuseeCommon.Fusee.Engine.Common.Point();
-            this._currentMouse.x = 0;
-            this._currentMouse.y = 0;
+    $.Method({ Static: false, Public: false }, "ConnectCanvasEvents",
+      JSIL.MethodSignature.Void,
+        function ConnectCanvasEvents() {
             var callbackClosure = this;
-            renderCanvas.theCanvas.onmousedown = function(event) {
-                callbackClosure.OnCanvasMouseDown.call(callbackClosure, event);
+            document.onkeydown = function (event) {
+                callbackClosure.OnCanvasKeyDown.call(callbackClosure, event.keyCode);
             };
-            renderCanvas.theCanvas.onmouseup = function(event) {
-                callbackClosure.OnCanvasMouseUp.call(callbackClosure, event);
-            };
-            renderCanvas.theCanvas.onmousemove = function(event) {
-                callbackClosure.OnCanvasMouseMove.call(callbackClosure, event);
-            };
-            renderCanvas.theCanvas.onmousewheel = function(event) {
-                callbackClosure.OnCanvasMouseWheel.call(callbackClosure, event);
-            };
-            document.onkeydown = function(event) {
-                callbackClosure.OnCanvasKeyDown.call(callbackClosure, event);
-            };
-            document.onkeyup = function(event) {
-                callbackClosure.OnCanvasKeyUp.call(callbackClosure, event);
+            document.onkeyup = function (event) {
+                callbackClosure.OnCanvasKeyUp.call(callbackClosure, event.keyCode);
             };
         }
-    );
+      );
 
-    return function(newThisType) { $thisType = newThisType; };
+      return function (newThisType) { $thisType = newThisType; };
 });
 
-/*
-JSIL.ImplementExternals("Fusee.Engine.Common.ImpFactory", function($) {
-    $.Method({ Static: true, Public: true }, "CreateIInputImp",
-        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.Common.IInputImp"), [$fuseeCommon.TypeRef("Fusee.Engine.Common.IRenderCanvasImp")]),
-        function ImpFactory_CreateIInputImp(renderCanvasImp) {
-            return new $WebGLImp.Fusee.Engine.Imp.Graphics.Web.InputImp(renderCanvasImp);
+
+
+JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.MouseDeviceImp", function ($) {
+
+    $.Method({ Static: false, Public: false }, "ConnectCanvasEvents",
+      JSIL.MethodSignature.Void,
+        function ConnectCanvasEvents() {
+            var callbackClosure = this;
+            this._canvas.onmousedown = function (event) {
+                callbackClosure.OnCanvasMouseDown.call(callbackClosure, event.button);
+            };
+            this._canvas.onmouseup = function (event) {
+                callbackClosure.OnCanvasMouseUp.call(callbackClosure, event.button);
+            };
+            this._canvas.onmousemove = function (event) {
+                var pt = new $fuseeMath.Fusee.Math.Core.float2().__Initialize__({ x: event.clientX, y: event.clientY });
+                callbackClosure.OnCanvasMouseMove.call(callbackClosure, pt);
+            };
+            this._canvas.onmousewheel = function (event) {
+                callbackClosure.OnCanvasMouseWheel.call(callbackClosure, event.wheelDelta);
+            };
         }
+      );
+
+    $.Method({ Static: false, Public: false }, "GetWindowHeight",
+      JSIL.MethodSignature.Return($.Single),
+      function GetWindowHeight() {
+          return this._canvas.height;
+      }
     );
 
-    $.Method({ Static: true, Public: true }, "CreateIRenderCanvasImp",
-        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.Common.IRenderCanvasImp"), []),
-        function ImpFactory_CreateIRenderCanvasImp() {
-            // return new $WebGLImp.Fusee.Engine.TheEmptyDummyClass
-            return new $WebGLImp.Fusee.Engine.Imp.Graphics.Web.RenderCanvasImp();
-        }
+    $.Method({ Static: false, Public: false }, "GetWindowWidth",
+      JSIL.MethodSignature.Return($.Single),
+      function GetWindowHeight() {
+          return this._canvas.width;
+      }
     );
 
-    $.Method({ Static: true, Public: true }, "CreateIRenderContextImp",
-        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.Common.IRenderContextImp"), [$fuseeCommon.TypeRef("Fusee.Engine.Common.IRenderCanvasImp")]),
-        function ImpFactory_CreateIRenderContextImp(renderCanvasImp) {
-            return new $WebGLImp.Fusee.Engine.RenderContextImp(renderCanvasImp);
-        }
-    );
-
-    $.Method({ Static: true, Public: true }, "CreateIAudioImp",
-        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.Common.IAudioImp"), []),
-        function ImpFactory_CreateIAudioImp() {
-            return new $WebAudioImp.Fusee.Engine.WebAudioImp();
-        }
-    );
-
-    $.Method({ Static: true, Public: true }, "CreateINetworkImp",
-        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.Common.INetworkImp"), []),
-        function ImpFactory_CreateINetworkImp() {
-            return new $WebNetImp.Fusee.Engine.WebNetImp();
-        }
-    );
-
-    $.Method({ Static: true, Public: true }, "CreateIInputDriverImp",
-        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.Common.IInputDriverImp"), []),
-        function ImpFactory_CreateIInputDriverImp() {
-            return new $WebInputImp.Fusee.Engine.WebInputDriverImp();
-        }
-    );
-
-        $.Method({ Static: true, Public: true }, "CreateIVideoManagerImp",
-        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.Common.IVideoManagerImp"), []),
-        function ImpFactory_CreateIVideoManagerImp() {
-            return new $WebGLImp.Fusee.Engine.VideoManagerImp();
-        }
-    );
-
+    return function (newThisType) { $thisType = newThisType; };
 });
-*/
+
+
+
+JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.TouchDeviceImp", function ($) {
+
+    $.Method({ Static: false, Public: false }, "ConnectCanvasEvents",
+      JSIL.MethodSignature.Void,
+        function ConnectCanvasEvents() {
+            var callbackClosure = this;
+
+            this._canvas.ontouchstart = function(event) {
+                event.preventDefault();
+                var touches = event.changedTouches;
+                for (var i = 0; i < touches.length; i++) {
+                    callbackClosure.OnCanvasTouchStart.call(callbackClosure, touches[i].identifier, touches[i].pageX, touches[i].pageY);
+                }
+            };
+            this._canvas.ontouchmove = function (event) {
+                event.preventDefault();
+                var touches = event.changedTouches;
+                for (var i = 0; i < touches.length; i++) {
+                    callbackClosure.OnCanvasTouchMove.call(callbackClosure, touches[i].identifier, touches[i].pageX, touches[i].pageY);
+                }
+            };
+            this._canvas.ontouchend = function (event) {
+                event.preventDefault();
+                var touches = event.changedTouches;
+                for (var i = 0; i < touches.length; i++) {
+                    callbackClosure.OnCanvasTouchEnd.call(callbackClosure, touches[i].identifier, touches[i].pageX, touches[i].pageY);
+                }
+            };
+            this._canvas.ontouchcancel = function (event) {
+                event.preventDefault();
+                var touches = event.changedTouches;
+                for (var i = 0; i < touches.length; i++) {
+                    callbackClosure.OnCanvasTouchCancel.call(callbackClosure, touches[i].identifier, touches[i].pageX, touches[i].pageY);
+                }
+            };
+        }
+      );
+
+    $.Method({ Static: false, Public: false }, "GetWindowHeight",
+      JSIL.MethodSignature.Return($.Single),
+      function GetWindowHeight() {
+          return this._canvas.height;
+      }
+    );
+
+    $.Method({ Static: false, Public: false }, "GetWindowWidth",
+      JSIL.MethodSignature.Return($.Single),
+      function GetWindowHeight() {
+          return this._canvas.width;
+      }
+    );
+
+    return function (newThisType) { $thisType = newThisType; };
+});
+
+
+
 
 JSIL.ImplementExternals("Fusee.Engine.Core.MeshReader", function($) {
     $.Method({ Static: true, Public: true }, "Double_Parse",
@@ -2572,17 +2223,7 @@ JSIL.ImplementExternals("Fusee.Engine.Core.MeshReader", function($) {
     );
 });
 
-/*
-JSIL.ImplementExternals("Fusee.Engine.RenderContext", function($) {
-    $.Method({ Static: false, Public: true }, "LoadSystemFont",
-        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.Common.IFont"), [$.String, $.UInt32]),
-        function LoadSystemFont(filename, size) {
-            filename = "Assets/" + filename + ".ttf";
-            return this.LoadFont(filename, size);
-        }
-    );
-});
-*/
+
 
 JSIL.ImplementExternals("Fusee.Engine.Core.GUI.GUIHandler", function ($) {
     $.Method({ Static: false, Public: true }, "SortArray",
@@ -2592,6 +2233,7 @@ JSIL.ImplementExternals("Fusee.Engine.Core.GUI.GUIHandler", function ($) {
         }
     );
 });
+
 
 /**
 * Provides requestAnimationFrame in a cross browser way.

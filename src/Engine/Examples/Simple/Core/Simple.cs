@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Reflection;
-using Fusee.Base.Common;
+﻿using Fusee.Base.Common;
 using Fusee.Base.Core;
-using Fusee.Engine;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
-using Fusee.Math;
 using Fusee.Math.Core;
 using Fusee.Serialization;
+using static Fusee.Engine.Core.Input;
+using static Fusee.Engine.Core.Time;
 
 namespace Fusee.Engine.Examples.Simple.Core
 {
@@ -20,11 +16,13 @@ namespace Fusee.Engine.Examples.Simple.Core
         // angle variables
         private static float _angleHorz = MathHelper.PiOver4, _angleVert, _angleVelHorz, _angleVelVert;
 
-        private const float RotationSpeed = 3f;
-        private const float Damping = 0.92f;
+        private const float RotationSpeed = 7;
+        private const float Damping = 0.8f;
 
         private SceneContainer _rocketScene;
         private SceneRenderer _sceneRenderer;
+
+        private bool _keys;
         
         // Init is called on startup. 
         public override void Init()
@@ -46,57 +44,43 @@ namespace Fusee.Engine.Examples.Simple.Core
 
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-      
-            /*
-            // Mouse movement
-            if (Input.Instance.Mouse.LeftButton)
+
+
+            // Mouse and keyboard movement
+            if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
             {
-                _angleVelHorz = -RotationSpeed* M.Saturate(Input.Instance.Mouse.XVel * 0.00005f, -0.5f, 0.5f);
-                _angleVelVert = -RotationSpeed* M.Saturate(Input.Instance.Mouse.YVel * 0.00005f, -0.5f, 0.5f);
-                // Diagnostics.Log($"XVel: {Input.Instance.Mouse.XVel}; YVel: {Input.Instance.Mouse.YVel}");
+                _keys = true;
+            }
+
+            if (Mouse.LeftButton)
+            {
+                _keys = false;
+                _angleVelHorz = -RotationSpeed * Mouse.XVel * DeltaTime * 0.0005f;
+                _angleVelVert = -RotationSpeed * Mouse.YVel * DeltaTime * 0.0005f;
+            }
+            else if (Touch.GetTouchActive(TouchPoints.Touchpoint_0))
+            {
+                _keys = false;
+                var touchVel = Touch.GetVelocity(TouchPoints.Touchpoint_0);
+                _angleVelHorz = -RotationSpeed * touchVel.x * DeltaTime * 0.0005f;
+                _angleVelVert = -RotationSpeed * touchVel.y * DeltaTime * 0.0005f;
             }
             else
             {
-                var curDamp = (float) System.Math.Exp(-Damping*Time.Instance.DeltaTime);
-
-                _angleVelHorz *= curDamp;
-                _angleVelVert *= curDamp;
+                if (_keys)
+                {
+                    _angleVelHorz = -RotationSpeed * Keyboard.LeftRightAxis * DeltaTime;
+                    _angleVelVert = -RotationSpeed * Keyboard.UpDownAxis * DeltaTime;
+                }
+                else
+                {
+                    var curDamp = (float)System.Math.Exp(-Damping * DeltaTime);
+                    _angleVelHorz *= curDamp;
+                    _angleVelVert *= curDamp;
+                }
             }
-            */
 
-            var lr = Input.Instance.Keyboard.GetLeftRight();
-            _angleVelHorz = -RotationSpeed * lr * (float) Time.Instance.DeltaTime;
-
-            var ud = Input.Instance.Keyboard.GetUpDown();
-            _angleVelVert = -RotationSpeed * ud * (float)Time.Instance.DeltaTime;
-
-            Diagnostics.Log($"lr: {lr}; ud: {ud}");
-
-
-
-            /*
-            // Keyboard movement
-            if (Input.Instance.Keyboard.GetKey(KeyCodes.Left))
-                _angleVelHorz = RotationSpeed*(float) Time.Instance.DeltaTime;
-            if (Input.Instance.Keyboard.IsKeyUp(KeyCodes.Left))
-                _angleVelHorz = 0;
-
-            if (Input.Instance.Keyboard.GetKey(KeyCodes.Right))
-                _angleVelHorz = -RotationSpeed*(float) Time.Instance.DeltaTime;
-            if (Input.Instance.Keyboard.IsKeyUp(KeyCodes.Right))
-                _angleVelHorz = 0;
-
-            if (Input.Instance.Keyboard.GetKey(KeyCodes.Up))
-                _angleVelVert = RotationSpeed*(float) Time.Instance.DeltaTime;
-            if (Input.Instance.Keyboard.IsKeyUp(KeyCodes.Up))
-                _angleVelVert = 0;
-
-            if (Input.Instance.Keyboard.GetKey(KeyCodes.Down))
-                _angleVelVert = -RotationSpeed*(float) Time.Instance.DeltaTime;
-            if (Input.Instance.Keyboard.IsKeyUp(KeyCodes.Down))
-                _angleVelVert = 0;
-            */
-
+            
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
 

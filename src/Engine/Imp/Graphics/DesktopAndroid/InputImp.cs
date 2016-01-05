@@ -4,7 +4,7 @@ using OpenTK.Input;
 using Fusee.Engine.Common;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
+
 
 #if PLATFORM_DESKTOP
 namespace Fusee.Engine.Imp.Graphics.Desktop
@@ -89,6 +89,48 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// You can register handlers but they will never get called.
         /// </summary>
         public event EventHandler<NewDeviceImpConnectedArgs> NewDeviceConnected;
+
+        #region IDisposable Support
+        private bool disposedValue = false; // To detect redundant calls
+
+        /// <summary>
+        /// Part of the Dispose pattern.
+        /// </summary>
+        /// <param name="disposing"></param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // TODO: dispose managed state (managed objects).
+                }
+
+                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
+                // TODO: set large fields to null.
+
+                disposedValue = true;
+            }
+        }
+
+        // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
+        // ~RenderCanvasInputDriverImp() {
+        //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+        //   Dispose(false);
+        // }
+
+        // This code added to correctly implement the disposable pattern.
+        /// <summary>
+        /// Part of the dispose pattern.
+        /// </summary>
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+            Dispose(true);
+            // TODO: uncomment the following line if the finalizer is overridden above.
+            // GC.SuppressFinalize(this);
+        }
+        #endregion
     }
 
 
@@ -256,7 +298,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <returns>No return, always throws.</returns>
         public bool GetButton(int iButtonId)
         {
-            throw new InvalidOperationException($"Button {iButtonId} does not exist or is no pollable. Listen to the ButtonValueChanged event to reveive keyboard notifications from this device.");
+            throw new InvalidOperationException($"Button {iButtonId} does not exist or is no pollable. Listen to the ButtonValueChanged event to receive keyboard notifications from this device.");
         }
     }
 
@@ -268,6 +310,10 @@ namespace Fusee.Engine.Imp.Graphics.Android
         private GameWindow _gameWindow;
         private ButtonImpDescription _btnLeftDesc, _btnRightDesc, _btnMiddleDesc;
 
+        /// <summary>
+        /// Creates a new mouse input device instance using an existing <see cref="OpenTK.GameWindow"/>.
+        /// </summary>
+        /// <param name="gameWindow">The game window providing mouse input.</param>
         public MouseDeviceImp(GameWindow gameWindow)
         {
             _gameWindow = gameWindow;
@@ -304,12 +350,9 @@ namespace Fusee.Engine.Imp.Graphics.Android
         }
 
         /// <summary>
-        /// Number of axes. Here three: "X", "Y" and "Wheel"
+        /// Number of axes. Here seven: "X", "Y" and "Wheel" as well as MinX, MaxX, MinY and MaxY
         /// </summary>
-        public int AxesCount
-        {
-            get { return 6; }
-        }
+        public int AxesCount => 7;
 
         /// <summary>
         /// Returns description information for all axes.
@@ -569,7 +612,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         }
     }
 
-
+    /*
     /// <summary>
     /// This class accesses the underlying OpenTK adapter and is the implementation of the input interface <see cref="IInputImp" />.
     /// </summary>
@@ -843,4 +886,5 @@ namespace Fusee.Engine.Imp.Graphics.Android
         
         #endregion
     }
+    */
 }

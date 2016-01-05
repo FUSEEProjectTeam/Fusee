@@ -135,7 +135,7 @@ namespace Fusee.Engine.Core
         internal void Disconnect()
         {
             // The driver informed the input system that this device has disconnected. Set all axes to 0 and all buttons to false.
-            foreach (var axisId in _axesToListen.Keys)
+            foreach (var axisId in _axesToListen.Keys.ToArray())
             {
                 if (AxisValueChanged != null && _axesToListen[axisId] != 0)
                 {
@@ -146,12 +146,12 @@ namespace Fusee.Engine.Core
                 _axesToListen[axisId] = 0;
             }
 
-            foreach (var axisId in _axesToPoll.Keys)
+            foreach (var axisId in _axesToPoll.Keys.ToArray())
             {
                 _axesToPoll[axisId] = 0;
             }
 
-            foreach (var buttonId in _buttonsToListen.Keys)
+            foreach (var buttonId in _buttonsToListen.Keys.ToArray())
             {
                 if (ButtonValueChanged != null && _buttonsToListen[buttonId])
                 {
@@ -162,7 +162,7 @@ namespace Fusee.Engine.Core
                 _buttonsToListen[buttonId] = false;
             }
 
-            foreach (var buttonId in _buttonsToPoll.Keys)
+            foreach (var buttonId in _buttonsToPoll.Keys.ToArray())
             {
                 _buttonsToPoll[buttonId] = false;
             }
@@ -404,15 +404,16 @@ namespace Fusee.Engine.Core
         /// <param name="calculator">The calculator method performing the calculation once per frame.</param>
         /// <param name="initialValue">The initial value for the new axis.</param>
         /// <remarks>
-        /// To register your own axis the main thing to do is to provide a working <see cref="AxisValueCalculator"/>. 
-        /// Any state the calculation depends upon should be queried from the input device or 
-        /// "statically" stored in the closure around the calculator. The methodes
+        /// To register your own axis you need to provide a working <see cref="AxisValueCalculator"/>. This method
+        /// is called whenever the axis value needs to be present.
+        /// Any state the calculation depends upon should be queried from existing axes presented by the input device 
+        /// or "statically" stored in the closure around the calculator. The methodes
         /// <list type="bullet"></list>
-        /// <item><see cref="RegisterButtonAxis(int,int,float,float,string,Fusee.Engine.Common.AxisDirection)"/></item>
-        /// <item><see cref="RegisterButtonAxis(int,float,float,string,Fusee.Engine.Common.AxisDirection)"/></item>
-        /// <item><see cref="RegisterDerivedAxis"/></item>
+        /// <item><see cref="RegisterSingleButtonAxis"/></item>
+        /// <item><see cref="RegisterTwoButtonAxis"/></item>
+        /// <item><see cref="RegisterVelocityAxis"/></item>
         /// </remarks>
-        /// contain pre-defined calculators for certain purposes.
+        /// provide pre-defined calculators for certain purposes.
         public void RegisterCalculatedAxis(AxisDescription calculatedAxisDescription, AxisValueCalculator calculator, float initialValue = 0)
         {
             if (calculatedAxisDescription.Id < _nextAxisId)
@@ -438,10 +439,11 @@ namespace Fusee.Engine.Core
         /// Registers a calculated axis exhibiting the derivative after the time (Velocity) of the value on the specified original axis.
         /// </summary>
         /// <param name="origAxisId">The original axis identifier.</param>
-        /// <param name="scale">A scale factor to apply to the calculated (derived) value.</param>
-        /// <param name="min">The minimum value reached by the new axis.</param>
-        /// <param name="max">The maximum value reached by the new axis.</param>
-        /// <param name="derivedAxisId">The derived axis identifier. Note this value must be bigger than all existing axis Ids. Leave this value
+        /// <param name="triggerButtonId">If a valid id is passed, the derived axis only produces values if the specified button is pressed. The velocity is only
+        /// calculated based on the axis value when the trigger button is pressed. This allows touch velocities to always start with a speed of zero when the touch starts (e.g. the 
+        /// button identifying that a touchpoint has contact). Otherwise touch velocites would become huge between two click-like touches on different screen locations. 
+        /// If this parameter is 0 (zero), the derived axis will always be calculated based on the original axis only.</param>
+        /// <param name="velocityAxisId">The derived axis identifier. Note this value must be bigger than all existing axis Ids. Leave this value
         /// zero to have a new identifier calculated automatically.</param>
         /// <param name="name">The name of the new axis.</param>
         /// <param name="direction">The direction of the new axis.</param>
@@ -453,8 +455,8 @@ namespace Fusee.Engine.Core
         /// speed of the axis. Imagine a mouse where the speed of the mouse over the screen is important rather than the absolute
         /// position.
         /// </remarks>
-        public AxisDescription RegisterDerivedAxis(int origAxisId,
-            int derivedAxisId = 0, string name = null, AxisDirection direction = AxisDirection.Unknown)
+        public AxisDescription RegisterVelocityAxis(int origAxisId, int triggerButtonId = 0,
+            int velocityAxisId = 0, string name = null, AxisDirection direction = AxisDirection.Unknown)
         {
             AxisDescription origAxisDesc;
             if (!_axes.TryGetValue(origAxisId, out origAxisDesc))
@@ -462,29 +464,63 @@ namespace Fusee.Engine.Core
                 throw new InvalidOperationException($"Axis Id {origAxisId} is not known. Cannot register derived axis based on unknown axis.");
             }
 
-                //switch (origAxisDesc.Bounded)
-                //{
-                //    case AxisBoundedType.Constant:
-                //        scale = 1.0f / (origAxisDesc.MaxValueOrAxis - origAxisDesc.MinValueOrAxis);
-                //        break;
-                //    case AxisBoundedType.OtherAxis:
-                //        scale = 1.0f / (GetAxis((int)origAxisDesc.MaxValueOrAxis) - GetAxis((int)origAxisDesc.MinValueOrAxis));
-                //        break;
-                //}
+            //switch (origAxisDesc.Bounded)
+            //{
+            //    case AxisBoundedType.Constant:
+            //        scale = 1.0f / (origAxisDesc.MaxValueOrAxis - origAxisDesc.MinValueOrAxis);
+            //        break;
+            //    case AxisBoundedType.OtherAxis:
+            //        scale = 1.0f / (GetAxis((int)origAxisDesc.MaxValueOrAxis) - GetAxis((int)origAxisDesc.MinValueOrAxis));
+            //        break;
+            //}
 
-            float closureLastValue = GetAxis(origAxisId);
-            AxisValueCalculator calculator = delegate (float deltaTime)
+            AxisValueCalculator calculator;
+            if (triggerButtonId != 0)
             {
-                float newVal = GetAxis(origAxisId);
-                float ret = (newVal - closureLastValue) / deltaTime; // v = dr / dt: velocity is position derived after time.
-                closureLastValue = newVal;
-                return ret;
-            };
+                ButtonDescription triggerButtonDesc;
+                if (!_buttons.TryGetValue(triggerButtonId, out triggerButtonDesc))
+                {
+                    throw new InvalidOperationException($"Button Id {triggerButtonId} is not known. Cannot register derived axis based on unknown trigger button id.");
+                }
+                float closureLastValue = GetAxis(origAxisId);
+                bool closureOffLastTime = true;
+                calculator = delegate (float deltaTime)
+                {
+                    if (!GetButton(triggerButtonId))
+                    {
+                        closureOffLastTime = true;
+                        return 0.0f;
+                    }
+
+                    if (closureOffLastTime)
+                    {
+                        closureLastValue = GetAxis(origAxisId);
+                        closureOffLastTime = false;
+                    }
+
+                    float newVal = GetAxis(origAxisId);
+                    float ret = (newVal - closureLastValue) / deltaTime; // v = dr / dt: velocity is position derived after time.
+                    closureLastValue = newVal;
+                    return ret;
+                };
+            }
+            else
+            {
+                float closureLastValue = GetAxis(origAxisId);
+                calculator = delegate (float deltaTime)
+                {
+                    float newVal = GetAxis(origAxisId);
+                    float ret = (newVal - closureLastValue) / deltaTime; // v = dr / dt: velocity is position derived after time.
+                    closureLastValue = newVal;
+                    return ret;
+                };
+            }
+
 
             int id = _nextAxisId + 1;
-            if (derivedAxisId > id)
+            if (velocityAxisId > id)
             {
-                id = derivedAxisId;
+                id = velocityAxisId;
             }
 
             var calculatedAxisDesc = new AxisDescription
@@ -579,7 +615,7 @@ namespace Fusee.Engine.Core
 
             var calculatedAxisDesc = new AxisDescription
             {
-                Id = id, Name = name ?? origButtonDesc.Name + " Axis", Bounded = AxisBoundedType.Constant, Direction = direction, Nature = AxisNature.Speed, MaxValueOrAxis = 1.0f, MinValueOrAxis = 0.0f
+                Id = id, Name = name ?? $"{origButtonDesc.Name} Axis", Bounded = AxisBoundedType.Constant, Direction = direction, Nature = AxisNature.Speed, MaxValueOrAxis = 1.0f, MinValueOrAxis = 0.0f
             };
 
             RegisterCalculatedAxis(calculatedAxisDesc, calculator);
@@ -608,7 +644,7 @@ namespace Fusee.Engine.Core
         /// will stop the animation and keep the value at its current amount.
         /// There is a user-defineable acceleration and deceleration period, so a simulation resulting on this input delivers a feeling of inertance.
         /// </remarks>
-        public AxisDescription RegisterTwoButtonAxis(int origButtonIdNegative, int origButtonIdPositive, AxisDirection direction = AxisDirection.Unknown, float rampUpTime = 0.3f, float rampDownTime = 0.7f, int buttonAxisId = 0, string name = null)
+        public AxisDescription RegisterTwoButtonAxis(int origButtonIdNegative, int origButtonIdPositive, AxisDirection direction = AxisDirection.Unknown, float rampUpTime = 0.15f, float rampDownTime = 0.35f, int buttonAxisId = 0, string name = null)
         {
             ButtonDescription origButtonDescPos;
             if (!_buttons.TryGetValue(origButtonIdPositive, out origButtonDescPos))
@@ -696,7 +732,7 @@ namespace Fusee.Engine.Core
 
             var calculatedAxisDesc = new AxisDescription
             {
-                Id = id, Name = name ?? origButtonDescPos.Name + " " + origButtonDescNeg.Name + " Axis", Bounded = AxisBoundedType.Constant, Direction = direction, Nature = AxisNature.Speed, MaxValueOrAxis = 1.0f, MinValueOrAxis = -1.0f
+                Id = id, Name = name ?? $"{origButtonDescPos.Name} {origButtonDescNeg.Name} Axis", Bounded = AxisBoundedType.Constant, Direction = direction, Nature = AxisNature.Speed, MaxValueOrAxis = 1.0f, MinValueOrAxis = -1.0f
             };
 
             RegisterCalculatedAxis(calculatedAxisDesc, calculator);
@@ -705,32 +741,12 @@ namespace Fusee.Engine.Core
 
         #endregion
 
-        /*
-        public AxisDescription RegisterVectorAxis(IEnumerable<int> axesIds)
-        {
-            
-        }
-
-        public float2 GetAxisf2(int axisId)
-        {
-
-        }
-        public float3 GetAxisf3(int axisId)
-        {
-
-        }
-        public float4 GetAxisf3(int axisId)
-        {
-
-        }
-        */
-
         internal void PreRender()
         {
             // Calculate derived axes first.
-            foreach (var derivedAxis in _calculatedAxes.OrderBy(a => a.Key))
+            foreach (var derivedAxis in _calculatedAxes) //.OrderBy(a => a.Key))
             {
-                derivedAxis.Value.CurrentAxisValue = derivedAxis.Value.Calculator((float) Time.Instance.DeltaTime);
+                derivedAxis.Value.CurrentAxisValue = derivedAxis.Value.Calculator(Time.DeltaTime);
             }
 
             // See if any listeners need to be triggered about changes on axes.

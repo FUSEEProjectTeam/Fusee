@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using Fusee.Base.Core;
+using Fusee.Engine.Core;
 
 namespace Fusee.Engine.Examples.Simple.Web
 {
@@ -17,7 +18,7 @@ namespace Fusee.Engine.Examples.Simple.Web
             // Inject Fusee.Engine InjectMe dependencies (hard coded)
             app.CanvasImplementor = new Fusee.Engine.Imp.Graphics.Web.RenderCanvasImp();
             app.ContextImplementor = new Fusee.Engine.Imp.Graphics.Web.RenderContextImp(app.CanvasImplementor);
-            app.InputImplementor = new Fusee.Engine.Imp.Graphics.Web.InputImp(app.CanvasImplementor);
+            Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Web.RenderCanvasInputDriverImp(app.CanvasImplementor));
             // app.AudioImplementor = new Fusee.Engine.Imp.Sound.Web.AudioImp();
             // app.NetworkImplementor = new Fusee.Engine.Imp.Network.Web.NetworkImp();
             // app.InputDriverImplementor = new Fusee.Engine.Imp.Input.Web.InputDriverImp();

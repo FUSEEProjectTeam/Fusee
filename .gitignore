@@ -10,7 +10,7 @@ mono64.lib
 *.tlog
 *.scc
 *.orig
-
+*.VC.opendb
 
 
 ##

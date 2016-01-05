@@ -55,7 +55,7 @@ namespace Fusee.Engine.Examples.SoundTest.Core
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
-            if (_testID < 8 && Time.Instance.TimeSinceStart > _curTime)
+            if (_testID < 8 && Time.TimeSinceStart > _curTime)
             {
                 _curTime += _timeStep;
 

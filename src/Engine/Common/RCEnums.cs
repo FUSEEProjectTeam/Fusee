@@ -469,7 +469,7 @@ namespace Fusee.Engine.Common
     }
 
     /// <summary>
-    /// Specifies constants that define which mouse button was pressed.
+    /// Which mouse button was pressed.
     /// </summary>
     [Flags]
     public enum MouseButtons : int
@@ -484,7 +484,7 @@ namespace Fusee.Engine.Common
 
 
     /// <summary>
-    /// Specifies the axis type. 
+    /// Specifies the axis types for mouse devices. 
     /// </summary>
     public enum MouseAxes : int
     {
@@ -500,6 +500,8 @@ namespace Fusee.Engine.Common
 #pragma warning restore 1591
     }
 
+
+
     /// <summary>
     /// The different cursor types directly supported by render canvas implementations
     /// Standard pointer and link-hand cursor are currently supported.
@@ -510,5 +512,81 @@ namespace Fusee.Engine.Common
         Standard,
         Hand,
 #pragma warning restore 1591
+    }
+
+
+    /// <summary>
+    /// Game controller button Ids.
+    /// </summary>
+    public enum ControllerButton
+    {
+#pragma warning disable 1591
+        A = 0,
+        B = 1,
+        C = 2,
+        D = 3,
+        E = 4,
+
+        R1,
+        R2,
+        L1,
+        L2,
+        //...
+
+        FirstUserButton,
+#pragma warning restore 1591
+    }
+
+    /// <summary>
+    /// Axis types for Touch devices. Use <code>(int) (Touchpoint_0_X/Y + 2*i)</code>
+    /// if not enough axes are handled by enum values.
+    /// </summary>
+    public enum TouchAxes : int
+    {
+        // ReSharper disable InconsistentNaming
+#pragma warning disable 1591
+        Unknown,
+        ActiveTouchpoints,
+        MinX,
+        MaxX,
+        MinY,
+        MaxY,
+        Touchpoint_0_X,
+        Touchpoint_0_Y,
+        Touchpoint_1_X,
+        Touchpoint_1_Y,
+        Touchpoint_2_X,
+        Touchpoint_2_Y,
+        Touchpoint_3_X,
+        Touchpoint_3_Y,
+        Touchpoint_4_X,
+        Touchpoint_4_Y,
+        Touchpoint_5_X,
+        Touchpoint_5_Y,
+        // More touchpoints (if supported) can be reached by 
+        // (int) Touchpoint0 + i)
+#pragma warning restore 1591
+        // Resharper restore InconsistentNaming
+    }
+
+    /// <summary>
+    /// Button Ids for Touch devices. Use <code>(int) (Touchpoint_0 + i)</code>
+    /// if not enough axes are handled by enum values.
+    /// </summary>
+    public enum TouchPoints : int
+    {
+        // ReSharper disable InconsistentNaming
+#pragma warning disable 1591
+        Unknown,
+        Touchpoint_0,
+        Touchpoint_1,
+        Touchpoint_2,
+        Touchpoint_3,
+        Touchpoint_4,
+        Touchpoint_5,
+        // More touchpoints (if supported) can be reached by 
+        // (int) Touchpoint0 + i)
+#pragma warning restore 1591
+        // Resharper restore InconsistentNaming
     }
 }
