@@ -85,9 +85,6 @@
     <FUSEE_External_JavaScript Include="$(FuseeBuildRoot)\ext\JSIL\FrameworkScripts\mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089.js">
       <Link>FrameworkScripts\mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089.js</Link>
     </FUSEE_External_JavaScript-->
-    <FUSEE_External_JavaScript Include="$(FuseeBuildRoot)\ext\JSIL\FrameworkScripts\opentype.js">
-      <Link>FrameworkScripts\opentype.js</Link>
-    </FUSEE_External_JavaScript>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Base\Common\Fusee.Base.Common.csproj">

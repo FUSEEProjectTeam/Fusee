@@ -195,7 +195,7 @@ namespace Fusee.Engine.Core
             _rc = rc;
             _clearColor = rc.ClearColor;
 
-            var imgData = _rc.CreateImage(_screenWidth, _screenHeight, "black");
+            var imgData = _rc.CreateImage(_screenWidth, _screenHeight, ColorUint.Black);
             _contentLTex = _rc.CreateTexture(imgData);
             _contentRTex = _rc.CreateTexture(imgData);
 

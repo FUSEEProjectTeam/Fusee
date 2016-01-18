@@ -1,26 +1,35 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
-using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using OpenTK;
 
 namespace Fusee.Engine.Imp.Graphics.Desktop
 {
 
+    /// <summary>
+    /// Input driver implementation supporting Windows 8 touch input as described in
+    /// https://msdn.microsoft.com/en-us/library/windows/desktop/hh454904(v=vs.85).aspx
+    /// </summary>
     public class WindowsTouchInputDriverImp : IInputDriverImp
     {
         GameWindow _gameWindow;
         WindowsTouchInputDeviceImp _touch;
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WindowsTouchInputDriverImp"/> class.
+        /// </summary>
+        /// <param name="renderCanvas">The render canvas. Internally this must be a Windows canvas with a valid window handle.</param>
+        /// <exception cref="System.ArgumentNullException">
+        /// </exception>
+        /// <exception cref="System.ArgumentException">RenderCanvas must be of type <see cref="RenderCanvasImp"/></exception>
         public WindowsTouchInputDriverImp(IRenderCanvasImp renderCanvas)
         {
             if (renderCanvas == null)
                 throw new ArgumentNullException(nameof(renderCanvas));
 
             if (!(renderCanvas is RenderCanvasImp))
-                throw new ArgumentException("renderCanvas must be of type RenderCanvasImp", nameof(renderCanvas));
+                throw new ArgumentException($"renderCanvas must be of type {typeof(RenderCanvasImp).FullName}", nameof(renderCanvas));
 
             _gameWindow = ((RenderCanvasImp)renderCanvas)._gameWindow;
             if (_gameWindow == null)
@@ -30,6 +39,19 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             _touch = new WindowsTouchInputDeviceImp(_gameWindow);
         }
 
+        /// <summary>
+        /// Retrieves a list of devices supported by this input driver.
+        /// </summary>
+        /// <value>
+        /// The list of devices.
+        /// </value>
+        /// <remarks>
+        /// The devices yielded represent the current status. At any time other devices can connect or disconnect.
+        /// Listen to the <see cref="E:Fusee.Engine.Common.IInputDriverImp.NewDeviceConnected" /> and <see cref="E:Fusee.Engine.Common.IInputDriverImp.DeviceDisconnected" /> events to get
+        /// informed about new or vanishing devices. Drivers may implement "static" access to devices such that
+        /// devices are connected at driver instantiation and never disconnected (in this case <see cref="E:Fusee.Engine.Common.IInputDriverImp.NewDeviceConnected" />
+        /// and <see cref="E:Fusee.Engine.Common.IInputDriverImp.DeviceDisconnected" /> are never fired).
+        /// </remarks>
         public IEnumerable<IInputDeviceImp> Devices { get { yield return _touch; } }
 
         /// <summary>
@@ -48,6 +70,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </value>
         public string DriverDesc => "Driver providing a touch device implementation for Windows 8 (and up) touch input.";
 
+#pragma warning disable 0067
         /// <summary>
         /// Not supported on this driver. Mouse and keyboard are considered to be connected all the time.
         /// You can register handlers but they will never get called.
@@ -59,6 +82,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// You can register handlers but they will never get called.
         /// </summary>
         public event EventHandler<NewDeviceImpConnectedArgs> NewDeviceConnected;
+#pragma warning restore 0067
+
 
         #region IDisposable Support
         private bool disposedValue = false; // To detect redundant calls
@@ -104,9 +129,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
     }
 
     /// <summary>
-    /// Touch input device implementation for the Windows platform. This implementation uses the HTML5 touch api
-    /// which doesn't seem to provide a value how many simultaneous touchpoints are supported. Thus we 
-    /// assume 5.
+    /// Touch input device implementation for the Windows platform. This implementation directly
+    /// sniffes at the render window's message pump (identified by the <see cref="GameWindow"/> parameter passed
+    /// to the constructor) to receive 
+    /// <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/hh454904(v=vs.85).aspx">WM_POINTER</a> messages.
     /// </summary>
     public class WindowsTouchInputDeviceImp : IInputDeviceImp
     {
@@ -114,15 +140,15 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         private Dictionary<int, ButtonImpDescription> _tpButtonDescs;
         private Dictionary<int, int> _activeTouchpoints;
         private int _nTouchPointsSupported = 5;
-        HandleRef _handle;
-        GameWindow _gameWindow;
+        private HandleRef _handle;
+        private readonly GameWindow _gameWindow;
 
 
         #region Windows handling
         // This helper static method is required because the 32-bit version of user32.dll does not contain this API
         // (on any versions of Windows), so linking the method will fail at run-time. The bridge dispatches the request
         // to the correct function (GetWindowLong in 32-bit mode and GetWindowLongPtr in 64-bit mode)
-        public static IntPtr SetWindowLongPtr(HandleRef hWnd, int nIndex, IntPtr dwNewLong)
+        private static IntPtr SetWindowLongPtr(HandleRef hWnd, int nIndex, IntPtr dwNewLong)
         {
             if (IntPtr.Size == 8)
                 return SetWindowLongPtr64(hWnd, nIndex, dwNewLong);
@@ -326,6 +352,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         #endregion
 
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WindowsTouchInputDeviceImp" /> class.
+        /// </summary>
+        /// <param name="gameWindow">The game window to hook on to reveive 
+        /// <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/hh454904(v=vs.85).aspx">WM_POINTER</a> messages.</param>
         public WindowsTouchInputDeviceImp(GameWindow gameWindow)
         {
             _gameWindow = gameWindow;
@@ -464,8 +495,14 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         public string Id => GetType().FullName;
 
+        /// <summary>
+        /// Occurs on value changes of axes exhibited by this device.
+        /// Only applies for axes where the <see cref="F:Fusee.Engine.Common.AxisImpDescription.PollAxis" /> is set to false.
+        /// </summary>
         public event EventHandler<AxisValueChangedArgs> AxisValueChanged;
 
+        /// <summary>A touchpoints's contact state is communicated by a button.</summary>
+        /// <see cref="F:Fusee.Engine.Common.ButtonImpDescription.PollButton" />
         public event EventHandler<ButtonValueChangedArgs> ButtonValueChanged;
 
 

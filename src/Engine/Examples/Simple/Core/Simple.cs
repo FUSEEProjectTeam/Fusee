@@ -1,4 +1,8 @@
-﻿using Fusee.Base.Common;
+﻿#define GUI_SIMPLE
+
+using System;
+using System.Linq;
+using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
@@ -6,6 +10,12 @@ using Fusee.Math.Core;
 using Fusee.Serialization;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
+
+
+#if GUI_SIMPLE
+using Fusee.Engine.Core.GUI;
+#endif
+
 
 namespace Fusee.Engine.Examples.Simple.Core
 {
@@ -23,10 +33,44 @@ namespace Fusee.Engine.Examples.Simple.Core
         private SceneRenderer _sceneRenderer;
 
         private bool _keys;
-        
+
+        #if GUI_SIMPLE
+        private GUIHandler _guiHandler;
+        private GUIButton _guiFuseeLink;
+        private GUIImage _guiFuseeLogo;
+        private IFont _guiLatoBlack;
+        private GUIText _guiSubText;
+        private float _subtextHeight;
+        private float _subtextWidth;
+        #endif
+
         // Init is called on startup. 
         public override void Init()
         {
+            #if GUI_SIMPLE
+            _guiHandler = new GUIHandler();
+            _guiHandler.AttachToContext(RC);
+
+            _guiFuseeLink = new GUIButton(6, 6, 157, 87);
+            _guiFuseeLink.ButtonColor = new float4(0, 0, 0, 0);
+            _guiFuseeLink.BorderColor = new float4(0, 0.6f, 0.2f, 1);
+            _guiFuseeLink.BorderWidth = 0;
+            _guiFuseeLink.OnGUIButtonDown += _guiFuseeLink_OnGUIButtonDown;
+            _guiFuseeLink.OnGUIButtonEnter += _guiFuseeLink_OnGUIButtonEnter;
+            _guiFuseeLink.OnGUIButtonLeave += _guiFuseeLink_OnGUIButtonLeave;
+            _guiHandler.Add(_guiFuseeLink);
+
+            _guiFuseeLogo = new GUIImage("Assets/FuseeLogo150.png", 10, 10, -5, 150, 80);
+            _guiHandler.Add(_guiFuseeLogo);
+
+            _guiLatoBlack = RC.LoadFont("Assets/Lato-Black.ttf", 14);
+            _guiSubText = new GUIText("FUSEE Simple example", _guiLatoBlack, 100, 100);
+            _guiSubText.TextColor = new float4(0.05f, 0.25f, 0.15f, 0.8f);
+            _guiHandler.Add(_guiSubText);
+            _subtextWidth = GUIText.GetTextWidth(_guiSubText.Text, _guiLatoBlack);
+            _subtextHeight = GUIText.GetTextHeight(_guiSubText.Text, _guiLatoBlack);
+            #endif
+
             // Set the clear color for the backbuffer to white (100% intentsity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
 
@@ -44,7 +88,6 @@ namespace Fusee.Engine.Examples.Simple.Core
 
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-
 
             // Mouse and keyboard movement
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
@@ -92,8 +135,20 @@ namespace Fusee.Engine.Examples.Simple.Core
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
 
+            #if GUI_SIMPLE
+            _guiSubText.PosX = (int)((Width - _subtextWidth) / 2);
+            _guiSubText.PosY = (int)(Height - _subtextHeight - 3);
+
+            _guiHandler.RenderGUI();
+            #endif
+
             // Swap buffers: Show the contents of the backbuffer (containing the currently rerndered farame) on the front buffer.
             Present();
+        }
+
+        private InputDevice Creator(IInputDeviceImp device)
+        {
+            throw new NotImplementedException();
         }
 
         // Is called when the window was resized
@@ -110,6 +165,33 @@ namespace Fusee.Engine.Examples.Simple.Core
             // Back clipping happens at 2000 (Anything further away from the camera than 2000 world units gets clipped, polygons will be cut)
             var projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 20000);
             RC.Projection = projection;
+
+            #if GUI_SIMPLE
+            _guiHandler.Refresh();
+            #endif
+
         }
+
+        #if GUI_SIMPLE
+        private void _guiFuseeLink_OnGUIButtonLeave(GUIButton sender, GUIButtonEventArgs mea)
+        {
+            _guiFuseeLink.ButtonColor = new float4(0, 0, 0, 0);
+            _guiFuseeLink.BorderWidth = 0;
+            SetCursor(CursorType.Standard);
+        }
+
+
+        private void _guiFuseeLink_OnGUIButtonEnter(GUIButton sender, GUIButtonEventArgs mea)
+        {
+            _guiFuseeLink.ButtonColor = new float4(0, 0.6f, 0.2f, 0.4f);
+            _guiFuseeLink.BorderWidth = 1;
+            SetCursor(CursorType.Hand);
+        }
+
+        void _guiFuseeLink_OnGUIButtonDown(GUIButton sender, GUIButtonEventArgs mea)
+        {
+            OpenLink("http://fusee3d.org");
+        }
+        #endif
     }
 }

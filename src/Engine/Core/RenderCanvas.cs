@@ -378,18 +378,6 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        ///     Gets or sets a value indicating whether Blending is enabled.
-        /// </summary>
-        /// <value>
-        ///     <c>true</c> if Blending is enabled; otherwise, <c>false</c>.
-        /// </value>
-        public bool Blending
-        {
-            get { return CanvasImplementor.EnableBlending; }
-            set { CanvasImplementor.EnableBlending = value; }
-        }
-
-        /// <summary>
         ///     Gets or sets a value indicating whether this <see cref="RenderCanvas" /> is fullscreen.
         /// </summary>
         /// <value>

@@ -37,7 +37,7 @@
     <EmbedAssembliesIntoApk>False</EmbedAssembliesIntoApk>
     <BundleAssemblies>False</BundleAssemblies>
     <AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
-    <AndroidSupportedAbis>armeabi,armeabi-v7a,x86</AndroidSupportedAbis>
+    <AndroidSupportedAbis>armeabi-v7a,x86</AndroidSupportedAbis>
     <AndroidStoreUncompressedFileExtensions />
     <MandroidI18n />
     <Debugger>Xamarin</Debugger>
@@ -97,12 +97,6 @@
     <ProjectReference Include="..\..\..\..\Math\Core\Fusee.Math.Core.csproj">
       <Project>{e95fa1c8-6491-4b4b-bbe1-eda6b16b2c6a}</Project>
       <Name>Fusee.Math.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Misc\SharedLibTest\Shalib\Shalib.Android\Shalib.Android.vcxproj">
-      <Project>{42ce4079-a8cb-481f-b523-840994ca0872}</Project>
-      <Name>Shalib.Android</Name>
-      <TargetPlatformIdentifier>Android</TargetPlatformIdentifier>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Imp\Graphics\Android\Fusee.Engine.Imp.Graphics.Android.csproj">
       <Project>{b3ce4f39-fcc4-4388-8130-9d0b9d65d034}</Project>

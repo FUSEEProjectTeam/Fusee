@@ -111,3 +111,13 @@ In addition the following changes to individual files need to be done:
 	  }
 	};
 ```
+
+
+###JSIL.Browser.Loaders.js (397 _AND_ 507)
+-> replace finisher function:
+```JavaScript
+    var finisher = function () {
+      $jsilbrowserstate.allAssetNames.push(filename);
+      allAssets[getAssetName(filename)] = {"image": e};
+    };
+```

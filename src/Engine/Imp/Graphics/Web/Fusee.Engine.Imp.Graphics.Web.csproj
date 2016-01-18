@@ -53,6 +53,11 @@
     <FUSEE_External_JavaScript Include="Scripts\SystemExternals.js" />
   </ItemGroup>
   <ItemGroup>
+    <FUSEE_External_JavaScript Include="$(FuseeBuildRoot)\ext\opentypejs\opentype.js">
+      <Link>ExternalScripts\opentype.js</Link>
+    </FUSEE_External_JavaScript>
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\..\..\Base\Common\Fusee.Base.Common.csproj">
       <Project>{5906abe0-1d62-4f9a-9aba-b7d301615bb0}</Project>
       <Name>Fusee.Base.Common</Name>

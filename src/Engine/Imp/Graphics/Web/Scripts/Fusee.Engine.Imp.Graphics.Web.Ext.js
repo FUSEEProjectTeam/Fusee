@@ -61,25 +61,10 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.Font", function ($)
 {
     $.Field({ Static: false, Public: false }, "Face", $.Object, null);
 
+    /*
     // texture atlas
     $.Field({ Static: false, Public: true }, "TexAtlas", $fuseeCommon.TypeRef("Fusee.Engine.Common.ITexture"), null);
 
-    $.Field({ Static: false, Public: true }, "Width", $.Int32, null);
-    $.Field({ Static: false, Public: true }, "Height", $.Int32, null);
-
-    // font settings
-    $.Field({ Static: false, Public: true }, "FontSize", $.UInt32, null);
-    $.Field({ Static: false, Public: true }, "UseKerning", $.Boolean, null);
-
-    // char info
-    $.Field({ Static: false, Public: true }, "CharInfo", $jsilcore.TypeRef("System.Array", [$fuseeCommon.TypeRef("Fusee.Engine.CharInfoStruct")]), null);
-
-    $.Method({ Static: false, Public: true }, ".ctor",
-        new JSIL.MethodSignature(null, []),
-        function _ctor() {
-            // not implemented
-        }
-    );
 
     $.Method({ Static: false, Public: true }, "get_TexAtlas",
         new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.Common.ITexture"), []),
@@ -103,7 +88,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.Font", function ($)
     );
 
     $.Method({ Static: false, Public: true }, "get_CharInfo",
-        new JSIL.MethodSignature($jsilcore.TypeRef("System.Array", [$fuseeCommon.TypeRef("Fusee.Engine.CharInfoStruct")]), []),
+        new JSIL.MethodSignature($jsilcore.TypeRef("System.Array", [$fuseeCommon.TypeRef("Fusee.Engine.Common.CharInfoStruct")]), []),
         function get_CharInfo() {
             return this.CharInfo;
         }
@@ -129,7 +114,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.Font", function ($)
             return this.UseKerning;
         }
     );
-
+    */
     return function(newThisType) { $thisType = newThisType; };
 });
 
@@ -549,15 +534,15 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
     );
 
     $.Method({ Static: false, Public: true }, "CreateImage",
-        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.Common.ImageData"), [$.Int32, $.Int32, $.String]),
-        function CreateImage(width, height, bgcolor) {
+        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.Common.ImageData"), [$.Int32, $.Int32, $fuseeCommon.TypeRef("Fusee.Engine.Common.ColorUint")]),
+        function CreateImage(width, height, color) {
 
             var canvas = document.createElement("canvas");
             canvas.width = width;
             canvas.height = height;
 
             var context = canvas.getContext("2d");
-            context.fillStyle = bgcolor;
+            context.fillStyle = color.ToCss();
             context.fillRect(0, 0, width, height);
 
             var myData = context.getImageData(0, 0, width, height);
@@ -671,7 +656,9 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
         function LoadFont(filename, size) {
             var texAtlas = new $WebGLImp.Fusee.Engine.Imp.Graphics.Web.Font;
 
-            texAtlas.Face = JSIL.Host.getAsset(filename);
+            // texAtlas.Face = JSIL.Host.getAsset(filename);
+            var byteArr = allFiles[filename.toLowerCase()];
+            texAtlas.Face = opentype.parse(byteArr.buffer);
             texAtlas.FontSize = size;
             texAtlas.UseKerning = false;
 
@@ -746,7 +733,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
             // paste the glyph images into the texture atlas
             texAtlas.CharInfo = new Array(256);
             for (var chInfo = 0; chInfo < 256; chInfo++) {
-                texAtlas.CharInfo[chInfo] = new $fuseeCommon.Fusee.Engine.CharInfoStruct;
+                texAtlas.CharInfo[chInfo] = new $fuseeCommon.Fusee.Engine.Common.CharInfoStruct;
             }
 
             var offX = 0;
@@ -2212,8 +2199,6 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.TouchDeviceImp", function
 });
 
 
-
-
 JSIL.ImplementExternals("Fusee.Engine.Core.MeshReader", function($) {
     $.Method({ Static: true, Public: true }, "Double_Parse",
         new JSIL.MethodSignature($.Double, [$.String]),
@@ -2224,10 +2209,9 @@ JSIL.ImplementExternals("Fusee.Engine.Core.MeshReader", function($) {
 });
 
 
-
 JSIL.ImplementExternals("Fusee.Engine.Core.GUI.GUIHandler", function ($) {
     $.Method({ Static: false, Public: true }, "SortArray",
-        new JSIL.MethodSignature(null, [$jsilcore.TypeRef("JSIL.Reference", [$jsilcore.TypeRef("System.Array", [$fuseeCore.TypeRef("Fusee.Engine.GUIElement")])])], []),
+        new JSIL.MethodSignature(null, [$jsilcore.TypeRef("JSIL.Reference", [$jsilcore.TypeRef("System.Array", [$fuseeCore.TypeRef("Fusee.Engine.Core.GUI.GUIElement")])])], []),
         function SortArray(/* ref */ elements) {
             elements.$value.sort(function (a, b) { return JSIL.CompareValues(a.get_ZIndex(), b.get_ZIndex()) });
         }

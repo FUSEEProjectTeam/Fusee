@@ -22,7 +22,7 @@ namespace Fusee.Engine.Examples.Simple.Android
             // - should match filename res/layout/main.xml ?
             // SetContentView(Resource.Layout.main);
 
-            SetContentView(new PaintingView(ApplicationContext, null));
+            SetContentView(new LibPaintingView(ApplicationContext, null));
 
 			// Load the view
 			// FindViewById (Resource.Id.paintingview);

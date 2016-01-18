@@ -20,8 +20,24 @@ DONE:	Engine.Core -> Portable
 DONE:	SimpleScene -> Portable
 DONE:	Fix Rebuild All
 DONE:	Create standard .Net and standard .js host apps (containing main, perhaps providing libraries)
-WORK:	Unify keyboard/mouse and gamepad input
-		Add Touch input
+DONE:	Unify keyboard/mouse and gamepad input
+DONE:	Add Touch input
+DONE:	Remove soundjs.min.js and opentype.js from JSIL.js; 
+				Remove soundjs dependency from JSIL.Browser.Audio.js. 
+				Put opentype and soundjs to Engine/Imp/Web/Graphics|Sound
+DONE:	Refactor fuGen (and others) such that it contains no knowledge about the project structure (e.g. does not contain any reference to xirkit, simplescene etc. in its code)
+DONE:	Clean up Imp.Graphics (Desktop, Android, DesktopAndroid->Shared)
+		Clean up Imp.Graphics (Desktop/Windows...)
+		Remove Font implementation from RenderContext (probably even from Imp.Graphics)
+		Create self-built freetype & Sharpfonnt
+			1. for Desktop
+			2. for Android
+		Publish self-built freetype & Sharpfont on GitHub
+		Clean up GitHub projects (fuTools, external binaries, ...)
+		Report JSIL issues:
+			1. Eliminating XNA causes trouble with audio and image loading (see ext/JSIL/README.md)
+			2. Using IEnumerable Extensions and LINQ in portable libraries causes JSIL crashes in JSIL.Internal.FunctionTransformFailureException: Function transform pipeline stage
+			3. issue regarding Dead Code Removal and how to avoid self-written mscorlib, System (everything under ext/JSIL/FrameworkScripts
 		Restructure input (move keyboard/mouse out of Graphics)
 		Clean-up gamepad input (implement new interfaces, 
 		Transform Examples to portable DLLs
@@ -29,21 +45,14 @@ WORK:	Unify keyboard/mouse and gamepad input
 		Rewrite asset system NOT using JSIL's XNA-mimicking asset system. Instead directly use XHTMLRequest (or some JSIL in-between lighter than XNA-assets)
 				in conjunction with soundjs/opentype handling
 				let users decide to load assets in advance / on demand / progressively
-		Remove soundjs.min.js and opentype.js from JSIL.js; 
-DONE:			Remove soundjs dependency from JSIL.Browser.Audio.js. 
-				Put opentype and soundjs to Engine/Imp/Web/Graphics|Sound
 		Use JSIL to translate a csproj at a time (with each .csproj triggering its own x-compilation as a post build event)
 		Fix Light position when applying bone animation (without normal map).
 		Fix RC Model/View/ModelView behaviour (1. View-only: awkward, 2. Model!=Id & View!=Id: Hierarchy broken.
-		
-
-		
 		Jometri integration (portable)
 		Try JSIL's PackedArray (= js typed array or arraybuffer) implementation on Mesh (and probably also MeshContainer/Component)
 		Use arraybuffer loading on XHTMLRequests loading mesh data (if possible - problem is that only parts of .fus should be read as arraybuffers, other parts rather not)
 		Minimize mscorlib with current JSIL-on-board functionality (instead of providing our own JSIL)
 		Completely remove FUSEE/JSIL (or replace it by a non-altered version of standard JSIL)
-		Refactor fuGen (and others) such that it contains no knowledge about the project structure (e.g. does not contain any reference to xirkit, simplescene etc. in its code)
 		Move physics stuff out of core
 		Look at http://www.codeproject.com/Articles/620154/UniversalSerializer. Can we create a precompiler?
 		

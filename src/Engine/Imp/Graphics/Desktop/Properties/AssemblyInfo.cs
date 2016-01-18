@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // Allgemeine Informationen über eine Assembly werden über die folgenden 
 // Attribute gesteuert. Ändern Sie diese Attributwerte, um die Informationen zu ändern,
 // die mit einer Assembly verknüpft sind.
-[assembly: AssemblyTitle("Fusee.Engine.Imp.OpenTK")]
+[assembly: AssemblyTitle("Fusee.Engine.Imp.Graphics.Desktop")]
 [assembly: AssemblyDescription("OpenTK implementation of the render engine hardware layer")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Furtwangen University")]
 [assembly: AssemblyProduct("Fusee")]
-[assembly: AssemblyCopyright("Copyright © 2013 the Fusee Project")]
+[assembly: AssemblyCopyright("Copyright © 2016 Christoph Müller")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

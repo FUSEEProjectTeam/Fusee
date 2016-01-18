@@ -1,14 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <RootNamespace>Fusee.Engine.Imp.Graphics.Desktop</RootNamespace>
-    <AssemblyName>Fusee.Engine.Imp.Graphics.Desktop</AssemblyName>
+    <RootNamespace>Fusee.Engine.Imp.Font.Desktop</RootNamespace>
+    <AssemblyName>Fusee.Engine.Imp.Font.Desktop</AssemblyName>
     <FuseeBuildRoot Condition=" '$(FuseeBuildRoot)' == '' ">..\..\..\..\..</FuseeBuildRoot>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{F7AD2BB5-D2B0-4697-BDDB-4CC26152A6B6}</ProjectGuid>
+    <ProjectGuid>{907A8251-F90D-4EC4-828A-489260ACF96F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <FileAlignment>512</FileAlignment>
@@ -40,7 +40,8 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="WindowsTouchDeviceImp.cs" />
+    <Compile Include="Font.cs" />
+    <Compile Include="FontManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -80,7 +81,6 @@
       <Link>Natives\freetype6.dll</Link>
     </FUSEE_Native_Library>
   </ItemGroup>
-  <Import Project="Fusee.Engine.Imp.Graphics.DesktopAndroid.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(FuseeBuildRoot)\src\FuseeBuildActions.target.xml" />
   <!-- Target Name="Clean">

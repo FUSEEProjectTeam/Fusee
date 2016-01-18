@@ -649,6 +649,11 @@ namespace Fusee.Engine.Common
             };
         }
 
+        public string ToCss()
+        {
+            return $"#{R:X2}{G:X2}{B:X2}";
+        }
+
         /// <summary>
         /// Gets the brightness.
         /// </summary>

@@ -93,7 +93,7 @@ namespace Fusee.Engine.Imp.Graphics.Web
         }
 
         [JSExternal]
-        public ImageData CreateImage(int width, int height, string bgColor)
+        public ImageData CreateImage(int width, int height, ColorUint color)
         {
             throw new System.NotImplementedException();
         }
@@ -143,12 +143,6 @@ namespace Fusee.Engine.Imp.Graphics.Web
 
         [JSExternal]
         public void ColorMask(bool red, bool green, bool blue, bool alpha)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        [JSExternal]
-        public void Frustum(double left, double right, double bottom, double top, double zNear, double zFar)
         {
             throw new System.NotImplementedException();
         }

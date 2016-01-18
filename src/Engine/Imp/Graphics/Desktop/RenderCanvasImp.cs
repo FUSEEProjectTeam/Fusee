@@ -1,20 +1,16 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
-using System.Security.AccessControl;
-using System.Windows.Forms;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Platform;
 using Fusee.Engine.Common;
+using System.Windows.Forms;
 
-#if PLATFORM_DESKTOP
+
+
 namespace Fusee.Engine.Imp.Graphics.Desktop
-#elif PLATFORM_ANDROID
-namespace Fusee.Engine.Imp.Graphics.Android
-#endif
 {
     /// <summary>
     /// Use this class as a base class for implementing connectivity to whatever windows system you intend to support.
@@ -250,7 +246,6 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             Left = (posx == -1) ? Screen.PrimaryScreen.Bounds.Width / 2 - width / 2 : posx;
             Top = (posy == -1) ? Screen.PrimaryScreen.Bounds.Height / 2 - height / 2 : posy;
-
             // TODO: border settings
         }
 
@@ -791,9 +786,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             if (major < 2)
             {
-                MessageBox.Show("You need at least OpenGL 2.0 to run this example. Aborting.", "GLSL not supported",
-                                MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                this.Exit();
+                throw new InvalidOperationException("You need at least OpenGL 2.0 to run this example. GLSL not supported.");
             }
 
             GL.ClearColor(Color.MidnightBlue);

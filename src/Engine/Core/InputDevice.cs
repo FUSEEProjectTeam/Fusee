@@ -432,6 +432,8 @@ namespace Fusee.Engine.Core
             // Calculated Axes are always to-be-polled axes.
             _calculatedAxes[calculatedAxisDescription.Id] = calculatedAxis;
             _axesToPoll[calculatedAxisDescription.Id] = calculatedAxis.CurrentAxisValue;
+
+            _axes[calculatedAxisDescription.Id] = calculatedAxisDescription;
         }
 
 
@@ -752,7 +754,7 @@ namespace Fusee.Engine.Core
             // See if any listeners need to be triggered about changes on axes.
             if (AxisValueChanged != null)
             {
-                foreach (var axisId in _axesToPoll.Keys)
+                foreach (var axisId in _axesToPoll.Keys.ToArray()) // ToArray: get the list up-front because we will change the _axesToPoll dictionary during iteration
                 {
                     float curVal;
                     if (!TryGetPolledAxis(axisId, out curVal))
@@ -767,7 +769,7 @@ namespace Fusee.Engine.Core
             }
 
             // Do this for all polled buttons no matter if a listener is registered to maintain IsKeyDown/IsKeyUp funtionality
-            foreach (var buttonId in _buttonsToPoll.Keys)
+            foreach (var buttonId in _buttonsToPoll.Keys.ToArray()) // ToArray: get the list up-front because we will change the _buttonsToPoll dictionary during iteration
             {
                 var curVal = _inpDevImp.GetButton(buttonId);
                 if (_buttonsToPoll[buttonId] != curVal)

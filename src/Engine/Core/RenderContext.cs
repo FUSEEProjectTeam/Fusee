@@ -932,7 +932,7 @@ namespace Fusee.Engine.Core
         /// <param name="height">The height of the image.</param>
         /// <param name="bgColor">The color of the image. Value must be JS compatible.</param>
         /// <returns>An ImageData struct containing all necessary information for further processing.</returns>
-        public ImageData CreateImage(int width, int height, String bgColor)
+        public ImageData CreateImage(int width, int height, ColorUint bgColor)
         {
             return _rci.CreateImage(width, height, bgColor);
         }
@@ -1714,21 +1714,6 @@ namespace Fusee.Engine.Core
         public void ColorMask(bool red, bool green, bool blue, bool alpha)
         {
             _rci.ColorMask(red, green, blue, alpha);
-        }
-
-        /// <summary>
-        /// Specify the View Frustum by settings its left,right,bottom,top,near and far planes. 
-        /// Image the View frustum as a cubical form that determines the Cameras 3D view along its far plane. 
-        /// </summary>
-        /// <param name="left">The left plane.</param>
-        /// <param name="right">The right plane.</param>
-        /// <param name="bottom">The bottom plane.</param>
-        /// <param name="top">The top plane.</param>
-        /// <param name="zNear">The z near plane.</param>
-        /// <param name="zFar">The z far plane.</param>
-        public void Frustum(double left, double right, double bottom, double top, double zNear, double zFar)
-        {
-            _rci.Frustum(left, right, bottom, top, zNear, zFar);
         }
 
         #endregion

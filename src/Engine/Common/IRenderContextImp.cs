@@ -269,16 +269,16 @@ namespace Fusee.Engine.Common
         /// <returns>
         /// An ImageData struct with all necessary information for the texture-binding process.
         /// </returns>
-        ImageData LoadImage(String filename);
+        ImageData LoadImage(string filename);
 
         /// <summary>
         /// Creates a new Image with a specified size and color.
         /// </summary>
         /// <param name="width">The width of the image.</param>
         /// <param name="height">The height of the image.</param>
-        /// <param name="bgColor">The color of the image. Value must be JS compatible.</param>
+        /// <param name="color">The color of the image.</param>
         /// <returns>An ImageData struct containing all necessary information for further processing.</returns>
-        ImageData CreateImage(int width, int height, String bgColor);
+        ImageData CreateImage(int width, int height, ColorUint color);
 
         /// <summary>
         /// Maps a text in a specific font on an image.
@@ -291,7 +291,7 @@ namespace Fusee.Engine.Common
         /// <param name="startPosX">The horizontal start-position of the text on the image.</param>
         /// <param name="startPosY">The vertical start-position of the text on the image.</param>
         /// <returns>An ImageData struct containing all necessary information for further processing</returns>
-        ImageData TextOnImage(ImageData imgData, String fontName, float fontSize, String text, String textColor,
+        ImageData TextOnImage(ImageData imgData, string fontName, float fontSize, String text, string textColor,
             float startPosX, float startPosY);
 
         /// <summary>
@@ -410,18 +410,6 @@ namespace Fusee.Engine.Common
         /// <param name="blue">if set to <c>true</c> [blue].</param>
         /// <param name="alpha">if set to <c>true</c> [alpha].</param>
         void ColorMask(bool red, bool green, bool blue, bool alpha);
-
-        /// <summary>
-        /// Specify the View Frustum by settings its left,right,bottom,top,near and far planes. 
-        /// Image the View frustum as a cubical form that determines the Cameras 3D view along its far plane. 
-        /// </summary>
-        /// <param name="left">The left plane.</param>
-        /// <param name="right">The right plane.</param>
-        /// <param name="bottom">The bottom plane.</param>
-        /// <param name="top">The top plane.</param>
-        /// <param name="zNear">The z near plane.</param>
-        /// <param name="zFar">The z far plane.</param>
-        void Frustum(double left, double right, double bottom, double top, double zNear, double zFar);
 
         /// <summary>
         /// Renders the specified mesh.

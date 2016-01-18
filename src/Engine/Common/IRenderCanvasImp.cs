@@ -50,15 +50,6 @@ namespace Fusee.Engine.Common
         bool VerticalSync { get; set; }
 
         /// <summary>
-        /// Implementation Tasks: Gets or sets a value indicating whether [enable blending].
-        /// Blending is required to allow rendering of transparent objects.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if [enable blending]; otherwise, <c>false</c>.
-        /// </value>
-        bool EnableBlending { get; set; }
-
-        /// <summary>
         /// Implementation Tasks: Gets or sets a value indicating whether this <see cref="IRenderCanvasImp"/> is in fullscreen mode.
         /// This option can not be applied to all plattforms. 
         /// </summary>
