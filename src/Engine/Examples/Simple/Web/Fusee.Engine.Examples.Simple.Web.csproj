@@ -34,7 +34,7 @@
     <StartAction>Program</StartAction>
     <StartProgram>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)$(FuseeBuildRoot)'))\bin\$(Configuration)\Tools\fuHttp.exe</StartProgram>
     <StartArguments>"$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)$(FuseeWebOutputPath)'))$(AssemblyName).html"</StartArguments>
-  </PropertyGroup>  
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
@@ -53,7 +53,7 @@
     <StartAction>Program</StartAction>
     <StartProgram>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)$(FuseeBuildRoot)'))\bin\$(Configuration)\Tools\fuHttp.exe</StartProgram>
     <StartArguments>"$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)$(FuseeWebOutputPath)'))$(AssemblyName).html"</StartArguments>
-  </PropertyGroup>  
+  </PropertyGroup>
   <PropertyGroup>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
@@ -95,9 +95,13 @@
       <Project>{7e0c9336-7a38-4c87-97e2-a8d2a90aa29d}</Project>
       <Name>Fusee.Base.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Base\Imp\DesktopWeb\Fusee.Base.Imp.Desktop.csproj">
-      <Project>{4b5ec54f-e0fb-4aa8-85e7-eb84843d5c7c}</Project>
-      <Name>Fusee.Base.Imp.Desktop</Name>
+    <ProjectReference Include="..\..\..\..\Base\Imp\Web\Fusee.Base.Imp.Web.csproj">
+      <Project>{7e9e4c1f-e2c8-4011-acbc-e9d305dc4855}</Project>
+      <Name>Fusee.Base.Imp.Web</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Serialization\Fusee.Serialization.csproj">
+      <Project>{B7FAC89A-4E75-4EAC-BBC3-BBDB89C94B8A}</Project>
+      <Name>Fusee.Serialization</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Common\Fusee.Engine.Common.csproj">
       <Project>{DFD770F6-4222-4255-AAE0-DCACDC7B21EB}</Project>
@@ -121,6 +125,13 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Fusee.SerializationSerializer, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\bin\Debug\Libraries\Fusee.SerializationSerializer.dll</HintPath>
+    </Reference>
+    <Reference Include="protobuf-net">
+      <HintPath>..\..\..\..\..\ext\protobuf\protobuf-net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>

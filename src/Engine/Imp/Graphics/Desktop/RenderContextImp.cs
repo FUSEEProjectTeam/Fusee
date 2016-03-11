@@ -6,11 +6,11 @@ using System.Drawing.Imaging;
 using System.Drawing.Text;
 using PixelFormat = System.Drawing.Imaging.PixelFormat;
 using System.Runtime.InteropServices;
+using Fusee.Base.Common;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using Fusee.Math.Core;
 using Fusee.Engine.Common;
-using SharpFont;
 
 namespace Fusee.Engine.Imp.Graphics.Desktop
 {
@@ -22,7 +22,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         #region Fields
         private int _currentTextureUnit;
         private readonly Dictionary<int, int> _shaderParam2TexUnit;
-        private readonly Library _sharpFont;
+        // private readonly Library _sharpFont;
         #endregion
 
         #region Constructors
@@ -42,7 +42,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             GL.CullFace(CullFaceMode.Back);
 
-            _sharpFont = new Library();
+            // _sharpFont = new Library();
         }
 
         #endregion
@@ -112,45 +112,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 format, PixelType.UnsignedByte, img.PixelData);
         }
 
-        /// <summary>
-        /// Creates a new Bitmap-Object from an image file,
-        /// locks the bits in the memory and makes them available
-        /// for furher action (e.g. creating a texture).
-        /// Method must be called before creating a texture to get the necessary
-        /// ImageData struct.
-        /// </summary>
-        /// <param name="filename">Path to the image file you would like to use as texture.</param>
-        /// <returns>An ImageData object with all necessary information for the texture-binding process.</returns>
-        public ImageData LoadImage(String filename)
-        {
-            if (!File.Exists(filename))
-                throw new FileNotFoundException();
 
-            var bmp = new Bitmap(filename);
-
-            //Flip y-axis, otherwise texture would be upside down
-            bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
-
-            BitmapData bmpData = bmp.LockBits(new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height),
-                ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
-            int strideAbs = (bmpData.Stride < 0) ? -bmpData.Stride : bmpData.Stride;
-            int bytes = (strideAbs)*bmp.Height;
-
-            var ret = new ImageData
-            {
-                PixelData = new byte[bytes],
-                Height = bmpData.Height,
-                Width = bmpData.Width,
-                PixelFormat = ImagePixelFormat.RGBA,
-                Stride = bmpData.Stride
-            };
-
-            Marshal.Copy(bmpData.Scan0, ret.PixelData, 0, bytes);
-
-            bmp.UnlockBits(bmpData);
-            return ret;
-        }
-
+        /* OBSOLETE
         /// <summary>
         /// Creates a new Image with a specified size and color.
         /// </summary>
@@ -186,6 +149,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             bmp.UnlockBits(bmpData);
             return ret;
         }
+
 
         /// <summary>
         /// Maps a specified text with on an image.
@@ -236,6 +200,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             bmp.UnlockBits(bmpData);
             return imgDataNew;
         }
+        */
 
         /// <summary>
         /// Creates a new Texture and binds it to the shader.
@@ -257,8 +222,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     internalFormat = PixelInternalFormat.Rgb;
                     format = OpenTK.Graphics.OpenGL.PixelFormat.Bgr;
                     break;
+                // TODO: Handle Alpha-only / Intensity-only and AlphaIntensity correctly.
+                case ImagePixelFormat.Intensity:
+                    internalFormat = PixelInternalFormat.Alpha;
+                    format = OpenTK.Graphics.OpenGL.PixelFormat.Alpha;
+                    break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new ArgumentOutOfRangeException("CreateTexture: Image pixel format not supported");
             }
 
             int id = GL.GenTexture();
@@ -284,21 +254,58 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         #endregion
 
         #region Text related Members
+        /*
+        public AssetHandler FontAssetHandler
+        {
+            get
+            {
+                return new AssetHandler
+                {
+                    Decoder = delegate(string id, object storage)
+                    {
+                        string ext = Base.Common.Path.GetExtension(id).ToLower();
+                        switch (ext)
+                        {
+                            case "ttf":
+                            case "otf":
+                                return LoadFont((Stream) storage);
+                        }
+                        return null;
+                    },
+                    Checker = delegate(string id)
+                    {
+                        string ext = Base.Common.Path.GetExtension(id).ToLower();
+                        switch (ext)
+                        {
+                            case "ttf":
+                            case "otf":
+                                return true;
+                        }
+                        return false;
+                    }
+                };
+            }
+        }
+
 
         /// <summary>
         /// Loads a font file (*.ttf) and processes it with the given font size.
         /// </summary>
-        /// <param name="filename">The filename.</param>
+        /// <param name="stream">The stream where to read the font from.</param>
         /// <param name="size">The size.</param>
         /// <returns>An <see cref="IFont"/> containing all necessary information for further processing.</returns>
-        public IFont LoadFont(string filename, uint size)
+        public IFont LoadFont(Stream stream, uint size)
         {
-            if (!File.Exists(filename))
-                throw new FileNotFoundException("Font not found: " + filename);
+            byte[] fileArray;
+            using (MemoryStream ms = new MemoryStream())
+            {
+                stream.CopyTo(ms);
+                fileArray = ms.ToArray();
+            }
 
             var texAtlas = new Font
             {
-                Face = _sharpFont.NewFace(filename, 0),
+                Face = _sharpFont.NewMemoryFace(fileArray, 0),
                 FontSize = size,
                 UseKerning = false
             };
@@ -306,8 +313,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             texAtlas.Face.SetPixelSizes(0, size);
             return GenerateTextureAtlas(texAtlas);
         }
-
-        private IFont GenerateTextureAtlas(IFont font)
+        private static IFont GenerateTextureAtlas(IFont font)
         {
             if (font == null)
                 return null;
@@ -449,56 +455,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             return vertices;
         }
-
-        #endregion
-
-        #region Matrix Fields
-
-        /// <summary>
-        /// Gets or sets the model view.
-        /// </summary>
-        /// <value>
-        /// The model view.
-        /// </value>
-        /// <exception cref="System.NotImplementedException"></exception>
-        public float4x4 ModelView
-        {
-            get { throw new NotImplementedException(); }
-            set
-            {
-                GL.MatrixMode(MatrixMode.Modelview);
-                unsafe
-                {
-                    GL.LoadMatrix((float*) (&value));
-                }
-            }
-        }
-
-        /// <summary>
-        /// The projection matrix used by the rendering pipeline
-        /// </summary>
-        /// <value>
-        /// The 4x4 projection matrix applied to view coordinates yielding clip space coordinates.
-        /// </value>
-        /// <remarks>
-        /// View coordinates are the result of the ModelView matrix multiplied to the geometry (<see cref="ModelView"/>).
-        /// The coordinate system of the view space has its origin in the camera center with the z axis aligned to the viewing direction, and the x- and
-        /// y axes aligned to the viewing plane. Still, no projection from 3d space to the viewing plane has been performed. This is done by multiplying
-        /// view coordinate geometry wihth the projection matrix. Typically, the projection matrix either performs a parallel projection or a perspective
-        /// projection.
-        /// </remarks>
-        public float4x4 Projection
-        {
-            get { throw new NotImplementedException(); }
-            set
-            {
-                GL.MatrixMode(MatrixMode.Projection);
-                unsafe
-                {
-                    GL.LoadMatrix((float*) (&value));
-                }
-            }
-        }
+        */
         #endregion
 
 
@@ -1697,7 +1654,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         #region Picking related Members
 
         /// <summary>
-        /// Retrieves a sub-image of the giben region.
+        /// Retrieves a sub-image of the given region.
         /// </summary>
         /// <param name="x">The x value of the start of the region.</param>
         /// <param name="y">The y value of the start of the region.</param>
@@ -1706,8 +1663,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <returns>The specified sub-image</returns>
         public ImageData GetPixelColor(int x, int y, int w = 1, int h = 1)
         {
-            ImageData image = CreateImage(w, h, ColorUint.Black);
-            GL.ReadPixels(x, y, w, h, OpenTK.Graphics.OpenGL.PixelFormat.Bgr, PixelType.UnsignedByte, image.PixelData);
+            ImageData image = ImageData.CreateImage(w, h, ColorUint.Black);
+            GL.ReadPixels(x, y, w, h, OpenTK.Graphics.OpenGL.PixelFormat.Bgr /* yuk, yuk ??? */, PixelType.UnsignedByte, image.PixelData);
             return image;
             
             /*

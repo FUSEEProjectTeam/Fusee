@@ -1,6 +1,11 @@
-﻿using Fusee.Base.Core;
+﻿using System.IO;
+using Fusee.Base.Common;
+using Fusee.Base.Core;
+using Fusee.Base.Imp.Desktop;
 using Fusee.Engine.Core;
-using Fusee.Engine.Imp.Graphics.Desktop;
+using Fusee.Serialization;
+using FileMode = Fusee.Base.Common.FileMode;
+using Path = Fusee.Base.Common.Path;
 
 namespace Fusee.Engine.Examples.Simple.Desktop
 {
@@ -10,6 +15,46 @@ namespace Fusee.Engine.Examples.Simple.Desktop
         {
             // Inject Fusee.Engine.Base InjectMe dependencies
             IO.IOImp = new Fusee.Base.Imp.Desktop.IOImp();
+
+            var fap = new Fusee.Base.Imp.Desktop.FileAssetProvider("Assets");
+            fap.RegisterTypeHandler(
+                new AssetHandler
+                {
+                    ReturnedType = typeof(Font),
+                    Decoder = delegate (string id, object storage)
+                    {
+                        if (Path.GetExtension(id).ToLower().Contains("ttf"))
+                            return new Font
+                            {
+                                _fontImp = new FontImp((Stream)storage)
+                            };
+                        return null;
+                    },
+                    Checker = delegate (string id)
+                    {
+                        return Path.GetExtension(id).ToLower().Contains("ttf");
+                    }
+                });
+            fap.RegisterTypeHandler(
+                new AssetHandler
+                {
+                    ReturnedType = typeof(SceneContainer),
+                    Decoder = delegate (string id, object storage)
+                    {
+                        if (Path.GetExtension(id).ToLower().Contains("fus"))
+                        {
+                            var ser = new Serializer();
+                            return ser.Deserialize((Stream)storage, null, typeof(SceneContainer)) as SceneContainer;
+                        }
+                        return null;
+                    },
+                    Checker = delegate (string id)
+                    {
+                        return Path.GetExtension(id).ToLower().Contains("fus");
+                    }
+                });
+
+            AssetStorage.RegisterProvider(fap);
 
             var app = new Core.Simple();
 

@@ -64,7 +64,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Attributes.cs" />
-    <Compile Include="ColorUint.cs" />
     <Compile Include="IAudioStream.cs" />
     <Compile Include="IInputDeviceImp.cs" />
     <Compile Include="IInputDriverImp.cs" />
@@ -84,7 +83,6 @@
     <Compile Include="IGeneric6DofConstraintImp.cs" />
     <Compile Include="IGImpactMeshShapeImp.cs" />
     <Compile Include="IHingeConstraintImp.cs" />
-    <Compile Include="ImageData.cs" />
     <Compile Include="IMeshImp.cs" />
     <Compile Include="IMultiSphereShapeImp.cs" />
     <Compile Include="INetworkConnection.cs" />
@@ -127,6 +125,10 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Base\Common\Fusee.Base.Common.csproj">
+      <Project>{5906abe0-1d62-4f9a-9aba-b7d301615bb0}</Project>
+      <Name>Fusee.Base.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Math\Core\Fusee.Math.Core.csproj">
       <Project>{e95fa1c8-6491-4b4b-bbe1-eda6b16b2c6a}</Project>
       <Name>Fusee.Math.Core</Name>

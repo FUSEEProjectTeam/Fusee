@@ -1,7 +1,6 @@
 ﻿#define GUI_SIMPLE
 
 using System;
-using System.Linq;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
@@ -10,16 +9,13 @@ using Fusee.Math.Core;
 using Fusee.Serialization;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
-
-
 #if GUI_SIMPLE
 using Fusee.Engine.Core.GUI;
 #endif
 
-
 namespace Fusee.Engine.Examples.Simple.Core
 {
- 
+
     [FuseeApplication(Name = "Simple Example", Description = "A very simple example.")]
     public class Simple : RenderCanvas
     {
@@ -36,9 +32,10 @@ namespace Fusee.Engine.Examples.Simple.Core
 
         #if GUI_SIMPLE
         private GUIHandler _guiHandler;
+
         private GUIButton _guiFuseeLink;
         private GUIImage _guiFuseeLogo;
-        private IFont _guiLatoBlack;
+        private FontMap _guiLatoBlack;
         private GUIText _guiSubText;
         private float _subtextHeight;
         private float _subtextWidth;
@@ -59,12 +56,12 @@ namespace Fusee.Engine.Examples.Simple.Core
             _guiFuseeLink.OnGUIButtonEnter += _guiFuseeLink_OnGUIButtonEnter;
             _guiFuseeLink.OnGUIButtonLeave += _guiFuseeLink_OnGUIButtonLeave;
             _guiHandler.Add(_guiFuseeLink);
-
-            _guiFuseeLogo = new GUIImage("Assets/FuseeLogo150.png", 10, 10, -5, 150, 80);
+            _guiFuseeLogo = new GUIImage(AssetStorage.Get<ImageData>("FuseeLogo150.png"), 10, 10, -5, 150, 80);
             _guiHandler.Add(_guiFuseeLogo);
-
-            _guiLatoBlack = RC.LoadFont("Assets/Lato-Black.ttf", 14);
-            _guiSubText = new GUIText("FUSEE Simple example", _guiLatoBlack, 100, 100);
+            var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
+            fontLato.UseKerning = true;
+            _guiLatoBlack = new FontMap(fontLato, 18);
+            _guiSubText = new GUIText("AWA fifi", _guiLatoBlack, 100, 100);
             _guiSubText.TextColor = new float4(0.05f, 0.25f, 0.15f, 0.8f);
             _guiHandler.Add(_guiSubText);
             _subtextWidth = GUIText.GetTextWidth(_guiSubText.Text, _guiLatoBlack);
@@ -75,11 +72,12 @@ namespace Fusee.Engine.Examples.Simple.Core
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             // Load the rocket model
-            var ser = new Serializer();
-            _rocketScene = ser.Deserialize(IO.StreamFromFile(@"Assets/RocketModel.fus", FileMode.Open), null, typeof(SceneContainer)) as SceneContainer;
+            // var ser = new Serializer();
+            // _rocketScene = ser.Deserialize(IO.StreamFromFile(@"Assets/RocketModel.fus", FileMode.Open), null, typeof(SceneContainer)) as SceneContainer;
+            _rocketScene = AssetStorage.Get<SceneContainer>("RocketModel.fus");
 
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRenderer(_rocketScene, "Assets");
+            _sceneRenderer = new SceneRenderer(_rocketScene);
         }
 
         // RenderAFrame is called once a frame
@@ -123,7 +121,7 @@ namespace Fusee.Engine.Examples.Simple.Core
                 }
             }
 
-            
+
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
 
@@ -136,9 +134,6 @@ namespace Fusee.Engine.Examples.Simple.Core
             _sceneRenderer.Render(RC);
 
             #if GUI_SIMPLE
-            _guiSubText.PosX = (int)((Width - _subtextWidth) / 2);
-            _guiSubText.PosY = (int)(Height - _subtextHeight - 3);
-
             _guiHandler.RenderGUI();
             #endif
 
@@ -167,6 +162,9 @@ namespace Fusee.Engine.Examples.Simple.Core
             RC.Projection = projection;
 
             #if GUI_SIMPLE
+            _guiSubText.PosX = (int)((Width - _subtextWidth) / 2);
+            _guiSubText.PosY = (int)(Height - _subtextHeight - 3);
+
             _guiHandler.Refresh();
             #endif
 
@@ -179,7 +177,6 @@ namespace Fusee.Engine.Examples.Simple.Core
             _guiFuseeLink.BorderWidth = 0;
             SetCursor(CursorType.Standard);
         }
-
 
         private void _guiFuseeLink_OnGUIButtonEnter(GUIButton sender, GUIButtonEventArgs mea)
         {

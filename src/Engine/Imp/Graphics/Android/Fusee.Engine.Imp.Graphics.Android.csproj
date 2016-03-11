@@ -45,23 +45,21 @@
     <Reference Include="Mono.Android" />
     <Reference Include="mscorlib" />
     <Reference Include="OpenTK" />
-    <Reference Include="SharpFont, Version=3.1.0.200, Culture=neutral, PublicKeyToken=48add4c483071cdf, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\ext\Freetype\bin\SharpFont\Release\SharpFont.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="InputImp.cs" />
+    <Compile Include="Keymapper.cs" />
     <Compile Include="LibPaintingView.cs" />
     <Compile Include="RenderCanvasImp.cs" />
     <Compile Include="RenderContextImp.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
+  <!--ItemGroup>
     <EmbeddedNativeLibrary Include="$(FuseeBuildRoot)\ext\Freetype\bin\freetype\Android\ARM64\libfreetype262.so">
       <Abi>arm64-8a</Abi>
       <Link>ARM64\libfreetype262.so</Link>
@@ -78,7 +76,7 @@
       <Abi>x86</Abi>
       <Link>x86\libfreetype262.so</Link>
     </EmbeddedNativeLibrary>
-  </ItemGroup>
+  </ItemGroup-->
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
   </ItemGroup>
@@ -86,6 +84,10 @@
     <AndroidResource Include="Resources\Values\Strings.xml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Base\Common\Fusee.Base.Common.csproj">
+      <Project>{5906abe0-1d62-4f9a-9aba-b7d301615bb0}</Project>
+      <Name>Fusee.Base.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Base\Core\Fusee.Base.Core.csproj">
       <Project>{7E0C9336-7A38-4C87-97E2-A8D2A90AA29D}</Project>
       <Name>Fusee.Base.Core</Name>

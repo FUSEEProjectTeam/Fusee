@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Math.Core;
@@ -188,11 +189,11 @@ namespace Fusee.Engine.Core
         #endregion
 
         #region Initialization Construction Startup
-        public SceneRenderer(SceneContainer sc, string scenePathDirectory)
+        public SceneRenderer(SceneContainer sc /*, string scenePathDirectory*/)
         {
             _lights = new List<LightInfo>();
             _sc = sc;
-            _scenePathDirectory = scenePathDirectory;
+            // _scenePathDirectory = scenePathDirectory;
             _state = new RendererState();
             InitAnimations(_sc);
         }
@@ -629,8 +630,8 @@ namespace Fusee.Engine.Core
 
         private ITexture LoadTexture(string path)
         {
-            string texturePath = Path.Combine(_scenePathDirectory, path);
-            var image = _rc.LoadImage(texturePath);
+            // string texturePath = Path.Combine(_scenePathDirectory, path);
+            var image = AssetStorage.Get<ImageData>(path);
             return _rc.CreateTexture(image);
         }
 

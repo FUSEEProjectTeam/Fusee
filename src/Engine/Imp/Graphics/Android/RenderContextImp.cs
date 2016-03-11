@@ -6,13 +6,14 @@ using System.Text;
 using Android.Content;
 using Android.Content.Res;
 using Android.Graphics;
+using Fusee.Base.Common;
 using Fusee.Base.Core;
 using OpenTK;
 using Fusee.Math.Core;
 using Fusee.Engine.Common;
 //using OpenTK.Graphics.ES11;
 using OpenTK.Graphics.ES30;
-using SharpFont;
+using Path = Fusee.Base.Common.Path;
 
 namespace Fusee.Engine.Imp.Graphics.Android
 {
@@ -24,7 +25,6 @@ namespace Fusee.Engine.Imp.Graphics.Android
         #region Fields
         private int _currentAll;
         private readonly Dictionary<int, int> _shaderParam2TexUnit;
-        private readonly Library _sharpFont;
         private Context _androidContext;
         #endregion
 
@@ -34,20 +34,18 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// Initializes a new instance of the <see cref="RenderContextImp"/> class.
         /// </summary>
         /// <param name="renderCanvas">The render canvas interface.</param>
-        public RenderContextImp(IRenderCanvasImp renderCanvas)
+        public RenderContextImp(IRenderCanvasImp renderCanvas, Context androidContext)
         {
             _currentAll = 0;
             _shaderParam2TexUnit = new Dictionary<int, int>();
 
-            _androidContext = ((RenderContextImp) renderCanvas)._androidContext;
+            _androidContext = androidContext;
 
             // Due to the right-handed nature of OpenGL and the left-handed design of FUSEE
             // the meaning of what's Front and Back of a face simply flips.
             // TODO - implement this in render states!!!
 
             GL.CullFace(All.Back);
-
-            _sharpFont = new Library();
         }
 
         #endregion
@@ -120,52 +118,6 @@ namespace Fusee.Engine.Imp.Graphics.Android
         }
 
         /// <summary>
-        /// Creates a new Bitmap-Object from an image file,
-        /// locks the bits in the memory and makes them available
-        /// for furher action (e.g. creating a texture).
-        /// Method must be called before creating a texture to get the necessary
-        /// ImageData struct.
-        /// </summary>
-        /// <param name="filename">Path to the image file you would like to use as texture.</param>
-        /// <returns>An ImageData object with all necessary information for the texture-binding process.</returns>
-        public ImageData LoadImage(string filename)
-        {
-            Stream file;
-            string filenameCpy = string.Copy(filename);
-            filenameCpy.ToLower();
-            if (filenameCpy.StartsWith("assets"))
-            {
-                file = _androidContext.Assets.Open(filename);
-            }
-            else
-            {
-                file = _androidContext.OpenFileInput(filename);
-            }
-
-            if (file == null)
-                throw new FileNotFoundException(filename);
-
-            Bitmap bmp = BitmapFactory.DecodeStream(file);
-
-            int nPixels = bmp.Width * bmp.Height;
-            int nBytes = nPixels*4;
-            int[] pxls = new int[nPixels];
-            bmp.GetPixels(pxls, 0, 0, 0, bmp.Width, bmp.Width, bmp.Height);
-
-            var ret = new ImageData
-            {
-                PixelData = new byte[nBytes],
-                Height = bmp.Height,
-                Width = bmp.Width,
-                PixelFormat = ImagePixelFormat.RGBA,
-                Stride = bmp.Width
-            };
-
-            Buffer.BlockCopy(pxls, 0, ret.PixelData, 0, nBytes);
-            return ret;
-        }
-
-        /// <summary>
         /// Creates a new Image with a specified size and color.
         /// </summary>
         /// <param name="width">The width of the image.</param>
@@ -232,8 +184,13 @@ namespace Fusee.Engine.Imp.Graphics.Android
                     internalFormat = (int) All.Rgb;
                     format = All.Rgb;
                     break;
+                // TODO: Handle Alpha-only / Intensity-only and AlphaIntensity correctly.
+                case ImagePixelFormat.Intensity:
+                    internalFormat = (int) All.Alpha;
+                    format = All.Alpha;
+                    break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new ArgumentOutOfRangeException("CreateTexture: Image pixel format not supported");
             }
 
             int id;
@@ -256,21 +213,25 @@ namespace Fusee.Engine.Imp.Graphics.Android
         #endregion
 
         #region Text related Members
-
+        /*
         /// <summary>
         /// Loads a font file (*.ttf) and processes it with the given font size.
         /// </summary>
-        /// <param name="filename">The filename.</param>
+        /// <param name="stream">The stream where to read the font from.</param>
         /// <param name="size">The size.</param>
         /// <returns>An <see cref="IFont"/> containing all necessary information for further processing.</returns>
-        public IFont LoadFont(string filename, uint size)
+        public IFont LoadFont(Stream stream, uint size)
         {
-            if (!File.Exists(filename))
-                throw new FileNotFoundException("Font not found: " + filename);
+            byte[] fileArray;
+            using (MemoryStream ms = new MemoryStream())
+            {
+                stream.CopyTo(ms);
+                fileArray = ms.ToArray();
+            }
 
             var texAtlas = new Font
             {
-                Face = _sharpFont.NewFace(filename, 0),
+                Face = _sharpFont.NewMemoryFace(fileArray, 0),
                 FontSize = size,
                 UseKerning = false
             };
@@ -419,50 +380,8 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             return vertices;
         }
-
+        */
         #endregion
-
-        #region Matrix Fields
-
-        /// <summary>
-        /// Gets or sets the model view.
-        /// </summary>
-        /// <value>
-        /// The model view.
-        /// </value>
-        /// <exception cref="System.NotImplementedException"></exception>
-        public float4x4 ModelView
-        {
-            get { throw new NotImplementedException(); }
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        /// <summary>
-        /// The projection matrix used by the rendering pipeline
-        /// </summary>
-        /// <value>
-        /// The 4x4 projection matrix applied to view coordinates yielding clip space coordinates.
-        /// </value>
-        /// <remarks>
-        /// View coordinates are the result of the ModelView matrix multiplied to the geometry (<see cref="ModelView"/>).
-        /// The coordinate system of the view space has its origin in the camera center with the z axis aligned to the viewing direction, and the x- and
-        /// y axes aligned to the viewing plane. Still, no projection from 3d space to the viewing plane has been performed. This is done by multiplying
-        /// view coordinate geometry wihth the projection matrix. Typically, the projection matrix either performs a parallel projection or a perspective
-        /// projection.
-        /// </remarks>
-        public float4x4 Projection
-        {
-            get { throw new NotImplementedException(); }
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
-        #endregion
-
 
         #region Shader related Members
         /// <summary>
@@ -732,28 +651,32 @@ namespace Fusee.Engine.Imp.Graphics.Android
         public IShaderProgramImp CreateShader(string vs, string ps)
         {
             int statusCode;
-            string info;
+            StringBuilder info = new StringBuilder(512);
+            int length;
 
             int vertexObject = GL.CreateShader(All.VertexShader);
             int fragmentObject = GL.CreateShader(All.FragmentShader);
 
             // Compile vertex shader
-            GL.ShaderSource(vertexObject, vs);
+            GL.ShaderSource(vertexObject, 1, new [] {vs}, new [] {vs.Length});
             GL.CompileShader(vertexObject);
-            GL.GetShaderInfoLog(vertexObject, out info);
+            GL.GetShaderInfoLog(vertexObject, 512, out length, info);
             GL.GetShader(vertexObject, All.CompileStatus, out statusCode);
 
             if (statusCode != 1)
-                throw new ApplicationException(info);
+            {
+                var errMsg = info.ToString();
+                throw new ApplicationException(info.ToString());
+            }
 
             // Compile pixel shader
-            GL.ShaderSource(fragmentObject, ps);
+            GL.ShaderSource(fragmentObject, 1, new [] {ps}, new [] {ps.Length});
             GL.CompileShader(fragmentObject);
-            GL.GetShaderInfoLog(fragmentObject, out info);
+            GL.GetShaderInfoLog(vertexObject, 512, out length, info);
             GL.GetShader(fragmentObject, All.CompileStatus, out statusCode);
 
             if (statusCode != 1)
-                throw new ApplicationException(info);
+                throw new ApplicationException(info.ToString());
 
             int program = GL.CreateProgram();
             GL.AttachShader(program, fragmentObject);

@@ -1,4 +1,5 @@
 ﻿using System;
+using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Math.Core;
 
@@ -144,36 +145,36 @@ namespace Fusee.Engine.Core.GUI
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="GUIButton" /> class.
+        /// Initializes a new instance of the <see cref="GUIButton" /> class.
         /// </summary>
         /// <param name="text">The text.</param>
-        /// <param name="font">The font.</param>
+        /// <param name="fontMap">The font map.</param>
         /// <param name="x">The x-coordinate.</param>
         /// <param name="y">The y-coordinate.</param>
         /// <param name="width">The width.</param>
         /// <param name="height">The height.</param>
-        public GUIButton(string text, IFont font, int x, int y, int width, int height)
-            : base(text, font, x, y, 0, width, height)
+        public GUIButton(string text, FontMap fontMap, int x, int y, int width, int height)
+            : base(text, fontMap, x, y, 0, width, height)
         {
             SetupButton();
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="GUIButton" /> class.
+        /// Initializes a new instance of the <see cref="GUIButton" /> class.
         /// </summary>
         /// <param name="text">The text.</param>
-        /// <param name="font">The font.</param>
+        /// <param name="fontMap">The font map.</param>
         /// <param name="x">The x-coordinate.</param>
         /// <param name="y">The y-coordinate.</param>
         /// <param name="z">The z-index.</param>
         /// <param name="width">The width.</param>
         /// <param name="height">The height.</param>
         /// <remarks>
-        ///     The z-index: lower values means further away. If two elements have the same z-index
-        ///     then they are rendered according to their order in the <see cref="GUIHandler" />.
+        /// The z-index: lower values means further away. If two elements have the same z-index
+        /// then they are rendered according to their order in the <see cref="GUIHandler" />.
         /// </remarks>
-        public GUIButton(string text, IFont font, int x, int y, int z, int width, int height)
-            : base(text, font, x, y, z, width, height)
+        public GUIButton(string text, FontMap fontMap, int x, int y, int z, int width, int height)
+            : base(text, fontMap, x, y, z, width, height)
         {
             SetupButton();
         }
@@ -188,8 +189,16 @@ namespace Fusee.Engine.Core.GUI
             BorderColor = new float4(0, 0, 0, 1);
 
             // event listener
-            Input.Mouse.ButtonValueChanged += OnMouseButton;
-            Input.Mouse.AxisValueChanged += OnMouseMove;
+            if (Input.Mouse != null)
+            {
+                Input.Mouse.ButtonValueChanged += OnMouseButton;
+                Input.Mouse.AxisValueChanged += OnMouseMove;
+            }
+            if (Input.Touch != null)
+            {
+                Input.Touch.ButtonValueChanged += OnMouseButton;
+                Input.Touch.AxisValueChanged += OnMouseMove;
+            }
 
             _mouseOnButton = false;
 
@@ -200,8 +209,16 @@ namespace Fusee.Engine.Core.GUI
         protected internal override void DetachFromContext()
         {
             base.DetachFromContext();
-            Input.Mouse.ButtonValueChanged -= OnMouseButton;
-            Input.Mouse.AxisValueChanged -= OnMouseMove;
+            if (Input.Mouse != null)
+            {
+                Input.Mouse.ButtonValueChanged -= OnMouseButton;
+                Input.Mouse.AxisValueChanged -= OnMouseMove;
+            }
+            if (Input.Touch != null)
+            {
+                Input.Touch.ButtonValueChanged -= OnMouseButton;
+                Input.Touch.AxisValueChanged -= OnMouseMove;
+            }
         }
 
         protected override void CreateMesh()
@@ -213,10 +230,10 @@ namespace Fusee.Engine.Core.GUI
             var x = PosX + OffsetX;
             var y = PosY + OffsetY;
 
-            var maxW = GUIText.GetTextWidth(Text, Font);
+            var maxW = GUIText.GetTextWidth(Text, FontMap);
             x = (int) System.Math.Round(x + (Width - maxW)/2);
 
-            var maxH = GUIText.GetTextHeight(Text, Font);
+            var maxH = GUIText.GetTextHeight(Text, FontMap);
             y = (int) System.Math.Round(y + maxH + (Height - maxH)/2);
 
             SetTextMesh(x, y);

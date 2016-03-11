@@ -3,7 +3,11 @@
    This file creates the connection to the underlying WebGL part.
 
 	Just for the records: The first version of this file was generated using 
-	JSIL v0.5.0 build 25310. Since then it was changed and maintained manually.
+	JSIL v0.5.0 build 25310 in July 2013. Since then it was changed and maintained manually.
+
+    Major rewrite was undertaken in November 2015 when changing the way how FUSEE handcoded
+    javascript is handled: From defining entire classes to implementing [JSExternal] marked
+    C# methods.
 */
 
 // var $WebGLImp = JSIL.DeclareAssembly("Fusee.Engine.Imp.Graphics.Web");
@@ -12,6 +16,7 @@ var $WebAudioImp = JSIL.GetAssembly("Fusee.Engine.Imp.Sound.Web");
 var $WebNetImp = JSIL.GetAssembly("Fusee.Engine.Imp.Network.Web");
 var $WebInputImp = JSIL.GetAssembly("Fusee.Engine.Imp.Input.Web");
 var $WebBaseCore = JSIL.GetAssembly("Fusee.Base.Core");
+var $WebBaseCommon = JSIL.GetAssembly("Fusee.Base.Common");
 var $VideoManagerImp;
 
 var $fuseeCore = JSIL.GetAssembly("Fusee.Engine.Core");
@@ -511,15 +516,15 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
 
 
     $.Method({ Static: false, Public: true }, "UpdateTextureRegion",
-        new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.Common.ITexture"), $fuseeCommon.TypeRef("Fusee.Engine.Common.ImageData"), $.Int32, $.Int32, $.Int32, $.Int32]),
+        new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.Common.ITexture"), $WebBaseCommon.TypeRef("Fusee.Base.Common.ImageData"), $.Int32, $.Int32, $.Int32, $.Int32]),
         function UpdateTextureRegion(tex, img, startX, startY, width, height) {
             var ubyteView = new Uint8Array(img.PixelData);
             var format;
             switch (img.PixelFormat) {
-                case $fuseeCommon.Fusee.Engine.Common.ImagePixelFormat.RGBA:
+                case $WebBaseCommon.Fusee.Base.Common.ImagePixelFormat.RGBA:
                     format = this.gl.RGBA;
                     break;
-                case $fuseeCommon.Fusee.Engine.Common.ImagePixelFormat.RGB:
+                case $WebBaseCommon.Fusee.Base.Common.ImagePixelFormat.RGB:
                     format = this.gl.RGB;
                     break;
             }
@@ -533,8 +538,9 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
 
     );
 
+    /*
     $.Method({ Static: false, Public: true }, "CreateImage",
-        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.Common.ImageData"), [$.Int32, $.Int32, $fuseeCommon.TypeRef("Fusee.Engine.Common.ColorUint")]),
+        new JSIL.MethodSignature($WebBaseCommon.TypeRef("Fusee.Base.Common.ImageData"), [$.Int32, $.Int32, $fuseeCommon.TypeRef("Fusee.Engine.Common.ColorUint")]),
         function CreateImage(width, height, color) {
 
             var canvas = document.createElement("canvas");
@@ -546,11 +552,11 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
             context.fillRect(0, 0, width, height);
 
             var myData = context.getImageData(0, 0, width, height);
-            var imageData = new $fuseeCommon.Fusee.Engine.Common.ImageData();
+            var imageData = new $fuseeCommon.Fusee.Base.Common.ImageData();
 
             imageData.Width = width;
             imageData.Height = height;
-            imageData.PixelFormat = $fuseeCommon.Fusee.Engine.Common.ImagePixelFormat.RGBA;
+            imageData.PixelFormat = $WebBaseCommon.Fusee.Base.Common.ImagePixelFormat.RGBA;
             imageData.Stride = width * 4; //TODO: Adjust pixel-size
             imageData.PixelData = myData.data;
 
@@ -558,11 +564,57 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
             return imageData;
         }
     );
+    */
+
+    //$.Method({Static:false, Public:false}, "JSLoadImage", 
+    //    new JSIL.MethodSignature($WebBaseCommon.TypeRef("Fusee.Base.Common.ImageData"), [$jsilcore.TypeRef("System.Array", [$.Byte]), $.String]),
+    //    function JSLoadImage(fileArray, mimeType) {
+    //        // var image = JSIL.Host.getImage(filename);
+    //        image = document.createElement("IMG");
+
+    //        image.src = "data:image/" + mimeType + ";base64," + btoa(fileArray);
+
+    //        var canvas = document.createElement("canvas");
+    //        canvas.width = image.width;
+    //        canvas.height = image.height;
+    //        var context = canvas.getContext("2d");
+
+    //        context.translate(canvas.width / 2, canvas.height / 2);
+    //        context.scale(1, -1);
+    //        context.translate(-canvas.width / 2, -canvas.height / 2);
+    //        context.drawImage(image, 0, 0);
+
+    //        var myData = context.getImageData(0, 0, image.width, image.height);
+    //        var imageData = new $fuseeCommon.Fusee.Base.Common.ImageData();
+    //        imageData.Width = image.width;
+    //        imageData.Height = image.height;
+    //        imageData.PixelFormat = $WebBaseCommon.Fusee.Base.Common.ImagePixelFormat.RGBA;
+    //        imageData.Stride = image.width * 4; //TODO: Adjust pixel-size
+    //        imageData.PixelData = myData.data;
+    //        isloaded = true;
+    //        return imageData;
+    //    }
+    //);
+
 
     $.Method({ Static: false, Public: true }, "LoadImage",
-        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.Common.ImageData"), [$.String]),
-        function LoadImage(filename) {
-            var image = JSIL.Host.getImage(filename);
+        new JSIL.MethodSignature($WebBaseCommon.TypeRef("Fusee.Base.Common.ImageData"), [$jsilcore.TypeRef("System.IO.Stream")]),
+        function LoadImage(stream) {
+            // var image = JSIL.Host.getImage(filename);
+            var mimeType = this.GetImageType(stream);
+            image = document.createElement("IMG");
+
+            var buffer;
+            if (stream.hasOwnProperty("_buffer")) {
+                // magic shortcut, internally its a JSIL memory stream backed by an ArrayBuffer.
+                // No copying necessary
+                buffer = stream._buffer;
+            } else {
+                buffer = this.GetFileBytes(stream);
+            }
+
+            image.src = "data:" + mimeType + ";base64," + btoa(buffer);
+
             var canvas = document.createElement("canvas");
             canvas.width = image.width;
             canvas.height = image.height;
@@ -574,10 +626,10 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
             context.drawImage(image, 0, 0);
 
             var myData = context.getImageData(0, 0, image.width, image.height);
-            var imageData = new $fuseeCommon.Fusee.Engine.Common.ImageData();
+            var imageData = new $fuseeCommon.Fusee.Base.Common.ImageData();
             imageData.Width = image.width;
             imageData.Height = image.height;
-            imageData.PixelFormat = $fuseeCommon.Fusee.Engine.Common.ImagePixelFormat.RGBA;
+            imageData.PixelFormat = $WebBaseCommon.Fusee.Base.Common.ImagePixelFormat.RGBA;
             imageData.Stride = image.width * 4; //TODO: Adjust pixel-size
             imageData.PixelData = myData.data;
             isloaded = true;
@@ -586,7 +638,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
     );
 
     $.Method({ Static: false, Public: true }, "TextOnImage",
-        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.Common.ImageData"), [$fuseeCommon.TypeRef("Fusee.Engine.Common.ImageData"), $.String, $.Int32, $.String, $.String, $.Int32, $.Int32]),
+        new JSIL.MethodSignature($WebBaseCommon.TypeRef("Fusee.Base.Common.ImageData"), [$WebBaseCommon.TypeRef("Fusee.Base.Common.ImageData"), $.String, $.Int32, $.String, $.String, $.Int32, $.Int32]),
         function TextOnImage(imgData, fontname, fontsize, text, textcolor, startposx, startposy) {
 
             var canvas = document.createElement("canvas");
@@ -615,17 +667,23 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
     );
 
     $.Method({ Static: false, Public: true }, "CreateTexture",
-        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.Common.ITexture"), [$fuseeCommon.TypeRef("Fusee.Engine.Common.ImageData"), $.Boolean]),
+        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.Common.ITexture"), [$WebBaseCommon.TypeRef("Fusee.Base.Common.ImageData"), $.Boolean]),
         function CreateTexture(img, repeat) {
             var ubyteView = new Uint8Array(img.PixelData);
             var format;
             switch (img.PixelFormat) {
-                case $fuseeCommon.Fusee.Engine.Common.ImagePixelFormat.RGBA:
+                case $WebBaseCommon.Fusee.Base.Common.ImagePixelFormat.RGBA:
                     format = this.gl.RGBA;
                     break;
-                case $fuseeCommon.Fusee.Engine.Common.ImagePixelFormat.RGB:
+                case $WebBaseCommon.Fusee.Base.Common.ImagePixelFormat.RGB:
                     format = this.gl.RGB;
                     break;
+                // TODO: Handle Alpha-only / Intensity-only and AlphaIntensity correctly.
+                case $WebBaseCommon.Fusee.Base.Common.ImagePixelFormat.Intensity:
+                    format = this.gl.ALPHA;
+                    break;
+                default:
+                    throw new Error("CreateTexture: Image pixel format not supported");
             }
 
             var glTexOb = this.gl.createTexture();
@@ -652,7 +710,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
     );
 
     $.Method({ Static: false, Public: true }, "LoadFont",
-        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.Common.IFont"), [$.String, $.UInt32]),
+        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.Common.IFont"), [$jsilcore.TypeRef("System.IO.Stream"), $.UInt32]),
         function LoadFont(filename, size) {
             var texAtlas = new $WebGLImp.Fusee.Engine.Imp.Graphics.Web.Font;
 
@@ -1960,7 +2018,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.VideoManagerImp
 JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.VideoStreamImp", true, [], function ($interfaceBuilder) {
     $ = $interfaceBuilder;
 
-    $.Field({ Static: false, Public: true }, "_nextFrame", $fuseeCommon.TypeRef("Fusee.Engine.Common.ImageData"), null);
+    $.Field({ Static: false, Public: true }, "_nextFrame", $WebBaseCommon.TypeRef("Fusee.Base.Common.ImageData"), null);
     $.Field({ Static: false, Public: true }, "_videoElement", $.Object, null);
     $.Field({ Static: false, Public: true }, "_filename", $.String, null);
     $.Field({ Static: false, Public: true }, "_isPlaying", $.Boolean, null);
@@ -1977,7 +2035,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.VideoStreamImp"
            this._useAudio = useAudio;
            this._canvas = document.createElement("canvas");
 
-           this._nextFrame = new $fuseeCommon.Fusee.Engine.Common.ImageData();
+           this._nextFrame = new $fuseeCommon.Fusee.Base.Common.ImageData();
 
 
        }
@@ -2009,7 +2067,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.VideoStreamImp"
                var myData = context.getImageData(0, 0, this._videoElement.videoWidth, this._videoElement.videoHeight);
                this._nextFrame.Width = this._videoElement.videoWidth;
                this._nextFrame.Height = this._videoElement.videoHeight;
-               this._nextFrame.PixelFormat = $fuseeCommon.Fusee.Engine.Common.ImagePixelFormat.RGBA;
+               this._nextFrame.PixelFormat = $WebBaseCommon.Fusee.Base.Common.ImagePixelFormat.RGBA;
                this._nextFrame.Stride = this._videoElement.width * 4; //TODO: Adjust pixel-size
                this._nextFrame.PixelData = myData.data;
 
@@ -2018,7 +2076,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.VideoStreamImp"
        );
 
     $.Method({ Static: false, Public: true }, "GetCurrentFrame",
-     new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.Common.ImageData"), []),
+     new JSIL.MethodSignature($WebBaseCommon.TypeRef("Fusee.Base.Common.ImageData"), []),
      function VideoStreamImp_GetCurrentFrame() {
          if (this._videoElement == null) {
              this._canvas = document.createElement('canvas');

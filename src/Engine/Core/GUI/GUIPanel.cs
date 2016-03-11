@@ -129,36 +129,36 @@ namespace Fusee.Engine.Core.GUI
         #endregion
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="GUIPanel" /> class.
+        /// Initializes a new instance of the <see cref="GUIPanel" /> class.
         /// </summary>
         /// <param name="text">The text.</param>
-        /// <param name="font">The font.</param>
+        /// <param name="fontMap">The font map.</param>
         /// <param name="x">The x-coordinate.</param>
         /// <param name="y">The y-coordinate.</param>
         /// <param name="z">The z-index.</param>
         /// <param name="width">The width.</param>
         /// <param name="height">The height.</param>
         /// <remarks>
-        ///     The z-index: lower values means further away. If two elements have the same z-index
-        ///     then they are rendered according to their order in the <see cref="GUIHandler" />.
+        /// The z-index: lower values means further away. If two elements have the same z-index
+        /// then they are rendered according to their order in the <see cref="GUIHandler" />.
         /// </remarks>
-        public GUIPanel(string text, IFont font, int x, int y, int z, int width, int height)
-            : base(text, font, x, y, z, width, height)
+        public GUIPanel(string text, FontMap fontMap, int x, int y, int z, int width, int height)
+            : base(text, fontMap, x, y, z, width, height)
         {
             SetupPanel();
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="GUIPanel" /> class.
+        /// Initializes a new instance of the <see cref="GUIPanel" /> class.
         /// </summary>
         /// <param name="text">The text.</param>
-        /// <param name="font">The font.</param>
+        /// <param name="fontMap">The font map.</param>
         /// <param name="x">The x-coordinate.</param>
         /// <param name="y">The y-coordinate.</param>
         /// <param name="width">The width.</param>
         /// <param name="height">The height.</param>
-        public GUIPanel(string text, IFont font, int x, int y, int width, int height)
-            : base(text, font, x, y, 0, width, height)
+        public GUIPanel(string text, FontMap fontMap, int x, int y, int width, int height)
+            : base(text, fontMap, x, y, 0, width, height)
         {
             SetupPanel();
         }
@@ -191,7 +191,7 @@ namespace Fusee.Engine.Core.GUI
             var x = PosX + OffsetX;
             var y = PosY + OffsetY;
 
-            var maxW = GUIText.GetTextWidth(Text, Font);
+            var maxW = GUIText.GetTextWidth(Text, FontMap);
             x = (int) System.Math.Round(x + (Width - maxW)/2);
 
             SetTextMesh(x, y + 20);

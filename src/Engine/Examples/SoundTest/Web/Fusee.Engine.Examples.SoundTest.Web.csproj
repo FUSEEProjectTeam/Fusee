@@ -34,7 +34,7 @@
     <StartAction>Program</StartAction>
     <StartProgram>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)$(FuseeBuildRoot)'))\bin\$(Configuration)\Tools\fuHttp.exe</StartProgram>
     <StartArguments>"$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)$(FuseeWebOutputPath)'))$(AssemblyName).html"</StartArguments>
-  </PropertyGroup>  
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
@@ -53,7 +53,7 @@
     <StartAction>Program</StartAction>
     <StartProgram>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)$(FuseeBuildRoot)'))\bin\$(Configuration)\Tools\fuHttp.exe</StartProgram>
     <StartArguments>"$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)$(FuseeWebOutputPath)'))$(AssemblyName).html"</StartArguments>
-  </PropertyGroup>  
+  </PropertyGroup>
   <PropertyGroup>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
@@ -97,10 +97,6 @@
     <ProjectReference Include="..\..\..\..\Base\Core\Fusee.Base.Core.csproj">
       <Project>{7e0c9336-7a38-4c87-97e2-a8d2a90aa29d}</Project>
       <Name>Fusee.Base.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Base\Imp\DesktopWeb\Fusee.Base.Imp.Desktop.csproj">
-      <Project>{4b5ec54f-e0fb-4aa8-85e7-eb84843d5c7c}</Project>
-      <Name>Fusee.Base.Imp.Desktop</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Common\Fusee.Engine.Common.csproj">
       <Project>{DFD770F6-4222-4255-AAE0-DCACDC7B21EB}</Project>

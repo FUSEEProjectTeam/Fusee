@@ -52,10 +52,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\ext\OpenTK.dll</HintPath>
     </Reference>
-    <Reference Include="SharpFont, Version=3.0.0.100, Culture=neutral, PublicKeyToken=48add4c483071cdf, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\ext\Freetype\bin\SharpFont\Release\SharpFont.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
@@ -79,11 +75,6 @@
       <Name>Fusee.Engine.Common</Name>
       <Private>False</Private>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <FUSEE_Native_Library Include="$(FuseeBuildRoot)\ext\Freetype\bin\freetype\Windows\Win32\freetype262.dll">
-      <Link>Natives\freetype262.dll</Link>
-    </FUSEE_Native_Library>
   </ItemGroup>
   <Import Project="..\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

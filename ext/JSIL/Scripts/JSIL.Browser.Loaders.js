@@ -505,7 +505,7 @@ function loadImageCORSHack (filename, data, onError, onDoneLoading) {
       var e = document.createElement("img");
       var finisher = function () {
         $jsilbrowserstate.allAssetNames.push(filename);
-      allAssets[getAssetName(filename)] = {"image": e};
+        allAssets[getAssetName(filename)] = {"image": e};
       };
       JSIL.Browser.RegisterOneShotEventListener(e, "error", true, onError);
       JSIL.Browser.RegisterOneShotEventListener(e, "load", true, onDoneLoading.bind(null, finisher));

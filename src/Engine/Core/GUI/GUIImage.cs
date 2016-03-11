@@ -1,4 +1,7 @@
 ﻿using System;
+using System.IO;
+using Fusee.Base.Common;
+using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Math.Core;
 
@@ -75,7 +78,7 @@ namespace Fusee.Engine.Core.GUI
         /// <summary>
         ///     Initializes a new instance of the <see cref="GUIImage" /> class.
         /// </summary>
-        /// <param name="img">The path to the image.</param>
+        /// <param name="image">The image data containting the pixels.</param>
         /// <param name="x">The x-coordinate.</param>
         /// <param name="y">The y-coordinate.</param>
         /// <param name="z">The z-index.</param>
@@ -85,27 +88,27 @@ namespace Fusee.Engine.Core.GUI
         ///     The z-index: lower values means further away. If two elements have the same z-index
         ///     then they are rendered according to their order in the <see cref="GUIHandler" />.
         /// </remarks>
-        public GUIImage(string img, int x, int y, int z, int width, int height)
+        public GUIImage(ImageData image, int x, int y, int z, int width, int height)
             : base(String.Empty, null, x, y, z, width, height)
         {
             // settings
-            ImgSrc = img;
+            ImgSrc = image;
             BorderWidth = 0;
         }
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="GUIImage" /> class.
         /// </summary>
-        /// <param name="img">The path to the image.</param>
+        /// <param name="image">The image data containting the pixels.</param>
         /// <param name="x">The x-coordinate.</param>
         /// <param name="y">The y-coordinate.</param>
         /// <param name="width">The width.</param>
         /// <param name="height">The height.</param>
-        public GUIImage(string img, int x, int y, int width, int height)
+        public GUIImage(ImageData image, int x, int y, int width, int height)
             : base(String.Empty, null, x, y, 0, width, height)
         {
             // settings
-            ImgSrc = img;
+            ImgSrc = image;
             BorderWidth = 0;
         }
 
@@ -133,12 +136,10 @@ namespace Fusee.Engine.Core.GUI
         {
             if (RContext == rc) return;
 
-            if (ImgSrc != null)
+            if (!ImgSrc.IsEmpty)
             {
-                var imgData = rc.LoadImage(ImgSrc);
-
-                GUITexture = rc.CreateTexture(imgData,
-                    MathHelper.IsPowerOfTwo(imgData.Width) && MathHelper.IsPowerOfTwo(imgData.Height));
+                GUITexture = rc.CreateTexture(ImgSrc,
+                    MathHelper.IsPowerOfTwo(ImgSrc.Width) && MathHelper.IsPowerOfTwo(ImgSrc.Height));
 
                 CreateGUIShader();
             }

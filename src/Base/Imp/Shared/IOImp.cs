@@ -1,7 +1,11 @@
 ﻿using System.IO;
 using Fusee.Base.Common;
 
+#if PLATFORM_DESKTOP
 namespace Fusee.Base.Imp.Desktop
+#elif PLATFORM_WEB
+namespace Fusee.Base.Imp.Web
+#endif
 {
     /// <summary>
     /// Implementation (platform dependent) for IO related functionality not supported by portable libraries.

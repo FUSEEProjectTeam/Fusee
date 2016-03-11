@@ -2,8 +2,10 @@
 using System.Diagnostics;
 using Android.Util;
 using Android.Content;
+using Android.Views;
 using OpenTK;
 using Fusee.Engine.Common;
+using OpenTK.Graphics;
 using OpenTK.Graphics.ES30;
 using OpenTK.Platform.Android;
 
@@ -48,6 +50,8 @@ namespace Fusee.Engine.Imp.Graphics.Android
             }
         }
 
+
+        private string _title;
         /// <summary>
         /// Gets or sets the caption(title of the window).
         /// </summary>
@@ -56,8 +60,11 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// </value>
         public string Caption
         {
-            get { return (_gameView == null) ? "" : _gameView.Title; }
-            set { if (_gameView != null) _gameView.Title = value; }
+            get { return _title; }
+            set
+            {
+                 _title = value;
+            }
         }
 
         /// <summary>
@@ -147,6 +154,14 @@ namespace Fusee.Engine.Imp.Graphics.Android
             set { }
         }
 
+        /// <summary>
+        /// Gets or sets the android view.
+        /// </summary>
+        /// <value>
+        /// The view.
+        /// </value>
+        public View View => _gameView;
+
         internal RenderCanvasGameView _gameView;
 
         #endregion
@@ -155,9 +170,9 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderCanvasImp"/> class.
         /// </summary>
-        public RenderCanvasImp(Context context, IAttributeSet attrs)
+        public RenderCanvasImp(Context context, IAttributeSet attrs, Action run)
         {
-            _gameView = new RenderCanvasGameView(this, true, context, attrs);
+            _gameView = new RenderCanvasGameView(this, true, context, attrs, run);
         }
 
         /// <summary>
@@ -302,42 +317,15 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
     }
 
-    /// <summary>
-    /// OpenTK implementation of RenderCanvas for the window output.
-    /// </summary>
-    public class RenderCanvasImpBase
-    {
-        #region Fields
 
-        /// <summary>
-        /// The Width
-        /// </summary>
-        protected internal int BaseWidth;
-
-        /// <summary>
-        /// The Height
-        /// </summary>
-        protected internal int BaseHeight;
-
-        /// <summary>
-        /// The Top Position
-        /// </summary>
-        protected internal int BaseTop;
-
-        /// <summary>
-        /// The Left Position
-        /// </summary>
-        protected internal int BaseLeft;
-
-        #endregion
-    }
-
-    class RenderCanvasGameView : AndroidGameView
+    public class RenderCanvasGameView : AndroidGameView
     {
         #region Fields
         private RenderCanvasImp _renderCanvasImp;
         private float _deltaTime;
+        private Action _run;
         internal Context AndroidContext;
+        private Stopwatch _stopwatch = new Stopwatch();
         #endregion
 
         /// <summary>
@@ -363,11 +351,13 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="antiAliasing">if set to <c>true</c> perform Antialiasing.</param>
         /// <param name="context">The Android context.</param>
         /// <param name="attrs">An Android View attribute set.</param>
-        public RenderCanvasGameView(RenderCanvasImp renderCanvasImp, bool antiAliasing, Context context, IAttributeSet attrs) :
+        /// <param name="run"></param>
+        public RenderCanvasGameView(RenderCanvasImp renderCanvasImp, bool antiAliasing, Context context, IAttributeSet attrs, Action run) :
             base(context, attrs)
         {
             _renderCanvasImp = renderCanvasImp;
             AndroidContext = context;
+            _run = run;
         }
 
         #endregion
@@ -393,8 +383,10 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             // Use VSync!
             // Context.SwapInterval = 1;
+            _run?.Invoke();
 
             _renderCanvasImp.DoInit();
+            _stopwatch.Start();
         }
 
         protected override void OnUnload(EventArgs e)
@@ -413,11 +405,52 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
-            _deltaTime = (float)e.Time;
+            _deltaTime = (float)_stopwatch.ElapsedMilliseconds / 1000.0f;
+            _stopwatch.Restart();
 
             if (_renderCanvasImp != null)
                 _renderCanvasImp.DoRender();
         }
+
+        // This method is called everytime the context needs
+        // to be recreated. Use it to set any egl-specific settings
+        // prior to context creation
+        protected override void CreateFrameBuffer()
+        {
+            GLContextVersion = GLContextVersion.Gles3_0;
+
+            // the default GraphicsMode that is set consists of (16, 16, 0, 0, 2, false)
+            try
+            {
+                Log.Verbose("FUSEE Android Game View", "Loading with default settings");
+
+                // if you don't call this, the context won't be created
+                base.CreateFrameBuffer();
+                return;
+            }
+            catch (Exception ex)
+            {
+                Log.Verbose("FUSEE Android Game View", "{0}", ex);
+            }
+
+            // this is a graphics setting that sets everything to the lowest mode possible so
+            // the device returns a reliable graphics setting.
+            try
+            {
+                Log.Verbose("FUSEE Android Game View", "Loading with custom Android settings (low mode)");
+                GraphicsMode = new AndroidGraphicsMode();//0, 0, 0, 0, 0, false);
+
+                // if you don't call this, the context won't be created
+                base.CreateFrameBuffer();
+                return;
+            }
+            catch (Exception ex)
+            {
+                Log.Verbose("FUSEE Android Game View", "{0}", ex);
+            }
+            throw new Exception("Can't load egl, aborting");
+        }
+
         #endregion
     }
 }

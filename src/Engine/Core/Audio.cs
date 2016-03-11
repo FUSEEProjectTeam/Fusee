@@ -17,7 +17,7 @@ namespace Fusee.Engine.Core
     /// 
     /// E.g. : IAudioStream myAudio1;
     ///
-    ///        myAudio1 = Audio.Instance.LoadFile("Assets/Music.ogg"). 
+    ///        myAudio1 = Audio.Instance.LoadFile("AssetStorage/Music.ogg"). 
     /// 
     ///        myAudio1.play();  
     /// </remarks>

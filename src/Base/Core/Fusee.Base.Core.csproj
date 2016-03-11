@@ -41,9 +41,10 @@
     <DocumentationFile>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\$(AssemblyName).xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AssetStorage.cs" />
     <Compile Include="Diagnostics.cs" />
+    <Compile Include="Font.cs" />
     <Compile Include="IO.cs" />
-    <Compile Include="Path.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -1,4 +1,5 @@
-﻿using Fusee.Engine.Common;
+﻿using Fusee.Base.Common;
+using Fusee.Engine.Common;
 using Fusee.Engine.Core.GUI;
 using Fusee.Math.Core;
 
@@ -195,7 +196,7 @@ namespace Fusee.Engine.Core
             _rc = rc;
             _clearColor = rc.ClearColor;
 
-            var imgData = _rc.CreateImage(_screenWidth, _screenHeight, ColorUint.Black);
+            var imgData = ImageData.CreateImage(_screenWidth, _screenHeight, ColorUint.Black);
             _contentLTex = _rc.CreateTexture(imgData);
             _contentRTex = _rc.CreateTexture(imgData);
 
@@ -203,11 +204,11 @@ namespace Fusee.Engine.Core
             switch (_activeMode)
             {
                 case Stereo3DMode.Oculus:
-                    _guiLImage = new GUIImage(null, 0, 0, _screenWidth/2, _screenHeight);
+                    _guiLImage = new GUIImage(default(ImageData), 0, 0, _screenWidth/2, _screenHeight);
                     _guiLImage.AttachToContext(rc);
                     _guiLImage.Refresh();
 
-                    _guiRImage = new GUIImage(null, _screenWidth/2, 0, _screenWidth/2, _screenHeight);
+                    _guiRImage = new GUIImage(default(ImageData), _screenWidth/2, 0, _screenWidth/2, _screenHeight);
                     _guiRImage.AttachToContext(rc);
                     _guiRImage.Refresh();
 
@@ -226,7 +227,7 @@ namespace Fusee.Engine.Core
                     _shaderProgram = _rc.CreateShader(AnaglyphVs, AnaglyphPs);
                     _shaderTexture = _shaderProgram.GetShaderParam("vTexture");
 
-                    _guiLImage = new GUIImage(null, 0, 0, _screenWidth, _screenHeight);
+                    _guiLImage = new GUIImage(default(ImageData), 0, 0, _screenWidth, _screenHeight);
                     _guiLImage.AttachToContext(rc);
                     _guiLImage.Refresh();
 

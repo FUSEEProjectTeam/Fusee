@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using Fusee.Math.Core;
 
-namespace Fusee.Engine.Common
+namespace Fusee.Base.Common
 {
 
     /// <summary>
@@ -649,6 +649,10 @@ namespace Fusee.Engine.Common
             };
         }
 
+        /// <summary>
+        /// Converts the color to a string capbable of being used in html/css declarations, like #FF0000 for red or #0000FF for blue.
+        /// </summary>
+        /// <returns>A seven charcacter string (# followed by two hex digits for each color channel, red, green and blue).</returns>
         public string ToCss()
         {
             return $"#{R:X2}{G:X2}{B:X2}";

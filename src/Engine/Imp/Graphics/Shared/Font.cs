@@ -1,4 +1,4 @@
-﻿using SharpFont;
+﻿// using SharpFont;
 using Fusee.Engine.Common;
 
 #if PLATFORM_DESKTOP
@@ -9,7 +9,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
 {
     internal class Font : IFont
     {
-        internal Face Face;
+        // internal Face Face;
 
         // texture atlas
         public ITexture TexAtlas { get; internal set; }

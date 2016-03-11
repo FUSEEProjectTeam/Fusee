@@ -252,7 +252,7 @@ var $jsilloaderstate = {
   environment.loadScript(libraryRoot + "Polyfills.js");
   environment.loadScript(libraryRoot + "mersenne.js");
 
-  environment.loadScript(libraryRoot + "opentype.js");  
+  // environment.loadScript(libraryRoot + "opentype.js");  
 
   if (config.typedObjects || false) {
     environment.loadScript(libraryRoot + "typedobjects.js");

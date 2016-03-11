@@ -8,8 +8,8 @@ using Android.Widget;
 
 namespace Fusee.Engine.Examples.Simple.Android
 {
-	[Activity (Label = "Fusee.Engine.Examples.Simple.Android", MainLauncher = true)]
-	public class TestActivity : Activity
+	[Activity (Label = "@string/app_name", MainLauncher = false)]
+	public class UnusedMainActivity : Activity
 	{
 		private static string tag = "GLVersion";
 
@@ -17,16 +17,17 @@ namespace Fusee.Engine.Examples.Simple.Android
 		{
             base.OnCreate (bundle);
 		    RequestWindowFeature(WindowFeatures.NoTitle);
-			SetContentView (Resource.Layout.Test);
+			// SetContentView (Resource.Layout.Test);
 			if (SupportedOpenGLVersion () >= 3) {
 				Log.Info (tag, "Supported hardware. Launching the demo.");
-				var launch = new Intent (this, typeof(GLTriangle30Activity));
+				var launch = new Intent (this, typeof(MainActivity));
 				StartActivity (launch);
 				Finish ();
 			} else {
-				var textout = FindViewById<TextView> (Resource.Id.textView1);
-				textout.Text = GetString (Resource.String.unsupported);
-				Log.Info (tag, "Unsupported hardware. Displaying notification screen");
+				// var textout = FindViewById<TextView> (Resource.Id.textView1);
+				// textout.Text = GetString (Resource.String.unsupported);
+			    Toast.MakeText(ApplicationContext, "Hardware does not support OpenGL ES 3.0 - Aborting...", ToastLength.Long);
+				Log.Info (tag, "Hardware does not support OpenGL ES 3.0 - Aborting...");
 			}
 		}
 

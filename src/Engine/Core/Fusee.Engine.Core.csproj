@@ -54,6 +54,7 @@
     <Compile Include="CylinderShape.cs" />
     <Compile Include="DynamicWorld.cs" />
     <Compile Include="EmptyShape.cs" />
+    <Compile Include="FontMap.cs" />
     <Compile Include="GearConstraint.cs" />
     <Compile Include="Generic6DofConstraint.cs" />
     <Compile Include="Frustum.cs" />

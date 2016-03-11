@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using Fusee.Base.Common;
 using Fusee.Engine.Common;
 using Fusee.Math.Core;
 
@@ -22,9 +24,10 @@ namespace Fusee.Engine.Core.GUI
 
         protected int PosZ;
 
-        protected IFont Font;
+        // protected IFont Font;
+        protected FontMap FontMap;
 
-        protected string ImgSrc;
+        protected ImageData ImgSrc;
         protected ITexture GUITexture;
 
         // shader
@@ -162,8 +165,10 @@ namespace Fusee.Engine.Core.GUI
             get { return _text; }
             set
             {
+                if (value != _text)
+                    Dirty = true;
+
                 _text = value;
-                Dirty = true;
             }
         }
 
@@ -178,8 +183,10 @@ namespace Fusee.Engine.Core.GUI
             get { return _posX; }
             set
             {
+                if (value != _posX)
+                    Dirty = true;
+
                 _posX = value;
-                Dirty = true;
             }
         }
 
@@ -194,8 +201,10 @@ namespace Fusee.Engine.Core.GUI
             get { return _posY; }
             set
             {
+                if (value != _posY)
+                    Dirty = true;
+
                 _posY = value;
-                Dirty = true;
             }
         }
 
@@ -233,7 +242,7 @@ namespace Fusee.Engine.Core.GUI
 
         protected abstract void CreateMesh();
 
-        protected GUIElement(string text, IFont font, int x, int y, int z, int width, int height)
+        protected GUIElement(string text, FontMap fontMap, int x, int y, int z, int width, int height)
         {
             Dirty = false;
 
@@ -251,10 +260,10 @@ namespace Fusee.Engine.Core.GUI
 
             // settings
             Text = text;
-            Font = font;
+            FontMap = fontMap;
 
             // shader
-            if (Font != null) CreateTextShader();
+            // if (FontMap != null) CreateTextShader();
         }
 
         protected virtual void CreateGUIShader()
@@ -277,7 +286,7 @@ namespace Fusee.Engine.Core.GUI
                 null);
         }
 
-        protected void CreateTextShader()
+        protected void CreateTextShader(ITexture textAtlas)
         {
             TextShader = new ShaderEffect(new[]
             {
@@ -296,18 +305,32 @@ namespace Fusee.Engine.Core.GUI
             },
                 new[]
                 {
-                    new EffectParameterDeclaration {Name = "tex", Value = Font.TexAtlas},
+                    new EffectParameterDeclaration {Name = "tex", Value = textAtlas},
                     new EffectParameterDeclaration {Name = "uColor", Value = _textColor}
                 });
         }
 
         protected internal virtual void AttachToContext(RenderContext rc)
         {
-            if (RContext == rc) return;
+            if (RContext == rc)
+                return;
+
+            if (RContext != null)
+            {
+                TextShader.DetachFromContext();
+                TextShader = null;
+            }
+
             RContext = rc;
 
-            if (GUIShader != null) GUIShader.AttachToContext(RContext);
-            if (TextShader != null) TextShader.AttachToContext(RContext);
+            if (GUIShader != null)
+                GUIShader.AttachToContext(RContext);
+
+            if (FontMap != null)
+            { 
+                CreateTextShader(rc.CreateTexture(FontMap.Image));
+                TextShader.AttachToContext(RContext);
+            }
 
             Refresh();
         }
@@ -322,7 +345,7 @@ namespace Fusee.Engine.Core.GUI
 
         protected void SetTextMesh(int posX, int posY)
         {
-            if (Font == null)
+            if (FontMap == null)
                 return;
 
             // relative coordinates from -1 to +1
@@ -337,9 +360,9 @@ namespace Fusee.Engine.Core.GUI
             var uvs = new float2[4*Text.Length];
             var indices = new ushort[6*Text.Length];
 
-            var charInfo = Font.CharInfo;
-            var atlasWidth = Font.Width;
-            var atlasHeight = Font.Height;
+            // var charInfo = Font.CharInfo;
+            var atlasWidth = FontMap.Image.Width;
+            var atlasHeight = FontMap.Image.Height;
 
             var index = 0;
             ushort vertex = 0;
@@ -347,22 +370,25 @@ namespace Fusee.Engine.Core.GUI
             // now build the mesh
             foreach (var letter in Text)
             {
-                var x2 = x + charInfo[letter].BitmapL*scaleX;
-                var y2 = -y - charInfo[letter].BitmapT*scaleY;
-                var w = charInfo[letter].BitmapW*scaleX;
-                var h = charInfo[letter].BitmapH*scaleY;
+                GlyphOnMap glyphOnMap = FontMap.GetGlyphOnMap(letter);
+                GlyphInfo glyphInfo = FontMap.Font.GetGlyphInfo(letter);
 
-                x += charInfo[letter].AdvanceX*scaleX;
-                y += charInfo[letter].AdvanceY*scaleY;
+                var x2 = x + glyphOnMap.BitmapL*scaleX;
+                var y2 = -y - glyphOnMap.BitmapT*scaleY;
+                var w = glyphOnMap.BitmapW*scaleX;
+                var h = glyphOnMap.BitmapH*scaleY;
+
+                x += glyphInfo.AdvanceX*scaleX;
+                y += glyphInfo.AdvanceY*scaleY;
 
                 // skip glyphs that have no pixels
                 if ((w <= MathHelper.EpsilonFloat) || (h <= MathHelper.EpsilonFloat))
                     continue;
 
-                var bitmapW = charInfo[letter].BitmapW;
-                var bitmapH = charInfo[letter].BitmapH;
-                var texOffsetX = charInfo[letter].TexOffX;
-                var texOffsetY = charInfo[letter].TexOffY;
+                var bitmapW = glyphOnMap.BitmapW;
+                var bitmapH = glyphOnMap.BitmapH;
+                var texOffsetX = glyphOnMap.TexOffX;
+                var texOffsetY = glyphOnMap.TexOffY;
 
                 // vertices
                 vertices[vertex] = new float3(x2, -y2 - h, 0);
@@ -388,7 +414,7 @@ namespace Fusee.Engine.Core.GUI
                 vertex += 4;
             }
 
-            vertices = RContext.FixTextKerning(Font, vertices, Text, scaleX);
+            vertices = FontMap.FixTextKerning(vertices, Text, scaleX);
 
             // create final mesh
             CreateTextMesh(vertices, uvs, indices);
@@ -509,8 +535,10 @@ namespace Fusee.Engine.Core.GUI
 
         protected virtual void PreRender(RenderContext rc)
         {
-            if (RContext != rc) AttachToContext(rc);
-            if (Dirty) Refresh();
+            if (RContext != rc)
+                AttachToContext(rc);
+            if (Dirty)
+                Refresh();
         }
 
         /// <summary>

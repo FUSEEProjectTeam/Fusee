@@ -38,11 +38,22 @@
     <DocumentationFile>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\$(AssemblyName).xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="IOImp.cs" />
+    <Compile Include="FileAssetProvider.cs" />
+    <Compile Include="FontImp.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="SharpFont, Version=3.1.0.200, Culture=neutral, PublicKeyToken=48add4c483071cdf, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\ext\Freetype\bin\SharpFont\Debug\SharpFont.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Drawing" />
+  </ItemGroup>
+  <ItemGroup>
+    <FUSEE_Native_Library Include="$(FuseeBuildRoot)\ext\Freetype\bin\freetype\Windows\Win32\freetype262d.dll">
+      <Link>Natives\freetype262d.dll</Link>
+    </FUSEE_Native_Library>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\Fusee.Base.Common.csproj">
@@ -50,7 +61,9 @@
       <Name>Fusee.Base.Common</Name>
     </ProjectReference>
   </ItemGroup>
+  <Import Project="..\Shared\Fusee.Base.Imp.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(FuseeBuildRoot)\src\FuseeBuildActions.target.xml" />
   <Target Name="Clean">
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

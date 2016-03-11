@@ -1,7 +1,11 @@
 ﻿// The only purpose of these implementations are to be cross-compiled with JSIL. 
 // Implementations of class elemets can be found in handcoded .js files.
 
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using Fusee.Base.Common;
 using Fusee.Engine.Common;
 using Fusee.Math.Core;
 using JSIL.Meta;
@@ -10,10 +14,6 @@ namespace Fusee.Engine.Imp.Graphics.Web
 {
     public class RenderContextImp : IRenderContextImp
     {
-        [JSExternal]
-        public float4x4 ModelView { get; set; }
-        [JSExternal]
-        public float4x4 Projection { get; set; }
         [JSExternal]
         public float4 ClearColor { get; set; }
         [JSExternal]
@@ -86,11 +86,97 @@ namespace Fusee.Engine.Imp.Graphics.Web
             throw new System.NotImplementedException();
         }
 
+
+        public string GetImageType(Stream stream)
+        {
+            string headerCode = GetHeaderInfo(stream).ToUpper();
+
+            if (headerCode.StartsWith("89504E470D0A1A0A"))
+            {
+                return "image/png";
+            }
+            else if (headerCode.StartsWith("FFD8FFE0"))
+            {
+                return "image/jpeg";
+            }
+            else if (headerCode.StartsWith("424D"))
+            {
+                return "image/bmp";
+            }
+            else if (headerCode.StartsWith("474946"))
+            {
+                return "image/gif";
+            }
+            else if (headerCode.StartsWith("49492A"))
+            {
+                return "image/tiff";
+            }
+            else
+            {
+                return ""; //UnKnown
+            }
+        }
+
+        public string GetHeaderInfo(Stream stream)
+        {
+            byte[] buffer = new byte[8];
+
+            BinaryReader reader = new BinaryReader(stream);
+            reader.Read(buffer, 0, buffer.Length);
+            stream.Position = 0;
+
+            StringBuilder sb = new StringBuilder();
+            foreach (byte b in buffer)
+                sb.Append(b.ToString("X2"));
+
+            return sb.ToString();
+        }
+
+        public byte[] GetFileBytes(Stream stream)
+        {
+            byte[] fileArray;
+            int bufsize = 1024;
+            long length=-1;
+            bool allInOne;
+            try
+            {
+                length = stream.Length;
+                allInOne = (length < int.MaxValue);
+            }
+            catch (Exception ex)
+            {
+                allInOne = false;
+            }
+
+            if (allInOne)
+                bufsize = (int)length;
+
+            // no length: read in chunks
+            MemoryStream ms = null;
+            int count = 0;
+            do
+            {
+                byte[] buf = new byte[bufsize];
+                count = stream.Read(buf, 0, bufsize);
+                if (allInOne && count == bufsize)
+                {
+                    return buf;
+                }
+                if (ms == null)
+                    ms = new MemoryStream();
+                allInOne = false;
+                ms.Write(buf, 0, count);
+            } while (stream.CanRead && count > 0);
+            return ms.ToArray();
+        }
+
+
         [JSExternal]
-        public ImageData LoadImage(string filename)
+        public ImageData LoadImage(Stream stream)
         {
             throw new System.NotImplementedException();
         }
+
 
         [JSExternal]
         public ImageData CreateImage(int width, int height, ColorUint color)
@@ -106,7 +192,7 @@ namespace Fusee.Engine.Imp.Graphics.Web
         }
 
         [JSExternal]
-        public IFont LoadFont(string filename, uint size)
+        public IFont LoadFont(Stream stream, uint size)
         {
             throw new System.NotImplementedException();
         }

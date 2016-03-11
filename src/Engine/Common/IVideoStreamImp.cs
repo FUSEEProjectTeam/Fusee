@@ -1,4 +1,6 @@
-﻿namespace Fusee.Engine.Common
+﻿using Fusee.Base.Common;
+
+namespace Fusee.Engine.Common
 {
     /// <summary>
     /// The interface for all VideoStream implementations.

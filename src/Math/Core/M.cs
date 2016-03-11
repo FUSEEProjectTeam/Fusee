@@ -31,6 +31,29 @@ namespace Fusee.Math.Core
             return (lower.CompareTo(val) < 0) ? ((val.CompareTo(upper) < 0) ? val : upper) : lower;
         }
 
+        /// <summary>
+        /// Calculates the minimum of a and b.
+        /// </summary>
+        /// <typeparam name="T">The type of a and b. Must be <see cref="IComparable{T}"/></typeparam>
+        /// <param name="a">a.</param>
+        /// <param name="b">b.</param>
+        /// <returns>The minimum of a and b.</returns>
+        public static T Min<T>(T a, T b) where T : IComparable<T>
+        {
+            return (a.CompareTo(b) < 0) ? a : b;
+        }
+
+        /// <summary>
+        /// Calculates the maximum of a and b.
+        /// </summary>
+        /// <typeparam name="T">The type of a and b. Must be <see cref="IComparable{T}"/></typeparam>
+        /// <param name="a">a.</param>
+        /// <param name="b">b.</param>
+        /// <returns>The maximum of a and b.</returns>
+        public static T Max<T>(T a, T b) where T : IComparable<T>
+        {
+            return (a.CompareTo(b) > 0) ? a : b;
+        }
         #endregion
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Fusee.Base.Common;
 using Fusee.Engine.Common;
 using JSIL.Meta;
 using Fusee.Math.Core;
@@ -185,8 +186,6 @@ namespace Fusee.Engine.Core
                 _modelView = _view * _model;
 
                 UpdateCurrentShader();
-
-                _rci.ModelView = _modelView;
             }
         }
 
@@ -222,8 +221,6 @@ namespace Fusee.Engine.Core
                 _modelView = _view*_model;
 
                 UpdateCurrentShader();
-                _rci.ModelView = _modelView;
-
             } //TODO: Flags
         }
 
@@ -271,9 +268,6 @@ namespace Fusee.Engine.Core
                 _transModelViewProjectionOk = false;
 
                 UpdateCurrentShader();
-
-                _rci.ModelView = value;
-
             }
         }
 
@@ -312,8 +306,6 @@ namespace Fusee.Engine.Core
                 _transProjectionOk = false;
 
                 UpdateCurrentShader();
-
-                _rci.Projection = value;
             }
         }
 
@@ -925,6 +917,7 @@ namespace Fusee.Engine.Core
             _rci.UpdateTextureRegion(tex,img, startX,startY, width, height);
         }
 
+        /*
         /// <summary>
         /// Creates a new Image with a specified size and color.
         /// </summary>
@@ -952,6 +945,7 @@ namespace Fusee.Engine.Core
         {
             return _rci.TextOnImage(imgData, fontName, fontSize, text, textColor, startPosX, startPosY);
         }
+        */
 
         /// <summary>
         /// Creates a new texture and binds it to the shader.
@@ -971,24 +965,6 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Loads an image file from disk and creates a new Bitmap-object out of it.
-        /// </summary>
-        /// <remarks>
-        /// This is the first step for the texturing Process.
-        /// The Bitmap-bits get locked in the memory and are made available for
-        /// further processing. The returned ImageData-Struct can be used in the
-        /// CreateTexture method.
-        /// </remarks>
-        /// <param name="filename">Path to the image file</param>
-        /// <returns>
-        /// An ImageData struct with all necessary information for the texture-binding process.
-        /// </returns>
-        public ImageData LoadImage(String filename)
-        {
-            return _rci.LoadImage(filename);
-        }
-
-        /// <summary>
         /// Sets a Shader Parameter to a created texture.
         /// </summary>
         /// <param name="param">Shader Parameter used for texture binding.</param>
@@ -1001,35 +977,18 @@ namespace Fusee.Engine.Core
         #endregion
 
         #region Text related Members
-
+        /*
         /// <summary>
         /// Loads a font file (*.ttf) and processes it with the given font size.
         /// </summary>
-        /// <param name="filename">The filename.</param>
+        /// <param name="stream">The stream containting the font data.</param>
         /// <param name="size">The font size.</param>
         /// <returns>An <see cref="IFont"/> containing all necessary information for further processing.</returns>
         /// <exception cref="System.Exception">Font not found: "filename"</exception>
-        public IFont LoadFont(string filename, uint size)
+        public IFont LoadFont(Stream stream, uint size)
         {
-            return _rci.LoadFont(filename, size);
+            return _rci.LoadFont(stream, size);
         }
-
-        /* NOT PORTABLE
-        /// <summary>
-        /// Loads a system font from the system's font folder and processes it with the given font size.
-        /// </summary>
-        /// <param name="fontname">The name of a system font (the filename, e.g. "calibri").</param>
-        /// <param name="size">The font size.</param>
-        /// <returns>An <see cref="IFont"/> containing all necessary information for further processing.</returns>
-        [JSExternal]
-        public IFont LoadSystemFont(string fontname, uint size)
-        {
-            var fontsFolder = Environment.GetFolderPath(Environment.SpecialFolder.Fonts);
-            var pathToFont = Path.Combine(fontsFolder, fontname + ".ttf");
-
-            return LoadFont(pathToFont, size);
-        }
-        */
 
         /// <summary>
         /// Fixes the kerning of a text (if possible).
@@ -1043,7 +1002,7 @@ namespace Fusee.Engine.Core
         {
             return _rci.FixTextKerning(font, vertices, text, scaleX);
         }
-
+        */
         #endregion
 
         #region Light related Members

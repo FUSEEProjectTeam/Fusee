@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using Fusee.Base.Common;
 using Fusee.Math.Core;
 using JSIL.Meta;
 
@@ -12,35 +14,6 @@ namespace Fusee.Engine.Common
     /// </summary>
     public interface IRenderContextImp
     {
-        /// <summary>
-        /// The ModelView matrix used by the rendering pipeline.
-        /// </summary>
-        /// <value>
-        /// The 4x4 ModelView matrix defining the transformation applied to model coordinates yielding view coordinates.
-        /// </value>
-        /// <remarks>
-        /// Model coordinates are the coordinates directly taken from the model (the mesh geometry - <see cref="IMeshImp"/> ). The rendering pipeline
-        /// transforms these coordinates into View coordinates. Further down the pipeline the coordinates will be transformed to screen coordinates to allow the
-        /// geometry to be rendered to pixel positions on the screen. The ModelView matrix defines the transformations performed on the original model coordinates
-        /// to yield view coordinates. In most cases the matrix is a composition of several translations, rotations, and scale operations.
-        /// </remarks>
-        float4x4 ModelView { set; get; }
-
-        /// <summary>
-        /// The projection matrix used by the rendering pipeline
-        /// </summary>
-        /// <value>
-        /// The 4x4 projection matrix applied to view coordinates yielding clip space coordinates.
-        /// </value>
-        /// <remarks>
-        /// View coordinates are the result of the ModelView matrix multiplied to the geometry (<see cref="IRenderContextImp.ModelView"/>).
-        /// The coordinate system of the view space has its origin in the camera center with the z axis aligned to the viewing direction, and the x- and
-        /// y axes aligned to the viewing plane. Still, no projection from 3d space to the viewing plane has been performed. This is done by multiplying
-        /// view coordinate geometry wihth the projection matrix. Typically, the projection matrix either performs a parallel projection or a perspective
-        /// projection.
-        /// </remarks>
-        float4x4 Projection { set; get; }
-
         /// <summary>
         /// The color to use when clearing the color buffer.
         /// </summary>
@@ -256,21 +229,7 @@ namespace Fusee.Engine.Common
         /// </returns>
         ITexture CreateTexture(ImageData imageData, bool repeat);
 
-        /// <summary>
-        /// Loads an image file from disk and creates a new Bitmap-object out of it.
-        /// </summary>
-        /// <remarks>
-        /// This is the first step for the texturing Process.
-        /// The Bitmap-bits get locked in the memory and are made available for
-        /// further processing. The returned ImageData-Struct can be used in the
-        /// CreateTexture method.
-        /// </remarks>
-        /// <param name="filename">Path to the image file</param>
-        /// <returns>
-        /// An ImageData struct with all necessary information for the texture-binding process.
-        /// </returns>
-        ImageData LoadImage(string filename);
-
+        /*
         /// <summary>
         /// Creates a new Image with a specified size and color.
         /// </summary>
@@ -297,10 +256,10 @@ namespace Fusee.Engine.Common
         /// <summary>
         /// Loads a font file (*.ttf) and processes it with the given font size.
         /// </summary>
-        /// <param name="filename">The filename.</param>
+        /// <param name="stream">The stream to read font data from.</param>
         /// <param name="size">The font size.</param>
         /// <returns>An <see cref="IFont"/> containing all necessary information for further processing.</returns>
-        IFont LoadFont(string filename, uint size);
+        IFont LoadFont(Stream stream, uint size);
 
         /// <summary>
         /// Fixes the kerning of a text (if possible).
@@ -311,6 +270,7 @@ namespace Fusee.Engine.Common
         /// <param name="scaleX">The scale x (OpenGL scaling factor).</param>
         /// <returns>The fixed vertices as an array of <see cref="float3"/>.</returns>
         float3[] FixTextKerning(IFont font, float3[] vertices, string text, float scaleX);
+        */
 
         /// <summary>
         /// Erases the contents of the speciefied rendering buffers.

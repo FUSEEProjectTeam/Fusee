@@ -2,7 +2,7 @@ using System;
 using System.Globalization;
 using System.Text;
 
-namespace Fusee.Base.Core
+namespace Fusee.Base.Common
 {
     /// <summary>
     /// Methods to perform various operations on strings resembling file paths.

@@ -37,10 +37,10 @@ namespace Fusee.Engine.Examples.SoundTest.Core
             RC.SetShaderParam(_vColor, new float4(0.8f, 0.1f, 0.1f, 1));
 
             // sound by http://www.soundjay.com
-            _audio1 = Audio.Instance.LoadFile("Assets/beep.ogg");
+            _audio1 = Audio.Instance.LoadFile("AssetStorage/beep.ogg");
 
             // excerpt from "the final rewind" by tryad (http://www.tryad.org) - cc-by-sa
-            _audio2 = Audio.Instance.LoadFile("Assets/music.ogg");
+            _audio2 = Audio.Instance.LoadFile("AssetStorage/music.ogg");
 
             _state = 0;
             _testID = 1;

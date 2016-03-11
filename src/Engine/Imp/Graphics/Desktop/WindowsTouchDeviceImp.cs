@@ -306,7 +306,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             // Diagnostics.Log($"TouchStart {id}");
             if (_activeTouchpoints.ContainsKey(id))
-                throw new InvalidOperationException($"HTML Touch id {id} is already tracked. Cannot track another touchpoint using this id.");
+                throw new InvalidOperationException($"Windows Touch id {id} is already tracked. Cannot track another touchpoint using this id.");
 
             var inx = NextFreeTouchIndex;
             if (inx < 0)
@@ -487,7 +487,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <summary>
         /// Short description string for this device to be used in dialogs.
         /// </summary>
-        public string Desc => "Web browser standard Touch implementation.";
+        public string Desc => "MS Windows standard Touch device.";
 
         /// <summary>
         /// Returns a (hopefully) unique ID for this driver. Uniqueness is granted by using the 

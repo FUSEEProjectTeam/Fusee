@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Android.Content;
 using Android.Util;
@@ -9,7 +7,6 @@ using Fusee.Math.Core;
 using OpenTK.Graphics;
 using OpenTK.Graphics.ES30;
 using OpenTK.Platform.Android;
-using SharpFont;
 
 namespace Fusee.Engine.Imp.Graphics.Android
 {
@@ -33,10 +30,6 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
         void Init()
         {
-            Library sharpFont = new Library();
-
-            var version = sharpFont.Version;
-
             var a = new float3(1, 2, 3);
             var b = new float3(3, 2, 1);
 
