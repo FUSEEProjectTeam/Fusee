@@ -43,6 +43,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Audio.cs" />
+    <Compile Include="AudioStream.cs" />
     <Compile Include="BoxShape.cs" />
     <Compile Include="CapsuleShape.cs" />
     <Compile Include="CollisionShape.cs" />

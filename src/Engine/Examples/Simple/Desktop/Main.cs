@@ -23,17 +23,10 @@ namespace Fusee.Engine.Examples.Simple.Desktop
                     ReturnedType = typeof(Font),
                     Decoder = delegate (string id, object storage)
                     {
-                        if (Path.GetExtension(id).ToLower().Contains("ttf"))
-                            return new Font
-                            {
-                                _fontImp = new FontImp((Stream)storage)
-                            };
-                        return null;
+                        if (!Path.GetExtension(id).ToLower().Contains("ttf")) return null;
+                        return new Font{ _fontImp = new FontImp((Stream)storage) };
                     },
-                    Checker = delegate (string id)
-                    {
-                        return Path.GetExtension(id).ToLower().Contains("ttf");
-                    }
+                    Checker = id => Path.GetExtension(id).ToLower().Contains("ttf")
                 });
             fap.RegisterTypeHandler(
                 new AssetHandler
@@ -41,17 +34,11 @@ namespace Fusee.Engine.Examples.Simple.Desktop
                     ReturnedType = typeof(SceneContainer),
                     Decoder = delegate (string id, object storage)
                     {
-                        if (Path.GetExtension(id).ToLower().Contains("fus"))
-                        {
-                            var ser = new Serializer();
-                            return ser.Deserialize((Stream)storage, null, typeof(SceneContainer)) as SceneContainer;
-                        }
-                        return null;
+                        if (!Path.GetExtension(id).ToLower().Contains("fus")) return null;
+                        var ser = new Serializer();
+                        return ser.Deserialize((Stream)storage, null, typeof(SceneContainer)) as SceneContainer;
                     },
-                    Checker = delegate (string id)
-                    {
-                        return Path.GetExtension(id).ToLower().Contains("fus");
-                    }
+                    Checker = id => Path.GetExtension(id).ToLower().Contains("fus")
                 });
 
             AssetStorage.RegisterProvider(fap);

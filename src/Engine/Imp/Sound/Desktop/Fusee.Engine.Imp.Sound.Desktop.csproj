@@ -50,7 +50,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AudioStream.cs" />
+    <Compile Include="AudioStreamImp.cs" />
     <Compile Include="Implementor.cs" />
     <Compile Include="AudioImp.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

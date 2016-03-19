@@ -13,8 +13,8 @@ namespace Fusee.Engine.Examples.SoundTest.Core
 
         private static float _angleHorz;
 
-        private IAudioStream _audio2;
-        private IAudioStream _audio1;
+        private IAudioStreamImp _audio2;
+        private IAudioStreamImp _audio1;
 
         private int _state;
         private int _testID;

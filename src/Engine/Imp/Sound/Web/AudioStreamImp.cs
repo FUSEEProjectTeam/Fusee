@@ -6,10 +6,10 @@ using JSIL.Meta;
 
 namespace Fusee.Engine.Imp.Sound.Web
 {
-    class AudioStream : IAudioStream
+    class AudioStreamImp : IAudioStreamImp
     {
         [JSExternal]
-        public AudioStream(string file)
+        public AudioStreamImp(string file)
         {
             throw new System.NotImplementedException();
         }

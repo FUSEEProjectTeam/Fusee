@@ -38,6 +38,17 @@ DONE:	Remove Font implementation from RenderContext (probably even from Imp.Grap
 
 
 DONE:	Check if Kerning works.
+
+		Clean-up Fusee.Engine.Simple build
+		Test creating an external project (not below FUSEE)
+		Create a project template for external projects
+		Document first steps (creating a new project)
+		Create new Develop branch and make it the main branch
+		
+		Convert Sound to Assets
+		Implement Android sound handling
+		
+
 		Remove FontMap.FixKerning. Instead of fixing existing geometry provide methods to create kerned geometry in the first place.
 		Document AssetStorage and under-the-hood mechanism.
 		Find a solution how to include Assets in Android-builds from the application's 

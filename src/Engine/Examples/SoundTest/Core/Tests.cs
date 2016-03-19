@@ -6,7 +6,7 @@ namespace Fusee.Engine.Examples.SoundTest.Core
 {
     internal class Tests
     {
-        public bool Test1(IAudioStream audio, int state)
+        public bool Test1(IAudioStreamImp audio, int state)
         {
             if (state == 0)
                 Debug.WriteLine("Test #1: play, pause, stop and global stop");
@@ -60,7 +60,7 @@ namespace Fusee.Engine.Examples.SoundTest.Core
             return true;
         }
 
-        public bool Test2(IAudioStream audio, int state)
+        public bool Test2(IAudioStreamImp audio, int state)
         {
             if (state == 0)
                 Debug.WriteLine("Test #2: lower global volume from 100 to 0");
@@ -76,7 +76,7 @@ namespace Fusee.Engine.Examples.SoundTest.Core
             return state == 7;
         }
 
-        public bool Test3(IAudioStream audio, int state)
+        public bool Test3(IAudioStreamImp audio, int state)
         {
             if (state == 0)
             {
@@ -97,7 +97,7 @@ namespace Fusee.Engine.Examples.SoundTest.Core
             return (state == 7);
         }
 
-        public bool Test4(IAudioStream audio, int state)
+        public bool Test4(IAudioStreamImp audio, int state)
         {
             if (state == 0)
                 Debug.WriteLine("Test #4: looping for 2 seconds with loop as attribute");
@@ -115,7 +115,7 @@ namespace Fusee.Engine.Examples.SoundTest.Core
             return true;
         }
 
-        public bool Test5(IAudioStream audio, int state)
+        public bool Test5(IAudioStreamImp audio, int state)
         {
             if (state == 0)
                 Debug.WriteLine("Test #5: looping for 2 seconds with loop as parameter");
@@ -130,7 +130,7 @@ namespace Fusee.Engine.Examples.SoundTest.Core
             return true;
         }
 
-        public bool Test6(IAudioStream audio, int state)
+        public bool Test6(IAudioStreamImp audio, int state)
         {
             if (state == 0)
                 Debug.WriteLine("Test #6: global panning from left to right");
@@ -153,7 +153,7 @@ namespace Fusee.Engine.Examples.SoundTest.Core
             return true;
         }
 
-        public bool Test7(IAudioStream audio, int state)
+        public bool Test7(IAudioStreamImp audio, int state)
         {
             if (state == 0)
                 Debug.WriteLine("Test #7: individual panning from right to left");

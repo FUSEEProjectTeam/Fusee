@@ -7,7 +7,7 @@ namespace Fusee.Engine.Imp.Sound.Desktop
     /// <summary>
     /// This class is the implementation for Audio playback. It uses the SFML library to handle the sound playback. 
     /// </summary>
-    class AudioStream : IAudioStream
+    class AudioStreamImp : IAudioStreamImp
     {
         #region Fields
         internal SoundBuffer OutputBuffer { get; set; }
@@ -19,10 +19,10 @@ namespace Fusee.Engine.Imp.Sound.Desktop
         internal bool IsStream { get; set; }
 
         /// <summary>
-        /// Gets or sets the volume of this <see cref="IAudioStream" /> (0 - 100).
+        /// Gets or sets the volume of this <see cref="IAudioStreamImp" /> (0 - 100).
         /// </summary>
         /// <value>
-        /// The volume of this <see cref="IAudioStream" /> (0 - 100).
+        /// The volume of this <see cref="IAudioStreamImp" /> (0 - 100).
         /// </value>
         public float Volume
         {
@@ -31,10 +31,10 @@ namespace Fusee.Engine.Imp.Sound.Desktop
         }
 
         /// <summary>
-        /// Gets or sets the panning of this <see cref="IAudioStream" /> (-100 to +100).
+        /// Gets or sets the panning of this <see cref="IAudioStreamImp" /> (-100 to +100).
         /// </summary>
         /// <value>
-        /// The panning of this <see cref="IAudioStream" /> (-100 to +100).
+        /// The panning of this <see cref="IAudioStreamImp" /> (-100 to +100).
         /// </value>
         public float Panning
         {
@@ -43,10 +43,10 @@ namespace Fusee.Engine.Imp.Sound.Desktop
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="IAudioStream" /> shall be looped.
+        /// Gets or sets a value indicating whether this <see cref="IAudioStreamImp" /> shall be looped.
         /// </summary>
         /// <value>
-        /// <c>true</c> if this <see cref="IAudioStream" /> shall be looped; otherwise, <c>false</c>.
+        /// <c>true</c> if this <see cref="IAudioStreamImp" /> shall be looped; otherwise, <c>false</c>.
         /// </value>
         public bool Loop
         {
@@ -63,11 +63,11 @@ namespace Fusee.Engine.Imp.Sound.Desktop
 
         #region Constructors
         /// <summary>
-        /// Initializes a new instance of the <see cref="AudioStream"/> class.
+        /// Initializes a new instance of the <see cref="AudioStreamImp"/> class.
         /// </summary>
         /// <param name="fileName">Name of the file.</param>
         /// <param name="sndBuffer">The SND buffer.</param>
-        public AudioStream(string fileName, SoundBuffer sndBuffer)
+        public AudioStreamImp(string fileName, SoundBuffer sndBuffer)
         {
             OutputBuffer = sndBuffer;
             _outputSound = new SFML.Audio.Sound(sndBuffer);
@@ -76,11 +76,11 @@ namespace Fusee.Engine.Imp.Sound.Desktop
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AudioStream"/> class.
+        /// Initializes a new instance of the <see cref="AudioStreamImp"/> class.
         /// </summary>
         /// <param name="fileName">Name of the file.</param>
         /// <param name="streaming">if set to <c>true</c> [streaming].</param>
-        public AudioStream(string fileName, bool streaming)
+        public AudioStreamImp(string fileName, bool streaming)
         {
             if (streaming)
                 _outputStream = new Music(fileName);
@@ -132,7 +132,7 @@ namespace Fusee.Engine.Imp.Sound.Desktop
         }
 
         /// <summary>
-        /// Plays this <see cref="IAudioStream" />.
+        /// Plays this <see cref="IAudioStreamImp" />.
         /// </summary>
         public void Play()
         {
@@ -140,9 +140,9 @@ namespace Fusee.Engine.Imp.Sound.Desktop
         }
 
         /// <summary>
-        /// Plays this <see cref="IAudioStream" />.
+        /// Plays this <see cref="IAudioStreamImp" />.
         /// </summary>
-        /// <param name="loop"><c>true</c> if this <see cref="IAudioStream" /> shall be looped; otherwise, <c>false</c>.</param>
+        /// <param name="loop"><c>true</c> if this <see cref="IAudioStreamImp" /> shall be looped; otherwise, <c>false</c>.</param>
         public void Play(bool loop)
         {
             if (IsStream)
@@ -159,7 +159,7 @@ namespace Fusee.Engine.Imp.Sound.Desktop
         }
 
         /// <summary>
-        /// Pauses this <see cref="IAudioStream" />.
+        /// Pauses this <see cref="IAudioStreamImp" />.
         /// </summary>
         public void Pause()
         {
@@ -173,7 +173,7 @@ namespace Fusee.Engine.Imp.Sound.Desktop
         #region Internal Members
 
         /// <summary>
-        /// Stops this <see cref="IAudioStream" />.
+        /// Stops this <see cref="IAudioStreamImp" />.
         /// </summary>
         public void Stop()
         {

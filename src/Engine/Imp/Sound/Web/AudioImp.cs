@@ -7,7 +7,7 @@ using JSIL.Meta;
 namespace Fusee.Engine.Imp.Sound.Web
 {
     /// <summary>
-    /// This class is a container of all <see cref="AudioStream" /> instances and regulates the properties of all Sounds.
+    /// This class is a container of all <see cref="AudioStreamImp" /> instances and regulates the properties of all Sounds.
     /// </summary>
     public class AudioImp : IAudioImp
     {
@@ -30,7 +30,7 @@ namespace Fusee.Engine.Imp.Sound.Web
         }
 
         [JSExternal]
-        public IAudioStream LoadFile(string fileName, bool streaming)
+        public IAudioStreamImp LoadFile(string fileName, bool streaming)
         {
             throw new System.NotImplementedException();
         }

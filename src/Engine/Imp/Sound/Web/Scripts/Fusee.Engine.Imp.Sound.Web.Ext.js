@@ -18,7 +18,7 @@ JSIL.DeclareNamespace("Fusee.Engine.Imp.Sound");
 JSIL.DeclareNamespace("Fusee.Engine.Imp.Sound.Web");
 
 
-JSIL.ImplementExternals("Fusee.Engine.Imp.Sound.Web.AudioStream", function ($)
+JSIL.ImplementExternals("Fusee.Engine.Imp.Sound.Web.AudioStreamImp", function ($)
 {
     $.Field({ Static: false, Public: false }, "MainOutputStream", $.Object);
     $.Field({ Static: false, Public: false }, "StreamFileName", $.String);
@@ -169,7 +169,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Sound.Web.AudioStream", function ($)
 
 JSIL.ImplementExternals("Fusee.Engine.Imp.Sound.Web.AudioImp", function ($)
 {
-    $.Field({ Static: false, Public: false }, "AllStreams", $jsilcore.TypeRef("System.Array", [$fuseeCommon.TypeRef("Fusee.Engine.Common.IAudioStream")]));
+    $.Field({ Static: false, Public: false }, "AllStreams", $jsilcore.TypeRef("System.Array", [$fuseeCommon.TypeRef("Fusee.Engine.Common.IAudioStreamImp")]));
     $.Field({ Static: false, Public: false }, "LoadedStreams", $.Int32);
     $.Field({ Static: false, Public: false }, "_globalVolume", $.Single);
     $.Field({ Static: false, Public: false }, "_globalPanning", $.Single);
@@ -185,7 +185,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Sound.Web.AudioImp", function ($)
     );
 
     $.Method({ Static: false, Public: true }, "LoadFile",
-        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.Common.IAudioStream"), [$.String, $.Boolean]),
+        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.Common.IAudioStreamImp"), [$.String, $.Boolean]),
         function WebAudioImp_LoadFile(fileName, streaming) {
             var tmp = new $WebAudioImp.Fusee.Engine.Imp.Sound.Web.AudioStream(fileName);
             this.AllStreams[this.LoadedStreams] = tmp;

@@ -15,7 +15,7 @@ namespace Fusee.Engine.Core
     /// 
     /// Audio can be either buffered completely or be played as a stream.
     /// 
-    /// E.g. : IAudioStream myAudio1;
+    /// E.g. : IAudioStreamImp myAudio1;
     ///
     ///        myAudio1 = Audio.Instance.LoadFile("AssetStorage/Music.ogg"). 
     /// 
@@ -59,14 +59,14 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="fileName">Path to the file.</param>
         /// <param name="streaming"><c>true</c> if the audiofile shall be streamed; otherwise, <c>false</c>.</param>
-        /// <returns>The audiofile as an <see cref="IAudioStream"/></returns>
-        public IAudioStream LoadFile(string fileName, bool streaming = false)
+        /// <returns>The audiofile as an <see cref="IAudioStreamImp"/></returns>
+        public IAudioStreamImp LoadFile(string fileName, bool streaming = false)
         {
             return _audioImp.LoadFile(fileName, streaming);
         }
 
         /// <summary>
-        /// Stops all <see cref="IAudioStream"/>s.
+        /// Stops all <see cref="IAudioStreamImp"/>s.
         /// </summary>
         public void Stop()
         {
@@ -92,7 +92,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Sets the panning of all <see cref="IAudioStream"/>s (-100 to +100)
+        /// Sets the panning of all <see cref="IAudioStreamImp"/>s (-100 to +100)
         /// </summary>
         /// <param name="val">The value</param>
         public void SetPanning(float val)
@@ -144,9 +144,9 @@ namespace Fusee.Engine.Core
         /// <param name="fileName">Name of the file.</param>
         /// <param name="streaming">if set to <c>true</c> [streaming].</param>
         /// <returns></returns>
-        public IAudioStream LoadFile(string fileName, bool streaming)
+        public IAudioStreamImp LoadFile(string fileName, bool streaming)
         {
-            return new DummyAudioStream();
+            return new DummyAudioStreamImp();
         }
 
         /// <summary>
@@ -185,7 +185,7 @@ namespace Fusee.Engine.Core
     /// <summary>
     /// Dummy audio stream implementation with no functionality.
     /// </summary>
-    internal class DummyAudioStream : IAudioStream
+    internal class DummyAudioStreamImp : IAudioStreamImp
     {
         /// <summary>
         /// Gets or sets the volume.
@@ -195,7 +195,7 @@ namespace Fusee.Engine.Core
         /// </value>
         public float Volume { get; set; }
         /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="DummyAudioStream"/> is loop.
+        /// Gets or sets a value indicating whether this <see cref="DummyAudioStreamImp"/> is loop.
         /// </summary>
         /// <value>
         ///   <c>true</c> if loop; otherwise, <c>false</c>.
