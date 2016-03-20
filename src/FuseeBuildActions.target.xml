@@ -115,13 +115,27 @@
 	   output directories for normal .exe files free from unnecessary *.Scripts subfolders
 	TODO: expand this to ordinary file references - currently only ProjectReferences are supported. A first try was buggy due to
 	%(Reference.Filename) containing NOT the filename but filename+version.
+	NOTE: The above TODO semms to be solved by using the @(ReferencePath) list instead of handling @(ProjectReference) and @(Reference) by hand.
 	-->
 	<Target Name="FuseeGetReferencedAssemblies">
+		<!-- FIRST TRY - HANDLES ONLY PROJECT REFERENCES -->
 		<!-- Ask the referenced .csproj to reveil the name of the generated output. Undefine $(Platform) (such that (Platform == '') is true) to have the .csproj choose its default platform. 
 		 store the result as item(s) under @(FuseeReferencedAssemblies) -->
-		<MSBuild Projects="@(ProjectReference)" Targets="GetTargetPath" Properties="Configuration=$(Configuration)" RemoveProperties="Platform">
+		<!--MSBuild Projects="@(ProjectReference)" Targets="GetTargetPath" Properties="Configuration=$(Configuration)" RemoveProperties="Platform">
 			<Output TaskParameter="TargetOutputs" ItemName="FuseeReferencedAssemblies" />
-		</MSBuild>
+		</MSBuild -->
+		
+		<!-- SECOND TRY - USES @(ReferencePath) -->
+		<ItemGroup>
+			<FuseeReferencedAssemblies Include="@(ReferencePath)" />
+		</ItemGroup>
+		
+		<!--ItemGroup>
+			<FuseeReferencedAssemblies Include="@(Reference)" />
+		</ItemGroup-->
+		<!--Message Importance="High" Text="Referenced Assemblies: %(FuseeReferencedAssemblies.Filename)" /-->
+		<!--Message Importance="High" Text="Referenced Assembly: %(Reference.FullPath)" / -->
+		<!-- Message Importance="High" Text="Referenced Assembly: %(ReferencePath.Filename)" / -->
 	</Target>
 
 	<Target Name="FuseeAssembleFuseeJavaScriptDependency"
