@@ -268,13 +268,16 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
         private void ConnectWindowsEvents()
         {
-            EnableMouseInPointer(false);
-            if (_handle.Handle != IntPtr.Zero)
+            OperatingSystem os = Environment.OSVersion;
+            if (os.Platform == PlatformID.Win32NT && os.Version.Major >= 10)
             {
-                _newWinProc = new WinProc(TouchWindowProc);
-                _oldWndProc = SetWindowLongPtr(_handle, GWLP_WNDPROC, Marshal.GetFunctionPointerForDelegate(_newWinProc));
+                EnableMouseInPointer(false);
+                if (_handle.Handle != IntPtr.Zero)
+                {
+                    _newWinProc = new WinProc(TouchWindowProc);
+                    _oldWndProc = SetWindowLongPtr(_handle, GWLP_WNDPROC, Marshal.GetFunctionPointerForDelegate(_newWinProc));
+                }
             }
-
         }
 
         private float GetWindowWidth()
