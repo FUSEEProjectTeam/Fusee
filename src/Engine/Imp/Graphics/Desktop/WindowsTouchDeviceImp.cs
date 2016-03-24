@@ -269,7 +269,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         private void ConnectWindowsEvents()
         {
             OperatingSystem os = Environment.OSVersion;
-            if (os.Platform == PlatformID.Win32NT && os.Version.Major >= 10)
+
+            // See https://msdn.microsoft.com/library/windows/desktop/ms724832.aspx : Apps NOT targetet for a specific windows version (like 8.1 or 10)
+            // retrieve Version# 6.2 (resembling Windows 8), which is the version where "Pointer" touch handling is first supported.
+            if (os.Platform == PlatformID.Win32NT 
+                && (    os.Version.Major > 6
+                     || os.Version.Major == 6 && os.Version.Minor >= 2) 
+                )
             {
                 EnableMouseInPointer(false);
                 if (_handle.Handle != IntPtr.Zero)
