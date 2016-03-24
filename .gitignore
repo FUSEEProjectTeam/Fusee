@@ -20,7 +20,7 @@ mono64.lib
 ##
 
 # Build Folders (you can keep bin if you'd like, to store dlls and pdbs)
-# [Bb]in/
+#[Bb]in/
 [Oo]bj/
 
 # mstest test results
