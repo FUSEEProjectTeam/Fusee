@@ -60,14 +60,6 @@
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Fusee.Math.Conversion">
-      <HintPath>..\..\..\..\bin\Debug\Fusee.Math.Conversion.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Fusee.Math.Core">
-      <HintPath>..\..\..\..\bin\Debug\Fusee.Math.Core.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -99,7 +91,16 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Math\Conversion\Conversion.csproj">
+      <Project>{23be5303-b821-4a19-9a9c-c498b3d1f0ad}</Project>
+      <Name>Conversion</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Math\Core\Fusee.Math.Core.csproj">
+      <Project>{e95fa1c8-6491-4b4b-bbe1-eda6b16b2c6a}</Project>
+      <Name>Fusee.Math.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

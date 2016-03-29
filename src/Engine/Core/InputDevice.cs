@@ -99,6 +99,14 @@ namespace Fusee.Engine.Core
             #endregion
         }
 
+        /// <summary>
+        /// Gets the new next possible new axis identifier. Use this when calling <see cref="RegisterCalculatedAxis"/>.
+        /// </summary>
+        /// <value>
+        /// The new axis identifier.
+        /// </value>
+        public int NewAxisID => _nextAxisId + 1;
+
         private void OnImpButtonValueChanged(object sender, ButtonValueChangedArgs args)
         {
             if (!_buttonsToListen.ContainsKey(args.Button.Id))

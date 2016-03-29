@@ -10,7 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using C4d;
-using Fusee.Math;
+using Fusee.Math.Core;
 using Fusee.Serialization;
 
 namespace FuExport

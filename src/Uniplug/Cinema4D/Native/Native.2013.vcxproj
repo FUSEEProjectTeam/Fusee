@@ -1,0 +1,258 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{021EB697-2611-4E9F-ADA6-07D14F5538DD}</ProjectGuid>
+    <RootNamespace>pluginTemplate</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+    <CLRSupport>false</CLRSupport>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <CLRSupport>false</CLRSupport>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(C4D_DIR)\frameworks\cinema.framework\project\cinema.framework.includes.props" />
+    <Import Project="projectsettings.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(C4D_DIR)\frameworks\cinema.framework\project\cinema.framework.includes.props" />
+    <Import Project="$(C4D_DIR)\frameworks\settings\DebugWin64.props" />
+    <Import Project="projectsettings.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(C4D_DIR)\frameworks\cinema.framework\project\cinema.framework.includes.props" />
+    <Import Project="projectsettings.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(C4D_DIR)\frameworks\cinema.framework\project\cinema.framework.includes.props" />
+    <Import Project="projectsettings.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <TargetName>$(ProjectName)</TargetName>
+    <TargetExt>.cdl</TargetExt>
+    <OutDir>$(C4D_DIR)\plugins\ManagedPlugIn</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <TargetName>$(ProjectName)</TargetName>
+    <TargetExt>.cdl64</TargetExt>
+    <OutDir>$(C4D_DIR)\plugins\ManagedPlugIn</OutDir>
+    <IntDir>..\..\..\..\Tmp\Obj\$(ProjectName)\$(PlatformName)_$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <TargetExt>.cdl</TargetExt>
+    <OutDir>$(C4D_DIR)\plugins\ManagedPlugIn</OutDir>
+    <IntDir>$(SolutionDir)obj\$(ProjectName)\$(PlatformName)_$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <TargetExt>.cdl64</TargetExt>
+    <OutDir>$(C4D_DIR)\plugins\ManagedPlugIn</OutDir>
+    <IntDir>$(SolutionDir)obj\$(ProjectName)\$(PlatformName)_$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(C4D_DIR)\frameworks\cinema.framework\source\description;C4dApiExtensions;$(MONODIR)\lib\glib-2.0\include;$(MONODIR)\include\mono-2.0;$(MONODIR)\include\glib-2.0;$(MONODIR)\bin;.\source;.\res;.\res\description;$(C4D_DIR)\frameworks\cinema.framework\source;$(C4D_DIR)\frameworks\cinema.framework\source\c4d_preview;$(C4D_DIR)\frameworks\cinema.framework\source\c4d_customgui;$(C4D_DIR)\frameworks\cinema.framework\source\c4d_libs;$(C4D_DIR)\frameworks\cinema.framework\source\c4d_gv;..\Bridge\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <MinimalRebuild>false</MinimalRebuild>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <AdditionalUsingDirectories>
+      </AdditionalUsingDirectories>
+      <CompileAsManaged>false</CompileAsManaged>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ObjectFileName>$(IntDir)obj\</ObjectFileName>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt) </OutputFile>
+      <AdditionalLibraryDirectories>$(C4D_DIR)\plugins\Fusee\bin\Release;$(C4D_DIR)\plugins\Fusee\bin\Debug;$(C4D_DIR)\resource\_api_lib;$(C4D_DIR)\;$(C4D_DIR)\plugins\ManagedPlugin\win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Mono.lib;Bridge.lib;_api_Win32_Debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DelayLoadDLLs>Bridge.dll;Mono-2.0.dll</DelayLoadDLLs>
+    </Link>
+    <PreBuildEvent>
+      <Command>lib /nologo /def:mono.def /out:mono.lib /machine:x86</Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>Creating mono.lib</Message>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>C4dApiExtensions;$(MONODIR)\include\mono-2.0;$(MONODIR)\include\glib-2.0;$(MONODIR)\lib\glib-2.0\include;.\source;.\res;.\res\description;..\Bridge\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MinimalRebuild>false</MinimalRebuild>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <AdditionalUsingDirectories>
+      </AdditionalUsingDirectories>
+      <CompileAsManaged>false</CompileAsManaged>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ObjectFileName>$(IntDir)obj\</ObjectFileName>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt) </OutputFile>
+      <AdditionalLibraryDirectories>$(C4D_DIR)\plugins\Fusee\bin\Release;$(C4D_DIR)\plugins\Fusee\bin\Debug;$(C4D_DIR)\;$(C4D_DIR)\plugins\ManagedPlugin\x64;$(MONODIR)\lib\glib-2.0\include;$(MONODIR)\include\mono-2.0;$(MONODIR)\include\glib-2.0;$(MONODIR)\bin;%(AdditionalLibraryDirectories);$(C4D_DIR)\plugins\cinema4dsdk\_obj\cinema.framework\x64_Debug</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Mono64.lib;Bridge.lib;cinema.framework_Debug_64bit.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DelayLoadDLLs>Bridge.dll;Mono-2.0.dll</DelayLoadDLLs>
+    </Link>
+    <PreBuildEvent>
+      <Command>lib /nologo /def:mono.def /out:mono64.lib /machine:x64</Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>Creating mono.lib</Message>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Full</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>$(C4D_DIR)\frameworks\cinema.framework\source\description;C4dApiExtensions $(MONODIR)\lib\glib-2.0\include;$(MONODIR)\include\mono-2.0;$(MONODIR)\include\glib-2.0;.\source;.\res;.\res\description;$(C4D_DIR)\frameworks\cinema.framework\source;$(C4D_DIR)\frameworks\cinema.framework\source\c4d_preview;$(C4D_DIR)\frameworks\cinema.framework\source\c4d_customgui;$(C4D_DIR)\frameworks\cinema.framework\source\c4d_libs;$(C4D_DIR)\frameworks\cinema.framework\source\c4d_gv;$(C4D_DIR)\frameworks\cinema.framework\source;..\Bridge\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAsManaged>false</CompileAsManaged>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <PreprocessorDefinitions>WIN32;__PC;_NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>
+      </StringPooling>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>
+      </EnableCOMDATFolding>
+      <OptimizeReferences>
+      </OptimizeReferences>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt) </OutputFile>
+      <AdditionalLibraryDirectories>$(C4D_DIR)\frameworks\cinema.framework\source;$(C4D_DIR)\;$(C4D_DIR)\plugins\ManagedPlugin\win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Mono.lib;Bridge.lib;_api_Win32_Release.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DelayLoadDLLs>Bridge.dll;Mono-2.0.dll</DelayLoadDLLs>
+      <FixedBaseAddress>
+      </FixedBaseAddress>
+    </Link>
+    <PreBuildEvent>
+      <Command>lib /nologo /def:mono.def /out:mono.lib /machine:x86</Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>Creating Mono.lib</Message>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Full</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>$(C4D_DIR)\frameworks\cinema.framework\source\description;C4dApiExtensions $(MONODIR)\lib\glib-2.0\include;$(MONODIR)\include\mono-2.0;$(MONODIR)\include\glib-2.0;.\source;.\res;.\res\description;$(C4D_DIR)\frameworks\cinema.framework\source;$(C4D_DIR)\frameworks\cinema.framework\source\c4d_preview;$(C4D_DIR)\frameworks\cinema.framework\source\c4d_customgui;$(C4D_DIR)\frameworks\cinema.framework\source\c4d_libs;$(C4D_DIR)\frameworks\cinema.framework\source\c4d_gv;$(C4D_DIR)\frameworks\cinema.framework\source;..\Bridge\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAsManaged>false</CompileAsManaged>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <PreprocessorDefinitions>WIN32;__PC;_NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>
+      </StringPooling>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>
+      </EnableCOMDATFolding>
+      <OptimizeReferences>
+      </OptimizeReferences>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt) </OutputFile>
+      <AdditionalLibraryDirectories>$(C4D_DIR)\frameworks\cinema.framework\source;$(C4D_DIR)\;$(C4D_DIR)\plugins\ManagedPlugin\win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Mono.lib;Bridge.lib;_api_Win32_Release.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DelayLoadDLLs>Bridge.dll;Mono-2.0.dll</DelayLoadDLLs>
+      <FixedBaseAddress>
+      </FixedBaseAddress>
+    </Link>
+    <PreBuildEvent>
+      <Command>lib /nologo /def:mono.def /out:mono.lib /machine:x86</Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>Creating Mono.lib</Message>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="C4dApiExtensions\ObjectDataM.cpp" />
+    <ClCompile Include="C4dApiExtensions\TagDataM.cpp" />
+    <ClCompile Include="C4dApiWrapper.cpp" />
+    <ClCompile Include="source\main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="mono.def" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C4dApiExtensions\DDescriptionParams.h" />
+    <ClInclude Include="C4dApiExtensions\ObjectDataM.h" />
+    <ClInclude Include="C4dApiExtensions\TagDataM.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

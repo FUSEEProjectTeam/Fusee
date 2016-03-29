@@ -32,10 +32,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Fusee.SerializationSerializer">
-      <HintPath>..\..\..\..\Bin\Debug\Fusee.SerializationSerializer.dll</HintPath>
+      <HintPath>..\..\..\..\bin\Debug\Libraries\Fusee.SerializationSerializer.dll</HintPath>
     </Reference>
     <Reference Include="protobuf-net">
-      <HintPath>..\..\..\..\ExternalBinaries\protobuf\protobuf-net.dll</HintPath>
+      <HintPath>..\..\..\..\ext\protobuf\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -75,13 +75,13 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Math\Core\Math.Core.csproj">
+    <ProjectReference Include="..\..\..\Math\Core\Fusee.Math.Core.csproj">
       <Project>{e95fa1c8-6491-4b4b-bbe1-eda6b16b2c6a}</Project>
-      <Name>Math.Core</Name>
+      <Name>Fusee.Math.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Serialization\SerializationContainer.csproj">
+    <ProjectReference Include="..\..\..\Serialization\Fusee.Serialization.csproj">
       <Project>{b7fac89a-4e75-4eac-bbc3-bbdb89c94b8a}</Project>
-      <Name>SerializationContainer</Name>
+      <Name>Fusee.Serialization</Name>
     </ProjectReference>
     <ProjectReference Include="..\C4d\C4d.csproj">
       <Project>{6bc54c31-aa63-4f56-9675-df866a64cc03}</Project>

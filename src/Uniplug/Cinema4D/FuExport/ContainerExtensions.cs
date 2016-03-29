@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Fusee.Math;
+using Fusee.Math.Core;
 using Fusee.Serialization;
 
 namespace FuExport

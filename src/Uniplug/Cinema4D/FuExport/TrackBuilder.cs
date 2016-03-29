@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Fusee.Math;
+﻿using System.Collections.Generic;
+using Fusee.Math.Core;
 using Fusee.Serialization;
 
 namespace FuExport

@@ -45,10 +45,6 @@
       <Project>{23be5303-b821-4a19-9a9c-c498b3d1f0ad}</Project>
       <Name>Conversion</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Math\Core\Math.Core.csproj">
-      <Project>{e95fa1c8-6491-4b4b-bbe1-eda6b16b2c6a}</Project>
-      <Name>Math.Core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\C4d\C4d.csproj">
       <Project>{6bc54c31-aa63-4f56-9675-df866a64cc03}</Project>
       <Name>C4d</Name>
