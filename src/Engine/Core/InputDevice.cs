@@ -753,10 +753,13 @@ namespace Fusee.Engine.Core
 
         internal void PreRender()
         {
-            // Calculate derived axes first.
-            foreach (var derivedAxis in _calculatedAxes) //.OrderBy(a => a.Key))
+            if (Time.DeltaTime != 0)
             {
-                derivedAxis.Value.CurrentAxisValue = derivedAxis.Value.Calculator(Time.DeltaTime);
+                // Calculate derived axes first.
+                foreach (var derivedAxis in _calculatedAxes) //.OrderBy(a => a.Key))
+                {
+                    derivedAxis.Value.CurrentAxisValue = derivedAxis.Value.Calculator(Time.DeltaTime);
+                }
             }
 
             // See if any listeners need to be triggered about changes on axes.

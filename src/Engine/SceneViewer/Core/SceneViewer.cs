@@ -16,13 +16,19 @@ namespace Fusee.Engine.SceneViewer.Core
     public class SceneViewer : RenderCanvas
     {
         // angle variables
-        private static float _angleHorz = MathHelper.PiOver4, _angleVert, _angleVelHorz, _angleVelVert;
+        private static float _angleHorz = MathHelper.PiOver4, _angleVert, _angleVelHorz, _angleVelVert, _angleRoll, _angleRollInit, _zoomVel, _zoom;
+        private static float2 _offset;
+        private static float2 _offsetInit;
 
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
 
         private SceneContainer _scene;
         private SceneRenderer _sceneRenderer;
+        private float4x4 _sceneCenter;
+        private float4x4 _sceneScale;
+        private float4x4 _projection;
+        private bool _twoTouchRepeated;
 
         private bool _keys;
 
@@ -34,6 +40,7 @@ namespace Fusee.Engine.SceneViewer.Core
         private GUIText _guiSubText;
         private float _subtextHeight;
         private float _subtextWidth;
+        private float _maxPinchSpeed;
 
         // Init is called on startup. 
         public override void Init()
@@ -60,12 +67,46 @@ namespace Fusee.Engine.SceneViewer.Core
             _subtextWidth = GUIText.GetTextWidth(_guiSubText.Text, _guiLatoBlack);
             _subtextHeight = GUIText.GetTextHeight(_guiSubText.Text, _guiLatoBlack);
 
+            // Initial "Zoom" value (it's rather the distance in view direction, not the camera's focal distance/opening angle)
+            _zoom = 400;
+
+            _angleRoll = 0;
+            _angleRollInit = 0;
+            _twoTouchRepeated = false;
+            _offset = float2.Zero;
+            _offsetInit = float2.Zero;
+
             // Set the clear color for the backbuffer to white (100% intentsity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             // Load the standard model
             _scene = AssetStorage.Get<SceneContainer>("Model.fus");
+            AABBCalculator aabbc = new AABBCalculator(_scene);
+            var bbox = aabbc.GetBox();
+            if (bbox != null)
+            {
+                // If the model origin is more than one third away from its bounding box, 
+                // recenter it to the bounding box. Do this check individually per dimension.
+                // This way, small deviations will keep the model's original center, while big deviations 
+                // will make the model rotating around its geometric center.
+                float3 bbCenter = bbox.Value.Center;
+                float3 bbSize = bbox.Value.Size;
+                float3 center = float3.Zero;
+                if (System.Math.Abs(bbCenter.x) > bbSize.x*0.3)
+                    center.x = bbCenter.x;
+                if (System.Math.Abs(bbCenter.y) > bbSize.y * 0.3)
+                    center.y = bbCenter.y;
+                if (System.Math.Abs(bbCenter.z) > bbSize.z * 0.3)
+                    center.z = bbCenter.z;
+                _sceneCenter = float4x4.CreateTranslation(-center);
 
+                // Adjust the model size
+                float maxScale = System.Math.Max(bbSize.x, System.Math.Max(bbSize.y, bbSize.z));
+                if (maxScale != 0)
+                    _sceneScale = float4x4.CreateScale(200.0f / maxScale);
+                else
+                    _sceneScale = float4x4.Identity;
+            }
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_scene);
 
@@ -74,20 +115,13 @@ namespace Fusee.Engine.SceneViewer.Core
             if (_scene.Header.CreatedBy != null || _scene.Header.CreationDate != null)
             {
                 _guiSubText.Text += " created";
-
                 if (_scene.Header.CreatedBy != null)
-                {
-
                     _guiSubText.Text += " by " + _scene.Header.CreatedBy;
-                }
 
                 if (_scene.Header.CreationDate != null)
-                {
-
                     _guiSubText.Text += " on " + _scene.Header.CreationDate;
-                }
             }
-
+            // _guiSubText.Text = "dT: xxx ms, W: xxxx, H: xxxx, PS: xxxxxxxx";
             _subtextWidth = GUIText.GetTextWidth(_guiSubText.Text, _guiLatoBlack);
             _subtextHeight = GUIText.GetTextHeight(_guiSubText.Text, _guiLatoBlack);
         }
@@ -95,7 +129,7 @@ namespace Fusee.Engine.SceneViewer.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-
+            // _guiSubText.Text = $"dt: {DeltaTime} ms, W: {Width}, H: {Height}, PS: {_maxPinchSpeed}";
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
@@ -105,44 +139,76 @@ namespace Fusee.Engine.SceneViewer.Core
                 _keys = true;
             }
 
-            Diagnostics.Log(Mouse.WheelVel);
+            var curDamp = (float)System.Math.Exp(-Damping * DeltaTime);
 
+            // Zoom & Roll
+            if (Touch.TwoPoint)
+            {
+                if (!_twoTouchRepeated)
+                {
+                    _twoTouchRepeated = true;
+                    _angleRollInit = Touch.TwoPointAngle - _angleRoll;
+                    _offsetInit = Touch.TwoPointMidPoint - _offset;
+                    _maxPinchSpeed = 0;
+                }
+                _zoomVel = Touch.TwoPointDistanceVel*-0.01f;
+                _angleRoll = Touch.TwoPointAngle - _angleRollInit;
+                _offset = Touch.TwoPointMidPoint - _offsetInit;
+                float pinchSpeed = Touch.TwoPointDistanceVel;
+                if (pinchSpeed > _maxPinchSpeed) _maxPinchSpeed = pinchSpeed;
+            }
+            else
+            {
+                _twoTouchRepeated = false;
+                _zoomVel = Mouse.WheelVel * -0.5f;
+                _angleRoll *= curDamp*0.8f;
+                _offset *= curDamp*0.8f;
+            }
+
+            // UpDown / LeftRight rotation
             if (Mouse.LeftButton)
             {
                 _keys = false;
-                _angleVelHorz = -RotationSpeed * Mouse.XVel * DeltaTime * 0.0005f;
-                _angleVelVert = -RotationSpeed * Mouse.YVel * DeltaTime * 0.0005f;
+                _angleVelHorz = -RotationSpeed * Mouse.XVel * 0.000002f;
+                _angleVelVert = -RotationSpeed * Mouse.YVel * 0.000002f;
             }
-            else if (Touch.GetTouchActive(TouchPoints.Touchpoint_0))
+            else if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
             {
                 _keys = false;
-                var touchVel = Touch.GetVelocity(TouchPoints.Touchpoint_0);
-                _angleVelHorz = -RotationSpeed * touchVel.x * DeltaTime * 0.0005f;
-                _angleVelVert = -RotationSpeed * touchVel.y * DeltaTime * 0.0005f;
+                float2 touchVel;
+                touchVel = Touch.GetVelocity(TouchPoints.Touchpoint_0);
+                _angleVelHorz = -RotationSpeed * touchVel.x * 0.000002f;
+                _angleVelVert = -RotationSpeed * touchVel.y * 0.000002f;
             }
             else
             {
                 if (_keys)
                 {
-                    _angleVelHorz = -RotationSpeed * Keyboard.LeftRightAxis * DeltaTime;
-                    _angleVelVert = -RotationSpeed * Keyboard.UpDownAxis * DeltaTime;
+                    _angleVelHorz = -RotationSpeed * Keyboard.LeftRightAxis * 0.002f;
+                    _angleVelVert = -RotationSpeed * Keyboard.UpDownAxis * 0.002f;
                 }
                 else
                 {
-                    var curDamp = (float)System.Math.Exp(-Damping * DeltaTime);
                     _angleVelHorz *= curDamp;
                     _angleVelVert *= curDamp;
                 }
             }
 
+            _zoom += _zoomVel;
+            if (_zoom < 80)
+                _zoom = 80;
+            if (_zoom > 2000)
+                _zoom = 2000;
 
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
 
             // Create the camera matrix and set it as the current ModelView transformation
-            var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-            var mtxCam = float4x4.LookAt(0, 20, -600, 0, 150, 0, 0, 1, 0);
-            RC.ModelView = mtxCam * mtxRot;
+            var mtxRot = float4x4.CreateRotationZ(_angleRoll) * float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
+            var mtxCam = float4x4.LookAt(0, 20, -_zoom, 0, 0, 0, 0, 1, 0);
+            RC.ModelView = mtxCam * mtxRot * _sceneScale * _sceneCenter;
+            var mtxOffset = float4x4.CreateTranslation(2 * _offset.x / Width, - 2 * _offset.y / Height, 0);
+            RC.Projection = mtxOffset * _projection;
 
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
@@ -170,8 +236,7 @@ namespace Fusee.Engine.SceneViewer.Core
             // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
             // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
             // Back clipping happens at 2000 (Anything further away from the camera than 2000 world units gets clipped, polygons will be cut)
-            var projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 20000);
-            RC.Projection = projection;
+            _projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 20000);
 
             _guiSubText.PosX = (int)((Width - _subtextWidth) / 2);
             _guiSubText.PosY = (int)(Height - _subtextHeight - 3);

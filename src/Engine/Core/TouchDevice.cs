@@ -202,8 +202,8 @@ namespace Fusee.Engine.Core
         public float2 GetPosition(TouchPoints touch)
         {
             return new float2(
-                GetAxis((int)(touch - TouchPoints.Touchpoint_0 + TouchAxes.Touchpoint_0_X)),
-                GetAxis((int)(touch - TouchPoints.Touchpoint_0 + TouchAxes.Touchpoint_0_Y))
+                GetAxis(2*(touch - TouchPoints.Touchpoint_0) + (int)TouchAxes.Touchpoint_0_X),
+                GetAxis(2*(touch - TouchPoints.Touchpoint_0) + (int)TouchAxes.Touchpoint_0_Y)
                 );
         }
 
@@ -216,8 +216,8 @@ namespace Fusee.Engine.Core
         public float2 GetVelocity(TouchPoints touch)
         {
             return new float2(
-                GetAxis(_velocityIDs[touch - TouchPoints.Touchpoint_0]),
-                GetAxis(_velocityIDs[touch - TouchPoints.Touchpoint_0 + 1])
+                GetAxis(_velocityIDs[2*(touch - TouchPoints.Touchpoint_0)]),
+                GetAxis(_velocityIDs[2*(touch - TouchPoints.Touchpoint_0) + 1])
                 );
         }
 
@@ -240,8 +240,8 @@ namespace Fusee.Engine.Core
 
         // These values adjust the detection which of the different TwoPointActions, Move, Rotate or Pinch
         // is currently performed (to the highest amount). 
-        private readonly float _angleVelNormalFactor = 5.0f;
-        private readonly float _midpointVelNormalFactor = 2.0f;
+        private readonly float _angleVelNormalFactor = 500.0f;
+        private readonly float _midpointVelNormalFactor = 1.0f;
         private readonly float _distanceVelNormalFactor = 1.0f;
         private readonly float _doubleTouchMovementThreshold = 0.001f;
 
@@ -268,7 +268,7 @@ namespace Fusee.Engine.Core
 
                 float angleNormalized    = System.Math.Abs(TwoPointAngleVel *_angleVelNormalFactor);
                 float midpointNormalized = TwoPointMidPointVel.Length * _midpointVelNormalFactor;
-                float distanceNormalized = System.Math.Abs(TwoPointAngleVel * _distanceVelNormalFactor);
+                float distanceNormalized = System.Math.Abs(TwoPointDistanceVel * _distanceVelNormalFactor);
 
                 if (angleNormalized < _doubleTouchMovementThreshold && 
                     midpointNormalized < _doubleTouchMovementThreshold && 
