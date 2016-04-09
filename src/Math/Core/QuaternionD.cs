@@ -130,7 +130,7 @@ namespace Fusee.Math.Core
             // angle
             var den = System.Math.Sqrt(1.0 - q.w*q.w);
 
-            if (den > MathHelper.EpsilonDouble)
+            if (den > M.EpsilonDouble)
             {
                 result.xyz = q.xyz/den;
             }
@@ -178,7 +178,7 @@ namespace Fusee.Math.Core
         /// </summary>
         public void Normalize()
         {
-            if (!(Length > MathHelper.EpsilonDouble)) return;
+            if (!(Length > M.EpsilonDouble)) return;
             var scale = 1.0f/Length;
             xyz *= scale;
             w *= scale;
@@ -400,7 +400,7 @@ namespace Fusee.Math.Core
         {
             double lengthSq = q.LengthSquared;
 
-            if (lengthSq > MathHelper.EpsilonDouble)
+            if (lengthSq > M.EpsilonDouble)
             {
                 var i = 1.0f/lengthSq;
                 result = new QuaternionD(q.xyz*-i, q.w*i);
@@ -436,7 +436,7 @@ namespace Fusee.Math.Core
         {
             double scale;
 
-            if (!(q.Length > MathHelper.EpsilonFloat))
+            if (!(q.Length > M.EpsilonFloat))
                 scale = 0;
             else
                 scale = 1.0/q.Length;
@@ -456,7 +456,7 @@ namespace Fusee.Math.Core
         /// <returns>A QuaternionD that represents the orientation.</returns>
         public static QuaternionD FromAxisAngle(double3 axis, double angle)
         {
-            if (axis.LengthSquared > MathHelper.EpsilonDouble)
+            if (axis.LengthSquared > M.EpsilonDouble)
                 return Identity;
 
             var result = Identity;
@@ -483,10 +483,10 @@ namespace Fusee.Math.Core
         public static QuaternionD Slerp(QuaternionD q1, QuaternionD q2, double blend)
         {
             // if either input is zero, return the other.
-            if (q1.LengthSquared < MathHelper.EpsilonDouble)
-                return (!(q2.LengthSquared > MathHelper.EpsilonFloat)) ? Identity : q2;
+            if (q1.LengthSquared < M.EpsilonDouble)
+                return (!(q2.LengthSquared > M.EpsilonFloat)) ? Identity : q2;
 
-            if ((q2.LengthSquared < MathHelper.EpsilonDouble))
+            if ((q2.LengthSquared < M.EpsilonDouble))
                 return q1;
 
             var cosHalfAngle = q1.w*q2.w + double3.Dot(q1.xyz, q2.xyz);
@@ -524,7 +524,7 @@ namespace Fusee.Math.Core
 
             var result = new QuaternionD(blendA*q1.xyz + blendB*q2.xyz, blendA*q1.w + blendB*q2.w);
 
-            return result.LengthSquared > MathHelper.EpsilonDouble ? Normalize(result) : Identity;
+            return result.LengthSquared > M.EpsilonDouble ? Normalize(result) : Identity;
         }
 
         #endregion
@@ -674,7 +674,7 @@ namespace Fusee.Math.Core
         /// <returns>True if both instances are equal; false otherwise.</returns>
         public bool Equals(QuaternionD other)
         {
-            return xyz == other.xyz && (System.Math.Abs(w - other.w) < MathHelper.EpsilonDouble);
+            return xyz == other.xyz && (System.Math.Abs(w - other.w) < M.EpsilonDouble);
         }
 
         #endregion

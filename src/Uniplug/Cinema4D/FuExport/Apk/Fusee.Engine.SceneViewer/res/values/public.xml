@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <public type="drawable" name="icon" id="0x7f020000" />
+    <public type="string" name="Hello" id="0x7f030000" />
+    <public type="string" name="ApplicationName" id="0x7f030001" />
+    <public type="string" name="app_name" id="0x7f030002" />
+    <public type="string" name="unsupported" id="0x7f030003" />
+</resources>

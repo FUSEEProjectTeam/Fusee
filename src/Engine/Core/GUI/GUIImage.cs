@@ -139,7 +139,7 @@ namespace Fusee.Engine.Core.GUI
             if (!ImgSrc.IsEmpty)
             {
                 GUITexture = rc.CreateTexture(ImgSrc,
-                    MathHelper.IsPowerOfTwo(ImgSrc.Width) && MathHelper.IsPowerOfTwo(ImgSrc.Height));
+                    M.IsPowerOfTwo(ImgSrc.Width) && M.IsPowerOfTwo(ImgSrc.Height));
 
                 CreateGUIShader();
             }

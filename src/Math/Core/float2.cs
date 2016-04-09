@@ -206,7 +206,7 @@ namespace Fusee.Math.Core
         {
             get
             {
-                return 1.0f / MathHelper.InverseSqrtFast(x * x + y * y);
+                return 1.0f / M.InverseSqrtFast(x * x + y * y);
             }
         }
 
@@ -293,7 +293,7 @@ namespace Fusee.Math.Core
         /// </summary>
         public void NormalizeFast()
         {
-            float scale = MathHelper.InverseSqrtFast(x * x + y * y);
+            float scale = M.InverseSqrtFast(x * x + y * y);
             x *= scale;
             y *= scale;
         }
@@ -822,7 +822,7 @@ namespace Fusee.Math.Core
         /// </returns>
         public static float2 NormalizeFast(float2 vec)
         {
-            float scale = MathHelper.InverseSqrtFast(vec.x * vec.x + vec.y * vec.y);
+            float scale = M.InverseSqrtFast(vec.x * vec.x + vec.y * vec.y);
             vec.x *= scale;
             vec.y *= scale;
             return vec;
@@ -835,7 +835,7 @@ namespace Fusee.Math.Core
         /// <param name="result">The normalized vector</param>
         public static void NormalizeFast(ref float2 vec, out float2 result)
         {
-            float scale = MathHelper.InverseSqrtFast(vec.x * vec.x + vec.y * vec.y);
+            float scale = M.InverseSqrtFast(vec.x * vec.x + vec.y * vec.y);
             result.x = vec.x * scale;
             result.y = vec.y * scale;
         }

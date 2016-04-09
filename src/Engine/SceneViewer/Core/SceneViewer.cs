@@ -16,7 +16,8 @@ namespace Fusee.Engine.SceneViewer.Core
     public class SceneViewer : RenderCanvas
     {
         // angle variables
-        private static float _angleHorz = MathHelper.PiOver4, _angleVert, _angleVelHorz, _angleVelVert, _angleRoll, _angleRollInit, _zoomVel, _zoom;
+        private static float _angleHorz = M.PiOver6*2.0f, _angleVert = -M.PiOver6*0.5f,
+                             _angleVelHorz, _angleVelVert, _angleRoll, _angleRollInit, _zoomVel, _zoom;
         private static float2 _offset;
         private static float2 _offsetInit;
 
@@ -155,7 +156,7 @@ namespace Fusee.Engine.SceneViewer.Core
                 _angleRoll = Touch.TwoPointAngle - _angleRollInit;
                 _offset = Touch.TwoPointMidPoint - _offsetInit;
                 float pinchSpeed = Touch.TwoPointDistanceVel;
-                if (pinchSpeed > _maxPinchSpeed) _maxPinchSpeed = pinchSpeed;
+                if (pinchSpeed > _maxPinchSpeed) _maxPinchSpeed = pinchSpeed; // _maxPinchSpeed is used for debugging only.
             }
             else
             {
@@ -195,13 +196,23 @@ namespace Fusee.Engine.SceneViewer.Core
             }
 
             _zoom += _zoomVel;
+            // Limit zoom
             if (_zoom < 80)
                 _zoom = 80;
             if (_zoom > 2000)
                 _zoom = 2000;
 
             _angleHorz += _angleVelHorz;
+            // Wrap-around to keep _angleHorz between -PI and + PI
+            _angleHorz = M.MinAngle(_angleHorz);
+
             _angleVert += _angleVelVert;
+            // Limit pitch to the range between [-PI/2, + PI/2]
+            _angleVert = M.Clamp(_angleVert, -M.PiOver2, M.PiOver2);
+
+            // Wrap-around to keep _angleRoll between -PI and + PI
+            _angleRoll = M.MinAngle(_angleRoll);
+
 
             // Create the camera matrix and set it as the current ModelView transformation
             var mtxRot = float4x4.CreateRotationZ(_angleRoll) * float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
@@ -210,7 +221,8 @@ namespace Fusee.Engine.SceneViewer.Core
             var mtxOffset = float4x4.CreateTranslation(2 * _offset.x / Width, - 2 * _offset.y / Height, 0);
             RC.Projection = mtxOffset * _projection;
 
-            // Render the scene loaded in Init()
+            // Tick any animations and Render the scene loaded in Init()
+            _sceneRenderer.Animate();
             _sceneRenderer.Render(RC);
 
             _guiHandler.RenderGUI();
@@ -236,7 +248,7 @@ namespace Fusee.Engine.SceneViewer.Core
             // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
             // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
             // Back clipping happens at 2000 (Anything further away from the camera than 2000 world units gets clipped, polygons will be cut)
-            _projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 20000);
+            _projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, aspectRatio, 1, 20000);
 
             _guiSubText.PosX = (int)((Width - _subtextWidth) / 2);
             _guiSubText.PosY = (int)(Height - _subtextHeight - 3);

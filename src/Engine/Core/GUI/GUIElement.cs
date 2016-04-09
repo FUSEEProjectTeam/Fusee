@@ -382,7 +382,7 @@ namespace Fusee.Engine.Core.GUI
                 y += glyphInfo.AdvanceY*scaleY;
 
                 // skip glyphs that have no pixels
-                if ((w <= MathHelper.EpsilonFloat) || (h <= MathHelper.EpsilonFloat))
+                if ((w <= M.EpsilonFloat) || (h <= M.EpsilonFloat))
                     continue;
 
                 var bitmapW = glyphOnMap.BitmapW;
@@ -475,7 +475,7 @@ namespace Fusee.Engine.Core.GUI
             vertices[vtStart + 3] = new float3(c2, c4, 0);
 
             // colors
-            var colorInt = MathHelper.Float4ToABGR(color);
+            var colorInt = M.Float4ToABGR(color);
 
             colors[vtStart + 0] = colorInt;
             colors[vtStart + 1] = colorInt;

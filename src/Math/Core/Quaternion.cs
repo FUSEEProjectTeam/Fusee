@@ -131,7 +131,7 @@ namespace Fusee.Math.Core
             // angle
             var den = (float) System.Math.Sqrt(1.0 - q.w*q.w);
 
-            if (den > MathHelper.EpsilonFloat)
+            if (den > M.EpsilonFloat)
             {
                 result.xyz = q.xyz/den;
             }
@@ -179,7 +179,7 @@ namespace Fusee.Math.Core
         /// </summary>
         public void Normalize()
         {
-            if (!(Length > MathHelper.EpsilonFloat)) return;
+            if (!(Length > M.EpsilonFloat)) return;
             var scale = 1.0f/Length;
             xyz *= scale;
             w *= scale;
@@ -401,7 +401,7 @@ namespace Fusee.Math.Core
         {
             float lengthSq = q.LengthSquared;
 
-            if (lengthSq > MathHelper.EpsilonFloat)
+            if (lengthSq > M.EpsilonFloat)
             {
                 var i = 1.0f/lengthSq;
                 result = new Quaternion(q.xyz*-i, q.w*i);
@@ -437,7 +437,7 @@ namespace Fusee.Math.Core
         {
             float scale;
 
-            if (!(q.Length > MathHelper.EpsilonFloat))
+            if (!(q.Length > M.EpsilonFloat))
                 scale = 0;
             else
                 scale = 1.0f/q.Length;
@@ -457,7 +457,7 @@ namespace Fusee.Math.Core
         /// <returns>A normalized quaternion rotation.</returns>
         public static Quaternion FromAxisAngle(float3 axis, float angle)
         {
-            if (axis.LengthSquared > MathHelper.EpsilonFloat)
+            if (axis.LengthSquared > M.EpsilonFloat)
                 return Identity;
 
             var result = Identity;
@@ -484,9 +484,9 @@ namespace Fusee.Math.Core
         public static Quaternion Slerp(Quaternion q1, Quaternion q2, float blend)
         {
             // if either input is zero, return the other.
-            if (q1.LengthSquared < MathHelper.EpsilonFloat)
+            if (q1.LengthSquared < M.EpsilonFloat)
             {
-                if (q2.LengthSquared < MathHelper.EpsilonFloat)
+                if (q2.LengthSquared < M.EpsilonFloat)
                 {
                     // Console.WriteLine("q1 and q2 have zero length");
                     return Identity;
@@ -495,7 +495,7 @@ namespace Fusee.Math.Core
                 return q2;
             }
 
-            if ((q2.LengthSquared < MathHelper.EpsilonFloat))
+            if ((q2.LengthSquared < M.EpsilonFloat))
             {
                 // Console.WriteLine("q2 has zero length");
                 return q1;
@@ -546,7 +546,7 @@ namespace Fusee.Math.Core
 
             var result = new Quaternion(blendA*q1.xyz + blendB*q2.xyz, blendA*q1.w + blendB*q2.w);
 
-            return result.LengthSquared > MathHelper.EpsilonFloat ? Normalize(result) : Identity;
+            return result.LengthSquared > M.EpsilonFloat ? Normalize(result) : Identity;
         }
 
         #endregion
@@ -570,15 +570,15 @@ namespace Fusee.Math.Core
             if (inDegrees)
             {
                 // Converts all degrees angles to radians.
-                var rX = MathHelper.DegreesToRadians(e.x);
-                var rY = MathHelper.DegreesToRadians(e.y);
-                var rZ = MathHelper.DegreesToRadians(e.z);
+                var rX = M.DegreesToRadians(e.x);
+                var rY = M.DegreesToRadians(e.y);
+                var rZ = M.DegreesToRadians(e.z);
 
                 e = new float3(rX, rY, rZ);
             }
 
             // y angle (YAW/HEADING) needs to be reversed. Probably due to left-handedness
-            e.y = MathHelper.TwoPi - e.y;
+            e.y = M.TwoPi - e.y;
 
             // Calculating the Sine and Cosine for each half angle.
             // YAW/HEADING
@@ -624,17 +624,17 @@ namespace Fusee.Math.Core
             float y;
             float z;
 
-            if (MathHelper.Equals(test, 1.0f))
+            if (M.Equals(test, 1.0f))
             {
                 z = -2.0f*(float) System.Math.Atan2(q.x, q.w);
                 y = 0;
-                x = MathHelper.Pi/2;
+                x = M.Pi/2;
             }
-            else if (MathHelper.Equals(test, -1.0f))
+            else if (M.Equals(test, -1.0f))
             {
                 z = 2.0f*(float) System.Math.Atan2(q.x, q.w);
                 y = 0;
-                x = MathHelper.Pi/-2;
+                x = M.Pi/-2;
             }
             else
             {
@@ -644,18 +644,18 @@ namespace Fusee.Math.Core
                 var sqW = q.w*q.w;
 
                 y = (float) System.Math.Atan2(2*(q.y*q.w - q.x*q.z), 1 - 2*sqY - 2*sqZ);
-                x = (float) System.Math.Asin(MathHelper.Clamp(test, -1.0f, 1.0f));
+                x = (float) System.Math.Asin(M.Clamp(test, -1.0f, 1.0f));
                 z = (float) System.Math.Atan2(2*(q.x*q.w - q.y*q.z), 1 - 2*sqX - 2*sqZ);
             }
 
             // y angle (YAW/HEADING) needs to be reversed. Probably due to left-handedness
-            y = MathHelper.TwoPi - y;
+            y = M.TwoPi - y;
                                    
             if (inDegrees)
             {
-                x = MathHelper.RadiansToDegrees(x);
-                y = MathHelper.RadiansToDegrees(y);
-                z = MathHelper.RadiansToDegrees(z);
+                x = M.RadiansToDegrees(x);
+                y = M.RadiansToDegrees(y);
+                z = M.RadiansToDegrees(z);
             }
 
             return new float3(x, y, z);
@@ -877,7 +877,7 @@ namespace Fusee.Math.Core
         /// <returns>True if both instances are equal; false otherwise.</returns>
         public bool Equals(Quaternion other)
         {
-            return xyz == other.xyz && (System.Math.Abs(w - other.w) < MathHelper.EpsilonFloat);
+            return xyz == other.xyz && (System.Math.Abs(w - other.w) < M.EpsilonFloat);
         }
 
         #endregion

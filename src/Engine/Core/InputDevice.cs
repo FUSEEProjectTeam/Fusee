@@ -496,6 +496,9 @@ namespace Fusee.Engine.Core
                 bool closureOffLastTime = true;
                 calculator = delegate (float deltaTime)
                 {
+                    if (deltaTime <= float.Epsilon) // avoid infinite velocites
+                        return 0;
+
                     if (!GetButton(triggerButtonId))
                     {
                         closureOffLastTime = true;
@@ -519,6 +522,9 @@ namespace Fusee.Engine.Core
                 float closureLastValue = GetAxis(origAxisId);
                 calculator = delegate (float deltaTime)
                 {
+                    if (deltaTime <= float.Epsilon) // avoid infinite velocites
+                        return 0;
+
                     float newVal = GetAxis(origAxisId);
                     float ret = (newVal - closureLastValue) / deltaTime; // v = dr / dt: velocity is position derived after time.
                     closureLastValue = newVal;

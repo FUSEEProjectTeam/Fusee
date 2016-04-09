@@ -1,0 +1,56 @@
+!!brut.androlib.meta.MetaInfo
+apkFileName: Fusee.Engine.SceneViewer.Orig.apk
+compressionType: false
+doNotCompress:
+- arsc
+isFrameworkApk: false
+packageInfo:
+  forcedPackageId: '127'
+  renameManifestPackage: null
+sdkInfo:
+  minSdkVersion: '11'
+sharedLibrary: false
+unknownFiles:
+  NOTICE: '8'
+  environment: '0'
+  typemap.jm: '0'
+  typemap.mj: '0'
+  assemblies/Fusee.Engine.SceneViewer.Android.dll: '0'
+  assemblies/Fusee.Base.Common.dll: '0'
+  assemblies/Fusee.Base.Core.dll: '0'
+  assemblies/Fusee.Base.Imp.Android.dll: '0'
+  assemblies/Fusee.Engine.Common.dll: '0'
+  assemblies/Fusee.Engine.Core.dll: '0'
+  assemblies/Fusee.Engine.Imp.Graphics.Android.dll: '0'
+  assemblies/Fusee.Engine.SceneViewer.Core.dll: '0'
+  assemblies/Fusee.Math.Core.dll: '0'
+  assemblies/Fusee.Serialization.dll: '0'
+  assemblies/Fusee.SerializationSerializer.dll: '0'
+  assemblies/protobuf-net.dll: '0'
+  assemblies/System.Diagnostics.Tracing.dll: '0'
+  assemblies/System.Reflection.Emit.dll: '0'
+  assemblies/System.Reflection.Emit.ILGeneration.dll: '0'
+  assemblies/System.Reflection.Emit.Lightweight.dll: '0'
+  assemblies/System.ServiceModel.Security.dll: '0'
+  assemblies/System.Threading.Timer.dll: '0'
+  assemblies/JSIL.Meta.dll: '0'
+  assemblies/SharpFont.dll: '0'
+  assemblies/Fusee.Xene.dll: '0'
+  assemblies/Fusee.Xirkit.dll: '0'
+  assemblies/System.ServiceModel.Internals.dll: '0'
+  assemblies/Mono.Android.dll: '0'
+  assemblies/mscorlib.dll: '0'
+  assemblies/OpenTK.dll: '0'
+  assemblies/System.Core.dll: '0'
+  assemblies/System.dll: '0'
+  assemblies/System.Xml.dll: '0'
+  assemblies/System.Runtime.Serialization.dll: '0'
+  assemblies/System.ServiceModel.dll: '0'
+usesFramework:
+  ids:
+  - 1
+  tag: null
+version: 2.1.0
+versionInfo:
+  versionCode: '1'
+  versionName: '1.0'

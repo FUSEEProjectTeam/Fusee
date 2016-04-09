@@ -84,6 +84,7 @@ namespace Fusee.Xirkit
                 _maxDuration = channel.Duration;
 
             _channels.Add(channel);
+            channel.SetTick(_time);
             Node channelNode = new Node(channel);
             Node channelObjektNode = new Node(channelObject);
             channelNode.Attach("Value", channelObjektNode, field);

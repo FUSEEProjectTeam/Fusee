@@ -1,0 +1,30 @@
+// JSILc v0.8.17619
+// Build took 0019,65 second(s).
+// The following configuration was used when translating 'C:\Users\mch\Documents\_DEV\Fusee\tmp\Obj\Fusee.Engine.SceneViewer.Web\bin\Debug\Fusee.Engine.SceneViewer.Web.exe':
+{"ContributingPaths":["C:\\Users\\mch\\Documents\\_DEV\\Fusee\\ext\\JSIL\\Compiler\\defaults.jsilconfig"],"Path":"C:\\Users\\mch\\Documents\\_DEV\\Fusee\\ext\\JSIL\\Compiler","SolutionBuilder":{"Configuration":null,"Platform":null,"Target":null,"LogVerbosity":null,"ExtraOutputs":[]},"Quiet":null,"AutoLoadConfigFiles":null,"UseLocalProxies":null,"ReuseTypeInfoAcrossAssemblies":null,"ProxyWarnings":false,"OutputDirectory":"C:\\Users\\mch\\Documents\\_DEV\\Fusee\\bin\\Debug\\SceneViewer\\Web\\Assets\\Scripts","OutputFileName":null,"FileOutputDirectory":null,"Profile":"Default","ProfileSettings":{"OverwriteExistingContent":true,"ContentOutputDirectory":"%outputdirectory%/Content"},"AnalyzerSettings":{},"CustomVariables":{},"ApplyDefaults":null,"IncludeDependencies":null,"UseSymbols":null,"UseThreads":null,"UseDefaultProxies":null,"GenerateSkeletonsForStubbedAssemblies":null,"GenerateContentManifest":null,"RunBugChecks":null,"TuneGarbageCollection":null,"FilenameEscapeRegex":null,"AssemblyCollectionName":null,"EmitterFactoryName":null,"BuildSourceMap":null,"FrameworkVersion":null,"Assemblies":{"TranslateAdditional":[],"Ignored":["Microsoft\\.VisualC,","Accessibility,","SMDiagnostics,","System\\.EnterpriseServices,","System\\.Security,","System\\.Runtime\\.Serialization\\.Formatters\\.Soap,","System\\.Runtime\\.DurableInstancing,","System\\.Data\\.SqlXml,","JSIL\\.Meta,","^mscorlib, Version=2"],"Stubbed":["^mscorlib,","^System,","^System\\.(.+),","^Microsoft\\.(.+),","FSharp.Core,"],"Proxies":[],"Redirects":{}},"CodeGenerator":{"EliminateStructCopies":null,"SimplifyOperators":null,"SimplifyLoops":null,"EliminateTemporaries":null,"EliminateRedundantControlFlow":null,"CacheMethodSignatures":null,"CacheGenericMethodSignatures":null,"CacheTypeExpressions":null,"CacheBaseMethodHandles":null,"EliminatePointlessFinallyBlocks":null,"PreferAccessorMethods":null,"HintIntegerArithmetic":null,"EnableThreadedTransforms":null,"FreezeImmutableObjects":null,"EnableUnsafeCode":null,"HoistAllocations":null,"HintDoubleArithmetic":null,"AutoGenerateEventAccessorsInSkeletons":null,"AggressivelyUseElementProxies":null,"EmitAllParameterNames":null,"StripUnusedLoopNames":null,"IntroduceCharCasts":null,"IntroduceEnumCasts":null,"EmulateInt64":null,"DecomposeAllMutationOperators":null}}
+// The configuration was generated from the following configuration files:
+C:\Users\mch\Documents\_DEV\Fusee\ext\JSIL\Compiler\defaults.jsilconfig
+// The following outputs were produced:
+Fusee.Engine.SceneViewer.Web, Version=0.5.0.0, Culture=neutral, PublicKeyToken=null.js
+mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089.js
+Fusee.Base.Imp.Web, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null.js
+Fusee.Engine.SceneViewer.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null.js
+Fusee.Base.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null.js
+Fusee.SerializationSerializer, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null.js
+Fusee.Base.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null.js
+Fusee.Serialization, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null.js
+Fusee.Engine.Imp.Graphics.Web, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null.js
+Fusee.Engine.Core, Version=0.5.0.0, Culture=neutral, PublicKeyToken=null.js
+Fusee.Engine.Common, Version=0.5.0.0, Culture=neutral, PublicKeyToken=null.js
+protobuf-net, Version=2.0.0.668, Culture=neutral, PublicKeyToken=null.js
+Fusee.Math.Core, Version=0.5.0.0, Culture=neutral, PublicKeyToken=null.js
+System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089.js
+System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089.js
+Fusee.Xene, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null.js
+Fusee.Xirkit, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null.js
+System.Configuration, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a.js
+System.Xml, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089.js
+System.Numerics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089.js
+// The following method(s) were ignored due to untranslatable variables:
+// Miscellaneous log output follows:
+

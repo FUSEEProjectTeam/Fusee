@@ -11,8 +11,8 @@ var jsilConfig = {
 	premultipliedAlpha: true,
 
 	manifests: [
-		"Examples.SceneViewer.exe",
-		"Examples.SceneViewer.contentproj",
+		"Fusee.Engine.SceneViewer.Web.exe",
+		"Fusee.Engine.SceneViewer.Web.contentproj",
 	],
 
 	updateProgressBar: function (prefix, suffix, bytesLoaded, bytesTotal) {

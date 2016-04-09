@@ -76,7 +76,9 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidAsset Include="Assets\Lato-Black.ttf" />
-    <AndroidAsset Include="Assets\Model.fus" />
+    <AndroidAsset Include="Assets\Model.fus">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AndroidAsset>
     <None Include="Properties\AndroidManifest.xml">
       <SubType>Designer</SubType>
     </None>

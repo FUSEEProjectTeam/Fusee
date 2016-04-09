@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:installLocation="auto" package="Fusee.Engine.BolliBolli" platformBuildVersionCode="23" platformBuildVersionName="6.0-2166767">
+    <uses-feature android:glEsVersion="0x20000"/>
+    <application android:allowBackup="true" android:icon="@drawable/icon" android:label="BolliBolli" android:name="mono.android.app.Application">
+        <activity android:configChanges="keyboardHidden" android:hardwareAccelerated="false" android:icon="@drawable/icon" android:label="BolliBolli" android:launchMode="singleTask" android:name="md5a1872a39f63cb389d64a1aab0173ab36.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <provider android:authorities="Fusee.Engine.BolliBolli.mono.MonoRuntimeProvider.__mono_init__" android:exported="false" android:initOrder="2147483647" android:name="mono.MonoRuntimeProvider"/>
+    </application>
+</manifest>

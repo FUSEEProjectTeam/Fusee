@@ -477,11 +477,6 @@ JSIL.Host.doesAssetExist = function (filename, stripRoot) {
 
   return true;
 };
-
-JSIL.Host.getAssetVal = function (key) {
-  return allAssets[key];
-}
-
 JSIL.Host.getAsset = function (filename, stripRoot) {
   if (filename === null)
     throw new System.Exception("Filename was null");
@@ -880,7 +875,7 @@ function finishLoading () {
     } else {
       initIfNeeded();
 
-      updateProgressBar("Initialising...", null, 0.7, 1);
+      updateProgressBar("Starting", null, 1, 1);
 
       var allFailures = $jsilloaderstate.loadFailures.concat(state.assetLoadFailures);
 
@@ -919,8 +914,7 @@ function pollAssetQueue () {
       state.assetsLoading -= 1;
       state.assetsLoaded += 1;
 
-	  // due to reduced filesize
-      state.bytesLoaded += sizeBytes * (state.assetBytes / state.assetBytesOrg);
+      state.bytesLoaded += sizeBytes;
     };
   };
 
@@ -1030,7 +1024,6 @@ function pollAssetQueue () {
 function loadAssets (assets, onDoneLoading) {
   var state = {
     assetBytes: 0,
-	assetBytesOrg: 0,
     assetCount: assets.length,
     bytesLoaded: 0,
     assetsLoaded: 0,
@@ -1053,15 +1046,14 @@ function loadAssets (assets, onDoneLoading) {
     var properties = assets[i][2];
 
     if (typeof (properties) !== "object") {
-      state.assetsBytesOrg += 1;
+      state.assetBytes += 1;
       continue;
     }
 
     var sizeBytes = properties.sizeBytes || 1;
-    state.assetBytesOrg += sizeBytes;
+    state.assetBytes += sizeBytes;
   }
 
-  state.assetBytes = state.assetBytesOrg - 19195904; // due to reduced filesize
   state.interval = window.setInterval(pollAssetQueue.bind(state), 1);
 };
 

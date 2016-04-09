@@ -185,7 +185,7 @@ namespace Fusee.Math.Core
         [Obsolete("Use static Divide() method instead.")]
         public void Div(float f)
         {
-            if (!(f > MathHelper.EpsilonFloat)) return;
+            if (!(f > M.EpsilonFloat)) return;
             var mult = 1.0f/f;
             x *= mult;
             y *= mult;
@@ -227,7 +227,7 @@ namespace Fusee.Math.Core
         /// </remarks>
         public float LengthFast
         {
-            get { return 1.0f/MathHelper.InverseSqrtFast(x*x + y*y + z*z); }
+            get { return 1.0f/M.InverseSqrtFast(x*x + y*y + z*z); }
         }
 
         #endregion
@@ -260,7 +260,7 @@ namespace Fusee.Math.Core
         /// </summary>
         public void Normalize()
         {
-            if (!(Length > MathHelper.EpsilonFloat)) return;
+            if (!(Length > M.EpsilonFloat)) return;
             var scale = 1.0f/Length;
             x *= scale;
             y *= scale;
@@ -276,7 +276,7 @@ namespace Fusee.Math.Core
         /// </summary>
         public void NormalizeFast()
         {
-            var scale = MathHelper.InverseSqrtFast(x*x + y*y + z*z);
+            var scale = M.InverseSqrtFast(x*x + y*y + z*z);
             x *= scale;
             y *= scale;
             z *= scale;
@@ -458,7 +458,7 @@ namespace Fusee.Math.Core
         [Obsolete("Use static Divide() method instead.")]
         public static float3 Div(float3 a, float f)
         {
-            if (!(f > MathHelper.EpsilonFloat)) return Zero;
+            if (!(f > M.EpsilonFloat)) return Zero;
             var mult = 1.0f/f;
             a.x *= mult;
             a.y *= mult;
@@ -475,7 +475,7 @@ namespace Fusee.Math.Core
         [Obsolete("Use static Divide() method instead.")]
         public static void Div(ref float3 a, float f, out float3 result)
         {
-            if (!(f > MathHelper.EpsilonFloat))
+            if (!(f > M.EpsilonFloat))
             {
                 var mult = 1.0f/f;
                 result.x = a.x*mult;
@@ -802,7 +802,7 @@ namespace Fusee.Math.Core
         /// </returns>
         public static float3 Normalize(float3 vec)
         {
-            if (vec.Length > MathHelper.EpsilonFloat)
+            if (vec.Length > M.EpsilonFloat)
             {
                 var scale = 1.0f/vec.Length;
 
@@ -821,7 +821,7 @@ namespace Fusee.Math.Core
         /// <param name="result">The normalized vector</param>
         public static void Normalize(ref float3 vec, out float3 result)
         {
-            if (vec.Length > MathHelper.EpsilonFloat)
+            if (vec.Length > M.EpsilonFloat)
             {
                 var scale = 1.0f/vec.Length;
 
@@ -870,7 +870,7 @@ namespace Fusee.Math.Core
         /// </returns>
         public static float3 NormalizeFast(float3 vec)
         {
-            var scale = MathHelper.InverseSqrtFast(vec.x*vec.x + vec.y*vec.y + vec.z*vec.z);
+            var scale = M.InverseSqrtFast(vec.x*vec.x + vec.y*vec.y + vec.z*vec.z);
             vec.x *= scale;
             vec.y *= scale;
             vec.z *= scale;
@@ -884,7 +884,7 @@ namespace Fusee.Math.Core
         /// <param name="result">The normalized vector</param>
         public static void NormalizeFast(ref float3 vec, out float3 result)
         {
-            var scale = MathHelper.InverseSqrtFast(vec.x*vec.x + vec.y*vec.y + vec.z*vec.z);
+            var scale = M.InverseSqrtFast(vec.x*vec.x + vec.y*vec.y + vec.z*vec.z);
             result.x = vec.x*scale;
             result.y = vec.y*scale;
             result.z = vec.z*scale;
@@ -1282,7 +1282,7 @@ namespace Fusee.Math.Core
             var v = new float4(vec);
             float4.Transform(ref v, ref mat, out v);
 
-            if (v.w > MathHelper.EpsilonFloat)
+            if (v.w > M.EpsilonFloat)
             {
                 result.x = v.x/v.w;
                 result.y = v.y/v.w;
@@ -1309,7 +1309,7 @@ namespace Fusee.Math.Core
         /// </remarks>
         public static float CalculateAngle(float3 first, float3 second)
         {
-            if ((first.Length > MathHelper.EpsilonFloat) && (second.Length > MathHelper.EpsilonFloat))
+            if ((first.Length > M.EpsilonFloat) && (second.Length > M.EpsilonFloat))
                 return (float) System.Math.Acos((Dot(first, second))/(first.Length*second.Length));
 
             return 0;
@@ -1329,7 +1329,7 @@ namespace Fusee.Math.Core
             float temp;
             Dot(ref first, ref second, out temp);
 
-            if ((first.Length > MathHelper.EpsilonFloat) && (second.Length > MathHelper.EpsilonFloat))
+            if ((first.Length > M.EpsilonFloat) && (second.Length > M.EpsilonFloat))
                 result = (float) System.Math.Acos(temp/(first.Length*second.Length));
             else
                 result = 0;
@@ -1469,7 +1469,7 @@ namespace Fusee.Math.Core
         /// </returns>
         public static float3 operator /(float3 vec, float scale)
         {
-            if (-MathHelper.EpsilonFloat < scale && scale < MathHelper.EpsilonFloat) return Zero;
+            if (-M.EpsilonFloat < scale && scale < M.EpsilonFloat) return Zero;
 
             var mult = 1.0f/scale;
             vec.x *= mult;
@@ -1616,9 +1616,9 @@ namespace Fusee.Math.Core
         public bool Equals(float3 other)
         {
             return
-                System.Math.Abs(x - other.x) < MathHelper.EpsilonFloat &&
-                System.Math.Abs(y - other.y) < MathHelper.EpsilonFloat &&
-                System.Math.Abs(z - other.z) < MathHelper.EpsilonFloat;
+                System.Math.Abs(x - other.x) < M.EpsilonFloat &&
+                System.Math.Abs(y - other.y) < M.EpsilonFloat &&
+                System.Math.Abs(z - other.z) < M.EpsilonFloat;
         }
 
         #endregion

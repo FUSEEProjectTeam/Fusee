@@ -693,12 +693,40 @@ JSIL.ImplementExternals(
         return this.length;
       }
     );
+
+    $.Method({ Static: true, Public: false }, "UseRandomizedHashing",
+      new JSIL.MethodSignature($.Boolean, [], []),
+      function() {
+        return false;
+      }
+    );
+
+    $.Method({ Static: false, Public: false }, null,
+        new JSIL.MethodSignature($jsilcore.TypeRef("System.Collections.IEnumerator"), [], []),
+        function() {
+          return JSIL.GetEnumerator(this, $jsilcore.System.Char.__Type__, true);
+        }
+      )
+      .Overrides("System.Collections.IEnumerable", "GetEnumerator");
+
+    $.Method({ Static: false, Public: false }, "GetEnumerator",
+        new JSIL.MethodSignature($jsilcore.TypeRef("System.Collections.Generic.IEnumerator`1", [$.Char]), [], []),
+        function() {
+          return JSIL.GetEnumerator(this, $jsilcore.System.Char.__Type__, true);
+        }
+      )
+      .Overrides("System.Collections.Generic.IEnumerable`1", "GetEnumerator");
   }
 );
 
 JSIL.MakeClass("System.Object", "System.String", true, [], function ($) {
   $.Field({ Static: true, Public: true }, "Empty", $.String, "");
   $.Property({ Public: true, Static: false }, "Length");
+  JSIL.MakeIConvertibleMethods($);
+  $.ImplementInterfaces(
+     $jsilcore.TypeRef("System.Collections.IEnumerable", []),
+     $jsilcore.TypeRef("System.Collections.Generic.IEnumerable`1", [$.Char])
+  );
 });
 JSIL.MakeEnum(
   "System.StringComparison", true, {
@@ -1829,14 +1857,14 @@ JSIL.ImplementExternals("System.Text.StringBuilder", function ($) {
   $.Method({ Static: false, Public: true }, "Insert",
     (new JSIL.MethodSignature($.Type, [$.Int32, $.String], [])),
     function Insert(index, value) {
-      return insert(this, index, value, 1);
+      return insert(this, value, index, 1);
     }
   );
 
   $.Method({ Static: false, Public: true }, "Insert",
     (new JSIL.MethodSignature($.Type, [$.Int32, $.String, $.Int32], [])),
     function Insert(index, value, count) {
-      return insert(this, index, value, count);
+      return insert(this, value, index, count);
     }
   );
 
@@ -2232,6 +2260,13 @@ JSIL.ImplementExternals("System.Char", function ($) {
     new JSIL.MethodSignature($.Char, [$.Char], []),
     function ToLowerInvariant(c) {
       return c.toUpperCase();
+    }
+  );
+
+  $.Method({ Static: true, Public: true }, "ToString",
+    new JSIL.MethodSignature($.String, [$.Char], []),
+    function ToString(c) {
+      return c;
     }
   );
 });

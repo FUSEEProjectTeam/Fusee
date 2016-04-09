@@ -296,7 +296,7 @@ namespace Fusee.Math.Core
         {
             get
             {
-                return 1.0f / MathHelper.InverseSqrtFast(x * x + y * y + z * z + w * w);
+                return 1.0f / M.InverseSqrtFast(x * x + y * y + z * z + w * w);
             }
         }
 
@@ -363,7 +363,7 @@ namespace Fusee.Math.Core
         /// </summary>
         public void NormalizeFast()
         {
-            float scale = MathHelper.InverseSqrtFast(x * x + y * y + z * z + w * w);
+            float scale = M.InverseSqrtFast(x * x + y * y + z * z + w * w);
             x *= scale;
             y *= scale;
             z *= scale;
@@ -848,7 +848,7 @@ namespace Fusee.Math.Core
         /// <returns>The normalized vector</returns>
         public static float4 NormalizeFast(float4 vec)
         {
-            float scale = MathHelper.InverseSqrtFast(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z + vec.w * vec.w);
+            float scale = M.InverseSqrtFast(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z + vec.w * vec.w);
             vec.x *= scale;
             vec.y *= scale;
             vec.z *= scale;
@@ -863,7 +863,7 @@ namespace Fusee.Math.Core
         /// <param name="result">The normalized vector</param>
         public static void NormalizeFast(ref float4 vec, out float4 result)
         {
-            float scale = MathHelper.InverseSqrtFast(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z + vec.w * vec.w);
+            float scale = M.InverseSqrtFast(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z + vec.w * vec.w);
             result.x = vec.x * scale;
             result.y = vec.y * scale;
             result.z = vec.z * scale;
@@ -1345,10 +1345,10 @@ namespace Fusee.Math.Core
         public bool Equals(float4 other)
         {
             return
-                System.Math.Abs(x - other.x) < MathHelper.EpsilonFloat &&
-                System.Math.Abs(y - other.y) < MathHelper.EpsilonFloat &&
-                System.Math.Abs(z - other.z) < MathHelper.EpsilonFloat &&
-                System.Math.Abs(w - other.w) < MathHelper.EpsilonFloat;
+                System.Math.Abs(x - other.x) < M.EpsilonFloat &&
+                System.Math.Abs(y - other.y) < M.EpsilonFloat &&
+                System.Math.Abs(z - other.z) < M.EpsilonFloat &&
+                System.Math.Abs(w - other.w) < M.EpsilonFloat;
         }
 
         #endregion
