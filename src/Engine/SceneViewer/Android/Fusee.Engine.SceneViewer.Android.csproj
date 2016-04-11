@@ -75,10 +75,11 @@
     <Compile Include="Resources\Resource.Designer.cs" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidAsset Include="Assets\Lato-Black.ttf" />
+    <!--AndroidAsset Include="Assets\Lato-Black.ttf" />
     <AndroidAsset Include="Assets\Model.fus">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </AndroidAsset>
+    <AndroidAsset Include="Assets\FuseeLogo150.png" /-->
     <None Include="Properties\AndroidManifest.xml">
       <SubType>Designer</SubType>
     </None>
@@ -143,18 +144,21 @@
     </Content-->
   </ItemGroup>
   <ItemGroup>
-    <AndroidAsset Include="Assets\FuseeLogo150.png" />
-  </ItemGroup>
-  <ItemGroup>
     <AndroidResource Include="Resources\drawable\icon.png" />
   </ItemGroup>
   <!-- Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" / -->
+  <Import Project="$(FuseeBuildRoot)\src\FuseeBuildActions.target.xml" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
+       Other similar extension points exist, see Microsoft.Common.targets. -->
   <Target Name="BeforeBuild">
+		<Message Importance="High" Condition="Exists('%(ReferencePath.RootDir)%(ReferencePath.Directory)Assets')" 
+		                                        Text="%(ReferencePath.RootDir)%(ReferencePath.Directory)Assets exists." />
+		<ItemGroup>
+			<AndroidAsset Include="%(ReferencePath.RootDir)%(ReferencePath.Directory)Assets\*.*"/>
+		</ItemGroup>
+  
   </Target>
   <Target Name="AfterBuild">
   </Target>
-  -->
 </Project>

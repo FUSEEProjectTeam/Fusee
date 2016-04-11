@@ -45,12 +45,14 @@ namespace FuExport
             {
                 ser.Serialize(file, root);
             }
-            
+
             return FILEERROR.FILEERROR_NONE;
         }
 
     }
 
+
+    // Your Plugin Number for "FUSEE Android APK Exporter" is: 1037175 
 
     // Your Plugin Number for "FUSEE HTML Exporter" is: 1031842 
     [SceneSaverPlugin(1031842,
@@ -166,10 +168,10 @@ namespace FuExport
             File.Move(origHtmlFilePath, htmlFilePath);
 
             string sceneFileDir = Path.Combine(htmlFileDir, "Assets");
-            string sceneFilePath = Path.Combine(sceneFileDir,  "Model.fus");
+            string sceneFilePath = Path.Combine(sceneFileDir, "Model.fus");
 
             var root = new FusConverter().FuseefyScene(doc, sceneFileDir, out textureFiles);
-            
+
             var ser = new Serializer();
             using (var file = File.Create(sceneFilePath))
             {
@@ -245,4 +247,21 @@ namespace FuExport
 
     }
 
+    // Your Plugin Number for "FUSEE Android APK Exporter" is: 1037175 
+    [SceneSaverPlugin(1037175,
+        Name = "FUSEE Android App (*.apk)",
+        Suffix = "apk")
+    ]
+    public class FusApkExporter : SceneSaverData
+    {
+        public FusApkExporter() : base(false)
+        {
+        }
+
+        public override FILEERROR Save(BaseSceneSaver node, Filename name, BaseDocument doc, SCENEFILTER filterflags)
+        {
+
+            return FILEERROR.FILEERROR_NONE;
+        }
+    }
 }
