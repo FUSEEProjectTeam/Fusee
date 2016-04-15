@@ -33,6 +33,7 @@ namespace Fusee.Base.Imp.Desktop
 
             _baseDir = baseDir;
 
+            // Image handler
             RegisterTypeHandler(new AssetHandler
             {
                 ReturnedType = typeof(ImageData),
@@ -63,6 +64,21 @@ namespace Fusee.Base.Imp.Desktop
                 }
             }
             );
+
+            /*
+            // Text file -> String handler. Keep this one the last entry as it doesn't check the extension
+            RegisterTypeHandler(new AssetHandler
+            {
+                ReturnedType = typeof(string),
+                Decoder = delegate (string id, object storage)
+                {
+                    var sr = new StreamReader((Stream) storage);
+                    return sr.ReadToEnd();
+                },
+                Checker = id => true // If it's there, we can handle it...
+            }
+            );
+            */
         }
 
 

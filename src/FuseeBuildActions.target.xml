@@ -26,7 +26,7 @@
 	<!-- ################################################################
 	               TASKS TO PERFORM AT BUILD 
 	     ################################################################ 	-->
-	<!-- "Recursively" override BuildDependsOn including a couple of tasks after the "normal" VS/C# build   -->
+	<!-- "Recursively" override BuildDependsOn including a couple of tasks before/after the "normal" VS/C# build   -->
 	  <PropertyGroup>
 		<BuildDependsOn>
 		  FuseeBeforeBuild;
@@ -43,11 +43,69 @@
 		</BuildDependsOn>
 	  </PropertyGroup>
 
+	<!-- ################################################################
+	               TASKS TO PERFORM AT ANDROID BULD STEP  ApplicationResolveReferencesDependsOn
+	     ################################################################ 	-->
+	<!-- "Recursively" override ApplicationResolveReferencesDependsOn including a couple of tasks before/after the Xamarin Android build  
+         NOTE: The Property ApplicationResolveReferencesDependsOn is used as a list of tasks in
+		 C:\Program Files (x86)\MSBuild\Xamarin\Android\Xamarin.Android.Common.targets -->
+	  <PropertyGroup>
+		<ApplicationResolveReferencesDependsOn>
+		FuseeBeforeAndroidResRef;
+		$(ApplicationResolveReferencesDependsOn)
+		FuseeAfterAndroidResRef;
+		</ApplicationResolveReferencesDependsOn>
+	  </PropertyGroup>
+
+
+	  <!--  ANDROID-ONLY: Task looking for any contents in "Assets" folders below referenced folders.
+	        This target depends on two things:
+			1. the $(MonoAndroidAssetsDirIntermediate) to contain the intermediate asset folder where the
+			   Android-Build's APK-Zipper tasks takes all asset files from when running the "Install" target (msbuild -t:/Install)
+			   This property is set during the build within C:\Program Files (x86)\MSBuild\Xamarin\Android\Xamarin.Android.Common.targets
+			2. The @(ReferencePath) to contain all referenced managed dlls as items. This item list is generated during
+			   all C# builds (and also Android builds).
+	  -->
+	  <Target Name="FuseeBeforeAndroidResRef">
+	  </Target>
+	  <Target Name="FuseeAfterAndroidResRef">
+		<Warning Condition=" '$(MonoAndroidAssetsDirIntermediate)' == '' "
+		         Text="FuseeBuildActions: MonoAndroidAssetsDirIntermediate not set. Assets depending on project $(MSBuildProjectFile) will most likely not be added to the APK."/>
+		<!--Message Importance="High" Text="ßßßß MonoAndroidAssetsDirIntermediate:  $(MonoAndroidAssetsDirIntermediate)  ßßßßß" />
+		<Message Importance="High" Text="ßßßß ReferencePath: @(ReferencePath) ßßßßß" />
+		<Message Importance="High" Text="ßßßß AssetsDirectory:  $(OutputPath)Assets\  ßßßßß" /-->
+		<ItemGroup>
+			<FUSEE_AndroidAsset Include="%(ReferencePath.RootDir)%(ReferencePath.Directory)Assets\*.*"/>
+		</ItemGroup>
+		<Message Importance="High" Text="[external android asset] %(FUSEE_AndroidAsset.RootDir)%(FUSEE_AndroidAsset.Directory)%(FUSEE_AndroidAsset.Filename)%(FUSEE_AndroidAsset.Extension)" />
+		<Copy 
+			SourceFiles="@(FUSEE_AndroidAsset)" 
+			DestinationFolder="$(MonoAndroidAssetsDirIntermediate)" />
+      </Target>
+
+	  <!-- msbuild debugging and test stuff -->
+	  <!--Target Name="FuseeCheckAddingAssetsBefore">
+		<Message Importance="High" Text="ßßßß  BEFORE ReferencePath:  @(ReferencePath)  ßßßßß" />
+		<ItemGroup>
+			<FUSEE_AndroidAsset Include="%(ReferencePath.RootDir)%(ReferencePath.Directory)Assets\*.*"/>
+		</ItemGroup>
+ 		<Message Importance="High" Text="ßßßß  BEFORE FUSEE_AndroidAsset:  %(FUSEE_AndroidAsset.FullPath)  ßßßßß" />
+	  </Target>
+
+	  <Target Name="FuseeCheckAddingAssetsAfter">
+		<Message Importance="High" Text="ßßßß  AFTER ReferencePath:  @(ReferencePath)  ßßßßß" />
+		<ItemGroup>
+			<FUSEE_AndroidAsset Include="%(ReferencePath.RootDir)%(ReferencePath.Directory)Assets\*.*"/>
+		</ItemGroup>
+ 		<Message Importance="High" Text="ßßßß  AFTER FUSEE_AndroidAsset:  %(FUSEE_AndroidAsset.FullPath)  ßßßßß" />
+	  </Target-->
+
+
+	  
 	  <!-- Add FUSEE targets/tasks to be performed BEFORE the normal build here -->
 	  <Target Name="FuseeBeforeBuild">
 		<!--  -->
 	  </Target>
-   
 	<!-- Add FUSEE tasks to be performed AFTER the normal build (csc etc) here -->
 
 	<!-- Helper Task to define the destination directory of script copying tasks. 

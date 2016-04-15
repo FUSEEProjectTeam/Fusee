@@ -53,6 +53,20 @@ namespace Fusee.Base.Imp.Web
                 }
             });
 
+            /*
+            // Text file -> String handler. Keep this one the last entry as it doesn't check the extension
+            RegisterTypeHandler(new AssetHandler
+            {
+                ReturnedType = typeof(string),
+                Decoder = delegate (string id, object storage)
+                {
+                    var sr = new StreamReader((Stream)storage);
+                    return sr.ReadToEnd();
+                },
+                Checker = id => true // If it's there, we can handle it...
+            }
+            );
+            */
         }
 
 

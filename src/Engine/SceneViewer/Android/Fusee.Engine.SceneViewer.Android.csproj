@@ -150,15 +150,21 @@
   <Import Project="$(FuseeBuildRoot)\src\FuseeBuildActions.target.xml" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets. -->
+       Other similar extension points exist, see Microsoft.Common.targets.>
   <Target Name="BeforeBuild">
 		<Message Importance="High" Condition="Exists('%(ReferencePath.RootDir)%(ReferencePath.Directory)Assets')" 
 		                                        Text="%(ReferencePath.RootDir)%(ReferencePath.Directory)Assets exists." />
+		<Message Importance="High" Text="ßßßß  BEFORE ReferencePath:  @(ReferencePath)  ßßßßß" />
 		<ItemGroup>
-			<AndroidAsset Include="%(ReferencePath.RootDir)%(ReferencePath.Directory)Assets\*.*"/>
+			<MyAndroidAsset Include="%(ReferencePath.RootDir)%(ReferencePath.Directory)Assets\*.*"/>
 		</ItemGroup>
-  
+ 		<Message Importance="High" Text="ßßßß  BEFORE MyAndroidAsset:  %(MyAndroidAsset.FullPath)  ßßßßß" />
   </Target>
   <Target Name="AfterBuild">
-  </Target>
+		<Message Importance="High" Text="ßßßß  AFTER ReferencePath:  @(ReferencePath)  ßßßßß" />
+		<ItemGroup>
+			<MyAndroidAsset Include="%(ReferencePath.RootDir)%(ReferencePath.Directory)Assets\*.*"/>
+		</ItemGroup>
+ 		<Message Importance="High" Text="ßßßß  AFTER MyAndroidAsset:  %(MyAndroidAsset.FullPath)  ßßßßß" />
+  </Target -->
 </Project>

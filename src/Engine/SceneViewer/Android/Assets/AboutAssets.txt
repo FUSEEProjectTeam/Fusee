@@ -1,7 +1,7 @@
 Any raw assets you want to be deployed with your application can be placed in
 this directory (and child directories) and given a Build Action of "AndroidAsset".
 
-In addition to the above functionality FUSEE considers all assets found in "Asset" 
+In addition to the above functionality FUSEE considers all assets found in "Assets" 
 subdirectories of any referenced projects to be "AndroidAssets" as well. They don't
 need to be specified as "AndroidAssets" but can remain simple "Content" items.
 

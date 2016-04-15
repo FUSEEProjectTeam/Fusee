@@ -1,3 +1,6 @@
+
+
+
 #Analyzing The Xamarain Android build
 
 ##Building my own msbuild command line prompt:
@@ -30,6 +33,15 @@ Expanding the `$(MSBuildExtensionsPath)` points to the file
 ```
 C:\Program Files (x86)\MSBuild \Xamarin\Android\Xamarin.Android.CSharp.targets 
 ```
+
+#Trying to include assets from other (non-Android)-projects to the APK.
+
+Here AndroidAsset Items are treated (from innermost Target)
+_GenerateAndroidAssetsDir (AndroidAsset items are copied)
+  UpdateAndroidAssets
+    ResolveReferencesDependsOn
+
+
 
 #Change APK contents:
 ##Prerequisites
