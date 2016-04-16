@@ -113,7 +113,7 @@ namespace Fusee.Base.Imp.Android
         /// <returns>An ImageData object with all necessary information for the texture-binding process.</returns>
         public static ImageData LoadImage(Stream file)
         {
-            Bitmap bmp = BitmapFactory.DecodeStream(file);
+            Bitmap bmp = BitmapFactory.DecodeStream(file, null, new BitmapFactory.Options {InPremultiplied = false});
 
             int nPixels = bmp.Width * bmp.Height;
             int nBytes = nPixels * 4;

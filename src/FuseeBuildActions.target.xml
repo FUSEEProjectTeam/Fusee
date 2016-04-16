@@ -43,11 +43,11 @@
 		</BuildDependsOn>
 	  </PropertyGroup>
 
-	<!-- ################################################################
+	<!-- ########################################################################################################
 	               TASKS TO PERFORM AT ANDROID BULD STEP  ApplicationResolveReferencesDependsOn
-	     ################################################################ 	-->
+	     ######################################################################################################## 	-->
 	<!-- "Recursively" override ApplicationResolveReferencesDependsOn including a couple of tasks before/after the Xamarin Android build  
-         NOTE: The Property ApplicationResolveReferencesDependsOn is used as a list of tasks in
+         NOTE: The Property $(ApplicationResolveReferencesDependsOn) is used as a list of tasks in
 		 C:\Program Files (x86)\MSBuild\Xamarin\Android\Xamarin.Android.Common.targets -->
 	  <PropertyGroup>
 		<ApplicationResolveReferencesDependsOn>
@@ -58,22 +58,23 @@
 	  </PropertyGroup>
 
 
-	  <!--  ANDROID-ONLY: Task looking for any contents in "Assets" folders below referenced folders.
-	        This target depends on two things:
-			1. the $(MonoAndroidAssetsDirIntermediate) to contain the intermediate asset folder where the
-			   Android-Build's APK-Zipper tasks takes all asset files from when running the "Install" target (msbuild -t:/Install)
-			   This property is set during the build within C:\Program Files (x86)\MSBuild\Xamarin\Android\Xamarin.Android.Common.targets
-			2. The @(ReferencePath) to contain all referenced managed dlls as items. This item list is generated during
-			   all C# builds (and also Android builds).
-	  -->
 	  <Target Name="FuseeBeforeAndroidResRef">
 	  </Target>
+
+	  <!--  ANDROID-ONLY: Task looking for any contents in "Assets" subfolders below folders of all referenced managed .dlls (no matter if 
+	        project or assembly references.
+	        This target depends on two things:
+			1. the $(MonoAndroidAssetsDirIntermediate) PROPERTY to contain the intermediate asset folder where the
+			   Android-Build's APK-Zipper tasks takes all asset files from when running the "Install" target (msbuild -t:/Install)
+			   This property is set during the build within C:\Program Files (x86)\MSBuild\Xamarin\Android\Xamarin.Android.Common.targets.
+			   Just in case this property will disappear in future versions of the Android build - it is set like this:
+			   <MonoAndroidAssetsDirIntermediate>$(IntermediateOutputPath)assets\</MonoAndroidAssetsDirIntermediate>
+			2. The @(ReferencePath) ITEM LIST to contain all referenced managed dlls as items. This item list is generated during
+			   all C# builds (and also Android builds).
+	  -->
 	  <Target Name="FuseeAfterAndroidResRef">
 		<Warning Condition=" '$(MonoAndroidAssetsDirIntermediate)' == '' "
 		         Text="FuseeBuildActions: MonoAndroidAssetsDirIntermediate not set. Assets depending on project $(MSBuildProjectFile) will most likely not be added to the APK."/>
-		<!--Message Importance="High" Text="ßßßß MonoAndroidAssetsDirIntermediate:  $(MonoAndroidAssetsDirIntermediate)  ßßßßß" />
-		<Message Importance="High" Text="ßßßß ReferencePath: @(ReferencePath) ßßßßß" />
-		<Message Importance="High" Text="ßßßß AssetsDirectory:  $(OutputPath)Assets\  ßßßßß" /-->
 		<ItemGroup>
 			<FUSEE_AndroidAsset Include="%(ReferencePath.RootDir)%(ReferencePath.Directory)Assets\*.*"/>
 		</ItemGroup>
@@ -99,8 +100,6 @@
 		</ItemGroup>
  		<Message Importance="High" Text="ßßßß  AFTER FUSEE_AndroidAsset:  %(FUSEE_AndroidAsset.FullPath)  ßßßßß" />
 	  </Target-->
-
-
 	  
 	  <!-- Add FUSEE targets/tasks to be performed BEFORE the normal build here -->
 	  <Target Name="FuseeBeforeBuild">

@@ -100,7 +100,7 @@ namespace Fusee.Base.Common
         /// <param name="id">The identifier string.</param>
         /// <param name="type">The type of the asset.</param>
         /// <returns>The asset, if this provider can akquire an asset with the given id and the given type. Ohterwise null.</returns>
-        object GetAsset(string id, out Type type);
+        object GetAsset(string id, Type type);
 
         /// <summary>
         /// Determines whether this asset provider can get the specified asset without actually getting it.
@@ -110,7 +110,7 @@ namespace Fusee.Base.Common
         /// <returns>
         /// true if this asset will produce a result. Otherwise false.
         /// </returns>
-        bool CanGet(string id, out Type type);
+        bool CanGet(string id, Type type);
 
         // TODO: prepare for asynchronous handling
         /// <summary>

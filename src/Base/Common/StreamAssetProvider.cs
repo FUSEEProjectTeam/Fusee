@@ -54,26 +54,23 @@ namespace Fusee.Base.Common
         /// The asset, if this provider can akquire an asset with the given id and the given type. Ohterwise null.
         /// </returns>
         /// <exception cref="System.ArgumentNullException"></exception>
-        public object GetAsset(string id, out Type type)
+        public object GetAsset(string id, Type type)
         {
             Stream stream = GetStream(id);
             if (stream == null)
             {
-                type = null;
                 return null;
             }
 
-            foreach (var handler in _assetHandlers.Values)
+            AssetHandler handler;
+            if (_assetHandlers.TryGetValue(type, out handler))
             {
                 object ret;
                 if (null != (ret = handler.Decoder(id, stream)))
                 {
-                    type = handler.ReturnedType;
                     return ret;
                 }
             }
-
-            type = null;
             return null;
         }
 
@@ -86,7 +83,7 @@ namespace Fusee.Base.Common
         /// <returns>
         /// true if this asset will produce a result. Otherwise false.
         /// </returns>
-        public bool CanGet(string id, out Type type)
+        public bool CanGet(string id, Type type)
         {
             if (!CheckExists(id))
             {
@@ -94,15 +91,14 @@ namespace Fusee.Base.Common
                 return false;
             }
 
-            foreach (var handler in _assetHandlers.Values)
+            AssetHandler handler;
+            if (_assetHandlers.TryGetValue(type, out handler))
             {
                 if (handler.Checker(id))
                 {
-                    type = handler.ReturnedType;
                     return true;
                 }
             }
-            type = null;
             return false;
         }
 

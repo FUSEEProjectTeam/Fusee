@@ -65,7 +65,6 @@ namespace Fusee.Base.Imp.Desktop
             }
             );
 
-            /*
             // Text file -> String handler. Keep this one the last entry as it doesn't check the extension
             RegisterTypeHandler(new AssetHandler
             {
@@ -78,7 +77,6 @@ namespace Fusee.Base.Imp.Desktop
                 Checker = id => true // If it's there, we can handle it...
             }
             );
-            */
         }
 
 

@@ -95,26 +95,23 @@ namespace Fusee.Base.Imp.Web
         /// The asset, if this provider can akquire an asset with the given id and the given type. Ohterwise null.
         /// </returns>
         /// <exception cref="System.ArgumentNullException"></exception>
-        public object GetAsset(string id, out Type type)
+        public object GetAsset(string id, Type type)
         {
             object assetOb = GetRawAsset(id);
             if (assetOb == null)
             {
-                type = null;
                 return null;
             }
 
-            foreach (var handler in _assetHandlers.Values)
+            AssetHandler handler;
+            if (_assetHandlers.TryGetValue(type, out handler))
             {
                 object ret;
                 if (null != (ret = handler.Decoder(id, assetOb)))
                 {
-                    type = handler.ReturnedType;
                     return ret;
                 }
             }
-
-            type = null;
             return null;
         }
 
@@ -127,15 +124,15 @@ namespace Fusee.Base.Imp.Web
         /// <returns>
         /// true if this asset will produce a result. Otherwise false.
         /// </returns>
-        public bool CanGet(string id, out Type type)
+        public bool CanGet(string id, Type type)
         {
             if (!CheckExists(id))
             {
-                type = null;
                 return false;
             }
 
-            foreach (var handler in _assetHandlers.Values)
+            AssetHandler handler;
+            if (_assetHandlers.TryGetValue(type, out handler))
             {
                 if (handler.Checker(id))
                 {
@@ -143,7 +140,6 @@ namespace Fusee.Base.Imp.Web
                     return true;
                 }
             }
-            type = null;
             return false;
         }
 

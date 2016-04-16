@@ -60,10 +60,9 @@ namespace Fusee.Base.Core
         {
             foreach (var assetProvider in _providers)
             {
-                Type type;
-                if (assetProvider.CanGet(id, out type) && typeof(T).IsAssignableFrom(type))
+                if (assetProvider.CanGet(id, typeof(T)))
                 {
-                    return (T)assetProvider.GetAsset(id, out type);
+                    return (T)assetProvider.GetAsset(id, typeof(T));
                 }
             }
             return default(T);
