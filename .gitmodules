@@ -1,5 +1,0 @@
-[submodule "ext/JSIL"]
-	path = ext/JSIL
-	url = https://github.com/FUSEEProjectTeam/JSIL-Binary.git
-	ignore = all
-	
