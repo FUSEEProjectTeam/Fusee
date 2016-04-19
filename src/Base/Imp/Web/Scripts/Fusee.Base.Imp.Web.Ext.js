@@ -64,6 +64,30 @@ JSIL.ImplementExternals("Fusee.Base.Imp.Web.WebAssetProvider", function ($) {
         }
     );
 
+    $.Method({ Static: true, Public: true }, "WrapString",
+        new JSIL.MethodSignature($.String, [$.Object]),
+        function WrapString(assetOb) {
+
+            if (!('TextDecoder' in window)) {
+                // assume 1:1 text file contents
+                return String.fromCharCode.apply(null, new Uint8Array(assetOb.buffer));
+            } else {
+                // The decode() method takes a DataView as a parameter, which is a wrapper on top of the ArrayBuffer.
+                var dataView = new DataView(assetOb.buffer);
+                // The TextDecoder interface is documented at http://encoding.spec.whatwg.org/#interface-textdecoder
+                // Possible TExtDecoder constructor parameters.
+                //  'utf-8',
+                //  'utf-16le',
+                //  'macintosh'
+                var decoder = new TextDecoder('utf-8');
+                var string = decoder.decode(dataView.buffer);
+
+                return string;
+            }
+        }
+    );
+
+
     return function (newThisType) { $thisType = newThisType; };
 });
 

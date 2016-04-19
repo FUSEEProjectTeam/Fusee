@@ -51,20 +51,18 @@ namespace Fusee.Base.Imp.Android
                 }}
             );
 
-            /*
             // Text file -> String handler. Keep this one the last entry as it doesn't check the extension
             RegisterTypeHandler(new AssetHandler
             {
                 ReturnedType = typeof(string),
                 Decoder = delegate (string id, object storage)
                 {
-                    var sr = new StreamReader((Stream)storage);
+                    var sr = new StreamReader((Stream)storage, System.Text.Encoding.Default, true);
                     return sr.ReadToEnd();
                 },
                 Checker = id => true // If it's there, we can handle it...
             }
             );
-            */
         }
 
 

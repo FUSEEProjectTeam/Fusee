@@ -53,20 +53,18 @@ namespace Fusee.Base.Imp.Web
                 }
             });
 
-            /*
             // Text file -> String handler. Keep this one the last entry as it doesn't check the extension
             RegisterTypeHandler(new AssetHandler
             {
                 ReturnedType = typeof(string),
                 Decoder = delegate (string id, object storage)
                 {
-                    var sr = new StreamReader((Stream)storage);
-                    return sr.ReadToEnd();
+                    string  sr = WrapString(storage);
+                    return sr;
                 },
                 Checker = id => true // If it's there, we can handle it...
             }
             );
-            */
         }
 
 
@@ -204,13 +202,25 @@ namespace Fusee.Base.Imp.Web
         /// <summary>
         /// Loads a new Bitmap-Object from the given stream.
         /// </summary>
-        /// <param name="file">Stream containing the image in a supported format (png, jpg).</param>
+        /// <param name="assetOb">JSIL asset object containing the image in a supported format (png, jpg).</param>
         /// <returns>An ImageData object with all necessary information.</returns>
         [JSExternal]
         public static ImageData WrapImage(object assetOb)
         {
             throw new NotImplementedException("This method is implemented in JavaScript [JSExternal]");
         }
+
+        /// <summary>
+        /// Wraps a string around the given asset object. The asset must contain text data.
+        /// </summary>
+        /// <param name="storage">JSIL asset object containing the image in a supported format (png, jpg).</param>
+        /// <returns>A string with the asset's contents</returns>
+        [JSExternal]
+        public static string WrapString(object storage)
+        {
+            throw new NotImplementedException("This method is implemented in JavaScript [JSExternal]");
+        }
+
     }
 }
 
