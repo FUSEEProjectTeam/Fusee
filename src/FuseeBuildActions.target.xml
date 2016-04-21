@@ -30,6 +30,7 @@
 	  <PropertyGroup>
 		<BuildDependsOn>
 		  FuseeBeforeBuild;
+		  FuseeReferenceCompileShaders;
 		  $(BuildDependsOn);
 		  FuseeJSILCompile;
 		  FuseeCopyJSILJavaScript;
@@ -105,6 +106,76 @@
 	  <Target Name="FuseeBeforeBuild">
 		<!--  -->
 	  </Target>
+	
+    <!--  Takes all files contained in a project marked as "Content" AND with either ".frag" or ".vert" extensions and adds them to 
+          the respective item list "FuseeVertexShaderSource" or "FuseePixelShaderSource".
+    -->  
+	  <Target Name="FuseeEnumerateShaderSources">
+      <!--Message Importance="High" Text="[ßßßß] %(Content.FullPath)" /-->
+		  <ItemGroup>
+        <FuseeVertexShaderSource Condition=" '%(Content.Extension)' == '.vert' " Include="%(Content.FullPath)" />
+      </ItemGroup>
+      <ItemGroup>
+          <FuseePixelShaderSource Condition=" '%(Content.Extension)' == '.frag' " Include="%(Content.FullPath)" />
+      </ItemGroup>
+    </Target>
+
+
+  <!--  Calls the chronos group's validating GLSL shader compiler ("glslangValidator.exe") on all itmes in 
+        either item list "FuseeVertexShaderSource" or "FuseePixelShaderSource". Quite some effort is done on 
+        re-arranging any error to match the Visual Studio double-click-on-error feature. Unfortunately the
+        Error task misbehaves as it 1. doesn't allow to specify a line number and 2. Propagates any line
+        number passed to the file name string erroneously. As a result, the error is not Double-Clickable
+        in Visual Studio's Error List but only in the text-based Output window.
+    -->
+  <Target Name="FuseeReferenceCompileShaders"
+			DependsOnTargets="FuseeEnumerateShaderSources"
+			Inputs="@(FuseeVertexShaderSource);@(FuseePixelShaderSource)"
+			Outputs="$(TargetPath)"
+	  >
+		  <Message Importance="High" Text="[vertex shader validation] %(FuseeVertexShaderSource.FullPath)" />
+      <Exec ContinueOnError="false" Timeout="120000" Command='"$(FuseeRoot)ext\glslangValidator\glslangValidator.exe" "%(FuseeVertexShaderSource.FullPath)" '  ConsoleToMSBuild="true" IgnoreExitCode='true'>
+          <Output TaskParameter="ConsoleOutput" PropertyName="ValidationResultString" />
+          <Output TaskParameter="ExitCode" PropertyName="ErrCode"/>
+      </Exec>
+      <PropertyGroup>
+        <!-- Find everything from the beginning of the line until (and including) '.vert' -->
+        <ErrFile>$([System.Text.RegularExpressions.Regex]::Match($(ValidationResultString), `^.*\.vert`))</ErrFile>
+        <!-- From the pattern 'col:line' take the first number before the colon -->
+        <ErrCol>$([System.Text.RegularExpressions.Regex]::Match($(ValidationResultString), `[0-9]+(?=\:[0-9]+)`))</ErrCol>
+        <!-- From the pattern 'col:line' take the second number after the colon -->
+        <ErrLine>$([System.Text.RegularExpressions.Regex]::Match($(ValidationResultString), `(?&lt;=[0-9]+\:)[0-9]+`))</ErrLine>
+        <!-- Take everything between (and excluding) 'col:line:' and the semicolon -->
+        <ErrMsg>$([System.Text.RegularExpressions.Regex]::Match($(ValidationResultString), `(?&lt;=[0-9]+\:[0-9]+\:).*(?=;)`))</ErrMsg>
+      </PropertyGroup>
+
+      <!-- Message Importance="High" Text="$(ErrFile)($(ErrLine),$(ErrCol)):$(ErrMsg)   - Code: $(ErrCode) [vertex shader result] " / -->
+      <!-- Oh my god - The Error Task doesn't allow to set line numbers -->
+      <Error Condition=" '$(ErrCode)' != '0' " File="$(ErrFile)($(ErrLine),$(ErrCol))" Code="$(ErrCode)" Text="$(ErrMsg) [vertex shader validation result] DOUBLE-CLICK IN OUTPUT WINDOW"/>
+
+
+      <Message Importance="High" Text="[pixel shader validation] %(FuseePixelShaderSource.FullPath)" />
+      <Exec ContinueOnError="false" Timeout="120000" Command='"$(FuseeRoot)ext\glslangValidator\glslangValidator.exe" "%(FuseePixelShaderSource.FullPath)" '  ConsoleToMSBuild="true" IgnoreExitCode='true'>
+        <Output TaskParameter="ConsoleOutput" PropertyName="ValidationResultString" />
+        <Output TaskParameter="ExitCode" PropertyName="ErrCode"/>
+      </Exec>
+      <PropertyGroup>
+        <!-- Find everything from the beginning of the line until (and including) '.frag' -->
+        <ErrFile>$([System.Text.RegularExpressions.Regex]::Match($(ValidationResultString), `^.*\.frag`))</ErrFile>
+        <!-- From the pattern 'col:line' take the first number before the colon -->
+        <ErrCol>$([System.Text.RegularExpressions.Regex]::Match($(ValidationResultString), `[0-9]+(?=\:[0-9]+)`))</ErrCol>
+        <!-- From the pattern 'col:line' take the second number after the colon -->
+        <ErrLine>$([System.Text.RegularExpressions.Regex]::Match($(ValidationResultString), `(?&lt;=[0-9]+\:)[0-9]+`))</ErrLine>
+        <!-- Take everything between (and excluding) 'col:line:' and the semicolon -->
+        <ErrMsg>$([System.Text.RegularExpressions.Regex]::Match($(ValidationResultString), `(?&lt;=[0-9]+\:[0-9]+\:).*(?=;)`))</ErrMsg>
+      </PropertyGroup>
+
+      <!-- Message Importance="High" Text="$(ErrFile)($(ErrLine),$(ErrCol)):$(ErrMsg)   - Code: $(ErrCode) [pixel shader result] " / -->
+      <!-- Oh my god - The Error Task doesn't allow to set line numbers-->
+      <Error Condition=" '$(ErrCode)' != '0' " File="$(ErrFile)($(ErrLine),$(ErrCol))" Code="$(ErrCode)" Text="$(ErrMsg) [pixel shader validation result] DOUBLE-CLICK IN OUTPUT WINDOW"/>
+    </Target>
+	  
+	  
 	<!-- Add FUSEE tasks to be performed AFTER the normal build (csc etc) here -->
 
 	<!-- Helper Task to define the destination directory of script copying tasks. 
