@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using ProtoBuf;
 
 namespace Fusee.Serialization
@@ -7,6 +8,7 @@ namespace Fusee.Serialization
     /// The building block to create hierarchies.
     /// </summary>
     [ProtoContract]
+    [DebuggerDisplay("{Name,nq}, {(Components==null)? \"No\" : Components.Count.ToString(),nq} components, {(Children==null)? \"No\" : Children.Count.ToString(),nq} children")]
     public class SceneNodeContainer
     {
         /// <summary>
