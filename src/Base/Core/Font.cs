@@ -60,6 +60,19 @@ namespace Fusee.Base.Core
             return ret;
         }
 
+
+        /// <summary>
+        /// Gets the control points of a character.
+        /// </summary>
+        /// <param name="c">The character to retrive information</param>
+        /// <returns></returns>
+        public GlyphPoints GetGlyphPoints(uint c)
+        {
+            //TODO: cache?
+            var ret = _fontImp.GetGlyphPoints(c);
+            return ret;
+        }
+
         /// <summary>
         ///     Renders the given glyph.
         /// </summary>

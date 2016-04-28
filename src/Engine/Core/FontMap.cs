@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Fusee.Base.Common;
@@ -109,11 +110,12 @@ namespace Fusee.Engine.Core
                 var h = 0;
 
                 const int maxWidth = 512;
-
+                
                 foreach (char c in _alphabet)
                 {
                     uint i = (uint) c;
                     GlyphInfo gi = _font.GetGlyphInfo(i);
+
                     if (rowW + ((int)gi.AdvanceX) + 1 >= maxWidth)
                     {
                         h += rowH;

@@ -52,6 +52,7 @@
     <Compile Include="ConeTwistConstraint.cs" />
     <Compile Include="ConvexHullShape.cs" />
     <Compile Include="Cube.cs" />
+    <Compile Include="Curves.cs" />
     <Compile Include="CylinderShape.cs" />
     <Compile Include="DynamicWorld.cs" />
     <Compile Include="EmptyShape.cs" />
@@ -76,6 +77,7 @@
     <Compile Include="MouseDevice.cs" />
     <Compile Include="MultiSphereShape.cs" />
     <Compile Include="Point2PointConstraint.cs" />
+    <Compile Include="ResizeEventArgs.cs" />
     <Compile Include="RigidBody.cs" />
     <Compile Include="ScenePicker.cs" />
     <Compile Include="SceneRenderer.cs" />

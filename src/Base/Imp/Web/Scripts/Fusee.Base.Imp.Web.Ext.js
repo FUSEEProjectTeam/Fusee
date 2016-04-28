@@ -92,38 +92,60 @@ JSIL.ImplementExternals("Fusee.Base.Imp.Web.WebAssetProvider", function ($) {
 });
 
 
+JSIL.ImplementExternals("Fusee.Base.Imp.Web.FontImp", function($) {
 
+        var _face;
 
-JSIL.ImplementExternals("Fusee.Base.Imp.Web.FontImp", function ($) {
+        //public FontImp(object storage)
+        $.Method({ Static: false, Public: true }, ".ctor",
+            new JSIL.MethodSignature(null, [$.Object]),
+            function _ctor(storage) {
+                this._face = opentype.parse(storage.buffer);
+            }
+        );
 
-    var _face;
+        //public GlyphInfo GetGlyphInfo(uint c)
+        $.Method({ Static: false, Public: true }, "GetGlyphInfo",
+            new JSIL.MethodSignature($fuseeBaseCommon.TypeRef("Fusee.Base.Common.GlyphInfo"), [$.UInt32]),
+            function GetGlyphInfo(c) {
+                var glyph = this._face.charToGlyph(String.fromCharCode(c));
+                var fontSize = this.PixelHeight;
+                var fontScale = 1 / this._face.unitsPerEm * fontSize;
 
-    //public FontImp(object storage)
-    $.Method({ Static: false, Public: true }, ".ctor",
-        new JSIL.MethodSignature(null, [$.Object]),
-        function _ctor(storage) {
-            this._face = opentype.parse(storage.buffer);
-        }
-    );
+                var glyphInfo = new $fuseeBaseCommon.Fusee.Base.Common.GlyphInfo();
+                // TODO: maybe normalize values with 1 / this._face.unitsPerEm
+                glyphInfo.CharCode = c;
+                glyphInfo.AdvanceX = glyph.advanceWidth * fontScale;
+                glyphInfo.AdvanceY = 0;
+                glyphInfo.Width = (glyph.xMax - glyph.xMin) * fontScale;
+                glyphInfo.Height = (glyph.yMax - glyph.yMin) * fontScale;
+                return glyphInfo;
+            }
+        );
 
-    //public GlyphInfo GetGlyphInfo(uint c)
-    $.Method({ Static: false, Public: true }, "GetGlyphInfo",
-      new JSIL.MethodSignature($fuseeBaseCommon.TypeRef("Fusee.Base.Common.GlyphInfo"), [$.UInt32]),
-        function GetGlyphInfo(c) {
-            var glyph = this._face.charToGlyph(String.fromCharCode(c));
-            var fontSize = this.PixelHeight;
-            var fontScale = 1 / this._face.unitsPerEm * fontSize;
+        //public GlyphPoints GetGlyphPoints(uint c)
+        $.Method({ Static: false, Public: true }, "GetGlyphPoints",
+            new JSIL.MethodSignature($fuseeBaseCommon.TypeRef("Fusee.Base.Common.GlyphPoints"), [$.UInt32]),
+            function GetGlyphPoints(c) {
+                var glyph = this._face.charToGlyph(String.fromCharCode());
 
-            var glyphInfo = new $fuseeBaseCommon.Fusee.Base.Common.GlyphInfo();
-            // TODO: maybe normalize values with 1 / this._face.unitsPerEm
-            glyphInfo.CharCode = c;
-            glyphInfo.AdvanceX = glyph.advanceWidth * fontScale;
-            glyphInfo.AdvanceY = 0;
-            glyphInfo.Width = (glyph.xMax - glyph.xMin) * fontScale;
-            glyphInfo.Height = (glyph.yMax - glyph.yMin) * fontScale;
-            return glyphInfo;
-        }
-     );
+                var glyphPoints = new $fuseeBaseCommon.Fusee.Base.Common.GlyphPoints();
+                glyphPoints.CharCode = c;
+
+                glyphPoints.Pos = { x: 0, y: 0 };
+
+                //console.log(glyph);
+                if (glyphPoints.Points != null) {
+                    for (var i = 0; i < glyph.path.commands.length; i++) {
+                        glyphPoints.Pos.x = glyph.path.commands[i].x;
+                        glyphPoints.Pos.y = glyph.path.commands[i].y;
+                        glyphPoints.Points.push(glyphPoints.Pos);
+                    }
+                }
+
+                return glyphPoints;
+            }
+        );
 
 
     //public ImageData RenderGlyph(uint c, out int bitmapLeft, out int bitmapTop)

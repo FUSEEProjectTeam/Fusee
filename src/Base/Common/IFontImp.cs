@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Fusee.Math.Core;
 
 namespace Fusee.Base.Common
 {
@@ -71,6 +72,32 @@ namespace Fusee.Base.Common
     }
 
     /// <summary>
+    /// A struct for saving character information, needed to get the control points of a character
+    /// </summary>
+    public struct GlyphPoints
+    {
+        /// <summary>
+        /// The unicode character code this information is for.
+        /// </summary>
+        public uint CharCode;
+
+        /// <summary>
+        /// Control points of a character as FTVector array
+        /// </summary>
+        public Array OrgPoints;
+
+        /// <summary>
+        /// x and y position of a control point
+        /// </summary>
+        public float2 Pos;
+
+        /// <summary>
+        /// Control points of a character as float2 list
+        /// </summary>
+        public List<float2> Points;
+    }
+
+    /// <summary>
     /// Common functionality that needs to be provided by a Font implementor.
     /// </summary>
     public interface IFontImp
@@ -97,6 +124,13 @@ namespace Fusee.Base.Common
         /// <param name="c">The character to retrieve information.</param>
         /// <returns>An information record about the character.</returns>
         GlyphInfo GetGlyphInfo(uint c);
+
+        /// <summary>
+        /// Gets the control points of a character.
+        /// </summary>
+        /// <param name="c">The character to retrive information</param>
+        /// <returns></returns>
+        GlyphPoints GetGlyphPoints(uint c);
 
         /// <summary>
         ///     Renders the given glyph.

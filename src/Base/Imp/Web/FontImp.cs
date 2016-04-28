@@ -35,5 +35,11 @@ namespace Fusee.Base.Imp.Web
         {
             throw new NotImplementedException();
         }
+
+        [JSExternal]
+        public GlyphPoints GetGlyphPoints(uint c)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

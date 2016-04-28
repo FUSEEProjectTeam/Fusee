@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Fusee.Base.Common;
+using Fusee.Math.Core;
 using SharpFont;
 
 namespace Fusee.Base.Imp.Desktop
@@ -91,6 +93,31 @@ namespace Fusee.Base.Imp.Desktop
             ret.Width = (float) _face.Glyph.Metrics.Width;
             ret.Height = (float)_face.Glyph.Metrics.Height;
 
+            return ret;
+        }
+
+        /// <summary>
+        /// Gets the control points of a character.
+        /// </summary>
+        /// <param name="c">The character to retrive information</param>
+        /// <returns></returns>
+        public GlyphPoints GetGlyphPoints(uint c)
+        {
+            GlyphPoints ret;
+            ret.CharCode = c;
+            ret.Pos = new float2();
+            ret.OrgPoints = _face.Glyph.Outline.Points;
+            ret.Points = new List<float2>();
+
+            _face.LoadChar(c, LoadFlags.Default, LoadTarget.Normal);
+
+            if (ret.OrgPoints == null) return ret; //Is null if c is space
+
+            foreach (FTVector vec in ret.OrgPoints)
+            {
+                ret.Pos = new float2(vec.X.Value,vec.Y.Value);
+                ret.Points.Add(ret.Pos);
+            }
             return ret;
         }
 
