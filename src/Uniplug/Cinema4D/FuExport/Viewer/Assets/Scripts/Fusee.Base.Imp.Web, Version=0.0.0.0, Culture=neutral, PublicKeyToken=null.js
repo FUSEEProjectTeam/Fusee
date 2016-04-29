@@ -150,13 +150,7 @@ JSIL.DeclareNamespace("Fusee.Base.Imp.Web");
     return ($T0A = JSIL.Memoize($asm0D.System.Boolean)) ();
   };
   var $T0B = function () {
-    return ($T0B = JSIL.Memoize($asm0D.System.Collections.Generic.Dictionary$b2_ValueCollection_Enumerator.Of($asm0D.System.Type, $asm00.Fusee.Base.Common.AssetHandler))) ();
-  };
-  var $T0C = function () {
-    return ($T0C = JSIL.Memoize($asm0D.System.Collections.Generic.Dictionary$b2_ValueCollection.Of($asm0D.System.Type, $asm00.Fusee.Base.Common.AssetHandler))) ();
-  };
-  var $T0D = function () {
-    return ($T0D = JSIL.Memoize($asm0D.System.Object)) ();
+    return ($T0B = JSIL.Memoize($asm0D.System.Object)) ();
   };
   var $S00 = function () {
     return ($S00 = JSIL.Memoize(new JSIL.ConstructorSignature($asm0D.TypeRef("System.Collections.Generic.Dictionary`2", [$asm0D.TypeRef("System.Type"), $asm00.TypeRef("Fusee.Base.Common.AssetHandler")]), null))) ();
@@ -168,12 +162,18 @@ JSIL.DeclareNamespace("Fusee.Base.Imp.Web");
     return ($S02 = JSIL.Memoize(new JSIL.MethodSignature($asm0D.TypeRef("System.Boolean"), [$asm0D.TypeRef("System.String")]))) ();
   };
   var $S03 = function () {
-    return ($S03 = JSIL.Memoize(new JSIL.ConstructorSignature($asm0D.TypeRef("System.NotImplementedException"), null))) ();
+    return ($S03 = JSIL.Memoize(new JSIL.MethodSignature($asm0D.TypeRef("System.Object"), [$asm0D.TypeRef("System.String"), $asm0D.TypeRef("System.Object")]))) ();
+  };
+  var $S04 = function () {
+    return ($S04 = JSIL.Memoize(new JSIL.MethodSignature($asm0D.TypeRef("System.Boolean"), [$asm0D.TypeRef("System.String")]))) ();
+  };
+  var $S05 = function () {
+    return ($S05 = JSIL.Memoize(new JSIL.ConstructorSignature($asm0D.TypeRef("System.NotImplementedException"), null))) ();
   };
 
 
   function WebAssetProvider__ctor () {
-    var arg_4E_1 = null, arg_74_1 = null;
+    var arg_4E_1 = null, arg_74_1 = null, arg_BB_1 = null, arg_E1_1 = null;
     this._assetHandlers = $S00().Construct();
     var handler = new ($T03())();
     handler.ReturnedType = $T04().__Type__;
@@ -186,30 +186,38 @@ JSIL.DeclareNamespace("Fusee.Base.Imp.Web");
     }
     handler.Checker = arg_74_1;
     this.RegisterTypeHandler(handler.MemberwiseClone());
+    handler = new ($T03())();
+    handler.ReturnedType = $T06().__Type__;
+    if ((arg_BB_1 = $T05().$l$g9__1_2) === null) {
+      arg_BB_1 = $T05().$l$g9__1_2 = $T00().New($T05().$l$g9, null, new JSIL.MethodPointerInfo($asm02.Fusee.Base.Imp.Web.WebAssetProvider_$l$gc, "$l_ctor$gb__1_2", $S03(), false, false));
+    }
+    handler.Decoder = arg_BB_1;
+    if ((arg_E1_1 = $T05().$l$g9__1_3) === null) {
+      arg_E1_1 = $T05().$l$g9__1_3 = $T01().New($T05().$l$g9, null, new JSIL.MethodPointerInfo($asm02.Fusee.Base.Imp.Web.WebAssetProvider_$l$gc, "$l_ctor$gb__1_3", $S04(), false, false));
+    }
+    handler.Checker = arg_E1_1;
+    this.RegisterTypeHandler(handler.MemberwiseClone());
   }; 
 
   function WebAssetProvider_BeginGetAsset (id, getCallback) {
-    throw $S03().Construct();
+    throw $S05().Construct();
   }; 
 
-  function WebAssetProvider_CanGet (id, /* ref */ type) {
+  function WebAssetProvider_CanGet (id, type) {
+    var assetHandler = new JSIL.BoxedVariable(new ($T03())());
     var flag = !this.CheckExists(id);
     if (flag) {
-      type.set(null);
       var result = false;
     } else {
-      var enumerator = ((this._assetHandlers).get_Values()).GetEnumerator();
-
-      while ($T0B().prototype.MoveNext.call(enumerator)) {
-        var current = $T0B().prototype.get_Current.call(enumerator).MemberwiseClone();
-        var flag2 = current.Checker(id);
-        if (flag2) {
-          type.set(current.ReturnedType);
+      var flag2 = (this._assetHandlers).TryGetValue(type, /* ref */ assetHandler);
+      if (flag2) {
+        var flag3 = assetHandler.get().Checker(id);
+        if (flag3) {
+          type = assetHandler.get().ReturnedType;
           result = true;
           return result;
         }
       }
-      type.set(null);
       result = false;
     }
     return result;
@@ -220,26 +228,22 @@ JSIL.DeclareNamespace("Fusee.Base.Imp.Web");
   }; 
 
 
-  function WebAssetProvider_GetAsset (id, /* ref */ type) {
+  function WebAssetProvider_GetAsset (id, type) {
+    var assetHandler = new JSIL.BoxedVariable(new ($T03())());
     var obj = null;
     var rawAsset = this.GetRawAsset(id);
     var flag = rawAsset === null;
     if (flag) {
-      type.set(null);
       var result = null;
     } else {
-      var enumerator = ((this._assetHandlers).get_Values()).GetEnumerator();
-
-      while ($T0B().prototype.MoveNext.call(enumerator)) {
-        var current = $T0B().prototype.get_Current.call(enumerator).MemberwiseClone();
-        var flag2 = (obj = current.Decoder(id, rawAsset)) !== null;
-        if (flag2) {
-          type.set(current.ReturnedType);
+      var flag2 = (this._assetHandlers).TryGetValue(type, /* ref */ assetHandler);
+      if (flag2) {
+        var flag3 = (obj = assetHandler.get().Decoder(id, rawAsset)) !== null;
+        if (flag3) {
           result = obj;
           return result;
         }
       }
-      type.set(null);
       result = null;
     }
     return result;
@@ -249,6 +253,7 @@ JSIL.DeclareNamespace("Fusee.Base.Imp.Web");
   function WebAssetProvider_RegisterTypeHandler (handler) {
     (this._assetHandlers).Add(handler.ReturnedType, handler.MemberwiseClone());
   }; 
+
 
 
   JSIL.MakeType({
@@ -271,7 +276,7 @@ JSIL.DeclareNamespace("Fusee.Base.Imp.Web");
     );
 
     $.Method({Static:false, Public:true , Virtual:true }, "CanGet", 
-      new JSIL.MethodSignature($.Boolean, [$.String, $jsilcore.TypeRef("JSIL.Reference", [$asm0D.TypeRef("System.Type")])]), 
+      new JSIL.MethodSignature($.Boolean, [$.String, $asm0D.TypeRef("System.Type")]), 
       WebAssetProvider_CanGet
     );
 
@@ -285,7 +290,7 @@ JSIL.DeclareNamespace("Fusee.Base.Imp.Web");
     );
 
     $.Method({Static:false, Public:true , Virtual:true }, "GetAsset", 
-      new JSIL.MethodSignature($.Object, [$.String, $jsilcore.TypeRef("JSIL.Reference", [$asm0D.TypeRef("System.Type")])]), 
+      new JSIL.MethodSignature($.Object, [$.String, $asm0D.TypeRef("System.Type")]), 
       WebAssetProvider_GetAsset
     );
 
@@ -300,6 +305,10 @@ JSIL.DeclareNamespace("Fusee.Base.Imp.Web");
 
     $.ExternalMethod({Static:true , Public:true }, "WrapImage", 
       new JSIL.MethodSignature($asm00.TypeRef("Fusee.Base.Common.ImageData"), [$.Object])
+    );
+
+    $.ExternalMethod({Static:true , Public:true }, "WrapString", 
+      new JSIL.MethodSignature($.String, [$.Object])
     );
 
     $.Field({Static:false, Public:false, ReadOnly:true }, "_assetHandlers", $asm0D.TypeRef("System.Collections.Generic.Dictionary`2", [$asm0D.TypeRef("System.Type"), $asm00.TypeRef("Fusee.Base.Common.AssetHandler")]));
@@ -356,6 +365,14 @@ JSIL.DeclareNamespace("Fusee.Base.Imp.Web");
       (a == ".png") || (a == ".bmp"));
   }; 
 
+  function $l$gc_$l_ctor$gb__1_2 (id, storage) {
+    return $T03().WrapString(storage);
+  }; 
+
+  function $l$gc_$l_ctor$gb__1_3 (id) {
+    return true;
+  }; 
+
   JSIL.MakeType({
       BaseType: $asm0D.TypeRef("System.Object"), 
       Name: "Fusee.Base.Imp.Web.WebAssetProvider+<>c", 
@@ -380,11 +397,25 @@ JSIL.DeclareNamespace("Fusee.Base.Imp.Web");
       $l$gc_$l_ctor$gb__1_1
     );
 
+    $.Method({Static:false, Public:false}, "$l.ctor$gb__1_2", 
+      new JSIL.MethodSignature($.Object, [$.String, $.Object]), 
+      $l$gc_$l_ctor$gb__1_2
+    );
+
+    $.Method({Static:false, Public:false}, "$l.ctor$gb__1_3", 
+      new JSIL.MethodSignature($.Boolean, [$.String]), 
+      $l$gc_$l_ctor$gb__1_3
+    );
+
     $.Field({Static:true , Public:true , ReadOnly:true }, "$l$g9", $.Type);
 
     $.Field({Static:true , Public:true }, "$l$g9__1_0", $asm00.TypeRef("Fusee.Base.Common.AssetDecoder"));
 
     $.Field({Static:true , Public:true }, "$l$g9__1_1", $asm00.TypeRef("Fusee.Base.Common.AssetChecker"));
+
+    $.Field({Static:true , Public:true }, "$l$g9__1_2", $asm00.TypeRef("Fusee.Base.Common.AssetDecoder"));
+
+    $.Field({Static:true , Public:true }, "$l$g9__1_3", $asm00.TypeRef("Fusee.Base.Common.AssetChecker"));
 
 
     function $l$gc__cctor () {

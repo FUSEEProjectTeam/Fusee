@@ -5177,7 +5177,7 @@ JSIL.DeclareNamespace("Fusee.Engine.Core");
       var array = JSIL.Array.New($T23(), Math.imul(3, (((f.InxVert.length | 0) - 2) | 0)));
 
       for (var i = 2; i < (f.InxVert.length | 0); i = ((i + 1) | 0)) {
-        array[((Math.imul(((i - 2) | 0), 3) + 0) | 0)] = (indices[0] & 0xFFFF);
+        array[Math.imul(((i - 2) | 0), 3)] = (indices[0] & 0xFFFF);
         array[((Math.imul(((i - 2) | 0), 3) + 1) | 0)] = (indices[((i - 1) | 0)] & 0xFFFF);
         array[((Math.imul(((i - 2) | 0), 3) + 2) | 0)] = (indices[i] & 0xFFFF);
       }
@@ -12355,7 +12355,7 @@ JSIL.MakeDelegate("Fusee.Engine.Core.InputDevice+AxisValueCalculator", false, []
         $S01().CallVirtual("Append", null, vs, "    newNormal = (FUSEE_BONES[int(fuBoneIndex.z)] * vec4(fuNormal, 0.0)) * fuBoneWeight.z + newNormal;\n");
         $S01().CallVirtual("Append", null, vs, "    newVertex = (FUSEE_BONES[int(fuBoneIndex.w)] * vec4(fuVertex, 1.0)) * fuBoneWeight.w + newVertex;\n");
         $S01().CallVirtual("Append", null, vs, "    newNormal = (FUSEE_BONES[int(fuBoneIndex.w)] * vec4(fuNormal, 0.0)) * fuBoneWeight.w + newNormal;\n");
-        $S01().CallVirtual("Append", null, vs, "    vNormal = vec3(FUSEE_IMV * newNormal);\n");
+        $S01().CallVirtual("Append", null, vs, "    vNormal = mat3(FUSEE_IMV) * newNormal.xyz;\n");
         var normalizeNormals = this._normalizeNormals;
         if (normalizeNormals) {
           $S01().CallVirtual("Append", null, vs, "    vNormal = normalize(vNormal);\n");
@@ -15224,22 +15224,22 @@ JSIL.MakeDelegate("Fusee.Engine.Core.InputDevice+AxisValueCalculator", false, []
       var minSize = +particleData.MinSize;
       var flag = (particleData.Life | 0) > 0;
       if (flag) {
-        array[((Math.imul(i, 4) + 0) | 0)] = position.MemberwiseClone();
+        array[Math.imul(i, 4)] = position.MemberwiseClone();
         array[((Math.imul(i, 4) + 1) | 0)] = position.MemberwiseClone();
         array[((Math.imul(i, 4) + 2) | 0)] = position.MemberwiseClone();
         array[((Math.imul(i, 4) + 3) | 0)] = position.MemberwiseClone();
-        array4[((Math.imul(i, 4) + 0) | 0)] = $S04().Construct(+((minSize / 2)), +((-minSize / 2)));
+        array4[Math.imul(i, 4)] = $S04().Construct(+((minSize / 2)), +((-minSize / 2)));
         array4[((Math.imul(i, 4) + 1) | 0)] = $S04().Construct(+((minSize / 2)), +((minSize / 2)));
         array4[((Math.imul(i, 4) + 2) | 0)] = $S04().Construct(+((-minSize / 2)), +((minSize / 2)));
         array4[((Math.imul(i, 4) + 3) | 0)] = $S04().Construct(+((-minSize / 2)), +((-minSize / 2)));
-        array3[((Math.imul(i, 4) + 0) | 0)] = $S02().Construct(particleData.Rotation, particleData.Transparency, 1);
+        array3[Math.imul(i, 4)] = $S02().Construct(particleData.Rotation, particleData.Transparency, 1);
         array3[((Math.imul(i, 4) + 1) | 0)] = $S02().Construct(particleData.Rotation, particleData.Transparency, 1);
         array3[((Math.imul(i, 4) + 2) | 0)] = $S02().Construct(particleData.Rotation, particleData.Transparency, 1);
         array3[((Math.imul(i, 4) + 3) | 0)] = $S02().Construct(particleData.Rotation, particleData.Transparency, 1);
-        array2[((Math.imul(i, 6) + 0) | 0)] = (((Math.imul(i, 4) + 0) | 0) & 0xFFFF);
+        array2[Math.imul(i, 6)] = (Math.imul(i, 4) & 0xFFFF);
         array2[((Math.imul(i, 6) + 1) | 0)] = (((Math.imul(i, 4) + 1) | 0) & 0xFFFF);
         array2[((Math.imul(i, 6) + 2) | 0)] = (((Math.imul(i, 4) + 2) | 0) & 0xFFFF);
-        array2[((Math.imul(i, 6) + 3) | 0)] = (((Math.imul(i, 4) + 0) | 0) & 0xFFFF);
+        array2[((Math.imul(i, 6) + 3) | 0)] = (Math.imul(i, 4) & 0xFFFF);
         array2[((Math.imul(i, 6) + 4) | 0)] = (((Math.imul(i, 4) + 2) | 0) & 0xFFFF);
         array2[((Math.imul(i, 6) + 5) | 0)] = (((Math.imul(i, 4) + 3) | 0) & 0xFFFF);
       }
@@ -20332,17 +20332,17 @@ JSIL.MakeDelegate("Fusee.Engine.Core.GUI.GUIButtonHandler", true, [],
   }; 
 
   function GUIElement_DrawRectangle (c1, c2, c3, c4, vtStart, indStart, color, /* ref */ vertices, /* ref */ indices, /* ref */ colors) {
-    vertices.get()[(((vtStart | 0) + 0) | 0)] = $S00().Construct(c1, c3, 0);
+    vertices.get()[vtStart] = $S00().Construct(c1, c3, 0);
     vertices.get()[(((vtStart | 0) + 1) | 0)] = $S00().Construct(c1, c4, 0);
     vertices.get()[(((vtStart | 0) + 2) | 0)] = $S00().Construct(c2, c3, 0);
     vertices.get()[(((vtStart | 0) + 3) | 0)] = $S00().Construct(c2, c4, 0);
     var num = ($T17().Float4ToABGR(color) >>> 0);
-    colors.get()[(((vtStart | 0) + 0) | 0)] = num;
+    colors.get()[vtStart] = num;
     colors.get()[(((vtStart | 0) + 1) | 0)] = num;
     colors.get()[(((vtStart | 0) + 2) | 0)] = num;
     colors.get()[(((vtStart | 0) + 3) | 0)] = num;
-    indices.get()[(((indStart | 0) + 0) | 0)] = ((((vtStart | 0) + 1) | 0) & 0xFFFF);
-    indices.get()[(((indStart | 0) + 1) | 0)] = ((((vtStart | 0) + 0) | 0) & 0xFFFF);
+    indices.get()[indStart] = ((((vtStart | 0) + 1) | 0) & 0xFFFF);
+    indices.get()[(((indStart | 0) + 1) | 0)] = (vtStart & 0xFFFF);
     indices.get()[(((indStart | 0) + 2) | 0)] = ((((vtStart | 0) + 2) | 0) & 0xFFFF);
     indices.get()[(((indStart | 0) + 3) | 0)] = ((((vtStart | 0) + 1) | 0) & 0xFFFF);
     indices.get()[(((indStart | 0) + 4) | 0)] = ((((vtStart | 0) + 2) | 0) & 0xFFFF);

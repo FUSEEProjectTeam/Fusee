@@ -10,14 +10,14 @@ var $customSysSec = JSIL.GetAssembly("System.Security");
 if (typeof (contentManifest) !== "object") { contentManifest = {}; };
 contentManifest["Fusee.Engine.SceneViewer.Web.contentproj"] = [
     ["Script",	"Fusee.Base.Core.Ext.js",	{  "sizeBytes": 1273 }],
-    ["Script",	"Fusee.Base.Imp.Web.Ext.js",	{  "sizeBytes": 8225 }],
+    ["Script",	"Fusee.Base.Imp.Web.Ext.js",	{  "sizeBytes": 9244 }],
     ["Script",	"opentype.js",	{  "sizeBytes": 166330 }],
     ["Script",	"Fusee.Xene.Ext.js",	{  "sizeBytes": 1441 }],
     ["Script",	"Fusee.Xirkit.Ext.js",	{  "sizeBytes": 44215 }],
-    ["Script",	"Fusee.Engine.Imp.Graphics.Web.Ext.js",	{  "sizeBytes": 105980 }],
+    ["Script",	"Fusee.Engine.Imp.Graphics.Web.Ext.js",	{  "sizeBytes": 109767 }],
     ["Script",	"SystemExternals.js",	{  "sizeBytes": 11976 }],
-    ["Image",	"Assets/FuseeLogo150.png",	{  "sizeBytes": 19685 }],
+    ["Image",	"Assets/FuseeLogo150.png",	{  "sizeBytes": 31419 }],
     ["File",	"Assets/Lato-Black.ttf",	{  "sizeBytes": 114588 }],
-    ["File",	"Assets/Model.fus",	{  "sizeBytes": 1516 }],
+    ["File",	"Assets/Model.fus",	{  "sizeBytes": 2334 }],
     ["Image",	"Assets/Styles/loading_rocket.png",	{  "sizeBytes": 10975 }],
     ];

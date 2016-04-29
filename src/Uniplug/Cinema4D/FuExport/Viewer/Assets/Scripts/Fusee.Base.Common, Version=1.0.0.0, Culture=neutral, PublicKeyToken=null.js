@@ -240,7 +240,7 @@ JSIL.DeclareNamespace("Fusee.Base.Common");
     if (flag2) {
       throw $S03().Construct("copyFrom", "Not enough pixel data to copy from given index.");
     }
-    this.R = (copyFrom[(((index | 0) + 0) | 0)] | 0);
+    this.R = (copyFrom[index] | 0);
     this.G = (copyFrom[(((index | 0) + 1) | 0)] | 0);
     this.B = (copyFrom[(((index | 0) + 2) | 0)] | 0);
     if (noAlpha) {
@@ -1933,22 +1933,16 @@ JSIL.MakeInterface(
     return ($T04 = JSIL.Memoize($asm14.System.Type)) ();
   };
   var $T05 = function () {
-    return ($T05 = JSIL.Memoize($asm14.System.Boolean)) ();
+    return ($T05 = JSIL.Memoize($asm00.Fusee.Base.Common.AssetHandler)) ();
   };
   var $T06 = function () {
-    return ($T06 = JSIL.Memoize($asm14.System.Collections.Generic.Dictionary$b2_ValueCollection_Enumerator.Of($asm14.System.Type, $asm00.Fusee.Base.Common.AssetHandler))) ();
+    return ($T06 = JSIL.Memoize($asm14.System.Boolean)) ();
   };
   var $T07 = function () {
-    return ($T07 = JSIL.Memoize($asm14.System.Collections.Generic.Dictionary$b2_ValueCollection.Of($asm14.System.Type, $asm00.Fusee.Base.Common.AssetHandler))) ();
+    return ($T07 = JSIL.Memoize($asm14.System.Object)) ();
   };
   var $T08 = function () {
-    return ($T08 = JSIL.Memoize($asm00.Fusee.Base.Common.AssetHandler)) ();
-  };
-  var $T09 = function () {
-    return ($T09 = JSIL.Memoize($asm14.System.Object)) ();
-  };
-  var $T0A = function () {
-    return ($T0A = JSIL.Memoize($asm14.System.IO.Stream)) ();
+    return ($T08 = JSIL.Memoize($asm14.System.IO.Stream)) ();
   };
   var $S00 = function () {
     return ($S00 = JSIL.Memoize(new JSIL.ConstructorSignature($asm14.TypeRef("System.Collections.Generic.Dictionary`2", [$asm14.TypeRef("System.Type"), $asm00.TypeRef("Fusee.Base.Common.AssetHandler")]), null))) ();
@@ -1966,24 +1960,21 @@ JSIL.MakeInterface(
     throw $S01().Construct();
   }; 
 
-  function StreamAssetProvider_CanGet (id, /* ref */ type) {
+  function StreamAssetProvider_CanGet (id, type) {
+    var assetHandler = new JSIL.BoxedVariable(new ($T05())());
     var flag = !this.CheckExists(id);
     if (flag) {
-      type.set(null);
+      type = null;
       var result = false;
     } else {
-      var enumerator = ((this._assetHandlers).get_Values()).GetEnumerator();
-
-      while ($T06().prototype.MoveNext.call(enumerator)) {
-        var current = $T06().prototype.get_Current.call(enumerator).MemberwiseClone();
-        var flag2 = current.Checker(id);
-        if (flag2) {
-          type.set(current.ReturnedType);
+      var flag2 = (this._assetHandlers).TryGetValue(type, /* ref */ assetHandler);
+      if (flag2) {
+        var flag3 = assetHandler.get().Checker(id);
+        if (flag3) {
           result = true;
           return result;
         }
       }
-      type.set(null);
       result = false;
     }
     return result;
@@ -1993,26 +1984,22 @@ JSIL.MakeInterface(
     return (this._assetHandlers).ContainsKey(type);
   }; 
 
-  function StreamAssetProvider_GetAsset (id, /* ref */ type) {
+  function StreamAssetProvider_GetAsset (id, type) {
+    var assetHandler = new JSIL.BoxedVariable(new ($T05())());
     var obj = null;
     var stream = this.GetStream(id);
     var flag = stream === null;
     if (flag) {
-      type.set(null);
       var result = null;
     } else {
-      var enumerator = ((this._assetHandlers).get_Values()).GetEnumerator();
-
-      while ($T06().prototype.MoveNext.call(enumerator)) {
-        var current = $T06().prototype.get_Current.call(enumerator).MemberwiseClone();
-        var flag2 = (obj = current.Decoder(id, stream)) !== null;
-        if (flag2) {
-          type.set(current.ReturnedType);
+      var flag2 = (this._assetHandlers).TryGetValue(type, /* ref */ assetHandler);
+      if (flag2) {
+        var flag3 = (obj = assetHandler.get().Decoder(id, stream)) !== null;
+        if (flag3) {
           result = obj;
           return result;
         }
       }
-      type.set(null);
       result = null;
     }
     return result;
@@ -2042,7 +2029,7 @@ JSIL.MakeInterface(
     );
 
     $.Method({Static:false, Public:true , Virtual:true }, "CanGet", 
-      new JSIL.MethodSignature($.Boolean, [$.String, $jsilcore.TypeRef("JSIL.Reference", [$asm14.TypeRef("System.Type")])]), 
+      new JSIL.MethodSignature($.Boolean, [$.String, $asm14.TypeRef("System.Type")]), 
       StreamAssetProvider_CanGet
     );
 
@@ -2052,7 +2039,7 @@ JSIL.MakeInterface(
     );
 
     $.Method({Static:false, Public:true , Virtual:true }, "GetAsset", 
-      new JSIL.MethodSignature($.Object, [$.String, $jsilcore.TypeRef("JSIL.Reference", [$asm14.TypeRef("System.Type")])]), 
+      new JSIL.MethodSignature($.Object, [$.String, $asm14.TypeRef("System.Type")]), 
       StreamAssetProvider_GetAsset
     );
 
@@ -2139,8 +2126,8 @@ JSIL.MakeDelegate("Fusee.Base.Common.AssetChecker", true, [],
 JSIL.MakeInterface(
   "Fusee.Base.Common.IAssetProvider", true, [], function ($) {
     $.Method({}, "CanHandleType", new JSIL.MethodSignature($.Boolean, [$asm14.TypeRef("System.Type")]));
-    $.Method({}, "GetAsset", new JSIL.MethodSignature($.Object, [$.String, $jsilcore.TypeRef("JSIL.Reference", [$asm14.TypeRef("System.Type")])]));
-    $.Method({}, "CanGet", new JSIL.MethodSignature($.Boolean, [$.String, $jsilcore.TypeRef("JSIL.Reference", [$asm14.TypeRef("System.Type")])]));
+    $.Method({}, "GetAsset", new JSIL.MethodSignature($.Object, [$.String, $asm14.TypeRef("System.Type")]));
+    $.Method({}, "CanGet", new JSIL.MethodSignature($.Boolean, [$.String, $asm14.TypeRef("System.Type")]));
     $.Method({}, "BeginGetAsset", new JSIL.MethodSignature(null, [$.String, $asm00.TypeRef("Fusee.Base.Common.GetCallback")]));
     $.Method({}, "RegisterTypeHandler", JSIL.MethodSignature.Action($asm00.TypeRef("Fusee.Base.Common.AssetHandler")));
   }, []);
@@ -2690,33 +2677,33 @@ JSIL.MakeDelegate("Fusee.Base.Common.ImageData+CopyFunc", false, [],
   }; 
 
   function $l$gc__DisplayClass14_0_$lBlt$gb__1 (idp, isp) {
-    this.dst.PixelData[(((idp | 0) + 0) | 0)] = (this.src.PixelData[(((isp | 0) + 0) | 0)] | 0);
+    this.dst.PixelData[idp] = (this.src.PixelData[isp] | 0);
     this.dst.PixelData[(((idp | 0) + 1) | 0)] = (this.src.PixelData[(((isp | 0) + 1) | 0)] | 0);
     this.dst.PixelData[(((idp | 0) + 2) | 0)] = (this.src.PixelData[(((isp | 0) + 2) | 0)] | 0);
     this.dst.PixelData[(((idp | 0) + 3) | 0)] = 255;
   }; 
 
   function $l$gc__DisplayClass14_0_$lBlt$gb__2 (idp, isp) {
-    this.dst.PixelData[(((idp | 0) + 0) | 0)] = (this.src.PixelData[isp] | 0);
+    this.dst.PixelData[idp] = (this.src.PixelData[isp] | 0);
     this.dst.PixelData[(((idp | 0) + 1) | 0)] = (this.src.PixelData[isp] | 0);
     this.dst.PixelData[(((idp | 0) + 2) | 0)] = (this.src.PixelData[isp] | 0);
     this.dst.PixelData[(((idp | 0) + 3) | 0)] = 255;
   }; 
 
   function $l$gc__DisplayClass14_0_$lBlt$gb__3 (idp, isp) {
-    this.dst.PixelData[(((idp | 0) + 0) | 0)] = (this.src.PixelData[(((isp | 0) + 0) | 0)] | 0);
+    this.dst.PixelData[idp] = (this.src.PixelData[isp] | 0);
     this.dst.PixelData[(((idp | 0) + 1) | 0)] = (this.src.PixelData[(((isp | 0) + 1) | 0)] | 0);
     this.dst.PixelData[(((idp | 0) + 2) | 0)] = (this.src.PixelData[(((isp | 0) + 2) | 0)] | 0);
   }; 
 
   function $l$gc__DisplayClass14_0_$lBlt$gb__4 (idp, isp) {
-    this.dst.PixelData[(((idp | 0) + 0) | 0)] = (this.src.PixelData[isp] | 0);
+    this.dst.PixelData[idp] = (this.src.PixelData[isp] | 0);
     this.dst.PixelData[(((idp | 0) + 1) | 0)] = (this.src.PixelData[isp] | 0);
     this.dst.PixelData[(((idp | 0) + 2) | 0)] = (this.src.PixelData[isp] | 0);
   }; 
 
   function $l$gc__DisplayClass14_0_$lBlt$gb__5 (idp, isp) {
-    var num = (this.src.PixelData[(((isp | 0) + 0) | 0)] | 0);
+    var num = (this.src.PixelData[isp] | 0);
     var num2 = (this.src.PixelData[(((isp | 0) + 1) | 0)] | 0);
     var num3 = (this.src.PixelData[(((isp | 0) + 2) | 0)] | 0);
     this.dst.PixelData[idp] = (((((((((((((num + num) | 0) + num3) | 0) + num2) | 0) + num2) | 0) + num2) | 0) / 6) | 0) & 0xFF);

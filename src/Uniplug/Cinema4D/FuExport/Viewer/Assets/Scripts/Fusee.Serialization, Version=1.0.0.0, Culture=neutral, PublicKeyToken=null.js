@@ -853,7 +853,8 @@ JSIL.MakeEnum(
 
     return function (newThisType) { $thisType = newThisType; }; 
   })
-    .Attribute($asm0E.TypeRef("ProtoBuf.ProtoContractAttribute"));
+    .Attribute($asm0E.TypeRef("ProtoBuf.ProtoContractAttribute"))
+    .Attribute($asm14.TypeRef("System.Diagnostics.DebuggerDisplayAttribute"), function () { return ["{Name,nq}, {(Components==null)? \"No\" : Components.Count.ToString(),nq} components, {(Children==null)? \"No\" : Children.Count.ToString(),nq} children"]; });
 
 })();
 

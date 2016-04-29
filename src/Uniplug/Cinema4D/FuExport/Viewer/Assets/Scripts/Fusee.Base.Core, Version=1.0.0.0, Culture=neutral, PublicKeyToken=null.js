@@ -65,16 +65,14 @@ JSIL.DeclareNamespace("Fusee.Base.Core");
 
   function AssetStorage_GetAsset$b1 (T, id) {
     var $temp00;
-    var type = new JSIL.BoxedVariable(null);
 
     for (var a$0 = this._providers._items, i$0 = 0, l$0 = (this._providers._size | 0); i$0 < l$0; ($temp00 = i$0, 
         i$0 = ((i$0 + 1) | 0), 
         $temp00)) {
       var assetProvider = a$0[i$0];
-      var flag = $IM00().Call(assetProvider, null, id, /* ref */ type) && 
-      T.IsAssignableFrom(type.get());
+      var flag = $IM00().Call(assetProvider, null, id, T);
       if (flag) {
-        var result = JSIL.CloneParameter(T, T.$Cast($IM01().Call(assetProvider, null, id, /* ref */ type)));
+        var result = JSIL.CloneParameter(T, T.$Cast($IM01().Call(assetProvider, null, id, T)));
         return result;
       }
     }
