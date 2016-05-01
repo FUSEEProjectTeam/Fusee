@@ -32,6 +32,7 @@ namespace Fusee.Serialization
     [ProtoInclude(104, typeof(WeightComponent))]
     [ProtoInclude(105, typeof(AnimationComponent))]
     [ProtoInclude(106, typeof(BoneComponent))]
+    [ProtoInclude(107, typeof(TargetComponent))]
     public class SceneComponentContainer
     {
         /// <summary>
@@ -39,5 +40,14 @@ namespace Fusee.Serialization
         /// </summary>
         [ProtoMember(1)]
         public string Name;
+    }
+
+    [ProtoContract]
+    public class TargetComponent : SceneComponentContainer
+    {
+        [ProtoMember(1)]
+        public string ExtraInfo;
+        [ProtoMember(2)]
+        public float Radius;
     }
 }

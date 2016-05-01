@@ -219,7 +219,7 @@ namespace FuExport
         /// The awkward side effects when changing the tags' order in C4D are not reproduced.
         /// </summary>
         /// <param name="ob"></param>
-        /// <param name="soc"></param>
+        /// <param name="snc"></param>
 
 
         private void VisitObject(BaseObject ob, SceneNodeContainer snc)
@@ -228,7 +228,6 @@ namespace FuExport
             Dictionary<string,  SelectionTag> selectionTags = new Dictionary<string, SelectionTag>();
             UVWTag uvwTag = null;
             CAWeightTag weightTag = null;
-
 
             // Iterate over the object's tags
             for (BaseTag tag = ob.GetFirstTag(); tag != null; tag = tag.GetNext())
@@ -240,6 +239,9 @@ namespace FuExport
                     int anInt = di.GetInt32(10000);
                     string aStr = di.GetString(10001);
                     Logger.Debug("Found a GeneralTag with TheInt=" + anInt + " and TheString = \"" + aStr + "\"");
+
+                    var targetComponent = new TargetComponent {ExtraInfo = aStr, Radius = anInt};
+                    snc.AddComponent(targetComponent);
                 }
 
                 // CAWeightTag - Save data to create the weight list later

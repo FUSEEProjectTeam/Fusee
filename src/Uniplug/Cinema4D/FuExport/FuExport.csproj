@@ -49,6 +49,8 @@
     <Compile Include="FileTypes.cs" />
     <Compile Include="FuExport.cs" />
     <Compile Include="FusConverter.cs" />
+    <Compile Include="TagBase.cs" />
+    <Compile Include="STep2016Data.cs" />
     <Compile Include="ManagedTagBase.cs" />
     <Compile Include="ManifestFile.cs">
       <AutoGen>True</AutoGen>
