@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Fusee.Base.Common;
 using Fusee.Math.Core;
 using SharpFont;
@@ -97,26 +98,54 @@ namespace Fusee.Base.Imp.Desktop
         }
 
         /// <summary>
-        /// Gets the control points of a character.
+        /// Gets the start, end and control points of a character.
         /// </summary>
         /// <param name="c">The character to retrive information</param>
         /// <returns></returns>
         public GlyphPoints GetGlyphPoints(uint c)
         {
             GlyphPoints ret;
-            ret.CharCode = c;
-            ret.Pos = new float2();
-            ret.OrgPoints = _face.Glyph.Outline.Points;
-            ret.Points = new List<float2>();
-
             _face.LoadChar(c, LoadFlags.Default, LoadTarget.Normal);
 
-            if (ret.OrgPoints == null) return ret; //Is null if c is space
+            ret.CharCode = c;
+            ret.Pos = new float2();
+            ret.PointFlags = new List<int[]>();
+            ret.PointCoords = new List<float2>();
+            ret.Points = new Dictionary<float2, int[]>();
+            ret.OrgPointCoords = _face.Glyph.Outline.Points;
 
-            foreach (FTVector vec in ret.OrgPoints)
+
+            //TODO: Split into 3 methods?
+            //Get tags and add them to an array
+            byte[] helper = _face.Glyph.Outline.Tags;
+
+            if (helper == null) return ret; //Is null if c is space
+
+            //Convert values of byte array into binary representation
+            foreach (var flags in helper)
             {
-                ret.Pos = new float2(vec.X.Value,vec.Y.Value);
-                ret.Points.Add(ret.Pos);
+                var s = Convert.ToString(flags, 2);
+
+                var bits = s.PadLeft(8, '0')                        // Add 0's from left
+                             .Select(x => int.Parse(x.ToString()))  // convert each char to int
+                             .ToArray();                            // Convert IEnumerable from select to Array
+
+                ret.PointFlags.Add(bits);                           //Bits are read from right to left, therfore the last bit in the array is bit 0 --> bits[7] is responsible to say wheather a point is on a curve or not
+            }
+
+            //Get point coordinates and add them to a list
+            if (ret.OrgPointCoords == null) return ret; //Is null if c is space
+
+            foreach (FTVector vec in ret.OrgPointCoords)
+            {
+                ret.Pos = new float2(vec.X.Value, vec.Y.Value);
+                ret.PointCoords.Add(ret.Pos);
+            }
+
+            //Write tags and coordinates into a dictionary
+            for (int i = 0; i < ret.PointCoords.Count; i++)
+            {
+                ret.Points.Add(ret.PointCoords[i], ret.PointFlags[i]);
             }
             return ret;
         }

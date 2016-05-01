@@ -19,6 +19,8 @@ namespace Fusee.Base.Core
 
         private readonly Dictionary<uint, GlyphInfo> _glyphInfoCache = new Dictionary<uint, GlyphInfo>();
 
+        private readonly Dictionary<uint, GlyphPoints> _glyphPointsChache = new Dictionary<uint, GlyphPoints>();
+
         /// <summary>
         ///     Gets or sets a value indicating whether the kerning definition of a font should be used.
         /// </summary>
@@ -62,14 +64,18 @@ namespace Fusee.Base.Core
 
 
         /// <summary>
-        /// Gets the control points of a character.
+        /// Gets the start, end and control points of a character.
         /// </summary>
         /// <param name="c">The character to retrive information</param>
         /// <returns></returns>
         public GlyphPoints GetGlyphPoints(uint c)
         {
-            //TODO: cache?
-            var ret = _fontImp.GetGlyphPoints(c);
+            GlyphPoints ret;
+            if (_glyphPointsChache.TryGetValue(c, out ret))
+                return ret;
+
+            ret = _fontImp.GetGlyphPoints(c);
+            _glyphPointsChache[c] = ret;
             return ret;
         }
 

@@ -42,7 +42,7 @@ namespace Fusee.Engine.Examples.Simple.Core
         private float _subtextWidth;
 
         private Curves _curves;
-        private List<float2> _controlPoints;
+        private List<Dictionary<float2, int[]>> _controlPoints;
         private string _text;
         #endif
 

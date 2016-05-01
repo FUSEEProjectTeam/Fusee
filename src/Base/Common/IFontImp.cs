@@ -72,7 +72,7 @@ namespace Fusee.Base.Common
     }
 
     /// <summary>
-    /// A struct for saving character information, needed to get the control points of a character
+    /// A struct for saving character information, needed to get the start, end and control points of a character
     /// </summary>
     public struct GlyphPoints
     {
@@ -84,7 +84,7 @@ namespace Fusee.Base.Common
         /// <summary>
         /// Control points of a character as FTVector array
         /// </summary>
-        public Array OrgPoints;
+        public Array OrgPointCoords;
 
         /// <summary>
         /// x and y position of a control point
@@ -94,7 +94,17 @@ namespace Fusee.Base.Common
         /// <summary>
         /// Control points of a character as float2 list
         /// </summary>
-        public List<float2> Points;
+        public List<float2> PointCoords;
+
+        /// <summary>
+        /// Flags for each Control Point
+        /// </summary>
+        public List<int[]> PointFlags;
+
+        /// <summary>
+        /// Key: Point coordinates, Value: Point flags
+        /// </summary>
+        public Dictionary<float2, int[]> Points;
     }
 
     /// <summary>
