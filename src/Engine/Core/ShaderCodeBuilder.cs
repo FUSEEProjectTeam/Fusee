@@ -134,12 +134,15 @@ namespace Fusee.Engine.Core
  
         }
 
+
+
         private void VSBody(StringBuilder vs)
         {
             vs.Append("\n\n  void main()\n  {\n");
             if (_hasNormals)
             {
-                if (_hasWeightMap){
+                if (_hasWeightMap)
+                {
                     vs.Append("    vec4 newVertex;\n");
                     vs.Append("    vec4 newNormal;\n");
 
@@ -156,12 +159,12 @@ namespace Fusee.Engine.Core
                     vs.Append("    newNormal = (FUSEE_BONES[int(fuBoneIndex.w)] * vec4(fuNormal, 0.0)) * fuBoneWeight.w + newNormal;\n");
 
                     // At this point the normal is in World space - transform back to model space
-                    // TODO: Is it a hack to invert Model AND View? SHould we rather only invert MODEL (and NOT VIEW)??
-                    vs.Append("    vNormal = vec3(FUSEE_IMV * newNormal);\n");
+                    // TODO: Is it a hack to invert Model AND View? Should we rather only invert MODEL (and NOT VIEW)??
+                    vs.Append("    vNormal = mat3(FUSEE_IMV) * newNormal.xyz;\n");
 
                     if (_normalizeNormals)
                         vs.Append("    vNormal = normalize(vNormal);\n");
-                }                   
+                }
                 else
                 {
                     // Lighting done in model space... no need to convert normals
@@ -190,13 +193,80 @@ namespace Fusee.Engine.Core
                 vs.Append("    gl_Position = FUSEE_P * FUSEE_V * vec4(vec3(newVertex), 1.0);\n ");
             else
                 vs.Append("    gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);\n");
-            
+
 
             if (_hasUVs)
                 vs.Append("    vUV = fuUV;\n");
 
             vs.Append("  }\n\n");
         }
+
+
+
+
+        //private void VSBody(StringBuilder vs)
+        //{
+        //    vs.Append("\n\n  void main()\n  {\n");
+        //    if (_hasNormals)
+        //    {
+        //        if (_hasWeightMap){
+        //            vs.Append("    vec4 newVertex;\n");
+        //            vs.Append("    vec4 newNormal;\n");
+
+        //            vs.Append("    newVertex = (FUSEE_BONES[int(fuBoneIndex.x)] * vec4(fuVertex, 1.0) ) * fuBoneWeight.x ;\n");
+        //            vs.Append("    newNormal = (FUSEE_BONES[int(fuBoneIndex.x)] * vec4(fuNormal, 0.0)) * fuBoneWeight.x;\n");
+
+        //            vs.Append("    newVertex = (FUSEE_BONES[int(fuBoneIndex.y)] * vec4(fuVertex, 1.0)) * fuBoneWeight.y + newVertex;\n");
+        //            vs.Append("    newNormal = (FUSEE_BONES[int(fuBoneIndex.y)] * vec4(fuNormal, 0.0)) * fuBoneWeight.y + newNormal;\n");
+
+        //            vs.Append("    newVertex = (FUSEE_BONES[int(fuBoneIndex.z)] * vec4(fuVertex, 1.0)) * fuBoneWeight.z + newVertex;\n");
+        //            vs.Append("    newNormal = (FUSEE_BONES[int(fuBoneIndex.z)] * vec4(fuNormal, 0.0)) * fuBoneWeight.z + newNormal;\n");
+
+        //            vs.Append("    newVertex = (FUSEE_BONES[int(fuBoneIndex.w)] * vec4(fuVertex, 1.0)) * fuBoneWeight.w + newVertex;\n");
+        //            vs.Append("    newNormal = (FUSEE_BONES[int(fuBoneIndex.w)] * vec4(fuNormal, 0.0)) * fuBoneWeight.w + newNormal;\n");
+
+        //            // At this point the normal is in World space - transform back to model space
+        //            // TODO: Is it a hack to invert Model AND View? SHould we rather only invert MODEL (and NOT VIEW)??
+        //            vs.Append("    vNormal = vec3(FUSEE_IMV * newNormal);\n");
+
+        //            if (_normalizeNormals)
+        //                vs.Append("    vNormal = normalize(vNormal);\n");
+        //        }                   
+        //        else
+        //        {
+        //            // Lighting done in model space... no need to convert normals
+        //            if (_normalizeNormals)
+        //                // vs.Append("    vNormal = normalize(mat3(FUSEE_MV[0].xyz, FUSEE_MV[1].xyz, FUSEE_MV[2].xyz) * fuNormal);\n");
+        //                vs.Append("    vNormal = normalize(fuNormal);\n");
+        //            else
+        //                vs.Append("    vNormal = fuNormal;\n");
+        //        }
+        //    }
+
+        //    if (_hasSpecular)
+        //    {
+        //        // vs.Append("    vec4 viewDirTmp = FUSEE_IMV * vec4(0, 0, 0, 1);\n");
+        //        // vs.Append("    vViewDir = viewDirTmp.xyz * 1/viewDirTmp.w;\n");
+        //        vs.Append("    vec3 viewPos = FUSEE_IMV[3].xyz;\n");
+
+        //        if (_hasWeightMap)
+        //            vs.Append("    vViewDir = normalize(viewPos - vec3(newVertex));\n");
+        //        else
+        //            vs.Append("    vViewDir = normalize(viewPos - fuVertex);\n");
+        //        // vs.Append("    vViewDir = vec3(0, -1, 0);\n");
+        //    }
+
+        //    if (_hasWeightMap)
+        //        vs.Append("    gl_Position = FUSEE_P * FUSEE_V * vec4(vec3(newVertex), 1.0);\n ");
+        //    else
+        //        vs.Append("    gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);\n");
+
+
+        //    if (_hasUVs)
+        //        vs.Append("    vUV = fuUV;\n");
+
+        //    vs.Append("  }\n\n");
+        //}
 
         private void PixelInputDeclarations(StringBuilder ps)
         {

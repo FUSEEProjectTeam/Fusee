@@ -168,7 +168,7 @@ namespace Fusee.Tools.fuGen
                     pathExt = srcRelativeToAssetsDir;
                     // DebugMode("MakeRelativePath(" + srcAssetFolder + ", " + srcAssetDirPath + "); yields: " + srcRelativeToAssetsDir);
 
-                    // Copy files to output if they not exist yet
+                    // Copy files to output if they don't exist yet
                     var tmpFileName = Path.GetFileName(filePath);
                     var dstFilePath = Path.Combine(targWeb, "Assets", pathExt, tmpFileName);
 

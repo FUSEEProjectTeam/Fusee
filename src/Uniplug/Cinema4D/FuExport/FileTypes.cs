@@ -22,7 +22,7 @@ namespace FuExport
             {"mp3", "Sound"},
 
             // font files
-            {"ttf", "Font"},
+            // ...are simply "File" {"ttf", "Font"},
 
             // script files
             {"js", "Script"}

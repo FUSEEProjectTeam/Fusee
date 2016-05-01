@@ -74,7 +74,7 @@ Function .onInit
   ; Find a CINEMA 4D installation
   ; First try to look at the standard installation directories
   ; in reverse order of revision number
-  StrCpy $MaxC4DVersion "17"
+  StrCpy $MaxC4DVersion "19"
   StrCpy $MinC4DVersion "14"
   StrCpy $fuVar0 $MaxC4DVersion
   ${While} $fuVar0 >= $MinC4DVersion

@@ -1,6 +1,7 @@
 ﻿using C4d;
 using System;
 using Fusee.Math;
+using Fusee.Math.Core;
 
 namespace DoubleCircle
 {
@@ -99,7 +100,7 @@ namespace DoubleCircle
 	
             double val = double3.Dot(tm.Offset, handle_dir);
 
-            dst.SetFloat(CIRCLEOBJECT_RAD, M.Saturate(src.GetFloat(CIRCLEOBJECT_RAD)+val, 0.0, C4dApi.MAXRANGE));
+            dst.SetFloat(CIRCLEOBJECT_RAD, M.Clamp(src.GetFloat(CIRCLEOBJECT_RAD)+val, 0.0, C4dApi.MAXRANGE));
             return true;
         }
 

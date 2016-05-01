@@ -40,7 +40,7 @@ namespace FuExport
             string sceneRoot = Path.GetDirectoryName(fileName);
             var root = new FusConverter().FuseefyScene(doc, sceneRoot, out textureFiles);
 
-            var ser = new Serializer();
+            var ser = new Fusee.Serialization.Serializer();
             using (var file = File.Create(fileName))
             {
                 ser.Serialize(file, root);
@@ -70,6 +70,37 @@ namespace FuExport
 
         private static FuseeHttpServer _httpServer;
         private bool _newVersionExists;
+
+
+        /// <summary>
+        /// Creates a relative path from one file or folder to another.
+        /// </summary>
+        /// <param name="fromPath">Contains the directory that defines the start of the relative path.</param>
+        /// <param name="toPath">Contains the path that defines the endpoint of the relative path.</param>
+        /// <returns>The relative path from the start directory to the end path.</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="UriFormatException"></exception>
+        /// <exception cref="InvalidOperationException"></exception>
+        public static String MakeRelativePath(String fromPath, String toPath)
+        {
+            if (String.IsNullOrEmpty(fromPath)) throw new ArgumentNullException("fromPath");
+            if (String.IsNullOrEmpty(toPath)) throw new ArgumentNullException("toPath");
+
+            Uri fromUri = new Uri(fromPath);
+            Uri toUri = new Uri(toPath);
+
+            if (fromUri.Scheme != toUri.Scheme) { return toPath; } // path can't be made relative.
+
+            Uri relativeUri = fromUri.MakeRelativeUri(toUri);
+            String relativePath = Uri.UnescapeDataString(relativeUri.ToString());
+
+            if (toUri.Scheme.ToUpperInvariant() == "FILE")
+            {
+                relativePath = relativePath.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+            }
+
+            return relativePath;
+        }
 
 
         private void StartServer(string root)
@@ -203,9 +234,13 @@ namespace FuExport
 
         private void CreateAssetManifest(string targWeb, IEnumerable<string> textureList)
         {
-            List<string> filePaths;
+            List<string> filePaths = new List<string>();
 
-            filePaths = textureList.ToList(); // Directory.GetFiles(Path.Combine(targDir, "Assets")).ToList();
+            if (textureList != null)
+                foreach (string texture in textureList)
+                    filePaths.Add(Path.Combine(targWeb, texture));
+
+            // filePaths = textureList.ToList(); // Directory.GetFiles(Path.Combine(targDir, "Assets")).ToList();
             filePaths.Add(Path.Combine(targWeb, "Assets", "Model.fus"));
             filePaths.Add(Path.Combine(targWeb, "Assets", "FuseeLogo150.png"));
             filePaths.Add(Path.Combine(targWeb, "Assets", "Lato-Black.ttf"));
@@ -216,8 +251,16 @@ namespace FuExport
 
             var externalFiles = new[]
             {
-                "Fusee.Engine.Imp.WebAudio", "Fusee.Engine.Imp.WebNet", "Fusee.Engine.Imp.WebGL",
-                "Fusee.Engine.Imp.WebInput", "XirkitScript", "WebSimpleScene"
+                "Fusee.Base.Core.Ext",
+                "Fusee.Base.Imp.Web.Ext",
+                "opentype",
+                "Fusee.Xene.Ext", 
+                "Fusee.Xirkit.Ext",
+                "Fusee.Engine.Imp.Graphics.Web.Ext",
+                "SystemExternals",
+
+                //"Fusee.Engine.Imp.WebAudio", "Fusee.Engine.Imp.WebNet", "Fusee.Engine.Imp.WebGL",
+                //"Fusee.Engine.Imp.WebInput", "XirkitScript", "WebSimpleScene"
             };
 
             foreach (var extFile in externalFiles)
@@ -226,7 +269,8 @@ namespace FuExport
 
                 if (exists)
                 {
-                    filePaths.Insert(fileCount, Path.Combine(targWeb, "Assets", "Scripts", extFile + ".js"));
+                    var filePath = Path.Combine(targWeb, "Assets", "Scripts", extFile + ".js");
+                    filePaths.Insert(fileCount, filePath);
                     fileCount++;
                 }
                 else
@@ -236,32 +280,52 @@ namespace FuExport
                 }
             }
 
+            var destRelativePaths = MakeAssetRelativePaths(filePaths, targWeb);
             // Create manifest
-            string fileName = "Examples.SceneViewer";
-            var manifest = new ManifestFile(fileName, filePaths, fileCount);
+            string fileName = "Fusee.Engine.SceneViewer.Web";
+            var manifest = new ManifestFile(fileName, filePaths, destRelativePaths, fileCount);
             string manifestContent = manifest.TransformText();
 
             File.WriteAllText(Path.Combine(targWeb, "Assets", "Scripts", fileName + ".contentproj.manifest.js"),
                 manifestContent);
         }
 
+        public static List<string> MakeAssetRelativePaths(IEnumerable<string> filePaths, string targWeb)
+        {
+            List<string> destRelativePaths = new List<string>();
+
+            var srcAssetFolder = Path.Combine(targWeb, "Assets");
+            if (!srcAssetFolder.EndsWith("\\")) srcAssetFolder += "\\";
+
+            foreach (var filePath in filePaths)
+            {
+
+                var srcAssetDirPath = Path.GetDirectoryName(filePath);
+                if (!srcAssetDirPath.EndsWith("\\")) srcAssetDirPath += "\\";
+
+                var srcRelativeToAssetsDir = MakeRelativePath(srcAssetFolder, srcAssetDirPath);
+                destRelativePaths.Add(srcRelativeToAssetsDir);
+            }
+            return destRelativePaths;
+        }
+
     }
 
     // Your Plugin Number for "FUSEE Android APK Exporter" is: 1037175 
-    [SceneSaverPlugin(1037175,
-        Name = "FUSEE Android App (*.apk)",
-        Suffix = "apk")
-    ]
-    public class FusApkExporter : SceneSaverData
-    {
-        public FusApkExporter() : base(false)
-        {
-        }
+    //[SceneSaverPlugin(1037175,
+    //    Name = "FUSEE Android App (*.apk)",
+    //    Suffix = "apk")
+    //]
+    //public class FusApkExporter : SceneSaverData
+    //{
+    //    public FusApkExporter() : base(false)
+    //    {
+    //    }
 
-        public override FILEERROR Save(BaseSceneSaver node, Filename name, BaseDocument doc, SCENEFILTER filterflags)
-        {
+    //    public override FILEERROR Save(BaseSceneSaver node, Filename name, BaseDocument doc, SCENEFILTER filterflags)
+    //    {
 
-            return FILEERROR.FILEERROR_NONE;
-        }
-    }
+    //        return FILEERROR.FILEERROR_NONE;
+    //    }
+    //}
 }

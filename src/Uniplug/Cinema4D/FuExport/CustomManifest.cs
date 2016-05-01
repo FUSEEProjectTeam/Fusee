@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -15,7 +14,7 @@ namespace FuExport
         private readonly string[] _fileTypes;
         private readonly string[] _fileFormats;
 
-        public ManifestFile(string projName, ICollection<string> filePaths, int specFiles)
+        public ManifestFile(string projName, List<string> filePaths, List<string> dstRelPaths, int specFiles)
         {
             _projName = projName;
             _fileCount = filePaths.Count;
@@ -44,6 +43,10 @@ namespace FuExport
                         continue;
                     }
 
+                    var pathExt = dstRelPaths[ct].Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+                    if (pathExt != "" && !pathExt.EndsWith("/")) 
+                        pathExt += "/";
+
                     // Sound files in more than one format
                     var doubleExt = false;
 
@@ -58,7 +61,7 @@ namespace FuExport
                             string ext2 = Path.GetExtension(filePaths.ElementAt(ct + 1));
 
                             fileFormatsList.Add(" \"formats\": [\"" + ext1 + "\", \"" + ext2 + "\"],	");
-                            fileNamesList.Add("Assets/" + fileName1);
+                            fileNamesList.Add("Assets/" + pathExt + fileName1);
 
                             ct++;
                             doubleExt = true;
@@ -67,10 +70,20 @@ namespace FuExport
 
                     if (!doubleExt)
                     {
-                        fileNamesList.Add("Assets/" + Path.GetFileName(filePath));
-                        fileFormatsList.Add(" ");
+                        if ((fType == "Sound"))
+                        {
+                            string fileName1 = Path.GetFileNameWithoutExtension(filePath);
+                            string ext1 = Path.GetExtension(filePath);
+                            fileNamesList.Add("Assets/" + pathExt + fileName1);
+                            fileFormatsList.Add(" \"formats\": [\"" + ext1 + "\"],	");
+                        }
+                        else
+                        {
+                            fileNamesList.Add("Assets/" + pathExt + Path.GetFileName(filePath));
+                            fileFormatsList.Add(" ");
                     }
                 }
+            }
 
             // Convert to Array
             _fileCount = fileNamesList.Count;
