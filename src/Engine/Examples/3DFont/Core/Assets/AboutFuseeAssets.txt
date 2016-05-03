@@ -1,0 +1,3 @@
+﻿Fusee Assets (3D models, texture images, sounds, fonts, etc) should be placed into this directory.
+
+Make sure to mark all assets as "Content" and to "Copy if newer" int the file properties.

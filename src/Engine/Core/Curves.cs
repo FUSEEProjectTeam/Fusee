@@ -12,10 +12,9 @@ namespace Fusee.Engine.Core
         private Font _font;
         private uint _pixelHeight;
 
-        public Curves(Font font, uint pixelHeight)
+        public Curves(Font font)
         {
             _font = font;
-            _pixelHeight = pixelHeight;
         }
 
         public List<float2> PointCoordinates(string text)
