@@ -22,6 +22,12 @@ namespace Fusee.Serialization
         /// </summary>
         [ProtoMember(1)]
         public string Name;
+
+        /// <summary>
+        /// The type of the key-values stored in this ShaderComponent.
+        /// </summary>
+        [ProtoMember(2, AsReference = true)]
+        public Type KeyType;
     }
 
     /// <summary>

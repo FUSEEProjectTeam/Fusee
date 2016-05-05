@@ -60,6 +60,8 @@
     <Compile Include="MeshComponent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SceneNodeContainer.cs" />
+    <Compile Include="ShaderComponent.cs" />
+    <Compile Include="TypeContainer.cs" />
     <Compile Include="WeightComponent.cs" />
     <Compile Include="TransformComponent.cs" />
   </ItemGroup>

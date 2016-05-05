@@ -1,6 +1,7 @@
 ﻿#define GUI_SIMPLE
 
 using System;
+using System.Collections.Generic;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
@@ -39,7 +40,35 @@ namespace Fusee.Engine.Examples.Simple.Core
         private GUIText _guiSubText;
         private float _subtextHeight;
         private float _subtextWidth;
+#endif
+
+        private const string _vertexShader = @"
+        attribute vec3 fuVertex;
+        attribute vec3 fuNormal;
+        uniform mat4 FUSEE_MVP;
+        uniform mat4 FUSEE_ITMV;
+        varying vec3 modelpos;
+        varying vec3 normal;
+        void main()
+        {
+            modelpos = fuVertex;
+            normal = normalize(mat3(FUSEE_ITMV) * fuNormal);
+            gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
+        }";
+
+        private const string _pixelShader = @"
+        #ifdef GL_ES
+            precision highp float;
         #endif
+        varying vec3 modelpos;
+        varying vec3 normal;
+        uniform vec3 albedo;
+
+        void main()
+        {
+            float intensity = dot(normal, vec3(0, 0, -1));
+            gl_FragColor = vec4(intensity * albedo, 1);
+        }";
 
         // Init is called on startup. 
         public override void Init()
@@ -76,6 +105,67 @@ namespace Fusee.Engine.Examples.Simple.Core
             // _rocketScene = ser.Deserialize(IO.StreamFromFile(@"Assets/RocketModel.fus", FileMode.Open), null, typeof(SceneContainer)) as SceneContainer;
             _rocketScene = AssetStorage.Get<SceneContainer>("RocketModel.fus");
 
+            var testEffectParameterContainer = new List<TypeContainer>();
+
+            // set vColor - is used in VS and PS
+            testEffectParameterContainer.Add(new TypeContainerFloat4()
+            {
+                Name = "vColor",
+                Value = new float4(0.5f, 1, 1, 1),
+                KeyType = typeof(float4)
+        });
+
+            // Replace Material with shader
+            Dictionary<uint, uint> tmpRenderStateContainer = new Dictionary<uint, uint>();
+            // Disable zBuffer
+            tmpRenderStateContainer.Add(7, 0);
+
+            var testShaderComponent = new ShaderComponent
+            {
+                VS = @"
+            /* Copies incoming vertex color without change.
+             * Applies the transformation matrix to vertex position.
+             */
+
+            attribute vec4 fuColor;
+            attribute vec3 fuVertex;
+            attribute vec3 fuNormal;
+            attribute vec2 fuUV;
+                    
+            varying vec4 vColor;
+            varying vec3 vNormal;
+            varying vec2 vUV;
+        
+            uniform mat4 FUSEE_MVP;
+            uniform mat4 FUSEE_ITMV;
+
+            void main()
+            {
+                vNormal = mat3(FUSEE_ITMV[0].xyz, FUSEE_ITMV[1].xyz, FUSEE_ITMV[2].xyz) * fuNormal;
+                vNormal = normalize(vNormal);
+                gl_Position = (FUSEE_MVP * vec4(fuVertex, 1.0) ) + vec4(5.0 * vNormal.x, 5.0 * vNormal.y, 0, 0);
+                vUV = fuUV;
+            }",
+                PS = @"
+            /* Copies incoming fragment color without change. */
+            #ifdef GL_ES
+                precision highp float;
+            #endif
+        
+            uniform vec4 vColor;
+            varying vec3 vNormal;
+
+            void main()
+            {
+                gl_FragColor = vColor;
+            }",
+                RenderStateContainer = tmpRenderStateContainer,
+                EffectParameter = testEffectParameterContainer
+            };
+
+     
+            _rocketScene.Children[0].Children[0].Components[1] = testShaderComponent;
+            
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_rocketScene);
         }

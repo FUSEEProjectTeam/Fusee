@@ -670,6 +670,7 @@ namespace Fusee.Engine.Core
 
 
         // Creates Shader from given shaderComponent
+        // TODO: Rewrite this so more than one EffectPass is supported
         private ShaderEffect MakeShader(ShaderComponent shaderComponent)
         {
             var effectParametersFromShaderComponent = new List<EffectParameterDeclaration>();
@@ -709,7 +710,7 @@ namespace Fusee.Engine.Core
             var returnEffectParameterDeclaration = new EffectParameterDeclaration {Name = effectParameter.Name};
 
             // replace this with good design pattern - some day ...
-            var t = effectParameter.GetType();
+            var t = effectParameter.KeyType;
 
             if (typeof (int).IsAssignableFrom(t))
             {
