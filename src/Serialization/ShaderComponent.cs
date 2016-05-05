@@ -47,7 +47,7 @@ namespace Fusee.Serialization
         /// The RenderStates
         /// </summary>
         [ProtoMember(3)]
-        public Dictionary<uint, uint> RenderStateContainer;
+        public Dictionary<string, uint> RenderStateContainer;
     }
 
 }
