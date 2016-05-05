@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
@@ -12,7 +14,6 @@ using Fusee.Xirkit;
 
 namespace Fusee.Engine.Core
 {
-
     /// <summary>
     /// Axis-Aligned Bounding Box Calculator. Use instances of this class to calculate axis-aligned bounding boxes
     /// on scenes, list of scene nodes or individual scene nodes. Calculations always include any child nodes.
@@ -28,6 +29,7 @@ namespace Fusee.Engine.Core
                 set { _modelView.Tos = value; }
                 get { return _modelView.Tos; }
             }
+
             public AABBState()
             {
                 RegisterState(_modelView);
@@ -81,6 +83,7 @@ namespace Fusee.Engine.Core
         }
 
         #region Visitors
+
         /// <summary>
         /// Do not call. Used for internal traversal purposes only
         /// </summary>
@@ -98,7 +101,7 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void OnMesh(MeshComponent meshComponent)
         {
-            AABBf box = _state.ModelView * meshComponent.BoundingBox;
+            AABBf box = _state.ModelView*meshComponent.BoundingBox;
             if (!_boxValid)
             {
                 _result = box;
@@ -109,9 +112,11 @@ namespace Fusee.Engine.Core
                 _result = AABBf.Union((AABBf) _result, box);
             }
         }
+
         #endregion
 
         #region HierarchyLevel
+
         protected override void InitState()
         {
             _boxValid = false;
@@ -128,6 +133,7 @@ namespace Fusee.Engine.Core
         {
             _state.Pop();
         }
+
         #endregion
     }
 
@@ -143,11 +149,12 @@ namespace Fusee.Engine.Core
     /// </summary>
     public class SceneRenderer : SceneVisitor
     {
-
         #region Traversal information
+
         private Dictionary<MeshComponent, Mesh> _meshMap;
         private Dictionary<MaterialComponent, ShaderEffect> _matMap;
         private Dictionary<SceneNodeContainer, float4x4> _boneMap;
+        private Dictionary<ShaderComponent, ShaderEffect> _shaderEffectMap;
         private Animation _animation;
         private SceneContainer _sc;
 
@@ -156,13 +163,15 @@ namespace Fusee.Engine.Core
 
         private string _scenePathDirectory;
         private ShaderEffect _defaultEffect;
+
         #endregion
 
         #region State
+
         public class RendererState : VisitorState
         {
-
             private CollapsingStateStack<float4x4> _model = new CollapsingStateStack<float4x4>();
+
             public float4x4 Model
             {
                 set { _model.Tos = value; }
@@ -170,6 +179,7 @@ namespace Fusee.Engine.Core
             }
 
             private StateStack<ShaderEffect> _effect = new StateStack<ShaderEffect>();
+
             public ShaderEffect Effect
             {
                 set { _effect.Tos = value; }
@@ -189,6 +199,7 @@ namespace Fusee.Engine.Core
         #endregion
 
         #region Initialization Construction Startup
+
         public SceneRenderer(SceneContainer sc /*, string scenePathDirectory*/)
         {
             _lights = new List<LightInfo>();
@@ -197,6 +208,7 @@ namespace Fusee.Engine.Core
             _state = new RendererState();
             InitAnimations(_sc);
         }
+
         public void InitAnimations(SceneContainer sc)
         {
             _animation = new Animation();
@@ -208,7 +220,7 @@ namespace Fusee.Engine.Core
                     foreach (AnimationTrackContainer animTrackContainer in ac.AnimationTracks)
                     {
                         Type t = animTrackContainer.KeyType;
-                        if (typeof(int).IsAssignableFrom(t))
+                        if (typeof (int).IsAssignableFrom(t))
                         {
                             Channel<int> channel = new Channel<int>(Lerp.IntLerp);
                             foreach (AnimationKeyContainerInt key in animTrackContainer.KeyFrames)
@@ -218,7 +230,7 @@ namespace Fusee.Engine.Core
                             _animation.AddAnimation(channel, animTrackContainer.SceneComponent,
                                 animTrackContainer.Property);
                         }
-                        else if (typeof(float).IsAssignableFrom(t))
+                        else if (typeof (float).IsAssignableFrom(t))
                         {
                             Channel<float> channel = new Channel<float>(Lerp.FloatLerp);
                             foreach (AnimationKeyContainerFloat key in animTrackContainer.KeyFrames)
@@ -228,7 +240,7 @@ namespace Fusee.Engine.Core
                             _animation.AddAnimation(channel, animTrackContainer.SceneComponent,
                                 animTrackContainer.Property);
                         }
-                        else if (typeof(float2).IsAssignableFrom(t))
+                        else if (typeof (float2).IsAssignableFrom(t))
                         {
                             Channel<float2> channel = new Channel<float2>(Lerp.Float2Lerp);
                             foreach (AnimationKeyContainerFloat2 key in animTrackContainer.KeyFrames)
@@ -238,7 +250,7 @@ namespace Fusee.Engine.Core
                             _animation.AddAnimation(channel, animTrackContainer.SceneComponent,
                                 animTrackContainer.Property);
                         }
-                        else if (typeof(float3).IsAssignableFrom(t))
+                        else if (typeof (float3).IsAssignableFrom(t))
                         {
                             Channel<float3>.LerpFunc lerpFunc;
                             switch (animTrackContainer.LerpType)
@@ -252,7 +264,9 @@ namespace Fusee.Engine.Core
                                 default:
                                     // C# 6throw new InvalidEnumArgumentException(nameof(animTrackContainer.LerpType), (int)animTrackContainer.LerpType, typeof(LerpType));
                                     // throw new InvalidEnumArgumentException("animTrackContainer.LerpType", (int)animTrackContainer.LerpType, typeof(LerpType));
-                                    throw new InvalidOperationException("Unknown lerp type: animTrackContainer.LerpType: " + (int)animTrackContainer.LerpType);
+                                    throw new InvalidOperationException(
+                                        "Unknown lerp type: animTrackContainer.LerpType: " +
+                                        (int) animTrackContainer.LerpType);
                             }
                             Channel<float3> channel = new Channel<float3>(lerpFunc);
                             foreach (AnimationKeyContainerFloat3 key in animTrackContainer.KeyFrames)
@@ -262,7 +276,7 @@ namespace Fusee.Engine.Core
                             _animation.AddAnimation(channel, animTrackContainer.SceneComponent,
                                 animTrackContainer.Property);
                         }
-                        else if (typeof(float4).IsAssignableFrom(t))
+                        else if (typeof (float4).IsAssignableFrom(t))
                         {
                             Channel<float4> channel = new Channel<float4>(Lerp.Float4Lerp);
                             foreach (AnimationKeyContainerFloat4 key in animTrackContainer.KeyFrames)
@@ -291,13 +305,14 @@ namespace Fusee.Engine.Core
         {
             if (rc == null)
                 throw new ArgumentNullException("rc");
-            
+
             if (rc != _rc)
             {
                 _rc = rc;
                 _meshMap = new Dictionary<MeshComponent, Mesh>();
                 _matMap = new Dictionary<MaterialComponent, ShaderEffect>();
                 _boneMap = new Dictionary<SceneNodeContainer, float4x4>();
+                _shaderEffectMap = new Dictionary<ShaderComponent, ShaderEffect>();
                 _defaultEffect = MakeMaterial(new MaterialComponent
                 {
                     Diffuse = new MatChannelContainer()
@@ -314,6 +329,7 @@ namespace Fusee.Engine.Core
                 _defaultEffect.AttachToContext(_rc);
             }
         }
+
         #endregion
 
         public void Render(RenderContext rc)
@@ -342,7 +358,7 @@ namespace Fusee.Engine.Core
             for (int i = 0; i < weight.Joints.Count(); i++)
             {
                 float4x4 tmp = weight.BindingMatrices[i];
-                boneArray[i] = _boneMap[weight.Joints[i]] * tmp;
+                boneArray[i] = _boneMap[weight.Joints[i]]*tmp;
             }
             _rc.Bones = boneArray;
         }
@@ -352,7 +368,7 @@ namespace Fusee.Engine.Core
         public void RenderTransform(TransformComponent transform)
         {
             _state.Model *= transform.Matrix();
-            _rc.Model = _view * _state.Model;
+            _rc.Model = _view*_state.Model;
         }
 
         [VisitMethod]
@@ -362,7 +378,13 @@ namespace Fusee.Engine.Core
             _state.Effect = effect;
         }
 
-        
+        [VisitMethod]
+        public void RenderShader(ShaderComponent shaderComponent)
+        {
+            var effect = BuildMaterialFromShaderComponent(shaderComponent);
+            _state.Effect = effect;
+        }
+
         [VisitMethod]
         public void RenderMesh(MeshComponent meshComponent)
         {
@@ -382,9 +404,11 @@ namespace Fusee.Engine.Core
                 _state.Effect.RenderMesh(rm);
             }
         }
+
         #endregion
 
         #region HierarchyLevel
+
         protected override void InitState()
         {
             _state.Clear();
@@ -402,10 +426,10 @@ namespace Fusee.Engine.Core
         protected override void PopState()
         {
             _state.Pop();
-            _rc.ModelView = _view * _state.Model;
+            _rc.ModelView = _view*_state.Model;
         }
-        #endregion
 
+        #endregion
 
         private void RenderWithLights(Mesh rm, ShaderEffect effect)
         {
@@ -422,20 +446,18 @@ namespace Fusee.Engine.Core
                 // No light present - switch on standard light
                 effect.SetEffectParam(ShaderCodeBuilder.LightColorName, new float3(1, 1, 1));
                 // float4 lightDirHom = new float4(0, 0, -1, 0);
-                float4 lightDirHom = _rc.InvModelView * new float4(0, 0, -1, 0);
+                float4 lightDirHom = _rc.InvModelView*new float4(0, 0, -1, 0);
                 // float4 lightDirHom = _rc.TransModelView * new float4(0, 0, -1, 0);
                 float3 lightDir = lightDirHom.xyz;
                 lightDir.Normalize();
                 effect.SetEffectParam(ShaderCodeBuilder.LightDirectionName, lightDir);
-                effect.SetEffectParam(ShaderCodeBuilder.LightIntensityName, (float)1);
+                effect.SetEffectParam(ShaderCodeBuilder.LightIntensityName, (float) 1);
                 effect.RenderMesh(rm);
             }
         }
 
-
-
-
         #region RenderContext/Asset Setup
+
         private ShaderEffect LookupMaterial(MaterialComponent mc)
         {
             ShaderEffect mat;
@@ -446,6 +468,18 @@ namespace Fusee.Engine.Core
                 _matMap.Add(mc, mat);
             }
             return mat;
+        }
+
+        private ShaderEffect BuildMaterialFromShaderComponent(ShaderComponent shaderComponent)
+        {
+            ShaderEffect shaderEffect;
+            if (!_shaderEffectMap.TryGetValue(shaderComponent, out shaderEffect))
+            {
+                shaderEffect = MakeShader(shaderComponent);
+                shaderEffect.AttachToContext(_rc);
+                _shaderEffectMap.Add(shaderComponent, shaderEffect);
+            }
+            return shaderEffect;
         }
 
         public Mesh MakeMesh(MeshComponent mc)
@@ -479,7 +513,8 @@ namespace Fusee.Engine.Core
                     if (vwl == null)
                         vwl = new VertexWeightList();
                     if (vwl.VertexWeights == null)
-                        vwl.VertexWeights = new List<VertexWeight>(new[] {new VertexWeight {JointIndex = 0, Weight = 1.0f}});
+                        vwl.VertexWeights =
+                            new List<VertexWeight>(new[] {new VertexWeight {JointIndex = 0, Weight = 1.0f}});
                     int nJoints = System.Math.Min(4, vwl.VertexWeights.Count);
                     for (int iJoint = 0; iJoint < nJoints; iJoint++)
                     {
@@ -519,8 +554,6 @@ namespace Fusee.Engine.Core
                     Vertices = mc.Vertices,
                     Triangles = mc.Triangles
                 };
-
-
 
 
                 /*
@@ -635,29 +668,113 @@ namespace Fusee.Engine.Core
             return _rc.CreateTexture(image);
         }
 
+
+        // Creates Shader from given shaderComponent
+        private ShaderEffect MakeShader(ShaderComponent shaderComponent)
+        {
+            var effectParametersFromShaderComponent = new List<EffectParameterDeclaration>();
+            var renderStateSet = new RenderStateSet();
+
+            if (shaderComponent.RenderStateContainer != null)
+                renderStateSet = new RenderStateSet(shaderComponent.RenderStateContainer);
+
+            if (shaderComponent.EffectParameter != null)
+            {
+                foreach (var effectParameter in shaderComponent.EffectParameter)
+                {
+                    effectParametersFromShaderComponent.Add(CreateEffectParameterDeclaration(effectParameter));
+                }
+            }
+
+            var returnShaderEffect = new ShaderEffect(new[]
+            {
+                new EffectPassDeclaration()
+                {
+                    VS = shaderComponent.VS,
+                    PS = shaderComponent.PS,
+                    StateSet = renderStateSet
+                }
+            },
+                effectParametersFromShaderComponent
+                );
+
+            return returnShaderEffect;
+        }
+
+        private EffectParameterDeclaration CreateEffectParameterDeclaration(TypeContainer effectParameter)
+        {
+            if(effectParameter.Name == null)
+                throw new InvalidDataException("EffectParameterDeclaration: Name is empty!");
+            
+            var returnEffectParameterDeclaration = new EffectParameterDeclaration {Name = effectParameter.Name};
+
+            // replace this with good design pattern - some day ...
+            var t = effectParameter.GetType();
+
+            if (typeof (int).IsAssignableFrom(t))
+            {
+                var effectParameterType = effectParameter as TypeContainerInt;
+                if (effectParameterType != null) returnEffectParameterDeclaration.Value = effectParameterType.Value;
+            }
+            else if (typeof (double).IsAssignableFrom(t))
+            {
+                var effectParameterType = effectParameter as TypeContainerDouble;
+                if (effectParameterType != null) returnEffectParameterDeclaration.Value = effectParameterType.Value;
+            }
+            else if (typeof (float).IsAssignableFrom(t))
+            {
+                var effectParameterType = effectParameter as TypeContainerFloat;
+                if (effectParameterType != null) returnEffectParameterDeclaration.Value = effectParameterType.Value;
+            }
+            else if (typeof (float2).IsAssignableFrom(t))
+            {
+                var effectParameterType = effectParameter as TypeContainerFloat2;
+                if (effectParameterType != null) returnEffectParameterDeclaration.Value = effectParameterType.Value;
+            }
+            else if (typeof (float3).IsAssignableFrom(t))
+            {
+                var effectParameterType = effectParameter as TypeContainerFloat3;
+                if (effectParameterType != null) returnEffectParameterDeclaration.Value = effectParameterType.Value;
+            }
+            else if (typeof (float4).IsAssignableFrom(t))
+            {
+                var effectParameterType = effectParameter as TypeContainerFloat4;
+                if (effectParameterType != null) returnEffectParameterDeclaration.Value = effectParameterType.Value;
+            }
+            else if (typeof (bool).IsAssignableFrom(t))
+            {
+                var effectParameterType = effectParameter as TypeContainerBoolean;
+                returnEffectParameterDeclaration.Value = effectParameterType != null && effectParameterType.Value;
+            }
+
+            if(returnEffectParameterDeclaration.Value == null)
+                throw new InvalidDataException("EffectParameterDeclaration:" + effectParameter.Name + ", value is empty or from unknown type!");
+
+            return returnEffectParameterDeclaration;
+        }
+
         private ShaderEffect MakeMaterial(MaterialComponent mc)
         {
-
             WeightComponent wc = CurrentNode.GetWeights();
             ShaderCodeBuilder scb = new ShaderCodeBuilder(mc, null, wc); // TODO, CurrentNode.GetWeights() != null);
             var effectParameters = AssembleEffectParamers(mc, scb);
 
-            ShaderEffect ret = new ShaderEffect(new []
+            ShaderEffect ret = new ShaderEffect(new[]
+            {
+                new EffectPassDeclaration()
                 {
-                    new EffectPassDeclaration()
+                    VS = scb.VS,
+                    //VS = VsBones,
+                    PS = scb.PS,
+                    StateSet = new RenderStateSet()
                     {
-                        VS = scb.VS,
-                        //VS = VsBones,
-                        PS = scb.PS,
-                        StateSet = new RenderStateSet()
-                        {
-                            ZEnable = true,
-                            AlphaBlendEnable = false
-                        }
+                        ZEnable = true,
+                        AlphaBlendEnable = false
                     }
-                },
+                }
+            },
                 effectParameters
-            );
+                );
             return ret;
         }
 
@@ -778,7 +895,7 @@ namespace Fusee.Engine.Core
 
             return effectParameters;
         }
+
         #endregion
- 
     }
 }

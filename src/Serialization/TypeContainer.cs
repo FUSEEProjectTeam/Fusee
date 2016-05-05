@@ -1,4 +1,5 @@
-﻿using Fusee.Math.Core;
+﻿using System;
+using Fusee.Math.Core;
 using ProtoBuf;
 
 namespace Fusee.Serialization
@@ -13,6 +14,7 @@ namespace Fusee.Serialization
     [ProtoInclude(103, typeof(TypeContainerFloat2))]
     [ProtoInclude(104, typeof(TypeContainerFloat3))]
     [ProtoInclude(105, typeof(TypeContainerFloat4))]
+    [ProtoInclude(106, typeof(TypeContainerBoolean))]
     public class TypeContainer
     {
         /// <summary>
@@ -23,7 +25,7 @@ namespace Fusee.Serialization
     }
 
     /// <summary>
-    /// TypeContainer storing double values.
+    /// TypeContainer storing a double value.
     /// </summary>
     [ProtoContract]
     public class TypeContainerDouble : TypeContainer
@@ -36,7 +38,7 @@ namespace Fusee.Serialization
     }
 
     /// <summary>
-    /// TypeContainer storing int values.
+    /// TypeContainer storing a int value.
     /// </summary>
     [ProtoContract]
     public class TypeContainerInt : TypeContainer
@@ -49,7 +51,7 @@ namespace Fusee.Serialization
     }
 
     /// <summary>
-    /// TypeContainer storing float values.
+    /// TypeContainer storing a float value.
     /// </summary>
     [ProtoContract]
     public class TypeContainerFloat : TypeContainer
@@ -62,7 +64,7 @@ namespace Fusee.Serialization
     }
 
     /// <summary>
-    /// TypeContainer storing float2 values.
+    /// TypeContainer storing a float2 value.
     /// </summary>
     [ProtoContract]
     public class TypeContainerFloat2 : TypeContainer
@@ -75,7 +77,7 @@ namespace Fusee.Serialization
     }
 
     /// <summary>
-    /// TypeContainer storing float3 values.
+    /// TypeContainer storing a float3 value.
     /// </summary>
     [ProtoContract]
     public class TypeContainerFloat3 : TypeContainer
@@ -88,7 +90,7 @@ namespace Fusee.Serialization
     }
 
     /// <summary>
-    /// TypeContainer storing float4 values.
+    /// TypeContainer storing a float4 value.
     /// </summary>
     [ProtoContract]
     public class TypeContainerFloat4 : TypeContainer
@@ -98,5 +100,18 @@ namespace Fusee.Serialization
         /// </summary>
         [ProtoMember(1)]
         public float4 Value;
+    }
+
+    /// <summary>
+    /// TypeContainer storing a bool value.
+    /// </summary>
+    [ProtoContract]
+    public class TypeContainerBoolean : TypeContainer
+    {
+        /// <summary>
+        /// The key value combined with a <see cref="TypeContainer.Name"/>.
+        /// </summary>
+        [ProtoMember(1)]
+        public bool Value;
     }
 }

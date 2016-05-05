@@ -26,14 +26,12 @@ namespace Fusee.Serialization
         /// The RenderStates
         /// </summary>
         [ProtoMember(3)]
-        public Dictionary<uint, uint> RenderState;
+        public Dictionary<uint, uint> RenderStateContainer;
 
         /// <summary>
         /// The EffectParameters
         /// </summary>
-        [ProtoMember(3)]
-        public List<TypeContainer> EffectPrameter;
-
-
+        [ProtoMember(3, AsReference = true)]
+        public List<TypeContainer> EffectParameter;
     }
 }

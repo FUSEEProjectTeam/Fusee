@@ -13,6 +13,41 @@ namespace Fusee.Engine.Core
     {
         private readonly Dictionary<RenderState, uint> _states = new Dictionary<RenderState, uint>();
 
+        #region constructor
+        /// <summary>
+        /// Creates a RenderStateSet from a given renderStateContainer
+        /// used in SceneRenderer
+        /// </summary>
+        public RenderStateSet(Dictionary<uint, uint> renderStateContainer)
+        {
+            // Set Values
+            foreach (var renderState in renderStateContainer)
+            {
+                _states[(RenderState) renderState.Key] = renderState.Value;
+            }
+        }
+
+        public RenderStateSet()
+        {
+
+        }
+        #endregion
+
+        /// <summary>
+        /// Creates a renderStateContainer from given RenderStateSet
+        /// </summary>
+        public Dictionary<uint, uint> ToContainer(RenderStateSet renderStateSet)
+        {
+            var returnDictonary = new Dictionary<uint,uint>();
+            foreach (var state in _states)
+            {
+                returnDictonary.Add((uint) state.Key, state.Value);
+            }
+            return returnDictonary;
+        } 
+
+      
+
         #region Butter and bread states
         /////// =======================
 
@@ -340,8 +375,5 @@ namespace Fusee.Engine.Core
             set { _states[RenderState.SeparateAlphaBlendEnable] = value ? 1U : 0U; }
         }
         */
-
-
-
     }
 }
