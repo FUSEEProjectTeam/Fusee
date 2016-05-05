@@ -120,7 +120,9 @@ namespace Fusee.Engine.Examples.Simple.Core
             // Disable zBuffer
             tmpRenderStateContainer.Add(7, 0);
 
-            var testShaderComponent = new ShaderComponent
+
+            List<RenderPass> renderPasses = new List<RenderPass>();
+            renderPasses.Add(new RenderPass
             {
                 VS = @"
             /* Copies incoming vertex color without change.
@@ -160,6 +162,11 @@ namespace Fusee.Engine.Examples.Simple.Core
                 gl_FragColor = vColor;
             }",
                 RenderStateContainer = tmpRenderStateContainer,
+            }); 
+
+            var testShaderComponent = new ShaderComponent
+            {
+                EffectPasses = renderPasses,
                 EffectParameter = testEffectParameterContainer
             };
 

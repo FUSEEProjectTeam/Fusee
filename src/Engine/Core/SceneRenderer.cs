@@ -670,15 +670,12 @@ namespace Fusee.Engine.Core
 
 
         // Creates Shader from given shaderComponent
-        // TODO: Rewrite this so more than one EffectPass is supported
+        // TODO: TEST
         private ShaderEffect MakeShader(ShaderComponent shaderComponent)
         {
             var effectParametersFromShaderComponent = new List<EffectParameterDeclaration>();
             var renderStateSet = new RenderStateSet();
-
-            if (shaderComponent.RenderStateContainer != null)
-                renderStateSet = new RenderStateSet(shaderComponent.RenderStateContainer);
-
+            
             if (shaderComponent.EffectParameter != null)
             {
                 foreach (var effectParameter in shaderComponent.EffectParameter)
@@ -687,19 +684,28 @@ namespace Fusee.Engine.Core
                 }
             }
 
-            var returnShaderEffect = new ShaderEffect(new[]
-            {
-                new EffectPassDeclaration()
-                {
-                    VS = shaderComponent.VS,
-                    PS = shaderComponent.PS,
-                    StateSet = renderStateSet
-                }
-            },
-                effectParametersFromShaderComponent
-                );
+            // no Effectpasses
+            if(shaderComponent.EffectPasses == null)
+                throw new InvalidDataException("No EffectPasses in Shader Component! Please specify at least one pass");
 
-            return returnShaderEffect;
+            var effectPasses = new EffectPassDeclaration[shaderComponent.EffectPasses.Count];
+
+            for (var i = 0; i < shaderComponent.EffectPasses.Count; i++)
+            {
+                var newEffectPass = new EffectPassDeclaration();
+                var effectPass = shaderComponent.EffectPasses[i];
+
+                if (effectPass.RenderStateContainer != null)
+                    renderStateSet = new RenderStateSet(effectPass.RenderStateContainer);
+
+                newEffectPass.VS = effectPass.VS;
+                newEffectPass.PS = effectPass.PS;
+                newEffectPass.StateSet = renderStateSet;
+
+                effectPasses[i] = newEffectPass;
+            }
+
+            return new ShaderEffect(effectPasses, effectParametersFromShaderComponent);
         }
 
         private EffectParameterDeclaration CreateEffectParameterDeclaration(TypeContainer effectParameter)

@@ -11,6 +11,26 @@ namespace Fusee.Serialization
     [ProtoContract]
     public class ShaderComponent : SceneComponentContainer
     {
+      
+        /// <summary>
+        /// List of EffectPasses
+        /// </summary>
+        [ProtoMember(1)]
+        public List<RenderPass> EffectPasses;
+
+        /// <summary>
+        /// The EffectParameters
+        /// </summary>
+        [ProtoMember(2, AsReference = true)]
+        public List<TypeContainer> EffectParameter;
+    }
+
+    /// <summary>
+    /// This class holds one RenderPass within the ShaderComponent EffectPasses List
+    /// </summary>
+    [ProtoContract]
+    public class RenderPass
+    {
         /// <summary>
         /// VS
         /// </summary>
@@ -28,11 +48,6 @@ namespace Fusee.Serialization
         /// </summary>
         [ProtoMember(3)]
         public Dictionary<uint, uint> RenderStateContainer;
-
-        /// <summary>
-        /// The EffectParameters
-        /// </summary>
-        [ProtoMember(3, AsReference = true)]
-        public List<TypeContainer> EffectParameter;
     }
+
 }
