@@ -1,7 +1,6 @@
 ﻿#define GUI_SIMPLE
 
 using System;
-using System.Collections.Generic;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
@@ -31,7 +30,7 @@ namespace Fusee.Engine.Examples.Simple.Core
 
         private bool _keys;
 
-        #if GUI_SIMPLE
+#if GUI_SIMPLE
         private GUIHandler _guiHandler;
 
         private GUIButton _guiFuseeLink;
@@ -42,38 +41,10 @@ namespace Fusee.Engine.Examples.Simple.Core
         private float _subtextWidth;
 #endif
 
-        private const string _vertexShader = @"
-        attribute vec3 fuVertex;
-        attribute vec3 fuNormal;
-        uniform mat4 FUSEE_MVP;
-        uniform mat4 FUSEE_ITMV;
-        varying vec3 modelpos;
-        varying vec3 normal;
-        void main()
-        {
-            modelpos = fuVertex;
-            normal = normalize(mat3(FUSEE_ITMV) * fuNormal);
-            gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
-        }";
-
-        private const string _pixelShader = @"
-        #ifdef GL_ES
-            precision highp float;
-        #endif
-        varying vec3 modelpos;
-        varying vec3 normal;
-        uniform vec3 albedo;
-
-        void main()
-        {
-            float intensity = dot(normal, vec3(0, 0, -1));
-            gl_FragColor = vec4(intensity * albedo, 1);
-        }";
-
         // Init is called on startup. 
         public override void Init()
         {
-            #if GUI_SIMPLE
+#if GUI_SIMPLE
             _guiHandler = new GUIHandler();
             _guiHandler.AttachToContext(RC);
 
@@ -95,7 +66,7 @@ namespace Fusee.Engine.Examples.Simple.Core
             _guiHandler.Add(_guiSubText);
             _subtextWidth = GUIText.GetTextWidth(_guiSubText.Text, _guiLatoBlack);
             _subtextHeight = GUIText.GetTextHeight(_guiSubText.Text, _guiLatoBlack);
-            #endif
+#endif
 
             // Set the clear color for the backbuffer to white (100% intentsity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
@@ -105,74 +76,6 @@ namespace Fusee.Engine.Examples.Simple.Core
             // _rocketScene = ser.Deserialize(IO.StreamFromFile(@"Assets/RocketModel.fus", FileMode.Open), null, typeof(SceneContainer)) as SceneContainer;
             _rocketScene = AssetStorage.Get<SceneContainer>("RocketModel.fus");
 
-            var testEffectParameterContainer = new List<TypeContainer>();
-
-            // set vColor - is used in VS and PS
-            testEffectParameterContainer.Add(new TypeContainerFloat4()
-            {
-                Name = "vColor",
-                Value = new float4(0.5f, 1, 1, 1),
-                KeyType = typeof(float4)
-        });
-
-            // Replace Material with shader
-            Dictionary<uint, uint> tmpRenderStateContainer = new Dictionary<uint, uint>();
-            // Disable zBuffer
-            tmpRenderStateContainer.Add(7, 0);
-
-
-            List<RenderPass> renderPasses = new List<RenderPass>();
-            renderPasses.Add(new RenderPass
-            {
-                VS = @"
-            /* Copies incoming vertex color without change.
-             * Applies the transformation matrix to vertex position.
-             */
-
-            attribute vec4 fuColor;
-            attribute vec3 fuVertex;
-            attribute vec3 fuNormal;
-            attribute vec2 fuUV;
-                    
-            varying vec4 vColor;
-            varying vec3 vNormal;
-            varying vec2 vUV;
-        
-            uniform mat4 FUSEE_MVP;
-            uniform mat4 FUSEE_ITMV;
-
-            void main()
-            {
-                vNormal = mat3(FUSEE_ITMV[0].xyz, FUSEE_ITMV[1].xyz, FUSEE_ITMV[2].xyz) * fuNormal;
-                vNormal = normalize(vNormal);
-                gl_Position = (FUSEE_MVP * vec4(fuVertex, 1.0) ) + vec4(5.0 * vNormal.x, 5.0 * vNormal.y, 0, 0);
-                vUV = fuUV;
-            }",
-                PS = @"
-            /* Copies incoming fragment color without change. */
-            #ifdef GL_ES
-                precision highp float;
-            #endif
-        
-            uniform vec4 vColor;
-            varying vec3 vNormal;
-
-            void main()
-            {
-                gl_FragColor = vColor;
-            }",
-                RenderStateContainer = tmpRenderStateContainer,
-            }); 
-
-            var testShaderComponent = new ShaderComponent
-            {
-                EffectPasses = renderPasses,
-                EffectParameter = testEffectParameterContainer
-            };
-
-     
-            _rocketScene.Children[0].Children[0].Components[1] = testShaderComponent;
-            
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_rocketScene);
         }
@@ -230,9 +133,9 @@ namespace Fusee.Engine.Examples.Simple.Core
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
 
-            #if GUI_SIMPLE
+#if GUI_SIMPLE
             _guiHandler.RenderGUI();
-            #endif
+#endif
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rerndered farame) on the front buffer.
             Present();
@@ -250,7 +153,7 @@ namespace Fusee.Engine.Examples.Simple.Core
             RC.Viewport(0, 0, Width, Height);
 
             // Create a new projection matrix generating undistorted images on the new aspect ratio.
-            var aspectRatio = Width/(float) Height;
+            var aspectRatio = Width / (float)Height;
 
             // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
             // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
@@ -258,16 +161,16 @@ namespace Fusee.Engine.Examples.Simple.Core
             var projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 20000);
             RC.Projection = projection;
 
-            #if GUI_SIMPLE
+#if GUI_SIMPLE
             _guiSubText.PosX = (int)((Width - _subtextWidth) / 2);
             _guiSubText.PosY = (int)(Height - _subtextHeight - 3);
 
             _guiHandler.Refresh();
-            #endif
+#endif
 
         }
 
-        #if GUI_SIMPLE
+#if GUI_SIMPLE
         private void _guiFuseeLink_OnGUIButtonLeave(GUIButton sender, GUIButtonEventArgs mea)
         {
             _guiFuseeLink.ButtonColor = new float4(0, 0, 0, 0);
@@ -286,6 +189,6 @@ namespace Fusee.Engine.Examples.Simple.Core
         {
             OpenLink("http://fusee3d.org");
         }
-        #endif
+#endif
     }
 }
