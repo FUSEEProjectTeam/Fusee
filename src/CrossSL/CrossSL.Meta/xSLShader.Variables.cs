@@ -1,6 +1,7 @@
 ﻿#pragma warning disable 0649
 
 using Fusee.Math;
+using Fusee.Math.Core;
 
 namespace CrossSL.Meta
 {

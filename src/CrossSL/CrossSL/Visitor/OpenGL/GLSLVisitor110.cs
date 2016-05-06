@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text;
 using Fusee.Math;
+using Fusee.Math.Core;
 using ICSharpCode.NRefactory.CSharp;
 using Mono.Cecil;
 

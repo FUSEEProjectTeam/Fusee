@@ -8,20 +8,20 @@ using C4d;
 namespace FuExport
 {
     // Your Plugin Number for "FUSEE General Tag" is: 1036156 
-    [TagPlugin(1036156, "FUSEE Step2016 Data", "FuExportLogo.tif", Visible = true)]
-    public class STeP2016Data : TagBase
+    [TagPlugin(1036156, "FUSEE General Tag", "FuExportLogo.tif", Visible = true)]
+    public class GeneralTag : TagBase
     {
-        [TagItem(DisplayName = "Radius")]
+        [TagItem(DisplayName = "Some Int")]
         public int TheInt { get; set; }
 
-        [TagItem(DisplayName = "Extra Info")]
+        [TagItem(DisplayName = "Some Text")]
         public string TheName { get; set; }
 
 
-        public STeP2016Data() : base()
+        public GeneralTag() : base()
         {
-            TheInt = 22;
-            TheName = "HFU";
+            TheInt = 42;
+            TheName = "Hello, Tag";
         }
     }
 }
