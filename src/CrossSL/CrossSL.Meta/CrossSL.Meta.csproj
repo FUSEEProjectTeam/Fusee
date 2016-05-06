@@ -45,9 +45,9 @@
     <Compile Include="xSLShader.Methods.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Math\Core\Math.Core.csproj">
+    <ProjectReference Include="..\..\Math\Core\Fusee.Math.Core.csproj">
       <Project>{e95fa1c8-6491-4b4b-bbe1-eda6b16b2c6a}</Project>
-      <Name>Math.Core</Name>
+      <Name>Fusee.Math.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
