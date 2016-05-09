@@ -1399,21 +1399,21 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
             switch (renderStateVal) {
                 case $fuseeCommon.Fusee.Engine.Common.RenderState.FillMode.value:
                     {
-                        if (value != $fuseeCommon.Fusee.Engine.FillMode.Solid)
+                        if (value !=$fuseeCommon.Fusee.Engine.Common.FillMode.Solid)
                             throw new Error("Line or Point fill mode (glPolygonMode) not supported in WebGL!");
                     }
                     break;
                 case $fuseeCommon.Fusee.Engine.Common.RenderState.CullMode.value:
                     switch (value) {
-                        case $fuseeCommon.Fusee.Engine.Cull.None.value:
+                        case $fuseeCommon.Fusee.Engine.Common.Cull.None.value:
                             this.gl.disable(this.gl.CULL_FACE);
                             this.gl.frontFace(this.gl.CCW);
                             break;
-                        case $fuseeCommon.Fusee.Engine.Cull.Clockwise.value:
+                        case $fuseeCommon.Fusee.Engine.Common.Cull.Clockwise.value:
                             this.gl.enable(this.gl.CULL_FACE);
                             this.gl.frontFace(this.gl.CW);
                             break;
-                        case $fuseeCommon.Fusee.Engine.Cull.Counterclockwise.value:
+                        case $fuseeCommon.Fusee.Engine.Common.Cull.Counterclockwise.value:
                             this.gl.enable(this.gl.CULL_FACE);
                             this.gl.frontFace(this.gl.CCW);
                             break;
@@ -1547,17 +1547,17 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
             switch (renderStateVal) {
                 case $fuseeCommon.Fusee.Engine.Common.RenderState.FillMode.value:
                     // Only solid polygon fill is supported by WebGL
-                    return $fuseeCommon.Fusee.Engine.PolygonMode.Fill;
+                    return $fuseeCommon.Fusee.Engine.Common.PolygonMode.Fill;
                 case $fuseeCommon.Fusee.Engine.Common.RenderState.CullMode.value:
                     {
                         var cullFace = this.gl.getParameter(this.gl.CULL_FACE);
                         if (cullFace == 0)
-                            return $fuseeCommon.Fusee.Engine.Cull.None;
+                            return $fuseeCommon.Fusee.Engine.Common.Cull.None;
                         var frontFace = this.gl.getParameter(this.gl.FRONT_FACE);
                         ;
                         if (frontFace == this.gl.CW)
-                            return $fuseeCommon.Fusee.Engine.Cull.Clockwise;
-                        return $fuseeCommon.Fusee.Engine.Counterclockwise;
+                            return $fuseeCommon.Fusee.Engine.Common.Cull.Clockwise;
+                        return $fuseeCommon.Fusee.Engine.Common.Counterclockwise;
                     }
                 case $fuseeCommon.Fusee.Engine.Common.RenderState.Clipping.value:
                     // clipping is always on in OpenGL - This state is simply ignored
