@@ -30,6 +30,7 @@ body {
 
 	-webkit-user-drag: none; 
 	-moz-user-drag: none; 
+    /* ReSharper disable once CssNotResolved */
 	user-drag: none;
 }
 

@@ -84,9 +84,9 @@
     <Compile Include="Visitor\ShaderVisitorInvalid.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Math\Core\Math.Core.csproj">
+    <ProjectReference Include="..\..\Math\Core\Fusee.Math.Core.csproj">
       <Project>{e95fa1c8-6491-4b4b-bbe1-eda6b16b2c6a}</Project>
-      <Name>Math.Core</Name>
+      <Name>Fusee.Math.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\CrossSL.Meta\CrossSL.Meta.csproj">
       <Project>{fa8e8b76-2aa7-4782-a471-a096816a2da7}</Project>

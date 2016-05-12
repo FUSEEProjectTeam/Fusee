@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using CrossSL.Meta;
 using Fusee.Math;
+using Fusee.Math.Core;
 
 namespace CrossSL
 {
@@ -17,7 +18,7 @@ namespace CrossSL
         {
             {typeof (xSLShader), String.Empty},
             {typeof (Math), String.Empty},
-            {typeof (MathHelper), String.Empty},
+            {typeof (M), String.Empty},
 
             // data types
             {typeof (void), "void"},

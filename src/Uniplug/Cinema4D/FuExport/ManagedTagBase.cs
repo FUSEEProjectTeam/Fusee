@@ -86,13 +86,14 @@ namespace FuExport
     */
 
     // Your Plugin Number for "FUSEE General Tag" is: 1036156 
-    // [TagPlugin(1036156, "General FUSEE export settings", "FuExportLogo.tif", Visible = true)]
-    public class ManagedTagPluginBase<TData> : TagDataM
+    // [TagPlugin(1036156, "FUSEE Step2016 Data", "FuExportLogo.tif", Visible = true)]
+    public class ManagedTagPluginBase : TagDataM
     {
         public int TheInt { get; set; }
         public string TheName { get; set; }
 
-        private static readonly int GENERAL_TAG_THEINT  = 10000;           // values 1000.3000 already reserved from includes
+        // values 1000.3000 already reserved from includes
+        private static readonly int GENERAL_TAG_THEINT  = 10000; 
         private static readonly int GENERAL_TAG_THENAME = 10001;
 
 
@@ -126,7 +127,7 @@ namespace FuExport
         // Different ways how data (The...) is obtained and written.
         // Example 1: An override gets the baseTag/BaseObject:
         // 
-        // Workgin example from DoubleCircle:
+        // Working example from DoubleCircle:
         // public override retval OverrideMethod(..., BaseTag tag, ...)
         // {
         //    BaseContainer di = tag.GetDataInstance();                       // Get the data instance from the object

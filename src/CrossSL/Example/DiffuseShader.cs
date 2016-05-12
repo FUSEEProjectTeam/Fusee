@@ -3,6 +3,7 @@
 using System;
 using CrossSL.Meta;
 using Fusee.Math;
+using Fusee.Math.Core;
 
 namespace Example
 {
