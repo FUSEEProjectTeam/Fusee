@@ -41,7 +41,7 @@ namespace Fusee.Engine.Examples.Simple.Core
         private float _subtextHeight;
         private float _subtextWidth;
 
-        private Curves _curves;
+        private Curve _curve;
         private List<Dictionary<float2, int[]>> _controlPoints;
         private string _text;
         #endif
@@ -74,10 +74,6 @@ namespace Fusee.Engine.Examples.Simple.Core
             _guiHandler.Add(_guiSubText);
             _subtextWidth = GUIText.GetTextWidth(_guiSubText.Text, _guiLatoBlack);
             _subtextHeight = GUIText.GetTextHeight(_guiSubText.Text, _guiLatoBlack);
-
-            _curves = new Curves(fontLato);
-            _controlPoints = _curves.ControlPoints(_text);
-
 
             #endif
 

@@ -54,46 +54,33 @@ namespace Fusee.Tutorial.Core
         private float _pitchCube2;
 
         private Cube _cube;
-
-        private Curves _curves;
+        private Curve _curve;
         private string _char;
-        private List<float2> _controlPoints;
-        private FontMap _guiLatoBlack;
-        private GUIText _guiSubText;
-        private GUIHandler _guiHandler;
+        private List<float3> _controlPoints;
         private Mesh _point;
-        private FontMap _guiVladimir;
+
 
 
         // Init is called on startup. 
         public override void Init()
         {
             _cube = new Cube();
-            _guiHandler = new GUIHandler();
-            _guiHandler.AttachToContext(RC);
 
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
             var vladimir = AssetStorage.Get<Font>("VLADIMIR.TTF");
             fontLato.UseKerning = true;
-            _guiLatoBlack = new FontMap(fontLato, 18);
-            _guiVladimir = new FontMap(vladimir, 18);
 
             _char = "Q";
 
-            _guiSubText = new GUIText(_char, _guiLatoBlack, 100, 100);
-            _guiSubText.TextColor = new float4(0.05f, 0.25f, 0.15f, 0.8f);
-            _guiHandler.Add(_guiSubText);
-
-            _curves = new Curves(fontLato);
-            _controlPoints = _curves.PointCoordinates(_char);
+            _curve = new Curve(fontLato);
+            _controlPoints = (List<float3>) _curve.PointCoordinates(_char);
             
             for (var i = 0; i < _controlPoints.Count; i++)
             {
-                _controlPoints[i] = new float2(_controlPoints[i].x/(Width/2.0f), _controlPoints[i].y/ (Height / 2.0f));
-
+                _controlPoints[i] = new float3(_controlPoints[i].x/Width, _controlPoints[i].y/Height,0);
             }
 
-            _point = _cube.BuildComp();
+            _point = _cube.BuildCube();
           
             var shader = RC.CreateShader(_vertexShader, _pixelShader);
             RC.SetShader(shader);

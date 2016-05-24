@@ -10,7 +10,7 @@ namespace Fusee.Tutorial.Core
             
         }
 
-        public Mesh BuildComp()
+        public Mesh BuildCube()
         {
 
             Mesh arm = new Mesh

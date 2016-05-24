@@ -7,49 +7,50 @@ using Fusee.Math.Core;
 
 namespace Fusee.Engine.Core
 {
-    public class Curves
+    public class Curve
     {
-        private Font _font;
-        private uint _pixelHeight;
+        private readonly Font _font;
 
-        public Curves(Font font)
+        public Curve(Font font)
         {
             _font = font;
         }
 
-        public List<float2> PointCoordinates(string text)
+        public IList<float3> PointCoordinates(string text)
         {
-            List<float2> cp = new List<float2>();
-            foreach (char c in text)
+            IList<float3> cp = new List<float3>();
+            foreach (var c in text)
             {
-                uint i = (uint)c;
+                uint i = c;
 
                 var gp = _font.GetGlyphPoints(i);
                 if (gp.PointCoords == null) continue;
 
                 foreach (float2 t in gp.PointCoords)
                 {
+                    var point  = new float3(t.x, t.y, 0);
                     Debug.WriteLine(c + " " + t);
-                    cp.Add(t);
+                    cp.Add(point);
                 }
             }
             return cp;
         }
 
-        public List<Dictionary<float2, int[]>> ControlPoints(string text)
+        public IList<IDictionary<float3, int[]>> ControlPoints(string text)
         {
-            var stringControlPoints = new List<Dictionary<float2, int[]>>();
+            IList<IDictionary<float3, int[]>> stringControlPoints = new List<IDictionary<float3, int[]>>();
             foreach (char c in text)
             {
-                var cp = new Dictionary<float2, int[]>();
+                IDictionary<float3, int[]> cp = new Dictionary<float3, int[]>();
                 var i = (uint)c;
 
                 var gp = _font.GetGlyphPoints(i);
 
                 if (gp.PointCoords == null) continue;
-                for (int j = 0; j < gp.PointCoords.Count; j++)
+                for (var j = 0; j < gp.PointCoords.Count; j++)
                 {
-                    cp.Add(gp.PointCoords[j], gp.PointFlags[j]);
+                    var point = new float3(gp.PointCoords[j].x, gp.PointCoords[j].y, 0);
+                    cp.Add(point, gp.PointFlags[j]);
                 }
                 foreach (var obj in cp)
                 {

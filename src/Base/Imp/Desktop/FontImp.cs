@@ -105,15 +105,14 @@ namespace Fusee.Base.Imp.Desktop
         public GlyphPoints GetGlyphPoints(uint c)
         {
             GlyphPoints ret;
-            _face.LoadChar(c, LoadFlags.Default, LoadTarget.Normal);
+            _face.LoadChar(c, LoadFlags.NoScale, LoadTarget.Normal);
 
             ret.CharCode = c;
-            ret.Pos = new float2();
             ret.PointFlags = new List<int[]>();
             ret.PointCoords = new List<float2>();
             ret.Points = new Dictionary<float2, int[]>();
-            ret.OrgPointCoords = _face.Glyph.Outline.Points;
 
+            var orgPointCoords = _face.Glyph.Outline.Points;
 
             //TODO: Split into 3 methods?
             //Get tags and add them to an array
@@ -134,12 +133,12 @@ namespace Fusee.Base.Imp.Desktop
             }
 
             //Get point coordinates and add them to a list
-            if (ret.OrgPointCoords == null) return ret; //Is null if c is space
+            if (orgPointCoords == null) return ret; //Is null if c is space
 
-            foreach (FTVector vec in ret.OrgPointCoords)
+            foreach (FTVector vec in orgPointCoords)
             {
-                ret.Pos = new float2(vec.X.Value, vec.Y.Value);
-                ret.PointCoords.Add(ret.Pos);
+                var pos = new float2(vec.X.Value, vec.Y.Value);
+                ret.PointCoords.Add(pos);
             }
 
             //Write tags and coordinates into a dictionary
