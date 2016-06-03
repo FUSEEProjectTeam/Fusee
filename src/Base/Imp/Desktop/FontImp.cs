@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Fusee.Base.Common;
@@ -88,10 +90,10 @@ namespace Fusee.Base.Imp.Desktop
             _face.LoadChar(c, LoadFlags.Default, LoadTarget.Normal);
 
             ret.CharCode = c;
-            ret.AdvanceX = (float) _face.Glyph.Advance.X;
-            ret.AdvanceY = (float) _face.Glyph.Advance.Y;
+            ret.AdvanceX = (float)_face.Glyph.Advance.X;
+            ret.AdvanceY = (float)_face.Glyph.Advance.Y;
 
-            ret.Width = (float) _face.Glyph.Metrics.Width;
+            ret.Width = (float)_face.Glyph.Metrics.Width;
             ret.Height = (float)_face.Glyph.Metrics.Height;
 
             return ret;
@@ -102,23 +104,57 @@ namespace Fusee.Base.Imp.Desktop
         /// </summary>
         /// <param name="c">The character to retrive information</param>
         /// <returns></returns>
-        public GlyphPoints GetGlyphPoints(uint c)
+        public Curve GetGlyphCurve(uint c)
         {
-            GlyphPoints ret;
+            Curve ret = new Curve();
+
             _face.LoadChar(c, LoadFlags.NoScale, LoadTarget.Normal);
 
-            ret.CharCode = c;
-            ret.PointFlags = new List<int[]>();
-            ret.PointCoords = new List<float2>();
-            ret.Points = new Dictionary<float2, int[]>();
-
+            ret.CurveParts = new List<CurvePart>();
             var orgPointCoords = _face.Glyph.Outline.Points;
 
-            //TODO: Split into 3 methods?
-            //Get tags and add them to an array
-            byte[] helper = _face.Glyph.Outline.Tags;
+            //Freetype contours are defined by their end points
+            var curvePartEndPoints = _face.Glyph.Outline.Contours;
 
-            if (helper == null) return ret; //Is null if c is space
+            //Write points of a freetyp contour into a CurvePart
+            for (var i = 0; i <= orgPointCoords.Length; i++)
+            {
+                //If certain index of outline points is in array of contour end points - create new CurvePart
+                if (curvePartEndPoints.Contains((short)i))
+                {
+                    int index = Array.IndexOf(curvePartEndPoints, (short)i);
+                    var cp = new CurvePart();
+                    cp.Vertices = new List<float3>();
+
+                    //Marginal case - first contour ( 0 to contours[0] ) 
+                    if (index == 0)
+                    {
+                        for (var j = 0; j <= i; j++)
+                        {
+                            cp.Vertices.Add(FontImpHelper.Vertice(cp, j, orgPointCoords)); 
+                        }
+                        //The start point is the first point in the outline.Points array
+                        cp.startPoint = new float3(orgPointCoords[0].X.Value, orgPointCoords[0].Y.Value, 0);
+                    }
+                    //contours[0]+1 to contours[1]
+                    else
+                    {
+                        for (int j = curvePartEndPoints[index-1]+1; j <= curvePartEndPoints[index]; j++)
+                        {
+                            cp.Vertices.Add(FontImpHelper.Vertice(cp, j, orgPointCoords));
+                        }
+
+                        //The index in outline.Points which describes the start point is given by the index of the foregone outline.contours index +1
+                        cp.startPoint = new float3(orgPointCoords[curvePartEndPoints[index - 1] + 1].X.Value, orgPointCoords[curvePartEndPoints[index - 1] + 1].Y.Value, 0);
+                    }
+                    ret.CurveParts.Add(cp);
+                }
+            }
+
+
+            //Get tags and add them to an array
+            /* IList pointFlags = new List<int[]>();
+             byte[] helper = _face.Glyph.Outline.Tags;
 
             //Convert values of byte array into binary representation
             foreach (var flags in helper)
@@ -129,23 +165,14 @@ namespace Fusee.Base.Imp.Desktop
                              .Select(x => int.Parse(x.ToString()))  // convert each char to int
                              .ToArray();                            // Convert IEnumerable from select to Array
 
-                ret.PointFlags.Add(bits);                           //Bits are read from right to left, therfore the last bit in the array is bit 0 --> bits[7] is responsible to say wheather a point is on a curve or not
-            }
-
-            //Get point coordinates and add them to a list
-            if (orgPointCoords == null) return ret; //Is null if c is space
-
-            foreach (FTVector vec in orgPointCoords)
-            {
-                var pos = new float2(vec.X.Value, vec.Y.Value);
-                ret.PointCoords.Add(pos);
-            }
+                pointFlags.Add(bits);                           //Bits are read from right to left, therfore the last bit in the array is bit 0 --> bits[7] is responsible to say wheather a point is on a curve or not
+            }*/
 
             //Write tags and coordinates into a dictionary
-            for (int i = 0; i < ret.PointCoords.Count; i++)
+            /*for (int i = 0; i < ret.Vertices.Count; i++)
             {
-                ret.Points.Add(ret.PointCoords[i], ret.PointFlags[i]);
-            }
+                ret.VertNTag.Add(ret.Vertices[i],(int[]) pointFlags[i]);
+            }*/
             return ret;
         }
 
@@ -205,7 +232,19 @@ namespace Fusee.Base.Imp.Desktop
             var leftInx = _face.GetCharIndex(leftC);
             var rightInx = _face.GetCharIndex(rightC);
 
-            return (float) _face.GetKerning(leftInx, rightInx, KerningMode.Default).X;
+            return (float)_face.GetKerning(leftInx, rightInx, KerningMode.Default).X;
+        }
+    }
+
+    internal class FontImpHelper
+    {
+        public static float3 Vertice(CurvePart cp, int j, FTVector[] orgPointCoords)
+        {
+            var vert = new float3(orgPointCoords[j].X.Value, orgPointCoords[j].Y.Value, 0);
+            cp.Vertices.Add(vert);
+            cp.closed = true;
+            cp.CurveSegments = new List<CurveSegment>();
+            return vert;
         }
     }
 }

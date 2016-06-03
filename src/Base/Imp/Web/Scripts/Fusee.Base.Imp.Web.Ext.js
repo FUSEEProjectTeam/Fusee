@@ -124,27 +124,28 @@ JSIL.ImplementExternals("Fusee.Base.Imp.Web.FontImp", function ($) {
         }
     );
 
-    //public GlyphPoints GetGlyphPoints(uint c)
-    $.Method({ Static: false, Public: true }, "GetGlyphPoints",
-        new JSIL.MethodSignature($fuseeBaseCommon.TypeRef("Fusee.Base.Common.GlyphPoints"), [$.UInt32]),
+    //public Curve GetGlyphCurve(uint c)
+    $.Method({ Static: false, Public: true }, "GetGlyphCurve",
+        new JSIL.MethodSignature($fuseeMathCore.TypeRef("Fusee.Math.Core.Curve"), [$.UInt32]),
 
-        function GetGlyphPoints(c) {
+        function GetGlyphCurve(c) {
 
             var glyph = this._face.charToGlyph(String.fromCharCode(c));
-            var glyphPoints = new $fuseeBaseCommon.Fusee.Base.Common.GlyphPoints();
+            var curve = new $fuseeMathCore.Fusee.Math.Core.Curve();
 
-            glyphPoints.CharCode = c;
-            glyphPoints.Pos = new $fuseeMathCore.Fusee.Math.Core.float2(0, 0);
+            //curve.CharCode = c;
+            //var pos = new $fuseeMathCore.Fusee.Math.Core.float3(0, 0, 0);
 
-            glyphPoints.PointCoords = new ($jsilcore.System.Collections.Generic.List$b1.Of($fuseeMathCore.Fusee.Math.Core.float2))();
+            curve.Vertices = new ($jsilcore.System.Collections.Generic.List$b1.Of($fuseeMathCore.Fusee.Math.Core.float3))();
 
             for (var i = 0; i < glyph.path.commands.length; i++) {
                 var x = glyph.path.commands[i].x;
                 var y = glyph.path.commands[i].y;
-                glyphPoints.PointCoords.Add(new $fuseeMathCore.Fusee.Math.Core.float2(x, y));
+                var z = 0;
+                curve.Vertices.Add(new $fuseeMathCore.Fusee.Math.Core.float3(x, y, z));
             }
 
-            return glyphPoints;
+            return curve;
         }
     );
 

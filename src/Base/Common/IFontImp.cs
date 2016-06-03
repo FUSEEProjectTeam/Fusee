@@ -7,7 +7,7 @@ using Fusee.Math.Core;
 namespace Fusee.Base.Common
 {
     /// <summary>
-    ///     A struct for saving character information needed for proccesing a font.
+    /// A struct for saving character information needed for proccesing a font.
     /// </summary>
     public struct GlyphInfo
     {
@@ -74,7 +74,7 @@ namespace Fusee.Base.Common
     /// <summary>
     /// A struct for saving character information, needed to get the start, end and control points of a character
     /// </summary>
-    public struct GlyphPoints
+    /*public struct GlyphPoints
     {
         /// <summary>
         /// The unicode character code this information is for.
@@ -95,7 +95,7 @@ namespace Fusee.Base.Common
         /// Key: Point coordinates, Value: Point flags
         /// </summary>
         public IDictionary<float2, int[]> Points;
-    }
+    }*/
 
     /// <summary>
     /// Common functionality that needs to be provided by a Font implementor.
@@ -130,7 +130,7 @@ namespace Fusee.Base.Common
         /// </summary>
         /// <param name="c">The character to retrive information</param>
         /// <returns></returns>
-        GlyphPoints GetGlyphPoints(uint c);
+        Curve GetGlyphCurve(uint c);
 
         /// <summary>
         ///     Renders the given glyph.

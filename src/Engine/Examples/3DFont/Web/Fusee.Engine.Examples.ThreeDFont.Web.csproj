@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <RootNamespace>Fusee.Tutorial.Web</RootNamespace>
-    <AssemblyName>Fusee.Tutorial.Web</AssemblyName>
+    <RootNamespace>Fusee.Engine.Examples.ThreeDFont.Web</RootNamespace>
+    <AssemblyName>Fusee.Engine.Examples.ThreeDFont.Web</AssemblyName>
     <ProjectBuildRoot Condition=" '$(ProjectBuildRoot)' == '' ">..</ProjectBuildRoot>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
@@ -88,9 +88,9 @@
     <FUSEE_External_JavaScript Include="$(FuseeBuildRoot)\ext\JSIL\FrameworkScripts\mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089.js">
       <Link>FrameworkScripts\mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089.js</Link>
     </FUSEE_External_JavaScript-->
-    <ProjectReference Include="..\Core\Fusee.Engine.Examples.3DFontTest.Core.csproj">
+    <ProjectReference Include="..\Core\Fusee.Engine.Examples.ThreeDFont.Core.csproj">
       <Project>{4e534fdd-a963-448d-b2a6-f3e8b9f0bf69}</Project>
-      <Name>Fusee.3DFontTest.Core</Name>
+      <Name>Fusee.Engine.Examples.ThreeDFont.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

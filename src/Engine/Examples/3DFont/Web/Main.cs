@@ -3,9 +3,9 @@ using Fusee.Base.Core;
 using Fusee.Engine.Core;
 using Fusee.Serialization;
 
-namespace Fusee.Tutorial.Web
+namespace Fusee.Engine.Examples.ThreeDFont.Web
 {
-    public class Tutorial
+    public class ThreeDFont
     {
         public static void Main()
         {
@@ -51,7 +51,7 @@ namespace Fusee.Tutorial.Web
                 });
             AssetStorage.RegisterProvider(fap);
 
-            var app = new Fusee.Tutorial.Core.Tutorial();
+            var app = new Core.ThreeDFont();
 
             // Inject Fusee.Engine InjectMe dependencies (hard coded)
             app.CanvasImplementor = new Fusee.Engine.Imp.Graphics.Web.RenderCanvasImp();

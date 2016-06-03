@@ -4,11 +4,12 @@ using Fusee.Base.Core;
 using Fusee.Base.Imp.Desktop;
 using Fusee.Engine.Core;
 using Fusee.Serialization;
+using FileMode = Fusee.Base.Common.FileMode;
 using Path = Fusee.Base.Common.Path;
 
-namespace Fusee.Tutorial.Desktop
+namespace Fusee.Engine.Examples.ThreeDFont.Desktop
 {
-    public class Simple
+    public class ThreeDFont
     {
         public static void Main()
         {
@@ -42,7 +43,7 @@ namespace Fusee.Tutorial.Desktop
 
             AssetStorage.RegisterProvider(fap);
 
-            var app = new Core.Tutorial();
+            var app = new Core.ThreeDFont();
 
             // Inject Fusee.Engine InjectMe dependencies (hard coded)
             app.CanvasImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasImp();

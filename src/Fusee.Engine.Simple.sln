@@ -88,13 +88,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Base.Imp.Desktop", "B
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Base.Imp.Web", "Base\Imp\Web\Fusee.Base.Imp.Web.csproj", "{7E9E4C1F-E2C8-4011-ACBC-E9D305DC4855}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3DFont", "3DFont", "{0D1B0773-E84F-4FD6-959F-73E6814E520B}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ThreeDFont", "ThreeDFont", "{0D1B0773-E84F-4FD6-959F-73E6814E520B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Examples.3DFontTest.Core", "Engine\Examples\3DFont\Core\Fusee.Engine.Examples.3DFontTest.Core.csproj", "{4E534FDD-A963-448D-B2A6-F3E8B9F0BF69}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Examples.ThreeDFont.Core", "Engine\Examples\3DFont\Core\Fusee.Engine.Examples.ThreeDFont.Core.csproj", "{4E534FDD-A963-448D-B2A6-F3E8B9F0BF69}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Examples.3DFontTest.Desktop", "Engine\Examples\3DFont\Desktop\Fusee.Engine.Examples.3DFontTest.Desktop.csproj", "{2AF22B4E-337D-4A87-AF3E-8E20823F7D9E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Examples.ThreeDFont.Desktop", "Engine\Examples\3DFont\Desktop\Fusee.Engine.Examples.ThreeDFont.Desktop.csproj", "{2AF22B4E-337D-4A87-AF3E-8E20823F7D9E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Examples.3DFontTest.Web", "Engine\Examples\3DFont\Web\Fusee.Engine.Examples.3DFontTest.Web.csproj", "{9EB00529-0063-46BB-8F2C-A3E976F89417}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Examples.ThreeDFont.Web", "Engine\Examples\3DFont\Web\Fusee.Engine.Examples.ThreeDFont.Web.csproj", "{9EB00529-0063-46BB-8F2C-A3E976F89417}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution

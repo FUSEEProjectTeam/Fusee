@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
@@ -6,11 +7,11 @@ using Fusee.Engine.Core.GUI;
 using Fusee.Math.Core;
 using static Fusee.Engine.Core.Input;
 
-namespace Fusee.Tutorial.Core
+namespace Fusee.Engine.Examples.ThreeDFont.Core
 {
 
-    [FuseeApplication(Name = "Tutorial Example", Description = "The official FUSEE Tutorial.")]
-    public class Tutorial : RenderCanvas
+    [FuseeApplication(Name = "ThreeDFont Example", Description = "The official FUSEE ThreeDFont.")]
+    public class ThreeDFont : RenderCanvas
     {
         private const string _vertexShader = @"
             attribute vec3 fuVertex;
@@ -39,7 +40,7 @@ namespace Fusee.Tutorial.Core
             #endif
             //varying vec3 modelpos;
             varying vec3 normal;
-            
+
             void main()
             {
                 gl_FragColor = vec4(normal*0.5+0.5, 1);
@@ -54,14 +55,13 @@ namespace Fusee.Tutorial.Core
         private float _pitchCube2;
 
         private Cube _cube;
-        private Curve _curve;
         private string _char;
         private List<float3> _controlPoints;
         private Mesh _point;
 
+        private readonly Font _font;
 
-
-        // Init is called on startup. 
+       // Init is called on startup. 
         public override void Init()
         {
             _cube = new Cube();
@@ -71,9 +71,27 @@ namespace Fusee.Tutorial.Core
             fontLato.UseKerning = true;
 
             _char = "Q";
+            
+            _controlPoints = new List<float3>();
+            foreach (var c in _char)
+            {
+                uint i = c;
+                var gp = fontLato.GetGlyphCurve(i);
 
-            _curve = new Curve(fontLato);
-            _controlPoints = (List<float3>) _curve.PointCoordinates(_char);
+                foreach (float3 t in gp.CurveParts[0].Vertices)
+                {
+                    var point = new float3(t.x,t.y,t.z);
+                    _controlPoints.Add(point);
+                }
+                /*foreach (var obj in gp.VertNTag)
+                {
+                    Debug.WriteLine(c+""+obj.Key);
+                    foreach (var bit in obj.Value)
+                    {
+                        Debug.WriteLine(bit);
+                    }
+                }*/
+            }
             
             for (var i = 0; i < _controlPoints.Count; i++)
             {
@@ -120,7 +138,6 @@ namespace Fusee.Tutorial.Core
                 RC.SetShaderParam(_xformParam, _xform);
                 RC.Render(_point);
             }
-
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered farame) on the front buffer.
             Present();
         }
@@ -147,6 +164,5 @@ namespace Fusee.Tutorial.Core
             return float4x4.CreateTranslation(pos + pivot)
                    * float4x4.CreateTranslation(-pivot);
         }
-
     }
 }

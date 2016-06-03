@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <RootNamespace>Fusee.Tutorial.Desktop</RootNamespace>
-    <AssemblyName>Fusee.Tutorial.Desktop</AssemblyName>
+    <RootNamespace>Fusee.Engine.Examples.ThreeDFont.Desktop</RootNamespace>
+    <AssemblyName>Fusee.Engine.Examples.3DFont.Desktop</AssemblyName>
     <ProjectBuildRoot Condition=" '$(ProjectBuildRoot)' == '' ">..</ProjectBuildRoot>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -105,9 +105,9 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Core\Fusee.Engine.Examples.3DFontTest.Core.csproj">
+    <ProjectReference Include="..\Core\Fusee.Engine.Examples.ThreeDFont.Core.csproj">
       <Project>{4e534fdd-a963-448d-b2a6-f3e8b9f0bf69}</Project>
-      <Name>Fusee.Engine.Examples.3DFontTest.Core</Name>
+      <Name>Fusee.Engine.Examples.ThreeDFont.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)/Microsoft.CSharp.targets" />

@@ -1,5 +1,6 @@
 ﻿using System;
 using Fusee.Base.Common;
+using Fusee.Math.Core;
 using JSIL.Meta;
 
 namespace Fusee.Base.Imp.Web
@@ -37,7 +38,7 @@ namespace Fusee.Base.Imp.Web
         }
 
         [JSExternal]
-        public GlyphPoints GetGlyphPoints(uint c)
+        public Curve GetGlyphCurve(uint c)
         {
             throw new NotImplementedException();
         }

@@ -1,7 +1,7 @@
 ﻿using Fusee.Engine.Core;
 using Fusee.Math.Core;
 
-namespace Fusee.Tutorial.Core
+namespace Fusee.Engine.Examples.ThreeDFont.Core
 {
     public class Cube
     {

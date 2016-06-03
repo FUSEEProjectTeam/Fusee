@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Fusee.Base.Common;
+using Fusee.Math.Core;
 
 namespace Fusee.Base.Core
 {
@@ -19,7 +20,7 @@ namespace Fusee.Base.Core
 
         private readonly Dictionary<uint, GlyphInfo> _glyphInfoCache = new Dictionary<uint, GlyphInfo>();
 
-        private readonly Dictionary<uint, GlyphPoints> _glyphPointsChache = new Dictionary<uint, GlyphPoints>();
+        private readonly Dictionary<uint, Curve> _glyphCurveChache = new Dictionary<uint, Curve>();
 
         /// <summary>
         ///     Gets or sets a value indicating whether the kerning definition of a font should be used.
@@ -68,14 +69,14 @@ namespace Fusee.Base.Core
         /// </summary>
         /// <param name="c">The character to retrive information</param>
         /// <returns></returns>
-        public GlyphPoints GetGlyphPoints(uint c)
+        public Curve GetGlyphCurve(uint c)
         {
-            GlyphPoints ret;
-            if (_glyphPointsChache.TryGetValue(c, out ret))
+            Curve ret;
+            if (_glyphCurveChache.TryGetValue(c, out ret))
                 return ret;
 
-            ret = _fontImp.GetGlyphPoints(c);
-            _glyphPointsChache[c] = ret;
+            ret = _fontImp.GetGlyphCurve(c);
+            _glyphCurveChache[c] = ret;
             return ret;
         }
 
