@@ -100,7 +100,7 @@ namespace Fusee.Base.Imp.Desktop
         }
 
         /// <summary>
-        /// Gets the start, end and control points of a character.
+        /// Gets the characters points, contours and tags and translates them into a curve
         /// </summary>
         /// <param name="c">The character to retrive information</param>
         /// <returns></returns>
@@ -119,60 +119,12 @@ namespace Fusee.Base.Imp.Desktop
             //Write points of a freetyp contour into a CurvePart
             for (var i = 0; i <= orgPointCoords.Length; i++)
             {
-                //If certain index of outline points is in array of contour end points - create new CurvePart
+                //If certain index of outline points is in array of contour end points - create new CurvePart and add it to Curve.CurveParts
                 if (curvePartEndPoints.Contains((short)i))
                 {
-                    int index = Array.IndexOf(curvePartEndPoints, (short)i);
-                    var cp = new CurvePart();
-                    cp.Vertices = new List<float3>();
-
-                    //Marginal case - first contour ( 0 to contours[0] ) 
-                    if (index == 0)
-                    {
-                        for (var j = 0; j <= i; j++)
-                        {
-                            cp.Vertices.Add(FontImpHelper.Vertice(cp, j, orgPointCoords)); 
-                        }
-                        //The start point is the first point in the outline.Points array
-                        cp.startPoint = new float3(orgPointCoords[0].X.Value, orgPointCoords[0].Y.Value, 0);
-                    }
-                    //contours[0]+1 to contours[1]
-                    else
-                    {
-                        for (int j = curvePartEndPoints[index-1]+1; j <= curvePartEndPoints[index]; j++)
-                        {
-                            cp.Vertices.Add(FontImpHelper.Vertice(cp, j, orgPointCoords));
-                        }
-
-                        //The index in outline.Points which describes the start point is given by the index of the foregone outline.contours index +1
-                        cp.startPoint = new float3(orgPointCoords[curvePartEndPoints[index - 1] + 1].X.Value, orgPointCoords[curvePartEndPoints[index - 1] + 1].Y.Value, 0);
-                    }
-                    ret.CurveParts.Add(cp);
+                    ret.CurveParts.Add(FontImpHelper.CreateCurvePart(orgPointCoords, curvePartEndPoints, i));
                 }
             }
-
-
-            //Get tags and add them to an array
-            /* IList pointFlags = new List<int[]>();
-             byte[] helper = _face.Glyph.Outline.Tags;
-
-            //Convert values of byte array into binary representation
-            foreach (var flags in helper)
-            {
-                var s = Convert.ToString(flags, 2);
-
-                var bits = s.PadLeft(8, '0')                        // Add 0's from left
-                             .Select(x => int.Parse(x.ToString()))  // convert each char to int
-                             .ToArray();                            // Convert IEnumerable from select to Array
-
-                pointFlags.Add(bits);                           //Bits are read from right to left, therfore the last bit in the array is bit 0 --> bits[7] is responsible to say wheather a point is on a curve or not
-            }*/
-
-            //Write tags and coordinates into a dictionary
-            /*for (int i = 0; i < ret.Vertices.Count; i++)
-            {
-                ret.VertNTag.Add(ret.Vertices[i],(int[]) pointFlags[i]);
-            }*/
             return ret;
         }
 
@@ -245,6 +197,52 @@ namespace Fusee.Base.Imp.Desktop
             cp.closed = true;
             cp.CurveSegments = new List<CurveSegment>();
             return vert;
+        }
+
+        public static CurvePart CreateCurvePart(FTVector[] orgPointCoords, short[] curvePartEndPoints, int i)
+        {
+            int index = Array.IndexOf(curvePartEndPoints, (short)i);
+            var cp = new CurvePart();
+            cp.Vertices = new List<float3>();
+
+            //Marginal case - first contour ( 0 to contours[0] ) 
+            if (index == 0)
+            {
+                for (var j = 0; j <= i; j++)
+                {
+                    cp.Vertices.Add(Vertice(cp, j, orgPointCoords));
+                }
+                //The start point is the first point in the outline.Points array
+                cp.startPoint = new float3(orgPointCoords[0].X.Value, orgPointCoords[0].Y.Value, 0);
+            }
+            //contours[0]+1 to contours[1]
+            else
+            {
+                for (int j = curvePartEndPoints[index - 1] + 1; j <= curvePartEndPoints[index]; j++)
+                {
+                    cp.Vertices.Add(Vertice(cp, j, orgPointCoords));
+                }
+
+                //The index in outline.Points which describes the start point is given by the index of the foregone outline.contours index +1
+                cp.startPoint = new float3(orgPointCoords[curvePartEndPoints[index - 1] + 1].X.Value, orgPointCoords[curvePartEndPoints[index - 1] + 1].Y.Value, 0);
+            }
+            return cp;
+        }
+
+        public static CurveSegment CreateCurveSegment()
+        {
+            var cs = new CurveSegment();
+
+            //TODO: algorithm to create a curve segment with the rules:
+            /*_face.glyph.outline.tags:
+             * If bit 0 is unset, the point is ‘off’ the curve, i.e., a Bézier control point, while it is ‘on’ if set.
+             * Bit 1 is meaningful for ‘off’ points only. If set, it indicates a third-order Bézier arc control point; and a second-order control point if unset.
+
+             * Two successive ‘on’ points indicate a line segment joining them.
+             * One conic ‘off’ point between two ‘on’ points indicates a conic Bézier arc, the ‘off’ point being the control point, and the ‘on’ ones the start and end points.
+             * Two successive cubic ‘off’ points between two ‘on’ points indicate a cubic Bézier arc. There must be exactly two cubic control points and two ‘on’ points for each cubic arc.*/
+
+            return cs;
         }
     }
 }
