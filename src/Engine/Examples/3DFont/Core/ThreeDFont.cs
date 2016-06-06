@@ -68,6 +68,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
 
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
             var vladimir = AssetStorage.Get<Font>("VLADIMIR.TTF");
+            var arial = AssetStorage.Get<Font>("arial.ttf");
             fontLato.UseKerning = true;
 
             _char = "Q";
@@ -76,7 +77,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             foreach (var c in _char)
             {
                 uint i = c;
-                var gp = fontLato.GetGlyphCurve(i);
+                var gp = arial.GetGlyphCurve(i);
 
                 foreach (float3 t in gp.CurveParts[0].Vertices)
                 {

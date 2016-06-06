@@ -112,7 +112,7 @@ namespace Fusee.Base.Imp.Desktop
 
             ret.CurveParts = new List<CurvePart>();
             var orgPointCoords = _face.Glyph.Outline.Points;
-
+            byte[] helper = _face.Glyph.Outline.Tags;
             //Freetype contours are defined by their end points
             var curvePartEndPoints = _face.Glyph.Outline.Contours;
 

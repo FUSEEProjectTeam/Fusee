@@ -126,7 +126,7 @@ namespace Fusee.Base.Common
         GlyphInfo GetGlyphInfo(uint c);
 
         /// <summary>
-        /// Gets the control points of a character.
+        /// Translatetes the characters control points into a curve.
         /// </summary>
         /// <param name="c">The character to retrive information</param>
         /// <returns></returns>
