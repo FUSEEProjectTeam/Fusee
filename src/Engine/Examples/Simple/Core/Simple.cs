@@ -1,6 +1,7 @@
 ﻿#define GUI_SIMPLE
 
 using System;
+using System.IO;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
@@ -72,8 +73,6 @@ namespace Fusee.Engine.Examples.Simple.Core
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             // Load the rocket model
-            // var ser = new Serializer();
-            // _rocketScene = ser.Deserialize(IO.StreamFromFile(@"Assets/RocketModel.fus", FileMode.Open), null, typeof(SceneContainer)) as SceneContainer;
             _rocketScene = AssetStorage.Get<SceneContainer>("RocketModel.fus");
 
             // Wrap a SceneRenderer around the model.
