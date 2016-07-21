@@ -37,7 +37,7 @@ namespace Fusee.Engine.Core
 
     internal static class Stereo3DParams
     {
-        internal static float EyeDistance = 30f;
+        internal static float EyeDistance = 6f;
         internal static float Convergence = 0f;
     }
 
@@ -46,7 +46,7 @@ namespace Fusee.Engine.Core
     /// </summary>
     public class Stereo3D
     {
-        private RenderContext _rc;
+        protected RenderContext _rc;
         private float4 _clearColor;
 
         private readonly Stereo3DMode _activeMode;
@@ -69,8 +69,8 @@ namespace Fusee.Engine.Core
         private ShaderProgram _shaderProgram;
         private IShaderParam _shaderTexture;
 
-        private readonly int _screenWidth;
-        private readonly int _screenHeight;
+        private int _screenWidth;
+        private int _screenHeight;
 
         #region Stereo3D Shaders
 
@@ -196,7 +196,13 @@ namespace Fusee.Engine.Core
             _rc = rc;
             _clearColor = rc.ClearColor;
 
-            var imgData = ImageData.CreateImage(_screenWidth, _screenHeight, ColorUint.Black);
+            var imgData = new ImageData();
+            imgData.Width = _screenWidth;
+            imgData.Height = _screenHeight;
+            imgData.PixelFormat = ImagePixelFormat.RGBA;
+            imgData.Stride = 4;
+            
+            //var imgData = ImageData.CreateImage(_screenWidth, _screenHeight, ColorUint.Black);
             _contentLTex = _rc.CreateTexture(imgData);
             _contentRTex = _rc.CreateTexture(imgData);
 
@@ -239,7 +245,7 @@ namespace Fusee.Engine.Core
         /// Prepares the specified eye side for 3D rendering.
         /// </summary>
         /// <param name="eye">The <see cref="Stereo3DEye"/>.</param>
-        public void Prepare(Stereo3DEye eye)
+        public virtual void Prepare(Stereo3DEye eye)
         {
             _currentEye = eye;
 
@@ -380,8 +386,20 @@ namespace Fusee.Engine.Core
             _rc.SetShaderParamTexture(_shaderTexture, eye == Stereo3DEye.Left ? _contentLTex : _contentRTex);
             _rc.ColorMask(red, green, blue, alpha);
 
-			// change lookat ?? lefthanded change
             _rc.Render(_guiLImage.GUIMesh);
+        }
+
+        /// <summary>
+        /// Has to be called when the window was resized. 
+        /// TODO: should be called automatically.
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        public void UpdateOnResize(int width, int height)
+        {
+            _screenWidth = width;
+            _screenHeight = height;
+
         }
 
         /// <summary>
@@ -392,7 +410,7 @@ namespace Fusee.Engine.Core
         /// <param name="target">The target.</param>
         /// <param name="up">Up vector.</param>
         /// <returns>A Matrix that represents the current eye's orientation towards a target point.</returns>
-        public float4x4 LookAt3D(Stereo3DEye eye, float3 eyeV, float3 target, float3 up)
+        public virtual float4x4 LookAt3D(Stereo3DEye eye, float3 eyeV, float3 target, float3 up)
         {
             var x = (eye == Stereo3DEye.Left)
                 ? eyeV.x - Stereo3DParams.EyeDistance
