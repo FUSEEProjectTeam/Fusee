@@ -182,11 +182,10 @@ namespace Fusee.Engine.Examples.S3DVideo.Core
             // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
             // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
             // Back clipping happens at 2000 (Anything further away from the camera than 2000 world units gets clipped, polygons will be cut)
-           // var projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 20000);
-           // RC.Projection = projection;
-            // --> instead use the StereoCamerarig.SetFrustum() to set Projection matrix if using StereoCamerarig
-            _stereoCam.UpdateOnResize(Width, Height);
-            //Set RC.Projection fpr S3D-frustumShift Mode
+            // var projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 20000);
+            // RC.Projection = projection;
+          
+            _stereoCam.UpdateOnResize(Width, Height);         
             _stereoCam.SetFrustums(RC, MathHelper.PiOver4, aspectRatio, 1,20000, 10000);
 
             #if GUI_SIMPLE

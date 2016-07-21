@@ -3,6 +3,9 @@ using Fusee.Math.Core;
 
 namespace Fusee.Engine.Core
 {
+    /// <summary>
+    /// A S3D camera rig. 
+    /// </summary>
     public class StereoCameraRig : Stereo3D
     {
         private float4x4 _leftFrustum, _rightFrustum;
@@ -19,13 +22,18 @@ namespace Fusee.Engine.Core
             Iod = iod;
         }
 
+
+        /// <summary>
+        /// Extends base. Prepare(Stereo3DEye eye) by setting projrction matrix whether left or right eye is rendered
+        /// </summary>
+        /// <param name="eye"></param>
         public override void Prepare(Stereo3DEye eye)
         {
             _rc.Projection = (eye == Stereo3DEye.Left) ? _leftFrustum : _rightFrustum;
             base.Prepare(eye);
         }
 
-        //LookAt3D -Shift -- override/hide
+        //LookAt3D - Frustum Shift
         public override float4x4 LookAt3D(Stereo3DEye eye, float3 eyeV, float3 target, float3 up)
         {
             //shifttranslation
@@ -38,9 +46,17 @@ namespace Fusee.Engine.Core
 
             return float4x4.LookAt(newEye, newTarget, up);
         }
-     
 
 
+        /// <summary>
+        /// Calculating left/right frustum/projection matrix
+        /// </summary>
+        /// <param name="rc">The <see cref="RenderContext" /></param>
+        /// <param name = "fovy" > Angle of the field of view in the y direction(in radians)</param>
+        /// <param name="aspect">Aspect ratio of the view (width / height)</param>
+        /// <param name="zNear">Distance to the near clip plane</param>
+        /// <param name="zFar">Distance to the far clip plane</param>
+        /// <param name="focalLength">Deistance to Camera where parallax is zero (zero parallax plane)</param>
         public void SetFrustums(RenderContext rc, float fovy, float aspectRatio, float zNear, float zFar, float focalLength)
         {
             FocalLength = focalLength;
@@ -69,6 +85,7 @@ namespace Fusee.Engine.Core
         ///         <item>zNear is larger than zFar</item>
         ///     </list>
         /// </exception>
+        /// More information on frustum shift and stereoscopic rendering in general can be found here: http://paulbourke.net/stereographics/stereorender/
         private float4x4 ViewFrustumShifted(float fovy, float aspect, float zNear, float zFar, float focalLength,
             bool lefteye)
         {
