@@ -31,7 +31,7 @@ namespace Fusee.Engine.Examples.S3DVideo.Core
 
         private bool _keys;
 
-        private Stereo3D _stereoCam;
+        private StereoCameraRig _stereoCam;
 
         #if GUI_SIMPLE
         private GUIHandler _guiHandler;
@@ -77,9 +77,10 @@ namespace Fusee.Engine.Examples.S3DVideo.Core
             // Load the rocket model
             _rocketScene = AssetStorage.Get<SceneContainer>("RocketModel.fus");
 
-            var img = AssetStorage.Get<ImageData>("FuseeLogo150.png");
-            _stereoCam = new Stereo3D(Stereo3DMode.Anaglyph, Width,Height);
+            //Create StereoCam for S3D rendering
+            _stereoCam = new StereoCameraRig(Stereo3DMode.Anaglyph, Width, Height, 6.5f);
             _stereoCam.AttachToContext(RC);
+            
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_rocketScene);
         }
@@ -133,8 +134,8 @@ namespace Fusee.Engine.Examples.S3DVideo.Core
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
 
             // 3d mode
-            var eyeF = new float3(0, 500, -800);
-            var targetF = new float3(0, 0, 0);
+            var eyeF = new float3(0, 110, -600);
+            var targetF = new float3(0, 110, 0);
             var upF = new float3(0, 1, 0);
 
             _stereoCam.Prepare(Stereo3DEye.Left);
@@ -146,6 +147,7 @@ namespace Fusee.Engine.Examples.S3DVideo.Core
                 RC.ModelView = lookAt*mtxRot*float4x4.CreateTranslation(new float3(0,0,0));
 
                 // Render the scene loaded in Init()
+                    //Render FUSEE Rocket
                 _sceneRenderer.Render(RC);
 
                 _stereoCam.Save();
@@ -180,11 +182,12 @@ namespace Fusee.Engine.Examples.S3DVideo.Core
             // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
             // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
             // Back clipping happens at 2000 (Anything further away from the camera than 2000 world units gets clipped, polygons will be cut)
-            var projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 20000);
-            RC.Projection = projection;
-
-            //_stereoCam.UpdateOnResize(Width, Height);
-           // _stereoCam.SetFrustums(RC, MathHelper.PiOver4, aspectRatio, 5, 150, 25);
+           // var projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 20000);
+           // RC.Projection = projection;
+            // --> instead use the StereoCamerarig.SetFrustum() to set Projection matrix if using StereoCamerarig
+            _stereoCam.UpdateOnResize(Width, Height);
+            //Set RC.Projection fpr S3D-frustumShift Mode
+            _stereoCam.SetFrustums(RC, MathHelper.PiOver4, aspectRatio, 1,20000, 10000);
 
             #if GUI_SIMPLE
             _guiSubText.PosX = (int)((Width - _subtextWidth) / 2);
