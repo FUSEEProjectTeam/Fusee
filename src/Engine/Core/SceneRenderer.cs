@@ -753,9 +753,19 @@ namespace Fusee.Engine.Core
                 var effectParameterType = effectParameter as TypeContainerBoolean;
                 returnEffectParameterDeclaration.Value = effectParameterType != null && effectParameterType.Value;
             }
+       /*     else if (typeof(float3x3).IsAssignableFrom(t))
+            {
+                var effectParameterType = effectParameter as TypeContainerFloat3X3;
+                if (effectParameterType != null) returnEffectParameterDeclaration.Value = effectParameterType.Value;
+            }
+            else if (typeof(float4x4).IsAssignableFrom(t))
+            {
+                var effectParameterType = effectParameter as TypeContainerFloat4X4;
+                if (effectParameterType != null) returnEffectParameterDeclaration.Value = effectParameterType.Value;
+            }*/
 
-            if(returnEffectParameterDeclaration.Value == null)
-                throw new InvalidDataException("EffectParameterDeclaration:" + effectParameter.Name + ", value is empty or from unknown type!");
+            if (returnEffectParameterDeclaration.Value == null)
+                throw new InvalidDataException("EffectParameterDeclaration:" + effectParameter.Name + ", value is empty or of unknown type!");
 
             return returnEffectParameterDeclaration;
         }

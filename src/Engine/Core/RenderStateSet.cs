@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Fusee.Base.Common;
 using Fusee.Engine.Common;
 using Fusee.Math.Core;
@@ -20,29 +21,18 @@ namespace Fusee.Engine.Core
         /// Creates a RenderStateSet from a given renderStateContainer
         /// used in SceneRenderer
         /// </summary>
-        public RenderStateSet(Dictionary<string, uint> renderStateContainer)
+        public RenderStateSet(Dictionary<uint, uint> renderStateContainer)
         {
            // Set Values
            foreach (var renderState in renderStateContainer)
             {
-                _states[_getRenderStateFromString(renderState.Key)] = renderState.Value;
+                _states[(RenderState) renderState.Key] = renderState.Value;
             }
         }
 
         public RenderStateSet()
         {
-
-        }
-        
-        private RenderState _getRenderStateFromString(string state)
-        {
-            RenderState outValue;
-
-            if (!Enum.TryParse(state, out outValue))
-            {
-                throw new InvalidDataException("RenderState: " + state + "is not a valid or known RenderState!");
-            }
-            return outValue;
+            
         }
         
         #endregion
@@ -50,17 +40,10 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Creates a renderStateContainer from given RenderStateSet
         /// </summary>
-        public Dictionary<string, uint> ToContainer(RenderStateSet renderStateSet)
+        public Dictionary<RenderState, uint> ToContainer(RenderStateSet renderStateSet)
         {
-            var returnDictonary = new Dictionary<string,uint>();
-            foreach (var state in _states)
-            {
-                returnDictonary.Add(state.Key.ToString(), state.Value);
-            }
-            return returnDictonary;
-        } 
-
-      
+            return _states.ToDictionary(state => state.Key, state => state.Value);
+        }
 
         #region Butter and bread states
         /////// =======================
