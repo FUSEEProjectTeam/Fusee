@@ -32,7 +32,7 @@ namespace Fusee.Serialization
         /// <summary>
         /// The type of the light source.
         /// </summary>
-        [ProtoMember(1)] 
+        [ProtoMember(1)]
         public LightType Type;
 
         /// <summary>
@@ -45,6 +45,18 @@ namespace Fusee.Serialization
         /// The light's intensity.
         /// </summary>
         [ProtoMember(3)]
-        public float3 Intensity;
+        public float Intensity;
+
+        /// <summary>
+        /// The light's Position in Model Coordiantes.
+        /// </summary>
+        [ProtoMember(4)]
+        public float3 Position;
+
+        /// <summary>
+        /// The light's Angle.
+        /// </summary>
+        [ProtoMember(5)]
+        public float3 Angle;
     }
 }
