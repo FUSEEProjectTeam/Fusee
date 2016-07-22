@@ -202,7 +202,9 @@ namespace Fusee.Engine.Core
             imgData.PixelFormat = ImagePixelFormat.RGBA;
             imgData.Stride = 4;
             
+            //this seems is not working in the new FUSEE verison
             //var imgData = ImageData.CreateImage(_screenWidth, _screenHeight, ColorUint.Black);
+
             _contentLTex = _rc.CreateTexture(imgData);
             _contentRTex = _rc.CreateTexture(imgData);
 

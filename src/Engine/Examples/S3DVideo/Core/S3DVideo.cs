@@ -32,6 +32,7 @@ namespace Fusee.Engine.Examples.S3DVideo.Core
         private bool _keys;
 
         private StereoCameraRig _stereoCam;
+        private ScreenS3D _screen;
 
         #if GUI_SIMPLE
         private GUIHandler _guiHandler;
@@ -80,7 +81,19 @@ namespace Fusee.Engine.Examples.S3DVideo.Core
             //Create StereoCam for S3D rendering
             _stereoCam = new StereoCameraRig(Stereo3DMode.Anaglyph, Width, Height, 6.5f);
             _stereoCam.AttachToContext(RC);
-            
+
+            //Create ScreenS3DTextures object holding the 4 textures to be used with the ScreenS3D object
+            ScreenS3DTextures screenTex = new ScreenS3DTextures();
+            screenTex.Left = RC.CreateTexture(AssetStorage.Get<ImageData>("left.png"));
+            screenTex.LeftDepth = RC.CreateTexture(AssetStorage.Get<ImageData>("leftDepth.png"));
+            screenTex.Right = RC.CreateTexture(AssetStorage.Get<ImageData>("right.png"));
+            screenTex.RightDepth = RC.CreateTexture(AssetStorage.Get<ImageData>("rightDepth.png"));
+            //Create ScreenS3D Object using the ScreenS3Dtextures object from above
+            _screen = new ScreenS3D(RC, screenTex);
+            //Set the config fort the Screen objet. This can also be doene using a whole ScreenConfig object and assiging direktly to the ScreenS3D object
+            _screen.Config.ScaleSize = 1000;
+            _screen.Config.ScaleDepth = 5;
+            _screen.Config.Transform = float4x4.CreateTranslation(0,200,0);
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_rocketScene);
         }
@@ -134,7 +147,7 @@ namespace Fusee.Engine.Examples.S3DVideo.Core
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
 
             // 3d mode
-            var eyeF = new float3(0, 110, -600);
+            var eyeF = new float3(0, 110, -1000);
             var targetF = new float3(0, 110, 0);
             var upF = new float3(0, 1, 0);
 
@@ -142,9 +155,9 @@ namespace Fusee.Engine.Examples.S3DVideo.Core
             for (var x = 0; x < 2; x++)
             {
                 var lookAt = _stereoCam.LookAt3D(_stereoCam.CurrentEye, eyeF, targetF, upF);
-
+                var mtx = lookAt * mtxRot;
               //  var mtxCam = float4x4.LookAt(0, 20, -600, 0, 150, 0, 0, 1, 0);
-                RC.ModelView = lookAt*mtxRot*float4x4.CreateTranslation(new float3(0,0,0));
+                RC.ModelView = mtx * float4x4.CreateTranslation(new float3(0,0,0));
 
                 // Render the scene loaded in Init()
                     //Render FUSEE Rocket
@@ -155,8 +168,13 @@ namespace Fusee.Engine.Examples.S3DVideo.Core
                 {
                     _stereoCam.Prepare(Stereo3DEye.Right);
                 }
+
+                //Render ScreenS3D object
+                _screen.Render(_stereoCam, lookAt * mtx);
             }
             _stereoCam.Display();
+
+
             #if GUI_SIMPLE
             _guiHandler.RenderGUI();
             #endif
