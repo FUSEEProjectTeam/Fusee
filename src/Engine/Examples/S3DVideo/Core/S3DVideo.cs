@@ -144,7 +144,7 @@ namespace Fusee.Engine.Examples.S3DVideo.Core
             }
             if(Input.Keyboard.IsKeyDown(KeyCodes.PageDown) == true)
             {
-                _screen.SetHit(-1);
+                _screen.SetHit(-10);
             }
 
             _angleHorz += _angleVelHorz;

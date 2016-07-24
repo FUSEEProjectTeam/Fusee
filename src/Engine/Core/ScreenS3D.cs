@@ -162,6 +162,10 @@ namespace Fusee.Engine.Core
 
         //TODO: Hit and Setting config stuff
 
+        public void SetHit(float offset)
+        {
+            Config.Hit +=offset;
+        }
   
         /// <summary>
         /// Creates a mesh used for the screen
