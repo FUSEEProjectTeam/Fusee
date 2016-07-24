@@ -85,9 +85,9 @@ namespace Fusee.Engine.Examples.S3DVideo.Core
             //Create ScreenS3DTextures object holding the 4 textures to be used with the ScreenS3D object
             ScreenS3DTextures screenTex = new ScreenS3DTextures();
             screenTex.Left = RC.CreateTexture(AssetStorage.Get<ImageData>("left.png"));
-            screenTex.LeftDepth = RC.CreateTexture(AssetStorage.Get<ImageData>("leftDepth.png"));
+            screenTex.LeftDepth = RC.CreateTexture(AssetStorage.Get<ImageData>("depthLeft.png"));
             screenTex.Right = RC.CreateTexture(AssetStorage.Get<ImageData>("right.png"));
-            screenTex.RightDepth = RC.CreateTexture(AssetStorage.Get<ImageData>("rightDepth.png"));
+            screenTex.RightDepth = RC.CreateTexture(AssetStorage.Get<ImageData>("depthRight.png"));
             //Create ScreenS3D Object using the ScreenS3Dtextures object from above
             _screen = new ScreenS3D(RC, screenTex);
             //Set the config fort the Screen objet. This can also be doene using a whole ScreenConfig object and assiging direktly to the ScreenS3D object
@@ -138,7 +138,14 @@ namespace Fusee.Engine.Examples.S3DVideo.Core
                     _angleVelVert *= curDamp;
                 }
             }
-
+            if (Input.Keyboard.IsKeyDown(KeyCodes.PageUp) == true)
+            {
+                _screen.SetHit(10);
+            }
+            if(Input.Keyboard.IsKeyDown(KeyCodes.PageDown) == true)
+            {
+                _screen.SetHit(-1);
+            }
 
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
@@ -162,15 +169,14 @@ namespace Fusee.Engine.Examples.S3DVideo.Core
                 // Render the scene loaded in Init()
                     //Render FUSEE Rocket
                 _sceneRenderer.Render(RC);
+                //Render ScreenS3D object
+                _screen.Render(_stereoCam, lookAt * mtx);
 
                 _stereoCam.Save();
                 if (x == 0)
                 {
                     _stereoCam.Prepare(Stereo3DEye.Right);
-                }
-
-                //Render ScreenS3D object
-                _screen.Render(_stereoCam, lookAt * mtx);
+                }                
             }
             _stereoCam.Display();
 
