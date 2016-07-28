@@ -5,6 +5,10 @@ using Fusee.Engine.Common;
 
 namespace Fusee.Engine.Core
 {
+    /// <summary>
+    /// This class is used to store all parameters the user can adjust for a ScreenS3D object
+    /// Can be used to serialize / de-serialize into a cinfig file to store adjustments / load adustments on application start (i.e. using JSON)
+    /// </summary>
     public class ScreenConfig
     {
         public ScreenConfig()
@@ -21,6 +25,9 @@ namespace Fusee.Engine.Core
         public float Hit { get; set; }
     }
 
+    /// <summary>
+    /// This stuct contains all four textures used for the next render call.
+    /// </summary>
     public struct ScreenS3DTextures
     {
         public ITexture Left;
@@ -130,9 +137,9 @@ namespace Fusee.Engine.Core
 
         private Mesh _screenMesh;
 
-        public ScreenConfig Config { get; private set; }        
+        public ScreenConfig Config { get; private set; }
 
-        public ScreenS3DTextures TexturesLR_DLR { get; set; }
+        public ScreenS3DTextures TexturesLR_DLR;// { get; set; }
 
         //Shader variables
         private ShaderProgram _stereo3DShaderProgram;
@@ -248,9 +255,6 @@ namespace Fusee.Engine.Core
                 _rc.ModelView = mv;
                 _rc.Render(_screenMesh);
             }
-
-
         }
-
     }
 }

@@ -86,6 +86,23 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Base.Imp.Desktop", "B
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Base.Imp.Web", "Base\Imp\Web\Fusee.Base.Imp.Web.csproj", "{7E9E4C1F-E2C8-4011-ACBC-E9D305DC4855}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Emgu", "Emgu", "{34EF860A-9D02-4C14-9465-B65FDCD5129B}"
+	ProjectSection(SolutionItems) = preProject
+		Engine\Examples\S3DVideo\Core\emgudll\Emgu.CV.Contrib.dll = Engine\Examples\S3DVideo\Core\emgudll\Emgu.CV.Contrib.dll
+		Engine\Examples\S3DVideo\Core\emgudll\Emgu.CV.Cuda.dll = Engine\Examples\S3DVideo\Core\emgudll\Emgu.CV.Cuda.dll
+		Engine\Examples\S3DVideo\Core\emgudll\Emgu.CV.DebuggerVisualizers.VS2013.dll = Engine\Examples\S3DVideo\Core\emgudll\Emgu.CV.DebuggerVisualizers.VS2013.dll
+		Engine\Examples\S3DVideo\Core\emgudll\Emgu.CV.dll = Engine\Examples\S3DVideo\Core\emgudll\Emgu.CV.dll
+		Engine\Examples\S3DVideo\Core\emgudll\Emgu.CV.ML.dll = Engine\Examples\S3DVideo\Core\emgudll\Emgu.CV.ML.dll
+		Engine\Examples\S3DVideo\Core\emgudll\Emgu.CV.OCR.dll = Engine\Examples\S3DVideo\Core\emgudll\Emgu.CV.OCR.dll
+		Engine\Examples\S3DVideo\Core\emgudll\Emgu.CV.Shape.dll = Engine\Examples\S3DVideo\Core\emgudll\Emgu.CV.Shape.dll
+		Engine\Examples\S3DVideo\Core\emgudll\Emgu.CV.Stitching.dll = Engine\Examples\S3DVideo\Core\emgudll\Emgu.CV.Stitching.dll
+		Engine\Examples\S3DVideo\Core\emgudll\Emgu.CV.Superres.dll = Engine\Examples\S3DVideo\Core\emgudll\Emgu.CV.Superres.dll
+		Engine\Examples\S3DVideo\Core\emgudll\Emgu.CV.UI.dll = Engine\Examples\S3DVideo\Core\emgudll\Emgu.CV.UI.dll
+		Engine\Examples\S3DVideo\Core\emgudll\Emgu.CV.UI.GL.dll = Engine\Examples\S3DVideo\Core\emgudll\Emgu.CV.UI.GL.dll
+		Engine\Examples\S3DVideo\Core\emgudll\Emgu.CV.VideoStab.dll = Engine\Examples\S3DVideo\Core\emgudll\Emgu.CV.VideoStab.dll
+		Engine\Examples\S3DVideo\Core\emgudll\Emgu.Util.dll = Engine\Examples\S3DVideo\Core\emgudll\Emgu.Util.dll
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Engine\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems*{253263c9-9c67-44a5-94d3-51c586bbdaec}*SharedItemsImports = 13
@@ -571,5 +588,6 @@ Global
 		{3564577B-6BA7-41DC-9B19-FD6FBD690CB0} = {A134FDBF-E063-415F-94F3-BF51C36AAB57}
 		{4B5EC54F-E0FB-4AA8-85E7-EB84843D5C7C} = {A134FDBF-E063-415F-94F3-BF51C36AAB57}
 		{7E9E4C1F-E2C8-4011-ACBC-E9D305DC4855} = {A134FDBF-E063-415F-94F3-BF51C36AAB57}
+		{34EF860A-9D02-4C14-9465-B65FDCD5129B} = {76BEC6C3-C4F0-4208-BBC5-4F318D8940A6}
 	EndGlobalSection
 EndGlobal

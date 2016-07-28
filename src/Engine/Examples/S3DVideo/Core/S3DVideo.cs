@@ -10,6 +10,7 @@ using Fusee.Math.Core;
 using Fusee.Serialization;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
+using Emgu.CV;
 #if GUI_SIMPLE
 using Fusee.Engine.Core.GUI;
 #endif
@@ -33,6 +34,8 @@ namespace Fusee.Engine.Examples.S3DVideo.Core
 
         private StereoCameraRig _stereoCam;
         private ScreenS3D _screen;
+        private IVideoStreamImp vl, vr, vld, vrd;
+        Capture capL, capR, capLD, capRD;
 
         #if GUI_SIMPLE
         private GUIHandler _guiHandler;
@@ -96,6 +99,60 @@ namespace Fusee.Engine.Examples.S3DVideo.Core
             _screen.Config.Transform = float4x4.CreateTranslation(0,200,0);
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_rocketScene);
+
+
+            // vl = AssetStorage.Get<VideoStream>("left.mkv");
+            capL = new Capture("Assets/left.mkv");
+            capLD = new Capture("Assets/depthLeft.mkv");
+            capR = new Capture("Assets/right.mkv");
+            capRD = new Capture("Assets/depthRight.mkv");
+
+        }
+
+        int count = 0;
+        private void UpdateVideos()
+        {
+            if (count < 300)
+            {
+                var frameL = capL.QueryFrame();
+                var imgData = new ImageData();
+                imgData.Width = frameL.Width;
+                imgData.Height = frameL.Height;
+                imgData.PixelFormat = ImagePixelFormat.RGB;
+                imgData.Stride = 3;
+
+                imgData.PixelData = frameL.GetData();
+                _screen.TexturesLR_DLR.Left = RC.CreateTexture(imgData);
+
+                imgData.PixelData = capLD.QueryFrame().GetData();
+                _screen.TexturesLR_DLR.LeftDepth = RC.CreateTexture(imgData);
+
+                imgData.PixelData = capR.QueryFrame().GetData();
+                _screen.TexturesLR_DLR.Right = RC.CreateTexture(imgData);
+
+                imgData.PixelData = capRD.QueryFrame().GetData();
+                _screen.TexturesLR_DLR.RightDepth = RC.CreateTexture(imgData);
+                //_screen.TexturesLR_DLR.Left = RC.CreateTexture(vl.GetCurrentFrame());
+                count++;
+            }
+            else
+            {
+                capL.Dispose();
+                capLD.Dispose();
+                capR.Dispose();
+                capRD.Dispose();
+
+                capL= null;
+                capLD= null;
+                capR= null;
+                capRD= null;
+
+                capL = new Capture("Assets/left.mkv");
+                capLD = new Capture("Assets/depthLeft.mkv");
+                capR = new Capture("Assets/right.mkv");
+                capRD = new Capture("Assets/depthRight.mkv");
+                count = 0;
+            }
         }
 
         // RenderAFrame is called once a frame
@@ -104,6 +161,8 @@ namespace Fusee.Engine.Examples.S3DVideo.Core
 
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
+
+            UpdateVideos();
 
             // Mouse and keyboard movement
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
@@ -187,6 +246,10 @@ namespace Fusee.Engine.Examples.S3DVideo.Core
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rerndered farame) on the front buffer.
             Present();
+
+            
+
+           
         }
 
         private InputDevice Creator(IInputDeviceImp device)
