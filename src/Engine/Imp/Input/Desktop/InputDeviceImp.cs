@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using Fusee.Engine.Common;
 using SlimDX.DirectInput;
 
@@ -222,6 +224,42 @@ namespace Fusee.Engine.Imp.Input.Desktop
         }
 
 
+        public string Id { get; }
+        public string Desc { get; }
+        public DeviceCategory Category { get; }
+        public int AxesCount { get; }
+        public IEnumerable AxisImpDesc { get; }
+        public float GetAxis(int iAxisId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public event EventHandler<AxisValueChangedArgs> AxisValueChanged;
+        public int ButtonCount { get; }
+        public IEnumerable ButtonImpDesc { get; }
+
+        IEnumerable<AxisImpDescription> IInputDeviceImp.AxisImpDesc
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        IEnumerable<ButtonImpDescription> IInputDeviceImp.ButtonImpDesc
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public bool GetButton(int iButtonId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public event EventHandler<ButtonValueChangedArgs> ButtonValueChanged;
     }
 }
 

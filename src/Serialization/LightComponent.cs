@@ -30,33 +30,44 @@ namespace Fusee.Serialization
     public class LightComponent : SceneComponentContainer
     {
         /// <summary>
-        /// The type of the light source.
+        /// Represents the light status.
         /// </summary>
         [ProtoMember(1)]
-        public LightType Type;
-
+        public float Active;
         /// <summary>
-        /// The color emitted by the light source.
+        /// Represents the color.
         /// </summary>
         [ProtoMember(2)]
         public float3 Color;
-
         /// <summary>
-        /// The light's intensity.
+        /// Represents the position of the light.
         /// </summary>
         [ProtoMember(3)]
-        public float Intensity;
-
+        public float4 Position;
         /// <summary>
-        /// The light's Position in Model Coordiantes.
+        /// Represents the attenuation of the light.
         /// </summary>
         [ProtoMember(4)]
-        public float3 Position;
-
+        public float Attenuation;
         /// <summary>
-        /// The light's Angle.
+        /// Represents the ambient coefficient of the light.
         /// </summary>
         [ProtoMember(5)]
-        public float3 Angle;
+        public float AmbientCoefficient;
+        /// <summary>
+        /// Represents the type of the light.
+        /// </summary>
+        [ProtoMember(6)]
+        public LightType Type;
+        /// <summary>
+        /// Represents the spot angle of the light.
+        /// </summary>
+        [ProtoMember(6)]
+        public float ConeAngle;
+        /// <summary>
+        /// Represents the cone direction of the light.
+        /// </summary>
+        [ProtoMember(7)]
+        public float3 ConeDirection;
     }
 }

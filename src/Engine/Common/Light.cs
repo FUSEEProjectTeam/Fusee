@@ -32,25 +32,21 @@ namespace Fusee.Engine.Common
         /// </summary>
         public float Active;
         /// <summary>
-        /// Represents the ambient color.
+        /// Represents the color.
         /// </summary>
-        public float4 AmbientColor;
-        /// <summary>
-        /// Represents the diffuse color.
-        /// </summary>
-        public float4 DiffuseColor;
-        /// <summary>
-        /// Represents the specular color.
-        /// </summary>
-        public float4 SpecularColor;
+        public float3 Color;
         /// <summary>
         /// Represents the position of the light.
         /// </summary>
-        public float3 Position;
+        public float4 Position;
         /// <summary>
-        /// Represents the direction of the light.
+        /// Represents the attenuation of the light.
         /// </summary>
-        public float3 Direction;
+        public float Attenuation;
+        /// <summary>
+        /// Represents the ambient coefficient of the light.
+        /// </summary>
+        public float AmbientCoefficient;
         /// <summary>
         /// Represents the type of the light.
         /// </summary>
@@ -58,6 +54,10 @@ namespace Fusee.Engine.Common
         /// <summary>
         /// Represents the spot angle of the light.
         /// </summary>
-        public float Angle;
+        public float ConeAngle;
+        /// <summary>
+        /// Represents the cone direction of the light.
+        /// </summary>
+        public float3 ConeDirection;
     }
 }
