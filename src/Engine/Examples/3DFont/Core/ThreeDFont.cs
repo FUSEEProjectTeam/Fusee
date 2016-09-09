@@ -70,8 +70,9 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             var vladimir = AssetStorage.Get<Font>("VLADIMIR.TTF");
             var arial = AssetStorage.Get<Font>("arial.ttf");
             fontLato.UseKerning = true;
+            arial.UseKerning = true;
 
-            _char = "Q";
+            _char = "B";
             
             _controlPoints = new List<float3>();
             foreach (var c in _char)
@@ -84,14 +85,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
                     var point = new float3(t.x,t.y,t.z);
                     _controlPoints.Add(point);
                 }
-                /*foreach (var obj in gp.VertNTag)
-                {
-                    Debug.WriteLine(c+""+obj.Key);
-                    foreach (var bit in obj.Value)
-                    {
-                        Debug.WriteLine(bit);
-                    }
-                }*/
+                
             }
             
             for (var i = 0; i < _controlPoints.Count; i++)
