@@ -80,9 +80,9 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
                 uint i = c;
                 var gp = arial.GetGlyphCurve(i);
 
-                foreach (float3 t in gp.CurveParts[0].Vertices)
+                foreach (var vert in gp.CurveParts[0].Vertices)
                 {
-                    var point = new float3(t.x,t.y,t.z);
+                    var point = new float3(vert.x,vert.y,vert.z);
                     _controlPoints.Add(point);
                 }
                 
@@ -116,7 +116,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             _pitchCube1 = M.Clamp(_pitchCube1, -M.Pi / 2, M.Pi / 2);
             _pitchCube2 = M.Clamp(_pitchCube2, -M.Pi / 2, M.Pi / 2);
 
-            float2 speed = Mouse.Velocity + Touch.GetVelocity(TouchPoints.Touchpoint_0);
+            var speed = Mouse.Velocity + Touch.GetVelocity(TouchPoints.Touchpoint_0);
             if (Mouse.LeftButton || Touch.GetTouchActive(TouchPoints.Touchpoint_0))
             {
                 _alpha -= speed.x * 0.0001f;

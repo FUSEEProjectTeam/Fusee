@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Fusee.Math.Core
 {
@@ -12,9 +13,24 @@ namespace Fusee.Math.Core
         /// </summary>
         public IList<CurvePart> CurveParts;
 
-        static void CombineCurve(Curve a, Curve b) //TODO: for rendering a text a list of Curves would be the better choice?
+        static Curve CombineCurve(Curve a, Curve b)
         {
-            
+            //Concat returns a new list, without modifying the original
+            var combinedCurve = new Curve { CurveParts = (IList<CurvePart>)a.CurveParts.Concat(b.CurveParts) };
+            return combinedCurve;
+        }
+
+        static Curve CombineCurve(IEnumerable<Curve> curves)
+        {
+            var combinedCurve = new Curve {CurveParts = new List<CurvePart>()};
+            foreach (var curve in curves)
+            {
+                foreach (var part in curve.CurveParts)
+                {
+                    combinedCurve.CurveParts.Add(part);
+                }
+            }
+            return combinedCurve;
         }
     }
 
@@ -63,7 +79,7 @@ namespace Fusee.Math.Core
 
         private void GetSegmentVertices(List<float3> vertices)
         {
-            
+
         }
     }
 
@@ -73,15 +89,15 @@ namespace Fusee.Math.Core
     public enum InterpolationMethod
     {
         /// <summary>
-        /// A linear curve is described by two successive "on curve" points.
+        /// A line is described by two successive "on curve" points.
         /// </summary>
         LINEAR,
         /// <summary>
-        /// A cubic curve is decribed by two successive "off curve" points between two "on curve" points.
+        /// A cubic curve is decribed by two successive control points between two "on curve" points.
         /// </summary>
         BEZIER_CUBIC,
         /// <summary>
-        /// A conic curve is described by a "off curve" point between two "on curve" points.
+        /// A conic curve is described by one control point between two "on curve" points.
         /// </summary>
         BEZIER_CONIC
     }

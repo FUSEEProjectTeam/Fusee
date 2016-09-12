@@ -245,7 +245,7 @@ namespace Fusee.Base.Imp.Desktop
             byte[] conicPattern = { 1, 0, 1 };
             byte[] cubicPattern = { 1, 0, 0, 1 };
             byte[] conicVirtualPattern = { 1, 0, 0, 0 };
-            //TODO: Deal with possibility that a contour/part starts with an "off" curve point
+
             var segments = new List<CurveSegment>();
 
             for (var i = 0; i < part.VertTags.Count; i++)
@@ -278,6 +278,10 @@ namespace Fusee.Base.Imp.Desktop
                         count = j;
                         break;
                     }
+
+                    //Create "on" points between two successive 0's
+                    CreateOnPointsAndAddToList(cs.Vertices);
+                    
                     segments.Add(cs);
                     i = count - 1;
                 }
@@ -302,6 +306,29 @@ namespace Fusee.Base.Imp.Desktop
                 }
             }
             return segments;
+        }
+
+        public static void CreateOnPointsAndAddToList(IList<float3> vertices)
+        {
+            var zeroes = new List<float3>(vertices);
+            zeroes.Remove(zeroes.First());
+            zeroes.Remove(zeroes.Last());
+            for (var j = 0; j < zeroes.Count; j++)
+            {
+                if (j + 1 >= zeroes.Count) break;
+                var vPoint = new float3(zeroes[j].x + zeroes[j + 1].x / 2, zeroes[j].y + zeroes[j + 1].y / 2,
+                    zeroes[j].z + zeroes[j + 1].z / 2);
+
+                if (j.Equals(0))
+                {
+                    vertices.Insert(2, vPoint);
+                }
+                else
+                {
+                    //Insert at every second index (2,4,6 ...)
+                   vertices.Insert((j + 1) * 2, vPoint);
+                }
+            }
         }
 
         public static CurveSegment CreateCurveSegment(CurvePart cp, int i, byte[] pattern, InterpolationMethod methode)
