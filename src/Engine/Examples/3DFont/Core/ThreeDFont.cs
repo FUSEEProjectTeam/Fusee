@@ -59,8 +59,6 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
         private List<float3> _controlPoints;
         private Mesh _point;
 
-        private readonly Font _font;
-
        // Init is called on startup. 
         public override void Init()
         {
@@ -80,12 +78,18 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
                 uint i = c;
                 var gp = arial.GetGlyphCurve(i);
 
-                foreach (var vert in gp.CurveParts[0].Vertices)
+
+                foreach (var part in gp.CurveParts)
                 {
-                    var point = new float3(vert.x,vert.y,vert.z);
-                    _controlPoints.Add(point);
+                    foreach (var segment in part.CurveSegments)
+                    {
+                        foreach (var vert in segment.Vertices)
+                        {
+                            var point = new float3(vert.x, vert.y, vert.z);
+                            _controlPoints.Add(point);
+                        }
+                    }
                 }
-                
             }
             
             for (var i = 0; i < _controlPoints.Count; i++)

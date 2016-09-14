@@ -36,7 +36,7 @@ namespace Fusee.Math.Core
 
 
     /// <summary>
-    /// Represents a open or Closed part of a curve, using a list of CurveSegments and its starting point.
+    /// Represents a open or closed part of a curve, using a list of CurveSegments and its starting point.
     /// </summary>
     public class CurvePart
     {
@@ -76,11 +76,6 @@ namespace Fusee.Math.Core
         /// Defines which kinde of curve the segment belongs to.
         /// </summary>
         public InterpolationMethod Interpolation;
-
-        private void GetSegmentVertices(List<float3> vertices)
-        {
-
-        }
     }
 
     /// <summary>

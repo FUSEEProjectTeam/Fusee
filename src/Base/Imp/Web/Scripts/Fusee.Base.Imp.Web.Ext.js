@@ -1,5 +1,6 @@
 var $fuseeBaseCommon = JSIL.GetAssembly("Fusee.Base.Common");
 var $fuseeMathCore = JSIL.GetAssembly("Fusee.Math.Core");
+var $fuseeBaseImp = JSIL.GetAssembly("Fusee.Base.Imp.Web");
 
 JSIL.DeclareNamespace("Fusee");
 JSIL.DeclareNamespace("Fusee.Base");
@@ -133,14 +134,12 @@ JSIL.ImplementExternals("Fusee.Base.Imp.Web.FontImp", function ($) {
             var glyph = this._face.charToGlyph(String.fromCharCode(c));
             var curve = new $fuseeMathCore.Fusee.Math.Core.Curve();
             
+            ////////////////////////// Create CurvePart //////////////////////////////////////////
             curve.CurveParts = new ($jsilcore.System.Collections.Generic.List$b1.Of($fuseeMathCore.Fusee.Math.Core.CurvePart))();
-
-            console.log(glyph);
 
             var contour = [];
             for (var i = 0; i < glyph.points.length; i++)
             {
-                console.log(glyph.points[i].lastPointOfContour);
                 if (!glyph.points[i].lastPointOfContour) {
                     contour.push(glyph.points[i]);
                 }
@@ -160,9 +159,9 @@ JSIL.ImplementExternals("Fusee.Base.Imp.Web.FontImp", function ($) {
                     cp.CurveSegments = new ($jsilcore.System.Collections.Generic.List$b1.Of($fuseeMathCore.Fusee.Math.Core.CurveSegment))();
 
                     cp.Vertices = new ($jsilcore.System.Collections.Generic.List$b1.Of($fuseeMathCore.Fusee.Math.Core.float3))();
-
-                    cp.VertTags = [];
-                    console.log(cp);
+                    
+                    
+                    cp.VertTags = new ($jsilcore.System.Collections.Generic.List$b1.Of($jsilcore.System.Byte))();
                     
                     for (var j = 0; j < contour.length; j++)
                     {
@@ -172,22 +171,24 @@ JSIL.ImplementExternals("Fusee.Base.Imp.Web.FontImp", function ($) {
                         cp.Vertices.Add(new $fuseeMathCore.Fusee.Math.Core.float3(x, y, z));
 
                         var tag = contour[j].onCurve ? 1 : 0;
-                        cp.VertTags.push(tag);
+                        cp.VertTags.Add(tag);
                     }
+
                     contour = [];
-                    
                     curve.CurveParts.Add(cp);
                 }
             }
-            console.log(curve);
+            //////////////////////////////////////////////////////////////////////////////////////////
 
-            //curve.Vertices = new ($jsilcore.System.Collections.Generic.List$b1.Of($fuseeMathCore.Fusee.Math.Core.float3))();
-            /*for (var i = 0; i < glyph.path.commands.length; i++) {
-                var x = glyph.path.commands[i].x;
-                var y = glyph.path.commands[i].y;
-                var z = 0;
-                curve.Vertices.Add(new $fuseeMathCore.Fusee.Math.Core.float3(x, y, z));
-            }*/
+            ///////////////////////////// Create Curve Segment //////////////////////////////////////
+            var helper = $fuseeBaseImp.Fusee.Base.Imp.Web.SplitToCurveSegmentHelper;
+            for (var k = 0; k < curve.CurveParts.Count; k++)
+            {
+                var segments = helper.SplitPartIntoSegments(curve.CurveParts._items[k]);
+                helper.CombineCurveSegmentsAndAddThemToCurvePart(segments, curve.CurveParts._items[k]);
+            }
+            /////////////////////////////////////////////////////////////////////////////////////
+            console.log(curve);
             return curve;
         }
     );

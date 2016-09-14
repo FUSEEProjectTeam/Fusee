@@ -120,15 +120,15 @@ namespace Fusee.Base.Imp.Desktop
                 //If a certain index of outline points is in array of contour end points - create new CurvePart and add it to Curve.CurveParts
                 if (curvePartEndPoints.Contains((short)i))
                 {
-                    curve.CurveParts.Add(FontImpHelper.CreateCurvePart(orgPointCoords, pointTags, curvePartEndPoints, i));
+                    curve.CurveParts.Add(SplitToCurvePartHelper.CreateCurvePart(orgPointCoords, pointTags, curvePartEndPoints, i));
                 }
             }
 
             //Create CurveSegments for every CurvePart
             foreach (var part in curve.CurveParts)
             {
-                var segments = FontImpHelper.SplitPartIntoSegments(part);
-                FontImpHelper.CombineCurveSegmentsAndAddThemToCurvePart(segments, part);
+                var segments = SplitToCurveSegmentHelper.SplitPartIntoSegments(part);
+                SplitToCurveSegmentHelper.CombineCurveSegmentsAndAddThemToCurvePart(segments, part);
             }
             return curve;
         }
@@ -193,7 +193,7 @@ namespace Fusee.Base.Imp.Desktop
         }
     }
 
-    internal class FontImpHelper
+    internal class SplitToCurvePartHelper
     {
         public static void CurvePartVertice(CurvePart cp, int j, FTVector[] orgPointCoords)
         {
@@ -237,150 +237,6 @@ namespace Fusee.Base.Imp.Desktop
                 cp.StartPoint = new float3(orgPointCoords[curvePartEndPoints[index - 1] + 1].X.Value, orgPointCoords[curvePartEndPoints[index - 1] + 1].Y.Value, 0);
             }
             return cp;
-        }
-
-        public static List<CurveSegment> SplitPartIntoSegments(CurvePart part)
-        {
-            byte[] linearPattern = { 1, 1 };
-            byte[] conicPattern = { 1, 0, 1 };
-            byte[] cubicPattern = { 1, 0, 0, 1 };
-            byte[] conicVirtualPattern = { 1, 0, 0, 0 };
-
-            var segments = new List<CurveSegment>();
-
-            for (var i = 0; i < part.VertTags.Count; i++)
-            {
-                if (part.VertTags.Skip(i).Take(linearPattern.Length).SequenceEqual(linearPattern))
-                {
-                    segments.Add(CreateCurveSegment(part, i, linearPattern, InterpolationMethod.LINEAR));
-                }
-                else if (part.VertTags.Skip(i).Take(conicPattern.Length).SequenceEqual(conicPattern))
-                {
-                    segments.Add(CreateCurveSegment(part, i, conicPattern, InterpolationMethod.BEZIER_CONIC));
-                    i = i + 1;
-                }
-                else if (part.VertTags.Skip(i).Take(cubicPattern.Length).SequenceEqual(cubicPattern))
-                {
-                    segments.Add(CreateCurveSegment(part, i, cubicPattern, InterpolationMethod.BEZIER_CUBIC));
-                    i = i + 2;
-                }
-                else if (part.VertTags.Skip(i).Take(conicVirtualPattern.Length).SequenceEqual(conicVirtualPattern))
-                {
-                    var count = 0;
-                    var cs = CreateCurveSegment(part, i, conicVirtualPattern, InterpolationMethod.BEZIER_CONIC);
-
-                    i = i + 3;
-
-                    for (var j = i + 1; j < part.VertTags.Count; j++)
-                    {
-                        cs.Vertices.Add(part.Vertices[j]);
-                        if (part.VertTags[j].Equals(0)) continue;
-                        count = j;
-                        break;
-                    }
-
-                    //Create "on" points between two successive 0's
-                    CreateOnPointsAndAddToList(cs.Vertices);
-                    
-                    segments.Add(cs);
-                    i = count - 1;
-                }
-                else
-                {
-                    //Only needed for "closed" CurveParts (like letters always are)
-                    var lastSegment = new List<byte>();
-                    lastSegment.AddRange(part.VertTags.Skip(i).Take(part.VertTags.Count - i));
-                    lastSegment.Add(part.VertTags[0]);
-                    if (lastSegment.SequenceEqual(conicPattern))
-                    {
-                        segments.Add(CreateCurveSegment(part, i, conicPattern, InterpolationMethod.BEZIER_CONIC, part.Vertices[0]));
-                    }
-                    else if (lastSegment.SequenceEqual(cubicPattern))
-                    {
-                        segments.Add(CreateCurveSegment(part, i, cubicPattern, InterpolationMethod.BEZIER_CUBIC, part.Vertices[0]));
-                    }
-                    else if (lastSegment.SequenceEqual(conicVirtualPattern))
-                    {
-                        segments.Add(CreateCurveSegment(part, i, cubicPattern, InterpolationMethod.BEZIER_CUBIC, part.Vertices[0]));
-                    }
-                }
-            }
-            return segments;
-        }
-
-        public static void CreateOnPointsAndAddToList(IList<float3> vertices)
-        {
-            var zeroes = new List<float3>(vertices);
-            zeroes.Remove(zeroes.First());
-            zeroes.Remove(zeroes.Last());
-            for (var j = 0; j < zeroes.Count; j++)
-            {
-                if (j + 1 >= zeroes.Count) break;
-                var vPoint = new float3(zeroes[j].x + zeroes[j + 1].x / 2, zeroes[j].y + zeroes[j + 1].y / 2,
-                    zeroes[j].z + zeroes[j + 1].z / 2);
-
-                if (j.Equals(0))
-                {
-                    vertices.Insert(2, vPoint);
-                }
-                else
-                {
-                    //Insert at every second index (2,4,6 ...)
-                   vertices.Insert((j + 1) * 2, vPoint);
-                }
-            }
-        }
-
-        public static CurveSegment CreateCurveSegment(CurvePart cp, int i, byte[] pattern, InterpolationMethod methode)
-        {
-            var segmentVerts = new List<float3>();
-            segmentVerts.AddRange(cp.Vertices.Skip(i).Take(pattern.Length));
-            var cs = new CurveSegment
-            {
-                Interpolation = methode,
-                Vertices = new List<float3>()
-            };
-            cs.Vertices = segmentVerts;
-            return cs;
-        }
-
-        public static CurveSegment CreateCurveSegment(CurvePart cp, int i, byte[] pattern, InterpolationMethod methode, float3 startPoint)
-        {
-            var segmentVerts = new List<float3>();
-            segmentVerts.AddRange(cp.Vertices.Skip(i).Take(pattern.Length));
-            segmentVerts.Add(startPoint);
-            var cs = new CurveSegment
-            {
-                Interpolation = methode,
-                Vertices = new List<float3>()
-            };
-            cs.Vertices = segmentVerts;
-            return cs;
-        }
-
-        public static void CombineCurveSegmentsAndAddThemToCurvePart(List<CurveSegment> segments, CurvePart part)
-        {
-            //Combine segments that follow each other and have the same interpolation methode.
-            for (var i = 0; i < segments.Count; i++)
-            {
-                //Constraint
-                if (i + 1 >= segments.Count) break;
-
-                //Check whether two successive segments have the same interpolation Methode, if so combine them.
-                if (segments[i].Interpolation.Equals(segments[i + 1].Interpolation))
-                {
-                    foreach (var vertex in segments[i + 1].Vertices)
-                    {
-                        if (vertex.Equals(segments[i + 1].Vertices[0])) continue;
-                        segments[i].Vertices.Add(vertex);
-                    }
-                    segments.RemoveAt(i + 1);
-                    //Set the for loop one step back, to check the "new" CurvePart with its follower
-                    if (i >= 0)
-                        i = i - 1;
-                }
-            }
-            part.CurveSegments = segments; //TODO: decide whether to delete duplicate points or just do not draw them
         }
     }
 }
