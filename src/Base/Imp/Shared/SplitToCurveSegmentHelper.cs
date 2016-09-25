@@ -1,27 +1,17 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-#if PLATFORM_DESKTOP
-using Fusee.Base.Imp.Desktop.ExtentionMethodes;
-#elif PLATFORM_WEB
-using Fusee.Base.Imp.Web.ExtentionMethodes;
-#endif
 using Fusee.Math.Core;
 
 #if PLATFORM_DESKTOP
+using Fusee.Base.Imp.Desktop.ExtentionMethodes;
 namespace Fusee.Base.Imp.Desktop
 #elif PLATFORM_WEB
+using Fusee.Base.Imp.Web.ExtentionMethodes;
 namespace Fusee.Base.Imp.Web
 #endif
 {
     static class SplitToCurveSegmentHelper
     {
-
-        public static List<byte> test()
-        {
-            return new List<byte>();
-        }
-
         public static List<CurveSegment> SplitPartIntoSegments(CurvePart part)
         {
             byte[] linearPattern = { 1, 1 };
