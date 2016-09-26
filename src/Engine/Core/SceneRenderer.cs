@@ -753,16 +753,6 @@ namespace Fusee.Engine.Core
                 var effectParameterType = effectParameter as TypeContainerBoolean;
                 returnEffectParameterDeclaration.Value = effectParameterType != null && effectParameterType.Value;
             }
-       /*     else if (typeof(float3x3).IsAssignableFrom(t))
-            {
-                var effectParameterType = effectParameter as TypeContainerFloat3X3;
-                if (effectParameterType != null) returnEffectParameterDeclaration.Value = effectParameterType.Value;
-            }
-            else if (typeof(float4x4).IsAssignableFrom(t))
-            {
-                var effectParameterType = effectParameter as TypeContainerFloat4X4;
-                if (effectParameterType != null) returnEffectParameterDeclaration.Value = effectParameterType.Value;
-            }*/
 
             if (returnEffectParameterDeclaration.Value == null)
                 throw new InvalidDataException("EffectParameterDeclaration:" + effectParameter.Name + ", value is empty or of unknown type!");
@@ -774,7 +764,10 @@ namespace Fusee.Engine.Core
         {
             WeightComponent wc = CurrentNode.GetWeights();
             // TODO: Seperation of Concerns
-            ShaderCodeBuilder scb = new ShaderCodeBuilder(mc, null, wc); // TODO, CurrentNode.GetWeights() != null);
+            // set RenderMethod ?? TODO: Evaluate
+            // TODO: MaterialComponent C4D -> material values -> CookTorrance roughness, etc.
+            ShaderCodeBuilder scb = new ShaderCodeBuilder(mc, null, LightningMethod.COOK_TORRANCE, wc); // TODO, CurrentNode.GetWeights() != null);
+
             var effectParameters = AssembleEffectParamers(mc, scb);
 
             ShaderEffect ret = new ShaderEffect(new[]

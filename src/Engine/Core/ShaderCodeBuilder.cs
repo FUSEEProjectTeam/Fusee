@@ -1,16 +1,28 @@
-﻿using System.Text;
+﻿using System;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using Fusee.Serialization;
 
 namespace Fusee.Engine.Core
 {
-    class ShaderCodeBuilder
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    internal enum LightningMethod
     {
+        BLINN_PHONG,
+        COOK_TORRANCE
+    }
+
+    internal class ShaderCodeBuilder
+    {
+        public LightningMethod LightningCalulationMethod;
+
         private bool _hasVertices, _hasNormals, _hasUVs, _hasColors;
         private bool _hasDiffuse, _hasSpecular, _hasEmissive, _hasBump;
         private bool _hasDiffuseTexture, _hasSpecularTexture, _hasEmissiveTexture;
-        private bool _hasWeightMap;
-        private int _nBones;
-        private bool _normalizeNormals;
+        private readonly bool _hasWeightMap;
+        private readonly int _nBones;
+        private readonly bool _normalizeNormals;
 
         /*
         struct SurfaceOutput {
@@ -23,8 +35,11 @@ namespace Fusee.Engine.Core
         };
         */
 
-        public ShaderCodeBuilder(MaterialComponent mc, MeshComponent mesh, WeightComponent wc = null)
+
+        public ShaderCodeBuilder(MaterialComponent mc, MeshComponent mesh, LightningMethod lightningCalulationMethod, WeightComponent wc = null)
         {
+            LightningCalulationMethod = lightningCalulationMethod;
+
             if (wc != null)
             {
                 _hasWeightMap = true;
@@ -46,23 +61,23 @@ namespace Fusee.Engine.Core
             }
             AnalyzeMaterial(mc);
 
-            StringBuilder vs = new StringBuilder();
+            var vs = new StringBuilder();
             MeshInputDeclarations(vs);
             MatrixDeclarations(vs);
             VSBody(vs);
-            _vs = vs.ToString();
+            VS = vs.ToString();
 
-            StringBuilder ps = new StringBuilder();
+            var ps = new StringBuilder();
             PixelInputDeclarations(ps);
             PSBody(ps);
-            _ps = ps.ToString();
+            PS = ps.ToString();
         }
 
         private void AnalyzeMesh(MeshComponent mesh)
         {
-            _hasVertices = (mesh.Vertices != null && mesh.Vertices.Length > 0);
-            _hasNormals = (mesh.Normals != null && mesh.Normals.Length > 0);
-            _hasUVs = (mesh.UVs != null && mesh.UVs.Length > 0);
+            _hasVertices = mesh.Vertices != null && mesh.Vertices.Length > 0;
+            _hasNormals = mesh.Normals != null && mesh.Normals.Length > 0;
+            _hasUVs = mesh.UVs != null && mesh.UVs.Length > 0;
             _hasColors = false;
             // _hasColors = (mesh.Colors != null && mesh.Colors.Length > 0);
         }
@@ -71,13 +86,13 @@ namespace Fusee.Engine.Core
         {
             _hasDiffuse = mc.HasDiffuse;
             if (_hasDiffuse)
-                _hasDiffuseTexture = (mc.Diffuse.Texture != null);
+                _hasDiffuseTexture = mc.Diffuse.Texture != null;
             _hasSpecular = mc.HasSpecular;
             if (_hasSpecular)
-                _hasSpecularTexture = (mc.Specular.Texture != null);
+                _hasSpecularTexture = mc.Specular.Texture != null;
             _hasEmissive = mc.HasEmissive;
             if (_hasEmissive)
-                _hasEmissiveTexture = (mc.Emissive.Texture != null);
+                _hasEmissiveTexture = mc.Emissive.Texture != null;
             _hasBump = mc.HasBump; // always has a texture...
         }
 
@@ -104,7 +119,7 @@ namespace Fusee.Engine.Core
 
             if (_hasUVs)
                 vs.Append("  attribute vec2 fuUV;\n  varying vec2 vUV;\n");
-            
+
             if (_hasColors)
                 vs.Append("  attribute vec4 fuColor;\n  varying vec4 vColors;\n");
         }
@@ -120,7 +135,8 @@ namespace Fusee.Engine.Core
                 vs.Append("  uniform mat4 FUSEE_IMV;\n");
             }
             // vs.Append("  uniform mat4 FUSEE_MV;\n");
-            if(_hasWeightMap){
+            if (_hasWeightMap)
+            {
                 vs.Append("uniform mat4 FUSEE_P;\n");
                 vs.Append("uniform mat4 FUSEE_V;\n");
             }
@@ -128,12 +144,10 @@ namespace Fusee.Engine.Core
             {
                 vs.Append("  uniform mat4 FUSEE_MVP;\n");
             }
-                
-            if(_hasWeightMap)
-                vs.Append("  uniform mat4 FUSEE_BONES[" + _nBones + "];\n");
- 
-        }
 
+            if (_hasWeightMap)
+                vs.Append("  uniform mat4 FUSEE_BONES[" + _nBones + "];\n");
+        }
 
 
         private void VSBody(StringBuilder vs)
@@ -146,17 +160,25 @@ namespace Fusee.Engine.Core
                     vs.Append("    vec4 newVertex;\n");
                     vs.Append("    vec4 newNormal;\n");
 
-                    vs.Append("    newVertex = (FUSEE_BONES[int(fuBoneIndex.x)] * vec4(fuVertex, 1.0) ) * fuBoneWeight.x ;\n");
-                    vs.Append("    newNormal = (FUSEE_BONES[int(fuBoneIndex.x)] * vec4(fuNormal, 0.0)) * fuBoneWeight.x;\n");
+                    vs.Append(
+                        "    newVertex = (FUSEE_BONES[int(fuBoneIndex.x)] * vec4(fuVertex, 1.0) ) * fuBoneWeight.x ;\n");
+                    vs.Append(
+                        "    newNormal = (FUSEE_BONES[int(fuBoneIndex.x)] * vec4(fuNormal, 0.0)) * fuBoneWeight.x;\n");
 
-                    vs.Append("    newVertex = (FUSEE_BONES[int(fuBoneIndex.y)] * vec4(fuVertex, 1.0)) * fuBoneWeight.y + newVertex;\n");
-                    vs.Append("    newNormal = (FUSEE_BONES[int(fuBoneIndex.y)] * vec4(fuNormal, 0.0)) * fuBoneWeight.y + newNormal;\n");
+                    vs.Append(
+                        "    newVertex = (FUSEE_BONES[int(fuBoneIndex.y)] * vec4(fuVertex, 1.0)) * fuBoneWeight.y + newVertex;\n");
+                    vs.Append(
+                        "    newNormal = (FUSEE_BONES[int(fuBoneIndex.y)] * vec4(fuNormal, 0.0)) * fuBoneWeight.y + newNormal;\n");
 
-                    vs.Append("    newVertex = (FUSEE_BONES[int(fuBoneIndex.z)] * vec4(fuVertex, 1.0)) * fuBoneWeight.z + newVertex;\n");
-                    vs.Append("    newNormal = (FUSEE_BONES[int(fuBoneIndex.z)] * vec4(fuNormal, 0.0)) * fuBoneWeight.z + newNormal;\n");
+                    vs.Append(
+                        "    newVertex = (FUSEE_BONES[int(fuBoneIndex.z)] * vec4(fuVertex, 1.0)) * fuBoneWeight.z + newVertex;\n");
+                    vs.Append(
+                        "    newNormal = (FUSEE_BONES[int(fuBoneIndex.z)] * vec4(fuNormal, 0.0)) * fuBoneWeight.z + newNormal;\n");
 
-                    vs.Append("    newVertex = (FUSEE_BONES[int(fuBoneIndex.w)] * vec4(fuVertex, 1.0)) * fuBoneWeight.w + newVertex;\n");
-                    vs.Append("    newNormal = (FUSEE_BONES[int(fuBoneIndex.w)] * vec4(fuNormal, 0.0)) * fuBoneWeight.w + newNormal;\n");
+                    vs.Append(
+                        "    newVertex = (FUSEE_BONES[int(fuBoneIndex.w)] * vec4(fuVertex, 1.0)) * fuBoneWeight.w + newVertex;\n");
+                    vs.Append(
+                        "    newNormal = (FUSEE_BONES[int(fuBoneIndex.w)] * vec4(fuNormal, 0.0)) * fuBoneWeight.w + newNormal;\n");
 
                     // At this point the normal is in World space - transform back to model space
                     // TODO: Is it a hack to invert Model AND View? Should we rather only invert MODEL (and NOT VIEW)??
@@ -200,8 +222,6 @@ namespace Fusee.Engine.Core
 
             vs.Append("  }\n\n");
         }
-
-
 
 
         //private void VSBody(StringBuilder vs)
@@ -270,39 +290,105 @@ namespace Fusee.Engine.Core
 
         private void PixelInputDeclarations(StringBuilder ps)
         {
-            
+            if (LightningCalulationMethod == LightningMethod.BLINN_PHONG)
+            {
+                ps.Append("#ifdef GL_ES\n");
+                ps.Append("  precision highp float;\n");
+                ps.Append("#endif\n\n");
+
+                ChannelInputDeclaration(ps, _hasDiffuse, _hasDiffuseTexture, "Diffuse");
+                SpecularInputDeclaration(ps);
+                ChannelInputDeclaration(ps, _hasEmissive, _hasEmissiveTexture, "Emissive");
+                BumpInputDeclaration(ps);
+
+                if (_hasSpecular || _hasDiffuse)
+                {
+                    ps.Append("  uniform vec3 ");
+                    ps.Append(LightColorName);
+                    ps.Append(";\n");
+                    ps.Append("  uniform float ");
+                    ps.Append(LightIntensityName);
+                    ps.Append(";\n");
+                    ps.Append("  uniform vec3 ");
+                    ps.Append(LightDirectionName);
+                    ps.Append(";\n");
+                }
+
+                if (_hasSpecular)
+                {
+                    ps.Append("  varying vec3 vViewDir;\n");
+                }
+
+                if (_hasNormals)
+                    ps.Append("  varying vec3 vNormal;\n");
+
+                if (_hasUVs)
+                    ps.Append("  varying vec2 vUV;\n");
+            }
+
+            if (LightningCalulationMethod == LightningMethod.COOK_TORRANCE)
+                AppendCookTorranceLightningCalculation(ps);
+        }
+
+        private void AppendCookTorranceLightningCalculation(StringBuilder ps)
+        {
+            AppendLightFunctions(ps);
+           // throw new NotImplementedException();
+        }
+
+        // TODO: Make material value factory methods
+        private void AppendLightFunctions(StringBuilder ps)
+        {
             ps.Append("#ifdef GL_ES\n");
             ps.Append("  precision highp float;\n");
             ps.Append("#endif\n\n");
-
-            ChannelInputDeclaration(ps, _hasDiffuse, _hasDiffuseTexture, "Diffuse");
-            SpecularInputDeclaration(ps);
-            ChannelInputDeclaration(ps, _hasEmissive, _hasEmissiveTexture, "Emissive");
-            BumpInputDeclaration(ps);
-
-            if (_hasSpecular || _hasDiffuse)
-            {
-                ps.Append("  uniform vec3 ");
-                ps.Append(LightColorName);
-                ps.Append(";\n");
-                ps.Append("  uniform float ");
-                ps.Append(LightIntensityName);
-                ps.Append(";\n");
-                ps.Append("  uniform vec3 ");
-                ps.Append(LightDirectionName);
-                ps.Append(";\n");
-            }
-            
-            if (_hasSpecular)
-            {
-                ps.Append("  varying vec3 vViewDir;\n");
-            }
- 
-            if (_hasNormals)
-                ps.Append("  varying vec3 vNormal;\n");
-
-            if (_hasUVs)
-                ps.Append("  varying vec2 vUV;\n");
+            ps.Append("  uniform vec3 ");
+            ps.Append(LightDirectionName);
+            ps.Append(";\n");
+            ps.Append("varying vec3 vNormal;\n" +
+                      "varying vec3 vViewDir;\n\n" +
+                      "void main() \n" +
+                      "{\n" +
+                      "// set important material values \n" +
+                      "float roughnessValue = 0.1; // 0 : smooth, 1: rough \n" +
+                      "float F0 = 0.8; // fresnel reflectance at normal incidence \n" +
+                      "float k = 0.2; // fraction of diffuse reflection (specular reflection = 1 - k) \n" +
+                      "vec3 lightColor = vec3(0.1, 0.9, 0.1);\n\n" +
+                      "// interpolating normals will change the length of the normal, so renormalize the normal. \n" +
+                      "vec3 normal = normalize(vNormal);\n\n" +
+                      "// do the lighting calculation for each fragment.\n" +
+                      "float NdotL = max(dot(normal, LightDirection), 0.0);\n" +
+                      "float specular = 0.0;\n\n" +
+                      "if (NdotL > 0.0)\n" +
+                      "{\n\n" +
+                      "vec3 eyeDir = normalize(vViewDir);\n\n" +
+                      "// calculate intermediary values\n" +
+                      "vec3 halfVector = normalize(LightDirection + eyeDir);\n" +
+                      "float NdotH = max(dot(normal, halfVector), 0.0);\n" +
+                      "float NdotV = max(dot(normal, eyeDir), 0.0); // note: this could also be NdotL, which is the same value\n" +
+                      "float VdotH = max(dot(eyeDir, halfVector), 0.0);\n" +
+                      "float mSquared = roughnessValue * roughnessValue;\n\n" +
+                      "// geometric attenuation\n" +
+                      "float NH2 = 2.0 * NdotH;\n" +
+                      "float g1 = (NH2 * NdotV) / VdotH;\n" +
+                      "float g2 = (NH2 * NdotL) / VdotH;\n" +
+                      "float geoAtt = min(1.0, min(g1, g2));\n\n" +
+                      "// roughness (or: microfacet distribution function)\n" +
+                      "// beckmann distribution function\n" +
+                      "float r1 = 1.0 / (4.0 * mSquared * pow(NdotH, 4.0));\n" +
+                      "float r2 = (NdotH * NdotH - 1.0) / (mSquared * NdotH * NdotH);\n" +
+                      "float roughness = r1 * exp(r2);\n\n" +
+                      "// fresnel\n" +
+                      "// Schlick approximation\n" +
+                      "float fresnel = pow(1.0 - VdotH, 5.0);\n" +
+                      "fresnel *= (1.0 - F0);\n" +
+                      "fresnel += F0;\n\n" +
+                      "specular = (fresnel * geoAtt * roughness) / (NdotV * NdotL * 3.14);\n" +
+                      "}\n\n" +
+                      "vec3 finalValue = lightColor * NdotL * (k + specular * (1.0 - k));\n" +
+                      "gl_FragColor = vec4(finalValue, 1.0);\n" +
+                      "}\n" +
+                      "");
         }
 
         private void BumpInputDeclaration(StringBuilder ps)
@@ -310,8 +396,8 @@ namespace Fusee.Engine.Core
             if (!_hasBump)
                 return;
 
-            ps.Append("  uniform sampler2D BumpTexture;\n"); 
-            ps.Append("  uniform float BumpIntensity;\n\n"); 
+            ps.Append("  uniform sampler2D BumpTexture;\n");
+            ps.Append("  uniform float BumpIntensity;\n\n");
         }
 
         private void SpecularInputDeclaration(StringBuilder ps)
@@ -321,17 +407,18 @@ namespace Fusee.Engine.Core
 
             ChannelInputDeclaration(ps, _hasSpecular, _hasSpecularTexture, "Specular");
             // This will generate e.g. "  uniform vec4 DiffuseColor;"
-            ps.Append("  uniform float SpecularShininess;\n"); 
-            ps.Append("  uniform float SpecularIntensity;\n\n"); 
+            ps.Append("  uniform float SpecularShininess;\n");
+            ps.Append("  uniform float SpecularIntensity;\n\n");
         }
 
-        private void ChannelInputDeclaration(StringBuilder ps, bool hasChannel, bool hasChannelTexture, string channelName)
+        private void ChannelInputDeclaration(StringBuilder ps, bool hasChannel, bool hasChannelTexture,
+            string channelName)
         {
             if (!hasChannel)
                 return;
 
             // This will generate e.g. "  uniform vec4 DiffuseColor;"
-            ps.Append("  uniform vec3 "); 
+            ps.Append("  uniform vec3 ");
             ps.Append(channelName);
             ps.Append("Color;\n");
 
@@ -341,17 +428,19 @@ namespace Fusee.Engine.Core
             // This will generate e.g. 
             // "  uniform sampler2D DiffuseTexture;"
             // "  uniform float DiffuseMix;"
-            ps.Append("  uniform sampler2D "); 
+            ps.Append("  uniform sampler2D ");
             ps.Append(channelName);
             ps.Append("Texture;\n");
 
-            ps.Append("  uniform float "); 
+            ps.Append("  uniform float ");
             ps.Append(channelName);
             ps.Append("Mix;\n\n");
         }
 
         private void PSBody(StringBuilder ps)
         {
+            if (LightningCalulationMethod != LightningMethod.BLINN_PHONG) return;
+
             ps.Append("\n\n  void main()\n  {\n");
             ps.Append("    vec3 result = vec3(0, 0, 0);\n\n");
 
@@ -451,7 +540,7 @@ namespace Fusee.Engine.Core
             ps.Append("    }\n");
         }
 
-        private void AddChannelBaseColorCalculation(StringBuilder ps,  bool hasChannelTexture, string channelName)
+        private void AddChannelBaseColorCalculation(StringBuilder ps, bool hasChannelTexture, string channelName)
         {
             if (!(hasChannelTexture && _hasUVs))
             {
@@ -467,49 +556,99 @@ namespace Fusee.Engine.Core
                 ps.Append(channelName);
                 ps.Append("BaseColor = ");
                 ps.Append(channelName);
-                ps.Append("Color * (1.0 - ");                
+                ps.Append("Color * (1.0 - ");
                 ps.Append(channelName);
-                ps.Append("Mix) + texture2D(");                
+                ps.Append("Mix) + texture2D(");
                 ps.Append(channelName);
-                ps.Append("Texture, vUV).rgb * ");                
+                ps.Append("Texture, vUV).rgb * ");
                 ps.Append(channelName);
-                ps.Append("Mix;\n");                
+                ps.Append("Mix;\n");
             }
         }
-        
 
-        private string _vs; 
-        public string VS
+
+        public string VS { get; }
+
+        public string PS { get; }
+
+        public string DiffuseColorName
         {
-            get { return _vs; }
+            get { return _hasDiffuse ? "DiffuseColor" : null; }
         }
 
-        private string _ps; 
-        public string PS
+        public string SpecularColorName
         {
-            get { return _ps; }
+            get { return _hasSpecular ? "SpecularColor" : null; }
         }
 
-        public string DiffuseColorName { get { return (_hasDiffuse) ? "DiffuseColor" : null; } }
-        public string SpecularColorName { get { return (_hasSpecular) ? "SpecularColor" : null; } }
-        public string EmissiveColorName { get { return (_hasEmissive) ? "EmissiveColor" : null; } }
+        public string EmissiveColorName
+        {
+            get { return _hasEmissive ? "EmissiveColor" : null; }
+        }
 
-        public string DiffuseTextureName { get { return (_hasDiffuseTexture) ? "DiffuseTexture" : null; } }
-        public string SpecularTextureName { get { return (_hasSpecularTexture) ? "SpecularTexture" : null; } }
-        public string EmissiveTextureName { get { return (_hasEmissiveTexture) ? "EmissiveTexture" : null; } }
-        public string BumpTextureName { get { return (_hasBump) ? "BumpTexture" : null; } }
+        public string DiffuseTextureName
+        {
+            get { return _hasDiffuseTexture ? "DiffuseTexture" : null; }
+        }
 
-        public string DiffuseMixName { get { return (_hasDiffuse) ? "DiffuseMix" : null; } }
-        public string SpecularMixName { get { return (_hasSpecular) ? "SpecularMix" : null; } }
-        public string EmissiveMixName { get { return (_hasEmissive) ? "EmissiveMix" : null; } }
+        public string SpecularTextureName
+        {
+            get { return _hasSpecularTexture ? "SpecularTexture" : null; }
+        }
 
-        public string SpecularShininessName { get { return (_hasSpecular) ? "SpecularShininess" : null; } }
-        public string SpecularIntensityName { get { return (_hasSpecular) ? "SpecularIntensity" : null; } }
-        public string BumpIntensityName { get { return (_hasBump) ? "BumpIntensity" : null; } }
+        public string EmissiveTextureName
+        {
+            get { return _hasEmissiveTexture ? "EmissiveTexture" : null; }
+        }
 
-        public static string LightDirectionName { get { return "LightDirection"; } }
-        public static string LightColorName { get { return "LightColor"; } }
-        public static string LightIntensityName { get { return "LightIntensity"; } }
-    
+        public string BumpTextureName
+        {
+            get { return _hasBump ? "BumpTexture" : null; }
+        }
+
+        public string DiffuseMixName
+        {
+            get { return _hasDiffuse ? "DiffuseMix" : null; }
+        }
+
+        public string SpecularMixName
+        {
+            get { return _hasSpecular ? "SpecularMix" : null; }
+        }
+
+        public string EmissiveMixName
+        {
+            get { return _hasEmissive ? "EmissiveMix" : null; }
+        }
+
+        public string SpecularShininessName
+        {
+            get { return _hasSpecular ? "SpecularShininess" : null; }
+        }
+
+        public string SpecularIntensityName
+        {
+            get { return _hasSpecular ? "SpecularIntensity" : null; }
+        }
+
+        public string BumpIntensityName
+        {
+            get { return _hasBump ? "BumpIntensity" : null; }
+        }
+
+        public static string LightDirectionName
+        {
+            get { return "LightDirection"; }
+        }
+
+        public static string LightColorName
+        {
+            get { return "LightColor"; }
+        }
+
+        public static string LightIntensityName
+        {
+            get { return "LightIntensity"; }
+        }
     }
 }

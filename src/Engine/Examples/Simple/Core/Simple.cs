@@ -78,6 +78,7 @@ namespace Fusee.Engine.Examples.Simple.Core
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_rocketScene);
+           
         }
 
         // RenderAFrame is called once a frame
