@@ -52,11 +52,14 @@ namespace Fusee.Base.Imp.Web
                         break;
                     }
 
+                    //If count = 0 its the last segment of the curve. We need to add the first vertice in the list to the segment and leave i as it is. 
+                    if (!count.Equals(0)) i = count - 1;
+                    else cs.Vertices.Add(part.Vertices[0]);
+
                     //Create "on" points between two successive 0's
                     CreateOnPointsAndAddToList(cs.Vertices);
 
                     segments.Add(cs);
-                    i = count - 1;
                 }
                 else
                 {
@@ -227,7 +230,7 @@ namespace Fusee.Base.Imp.Web
                 {
                     temp = iEnum.Current;
                 }
-                
+
                 return temp;
             }
 
