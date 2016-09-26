@@ -773,6 +773,7 @@ namespace Fusee.Engine.Core
         private ShaderEffect MakeMaterial(MaterialComponent mc)
         {
             WeightComponent wc = CurrentNode.GetWeights();
+            // TODO: Seperation of Concerns
             ShaderCodeBuilder scb = new ShaderCodeBuilder(mc, null, wc); // TODO, CurrentNode.GetWeights() != null);
             var effectParameters = AssembleEffectParamers(mc, scb);
 
