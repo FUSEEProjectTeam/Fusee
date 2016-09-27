@@ -70,7 +70,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             fontLato.UseKerning = true;
             arial.UseKerning = true;
 
-            _char = "S";
+            _char = "B";
             
             _controlPoints = new List<float3>();
             foreach (var c in _char)

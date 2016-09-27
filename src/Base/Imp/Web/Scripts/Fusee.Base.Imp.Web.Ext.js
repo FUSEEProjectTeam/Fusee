@@ -158,35 +158,40 @@ JSIL.ImplementExternals("Fusee.Base.Imp.Web.FontImp", function ($) {
 
                     cp.CurveSegments = new ($jsilcore.System.Collections.Generic.List$b1.Of($fuseeMathCore.Fusee.Math.Core.CurveSegment))();
 
-                    cp.Vertices = new ($jsilcore.System.Collections.Generic.List$b1.Of($fuseeMathCore.Fusee.Math.Core.float3))();
-                    
-                    
-                    cp.VertTags = new ($jsilcore.System.Collections.Generic.List$b1.Of($jsilcore.System.Byte))();
+                    var partVertices = new ($jsilcore.System.Collections.Generic.List$b1.Of($fuseeMathCore.Fusee.Math.Core.float3))();
+                    var partTags = new ($jsilcore.System.Collections.Generic.List$b1.Of($jsilcore.System.Byte))();
                     
                     for (var j = 0; j < contour.length; j++)
                     {
                         var x = contour[j].x;
                         var y = contour[j].y;
                         var z = 0;
-                        cp.Vertices.Add(new $fuseeMathCore.Fusee.Math.Core.float3(x, y, z));
+                        partVertices.Add(new $fuseeMathCore.Fusee.Math.Core.float3(x, y, z));
 
                         var tag = contour[j].onCurve ? 1 : 0;
-                        cp.VertTags.Add(tag);
+                        partTags.Add(tag);
                     }
 
                     contour = [];
                     curve.CurveParts.Add(cp);
+
+                    var helper = $fuseeBaseImp.Fusee.Base.Imp.Web.SplitToCurveSegmentHelper;
+                    var segments = helper.SplitPartIntoSegments(cp, partTags, partVertices);
+                    helper.CombineCurveSegmentsAndAddThemToCurvePart(segments, cp);
+                    
+                    partVertices.Clear();
+                    partTags.Clear();
                 }
             }
-            //////////////////////////////////////////////////////////////////////////////////////////
+           
 
             ///////////////////////////// Create Curve Segment //////////////////////////////////////
-            var helper = $fuseeBaseImp.Fusee.Base.Imp.Web.SplitToCurveSegmentHelper;
+            /*var helper = $fuseeBaseImp.Fusee.Base.Imp.Web.SplitToCurveSegmentHelper;
             for (var k = 0; k < curve.CurveParts.Count; k++)
             {
                 var segments = helper.SplitPartIntoSegments(curve.CurveParts._items[k]);
                 helper.CombineCurveSegmentsAndAddThemToCurvePart(segments, curve.CurveParts._items[k]);
-            }
+            }*/
             /////////////////////////////////////////////////////////////////////////////////////
             console.log(curve);
             return curve;

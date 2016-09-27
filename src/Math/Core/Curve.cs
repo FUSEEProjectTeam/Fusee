@@ -52,15 +52,6 @@ namespace Fusee.Math.Core
         /// The segments making up the CurveParts.
         /// </summary>
         public IList<CurveSegment> CurveSegments;
-
-        /// <summary>
-        /// The vertices belonging to the CurvePart.
-        /// </summary>
-        public IList<float3> Vertices;
-        /// <summary>
-        ///The tags belonging to the Vertices. Those are importent to create CurveSegments and defining the interpolation methode.
-        /// </summary>
-        public IList<byte> VertTags;
     }
 
     /// <summary>

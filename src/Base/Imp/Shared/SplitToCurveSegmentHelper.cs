@@ -12,7 +12,7 @@ namespace Fusee.Base.Imp.Web
 {
     static class SplitToCurveSegmentHelper
     {
-        public static List<CurveSegment> SplitPartIntoSegments(CurvePart part)
+        public static List<CurveSegment> SplitPartIntoSegments(CurvePart part, List<byte> partTags, List<float3> partVerts  )
         {
             byte[] linearPattern = { 1, 1 };
             byte[] conicPattern = { 1, 0, 1 };
@@ -21,40 +21,40 @@ namespace Fusee.Base.Imp.Web
 
             var segments = new List<CurveSegment>();
 
-            for (var i = 0; i < part.VertTags.Count; i++)
+            for (var i = 0; i < partTags.Count; i++)
             {
-                if (part.VertTags.SkipItems(i).TakeItems(linearPattern.Length).IEnumEqual(linearPattern))
+                if (partTags.SkipItems(i).TakeItems(linearPattern.Length).IEnumEqual(linearPattern))
                 {
-                    segments.Add(CreateCurveSegment(part, i, linearPattern, InterpolationMethod.LINEAR));
+                    segments.Add(CreateCurveSegment(part, i, linearPattern, InterpolationMethod.LINEAR, partVerts));
                 }
-                else if (part.VertTags.SkipItems(i).TakeItems(conicPattern.Length).IEnumEqual(conicPattern))
+                else if (partTags.SkipItems(i).TakeItems(conicPattern.Length).IEnumEqual(conicPattern))
                 {
-                    segments.Add(CreateCurveSegment(part, i, conicPattern, InterpolationMethod.BEZIER_CONIC));
+                    segments.Add(CreateCurveSegment(part, i, conicPattern, InterpolationMethod.BEZIER_CONIC, partVerts));
                     i = i + 1;
                 }
-                else if (part.VertTags.SkipItems(i).TakeItems(cubicPattern.Length).IEnumEqual(cubicPattern))
+                else if (partTags.SkipItems(i).TakeItems(cubicPattern.Length).IEnumEqual(cubicPattern))
                 {
-                    segments.Add(CreateCurveSegment(part, i, cubicPattern, InterpolationMethod.BEZIER_CUBIC));
+                    segments.Add(CreateCurveSegment(part, i, cubicPattern, InterpolationMethod.BEZIER_CUBIC, partVerts));
                     i = i + 2;
                 }
-                else if (part.VertTags.SkipItems(i).TakeItems(conicVirtualPattern.Length).IEnumEqual(conicVirtualPattern))
+                else if (partTags.SkipItems(i).TakeItems(conicVirtualPattern.Length).IEnumEqual(conicVirtualPattern))
                 {
                     var count = 0;
-                    var cs = CreateCurveSegment(part, i, conicVirtualPattern, InterpolationMethod.BEZIER_CONIC);
+                    var cs = CreateCurveSegment(part, i, conicVirtualPattern, InterpolationMethod.BEZIER_CONIC, partVerts);
 
                     i = i + 3;
 
-                    for (var j = i + 1; j < part.VertTags.Count; j++)
+                    for (var j = i + 1; j < partTags.Count; j++)
                     {
-                        cs.Vertices.Add(part.Vertices[j]);
-                        if (part.VertTags[j].Equals(0)) continue;
+                        cs.Vertices.Add(partVerts[j]);
+                        if (partTags[j].Equals(0)) continue;
                         count = j;
                         break;
                     }
 
                     //If count = 0 its the last segment of the curve. We need to add the first vertice in the list to the segment and leave i as it is. 
                     if (!count.Equals(0)) i = count - 1;
-                    else cs.Vertices.Add(part.Vertices[0]);
+                    else cs.Vertices.Add(partVerts[0]);
 
                     //Create "on" points between two successive 0's
                     CreateOnPointsAndAddToList(cs.Vertices);
@@ -65,19 +65,19 @@ namespace Fusee.Base.Imp.Web
                 {
                     //Only needed for "closed" CurveParts (like letters always are)
                     var lastSegment = new List<byte>();
-                    lastSegment.AddRange(part.VertTags.SkipItems(i).TakeItems(part.VertTags.Count - i));
-                    lastSegment.Add(part.VertTags[0]);
+                    lastSegment.AddRange(partTags.SkipItems(i).TakeItems(partTags.Count - i));
+                    lastSegment.Add(partTags[0]);
                     if (lastSegment.IEnumEqual(conicPattern))
                     {
-                        segments.Add(CreateCurveSegment(part, i, conicPattern, InterpolationMethod.BEZIER_CONIC, part.Vertices[0]));
+                        segments.Add(CreateCurveSegment(part, i, conicPattern, InterpolationMethod.BEZIER_CONIC, partVerts[0], partVerts));
                     }
                     else if (lastSegment.IEnumEqual(cubicPattern))
                     {
-                        segments.Add(CreateCurveSegment(part, i, cubicPattern, InterpolationMethod.BEZIER_CUBIC, part.Vertices[0]));
+                        segments.Add(CreateCurveSegment(part, i, cubicPattern, InterpolationMethod.BEZIER_CUBIC, partVerts[0], partVerts));
                     }
                     else if (lastSegment.IEnumEqual(conicVirtualPattern))
                     {
-                        segments.Add(CreateCurveSegment(part, i, cubicPattern, InterpolationMethod.BEZIER_CUBIC, part.Vertices[0]));
+                        segments.Add(CreateCurveSegment(part, i, cubicPattern, InterpolationMethod.BEZIER_CUBIC, partVerts[0], partVerts));
                     }
                 }
             }
@@ -107,10 +107,10 @@ namespace Fusee.Base.Imp.Web
             }
         }
 
-        public static CurveSegment CreateCurveSegment(CurvePart cp, int i, byte[] pattern, InterpolationMethod methode)
+        public static CurveSegment CreateCurveSegment(CurvePart cp, int i, byte[] pattern, InterpolationMethod methode, List<float3> verts )
         {
             var segmentVerts = new List<float3>();
-            segmentVerts.AddRange(cp.Vertices.SkipItems(i).TakeItems(pattern.Length));
+            segmentVerts.AddRange(verts.SkipItems(i).TakeItems(pattern.Length));
             var cs = new CurveSegment
             {
                 Interpolation = methode,
@@ -120,10 +120,10 @@ namespace Fusee.Base.Imp.Web
             return cs;
         }
 
-        public static CurveSegment CreateCurveSegment(CurvePart cp, int i, byte[] pattern, InterpolationMethod methode, float3 startPoint)
+        public static CurveSegment CreateCurveSegment(CurvePart cp, int i, byte[] pattern, InterpolationMethod methode, float3 startPoint, List<float3> verts )
         {
             var segmentVerts = new List<float3>();
-            segmentVerts.AddRange(cp.Vertices.SkipItems(i).TakeItems(pattern.Length));
+            segmentVerts.AddRange(verts.SkipItems(i).TakeItems(pattern.Length));
             segmentVerts.Add(startPoint);
             var cs = new CurveSegment
             {
