@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.CodeDom;
+using System.Collections.Generic;
 using System.Linq;
 using Fusee.Math.Core;
 
@@ -12,7 +13,7 @@ namespace Fusee.Base.Imp.Web
 {
     static class SplitToCurveSegmentHelper
     {
-        public static List<CurveSegment> SplitPartIntoSegments(CurvePart part, List<byte> partTags, List<float3> partVerts  )
+        public static List<CurveSegment> SplitPartIntoSegments(CurvePart part, List<byte> partTags, List<float3> partVerts)
         {
             byte[] linearPattern = { 1, 1 };
             byte[] conicPattern = { 1, 0, 1 };
@@ -107,7 +108,7 @@ namespace Fusee.Base.Imp.Web
             }
         }
 
-        public static CurveSegment CreateCurveSegment(CurvePart cp, int i, byte[] pattern, InterpolationMethod methode, List<float3> verts )
+        public static CurveSegment CreateCurveSegment(CurvePart cp, int i, byte[] pattern, InterpolationMethod methode, List<float3> verts)
         {
             var segmentVerts = new List<float3>();
             segmentVerts.AddRange(verts.SkipItems(i).TakeItems(pattern.Length));
@@ -120,7 +121,7 @@ namespace Fusee.Base.Imp.Web
             return cs;
         }
 
-        public static CurveSegment CreateCurveSegment(CurvePart cp, int i, byte[] pattern, InterpolationMethod methode, float3 startPoint, List<float3> verts )
+        public static CurveSegment CreateCurveSegment(CurvePart cp, int i, byte[] pattern, InterpolationMethod methode, float3 startPoint, List<float3> verts)
         {
             var segmentVerts = new List<float3>();
             segmentVerts.AddRange(verts.SkipItems(i).TakeItems(pattern.Length));
@@ -156,8 +157,22 @@ namespace Fusee.Base.Imp.Web
                         i = i - 1;
                 }
             }
-            part.CurveSegments = segments; //TODO: decide whether to delete duplicate points or just do not draw them
+            RemoveRedundantVert(segments);
+
+            part.CurveSegments = segments;
         }
+
+        public static void RemoveRedundantVert(List<CurveSegment> segments)
+        {
+            foreach (var seg in segments)
+            {
+                if (!seg.Equals(segments.First()))
+                {
+                    seg.Vertices.Remove(seg.Vertices.First());
+                }
+            }
+        }
+
     }
 
     namespace ExtentionMethodes
@@ -167,6 +182,7 @@ namespace Fusee.Base.Imp.Web
         /// </summary>
         public static class CustomExtentions
         {
+            #region IEnumerable extension methodes
             /// <summary>
             /// Bypasses a given number of elements in a sequence and returns the remaining. Alternative to LINQs Skip().
             /// </summary>
@@ -268,6 +284,7 @@ namespace Fusee.Base.Imp.Web
                 }
                 return true;
             }
+            #endregion
         }
     }
 }

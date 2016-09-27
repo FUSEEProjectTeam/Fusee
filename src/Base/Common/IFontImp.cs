@@ -133,6 +133,13 @@ namespace Fusee.Base.Common
         Curve GetGlyphCurve(uint c);
 
         /// <summary>
+        /// Gets the value of horizontal advance of a glyph. This is the distance to increment the position of the next glyph when rendering more then one.
+        /// </summary>
+        /// <param name="c">The character to retrive information</param>
+        /// <returns></returns>
+        float GetGlyphAdvance(uint c);
+
+        /// <summary>
         ///     Renders the given glyph.
         /// </summary>
         /// <param name="c">The character code (Unicode) of the character to render.</param>

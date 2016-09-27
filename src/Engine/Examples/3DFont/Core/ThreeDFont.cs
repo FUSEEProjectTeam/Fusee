@@ -50,34 +50,40 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
         private IShaderParam _xformParam;
         private float4x4 _xform;
         private float _alpha;
-        
+
         private float _pitchCube1;
         private float _pitchCube2;
 
         private Cube _cube;
-        private string _char;
+        private string _text;
         private List<float3> _controlPoints;
         private Mesh _point;
 
-       // Init is called on startup. 
+        // Init is called on startup. 
         public override void Init()
         {
             _cube = new Cube();
 
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
             var vladimir = AssetStorage.Get<Font>("VLADIMIR.TTF");
-            var arial = AssetStorage.Get<Font>("arial.ttf");
+            //var arial = AssetStorage.Get<Font>("arial.ttf");
             fontLato.UseKerning = true;
-            arial.UseKerning = true;
 
-            _char = "B";
-            
+            var advance = 0f;
+            var advanceComp = 0f;
+
+            _text = "Test 1";
+
             _controlPoints = new List<float3>();
-            foreach (var c in _char)
-            {
-                uint i = c;
-                var gp = arial.GetGlyphCurve(i);
 
+            for (int i = 0; i < _text.Length; i++)
+            {
+                var gp = fontLato.GetGlyphCurve(_text[i]);
+
+                advanceComp = advanceComp + advance;
+
+                
+                //var kerning = fontLato.GetKerning(_text[i - 1], _text[i + 1]);
 
                 foreach (var part in gp.CurveParts)
                 {
@@ -85,20 +91,22 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
                     {
                         foreach (var vert in segment.Vertices)
                         {
-                            var point = new float3(vert.x, vert.y, vert.z);
+                            var point = new float3(vert.x + advanceComp, vert.y, vert.z);
                             _controlPoints.Add(point);
                         }
                     }
                 }
+                advance = fontLato.GetGlyphAdvance(_text[i]);
             }
-            
+
             for (var i = 0; i < _controlPoints.Count; i++)
             {
-                _controlPoints[i] = new float3(_controlPoints[i].x/Width, _controlPoints[i].y/Height,0);
+                _controlPoints[i] = new float3((_controlPoints[i].x / Width) - 1.5f, _controlPoints[i].y / Height, _controlPoints[i].z);
+
             }
 
             _point = _cube.BuildCube();
-          
+
             var shader = RC.CreateShader(_vertexShader, _pixelShader);
             RC.SetShader(shader);
             _xformParam = RC.GetShaderParam(shader, "xform");
@@ -132,7 +140,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
 
             foreach (var point in _controlPoints)
             {
-                var modelPoint = ModelXForm(new float3(point.x-0.5f, point.y-1, 0), new float3(0, 0, 0));
+                var modelPoint = ModelXForm(new float3(point.x - 0.5f, point.y - 1, 0), new float3(0, 0, 0));
                 _xform = projection * view * modelPoint * float4x4.CreateScale(0.015f, 0.015f, 0.015f);
                 RC.SetShaderParam(_xformParam, _xform);
                 RC.Render(_point);

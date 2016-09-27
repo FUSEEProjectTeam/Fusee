@@ -98,7 +98,7 @@ namespace Fusee.Base.Imp.Desktop
         }
 
         /// <summary>
-        /// Gets the characters points, contours and tags and translates them into a curve
+        /// Gets the characters points, contours and tags and translates them into a curve.
         /// </summary>
         /// <param name="c">The character to retrive information</param>
         /// <returns></returns>
@@ -107,10 +107,12 @@ namespace Fusee.Base.Imp.Desktop
             var curve = new Curve();
 
             _face.LoadChar(c, LoadFlags.NoScale, LoadTarget.Normal);
-
+            
             curve.CurveParts = new List<CurvePart>();
             var orgPointCoords = _face.Glyph.Outline.Points;
             var pointTags = _face.Glyph.Outline.Tags;
+
+            if (orgPointCoords == null) return curve;
             //Freetype contours are defined by their end points
             var curvePartEndPoints = _face.Glyph.Outline.Contours;
 
@@ -126,13 +128,26 @@ namespace Fusee.Base.Imp.Desktop
                 partVerts.Clear();
                 partTags.Clear();
 
-                var part = SplitToCurvePartHelper.CreateCurvePart(orgPointCoords, pointTags, curvePartEndPoints, i, partVerts, partTags);
+                var part = SplitToCurvePartHelper.CreateCurvePart(orgPointCoords, pointTags, curvePartEndPoints, i,
+                    partVerts, partTags);
                 curve.CurveParts.Add(part);
 
                 var segments = SplitToCurveSegmentHelper.SplitPartIntoSegments(part, partTags, partVerts);
                 SplitToCurveSegmentHelper.CombineCurveSegmentsAndAddThemToCurvePart(segments, part);
             }
             return curve;
+        }
+
+        /// <summary>
+        /// Gets the value of the horizontal advance of a glyph. This is the distance to increment the position of the next glyph when rendering more then one.
+        /// </summary>
+        /// <param name="c">The character to retrive information</param>
+        /// <returns></returns>
+        public float GetGlyphAdvance(uint c)
+        {
+            _face.LoadChar(c, LoadFlags.NoScale, LoadTarget.Normal);
+            var advance = _face.Glyph.Metrics.HorizontalAdvance.Value;
+            return advance;
         }
 
         /// <summary>
@@ -197,9 +212,10 @@ namespace Fusee.Base.Imp.Desktop
 
     internal class SplitToCurvePartHelper
     {
+        #region Methodes
         public static void CurvePartVertice(CurvePart cp, int j, FTVector[] orgPointCoords, List<float3> partVerts)
         {
-            var vert = new float3((float)orgPointCoords[j].X * 50000, (float)orgPointCoords[j].Y * 50000, 0);
+            var vert = new float3((float)orgPointCoords[j].X.Value, (float)orgPointCoords[j].Y.Value, 0);
             partVerts.Add(vert);
         }
 
@@ -238,5 +254,6 @@ namespace Fusee.Base.Imp.Desktop
             }
             return cp;
         }
+        #endregion
     }
 }

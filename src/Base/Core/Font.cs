@@ -22,6 +22,7 @@ namespace Fusee.Base.Core
 
         private readonly Dictionary<uint, Curve> _glyphCurveChache = new Dictionary<uint, Curve>();
 
+        private readonly Dictionary<uint, float> _glyphAdvanceChache = new Dictionary<uint, float>();
         /// <summary>
         ///     Gets or sets a value indicating whether the kerning definition of a font should be used.
         /// </summary>
@@ -65,7 +66,7 @@ namespace Fusee.Base.Core
 
 
         /// <summary>
-        /// Gets the start, end and control points of a character.
+        /// Gets the characters points, contours and tags and translates them into a curve.
         /// </summary>
         /// <param name="c">The character to retrive information</param>
         /// <returns></returns>
@@ -77,6 +78,22 @@ namespace Fusee.Base.Core
 
             ret = _fontImp.GetGlyphCurve(c);
             _glyphCurveChache[c] = ret;
+            return ret;
+        }
+
+        /// <summary>
+        /// Gets the value of horizontal advance of a glyph. This is the distance to increment the position of the next glyph when rendering more then one.
+        /// </summary>
+        /// <param name="c">The character to retrive information</param>
+        /// <returns></returns>
+        public float GetGlyphAdvance(uint c)
+        {
+            float ret;
+            if (_glyphAdvanceChache.TryGetValue(c, out ret))
+                return ret;
+
+            ret = _fontImp.GetGlyphAdvance(c);
+            _glyphAdvanceChache[c] = ret;
             return ret;
         }
 

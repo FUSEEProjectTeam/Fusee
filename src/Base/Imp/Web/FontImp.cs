@@ -42,5 +42,11 @@ namespace Fusee.Base.Imp.Web
         {
             throw new NotImplementedException();
         }
+
+        [JSExternal]
+        public float GetGlyphAdvance(uint c)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
