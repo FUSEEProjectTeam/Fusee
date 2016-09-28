@@ -107,7 +107,7 @@ namespace Fusee.Base.Imp.Desktop
             var curve = new Curve();
 
             _face.LoadChar(c, LoadFlags.NoScale, LoadTarget.Normal);
-            
+
             curve.CurveParts = new List<CurvePart>();
             var orgPointCoords = _face.Glyph.Outline.Points;
             var pointTags = _face.Glyph.Outline.Tags;
@@ -123,7 +123,7 @@ namespace Fusee.Base.Imp.Desktop
             for (var i = 0; i <= orgPointCoords.Length; i++)
             {
                 //If a certain index of outline points is in array of contour end points - create new CurvePart and add it to Curve.CurveParts
-                if (!curvePartEndPoints.Contains((short) i)) continue;
+                if (!curvePartEndPoints.Contains((short)i)) continue;
 
                 partVerts.Clear();
                 partTags.Clear();
@@ -139,11 +139,11 @@ namespace Fusee.Base.Imp.Desktop
         }
 
         /// <summary>
-        /// Gets the value of the horizontal advance of a glyph. This is the distance to increment the position of the next glyph when rendering more then one.
+        /// Get the unscaled advance from a character.
         /// </summary>
         /// <param name="c">The character to retrive information</param>
         /// <returns></returns>
-        public float GetGlyphAdvance(uint c)
+        public float GetUnscaledAdvance(uint c)
         {
             _face.LoadChar(c, LoadFlags.NoScale, LoadTarget.Normal);
             var advance = _face.Glyph.Metrics.HorizontalAdvance.Value;
@@ -207,6 +207,20 @@ namespace Fusee.Base.Imp.Desktop
             var rightInx = _face.GetCharIndex(rightC);
 
             return (float)_face.GetKerning(leftInx, rightInx, KerningMode.Default).X;
+        }
+
+        /// <summary>
+        /// Gets the unscaled kerning offset between a pair of two consecutive characters in a text string.
+        /// </summary>
+        /// <param name="leftC">The left character</param>
+        /// <param name="rightC">The right character</param>
+        /// <returns></returns>
+        public float GetUnscaledKerning(uint leftC, uint rightC)
+        {
+            var leftInx = _face.GetCharIndex(leftC);
+            var rightInx = _face.GetCharIndex(rightC);
+
+            return _face.GetKerning(leftInx, rightInx, KerningMode.Unscaled).X.Value;
         }
     }
 

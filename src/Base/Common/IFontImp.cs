@@ -72,32 +72,6 @@ namespace Fusee.Base.Common
     }
 
     /// <summary>
-    /// A struct for saving character information, needed to get the start, end and control points of a character
-    /// </summary>
-    /*public struct GlyphPoints
-    {
-        /// <summary>
-        /// The unicode character code this information is for.
-        /// </summary>
-        public uint CharCode;
-
-        /// <summary>
-        /// Control points of a character as float2 list
-        /// </summary>
-        public IList<float2> PointCoords;
-
-        /// <summary>
-        /// Flags for each Control Point
-        /// </summary>
-        public IList<int[]> PointFlags;
-
-        /// <summary>
-        /// Key: Point coordinates, Value: Point flags
-        /// </summary>
-        public IDictionary<float2, int[]> Points;
-    }*/
-
-    /// <summary>
     /// Common functionality that needs to be provided by a Font implementor.
     /// </summary>
     public interface IFontImp
@@ -133,11 +107,11 @@ namespace Fusee.Base.Common
         Curve GetGlyphCurve(uint c);
 
         /// <summary>
-        /// Gets the value of horizontal advance of a glyph. This is the distance to increment the position of the next glyph when rendering more then one.
+        /// Get the unscaled advance from a character.
         /// </summary>
         /// <param name="c">The character to retrive information</param>
         /// <returns></returns>
-        float GetGlyphAdvance(uint c);
+        float GetUnscaledAdvance(uint c);
 
         /// <summary>
         ///     Renders the given glyph.
@@ -163,6 +137,14 @@ namespace Fusee.Base.Common
         /// <param name="rightC">The right character.</param>
         /// <returns>An offset to add to the normal advance. Typically negative since kerning rather compacts text lines.</returns>
         float GetKerning(uint leftC, uint rightC);
+
+        /// <summary>
+        /// Gets the unscaled kerning offset between a pair of two consecutive characters in a text string.
+        /// </summary>
+        /// <param name="leftC">The left character</param>
+        /// <param name="rightC">The right character</param>
+        /// <returns></returns>
+        float GetUnscaledKerning(uint leftC, uint rightC);
     }
 
 

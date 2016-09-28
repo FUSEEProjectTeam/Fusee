@@ -22,7 +22,9 @@ namespace Fusee.Base.Core
 
         private readonly Dictionary<uint, Curve> _glyphCurveChache = new Dictionary<uint, Curve>();
 
-        private readonly Dictionary<uint, float> _glyphAdvanceChache = new Dictionary<uint, float>();
+        private readonly Dictionary<uint, float> _glyphAdvanceCache = new Dictionary<uint, float>();
+
+
         /// <summary>
         ///     Gets or sets a value indicating whether the kerning definition of a font should be used.
         /// </summary>
@@ -82,18 +84,18 @@ namespace Fusee.Base.Core
         }
 
         /// <summary>
-        /// Gets the value of horizontal advance of a glyph. This is the distance to increment the position of the next glyph when rendering more then one.
+        /// Get the unscaled advance from a character.
         /// </summary>
         /// <param name="c">The character to retrive information</param>
         /// <returns></returns>
-        public float GetGlyphAdvance(uint c)
+        public float GetUnscaledAdvance(uint c)
         {
             float ret;
-            if (_glyphAdvanceChache.TryGetValue(c, out ret))
+            if (_glyphAdvanceCache.TryGetValue(c, out ret))
                 return ret;
 
-            ret = _fontImp.GetGlyphAdvance(c);
-            _glyphAdvanceChache[c] = ret;
+            ret = _fontImp.GetUnscaledAdvance(c);
+            _glyphAdvanceCache[c] = ret;
             return ret;
         }
 
@@ -121,6 +123,14 @@ namespace Fusee.Base.Core
         /// <param name="rightC">The right character.</param>
         /// <returns>An offset to add to the normal advance. Typically negative since kerning rather compacts text lines.</returns>
         public float GetKerning(uint leftC, uint rightC) => _fontImp.GetKerning(leftC, rightC);
+
+        /// <summary>
+        /// Gets the unscaled kerning offset between a pair of two consecutive characters in a text string.
+        /// </summary>
+        /// <param name="leftC">The left character</param>
+        /// <param name="rightC">The right character</param>
+        /// <returns></returns>
+        public float GetUnscaledKerning(uint leftC, uint rightC) => _fontImp.GetUnscaledKerning(leftC, rightC);
 
     }
 }

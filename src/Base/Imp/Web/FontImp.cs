@@ -38,13 +38,19 @@ namespace Fusee.Base.Imp.Web
         }
 
         [JSExternal]
+        public float GetUnscaledKerning(uint leftC, uint rightC)
+        {
+            throw new NotImplementedException();
+        }
+
+        [JSExternal]
         public Curve GetGlyphCurve(uint c)
         {
             throw new NotImplementedException();
         }
 
         [JSExternal]
-        public float GetGlyphAdvance(uint c)
+        public float GetUnscaledAdvance(uint c)
         {
             throw new NotImplementedException();
         }

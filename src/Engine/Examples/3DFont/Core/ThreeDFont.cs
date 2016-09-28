@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
@@ -68,11 +69,13 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             var vladimir = AssetStorage.Get<Font>("VLADIMIR.TTF");
             //var arial = AssetStorage.Get<Font>("arial.ttf");
             fontLato.UseKerning = true;
-
+           
             var advance = 0f;
             var advanceComp = 0f;
+            var kerning = 0f;
+            var kerningComp = 0f;
 
-            _text = "Test 1";
+            _text = "AVAV";
 
             _controlPoints = new List<float3>();
 
@@ -81,9 +84,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
                 var gp = fontLato.GetGlyphCurve(_text[i]);
 
                 advanceComp = advanceComp + advance;
-
-                
-                //var kerning = fontLato.GetKerning(_text[i - 1], _text[i + 1]);
+                kerningComp = kerningComp + kerning;
 
                 foreach (var part in gp.CurveParts)
                 {
@@ -91,12 +92,15 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
                     {
                         foreach (var vert in segment.Vertices)
                         {
-                            var point = new float3(vert.x + advanceComp, vert.y, vert.z);
+                            var point = new float3(vert.x + advanceComp + kerningComp, vert.y, vert.z);
                             _controlPoints.Add(point);
                         }
                     }
                 }
-                advance = fontLato.GetGlyphAdvance(_text[i]);
+                advance = fontLato.GetUnscaledAdvance(_text[i]);
+
+                if(i+1<_text.Length)
+                    kerning = fontLato.GetUnscaledKerning(_text[i], _text[i + 1]);
             }
 
             for (var i = 0; i < _controlPoints.Count; i++)
