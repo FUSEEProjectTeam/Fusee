@@ -20,7 +20,7 @@ namespace Fusee.Base.Core
 
         private readonly Dictionary<uint, GlyphInfo> _glyphInfoCache = new Dictionary<uint, GlyphInfo>();
 
-        private readonly Dictionary<uint, Curve> _glyphCurveChache = new Dictionary<uint, Curve>();
+        //private readonly Dictionary<uint, Curve> _glyphCurveChache = new Dictionary<uint, Curve>();
 
         private readonly Dictionary<uint, float> _glyphAdvanceCache = new Dictionary<uint, float>();
 
@@ -72,16 +72,8 @@ namespace Fusee.Base.Core
         /// </summary>
         /// <param name="c">The character to retrive information</param>
         /// <returns></returns>
-        public Curve GetGlyphCurve(uint c)
-        {
-            Curve ret;
-            if (_glyphCurveChache.TryGetValue(c, out ret))
-                return ret;
-
-            ret = _fontImp.GetGlyphCurve(c);
-            _glyphCurveChache[c] = ret;
-            return ret;
-        }
+        public Curve GetGlyphCurve(uint c) => _fontImp.GetGlyphCurve(c);
+        
 
         /// <summary>
         /// Get the unscaled advance from a character.

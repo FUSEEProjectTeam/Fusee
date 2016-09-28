@@ -13,14 +13,25 @@ namespace Fusee.Math.Core
         /// </summary>
         public IList<CurvePart> CurveParts;
 
-        static Curve CombineCurve(Curve a, Curve b)
+        /// <summary>
+        /// Combines two Curves by creating a new one.
+        /// </summary>
+        /// <param name="a">The first curve to combine</param>
+        /// <param name="b">The second curve to combine</param>
+        /// <returns></returns>
+        public static Curve CombineCurve(Curve a, Curve b)
         {
             //Concat returns a new list, without modifying the original
             var combinedCurve = new Curve { CurveParts = (IList<CurvePart>)a.CurveParts.Concat(b.CurveParts) };
             return combinedCurve;
         }
 
-        static Curve CombineCurve(IEnumerable<Curve> curves)
+        /// <summary>
+        /// Combines a list of Curves by creating a new Curve out of the list.
+        /// </summary>
+        /// <param name="curves">The curves to combine</param>
+        /// <returns></returns>
+        public static Curve CombineCurve(IEnumerable<Curve> curves)
         {
             var combinedCurve = new Curve {CurveParts = new List<CurvePart>()};
             foreach (var curve in curves)

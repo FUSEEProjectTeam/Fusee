@@ -6,6 +6,7 @@ using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.GUI;
 using Fusee.Math.Core;
+using Fusee.Serialization;
 using static Fusee.Engine.Core.Input;
 
 namespace Fusee.Engine.Examples.ThreeDFont.Core
@@ -60,47 +61,31 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
         private List<float3> _controlPoints;
         private Mesh _point;
 
+        private TextCurve _textCurve;
+
         // Init is called on startup. 
         public override void Init()
         {
             _cube = new Cube();
-
+            _controlPoints = new List<float3>();
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
             var vladimir = AssetStorage.Get<Font>("VLADIMIR.TTF");
-            //var arial = AssetStorage.Get<Font>("arial.ttf");
-            fontLato.UseKerning = true;
-           
-            var advance = 0f;
-            var advanceComp = 0f;
-            var kerning = 0f;
-            var kerningComp = 0f;
+            var arial = AssetStorage.Get<Font>("arial.ttf");
 
-            _text = "AVAV";
+            _text = "Hallo! Echo!";
+            _textCurve = new TextCurve(_text, fontLato);
+            
+            var curve = _textCurve.GetTextCurve();
 
-            _controlPoints = new List<float3>();
-
-            for (int i = 0; i < _text.Length; i++)
+            foreach (var p in curve.CurveParts)
             {
-                var gp = fontLato.GetGlyphCurve(_text[i]);
-
-                advanceComp = advanceComp + advance;
-                kerningComp = kerningComp + kerning;
-
-                foreach (var part in gp.CurveParts)
+                foreach (var s in p.CurveSegments)
                 {
-                    foreach (var segment in part.CurveSegments)
+                    foreach (var v in s.Vertices)
                     {
-                        foreach (var vert in segment.Vertices)
-                        {
-                            var point = new float3(vert.x + advanceComp + kerningComp, vert.y, vert.z);
-                            _controlPoints.Add(point);
-                        }
+                        _controlPoints.Add(v);
                     }
                 }
-                advance = fontLato.GetUnscaledAdvance(_text[i]);
-
-                if(i+1<_text.Length)
-                    kerning = fontLato.GetUnscaledKerning(_text[i], _text[i + 1]);
             }
 
             for (var i = 0; i < _controlPoints.Count; i++)
@@ -144,7 +129,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
 
             foreach (var point in _controlPoints)
             {
-                var modelPoint = ModelXForm(new float3(point.x - 0.5f, point.y - 1, 0), new float3(0, 0, 0));
+                var modelPoint = ModelXForm(new float3(point.x - 1.5f, point.y - 1f, 0), new float3(0, 0, 0));
                 _xform = projection * view * modelPoint * float4x4.CreateScale(0.015f, 0.015f, 0.015f);
                 RC.SetShaderParam(_xformParam, _xform);
                 RC.Render(_point);
