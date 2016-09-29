@@ -72,8 +72,8 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             var vladimir = AssetStorage.Get<Font>("VLADIMIR.TTF");
             var arial = AssetStorage.Get<Font>("arial.ttf");
 
-            _text = "Hallo! Echo!";
-            _textCurve = new TextCurve(_text, fontLato);
+            _text = "B";
+            _textCurve = new TextCurve(_text, arial);
             
             var curve = _textCurve.GetTextCurve();
 

@@ -66,7 +66,8 @@ namespace Fusee.Math.Core
     }
 
     /// <summary>
-    /// Represents a segment of a CurvePart, using a list of float3 and their interpolation methode.
+    /// The base class for CurveSegments.
+    /// Represents a segment of a CurvePart, using a list of float3.
     /// </summary>
     public class CurveSegment
     {
@@ -74,29 +75,43 @@ namespace Fusee.Math.Core
         /// The Vertices, representet as float3, of a CurveSegment.
         /// </summary>
         public IList<float3> Vertices;
-        /// <summary>
-        /// Defines which kinde of curve the segment belongs to.
-        /// </summary>
-        public InterpolationMethod Interpolation;
+        
+        public virtual IEnumerator<IList<float3>> CalculateOutline()
+        {
+            return null;
+        }
     }
 
     /// <summary>
-    /// Contains the possible methodes to interpolate between vertices.
+    /// Represents a linear segment of a CurvePart, using a list of float3.
     /// </summary>
-    public enum InterpolationMethod
+    public class LinearSegment : CurveSegment
     {
-        /// <summary>
-        /// A line is described by two successive "on curve" points.
-        /// </summary>
-        LINEAR,
-        /// <summary>
-        /// A cubic curve is decribed by two successive control points between two "on curve" points.
-        /// </summary>
-        BEZIER_CUBIC,
-        /// <summary>
-        /// A conic curve is described by one control point between two "on curve" points.
-        /// </summary>
-        BEZIER_CONIC
+        public override IEnumerator<IList<float3>> CalculateOutline()
+        {
+            return base.CalculateOutline();
+        }
     }
 
+    /// <summary>
+    /// Represents a cubic segment of a CurvePart, using a list of float3.
+    /// </summary>
+    public class BezierCubicSegment : CurveSegment
+    {
+        public override IEnumerator<IList<float3>> CalculateOutline()
+        {
+            return base.CalculateOutline();
+        }
+    }
+
+    /// <summary>
+    /// Represents a conic segment of a CurvePart, using a list of float3.
+    /// </summary>
+    public class BezierConicSegment : CurveSegment
+    {
+        public override IEnumerator<IList<float3>> CalculateOutline()
+        {
+            return base.CalculateOutline();
+        }
+    }
 }
