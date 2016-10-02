@@ -162,12 +162,35 @@ namespace Fusee.Base.Imp.Web
             var segmentVerts = new List<float3>();
             segmentVerts.AddRange(verts.SkipItems(i).TakeItems(pattern.Length));
             segmentVerts.Add(startPoint);
-            var cs = new CurveSegment
+            CurveSegment segment;
+            switch (Type)
             {
-                Vertices = new List<float3>()
-            };
-            cs.Vertices = segmentVerts;
-            return cs;
+                case SegmentType.LINEAR:
+                    segment = new LinearSegment()
+                    {
+                        Vertices = new List<float3>()
+                    };
+                    segment.Vertices = segmentVerts;
+                    break;
+                case SegmentType.CONIC:
+                    segment = new BezierConicSegment()
+                    {
+                        Vertices = new List<float3>()
+                    };
+                    segment.Vertices = segmentVerts;
+                    break;
+                case SegmentType.CUBIC:
+                    segment = new BezierCubicSegment()
+                    {
+                        Vertices = new List<float3>()
+                    };
+                    segment.Vertices = segmentVerts;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            segment.Vertices = segmentVerts;
+            return segment;
         }
 
         public static void CombineCurveSegmentsAndAddThemToCurvePart(List<CurveSegment> segments, CurvePart part)
@@ -192,20 +215,27 @@ namespace Fusee.Base.Imp.Web
                         i = i - 1;
                 }
             }
-            RemoveRedundantVert(segments);
+            FixSegments(segments);
 
             part.CurveSegments = segments;
         }
 
-        public static void RemoveRedundantVert(List<CurveSegment> segments)
+        //Remove redundant points and set the last point of the last segment in each part to the parts starting point
+        public static void FixSegments(List<CurveSegment> segments)
         {
+            var firstPoint = segments.First().Vertices.First();
+
             foreach (var seg in segments)
             {
-                if (!seg.Equals(segments.First()))
-                {
-                    seg.Vertices.Remove(seg.Vertices.First());
-                }
+                seg.Vertices.Remove(seg.Vertices.First());
             }
+
+            if (firstPoint == (segments.LastItem().Vertices.LastItem())) return;
+
+            var lastSegmentinPart = new LinearSegment() { Vertices = new List<float3>() };
+            lastSegmentinPart.Vertices.Add(firstPoint);
+            segments.Add(lastSegmentinPart);
+
         }
     }
 
@@ -228,7 +258,7 @@ namespace Fusee.Base.Imp.Web
             public static IEnumerable<T> SkipItems<T>(this IEnumerable<T> data, int count)
             {
                 var zwerg = new List<T>();
-                zwerg.AddRange((List<T>) data);
+                zwerg.AddRange((List<T>)data);
                 var i = 0;
 
                 foreach (var t in data)
