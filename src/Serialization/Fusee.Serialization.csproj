@@ -55,6 +55,7 @@
     <Compile Include="BoneComponent.cs" />
     <Compile Include="LightComponent.cs" />
     <Compile Include="MaterialComponent.cs" />
+    <Compile Include="MaterialLightComponent.cs" />
     <Compile Include="SceneComponentContainer.cs" />
     <Compile Include="SceneContainer.cs" />
     <Compile Include="MeshComponent.cs" />

@@ -62,12 +62,12 @@ namespace Fusee.Serialization
         /// <summary>
         /// Represents the spot angle of the light.
         /// </summary>
-        [ProtoMember(6)]
+        [ProtoMember(7)]
         public float ConeAngle;
         /// <summary>
         /// Represents the cone direction of the light.
         /// </summary>
-        [ProtoMember(7)]
+        [ProtoMember(8)]
         public float3 ConeDirection;
     }
 }

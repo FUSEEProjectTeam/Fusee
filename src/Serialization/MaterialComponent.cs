@@ -75,6 +75,7 @@ namespace Fusee.Serialization
     /// geometry is rendered with the speicified material.
     /// </summary>
     [ProtoContract]
+    [ProtoInclude(200, typeof(MaterialLightComponent))]
     public class MaterialComponent : SceneComponentContainer
     {
         #region Diffuse

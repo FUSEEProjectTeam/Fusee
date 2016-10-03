@@ -153,6 +153,7 @@ namespace Fusee.Engine.Core
 
         private Dictionary<MeshComponent, Mesh> _meshMap;
         private Dictionary<MaterialComponent, ShaderEffect> _matMap;
+        private Dictionary<MaterialLightComponent, ShaderEffect> _lightMatMap;
         private Dictionary<SceneNodeContainer, float4x4> _boneMap;
         private Dictionary<ShaderComponent, ShaderEffect> _shaderEffectMap;
         private Animation _animation;
@@ -311,6 +312,7 @@ namespace Fusee.Engine.Core
                 _rc = rc;
                 _meshMap = new Dictionary<MeshComponent, Mesh>();
                 _matMap = new Dictionary<MaterialComponent, ShaderEffect>();
+                _lightMatMap = new Dictionary<MaterialLightComponent, ShaderEffect>();
                 _boneMap = new Dictionary<SceneNodeContainer, float4x4>();
                 _shaderEffectMap = new Dictionary<ShaderComponent, ShaderEffect>();
                 _defaultEffect = MakeMaterial(new MaterialComponent
@@ -375,6 +377,13 @@ namespace Fusee.Engine.Core
         public void RenderMaterial(MaterialComponent matComp)
         {
             var effect = LookupMaterial(matComp);
+            _state.Effect = effect;
+        }
+
+        [VisitMethod]
+        public void RenderLightMaterial(MaterialLightComponent materialLightComponent)
+        {
+            var effect = LookupLightMaterial(materialLightComponent);
             _state.Effect = effect;
         }
 
@@ -466,6 +475,18 @@ namespace Fusee.Engine.Core
                 mat = MakeMaterial(mc);
                 mat.AttachToContext(_rc);
                 _matMap.Add(mc, mat);
+            }
+            return mat;
+        }
+
+        private ShaderEffect LookupLightMaterial(MaterialLightComponent mc)
+        {
+            ShaderEffect mat;
+            if (!_lightMatMap.TryGetValue(mc, out mat))
+            {
+                mat = MakeLightMaterial(mc);
+                mat.AttachToContext(_rc);
+                _lightMatMap.Add(mc, mat);
             }
             return mat;
         }
@@ -760,13 +781,40 @@ namespace Fusee.Engine.Core
             return returnEffectParameterDeclaration;
         }
 
+        private ShaderEffect MakeLightMaterial(MaterialLightComponent mc)
+        {
+            WeightComponent wc = CurrentNode.GetWeights();
+
+            ShaderCodeBuilder scb = new ShaderCodeBuilder(mc, null, mc.ApplyLightString, wc);
+
+            var effectParameters = AssembleEffectParamers(mc, scb);
+
+            ShaderEffect ret = new ShaderEffect(new[]
+            {
+                new EffectPassDeclaration()
+                {
+                    VS = scb.VS,
+                    //VS = VsBones,
+                    PS = scb.PS,
+                    StateSet = new RenderStateSet()
+                    {
+                        ZEnable = true,
+                        AlphaBlendEnable = false
+                    }
+                }
+            },
+                effectParameters
+                );
+            return ret;
+        }
+
         private ShaderEffect MakeMaterial(MaterialComponent mc)
         {
             WeightComponent wc = CurrentNode.GetWeights();
             // TODO: Seperation of Concerns
             // set RenderMethod ?? TODO: Evaluate
             // TODO: MaterialComponent C4D -> material values -> CookTorrance roughness, etc.
-            ShaderCodeBuilder scb = new ShaderCodeBuilder(mc, null, LightningMethod.COOK_TORRANCE, wc); // TODO, CurrentNode.GetWeights() != null);
+            ShaderCodeBuilder scb = new ShaderCodeBuilder(mc, null, LightningMethod.BLINN_PHONG, wc); // TODO, CurrentNode.GetWeights() != null);
 
             var effectParameters = AssembleEffectParamers(mc, scb);
 

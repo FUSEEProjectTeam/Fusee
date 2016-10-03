@@ -35,6 +35,42 @@ namespace Fusee.Engine.Core
         };
         */
 
+        public ShaderCodeBuilder(MaterialComponent mc, MeshComponent mesh, string applyLightString,
+            WeightComponent wc = null)
+        {
+            if (wc != null)
+            {
+                _hasWeightMap = true;
+                _nBones = wc.Joints.Count;
+            }
+            else
+            {
+                _nBones = 0;
+            }
+
+            float f1 = 1;
+            f1.GetType();
+            _normalizeNormals = true;
+            if (mesh != null)
+                AnalyzeMesh(mesh);
+            else
+            {
+                _hasVertices = _hasNormals = _hasUVs = true;
+            }
+            AnalyzeMaterial(mc);
+
+            var vs = new StringBuilder();
+            MeshInputDeclarations(vs);
+            MatrixDeclarations(vs);
+            VSBody(vs);
+            VS = vs.ToString();
+
+            var ps = new StringBuilder();
+            PixelInputDeclarations(ps);
+            PSBodyWithLight(ps, applyLightString);
+            PS = ps.ToString();
+        }
+
 
         public ShaderCodeBuilder(MaterialComponent mc, MeshComponent mesh, LightningMethod lightningCalulationMethod, WeightComponent wc = null)
         {
@@ -453,6 +489,21 @@ namespace Fusee.Engine.Core
             AddSpecularChannel(ps);
 
             ps.Append("\n    gl_FragColor = vec4(result, 1.0);\n");
+            // ps.Append("\n    gl_FragColor = vec4((Normal + 1.0) * 0.5, 1.0);\n");
+            ps.Append("  }\n\n");
+        }
+
+        private void PSBodyWithLight(StringBuilder ps, string applyLightMethod)
+        {
+            ps.Append(applyLightMethod);
+            ps.Append("\n\n  void main()\n  {\n");
+            ps.Append("    vec3 result = vec3(0, 0, 0);\n\n");
+
+            AddNormalVec(ps);
+            AddCameraVec(ps);
+            ps.Append("\n    vec3 linearColor = vec3(0);\n");
+            ps.Append("\n    linearColor += ApplyLight();\n");
+            ps.Append("\n    gl_FragColor = vec4(linearColor, 1.0);\n");
             // ps.Append("\n    gl_FragColor = vec4((Normal + 1.0) * 0.5, 1.0);\n");
             ps.Append("  }\n\n");
         }
