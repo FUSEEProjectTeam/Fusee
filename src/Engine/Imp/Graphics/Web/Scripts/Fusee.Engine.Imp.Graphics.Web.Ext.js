@@ -448,6 +448,15 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
             this.gl.clearDepth(value);
         }
     );
+
+/*
+    $.Method({ Static: false, Public: true }, "GetHardwareCapabilities",
+        new JSIL.MethodSignature([$fuseeMath.TypeRef("Fusee.Engine.Common.HardwareCapability")]),
+        function GetHardwareCapabilities(value) {
+            console.log("hello");
+        }
+    );
+    */
     // </IRenderContextImp Properties implementation>
 
     $.Method({ Static: false, Public: true }, "UpdateTextureFromVideoStream",

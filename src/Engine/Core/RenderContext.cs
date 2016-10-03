@@ -1675,6 +1675,11 @@ namespace Fusee.Engine.Core
             _rci.ColorMask(red, green, blue, alpha);
         }
 
+        public uint GetHardwareCapabilities(HardwareCapability capability)
+        {
+            return _rci.GetHardwareCapabilities(capability);
+        }
+
         #endregion
 
         #endregion

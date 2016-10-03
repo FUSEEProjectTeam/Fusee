@@ -7,7 +7,7 @@ namespace Fusee.Engine.Examples.SoundTest.Web
     {
         public static void Main()
         {
-            // Inject Fusee.Engine.Base InjectMe dependencies
+       /*     // Inject Fusee.Engine.Base InjectMe dependencies
             // We're using *Desktop*.IOImp here because JSIL can (still) xcompile it.
             IO.IOImp = new Fusee.Base.Imp.Desktop.IOImp();
 
@@ -23,7 +23,7 @@ namespace Fusee.Engine.Examples.SoundTest.Web
             // app.VideoManagerImplementor = ImpFactory.CreateIVideoManagerImp();
 
             // Start the app
-            app.Run();
+            app.Run();*/
         }
     }
 }

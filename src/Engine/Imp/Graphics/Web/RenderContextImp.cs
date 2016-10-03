@@ -358,5 +358,11 @@ namespace Fusee.Engine.Imp.Graphics.Web
         {
             throw new System.NotImplementedException();
         }
+
+        [JSExternal]
+        public uint GetHardwareCapabilities(HardwareCapability capability)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

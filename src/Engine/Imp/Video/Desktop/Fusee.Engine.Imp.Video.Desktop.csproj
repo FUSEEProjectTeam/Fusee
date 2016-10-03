@@ -62,6 +62,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Base\Common\Fusee.Base.Common.csproj">
+      <Project>{5906ABE0-1D62-4F9A-9ABA-B7D301615BB0}</Project>
+      <Name>Fusee.Base.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Common\Fusee.Engine.Common.csproj">
       <Project>{DFD770F6-4222-4255-AAE0-DCACDC7B21EB}</Project>
       <Name>Fusee.Engine.Common</Name>

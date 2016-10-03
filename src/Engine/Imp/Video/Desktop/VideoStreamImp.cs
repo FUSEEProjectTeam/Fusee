@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using AForge.Video;
 using AForge.Video.FFMPEG;
 using AForge.Video.DirectShow;
+using Fusee.Base.Common;
 using Fusee.Engine.Common;
 
 namespace Fusee.Engine.Imp.Video.Desktop

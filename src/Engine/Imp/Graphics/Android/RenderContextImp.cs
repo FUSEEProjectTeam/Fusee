@@ -14,6 +14,7 @@ using Fusee.Engine.Common;
 //using OpenTK.Graphics.ES11;
 using OpenTK.Graphics.ES30;
 using Path = Fusee.Base.Common.Path;
+using StringName = OpenTK.Graphics.ES20.StringName;
 
 namespace Fusee.Engine.Imp.Graphics.Android
 {
@@ -1564,6 +1565,28 @@ namespace Fusee.Engine.Imp.Graphics.Android
             GL.ColorMask(red, green, blue, alpha);
         }
 
+        /// <summary>
+        /// Returns the capabilities of the underlying graphics hardware
+        /// </summary>
+        /// <param name="capability"></param>
+        /// <returns>uint</returns>
+        public uint GetHardwareCapabilities(HardwareCapability capability)
+        {
+            float outVar;
+            switch (capability)
+            {
+                case HardwareCapability.DEFFERED_POSSIBLE:
+                    GL.GetFloat(All.MajorVersion, out outVar);
+                    // since version 3.0
+                    return outVar > 30000 ? 1U : 0U;
+                case HardwareCapability.BUFFERSIZE:
+                    GL.GetFloat(All.BufferSize, out outVar);
+                    return BitConverter.ToUInt32(BitConverter.GetBytes(outVar), 0);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(capability), capability, null);
+            }
+        }
+
         #endregion
 
         #region Picking related Members
@@ -1581,7 +1604,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             ImageData image = CreateImage(w, h, ColorUint.Black);
             GL.ReadPixels(x, y, w, h, All.Rgb, All.UnsignedByte, image.PixelData);
             return image;
-            
+
             /*
             System.Drawing.Rectangle rect = new System.Drawing.Rectangle(0, 0, w, h);
             Bitmap bmp = new Bitmap(w, h);

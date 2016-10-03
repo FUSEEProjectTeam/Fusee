@@ -11,6 +11,7 @@ using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using Fusee.Math.Core;
 using Fusee.Engine.Common;
+using All = OpenTK.Graphics.ES30.All;
 
 namespace Fusee.Engine.Imp.Graphics.Desktop
 {
@@ -670,6 +671,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.ActiveTexture(TextureUnit.Texture0 + texUnit);
             GL.BindTexture(TextureTarget.Texture2D, ((Texture)texId).handle);
         }
+
         #endregion
 
         #region Clear Fields
@@ -1648,6 +1650,28 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             GL.ColorMask(red, green, blue, alpha);
         }
+
+        /// <summary>
+        /// Returns the capabilities of the underlying graphics hardware
+        /// </summary>
+        /// <param name="capability"></param>
+        /// <returns>uint</returns>
+        public uint GetHardwareCapabilities(HardwareCapability capability)
+        {
+            switch (capability)
+            {
+                case HardwareCapability.DEFFERED_POSSIBLE:
+                    var version = float.Parse(GL.GetString(StringName.ShadingLanguageVersion));
+                    // since version 3.0
+                    return version > 3.0 ? 1U : 0U;
+                case HardwareCapability.BUFFERSIZE:
+                    throw new NotImplementedException("Not yet.");
+                    return 0;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(capability), capability, null);
+            }
+        }
+
 
         #endregion
 

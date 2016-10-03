@@ -52,7 +52,7 @@ namespace Fusee.Engine.Imp.Input.Desktop
 
             foreach (DeviceInstance deviceInstance in devices)
             {
-                Devices.Add(deviceInstance);
+               // Devices.Add(deviceInstance);
             }
 
 
