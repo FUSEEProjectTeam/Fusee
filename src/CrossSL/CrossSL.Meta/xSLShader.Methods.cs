@@ -1,5 +1,6 @@
 ﻿using System;
 using Fusee.Math;
+using Fusee.Math.Core;
 
 namespace CrossSL.Meta
 {

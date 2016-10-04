@@ -1553,6 +1553,11 @@ namespace Fusee.Engine.Core
             _rci.Render(m._meshImp);
         }
 
+        public uint GetHardwareCapabilities(HardwareCapability capability)
+        {
+            return _rci.GetHardwareCapabilities(capability);
+        }
+
         #endregion
 
         #region Other Members
@@ -1673,11 +1678,6 @@ namespace Fusee.Engine.Core
         public void ColorMask(bool red, bool green, bool blue, bool alpha)
         {
             _rci.ColorMask(red, green, blue, alpha);
-        }
-
-        public uint GetHardwareCapabilities(HardwareCapability capability)
-        {
-            return _rci.GetHardwareCapabilities(capability);
         }
 
         #endregion

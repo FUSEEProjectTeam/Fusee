@@ -450,11 +450,11 @@ namespace Fusee.Engine.Common
         /// <returns>The Z value at (x, y).</returns>
         float GetPixelDepth(int x, int y);
 
-        /// <summary>
-        /// Returns the capabilities of the underlying graphics hardware
-        /// </summary>
-        /// <param name="capability"></param>
-        /// <returns>uint</returns>
+        /// <summary> 
+        /// Returns the capabilities of the underlying graphics hardware 
+        /// </summary> 
+        /// <param name="capability"></param> 
+        /// <returns>uint</returns> 
         uint GetHardwareCapabilities(HardwareCapability capability);
 
     }
@@ -464,4 +464,5 @@ namespace Fusee.Engine.Common
         DEFFERED_POSSIBLE,
         BUFFERSIZE
     }
+
 }

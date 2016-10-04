@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using Fusee.Base.Common;
+using Fusee.Serialization;
 
 namespace Fusee.Base.Core
 {
@@ -85,6 +87,30 @@ namespace Fusee.Base.Core
             if (_providers.Contains(assetProvider))
                 throw new InvalidOperationException("Asset Provider already registered " + assetProvider);
             _providers.Add(assetProvider);
+        }
+
+        /// <summary>
+        /// Creates a deep copy of the source object. Only works for source objects with the 
+        /// <see cref="ProtoBuf.ProtoContractAttribute"/> defined on their class.
+        /// </summary>
+        /// <typeparam name="T">
+        ///   Type of the source and object and the returnded clone. Implicitely defined by the source parameter.
+        /// </typeparam>
+        /// <param name="source">The source object to clone.</param>
+        /// <returns>A deep copy of the source object. All objects referenced directly and indirectly from the source
+        ///  object are copied, too.</returns>
+        public static T DeepCopy<T>(T source) where T : class
+        {
+            if (source.GetType().GetCustomAttributes(true).OfType<ProtoBuf.ProtoContractAttribute>() == null)
+            {
+                throw new InvalidOperationException($"DeepCopy: ProtoBuf.ProtoContractAttribute is not defined on '{source.GetType().Name}'!");
+            }
+            var ser = new Serializer();
+            var stream = new MemoryStream();
+
+            ser.Serialize(stream, source);
+            stream.Position = 0;
+            return ser.Deserialize(stream, null, typeof(T)) as T;
         }
     }
 }

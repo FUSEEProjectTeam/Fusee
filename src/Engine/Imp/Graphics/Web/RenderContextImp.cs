@@ -276,6 +276,12 @@ namespace Fusee.Engine.Imp.Graphics.Web
         }
 
         [JSExternal]
+        public uint GetHardwareCapabilities(HardwareCapability capability)
+        {
+            throw new NotImplementedException();
+        }
+
+        [JSExternal]
         public void DebugLine(float3 start, float3 end, float4 color)
         {
             throw new System.NotImplementedException();
@@ -358,11 +364,6 @@ namespace Fusee.Engine.Imp.Graphics.Web
         {
             throw new System.NotImplementedException();
         }
-
-        [JSExternal]
-        public uint GetHardwareCapabilities(HardwareCapability capability)
-        {
-            throw new System.NotImplementedException();
-        }
+        
     }
 }

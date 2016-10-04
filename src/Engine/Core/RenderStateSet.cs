@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.Collections.Generic;
 using Fusee.Base.Common;
 using Fusee.Engine.Common;
 using Fusee.Math.Core;
@@ -16,33 +13,12 @@ namespace Fusee.Engine.Core
     {
         private readonly Dictionary<RenderState, uint> _states = new Dictionary<RenderState, uint>();
 
-        #region constructor
-        /// <summary>
-        /// Creates a RenderStateSet from a given renderStateContainer
-        /// used in SceneRenderer
-        /// </summary>
-        public RenderStateSet(Dictionary<uint, uint> renderStateContainer)
+        public void SetRenderStates(Dictionary<uint, uint> renderStateContainer)
         {
-           // Set Values
-           foreach (var renderState in renderStateContainer)
+            foreach (var renderState in renderStateContainer)
             {
-                _states[(RenderState) renderState.Key] = renderState.Value;
+                _states[(RenderState)renderState.Key] = renderState.Value;
             }
-        }
-
-        public RenderStateSet()
-        {
-            
-        }
-        
-        #endregion
-
-        /// <summary>
-        /// Creates a renderStateContainer from given RenderStateSet
-        /// </summary>
-        public Dictionary<RenderState, uint> ToContainer(RenderStateSet renderStateSet)
-        {
-            return _states.ToDictionary(state => state.Key, state => state.Value);
         }
 
         #region Butter and bread states
@@ -372,5 +348,8 @@ namespace Fusee.Engine.Core
             set { _states[RenderState.SeparateAlphaBlendEnable] = value ? 1U : 0U; }
         }
         */
+
+
+
     }
 }

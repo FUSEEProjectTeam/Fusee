@@ -11,7 +11,6 @@ using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using Fusee.Math.Core;
 using Fusee.Engine.Common;
-using All = OpenTK.Graphics.ES30.All;
 
 namespace Fusee.Engine.Imp.Graphics.Desktop
 {
@@ -671,7 +670,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.ActiveTexture(TextureUnit.Texture0 + texUnit);
             GL.BindTexture(TextureTarget.Texture2D, ((Texture)texId).handle);
         }
-
         #endregion
 
         #region Clear Fields
@@ -1671,7 +1669,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     throw new ArgumentOutOfRangeException(nameof(capability), capability, null);
             }
         }
-
 
         #endregion
 

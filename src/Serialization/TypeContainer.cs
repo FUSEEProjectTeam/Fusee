@@ -15,8 +15,8 @@ namespace Fusee.Serialization
     [ProtoInclude(104, typeof(TypeContainerFloat3))]
     [ProtoInclude(105, typeof(TypeContainerFloat4))]
     [ProtoInclude(106, typeof(TypeContainerBoolean))]
-  //  [ProtoInclude(107, typeof(TypeContainerFloat3X3))]
-  //  [ProtoInclude(108, typeof(TypeContainerFloat4X4))]
+    //  [ProtoInclude(107, typeof(TypeContainerFloat3X3))]
+    //  [ProtoInclude(108, typeof(TypeContainerFloat4X4))]
     public class TypeContainer
     {
         /// <summary>
@@ -122,30 +122,4 @@ namespace Fusee.Serialization
         [ProtoMember(1)]
         public bool Value;
     }
-    /*
-    /// <summary>
-    /// TypeContainer storing a float 3x3 value.
-    /// </summary>
-    [ProtoContract]
-    public class TypeContainerFloat3X3 : TypeContainer
-    {
-        /// <summary>
-        /// The key value combined with a <see cref="TypeContainer.Name"/>.
-        /// </summary>
-        [ProtoMember(1)]
-        public float3x3 Value;
-    }
-
-    /// <summary>
-    /// TypeContainer storing a float 4x4 value.
-    /// </summary>
-    [ProtoContract]
-    public class TypeContainerFloat4X4 : TypeContainer
-    {
-        /// <summary>
-        /// The key value combined with a <see cref="TypeContainer.Name"/>.
-        /// </summary>
-        [ProtoMember(1)]
-        public float4x4 Value;
-    }*/
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Fusee.Engine.Common;
 using SlimDX.DirectInput;
 
@@ -13,33 +12,7 @@ namespace Fusee.Engine.Imp.Input.Desktop
         /// <summary>
         /// The list of devices.
         /// </summary>
-        //public List<DeviceInstance> Devices = new List<DeviceInstance>();
-
-        event EventHandler<NewDeviceImpConnectedArgs> IInputDriverImp.NewDeviceConnected
-        {
-            add
-            {
-                throw new NotImplementedException();
-            }
-
-            remove
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        event EventHandler<DeviceImpDisconnectedArgs> IInputDriverImp.DeviceDisconnected
-        {
-            add
-            {
-                throw new NotImplementedException();
-            }
-
-            remove
-            {
-                throw new NotImplementedException();
-            }
-        }
+        public List<DeviceInstance> Devices = new List<DeviceInstance>();
 
         /// <summary>
         /// All SlimDX - compatible input devices are initialised and added to a List of the type <see cref="IInputDeviceImp"/>.
@@ -52,7 +25,7 @@ namespace Fusee.Engine.Imp.Input.Desktop
 
             foreach (DeviceInstance deviceInstance in devices)
             {
-               // Devices.Add(deviceInstance);
+                Devices.Add(deviceInstance);
             }
 
 
@@ -63,16 +36,5 @@ namespace Fusee.Engine.Imp.Input.Desktop
             }
             return retList;
         }
-
-        public void Dispose()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public IEnumerable<IInputDeviceImp> Devices { get; }
-        public string DriverId { get; }
-        public string DriverDesc { get; }
-        public event EventHandler NewDeviceConnected;
-        public event EventHandler DeviceDisconnected;
     }
 }

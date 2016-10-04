@@ -1,6 +1,7 @@
 ﻿#define GUI_SIMPLE
 
 using System;
+using System.IO;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
@@ -30,7 +31,7 @@ namespace Fusee.Engine.Examples.Simple.Core
 
         private bool _keys;
 
-#if GUI_SIMPLE
+        #if GUI_SIMPLE
         private GUIHandler _guiHandler;
 
         private GUIButton _guiFuseeLink;
@@ -39,12 +40,12 @@ namespace Fusee.Engine.Examples.Simple.Core
         private GUIText _guiSubText;
         private float _subtextHeight;
         private float _subtextWidth;
-#endif
+        #endif
 
         // Init is called on startup. 
         public override void Init()
         {
-#if GUI_SIMPLE
+            #if GUI_SIMPLE
             _guiHandler = new GUIHandler();
             _guiHandler.AttachToContext(RC);
 
@@ -66,19 +67,16 @@ namespace Fusee.Engine.Examples.Simple.Core
             _guiHandler.Add(_guiSubText);
             _subtextWidth = GUIText.GetTextWidth(_guiSubText.Text, _guiLatoBlack);
             _subtextHeight = GUIText.GetTextHeight(_guiSubText.Text, _guiLatoBlack);
-#endif
+            #endif
 
             // Set the clear color for the backbuffer to white (100% intentsity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             // Load the rocket model
-            // var ser = new Serializer();
-            // _rocketScene = ser.Deserialize(IO.StreamFromFile(@"Assets/RocketModel.fus", FileMode.Open), null, typeof(SceneContainer)) as SceneContainer;
             _rocketScene = AssetStorage.Get<SceneContainer>("RocketModel.fus");
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_rocketScene);
-           
         }
 
         // RenderAFrame is called once a frame
@@ -134,9 +132,9 @@ namespace Fusee.Engine.Examples.Simple.Core
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
 
-#if GUI_SIMPLE
+            #if GUI_SIMPLE
             _guiHandler.RenderGUI();
-#endif
+            #endif
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rerndered farame) on the front buffer.
             Present();
@@ -154,7 +152,7 @@ namespace Fusee.Engine.Examples.Simple.Core
             RC.Viewport(0, 0, Width, Height);
 
             // Create a new projection matrix generating undistorted images on the new aspect ratio.
-            var aspectRatio = Width / (float)Height;
+            var aspectRatio = Width/(float) Height;
 
             // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
             // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
@@ -162,16 +160,16 @@ namespace Fusee.Engine.Examples.Simple.Core
             var projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 20000);
             RC.Projection = projection;
 
-#if GUI_SIMPLE
+            #if GUI_SIMPLE
             _guiSubText.PosX = (int)((Width - _subtextWidth) / 2);
             _guiSubText.PosY = (int)(Height - _subtextHeight - 3);
 
             _guiHandler.Refresh();
-#endif
+            #endif
 
         }
 
-#if GUI_SIMPLE
+        #if GUI_SIMPLE
         private void _guiFuseeLink_OnGUIButtonLeave(GUIButton sender, GUIButtonEventArgs mea)
         {
             _guiFuseeLink.ButtonColor = new float4(0, 0, 0, 0);
@@ -190,6 +188,6 @@ namespace Fusee.Engine.Examples.Simple.Core
         {
             OpenLink("http://fusee3d.org");
         }
-#endif
+        #endif
     }
 }

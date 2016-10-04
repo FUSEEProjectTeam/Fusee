@@ -11,7 +11,7 @@ namespace Fusee.Serialization
     [ProtoContract]
     public class ShaderComponent : SceneComponentContainer
     {
-      
+
         /// <summary>
         /// List of EffectPasses
         /// </summary>

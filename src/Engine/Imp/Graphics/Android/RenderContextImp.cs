@@ -14,7 +14,6 @@ using Fusee.Engine.Common;
 //using OpenTK.Graphics.ES11;
 using OpenTK.Graphics.ES30;
 using Path = Fusee.Base.Common.Path;
-using StringName = OpenTK.Graphics.ES20.StringName;
 
 namespace Fusee.Engine.Imp.Graphics.Android
 {
@@ -1589,22 +1588,22 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
         #endregion
 
-        #region Picking related Members
+            #region Picking related Members
 
-        /// <summary>
-        /// Retrieves a sub-image of the giben region.
-        /// </summary>
-        /// <param name="x">The x value of the start of the region.</param>
-        /// <param name="y">The y value of the start of the region.</param>
-        /// <param name="w">The width to copy.</param>
-        /// <param name="h">The height to copy.</param>
-        /// <returns>The specified sub-image</returns>
+            /// <summary>
+            /// Retrieves a sub-image of the giben region.
+            /// </summary>
+            /// <param name="x">The x value of the start of the region.</param>
+            /// <param name="y">The y value of the start of the region.</param>
+            /// <param name="w">The width to copy.</param>
+            /// <param name="h">The height to copy.</param>
+            /// <returns>The specified sub-image</returns>
         public ImageData GetPixelColor(int x, int y, int w = 1, int h = 1)
         {
             ImageData image = CreateImage(w, h, ColorUint.Black);
             GL.ReadPixels(x, y, w, h, All.Rgb, All.UnsignedByte, image.PixelData);
             return image;
-
+            
             /*
             System.Drawing.Rectangle rect = new System.Drawing.Rectangle(0, 0, w, h);
             Bitmap bmp = new Bitmap(w, h);

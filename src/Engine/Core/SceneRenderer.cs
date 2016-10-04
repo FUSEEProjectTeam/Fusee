@@ -101,7 +101,7 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void OnMesh(MeshComponent meshComponent)
         {
-            AABBf box = _state.ModelView*meshComponent.BoundingBox;
+            AABBf box = _state.ModelView * meshComponent.BoundingBox;
             if (!_boxValid)
             {
                 _result = box;
@@ -109,7 +109,7 @@ namespace Fusee.Engine.Core
             }
             else
             {
-                _result = AABBf.Union((AABBf) _result, box);
+                _result = AABBf.Union((AABBf)_result, box);
             }
         }
 
@@ -221,7 +221,7 @@ namespace Fusee.Engine.Core
                     foreach (AnimationTrackContainer animTrackContainer in ac.AnimationTracks)
                     {
                         Type t = animTrackContainer.KeyType;
-                        if (typeof (int).IsAssignableFrom(t))
+                        if (typeof(int).IsAssignableFrom(t))
                         {
                             Channel<int> channel = new Channel<int>(Lerp.IntLerp);
                             foreach (AnimationKeyContainerInt key in animTrackContainer.KeyFrames)
@@ -231,7 +231,7 @@ namespace Fusee.Engine.Core
                             _animation.AddAnimation(channel, animTrackContainer.SceneComponent,
                                 animTrackContainer.Property);
                         }
-                        else if (typeof (float).IsAssignableFrom(t))
+                        else if (typeof(float).IsAssignableFrom(t))
                         {
                             Channel<float> channel = new Channel<float>(Lerp.FloatLerp);
                             foreach (AnimationKeyContainerFloat key in animTrackContainer.KeyFrames)
@@ -241,7 +241,7 @@ namespace Fusee.Engine.Core
                             _animation.AddAnimation(channel, animTrackContainer.SceneComponent,
                                 animTrackContainer.Property);
                         }
-                        else if (typeof (float2).IsAssignableFrom(t))
+                        else if (typeof(float2).IsAssignableFrom(t))
                         {
                             Channel<float2> channel = new Channel<float2>(Lerp.Float2Lerp);
                             foreach (AnimationKeyContainerFloat2 key in animTrackContainer.KeyFrames)
@@ -251,7 +251,7 @@ namespace Fusee.Engine.Core
                             _animation.AddAnimation(channel, animTrackContainer.SceneComponent,
                                 animTrackContainer.Property);
                         }
-                        else if (typeof (float3).IsAssignableFrom(t))
+                        else if (typeof(float3).IsAssignableFrom(t))
                         {
                             Channel<float3>.LerpFunc lerpFunc;
                             switch (animTrackContainer.LerpType)
@@ -267,7 +267,7 @@ namespace Fusee.Engine.Core
                                     // throw new InvalidEnumArgumentException("animTrackContainer.LerpType", (int)animTrackContainer.LerpType, typeof(LerpType));
                                     throw new InvalidOperationException(
                                         "Unknown lerp type: animTrackContainer.LerpType: " +
-                                        (int) animTrackContainer.LerpType);
+                                        (int)animTrackContainer.LerpType);
                             }
                             Channel<float3> channel = new Channel<float3>(lerpFunc);
                             foreach (AnimationKeyContainerFloat3 key in animTrackContainer.KeyFrames)
@@ -277,7 +277,7 @@ namespace Fusee.Engine.Core
                             _animation.AddAnimation(channel, animTrackContainer.SceneComponent,
                                 animTrackContainer.Property);
                         }
-                        else if (typeof (float4).IsAssignableFrom(t))
+                        else if (typeof(float4).IsAssignableFrom(t))
                         {
                             Channel<float4> channel = new Channel<float4>(Lerp.Float4Lerp);
                             foreach (AnimationKeyContainerFloat4 key in animTrackContainer.KeyFrames)
@@ -360,7 +360,7 @@ namespace Fusee.Engine.Core
             for (int i = 0; i < weight.Joints.Count(); i++)
             {
                 float4x4 tmp = weight.BindingMatrices[i];
-                boneArray[i] = _boneMap[weight.Joints[i]]*tmp;
+                boneArray[i] = _boneMap[weight.Joints[i]] * tmp;
             }
             _rc.Bones = boneArray;
         }
@@ -370,22 +370,25 @@ namespace Fusee.Engine.Core
         public void RenderTransform(TransformComponent transform)
         {
             _state.Model *= transform.Matrix();
-            _rc.Model = _view*_state.Model;
+            _rc.Model = _view * _state.Model;
         }
 
         [VisitMethod]
         public void RenderMaterial(MaterialComponent matComp)
         {
+            if (matComp.GetType() == typeof(MaterialLightComponent)) return;
+            
             var effect = LookupMaterial(matComp);
             _state.Effect = effect;
         }
 
         [VisitMethod]
-        public void RenderLightMaterial(MaterialLightComponent materialLightComponent)
+        public void RenderMaterial(MaterialLightComponent matComp)
         {
-            var effect = LookupLightMaterial(materialLightComponent);
+            var effect = LookupLightMaterial(matComp);
             _state.Effect = effect;
         }
+
 
         [VisitMethod]
         public void RenderShader(ShaderComponent shaderComponent)
@@ -435,7 +438,7 @@ namespace Fusee.Engine.Core
         protected override void PopState()
         {
             _state.Pop();
-            _rc.ModelView = _view*_state.Model;
+            _rc.ModelView = _view * _state.Model;
         }
 
         #endregion
@@ -455,12 +458,12 @@ namespace Fusee.Engine.Core
                 // No light present - switch on standard light
                 effect.SetEffectParam(ShaderCodeBuilder.LightColorName, new float3(1, 1, 1));
                 // float4 lightDirHom = new float4(0, 0, -1, 0);
-                float4 lightDirHom = _rc.InvModelView*new float4(0, 0, -1, 0);
+                float4 lightDirHom = _rc.InvModelView * new float4(0, 0, -1, 0);
                 // float4 lightDirHom = _rc.TransModelView * new float4(0, 0, -1, 0);
                 float3 lightDir = lightDirHom.xyz;
                 lightDir.Normalize();
                 effect.SetEffectParam(ShaderCodeBuilder.LightDirectionName, lightDir);
-                effect.SetEffectParam(ShaderCodeBuilder.LightIntensityName, (float) 1);
+                effect.SetEffectParam(ShaderCodeBuilder.LightIntensityName, (float)1);
                 effect.RenderMesh(rm);
             }
         }
@@ -470,26 +473,24 @@ namespace Fusee.Engine.Core
         private ShaderEffect LookupMaterial(MaterialComponent mc)
         {
             ShaderEffect mat;
-            if (!_matMap.TryGetValue(mc, out mat))
-            {
-                mat = MakeMaterial(mc);
-                mat.AttachToContext(_rc);
-                _matMap.Add(mc, mat);
-            }
+            if (_matMap.TryGetValue(mc, out mat)) return mat;
+
+            mat = MakeMaterial(mc);
+            mat.AttachToContext(_rc);
+            _matMap.Add(mc, mat);
             return mat;
         }
-
         private ShaderEffect LookupLightMaterial(MaterialLightComponent mc)
         {
             ShaderEffect mat;
-            if (!_lightMatMap.TryGetValue(mc, out mat))
-            {
-                mat = MakeLightMaterial(mc);
-                mat.AttachToContext(_rc);
-                _lightMatMap.Add(mc, mat);
-            }
+            if (_lightMatMap.TryGetValue(mc, out mat)) return mat;
+
+            mat = MakeMaterial(mc);
+            mat.AttachToContext(_rc);
+            _lightMatMap.Add(mc, mat);
             return mat;
         }
+        
 
         private ShaderEffect BuildMaterialFromShaderComponent(ShaderComponent shaderComponent)
         {
@@ -535,7 +536,7 @@ namespace Fusee.Engine.Core
                         vwl = new VertexWeightList();
                     if (vwl.VertexWeights == null)
                         vwl.VertexWeights =
-                            new List<VertexWeight>(new[] {new VertexWeight {JointIndex = 0, Weight = 1.0f}});
+                            new List<VertexWeight>(new[] { new VertexWeight { JointIndex = 0, Weight = 1.0f } });
                     int nJoints = System.Math.Min(4, vwl.VertexWeights.Count);
                     for (int iJoint = 0; iJoint < nJoints; iJoint++)
                     {
@@ -691,12 +692,11 @@ namespace Fusee.Engine.Core
 
 
         // Creates Shader from given shaderComponent
-        // TODO: TEST
         private ShaderEffect MakeShader(ShaderComponent shaderComponent)
         {
             var effectParametersFromShaderComponent = new List<EffectParameterDeclaration>();
             var renderStateSet = new RenderStateSet();
-            
+
             if (shaderComponent.EffectParameter != null)
             {
                 foreach (var effectParameter in shaderComponent.EffectParameter)
@@ -706,7 +706,7 @@ namespace Fusee.Engine.Core
             }
 
             // no Effectpasses
-            if(shaderComponent.EffectPasses == null)
+            if (shaderComponent.EffectPasses == null)
                 throw new InvalidDataException("No EffectPasses in Shader Component! Please specify at least one pass");
 
             var effectPasses = new EffectPassDeclaration[shaderComponent.EffectPasses.Count];
@@ -717,7 +717,11 @@ namespace Fusee.Engine.Core
                 var effectPass = shaderComponent.EffectPasses[i];
 
                 if (effectPass.RenderStateContainer != null)
-                    renderStateSet = new RenderStateSet(effectPass.RenderStateContainer);
+                {
+                    renderStateSet = new RenderStateSet();
+                    renderStateSet.SetRenderStates(effectPass.RenderStateContainer);
+                }
+
 
                 newEffectPass.VS = effectPass.VS;
                 newEffectPass.PS = effectPass.PS;
@@ -731,45 +735,44 @@ namespace Fusee.Engine.Core
 
         private EffectParameterDeclaration CreateEffectParameterDeclaration(TypeContainer effectParameter)
         {
-            if(effectParameter.Name == null)
+            if (effectParameter.Name == null)
                 throw new InvalidDataException("EffectParameterDeclaration: Name is empty!");
-            
-            var returnEffectParameterDeclaration = new EffectParameterDeclaration {Name = effectParameter.Name};
 
-            // replace this with good design pattern - some day ...
+            var returnEffectParameterDeclaration = new EffectParameterDeclaration { Name = effectParameter.Name };
+
             var t = effectParameter.KeyType;
 
-            if (typeof (int).IsAssignableFrom(t))
+            if (typeof(int).IsAssignableFrom(t))
             {
                 var effectParameterType = effectParameter as TypeContainerInt;
                 if (effectParameterType != null) returnEffectParameterDeclaration.Value = effectParameterType.Value;
             }
-            else if (typeof (double).IsAssignableFrom(t))
+            else if (typeof(double).IsAssignableFrom(t))
             {
                 var effectParameterType = effectParameter as TypeContainerDouble;
                 if (effectParameterType != null) returnEffectParameterDeclaration.Value = effectParameterType.Value;
             }
-            else if (typeof (float).IsAssignableFrom(t))
+            else if (typeof(float).IsAssignableFrom(t))
             {
                 var effectParameterType = effectParameter as TypeContainerFloat;
                 if (effectParameterType != null) returnEffectParameterDeclaration.Value = effectParameterType.Value;
             }
-            else if (typeof (float2).IsAssignableFrom(t))
+            else if (typeof(float2).IsAssignableFrom(t))
             {
                 var effectParameterType = effectParameter as TypeContainerFloat2;
                 if (effectParameterType != null) returnEffectParameterDeclaration.Value = effectParameterType.Value;
             }
-            else if (typeof (float3).IsAssignableFrom(t))
+            else if (typeof(float3).IsAssignableFrom(t))
             {
                 var effectParameterType = effectParameter as TypeContainerFloat3;
                 if (effectParameterType != null) returnEffectParameterDeclaration.Value = effectParameterType.Value;
             }
-            else if (typeof (float4).IsAssignableFrom(t))
+            else if (typeof(float4).IsAssignableFrom(t))
             {
                 var effectParameterType = effectParameter as TypeContainerFloat4;
                 if (effectParameterType != null) returnEffectParameterDeclaration.Value = effectParameterType.Value;
             }
-            else if (typeof (bool).IsAssignableFrom(t))
+            else if (typeof(bool).IsAssignableFrom(t))
             {
                 var effectParameterType = effectParameter as TypeContainerBoolean;
                 returnEffectParameterDeclaration.Value = effectParameterType != null && effectParameterType.Value;
@@ -781,40 +784,24 @@ namespace Fusee.Engine.Core
             return returnEffectParameterDeclaration;
         }
 
-        private ShaderEffect MakeLightMaterial(MaterialLightComponent mc)
-        {
-            WeightComponent wc = CurrentNode.GetWeights();
-
-            ShaderCodeBuilder scb = new ShaderCodeBuilder(mc, null, mc.ApplyLightString, wc);
-
-            var effectParameters = AssembleEffectParamers(mc, scb);
-
-            ShaderEffect ret = new ShaderEffect(new[]
-            {
-                new EffectPassDeclaration()
-                {
-                    VS = scb.VS,
-                    //VS = VsBones,
-                    PS = scb.PS,
-                    StateSet = new RenderStateSet()
-                    {
-                        ZEnable = true,
-                        AlphaBlendEnable = false
-                    }
-                }
-            },
-                effectParameters
-                );
-            return ret;
-        }
-
+        
+    
         private ShaderEffect MakeMaterial(MaterialComponent mc)
         {
             WeightComponent wc = CurrentNode.GetWeights();
-            // TODO: Seperation of Concerns
-            // set RenderMethod ?? TODO: Evaluate
-            // TODO: MaterialComponent C4D -> material values -> CookTorrance roughness, etc.
-            ShaderCodeBuilder scb = new ShaderCodeBuilder(mc, null, LightningMethod.BLINN_PHONG, wc); // TODO, CurrentNode.GetWeights() != null);
+           
+
+            ShaderCodeBuilder scb = null;
+
+            if (mc.GetType() == typeof(MaterialLightComponent))
+            {
+                var lightMat = mc as MaterialLightComponent;
+                if (lightMat != null) scb = new ShaderCodeBuilder(mc, null, lightMat.ApplyLightString, wc);
+            }
+            else
+            {
+                scb = new ShaderCodeBuilder(mc, null, wc); // TODO, CurrentNode.GetWeights() != null);
+            }
 
             var effectParameters = AssembleEffectParamers(mc, scb);
 
@@ -846,7 +833,7 @@ namespace Fusee.Engine.Core
                 effectParameters.Add(new EffectParameterDeclaration
                 {
                     Name = scb.DiffuseColorName,
-                    Value = (object) mc.Diffuse.Color
+                    Value = (object)mc.Diffuse.Color
                 });
                 if (mc.Diffuse.Texture != null)
                 {
@@ -868,17 +855,17 @@ namespace Fusee.Engine.Core
                 effectParameters.Add(new EffectParameterDeclaration
                 {
                     Name = scb.SpecularColorName,
-                    Value = (object) mc.Specular.Color
+                    Value = (object)mc.Specular.Color
                 });
                 effectParameters.Add(new EffectParameterDeclaration
                 {
                     Name = scb.SpecularShininessName,
-                    Value = (object) mc.Specular.Shininess
+                    Value = (object)mc.Specular.Shininess
                 });
                 effectParameters.Add(new EffectParameterDeclaration
                 {
                     Name = scb.SpecularIntensityName,
-                    Value = (object) mc.Specular.Intensity
+                    Value = (object)mc.Specular.Intensity
                 });
                 if (mc.Specular.Texture != null)
                 {
@@ -900,7 +887,7 @@ namespace Fusee.Engine.Core
                 effectParameters.Add(new EffectParameterDeclaration
                 {
                     Name = scb.EmissiveColorName,
-                    Value = (object) mc.Emissive.Color
+                    Value = (object)mc.Emissive.Color
                 });
                 if (mc.Emissive.Texture != null)
                 {
@@ -943,7 +930,7 @@ namespace Fusee.Engine.Core
                 effectParameters.Add(new EffectParameterDeclaration
                 {
                     Name = ShaderCodeBuilder.LightIntensityName,
-                    Value = (float) 1
+                    Value = (float)1
                 });
                 effectParameters.Add(new EffectParameterDeclaration
                 {
