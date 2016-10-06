@@ -457,6 +457,13 @@ namespace Fusee.Engine.Common
         /// <returns>uint</returns> 
         uint GetHardwareCapabilities(HardwareCapability capability);
 
+
+        /// <summary>
+        /// Creates a FrameBufferObject
+        /// </summary>
+        /// <returns></returns>
+        // ReSharper disable once InconsistentNaming
+        bool CreateFBO();
     }
 
     public enum HardwareCapability

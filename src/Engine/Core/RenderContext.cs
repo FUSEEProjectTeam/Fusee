@@ -1502,6 +1502,11 @@ namespace Fusee.Engine.Core
             return _rci.GetRenderState(renderState);
         }
 
+        public bool CreateFBO()
+        {
+            return _rci.CreateFBO();
+        }
+
         /// <summary>
         /// Renders the specified mesh.
         /// </summary>

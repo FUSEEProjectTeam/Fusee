@@ -1,8 +1,17 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
+using Fusee.Base.Core;
 using Fusee.Serialization;
 
 namespace Fusee.Engine.Core
 {
+    // ReSharper disable InconsistentNaming
+    //TODO: Implement ShaderCode for Light
+    //TODO: Standard ApplyLight()
+    //TODO: Refactor and restructre
+    //TODO: Implement PBR
+    //TODO: Implement usage of FBO if supported
+    //TODO: Implement usage of more than one RenderPass (w&wo FBO)
     class ShaderCodeBuilder
     {
         private bool _hasVertices, _hasNormals, _hasUVs, _hasColors;
@@ -11,6 +20,11 @@ namespace Fusee.Engine.Core
         private bool _hasWeightMap;
         private int _nBones;
         private bool _normalizeNormals;
+
+        // Needed for MaterialLightComponent
+        private bool _hasApplyLightString;
+        private bool _hasFragmentString;
+        private MaterialLightComponent.StandardLightningCalculationMethod _lightningCalculationMethod;
 
         /*
         struct SurfaceOutput {
@@ -23,8 +37,18 @@ namespace Fusee.Engine.Core
         };
         */
 
-        public ShaderCodeBuilder(MaterialComponent mc, MeshComponent mesh, string applyLightString, WeightComponent wc = null)
+
+        /// <summary>
+        /// If we have a MaterialLightComponent this constructor is called.
+        /// </summary>
+        /// <param name="mlc">The MaterialLightComponent</param>
+        /// <param name="mesh">The Mesh</param>
+        /// <param name="wc">WeightCompoennt for animations</param>
+        public ShaderCodeBuilder(MaterialLightComponent mlc, MeshComponent mesh, WeightComponent wc = null)
         {
+            Diagnostics.Log($"{mlc.ApplyLightString} : {mlc.FragmentShaderString} : {mlc.LightningMethod}");
+
+            // Check WC
             if (wc != null)
             {
                 _hasWeightMap = true;
@@ -35,26 +59,34 @@ namespace Fusee.Engine.Core
                 _nBones = 0;
             }
 
-            float f1 = 1;
-            f1.GetType();
+            //float f1 = 1;
+            //var type = f1.GetType();
             _normalizeNormals = true;
+
+            // Check for mesh
             if (mesh != null)
                 AnalyzeMesh(mesh);
             else
             {
                 _hasVertices = _hasNormals = _hasUVs = true;
             }
-            AnalyzeMaterial(mc);
 
+            // Analyze the Material
+            AnalyzeMaterial(mlc);
+
+            Diagnostics.Log($"{_hasApplyLightString} : {_hasFragmentString} : {_lightningCalculationMethod}");
+
+            // VS
             StringBuilder vs = new StringBuilder();
             MeshInputDeclarations(vs);
             MatrixDeclarations(vs);
             VSBody(vs);
             _vs = vs.ToString();
 
+            // PS
             StringBuilder ps = new StringBuilder();
             PixelInputDeclarations(ps);
-            PSBodyWithApplyLight(ps, applyLightString);
+            PSCustomBody(ps, mlc);
             _ps = ps.ToString();
         }
 
@@ -70,8 +102,8 @@ namespace Fusee.Engine.Core
                 _nBones = 0;
             }
 
-            float f1 = 1;
-            f1.GetType();
+            //float f1 = 1;
+            //var type = f1.GetType();
             _normalizeNormals = true;
             if (mesh != null)
                 AnalyzeMesh(mesh);
@@ -115,6 +147,27 @@ namespace Fusee.Engine.Core
                 _hasEmissiveTexture = (mc.Emissive.Texture != null);
             _hasBump = mc.HasBump; // always has a texture...
         }
+
+        private void AnalyzeMaterial(MaterialLightComponent mlc)
+            {
+            _hasDiffuse = mlc.HasDiffuse;
+            if (_hasDiffuse)
+                _hasDiffuseTexture = (mlc.Diffuse.Texture != null);
+            _hasSpecular = mlc.HasSpecular;
+            if (_hasSpecular)
+                _hasSpecularTexture = (mlc.Specular.Texture != null);
+            _hasEmissive = mlc.HasEmissive;
+            if (_hasEmissive)
+                _hasEmissiveTexture = (mlc.Emissive.Texture != null);
+            _hasBump = mlc.HasBump; // always has a texture...
+
+            _hasApplyLightString = (mlc.ApplyLightString != null);
+            _hasFragmentString = (mlc.FragmentShaderString != null);
+
+            // always has standart rendering method:
+            _lightningCalculationMethod = mlc.LightningMethod;
+
+            }
 
         private void MeshInputDeclarations(StringBuilder vs)
         {
@@ -385,6 +438,7 @@ namespace Fusee.Engine.Core
             ps.Append("Mix;\n\n");
         }
 
+        
         private void PSBody(StringBuilder ps)
         {
             ps.Append("\n\n  void main()\n  {\n");
@@ -398,28 +452,87 @@ namespace Fusee.Engine.Core
             AddDiffuseChannel(ps);
             AddSpecularChannel(ps);
 
+            
             ps.Append("\n    gl_FragColor = vec4(result, 1.0);\n");
             // ps.Append("\n    gl_FragColor = vec4((Normal + 1.0) * 0.5, 1.0);\n");
             ps.Append("  }\n\n");
         }
 
-        private void PSBodyWithApplyLight(StringBuilder ps, string applyLightString)
+        private void PSCustomBody(StringBuilder ps, MaterialLightComponent mlc)
         {
-            ps.Append("\n\n\n");
-            ps.Append(applyLightString);
-            ps.Append("\n\n\n");
+            AddApplyLightCalculation(ps, mlc);
+            AddStandardLightningCalculation(ps, mlc);
+
             ps.Append("\n\n  void main()\n  {\n");
             ps.Append("    vec3 result = vec3(0, 0, 0);\n\n");
 
             AddNormalVec(ps);
             AddCameraVec(ps);
 
-            ps.Append("\n   vec3 linearColor = vec3(0); \n ");
-            ps.Append("\n   linearColor += ApplyLight(); \n ");
-            ps.Append("\n    gl_FragColor = vec4(linearColor, 1.0);\n");
+            // ApplyLight() is always called
+            ps.Append("\n   result += ApplyLight(); \n ");
+            ps.Append("\n    gl_FragColor = vec4(result, 1.0);\n");
             ps.Append("  }\n\n");
-        
-    }
+
+        }
+
+        private void AddApplyLightCalculation(StringBuilder ps, MaterialLightComponent mlc)
+        {
+            if (!_hasApplyLightString)
+                return;
+
+            if(!CheckApplyLightStringForErrors(mlc.ApplyLightString)) 
+                throw new ArgumentException($"Error while compiling ApplyLight(). Are you sure this:\n {mlc.ApplyLightString} \nis correct?" +
+                                            $"\nPerhaps (re)consult the documentation of MaterialLightComponent class.");
+          
+            ps.Append("\n\n" + mlc.ApplyLightString);
+        }
+
+        private static bool CheckApplyLightStringForErrors(string applyLightMethod)
+        {
+            const string applyLightString = "vec3 ApplyLight()";
+            return !string.IsNullOrEmpty(applyLightMethod) && applyLightMethod.Contains(applyLightString);
+        }
+
+        private void AddStandardLightningCalculation(StringBuilder ps, MaterialLightComponent mlc)
+        {
+            if (_hasApplyLightString)
+                return;
+
+            switch (mlc.LightningMethod)
+            {
+                case MaterialLightComponent.StandardLightningCalculationMethod.BLINN:
+                    AddBlinnLightning(ps);
+                    break;
+                case MaterialLightComponent.StandardLightningCalculationMethod.BLINN_PHONG:
+                    AddBlinnphongLightning(ps);
+                    break;
+                case MaterialLightComponent.StandardLightningCalculationMethod.COOK_TORRANCE:
+                    AddcooktorranceLightning(ps);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException($"Lightning calculation method: {mlc.LightningMethod} not found!");
+            }
+        }
+
+        private static void AddBlinnLightning(StringBuilder ps)
+        {
+            //TODO: Add shader code
+            ps.Append("\n\n" + " vec3 ApplyLight() { return vec3(1.0, 1.0, 0.0); } \n\n");
+        }
+
+        private static void AddBlinnphongLightning(StringBuilder ps)
+        {
+            //TODO: Add shader code
+            ps.Append("\n\n" + " vec3 ApplyLight() { return vec3(1.0, 0.0, 1.0); } \n\n");
+
+        }
+
+        private static void AddcooktorranceLightning(StringBuilder ps)
+        {
+            //TODO: Add shader code
+            ps.Append("\n\n" + " vec3 ApplyLight() { return vec3(0.0, 1.0, 1.0); } \n\n");
+        }
 
         private void AddCameraVec(StringBuilder ps)
         {
@@ -499,12 +612,11 @@ namespace Fusee.Engine.Core
             AddChannelBaseColorCalculation(ps, _hasSpecularTexture, "Specular");
             ps.Append("      vec3 h = normalize(LDir + Camera);\n");
 
-            ps.Append(
-                "      result += SpecularBaseColor * LColor * LIntensity * SpecularIntensity * pow(max(0.0, dot(h, Normal)), SpecularShininess);\n");
+            ps.Append("      result += SpecularBaseColor * LColor * LIntensity * SpecularIntensity * pow(max(0.0, dot(h, Normal)), SpecularShininess);\n");
             ps.Append("    }\n");
         }
 
-        private void AddChannelBaseColorCalculation(StringBuilder ps,  bool hasChannelTexture, string channelName)
+        private void AddChannelBaseColorCalculation(StringBuilder ps, bool hasChannelTexture, string channelName)
         {
             if (!(hasChannelTexture && _hasUVs))
             {
@@ -520,49 +632,109 @@ namespace Fusee.Engine.Core
                 ps.Append(channelName);
                 ps.Append("BaseColor = ");
                 ps.Append(channelName);
-                ps.Append("Color * (1.0 - ");                
+                ps.Append("Color * (1.0 - ");
                 ps.Append(channelName);
-                ps.Append("Mix) + texture2D(");                
+                ps.Append("Mix) + texture2D(");
                 ps.Append(channelName);
-                ps.Append("Texture, vUV).rgb * ");                
+                ps.Append("Texture, vUV).rgb * ");
                 ps.Append(channelName);
-                ps.Append("Mix;\n");                
+                ps.Append("Mix;\n");
             }
         }
-        
 
-        private string _vs; 
+
+        private string _vs;
+
         public string VS
         {
             get { return _vs; }
         }
 
-        private string _ps; 
+        private string _ps;
+
         public string PS
         {
             get { return _ps; }
         }
 
-        public string DiffuseColorName { get { return (_hasDiffuse) ? "DiffuseColor" : null; } }
-        public string SpecularColorName { get { return (_hasSpecular) ? "SpecularColor" : null; } }
-        public string EmissiveColorName { get { return (_hasEmissive) ? "EmissiveColor" : null; } }
+        public string DiffuseColorName
+        {
+            get { return (_hasDiffuse) ? "DiffuseColor" : null; }
+        }
 
-        public string DiffuseTextureName { get { return (_hasDiffuseTexture) ? "DiffuseTexture" : null; } }
-        public string SpecularTextureName { get { return (_hasSpecularTexture) ? "SpecularTexture" : null; } }
-        public string EmissiveTextureName { get { return (_hasEmissiveTexture) ? "EmissiveTexture" : null; } }
-        public string BumpTextureName { get { return (_hasBump) ? "BumpTexture" : null; } }
+        public string SpecularColorName
+        {
+            get { return (_hasSpecular) ? "SpecularColor" : null; }
+        }
 
-        public string DiffuseMixName { get { return (_hasDiffuse) ? "DiffuseMix" : null; } }
-        public string SpecularMixName { get { return (_hasSpecular) ? "SpecularMix" : null; } }
-        public string EmissiveMixName { get { return (_hasEmissive) ? "EmissiveMix" : null; } }
+        public string EmissiveColorName
+        {
+            get { return (_hasEmissive) ? "EmissiveColor" : null; }
+        }
 
-        public string SpecularShininessName { get { return (_hasSpecular) ? "SpecularShininess" : null; } }
-        public string SpecularIntensityName { get { return (_hasSpecular) ? "SpecularIntensity" : null; } }
-        public string BumpIntensityName { get { return (_hasBump) ? "BumpIntensity" : null; } }
+        public string DiffuseTextureName
+        {
+            get { return (_hasDiffuseTexture) ? "DiffuseTexture" : null; }
+        }
 
-        public static string LightDirectionName { get { return "LightDirection"; } }
-        public static string LightColorName { get { return "LightColor"; } }
-        public static string LightIntensityName { get { return "LightIntensity"; } }
-    
+        public string SpecularTextureName
+        {
+            get { return (_hasSpecularTexture) ? "SpecularTexture" : null; }
+        }
+
+        public string EmissiveTextureName
+        {
+            get { return (_hasEmissiveTexture) ? "EmissiveTexture" : null; }
+        }
+
+        public string BumpTextureName
+        {
+            get { return (_hasBump) ? "BumpTexture" : null; }
+        }
+
+        public string DiffuseMixName
+        {
+            get { return (_hasDiffuse) ? "DiffuseMix" : null; }
+        }
+
+        public string SpecularMixName
+        {
+            get { return (_hasSpecular) ? "SpecularMix" : null; }
+        }
+
+        public string EmissiveMixName
+        {
+            get { return (_hasEmissive) ? "EmissiveMix" : null; }
+        }
+
+        public string SpecularShininessName
+        {
+            get { return (_hasSpecular) ? "SpecularShininess" : null; }
+        }
+
+        public string SpecularIntensityName
+        {
+            get { return (_hasSpecular) ? "SpecularIntensity" : null; }
+        }
+
+        public string BumpIntensityName
+        {
+            get { return (_hasBump) ? "BumpIntensity" : null; }
+        }
+
+        public static string LightDirectionName
+        {
+            get { return "LightDirection"; }
+        }
+
+        public static string LightColorName
+        {
+            get { return "LightColor"; }
+        }
+
+        public static string LightIntensityName
+        {
+            get { return "LightIntensity"; }
+        }
     }
 }

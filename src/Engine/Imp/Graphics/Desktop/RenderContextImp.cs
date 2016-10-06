@@ -1649,6 +1649,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.ColorMask(red, green, blue, alpha);
         }
 
+#region FBO related Methods/Members
+
         /// <summary>
         /// Returns the capabilities of the underlying graphics hardware
         /// </summary>
@@ -1669,6 +1671,16 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     throw new ArgumentOutOfRangeException(nameof(capability), capability, null);
             }
         }
+
+        public bool CreateFBO()
+        {
+            throw new NotImplementedException();
+            // throws Exception
+            // var test = new FrameBufferObject();
+            // test.CheckFboStatus();
+            // return true;
+        }
+#endregion
 
         #endregion
 

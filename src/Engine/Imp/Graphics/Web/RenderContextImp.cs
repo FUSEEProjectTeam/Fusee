@@ -364,6 +364,12 @@ namespace Fusee.Engine.Imp.Graphics.Web
         {
             throw new System.NotImplementedException();
         }
-        
+
+        [JSExternal]
+        public bool CreateFBO()
+        {
+            throw new System.NotImplementedException();
+        }
+
     }
 }

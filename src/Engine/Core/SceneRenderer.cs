@@ -789,14 +789,15 @@ namespace Fusee.Engine.Core
         private ShaderEffect MakeMaterial(MaterialComponent mc)
         {
             WeightComponent wc = CurrentNode.GetWeights();
-           
 
             ShaderCodeBuilder scb = null;
 
+            // If MaterialLightCompoenent is found call the ShaderCodeBuilder with the MaterialLight
+            // The ShaderCodeBuilder is intelligent enough to handle all the necessary compilations needed for the VS & PS
             if (mc.GetType() == typeof(MaterialLightComponent))
             {
                 var lightMat = mc as MaterialLightComponent;
-                if (lightMat != null) scb = new ShaderCodeBuilder(mc, null, lightMat.ApplyLightString, wc);
+                if (lightMat != null) scb = new ShaderCodeBuilder(lightMat, null, wc);
             }
             else
             {

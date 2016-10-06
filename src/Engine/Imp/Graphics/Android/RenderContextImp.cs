@@ -1586,18 +1586,24 @@ namespace Fusee.Engine.Imp.Graphics.Android
             }
         }
 
+
+        public bool CreateFBO()
+        {
+            return true;
+        }
+
         #endregion
 
-            #region Picking related Members
+        #region Picking related Members
 
-            /// <summary>
-            /// Retrieves a sub-image of the giben region.
-            /// </summary>
-            /// <param name="x">The x value of the start of the region.</param>
-            /// <param name="y">The y value of the start of the region.</param>
-            /// <param name="w">The width to copy.</param>
-            /// <param name="h">The height to copy.</param>
-            /// <returns>The specified sub-image</returns>
+        /// <summary>
+        /// Retrieves a sub-image of the giben region.
+        /// </summary>
+        /// <param name="x">The x value of the start of the region.</param>
+        /// <param name="y">The y value of the start of the region.</param>
+        /// <param name="w">The width to copy.</param>
+        /// <param name="h">The height to copy.</param>
+        /// <returns>The specified sub-image</returns>
         public ImageData GetPixelColor(int x, int y, int w = 1, int h = 1)
         {
             ImageData image = CreateImage(w, h, ColorUint.Black);
