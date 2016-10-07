@@ -1,29 +1,10 @@
 ﻿using Fusee.Math.Core;
+using Fusee.Serialization;
 
 namespace Fusee.Engine.Common
 {
     /// <summary>
-    /// Specifies the type of the light.
-    /// A light is specified by one of three types represented by integers between 0 and 2.
-    /// </summary>
-    public enum LightType
-    {
-        /// <summary>
-        /// Directional light is represented by 0.
-        /// </summary>
-        Directional,
-        /// <summary>
-        /// Point light is represented by 1.
-        /// </summary>
-        Point,
-        /// <summary>
-        /// Spot light is represented by 2.
-        /// </summary>
-        Spot
-    }
-
-    /// <summary>
-    /// The container that holds all informations that are required for shader light calculation.
+    /// This container holds all informations which are required for shader light calculation.
     /// </summary>
     public struct Light
     {

@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using Fusee.Base.Core;
+using Fusee.Engine.Common;
 using Fusee.Serialization;
 
 namespace Fusee.Engine.Core
@@ -14,6 +17,10 @@ namespace Fusee.Engine.Core
     //TODO: Implement usage of more than one RenderPass (w&wo FBO)
     class ShaderCodeBuilder
     {
+        public static IList<LightResult> _allLights;
+        private IList<Light> _lightsForPS = new List<Light>();
+        
+  
         private bool _hasVertices, _hasNormals, _hasUVs, _hasColors;
         private bool _hasDiffuse, _hasSpecular, _hasEmissive, _hasBump;
         private bool _hasDiffuseTexture, _hasSpecularTexture, _hasEmissiveTexture;
@@ -25,6 +32,8 @@ namespace Fusee.Engine.Core
         private bool _hasApplyLightString;
         private bool _hasFragmentString;
         private MaterialLightComponent.StandardLightningCalculationMethod _lightningCalculationMethod;
+
+
 
         /*
         struct SurfaceOutput {
@@ -123,6 +132,26 @@ namespace Fusee.Engine.Core
             PixelInputDeclarations(ps);
             PSBody(ps);
             _ps = ps.ToString();
+            Diagnostics.Log(_ps);
+        }
+
+        private static void ParseLights(StringBuilder ps)
+        {
+            // no LightComponent found
+            if (_allLights.Count == 0)
+                return;
+
+            // LightComponent found, add Light struct
+            ps.Append("\n\n " +
+                      "uniform struct Light {\n" +
+                      "vec4 position;\n" +
+                      "vec3 intensities;\n" +
+                      "float attenuation;\n" +
+                      "float ambientCoefficient;\n" +
+                      "float coneAngle;\n" +
+                      "vec3 coneDirection;\n" +
+                      "} allLights[MAX_LIGHTS];\n" +
+                      "\n\n");
         }
 
         private void AnalyzeMesh(MeshComponent mesh)
@@ -363,6 +392,10 @@ namespace Fusee.Engine.Core
             ps.Append("  precision highp float;\n");
             ps.Append("#endif\n\n");
 
+            // define max lights
+            ps.Append("\n\n #define MAX_LIGHTS " + _allLights.Count + "\n\n");
+
+
             ChannelInputDeclaration(ps, _hasDiffuse, _hasDiffuseTexture, "Diffuse");
             SpecularInputDeclaration(ps);
             ChannelInputDeclaration(ps, _hasEmissive, _hasEmissiveTexture, "Emissive");
@@ -441,6 +474,8 @@ namespace Fusee.Engine.Core
         
         private void PSBody(StringBuilder ps)
         {
+            ParseLights(ps);
+
             ps.Append("\n\n  void main()\n  {\n");
             ps.Append("    vec3 result = vec3(0, 0, 0);\n\n");
 
@@ -460,6 +495,8 @@ namespace Fusee.Engine.Core
 
         private void PSCustomBody(StringBuilder ps, MaterialLightComponent mlc)
         {
+            ParseLights(ps);
+
             AddApplyLightCalculation(ps, mlc);
             AddStandardLightningCalculation(ps, mlc);
 

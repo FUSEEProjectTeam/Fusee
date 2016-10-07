@@ -162,6 +162,8 @@ namespace Fusee.Engine.Core
         private RenderContext _rc;
         private List<LightInfo> _lights;
 
+        private List<LightResult> _lightComponents; 
+
         private string _scenePathDirectory;
         private ShaderEffect _defaultEffect;
 
@@ -203,6 +205,12 @@ namespace Fusee.Engine.Core
 
         public SceneRenderer(SceneContainer sc /*, string scenePathDirectory*/)
         {
+
+            // accumulate all lights and...
+            _lightComponents = sc.Children.Viserate<LightSetup, LightResult>().ToList();
+            // ...pass them to ShaderCodeBuilder
+            ShaderCodeBuilder._allLights = _lightComponents;
+
             _lights = new List<LightInfo>();
             _sc = sc;
             // _scenePathDirectory = scenePathDirectory;
@@ -825,9 +833,9 @@ namespace Fusee.Engine.Core
             return ret;
         }
 
-        private List<EffectParameterDeclaration> AssembleEffectParamers(MaterialComponent mc, ShaderCodeBuilder scb)
+        private IEnumerable<EffectParameterDeclaration> AssembleEffectParamers(MaterialComponent mc, ShaderCodeBuilder scb)
         {
-            List<EffectParameterDeclaration> effectParameters = new List<EffectParameterDeclaration>();
+            var effectParameters = new List<EffectParameterDeclaration>();
 
             if (mc.HasDiffuse)
             {
@@ -940,9 +948,157 @@ namespace Fusee.Engine.Core
                 });
             }
 
+            if (ShaderCodeBuilder._allLights != null)
+            {
+                for (var i = 0; i < ShaderCodeBuilder._allLights.Count; i++)
+                {
+                    if(!ShaderCodeBuilder._allLights[i].Active)
+                        continue;
+
+                    effectParameters.Add(new EffectParameterDeclaration
+                    {
+                        Name = "allLights[" + i + "].position",
+                        Value = ShaderCodeBuilder._allLights[i].Position
+                    });
+                    effectParameters.Add(new EffectParameterDeclaration
+                    {
+                        Name = "allLights[" + i + "].intensities",
+                        Value = ShaderCodeBuilder._allLights[i].Color
+                    });
+                    effectParameters.Add(new EffectParameterDeclaration
+                    {
+                        Name = "allLights[" + i + "].attenuation",
+                        Value = ShaderCodeBuilder._allLights[i].Attenuation
+                    });
+                    effectParameters.Add(new EffectParameterDeclaration
+                    {
+                        Name = "allLights[" + i + "].ambientCoefficient",
+                        Value = ShaderCodeBuilder._allLights[i].AmbientCoefficient
+                    });
+                    effectParameters.Add(new EffectParameterDeclaration
+                    {
+                        Name = "allLights[" + i + "].coneAngle",
+                        Value = ShaderCodeBuilder._allLights[i].ConeAngle
+                    });
+                    effectParameters.Add(new EffectParameterDeclaration
+                    {
+                        Name = "allLights[" + i + "].coneDirection",
+                        Value = ShaderCodeBuilder._allLights[i].ConeDirection
+                    });
+                }
+            }
+
             return effectParameters;
         }
 
         #endregion
+    }
+    /// <summary>
+    /// This class saves a light found by a Viserator with all parameters
+    /// </summary>
+    public struct LightResult
+    {
+        /// <summary>
+        /// Represents the light status.
+        /// </summary>
+        public bool Active;
+        /// <summary>
+        /// Represents the position of the light.
+        /// </summary>
+        public float4 Position;
+        /// <summary>
+        /// Represents the color.
+        /// </summary>
+        public float3 Color;
+        /// <summary>
+        /// Represents the attenuation of the light.
+        /// </summary>
+        public float Attenuation;
+        /// <summary>
+        /// Represents the ambient coefficient of the light.
+        /// </summary>
+        public float AmbientCoefficient;
+        /// <summary>
+        /// Represents the type of the light.
+        /// </summary>
+        public LightType Type;
+        /// <summary>
+        /// Represents the spot angle of the light.
+        /// </summary>
+        public float ConeAngle;
+        /// <summary>
+        /// Represents the cone direction of the light.
+        /// </summary>
+        public float3 ConeDirection;
+        /// <summary>
+        /// The ModelMatrix of the light
+        /// </summary>
+        public float4x4 ModelMatrix;
+        /// <summary>
+        /// The light's Position in World Coordiantes.
+        /// </summary>
+        public float4 PositionWorldSpace;
+    }
+
+    public class LightSetupState : VisitorState
+    {
+        private readonly CollapsingStateStack<float4x4> _model = new CollapsingStateStack<float4x4>();
+
+        /// <summary>
+        /// Gets or sets the top of the Model matrix stack. The Model matrix transforms model coordinates into world coordinates.
+        /// </summary>
+        /// <value>
+        /// The Model matrix.
+        /// </value>
+        public float4x4 Model
+        {
+            set { _model.Tos = value; }
+            get { return _model.Tos; }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LightSetupState"/> class.
+        /// </summary>
+        public LightSetupState()
+        {
+            RegisterState(_model);
+        }
+    }
+
+    public class LightSetup : Viserator<LightResult, LightSetupState>
+    {
+        protected override void InitState()
+        {
+            base.InitState();
+            State.Model = float4x4.Identity;
+        }
+
+
+        [VisitMethod]
+        public void OnTransform(TransformComponent xform)
+        {
+            State.Model *= xform.Matrix();
+        }
+
+        [VisitMethod]
+        public void OnLight(LightComponent lightComponent)
+        {
+            var lightResult = new LightResult
+            {
+                Type = lightComponent.Type,
+                Color = lightComponent.Color,
+                ConeAngle = lightComponent.ConeAngle,
+                ConeDirection = lightComponent.ConeDirection,
+                AmbientCoefficient = lightComponent.AmbientCoefficient,
+                ModelMatrix = State.Model,
+                Position = lightComponent.Position,
+                PositionWorldSpace = State.Model * lightComponent.Position,
+                Active = lightComponent.Active,
+                Attenuation = lightComponent.Attenuation
+            };
+
+            YieldItem(lightResult);
+        }
+
     }
 }

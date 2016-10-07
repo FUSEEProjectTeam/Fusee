@@ -15,8 +15,6 @@ namespace Fusee.Serialization
     [ProtoInclude(104, typeof(TypeContainerFloat3))]
     [ProtoInclude(105, typeof(TypeContainerFloat4))]
     [ProtoInclude(106, typeof(TypeContainerBoolean))]
-    //  [ProtoInclude(107, typeof(TypeContainerFloat3X3))]
-    //  [ProtoInclude(108, typeof(TypeContainerFloat4X4))]
     public class TypeContainer
     {
         /// <summary>

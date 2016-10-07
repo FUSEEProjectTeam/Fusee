@@ -8,6 +8,7 @@ using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Math.Core;
 using Fusee.Serialization;
+using Fusee.Xene;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 #if GUI_SIMPLE
@@ -74,6 +75,19 @@ namespace Fusee.Engine.Examples.Simple.Core
 
             // Load the rocket model
             _rocketScene = AssetStorage.Get<SceneContainer>("RocketModel.fus");
+
+            _rocketScene.Children[0].AddComponent(new LightComponent
+            {
+                Active = true,
+                AmbientCoefficient = 1f,
+                Attenuation = 1f,
+                Color = new float3(1f,0f,0f),
+                ConeAngle = 35.0f,
+                ConeDirection = new float3(0f,1f,0f),
+                Name = "Light1",
+                Position = new float4(0f,0f,-1f,1f),
+                Type = LightType.Parallel
+            });
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_rocketScene);
