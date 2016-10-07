@@ -33,30 +33,30 @@ namespace Fusee.Base.Imp.Web
 
             for (var i = 0; i < partTags.Count; i++)
             {
-                if (partTags.SkipItems(i).TakeItems(linearPattern.Length).IEnumEqual(linearPattern))
+                if (partTags.SkipItems(i).TakeItems(linearPattern.Length).SequEqual(linearPattern))
                 {
                     Type = SegmentType.LINEAR;
                     segments.Add(CreateCurveSegment(part, i, linearPattern, partVerts));
                 }
-                else if (partTags.SkipItems(i).TakeItems(conicPattern.Length).IEnumEqual(conicPattern))
+                else if (partTags.SkipItems(i).TakeItems(conicPattern.Length).SequEqual(conicPattern))
                 {
                     Type = SegmentType.CONIC;
                     segments.Add(CreateCurveSegment(part, i, conicPattern, partVerts));
-                    i = i + 1;
+                    i += 1;
                 }
-                else if (partTags.SkipItems(i).TakeItems(cubicPattern.Length).IEnumEqual(cubicPattern))
+                else if (partTags.SkipItems(i).TakeItems(cubicPattern.Length).SequEqual(cubicPattern))
                 {
                     Type = SegmentType.CUBIC;
                     segments.Add(CreateCurveSegment(part, i, cubicPattern, partVerts));
-                    i = i + 2;
+                    i += 2;
                 }
-                else if (partTags.SkipItems(i).TakeItems(conicVirtualPattern.Length).IEnumEqual(conicVirtualPattern))
+                else if (partTags.SkipItems(i).TakeItems(conicVirtualPattern.Length).SequEqual(conicVirtualPattern))
                 {
                     Type = SegmentType.CONIC;
                     var count = 0;
                     var cs = CreateCurveSegment(part, i, conicVirtualPattern, partVerts);
 
-                    i = i + 3;
+                    i += 3;
 
                     for (var j = i + 1; j < partTags.Count; j++)
                     {
@@ -81,15 +81,15 @@ namespace Fusee.Base.Imp.Web
                     var lastSegment = new List<byte>();
                     lastSegment.AddRange(partTags.SkipItems(i).TakeItems(partTags.Count - i));
                     lastSegment.Add(partTags[0]);
-                    if (lastSegment.IEnumEqual(conicPattern))
+                    if (lastSegment.SequEqual(conicPattern))
                     {
                         segments.Add(CreateCurveSegment(part, i, conicPattern, partVerts[0], partVerts));
                     }
-                    else if (lastSegment.IEnumEqual(cubicPattern))
+                    else if (lastSegment.SequEqual(cubicPattern))
                     {
                         segments.Add(CreateCurveSegment(part, i, cubicPattern, partVerts[0], partVerts));
                     }
-                    else if (lastSegment.IEnumEqual(conicVirtualPattern))
+                    else if (lastSegment.SequEqual(conicVirtualPattern))
                     {
                         segments.Add(CreateCurveSegment(part, i, cubicPattern, partVerts[0], partVerts));
                     }
@@ -282,19 +282,19 @@ namespace Fusee.Base.Imp.Web
             /// <returns></returns>
             public static IEnumerable<T> TakeItems<T>(this IEnumerable<T> data, int count)
             {
-                var zwerg = new List<T>();
+                var items = new List<T>();
                 var i = 0;
 
                 foreach (var t in data)
                 {
                     if (i < count)
                     {
-                        zwerg.Add(t);
+                        items.Add(t);
                     }
                     else break;
                     i++;
                 }
-                return zwerg;
+                return items;
             }
 
             /// <summary>
@@ -322,7 +322,7 @@ namespace Fusee.Base.Imp.Web
             /// <param name="compObj"></param>
             /// <typeparam name="T"></typeparam>
             /// <returns></returns>
-            public static bool IEnumEqual<T>(this IEnumerable<T> source, IEnumerable<T> compObj)
+            public static bool SequEqual<T>(this IEnumerable<T> source, IEnumerable<T> compObj)
             {
                 var enum1 = source.GetEnumerator();
                 var enum2 = compObj.GetEnumerator();

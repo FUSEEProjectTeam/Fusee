@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using Fusee.Base.Core;
 using Fusee.Math.Core;
 
@@ -65,7 +62,5 @@ namespace Fusee.Engine.Core
         }
 
     }
-
-
 }
 

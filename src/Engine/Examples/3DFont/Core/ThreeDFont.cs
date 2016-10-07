@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
@@ -15,39 +16,28 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
     [FuseeApplication(Name = "ThreeDFont Example", Description = "The official FUSEE ThreeDFont.")]
     public class ThreeDFont : RenderCanvas
     {
-        private const string _vertexShader = @"
-            attribute vec3 fuVertex;
-            attribute vec3 fuNormal;
-            uniform mat4 xform;
-            //uniform float alpha;
-            //varying vec3 modelpos;
-            varying vec3 normal;
+        private readonly string _vertexShader = @"
+        attribute vec3 fuVertex;
+        attribute vec3 fuNormal;
+        uniform mat4 xform;            
+        varying vec3 normal;
 
-            void main()
-            {
-                //modelpos = fuVertex;
-                normal = fuNormal;
-                //float s = sin(alpha);
-                //float c = cos(alpha);
-                /*gl_Position = vec4(0.5 * (fuVertex.x * c - fuVertex.z * s), 
-                                   0.5 *  fuVertex.y, 
-                                   0.5 * (fuVertex.x * s + fuVertex.z * c),
-                                   1.0);*/
-                gl_Position = xform* vec4(fuVertex, 1);
-            }";
+        void main()
+        {
+	        normal = fuNormal;               
+            gl_Position = xform* vec4(fuVertex, 1);
+        }";
+        private readonly string _pixelShader = @"
+        #ifdef GL_ES
+	        precision highp float;
+        #endif
 
-        private const string _pixelShader = @"
-            #ifdef GL_ES
-                precision highp float;
-            #endif
-            //varying vec3 modelpos;
-            varying vec3 normal;
+        varying vec3 normal;
 
-            void main()
-            {
-                gl_FragColor = vec4(normal*0.5+0.5, 1);
-            }";
-
+        void main()
+        {
+            gl_FragColor = vec4(normal*0.5+0.5, 1);
+        }";
 
         private IShaderParam _xformParam;
         private float4x4 _xform;
@@ -72,20 +62,26 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             var vladimir = AssetStorage.Get<Font>("VLADIMIR.TTF");
             var arial = AssetStorage.Get<Font>("arial.ttf");
 
-            _text = "Q";
-            _textCurve = new TextCurve(_text, arial);
+            _text = "S";
+            _textCurve = new TextCurve(_text, vladimir);
             
             var curve = _textCurve.GetTextCurve();
 
             foreach (var p in curve.CurveParts)
             {
-                foreach (var s in p.CurveSegments)
+                for (var i = 0; i < p.CurveSegments.Count; i++)
                 {
-                    foreach (var v in s.Vertices)
+                    if (i == 0)
                     {
-                        _controlPoints.Add(v);
+                        _controlPoints.AddRange(p.CurveSegments[0].CalculateUniformPolyline(p.StartPoint,6));
+                    }
+                    else
+                    {
+                        var startPoint = p.CurveSegments[i - 1].Vertices.Last();
+                        _controlPoints.AddRange(p.CurveSegments[i].CalculateUniformPolyline(startPoint, 6));
                     }
                 }
+                
             }
 
             for (var i = 0; i < _controlPoints.Count; i++)
