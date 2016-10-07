@@ -12,6 +12,7 @@ namespace Fusee.Engine.Core
     //TODO: Implement ShaderCode for Light
     //TODO: Standard ApplyLight()
     //TODO: Refactor and restructre
+    //TODO: Restructure with legacymode if no lightcomponent is found
     //TODO: Implement PBR
     //TODO: Implement usage of FBO if supported
     //TODO: Implement usage of more than one RenderPass (w&wo FBO)
