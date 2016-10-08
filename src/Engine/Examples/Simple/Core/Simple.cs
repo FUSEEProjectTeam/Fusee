@@ -90,7 +90,8 @@ namespace Fusee.Engine.Examples.Simple.Core
             });
 
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRenderer(_rocketScene);
+            _sceneRenderer = new SceneRenderer(_rocketScene, LightningCalculationMethod.BLINN_PHONG);
+            
         }
 
         // RenderAFrame is called once a frame

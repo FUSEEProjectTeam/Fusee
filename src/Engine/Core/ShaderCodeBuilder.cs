@@ -33,8 +33,7 @@ namespace Fusee.Engine.Core
         private bool _hasApplyLightString;
         private bool _hasFragmentString;
         private MaterialLightComponent.StandardLightningCalculationMethod _lightningCalculationMethod;
-
-
+        
 
         /*
         struct SurfaceOutput {
@@ -102,6 +101,8 @@ namespace Fusee.Engine.Core
 
         public ShaderCodeBuilder(MaterialComponent mc, MeshComponent mesh, WeightComponent wc = null)
         {
+            var lightningMethod = SceneRenderer.LightningCalculationMethod;
+
             if (wc != null)
             {
                 _hasWeightMap = true;
@@ -122,6 +123,8 @@ namespace Fusee.Engine.Core
                 _hasVertices = _hasNormals = _hasUVs = true;
             }
             AnalyzeMaterial(mc);
+
+            //TODO: Use/switch lightning method to build PS & VS
 
             StringBuilder vs = new StringBuilder();
             MeshInputDeclarations(vs);

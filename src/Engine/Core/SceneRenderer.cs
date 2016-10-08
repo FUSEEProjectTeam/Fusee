@@ -144,11 +144,36 @@ namespace Fusee.Engine.Core
 
 
     /// <summary>
+    /// All supported lightning calculation methods ShaderCodeBuilder.cs supports.
+    /// </summary>
+    // ReSharper disable InconsistentNaming
+    public enum LightningCalculationMethod
+    {
+        /// <summary>
+        /// Blinn
+        /// </summary>
+        BLINN,
+
+        /// <summary>
+        /// Blinn Phong
+        /// </summary>
+        BLINN_PHONG,
+
+        /// <summary>
+        /// Cook Torrance, also known as physical based rendering
+        /// </summary>
+        COOK_TORRANCE
+    }
+
+    /// <summary>
     /// Use a Scene Renderer to traverse a scene hierarchy (made out of scene nodes and components) in order
     /// to have each visited element contribute to the result rendered against a given render context.
     /// </summary>
     public class SceneRenderer : SceneVisitor
     {
+        // Choose Lightning Method
+        public static LightningCalculationMethod LightningCalculationMethod = LightningCalculationMethod.BLINN_PHONG;
+
         #region Traversal information
 
         private Dictionary<MeshComponent, Mesh> _meshMap;
@@ -166,6 +191,8 @@ namespace Fusee.Engine.Core
 
         private string _scenePathDirectory;
         private ShaderEffect _defaultEffect;
+
+
 
         #endregion
 
@@ -203,9 +230,14 @@ namespace Fusee.Engine.Core
 
         #region Initialization Construction Startup
 
+        public SceneRenderer(SceneContainer sc, LightningCalculationMethod LightningCalculationMethod)
+             : this(sc)
+        {
+            this.LightningCalculationMethod = LightningCalculationMethod;
+        }
+
         public SceneRenderer(SceneContainer sc /*, string scenePathDirectory*/)
         {
-
             // accumulate all lights and...
             _lightComponents = sc.Children.Viserate<LightSetup, LightResult>().ToList();
             // ...pass them to ShaderCodeBuilder
