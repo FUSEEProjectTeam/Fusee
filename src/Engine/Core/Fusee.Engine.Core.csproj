@@ -46,7 +46,7 @@
     <Compile Include="AudioStream.cs" />
     <Compile Include="BoxShape.cs" />
     <Compile Include="CapsuleShape.cs" />
-    <Compile Include="TextCurve.cs" />
+    <Compile Include="TextCurveUtility.cs" />
     <Compile Include="CollisionShape.cs" />
     <Compile Include="CompoundShape.cs" />
     <Compile Include="ConeShape.cs" />

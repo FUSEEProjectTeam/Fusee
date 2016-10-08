@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Collections.Generic;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
-using Fusee.Engine.Core.GUI;
 using Fusee.Math.Core;
-using Fusee.Serialization;
 using static Fusee.Engine.Core.Input;
 
 namespace Fusee.Engine.Examples.ThreeDFont.Core
@@ -51,7 +46,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
         private List<float3> _controlPoints;
         private Mesh _point;
 
-        private TextCurve _textCurve;
+        private TextCurveUtility _textCurveUtility;
 
         // Init is called on startup. 
         public override void Init()
@@ -62,32 +57,18 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             var vladimir = AssetStorage.Get<Font>("VLADIMIR.TTF");
             var arial = AssetStorage.Get<Font>("arial.ttf");
 
-            _text = "S";
-            _textCurve = new TextCurve(_text, vladimir);
-            
-            var curve = _textCurve.GetTextCurve();
+            _text = "Hello World!";
+            _textCurveUtility = new TextCurveUtility(_text, fontLato);
 
-            foreach (var p in curve.CurveParts)
-            {
-                for (var i = 0; i < p.CurveSegments.Count; i++)
-                {
-                    if (i == 0)
-                    {
-                        _controlPoints.AddRange(p.CurveSegments[0].CalculateUniformPolyline(p.StartPoint,6));
-                    }
-                    else
-                    {
-                        var startPoint = p.CurveSegments[i - 1].Vertices.Last();
-                        _controlPoints.AddRange(p.CurveSegments[i].CalculateUniformPolyline(startPoint, 6));
-                    }
-                }
-                
-            }
+            var outline = _textCurveUtility.GetTextOutline(5);
+            var controlPoints = _textCurveUtility.GetTextControlPoints();
+
+            //_controlPoints.AddRange(controlPoints);
+            _controlPoints.AddRange(outline);
 
             for (var i = 0; i < _controlPoints.Count; i++)
             {
                 _controlPoints[i] = new float3((_controlPoints[i].x / Width) - 1.5f, _controlPoints[i].y / Height, _controlPoints[i].z);
-
             }
 
             _point = _cube.BuildCube();
@@ -121,11 +102,11 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
 
             var aspectRatio = Width / (float)Height;
             var projection = float4x4.CreatePerspectiveFieldOfView(3.141592f * 0.25f, aspectRatio, 0.01f, 20);
-            var view = float4x4.CreateTranslation(0, 0, 5) * float4x4.CreateRotationY(_alpha);
+            var view = float4x4.CreateTranslation(0, 0, 10) * float4x4.CreateRotationY(_alpha);
 
             foreach (var point in _controlPoints)
             {
-                var modelPoint = ModelXForm(new float3(point.x - 1.5f, point.y - 1f, 0), new float3(0, 0, 0));
+                var modelPoint = ModelXForm(new float3(point.x - 3f, point.y - 1f, 0), new float3(0, 0, 0));
                 _xform = projection * view * modelPoint * float4x4.CreateScale(0.015f, 0.015f, 0.015f);
                 RC.SetShaderParam(_xformParam, _xform);
                 RC.Render(_point);

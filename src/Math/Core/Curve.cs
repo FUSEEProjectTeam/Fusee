@@ -44,6 +44,17 @@ namespace Fusee.Math.Core
             }
             return combinedCurve;
         }
+
+        public IEnumerable<float3> CalcUniformPolyline (int curveSegments)
+        {
+            foreach (var part in CurveParts)
+            {
+                foreach (var vert in part.GetUniformOutline(curveSegments))
+                {
+                    yield return vert;
+                }
+            }
+        }
     }
 
 
@@ -63,14 +74,40 @@ namespace Fusee.Math.Core
         public float3 StartPoint;
 
         /// <summary>
-        /// The segments making up the CurveParts.
+        /// The segments making up the CurvePart.
         /// </summary>
         public IList<CurveSegment> CurveSegments;
+
+        public IEnumerable<float3> GetUniformOutline(int segmentCount)
+        {
+            for (var i = 0; i < CurveSegments.Count; i++)
+            {
+                float3 startPoint;
+
+                if (i == 0)
+                {
+                    startPoint = StartPoint;
+                    foreach (var vert in CurveSegments[i].CalculateUniformPolyline(startPoint, segmentCount))
+                    {
+                        yield return vert;
+                    }
+                }
+                else
+                {
+                    startPoint = CurveSegments[i - 1].Vertices[CurveSegments[i - 1].Vertices.Count - 1];
+                    foreach (var vert in CurveSegments[i].CalculateUniformPolyline(startPoint, segmentCount))
+                    {
+                        yield return vert;
+                    }
+                }
+            }
+        }
     }
 
     /// <summary>
     /// The base class for CurveSegments.
-    /// Represents a segment of a CurvePart, using a list of float3.
+    /// Represents a segment of a CurvePart, using a list of float3. Segments don't know their own start point.
+    /// The start point of the first segment is saved in the CurveParts StartPoint. The following applies to the other segments: The start point of the current segment is the last vertice of the previous segment. 
     /// </summary>
     public abstract class CurveSegment
     {
@@ -131,10 +168,11 @@ namespace Fusee.Math.Core
             var zwerg = new List<float3>();
             zwerg.Add(startPoint);
             zwerg.AddRange(Vertices);
-
-
+            
             for (var i = 0; i < zwerg.Count - 1; i += 1)
             {
+                yield return zwerg[i];
+
                 var verts = new float3[2];
                 if (i == 0)
                 {
@@ -149,7 +187,7 @@ namespace Fusee.Math.Core
                     var t = j / (float)segmentsPerCurve;
                     yield return (1 - t) * verts[0] + t * verts[1];
                 }
-                yield return zwerg.Last();
+                yield return zwerg[zwerg.Count-1];
             }
         }
     }
@@ -190,10 +228,9 @@ namespace Fusee.Math.Core
 
             for (var i = 0; i < zwerg.Count - 3; i += 3)
             {
-
                 yield return zwerg[i];
+
                 var verts = new float3[4];
-                
                 verts[0] = zwerg[i];
                 verts[1] = zwerg[i + 1];
                 verts[2] = zwerg[i + 2];
@@ -205,7 +242,7 @@ namespace Fusee.Math.Core
                     var point = CalcPoint(t, verts);
                     yield return point;
                 }
-                yield return zwerg.Last();
+                yield return zwerg[zwerg.Count-1];
             }
 
         }
@@ -245,8 +282,8 @@ namespace Fusee.Math.Core
             for (var i = 0; i < zwerg.Count - 2; i += 2)
             {
                 yield return zwerg[i];
-                var verts = new float3[3];
 
+                var verts = new float3[3];
                 verts[0] = zwerg[i];
                 verts[1] = zwerg[i + 1];
                 verts[2] = zwerg[i + 2];
@@ -258,7 +295,7 @@ namespace Fusee.Math.Core
                     yield return point;
                 }
             }
-            yield return zwerg.Last();
+            yield return zwerg[zwerg.Count-1];
         }
     }
 
