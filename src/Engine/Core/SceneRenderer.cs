@@ -150,11 +150,6 @@ namespace Fusee.Engine.Core
     public enum LightningCalculationMethod
     {
         /// <summary>
-        /// Blinn
-        /// </summary>
-        BLINN,
-
-        /// <summary>
         /// Blinn Phong
         /// </summary>
         BLINN_PHONG,
@@ -179,6 +174,7 @@ namespace Fusee.Engine.Core
         private Dictionary<MeshComponent, Mesh> _meshMap;
         private Dictionary<MaterialComponent, ShaderEffect> _matMap;
         private Dictionary<MaterialLightComponent, ShaderEffect> _lightMatMap;
+        private Dictionary<MaterialPBRComponent, ShaderEffect> _pbrComponent;
         private Dictionary<SceneNodeContainer, float4x4> _boneMap;
         private Dictionary<ShaderComponent, ShaderEffect> _shaderEffectMap;
         private Animation _animation;
@@ -230,10 +226,10 @@ namespace Fusee.Engine.Core
 
         #region Initialization Construction Startup
 
-        public SceneRenderer(SceneContainer sc, LightningCalculationMethod LightningCalculationMethod)
+        public SceneRenderer(SceneContainer sc, LightningCalculationMethod lCalcMethod)
              : this(sc)
         {
-            this.LightningCalculationMethod = LightningCalculationMethod;
+            LightningCalculationMethod = lCalcMethod;
         }
 
         public SceneRenderer(SceneContainer sc /*, string scenePathDirectory*/)
@@ -353,6 +349,7 @@ namespace Fusee.Engine.Core
                 _meshMap = new Dictionary<MeshComponent, Mesh>();
                 _matMap = new Dictionary<MaterialComponent, ShaderEffect>();
                 _lightMatMap = new Dictionary<MaterialLightComponent, ShaderEffect>();
+                _pbrComponent = new Dictionary<MaterialPBRComponent, ShaderEffect>();
                 _boneMap = new Dictionary<SceneNodeContainer, float4x4>();
                 _shaderEffectMap = new Dictionary<ShaderComponent, ShaderEffect>();
                 _defaultEffect = MakeMaterial(new MaterialComponent
@@ -417,7 +414,8 @@ namespace Fusee.Engine.Core
         public void RenderMaterial(MaterialComponent matComp)
         {
             if (matComp.GetType() == typeof(MaterialLightComponent)) return;
-            
+            if (matComp.GetType() == typeof(MaterialPBRComponent)) return;
+
             var effect = LookupMaterial(matComp);
             _state.Effect = effect;
         }
@@ -425,7 +423,18 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void RenderMaterial(MaterialLightComponent matComp)
         {
+            if (matComp.GetType() == typeof(MaterialPBRComponent)) return;
+
             var effect = LookupLightMaterial(matComp);
+            _state.Effect = effect;
+        }
+
+        [VisitMethod]
+        public void RenderMaterial(MaterialPBRComponent matComp)
+        {
+            if (matComp.GetType() == typeof(MaterialLightComponent)) return;
+
+            var effect = LookupPBRMaterial(matComp);
             _state.Effect = effect;
         }
 
@@ -530,7 +539,18 @@ namespace Fusee.Engine.Core
             _lightMatMap.Add(mc, mat);
             return mat;
         }
-        
+
+        private ShaderEffect LookupPBRMaterial(MaterialPBRComponent mc)
+        {
+            ShaderEffect mat;
+            if (_pbrComponent.TryGetValue(mc, out mat)) return mat;
+
+            mat = MakeMaterial(mc);
+            mat.AttachToContext(_rc);
+            _pbrComponent.Add(mc, mat);
+            return mat;
+        }
+
 
         private ShaderEffect BuildMaterialFromShaderComponent(ShaderComponent shaderComponent)
         {
@@ -839,6 +859,11 @@ namespace Fusee.Engine.Core
                 var lightMat = mc as MaterialLightComponent;
                 if (lightMat != null) scb = new ShaderCodeBuilder(lightMat, null, wc);
             }
+            else if (mc.GetType() == typeof(MaterialPBRComponent))
+            {
+                    var pbrMaterial = mc as MaterialPBRComponent;
+                    if (pbrMaterial != null) scb = new ShaderCodeBuilder(pbrMaterial, null, wc);
+            }
             else
             {
                 scb = new ShaderCodeBuilder(mc, null, wc); // TODO, CurrentNode.GetWeights() != null);
@@ -980,17 +1005,18 @@ namespace Fusee.Engine.Core
                 });
             }
 
-            if (ShaderCodeBuilder._allLights != null)
+            // More than one light in scene, no legacy mode
+            if (ShaderCodeBuilder._allLights.Count > 0)
             {
                 for (var i = 0; i < ShaderCodeBuilder._allLights.Count; i++)
                 {
-                    if(!ShaderCodeBuilder._allLights[i].Active)
+                    if (!ShaderCodeBuilder._allLights[i].Active)
                         continue;
 
                     effectParameters.Add(new EffectParameterDeclaration
                     {
                         Name = "allLights[" + i + "].position",
-                        Value = ShaderCodeBuilder._allLights[i].Position
+                        Value = ShaderCodeBuilder._allLights[i].PositionWorldSpace
                     });
                     effectParameters.Add(new EffectParameterDeclaration
                     {
@@ -1017,7 +1043,51 @@ namespace Fusee.Engine.Core
                         Name = "allLights[" + i + "].coneDirection",
                         Value = ShaderCodeBuilder._allLights[i].ConeDirection
                     });
+                    effectParameters.Add(new EffectParameterDeclaration
+                    {
+                        Name = "allLights[" + i + "].lightType",
+                        Value = (int) ShaderCodeBuilder._allLights[i].Type
+                    });
                 }
+            }
+            // No LightComponent in Scene -> switch to legacy mode!
+            else
+            {
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = "allLights[0].position",
+                    Value = new float4(0, 0, 1, 1)
+                });
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = "allLights[0].intensities",
+                    Value = new float3(1, 1, 1)
+                });
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = "allLights[0].attenuation",
+                    Value = (float)1
+                });
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = "allLights[0].ambientCoefficient",
+                    Value = (float)1
+                });
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = "allLights[0].coneAngle",
+                    Value = (float)365
+                });
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = "allLights[0].coneDirection",
+                    Value = new float3(0, 0, 1)
+                });
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = "allLights[0].lightType",
+                    Value = 0
+                });
             }
 
             return effectParameters;

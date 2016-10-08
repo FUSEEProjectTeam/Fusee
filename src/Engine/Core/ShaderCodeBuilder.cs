@@ -18,8 +18,7 @@ namespace Fusee.Engine.Core
     //TODO: Implement usage of more than one RenderPass (w&wo FBO)
     class ShaderCodeBuilder
     {
-        public static IList<LightResult> _allLights;
-        private IList<Light> _lightsForPS = new List<Light>();
+        public static IList<LightResult> _allLights = new List<LightResult>();
         
   
         private bool _hasVertices, _hasNormals, _hasUVs, _hasColors;
@@ -32,8 +31,8 @@ namespace Fusee.Engine.Core
         // Needed for MaterialLightComponent
         private bool _hasApplyLightString;
         private bool _hasFragmentString;
-        private MaterialLightComponent.StandardLightningCalculationMethod _lightningCalculationMethod;
-        
+        private LightningCalculationMethod _lightningCalculationMethod = LightningCalculationMethod.BLINN_PHONG;
+
 
         /*
         struct SurfaceOutput {
@@ -46,6 +45,57 @@ namespace Fusee.Engine.Core
         };
         */
 
+        /// <summary>
+        /// If we have a MaterialPBRComponent this constructor is called.
+        /// </summary>
+        /// <param name="mlc">The MaterialLightComponent</param>
+        /// <param name="pbrMaterialPbrComponent"></param>
+        /// <param name="mesh">The Mesh</param>
+        /// <param name="wc">WeightCompoennt for animations</param>
+        public ShaderCodeBuilder(MaterialPBRComponent pbrMaterialPbrComponent, MeshComponent mesh, WeightComponent wc = null)
+        {
+           Diagnostics.Log($"{pbrMaterialPbrComponent.RoughnessValue} : {pbrMaterialPbrComponent.DiffuseFraction} : {pbrMaterialPbrComponent.FresnelReflectance}");
+
+            // Check WC
+            if (wc != null)
+            {
+                _hasWeightMap = true;
+                _nBones = wc.Joints.Count;
+            }
+            else
+            {
+                _nBones = 0;
+            }
+
+            //float f1 = 1;
+            //var type = f1.GetType();
+            _normalizeNormals = true;
+
+            // Check for mesh
+            if (mesh != null)
+                AnalyzeMesh(mesh);
+            else
+            {
+                _hasVertices = _hasNormals = _hasUVs = true;
+            }
+
+            // Analyze the Material
+            AnalyzeMaterial(pbrMaterialPbrComponent);
+            // VS
+            StringBuilder vs = new StringBuilder();
+            MeshInputDeclarations(vs);
+            MatrixDeclarations(vs);
+            VSBody(vs);
+            _vs = vs.ToString();
+
+            // PS
+            StringBuilder ps = new StringBuilder();
+            PixelInputDeclarations(ps);
+            PSPBRBody(ps, pbrMaterialPbrComponent);
+            _ps = ps.ToString();
+            Diagnostics.Log(_ps);
+        }
+
 
         /// <summary>
         /// If we have a MaterialLightComponent this constructor is called.
@@ -55,7 +105,7 @@ namespace Fusee.Engine.Core
         /// <param name="wc">WeightCompoennt for animations</param>
         public ShaderCodeBuilder(MaterialLightComponent mlc, MeshComponent mesh, WeightComponent wc = null)
         {
-            Diagnostics.Log($"{mlc.ApplyLightString} : {mlc.FragmentShaderString} : {mlc.LightningMethod}");
+            Diagnostics.Log($"{mlc.ApplyLightString} : {mlc.FragmentShaderString}");
 
             // Check WC
             if (wc != null)
@@ -83,7 +133,7 @@ namespace Fusee.Engine.Core
             // Analyze the Material
             AnalyzeMaterial(mlc);
 
-            Diagnostics.Log($"{_hasApplyLightString} : {_hasFragmentString} : {_lightningCalculationMethod}");
+            Diagnostics.Log($"{_hasApplyLightString} : {_hasFragmentString}");
 
             // VS
             StringBuilder vs = new StringBuilder();
@@ -136,14 +186,17 @@ namespace Fusee.Engine.Core
             PixelInputDeclarations(ps);
             PSBody(ps);
             _ps = ps.ToString();
-            Diagnostics.Log(_ps);
+
+            // Print shader
+            //Diagnostics.Log(_vs);
+            //Diagnostics.Log(_ps);
         }
 
         private static void ParseLights(StringBuilder ps)
         {
             // no LightComponent found
-            if (_allLights.Count == 0)
-                return;
+          //  if (_allLights.Count == 0)
+           //     return;
 
             // LightComponent found, add Light struct
             ps.Append("\n\n " +
@@ -154,6 +207,7 @@ namespace Fusee.Engine.Core
                       "float ambientCoefficient;\n" +
                       "float coneAngle;\n" +
                       "vec3 coneDirection;\n" +
+                      "int lightType;\n" +
                       "} allLights[MAX_LIGHTS];\n" +
                       "\n\n");
         }
@@ -197,10 +251,21 @@ namespace Fusee.Engine.Core
             _hasApplyLightString = (mlc.ApplyLightString != null);
             _hasFragmentString = (mlc.FragmentShaderString != null);
 
-            // always has standart rendering method:
-            _lightningCalculationMethod = mlc.LightningMethod;
-
             }
+
+        private void AnalyzeMaterial(MaterialPBRComponent mlc)
+        {
+            _hasDiffuse = mlc.HasDiffuse;
+            if (_hasDiffuse)
+                _hasDiffuseTexture = (mlc.Diffuse.Texture != null);
+            _hasSpecular = mlc.HasSpecular;
+            if (_hasSpecular)
+                _hasSpecularTexture = (mlc.Specular.Texture != null);
+            _hasEmissive = mlc.HasEmissive;
+            if (_hasEmissive)
+                _hasEmissiveTexture = (mlc.Emissive.Texture != null);
+            _hasBump = mlc.HasBump; // always has a texture...
+        }
 
         private void MeshInputDeclarations(StringBuilder vs)
         {
@@ -228,6 +293,8 @@ namespace Fusee.Engine.Core
             
             if (_hasColors)
                 vs.Append("  attribute vec4 fuColor;\n  varying vec4 vColors;\n");
+
+
         }
 
         private void MatrixDeclarations(StringBuilder vs)
@@ -252,7 +319,11 @@ namespace Fusee.Engine.Core
                 
             if(_hasWeightMap)
                 vs.Append("  uniform mat4 FUSEE_BONES[" + _nBones + "];\n");
- 
+
+            // needed for lightning calc
+            vs.Append("varying vec4 surfacePos;\n");
+            vs.Append("uniform mat4 FUSEE_MV;\n");
+
         }
 
 
@@ -319,7 +390,11 @@ namespace Fusee.Engine.Core
             if (_hasUVs)
                 vs.Append("    vUV = fuUV;\n");
 
-            vs.Append("  }\n\n");
+            // needed for spotlight
+            vs.Append(" surfacePos =  vec4(fuVertex, 1.0); \n");
+
+
+           vs.Append("  }\n\n");
         }
 
 
@@ -397,7 +472,8 @@ namespace Fusee.Engine.Core
             ps.Append("#endif\n\n");
 
             // define max lights
-            ps.Append("\n\n #define MAX_LIGHTS " + _allLights.Count + "\n\n");
+            var numberOfLights = _allLights.Count > 0 ? _allLights.Count : 1;
+            ps.Append("\n\n #define MAX_LIGHTS " + numberOfLights + "\n\n");
 
 
             ChannelInputDeclaration(ps, _hasDiffuse, _hasDiffuseTexture, "Diffuse");
@@ -479,41 +555,146 @@ namespace Fusee.Engine.Core
         private void PSBody(StringBuilder ps)
         {
             ParseLights(ps);
+            CreatePSBodyFromLightningMethod(ps);
 
-            ps.Append("\n\n  void main()\n  {\n");
-            ps.Append("    vec3 result = vec3(0, 0, 0);\n\n");
-
-            AddNormalVec(ps);
-            AddCameraVec(ps);
-            AddLightVec(ps);
-
-            AddEmissiveChannel(ps);
-            AddDiffuseChannel(ps);
-            AddSpecularChannel(ps);
-
-            
-            ps.Append("\n    gl_FragColor = vec4(result, 1.0);\n");
-            // ps.Append("\n    gl_FragColor = vec4((Normal + 1.0) * 0.5, 1.0);\n");
-            ps.Append("  }\n\n");
         }
 
+        // This is called when no MaterialLightComponent is found and ...
+        private void CreatePSBodyFromLightningMethod(StringBuilder ps)
+        {
+            /////////////// Legacy Mode 
+            // ...no LightComponents are in scene
+            if (_allLights.Count == 0)
+            {
+                AddNormalVec(ps);
+                AddCameraVec(ps);
+                AddLightVec(ps);
+                
+                ps.Append("\n\n  void main()\n  {\n");
+                ps.Append("    vec3 result = vec3(0, 0, 0);\n\n");
+
+                AddEmissiveChannel(ps);
+                AddDiffuseChannel(ps);
+                AddSpecularChannel(ps);
+
+                ps.Append("\n    gl_FragColor = vec4(result, 1.0);\n");
+                // ps.Append("\n    gl_FragColor = vec4((Normal + 1.0) * 0.5, 1.0);\n");
+                ps.Append("  }\n\n");
+
+            }
+            /////////////// Create ApplyLight from lightning method 
+            // ...LightComponents are in scene
+            else
+            {
+                AddStandardLightningCalculation(ps);
+            }
+        }
+
+        // This is called when MaterialLightComponent is found
         private void PSCustomBody(StringBuilder ps, MaterialLightComponent mlc)
         {
             ParseLights(ps);
+            AddNormalVec(ps);
+            AddCameraVec(ps);
 
             AddApplyLightCalculation(ps, mlc);
-            AddStandardLightningCalculation(ps, mlc);
+
+            ps.Append("\n\n  void main()\n  {\n");
+            ps.Append("    vec3 result = vec3(0, 0, 0);\n\n");
+            
+            // ApplyLight() is always called
+            ps.Append("\n   for(int i = 0; i < 3000; i++) { \n ");
+            ps.Append("\n   if(i > MAX_LIGHTS) break; \n ");
+            ps.Append("\n   result += ApplyLight(allLights[i]); \n ");
+            ps.Append("\n   } \n ");
+            ps.Append("\n   vec3 gamma = vec3(1.0/2.2);\n ");
+            ps.Append("\n   vec3 final_light = pow(result, gamma); \n ");
+            ps.Append("\n   gl_FragColor = vec4(final_light, 1.0);\n");
+            ps.Append("  }\n\n");
+        }
+
+        private void PSPBRBody(StringBuilder ps, MaterialPBRComponent mpbr)
+        {
+            ParseLights(ps);
+            AddNormalVec(ps);
+            AddCameraVec(ps);
+
+            ps.Append("  varying vec3 vViewDir;\n");
+
+
+            AddcooktorrancePBRMat(ps, mpbr);
 
             ps.Append("\n\n  void main()\n  {\n");
             ps.Append("    vec3 result = vec3(0, 0, 0);\n\n");
 
-            AddNormalVec(ps);
-            AddCameraVec(ps);
 
             // ApplyLight() is always called
-            ps.Append("\n   result += ApplyLight(); \n ");
-            ps.Append("\n    gl_FragColor = vec4(result, 1.0);\n");
+            ps.Append("\n   for(int i = 0; i < 3000; i++) { \n ");
+            ps.Append("\n   if(i > MAX_LIGHTS) break; \n ");
+            ps.Append("\n   result += ApplyLight(allLights[i]); \n ");
+            ps.Append("\n   } \n ");
+            ps.Append("\n   vec3 gamma = vec3(1.0/2.2);\n ");
+            ps.Append("\n   vec3 final_light = pow(result, gamma); \n ");
+            ps.Append("\n   gl_FragColor = vec4(final_light, 1.0);\n");
             ps.Append("  }\n\n");
+        }
+
+        private void AddcooktorrancePBRMat(StringBuilder ps, MaterialPBRComponent mpbr)
+        {
+
+            /*
+
+        uniform struct Light {
+           vec4 position;
+           vec3 intensities;
+           float attenuation;
+           float ambientCoefficient;
+           float coneAngle;
+           vec3 coneDirection;
+           float lightType;
+           } allLights[MAX_LIGHTS];
+
+
+
+       */
+        
+            // TODO: Vars from SceneRenderer.
+            ps.Append("vec3 ApplyLight(Light light) { \n\n");
+            ps.Append(" \n\n" +
+                      "float roughnessValue = 0.1;\n" +
+                      "float F0 = 0.8;\n" +
+                      "float k = 0.8;\n" +
+                      "vec3 lightColor = light.intensities;\n\n" +
+                      "vec3 normal = Normal;\n\n" +
+                      "// do the lighting calculation for each fragment.\n" +
+                      "float NdotL = max(dot(normal, vViewDir), 0.0);\n\n" +
+                      " float specular = 0.0;\n\n" +
+                      "if(NdotL > 0.0) {\n\n" +
+                      "vec3 eyeDir = normalize(vViewDir);\n" +
+                      "// calculate intermediary values\n" +
+                      "vec3 halfVector = normalize(light.coneDirection + eyeDir);\n" +
+                      "float NdotH = max(dot(normal, halfVector), 0.0); \n" +
+                      "float NdotV = max(dot(normal, eyeDir), 0.0); // note: this could also be NdotL, which is the same value\n" +
+                      "float VdotH = max(dot(eyeDir, halfVector), 0.0);\n" +
+                      "float mSquared = roughnessValue * roughnessValue;\n\n" +
+                      "// geometric attenuation\n" +
+                      "float NH2 = 2.0 * NdotH;\n" +
+                      "float g1 = (NH2 * NdotV) / VdotH;\n" +
+                      "float g2 = (NH2 * NdotL) / VdotH;\n" +
+                      "float geoAtt = min(1.0, min(g1, g2));\n\n" +
+                      " // roughness (or: microfacet distribution function)\n" +
+                      " // beckmann distribution function\n" +
+                      "float r1 = 1.0 / ( 4.0 * mSquared * pow(NdotH, 4.0));\n" +
+                      "float r2 = (NdotH * NdotH - 1.0) / (mSquared * NdotH * NdotH);\n" +
+                      "float roughness = r1 * exp(r2);\n\n" +
+                      "// fresnel - Schlick approximation\n" +
+                      "float fresnel = pow(1.0 - VdotH, 5.0);\n" +
+                      "fresnel *= (1.0 - F0);\n" +
+                      "fresnel += F0;\n" +
+                      "specular = (fresnel * geoAtt * roughness) / (NdotV * NdotL * 3.14);\n\n" +
+                      "}\n\n" +
+                      "return lightColor * NdotL * (k + specular * (1.0 - k));\n");
+            ps.Append("} \n\n");
 
         }
 
@@ -522,51 +703,135 @@ namespace Fusee.Engine.Core
             if (!_hasApplyLightString)
                 return;
 
-            if(!CheckApplyLightStringForErrors(mlc.ApplyLightString)) 
-                throw new ArgumentException($"Error while compiling ApplyLight(). Are you sure this:\n {mlc.ApplyLightString} \nis correct?" +
-                                            $"\nPerhaps (re)consult the documentation of MaterialLightComponent class.");
-          
+            if (!CheckApplyLightStringForErrors(mlc.ApplyLightString))
+                throw new ArgumentException($"Error while compiling ApplyLight(). Are you sure this:\n {mlc.ApplyLightString} \nis correct?" + $"\nPerhaps (re)consult the documentation of MaterialLightComponent class.");
+
             ps.Append("\n\n" + mlc.ApplyLightString);
         }
 
         private static bool CheckApplyLightStringForErrors(string applyLightMethod)
         {
-            const string applyLightString = "vec3 ApplyLight()";
+            const string applyLightString = "vec3 ApplyLight(Light light)";
             return !string.IsNullOrEmpty(applyLightMethod) && applyLightMethod.Contains(applyLightString);
         }
 
-        private void AddStandardLightningCalculation(StringBuilder ps, MaterialLightComponent mlc)
+        // This is called when no MaterialLightComponent is found but there are LightComponents in the scene
+        private void AddStandardLightningCalculation(StringBuilder ps)
         {
             if (_hasApplyLightString)
                 return;
 
-            switch (mlc.LightningMethod)
+            switch (_lightningCalculationMethod)
             {
-                case MaterialLightComponent.StandardLightningCalculationMethod.BLINN:
-                    AddBlinnLightning(ps);
-                    break;
-                case MaterialLightComponent.StandardLightningCalculationMethod.BLINN_PHONG:
+                case LightningCalculationMethod.BLINN_PHONG:
                     AddBlinnphongLightning(ps);
                     break;
-                case MaterialLightComponent.StandardLightningCalculationMethod.COOK_TORRANCE:
+                case LightningCalculationMethod.COOK_TORRANCE:
+                    // TODO: Convert material params to cook_torrance
                     AddcooktorranceLightning(ps);
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException($"Lightning calculation method: {mlc.LightningMethod} not found!");
+                    throw new ArgumentOutOfRangeException($"Lightning calculation method: {_lightningCalculationMethod} not found!");
             }
+
+            // TODO: To for loop for all lights
+            // ApplyLight() is always called
+            ps.Append("\n\n  void main()\n  {\n");
+            ps.Append("    vec3 result = vec3(0, 0, 0);\n\n");
+            // TODO MAX ITTERATIONS?? - WebGL needs this: 
+            ps.Append("\n   for(int i = 0; i < 3000; i++) { \n ");
+            ps.Append("\n   if(i > MAX_LIGHTS) break; \n ");
+            ps.Append("\n   result += ApplyLight(allLights[i]); \n ");
+            ps.Append("\n   } \n ");
+            ps.Append("\n   vec3 gamma = vec3(1.0/2.2);\n ");
+            ps.Append("\n   vec3 final_light = pow(result, gamma); \n ");
+            ps.Append("\n   gl_FragColor = vec4(final_light, 1.0);\n");
+            ps.Append("  }\n\n");
+
         }
 
-        private static void AddBlinnLightning(StringBuilder ps)
+        private  void AddBlinnphongLightning(StringBuilder ps)
         {
-            //TODO: Add shader code
-            ps.Append("\n\n" + " vec3 ApplyLight() { return vec3(1.0, 1.0, 0.0); } \n\n");
-        }
+            // get all necessary vars for calculation
+            AddNormalVec(ps);
+            AddCameraVec(ps);
+            AddLightVec(ps);
 
-        private static void AddBlinnphongLightning(StringBuilder ps)
-        {
-            //TODO: Add shader code
-            ps.Append("\n\n" + " vec3 ApplyLight() { return vec3(1.0, 0.0, 1.0); } \n\n");
+            if (_hasEmissive)
+            {
+                ps.Append("\n\n    //*********** Emissive *********\n");
+                AddChannelBaseColorCalculation(ps, _hasEmissiveTexture, "Emissive");
+            }
 
+            ps.Append("\n\n    //*********** DIFFUSE *********\n");
+            AddChannelBaseColorCalculation(ps, _hasDiffuseTexture, "Diffuse");
+            ps.Append("\n\n    //*********** Specular *********\n");
+            AddChannelBaseColorCalculation(ps, _hasSpecularTexture, "Specular");
+
+            // needed for spotlight
+            ps.Append("\n\n   varying vec4 surfacePos; \n");
+            
+            // TODO IMPLEMENT Parallel Light
+            ps.Append("vec3 ApplyLight(Light light) { \n\n");
+            ps.Append("// switch type: 0 = Point; 1 = Parallel; 2 = Spot;\n");
+            // POINTLIGHT
+            ps.Append("////// POINTLIGHT \n\n");
+            ps.Append("if(light.lightType == 0) { \n\n");
+
+            ps.Append("vec3 result = vec3(0, 0, 0); \n\n");
+            ps.Append("vec3 DiffuseBaseColor = DiffuseColor; \n\n");
+            ps.Append("float diffFactor = dot(LDir, Normal); \n\n");
+            ps.Append("  result += DiffuseBaseColor * light.intensities * light.ambientCoefficient * max(diffFactor, 0.0); \n\n");
+
+
+            ps.Append("  if (diffFactor > 0.0) \n\n");
+            ps.Append(" { \n\n");
+            ps.Append(" vec3 SpecularBaseColor = SpecularColor; \n\n");
+            ps.Append(" vec3 h = normalize(light.coneDirection + Camera); \n\n");
+            ps.Append(" result += SpecularBaseColor * light.intensities * light.ambientCoefficient * SpecularIntensity * pow(max(0.0, dot(h, Normal)), SpecularShininess); \n\n");
+            ps.Append(" } \n\n");
+            ps.Append(" return result; \n\n");
+
+
+            ps.Append("     }\n\n");
+
+
+            // SPOTLIGHT
+            ps.Append("////// SPOTLIGHT \n\n");
+            ps.Append("if(light.lightType == 2) { \n\n");
+
+            ps.Append(" vec3 surfaceToLight; \n");
+            ps.Append("  float attenuation = 1.0; \n\n");
+           
+            ps.Append(" surfaceToLight = normalize(light.position.xyz - surfacePos); \n");
+            ps.Append(" float distanceToLight = length(light.position.xyz - surfacePos); \n");
+            ps.Append("  attenuation = 1.0 / (1.0 + light.attenuation * pow(distanceToLight, 2.0)); \n\n");
+
+            ps.Append(" //cone restrictions (affects attenuation) \n");
+            ps.Append(" float lightToSurfaceAngle = degrees(acos(dot(-surfaceToLight, normalize(light.coneDirection)))); \n\n");
+            ps.Append(" if(lightToSurfaceAngle > light.coneAngle) { \n\n");
+            ps.Append("  attenuation = 0.0; } \n\n");
+         
+               
+            ps.Append("vec3 result = vec3(0, 0, 0); \n\n");
+            ps.Append("vec3 DiffuseBaseColor = DiffuseColor; \n\n");
+            ps.Append("float diffFactor = dot(LDir, Normal); \n\n");
+            ps.Append("  result += attenuation * DiffuseBaseColor * light.intensities * light.ambientCoefficient * max(diffFactor, 0.0); \n\n");
+
+
+            ps.Append("  if (diffFactor > 0.0) \n\n");
+            ps.Append(" { \n\n");
+            ps.Append(" vec3 SpecularBaseColor = SpecularColor; \n\n");
+            ps.Append(" vec3 h = normalize(light.coneDirection + Camera); \n\n");
+            ps.Append(" result += attenuation * SpecularBaseColor * light.intensities * light.ambientCoefficient * SpecularIntensity * pow(max(0.0, dot(h, Normal)), SpecularShininess); \n\n");
+            ps.Append(" } \n\n");
+            ps.Append(" return result; \n\n");
+            ps.Append("     } \n\n");
+
+     
+
+            // End of Method
+            ps.Append("}\n\n");
         }
 
         private static void AddcooktorranceLightning(StringBuilder ps)

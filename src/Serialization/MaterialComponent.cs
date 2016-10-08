@@ -76,6 +76,7 @@ namespace Fusee.Serialization
     /// </summary>
     [ProtoContract]
     [ProtoInclude(200, typeof(MaterialLightComponent))]
+    [ProtoInclude(201, typeof(MaterialPBRComponent))]
     public class MaterialComponent : SceneComponentContainer
     {
         #region Diffuse
