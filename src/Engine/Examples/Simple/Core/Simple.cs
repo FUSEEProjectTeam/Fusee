@@ -74,8 +74,8 @@ namespace Fusee.Engine.Examples.Simple.Core
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             // Load the rocket model
-            //_rocketScene = AssetStorage.Get<SceneContainer>("WuggyLand.fus");
-            _rocketScene = AssetStorage.Get<SceneContainer>("RocketModel.fus");
+            _rocketScene = AssetStorage.Get<SceneContainer>("WuggyLand.fus");
+            //_rocketScene = AssetStorage.Get<SceneContainer>("RocketModel.fus");
             /* //// Legacy Mode
              // Wrap a SceneRenderer around the model.
              _sceneRenderer = new SceneRenderer(_rocketScene); */
@@ -85,7 +85,7 @@ namespace Fusee.Engine.Examples.Simple.Core
              _sceneRenderer = new SceneRenderer(_rocketScene, LightningCalculationMethod.COOK_TORRANCE); */
 
             /*   //// LightComponents in Scene
-               ///// Light is calculated with given Lightning Method & Light or BLINN_PHONG as standard  
+               ///// Light is calculated with given Lightning Method & Light or BLINN_PHONG as standard  */
             Random rnd = new Random();
 
             for (var i = 0; i < 2; i++)
@@ -133,53 +133,78 @@ namespace Fusee.Engine.Examples.Simple.Core
            
 
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRenderer(_rocketScene, LightningCalculationMethod.BLINN_PHONG);*/
+            _sceneRenderer = new SceneRenderer(_rocketScene, LightningCalculationMethod.BLINN_PHONG);
 
 
 
             /*     //// MaterialLightComponent in Scene, lightningcaluclation with given ApplyLight Method over all lights
             _rocketScene.Children[0].AddComponent(new LightComponent
-                {
-                    Active = true,
-                    AmbientCoefficient = 1f,
-                    Attenuation = 1f,
-                    Color = new float3(1f, 0f, 0f),
-                    ConeAngle = 35.0f,
-                    ConeDirection = new float3(0f, 1f, 0f),
-                    Name = "Light1",
-                    Position = new float4(0f, 0f, -1f, 1f),
-                    Type = LightType.Point
-                });
-
-                _rocketScene.Children[0].Children[1].AddComponent(new MaterialLightComponent
-                {
-                    ApplyLightString = "vec3 ApplyLight(Light light) {return vec3(1.0,0.0,0.0);}"
-                });
-
-                _sceneRenderer = new SceneRenderer(_rocketScene);   */
-
-            /*   ///// Render with PBR Material and Light */
-
-            _rocketScene.Children[0].AddComponent(new LightComponent
             {
                 Active = true,
-                AmbientCoefficient = 0.7f,
+                AmbientCoefficient = 1f,
                 Attenuation = 1f,
-                Color = new float3(1f, 1f, 1f),
+                Color = new float3(1f, 0f, 0f),
                 ConeAngle = 35.0f,
-                ConeDirection = new float3(0f, 1f, 1f),
+                ConeDirection = new float3(0f, 1f, 0f),
                 Name = "Light1",
                 Position = new float4(0f, 0f, -1f, 1f),
                 Type = LightType.Point
             });
 
-            _rocketScene.Children[0].Components[1] = new MaterialPBRComponent
-            {
-                RoughnessValue = 0.3f,
-                FresnelReflectance = 0.8f,
-                DiffuseFraction = 0.2f
-            };
-               _sceneRenderer = new SceneRenderer(_rocketScene);
+            _rocketScene.Children[0].Children[1].Components[1] = new MaterialLightComponent
+                {
+                    ApplyLightString = "vec3 ApplyLight(Light light) {return vec3(1.0,0.0,0.0);}"
+                };
+
+                _sceneRenderer = new SceneRenderer(_rocketScene);   */
+
+            /*   ///// Render with PBR Material and Light 
+  
+              _rocketScene.Children[0].AddComponent(new LightComponent
+              {
+                  Active = true,
+                  AmbientCoefficient = 0.3f,
+                  Attenuation = 1f,
+                  Color = new float3(1f, 1f, 1f),
+                  ConeAngle = 35.0f,
+                  ConeDirection = new float3(1f, 0f, 1f),
+                  Name = "Light1",
+                  Position = new float4(0, 0, 1f, 1f),
+                  Type = LightType.Point
+              });
+
+              _rocketScene.Children[0].AddComponent(new LightComponent
+              {
+                  Active = true,
+                  AmbientCoefficient = 1f,
+                  Attenuation = 1f,
+                  Color = new float3(0.7f, 0.3f, 0.6f),
+                  ConeAngle = 35.0f,
+                  ConeDirection = new float3(1f, 0f, 1f),
+                  Name = "Light1",
+                  Position = new float4(0, 0, 1f, 1f),
+                  Type = LightType.Point
+              });
+         
+              var material = _rocketScene.Children[0].Components[1] as MaterialComponent;
+
+              if (material != null)
+              {
+                  var pbr =  new MaterialPBRComponent
+                  {
+                      Bump = material.Bump,
+                      Diffuse = material.Diffuse,
+                      Emissive = material.Emissive,
+                      Specular = material.Specular,
+                      RoughnessValue = 0.1F,
+                      FresnelReflectance = 0.8F,
+                      DiffuseFraction = 0.1F
+                  };
+
+                  _rocketScene.Children[0].Components[1] = pbr;
+              }*/
+
+            // _sceneRenderer = new SceneRenderer(_rocketScene, LightningCalculationMethod.BLINN_PHONG);
         }
 
         // RenderAFrame is called once a frame

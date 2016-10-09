@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
@@ -93,6 +94,7 @@ namespace Fusee.Engine.Core
             PixelInputDeclarations(ps);
             PSPBRBody(ps, pbrMaterialPbrComponent);
             _ps = ps.ToString();
+            Diagnostics.Log(_vs);
             Diagnostics.Log(_ps);
         }
 
@@ -147,12 +149,12 @@ namespace Fusee.Engine.Core
             PixelInputDeclarations(ps);
             PSCustomBody(ps, mlc);
             _ps = ps.ToString();
+            Diagnostics.Log(_vs);
+            Diagnostics.Log(_ps);
         }
 
         public ShaderCodeBuilder(MaterialComponent mc, MeshComponent mesh, WeightComponent wc = null)
         {
-            var lightningMethod = SceneRenderer.LightningCalculationMethod;
-
             if (wc != null)
             {
                 _hasWeightMap = true;
@@ -188,8 +190,8 @@ namespace Fusee.Engine.Core
             _ps = ps.ToString();
 
             // Print shader
-            //Diagnostics.Log(_vs);
-            //Diagnostics.Log(_ps);
+            Diagnostics.Log(_vs);
+            Diagnostics.Log(_ps);
         }
 
         private static void ParseLights(StringBuilder ps)
@@ -330,6 +332,9 @@ namespace Fusee.Engine.Core
 
         private void VSBody(StringBuilder vs)
         {
+            // needed for cook torrance:
+            vs.Append("\n\n  varying vec3 oNormal; \n  \n"); 
+
             vs.Append("\n\n  void main()\n  {\n");
             if (_hasNormals)
             {
@@ -392,9 +397,9 @@ namespace Fusee.Engine.Core
 
             // needed for spotlight
             vs.Append(" surfacePos =  vec4(fuVertex, 1.0); \n");
+            vs.Append(" oNormal = fuNormal; \n");
 
-
-           vs.Append("  }\n\n");
+            vs.Append("  }\n\n");
         }
 
 
@@ -566,12 +571,14 @@ namespace Fusee.Engine.Core
             // ...no LightComponents are in scene
             if (_allLights.Count == 0)
             {
-                AddNormalVec(ps);
-                AddCameraVec(ps);
-                AddLightVec(ps);
+              
                 
                 ps.Append("\n\n  void main()\n  {\n");
                 ps.Append("    vec3 result = vec3(0, 0, 0);\n\n");
+
+                AddNormalVec(ps);
+                AddCameraVec(ps);
+                AddLightVec(ps);
 
                 AddEmissiveChannel(ps);
                 AddDiffuseChannel(ps);
@@ -594,14 +601,16 @@ namespace Fusee.Engine.Core
         private void PSCustomBody(StringBuilder ps, MaterialLightComponent mlc)
         {
             ParseLights(ps);
-            AddNormalVec(ps);
-            AddCameraVec(ps);
+           
 
             AddApplyLightCalculation(ps, mlc);
 
             ps.Append("\n\n  void main()\n  {\n");
             ps.Append("    vec3 result = vec3(0, 0, 0);\n\n");
-            
+
+            AddNormalVec(ps);
+            AddCameraVec(ps);
+
             // ApplyLight() is always called
             ps.Append("\n   for(int i = 0; i < 3000; i++) { \n ");
             ps.Append("\n   if(i > MAX_LIGHTS) break; \n ");
@@ -619,7 +628,8 @@ namespace Fusee.Engine.Core
             AddNormalVec(ps);
             AddCameraVec(ps);
 
-            ps.Append("  varying vec3 vViewDir;\n");
+            if(!_hasSpecular)
+                ps.Append("  varying vec3 vViewDir;\n");
 
 
             AddcooktorrancePBRMat(ps, mpbr);
@@ -655,24 +665,47 @@ namespace Fusee.Engine.Core
            } allLights[MAX_LIGHTS];
 
 
+            SpecularBaseColor * light.intensities * light.ambientCoefficient * SpecularIntensity
+            DiffuseBaseColor
 
        */
-        
+            if (_hasEmissive)
+            {
+                ps.Append("\n\n    //*********** Emissive *********\n");
+                AddChannelBaseColorCalculation(ps, _hasEmissiveTexture, "Emissive");
+            }
+
+            ps.Append("\n\n    //*********** DIFFUSE *********\n");
+            AddChannelBaseColorCalculation(ps, _hasDiffuseTexture, "Diffuse");
+            ps.Append("\n\n    //*********** Specular *********\n");
+            AddChannelBaseColorCalculation(ps, _hasSpecularTexture, "Specular");
+
+            // needed for spotlight
+            ps.Append("\n\n   varying vec4 surfacePos; \n");
+            ps.Append("\n\n   varying mat4 FUSEE_ITMV; \n");
+
+            // needed for CookTorrance
+            ps.Append("\n\n   varying vec3 oNormal; \n");
+
+
+
             // TODO: Vars from SceneRenderer.
             ps.Append("vec3 ApplyLight(Light light) { \n\n");
             ps.Append(" \n\n" +
-                      "float roughnessValue = 0.1;\n" +
-                      "float F0 = 0.8;\n" +
-                      "float k = 0.8;\n" +
-                      "vec3 lightColor = light.intensities;\n\n" +
+                      "float roughnessValue = ");
+            // CultureInfo needed for float conversion fullstop, otherwise he formats floats to: #,##
+                ps.AppendFormat("{0} ;\n", mpbr.RoughnessValue.ToString(CultureInfo.InvariantCulture));
+                ps.AppendFormat("float F0 = {0};\n", mpbr.FresnelReflectance.ToString(CultureInfo.InvariantCulture));
+                ps.AppendFormat("float k = {0};\n", mpbr.DiffuseFraction.ToString(CultureInfo.InvariantCulture));
+               ps.Append("vec3 lightColor = light.intensities;\n\n" +
                       "vec3 normal = Normal;\n\n" +
                       "// do the lighting calculation for each fragment.\n" +
-                      "float NdotL = max(dot(normal, vViewDir), 0.0);\n\n" +
+                      "float NdotL = max(dot(normal, normalize(Camera)), 0.0);\n\n" +
                       " float specular = 0.0;\n\n" +
                       "if(NdotL > 0.0) {\n\n" +
-                      "vec3 eyeDir = normalize(vViewDir);\n" +
+                      "vec3 eyeDir = vViewDir;\n" +
                       "// calculate intermediary values\n" +
-                      "vec3 halfVector = normalize(light.coneDirection + eyeDir);\n" +
+                      "vec3 halfVector = normalize(eyeDir + Camera);\n" +
                       "float NdotH = max(dot(normal, halfVector), 0.0); \n" +
                       "float NdotV = max(dot(normal, eyeDir), 0.0); // note: this could also be NdotL, which is the same value\n" +
                       "float VdotH = max(dot(eyeDir, halfVector), 0.0);\n" +
@@ -691,9 +724,9 @@ namespace Fusee.Engine.Core
                       "float fresnel = pow(1.0 - VdotH, 5.0);\n" +
                       "fresnel *= (1.0 - F0);\n" +
                       "fresnel += F0;\n" +
-                      "specular = (fresnel * geoAtt * roughness) / (NdotV * NdotL * 3.14);\n\n" +
+                      "specular = SpecularBaseColor * ( (fresnel * geoAtt * roughness) / (NdotV * NdotL * 3.14));\n\n" +
                       "}\n\n" +
-                      "return lightColor * NdotL * (k + specular * (1.0 - k));\n");
+                      "return light.ambientCoefficient * DiffuseBaseColor * lightColor * NdotL * (k + specular * (1.0 - k));\n");
             ps.Append("} \n\n");
 
         }

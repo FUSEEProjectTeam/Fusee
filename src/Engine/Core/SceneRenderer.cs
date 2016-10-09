@@ -1053,6 +1053,7 @@ namespace Fusee.Engine.Core
             // No LightComponent in Scene -> switch to legacy mode!
             else
             {
+                Diagnostics.Log("legacy no lightcomponent");
                 effectParameters.Add(new EffectParameterDeclaration
                 {
                     Name = "allLights[0].position",
