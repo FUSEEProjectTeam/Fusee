@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Serialization;
 
 namespace Fusee.Math.Core
 {
@@ -45,11 +44,16 @@ namespace Fusee.Math.Core
             return combinedCurve;
         }
 
-        public IEnumerable<float3> CalcUniformPolyline (int curveSegments)
+        /// <summary>
+        /// Calculates a polyline, representing the curve itself.
+        /// </summary>
+        /// <param name="curveSegments">The number of subdivisions per curve segment</param>
+        /// <returns></returns>
+        public IEnumerable<float3> CalcUniformPolyline(int curveSegments)
         {
             foreach (var part in CurveParts)
             {
-                foreach (var vert in part.GetUniformOutline(curveSegments))
+                foreach (var vert in part.CalcUniformPolyline(curveSegments))
                 {
                     yield return vert;
                 }
@@ -78,27 +82,37 @@ namespace Fusee.Math.Core
         /// </summary>
         public IList<CurveSegment> CurveSegments;
 
-        public IEnumerable<float3> GetUniformOutline(int segmentCount)
+        /// <summary>
+        /// Calculates a polyline, representing the curve part.
+        /// </summary>
+        /// <param name="segmentCount">The number of subdivisions per curve segment</param>
+        /// <returns></returns>
+        public IEnumerable<float3> CalcUniformPolyline(int segmentCount)
         {
             for (var i = 0; i < CurveSegments.Count; i++)
             {
-                float3 startPoint;
+                float3 sp;
+                var degree = 0;
 
-                if (i == 0)
+                if (CurveSegments[i].GetType() == typeof(LinearSegment))
                 {
-                    startPoint = StartPoint;
-                    foreach (var vert in CurveSegments[i].CalculateUniformPolyline(startPoint, segmentCount))
-                    {
-                        yield return vert;
-                    }
+                    degree = 1;
                 }
-                else
+                else if (CurveSegments[i].GetType() == typeof(BezierConicSegment))
                 {
-                    startPoint = CurveSegments[i - 1].Vertices[CurveSegments[i - 1].Vertices.Count - 1];
-                    foreach (var vert in CurveSegments[i].CalculateUniformPolyline(startPoint, segmentCount))
-                    {
-                        yield return vert;
-                    }
+                    degree = 2;
+                }
+                else if (CurveSegments[i].GetType() == typeof(BezierCubicSegment))
+                {
+                    degree = 3;
+                }
+
+                //If i == 0 sp = StartPoint, if not it's the last vert of the CurveSegment[i-1]s' list of vertices
+                sp = i == 0 ? StartPoint : CurveSegments[i - 1].Vertices[CurveSegments[i - 1].Vertices.Count - 1];
+
+                foreach (var vert in CurveSegments[i].CalcUniformPolyline(sp, segmentCount, degree))
+                {
+                    yield return vert;
                 }
             }
         }
@@ -106,8 +120,8 @@ namespace Fusee.Math.Core
 
     /// <summary>
     /// The base class for CurveSegments.
-    /// Represents a segment of a CurvePart, using a list of float3. Segments don't know their own start point.
-    /// The start point of the first segment is saved in the CurveParts StartPoint. The following applies to the other segments: The start point of the current segment is the last vertice of the previous segment. 
+    /// A CurveSgment does not know its own start point. For the first CurveSegment in a sequence the start point is saved in the CurvePart belonging to the segment.
+    /// The start point for the CurveSegment with index i is the last vertex in the CurveSegent[i-1]s' list of vertices.
     /// </summary>
     public abstract class CurveSegment
     {
@@ -122,7 +136,7 @@ namespace Fusee.Math.Core
         /// <param name="t">Beziér curves are polynominals of t. t is element of [0, 1] </param>
         /// <param name="vertices">All control points, incl. start and end point</param>
         /// <returns></returns>
-        public float3 CalcPoint(float t, float3[] vertices)
+        public virtual float3 CalcPoint(float t, float3[] vertices)
         {
             if (vertices.Length == 1)
                 return vertices[0];
@@ -140,163 +154,99 @@ namespace Fusee.Math.Core
             return CalcPoint(t, newVerts);
         }
 
-
         /// <summary>
-        /// Calculates a polyline, representing the segment
+        /// Calculates a polyline, representing the curve segment.
         /// </summary>
         /// <param name="startPoint">The segments starting point</param>
         /// <param name="segmentsPerCurve">The number of segments per curve</param>
-        /// <returns></returns>
-        public abstract IEnumerable<float3> CalculateUniformPolyline(float3 startPoint, int segmentsPerCurve);
+        /// <param name="degree">The degree of the curve: 1 for linear, 2 for conic, 3 for cubic</param>
+        public virtual IEnumerable<float3> CalcUniformPolyline(float3 startPoint, int segmentsPerCurve, int degree)
+        {
+            var controlPoints = new List<float3> { startPoint };
+            controlPoints.AddRange(Vertices);
+
+            for (var i = 0; i < controlPoints.Count - degree; i += degree)
+            {
+                //Returns all points that already lie on the curve (i +=2)
+                yield return controlPoints[i];
+
+                var verts = new float3[degree + 1];
+
+                for (var j = 0; j < verts.Length; j++)
+                {
+                    verts[j] = controlPoints[i + j];
+                }
+
+                for (var j = 1; j < segmentsPerCurve; j++)
+                {
+                    var t = j / (float)segmentsPerCurve;
+                    var point = CalcPoint(t, verts);
+                    yield return point;
+                }
+            }
+            //Manually adds the last control point to maintain the order of the points
+            yield return controlPoints[controlPoints.Count - 1];
+        }
 
     }
 
     /// <summary>
     /// Represents a linear segment of a CurvePart, using a list of float3.
+    /// A CurveSgment does not know its own start point. For the first CurveSegment in a sequence the start point is saved in the CurvePart belonging to the segment.
+    /// The start point for the CurveSegment with index i is the last vertex in the CurveSegent[i-1]s' list of vertices.
     /// </summary>
     public class LinearSegment : CurveSegment
     {
         /// <summary>
-        /// Calculates a polyline, representing the segment
+        /// Calculates a polyline, representing the curve segment.
         /// </summary>
         /// <param name="startPoint">The segments starting point</param>
         /// <param name="segmentsPerCurve">The number of segments per curve</param>
-        /// <returns></returns>
-        public override IEnumerable<float3> CalculateUniformPolyline(float3 startPoint, int segmentsPerCurve)
+        /// <param name="degree">The degree of the curve: 1 for linear, 2 for conic, 3 for cubic</param>
+        public override IEnumerable<float3> CalcUniformPolyline(float3 startPoint, int segmentsPerCurve, int degree)
         {
+            var controlPoints = new List<float3> { startPoint };
+            controlPoints.AddRange(Vertices);
 
-            var zwerg = new List<float3>();
-            zwerg.Add(startPoint);
-            zwerg.AddRange(Vertices);
-            
-            for (var i = 0; i < zwerg.Count - 1; i += 1)
+            for (var i = 0; i < controlPoints.Count - degree; i += degree)
             {
-                yield return zwerg[i];
+                yield return controlPoints[i];
 
-                var verts = new float3[2];
-                if (i == 0)
+                var verts = new float3[degree + 1];
+
+                for (var j = 0; j < verts.Length; j++)
                 {
-                    yield return startPoint;
-
+                    verts[j] = controlPoints[i + j];
                 }
-                verts[0] = zwerg[i];
-                verts[1] = zwerg[i + 1];
 
                 for (var j = 1; j < segmentsPerCurve; j++)
                 {
                     var t = j / (float)segmentsPerCurve;
                     yield return (1 - t) * verts[0] + t * verts[1];
                 }
-                yield return zwerg[zwerg.Count-1];
+                yield return controlPoints[controlPoints.Count - 1];
             }
-        }
-    }
-
-    /// <summary>
-    /// Represents a cubic beziér path of a CurvePart, using a list of float3.
-    /// </summary>
-    public class BezierCubicSegment : CurveSegment
-    {
-
-        private float3 CalculateCubicPoint(float t, IList<float3> vertices)
-        {
-            float u = 1 - t;
-            float tt = t * t;
-            float uu = u * u;
-            float uuu = uu * u;
-            float ttt = tt * t;
-
-            float3 p = uuu * vertices[0]; //first term
-            p += 3 * uu * t * vertices[1]; //second term
-            p += 3 * u * tt * vertices[2]; //third term
-            p += ttt * vertices[3]; //fourth term
-
-            return p;
-        }
-
-        /// <summary>
-        /// Calculates a polyline, representing the segment
-        /// </summary>
-        /// <param name="startPoint">The segments starting point</param>
-        /// <param name="segmentsPerCurve">The number of segments per curve</param>
-        /// <returns></returns>
-        public override IEnumerable<float3> CalculateUniformPolyline(float3 startPoint, int segmentsPerCurve)
-        {
-            var zwerg = new List<float3>();
-            zwerg.Add(startPoint);
-            zwerg.AddRange(Vertices);
-
-            for (var i = 0; i < zwerg.Count - 3; i += 3)
-            {
-                yield return zwerg[i];
-
-                var verts = new float3[4];
-                verts[0] = zwerg[i];
-                verts[1] = zwerg[i + 1];
-                verts[2] = zwerg[i + 2];
-                verts[3] = zwerg[i + 3];
-
-                for (var j = 1; j < segmentsPerCurve; j++)
-                {
-                    var t = j / (float)segmentsPerCurve;
-                    var point = CalcPoint(t, verts);
-                    yield return point;
-                }
-                yield return zwerg[zwerg.Count-1];
-            }
-
         }
     }
 
     /// <summary>
     /// Represents a conic beziér path of a CurvePart, using a list of float3.
+    /// A CurveSgment does not know its own start point. For the first CurveSegment in a sequence the start point is saved in the CurvePart belonging to the segment.
+    /// The start point for the CurveSegment with index i is the last vertex in the CurveSegent[i-1]s' list of vertices.
     /// </summary>
     public class BezierConicSegment : CurveSegment
     {
 
-        private float3 CalculateConicPoint(float t, IList<float3> vertices)
-        {
-            float u = 1 - t;
-            float tt = t * t;
-            float uu = u * u;
+    }
 
-            float3 p = uu * vertices[0]; //first term
-            p += 2 * u * t * vertices[1]; //second term
-            p += tt * vertices[2]; //third term
-
-            return p;
-        }
-
-        /// <summary>
-        /// Calculates a polyline, representing the segment
-        /// </summary>
-        /// <param name="startPoint">The segments starting point</param>
-        /// <param name="segmentsPerCurve">The number of segments per curve</param>
-        /// <returns></returns>
-        public override IEnumerable<float3> CalculateUniformPolyline(float3 startPoint, int segmentsPerCurve)
-        {
-            var zwerg = new List<float3>();
-            zwerg.Add(startPoint);
-            zwerg.AddRange(Vertices);
-
-            for (var i = 0; i < zwerg.Count - 2; i += 2)
-            {
-                yield return zwerg[i];
-
-                var verts = new float3[3];
-                verts[0] = zwerg[i];
-                verts[1] = zwerg[i + 1];
-                verts[2] = zwerg[i + 2];
-
-                for (var j = 1; j < segmentsPerCurve; j++)
-                {
-                    var t = j / (float)segmentsPerCurve;
-                    var point = CalcPoint(t, verts);
-                    yield return point;
-                }
-            }
-            yield return zwerg[zwerg.Count-1];
-        }
+    /// <summary>
+    /// Represents a cubic beziér path of a CurvePart, using a list of float3.
+    /// A CurveSgment does not know its own start point. For the first CurveSegment in a sequence the start point is saved in the CurvePart belonging to the segment.
+    /// The start point for the CurveSegment with index i is the last vertex in the CurveSegent[i-1]s' list of vertices.
+    /// </summary>
+    public class BezierCubicSegment : CurveSegment
+    {
+       
     }
 
 }

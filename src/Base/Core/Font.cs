@@ -20,7 +20,7 @@ namespace Fusee.Base.Core
 
         private readonly Dictionary<uint, GlyphInfo> _glyphInfoCache = new Dictionary<uint, GlyphInfo>();
 
-        //private readonly Dictionary<uint, Curve> _glyphCurveChache = new Dictionary<uint, Curve>();
+        private readonly Dictionary<uint, Curve> _glyphCurveChache = new Dictionary<uint, Curve>();
 
         private readonly Dictionary<uint, float> _glyphAdvanceCache = new Dictionary<uint, float>();
 
@@ -70,10 +70,21 @@ namespace Fusee.Base.Core
         /// <summary>
         /// Gets the characters points, contours and tags and translates them into a curve.
         /// </summary>
-        /// <param name="c">The character to retrive information</param>
+        /// <param name="c">The character to retrive the curve</param>
         /// <returns></returns>
-        public Curve GetGlyphCurve(uint c) => _fontImp.GetGlyphCurve(c);
-        
+        //public Curve GetGlyphCurve(uint c) => _fontImp.GetGlyphCurve(c);
+        public Curve GetGlyphCurve(uint c)
+        {
+            Curve curve;
+            if (_glyphCurveChache.TryGetValue(c, out curve))
+                return curve;
+
+            // its not in the cache...
+            curve = _fontImp.GetGlyphCurve(c);
+            _glyphCurveChache[c] = curve;
+            return curve;
+        }
+
 
         /// <summary>
         /// Get the unscaled advance from a character.

@@ -46,32 +46,26 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
         private List<float3> _controlPoints;
         private Mesh _point;
 
-        private TextCurveUtility _textCurveUtility;
+        private ThreeDFontHelper _threeDFontHelper;
 
         // Init is called on startup. 
         public override void Init()
         {
-            _cube = new Cube();
-            _controlPoints = new List<float3>();
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
             var vladimir = AssetStorage.Get<Font>("VLADIMIR.TTF");
             var arial = AssetStorage.Get<Font>("arial.ttf");
 
             _text = "Hello World!";
-            _textCurveUtility = new TextCurveUtility(_text, fontLato);
+            _threeDFontHelper = new ThreeDFontHelper(_text, fontLato);
 
-            var outline = _textCurveUtility.GetTextOutline(5);
-            var controlPoints = _textCurveUtility.GetTextControlPoints();
-
-            //_controlPoints.AddRange(controlPoints);
-            _controlPoints.AddRange(outline);
+            _controlPoints = (List<float3>)_threeDFontHelper.GetTextVertices(5);
 
             for (var i = 0; i < _controlPoints.Count; i++)
             {
                 _controlPoints[i] = new float3((_controlPoints[i].x / Width) - 1.5f, _controlPoints[i].y / Height, _controlPoints[i].z);
             }
 
-            _point = _cube.BuildCube();
+            _point = new Cube();
 
             var shader = RC.CreateShader(_vertexShader, _pixelShader);
             RC.SetShader(shader);
@@ -107,7 +101,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             foreach (var point in _controlPoints)
             {
                 var modelPoint = ModelXForm(new float3(point.x - 3f, point.y - 1f, 0), new float3(0, 0, 0));
-                _xform = projection * view * modelPoint * float4x4.CreateScale(0.015f, 0.015f, 0.015f);
+                _xform = projection * view * modelPoint * float4x4.CreateScale(0.03f, 0.03f, 0.03f);
                 RC.SetShaderParam(_xformParam, _xform);
                 RC.Render(_point);
             }

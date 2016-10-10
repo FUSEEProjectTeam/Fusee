@@ -100,7 +100,7 @@ namespace Fusee.Base.Imp.Desktop
         /// <summary>
         /// Gets the characters points, contours and tags and translates them into a curve.
         /// </summary>
-        /// <param name="c">The character to retrive information</param>
+        /// <param name="c">The character to retrive the curve</param>
         /// <returns></returns>
         public Curve GetGlyphCurve(uint c)
         {
