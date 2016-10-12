@@ -29,7 +29,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
         }
 
         //Returns all control points of a given text
-        public IEnumerable<float3> GetTextVertices()
+        public IEnumerable<float3> GetTextControlPoints()
         {
             var advance = 0f;
             var advanceComp = 0f;
@@ -72,7 +72,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             return controlPoints;
         }
 
-        public IList<float3> GetTextVertices(int seg)
+        public IList<float3> GetTextVerticesUniformly(int seg)
         {
             var advance = 0f;
             var advanceComp = 0f;
@@ -85,6 +85,38 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             for (var i = 0; i < textCurves.Count; i++)
             {
                 var outline = textCurves[i].CalcUniformPolyline(seg).ToList();
+
+                advanceComp = advanceComp + advance;
+                kerningComp = kerningComp + kerning;
+
+                for (var j = 0; j < outline.Count; j++)
+                {
+                    outline[j] = new float3(outline[j].x + advanceComp + kerningComp,
+                        outline[j].y, outline[j].z);
+                }
+                advance = _font.GetUnscaledAdvance(_text[i]);
+
+                if (i + 1 < _text.Length)
+                    kerning = _font.GetUnscaledKerning(_text[i], _text[i + 1]);
+
+                combinedOutline.AddRange(outline);
+            }
+            return combinedOutline;
+        }
+
+        public IList<float3> GetTextVerticesAdaptively(int angle)
+        {
+            var advance = 0f;
+            var advanceComp = 0f;
+            var kerning = 0f;
+            var kerningComp = 0f;
+
+            var textCurves = GetTextCurves();
+            var combinedOutline = new List<float3>();
+
+            for (var i = 0; i < textCurves.Count; i++)
+            {
+                var outline = textCurves[i].CalcAdaptivePolyline(angle).ToList();
 
                 advanceComp = advanceComp + advance;
                 kerningComp = kerningComp + kerning;
