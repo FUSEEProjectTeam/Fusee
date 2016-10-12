@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
@@ -58,7 +57,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             _text = "Hello World!";
             _threeDFontHelper = new ThreeDFontHelper(_text, fontLato);
 
-            _controlPoints = (List<float3>) _threeDFontHelper.GetTextVerticesAdaptively(10);
+            _controlPoints = (List<float3>) _threeDFontHelper.GetTextVerticesAdaptively(5);
 
             for (var i = 0; i < _controlPoints.Count; i++)
             {

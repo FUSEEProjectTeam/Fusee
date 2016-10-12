@@ -72,6 +72,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             return controlPoints;
         }
 
+        //Returns all control points od a given text calculated with a uniform value of t
         public IList<float3> GetTextVerticesUniformly(int seg)
         {
             var advance = 0f;
@@ -104,6 +105,8 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             return combinedOutline;
         }
 
+        //Returns all control points od a given text calculated adaptively by testing the angle.
+        //"angle" determines how far the angle between the two vectors(start point random point and random point end point) may vary from 180° 
         public IList<float3> GetTextVerticesAdaptively(int angle)
         {
             var advance = 0f;
@@ -117,6 +120,39 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             for (var i = 0; i < textCurves.Count; i++)
             {
                 var outline = textCurves[i].CalcAdaptivePolyline(angle).ToList();
+
+                advanceComp = advanceComp + advance;
+                kerningComp = kerningComp + kerning;
+
+                for (var j = 0; j < outline.Count; j++)
+                {
+                    outline[j] = new float3(outline[j].x + advanceComp + kerningComp,
+                        outline[j].y, outline[j].z);
+                }
+                advance = _font.GetUnscaledAdvance(_text[i]);
+
+                if (i + 1 < _text.Length)
+                    kerning = _font.GetUnscaledKerning(_text[i], _text[i + 1]);
+
+                combinedOutline.AddRange(outline);
+            }
+            return combinedOutline;
+        }
+
+        //Returns all control points od a given text calculated adaptively by testing the area of a triangle
+        public IList<float3> GetTextVerticesAdaptively(float area)
+        {
+            var advance = 0f;
+            var advanceComp = 0f;
+            var kerning = 0f;
+            var kerningComp = 0f;
+
+            var textCurves = GetTextCurves();
+            var combinedOutline = new List<float3>();
+
+            for (var i = 0; i < textCurves.Count; i++)
+            {
+                var outline = textCurves[i].CalcAdaptivePolyline(area).ToList();
 
                 advanceComp = advanceComp + advance;
                 kerningComp = kerningComp + kerning;
