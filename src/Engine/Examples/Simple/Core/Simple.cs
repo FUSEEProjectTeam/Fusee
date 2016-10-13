@@ -85,10 +85,10 @@ namespace Fusee.Engine.Examples.Simple.Core
              _sceneRenderer = new SceneRenderer(_rocketScene, LightningCalculationMethod.COOK_TORRANCE); */
 
             /*   //// LightComponents in Scene
-               ///// Light is calculated with given Lightning Method & Light or BLINN_PHONG as standard  */
+               ///// Light is calculated with given Lightning Method & Light or BLINN_PHONG as standard   */
             Random rnd = new Random();
 
-            for (var i = 0; i < 2; i++)
+            /*for (var i = 0; i < 2; i++)
             {
                 _rocketScene.Children[0].AddComponent(new LightComponent
                 {
@@ -102,22 +102,22 @@ namespace Fusee.Engine.Examples.Simple.Core
                     Position = new float4(0f, 0f, -1f, 1f),
                     Type = LightType.Point
                 });
-            }
+            }*/
 
         
                 _rocketScene.Children[0].AddComponent(new LightComponent
                 {
                     Active = true,
                     AmbientCoefficient = 1000f,
-                    Attenuation = 0.01f,
+                    Attenuation = 0.005f,
                     Color = new float3(1f,1f,1f),
-                    ConeAngle = 40.0f,
-                    ConeDirection = new float3(0f, -1f, 0f),
+                    ConeAngle = 10.0f,
+                    ConeDirection = new float3(0f, 0f, 1f),
                     Name = "Light1",
-                    Position = new float4(100, 700, 100, 1),
-                    Type = LightType.Spot
+                    Position = new float4(-1000, 600, 100, 1),
+                    Type = LightType.Point
                 });
-
+            /*
             _rocketScene.Children[0].AddComponent(new LightComponent
             {
                 Active = true,
@@ -129,12 +129,12 @@ namespace Fusee.Engine.Examples.Simple.Core
                 Name = "Light1",
                 Position = new float4(100, 1000, 700, 1),
                 Type = LightType.Spot
-            });
+            });*/
            
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_rocketScene, LightningCalculationMethod.BLINN_PHONG);
-
+          
 
 
             /*     //// MaterialLightComponent in Scene, lightningcaluclation with given ApplyLight Method over all lights
@@ -156,29 +156,29 @@ namespace Fusee.Engine.Examples.Simple.Core
                     ApplyLightString = "vec3 ApplyLight(Light light) {return vec3(1.0,0.0,0.0);}"
                 };
 
-                _sceneRenderer = new SceneRenderer(_rocketScene);   */
+                _sceneRenderer = new SceneRenderer(_rocketScene);   
 
-            /*   ///// Render with PBR Material and Light 
-  
-              _rocketScene.Children[0].AddComponent(new LightComponent
+            /*   ///// Render with PBR Material and Light
+
+            _rocketScene.Children[0].AddComponent(new LightComponent
               {
                   Active = true,
-                  AmbientCoefficient = 0.3f,
-                  Attenuation = 1f,
+                  AmbientCoefficient = 0.9f,
+                  Attenuation = 2000f,
                   Color = new float3(1f, 1f, 1f),
                   ConeAngle = 35.0f,
-                  ConeDirection = new float3(1f, 0f, 1f),
+                  ConeDirection = new float3(0f, 0f, 1f),
                   Name = "Light1",
-                  Position = new float4(0, 0, 1f, 1f),
-                  Type = LightType.Point
+                  Position = new float4(1000, 0, 1f, 1f),
+                  Type = LightType.Spot
               });
 
-              _rocketScene.Children[0].AddComponent(new LightComponent
+            /*  _rocketScene.Children[0].AddComponent(new LightComponent
               {
                   Active = true,
-                  AmbientCoefficient = 1f,
+                  AmbientCoefficient = 0.1f,
                   Attenuation = 1f,
-                  Color = new float3(0.7f, 0.3f, 0.6f),
+                  Color = new float3(1f, 1f, 0.1f),
                   ConeAngle = 35.0f,
                   ConeDirection = new float3(1f, 0f, 1f),
                   Name = "Light1",
@@ -197,14 +197,14 @@ namespace Fusee.Engine.Examples.Simple.Core
                       Emissive = material.Emissive,
                       Specular = material.Specular,
                       RoughnessValue = 0.1F,
-                      FresnelReflectance = 0.8F,
+                      FresnelReflectance = 0.9F,
                       DiffuseFraction = 0.1F
                   };
 
                   _rocketScene.Children[0].Components[1] = pbr;
-              }*/
+              }
 
-            // _sceneRenderer = new SceneRenderer(_rocketScene, LightningCalculationMethod.BLINN_PHONG);
+             _sceneRenderer = new SceneRenderer(_rocketScene, LightningCalculationMethod.BLINN_PHONG); */
         }
 
         // RenderAFrame is called once a frame
@@ -257,15 +257,23 @@ namespace Fusee.Engine.Examples.Simple.Core
             var mtxCam = float4x4.LookAt(40, 600, -600, 0, 150, 0, 0, 1, 0);
             RC.ModelView = mtxCam * mtxRot;
 
+
+        
+
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
 
-            #if GUI_SIMPLE
+         
+#if GUI_SIMPLE
             _guiHandler.RenderGUI();
-            #endif
+#endif
+            
+         
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rerndered farame) on the front buffer.
             Present();
+
+
         }
 
         private InputDevice Creator(IInputDeviceImp device)

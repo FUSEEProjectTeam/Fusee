@@ -7,6 +7,7 @@ using System.Drawing.Text;
 using PixelFormat = System.Drawing.Imaging.PixelFormat;
 using System.Runtime.InteropServices;
 using Fusee.Base.Common;
+using Fusee.Base.Core;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using Fusee.Math.Core;

@@ -168,6 +168,9 @@ namespace Fusee.Engine.Core
     {
         // Choose Lightning Method
         public static LightningCalculationMethod LightningCalculationMethod = LightningCalculationMethod.BLINN_PHONG;
+        // All lights
+        public static IList<LightResult> AllLightResults = new List<LightResult>();
+
 
         #region Traversal information
 
@@ -236,8 +239,8 @@ namespace Fusee.Engine.Core
         {
             // accumulate all lights and...
             _lightComponents = sc.Children.Viserate<LightSetup, LightResult>().ToList();
-            // ...pass them to ShaderCodeBuilder
-            ShaderCodeBuilder._allLights = _lightComponents;
+            // ...set them
+            AllLightResults = _lightComponents;
 
             _lights = new List<LightInfo>();
             _sc = sc;
@@ -850,23 +853,24 @@ namespace Fusee.Engine.Core
         {
             WeightComponent wc = CurrentNode.GetWeights();
 
-            ShaderCodeBuilder scb = null;
+            ForwardShaderCodeBuilder scb = null;
 
             // If MaterialLightCompoenent is found call the ShaderCodeBuilder with the MaterialLight
             // The ShaderCodeBuilder is intelligent enough to handle all the necessary compilations needed for the VS & PS
             if (mc.GetType() == typeof(MaterialLightComponent))
             {
                 var lightMat = mc as MaterialLightComponent;
-                if (lightMat != null) scb = new ShaderCodeBuilder(lightMat, null, wc);
+                if (lightMat != null) scb = new ForwardShaderCodeBuilder(lightMat, null, wc);
             }
             else if (mc.GetType() == typeof(MaterialPBRComponent))
             {
                     var pbrMaterial = mc as MaterialPBRComponent;
-                    if (pbrMaterial != null) scb = new ShaderCodeBuilder(pbrMaterial, null, wc);
+                    if (pbrMaterial != null) scb = new ForwardShaderCodeBuilder(pbrMaterial, null, wc);
             }
             else
             {
-                scb = new ShaderCodeBuilder(mc, null, wc); // TODO, CurrentNode.GetWeights() != null);
+                scb = new ForwardShaderCodeBuilder(mc, null, wc); // TODO, CurrentNode.GetWeights() != null);
+                //var test = new ForwardShaderCodeBuilder(mc, null, wc);
             }
 
             var effectParameters = AssembleEffectParamers(mc, scb);
@@ -890,7 +894,7 @@ namespace Fusee.Engine.Core
             return ret;
         }
 
-        private IEnumerable<EffectParameterDeclaration> AssembleEffectParamers(MaterialComponent mc, ShaderCodeBuilder scb)
+        private IEnumerable<EffectParameterDeclaration> AssembleEffectParamers(MaterialComponent mc, ForwardShaderCodeBuilder scb)
         {
             var effectParameters = new List<EffectParameterDeclaration>();
 
@@ -1006,47 +1010,47 @@ namespace Fusee.Engine.Core
             }
 
             // More than one light in scene, no legacy mode
-            if (ShaderCodeBuilder._allLights.Count > 0)
+            if (AllLightResults.Count > 0)
             {
-                for (var i = 0; i < ShaderCodeBuilder._allLights.Count; i++)
+                for (var i = 0; i < AllLightResults.Count; i++)
                 {
-                    if (!ShaderCodeBuilder._allLights[i].Active)
+                    if (!AllLightResults[i].Active)
                         continue;
-
+                    
                     effectParameters.Add(new EffectParameterDeclaration
                     {
                         Name = "allLights[" + i + "].position",
-                        Value = ShaderCodeBuilder._allLights[i].PositionWorldSpace
+                        Value = AllLightResults[i].PositionWorldSpace
                     });
                     effectParameters.Add(new EffectParameterDeclaration
                     {
                         Name = "allLights[" + i + "].intensities",
-                        Value = ShaderCodeBuilder._allLights[i].Color
+                        Value = AllLightResults[i].Color
                     });
                     effectParameters.Add(new EffectParameterDeclaration
                     {
                         Name = "allLights[" + i + "].attenuation",
-                        Value = ShaderCodeBuilder._allLights[i].Attenuation
+                        Value = AllLightResults[i].Attenuation
                     });
                     effectParameters.Add(new EffectParameterDeclaration
                     {
                         Name = "allLights[" + i + "].ambientCoefficient",
-                        Value = ShaderCodeBuilder._allLights[i].AmbientCoefficient
+                        Value = AllLightResults[i].AmbientCoefficient
                     });
                     effectParameters.Add(new EffectParameterDeclaration
                     {
                         Name = "allLights[" + i + "].coneAngle",
-                        Value = ShaderCodeBuilder._allLights[i].ConeAngle
+                        Value = AllLightResults[i].ConeAngle
                     });
                     effectParameters.Add(new EffectParameterDeclaration
                     {
                         Name = "allLights[" + i + "].coneDirection",
-                        Value = ShaderCodeBuilder._allLights[i].ConeDirection
+                        Value = AllLightResults[i].ConeDirection
                     });
                     effectParameters.Add(new EffectParameterDeclaration
                     {
                         Name = "allLights[" + i + "].lightType",
-                        Value = (int) ShaderCodeBuilder._allLights[i].Type
+                        Value = (int) AllLightResults[i].Type
                     });
                 }
             }

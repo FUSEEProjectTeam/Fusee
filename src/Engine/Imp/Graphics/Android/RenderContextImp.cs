@@ -426,6 +426,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             int nParams;
             GL.GetProgram(sProg.Program, All.ActiveUniforms, out nParams);
+         
 
             for (var i = 0; i < nParams; i++)
             {

@@ -55,7 +55,6 @@ namespace Fusee.Engine.Core
         /// <param name="wc">WeightCompoennt for animations</param>
         public ShaderCodeBuilder(MaterialPBRComponent pbrMaterialPbrComponent, MeshComponent mesh, WeightComponent wc = null)
         {
-           Diagnostics.Log($"{pbrMaterialPbrComponent.RoughnessValue} : {pbrMaterialPbrComponent.DiffuseFraction} : {pbrMaterialPbrComponent.FresnelReflectance}");
 
             // Check WC
             if (wc != null)
@@ -94,8 +93,7 @@ namespace Fusee.Engine.Core
             PixelInputDeclarations(ps);
             PSPBRBody(ps, pbrMaterialPbrComponent);
             _ps = ps.ToString();
-            Diagnostics.Log(_vs);
-            Diagnostics.Log(_ps);
+
         }
 
 
@@ -107,7 +105,6 @@ namespace Fusee.Engine.Core
         /// <param name="wc">WeightCompoennt for animations</param>
         public ShaderCodeBuilder(MaterialLightComponent mlc, MeshComponent mesh, WeightComponent wc = null)
         {
-            Diagnostics.Log($"{mlc.ApplyLightString} : {mlc.FragmentShaderString}");
 
             // Check WC
             if (wc != null)
@@ -135,7 +132,6 @@ namespace Fusee.Engine.Core
             // Analyze the Material
             AnalyzeMaterial(mlc);
 
-            Diagnostics.Log($"{_hasApplyLightString} : {_hasFragmentString}");
 
             // VS
             StringBuilder vs = new StringBuilder();
@@ -149,8 +145,7 @@ namespace Fusee.Engine.Core
             PixelInputDeclarations(ps);
             PSCustomBody(ps, mlc);
             _ps = ps.ToString();
-            Diagnostics.Log(_vs);
-            Diagnostics.Log(_ps);
+       
         }
 
         public ShaderCodeBuilder(MaterialComponent mc, MeshComponent mesh, WeightComponent wc = null)
@@ -189,29 +184,31 @@ namespace Fusee.Engine.Core
             PSBody(ps);
             _ps = ps.ToString();
 
-            // Print shader
-            Diagnostics.Log(_vs);
-            Diagnostics.Log(_ps);
         }
 
         private static void ParseLights(StringBuilder ps)
         {
             // no LightComponent found
-          //  if (_allLights.Count == 0)
-           //     return;
+            //  if (_allLights.Count == 0)
+            //     return;
 
             // LightComponent found, add Light struct
             ps.Append("\n\n " +
                       "uniform struct Light {\n" +
                       "vec4 position;\n" +
                       "vec3 intensities;\n" +
+                      "vec3 coneDirection;\n" +
                       "float attenuation;\n" +
                       "float ambientCoefficient;\n" +
                       "float coneAngle;\n" +
-                      "vec3 coneDirection;\n" +
                       "int lightType;\n" +
-                      "} allLights[MAX_LIGHTS];\n" +
+                      "};\n" +
                       "\n\n");
+
+            ps.Append("\n\n " +
+                      "uniform Light allLights[MAX_LIGHTS]; \n" +
+                      "\n\n");
+
         }
 
         private void AnalyzeMesh(MeshComponent mesh)
@@ -477,7 +474,8 @@ namespace Fusee.Engine.Core
             ps.Append("#endif\n\n");
 
             // define max lights
-            var numberOfLights = _allLights.Count > 0 ? _allLights.Count : 1;
+            var numberOfLights = SceneRenderer.AllLightResults.Count > 0 ? SceneRenderer.AllLightResults.Count : 1;
+
             ps.Append("\n\n #define MAX_LIGHTS " + numberOfLights + "\n\n");
 
 
@@ -569,7 +567,7 @@ namespace Fusee.Engine.Core
         {
             /////////////// Legacy Mode 
             // ...no LightComponents are in scene
-            if (_allLights.Count == 0)
+            if (SceneRenderer.AllLightResults.Count == 0)
             {
               
                 
@@ -642,7 +640,6 @@ namespace Fusee.Engine.Core
             ps.Append("\n   for(int i = 0; i < 3000; i++) { \n ");
             ps.Append("\n   if(i > MAX_LIGHTS) break; \n ");
             ps.Append("\n   result += ApplyLight(allLights[i]); \n ");
-            ps.Append("\n   } \n ");
             ps.Append("\n   vec3 gamma = vec3(1.0/2.2);\n ");
             ps.Append("\n   vec3 final_light = pow(result, gamma); \n ");
             ps.Append("\n   gl_FragColor = vec4(final_light, 1.0);\n");
@@ -821,7 +818,7 @@ namespace Fusee.Engine.Core
             ps.Append(" { \n\n");
             ps.Append(" vec3 SpecularBaseColor = SpecularColor; \n\n");
             ps.Append(" vec3 h = normalize(light.coneDirection + Camera); \n\n");
-            ps.Append(" result += SpecularBaseColor * light.intensities * light.ambientCoefficient * SpecularIntensity * pow(max(0.0, dot(h, Normal)), SpecularShininess); \n\n");
+            ps.Append(" result += SpecularBaseColor * light.intensities * light.ambientCoefficient * SpecularIntensity * pow(max(0.0, dot(h, vNormal)), SpecularShininess); \n\n");
             ps.Append(" } \n\n");
             ps.Append(" return result; \n\n");
 
@@ -836,8 +833,8 @@ namespace Fusee.Engine.Core
             ps.Append(" vec3 surfaceToLight; \n");
             ps.Append("  float attenuation = 1.0; \n\n");
            
-            ps.Append(" surfaceToLight = normalize(light.position.xyz - surfacePos); \n");
-            ps.Append(" float distanceToLight = length(light.position.xyz - surfacePos); \n");
+            ps.Append(" surfaceToLight = normalize(light.position.xyz - surfacePos.xyz); \n");
+            ps.Append(" float distanceToLight = length(light.position.xyz - surfacePos.xyz); \n");
             ps.Append("  attenuation = 1.0 / (1.0 + light.attenuation * pow(distanceToLight, 2.0)); \n\n");
 
             ps.Append(" //cone restrictions (affects attenuation) \n");
