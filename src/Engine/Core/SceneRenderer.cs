@@ -469,6 +469,16 @@ namespace Fusee.Engine.Core
             }
         }
 
+      /*  [VisitMethod]
+        public void AccumulateLight(LightComponent lightComponent)
+        {
+            // update all Lights
+            // accumulate all lights and...
+            _lightComponents = _sc.Children.Viserate<LightSetup, LightResult>().ToList();
+            // ...set them
+            AllLightResults = _lightComponents;
+        }*/
+
         #endregion
 
         #region HierarchyLevel

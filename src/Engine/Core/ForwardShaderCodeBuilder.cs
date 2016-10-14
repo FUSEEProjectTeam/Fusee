@@ -132,9 +132,10 @@ namespace Fusee.Engine.Core
 
             // needed for lightning calc
             vs.Append("  varying vec4 surfacePos;\n");
+            vs.Append(" varying vec4 surfacePosOriginal;\n");
             vs.Append("  uniform mat4 FUSEE_MV;\n");
-            vs.Append(" varying vec3 vMVNormal;\n");
-           
+            vs.Append("  varying vec3 vMVNormal;\n");
+            vs.Append("  uniform mat4 FUSEE_M;\n");
         }
 
         // ReSharper disable once InconsistentNaming
@@ -168,7 +169,7 @@ namespace Fusee.Engine.Core
 
                     if (_normalizeNormals)
                     {
-                        vs.Append("    vNormal = normalize(vNormal);\n");
+                        vs.Append("    vNormal = normalize(fuNormal);\n");
                         vs.Append("    vMVNormal = normalize(mat3(FUSEE_ITMV) * fuNormal);\n");
                     }
                 }
@@ -177,7 +178,7 @@ namespace Fusee.Engine.Core
                     // Lighting done in model space... no need to convert normals
                     if (_normalizeNormals) { 
                         // vs.Append("    vNormal = normalize(mat3(FUSEE_MV[0].xyz, FUSEE_MV[1].xyz, FUSEE_MV[2].xyz) * fuNormal);\n");
-                        vs.Append("    vNormal = fuNormal;\n");
+                        vs.Append("    vNormal = normalize(mat3(transpose(inverse(FUSEE_M))) * fuNormal);\n");
                     vs.Append("    vMVNormal = normalize(mat3(FUSEE_ITMV) * fuNormal);\n");
                     }
                     else
@@ -203,8 +204,8 @@ namespace Fusee.Engine.Core
                 vs.Append("    vUV = fuUV;\n");
 
             // needed for spotlight
-            vs.Append("    surfacePos = vec4(fuVertex, 1.0); \n");
-
+            vs.Append("    surfacePos = FUSEE_M * vec4(fuVertex, 1.0); \n");
+            vs.Append("    surfacePosOriginal = vec4(fuVertex, 1.0); \n");
             vs.Append("  }\n\n");
         }
 
@@ -239,7 +240,11 @@ namespace Fusee.Engine.Core
                 ps.Append("  varying vec2 vUV;\n");
 
             ps.Append(" varying vec4 surfacePos;\n");
+            ps.Append(" varying vec4 surfacePosOriginal;\n");
+            
             ps.Append(" varying vec3 vMVNormal;\n");
+            ps.Append(" varying mat4 FUSEE_MV;\n");
+            ps.Append(" varying mat4 FUSEE_M;\n");
         }
 
         // ReSharper disable once InconsistentNaming
@@ -294,6 +299,10 @@ namespace Fusee.Engine.Core
             else if (_lightningCalculationMethod == LightningCalculationMethod.BLINN_PHONG)
             {
                 vs.Append("\n\n\n");
+                vs.Append($"           {AmbientLightningMethod()}\n");
+                vs.Append($"           {DiffuseLightingMethod()}\n");
+                vs.Append($"           {SpecularLightingMethod()}\n");
+                vs.Append("\n\n\n");
                 vs.Append("/******* ApplyLight Method ****/\n");
                 vs.Append("vec3 ApplyLight(Light light)\n");
                 vs.Append("{\n");
@@ -339,6 +348,54 @@ namespace Fusee.Engine.Core
             }
         }
 
+        private string AmbientLightningMethod()
+        {
+            var outputString = "\n";
+            outputString += "// returns intensity of reflected ambient lighting\n";
+            outputString += "vec3 ambientLighting(Light light)\n";
+            outputString += "{\n";
+                if(EmissiveColorName != null)
+                    outputString += $"   return ({EmissiveColorName} * light.ambientCoefficient);\n";
+                else
+                    outputString += $"   return vec3(light.ambientCoefficient);\n";
+            outputString += "}\n";
+
+            return outputString;
+        }
+
+        private string DiffuseLightingMethod()
+        {
+            var outputString = "\n";
+            outputString += "// returns intensity of diffuse reflection\n";
+            outputString += "vec3 diffuseLighting(vec3 N, vec3 L, Light light)\n";
+            outputString += "{\n";
+            outputString += "   // calculation as for Lambertian reflection\n";
+            outputString += "   float diffuseTerm = clamp(dot(N, L), 0.0, 1.0) ;\n";
+            outputString += $"  return ({DiffuseColorName} * light.intensities * diffuseTerm);\n";
+            outputString += "}\n";
+
+            return outputString;
+        }
+
+        private string SpecularLightingMethod()
+        {
+            var outputString = "\n";
+            outputString += "// returns intensity of diffuse reflection\n";
+            outputString += "vec3 specularLighting(vec3 N, vec3 L, vec3 V, Light light)\n";
+            outputString += "{\n";
+            outputString += "   float specularTerm = 0.0;\n";
+            outputString += "   if(dot(N, L) > 0.0)\n";
+            outputString += "   {\n";
+            outputString += "   // half vector\n";
+            outputString += "   vec3 H = normalize(L + V);\n";
+            outputString += $"   specularTerm = max(0.0, pow(dot(N, H), {SpecularShininessName}));\n";
+            outputString += "   }\n";
+            outputString += $"  return ({SpecularColorName} * {SpecularIntensityName} * light.intensities * specularTerm);\n";
+            outputString += "}\n";
+
+            return outputString;
+        }
+
         /// <summary>
         /// ParallelLight, no specular component
         /// ConeDirection specifies direction of light.
@@ -347,9 +404,27 @@ namespace Fusee.Engine.Core
         private string ParallelLightCalculation()
         {
             var outputString = "\n";
-            outputString += "      vec3 Normal = vMVNormal;\n";
-            outputString += "      float lightDot = dot(Normal, -light.coneDirection);\n";
-            outputString += $"      result += {DiffuseColorName} * light.intensities * light.ambientCoefficient * max(lightDot, 0.0);";
+
+            outputString += "vec3 o_normal = vNormal;\n";
+            outputString += "vec3 o_toLight = normalize(mat3(FUSEE_M) *light.position.xyz - surfacePos.xyz);\n";
+            outputString += "vec3 o_toCamera = normalize(mat3(FUSEE_M) * vViewDir - surfacePos.xyz);\n";
+            outputString += "vec2 o_texcoords = vUV;\n";
+            outputString += "\n";
+            outputString += "\n";
+            outputString += "vec3 L = normalize(o_toLight);\n";
+            outputString += "vec3 V = normalize(o_toCamera);\n";
+            outputString += "vec3 N = normalize(o_normal);\n";
+            outputString += "vec3 Iamb = ambientLighting(light);\n";
+            outputString += "vec3 Idif = diffuseLighting(N, L, light);\n";
+            outputString += "vec3 Ispe = specularLighting(N, L, V, light);\n";
+            outputString += "\n";
+            if (DiffuseTextureName != null)
+                outputString += $"vec3 diffuseColor = texture({DiffuseTextureName}, o_texcoords).rgb * {DiffuseMixName};\n";
+            else
+                outputString += $"vec3 diffuseColor = {DiffuseColorName};\n";
+            outputString += "\n";
+            outputString += "\n";
+            outputString += "result = diffuseColor * (Iamb + Idif + Ispe);\n";
 
             return outputString;
         }
@@ -360,28 +435,78 @@ namespace Fusee.Engine.Core
         /// <returns></returns>
         private string PointLightCalculation()
         {
-
+            
             var outputString = "\n";
+         
+            outputString += "vec3 o_normal = vNormal;\n";
+            outputString += "vec3 o_toLight = normalize(mat3(FUSEE_M) * light.position.xyz - surfacePos.xyz);\n";
+            outputString += "vec3 o_toCamera = normalize(vec3(0.0,0.0,0.0) - surfacePos.xyz);\n";
+            outputString += "vec2 o_texcoords = vUV;\n";
+            outputString += "\n";
+            outputString += "\n";
+            outputString += "vec3 L = normalize(o_toLight);\n";
+            outputString += "vec3 V = normalize(o_toCamera);\n";
+            outputString += "vec3 N = normalize(o_normal);\n";
+            outputString += "vec3 Iamb = ambientLighting(light);\n";
+            outputString += "vec3 Idif = diffuseLighting(N, L, light);\n";
+            outputString += "vec3 Ispe = specularLighting(N, L, V, light);\n";
+            outputString += "\n";
+            outputString += "       float distanceToLight = distance(mat3(FUSEE_M) * light.position.xyz, surfacePos.xyz);\n";
+            outputString += "       float att = clamp(1.0 - distanceToLight*distanceToLight/(light.attenuation*light.attenuation), 0.0, 1.0);";
+            if (DiffuseTextureName != null)
+                outputString += $"vec3 diffuseColor = texture({DiffuseTextureName}, o_texcoords).rgb * {DiffuseMixName};\n";
+            else
+                outputString += $"vec3 diffuseColor = {DiffuseColorName};\n";
+            outputString += "\n";
+            outputString += "\n";
+            outputString += "result = diffuseColor * (Iamb + Idif + Ispe) * att ;\n";
+            //outputString += "result = vec3(att);\n";
 
-            outputString += "       vec3 Normal = vMVNormal;\n";
+            /*
+            outputString += "// Vector that goes from the vertex to the camera, in camera space.\n";
+            outputString += "// In camera space, the camera is at the origin (0,0,0).\n";
+            outputString += "vec3 vertexPosition_cameraspace = (surfacePos).xyz;\n";
+            outputString += "vec3 EyeDirection_cameraspace = vec3(0, 0, 0) - vertexPosition_cameraspace;\n";
 
-            //vec3 surfaceWorldPosition = (u_world * a_position).xyz;
-            outputString += "       vec3 v_surfaceToLight = normalize(light.position.xyz - surfacePos.xyz);\n";
-            outputString += "       float lightDot = dot(Normal, v_surfaceToLight);\n";
+            outputString += "// Vector that goes from the vertex to the light, in camera space. M is ommited because it's identity.\n";
+            outputString += "vec3 LightPosition_cameraspace = (FUSEE_MV * vec4(light.position.xyz, 1)).xyz;\n";
+            outputString += "vec3 LightDirection_cameraspace = LightPosition_cameraspace + EyeDirection_cameraspace;\n";
 
-            outputString += "       float distanceToLight = length(light.position.xyz - surfacePos.xyz);\n";
-            outputString += "       attenuation = 1.0 / (1.0 + light.attenuation * pow(distanceToLight, 2.0));\n";
+            outputString += "// Normal of the the vertex, in camera space\n";
+            outputString += "vec3 Normal_cameraspace = vMVNormal;\n";
 
-            outputString += $"       result += {DiffuseColorName} * light.intensities * light.ambientCoefficient * max(lightDot, 0.0) * attenuation;\n";
+            outputString += "// Normal of the computed fragment, in camera space\n";
+            outputString += "vec3 n = normalize(Normal_cameraspace);\n";
+            outputString += "// Direction of the light (from the fragment to the light)\n";
+            outputString += "vec3 l = normalize(LightDirection_cameraspace);\n";
+            outputString += "float cosTheta = clamp( dot( n,l ), 0.0,1.0 );\n";
+            outputString += $"result += {DiffuseColorName}  * cosTheta * light.intensities * light.ambientCoefficient / pow(light.attenuation, 2.0);";
 
-            outputString += "       vec3 surfaceToViewDirection = normalize(vViewDir - surfacePos.xyz);\n";
-            outputString += "       vec3 halfVector = normalize(v_surfaceToLight + surfaceToViewDirection);\n\n";
-          
-            outputString += "       float specular = 0.0;\n";
-            outputString += "       if (lightDot > 0.0) {\n";
-            outputString += $"          specular = max(0.0,pow(dot(Normal, halfVector), {SpecularShininessName}));\n";
-            outputString += "       }\n";
-            outputString += $"       result += {SpecularColorName} * {SpecularIntensityName} * specular * attenuation;";
+            outputString += "// Eye vector (towards the camera)\n";
+            outputString += "vec3 E = normalize(EyeDirection_cameraspace);\n";
+            outputString += "vec3 R = reflect(-l, n);\n";
+            outputString += "float cosAlpha = clamp( dot( E,R ), 0.0,1.0 );\n";
+            outputString += $"result += {SpecularColorName}  * light.intensities * light.ambientCoefficient * pow(cosAlpha, {SpecularShininessName}) * {SpecularIntensityName} / pow(light.attenuation, 2.0);\n";
+            */
+            /* outputString += "       vec3 Normal = vMVNormal;\n";
+
+             //vec3 surfaceWorldPosition = (u_world * a_position).xyz;
+             outputString += "       vec3 v_surfaceToLight = normalize(light.position.xyz - surfacePos.xyz);\n";
+             outputString += "       float lightDot = dot(Normal, v_surfaceToLight);\n";
+
+             outputString += "       float distanceToLight = length(light.position.xyz - surfacePos.xyz);\n";
+             outputString += "       attenuation = 1.0 / (1.0 + light.attenuation * pow(distanceToLight, 2.0));\n";
+
+             outputString += $"       result += {DiffuseColorName} * light.intensities * light.ambientCoefficient * max(lightDot, 0.0) * attenuation;\n";
+
+             outputString += "       vec3 surfaceToViewDirection = normalize(vViewDir - surfacePos.xyz);\n";
+             outputString += "       vec3 halfVector = normalize(v_surfaceToLight + surfaceToViewDirection);\n\n";
+
+             outputString += "       float specular = 0.0;\n";
+             outputString += "       if (lightDot > 0.0) {\n";
+             outputString += $"          specular = max(0.0,pow(dot(Normal, halfVector), {SpecularShininessName}));\n";
+             outputString += "       }\n";
+             outputString += $"       result += {SpecularColorName} * {SpecularIntensityName} * specular * attenuation;"; */
 
             return outputString;
 

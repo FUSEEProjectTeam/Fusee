@@ -108,13 +108,13 @@ namespace Fusee.Engine.Examples.Simple.Core
                 _rocketScene.Children[0].AddComponent(new LightComponent
                 {
                     Active = true,
-                    AmbientCoefficient = 1000f,
-                    Attenuation = 0.005f,
+                    AmbientCoefficient = 0.2f,
+                    Attenuation =  1000f,
                     Color = new float3(1f,1f,1f),
                     ConeAngle = 10.0f,
-                    ConeDirection = new float3(0f, 0f, 1f),
+                    ConeDirection = new float3(0f, 1f, 1f),
                     Name = "Light1",
-                    Position = new float4(-1000, 600, 100, 1),
+                    Position = new float4(10, 20, 10, 1f),
                     Type = LightType.Point
                 });
             /*
