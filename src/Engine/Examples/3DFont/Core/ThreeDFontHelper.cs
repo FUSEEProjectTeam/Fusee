@@ -107,7 +107,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
 
         //Returns all control points od a given text calculated adaptively by testing the angle.
         //"angle" determines how far the angle between the two vectors(start point random point and random point end point) may vary from 180° 
-        public IList<float3> GetTextVerticesAdaptively(int angle)
+        public IList<float3> GetTextVerticesWAngle(int angle)
         {
             var advance = 0f;
             var advanceComp = 0f;
@@ -140,7 +140,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
         }
 
         //Returns all control points od a given text calculated adaptively by testing the area of a triangle
-        public IList<float3> GetTextVerticesAdaptively(float area)
+        public IList<float3> GetTextVerticesWArcreage(float arcreage)
         {
             var advance = 0f;
             var advanceComp = 0f;
@@ -152,7 +152,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
 
             for (var i = 0; i < textCurves.Count; i++)
             {
-                var outline = textCurves[i].CalcAdaptivePolyline(area).ToList();
+                var outline = textCurves[i].CalcAdaptivePolyline(arcreage).ToList();
 
                 advanceComp = advanceComp + advance;
                 kerningComp = kerningComp + kerning;

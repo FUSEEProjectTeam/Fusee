@@ -54,10 +54,10 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             var vladimir = AssetStorage.Get<Font>("VLADIMIR.TTF");
             var arial = AssetStorage.Get<Font>("arial.ttf");
 
-            _text = "Hello World!";
+            _text = "a";
             _threeDFontHelper = new ThreeDFontHelper(_text, fontLato);
 
-            _controlPoints = (List<float3>) _threeDFontHelper.GetTextVerticesAdaptively(5);
+            _controlPoints = (List<float3>) _threeDFontHelper.GetTextVerticesWAngle(10);
 
             for (var i = 0; i < _controlPoints.Count; i++)
             {
@@ -66,7 +66,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
 
             _point = new Cube();
 
-            var shader = RC.CreateShader(_vertexShader, _pixelShader);
+            var shader = RC.CreateShader(AssetStorage.Get<string>("VertShader.vert"), AssetStorage.Get<string>("FragShader.frag"));
             RC.SetShader(shader);
             _xformParam = RC.GetShaderParam(shader, "xform");
             _alpha = 0;

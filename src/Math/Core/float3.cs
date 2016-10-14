@@ -1310,7 +1310,16 @@ namespace Fusee.Math.Core
         public static float CalculateAngle(float3 first, float3 second)
         {
             if ((first.Length > M.EpsilonFloat) && (second.Length > M.EpsilonFloat))
-                return (float) System.Math.Acos((Dot(first, second))/(first.Length*second.Length));
+            {
+                var dotP = Dot(first, second)/(first.Length*second.Length);
+
+                if (dotP < -1)
+                    dotP = -1;
+                if (dotP > 1)
+                    dotP = 1;
+
+                return (float) System.Math.Acos(dotP);
+            }
 
             return 0;
         }

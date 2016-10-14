@@ -80,13 +80,13 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Returns a polyline, representing the curve segment. Intermediate points are calculated adaptively.
         /// </summary>
-        /// <param name="area">Determines a maximal area size for the tringale created from start point random point and end point.</param>
+        /// <param name="arcreage">Determines a maximal arcreage for the tringale created from start point random point and end point.</param>
         /// <returns></returns>
-        public IEnumerable<float3> CalcAdaptivePolyline(float area)
+        public IEnumerable<float3> CalcAdaptivePolyline(float arcreage)
         {
             foreach (var part in CurveParts)
             {
-                foreach (var vert in part.CalcAdaptivePolyline(area))
+                foreach (var vert in part.CalcAdaptivePolyline(arcreage))
                 {
                     yield return vert;
                 }
@@ -178,7 +178,7 @@ namespace Fusee.Math.Core
                 //If i == 0 sp = StartPoint, if not it's the last vert of the CurveSegment[i-1]s' list of vertices
                 sp = i == 0 ? StartPoint : CurveSegments[i - 1].Vertices[CurveSegments[i - 1].Vertices.Count - 1];
 
-                foreach (var vert in CurveSegments[i].CalcAdaptivePolyline(sp, angle, degree))
+                foreach (var vert in CurveSegments[i].CalcAdaptivePolylineWAngle(sp, angle, degree))
                 {
                     yield return vert;
                 }
@@ -188,9 +188,9 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Returns a polyline, representing the curve segment. Intermediate points are calculated adaptively.
         /// </summary>
-        /// <param name="area">Determines a maximal area size for the tringale created from start point random point and end point.</param>
+        /// <param name="arcreage">Determines a maximal arcreage for the tringale created from start point random point and end point.</param>
         /// <returns></returns>
-        public IEnumerable<float3> CalcAdaptivePolyline(float area)
+        public IEnumerable<float3> CalcAdaptivePolyline(float arcreage)
         {
             for (var i = 0; i < CurveSegments.Count; i++)
             {
@@ -213,7 +213,7 @@ namespace Fusee.Math.Core
                 //If i == 0 sp = StartPoint, if not it's the last vert of the CurveSegment[i-1]s' list of vertices
                 sp = i == 0 ? StartPoint : CurveSegments[i - 1].Vertices[CurveSegments[i - 1].Vertices.Count - 1];
 
-                foreach (var vert in CurveSegments[i].CalcAdaptivePolyline(sp, area, degree))
+                foreach (var vert in CurveSegments[i].CalcAdaptivePolylineWArcreage(sp, arcreage, degree))
                 {
                     yield return vert;
                 }
@@ -338,7 +338,7 @@ namespace Fusee.Math.Core
         /// <param name="angle">Determines how far the angle between the two vectors(start point random point and random point end point) may vary from 180°</param>
         /// <param name="degree">The degree of the curve: 1 for linear, 2 for conic, 3 for cubic</param>
         /// <returns></returns>
-        public virtual IEnumerable<float3> CalcAdaptivePolyline(float3 startPoint, int angle, int degree)
+        public IEnumerable<float3> CalcAdaptivePolylineWAngle(float3 startPoint, int angle, int degree)
         {
             var controlPoints = new List<float3> { startPoint };
             controlPoints.AddRange(Vertices);
@@ -357,7 +357,7 @@ namespace Fusee.Math.Core
                 }
 
                 //Sample verts by performig a flatness test
-                foreach (var float3 in AdaptiveSampling(verts, angle))
+                foreach (var float3 in AdaptiveSamplingWAngle(verts, angle))
                 {
                     yield return float3;
                 }
@@ -370,10 +370,10 @@ namespace Fusee.Math.Core
         /// Returns a polyline, representing the curve segment. Intermediate points are calculated adaptively.
         /// </summary>
         /// <param name="startPoint">The segments starting point</param>
-        /// <param name="area">Determines a maximal area size for the tringale created from start point random point and end point.</param>
+        /// <param name="arcreage">Determines a maximal arcreage for the tringale created from start point random point and end point.</param>
         /// <param name="degree">The degree of the curve: 1 for linear, 2 for conic, 3 for cubic</param>
         /// <returns></returns>
-        public virtual IEnumerable<float3> CalcAdaptivePolyline(float3 startPoint, float area, int degree)
+        public IEnumerable<float3> CalcAdaptivePolylineWArcreage(float3 startPoint, float arcreage, int degree)
         {
             var controlPoints = new List<float3> { startPoint };
             controlPoints.AddRange(Vertices);
@@ -392,7 +392,7 @@ namespace Fusee.Math.Core
                 }
 
                 //Sample verts by performig a flatness test
-                foreach (var float3 in AdaptiveSampling(verts, area))
+                foreach (var float3 in AdaptiveSamplingWArcreage(verts, arcreage))
                 {
                     yield return float3;
                 }
@@ -401,7 +401,7 @@ namespace Fusee.Math.Core
             yield return controlPoints[controlPoints.Count - 1];
         }
 
-        private IEnumerable<float3> AdaptiveSampling(float3[] verts, int angle)
+        private IEnumerable<float3> AdaptiveSamplingWAngle(float3[] verts, int angle)
         {
             var rnd = new Random();
             const double min = 0.45;
@@ -421,18 +421,18 @@ namespace Fusee.Math.Core
                 List<float3> rightCurve = new List<float3>();
                 SplitCurve((float)t, verts, ref leftCurve, ref rightCurve);
 
-                foreach (var vert in AdaptiveSampling(leftCurve.ToArray(), angle))
+                foreach (var vert in AdaptiveSamplingWAngle(leftCurve.ToArray(), angle))
                 {
                     yield return vert;
                 }
-                foreach (var vert in AdaptiveSampling(rightCurve.ToArray(), angle))
+                foreach (var vert in AdaptiveSamplingWAngle(rightCurve.ToArray(), angle))
                 {
                     yield return vert;
                 }
             }
         }
 
-        private IEnumerable<float3> AdaptiveSampling(float3[] verts, float area)
+        private IEnumerable<float3> AdaptiveSamplingWArcreage(float3[] verts, float arcreage)
         {
             var rnd = new Random();
             const double min = 0.45;
@@ -444,7 +444,7 @@ namespace Fusee.Math.Core
             var t = RandomT(rnd, min, max);
             var vertNearMiddle = CalcPoint((float)t, verts);
 
-            if (!IsTriangleAreaSmallEnough(a, vertNearMiddle, b, area))
+            if (!IsArcreageSmallEnough(a, vertNearMiddle, b, arcreage))
             {
                 yield return vertNearMiddle;
 
@@ -452,11 +452,11 @@ namespace Fusee.Math.Core
                 List<float3> rightCurve = new List<float3>();
                 SplitCurve((float)t, verts, ref leftCurve, ref rightCurve);
 
-                foreach (var vert in AdaptiveSampling(leftCurve.ToArray(), area))
+                foreach (var vert in AdaptiveSamplingWArcreage(leftCurve.ToArray(), arcreage))
                 {
                     yield return vert;
                 }
-                foreach (var vert in AdaptiveSampling(rightCurve.ToArray(), area))
+                foreach (var vert in AdaptiveSamplingWArcreage(rightCurve.ToArray(), arcreage))
                 {
                     yield return vert;
                 }
@@ -476,7 +476,7 @@ namespace Fusee.Math.Core
         {
             var p = a - m;
             var q = b - m;
-            var angle = CalcAngle(p, q);
+            var angle = float3.CalculateAngle(p, q);
 
             angle = M.RadiansToDegrees(angle);
             if (angle <= 180 && angle >= 180 - threshold)
@@ -484,35 +484,17 @@ namespace Fusee.Math.Core
             return false;
         }
 
-        private bool IsTriangleAreaSmallEnough(float3 a, float3 m, float3 b, float threshold)
+        private bool IsArcreageSmallEnough(float3 a, float3 m, float3 b, float threshold)
         {
             var am = m - a;
             var ab = b - a;
-            var alpha = CalcAngle(am, ab);
+            var alpha = float3.CalculateAngle(am, ab);
             var hc = am.Length * M.Sin(alpha);
             var area = ab.Length * hc / 2;
 
             if (area < threshold)
                 return true;
             return false;
-        }
-
-        private float CalcAngle(float3 first, float3 second) //TODO: is already available als extension to float3 .. but this extension throws NaNs!
-        {
-            var nFirst = first / first.Length;
-            var nSecond = second / second.Length;
-
-            var dotP = float3.Dot(nFirst, nSecond);
-
-            //Some values of dotP are not between -1 and 1 --> acos not defined --> NaN
-            if (dotP < -1)
-                dotP = -1;
-            if (dotP > 1)
-                dotP = 1;
-
-            var angle = ((float)System.Math.Acos(dotP));
-
-            return angle;
         }
     }
 
