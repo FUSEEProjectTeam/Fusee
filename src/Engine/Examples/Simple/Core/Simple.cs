@@ -225,6 +225,7 @@ namespace Fusee.Engine.Examples.Simple.Core
                 _keys = false;
                 _angleVelHorz = -RotationSpeed * Mouse.XVel * DeltaTime * 0.0005f;
                 _angleVelVert = -RotationSpeed * Mouse.YVel * DeltaTime * 0.0005f;
+                //Diagnostics.Log($"New ModelMatrix? {RC.Model}");
             }
             else if (Touch.GetTouchActive(TouchPoints.Touchpoint_0))
             {

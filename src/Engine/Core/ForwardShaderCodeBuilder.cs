@@ -136,6 +136,7 @@ namespace Fusee.Engine.Core
             vs.Append("  uniform mat4 FUSEE_MV;\n");
             vs.Append("  varying vec3 vMVNormal;\n");
             vs.Append("  uniform mat4 FUSEE_M;\n");
+            vs.Append("  uniform mat4 FUSEE_IV;\n");
         }
 
         // ReSharper disable once InconsistentNaming
@@ -178,7 +179,7 @@ namespace Fusee.Engine.Core
                     // Lighting done in model space... no need to convert normals
                     if (_normalizeNormals) { 
                         // vs.Append("    vNormal = normalize(mat3(FUSEE_MV[0].xyz, FUSEE_MV[1].xyz, FUSEE_MV[2].xyz) * fuNormal);\n");
-                        vs.Append("    vNormal = normalize(mat3(transpose(inverse(FUSEE_M))) * fuNormal);\n");
+                        vs.Append("    vNormal = normalize(fuNormal);\n");
                     vs.Append("    vMVNormal = normalize(mat3(FUSEE_ITMV) * fuNormal);\n");
                     }
                     else
@@ -204,8 +205,8 @@ namespace Fusee.Engine.Core
                 vs.Append("    vUV = fuUV;\n");
 
             // needed for spotlight
-            vs.Append("    surfacePos = FUSEE_M * vec4(fuVertex, 1.0); \n");
-            vs.Append("    surfacePosOriginal = vec4(fuVertex, 1.0); \n");
+            vs.Append("    surfacePos = FUSEE_MV * vec4(fuVertex, 1.0); \n");
+            vs.Append("    surfacePosOriginal = vec4( fuVertex, 1.0); \n");
             vs.Append("  }\n\n");
         }
 
@@ -245,6 +246,9 @@ namespace Fusee.Engine.Core
             ps.Append(" varying vec3 vMVNormal;\n");
             ps.Append(" varying mat4 FUSEE_MV;\n");
             ps.Append(" varying mat4 FUSEE_M;\n");
+            ps.Append("  uniform mat4 FUSEE_IMV;\n");
+            ps.Append("  uniform mat4 FUSEE_IV;\n");
+
         }
 
         // ReSharper disable once InconsistentNaming
@@ -390,7 +394,7 @@ namespace Fusee.Engine.Core
             outputString += "   vec3 H = normalize(L + V);\n";
             outputString += $"   specularTerm = max(0.0, pow(dot(N, H), {SpecularShininessName}));\n";
             outputString += "   }\n";
-            outputString += $"  return ({SpecularColorName} * {SpecularIntensityName} * light.intensities * specularTerm);\n";
+            outputString += $"  return ({SpecularColorName} * {SpecularIntensityName} * light.intensities * specularTerm) * 1000.0;\n";
             outputString += "}\n";
 
             return outputString;
@@ -406,8 +410,8 @@ namespace Fusee.Engine.Core
             var outputString = "\n";
 
             outputString += "vec3 o_normal = vNormal;\n";
-            outputString += "vec3 o_toLight = normalize(mat3(FUSEE_M) *light.position.xyz - surfacePos.xyz);\n";
-            outputString += "vec3 o_toCamera = normalize(mat3(FUSEE_M) * vViewDir - surfacePos.xyz);\n";
+            outputString += "vec3 o_toLight = normalize(mat3(FUSEE_MV) *light.position.xyz - surfacePos.xyz);\n";
+            outputString += "vec3 o_toCamera = normalize(mat3(FUSEE_MV) * vViewDir - surfacePos.xyz);\n";
             outputString += "vec2 o_texcoords = vUV;\n";
             outputString += "\n";
             outputString += "\n";
@@ -438,20 +442,20 @@ namespace Fusee.Engine.Core
             
             var outputString = "\n";
          
-            outputString += "vec3 o_normal = vNormal;\n";
-            outputString += "vec3 o_toLight = normalize(mat3(FUSEE_M) * light.position.xyz - surfacePos.xyz);\n";
-            outputString += "vec3 o_toCamera = normalize(vec3(0.0,0.0,0.0) - surfacePos.xyz);\n";
+            outputString += "vec3 o_normal = vMVNormal;\n";
+            outputString += "vec3 o_toLight = normalize(light.position.xyz - surfacePos.xyz);\n";
+            outputString += "vec3 o_toCamera = normalize(vViewDir - surfacePos.xyz);\n";
             outputString += "vec2 o_texcoords = vUV;\n";
             outputString += "\n";
             outputString += "\n";
-            outputString += "vec3 L = normalize(o_toLight);\n";
-            outputString += "vec3 V = normalize(o_toCamera);\n";
-            outputString += "vec3 N = normalize(o_normal);\n";
+            outputString += "vec3 L = o_toLight;\n";
+            outputString += "vec3 V = o_toCamera;\n";
+            outputString += "vec3 N = o_normal;\n";
             outputString += "vec3 Iamb = ambientLighting(light);\n";
             outputString += "vec3 Idif = diffuseLighting(N, L, light);\n";
             outputString += "vec3 Ispe = specularLighting(N, L, V, light);\n";
             outputString += "\n";
-            outputString += "       float distanceToLight = distance(mat3(FUSEE_M) * light.position.xyz, surfacePos.xyz);\n";
+            outputString += "       float distanceToLight = distance(light.position.xyz, surfacePos.xyz);\n";
             outputString += "       float att = clamp(1.0 - distanceToLight*distanceToLight/(light.attenuation*light.attenuation), 0.0, 1.0);";
             if (DiffuseTextureName != null)
                 outputString += $"vec3 diffuseColor = texture({DiffuseTextureName}, o_texcoords).rgb * {DiffuseMixName};\n";
@@ -459,8 +463,8 @@ namespace Fusee.Engine.Core
                 outputString += $"vec3 diffuseColor = {DiffuseColorName};\n";
             outputString += "\n";
             outputString += "\n";
-            outputString += "result = diffuseColor * (Iamb + Idif + Ispe) * att ;\n";
-            //outputString += "result = vec3(att);\n";
+            //outputString += "result = diffuseColor * (Iamb + Idif + Ispe) ;\n";
+            outputString += "result = vec3(att);\n";
 
             /*
             outputString += "// Vector that goes from the vertex to the camera, in camera space.\n";

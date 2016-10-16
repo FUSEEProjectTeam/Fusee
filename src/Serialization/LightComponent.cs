@@ -69,5 +69,10 @@ namespace Fusee.Serialization
         /// </summary>
         [ProtoMember(8)]
         public float3 ConeDirection;
+        /// <summary>
+        /// Represents the position in world coordinates.
+        /// </summary>
+        [ProtoMember(9)]
+        public float3 PositionWorldSpace;
     }
 }

@@ -469,15 +469,18 @@ namespace Fusee.Engine.Core
             }
         }
 
-      /*  [VisitMethod]
+       [VisitMethod]
         public void AccumulateLight(LightComponent lightComponent)
         {
-            // update all Lights
+            /* // update all Lights
             // accumulate all lights and...
             _lightComponents = _sc.Children.Viserate<LightSetup, LightResult>().ToList();
             // ...set them
-            AllLightResults = _lightComponents;
-        }*/
+            AllLightResults = _lightComponents; */
+           lightComponent.PositionWorldSpace = _rc.ModelView * lightComponent.PositionWorldSpace;
+          //  Diagnostics.Log($"NEW position world space from {lightComponent.PositionWorldSpace} \n InvModelViewMatrix: {_rc.InvView}");
+
+        }
 
         #endregion
 
