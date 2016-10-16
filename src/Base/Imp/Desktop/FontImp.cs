@@ -111,11 +111,10 @@ namespace Fusee.Base.Imp.Desktop
             curve.CurveParts = new List<CurvePart>();
             var orgPointCoords = _face.Glyph.Outline.Points;
             var pointTags = _face.Glyph.Outline.Tags;
-
             if (orgPointCoords == null) return curve;
             //Freetype contours are defined by their end points
             var curvePartEndPoints = _face.Glyph.Outline.Contours;
-
+            var t = _face.Glyph.Outline.GetOrientation();
             var partTags = new List<byte>();
             var partVerts = new List<float3>();
 

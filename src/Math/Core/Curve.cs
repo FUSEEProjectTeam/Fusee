@@ -249,10 +249,8 @@ namespace Fusee.Math.Core
             for (var i = 0; i < newVerts.Length; i++)
             {
                 //calculates a weighted average of vertices[i] and vertices[i + 1] for x,y,z --> point on line between vertices[i] and vertices[i + 1]
-                var x = (1 - t) * vertices[i].x + t * vertices[i + 1].x;
-                var y = (1 - t) * vertices[i].y + t * vertices[i + 1].y;
-                var z = (1 - t) * vertices[i].z + t * vertices[i + 1].z;
-                newVerts[i] = new float3(x, y, z);
+                var point = (1 - t) * vertices[i] + t * vertices[i + 1];
+                newVerts[i] = point;
             }
             return CalcPoint(t, newVerts);
         }
@@ -268,8 +266,8 @@ namespace Fusee.Math.Core
         {
             if (vertices.Length == 1)
             {
-                leftCurve.Add(vertices[0]);
-                rightCurve.Add(vertices[0]);
+                leftCurve.Add(vertices[0]); //3. Stelle
+                rightCurve.Add(vertices[0]);//1. Stelle
                 rightCurve.Reverse();
                 return;
             }
@@ -280,7 +278,7 @@ namespace Fusee.Math.Core
             {
                 if (i == 0)
                 {
-                    leftCurve.Add(vertices[i]);
+                    leftCurve.Add(vertices[0]);
                 }
                 if (i == newVerts.Length - 1)
                 {
@@ -301,7 +299,7 @@ namespace Fusee.Math.Core
         /// <param name="startPoint">The segments starting point</param>
         /// <param name="segmentsPerCurve">The number of segments per curve</param>
         /// <param name="degree">The degree of the curve: 1 for linear, 2 for conic, 3 for cubic</param>
-        public virtual IEnumerable<float3> CalcUniformPolyline(float3 startPoint, int segmentsPerCurve, int degree)
+        public virtual IEnumerable<float3> CalcUniformPolyline(float3 startPoint, int segmentsPerCurve, int degree) //TODO: Fix order
         {
             var controlPoints = new List<float3> { startPoint };
             controlPoints.AddRange(Vertices);
@@ -345,9 +343,6 @@ namespace Fusee.Math.Core
 
             for (var i = 0; i < controlPoints.Count - degree; i += degree)
             {
-                //Returns all points that already lie on the curve (i +=degree)
-                yield return controlPoints[i];
-
                 var verts = new float3[degree + 1];
 
                 //After this loop verts represents a single Beziér curve  - not a Beziér path (= CurveSegment)
@@ -355,15 +350,17 @@ namespace Fusee.Math.Core
                 {
                     verts[j] = controlPoints[i + j];
                 }
+                
+                var vertList = new List<float3>();
 
                 //Sample verts by performig a flatness test
-                foreach (var float3 in AdaptiveSamplingWAngle(verts, angle))
+                AdaptiveSamplingWAngle(verts, angle, ref vertList);
+               
+                foreach (var vert in vertList)
                 {
-                    yield return float3;
+                    yield return vert;
                 }
             }
-            //Manually adds the last control point to maintain the order of the points
-            yield return controlPoints[controlPoints.Count - 1];
         }
 
         /// <summary>
@@ -380,9 +377,6 @@ namespace Fusee.Math.Core
 
             for (var i = 0; i < controlPoints.Count - degree; i += degree)
             {
-                //Returns all points that already lie on the curve (i +=degree)
-                yield return controlPoints[i];
-
                 var verts = new float3[degree + 1];
 
                 //After this loop verts represents a single Beziér curve  - not a Beziér path (= CurveSegment)
@@ -391,17 +385,19 @@ namespace Fusee.Math.Core
                     verts[j] = controlPoints[i + j];
                 }
 
+                var vertList = new List<float3>();
+
                 //Sample verts by performig a flatness test
-                foreach (var float3 in AdaptiveSamplingWArcreage(verts, arcreage))
+                AdaptiveSamplingWArcreage(verts, arcreage, ref vertList);
+                
+                foreach (var vert in vertList)
                 {
-                    yield return float3;
+                    yield return vert;
                 }
             }
-            //Manually adds the last control point to maintain the order of the points
-            yield return controlPoints[controlPoints.Count - 1];
         }
 
-        private IEnumerable<float3> AdaptiveSamplingWAngle(float3[] verts, int angle)
+        private void AdaptiveSamplingWAngle(float3[] verts, int angle, ref List<float3> vertList )
         {
             var rnd = new Random();
             const double min = 0.45;
@@ -413,26 +409,22 @@ namespace Fusee.Math.Core
             var t = RandomT(rnd, min, max);
             var vertNearMiddle = CalcPoint((float)t, verts);
 
-            if (!IsAngleFlatEnough(a, vertNearMiddle, b, angle))
+            if (IsAngleFlatEnough(a, vertNearMiddle, b, angle))
             {
-                yield return vertNearMiddle;
-
-                List<float3> leftCurve = new List<float3>();
-                List<float3> rightCurve = new List<float3>();
+                vertList.Add(b);
+            }
+            else
+            {
+                var leftCurve = new List<float3>();
+                var rightCurve = new List<float3>();
                 SplitCurve((float)t, verts, ref leftCurve, ref rightCurve);
 
-                foreach (var vert in AdaptiveSamplingWAngle(leftCurve.ToArray(), angle))
-                {
-                    yield return vert;
-                }
-                foreach (var vert in AdaptiveSamplingWAngle(rightCurve.ToArray(), angle))
-                {
-                    yield return vert;
-                }
+                AdaptiveSamplingWAngle(leftCurve.ToArray(), angle, ref vertList);
+                AdaptiveSamplingWAngle(rightCurve.ToArray(), angle, ref vertList);
             }
         }
 
-        private IEnumerable<float3> AdaptiveSamplingWArcreage(float3[] verts, float arcreage)
+        private void AdaptiveSamplingWArcreage(float3[] verts, float arcreage, ref List<float3> vertList)
         {
             var rnd = new Random();
             const double min = 0.45;
@@ -444,22 +436,18 @@ namespace Fusee.Math.Core
             var t = RandomT(rnd, min, max);
             var vertNearMiddle = CalcPoint((float)t, verts);
 
-            if (!IsArcreageSmallEnough(a, vertNearMiddle, b, arcreage))
+            if (IsArcreageSmallEnough(a, vertNearMiddle, b, arcreage))
             {
-                yield return vertNearMiddle;
-
-                List<float3> leftCurve = new List<float3>();
-                List<float3> rightCurve = new List<float3>();
+                vertList.Add(b);
+            }
+            else
+            {
+                var leftCurve = new List<float3>();
+                var rightCurve = new List<float3>();
                 SplitCurve((float)t, verts, ref leftCurve, ref rightCurve);
 
-                foreach (var vert in AdaptiveSamplingWArcreage(leftCurve.ToArray(), arcreage))
-                {
-                    yield return vert;
-                }
-                foreach (var vert in AdaptiveSamplingWArcreage(rightCurve.ToArray(), arcreage))
-                {
-                    yield return vert;
-                }
+                AdaptiveSamplingWArcreage(leftCurve.ToArray(), arcreage, ref vertList);
+                AdaptiveSamplingWArcreage(rightCurve.ToArray(), arcreage, ref vertList);
             }
         }
 
@@ -488,9 +476,7 @@ namespace Fusee.Math.Core
         {
             var am = m - a;
             var ab = b - a;
-            var alpha = float3.CalculateAngle(am, ab);
-            var hc = am.Length * M.Sin(alpha);
-            var area = ab.Length * hc / 2;
+            var area = 0.5 * float3.Cross(am, ab).Length;
 
             if (area < threshold)
                 return true;
@@ -518,6 +504,7 @@ namespace Fusee.Math.Core
 
             for (var i = 0; i < controlPoints.Count - degree; i += degree)
             {
+                //Returns all points that already lie on the curve (i +=degree)
                 yield return controlPoints[i];
 
                 var verts = new float3[degree + 1];
@@ -527,13 +514,16 @@ namespace Fusee.Math.Core
                     verts[j] = controlPoints[i + j];
                 }
 
+                //Calculate additional vertices for values of t
                 for (var j = 1; j < segmentsPerCurve; j++)
                 {
                     var t = j / (float)segmentsPerCurve;
-                    yield return (1 - t) * verts[0] + t * verts[1];
+                    var point = (1 - t) * verts[0] + t * verts[1];
+                    yield return point;
                 }
-                yield return controlPoints[controlPoints.Count - 1];
             }
+            //Manually adds the last control point to maintain the order of the points
+            yield return controlPoints[controlPoints.Count - 1];
         }
     }
 

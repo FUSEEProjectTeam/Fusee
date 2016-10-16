@@ -11,29 +11,6 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
     [FuseeApplication(Name = "ThreeDFont Example", Description = "The official FUSEE ThreeDFont.")]
     public class ThreeDFont : RenderCanvas
     {
-        private readonly string _vertexShader = @"
-        attribute vec3 fuVertex;
-        attribute vec3 fuNormal;
-        uniform mat4 xform;            
-        varying vec3 normal;
-
-        void main()
-        {
-	        normal = fuNormal;               
-            gl_Position = xform* vec4(fuVertex, 1);
-        }";
-        private readonly string _pixelShader = @"
-        #ifdef GL_ES
-	        precision highp float;
-        #endif
-
-        varying vec3 normal;
-
-        void main()
-        {
-            gl_FragColor = vec4(normal*0.5+0.5, 1);
-        }";
-
         private IShaderParam _xformParam;
         private float4x4 _xform;
         private float _alpha;
@@ -47,17 +24,26 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
 
         private ThreeDFontHelper _threeDFontHelper;
 
+        private int _frameCount;
+        private int _pointCount;
+        private List<Mesh> _pointList;
+        private List<float4x4> _xForms;
+
         // Init is called on startup. 
         public override void Init()
         {
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
             var vladimir = AssetStorage.Get<Font>("VLADIMIR.TTF");
             var arial = AssetStorage.Get<Font>("arial.ttf");
+            _frameCount = 0;
+            _pointCount = 0;
+            _pointList = new List<Mesh>();
+            _xForms = new List<float4x4>();
 
-            _text = "a";
+            _text = "o";
             _threeDFontHelper = new ThreeDFontHelper(_text, fontLato);
 
-            _controlPoints = (List<float3>) _threeDFontHelper.GetTextVerticesWAngle(10);
+            _controlPoints = (List<float3>) _threeDFontHelper.GetTextVerticesWAngle(20);
 
             for (var i = 0; i < _controlPoints.Count; i++)
             {
@@ -78,6 +64,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
+            _frameCount ++;
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
@@ -96,14 +83,24 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             var aspectRatio = Width / (float)Height;
             var projection = float4x4.CreatePerspectiveFieldOfView(3.141592f * 0.25f, aspectRatio, 0.01f, 20);
             var view = float4x4.CreateTranslation(0, 0, 10) * float4x4.CreateRotationY(_alpha);
-
-            foreach (var point in _controlPoints)
+            
+            if (_frameCount % 25 == 0 && _pointCount<_controlPoints.Count)
             {
+                _pointCount++;
+                var point = _controlPoints[_pointCount - 1];
                 var modelPoint = ModelXForm(new float3(point.x - 3f, point.y - 1f, 0), new float3(0, 0, 0));
-                _xform = projection * view * modelPoint * float4x4.CreateScale(0.03f, 0.03f, 0.03f);
-                RC.SetShaderParam(_xformParam, _xform);
-                RC.Render(_point);
+                _xform = projection * view * modelPoint * float4x4.CreateScale(0.02f, 0.02f, 0.02f);
+                
+                _pointList.Add(_point);
+                _xForms.Add(_xform);
+                
             }
+            for (var i = 0; i < _pointList.Count; i++)
+            {
+                RC.SetShaderParam(_xformParam, _xForms[i]);
+                RC.Render(_pointList[i]);
+            }
+
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered farame) on the front buffer.
             Present();
         }
