@@ -41,9 +41,9 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             _xForms = new List<float4x4>();
 
             _text = "o";
-            _threeDFontHelper = new ThreeDFontHelper(_text, fontLato);
+            _threeDFontHelper = new ThreeDFontHelper(_text, arial);
 
-            _controlPoints = (List<float3>) _threeDFontHelper.GetTextVerticesWAngle(20);
+            _controlPoints = (List<float3>) _threeDFontHelper.GetTextVerticesWArcreage(2000);
 
             for (var i = 0; i < _controlPoints.Count; i++)
             {

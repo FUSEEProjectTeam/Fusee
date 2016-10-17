@@ -350,12 +350,12 @@ namespace Fusee.Math.Core
                 {
                     verts[j] = controlPoints[i + j];
                 }
-                
+
                 var vertList = new List<float3>();
 
                 //Sample verts by performig a flatness test
                 AdaptiveSamplingWAngle(verts, angle, ref vertList);
-               
+
                 foreach (var vert in vertList)
                 {
                     yield return vert;
@@ -389,7 +389,7 @@ namespace Fusee.Math.Core
 
                 //Sample verts by performig a flatness test
                 AdaptiveSamplingWArcreage(verts, arcreage, ref vertList);
-                
+
                 foreach (var vert in vertList)
                 {
                     yield return vert;
@@ -397,7 +397,7 @@ namespace Fusee.Math.Core
             }
         }
 
-        private void AdaptiveSamplingWAngle(float3[] verts, int angle, ref List<float3> vertList )
+        private void AdaptiveSamplingWAngle(float3[] verts, int angle, ref List<float3> vertList)
         {
             var rnd = new Random();
             const double min = 0.45;
@@ -474,9 +474,14 @@ namespace Fusee.Math.Core
 
         private bool IsArcreageSmallEnough(float3 a, float3 m, float3 b, float threshold)
         {
-            var am = m - a;
-            var ab = b - a;
-            var area = 0.5 * float3.Cross(am, ab).Length;
+            var det = new float3x3
+                (1, 1, 1,
+                m.x - a.x, m.y - a.y, m.z - a.z,
+                b.x - a.x, b.y - a.y, b.z - a.z)
+                .Determinant;
+
+            var area = 0.5 * det;
+            if (area < 1) area = area*-1;
 
             if (area < threshold)
                 return true;
