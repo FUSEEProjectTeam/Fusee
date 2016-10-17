@@ -43,7 +43,7 @@ namespace Fusee.Serialization
         /// Represents the position of the light.
         /// </summary>
         [ProtoMember(3)]
-        public float4 Position;
+        public float3 Position;
         /// <summary>
         /// Represents the attenuation of the light.
         /// </summary>

@@ -1,4 +1,4 @@
-﻿#define GUI_SIMPLE
+﻿//#define GUI_SIMPLE
 
 using System;
 using System.IO;
@@ -103,19 +103,17 @@ namespace Fusee.Engine.Examples.Simple.Core
                     Type = LightType.Point
                 });
             }*/
-
-        
                 _rocketScene.Children[0].AddComponent(new LightComponent
                 {
                     Active = true,
-                    AmbientCoefficient = 0.2f,
+                    AmbientCoefficient = 0.3f,
                     Attenuation =  1000f,
                     Color = new float3(1f,1f,1f),
-                    ConeAngle = 10.0f,
+                    ConeAngle = 15.0f,
                     ConeDirection = new float3(0f, 1f, 1f),
                     Name = "Light1",
-                    Position = new float4(10, 20, 10, 1f),
-                    Type = LightType.Point
+                    Position = new float3(200, 0, 300),
+                    Type = LightType.Spot
                 });
             /*
             _rocketScene.Children[0].AddComponent(new LightComponent
@@ -253,24 +251,59 @@ namespace Fusee.Engine.Examples.Simple.Core
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
 
+
+
+
+
+            /*    var light = SceneRenderer.AllLightResults[0];
+                Diagnostics.Log($"FIRST: {light.PositionWorldSpace}");
+                light.PositionWorldSpace = RC.InvView * light.PositionWorldSpace;
+                SceneRenderer.AllLightResults[0] = light;
+                Diagnostics.Log($"SECOND: {SceneRenderer.AllLightResults[0].PositionWorldSpace}"); */
+
+
             // Create the camera matrix and set it as the current ModelView transformation
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
             var mtxCam = float4x4.LookAt(40, 600, -600, 0, 150, 0, 0, 1, 0);
+
             RC.ModelView = mtxCam * mtxRot;
 
-
-        
 
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
 
-         
+
 #if GUI_SIMPLE
             _guiHandler.RenderGUI();
 #endif
-            
-         
 
+/*
+            var param = RC.GetShaderParam(RC.CurrentShader, "allLights[0].position");
+            if (param != null)
+            {
+                var value = RC.GetParamValue(RC.CurrentShader, param);
+                Diagnostics.Log($"ShaderValue {value}");
+                RC.SetShaderParam(param, new float3(0, 0, 0));
+                value = RC.GetParamValue(RC.CurrentShader, param);
+                Diagnostics.Log($"ShaderValue2 {value}");
+            }
+
+            _sceneRenderer.Render(RC); */
+
+            /*   var list = RC.GetShaderParamList(RC.CurrentShader);
+               foreach (var shaderParamInfo in list)
+               {
+                   Diagnostics.Log(shaderParamInfo.Name);
+               }
+              */
+
+
+           
+
+            /*  .PositionWorldSpace = light.PositionWorldSpace;
+              light.ConeDirection = _rc.InvModelView * light.ConeDirection;
+              effect.SetEffectParam($"allLights[{position}].position", light.PositionWorldSpace);
+              */
             // Swap buffers: Show the contents of the backbuffer (containing the currently rerndered farame) on the front buffer.
             Present();
 

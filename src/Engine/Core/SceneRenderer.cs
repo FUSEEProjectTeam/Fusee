@@ -459,27 +459,29 @@ namespace Fusee.Engine.Core
                 _meshMap.Add(meshComponent, rm);
             }
 
-            if (null != _state.Effect.GetEffectParam(ShaderCodeBuilder.LightDirectionName))
-            {
-                RenderWithLights(rm, _state.Effect);
-            }
-            else
-            {
-                _state.Effect.RenderMesh(rm);
-            }
-        }
+            RenderWithLights(rm, _state.Effect);
 
+            /* if (null != _state.Effect.GetEffectParam(ShaderCodeBuilder.LightDirectionName))
+             {
+
+             }
+             else
+             {
+                 _state.Effect.RenderMesh(rm);
+             }*/
+        }
+        // TODO: Currently rendering everything with all lights. Change this.
        [VisitMethod]
         public void AccumulateLight(LightComponent lightComponent)
         {
-            /* // update all Lights
+             // update all Lights
             // accumulate all lights and...
             _lightComponents = _sc.Children.Viserate<LightSetup, LightResult>().ToList();
             // ...set them
-            AllLightResults = _lightComponents; */
-           lightComponent.PositionWorldSpace = _rc.ModelView * lightComponent.PositionWorldSpace;
-          //  Diagnostics.Log($"NEW position world space from {lightComponent.PositionWorldSpace} \n InvModelViewMatrix: {_rc.InvView}");
-
+            AllLightResults = _lightComponents; 
+           //lightComponent.PositionWorldSpace = lightComponent.PositionWorldSpace;
+          //  Diagnostics.Log($"NEW position world space from {lightComponent.PositionWorldSpace} \n InvModelViewMatrix: {_rc.InvView}"); */
+         
         }
 
         #endregion
@@ -510,11 +512,11 @@ namespace Fusee.Engine.Core
 
         private void RenderWithLights(Mesh rm, ShaderEffect effect)
         {
-            if (_lights.Count > 0)
+            if (_lightComponents.Count > 0)
             {
-                foreach (LightInfo li in _lights)
+                for (var i = 0; i < _lightComponents.Count; i++)
                 {
-                    // SetupLight(li);
+                    SetupLight(i, _lightComponents[i], effect);
                     effect.RenderMesh(rm);
                 }
             }
@@ -531,6 +533,19 @@ namespace Fusee.Engine.Core
                 effect.SetEffectParam(ShaderCodeBuilder.LightIntensityName, (float)1);
                 effect.RenderMesh(rm);
             }
+        }
+
+        private static void SetupLight(int position, LightResult light, ShaderEffect effect)
+        {
+            if (!light.Active) return; 
+               
+            effect.SetEffectParam($"allLights[{position}].position", light.PositionWorldSpace);
+            effect.SetEffectParam($"allLights[{position}].intensities", light.Color);
+            effect.SetEffectParam($"allLights[{position}].attenuation", light.Attenuation);
+            effect.SetEffectParam($"allLights[{position}].ambientCoefficient", light.AmbientCoefficient);
+            effect.SetEffectParam($"allLights[{position}].coneAngle", light.ConeAngle);
+            effect.SetEffectParam($"allLights[{position}].coneDirection", light.ConeDirection);
+            effect.SetEffectParam($"allLights[{position}].lightType", light.Type);
         }
 
         #region RenderContext/Asset Setup
@@ -883,7 +898,6 @@ namespace Fusee.Engine.Core
             else
             {
                 scb = new ForwardShaderCodeBuilder(mc, null, wc); // TODO, CurrentNode.GetWeights() != null);
-                //var test = new ForwardShaderCodeBuilder(mc, null, wc);
             }
 
             var effectParameters = AssembleEffectParamers(mc, scb);
@@ -1025,47 +1039,7 @@ namespace Fusee.Engine.Core
             // More than one light in scene, no legacy mode
             if (AllLightResults.Count > 0)
             {
-                for (var i = 0; i < AllLightResults.Count; i++)
-                {
-                    if (!AllLightResults[i].Active)
-                        continue;
-                    
-                    effectParameters.Add(new EffectParameterDeclaration
-                    {
-                        Name = "allLights[" + i + "].position",
-                        Value = AllLightResults[i].PositionWorldSpace
-                    });
-                    effectParameters.Add(new EffectParameterDeclaration
-                    {
-                        Name = "allLights[" + i + "].intensities",
-                        Value = AllLightResults[i].Color
-                    });
-                    effectParameters.Add(new EffectParameterDeclaration
-                    {
-                        Name = "allLights[" + i + "].attenuation",
-                        Value = AllLightResults[i].Attenuation
-                    });
-                    effectParameters.Add(new EffectParameterDeclaration
-                    {
-                        Name = "allLights[" + i + "].ambientCoefficient",
-                        Value = AllLightResults[i].AmbientCoefficient
-                    });
-                    effectParameters.Add(new EffectParameterDeclaration
-                    {
-                        Name = "allLights[" + i + "].coneAngle",
-                        Value = AllLightResults[i].ConeAngle
-                    });
-                    effectParameters.Add(new EffectParameterDeclaration
-                    {
-                        Name = "allLights[" + i + "].coneDirection",
-                        Value = AllLightResults[i].ConeDirection
-                    });
-                    effectParameters.Add(new EffectParameterDeclaration
-                    {
-                        Name = "allLights[" + i + "].lightType",
-                        Value = (int) AllLightResults[i].Type
-                    });
-                }
+                SetLightEffectParameters(ref effectParameters);
             }
             // No LightComponent in Scene -> switch to legacy mode!
             else
@@ -1111,6 +1085,51 @@ namespace Fusee.Engine.Core
             return effectParameters;
         }
 
+        private void SetLightEffectParameters(ref List<EffectParameterDeclaration> effectParameters)
+        {
+            for (var i = 0; i < AllLightResults.Count; i++)
+            {
+                if (!AllLightResults[i].Active)
+                    continue;
+
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = "allLights[" + i + "].position",
+                    Value = AllLightResults[i].PositionWorldSpace
+                });
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = "allLights[" + i + "].intensities",
+                    Value = AllLightResults[i].Color
+                });
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = "allLights[" + i + "].attenuation",
+                    Value = AllLightResults[i].Attenuation
+                });
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = "allLights[" + i + "].ambientCoefficient",
+                    Value = AllLightResults[i].AmbientCoefficient
+                });
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = "allLights[" + i + "].coneAngle",
+                    Value = AllLightResults[i].ConeAngle
+                });
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = "allLights[" + i + "].coneDirection",
+                    Value = AllLightResults[i].ConeDirection
+                });
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = "allLights[" + i + "].lightType",
+                    Value = (int)AllLightResults[i].Type
+                });
+            }
+        }
+
         #endregion
     }
     /// <summary>
@@ -1125,7 +1144,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Represents the position of the light.
         /// </summary>
-        public float4 Position;
+        public float3 Position;
         /// <summary>
         /// Represents the color.
         /// </summary>
@@ -1157,7 +1176,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The light's Position in World Coordiantes.
         /// </summary>
-        public float4 PositionWorldSpace;
+        public float3 PositionWorldSpace;
     }
 
     public class LightSetupState : VisitorState
@@ -1216,7 +1235,6 @@ namespace Fusee.Engine.Core
                 Active = lightComponent.Active,
                 Attenuation = lightComponent.Attenuation
             };
-
             YieldItem(lightResult);
         }
 
