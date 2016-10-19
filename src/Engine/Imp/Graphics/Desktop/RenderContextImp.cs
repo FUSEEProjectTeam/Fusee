@@ -513,6 +513,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 paramInfo.Name = GL.GetActiveUniform(sProg.Program, i, out paramInfo.Size, out uType);
                 paramInfo.Handle = GetShaderParam(sProg, paramInfo.Name);
 
+                Diagnostics.Log($"Active Uniforms: {paramInfo.Name}");
+
+
                 switch (uType)
                 {
                     case ActiveUniformType.Int:
@@ -1664,9 +1667,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             switch (capability)
             {
                 case HardwareCapability.DEFFERED_POSSIBLE:
-                    var version = float.Parse(GL.GetString(StringName.ShadingLanguageVersion));
-                    // since version 3.0
-                    return version > 3.0 ? 1U : 0U;
+                    return !GL.GetString(StringName.Extensions).Contains("EXT_framebuffer_object") ? 0U : 1U;
                 case HardwareCapability.BUFFERSIZE:
                     throw new NotImplementedException("Not yet.");
                     return 0;

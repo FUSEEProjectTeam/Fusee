@@ -106,18 +106,18 @@ namespace Fusee.Engine.Examples.Simple.Core
                 _rocketScene.Children[0].AddComponent(new LightComponent
                 {
                     Active = true,
-                    AmbientCoefficient = 0.3f,
-                    Attenuation = 3000f,
+                    AmbientCoefficient = 0.8f,
+                    Attenuation = 1000f,
                     Color = new float3(1f,1f,1f),
                     ConeAngle = 15.0f,
-                    ConeDirection = new float3(0f, 0f, 5f),
+                    ConeDirection = new float3(0f, 1f, 1f),
                     Name = "Light1",
                     Position = new float3(-600, 300, -500),
                     Type = LightType.Point
                 });
 
-            var lightCone = AssetStorage.Get<SceneContainer>("Cube.fus");
-            _rocketScene.Children.Add(lightCone.Children[0]);
+           // var lightCone = AssetStorage.Get<SceneContainer>("Cube.fus");
+           // _rocketScene.Children.Add(lightCone.Children[0]);
 
 
 
@@ -277,15 +277,8 @@ namespace Fusee.Engine.Examples.Simple.Core
 
             RC.ModelView = mtxCam * mtxRot;
 
-            
-
-
-
-
-           
-
-            _rocketScene.Children[8].GetComponent<TransformComponent>().Scale =
-            new float3(10, 10, 10);
+         //   _rocketScene.Children[8].GetComponent<TransformComponent>().Scale =
+          //  new float3(10, 10, 10);
 
 //            _sceneRenderer.AccumulateLight(_rocketScene.Children[0].GetLight());
 
@@ -293,8 +286,8 @@ namespace Fusee.Engine.Examples.Simple.Core
             _sceneRenderer.Render(RC);
 
 
-            var paramX = RC.GetShaderParam(RC.CurrentShader, "allLights[0].position");
-            var translationX = RC.GetParamValue(RC.CurrentShader, paramX);
+           // var paramX = RC.GetShaderParam(RC.CurrentShader, "allLights[0].position");
+           // var translationX = RC.GetParamValue(RC.CurrentShader, paramX);
 
          //  Diagnostics.Log($"paramx {translationX}");
 

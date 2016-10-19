@@ -549,7 +549,7 @@ namespace Fusee.Engine.Core
             effect.SetEffectParam($"allLights[{position}].attenuation", light.Attenuation);
             effect.SetEffectParam($"allLights[{position}].ambientCoefficient", light.AmbientCoefficient);
             effect.SetEffectParam($"allLights[{position}].coneAngle", light.ConeAngle);
-            effect.SetEffectParam($"allLights[{position}].coneDirection", effect._rc.InvModel * light.ConeDirection);
+            effect.SetEffectParam($"allLights[{position}].coneDirection", light.ConeDirection);
             effect.SetEffectParam($"allLights[{position}].lightType", light.Type);
            
         }
