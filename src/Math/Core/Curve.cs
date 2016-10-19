@@ -474,6 +474,7 @@ namespace Fusee.Math.Core
 
         private bool IsArcreageSmallEnough(float3 a, float3 m, float3 b, float threshold)
         {
+            //equals the formula "0.5 * float3.Cross(a-m, a-b).Length", but without square roots
             var det = new float3x3
                 (1, 1, 1,
                 m.x - a.x, m.y - a.y, m.z - a.z,

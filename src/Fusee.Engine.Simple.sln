@@ -96,6 +96,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Examples.Three
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Examples.ThreeDFont.Web", "Engine\Examples\3DFont\Web\Fusee.Engine.Examples.ThreeDFont.Web.csproj", "{9EB00529-0063-46BB-8F2C-A3E976F89417}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Jometri", "Jometri\Fusee.Jometri.csproj", "{8EE002C1-E15C-4297-8013-5005D65E33D9}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Base\Imp\Shared\Fusee.Base.Imp.Shared.projitems*{3564577b-6ba7-41dc-9b19-fd6fbd690cb0}*SharedItemsImports = 13
@@ -618,6 +620,26 @@ Global
 		{9EB00529-0063-46BB-8F2C-A3E976F89417}.Release|x64.ActiveCfg = Release|x86
 		{9EB00529-0063-46BB-8F2C-A3E976F89417}.Release|x86.ActiveCfg = Release|x86
 		{9EB00529-0063-46BB-8F2C-A3E976F89417}.Release|x86.Build.0 = Release|x86
+		{8EE002C1-E15C-4297-8013-5005D65E33D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8EE002C1-E15C-4297-8013-5005D65E33D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8EE002C1-E15C-4297-8013-5005D65E33D9}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{8EE002C1-E15C-4297-8013-5005D65E33D9}.Debug|ARM.Build.0 = Debug|Any CPU
+		{8EE002C1-E15C-4297-8013-5005D65E33D9}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{8EE002C1-E15C-4297-8013-5005D65E33D9}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{8EE002C1-E15C-4297-8013-5005D65E33D9}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8EE002C1-E15C-4297-8013-5005D65E33D9}.Debug|x64.Build.0 = Debug|Any CPU
+		{8EE002C1-E15C-4297-8013-5005D65E33D9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8EE002C1-E15C-4297-8013-5005D65E33D9}.Debug|x86.Build.0 = Debug|Any CPU
+		{8EE002C1-E15C-4297-8013-5005D65E33D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8EE002C1-E15C-4297-8013-5005D65E33D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8EE002C1-E15C-4297-8013-5005D65E33D9}.Release|ARM.ActiveCfg = Release|Any CPU
+		{8EE002C1-E15C-4297-8013-5005D65E33D9}.Release|ARM.Build.0 = Release|Any CPU
+		{8EE002C1-E15C-4297-8013-5005D65E33D9}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{8EE002C1-E15C-4297-8013-5005D65E33D9}.Release|ARM64.Build.0 = Release|Any CPU
+		{8EE002C1-E15C-4297-8013-5005D65E33D9}.Release|x64.ActiveCfg = Release|Any CPU
+		{8EE002C1-E15C-4297-8013-5005D65E33D9}.Release|x64.Build.0 = Release|Any CPU
+		{8EE002C1-E15C-4297-8013-5005D65E33D9}.Release|x86.ActiveCfg = Release|Any CPU
+		{8EE002C1-E15C-4297-8013-5005D65E33D9}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

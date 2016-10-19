@@ -112,6 +112,7 @@ namespace Fusee.Base.Imp.Desktop
             var orgPointCoords = _face.Glyph.Outline.Points;
             var pointTags = _face.Glyph.Outline.Tags;
             if (orgPointCoords == null) return curve;
+
             //Freetype contours are defined by their end points
             var curvePartEndPoints = _face.Glyph.Outline.Contours;
             
