@@ -82,10 +82,10 @@ namespace Fusee.Engine.Examples.Simple.Core
 
             /* //// Legacy Mode with Lightning Calculation given. For Cook Torrance the calculation is aproximated from material
              // Wrap a SceneRenderer around the model.
-             _sceneRenderer = new SceneRenderer(_rocketScene, LightningCalculationMethod.COOK_TORRANCE); */
+             _sceneRenderer = new SceneRenderer(_rocketScene, LightningCalculationMethod.ADVANCED); */
 
             /*   //// LightComponents in Scene
-               ///// Light is calculated with given Lightning Method & Light or BLINN_PHONG as standard   */
+               ///// Light is calculated with given Lightning Method & Light or SIMPLE as standard   */
             Random rnd = new Random();
 
             /*for (var i = 0; i < 2; i++)
@@ -107,14 +107,23 @@ namespace Fusee.Engine.Examples.Simple.Core
                 {
                     Active = true,
                     AmbientCoefficient = 0.3f,
-                    Attenuation =  1000f,
+                    Attenuation = 3000f,
                     Color = new float3(1f,1f,1f),
                     ConeAngle = 15.0f,
-                    ConeDirection = new float3(0f, 1f, 1f),
+                    ConeDirection = new float3(0f, 0f, 5f),
                     Name = "Light1",
-                    Position = new float3(200, 0, 300),
-                    Type = LightType.Spot
+                    Position = new float3(-600, 300, -500),
+                    Type = LightType.Point
                 });
+
+            var lightCone = AssetStorage.Get<SceneContainer>("Cube.fus");
+            _rocketScene.Children.Add(lightCone.Children[0]);
+
+
+
+
+            //var transform = _rocketScene.Children[0].GetComponent<TransformComponent>();
+            //transform.Translation = _rocketScene.Children[0].GetComponent<LightComponent>().PositionWorldSpace;
             /*
             _rocketScene.Children[0].AddComponent(new LightComponent
             {
@@ -128,10 +137,10 @@ namespace Fusee.Engine.Examples.Simple.Core
                 Position = new float4(100, 1000, 700, 1),
                 Type = LightType.Spot
             });*/
-           
+
 
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRenderer(_rocketScene, LightningCalculationMethod.BLINN_PHONG);
+            _sceneRenderer = new SceneRenderer(_rocketScene, LightningCalculationMethod.SIMPLE);
           
 
 
@@ -202,7 +211,7 @@ namespace Fusee.Engine.Examples.Simple.Core
                   _rocketScene.Children[0].Components[1] = pbr;
               }
 
-             _sceneRenderer = new SceneRenderer(_rocketScene, LightningCalculationMethod.BLINN_PHONG); */
+             _sceneRenderer = new SceneRenderer(_rocketScene, LightningCalculationMethod.SIMPLE); */
         }
 
         // RenderAFrame is called once a frame
@@ -268,27 +277,45 @@ namespace Fusee.Engine.Examples.Simple.Core
 
             RC.ModelView = mtxCam * mtxRot;
 
+            
+
+
+
+
+           
+
+            _rocketScene.Children[8].GetComponent<TransformComponent>().Scale =
+            new float3(10, 10, 10);
+
+//            _sceneRenderer.AccumulateLight(_rocketScene.Children[0].GetLight());
 
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
+
+
+            var paramX = RC.GetShaderParam(RC.CurrentShader, "allLights[0].position");
+            var translationX = RC.GetParamValue(RC.CurrentShader, paramX);
+
+         //  Diagnostics.Log($"paramx {translationX}");
+
 
 
 #if GUI_SIMPLE
             _guiHandler.RenderGUI();
 #endif
 
-/*
-            var param = RC.GetShaderParam(RC.CurrentShader, "allLights[0].position");
-            if (param != null)
-            {
-                var value = RC.GetParamValue(RC.CurrentShader, param);
-                Diagnostics.Log($"ShaderValue {value}");
-                RC.SetShaderParam(param, new float3(0, 0, 0));
-                value = RC.GetParamValue(RC.CurrentShader, param);
-                Diagnostics.Log($"ShaderValue2 {value}");
-            }
+            /*
+                        var param = RC.GetShaderParam(RC.CurrentShader, "allLights[0].position");
+                        if (param != null)
+                        {
+                            var value = RC.GetParamValue(RC.CurrentShader, param);
+                            Diagnostics.Log($"ShaderValue {value}");
+                            RC.SetShaderParam(param, new float3(0, 0, 0));
+                            value = RC.GetParamValue(RC.CurrentShader, param);
+                            Diagnostics.Log($"ShaderValue2 {value}");
+                        }
 
-            _sceneRenderer.Render(RC); */
+                        _sceneRenderer.Render(RC); */
 
             /*   var list = RC.GetShaderParamList(RC.CurrentShader);
                foreach (var shaderParamInfo in list)
@@ -298,7 +325,7 @@ namespace Fusee.Engine.Examples.Simple.Core
               */
 
 
-           
+
 
             /*  .PositionWorldSpace = light.PositionWorldSpace;
               light.ConeDirection = _rc.InvModelView * light.ConeDirection;

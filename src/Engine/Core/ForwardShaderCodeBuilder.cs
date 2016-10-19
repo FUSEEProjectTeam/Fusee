@@ -23,7 +23,7 @@ namespace Fusee.Engine.Core
         private bool _hasDiffuseFraction;
         private bool _hasRoughness;
 
-        private LightningCalculationMethod _lightningCalculationMethod = LightningCalculationMethod.BLINN_PHONG;
+        private LightningCalculationMethod _lightningCalculationMethod = LightningCalculationMethod.SIMPLE;
 
         // ReSharper disable once InconsistentNaming
         public string VS { get; }
@@ -138,6 +138,8 @@ namespace Fusee.Engine.Core
             vs.Append("  uniform mat4 FUSEE_M;\n");
             vs.Append("  uniform mat4 FUSEE_IV;\n");
             vs.Append("  uniform mat4 FUSEE_V;\n");
+            vs.Append("  uniform mat4 FUSEE_IM;\n");
+            vs.Append("  varying vec3 viewpos;\n");
         }
 
         // ReSharper disable once InconsistentNaming
@@ -208,6 +210,7 @@ namespace Fusee.Engine.Core
             // needed for spotlight
             vs.Append("    surfacePos = FUSEE_M * vec4(fuVertex, 1.0); \n");
             vs.Append("    surfacePosOriginal = vec4( fuVertex, 1.0); \n");
+            vs.Append("    viewpos = (FUSEE_MV * vec4(fuVertex, 1.0)).xyz;");
             vs.Append("  }\n\n");
         }
 
@@ -248,8 +251,10 @@ namespace Fusee.Engine.Core
             ps.Append(" varying mat4 FUSEE_MV;\n");
             ps.Append(" varying mat4 FUSEE_M;\n");
             ps.Append("  uniform mat4 FUSEE_IMV;\n");
+            ps.Append("  uniform mat4 FUSEE_IM;\n");
             ps.Append("  uniform mat4 FUSEE_IV;\n");
             ps.Append("  uniform mat4 FUSEE_V;\n");
+            ps.Append("  varying vec3 viewpos;\n");
 
         }
 
@@ -302,7 +307,7 @@ namespace Fusee.Engine.Core
             {
                 vs.Append($"\n\n    {_applyLightString}     \n\n");
             }
-            else if (_lightningCalculationMethod == LightningCalculationMethod.BLINN_PHONG)
+            else if (_lightningCalculationMethod == LightningCalculationMethod.SIMPLE)
             {
                 vs.Append("\n\n\n");
                 vs.Append($"           {AmbientLightningMethod()}\n");
@@ -376,7 +381,7 @@ namespace Fusee.Engine.Core
             outputString += "vec3 diffuseLighting(vec3 N, vec3 L, Light light)\n";
             outputString += "{\n";
             outputString += "   // calculation as for Lambertian reflection\n";
-            outputString += "   float diffuseTerm = clamp(dot(N, L), 0.0, 1.0) ;\n";
+            outputString += "   float diffuseTerm = clamp(dot(N, L) / (length(L) * length(N)), 0.0, 1.0) ;\n";
             outputString += $"  return ({DiffuseColorName} * light.intensities * diffuseTerm);\n";
             outputString += "}\n";
 
@@ -446,7 +451,7 @@ namespace Fusee.Engine.Core
          
             outputString += "vec3 o_normal = vNormal;\n";
             outputString += "vec3 o_toLight = normalize(light.position.xyz - surfacePos.xyz);\n";
-            outputString += "vec3 o_toCamera = normalize(vViewDir -surfacePos.xyz);\n";
+            outputString += "vec3 o_toCamera = normalize(vViewDir - surfacePos.xyz);\n";
             outputString += "vec2 o_texcoords = vUV;\n";
             outputString += "\n";
             outputString += "\n";
@@ -457,15 +462,17 @@ namespace Fusee.Engine.Core
             outputString += "vec3 Idif = diffuseLighting(N, L, light);\n";
             outputString += "vec3 Ispe = specularLighting(N, L, V, light);\n";
             outputString += "\n";
+            
             outputString += "       float distanceToLight = distance(light.position.xyz, surfacePos.xyz);\n";
             outputString += "       float att = clamp(1.0 - distanceToLight*distanceToLight/(light.attenuation*light.attenuation), 0.0, 1.0);";
+            outputString += "       att *= att;";
             if (DiffuseTextureName != null)
                 outputString += $"vec3 diffuseColor = texture({DiffuseTextureName}, o_texcoords).rgb * {DiffuseMixName};\n";
             else
                 outputString += $"vec3 diffuseColor = {DiffuseColorName};\n";
             outputString += "\n";
             outputString += "\n";
-            outputString += "result = diffuseColor * (Iamb + Idif + Ispe) * att ;\n";
+            outputString += "result = vec3(1.0,att,att);\n";
 
             return outputString;
 
@@ -477,7 +484,7 @@ namespace Fusee.Engine.Core
 
             outputString += "vec3 o_normal = vNormal;\n";
             outputString += "vec3 o_toLight = normalize(light.position.xyz - surfacePos.xyz);\n";
-            outputString += "vec3 o_toCamera = normalize(vViewDir -surfacePos.xyz);\n";
+            outputString += "vec3 o_toCamera = normalize(viewpos - surfacePos.xyz);\n";
             outputString += "vec2 o_texcoords = vUV;\n";
             outputString += "\n";
             outputString += "\n";
@@ -490,6 +497,7 @@ namespace Fusee.Engine.Core
             outputString += "\n";
             outputString += "       float distanceToLight = distance(light.position.xyz, surfacePos.xyz);\n";
             outputString += "       float att = clamp(1.0 - distanceToLight*distanceToLight/(light.attenuation*light.attenuation), 0.0, 1.0);";
+            outputString += "       att *= att;";
             if (DiffuseTextureName != null)
                 outputString += $"vec3 diffuseColor = texture({DiffuseTextureName}, o_texcoords).rgb * {DiffuseMixName};\n";
             else
@@ -498,7 +506,7 @@ namespace Fusee.Engine.Core
             outputString += "       float lightToSurfaceAngle = degrees(acos(dot(-o_toLight, normalize(light.coneDirection))));\n";
             outputString += "       if (lightToSurfaceAngle > light.coneAngle)\n";
             outputString += "       {\n";
-            outputString += "       att = 0.0;\n";
+            outputString += "           att = 0.0;\n";
             outputString += "       }\n";
 
             outputString += "\n";

@@ -150,14 +150,14 @@ namespace Fusee.Engine.Core
     public enum LightningCalculationMethod
     {
         /// <summary>
-        /// Blinn Phong
+        /// Simple Blinn Phong Shading without fresnel & distribution function
         /// </summary>
-        BLINN_PHONG,
+        SIMPLE,
 
         /// <summary>
-        /// Cook Torrance, also known as physical based rendering
+        /// Physical based shading
         /// </summary>
-        COOK_TORRANCE
+        ADVANCED
     }
 
     /// <summary>
@@ -167,7 +167,7 @@ namespace Fusee.Engine.Core
     public class SceneRenderer : SceneVisitor
     {
         // Choose Lightning Method
-        public static LightningCalculationMethod LightningCalculationMethod = LightningCalculationMethod.BLINN_PHONG;
+        public static LightningCalculationMethod LightningCalculationMethod = LightningCalculationMethod.SIMPLE;
         // All lights
         public static IList<LightResult> AllLightResults = new List<LightResult>();
 
@@ -535,17 +535,23 @@ namespace Fusee.Engine.Core
             }
         }
 
-        private static void SetupLight(int position, LightResult light, ShaderEffect effect)
+        private void SetupLight(int position, LightResult light, ShaderEffect effect)
         {
-            if (!light.Active) return; 
-               
+            if (!light.Active) return;
+            /*
+            var thisLight = AllLightResults[position];
+            thisLight.PositionWorldSpace = _rc.InvView *  thisLight.PositionWorldSpace;
+            AllLightResults[position] = thisLight; */
+
+
             effect.SetEffectParam($"allLights[{position}].position", light.PositionWorldSpace);
             effect.SetEffectParam($"allLights[{position}].intensities", light.Color);
             effect.SetEffectParam($"allLights[{position}].attenuation", light.Attenuation);
             effect.SetEffectParam($"allLights[{position}].ambientCoefficient", light.AmbientCoefficient);
             effect.SetEffectParam($"allLights[{position}].coneAngle", light.ConeAngle);
-            effect.SetEffectParam($"allLights[{position}].coneDirection", light.ConeDirection);
+            effect.SetEffectParam($"allLights[{position}].coneDirection", effect._rc.InvModel * light.ConeDirection);
             effect.SetEffectParam($"allLights[{position}].lightType", light.Type);
+           
         }
 
         #region RenderContext/Asset Setup

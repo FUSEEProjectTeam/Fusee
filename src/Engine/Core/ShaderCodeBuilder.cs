@@ -32,7 +32,7 @@ namespace Fusee.Engine.Core
         // Needed for MaterialLightComponent
         private bool _hasApplyLightString;
         private bool _hasFragmentString;
-        private LightningCalculationMethod _lightningCalculationMethod = LightningCalculationMethod.BLINN_PHONG;
+        private LightningCalculationMethod _lightningCalculationMethod = LightningCalculationMethod.SIMPLE;
 
 
         /*
@@ -753,10 +753,10 @@ namespace Fusee.Engine.Core
 
             switch (_lightningCalculationMethod)
             {
-                case LightningCalculationMethod.BLINN_PHONG:
+                case LightningCalculationMethod.SIMPLE:
                     AddBlinnphongLightning(ps);
                     break;
-                case LightningCalculationMethod.COOK_TORRANCE:
+                case LightningCalculationMethod.ADVANCED:
                     // TODO: Convert material params to cook_torrance
                     AddcooktorranceLightning(ps);
                     break;
