@@ -53,6 +53,7 @@
     <Compile Include="ConvexHullShape.cs" />
     <Compile Include="Cube.cs" />
     <Compile Include="CylinderShape.cs" />
+    <Compile Include="DeferredShaderCodeBuilder.cs" />
     <Compile Include="DynamicWorld.cs" />
     <Compile Include="EmptyShape.cs" />
     <Compile Include="FontMap.cs" />

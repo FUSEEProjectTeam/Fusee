@@ -23,6 +23,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         #region Fields
         private int _currentTextureUnit;
         private readonly Dictionary<int, int> _shaderParam2TexUnit;
+        private IRenderContextImp _renderContextImpImplementation;
         // private readonly Library _sharpFont;
         #endregion
 
@@ -488,7 +489,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.GetUniform(((ShaderProgramImp) program).Program, ((ShaderParam) param).handle, out f);
             return f;
         }
-
 
 
         /// <summary>
@@ -1065,6 +1065,105 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     "Problem uploading vertex buffer to VBO (offsets). Tried to upload {0} bytes, uploaded {1}.",
                     trisBytes, vboBytes));
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+        }
+
+        private bool isReady = false;
+
+        private void createFBOWFlag()
+        {
+            if(isReady) return;
+
+            // Create FBO
+            var test = new FrameBufferObject();
+            isReady = true;
+        }
+
+        /// <summary>
+        /// Renders the specified <see cref="IMeshImp" />.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        public void RenderDeferred(IMeshImp mr)
+        {
+
+        //    createFBOWFlag();
+
+            if (((MeshImp)mr).VertexBufferObject != 0)
+            {
+                GL.EnableVertexAttribArray(Helper.VertexAttribLocation);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).VertexBufferObject);
+                GL.VertexAttribPointer(Helper.VertexAttribLocation, 3, VertexAttribPointerType.Float, false, 0,
+                    IntPtr.Zero);
+            }
+            if (((MeshImp)mr).ColorBufferObject != 0)
+            {
+                GL.EnableVertexAttribArray(Helper.ColorAttribLocation);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).ColorBufferObject);
+                GL.VertexAttribPointer(Helper.ColorAttribLocation, 4, VertexAttribPointerType.UnsignedByte, true, 0,
+                    IntPtr.Zero);
+            }
+
+            if (((MeshImp)mr).UVBufferObject != 0)
+            {
+                GL.EnableVertexAttribArray(Helper.UvAttribLocation);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).UVBufferObject);
+                GL.VertexAttribPointer(Helper.UvAttribLocation, 2, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
+            }
+
+            if (((MeshImp)mr).NormalBufferObject != 0)
+            {
+                GL.EnableVertexAttribArray(Helper.NormalAttribLocation);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).NormalBufferObject);
+                GL.VertexAttribPointer(Helper.NormalAttribLocation, 3, VertexAttribPointerType.Float, false, 0,
+                    IntPtr.Zero);
+            }
+            if (((MeshImp)mr).BoneIndexBufferObject != 0)
+            {
+                GL.EnableVertexAttribArray(Helper.BoneIndexAttribLocation);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BoneIndexBufferObject);
+                GL.VertexAttribPointer(Helper.BoneIndexAttribLocation, 4, VertexAttribPointerType.Float, false, 0,
+                    IntPtr.Zero);
+            }
+            if (((MeshImp)mr).BoneWeightBufferObject != 0)
+            {
+                GL.EnableVertexAttribArray(Helper.BoneWeightAttribLocation);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BoneWeightBufferObject);
+                GL.VertexAttribPointer(Helper.BoneWeightAttribLocation, 4, VertexAttribPointerType.Float, false, 0,
+                    IntPtr.Zero);
+            }
+            if (((MeshImp)mr).ElementBufferObject != 0)
+            {
+                GL.BindBuffer(BufferTarget.ElementArrayBuffer, ((MeshImp)mr).ElementBufferObject);
+                GL.DrawElements(BeginMode.Triangles, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort,
+                    IntPtr.Zero);
+                //GL.DrawArrays(GL.Enums.BeginMode.POINTS, 0, shape.Vertices.Length);
+            }
+            if (((MeshImp)mr).VertexBufferObject != 0)
+            {
+                GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+                GL.DisableVertexAttribArray(Helper.VertexAttribLocation);
+            }
+            if (((MeshImp)mr).ColorBufferObject != 0)
+            {
+                GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+                GL.DisableVertexAttribArray(Helper.ColorAttribLocation);
+            }
+            if (((MeshImp)mr).NormalBufferObject != 0)
+            {
+                GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+                GL.DisableVertexAttribArray(Helper.NormalAttribLocation);
+            }
+            if (((MeshImp)mr).UVBufferObject != 0)
+            {
+                GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+                GL.DisableVertexAttribArray(Helper.UvAttribLocation);
+            }
+
+           /* // TODO: Move this to Present() ?
+           
+            // GL.PopAttrib(); // restores GL.Viewport() parameters
+            GL.Ext.BindFramebuffer(FramebufferTarget.FramebufferExt, 0); // return to visible framebuffer
+            GL.DrawBuffer(DrawBufferMode.Back);*/
+
         }
 
         /// <summary>

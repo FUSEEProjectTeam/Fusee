@@ -4,9 +4,11 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
+using Fusee.Base.Core;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using Path = Fusee.Base.Common.Path;
+using TextureTarget2d = OpenTK.Graphics.ES20.TextureTarget2d;
 
 namespace Fusee.Engine.Imp.Graphics.Desktop
 {
@@ -23,11 +25,15 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         public FrameBufferObject()
         {
+
             // Create Color Texture
             uint depthRenderbuffer;
             uint colorTexture;
             uint fboHandle;
-
+          
+           
+              try
+            {
 
             GL.GenTextures(1, out colorTexture);
             GL.BindTexture(TextureTarget.Texture2D, colorTexture);
@@ -43,37 +49,64 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             // test for GL Error here (might be unsupported format)
 
             GL.BindTexture(TextureTarget.Texture2D, 0);
-                // prevent feedback, reading and writing to the same image is a bad idea
+            // prevent feedback, reading and writing to the same image is a bad idea
+            
+                        // Create Depth Renderbuffer
+                        GL.Ext.GenRenderbuffers(1, out depthRenderbuffer);
+                        GL.Ext.BindRenderbuffer(RenderbufferTarget.RenderbufferExt, depthRenderbuffer);
+                        GL.Ext.RenderbufferStorage(RenderbufferTarget.RenderbufferExt, (RenderbufferStorage) All.DepthComponent32,
+                            FboWidth, FboHeight);
 
-            // Create Depth Renderbuffer
-            GL.Ext.GenRenderbuffers(1, out depthRenderbuffer);
-            GL.Ext.BindRenderbuffer(RenderbufferTarget.RenderbufferExt, depthRenderbuffer);
-            GL.Ext.RenderbufferStorage(RenderbufferTarget.RenderbufferExt, (RenderbufferStorage) All.DepthComponent32,
-                FboWidth, FboHeight);
+                        // test for GL Error here (might be unsupported format)
 
-            // test for GL Error here (might be unsupported format)
+                        // Create a FBO and attach the textures 
+                         GL.Ext.GenFramebuffers(1, out fboHandle);
+                          GL.Ext.BindFramebuffer(FramebufferTarget.FramebufferExt, fboHandle);
+                          GL.Ext.FramebufferTexture2D(FramebufferTarget.FramebufferExt, FramebufferAttachment.ColorAttachment0Ext,
+                              TextureTarget.Texture2D, colorTexture, 0);
+                          GL.Ext.FramebufferRenderbuffer(FramebufferTarget.FramebufferExt, FramebufferAttachment.DepthAttachmentExt,
+                              RenderbufferTarget.RenderbufferExt, depthRenderbuffer);
 
-            // Create a FBO and attach the textures
-            GL.Ext.GenFramebuffers(1, out fboHandle);
-            GL.Ext.BindFramebuffer(FramebufferTarget.FramebufferExt, fboHandle);
-            GL.Ext.FramebufferTexture2D(FramebufferTarget.FramebufferExt, FramebufferAttachment.ColorAttachment0Ext,
-                TextureTarget.Texture2D, colorTexture, 0);
-            GL.Ext.FramebufferRenderbuffer(FramebufferTarget.FramebufferExt, FramebufferAttachment.DepthAttachmentExt,
-                RenderbufferTarget.RenderbufferExt, depthRenderbuffer);
+                // since there's only 1 Color buffer attached this is not explicitly required
+                GL.DrawBuffer((DrawBufferMode)FramebufferAttachment.ColorAttachment0Ext);
+                GL.PushAttrib(AttribMask.ViewportBit); // stores GL.Viewport() parameters
+                GL.Viewport(0, 0, 512, 512);
 
-            // now GL.Ext.CheckFramebufferStatus( FramebufferTarget.FramebufferExt ) can be called, check the end of this page for a snippet.
 
-            // since there's only 1 Color buffer attached this is not explicitly required
-            GL.DrawBuffer((DrawBufferMode) FramebufferAttachment.ColorAttachment0Ext);
+                // now GL.Ext.CheckFramebufferStatus( FramebufferTarget.FramebufferExt ) can be called, check the end of this page for a snippet.
 
-            GL.PushAttrib(AttribMask.ViewportBit); // stores GL.Viewport() parameters
-            GL.Viewport(0, 0, FboWidth, FboHeight);
+            }
+            catch (Exception e)
+            {
+                var error = GL.GetError();
+                throw new Exception($"Error: {error}, Exception: {e}, FBO: {CheckFboStatus()}");
+            }
 
-            // render whatever your heart desires, when done ...
+          
+            //-------------------------
+            /*
+            GL.Viewport(0, 0, 256, 256);
+            GL.MatrixMode(MatrixMode.Projection);
+            GL.LoadIdentity();
+            GL.Ortho(0.0, 256.0, 0.0, 256.0, -1.0, 1.0);
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadIdentity();
+            //-------------------------
+            GL.Disable(EnableCap.Texture2D);
+            GL.Disable(EnableCap.Blend);
+            GL.Enable(EnableCap.DepthTest);
+            //-------------------------
+            //**************************
+            //RenderATriangle, {0.0, 0.0}, {256.0, 0.0}, {256.0, 256.0}
+            //Read http://www.opengl.org/wiki/VBO_-_just_examples
 
-            GL.PopAttrib(); // restores GL.Viewport() parameters
-            GL.Ext.BindFramebuffer(FramebufferTarget.FramebufferExt, 0); // return to visible framebuffer
-            GL.DrawBuffer(DrawBufferMode.Back);
+            //-------------------------
+            //pixels 0, 1, 2 should be white
+            //pixel 4 should be black
+            //----------------
+            //Bind 0, which means render to back buffer
+            GL.Ext.BindFramebuffer(FramebufferTarget.FramebufferExt, 0); */
+
         }
 
         /// <summary>

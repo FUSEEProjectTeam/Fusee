@@ -382,6 +382,16 @@ namespace Fusee.Engine.Common
         void Render(IMeshImp mr);
 
         /// <summary>
+        /// Renders the specified mesh in a deffered way.
+        /// </summary>
+        /// <param name="mr">The mesh that should be rendered.</param>
+        /// <remarks>
+        /// Passes geometry to be pushed through the rendering pipeline. <see cref="IMeshImp"/> for a description how geometry is made up.
+        /// The geometry is transformed and rendered by the currently active shader program.
+        /// </remarks>
+        void RenderDeferred(IMeshImp mr);
+
+        /// <summary>
         /// Draws a Debug Line in 3D Space by using a start and end point (float3).
         /// </summary>
         /// <param name="start">The startpoint of the DebugLine.</param>

@@ -113,7 +113,7 @@ namespace Fusee.Engine.Examples.Simple.Core
                     ConeDirection = new float3(0f, 1f, 1f),
                     Name = "Light1",
                     Position = new float3(-600, 300, -500),
-                    Type = LightType.Point
+                    Type = LightType.Parallel
                 });
 
            // var lightCone = AssetStorage.Get<SceneContainer>("Cube.fus");

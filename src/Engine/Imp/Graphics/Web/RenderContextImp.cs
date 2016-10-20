@@ -239,6 +239,13 @@ namespace Fusee.Engine.Imp.Graphics.Web
             throw new System.NotImplementedException();
         }
 
+        // This is not yet possible.
+        // FBO in WebGL is in beta stadium - late 2016
+        public void RenderDeferred(IMeshImp mr)
+        {
+            throw new System.NotImplementedException();
+        }
+
         [JSExternal]
         public void GetBufferContent(Rectangle quad, ITexture texId)
         {

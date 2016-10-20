@@ -728,6 +728,8 @@ namespace Fusee.Engine.Core
 
         #endregion
 
+        public bool RenderDeferred = true;
+
         #endregion
 
         #region Constructors
@@ -1556,7 +1558,18 @@ namespace Fusee.Engine.Core
             if (m.Triangles != null && m.Triangles.Length != 0 && !m.TrianglesSet)
                 _rci.SetTriangles(m._meshImp, m.Triangles);
 
-            _rci.Render(m._meshImp);
+            // TODO: Check if GetHardwareCapabilits Deffered == 1 then switch to Deffered Rendering
+            if (GetHardwareCapabilities(HardwareCapability.DEFFERED_POSSIBLE) == 1U && RenderDeferred)
+            {
+                //Diagnostics.Log("Switching to deferred render path");
+                _rci.RenderDeferred(m._meshImp);
+            }
+            else
+            {
+                //Diagnostics.Log("Switching to forward render path");
+                _rci.Render(m._meshImp);
+
+            }
         }
 
         public uint GetHardwareCapabilities(HardwareCapability capability)
