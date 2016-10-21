@@ -102,6 +102,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Jometri\Fusee.Jometri.csproj">
+      <Project>{8ee002c1-e15c-4297-8013-5005d65e33d9}</Project>
+      <Name>Fusee.Jometri</Name>
+    </ProjectReference>
+  </ItemGroup>
   <!-- ItemGroup>
     <Reference Include="Fusee.SerializationSerializer">
       <HintPath>..\..\..\..\..\bin\Debug\Libraries\Fusee.SerializationSerializer.dll</HintPath>

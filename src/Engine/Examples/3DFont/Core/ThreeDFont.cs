@@ -5,6 +5,7 @@ using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Math.Core;
 using static Fusee.Engine.Core.Input;
+using Geometry = Fusee.Jometri.Geometry;
 
 namespace Fusee.Engine.Examples.ThreeDFont.Core
 {
@@ -32,7 +33,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
 
         // Init is called on startup. 
         public override void Init()
-        {
+        {   
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
             var vladimir = AssetStorage.Get<Font>("VLADIMIR.TTF");
             var arial = AssetStorage.Get<Font>("arial.ttf");

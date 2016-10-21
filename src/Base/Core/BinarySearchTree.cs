@@ -36,7 +36,7 @@ namespace Fusee.Base.Core
     /// <summary>
     /// Data structure that stores items and allows fast lookup, insertion and deletion.
     /// </summary>
-    /// <typeparam name="T">The yype of the trees items.</typeparam>
+    /// <typeparam name="T">The type of the trees items.</typeparam>
     public class BinarySearchTree<T> where T : IComparable<T>
     {
         private Node<T> _globalRoot;
