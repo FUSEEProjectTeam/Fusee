@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Jometri;
 using Fusee.Math.Core;
 using static Fusee.Engine.Core.Input;
 using Geometry = Fusee.Jometri.Geometry;
@@ -45,6 +47,32 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             _text = "Hello World!";
             _threeDFontHelper = new ThreeDFontHelper(_text, fontLato);
 
+
+            var curves = _threeDFontHelper.GetTextCurves();
+
+            var partVerts = new List<float3>();
+            /////////////////Test if IsCounterClockwise works////////////////////////
+            foreach (var seg in curves[0].CurveParts[0].CurveSegments)
+            {
+                foreach (var v in seg.Vertices)
+                {
+                    partVerts.Add(v);
+                }
+            }
+            var ccw = partVerts.IsCounterClockwise();
+            /////////////////////////////////////////////////////////////////////////
+            
+            //////////////////////// Test DCEL /////////////////////////////////////
+           
+            if(!ccw)
+                partVerts.Reverse();
+            var faces = new List<List<float3>> {partVerts};
+            var geom = new Geometry(faces);
+
+
+            //////////////////////////////////////////////////////////////////////////
+
+            /////////////////////////////////////////////////////////////////////////
             _controlPoints = (List<float3>) _threeDFontHelper.GetTextVerticesWAngle(20);
 
             for (var i = 0; i < _controlPoints.Count; i++)

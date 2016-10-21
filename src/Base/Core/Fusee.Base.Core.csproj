@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="AssetStorage.cs" />
     <Compile Include="BinarySearchTree.cs" />
+    <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Diagnostics.cs" />
     <Compile Include="Font.cs" />
     <Compile Include="IO.cs" />
