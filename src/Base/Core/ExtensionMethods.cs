@@ -116,10 +116,11 @@ namespace Fusee.Base.Core
         #region IList extension methodes
 
         /// <summary>
-        /// Checks whether a polygon (parallel to the xy plane) has a ccw winding.
+        /// Checks whether a polygon, parallel to the xy plane, has a ccw winding.
+        /// This methode does NOT support polygons parallel to the yz or xz plane!
+        /// To guarantee a correct output make sure the polygon does not degenerate when the z coordinates are ignored.
         /// </summary>
         /// <param name="source">The polygon, represented as list of float3</param>
-        /// <param name="closed">Determines if the polygon is closed</param>
         /// <returns></returns>
         public static bool IsCounterClockwise(this IList<float3> source)
         {

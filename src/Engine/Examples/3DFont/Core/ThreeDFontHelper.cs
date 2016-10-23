@@ -17,7 +17,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
         }
 
         //Reads all curves from a given text and retruns them as a List of Curves
-        public IList<Curve> GetTextCurves()
+        private IList<Curve> GetTextCurves()
         {
             var curves = new List<Curve>();
             foreach (var t in _text)
@@ -72,7 +72,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             return controlPoints;
         }
 
-        //Returns all control points od a given text calculated with a uniform value of t
+        //Returns all control points of a given text calculated with a uniform value of t
         public IList<float3> GetTextVerticesUniformly(int seg)
         {
             var advance = 0f;
@@ -82,7 +82,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
 
             var textCurves = GetTextCurves();
             var combinedOutline = new List<float3>();
-            
+
             for (var i = 0; i < textCurves.Count; i++)
             {
                 var outline = textCurves[i].CalcUniformPolyline(seg).ToList();
@@ -105,7 +105,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             return combinedOutline;
         }
 
-        //Returns all control points od a given text calculated adaptively by testing the angle.
+        //Returns all control points of a given text calculated adaptively by testing the angle.
         //"angle" determines how far the angle between the two vectors(start point random point and random point end point) may vary from 180° 
         public IList<float3> GetTextVerticesWAngle(int angle)
         {
@@ -139,7 +139,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             return combinedOutline;
         }
 
-        //Returns all control points od a given text calculated adaptively by testing the area of a triangle
+        //Returns all control points of a given text calculated adaptively by testing the area of a triangle
         public IList<float3> GetTextVerticesWArcreage(float arcreage)
         {
             var advance = 0f;
@@ -170,6 +170,87 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
                 combinedOutline.AddRange(outline);
             }
             return combinedOutline;
+        }
+
+        //Returns all control points of a given text, grouped in faces and calculated adaptively by testing the angle.
+        public IList<List<float3>> GetTextFacesWAngle(int angle)
+        {
+            var advance = 0f;
+            var advanceComp = 0f;
+            var kerning = 0f;
+            var kerningComp = 0f;
+
+            var textCurves = GetTextCurves();
+            var textFaces = new List<List<float3>>();
+
+            for (var i = 0; i < textCurves.Count; i++)
+            {
+                var current = textCurves[i];
+
+                if (current.CurveParts.Count.Equals(0)) continue;
+
+                var curveFaces = GroupVertsIntoFaces(current,angle).ToList();
+                
+                advanceComp = advanceComp + advance;
+                kerningComp = kerningComp + kerning;
+
+                foreach (var f in curveFaces)
+                {
+                    for (var j = 0; j < f.Count; j++)
+                    {
+                        f[j] = new float3(f[j].x + advanceComp + kerningComp,
+                            f[j].y, f[j].z);
+                    }
+                }
+                
+                advance = _font.GetUnscaledAdvance(_text[i]);
+
+                if (i + 1 < _text.Length)
+                    kerning = _font.GetUnscaledKerning(_text[i], _text[i + 1]);
+
+                textFaces.AddRange(curveFaces);
+                curveFaces.Clear();
+            }
+            return textFaces;
+        }
+
+        private static IEnumerable<List<float3>> GroupVertsIntoFaces(Curve curve, int angle)
+        {
+            var face = new List<float3>();
+
+            var partOutline = curve.CurveParts[0].CalcAdaptivePolyline(angle).ToList();
+            partOutline.Reverse();
+            face.AddRange(partOutline);
+
+            if (curve.CurveParts.Count > 1)
+            {
+                for (var k = 1; k < curve.CurveParts.Count; k++)
+                {
+                    var next = curve.CurveParts[k].CalcAdaptivePolyline(angle).ToList();
+                    next.Reverse();
+
+                    if (!next.IsCounterClockwise())
+                    {
+                        face.AddRange(next);
+
+                        if (k + 1 == curve.CurveParts.Count)
+                            yield return face;
+                    }
+                    else
+                    {
+                        yield return face;
+                        face = new List<float3>();
+                        face.AddRange(next);
+
+                        if (k + 1 == curve.CurveParts.Count)
+                            yield return face;
+                    }
+                }
+            }
+            else
+            {
+                yield return face;
+            }
         }
     }
 }

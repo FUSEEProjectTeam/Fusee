@@ -1,5 +1,8 @@
 ﻿namespace Fusee.Jometri
 {
+    /// <summary>
+    /// A handle to assign a abstract reference to a Vertex
+    /// </summary>
     public struct VertHandle
     {
         internal int Id;
@@ -10,6 +13,9 @@
         }
     }
 
+    /// <summary>
+    /// A handle to assign a abstract reference to a HalfEdge
+    /// </summary>
     public struct HalfEdgeHandle
     {
         internal int Id;
@@ -20,6 +26,9 @@
         }
     }
 
+    /// <summary>
+    /// A handle to assign a abstract reference to a Face
+    /// </summary>
     public struct FaceHandle
     {
         internal int Id;

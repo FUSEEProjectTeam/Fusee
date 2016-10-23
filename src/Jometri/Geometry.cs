@@ -44,7 +44,7 @@ namespace Fusee.Jometri
             FaceHandles = new List<FaceHandle>();
             VertHandles = new List<VertHandle>();
 
-            CreateHalfEdges(faces);
+            CreateHalfEdgesForGeometry(faces);
         }
 
         #region Structs
@@ -99,13 +99,14 @@ namespace Fusee.Jometri
         }
         #endregion
 
-        //Insert methods like:
-        //InsertFace
-        //InsertVertex
-        //InsertHalfEdge 
-        //Get all edges adjecant to a vertex
-        //Get all edges that belong to a face
-        //etc.
+        /*Insert methods like:
+            >InsertVertex
+            >InsertFace
+            >InsertHalfEdge 
+            >Get all edges adjecant to a vertex
+            >Get all edges that belong to a face
+            >etc.
+        */
         #region public Methodes
 
         /// <summary>
@@ -120,7 +121,7 @@ namespace Fusee.Jometri
                 if (e.Handle.Id == id)
                     return e;
             }
-            throw new HandleNotFoundException("HalfEdge with id "+id + " not found!");
+            throw new HandleNotFoundException("HalfEdge with id " + id + " not found!");
         }
 
         /// <summary>
@@ -152,12 +153,12 @@ namespace Fusee.Jometri
             }
             throw new HandleNotFoundException("HalfEdge with id " + id + " not found!");
         }
-        
+
         #endregion
 
         #region private Methodes
 
-        private void CreateHalfEdges(IEnumerable<IList<float3>> faces)
+        private void CreateHalfEdgesForGeometry(IEnumerable<IList<float3>> faces)
         {
             foreach (var face in faces)
             {
@@ -179,6 +180,7 @@ namespace Fusee.Jometri
             var faceHalfEdges = new List<HalfEdge>();
             foreach (var coord in vertices)
             {
+                //TODO: Wenn der erste Vertex eiens Face schon im Face davor vorkommt nicht neu anlegen sondern das schon vorhandene Objekt benutzen!
                 //Create Vertices and VertHandles for each float3
                 var vertId = new VertHandle(VertHandles.Count + 1);
                 VertHandles.Add(vertId);
@@ -206,9 +208,7 @@ namespace Fusee.Jometri
                 current.IncidentFace = faceId;
 
                 //Set HalfEdge.Next for each HalfEdge in this face
-                if (i + 1 < faceHalfEdges.Count)
-                    current.Next = faceHalfEdges[i + 1].Handle;
-                else { current.Next = faceHalfEdges[0].Handle; }
+                current.Next = i + 1 < faceHalfEdges.Count ? faceHalfEdges[i + 1].Handle : faceHalfEdges[0].Handle;
 
                 //Find and assign twin half edges by looking for existing half edges with opposit direction of the origin and target vertices
                 if (_halfEdges.Count == 0)
@@ -216,25 +216,25 @@ namespace Fusee.Jometri
                     faceHalfEdges[i] = current;
                     continue;
                 }
-                
-                var origin = current.Origin;
-                var target = GetHalfEdgeByHandle(current.Next.Id).Origin;
 
-                try
+                var origin = current.Origin;
+                var target = new VertHandle();
+                foreach (var he in faceHalfEdges)
                 {
-                    foreach (var handle in HalfEdgeHandles)
+                    if (he.Handle.Id == current.Next.Id)
+                        target = he.Origin;
+                }
+                
+                foreach (var halfEdge in _halfEdges)
+                {
+                    var compObj = GetHalfEdgeByHandle(halfEdge.Origin.Id);
+                    var compOrigin = compObj.Origin;
+                    var compTarget = GetHalfEdgeByHandle(compObj.Next.Id).Origin;
+                    if (origin.Equals(compTarget) && target.Equals(compOrigin))
                     {
-                        var compObj = GetHalfEdgeByHandle(handle.Id);
-                        var compOrigin = compObj.Origin;
-                        var compTarget = GetHalfEdgeByHandle(compObj.Next.Id).Origin;
-                        if (origin.Equals(compTarget) && target.Equals(compOrigin))
-                        {
-                            current.Twin = compObj.Handle;
-                        }
+                        current.Twin = compObj.Handle;
                     }
                 }
-                catch (HandleNotFoundException) { }
-
                 faceHalfEdges[i] = current;
             }
 

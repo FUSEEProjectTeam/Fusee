@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
@@ -44,36 +45,29 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             _pointList = new List<Mesh>();
             _xForms = new List<float4x4>();
             
-            _text = "Hello World!";
-            _threeDFontHelper = new ThreeDFontHelper(_text, fontLato);
+            _text = "ü";
+            _threeDFontHelper = new ThreeDFontHelper(_text, arial);
+
+            _controlPoints = new List<float3>();
+            var face = _threeDFontHelper.GetTextControlPoints().ToList();
+            var faceList = new List<List<float3>>();
+            faceList.Add(face);
 
 
-            var curves = _threeDFontHelper.GetTextCurves();
 
-            var partVerts = new List<float3>();
-            /////////////////Test if IsCounterClockwise works////////////////////////
-            foreach (var seg in curves[0].CurveParts[0].CurveSegments)
+            //var faces = _threeDFontHelper.GetTextFacesWAngle(20);
+           
+            var geom = new Geometry(faceList);
+            
+            foreach (var f in faceList)
             {
-                foreach (var v in seg.Vertices)
+                foreach (var v in f)
                 {
-                    partVerts.Add(v);
+                    _controlPoints.Add(v);
                 }
             }
-            var ccw = partVerts.IsCounterClockwise();
-            /////////////////////////////////////////////////////////////////////////
             
-            //////////////////////// Test DCEL /////////////////////////////////////
-           
-            if(!ccw)
-                partVerts.Reverse();
-            var faces = new List<List<float3>> {partVerts};
-            var geom = new Geometry(faces);
-
-
-            //////////////////////////////////////////////////////////////////////////
-
-            /////////////////////////////////////////////////////////////////////////
-            _controlPoints = (List<float3>) _threeDFontHelper.GetTextVerticesWAngle(20);
+            //_controlPoints = (List<float3>) _threeDFontHelper.GetTextVerticesWAngle(20);
 
             for (var i = 0; i < _controlPoints.Count; i++)
             {
