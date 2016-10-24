@@ -388,9 +388,9 @@ namespace Fusee.Engine.Core
             SceneNodeContainer boneContainer = CurrentNode;
             float4x4 transform;
             if (!_boneMap.TryGetValue(boneContainer, out transform))
-                _boneMap.Add(boneContainer, _rc.Model);
+                _boneMap.Add(boneContainer, _rc.ModelView); // Changed from Model to ModelView
             else
-                _boneMap[boneContainer] = _rc.Model;
+                _boneMap[boneContainer] = _rc.ModelView; // Changed from Model to ModelView
         }
 
         [VisitMethod]
@@ -410,7 +410,7 @@ namespace Fusee.Engine.Core
         public void RenderTransform(TransformComponent transform)
         {
             _state.Model *= transform.Matrix();
-            _rc.Model = _view * _state.Model;
+            _rc.ModelView = _view * _state.Model; // Changed from Model to ModelView
         }
 
         [VisitMethod]
@@ -474,10 +474,26 @@ namespace Fusee.Engine.Core
        [VisitMethod]
         public void AccumulateLight(LightComponent lightComponent)
         {
+            
             // accumulate all lights and...
             _lightComponents = _sc.Children.Viserate<LightSetup, LightResult>().ToList();
             // ...set them
             AllLightResults = _lightComponents;
+            // and multiply with current modelview matrix
+            AddMVToAllLights();
+
+            Diagnostics.Log($"This light's position is {AllLightResults[0].PositionWorldSpace.xyz}"); 
+        }
+
+        private void AddMVToAllLights()
+        {
+            // Add ModelView Matrix to all lights
+            for (var i = 0; i < AllLightResults.Count; i++)
+            {
+                var light = AllLightResults[i];
+                light.PositionWorldSpace = _rc.ModelView * light.PositionWorldSpace;
+                AllLightResults[i] = light;
+            }
         }
 
         #endregion
@@ -539,18 +555,20 @@ namespace Fusee.Engine.Core
             thisLight.PositionWorldSpace = _rc.InvView *  thisLight.PositionWorldSpace;
             AllLightResults[position] = thisLight; */
 
-
+           // light.ModelMatrix.Invert();
             effect.SetEffectParam($"allLights[{position}].position", light.PositionWorldSpace);
             effect.SetEffectParam($"allLights[{position}].intensities", light.Color);
             effect.SetEffectParam($"allLights[{position}].attenuation", light.Attenuation);
             effect.SetEffectParam($"allLights[{position}].ambientCoefficient", light.AmbientCoefficient);
             effect.SetEffectParam($"allLights[{position}].coneAngle", light.ConeAngle);
-            effect.SetEffectParam($"allLights[{position}].coneDirection", light.ConeDirection);
+            effect.SetEffectParam($"allLights[{position}].coneDirection", _rc.ModelView * light.ConeDirection);
             effect.SetEffectParam($"allLights[{position}].lightType", light.Type);
-           
+
+            
         }
 
         #region RenderContext/Asset Setup
+
 
         private ShaderEffect LookupMaterial(MaterialComponent mc)
         {

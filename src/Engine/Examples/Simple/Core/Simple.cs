@@ -76,6 +76,7 @@ namespace Fusee.Engine.Examples.Simple.Core
             // Load the rocket model
             _rocketScene = AssetStorage.Get<SceneContainer>("WuggyLand.fus");
             //_rocketScene = AssetStorage.Get<SceneContainer>("RocketModel.fus");
+            RC.RenderDeferred = false;
             /* //// Legacy Mode
              // Wrap a SceneRenderer around the model.
              _sceneRenderer = new SceneRenderer(_rocketScene); */
@@ -106,14 +107,14 @@ namespace Fusee.Engine.Examples.Simple.Core
                 _rocketScene.Children[0].AddComponent(new LightComponent
                 {
                     Active = true,
-                    AmbientCoefficient = 0.8f,
+                    AmbientCoefficient = 0.3f,
                     Attenuation = 1000f,
                     Color = new float3(1f,1f,1f),
                     ConeAngle = 15.0f,
                     ConeDirection = new float3(0f, 1f, 1f),
                     Name = "Light1",
-                    Position = new float3(-600, 300, -500),
-                    Type = LightType.Parallel
+                    Position = new float3(896.3995f, 283.4517f, 1455.255f),
+                    Type = LightType.Point
                 });
 
            // var lightCone = AssetStorage.Get<SceneContainer>("Cube.fus");
@@ -245,8 +246,8 @@ namespace Fusee.Engine.Examples.Simple.Core
             {
                 if (_keys)
                 {
-                    _angleVelHorz = -RotationSpeed * Keyboard.LeftRightAxis * DeltaTime;
-                    _angleVelVert = -RotationSpeed * Keyboard.UpDownAxis * DeltaTime;
+                   // _angleVelHorz = -RotationSpeed * Keyboard.LeftRightAxis * DeltaTime;
+                   // _angleVelVert = -RotationSpeed * Keyboard.UpDownAxis * DeltaTime;
                 }
                 else
                 {
@@ -262,20 +263,24 @@ namespace Fusee.Engine.Examples.Simple.Core
 
 
 
+            var light = _rocketScene.Children[0].GetComponent<LightComponent>();
+            light.Position += new float3(Keyboard.LeftRightAxis * 10f, Keyboard.UpDownAxis * 10f, Keyboard.WSAxis * 10f);
+            _rocketScene.Children[0].Components[3] = light;
 
+            //Diagnostics.Log($"Is light changed? : {SceneRenderer.AllLightResults[0].PositionWorldSpace}");
 
-            /*    var light = SceneRenderer.AllLightResults[0];
-                Diagnostics.Log($"FIRST: {light.PositionWorldSpace}");
-                light.PositionWorldSpace = RC.InvView * light.PositionWorldSpace;
-                SceneRenderer.AllLightResults[0] = light;
-                Diagnostics.Log($"SECOND: {SceneRenderer.AllLightResults[0].PositionWorldSpace}"); */
+                //var light2 = SceneRenderer.AllLightResults[0];
+                //Diagnostics.Log($"FIRST: {light.PositionWorldSpace}");
+               // light.PositionWorldSpace = light.PositionWorldSpace;
+               // SceneRenderer.AllLightResults[0] = light2;
+               // Diagnostics.Log($"SECOND: {SceneRenderer.AllLightResults[0].PositionWorldSpace}");
 
 
             // Create the camera matrix and set it as the current ModelView transformation
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
             var mtxCam = float4x4.LookAt(40, 600, -600, 0, 150, 0, 0, 1, 0);
-
-            RC.ModelView = mtxCam * mtxRot;
+           
+            RC.ModelView = mtxCam  * mtxRot ;
 
          //   _rocketScene.Children[8].GetComponent<TransformComponent>().Scale =
           //  new float3(10, 10, 10);
@@ -286,10 +291,10 @@ namespace Fusee.Engine.Examples.Simple.Core
             _sceneRenderer.Render(RC);
 
 
-           // var paramX = RC.GetShaderParam(RC.CurrentShader, "allLights[0].position");
-           // var translationX = RC.GetParamValue(RC.CurrentShader, paramX);
+            var paramX = RC.GetShaderParam(RC.CurrentShader, "allLights[0].position");
+            var translationX = RC.GetParamValue(RC.CurrentShader, paramX);
 
-         //  Diagnostics.Log($"paramx {translationX}");
+           Diagnostics.Log($"paramx {translationX}");
 
 
 
