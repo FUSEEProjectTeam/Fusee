@@ -406,7 +406,7 @@ namespace Fusee.Engine.Core
             outputString += "   vec3 H = normalize(L + V);\n";
             outputString += $"   specularTerm = max(0.0, pow(dot(N, H), {SpecularShininessName}));\n";
             outputString += "   }\n";
-            outputString += $"  return ({SpecularColorName} * {SpecularIntensityName} * allLights[i].intensities) * specularTerm * 1000.0;\n";
+            outputString += $"  return ({SpecularColorName} * {SpecularIntensityName} * allLights[i].intensities) * specularTerm;\n";
             outputString += "}\n";
 
             return outputString;
