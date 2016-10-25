@@ -481,8 +481,7 @@ namespace Fusee.Engine.Core
             AllLightResults = _lightComponents;
             // and multiply with current modelview matrix
             AddMVToAllLights();
-
-            Diagnostics.Log($"This light's position is {AllLightResults[0].PositionWorldSpace.xyz}"); 
+            
         }
 
         private void AddMVToAllLights()
@@ -492,6 +491,11 @@ namespace Fusee.Engine.Core
             {
                 var light = AllLightResults[i];
                 light.PositionWorldSpace = _rc.ModelView * light.PositionWorldSpace;
+                // this is really ne
+                var lightfloat4 = new float4(light.ConeDirection.x, light.ConeDirection.y, light.ConeDirection.z,
+                                          0.0f);
+                var lightMV = _rc.ModelView*lightfloat4;
+                light.ConeDirection = new float3(lightMV.x, lightMV.y, lightMV.z);                                      
                 AllLightResults[i] = light;
             }
         }
@@ -561,7 +565,7 @@ namespace Fusee.Engine.Core
             effect.SetEffectParam($"allLights[{position}].attenuation", light.Attenuation);
             effect.SetEffectParam($"allLights[{position}].ambientCoefficient", light.AmbientCoefficient);
             effect.SetEffectParam($"allLights[{position}].coneAngle", light.ConeAngle);
-            effect.SetEffectParam($"allLights[{position}].coneDirection", _rc.ModelView * light.ConeDirection);
+            effect.SetEffectParam($"allLights[{position}].coneDirection", light.ConeDirection);
             effect.SetEffectParam($"allLights[{position}].lightType", light.Type);
 
             
@@ -1463,7 +1467,7 @@ namespace Fusee.Engine.Core
                 Type = lightComponent.Type,
                 Color = lightComponent.Color,
                 ConeAngle = lightComponent.ConeAngle,
-                ConeDirection = lightComponent.ConeDirection,
+                ConeDirection = State.Model * lightComponent.ConeDirection,
                 AmbientCoefficient = lightComponent.AmbientCoefficient,
                 ModelMatrix = State.Model,
                 Position = lightComponent.Position,

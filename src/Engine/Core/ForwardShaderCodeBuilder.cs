@@ -421,15 +421,15 @@ namespace Fusee.Engine.Core
         {
             var outputString = "\n";
 
-            outputString += "vec3 o_normal = vNormal;\n";
-            outputString += "vec3 o_toLight = normalize(allLights[i].position.xyz - surfacePos.xyz);\n";
+            outputString += "vec3 o_normal = vMVNormal;\n";
+            outputString += "vec3 o_toLight = normalize(allLights[i].position - surfacePos.xyz);\n";
             outputString += "vec3 o_toCamera = normalize(vViewDir - surfacePos.xyz);\n";
             outputString += "vec2 o_texcoords = vUV;\n";
             outputString += "\n";
             outputString += "\n";
-            outputString += "vec3 L = normalize(o_toLight);\n";
-            outputString += "vec3 V = normalize(o_toCamera);\n";
-            outputString += "vec3 N = normalize(o_normal);\n";
+            outputString += "vec3 L = o_toLight;\n";
+            outputString += "vec3 V = o_toCamera;\n";
+            outputString += "vec3 N = o_normal;\n";
             outputString += "vec3 Iamb = ambientLighting(i);\n";
             outputString += "vec3 Idif = diffuseLighting(N, L, i);\n";
             outputString += "vec3 Ispe = specularLighting(N, L, V, i);\n";
@@ -492,9 +492,9 @@ namespace Fusee.Engine.Core
         {
             var outputString = "\n";
 
-            outputString += "vec3 o_normal = vNormal;\n";
-            outputString += "vec3 o_toLight = normalize(allLights[i].position.xyz - surfacePos.xyz);\n";
-            outputString += "vec3 o_toCamera = normalize(viewpos - surfacePos.xyz);\n";
+            outputString += "vec3 o_normal = vMVNormal;\n";
+            outputString += "vec3 o_toLight = normalize(allLights[i].position - surfacePos.xyz);\n";
+            outputString += "vec3 o_toCamera = normalize(vViewDir - surfacePos.xyz);\n";
             outputString += "vec2 o_texcoords = vUV;\n";
             outputString += "\n";
             outputString += "\n";
@@ -505,18 +505,20 @@ namespace Fusee.Engine.Core
             outputString += "vec3 Idif = diffuseLighting(N, L, i);\n";
             outputString += "vec3 Ispe = specularLighting(N, L, V, i);\n";
             outputString += "\n";
-            outputString += "       float distanceToLight = distance(allLights[i].position.xyz, surfacePos.xyz);\n";
-            outputString += "       float att = clamp(1.0 - distanceToLight*distanceToLight/(allLights[i].attenuation*allLights[i].attenuation), 0.0, 1.0);";
-            outputString += "       att *= att;";
+
+            // outputString += "       float distanceToLight = distance(allLights[i].position, surfacePos.xyz);\n";
+            // outputString += "       float att = clamp(1.0 - distanceToLight*distanceToLight/(allLights[i].attenuation*allLights[i].attenuation), 0.0, 1.0);\n";
+            //  outputString += "       att *= att;\n";
+            outputString += "       float att = 0.0;\n";
             if (DiffuseTextureName != null)
                 outputString += $"vec3 diffuseColor = texture2D({DiffuseTextureName}, o_texcoords).rgb * {DiffuseMixName};\n";
             else
                 outputString += $"vec3 diffuseColor = {DiffuseColorName};\n";
 
             outputString += "       float lightToSurfaceAngle = degrees(acos(dot(-o_toLight, normalize(allLights[i].coneDirection))));\n";
-            outputString += "       if (lightToSurfaceAngle > allLights[i].coneAngle)\n";
+            outputString += "       if (lightToSurfaceAngle < allLights[i].coneAngle)\n";
             outputString += "       {\n";
-            outputString += "           att = 0.0;\n";
+            outputString += "           att = (1.0 - (1.0 - lightToSurfaceAngle) * 1.0/(1.0 - allLights[i].coneAngle));\n";
             outputString += "       }\n";
 
             outputString += "\n";

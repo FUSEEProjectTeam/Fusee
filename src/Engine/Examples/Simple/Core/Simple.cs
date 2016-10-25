@@ -86,35 +86,35 @@ namespace Fusee.Engine.Examples.Simple.Core
              _sceneRenderer = new SceneRenderer(_rocketScene, LightningCalculationMethod.ADVANCED); */
 
             /*   //// LightComponents in Scene
-               ///// Light is calculated with given Lightning Method & Light or SIMPLE as standard   */
+               ///// Light is calculated with given Lightning Method & Light or SIMPLE as standard  
             Random rnd = new Random();
 
-            /*for (var i = 0; i < 2; i++)
+            for (var i = 0; i < 2; i++)
             {
-                _rocketScene.Children[0].AddComponent(new LightComponent
+                _rocketScene.Children[1].AddComponent(new LightComponent
                 {
                     Active = true,
-                    AmbientCoefficient = 0.6f,
-                    Attenuation = 0.001f,
+                    AmbientCoefficient = 0.01f,
+                    Attenuation = 1000f,
                     Color = new float3((float) rnd.NextDouble(), (float)rnd.NextDouble(), (float)rnd.NextDouble()),
                     ConeAngle = 35.0f,
                     ConeDirection = new float3(0f, 1f, 0f),
                     Name = "Light1",
-                    Position = new float4(0f, 0f, -1f, 1f),
-                    Type = LightType.Point
+                    Position = new float3(0f, 0f, -1f),
+                    Type = LightType.Parallel
                 });
-            }*/
-                _rocketScene.Children[0].AddComponent(new LightComponent
+            } */
+            _rocketScene.Children[0].AddComponent(new LightComponent
                 {
                     Active = true,
-                    AmbientCoefficient = 0.3f,
+                    AmbientCoefficient = 0.9f,
                     Attenuation = 1000f,
                     Color = new float3(1f,1f,1f),
-                    ConeAngle = 15.0f,
-                    ConeDirection = new float3(0f, 1f, 1f),
+                    ConeAngle = 45f,
+                    ConeDirection = new float3(0f, 0f, 1f),
                     Name = "Light1",
                     Position = new float3(896.3995f, 283.4517f, 1455.255f),
-                    Type = LightType.Point
+                    Type = LightType.Spot
                 });
 
            // var lightCone = AssetStorage.Get<SceneContainer>("Cube.fus");
