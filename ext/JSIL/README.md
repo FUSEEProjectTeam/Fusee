@@ -121,3 +121,14 @@ In addition the following changes to individual files need to be done:
       allAssets[getAssetName(filename)] = {"image": e};
     };
 ```
+
+###IgnoredBCL/JSIL.IO.js (107)
+-> Added getter for MemoryStream.CanWrite property:
+```JavaScript
+  $.Method({ Static: false, Public: true }, "get_CanWrite",
+    (new JSIL.MethodSignature($.Boolean, [], [])),
+    function get_CanWrite() {
+        return true;
+    }
+  );
+```

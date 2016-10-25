@@ -80,6 +80,7 @@
     <Compile Include="RigidBody.cs" />
     <Compile Include="ScenePicker.cs" />
     <Compile Include="SceneRenderer.cs" />
+    <Compile Include="ScreenS3D.cs" />
     <Compile Include="ShaderCodeBuilder.cs" />
     <Compile Include="ShaderMaterial.cs" />
     <Compile Include="ShaderProgram.cs" />
@@ -95,6 +96,7 @@
     <Compile Include="RenderStateSet.cs" />
     <Compile Include="ShaderEffect.cs" />
     <Compile Include="Stereo3D.cs" />
+    <Compile Include="StereoCameraRig.cs" />
     <Compile Include="Time.cs" />
     <Compile Include="TouchDevice.cs" />
     <Compile Include="VideoManager.cs" />
