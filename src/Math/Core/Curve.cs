@@ -451,7 +451,7 @@ namespace Fusee.Math.Core
             }
         }
 
-        private double RandomT(Random rnd, double min, double max)
+        private static double RandomT(Random rnd, double min, double max)
         {
             var rndT = min + rnd.NextDouble() * (max - min);
             rndT = System.Math.Round(rndT, 2);
@@ -460,7 +460,7 @@ namespace Fusee.Math.Core
             return RandomT(rnd, min, max);
         }
 
-        private bool IsAngleFlatEnough(float3 a, float3 m, float3 b, float threshold)
+        private static bool IsAngleFlatEnough(float3 a, float3 m, float3 b, float threshold)
         {
             var p = a - m;
             var q = b - m;
@@ -472,7 +472,7 @@ namespace Fusee.Math.Core
             return false;
         }
 
-        private bool IsArcreageSmallEnough(float3 a, float3 m, float3 b, float threshold)
+        private static bool IsArcreageSmallEnough(float3 a, float3 m, float3 b, float threshold)
         {
             //equals the formula "0.5 * float3.Cross(a-m, a-b).Length", but without square roots
             var det = new float3x3

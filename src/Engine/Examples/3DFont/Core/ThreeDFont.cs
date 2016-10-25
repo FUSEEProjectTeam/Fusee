@@ -45,21 +45,16 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             _pointList = new List<Mesh>();
             _xForms = new List<float4x4>();
             
-            _text = "ü";
+            _text = "Wolkenlos";
             _threeDFontHelper = new ThreeDFontHelper(_text, arial);
 
             _controlPoints = new List<float3>();
-            var face = _threeDFontHelper.GetTextControlPoints().ToList();
-            var faceList = new List<List<float3>>();
-            faceList.Add(face);
 
-
-
-            //var faces = _threeDFontHelper.GetTextFacesWAngle(20);
+            var faces = _threeDFontHelper.GetTextFacesWAngle(20);
            
-            var geom = new Geometry(faceList);
+            var geom = new Geometry(faces);
             
-            foreach (var f in faceList)
+            foreach (var f in faces)
             {
                 foreach (var v in f)
                 {
