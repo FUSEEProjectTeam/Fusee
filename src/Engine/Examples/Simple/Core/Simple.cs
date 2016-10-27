@@ -86,10 +86,10 @@ namespace Fusee.Engine.Examples.Simple.Core
              _sceneRenderer = new SceneRenderer(_rocketScene, LightningCalculationMethod.ADVANCED); */
 
             /*   //// LightComponents in Scene
-               ///// Light is calculated with given Lightning Method & Light or SIMPLE as standard  
+               ///// Light is calculated with given Lightning Method & Light or SIMPLE as standard 
             Random rnd = new Random();
 
-            for (var i = 0; i < 2; i++)
+            for (var i = 0; i < 6; i++)
             {
                 _rocketScene.Children[1].AddComponent(new LightComponent
                 {
@@ -101,9 +101,9 @@ namespace Fusee.Engine.Examples.Simple.Core
                     ConeDirection = new float3(0f, 1f, 0f),
                     Name = "Light1",
                     Position = new float3(0f, 0f, -1f),
-                    Type = LightType.Parallel
+                    Type = LightType.Point
                 });
-            } */
+            }  */
             _rocketScene.Children[0].AddComponent(new LightComponent
                 {
                     Active = true,
@@ -111,9 +111,9 @@ namespace Fusee.Engine.Examples.Simple.Core
                     Attenuation = 1000f,
                     Color = new float3(1f,1f,1f),
                     ConeAngle = 45f,
-                    ConeDirection = new float3(0f, 0f, 1f),
+                    ConeDirection = new float3(0f, 1f, 1f),
                     Name = "Light1",
-                    Position = new float3(896.3995f, 283.4517f, 1455.255f),
+                    Position = new float3(896f, 283.5f, 1455.25f),
                     Type = LightType.Spot
                 });
 
@@ -290,11 +290,6 @@ namespace Fusee.Engine.Examples.Simple.Core
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
 
-
-            var paramX = RC.GetShaderParam(RC.CurrentShader, "allLights[0].position");
-            var translationX = RC.GetParamValue(RC.CurrentShader, paramX);
-
-           Diagnostics.Log($"paramx {translationX}");
 
 
 
