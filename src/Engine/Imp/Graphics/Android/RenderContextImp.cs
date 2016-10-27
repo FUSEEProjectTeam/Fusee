@@ -1650,12 +1650,12 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <returns>uint</returns>
         public uint GetHardwareCapabilities(HardwareCapability capability)
         {
-            float outVar;
             switch (capability)
             {
                 case HardwareCapability.DEFFERED_POSSIBLE:
                     return !GL.GetString(All.Extensions).Contains("EXT_framebuffer_object") ? 0U : 1U;
                 case HardwareCapability.BUFFERSIZE:
+                    float outVar;
                     GL.GetFloat(All.BufferSize, out outVar);
                     return BitConverter.ToUInt32(BitConverter.GetBytes(outVar), 0);
                 default:

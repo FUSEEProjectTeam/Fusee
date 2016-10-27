@@ -390,7 +390,12 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
     $.Method({ Static: false, Public: true }, "GetHardwareCapabilities",
        new JSIL.MethodSignature($.UInt32, [$fuseeCommon.TypeRef("Fusee.Engine.Common.HardwareCapability")]),
        function GetHardwareCapabilities(capability) {
-           console.log("hello " + capability);
+           switch(capability) {
+               case 0: // <- this is DEFFERED_POSSIBLE
+                   return 0; // not yet WebGL beta!
+               default:
+                   Error("Hardware capability not found!");
+           }
        }
     );
 
