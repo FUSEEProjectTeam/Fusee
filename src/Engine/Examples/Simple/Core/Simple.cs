@@ -41,8 +41,6 @@ namespace Fusee.Engine.Examples.Simple.Core
         private float _subtextHeight;
         private float _subtextWidth;
 
-        private Curve _curve;
-        private List<Dictionary<float2, int[]>> _controlPoints;
         private string _text;
         #endif
 

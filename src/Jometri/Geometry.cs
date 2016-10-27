@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Fusee.Base.Core;
 using Fusee.Math.Core;
 
 namespace Fusee.Jometri
@@ -18,12 +19,12 @@ namespace Fusee.Jometri
         public IList<HalfEdgeHandle> HalfEdgeHandles;
 
         /// <summary>
-        /// Contains handles to faces. Use this to find the first half edge.
+        /// Contains handles to outlines. Use this to find the first half edge.
         /// </summary>
         public IList<FaceHandle> FaceHandles;
 
         /// <summary>
-        /// Contains handles to vertices. Use this to get the vertexes coordinates.
+        /// Contains handles to outline. Use this to get the vertexes coordinates.
         /// </summary>
         public IList<VertHandle> VertHandles;
 
@@ -36,8 +37,8 @@ namespace Fusee.Jometri
         /// <summary>
         /// Stores geometry in a DCEL (doubly conneted edge list).
         /// </summary>
-        /// <param name="faces">A collection of the geometrys' faces, each containing the geometric information as a list of float3 in ccw order</param>
-        public Geometry(IEnumerable<IList<float3>> faces)
+        /// <param name="outlines">A collection of the geometrys' outlines, each containing the geometric information as a list of float3 in ccw order</param>
+        public Geometry(IEnumerable<Outline> outlines)
         {
             _vertices = new List<Vertex>();
             _halfEdges = new List<HalfEdge>();
@@ -47,7 +48,7 @@ namespace Fusee.Jometri
             FaceHandles = new List<FaceHandle>();
             VertHandles = new List<VertHandle>();
 
-            CreateHalfEdgesForGeometry(faces);
+            CreateHalfEdgesForGeometry(outlines);
         }
 
         #region Structs
@@ -101,6 +102,12 @@ namespace Fusee.Jometri
             public FaceHandle IncidentFace;
         }
 
+        public struct Outline
+        {
+            public IList<float3> points;
+            public bool isOuter;
+        }
+
         #endregion
 
         /*Insert methods like:
@@ -114,7 +121,7 @@ namespace Fusee.Jometri
         #region public Methods
 
         /// <summary>
-        /// Inserts a pair of half edges between two vertices.
+        /// Inserts a pair of half edges between two outline.
         /// </summary>
         /// <param name="p"></param>
         /// <param name="q"></param>
@@ -146,7 +153,7 @@ namespace Fusee.Jometri
                     }
                     else
                     {
-                        throw new Exception("Vertex " + p + " vertex " + q + " have no common Face!");
+                        throw new ArgumentException("Vertex " + p + " vertex " + q + " have no common Face!");
                     }
                 }
             }
@@ -218,7 +225,7 @@ namespace Fusee.Jometri
         /// <summary>
         /// Gets a face by its handle
         /// </summary>
-        /// <param name="id">The faces' reference key</param>
+        /// <param name="id">The outlines' reference key</param>
         /// <returns></returns>
         public Face GetFaceByHandle(int id)
         {
@@ -249,101 +256,78 @@ namespace Fusee.Jometri
 
         #region private Methods
 
-        private void CreateHalfEdgesForGeometry(IEnumerable<IList<float3>> faces)
+        private void CreateHalfEdgesForGeometry(IEnumerable<Outline> outlines)
         {
-            foreach (var face in faces)
+            var count = 0;
+            foreach (var o in outlines)
             {
-                CreateHalfEdgesForFace(face);
+                var outlineHalfEdges = CreateHalfEdgesForBoundary(o);
+
+                for (var i = 0; i < outlineHalfEdges.Count; i++)
+                {
+                    var current = outlineHalfEdges[i];
+
+                    //Assign Twins. There can only be twins if another outline was already processed.
+                    if (count == 0)
+                    {
+                        outlineHalfEdges[i] = current;
+                        continue;
+                    }
+
+                    //Find Twin by checking for existing half edges with opposit direction of the origin and target vertices.
+                    var origin = current.Origin;
+                    var target = new VertHandle();
+                    foreach (var he in outlineHalfEdges)
+                    {
+                        if (he.Handle.Id == current.Next.Id)
+                            target = he.Origin;
+                    }
+
+                    foreach (var halfEdge in _halfEdges)
+                    {
+                        var compOrigin = halfEdge.Origin;
+                        var compTarget = GetHalfEdgeByHandle(halfEdge.Next.Id).Origin;
+
+                        if (origin.Equals(compTarget) && target.Equals(compOrigin))
+                        {
+                            current.Twin = halfEdge.Handle;
+                        }
+                    }
+                    outlineHalfEdges[i] = current;
+                }
+                count++;
+                _halfEdges.AddRange(outlineHalfEdges);
             }
         }
 
         /// <summary>
-        /// Creates half edges from a single face
+        /// Creates half edges for a boundary.
         /// </summary>
-        /// <param name="vertices">The vertices of the face, containing the geometric information - they have to be in ccw order</param>
+        /// <param name="outline">A single outline (equals a boundary), containing the geometric information - they have to be in ccw order for outer boundarys and in cw order for inner boundarys</param>
         /// <returns></returns>
-        private void CreateHalfEdgesForFace(IEnumerable<float3> vertices)
+        private List<HalfEdge> CreateHalfEdgesForBoundary(Outline outline)
         {
-            //Create new FaceHandle
-            var faceId = new FaceHandle(FaceHandles.Count + 1);
-            FaceHandles.Add(faceId);
+            var outlineHalfEdges = new List<HalfEdge>();
 
-            List<HalfEdge> faceHalfEdges;
-            List<Vertex> faceVertices;
+            var faceHandle = new FaceHandle();
+            var face = new Face();
+            var addNewFace = false;
 
-            InstantiateVerticesAndHalfEdges(vertices, out faceHalfEdges, out faceVertices);
-
-            for (var i = 0; i < faceHalfEdges.Count; i++)
+            if (outline.isOuter)
             {
-                var current = faceHalfEdges[i];
-
-                //Set IncidentFace
-                current.IncidentFace = faceId;
-
-                //Set HalfEdge.Next for each HalfEdge in this face
-                current.Next = i + 1 < faceHalfEdges.Count ? faceHalfEdges[i + 1].Handle : faceHalfEdges[0].Handle;
-
-
-                if (_halfEdges.Count == 0)
-                {
-                    faceHalfEdges[i] = current;
-                    continue;
-                }
-
-                //Find and assign Twin by checking for existing half edges with opposit direction of the origin and target vertices
-                var origin = current.Origin;
-                var target = new VertHandle();
-                foreach (var he in faceHalfEdges)
-                {
-                    if (he.Handle.Id == current.Next.Id)
-                        target = he.Origin;
-                }
-
-                foreach (var halfEdge in _halfEdges)
-                {
-                    var compObj = GetHalfEdgeByHandle(halfEdge.Origin.Id);
-
-                    var compOrigin = compObj.Origin;
-                    var compTarget = GetHalfEdgeByHandle(compObj.Next.Id).Origin;
-
-                    if (origin.Equals(compTarget) && target.Equals(compOrigin))
-                    {
-                        current.Twin = compObj.Handle;
-                    }
-                }
-                faceHalfEdges[i] = current;
+                faceHandle.Id = FaceHandles.Count + 1;
+                FaceHandles.Add(faceHandle);
+                face.Handle = faceHandle;
+                addNewFace = true;
             }
 
-            //Create a new Face
-            var face = new Face
+            foreach (var coord in outline.points)
             {
-                Handle = faceId,
-                FirstHalfEdge = faceHalfEdges[0].Handle
-            };
-            _faces.Add(face);
-
-            //Add the faces' Vertices to geometrys' list
-            _vertices.AddRange(faceVertices);
-
-            //Add the faces' HalfEdges to geometrys' list
-            _halfEdges.AddRange(faceHalfEdges);
-
-        }
-
-        private void InstantiateVerticesAndHalfEdges(IEnumerable<float3> vertices, out List<HalfEdge> faceHalfEdges, out List<Vertex> faceVertices)
-        {
-            faceHalfEdges = new List<HalfEdge>();
-            faceVertices = new List<Vertex>();
-
-            foreach (var coord in vertices)
-            {
-
                 var vertHandle = new VertHandle();
                 Vertex vert;
-                var doesFaceExist = _faces.Count > 0;
 
                 //Check if a Vertex already exists and assign it to the HalfEdge instead of createing a new
-                if (doesFaceExist)
+                if (_vertices.Count != 0)
                 {
                     foreach (var v in _vertices)
                     {
@@ -355,7 +339,7 @@ namespace Fusee.Jometri
                             vertHandle.Id = VertHandles.Count + 1;
                             VertHandles.Add(vertHandle);
                             vert = new Vertex(coord) { Handle = vertHandle };
-                            faceVertices.Add(vert);
+                            _vertices.Add(vert);
                             break;
                         }
                     }
@@ -366,23 +350,49 @@ namespace Fusee.Jometri
                     vertHandle.Id = VertHandles.Count + 1;
                     VertHandles.Add(vertHandle);
                     vert = new Vertex(coord) { Handle = vertHandle };
-                    faceVertices.Add(vert);
+                    _vertices.Add(vert);
                 }
 
-                //Create HalfEdges and HalfEdgeHandles
-                var halfEdgeId = new HalfEdgeHandle(HalfEdgeHandles.Count + 1);
-                HalfEdgeHandles.Add(halfEdgeId);
+                var halfEdgeHandle = new HalfEdgeHandle(HalfEdgeHandles.Count + 1);
+                HalfEdgeHandles.Add(halfEdgeHandle);
                 var halfEdge = new HalfEdge
                 {
-                    Handle = halfEdgeId,
                     Origin = vertHandle,
-                    Twin = new HalfEdgeHandle(0),
-                    IncidentFace = new FaceHandle(0)
+                    Handle = halfEdgeHandle,
+                    Twin = new HalfEdgeHandle()
                 };
-                faceHalfEdges.Add(halfEdge);
-            }
-        }
 
+                //Assumption: outlines are processed from outer to inner for every face, therfore _faces.Count can't be empty when this condition is fulfilled.
+                if (outline.isOuter && _faces.Count != 0)
+                {
+                    halfEdge.IncidentFace = faceHandle;
+                }
+                else
+                {
+                    halfEdge.IncidentFace = FaceHandles.LastItem();
+                }
+
+                outlineHalfEdges.Add(halfEdge);
+            }
+
+            for (var i = 0; i < outlineHalfEdges.Count; i++)
+            {
+                var he = outlineHalfEdges[i];
+
+                //Assumption: a boundary is always closed!
+                if (i + 1 < outlineHalfEdges.Count)
+                    he.Next.Id = outlineHalfEdges[i + 1].Handle.Id;
+                else { he.Next.Id = outlineHalfEdges[0].Handle.Id; }
+
+                outlineHalfEdges[i] = he;
+            }
+
+            if (!addNewFace) return outlineHalfEdges;
+            face.FirstHalfEdge = outlineHalfEdges[0].Handle;
+            _faces.Add(face);
+
+            return outlineHalfEdges;
+        }
         #endregion
     }
 }

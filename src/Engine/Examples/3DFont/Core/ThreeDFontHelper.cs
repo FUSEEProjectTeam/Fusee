@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Fusee.Base.Core;
+using Fusee.Jometri;
 using Fusee.Math.Core;
 
 namespace Fusee.Engine.Examples.ThreeDFont.Core
@@ -173,7 +174,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
         }
 
         //Returns all control points of a given text, grouped in faces and calculated adaptively by testing the angle.
-        public IList<List<float3>> GetTextFacesWAngle(int angle)
+        public IList<Geometry.Outline> GetTextOutlinesWAngle(int angle)
         {
             var advance = 0f;
             var advanceComp = 0f;
@@ -181,76 +182,51 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             var kerningComp = 0f;
 
             var textCurves = GetTextCurves();
-            var textFaces = new List<List<float3>>();
+            var textOutlines = new List<Geometry.Outline>();
 
             for (var i = 0; i < textCurves.Count; i++)
             {
-                var current = textCurves[i];
+                if (textCurves[i].CurveParts.Count.Equals(0)) continue;
 
-                if (current.CurveParts.Count.Equals(0)) continue;
-
-                var curveFaces = GroupVertsIntoFaces(current,angle).ToList();
-                
                 advanceComp = advanceComp + advance;
                 kerningComp = kerningComp + kerning;
 
-                foreach (var f in curveFaces)
+                foreach (var part in textCurves[i].CurveParts)
                 {
-                    for (var j = 0; j < f.Count; j++)
+                    var outlinePoints = part.CalcAdaptivePolyline(angle).ToList();
+                    for (var j = 0; j < outlinePoints.Count; j++)
                     {
-                        f[j] = new float3(f[j].x + advanceComp + kerningComp,
-                            f[j].y, f[j].z);
+                        outlinePoints[j] = new float3(outlinePoints[j].x + advanceComp + kerningComp,
+                            outlinePoints[j].y, outlinePoints[j].z);
+                    }
+                    outlinePoints.Reverse();
+
+                    if (outlinePoints.IsCounterClockwise())
+                    {
+                        var outline = new Geometry.Outline
+                        {
+                            isOuter = true,
+                            points = outlinePoints
+                        };
+                        textOutlines.Add(outline);
+                    }
+                    else
+                    {
+                        var outline = new Geometry.Outline
+                        {
+                            isOuter = false,
+                            points = outlinePoints
+                        };
+                        textOutlines.Add(outline);
                     }
                 }
-                
+
                 advance = _font.GetUnscaledAdvance(_text[i]);
 
                 if (i + 1 < _text.Length)
                     kerning = _font.GetUnscaledKerning(_text[i], _text[i + 1]);
-
-                textFaces.AddRange(curveFaces);
-                curveFaces.Clear();
             }
-            return textFaces;
-        }
-
-        private static IEnumerable<List<float3>> GroupVertsIntoFaces(Curve curve, int angle)
-        {
-            var face = new List<float3>();
-
-            var partOutline = curve.CurveParts[0].CalcAdaptivePolyline(angle).ToList();
-            partOutline.Reverse();
-            face.AddRange(partOutline);
-
-            if (curve.CurveParts.Count > 1)
-            {
-                for (var k = 1; k < curve.CurveParts.Count; k++)
-                {
-                    var next = curve.CurveParts[k].CalcAdaptivePolyline(angle).ToList();
-                    next.Reverse();
-
-                    if (!next.IsCounterClockwise())
-                    {
-                        face.AddRange(next);
-
-                        if (k + 1 == curve.CurveParts.Count)
-                            yield return face;
-                    }
-                    else
-                    {
-                        yield return face;
-                        face = new List<float3>();
-                        face.AddRange(next);
-
-                        if (k + 1 == curve.CurveParts.Count)
-                            yield return face;
-                    }
-                }
-            }
-            else
-            {
-                yield return face;
-            }
+            return textOutlines;
         }
     }
 }

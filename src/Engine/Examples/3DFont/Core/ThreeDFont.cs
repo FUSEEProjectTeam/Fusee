@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
-using Fusee.Jometri;
 using Fusee.Math.Core;
 using static Fusee.Engine.Core.Input;
 using Geometry = Fusee.Jometri.Geometry;
@@ -45,18 +41,18 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             _pointList = new List<Mesh>();
             _xForms = new List<float4x4>();
             
-            _text = "Wolkenlos";
-            _threeDFontHelper = new ThreeDFontHelper(_text, arial);
+            _text = "ABC";
+            _threeDFontHelper = new ThreeDFontHelper(_text, fontLato);
 
             _controlPoints = new List<float3>();
 
-            var faces = _threeDFontHelper.GetTextFacesWAngle(20);
+            var outlines = _threeDFontHelper.GetTextOutlinesWAngle(20);
            
-            var geom = new Geometry(faces);
+            var geom = new Geometry(outlines);
             
-            foreach (var f in faces)
+            foreach (var f in outlines)
             {
-                foreach (var v in f)
+                foreach (var v in f.points)
                 {
                     _controlPoints.Add(v);
                 }
