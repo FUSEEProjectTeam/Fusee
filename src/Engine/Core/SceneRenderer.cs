@@ -137,12 +137,6 @@ namespace Fusee.Engine.Core
         #endregion
     }
 
-
-    class LightInfo // Todo: TBD...
-    {
-    }
-
-
     /// <summary>
     /// All supported lightning calculation methods ShaderCodeBuilder.cs supports.
     /// </summary>
@@ -167,7 +161,7 @@ namespace Fusee.Engine.Core
     public class SceneRenderer : SceneVisitor
     {
         // Choose Lightning Method
-        public static LightningCalculationMethod LightningCalculationMethod = LightningCalculationMethod.SIMPLE;
+        public static LightningCalculationMethod LightningCalculationMethod = LightningCalculationMethod.ADVANCED;
         // All lights
         public static IList<LightResult> AllLightResults = new List<LightResult>();
 
@@ -184,7 +178,7 @@ namespace Fusee.Engine.Core
         private SceneContainer _sc;
 
         private RenderContext _rc;
-        private List<LightInfo> _lights;
+
 
         private List<LightResult> _lightComponents; 
 
@@ -242,7 +236,7 @@ namespace Fusee.Engine.Core
             // ...set them
             AllLightResults = _lightComponents;
 
-            _lights = new List<LightInfo>();
+
             _sc = sc;
             // _scenePathDirectory = scenePathDirectory;
             _state = new RendererState();
@@ -460,17 +454,8 @@ namespace Fusee.Engine.Core
             }
 
             RenderWithLights(rm, _state.Effect);
-
-            /* if (null != _state.Effect.GetEffectParam(ShaderCodeBuilder.LightDirectionName))
-             {
-
-             }
-             else
-             {
-                 _state.Effect.RenderMesh(rm);
-             }*/
         }
-        // TODO: Currently rendering everything with all lights. Change this.
+
        [VisitMethod]
         public void AccumulateLight(LightComponent lightComponent)
         {
@@ -479,23 +464,31 @@ namespace Fusee.Engine.Core
             _lightComponents = _sc.Children.Viserate<LightSetup, LightResult>().ToList();
             // ...set them
             AllLightResults = _lightComponents;
-            // and multiply with current modelview matrix
-            AddMVToAllLights();
+            // and multiply them with current modelview matrix
+            // normalize etc.
+            SetupLights();
             
         }
 
-        private void AddMVToAllLights()
+        private void SetupLights()
         {
             // Add ModelView Matrix to all lights
             for (var i = 0; i < AllLightResults.Count; i++)
             {
                 var light = AllLightResults[i];
+                
+                // Multiply LightPosition with modelview
                 light.PositionWorldSpace = _rc.ModelView * light.PositionWorldSpace;
-                // this is really ne
-                var lightfloat4 = new float4(light.ConeDirection.x, light.ConeDirection.y, light.ConeDirection.z,
+                
+                // float4 is really needed
+                var lightConeDirectionFloat4 = new float4(light.ConeDirection.x, light.ConeDirection.y, light.ConeDirection.z,
                                           0.0f);
-                var lightMV = _rc.ModelView*lightfloat4;
-                light.ConeDirection = new float3(lightMV.x, lightMV.y, lightMV.z);                                      
+                lightConeDirectionFloat4 = _rc.ModelView* lightConeDirectionFloat4;
+                lightConeDirectionFloat4.Normalize();
+                light.ConeDirection = new float3(lightConeDirectionFloat4.x, lightConeDirectionFloat4.y, lightConeDirectionFloat4.z);   
+                
+                // convert spotlight angle from degrees to radians
+                light.ConeAngle = M.DegreesToRadians(light.ConeAngle);                                   
                 AllLightResults[i] = light;
             }
         }
@@ -541,9 +534,9 @@ namespace Fusee.Engine.Core
                 // No light present - switch on standard light
                 effect.SetEffectParam(ShaderCodeBuilder.LightColorName, new float3(1, 1, 1));
                 // float4 lightDirHom = new float4(0, 0, -1, 0);
-                float4 lightDirHom = _rc.InvModelView * new float4(0, 0, -1, 0);
+                var lightDirHom = _rc.InvModelView * new float4(0, 0, -1, 0);
                 // float4 lightDirHom = _rc.TransModelView * new float4(0, 0, -1, 0);
-                float3 lightDir = lightDirHom.xyz;
+                var lightDir = lightDirHom.xyz;
                 lightDir.Normalize();
                 effect.SetEffectParam(ShaderCodeBuilder.LightDirectionName, lightDir);
                 effect.SetEffectParam(ShaderCodeBuilder.LightIntensityName, (float)1);
@@ -985,8 +978,6 @@ namespace Fusee.Engine.Core
                 );
             return ret;
         }
-
-
     
         private ShaderEffect MakeMaterial(MaterialComponent mc)
         {
