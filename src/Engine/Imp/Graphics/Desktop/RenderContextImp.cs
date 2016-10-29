@@ -45,7 +45,16 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.CullFace(CullFaceMode.Back);
 
             // _sharpFont = new Library();
+
+
+            // Create new ShadowFBO
+            ShadowFrameBuffer = new ShadowFrameBufferObject(renderCanvas.Width, renderCanvas.Height, this);
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public ShadowFrameBufferObject ShadowFrameBuffer;
 
         #endregion
 
@@ -1067,16 +1076,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
 
-        private bool isReady = false;
-
-        private void createFBOWFlag()
-        {
-            if(isReady) return;
-
-            // Create FBO
-            var test = new FrameBufferObject();
-            isReady = true;
-        }
+      
 
         /// <summary>
         /// Renders the specified <see cref="IMeshImp" />.
@@ -1084,85 +1084,23 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
         public void RenderDeferred(IMeshImp mr)
         {
+            /* // TODO: Implement ShadowPass
+             // TODO: CreateShader and SetShader
 
-        //    createFBOWFlag();
+             _shadowFrameBuffer.BindForWriting();
 
-            if (((MeshImp)mr).VertexBufferObject != 0)
-            {
-                GL.EnableVertexAttribArray(Helper.VertexAttribLocation);
-                GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).VertexBufferObject);
-                GL.VertexAttribPointer(Helper.VertexAttribLocation, 3, VertexAttribPointerType.Float, false, 0,
-                    IntPtr.Zero);
-            }
-            if (((MeshImp)mr).ColorBufferObject != 0)
-            {
-                GL.EnableVertexAttribArray(Helper.ColorAttribLocation);
-                GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).ColorBufferObject);
-                GL.VertexAttribPointer(Helper.ColorAttribLocation, 4, VertexAttribPointerType.UnsignedByte, true, 0,
-                    IntPtr.Zero);
-            }
+             // Get shadowpass Shader and set it
+             //GL.UseProgram(_shadowFrameBuffer.ShadowShader.Program);
 
-            if (((MeshImp)mr).UVBufferObject != 0)
-            {
-                GL.EnableVertexAttribArray(Helper.UvAttribLocation);
-                GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).UVBufferObject);
-                GL.VertexAttribPointer(Helper.UvAttribLocation, 2, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
-            }
+             // Set normal shaders
 
-            if (((MeshImp)mr).NormalBufferObject != 0)
-            {
-                GL.EnableVertexAttribArray(Helper.NormalAttribLocation);
-                GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).NormalBufferObject);
-                GL.VertexAttribPointer(Helper.NormalAttribLocation, 3, VertexAttribPointerType.Float, false, 0,
-                    IntPtr.Zero);
-            }
-            if (((MeshImp)mr).BoneIndexBufferObject != 0)
-            {
-                GL.EnableVertexAttribArray(Helper.BoneIndexAttribLocation);
-                GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BoneIndexBufferObject);
-                GL.VertexAttribPointer(Helper.BoneIndexAttribLocation, 4, VertexAttribPointerType.Float, false, 0,
-                    IntPtr.Zero);
-            }
-            if (((MeshImp)mr).BoneWeightBufferObject != 0)
-            {
-                GL.EnableVertexAttribArray(Helper.BoneWeightAttribLocation);
-                GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BoneWeightBufferObject);
-                GL.VertexAttribPointer(Helper.BoneWeightAttribLocation, 4, VertexAttribPointerType.Float, false, 0,
-                    IntPtr.Zero);
-            }
-            if (((MeshImp)mr).ElementBufferObject != 0)
-            {
-                GL.BindBuffer(BufferTarget.ElementArrayBuffer, ((MeshImp)mr).ElementBufferObject);
-                GL.DrawElements(BeginMode.Triangles, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort,
-                    IntPtr.Zero);
-                //GL.DrawArrays(GL.Enums.BeginMode.POINTS, 0, shape.Vertices.Length);
-            }
-            if (((MeshImp)mr).VertexBufferObject != 0)
-            {
-                GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-                GL.DisableVertexAttribArray(Helper.VertexAttribLocation);
-            }
-            if (((MeshImp)mr).ColorBufferObject != 0)
-            {
-                GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-                GL.DisableVertexAttribArray(Helper.ColorAttribLocation);
-            }
-            if (((MeshImp)mr).NormalBufferObject != 0)
-            {
-                GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-                GL.DisableVertexAttribArray(Helper.NormalAttribLocation);
-            }
-            if (((MeshImp)mr).UVBufferObject != 0)
-            {
-                GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-                GL.DisableVertexAttribArray(Helper.UvAttribLocation);
-            }
+             //SetShader(_renderContextImpImplementation.Get);
+             */
+            // _shadowFrameBuffer.BindForReading(TextureUnit.Texture0);
 
-           /* // TODO: Move this to Present() ?
-           
-            // GL.PopAttrib(); // restores GL.Viewport() parameters
-            GL.Ext.BindFramebuffer(FramebufferTarget.FramebufferExt, 0); // return to visible framebuffer
-            GL.DrawBuffer(DrawBufferMode.Back);*/
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0); // this is the standart framebuffer, without it rendering would fail at the moment!
+
+            Render(mr);
 
         }
 
@@ -1779,7 +1717,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             throw new NotImplementedException();
             // throws Exception
-            // var test = new FrameBufferObject();
+            // var test = new ShadowFrameBufferObject();
             // test.CheckFboStatus();
             // return true;
         }

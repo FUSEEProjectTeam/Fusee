@@ -86,6 +86,7 @@
     <Compile Include="ShaderMaterial.cs" />
     <Compile Include="ShaderProgram.cs" />
     <Compile Include="Shaders.cs" />
+    <Compile Include="ShadowFrameBufferObject.cs" />
     <Compile Include="SliderConstraint.cs" />
     <Compile Include="SphereShape.cs" />
     <Compile Include="StaticPlaneShape.cs" />

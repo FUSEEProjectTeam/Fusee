@@ -13,76 +13,55 @@ using TextureTarget2d = OpenTK.Graphics.ES20.TextureTarget2d;
 namespace Fusee.Engine.Imp.Graphics.Desktop
 {
     /// <summary>
-    /// Creates a simple FrameBufferObject
+    /// Creates a simple ShadowFrameBufferObject
     /// </summary>
-    public class FrameBufferObject : GameWindow
+    public class ShadowFrameBufferObject
     {
-        private const int FboWidth = 512;
-        private const int FboHeight = 512;
+        // Create handles
+        private int _shadowTextureHandle;
+        private int _fboHandle;
+        public ShaderProgramImp ShadowShader { private set; get; }
+
+        private const string ShadowMapVs = @"
+
+                attribute vec3 fuVertex;
+                attribute vec2 fuUV;
+                attribute vec3 fuNormal;
+
+                uniform mat4 FUSEE_MVP;
+
+                varying vec2 uv;
+
+                void main()
+                {
+                    gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
+                    uv = fuUV;
+                }";
+
+        private const string ShadowMapPs = @"
+                #ifdef GL_ES
+                    precision highp float
+                #endif
+
+            varying vec2 uv;
+
+            uniform sampler2D texture;
+
+            void main()
+            {
+                float Depth = texture2D(texture, uv).x;
+                Depth = 1.0 - (1.0 - Depth) * 25.0;
+                gl_FragColor = vec4(Depth);
+            }";
 
         /// <summary>
-        /// Creates a FrameBufferObject with a given TextureSize
+        /// Creates a ShadowFrameBufferObject with a given TextureSize
         /// </summary>
-        public FrameBufferObject()
+        public ShadowFrameBufferObject(int width, int height, RenderContextImp rc)
         {
+            Init(width, height);
+            ShadowShader = (ShaderProgramImp) rc.CreateShader(ShadowMapVs, ShadowMapPs);
 
-            // Create Color Texture
-            uint depthRenderbuffer;
-            uint colorTexture;
-            uint fboHandle;
-          
-           
-              try
-            {
-
-            GL.GenTextures(1, out colorTexture);
-            GL.BindTexture(TextureTarget.Texture2D, colorTexture);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter,
-                (int) TextureMinFilter.Nearest);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter,
-                (int) TextureMagFilter.Nearest);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int) TextureWrapMode.Clamp);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int) TextureWrapMode.Clamp);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba8, FboWidth, FboHeight, 0,
-                PixelFormat.Rgba, PixelType.UnsignedByte, IntPtr.Zero);
-
-            // test for GL Error here (might be unsupported format)
-
-            GL.BindTexture(TextureTarget.Texture2D, 0);
-            // prevent feedback, reading and writing to the same image is a bad idea
-            
-                        // Create Depth Renderbuffer
-                        GL.Ext.GenRenderbuffers(1, out depthRenderbuffer);
-                        GL.Ext.BindRenderbuffer(RenderbufferTarget.RenderbufferExt, depthRenderbuffer);
-                        GL.Ext.RenderbufferStorage(RenderbufferTarget.RenderbufferExt, (RenderbufferStorage) All.DepthComponent32,
-                            FboWidth, FboHeight);
-
-                        // test for GL Error here (might be unsupported format)
-
-                        // Create a FBO and attach the textures 
-                         GL.Ext.GenFramebuffers(1, out fboHandle);
-                          GL.Ext.BindFramebuffer(FramebufferTarget.FramebufferExt, fboHandle);
-                          GL.Ext.FramebufferTexture2D(FramebufferTarget.FramebufferExt, FramebufferAttachment.ColorAttachment0Ext,
-                              TextureTarget.Texture2D, colorTexture, 0);
-                          GL.Ext.FramebufferRenderbuffer(FramebufferTarget.FramebufferExt, FramebufferAttachment.DepthAttachmentExt,
-                              RenderbufferTarget.RenderbufferExt, depthRenderbuffer);
-
-                // since there's only 1 Color buffer attached this is not explicitly required
-                GL.DrawBuffer((DrawBufferMode)FramebufferAttachment.ColorAttachment0Ext);
-                GL.PushAttrib(AttribMask.ViewportBit); // stores GL.Viewport() parameters
-                GL.Viewport(0, 0, 512, 512);
-
-
-                // now GL.Ext.CheckFramebufferStatus( FramebufferTarget.FramebufferExt ) can be called, check the end of this page for a snippet.
-
-            }
-            catch (Exception e)
-            {
-                var error = GL.GetError();
-                throw new Exception($"Error: {error}, Exception: {e}, FBO: {CheckFboStatus()}");
-            }
-
-          
             //-------------------------
             /*
             GL.Viewport(0, 0, 256, 256);
@@ -109,13 +88,78 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
         }
 
+        private void Init(int width, int height)
+        {
+            try
+            {
+
+                GL.GenTextures(1, out _shadowTextureHandle);
+                GL.BindTexture(TextureTarget.Texture2D, _shadowTextureHandle);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter,
+                    (int)TextureMinFilter.Nearest);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter,
+                    (int)TextureMagFilter.Nearest);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToBorder);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToBorder);
+                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent, width, height, 0,
+                    PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
+
+                // test for GL Error here (might be unsupported format)
+
+                // GL.BindTexture(TextureTarget.Texture2D, 0);
+                // prevent feedback, reading and writing to the same image is a bad idea
+
+                // test for GL Error here (might be unsupported format)
+
+                // Create a FBO and attach the textures 
+                GL.GenFramebuffers(1, out _fboHandle);
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, _fboHandle);
+                GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment,
+                    TextureTarget.Texture2D, _shadowTextureHandle, 0);
+
+                // now GL.Ext.CheckFramebufferStatus( FramebufferTarget.FramebufferExt ) can be called, check the end of this page for a snippet.
+
+                // Disable writes to the color buffer
+                GL.DrawBuffer(DrawBufferMode.None);
+                GL.ReadBuffer(ReadBufferMode.None);
+
+                // TODO: Add usage of shadowmap shader
+
+            }
+            catch (Exception e)
+            {
+                var error = GL.GetError();
+                throw new Exception($"Error: {error}, Exception: {e}, FBO: {CheckFboStatus()}");
+            }
+
+
+        }
+
         /// <summary>
-        /// Checks and prints the status of the FrameBufferObject.
+        /// Convenience method for framebufferbinding
+        /// </summary>
+        public void BindForWriting()
+        {
+            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _fboHandle);
+        }
+
+        /// <summary>
+        /// Convenience method for binding the texture created by the framebuffer
+        /// </summary>
+        /// <param name="textureUnit"></param>
+        public void BindForReading(TextureUnit textureUnit)
+        {
+            GL.ActiveTexture(textureUnit);
+            GL.BindTexture(TextureTarget.Texture2D, _shadowTextureHandle);
+        }
+
+        /// <summary>
+        /// Checks and prints the status of the ShadowFrameBufferObject.
         /// </summary>
         /// <returns></returns>
         public bool CheckFboStatus()
         {
-            switch (GL.Ext.CheckFramebufferStatus(FramebufferTarget.FramebufferExt))
+            switch (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer))
             {
                 case FramebufferErrorCode.FramebufferCompleteExt:
                     {

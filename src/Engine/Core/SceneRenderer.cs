@@ -374,6 +374,14 @@ namespace Fusee.Engine.Core
             Traverse(_sc.Children);
         }
 
+        
+
+        public void RenderDeferred(RenderContext rc)
+        {
+            SetContext(rc);
+            Traverse(_sc.Children);
+        }
+
         #region Visitors
 
         [VisitMethod]

@@ -691,9 +691,9 @@ namespace Fusee.Engine.Core
             ps.Append(" \n\n" +
                       "float roughnessValue = ");
             // CultureInfo needed for float conversion fullstop, otherwise he formats floats to: #,##
-                ps.AppendFormat("{0} ;\n", mpbr.RoughnessValue.ToString(CultureInfo.InvariantCulture));
-                ps.AppendFormat("float F0 = {0};\n", mpbr.FresnelReflectance.ToString(CultureInfo.InvariantCulture));
-                ps.AppendFormat("float k = {0};\n", mpbr.DiffuseFraction.ToString(CultureInfo.InvariantCulture));
+                ps.AppendFormat("{0} ;\n", mpbr.RoughnessValue.ToString("00000.00", CultureInfo.InvariantCulture));
+                ps.AppendFormat("float F0 = {0};\n", mpbr.FresnelReflectance.ToString("00000.00", CultureInfo.InvariantCulture));
+                ps.AppendFormat("float k = {0};\n", mpbr.DiffuseFraction.ToString("00000.00", CultureInfo.InvariantCulture));
                ps.Append("vec3 lightColor = light.intensities;\n\n" +
                       "vec3 normal = Normal;\n\n" +
                       "// do the lighting calculation for each fragment.\n" +

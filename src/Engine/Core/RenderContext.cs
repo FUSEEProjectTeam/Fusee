@@ -32,6 +32,7 @@ namespace Fusee.Engine.Core
         private readonly Light[] _lightParams;
         private readonly LightParamNames[] _lightShaderParams;
         */
+        
 
         private bool _updatedShaderParams;
 
@@ -1513,6 +1514,8 @@ namespace Fusee.Engine.Core
             return _rci.CreateFBO();
         }
 
+
+
         /// <summary>
         /// Renders the specified mesh.
         /// </summary>
@@ -1564,12 +1567,10 @@ namespace Fusee.Engine.Core
             // TODO: Check if GetHardwareCapabilits Deffered == 1 then switch to Deffered Rendering
             if (GetHardwareCapabilities(HardwareCapability.DEFFERED_POSSIBLE) == 1U && RenderDeferred)
             {
-                //Diagnostics.Log("Switching to deferred render path");
                 _rci.RenderDeferred(m._meshImp);
             }
             else
             {
-                //Diagnostics.Log("Switching to forward render path");
                 _rci.Render(m._meshImp);
 
             }

@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using System;
+using System.Globalization;
+using System.Text;
 using Fusee.Base.Core;
 using Fusee.Serialization;
 
@@ -34,6 +36,7 @@ namespace Fusee.Engine.Core
         public DeferredShaderCodeBuilder(MaterialComponent mc, MeshComponent mesh, WeightComponent wc = null)
         {
             GetLightningCalculationMethodFromSceneRender();
+
             AnalyzeMaterial(mc);
 
             if (wc != null)
@@ -68,12 +71,12 @@ namespace Fusee.Engine.Core
             // PS
             var ps = new StringBuilder();
             PixelInputDeclarations(ps);
-           // ApplyLightMethod(ps);
+            ApplyLightMethod(ps);
             PSBody(ps);
             PS = ps.ToString();
 
-            Diagnostics.Log($"ForwardShaderCodeBuilder, VS \n{VS}");
-            Diagnostics.Log($"ForwardShaderCodeBuilder, PS \n{PS}");
+            // Diagnostics.Log($"ForwardShaderCodeBuilder, VS \n{VS}");
+            // Diagnostics.Log($"ForwardShaderCodeBuilder, PS \n{PS}");
 
         }
 
@@ -132,94 +135,79 @@ namespace Fusee.Engine.Core
 
             // needed for lightning calc
             vs.Append("  varying vec4 surfacePos;\n");
-            vs.Append("  varying vec4 surfacePosOriginal;\n");
-            vs.Append("  uniform mat4 FUSEE_MV;\n");
             vs.Append("  varying vec3 vMVNormal;\n");
-            vs.Append("  uniform mat4 FUSEE_M;\n");
-            vs.Append("  uniform mat4 FUSEE_IV;\n");
-            vs.Append("  uniform mat4 FUSEE_V;\n");
-            vs.Append("  uniform mat4 FUSEE_IM;\n");
-            vs.Append("  varying vec3 viewpos;\n");
-            vs.Append("  varying mat4 ModelMatrix;\n");
-
+            vs.Append("  uniform mat4 FUSEE_MV;\n");
         }
 
         // ReSharper disable once InconsistentNaming
         private void VSBody(StringBuilder vs)
         {
+
+
             vs.Append("\n\n  void main()\n  {\n");
-            vs.Append("\n\n gl_Position = vec4(fuVertex, 1.0);\n");
-            vs.Append("\n\n }\n");
-            /*
-                        vs.Append("\n\n  void main()\n  {\n");
-                        if (_hasNormals)
-                        {
-                            if (_hasWeightMap)
-                            {
-                                vs.Append("    vec4 newVertex;\n");
-                                vs.Append("    vec4 newNormal;\n");
+            if (_hasNormals)
+            {
+                if (_hasWeightMap)
+                {
+                    vs.Append("    vec4 newVertex;\n");
+                    vs.Append("    vec4 newNormal;\n");
 
-                                vs.Append("    newVertex = (FUSEE_BONES[int(fuBoneIndex.x)] * vec4(fuVertex, 1.0) ) * fuBoneWeight.x ;\n");
-                                vs.Append("    newNormal = (FUSEE_BONES[int(fuBoneIndex.x)] * vec4(fuNormal, 0.0)) * fuBoneWeight.x;\n");
+                    vs.Append("    newVertex = (FUSEE_BONES[int(fuBoneIndex.x)] * vec4(fuVertex, 1.0) ) * fuBoneWeight.x ;\n");
+                    vs.Append("    newNormal = (FUSEE_BONES[int(fuBoneIndex.x)] * vec4(fuNormal, 0.0)) * fuBoneWeight.x;\n");
 
-                                vs.Append("    newVertex = (FUSEE_BONES[int(fuBoneIndex.y)] * vec4(fuVertex, 1.0)) * fuBoneWeight.y + newVertex;\n");
-                                vs.Append("    newNormal = (FUSEE_BONES[int(fuBoneIndex.y)] * vec4(fuNormal, 0.0)) * fuBoneWeight.y + newNormal;\n");
+                    vs.Append("    newVertex = (FUSEE_BONES[int(fuBoneIndex.y)] * vec4(fuVertex, 1.0)) * fuBoneWeight.y + newVertex;\n");
+                    vs.Append("    newNormal = (FUSEE_BONES[int(fuBoneIndex.y)] * vec4(fuNormal, 0.0)) * fuBoneWeight.y + newNormal;\n");
 
-                                vs.Append("    newVertex = (FUSEE_BONES[int(fuBoneIndex.z)] * vec4(fuVertex, 1.0)) * fuBoneWeight.z + newVertex;\n");
-                                vs.Append("    newNormal = (FUSEE_BONES[int(fuBoneIndex.z)] * vec4(fuNormal, 0.0)) * fuBoneWeight.z + newNormal;\n");
+                    vs.Append("    newVertex = (FUSEE_BONES[int(fuBoneIndex.z)] * vec4(fuVertex, 1.0)) * fuBoneWeight.z + newVertex;\n");
+                    vs.Append("    newNormal = (FUSEE_BONES[int(fuBoneIndex.z)] * vec4(fuNormal, 0.0)) * fuBoneWeight.z + newNormal;\n");
 
-                                vs.Append("    newVertex = (FUSEE_BONES[int(fuBoneIndex.w)] * vec4(fuVertex, 1.0)) * fuBoneWeight.w + newVertex;\n");
-                                vs.Append("    newNormal = (FUSEE_BONES[int(fuBoneIndex.w)] * vec4(fuNormal, 0.0)) * fuBoneWeight.w + newNormal;\n");
+                    vs.Append("    newVertex = (FUSEE_BONES[int(fuBoneIndex.w)] * vec4(fuVertex, 1.0)) * fuBoneWeight.w + newVertex;\n");
+                    vs.Append("    newNormal = (FUSEE_BONES[int(fuBoneIndex.w)] * vec4(fuNormal, 0.0)) * fuBoneWeight.w + newNormal;\n");
 
-                                // At this point the normal is in World space - transform back to model space
-                                // TODO: Is it a hack to invert Model AND View? Should we rather only invert MODEL (and NOT VIEW)??
-                                vs.Append("    vNormal = mat3(FUSEE_IMV) * newNormal.xyz;\n");
+                    // At this point the normal is in World space - transform back to model space
+                    // TODO: Is it a hack to invert Model AND View? Should we rather only invert MODEL (and NOT VIEW)??
+                    vs.Append("    vNormal = mat3(FUSEE_IMV) * newNormal.xyz;\n");
 
-                                if (_normalizeNormals)
-                                {
-                                    vs.Append("    vNormal = normalize(fuNormal);\n");
-                                    vs.Append("    vMVNormal = normalize(mat3(FUSEE_ITMV) * fuNormal);\n");
-                                }
-                            }
-                            else
-                            {
-                                // Lighting done in model space... no need to convert normals
-                                if (_normalizeNormals)
-                                {
-                                    // vs.Append("    vNormal = normalize(mat3(FUSEE_MV[0].xyz, FUSEE_MV[1].xyz, FUSEE_MV[2].xyz) * fuNormal);\n");
-                                    vs.Append("    vNormal = normalize(mat3(FUSEE_IMV) * fuNormal); \n");
-                                    vs.Append("    vMVNormal = normalize(mat3(FUSEE_ITMV) * fuNormal);\n");
-                                }
-                                else
-                                    vs.Append("    vNormal = fuNormal;\n");
-                            }
-                        }
+                    if (_normalizeNormals)
+                    {
+                        vs.Append("    vNormal = normalize(fuNormal);\n");
+                        vs.Append("    vMVNormal = normalize(mat3(FUSEE_ITMV) * fuNormal);\n");
+                    }
+                }
+                else
+                {
+                    // Lighting done in view space... we need to convert the normals
+                    if (_normalizeNormals)
+                    {
+                        // vs.Append("    vNormal = normalize(mat3(FUSEE_MV[0].xyz, FUSEE_MV[1].xyz, FUSEE_MV[2].xyz) * fuNormal);\n");
+                        vs.Append("    vMVNormal = normalize(mat3(FUSEE_ITMV) * fuNormal);\n");
+                    }
+                    else
+                        vs.Append("    vNormal = fuNormal;\n");
+                }
+            }
 
-                        if (_hasSpecular)
-                        {
-                            vs.Append("    vec3 viewPos = FUSEE_IMV[3].xyz;\n");
+            if (_hasSpecular)
+            {
+                vs.Append("    vec3 viewPos = FUSEE_IMV[3].xyz;\n");
 
-                            vs.Append(_hasWeightMap
-                                ? "    vViewDir = normalize(viewPos - vec3(newVertex));\n"
-                                : "    vViewDir = normalize(viewPos - fuVertex);\n");
-                        }
+                vs.Append(_hasWeightMap
+                    ? "    vViewDir = normalize(viewPos - vec3(newVertex));\n"
+                    : "    vViewDir = normalize(viewPos - fuVertex);\n");
+            }
 
-                        vs.Append(_hasWeightMap
-                            ? "    gl_Position = FUSEE_P * FUSEE_V * vec4(vec3(newVertex), 1.0);\n "
-                            : "    gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);\n");
+            vs.Append(_hasWeightMap
+                ? "    gl_Position = FUSEE_P * FUSEE_V * vec4(vec3(newVertex), 1.0);\n "
+                : "    gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);\n");
 
 
-                        if (_hasUVs)
-                            vs.Append("    vUV = fuUV;\n");
+            if (_hasUVs)
+                vs.Append("    vUV = fuUV;\n");
 
-                        // needed for spotlight
-                        vs.Append("    surfacePos =  FUSEE_M * vec4(fuVertex, 1.0); \n");
-                        vs.Append("    surfacePosOriginal = vec4( fuVertex, 1.0); \n");
-                        vs.Append("    viewpos = (FUSEE_MV * vec4(fuVertex, 1.0)).xyz;");
-                        vs.Append("    ModelMatrix = FUSEE_M;");
+            // needed for lightcalculation
+            vs.Append("    surfacePos =  FUSEE_MV * vec4(fuVertex, 1.0); \n");
 
-
-                        vs.Append("  }\n\n"); */
+            vs.Append("  }\n\n");
         }
 
 
@@ -230,7 +218,7 @@ namespace Fusee.Engine.Core
             ps.Append("#ifdef GL_ES\n");
             ps.Append("  precision highp float;\n");
             ps.Append("#endif\n\n");
-            /*
+
             // define max lights
             var numberOfLights = SceneRenderer.AllLightResults.Count > 0 ? SceneRenderer.AllLightResults.Count : 1;
             ps.Append("\n\n #define MAX_LIGHTS " + numberOfLights + "\n\n");
@@ -247,23 +235,13 @@ namespace Fusee.Engine.Core
 
 
             if (_hasNormals)
-                ps.Append("  varying vec3 vNormal;\n");
+                ps.Append("  varying vec3 vMVNormal;\n");
 
             if (_hasUVs)
                 ps.Append("  varying vec2 vUV;\n");
 
-            ps.Append(" varying vec4 surfacePos;\n");
-            ps.Append(" varying vec4 surfacePosOriginal;\n");
-
-            ps.Append(" varying vec3 vMVNormal;\n");
-            ps.Append(" uniform mat4 FUSEE_MV;\n");
-            ps.Append(" varying mat4 ModelMatrix;\n");
-            ps.Append("  uniform mat4 FUSEE_IMV;\n");
-            ps.Append("  uniform mat4 FUSEE_IM;\n");
-            ps.Append("  uniform mat4 FUSEE_IV;\n");
-            ps.Append("  uniform mat4 FUSEE_V;\n");
-            ps.Append("  varying vec3 viewpos;\n");
-            */
+            ps.Append("  varying vec4 surfacePos;\n");
+            ps.Append("  uniform mat4 FUSEE_MV;\n");
         }
 
         // ReSharper disable once InconsistentNaming
@@ -323,19 +301,20 @@ namespace Fusee.Engine.Core
                 vs.Append($"           {SpecularLightingMethod()}\n");
                 vs.Append("\n\n\n");
                 vs.Append("/******* ApplyLight Method ****/\n");
-                vs.Append("vec3 ApplyLight(int i)\n");
+                vs.Append("vec3 ApplyLight(vec3 position, vec3 intensities, vec3 coneDirection, float attenuation, float ambientCoefficient, float coneAngle, int lightType)\n");
                 vs.Append("{\n");
                 vs.Append("     vec3 result = vec3(0.0, 0.0, 0.0);\n");
-                vs.Append("     float attenuation = 1.0;\n");
-                vs.Append("     if(allLights[i].lightType == 0) // PointLight\n");
+                vs.Append($"     {BlinnPhongCalculation()}\n");
+                vs.Append($"     {AttenuationFunction()}\n");
+                vs.Append("     if(lightType == 0) // PointLight\n");
                 vs.Append("     {");
                 vs.Append($"           {PointLightCalculation()}\n");
                 vs.Append("     }\n");
-                vs.Append("     else if(allLights[i].lightType == 1) // ParallelLight\n");
+                vs.Append("     else if(lightType == 1) // ParallelLight\n");
                 vs.Append("     {");
                 vs.Append($"            {ParallelLightCalculation()}\n");
                 vs.Append("     }\n");
-                vs.Append("     else if(allLights[i].lightType == 2) // SpotLight\n");
+                vs.Append("     else if(lightType == 2) // SpotLight\n");
                 vs.Append("     {");
                 vs.Append($"            {SpotLightCalculation()}\n");
                 vs.Append("     }\n");
@@ -344,22 +323,30 @@ namespace Fusee.Engine.Core
 
             }
             else
-            { // TODO: Add CookTorranceModel and try to parse Diffusevars to PBR values
+            { // TODO: Try to parse Diffusevars to PBR values
+                // needed Methods
                 vs.Append("\n\n\n");
+                vs.Append($"{GgxMethod()}");
+                vs.Append($"{FresnelMethod()}");
+                vs.Append($"{GeometryMethod()}");
+                vs.Append($"{AmbientLightningMethod()}");
+
+                // Method
                 vs.Append("/******* ApplyLight Method ****/\n");
-                vs.Append("vec3 ApplyLight(int i\n");
+                vs.Append("vec3 ApplyLight(vec3 position, vec3 intensities, vec3 coneDirection, float attenuation, float ambientCoefficient, float coneAngle, int lightType)\n");
                 vs.Append("{\n");
-                vs.Append("     vec3 result = vec3(0, 0, 0);\n");
-                vs.Append("     if(light.lightType == 0)\n");
-                vs.Append("    {\n");
+                vs.Append($"     {PhysicallyBasedShadingMethod()}\n");
+                vs.Append($"     {AttenuationFunction()}\n");
+                vs.Append("     if(lightType == 0) // PointLight\n");
+                vs.Append("     {");
                 vs.Append($"           {PointLightCalculation()}\n");
-                vs.Append("    }\n");
-                vs.Append("     else if(light.lightType == 2)\n");
-                vs.Append("     {\n");
+                vs.Append("     }\n");
+                vs.Append("     else if(lightType == 1) // ParallelLight\n");
+                vs.Append("     {");
                 vs.Append($"            {ParallelLightCalculation()}\n");
                 vs.Append("     }\n");
-                vs.Append("     else if(light.lightType == 1)\n");
-                vs.Append("     {\n");
+                vs.Append("     else if(lightType == 2) // SpotLight\n");
+                vs.Append("     {");
                 vs.Append($"            {SpotLightCalculation()}\n");
                 vs.Append("     }\n");
                 vs.Append("     return result;\n");
@@ -367,16 +354,26 @@ namespace Fusee.Engine.Core
             }
         }
 
+
+        private string AttenuationFunction()
+        {
+            var outputString = "";
+            outputString += "       float distanceToLight = distance(position, surfacePos.xyz);\n";
+            outputString += "       float att = clamp(1.0 - distanceToLight*distanceToLight/(attenuation*attenuation), 0.0, 1.0);\n";
+            outputString += "       att *= att;\n";
+            return outputString;
+        }
+
         private string AmbientLightningMethod()
         {
             var outputString = "\n";
             outputString += "// returns intensity of reflected ambient lighting\n";
-            outputString += "vec3 ambientLighting(int i)\n";
+            outputString += "vec3 ambientLighting(float ambientCoefficient)\n";
             outputString += "{\n";
             if (EmissiveColorName != null)
-                outputString += $"   return ({EmissiveColorName} * allLights[i].ambientCoefficient);\n";
+                outputString += $"   return ({EmissiveColorName} * ambientCoefficient);\n";
             else
-                outputString += $"   return vec3(allLights[i].ambientCoefficient);\n";
+                outputString += "   return vec3(ambientCoefficient);\n";
             outputString += "}\n";
 
             return outputString;
@@ -386,11 +383,11 @@ namespace Fusee.Engine.Core
         {
             var outputString = "\n";
             outputString += "// returns intensity of diffuse reflection\n";
-            outputString += "vec3 diffuseLighting(vec3 N, vec3 L, int i)\n";
+            outputString += "vec3 diffuseLighting(vec3 N, vec3 L, vec3 intensities)\n";
             outputString += "{\n";
             outputString += "   // calculation as for Lambertian reflection\n";
             outputString += "   float diffuseTerm = clamp(dot(N, L) / (length(L) * length(N)), 0.0, 1.0) ;\n";
-            outputString += $"  return ({DiffuseColorName} * allLights[i].intensities * diffuseTerm);\n";
+            outputString += $"  return ({DiffuseColorName} * intensities * diffuseTerm);\n";
             outputString += "}\n";
 
             return outputString;
@@ -400,7 +397,7 @@ namespace Fusee.Engine.Core
         {
             var outputString = "\n";
             outputString += "// returns intensity of diffuse reflection\n";
-            outputString += "vec3 specularLighting(vec3 N, vec3 L, vec3 V, int i)\n";
+            outputString += "vec3 specularLighting(vec3 N, vec3 L, vec3 V, vec3 intensities)\n";
             outputString += "{\n";
             outputString += "   float specularTerm = 0.0;\n";
             outputString += "   if(dot(N, L) > 0.0)\n";
@@ -409,33 +406,28 @@ namespace Fusee.Engine.Core
             outputString += "   vec3 H = normalize(L + V);\n";
             outputString += $"   specularTerm = max(0.0, pow(dot(N, H), {SpecularShininessName}));\n";
             outputString += "   }\n";
-            outputString += $"  return ({SpecularColorName} * {SpecularIntensityName} * allLights[i].intensities) * specularTerm;\n";
+            outputString += $"  return ({SpecularColorName} * {SpecularIntensityName} * intensities) * specularTerm;\n";
             outputString += "}\n";
 
             return outputString;
         }
 
-        /// <summary>
-        /// ParallelLight, no specular component
-        /// ConeDirection specifies direction of light.
-        /// </summary>
-        /// <returns></returns>
-        private string ParallelLightCalculation()
+        private string BlinnPhongCalculation()
         {
             var outputString = "\n";
 
-            outputString += "vec3 o_normal = vNormal;\n";
-            outputString += "vec3 o_toLight = normalize(allLights[i].position.xyz - surfacePos.xyz);\n";
+            outputString += "vec3 o_normal = vMVNormal;\n";
+            outputString += "vec3 o_toLight = normalize(position - surfacePos.xyz);\n";
             outputString += "vec3 o_toCamera = normalize(vViewDir - surfacePos.xyz);\n";
             outputString += "vec2 o_texcoords = vUV;\n";
             outputString += "\n";
             outputString += "\n";
-            outputString += "vec3 L = normalize(o_toLight);\n";
-            outputString += "vec3 V = normalize(o_toCamera);\n";
-            outputString += "vec3 N = normalize(o_normal);\n";
-            outputString += "vec3 Iamb = ambientLighting(i);\n";
-            outputString += "vec3 Idif = diffuseLighting(N, L, i);\n";
-            outputString += "vec3 Ispe = specularLighting(N, L, V, i);\n";
+            outputString += "vec3 L = o_toLight;\n";
+            outputString += "vec3 V = o_toCamera;\n";
+            outputString += "vec3 N = o_normal;\n";
+            outputString += "vec3 Iamb = ambientLighting(ambientCoefficient);\n";
+            outputString += "vec3 Idif = diffuseLighting(N, L, intensities);\n";
+            outputString += "vec3 Ispe = specularLighting(N, L, V, intensities);\n";
             outputString += "\n";
             if (DiffuseTextureName != null)
                 outputString += $"vec3 diffuseColor = texture2D({DiffuseTextureName}, o_texcoords).rgb * {DiffuseMixName};\n";
@@ -443,8 +435,18 @@ namespace Fusee.Engine.Core
                 outputString += $"vec3 diffuseColor = {DiffuseColorName};\n";
             outputString += "\n";
             outputString += "\n";
-            outputString += "result = diffuseColor * (Iamb + Idif + Ispe);\n";
 
+            return outputString;
+        }
+
+        /// <summary>
+        /// ParallelLight, no specular component
+        /// </summary>
+        /// <returns></returns>
+        private static string ParallelLightCalculation()
+        {
+            var outputString = "\n";
+            outputString += "       result = diffuseColor * (Iamb + Idif + Ispe);\n";
             return outputString;
         }
 
@@ -452,13 +454,50 @@ namespace Fusee.Engine.Core
         /// PointLight, with specular component and half-vector
         /// </summary>
         /// <returns></returns>
-        private string PointLightCalculation()
+        private static string PointLightCalculation()
+        {
+            var outputString = "\n";
+            outputString += "\n";
+            outputString += "\n";
+            outputString += "       result = diffuseColor * (Iamb + Idif + Ispe) * att;\n";
+
+            return outputString;
+        }
+
+        private static string SpotLightCalculation()
+        {
+            var outputString = "\n";
+            outputString += "       float lightToSurfaceAngle = dot(-o_toLight, coneDirection);\n"; // coneDirection comes in normalized and multiplied with modelview
+            outputString += "       if (lightToSurfaceAngle > coneAngle)\n"; // coneAngle comes in converted from degrees to radians
+            outputString += "       {\n";
+            outputString += "           att *= (1.0 - (1.0 - lightToSurfaceAngle) * 1.0/(1.0 - coneAngle));\n";
+            outputString += "       }\n";
+            outputString += "       else\n";
+            outputString += "       {\n";
+            outputString += "       att = 0.0;\n";
+            outputString += "       }\n";
+
+            outputString += "\n";
+            outputString += "\n";
+            outputString += "       result = diffuseColor * (Iamb + Idif + Ispe) * att;\n";
+
+            return outputString;
+        }
+
+        private string DiffuseEnergyRatio()
+        {
+            return "float diffuseEnergyRatio(float f0, vec3 n, vec3 l){\n return 1.0 - fresnel(f0, n, l);\n }\n";
+        }
+
+        // TODO: Cleanup & improve
+        private string PhysicallyBasedShadingMethod()
         {
 
-            var outputString = "\n";
+            var outputString = "";
 
-            outputString += "vec3 o_normal = vNormal;\n";
-            outputString += "vec3 o_toLight = normalize( allLights[i].position.xyz - surfacePos.xyz);\n";
+
+            outputString += "vec3 o_normal = vMVNormal;\n";
+            outputString += "vec3 o_toLight = normalize(position - surfacePos.xyz);\n";
             outputString += "vec3 o_toCamera = normalize(vViewDir - surfacePos.xyz);\n";
             outputString += "vec2 o_texcoords = vUV;\n";
             outputString += "\n";
@@ -466,61 +505,99 @@ namespace Fusee.Engine.Core
             outputString += "vec3 L = o_toLight;\n";
             outputString += "vec3 V = o_toCamera;\n";
             outputString += "vec3 N = o_normal;\n";
-            outputString += "vec3 Iamb = ambientLighting(i);\n";
-            outputString += "vec3 Idif = diffuseLighting(N, L, i);\n";
-            outputString += "vec3 Ispe = specularLighting(N, L, V, i);\n";
-            outputString += "\n";
+            outputString += "float NdotV = max(0.0,dot(N,V));\n";
+            outputString += "float NdotL = max(0.0,dot(N,L));\n";
+            outputString += "vec3 H = normalize(L + V);\n";
+            outputString += "vec3 result = vec3(0);\n";
 
-            outputString += "       float distanceToLight = distance( allLights[i].position.xyz, surfacePos.xyz);\n";
-            outputString += "       float att = clamp(1.0 - distanceToLight*distanceToLight/(allLights[i].attenuation*allLights[i].attenuation), 0.0, 1.0);\n";
-            outputString += "       att *= att;\n";
+
+
+            outputString += $"float fresnelValue={FresnelValue.ToString("0000.0000", CultureInfo.InvariantCulture)};\n";
+            outputString += $"float diffuseFractionValue={DiffuseFractionValue.ToString("0000.0000", CultureInfo.InvariantCulture)};\n";
+            outputString += $"float roughnessValue={RoughnessValue.ToString("0000.0000", CultureInfo.InvariantCulture)};\n";
+            outputString += " \n";
+            outputString += " float G = ggx(N, L, V, roughnessValue, fresnelValue);\n";
+            outputString += " float F = fresnel(fresnelValue, N, L);\n";
+            outputString += " float D = geometry(N, H, V, L, roughnessValue);\n";
+            outputString += " float brdf_spec = G * F * D / (NdotL * NdotV * 3.14);\n";
+
+            outputString += $" vec3 Ispe = (brdf_spec * intensities) * {SpecularColorName} * {SpecularIntensityName} * 10.0;\n";
+            outputString += $" vec3 Idif =  NdotL * (diffuseFractionValue + Ispe * (1.0 - diffuseFractionValue));\n";
+            outputString += "vec3 Iamb = ambientLighting(ambientCoefficient);\n";
             if (DiffuseTextureName != null)
                 outputString += $"vec3 diffuseColor = texture2D({DiffuseTextureName}, o_texcoords).rgb * {DiffuseMixName};\n";
             else
                 outputString += $"vec3 diffuseColor = {DiffuseColorName};\n";
-            outputString += "\n";
-            outputString += "\n";
-            outputString += "result = diffuseColor * (Iamb + Idif + Ispe) * att;\n";
-            //outputString += "result = diffuseColor * allLights[i].intensities;\n";
 
             return outputString;
-
         }
 
-        private string SpotLightCalculation()
+        private static string GgxMethod()
         {
             var outputString = "\n";
+            outputString += "// Normal distribution function, GGX/Trowbridge-Reitz\n";
+            outputString += "float ggx(vec3 N, vec3 L, vec3 V, float roughness, float F0)\n";
+            outputString += "{\n";
+            outputString += "   float alpha = roughness*roughness;\n";
+            outputString += "   vec3 H = normalize(L + V);\n";
+            outputString += "   float dotLH = max(0.0, dot(L,H));\n";
+            outputString += "   float dotNH = max(0.0, dot(N,H));\n";
+            outputString += "   float dotNL = max(0.0, dot(N,L));\n";
+            outputString += "   float alphaSqr = alpha * alpha;\n";
+            outputString += "   float denom = dotNH * dotNH * (alphaSqr - 1.0) + 1.0;\n";
+            outputString += "   float D = alphaSqr / (3.141592653589793 * denom * denom);\n";
+            outputString += "   float F = F0 + (1.0 - F0) * pow(1.0 - dotLH, 5.0);\n";
+            outputString += "   float k = 0.5 * alpha;\n";
+            outputString += "   float k2 = k * k;\n";
+            outputString += "   return dotNL * D * F / (dotLH*dotLH*(1.0-k2)+k2);\n";
+            outputString += "}\n";
 
-            outputString += "vec3 o_normal = vNormal;\n";
-            outputString += "vec3 o_toLight = normalize(allLights[i].position.xyz - surfacePos.xyz);\n";
-            outputString += "vec3 o_toCamera = normalize(viewpos - surfacePos.xyz);\n";
-            outputString += "vec2 o_texcoords = vUV;\n";
-            outputString += "\n";
-            outputString += "\n";
-            outputString += "vec3 L = o_toLight;\n";
-            outputString += "vec3 V = o_toCamera;\n";
-            outputString += "vec3 N = o_normal;\n";
-            outputString += "vec3 Iamb = ambientLighting(i);\n";
-            outputString += "vec3 Idif = diffuseLighting(N, L, i);\n";
-            outputString += "vec3 Ispe = specularLighting(N, L, V, i);\n";
-            outputString += "\n";
-            outputString += "       float distanceToLight = distance(allLights[i].position.xyz, surfacePos.xyz);\n";
-            outputString += "       float att = clamp(1.0 - distanceToLight*distanceToLight/(allLights[i].attenuation*allLights[i].attenuation), 0.0, 1.0);";
-            outputString += "       att *= att;";
-            if (DiffuseTextureName != null)
-                outputString += $"vec3 diffuseColor = texture2D({DiffuseTextureName}, o_texcoords).rgb * {DiffuseMixName};\n";
-            else
-                outputString += $"vec3 diffuseColor = {DiffuseColorName};\n";
+            return outputString;
+        }
 
-            outputString += "       float lightToSurfaceAngle = degrees(acos(dot(-o_toLight, normalize(allLights[i].coneDirection))));\n";
-            outputString += "       if (lightToSurfaceAngle > allLights[i].coneAngle)\n";
-            outputString += "       {\n";
-            outputString += "           att = 0.0;\n";
-            outputString += "       }\n";
+        private static string FresnelMethod()
+        {
+            /*
+             "float fresnel(float f0, vec3 n, vec3 l){\n\
+                                    return f0 + (1.0-f0) * pow(1.0- dot(n, l), 5.0);\n\
+                                }\n";
 
-            outputString += "\n";
-            outputString += "\n";
-            outputString += "result = diffuseColor * (Iamb + Idif + Ispe) * att;\n";
+            */
+
+            var outputString = "\n";
+            outputString += "// Fresnel term, Schlick's approximation\n";
+            outputString += "float fresnel(float f0, vec3 n, vec3 l)\n";
+            outputString += "{\n";
+            outputString += "   return f0 + (1.0-f0) * pow(1.0- dot(n, l), 5.0);\n";
+            outputString += "}\n";
+
+            return outputString;
+        }
+
+        private static string GeometryMethod()
+        {
+
+            /*
+
+            "float geometry(vec3 n, vec3 h, vec3 v, vec3 l, float roughness){\n\
+                                                                float NdotL_clamped= max(dot(n, l), 0.0);\n\
+                                                                float NdotV_clamped= max(dot(n, v), 0.0);\n\
+                                                                float k= roughness * sqrt(2.0/3.14159265);\n\
+                                                                float one_minus_k= 1.0 -k;\n\
+                                                                return ( NdotL_clamped / (NdotL_clamped * one_minus_k + k) ) * ( NdotV_clamped / (NdotV_clamped * one_minus_k + k) );\n\
+                                                            }\n";
+
+    */
+            var outputString = "\n";
+            outputString += "// Schlick's approximation of Smith's shadow equation\n";
+            outputString += "float geometry(vec3 n, vec3 h, vec3 v, vec3 l, float roughness)\n";
+            outputString += "{\n";
+            outputString += "   float NdotL_clamped= max(dot(n, l), 0.0);\n";
+            outputString += "   float NdotV_clamped= max(dot(n, v), 0.0);\n";
+            outputString += "   float k= roughness * sqrt(2.0/3.14159265);\n";
+            outputString += "   float one_minus_k= 1.0 -k;\n";
+            outputString += "   return ( NdotL_clamped / (NdotL_clamped * one_minus_k + k) ) * ( NdotV_clamped / (NdotV_clamped * one_minus_k + k) );\n";
+            outputString += "}\n";
 
             return outputString;
         }
@@ -531,22 +608,18 @@ namespace Fusee.Engine.Core
             vs.Append("\n\n\n");
             vs.Append("void main()\n");
             vs.Append("{\n");
-            vs.Append("    gl_FragColor = vec4(0.2,0.2,0.2,1.0);\n");
-            vs.Append("}\n"); 
-            /*
-            vs.Append("\n\n\n");
-            vs.Append("void main()\n");
-            vs.Append("{\n");
             vs.Append("    vec3 result = vec3(0.0);\n");
             // Annotation: allLights.length() only supported in version 300; WebGL needs version 100.
             // Therefore we need a workaround.  
             vs.Append("    for(int i = 0; i < MAX_LIGHTS;i++)\n");
             vs.Append("    {\n");
-            vs.Append("         result += ApplyLight(i);\n");
+            vs.Append("         Light currentLight = allLights[i];\n");
+            vs.Append("         result += ApplyLight(currentLight.position, currentLight.intensities, currentLight.coneDirection, " +
+                      "currentLight.attenuation, currentLight.ambientCoefficient, currentLight.coneAngle, currentLight.lightType);\n");
             vs.Append("    }\n");
             vs.Append($"    {GammaCorrection()}\n");
             vs.Append("    gl_FragColor = vec4(final_light ,1.0);\n");
-            vs.Append("}\n"); */
+            vs.Append("}\n");
         }
 
 
@@ -698,11 +771,11 @@ namespace Fusee.Engine.Core
 
         public string ApplyFragmentFunction => (_hasFragmentString) ? _applyFragmentString : null;
 
-        public float FresnelValue => (_hasFresnel) ? _fresnelValue : 0;
+        public float FresnelValue => (_hasFresnel) ? _fresnelValue : 0.5f;
 
-        public float DiffuseFractionValue => (_hasDiffuseFraction) ? _diffuseFractionValue : 0;
+        public float DiffuseFractionValue => (_hasDiffuseFraction) ? _diffuseFractionValue : 0.5f;
 
-        public float RoughnessValue => (_hasRoughness) ? _roughnessValue : 0;
+        public float RoughnessValue => (_hasRoughness) ? _roughnessValue : 0.5f;
 
         private string _applyLightString;
 

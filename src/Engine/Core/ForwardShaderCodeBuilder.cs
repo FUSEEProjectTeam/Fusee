@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using System;
+using System.Globalization;
+using System.Text;
 using Fusee.Base.Core;
 using Fusee.Serialization;
 
@@ -73,8 +75,8 @@ namespace Fusee.Engine.Core
             PSBody(ps);
             PS = ps.ToString();
             
-            Diagnostics.Log($"ForwardShaderCodeBuilder, VS \n{VS}");
-            Diagnostics.Log($"ForwardShaderCodeBuilder, PS \n{PS}");
+           // Diagnostics.Log($"ForwardShaderCodeBuilder, VS \n{VS}");
+           // Diagnostics.Log($"ForwardShaderCodeBuilder, PS \n{PS}");
 
         }
 
@@ -302,6 +304,7 @@ namespace Fusee.Engine.Core
                 vs.Append("{\n");
                 vs.Append("     vec3 result = vec3(0.0, 0.0, 0.0);\n");
                 vs.Append($"     {BlinnPhongCalculation()}\n");
+                vs.Append($"     {AttenuationFunction()}\n");
                 vs.Append("     if(lightType == 0) // PointLight\n");
                 vs.Append("     {");
                 vs.Append($"           {PointLightCalculation()}\n");
@@ -325,34 +328,38 @@ namespace Fusee.Engine.Core
                 vs.Append($"{GgxMethod()}");
                 vs.Append($"{FresnelMethod()}");
                 vs.Append($"{GeometryMethod()}");
+                vs.Append($"{AmbientLightningMethod()}");
+                
                 // Method
                 vs.Append("/******* ApplyLight Method ****/\n");
                 vs.Append("vec3 ApplyLight(vec3 position, vec3 intensities, vec3 coneDirection, float attenuation, float ambientCoefficient, float coneAngle, int lightType)\n");
                 vs.Append("{\n");
-                vs.Append($"     {PBRComponentCalculation()}");
                 vs.Append($"     {PhysicallyBasedShadingMethod()}\n");
+                vs.Append($"     {AttenuationFunction()}\n");
+                vs.Append("     if(lightType == 0) // PointLight\n");
+                vs.Append("     {");
+                vs.Append($"           {PointLightCalculation()}\n");
+                vs.Append("     }\n");
+                vs.Append("     else if(lightType == 1) // ParallelLight\n");
+                vs.Append("     {");
+                vs.Append($"            {ParallelLightCalculation()}\n");
+                vs.Append("     }\n");
+                vs.Append("     else if(lightType == 2) // SpotLight\n");
+                vs.Append("     {");
+                vs.Append($"            {SpotLightCalculation()}\n");
+                vs.Append("     }\n");
+                vs.Append("     return result;\n");
                 vs.Append("}\n");
             }
         }
 
-        private string PBRComponentCalculation()
+
+        private string AttenuationFunction()
         {
-            var outputString = "\n";
-
-            outputString += "vec3 o_normal = vMVNormal;\n";
-            outputString += "vec3 o_toLight = normalize(position - surfacePos.xyz);\n";
-            outputString += "vec3 o_toCamera = normalize(vViewDir - surfacePos.xyz);\n";
-            outputString += "vec2 o_texcoords = vUV;\n";
-            outputString += "\n";
-            outputString += "\n";
-            outputString += "vec3 L = o_toLight;\n";
-            outputString += "vec3 V = o_toCamera;\n";
-            outputString += "vec3 N = o_normal;\n";
-            outputString += "float VdotN = max(0.0,dot(V,N));\n";
-            outputString += "float LdotN = max(0.0,dot(L,N));\n";
-            outputString += "vec3 H = normalize(L + V);\n";
-         
-
+            var outputString = "";
+            outputString += "       float distanceToLight = distance(position, surfacePos.xyz);\n";
+            outputString += "       float att = clamp(1.0 - distanceToLight*distanceToLight/(attenuation*attenuation), 0.0, 1.0);\n";
+            outputString += "       att *= att;\n";
             return outputString;
         }
 
@@ -449,9 +456,6 @@ namespace Fusee.Engine.Core
         private static string PointLightCalculation()
         {
             var outputString = "\n";
-            outputString += "       float distanceToLight = distance(position, surfacePos.xyz);\n";
-            outputString += "       float att = clamp(1.0 - distanceToLight*distanceToLight/(attenuation*attenuation), 0.0, 1.0);\n";
-            outputString += "       att *= att;\n";
             outputString += "\n";
             outputString += "\n";
             outputString += "       result = diffuseColor * (Iamb + Idif + Ispe) * att;\n";
@@ -462,14 +466,10 @@ namespace Fusee.Engine.Core
         private static string SpotLightCalculation()
         {
             var outputString = "\n";
-             outputString += "       float distanceToLight = distance(position, surfacePos.xyz);\n";
-             outputString += "       float att = clamp(1.0 - distanceToLight*distanceToLight/(attenuation*attenuation), 0.0, 1.0);\n";
-              outputString += "      att *= att;\n";
-                                    
             outputString += "       float lightToSurfaceAngle = dot(-o_toLight, coneDirection);\n"; // coneDirection comes in normalized and multiplied with modelview
             outputString += "       if (lightToSurfaceAngle > coneAngle)\n"; // coneAngle comes in converted from degrees to radians
             outputString += "       {\n";
-            outputString += "           att = (1.0 - (1.0 - lightToSurfaceAngle) * 1.0/(1.0 - coneAngle));\n";
+            outputString += "           att *= (1.0 - (1.0 - lightToSurfaceAngle) * 1.0/(1.0 - coneAngle));\n";
             outputString += "       }\n";
             outputString += "       else\n";
             outputString += "       {\n";
@@ -483,19 +483,51 @@ namespace Fusee.Engine.Core
             return outputString;
         }
 
+        private string DiffuseEnergyRatio()
+        {
+           return "float diffuseEnergyRatio(float f0, vec3 n, vec3 l){\n return 1.0 - fresnel(f0, n, l);\n }\n";
+        }
+
+        // TODO: Cleanup & improve
         private string PhysicallyBasedShadingMethod()
         {
+    
             var outputString = "";
 
-            outputString += $"float fresnelValue=0.9;\n";
-            outputString += $"float diffuseFractionValue=0.1;\n";
-            outputString += $"float roughnessValue=0.1;\n";
+
+            outputString += "vec3 o_normal = vMVNormal;\n";
+            outputString += "vec3 o_toLight = normalize(position - surfacePos.xyz);\n";
+            outputString += "vec3 o_toCamera = normalize(vViewDir - surfacePos.xyz);\n";
+            outputString += "vec2 o_texcoords = vUV;\n";
+            outputString += "\n";
+            outputString += "\n";
+            outputString += "vec3 L = o_toLight;\n";
+            outputString += "vec3 V = o_toCamera;\n";
+            outputString += "vec3 N = o_normal;\n";
+            outputString += "float NdotV = max(0.0,dot(N,V));\n";
+            outputString += "float NdotL = max(0.0,dot(N,L));\n";
+            outputString += "vec3 H = normalize(L + V);\n";
+            outputString += "vec3 result = vec3(0);\n";
+       
+           
+
+            outputString += $"float fresnelValue={FresnelValue.ToString("0000.0000", CultureInfo.InvariantCulture)};\n";
+            outputString += $"float diffuseFractionValue={DiffuseFractionValue.ToString("0000.0000", CultureInfo.InvariantCulture)};\n";
+            outputString += $"float roughnessValue={RoughnessValue.ToString("0000.0000", CultureInfo.InvariantCulture)};\n";
             outputString += " \n";
             outputString += " float G = ggx(N, L, V, roughnessValue, fresnelValue);\n";
-            outputString += " float F = fresnel(V, N, false);\n";
+            outputString += " float F = fresnel(fresnelValue, N, L);\n"; 
             outputString += " float D = geometry(N, H, V, L, roughnessValue);\n";
-            outputString += " float returnFloat = G * F * D / max(3.14159265 * VdotN * LdotN, 0.000001);\n";
-            outputString += $"return  {DiffuseColorName} * returnFloat;\n";
+            outputString += " float brdf_spec = G * F * D / (NdotL * NdotV * 3.14);\n";
+        
+            outputString += $" vec3 Ispe = (brdf_spec * intensities) * {SpecularColorName} * {SpecularIntensityName} * 10.0;\n";
+            outputString += $" vec3 Idif =  NdotL * (diffuseFractionValue + Ispe * (1.0 - diffuseFractionValue));\n";
+            outputString += "vec3 Iamb = ambientLighting(ambientCoefficient);\n";
+            if (DiffuseTextureName != null)
+                outputString += $"vec3 diffuseColor = texture2D({DiffuseTextureName}, o_texcoords).rgb * {DiffuseMixName};\n";
+            else
+                outputString += $"vec3 diffuseColor = {DiffuseColorName};\n";
+            
             return outputString;
         }
 
@@ -506,7 +538,7 @@ namespace Fusee.Engine.Core
             outputString += "float ggx(vec3 N, vec3 L, vec3 V, float roughness, float F0)\n";
             outputString += "{\n";
             outputString += "   float alpha = roughness*roughness;\n";
-            outputString += "   vec3 H = normalize(L - V);\n";
+            outputString += "   vec3 H = normalize(L + V);\n";
             outputString += "   float dotLH = max(0.0, dot(L,H));\n";
             outputString += "   float dotNH = max(0.0, dot(N,H));\n";
             outputString += "   float dotNL = max(0.0, dot(N,L));\n";
@@ -524,17 +556,18 @@ namespace Fusee.Engine.Core
 
         private static string FresnelMethod()
         {
+            /*
+             "float fresnel(float f0, vec3 n, vec3 l){\n\
+                                    return f0 + (1.0-f0) * pow(1.0- dot(n, l), 5.0);\n\
+                                }\n";
+
+            */
+
             var outputString = "\n";
             outputString += "// Fresnel term, Schlick's approximation\n";
-            outputString += "float fresnel(vec3 V, vec3 N, bool invert)\n";
+            outputString += "float fresnel(float f0, vec3 n, vec3 l)\n";
             outputString += "{\n";
-            outputString += "   vec3 nDirection = normalize(V);\n";
-            outputString += "   vec3 nNormal = normalize(N);\n";
-            outputString += "   vec3 halfDirection = normalize( nNormal + nDirection );\n";
-            outputString += "   float cosine = dot( halfDirection, nDirection );\n";
-            outputString += "   float product = max( cosine, 0.0 );\n";
-            outputString += "   float factor = invert ? 1.0 - pow( product, 5.0 ) : pow( product, 5.0 );\n";
-            outputString += "   return factor;\n";
+            outputString += "   return f0 + (1.0-f0) * pow(1.0- dot(n, l), 5.0);\n";
             outputString += "}\n";
 
             return outputString;
@@ -702,7 +735,6 @@ namespace Fusee.Engine.Core
 
         private void GetLightningCalculationMethodFromSceneRender()
         {
-            Diagnostics.Log($"light {_lightningCalculationMethod}");
             _lightningCalculationMethod = SceneRenderer.LightningCalculationMethod;
         }
 
@@ -738,11 +770,11 @@ namespace Fusee.Engine.Core
 
         public string ApplyFragmentFunction => (_hasFragmentString) ? _applyFragmentString : null;
 
-        public float FresnelValue => (_hasFresnel) ? _fresnelValue : 0;
+        public float FresnelValue => (_hasFresnel) ? _fresnelValue : 0.5f;
 
-        public float DiffuseFractionValue => (_hasDiffuseFraction) ? _diffuseFractionValue : 0;
+        public float DiffuseFractionValue => (_hasDiffuseFraction) ? _diffuseFractionValue : 0.5f;
 
-        public float RoughnessValue => (_hasRoughness) ? _roughnessValue : 0;
+        public float RoughnessValue => (_hasRoughness) ? _roughnessValue : 0.5f;
 
         private string  _applyLightString;
 

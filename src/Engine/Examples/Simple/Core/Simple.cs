@@ -1,8 +1,5 @@
 ﻿//#define GUI_SIMPLE
 
-using System;
-using System.IO;
-using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
@@ -22,7 +19,7 @@ namespace Fusee.Engine.Examples.Simple.Core
     public class Simple : RenderCanvas
     {
         // angle variables
-        private static float _angleHorz = MathHelper.PiOver4, _angleVert, _angleVelHorz, _angleVelVert;
+        private static float _angleHorz = M.PiOver4, _angleVert, _angleVelHorz, _angleVelVert;
 
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
@@ -76,7 +73,7 @@ namespace Fusee.Engine.Examples.Simple.Core
             // Load the rocket model
             _rocketScene = AssetStorage.Get<SceneContainer>("WuggyLand.fus");
             //_rocketScene = AssetStorage.Get<SceneContainer>("RocketModel.fus");
-            RC.RenderDeferred = false;
+            RC.RenderDeferred = true; // activate lasers!
             /* //// Legacy Mode
              // Wrap a SceneRenderer around the model.
              _sceneRenderer = new SceneRenderer(_rocketScene); */
@@ -107,18 +104,39 @@ namespace Fusee.Engine.Examples.Simple.Core
             _rocketScene.Children[0].AddComponent(new LightComponent
                 {
                     Active = true,
-                    AmbientCoefficient = 0.9f,
+                    AmbientCoefficient = 0.6f,
                     Attenuation = 1000f,
-                    Color = new float3(1f,1f,1f),
+                    Color = new float3(0.6f,0.6f,0.6f),
                     ConeAngle = 45f,
                     ConeDirection = new float3(0f, 1f, 1f),
                     Name = "Light1",
-                    Position = new float3(896f, 283.5f, 1455.25f),
-                    Type = LightType.Spot
+                    Position = new float3(-300, 283.5f, 1455.25f),
+                    Type = LightType.Parallel
                 });
 
-           // var lightCone = AssetStorage.Get<SceneContainer>("Cube.fus");
-           // _rocketScene.Children.Add(lightCone.Children[0]);
+
+
+            var mat = _rocketScene.Children[7].Children[1].Components[1] as MaterialComponent;
+
+            if (mat != null)
+            {
+                var newMat = new MaterialPBRComponent
+                {
+                    Bump = mat.Bump,
+                    Diffuse = mat.Diffuse,
+                    DiffuseFraction = 0.1f,
+                    Emissive = mat.Emissive,
+                    FresnelReflectance = 30f,
+                    Name = "WuggyBody",
+                    RoughnessValue = 20f,
+                    Specular = mat.Specular
+                };
+
+                _rocketScene.Children[7].Children[1].Components[1] = newMat;
+            }
+
+            // var lightCone = AssetStorage.Get<SceneContainer>("Cube.fus");
+            // _rocketScene.Children.Add(lightCone.Children[0]);
 
 
 
@@ -223,7 +241,7 @@ namespace Fusee.Engine.Examples.Simple.Core
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
             // Mouse and keyboard movement
-            if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
+            if (System.Math.Abs(Keyboard.LeftRightAxis) > 0.1 || System.Math.Abs(Keyboard.UpDownAxis) > 0.1)
             {
                 _keys = true;
             }
@@ -330,11 +348,6 @@ namespace Fusee.Engine.Examples.Simple.Core
 
         }
 
-        private InputDevice Creator(IInputDeviceImp device)
-        {
-            throw new NotImplementedException();
-        }
-
         // Is called when the window was resized
         public override void Resize()
         {
@@ -347,7 +360,7 @@ namespace Fusee.Engine.Examples.Simple.Core
             // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
             // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
             // Back clipping happens at 2000 (Anything further away from the camera than 2000 world units gets clipped, polygons will be cut)
-            var projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 20000);
+            var projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, aspectRatio, 1, 20000);
             RC.Projection = projection;
 
             #if GUI_SIMPLE
