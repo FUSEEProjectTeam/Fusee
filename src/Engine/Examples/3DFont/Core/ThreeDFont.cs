@@ -2,6 +2,7 @@
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Jometri;
 using Fusee.Math.Core;
 using static Fusee.Engine.Core.Input;
 using Geometry = Fusee.Jometri.Geometry;
@@ -41,25 +42,37 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             _pointList = new List<Mesh>();
             _xForms = new List<float4x4>();
             
-            _text = "ABC";
+            _text = "i";
             _threeDFontHelper = new ThreeDFontHelper(_text, fontLato);
 
             _controlPoints = new List<float3>();
 
             var outlines = _threeDFontHelper.GetTextOutlinesWAngle(20);
-           
+            VertHandle vHandle1 = new VertHandle();
+            VertHandle vHandle3 = new VertHandle();
+
             var geom = new Geometry(outlines);
-            
-            foreach (var f in outlines)
+
+            foreach (var h in geom.VertHandles)
             {
-                foreach (var v in f.points)
+                if (h.Id == 1)
+                    vHandle1 = h;
+                if (h.Id != 3) continue;
+                vHandle3 = h;
+                break;
+            }
+
+            geom.InsertHalfEdge(vHandle1,vHandle3);
+
+            foreach (var f in geom.FaceHandles)
+            {
+                foreach (var vertex in geom.GetVeticesFromFace(f))
                 {
-                    _controlPoints.Add(v);
+                    _controlPoints.Add(vertex.Coord);
                 }
             }
             
-            //_controlPoints = (List<float3>) _threeDFontHelper.GetTextVerticesWAngle(20);
-
+            
             for (var i = 0; i < _controlPoints.Count; i++)
             {
                 _controlPoints[i] = new float3((_controlPoints[i].x / Width) - 1.5f, _controlPoints[i].y / Height, _controlPoints[i].z);

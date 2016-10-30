@@ -5,7 +5,10 @@
     /// </summary>
     public struct VertHandle
     {
-        internal int Id;
+        /// <summary>
+        /// Reference key for a vertex
+        /// </summary>
+        public int Id;
 
         internal VertHandle(int vertHandle)
         {
@@ -18,7 +21,10 @@
     /// </summary>
     public struct HalfEdgeHandle
     {
-        internal int Id;
+        /// <summary>
+        /// Reference key for a half edge
+        /// </summary>
+        public int Id;
 
         internal HalfEdgeHandle(int halfEdgeHandle)
         {
@@ -31,7 +37,10 @@
     /// </summary>
     public struct FaceHandle
     {
-        internal int Id;
+        /// <summary>
+        /// Reference key for a face
+        /// </summary>
+        public int Id;
 
         internal FaceHandle(int faceHandle)
         {

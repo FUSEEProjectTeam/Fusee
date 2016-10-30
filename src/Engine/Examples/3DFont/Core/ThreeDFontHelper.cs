@@ -205,8 +205,8 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
                     {
                         var outline = new Geometry.Outline
                         {
-                            isOuter = true,
-                            points = outlinePoints
+                            IsOuter = true,
+                            Points = outlinePoints
                         };
                         textOutlines.Add(outline);
                     }
@@ -214,8 +214,8 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
                     {
                         var outline = new Geometry.Outline
                         {
-                            isOuter = false,
-                            points = outlinePoints
+                            IsOuter = false,
+                            Points = outlinePoints
                         };
                         textOutlines.Add(outline);
                     }
