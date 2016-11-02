@@ -87,7 +87,7 @@ namespace Fusee.Jometri
             /// </summary>
             public HalfEdgeHandle IncidentHalfEdge;
 
-            
+
             /// <summary>
             /// The vertex' constuctor.
             /// </summary>
@@ -201,21 +201,20 @@ namespace Fusee.Jometri
             newFromP.Prev = pStartHe.Prev;
             newFromP.IncidentFace = newFace.Handle;
             newFromP.Handle = new HalfEdgeHandle(HalfEdgeHandles.Count + 1);
+            HalfEdgeHandles.Add(newFromP.Handle);
 
             newFromQ.Origin = q;
             newFromQ.Next = pStartHe.Handle;
             newFromQ.Prev = qStartHe.Prev;
             newFromQ.IncidentFace = face.Handle;
             newFromQ.Handle = new HalfEdgeHandle(HalfEdgeHandles.Count + 1);
+            HalfEdgeHandles.Add(newFromQ.Handle);
 
             newFromP.Twin = newFromQ.Handle;
             newFromQ.Twin = newFromP.Handle;
 
             newFace.FirstHalfEdge = newFromP.Handle;
             _faces.Add(newFace);
-
-            HalfEdgeHandles.Add(newFromP.Handle);
-            HalfEdgeHandles.Add(newFromQ.Handle);
 
             _halfEdges.Add(newFromP);
             _halfEdges.Add(newFromQ);
@@ -268,7 +267,6 @@ namespace Fusee.Jometri
                     break;
                 }
                 currentHe = GetHalfEdgeByHandle(currentHe.Next);
-                
 
             } while (currentHe.Handle.Id != qStartHe.Handle.Id);
         }
@@ -353,6 +351,20 @@ namespace Fusee.Jometri
                     break;
                 }
             } while (halfEdge.Handle.Id != origin.Id);
+
+            var incident = GetHalfEdgeByHandle(origin);
+            do
+            {
+                if (incident.Twin.Id != 0)
+                {
+                    var twin = GetHalfEdgeByHandle(incident.Twin);
+                    if(twin.Origin.Id == v.Handle.Id)
+                        yield return GetHalfEdgeByHandle(incident.Twin).Handle;
+                }
+                incident = GetHalfEdgeByHandle(incident.Next);
+            } while (incident.Handle.Id != origin.Id);
+
+
         }
 
         /// <summary>
@@ -387,7 +399,7 @@ namespace Fusee.Jometri
 
         #endregion
 
-        #region private Methods
+        #region private Methods for initialisation
 
         private void CreateHalfEdgesForGeometry(IEnumerable<Outline> outlines)
         {
@@ -476,6 +488,7 @@ namespace Fusee.Jometri
                 {
                     if (i == 0)
                         _faces.LastItem().InnerHalfEdges.Add(halfEdge.Handle);
+                    faceHandle = _faces.LastItem().Handle;
                 }
                 halfEdge.IncidentFace = faceHandle;
 

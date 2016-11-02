@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
@@ -42,18 +43,19 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             _pointList = new List<Mesh>();
             _xForms = new List<float4x4>();
             
-            _text = "i";
+            _text = "Ü";
             _threeDFontHelper = new ThreeDFontHelper(_text, fontLato);
 
             _controlPoints = new List<float3>();
 
             var outlines = _threeDFontHelper.GetTextOutlinesWAngle(20);
-            VertHandle vHandle1 = new VertHandle();
-            VertHandle vHandle3 = new VertHandle();
+            var vHandle1 = new VertHandle();
+            var vHandle3 = new VertHandle();
 
             var geom = new Geometry(outlines);
 
-            foreach (var h in geom.VertHandles)
+            //////////// InsertHalfEdgeTest //////////////////////////////////
+            /*foreach (var h in geom.VertHandles)
             {
                 if (h.Id == 1)
                     vHandle1 = h;
@@ -61,8 +63,15 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
                 vHandle3 = h;
                 break;
             }
+            geom.InsertHalfEdge(vHandle1,vHandle3);*/
+            ////////////////////////////////////////////////////////////////
 
-            geom.InsertHalfEdge(vHandle1,vHandle3);
+            var face = geom.FaceHandles[0];
+            var unsorted = geom.GetVeticesFromFace(face).ToList();
+            
+            var tri = new Triangulation(geom);
+
+            var sorted = tri.SortedVertices(unsorted);
 
             foreach (var f in geom.FaceHandles)
             {

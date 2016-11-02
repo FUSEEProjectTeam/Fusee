@@ -1,6 +1,7 @@
 ﻿#pragma warning disable 1591
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using ProtoBuf;
 
@@ -94,9 +95,9 @@ namespace Fusee.Math.Core
         /// <param name="d3">The double3 to copy components from.</param>
         public float3(double3 d3)
         {
-            x = (float) d3.x;
-            y = (float) d3.y;
-            z = (float) d3.z;
+            x = (float)d3.x;
+            y = (float)d3.y;
+            z = (float)d3.z;
         }
         #endregion
 
@@ -186,7 +187,7 @@ namespace Fusee.Math.Core
         public void Div(float f)
         {
             if (!(f > M.EpsilonFloat)) return;
-            var mult = 1.0f/f;
+            var mult = 1.0f / f;
             x *= mult;
             y *= mult;
             z *= mult;
@@ -206,7 +207,7 @@ namespace Fusee.Math.Core
         ///   <seealso cref="LengthSquared" />
         public float Length
         {
-            get { return (float) System.Math.Sqrt(x*x + y*y + z*z); }
+            get { return (float)System.Math.Sqrt(x * x + y * y + z * z); }
         }
 
         #endregion
@@ -227,7 +228,7 @@ namespace Fusee.Math.Core
         /// </remarks>
         public float LengthFast
         {
-            get { return 1.0f/M.InverseSqrtFast(x*x + y*y + z*z); }
+            get { return 1.0f / M.InverseSqrtFast(x * x + y * y + z * z); }
         }
 
         #endregion
@@ -248,7 +249,7 @@ namespace Fusee.Math.Core
         /// </remarks>
         public float LengthSquared
         {
-            get { return x*x + y*y + z*z; }
+            get { return x * x + y * y + z * z; }
         }
 
         #endregion
@@ -261,7 +262,7 @@ namespace Fusee.Math.Core
         public void Normalize()
         {
             if (!(Length > M.EpsilonFloat)) return;
-            var scale = 1.0f/Length;
+            var scale = 1.0f / Length;
             x *= scale;
             y *= scale;
             z *= scale;
@@ -276,7 +277,7 @@ namespace Fusee.Math.Core
         /// </summary>
         public void NormalizeFast()
         {
-            var scale = M.InverseSqrtFast(x*x + y*y + z*z);
+            var scale = M.InverseSqrtFast(x * x + y * y + z * z);
             x *= scale;
             y *= scale;
             z *= scale;
@@ -295,9 +296,9 @@ namespace Fusee.Math.Core
         [Obsolete("Use static Multiply() method instead.")]
         public void Scale(float sx, float sy, float sz)
         {
-            x = x*sx;
-            y = y*sy;
-            z = z*sz;
+            x = x * sx;
+            y = y * sy;
+            z = z * sz;
         }
 
         /// <summary>
@@ -332,7 +333,7 @@ namespace Fusee.Math.Core
         /// <returns>Returns an array of floats with the three components of the vector.</returns>
         public float[] ToArray()
         {
-            return new[] {x, y, z};
+            return new[] { x, y, z };
         }
 
         #endregion
@@ -438,9 +439,9 @@ namespace Fusee.Math.Core
         [Obsolete("Use static Multiply() method instead.")]
         public static void Mult(ref float3 a, float f, out float3 result)
         {
-            result.x = a.x*f;
-            result.y = a.y*f;
-            result.z = a.z*f;
+            result.x = a.x * f;
+            result.y = a.y * f;
+            result.z = a.z * f;
         }
 
         #endregion
@@ -459,7 +460,7 @@ namespace Fusee.Math.Core
         public static float3 Div(float3 a, float f)
         {
             if (!(f > M.EpsilonFloat)) return Zero;
-            var mult = 1.0f/f;
+            var mult = 1.0f / f;
             a.x *= mult;
             a.y *= mult;
             a.z *= mult;
@@ -477,10 +478,10 @@ namespace Fusee.Math.Core
         {
             if (!(f > M.EpsilonFloat))
             {
-                var mult = 1.0f/f;
-                result.x = a.x*mult;
-                result.y = a.y*mult;
-                result.z = a.z*mult;
+                var mult = 1.0f / f;
+                result.x = a.x * mult;
+                result.y = a.y * mult;
+                result.z = a.z * mult;
             }
             else
                 result = Zero;
@@ -572,7 +573,7 @@ namespace Fusee.Math.Core
         /// <param name="result">Result of the operation.</param>
         public static void Multiply(ref float3 vector, float scale, out float3 result)
         {
-            result = new float3(vector.x*scale, vector.y*scale, vector.z*scale);
+            result = new float3(vector.x * scale, vector.y * scale, vector.z * scale);
         }
 
         /// <summary>
@@ -597,7 +598,7 @@ namespace Fusee.Math.Core
         /// <param name="result">Result of the operation.</param>
         public static void Multiply(ref float3 vector, ref float3 scale, out float3 result)
         {
-            result = new float3(vector.x*scale.x, vector.y*scale.y, vector.z*scale.z);
+            result = new float3(vector.x * scale.x, vector.y * scale.y, vector.z * scale.z);
         }
 
         #endregion
@@ -626,7 +627,7 @@ namespace Fusee.Math.Core
         /// <param name="result">Result of the operation.</param>
         public static void Divide(ref float3 vector, float scale, out float3 result)
         {
-            Multiply(ref vector, 1/scale, out result);
+            Multiply(ref vector, 1 / scale, out result);
         }
 
         /// <summary>
@@ -651,7 +652,7 @@ namespace Fusee.Math.Core
         /// <param name="result">Result of the operation.</param>
         public static void Divide(ref float3 vector, ref float3 scale, out float3 result)
         {
-            result = new float3(vector.x/scale.x, vector.y/scale.y, vector.z/scale.z);
+            result = new float3(vector.x / scale.x, vector.y / scale.y, vector.z / scale.z);
         }
 
         #endregion
@@ -804,7 +805,7 @@ namespace Fusee.Math.Core
         {
             if (vec.Length > M.EpsilonFloat)
             {
-                var scale = 1.0f/vec.Length;
+                var scale = 1.0f / vec.Length;
 
                 vec.x *= scale;
                 vec.y *= scale;
@@ -823,11 +824,11 @@ namespace Fusee.Math.Core
         {
             if (vec.Length > M.EpsilonFloat)
             {
-                var scale = 1.0f/vec.Length;
+                var scale = 1.0f / vec.Length;
 
-                result.x = vec.x*scale;
-                result.y = vec.y*scale;
-                result.z = vec.z*scale;
+                result.x = vec.x * scale;
+                result.y = vec.y * scale;
+                result.z = vec.z * scale;
             }
             else
             {
@@ -846,7 +847,7 @@ namespace Fusee.Math.Core
             var ret = new float3[2];
 
             normal = Normalize(normal);
-            var proj = normal*Dot(tangent, normal);
+            var proj = normal * Dot(tangent, normal);
 
             tangent -= proj;
             tangent = Normalize(tangent);
@@ -870,7 +871,7 @@ namespace Fusee.Math.Core
         /// </returns>
         public static float3 NormalizeFast(float3 vec)
         {
-            var scale = M.InverseSqrtFast(vec.x*vec.x + vec.y*vec.y + vec.z*vec.z);
+            var scale = M.InverseSqrtFast(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
             vec.x *= scale;
             vec.y *= scale;
             vec.z *= scale;
@@ -884,10 +885,10 @@ namespace Fusee.Math.Core
         /// <param name="result">The normalized vector</param>
         public static void NormalizeFast(ref float3 vec, out float3 result)
         {
-            var scale = M.InverseSqrtFast(vec.x*vec.x + vec.y*vec.y + vec.z*vec.z);
-            result.x = vec.x*scale;
-            result.y = vec.y*scale;
-            result.z = vec.z*scale;
+            var scale = M.InverseSqrtFast(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
+            result.x = vec.x * scale;
+            result.y = vec.y * scale;
+            result.z = vec.z * scale;
         }
 
         #endregion
@@ -904,7 +905,7 @@ namespace Fusee.Math.Core
         /// </returns>
         public static float Dot(float3 left, float3 right)
         {
-            return left.x*right.x + left.y*right.y + left.z*right.z;
+            return left.x * right.x + left.y * right.y + left.z * right.z;
         }
 
         /// <summary>
@@ -915,7 +916,7 @@ namespace Fusee.Math.Core
         /// <param name="result">The dot product of the two inputs</param>
         public static void Dot(ref float3 left, ref float3 right, out float result)
         {
-            result = left.x*right.x + left.y*right.y + left.z*right.z;
+            result = left.x * right.x + left.y * right.y + left.z * right.z;
         }
 
         #endregion
@@ -945,9 +946,9 @@ namespace Fusee.Math.Core
         /// <param name="result">The cross product of the two inputs</param>
         public static void Cross(ref float3 left, ref float3 right, out float3 result)
         {
-            result = new float3(left.y*right.z - left.z*right.y,
-                                left.z*right.x - left.x*right.z,
-                                left.x*right.y - left.y*right.x);
+            result = new float3(left.y * right.z - left.z * right.y,
+                                left.z * right.x - left.x * right.z,
+                                left.x * right.y - left.y * right.x);
         }
 
         #endregion
@@ -965,9 +966,9 @@ namespace Fusee.Math.Core
         /// </returns>
         public static float3 Lerp(float3 a, float3 b, float blend)
         {
-            a.x = blend*(b.x - a.x) + a.x;
-            a.y = blend*(b.y - a.y) + a.y;
-            a.z = blend*(b.z - a.z) + a.z;
+            a.x = blend * (b.x - a.x) + a.x;
+            a.y = blend * (b.y - a.y) + a.y;
+            a.z = blend * (b.z - a.z) + a.z;
             return a;
         }
 
@@ -980,9 +981,9 @@ namespace Fusee.Math.Core
         /// <param name="result">a when blend=0, b when blend=1, and a linear combination otherwise</param>
         public static void Lerp(ref float3 a, ref float3 b, float blend, out float3 result)
         {
-            result.x = blend*(b.x - a.x) + a.x;
-            result.y = blend*(b.y - a.y) + a.y;
-            result.z = blend*(b.z - a.z) + a.z;
+            result.x = blend * (b.x - a.x) + a.x;
+            result.y = blend * (b.y - a.y) + a.y;
+            result.z = blend * (b.z - a.z) + a.z;
         }
 
         #endregion
@@ -1002,7 +1003,7 @@ namespace Fusee.Math.Core
         /// </returns>
         public static float3 BaryCentric(float3 a, float3 b, float3 c, float u, float v)
         {
-            return a + u*(b - a) + v*(c - a);
+            return a + u * (b - a) + v * (c - a);
         }
 
         /// <summary>
@@ -1060,17 +1061,17 @@ namespace Fusee.Math.Core
         /// <param name="result">The transformed vector</param>
         public static void TransformVector(ref float3 vec, ref float4x4 mat, out float3 result)
         {
-            result.x = vec.x*mat.Row0.x +
-                       vec.y*mat.Row1.x +
-                       vec.z*mat.Row2.x;
+            result.x = vec.x * mat.Row0.x +
+                       vec.y * mat.Row1.x +
+                       vec.z * mat.Row2.x;
 
-            result.y = vec.x*mat.Row0.y +
-                       vec.y*mat.Row1.y +
-                       vec.z*mat.Row2.y;
+            result.y = vec.x * mat.Row0.y +
+                       vec.y * mat.Row1.y +
+                       vec.z * mat.Row2.y;
 
-            result.z = vec.x*mat.Row0.z +
-                       vec.y*mat.Row1.z +
-                       vec.z*mat.Row2.z;
+            result.z = vec.x * mat.Row0.z +
+                       vec.y * mat.Row1.z +
+                       vec.z * mat.Row2.z;
         }
 
         /// <summary>
@@ -1140,17 +1141,17 @@ namespace Fusee.Math.Core
         /// </remarks>
         public static void TransformNormalInverse(ref float3 norm, ref float4x4 invMat, out float3 result)
         {
-            result.x = norm.x*invMat.Row0.x +
-                       norm.y*invMat.Row0.y +
-                       norm.z*invMat.Row0.z;
+            result.x = norm.x * invMat.Row0.x +
+                       norm.y * invMat.Row0.y +
+                       norm.z * invMat.Row0.z;
 
-            result.y = norm.x*invMat.Row1.x +
-                       norm.y*invMat.Row1.y +
-                       norm.z*invMat.Row1.z;
+            result.y = norm.x * invMat.Row1.x +
+                       norm.y * invMat.Row1.y +
+                       norm.z * invMat.Row1.z;
 
-            result.z = norm.x*invMat.Row2.x +
-                       norm.y*invMat.Row2.y +
-                       norm.z*invMat.Row2.z;
+            result.z = norm.x * invMat.Row2.x +
+                       norm.y * invMat.Row2.y +
+                       norm.z * invMat.Row2.z;
         }
 
         /// <summary>
@@ -1178,19 +1179,19 @@ namespace Fusee.Math.Core
         /// <param name="result">The transformed position</param>
         public static void TransformPosition(ref float3 pos, ref float4x4 mat, out float3 result)
         {
-            result.x = pos.x*mat.Row0.x +
-                       pos.y*mat.Row1.x +
-                       pos.z*mat.Row2.x +
+            result.x = pos.x * mat.Row0.x +
+                       pos.y * mat.Row1.x +
+                       pos.z * mat.Row2.x +
                        mat.Row3.x;
 
-            result.y = pos.x*mat.Row0.y +
-                       pos.y*mat.Row1.y +
-                       pos.z*mat.Row2.y +
+            result.y = pos.x * mat.Row0.y +
+                       pos.y * mat.Row1.y +
+                       pos.z * mat.Row2.y +
                        mat.Row3.y;
 
-            result.z = pos.x*mat.Row0.z +
-                       pos.y*mat.Row1.z +
-                       pos.z*mat.Row2.z +
+            result.z = pos.x * mat.Row0.z +
+                       pos.y * mat.Row1.z +
+                       pos.z * mat.Row2.z +
                        mat.Row3.z;
         }
 
@@ -1284,9 +1285,9 @@ namespace Fusee.Math.Core
 
             if (v.w > M.EpsilonFloat)
             {
-                result.x = v.x/v.w;
-                result.y = v.y/v.w;
-                result.z = v.z/v.w;
+                result.x = v.x / v.w;
+                result.y = v.y / v.w;
+                result.z = v.z / v.w;
             }
             else
                 result = Zero;
@@ -1311,14 +1312,14 @@ namespace Fusee.Math.Core
         {
             if ((first.Length > M.EpsilonFloat) && (second.Length > M.EpsilonFloat))
             {
-                var dotP = Dot(first, second)/(first.Length*second.Length);
+                var dotP = Dot(first, second) / (first.Length * second.Length);
 
                 if (dotP < -1)
                     dotP = -1;
                 if (dotP > 1)
                     dotP = 1;
 
-                return (float) System.Math.Acos(dotP);
+                return (float)System.Math.Acos(dotP);
             }
 
             return 0;
@@ -1339,7 +1340,7 @@ namespace Fusee.Math.Core
             Dot(ref first, ref second, out temp);
 
             if ((first.Length > M.EpsilonFloat) && (second.Length > M.EpsilonFloat))
-                result = (float) System.Math.Acos(temp/(first.Length*second.Length));
+                result = (float)System.Math.Acos(temp / (first.Length * second.Length));
             else
                 result = 0;
         }
@@ -1480,7 +1481,7 @@ namespace Fusee.Math.Core
         {
             if (-M.EpsilonFloat < scale && scale < M.EpsilonFloat) return Zero;
 
-            var mult = 1.0f/scale;
+            var mult = 1.0f / scale;
             vec.x *= mult;
             vec.y *= mult;
             vec.z *= mult;
@@ -1552,9 +1553,9 @@ namespace Fusee.Math.Core
         /// </returns>
         public override int GetHashCode()
         {
-// ReSharper disable NonReadonlyFieldInGetHashCode
+            // ReSharper disable NonReadonlyFieldInGetHashCode
             return x.GetHashCode() ^ y.GetHashCode() ^ z.GetHashCode();
-// ReSharper restore NonReadonlyFieldInGetHashCode
+            // ReSharper restore NonReadonlyFieldInGetHashCode
         }
 
         #endregion
@@ -1573,7 +1574,7 @@ namespace Fusee.Math.Core
             if (!(obj is float3))
                 return false;
 
-            return Equals((float3) obj);
+            return Equals((float3)obj);
         }
 
         #endregion
@@ -1639,6 +1640,20 @@ namespace Fusee.Math.Core
         /// The parse property.
         /// </value>
         public static Converter<string, float3> Parse { get; set; }
+
+
+        /// <summary>
+        /// Reduces a vertex of a face to "2D" by calculating the face normal and rotating the face until its normal lies on z axis
+        /// </summary>
+        /// <param name="src">Input vertex</param>
+        /// <param name="face">Input face</param>
+        public static float3 Reduce2D(float3 src, IEnumerable<float3> face)
+        {
+            //calculate face normal - rotate face until normal lies on z axis - retrun new value of src
+
+            //Dummy
+            return new float3(src.x, src.y, 0);
+        }
     }
 
     // ReSharper restore InconsistentNaming
