@@ -161,7 +161,7 @@ namespace Fusee.Engine.Core
     public class SceneRenderer : SceneVisitor
     {
         // Choose Lightning Method
-        public static LightningCalculationMethod LightningCalculationMethod = LightningCalculationMethod.ADVANCED;
+        public static LightningCalculationMethod LightningCalculationMethod = LightningCalculationMethod.SIMPLE;
         // All lights
         public static IList<LightResult> AllLightResults = new List<LightResult>();
 
@@ -185,6 +185,7 @@ namespace Fusee.Engine.Core
         private string _scenePathDirectory;
         private ShaderEffect _defaultEffect;
 
+        public static bool RenderDeferred = false;
 
 
         #endregion
@@ -369,14 +370,6 @@ namespace Fusee.Engine.Core
         #endregion
 
         public void Render(RenderContext rc)
-        {
-            SetContext(rc);
-            Traverse(_sc.Children);
-        }
-
-        
-
-        public void RenderDeferred(RenderContext rc)
         {
             SetContext(rc);
             Traverse(_sc.Children);
@@ -989,12 +982,13 @@ namespace Fusee.Engine.Core
     
         private ShaderEffect MakeMaterial(MaterialComponent mc)
         {
-            if (_rc.GetHardwareCapabilities(HardwareCapability.DEFFERED_POSSIBLE) == 1U && _rc.RenderDeferred)
+            if (_rc.GetHardwareCapabilities(HardwareCapability.DEFFERED_POSSIBLE) == 1U && RenderDeferred)
                 return DeferredRenderPathMaterial(mc);
             return ForwardRenderPathMaterial(mc);
         }
 
         // TODO: Set TextureParams from DeferredPath here, etc.
+        // TODO: Make polymorph
         private IEnumerable<EffectParameterDeclaration> AssembleEffectParamers(MaterialComponent mc, DeferredShaderCodeBuilder scb)
         {
             var effectParameters = new List<EffectParameterDeclaration>();
@@ -1122,12 +1116,12 @@ namespace Fusee.Engine.Core
                 effectParameters.Add(new EffectParameterDeclaration
                 {
                     Name = "allLights[0].position",
-                    Value = new float4(0, 0, 1, 1)
+                    Value = new float3(0f, 0f, 1f)
                 });
                 effectParameters.Add(new EffectParameterDeclaration
                 {
                     Name = "allLights[0].intensities",
-                    Value = new float3(1, 1, 1)
+                    Value = new float3(0.3f, 0.3f, 0.3f)
                 });
                 effectParameters.Add(new EffectParameterDeclaration
                 {
@@ -1152,7 +1146,7 @@ namespace Fusee.Engine.Core
                 effectParameters.Add(new EffectParameterDeclaration
                 {
                     Name = "allLights[0].lightType",
-                    Value = 0
+                    Value = 1
                 });
             }
 
@@ -1287,12 +1281,12 @@ namespace Fusee.Engine.Core
                 effectParameters.Add(new EffectParameterDeclaration
                 {
                     Name = "allLights[0].position",
-                    Value = new float4(0, 0, 1, 1)
+                    Value = new float3(0, 0, 1)
                 });
                 effectParameters.Add(new EffectParameterDeclaration
                 {
                     Name = "allLights[0].intensities",
-                    Value = new float3(1, 1, 1)
+                    Value = new float3(0.6f, 0.6f, 0.6f)
                 });
                 effectParameters.Add(new EffectParameterDeclaration
                 {
@@ -1302,7 +1296,7 @@ namespace Fusee.Engine.Core
                 effectParameters.Add(new EffectParameterDeclaration
                 {
                     Name = "allLights[0].ambientCoefficient",
-                    Value = (float)1
+                    Value = (float)0.1f
                 });
                 effectParameters.Add(new EffectParameterDeclaration
                 {
@@ -1317,7 +1311,7 @@ namespace Fusee.Engine.Core
                 effectParameters.Add(new EffectParameterDeclaration
                 {
                     Name = "allLights[0].lightType",
-                    Value = 0
+                    Value = 1
                 });
             }
 
@@ -1371,6 +1365,8 @@ namespace Fusee.Engine.Core
 
         #endregion
     }
+
+    #region LightViserator
     /// <summary>
     /// This class saves a light found by a Viserator with all parameters
     /// </summary>
@@ -1478,4 +1474,5 @@ namespace Fusee.Engine.Core
         }
 
     }
+#endregion
 }

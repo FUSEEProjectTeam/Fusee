@@ -45,16 +45,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.CullFace(CullFaceMode.Back);
 
             // _sharpFont = new Library();
-
-
-            // Create new ShadowFBO
-            ShadowFrameBuffer = new ShadowFrameBufferObject(renderCanvas.Width, renderCanvas.Height, this);
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public ShadowFrameBufferObject ShadowFrameBuffer;
 
         #endregion
 
@@ -1075,35 +1066,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     trisBytes, vboBytes));
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
-
-      
-
-        /// <summary>
-        /// Renders the specified <see cref="IMeshImp" />.
-        /// </summary>
-        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
-        public void RenderDeferred(IMeshImp mr)
-        {
-            /* // TODO: Implement ShadowPass
-             // TODO: CreateShader and SetShader
-
-             _shadowFrameBuffer.BindForWriting();
-
-             // Get shadowpass Shader and set it
-             //GL.UseProgram(_shadowFrameBuffer.ShadowShader.Program);
-
-             // Set normal shaders
-
-             //SetShader(_renderContextImpImplementation.Get);
-             */
-            // _shadowFrameBuffer.BindForReading(TextureUnit.Texture0);
-
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0); // this is the standart framebuffer, without it rendering would fail at the moment!
-
-            Render(mr);
-
-        }
-
+     
         /// <summary>
         /// Renders the specified <see cref="IMeshImp" />.
         /// </summary>

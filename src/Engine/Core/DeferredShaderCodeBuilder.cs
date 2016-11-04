@@ -75,8 +75,8 @@ namespace Fusee.Engine.Core
             PSBody(ps);
             PS = ps.ToString();
 
-            // Diagnostics.Log($"ForwardShaderCodeBuilder, VS \n{VS}");
-            // Diagnostics.Log($"ForwardShaderCodeBuilder, PS \n{PS}");
+             Diagnostics.Log($"ForwardShaderCodeBuilder, VS \n{VS}");
+             Diagnostics.Log($"ForwardShaderCodeBuilder, PS \n{PS}");
 
         }
 

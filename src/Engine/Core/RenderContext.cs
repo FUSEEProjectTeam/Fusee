@@ -32,7 +32,7 @@ namespace Fusee.Engine.Core
         private readonly Light[] _lightParams;
         private readonly LightParamNames[] _lightShaderParams;
         */
-        
+
 
         private bool _updatedShaderParams;
 
@@ -51,10 +51,7 @@ namespace Fusee.Engine.Core
 
         public float4x4[] Bones
         {
-            get
-            {
-                return _bones;
-            }
+            get { return _bones; }
             set
             {
                 _bones = value;
@@ -102,7 +99,7 @@ namespace Fusee.Engine.Core
         private bool _transModelViewOk;
         private bool _transProjectionOk;
         private bool _transModelViewProjectionOk;
-        
+
         #endregion
 
         #region Internal Fields
@@ -152,6 +149,7 @@ namespace Fusee.Engine.Core
 
 
         #region Matrix Fields
+
         /*/// <summary>
         /// The View matrix used by the rendering pipeline.
         /// </summary>
@@ -242,10 +240,7 @@ namespace Fusee.Engine.Core
         /// </remarks>
         public float4x4 ModelView
         {
-            get
-            {
-                return _modelView;
-            }
+            get { return _modelView; }
             set
             {
                 // Update matrix
@@ -291,10 +286,7 @@ namespace Fusee.Engine.Core
         /// </remarks>
         public float4x4 Projection
         {
-            get
-            {
-                return _projection;
-            }
+            get { return _projection; }
             set
             {
                 // Update matrix
@@ -331,7 +323,7 @@ namespace Fusee.Engine.Core
                 {
                     // Row order notation
                     // _modelViewProjection = float4x4.Mult(ModelView, Projection);
- 
+
                     // Column order notation
                     _modelViewProjection = float4x4.Mult(Projection, ModelView);
                     _modelViewProjectionOk = true;
@@ -468,6 +460,7 @@ namespace Fusee.Engine.Core
                 return _invModelViewProjection;
             }
         }
+
         /*
         /// <summary>
         /// The transpose of the View matrix.
@@ -596,6 +589,7 @@ namespace Fusee.Engine.Core
                 return _transModelViewProjection;
             }
         }
+
         /*
         /// <summary>
         /// The inverse transpose of the View matrix.
@@ -731,9 +725,7 @@ namespace Fusee.Engine.Core
         }
 
         #endregion
-
-        public bool RenderDeferred = true;
-
+        
         #endregion
 
         #region Constructors
@@ -745,7 +737,7 @@ namespace Fusee.Engine.Core
         public RenderContext(IRenderContextImp rci)
         {
             _rci = rci;
-           // View = float4x4.Identity;
+            // View = float4x4.Identity;
             ModelView = float4x4.Identity;
             Projection = float4x4.Identity;
 
@@ -779,11 +771,11 @@ namespace Fusee.Engine.Core
                 UpdateShaderParams();
 
             // Normal versions of MV and P
-          //  if (_currentShaderParams.FUSEE_M != null)
-           //     SetShaderParam(_currentShaderParams.FUSEE_M, Model);
+            //  if (_currentShaderParams.FUSEE_M != null)
+            //     SetShaderParam(_currentShaderParams.FUSEE_M, Model);
 
-          //  if (_currentShaderParams.FUSEE_V != null)
-           //     SetShaderParam(_currentShaderParams.FUSEE_V, View);
+            //  if (_currentShaderParams.FUSEE_V != null)
+            //     SetShaderParam(_currentShaderParams.FUSEE_V, View);
 
             if (_currentShaderParams.FUSEE_MV != null)
                 SetShaderParam(_currentShaderParams.FUSEE_MV, ModelView);
@@ -828,7 +820,7 @@ namespace Fusee.Engine.Core
             if (_currentShaderParams.FUSEE_BONES != null && Bones != null)
                 SetShaderParam(_currentShaderParams.FUSEE_BONES, Bones);
 
-            
+
             /* Removed light support
             // Todo: Remove multiple Lights per shader !!!
             for (var i = 0; i < 8; i++)
@@ -887,7 +879,7 @@ namespace Fusee.Engine.Core
             _currentShaderParams.FUSEE_ITMV = _currentShader.GetShaderParam("FUSEE_ITMV");
             _currentShaderParams.FUSEE_ITP = _currentShader.GetShaderParam("FUSEE_ITP");
             _currentShaderParams.FUSEE_ITMVP = _currentShader.GetShaderParam("FUSEE_ITMVP");
-            
+
             // Bones
             _currentShaderParams.FUSEE_BONES = _currentShader.GetShaderParam("FUSEE_BONES[0]");
 
@@ -921,7 +913,7 @@ namespace Fusee.Engine.Core
 
         public void UpdateTextureRegion(ITexture tex, ImageData img, int startX, int startY, int width, int height)
         {
-            _rci.UpdateTextureRegion(tex,img, startX,startY, width, height);
+            _rci.UpdateTextureRegion(tex, img, startX, startY, width, height);
         }
 
         /*
@@ -984,6 +976,7 @@ namespace Fusee.Engine.Core
         #endregion
 
         #region Text related Members
+
         /*
         /// <summary>
         /// Loads a font file (*.ttf) and processes it with the given font size.
@@ -1010,6 +1003,7 @@ namespace Fusee.Engine.Core
             return _rci.FixTextKerning(font, vertices, text, scaleX);
         }
         */
+
         #endregion
 
         #region Light related Members
@@ -1054,7 +1048,8 @@ namespace Fusee.Engine.Core
         /// <param name="specular">The specular light color.</param>
         /// <param name="type">The light type.</param>
         /// <param name="id">The identifier.A maximum of 8 lights is recommended due to portability.</param>
-        public void SetLight(float3 position, float3 direction, float4 diffuse, float4 ambient, float4 specular, int type, int id)
+        public void SetLight(float3 position, float3 direction, float4 diffuse, float4 ambient, float4 specular,
+            int type, int id)
         {
             SetLightActive(id, type);
             SetLightAmbient(id, ambient);
@@ -1289,13 +1284,13 @@ namespace Fusee.Engine.Core
         public void SetShader(ShaderProgram program)
         {
             _updatedShaderParams = false;
-                
+
             if (_currentShader != program)
             {
                 _currentShader = program;
                 _rci.SetShader(program._spi);
             }
-            UpdateShaderParams();         
+            UpdateShaderParams();
         }
 
         /// <summary>
@@ -1564,19 +1559,10 @@ namespace Fusee.Engine.Core
             if (m.Triangles != null && m.Triangles.Length != 0 && !m.TrianglesSet)
                 _rci.SetTriangles(m._meshImp, m.Triangles);
 
-            // TODO: Check if GetHardwareCapabilits Deffered == 1 then switch to Deffered Rendering
-            if (GetHardwareCapabilities(HardwareCapability.DEFFERED_POSSIBLE) == 1U && RenderDeferred)
-            {
-                _rci.RenderDeferred(m._meshImp);
-            }
-            else
-            {
-                _rci.Render(m._meshImp);
-
-            }
+            _rci.Render(m._meshImp);
         }
-
-        public uint GetHardwareCapabilities(HardwareCapability capability)
+      
+    public uint GetHardwareCapabilities(HardwareCapability capability)
         {
             return _rci.GetHardwareCapabilities(capability);
         }

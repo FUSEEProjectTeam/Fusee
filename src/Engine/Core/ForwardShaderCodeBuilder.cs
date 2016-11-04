@@ -75,8 +75,8 @@ namespace Fusee.Engine.Core
             PSBody(ps);
             PS = ps.ToString();
             
-           // Diagnostics.Log($"ForwardShaderCodeBuilder, VS \n{VS}");
-           // Diagnostics.Log($"ForwardShaderCodeBuilder, PS \n{PS}");
+            Diagnostics.Log($"ForwardShaderCodeBuilder, VS \n{VS}");
+            Diagnostics.Log($"ForwardShaderCodeBuilder, PS \n{PS}");
 
         }
 
@@ -89,10 +89,10 @@ namespace Fusee.Engine.Core
             {
                 vs.Append("  attribute vec3 fuVertex;\n");
 
-                if (_hasSpecular)
-                {
+              //  if (_hasSpecular)
+              //  {
                     vs.Append("  varying vec3 vViewDir;\n");
-                }
+              //  }
             }
 
             if (_hasWeightMap)
@@ -229,8 +229,7 @@ namespace Fusee.Engine.Core
             ChannelInputDeclaration(ps, _hasEmissive, _hasEmissiveTexture, "Emissive");
             BumpInputDeclaration(ps);
 
-            if (_hasSpecular)
-                ps.Append("  varying vec3 vViewDir;\n");
+           ps.Append("  varying vec3 vViewDir;\n");
             
 
             if (_hasNormals)
@@ -296,8 +295,10 @@ namespace Fusee.Engine.Core
             {
                 vs.Append("\n\n\n");
                 vs.Append($"           {AmbientLightningMethod()}\n");
-                vs.Append($"           {DiffuseLightingMethod()}\n");
-                vs.Append($"           {SpecularLightingMethod()}\n");
+                if(_hasDiffuse)
+                    vs.Append($"           {DiffuseLightingMethod()}\n");
+                if(_hasSpecular)
+                    vs.Append($"           {SpecularLightingMethod()}\n");
                 vs.Append("\n\n\n");
                 vs.Append("/******* ApplyLight Method ****/\n");
                 vs.Append("vec3 ApplyLight(vec3 position, vec3 intensities, vec3 coneDirection, float attenuation, float ambientCoefficient, float coneAngle, int lightType)\n");
@@ -425,8 +426,14 @@ namespace Fusee.Engine.Core
             outputString += "vec3 V = o_toCamera;\n";
             outputString += "vec3 N = o_normal;\n";
             outputString += "vec3 Iamb = ambientLighting(ambientCoefficient);\n";
-            outputString += "vec3 Idif = diffuseLighting(N, L, intensities);\n";
-            outputString += "vec3 Ispe = specularLighting(N, L, V, intensities);\n";
+            if(_hasDiffuse)
+                outputString += "vec3 Idif = diffuseLighting(N, L, intensities);\n";
+            else
+                outputString += "vec3 Idif = vec3(0.1,0.1,0.1);\n";
+            if(_hasSpecular)
+                outputString += "vec3 Ispe = specularLighting(N, L, V, intensities);\n";
+            else
+                outputString += "vec3 Ispe = vec3(0.1,0.1,0.1);\n";
             outputString += "\n";
             if (DiffuseTextureName != null)
                 outputString += $"vec3 diffuseColor = texture2D({DiffuseTextureName}, o_texcoords).rgb * {DiffuseMixName};\n";
