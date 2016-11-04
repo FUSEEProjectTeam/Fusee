@@ -322,7 +322,7 @@ namespace Fusee.Engine.Core
                 vs.Append("}\n");
                
             }
-            else
+        /*    else
             { // TODO: Try to parse Diffusevars to PBR values
                 // needed Methods
                 vs.Append("\n\n\n");
@@ -332,7 +332,7 @@ namespace Fusee.Engine.Core
                 vs.Append($"{AmbientLightningMethod()}");
                 
                 // Method
-                vs.Append("/******* ApplyLight Method ****/\n");
+                vs.Append("/******* ApplyLight Method ****//*\n");
                 vs.Append("vec3 ApplyLight(vec3 position, vec3 intensities, vec3 coneDirection, float attenuation, float ambientCoefficient, float coneAngle, int lightType)\n");
                 vs.Append("{\n");
                 vs.Append($"     {PhysicallyBasedShadingMethod()}\n");
@@ -351,7 +351,7 @@ namespace Fusee.Engine.Core
                 vs.Append("     }\n");
                 vs.Append("     return result;\n");
                 vs.Append("}\n");
-            }
+            }*/
         }
 
 
@@ -615,7 +615,9 @@ namespace Fusee.Engine.Core
         // ReSharper disable once InconsistentNaming
         private void PSBody(StringBuilder vs)
         {
-            vs.Append("\n\n\n");
+            if (_lightningCalculationMethod == LightningCalculationMethod.SIMPLE)
+            {
+                  vs.Append("\n\n\n");
             vs.Append("void main()\n");
             vs.Append("{\n");
                 vs.Append("    vec3 result = vec3(0.0);\n");
@@ -630,6 +632,206 @@ namespace Fusee.Engine.Core
                 vs.Append($"    {GammaCorrection()}\n");
                 vs.Append("    gl_FragColor = vec4(final_light ,1.0);\n");
             vs.Append("}\n");
+            }
+          
+            else
+            {
+                var advancedShader = @"
+                    #ifdef GL_ES
+                      precision highp float;
+                    #endif
+
+                    #define PI 3.1415926535897932384626433832795
+                 
+                    uniform float diffuseFractionValue;
+                    uniform	float roughnessValue;
+
+                    uniform vec3 position;
+
+                  
+                    // Physically based shading model
+                    // parameterized with the below options
+
+                    // Microfacet specular = D*G*F / (4*NoL*NoV) = D*Vis*F
+                    // Vis = G / (4*NoL*NoV)
+
+
+                    float Square( float x )
+                    {
+	                    return x*x;
+                    }
+
+                    vec2 Square( vec2 x )
+                    {
+	                    return x*x;
+                    }
+
+                    vec3 Square( vec3 x )
+                    {
+	                    return x*x;
+                    }
+
+                    vec4 Square( vec4 x )
+                    {
+	                    return x*x;
+                    }
+
+                    float Pow5( float x )
+                    {
+	                    float xx = x*x;
+	                    return xx * xx * x;
+                    }
+
+                // GGX / Trowbridge-Reitz
+                // [Walter et al. 2007, Microfacet models for refraction through rough surfaces]
+                float D_GGX(float Roughness, float NoH)
+                {
+                    float a = Roughness * Roughness;
+                    float a2 = a * a;
+                    float d = (NoH * a2 - NoH) * NoH + 1.0; // 2 mad
+                    return a2 / (PI * d * d);                   // 4 mul, 1 rcp
+                }
+
+                vec3 Diffuse_Lambert(vec3 DiffuseColor )
+                {
+                    return DiffuseColor * (1.0 / PI);
+                }
+
+                // Appoximation of joint Smith term for GGX
+                // [Heitz 2014, Understanding the Masking-Shadowing Function in Microfacet-Based BRDFs]
+                float Vis_SmithJointApprox(float Roughness, float NoV, float NoL)
+                {
+                    float a = Square(Roughness);
+                    float Vis_SmithV = NoL * (NoV * (1.0 - a) + a);
+                    float Vis_SmithL = NoV * (NoL * (1.0 - a) + a);
+                    return 0.5 * 1.0 / (Vis_SmithV + Vis_SmithL); // rcp to 1/X
+}
+                
+                // [Schlick 1994, An Inexpensive BRDF Model for Physically-Based Rendering]
+                                vec3 F_Schlick(vec3 SpecularColor, float VoH)
+                {
+                    float Fc = Pow5(1.0 - VoH);                 // 1 sub, 3 mul
+                                                                //return Fc + (1 - Fc) * SpecularColor;		// 1 add, 3 mad
+
+                    // Anything less than 2% is physically impossible and is instead considered to be shadowing
+                    // SpecularColor.g to SpecularColor.y
+                    return clamp((50.0 * SpecularColor.y), 0.0, 1.0) * Fc + (1.0 - Fc) * SpecularColor;
+                }
+
+
+                // [Enviroment BDRF Aprox]
+                vec3 EnvBRDFApprox(vec3 SpecularColor, float Roughness, float NoV)
+                {
+                // [ Lazarov 2013, Getting More Physical in Call of Duty: Black Ops II ]
+                // Adaptation to fit our G term.
+                const vec4 c0 = vec4(-1.0, -0.0275, -0.572, 0.022);
+                                const vec4 c1 = vec4(1.0, 0.0425, 1.04, -0.04);
+                                vec4 r = Roughness * c0 + c1;
+                                float a004 = min(r.x * r.x, exp2(-9.28 * NoV)) * r.x + r.y;
+                                vec2 AB = vec2(-1.04, 1.04) * a004 + r.zw;
+
+                // Anything less than 2% is physically impossible and is instead considered to be shadowing
+                // In ES2 this is skipped for performance as the impact can be small
+                // Note: this is needed for the 'specular' show flag to work, since it uses a SpecularColor of 0
+                // Changed SpecularColor.g to SpecularColor.y
+                AB.y *= clamp((50.0 * SpecularColor.y), 0.0, 1.0);
+
+
+                    return SpecularColor * AB.x + AB.y;
+                }
+                
+
+                float EnvBRDFApproxNonmetal(float Roughness, float NoV)
+                 {
+                    // Same as EnvBRDFApprox( 0.04, Roughness, NoV )
+                    const vec2 c0 = vec2(-1.0, -0.0275);
+                    const vec2 c1 = vec2(1.0, 0.0425);
+                    vec2 r = Roughness * c0 + c1;
+                    return min(r.x * r.x, exp2(-9.28 * NoV)) * r.x + r.y;
+                }
+
+
+                void main()
+                {
+                    vec3 result = vec3(0.0);
+
+
+                    vec3 o_normal = vMVNormal;
+                    vec3 o_toLight = normalize(position - surfacePos.xyz);
+                    vec3 o_toCamera = normalize(vViewDir - surfacePos.xyz);
+                    vec2 o_texcoords = vUV;
+
+
+                    vec3 L = o_toLight;
+                    vec3 V = o_toCamera;
+                    vec3 N = o_normal;
+
+                    vec3 H = normalize(V + L);
+
+                    float NdotV = clamp(abs(dot(N, V)) + 1e-5, 0.0, 1.0);
+                    float NdotL = clamp(dot(N, L), 0.0, 1.0);
+                    float VdotH = clamp(dot(V, H), 0.0, 1.0);
+                    float NdotH = clamp(dot(N, H), 0.0, 1.0);
+
+                    vec3 RayDirection = 2.0 * dot(V, N) * N - V;
+                    float RdotV = clamp(dot(RayDirection, L), 0.0, 1.0);
+
+                    // EnvBRDF 
+                    // TODO: Check for metal / nonmetal
+                    // TODO: Multipass with real envTexture
+                    //	vec3 SpecularTextureColor = vec3(texture2D(texture, vUV));
+                    //	vec3 SpecularEnvColor = EnvBRDFApprox(SpecularTextureColor, roughnessValue, RdotV);
+
+                    // Generalized microfacet specular
+                    float D = D_GGX(roughnessValue, NdotH) * diffuseFractionValue;
+                    float Vis = Vis_SmithJointApprox(roughnessValue, NdotV, NdotL);";
+                vs.Append(advancedShader);
+
+                if (_hasSpecular)
+                    vs.Append("vec3 F = F_Schlick(SpecularColor, VdotH); // F0 is in SpecularColor\n");
+                else
+                    vs.Append("vec3 F = F_Schlick(vec3(1.0,0.0,0.0), VdotH); // F0 is in SpecularColor\n");
+
+                var weiter = "";
+                if(_hasDiffuseTexture)
+                    weiter = @"
+                    // [Other diffuses have no visible change but much higher compile costs]
+                    // see: http://graphicrants.blogspot.de/2013/08/specular-brdf-reference.html
+                    vec3 Diffuse = Diffuse_Lambert(DiffuseColor);
+
+                    vec2 randomPoint;
+                    vec3 color = vec3(0.0, 0.0, 0.0);
+
+                    result = texture2D(DiffuseTexture, vUV).rgb + (D * Vis) * F;
+
+
+                    vec3 gamma = vec3(1.0 / 2.2);
+                    vec3 final_light = pow(result, gamma);
+
+                    gl_FragColor = vec4(result, 1.0);
+                }
+                ";
+                else
+              weiter = @"
+                    // [Other diffuses have no visible change but much higher compile costs]
+                    // see: http://graphicrants.blogspot.de/2013/08/specular-brdf-reference.html
+                    vec3 Diffuse = Diffuse_Lambert(DiffuseColor);
+
+                    vec2 randomPoint;
+                    vec3 color = vec3(0.0, 0.0, 0.0);
+
+                    result = Diffuse + (D * Vis) * F;
+
+
+                    vec3 gamma = vec3(1.0 / 2.2);
+                    vec3 final_light = pow(result, gamma);
+
+                    gl_FragColor = vec4(result, 1.0);
+                }
+                ";
+               
+                vs.Append(weiter);
+            }
         }
 
 

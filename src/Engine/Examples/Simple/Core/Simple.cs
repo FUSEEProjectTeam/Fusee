@@ -8,6 +8,7 @@ using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Math.Core;
 using Fusee.Serialization;
+using Fusee.Xene;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 #if GUI_SIMPLE
@@ -78,7 +79,18 @@ namespace Fusee.Engine.Examples.Simple.Core
            // RC.SetRenderState(RenderState.CullMode, (uint) Cull.Clockwise);
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_rocketScene);
-            SceneRenderer.LightningCalculationMethod = LightningCalculationMethod.ADVANCED;
+            SceneRenderer.LightningCalculationMethod = LightningCalculationMethod.SIMPLE;
+
+           
+
+            // Set roughness and diffuse
+            var ball1mat = _rocketScene.Children[0].Children[2].Children[3].Components[1] as MaterialPBRComponent;
+            ball1mat.Diffuse.Color = new float3(1.0f,0.0f,0.0f);
+            ball1mat.Specular = new SpecularChannelContainer();
+            ball1mat.Specular.Color = new float3(1.0f, 0.0f, 1.0f);
+            ball1mat.RoughnessValue = 0.9f;
+            ball1mat.DiffuseFraction = 0.6f;
+            _rocketScene.Children[0].Children[2].Children[3].Components[1] = ball1mat;
         }
 
         // RenderAFrame is called once a frame
