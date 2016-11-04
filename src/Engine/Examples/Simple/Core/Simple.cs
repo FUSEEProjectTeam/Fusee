@@ -74,9 +74,11 @@ namespace Fusee.Engine.Examples.Simple.Core
 
             // Load the rocket model
             _rocketScene = AssetStorage.Get<SceneContainer>("skybox.fus");
-
+            
+           // RC.SetRenderState(RenderState.CullMode, (uint) Cull.Clockwise);
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_rocketScene);
+            SceneRenderer.LightningCalculationMethod = LightningCalculationMethod.ADVANCED;
         }
 
         // RenderAFrame is called once a frame

@@ -228,7 +228,7 @@ namespace Fusee.Engine.Core
             SpecularInputDeclaration(ps);
             ChannelInputDeclaration(ps, _hasEmissive, _hasEmissiveTexture, "Emissive");
             BumpInputDeclaration(ps);
-
+            
            ps.Append("  varying vec3 vViewDir;\n");
             
 
@@ -526,9 +526,13 @@ namespace Fusee.Engine.Core
             outputString += " float F = fresnel(fresnelValue, N, L);\n"; 
             outputString += " float D = geometry(N, H, V, L, roughnessValue);\n";
             outputString += " float brdf_spec = G * F * D / (NdotL * NdotV * 3.14);\n";
-        
-            outputString += $" vec3 Ispe = (brdf_spec * intensities) * {SpecularColorName} * {SpecularIntensityName} * 10.0;\n";
-            outputString += $" vec3 Idif =  NdotL * (diffuseFractionValue + Ispe * (1.0 - diffuseFractionValue));\n";
+
+            if (_hasSpecular)
+                outputString += $" vec3 Ispe = (brdf_spec * intensities) * {SpecularColorName} * {SpecularIntensityName};\n";
+            else
+                outputString += $" vec3 Ispe = (brdf_spec * intensities) * vec3(0.3,0.3,0.3) * 0.5;\n";
+                outputString += $" vec3 Idif =  NdotL * (diffuseFractionValue + Ispe * (1.0 - diffuseFractionValue));\n";
+
             outputString += "vec3 Iamb = ambientLighting(ambientCoefficient);\n";
             if (DiffuseTextureName != null)
                 outputString += $"vec3 diffuseColor = texture2D({DiffuseTextureName}, o_texcoords).rgb * {DiffuseMixName};\n";

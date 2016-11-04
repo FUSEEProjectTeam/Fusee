@@ -105,7 +105,7 @@ namespace Fusee.Tools.fuConv
 
                     Console.WriteLine($"Converting from {opts.Input} to {Path.GetFileName(opts.Output)}");
                     var assimpScene = Assimp.ImportFileFromStream(input,
-                                    PostProcessSteps.Triangulate | PostProcessSteps.GenerateSmoothNormals | PostProcessSteps.FlipUVs |
+                                    PostProcessSteps.Triangulate | PostProcessSteps.GenerateSmoothNormals | 
                                     PostProcessSteps.JoinIdenticalVertices, inputFormat);
 
                     SceneContainer fuseeScene = Assimp2Fusee.FuseefyScene(assimpScene);

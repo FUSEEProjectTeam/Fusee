@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using Fusee.Serialization;
@@ -130,22 +131,42 @@ namespace Fusee.Tools.fuConv
                 return fuMat;
 
             // Cache miss.
-            fuMat = new MaterialComponent();
+            // Check for anisotropic material and decide if material- or materialpbrComponent is needed
+            fuMat = new MaterialPBRComponent();
+
             Material asMat = _assimpScene.Materials[materialIndex];
             if (asMat.HasName)
                 fuMat.Name = asMat.Name;
+            
 
             if (asMat.HasColorDiffuse || asMat.HasTextureDiffuse)
             {
                 fuMat.Diffuse = new MatChannelContainer();
                 if (asMat.HasColorDiffuse)
                 {
-                    /*
-                    Color = new float3(asMat.ColorDiffuse.R, asMat.ColorDiffuse.G, asMat.ColorDiffuse.B),
-                    Mix = 1.0f,
-                    */
+                    fuMat.Diffuse.Color = new float3(asMat.ColorDiffuse.R, asMat.ColorDiffuse.G, asMat.ColorDiffuse.B);
 
-                };
+                    if (asMat.HasTextureDiffuse)
+                    {
+                        fuMat.Diffuse.Texture = Path.GetFileName(asMat.TextureDiffuse.FilePath);
+                        fuMat.Diffuse.Mix = 1.0f;
+                    }
+                }
+                if (asMat.HasColorSpecular)
+                {
+                    fuMat.Specular = new SpecularChannelContainer
+                    {
+                        Color = new float3(asMat.ColorSpecular.R, asMat.ColorSpecular.G, asMat.ColorSpecular.B),
+                        Shininess = asMat.Shininess + 100f,
+                        Intensity = asMat.ShininessStrength * 0.1f // <- this value is needed for Maya fbx Export, strength too strong otherwise
+                    };
+                    if (asMat.HasTextureSpecular)
+                    {
+                        fuMat.Specular.Texture = asMat.TextureSpecular.FilePath;
+                        fuMat.Specular.Mix = 1.0f;
+                    }
+                }
+                // TODO: Set roughness fresnel etc. 
             }
             return fuMat;
         }
@@ -166,7 +187,7 @@ namespace Fusee.Tools.fuConv
 
             var fuMeshVerticies = new float3[meshVertices.Count];
             var fuMeshNormals = new float3[meshNormals.Count];
-            var fuMeshTexCords = new float2[meshTexCords.Length];
+            var fuMeshTexCords = new float2[meshTexCords.Length * 2];
             var fuMeshTriangles = new ushort[meshFaces.Count * 3];
 
             for (var i = 0; i < meshVertices.Count; i++)
@@ -174,18 +195,22 @@ namespace Fusee.Tools.fuConv
                 // Evaluate mesh and ...
                 var vertex = new float3(meshVertices[i].X, meshVertices[i].Y, meshVertices[i].Z);
                 var normal = new float3(meshNormals[i].X, meshNormals[i].Y, meshNormals[i].Z);
-                var texCord = new float2(0f, 0f);
+                var texCord = new float2[meshTexCords.Length * meshTexCords[0].Count];
 
-                // FUSEE has no multitexturesupport yet
-                if (meshTexCords[0].Count > 1)
-                    texCord = new float2(meshTexCords[0][i].X, meshTexCords[0][i].Y);
+                // ... evaluate and set UVs
+                foreach (var meshTexCord in meshTexCords)
+                {
+                    for (var k = 0; k < meshTexCord.Count; k++)
+                    {
+                        texCord[k] = new float2(meshTexCord[k].X, meshTexCord[k].Y);
+                    }
+                }
 
                 // ... add it to components of MeshComponent
                 fuMeshVerticies[i] = vertex;
                 fuMeshNormals[i] = normal;
+                fuMeshTexCords = texCord;
 
-                if (i < meshTexCords.Length)
-                    fuMeshTexCords[i] = texCord;
             }
 
             var count = 0;
@@ -193,9 +218,9 @@ namespace Fusee.Tools.fuConv
             // Evaluate all faces and add them all to one ushort[]
             foreach (var face in meshFaces)
             {
-                fuMeshTriangles[count] = (ushort)face.Indices[0];
+                fuMeshTriangles[count] = (ushort)face.Indices[2];
                 fuMeshTriangles[++count] = (ushort)face.Indices[1];
-                fuMeshTriangles[++count] = (ushort)face.Indices[2];
+                fuMeshTriangles[++count] = (ushort)face.Indices[0];
                 ++count;
             }
 
