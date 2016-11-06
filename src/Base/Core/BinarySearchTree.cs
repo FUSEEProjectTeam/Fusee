@@ -127,9 +127,10 @@ namespace Fusee.Base.Core
             return res;
         }
 
-
         private Node<T> Delete(ref Node<T> root)
         {
+            var tempValue = default(T);
+
             if (_globalRoot == root)
             {
                 //Deletion of root element is not allowed;
@@ -149,16 +150,24 @@ namespace Fusee.Base.Core
             }
             else
             {
-                Replace(ref root);
+                Replace(ref root, ref tempValue);
+                root.Value = tempValue;
             }
             return root;
         }
 
-        private static void Replace(ref Node<T> root)
+        private static void Replace(ref Node<T> root, ref T newValue )
         {
+            if (root == null) return;
             if (root.LeftNode == null)
+            {
+                newValue = root.Value;
                 root = root.RightNode;
-            else { Replace(ref root.LeftNode); }
+            }
+            else
+            {
+                Replace(ref root.LeftNode, ref newValue);
+            }
         }
     }
 }

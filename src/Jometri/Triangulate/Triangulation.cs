@@ -18,7 +18,7 @@ namespace Fusee.Jometri.Triangulate
         private VertexType _vertType;
         private BinarySearchTree<StatusNode> _sweepLineStatus;
         private Node<StatusNode> _root;
-        
+
 
         /// <summary>
         /// Constructs a new triangulation.
@@ -51,7 +51,7 @@ namespace Fusee.Jometri.Triangulate
                 }
             }
         }
-        
+
         #region Test face for y monotony
 
         private bool IsMonotone(FaceHandle faceHandle)
@@ -127,7 +127,6 @@ namespace Fusee.Jometri.Triangulate
             {
                 var current = sortedVertices[0];
                 
-
                 TestVertexType(current, face, newFaces);
 
                 Debug.WriteLine(_vertType);
@@ -167,14 +166,17 @@ namespace Fusee.Jometri.Triangulate
 
                 var ei = new StatusNode
                 {
-                    Coord = _geometry.GetVertexByHandle(he.Origin).Coord, HalfEdge = he.Handle, Helper = v.Handle, IsMergeVertex = false
+                    Coord = _geometry.GetVertexByHandle(he.Origin).Coord,
+                    HalfEdge = he.Handle,
+                    Helper = v.Handle,
+                    IsMergeVertex = false
                 };
                 _root = tree.InsertNode(_root, ei);
                 break;
             }
         }
 
-        private void HandleEndVertex(ref BinarySearchTree<StatusNode> tree, Geometry.Vertex v, IEnumerable<HalfEdgeHandle> faceHalfEdges, ICollection<FaceHandle> newFaces )
+        private void HandleEndVertex(ref BinarySearchTree<StatusNode> tree, Geometry.Vertex v, IEnumerable<HalfEdgeHandle> faceHalfEdges, ICollection<FaceHandle> newFaces)
         {
             foreach (var heh in faceHalfEdges)
             {
@@ -189,17 +191,21 @@ namespace Fusee.Jometri.Triangulate
 
                 if (eMinOne.IsMergeVertex)
                 {
-                    _geometry.InsertHalfEdge(v.Handle, eMinOne.Helper);
-                   newFaces.Add(_geometry.FaceHandles.LastItem());
+                    VertHandle p;
+                    VertHandle q;
+
+                    FindVertWithLowerX(out p, out q, v, eMinOne);
+
+                    _geometry.InsertHalfEdge(p, q);
+                    newFaces.Add(_geometry.FaceHandles.LastItem());
                 }
 
                 tree.DeleteNode(ref _root, eMinOne);
-
                 break;
             }
         }
 
-        private void HandleSplitVertex(ref BinarySearchTree<StatusNode> tree, Geometry.Vertex v, ICollection<FaceHandle> newFaces )
+        private void HandleSplitVertex(ref BinarySearchTree<StatusNode> tree, Geometry.Vertex v, ICollection<FaceHandle> newFaces)
         {
             foreach (var n in tree.PreorderTraverseTree(_root))
             {
@@ -208,7 +214,12 @@ namespace Fusee.Jometri.Triangulate
 
             var ej = FindLargestSmallerThan(_root, v.Coord.x).Value;
 
-            _geometry.InsertHalfEdge(v.Handle, ej.Helper);
+            VertHandle p;
+            VertHandle q;
+
+            FindVertWithLowerX(out p, out q, v, ej);
+
+            _geometry.InsertHalfEdge(p, q);
             newFaces.Add(_geometry.FaceHandles.LastItem());
 
             tree.FindNode(_root, ej).Value.Helper = v.Handle;
@@ -216,7 +227,10 @@ namespace Fusee.Jometri.Triangulate
 
             var ei = new StatusNode
             {
-                HalfEdge = v.IncidentHalfEdge, Helper = v.Handle, IsMergeVertex = false, Coord = v.Coord
+                HalfEdge = v.IncidentHalfEdge,
+                Helper = v.Handle,
+                IsMergeVertex = false,
+                Coord = v.Coord
             };
 
             tree.InsertNode(_root, ei);
@@ -232,12 +246,16 @@ namespace Fusee.Jometri.Triangulate
 
                 var prevHalfEdge = _geometry.GetHalfEdgeByHandle(he.Prev);
                 var x = _geometry.GetVertexByHandle(prevHalfEdge.Origin).Coord.x;
-
                 var eMinOne = FindStatusNode(_root, x).Value;
+
+                VertHandle p;
+                VertHandle q;
 
                 if (eMinOne.IsMergeVertex)
                 {
-                    _geometry.InsertHalfEdge(v.Handle, eMinOne.Helper);
+                    FindVertWithLowerX(out p, out q, v, eMinOne);
+
+                    _geometry.InsertHalfEdge(p, q);
                     newFaces.Add(_geometry.FaceHandles.LastItem());
                 }
 
@@ -247,7 +265,9 @@ namespace Fusee.Jometri.Triangulate
 
                 if (ej.IsMergeVertex)
                 {
-                    _geometry.InsertHalfEdge(v.Handle, ej.Helper);
+                    FindVertWithLowerX(out p, out q, v, ej);
+
+                    _geometry.InsertHalfEdge(p, q);
                     newFaces.Add(_geometry.FaceHandles.LastItem());
                 }
 
@@ -270,19 +290,40 @@ namespace Fusee.Jometri.Triangulate
 
                     var prevHalfEdge = _geometry.GetHalfEdgeByHandle(he.Prev);
                     var x = _geometry.GetVertexByHandle(prevHalfEdge.Origin).Coord.x;
+
+                    foreach (var n in tree.PreorderTraverseTree(_root))
+                    {
+                        Debug.WriteLine(n.Coord + " " + n.Helper.Id + " Is Merge " + n.IsMergeVertex);
+                    }
+
                     var eMinOne = FindStatusNode(_root, x).Value;
 
                     if (eMinOne.IsMergeVertex)
                     {
-                        _geometry.InsertHalfEdge(v.Handle, eMinOne.Helper);
+                        VertHandle p;
+                        VertHandle q;
+
+                        FindVertWithLowerX(out p, out q, v, eMinOne);
+
+                        _geometry.InsertHalfEdge(p, q);
                         newFaces.Add(_geometry.FaceHandles.LastItem());
                     }
 
                     tree.DeleteNode(ref _root, eMinOne);
 
+
+                    foreach (var n in tree.PreorderTraverseTree(_root))
+                    {
+                        Debug.WriteLine("After deletion");
+                        Debug.WriteLine(n.Coord + " " + n.Helper.Id + " Is Merge " + n.IsMergeVertex);
+                    }
+
                     var ei = new StatusNode
                     {
-                        HalfEdge = v.IncidentHalfEdge, Helper = v.Handle, IsMergeVertex = false, Coord = v.Coord
+                        HalfEdge = v.IncidentHalfEdge,
+                        Helper = v.Handle,
+                        IsMergeVertex = false,
+                        Coord = v.Coord
                     };
                     tree.InsertNode(_root, ei);
 
@@ -300,7 +341,12 @@ namespace Fusee.Jometri.Triangulate
 
                 if (ej.IsMergeVertex)
                 {
-                    _geometry.InsertHalfEdge(v.Handle, ej.Helper);
+                    VertHandle p;
+                    VertHandle q;
+
+                    FindVertWithLowerX(out p, out q, v, ej);
+
+                    _geometry.InsertHalfEdge(p, q);
                     newFaces.Add(_geometry.FaceHandles.LastItem());
                 }
 
@@ -313,9 +359,9 @@ namespace Fusee.Jometri.Triangulate
         {
             var sorted = new List<Geometry.Vertex>();
             sorted.AddRange(unsorted);
-            sorted.Sort(delegate(Geometry.Vertex a, Geometry.Vertex b)
+            sorted.Sort(delegate (Geometry.Vertex a, Geometry.Vertex b)
             {
-                var ydiff = -1*a.Coord.y.CompareTo(b.Coord.y);
+                var ydiff = -1 * a.Coord.y.CompareTo(b.Coord.y);
                 if (ydiff != 0) return ydiff;
                 return a.Coord.x.CompareTo(b.Coord.x);
             });
@@ -334,16 +380,15 @@ namespace Fusee.Jometri.Triangulate
         //Custom implementation of BinaryTrees FindNode method - works with StatusNodes
         private static Node<StatusNode> FindStatusNode(Node<StatusNode> root, float value)
         {
-            Node<StatusNode> res = null;
-            if (root.LeftNode != null)
-                res = FindStatusNode(root.LeftNode, value);
+            if (root == null) return null;
 
-            if (value.CompareTo(root.Value.Coord.x) == 0)
+            if (root.Value.Coord.x.Equals(value))
                 return root;
 
-            if (res == null && root.RightNode != null)
-                res = FindStatusNode(root.RightNode, value);
+            var res = FindStatusNode(root.LeftNode, value);
 
+            if (res == null)
+                res = FindStatusNode(root.RightNode, value);
             return res;
         }
 
@@ -361,8 +406,23 @@ namespace Fusee.Jometri.Triangulate
                     root = root.RightNode;
                 }
             }
-
             return res;
+        }
+
+        private void FindVertWithLowerX(out VertHandle p, out VertHandle q, Geometry.Vertex v, StatusNode helper)
+        {
+            var eHelper = _geometry.GetVertexByHandle(helper.Helper);
+
+            if (v.Coord.x < eHelper.Coord.x)
+            {
+                p = v.Handle;
+                q = helper.Helper;
+            }
+            else
+            {
+                q = v.Handle;
+                p = helper.Helper;
+            }
         }
 
         #endregion
@@ -372,8 +432,8 @@ namespace Fusee.Jometri.Triangulate
         private void TestVertexType(Geometry.Vertex vert, FaceHandle faceHandle, ICollection<FaceHandle> newFaces)
         {
             var heStartingAtFace = _geometry.HalfEdgesStartingAtV(vert).ToList();
-
             var incidentHalfEdge = new Geometry.HalfEdge();
+
             foreach (var he in heStartingAtFace)
             {
                 var incidentFace = _geometry.GetHalfEdgeByHandle(he).IncidentFace;
@@ -475,6 +535,7 @@ namespace Fusee.Jometri.Triangulate
         {
             var currentHe = _geometry.GetHalfEdgeByHandle(current.IncidentHalfEdge);
             var nextHe = _geometry.GetHalfEdgeByHandle(currentHe.Next);
+
             return _geometry.GetVertexByHandle(nextHe.Origin);
         }
 
@@ -482,6 +543,7 @@ namespace Fusee.Jometri.Triangulate
         {
             var currentHe = _geometry.GetHalfEdgeByHandle(current.IncidentHalfEdge);
             var prevHe = _geometry.GetHalfEdgeByHandle(currentHe.Prev);
+
             return _geometry.GetVertexByHandle(prevHe.Origin);
         }
 
@@ -493,10 +555,10 @@ namespace Fusee.Jometri.Triangulate
             var b = p3 - p4;
             var c = p1 - p3;
 
-            var tNumerator = b.y*b.x - b.x*c.y;
-            var iNumerator = a.x*c.y - a.y*c.x;
+            var tNumerator = b.y * b.x - b.x * c.y;
+            var iNumerator = a.x * c.y - a.y * c.x;
 
-            var denominator = a.y*b.x - a.x*b.y;
+            var denominator = a.y * b.x - a.x * b.y;
 
             if (denominator > 0)
             {
