@@ -229,6 +229,15 @@ namespace Fusee.Engine.Common
         /// </returns>
         ITexture CreateTexture(ImageData imageData, bool repeat);
 
+        /// <summary>
+        /// Creates a new writable texture and binds it to the shader.
+        /// Creates also a framebufferobject and installs convenience methods for binding and reading.
+        /// </summary>
+        /// <returns>
+        /// An ITexture that can be used for rendering to a texture in the shader.
+        /// </returns>
+        ITexture CreateWritableTexture();
+
         /*
         /// <summary>
         /// Creates a new Image with a specified size and color.

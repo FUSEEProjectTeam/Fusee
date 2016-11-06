@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Text;
 using Fusee.Serialization;
 using Assimp;
 using Fusee.Math.Core;
@@ -17,17 +15,16 @@ namespace Fusee.Tools.fuConv
     {
         // Context used while traversing
         private Scene _assimpScene;
-        private StateStack<Node> _currentAssimpNode;
-        private Dictionary<int, MaterialComponent> _matCache;
-        private Dictionary<int, MeshComponent> _meshCache;
+        private readonly StateStack<Node> _currentAssimpNode;
+        private readonly Dictionary<int, MaterialComponent> _matCache;
+        private readonly Dictionary<int, MeshComponent> _meshCache;
 
         public static SceneContainer FuseefyScene(Scene assimpScene)
         {
-            String userName = Environment.UserName;
+            var userName = Environment.UserName;
 
             // Create an instance of this class to keep state during recursive traversal
-            var inst = new Assimp2Fusee();
-            inst._assimpScene = assimpScene;
+            var inst = new Assimp2Fusee {_assimpScene = assimpScene};
 
             SceneContainer fuScene = new SceneContainer()
             {
@@ -40,13 +37,21 @@ namespace Fusee.Tools.fuConv
                 },
 
                 // Assimp scenes contain ONE root node (not a list of root notes)
-                Children = new List<SceneNodeContainer>(new [] {inst.FuseefyNode(assimpScene.RootNode)}),
+                Children = new List<SceneNodeContainer>(new [] {inst.FuseefyNode(assimpScene.RootNode)})
             };
+
+            // Evaluate and add all Lights to rootNode
+            // There is a meshcount but no lightcount per node. :/
+            foreach (var light in assimpScene.Lights)
+            {
+                var currentLight = GetLight(light);
+                fuScene.Children[0].AddComponent(currentLight);
+            }
 
             return fuScene;
         }
 
-        Assimp2Fusee()
+        private Assimp2Fusee()
         {
             _currentAssimpNode = new StateStack<Node>();
             _matCache = new Dictionary<int, MaterialComponent>();
@@ -56,6 +61,7 @@ namespace Fusee.Tools.fuConv
         private SceneNodeContainer FuseefyNode(Node assimpNode)
         {
             _currentAssimpNode.Tos = assimpNode;
+
             SceneNodeContainer fuNode;
             if (assimpNode.HasMeshes)
             {
@@ -109,7 +115,7 @@ namespace Fusee.Tools.fuConv
             };
         }
 
-        private TransformComponent GetXForm(Matrix4x4 transform)
+        private static TransformComponent GetXForm(Matrix4x4 transform)
         {
             Vector3D scaling, translation;
             AsQuaternion rotation;
@@ -134,7 +140,7 @@ namespace Fusee.Tools.fuConv
             // Check for anisotropic material and decide if material- or materialpbrComponent is needed
             fuMat = new MaterialPBRComponent();
 
-            Material asMat = _assimpScene.Materials[materialIndex];
+            var asMat = _assimpScene.Materials[materialIndex];
             if (asMat.HasName)
                 fuMat.Name = asMat.Name;
             
@@ -166,9 +172,50 @@ namespace Fusee.Tools.fuConv
                         fuMat.Specular.Mix = 1.0f;
                     }
                 }
-                // TODO: Set roughness fresnel etc. 
+                // TODO: Evaluate and set roughness fresnel etc. 
             }
+
+            // Add to cache
+            _matCache.Add(materialIndex, fuMat);
+
             return fuMat;
+        }
+
+        private static LightComponent GetLight(Light light)
+        {
+            var asLight = light;
+
+            var asAmbient = new float3(asLight.ColorAmbient.R, asLight.ColorAmbient.G, asLight.ColorAmbient.B);
+            var asPosition = new float3(asLight.Position.X, asLight.Position.Y, asLight.Position.Z);
+            var asConeAngle = asLight.AngleOuterCone;
+            var asAttenuation = asLight.AttenuationConstant;
+            var asColor = new float3(asLight.ColorDiffuse.R, asLight.ColorDiffuse.G, asLight.ColorDiffuse.B);
+            var asConeDirection = new float3(asLight.Direction.X, asLight.Direction.Y, asLight.Direction.Z);
+            var asLightType = asLight.LightType; // Undefined = 0, Directional = 1, Point = 2, Spot = 3
+
+            var fuLightType = LightType.Parallel;
+
+            switch ((int) asLightType)
+            {
+                case 1:
+                    fuLightType = LightType.Point;
+                    break;
+                case 3:
+                    fuLightType = LightType.Spot;
+                    break;
+            }
+
+            return new LightComponent
+            {
+                Active = true,
+                Position = asPosition,
+                ConeAngle = asConeAngle,
+                ConeDirection = asConeDirection,
+                Attenuation = asAttenuation,
+                AmbientCoefficient = asAmbient.Length,
+                Color = asColor,
+                Type = fuLightType
+            };
         }
 
         private MeshComponent GetMesh(int meshIndex)
@@ -224,16 +271,49 @@ namespace Fusee.Tools.fuConv
                 ++count;
             }
 
+            float3 min;
+            float3 max;
+
+            EvaluateAABB(fuMeshVerticies, out min, out max);
+
             // Create new MeshComponent
-            return new MeshComponent
+            var fuMeshComponent =  new MeshComponent
             {
                 Name = assimpMesh.Name,
                 Vertices = fuMeshVerticies,
-                BoundingBox = new AABBf(new float3(0, 0, 0), new float3(1000f, 1000, 1000f)), // TODO: Fix this
+                BoundingBox = new AABBf(min, max),
                 Normals = fuMeshNormals,
                 Triangles = fuMeshTriangles,
                 UVs = fuMeshTexCords
             };
+
+            // Add to cache
+            _meshCache.Add(meshIndex, fuMeshComponent);
+
+            return fuMeshComponent;
+        }
+
+        // ReSharper disable once InconsistentNaming
+        private static void EvaluateAABB(IList<float3> fuMeshVerticies, out float3 min, out float3 max)
+        {
+            var minVert = fuMeshVerticies[0];
+            var maxVert = minVert;
+
+            foreach (var vertex in fuMeshVerticies)
+            {
+                minVert = float3.Min(minVert, vertex);
+                maxVert = float3.Max(maxVert, vertex);
+                // Debuging:
+                // Console.WriteLine($"Current MinVert {minVert}, MaxVert {maxVert}");
+            }
+
+            // TODO: If bone transform is added in further release we need to take this into account!
+            // e.g.: 
+            // var minWithBone = float3.Transform(minVert, m_transforms[mesh.ParentBone.Index]);
+            // min = float3.Min(minWithBone,minVert);
+
+            min = minVert;
+            max = maxVert;
         }
 
         private static SceneNodeContainer CreateFuseeNode(string name, TransformComponent xform, MaterialComponent mat, MeshComponent mesh)

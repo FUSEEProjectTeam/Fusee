@@ -253,6 +253,22 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             return texID;
         }
 
+        /// <summary>
+        /// Creates a new writable texture and binds it to the shader.
+        /// Creates also a framebufferobject and installs convenience methods for binding and reading.
+        /// </summary>
+        /// <returns>An ITexture that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
+        public ITexture CreateWritableTexture()
+        {
+            PixelInternalFormat internalFormat;
+            OpenTK.Graphics.OpenGL.PixelFormat format;
+         
+            // TODO: Add FBO etc to Texture
+            ITexture texID = new Texture { };
+
+            return texID;
+        }
+
         #endregion
 
         #region Text related Members

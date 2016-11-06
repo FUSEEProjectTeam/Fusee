@@ -964,6 +964,18 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
+        /// Creates a new writable texture and binds it to the shader.
+        /// Creates also a framebufferobject and installs convenience methods for binding and reading.
+        /// </summary>
+        /// <returns>
+        /// <returns>An <see cref="ITexture"/>ITexture that can be used for texturing in the shader.</returns>
+        /// </returns>
+        public ITexture CreateWritableTexture()
+        {
+            return _rci.CreateWritableTexture();
+        }
+
+        /// <summary>
         /// Sets a Shader Parameter to a created texture.
         /// </summary>
         /// <param name="param">Shader Parameter used for texture binding.</param>
