@@ -2,6 +2,7 @@
 using System.Linq;
 using Fusee.Base.Core;
 using Fusee.Jometri;
+using Fusee.Jometri.DCEL;
 using Fusee.Math.Core;
 
 namespace Fusee.Engine.Examples.ThreeDFont.Core

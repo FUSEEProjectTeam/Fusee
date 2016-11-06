@@ -1,4 +1,4 @@
-﻿namespace Fusee.Jometri
+﻿namespace Fusee.Jometri.DCEL
 {
     /// <summary>
     /// A handle to assign a abstract reference to a Vertex

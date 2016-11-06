@@ -4,9 +4,11 @@ using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Jometri;
+using Fusee.Jometri.DCEL;
+using Fusee.Jometri.Triangulate;
 using Fusee.Math.Core;
 using static Fusee.Engine.Core.Input;
-using Geometry = Fusee.Jometri.Geometry;
+using Geometry = Fusee.Jometri.DCEL.Geometry;
 
 namespace Fusee.Engine.Examples.ThreeDFont.Core
 {
@@ -34,7 +36,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
 
         // Init is called on startup. 
         public override void Init()
-        {   
+        {
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
             var vladimir = AssetStorage.Get<Font>("VLADIMIR.TTF");
             var arial = AssetStorage.Get<Font>("arial.ttf");
@@ -42,8 +44,8 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             _pointCount = 0;
             _pointList = new List<Mesh>();
             _xForms = new List<float4x4>();
-            
-            _text = "Ü";
+
+            _text = "E";
             _threeDFontHelper = new ThreeDFontHelper(_text, fontLato);
 
             _controlPoints = new List<float3>();
@@ -66,22 +68,25 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             geom.InsertHalfEdge(vHandle1,vHandle3);*/
             ////////////////////////////////////////////////////////////////
 
-            var face = geom.FaceHandles[0];
-            var unsorted = geom.GetVeticesFromFace(face).ToList();
-            
+
             var tri = new Triangulation(geom);
 
-            var sorted = tri.SortedVertices(unsorted);
+            var test = new List<Geometry.Vertex>();
 
             foreach (var f in geom.FaceHandles)
             {
-                foreach (var vertex in geom.GetVeticesFromFace(f))
-                {
-                    _controlPoints.Add(vertex.Coord);
-                }
+                var zwerg = new List<Geometry.Vertex>();
+                zwerg.AddRange(geom.GetVeticesFromFace(f));
+                test.AddRange(zwerg);
+
             }
-            
-            
+
+            foreach (var vertex in test)
+            {
+                _controlPoints.Add(vertex.Coord);
+            }
+
+
             for (var i = 0; i < _controlPoints.Count; i++)
             {
                 _controlPoints[i] = new float3((_controlPoints[i].x / Width) - 1.5f, _controlPoints[i].y / Height, _controlPoints[i].z);
@@ -101,7 +106,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-            _frameCount ++;
+            _frameCount++;
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
@@ -120,17 +125,17 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             var aspectRatio = Width / (float)Height;
             var projection = float4x4.CreatePerspectiveFieldOfView(3.141592f * 0.25f, aspectRatio, 0.01f, 20);
             var view = float4x4.CreateTranslation(0, 0, 10) * float4x4.CreateRotationY(_alpha);
-            
-            if (_frameCount % 25 == 0 && _pointCount<_controlPoints.Count)
+
+            if (_frameCount % 25 == 0 && _pointCount < _controlPoints.Count)
             {
                 _pointCount++;
                 var point = _controlPoints[_pointCount - 1];
                 var modelPoint = ModelXForm(new float3(point.x - 3f, point.y - 1f, 0), new float3(0, 0, 0));
                 _xform = projection * view * modelPoint * float4x4.CreateScale(0.02f, 0.02f, 0.02f);
-                
+
                 _pointList.Add(_point);
                 _xForms.Add(_xform);
-                
+
             }
             for (var i = 0; i < _pointList.Count; i++)
             {

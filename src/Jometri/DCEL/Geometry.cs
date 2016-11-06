@@ -4,7 +4,7 @@ using System.Linq;
 using Fusee.Base.Core;
 using Fusee.Math.Core;
 
-namespace Fusee.Jometri
+namespace Fusee.Jometri.DCEL
 {
     /// <summary>
     /// Stores geometry in a DCEL (doubly conneted edge list).
@@ -149,7 +149,7 @@ namespace Fusee.Jometri
         #region public Methods
 
         /// <summary>
-        /// Inserts a pair of half edges between two outline.
+        /// Inserts a pair of half edges between two vertices.
         /// </summary>
         /// <param name="p"></param>
         /// <param name="q"></param>
@@ -199,7 +199,7 @@ namespace Fusee.Jometri
             newFromP.Origin = p;
             newFromP.Next = qStartHe.Handle;
             newFromP.Prev = pStartHe.Prev;
-            newFromP.IncidentFace = newFace.Handle;
+            newFromP.IncidentFace = face.Handle;
             newFromP.Handle = new HalfEdgeHandle(HalfEdgeHandles.Count + 1);
             HalfEdgeHandles.Add(newFromP.Handle);
 
@@ -213,7 +213,7 @@ namespace Fusee.Jometri
             newFromP.Twin = newFromQ.Handle;
             newFromQ.Twin = newFromP.Handle;
 
-            newFace.FirstHalfEdge = newFromP.Handle;
+            newFace.FirstHalfEdge = newFromQ.Handle;
             _faces.Add(newFace);
 
             _halfEdges.Add(newFromP);
@@ -254,7 +254,7 @@ namespace Fusee.Jometri
             }
 
             //Assign the handle of the new face to its half edges
-            var currentHe = qStartHe;
+            var currentHe = pStartHe;
             do
             {
                 currentHe.IncidentFace = newFace.Handle;
@@ -268,7 +268,7 @@ namespace Fusee.Jometri
                 }
                 currentHe = GetHalfEdgeByHandle(currentHe.Next);
 
-            } while (currentHe.Handle.Id != qStartHe.Handle.Id);
+            } while (currentHe.Handle.Id != pStartHe.Handle.Id);
         }
 
         /// <summary>
@@ -327,6 +327,33 @@ namespace Fusee.Jometri
         #endregion
 
         #region internal Methods
+
+        /// <summary>
+        /// This collection contains all handles to HalfEdges belonging to a certain face.
+        /// </summary>
+        /// <returns></returns>
+        internal IEnumerable<HalfEdgeHandle> HalfEdgesOfFace(FaceHandle faceHandle)
+        {
+            var face = GetFaceByHandle(faceHandle);
+            var firstHandle = face.FirstHalfEdge;
+            var current = GetHalfEdgeByHandle(face.FirstHalfEdge);
+            do
+            {
+                yield return current.Handle;
+                current = GetHalfEdgeByHandle(current.Next);
+            } while (firstHandle.Id != current.Handle.Id);
+
+            foreach (var he in face.InnerHalfEdges)
+            {
+                var cur = GetHalfEdgeByHandle(he);
+                do
+                {
+                    yield return cur.Handle;
+                    cur = GetHalfEdgeByHandle(cur.Next);
+
+                } while (he.Id != cur.Handle.Id);
+            }
+        }
 
         /// <summary>
         /// This collection contains all handles to HalfEdges which are starting at a certain vertex.

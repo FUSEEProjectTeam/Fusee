@@ -106,6 +106,28 @@ namespace Fusee.Base.Core
             }
         }
 
+        /// <summary>
+        /// Traverses the tree to find and return a Node with a certain value.
+        /// </summary>
+        /// <param name="root">The root node of the tree.</param>
+        /// <param name="value">The value to search for</param>
+        /// <returns></returns>
+        public Node<T> FindNode(Node<T> root, T value)
+        {
+            Node<T> res = null;
+            if (root.LeftNode != null)
+                res = FindNode(root.LeftNode, value);
+
+            if (value.CompareTo(root.Value) == 0)
+                return root;
+
+            if (res == null && root.RightNode != null)
+                res = FindNode(root.RightNode, value);
+
+            return res;
+        }
+
+
         private Node<T> Delete(ref Node<T> root)
         {
             if (_globalRoot == root)

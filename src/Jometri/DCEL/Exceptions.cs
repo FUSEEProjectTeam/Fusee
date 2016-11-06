@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Fusee.Jometri
+namespace Fusee.Jometri.DCEL
 {
     /// <summary>
     /// This excaption is thrown when the given handle of a HalfEdge Vertice or Face is not found.
