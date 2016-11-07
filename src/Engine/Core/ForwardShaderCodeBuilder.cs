@@ -75,8 +75,8 @@ namespace Fusee.Engine.Core
             PSBody(ps);
             PS = ps.ToString();
             
-            Diagnostics.Log($"ForwardShaderCodeBuilder, VS \n{VS}");
-            Diagnostics.Log($"ForwardShaderCodeBuilder, PS \n{PS}");
+           // Diagnostics.Log($"ForwardShaderCodeBuilder, VS \n{VS}");
+          //  Diagnostics.Log($"ForwardShaderCodeBuilder, PS \n{PS}");
 
         }
 
@@ -137,6 +137,10 @@ namespace Fusee.Engine.Core
             vs.Append("  varying vec4 surfacePos;\n");
             vs.Append("  varying vec3 vMVNormal;\n");
             vs.Append("  uniform mat4 FUSEE_MV;\n");
+            
+            // Needed for Shadows
+            vs.Append(" varying vec4 shadowLight;\n");
+            vs.Append(" uniform mat4 LightMVP;\n");
         }
 
         // ReSharper disable once InconsistentNaming
@@ -205,7 +209,7 @@ namespace Fusee.Engine.Core
 
             // needed for lightcalculation
             vs.Append("    surfacePos =  FUSEE_MV * vec4(fuVertex, 1.0); \n");
-            
+            vs.Append("    shadowLight =  LightMVP * vec4(fuVertex, 1.0); \n");
             vs.Append("  }\n\n");
         }
 
@@ -221,6 +225,10 @@ namespace Fusee.Engine.Core
             // define max lights
             var numberOfLights = SceneRenderer.AllLightResults.Count > 0 ? SceneRenderer.AllLightResults.Count : 1;
             ps.Append("\n\n #define MAX_LIGHTS " + numberOfLights + "\n\n");
+
+         
+
+      
 
             LightStructDeclaration(ps);
 
@@ -240,6 +248,29 @@ namespace Fusee.Engine.Core
 
             ps.Append("  varying vec4 surfacePos;\n");
             ps.Append("  uniform mat4 FUSEE_MV;\n");
+
+            ps.Append("\n uniform sampler2D firstPassTex; \n");
+
+            ps.Append("\n varying vec4 shadowLight; \n");
+                
+
+
+            string calcshadow = @"
+                    float CalcShadowFactor(vec4 LightSpacePos)
+                    {
+                        vec3 ProjCoords = LightSpacePos.xyz / LightSpacePos.w;
+                        vec2 UVCoords;
+                        UVCoords.x = 0.5 * ProjCoords.x + 0.5;
+                        UVCoords.y = 0.5 * ProjCoords.y + 0.5;
+                        float z = 0.5 * ProjCoords.z + 0.5;
+                        float Depth = texture2D(firstPassTex, UVCoords).x;
+                        if (Depth < (z + 0.00001))
+                            return 0.5;
+                        else
+                            return 1.0;
+                    }";
+            ps.Append(calcshadow);
+
         }
 
         // ReSharper disable once InconsistentNaming
@@ -440,6 +471,7 @@ namespace Fusee.Engine.Core
             else
                 outputString += $"vec3 diffuseColor = {DiffuseColorName};\n";
             outputString += "\n";
+            outputString += "float shadowFactor = CalcShadowFactor(shadowLight);";
             outputString += "\n";
 
             return outputString;
@@ -452,7 +484,7 @@ namespace Fusee.Engine.Core
         private static string ParallelLightCalculation()
         {
             var outputString = "\n";
-            outputString += "       result = diffuseColor * (Iamb + Idif + Ispe);\n";
+            outputString += "       result = diffuseColor *  shadowFactor * (Iamb + Idif + Ispe);\n";
             return outputString;
         }
 
@@ -465,7 +497,7 @@ namespace Fusee.Engine.Core
             var outputString = "\n";
             outputString += "\n";
             outputString += "\n";
-            outputString += "       result = diffuseColor * (Iamb + Idif + Ispe) * att;\n";
+            outputString += "       result = diffuseColor * shadowFactor * (Iamb + Idif + Ispe) * att;\n";
 
             return outputString;
         }
@@ -485,7 +517,7 @@ namespace Fusee.Engine.Core
 
             outputString += "\n";
             outputString += "\n";
-            outputString += "       result = diffuseColor * (Iamb + Idif + Ispe) * att;\n";
+            outputString += "       result = diffuseColor * shadowFactor * (Iamb + Idif + Ispe) * att;\n";
 
             return outputString;
         }
@@ -617,7 +649,8 @@ namespace Fusee.Engine.Core
         {
             if (_lightningCalculationMethod == LightningCalculationMethod.SIMPLE)
             {
-                  vs.Append("\n\n\n");
+              
+                vs.Append("\n\n\n");
             vs.Append("void main()\n");
             vs.Append("{\n");
                 vs.Append("    vec3 result = vec3(0.0);\n");
@@ -630,7 +663,9 @@ namespace Fusee.Engine.Core
                               "currentLight.attenuation, currentLight.ambientCoefficient, currentLight.coneAngle, currentLight.lightType);\n");
                 vs.Append("    }\n");
                 vs.Append($"    {GammaCorrection()}\n");
-                vs.Append("    gl_FragColor = vec4(final_light ,1.0);\n");
+                vs.Append($"    float shadow = CalcShadowFactor(shadowLight);\n");
+                
+                vs.Append("    gl_FragColor = vec4(final_light, 1.0);\n");
             vs.Append("}\n");
             }
           

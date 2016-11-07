@@ -970,9 +970,9 @@ namespace Fusee.Engine.Core
         /// <returns>
         /// <returns>An <see cref="ITexture"/>ITexture that can be used for texturing in the shader.</returns>
         /// </returns>
-        public ITexture CreateWritableTexture()
+        public ITexture CreateWritableTexture(int width, int height, ImagePixelFormat imagePixelFormat)
         {
-            return _rci.CreateWritableTexture();
+            return _rci.CreateWritableTexture(width, height, imagePixelFormat);
         }
 
         /// <summary>
@@ -984,6 +984,8 @@ namespace Fusee.Engine.Core
         {
             _rci.SetShaderParamTexture(param, texId);
         }
+
+
 
         #endregion
 
@@ -1516,9 +1518,10 @@ namespace Fusee.Engine.Core
             return _rci.GetRenderState(renderState);
         }
 
-        public bool CreateFBO()
+
+        public void SetRenderTarget(ITexture texture)
         {
-            return _rci.CreateFBO();
+            _rci.SetRenderTarget(texture);
         }
 
 

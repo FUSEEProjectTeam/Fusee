@@ -258,15 +258,62 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// Creates also a framebufferobject and installs convenience methods for binding and reading.
         /// </summary>
         /// <returns>An ITexture that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
-        public ITexture CreateWritableTexture()
+        public ITexture CreateWritableTexture(int width, int height, ImagePixelFormat pixelFormat)
         {
+            // TODO: Create Texture
+            // TODO: Create FBO with texture
+            // TODO: Bind to Buffer
+
+            int _textureHandle;
+            int _fboHandle;
+
             PixelInternalFormat internalFormat;
             OpenTK.Graphics.OpenGL.PixelFormat format;
-         
-            // TODO: Add FBO etc to Texture
-            ITexture texID = new Texture { };
 
-            return texID;
+            try
+            {
+                // Create a shadow texture
+                GL.GenTextures(1, out _textureHandle);
+                GL.BindTexture(TextureTarget.Texture2D, _textureHandle);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter,
+                    (int) TextureMinFilter.Nearest);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter,
+                    (int) TextureMagFilter.Nearest);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS,
+                    (int) TextureWrapMode.ClampToBorder);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT,
+                    (int) TextureWrapMode.ClampToBorder);
+                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent16, width, height, 0,
+                    OpenTK.Graphics.OpenGL.PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
+
+                // Create FBO
+                GL.GenFramebuffers(1, out _fboHandle);
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, _fboHandle);
+                GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment,
+                    TextureTarget.Texture2D, _textureHandle, 0);
+
+                // Disable writes to the color buffer
+                GL.DrawBuffer(DrawBufferMode.None);
+                GL.ReadBuffer(ReadBufferMode.None);
+
+                if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
+                {
+                    throw new Exception($"Error creating writable Texture: {GL.GetError()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
+                }
+
+             
+
+                // TODO: Evaluate, but this should work
+                return new Texture { handle = _textureHandle, fboHandle = _fboHandle };
+            }
+            catch (Exception e)
+            {
+                Diagnostics.Log($"Error creating writable Texture: {GL.GetError()}, {e}");
+            }
+
+            // TODO: Evaluate, but this should work
+            return new Texture { handle = 0, fboHandle = 0 };
+
         }
 
         #endregion
@@ -529,7 +576,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 paramInfo.Name = GL.GetActiveUniform(sProg.Program, i, out paramInfo.Size, out uType);
                 paramInfo.Handle = GetShaderParam(sProg, paramInfo.Name);
 
-                Diagnostics.Log($"Active Uniforms: {paramInfo.Name}");
+                //Diagnostics.Log($"Active Uniforms: {paramInfo.Name}");
 
 
                 switch (uType)
@@ -1645,6 +1692,35 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
         }
 
+
+
+        /// <summary>
+        /// Sets the RenderTarget, if texture is null rendertarget is the main screen, otherwise the picture will be rendered onto given texture
+        /// </summary>
+        /// <param name="texture">The texture as target</param>
+        public void SetRenderTarget(ITexture texture)
+        {
+            // If texture is null bind frambuffer 0, this is the main screen
+            if (texture == null)
+            {
+                GL.DrawBuffer(DrawBufferMode.Front);
+                GL.ReadBuffer(ReadBufferMode.Front);
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+               // GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, 0);
+            }
+            else
+            {
+                // Clear 
+                Clear(ClearFlags.Depth);
+
+                var fboTexture = (Texture) texture;
+                
+                // Bind buffer - now we are rendering to this buffer!
+                GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer,  fboTexture.fboHandle);
+
+            }
+        }
+
         /// <summary>
         /// Set the Viewport of the rendering output window by x,y position and width,height parameters. 
         /// The Viewport is the portion of the final image window.
@@ -1695,12 +1771,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public bool CreateFBO()
         {
             throw new NotImplementedException();
-            // throws Exception
-            // var test = new ShadowFrameBufferObject();
-            // test.CheckFboStatus();
-            // return true;
         }
-#endregion
+
+        #endregion
 
         #endregion
 

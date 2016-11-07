@@ -86,6 +86,17 @@ namespace Fusee.Engine.Imp.Graphics.Web
             throw new System.NotImplementedException();
         }
 
+        public ITexture CreateWritableTexture(int width, int height, ImagePixelFormat pixelFormat)
+        {
+            throw new NotImplementedException();
+        }
+
+        // This should not be extern for the moment
+        public ITexture CreateWritableTexture()
+        {
+            throw new NotImplementedException();
+        }
+
 
         public string GetImageType(Stream stream)
         {
@@ -268,6 +279,11 @@ namespace Fusee.Engine.Imp.Graphics.Web
         public uint GetRenderState(RenderState renderState)
         {
             throw new System.NotImplementedException();
+        }
+
+        public void SetRenderTarget(ITexture texture)
+        {
+            throw new NotImplementedException();
         }
 
         [JSExternal]

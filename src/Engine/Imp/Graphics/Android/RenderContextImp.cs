@@ -210,6 +210,16 @@ namespace Fusee.Engine.Imp.Graphics.Android
             return texID;
         }
 
+        public ITexture CreateWritableTexture(int width, int height, ImagePixelFormat pixelFormat)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ITexture CreateWritableTexture()
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #region Text related Members
@@ -1615,6 +1625,11 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 default:
                     throw new ArgumentOutOfRangeException(nameof(renderState));
             }
+        }
+
+        public void SetRenderTarget(ITexture texture)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>

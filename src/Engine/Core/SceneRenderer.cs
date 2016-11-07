@@ -164,7 +164,13 @@ namespace Fusee.Engine.Core
         public static LightningCalculationMethod LightningCalculationMethod = LightningCalculationMethod.SIMPLE;
         // All lights
         public static IList<LightResult> AllLightResults = new List<LightResult>();
-
+        // Multipass
+        public static bool RenderShadows = true;
+        private static int _renderPass = 1;
+        public static bool RenderDeferred = false; // TODO: Create and set vars within the constructor
+        private ITexture _firstPasswritableTexture;
+        private ShaderEffect _firstPassShaderEffect;
+        private float4x4 _lightMVP;
 
         #region Traversal information
 
@@ -185,7 +191,7 @@ namespace Fusee.Engine.Core
         private string _scenePathDirectory;
         private ShaderEffect _defaultEffect;
 
-        public static bool RenderDeferred = false;
+
 
 
         #endregion
@@ -236,7 +242,6 @@ namespace Fusee.Engine.Core
             _lightComponents = sc.Children.Viserate<LightSetup, LightResult>().ToList();
             // ...set them
             AllLightResults = _lightComponents;
-
 
             _sc = sc;
             // _scenePathDirectory = scenePathDirectory;
@@ -369,11 +374,84 @@ namespace Fusee.Engine.Core
 
         #endregion
 
+        // Shader for firstPass
+
+        private const string ShadowMapVs = @"
+
+                attribute vec3 fuVertex;
+                attribute vec2 fuUV;
+                attribute vec3 fuNormal;
+
+                uniform mat4 FUSEE_MVP;
+                uniform mat4 LightMVP;
+
+                varying vec2 uv;
+                varying vec3 normal;
+
+                void main()
+                {
+                    gl_Position = LightMVP * vec4(fuVertex, 1.0);
+                    uv = fuUV;
+                    normal = fuNormal;
+                }";
+
+        private const string ShadowMapPs = @"
+                #ifdef GL_ES
+                    precision highp float
+                #endif
+
+            varying vec2 uv;
+            varying vec3 normal;
+
+            uniform sampler2D texture;
+
+            void main()
+            {
+                float Depth = texture2D(texture, uv).x;
+                Depth = 1.0 - (1.0 - Depth) * 25.0;
+                gl_FragColor = vec4(Depth);
+            }";
+
+        private Dictionary<int, ITexture> _textureCache = new Dictionary<int, ITexture>();
+
+        private void CreateRenderPass(RenderContext rc, int i)
+        {
+            ITexture texture;
+            if (_textureCache.TryGetValue(i, out texture)) return;
+
+            _firstPasswritableTexture = rc.CreateWritableTexture(rc.ViewportWidth, rc.ViewportHeight, ImagePixelFormat.Depth);
+            _textureCache.Add(i, _firstPasswritableTexture);
+        }
+
         public void Render(RenderContext rc)
         {
+           // [First Pass]
+            // Create Texture and FBO
+            // -> Constructor // only one texture otherwise strange errors! ;)
+            CreateRenderPass(rc, 1);
+            // Set Rendertarget to this texture
+            rc.SetRenderTarget(_firstPasswritableTexture);
+            // Set Contex and traverse
+            SetContext(rc);
+            Traverse(_sc.Children); // Shader for first Pass is created and used in RenderWithLightsMethod()
+            _renderPass++; // Second Renderpass
+            // [First Pass complete]
+
+            // [Second Pass]
+            // Set Rendertarget to screen and render
+            rc.SetRenderTarget(null);
+            // TODO: Get texture created from firstPass -> perhaps in ShaderCodeBuilder
             SetContext(rc);
             Traverse(_sc.Children);
+            // [Second Pass complete]
+            _renderPass--;
         }
+
+      /*  public void SetRenderTarget(ITexture texture)
+        {
+            if(texture == null)
+                _rc.
+        } */
 
         #region Visitors
 
@@ -453,8 +531,8 @@ namespace Fusee.Engine.Core
                 rm = MakeMesh(meshComponent);
                 _meshMap.Add(meshComponent, rm);
             }
-
-            RenderWithLights(rm, _state.Effect);
+           
+            RenderWithLights(rm, _state.Effect, meshComponent.Name);
         }
 
        [VisitMethod]
@@ -480,7 +558,9 @@ namespace Fusee.Engine.Core
                 
                 // Multiply LightPosition with modelview
                 light.PositionWorldSpace = _rc.ModelView * light.PositionWorldSpace;
-                
+
+                light.OriginalConeDirection = light.ConeDirection;
+
                 // float4 is really needed
                 var lightConeDirectionFloat4 = new float4(light.ConeDirection.x, light.ConeDirection.y, light.ConeDirection.z,
                                           0.0f);
@@ -520,29 +600,105 @@ namespace Fusee.Engine.Core
 
         #endregion
 
-        private void RenderWithLights(Mesh rm, ShaderEffect effect)
+        private void RenderWithLights(Mesh rm, ShaderEffect effect, string name)
         {
-            if (_lightComponents.Count > 0)
+            if (AllLightResults.Count == 0) return;
+            if (RenderShadows && _renderPass == 1)
             {
-                for (var i = 0; i < _lightComponents.Count; i++)
-                {
-                    SetupLight(i, _lightComponents[i], effect);
-                    effect.RenderMesh(rm);
-                }
+                    // [First Pass]
+                    // Build and Set effectPass
+                    // RenderMeshes
+                        var lightPos = AllLightResults[0].Position;
+                        var lightCone = AllLightResults[0].OriginalConeDirection;
+                        lightCone.Normalize();
+                        
+                        var mtxRot = float4x4.CreateRotationX(0)*float4x4.CreateRotationY(0);
+                        var mtxCam = float4x4.LookAt(lightPos.x, lightPos.y, lightPos.z, lightCone.x, lightCone.y, lightCone.z, 0, 1, 0);
+                        var mtxScale = float4x4.CreateScale(1f);
+
+                        _lightMVP = mtxCam * mtxRot * mtxScale;
+                        _lightMVP = _rc.Projection * _lightMVP * _state.Model;
+
+                        var effectPass = new EffectPassDeclaration[1];
+                        effectPass[0] = new EffectPassDeclaration
+                        {
+                            PS = ShadowMapPs,
+                            VS = ShadowMapVs,
+                            StateSet = new RenderStateSet
+                            {
+                                ZEnable = true
+                            }
+                        };
+                        var effectParameter = new List<EffectParameterDeclaration>
+                        {
+                            new EffectParameterDeclaration {Name = "LightMVP", Value = _lightMVP}
+                        };
+                        _firstPassShaderEffect = new ShaderEffect(effectPass, effectParameter);
+                        _firstPassShaderEffect.AttachToContext(_rc);
+
+                        _firstPassShaderEffect.RenderMesh(rm);
+                        //_firstPassShaderEffect.DetachFromContext();
             }
             else
             {
-                // No light present - switch on standard light
-                effect.SetEffectParam(ShaderCodeBuilder.LightColorName, new float3(1, 1, 1));
-                // float4 lightDirHom = new float4(0, 0, -1, 0);
-                var lightDirHom = _rc.InvModelView * new float4(0, 0, -1, 0);
-                // float4 lightDirHom = _rc.TransModelView * new float4(0, 0, -1, 0);
-                var lightDir = lightDirHom.xyz;
-                lightDir.Normalize();
-                effect.SetEffectParam(ShaderCodeBuilder.LightDirectionName, lightDir);
-                effect.SetEffectParam(ShaderCodeBuilder.LightIntensityName, (float)1);
-                effect.RenderMesh(rm);
+
+           
+
+                var handleLight = effect._rc.GetShaderParam(effect._rc.CurrentShader, "LightMVP");
+                if (handleLight != null)
+                   {
+                    var lightPos = AllLightResults[0].Position;
+                    var lightCone = AllLightResults[0].OriginalConeDirection;
+                    lightCone.Normalize();
+
+                    var mtxRot = float4x4.CreateRotationX(0) * float4x4.CreateRotationY(0);
+                    var mtxCam = float4x4.LookAt(lightPos.x, lightPos.y, lightPos.z, lightCone.x, lightCone.y, lightCone.z, 0, 1, 0);
+                    var mtxScale = float4x4.CreateScale(1f);
+
+                     var lightMVP = mtxCam * mtxRot * mtxScale;
+                   
+                    effect._rc.SetShaderParam(handleLight,  _rc.Projection * lightMVP * _state.Model);
+                   }
+
+                var handle = effect._rc.GetShaderParam(effect._rc.CurrentShader, "firstPassTex");
+                if (handle != null)
+                {
+                    effect._rc.SetShaderParamTexture(handle, _firstPasswritableTexture);
+                }
+
+                    // effect.SetEffectParam("firstPassTex", _firstPasswritableTexture);
+                    //  effect.SetEffectParam("LightMVP", effect._rc.ModelViewProjection);
+
+                    //  if (name == "debug")
+                    // {
+                    effect.RenderMesh(rm);
+               // }
+                /*
+                if (_lightComponents.Count > 0)
+                {
+                    for (var i = 0; i < _lightComponents.Count; i++)
+                    {
+                        SetupLight(i, _lightComponents[i], effect);
+                        //SetupShadowLight(i, _lightComponents[i], effect);
+
+                        effect.RenderMesh(rm);
+                    }
+                }
+                else
+                {
+                    // No light present - switch on standard light
+                    effect.SetEffectParam(ShaderCodeBuilder.LightColorName, new float3(1, 1, 1));
+                    // float4 lightDirHom = new float4(0, 0, -1, 0);
+                    var lightDirHom = _rc.InvModelView*new float4(0, 0, -1, 0);
+                    // float4 lightDirHom = _rc.TransModelView * new float4(0, 0, -1, 0);
+                    var lightDir = lightDirHom.xyz;
+                    lightDir.Normalize();
+                    effect.SetEffectParam(ShaderCodeBuilder.LightDirectionName, lightDir);
+                    effect.SetEffectParam(ShaderCodeBuilder.LightIntensityName, (float) 1);
+                    effect.RenderMesh(rm);
+                } */
             }
+
         }
 
         private void SetupLight(int position, LightResult light, ShaderEffect effect)
@@ -560,9 +716,7 @@ namespace Fusee.Engine.Core
             effect.SetEffectParam($"allLights[{position}].ambientCoefficient", light.AmbientCoefficient);
             effect.SetEffectParam($"allLights[{position}].coneAngle", light.ConeAngle);
             effect.SetEffectParam($"allLights[{position}].coneDirection", light.ConeDirection);
-            effect.SetEffectParam($"allLights[{position}].lightType", light.Type);
-
-            
+            effect.SetEffectParam($"allLights[{position}].lightType", light.Type);            
         }
 
         #region RenderContext/Asset Setup
@@ -1277,7 +1431,9 @@ namespace Fusee.Engine.Core
             // No LightComponent in Scene -> switch to legacy mode!
             else
             {
-                Diagnostics.Log("legacy no lightcomponent");
+                Diagnostics.Log("" +
+                                "legacy no lightcomponent" +
+                                "");
                 effectParameters.Add(new EffectParameterDeclaration
                 {
                     Name = "allLights[0].position",
@@ -1368,7 +1524,7 @@ namespace Fusee.Engine.Core
 
     #region LightViserator
     /// <summary>
-    /// This class saves a light found by a Viserator with all parameters
+    /// This struct saves a light found by a Viserator with all parameters
     /// </summary>
     public struct LightResult
     {
@@ -1412,6 +1568,8 @@ namespace Fusee.Engine.Core
         /// The light's Position in World Coordiantes.
         /// </summary>
         public float3 PositionWorldSpace;
+
+        public float3 OriginalConeDirection;
     }
 
     public class LightSetupState : VisitorState

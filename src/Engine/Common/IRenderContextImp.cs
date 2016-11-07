@@ -236,7 +236,7 @@ namespace Fusee.Engine.Common
         /// <returns>
         /// An ITexture that can be used for rendering to a texture in the shader.
         /// </returns>
-        ITexture CreateWritableTexture();
+        ITexture CreateWritableTexture(int width, int height, ImagePixelFormat pixelFormat);
 
         /*
         /// <summary>
@@ -418,11 +418,17 @@ namespace Fusee.Engine.Common
         void SetRenderState(RenderState renderState, uint value);
 
         /// <summary>
-        /// Retrieves the value of the giben render state.
+        /// Retrieves the value of the given render state.
         /// </summary>
         /// <param name="renderState">The render state to retrieve.</param>
         /// <returns>the current value of the render state.</returns>
         uint GetRenderState(RenderState renderState);
+        
+        /// <summary>
+        /// Sets the RenderTarget, if texture is null rendertarget is the main screen, otherwise the picture will be rendered onto given texture
+        /// </summary>
+        /// <param name="texture">The texture as target</param>
+        void SetRenderTarget(ITexture texture);
 
         /*
          * TODO: NO tangent space normal maps at this time...

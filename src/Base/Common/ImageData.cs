@@ -25,6 +25,11 @@ namespace Fusee.Base.Common
         /// </summary>
         Intensity,
 
+        /// <summary>
+        /// Used for Images containing a depth value per-pixel. Each pixel consists of one byte.
+        /// </summary>
+        Depth,
+
     }
 
     /// <summary>

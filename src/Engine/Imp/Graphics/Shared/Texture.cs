@@ -12,5 +12,6 @@ namespace Fusee.Engine.Imp.Graphics.Android
     class Texture : ITexture
     {
         internal int handle;
+        internal int fboHandle;
     }
 }

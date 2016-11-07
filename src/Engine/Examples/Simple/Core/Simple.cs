@@ -74,23 +74,27 @@ namespace Fusee.Engine.Examples.Simple.Core
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             // Load the rocket model
-            _rocketScene = AssetStorage.Get<SceneContainer>("skybox.fus");
+            _rocketScene = AssetStorage.Get<SceneContainer>("shadow.fus");
             
            // RC.SetRenderState(RenderState.CullMode, (uint) Cull.Clockwise);
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_rocketScene);
             SceneRenderer.LightningCalculationMethod = LightningCalculationMethod.SIMPLE;
 
-           
+            _rocketScene.Children[0].AddComponent(new LightComponent
+            {
+                Active = true,
+                AmbientCoefficient = 0.4f,
+                Attenuation = 1000f,
+                Color = float3.One,
+                ConeAngle = 45f,
+                ConeDirection = new float3(0, 0, 1),
+                Position = new float3(0, 0, 3),
+                Type = LightType.Parallel
+            });
 
-            // Set roughness and diffuse
-            var ball1mat = _rocketScene.Children[0].Children[2].Children[3].Components[1] as MaterialPBRComponent;
-            ball1mat.Diffuse.Color = new float3(1.0f,0.0f,0.0f);
-            ball1mat.Specular = new SpecularChannelContainer();
-            ball1mat.Specular.Color = new float3(1.0f, 0.0f, 1.0f);
-            ball1mat.RoughnessValue = 0.9f;
-            ball1mat.DiffuseFraction = 0.6f;
-            _rocketScene.Children[0].Children[2].Children[3].Components[1] = ball1mat;
+            _rocketScene.Children[0].Children[0].Components[2].Name = "debug";
+
         }
 
         // RenderAFrame is called once a frame
@@ -121,28 +125,27 @@ namespace Fusee.Engine.Examples.Simple.Core
             }
             else
             {
-                if (_keys)
-                {
-                    _angleVelHorz = -RotationSpeed * Keyboard.LeftRightAxis * DeltaTime;
-                    _angleVelVert = -RotationSpeed * Keyboard.UpDownAxis * DeltaTime;
-                }
-                else
-                {
                     var curDamp = (float)System.Math.Exp(-Damping * DeltaTime);
                     _angleVelHorz *= curDamp;
                     _angleVelVert *= curDamp;
-                }
             }
 
 
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
 
+            var light = _rocketScene.Children[0].GetComponent<LightComponent>();
+            light.Position = new float3(light.Position.x + Keyboard.ADAxis * 0.01f, light.Position.y + Keyboard.WSAxis * 0.01f, light.Position.z + Keyboard.UpDownAxis * 0.01f);
+            _rocketScene.Children[0].Components[1] = light;
+            var debug = _rocketScene.Children[0].Components[1] as LightComponent;
+            Diagnostics.Log($"Pos: {debug.Position}");
             // Create the camera matrix and set it as the current ModelView transformation
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-            var mtxCam = float4x4.LookAt(0, 20, -1000, 0, 150, 0, 0, 1, 0);
-            var mtxScale = float4x4.CreateScale(100.0f);
+            var mtxCam = float4x4.LookAt(0, 20, -3, 0, -100, 0, 0, 1, 0);
+            var mtxScale = float4x4.CreateScale(1f);
             RC.ModelView = mtxCam * mtxRot * mtxScale;
+
+            
 
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
