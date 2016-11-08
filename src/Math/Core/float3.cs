@@ -1640,20 +1640,6 @@ namespace Fusee.Math.Core
         /// The parse property.
         /// </value>
         public static Converter<string, float3> Parse { get; set; }
-
-
-        /// <summary>
-        /// Reduces a vertex of a face to "2D" by calculating the face normal and rotating the face until its normal lies on z axis
-        /// </summary>
-        /// <param name="src">Input vertex</param>
-        /// <param name="face">Input face</param>
-        public static float3 Reduce2D(float3 src, IEnumerable<float3> face)
-        {
-            //calculate face normal - rotate face until normal lies on z axis - retrun new value of src
-
-            //Dummy
-            return new float3(src.x, src.y, 0);
-        }
     }
 
     // ReSharper restore InconsistentNaming

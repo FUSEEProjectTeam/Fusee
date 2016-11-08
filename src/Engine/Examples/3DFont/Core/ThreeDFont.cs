@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
-using Fusee.Jometri;
 using Fusee.Jometri.DCEL;
 using Fusee.Jometri.Triangulate;
 using Fusee.Math.Core;
@@ -45,30 +43,13 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             _pointList = new List<Mesh>();
             _xForms = new List<float4x4>();
 
-            _text = "E";
+            _text = "B";
             _threeDFontHelper = new ThreeDFontHelper(_text, fontLato);
 
             _controlPoints = new List<float3>();
 
             var outlines = _threeDFontHelper.GetTextOutlinesWAngle(20);
-            var vHandle1 = new VertHandle();
-            var vHandle3 = new VertHandle();
-
             var geom = new Geometry(outlines);
-
-            //////////// InsertHalfEdgeTest //////////////////////////////////
-            /*foreach (var h in geom.VertHandles)
-            {
-                if (h.Id == 1)
-                    vHandle1 = h;
-                if (h.Id != 3) continue;
-                vHandle3 = h;
-                break;
-            }
-            geom.InsertHalfEdge(vHandle1,vHandle3);*/
-            ////////////////////////////////////////////////////////////////
-
-
             var tri = new Triangulation(geom);
 
             var test = new List<Geometry.Vertex>();
@@ -76,7 +57,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             foreach (var f in geom.FaceHandles)
             {
                 var zwerg = new List<Geometry.Vertex>();
-                zwerg.AddRange(geom.GetVeticesFromFace(f));
+                zwerg.AddRange(geom.GetFaceVertices(f));
                 test.AddRange(zwerg);
 
             }
@@ -85,7 +66,6 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             {
                 _controlPoints.Add(vertex.Coord);
             }
-
 
             for (var i = 0; i < _controlPoints.Count; i++)
             {

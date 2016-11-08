@@ -229,6 +229,8 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             }
             return textOutlines;
         }
+
+        
     }
 }
 
