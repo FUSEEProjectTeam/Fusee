@@ -257,8 +257,9 @@ namespace Fusee.Engine.Core
 
             string calcshadow = @"
                     float CalcShadowFactor(vec4 LightSpacePos)
-                    {
+                    {                           
                         vec3 ProjCoords = LightSpacePos.xyz / LightSpacePos.w;
+                        //ProjCoords = surfacePos.xyz + ProjCoords;
                         vec2 UVCoords;
                         UVCoords.x = 0.5 * ProjCoords.x + 0.5;
                         UVCoords.y = 0.5 * ProjCoords.y + 0.5;
@@ -484,7 +485,7 @@ namespace Fusee.Engine.Core
         private static string ParallelLightCalculation()
         {
             var outputString = "\n";
-            outputString += "       result = diffuseColor *  shadowFactor * (Iamb + Idif + Ispe);\n";
+            outputString += "       result = diffuseColor * (Iamb + Idif + Ispe);\n";
             return outputString;
         }
 
@@ -497,7 +498,7 @@ namespace Fusee.Engine.Core
             var outputString = "\n";
             outputString += "\n";
             outputString += "\n";
-            outputString += "       result = diffuseColor * shadowFactor * (Iamb + Idif + Ispe) * att;\n";
+            outputString += "       result = diffuseColor * (Iamb + Idif + Ispe) * att;\n";
 
             return outputString;
         }
@@ -517,7 +518,7 @@ namespace Fusee.Engine.Core
 
             outputString += "\n";
             outputString += "\n";
-            outputString += "       result = diffuseColor * shadowFactor * (Iamb + Idif + Ispe) * att;\n";
+            outputString += "       result = diffuseColor * (Iamb + Idif + Ispe) * att;\n";
 
             return outputString;
         }
@@ -664,8 +665,12 @@ namespace Fusee.Engine.Core
                 vs.Append("    }\n");
                 vs.Append($"    {GammaCorrection()}\n");
                 vs.Append($"    float shadow = CalcShadowFactor(shadowLight);\n");
-                
-                vs.Append("    gl_FragColor = vec4(final_light, 1.0);\n");
+                vs.Append(@" float visibility = 0.5;
+               if( texture2D( firstPassTex, shadowLight.xy ).z  <  shadowLight.z) {
+                visibility = 1.0;
+            }
+");
+                vs.Append("    gl_FragColor = vec4(vec3(visibility), 1.0);\n");
             vs.Append("}\n");
             }
           

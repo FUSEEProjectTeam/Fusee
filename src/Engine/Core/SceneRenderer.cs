@@ -382,7 +382,6 @@ namespace Fusee.Engine.Core
                 attribute vec2 fuUV;
                 attribute vec3 fuNormal;
 
-                uniform mat4 FUSEE_MVP;
                 uniform mat4 LightMVP;
 
                 varying vec2 uv;
@@ -391,25 +390,22 @@ namespace Fusee.Engine.Core
                 void main()
                 {
                     gl_Position = LightMVP * vec4(fuVertex, 1.0);
-                    uv = fuUV;
-                    normal = fuNormal;
+                    uv = (fuVertex.xy+vec2(1.0,1.0))/2.0;;    
                 }";
 
         private const string ShadowMapPs = @"
                 #ifdef GL_ES
                     precision highp float
                 #endif
-
+                
             varying vec2 uv;
-            varying vec3 normal;
-
-            uniform sampler2D texture;
+            uniform sampler2D gShadowMap;          
 
             void main()
-            {
-                float Depth = texture2D(texture, uv).x;
-                Depth = 1.0 - (1.0 - Depth) * 25.0;
-                gl_FragColor = vec4(Depth);
+            {           
+           //     float Depth = texture(gShadowMap, uv).x;                               
+            //    Depth = 1.0 - (1.0 - Depth) * 25.0;                                             
+                gl_FragColor = gl_FragCoord.z;                          
             }";
 
         private Dictionary<int, ITexture> _textureCache = new Dictionary<int, ITexture>();
@@ -564,7 +560,7 @@ namespace Fusee.Engine.Core
                 // float4 is really needed
                 var lightConeDirectionFloat4 = new float4(light.ConeDirection.x, light.ConeDirection.y, light.ConeDirection.z,
                                           0.0f);
-                lightConeDirectionFloat4 = _rc.ModelView* lightConeDirectionFloat4;
+                lightConeDirectionFloat4 = _rc.ModelView * lightConeDirectionFloat4;
                 lightConeDirectionFloat4.Normalize();
                 light.ConeDirection = new float3(lightConeDirectionFloat4.x, lightConeDirectionFloat4.y, lightConeDirectionFloat4.z);   
                 
@@ -602,24 +598,22 @@ namespace Fusee.Engine.Core
 
         private void RenderWithLights(Mesh rm, ShaderEffect effect, string name)
         {
-            if (AllLightResults.Count == 0) return;
+           // if (AllLightResults.Count == 0) return;
             if (RenderShadows && _renderPass == 1)
             {
                     // [First Pass]
                     // Build and Set effectPass
                     // RenderMeshes
                         var lightPos = AllLightResults[0].Position;
-                        var lightCone = AllLightResults[0].OriginalConeDirection;
+                        var lightCone = AllLightResults[0].ConeDirection;
                         lightCone.Normalize();
-                        
-                        var mtxRot = float4x4.CreateRotationX(0)*float4x4.CreateRotationY(0);
-                        var mtxCam = float4x4.LookAt(lightPos.x, lightPos.y, lightPos.z, lightCone.x, lightCone.y, lightCone.z, 0, 1, 0);
-                        var mtxScale = float4x4.CreateScale(1f);
 
-                        _lightMVP = mtxCam * mtxRot * mtxScale;
-                        _lightMVP = _rc.Projection * _lightMVP * _state.Model;
+                        var mtxCam = float4x4.LookAt(0, 0, 0, 0, 1,1, 0, 1, 0);
+                        var worldTrans = mtxCam * float4x4.Identity;
+                var ortoPro = float4x4.CreateOrthographicOffCenter(-5f, 5f, -5f, 5f, -5f, 5f);
+                var light = ortoPro*worldTrans * _state.Model;
 
-                        var effectPass = new EffectPassDeclaration[1];
+                var effectPass = new EffectPassDeclaration[1];
                         effectPass[0] = new EffectPassDeclaration
                         {
                             PS = ShadowMapPs,
@@ -631,33 +625,36 @@ namespace Fusee.Engine.Core
                         };
                         var effectParameter = new List<EffectParameterDeclaration>
                         {
-                            new EffectParameterDeclaration {Name = "LightMVP", Value = _lightMVP}
+                            new EffectParameterDeclaration {Name = "LightMVP", Value = light}
                         };
                         _firstPassShaderEffect = new ShaderEffect(effectPass, effectParameter);
                         _firstPassShaderEffect.AttachToContext(_rc);
 
                         _firstPassShaderEffect.RenderMesh(rm);
-                        //_firstPassShaderEffect.DetachFromContext();
+                    
             }
             else
             {
-
-           
-
                 var handleLight = effect._rc.GetShaderParam(effect._rc.CurrentShader, "LightMVP");
                 if (handleLight != null)
                    {
                     var lightPos = AllLightResults[0].Position;
-                    var lightCone = AllLightResults[0].OriginalConeDirection;
+                    var lightCone = AllLightResults[0].ConeDirection;
                     lightCone.Normalize();
 
-                    var mtxRot = float4x4.CreateRotationX(0) * float4x4.CreateRotationY(0);
-                    var mtxCam = float4x4.LookAt(lightPos.x, lightPos.y, lightPos.z, lightCone.x, lightCone.y, lightCone.z, 0, 1, 0);
-                    var mtxScale = float4x4.CreateScale(1f);
+                    var mtxCam = float4x4.LookAt(0, 0, 0, 0, 1, 1, 0, 1, 0);
+                    var worldTrans = mtxCam * float4x4.Identity;
+                    var ortoPro = float4x4.CreateOrthographicOffCenter(-5f, 5f, -5f, 5f, -5f, 5f);
+                    var light = ortoPro * worldTrans * _state.Model;
 
-                     var lightMVP = mtxCam * mtxRot * mtxScale;
-                   
-                    effect._rc.SetShaderParam(handleLight,  _rc.Projection * lightMVP * _state.Model);
+                    var bias = new float4x4(0.5f, 0.0f, 0.0f, 0.0f,
+                    0.0f, 0.5f, 0.0f, 0.0f,
+                    0.0f, 0.0f, 0.5f, 0.0f,
+                    0.5f, 0.5f, 0.5f, 1.0f);
+                   // var lightMV = bias * light;
+                   // var test = _rc.Projection * light;
+                      //  test = _state.Model * test;
+                    effect._rc.SetShaderParam(handleLight, bias * light);
                    }
 
                 var handle = effect._rc.GetShaderParam(effect._rc.CurrentShader, "firstPassTex");
@@ -671,9 +668,9 @@ namespace Fusee.Engine.Core
 
                     //  if (name == "debug")
                     // {
-                    effect.RenderMesh(rm);
+                   
                // }
-                /*
+                
                 if (_lightComponents.Count > 0)
                 {
                     for (var i = 0; i < _lightComponents.Count; i++)
@@ -681,6 +678,7 @@ namespace Fusee.Engine.Core
                         SetupLight(i, _lightComponents[i], effect);
                         //SetupShadowLight(i, _lightComponents[i], effect);
 
+                        //  effect.RenderMesh(rm);
                         effect.RenderMesh(rm);
                     }
                 }
@@ -696,7 +694,7 @@ namespace Fusee.Engine.Core
                     effect.SetEffectParam(ShaderCodeBuilder.LightDirectionName, lightDir);
                     effect.SetEffectParam(ShaderCodeBuilder.LightIntensityName, (float) 1);
                     effect.RenderMesh(rm);
-                } */
+                } 
             }
 
         }
@@ -704,12 +702,7 @@ namespace Fusee.Engine.Core
         private void SetupLight(int position, LightResult light, ShaderEffect effect)
         {
             if (!light.Active) return;
-            /*
-            var thisLight = AllLightResults[position];
-            thisLight.PositionWorldSpace = _rc.InvView *  thisLight.PositionWorldSpace;
-            AllLightResults[position] = thisLight; */
 
-           // light.ModelMatrix.Invert();
             effect.SetEffectParam($"allLights[{position}].position", light.PositionWorldSpace);
             effect.SetEffectParam($"allLights[{position}].intensities", light.Color);
             effect.SetEffectParam($"allLights[{position}].attenuation", light.Attenuation);

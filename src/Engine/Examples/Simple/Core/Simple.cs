@@ -81,7 +81,7 @@ namespace Fusee.Engine.Examples.Simple.Core
             _sceneRenderer = new SceneRenderer(_rocketScene);
             SceneRenderer.LightningCalculationMethod = LightningCalculationMethod.SIMPLE;
 
-            _rocketScene.Children[0].AddComponent(new LightComponent
+           _rocketScene.Children[0].AddComponent(new LightComponent
             {
                 Active = true,
                 AmbientCoefficient = 0.4f,
@@ -91,7 +91,7 @@ namespace Fusee.Engine.Examples.Simple.Core
                 ConeDirection = new float3(0, 0, 1),
                 Position = new float3(0, 0, 3),
                 Type = LightType.Parallel
-            });
+            }); 
 
             _rocketScene.Children[0].Children[0].Components[2].Name = "debug";
 
@@ -139,6 +139,7 @@ namespace Fusee.Engine.Examples.Simple.Core
             _rocketScene.Children[0].Components[1] = light;
             var debug = _rocketScene.Children[0].Components[1] as LightComponent;
             Diagnostics.Log($"Pos: {debug.Position}");
+
             // Create the camera matrix and set it as the current ModelView transformation
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
             var mtxCam = float4x4.LookAt(0, 20, -3, 0, -100, 0, 0, 1, 0);

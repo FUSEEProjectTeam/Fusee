@@ -280,9 +280,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter,
                     (int) TextureMagFilter.Nearest);
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS,
-                    (int) TextureWrapMode.ClampToBorder);
+                    (int) TextureWrapMode.ClampToEdge);
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT,
-                    (int) TextureWrapMode.ClampToBorder);
+                    (int) TextureWrapMode.ClampToEdge);
                 GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent16, width, height, 0,
                     OpenTK.Graphics.OpenGL.PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
 
@@ -294,14 +294,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
                 // Disable writes to the color buffer
                 GL.DrawBuffer(DrawBufferMode.None);
-                GL.ReadBuffer(ReadBufferMode.None);
+                //GL.ReadBuffer(ReadBufferMode.None);
 
                 if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
                 {
                     throw new Exception($"Error creating writable Texture: {GL.GetError()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
                 }
-
-             
 
                 // TODO: Evaluate, but this should work
                 return new Texture { handle = _textureHandle, fboHandle = _fboHandle };
@@ -1703,18 +1701,17 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             // If texture is null bind frambuffer 0, this is the main screen
             if (texture == null)
             {
-                GL.DrawBuffer(DrawBufferMode.Front);
-                GL.ReadBuffer(ReadBufferMode.Front);
+                // Enable writes to the color buffer
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
                // GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, 0);
             }
             else
             {
                 // Clear 
-                Clear(ClearFlags.Depth);
-
+               // Clear(ClearFlags.Depth);
+               
                 var fboTexture = (Texture) texture;
-                
+
                 // Bind buffer - now we are rendering to this buffer!
                 GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer,  fboTexture.fboHandle);
 
