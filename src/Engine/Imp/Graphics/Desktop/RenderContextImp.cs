@@ -1706,12 +1706,18 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             // If texture is null bind frambuffer 0, this is the main screen
             if (texture == null)
             {
+                
+                //GL.CullFace(CullFaceMode.Back);
+
                 // Enable writes to the color buffer
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
                // GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, 0);
             }
             else
             {
+                // To prevent Peter Panning
+                //GL.CullFace(CullFaceMode.Front);
+
                 var fboTexture = (Texture) texture;
 
                 // Bind buffer - now we are rendering to this buffer!

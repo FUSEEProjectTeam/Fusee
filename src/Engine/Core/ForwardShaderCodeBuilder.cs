@@ -74,9 +74,9 @@ namespace Fusee.Engine.Core
             ApplyLightMethod(ps);
             PSBody(ps);
             PS = ps.ToString();
-            
-           // Diagnostics.Log($"ForwardShaderCodeBuilder, VS \n{VS}");
-          //  Diagnostics.Log($"ForwardShaderCodeBuilder, PS \n{PS}");
+
+            // Diagnostics.Log($"ForwardShaderCodeBuilder, VS \n{VS}");
+            Diagnostics.Log($"ForwardShaderCodeBuilder, PS \n{PS}");
 
         }
 
@@ -89,10 +89,10 @@ namespace Fusee.Engine.Core
             {
                 vs.Append("  attribute vec3 fuVertex;\n");
 
-              //  if (_hasSpecular)
-              //  {
-                    vs.Append("  varying vec3 vViewDir;\n");
-              //  }
+                //  if (_hasSpecular)
+                //  {
+                vs.Append("  varying vec3 vViewDir;\n");
+                //  }
             }
 
             if (_hasWeightMap)
@@ -114,12 +114,12 @@ namespace Fusee.Engine.Core
         private void MatrixDeclarations(StringBuilder vs)
         {
             // Lighting done in view space
-             if (_hasNormals)
+            if (_hasNormals)
                 vs.Append("  uniform mat4 FUSEE_ITMV;\n");
 
             if (_hasSpecular)
                 vs.Append("  uniform mat4 FUSEE_IMV;\n");
-            
+
             if (_hasWeightMap)
             {
                 vs.Append("uniform mat4 FUSEE_P;\n");
@@ -137,7 +137,7 @@ namespace Fusee.Engine.Core
             vs.Append("  varying vec4 surfacePos;\n");
             vs.Append("  varying vec3 vMVNormal;\n");
             vs.Append("  uniform mat4 FUSEE_MV;\n");
-            
+
             // Needed for Shadows
             vs.Append(" varying vec4 shadowLight;\n");
             vs.Append(" uniform mat4 shadowMVP;\n");
@@ -146,7 +146,7 @@ namespace Fusee.Engine.Core
         // ReSharper disable once InconsistentNaming
         private void VSBody(StringBuilder vs)
         {
-          
+
 
             vs.Append("\n\n  void main()\n  {\n");
             if (_hasNormals)
@@ -181,9 +181,10 @@ namespace Fusee.Engine.Core
                 else
                 {
                     // Lighting done in view space... we need to convert the normals
-                    if (_normalizeNormals) { 
+                    if (_normalizeNormals)
+                    {
                         // vs.Append("    vNormal = normalize(mat3(FUSEE_MV[0].xyz, FUSEE_MV[1].xyz, FUSEE_MV[2].xyz) * fuNormal);\n");
-                    vs.Append("    vMVNormal = normalize(mat3(FUSEE_ITMV) * fuNormal);\n");
+                        vs.Append("    vMVNormal = normalize(mat3(FUSEE_ITMV) * fuNormal);\n");
                     }
                     else
                         vs.Append("    vNormal = fuNormal;\n");
@@ -226,9 +227,9 @@ namespace Fusee.Engine.Core
             var numberOfLights = SceneRenderer.AllLightResults.Count > 0 ? SceneRenderer.AllLightResults.Count : 1;
             ps.Append("\n\n #define MAX_LIGHTS " + numberOfLights + "\n\n");
 
-         
 
-      
+
+
 
             LightStructDeclaration(ps);
 
@@ -236,9 +237,9 @@ namespace Fusee.Engine.Core
             SpecularInputDeclaration(ps);
             ChannelInputDeclaration(ps, _hasEmissive, _hasEmissiveTexture, "Emissive");
             BumpInputDeclaration(ps);
-            
-           ps.Append("  varying vec3 vViewDir;\n");
-            
+
+            ps.Append("  varying vec3 vViewDir;\n");
+
 
             if (_hasNormals)
                 ps.Append("  varying vec3 vMVNormal;\n");
@@ -251,56 +252,44 @@ namespace Fusee.Engine.Core
 
             ps.Append("\n uniform sampler2D firstPassTex; \n");
 
+
             ps.Append("\n varying vec4 shadowLight; \n");
-                
+
 
 
             string calcshadow = @"
                     float CalcShadowFactor(vec4 fragPosLightSpace, float NoL)
-            {    
-            
+            {
 
-            
-             // perform perspective divide
-             vec3 projCoords = fragPosLightSpace.xyz;
+             // perform perspective divide for ortographic!
+            vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
             projCoords = projCoords * 0.5 + 0.5; // map to [0,1]
-            float bias = max(0.00005 * (1.0 - NoL), 0.000001);  
-            float closestDepth = texture(firstPassTex, projCoords.xy).z;   
-            float currentDepth = projCoords.z + bias;  
+            float bias =  max(0.005 * (1.0 - NoL), 0.001);  // bias to prevent shadow acne
+            float currentDepth = projCoords.z;
 
-            float shadow = closestDepth < currentDepth ? 0.5 : 0.9; 
-            
+            float shadow = 0.0;
+
+            // Percentage closer filtering
+            // [http://http.developer.nvidia.com/GPUGems/gpugems_ch11.html]
+            ivec2 texelSize = textureSize(firstPassTex, 0);
+            vec2 texelSizeFloat = vec2(texelSize);
+            texelSizeFloat = 1.0/texelSizeFloat;
+            for(int x = -1; x <= 1; ++x)
+            {
+                for(int y = -1; y <= 1; ++y)
+                {
+                    float pcfDepth = texture2D(firstPassTex, projCoords.xy + vec2(x, y) * texelSizeFloat).r;
+                    shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
+                }
+            }
+            shadow /= 9.0;
+
             if(projCoords.z > 1.0)
-                    shadow = 0.0;
+                 shadow = 0.0;
 
             return shadow;
-                    
-/*
-                         float visibility = 0.9;
-                        vec3 ProjCoords = LightSpacePos.xyz;
-                        vec3 UVCoords;
-                        UVCoords.x = (ProjCoords.x / 1280.0) * 2.0 - 1.0;
-                        UVCoords.y = (ProjCoords.y / 720.0) * 2.0 - 1.0;
-                        UVCoords.z = LightSpacePos.z  * 2.0 - 1.0;
-                        
-                        if ( texture2D( firstPassTex, UVCoords.xy ).z  <  (UVCoords.z + 0.0001)){
-                            visibility = 0.5;
-                        }
 
-                    return visibility;
-*/  
-                   /*     vec3 ProjCoords = LightSpacePos.xyz / LightSpacePos.w;
-                        //ProjCoords = surfacePos.xyz + ProjCoords;
-                        vec2 UVCoords;
-                        UVCoords.x = 0.5 * ProjCoords.x + 0.5;
-                        UVCoords.y = 0.5 * ProjCoords.y + 0.5;
-                        float z = 0.5 * ProjCoords.z + 0.5;
-                        float Depth = texture2D(firstPassTex, UVCoords).x;
-                        if (Depth < (z + 0.00001))
-                            return 0.5;
-                        else
-                            return 1.0;*/
-                    }";
+      }";
             ps.Append(calcshadow);
 
         }
@@ -316,13 +305,13 @@ namespace Fusee.Engine.Core
             ps.Append("\n\n");
             ps.Append("struct Light\n");
             ps.Append("{\n");
-                ps.Append(" vec3 position;\n");
-                ps.Append(" vec3 intensities;\n");
-                ps.Append(" vec3 coneDirection;\n");
-                ps.Append(" float attenuation;\n");
-                ps.Append(" float ambientCoefficient;\n");
-                ps.Append(" float coneAngle;\n");
-                ps.Append(" int lightType;\n");
+            ps.Append(" vec3 position;\n");
+            ps.Append(" vec3 intensities;\n");
+            ps.Append(" vec3 coneDirection;\n");
+            ps.Append(" float attenuation;\n");
+            ps.Append(" float ambientCoefficient;\n");
+            ps.Append(" float coneAngle;\n");
+            ps.Append(" int lightType;\n");
             ps.Append("};\n");
             ps.Append("\n\n");
             ps.Append(" uniform Light allLights[MAX_LIGHTS]; \n\n");
@@ -358,9 +347,9 @@ namespace Fusee.Engine.Core
             {
                 vs.Append("\n\n\n");
                 vs.Append($"           {AmbientLightningMethod()}\n");
-                if(_hasDiffuse)
+                if (_hasDiffuse)
                     vs.Append($"           {DiffuseLightingMethod()}\n");
-                if(_hasSpecular)
+                if (_hasSpecular)
                     vs.Append($"           {SpecularLightingMethod()}\n");
                 vs.Append("\n\n\n");
                 vs.Append("/******* ApplyLight Method ****/\n");
@@ -383,38 +372,38 @@ namespace Fusee.Engine.Core
                 vs.Append("     }\n");
                 vs.Append("     return result;\n");
                 vs.Append("}\n");
-               
+
             }
-        /*    else
-            { // TODO: Try to parse Diffusevars to PBR values
-                // needed Methods
-                vs.Append("\n\n\n");
-                vs.Append($"{GgxMethod()}");
-                vs.Append($"{FresnelMethod()}");
-                vs.Append($"{GeometryMethod()}");
-                vs.Append($"{AmbientLightningMethod()}");
-                
-                // Method
-                vs.Append("/******* ApplyLight Method ****//*\n");
-                vs.Append("vec3 ApplyLight(vec3 position, vec3 intensities, vec3 coneDirection, float attenuation, float ambientCoefficient, float coneAngle, int lightType)\n");
-                vs.Append("{\n");
-                vs.Append($"     {PhysicallyBasedShadingMethod()}\n");
-                vs.Append($"     {AttenuationFunction()}\n");
-                vs.Append("     if(lightType == 0) // PointLight\n");
-                vs.Append("     {");
-                vs.Append($"           {PointLightCalculation()}\n");
-                vs.Append("     }\n");
-                vs.Append("     else if(lightType == 1) // ParallelLight\n");
-                vs.Append("     {");
-                vs.Append($"            {ParallelLightCalculation()}\n");
-                vs.Append("     }\n");
-                vs.Append("     else if(lightType == 2) // SpotLight\n");
-                vs.Append("     {");
-                vs.Append($"            {SpotLightCalculation()}\n");
-                vs.Append("     }\n");
-                vs.Append("     return result;\n");
-                vs.Append("}\n");
-            }*/
+            /*    else
+                { // TODO: Try to parse Diffusevars to PBR values
+                    // needed Methods
+                    vs.Append("\n\n\n");
+                    vs.Append($"{GgxMethod()}");
+                    vs.Append($"{FresnelMethod()}");
+                    vs.Append($"{GeometryMethod()}");
+                    vs.Append($"{AmbientLightningMethod()}");
+
+                    // Method
+                    vs.Append("/******* ApplyLight Method ****//*\n");
+                    vs.Append("vec3 ApplyLight(vec3 position, vec3 intensities, vec3 coneDirection, float attenuation, float ambientCoefficient, float coneAngle, int lightType)\n");
+                    vs.Append("{\n");
+                    vs.Append($"     {PhysicallyBasedShadingMethod()}\n");
+                    vs.Append($"     {AttenuationFunction()}\n");
+                    vs.Append("     if(lightType == 0) // PointLight\n");
+                    vs.Append("     {");
+                    vs.Append($"           {PointLightCalculation()}\n");
+                    vs.Append("     }\n");
+                    vs.Append("     else if(lightType == 1) // ParallelLight\n");
+                    vs.Append("     {");
+                    vs.Append($"            {ParallelLightCalculation()}\n");
+                    vs.Append("     }\n");
+                    vs.Append("     else if(lightType == 2) // SpotLight\n");
+                    vs.Append("     {");
+                    vs.Append($"            {SpotLightCalculation()}\n");
+                    vs.Append("     }\n");
+                    vs.Append("     return result;\n");
+                    vs.Append("}\n");
+                }*/
         }
 
 
@@ -433,10 +422,10 @@ namespace Fusee.Engine.Core
             outputString += "// returns intensity of reflected ambient lighting\n";
             outputString += "vec3 ambientLighting(float ambientCoefficient)\n";
             outputString += "{\n";
-                if(EmissiveColorName != null)
-                    outputString += $"   return ({EmissiveColorName} * ambientCoefficient);\n";
-                else
-                    outputString += "   return vec3(ambientCoefficient);\n";
+            if (EmissiveColorName != null)
+                outputString += $"   return ({EmissiveColorName} * ambientCoefficient);\n";
+            else
+                outputString += "   return vec3(ambientCoefficient);\n";
             outputString += "}\n";
 
             return outputString;
@@ -489,11 +478,11 @@ namespace Fusee.Engine.Core
             outputString += "vec3 V = o_toCamera;\n";
             outputString += "vec3 N = o_normal;\n";
             outputString += "vec3 Iamb = ambientLighting(ambientCoefficient);\n";
-            if(_hasDiffuse)
+            if (_hasDiffuse)
                 outputString += "vec3 Idif = diffuseLighting(N, L, intensities);\n";
             else
                 outputString += "vec3 Idif = vec3(0.1,0.1,0.1);\n";
-            if(_hasSpecular)
+            if (_hasSpecular)
                 outputString += "vec3 Ispe = specularLighting(N, L, V, intensities);\n";
             else
                 outputString += "vec3 Ispe = vec3(0.1,0.1,0.1);\n";
@@ -516,7 +505,7 @@ namespace Fusee.Engine.Core
         private static string ParallelLightCalculation()
         {
             var outputString = "\n";
-            outputString += "       result = diffuseColor * shadowFactor * (Iamb + Idif + Ispe);\n";
+            outputString += "       result = Iamb + diffuseColor * (1.0-shadowFactor) * (Idif + Ispe);\n";
             return outputString;
         }
 
@@ -529,7 +518,7 @@ namespace Fusee.Engine.Core
             var outputString = "\n";
             outputString += "\n";
             outputString += "\n";
-            outputString += "       result = diffuseColor  *  (Iamb + Idif + Ispe) * att;\n";
+            outputString += "       result = Iamb + diffuseColor  * (1.0-shadowFactor) * (Idif + Ispe) * att;\n";
 
             return outputString;
         }
@@ -549,20 +538,20 @@ namespace Fusee.Engine.Core
 
             outputString += "\n";
             outputString += "\n";
-            outputString += "       result = diffuseColor  *  (Iamb + Idif + Ispe) * att;\n";
+            outputString += "       result = Iamb + diffuseColor  * (1.0-shadowFactor) * (Idif + Ispe) * att;\n";
 
             return outputString;
         }
 
         private string DiffuseEnergyRatio()
         {
-           return "float diffuseEnergyRatio(float f0, vec3 n, vec3 l){\n return 1.0 - fresnel(f0, n, l);\n }\n";
+            return "float diffuseEnergyRatio(float f0, vec3 n, vec3 l){\n return 1.0 - fresnel(f0, n, l);\n }\n";
         }
 
         // TODO: Cleanup & improve
         private string PhysicallyBasedShadingMethod()
         {
-    
+
             var outputString = "";
 
 
@@ -579,15 +568,15 @@ namespace Fusee.Engine.Core
             outputString += "float NdotL = max(0.0,dot(N,L));\n";
             outputString += "vec3 H = normalize(L + V);\n";
             outputString += "vec3 result = vec3(0);\n";
-       
-           
+
+
 
             outputString += $"float fresnelValue={FresnelValue.ToString("0000.0000", CultureInfo.InvariantCulture)};\n";
             outputString += $"float diffuseFractionValue={DiffuseFractionValue.ToString("0000.0000", CultureInfo.InvariantCulture)};\n";
             outputString += $"float roughnessValue={RoughnessValue.ToString("0000.0000", CultureInfo.InvariantCulture)};\n";
             outputString += " \n";
             outputString += " float G = ggx(N, L, V, roughnessValue, fresnelValue);\n";
-            outputString += " float F = fresnel(fresnelValue, N, L);\n"; 
+            outputString += " float F = fresnel(fresnelValue, N, L);\n";
             outputString += " float D = geometry(N, H, V, L, roughnessValue);\n";
             outputString += " float brdf_spec = G * F * D / (NdotL * NdotV * 3.14);\n";
 
@@ -595,14 +584,14 @@ namespace Fusee.Engine.Core
                 outputString += $" vec3 Ispe = (brdf_spec * intensities) * {SpecularColorName} * {SpecularIntensityName};\n";
             else
                 outputString += $" vec3 Ispe = (brdf_spec * intensities) * vec3(0.3,0.3,0.3) * 0.5;\n";
-                outputString += $" vec3 Idif =  NdotL * (diffuseFractionValue + Ispe * (1.0 - diffuseFractionValue));\n";
+            outputString += $" vec3 Idif =  NdotL * (diffuseFractionValue + Ispe * (1.0 - diffuseFractionValue));\n";
 
             outputString += "vec3 Iamb = ambientLighting(ambientCoefficient);\n";
             if (DiffuseTextureName != null)
                 outputString += $"vec3 diffuseColor = texture2D({DiffuseTextureName}, o_texcoords).rgb * {DiffuseMixName};\n";
             else
                 outputString += $"vec3 diffuseColor = {DiffuseColorName};\n";
-            
+
             return outputString;
         }
 
@@ -681,25 +670,26 @@ namespace Fusee.Engine.Core
         {
             if (_lightningCalculationMethod == LightningCalculationMethod.SIMPLE)
             {
-              
+
                 vs.Append("\n\n\n");
-            vs.Append("void main()\n");
-            vs.Append("{\n");
+                vs.Append("void main()\n");
+                vs.Append("{\n");
                 vs.Append("    vec3 result = vec3(0.0);\n");
                 // Annotation: allLights.length() only supported in version 300; WebGL needs version 100.
-                // Therefore we need a workaround.  
+                // Therefore we need a workaround.
                 vs.Append("    for(int i = 0; i < MAX_LIGHTS;i++)\n");
                 vs.Append("    {\n");
-                    vs.Append("         Light currentLight = allLights[i];\n");
-                    vs.Append("         result += ApplyLight(currentLight.position, currentLight.intensities, currentLight.coneDirection, " +
-                              "currentLight.attenuation, currentLight.ambientCoefficient, currentLight.coneAngle, currentLight.lightType);\n");
+                vs.Append("         Light currentLight = allLights[i];\n");
+                vs.Append("         result += ApplyLight(currentLight.position, currentLight.intensities, currentLight.coneDirection, " +
+                          "currentLight.attenuation, currentLight.ambientCoefficient, currentLight.coneAngle, currentLight.lightType);\n");
                 vs.Append("    }\n");
                 vs.Append($"    {GammaCorrection()}\n");
-                //vs.Append($"float shadow = CalcShadowFactor(shadowLight);\n");
-                vs.Append("    gl_FragColor = vec4(final_light, 1.0);\n");
-            vs.Append("}\n");
+
+                vs.Append("    gl_FragColor = vec4(final_light,1.0);\n");
+
+                vs.Append("}\n");
             }
-          
+
             else
             {
                 var advancedShader = @"
@@ -708,13 +698,13 @@ namespace Fusee.Engine.Core
                     #endif
 
                     #define PI 3.1415926535897932384626433832795
-                 
+
                     uniform float diffuseFractionValue;
                     uniform	float roughnessValue;
 
                     uniform vec3 position;
 
-                  
+
                     // Physically based shading model
                     // parameterized with the below options
 
@@ -772,7 +762,7 @@ namespace Fusee.Engine.Core
                     float Vis_SmithL = NoV * (NoL * (1.0 - a) + a);
                     return 0.5 * 1.0 / (Vis_SmithV + Vis_SmithL); // rcp to 1/X
 }
-                
+
                 // [Schlick 1994, An Inexpensive BRDF Model for Physically-Based Rendering]
                                 vec3 F_Schlick(vec3 SpecularColor, float VoH)
                 {
@@ -805,7 +795,7 @@ namespace Fusee.Engine.Core
 
                     return SpecularColor * AB.x + AB.y;
                 }
-                
+
 
                 float EnvBRDFApproxNonmetal(float Roughness, float NoV)
                  {
@@ -842,7 +832,7 @@ namespace Fusee.Engine.Core
                     vec3 RayDirection = 2.0 * dot(V, N) * N - V;
                     float RdotV = clamp(dot(RayDirection, L), 0.0, 1.0);
 
-                    // EnvBRDF 
+                    // EnvBRDF
                     // TODO: Check for metal / nonmetal
                     // TODO: Multipass with real envTexture
                     //	vec3 SpecularTextureColor = vec3(texture2D(texture, vUV));
@@ -859,7 +849,7 @@ namespace Fusee.Engine.Core
                     vs.Append("vec3 F = F_Schlick(vec3(1.0,0.0,0.0), VdotH); // F0 is in SpecularColor\n");
 
                 var weiter = "";
-                if(_hasDiffuseTexture)
+                if (_hasDiffuseTexture)
                     weiter = @"
                     // [Other diffuses have no visible change but much higher compile costs]
                     // see: http://graphicrants.blogspot.de/2013/08/specular-brdf-reference.html
@@ -878,7 +868,7 @@ namespace Fusee.Engine.Core
                 }
                 ";
                 else
-              weiter = @"
+                    weiter = @"
                     // [Other diffuses have no visible change but much higher compile costs]
                     // see: http://graphicrants.blogspot.de/2013/08/specular-brdf-reference.html
                     vec3 Diffuse = Diffuse_Lambert(DiffuseColor);
@@ -895,7 +885,7 @@ namespace Fusee.Engine.Core
                     gl_FragColor = vec4(result, 1.0);
                 }
                 ";
-               
+
                 vs.Append(weiter);
             }
         }
@@ -905,7 +895,7 @@ namespace Fusee.Engine.Core
         {
             return "    vec3 gamma = vec3(1.0/2.2);\n   vec3 final_light = pow(result, gamma);\n";
         }
-      
+
 
         private static void ChannelInputDeclaration(StringBuilder ps, bool hasChannel, bool hasChannelTexture, string channelName)
         {
@@ -920,7 +910,7 @@ namespace Fusee.Engine.Core
             if (!hasChannelTexture)
                 return;
 
-            // This will generate e.g. 
+            // This will generate e.g.
             // "  uniform sampler2D DiffuseTexture;"
             // "  uniform float DiffuseMix;"
             ps.Append("  uniform sampler2D ");
@@ -957,7 +947,7 @@ namespace Fusee.Engine.Core
             {
                 var mlc = mc as MaterialLightComponent;
                 if (mlc == null) return;
-                
+
                 // check for ApplyLightString
                 if (!string.IsNullOrEmpty(mlc.ApplyLightString))
                 {
@@ -971,14 +961,14 @@ namespace Fusee.Engine.Core
                     _hasFragmentString = true;
                     _applyFragmentString = mlc.FragmentShaderString;
                 }
-                   
+
 
             }
-            else if(mc.GetType() == typeof(MaterialPBRComponent))
+            else if (mc.GetType() == typeof(MaterialPBRComponent))
             {
                 var mpbr = mc as MaterialPBRComponent;
-                if(mpbr == null) return;
-                
+                if (mpbr == null) return;
+
                 // check for fraction
                 if (mpbr.DiffuseFraction > 0f)
                 {
@@ -1055,7 +1045,7 @@ namespace Fusee.Engine.Core
 
         public float RoughnessValue => (_hasRoughness) ? _roughnessValue : 0.5f;
 
-        private string  _applyLightString;
+        private string _applyLightString;
 
         private string _applyFragmentString;
 

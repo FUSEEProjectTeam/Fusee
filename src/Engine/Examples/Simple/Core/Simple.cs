@@ -89,7 +89,7 @@ namespace Fusee.Engine.Examples.Simple.Core
                 Color = float3.One,
                 ConeAngle = 45f,
                 ConeDirection = new float3(0,1,1),
-                Position = new float3(-9.696284f, 6.547763f, 16.88832f),
+                Position = new float3(-4, 5.9f, 0),
                 Type = LightType.Parallel
            }); 
 

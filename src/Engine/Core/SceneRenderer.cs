@@ -643,10 +643,13 @@ namespace Fusee.Engine.Core
             //lightCone.Normalize();
 
             var depthViewMatrix = float4x4.LookAt(lightPos.x, lightPos.y, lightPos.z, 0, 0, 0, 0, 1, 0);
-            var depthModelMatrix = _state.Model;
-            var depthProjectionMatrix = float4x4.CreateOrthographic(20f, 20f, -50f, 50f);
-            _depthMVP = depthProjectionMatrix * depthViewMatrix*depthModelMatrix;
-          
+            var scale = float4x4.CreateScale(0.1f);
+            var depthModelMatrix = scale * _state.Model;
+            var depthProjectionMatrix = float4x4.CreateOrthographic(10f, 10f, 0.001f, 20f);
+            var aspectRatio = _rc.ViewportWidth / (float)_rc.ViewportHeight;
+            var projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, aspectRatio, 1f, 10f);
+            _depthMVP = _rc.Projection * depthViewMatrix * depthModelMatrix;
+
 
             var effectPass = new EffectPassDeclaration[1];
             effectPass[0] = new EffectPassDeclaration
@@ -677,10 +680,12 @@ namespace Fusee.Engine.Core
             {
                 var lightPos = AllLightResults[0].Position;
                 var depthViewMatrix = float4x4.LookAt(lightPos.x, lightPos.y, lightPos.z, 0, 0, 0, 0, 1, 0);
-                var depthModelMatrix = _state.Model;
-
-                var depthProjectionMatrix = float4x4.CreateOrthographic(20f, 20f, -50f, 50f);
-                _depthMVP = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
+                var scale = float4x4.CreateScale(0.1f);
+                var depthModelMatrix = scale * _state.Model;
+                var depthProjectionMatrix = float4x4.CreateOrthographic(10f, 10f, 0.001f, 20f);
+                var aspectRatio = _rc.ViewportWidth / (float)_rc.ViewportHeight;
+                var projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, aspectRatio, 1f, 10f);
+                _depthMVP = _rc.Projection * depthViewMatrix * depthModelMatrix;
 
                 effect._rc.SetShaderParam(handleLight, _depthMVP);
             }
