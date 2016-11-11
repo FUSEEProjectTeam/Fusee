@@ -174,18 +174,15 @@ namespace Fusee.Jometri.DCEL
                 {
                     var faceHeQ = GetHalfEdgeByHandle(heQ).IncidentFace;
 
-                    if (faceHeP.Id == faceHeQ.Id)
-                    {
-                        face = GetFaceByHandle(faceHeP);
-                        pStartHe = GetHalfEdgeByHandle(vertP.IncidentHalfEdge);
-                        qStartHe = GetHalfEdgeByHandle(vertQ.IncidentHalfEdge);
-                    }
-                    else
-                    {
-                        throw new ArgumentException("Vertex " + p + " vertex " + q + " have no common Face!");
-                    }
+                    if (faceHeP.Id != faceHeQ.Id) continue;
+
+                    face = GetFaceByHandle(faceHeP);
+                    pStartHe = GetHalfEdgeByHandle(heP);
+                    qStartHe = GetHalfEdgeByHandle(heQ);
                 }
             }
+            if (pStartHe.Handle.Id == 0)
+                throw new ArgumentException("Vertex " + p + " vertex " + q + " have no common Face!");
 
             var newFromP = new HalfEdge();
             var newFromQ = new HalfEdge();
@@ -210,7 +207,7 @@ namespace Fusee.Jometri.DCEL
             _halfEdges.Add(newFromP);
             _halfEdges.Add(newFromQ);
 
-            //Assign new Next to previous HalfEdges from p and q  //Assign new prev for qStartHe and pStartHe
+            //Assign new Next to previous HalfEdges from p and q  //Assign new prev for qStartHe and halfEdge
             var prevHeP = GetHalfEdgeByHandle(pStartHe.Prev);
             var prevHeQ = GetHalfEdgeByHandle(qStartHe.Prev);
             var count = 0;
@@ -257,7 +254,7 @@ namespace Fusee.Jometri.DCEL
             _faces.Add(newFace);
 
             //Assign the handle of the new face to its half edges
-            AssignFaceHandle(pStartHe, newFace);
+            AssignFaceHandle(newFace.FirstHalfEdge, newFace);
 
             //Set face.FirstHalfEdge to newFromP - old FirstHalfEdge can be part of new face now!
             for (var i = 0; i < _faces.Count; i++)
@@ -355,36 +352,27 @@ namespace Fusee.Jometri.DCEL
         {
             var origin = v.IncidentHalfEdge;
             var halfEdge = GetHalfEdgeByHandle(origin);
+
+            yield return halfEdge.Handle;
+
             do
             {
                 if (halfEdge.Twin.Id != 0)
                 {
                     var twin = GetHalfEdgeByHandle(halfEdge.Twin);
-                    halfEdge = GetHalfEdgeByHandle(twin.Next);
-                    yield return halfEdge.Handle;
-                }
-                else
-                {
-                    yield return halfEdge.Handle;
-                    break;
-                }
-            } while (halfEdge.Handle.Id != origin.Id);
-
-            var incident = GetHalfEdgeByHandle(origin);
-            do
-            {
-                if (incident.Twin.Id != 0)
-                {
-                    var twin = GetHalfEdgeByHandle(incident.Twin);
                     if (twin.Origin.Id == v.Handle.Id)
-                        yield return GetHalfEdgeByHandle(incident.Twin).Handle;
+                    {
+                        yield return GetHalfEdgeByHandle(halfEdge.Twin).Handle;
+                        halfEdge = GetHalfEdgeByHandle(twin.Next);
+                    }
+                    else { halfEdge = GetHalfEdgeByHandle(halfEdge.Next); }
                 }
-                incident = GetHalfEdgeByHandle(incident.Next);
-            } while (incident.Handle.Id != origin.Id);
+                else { halfEdge = GetHalfEdgeByHandle(halfEdge.Next); }
+            } while (halfEdge.Origin.Id != origin.Id);
 
 
         }
-        
+
         internal IEnumerable<HalfEdge> GetEdgeLoop(HalfEdgeHandle handle)
         {
             var currentHandle = handle;
@@ -580,9 +568,9 @@ namespace Fusee.Jometri.DCEL
         #endregion
 
         #region private methods concerning InsertHalfEdge
-        private void AssignFaceHandle(HalfEdge pStartHe, Face newFace)
+        private void AssignFaceHandle(HalfEdgeHandle halfEdge, Face newFace)
         {
-            var currentHe = pStartHe;
+            var currentHe = GetHalfEdgeByHandle(halfEdge);
             do
             {
                 currentHe.IncidentFace = newFace.Handle;
@@ -590,13 +578,12 @@ namespace Fusee.Jometri.DCEL
                 for (var i = 0; i < _halfEdges.Count; i++)
                 {
                     if (_halfEdges[i].Handle.Id != currentHe.Handle.Id) continue;
-                    currentHe.IncidentFace = newFace.Handle;
                     _halfEdges[i] = currentHe;
                     break;
                 }
                 currentHe = GetHalfEdgeByHandle(currentHe.Next);
 
-            } while (currentHe.Handle.Id != pStartHe.Handle.Id);
+            } while (currentHe.Handle.Id != halfEdge.Id);
         }
 
         private bool IsHalfEdgeToHole(Face face, VertHandle p, VertHandle q)

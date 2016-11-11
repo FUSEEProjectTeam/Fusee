@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Fusee.Base.Core;
 using Fusee.Jometri.DCEL;
@@ -38,14 +39,111 @@ namespace Fusee.Jometri.Triangulate
 
             foreach (var fHandle in originalFaces)
             {
-                if (IsMonotone(fHandle))
+                if (!IsMonotone(fHandle))
+                    MakeMonotone(fHandle);
+            }
+
+            var monotoneFaces  = new List<FaceHandle>();
+            monotoneFaces.AddRange(_geometry.FaceHandles);
+            foreach (var fHandle in monotoneFaces)
+            {
+                TriangulateMonotone(fHandle);
+            }
+        }
+
+        private IEnumerable<Geometry.Vertex> GetLeftChain(IList<Geometry.Vertex> sortedVerts, FaceHandle fHandle)
+        {
+            var heHandle = new HalfEdgeHandle();
+            var endOfChain = sortedVerts.LastItem();
+
+            var startingAtFirstV = _geometry.GetHalfEdgesStartingAtV(sortedVerts[0]).ToList();
+            if (startingAtFirstV.Count > 1)
+            {
+                foreach (var heh in startingAtFirstV)
                 {
-                    //Triangulate, e.g. by ear clipping
+                    var he = _geometry.GetHalfEdgeByHandle(heh);
+                    if (he.IncidentFace.Id == fHandle.Id)
+                        heHandle = heh;
+                }
+            }
+            else
+            { heHandle = sortedVerts[0].IncidentHalfEdge; }
+
+            do
+            {
+                var halfEdge = _geometry.GetHalfEdgeByHandle(heHandle);
+                yield return _geometry.GetVertexByHandle(halfEdge.Origin);
+                heHandle = halfEdge.Next;
+
+            } while (heHandle.Id != endOfChain.Handle.Id);
+        }
+
+        private static bool IsLeftChain(IEnumerable<Geometry.Vertex> leftChain, Geometry.Vertex cur)
+        {
+            foreach (var v in leftChain)
+            {
+                if (v.Handle.Id == cur.Handle.Id)
+                    return true;
+            }
+            return false;
+        }
+
+        private void TriangulateMonotone(FaceHandle fHandle)
+        {
+            var faceVertices = _geometry.GetFaceVertices(fHandle).ToList();
+            if (faceVertices.Count.Equals(3)) return;
+
+            var sortedVerts = GetSortedVertices(faceVertices);
+            var vertStack = new Stack<Geometry.Vertex>();
+            var leftCain = GetLeftChain(sortedVerts, fHandle).ToList();
+
+            vertStack.Push(sortedVerts[0]);
+            vertStack.Push(sortedVerts[1]);
+
+            for (var i = 2; i < sortedVerts.Count-1; i++)
+            {
+                var current = sortedVerts[i];
+                
+                if (!IsLeftChain(leftCain, current) && IsLeftChain(leftCain, vertStack.Peek()) ||
+                    IsLeftChain(leftCain, current) && !IsLeftChain(leftCain, vertStack.Peek()))
+                {
+                    while (vertStack.Count > 0)
+                    {
+                        var popped = vertStack.Pop();
+
+                        if (vertStack.Count >= 1)
+                            _geometry.InsertHalfEdge(current.Handle, popped.Handle);
+                    }
+                    vertStack.Push(sortedVerts[i - 1]);
+                    vertStack.Push(current);
                 }
                 else
                 {
-                    MakeMonotone(fHandle);
-                    //Triangulate, e.g. by ear clipping
+                    var popped = vertStack.Pop();
+                    var isValidDiagonal = true;
+
+                    while (vertStack.Count > 0 && isValidDiagonal)
+                    {
+                        var v2 = vertStack.Peek().Coord - popped.Coord;
+                        var v1 = sortedVerts[i].Coord - popped.Coord;
+
+                        popped = vertStack.Pop();
+
+                        if (IsAngleGreaterOrEqualPi(v1, v2))
+                            isValidDiagonal = false;
+
+                        if(isValidDiagonal)
+                            _geometry.InsertHalfEdge(current.Handle, popped.Handle);
+                    }
+                    vertStack.Push(popped);
+                    vertStack.Push(current);
+
+                    for (var j = 0; j < vertStack.Count; j++)
+                    {
+                        if (j == 0 || j == vertStack.Count - 1) { }
+                        else { _geometry.InsertHalfEdge(sortedVerts.LastItem().Handle, sortedVerts[j].Handle); }
+
+                    }
                 }
             }
         }
@@ -86,10 +184,10 @@ namespace Fusee.Jometri.Triangulate
                 return true;
             }
             return false;
-        } 
+        }
 
         //Vertices need to be reduced to 2D
-        private static bool IsOverVert(Geometry.Vertex middle, Geometry.Vertex neighbour) 
+        private static bool IsOverVert(Geometry.Vertex middle, Geometry.Vertex neighbour)
         {
             var redMiddle = middle.Coord.Reduce2D();
             var redNeighbour = neighbour.Coord.Reduce2D();
@@ -101,7 +199,7 @@ namespace Fusee.Jometri.Triangulate
                 return true;
             }
             return false;
-        } 
+        }
 
         private static bool IsAngleGreaterPi(float3 first, float3 second)
         {
@@ -115,6 +213,17 @@ namespace Fusee.Jometri.Triangulate
             return angle < 0;
         }
 
+        private static bool IsAngleGreaterOrEqualPi(float3 first, float3 second)
+        {
+            var cross = first.x * second.y - first.y * second.x; //z component of the cross product
+            var dot = float3.Dot(first, second);
+
+            var angle = (float)System.Math.Atan2(cross, dot);
+            var deg = M.RadiansToDegrees(angle);
+            return angle <= 0;
+        }
+
+
         #endregion
 
 
@@ -122,7 +231,7 @@ namespace Fusee.Jometri.Triangulate
         private void MakeMonotone(FaceHandle face)
         {
             var vertices = _geometry.GetFaceVertices(face);
-            var sortedVertices = SortedVertices(vertices.ToList());
+            var sortedVertices = GetSortedVertices(vertices.ToList());
             var faceHalfEdges = _geometry.GetHalfEdgesOfFace(face).ToList();
 
             var newFaces = new List<FaceHandle>();
@@ -132,7 +241,7 @@ namespace Fusee.Jometri.Triangulate
             while (sortedVertices.Count != 0)
             {
                 var current = sortedVertices[0];
-                
+
                 TestVertexType(current, face, newFaces);
 
                 switch (_vertType)
@@ -262,7 +371,7 @@ namespace Fusee.Jometri.Triangulate
 
         private void HandleRegularVertex(BinarySearchTree<StatusNode> tree, Geometry.Vertex v, IEnumerable<HalfEdgeHandle> faceHalfEdges, ICollection<FaceHandle> newFaces)
         {
-            if (IsPolygonRightOfRegular(v))
+            if (IsPolygonRightOfVert(v))
             {
                 foreach (var heh in faceHalfEdges)
                 {
@@ -310,32 +419,6 @@ namespace Fusee.Jometri.Triangulate
             }
         }
 
-        //Vertices need to be reduced to 2D
-        private static IList<Geometry.Vertex> SortedVertices(IEnumerable<Geometry.Vertex> unsorted) 
-        {
-            var sorted = new List<Geometry.Vertex>();
-            sorted.AddRange(unsorted);
-            sorted.Sort(delegate (Geometry.Vertex a, Geometry.Vertex b)
-            {
-                var redA = a.Coord.Reduce2D();
-                var redB = b.Coord.Reduce2D();
-
-                var ydiff = -1 * redA.y.CompareTo(redB.y);
-                if (ydiff != 0) return ydiff;
-                return redA.x.CompareTo(redB.x);
-            });
-
-            return sorted;
-        }
-
-        private bool IsPolygonRightOfRegular(Geometry.Vertex vert)
-        {
-            var prevV = GetPrevVertex(vert);
-            var nextV = GetNextVertex(vert);
-
-            return prevV.Coord.y > nextV.Coord.y;
-        }
-
         //Custom implementation of BinaryTrees FindNode method - works with StatusNodes
         private static Node<StatusNode> FindStatusNode(Node<StatusNode> root, float value)
         {
@@ -372,6 +455,32 @@ namespace Fusee.Jometri.Triangulate
 
         #region General methods
 
+        private bool IsPolygonRightOfVert(Geometry.Vertex vert)
+        {
+            var prevV = GetPrevVertex(vert);
+            var nextV = GetNextVertex(vert);
+
+            return prevV.Coord.y > nextV.Coord.y;
+        }
+
+        //Vertices need to be reduced to 2D
+        private static IList<Geometry.Vertex> GetSortedVertices(IEnumerable<Geometry.Vertex> unsorted)
+        {
+            var sorted = new List<Geometry.Vertex>();
+            sorted.AddRange(unsorted);
+            sorted.Sort(delegate (Geometry.Vertex a, Geometry.Vertex b)
+            {
+                var redA = a.Coord.Reduce2D();
+                var redB = b.Coord.Reduce2D();
+
+                var ydiff = -1 * redA.y.CompareTo(redB.y);
+                if (ydiff != 0) return ydiff;
+                return redA.x.CompareTo(redB.x);
+            });
+
+            return sorted;
+        }
+
         private void TestVertexType(Geometry.Vertex vert, FaceHandle faceHandle, ICollection<FaceHandle> newFaces)
         {
             var heStartingAtFace = _geometry.GetHalfEdgesStartingAtV(vert).ToList();
@@ -391,7 +500,7 @@ namespace Fusee.Jometri.Triangulate
                         incidentHalfEdge = _geometry.GetHalfEdgeByHandle(he);
                 }
             }
-            
+
             var nextHalfEdge = _geometry.GetHalfEdgeByHandle(incidentHalfEdge.Next);
             var nextVert = _geometry.GetVertexByHandle(nextHalfEdge.Origin);
 
