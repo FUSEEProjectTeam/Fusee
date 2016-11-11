@@ -74,7 +74,7 @@ namespace Fusee.Engine.Examples.Simple.Core
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             // Load the rocket model
-            _rocketScene = AssetStorage.Get<SceneContainer>("shadow.fus");
+            _rocketScene = AssetStorage.Get<SceneContainer>("shadowBox.fus");
             
            // RC.SetRenderState(RenderState.CullMode, (uint) Cull.Clockwise);
             // Wrap a SceneRenderer around the model.
@@ -88,10 +88,10 @@ namespace Fusee.Engine.Examples.Simple.Core
                 Attenuation = 1000f,
                 Color = float3.One,
                 ConeAngle = 45f,
-                ConeDirection = new float3(0, 0, 1),
-                Position = new float3(0, 0, 3),
+                ConeDirection = new float3(0,1,1),
+                Position = new float3(-9.696284f, 6.547763f, 16.88832f),
                 Type = LightType.Parallel
-            }); 
+           }); 
 
             _rocketScene.Children[0].Children[0].Components[2].Name = "debug";
 
@@ -134,20 +134,24 @@ namespace Fusee.Engine.Examples.Simple.Core
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
 
-            var light = _rocketScene.Children[0].GetComponent<LightComponent>();
+           var light = _rocketScene.Children[0].GetComponent<LightComponent>();
             light.Position = new float3(light.Position.x + Keyboard.ADAxis * 0.01f, light.Position.y + Keyboard.WSAxis * 0.01f, light.Position.z + Keyboard.UpDownAxis * 0.01f);
+            var lightPos = light.Position;
+            var lightCone = light.ConeDirection;
+            lightCone.Normalize();
             _rocketScene.Children[0].Components[1] = light;
             var debug = _rocketScene.Children[0].Components[1] as LightComponent;
             Diagnostics.Log($"Pos: {debug.Position}");
-
+            
             // Create the camera matrix and set it as the current ModelView transformation
-            var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-            var mtxCam = float4x4.LookAt(0, 20, -3, 0, -100, 0, 0, 1, 0);
-            var mtxScale = float4x4.CreateScale(1f);
-            RC.ModelView = mtxCam * mtxRot * mtxScale;
+              var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
+              var mtxCam = float4x4.LookAt(0, 20, -3, 0, -100, 0, 0, 1, 0);
+              var mtxScale = float4x4.CreateScale(1f);
+
+              RC.ModelView = mtxCam * mtxRot * mtxScale; 
+
 
             
-
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
 
@@ -176,7 +180,7 @@ namespace Fusee.Engine.Examples.Simple.Core
             // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
             // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
             // Back clipping happens at 2000 (Anything further away from the camera than 2000 world units gets clipped, polygons will be cut)
-            var projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 20000);
+            var projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 200000);
             RC.Projection = projection;
 
 #if GUI_SIMPLE

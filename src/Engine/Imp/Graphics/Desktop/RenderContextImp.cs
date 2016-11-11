@@ -260,58 +260,63 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <returns>An ITexture that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
         public ITexture CreateWritableTexture(int width, int height, ImagePixelFormat pixelFormat)
         {
-            // TODO: Create Texture
-            // TODO: Create FBO with texture
-            // TODO: Bind to Buffer
-
-            int _textureHandle;
-            int _fboHandle;
-
-            PixelInternalFormat internalFormat;
-            OpenTK.Graphics.OpenGL.PixelFormat format;
+            Texture returnTexture = null;
 
             try
             {
-                // Create a shadow texture
-                GL.GenTextures(1, out _textureHandle);
-                GL.BindTexture(TextureTarget.Texture2D, _textureHandle);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter,
-                    (int) TextureMinFilter.Nearest);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter,
-                    (int) TextureMagFilter.Nearest);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS,
-                    (int) TextureWrapMode.ClampToEdge);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT,
-                    (int) TextureWrapMode.ClampToEdge);
-                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent16, width, height, 0,
-                    OpenTK.Graphics.OpenGL.PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
-
-                // Create FBO
-                GL.GenFramebuffers(1, out _fboHandle);
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, _fboHandle);
-                GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment,
-                    TextureTarget.Texture2D, _textureHandle, 0);
-
-                // Disable writes to the color buffer
-                GL.DrawBuffer(DrawBufferMode.None);
-                //GL.ReadBuffer(ReadBufferMode.None);
-
-                if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
+                switch (pixelFormat)
                 {
-                    throw new Exception($"Error creating writable Texture: {GL.GetError()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
+                    case ImagePixelFormat.Depth:
+                        returnTexture = CreateDepthFramebuffer(width, height);
+                        break;
+                    default:
+                        throw new NotImplementedException();
                 }
-
-                // TODO: Evaluate, but this should work
-                return new Texture { handle = _textureHandle, fboHandle = _fboHandle };
             }
             catch (Exception e)
             {
                 Diagnostics.Log($"Error creating writable Texture: {GL.GetError()}, {e}");
             }
+            return returnTexture;
+        }
 
-            // TODO: Evaluate, but this should work
-            return new Texture { handle = 0, fboHandle = 0 };
+        private static Texture CreateDepthFramebuffer(int width, int height)
+        {
+            var textureHandle = 0;
+            var fboHandle = 0;
+            
+            // Create a shadow texture
+            GL.GenTextures(1, out textureHandle);
+            GL.BindTexture(TextureTarget.Texture2D, textureHandle);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter,
+                (int)TextureMinFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter,
+                (int)TextureMagFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS,
+                (int)TextureWrapMode.ClampToBorder);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT,
+                (int)TextureWrapMode.ClampToBorder);
+            // everything outside the border will be white
+            var borderColor = 1.0f;
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureBorderColor, borderColor);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent32, width, height, 0,
+                OpenTK.Graphics.OpenGL.PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
 
+            // Create FBO
+            GL.GenFramebuffers(1, out fboHandle);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, fboHandle);
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment,
+                TextureTarget.Texture2D, textureHandle, 0);
+
+            // Disable writes to the color buffer
+            GL.DrawBuffer(DrawBufferMode.None);  
+
+            if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
+            {
+                throw new Exception($"Error creating writable Texture: {GL.GetError()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
+            }
+
+            return new Texture { handle = textureHandle, fboHandle = fboHandle };
         }
 
         #endregion
@@ -1707,14 +1712,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
             else
             {
-                // Clear 
-               // Clear(ClearFlags.Depth);
-               
                 var fboTexture = (Texture) texture;
 
                 // Bind buffer - now we are rendering to this buffer!
                 GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer,  fboTexture.fboHandle);
 
+                // Clear 
+                Clear(ClearFlags.Depth);
             }
         }
 
