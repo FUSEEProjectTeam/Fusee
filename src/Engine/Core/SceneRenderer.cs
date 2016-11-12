@@ -700,9 +700,10 @@ namespace Fusee.Engine.Core
             for (var i = 0; i < _lightComponents.Count; i++)
             {
                 SetupLight(i, _lightComponents[i], effect);
+                effect.RenderMesh(rm);
             }
             
-            effect.RenderMesh(rm);
+            
         }
 
       
