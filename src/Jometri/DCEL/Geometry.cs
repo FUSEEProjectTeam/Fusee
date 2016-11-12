@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Fusee.Base.Core;
+using Fusee.Jometri.Triangulate;
 using Fusee.Math.Core;
 
 namespace Fusee.Jometri.DCEL
@@ -32,13 +33,15 @@ namespace Fusee.Jometri.DCEL
         private readonly List<HalfEdge> _halfEdges;
         private readonly List<Face> _faces;
 
+        private Triangulation _tri;
+
         #endregion
 
         /// <summary>
         /// Stores geometry in a DCEL (doubly conneted edge list).
         /// </summary>
         /// <param name="outlines">A collection of the geometrys' outlines, each containing the geometric information as a list of float3 in ccw order</param>
-        public Geometry(IEnumerable<Outline> outlines)
+        public Geometry(IEnumerable<Outline> outlines, bool triangulate= false)
         {
             _vertices = new List<Vertex>();
             _halfEdges = new List<HalfEdge>();
@@ -49,6 +52,9 @@ namespace Fusee.Jometri.DCEL
             VertHandles = new List<VertHandle>();
 
             CreateHalfEdgesForGeometry(outlines);
+
+            if(triangulate)
+                _tri = new Triangulation(this);
         }
 
         #region Structs

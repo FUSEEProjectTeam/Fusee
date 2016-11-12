@@ -50,44 +50,7 @@ namespace Fusee.Jometri.Triangulate
                 TriangulateMonotone(fHandle);
             }
         }
-
-        private IEnumerable<Geometry.Vertex> GetLeftChain(IList<Geometry.Vertex> sortedVerts, FaceHandle fHandle)
-        {
-            var heHandle = new HalfEdgeHandle();
-            var endOfChain = sortedVerts.LastItem();
-
-            var startingAtFirstV = _geometry.GetHalfEdgesStartingAtV(sortedVerts[0]).ToList();
-            if (startingAtFirstV.Count > 1)
-            {
-                foreach (var heh in startingAtFirstV)
-                {
-                    var he = _geometry.GetHalfEdgeByHandle(heh);
-                    if (he.IncidentFace.Id == fHandle.Id)
-                        heHandle = heh;
-                }
-            }
-            else
-            { heHandle = sortedVerts[0].IncidentHalfEdge; }
-
-            do
-            {
-                var halfEdge = _geometry.GetHalfEdgeByHandle(heHandle);
-                yield return _geometry.GetVertexByHandle(halfEdge.Origin);
-                heHandle = halfEdge.Next;
-
-            } while (heHandle.Id != endOfChain.Handle.Id);
-        }
-
-        private static bool IsLeftChain(IEnumerable<Geometry.Vertex> leftChain, Geometry.Vertex cur)
-        {
-            foreach (var v in leftChain)
-            {
-                if (v.Handle.Id == cur.Handle.Id)
-                    return true;
-            }
-            return false;
-        }
-
+        #region Triangulate monotone polygone
         private void TriangulateMonotone(FaceHandle fHandle)
         {
             var faceVertices = _geometry.GetFaceVertices(fHandle).ToList();
@@ -147,6 +110,44 @@ namespace Fusee.Jometri.Triangulate
                 }
             }
         }
+
+        private IEnumerable<Geometry.Vertex> GetLeftChain(IList<Geometry.Vertex> sortedVerts, FaceHandle fHandle)
+        {
+            var heHandle = new HalfEdgeHandle();
+            var endOfChain = sortedVerts.LastItem();
+
+            var startingAtFirstV = _geometry.GetHalfEdgesStartingAtV(sortedVerts[0]).ToList();
+            if (startingAtFirstV.Count > 1)
+            {
+                foreach (var heh in startingAtFirstV)
+                {
+                    var he = _geometry.GetHalfEdgeByHandle(heh);
+                    if (he.IncidentFace.Id == fHandle.Id)
+                        heHandle = heh;
+                }
+            }
+            else
+            { heHandle = sortedVerts[0].IncidentHalfEdge; }
+
+            do
+            {
+                var halfEdge = _geometry.GetHalfEdgeByHandle(heHandle);
+                yield return _geometry.GetVertexByHandle(halfEdge.Origin);
+                heHandle = halfEdge.Next;
+
+            } while (_geometry.GetHalfEdgeByHandle(heHandle).Origin.Id != endOfChain.Handle.Id);
+        }
+
+        private static bool IsLeftChain(IEnumerable<Geometry.Vertex> leftChain, Geometry.Vertex cur)
+        {
+            foreach (var v in leftChain)
+            {
+                if (v.Handle.Id == cur.Handle.Id)
+                    return true;
+            }
+            return false;
+        }
+        #endregion
 
         #region Test face for y monotony
 
@@ -237,6 +238,7 @@ namespace Fusee.Jometri.Triangulate
             var newFaces = new List<FaceHandle>();
 
             _sweepLineStatus = new BinarySearchTree<StatusNode>();
+            _root = null;
 
             while (sortedVertices.Count != 0)
             {
