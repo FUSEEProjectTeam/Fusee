@@ -46,7 +46,7 @@ namespace Fusee.Base.Core
         /// <param name="root">The root node of the tree</param>
         /// <param name="value">Value to be inserted into the tree</param>
         /// <returns></returns>
-        public Node<T> InsertNode(Node<T> root, T value)
+        public Node<T> InsertNode(ref Node<T> root, T value)
         {
             if (root == null)
             {
@@ -58,11 +58,11 @@ namespace Fusee.Base.Core
             {
                 if (value.CompareTo(root.Value) < 0) //Items with the same value are ignored, use <= to insert them into the three
                 {
-                    root.LeftNode = InsertNode(root.LeftNode, value);
+                    root.LeftNode = InsertNode(ref root.LeftNode, value);
                 }
-                else if (value.CompareTo(root.Value) > 0) //Items with the same value are ignored, use >= to insert them into the tree
+                else if (value.CompareTo(root.Value) >= 0) 
                 {
-                    root.RightNode = InsertNode(root.RightNode, value);
+                    root.RightNode = InsertNode(ref root.RightNode, value);
                 }
             }
             return root;
@@ -127,14 +127,19 @@ namespace Fusee.Base.Core
             return res;
         }
 
-        private Node<T> Delete(ref Node<T> root)
+        /// <summary>
+        /// Only use with custom implementations of DeleteNode!
+        /// </summary>
+        /// <param name="root">The root node of the tree.</param>
+        /// <returns></returns>
+        public Node<T> Delete(ref Node<T> root)
         {
             var tempValue = default(T);
 
-            if (_globalRoot == root)
+            if (_globalRoot == root && root.LeftNode == null && root.RightNode == null)
             {
-                //Deletion of root element is not allowed;
-                return root;
+                //Deletion of root element is allowed  - to for forbid it, return root
+                return null;
             }
             if (root.LeftNode == null && root.RightNode == null)
             {

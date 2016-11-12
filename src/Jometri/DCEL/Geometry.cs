@@ -41,7 +41,8 @@ namespace Fusee.Jometri.DCEL
         /// Stores geometry in a DCEL (doubly conneted edge list).
         /// </summary>
         /// <param name="outlines">A collection of the geometrys' outlines, each containing the geometric information as a list of float3 in ccw order</param>
-        public Geometry(IEnumerable<Outline> outlines, bool triangulate= false)
+        /// <param name="triangulate">If triangulate is set to true, the created geometry will be triangulated</param>
+        public Geometry(IEnumerable<Outline> outlines, bool triangulate = false)
         {
             _vertices = new List<Vertex>();
             _halfEdges = new List<HalfEdge>();
@@ -53,7 +54,13 @@ namespace Fusee.Jometri.DCEL
 
             CreateHalfEdgesForGeometry(outlines);
 
-            if(triangulate)
+            var coords = new List<string>();
+            foreach (var v in _vertices)
+            {
+                coords.Add(v.Coord.ToString());
+            }
+
+            if (triangulate)
                 _tri = new Triangulation(this);
         }
 
@@ -154,6 +161,18 @@ namespace Fusee.Jometri.DCEL
 
         #region public Methods
 
+        private Dictionary<HalfEdgeHandle, List<HalfEdge>> GetHoles(Face face)
+        {
+            var holes = new Dictionary<HalfEdgeHandle, List<HalfEdge>>();
+
+            foreach (var he in face.InnerHalfEdges)
+            {
+                holes.Add(he, GetEdgeLoop(he).ToList());
+            }
+
+            return holes;
+        }
+
         /// <summary>
         /// Inserts a pair of half edges between two vertices.
         /// </summary>
@@ -189,6 +208,8 @@ namespace Fusee.Jometri.DCEL
             }
             if (pStartHe.Handle.Id == 0)
                 throw new ArgumentException("Vertex " + p + " vertex " + q + " have no common Face!");
+
+            var holes = GetHoles(face);
 
             var newFromP = new HalfEdge();
             var newFromQ = new HalfEdge();
@@ -247,7 +268,7 @@ namespace Fusee.Jometri.DCEL
                 if (count == 4) break;
             }
 
-            if (IsHalfEdgeToHole(face, p, q)) return;
+            if (holes.Count != 0 && IsHalfEdgeToHole(holes, p, q, face)) return;
 
             var newFace = new Face
             {
@@ -260,7 +281,7 @@ namespace Fusee.Jometri.DCEL
             _faces.Add(newFace);
 
             //Assign the handle of the new face to its half edges
-            AssignFaceHandle(newFace.FirstHalfEdge, newFace);
+            AssignFaceHandle(newFace.FirstHalfEdge, ref newFace);
 
             //Set face.FirstHalfEdge to newFromP - old FirstHalfEdge can be part of new face now!
             for (var i = 0; i < _faces.Count; i++)
@@ -574,8 +595,9 @@ namespace Fusee.Jometri.DCEL
         #endregion
 
         #region private methods concerning InsertHalfEdge
-        private void AssignFaceHandle(HalfEdgeHandle halfEdge, Face newFace)
+        private void AssignFaceHandle(HalfEdgeHandle halfEdge, ref Face newFace)
         {
+            var oldFaceHandle = GetHalfEdgeByHandle(halfEdge).IncidentFace;
             var currentHe = GetHalfEdgeByHandle(halfEdge);
             do
             {
@@ -588,24 +610,53 @@ namespace Fusee.Jometri.DCEL
                     break;
                 }
                 currentHe = GetHalfEdgeByHandle(currentHe.Next);
-
             } while (currentHe.Handle.Id != halfEdge.Id);
+
+            //Assign newFace to possible holes in the "old" face
+            var oldFace = GetFaceByHandle(oldFaceHandle);
+            if (oldFace.InnerHalfEdges.Count == 0) return;
+
+            var inner = new List<HalfEdgeHandle>();
+            inner.AddRange(oldFace.InnerHalfEdges);
+
+            foreach (var he in inner)
+            {
+                newFace.InnerHalfEdges.Add(he);
+                oldFace.InnerHalfEdges.Remove(he);
+
+                var fistHe = GetHalfEdgeByHandle(he);
+                do
+                {
+                    fistHe.IncidentFace = newFace.Handle;
+
+                    for (var i = 0; i < _halfEdges.Count; i++)
+                    {
+                        if (_halfEdges[i].Handle.Id != fistHe.Handle.Id) continue;
+                        _halfEdges[i] = fistHe;
+                        break;
+                    }
+                    fistHe = GetHalfEdgeByHandle(fistHe.Next);
+
+                } while (fistHe.Handle.Id != he.Id);
+            }
+            for (var i = 0; i < _faces.Count; i++)
+            {
+                if (_faces[i].Handle.Id == oldFace.Handle.Id)
+                    _faces[i] = oldFace;
+            }
         }
 
-        private bool IsHalfEdgeToHole(Face face, VertHandle p, VertHandle q)
+        private bool IsHalfEdgeToHole(Dictionary<HalfEdgeHandle,List<HalfEdge>> holes, VertHandle p, VertHandle q, Face face)
         {
-            var innerHalfEdges = face.InnerHalfEdges;
+            if (holes.Count == 0) return false;
 
-            if (innerHalfEdges.Count == 0) return false;
-
-            foreach (var heh in innerHalfEdges)
+            foreach (var hole in holes)
             {
-                var loop = GetEdgeLoop(heh).ToList();
-                foreach (var he in loop)
+                foreach (var he in hole.Value)
                 {
                     if (p.Id != he.Origin.Id && q.Id != he.Origin.Id) continue;
 
-                    face.InnerHalfEdges.Remove(heh);
+                    face.InnerHalfEdges.Remove(hole.Key);
                     return true;
                 }
             }
