@@ -241,6 +241,8 @@ namespace Fusee.Engine.Core
              : this(sc)
         {
             LightningCalculationMethod = lCalcMethod;
+
+          
         }
 
         public SceneRenderer(SceneContainer sc /*, string scenePathDirectory*/)
@@ -262,7 +264,7 @@ namespace Fusee.Engine.Core
                 LightningCalculation = LightningCalculationMethod.SIMPLE,
                 passes = 2
             };
-
+            
         }
 
         public void InitAnimations(SceneContainer sc)
@@ -385,6 +387,10 @@ namespace Fusee.Engine.Core
                     }
                 });
                 _defaultEffect.AttachToContext(_rc);
+
+
+                // TODO: Move this
+                CreateRenderShadowMapEffect();
             }
         }
 
@@ -636,19 +642,9 @@ namespace Fusee.Engine.Core
 
         private float4x4 _depthMVP;
 
-        private void RenderShadowMapPass(Mesh rm)
+        private void CreateRenderShadowMapEffect()
         {
-            var lightPos = AllLightResults[0].Position;
-            var lightCone = AllLightResults[0].ConeDirection;
-            //lightCone.Normalize();
-
-            var depthViewMatrix = float4x4.LookAt(lightPos.x, lightPos.y, lightPos.z, 0, 0, 0, 0, 1, 0);
-            var scale = float4x4.CreateScale(0.1f);
-            var depthModelMatrix = scale * _state.Model;
-            var depthProjectionMatrix = float4x4.CreateOrthographic(10f, 10f, 0.001f, 20f);
-            var aspectRatio = _rc.ViewportWidth / (float)_rc.ViewportHeight;
-            var projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, aspectRatio, 1f, 10f);
-            _depthMVP = _rc.Projection * depthViewMatrix * depthModelMatrix;
+            _depthMVP = float4x4.Identity;
 
 
             var effectPass = new EffectPassDeclaration[1];
@@ -664,8 +660,28 @@ namespace Fusee.Engine.Core
                         };
 
             _firstPassShaderEffect = new ShaderEffect(effectPass, effectParameter);
-
             _firstPassShaderEffect.AttachToContext(_rc); // TODO: Move this to constructor - otherwise OpenTK Exception over time
+        }
+
+        private void RenderShadowMapPass(Mesh rm)
+        {
+           // if(_firstPassShaderEffect == null) return;
+            if(AllLightResults.Count == 0) return;
+            
+            var lightPos = AllLightResults[0].Position;
+            var lightCone = AllLightResults[0].ConeDirection;
+            //lightCone.Normalize();
+
+            var depthViewMatrix = float4x4.LookAt(lightPos.x, lightPos.y, lightPos.z, 0, 0, 0, 0, 1, 0);
+            var scale = float4x4.CreateScale(0.1f);
+            var depthModelMatrix = scale * _state.Model;
+            var depthProjectionMatrix = float4x4.CreateOrthographic(10f, 10f, 0.001f, 20f);
+            var aspectRatio = _rc.ViewportWidth / (float)_rc.ViewportHeight;
+            var projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, aspectRatio, 0.1f, 1500f);
+            _depthMVP = projection * depthViewMatrix * depthModelMatrix;
+            
+            _firstPassShaderEffect.SetEffectParam("LightMVP", _depthMVP);
+          
             _firstPassShaderEffect.RenderMesh(rm);
 
         }
@@ -673,6 +689,8 @@ namespace Fusee.Engine.Core
         private void RenderPass(Mesh rm, ShaderEffect effect, string name)
         {
           //  if (name != "debug") return;
+          if(effect._rc.CurrentShader == null) return;
+            
 
             var handleLight = effect._rc.GetShaderParam(effect._rc.CurrentShader, "shadowMVP");
 
@@ -684,8 +702,8 @@ namespace Fusee.Engine.Core
                 var depthModelMatrix = scale * _state.Model;
                 var depthProjectionMatrix = float4x4.CreateOrthographic(10f, 10f, 0.001f, 20f);
                 var aspectRatio = _rc.ViewportWidth / (float)_rc.ViewportHeight;
-                var projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, aspectRatio, 1f, 10f);
-                _depthMVP = _rc.Projection * depthViewMatrix * depthModelMatrix;
+                var projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, aspectRatio, 0.1f, 1500f);
+                _depthMVP = projection * depthViewMatrix * depthModelMatrix;
 
                 effect._rc.SetShaderParam(handleLight, _depthMVP);
             }

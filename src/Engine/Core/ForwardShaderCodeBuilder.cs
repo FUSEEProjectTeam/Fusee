@@ -264,7 +264,7 @@ namespace Fusee.Engine.Core
              // perform perspective divide for ortographic!
             vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
             projCoords = projCoords * 0.5 + 0.5; // map to [0,1]
-            float bias =  max(0.005 * (1.0 - NoL), 0.001);  // bias to prevent shadow acne
+            float bias =  max(0.00001 * (1.0 - NoL), 0.00005);  // bias to prevent shadow acne
             float currentDepth = projCoords.z;
 
             float shadow = 0.0;
@@ -279,12 +279,12 @@ namespace Fusee.Engine.Core
                 for(int y = -1; y <= 1; ++y)
                 {
                     float pcfDepth = texture2D(firstPassTex, projCoords.xy + vec2(x, y) * texelSizeFloat).r;
-                    shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
+                    shadow += currentDepth /*- bias*/ -0.000001 > pcfDepth ? 1.0 : 0.0; // without bias because the number has to be so small, TODO: Fix this
                 }
             }
             shadow /= 9.0;
 
-            if(projCoords.z > 1.0)
+            if(projCoords.z > 0.99997)
                  shadow = 0.0;
 
             return shadow;
@@ -439,7 +439,10 @@ namespace Fusee.Engine.Core
             outputString += "{\n";
             outputString += "   // calculation as for Lambertian reflection\n";
             outputString += "   float diffuseTerm = clamp(dot(N, L) / (length(L) * length(N)), 0.0, 1.0) ;\n";
-            outputString += $"  return ({DiffuseColorName} * intensities * diffuseTerm);\n";
+            if(_hasDiffuseTexture)
+                outputString += $"return texture2D({DiffuseTextureName}, vUV).rgb * {DiffuseMixName} * diffuseTerm * intensities;\n";
+            else
+                outputString += $"  return ({DiffuseColorName} * intensities * diffuseTerm);\n";
             outputString += "}\n";
 
             return outputString;
@@ -505,7 +508,7 @@ namespace Fusee.Engine.Core
         private static string ParallelLightCalculation()
         {
             var outputString = "\n";
-            outputString += "       result = Iamb + diffuseColor * (1.0-shadowFactor) * (Idif + Ispe);\n";
+            outputString += "       result = Iamb +  (1.0-shadowFactor) * (Idif + Ispe);\n";
             return outputString;
         }
 

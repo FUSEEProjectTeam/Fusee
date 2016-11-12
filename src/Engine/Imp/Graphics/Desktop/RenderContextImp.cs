@@ -303,13 +303,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 OpenTK.Graphics.OpenGL.PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
 
             // Create FBO
-            GL.GenFramebuffers(1, out fboHandle);
+           GL.GenFramebuffers(1, out fboHandle);
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, fboHandle);
             GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment,
                 TextureTarget.Texture2D, textureHandle, 0);
 
             // Disable writes to the color buffer
-            GL.DrawBuffer(DrawBufferMode.None);  
+            GL.DrawBuffer(DrawBufferMode.None); 
 
             if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
             {
