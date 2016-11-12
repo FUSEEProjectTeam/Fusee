@@ -665,7 +665,7 @@ namespace Fusee.Engine.Core
 
             _firstPassShaderEffect = new ShaderEffect(effectPass, effectParameter);
 
-            _firstPassShaderEffect.AttachToContext(_rc);
+            _firstPassShaderEffect.AttachToContext(_rc); // TODO: Move this to constructor - otherwise OpenTK Exception over time
             _firstPassShaderEffect.RenderMesh(rm);
 
         }
