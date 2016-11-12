@@ -736,7 +736,7 @@ namespace Fusee.Engine.Core
 
         private void GetLightningCalculationMethodFromSceneRender()
         {
-            _lightningCalculationMethod = SceneRenderer.LightningCalculationMethod;
+          //  _lightningCalculationMethod = SceneRenderer.LightningCalculationMethod;
         }
 
         #region NamesAndValues

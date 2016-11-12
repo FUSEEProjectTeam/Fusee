@@ -279,7 +279,7 @@ namespace Fusee.Engine.Core
                 for(int y = -1; y <= 1; ++y)
                 {
                     float pcfDepth = texture2D(firstPassTex, projCoords.xy + vec2(x, y) * texelSizeFloat).r;
-                    shadow += currentDepth /*- bias*/ -0.000001 > pcfDepth ? 1.0 : 0.0; // without bias because the number has to be so small, TODO: Fix this
+                    shadow += currentDepth /*- bias*/ - 0.000001 > pcfDepth ? 1.0 : 0.0; // without bias because the number has to be so small, TODO: Fix this
                 }
             }
             shadow /= 9.0;

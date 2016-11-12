@@ -154,13 +154,6 @@ namespace Fusee.Engine.Core
         ADVANCED
     }
 
-    internal struct RenderPasses
-    {
-        public int passes;
-        public LightningCalculationMethod LightningCalculation;
-        public bool castShadows;
-    }
-
     /// <summary>
     /// Use a Scene Renderer to traverse a scene hierarchy (made out of scene nodes and components) in order
     /// to have each visited element contribute to the result rendered against a given render context.
@@ -168,15 +161,16 @@ namespace Fusee.Engine.Core
     public class SceneRenderer : SceneVisitor
     {
         // Choose Lightning Method
-        public static LightningCalculationMethod LightningCalculationMethod = LightningCalculationMethod.SIMPLE;
+        public static LightningCalculationMethod LightningCalculationMethod;
         // All lights
         public static IList<LightResult> AllLightResults = new List<LightResult>();
         // Multipass
-        public static bool RenderShadows = true;
-        private static int _currentRenderPass = 0;
+        public static bool RenderShadows;
+        private static int _currentRenderPass;
         public static bool RenderDeferred = false; // TODO: Create and set vars within the constructor
-        private ShaderEffect _firstPassShaderEffect;
-        private float4x4 _lightMVP;
+        private ShaderEffect _shadowPassShaderEffect = null;
+        private ITexture _shadowTexture = null;
+        private float4x4 _depthMVP;
 
         #region Traversal information
 
@@ -196,8 +190,6 @@ namespace Fusee.Engine.Core
 
         private string _scenePathDirectory;
         private ShaderEffect _defaultEffect;
-
-        private RenderPasses _renderPasses;
 
 
 
@@ -237,13 +229,16 @@ namespace Fusee.Engine.Core
 
         #region Initialization Construction Startup
 
-        public SceneRenderer(SceneContainer sc, LightningCalculationMethod lCalcMethod)
+        public SceneRenderer(SceneContainer sc, LightningCalculationMethod lCalcMethod, bool Shadows = false)
              : this(sc)
         {
             LightningCalculationMethod = lCalcMethod;
 
-          
+            if (Shadows)
+                RenderShadows = true;
         }
+
+     
 
         public SceneRenderer(SceneContainer sc /*, string scenePathDirectory*/)
         {
@@ -256,15 +251,6 @@ namespace Fusee.Engine.Core
             // _scenePathDirectory = scenePathDirectory;
             _state = new RendererState();
             InitAnimations(_sc);
-
-            // Create RenderPass, TODO: Constructor call
-            _renderPasses = new RenderPasses
-            {
-                castShadows = true,
-                LightningCalculation = LightningCalculationMethod.SIMPLE,
-                passes = 2
-            };
-            
         }
 
         public void InitAnimations(SceneContainer sc)
@@ -387,10 +373,6 @@ namespace Fusee.Engine.Core
                     }
                 });
                 _defaultEffect.AttachToContext(_rc);
-
-
-                // TODO: Move this
-                CreateRenderShadowMapEffect();
             }
         }
 
@@ -418,68 +400,74 @@ namespace Fusee.Engine.Core
                 //gl_FragColor = gl_FragCoord.z;
             }";
 
-        private readonly Dictionary<int, ITexture> _writableTextureCache = new Dictionary<int, ITexture>();
 
-        private void CreateWritableTexture(RenderContext rc, int i)
-        {
-            ITexture texture;
-            if (_writableTextureCache.TryGetValue(i, out texture)) return;
 
-            var writableTexture = rc.CreateWritableTexture(rc.ViewportWidth, rc.ViewportHeight, ImagePixelFormat.Depth);
-            _writableTextureCache.Add(i, writableTexture);
-        }
 
         public void Render(RenderContext rc)
         {
-            // Parse RenderPass
-            for (var i = 0; i < _renderPasses.passes; i++)
+            if (RenderShadows)
             {
-                // FirstPass - if shadow
-                if (_renderPasses.castShadows && i == 0)
+                RenderWithShadow(rc);
+            }
+            else
+            {
+                rc.SetRenderTarget(null);
+                SetContext(rc);
+                Traverse(_sc.Children);
+            }
+         }
+
+
+        private void RenderWithShadow(RenderContext rc)
+        {
+            // Create ShadowTexture if none avaliable
+            if (_shadowTexture == null)
+                _shadowTexture = rc.CreateWritableTexture(rc.ViewportWidth, rc.ViewportHeight, ImagePixelFormat.Depth);
+
+            if (_shadowPassShaderEffect == null)
+                CreateRenderShadowMapEffect(rc);
+            
+            // Parse RenderPass
+            for (var i = 0; i < 2; i++)
+            {
+                if (i == 0)
                 {
-                    // TODO: Create more for more passes
-                    CreateWritableTexture(rc, i);
-                    rc.SetRenderTarget(_writableTextureCache[i]);
+                    // Set RenderTarget to FBO
+                    rc.SetRenderTarget(_shadowTexture);
                     SetContext(rc);
                     Traverse(_sc.Children);
                     _currentRenderPass++;
                 }
                 else
                 {
+                    // Set RenderTarget to Screenbuffer
                     rc.SetRenderTarget(null);
                     SetContext(rc);
                     Traverse(_sc.Children);
                     _currentRenderPass--;
                 }
             }
-
-
-       /*    // [First Pass]
-            // Create Texture and FBO
-            // -> Constructor // only one texture otherwise strange errors! ;)
-            CreateWritableTexture(rc, 1);
-            // Set Rendertarget to this texture
-            rc.SetRenderTarget(_firstPasswritableTexture);
-            // Set Contex and traverse
-            SetContext(rc);
-            Traverse(_sc.Children); // Shader for first Pass is created and used in RenderWithLightsMethod()
-            _currentRenderPass++; // Second Renderpass
-            // [First Pass complete]
-
-            // [Second Pass]
-            // Set Rendertarget to screen and render
-            rc.SetRenderTarget(null);
-            SetContext(rc);
-            Traverse(_sc.Children);
-            // [Second Pass complete]
-            _currentRenderPass--;*/
         }
 
-      /*  public void SetRenderTarget(ITexture texture)
+        private void CreateRenderShadowMapEffect(RenderContext rc)
         {
-            if(texture == null)
-                _rc.
-        } */
+            _depthMVP = float4x4.Identity;
+
+            var effectPass = new EffectPassDeclaration[1];
+            effectPass[0] = new EffectPassDeclaration
+            {
+                PS = ShadowMapPs,
+                VS = ShadowMapVs,
+                StateSet = new RenderStateSet()
+            };
+            var effectParameter = new List<EffectParameterDeclaration>
+                        {
+                            new EffectParameterDeclaration {Name = "LightMVP", Value = _depthMVP}
+                        };
+
+            _shadowPassShaderEffect = new ShaderEffect(effectPass, effectParameter);
+            _shadowPassShaderEffect.AttachToContext(rc);
+        }
 
         #region Visitors
 
@@ -560,7 +548,7 @@ namespace Fusee.Engine.Core
                 _meshMap.Add(meshComponent, rm);
             }
 
-            RenderCurrentPass(rm, _state.Effect, meshComponent.Name);
+            RenderCurrentPass(rm, _state.Effect);
         }
 
        [VisitMethod]
@@ -627,7 +615,7 @@ namespace Fusee.Engine.Core
 
         #endregion
 
-        public void RenderCurrentPass(Mesh rm, ShaderEffect effect, string name)
+        public void RenderCurrentPass(Mesh rm, ShaderEffect effect)
         {
             if (_currentRenderPass == 0)
             {
@@ -636,36 +624,14 @@ namespace Fusee.Engine.Core
             }
             else
             {
-                RenderPass(rm, effect, name);
+                RenderPass(rm, effect);
             }
         }
-
-        private float4x4 _depthMVP;
-
-        private void CreateRenderShadowMapEffect()
-        {
-            _depthMVP = float4x4.Identity;
-
-
-            var effectPass = new EffectPassDeclaration[1];
-            effectPass[0] = new EffectPassDeclaration
-            {
-                PS = ShadowMapPs,
-                VS = ShadowMapVs,
-                StateSet = new RenderStateSet()
-            };
-            var effectParameter = new List<EffectParameterDeclaration>
-                        {
-                            new EffectParameterDeclaration {Name = "LightMVP", Value = _depthMVP}
-                        };
-
-            _firstPassShaderEffect = new ShaderEffect(effectPass, effectParameter);
-            _firstPassShaderEffect.AttachToContext(_rc); // TODO: Move this to constructor - otherwise OpenTK Exception over time
-        }
+        
 
         private void RenderShadowMapPass(Mesh rm)
         {
-           // if(_firstPassShaderEffect == null) return;
+           // if(_shadowPassShaderEffect == null) return;
             if(AllLightResults.Count == 0) return;
             
             var lightPos = AllLightResults[0].Position;
@@ -675,53 +641,46 @@ namespace Fusee.Engine.Core
             var depthViewMatrix = float4x4.LookAt(lightPos.x, lightPos.y, lightPos.z, 0, 0, 0, 0, 1, 0);
             var scale = float4x4.CreateScale(0.1f);
             var depthModelMatrix = scale * _state.Model;
-            var depthProjectionMatrix = float4x4.CreateOrthographic(10f, 10f, 0.001f, 20f);
             var aspectRatio = _rc.ViewportWidth / (float)_rc.ViewportHeight;
             var projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, aspectRatio, 0.1f, 1500f);
             _depthMVP = projection * depthViewMatrix * depthModelMatrix;
             
-            _firstPassShaderEffect.SetEffectParam("LightMVP", _depthMVP);
+            _shadowPassShaderEffect.SetEffectParam("LightMVP", _depthMVP);
           
-            _firstPassShaderEffect.RenderMesh(rm);
+            _shadowPassShaderEffect.RenderMesh(rm);
 
         }
 
-        private void RenderPass(Mesh rm, ShaderEffect effect, string name)
+        private void RenderPass(Mesh rm, ShaderEffect effect)
         {
           //  if (name != "debug") return;
           if(effect._rc.CurrentShader == null) return;
-            
+
+
+            var lightPos = AllLightResults[0].Position;
+
+            var depthViewMatrix = float4x4.LookAt(lightPos.x, lightPos.y, lightPos.z, 0, 0, 0, 0, 1, 0);
+            var scale = float4x4.CreateScale(0.1f);
+            var depthModelMatrix = scale * _state.Model;
+            var aspectRatio = _rc.ViewportWidth / (float)_rc.ViewportHeight;
+            var projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, aspectRatio, 0.1f, 1500f);
+            _depthMVP = projection * depthViewMatrix * depthModelMatrix;
+
 
             var handleLight = effect._rc.GetShaderParam(effect._rc.CurrentShader, "shadowMVP");
-
             if (handleLight != null)
-            {
-                var lightPos = AllLightResults[0].Position;
-                var depthViewMatrix = float4x4.LookAt(lightPos.x, lightPos.y, lightPos.z, 0, 0, 0, 0, 1, 0);
-                var scale = float4x4.CreateScale(0.1f);
-                var depthModelMatrix = scale * _state.Model;
-                var depthProjectionMatrix = float4x4.CreateOrthographic(10f, 10f, 0.001f, 20f);
-                var aspectRatio = _rc.ViewportWidth / (float)_rc.ViewportHeight;
-                var projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, aspectRatio, 0.1f, 1500f);
-                _depthMVP = projection * depthViewMatrix * depthModelMatrix;
-
                 effect._rc.SetShaderParam(handleLight, _depthMVP);
-            }
 
             var handle = effect._rc.GetShaderParam(effect._rc.CurrentShader, "firstPassTex");
             if (handle != null)
-            {
-                var textureFromPreviousPass = _currentRenderPass - 1;
-                effect._rc.SetShaderParamTexture(handle, _writableTextureCache[textureFromPreviousPass]);
-            }
+                effect._rc.SetShaderParamTexture(handle, _shadowTexture);
+
 
             for (var i = 0; i < _lightComponents.Count; i++)
             {
                 SetupLight(i, _lightComponents[i], effect);
                 effect.RenderMesh(rm);
             }
-            
-            
         }
 
       

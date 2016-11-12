@@ -76,11 +76,8 @@ namespace Fusee.Engine.Examples.Simple.Core
 
             // Load the rocket model
             _rocketScene = AssetStorage.Get<SceneContainer>("WuggyLand.fus");
-            
-           // RC.SetRenderState(RenderState.CullMode, (uint) Cull.Clockwise);
-            // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRenderer(_rocketScene);
-            SceneRenderer.LightningCalculationMethod = LightningCalculationMethod.SIMPLE;
+
+           
             _rocketScene.Children.Add(new SceneNodeContainer
             {
                 Children = new List<SceneNodeContainer>(),
@@ -99,10 +96,15 @@ namespace Fusee.Engine.Examples.Simple.Core
                        Type = LightType.Parallel
                     },
                     new TransformComponent()
-                    
+
                 }
-                
+
             });
+
+          
+            // Wrap a SceneRenderer around the model.
+            _sceneRenderer = new SceneRenderer(_rocketScene, LightningCalculationMethod.SIMPLE, true);
+        
          
             _rocketScene.Children[0].Children[0].Components[2].Name = "debug";
 
