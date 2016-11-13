@@ -43,7 +43,7 @@ namespace Fusee.Jometri.Triangulate
                     MakeMonotone(fHandle);
             }
 
-            var monotoneFaces  = new List<FaceHandle>();
+            var monotoneFaces = new List<FaceHandle>();
             monotoneFaces.AddRange(_geometry.FaceHandles);
             foreach (var fHandle in monotoneFaces)
             {
@@ -63,10 +63,10 @@ namespace Fusee.Jometri.Triangulate
             vertStack.Push(sortedVerts[0]);
             vertStack.Push(sortedVerts[1]);
 
-            for (var i = 2; i < sortedVerts.Count-1; i++)
+            for (var i = 2; i < sortedVerts.Count - 1; i++)
             {
                 var current = sortedVerts[i];
-                
+
                 if (!IsLeftChain(leftCain, current) && IsLeftChain(leftCain, vertStack.Peek()) ||
                     IsLeftChain(leftCain, current) && !IsLeftChain(leftCain, vertStack.Peek()))
                 {
@@ -95,7 +95,7 @@ namespace Fusee.Jometri.Triangulate
                         if (IsAngleGreaterOrEqualPi(v1, v2))
                             isValidDiagonal = false;
 
-                        if(isValidDiagonal)
+                        if (isValidDiagonal)
                             _geometry.InsertHalfEdge(current.Handle, popped.Handle);
                     }
                     vertStack.Push(popped);
@@ -224,11 +224,11 @@ namespace Fusee.Jometri.Triangulate
             return angle < 0;
         }
         #endregion
-        
+
         #region MakeMonotone
         private void MakeMonotone(FaceHandle face)
         {
-            var vertices = _geometry.GetFaceVertices(face);
+            var vertices = _geometry.GetFaceVertices(face).ToList();
             var sortedVertices = GetSortedVertices(vertices.ToList());
             var faceHalfEdges = _geometry.GetHalfEdgesOfFace(face).ToList();
 
@@ -242,14 +242,6 @@ namespace Fusee.Jometri.Triangulate
                 var current = sortedVertices[0];
 
                 TestVertexType(current, face, newFaces);
-
-                //Debug.WriteLine(current.Handle.Id+" HalfEdgeOrigin " +current.HalfEdgeOrigin +  _vertType);
-                
-                foreach (var p in _sweepLineStatus.PreorderTraverseTree(_root))
-                {
-                    Debug.WriteLine("HE " + p.HalfEdge.Id + " Helper " + p.Helper.Id + " Helper HalfEdgeOrigin " + p.HalfEdgeOrigin);
-                }
-                Debug.WriteLine(_vertType + "current " + current.Handle.Id);
 
                 switch (_vertType)
                 {
@@ -272,6 +264,12 @@ namespace Fusee.Jometri.Triangulate
                         throw new ArgumentOutOfRangeException();
                 }
                 sortedVertices.RemoveAt(0);
+
+                Debug.WriteLine(_vertType + "current " + current.Handle.Id);
+                foreach (var p in _sweepLineStatus.PreorderTraverseTree(_root))
+                {
+                    Debug.WriteLine("HE " + p.HalfEdge.Id + " Helper " + p.Helper.Id + " Helper Key " + p.Key);
+                }
             }
         }
 
@@ -285,11 +283,16 @@ namespace Fusee.Jometri.Triangulate
 
                 var ei = new StatusNode
                 {
-                    HalfEdgeOrigin = _geometry.GetVertexByHandle(he.Origin).Coord,
                     HalfEdge = he.Handle,
                     Helper = v.Handle,
                     IsMergeVertex = false
                 };
+
+                var origin = _geometry.GetVertexByHandle(he.Origin);
+                var targetH = _geometry.GetHalfEdgeByHandle(he.Next).Origin;
+                var target = _geometry.GetVertexByHandle(targetH);
+                ei.SetKey(origin, target);
+
                 _root = tree.InsertNode(ref _root, ei);
                 break;
             }
@@ -303,30 +306,11 @@ namespace Fusee.Jometri.Triangulate
 
                 if (he.Origin.Id != v.Handle.Id) continue;
 
-                //var prevHalfEdge = _geometry.GetHalfEdgeByHandle(he.Prev);
-                //var x = _geometry.GetVertexByHandle(prevHalfEdge.Origin).HalfEdgeOrigin.x;
-
                 var eMinOne = FindStatusNode(_root, he.Prev).Value;
 
                 if (eMinOne.IsMergeVertex)
                 {
-                    var vert1 = _geometry.GetVertexByHandle(v.Handle);
-                    var vert2 = _geometry.GetVertexByHandle(eMinOne.Helper);
-                    var p = new VertHandle();
-                    var q = new VertHandle();
-
-                    if (vert1.Coord.x > vert2.Coord.x)
-                    {
-                        p = vert1.Handle;
-                        q = vert2.Handle;
-                    }
-                    else
-                    {
-                        q = vert1.Handle;
-                        p = vert2.Handle;
-                    }
-
-                    _geometry.InsertHalfEdge(p, q);
+                    _geometry.InsertHalfEdge(v.Handle, eMinOne.Helper);
                     newFaces.Add(_geometry.FaceHandles.LastItem());
                 }
 
@@ -339,120 +323,57 @@ namespace Fusee.Jometri.Triangulate
         {
             var ej = FindLargestSmallerThan(_root, v.Coord.x).Value;
 
-            var vert1 = _geometry.GetVertexByHandle(v.Handle);
-            var vert2 = _geometry.GetVertexByHandle(ej.Helper);
-            var p = new VertHandle();
-            var q = new VertHandle();
-
-            if (vert1.Coord.x < vert2.Coord.x)
-            {
-                p = vert1.Handle;
-                q = vert2.Handle;
-            }
-            else
-            {
-                q = vert1.Handle;
-                p = vert2.Handle;
-            }
-
-            _geometry.InsertHalfEdge(p, q);
+            _geometry.InsertHalfEdge(v.Handle, ej.Helper);
             newFaces.Add(_geometry.FaceHandles.LastItem());
 
             tree.FindNode(_root, ej).Value.Helper = v.Handle;
             tree.FindNode(_root, ej).Value.IsMergeVertex = false;
-
-            //Rebuild tree after v.handle changes
-            /*var nodes = tree.PreorderTraverseTree(_root);
-            _root = null;
-            foreach (var n in nodes)
-            {
-                tree.InsertNode(ref _root, n);
-            }*/
 
             var ei = new StatusNode
             {
                 HalfEdge = v.IncidentHalfEdge,
                 Helper = v.Handle,
                 IsMergeVertex = false,
-                HalfEdgeOrigin = v.Coord
             };
-            
+            var he = _geometry.GetHalfEdgeByHandle(ei.HalfEdge);
+            var origin = _geometry.GetVertexByHandle(he.Origin);
+            var targetH = _geometry.GetHalfEdgeByHandle(he.Next).Origin;
+            var target = _geometry.GetVertexByHandle(targetH);
+            ei.SetKey(origin, target);
+
             tree.InsertNode(ref _root, ei);
         }
 
         private void HandleMergeVertex(ref BinarySearchTree<StatusNode> tree, Geometry.Vertex v, IEnumerable<HalfEdgeHandle> faceHalfEdges, ICollection<FaceHandle> newFaces)
         {
+            var he = new Geometry.HalfEdge();
             foreach (var heh in faceHalfEdges)
             {
-                var he = _geometry.GetHalfEdgeByHandle(heh);
+                he = _geometry.GetHalfEdgeByHandle(heh);
 
-                if (he.Origin.Id != v.Handle.Id) continue;
-
-                //var prevHalfEdge = _geometry.GetHalfEdgeByHandle(he.Prev);
-                //var x = _geometry.GetVertexByHandle(prevHalfEdge.Origin).HalfEdgeOrigin.x;
-                var eMinOne = FindStatusNode(_root, he.Prev).Value;
-
-                if (eMinOne.IsMergeVertex)
-                {
-                    var vert1 = _geometry.GetVertexByHandle(v.Handle);
-                    var vert2 = _geometry.GetVertexByHandle(eMinOne.Helper);
-                    var p = new VertHandle();
-                    var q = new VertHandle();
-
-                    if (vert1.Coord.x > vert2.Coord.x)
-                    {
-                        p = vert1.Handle;
-                        q = vert2.Handle;
-                    }
-                    else
-                    {
-                        q = vert1.Handle;
-                        p = vert2.Handle;
-                    }
-
-                    _geometry.InsertHalfEdge(p, q);
-                    newFaces.Add(_geometry.FaceHandles.LastItem());
-                }
-
-                tree.DeleteNode(ref _root, eMinOne); 
-
-                var ej = FindLargestSmallerThan(_root, v.Coord.x).Value;
-
-                if (ej.IsMergeVertex)
-                {
-                    var vert1 = _geometry.GetVertexByHandle(v.Handle);//TODO: Make Methode
-                    var vert2 = _geometry.GetVertexByHandle(ej.Helper);
-                    var p = new VertHandle();
-                    var q = new VertHandle();
-
-                    if (vert1.Coord.x > vert2.Coord.x)
-                    {
-                        p = vert1.Handle;
-                        q = vert2.Handle;
-                    }
-                    else
-                    {
-                        q = vert1.Handle;
-                        p = vert2.Handle;
-                    }
-
-                    _geometry.InsertHalfEdge(p, q);
-                    newFaces.Add(_geometry.FaceHandles.LastItem());
-                }
-
-                tree.FindNode(_root, ej).Value.Helper = v.Handle;
-                tree.FindNode(_root, ej).Value.IsMergeVertex = true;
-
-                //Rebuild tree after v.handle changes TODO: Make Methode!
-                /*var nodes = tree.PreorderTraverseTree(_root);
-                _root = null;
-                foreach (var n in nodes)
-                {
-                    tree.InsertNode(ref _root, n);
-                }*/
-
-                break;
+                if (he.Origin.Id == v.Handle.Id) break;
             }
+
+            var eMinOne = FindStatusNode(_root, he.Prev).Value;
+
+            if (eMinOne.IsMergeVertex)
+            {
+                _geometry.InsertHalfEdge(v.Handle, eMinOne.Helper);
+                newFaces.Add(_geometry.FaceHandles.LastItem());
+            }
+
+            tree.DeleteNode(ref _root, eMinOne);
+            
+            var ej = FindLargestSmallerThan(_root, v.Coord.x).Value;
+
+            if (ej.IsMergeVertex)
+            {
+                _geometry.InsertHalfEdge(v.Handle, ej.Helper);
+                newFaces.Add(_geometry.FaceHandles.LastItem());
+            }
+
+            tree.FindNode(_root, ej).Value.Helper = v.Handle;
+            tree.FindNode(_root, ej).Value.IsMergeVertex = true;
         }
 
         private void HandleRegularVertex(BinarySearchTree<StatusNode> tree, Geometry.Vertex v, IEnumerable<HalfEdgeHandle> faceHalfEdges, ICollection<FaceHandle> newFaces)
@@ -465,30 +386,11 @@ namespace Fusee.Jometri.Triangulate
 
                     if (he.Origin.Id != v.Handle.Id) continue;
 
-                    //var prevHalfEdge = _geometry.GetHalfEdgeByHandle(he.Prev);
-                    //var x = _geometry.GetVertexByHandle(prevHalfEdge.Origin).HalfEdgeOrigin.x;
-
                     var eMinOne = FindStatusNode(_root, he.Prev).Value;
 
                     if (eMinOne.IsMergeVertex)
                     {
-                        var vert1 = _geometry.GetVertexByHandle(v.Handle);
-                        var vert2 = _geometry.GetVertexByHandle(eMinOne.Helper);
-                        var p = new VertHandle();
-                        var q = new VertHandle();
-
-                        if (vert1.Coord.x > vert2.Coord.x)
-                        {
-                            p = vert1.Handle;
-                            q = vert2.Handle;
-                        }
-                        else
-                        {
-                            q = vert1.Handle;
-                            p = vert2.Handle;
-                        }
-
-                        _geometry.InsertHalfEdge(p, q);
+                        _geometry.InsertHalfEdge(v.Handle, eMinOne.Helper);
                         newFaces.Add(_geometry.FaceHandles.LastItem());
                     }
 
@@ -498,12 +400,13 @@ namespace Fusee.Jometri.Triangulate
                     {
                         HalfEdge = v.IncidentHalfEdge,
                         Helper = v.Handle,
-                        IsMergeVertex = false,
-                        //HalfEdgeOrigin = v.Coord
+                        IsMergeVertex = false
                     };
                     var halfEdge = _geometry.GetHalfEdgeByHandle(ei.HalfEdge);
-                    var halfEdgeOrigin = _geometry.GetVertexByHandle(halfEdge.Origin);
-                    ei.HalfEdgeOrigin = halfEdgeOrigin.Coord;
+                    var origin = _geometry.GetVertexByHandle(halfEdge.Origin);
+                    var targetH = _geometry.GetHalfEdgeByHandle(halfEdge.Next).Origin;
+                    var target = _geometry.GetVertexByHandle(targetH);
+                    ei.SetKey(origin, target);
 
                     tree.InsertNode(ref _root, ei);
 
@@ -516,38 +419,12 @@ namespace Fusee.Jometri.Triangulate
 
                 if (ej.IsMergeVertex)
                 {
-
-                    var vert1 = _geometry.GetVertexByHandle(v.Handle);
-                    var vert2 = _geometry.GetVertexByHandle(ej.Helper);
-                    VertHandle p;
-                    VertHandle q;
-
-                    if (vert1.Coord.x > vert2.Coord.x)
-                    {
-                        p = vert1.Handle;
-                        q = vert2.Handle;
-                    }
-                    else
-                    {
-                        q = vert1.Handle;
-                        p = vert2.Handle;
-                    }
-
-                    _geometry.InsertHalfEdge(p, q);
+                    _geometry.InsertHalfEdge(v.Handle, ej.Helper);
                     newFaces.Add(_geometry.FaceHandles.LastItem());
                 }
 
                 tree.FindNode(_root, ej).Value.Helper = v.Handle;
                 tree.FindNode(_root, ej).Value.IsMergeVertex = false;
-
-                //Rebuild tree after v.handle changes
-                /*var nodes = tree.PreorderTraverseTree(_root);
-                _root = null;
-                foreach (var n in nodes)
-                {
-                    tree.InsertNode(ref _root, n);
-                }*/
-
             }
         }
 
@@ -566,13 +443,13 @@ namespace Fusee.Jometri.Triangulate
             return res;
         }
 
-        private static Node<StatusNode> FindLargestSmallerThan(Node<StatusNode> root, float value) //TODO: left to right order of the LEAVES correspont to left to right order of the edges - fix methode to find leave with greatest value
+        private static Node<StatusNode> FindLargestSmallerThan(Node<StatusNode> root, float value)
         {
             var res = root;
 
             while (root != null)
             {
-                if (root.Value.HalfEdgeOrigin.x >= value)
+                if (root.Value.Key.x >= value)
                     root = root.LeftNode;
                 else
                 {
@@ -582,6 +459,30 @@ namespace Fusee.Jometri.Triangulate
             }
             return res;
         }
+
+        
+
+        //Needed to check whether a edge in _sweepLineStatus lies left of the event point p
+        /*private bool IsRayIntersectingEdge(Geometry.Vertex p, float3 rayDir, Geometry.HalfEdge edge)
+        {
+            var aHandle = edge.Origin;
+            var bHandle = _geometry.GetHalfEdgeByHandle(edge.Next).Origin;
+
+            var a = _geometry.GetVertexByHandle(aHandle);
+            var b = _geometry.GetVertexByHandle(bHandle);
+
+            var v1 = p.Coord.Reduce2D() - a.Coord.Reduce2D();
+            var v2 = b.Coord.Reduce2D() - a.Coord.Reduce2D();
+            var v3 = new float3(-rayDir.y, rayDir.x, 0);
+
+            var dot = float3.Dot(v2, v3);
+
+            var t1 = float3.Cross(v2, v1).Length / dot;
+            var t2 = float3.Dot(v1, v3) / dot;
+
+            return t1 >= 0f && t2 >= 0f && t2 <= 1f;
+        }*/
+
 
         #endregion
 
@@ -728,7 +629,7 @@ namespace Fusee.Jometri.Triangulate
             return _geometry.GetVertexByHandle(prevHe.Origin);
         }
 
-        //(Obsolete)
+        //(Obsolete) See: Antionio, Franklin - Faster line intersection (1992)
         //Assumption: z component of float3 is always 0
         private bool AreLinesIntersecting(float3 p1, float3 p2, float3 p3, float3 p4)
         {

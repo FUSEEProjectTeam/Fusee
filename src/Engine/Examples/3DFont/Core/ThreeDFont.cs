@@ -43,12 +43,12 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             _pointList = new List<Mesh>();
             _xForms = new List<float4x4>();
 
-            _text = "g";
-            _threeDFontHelper = new ThreeDFontHelper(_text, fontLato);
+            _text = "m";
+            _threeDFontHelper = new ThreeDFontHelper(_text, vladimir);
 
             _controlPoints = new List<float3>();
 
-            var outlines = _threeDFontHelper.GetTextOutlinesWAngle(20);
+            var outlines = _threeDFontHelper.GetTextOutlinesWAngle(50);
             var geom = new Geometry(outlines, true);
 
             var test = new List<Geometry.Vertex>();

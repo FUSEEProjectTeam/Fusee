@@ -173,6 +173,34 @@ namespace Fusee.Jometri.DCEL
             return holes;
         }
 
+        //see Akenine-Möller, Tomas; Haines, Eric; Hoffman, Naty (2016): Real-Time Rendering, p. 754
+        private bool IsPointInPolygon(FaceHandle face, Vertex v)
+        {
+            var inside = false;
+            var faceVerts = GetFaceVertices(face).ToList();
+
+            var e0 = faceVerts.LastItem();
+
+            var y0 = e0.Coord.y >= v.Coord.y;
+
+            for (var i = 0; i < faceVerts.Count(); i++)
+            {
+                var e1 = faceVerts[i];
+                var y1 = e1.Coord.y >= v.Coord.y;
+                if (y0 != y1)
+                {
+                    if ((e1.Coord.y - v.Coord.y) * (e0.Coord.x - e1.Coord.x) >=
+                        (e1.Coord.x - v.Coord.x) * (e0.Coord.y - e1.Coord.y) == y1)
+                    {
+                        inside = !inside;
+                    }
+                }
+                y0 = y1;
+                e0 = e1;
+            }
+            return inside;
+        }
+
         /// <summary>
         /// Inserts a pair of half edges between two vertices.
         /// </summary>
@@ -595,6 +623,7 @@ namespace Fusee.Jometri.DCEL
         #endregion
 
         #region private methods concerning InsertHalfEdge
+
         private void AssignFaceHandle(HalfEdgeHandle halfEdge, ref Face newFace)
         {
             var oldFaceHandle = GetHalfEdgeByHandle(halfEdge).IncidentFace;
@@ -613,40 +642,40 @@ namespace Fusee.Jometri.DCEL
             } while (currentHe.Handle.Id != halfEdge.Id);
 
             //Assign newFace to possible holes in the "old" face
-            /*var oldFace = GetFaceByHandle(oldFaceHandle);
+
+            var oldFace = GetFaceByHandle(oldFaceHandle);
             if (oldFace.InnerHalfEdges.Count == 0) return;
 
             var inner = new List<HalfEdgeHandle>();
             inner.AddRange(oldFace.InnerHalfEdges);
 
-            foreach (var he in inner)
+            foreach (var heh in inner)
             {
-                newFace.InnerHalfEdges.Add(he);
-                oldFace.InnerHalfEdges.Remove(he);
+                var origin = GetHalfEdgeByHandle(heh).Origin;
 
-                var fistHe = GetHalfEdgeByHandle(he);
+                if (!IsPointInPolygon(newFace.Handle, GetVertexByHandle(origin))) continue;
+
+                oldFace.InnerHalfEdges.Remove(heh);
+                newFace.InnerHalfEdges.Add(heh);
+
+                var curHe = GetHalfEdgeByHandle(heh);
                 do
                 {
-                    fistHe.IncidentFace = newFace.Handle;
+                    curHe.IncidentFace = newFace.Handle;
 
                     for (var i = 0; i < _halfEdges.Count; i++)
                     {
-                        if (_halfEdges[i].Handle.Id != fistHe.Handle.Id) continue;
-                        _halfEdges[i] = fistHe;
+                        if (_halfEdges[i].Handle.Id != curHe.Handle.Id) continue;
+                        _halfEdges[i] = curHe;
                         break;
                     }
-                    fistHe = GetHalfEdgeByHandle(fistHe.Next);
+                    curHe = GetHalfEdgeByHandle(curHe.Next);
 
-                } while (fistHe.Handle.Id != he.Id);
+                } while (curHe.Handle.Id != heh.Id);
             }
-            for (var i = 0; i < _faces.Count; i++)
-            {
-                if (_faces[i].Handle.Id == oldFace.Handle.Id)
-                    _faces[i] = oldFace;
-            }*/
         }
 
-        private bool IsHalfEdgeToHole(Dictionary<HalfEdgeHandle,List<HalfEdge>> holes, VertHandle p, VertHandle q, Face face)
+        private bool IsHalfEdgeToHole(Dictionary<HalfEdgeHandle, List<HalfEdge>> holes, VertHandle p, VertHandle q, Face face)
         {
             if (holes.Count == 0) return false;
 

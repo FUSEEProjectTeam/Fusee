@@ -43,6 +43,7 @@
     <OutputRoot>$(ProjectBuildRoot)\bin\$(Configuration)\</OutputRoot>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="HalfEdgesToMesh.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ThreeDFontHelper.cs" />
     <Compile Include="ThreeDFont.cs" />

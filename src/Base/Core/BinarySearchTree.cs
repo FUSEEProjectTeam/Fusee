@@ -56,11 +56,11 @@ namespace Fusee.Base.Core
             }
             else
             {
-                if (value.CompareTo(root.Value) < 0) //Items with the same value are ignored, use <= to insert them into the three
+                if (value.CompareTo(root.Value) <= 0) 
                 {
                     root.LeftNode = InsertNode(ref root.LeftNode, value);
                 }
-                else if (value.CompareTo(root.Value) >= 0) 
+                else if (value.CompareTo(root.Value) > 0) //Items with the same value are ignored, use >= to insert them into the three
                 {
                     root.RightNode = InsertNode(ref root.RightNode, value);
                 }

@@ -6,8 +6,9 @@ namespace Fusee.Jometri.Triangulate
 {
     internal class StatusNode : IComparable<StatusNode>
     {
-        //HalfEdgeOrigin is needed to find the edge directly left of an vertex (FindLargestSmalerThan(vertex.x)). HalfEdge(Handle) identifies the HalfEdge
-        internal float3 HalfEdgeOrigin;
+        //Key is needed to insert the Node into a binary search tree and to find the edge directly left of an vertex (FindLargestSmalerThan(vertex.x)). 
+        internal float3 Key;
+        //HalfEdge(Handle) identifies the HalfEdge
         internal HalfEdgeHandle HalfEdge;
 
         //The helper is the vertex to which a possible new diagonal is drawn. Additionally we need to know if the helper vertex is of type merge vertex.
@@ -16,7 +17,12 @@ namespace Fusee.Jometri.Triangulate
 
         public int CompareTo(StatusNode other)
         {
-            return HalfEdgeOrigin.x.CompareTo(other.HalfEdgeOrigin.x);
+            return Key.x.CompareTo(other.Key.x);
+        }
+
+        internal void SetKey(Geometry.Vertex origin, Geometry.Vertex target)
+        {
+            Key = origin.Coord.x < target.Coord.x ? origin.Coord : target.Coord;
         }
     }
 }
