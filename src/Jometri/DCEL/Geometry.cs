@@ -613,7 +613,7 @@ namespace Fusee.Jometri.DCEL
             } while (currentHe.Handle.Id != halfEdge.Id);
 
             //Assign newFace to possible holes in the "old" face
-            var oldFace = GetFaceByHandle(oldFaceHandle);
+            /*var oldFace = GetFaceByHandle(oldFaceHandle);
             if (oldFace.InnerHalfEdges.Count == 0) return;
 
             var inner = new List<HalfEdgeHandle>();
@@ -643,7 +643,7 @@ namespace Fusee.Jometri.DCEL
             {
                 if (_faces[i].Handle.Id == oldFace.Handle.Id)
                     _faces[i] = oldFace;
-            }
+            }*/
         }
 
         private bool IsHalfEdgeToHole(Dictionary<HalfEdgeHandle,List<HalfEdge>> holes, VertHandle p, VertHandle q, Face face)
