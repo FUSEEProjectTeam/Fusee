@@ -54,12 +54,6 @@ namespace Fusee.Jometri.DCEL
 
             CreateHalfEdgesForGeometry(outlines);
 
-            var coords = new List<string>();
-            foreach (var v in _vertices)
-            {
-                coords.Add(v.Coord.ToString());
-            }
-
             if (triangulate)
                 _tri = new Triangulation(this);
         }

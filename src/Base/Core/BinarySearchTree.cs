@@ -89,6 +89,25 @@ namespace Fusee.Base.Core
         }
 
         /// <summary>
+        /// Inorder traversal of the tree.
+        /// </summary>
+        /// <param name="root">The root node of the tree.</param>
+        /// <returns></returns>
+        public IEnumerable<T> InOrderTraverseTree(Node<T> root)
+        {
+            if (root == null) yield break;
+            foreach (var v in InOrderTraverseTree(root.LeftNode))
+            {
+                yield return v;
+            }
+            yield return root.Value;
+            foreach (var v in InOrderTraverseTree(root.RightNode))
+            {
+                yield return v;
+            }
+        }
+
+        /// <summary>
         /// Deletes a node from the tree.
         /// </summary>
         /// <param name="root">The root node of the tree</param>

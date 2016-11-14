@@ -7,7 +7,7 @@ namespace Fusee.Jometri.Triangulate
     internal class StatusNode : IComparable<StatusNode>
     {
         //Key is needed to insert the Node into a binary search tree and to find the edge directly left of an vertex (FindLargestSmalerThan(vertex.x)). 
-        internal float3 Key;
+        internal float Key;
         //HalfEdge(Handle) identifies the HalfEdge
         internal HalfEdgeHandle HalfEdge;
 
@@ -15,14 +15,39 @@ namespace Fusee.Jometri.Triangulate
         internal VertHandle Helper;
         internal bool IsMergeVertex;
 
-        public int CompareTo(StatusNode other)
+        //The vertices that define the HalfEdge
+        private Geometry.Vertex _origin;
+        private Geometry.Vertex _target;
+
+        public StatusNode(Geometry.Vertex origin, Geometry.Vertex target, Geometry.Vertex eventPoint)
         {
-            return Key.x.CompareTo(other.Key.x);
+            _origin = origin;
+            _target = target;
+
+            SetKey(eventPoint);
         }
 
-        internal void SetKey(Geometry.Vertex origin, Geometry.Vertex target)
+        //If HalfEdge is not parallel (m = -Infinity) to x or y axis: Key = x value of the intersection point from sweep line with HalfEdge. Else Key = origin.x
+        internal void SetKey(Geometry.Vertex eventPoint)
         {
-            Key = origin.Coord.x < target.Coord.x ? origin.Coord : target.Coord;
+            _target.Coord = _target.Coord.Reduce2D();
+            _origin.Coord = _origin.Coord.Reduce2D();
+
+            var y = eventPoint.Coord.Reduce2D().y;
+            var m = (_target.Coord.y - _origin.Coord.y) / (_target.Coord.x - _origin.Coord.x);
+
+            if (_target.Coord.y.Equals(_origin.Coord.y) || _target.Coord.x.Equals(_origin.Coord.x))
+                Key = _origin.Coord.x;
+            else
+            {
+                var b = _origin.Coord.y - (m*_origin.Coord.x);
+                Key = (y - b)/m;
+            }
+        }
+
+        public int CompareTo(StatusNode other)
+        {
+            return Key.CompareTo(other.Key);
         }
     }
 }

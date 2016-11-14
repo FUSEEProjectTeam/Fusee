@@ -54,6 +54,13 @@ namespace Fusee.Jometri.Triangulate
         private void TriangulateMonotone(FaceHandle fHandle)
         {
             var faceVertices = _geometry.GetFaceVertices(fHandle).ToList();
+
+            var test = new List<int>();
+            foreach (var v in faceVertices)
+            {
+                test.Add(v.Handle.Id);
+            }
+
             if (faceVertices.Count.Equals(3)) return;
 
             var sortedVerts = GetSortedVertices(faceVertices);
@@ -264,12 +271,6 @@ namespace Fusee.Jometri.Triangulate
                         throw new ArgumentOutOfRangeException();
                 }
                 sortedVertices.RemoveAt(0);
-
-                Debug.WriteLine(_vertType + "current " + current.Handle.Id);
-                foreach (var p in _sweepLineStatus.PreorderTraverseTree(_root))
-                {
-                    Debug.WriteLine("HE " + p.HalfEdge.Id + " Helper " + p.Helper.Id + " Helper Key " + p.Key);
-                }
             }
         }
 
@@ -281,17 +282,18 @@ namespace Fusee.Jometri.Triangulate
 
                 if (he.Origin.Id != v.Handle.Id) continue;
 
-                var ei = new StatusNode
+                UpdateKey(tree, v);
+                ResortTree(tree);
+
+                var origin = _geometry.GetVertexByHandle(he.Origin);
+                var targetH = _geometry.GetHalfEdgeByHandle(he.Next).Origin;
+                var target = _geometry.GetVertexByHandle(targetH);
+                var ei = new StatusNode(origin, target,v)
                 {
                     HalfEdge = he.Handle,
                     Helper = v.Handle,
                     IsMergeVertex = false
                 };
-
-                var origin = _geometry.GetVertexByHandle(he.Origin);
-                var targetH = _geometry.GetHalfEdgeByHandle(he.Next).Origin;
-                var target = _geometry.GetVertexByHandle(targetH);
-                ei.SetKey(origin, target);
 
                 _root = tree.InsertNode(ref _root, ei);
                 break;
@@ -305,6 +307,9 @@ namespace Fusee.Jometri.Triangulate
                 var he = _geometry.GetHalfEdgeByHandle(heh);
 
                 if (he.Origin.Id != v.Handle.Id) continue;
+
+                UpdateKey(tree, v);
+                ResortTree(tree);
 
                 var eMinOne = FindStatusNode(_root, he.Prev).Value;
 
@@ -321,7 +326,10 @@ namespace Fusee.Jometri.Triangulate
 
         private void HandleSplitVertex(ref BinarySearchTree<StatusNode> tree, Geometry.Vertex v, ICollection<FaceHandle> newFaces)
         {
-            var ej = FindLargestSmallerThan(_root, v.Coord.x).Value;
+            UpdateKey(tree, v);
+            ResortTree(tree);
+
+            var ej = FindLargestSmallerThan(_root, v.Coord.x, tree);
 
             _geometry.InsertHalfEdge(v.Handle, ej.Helper);
             newFaces.Add(_geometry.FaceHandles.LastItem());
@@ -329,18 +337,16 @@ namespace Fusee.Jometri.Triangulate
             tree.FindNode(_root, ej).Value.Helper = v.Handle;
             tree.FindNode(_root, ej).Value.IsMergeVertex = false;
 
-            var ei = new StatusNode
+            var he = _geometry.GetHalfEdgeByHandle(v.IncidentHalfEdge);
+            var origin = _geometry.GetVertexByHandle(he.Origin);
+            var targetH = _geometry.GetHalfEdgeByHandle(he.Next).Origin;
+            var target = _geometry.GetVertexByHandle(targetH);
+            var ei = new StatusNode(origin, target, v)
             {
                 HalfEdge = v.IncidentHalfEdge,
                 Helper = v.Handle,
                 IsMergeVertex = false,
             };
-            var he = _geometry.GetHalfEdgeByHandle(ei.HalfEdge);
-            var origin = _geometry.GetVertexByHandle(he.Origin);
-            var targetH = _geometry.GetHalfEdgeByHandle(he.Next).Origin;
-            var target = _geometry.GetVertexByHandle(targetH);
-            ei.SetKey(origin, target);
-
             tree.InsertNode(ref _root, ei);
         }
 
@@ -353,6 +359,9 @@ namespace Fusee.Jometri.Triangulate
 
                 if (he.Origin.Id == v.Handle.Id) break;
             }
+            
+            UpdateKey(tree, v);
+            ResortTree(tree);
 
             var eMinOne = FindStatusNode(_root, he.Prev).Value;
 
@@ -363,8 +372,8 @@ namespace Fusee.Jometri.Triangulate
             }
 
             tree.DeleteNode(ref _root, eMinOne);
-            
-            var ej = FindLargestSmallerThan(_root, v.Coord.x).Value;
+
+            var ej = FindLargestSmallerThan(_root, v.Coord.x, tree);
 
             if (ej.IsMergeVertex)
             {
@@ -386,6 +395,9 @@ namespace Fusee.Jometri.Triangulate
 
                     if (he.Origin.Id != v.Handle.Id) continue;
 
+                    UpdateKey(tree, v);
+                    ResortTree(tree);
+
                     var eMinOne = FindStatusNode(_root, he.Prev).Value;
 
                     if (eMinOne.IsMergeVertex)
@@ -396,18 +408,17 @@ namespace Fusee.Jometri.Triangulate
 
                     tree.DeleteNode(ref _root, eMinOne);
 
-                    var ei = new StatusNode
+                    var halfEdge = _geometry.GetHalfEdgeByHandle(v.IncidentHalfEdge);
+                    var origin = _geometry.GetVertexByHandle(halfEdge.Origin);
+                    var targetH = _geometry.GetHalfEdgeByHandle(halfEdge.Next).Origin;
+                    var target = _geometry.GetVertexByHandle(targetH);
+                    var ei = new StatusNode(origin, target, v)
                     {
                         HalfEdge = v.IncidentHalfEdge,
                         Helper = v.Handle,
                         IsMergeVertex = false
                     };
-                    var halfEdge = _geometry.GetHalfEdgeByHandle(ei.HalfEdge);
-                    var origin = _geometry.GetVertexByHandle(halfEdge.Origin);
-                    var targetH = _geometry.GetHalfEdgeByHandle(halfEdge.Next).Origin;
-                    var target = _geometry.GetVertexByHandle(targetH);
-                    ei.SetKey(origin, target);
-
+                    
                     tree.InsertNode(ref _root, ei);
 
                     break;
@@ -415,7 +426,11 @@ namespace Fusee.Jometri.Triangulate
             }
             else
             {
-                var ej = FindLargestSmallerThan(_root, v.Coord.x).Value;
+
+                UpdateKey(tree, v);
+                ResortTree(tree);
+
+                var ej = FindLargestSmallerThan(_root, v.Coord.x, tree);
 
                 if (ej.IsMergeVertex)
                 {
@@ -425,6 +440,25 @@ namespace Fusee.Jometri.Triangulate
 
                 tree.FindNode(_root, ej).Value.Helper = v.Handle;
                 tree.FindNode(_root, ej).Value.IsMergeVertex = false;
+            }
+        }
+
+        private void UpdateKey(BinarySearchTree<StatusNode> tree, Geometry.Vertex eventPoint)
+        {
+            if(_root == null) return;
+            foreach (var node in tree.PreorderTraverseTree(_root))
+            {
+                node.SetKey(eventPoint);
+            }
+        }
+
+        private void ResortTree(BinarySearchTree<StatusNode> tree)
+        {
+            var nodes = tree.PreorderTraverseTree(_root);
+            _root = null;
+            foreach (var n in nodes)
+            {
+                _root = tree.InsertNode(ref _root, n);
             }
         }
 
@@ -443,47 +477,28 @@ namespace Fusee.Jometri.Triangulate
             return res;
         }
 
-        private static Node<StatusNode> FindLargestSmallerThan(Node<StatusNode> root, float value)
+        //Can be optimized by using a self balancing binary search tree. See: http://stackoverflow.com/questions/6334514/to-find-largest-element-smaller-than-k-in-a-bst
+        private static StatusNode FindLargestSmallerThan(Node<StatusNode> root, float value, BinarySearchTree<StatusNode> tree )
         {
-            var res = root;
+            var preorder = tree.PreorderTraverseTree(root).ToList();
+            var temp = default(StatusNode);
 
-            while (root != null)
+            foreach (var n in preorder)
             {
-                if (root.Value.Key.x >= value)
-                    root = root.LeftNode;
-                else
-                {
-                    res = root;
-                    root = root.RightNode;
-                }
+                if (!(n.Key < value)) continue;
+                temp = n;
+                break;
             }
-            return res;
+
+            if (preorder.Count == 1) return temp;
+
+            foreach (var n in preorder)
+            {
+                if (n.Key < value && n.Key > temp.Key)
+                    temp = n;
+             }
+            return temp;
         }
-
-        
-
-        //Needed to check whether a edge in _sweepLineStatus lies left of the event point p
-        /*private bool IsRayIntersectingEdge(Geometry.Vertex p, float3 rayDir, Geometry.HalfEdge edge)
-        {
-            var aHandle = edge.Origin;
-            var bHandle = _geometry.GetHalfEdgeByHandle(edge.Next).Origin;
-
-            var a = _geometry.GetVertexByHandle(aHandle);
-            var b = _geometry.GetVertexByHandle(bHandle);
-
-            var v1 = p.Coord.Reduce2D() - a.Coord.Reduce2D();
-            var v2 = b.Coord.Reduce2D() - a.Coord.Reduce2D();
-            var v3 = new float3(-rayDir.y, rayDir.x, 0);
-
-            var dot = float3.Dot(v2, v3);
-
-            var t1 = float3.Cross(v2, v1).Length / dot;
-            var t2 = float3.Dot(v1, v3) / dot;
-
-            return t1 >= 0f && t2 >= 0f && t2 <= 1f;
-        }*/
-
-
         #endregion
 
         #region General methods
@@ -496,7 +511,7 @@ namespace Fusee.Jometri.Triangulate
             return prevV.Coord.y > nextV.Coord.y;
         }
 
-        //Vertices need to be reduced to 2D
+        //Vertices need to be reduced to 2D. Can be optimized by implementing a priority queue data structure an use it insted of sorting a list
         private static IList<Geometry.Vertex> GetSortedVertices(IEnumerable<Geometry.Vertex> unsorted)
         {
             var sorted = new List<Geometry.Vertex>();
