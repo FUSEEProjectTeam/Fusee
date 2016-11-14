@@ -165,9 +165,49 @@ namespace Fusee.Engine.Core
         // All lights
         public static IList<LightResult> AllLightResults = new List<LightResult>();
         // Multipass
-        public static bool RenderShadows;
         private static int _currentRenderPass;
-        public static bool RenderDeferred = false; // TODO: Create and set vars within the constructor
+        private bool _renderWithShadows;
+        private bool _renderDeferred;
+
+        public bool RenderShadows
+        {
+            set
+            {
+                if (!_renderWithShadows) return;
+
+                if (_rc.GetHardwareCapabilities(HardwareCapability.DEFFERED_POSSIBLE) == 1U)
+                {
+                    _renderWithShadows = value;
+                }
+                   
+                else
+                {
+                    throw new ArgumentException("Deferred Rendering not possible with the current renderpath!");
+                }
+            }
+            get { return _renderWithShadows; }
+        }
+
+        public bool RenderDeferred
+        {
+            set
+            {
+                if (!_renderDeferred) return;
+
+                if (_rc.GetHardwareCapabilities(HardwareCapability.DEFFERED_POSSIBLE) == 1U)
+                {
+                    _renderDeferred = value;
+                }
+
+                else
+                {
+                    throw new ArgumentException("Deferred Rendering not possible with the current renderpath!");
+                }
+            }
+            get { return _renderDeferred; }
+        }
+
+
         private ShaderEffect _shadowPassShaderEffect = null;
         private ITexture _shadowTexture = null;
         private float4x4 _depthMVP;
@@ -229,13 +269,16 @@ namespace Fusee.Engine.Core
 
         #region Initialization Construction Startup
 
-        public SceneRenderer(SceneContainer sc, LightningCalculationMethod lCalcMethod, bool Shadows = false)
+        public SceneRenderer(SceneContainer sc, LightningCalculationMethod lCalcMethod, bool RenderShadows = false, bool RenderDeferred = false)
              : this(sc)
         {
             LightningCalculationMethod = lCalcMethod;
+            
+            if (RenderShadows)
+                _renderWithShadows = true;
 
-            if (Shadows)
-                RenderShadows = true;
+            if (RenderDeferred)
+                _renderDeferred = true;
         }
 
      
@@ -373,6 +416,12 @@ namespace Fusee.Engine.Core
                     }
                 });
                 _defaultEffect.AttachToContext(_rc);
+
+
+                // Check for hardware capabilities:
+                RenderDeferred = _renderDeferred;
+                RenderShadows = _renderWithShadows;
+
             }
         }
 
@@ -409,6 +458,10 @@ namespace Fusee.Engine.Core
             {
                 RenderWithShadow(rc);
             }
+            else if (RenderDeferred)
+            {
+                RenderDeferredPasses(rc);
+            }
             else
             {
                 rc.SetRenderTarget(null);
@@ -418,8 +471,16 @@ namespace Fusee.Engine.Core
          }
 
 
+        private void RenderDeferredPasses(RenderContext rc)
+        {
+            
+        }
+
         private void RenderWithShadow(RenderContext rc)
         {
+
+            SetContext(rc);
+
             // Create ShadowTexture if none avaliable
             if (_shadowTexture == null)
                 _shadowTexture = rc.CreateWritableTexture(rc.ViewportWidth, rc.ViewportHeight, ImagePixelFormat.Depth);
@@ -434,7 +495,6 @@ namespace Fusee.Engine.Core
                 {
                     // Set RenderTarget to FBO
                     rc.SetRenderTarget(_shadowTexture);
-                    SetContext(rc);
                     Traverse(_sc.Children);
                     _currentRenderPass++;
                 }
@@ -442,7 +502,6 @@ namespace Fusee.Engine.Core
                 {
                     // Set RenderTarget to Screenbuffer
                     rc.SetRenderTarget(null);
-                    SetContext(rc);
                     Traverse(_sc.Children);
                     _currentRenderPass--;
                 }
@@ -617,17 +676,45 @@ namespace Fusee.Engine.Core
 
         public void RenderCurrentPass(Mesh rm, ShaderEffect effect)
         {
-            if (_currentRenderPass == 0)
+            if (RenderShadows)
             {
-                // TODO: Switch hardcoded shader to effect?
-                RenderShadowMapPass(rm);
+                if (_currentRenderPass == 0)
+                {
+                    // TODO: Switch hardcoded shader to effect?
+                    RenderShadowMapPass(rm);
+                }
+                else
+                {
+                    RenderPass(rm, effect);
+                }
+            }
+            else if (RenderDeferred)
+            {
+                if (_currentRenderPass == 0)
+                {
+                    // TODO: Switch hardcoded shader to effect?
+                    //RenderShadowMapPass(rm);
+                }
+                else
+                {
+                    //RenderPass(rm, effect);
+                }
             }
             else
             {
-                RenderPass(rm, effect);
+                RenderStandardPass(rm, effect);
             }
         }
-        
+
+
+        private void RenderStandardPass(Mesh rm, ShaderEffect effect)
+        {
+            for (var i = 0; i < _lightComponents.Count; i++)
+            {
+                SetupLight(i, _lightComponents[i], effect);
+                effect.RenderMesh(rm);
+            }
+        }
 
         private void RenderShadowMapPass(Mesh rm)
         {
@@ -643,7 +730,7 @@ namespace Fusee.Engine.Core
             var depthModelMatrix = scale * _state.Model;
             var aspectRatio = _rc.ViewportWidth / (float)_rc.ViewportHeight;
             var projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, aspectRatio, 0.1f, 1500f);
-            _depthMVP = projection * depthViewMatrix * depthModelMatrix;
+            _depthMVP = _rc.Projection * depthViewMatrix * depthModelMatrix;
             
             _shadowPassShaderEffect.SetEffectParam("LightMVP", _depthMVP);
           
@@ -653,19 +740,19 @@ namespace Fusee.Engine.Core
 
         private void RenderPass(Mesh rm, ShaderEffect effect)
         {
-          //  if (name != "debug") return;
-          if(effect._rc.CurrentShader == null) return;
-
+            //  if (name != "debug") return;
+            if(effect._rc.CurrentShader == null) return;
 
             var lightPos = AllLightResults[0].Position;
+            var lightCone = AllLightResults[0].ConeDirection;
+            //lightCone.Normalize();
 
             var depthViewMatrix = float4x4.LookAt(lightPos.x, lightPos.y, lightPos.z, 0, 0, 0, 0, 1, 0);
             var scale = float4x4.CreateScale(0.1f);
             var depthModelMatrix = scale * _state.Model;
             var aspectRatio = _rc.ViewportWidth / (float)_rc.ViewportHeight;
             var projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, aspectRatio, 0.1f, 1500f);
-            _depthMVP = projection * depthViewMatrix * depthModelMatrix;
-
+            _depthMVP = _rc.Projection * depthViewMatrix * depthModelMatrix;
 
             var handleLight = effect._rc.GetShaderParam(effect._rc.CurrentShader, "shadowMVP");
             if (handleLight != null)

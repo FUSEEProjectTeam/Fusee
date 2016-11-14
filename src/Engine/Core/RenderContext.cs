@@ -1577,7 +1577,7 @@ namespace Fusee.Engine.Core
             _rci.Render(m._meshImp);
         }
       
-    public uint GetHardwareCapabilities(HardwareCapability capability)
+        public uint GetHardwareCapabilities(HardwareCapability capability)
         {
             return _rci.GetHardwareCapabilities(capability);
         }

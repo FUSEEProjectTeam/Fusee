@@ -269,9 +269,9 @@ namespace Fusee.Engine.Core
 
             float shadow = 0.0;
 
-            // Percentage closer filtering
+       /*     // Percentage closer filtering [Currently error with webgl - desktop needs ivec, web expects float for textureSize()]
             // [http://http.developer.nvidia.com/GPUGems/gpugems_ch11.html]
-            ivec2 texelSize = textureSize(firstPassTex, 0);
+            ivec2 texelSize = textureSize(firstPassTex, 0.0);
             vec2 texelSizeFloat = vec2(texelSize);
             texelSizeFloat = 1.0/texelSizeFloat;
             for(int x = -1; x <= 1; ++x)
@@ -279,10 +279,10 @@ namespace Fusee.Engine.Core
                 for(int y = -1; y <= 1; ++y)
                 {
                     float pcfDepth = texture2D(firstPassTex, projCoords.xy + vec2(x, y) * texelSizeFloat).r;
-                    shadow += currentDepth /*- bias*/ - 0.000001 > pcfDepth ? 1.0 : 0.0; // without bias because the number has to be so small, TODO: Fix this
+                    shadow += currentDepth  > pcfDepth ? 1.0 : 0.0; // without currentDepth-bias because the number has to be so small, TODO: Fix this
                 }
             }
-            shadow /= 9.0;
+            shadow /= 9.0;*/
 
             if(projCoords.z > 0.99997)
                  shadow = 0.0;

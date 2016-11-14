@@ -88,13 +88,13 @@ namespace Fusee.Engine.Imp.Graphics.Web
 
         public ITexture CreateWritableTexture(int width, int height, ImagePixelFormat pixelFormat)
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException("CreateWritableTexture not implmented!");
         }
 
         // This should not be extern for the moment
         public ITexture CreateWritableTexture()
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException("CreateWritableTexture not implmented!");
         }
 
 
@@ -281,9 +281,15 @@ namespace Fusee.Engine.Imp.Graphics.Web
             throw new System.NotImplementedException();
         }
 
+        /// <summary>
+        /// Not needed for Web because EXT_FRAMEBUFFER is not possible with WebGL (2016)
+        /// </summary>
+        /// <param name="texture"></param>
+        [JSExternal]
         public void SetRenderTarget(ITexture texture)
         {
-            throw new NotImplementedException();
+            return;
+            //throw new NotImplementedException();
         }
 
         [JSExternal]

@@ -269,6 +269,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     case ImagePixelFormat.Depth:
                         returnTexture = CreateDepthFramebuffer(width, height);
                         break;
+                        case ImagePixelFormat.DepthCubeMap:
+                        returnTexture = CreateDepthCubeMapFramebuffer(width, height);
+                        break;
                     default:
                         throw new NotImplementedException();
                 }
@@ -309,7 +312,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 TextureTarget.Texture2D, textureHandle, 0);
 
             // Disable writes to the color buffer
-            GL.DrawBuffer(DrawBufferMode.None); 
+            GL.DrawBuffer(DrawBufferMode.None);
+            GL.ReadBuffer(ReadBufferMode.None);
 
             if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
             {
@@ -317,6 +321,52 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
 
             return new Texture { handle = textureHandle, fboHandle = fboHandle };
+        }
+
+        private static Texture CreateDepthCubeMapFramebuffer(int width ,int height)
+        {
+
+            throw new NotImplementedException("Currently not implemented!");
+
+            var cubeMapTextureHandle = 0;
+            var textureHandle = 0;
+            var depthMapFBO = 0;
+
+            // Create a shadow texture
+            GL.GenTextures(1, out cubeMapTextureHandle);
+            GL.BindTexture(TextureTarget.TextureCubeMap, cubeMapTextureHandle);
+
+            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureMinFilter,
+                (int)TextureMinFilter.Nearest);
+            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureMagFilter,
+                (int)TextureMagFilter.Nearest);
+            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapS,
+                (int)TextureWrapMode.ClampToEdge);
+            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapT,
+                (int)TextureWrapMode.ClampToEdge);
+            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapR,
+               (int)TextureWrapMode.ClampToEdge);
+
+            for (var i = 0; i < 6; i++)
+                GL.TexImage2D(TextureTarget.TextureCubeMapPositiveX + i, 0, PixelInternalFormat.R32f, width, height, 0,
+                    OpenTK.Graphics.OpenGL.PixelFormat.Red, PixelType.Float, IntPtr.Zero);
+
+            // Create FBO
+            GL.GenFramebuffers(1, out depthMapFBO);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, depthMapFBO);
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment,
+                TextureTarget.Texture2D, cubeMapTextureHandle, 0);
+
+            // Disable writes to the color buffer
+            GL.DrawBuffer(DrawBufferMode.None);
+            GL.ReadBuffer(ReadBufferMode.None);
+
+            if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
+            {
+                throw new Exception($"Error creating writable Texture: {GL.GetError()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
+            }
+
+            return new Texture { handle = cubeMapTextureHandle, fboHandle = depthMapFBO };
         }
 
         #endregion
@@ -1722,7 +1772,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
                 // Bind buffer - now we are rendering to this buffer!
                 GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer,  fboTexture.fboHandle);
-
+                
                 // Clear 
                 Clear(ClearFlags.Depth);
             }

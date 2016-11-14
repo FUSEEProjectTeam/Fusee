@@ -92,7 +92,6 @@ namespace Fusee.Engine.Examples.Simple.Core
                         ConeAngle = 45f,
                         ConeDirection = new float3(0,1,1),
                         Position = new float3(-434.6684f, 453.8217f, 669.1001f),
-                       // (-434,6684, 453,8217, 669,1001)
                        Type = LightType.Parallel
                     },
                     new TransformComponent()
@@ -103,7 +102,7 @@ namespace Fusee.Engine.Examples.Simple.Core
 
           
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRenderer(_rocketScene, LightningCalculationMethod.SIMPLE, true);
+            _sceneRenderer = new SceneRenderer(_rocketScene, LightningCalculationMethod.SIMPLE);
         
          
             _rocketScene.Children[0].Children[0].Components[2].Name = "debug";
