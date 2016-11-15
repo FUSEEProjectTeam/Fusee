@@ -939,10 +939,10 @@ namespace Fusee.Engine.Core
                   },
                    UVs = new []
                    {
-                        new float2(0, 0.5f),
-                        new float2(0.5f, 0.5f),
-                        new float2(0.5f, 1),
-                        new float2(0,1)
+                        new float2(0, 0.0f), // bottom left
+                        new float2(1f, 0.0f), // bottom right
+                        new float2(1.0f, 1.0f), // top right
+                        new float2(0.0f, 1.0f) // top left
                    }
                };
 
