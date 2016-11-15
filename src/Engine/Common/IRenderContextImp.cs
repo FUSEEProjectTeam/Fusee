@@ -436,7 +436,7 @@ namespace Fusee.Engine.Common
         /// Sets the RenderTarget, if texture is null rendertarget is the main screen, otherwise the picture will be rendered onto given texture
         /// </summary>
         /// <param name="texture">The texture as target</param>
-        void SetRenderTarget(ITexture texture);
+        void SetRenderTarget(ITexture texture, bool deferredNormalPass = false);
 
         /*
          * TODO: NO tangent space normal maps at this time...

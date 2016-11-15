@@ -1530,9 +1530,9 @@ namespace Fusee.Engine.Core
         }
 
 
-        public void SetRenderTarget(ITexture texture)
+        public void SetRenderTarget(ITexture texture, bool deferredNormalPass = false)
         {
-            _rci.SetRenderTarget(texture);
+            _rci.SetRenderTarget(texture, deferredNormalPass);
         }
 
 

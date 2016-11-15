@@ -474,7 +474,8 @@ namespace Fusee.Engine.Core
                     normal = normalize(mat3(FUSEE_ITMV) * fuNormal);
 	                uv = fuUV;
 	                gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
-                    surfacePos = FUSEE_MV * vec4(fuVertex, 1.0);
+                    // TODO: add FUSEE_MV *; this is just to showcase the position
+                    surfacePos = vec4(fuVertex, 1.0);
                 }";
 
         private const string GBufferPS = @"
@@ -498,8 +499,7 @@ namespace Fusee.Engine.Core
                 // And the diffuse per-fragment color   
                 // Store specular intensity in gAlbedoSpec's alpha component
                 //vec4 albedoSpec = vec4(DiffuseColor,  0.3);         
-                gl_FragData[2] = vec4(DiffuseColor,  0.3);
-                
+                gl_FragData[2] = vec4(DiffuseColor,  SpecularIntensity);
           }";
 
 
@@ -543,6 +543,7 @@ namespace Fusee.Engine.Core
                 vec3 color = position + normal + albedo + depth;
                 vec3 showCase = texture2D(gShowCase, uv).rgb;
                 gl_FragColor = vec4(showCase, 1.0);
+
             }";
 
 
@@ -592,7 +593,7 @@ namespace Fusee.Engine.Core
                 else
                 {
                     // Set RenderTarget to Screenbuffer
-                    rc.SetRenderTarget(null);
+                    rc.SetRenderTarget(_gBufferTexture, true);
                     Traverse(_sc.Children);
                     _currentRenderPass--;
                 }
@@ -664,7 +665,8 @@ namespace Fusee.Engine.Core
             };
             var effectParameter = new List<EffectParameterDeclaration>
                         {
-                            new EffectParameterDeclaration {Name = "DiffuseColor", Value = float3.One }
+                            new EffectParameterDeclaration {Name = "DiffuseColor", Value = float3.One },
+                            new EffectParameterDeclaration {Name = "SpecularIntensity", Value = float3.One }
                         };
 
             _gBufferPassShaderEffect = new ShaderEffect(effectPass, effectParameter);
@@ -885,10 +887,13 @@ namespace Fusee.Engine.Core
 
         private void RenderDeferredPass(Mesh rm, ShaderEffect effect) {
 
-            // This should suffice?
             var diffuse = float3.One;
             if (effect._rc.CurrentShader != null)
                  diffuse = (float3) effect.GetEffectParam("DiffuseColor");
+
+            var specularIntensity = 1.0f;
+            if (effect._rc.CurrentShader != null)
+                specularIntensity = (float)effect.GetEffectParam("SpecularIntensity");
 
             _gBufferPassShaderEffect.SetEffectParam("DiffuseColor", diffuse);
           
@@ -957,9 +962,11 @@ namespace Fusee.Engine.Core
                     _gBufferDrawPassShaderEffect._rc.SetShaderParamTexture(gShowCase, _gBufferTexture, GBufferHandle.gNormalHandle);
                 if (SHOWCASE == 2)
                     _gBufferDrawPassShaderEffect._rc.SetShaderParamTexture(gShowCase, _gBufferTexture, GBufferHandle.gAlbedoSpecHandle);
+                if (SHOWCASE == 3)
+                    _gBufferDrawPassShaderEffect._rc.SetShaderParamTexture(gShowCase, _gBufferTexture, GBufferHandle.gDepthHandle);
             }
 
-            /*    // Set textures from first GBuffer pass
+                // Set textures from first GBuffer pass
                 var gPosition = _gBufferDrawPassShaderEffect._rc.CurrentShader.GetShaderParam("gPosition");
                 if (gPosition != null)
                     _gBufferDrawPassShaderEffect._rc.SetShaderParamTexture(gPosition, _gBufferTexture, GBufferHandle.gPositionHandle);
@@ -974,7 +981,7 @@ namespace Fusee.Engine.Core
 
                 var gDepth = _gBufferDrawPassShaderEffect._rc.CurrentShader.GetShaderParam("gDepth");
                 if (gDepth != null)
-                    _gBufferDrawPassShaderEffect._rc.SetShaderParamTexture(gDepth, _gBufferTexture, GBufferHandle.gDepthHandle); */
+                    _gBufferDrawPassShaderEffect._rc.SetShaderParamTexture(gDepth, _gBufferTexture, GBufferHandle.gDepthHandle);
 
             _gBufferDrawPassShaderEffect.RenderMesh(rm);
 

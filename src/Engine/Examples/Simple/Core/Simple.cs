@@ -165,10 +165,12 @@ namespace Fusee.Engine.Examples.Simple.Core
                     SceneRenderer.SHOWCASE = 1;
                 if (Keyboard.IsKeyDown(KeyCodes.F5))
                     SceneRenderer.SHOWCASE = 2;
-          
+                if (Keyboard.IsKeyDown(KeyCodes.F6))
+                    SceneRenderer.SHOWCASE = 3;
+
 
             // Create the camera matrix and set it as the current ModelView transformation
-              var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
+            var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
               var mtxCam = float4x4.LookAt(0, 20, -3000, 0, -100, 0, 0, 1, 0);
               var mtxScale = float4x4.CreateScale(1f);
 

@@ -365,7 +365,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 gBufferPositionTextureHandle = gBufferPositionTextureHandle,
                 gBufferAlbedoSpecTextureHandle = gBufferAlbedoSpecTextureHandle,
                 gBufferNormalTextureHandle = gBufferNormalTextureHandle,
-                gDepthRenderbufferHandle = gDepthRenderbufferHandle
+                gDepthRenderbufferHandle = gDepthRenderbufferHandle,
+
+                textureWidth = width,
+                textureHeight = height
+ 
             };
         }
 
@@ -1836,7 +1840,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// Sets the RenderTarget, if texture is null rendertarget is the main screen, otherwise the picture will be rendered onto given texture
         /// </summary>
         /// <param name="texture">The texture as target</param>
-        public void SetRenderTarget(ITexture texture)
+        /// <param name="deferredNormalPass">Activate this, if you are rendering deferred as it copies the DepthFramebuffer to normal Framebuffer!</param>
+        public void SetRenderTarget(ITexture texture, bool deferredNormalPass = false)
         {
             var textureImp = (Texture) texture;
 
@@ -1844,12 +1849,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             if (textureImp == null)
             {
                 //GL.CullFace(CullFaceMode.Back);
-
+          
                 // Enable writes to the color buffer
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
                 GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
 
-                // GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, 0);
+
             }
             // FBO Handle is set -> ShadowMap
             else if (textureImp.fboHandle != -1)
@@ -1864,7 +1869,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 Clear(ClearFlags.Depth);
             }
             // GBufferHandle is set -> Bind GBuffer
-            else if (textureImp.gBufferHandle != -1)
+            else if (textureImp.gBufferHandle != -1 && !deferredNormalPass)
             {
                 var wireframe = false;
 
@@ -1874,8 +1879,32 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 // Framebuffer or DrawFrameBuffer as Target?
                 GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, textureImp.gBufferHandle);
 
+                // GL.DepthMask(true);
+
                 // Clear Depth & Color for GBuffer!
                 Clear(ClearFlags.Depth | ClearFlags.Color);
+
+               // GL.Enable(EnableCap.DepthTest);
+               // GL.Disable(EnableCap.Blend);
+            }
+            else if (textureImp.gBufferHandle != -1 && deferredNormalPass)
+            {
+
+                // TODO: is this affecting shadowpass?
+                //GL.DepthMask(false);
+                //GL.Disable(EnableCap.DepthTest);
+
+                // Copy depth to normal buffer
+                GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, textureImp.gBufferHandle);
+                GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0); // Write to default framebuffer
+                // copy depth
+                var width = textureImp.textureWidth;
+                var height = textureImp.textureHeight;
+                GL.BlitFramebuffer(0, 0, width, height, 0, 0, width, height, ClearBufferMask.DepthBufferBit, BlitFramebufferFilter.Nearest);
+
+                // Now we bind the standart framebuffer an can render lights width depth
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+                GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
             }
         }
 
