@@ -169,6 +169,8 @@ namespace Fusee.Engine.Core
         private bool _renderWithShadows;
         private bool _renderDeferred;
 
+        public static int SHOWCASE = 0;
+
         public bool RenderShadows
         {
             set
@@ -209,7 +211,10 @@ namespace Fusee.Engine.Core
 
 
         private ShaderEffect _shadowPassShaderEffect = null;
+        private ShaderEffect _gBufferPassShaderEffect = null;
+        private ShaderEffect _gBufferDrawPassShaderEffect = null;
         private ITexture _shadowTexture = null;
+        private ITexture _gBufferTexture = null;
         private float4x4 _depthMVP;
 
         #region Traversal information
@@ -449,7 +454,96 @@ namespace Fusee.Engine.Core
                 //gl_FragColor = gl_FragCoord.z;
             }";
 
+        // Normal Shader
+        private const string GBufferVS = @"
 
+                attribute vec3 fuVertex;
+                attribute vec3 fuNormal;
+                attribute vec3 fuUV;
+
+                uniform mat4 FUSEE_MVP;
+                uniform mat4 FUSEE_ITMV;
+                uniform mat4 FUSEE_MV;
+                
+                varying vec3 uv;
+                varying vec3 normal;
+                varying vec4 surfacePos;
+
+                void main()
+                {
+                    normal = normalize(mat3(FUSEE_ITMV) * fuNormal);
+	                uv = fuUV;
+	                gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
+                    surfacePos = FUSEE_MV * vec4(fuVertex, 1.0);
+                }";
+
+        private const string GBufferPS = @"
+                #ifdef GL_ES
+                    precision highp float
+                #endif
+                   
+                varying vec3 uv;
+                varying vec3 normal;
+                varying vec4 surfacePos;
+       
+                uniform vec3 DiffuseColor;
+                uniform vec3 SpecularIntensity;
+
+            void main()
+            {                                              
+                // Store the fragment position vector in the first gbuffer texture
+                gl_FragData[0] = surfacePos;
+                // Also store the per-fragment normals into the gbuffer
+                gl_FragData[1] = vec4(normal,1.0);
+                // And the diffuse per-fragment color   
+                // Store specular intensity in gAlbedoSpec's alpha component
+                //vec4 albedoSpec = vec4(DiffuseColor,  0.3);         
+                gl_FragData[2] = vec4(DiffuseColor,  0.3);
+                
+          }";
+
+
+        // TODO: Move this and the shader above into DeferredShaderCodeBuilder!
+        private const string GBufferDisplayVS = @"
+
+                attribute vec3 fuVertex;
+                attribute vec3 fuNormal;
+                attribute vec3 fuUV;                
+                
+                varying vec2 uv; 
+                uniform mat4 FUSEE_MVP;          
+
+                void main()
+                {
+	                gl_Position = vec4(fuVertex, 1.0);
+                    uv = fuUV;
+                }";
+
+        private const string GBufferDisplayPS = @"
+                #ifdef GL_ES
+                    precision highp float
+                #endif       
+                
+                varying vec2 uv;
+                
+                uniform sampler2D gPosition;
+                uniform sampler2D gNormal;
+                uniform sampler2D gAlbedoSpec;
+                uniform sampler2D gDepth;
+                uniform sampler2D gShowCase;
+           
+            void main()
+            { 
+                vec3 position = texture2D(gPosition, uv).rgb;
+                vec3 normal = texture2D(gNormal, uv).rgb;
+                vec3 albedo = texture2D(gAlbedoSpec, uv).rgb;
+                float specularIntensity = texture2D(gPosition, uv).a;
+                vec3 depth = texture2D(gDepth, uv).rgb;                   
+                
+                vec3 color = position + normal + albedo + depth;
+                vec3 showCase = texture2D(gShowCase, uv).rgb;
+                gl_FragColor = vec4(showCase, 1.0);
+            }";
 
 
         public void Render(RenderContext rc)
@@ -473,7 +567,36 @@ namespace Fusee.Engine.Core
 
         private void RenderDeferredPasses(RenderContext rc)
         {
-            
+            SetContext(rc);
+
+            // Create GBufferTexture if none avaliable
+            if (_gBufferTexture == null)
+                _gBufferTexture = rc.CreateWritableTexture(rc.ViewportWidth, rc.ViewportHeight, ImagePixelFormat.GBuffer);
+
+            if (_gBufferPassShaderEffect == null)
+                CreateGBufferPassEffect(rc);
+
+            if (_gBufferDrawPassShaderEffect == null)
+                CreateGBufferDrawPassEffect(rc);
+
+            // Parse RenderNormalGBufferPass
+            for (var i = 0; i < 2; i++)
+            {
+                if (i == 0)
+                {
+                    // Set RenderTarget to gBuffer
+                    rc.SetRenderTarget(_gBufferTexture);
+                    Traverse(_sc.Children);
+                    _currentRenderPass++;
+                }
+                else
+                {
+                    // Set RenderTarget to Screenbuffer
+                    rc.SetRenderTarget(null);
+                    Traverse(_sc.Children);
+                    _currentRenderPass--;
+                }
+            }
         }
 
         private void RenderWithShadow(RenderContext rc)
@@ -488,7 +611,7 @@ namespace Fusee.Engine.Core
             if (_shadowPassShaderEffect == null)
                 CreateRenderShadowMapEffect(rc);
             
-            // Parse RenderPass
+            // Parse RenderNormalShadowPass
             for (var i = 0; i < 2; i++)
             {
                 if (i == 0)
@@ -526,6 +649,51 @@ namespace Fusee.Engine.Core
 
             _shadowPassShaderEffect = new ShaderEffect(effectPass, effectParameter);
             _shadowPassShaderEffect.AttachToContext(rc);
+        }
+
+        private void CreateGBufferPassEffect(RenderContext rc)
+        {
+            _depthMVP = float4x4.Identity;
+
+            var effectPass = new EffectPassDeclaration[1];
+            effectPass[0] = new EffectPassDeclaration
+            {
+                PS = GBufferPS,
+                VS = GBufferVS,
+                StateSet = new RenderStateSet()
+            };
+            var effectParameter = new List<EffectParameterDeclaration>
+                        {
+                            new EffectParameterDeclaration {Name = "DiffuseColor", Value = float3.One }
+                        };
+
+            _gBufferPassShaderEffect = new ShaderEffect(effectPass, effectParameter);
+            _gBufferPassShaderEffect.AttachToContext(rc);
+        }
+
+        private void CreateGBufferDrawPassEffect(RenderContext rc)
+        {
+
+            var effectPass = new EffectPassDeclaration[1];
+            effectPass[0] = new EffectPassDeclaration
+            {
+                PS = GBufferDisplayPS,
+                VS = GBufferDisplayVS,
+                StateSet = new RenderStateSet()
+            };
+
+            var effectParameter = new List<EffectParameterDeclaration>
+            {
+                new EffectParameterDeclaration { Name = "gPosition", Value = _gBufferTexture },
+                new EffectParameterDeclaration { Name = "gNormal", Value = _gBufferTexture },
+                new EffectParameterDeclaration { Name = "gAlbedoSpec", Value = _gBufferTexture },
+                new EffectParameterDeclaration { Name = "gDepth", Value = _gBufferTexture },
+                new EffectParameterDeclaration { Name = "gShowCase", Value = _gBufferTexture }
+            };
+
+            _gBufferDrawPassShaderEffect = new ShaderEffect(effectPass, effectParameter);
+            _gBufferDrawPassShaderEffect.AttachToContext(_rc);
+
         }
 
         #region Visitors
@@ -685,19 +853,18 @@ namespace Fusee.Engine.Core
                 }
                 else
                 {
-                    RenderPass(rm, effect);
+                    RenderNormalShadowPass(rm, effect);
                 }
             }
             else if (RenderDeferred)
             {
                 if (_currentRenderPass == 0)
                 {
-                    // TODO: Switch hardcoded shader to effect?
-                    //RenderShadowMapPass(rm);
+                    RenderDeferredPass(rm, effect);
                 }
                 else
                 {
-                    //RenderPass(rm, effect);
+                    RenderNormalDeferredPass(rm);
                 }
             }
             else
@@ -714,6 +881,110 @@ namespace Fusee.Engine.Core
                 SetupLight(i, _lightComponents[i], effect);
                 effect.RenderMesh(rm);
             }
+        }
+
+        private void RenderDeferredPass(Mesh rm, ShaderEffect effect) {
+
+            // This should suffice?
+            var diffuse = float3.One;
+            if (effect._rc.CurrentShader != null)
+                 diffuse = (float3) effect.GetEffectParam("DiffuseColor");
+
+            _gBufferPassShaderEffect.SetEffectParam("DiffuseColor", diffuse);
+          
+            _gBufferPassShaderEffect.RenderMesh(rm);
+        }
+
+        private void RenderNormalDeferredPass(Mesh mesh) {
+
+            if(_gBufferDrawPassShaderEffect == null) return;
+
+              // Mesh is a quad on screen:
+               Mesh rm = new Mesh
+               {
+                   Vertices = new[]
+                  {
+                       // left, down, front vertex
+                       new float3(-1, -1, 0), // 0
+                       new float3(1, -1, 0), // 1
+                       new float3(1, 1, 0),  // 2
+                       new float3(-1, 1, 0),  // 3
+                   },
+                   Normals = new[]
+                  {
+                       // left, down, front vertex
+                       new float3(-1,  0,  0), // 0  - belongs to left
+                       new float3( 0, -1,  0), // 1  - belongs to down
+                       new float3( 0,  0, -1), // 2  - belongs to front
+
+                       // left, up, front vertex
+                       new float3(-1,  0,  0),  // 6  - belongs to left
+                       new float3( 0,  1,  0),  // 7  - belongs to up
+                       new float3( 0,  0, -1),  // 8  - belongs to front
+
+                       // right, down, front vertex
+                       new float3( 1,  0,  0), // 12 - belongs to right
+                       new float3( 0, -1,  0), // 13 - belongs to down
+                       new float3( 0,  0, -1), // 14 - belongs to front
+
+                       // right, up, front vertex
+                       new float3( 1,  0,  0),  // 18 - belongs to right
+                       new float3( 0,  1,  0),  // 19 - belongs to up
+                       new float3( 0,  0, -1),  // 20 - belongs to front
+                   },
+                   Triangles = new ushort[]
+                  {
+                       0, 1, 2,
+                       2, 3, 0 
+                  },
+                   UVs = new []
+                   {
+                        new float2(0, 0.5f),
+                        new float2(0.5f, 0.5f),
+                        new float2(0.5f, 1),
+                        new float2(0,1)
+                   }
+               };
+
+
+            // SHOWCASE SWITCH!
+            var gShowCase = _gBufferDrawPassShaderEffect._rc.CurrentShader.GetShaderParam("gShowCase");
+            if (gShowCase != null)
+            {
+                if(SHOWCASE == 0)
+                    _gBufferDrawPassShaderEffect._rc.SetShaderParamTexture(gShowCase, _gBufferTexture, GBufferHandle.gPositionHandle);
+                if (SHOWCASE == 1)
+                    _gBufferDrawPassShaderEffect._rc.SetShaderParamTexture(gShowCase, _gBufferTexture, GBufferHandle.gNormalHandle);
+                if (SHOWCASE == 2)
+                    _gBufferDrawPassShaderEffect._rc.SetShaderParamTexture(gShowCase, _gBufferTexture, GBufferHandle.gAlbedoSpecHandle);
+            }
+
+            /*    // Set textures from first GBuffer pass
+                var gPosition = _gBufferDrawPassShaderEffect._rc.CurrentShader.GetShaderParam("gPosition");
+                if (gPosition != null)
+                    _gBufferDrawPassShaderEffect._rc.SetShaderParamTexture(gPosition, _gBufferTexture, GBufferHandle.gPositionHandle);
+
+                var gNormal = _gBufferDrawPassShaderEffect._rc.CurrentShader.GetShaderParam("gNormal");
+                if (gNormal != null)
+                    _gBufferDrawPassShaderEffect._rc.SetShaderParamTexture(gNormal, _gBufferTexture, GBufferHandle.gNormalHandle);
+
+                var gAlbedoSpec = _gBufferDrawPassShaderEffect._rc.CurrentShader.GetShaderParam("gAlbedoSpec");
+                if (gAlbedoSpec != null)
+                    _gBufferDrawPassShaderEffect._rc.SetShaderParamTexture(gAlbedoSpec, _gBufferTexture, GBufferHandle.gAlbedoSpecHandle);
+
+                var gDepth = _gBufferDrawPassShaderEffect._rc.CurrentShader.GetShaderParam("gDepth");
+                if (gDepth != null)
+                    _gBufferDrawPassShaderEffect._rc.SetShaderParamTexture(gDepth, _gBufferTexture, GBufferHandle.gDepthHandle); */
+
+            _gBufferDrawPassShaderEffect.RenderMesh(rm);
+
+
+            /*   for (var i = 0; i < _lightComponents.Count; i++)
+               {
+                   SetupLight(i, _lightComponents[i], effect);
+
+               }*/
+
         }
 
         private void RenderShadowMapPass(Mesh rm)
@@ -738,7 +1009,7 @@ namespace Fusee.Engine.Core
 
         }
 
-        private void RenderPass(Mesh rm, ShaderEffect effect)
+        private void RenderNormalShadowPass(Mesh rm, ShaderEffect effect)
         {
             //  if (name != "debug") return;
             if(effect._rc.CurrentShader == null) return;

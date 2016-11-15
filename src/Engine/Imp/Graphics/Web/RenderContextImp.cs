@@ -68,6 +68,11 @@ namespace Fusee.Engine.Imp.Graphics.Web
             throw new System.NotImplementedException();
         }
 
+        public void SetShaderParamTexture(IShaderParam param, ITexture texId, GBufferHandle gHandle)
+        {
+            throw new NotImplementedException();
+        }
+
         [JSExternal]
         public void UpdateTextureFromVideoStream(IVideoStreamImp stream, ITexture tex)
         {

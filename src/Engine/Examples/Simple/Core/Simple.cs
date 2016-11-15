@@ -1,4 +1,4 @@
-﻿#define GUI_SIMPLE
+﻿//#define GUI_SIMPLE
 
 using System;
 using System.Collections.Generic;
@@ -102,7 +102,7 @@ namespace Fusee.Engine.Examples.Simple.Core
 
           
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRenderer(_rocketScene, LightningCalculationMethod.SIMPLE);
+            _sceneRenderer = new SceneRenderer(_rocketScene, LightningCalculationMethod.SIMPLE, false, true);
         
          
             _rocketScene.Children[0].Children[0].Components[2].Name = "debug";
@@ -153,8 +153,17 @@ namespace Fusee.Engine.Examples.Simple.Core
             lightCone.Normalize();
             _rocketScene.Children[8].Components[0] = light;
             var debug = _rocketScene.Children[8].Components[0] as LightComponent;
-            Diagnostics.Log($"Pos: {debug.Position}");
-            
+           // Diagnostics.Log($"Pos: {debug.Position}");
+
+       
+                if (Keyboard.IsKeyDown(KeyCodes.F3))
+                    SceneRenderer.SHOWCASE = 0;
+                if (Keyboard.IsKeyDown(KeyCodes.F4))
+                    SceneRenderer.SHOWCASE = 1;
+                if (Keyboard.IsKeyDown(KeyCodes.F5))
+                    SceneRenderer.SHOWCASE = 2;
+          
+
             // Create the camera matrix and set it as the current ModelView transformation
               var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
               var mtxCam = float4x4.LookAt(0, 20, -3000, 0, -100, 0, 0, 1, 0);

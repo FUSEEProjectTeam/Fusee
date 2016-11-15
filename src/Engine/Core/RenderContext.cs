@@ -974,6 +974,7 @@ namespace Fusee.Engine.Core
         {
             return _rci.CreateWritableTexture(width, height, imagePixelFormat);
         }
+  
 
         /// <summary>
         /// Sets a Shader Parameter to a created texture.
@@ -985,6 +986,16 @@ namespace Fusee.Engine.Core
             _rci.SetShaderParamTexture(param, texId);
         }
 
+        /// <summary>
+        /// Sets a Shader Parameter to a created texture.
+        /// </summary>
+        /// <param name="param">Shader Parameter used for texture binding.</param>
+        /// <param name="texId">An ITexture probably returned from CreateWritableTexture() method.</param>
+        /// <param name="gHandle">The desired gBuffer texture</param>
+        public void SetShaderParamTexture(IShaderParam param, ITexture texId, GBufferHandle gHandle)
+        {
+            _rci.SetShaderParamTexture(param, texId, gHandle);
+        }
 
 
         #endregion

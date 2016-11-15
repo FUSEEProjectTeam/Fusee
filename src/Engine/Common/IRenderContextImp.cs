@@ -198,6 +198,14 @@ namespace Fusee.Engine.Common
         void SetShaderParamTexture(IShaderParam param, ITexture texId);
 
         /// <summary>
+        /// Sets a Shader Parameter to a created texture.
+        /// </summary>
+        /// <param name="param">Shader Parameter used for texture binding.</param>
+        /// <param name="texId">An ITexture probably returned from CreateTexture() method.</param>
+        /// /// <param name="texId">The gBuffer Handle</param>
+        void SetShaderParamTexture(IShaderParam param, ITexture texId, GBufferHandle gHandle);
+
+        /// <summary>
         /// Updates the texture from video the given video stream.
         /// </summary>
         /// <param name="stream">The video stream to retrieve an individual image.</param>

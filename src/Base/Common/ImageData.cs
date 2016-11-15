@@ -33,7 +33,12 @@ namespace Fusee.Base.Common
         /// <summary>
         /// Used for a CubeMap Image with 6 faces, containing a depth value per-pixel. Each pixel consists of one byte.
         /// </summary>
-        DepthCubeMap
+        DepthCubeMap,
+
+        /// <summary>
+        /// Used for a GBuffer Texture
+        /// </summary>
+        GBuffer
 
 
     }

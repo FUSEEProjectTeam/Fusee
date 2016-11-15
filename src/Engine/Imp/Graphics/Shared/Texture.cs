@@ -12,6 +12,15 @@ namespace Fusee.Engine.Imp.Graphics.Android
     class Texture : ITexture
     {
         internal int handle;
-        internal int fboHandle;
+        internal int fboHandle = -1;
+
+        // GBUFFER
+        internal int gBufferHandle = -1;
+        internal int gBufferPositionTextureHandle;
+        internal int gBufferNormalTextureHandle;
+        internal int gBufferAlbedoSpecTextureHandle;
+        internal int gDepthRenderbufferHandle;
     }
+
+
 }
