@@ -269,9 +269,9 @@ namespace Fusee.Engine.Core
 
             float shadow = 0.0;
 
-       /*     // Percentage closer filtering [Currently error with webgl - desktop needs ivec, web expects float for textureSize()]
+            // Percentage closer filtering [Currently error with webgl - desktop needs ivec, web expects float for textureSize()]
             // [http://http.developer.nvidia.com/GPUGems/gpugems_ch11.html]
-            ivec2 texelSize = textureSize(firstPassTex, 0.0);
+            ivec2 texelSize = textureSize(firstPassTex, 0);
             vec2 texelSizeFloat = vec2(texelSize);
             texelSizeFloat = 1.0/texelSizeFloat;
             for(int x = -1; x <= 1; ++x)
@@ -279,11 +279,11 @@ namespace Fusee.Engine.Core
                 for(int y = -1; y <= 1; ++y)
                 {
                     float pcfDepth = texture2D(firstPassTex, projCoords.xy + vec2(x, y) * texelSizeFloat).r;
-                    shadow += currentDepth  > pcfDepth ? 1.0 : 0.0; // without currentDepth-bias because the number has to be so small, TODO: Fix this
+                    shadow += currentDepth - 0.00005  > pcfDepth ? 1.0 : 0.0; // without currentDepth-bias because the number has to be so small, TODO: Fix this
                 }
             }
-            shadow /= 9.0;*/
-
+            shadow /= 9.0;
+        
             if(projCoords.z > 0.99997)
                  shadow = 0.0;
 
@@ -682,14 +682,14 @@ namespace Fusee.Engine.Core
                 // Therefore we need a workaround.
                 vs.Append("    for(int i = 0; i < MAX_LIGHTS;i++)\n");
                 vs.Append("    {\n");
-                vs.Append("         Light currentLight = allLights[i];\n");
-                vs.Append("         result += ApplyLight(currentLight.position, currentLight.intensities, currentLight.coneDirection, " +
-                          "currentLight.attenuation, currentLight.ambientCoefficient, currentLight.coneAngle, currentLight.lightType);\n");
+                vs.Append("         Light currentLight = allLights[0];\n");
+                vs.Append("         result += ApplyLight(allLights[0].position, allLights[0].intensities, allLights[0].coneDirection, " +
+                          "allLights[0].attenuation, allLights[0].ambientCoefficient, allLights[0].coneAngle, allLights[0].lightType);\n");
                 vs.Append("    }\n");
                 vs.Append($"    {GammaCorrection()}\n");
 
-                // vs.Append("    gl_FragColor = vec4(final_light,1.0);\n");
-                vs.Append("    gl_FragColor = vec4(vec3(1.0,0.0,0.0),1.0);\n");
+                 vs.Append("    gl_FragColor = vec4(final_light,1.0);\n");
+                //vs.Append("    gl_FragColor = vec4(vec3(1.0,0.0,0.0),1.0);\n");
                 vs.Append("}\n");
             }
 

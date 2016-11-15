@@ -100,8 +100,11 @@ namespace Fusee.Engine.Examples.Simple.Core
 
             });
 
-          
+
             // Wrap a SceneRenderer around the model.
+            // Shadow
+            //_sceneRenderer = new SceneRenderer(_rocketScene, LightningCalculationMethod.SIMPLE, true);
+            // Deferred
             _sceneRenderer = new SceneRenderer(_rocketScene, LightningCalculationMethod.SIMPLE, false, true);
         
          
