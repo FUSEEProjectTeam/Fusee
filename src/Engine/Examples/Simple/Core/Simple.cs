@@ -95,7 +95,7 @@ namespace Fusee.Engine.Examples.Simple.Core
                        Type = LightType.Parallel
                     },
                     new TransformComponent()
-
+                     
                 }
 
             });
