@@ -75,8 +75,8 @@ namespace Fusee.Engine.Core
             PSBody(ps);
             PS = ps.ToString();
 
-            // Diagnostics.Log($"ForwardShaderCodeBuilder, VS \n{VS}");
-            Diagnostics.Log($"ForwardShaderCodeBuilder, PS \n{PS}");
+            //  Diagnostics.Log($"ForwardShaderCodeBuilder, VS \n{VS}");
+            //Diagnostics.Log($"ForwardShaderCodeBuilder, PS \n{PS}");
 
         }
 
@@ -258,38 +258,84 @@ namespace Fusee.Engine.Core
 
 
             string calcshadow = @"
-                    float CalcShadowFactor(vec4 fragPosLightSpace, float NoL)
-            {
-
-             // perform perspective divide for ortographic!
+                    float CalcShadowFactor(vec4 fragPosLightSpace)
+                {
+                
+                         // perform perspective divide for ortographic!
             vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
             projCoords = projCoords * 0.5 + 0.5; // map to [0,1]
-            float bias =  max(0.00001 * (1.0 - NoL), 0.00005);  // bias to prevent shadow acne
+            //float bias =  max(0.0005 * (1.0 - NoL), 0.001);  // bias to prevent shadow acne
             float currentDepth = projCoords.z;
-
+float pcfDepth = texture2D(firstPassTex, projCoords.xy).r; 
             float shadow = 0.0;
-
-            // Percentage closer filtering [Currently error with webgl - desktop needs ivec, web expects float for textureSize()]
+/*
+            // Percentage closer filtering[Currently error with webgl - desktop needs ivec, web expects float for textureSize()]
             // [http://http.developer.nvidia.com/GPUGems/gpugems_ch11.html]
-            ivec2 texelSize = textureSize(firstPassTex, 0);
-            vec2 texelSizeFloat = vec2(texelSize);
-            texelSizeFloat = 1.0/texelSizeFloat;
-            for(int x = -1; x <= 1; ++x)
+                ivec2 texelSize = textureSize(firstPassTex, 0);
+                vec2 texelSizeFloat = vec2(texelSize);
+                texelSizeFloat = 1.0 / texelSizeFloat;
+            for (int x = -1; x <= 1; ++x)
             {
-                for(int y = -1; y <= 1; ++y)
+                for (int y = -1; y <= 1; ++y)
                 {
                     float pcfDepth = texture2D(firstPassTex, projCoords.xy + vec2(x, y) * texelSizeFloat).r;
-                    shadow += currentDepth - 0.00005  > pcfDepth ? 1.0 : 0.0; // without currentDepth-bias because the number has to be so small, TODO: Fix this
+                    shadow += currentDepth > pcfDepth ? 1.0 : 0.0; // without currentDepth-bias because the number has to be so small, TODO: Fix this
                 }
             }
-            shadow /= 9.0;
-        
-            if(projCoords.z > 0.99997)
-                 shadow = 0.0;
+            shadow /= 32.0;
 
-            return shadow;
 
-      }";
+
+            if (projCoords.z > 1.0)
+                shadow = 0.0;
+*/
+            shadow = currentDepth > pcfDepth ? 1.0 : 0.0;
+
+            return shadow; 
+
+
+
+
+                }";
+
+            /*
+
+
+
+            
+       /*      // perform perspective divide for ortographic!
+            vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+            projCoords = projCoords * 0.5 + 0.5; // map to [0,1]
+            float bias =  max(0.0005 * (1.0 - NoL), 0.0001);  // bias to prevent shadow acne
+            float currentDepth = projCoords.z;
+            float shadowDepth = texture2D(firstPassTex, projCoords.xy).r;
+            float shadow = 0.0;
+
+            // Percentage closer filtering[Currently error with webgl - desktop needs ivec, web expects float for textureSize()]
+            // [http://http.developer.nvidia.com/GPUGems/gpugems_ch11.html]
+           ivec2 texelSize = textureSize(firstPassTex, 0);
+           vec2 texelSizeFloat = vec2(texelSize);
+            texelSizeFloat = 1.0 / texelSizeFloat;
+            for (int x = -1; x <= 1; ++x)
+            {
+                for (int y = -1; y <= 1; ++y)
+                {
+                    float pcfDepth = texture2D(firstPassTex, projCoords.xy + vec2(x, y) * texelSizeFloat).r;
+                    shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0; // without currentDepth-bias because the number has to be so small, TODO: Fix this
+                }
+            }
+            shadow /= 16.0;
+
+            shadow = currentDepth > shadowDepth ? 1.0 : 0.0;
+
+            if (projCoords.z > 0.99997)
+                shadow = 0.0;
+
+            return shadow; 
+
+
+
+            */
             ps.Append(calcshadow);
 
         }
@@ -459,9 +505,18 @@ namespace Fusee.Engine.Core
             outputString += "   {\n";
             outputString += "   // half vector\n";
             outputString += "   vec3 H = normalize(L + V);\n";
-            outputString += $"   specularTerm = max(0.0, pow(dot(N, H), {SpecularShininessName}));\n";
-            outputString += "   }\n";
-            outputString += $"  return ({SpecularColorName} * {SpecularIntensityName} * intensities) * specularTerm;\n";
+            if (_hasSpecular)
+            {
+                outputString += $"   specularTerm = max(0.0, pow(dot(N, H), {SpecularShininessName}));\n";
+                outputString += "   }\n";
+                outputString += $"  return ({SpecularColorName} * {SpecularIntensityName} * intensities) * specularTerm;\n";
+            }
+            else
+            { 
+              outputString += "   }\n";
+            outputString += $"  return intensities;\n";
+            }
+           
             outputString += "}\n";
 
             return outputString;
@@ -495,7 +550,7 @@ namespace Fusee.Engine.Core
             else
                 outputString += $"vec3 diffuseColor = {DiffuseColorName};\n";
             outputString += "\n";
-            outputString += "float shadowFactor = CalcShadowFactor(shadowLight, dot(N,L));";
+            outputString += "float shadowFactor = CalcShadowFactor(shadowLight);";
             outputString += "\n";
 
             return outputString;
@@ -508,7 +563,7 @@ namespace Fusee.Engine.Core
         private static string ParallelLightCalculation()
         {
             var outputString = "\n";
-            outputString += "       result = Iamb +  (1.0-shadowFactor) * (Idif + Ispe);\n";
+            outputString += "       result = Iamb +  (1.0-shadowFactor) *  (Idif + Ispe);\n";
             return outputString;
         }
 
@@ -687,8 +742,8 @@ namespace Fusee.Engine.Core
                           "allLights[0].attenuation, allLights[0].ambientCoefficient, allLights[0].coneAngle, allLights[0].lightType);\n");
                 vs.Append("    }\n");
                 vs.Append($"    {GammaCorrection()}\n");
-
-                 vs.Append("    gl_FragColor = vec4(final_light,1.0);\n");
+            
+                vs.Append("    gl_FragColor = vec4(final_light,1.0);\n");
                 //vs.Append("    gl_FragColor = vec4(vec3(1.0,0.0,0.0),1.0);\n");
                 vs.Append("}\n");
             }

@@ -437,6 +437,7 @@ namespace Fusee.Engine.Core
         private const string ShadowMapVs = @"
 
                 attribute vec3 fuVertex;
+
                 uniform mat4 LightMVP;
 
                 void main()
@@ -451,7 +452,7 @@ namespace Fusee.Engine.Core
                    
             void main()
             {                                              
-                //gl_FragColor = gl_FragCoord.z;
+                gl_FragColor = gl_FragCoord.z;
             }";
 
         // Normal Shader
@@ -641,7 +642,11 @@ namespace Fusee.Engine.Core
             {
                 PS = ShadowMapPs,
                 VS = ShadowMapVs,
-                StateSet = new RenderStateSet()
+                StateSet = new RenderStateSet
+                {
+                    //CullMode = Cull.Clockwise // This is not working due to the fact, that we cant change the RenderStateSet for the normal render pass
+                    // therefore we are using GL.Cull(Front / Back) in RenderContextImp!
+                }
             };
             var effectParameter = new List<EffectParameterDeclaration>
                         {
@@ -892,7 +897,7 @@ namespace Fusee.Engine.Core
                  diffuse = (float3) effect.GetEffectParam("DiffuseColor");
 
             var specularIntensity = 1.0f;
-            if (effect._rc.CurrentShader != null)
+            if (effect._rc.CurrentShader != null && effect.GetEffectParam("SpecularIntensity") != null)
                 specularIntensity = (float)effect.GetEffectParam("SpecularIntensity");
 
             _gBufferPassShaderEffect.SetEffectParam("DiffuseColor", diffuse);
@@ -1004,11 +1009,11 @@ namespace Fusee.Engine.Core
             //lightCone.Normalize();
 
             var depthViewMatrix = float4x4.LookAt(lightPos.x, lightPos.y, lightPos.z, 0, 0, 0, 0, 1, 0);
-            var scale = float4x4.CreateScale(0.1f);
+            var scale = float4x4.CreateScale(0.9f);
             var depthModelMatrix = scale * _state.Model;
             var aspectRatio = _rc.ViewportWidth / (float)_rc.ViewportHeight;
-            var projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, aspectRatio, 0.1f, 1500f);
-            _depthMVP = _rc.Projection * depthViewMatrix * depthModelMatrix;
+            var projection = float4x4.CreateOrthographic(100, 100, 0.1f, 35f);
+            _depthMVP = projection *  depthViewMatrix * depthModelMatrix;
             
             _shadowPassShaderEffect.SetEffectParam("LightMVP", _depthMVP);
           
@@ -1018,19 +1023,21 @@ namespace Fusee.Engine.Core
 
         private void RenderNormalShadowPass(Mesh rm, ShaderEffect effect)
         {
-            //  if (name != "debug") return;
+            //  if (rm.N != "cube") return;
             if(effect._rc.CurrentShader == null) return;
+          
 
             var lightPos = AllLightResults[0].Position;
             var lightCone = AllLightResults[0].ConeDirection;
             //lightCone.Normalize();
 
             var depthViewMatrix = float4x4.LookAt(lightPos.x, lightPos.y, lightPos.z, 0, 0, 0, 0, 1, 0);
-            var scale = float4x4.CreateScale(0.1f);
+            var scale = float4x4.CreateScale(0.9f);
             var depthModelMatrix = scale * _state.Model;
             var aspectRatio = _rc.ViewportWidth / (float)_rc.ViewportHeight;
-            var projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, aspectRatio, 0.1f, 1500f);
-            _depthMVP = _rc.Projection * depthViewMatrix * depthModelMatrix;
+            var projection = float4x4.CreateOrthographic(100, 100, 0.1f, 35f);
+            _depthMVP = projection *  depthViewMatrix * depthModelMatrix;
+            
 
             var handleLight = effect._rc.GetShaderParam(effect._rc.CurrentShader, "shadowMVP");
             if (handleLight != null)
@@ -1481,8 +1488,8 @@ namespace Fusee.Engine.Core
     
         private ShaderEffect MakeMaterial(MaterialComponent mc)
         {
-            if (_rc.GetHardwareCapabilities(HardwareCapability.DEFFERED_POSSIBLE) == 1U && RenderDeferred)
-                return DeferredRenderPathMaterial(mc);
+           // if (_rc.GetHardwareCapabilities(HardwareCapability.DEFFERED_POSSIBLE) == 1U && RenderDeferred)
+            //    return DeferredRenderPathMaterial(mc);
             return ForwardRenderPathMaterial(mc);
         }
 
