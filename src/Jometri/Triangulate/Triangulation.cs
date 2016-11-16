@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using Fusee.Base.Core;
 using Fusee.Jometri.DCEL;
 using Fusee.Math.Core;
@@ -81,7 +82,7 @@ namespace Fusee.Jometri.Triangulate
                     {
                         var popped = vertStack.Pop();
 
-                        if (vertStack.Count >= 1)
+                        if (vertStack.Count > 0)
                             _geometry.InsertHalfEdge(current.Handle, popped.Handle);
                     }
                     vertStack.Push(sortedVerts[i - 1]);
@@ -90,20 +91,33 @@ namespace Fusee.Jometri.Triangulate
                 else
                 {
                     var popped = vertStack.Pop();
-                    var isValidDiagonal = true;
+                    
+                    float3 v1;
+                    float3 v2;
 
-                    while (vertStack.Count > 0 && isValidDiagonal)
+                    //TODO: Diagonal is valid if the angle between peak - popped and current - popped is less than pi. Problem: which angle is the inner one?
+                    //if (!IsPolygonRightOfVert(popped)) //TODO: Gets the wrong prev,next because of face changes
                     {
-                        var v2 = vertStack.Peek().Coord - popped.Coord;
-                        var v1 = sortedVerts[i].Coord - popped.Coord;
+                        v1 = vertStack.Peek().Coord - popped.Coord;
+                        v2 = sortedVerts[i].Coord - popped.Coord;
+                    }
+                    /*else 
+                    {
+                        v2 = vertStack.Peek().Coord - popped.Coord;
+                        v1 = sortedVerts[i].Coord - popped.Coord;
+                    }*/
 
+                    while (vertStack.Count > 0 && !IsAngleGreaterOrEqualPi(v1, v2))
+                    {
                         popped = vertStack.Pop();
 
-                        if (IsAngleGreaterOrEqualPi(v1, v2))
-                            isValidDiagonal = false;
+                        if (vertStack.Count > 0)
+                        {
+                            v1 = vertStack.Peek().Coord - popped.Coord;
+                            v2 = sortedVerts[i].Coord - popped.Coord;
+                        }
 
-                        if (isValidDiagonal)
-                            _geometry.InsertHalfEdge(current.Handle, popped.Handle);
+                        _geometry.InsertHalfEdge(current.Handle, popped.Handle);
                     }
                     vertStack.Push(popped);
                     vertStack.Push(current);
@@ -111,9 +125,10 @@ namespace Fusee.Jometri.Triangulate
             }
             for (var j = 0; j < vertStack.Count; j++)
             {
-                if (j == 0 || j == vertStack.Count - 1) { }
-                else { _geometry.InsertHalfEdge(sortedVerts.LastItem().Handle, sortedVerts[j].Handle); }
-
+                if (j != 0 && j != vertStack.Count - 1)
+                {
+                    _geometry.InsertHalfEdge(sortedVerts.LastItem().Handle, sortedVerts[j].Handle);
+                }
             }
         }
 
@@ -288,7 +303,7 @@ namespace Fusee.Jometri.Triangulate
                 var origin = _geometry.GetVertexByHandle(he.Origin);
                 var targetH = _geometry.GetHalfEdgeByHandle(he.Next).Origin;
                 var target = _geometry.GetVertexByHandle(targetH);
-                var ei = new StatusNode(origin, target,v)
+                var ei = new StatusNode(origin, target, v)
                 {
                     HalfEdge = he.Handle,
                     Helper = v.Handle,
@@ -359,7 +374,7 @@ namespace Fusee.Jometri.Triangulate
 
                 if (he.Origin.Id == v.Handle.Id) break;
             }
-            
+
             UpdateKey(tree, v);
             ResortTree(tree);
 
@@ -418,7 +433,7 @@ namespace Fusee.Jometri.Triangulate
                         Helper = v.Handle,
                         IsMergeVertex = false
                     };
-                    
+
                     tree.InsertNode(ref _root, ei);
 
                     break;
@@ -445,7 +460,7 @@ namespace Fusee.Jometri.Triangulate
 
         private void UpdateKey(BinarySearchTree<StatusNode> tree, Geometry.Vertex eventPoint)
         {
-            if(_root == null) return;
+            if (_root == null) return;
             foreach (var node in tree.PreorderTraverseTree(_root))
             {
                 node.SetKey(eventPoint);
@@ -478,7 +493,7 @@ namespace Fusee.Jometri.Triangulate
         }
 
         //Can be optimized by using a self balancing binary search tree. See: http://stackoverflow.com/questions/6334514/to-find-largest-element-smaller-than-k-in-a-bst
-        private static StatusNode FindLargestSmallerThan(Node<StatusNode> root, float value, BinarySearchTree<StatusNode> tree )
+        private static StatusNode FindLargestSmallerThan(Node<StatusNode> root, float value, BinarySearchTree<StatusNode> tree)
         {
             var preorder = tree.PreorderTraverseTree(root).ToList();
             var temp = default(StatusNode);
@@ -496,7 +511,7 @@ namespace Fusee.Jometri.Triangulate
             {
                 if (n.Key < value && n.Key > temp.Key)
                     temp = n;
-             }
+            }
             return temp;
         }
         #endregion
