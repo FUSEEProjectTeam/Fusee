@@ -3,6 +3,7 @@ using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Math.Core;
+using Fusee.Serialization;
 using static Fusee.Engine.Core.Input;
 using Geometry = Fusee.Jometri.DCEL.Geometry;
 
@@ -23,6 +24,8 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
         private List<float3> _controlPoints;
         private Mesh _point;
 
+        private Mesh _textMesh;
+
         private ThreeDFontHelper _threeDFontHelper;
 
         private int _frameCount;
@@ -41,13 +44,15 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             _pointList = new List<Mesh>();
             _xForms = new List<float4x4>();
 
-            _text = "B";
+            _text = "Hello World!";
             _threeDFontHelper = new ThreeDFontHelper(_text, fontLato);
 
             _controlPoints = new List<float3>();
 
-            var outlines = _threeDFontHelper.GetTextOutlinesWAngle(20);
+            var outlines = _threeDFontHelper.GetTextOutlinesWAngle(10);
             var geom = new Geometry(outlines, true);
+
+            _textMesh = new HalfEdgesToMesh(geom);
 
             var test = new List<Geometry.Vertex>();
 
@@ -102,7 +107,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             var projection = float4x4.CreatePerspectiveFieldOfView(3.141592f * 0.25f, aspectRatio, 0.01f, 20);
             var view = float4x4.CreateTranslation(0, 0, 10) * float4x4.CreateRotationY(_alpha);
 
-            if (_frameCount % 25 == 0 && _pointCount < _controlPoints.Count)
+            /*if (_frameCount % 25 == 0 && _pointCount < _controlPoints.Count)
             {
                 _pointCount++;
                 var point = _controlPoints[_pointCount - 1];
@@ -117,7 +122,13 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             {
                 RC.SetShaderParam(_xformParam, _xForms[i]);
                 RC.Render(_pointList[i]);
-            }
+            }*/
+
+            var point = _controlPoints[0];
+            var modelPoint = ModelXForm(new float3(point.x - 3f, point.y - 1f, 0), new float3(0, 0, 0));
+            _xform = projection * view * modelPoint * float4x4.CreateScale(0.002f, 0.002f, 0.002f);
+            RC.SetShaderParam(_xformParam, _xform);
+            RC.Render(_textMesh);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered farame) on the front buffer.
             Present();

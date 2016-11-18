@@ -66,17 +66,17 @@ namespace Fusee.Jometri.Triangulate
 
             var sortedVerts = GetSortedVertices(faceVertices);
             var vertStack = new Stack<Geometry.Vertex>();
-            var leftCain = GetLeftChain(sortedVerts, fHandle).ToList();
+            var leftChain = GetLeftChain(sortedVerts, fHandle).ToList();
 
             vertStack.Push(sortedVerts[0]);
             vertStack.Push(sortedVerts[1]);
 
-            for (var i = 2; i < sortedVerts.Count - 1; i++)
+            for (var i = 2; i < sortedVerts.Count-1; i++)
             {
                 var current = sortedVerts[i];
 
-                if (!IsLeftChain(leftCain, current) && IsLeftChain(leftCain, vertStack.Peek()) ||
-                    IsLeftChain(leftCain, current) && !IsLeftChain(leftCain, vertStack.Peek()))
+                if (!IsLeftChain(leftChain, current) && IsLeftChain(leftChain, vertStack.Peek()) ||
+                    IsLeftChain(leftChain, current) && !IsLeftChain(leftChain, vertStack.Peek()))
                 {
                     while (vertStack.Count > 0)
                     {
@@ -91,21 +91,27 @@ namespace Fusee.Jometri.Triangulate
                 else
                 {
                     var popped = vertStack.Pop();
-                    
+
                     float3 v1;
                     float3 v2;
 
-                    //TODO: Diagonal is valid if the angle between peak - popped and current - popped is less than pi. Problem: which angle is the inner one?
-                    //if (!IsPolygonRightOfVert(popped)) //TODO: Gets the wrong prev,next because of face changes
+                    Geometry.Vertex next;
+                    Geometry.Vertex prev;
+
+                    if (IsLeftChain(leftChain, popped))
                     {
-                        v1 = vertStack.Peek().Coord - popped.Coord;
-                        v2 = sortedVerts[i].Coord - popped.Coord;
+                        next = sortedVerts[i];
+                        prev = vertStack.Peek();
                     }
-                    /*else 
+                    else
                     {
-                        v2 = vertStack.Peek().Coord - popped.Coord;
-                        v1 = sortedVerts[i].Coord - popped.Coord;
-                    }*/
+                        next = vertStack.Peek();
+                        prev = sortedVerts[i];
+                    }
+
+                    v1 = next.Coord - popped.Coord;
+                    v2 = prev.Coord - popped.Coord;
+
 
                     while (vertStack.Count > 0 && !IsAngleGreaterOrEqualPi(v1, v2))
                     {
@@ -113,8 +119,19 @@ namespace Fusee.Jometri.Triangulate
 
                         if (vertStack.Count > 0)
                         {
-                            v1 = vertStack.Peek().Coord - popped.Coord;
-                            v2 = sortedVerts[i].Coord - popped.Coord;
+                            if (IsLeftChain(leftChain, popped))
+                            {
+                                next = sortedVerts[i];
+                                prev = vertStack.Peek();
+                            }
+                            else
+                            {
+                                next = vertStack.Peek();
+                                prev = sortedVerts[i];
+                            }
+
+                            v1 = next.Coord - popped.Coord;
+                            v2 = prev.Coord - popped.Coord;
                         }
 
                         _geometry.InsertHalfEdge(current.Handle, popped.Handle);
@@ -123,12 +140,16 @@ namespace Fusee.Jometri.Triangulate
                     vertStack.Push(current);
                 }
             }
-            for (var j = 0; j < vertStack.Count; j++)
+
+            var count = vertStack.Count;
+
+            for (var j = 0; j < count; j++)
             {
-                if (j != 0 && j != vertStack.Count - 1)
-                {
-                    _geometry.InsertHalfEdge(sortedVerts.LastItem().Handle, sortedVerts[j].Handle);
-                }
+                var popped = vertStack.Pop();
+
+                if (j == 0) continue;
+                if(j!= count-1)
+                    _geometry.InsertHalfEdge(sortedVerts.LastItem().Handle, popped.Handle);
             }
         }
 
@@ -159,11 +180,11 @@ namespace Fusee.Jometri.Triangulate
             } while (_geometry.GetHalfEdgeByHandle(heHandle).Origin.Id != endOfChain.Handle.Id);
         }
 
-        private static bool IsLeftChain(IEnumerable<Geometry.Vertex> leftChain, Geometry.Vertex cur)
+        private static bool IsLeftChain(IEnumerable<Geometry.Vertex> leftChain, Geometry.Vertex vert)
         {
             foreach (var v in leftChain)
             {
-                if (v.Handle.Id == cur.Handle.Id)
+                if (v.Handle.Id == vert.Handle.Id)
                     return true;
             }
             return false;
@@ -298,6 +319,8 @@ namespace Fusee.Jometri.Triangulate
                 if (he.Origin.Id != v.Handle.Id) continue;
 
                 UpdateKey(tree, v);
+
+                //Optimization: Resort the try by balancing it once (only if "FindLargestSamllerThan()" is called)
                 ResortTree(tree);
 
                 var origin = _geometry.GetVertexByHandle(he.Origin);
@@ -324,6 +347,8 @@ namespace Fusee.Jometri.Triangulate
                 if (he.Origin.Id != v.Handle.Id) continue;
 
                 UpdateKey(tree, v);
+
+                //Optimization: Resort the try by balancing it once (only if "FindLargestSamllerThan()" is called)
                 ResortTree(tree);
 
                 var eMinOne = FindStatusNode(_root, he.Prev).Value;
@@ -342,8 +367,10 @@ namespace Fusee.Jometri.Triangulate
         private void HandleSplitVertex(ref BinarySearchTree<StatusNode> tree, Geometry.Vertex v, ICollection<FaceHandle> newFaces)
         {
             UpdateKey(tree, v);
+            //Optimization: Resort the try by balancing it once (only if "FindLargestSamllerThan()" is called)
             ResortTree(tree);
 
+            //Optimization: Resort the try by balancing it once (only if "FindLargestSamllerThan()" is called)
             var ej = FindLargestSmallerThan(_root, v.Coord.x, tree);
 
             _geometry.InsertHalfEdge(v.Handle, ej.Helper);
@@ -376,6 +403,8 @@ namespace Fusee.Jometri.Triangulate
             }
 
             UpdateKey(tree, v);
+
+            //Optimization: Resort the try by balancing it once (only if "FindLargestSamllerThan()" is called)
             ResortTree(tree);
 
             var eMinOne = FindStatusNode(_root, he.Prev).Value;
@@ -388,6 +417,7 @@ namespace Fusee.Jometri.Triangulate
 
             tree.DeleteNode(ref _root, eMinOne);
 
+            //Optimization: Resort the try by balancing it once (only if "FindLargestSamllerThan()" is called)
             var ej = FindLargestSmallerThan(_root, v.Coord.x, tree);
 
             if (ej.IsMergeVertex)
@@ -411,6 +441,8 @@ namespace Fusee.Jometri.Triangulate
                     if (he.Origin.Id != v.Handle.Id) continue;
 
                     UpdateKey(tree, v);
+
+                    //Optimization: Resort the try by balancing it once (only if "FindLargestSamllerThan()" is called)
                     ResortTree(tree);
 
                     var eMinOne = FindStatusNode(_root, he.Prev).Value;
@@ -443,8 +475,11 @@ namespace Fusee.Jometri.Triangulate
             {
 
                 UpdateKey(tree, v);
+
+                //Optimization: Resort the try by balancing it once (only if "FindLargestSamllerThan()" is called)
                 ResortTree(tree);
 
+                //Optimization: Resort the try by balancing it once (only if "FindLargestSamllerThan()" is called)
                 var ej = FindLargestSmallerThan(_root, v.Coord.x, tree);
 
                 if (ej.IsMergeVertex)
@@ -522,6 +557,38 @@ namespace Fusee.Jometri.Triangulate
         {
             var prevV = GetPrevVertex(vert);
             var nextV = GetNextVertex(vert);
+
+            return prevV.Coord.y > nextV.Coord.y;
+        }
+
+        //face = soretedVerts[i], vert = popped
+        private bool IsPolygonRightOfVert(Geometry.Vertex popped, Geometry.Vertex current)
+        {
+            var prevV = new Geometry.Vertex();
+            var nextV = new Geometry.Vertex();
+
+            foreach (var hehP in _geometry.GetHalfEdgesStartingAtV(popped).ToList())
+            {
+                var heP = _geometry.GetHalfEdgeByHandle(hehP);
+
+                foreach (var hehC in _geometry.GetHalfEdgesStartingAtV(current).ToList())
+                {
+                    var heC = _geometry.GetHalfEdgeByHandle(hehC);
+                    if (heC.IncidentFace.Id == heP.IncidentFace.Id)
+                    {
+                        var prevVHandle = _geometry.GetHalfEdgeByHandle(heP.Prev).Origin;
+                        prevV = _geometry.GetVertexByHandle(prevVHandle);
+
+                        var nextVHandle = _geometry.GetHalfEdgeByHandle(heP.Next).Origin;
+                        nextV = _geometry.GetVertexByHandle(nextVHandle);
+
+                        break;
+                    }
+                }
+            }
+
+            if (prevV.Handle.Id == 0 || nextV.Handle.Id == 0)
+                throw new ArgumentException("prev or next vert not defined!");
 
             return prevV.Coord.y > nextV.Coord.y;
         }

@@ -187,8 +187,6 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
 
             for (var i = 0; i < textCurves.Count; i++)
             {
-                if (textCurves[i].CurveParts.Count.Equals(0)) continue;
-
                 advanceComp = advanceComp + advance;
                 kerningComp = kerningComp + kerning;
 
