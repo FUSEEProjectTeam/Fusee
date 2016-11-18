@@ -1,40 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
 using Fusee.Base.Core;
 using Fusee.Jometri.DCEL;
+using Fusee.Jometri.Triangulate;
 using Fusee.Math.Core;
 
-namespace Fusee.Jometri.Triangulate
+namespace Fusee.Jometri.Triangulation
 {
     /// <summary>
     /// Contains the triangulation of some geometry, stored in a doubly connected halfe edge list.
     /// </summary>
-    public class Triangulation
+    internal static class Triangulation
     {
-
-        private readonly Geometry _geometry;
-        private VertexType _vertType;
-        private BinarySearchTree<StatusNode> _sweepLineStatus;
-        private Node<StatusNode> _root;
-
-
-        /// <summary>
-        /// Constructs a new triangulation.
-        /// </summary>
-        /// <param name="geometry">Geometry, stored in a doubly connected half edge list</param>
-        public Triangulation(Geometry geometry)
+        private static Geometry _geometry;
+        private static VertexType _vertType;
+        private static BinarySearchTree<StatusNode> _sweepLineStatus;
+        private static Node<StatusNode> _root;
+        
+        internal static void Triangulate(this Geometry geometry)
         {
+            //TODO: Both, MakeMonotone and TriangulateMonotone need 2D coordinates instead of 3D. It is possibly more effective to call Reduce2D for the whole face in those methods than in the sub methods
+
             _geometry = geometry;
-            _vertType = new VertexType();
 
-            Triangulate();
-        }
-
-        private void Triangulate()
-        {
             var originalFaces = new List<FaceHandle>();
             originalFaces.AddRange(_geometry.FaceHandles);
 
@@ -51,16 +40,11 @@ namespace Fusee.Jometri.Triangulate
                 TriangulateMonotone(fHandle);
             }
         }
+
         #region Triangulate monotone polygone
-        private void TriangulateMonotone(FaceHandle fHandle)
+        private static void TriangulateMonotone(FaceHandle fHandle)
         {
             var faceVertices = _geometry.GetFaceVertices(fHandle).ToList();
-
-            var test = new List<int>();
-            foreach (var v in faceVertices)
-            {
-                test.Add(v.Handle.Id);
-            }
 
             if (faceVertices.Count.Equals(3)) return;
 
@@ -71,7 +55,7 @@ namespace Fusee.Jometri.Triangulate
             vertStack.Push(sortedVerts[0]);
             vertStack.Push(sortedVerts[1]);
 
-            for (var i = 2; i < sortedVerts.Count-1; i++)
+            for (var i = 2; i < sortedVerts.Count - 1; i++)
             {
                 var current = sortedVerts[i];
 
@@ -112,7 +96,6 @@ namespace Fusee.Jometri.Triangulate
                     v1 = next.Coord - popped.Coord;
                     v2 = prev.Coord - popped.Coord;
 
-
                     while (vertStack.Count > 0 && !IsAngleGreaterOrEqualPi(v1, v2))
                     {
                         popped = vertStack.Pop();
@@ -148,12 +131,12 @@ namespace Fusee.Jometri.Triangulate
                 var popped = vertStack.Pop();
 
                 if (j == 0) continue;
-                if(j!= count-1)
+                if (j != count - 1)
                     _geometry.InsertHalfEdge(sortedVerts.LastItem().Handle, popped.Handle);
             }
         }
 
-        private IEnumerable<Geometry.Vertex> GetLeftChain(IList<Geometry.Vertex> sortedVerts, FaceHandle fHandle)
+        private static IEnumerable<Geometry.Vertex> GetLeftChain(IList<Geometry.Vertex> sortedVerts, FaceHandle fHandle)
         {
             var heHandle = new HalfEdgeHandle();
             var endOfChain = sortedVerts.LastItem();
@@ -190,9 +173,13 @@ namespace Fusee.Jometri.Triangulate
             return false;
         }
 
+        //Vertices need to be reduced to 2D
         private static bool IsAngleGreaterOrEqualPi(float3 first, float3 second)
         {
-            var cross = first.x * second.y - first.y * second.x; //z component of the cross product
+            var redFirst = first.Reduce2D();
+            var redSecond = second.Reduce2D();
+
+            var cross = redFirst.x * redSecond.y - redFirst.y * redSecond.x; //z component of the cross product
             var dot = float3.Dot(first, second);
 
             var angle = (float)System.Math.Atan2(cross, dot);
@@ -204,15 +191,16 @@ namespace Fusee.Jometri.Triangulate
 
         #region Test face for y monotony
 
-        private bool IsMonotone(FaceHandle faceHandle)
+        private static bool IsMonotone(FaceHandle faceHandle)
         {
+             var vertType = new VertexType();
             var face = _geometry.GetFaceByHandle(faceHandle);
-            var noSplitOrMerge = HasNoSplitOrMerge(faceHandle);
+            var noSplitOrMerge = HasNoSplitOrMerge(faceHandle, vertType);
 
             return noSplitOrMerge && face.InnerHalfEdges.Count == 0;
         }
 
-        private bool HasNoSplitOrMerge(FaceHandle faceHandle)
+        private static bool HasNoSplitOrMerge(FaceHandle faceHandle, VertexType vertType)
         {
             var verts = _geometry.GetFaceVertices(faceHandle).ToList();
 
@@ -255,9 +243,13 @@ namespace Fusee.Jometri.Triangulate
             return false;
         }
 
+        //Vertices need to be reduced to 2D
         private static bool IsAngleGreaterPi(float3 first, float3 second)
         {
-            var cross = first.x * second.y - first.y * second.x; //z component of the cross product
+            var redFirst = first.Reduce2D();
+            var redSecond = second.Reduce2D();
+
+            var cross = redFirst.x * redSecond.y - redFirst.y * redSecond.x; //z component of the cross product
             var dot = float3.Dot(first, second);
 
             var angle = (float)System.Math.Atan2(cross, dot);
@@ -269,7 +261,7 @@ namespace Fusee.Jometri.Triangulate
         #endregion
 
         #region MakeMonotone
-        private void MakeMonotone(FaceHandle face)
+        private static void MakeMonotone(FaceHandle face)
         {
             var vertices = _geometry.GetFaceVertices(face).ToList();
             var sortedVertices = GetSortedVertices(vertices.ToList());
@@ -310,7 +302,7 @@ namespace Fusee.Jometri.Triangulate
             }
         }
 
-        private void HandleStartVertex(ref BinarySearchTree<StatusNode> tree, Geometry.Vertex v, IEnumerable<HalfEdgeHandle> faceHalfEdges)
+        private static void HandleStartVertex(ref BinarySearchTree<StatusNode> tree, Geometry.Vertex v, IEnumerable<HalfEdgeHandle> faceHalfEdges)
         {
             foreach (var halfEdge in faceHalfEdges)
             {
@@ -338,7 +330,7 @@ namespace Fusee.Jometri.Triangulate
             }
         }
 
-        private void HandleEndVertex(ref BinarySearchTree<StatusNode> tree, Geometry.Vertex v, IEnumerable<HalfEdgeHandle> faceHalfEdges, ICollection<FaceHandle> newFaces)
+        private static void HandleEndVertex(ref BinarySearchTree<StatusNode> tree, Geometry.Vertex v, IEnumerable<HalfEdgeHandle> faceHalfEdges, ICollection<FaceHandle> newFaces)
         {
             foreach (var heh in faceHalfEdges)
             {
@@ -364,7 +356,7 @@ namespace Fusee.Jometri.Triangulate
             }
         }
 
-        private void HandleSplitVertex(ref BinarySearchTree<StatusNode> tree, Geometry.Vertex v, ICollection<FaceHandle> newFaces)
+        private static void HandleSplitVertex(ref BinarySearchTree<StatusNode> tree, Geometry.Vertex v, ICollection<FaceHandle> newFaces)
         {
             UpdateKey(tree, v);
             //Optimization: Resort the try by balancing it once (only if "FindLargestSamllerThan()" is called)
@@ -392,7 +384,7 @@ namespace Fusee.Jometri.Triangulate
             tree.InsertNode(ref _root, ei);
         }
 
-        private void HandleMergeVertex(ref BinarySearchTree<StatusNode> tree, Geometry.Vertex v, IEnumerable<HalfEdgeHandle> faceHalfEdges, ICollection<FaceHandle> newFaces)
+        private static void HandleMergeVertex(ref BinarySearchTree<StatusNode> tree, Geometry.Vertex v, IEnumerable<HalfEdgeHandle> faceHalfEdges, ICollection<FaceHandle> newFaces)
         {
             var he = new Geometry.HalfEdge();
             foreach (var heh in faceHalfEdges)
@@ -430,7 +422,7 @@ namespace Fusee.Jometri.Triangulate
             tree.FindNode(_root, ej).Value.IsMergeVertex = true;
         }
 
-        private void HandleRegularVertex(BinarySearchTree<StatusNode> tree, Geometry.Vertex v, IEnumerable<HalfEdgeHandle> faceHalfEdges, ICollection<FaceHandle> newFaces)
+        private static void HandleRegularVertex(BinarySearchTree<StatusNode> tree, Geometry.Vertex v, IEnumerable<HalfEdgeHandle> faceHalfEdges, ICollection<FaceHandle> newFaces)
         {
             if (IsPolygonRightOfVert(v))
             {
@@ -493,7 +485,7 @@ namespace Fusee.Jometri.Triangulate
             }
         }
 
-        private void UpdateKey(BinarySearchTree<StatusNode> tree, Geometry.Vertex eventPoint)
+        private static void UpdateKey(BinarySearchTree<StatusNode> tree, Geometry.Vertex eventPoint)
         {
             if (_root == null) return;
             foreach (var node in tree.PreorderTraverseTree(_root))
@@ -502,7 +494,7 @@ namespace Fusee.Jometri.Triangulate
             }
         }
 
-        private void ResortTree(BinarySearchTree<StatusNode> tree)
+        private static void ResortTree(BinarySearchTree<StatusNode> tree)
         {
             var nodes = tree.PreorderTraverseTree(_root);
             _root = null;
@@ -528,6 +520,7 @@ namespace Fusee.Jometri.Triangulate
         }
 
         //Can be optimized by using a self balancing binary search tree. See: http://stackoverflow.com/questions/6334514/to-find-largest-element-smaller-than-k-in-a-bst
+        //Idea: Instead of resorting the tree if key are changed (if a new event point is hit), one-time-balance it if this method is called) - possibly faster
         private static StatusNode FindLargestSmallerThan(Node<StatusNode> root, float value, BinarySearchTree<StatusNode> tree)
         {
             var preorder = tree.PreorderTraverseTree(root).ToList();
@@ -553,7 +546,7 @@ namespace Fusee.Jometri.Triangulate
 
         #region General methods
 
-        private bool IsPolygonRightOfVert(Geometry.Vertex vert)
+        private static bool IsPolygonRightOfVert(Geometry.Vertex vert)
         {
             var prevV = GetPrevVertex(vert);
             var nextV = GetNextVertex(vert);
@@ -561,39 +554,8 @@ namespace Fusee.Jometri.Triangulate
             return prevV.Coord.y > nextV.Coord.y;
         }
 
-        //face = soretedVerts[i], vert = popped
-        private bool IsPolygonRightOfVert(Geometry.Vertex popped, Geometry.Vertex current)
-        {
-            var prevV = new Geometry.Vertex();
-            var nextV = new Geometry.Vertex();
-
-            foreach (var hehP in _geometry.GetHalfEdgesStartingAtV(popped).ToList())
-            {
-                var heP = _geometry.GetHalfEdgeByHandle(hehP);
-
-                foreach (var hehC in _geometry.GetHalfEdgesStartingAtV(current).ToList())
-                {
-                    var heC = _geometry.GetHalfEdgeByHandle(hehC);
-                    if (heC.IncidentFace.Id == heP.IncidentFace.Id)
-                    {
-                        var prevVHandle = _geometry.GetHalfEdgeByHandle(heP.Prev).Origin;
-                        prevV = _geometry.GetVertexByHandle(prevVHandle);
-
-                        var nextVHandle = _geometry.GetHalfEdgeByHandle(heP.Next).Origin;
-                        nextV = _geometry.GetVertexByHandle(nextVHandle);
-
-                        break;
-                    }
-                }
-            }
-
-            if (prevV.Handle.Id == 0 || nextV.Handle.Id == 0)
-                throw new ArgumentException("prev or next vert not defined!");
-
-            return prevV.Coord.y > nextV.Coord.y;
-        }
-
-        //Vertices need to be reduced to 2D. Can be optimized by implementing a priority queue data structure an use it insted of sorting a list
+        //Vertices need to be reduced to 2D.
+        //Can be optimized by implementing a priority queue data structure and use it insted of sorting a list
         private static IList<Geometry.Vertex> GetSortedVertices(IEnumerable<Geometry.Vertex> unsorted)
         {
             var sorted = new List<Geometry.Vertex>();
@@ -611,7 +573,7 @@ namespace Fusee.Jometri.Triangulate
             return sorted;
         }
 
-        private void TestVertexType(Geometry.Vertex vert, FaceHandle faceHandle, ICollection<FaceHandle> newFaces)
+        private static void TestVertexType(Geometry.Vertex vert, FaceHandle faceHandle, ICollection<FaceHandle> newFaces)
         {
             var heStartingAtFace = _geometry.GetHalfEdgesStartingAtV(vert).ToList();
             var incidentHalfEdge = new Geometry.HalfEdge();
@@ -664,7 +626,7 @@ namespace Fusee.Jometri.Triangulate
             }
         }
 
-        private void TestVertexType(Geometry.Vertex vert, FaceHandle faceHandle)
+        private static void TestVertexType(Geometry.Vertex vert, FaceHandle faceHandle)
         {
             var heStartingAtFace = _geometry.GetHalfEdgesStartingAtV(vert).ToList();
 
@@ -710,7 +672,7 @@ namespace Fusee.Jometri.Triangulate
             }
         }
 
-        private Geometry.Vertex GetNextVertex(Geometry.Vertex current)
+        private static Geometry.Vertex GetNextVertex(Geometry.Vertex current)
         {
             var currentHe = _geometry.GetHalfEdgeByHandle(current.IncidentHalfEdge);
             var nextHe = _geometry.GetHalfEdgeByHandle(currentHe.Next);
@@ -718,7 +680,7 @@ namespace Fusee.Jometri.Triangulate
             return _geometry.GetVertexByHandle(nextHe.Origin);
         }
 
-        private Geometry.Vertex GetPrevVertex(Geometry.Vertex current)
+        private static Geometry.Vertex GetPrevVertex(Geometry.Vertex current)
         {
             var currentHe = _geometry.GetHalfEdgeByHandle(current.IncidentHalfEdge);
             var prevHe = _geometry.GetHalfEdgeByHandle(currentHe.Prev);
@@ -728,7 +690,7 @@ namespace Fusee.Jometri.Triangulate
 
         //(Obsolete) See: Antionio, Franklin - Faster line intersection (1992)
         //Assumption: z component of float3 is always 0
-        private bool AreLinesIntersecting(float3 p1, float3 p2, float3 p3, float3 p4)
+        private static bool AreLinesIntersecting(float3 p1, float3 p2, float3 p3, float3 p4)
         {
             var a = p2 - p1;
             var b = p3 - p4;

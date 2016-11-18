@@ -46,13 +46,13 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Triangulate\StatusNode.cs" />
-    <Compile Include="Triangulate\Triangulation.cs" />
+    <Compile Include="Triangulation\StatusNode.cs" />
+    <Compile Include="Triangulation\Triangulate.cs" />
     <Compile Include="DCEL\Exceptions.cs" />
     <Compile Include="DCEL\Geometry.cs" />
     <Compile Include="DCEL\Handles.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Triangulate\VertexType.cs" />
+    <Compile Include="Triangulation\VertexType.cs" />
     <Compile Include="Utility.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />

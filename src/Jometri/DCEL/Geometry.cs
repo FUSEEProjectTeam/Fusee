@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using Fusee.Base.Core;
 using Fusee.Jometri.Triangulate;
+using Fusee.Jometri.Triangulation;
 using Fusee.Math.Core;
 
 namespace Fusee.Jometri.DCEL
 {
     /// <summary>
-    /// Stores geometry in a DCEL (doubly conneted edge list).
+    /// Geometry, stored in a DCEL (doubly conneted edge list).
     /// </summary>
     public class Geometry
     {
@@ -33,12 +34,10 @@ namespace Fusee.Jometri.DCEL
         private readonly List<HalfEdge> _halfEdges;
         private readonly List<Face> _faces;
 
-        private Triangulation _tri;
-
         #endregion
 
         /// <summary>
-        /// Stores geometry in a DCEL (doubly conneted edge list).
+        /// Geometry, stored in a DCEL (doubly conneted edge list).
         /// </summary>
         /// <param name="outlines">A collection of the geometrys' outlines, each containing the geometric information as a list of float3 in ccw order</param>
         /// <param name="triangulate">If triangulate is set to true, the created geometry will be triangulated</param>
@@ -55,7 +54,7 @@ namespace Fusee.Jometri.DCEL
             CreateHalfEdgesForGeometry(outlines);
 
             if (triangulate)
-                _tri = new Triangulation(this);
+                this.Triangulate();
         }
 
         #region Structs
@@ -167,9 +166,12 @@ namespace Fusee.Jometri.DCEL
             return holes;
         }
 
+        ////Vertices need to be reduced to 2D
         //see Akenine-Möller, Tomas; Haines, Eric; Hoffman, Naty (2016): Real-Time Rendering, p. 754
         private bool IsPointInPolygon(FaceHandle face, Vertex v)
         {
+            //TODO: Reduce vertices of face to 2D (float3.Reduce2D)
+
             var inside = false;
             var faceVerts = GetFaceVertices(face).ToList();
 

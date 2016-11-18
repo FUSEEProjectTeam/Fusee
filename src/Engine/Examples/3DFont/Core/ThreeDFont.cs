@@ -45,35 +45,14 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             _xForms = new List<float4x4>();
 
             _text = "Hello World!";
-            _threeDFontHelper = new ThreeDFontHelper(_text, fontLato);
+            _threeDFontHelper = new ThreeDFontHelper(_text, arial);
 
             _controlPoints = new List<float3>();
 
             var outlines = _threeDFontHelper.GetTextOutlinesWAngle(10);
             var geom = new Geometry(outlines, true);
 
-            _textMesh = new HalfEdgesToMesh(geom);
-
-            var test = new List<Geometry.Vertex>();
-
-            foreach (var f in geom.FaceHandles)
-            {
-                var zwerg = new List<Geometry.Vertex>();
-                zwerg.AddRange(geom.GetFaceVertices(f));
-                test.AddRange(zwerg);
-            }
-
-            foreach (var vertex in test)
-            {
-                _controlPoints.Add(vertex.Coord);
-            }
-
-            for (var i = 0; i < _controlPoints.Count; i++)
-            {
-                _controlPoints[i] = new float3((_controlPoints[i].x / Width) - 1.5f, _controlPoints[i].y / Height, _controlPoints[i].z);
-            }
-
-            _point = new Cube();
+            _textMesh = new HalfEdgeListToMesh(geom);
 
             var shader = RC.CreateShader(AssetStorage.Get<string>("VertShader.vert"), AssetStorage.Get<string>("FragShader.frag"));
             RC.SetShader(shader);
@@ -106,27 +85,10 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             var aspectRatio = Width / (float)Height;
             var projection = float4x4.CreatePerspectiveFieldOfView(3.141592f * 0.25f, aspectRatio, 0.01f, 20);
             var view = float4x4.CreateTranslation(0, 0, 10) * float4x4.CreateRotationY(_alpha);
+            var modelPoint = ModelXForm(new float3(-6,-1,0), float3.Zero);
 
-            /*if (_frameCount % 25 == 0 && _pointCount < _controlPoints.Count)
-            {
-                _pointCount++;
-                var point = _controlPoints[_pointCount - 1];
-                var modelPoint = ModelXForm(new float3(point.x - 3f, point.y - 1f, 0), new float3(0, 0, 0));
-                _xform = projection * view * modelPoint * float4x4.CreateScale(0.02f, 0.02f, 0.02f);
+            _xform = projection * view * modelPoint * float4x4.CreateScale(0.001f, 0.001f, 0.001f);
 
-                _pointList.Add(_point);
-                _xForms.Add(_xform);
-
-            }
-            for (var i = 0; i < _pointList.Count; i++)
-            {
-                RC.SetShaderParam(_xformParam, _xForms[i]);
-                RC.Render(_pointList[i]);
-            }*/
-
-            var point = _controlPoints[0];
-            var modelPoint = ModelXForm(new float3(point.x - 3f, point.y - 1f, 0), new float3(0, 0, 0));
-            _xform = projection * view * modelPoint * float4x4.CreateScale(0.002f, 0.002f, 0.002f);
             RC.SetShaderParam(_xformParam, _xform);
             RC.Render(_textMesh);
 
@@ -147,7 +109,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
             // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
             // Back clipping happens at 2000 (Anything further away from the camera than 2000 world units gets clipped, polygons will be cut)
-            var projection = float4x4.CreatePerspectiveFieldOfView(3.141592f * 0.25f, aspectRatio, 1, 20000);
+            var projection = float4x4.CreatePerspectiveFieldOfView(3.141592f * 0.25f, aspectRatio, 1, 30000);
             RC.Projection = projection;
         }
 

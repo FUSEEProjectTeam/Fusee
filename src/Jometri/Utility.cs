@@ -4,13 +4,15 @@ using Fusee.Math.Core;
 
 namespace Fusee.Jometri
 {
+    /// <summary>
+    /// Provides utility methodes, used in the Jometri project
+    /// </summary>
     public static class Utility
     {
         /// <summary>
         /// Reduces a vertex of a face to "2D" by calculating the face normal and rotating the face until its normal lies on z axis
         /// </summary>
         /// <param name="src">Input vertex</param>
-        /// <param name="polygon">The polygon, represented as collection of float3s, the vertex belongs to</param>
         public static float3 Reduce2D(this float3 src)
         {
             //calculate face normal - rotate face until normal lies on z axis - buffer the normal for this polygon (?)
@@ -50,6 +52,7 @@ namespace Fusee.Jometri
             }
         }
 
+        //For an explanation if this algorythm see: http://blog.element84.com/polygon-winding.html
         /// <summary>
         /// Checks whether a polygon, parallel to the xy plane, has a ccw winding.
         /// This methode does NOT support polygons parallel to the yz or xz plane!
