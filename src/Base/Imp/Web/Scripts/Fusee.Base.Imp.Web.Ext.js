@@ -282,7 +282,6 @@ JSIL.ImplementExternals("Fusee.Base.Imp.Web.FontImp",
             var rightGlyph = this._face.charToGlyph(String.fromCharCode(rightC));
 
             var kerning = this._face.getKerningValue(leftGlyph, rightGlyph);
-            console.log(kerning);
             return kerning;
         }
     );

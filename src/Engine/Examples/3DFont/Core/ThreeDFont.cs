@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-using Fusee.Base.Core;
+﻿using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Math.Core;
-using Fusee.Serialization;
 using static Fusee.Engine.Core.Input;
 using Geometry = Fusee.Jometri.DCEL.Geometry;
 
@@ -21,35 +19,21 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
         private float _pitchCube2;
 
         private string _text;
-        private List<float3> _controlPoints;
-        private Mesh _point;
-
         private Mesh _textMesh;
 
         private ThreeDFontHelper _threeDFontHelper;
-
-        private int _frameCount;
-        private int _pointCount;
-        private List<Mesh> _pointList;
-        private List<float4x4> _xForms;
 
         // Init is called on startup. 
         public override void Init()
         {
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
             var vladimir = AssetStorage.Get<Font>("VLADIMIR.TTF");
-            var arial = AssetStorage.Get<Font>("arial.ttf");
-            _frameCount = 0;
-            _pointCount = 0;
-            _pointList = new List<Mesh>();
-            _xForms = new List<float4x4>();
-
+            var gnuSerif = AssetStorage.Get<Font>("GNU-FreeSerif.ttf");
+            
             _text = "Hello World!";
-            _threeDFontHelper = new ThreeDFontHelper(_text, arial);
+            _threeDFontHelper = new ThreeDFontHelper(_text, gnuSerif);
 
-            _controlPoints = new List<float3>();
-
-            var outlines = _threeDFontHelper.GetTextOutlinesWAngle(10);
+            var outlines = _threeDFontHelper.GetTextOutlinesWAngle(30);
             var geom = new Geometry(outlines, true);
 
             _textMesh = new HalfEdgeListToMesh(geom);
@@ -66,7 +50,6 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-            _frameCount++;
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
@@ -83,7 +66,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             }
 
             var aspectRatio = Width / (float)Height;
-            var projection = float4x4.CreatePerspectiveFieldOfView(3.141592f * 0.25f, aspectRatio, 0.01f, 20);
+            var projection = float4x4.CreatePerspectiveFieldOfView(3.141592f * 0.25f, aspectRatio, 0.01f, 30000);
             var view = float4x4.CreateTranslation(0, 0, 10) * float4x4.CreateRotationY(_alpha);
             var modelPoint = ModelXForm(new float3(-6,-1,0), float3.Zero);
 
@@ -109,7 +92,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
             // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
             // Back clipping happens at 2000 (Anything further away from the camera than 2000 world units gets clipped, polygons will be cut)
-            var projection = float4x4.CreatePerspectiveFieldOfView(3.141592f * 0.25f, aspectRatio, 1, 30000);
+            var projection = float4x4.CreatePerspectiveFieldOfView(3.141592f * 0.25f, aspectRatio, 0.01f, 30000);
             RC.Projection = projection;
         }
 

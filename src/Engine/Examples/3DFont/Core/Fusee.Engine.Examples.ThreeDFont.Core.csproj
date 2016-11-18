@@ -94,11 +94,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Assets\arial.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Assets\VertShader.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -108,6 +103,11 @@
       <Project>{8ee002c1-e15c-4297-8013-5005d65e33d9}</Project>
       <Name>Fusee.Jometri</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Assets\GNU-FreeSerif.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <!-- ItemGroup>
     <Reference Include="Fusee.SerializationSerializer">

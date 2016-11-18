@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Fusee.Base.Core;
-using Fusee.Jometri.Triangulate;
 using Fusee.Jometri.Triangulation;
 using Fusee.Math.Core;
 
@@ -602,7 +601,8 @@ namespace Fusee.Jometri.DCEL
                         //Create Vertice and VertHandle
                         vertHandle.Id = VertHandles.Count + 1;
                         VertHandles.Add(vertHandle);
-                        vert = new Vertex(pointCoord) { Handle = vertHandle };
+                        vert = new Vertex(pointCoord);
+                        vert.Handle = vertHandle;
                         break;
                     }
                 }
@@ -612,7 +612,8 @@ namespace Fusee.Jometri.DCEL
                 //Create Vertices and VertHandle
                 vertHandle.Id = VertHandles.Count + 1;
                 VertHandles.Add(vertHandle);
-                vert = new Vertex(pointCoord) { Handle = vertHandle };
+                vert = new Vertex(pointCoord);
+                vert.Handle = vertHandle;
             }
             return vertHandle;
         }
