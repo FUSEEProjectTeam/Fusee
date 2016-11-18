@@ -42,11 +42,13 @@ namespace Fusee.Tools.fuConv
 
             // Evaluate and add all Lights to rootNode
             // There is a meshcount but no lightcount per node. :/
+            // TODO: Merge changes from moritzhfu first - see function below
+            /*
             foreach (var light in assimpScene.Lights)
             {
                 var currentLight = GetLight(light);
                 fuScene.Children[0].AddComponent(currentLight);
-            }
+            }*/
 
             return fuScene;
         }
@@ -115,11 +117,12 @@ namespace Fusee.Tools.fuConv
             };
         }
 
+        // TODO: Check if transform is right, or lefthanded and transform it accordingly, to match imported scene and scene display in FUSEE
         private static TransformComponent GetXForm(Matrix4x4 transform)
         {
             Vector3D scaling, translation;
             AsQuaternion rotation;
-            transform.Decompose(out scaling, out rotation, out translation);
+            transform.Decompose(out scaling, out rotation, out translation); 
             FuQuaternion fuRot = new FuQuaternion(rotation.X, rotation.Y, rotation.Z, rotation.W);
             float3 ypr = FuQuaternion.QuaternionToEuler(fuRot);
             return new TransformComponent
@@ -137,13 +140,15 @@ namespace Fusee.Tools.fuConv
                 return fuMat;
 
             // Cache miss.
-            // Check for anisotropic material and decide if material- or materialpbrComponent is needed
-            fuMat = new MaterialPBRComponent();
+            // TODO: Check for any anisotropic material and decide if material - or a materialpbrComponent is needed
+            // Annotation: As far as I know, Assimp has no ability to decode physically based materials
+            // This needs to be implmented to use the new MaterialPBRComponent
+            // fuMat = new MaterialPBRComponent();
+            fuMat = new MaterialComponent();
 
             var asMat = _assimpScene.Materials[materialIndex];
             if (asMat.HasName)
                 fuMat.Name = asMat.Name;
-            
 
             if (asMat.HasColorDiffuse || asMat.HasTextureDiffuse)
             {
@@ -163,8 +168,8 @@ namespace Fusee.Tools.fuConv
                     fuMat.Specular = new SpecularChannelContainer
                     {
                         Color = new float3(asMat.ColorSpecular.R, asMat.ColorSpecular.G, asMat.ColorSpecular.B),
-                        Shininess = asMat.Shininess + 100f,
-                        Intensity = asMat.ShininessStrength * 0.1f // <- this value is needed for Maya fbx Export, strength too strong otherwise
+                        Shininess = asMat.Shininess,
+                        Intensity = asMat.ShininessStrength // * 0.01f TODO: Play around with variables here, as these are sometimes too small, or large
                     };
                     if (asMat.HasTextureSpecular)
                     {
@@ -172,7 +177,7 @@ namespace Fusee.Tools.fuConv
                         fuMat.Specular.Mix = 1.0f;
                     }
                 }
-                // TODO: Evaluate and set roughness fresnel etc. 
+                // TODO: Evaluate and set roughness fresnel etc. for PBR Component 
             }
 
             // Add to cache
@@ -181,6 +186,7 @@ namespace Fusee.Tools.fuConv
             return fuMat;
         }
 
+        /* TODO: Merge changes from morithfu/FUSEE3D branch: feat_AdvShaderCodeBuilder to FUSEE3D develop branch, to be able to use this function
         private static LightComponent GetLight(Light light)
         {
             var asLight = light;
@@ -216,7 +222,7 @@ namespace Fusee.Tools.fuConv
                 Color = asColor,
                 Type = fuLightType
             };
-        }
+        } */
 
         private MeshComponent GetMesh(int meshIndex)
         {
@@ -263,6 +269,8 @@ namespace Fusee.Tools.fuConv
             var count = 0;
 
             // Evaluate all faces and add them all to one ushort[]
+            // TODO: This allocation is reversed (2, 1, 0) to satisfy FUSEE's rendering
+            // TODO: Change this if your vertex is culled!!
             foreach (var face in meshFaces)
             {
                 fuMeshTriangles[count] = (ushort)face.Indices[2];
@@ -274,6 +282,7 @@ namespace Fusee.Tools.fuConv
             float3 min;
             float3 max;
 
+            // TODO: Test if this method works!
             EvaluateAABB(fuMeshVerticies, out min, out max);
 
             // Create new MeshComponent
@@ -294,6 +303,7 @@ namespace Fusee.Tools.fuConv
         }
 
         // ReSharper disable once InconsistentNaming
+        // TODO: See above, test this.
         private static void EvaluateAABB(IList<float3> fuMeshVerticies, out float3 min, out float3 max)
         {
             var minVert = fuMeshVerticies[0];
