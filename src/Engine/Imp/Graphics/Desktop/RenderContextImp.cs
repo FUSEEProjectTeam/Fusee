@@ -380,6 +380,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             
             // Create a shadow texture
             GL.Ext.GenTextures(1, out textureHandle);
+            
             GL.Ext.BindTexture(TextureTarget.Texture2D, textureHandle);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter,
                 (int)TextureMinFilter.Nearest);
@@ -394,7 +395,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             // everything outside the border will be white
             var borderColor = 1.0f;
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureBorderColor, borderColor);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent32, width, height, 0,
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent16, width, height, 0,
                 OpenTK.Graphics.OpenGL.PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
 
             // Create FBO

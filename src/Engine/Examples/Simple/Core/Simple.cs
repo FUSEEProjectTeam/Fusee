@@ -72,7 +72,7 @@ namespace Fusee.Engine.Examples.Simple.Core
 #endif
 
             // Set the clear color for the backbuffer to white (100% intentsity in all color channels R, G, B, A).
-            RC.ClearColor = new float4(1, 1, 1, 1);
+            RC.ClearColor = new float4(0.2f, 0.2f, 0.2f, 1);
 
             // Load the rocket model
             _rocketScene = AssetStorage.Get<SceneContainer>("shadowBox.fus");
@@ -91,7 +91,7 @@ namespace Fusee.Engine.Examples.Simple.Core
                         Color = new float3(0.2f,0.2f,0.2f),
                         ConeAngle = 45f,
                         ConeDirection = new float3(0,1,1),
-                        Position = new float3(-10f, 10f, 10f),
+                        Position = new float3(-0.3724f, 15.34589f, 4.533697f),
                        Type = LightType.Parallel
                     },
                     new TransformComponent()
@@ -150,13 +150,13 @@ namespace Fusee.Engine.Examples.Simple.Core
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
 
-   /*        var light = _rocketScene.Children[8].GetComponent<LightComponent>();
-            light.Position = new float3(light.Position.x + Keyboard.ADAxis * 2f, light.Position.y + Keyboard.WSAxis * 2f, light.Position.z + Keyboard.UpDownAxis * 2f);
+           var light = _rocketScene.Children[1].GetComponent<LightComponent>();
+            light.Position = new float3(light.Position.x + Keyboard.ADAxis * 0.1f, light.Position.y + Keyboard.WSAxis * 0.1f, light.Position.z + Keyboard.UpDownAxis * 0.1f);
             var lightPos = light.Position;
             var lightCone = light.ConeDirection;
             lightCone.Normalize();
-            _rocketScene.Children[8].Components[0] = light;
-            var debug = _rocketScene.Children[8].Components[0] as LightComponent;*/
+            _rocketScene.Children[1].Components[0] = light;
+            var debug = _rocketScene.Children[1].Components[0] as LightComponent;
            // Diagnostics.Log($"Pos: {debug.Position}");
 
        

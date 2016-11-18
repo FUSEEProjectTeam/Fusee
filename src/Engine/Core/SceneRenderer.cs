@@ -393,6 +393,8 @@ namespace Fusee.Engine.Core
             }
         }
 
+        private float2 _rcViewportOriginalSize;
+
         public void SetContext(RenderContext rc)
         {
             if (rc == null)
@@ -401,6 +403,7 @@ namespace Fusee.Engine.Core
             if (rc != _rc)
             {
                 _rc = rc;
+                _rcViewportOriginalSize = new float2(_rc.ViewportWidth, _rc.ViewportHeight);
                 _meshMap = new Dictionary<MeshComponent, Mesh>();
                 _matMap = new Dictionary<MaterialComponent, ShaderEffect>();
                 _lightMatMap = new Dictionary<MaterialLightComponent, ShaderEffect>();
@@ -439,10 +442,12 @@ namespace Fusee.Engine.Core
                 attribute vec3 fuVertex;
 
                 uniform mat4 LightMVP;
+                uniform mat4 FUSEE_MV;
 
                 void main()
                 {
-                    gl_Position = LightMVP * vec4(fuVertex, 1.0);
+                    vec4 fuVertexMVSpace = FUSEE_MV * vec4(fuVertex,1.0);
+                    gl_Position = LightMVP * fuVertexMVSpace;
                 }";
 
         private const string ShadowMapPs = @"
@@ -601,14 +606,29 @@ namespace Fusee.Engine.Core
             }
         }
 
+        private float2 _shadowMapSize;
+  
+
+        public int ShadowMapSize
+        {
+            set
+            {
+                _shadowMapSize = new float2(value, value);
+            }
+            get { return (int) _shadowMapSize.x; }
+        }
+
         private void RenderWithShadow(RenderContext rc)
         {
 
-            SetContext(rc);
+            // ShadowMap Size 1024x1024:
+            ShadowMapSize = 1024;
 
+            SetContext(rc);
+            
             // Create ShadowTexture if none avaliable
             if (_shadowTexture == null)
-                _shadowTexture = rc.CreateWritableTexture(rc.ViewportWidth, rc.ViewportHeight, ImagePixelFormat.Depth);
+                _shadowTexture = rc.CreateWritableTexture(ShadowMapSize, ShadowMapSize, ImagePixelFormat.Depth);
 
             if (_shadowPassShaderEffect == null)
                 CreateRenderShadowMapEffect(rc);
@@ -856,7 +876,7 @@ namespace Fusee.Engine.Core
                 if (_currentRenderPass == 0)
                 {
                     // TODO: Switch hardcoded shader to effect?
-                    RenderShadowMapPass(rm);
+                    RenderShadowMapPass(rm, effect);
                 }
                 else
                 {
@@ -999,49 +1019,66 @@ namespace Fusee.Engine.Core
 
         }
 
-        private void RenderShadowMapPass(Mesh rm)
+        CollapsingStateStack<float4x4> _shadowMVPMatrices = new CollapsingStateStack<float4x4>();
+
+        private float4x4 depthMVP = float4x4.Zero;
+
+        private void RenderShadowMapPass(Mesh rm, ShaderEffect effect)
         {
            // if(_shadowPassShaderEffect == null) return;
             if(AllLightResults.Count == 0) return;
-            
-            var lightPos = AllLightResults[0].Position;
-            var lightCone = AllLightResults[0].ConeDirection;
-            //lightCone.Normalize();
 
-            var depthViewMatrix = float4x4.LookAt(lightPos.x, lightPos.y, lightPos.z, 0, 0, 0, 0, 1, 0);
-            var scale = float4x4.CreateScale(0.9f);
-            var depthModelMatrix = scale * _state.Model;
-            var aspectRatio = _rc.ViewportWidth / (float)_rc.ViewportHeight;
-            var projection = float4x4.CreateOrthographic(100, 100, 0.1f, 35f);
-            _depthMVP = projection *  depthViewMatrix * depthModelMatrix;
-            
+
+            _rc.Viewport(0, 0, ShadowMapSize, ShadowMapSize);
+
+            var lightPos = AllLightResults[0].Position;
+            var lightCone = AllLightResults[0].OriginalConeDirection;
+            //lightCone.Normalize();
+            var target = lightCone;
+            var depthViewMatrix = float4x4.LookAt(lightPos.x, lightPos.y, lightPos.z, target.x, target.y, target.z, 0, 1, 0);
+                var scale = float4x4.CreateScale(1.0f);
+                var depthModelMatrix = scale;
+                var aspectRatio = _rc.ViewportWidth / (float)_rc.ViewportHeight;
+                var projection = float4x4.CreateOrthographic(50, 50, -40f, 50f);
+                var lightModelView = depthViewMatrix * depthModelMatrix;
+                var invView = float4x4.Invert(_view); // this is nescessary because we are calculating everything in ModelView Space 
+                                                     // and with additional view, the shadow would move with camera!
+                _depthMVP = projection * lightModelView * invView;
+
             _shadowPassShaderEffect.SetEffectParam("LightMVP", _depthMVP);
           
             _shadowPassShaderEffect.RenderMesh(rm);
-
+       
         }
 
         private void RenderNormalShadowPass(Mesh rm, ShaderEffect effect)
         {
             //  if (rm.N != "cube") return;
             if(effect._rc.CurrentShader == null) return;
-          
 
-            var lightPos = AllLightResults[0].Position;
+            // reset Viewport
+            _rc.Viewport(0, 0, (int)_rcViewportOriginalSize.x, (int)_rcViewportOriginalSize.y);
+
+       /*     var lightPos = AllLightResults[0].PositionWorldSpace;
             var lightCone = AllLightResults[0].ConeDirection;
             //lightCone.Normalize();
-
-            var depthViewMatrix = float4x4.LookAt(lightPos.x, lightPos.y, lightPos.z, 0, 0, 0, 0, 1, 0);
-            var scale = float4x4.CreateScale(0.9f);
-            var depthModelMatrix = scale * _state.Model;
+            var target = lightCone;
+            var depthViewMatrix = float4x4.LookAt(lightPos.x, lightPos.y, lightPos.z, target.x, target.y, target.z, 0, 1, 0);
+            var scale = float4x4.CreateScale(1.0f);
+            var depthModelMatrix = scale;
             var aspectRatio = _rc.ViewportWidth / (float)_rc.ViewportHeight;
-            var projection = float4x4.CreateOrthographic(100, 100, 0.1f, 35f);
-            _depthMVP = projection *  depthViewMatrix * depthModelMatrix;
-            
+            var projection = float4x4.CreateOrthographic(50, 50, -40f, 50f);
+            var lightModelView = depthViewMatrix * depthModelMatrix;
+            var invView = float4x4.Invert(_view);
+            _depthMVP = projection * lightModelView * invView; */
+
+
 
             var handleLight = effect._rc.GetShaderParam(effect._rc.CurrentShader, "shadowMVP");
             if (handleLight != null)
                 effect._rc.SetShaderParam(handleLight, _depthMVP);
+
+         
 
             var handle = effect._rc.GetShaderParam(effect._rc.CurrentShader, "firstPassTex");
             if (handle != null)

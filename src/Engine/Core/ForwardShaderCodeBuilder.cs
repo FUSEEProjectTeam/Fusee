@@ -117,7 +117,7 @@ namespace Fusee.Engine.Core
             if (_hasNormals)
                 vs.Append("  uniform mat4 FUSEE_ITMV;\n");
 
-            if (_hasSpecular)
+          //  if (_hasSpecular)
                 vs.Append("  uniform mat4 FUSEE_IMV;\n");
 
             if (_hasWeightMap)
@@ -210,7 +210,7 @@ namespace Fusee.Engine.Core
 
             // needed for lightcalculation
             vs.Append("    surfacePos =  FUSEE_MV * vec4(fuVertex, 1.0); \n");
-            vs.Append("    shadowLight =  shadowMVP * vec4(fuVertex, 1.0); \n");
+            vs.Append("    shadowLight = shadowMVP * surfacePos; \n");
             vs.Append("  }\n\n");
         }
 
@@ -241,7 +241,7 @@ namespace Fusee.Engine.Core
             ps.Append("  varying vec3 vViewDir;\n");
 
 
-            if (_hasNormals)
+            if (_hasNormals) 
                 ps.Append("  varying vec3 vMVNormal;\n");
 
             if (_hasUVs)
@@ -255,18 +255,19 @@ namespace Fusee.Engine.Core
 
             ps.Append("\n varying vec4 shadowLight; \n");
 
-
+            ps.Append("\n varying vec4 modelSpace; \n");
 
             string calcshadow = @"
                     float CalcShadowFactor(vec4 fragPosLightSpace)
                 {
-                
-                         // perform perspective divide for ortographic!
-            vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+
+            // perform perspective divide for ortographic!            
+             vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
             projCoords = projCoords * 0.5 + 0.5; // map to [0,1]
             //float bias =  max(0.0005 * (1.0 - NoL), 0.001);  // bias to prevent shadow acne
+
             float currentDepth = projCoords.z;
-float pcfDepth = texture2D(firstPassTex, projCoords.xy).r; 
+            float pcfDepth = texture2D(firstPassTex, projCoords.xy).r;
             float shadow = 0.0;
 /*
             // Percentage closer filtering[Currently error with webgl - desktop needs ivec, web expects float for textureSize()]
@@ -286,17 +287,17 @@ float pcfDepth = texture2D(firstPassTex, projCoords.xy).r;
 
 
 
-            if (projCoords.z > 1.0)
-                shadow = 0.0;
+           
 */
-            shadow = currentDepth > pcfDepth ? 1.0 : 0.0;
+            shadow = currentDepth - 0.0001 > pcfDepth ? 1.0 : 0.0;         
 
+ if (projCoords.z > 1.0)
+                shadow = 0.0;
+        
+           // if( distanceToLight < pcfDepth )
+           //     shadow = 1.0;
             return shadow; 
-
-
-
-
-                }";
+      }";
 
             /*
 
@@ -532,6 +533,7 @@ float pcfDepth = texture2D(firstPassTex, projCoords.xy).r;
             outputString += "vec2 o_texcoords = vUV;\n";
             outputString += "\n";
             outputString += "\n";
+            outputString += "float shadowFactor = CalcShadowFactor(shadowLight); \n";
             outputString += "vec3 L = o_toLight;\n";
             outputString += "vec3 V = o_toCamera;\n";
             outputString += "vec3 N = o_normal;\n";
@@ -550,7 +552,7 @@ float pcfDepth = texture2D(firstPassTex, projCoords.xy).r;
             else
                 outputString += $"vec3 diffuseColor = {DiffuseColorName};\n";
             outputString += "\n";
-            outputString += "float shadowFactor = CalcShadowFactor(shadowLight);";
+
             outputString += "\n";
 
             return outputString;
@@ -563,7 +565,7 @@ float pcfDepth = texture2D(firstPassTex, projCoords.xy).r;
         private static string ParallelLightCalculation()
         {
             var outputString = "\n";
-            outputString += "       result = Iamb +  (1.0-shadowFactor) *  (Idif + Ispe);\n";
+            outputString += "       result = Iamb + (1.0-shadowFactor) *  (Idif + Ispe);\n";
             return outputString;
         }
 
@@ -742,7 +744,7 @@ float pcfDepth = texture2D(firstPassTex, projCoords.xy).r;
                           "allLights[0].attenuation, allLights[0].ambientCoefficient, allLights[0].coneAngle, allLights[0].lightType);\n");
                 vs.Append("    }\n");
                 vs.Append($"    {GammaCorrection()}\n");
-            
+                vs.Append("float shadowFactor = CalcShadowFactor(shadowLight); \n");
                 vs.Append("    gl_FragColor = vec4(final_light,1.0);\n");
                 //vs.Append("    gl_FragColor = vec4(vec3(1.0,0.0,0.0),1.0);\n");
                 vs.Append("}\n");
