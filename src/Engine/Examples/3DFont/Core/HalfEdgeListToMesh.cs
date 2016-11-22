@@ -24,7 +24,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
         }
 
         //geometry has to be trinagulated
-        private void ConvertToMesh(Geometry geometry, out float3[] vertices, out ushort[] triangles, out List<float3> normals)
+        private static void ConvertToMesh(Geometry geometry, out float3[] vertices, out ushort[] triangles, out List<float3> normals)
         {
             var triangleCount = geometry.FaceHandles.Count;
             var vertCount = triangleCount * 3;

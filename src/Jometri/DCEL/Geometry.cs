@@ -191,51 +191,18 @@ namespace Fusee.Jometri.DCEL
 
         #region public Methods
 
-        private Dictionary<HalfEdgeHandle, List<HalfEdge>> GetHoles(Face face)
-        {
-            var holes = new Dictionary<HalfEdgeHandle, List<HalfEdge>>();
-
-            foreach (var he in face.InnerHalfEdges)
-            {
-                holes.Add(he, GetEdgeLoop(he).ToList());
-            }
-
-            return holes;
-        }
-
-        ////Vertices need to be reduced to 2D
-        //see Akenine-Möller, Tomas; Haines, Eric; Hoffman, Naty (2016): Real-Time Rendering, p. 754
-        private bool IsPointInPolygon(FaceHandle face, Vertex v)
-        {
-            //TODO: Reduce vertices of face to 2D (float3.Reduce2D)
-
-            var inside = false;
-            var faceVerts = GetFaceVertices(face).ToList();
-
-            var e0 = faceVerts.LastItem();
-
-            var y0 = e0.Coord.y >= v.Coord.y;
-
-            for (var i = 0; i < faceVerts.Count(); i++)
-            {
-                var e1 = faceVerts[i];
-                var y1 = e1.Coord.y >= v.Coord.y;
-                if (y0 != y1)
-                {
-                    if ((e1.Coord.y - v.Coord.y) * (e0.Coord.x - e1.Coord.x) >=
-                        (e1.Coord.x - v.Coord.x) * (e0.Coord.y - e1.Coord.y) == y1)
-                    {
-                        inside = !inside;
-                    }
-                }
-                y0 = y1;
-                e0 = e1;
-            }
-            return inside;
-        }
-
         /// <summary>
-        /// Inserts a pair of half edges between two vertices.
+        /// Inserts a new face between vertices of the geometry
+        /// </summary>
+        /// <param name="vertices">The vertices of the new face</param>
+        public void InsertFace(IEnumerable<VertHandle> vertices)
+        {
+            
+        }
+
+        
+        /// <summary>
+        /// Inserts a pair of half edges between two vertices of a face.
         /// </summary>
         /// <param name="p"></param>
         /// <param name="q"></param>
@@ -440,6 +407,7 @@ namespace Fusee.Jometri.DCEL
         {
             var origin = v.IncidentHalfEdge;
             var halfEdge = GetHalfEdgeByHandle(origin);
+            var originHalfEdge = halfEdge;
 
             yield return halfEdge.Handle;
 
@@ -456,7 +424,7 @@ namespace Fusee.Jometri.DCEL
                     else { halfEdge = GetHalfEdgeByHandle(halfEdge.Next); }
                 }
                 else { halfEdge = GetHalfEdgeByHandle(halfEdge.Next); }
-            } while (halfEdge.Origin.Id != origin.Id);
+            } while (halfEdge.Origin.Id != originHalfEdge.Origin.Id);
             
         }
 
@@ -506,45 +474,95 @@ namespace Fusee.Jometri.DCEL
             }
         }
 
-        internal void OverwriteHalfEdge(HalfEdge he)
+        internal void JoinGeometries(Geometry second)
         {
-            for (var i = 0; i < _halfEdges.Count; i++)
-            {
-                var origHe = _halfEdges[i];
-                if (origHe.Handle.Id != he.Handle.Id) continue;
-                origHe.Prev = he.Prev;
-                origHe.Next = he.Next;
-
-                _halfEdges[i] = origHe;
-                break;
-            }
-        }
-
-        internal Geometry JoinGeometries(Geometry first, Geometry second)
-        {
-            var vertStartHandle = first._vertices.Count-1;
+            var vertStartHandle = _vertices.Count;
             for (var i = 0; i < second.VertHandles.Count; i++)
             {
                 var vHandle = second.VertHandles[i];
-                vHandle.Id = i + vertStartHandle;
+                vHandle.Id = vHandle.Id + vertStartHandle;
 
-                for (var j = 0; j < _vertices.Count; j++)
+                for (var j = 0; j < second._vertices.Count; j++)
                 {
-                    var vert = _vertices[j];
+                    var vert = second._vertices[j];
                     if (vert.Handle.Id != second.VertHandles[i].Id) continue;
 
                     vert.Handle.Id = vHandle.Id;
-                    _vertices[j] = vert;
+                    vert.IncidentHalfEdge.Id = vert.IncidentHalfEdge.Id + (_halfEdges.Count);
+                    second._vertices[j] = vert;
                     break;
                 }
                 second.VertHandles[i] = vHandle;
             }
 
-            //TODO: same for faces and half edges
-            //TODO: add lists from second to first
+            var faceStartHandle = _faces.Count;
+            for (var i = 0; i < second.FaceHandles.Count; i++)
+            {
+                var fHandle = second.FaceHandles[i];
+                fHandle.Id = fHandle.Id + faceStartHandle;
 
-            return null;
+                for (var j = 0; j < second._faces.Count; j++)
+                {
+                    var face = second._faces[j];
+                    if (face.Handle.Id != second.FaceHandles[i].Id) continue;
 
+                    face.Handle.Id = fHandle.Id;
+                    face.FirstHalfEdge.Id = face.FirstHalfEdge.Id + (_halfEdges.Count);
+                    second._faces[j] = face;
+                    break;
+                }
+                second.FaceHandles[i] = fHandle;
+            }
+
+            var heStartHandle = _halfEdges.Count;
+            for (var i = 0; i < second.HalfEdgeHandles.Count; i++)
+            {
+                var heHandle = second.HalfEdgeHandles[i];
+                heHandle.Id = heHandle.Id + heStartHandle;
+
+                for (var j = 0; j < second._halfEdges.Count; j++)
+                {
+                    var he = second._halfEdges[j];
+                    if (he.Handle.Id != second.HalfEdgeHandles[i].Id) continue;
+
+
+                    he.IncidentFace.Id = he.IncidentFace.Id + (_faces.Count);
+                    he.Origin.Id = he.Origin.Id + (_vertices.Count);
+
+                    if (he.Twin.Id != 0)
+                        he.Twin.Id = he.Twin.Id + heStartHandle;
+
+                    he.Handle.Id = heHandle.Id;
+
+                    var next = he.Prev.Id;
+                    var prev = he.Next.Id;
+
+                    he.Next.Id = next + (heStartHandle);
+                    he.Prev.Id = prev + (heStartHandle);
+
+                    second._halfEdges[j] = he;
+                    break;
+                }
+                second.HalfEdgeHandles[i] = heHandle;
+            }
+
+            for (var i = 0; i < second.VertHandles.Count; i++)
+            {
+                VertHandles.Add(second.VertHandles[i]);
+                _vertices.Add(second._vertices[i]);
+            }
+
+            for (var i = 0; i < second.FaceHandles.Count; i++)
+            {
+                FaceHandles.Add(second.FaceHandles[i]);
+                _faces.Add(second._faces[i]);
+            }
+
+            for (var i = 0; i < second.HalfEdgeHandles.Count; i++)
+            {
+                HalfEdgeHandles.Add(second.HalfEdgeHandles[i]);
+                _halfEdges.Add(second._halfEdges[i]);
+            }
         }
 
         #endregion
@@ -712,6 +730,49 @@ namespace Fusee.Jometri.DCEL
         #endregion
 
         #region private methods concerning InsertHalfEdge
+
+        private Dictionary<HalfEdgeHandle, List<HalfEdge>> GetHoles(Face face)
+        {
+            var holes = new Dictionary<HalfEdgeHandle, List<HalfEdge>>();
+
+            foreach (var he in face.InnerHalfEdges)
+            {
+                holes.Add(he, GetEdgeLoop(he).ToList());
+            }
+
+            return holes;
+        }
+
+        ////Vertices need to be reduced to 2D
+        //see Akenine-Möller, Tomas; Haines, Eric; Hoffman, Naty (2016): Real-Time Rendering, p. 754
+        private bool IsPointInPolygon(FaceHandle face, Vertex v)
+        {
+            //TODO: Reduce vertices of face to 2D (float3.Reduce2D)
+
+            var inside = false;
+            var faceVerts = GetFaceVertices(face).ToList();
+
+            var e0 = faceVerts.LastItem();
+
+            var y0 = e0.Coord.y >= v.Coord.y;
+
+            for (var i = 0; i < faceVerts.Count(); i++)
+            {
+                var e1 = faceVerts[i];
+                var y1 = e1.Coord.y >= v.Coord.y;
+                if (y0 != y1)
+                {
+                    if ((e1.Coord.y - v.Coord.y) * (e0.Coord.x - e1.Coord.x) >=
+                        (e1.Coord.x - v.Coord.x) * (e0.Coord.y - e1.Coord.y) == y1)
+                    {
+                        inside = !inside;
+                    }
+                }
+                y0 = y1;
+                e0 = e1;
+            }
+            return inside;
+        }
 
         private void AssignFaceHandle(HalfEdgeHandle halfEdge, ref Face newFace)
         {

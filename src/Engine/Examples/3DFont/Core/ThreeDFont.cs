@@ -36,7 +36,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
 
             var outlines = _threeDFontHelper.GetTextOutlinesWAngle(10);
             var geom = new Geometry(outlines, true);
-            geom.ExtrudePolygon(5);
+            geom = geom.ExtrudePolygon(200);
 
             _textMesh = new HalfEdgeListToMesh(geom);
 
