@@ -46,6 +46,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extrusion\ExtrudeTriangulated.cs" />
     <Compile Include="Triangulation\StatusNode.cs" />
     <Compile Include="Triangulation\Triangulate.cs" />
     <Compile Include="DCEL\Exceptions.cs" />

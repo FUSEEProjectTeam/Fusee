@@ -3,6 +3,7 @@ using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Math.Core;
 using static Fusee.Engine.Core.Input;
+using Fusee.Jometri.Extrusion;
 using Geometry = Fusee.Jometri.DCEL.Geometry;
 
 namespace Fusee.Engine.Examples.ThreeDFont.Core
@@ -31,10 +32,11 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             var gnuSerif = AssetStorage.Get<Font>("GNU-FreeSerif.ttf");
             
             _text = "Hello World!";
-            _threeDFontHelper = new ThreeDFontHelper(_text, gnuSerif);
+            _threeDFontHelper = new ThreeDFontHelper(_text, fontLato);
 
-            var outlines = _threeDFontHelper.GetTextOutlinesWAngle(30);
+            var outlines = _threeDFontHelper.GetTextOutlinesWAngle(10);
             var geom = new Geometry(outlines, true);
+            geom.ExtrudePolygon(5);
 
             _textMesh = new HalfEdgeListToMesh(geom);
 

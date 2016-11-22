@@ -13,15 +13,18 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
         {
             float3[] vertices;
             ushort[] triangles;
-
-            ConvertToMesh(geometry, out vertices, out triangles);
+            List<float3> normals;
+                
+            ConvertToMesh(geometry, out vertices, out triangles, out normals);
 
             Vertices = vertices;
             Triangles = triangles;
+            Normals = normals.ToArray();
+
         }
 
         //geometry has to be trinagulated
-        private void ConvertToMesh(Geometry geometry, out float3[] vertices, out ushort[] triangles)
+        private void ConvertToMesh(Geometry geometry, out float3[] vertices, out ushort[] triangles, out List<float3> normals)
         {
             var triangleCount = geometry.FaceHandles.Count;
             var vertCount = triangleCount * 3;
@@ -30,6 +33,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
 
             vertices = new float3[vertCount];
             triangles = new ushort[vertCount];
+            normals = new List<float3>();
 
             foreach (var face in geometry.FaceHandles)
             {
@@ -48,6 +52,20 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             {
                 vertices[i] = verts[i];
                 triangles[i] = (ushort)i;
+            }
+
+            for (var i = 0; i < vertices.Length; i+=3)
+            {
+                var a = vertices[i + 1] - vertices[i];
+                var b = vertices[i + 2] - vertices[i];
+
+                var cross = float3.Cross(b, a);
+                cross.Normalize();
+
+                for (var j = 0; j < 3; j++)
+                {
+                    normals.Add(cross);
+                }
             }
         }
     }

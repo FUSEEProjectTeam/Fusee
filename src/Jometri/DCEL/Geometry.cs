@@ -56,6 +56,44 @@ namespace Fusee.Jometri.DCEL
                 this.Triangulate();
         }
 
+        //Copies a existing Geometry object. E.g to create a backface for an extrusion
+        internal Geometry(Geometry geom)
+        {
+            VertHandles = new List<VertHandle>();
+            foreach (var vHandle in geom.VertHandles)
+            {
+                VertHandles.Add(vHandle);
+            }
+            
+            _vertices = new List<Vertex>();
+            foreach (var vert in geom._vertices)
+            {
+                _vertices.Add(vert);
+            }
+
+            HalfEdgeHandles = new List<HalfEdgeHandle>();
+            foreach (var heHandle in geom.HalfEdgeHandles)
+            {
+                HalfEdgeHandles.Add(heHandle);
+            }
+            _halfEdges = new List<HalfEdge>();
+            foreach (var he in geom._halfEdges)
+            {
+                _halfEdges.Add(he);
+            }
+
+            FaceHandles = new List<FaceHandle>();
+            foreach (var fHandle in geom.FaceHandles)
+            {
+                FaceHandles.Add(fHandle);
+            }
+            _faces = new List<Face>();
+            foreach (var f in geom._faces)
+            {
+                _faces.Add(f);
+            }
+        }
+
         #region Structs
 
         /// <summary>
@@ -419,8 +457,7 @@ namespace Fusee.Jometri.DCEL
                 }
                 else { halfEdge = GetHalfEdgeByHandle(halfEdge.Next); }
             } while (halfEdge.Origin.Id != origin.Id);
-
-
+            
         }
 
         internal IEnumerable<HalfEdge> GetEdgeLoop(HalfEdgeHandle handle)
@@ -455,6 +492,61 @@ namespace Fusee.Jometri.DCEL
             }
             throw new HandleNotFoundException("HalfEdge with id " + faceHandle.Id + " not found!");
         }
+
+        internal void OverwriteVertexCoord(Vertex vert, float3 newCoord)
+        {
+            var handle = vert.Handle;
+            for (var i = 0; i < _vertices.Count; i++)
+            {
+                var v = _vertices[i];
+                if (v.Handle.Id != handle.Id) continue;
+                v.Coord = newCoord;
+                _vertices[i] = v;
+                break;
+            }
+        }
+
+        internal void OverwriteHalfEdge(HalfEdge he)
+        {
+            for (var i = 0; i < _halfEdges.Count; i++)
+            {
+                var origHe = _halfEdges[i];
+                if (origHe.Handle.Id != he.Handle.Id) continue;
+                origHe.Prev = he.Prev;
+                origHe.Next = he.Next;
+
+                _halfEdges[i] = origHe;
+                break;
+            }
+        }
+
+        internal Geometry JoinGeometries(Geometry first, Geometry second)
+        {
+            var vertStartHandle = first._vertices.Count-1;
+            for (var i = 0; i < second.VertHandles.Count; i++)
+            {
+                var vHandle = second.VertHandles[i];
+                vHandle.Id = i + vertStartHandle;
+
+                for (var j = 0; j < _vertices.Count; j++)
+                {
+                    var vert = _vertices[j];
+                    if (vert.Handle.Id != second.VertHandles[i].Id) continue;
+
+                    vert.Handle.Id = vHandle.Id;
+                    _vertices[j] = vert;
+                    break;
+                }
+                second.VertHandles[i] = vHandle;
+            }
+
+            //TODO: same for faces and half edges
+            //TODO: add lists from second to first
+
+            return null;
+
+        }
+
         #endregion
 
         #region private Methods for initialisation
