@@ -564,8 +564,8 @@ namespace Fusee.Engine.Core
             var effectPass = new EffectPassDeclaration[1];
             effectPass[0] = new EffectPassDeclaration
             {
-                PS = DeferredShaderHelper.DeferredPassPixelShader(),
                 VS = DeferredShaderHelper.DeferredPassVertexShader(),
+                PS = DeferredShaderHelper.DeferredPassPixelShader(),
                 StateSet = new RenderStateSet()
             };
             var effectParameter = new List<EffectParameterDeclaration>
@@ -584,8 +584,8 @@ namespace Fusee.Engine.Core
             var effectPass = new EffectPassDeclaration[1];
             effectPass[0] = new EffectPassDeclaration
             {
-                PS = DeferredShaderHelper.DeferredDrawPassPixelShader(),
                 VS = DeferredShaderHelper.DeferredDrawPassVertexShader(),
+                PS = DeferredShaderHelper.DeferredDrawPassPixelShader(),
                 StateSet = new RenderStateSet()
             };
 
@@ -790,7 +790,7 @@ namespace Fusee.Engine.Core
         private void RenderDeferredPass(Mesh rm, ShaderEffect effect) {
 
             var diffuse = float3.One;
-            if (effect._rc.CurrentShader != null)
+            if (effect._rc.CurrentShader != null && effect.GetEffectParam("DiffuseColor") != null)
                  diffuse = (float3) effect.GetEffectParam("DiffuseColor");
 
             var specularIntensity = 1.0f;

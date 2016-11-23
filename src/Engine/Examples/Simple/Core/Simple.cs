@@ -75,7 +75,7 @@ namespace Fusee.Engine.Examples.Simple.Core
             RC.ClearColor = new float4(0.2f, 0.2f, 0.2f, 1);
 
             // Load the rocket model
-            _rocketScene = AssetStorage.Get<SceneContainer>("shadowBox.fus");
+            _rocketScene = AssetStorage.Get<SceneContainer>("WuggyLand.fus");
 
            
             _rocketScene.Children.Add(new SceneNodeContainer
@@ -150,18 +150,18 @@ namespace Fusee.Engine.Examples.Simple.Core
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
 
-           var light = _rocketScene.Children[1].GetComponent<LightComponent>();
+            /*var light = _rocketScene.Children[1].GetComponent<LightComponent>();
             light.Position = new float3(light.Position.x + Keyboard.ADAxis * 0.1f, light.Position.y + Keyboard.WSAxis * 0.1f, light.Position.z + Keyboard.UpDownAxis * 0.1f);
             var lightPos = light.Position;
             var lightCone = light.ConeDirection;
             lightCone.Normalize();
             _rocketScene.Children[1].Components[0] = light;
             var debug = _rocketScene.Children[1].Components[0] as LightComponent;
-           // Diagnostics.Log($"Pos: {debug.Position}");
+           // Diagnostics.Log($"Pos: {debug.Position}");*/
 
             // Create the camera matrix and set it as the current ModelView transformation
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-            var mtxCam = float4x4.LookAt(0, 20, -3, 0, -100, 0, 0, 1, 0);
+            var mtxCam = float4x4.LookAt(0, 20, -3000, 0, -100, 0, 0, 1, 0);
             var mtxScale = float4x4.CreateScale(1f);
 
               RC.ModelView = mtxCam * mtxRot * mtxScale; 
