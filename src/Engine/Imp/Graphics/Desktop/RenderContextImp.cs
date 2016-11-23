@@ -310,32 +310,33 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.GenTextures(1, out gBufferPositionTextureHandle);
             GL.BindTexture(TextureTarget.Texture2D, gBufferPositionTextureHandle);
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb16f, width, height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgb, PixelType.Float, IntPtr.Zero);
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, gBufferPositionTextureHandle, 0);
+
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter,
                 (int)TextureMinFilter.Nearest);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter,
                 (int)TextureMagFilter.Nearest);
-            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, gBufferPositionTextureHandle, 0);
 
 
             // Normal color buffer - 16 or 32 bit float per component - high precision texture
             GL.GenTextures(1, out gBufferNormalTextureHandle);
             GL.BindTexture(TextureTarget.Texture2D, gBufferNormalTextureHandle);
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb16f, width, height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgb, PixelType.Float, IntPtr.Zero);
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment1, TextureTarget.Texture2D, gBufferNormalTextureHandle, 0);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter,
-                (int)TextureMinFilter.Nearest);
+              (int)TextureMinFilter.Nearest);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter,
                 (int)TextureMagFilter.Nearest);
-            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment1, TextureTarget.Texture2D, gBufferNormalTextureHandle, 0);
 
             // Color + Specular color buffer - default 8bit texture is enough
             GL.GenTextures(1, out gBufferAlbedoSpecTextureHandle);
             GL.BindTexture(TextureTarget.Texture2D, gBufferAlbedoSpecTextureHandle);
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, width, height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment2, TextureTarget.Texture2D, gBufferAlbedoSpecTextureHandle, 0);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter,
-                (int)TextureMinFilter.Nearest);
+               (int)TextureMinFilter.Nearest);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter,
                 (int)TextureMagFilter.Nearest);
-            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment2, TextureTarget.Texture2D, gBufferAlbedoSpecTextureHandle, 0);
 
             // Tell OpenGL which color attachments we will use (of this framebuffer) for rendering:
             var attachements = new[]
@@ -344,15 +345,14 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 DrawBuffersEnum.ColorAttachment2
             };
 
-            GL.DrawBuffers(attachements.Length, attachements);
-
             // Create and attach depth buffer (renderbuffer)
             GL.GenRenderbuffers(1, out gDepthRenderbufferHandle);
             GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, gDepthRenderbufferHandle);
-            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent16, width, height);
+            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent, width, height);
             GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, gDepthRenderbufferHandle);
-            
-           
+
+            GL.DrawBuffers(attachements.Length, attachements);
+
             // check if complete
             if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
             {
@@ -370,7 +370,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
                 textureWidth = width,
                 textureHeight = height
- 
             };
         }
 
@@ -1852,12 +1851,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             // If texture is null bind frambuffer 0, this is the main screen
             if (textureImp == null)
             {
-                //GL.CullFace(CullFaceMode.Back);
+                GL.CullFace(CullFaceMode.Back);
           
                 // Enable writes to the color buffer
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
                 GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
-
+                GL.DrawBuffer(DrawBufferMode.Front);
+                GL.ReadBuffer(ReadBufferMode.Front);
 
             }
             // FBO Handle is set -> ShadowMap
@@ -1873,31 +1873,17 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 Clear(ClearFlags.Depth);
             }
             // GBufferHandle is set -> Bind GBuffer
-            else if (textureImp.gBufferHandle != -1 && !deferredNormalPass)
+            else if (textureImp.gBufferHandle != -1)
             {
-                var wireframe = false;
-
-                GL.PolygonMode(MaterialFace.FrontAndBack, wireframe ? PolygonMode.Line : PolygonMode.Fill);
-
                 // Bind buffer - now we are rendering to this buffer!
                 // Framebuffer or DrawFrameBuffer as Target?
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, textureImp.gBufferHandle);
-
-                // GL.DepthMask(true);
-
+              
                 // Clear Depth & Color for GBuffer!
                 Clear(ClearFlags.Depth | ClearFlags.Color);
-                
-               // GL.Enable(EnableCap.DepthTest);
-               // GL.Disable(EnableCap.Blend);
             }
             else if (textureImp.gBufferHandle != -1 && deferredNormalPass)
             {
-
-                // TODO: is this affecting shadowpass?
-                //GL.DepthMask(false);
-                //GL.Disable(EnableCap.DepthTest);
-
                 // Copy depth to normal buffer
                 GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, textureImp.gBufferHandle);
                 GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0); // Write to default framebuffer

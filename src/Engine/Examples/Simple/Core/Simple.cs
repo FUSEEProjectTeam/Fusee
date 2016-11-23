@@ -1,4 +1,4 @@
-﻿//#define GUI_SIMPLE
+﻿#define GUI_SIMPLE
 
 using System;
 using System.Collections.Generic;

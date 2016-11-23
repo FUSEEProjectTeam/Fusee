@@ -37,7 +37,7 @@ namespace Fusee.Engine.Core
 
         public static string GlslVersion()
         {
-            return "#version 150";
+            return "#version 130";
         }
 
         public static string OrtographicShadowMapMvVertexShader()
@@ -94,9 +94,9 @@ namespace Fusee.Engine.Core
         public static string DeferredPassPixelShader()
         {
             return GlslVersion() + @"
-                /*#ifdef GL_ES
+                #ifdef GL_ES
                     precision highp float
-                #endif*/
+                #endif      
                    
                 varying vec2 uv;
                 varying vec3 normal;
@@ -113,7 +113,7 @@ namespace Fusee.Engine.Core
                 gl_FragData[1] = vec4(normal,1.0);
                 // And the diffuse per-fragment color   
                 // Store specular intensity in gAlbedoSpec's alpha component                         
-                gl_FragData[2] = vec4(DiffuseColor,  SpecularIntensity);
+                gl_FragData[2] = vec4(DiffuseColor,  SpecularIntensity);                
           }";
         }
 
@@ -138,8 +138,7 @@ namespace Fusee.Engine.Core
         public static string DeferredDrawPassPixelShader()
         {
             return GlslVersion() + @"
-
-                 #ifdef GL_ES
+                #ifdef GL_ES
                     precision highp float
                 #endif       
                 
