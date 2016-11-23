@@ -469,7 +469,6 @@ namespace Fusee.Engine.Core
         private void RenderDeferredPasses(RenderContext rc)
         {
             SetContext(rc);
-
             
             if (DeferredShaderHelper.GBufferTexture == null)
                 DeferredShaderHelper.GBufferTexture = rc.CreateWritableTexture(rc.ViewportWidth, rc.ViewportHeight, ImagePixelFormat.GBuffer);
@@ -479,7 +478,7 @@ namespace Fusee.Engine.Core
             
             if (DeferredShaderHelper.GBufferDrawPassShaderEffect == null)
                 CreateGBufferDrawPassEffect(rc);
-
+            
             for (var i = 0; i < 2; i++)
             {
                 if (i == 0)
@@ -768,7 +767,7 @@ namespace Fusee.Engine.Core
                 }
                 else
                 {
-                    RenderNormalDeferredPass();
+                    RenderNormalDeferredPass(rm);
                 }
             }
             else
@@ -787,21 +786,21 @@ namespace Fusee.Engine.Core
             }
         }
 
-        private void RenderDeferredPass(Mesh rm, ShaderEffect effect) {
+        private static void RenderDeferredPass(Mesh rm, ShaderEffect effect) {
 
-            var diffuse = float3.One;
+        /*    var diffuse = float3.One;
             if (effect._rc.CurrentShader != null && effect.GetEffectParam("DiffuseColor") != null)
                  diffuse = (float3) effect.GetEffectParam("DiffuseColor");
 
             var specularIntensity = 1.0f;
             if (effect._rc.CurrentShader != null && effect.GetEffectParam("SpecularIntensity") != null)
-                specularIntensity = (float)effect.GetEffectParam("SpecularIntensity");
+                specularIntensity = (float)effect.GetEffectParam("SpecularIntensity");*/
 
-            DeferredShaderHelper.GBufferPassShaderEffect.SetEffectParam("DiffuseColor", diffuse);
+            DeferredShaderHelper.GBufferPassShaderEffect.SetEffectParam("DiffuseColor", float3.One);
             DeferredShaderHelper.GBufferPassShaderEffect.RenderMesh(rm);
         }
 
-        private static void RenderNormalDeferredPass() {
+        private static void RenderNormalDeferredPass(Mesh rm) {
             
             if(DeferredShaderHelper.GBufferDrawPassShaderEffect == null) return;
          
@@ -821,8 +820,9 @@ namespace Fusee.Engine.Core
                 var gDepth = DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.CurrentShader.GetShaderParam("gDepth");
                 if (gDepth != null)
                     DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.SetShaderParamTexture(gDepth, DeferredShaderHelper.GBufferTexture, GBufferHandle.gDepthHandle);
-
-            DeferredShaderHelper.GBufferDrawPassShaderEffect.RenderMesh(DeferredShaderHelper.DeferredFullscreenQuad());
+                
+                // This DeferredFullscreenQuad lets FUSEE crash!
+                DeferredShaderHelper.GBufferDrawPassShaderEffect.RenderMesh(DeferredShaderHelper.DeferredFullscreenQuad());
 
 
              /*for (var i = 0; i < _lightComponents.Count; i++)

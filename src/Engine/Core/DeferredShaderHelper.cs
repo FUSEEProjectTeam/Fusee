@@ -1,5 +1,6 @@
 ﻿
 using Fusee.Engine.Common;
+using Fusee.Engine.Imp.Graphics.Web;
 using Fusee.Math.Core;
 
 namespace Fusee.Engine.Core
@@ -13,6 +14,8 @@ namespace Fusee.Engine.Core
         public static ShaderEffect GBufferDrawPassShaderEffect = null;
         public static ITexture ShadowTexture = null;
         public static ITexture GBufferTexture = null;
+
+        public static Mesh Quad = new FullscreenQuad();
 
         // ReSharper disable once InconsistentNaming
         public static float4x4 ShadowMapMVP { private set; get; } = float4x4.Identity;
@@ -165,54 +168,57 @@ namespace Fusee.Engine.Core
 
         public static Mesh DeferredFullscreenQuad()
         {
-            // This Mesh is a quad on screen and is used for displaying the second aka "normal" Renderpath during deferred rendering:
-            return new Mesh
+            return Quad;
+        }
+    }
+
+    internal class FullscreenQuad : Mesh
+    {
+        // This Mesh is a quad on screen and is used for displaying the second aka "normal" Renderpath during deferred rendering:
+        public FullscreenQuad()
+        {
+            Vertices = new[]
             {
-                Vertices = new[]
-               {
-                       // left, down, front vertex
-                       new float3(-1, -1, 0), // 0
-                       new float3(1, -1, 0), // 1
-                       new float3(1, 1, 0),  // 2
-                       new float3(-1, 1, 0),  // 3
-                   },
-                Normals = new[]
-               {
-                       // left, down, front vertex
-                       new float3(-1,  0,  0), // 0  - belongs to left
-                       new float3( 0, -1,  0), // 1  - belongs to down
-                       new float3( 0,  0, -1), // 2  - belongs to front
-
-                       // left, up, front vertex
-                       new float3(-1,  0,  0),  // 6  - belongs to left
-                       new float3( 0,  1,  0),  // 7  - belongs to up
-                       new float3( 0,  0, -1),  // 8  - belongs to front
-
-                       // right, down, front vertex
-                       new float3( 1,  0,  0), // 12 - belongs to right
-                       new float3( 0, -1,  0), // 13 - belongs to down
-                       new float3( 0,  0, -1), // 14 - belongs to front
-
-                       // right, up, front vertex
-                       new float3( 1,  0,  0),  // 18 - belongs to right
-                       new float3( 0,  1,  0),  // 19 - belongs to up
-                       new float3( 0,  0, -1),  // 20 - belongs to front
-                   },
-                Triangles = new ushort[]
-               {
-                       0, 1, 2,
-                       2, 3, 0
-               },
-                UVs = new[]
-                {
-                        new float2(0, 0.0f), // bottom left
-                        new float2(1f, 0.0f), // bottom right
-                        new float2(1.0f, 1.0f), // top right
-                        new float2(0.0f, 1.0f) // top left
-                   }
+                // left, down, front vertex
+                new float3(-1, -1, 0), // 0
+                new float3(1, -1, 0), // 1
+                new float3(1, 1, 0), // 2
+                new float3(-1, 1, 0), // 3
             };
+            Normals = new[]
+            {
+                // left, down, front vertex
+                new float3(-1, 0, 0), // 0  - belongs to left
+                new float3(0, -1, 0), // 1  - belongs to down
+                new float3(0, 0, -1), // 2  - belongs to front
 
+                // left, up, front vertex
+                new float3(-1, 0, 0), // 6  - belongs to left
+                new float3(0, 1, 0), // 7  - belongs to up
+                new float3(0, 0, -1), // 8  - belongs to front
 
+                // right, down, front vertex
+                new float3(1, 0, 0), // 12 - belongs to right
+                new float3(0, -1, 0), // 13 - belongs to down
+                new float3(0, 0, -1), // 14 - belongs to front
+
+                // right, up, front vertex
+                new float3(1, 0, 0), // 18 - belongs to right
+                new float3(0, 1, 0), // 19 - belongs to up
+                new float3(0, 0, -1), // 20 - belongs to front
+            };
+            Triangles = new ushort[]
+            {
+                0, 1, 2,
+                2, 3, 0
+            };
+            UVs = new[]
+            {
+                new float2(0, 0.0f), // bottom left
+                new float2(1f, 0.0f), // bottom right
+                new float2(1.0f, 1.0f), // top right
+                new float2(0.0f, 1.0f) // top left
+            };
         }
     }
 }

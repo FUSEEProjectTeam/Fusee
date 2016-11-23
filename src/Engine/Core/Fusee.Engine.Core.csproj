@@ -150,6 +150,10 @@
       <Name>Fusee.Math.Core</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\Imp\Graphics\Web\Fusee.Engine.Imp.Graphics.Web.csproj">
+      <Project>{82A2D997-B7AC-41D9-A166-65FCFED2114D}</Project>
+      <Name>Fusee.Engine.Imp.Graphics.Web</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <Import Project="$(FuseeBuildRoot)\src\FuseeBuildActions.target.xml" />

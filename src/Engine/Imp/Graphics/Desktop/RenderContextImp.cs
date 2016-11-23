@@ -345,13 +345,16 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 DrawBuffersEnum.ColorAttachment2
             };
 
+            GL.DrawBuffers(attachements.Length, attachements);
+
             // Create and attach depth buffer (renderbuffer)
             GL.GenRenderbuffers(1, out gDepthRenderbufferHandle);
             GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, gDepthRenderbufferHandle);
             GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent, width, height);
             GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, gDepthRenderbufferHandle);
 
-            GL.DrawBuffers(attachements.Length, attachements);
+            // Bind normal buffer again
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 
             // check if complete
             if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
@@ -359,6 +362,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 throw new Exception($"Error creating writable Texture: {GL.GetError()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
             }
 
+      
             // Fill texture with all params
             return new Texture
             {
@@ -1852,12 +1856,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             if (textureImp == null)
             {
                 GL.CullFace(CullFaceMode.Back);
-          
+
                 // Enable writes to the color buffer
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-                GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
-                GL.DrawBuffer(DrawBufferMode.Front);
-                GL.ReadBuffer(ReadBufferMode.Front);
+                GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
 
             }
             // FBO Handle is set -> ShadowMap
@@ -1875,6 +1876,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             // GBufferHandle is set -> Bind GBuffer
             else if (textureImp.gBufferHandle != -1)
             {
+                // Clear Depth & Color for GBuffer!
+                Clear(ClearFlags.Depth | ClearFlags.Color);
+
                 // Bind buffer - now we are rendering to this buffer!
                 // Framebuffer or DrawFrameBuffer as Target?
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, textureImp.gBufferHandle);
@@ -1882,7 +1886,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 // Clear Depth & Color for GBuffer!
                 Clear(ClearFlags.Depth | ClearFlags.Color);
             }
-            else if (textureImp.gBufferHandle != -1 && deferredNormalPass)
+         /*   else if (textureImp.gBufferHandle != -1 && deferredNormalPass)
             {
                 // Copy depth to normal buffer
                 GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, textureImp.gBufferHandle);
@@ -1895,7 +1899,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 // Now we bind the standart framebuffer an can render lights width depth
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
                 GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
-            }
+            }*/
         }
 
         /// <summary>

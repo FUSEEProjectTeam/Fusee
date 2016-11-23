@@ -286,6 +286,11 @@ namespace Fusee.Engine.Imp.Graphics.Web
             throw new System.NotImplementedException();
         }
 
+        public void SetRenderTarget(ITexture texture, bool deferredNormalPass = false)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Not needed for Web because EXT_FRAMEBUFFER is not possible with WebGL (2016)
         /// </summary>
