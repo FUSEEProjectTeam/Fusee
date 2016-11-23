@@ -556,7 +556,7 @@ namespace Fusee.Engine.Core
                         };
 
             DeferredShaderHelper.ShadowPassShaderEffect = new ShaderEffect(effectPass, effectParameter);
-            DeferredShaderHelper.ShadowPassShaderEffect.AttachToContext(rc);
+            DeferredShaderHelper.ShadowPassShaderEffect.AttachToContext(_rc);
         }
 
         private static void CreateGBufferPassEffect(RenderContext rc)
@@ -578,7 +578,7 @@ namespace Fusee.Engine.Core
             DeferredShaderHelper.GBufferPassShaderEffect.AttachToContext(rc);
         }
 
-        private void CreateGBufferDrawPassEffect(RenderContext rc)
+        private static void CreateGBufferDrawPassEffect(RenderContext rc)
         {
 
             var effectPass = new EffectPassDeclaration[1];
@@ -599,7 +599,7 @@ namespace Fusee.Engine.Core
             };
 
             DeferredShaderHelper.GBufferDrawPassShaderEffect = new ShaderEffect(effectPass, effectParameter);
-            DeferredShaderHelper.GBufferDrawPassShaderEffect.AttachToContext(_rc);
+            DeferredShaderHelper.GBufferDrawPassShaderEffect.AttachToContext(rc);
         }
 
         #region Visitors
