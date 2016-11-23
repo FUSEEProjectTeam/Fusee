@@ -15,5 +15,18 @@ namespace Fusee.Jometri.DCEL
         }
     }
 
+    /// <summary>
+    /// This excaption is thrown when the given HalfEdge already exists
+    /// </summary>
+    public class DublicatedHalfEdgeException : Exception
+    {
+        /// <summary>
+        /// This excaption is thrown when the given HalfEdge already exists
+        /// </summary>
+        public DublicatedHalfEdgeException(string msg)
+        {
+        }
+    }
+
 }
 

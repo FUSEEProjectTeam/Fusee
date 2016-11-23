@@ -20,7 +20,6 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             Vertices = vertices;
             Triangles = triangles;
             Normals = normals.ToArray();
-
         }
 
         //geometry has to be trinagulated

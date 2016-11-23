@@ -1,12 +1,13 @@
-﻿using Fusee.Jometri.DCEL;
+﻿using System.Collections.Generic;
+using Fusee.Jometri.DCEL;
 using Fusee.Math.Core;
 
 namespace Fusee.Jometri.Extrusion
 {
     /// <summary>
-    /// Extrudes a trinagulated 2D geometry
+    /// Extrudes a 2D geometry
     /// </summary>
-    public static class ExtrudeTriangulated
+    public static class Extrude
     {
         //zOffset will be added to each vertex' z coordinate, if the front face is not parallel to the x-y plane we have to rotate it there first, extrude and rotate back
         /// <summary>
@@ -18,7 +19,7 @@ namespace Fusee.Jometri.Extrusion
         public static Geometry ExtrudePolygon(this Geometry geometry, int zOffset)
         {
             CreateBackface(geometry, zOffset);
-            //CreateSidefaces(geometry);
+            CreateSidefaces(geometry);
 
             return geometry;
         }
@@ -46,25 +47,33 @@ namespace Fusee.Jometri.Extrusion
 
             for (var i = 1; i <= vertCountFront; i++)
             {
-                var first = new VertHandle();
+                var faceVertices = new List<VertHandle>();
+
+                var first = geometry.VertHandles[0];
                 var second = new VertHandle();
                 var third = new VertHandle();
-
+                var fourth = new VertHandle();
                 foreach (var handle in geometry.VertHandles)
                 {
-                    if (handle.Id == i)
-                        first = handle;
-                    else if (handle.Id == i + vertCountFront)
+                    if (handle.Id == i + vertCountFront)
+                    {
                         second = handle;
-                    else if (handle.Id == i + vertCountFront + 1)
-                        third = handle;
+                        var hehSecond = geometry.GetVertexByHandle(second).IncidentHalfEdge;
+                        var heSecond = geometry.GetHalfEdgeByHandle(hehSecond);
 
-                    if(first.Id != 0 && second.Id != 0 && third.Id != 0)
-                        break;
+                        third = geometry.GetHalfEdgeByHandle(heSecond.Prev).Origin;
+                    }
+                    if (third.Id == 0) continue;
+                    fourth.Id = third.Id - vertCountFront;
+                    break;
                 }
-                
-                //geometry.InsertFace(first,second);
-                //geometry.InsertHalfEdge(first, third);
+                faceVertices.Add(first);
+                faceVertices.Add(second);
+                faceVertices.Add(third);
+                faceVertices.Add(fourth);
+
+                geometry.InsertFace(faceVertices);
+                geometry.InsertHalfEdge(first,third);
             }
         }
     }
