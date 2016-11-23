@@ -106,7 +106,7 @@ namespace Fusee.Engine.Examples.Simple.Core
             // Shadow
             //_sceneRenderer = new SceneRenderer(_rocketScene, LightningCalculationMethod.SIMPLE, true);
             // Deferred
-            _sceneRenderer = new SceneRenderer(_rocketScene, LightningCalculationMethod.SIMPLE, true, false);
+            _sceneRenderer = new SceneRenderer(_rocketScene, LightningCalculationMethod.SIMPLE, false, true);
         
          
             _rocketScene.Children[0].Children[0].Components[2].Name = "debug";
@@ -159,21 +159,10 @@ namespace Fusee.Engine.Examples.Simple.Core
             var debug = _rocketScene.Children[1].Components[0] as LightComponent;
            // Diagnostics.Log($"Pos: {debug.Position}");
 
-       
-                if (Keyboard.IsKeyDown(KeyCodes.F3))
-                    SceneRenderer.SHOWCASE = 0;
-                if (Keyboard.IsKeyDown(KeyCodes.F4))
-                    SceneRenderer.SHOWCASE = 1;
-                if (Keyboard.IsKeyDown(KeyCodes.F5))
-                    SceneRenderer.SHOWCASE = 2;
-                if (Keyboard.IsKeyDown(KeyCodes.F6))
-                    SceneRenderer.SHOWCASE = 3;
-
-
             // Create the camera matrix and set it as the current ModelView transformation
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-              var mtxCam = float4x4.LookAt(0, 20, -3, 0, -100, 0, 0, 1, 0);
-              var mtxScale = float4x4.CreateScale(1f);
+            var mtxCam = float4x4.LookAt(0, 20, -3, 0, -100, 0, 0, 1, 0);
+            var mtxScale = float4x4.CreateScale(1f);
 
               RC.ModelView = mtxCam * mtxRot * mtxScale; 
 

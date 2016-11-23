@@ -1,7 +1,4 @@
-﻿using System;
-using System.Globalization;
-using System.Text;
-using Fusee.Base.Core;
+﻿using System.Text;
 using Fusee.Serialization;
 
 namespace Fusee.Engine.Core
@@ -269,11 +266,11 @@ namespace Fusee.Engine.Core
             float currentDepth = projCoords.z;
             float pcfDepth = texture2D(firstPassTex, projCoords.xy).r;
             float shadow = 0.0;
-/*
-            // Percentage closer filtering[Currently error with webgl - desktop needs ivec, web expects float for textureSize()]
+
+       /*     // Percentage closer filtering[Currently error with webgl - desktop needs ivec, web expects float for textureSize()]
             // [http://http.developer.nvidia.com/GPUGems/gpugems_ch11.html]
-                ivec2 texelSize = textureSize(firstPassTex, 0);
-                vec2 texelSizeFloat = vec2(texelSize);
+                const float texelSizeFloat = textureSize(firstPassTex, 0);
+                //vec2 texelSizeFloat = vec2(texelSize);
                 texelSizeFloat = 1.0 / texelSizeFloat;
             for (int x = -1; x <= 1; ++x)
             {
@@ -284,19 +281,17 @@ namespace Fusee.Engine.Core
                 }
             }
             shadow /= 32.0;
-
+*/
 
 
            
-*/
-            shadow = currentDepth - 0.0001 > pcfDepth ? 1.0 : 0.0;         
 
- if (projCoords.z > 1.0)
+           shadow = currentDepth - 0.0001 > pcfDepth ? 1.0 : 0.0;         
+
+         if (projCoords.z > 1.0)
                 shadow = 0.0;
         
-           // if( distanceToLight < pcfDepth )
-           //     shadow = 1.0;
-            return shadow; 
+           return shadow; 
       }";
 
             /*
@@ -603,12 +598,15 @@ namespace Fusee.Engine.Core
             return outputString;
         }
 
+/*
         private string DiffuseEnergyRatio()
         {
             return "float diffuseEnergyRatio(float f0, vec3 n, vec3 l){\n return 1.0 - fresnel(f0, n, l);\n }\n";
         }
+*/
 
         // TODO: Cleanup & improve
+/*
         private string PhysicallyBasedShadingMethod()
         {
 
@@ -654,7 +652,9 @@ namespace Fusee.Engine.Core
 
             return outputString;
         }
+*/
 
+/*
         private static string GgxMethod()
         {
             var outputString = "\n";
@@ -677,53 +677,54 @@ namespace Fusee.Engine.Core
 
             return outputString;
         }
+*/
 
-        private static string FresnelMethod()
-        {
-            /*
-             "float fresnel(float f0, vec3 n, vec3 l){\n\
-                                    return f0 + (1.0-f0) * pow(1.0- dot(n, l), 5.0);\n\
-                                }\n";
+//        private static string FresnelMethod()
+//        {
+//            /*
+//             "float fresnel(float f0, vec3 n, vec3 l){\n\
+//                                    return f0 + (1.0-f0) * pow(1.0- dot(n, l), 5.0);\n\
+//                                }\n";
+//
+//            */
+//
+//            var outputString = "\n";
+//            outputString += "// Fresnel term, Schlick's approximation\n";
+//            outputString += "float fresnel(float f0, vec3 n, vec3 l)\n";
+//            outputString += "{\n";
+//            outputString += "   return f0 + (1.0-f0) * pow(1.0- dot(n, l), 5.0);\n";
+//            outputString += "}\n";
+//
+//            return outputString;
+//        }
 
-            */
-
-            var outputString = "\n";
-            outputString += "// Fresnel term, Schlick's approximation\n";
-            outputString += "float fresnel(float f0, vec3 n, vec3 l)\n";
-            outputString += "{\n";
-            outputString += "   return f0 + (1.0-f0) * pow(1.0- dot(n, l), 5.0);\n";
-            outputString += "}\n";
-
-            return outputString;
-        }
-
-        private static string GeometryMethod()
-        {
-
-            /*
-
-            "float geometry(vec3 n, vec3 h, vec3 v, vec3 l, float roughness){\n\
-                                                                float NdotL_clamped= max(dot(n, l), 0.0);\n\
-                                                                float NdotV_clamped= max(dot(n, v), 0.0);\n\
-                                                                float k= roughness * sqrt(2.0/3.14159265);\n\
-                                                                float one_minus_k= 1.0 -k;\n\
-                                                                return ( NdotL_clamped / (NdotL_clamped * one_minus_k + k) ) * ( NdotV_clamped / (NdotV_clamped * one_minus_k + k) );\n\
-                                                            }\n";
-
-    */
-            var outputString = "\n";
-            outputString += "// Schlick's approximation of Smith's shadow equation\n";
-            outputString += "float geometry(vec3 n, vec3 h, vec3 v, vec3 l, float roughness)\n";
-            outputString += "{\n";
-            outputString += "   float NdotL_clamped= max(dot(n, l), 0.0);\n";
-            outputString += "   float NdotV_clamped= max(dot(n, v), 0.0);\n";
-            outputString += "   float k= roughness * sqrt(2.0/3.14159265);\n";
-            outputString += "   float one_minus_k= 1.0 -k;\n";
-            outputString += "   return ( NdotL_clamped / (NdotL_clamped * one_minus_k + k) ) * ( NdotV_clamped / (NdotV_clamped * one_minus_k + k) );\n";
-            outputString += "}\n";
-
-            return outputString;
-        }
+//        private static string GeometryMethod()
+//        {
+//
+//            /*
+//
+//            "float geometry(vec3 n, vec3 h, vec3 v, vec3 l, float roughness){\n\
+//                                                                float NdotL_clamped= max(dot(n, l), 0.0);\n\
+//                                                                float NdotV_clamped= max(dot(n, v), 0.0);\n\
+//                                                                float k= roughness * sqrt(2.0/3.14159265);\n\
+//                                                                float one_minus_k= 1.0 -k;\n\
+//                                                                return ( NdotL_clamped / (NdotL_clamped * one_minus_k + k) ) * ( NdotV_clamped / (NdotV_clamped * one_minus_k + k) );\n\
+//                                                            }\n";
+//
+//    */
+//            var outputString = "\n";
+//            outputString += "// Schlick's approximation of Smith's shadow equation\n";
+//            outputString += "float geometry(vec3 n, vec3 h, vec3 v, vec3 l, float roughness)\n";
+//            outputString += "{\n";
+//            outputString += "   float NdotL_clamped= max(dot(n, l), 0.0);\n";
+//            outputString += "   float NdotV_clamped= max(dot(n, v), 0.0);\n";
+//            outputString += "   float k= roughness * sqrt(2.0/3.14159265);\n";
+//            outputString += "   float one_minus_k= 1.0 -k;\n";
+//            outputString += "   return ( NdotL_clamped / (NdotL_clamped * one_minus_k + k) ) * ( NdotV_clamped / (NdotV_clamped * one_minus_k + k) );\n";
+//            outputString += "}\n";
+//
+//            return outputString;
+//        }
 
         // ReSharper disable once InconsistentNaming
         private void PSBody(StringBuilder vs)
@@ -908,7 +909,7 @@ namespace Fusee.Engine.Core
                 else
                     vs.Append("vec3 F = F_Schlick(vec3(1.0,0.0,0.0), VdotH); // F0 is in SpecularColor\n");
 
-                var weiter = "";
+                string weiter;
                 if (_hasDiffuseTexture)
                     weiter = @"
                     // [Other diffuses have no visible change but much higher compile costs]

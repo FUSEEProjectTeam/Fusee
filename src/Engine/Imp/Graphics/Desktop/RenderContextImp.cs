@@ -349,9 +349,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             // Create and attach depth buffer (renderbuffer)
             GL.GenRenderbuffers(1, out gDepthRenderbufferHandle);
             GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, gDepthRenderbufferHandle);
-            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent, width, height);
+            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent16, width, height);
             GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, gDepthRenderbufferHandle);
-
+            
+           
             // check if complete
             if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
             {
@@ -379,9 +380,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             var fboHandle = 0;
             
             // Create a shadow texture
-            GL.Ext.GenTextures(1, out textureHandle);
+            GL.GenTextures(1, out textureHandle);
             
-            GL.Ext.BindTexture(TextureTarget.Texture2D, textureHandle);
+            GL.BindTexture(TextureTarget.Texture2D, textureHandle);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter,
                 (int)TextureMinFilter.Nearest);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter,
@@ -399,16 +400,16 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 OpenTK.Graphics.OpenGL.PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
 
             // Create FBO
-            GL.Ext.GenFramebuffers(1, out fboHandle);
-            GL.Ext.BindFramebuffer(FramebufferTarget.FramebufferExt, fboHandle);
-            GL.Ext.FramebufferTexture2D(FramebufferTarget.FramebufferExt, FramebufferAttachment.DepthAttachmentExt,
+            GL.GenFramebuffers(1, out fboHandle);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, fboHandle);
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment,
                 TextureTarget.Texture2D, textureHandle, 0);
 
             // Disable writes to the color buffer
             GL.DrawBuffer(DrawBufferMode.None);
             GL.ReadBuffer(ReadBufferMode.None);
 
-            if (GL.Ext.CheckFramebufferStatus(FramebufferTarget.FramebufferExt) != FramebufferErrorCode.FramebufferCompleteExt)
+            if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferCompleteExt)
             {
                 throw new Exception($"Error creating writable Texture: {GL.GetError()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
             }
@@ -1851,7 +1852,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             // If texture is null bind frambuffer 0, this is the main screen
             if (textureImp == null)
             {
-                GL.CullFace(CullFaceMode.Back);
+                //GL.CullFace(CullFaceMode.Back);
           
                 // Enable writes to the color buffer
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
@@ -1880,13 +1881,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
                 // Bind buffer - now we are rendering to this buffer!
                 // Framebuffer or DrawFrameBuffer as Target?
-                GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, textureImp.gBufferHandle);
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, textureImp.gBufferHandle);
 
                 // GL.DepthMask(true);
 
                 // Clear Depth & Color for GBuffer!
                 Clear(ClearFlags.Depth | ClearFlags.Color);
-
+                
                // GL.Enable(EnableCap.DepthTest);
                // GL.Disable(EnableCap.Blend);
             }
