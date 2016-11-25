@@ -288,7 +288,7 @@ namespace Fusee.Engine.Imp.Graphics.Web
 
         public void SetRenderTarget(ITexture texture, bool deferredNormalPass = false)
         {
-            throw new NotImplementedException();
+            return; // do nothing, we have only one rendertarget
         }
 
         /// <summary>
