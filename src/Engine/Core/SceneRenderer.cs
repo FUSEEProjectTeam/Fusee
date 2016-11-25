@@ -492,8 +492,8 @@ namespace Fusee.Engine.Core
                 {
                     // Set RenderTarget to Screenbuffer, but before, copy z-buffer from deferred pass to screenbuffer
                     // TODO: Evaluate if this could be written better.
-                    //rc.SetRenderTarget(DeferredShaderHelper.GBufferTexture, true);
-                    rc.SetRenderTarget(null);
+                    rc.SetRenderTarget(DeferredShaderHelper.GBufferTexture, true);
+                    //rc.SetRenderTarget(null);
                     Traverse(_sc.Children);
                     DeferredShaderHelper.CurrentRenderPass--;
                 }
@@ -536,7 +536,7 @@ namespace Fusee.Engine.Core
             }
         }
 
-        private void CreateShadowPassShaderEffect(RenderContext rc)
+        private static void CreateShadowPassShaderEffect(RenderContext rc)
         {
             var effectPass = new EffectPassDeclaration[1];
             effectPass[0] = new EffectPassDeclaration
@@ -555,7 +555,7 @@ namespace Fusee.Engine.Core
                         };
 
             DeferredShaderHelper.ShadowPassShaderEffect = new ShaderEffect(effectPass, effectParameter);
-            DeferredShaderHelper.ShadowPassShaderEffect.AttachToContext(_rc);
+            DeferredShaderHelper.ShadowPassShaderEffect.AttachToContext(rc);
         }
 
         private static void CreateGBufferPassEffect(RenderContext rc)
@@ -593,8 +593,7 @@ namespace Fusee.Engine.Core
                 new EffectParameterDeclaration { Name = "gPosition", Value = DeferredShaderHelper.GBufferTexture },
                 new EffectParameterDeclaration { Name = "gNormal", Value = DeferredShaderHelper.GBufferTexture },
                 new EffectParameterDeclaration { Name = "gAlbedoSpec", Value = DeferredShaderHelper.GBufferTexture },
-                new EffectParameterDeclaration { Name = "gDepth", Value = DeferredShaderHelper.GBufferTexture },
-                new EffectParameterDeclaration { Name = "gShowCase", Value = DeferredShaderHelper.GBufferTexture }
+                new EffectParameterDeclaration { Name = "gViewDir", Value = DeferredShaderHelper.GBufferTexture }
             };
 
             DeferredShaderHelper.GBufferDrawPassShaderEffect = new ShaderEffect(effectPass, effectParameter);
@@ -704,7 +703,7 @@ namespace Fusee.Engine.Core
                 var light = AllLightResults[i];
                 
                 // Multiply LightPosition with modelview
-                light.PositionWorldSpace = _rc.ModelView * light.PositionWorldSpace;
+                light.PositionModelViewSpace = _rc.ModelView * light.PositionWorldSpace;
 
                 // float4 is really needed
                 var lightConeDirectionFloat4 = new float4(light.ConeDirection.x, light.ConeDirection.y, light.ConeDirection.z,
@@ -767,7 +766,7 @@ namespace Fusee.Engine.Core
                 }
                 else
                 {
-                    RenderNormalDeferredPass(rm);
+                    RenderNormalDeferredPass(effect);
                 }
             }
             else
@@ -786,21 +785,22 @@ namespace Fusee.Engine.Core
             }
         }
 
-        private static void RenderDeferredPass(Mesh rm, ShaderEffect effect) {
-
-        /*    var diffuse = float3.One;
+        private static void RenderDeferredPass(Mesh rm, ShaderEffect effect)
+        {
+            var diffuse = float3.One;
             if (effect._rc.CurrentShader != null && effect.GetEffectParam("DiffuseColor") != null)
                  diffuse = (float3) effect.GetEffectParam("DiffuseColor");
 
-            var specularIntensity = 1.0f;
+         /*   var specularIntensity = 1.0f;
             if (effect._rc.CurrentShader != null && effect.GetEffectParam("SpecularIntensity") != null)
-                specularIntensity = (float)effect.GetEffectParam("SpecularIntensity");*/
-
-            DeferredShaderHelper.GBufferPassShaderEffect.SetEffectParam("DiffuseColor", float3.One);
+                specularIntensity = (float)effect.GetEffectParam("SpecularIntensity");
+                */
+            DeferredShaderHelper.GBufferPassShaderEffect.SetEffectParam("DiffuseColor", diffuse);
+        //    DeferredShaderHelper.GBufferPassShaderEffect.SetEffectParam("SpecularIntensity", specularIntensity);
             DeferredShaderHelper.GBufferPassShaderEffect.RenderMesh(rm);
         }
 
-        private static void RenderNormalDeferredPass(Mesh rm) {
+        private void RenderNormalDeferredPass(ShaderEffect effect) {
             
             if(DeferredShaderHelper.GBufferDrawPassShaderEffect == null) return;
          
@@ -817,11 +817,17 @@ namespace Fusee.Engine.Core
                 if (gAlbedoSpec != null)
                     DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.SetShaderParamTexture(gAlbedoSpec, DeferredShaderHelper.GBufferTexture, GBufferHandle.gAlbedoSpecHandle);
 
-                var gDepth = DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.CurrentShader.GetShaderParam("gDepth");
-                if (gDepth != null)
-                    DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.SetShaderParamTexture(gDepth, DeferredShaderHelper.GBufferTexture, GBufferHandle.gDepthHandle);
-                
-                // This DeferredFullscreenQuad lets FUSEE crash!
+
+                var gViewDir = DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.CurrentShader.GetShaderParam("gViewDir");
+                if (gViewDir != null)
+                    DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.SetShaderParamTexture(gViewDir, DeferredShaderHelper.GBufferTexture, GBufferHandle.gViewDir);
+
+                // Set Light(s)
+                var lightPosition = DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.CurrentShader.GetShaderParam("lightPosition");
+                if(lightPosition != null)
+                    DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.SetShaderParam(lightPosition, _rc.ModelView * AllLightResults[0].PositionWorldSpace);
+            
+
                 DeferredShaderHelper.GBufferDrawPassShaderEffect.RenderMesh(DeferredShaderHelper.DeferredFullscreenQuad());
 
 

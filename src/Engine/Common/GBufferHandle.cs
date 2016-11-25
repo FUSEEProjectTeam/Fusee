@@ -8,6 +8,6 @@
         gPositionHandle = 0,
         gNormalHandle = 1,
         gAlbedoSpecHandle = 2,
-        gDepthHandle = 3
+        gViewDir = 3
     }
 }

@@ -40,7 +40,8 @@ namespace Fusee.Engine.Core
 
         public static string GlslVersion()
         {
-            return "#version 130";
+           // return "#version 100";
+            return "";
         }
 
         public static string OrtographicShadowMapMvVertexShader()
@@ -80,15 +81,21 @@ namespace Fusee.Engine.Core
                 uniform mat4 FUSEE_MVP;
                 uniform mat4 FUSEE_ITMV;
                 uniform mat4 FUSEE_MV;
+                uniform mat4 FUSEE_IMV;
                 
                 varying vec2 uv;
                 varying vec3 normal;
                 varying vec4 surfacePos;
+                varying vec3 vViewDir;
 
                 void main()
                 {
-                    normal = normalize(mat3(FUSEE_ITMV) * fuNormal);
+                    normal =  normalize(mat3(FUSEE_ITMV) * fuNormal);
 	                uv = fuUV;
+
+                    vec3 viewPos = FUSEE_IMV[3].xyz;
+                    vViewDir = normalize(viewPos - fuVertex);    
+
 	                gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
                     surfacePos = FUSEE_MV * vec4(fuVertex, 1.0);
                 }";
@@ -104,6 +111,7 @@ namespace Fusee.Engine.Core
                 varying vec2 uv;
                 varying vec3 normal;
                 varying vec4 surfacePos;
+                varying vec3 vViewDir;
        
                 uniform vec3 DiffuseColor;
                 uniform vec3 SpecularIntensity;
@@ -116,7 +124,8 @@ namespace Fusee.Engine.Core
                 gl_FragData[1] = vec4(normal,1.0);
                 // And the diffuse per-fragment color   
                 // Store specular intensity in gAlbedoSpec's alpha component                         
-                gl_FragData[2] = vec4(DiffuseColor,  SpecularIntensity);                
+                gl_FragData[2] = vec4(DiffuseColor, 1.0);
+                gl_FragData[3] = vec4(vViewDir, 1.0);             
           }";
         }
 
@@ -138,6 +147,7 @@ namespace Fusee.Engine.Core
                 }";
         }
 
+      
         public static string DeferredDrawPassPixelShader()
         {
             return GlslVersion() + @"
@@ -151,18 +161,46 @@ namespace Fusee.Engine.Core
                 uniform sampler2D gNormal;
                 uniform sampler2D gAlbedoSpec;
                 uniform sampler2D gDepth;
-                uniform sampler2D gShowCase;
-           
+                uniform sampler2D gViewDir;
+
+                uniform vec3 lightPosition;
+            
+               float diffuseLightingTerm(vec3 N, vec3 L)
+               {
+                  // calculation as for Lambertian reflection
+                  float diffuseTerm = clamp(dot(N, L) / (length(L) * length(N)), 0.0, 1.0);
+                  return diffuseTerm;
+               }
+
+                vec3 specularLightingTerm(vec3 N, vec3 L, vec3 V) 
+                { 
+                     
+                    float specFac = 0.0;
+                    float diffFactor = dot(L, N);
+
+                    if (diffFactor > 0.0) {
+                            vec3 h = normalize(L + V);
+                            specFac = pow(max(0.0, dot(h, N)), 2.0);
+                    }
+
+                 return vec3(specFac);
+               }
+
             void main()
             { 
-                vec3 position = texture2D(gPosition, uv).rgb;
+                vec4 surfacePos = texture2D(gPosition, uv).rgba;
                 vec3 normal = texture2D(gNormal, uv).rgb;
                 vec3 albedo = texture2D(gAlbedoSpec, uv).rgb;
-                float specularIntensity = texture2D(gPosition, uv).a;
-                vec3 depth = texture2D(gDepth, uv).rgb;                   
-                
-                gl_FragColor = vec4(normal, 1.0);
+                float specularIntensity = texture2D(gPosition, uv).a;                 
+                vec3 vViewDir = texture2D(gViewDir, uv).rgb;
+           
+                vec3 N = normal;
+                vec3 L = normalize(lightPosition - surfacePos.xyz);
+                vec3 V = normalize(vViewDir - surfacePos.xyz);
 
+                vec3 spec = specularLightingTerm(N,L,V);
+                vec3 dif = diffuseLightingTerm(N, L) * albedo;
+                gl_FragColor = vec4(dif, 1.0);
             }";
         }
 

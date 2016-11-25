@@ -91,7 +91,7 @@ namespace Fusee.Engine.Examples.Simple.Core
                         Color = new float3(0.2f,0.2f,0.2f),
                         ConeAngle = 45f,
                         ConeDirection = new float3(0,1,1),
-                        Position = new float3(-0.3724f, 15.34589f, 4.533697f),
+                        Position = new float3(0,600, 5f),
                        Type = LightType.Parallel
                     },
                     new TransformComponent()
@@ -106,7 +106,7 @@ namespace Fusee.Engine.Examples.Simple.Core
             // Shadow
             //_sceneRenderer = new SceneRenderer(_rocketScene, LightningCalculationMethod.SIMPLE, true);
             // Deferred
-            _sceneRenderer = new SceneRenderer(_rocketScene);
+            _sceneRenderer = new SceneRenderer(_rocketScene, LightningCalculationMethod.SIMPLE, false, true);
         
          
             _rocketScene.Children[0].Children[0].Components[2].Name = "debug";
@@ -150,14 +150,14 @@ namespace Fusee.Engine.Examples.Simple.Core
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
 
-            /*var light = _rocketScene.Children[1].GetComponent<LightComponent>();
+            var light = _rocketScene.Children[8].GetComponent<LightComponent>();
             light.Position = new float3(light.Position.x + Keyboard.ADAxis * 0.1f, light.Position.y + Keyboard.WSAxis * 0.1f, light.Position.z + Keyboard.UpDownAxis * 0.1f);
             var lightPos = light.Position;
             var lightCone = light.ConeDirection;
             lightCone.Normalize();
-            _rocketScene.Children[1].Components[0] = light;
-            var debug = _rocketScene.Children[1].Components[0] as LightComponent;
-           // Diagnostics.Log($"Pos: {debug.Position}");*/
+            _rocketScene.Children[8].Components[0] = light;
+            var debug = _rocketScene.Children[8].Components[0] as LightComponent;
+           // Diagnostics.Log($"Pos: {debug.Position}");
 
             // Create the camera matrix and set it as the current ModelView transformation
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);

@@ -554,7 +554,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// ParallelLight, no specular component
+        /// ParallelLight
         /// </summary>
         /// <returns></returns>
         private static string ParallelLightCalculation()
