@@ -1,4 +1,5 @@
-﻿using Fusee.Base.Core;
+﻿using System.Collections.Generic;
+using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Math.Core;
@@ -31,11 +32,12 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             var vladimir = AssetStorage.Get<Font>("VLADIMIR.TTF");
             var gnuSerif = AssetStorage.Get<Font>("GNU-FreeSerif.ttf");
             
-            _text = "I";
+            _text = "Hello World!";
             _threeDFontHelper = new ThreeDFontHelper(_text, fontLato);
 
             var outlines = _threeDFontHelper.GetTextOutlinesWAngle(10);
-            var geom = new Geometry(outlines, true);
+            var geom = new Geometry(outlines,true);
+            
             geom = geom.ExtrudePolygon(1000);
 
             _textMesh = new HalfEdgeListToMesh(geom);

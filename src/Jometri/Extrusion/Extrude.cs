@@ -19,7 +19,7 @@ namespace Fusee.Jometri.Extrusion
         public static Geometry ExtrudePolygon(this Geometry geometry, int zOffset)
         {
             CreateBackface(geometry, zOffset);
-            CreateSidefaces(geometry);
+            //CreateSidefaces(geometry);
 
             return geometry;
         }
@@ -37,25 +37,24 @@ namespace Fusee.Jometri.Extrusion
                 backface.OverwriteVertexCoord(vert, newCoord);
             }
 
-            geometry.JoinGeometries(backface);
+            geometry.Join2DGeometries(backface);
         }
-
 
         private static void CreateSidefaces(Geometry geometry)
         {
             var vertCountFront = geometry.VertHandles.Count/2;
 
-            for (var i = 1; i <= vertCountFront; i++)
+            for (var i = 0; i < vertCountFront; i++)
             {
                 var faceVertices = new List<VertHandle>();
 
-                var first = geometry.VertHandles[0];
+                var first = geometry.VertHandles[i];
                 var second = new VertHandle();
                 var third = new VertHandle();
                 var fourth = new VertHandle();
                 foreach (var handle in geometry.VertHandles)
                 {
-                    if (handle.Id == i + vertCountFront)
+                    if (handle.Id == i +1 + vertCountFront)
                     {
                         second = handle;
                         var hehSecond = geometry.GetVertexByHandle(second).IncidentHalfEdge;
@@ -73,7 +72,7 @@ namespace Fusee.Jometri.Extrusion
                 faceVertices.Add(fourth);
 
                 geometry.InsertFace(faceVertices);
-                geometry.InsertHalfEdge(first,third);
+                geometry.InsertEdge(first,third);
             }
         }
     }

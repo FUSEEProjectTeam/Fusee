@@ -25,7 +25,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
         //geometry has to be trinagulated
         private static void ConvertToMesh(Geometry geometry, out float3[] vertices, out ushort[] triangles, out List<float3> normals)
         {
-            var triangleCount = geometry.FaceHandles.Count;
+            var triangleCount = geometry.FaceHandles.Count -1; //TODO: Delete!! if geometry is extruded there schouldn't be a unbounded face anymore
             var vertCount = triangleCount * 3;
 
             var verts = new List<float3>();
@@ -34,8 +34,14 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             triangles = new ushort[vertCount];
             normals = new List<float3>();
 
-            foreach (var face in geometry.FaceHandles)
+            for (var i = 0; i < geometry.FaceHandles.Count; i++)
             {
+                var face = geometry.FaceHandles[i];
+
+                //TODO: delete, if geometry is extruded there schouldn't be a unbounded face anymore
+                //first  Face is always the unbounded one - If face has no OuterHalfEdge it's unbounded and can be ignored
+                if (i == 0) continue;
+
                 var faceVerts = geometry.GetFaceVertices(face).ToList();
 
                 if (faceVerts.Count > 3)

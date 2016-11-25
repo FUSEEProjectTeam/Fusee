@@ -27,14 +27,37 @@ namespace Fusee.Jometri.Triangulation
             var originalFaces = new List<FaceHandle>();
             originalFaces.AddRange(_geometry.FaceHandles);
 
-            foreach (var fHandle in originalFaces)
+            var monotoneFaces = new List<FaceHandle>();
+
+            for (var i = 0; i < originalFaces.Count; i++)
             {
+                var fHandle = originalFaces[i];
+
+                //If face has no OuterHalfEdge it's unbounded and can be ignored - if there is a unbounded face its always the first in _faces
+                if (i == 0)
+                {
+                    var face = _geometry.GetFaceByHandle(fHandle);
+                    if (face.OuterHalfEdge.Id == 0) continue;
+                }
+
                 if (!IsMonotone(fHandle))
                     MakeMonotone(fHandle);
             }
 
-            var monotoneFaces = new List<FaceHandle>();
-            monotoneFaces.AddRange(_geometry.FaceHandles);
+            //Test again because there are new faces 
+            for (var i = 0; i < geometry.FaceHandles.Count; i++)
+            {
+                var fHandle = geometry.FaceHandles[i];
+
+                //If face has no OuterHalfEdge it's unbounded and can be ignored - if there is a unbounded face its always the first in _faces
+                if (i == 0)
+                {
+                    var face = _geometry.GetFaceByHandle(fHandle);
+                    if (face.OuterHalfEdge.Id == 0) continue;
+                }
+                monotoneFaces.Add(fHandle);
+            }
+
             foreach (var fHandle in monotoneFaces)
             {
                 TriangulateMonotone(fHandle);
@@ -67,7 +90,7 @@ namespace Fusee.Jometri.Triangulation
                         var popped = vertStack.Pop();
 
                         if (vertStack.Count > 0)
-                            _geometry.InsertHalfEdge(current.Handle, popped.Handle);
+                            _geometry.InsertEdge(current.Handle, popped.Handle);
                     }
                     vertStack.Push(sortedVerts[i - 1]);
                     vertStack.Push(current);
@@ -117,7 +140,7 @@ namespace Fusee.Jometri.Triangulation
                             v2 = prev.Coord - popped.Coord;
                         }
 
-                        _geometry.InsertHalfEdge(current.Handle, popped.Handle);
+                        _geometry.InsertEdge(current.Handle, popped.Handle);
                     }
                     vertStack.Push(popped);
                     vertStack.Push(current);
@@ -132,7 +155,7 @@ namespace Fusee.Jometri.Triangulation
 
                 if (j == 0) continue;
                 if (j != count - 1)
-                    _geometry.InsertHalfEdge(sortedVerts.LastItem().Handle, popped.Handle);
+                    _geometry.InsertEdge(sortedVerts.LastItem().Handle, popped.Handle);
             }
         }
 
@@ -191,10 +214,10 @@ namespace Fusee.Jometri.Triangulation
 
         #region Test face for y monotony
 
-        private static bool IsMonotone(FaceHandle faceHandle)
+        private static bool IsMonotone(FaceHandle faceHandle) //TODO: replace FaceHandle with Face
         {
-             var vertType = new VertexType();
-            var face = _geometry.GetFaceByHandle(faceHandle);
+            var vertType = new VertexType();
+            var face = _geometry.GetFaceByHandle(faceHandle); 
             var noSplitOrMerge = HasNoSplitOrMerge(faceHandle, vertType);
 
             return noSplitOrMerge && face.InnerHalfEdges.Count == 0;
@@ -347,7 +370,7 @@ namespace Fusee.Jometri.Triangulation
 
                 if (eMinOne.IsMergeVertex)
                 {
-                    _geometry.InsertHalfEdge(v.Handle, eMinOne.Helper);
+                    _geometry.InsertEdge(v.Handle, eMinOne.Helper);
                     newFaces.Add(_geometry.FaceHandles.LastItem());
                 }
 
@@ -365,7 +388,7 @@ namespace Fusee.Jometri.Triangulation
             //Optimization: Resort the try by balancing it once (only if "FindLargestSamllerThan()" is called)
             var ej = FindLargestSmallerThan(_root, v.Coord.x, tree);
 
-            _geometry.InsertHalfEdge(v.Handle, ej.Helper);
+            _geometry.InsertEdge(v.Handle, ej.Helper);
             newFaces.Add(_geometry.FaceHandles.LastItem());
 
             tree.FindNode(_root, ej).Value.Helper = v.Handle;
@@ -403,7 +426,7 @@ namespace Fusee.Jometri.Triangulation
 
             if (eMinOne.IsMergeVertex)
             {
-                _geometry.InsertHalfEdge(v.Handle, eMinOne.Helper);
+                _geometry.InsertEdge(v.Handle, eMinOne.Helper);
                 newFaces.Add(_geometry.FaceHandles.LastItem());
             }
 
@@ -414,7 +437,7 @@ namespace Fusee.Jometri.Triangulation
 
             if (ej.IsMergeVertex)
             {
-                _geometry.InsertHalfEdge(v.Handle, ej.Helper);
+                _geometry.InsertEdge(v.Handle, ej.Helper);
                 newFaces.Add(_geometry.FaceHandles.LastItem());
             }
 
@@ -441,7 +464,7 @@ namespace Fusee.Jometri.Triangulation
 
                     if (eMinOne.IsMergeVertex)
                     {
-                        _geometry.InsertHalfEdge(v.Handle, eMinOne.Helper);
+                        _geometry.InsertEdge(v.Handle, eMinOne.Helper);
                         newFaces.Add(_geometry.FaceHandles.LastItem());
                     }
 
@@ -476,7 +499,7 @@ namespace Fusee.Jometri.Triangulation
 
                 if (ej.IsMergeVertex)
                 {
-                    _geometry.InsertHalfEdge(v.Handle, ej.Helper);
+                    _geometry.InsertEdge(v.Handle, ej.Helper);
                     newFaces.Add(_geometry.FaceHandles.LastItem());
                 }
 
