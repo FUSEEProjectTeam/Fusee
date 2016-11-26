@@ -1,8 +1,7 @@
 ﻿using System;
 using Fusee.Jometri.DCEL;
-using Fusee.Math.Core;
 
-namespace Fusee.Jometri.Triangulate
+namespace Fusee.Jometri.Triangulation
 {
     internal class StatusNode : IComparable<StatusNode>
     {

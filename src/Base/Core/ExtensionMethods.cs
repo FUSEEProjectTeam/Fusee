@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Fusee.Math.Core;
 
 namespace Fusee.Base.Core
 {
@@ -22,7 +21,7 @@ namespace Fusee.Base.Core
             var zwerg = new List<T>();
             zwerg.AddRange((List<T>)data);
             var i = 0;
-
+            
             foreach (var t in data)
             {
                 if (i < count)
@@ -112,6 +111,5 @@ namespace Fusee.Base.Core
             return true;
         }
         #endregion
-
     }
 }

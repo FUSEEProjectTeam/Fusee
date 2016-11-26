@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Fusee.Base.Core;
+﻿using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Math.Core;
@@ -36,9 +35,9 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             _threeDFontHelper = new ThreeDFontHelper(_text, fontLato);
 
             var outlines = _threeDFontHelper.GetTextOutlinesWAngle(10);
-            var geom = new Geometry(outlines,true);
+            var geom = new Geometry(outlines, true);
             
-            geom = geom.ExtrudePolygon(1000);
+            geom = geom.Extrude2DPolygon(1000);
 
             _textMesh = new HalfEdgeListToMesh(geom);
 
@@ -48,7 +47,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             _alpha = 0;
 
             // Set the clear color for the backbuffer
-            RC.ClearColor = new float4(0.1f, 0.3f, 0.2f, 1);
+            RC.ClearColor = new float4(1f,1f,1f, 1);
         }
 
         // RenderAFrame is called once a frame

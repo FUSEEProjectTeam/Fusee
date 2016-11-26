@@ -228,7 +228,10 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             return textOutlines;
         }
 
-        
+        public IList<Geometry.Outline> GetTextOutlinesUniformy(int angle)
+        {
+            return null; //TODO implement ....
+        }
     }
 }
 

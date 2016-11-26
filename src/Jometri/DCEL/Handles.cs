@@ -1,4 +1,6 @@
-﻿namespace Fusee.Jometri.DCEL
+﻿using System;
+
+namespace Fusee.Jometri.DCEL
 {
     /// <summary>
     /// A handle to assign a abstract reference to a Vertex
@@ -14,6 +16,53 @@
         {
             Id = vertHandle;
         }
+        #region  Overloading comparison operators
+
+        /// <summary>
+        /// Overload for "smaller than" operator
+        /// </summary>
+        /// <param name="first">First parameter to be compared</param>
+        /// <param name="second">Second parameter to be compared</param>
+        /// <returns></returns>
+        public static bool operator <(VertHandle first, VertHandle second)
+        {
+            return first.Id < second.Id;
+        }
+
+        /// <summary>
+        /// Overload for "greater than" operator
+        /// </summary>
+        /// <param name="first">First parameter to be compared</param>
+        /// <param name="second">Second parameter to be compared</param>
+        /// <returns></returns>
+        public static bool operator >(VertHandle first, VertHandle second)
+        {
+            return first.Id > second.Id;
+        }
+
+        /// <summary>
+        /// Overload for != operator
+        /// </summary>
+        /// <param name="first">First parameter to be compared</param>
+        /// <param name="second">Second parameter to be compared</param>
+        /// <returns></returns>
+        public static bool operator !=(VertHandle first, VertHandle second)
+        {
+            return first.Id != second.Id;
+        }
+
+        /// <summary>
+        /// Overload for == operator
+        /// </summary>
+        /// <param name="first">First parameter to be compared</param>
+        /// <param name="second">Second parameter to be compared</param>
+        /// <returns></returns>
+        public static bool operator ==(VertHandle first, VertHandle second)
+        {
+            return (first.Id == second.Id);
+        }
+
+        #endregion
     }
 
     /// <summary>
@@ -30,6 +79,49 @@
         {
             Id = halfEdgeHandle;
         }
+
+        #region   Overloading comparison operators
+
+        /// <summary>
+        /// Overload for "smaller than" operator
+        /// </summary>
+        /// <param name="first">First parameter to be compared</param>
+        /// <param name="second">Second parameter to be compared</param>
+        public static bool operator <(HalfEdgeHandle first, HalfEdgeHandle second)
+        {
+            return first.Id < second.Id;
+        }
+
+        /// <summary>
+        /// Overload for "greater than" operator
+        /// </summary>
+        /// <param name="first">First parameter to be compared</param>
+        /// <param name="second">Second parameter to be compared</param>
+        public static bool operator >(HalfEdgeHandle first, HalfEdgeHandle second)
+        {
+            return first.Id > second.Id;
+        }
+
+        /// <summary>
+        /// Overload for != operator
+        /// </summary>
+        /// <param name="first">First parameter to be compared</param>
+        /// <param name="second">Second parameter to be compared</param>
+        public static bool operator !=(HalfEdgeHandle first, HalfEdgeHandle second)
+        {
+            return first.Id != second.Id;
+        }
+
+        /// <summary>
+        /// Overload for == operator
+        /// </summary>
+        /// <param name="first">First parameter to be compared</param>
+        /// <param name="second">Second parameter to be compared</param>
+        public static bool operator ==(HalfEdgeHandle first, HalfEdgeHandle second)
+        {
+            return (first.Id == second.Id);
+        }
+        #endregion
     }
 
     /// <summary>
@@ -46,6 +138,49 @@
         {
             Id = faceHandle;
         }
+
+        #region   Overloading comparison operators
+
+        /// <summary>
+        /// Overload for "smaller than" operator
+        /// </summary>
+        /// <param name="first">First parameter to be compared</param>
+        /// <param name="second">Second parameter to be compared</param>
+        public static bool operator <(FaceHandle first, FaceHandle second)
+        {
+            return first.Id < second.Id;
+        }
+
+        /// <summary>
+        /// Overload for "greater than" operator
+        /// </summary>
+        /// <param name="first">First parameter to be compared</param>
+        /// <param name="second">Second parameter to be compared</param>
+        public static bool operator >(FaceHandle first, FaceHandle second)
+        {
+            return first.Id > second.Id;
+        }
+
+        /// <summary>
+        /// Overload for != operator
+        /// </summary>
+        /// <param name="first">First parameter to be compared</param>
+        /// <param name="second">Second parameter to be compared</param>
+        public static bool operator !=(FaceHandle first, FaceHandle second)
+        {
+            return first.Id != second.Id;
+        }
+
+        /// <summary>
+        /// Overload for == operator
+        /// </summary>
+        /// <param name="first">First parameter to be compared</param>
+        /// <param name="second">Second parameter to be compared</param>
+        public static bool operator ==(FaceHandle first, FaceHandle second)
+        {
+            return (first.Id == second.Id);
+        }
+        #endregion
     }
 }
 
