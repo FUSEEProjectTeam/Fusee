@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Fusee.Jometri.DCEL
+﻿namespace Fusee.Jometri.DCEL
 {
     /// <summary>
     /// A handle to assign a abstract reference to a Vertex
@@ -16,6 +14,7 @@ namespace Fusee.Jometri.DCEL
         {
             Id = vertHandle;
         }
+
         #region  Overloading comparison operators
 
         /// <summary>

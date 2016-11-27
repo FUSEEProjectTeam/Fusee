@@ -30,14 +30,14 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
             var vladimir = AssetStorage.Get<Font>("VLADIMIR.TTF");
             var gnuSerif = AssetStorage.Get<Font>("GNU-FreeSerif.ttf");
-            
-            _text = "Hello World!";
-            _threeDFontHelper = new ThreeDFontHelper(_text, fontLato);
 
-            var outlines = _threeDFontHelper.GetTextOutlinesWAngle(10);
+            _text = "Hello World";
+            _threeDFontHelper = new ThreeDFontHelper(_text, vladimir);
+
+            var outlines = _threeDFontHelper.GetTextOutlinesWAngle(5);
             var geom = new Geometry(outlines, true);
-            
-            geom = geom.Extrude2DPolygon(1000);
+
+            geom = geom.Extrude2DPolygon(2000);
 
             _textMesh = new HalfEdgeListToMesh(geom);
 
@@ -47,7 +47,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             _alpha = 0;
 
             // Set the clear color for the backbuffer
-            RC.ClearColor = new float4(1f,1f,1f, 1);
+            RC.ClearColor = new float4(1f, 1f, 1f, 1);
         }
 
         // RenderAFrame is called once a frame
@@ -71,7 +71,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             var aspectRatio = Width / (float)Height;
             var projection = float4x4.CreatePerspectiveFieldOfView(3.141592f * 0.25f, aspectRatio, 0.01f, 30000);
             var view = float4x4.CreateTranslation(0, 0, 10) * float4x4.CreateRotationY(_alpha);
-            var modelPoint = ModelXForm(new float3(-6,-1,0), float3.Zero);
+            var modelPoint = ModelXForm(new float3(-6, -1, 0), float3.Zero);
 
             _xform = projection * view * modelPoint * float4x4.CreateScale(0.001f, 0.001f, 0.001f);
 

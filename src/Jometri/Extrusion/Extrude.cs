@@ -41,15 +41,15 @@ namespace Fusee.Jometri.Extrusion
             var unboundedFace = geometry.GetFaceByHandle(geometry.FaceHandles[0]);
             var frontHalfEdgesCount = geometry.HalfEdgeHandles.Count / 2;
 
-            for (var i = 0; i < unboundedFace.InnerHalfEdges.Count/2; i++)
+            for (var i = 0; i < unboundedFace.InnerHalfEdges.Count / 2; i++)
             {
                 var edgeLoop = geometry.GetEdgeLoop(unboundedFace.InnerHalfEdges[i]).ToList();
                 var newHalfEdges = new List<Geometry.HalfEdge>();
 
-                for (var j = 0; j < edgeLoop.Count; j++)
+                foreach (var halfEdge in edgeLoop)
                 {
-                    var halfEdgeFront = edgeLoop[j];
-               
+                    var halfEdgeFront = halfEdge;
+
                     var id = halfEdgeFront.Handle.Id + frontHalfEdgesCount;
                     var halfEdgeBack = geometry.GetHalfEdgeByHandle(HalfEdgeBackHandle(geometry, id));
 
@@ -58,14 +58,14 @@ namespace Fusee.Jometri.Extrusion
 
                     var newFromBack = new Geometry.HalfEdge();
                     newFromBack.Origin = backTargetVert;
-                    newFromBack.Handle = new HalfEdgeHandle(geometry.HalfEdgeHandles.Count + 1);
+                    newFromBack.Handle = new HalfEdgeHandle(geometry.CreateHalfEdgeHandleId());
                     newFromBack.Next = halfEdgeFront.Handle;
                     newFromBack.Prev = halfEdgeBack.Handle;
 
                     geometry.HalfEdgeHandles.Add(newFromBack.Handle);
-                    
+
                     var newFace = new Geometry.Face();
-                    newFace.Handle = new FaceHandle(geometry.FaceHandles.LastItem().Id + 1); //TODO: other way to create id?!
+                    newFace.Handle = new FaceHandle(geometry.CreateFaceHandleId());
                     newFace.OuterHalfEdge = newFromBack.Handle;
                     newFace.InnerHalfEdges = new List<HalfEdgeHandle>();
 
@@ -76,7 +76,7 @@ namespace Fusee.Jometri.Extrusion
 
                     var newFromFront = new Geometry.HalfEdge();
                     newFromFront.Origin = frontTargetVert;
-                    newFromFront.Handle = new HalfEdgeHandle(geometry.HalfEdgeHandles.Count + 1);
+                    newFromFront.Handle = new HalfEdgeHandle(geometry.CreateHalfEdgeHandleId());
                     newFromFront.Next = halfEdgeBack.Handle;
                     newFromFront.Prev = halfEdgeFront.Handle;
                     newFromFront.IncidentFace = newFace.Handle;
@@ -98,7 +98,7 @@ namespace Fusee.Jometri.Extrusion
                     newHalfEdges.Add(newFromFront);
                 }
 
-                for (var j = 0; j < newHalfEdges.Count-1; j++ )
+                for (var j = 0; j < newHalfEdges.Count - 1; j++)
                 {
                     var current = newHalfEdges[j];
                     if (j == 0)
@@ -122,18 +122,22 @@ namespace Fusee.Jometri.Extrusion
                         newHalfEdges[j] = current;
                         j = j + 1;
                     }
-                 }
+                }
 
                 foreach (var halfEdge in newHalfEdges)
                 {
                     geometry.AddHalfEdge(halfEdge);
                 }
 
-                for (int j = 0; j < newHalfEdges.Count; j+=2)
+                for (var j = 0; j < newHalfEdges.Count; j += 2)
                 {
-                    geometry.InsertEdge(newHalfEdges[j].Origin, newHalfEdges[j+1].Origin);
+                    geometry.InsertEdge(newHalfEdges[j].Origin, newHalfEdges[j + 1].Origin);
                 }
             }
+
+            //Delete unbounded face
+            geometry.RemoveFace(unboundedFace);
+            geometry.FaceHandles.Remove(unboundedFace.Handle);
         }
 
         private static HalfEdgeHandle HalfEdgeBackHandle(Geometry geometry, int id)

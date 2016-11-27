@@ -14,7 +14,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             float3[] vertices;
             ushort[] triangles;
             List<float3> normals;
-                
+
             ConvertToMesh(geometry, out vertices, out triangles, out normals);
 
             Vertices = vertices;
@@ -25,7 +25,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
         //geometry has to be trinagulated
         private static void ConvertToMesh(Geometry geometry, out float3[] vertices, out ushort[] triangles, out List<float3> normals)
         {
-            var triangleCount = geometry.FaceHandles.Count -1; //TODO: Delete!! if geometry is extruded there schouldn't be a unbounded face anymore
+            var triangleCount = geometry.FaceHandles.Count - 1; //TODO: Delete!! if geometry is extruded there schouldn't be a unbounded face anymore
             var vertCount = triangleCount * 3;
 
             var verts = new List<float3>();
@@ -34,15 +34,9 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             triangles = new ushort[vertCount];
             normals = new List<float3>();
 
-            for (var i = 0; i < geometry.FaceHandles.Count; i++)
+            foreach (var faceHandle in geometry.FaceHandles)
             {
-                var face = geometry.FaceHandles[i];
-
-                //TODO: delete, if geometry is extruded there schouldn't be a unbounded face anymore
-                //first  Face is always the unbounded one - If face has no OuterHalfEdge it's unbounded and can be ignored
-                if (i == 0) continue;
-
-                var faceVerts = geometry.GetFaceVertices(face).ToList();
+                var faceVerts = geometry.GetFaceVertices(faceHandle).ToList();
 
                 if (faceVerts.Count > 3)
                     throw new ArgumentException("Invalid Triangle - face has more than 3 Vertices");
@@ -59,7 +53,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
                 triangles[i] = (ushort)i;
             }
 
-            for (var i = 0; i < vertices.Length; i+=3)
+            for (var i = 0; i < vertices.Length; i += 3)
             {
                 var a = vertices[i + 1] - vertices[i];
                 var b = vertices[i + 2] - vertices[i];

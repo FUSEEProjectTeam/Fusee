@@ -16,10 +16,10 @@ namespace Fusee.Jometri.Triangulation
         private static VertexType _vertType;
         private static BinarySearchTree<StatusNode> _sweepLineStatus;
         private static Node<StatusNode> _root;
-        
+
         internal static void Triangulate(this Geometry geometry)
         {
-            //TODO: Both, MakeMonotone and TriangulateMonotone need 2D coordinates instead of 3D. It is possibly more effective to call Reduce2D for the whole face in those methods than in the sub methods
+            //TODO: Both, MakeMonotone and TriangulateMonotone need 2D coordinates instead of 3D. It is possibly more effective to call Reduce2D for the vertices of the whole face in those methods than in the sub methods
 
             _geometry = geometry;
 
@@ -202,7 +202,7 @@ namespace Fusee.Jometri.Triangulation
 
         private static bool IsMonotone(FaceHandle faceHandle)
         {
-            var face = _geometry.GetFaceByHandle(faceHandle); 
+            var face = _geometry.GetFaceByHandle(faceHandle);
             var noSplitOrMerge = HasNoSplitOrMerge(faceHandle);
 
             return noSplitOrMerge && face.InnerHalfEdges.Count == 0;
@@ -219,6 +219,52 @@ namespace Fusee.Jometri.Triangulation
                     return false;
             }
             return true;
+        }
+
+        private static void TestVertexType(Geometry.Vertex vert, FaceHandle faceHandle)
+        {
+            var heStartingAtFace = _geometry.GetHalfEdgesStartingAtV(vert).ToList();
+
+            var incidentHalfEdge = new Geometry.HalfEdge();
+            foreach (var he in heStartingAtFace)
+            {
+                var incidentFace = _geometry.GetHalfEdgeByHandle(he).IncidentFace;
+                if (!incidentFace.Equals(faceHandle)) continue;
+                incidentHalfEdge = _geometry.GetHalfEdgeByHandle(he);
+                break;
+            }
+
+            var nextHalfEdge = _geometry.GetHalfEdgeByHandle(incidentHalfEdge.Next);
+            var nextVert = _geometry.GetVertexByHandle(nextHalfEdge.Origin);
+
+            var prevHalfEdge = _geometry.GetHalfEdgeByHandle(incidentHalfEdge.Prev);
+            var prevVert = _geometry.GetVertexByHandle(prevHalfEdge.Origin);
+
+            var v2 = new float3(prevVert.Coord - vert.Coord);
+            var v1 = new float3(nextVert.Coord - vert.Coord);
+
+            if (IsUnderVert(vert, nextVert) && IsUnderVert(vert, prevVert))
+            {
+                if (IsAngleGreaterPi(v1, v2))
+                    _vertType = VertexType.SPLIT_VERTEX;
+                else
+                {
+                    _vertType = VertexType.START_VERTEX;
+                }
+            }
+            else if (IsOverVert(vert, nextVert) && IsOverVert(vert, prevVert))
+            {
+                if (IsAngleGreaterPi(v1, v2))
+                    _vertType = VertexType.MERGE_VERTEX;
+                else
+                {
+                    _vertType = VertexType.END_VERTEX;
+                }
+            }
+            else
+            {
+                _vertType = VertexType.REGULAR_VERTEX;
+            }
         }
 
         //Vertices need to be reduced to 2D
@@ -307,6 +353,59 @@ namespace Fusee.Jometri.Triangulation
                         throw new ArgumentOutOfRangeException();
                 }
                 sortedVertices.RemoveAt(0);
+            }
+        }
+
+        private static void TestVertexType(Geometry.Vertex vert, FaceHandle faceHandle, ICollection<FaceHandle> newFaces)
+        {
+            var heStartingAtFace = _geometry.GetHalfEdgesStartingAtV(vert).ToList();
+            var incidentHalfEdge = new Geometry.HalfEdge();
+
+            foreach (var he in heStartingAtFace)
+            {
+                var incidentFace = _geometry.GetHalfEdgeByHandle(he).IncidentFace;
+                if (incidentFace.Equals(faceHandle))
+                {
+                    incidentHalfEdge = _geometry.GetHalfEdgeByHandle(he);
+                    break;
+                }
+                foreach (var fh in newFaces)
+                {
+                    if (incidentFace.Equals(fh))
+                        incidentHalfEdge = _geometry.GetHalfEdgeByHandle(he);
+                }
+            }
+
+            var nextHalfEdge = _geometry.GetHalfEdgeByHandle(incidentHalfEdge.Next);
+            var nextVert = _geometry.GetVertexByHandle(nextHalfEdge.Origin);
+
+            var prevHalfEdge = _geometry.GetHalfEdgeByHandle(incidentHalfEdge.Prev);
+            var prevVert = _geometry.GetVertexByHandle(prevHalfEdge.Origin);
+
+            var v2 = new float3(prevVert.Coord - vert.Coord);
+            var v1 = new float3(nextVert.Coord - vert.Coord);
+
+            if (IsUnderVert(vert, nextVert) && IsUnderVert(vert, prevVert))
+            {
+                if (IsAngleGreaterPi(v1, v2))
+                    _vertType = VertexType.SPLIT_VERTEX;
+                else
+                {
+                    _vertType = VertexType.START_VERTEX;
+                }
+            }
+            else if (IsOverVert(vert, nextVert) && IsOverVert(vert, prevVert))
+            {
+                if (IsAngleGreaterPi(v1, v2))
+                    _vertType = VertexType.MERGE_VERTEX;
+                else
+                {
+                    _vertType = VertexType.END_VERTEX;
+                }
+            }
+            else
+            {
+                _vertType = VertexType.REGULAR_VERTEX;
             }
         }
 
@@ -580,106 +679,7 @@ namespace Fusee.Jometri.Triangulation
 
             return sorted;
         }
-
-        private static void TestVertexType(Geometry.Vertex vert, FaceHandle faceHandle, ICollection<FaceHandle> newFaces)
-        {
-            var heStartingAtFace = _geometry.GetHalfEdgesStartingAtV(vert).ToList();
-            var incidentHalfEdge = new Geometry.HalfEdge();
-
-            foreach (var he in heStartingAtFace)
-            {
-                var incidentFace = _geometry.GetHalfEdgeByHandle(he).IncidentFace;
-                if (incidentFace.Equals(faceHandle))
-                {
-                    incidentHalfEdge = _geometry.GetHalfEdgeByHandle(he);
-                    break;
-                }
-                foreach (var fh in newFaces)
-                {
-                    if (incidentFace.Equals(fh))
-                        incidentHalfEdge = _geometry.GetHalfEdgeByHandle(he);
-                }
-            }
-
-            var nextHalfEdge = _geometry.GetHalfEdgeByHandle(incidentHalfEdge.Next);
-            var nextVert = _geometry.GetVertexByHandle(nextHalfEdge.Origin);
-
-            var prevHalfEdge = _geometry.GetHalfEdgeByHandle(incidentHalfEdge.Prev);
-            var prevVert = _geometry.GetVertexByHandle(prevHalfEdge.Origin);
-
-            var v2 = new float3(prevVert.Coord - vert.Coord);
-            var v1 = new float3(nextVert.Coord - vert.Coord);
-
-            if (IsUnderVert(vert, nextVert) && IsUnderVert(vert, prevVert))
-            {
-                if (IsAngleGreaterPi(v1, v2))
-                    _vertType = VertexType.SPLIT_VERTEX;
-                else
-                {
-                    _vertType = VertexType.START_VERTEX;
-                }
-            }
-            else if (IsOverVert(vert, nextVert) && IsOverVert(vert, prevVert))
-            {
-                if (IsAngleGreaterPi(v1, v2))
-                    _vertType = VertexType.MERGE_VERTEX;
-                else
-                {
-                    _vertType = VertexType.END_VERTEX;
-                }
-            }
-            else
-            {
-                _vertType = VertexType.REGULAR_VERTEX;
-            }
-        }
-
-        private static void TestVertexType(Geometry.Vertex vert, FaceHandle faceHandle)
-        {
-            var heStartingAtFace = _geometry.GetHalfEdgesStartingAtV(vert).ToList();
-
-            var incidentHalfEdge = new Geometry.HalfEdge();
-            foreach (var he in heStartingAtFace)
-            {
-                var incidentFace = _geometry.GetHalfEdgeByHandle(he).IncidentFace;
-                if (!incidentFace.Equals(faceHandle)) continue;
-                incidentHalfEdge = _geometry.GetHalfEdgeByHandle(he);
-                break;
-            }
-
-            var nextHalfEdge = _geometry.GetHalfEdgeByHandle(incidentHalfEdge.Next);
-            var nextVert = _geometry.GetVertexByHandle(nextHalfEdge.Origin);
-
-            var prevHalfEdge = _geometry.GetHalfEdgeByHandle(incidentHalfEdge.Prev);
-            var prevVert = _geometry.GetVertexByHandle(prevHalfEdge.Origin);
-
-            var v2 = new float3(prevVert.Coord - vert.Coord);
-            var v1 = new float3(nextVert.Coord - vert.Coord);
-
-            if (IsUnderVert(vert, nextVert) && IsUnderVert(vert, prevVert))
-            {
-                if (IsAngleGreaterPi(v1, v2))
-                    _vertType = VertexType.SPLIT_VERTEX;
-                else
-                {
-                    _vertType = VertexType.START_VERTEX;
-                }
-            }
-            else if (IsOverVert(vert, nextVert) && IsOverVert(vert, prevVert))
-            {
-                if (IsAngleGreaterPi(v1, v2))
-                    _vertType = VertexType.MERGE_VERTEX;
-                else
-                {
-                    _vertType = VertexType.END_VERTEX;
-                }
-            }
-            else
-            {
-                _vertType = VertexType.REGULAR_VERTEX;
-            }
-        }
-
+        
         private static Geometry.Vertex GetNextVertex(Geometry.Vertex current)
         {
             var currentHe = _geometry.GetHalfEdgeByHandle(current.IncidentHalfEdge);
