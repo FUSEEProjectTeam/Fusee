@@ -57,6 +57,7 @@ namespace Fusee.Engine.Core
             // first step, analyze Material
             AnalyzeMaterial(mc);
 
+            // check for animation
             if (wc != null)
             {
                 _hasWeightMap = true;
@@ -103,7 +104,7 @@ namespace Fusee.Engine.Core
                 _hasEmissiveTexture = (mc.Emissive.Texture != null);
             _hasBump = mc.HasBump; // always has a texture...
 
-            // Reflection of materialComponent
+            // Reflection for materialComponent
             var t = mc.GetType();
             if (typeof(MaterialPBRComponent).IsAssignableFrom(t))
             {
@@ -156,11 +157,11 @@ namespace Fusee.Engine.Core
             pixelStringBuilder.Append(Version());
             // PixelInputs
             pixelStringBuilder.Append(PixelInputDeclarations());
-            // PxelShaderMethods (specular, light, etc.)
+            // PixelShaderMethods (specular, light, etc.)
             pixelStringBuilder.Append(PixelShaderMethods());
             // PixelBody
             pixelStringBuilder.Append(PixelBody());
-
+            // Return PS
             PS = pixelStringBuilder.ToString();
         }
 

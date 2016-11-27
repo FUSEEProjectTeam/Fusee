@@ -181,7 +181,6 @@ namespace Fusee.Engine.Core
                 {
                     _renderWithShadows = value;
                 }
-                   
                 else
                 {
                     throw new ArgumentException("Deferred Rendering not possible with the current renderpath!");
@@ -200,7 +199,6 @@ namespace Fusee.Engine.Core
                 {
                     _renderDeferred = value;
                 }
-
                 else
                 {
                     throw new ArgumentException("Deferred Rendering not possible with the current renderpath!");
@@ -208,9 +206,6 @@ namespace Fusee.Engine.Core
             }
             get { return _renderDeferred; }
         }
-
-
-       
 
         #region Traversal information
 
@@ -280,8 +275,6 @@ namespace Fusee.Engine.Core
             if (RenderDeferred)
                 _renderDeferred = true;
         }
-
-     
 
         public SceneRenderer(SceneContainer sc /*, string scenePathDirectory*/)
         {

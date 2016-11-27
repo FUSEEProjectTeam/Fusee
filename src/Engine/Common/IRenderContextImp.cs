@@ -498,5 +498,4 @@ namespace Fusee.Engine.Common
         /// </summary>
         Buffersize
     }
-
 }
