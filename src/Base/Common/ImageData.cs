@@ -23,24 +23,7 @@ namespace Fusee.Base.Common
         /// <summary>
         /// Used for Images containing a single grey-scale value per-pixel. Each pixel consists of one byte.
         /// </summary>
-        Intensity,
-
-        /// <summary>
-        /// Used for Images containing a depth value per-pixel. Each pixel consists of one byte.
-        /// </summary>
-        Depth,
-
-        /// <summary>
-        /// Used for a CubeMap Image with 6 faces, containing a depth value per-pixel. Each pixel consists of one byte.
-        /// </summary>
-        DepthCubeMap,
-
-        /// <summary>
-        /// Used for a GBuffer Texture
-        /// </summary>
-        GBuffer
-
-
+        Intensity
     }
 
     /// <summary>

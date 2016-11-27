@@ -106,7 +106,7 @@ namespace Fusee.Engine.Examples.Simple.Core
             // Shadow
             //_sceneRenderer = new SceneRenderer(_rocketScene, LightningCalculationMethod.SIMPLE, true);
             // Deferred
-            _sceneRenderer = new SceneRenderer(_rocketScene, LightningCalculationMethod.SIMPLE, false, true);
+            _sceneRenderer = new SceneRenderer(_rocketScene, LightningCalculationMethod.SIMPLE, false, false);
         
          
             _rocketScene.Children[0].Children[0].Components[2].Name = "debug";
@@ -118,7 +118,8 @@ namespace Fusee.Engine.Examples.Simple.Core
         {
 
             // Clear the backbuffer
-            RC.Clear(ClearFlags.Color | ClearFlags.Depth);
+            // No backbuffer cleared here
+            RC.Clear(ClearFlags.Color);
 
             // Mouse and keyboard movement
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)

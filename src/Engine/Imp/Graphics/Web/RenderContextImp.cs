@@ -91,7 +91,7 @@ namespace Fusee.Engine.Imp.Graphics.Web
             throw new System.NotImplementedException();
         }
 
-        public ITexture CreateWritableTexture(int width, int height, ImagePixelFormat pixelFormat)
+        public ITexture CreateWritableTexture(int width, int height, WritableTextureFormat textureFormat)
         {
             throw new NotImplementedException("CreateWritableTexture not implmented!");
         }

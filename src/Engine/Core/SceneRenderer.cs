@@ -177,7 +177,7 @@ namespace Fusee.Engine.Core
             {
                 if (!_renderWithShadows) return;
 
-                if (_rc.GetHardwareCapabilities(HardwareCapability.DEFFERED_POSSIBLE) == 1U)
+                if (_rc.GetHardwareCapabilities(HardwareCapability.DefferedPossible) == 1U)
                 {
                     _renderWithShadows = value;
                 }
@@ -196,7 +196,7 @@ namespace Fusee.Engine.Core
             {
                 if (!_renderDeferred) return;
 
-                if (_rc.GetHardwareCapabilities(HardwareCapability.DEFFERED_POSSIBLE) == 1U)
+                if (_rc.GetHardwareCapabilities(HardwareCapability.DefferedPossible) == 1U)
                 {
                     _renderDeferred = value;
                 }
@@ -471,7 +471,7 @@ namespace Fusee.Engine.Core
             SetContext(rc);
             
             if (DeferredShaderHelper.GBufferTexture == null)
-                DeferredShaderHelper.GBufferTexture = rc.CreateWritableTexture(rc.ViewportWidth, rc.ViewportHeight, ImagePixelFormat.GBuffer);
+                DeferredShaderHelper.GBufferTexture = rc.CreateWritableTexture(rc.ViewportWidth, rc.ViewportHeight, WritableTextureFormat.GBuffer);
 
             if (DeferredShaderHelper.GBufferPassShaderEffect == null)
                 CreateGBufferPassEffect(rc);
@@ -485,6 +485,7 @@ namespace Fusee.Engine.Core
                 {
                     // Set RenderTarget to gBuffer
                     rc.SetRenderTarget(DeferredShaderHelper.GBufferTexture);
+                    //rc.SetRenderTarget(null);
                     Traverse(_sc.Children);
                     DeferredShaderHelper.CurrentRenderPass++;
                 }
@@ -511,12 +512,12 @@ namespace Fusee.Engine.Core
             
             // Create ShadowTexture if none avaliable
             if (DeferredShaderHelper.ShadowTexture == null)
-                DeferredShaderHelper.ShadowTexture = rc.CreateWritableTexture((int) ShadowMapSize.x, (int) ShadowMapSize.y, ImagePixelFormat.Depth);
+                DeferredShaderHelper.ShadowTexture = rc.CreateWritableTexture((int) ShadowMapSize.x, (int) ShadowMapSize.y, WritableTextureFormat.Depth);
 
             if (DeferredShaderHelper.ShadowPassShaderEffect == null)
                 CreateShadowPassShaderEffect(rc);
             
-            // Parse RenderNormalShadowPass
+            // Parse RenderSecondShadowPass
             for (var i = 0; i < 2; i++)
             {
                 if (i == 0)
@@ -593,7 +594,8 @@ namespace Fusee.Engine.Core
                 new EffectParameterDeclaration { Name = "gPosition", Value = DeferredShaderHelper.GBufferTexture },
                 new EffectParameterDeclaration { Name = "gNormal", Value = DeferredShaderHelper.GBufferTexture },
                 new EffectParameterDeclaration { Name = "gAlbedoSpec", Value = DeferredShaderHelper.GBufferTexture },
-                new EffectParameterDeclaration { Name = "gViewDir", Value = DeferredShaderHelper.GBufferTexture }
+                new EffectParameterDeclaration { Name = "gViewDir", Value = DeferredShaderHelper.GBufferTexture },
+                new EffectParameterDeclaration { Name = "gScreenSize", Value = new float2(10, 10) }
             };
 
             DeferredShaderHelper.GBufferDrawPassShaderEffect = new ShaderEffect(effectPass, effectParameter);
@@ -692,10 +694,10 @@ namespace Fusee.Engine.Core
             AllLightResults = _lightComponents;
             // and multiply them with current modelview matrix
             // normalize etc.
-            SetupLights();
+            LightsToModelViewSpace();
             
         }
-        private void SetupLights()
+        private void LightsToModelViewSpace()
         {
             // Add ModelView Matrix to all lights
             for (var i = 0; i < AllLightResults.Count; i++)
@@ -751,41 +753,42 @@ namespace Fusee.Engine.Core
             {
                 if (DeferredShaderHelper.CurrentRenderPass == 0)
                 {
-                    RenderShadowMapPass(rm, effect);
+                    RenderFirstShadowPass(rm);
                 }
                 else
                 {
-                    RenderNormalShadowPass(rm, effect);
+                    RenderSecondShadowPass(rm, effect);
                 }
             }
             else if (RenderDeferred)
             {
                 if (DeferredShaderHelper.CurrentRenderPass == 0)
                 {
-                    RenderDeferredPass(rm, effect);
+                    RenderDeferredModelPass(rm, effect);
                 }
                 else
                 {
-                    RenderNormalDeferredPass(effect);
+                    RenderDeferredLightPass();
                 }
             }
             else
             {
-                RenderStandardPass(rm, effect);
+                RenderStandartPass(rm, effect);
             }
         }
 
 
-        private void RenderStandardPass(Mesh rm, ShaderEffect effect)
+        private void RenderStandartPass(Mesh rm, ShaderEffect effect)
         {
             for (var i = 0; i < _lightComponents.Count; i++)
             {
-                SetupLight(i, _lightComponents[i], effect);
+                UpdateLightParamsInPixelShader(i, _lightComponents[i], effect);
                 effect.RenderMesh(rm);
             }
         }
 
-        private static void RenderDeferredPass(Mesh rm, ShaderEffect effect)
+        // TODO: Assemble all effect params accordingly from current ShaderEffect and pass them to GBufferPassShaderEffect
+        private static void RenderDeferredModelPass(Mesh rm, ShaderEffect effect)
         {
             var diffuse = float3.One;
             if (effect._rc.CurrentShader != null && effect.GetEffectParam("DiffuseColor") != null)
@@ -796,50 +799,53 @@ namespace Fusee.Engine.Core
                 specularIntensity = (float)effect.GetEffectParam("SpecularIntensity");
                 */
             DeferredShaderHelper.GBufferPassShaderEffect.SetEffectParam("DiffuseColor", diffuse);
-        //    DeferredShaderHelper.GBufferPassShaderEffect.SetEffectParam("SpecularIntensity", specularIntensity);
-            DeferredShaderHelper.GBufferPassShaderEffect.RenderMesh(rm);
+            //    DeferredShaderHelper.GBufferPassShaderEffect.SetEffectParam("SpecularIntensity", specularIntensity);
+
+              DeferredShaderHelper.GBufferPassShaderEffect.RenderMesh(rm);
         }
 
-        private void RenderNormalDeferredPass(ShaderEffect effect) {
+        private void RenderDeferredLightPass() {
             
             if(DeferredShaderHelper.GBufferDrawPassShaderEffect == null) return;
          
                 // Set textures from first GBuffer pass
                 var gPosition = DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.CurrentShader.GetShaderParam("gPosition");
                 if (gPosition != null)
-                    DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.SetShaderParamTexture(gPosition, DeferredShaderHelper.GBufferTexture, GBufferHandle.gPositionHandle);
+                    DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.SetShaderParamTexture(gPosition, DeferredShaderHelper.GBufferTexture, GBufferHandle.GPositionHandle);
 
                 var gNormal = DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.CurrentShader.GetShaderParam("gNormal");
                 if (gNormal != null)
-                    DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.SetShaderParamTexture(gNormal, DeferredShaderHelper.GBufferTexture, GBufferHandle.gNormalHandle);
+                    DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.SetShaderParamTexture(gNormal, DeferredShaderHelper.GBufferTexture, GBufferHandle.GNormalHandle);
 
                 var gAlbedoSpec = DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.CurrentShader.GetShaderParam("gAlbedoSpec");
                 if (gAlbedoSpec != null)
-                    DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.SetShaderParamTexture(gAlbedoSpec, DeferredShaderHelper.GBufferTexture, GBufferHandle.gAlbedoSpecHandle);
+                    DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.SetShaderParamTexture(gAlbedoSpec, DeferredShaderHelper.GBufferTexture, GBufferHandle.GAlbedoHandle);
 
 
                 var gViewDir = DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.CurrentShader.GetShaderParam("gViewDir");
                 if (gViewDir != null)
-                    DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.SetShaderParamTexture(gViewDir, DeferredShaderHelper.GBufferTexture, GBufferHandle.gViewDir);
+                    DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.SetShaderParamTexture(gViewDir, DeferredShaderHelper.GBufferTexture, GBufferHandle.GViewDir);
 
-                // Set Light(s)
-                var lightPosition = DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.CurrentShader.GetShaderParam("lightPosition");
+              
+            // Set Light(s)
+            var lightPosition = DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.CurrentShader.GetShaderParam("lightPosition");
                 if(lightPosition != null)
-                    DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.SetShaderParam(lightPosition, _rc.ModelView * AllLightResults[0].PositionWorldSpace);
-            
+                    DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.SetShaderParam(lightPosition, AllLightResults[0].Position);
+                    // use the ModelView from pass before
+
 
                 DeferredShaderHelper.GBufferDrawPassShaderEffect.RenderMesh(DeferredShaderHelper.DeferredFullscreenQuad());
 
 
              /*for (var i = 0; i < _lightComponents.Count; i++)
                {
-                   SetupLight(i, _lightComponents[i], effect);
+                   UpdateLightParamsInPixelShader(i, _lightComponents[i], effect);
 
                }*/
 
         }
 
-        private void RenderShadowMapPass(Mesh rm, ShaderEffect effect)
+        private void RenderFirstShadowPass(Mesh rm)
         {
            // if(_shadowPassShaderEffect == null) return;
             if(AllLightResults.Count == 0) return;
@@ -852,13 +858,14 @@ namespace Fusee.Engine.Core
             DeferredShaderHelper.ShadowPassShaderEffect.RenderMesh(rm);
         }
 
-        private void RenderNormalShadowPass(Mesh rm, ShaderEffect effect)
+        private void RenderSecondShadowPass(Mesh rm, ShaderEffect effect)
         {
             if(effect._rc.CurrentShader == null) return;
 
             // reset Viewport to orginal size; is wrong size due to creation of shadowmap with different viewportsize
             _rc.Viewport(0, 0, (int)_rcViewportOriginalSize.x, (int)_rcViewportOriginalSize.y);
 
+            // Set ShaderParams
             var handleLight = effect._rc.GetShaderParam(effect._rc.CurrentShader, "shadowMVP");
             if (handleLight != null)
                 effect._rc.SetShaderParam(handleLight, DeferredShaderHelper.ShadowMapMVP);
@@ -867,15 +874,12 @@ namespace Fusee.Engine.Core
             if (handle != null)
                 effect._rc.SetShaderParamTexture(handle, DeferredShaderHelper.ShadowTexture);
 
+            // Now we can render a normal pass
+            RenderStandartPass(rm, effect);
 
-            for (var i = 0; i < _lightComponents.Count; i++)
-            {
-                SetupLight(i, _lightComponents[i], effect);
-                effect.RenderMesh(rm);
-            }
         }
 
-        private static void SetupLight(int position, LightResult light, ShaderEffect effect)
+        private static void UpdateLightParamsInPixelShader(int position, LightResult light, ShaderEffect effect)
         {
             if (!light.Active) return;
 
@@ -1360,9 +1364,9 @@ namespace Fusee.Engine.Core
                     Value = LoadTexture(mc.Bump.Texture)
                 });
             }
-
+            // TODO: Check if this is needed at all?
             // Any light calculation needed at all?
-            if (mc.HasDiffuse || mc.HasSpecular)
+           /* if (mc.HasDiffuse || mc.HasSpecular)
             {
                 // Light calculation parameters
                 effectParameters.Add(new EffectParameterDeclaration
@@ -1380,7 +1384,7 @@ namespace Fusee.Engine.Core
                     Name = ShaderCodeBuilder.LightDirectionName,
                     Value = new float3(0, 0, 1)
                 });
-            }
+            } */
 
             SetLightEffectParameters(ref effectParameters);
 

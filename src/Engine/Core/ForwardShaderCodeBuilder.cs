@@ -1,9 +1,807 @@
-﻿using System.Text;
+﻿#define DEBUG
+
+using System.Text;
+using Fusee.Base.Core;
 using Fusee.Serialization;
+
 
 namespace Fusee.Engine.Core
 {
+    public class ForwardShaderCodeBuilder
+    {
+        // Material Analyze
+        private bool _hasVertices, _hasNormals, _hasUVs, _hasColors;
+        private bool _hasDiffuse, _hasSpecular, _hasEmissive, _hasBump;
+        private bool _hasDiffuseTexture, _hasSpecularTexture, _hasEmissiveTexture;
+        private bool _isMaterialLightComponent, _isMaterialPBRComponent;
+        private bool _hasApplyLightString;
+        private bool _hasFragmentString;
+        private readonly bool _hasWeightMap;
+        private readonly int _nBones;
+        private string _applyLightString;
+        private string _applyFragmentString;
+        private LightningCalculationMethod _lightningCalculationMethod;
 
+        // ReSharper disable once InconsistentNaming
+        public string VS { get; private set; }
+        // ReSharper disable once InconsistentNaming
+        public string PS { get; private set; }
+
+        /// <summary>
+        /// LEGACY CONSTRUCTOR
+        /// Creates vertex and pixel shader for given material, mesh, weight; lightning calculation is simple per default
+        /// </summary>
+        /// <param name="mc">The MaterialCpmponent</param>
+        /// <param name="mesh">The MeshComponent</param>
+        /// <param name="wc">Teh WeightComponent</param>
+        public ForwardShaderCodeBuilder(MaterialComponent mc, MeshComponent mesh, WeightComponent wc = null)
+            : this(mc, mesh, LightningCalculationMethod.SIMPLE, wc)
+        {
+           
+        }
+
+        /// <summary>
+        /// Creates vertex and pixel shader for given material, mesh, weight; lightning calculation is simple per default
+        /// </summary>
+        /// <param name="mc">The MaterialCpmponent</param>
+        /// <param name="mesh">The MeshComponent</param>
+        /// <param name="wc">The WeightComponent</param>
+        /// <param name="lightningCalculation">Method of lightning calculation; simple BLINN PHONG or advanced physically based</param>
+        public ForwardShaderCodeBuilder(MaterialComponent mc, MeshComponent mesh,
+            LightningCalculationMethod lightningCalculation = LightningCalculationMethod.SIMPLE,
+            WeightComponent wc = null)
+        {
+            // Set Lightnincalculation
+            _lightningCalculationMethod = lightningCalculation;
+
+            // first step, analyze Material
+            AnalyzeMaterial(mc);
+
+            if (wc != null)
+            {
+                _hasWeightMap = true;
+                _nBones = wc.Joints.Count;
+            }
+            else
+            {
+                _nBones = 0;
+            }
+
+            // Check for mesh
+            if (mesh != null)
+                AnalyzeMesh(mesh);
+            else
+            {
+                _hasVertices = _hasNormals = _hasUVs = true;
+            }
+
+            // Create VS
+            CreateVertexShader();
+            // Create PS
+            CreatePixelShader();
+
+#if DEBUG
+            Diagnostics.Log(VS);
+            Diagnostics.Log(PS);
+#endif
+        }
+
+        public void AnalyzeMaterial(MaterialComponent mc)
+        {
+            // MaterialComponent analysis:
+            _hasDiffuse = mc.HasDiffuse;
+
+            if (_hasDiffuse)
+                _hasDiffuseTexture = (mc.Diffuse.Texture != null);
+            _hasSpecular = mc.HasSpecular;
+
+            if (_hasSpecular)
+                _hasSpecularTexture = (mc.Specular.Texture != null);
+            _hasEmissive = mc.HasEmissive;
+
+            if (_hasEmissive)
+                _hasEmissiveTexture = (mc.Emissive.Texture != null);
+            _hasBump = mc.HasBump; // always has a texture...
+
+            // Reflection of materialComponent
+            var t = mc.GetType();
+            if (typeof(MaterialPBRComponent).IsAssignableFrom(t))
+            {
+                // TODO: Write correct physically based shaders
+                // mc = mc as MaterialPBRComponent;
+                _isMaterialPBRComponent = true;
+            }
+            if (typeof(MaterialLightComponent).IsAssignableFrom(t))
+            {
+                var mlc = mc as MaterialLightComponent;
+                _isMaterialLightComponent = true;
+
+                // check for ApplyLightString
+                if (!string.IsNullOrEmpty(mlc?.ApplyLightString))
+                {
+                    _hasApplyLightString = true;
+                    _applyLightString = mlc.ApplyLightString;
+                }
+
+            }
+        }
+
+        private void AnalyzeMesh(MeshComponent mesh)
+        {
+            _hasVertices = (mesh.Vertices != null && mesh.Vertices.Length > 0);
+            _hasNormals = (mesh.Normals != null && mesh.Normals.Length > 0);
+            _hasUVs = (mesh.UVs != null && mesh.UVs.Length > 0);
+            _hasColors = false;
+        }
+
+        private void CreateVertexShader()
+        {
+            var vertexStringBuilder = new StringBuilder();
+            // Version
+            vertexStringBuilder.Append(Version());
+            // VertexInputs
+            vertexStringBuilder.Append(VertexInputDeclarations());
+            // VertexMatrix
+            vertexStringBuilder.Append(VertexMatrixDeclarations());
+            // VertexBody
+            vertexStringBuilder.Append(VertexBody());
+            // Return VS
+            VS = vertexStringBuilder.ToString();
+        }
+
+        private void CreatePixelShader()
+        {
+            var pixelStringBuilder = new StringBuilder();
+            // Version
+            pixelStringBuilder.Append(Version());
+            // PixelInputs
+            pixelStringBuilder.Append(PixelInputDeclarations());
+            // PxelShaderMethods (specular, light, etc.)
+            pixelStringBuilder.Append(PixelShaderMethods());
+            // PixelBody
+            pixelStringBuilder.Append(PixelBody());
+
+            PS = pixelStringBuilder.ToString();
+        }
+
+        /// <summary>
+        /// Returns the GLSL Version
+        /// </summary>
+        /// <returns></returns>
+        private static string Version()
+        {
+            return "#version 100\n";
+        }
+
+        /// <summary>
+        /// Returns the vertex input declarations
+        /// </summary>
+
+        private string VertexInputDeclarations()
+        {
+            var returnString = "";
+
+            if (_hasVertices)
+                returnString += "attribute vec3 fuVertex;\n";
+
+            if (_hasSpecular)
+                returnString += "varying vec3 vViewDir;\n";
+
+            if (_hasWeightMap)
+            {
+                returnString += "attribute vec4 fuBoneIndex;\n";
+                returnString += "attribute vec4 fuBoneWeight;\n";
+            }
+
+            if (_hasNormals)
+                returnString += "attribute vec3 fuNormal;\n " +
+                                "varying vec3 vNormal;\n";
+
+            if (_hasUVs)
+                returnString += "attribute vec2 fuUV;\n" +
+                                "varying vec2 vUV;\n";
+
+            if (_hasColors)
+                returnString += "attribute vec4 fuColor;" +
+                                "\n varying vec4 vColors;\n";
+
+            return returnString;
+        }
+
+        /// <summary>
+        /// Returns the vertex shader matrix declarations
+        /// </summary>
+        /// <returns></returns>
+        private string VertexMatrixDeclarations()
+        {
+            var returnString = "";
+
+            // FUSEE_MVP
+            returnString += "uniform mat4 FUSEE_MVP;\n";
+
+            if (_hasNormals)
+                returnString += "uniform mat4 FUSEE_ITMV;\n";
+
+            if (_hasSpecular)
+                returnString += "uniform mat4 FUSEE_IMV;\n";
+
+            if (_hasWeightMap)
+            {
+                returnString += "uniform mat4 FUSEE_P;\n";
+                //returnString += "uniform mat4 FUSEE_V;\n"; legacy code, there is no sperate view anymore!
+                returnString += "uniform mat4 FUSEE_IMV;\n";
+                returnString += $"uniform mat4 FUSEE_BONES[{_nBones}];\n";
+            }
+
+            // lightning calculation
+            returnString += "varying vec4 surfacePos;\n";
+            returnString += "varying vec3 vMVNormal;\n";
+            returnString += "uniform mat4 FUSEE_MV;\n";
+
+            // shadow calculation
+            returnString += "varying vec4 shadowLight;\n";
+            returnString += "uniform mat4 shadowMVP;\n";
+
+            return returnString;
+        }
+
+        /// <summary>
+        /// Returns the vertex shader main method
+        /// </summary>
+        /// <returns></returns>
+        private string VertexBody()
+        {
+            var returnString = "";
+
+            // Start of main
+            returnString += "void main() {\n";
+
+            if (_hasNormals && _hasWeightMap)
+            {
+                returnString += "vec4 newVertex;\n";
+                returnString += "vec4 newNormal;\n";
+
+                returnString +=
+                    "newVertex = (FUSEE_BONES[int(fuBoneIndex.x)] * vec4(fuVertex, 1.0) ) * fuBoneWeight.x ;\n";
+                returnString +=
+                    "newNormal = (FUSEE_BONES[int(fuBoneIndex.x)] * vec4(fuNormal, 0.0)) * fuBoneWeight.x;\n";
+
+                returnString +=
+                    "newVertex = (FUSEE_BONES[int(fuBoneIndex.y)] * vec4(fuVertex, 1.0)) * fuBoneWeight.y + newVertex;\n";
+                returnString +=
+                    "newNormal = (FUSEE_BONES[int(fuBoneIndex.y)] * vec4(fuNormal, 0.0)) * fuBoneWeight.y + newNormal;\n";
+
+                returnString +=
+                    "newVertex = (FUSEE_BONES[int(fuBoneIndex.z)] * vec4(fuVertex, 1.0)) * fuBoneWeight.z + newVertex;\n";
+                returnString +=
+                    "newNormal = (FUSEE_BONES[int(fuBoneIndex.z)] * vec4(fuNormal, 0.0)) * fuBoneWeight.z + newNormal;\n";
+
+                returnString +=
+                    "newVertex = (FUSEE_BONES[int(fuBoneIndex.w)] * vec4(fuVertex, 1.0)) * fuBoneWeight.w + newVertex;\n";
+                returnString +=
+                    "newNormal = (FUSEE_BONES[int(fuBoneIndex.w)] * vec4(fuNormal, 0.0)) * fuBoneWeight.w + newNormal;\n";
+
+                // At this point the normal is in World space - transform back to model space
+                // TODO: Is it a hack to invert Model AND View? Should we rather only invert MODEL (and NOT VIEW)??
+                returnString += "vNormal = mat3(FUSEE_IMV) * newNormal.xyz;\n";
+            }
+
+            if (_hasSpecular)
+            {
+                returnString += "vec3 viewPos = FUSEE_IMV[3].xyz;\n";
+
+                returnString += _hasWeightMap
+                    ? "vViewDir = normalize(viewPos - vec3(newVertex));\n"
+                    : "vViewDir = normalize(viewPos - fuVertex);\n";
+            }
+
+            if (_hasUVs)
+                returnString += "vUV = fuUV;\n";
+
+            // Add ModelViewSpace normals for lightning calculation
+            returnString += "vMVNormal = normalize(mat3(FUSEE_ITMV) * fuNormal);\n";
+
+            // lightning calculation
+            returnString += "surfacePos =  FUSEE_MV * vec4(fuVertex, 1.0); \n";
+            returnString += "shadowLight = shadowMVP * surfacePos; \n";
+
+            // gl_Position
+            returnString += _hasWeightMap
+                ? "gl_Position = FUSEE_P * FUSEE_V * vec4(vec3(newVertex), 1.0);\n"
+                : "gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);\n";
+
+            // End of main
+            returnString += "}\n";
+
+            return returnString;
+        }
+
+        /// <summary>
+        /// Returns the GL_ES Precision precompiler
+        /// </summary>
+        /// <returns></returns>
+        // ReSharper disable once InconsistentNaming
+        private static string ESPrecision()
+        {
+            return "#ifdef GL_ES\n" +
+                   "  precision highp float;\n" +
+                   "#endif\n\n";
+        }
+
+        private string PixelInputDeclarations()
+        {
+            var returnString = "";
+            // #ifdef GL_ES
+            returnString += ESPrecision();
+
+            // Define number of lights
+            var numberOfLights = SceneRenderer.AllLightResults.Count > 0 ? SceneRenderer.AllLightResults.Count : 1;
+                // legacy code, should be larger one by default!
+            returnString += $"#define MAX_LIGHTS {numberOfLights}\n";
+
+            // LightStructDeclaration
+            returnString += LightStructDeclaration();
+
+            // UniformInputDelcaration (uniform Texture, etc.)
+            returnString += ChannelInputDeclaration(_hasDiffuse, _hasDiffuseTexture, "Diffuse");
+            returnString += ChannelInputDeclaration(_hasEmissive, _hasEmissiveTexture, "Emissive");
+            returnString += SpecularInputDeclaration();
+            returnString += BumbInputDeclaration(_hasBump);
+
+            returnString += "varying vec3 vViewDir;\n";
+
+            if (_hasNormals)
+            {
+                returnString += "varying vec3 vMVNormal;\n";
+                returnString += "varying vec3 vNormal;\n";
+            }
+
+            if (_hasUVs)
+                returnString += "varying vec2 vUV;\n";
+
+
+            returnString += "varying vec4 surfacePos;\n";
+            returnString += "uniform mat4 FUSEE_MV;\n";
+
+            // Multipass
+            returnString += "uniform sampler2D firstPassTex;\n";
+
+            // Shadow
+            returnString += "varying vec4 shadowLight;\n";
+
+            return returnString;
+        }
+
+        private static string LightStructDeclaration()
+        {
+            return @"
+            struct Light 
+            {
+                vec3 position;
+                vec3 intensities;
+                vec3 coneDirection;
+                float attenuation;
+                float ambientCoefficient;
+                float coneAngle;
+                int lightType;
+            };
+            uniform Light allLights[MAX_LIGHTS];
+            ";
+        }
+
+        private string ChannelInputDeclaration(bool hasChannel, bool hasChannelTexture, string channelName)
+        {
+            var returnString = "";
+
+            if (!hasChannel)
+                return returnString;
+
+            // This will generate e.g. "  uniform vec4 DiffuseColor;"
+            returnString += $"uniform vec3 {channelName}Color; \n";
+
+            if (!hasChannelTexture)
+                return returnString;
+
+            // This will generate e.g.
+            // "  uniform sampler2D DiffuseTexture;"
+            // "  uniform float DiffuseMix;"
+            returnString += $"uniform sampler2D {channelName}Texture; \n";
+            returnString += $"uniform float {channelName}Mix; \n";
+
+            return returnString;
+        }
+
+        private string SpecularInputDeclaration()
+        {
+            var returnString = "";
+
+            if (!_hasSpecular)
+                return returnString;
+
+            returnString += ChannelInputDeclaration(_hasSpecular, _hasSpecularTexture, "Specular");
+
+            returnString += "uniform float SpecularShininess;\n";
+            returnString += "uniform float SpecularIntensity;\n";
+
+            return returnString;
+        }
+
+        private static string BumbInputDeclaration(bool bumb)
+        {
+            var returnString = "";
+
+            if (!bumb)
+                return returnString;
+
+            returnString += "uniform sampler2D BumpTexture;\n";
+            returnString += "uniform float BumpIntensity;\n";
+
+            return returnString;
+        }
+
+        private string PixelShaderMethods()
+        {
+            var returnString = "";
+
+            // Ambient Light
+            returnString += AmbientLightMethod();
+
+            // Diffuse Light
+            if (_hasDiffuse)
+                returnString += DiffuseLightMethod();
+
+            // Specular Light
+            if (_hasSpecular)
+                returnString += SpecularLightMethod();
+
+            // Shadows
+            returnString += ShadowFactorMethod();
+
+            return returnString;
+        }
+
+        // TODO: Refactor
+        private static string ShadowFactorMethod()
+        {
+            return @"
+                    float CalcShadowFactor(vec4 fragPosLightSpace)
+                {
+
+                    // perform perspective divide for ortographic!            
+                     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+                    projCoords = projCoords * 0.5 + 0.5; // map to [0,1]
+                    //float bias =  max(0.0005 * (1.0 - NoL), 0.001);  // bias to prevent shadow acne
+
+                    float currentDepth = projCoords.z;
+                    float pcfDepth = texture2D(firstPassTex, projCoords.xy).r;
+                    float shadow = 0.0;
+
+                /*     // Percentage closer filtering[Currently error with webgl - desktop needs ivec, web expects float for textureSize()]
+                    // [http://http.developer.nvidia.com/GPUGems/gpugems_ch11.html]
+                        const float texelSizeFloat = textureSize(firstPassTex, 0);
+                        //vec2 texelSizeFloat = vec2(texelSize);
+                        texelSizeFloat = 1.0 / texelSizeFloat;
+                    for (int x = -1; x <= 1; ++x)
+                    {
+                        for (int y = -1; y <= 1; ++y)
+                        {
+                            float pcfDepth = texture2D(firstPassTex, projCoords.xy + vec2(x, y) * texelSizeFloat).r;
+                            shadow += currentDepth > pcfDepth ? 1.0 : 0.0; // without currentDepth-bias because the number has to be so small, TODO: Fix this
+                        }
+                    }
+                    shadow /= 32.0;
+                */
+
+                   shadow = currentDepth - 0.0001 > pcfDepth ? 1.0 : 0.0;         
+
+                 if (projCoords.z > 1.0)
+                        shadow = 0.0;
+        
+                   return shadow; 
+            }";
+        }
+
+        private string DiffuseLightMethod()
+        {
+            var returnString = "";
+            returnString += "// returns intensity of diffuse reflection\n";
+            returnString += "vec3 diffuseLighting(vec3 N, vec3 L, vec3 intensities)\n";
+            returnString += "{\n";
+            returnString += "   // calculation as for Lambertian reflection\n";
+            returnString += "   float diffuseTerm = clamp(dot(N, L) / (length(L) * length(N)), 0.0, 1.0) ;\n";
+            if (_hasDiffuseTexture)
+                returnString +=
+                    $"return texture2D({DiffuseTextureName}, vUV).rgb * {DiffuseMixName} * diffuseTerm * intensities;\n";
+            else
+                returnString += $"  return ({DiffuseColorName} * intensities * diffuseTerm);\n";
+            returnString += "}\n";
+
+            return returnString;
+        }
+
+        private string SpecularLightMethod()
+        {
+            var returnString = "";
+
+            returnString += "// returns intensity of diffuse reflection\n";
+            returnString += "vec3 specularLighting(vec3 N, vec3 L, vec3 V, vec3 intensities)\n";
+            returnString += "{\n";
+            returnString += "   float specularTerm = 0.0;\n";
+            returnString += "   if(dot(N, L) > 0.0)\n";
+            returnString += "   {\n";
+            returnString += "   // half vector\n";
+            returnString += "   vec3 H = normalize(L + V);\n";
+            returnString += $"   specularTerm = max(0.0, pow(dot(N, H), {SpecularShininessName}));\n";
+            returnString += "   }\n";
+            returnString += $"  return ({SpecularColorName} * {SpecularIntensityName} * intensities) * specularTerm;\n";
+            returnString += "}\n";
+
+            return returnString;
+        }
+        
+        private string AmbientLightMethod()
+        {
+            var returnString = "";
+
+            returnString += "// returns intensity of reflected ambient lighting\n";
+            returnString += "vec3 ambientLighting(float ambientCoefficient)\n";
+            returnString += "{\n";
+            if (EmissiveColorName != null)
+                returnString += $"   return ({EmissiveColorName} * ambientCoefficient);\n";
+            else
+                returnString += "   return vec3(ambientCoefficient);\n";
+            returnString += "}\n";
+
+            return returnString;
+        }
+
+        private string ApplyLightMethod()
+        {
+            if (_hasApplyLightString)
+                return ApplyLightFunction;
+
+            var returnString = "";
+
+            // Start of ApplyLight()
+            returnString +=
+                "vec3 ApplyLight(vec3 position, vec3 intensities, vec3 coneDirection, float attenuation, float ambientCoefficient, float coneAngle, int lightType) {\n";
+
+            // ApplyLightParams
+            returnString += ApplyLightParams();
+
+            // Result
+            returnString += "vec3 result = vec3(0);\n";
+
+            // AtteunationFunction
+            returnString += AttenuationFunction();
+
+            // TODO: Add legacy light back (infinite softbox @ camera)
+            // LightCalculation
+            returnString += "if(lightType == 0) // PointLight\n";
+            returnString += "{";
+            returnString += $"  {PointLightCalculation()}\n";
+            returnString += "}\n";
+            returnString += "else if(lightType == 1) // ParallelLight\n";
+            returnString += "{";
+            returnString += $"  {ParallelLightCalculation()}\n";
+            returnString += "}\n";
+            returnString += "else if(lightType == 2) // SpotLight\n";
+            returnString += "{";
+            returnString += $"  {SpotLightCalculation()}\n";
+            returnString += "}\n";
+
+            // Gamma Correction
+            returnString += GammaCorrection();
+            // Return Result
+            returnString += "return result;\n";
+            // End of ApplyLight()
+            returnString += "}";
+
+            return returnString;
+        }
+
+        private static string GammaCorrection()
+        {
+            return "vec3 gamma = vec3(1.0/2.2);\n" +
+                   "result = pow(result, gamma);\n";
+        }
+
+        private string PixelBody()
+        {
+            var returnString = "";
+
+            // ApplyLightMethod
+            returnString += ApplyLightMethod();
+
+            // Begin of main()
+            returnString += "void main() {";
+
+
+            returnString += "vec3 result = vec3(0.0);\n";
+            returnString += "for(int i = 0; i < MAX_LIGHTS;i++)\n";
+            returnString += "{\n";
+            returnString += "Light currentLight = allLights[0];\n";
+            // TODO: Evaluate if this works with intel GLSL:
+            returnString += @"
+                vec3 currentPosition = allLights[i].position;
+                vec3 currentIntensities = allLights[i].intensities;
+                vec3 currentConeDirection = allLights[i].coneDirection;
+                float currentAttenuation = allLights[i].attenuation;
+                float currentAmbientCoefficient = allLights[i].ambientCoefficient;
+                float currentConeAngle = allLights[i].coneAngle;
+                int currentLightType = allLights[i].lightType; ";
+            returnString +=
+                "result += ApplyLight(currentPosition, currentIntensities, currentConeDirection, " +
+                "currentAttenuation, currentAmbientCoefficient, currentConeAngle, currentLightType);\n";
+            returnString += "}\n";
+            returnString += "gl_FragColor = vec4(result,1.0);\n";
+
+
+            // End of main()
+            returnString += "}";
+
+            return returnString;
+        }
+
+        private string ApplyLightParams()
+        {
+            var outputString = "";
+
+            outputString += "vec3 N = vMVNormal;\n";
+            outputString += "vec3 L = normalize(position - surfacePos.xyz);\n";
+            outputString += "vec3 V = normalize(vViewDir - surfacePos.xyz);\n";
+            outputString += "vec2 o_texcoords = vUV;\n";
+            outputString += "\n";
+            outputString += "\n";
+            outputString += "float shadowFactor = CalcShadowFactor(shadowLight); \n";
+            outputString += "\n";
+
+            // Diffuse, specular, color names
+            outputString += "vec3 Idif = vec3(0);\n";
+            outputString += "vec3 Ispe = vec3(0);\n";
+            outputString += "vec3 diffuseColor = vec3(0);\n";
+
+            // Ambient
+            outputString += "vec3 Iamb = ambientLighting(ambientCoefficient);\n";
+
+            // Diffuse
+            if (_hasDiffuse)
+            {
+                outputString += "Idif = diffuseLighting(N, L, intensities);\n";
+                if (_hasDiffuseTexture)
+                    outputString +=
+                        $"diffuseColor = texture2D({DiffuseTextureName}, o_texcoords).rgb * {DiffuseMixName};\n";
+                else
+                    outputString += $"diffuseColor = {DiffuseColorName};\n";
+            }
+
+            // Specular
+            if (_hasSpecular)
+                outputString += "Ispe = specularLighting(N, L, V, intensities);\n";
+
+            outputString += "\n";
+            outputString += "\n";
+
+            return outputString;
+        }
+
+        private static string ParallelLightCalculation()
+        {
+            var returnString = "";
+            returnString += "result = Iamb + (1.0-shadowFactor) *  (Idif + Ispe);\n";
+            return returnString;
+        }
+
+        private static string PointLightCalculation()
+        {
+            var returnString = "\n";
+            returnString += "result = Iamb + diffuseColor  * (1.0-shadowFactor) * (Idif + Ispe) * att;\n";
+
+            return returnString;
+        }
+
+        private static string SpotLightCalculation()
+        {
+            var returnString = "\n";
+            returnString += "float lightToSurfaceAngle = dot(-L, coneDirection);\n";
+            // coneDirection comes in normalized and multiplied with modelview
+            returnString += "if (lightToSurfaceAngle > coneAngle)\n";
+            // coneAngle comes in converted from degrees to radians
+            returnString += "{\n";
+            returnString += "   att *= (1.0 - (1.0 - lightToSurfaceAngle) * 1.0/(1.0 - coneAngle));\n";
+            returnString += "}\n";
+            returnString += "else\n";
+            returnString += "{\n";
+            returnString += "   att = 0.0;\n";
+            returnString += "}\n";
+
+            returnString += "\n";
+            returnString += "\n";
+            returnString += "       result = Iamb + diffuseColor  * (1.0-shadowFactor) * (Idif + Ispe) * att;\n";
+
+            return returnString;
+        }
+
+        private static string AttenuationFunction()
+        {
+            var returnString = "";
+            returnString += "float distanceToLight = distance(position, surfacePos.xyz);\n";
+            returnString += "float att = clamp(1.0 - distanceToLight*distanceToLight/(attenuation*attenuation), 0.0, 1.0);\n";
+            returnString += "att *= att;\n";
+            return returnString;
+        }
+
+        public string DiffuseColorName => (_hasDiffuse) ? "DiffuseColor" : null;
+
+        public string SpecularColorName => (_hasSpecular) ? "SpecularColor" : null;
+
+        public string EmissiveColorName => (_hasEmissive) ? "EmissiveColor" : null;
+
+        public string DiffuseTextureName => (_hasDiffuseTexture) ? "DiffuseTexture" : null;
+
+        public string SpecularTextureName => (_hasSpecularTexture) ? "SpecularTexture" : null;
+
+        public string EmissiveTextureName => (_hasEmissiveTexture) ? "EmissiveTexture" : null;
+
+        public string BumpTextureName => (_hasBump) ? "BumpTexture" : null;
+
+        public string DiffuseMixName => (_hasDiffuse) ? "DiffuseMix" : null;
+
+        public string SpecularMixName => (_hasSpecular) ? "SpecularMix" : null;
+
+        public string EmissiveMixName => (_hasEmissive) ? "EmissiveMix" : null;
+
+        public string SpecularShininessName => (_hasSpecular) ? "SpecularShininess" : null;
+
+        public string SpecularIntensityName => (_hasSpecular) ? "SpecularIntensity" : null;
+
+        public string BumpIntensityName => (_hasBump) ? "BumpIntensity" : null;
+
+        public string ApplyLightFunction => (_hasApplyLightString) ? _applyLightString : null;
+
+        public string ApplyFragmentFunction => (_hasFragmentString) ? _applyFragmentString : null;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
     public class ForwardShaderCodeBuilder
     {
         private bool _hasVertices, _hasNormals, _hasUVs, _hasColors;
@@ -282,7 +1080,7 @@ namespace Fusee.Engine.Core
             }
             shadow /= 32.0;
 */
-
+/*
 
            
 
@@ -332,7 +1130,7 @@ namespace Fusee.Engine.Core
 
 
             */
-            ps.Append(calcshadow);
+        /*    ps.Append(calcshadow);
 
         }
 
@@ -394,7 +1192,6 @@ namespace Fusee.Engine.Core
                 if (_hasSpecular)
                     vs.Append($"           {SpecularLightingMethod()}\n");
                 vs.Append("\n\n\n");
-                vs.Append("/******* ApplyLight Method ****/\n");
                 vs.Append("vec3 ApplyLight(vec3 position, vec3 intensities, vec3 coneDirection, float attenuation, float ambientCoefficient, float coneAngle, int lightType)\n");
                 vs.Append("{\n");
                 vs.Append("     vec3 result = vec3(0.0, 0.0, 0.0);\n");
@@ -445,7 +1242,7 @@ namespace Fusee.Engine.Core
                     vs.Append("     }\n");
                     vs.Append("     return result;\n");
                     vs.Append("}\n");
-                }*/
+                }
         }
 
 
@@ -727,7 +1524,7 @@ namespace Fusee.Engine.Core
 //        }
 
         // ReSharper disable once InconsistentNaming
-        private void PSBody(StringBuilder vs)
+/*        private void PSBody(StringBuilder vs)
         {
             if (_lightningCalculationMethod == LightningCalculationMethod.SIMPLE)
             {
@@ -1120,3 +1917,4 @@ namespace Fusee.Engine.Core
     }
 
 }
+*/

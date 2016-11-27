@@ -64,7 +64,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Attributes.cs" />
-    <Compile Include="GBufferHandle.cs" />
+    <Compile Include="GBufferHelper.cs" />
     <Compile Include="IAudioStreamImp.cs" />
     <Compile Include="IInputDeviceImp.cs" />
     <Compile Include="IInputDriverImp.cs" />

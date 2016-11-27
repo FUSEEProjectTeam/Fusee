@@ -258,21 +258,21 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// Creates also a framebufferobject and installs convenience methods for binding and reading.
         /// </summary>
         /// <returns>An ITexture that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
-        public ITexture CreateWritableTexture(int width, int height, ImagePixelFormat pixelFormat)
+        public ITexture CreateWritableTexture(int width, int height, WritableTextureFormat textureFormat)
         {
             Texture returnTexture = null;
 
             try
             {
-                switch (pixelFormat)
+                switch (textureFormat)
                 {
-                    case ImagePixelFormat.Depth:
+                    case WritableTextureFormat.Depth:
                         returnTexture = CreateDepthFramebuffer(width, height);
                         break;
-                        case ImagePixelFormat.DepthCubeMap:
+                        case WritableTextureFormat.DepthCubeMap:
                         returnTexture = CreateDepthCubeMapFramebuffer(width, height);
                         break;
-                        case ImagePixelFormat.GBuffer:
+                        case WritableTextureFormat.GBuffer:
                         returnTexture = CreateGBufferFramebuffer(width, height);
                         break;
                     default:
@@ -289,11 +289,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
         private static Texture CreateGBufferFramebuffer(int width, int height)
         {
+            // TODO: Add Speculardata
             // Set up G-Buffer
-            // 3 textures:
+            // 4 textures:
             // 1. Positions (RGB)
             // 2. Normals (RGB)
-            // 3. Color (RGB) + Specular (A)
+            // 3. Color (RGB)
+            // 4. ViewPos as vViewPos = FUSEE_IMV[3].xyz - fuVertex
 
             var gBufferHandle = 0;
             var gBufferPositionTextureHandle = 0;
@@ -391,6 +393,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             };
         }
 
+        // Creates a depth framebuffer
         private static Texture CreateDepthFramebuffer(int width, int height)
         {
             var textureHandle = 0;
@@ -903,31 +906,31 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.ActiveTexture(TextureUnit.Texture0 + texUnit);
             GL.BindTexture(TextureTarget.Texture2D, ((Texture)texId).handle);
         }
-        
+
         /// <summary>
         /// Sets a given Shader Parameter to a created texture
         /// </summary>
         /// <param name="param">Shader Parameter used for texture binding</param>
-        /// <param name="texId">An ITexture probably returned from CreateTexture method</param>
+        /// <param name="texId">An ITexture probably returned from CreateWritableTexture method</param>
         /// <param name="gHandle">The GBufferHandle</param>
         public void SetShaderParamTexture(IShaderParam param, ITexture texId, GBufferHandle gHandle)
         {
             switch (gHandle)
             {
-                case GBufferHandle.gPositionHandle:
+                case GBufferHandle.GPositionHandle:
                     ((Texture) texId).handle = ((Texture) texId).gBufferPositionTextureHandle;
                     SetShaderParamTexture(param, texId);
                     break;
-                case GBufferHandle.gNormalHandle:
+                case GBufferHandle.GNormalHandle:
                     ((Texture)texId).handle = ((Texture)texId).gBufferNormalTextureHandle;
                     SetShaderParamTexture(param, texId);
                     
                     break;
-                case GBufferHandle.gAlbedoSpecHandle:
+                case GBufferHandle.GAlbedoHandle:
                     ((Texture)texId).handle = ((Texture)texId).gBufferAlbedoSpecTextureHandle;
                     SetShaderParamTexture(param, texId);
                     break;
-                case GBufferHandle.gViewDir:
+                case GBufferHandle.GViewDir:
                     ((Texture)texId).handle = ((Texture)texId).gBufferViewDirTextureHandle;
                     SetShaderParamTexture(param, texId);
                     break;
@@ -1881,7 +1884,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 GL.CullFace(CullFaceMode.Front);
                 
                 // Bind buffer - now we are rendering to this buffer!
-                GL.Ext.BindFramebuffer(FramebufferTarget.DrawFramebuffer, textureImp.fboHandle);
+                GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, textureImp.fboHandle);
 
                 // Clear 
                 Clear(ClearFlags.Depth);
@@ -1899,7 +1902,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             else if (deferredNormalPass && textureImp.gBufferHandle != -1)
             {
                 // Copy depth to normal buffer
-                GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, textureImp.gBufferHandle);
+                GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, textureImp.gDepthRenderbufferHandle);
                 GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0); // Write to default framebuffer
                 // copy depth
                 var width = textureImp.textureWidth;
@@ -1938,8 +1941,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.ColorMask(red, green, blue, alpha);
         }
 
-        #region FBO related Methods/Members
-
         /// <summary>
         /// Returns the capabilities of the underlying graphics hardware
         /// </summary>
@@ -1949,23 +1950,16 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             switch (capability)
             {
-                case HardwareCapability.DEFFERED_POSSIBLE:
+                case HardwareCapability.DefferedPossible:
                     return !GL.GetString(StringName.Extensions).Contains("EXT_framebuffer_object") ? 0U : 1U;
-                case HardwareCapability.BUFFERSIZE:
+                case HardwareCapability.Buffersize:
                     throw new NotImplementedException("Not yet.");
                     return 0;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(capability), capability, null);
             }
         }
-
-        public bool CreateFBO()
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
-
+        
         #endregion
 
         #region Picking related Members

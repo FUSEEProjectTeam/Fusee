@@ -965,14 +965,17 @@ namespace Fusee.Engine.Core
 
         /// <summary>
         /// Creates a new writable texture and binds it to the shader.
-        /// Creates also a framebufferobject and installs convenience methods for binding and reading.
+        /// This is done by creating a framebuffer and a renderbuffer (if needed).
+        /// All bufferhandles are returned with the texture.
+        /// For binding this texture call <see cref="SetRenderTarget"/>SetRenderTarget
+        /// <param name="textureFormat">The format of writable texture (e.g. Depthbuffer, G-Buffer, ...)</param>
         /// </summary>
         /// <returns>
-        /// <returns>An <see cref="ITexture"/>ITexture that can be used for texturing in the shader.</returns>
+        /// An <see cref="ITexture"/>ITexture that can be used for of screen rendering
         /// </returns>
-        public ITexture CreateWritableTexture(int width, int height, ImagePixelFormat imagePixelFormat)
+        public ITexture CreateWritableTexture(int width, int height, WritableTextureFormat textureFormat)
         {
-            return _rci.CreateWritableTexture(width, height, imagePixelFormat);
+            return _rci.CreateWritableTexture(width, height, textureFormat);
         }
   
 
@@ -1530,6 +1533,12 @@ namespace Fusee.Engine.Core
         }
 
 
+        /// <summary>
+        /// Sets the RenderTarget, if texture is null rendertarget is the main screen, otherwise the picture will be rendered onto given texture
+        /// </summary>
+        /// <param name="texture">The texture as target</param>
+        /// <param name="deferredNormalPass">If this is true, the rendertarget is set to the main screen,
+        /// but before the content of the first pass's z-Buffer is copied to main screen buffer (needed for G-Buffer).</param>
         public void SetRenderTarget(ITexture texture, bool deferredNormalPass = false)
         {
             _rci.SetRenderTarget(texture, deferredNormalPass);

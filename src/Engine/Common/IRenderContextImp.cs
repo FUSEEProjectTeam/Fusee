@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using Fusee.Base.Common;
 using Fusee.Math.Core;
 using JSIL.Meta;
@@ -201,8 +199,8 @@ namespace Fusee.Engine.Common
         /// Sets a Shader Parameter to a created texture.
         /// </summary>
         /// <param name="param">Shader Parameter used for texture binding.</param>
-        /// <param name="texId">An ITexture probably returned from CreateTexture() method.</param>
-        /// /// <param name="texId">The gBuffer Handle</param>
+        /// <param name="texId">An ITexture probably returned from CreateWritableTexture method</param>
+        /// <param name="gHandle">The GBufferHandle</param>
         void SetShaderParamTexture(IShaderParam param, ITexture texId, GBufferHandle gHandle);
 
         /// <summary>
@@ -239,12 +237,15 @@ namespace Fusee.Engine.Common
 
         /// <summary>
         /// Creates a new writable texture and binds it to the shader.
-        /// Creates also a framebufferobject and installs convenience methods for binding and reading.
+        /// This is done by creating a framebuffer and a renderbuffer (if needed).
+        /// All bufferhandles are returned with the texture.
+        /// For binding this texture call <see cref="SetRenderTarget"/>SetRenderTarget
+        /// <param name="textureFormat">The format of writable texture (e.g. Depthbuffer, G-Buffer, ...)</param>
         /// </summary>
         /// <returns>
-        /// An ITexture that can be used for rendering to a texture in the shader.
+        /// An <see cref="ITexture"/>ITexture that can be used for of screen rendering
         /// </returns>
-        ITexture CreateWritableTexture(int width, int height, ImagePixelFormat pixelFormat);
+        ITexture CreateWritableTexture(int width, int height, WritableTextureFormat textureFormat);
 
         /*
         /// <summary>
@@ -431,11 +432,12 @@ namespace Fusee.Engine.Common
         /// <param name="renderState">The render state to retrieve.</param>
         /// <returns>the current value of the render state.</returns>
         uint GetRenderState(RenderState renderState);
-        
+
         /// <summary>
         /// Sets the RenderTarget, if texture is null rendertarget is the main screen, otherwise the picture will be rendered onto given texture
         /// </summary>
         /// <param name="texture">The texture as target</param>
+        /// <param name="deferredNormalPass">If this is true, the framebuffer will be set to the mainscreen but before this, the content of the z-Buffer is copied from the first pass to the current pass.</param>
         void SetRenderTarget(ITexture texture, bool deferredNormalPass = false);
 
         /*
@@ -476,23 +478,25 @@ namespace Fusee.Engine.Common
         /// <summary> 
         /// Returns the capabilities of the underlying graphics hardware 
         /// </summary> 
-        /// <param name="capability"></param> 
+        /// <param name="capability">The capability to check against</param> 
         /// <returns>uint</returns> 
         uint GetHardwareCapabilities(HardwareCapability capability);
-
-
-        /// <summary>
-        /// Creates a FrameBufferObject
-        /// </summary>
-        /// <returns></returns>
-        // ReSharper disable once InconsistentNaming
-        bool CreateFBO();
     }
 
+    /// <summary>
+    /// Checks if the hardware is capable of the following entries.
+    /// If a numeric value is expected, this will be returned as a uint from the <see cref="IRenderContextImp.GetHardwareCapabilities"/>GetHardwareCapabilites
+    /// </summary>
     public enum HardwareCapability
     {
-        DEFFERED_POSSIBLE,
-        BUFFERSIZE
+        /// <summary>
+        /// Checks if deferred rendering with EXT_FRAMEBUFFER is possible
+        /// </summary>
+        DefferedPossible,
+        /// <summary>
+        /// Returns the buffersize of the hardware
+        /// </summary>
+        Buffersize
     }
 
 }
