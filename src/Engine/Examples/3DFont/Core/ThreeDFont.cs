@@ -31,10 +31,10 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             var vladimir = AssetStorage.Get<Font>("VLADIMIR.TTF");
             var gnuSerif = AssetStorage.Get<Font>("GNU-FreeSerif.ttf");
 
-            _text = "Hello World";
-            _threeDFontHelper = new ThreeDFontHelper(_text, vladimir);
+            _text = "Hello World!";
+            _threeDFontHelper = new ThreeDFontHelper(_text, gnuSerif);
 
-            var outlines = _threeDFontHelper.GetTextOutlinesWAngle(5);
+            var outlines = _threeDFontHelper.GetTextOutlinesWAngle(10);
             var geom = new Geometry(outlines, true);
 
             geom = geom.Extrude2DPolygon(2000);

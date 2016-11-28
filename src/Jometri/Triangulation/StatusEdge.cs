@@ -3,7 +3,7 @@ using Fusee.Jometri.DCEL;
 
 namespace Fusee.Jometri.Triangulation
 {
-    internal class StatusNode : IComparable<StatusNode>
+    internal class StatusEdge : IComparable<StatusEdge>
     {
         //Key is needed to insert the Node into a binary search tree and to find the edge directly left of an vertex (FindLargestSmalerThan(vertex.x)). 
         internal float Key;
@@ -18,7 +18,7 @@ namespace Fusee.Jometri.Triangulation
         private Geometry.Vertex _origin;
         private Geometry.Vertex _target;
 
-        public StatusNode(Geometry.Vertex origin, Geometry.Vertex target, Geometry.Vertex eventPoint)
+        public StatusEdge(Geometry.Vertex origin, Geometry.Vertex target, Geometry.Vertex eventPoint)
         {
             _origin = origin;
             _target = target;
@@ -44,7 +44,7 @@ namespace Fusee.Jometri.Triangulation
             }
         }
 
-        public int CompareTo(StatusNode other)
+        public int CompareTo(StatusEdge other)
         {
             return Key.CompareTo(other.Key);
         }

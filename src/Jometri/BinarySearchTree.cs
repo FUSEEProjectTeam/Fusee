@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Fusee.Base.Core
+namespace Fusee.Jometri
 {
     /// <summary>
     /// Represents a node in a (binary) tree.
@@ -33,6 +33,7 @@ namespace Fusee.Base.Core
         }
     }
 
+
     /// <summary>
     /// Data structure that stores items and allows fast lookup, insertion and deletion.
     /// </summary>
@@ -46,7 +47,7 @@ namespace Fusee.Base.Core
         /// <param name="root">The root node of the tree</param>
         /// <param name="value">Value to be inserted into the tree</param>
         /// <returns></returns>
-        public Node<T> InsertNode(ref Node<T> root, T value)
+        /*public Node<T> InsertNode(ref Node<T> root, T value)
         {
             if (root == null)
             {
@@ -58,11 +59,44 @@ namespace Fusee.Base.Core
             {
                 if (value.CompareTo(root.Value) <= 0) 
                 {
-                    root.LeftNode = InsertNode(ref root.LeftNode, value);
+                    root.LeftNode = InsertNode(root.LeftNode, value);
                 }
                 else if (value.CompareTo(root.Value) > 0) //Items with the same value are ignored, use >= to insert them into the three
                 {
-                    root.RightNode = InsertNode(ref root.RightNode, value);
+                    root.RightNode = InsertNode(root.RightNode, value);
+                }
+            }
+            return root;
+        }*/
+
+
+        public void InsertNode(T value)
+        {
+            if (_globalRoot == null)
+            {
+                _globalRoot = new Node<T>(value);
+            }
+            else
+            {
+                InsertNode(_globalRoot, value);
+            }
+        }
+
+        private static Node<T> InsertNode(Node<T> root, T value)
+        {
+            if (root == null)
+            {
+                root = new Node<T>(value);
+            }
+            else
+            {
+                if (value.CompareTo(root.Value) <= 0)
+                {
+                    root.LeftNode = InsertNode(root.LeftNode, value);
+                }
+                else if (value.CompareTo(root.Value) > 0)//Items with the same value are ignored, use >= to insert them into the three
+                {
+                    root.RightNode = InsertNode(root.RightNode, value);
                 }
             }
             return root;
@@ -71,9 +105,16 @@ namespace Fusee.Base.Core
         /// <summary>
         /// Preorder traversal of the tree. Visites the root, then visits the left sub-tree, after that it visits the right sub-tree.
         /// </summary>
-        /// <param name="root">The root node of the tree.</param>
         /// <returns></returns>
-        public IEnumerable<T> PreorderTraverseTree(Node<T> root)
+        public IEnumerable<T> PreorderTraverseTree()
+        {
+            if (_globalRoot == null) yield break;
+
+            foreach (var node in PreorderTraverseTree(_globalRoot))
+                yield return node;
+        }
+
+        private static IEnumerable<T> PreorderTraverseTree(Node<T> root)
         {
             if (root == null) yield break;
             yield return root.Value;
@@ -91,9 +132,16 @@ namespace Fusee.Base.Core
         /// <summary>
         /// Inorder traversal of the tree.
         /// </summary>
-        /// <param name="root">The root node of the tree.</param>
         /// <returns></returns>
-        public IEnumerable<T> InOrderTraverseTree(Node<T> root)
+        public IEnumerable<T> InOrderTraverseTree()
+        {
+            if (_globalRoot == null) yield break;
+
+            foreach (var node in InOrderTraverseTree(_globalRoot))
+                yield return node;
+        }
+
+        private static IEnumerable<T> InOrderTraverseTree(Node<T> root)
         {
             if (root == null) yield break;
             foreach (var v in InOrderTraverseTree(root.LeftNode))
@@ -110,9 +158,14 @@ namespace Fusee.Base.Core
         /// <summary>
         /// Deletes a node from the tree.
         /// </summary>
-        /// <param name="root">The root node of the tree</param>
         /// <param name="value">Value of the node which is to be deleted.</param>
-        public void DeleteNode(ref Node<T> root, T value)
+        public void DeleteNode(T value)
+        {
+            if (_globalRoot == null) return;
+            DeleteNode(ref _globalRoot, value);
+        }
+
+        private void DeleteNode(ref Node<T> root, T value)
         {
             if (root == null) return;
             if (root.Value.Equals(value))
@@ -128,10 +181,16 @@ namespace Fusee.Base.Core
         /// <summary>
         /// Traverses the tree to find and return a Node with a certain value.
         /// </summary>
-        /// <param name="root">The root node of the tree.</param>
         /// <param name="value">The value to search for</param>
         /// <returns></returns>
-        public Node<T> FindNode(Node<T> root, T value)
+        public T FindNode(T value)
+        {
+            var res = FindNode(_globalRoot, value);
+
+            return res.Value;
+        }
+
+        private static Node<T> FindNode(Node<T> root, T value)
         {
             Node<T> res = null;
             if (root.LeftNode != null)
@@ -180,7 +239,7 @@ namespace Fusee.Base.Core
             return root;
         }
 
-        private static void Replace(ref Node<T> root, ref T newValue )
+        private static void Replace(ref Node<T> root, ref T newValue)
         {
             if (root == null) return;
             if (root.LeftNode == null)
