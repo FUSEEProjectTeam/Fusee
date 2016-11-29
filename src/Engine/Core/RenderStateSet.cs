@@ -70,6 +70,25 @@ namespace Fusee.Engine.Core
         /// <item><description>SourceBlendAlpha: See the <see cref="SourceBlendAlpha"/> attribute</description></item>
         /// <item><description>DestinationBlendAlpha: See the <see cref="DestinationBlendAlpha"/> attribute</description></item>
         /// </list>
+        /// The following example shows how to set-up the combiner to use the alpha value passed to gl_FragColor.a in the 
+        /// pixel shader as the opacity of the resulting pixel's color. The color is blended between the pixel shader's 
+        /// RGB output and the RGB color already in the output buffer.
+        /// <code>
+        ///     // Switch alpha blending ON
+        ///     RC.SetRenderState(new RenderStateSet
+        ///     {
+        ///         AlphaBlendEnable = true,
+        ///         SourceBlend = Blend.SourceAlpha,
+        ///         DestinationBlend = Blend.InvSourceAlpha,
+        ///         BlendOperation = BlendOperation.Add,
+        ///         // In case of particles:
+        ///         ZEnable = true,
+        ///         ZWriteEnable = false,
+        ///     });
+        /// 
+        ///     // Switch alpha blending OFF
+        ///     RC.SetRenderState(RenderState.AlphaBlendEnable, 0);
+        /// </code>
         /// </remarks>
         public bool AlphaBlendEnable
         {
@@ -168,6 +187,16 @@ namespace Fusee.Engine.Core
         {
             get { return (Compare)_states[RenderState.ZFunc]; }
             set { _states[RenderState.ZFunc] = (uint)value; }
+        }
+
+        /// <summary>
+        /// Enables or disables depth buffer writing.
+        /// </summary>
+        public bool ZWriteEnable
+
+        {
+            get { return _states[RenderState.ZWriteEnable] != 0; }
+            set { _states[RenderState.ZWriteEnable] = value ? 1U : 0U; }
         }
         #endregion
 
