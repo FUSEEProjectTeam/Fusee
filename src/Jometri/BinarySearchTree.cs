@@ -7,74 +7,84 @@ namespace Fusee.Jometri
     /// <summary>
     /// Represents a node in a (binary) tree.
     /// </summary>
-    /// <typeparam name="T">The payload of the node as generic type.</typeparam>
-    public class Node<T>
+    /// <typeparam name="TK">The key of the node as generic type</typeparam>
+    /// <typeparam name="TV">The payload of the node as generic type.</typeparam>
+    public class Node<TK, TV>
     {
+
+        /// <summary>
+        /// The key of the node - determines how a node is sorted into the tree
+        /// </summary>
+        public TK Key { get; set; }
+
         /// <summary>
         /// The payload of the node.
         /// </summary>
-        public T Value { get; set; }
+        public TV Value { get; set; }
 
         /// <summary>
         /// An item with lower a value than the value of this node will become a LeftNode.
         /// </summary>
-        public Node<T> LeftNode;
+        public Node<TK, TV> LeftNode;
         /// <summary>
         /// An item with higher a value than the value of this node will become a RightNode.
         /// </summary>
-        public Node<T> RightNode;
+        public Node<TK, TV> RightNode;
 
         /// <summary>
         /// Creates a new Node.
         /// </summary>
+        /// <param name="key">The key of the new node</param>
         /// <param name="value">Payload of the new node</param>
-        public Node(T value)
+        public Node(TK key, TV value)
         {
+            Key = key;
             Value = value;
         }
     }
 
-
     /// <summary>
     /// Data structure that stores items and allows fast lookup, insertion and deletion.
     /// </summary>
-    /// <typeparam name="T">The type of the trees items.</typeparam>
-    public class BinarySearchTree<T> where T : IComparable<T>
+    /// <typeparam name="TK">The type of the trees key.</typeparam>
+    /// <typeparam name="TV">The type of the trees key.</typeparam>
+    public class BinarySearchTree<TK, TV> where TK : IComparable<TK>
     {
-        private Node<T> _globalRoot;
+        private Node<TK, TV> _globalRoot;
 
         /// <summary>
         /// Inserts a new node in a existing tree
         /// </summary>
-        /// <param name="value">Value to be inserted into the tree</param>
+        /// <param name="key">The key of the node </param>
+        /// <param name="value">Value of the node to be inserted into the tree</param>
         /// <returns></returns>
-        public void InsertNode(T value)
+        public void InsertNode(TK key, TV value)
         {
             if (_globalRoot == null)
             {
-                _globalRoot = new Node<T>(value);
+                _globalRoot = new Node<TK, TV>(key, value);
             }
             else
             {
-                InsertNode(_globalRoot, value);
+                InsertNode(_globalRoot, key, value);
             }
         }
 
-        private static Node<T> InsertNode(Node<T> root, T value)
+        private static Node<TK, TV> InsertNode(Node<TK, TV> root, TK key, TV value)
         {
             if (root == null)
             {
-                root = new Node<T>(value);
+                root = new Node<TK, TV>(key, value);
             }
             else
             {
-                if (value.CompareTo(root.Value) <= 0)
+                if (key.CompareTo(root.Key) <= 0)
                 {
-                    root.LeftNode = InsertNode(root.LeftNode, value);
+                    root.LeftNode = InsertNode(root.LeftNode, key, value);
                 }
-                else if (value.CompareTo(root.Value) > 0)//Items with the same value are ignored, use >= to insert them into the three
+                else if (key.CompareTo(root.Key) > 0)//Items with the same value are ignored, use >= to insert them into the three
                 {
-                    root.RightNode = InsertNode(root.RightNode, value);
+                    root.RightNode = InsertNode(root.RightNode, key, value);
                 }
             }
             return root;
@@ -82,9 +92,31 @@ namespace Fusee.Jometri
 
         /// <summary>
         /// Preorder traversal of the tree. Visites the root, then visits the left sub-tree, after that it visits the right sub-tree.
+        /// Retruns the keys.
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<T> PreorderTraverseTree()
+        public IEnumerable<TK> PreorderTraverseTreeKeys()
+        {
+            if (_globalRoot == null) yield break;
+
+            foreach (var node in PreorderTraverseTree(_globalRoot))
+                yield return node.Key;
+        }
+
+        /// <summary>
+        /// Preorder traversal of the tree. Visites the root, then visits the left sub-tree, after that it visits the right sub-tree.
+        /// Retruns the values.
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<TV> PreorderTraverseTreeValues()
+        {
+            if (_globalRoot == null) yield break;
+            var traverseGlobal = PreorderTraverseTree(_globalRoot).ToList();
+            foreach (var node in traverseGlobal)
+                yield return node.Value;
+        }
+
+        internal IEnumerable<Node<TK, TV>> PreorderTraverseTreeNodes()
         {
             if (_globalRoot == null) yield break;
 
@@ -92,10 +124,10 @@ namespace Fusee.Jometri
                 yield return node;
         }
 
-        private static IEnumerable<T> PreorderTraverseTree(Node<T> root)
+        private static IEnumerable<Node<TK, TV>> PreorderTraverseTree(Node<TK, TV> root)
         {
             if (root == null) yield break;
-            yield return root.Value;
+            yield return root;
             foreach (var v in PreorderTraverseTree(root.LeftNode))
             {
                 yield return v;
@@ -111,22 +143,22 @@ namespace Fusee.Jometri
         /// Inorder traversal of the tree.
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<T> InOrderTraverseTree()
+        public IEnumerable<TK> InOrderTraverseTree()
         {
             if (_globalRoot == null) yield break;
 
             foreach (var node in InOrderTraverseTree(_globalRoot))
-                yield return node;
+                yield return node.Key;
         }
 
-        private static IEnumerable<T> InOrderTraverseTree(Node<T> root)
+        private static IEnumerable<Node<TK, TV>> InOrderTraverseTree(Node<TK, TV> root)
         {
             if (root == null) yield break;
             foreach (var v in InOrderTraverseTree(root.LeftNode))
             {
                 yield return v;
             }
-            yield return root.Value;
+            yield return root;
             foreach (var v in InOrderTraverseTree(root.RightNode))
             {
                 yield return v;
@@ -136,23 +168,23 @@ namespace Fusee.Jometri
         /// <summary>
         /// Deletes a node from the tree.
         /// </summary>
-        /// <param name="value">Value of the node which is to be deleted.</param>
-        public void DeleteNode(T value)
+        /// <param name="key">Key of the node which is to be deleted.</param>
+        public void DeleteNode(TK key)
         {
             if (_globalRoot == null) return;
-            DeleteNode(ref _globalRoot, value);
+            DeleteNode(ref _globalRoot, key);
         }
 
-        private void DeleteNode(ref Node<T> root, T value)
+        private void DeleteNode(ref Node<TK, TV> root, TK key)
         {
             if (root == null) return;
-            if (root.Value.Equals(value))
+            if (root.Key.Equals(key))
                 root = Delete(ref root);
-            else if (value.CompareTo(root.Value) <= 0)
-                DeleteNode(ref root.LeftNode, value);
-            else if (value.CompareTo(root.Value) >= 0)
+            else if (key.CompareTo(root.Key) <= 0)
+                DeleteNode(ref root.LeftNode, key);
+            else if (key.CompareTo(root.Key) >= 0)
             {
-                DeleteNode(ref root.RightNode, value);
+                DeleteNode(ref root.RightNode, key);
             }
         }
 
@@ -161,9 +193,10 @@ namespace Fusee.Jometri
         /// </summary>
         /// <param name="root">The root node of the tree.</param>
         /// <returns></returns>
-        public Node<T> Delete(ref Node<T> root)
+        public Node<TK, TV> Delete(ref Node<TK, TV> root)
         {
-            var tempValue = default(T);
+            var tempKey = default(TK);
+            var tempValue = default(TV);
 
             if (_globalRoot == root && root.LeftNode == null && root.RightNode == null)
             {
@@ -184,49 +217,51 @@ namespace Fusee.Jometri
             }
             else
             {
-                Replace(ref root, ref tempValue);
+                Replace(ref root, ref tempKey, ref tempValue);
                 root.Value = tempValue;
+                root.Key = tempKey;
             }
             return root;
         }
 
-        private static void Replace(ref Node<T> root, ref T newValue)
+        private static void Replace(ref Node<TK, TV> root, ref TK newKey, ref TV newValue)
         {
             if (root == null) return;
             if (root.LeftNode == null)
             {
                 newValue = root.Value;
+                newKey = root.Key;
                 root = root.RightNode;
             }
             else
             {
-                Replace(ref root.LeftNode, ref newValue);
+                Replace(ref root.LeftNode, ref newKey, ref newValue);
             }
         }
 
         /// <summary>
         /// Traverses the tree to find and return a Node with a certain value.
         /// </summary>
-        /// <param name="value">The value to search for</param>
+        /// <param name="key">The key to search for</param>
         /// <returns></returns>
-        public T FindNode(T value)
+        public TV FindNode(TK key)
         {
-            var res = FindNode(_globalRoot, value);
+            var res = FindNode(_globalRoot, key);
 
             return res.Value;
         }
 
-        private static Node<T> FindNode(Node<T> root, T value)
+        private static Node<TK, TV> FindNode(Node<TK, TV> root, TK key)
         {
-            Node<T> res = null;
+            Node<TK, TV> res = null;
             if (root.LeftNode != null)
-                res = FindNode(root.LeftNode, value);
+                res = FindNode(root.LeftNode, key);
 
-            if (value.CompareTo(root.Value) == 0)
+            if (key.CompareTo(root.Key) == 0)
                 return root;
 
             if (res == null && root.RightNode != null)
-                res = FindNode(root.RightNode, value);
+                res = FindNode(root.RightNode, key);
 
             return res;
         }
@@ -235,28 +270,58 @@ namespace Fusee.Jometri
         /// Balances a given tree
         /// </summary>
         /// <returns></returns>
-        public BinarySearchTree<T> BalancedTree()
+        public BinarySearchTree<TK, TV> BalancedTree()
         {
-            var balanced = new BinarySearchTree<T>();
-            var inorder = InOrderTraverseTree().ToArray();
+            var balanced = new BinarySearchTree<TK, TV>();
+            var inorder = InOrderTraverseTree(_globalRoot).ToArray();
 
             balanced._globalRoot = BalanceTree(inorder, 0, inorder.Length - 1);
 
             return balanced;
         }
 
-        private static Node<T> BalanceTree(IList<T> inorder, int startIndex, int endIndex)
+        private static Node<TK, TV> BalanceTree(IList<Node<TK, TV>> inorder, int startIndex, int endIndex)
         {
             if (startIndex > endIndex) return null;
 
             var middIndex = (startIndex + endIndex) / 2;
 
-            var root = new Node<T>(inorder[middIndex]);
+            var root = new Node<TK, TV>(inorder[middIndex].Key, inorder[middIndex].Value);
 
             root.LeftNode = BalanceTree(inorder, startIndex, middIndex - 1);
             root.RightNode = BalanceTree(inorder, middIndex + 1, endIndex);
 
             return root;
+        }
+
+        // <summary>
+        /// Finds the value of a node whose key is the largest smaller than the given one.
+        /// Only works with a balanced tree. There may need to be the necessity to call BalanceTree before.
+        /// <param name="key">The key that is uesed as search parameter</param>
+        /// <returns></returns>
+        public TV FindLargestSmallerThanInBalanced(TK key)
+        {
+            var res = FindLargestSmallerThanInBalanced(_globalRoot, key);
+            return res.Value;
+        }
+
+        private static Node<TK, TV> FindLargestSmallerThanInBalanced(Node<TK, TV> root, TK key)
+        {
+            var res = root;
+
+            while (root != null)
+            {
+                if (root.Key.CompareTo(key) > 0 || root.Key.CompareTo(key) == 0)
+                {
+                    root = root.LeftNode;
+                }
+                else
+                {
+                    res = root;
+                    root = root.RightNode;
+                }
+            }
+            return res;
         }
     }
 }

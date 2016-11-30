@@ -73,5 +73,56 @@ namespace Fusee.Jometri
             }
             return sum < 0;
         }
+
+        //See: Antionio, Franklin - Faster line intersection (1992)
+        //Points need to be reduced to 2D!
+        /// <summary>
+        /// Checks if two lines intersect.
+        /// </summary>
+        /// <param name="p1">First control point of the first line</param>
+        /// <param name="p2">Second control point of the first line</param>
+        /// <param name="p3">First point of the second line</param>
+        /// <param name="p4">Second point of the secornd line</param>
+        /// <returns></returns>
+        public static bool AreLinesIntersecting(float3 p1, float3 p2, float3 p3, float3 p4)
+        {
+            p1 = p1.Reduce2D();
+            p2 = p2.Reduce2D();
+            p3 = p3.Reduce2D();
+            p4 = p4.Reduce2D();
+
+            var a = p2 - p1;
+            var b = p3 - p4;
+            var c = p1 - p3;
+
+            var tNumerator = b.y * b.x - b.x * c.y;
+            var iNumerator = a.x * c.y - a.y * c.x;
+
+            var denominator = a.y * b.x - a.x * b.y;
+
+            if (denominator > 0)
+            {
+                if (tNumerator < 0 || tNumerator > denominator)
+                    return false;
+            }
+            else
+            {
+                if (tNumerator > 0 || tNumerator < denominator)
+                    return false;
+            }
+
+            if (denominator > 0)
+            {
+                if (iNumerator < 0 || iNumerator > denominator)
+                    return false;
+            }
+            else
+            {
+                if (iNumerator > 0 || iNumerator < denominator)
+                    return false;
+            }
+
+            return true;
+        }
     }
 }

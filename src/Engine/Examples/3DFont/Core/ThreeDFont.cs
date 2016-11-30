@@ -31,8 +31,8 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             var vladimir = AssetStorage.Get<Font>("VLADIMIR.TTF");
             var gnuSerif = AssetStorage.Get<Font>("GNU-FreeSerif.ttf");
 
-            _text = "Hello World!";
-            _threeDFontHelper = new ThreeDFontHelper(_text, gnuSerif);
+            _text = "Hello World";
+            _threeDFontHelper = new ThreeDFontHelper(_text, vladimir);
 
             var outlines = _threeDFontHelper.GetTextOutlinesWAngle(10);
             var geom = new Geometry(outlines, true);
@@ -81,8 +81,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered farame) on the front buffer.
             Present();
         }
-
-
+        
         // Is called when the window was resized
         public override void Resize()
         {

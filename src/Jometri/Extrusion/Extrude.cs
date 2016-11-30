@@ -131,7 +131,7 @@ namespace Fusee.Jometri.Extrusion
 
                 for (var j = 0; j < newHalfEdges.Count; j += 2)
                 {
-                    geometry.InsertEdge(newHalfEdges[j].Origin, newHalfEdges[j + 1].Origin);
+                    geometry.InsertDiagonal(newHalfEdges[j].Origin, newHalfEdges[j + 1].Origin);
                 }
             }
 

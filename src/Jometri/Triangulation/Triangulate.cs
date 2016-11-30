@@ -14,7 +14,7 @@ namespace Fusee.Jometri.Triangulation
     {
         private static Geometry _geometry;
         private static VertexType _vertType;
-        private static BinarySearchTree<StatusEdge> _sweepLineStatus;
+        private static BinarySearchTree<float, StatusEdge> _sweepLineStatus;
         
         internal static void Triangulate(this Geometry geometry)
         {
@@ -75,7 +75,7 @@ namespace Fusee.Jometri.Triangulation
                         var popped = vertStack.Pop();
 
                         if (vertStack.Count > 0)
-                            _geometry.InsertEdge(current.Handle, popped.Handle);
+                            _geometry.InsertDiagonal(current.Handle, popped.Handle);
                     }
                     vertStack.Push(sortedVerts[i - 1]);
                     vertStack.Push(current);
@@ -125,7 +125,7 @@ namespace Fusee.Jometri.Triangulation
                             v2 = prev.Coord - popped.Coord;
                         }
 
-                        _geometry.InsertEdge(current.Handle, popped.Handle);
+                        _geometry.InsertDiagonal(current.Handle, popped.Handle);
                     }
                     vertStack.Push(popped);
                     vertStack.Push(current);
@@ -140,7 +140,7 @@ namespace Fusee.Jometri.Triangulation
 
                 if (j == 0) continue;
                 if (j != count - 1)
-                    _geometry.InsertEdge(sortedVerts.LastItem().Handle, popped.Handle);
+                    _geometry.InsertDiagonal(sortedVerts.LastItem().Handle, popped.Handle);
             }
         }
 
@@ -322,7 +322,7 @@ namespace Fusee.Jometri.Triangulation
 
             var newFaces = new List<FaceHandle>();
 
-            _sweepLineStatus = new BinarySearchTree<StatusEdge>();
+            _sweepLineStatus = new BinarySearchTree<float, StatusEdge>();
             
             while (sortedVertices.Count != 0)
             {
@@ -407,7 +407,7 @@ namespace Fusee.Jometri.Triangulation
             }
         }
 
-        private static void HandleStartVertex(ref BinarySearchTree<StatusEdge> tree, Geometry.Vertex v, IEnumerable<HalfEdgeHandle> faceHalfEdges)
+        private static void HandleStartVertex(ref BinarySearchTree<float, StatusEdge> tree, Geometry.Vertex v, IEnumerable<HalfEdgeHandle> faceHalfEdges)
         {
             foreach (var halfEdge in faceHalfEdges)
             {
@@ -415,10 +415,7 @@ namespace Fusee.Jometri.Triangulation
 
                 if (he.Origin != v.Handle) continue;
 
-                UpdateKey(tree, v);
-
-                //Optimization: Resort the try by balancing it once (only if "FindLargestSamllerThan()" is called)
-                ResortTree(ref tree);
+                tree.UpdateNodes(v);
 
                 var origin = _geometry.GetVertexByHandle(he.Origin);
                 var targetH = _geometry.GetHalfEdgeByHandle(he.Next).Origin;
@@ -429,12 +426,12 @@ namespace Fusee.Jometri.Triangulation
                 ei.Helper = v.Handle;
                 ei.IsMergeVertex = false;
 
-                tree.InsertNode(ei);
+                tree.InsertNode(ei.IntersectionPointX, ei);
                 break;
             }
         }
 
-        private static void HandleEndVertex(ref BinarySearchTree<StatusEdge> tree, Geometry.Vertex v, IEnumerable<HalfEdgeHandle> faceHalfEdges, ICollection<FaceHandle> newFaces)
+        private static void HandleEndVertex(ref BinarySearchTree<float, StatusEdge> tree, Geometry.Vertex v, IEnumerable<HalfEdgeHandle> faceHalfEdges, ICollection<FaceHandle> newFaces)
         {
             foreach (var heh in faceHalfEdges)
             {
@@ -442,38 +439,33 @@ namespace Fusee.Jometri.Triangulation
 
                 if (he.Origin != v.Handle) continue;
 
-                UpdateKey(tree, v);
+                tree.UpdateNodes(v);
 
-                //Optimization: Resort the try by balancing it once (only if "FindLargestSamllerThan()" is called)
-                ResortTree(ref tree);
-
-                var eMinOne = FindStatusEdgeWithHandle(tree, he.Prev);
+                var eMinOne = tree.FindStatusEdgeWithHandle(he.Prev);
 
                 if (eMinOne.IsMergeVertex)
                 {
-                    _geometry.InsertEdge(v.Handle, eMinOne.Helper);
+                    _geometry.InsertDiagonal(v.Handle, eMinOne.Helper);
                     newFaces.Add(_geometry.FaceHandles.LastItem());
                 }
 
-                tree.DeleteNode(eMinOne);
+                tree.DeleteNode(eMinOne.IntersectionPointX);
                 break;
             }
         }
 
-        private static void HandleSplitVertex(ref BinarySearchTree<StatusEdge> tree, Geometry.Vertex v, ICollection<FaceHandle> newFaces)
+        private static void HandleSplitVertex(ref BinarySearchTree<float, StatusEdge> tree, Geometry.Vertex v, ICollection<FaceHandle> newFaces)
         {
-            UpdateKey(tree, v);
-            //Optimization: Resort the tree by balancing it once (only if "FindLargestSamllerThan()" is called)
-            ResortTree(ref tree);
+            tree.UpdateNodes(v);
+            tree = tree.BalancedTree();
 
-            //Optimization: Resort the tree by balancing it once (only if "FindLargestSamllerThan()" is called)
-            var ej = FindLargestSmallerThan(v.Coord.x, tree);
+            var ej = tree.FindLargestSmallerThanInBalanced(v.Coord.x);
 
-            _geometry.InsertEdge(v.Handle, ej.Helper);
+            _geometry.InsertDiagonal(v.Handle, ej.Helper);
             newFaces.Add(_geometry.FaceHandles.LastItem());
 
-            tree.FindNode(ej).Helper = v.Handle;
-            tree.FindNode(ej).IsMergeVertex = false;
+            tree.FindNode(ej.IntersectionPointX).Helper = v.Handle;
+            tree.FindNode(ej.IntersectionPointX).IsMergeVertex = false;
 
             var he = _geometry.GetHalfEdgeByHandle(v.IncidentHalfEdge);
             var origin = _geometry.GetVertexByHandle(he.Origin);
@@ -485,10 +477,10 @@ namespace Fusee.Jometri.Triangulation
             ei.Helper = v.Handle;
             ei.IsMergeVertex = false;
 
-            tree.InsertNode(ei);
+            tree.InsertNode(ei.IntersectionPointX,ei);
         }
 
-        private static void HandleMergeVertex(ref BinarySearchTree<StatusEdge> tree, Geometry.Vertex v, IEnumerable<HalfEdgeHandle> faceHalfEdges, ICollection<FaceHandle> newFaces)
+        private static void HandleMergeVertex(ref BinarySearchTree<float, StatusEdge> tree, Geometry.Vertex v, IEnumerable<HalfEdgeHandle> faceHalfEdges, ICollection<FaceHandle> newFaces)
         {
             var he = new Geometry.HalfEdge();
             foreach (var heh in faceHalfEdges)
@@ -498,35 +490,32 @@ namespace Fusee.Jometri.Triangulation
                 if (he.Origin == v.Handle) break;
             }
 
-            UpdateKey(tree, v);
+            tree.UpdateNodes(v);
 
-            //Optimization: Resort the try by balancing it once (only if "FindLargestSamllerThan()" is called)
-            ResortTree(ref tree);
-
-            var eMinOne = FindStatusEdgeWithHandle(tree,he.Prev);
+            var eMinOne = tree.FindStatusEdgeWithHandle(he.Prev);
 
             if (eMinOne.IsMergeVertex)
             {
-                _geometry.InsertEdge(v.Handle, eMinOne.Helper);
+                _geometry.InsertDiagonal(v.Handle, eMinOne.Helper);
                 newFaces.Add(_geometry.FaceHandles.LastItem());
             }
 
-            tree.DeleteNode(eMinOne);
-
-            //Optimization: Resort the try by balancing it once (only if "FindLargestSamllerThan()" is called)
-            var ej = FindLargestSmallerThan(v.Coord.x, tree);
+            tree.DeleteNode(eMinOne.IntersectionPointX);
+            tree = tree.BalancedTree();
+            
+            var ej = tree.FindLargestSmallerThanInBalanced(v.Coord.x);
 
             if (ej.IsMergeVertex)
             {
-                _geometry.InsertEdge(v.Handle, ej.Helper);
+                _geometry.InsertDiagonal(v.Handle, ej.Helper);
                 newFaces.Add(_geometry.FaceHandles.LastItem());
             }
 
-            tree.FindNode(ej).Helper = v.Handle;
-            tree.FindNode(ej).IsMergeVertex = true;
+            tree.FindNode(ej.IntersectionPointX).Helper = v.Handle;
+            tree.FindNode(ej.IntersectionPointX).IsMergeVertex = true;
         }
 
-        private static void HandleRegularVertex(ref BinarySearchTree<StatusEdge> tree, Geometry.Vertex v, IEnumerable<HalfEdgeHandle> faceHalfEdges, ICollection<FaceHandle> newFaces)
+        private static void HandleRegularVertex(ref BinarySearchTree<float, StatusEdge> tree, Geometry.Vertex v, IEnumerable<HalfEdgeHandle> faceHalfEdges, ICollection<FaceHandle> newFaces)
         {
             if (IsPolygonRightOfVert(v))
             {
@@ -536,20 +525,17 @@ namespace Fusee.Jometri.Triangulation
 
                     if (he.Origin != v.Handle) continue;
 
-                    UpdateKey(tree, v);
+                    tree.UpdateNodes(v);
 
-                    //Optimization: Resort the tree by balancing it once (only if "FindLargestSamllerThan()" is called)
-                    ResortTree(ref tree);
-
-                    var eMinOne = FindStatusEdgeWithHandle(tree,he.Prev);
+                    var eMinOne = tree.FindStatusEdgeWithHandle(he.Prev);
 
                     if (eMinOne.IsMergeVertex)
                     {
-                        _geometry.InsertEdge(v.Handle, eMinOne.Helper);
+                        _geometry.InsertDiagonal(v.Handle, eMinOne.Helper);
                         newFaces.Add(_geometry.FaceHandles.LastItem());
                     }
 
-                    tree.DeleteNode(eMinOne);
+                    tree.DeleteNode(eMinOne.IntersectionPointX);
 
                     var halfEdge = _geometry.GetHalfEdgeByHandle(v.IncidentHalfEdge);
                     var origin = _geometry.GetVertexByHandle(halfEdge.Origin);
@@ -561,85 +547,27 @@ namespace Fusee.Jometri.Triangulation
                     ei.Helper = v.Handle;
                     ei.IsMergeVertex = false;
 
-
-                    tree.InsertNode(ei);
+                    tree.InsertNode(ei.IntersectionPointX, ei);
 
                     break;
                 }
             }
             else
             {
-
-                UpdateKey(tree, v);
-
-                //Optimization: Resort the tree by balancing it once (only if "FindLargestSamllerThan()" is called)
-                ResortTree(ref tree);
-
-                //Optimization: Resort the tree by balancing it once (only if "FindLargestSamllerThan()" is called)
-                var ej = FindLargestSmallerThan(v.Coord.x, tree);
+                tree.UpdateNodes(v);
+                tree = tree.BalancedTree();
+                
+                var ej = tree.FindLargestSmallerThanInBalanced(v.Coord.x);
 
                 if (ej.IsMergeVertex)
                 {
-                    _geometry.InsertEdge(v.Handle, ej.Helper);
+                    _geometry.InsertDiagonal(v.Handle, ej.Helper);
                     newFaces.Add(_geometry.FaceHandles.LastItem());
                 }
 
-                tree.FindNode(ej).Helper = v.Handle;
-                tree.FindNode(ej).IsMergeVertex = false;
+                tree.FindNode(ej.IntersectionPointX).Helper = v.Handle;
+                tree.FindNode(ej.IntersectionPointX).IsMergeVertex = false;
             }
-        }
-
-        private static void UpdateKey(BinarySearchTree<StatusEdge> tree, Geometry.Vertex eventPoint)
-        {
-            foreach (var node in tree.PreorderTraverseTree())
-            {
-                node.SetKey(eventPoint);
-            }
-        }
-
-        private static void ResortTree(ref BinarySearchTree<StatusEdge> tree)
-        {
-            var nodes = tree.PreorderTraverseTree();
-            tree = new BinarySearchTree<StatusEdge>();
-            foreach (var n in nodes)
-            {
-                tree.InsertNode(n);
-            }
-        }
-
-        //Custom implementation of BinaryTrees FindNode method - works with StatusNodes
-        private static StatusEdge FindStatusEdgeWithHandle(BinarySearchTree<StatusEdge> tree, HalfEdgeHandle handle)
-        {
-            foreach (var n in tree.PreorderTraverseTree())
-            {
-                if (n.HalfEdge == handle)
-                    return n;
-            }
-            return null;
-        }
-
-        //Can be optimized by using a self balancing binary search tree. See: http://stackoverflow.com/questions/6334514/to-find-largest-element-smaller-than-k-in-a-bst
-        //Idea: Instead of resorting the tree if key are changed (if a new event point is hit), one-time-balance it if this method is called) - possibly faster
-        private static StatusEdge FindLargestSmallerThan(float value, BinarySearchTree<StatusEdge> tree)
-        {
-            var preorder = tree.PreorderTraverseTree().ToList();
-            var temp = default(StatusEdge);
-
-            foreach (var n in preorder)
-            {
-                if (!(n.Key < value)) continue;
-                temp = n;
-                break;
-            }
-
-            if (preorder.Count == 1) return temp;
-
-            foreach (var n in preorder)
-            {
-                if (n.Key < value && n.Key > temp.Key)
-                    temp = n;
-            }
-            return temp;
         }
         
         #endregion
@@ -688,45 +616,7 @@ namespace Fusee.Jometri.Triangulation
 
             return _geometry.GetVertexByHandle(prevHe.Origin);
         }
-
-        //(Obsolete) See: Antionio, Franklin - Faster line intersection (1992)
-        //Assumption: z component of float3 is always 0
-        private static bool AreLinesIntersecting(float3 p1, float3 p2, float3 p3, float3 p4)
-        {
-            var a = p2 - p1;
-            var b = p3 - p4;
-            var c = p1 - p3;
-
-            var tNumerator = b.y * b.x - b.x * c.y;
-            var iNumerator = a.x * c.y - a.y * c.x;
-
-            var denominator = a.y * b.x - a.x * b.y;
-
-            if (denominator > 0)
-            {
-                if (tNumerator < 0 || tNumerator > denominator)
-                    return false;
-            }
-            else
-            {
-                if (tNumerator > 0 || tNumerator < denominator)
-                    return false;
-            }
-
-            if (denominator > 0)
-            {
-                if (iNumerator < 0 || iNumerator > denominator)
-                    return false;
-            }
-            else
-            {
-                if (iNumerator > 0 || iNumerator < denominator)
-                    return false;
-            }
-
-            return true;
-        }
-
+        
         #endregion
     }
 }

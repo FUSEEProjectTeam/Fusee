@@ -6,7 +6,7 @@ namespace Fusee.Jometri.Triangulation
     internal class StatusEdge : IComparable<StatusEdge>
     {
         //Key is needed to insert the Node into a binary search tree and to find the edge directly left of an vertex (FindLargestSmalerThan(vertex.x)). 
-        internal float Key;
+        internal float IntersectionPointX;
         //HalfEdge(Handle) identifies the HalfEdge
         internal HalfEdgeHandle HalfEdge;
 
@@ -36,17 +36,17 @@ namespace Fusee.Jometri.Triangulation
             var m = (_target.Coord.y - _origin.Coord.y) / (_target.Coord.x - _origin.Coord.x);
 
             if (_target.Coord.y.Equals(_origin.Coord.y) || _target.Coord.x.Equals(_origin.Coord.x))
-                Key = _origin.Coord.x;
+                IntersectionPointX = _origin.Coord.x;
             else
             {
                 var b = _origin.Coord.y - (m*_origin.Coord.x);
-                Key = (y - b)/m;
+                IntersectionPointX = (y - b)/m;
             }
         }
 
         public int CompareTo(StatusEdge other)
         {
-            return Key.CompareTo(other.Key);
+            return IntersectionPointX.CompareTo(other.IntersectionPointX);
         }
     }
 }

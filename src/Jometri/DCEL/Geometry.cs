@@ -40,7 +40,7 @@ namespace Fusee.Jometri.DCEL
         #endregion
 
         /// <summary>
-        /// Geometry, stored in a DCEL (doubly conneted edge list).
+        /// 2D Geometry, stored in a DCEL (doubly conneted edge list).
         /// </summary>
         /// <param name="outlines">A collection of the geometrys' outlines, each containing the geometric information as a list of float3 in ccw order</param>
         /// <param name="triangulate">If triangulate is set to true, the created geometry will be triangulated</param>
@@ -54,7 +54,7 @@ namespace Fusee.Jometri.DCEL
             FaceHandles = new List<FaceHandle>();
             VertHandles = new List<VertHandle>();
 
-            CreateHalfEdgesForGeometry(outlines);
+            CreateHalfEdgesFor2DGeometry(outlines);
 
             if (triangulate)
                 this.Triangulate();
@@ -264,7 +264,7 @@ namespace Fusee.Jometri.DCEL
                 current.Next = faceHalfEdges[(i + 1) % faceHalfEdges.Count].Handle;
                 current.Prev = i - 1 >= 0 ? faceHalfEdges[i - 1].Handle : faceHalfEdges.LastItem().Handle;
 
-                //Check if new HalfEdge is a twin to some other (already existing) HalfEdge
+                //Check if new HalfEdge is a twin to some other (already existing) HalfEdge in this face //TODO optimize by ceckeing only those half edges targeting to origin vert of new HalfEdge
                 var curOrigin = current.Origin;
                 var curTarget = new VertHandle();
                 foreach (var hEdge in faceHalfEdges)
@@ -301,12 +301,12 @@ namespace Fusee.Jometri.DCEL
 
 
         /// <summary>
-        /// Inserts a pair of half edges between two vertices of a face.
+        /// Inserts a pair of half edges between two (non adjacant) vertices of a face.
         /// </summary>
         /// <param name="p"></param>
         /// <param name="q"></param>
         /// <exception cref="Exception"></exception>
-        public void InsertEdge(VertHandle p, VertHandle q)
+        public void InsertDiagonal(VertHandle p, VertHandle q)
         {
             var vertP = GetVertexByHandle(p);
             var vertQ = GetVertexByHandle(q);
@@ -341,6 +341,8 @@ namespace Fusee.Jometri.DCEL
             }
             if (pStartHe.Handle == default(HalfEdgeHandle))
                 throw new ArgumentException("Vertex " + p + " vertex " + q + " have no common Face!");
+
+            //TODO: Test adjacancy by checking if pStartHe target is q or qStartHe target is p
 
             var holes = GetHoles(face);
 
@@ -795,7 +797,7 @@ namespace Fusee.Jometri.DCEL
         //TODO: initialisation for 3D geometry
         #region private Methods for 2D geometry initialisation
         
-        private void CreateHalfEdgesForGeometry(IEnumerable<Outline> outlines)
+        private void CreateHalfEdgesFor2DGeometry(IEnumerable<Outline> outlines)
         {
 
             var faceHandle = new FaceHandle { Id = FaceHandles.Count + 1 };
