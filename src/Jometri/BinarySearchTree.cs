@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Fusee.Jometri
 {
@@ -41,35 +42,12 @@ namespace Fusee.Jometri
     public class BinarySearchTree<T> where T : IComparable<T>
     {
         private Node<T> _globalRoot;
+
         /// <summary>
         /// Inserts a new node in a existing tree
         /// </summary>
-        /// <param name="root">The root node of the tree</param>
         /// <param name="value">Value to be inserted into the tree</param>
         /// <returns></returns>
-        /*public Node<T> InsertNode(ref Node<T> root, T value)
-        {
-            if (root == null)
-            {
-                root = new Node<T>(value);
-                if (_globalRoot == null)
-                    _globalRoot = root;
-            }
-            else
-            {
-                if (value.CompareTo(root.Value) <= 0) 
-                {
-                    root.LeftNode = InsertNode(root.LeftNode, value);
-                }
-                else if (value.CompareTo(root.Value) > 0) //Items with the same value are ignored, use >= to insert them into the three
-                {
-                    root.RightNode = InsertNode(root.RightNode, value);
-                }
-            }
-            return root;
-        }*/
-
-
         public void InsertNode(T value)
         {
             if (_globalRoot == null)
@@ -179,33 +157,6 @@ namespace Fusee.Jometri
         }
 
         /// <summary>
-        /// Traverses the tree to find and return a Node with a certain value.
-        /// </summary>
-        /// <param name="value">The value to search for</param>
-        /// <returns></returns>
-        public T FindNode(T value)
-        {
-            var res = FindNode(_globalRoot, value);
-
-            return res.Value;
-        }
-
-        private static Node<T> FindNode(Node<T> root, T value)
-        {
-            Node<T> res = null;
-            if (root.LeftNode != null)
-                res = FindNode(root.LeftNode, value);
-
-            if (value.CompareTo(root.Value) == 0)
-                return root;
-
-            if (res == null && root.RightNode != null)
-                res = FindNode(root.RightNode, value);
-
-            return res;
-        }
-
-        /// <summary>
         /// Only use with custom implementations of DeleteNode!
         /// </summary>
         /// <param name="root">The root node of the tree.</param>
@@ -251,6 +202,61 @@ namespace Fusee.Jometri
             {
                 Replace(ref root.LeftNode, ref newValue);
             }
+        }
+
+        /// <summary>
+        /// Traverses the tree to find and return a Node with a certain value.
+        /// </summary>
+        /// <param name="value">The value to search for</param>
+        /// <returns></returns>
+        public T FindNode(T value)
+        {
+            var res = FindNode(_globalRoot, value);
+
+            return res.Value;
+        }
+
+        private static Node<T> FindNode(Node<T> root, T value)
+        {
+            Node<T> res = null;
+            if (root.LeftNode != null)
+                res = FindNode(root.LeftNode, value);
+
+            if (value.CompareTo(root.Value) == 0)
+                return root;
+
+            if (res == null && root.RightNode != null)
+                res = FindNode(root.RightNode, value);
+
+            return res;
+        }
+
+        /// <summary>
+        /// Balances a given tree
+        /// </summary>
+        /// <returns></returns>
+        public BinarySearchTree<T> BalancedTree()
+        {
+            var balanced = new BinarySearchTree<T>();
+            var inorder = InOrderTraverseTree().ToArray();
+
+            balanced._globalRoot = BalanceTree(inorder, 0, inorder.Length - 1);
+
+            return balanced;
+        }
+
+        private static Node<T> BalanceTree(IList<T> inorder, int startIndex, int endIndex)
+        {
+            if (startIndex > endIndex) return null;
+
+            var middIndex = (startIndex + endIndex) / 2;
+
+            var root = new Node<T>(inorder[middIndex]);
+
+            root.LeftNode = BalanceTree(inorder, startIndex, middIndex - 1);
+            root.RightNode = BalanceTree(inorder, middIndex + 1, endIndex);
+
+            return root;
         }
     }
 }

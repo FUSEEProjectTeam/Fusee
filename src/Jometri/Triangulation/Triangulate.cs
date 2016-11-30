@@ -423,12 +423,11 @@ namespace Fusee.Jometri.Triangulation
                 var origin = _geometry.GetVertexByHandle(he.Origin);
                 var targetH = _geometry.GetHalfEdgeByHandle(he.Next).Origin;
                 var target = _geometry.GetVertexByHandle(targetH);
-                var ei = new StatusEdge(origin, target, v)
-                {
-                    HalfEdge = he.Handle,
-                    Helper = v.Handle,
-                    IsMergeVertex = false
-                };
+
+                var ei = new StatusEdge(origin, target, v);
+                ei.HalfEdge = he.Handle;
+                ei.Helper = v.Handle;
+                ei.IsMergeVertex = false;
 
                 tree.InsertNode(ei);
                 break;
@@ -448,7 +447,7 @@ namespace Fusee.Jometri.Triangulation
                 //Optimization: Resort the try by balancing it once (only if "FindLargestSamllerThan()" is called)
                 ResortTree(ref tree);
 
-                var eMinOne = FindStatusNode(tree, he.Prev);
+                var eMinOne = FindStatusEdgeWithHandle(tree, he.Prev);
 
                 if (eMinOne.IsMergeVertex)
                 {
@@ -464,10 +463,10 @@ namespace Fusee.Jometri.Triangulation
         private static void HandleSplitVertex(ref BinarySearchTree<StatusEdge> tree, Geometry.Vertex v, ICollection<FaceHandle> newFaces)
         {
             UpdateKey(tree, v);
-            //Optimization: Resort the try by balancing it once (only if "FindLargestSamllerThan()" is called)
+            //Optimization: Resort the tree by balancing it once (only if "FindLargestSamllerThan()" is called)
             ResortTree(ref tree);
 
-            //Optimization: Resort the try by balancing it once (only if "FindLargestSamllerThan()" is called)
+            //Optimization: Resort the tree by balancing it once (only if "FindLargestSamllerThan()" is called)
             var ej = FindLargestSmallerThan(v.Coord.x, tree);
 
             _geometry.InsertEdge(v.Handle, ej.Helper);
@@ -480,12 +479,12 @@ namespace Fusee.Jometri.Triangulation
             var origin = _geometry.GetVertexByHandle(he.Origin);
             var targetH = _geometry.GetHalfEdgeByHandle(he.Next).Origin;
             var target = _geometry.GetVertexByHandle(targetH);
-            var ei = new StatusEdge(origin, target, v)
-            {
-                HalfEdge = v.IncidentHalfEdge,
-                Helper = v.Handle,
-                IsMergeVertex = false,
-            };
+
+            var ei = new StatusEdge(origin, target, v);
+            ei.HalfEdge = v.IncidentHalfEdge;
+            ei.Helper = v.Handle;
+            ei.IsMergeVertex = false;
+
             tree.InsertNode(ei);
         }
 
@@ -504,7 +503,7 @@ namespace Fusee.Jometri.Triangulation
             //Optimization: Resort the try by balancing it once (only if "FindLargestSamllerThan()" is called)
             ResortTree(ref tree);
 
-            var eMinOne = FindStatusNode(tree,he.Prev);
+            var eMinOne = FindStatusEdgeWithHandle(tree,he.Prev);
 
             if (eMinOne.IsMergeVertex)
             {
@@ -539,10 +538,10 @@ namespace Fusee.Jometri.Triangulation
 
                     UpdateKey(tree, v);
 
-                    //Optimization: Resort the try by balancing it once (only if "FindLargestSamllerThan()" is called)
+                    //Optimization: Resort the tree by balancing it once (only if "FindLargestSamllerThan()" is called)
                     ResortTree(ref tree);
 
-                    var eMinOne = FindStatusNode(tree,he.Prev);
+                    var eMinOne = FindStatusEdgeWithHandle(tree,he.Prev);
 
                     if (eMinOne.IsMergeVertex)
                     {
@@ -556,12 +555,12 @@ namespace Fusee.Jometri.Triangulation
                     var origin = _geometry.GetVertexByHandle(halfEdge.Origin);
                     var targetH = _geometry.GetHalfEdgeByHandle(halfEdge.Next).Origin;
                     var target = _geometry.GetVertexByHandle(targetH);
-                    var ei = new StatusEdge(origin, target, v)
-                    {
-                        HalfEdge = v.IncidentHalfEdge,
-                        Helper = v.Handle,
-                        IsMergeVertex = false
-                    };
+
+                    var ei = new StatusEdge(origin, target, v);
+                    ei.HalfEdge = v.IncidentHalfEdge;
+                    ei.Helper = v.Handle;
+                    ei.IsMergeVertex = false;
+
 
                     tree.InsertNode(ei);
 
@@ -573,10 +572,10 @@ namespace Fusee.Jometri.Triangulation
 
                 UpdateKey(tree, v);
 
-                //Optimization: Resort the try by balancing it once (only if "FindLargestSamllerThan()" is called)
+                //Optimization: Resort the tree by balancing it once (only if "FindLargestSamllerThan()" is called)
                 ResortTree(ref tree);
 
-                //Optimization: Resort the try by balancing it once (only if "FindLargestSamllerThan()" is called)
+                //Optimization: Resort the tree by balancing it once (only if "FindLargestSamllerThan()" is called)
                 var ej = FindLargestSmallerThan(v.Coord.x, tree);
 
                 if (ej.IsMergeVertex)
@@ -609,7 +608,7 @@ namespace Fusee.Jometri.Triangulation
         }
 
         //Custom implementation of BinaryTrees FindNode method - works with StatusNodes
-        private static StatusEdge FindStatusNode(BinarySearchTree<StatusEdge> tree, HalfEdgeHandle handle)
+        private static StatusEdge FindStatusEdgeWithHandle(BinarySearchTree<StatusEdge> tree, HalfEdgeHandle handle)
         {
             foreach (var n in tree.PreorderTraverseTree())
             {
@@ -642,6 +641,7 @@ namespace Fusee.Jometri.Triangulation
             }
             return temp;
         }
+        
         #endregion
 
         #region General methods

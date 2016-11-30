@@ -60,6 +60,20 @@ namespace Fusee.Jometri.DCEL
                 this.Triangulate();
         }
 
+        /// <summary>
+        /// Creates an empty geometry, that can be filled by the user using InsertFace and InsertHalfEdge methodes
+        /// </summary>
+        public Geometry()
+        {
+            _vertices = new List<Vertex>();
+            _halfEdges = new List<HalfEdge>();
+            _faces = new List<Face>();
+
+            HalfEdgeHandles = new List<HalfEdgeHandle>();
+            FaceHandles = new List<FaceHandle>();
+            VertHandles = new List<VertHandle>();
+        }
+
         //Copies a existing Geometry object. E.g to create a backface for an extrusion
         internal Geometry(Geometry geom)
         {
@@ -107,7 +121,7 @@ namespace Fusee.Jometri.DCEL
         /// A List that contains handles to one half edge for each hole in a face
         /// Note that unbounded faces can't have a OuterHalfEdge but need to have at least one InnerHalfEdge - bounded faces must have a OuterComponent
         /// </summary>
-        internal struct Face
+        internal struct Face //TODO: Create 2D and 3D Face - difference: a 3D face can not have inner half edges!
         {
             internal FaceHandle Handle;
             internal HalfEdgeHandle OuterHalfEdge;
@@ -208,6 +222,7 @@ namespace Fusee.Jometri.DCEL
         /// <param name="vertices">The vertices of the new face, they have to be in ccw order (according to the orientation of the new face)</param>
         public void InsertFace(IList<VertHandle> vertices)
         {
+            //TODO: create twins and check if halfedges are already part of the geometry
             var faceHandle = new FaceHandle(FaceHandles.Count + 1);
             var face = new Face
             {
@@ -608,6 +623,11 @@ namespace Fusee.Jometri.DCEL
             return GetHalfEdgeByHandle(twin.Next);
         }
 
+        internal IEnumerable<HalfEdgeHandle> GetHalfEdgesTargetingV(Vertex v)
+        {
+            return null; //TODO: implement
+        }
+
         internal IEnumerable<HalfEdge> GetEdgeLoop(HalfEdgeHandle handle)
         {
             var currentHandle = handle;
@@ -801,6 +821,7 @@ namespace Fusee.Jometri.DCEL
 
         private IEnumerable<HalfEdge> CreateHalfEdgesForBoundary(Outline outline)
         {
+            //TODO: check if half edges already exist (check half edges starting and targeting to vert)
             var outlineHalfEdges = new List<HalfEdge>();
             var faceHandle = new FaceHandle();
 

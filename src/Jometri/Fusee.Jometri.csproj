@@ -46,8 +46,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BinarySearchTree.cs" />
     <Compile Include="Extrusion\Extrude.cs" />
-    <Compile Include="Triangulation\StatusNode.cs" />
+    <Compile Include="Triangulation\StatusEdge.cs" />
     <Compile Include="Triangulation\Triangulate.cs" />
     <Compile Include="DCEL\Exceptions.cs" />
     <Compile Include="DCEL\Geometry.cs" />
