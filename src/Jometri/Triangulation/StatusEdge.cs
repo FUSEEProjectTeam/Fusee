@@ -1,9 +1,8 @@
-﻿using System;
-using Fusee.Jometri.DCEL;
+﻿using Fusee.Jometri.DCEL;
 
 namespace Fusee.Jometri.Triangulation
 {
-    internal class StatusEdge : IComparable<StatusEdge>
+    internal class StatusEdge 
     {
         //Key is needed to insert the Node into a binary search tree and to find the edge directly left of an vertex (FindLargestSmalerThan(vertex.x)). 
         internal float IntersectionPointX;
@@ -15,10 +14,10 @@ namespace Fusee.Jometri.Triangulation
         internal bool IsMergeVertex;
 
         //The vertices that define the HalfEdge
-        private Geometry.Vertex _origin;
-        private Geometry.Vertex _target;
+        private Vertex _origin;
+        private Vertex _target;
 
-        public StatusEdge(Geometry.Vertex origin, Geometry.Vertex target, Geometry.Vertex eventPoint)
+        public StatusEdge(Vertex origin, Vertex target, Vertex eventPoint)
         {
             _origin = origin;
             _target = target;
@@ -27,7 +26,7 @@ namespace Fusee.Jometri.Triangulation
         }
 
         //If HalfEdge is not parallel (m = -Infinity) to x or y axis: Key = x value of the intersection point from sweep line with HalfEdge. Else Key = origin.x
-        internal void SetKey(Geometry.Vertex eventPoint)
+        internal void SetKey(Vertex eventPoint)
         {
             _target.Coord = _target.Coord.Reduce2D();
             _origin.Coord = _origin.Coord.Reduce2D();
@@ -42,11 +41,6 @@ namespace Fusee.Jometri.Triangulation
                 var b = _origin.Coord.y - (m*_origin.Coord.x);
                 IntersectionPointX = (y - b)/m;
             }
-        }
-
-        public int CompareTo(StatusEdge other)
-        {
-            return IntersectionPointX.CompareTo(other.IntersectionPointX);
         }
     }
 }

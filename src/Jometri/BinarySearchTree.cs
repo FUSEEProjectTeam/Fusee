@@ -172,71 +172,38 @@ namespace Fusee.Jometri
         public void DeleteNode(TK key)
         {
             if (_globalRoot == null) return;
-            DeleteNode(ref _globalRoot, key);
+            _globalRoot = DeleteNode(_globalRoot, key);
         }
 
-        private void DeleteNode(ref Node<TK, TV> root, TK key)
+        private static Node<TK,TV> DeleteNode(Node<TK, TV> root, TK key)
         {
-            if (root == null) return;
-            if (root.Key.Equals(key))
-                root = Delete(ref root);
-            else if (key.CompareTo(root.Key) <= 0)
-                DeleteNode(ref root.LeftNode, key);
-            else if (key.CompareTo(root.Key) >= 0)
-            {
-                DeleteNode(ref root.RightNode, key);
-            }
-        }
-
-        /// <summary>
-        /// Only use with custom implementations of DeleteNode!
-        /// </summary>
-        /// <param name="root">The root node of the tree.</param>
-        /// <returns></returns>
-        public Node<TK, TV> Delete(ref Node<TK, TV> root)
-        {
-            var tempKey = default(TK);
-            var tempValue = default(TV);
-
-            if (_globalRoot == root && root.LeftNode == null && root.RightNode == null)
-            {
-                //Deletion of root element is allowed  - to for forbid it, return root
-                return null;
-            }
-            if (root.LeftNode == null && root.RightNode == null)
-            {
-                root = null;
-            }
-            else if (root.LeftNode == null)
-            {
-                root = root.RightNode;
-            }
-            else if (root.RightNode == null)
-            {
-                root = root.LeftNode;
-            }
+            if (root == null) return null;
+            if (key.CompareTo(root.Key) < 0)
+                root.LeftNode = DeleteNode(root.LeftNode, key);
+            else if (key.CompareTo(root.Key) > 0)
+                root.RightNode = DeleteNode(root.RightNode, key);
             else
             {
-                Replace(ref root, ref tempKey, ref tempValue);
-                root.Value = tempValue;
-                root.Key = tempKey;
+                if (root.LeftNode == null && root.RightNode == null)
+                {
+                    return null;
+                }
+                if (root.LeftNode == null)
+                {
+                    root = root.RightNode;
+                    return root;
+                }
+                if (root.RightNode == null)
+                {
+                    root = root.LeftNode;
+                    return root;
+                }
+                var temp = FindMin(root.RightNode);
+                root.Value = temp.Value;
+                root.Key = temp.Key;
+                root.RightNode = DeleteNode(root.RightNode, temp.Key);
             }
             return root;
-        }
-
-        private static void Replace(ref Node<TK, TV> root, ref TK newKey, ref TV newValue)
-        {
-            if (root == null) return;
-            if (root.LeftNode == null)
-            {
-                newValue = root.Value;
-                newKey = root.Key;
-                root = root.RightNode;
-            }
-            else
-            {
-                Replace(ref root.LeftNode, ref newKey, ref newValue);
-            }
         }
 
         /// <summary>
@@ -267,17 +234,35 @@ namespace Fusee.Jometri
         }
 
         /// <summary>
+        /// Returns the minimum value in the tree
+        /// </summary>
+        /// <returns></returns>
+        public TV FindMin()
+        {
+            return FindMin(_globalRoot).Value;
+        }
+
+        private static Node<TK, TV> FindMin(Node<TK, TV> root)
+        {
+            var current = root;
+
+            while (current.LeftNode != null)
+            {
+                current = current.LeftNode;
+            }
+            return current;
+
+        }
+
+
+        /// <summary>
         /// Balances a given tree
         /// </summary>
         /// <returns></returns>
-        public BinarySearchTree<TK, TV> BalancedTree()
+        public void BalanceTree()
         {
-            var balanced = new BinarySearchTree<TK, TV>();
             var inorder = InOrderTraverseTree(_globalRoot).ToArray();
-
-            balanced._globalRoot = BalanceTree(inorder, 0, inorder.Length - 1);
-
-            return balanced;
+            _globalRoot = BalanceTree(inorder, 0, inorder.Length - 1);
         }
 
         private static Node<TK, TV> BalanceTree(IList<Node<TK, TV>> inorder, int startIndex, int endIndex)
@@ -294,9 +279,10 @@ namespace Fusee.Jometri
             return root;
         }
 
-        // <summary>
+        ///<summary>
         /// Finds the value of a node whose key is the largest smaller than the given one.
         /// Only works with a balanced tree. There may need to be the necessity to call BalanceTree before.
+        /// </summary>
         /// <param name="key">The key that is uesed as search parameter</param>
         /// <returns></returns>
         public TV FindLargestSmallerThanInBalanced(TK key)

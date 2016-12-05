@@ -1,4 +1,5 @@
-﻿using Fusee.Base.Core;
+﻿using System.Diagnostics;
+using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Math.Core;
@@ -15,6 +16,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
         private IShaderParam _xformParam;
         private float4x4 _xform;
         private float _alpha;
+        private float _beta;
 
         private float _pitchCube1;
         private float _pitchCube2;
@@ -32,11 +34,11 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             var gnuSerif = AssetStorage.Get<Font>("GNU-FreeSerif.ttf");
 
             _text = "Hello World";
-            _threeDFontHelper = new ThreeDFontHelper(_text, vladimir);
+            _threeDFontHelper = new ThreeDFontHelper(_text, gnuSerif);
 
             var outlines = _threeDFontHelper.GetTextOutlinesWAngle(10);
             var geom = new Geometry(outlines, true);
-
+            
             geom = geom.Extrude2DPolygon(2000);
 
             _textMesh = new HalfEdgeListToMesh(geom);
@@ -66,11 +68,12 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             if (Mouse.LeftButton || Touch.GetTouchActive(TouchPoints.Touchpoint_0))
             {
                 _alpha -= speed.x * 0.0001f;
+                _beta -= speed.y * 0.0001f;
             }
 
             var aspectRatio = Width / (float)Height;
             var projection = float4x4.CreatePerspectiveFieldOfView(3.141592f * 0.25f, aspectRatio, 0.01f, 30000);
-            var view = float4x4.CreateTranslation(0, 0, 10) * float4x4.CreateRotationY(_alpha);
+            var view = float4x4.CreateTranslation(0, 0, 10) * float4x4.CreateRotationX(_beta) * float4x4.CreateRotationY(_alpha);
             var modelPoint = ModelXForm(new float3(-6, -1, 0), float3.Zero);
 
             _xform = projection * view * modelPoint * float4x4.CreateScale(0.001f, 0.001f, 0.001f);
