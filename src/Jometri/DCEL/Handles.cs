@@ -1,9 +1,11 @@
-﻿namespace Fusee.Jometri.DCEL
+﻿using System;
+
+namespace Fusee.Jometri.DCEL
 {
     /// <summary>
     /// A handle to assign a abstract reference to a Vertex
     /// </summary>
-    public struct VertHandle
+    public struct VertHandle : IComparable<VertHandle>
     {
         /// <summary>
         /// Reference key for a vertex
@@ -62,12 +64,17 @@
         }
 
         #endregion
+
+        public int CompareTo(VertHandle other)
+        {
+           return Id.CompareTo(other.Id);
+        }
     }
 
     /// <summary>
     /// A handle to assign a abstract reference to a HalfEdge
     /// </summary>
-    public struct HalfEdgeHandle
+    public struct HalfEdgeHandle : IComparable<HalfEdgeHandle>
     {
         /// <summary>
         /// Reference key for a half edge
@@ -121,12 +128,17 @@
             return (first.Id == second.Id);
         }
         #endregion
+
+        public int CompareTo(HalfEdgeHandle other)
+        {
+            return Id.CompareTo(other.Id);
+        }
     }
 
     /// <summary>
     /// A handle to assign a abstract reference to a Face
     /// </summary>
-    public struct FaceHandle
+    public struct FaceHandle : IComparable<FaceHandle>
     {
         /// <summary>
         /// Reference key for a face
@@ -180,6 +192,11 @@
             return (first.Id == second.Id);
         }
         #endregion
+
+        public int CompareTo(FaceHandle other)
+        {
+            return Id.CompareTo(other.Id);
+        }
     }
 }
 

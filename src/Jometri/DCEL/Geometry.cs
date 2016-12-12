@@ -125,9 +125,11 @@ namespace Fusee.Jometri.DCEL
 
         internal List<Face> Faces { get; }
 
-        private int _highestVertHandle;
-        private int _highestHalfEdgeHandle;
-        private int _highestFaceHandle;
+        internal int HighestHalfEdgeHandle { get; private set; }
+
+        internal int HighestVertHandle { get; private set; }
+
+        internal int HighestFaceHandle { get; private set; }
 
         #endregion
 
@@ -170,40 +172,58 @@ namespace Fusee.Jometri.DCEL
         internal Geometry CloneGeometry()
         {
             var clone = new Geometry();
-            
+
             foreach (var vHandle in VertHandles)
             {
                 clone.VertHandles.Add(vHandle);
             }
 
-            
+
             foreach (var vert in Vertices)
             {
                 clone.Vertices.Add(vert);
             }
 
-            
+
             foreach (var heHandle in HalfEdgeHandles)
             {
                 clone.HalfEdgeHandles.Add(heHandle);
             }
-            
+
             foreach (var he in HalfEdges)
             {
                 clone.HalfEdges.Add(he);
             }
 
-            
+
             foreach (var fHandle in FaceHandles)
             {
                 clone.FaceHandles.Add(fHandle);
             }
-            
+
             foreach (var f in Faces)
             {
                 clone.Faces.Add(f);
+
+                for (var i = 0; i < clone.Faces.Count; i++)
+                {
+                    var face = clone.Faces[i];
+                    var innerHe = new List<HalfEdgeHandle>();
+                    innerHe.AddRange(face.InnerHalfEdges);
+                    face.InnerHalfEdges = innerHe;
+                    clone.Faces[i] = face;
+                }
             }
             return clone;
+        }
+
+        //Used for 2D initialisation
+        private struct BoundaryEdge
+        {
+            internal Vertex OriginVert;
+            internal bool IsOriginOldVert;
+            internal HalfEdge HalfEdge;
+            internal HalfEdge TwinHalfEdge;
         }
 
         #region public Methods
@@ -599,9 +619,9 @@ namespace Fusee.Jometri.DCEL
             } while (currentHandle != heHandle);
         }
         #endregion
-        
-        #region internal methods for updating a certain HalfEdge, Vertex or Face
-        internal void UpdateVertex(Vertex vert)
+
+        #region internal methods for replacing a certain HalfEdge, Vertex or Face
+        internal void ReplaceVertex(Vertex vert)
         {
             var handle = vert.Handle;
             for (var i = 0; i < Vertices.Count; i++)
@@ -613,7 +633,7 @@ namespace Fusee.Jometri.DCEL
             }
         }
 
-        internal void UpdateFace(Face face)
+        internal void ReplaceFace(Face face)
         {
             var handle = face.Handle;
             for (var i = 0; i < Faces.Count; i++)
@@ -625,7 +645,7 @@ namespace Fusee.Jometri.DCEL
             }
         }
 
-        internal void UpdateHalfEdge(HalfEdge halfEdge)
+        internal void ReplaceHalfEdge(HalfEdge halfEdge)
         {
             var handle = halfEdge.Handle;
             for (var i = 0; i < HalfEdges.Count; i++)
@@ -657,50 +677,56 @@ namespace Fusee.Jometri.DCEL
 
             foreach (var o in outlines)
             {
-                var outlineHalfEdges = CreateHalfEdgesForBoundary(o);
-
-                foreach (var he in outlineHalfEdges)
-                {
-
-                    //TODO: check for dublicates in outlineHalfEdges / _halfEdges - can only be done if HalfEdge.Next is known because this check needs the target vertex
-
-
-                    HalfEdgeHandles.Add(he.Handle);
-                    HalfEdges.Add(he);
-                }
+                CreateHalfEdgesForBoundary(o);
             }
-
-            //Set highestHandles to Id of last the item in the handle lists
+            
             SetHighestHandles();
         }
 
-        private IEnumerable<HalfEdge> CreateHalfEdgesForBoundary(Outline outline)
+        private void CreateHalfEdgesForBoundary(Outline outline)
         {
-            var outlineHalfEdges = new List<HalfEdge>();
             var faceHandle = new FaceHandle();
 
-            for (var i = 0; i < outline.Points.Count; i++)
+            var outlineVerts = new List<KeyValuePair<Vertex, bool>>();
+            var boundaryEdges = new List<BoundaryEdge>();
+
+            foreach (var coord in outline.Points)
             {
-                var coord = outline.Points[i];
                 bool isOldVert;
                 var vert = CreateOrFindVertex(coord, out isOldVert);
+                outlineVerts.Add(new KeyValuePair<Vertex, bool>(vert, isOldVert));
+            }
+
+            for (var j = 0; j < outlineVerts.Count; j++)
+            {
+                var currentVert = outlineVerts[j];
 
                 var halfEdgeHandle = new HalfEdgeHandle(CreateHalfEdgeHandleId());
-                _highestHalfEdgeHandle = halfEdgeHandle.Id;
 
-                if (!isOldVert)
+                if (!currentVert.Value)
                 {
                     //Only necessary for new Vertices
+                    var vert = currentVert.Key;
                     vert.IncidentHalfEdge = halfEdgeHandle;
                     Vertices.Add(vert);
                 }
 
                 var halfEdge = new HalfEdge
                 {
-                    Origin = vert.Handle,
+                    Origin = currentVert.Key.Handle,
                     Handle = halfEdgeHandle,
                     Twin = new HalfEdgeHandle()
                 };
+
+                var twinHalfEdge = new HalfEdge
+                {
+                    Handle = new HalfEdgeHandle(CreateHalfEdgeHandleId()),
+                    Twin = halfEdge.Handle,
+                    Origin = outlineVerts[(j + 1)%outlineVerts.Count].Key.Handle
+                };
+
+
+                halfEdge.Twin = twinHalfEdge.Handle;
 
                 //Assumption: outlines are processed from outer to inner for every face, therfore faceHandle will never has its default value if "else" is hit.
                 if (outline.IsOuter)
@@ -715,88 +741,188 @@ namespace Fusee.Jometri.DCEL
                 }
                 else
                 {
-                    if (i == 0)
+                    if (j == 0)
                         Faces.LastItem().InnerHalfEdges.Add(halfEdge.Handle);
-
                     faceHandle = Faces.LastItem().Handle;
                 }
 
                 halfEdge.IncidentFace = faceHandle;
-                outlineHalfEdges.Add(halfEdge);
-            }
 
-            for (var i = 0; i < outlineHalfEdges.Count; i++)
-            {
-                var he = outlineHalfEdges[i];
-
-                //Assumption: a boundary is always closed!
-                if (i + 1 < outlineHalfEdges.Count)
-                    he.Next.Id = outlineHalfEdges[i + 1].Handle.Id;
-                else { he.Next.Id = outlineHalfEdges[0].Handle.Id; }
-
-                if (i - 1 < 0)
-                    he.Prev.Id = outlineHalfEdges.LastItem().Handle.Id;
-                else { he.Prev.Id = outlineHalfEdges[i - 1].Handle.Id; }
-
-                outlineHalfEdges[i] = he;
-            }
-
-            outlineHalfEdges.AddRange(CreateOutlineTwins(outlineHalfEdges));
-
-            return outlineHalfEdges;
-        }
-
-        private IEnumerable<HalfEdge> CreateOutlineTwins(IList<HalfEdge> outlineHalfEdges)
-        {
-            var twinHalfEdges = new List<HalfEdge>();
-
-            for (var i = 0; i < outlineHalfEdges.Count; i++)
-            {
-                var oldhalfEdge = outlineHalfEdges[i];
-                var halfEdgeHandle = new HalfEdgeHandle(CreateHalfEdgeHandleId());
-                _highestHalfEdgeHandle = halfEdgeHandle.Id;
-
-                //origin vertex for the twin is the origin vertex of the next half edge
-                var originVert = outlineHalfEdges[(i + 1) % outlineHalfEdges.Count].Origin;
-
-                var newHalfEdge = new HalfEdge
+                if (!outlineVerts[j].Value)
                 {
-                    Origin = originVert,
-                    Handle = halfEdgeHandle,
-                    Twin = oldhalfEdge.Handle,
+                    var unboundFace = Faces[0];
+
+                    twinHalfEdge.IncidentFace = unboundFace.Handle;
+                    if (j == 0)
+                    {
+                        unboundFace.InnerHalfEdges.Add(twinHalfEdge.Handle);
+                        Faces[0] = unboundFace;
+                    }
+                }
+
+                var boundaryEdge = new BoundaryEdge
+                {
+                    OriginVert = currentVert.Key,
+                    IsOriginOldVert = currentVert.Value,
+                    HalfEdge = halfEdge,
+                    TwinHalfEdge = twinHalfEdge
                 };
-                var unboundFace = Faces.First();
-                newHalfEdge.IncidentFace = unboundFace.Handle;
-
-                twinHalfEdges.Add(newHalfEdge);
-
-                //assign twin to "old" half edge
-                oldhalfEdge.Twin = newHalfEdge.Handle;
-                outlineHalfEdges[i] = oldhalfEdge;
-
-                //Add fist half edge in loop to unboundFace InnerComponents
-                if (i == 0)
-                    unboundFace.InnerHalfEdges.Add(newHalfEdge.Handle);
+                boundaryEdges.Add(boundaryEdge);
             }
 
-            //assign next and prev half edges
-            for (var i = 0; i < twinHalfEdges.Count; i++)
+            for (var i = 0; i < boundaryEdges.Count; i++)
             {
-                var he = twinHalfEdges[i];
+                var bEdge = boundaryEdges[i];
+                var halfEdge = bEdge.HalfEdge;
+                var twinHalfEdge = bEdge.TwinHalfEdge;
 
                 //Assumption: a boundary is always closed!
-                if (i + 1 < twinHalfEdges.Count)
-                    he.Prev.Id = twinHalfEdges[i + 1].Handle.Id;
-                else { he.Prev.Id = twinHalfEdges[0].Handle.Id; }
+                halfEdge.Next.Id = boundaryEdges[(i + 1) % outlineVerts.Count].HalfEdge.Handle.Id;
+                twinHalfEdge.Prev.Id = boundaryEdges[(i + 1) % outlineVerts.Count].TwinHalfEdge.Handle.Id;
 
                 if (i - 1 < 0)
-                    he.Next.Id = twinHalfEdges.LastItem().Handle.Id;
-                else { he.Next.Id = twinHalfEdges[i - 1].Handle.Id; }
+                {
+                    halfEdge.Prev.Id = boundaryEdges.LastItem().HalfEdge.Handle.Id;
+                    twinHalfEdge.Next.Id = boundaryEdges.LastItem().TwinHalfEdge.Handle.Id;
+                }
+                else
+                {
+                    halfEdge.Prev.Id = boundaryEdges[i - 1].HalfEdge.Handle.Id;
+                    twinHalfEdge.Next.Id = boundaryEdges[i - 1].TwinHalfEdge.Handle.Id;
+                }
 
-                twinHalfEdges[i] = he;
+                bEdge.HalfEdge = halfEdge;
+                bEdge.TwinHalfEdge = twinHalfEdge;
+
+                boundaryEdges[i] = bEdge;
             }
 
-            return twinHalfEdges;
+            var heToUpate = new List<HalfEdge>();
+
+            for (var i = boundaryEdges.Count - 1; i > -1; i--)
+            {
+                var bEdge = boundaryEdges[i];
+                if (!bEdge.IsOriginOldVert)
+                {
+                    boundaryEdges[i] = bEdge;
+                    continue;
+                }
+
+                //Test if halfEdge and twinHalfEdge are already existing
+                HalfEdgeHandle existingHeHandle;
+
+                if (IsEdgeExisting(bEdge.HalfEdge, boundaryEdges, out existingHeHandle))
+                {
+                    //If the existing half edge is halfedge.IncidentFace.OuterHalfEdge - replace
+                    var face = GetFaceByHandle(bEdge.HalfEdge.IncidentFace);
+                    if (face.OuterHalfEdge == bEdge.HalfEdge.Handle)
+                    {
+                        face.OuterHalfEdge = existingHeHandle;
+                        ReplaceFace(face);
+                    }
+
+                    //If the existing half edge is one of the unbounded faces inner half edges - replace
+                    var unboundedFace = Faces[0];
+                    for (var k = 0; k < unboundedFace.InnerHalfEdges.Count; k++)
+                    {
+                        var heHandle = unboundedFace.InnerHalfEdges[k];
+                        if (heHandle != existingHeHandle) continue;
+                        var nextHe = GetHalfEdgeByHandle(heHandle).Next;
+
+                        unboundedFace.InnerHalfEdges[k] = nextHe;
+                        Faces[0] = unboundedFace;
+                        break;
+                    }
+
+                    var existingHe = GetHalfEdgeByHandle(existingHeHandle);
+
+                    var existingHeNext = GetHalfEdgeByHandle(existingHe.Next);
+                    var existingHePrev = GetHalfEdgeByHandle(existingHe.Prev);
+
+                    existingHe.Next = bEdge.HalfEdge.Next;
+                    existingHe.Prev = bEdge.HalfEdge.Prev;
+                    existingHe.IncidentFace = bEdge.HalfEdge.IncidentFace;
+
+                    heToUpate.Add(existingHe);
+                    //ReplaceHalfEdge(existingHe);
+
+                    for (var j = 0; j < boundaryEdges.Count; j++)
+                    {
+                        var count = 0;
+                        var be = boundaryEdges[j];
+                        if (be.TwinHalfEdge.Handle == bEdge.TwinHalfEdge.Prev)
+                        {
+                            var twinHalfEdge = be.TwinHalfEdge; //he10
+                            twinHalfEdge.Next = existingHeNext.Handle;
+
+                            var halfEdge = be.HalfEdge;
+                            halfEdge.Prev = existingHeHandle;
+
+                            be.TwinHalfEdge = twinHalfEdge;
+                            be.HalfEdge = halfEdge;
+
+                            existingHeNext.Prev = twinHalfEdge.Handle;
+
+                            heToUpate.Add(existingHeNext);
+                            //ReplaceHalfEdge(existingHeNext);
+
+                            boundaryEdges[j] = be;
+                            count++;
+                        }
+
+                        if (be.TwinHalfEdge.Handle == bEdge.TwinHalfEdge.Next)
+                        {
+                            var twinHalfEdge = be.TwinHalfEdge;
+                            twinHalfEdge.Prev = existingHePrev.Handle;
+
+                            var halfEdge = be.HalfEdge;
+                            halfEdge.Next = existingHeHandle;
+
+                            be.TwinHalfEdge = twinHalfEdge;
+                            be.HalfEdge = halfEdge;
+
+                            existingHePrev.Next = twinHalfEdge.Handle;
+
+                            heToUpate.Add(existingHePrev);
+                            //ReplaceHalfEdge(existingHePrev);
+
+                            boundaryEdges[j] = be;
+                            count++;
+                        }
+                        if (count == 2)
+                            break;
+                    }
+                    boundaryEdges.RemoveAt(i);
+                    continue;
+                }
+                boundaryEdges[i] = bEdge;
+            }
+
+            if (heToUpate.Count == 0)
+            {
+                foreach (var be in boundaryEdges)
+                {
+                    HalfEdgeHandles.Add(be.HalfEdge.Handle);
+                    HalfEdgeHandles.Add(be.TwinHalfEdge.Handle);
+                    HalfEdges.Add(be.HalfEdge);
+                    HalfEdges.Add(be.TwinHalfEdge);
+                }
+                return;
+            }
+
+            foreach (var he in heToUpate)
+            {
+                ReplaceHalfEdge(he);
+            }
+
+            foreach (var be in boundaryEdges)
+            {
+                HalfEdgeHandles.Add(be.HalfEdge.Handle);
+                HalfEdgeHandles.Add(be.TwinHalfEdge.Handle);
+                HalfEdges.Add(be.HalfEdge);
+                HalfEdges.Add(be.TwinHalfEdge);
+            }
+            SetHighestHandles();
         }
 
         private FaceHandle AddFace(HalfEdgeHandle firstHalfEdge, out Face face)
@@ -845,7 +971,7 @@ namespace Fusee.Jometri.DCEL
             isOldVertex = false;
             return vert;
         }
-        
+
         #endregion
 
         #region methods concerning InsertDiagonal
@@ -973,40 +1099,71 @@ namespace Fusee.Jometri.DCEL
             return nextHeP.Origin == q || nextHeQ.Origin == p;
         }
         #endregion
-        
+
         #region methods concerning the creation of IDs for Vert-, Face- and HalfEdgeHandles
 
         internal int CreateVertHandleId()
         {
-            var newId = _highestVertHandle + 1;
-            _highestVertHandle = newId;
+            var newId = HighestVertHandle + 1;
+            HighestVertHandle = newId;
             return newId;
         }
 
         internal int CreateHalfEdgeHandleId()
         {
-            var newId = _highestHalfEdgeHandle + 1;
-            _highestHalfEdgeHandle = newId;
+            var newId = HighestHalfEdgeHandle + 1;
+            HighestHalfEdgeHandle = newId;
             return newId;
         }
 
         internal int CreateFaceHandleId()
         {
-            var newId = _highestFaceHandle + 1;
-            _highestFaceHandle = newId;
+            var newId = HighestFaceHandle + 1;
+            HighestFaceHandle = newId;
             return newId;
         }
 
         internal void SetHighestHandles()
         {
-            _highestVertHandle = VertHandles.LastItem().Id;
-            _highestHalfEdgeHandle = HalfEdgeHandles.LastItem().Id;
-            _highestFaceHandle = FaceHandles.LastItem().Id;
+            HighestVertHandle = VertHandles.Max().Id;
+            HighestHalfEdgeHandle = HalfEdgeHandles.Max().Id;
+            HighestFaceHandle = FaceHandles.Max().Id;
         }
 
         #endregion
 
-        
+        private bool IsEdgeExisting(HalfEdge halfEdge, IEnumerable<BoundaryEdge> boundaryEdges, out HalfEdgeHandle existingHeHandle)
+        {
+            existingHeHandle = new HalfEdgeHandle();
+
+            var originVert = GetVertexByHandle(halfEdge.Origin);
+            var newHeTargetVert = new VertHandle();
+
+            foreach (var be in boundaryEdges)
+            {
+                if (be.HalfEdge.Handle == halfEdge.Next)
+                    newHeTargetVert = be.HalfEdge.Origin;
+            }
+
+            if (newHeTargetVert == default(VertHandle))
+                throw new ArgumentException("target vert not found");
+
+            var heStartingAtOldV = GetHalfEdgesStartingAtV(originVert).ToList();
+
+            foreach (var heHandle in heStartingAtOldV)
+            {
+                var he = GetHalfEdgeByHandle(heHandle);
+                var oldHeTargetVert = GetHalfEdgeByHandle(he.Next).Origin;
+
+                if (oldHeTargetVert == newHeTargetVert)
+                {
+                    existingHeHandle = heHandle;
+                    return true;
+                }
+
+            }
+            return false;
+        }
     }
 }
 

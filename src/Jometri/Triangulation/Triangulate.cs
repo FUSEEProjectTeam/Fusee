@@ -38,10 +38,13 @@ namespace Fusee.Jometri.Triangulation
                 if (!IsMonotone(fHandle))
                     MakeMonotone(fHandle);
             }
+
+            var monotoneFaces = new List<FaceHandle>();
+            monotoneFaces.AddRange(_geometry.FaceHandles);
             
-            for (var i = 0; i < geometry.FaceHandles.Count; i++)
+            for (var i = 0; i < monotoneFaces.Count; i++)
             {
-                var fHandle = geometry.FaceHandles[i];
+                var fHandle = monotoneFaces[i];
 
                 if (i == 0 && isFirstFaceUnbounded) { continue; }
 

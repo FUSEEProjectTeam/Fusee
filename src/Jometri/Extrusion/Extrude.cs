@@ -33,8 +33,8 @@ namespace Fusee.Jometri.Extrusion
 
             //Add z value to each vertex coord
             UpdateAllVertexZCoord(backface, zOffset);
-
-            Join2DGeometries(geometry, backface);
+            List<KeyValuePair<HalfEdgeHandle,HalfEdgeHandle>> frontBackFacePairs;
+            Join2DGeometries(geometry, backface, out frontBackFacePairs);
         }
 
         private static void UpdateAllVertexZCoord(Geometry geometry,int zOffset)
@@ -47,7 +47,7 @@ namespace Fusee.Jometri.Extrusion
             }
         }
 
-        private static void CreateSidefaces(Geometry geometry)
+        private static void CreateSidefaces(Geometry geometry) //TODO: create side faces with frontBackPairs
         {
             var unboundedFace = geometry.GetFaceByHandle(geometry.FaceHandles[0]);
             var halfEdgeCountInFront = geometry.HalfEdgeHandles.Count / 2;
@@ -108,8 +108,8 @@ namespace Fusee.Jometri.Extrusion
                     halfEdgeInBack.Next = newFromBack.Handle;
                     halfEdgeInBack.Prev = newFromFront.Handle;
 
-                    geometry.UpdateHalfEdge(halfEdgeFront);
-                    geometry.UpdateHalfEdge(halfEdgeInBack);
+                    geometry.ReplaceHalfEdge(halfEdgeFront);
+                    geometry.ReplaceHalfEdge(halfEdgeInBack);
 
                     newHalfEdges.Add(newFromBack);
                     newHalfEdges.Add(newFromFront);
@@ -167,9 +167,11 @@ namespace Fusee.Jometri.Extrusion
             return default(HalfEdgeHandle);
         }
 
-        private static void Join2DGeometries(Geometry first, Geometry second)
+        private static void Join2DGeometries(Geometry first, Geometry second, out List<KeyValuePair<HalfEdgeHandle,HalfEdgeHandle>> frontBackFacePairs)
         {
-            var vertStartHandle = first.Vertices.Count;
+            frontBackFacePairs = new List<KeyValuePair<HalfEdgeHandle,HalfEdgeHandle>>();
+
+            var vertStartHandle = first.HighestVertHandle;
             for (var i = 0; i < second.VertHandles.Count; i++)
             {
                 var vHandle = second.VertHandles[i];
@@ -188,7 +190,7 @@ namespace Fusee.Jometri.Extrusion
                 second.VertHandles[i] = vHandle;
             }
 
-            var faceStartHandle = first.Faces.Count;
+            var faceStartHandle = first.HighestFaceHandle;
             for (var i = 0; i < second.FaceHandles.Count; i++)
             {
                 var fHandle = second.FaceHandles[i];
@@ -200,14 +202,24 @@ namespace Fusee.Jometri.Extrusion
                     if (face.Handle != second.FaceHandles[i]) continue;
 
                     face.Handle.Id = fHandle.Id;
-                    face.OuterHalfEdge.Id = face.OuterHalfEdge.Id + (first.HalfEdges.Count);
+
+                    if(face.OuterHalfEdge != default(HalfEdgeHandle))
+                        face.OuterHalfEdge.Id = face.OuterHalfEdge.Id + first.HalfEdges.Count;
+
+                    for (var k = 0; k < face.InnerHalfEdges.Count; k++)
+                    {
+                        var innerHe = face.InnerHalfEdges[k];
+                        innerHe.Id = innerHe.Id + first.HalfEdges.Count;
+                        face.InnerHalfEdges[k] = innerHe;
+                    }
+
                     second.Faces[j] = face;
                     break;
                 }
                 second.FaceHandles[i] = fHandle;
             }
 
-            var heStartHandle = first.HalfEdges.Count;
+            var heStartHandle = first.HighestHalfEdgeHandle;
 
             for (var i = 0; i < second.HalfEdgeHandles.Count; i++)
             {
@@ -217,10 +229,12 @@ namespace Fusee.Jometri.Extrusion
                 for (var j = 0; j < second.HalfEdges.Count; j++)
                 {
                     var he = second.HalfEdges[j];
-                    if (he.Handle != second.HalfEdgeHandles[i]) continue;
+                    if (he.Handle != second.HalfEdgeHandles[i]) continue; //TODO: neccessary?
 
+                    if (he.IncidentFace == first.Faces[0].Handle)
+                        frontBackFacePairs.Add(new KeyValuePair<HalfEdgeHandle, HalfEdgeHandle>(he.Handle, heHandle));
 
-                    he.IncidentFace.Id = he.IncidentFace.Id + (first.Faces.Count);
+                    he.IncidentFace.Id = he.IncidentFace.Id + (first.Faces.Count); //TODO: replace w highestHandle
                     he.Origin.Id = he.Origin.Id + (first.Vertices.Count);
 
                     he.Handle.Id = heHandle.Id;
@@ -238,37 +252,7 @@ namespace Fusee.Jometri.Extrusion
             }
 
             //Change winding
-            var zwerg = new List<HalfEdge>();
-            foreach (var hEdge in second.HalfEdges)
-            {
-                var he = hEdge;
-                var next = he.Prev;
-                var prev = he.Next;
-
-                he.Next = next;
-                he.Prev = prev;
-
-                var newOrigin = second.GetHalfEdgeByHandle(he.Prev).Origin;
-                he.Origin = newOrigin;
-
-                zwerg.Add(he);
-
-                for (var i = 0; i < second.Vertices.Count; i++)
-                {
-                    var vert = second.Vertices[i];
-
-                    if (vert.Handle != newOrigin) continue;
-
-                    vert.IncidentHalfEdge = he.Handle;
-                    second.Vertices[i] = vert;
-                    break;
-                }
-            }
-
-            for (var i = 0; i < second.HalfEdges.Count; i++)
-            {
-                second.HalfEdges[i] = zwerg[i];
-            }
+            var hEdgesWChangedWinding = HalfEdgesWChangedWinding(second.HalfEdges, second).ToList();
 
             //Add data of second geometry to this one
             for (var i = 0; i < second.VertHandles.Count; i++)
@@ -290,10 +274,39 @@ namespace Fusee.Jometri.Extrusion
             for (var i = 0; i < second.HalfEdgeHandles.Count; i++)
             {
                 first.HalfEdgeHandles.Add(second.HalfEdgeHandles[i]);
-                first.HalfEdges.Add(second.HalfEdges[i]);
+                first.HalfEdges.Add(hEdgesWChangedWinding[i]);
             }
 
             first.SetHighestHandles();
+        }
+
+        private static IEnumerable<HalfEdge> HalfEdgesWChangedWinding(IEnumerable<HalfEdge> originHEdges, Geometry geom)
+        {
+            foreach (var hEdge in originHEdges)
+            {
+                var he = hEdge;
+                var next = he.Prev;
+                var prev = he.Next;
+
+                he.Next = next;
+                he.Prev = prev;
+
+                var newOrigin = geom.GetHalfEdgeByHandle(he.Prev).Origin;
+                he.Origin = newOrigin;
+
+                yield return he;
+
+                for (var i = 0; i < geom.Vertices.Count; i++)
+                {
+                    var vert = geom.Vertices[i];
+
+                    if (vert.Handle != newOrigin) continue;
+
+                    vert.IncidentHalfEdge = he.Handle;
+                    geom.Vertices[i] = vert;
+                    break;
+                }
+            }
         }
     }
 }

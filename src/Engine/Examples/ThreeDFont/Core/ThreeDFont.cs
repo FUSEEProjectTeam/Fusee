@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Fusee.Base.Core;
+﻿using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Math.Core;
@@ -18,9 +17,6 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
         private float _alpha;
         private float _beta;
 
-        private float _pitchCube1;
-        private float _pitchCube2;
-
         private string _text;
         private Mesh _textMesh;
 
@@ -34,7 +30,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             var gnuSerif = AssetStorage.Get<Font>("GNU-FreeSerif.ttf");
 
             _text = "Hello World";
-            _threeDFontHelper = new ThreeDFontHelper(_text, gnuSerif);
+            _threeDFontHelper = new ThreeDFontHelper(_text, fontLato);
 
             var outlines = _threeDFontHelper.GetTextOutlinesWAngle(10);
             var geom = new Geometry(outlines, true);
@@ -57,12 +53,6 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
         {
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-
-            _pitchCube1 += Keyboard.WSAxis * 0.1f;
-            _pitchCube2 += Keyboard.UpDownAxis * 0.1f;
-
-            _pitchCube1 = M.Clamp(_pitchCube1, -M.Pi / 2, M.Pi / 2);
-            _pitchCube2 = M.Clamp(_pitchCube2, -M.Pi / 2, M.Pi / 2);
 
             var speed = Mouse.Velocity + Touch.GetVelocity(TouchPoints.Touchpoint_0);
             if (Mouse.LeftButton || Touch.GetTouchActive(TouchPoints.Touchpoint_0))
