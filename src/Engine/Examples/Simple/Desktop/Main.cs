@@ -36,6 +36,8 @@ namespace Fusee.Engine.Examples.Simple.Desktop
                     {
                         if (!Path.GetExtension(id).ToLower().Contains("fus")) return null;
                         var ser = new Serializer();
+                        var schema = ProtoBuf.Serializer.GetProto<SceneContainer>();
+
                         return ser.Deserialize((Stream)storage, null, typeof(SceneContainer)) as SceneContainer;
                     },
                     Checker = id => Path.GetExtension(id).ToLower().Contains("fus")
