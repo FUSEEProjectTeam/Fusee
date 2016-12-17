@@ -43,8 +43,9 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
                 if (faceVerts.Count > 3)
                     throw new ArgumentException("Invalid Triangle - face has more than 3 Vertices");
 
-                foreach (var vert in faceVerts)
+                foreach (var vHandle in faceVerts)
                 {
+                    var vert = geometry.GetVertexByHandle(vHandle);
                     verts.Add(vert.Coord);
                 }
             }

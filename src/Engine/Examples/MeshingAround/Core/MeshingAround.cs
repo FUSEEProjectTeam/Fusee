@@ -26,21 +26,35 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
         private float _beta;
 
         private SceneRenderer _renderer;
- 
+
         // Init is called on startup. 
         public override void Init()
         {
             ////////////////////// Mesh creation ///////////////////////////////
-            var outlineOne = new Outline
+            var outlineOne = new Outline //CCW!!
             {
                 Points = new List<float3>
                 {
                     new float3(0, 0, 0),
                     new float3(0, 0.5f, 0),
+                    new float3(-0.25f,0.75f,0),
                     new float3(-0.5f, 0.5f, 0),
                     new float3(-0.5f, 0, 0)
                 },
                 IsOuter = true
+            };
+
+            var outlineOneHole = new Outline //CW!!
+            {
+                Points = new List<float3>
+                {
+                    new float3(-0.125f, 0.125f, 0),
+                    new float3(-0.375f, 0.125f, 0),
+                    new float3(-0.375f, 0.375f, 0),
+                    new float3(-0.125f, 0.375f, 0)
+
+                },
+                IsOuter = false
             };
 
             var outlineTwo = new Outline
@@ -55,7 +69,6 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
                 IsOuter = true
             };
 
-
             var outlineThree = new Outline
             {
                 Points = new List<float3>
@@ -67,8 +80,8 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
                 },
                 IsOuter = true
             };
-            
-            var geomOutlines = new List<Outline> { outlineOne, outlineTwo, outlineThree };
+
+            var geomOutlines = new List<Outline> { outlineOne, outlineOneHole, outlineTwo, outlineThree };
             var geom = new Geometry(geomOutlines, true);
             geom.Extrude2DPolygon(1);
             var mesh = new HalfEdgeListToMesh(geom);
@@ -89,7 +102,7 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
 
             parentNode.Components.Add(parentTrans);
 
-            var sceneNodeC = new SceneNodeContainer {Components = new List<SceneComponentContainer>()};
+            var sceneNodeC = new SceneNodeContainer { Components = new List<SceneComponentContainer>() };
 
 
             var meshC = new MeshComponent
@@ -98,27 +111,27 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
                 Triangles = mesh.Triangles,
                 Normals = mesh.Normals,
             };
-            
+
 
             var tranC = new TransformComponent
             {
                 Rotation = float3.Zero,
                 Scale = float3.One,
-                Translation = new float3(0,0,0)
+                Translation = new float3(0, 0, 0)
             };
 
             sceneNodeC.Components.Add(tranC);
             sceneNodeC.Components.Add(meshC);
-            
+
             parentNode.Children.Add(sceneNodeC);
 
-            var sc = new SceneContainer {Children = new List<SceneNodeContainer> {parentNode}};
+            var sc = new SceneContainer { Children = new List<SceneNodeContainer> { parentNode } };
 
             _renderer = new SceneRenderer(sc);
 
             // Set the clear color for the backbuffer to white (100% intentsity in all color channels R, G, B, A).
             RC.ClearColor = new float4(0, 1, 1, 1);
-            
+
         }
 
         // RenderAFrame is called once a frame
@@ -158,7 +171,7 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
             RC.Viewport(0, 0, Width, Height);
 
             // Create a new projection matrix generating undistorted images on the new aspect ratio.
-            var aspectRatio = Width/(float) Height;
+            var aspectRatio = Width / (float)Height;
 
             // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
             // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
@@ -167,6 +180,6 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
             RC.Projection = projection;
 
         }
-        
+
     }
 }

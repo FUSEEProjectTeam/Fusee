@@ -56,7 +56,11 @@ namespace Fusee.Jometri.Triangulation
 
         private static void TriangulateMonotone(FaceHandle fHandle)
         {
-            var faceVertices = _geometry.GetFaceVertices(fHandle).ToList();
+            var faceVertices = new List<Vertex>();
+            foreach (var vHandle in _geometry.GetFaceVertices(fHandle))
+            {
+                faceVertices.Add(_geometry.GetVertexByHandle(vHandle));
+            }
 
             if (faceVertices.Count.Equals(3)) return;
 
@@ -153,7 +157,7 @@ namespace Fusee.Jometri.Triangulation
             var heHandle = new HalfEdgeHandle();
             var endOfChain = sortedVerts.LastItem();
 
-            var startingAtFirstV = _geometry.GetHalfEdgesStartingAtV(sortedVerts[0]).ToList();
+            var startingAtFirstV = _geometry.GetVertexStartingHalfEdges(sortedVerts[0].Handle).ToList();
             if (startingAtFirstV.Count > 1)
             {
                 foreach (var heh in startingAtFirstV)
@@ -215,18 +219,19 @@ namespace Fusee.Jometri.Triangulation
         {
             var verts = _geometry.GetFaceVertices(fHandle).ToList();
 
-            foreach (var vert in verts)
+            foreach (var vHandle in verts)
             {
-                TestVertexType(vert, fHandle);
+                TestVertexType(vHandle, fHandle);
                 if (_vertType.Equals(VertexType.SPLIT_VERTEX) || _vertType.Equals(VertexType.MERGE_VERTEX))
                     return false;
             }
             return true;
         }
 
-        private static void TestVertexType(Vertex vert, FaceHandle fHandle)
+        private static void TestVertexType(VertHandle vHandle, FaceHandle fHandle)
         {
-            var heStartingAtFace = _geometry.GetHalfEdgesStartingAtV(vert).ToList();
+            var vert = _geometry.GetVertexByHandle(vHandle);
+            var heStartingAtFace = _geometry.GetVertexStartingHalfEdges(vHandle).ToList();
 
             var incidentHalfEdge = new HalfEdge();
             foreach (var he in heStartingAtFace)
@@ -320,9 +325,15 @@ namespace Fusee.Jometri.Triangulation
         #region MakeMonotone
         private static void MakeMonotone(FaceHandle fHandle)
         {
-            var vertices = _geometry.GetFaceVertices(fHandle).ToList();
+            var vertices = new List<Vertex>();
+
+            foreach (var vHandle in _geometry.GetFaceVertices(fHandle))
+            {
+                vertices.Add(_geometry.GetVertexByHandle(vHandle));
+            }
+
             var sortedVertices = GetSortedVertices(vertices.ToList());
-            var faceHalfEdges = _geometry.GetHalfEdgesOfFace(fHandle).ToList();
+            var faceHalfEdges = _geometry.GetFaceHalfEdges(fHandle).ToList();
 
             var newFaces = new List<FaceHandle>();
 
@@ -360,10 +371,10 @@ namespace Fusee.Jometri.Triangulation
 
         private static void TestVertexType(Vertex vert, FaceHandle fHandle, ICollection<FaceHandle> newFaces)
         {
-            var heStartingAtFace = _geometry.GetHalfEdgesStartingAtV(vert).ToList();
+            var heStartingAtVert = _geometry.GetVertexStartingHalfEdges(vert.Handle).ToList();
             var incidentHalfEdge = new HalfEdge();
 
-            foreach (var he in heStartingAtFace)
+            foreach (var he in heStartingAtVert)
             {
                 var incidentFace = _geometry.GetHalfEdgeByHandle(he).IncidentFace;
                 if (incidentFace.Equals(fHandle))

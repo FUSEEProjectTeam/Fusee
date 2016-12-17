@@ -1,9 +1,11 @@
-﻿using Fusee.Base.Core;
+﻿using System.Collections.Generic;
+using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Math.Core;
 using static Fusee.Engine.Core.Input;
 using Fusee.Jometri.Extrusion;
+using Fusee.Serialization;
 using Geometry = Fusee.Jometri.DCEL.Geometry;
 
 namespace Fusee.Engine.Examples.ThreeDFont.Core
@@ -12,8 +14,8 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
     [FuseeApplication(Name = "ThreeDFont Example", Description = "The official FUSEE ThreeDFont.")]
     public class ThreeDFont : RenderCanvas
     {
-        private IShaderParam _xformParam;
-        private float4x4 _xform;
+        private SceneRenderer _renderer;
+
         private float _alpha;
         private float _beta;
 
@@ -30,19 +32,59 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             var gnuSerif = AssetStorage.Get<Font>("GNU-FreeSerif.ttf");
 
             _text = "Hello World";
-            _threeDFontHelper = new ThreeDFontHelper(_text, fontLato);
+            _threeDFontHelper = new ThreeDFontHelper(_text, gnuSerif);
 
             var outlines = _threeDFontHelper.GetTextOutlinesWAngle(10);
             var geom = new Geometry(outlines, true);
-            
+
             geom = geom.Extrude2DPolygon(2000);
 
             _textMesh = new HalfEdgeListToMesh(geom);
 
+            var parentNode = new SceneNodeContainer
+            {
+                Components = new List<SceneComponentContainer>(),
+                Children = new List<SceneNodeContainer>()
+            };
+
+            var parentTrans = new TransformComponent
+            {
+                Rotation = float3.Zero,
+                Scale = new float3(0.01f, 0.01f, 0.01f),
+                Translation = new float3(0, 0, 0)
+            };
+
+            parentNode.Components.Add(parentTrans);
+
+            var sceneNodeC = new SceneNodeContainer { Components = new List<SceneComponentContainer>() };
+
+            var meshC = new MeshComponent
+            {
+                Vertices = _textMesh.Vertices,
+                Triangles = _textMesh.Triangles,
+                Normals = _textMesh.Normals,
+            };
+
+
+            var transC = new TransformComponent
+            {
+                Rotation = float3.Zero,
+                Scale = float3.One,
+                Translation = new float3(0, 0, 0)
+            };
+
+            sceneNodeC.Components.Add(transC);
+            sceneNodeC.Components.Add(meshC);
+
+            parentNode.Children.Add(sceneNodeC);
+
+            var sc = new SceneContainer { Children = new List<SceneNodeContainer> { parentNode } };
+
+            _renderer = new SceneRenderer(sc);
+
+
             var shader = RC.CreateShader(AssetStorage.Get<string>("VertShader.vert"), AssetStorage.Get<string>("FragShader.frag"));
             RC.SetShader(shader);
-            _xformParam = RC.GetShaderParam(shader, "xform");
-            _alpha = 0;
 
             // Set the clear color for the backbuffer
             RC.ClearColor = new float4(1f, 1f, 1f, 1);
@@ -51,6 +93,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
+
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
@@ -61,20 +104,17 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
                 _beta -= speed.y * 0.0001f;
             }
 
-            var aspectRatio = Width / (float)Height;
-            var projection = float4x4.CreatePerspectiveFieldOfView(3.141592f * 0.25f, aspectRatio, 0.01f, 30000);
-            var view = float4x4.CreateTranslation(0, 0, 10) * float4x4.CreateRotationX(_beta) * float4x4.CreateRotationY(_alpha);
-            var modelPoint = ModelXForm(new float3(-6, -1, 0), float3.Zero);
+            // Create the camera matrix and set it as the current ModelView transformation
+            var mtxRot = float4x4.CreateRotationX(_beta) * float4x4.CreateRotationY(_alpha);
+            var mtxCam = float4x4.LookAt(0, 0, -80, 0, 0, 0, 0, 1, 0);
+            RC.ModelView = mtxCam * mtxRot * ModelXForm(new float3(-55, -8, 0), float3.Zero);
 
-            _xform = projection * view * modelPoint * float4x4.CreateScale(0.001f, 0.001f, 0.001f);
+            _renderer.Render(RC);
 
-            RC.SetShaderParam(_xformParam, _xform);
-            RC.Render(_textMesh);
-
-            // Swap buffers: Show the contents of the backbuffer (containing the currently rendered farame) on the front buffer.
+            // Swap buffers: Show the contents of the backbuffer (containing the currently rerndered farame) on the front buffer.
             Present();
         }
-        
+
         // Is called when the window was resized
         public override void Resize()
         {
@@ -91,7 +131,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             RC.Projection = projection;
         }
 
-        static float4x4 ModelXForm(float3 pos, float3 pivot)
+        private static float4x4 ModelXForm(float3 pos, float3 pivot)
         {
             return float4x4.CreateTranslation(pos + pivot)
                    * float4x4.CreateTranslation(-pivot);
