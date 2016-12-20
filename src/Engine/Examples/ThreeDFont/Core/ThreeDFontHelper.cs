@@ -175,7 +175,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
         }
 
         //Returns all control points of a given text, grouped in faces and calculated adaptively by testing the angle.
-        public IList<Outline> GetTextOutlinesWAngle(int angle)
+        public IList<PolyBoundary> GetTextOutlinesWAngle(int angle)
         {
             var advance = 0f;
             var advanceComp = 0f;
@@ -183,7 +183,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             var kerningComp = 0f;
 
             var textCurves = GetTextCurves();
-            var textOutlines = new List<Outline>();
+            var textOutlines = new List<PolyBoundary>();
 
             for (var i = 0; i < textCurves.Count; i++)
             {
@@ -202,7 +202,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
 
                     if (outlinePoints.IsCounterClockwise())
                     {
-                        var outline = new Outline
+                        var outline = new PolyBoundary
                         {
                             IsOuter = true,
                             Points = outlinePoints
@@ -211,7 +211,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
                     }
                     else
                     {
-                        var outline = new Outline
+                        var outline = new PolyBoundary
                         {
                             IsOuter = false,
                             Points = outlinePoints
@@ -228,7 +228,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             return textOutlines;
         }
 
-        public IList<Outline> GetTextOutlinesUniformy(int angle)
+        public IList<PolyBoundary> GetTextOutlinesUniformy(int angle)
         {
             return null; //TODO implement ....
         }

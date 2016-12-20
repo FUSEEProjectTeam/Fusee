@@ -1,6 +1,4 @@
-﻿#define GUI_SIMPLE
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
@@ -9,11 +7,7 @@ using Fusee.Jometri.Extrusion;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 using static Fusee.Engine.Core.Input;
-using Geometry = Fusee.Jometri.DCEL.Geometry;
 
-#if GUI_SIMPLE
-
-#endif
 
 namespace Fusee.Engine.Examples.MeshingAround.Core
 {
@@ -31,7 +25,7 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
         public override void Init()
         {
             ////////////////////// Mesh creation ///////////////////////////////
-            var outlineOne = new Outline //CCW!!
+            var outlineOne = new PolyBoundary //CCW!!
             {
                 Points = new List<float3>
                 {
@@ -44,7 +38,7 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
                 IsOuter = true
             };
 
-            var outlineOneHole = new Outline //CW!!
+            var outlineOneHole = new PolyBoundary //CW = hole!!
             {
                 Points = new List<float3>
                 {
@@ -57,7 +51,7 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
                 IsOuter = false
             };
 
-            var outlineTwo = new Outline
+            var outlineTwo = new PolyBoundary
             {
                 Points = new List<float3>
                 {
@@ -69,7 +63,7 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
                 IsOuter = true
             };
 
-            var outlineThree = new Outline
+            var outlineThree = new PolyBoundary
             {
                 Points = new List<float3>
                 {
@@ -81,12 +75,12 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
                 IsOuter = true
             };
 
-            var geomOutlines = new List<Outline> { outlineOne, outlineOneHole, outlineTwo, outlineThree };
-            var geom = new Geometry(geomOutlines, true);
-            geom.Extrude2DPolygon(1);
-            var mesh = new HalfEdgeListToMesh(geom);
+            var geomOutlines = new List<PolyBoundary> { outlineOne, outlineOneHole, outlineTwo, outlineThree };
+            var geom2D = new Geometry2D(geomOutlines);
+            var geom3D = geom2D.Extrude2DPolygon(1);
+            var mesh = new HalfEdgeListToMesh(geom3D);
 
-            ////////////////// Scene graph ////////////////////////////////
+            ////////////////// Fill SceneNodeContainer ////////////////////////////////
             var parentNode = new SceneNodeContainer
             {
                 Components = new List<SceneComponentContainer>(),
@@ -176,7 +170,7 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
             // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
             // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
             // Back clipping happens at 2000 (Anything further away from the camera than 2000 world units gets clipped, polygons will be cut)
-            var projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 2000000);
+            var projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, aspectRatio, 1, 2000000);
             RC.Projection = projection;
 
         }

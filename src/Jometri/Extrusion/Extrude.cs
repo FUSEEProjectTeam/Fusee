@@ -18,17 +18,30 @@ namespace Fusee.Jometri.Extrusion
         /// <param name="geometry">The geometry to be extruded.</param>
         /// <param name="zOffset">zOffset will be added to each vertex' z coordinate in order to create the back of the geometry </param>
         /// <returns></returns>
-        public static Geometry Extrude2DPolygon(this Geometry geometry, int zOffset)
+        public static Geometry3D Extrude2DPolygon(this Geometry2D geometry, int zOffset)
         {
             CreateBackface(geometry, zOffset);
             CreateSidefaces(geometry);
 
-            return geometry;
+            var geom3D = new Geometry3D
+            {
+                Faces = geometry.Faces, //TODO: Convert to List<Face3D>
+                Vertices = geometry.Vertices,
+                HalfEdges = geometry.HalfEdges,
+
+                FaceHandles = geometry.FaceHandles,
+                VertHandles = geometry.VertHandles,
+                HalfEdgeHandles = geometry.HalfEdgeHandles
+            };
+
+            //TODO: geom3D.HighestHalfEdgeHandle = geometry.HighestHalfEdgeHandle / HighestVertexHandle / HighestFaceHandle
+            
+            return geom3D;
         }
 
-        private static void CreateBackface(Geometry geometry, int zOffset)
+        private static void CreateBackface(Geometry2D geometry, int zOffset)
         {
-            //Clone frontface
+            //Clone front face
             var backface = geometry.CloneGeometry();
 
             //Add z value to each vertex coord
@@ -37,7 +50,7 @@ namespace Fusee.Jometri.Extrusion
             Join2DGeometries(geometry, backface);
         }
 
-        private static void UpdateAllVertexZCoord(Geometry geometry, int zOffset)
+        private static void UpdateAllVertexZCoord(Geometry2D geometry, int zOffset)
         {
             for (var i = 0; i < geometry.Vertices.Count; i++)
             {
@@ -47,9 +60,9 @@ namespace Fusee.Jometri.Extrusion
             }
         }
 
-        private static void CreateSidefaces(Geometry geometry)
+        private static void CreateSidefaces(Geometry2D geometry)
         {
-            var unboundedFace = geometry.GetFaceByHandle(geometry.FaceHandles[0]);
+            var unboundedFace = (Face2D)geometry.GetFaceByHandle(geometry.FaceHandles[0]);
 
             var frontLoopsStartHalfEdges = unboundedFace.InnerHalfEdges.TakeItems(unboundedFace.InnerHalfEdges.Count / 2).ToList();
             var backLoopsStartHalfEdges = unboundedFace.InnerHalfEdges.SkipItems(unboundedFace.InnerHalfEdges.Count / 2).ToList();
@@ -81,7 +94,7 @@ namespace Fusee.Jometri.Extrusion
                         Prev = halfEdgeInBack.Handle
                     };
 
-                    var newFace = new Face
+                    var newFace = new Face2D
                     {
                         Handle = new FaceHandle(geometry.CreateFaceHandleId()),
                         OuterHalfEdge = newFromBack.Handle,
@@ -145,7 +158,7 @@ namespace Fusee.Jometri.Extrusion
             geometry.FaceHandles.Remove(unboundedFace.Handle);
         }
 
-        private static void Join2DGeometries(Geometry first, Geometry second)
+        private static void Join2DGeometries(Geometry2D first, Geometry2D second)
         {
             var vertStartHandle = first.HighestVertHandle;
             for (var i = 0; i < second.VertHandles.Count; i++)
@@ -174,13 +187,16 @@ namespace Fusee.Jometri.Extrusion
 
                 for (var j = 0; j < second.Faces.Count; j++)
                 {
-                    var face = second.Faces[j];
+                    var face = (Face2D)second.Faces[j];
                     if (face.Handle != second.FaceHandles[i]) continue;
 
-                    face.Handle.Id = fHandle.Id;
+                    face.Handle = fHandle;
 
                     if (face.OuterHalfEdge != default(HalfEdgeHandle))
-                        face.OuterHalfEdge.Id = face.OuterHalfEdge.Id + first.HighestHalfEdgeHandle;
+                    {
+                        var outerHeId = new HalfEdgeHandle(face.OuterHalfEdge.Id + first.HighestHalfEdgeHandle);
+                        face.OuterHalfEdge = outerHeId;
+                    }
 
                     for (var k = 0; k < face.InnerHalfEdges.Count; k++)
                     {
@@ -235,7 +251,9 @@ namespace Fusee.Jometri.Extrusion
             }
 
             //Write content of second undbounded face into the first - delete second unbounded face
-            first.Faces[0].InnerHalfEdges.AddRange(second.Faces[0].InnerHalfEdges);
+            var firstUnbounded = (Face2D)first.Faces[0];
+            var secUnbounded = (Face2D)second.Faces[0];
+            firstUnbounded.InnerHalfEdges.AddRange(secUnbounded.InnerHalfEdges);
             second.Faces.RemoveAt(0);
             second.FaceHandles.RemoveAt(0);
             for (var i = 0; i < second.FaceHandles.Count; i++)

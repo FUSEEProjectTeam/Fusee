@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using Fusee.Engine.Core;
+using Fusee.Jometri.DCEL;
 using Fusee.Math.Core;
-using Geometry = Fusee.Jometri.DCEL.Geometry;
+
 
 namespace Fusee.Engine.Examples.MeshingAround.Core
 {
     public class HalfEdgeListToMesh : Mesh
     {
-        public HalfEdgeListToMesh(Geometry geometry)
+        public HalfEdgeListToMesh(Geometry3D geometry)
         {
             float3[] vertices;
             ushort[] triangles;
@@ -23,9 +24,9 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
         }
 
         //geometry has to be trinagulated
-        private static void ConvertToMesh(Geometry geometry, out float3[] vertices, out ushort[] triangles, out List<float3> normals)
+        private static void ConvertToMesh(Geometry3D geometry, out float3[] vertices, out ushort[] triangles, out List<float3> normals)
         {
-            var triangleCount = geometry.FaceHandles.Count;//-1;
+            var triangleCount = geometry.FaceHandles.Count;
             var vertCount = triangleCount * 3;
 
             var verts = new List<float3>();
@@ -36,12 +37,10 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
 
             foreach (var faceHandle in geometry.FaceHandles)
             {
-                //if(faceHandle.Id ==1) continue;
-                
                 var faceVerts = geometry.GetFaceVertices(faceHandle).ToList();
 
                 if (faceVerts.Count > 3)
-                    throw new ArgumentException("Invalid Triangle - face has more than 3 Vertices");
+                    throw new ArgumentException("Invalid triangle - face has more than 3 Vertices");
 
                 foreach (var vHandle in faceVerts)
                 {

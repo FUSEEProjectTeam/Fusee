@@ -239,7 +239,7 @@ namespace Fusee.Math.Core
         /// <param name="t">Beziér curves are polynominals of t. t is element of [0, 1]</param>
         /// <param name="vertices">All control points thet represent the curve, incl. start and end point</param>
         /// <returns></returns>
-        public virtual float3 CalcPoint(float t, float3[] vertices)
+        public float3 CalcPoint(float t, float3[] vertices)
         {
             if (vertices.Length == 1)
                 return vertices[0];
@@ -262,7 +262,7 @@ namespace Fusee.Math.Core
         /// <param name="vertices">All control points thet represent the curve, incl. start and end point.</param>
         /// <param name="leftCurve">The left new curve</param>
         /// <param name="rightCurve">The right new curve</param>
-        public virtual void SplitCurve(float t, float3[] vertices, ref List<float3> leftCurve, ref List<float3> rightCurve)
+        public void SplitCurve(float t, float3[] vertices, ref List<float3> leftCurve, ref List<float3> rightCurve)
         {
             if (vertices.Length == 1)
             {

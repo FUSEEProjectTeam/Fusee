@@ -12,11 +12,11 @@ namespace Fusee.Jometri.Triangulation
     /// </summary>
     internal static class Triangulation
     {
-        private static Geometry _geometry;
+        private static Geometry2D _geometry;
         private static VertexType _vertType;
         private static SweepLineStatus _sweepLineStatus;
-        
-        internal static void Triangulate(this Geometry geometry)
+
+        internal static void Triangulate(this Geometry2D geometry)
         {
             //TODO: Both, MakeMonotone and TriangulateMonotone need 2D coordinates instead of 3D. It is possibly more effective to call Reduce2D for the vertices of the whole face in those methods than in the sub methods
 
@@ -41,7 +41,7 @@ namespace Fusee.Jometri.Triangulation
 
             var monotoneFaces = new List<FaceHandle>();
             monotoneFaces.AddRange(_geometry.FaceHandles);
-            
+
             for (var i = 0; i < monotoneFaces.Count; i++)
             {
                 var fHandle = monotoneFaces[i];
@@ -209,7 +209,7 @@ namespace Fusee.Jometri.Triangulation
 
         private static bool IsMonotone(FaceHandle fHandle)
         {
-            var face = _geometry.GetFaceByHandle(fHandle);
+            var face = (Face2D)_geometry.GetFaceByHandle(fHandle);
             var noSplitOrMerge = HasNoSplitOrMerge(fHandle);
 
             return noSplitOrMerge && face.InnerHalfEdges.Count == 0;
@@ -338,7 +338,7 @@ namespace Fusee.Jometri.Triangulation
             var newFaces = new List<FaceHandle>();
 
             _sweepLineStatus = new SweepLineStatus();
-            
+
             while (sortedVertices.Count != 0)
             {
                 var current = sortedVertices[0];
@@ -491,7 +491,7 @@ namespace Fusee.Jometri.Triangulation
             ei.Helper = vert.Handle;
             ei.IsMergeVertex = false;
 
-            _sweepLineStatus.InsertNode(ei.IntersectionPointX,ei);
+            _sweepLineStatus.InsertNode(ei.IntersectionPointX, ei);
         }
 
         private static void HandleMergeVertex(Vertex vert, IEnumerable<HalfEdgeHandle> faceHalfEdges, ICollection<FaceHandle> newFaces)
@@ -516,7 +516,7 @@ namespace Fusee.Jometri.Triangulation
 
             _sweepLineStatus.DeleteNode(eMinOne.IntersectionPointX);
             _sweepLineStatus.BalanceTree();
-            
+
             var ej = _sweepLineStatus.FindLargestSmallerThanInBalanced(vert.Coord.x);
 
             if (ej.IsMergeVertex)
@@ -570,7 +570,7 @@ namespace Fusee.Jometri.Triangulation
             {
                 _sweepLineStatus.UpdateNodes(vert);
                 _sweepLineStatus.BalanceTree();
-                
+
                 var ej = _sweepLineStatus.FindLargestSmallerThanInBalanced(vert.Coord.x);
 
                 if (ej.IsMergeVertex)

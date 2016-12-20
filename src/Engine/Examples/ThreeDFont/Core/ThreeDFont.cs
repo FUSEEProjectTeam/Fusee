@@ -2,11 +2,11 @@
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Jometri.DCEL;
 using Fusee.Math.Core;
 using static Fusee.Engine.Core.Input;
 using Fusee.Jometri.Extrusion;
 using Fusee.Serialization;
-using Geometry = Fusee.Jometri.DCEL.Geometry;
 
 namespace Fusee.Engine.Examples.ThreeDFont.Core
 {
@@ -32,14 +32,13 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             var gnuSerif = AssetStorage.Get<Font>("GNU-FreeSerif.ttf");
 
             _text = "Hello World";
-            _threeDFontHelper = new ThreeDFontHelper(_text, gnuSerif);
+            _threeDFontHelper = new ThreeDFontHelper(_text, fontLato);
 
             var outlines = _threeDFontHelper.GetTextOutlinesWAngle(10);
-            var geom = new Geometry(outlines, true);
+            var geom2D = new Geometry2D(outlines);
+            var geom3D = geom2D.Extrude2DPolygon(2000);
 
-            geom = geom.Extrude2DPolygon(2000);
-
-            _textMesh = new HalfEdgeListToMesh(geom);
+            _textMesh = new HalfEdgeListToMesh(geom3D);
 
             var parentNode = new SceneNodeContainer
             {
@@ -87,7 +86,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             RC.SetShader(shader);
 
             // Set the clear color for the backbuffer
-            RC.ClearColor = new float4(1f, 1f, 1f, 1);
+            RC.ClearColor = new float4(0, 0, 0, 1);
         }
 
         // RenderAFrame is called once a frame

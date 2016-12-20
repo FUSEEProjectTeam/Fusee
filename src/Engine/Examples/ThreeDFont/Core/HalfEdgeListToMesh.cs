@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using Fusee.Engine.Core;
+using Fusee.Jometri.DCEL;
 using Fusee.Math.Core;
-using Geometry = Fusee.Jometri.DCEL.Geometry;
 
 namespace Fusee.Engine.Examples.ThreeDFont.Core
 {
     public class HalfEdgeListToMesh : Mesh
     {
-        public HalfEdgeListToMesh(Geometry geometry)
+        public HalfEdgeListToMesh(Geometry3D geometry)
         {
             float3[] vertices;
             ushort[] triangles;
@@ -23,7 +23,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
         }
 
         //geometry has to be trinagulated
-        private static void ConvertToMesh(Geometry geometry, out float3[] vertices, out ushort[] triangles, out List<float3> normals)
+        private static void ConvertToMesh(Geometry3D geometry, out float3[] vertices, out ushort[] triangles, out List<float3> normals)
         {
             var triangleCount = geometry.FaceHandles.Count;
             var vertCount = triangleCount * 3;
