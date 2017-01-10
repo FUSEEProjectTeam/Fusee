@@ -40,9 +40,18 @@ namespace Fusee.Tools.fuConv
         {
         }
 
+        [Verb("protoschema", HelpText = "Output the protobuf schema for the .fus file format.")]
+        public class ProtoSchema
+        {
+            [Option('o', "output", HelpText = "Path of .proto file to be written. \".proto\" extension will be added if not present.")]
+            public string Output { get; set; }
+
+        }
+
+
         static void Main(string[] args)
         {
-            var result = Parser.Default.ParseArguments<SceneOptions, InputSceneFormats>(args)
+            var result = Parser.Default.ParseArguments<SceneOptions, InputSceneFormats, ProtoSchema>(args)
                 
                 // Called with the SCENE verb
                 .WithParsed<SceneOptions>(opts =>
@@ -112,8 +121,8 @@ namespace Fusee.Tools.fuConv
 
                     var ser = new Serializer();
                     ser.Serialize(output, fuseeScene);
-
-
+                    output.Flush();
+                    output.Close();
                 })
 
                 // Called with the INPUTSCENEFORMATS verb
@@ -125,6 +134,38 @@ namespace Fusee.Tools.fuConv
                         Console.Write(inFormat + "; ");
                     }
                     Console.WriteLine();
+                })
+
+                // Called with the PROTOSCHEMA verb
+                .WithParsed<ProtoSchema>(opts =>
+                {
+                    var schema = ProtoBuf.Serializer.GetProto<SceneContainer>();
+
+                    // Check and open output file
+                    if (!string.IsNullOrEmpty(opts.Output))
+                    {
+                        if (Path.GetExtension(opts.Output).ToLower() != ".proto")
+                        {
+                            opts.Output += ".proto";
+                        }
+                        try
+                        {
+                            using (var output = new StreamWriter(File.Open(opts.Output, FileMode.Create)))
+                                output.Write(schema);
+                            Console.Error.WriteLine($"Protobuf schema for .fus files successfully written to '{opts.Output}'");
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.Error.WriteLine($"ERROR creating output file '{opts.Output}':");
+                            Console.Error.WriteLine(ex);
+                            Environment.Exit((int) ErrorCode.OutputFile);
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine(schema);
+                    }
+
                 })
 
                 // ERROR on the command line

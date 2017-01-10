@@ -118,6 +118,24 @@ namespace Fusee.Serialization
         Slerp,  
     }
 
+    /// <summary> 
+    /// Symbolic value describing the data type of the key values stored in an animation track. 
+    /// </summary>
+    public enum KeyType
+    {
+        /// <summary> Key contains double values. </summary>
+        Double,
+        /// <summary> Key contains int values. </summary>
+        Int,
+        /// <summary> Key contains float values. </summary>
+        Float,
+        /// <summary> Key contains float2 values. </summary>
+        Float2,
+        /// <summary> Key contains float3 values. </summary>
+        Float3,
+        /// <summary> Key contains float4 values. </summary>
+        Float4,      
+    }
 
     /// <summary>
     /// Stores data about a single animation track (mainly a list of keyframes)
@@ -141,7 +159,7 @@ namespace Fusee.Serialization
         /// The type of the key-values stored in this animation track.
         /// </summary>
         [ProtoMember(3, AsReference = true)] 
-        public Type KeyType;
+        public KeyType KeyType;
 
         /// <summary>
         /// The lerp type to use for interpolation. 
