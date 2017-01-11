@@ -189,7 +189,7 @@ namespace Fusee.Engine.Core
                return (vec3(0.5,0.5,0.5));
             }
                 
-
+            // TODO: Custom Light and Material Params
             void main()
             { 
                 vec3 surfacePos = texture2D(gPosition, uv).xyz;
