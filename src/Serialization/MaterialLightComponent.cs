@@ -23,6 +23,7 @@ namespace Fusee.Serialization
         //TODO: What else could a user need?
         //TODO: How to implement it?
         //TODO: Perhaps user can decide implementation method?
+        //TODO: Describe normal and material settings for normal & deferred
         /// <summary>
         /// This string is converted and used for the calculation of the fragment shader during the render traversal.
         /// <remarks>Not yet implemented!</remarks>

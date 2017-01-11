@@ -105,7 +105,7 @@ namespace Fusee.Engine.Examples.Simple.Core
             // Shadow
             //_sceneRenderer = new SceneRenderer(_rocketScene, LightningCalculationMethod.SIMPLE, true);
             // Deferred
-            _sceneRenderer = new SceneRenderer(_rocketScene, LightningCalculationMethod.SIMPLE, false, false);
+            _sceneRenderer = new SceneRenderer(_rocketScene, LightningCalculationMethod.SIMPLE, true, false);
         
          
             _rocketScene.Children[0].Children[0].Components[2].Name = "debug";

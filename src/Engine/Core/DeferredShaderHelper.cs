@@ -207,8 +207,8 @@ namespace Fusee.Engine.Core
                 vec3 result = vec3(0);
 
                 result = diffuseLighting(N,L,albedo);
-                //result = specularLighting(N, L, V);
-                gl_FragColor = vec4(surfacePos, 1);
+                result += specularLighting(N, L, V);
+                gl_FragColor = vec4(result, 1);
 
             }";
         }

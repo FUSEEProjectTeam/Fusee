@@ -1864,14 +1864,14 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="texture">The texture as target</param>
         /// <param name="deferredNormalPass">Activate this, if you are rendering deferred as it copies the DepthFramebuffer to normal Framebuffer!</param>
-        public void SetRenderTarget(ITexture texture, bool deferredNormalPass = false)
+        public void SetRenderTarget(ITexture texture, bool deferredNormalPass = false) // TODO: Clear deferredNormalPass
         {
             var textureImp = (Texture) texture;
 
             // If texture is null bind frambuffer 0, this is the main screen
             if (textureImp == null)
             {
-                GL.CullFace(CullFaceMode.Back);
+               // GL.CullFace(CullFaceMode.Back);
 
                 // Enable writes to the color buffer
                 GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
@@ -1881,7 +1881,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             else if (textureImp.fboHandle != -1)
             {
                 // To prevent Peter Panning
-                GL.CullFace(CullFaceMode.Front);
+               // GL.CullFace(CullFaceMode.Front); //TODO: Move this to SceneRender
                 
                 // Bind buffer - now we are rendering to this buffer!
                 GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, textureImp.fboHandle);
@@ -1899,7 +1899,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 // Clear Depth & Color for GBuffer!
                 Clear(ClearFlags.Depth | ClearFlags.Color);
             }
-            else if (deferredNormalPass && textureImp.gBufferHandle != -1)
+            else if (deferredNormalPass && textureImp.gBufferHandle != -1) // TODO: Move to SceneRenderer
             {
                 // Copy depth to normal buffer
                 GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, textureImp.gDepthRenderbufferHandle);

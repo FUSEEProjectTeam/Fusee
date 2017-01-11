@@ -264,11 +264,14 @@ namespace Fusee.Engine.Core
 
         #region Initialization Construction Startup
 
-        public SceneRenderer(SceneContainer sc, LightningCalculationMethod lCalcMethod, bool RenderShadows = false, bool RenderDeferred = false)
+        public SceneRenderer(SceneContainer sc, LightningCalculationMethod lCalcMethod, bool RenderDeferred = false, bool RenderShadows = false)
              : this(sc)
         {
             LightningCalculationMethod = lCalcMethod;
             
+            //TODO: doRender
+            //TODO: doRenderDeferred
+            //TODO: Abfragen ob das geht?
             if (RenderShadows)
                 _renderWithShadows = true;
 
@@ -472,25 +475,20 @@ namespace Fusee.Engine.Core
             if (DeferredShaderHelper.GBufferDrawPassShaderEffect == null)
                 CreateGBufferDrawPassEffect(rc);
             
-            for (var i = 0; i < 2; i++)
-            {
-                if (i == 0)
-                {
+         {
                     // Set RenderTarget to gBuffer
                     rc.SetRenderTarget(DeferredShaderHelper.GBufferTexture);
                     //rc.SetRenderTarget(null);
                     Traverse(_sc.Children);
                     DeferredShaderHelper.CurrentRenderPass++;
-                }
-                else
-                {
+
                     // Set RenderTarget to Screenbuffer, but before, copy z-buffer from deferred pass to screenbuffer
                     // TODO: Evaluate if this could be written better.
                     rc.SetRenderTarget(DeferredShaderHelper.GBufferTexture, true);
                     //rc.SetRenderTarget(null);
                     Traverse(_sc.Children);
                     DeferredShaderHelper.CurrentRenderPass--;
-                }
+                
             }
         }
 
@@ -509,25 +507,17 @@ namespace Fusee.Engine.Core
 
             if (DeferredShaderHelper.ShadowPassShaderEffect == null)
                 CreateShadowPassShaderEffect(rc);
-            
-            // Parse RenderSecondShadowPass
-            for (var i = 0; i < 2; i++)
-            {
-                if (i == 0)
-                {
+      
                     // Set RenderTarget to FBO
                     rc.SetRenderTarget(DeferredShaderHelper.ShadowTexture);
                     Traverse(_sc.Children);
                     DeferredShaderHelper.CurrentRenderPass++;
-                }
-                else
-                {
+            
                     // Set RenderTarget to Screenbuffer
                     rc.SetRenderTarget(null);
                     Traverse(_sc.Children);
                     DeferredShaderHelper.CurrentRenderPass--;
-                }
-            }
+            
         }
 
         private static void CreateShadowPassShaderEffect(RenderContext rc)
