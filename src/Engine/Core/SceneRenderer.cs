@@ -425,6 +425,10 @@ namespace Fusee.Engine.Core
 
         public void Render(RenderContext rc)
         {
+            // Set Context here, so that even the first pass is rendered defered or with shadows
+            // otherwise DeferredShaderHelper.GBufferPassShaderEffect is not initialized and null leading to an exception
+            SetContext(rc);
+
             if (DoRenderWithShadows)
             {
                 RenderWithShadow(rc);
@@ -436,7 +440,6 @@ namespace Fusee.Engine.Core
             else
             {
                 rc.SetRenderTarget(null);
-                SetContext(rc);
                 Traverse(_sc.Children);
             }
          }
@@ -601,9 +604,6 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void RenderMaterial(MaterialComponent matComp)
         {
-            if (matComp.GetType() == typeof(MaterialLightComponent)) return;
-            if (matComp.GetType() == typeof(MaterialPBRComponent)) return;
-
             var effect = LookupMaterial(matComp);
             _state.Effect = effect;
         }
@@ -611,18 +611,14 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void RenderMaterial(MaterialLightComponent matComp)
         {
-            if (matComp.GetType() == typeof(MaterialPBRComponent)) return;
-
-            var effect = LookupLightMaterial(matComp);
+            var effect = LookupMaterial(matComp);
             _state.Effect = effect;
         }
 
         [VisitMethod]
         public void RenderMaterial(MaterialPBRComponent matComp)
         {
-            if (matComp.GetType() == typeof(MaterialLightComponent)) return;
-
-            var effect = LookupPBRMaterial(matComp);
+            var effect = LookupMaterial(matComp);
             _state.Effect = effect;
         }
 
@@ -764,7 +760,7 @@ namespace Fusee.Engine.Core
             DeferredShaderHelper.GBufferPassShaderEffect.SetEffectParam("DiffuseColor", diffuse);
             //    DeferredShaderHelper.GBufferPassShaderEffect.SetEffectParam("SpecularIntensity", specularIntensity);
 
-              DeferredShaderHelper.GBufferPassShaderEffect.RenderMesh(rm);
+            DeferredShaderHelper.GBufferPassShaderEffect.RenderMesh(rm);
         }
 
         private void RenderDeferredLightPass() {
@@ -869,7 +865,7 @@ namespace Fusee.Engine.Core
             _matMap.Add(mc, mat);
             return mat;
         }
-        private ShaderEffect LookupLightMaterial(MaterialLightComponent mc)
+        private ShaderEffect LookupMaterial(MaterialLightComponent mc)
         {
             ShaderEffect mat;
             if (_lightMatMap.TryGetValue(mc, out mat)) return mat;
@@ -880,7 +876,7 @@ namespace Fusee.Engine.Core
             return mat;
         }
 
-        private ShaderEffect LookupPBRMaterial(MaterialPBRComponent mc)
+        private ShaderEffect LookupMaterial(MaterialPBRComponent mc)
         {
             ShaderEffect mat;
             if (_pbrComponent.TryGetValue(mc, out mat)) return mat;
