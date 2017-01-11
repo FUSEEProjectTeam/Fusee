@@ -168,42 +168,25 @@ namespace Fusee.Engine.Core
         // Multipass
         private bool _renderWithShadows;
         private bool _renderDeferred;
+        private bool _wantToRenderWithShadows;
+        private bool _wantToRenderDeferred;
         public float2 ShadowMapSize { set; get; } = new float2(1024,1024);
 
-
-        public bool RenderShadows
+        /// <summary>
+        /// Try to render with Shadows. If not possible, fallback to false.
+        /// </summary>
+        public bool DoRenderWithShadows
         {
-            set
-            {
-                if (!_renderWithShadows) return;
-
-                if (_rc.GetHardwareCapabilities(HardwareCapability.DefferedPossible) == 1U)
-                {
-                    _renderWithShadows = value;
-                }
-                else
-                {
-                    throw new ArgumentException("Deferred Rendering not possible with the current renderpath!");
-                }
-            }
+            private set { _renderWithShadows = _rc.GetHardwareCapabilities(HardwareCapability.DefferedPossible) == 1U && value; }
             get { return _renderWithShadows; }
         }
 
-        public bool RenderDeferred
+        /// <summary>
+        /// Try to render deferred. If not possible, fallback to false.
+        /// </summary>
+        public bool DoRenderDeferred
         {
-            set
-            {
-                if (!_renderDeferred) return;
-
-                if (_rc.GetHardwareCapabilities(HardwareCapability.DefferedPossible) == 1U)
-                {
-                    _renderDeferred = value;
-                }
-                else
-                {
-                    throw new ArgumentException("Deferred Rendering not possible with the current renderpath!");
-                }
-            }
+            private set { _renderDeferred = _rc.GetHardwareCapabilities(HardwareCapability.DefferedPossible) == 1U && value; }
             get { return _renderDeferred; }
         }
 
@@ -269,14 +252,11 @@ namespace Fusee.Engine.Core
         {
             LightningCalculationMethod = lCalcMethod;
             
-            //TODO: doRender
-            //TODO: doRenderDeferred
-            //TODO: Abfragen ob das geht?
             if (RenderShadows)
-                _renderWithShadows = true;
+                _wantToRenderWithShadows = true;
 
             if (RenderDeferred)
-                _renderDeferred = true;
+                _wantToRenderDeferred = true;
         }
 
         public SceneRenderer(SceneContainer sc /*, string scenePathDirectory*/)
@@ -435,8 +415,8 @@ namespace Fusee.Engine.Core
                 _defaultEffect.AttachToContext(_rc);
 
                 // Check for hardware capabilities:
-                RenderDeferred = _renderDeferred;
-                RenderShadows = _renderWithShadows;
+                DoRenderDeferred = _wantToRenderDeferred;
+                DoRenderWithShadows = _wantToRenderWithShadows;
             }
         }
 
@@ -445,11 +425,11 @@ namespace Fusee.Engine.Core
 
         public void Render(RenderContext rc)
         {
-            if (RenderShadows)
+            if (DoRenderWithShadows)
             {
                 RenderWithShadow(rc);
             }
-            else if (RenderDeferred)
+            else if (DoRenderDeferred)
             {
                 RenderDeferredPasses(rc);
             }
@@ -732,7 +712,7 @@ namespace Fusee.Engine.Core
 
         public void RenderCurrentPass(Mesh rm, ShaderEffect effect)
         {
-            if (RenderShadows)
+            if (DoRenderWithShadows)
             {
                 if (DeferredShaderHelper.CurrentRenderPass == 0)
                 {
@@ -743,7 +723,7 @@ namespace Fusee.Engine.Core
                     RenderSecondShadowPass(rm, effect);
                 }
             }
-            else if (RenderDeferred)
+            else if (DoRenderDeferred)
             {
                 if (DeferredShaderHelper.CurrentRenderPass == 0)
                 {
@@ -756,12 +736,12 @@ namespace Fusee.Engine.Core
             }
             else
             {
-                RenderStandartPass(rm, effect);
+                RenderStandardPass(rm, effect);
             }
         }
 
 
-        private void RenderStandartPass(Mesh rm, ShaderEffect effect)
+        private void RenderStandardPass(Mesh rm, ShaderEffect effect)
         {
             for (var i = 0; i < _lightComponents.Count; i++)
             {
@@ -858,7 +838,7 @@ namespace Fusee.Engine.Core
                 effect._rc.SetShaderParamTexture(handle, DeferredShaderHelper.ShadowTexture);
 
             // Now we can render a normal pass
-            RenderStandartPass(rm, effect);
+            RenderStandardPass(rm, effect);
 
         }
 
