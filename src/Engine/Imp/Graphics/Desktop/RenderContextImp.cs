@@ -1395,6 +1395,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     else
                         GL.Enable(EnableCap.DepthTest);
                     break;
+                case RenderState.ZWriteEnable:
+                    GL.DepthMask(value != 0);
+                    break;
                 case RenderState.AlphaBlendEnable:
                     if (value == 0)
                         GL.Disable(EnableCap.Blend);
@@ -1571,6 +1574,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                         int depTest;
                         GL.GetInteger(GetPName.DepthTest, out depTest);
                         return (uint)(depTest);
+                    }
+                case RenderState.ZWriteEnable:
+                    {
+                        int depWriteMask;
+                        GL.GetInteger(GetPName.DepthWritemask, out depWriteMask);
+                        return (uint)(depWriteMask);
                     }
                 case RenderState.AlphaBlendEnable:
                     {

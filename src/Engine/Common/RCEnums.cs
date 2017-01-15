@@ -17,6 +17,7 @@ namespace Fusee.Engine.Common
         // Z states
         ZFunc = 23,
         ZEnable = 7,
+        ZWriteEnable = 14,
 
         // Blend states
         // Blending assignments (always independent for rgb and alpha: 

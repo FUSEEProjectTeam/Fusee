@@ -207,72 +207,88 @@ namespace Fusee.Engine.Core
                 {
                     foreach (AnimationTrackContainer animTrackContainer in ac.AnimationTracks)
                     {
-                        Type t = animTrackContainer.KeyType;
-                        if (typeof(int).IsAssignableFrom(t))
+                        // Type t = animTrackContainer.KeyType;
+                        switch (animTrackContainer.KeyType)
                         {
-                            Channel<int> channel = new Channel<int>(Lerp.IntLerp);
-                            foreach (AnimationKeyContainerInt key in animTrackContainer.KeyFrames)
+                            // if (typeof(int).IsAssignableFrom(t))
+                            case KeyType.Int:
                             {
-                                channel.AddKeyframe(new Keyframe<int>(key.Time, key.Value));
+                                Channel<int> channel = new Channel<int>(Lerp.IntLerp);
+                                foreach (AnimationKeyContainerInt key in animTrackContainer.KeyFrames)
+                                {
+                                    channel.AddKeyframe(new Keyframe<int>(key.Time, key.Value));
+                                }
+                                _animation.AddAnimation(channel, animTrackContainer.SceneComponent,
+                                    animTrackContainer.Property);
                             }
-                            _animation.AddAnimation(channel, animTrackContainer.SceneComponent,
-                                animTrackContainer.Property);
+                                break;
+                            //else if (typeof(float).IsAssignableFrom(t))
+                            case KeyType.Float:
+                            {
+                                Channel<float> channel = new Channel<float>(Lerp.FloatLerp);
+                                foreach (AnimationKeyContainerFloat key in animTrackContainer.KeyFrames)
+                                {
+                                    channel.AddKeyframe(new Keyframe<float>(key.Time, key.Value));
+                                }
+                                _animation.AddAnimation(channel, animTrackContainer.SceneComponent,
+                                    animTrackContainer.Property);
+                            }
+                                break;
+
+                            // else if (typeof(float2).IsAssignableFrom(t))
+                            case KeyType.Float2:
+                            {
+                                Channel<float2> channel = new Channel<float2>(Lerp.Float2Lerp);
+                                foreach (AnimationKeyContainerFloat2 key in animTrackContainer.KeyFrames)
+                                {
+                                    channel.AddKeyframe(new Keyframe<float2>(key.Time, key.Value));
+                                }
+                                _animation.AddAnimation(channel, animTrackContainer.SceneComponent,
+                                    animTrackContainer.Property);
+                            }
+                                break;
+                            // else if (typeof(float3).IsAssignableFrom(t))
+                            case KeyType.Float3:
+                            {
+                                Channel<float3>.LerpFunc lerpFunc;
+                                switch (animTrackContainer.LerpType)
+                                {
+                                    case LerpType.Lerp:
+                                        lerpFunc = Lerp.Float3Lerp;
+                                        break;
+                                    case LerpType.Slerp:
+                                        lerpFunc = Lerp.Float3QuaternionSlerp;
+                                        break;
+                                    default:
+                                        // C# 6throw new InvalidEnumArgumentException(nameof(animTrackContainer.LerpType), (int)animTrackContainer.LerpType, typeof(LerpType));
+                                        // throw new InvalidEnumArgumentException("animTrackContainer.LerpType", (int)animTrackContainer.LerpType, typeof(LerpType));
+                                        throw new InvalidOperationException(
+                                            "Unknown lerp type: animTrackContainer.LerpType: " +
+                                            (int) animTrackContainer.LerpType);
+                                }
+                                Channel<float3> channel = new Channel<float3>(lerpFunc);
+                                foreach (AnimationKeyContainerFloat3 key in animTrackContainer.KeyFrames)
+                                {
+                                    channel.AddKeyframe(new Keyframe<float3>(key.Time, key.Value));
+                                }
+                                _animation.AddAnimation(channel, animTrackContainer.SceneComponent,
+                                    animTrackContainer.Property);
+                            }
+                                break;
+                            // else if (typeof(float4).IsAssignableFrom(t))
+                            case KeyType.Float4:
+                            {
+                                Channel<float4> channel = new Channel<float4>(Lerp.Float4Lerp);
+                                foreach (AnimationKeyContainerFloat4 key in animTrackContainer.KeyFrames)
+                                {
+                                    channel.AddKeyframe(new Keyframe<float4>(key.Time, key.Value));
+                                }
+                                _animation.AddAnimation(channel, animTrackContainer.SceneComponent,
+                                    animTrackContainer.Property);
+                            }
+                                break;
+                            //TODO : Add cases for each type
                         }
-                        else if (typeof(float).IsAssignableFrom(t))
-                        {
-                            Channel<float> channel = new Channel<float>(Lerp.FloatLerp);
-                            foreach (AnimationKeyContainerFloat key in animTrackContainer.KeyFrames)
-                            {
-                                channel.AddKeyframe(new Keyframe<float>(key.Time, key.Value));
-                            }
-                            _animation.AddAnimation(channel, animTrackContainer.SceneComponent,
-                                animTrackContainer.Property);
-                        }
-                        else if (typeof(float2).IsAssignableFrom(t))
-                        {
-                            Channel<float2> channel = new Channel<float2>(Lerp.Float2Lerp);
-                            foreach (AnimationKeyContainerFloat2 key in animTrackContainer.KeyFrames)
-                            {
-                                channel.AddKeyframe(new Keyframe<float2>(key.Time, key.Value));
-                            }
-                            _animation.AddAnimation(channel, animTrackContainer.SceneComponent,
-                                animTrackContainer.Property);
-                        }
-                        else if (typeof(float3).IsAssignableFrom(t))
-                        {
-                            Channel<float3>.LerpFunc lerpFunc;
-                            switch (animTrackContainer.LerpType)
-                            {
-                                case LerpType.Lerp:
-                                    lerpFunc = Lerp.Float3Lerp;
-                                    break;
-                                case LerpType.Slerp:
-                                    lerpFunc = Lerp.Float3QuaternionSlerp;
-                                    break;
-                                default:
-                                    // C# 6throw new InvalidEnumArgumentException(nameof(animTrackContainer.LerpType), (int)animTrackContainer.LerpType, typeof(LerpType));
-                                    // throw new InvalidEnumArgumentException("animTrackContainer.LerpType", (int)animTrackContainer.LerpType, typeof(LerpType));
-                                    throw new InvalidOperationException("Unknown lerp type: animTrackContainer.LerpType: " + (int)animTrackContainer.LerpType);
-                            }
-                            Channel<float3> channel = new Channel<float3>(lerpFunc);
-                            foreach (AnimationKeyContainerFloat3 key in animTrackContainer.KeyFrames)
-                            {
-                                channel.AddKeyframe(new Keyframe<float3>(key.Time, key.Value));
-                            }
-                            _animation.AddAnimation(channel, animTrackContainer.SceneComponent,
-                                animTrackContainer.Property);
-                        }
-                        else if (typeof(float4).IsAssignableFrom(t))
-                        {
-                            Channel<float4> channel = new Channel<float4>(Lerp.Float4Lerp);
-                            foreach (AnimationKeyContainerFloat4 key in animTrackContainer.KeyFrames)
-                            {
-                                channel.AddKeyframe(new Keyframe<float4>(key.Time, key.Value));
-                            }
-                            _animation.AddAnimation(channel, animTrackContainer.SceneComponent,
-                                animTrackContainer.Property);
-                        }
-                        //TODO : Add cases for each type
                     }
                 }
             }

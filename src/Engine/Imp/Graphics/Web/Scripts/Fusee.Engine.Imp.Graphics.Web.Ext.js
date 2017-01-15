@@ -1464,6 +1464,9 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
                     else
                         this.gl.enable(this.gl.DEPTH_TEST);
                     break;
+                case $fuseeCommon.Fusee.Engine.Common.RenderState.ZWriteEnable.value:
+                    this.gl.depthMask(value != 0)
+                    break;
                 case $fuseeCommon.Fusee.Engine.Common.RenderState.AlphaBlendEnable.value:
                     if (value == 0)
                         this.gl.disable(this.gl.BLEND);
@@ -1599,6 +1602,8 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
                     }
                 case $fuseeCommon.Fusee.Engine.Common.RenderState.ZEnable.value:
                     return this.gl.getParameter(this.gl.DEPTH_TEST);
+                case $fuseeCommon.Fusee.Engine.Common.RenderState.ZWriteEnable.value:
+                    return this.gl.getParameter(this.gl.DEPTH_WRITEMASK);
                 case $fuseeCommon.Fusee.Engine.Common.RenderState.AlphaBlendEnable.value:
                     return this.gl.getParameter(this.gl.BLEND);
                 case $fuseeCommon.Fusee.Engine.Common.RenderState.BlendOperation.value:

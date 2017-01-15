@@ -650,7 +650,13 @@ namespace Fusee.Math.Core
 
             // y angle (YAW/HEADING) needs to be reversed. Probably due to left-handedness
             y = M.TwoPi - y;
-                                   
+
+            // Clamp angles to ranges arond 0 (e.g. [-PI, PI] for yaw)
+            while (y >= M.TwoPi)
+                y -= M.TwoPi;
+            while (y <= -M.TwoPi)
+                y += M.TwoPi;
+
             if (inDegrees)
             {
                 x = M.RadiansToDegrees(x);

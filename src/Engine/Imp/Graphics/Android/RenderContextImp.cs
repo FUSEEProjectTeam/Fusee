@@ -1325,6 +1325,9 @@ namespace Fusee.Engine.Imp.Graphics.Android
                     else
                         GL.Enable(All.DepthTest);
                     break;
+                case RenderState.ZWriteEnable:
+                    GL.DepthMask(value != 0);
+                    break;
                 case RenderState.AlphaBlendEnable:
                     if (value == 0)
                         GL.Disable(All.Blend);
@@ -1486,6 +1489,12 @@ namespace Fusee.Engine.Imp.Graphics.Android
                         int depTest;
                         GL.GetInteger(All.DepthTest, out depTest);
                         return (uint)(depTest);
+                    }
+                case RenderState.ZWriteEnable:
+                    {
+                        int depWriteMask;
+                        GL.GetInteger(All.DepthWritemask, out depWriteMask);
+                        return (uint)(depWriteMask);
                     }
                 case RenderState.AlphaBlendEnable:
                     {

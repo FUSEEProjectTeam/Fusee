@@ -191,7 +191,7 @@ namespace FuExport
                 {
                     SceneComponent = transform,
                     Property = "Translation",
-                    KeyType = typeof(float3),
+                    KeyType = KeyType.Float3,
                     KeyFrames = BuildFloat3Keys(TranslationKeys)
                 });
 
@@ -200,7 +200,7 @@ namespace FuExport
                 {
                     SceneComponent = transform,
                     Property = "Rotation",
-                    KeyType = typeof(float3),
+                    KeyType = KeyType.Float3,
                     LerpType = this.LerpType,
                     KeyFrames = BuildFloat3Keys(RotationKeys)
                 });
@@ -210,7 +210,7 @@ namespace FuExport
                 {
                     SceneComponent = transform,
                     Property = "Scale",
-                    KeyType = typeof(float3),
+                    KeyType = KeyType.Float3,
                     KeyFrames = BuildFloat3Keys(ScaleKeys)
                 });
         }
