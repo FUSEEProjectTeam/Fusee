@@ -14,11 +14,11 @@ namespace Fusee.Jometri.Triangulation
             }
         }
 
-        internal StatusEdge FindStatusEdgeWithHandle(HalfEdgeHandle handle)
+        internal StatusEdge FindStatusEdgeWithHandle(int handle)
         {
             foreach (var n in PreorderTraverseTreeValues())
             {
-                if (n.HalfEdge == handle)
+                if (n.HalfEdgeHandle == handle)
                     return n;
             }
             return null;

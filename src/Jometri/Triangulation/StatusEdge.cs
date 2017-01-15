@@ -7,10 +7,10 @@ namespace Fusee.Jometri.Triangulation
         //Key is needed to insert the Node into a binary search tree and to find the edge directly left of an vertex (FindLargestSmalerThan(vertex.x)). 
         internal float IntersectionPointX;
         //HalfEdge(Handle) identifies the HalfEdge
-        internal HalfEdgeHandle HalfEdge;
+        internal int HalfEdgeHandle;
 
         //The helper is the vertex to which a possible new diagonal is drawn. Additionally we need to know if the helper vertex is of type merge vertex.
-        internal VertHandle Helper;
+        internal int HelperVertexHandle;
         internal bool IsMergeVertex;
 
         //The vertices that define the HalfEdge

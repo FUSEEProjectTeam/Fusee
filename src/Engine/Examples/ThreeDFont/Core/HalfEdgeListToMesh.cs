@@ -25,7 +25,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
         //geometry has to be trinagulated
         private static void ConvertToMesh(Geometry3D geometry, out float3[] vertices, out ushort[] triangles, out List<float3> normals)
         {
-            var triangleCount = geometry.FaceHandles.Count;
+            var triangleCount = geometry.GetAllFaces().ToList().Count;
             var vertCount = triangleCount * 3;
 
             var verts = new List<float3>();
@@ -34,16 +34,16 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             triangles = new ushort[vertCount];
             normals = new List<float3>();
 
-            foreach (var faceHandle in geometry.FaceHandles)
+            foreach (var face in geometry.GetAllFaces())
             {
-                var faceVerts = geometry.GetFaceVertices(faceHandle).ToList();
+                var faceVerts = geometry.GetFaceVertices(face.Handle).ToList();
 
                 if (faceVerts.Count > 3)
                     throw new ArgumentException("Invalid Triangle - face has more than 3 Vertices");
 
-                foreach (var vHandle in faceVerts)
+                foreach (var vertex in faceVerts)
                 {
-                    var vert = geometry.GetVertexByHandle(vHandle);
+                    var vert = vertex;
                     verts.Add(vert.Coord);
                 }
             }

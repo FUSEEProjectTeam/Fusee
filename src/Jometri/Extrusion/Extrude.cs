@@ -25,17 +25,13 @@ namespace Fusee.Jometri.Extrusion
 
             var geom3D = new Geometry3D
             {
-                Faces = geometry.Faces, //TODO: Convert to List<Face3D>
-                Vertices = geometry.Vertices,
-                HalfEdges = geometry.HalfEdges,
-
-                FaceHandles = geometry.FaceHandles,
-                VertHandles = geometry.VertHandles,
-                HalfEdgeHandles = geometry.HalfEdgeHandles
+                DictFaces = geometry.DictFaces, //TODO: Convert to List<Face3D>
+                DictVertices = geometry.DictVertices,
+                DictHalfEdges = geometry.DictHalfEdges,
             };
 
             //TODO: geom3D.HighestHalfEdgeHandle = geometry.HighestHalfEdgeHandle / HighestVertexHandle / HighestFaceHandle
-            
+
             return geom3D;
         }
 
@@ -52,17 +48,18 @@ namespace Fusee.Jometri.Extrusion
 
         private static void UpdateAllVertexZCoord(Geometry2D geometry, int zOffset)
         {
-            for (var i = 0; i < geometry.Vertices.Count; i++)
+            foreach (var vertkey in geometry.DictVertices.Keys.ToList())
             {
-                var v = geometry.Vertices[i];
+                var v = geometry.DictVertices[vertkey];
                 v.Coord = new float3(v.Coord.x, v.Coord.y, v.Coord.z + zOffset);
-                geometry.Vertices[i] = v;
+                geometry.DictVertices[vertkey] = v;
             }
+            
         }
 
         private static void CreateSidefaces(Geometry2D geometry)
         {
-            var unboundedFace = (Face2D)geometry.GetFaceByHandle(geometry.FaceHandles[0]);
+            var unboundedFace = (Face2D)geometry.GetFaceByHandle(1); //the unbounded face is always added first - therefore it will always have 1 as handle
 
             var frontLoopsStartHalfEdges = unboundedFace.InnerHalfEdges.TakeItems(unboundedFace.InnerHalfEdges.Count / 2).ToList();
             var backLoopsStartHalfEdges = unboundedFace.InnerHalfEdges.SkipItems(unboundedFace.InnerHalfEdges.Count / 2).ToList();
@@ -78,50 +75,49 @@ namespace Fusee.Jometri.Extrusion
                 for (var j = 0; j < frontEdgeLoop.Count; j++)
                 {
                     var heHandleFront = frontEdgeLoop[j];
-                    var halfEdgeFront = geometry.GetHalfEdgeByHandle(heHandleFront);
+                    var halfEdgeFront = heHandleFront;
 
                     var heHandleBack = backEdgeLoop[j];
-                    var halfEdgeInBack = geometry.GetHalfEdgeByHandle(heHandleBack);
+                    var halfEdgeInBack = heHandleBack;
 
-                    var backTargetVert = geometry.GetHalfEdgeByHandle(halfEdgeInBack.Next).Origin;
-                    var frontTargetVert = geometry.GetHalfEdgeByHandle(halfEdgeFront.Next).Origin;
+                    var backTargetVert = geometry.GetHalfEdgeByHandle(halfEdgeInBack.NextHalfEdge).OriginVertex;
+                    var frontTargetVert = geometry.GetHalfEdgeByHandle(halfEdgeFront.NextHalfEdge).OriginVertex;
 
                     var newFromBack = new HalfEdge
                     {
-                        Origin = backTargetVert,
-                        Handle = new HalfEdgeHandle(geometry.CreateHalfEdgeHandleId()),
-                        Next = halfEdgeFront.Handle,
-                        Prev = halfEdgeInBack.Handle
+                        OriginVertex = backTargetVert,
+                        Handle = geometry.CreateHalfEdgeHandleId(),
+                        NextHalfEdge = halfEdgeFront.Handle,
+                        PrevHalfEdge = halfEdgeInBack.Handle
                     };
 
                     var newFace = new Face2D
                     {
-                        Handle = new FaceHandle(geometry.CreateFaceHandleId()),
+                        Handle = geometry.CreateFaceHandleId(),
                         OuterHalfEdge = newFromBack.Handle,
-                        InnerHalfEdges = new List<HalfEdgeHandle>()
+                        InnerHalfEdges = new List<int>()
                     };
 
-                    geometry.Faces.Add(newFace);
-                    geometry.FaceHandles.Add(newFace.Handle);
+                    geometry.DictFaces.Add(newFace.Handle, newFace);
 
                     newFromBack.IncidentFace = newFace.Handle;
 
                     var newFromFront = new HalfEdge
                     {
-                        Origin = frontTargetVert,
-                        Handle = new HalfEdgeHandle(geometry.CreateHalfEdgeHandleId()),
-                        Next = halfEdgeInBack.Handle,
-                        Prev = halfEdgeFront.Handle,
+                        OriginVertex = frontTargetVert,
+                        Handle = geometry.CreateHalfEdgeHandleId(),
+                        NextHalfEdge = halfEdgeInBack.Handle,
+                        PrevHalfEdge = halfEdgeFront.Handle,
                         IncidentFace = newFace.Handle
                     };
 
                     halfEdgeFront.IncidentFace = newFace.Handle;
-                    halfEdgeFront.Next = newFromFront.Handle;
-                    halfEdgeFront.Prev = newFromBack.Handle;
+                    halfEdgeFront.NextHalfEdge = newFromFront.Handle;
+                    halfEdgeFront.PrevHalfEdge = newFromBack.Handle;
 
                     halfEdgeInBack.IncidentFace = newFace.Handle;
-                    halfEdgeInBack.Next = newFromBack.Handle;
-                    halfEdgeInBack.Prev = newFromFront.Handle;
+                    halfEdgeInBack.NextHalfEdge = newFromBack.Handle;
+                    halfEdgeInBack.PrevHalfEdge = newFromFront.Handle;
 
                     geometry.ReplaceHalfEdge(halfEdgeFront);
                     geometry.ReplaceHalfEdge(halfEdgeInBack);
@@ -134,138 +130,114 @@ namespace Fusee.Jometri.Extrusion
                 {
                     var current = newHalfEdges[j];
                     if (j == 0)
-                        current.Twin = newHalfEdges.LastItem().Handle;
+                        current.TwinHalfEdge = newHalfEdges.LastItem().Handle;
                     else if (j == newHalfEdges.Count - 1)
-                        current.Twin = newHalfEdges[0].Handle;
+                        current.TwinHalfEdge = newHalfEdges[0].Handle;
                     else if (j % 2 != 0 && j != newHalfEdges.Count - 1) //odd
-                        current.Twin = newHalfEdges[j + 1].Handle;
+                        current.TwinHalfEdge = newHalfEdges[j + 1].Handle;
                     else if (j % 2 == 0 && j != 0) //even
-                        current.Twin = newHalfEdges[j - 1].Handle;
+                        current.TwinHalfEdge = newHalfEdges[j - 1].Handle;
                     newHalfEdges[j] = current;
 
-                    geometry.HalfEdges.Add(current);
-                    geometry.HalfEdgeHandles.Add(current.Handle);
+                    geometry.DictHalfEdges.Add(current.Handle, current);
                 }
 
                 for (var j = 0; j < newHalfEdges.Count; j += 2)
                 {
-                    geometry.InsertDiagonal(newHalfEdges[j].Origin, newHalfEdges[j + 1].Origin);
+                    geometry.InsertDiagonal(newHalfEdges[j].OriginVertex, newHalfEdges[j + 1].OriginVertex);
                 }
             }
 
             //Delete unbounded face
-            geometry.Faces.Remove(unboundedFace);
-            geometry.FaceHandles.Remove(unboundedFace.Handle);
+            geometry.DictFaces.Remove(unboundedFace.Handle);
         }
 
         private static void Join2DGeometries(Geometry2D first, Geometry2D second)
         {
-            var vertStartHandle = first.HighestVertHandle;
-            for (var i = 0; i < second.VertHandles.Count; i++)
+            var highestVertHandle = first.HighestVertHandle;
+            var highestHalfEdgeHandle = first.HighestHalfEdgeHandle;
+            var highestFaceHandle = first.HighestFaceHandle;
+
+            var vertDictHelper = new Dictionary<int, Vertex>();
+            foreach (var v in second.DictVertices)
             {
-                var vHandle = second.VertHandles[i];
-                vHandle.Id = vHandle.Id + vertStartHandle;
-
-                for (var j = 0; j < second.Vertices.Count; j++)
-                {
-                    var vert = second.Vertices[j];
-                    if (vert.Handle != second.VertHandles[i]) continue;
-
-                    vert.Handle.Id = vHandle.Id;
-                    vert.IncidentHalfEdge.Id = vert.IncidentHalfEdge.Id + first.HighestVertHandle;
-                    second.Vertices[j] = vert;
-                    break;
-                }
-                second.VertHandles[i] = vHandle;
+                var vert = v.Value;
+                vert.Handle = vert.Handle + highestVertHandle;
+                vert.IncidentHalfEdge = vert.IncidentHalfEdge + highestHalfEdgeHandle;
+                vertDictHelper.Add(vert.Handle, vert);
             }
+            second.DictVertices.Clear();
+            second.DictVertices = vertDictHelper;
 
-            var faceStartHandle = first.HighestFaceHandle;
-            for (var i = 0; i < second.FaceHandles.Count; i++)
+            var faceDictHelper = new Dictionary<int, IFace>();
+            foreach (var f in second.DictFaces)
             {
-                var fHandle = second.FaceHandles[i];
-                fHandle.Id = fHandle.Id + faceStartHandle;
+                var face = (Face2D)f.Value;
 
-                for (var j = 0; j < second.Faces.Count; j++)
+                face.Handle = face.Handle + highestFaceHandle;
+
+                if (face.OuterHalfEdge != default(int))
                 {
-                    var face = (Face2D)second.Faces[j];
-                    if (face.Handle != second.FaceHandles[i]) continue;
-
-                    face.Handle = fHandle;
-
-                    if (face.OuterHalfEdge != default(HalfEdgeHandle))
-                    {
-                        var outerHeId = new HalfEdgeHandle(face.OuterHalfEdge.Id + first.HighestHalfEdgeHandle);
-                        face.OuterHalfEdge = outerHeId;
-                    }
-
-                    for (var k = 0; k < face.InnerHalfEdges.Count; k++)
-                    {
-                        var innerHe = face.InnerHalfEdges[k];
-                        innerHe.Id = innerHe.Id + first.HighestHalfEdgeHandle;
-                        face.InnerHalfEdges[k] = innerHe;
-                    }
-
-                    second.Faces[j] = face;
-                    break;
+                    var outerHeId = face.OuterHalfEdge + first.HighestHalfEdgeHandle;
+                    face.OuterHalfEdge = outerHeId;
                 }
-                second.FaceHandles[i] = fHandle;
+
+                for (var k = 0; k < face.InnerHalfEdges.Count; k++)
+                {
+                    var innerHe = face.InnerHalfEdges[k];
+                    innerHe = innerHe + first.HighestHalfEdgeHandle;
+                    face.InnerHalfEdges[k] = innerHe;
+                }
+
+                faceDictHelper.Add(face.Handle, face);
             }
+            second.DictFaces.Clear();
+            second.DictFaces = faceDictHelper;
 
-            var heStartHandle = first.HighestHalfEdgeHandle;
-
-            for (var i = 0; i < second.HalfEdgeHandles.Count; i++)
+            var heDictHelper = new Dictionary<int, HalfEdge>();
+            foreach (var he in second.DictHalfEdges)
             {
-                var heHandle = second.HalfEdgeHandles[i];
-                heHandle.Id = heHandle.Id + heStartHandle;
+                var halfEdge = he.Value;
 
-                for (var j = 0; j < second.HalfEdges.Count; j++)
-                {
-                    var he = second.HalfEdges[j];
-                    if (he.Handle != second.HalfEdgeHandles[i]) continue;
+                halfEdge.IncidentFace = halfEdge.IncidentFace + first.HighestFaceHandle;
+                halfEdge.OriginVertex = halfEdge.OriginVertex + first.HighestVertHandle;
 
-                    he.IncidentFace.Id = he.IncidentFace.Id + first.HighestFaceHandle;
-                    he.Origin.Id = he.Origin.Id + first.HighestVertHandle;
+                halfEdge.Handle = halfEdge.Handle + highestHalfEdgeHandle;
 
-                    he.Handle.Id = heHandle.Id;
+                halfEdge.NextHalfEdge = halfEdge.NextHalfEdge + highestHalfEdgeHandle;
+                halfEdge.PrevHalfEdge = halfEdge.PrevHalfEdge + highestHalfEdgeHandle;
 
-                    he.Next.Id = he.Next.Id + heStartHandle;
-                    he.Prev.Id = he.Prev.Id + heStartHandle;
+                if (halfEdge.TwinHalfEdge != default(int))
+                    halfEdge.TwinHalfEdge = halfEdge.TwinHalfEdge + highestHalfEdgeHandle;
 
-                    if (he.Twin != default(HalfEdgeHandle))
-                        he.Twin.Id = he.Twin.Id + heStartHandle;
-
-                    second.HalfEdges[j] = he;
-                    break;
-                }
-                second.HalfEdgeHandles[i] = heHandle;
+                heDictHelper.Add(halfEdge.Handle, halfEdge);
             }
+            second.DictHalfEdges.Clear();
+            second.DictHalfEdges = heDictHelper;
 
             //Change winding
-            var hEdgesWChangedWinding = HalfEdgesWChangedWinding(second.HalfEdges, second).ToList();
+            var hEdgesWChangedWinding = HalfEdgesWChangedWinding(second.GetAllHalfEdges(), second).ToList();
 
-            //Add data of second geometry to this one
-            for (var i = 0; i < second.VertHandles.Count; i++)
+            //Add data of second geometry to first one
+            foreach (var vert in second.DictVertices)
             {
-                first.VertHandles.Add(second.VertHandles[i]);
-                first.Vertices.Add(second.Vertices[i]);
+                first.DictVertices.Add(vert.Key, vert.Value);
+            }
+
+            foreach (var halfEdge in hEdgesWChangedWinding)
+            {
+                first.DictHalfEdges.Add(halfEdge.Handle, halfEdge);
             }
 
             //Write content of second undbounded face into the first - delete second unbounded face
-            var firstUnbounded = (Face2D)first.Faces[0];
-            var secUnbounded = (Face2D)second.Faces[0];
+            var firstUnbounded = (Face2D)first.DictFaces[first.DictFaces.Keys.Min()];
+            var secUnbounded = (Face2D)second.DictFaces[second.DictFaces.Keys.Min()];
             firstUnbounded.InnerHalfEdges.AddRange(secUnbounded.InnerHalfEdges);
-            second.Faces.RemoveAt(0);
-            second.FaceHandles.RemoveAt(0);
-            for (var i = 0; i < second.FaceHandles.Count; i++)
-            {
-                first.FaceHandles.Add(second.FaceHandles[i]);
-                first.Faces.Add(second.Faces[i]);
-            }
+            second.DictFaces.Remove(secUnbounded.Handle);
 
-            for (var i = 0; i < second.HalfEdgeHandles.Count; i++)
+            foreach (var face in second.DictFaces)
             {
-                first.HalfEdgeHandles.Add(second.HalfEdgeHandles[i]);
-                first.HalfEdges.Add(hEdgesWChangedWinding[i]);
+                first.DictFaces.Add(face.Key,face.Value);
             }
 
             first.SetHighestHandles();
@@ -276,27 +248,20 @@ namespace Fusee.Jometri.Extrusion
             foreach (var hEdge in originHEdges)
             {
                 var he = hEdge;
-                var next = he.Prev;
-                var prev = he.Next;
+                var next = he.PrevHalfEdge;
+                var prev = he.NextHalfEdge;
 
-                he.Next = next;
-                he.Prev = prev;
+                he.NextHalfEdge = next;
+                he.PrevHalfEdge = prev;
 
-                var newOrigin = geom.GetHalfEdgeByHandle(he.Prev).Origin;
-                he.Origin = newOrigin;
+                var newOrigin = geom.GetHalfEdgeByHandle(he.PrevHalfEdge).OriginVertex;
+                he.OriginVertex = newOrigin;
 
                 yield return he;
 
-                for (var i = 0; i < geom.Vertices.Count; i++)
-                {
-                    var vert = geom.Vertices[i];
-
-                    if (vert.Handle != newOrigin) continue;
-
-                    vert.IncidentHalfEdge = he.Handle;
-                    geom.Vertices[i] = vert;
-                    break;
-                }
+                var vertToUpdate = geom.DictVertices[newOrigin];
+                vertToUpdate.IncidentHalfEdge = he.Handle;
+                geom.DictVertices[newOrigin] = vertToUpdate;
             }
         }
     }

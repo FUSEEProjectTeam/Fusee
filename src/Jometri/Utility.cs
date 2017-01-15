@@ -26,8 +26,8 @@ namespace Fusee.Jometri
         /// Reduces a vertex of a face to "2D" by calculating the face normal and rotating the face until its normal lies on z axis
         /// </summary>
         /// <param name="src">Input vertex</param>
-        /// <param name="face">The face the vertex belongs to</param>
-        public static float3 Reduce2D(this float3 src, FaceHandle face)
+        /// <param name="faceHandle">The face the vertex belongs to</param>
+        public static float3 Reduce2D(this float3 src, int faceHandle)
         {
             //calculate face normal - rotate face until normal lies on z axis - - buffer the normal for this polygon (?)
             //retrun new value of src
@@ -40,8 +40,8 @@ namespace Fusee.Jometri
         /// Reduces the vertices of a face to "2D" by calculating the face normal and rotating the face until its normal lies on z axis
         /// </summary>
         /// <param name="src">Input vertex</param>
-        /// <param name="face"></param>
-        public static IEnumerable<float3> Reduce2D(this IEnumerable<float3> src, FaceHandle face)
+        /// <param name="faceHandle"></param>
+        public static IEnumerable<float3> Reduce2D(this IEnumerable<float3> src, int faceHandle)
         {
             //calculate face normal - rotate face until normal lies on z axis - retrun new value of src
 

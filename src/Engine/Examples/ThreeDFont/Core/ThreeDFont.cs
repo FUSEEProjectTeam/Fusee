@@ -32,9 +32,9 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             var gnuSerif = AssetStorage.Get<Font>("GNU-FreeSerif.ttf");
 
             _text = "Hello World";
-            _threeDFontHelper = new ThreeDFontHelper(_text, fontLato);
+            _threeDFontHelper = new ThreeDFontHelper(_text, gnuSerif);
 
-            var outlines = _threeDFontHelper.GetTextOutlinesWAngle(10);
+            var outlines = _threeDFontHelper.GetTextOutlinesWAngle(90);
             var geom2D = new Geometry2D(outlines);
             var geom3D = geom2D.Extrude2DPolygon(2000);
 
