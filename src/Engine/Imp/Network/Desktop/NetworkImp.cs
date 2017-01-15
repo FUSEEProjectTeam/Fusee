@@ -601,7 +601,8 @@ namespace Fusee.Engine.Imp.Network.Desktop
                                 new NetworkMsgType
                                     {
                                         MsgType = MsgDataTypes.Bytes,
-                                        ReadBytes = msg.ReadBytes(msg.LengthBytes)
+                                        ReadBytes = msg.ReadBytes(msg.LengthBytes),
+                                        MsgChannel = msg.SequenceChannel
                                     }
                         };
 
