@@ -11,12 +11,12 @@ namespace Fusee.Jometri.Extrusion
     /// </summary>
     public static class Extrude
     {
-        //zOffset will be added to each vertex' z coordinate, if the front face is not parallel to the x-y plane we have to rotate it there first, extrude and rotate back
+        //zOffset will be added to each vertex' z coordinate, if the front face is not parallel to the x-y plane we have to rotate it there first, extrude and rotate back.
         /// <summary>
-        /// Extrudes a trinagulated 2D geometry
+        /// Extrudes a trinagulated 2D geometry.
         /// </summary>
         /// <param name="geometry">The geometry to be extruded.</param>
-        /// <param name="zOffset">zOffset will be added to each vertex' z coordinate in order to create the back of the geometry </param>
+        /// <param name="zOffset">zOffset will be added to each vertex' z coordinate in order to create the backface of the geometry.</param>
         /// <returns></returns>
         public static Geometry3D Extrude2DPolygon(this Geometry2D geometry, int zOffset)
         {
@@ -37,7 +37,7 @@ namespace Fusee.Jometri.Extrusion
 
         private static void CreateBackface(Geometry2D geometry, int zOffset)
         {
-            //Clone front face
+            //Clone frontface
             var backface = geometry.CloneGeometry();
 
             //Add z value to each vertex coord
@@ -51,7 +51,7 @@ namespace Fusee.Jometri.Extrusion
             foreach (var vertkey in geometry.DictVertices.Keys.ToList())
             {
                 var v = geometry.DictVertices[vertkey];
-                v.Coord = new float3(v.Coord.x, v.Coord.y, v.Coord.z + zOffset);
+                v.VertData.Pos = new float3(v.VertData.Pos.x, v.VertData.Pos.y, v.VertData.Pos.z + zOffset);
                 geometry.DictVertices[vertkey] = v;
             }
             
@@ -59,7 +59,7 @@ namespace Fusee.Jometri.Extrusion
 
         private static void CreateSidefaces(Geometry2D geometry)
         {
-            var unboundedFace = (Face2D)geometry.GetFaceByHandle(1); //the unbounded face is always added first - therefore it will always have 1 as handle
+            var unboundedFace = (Face2D)geometry.GetFaceByHandle(1); //The unbounded face is always added first - therefore it will always have 1 as handle.
 
             var frontLoopsStartHalfEdges = unboundedFace.InnerHalfEdges.TakeItems(unboundedFace.InnerHalfEdges.Count / 2).ToList();
             var backLoopsStartHalfEdges = unboundedFace.InnerHalfEdges.SkipItems(unboundedFace.InnerHalfEdges.Count / 2).ToList();
@@ -91,13 +91,8 @@ namespace Fusee.Jometri.Extrusion
                         PrevHalfEdge = halfEdgeInBack.Handle
                     };
 
-                    var newFace = new Face2D
-                    {
-                        Handle = geometry.CreateFaceHandleId(),
-                        OuterHalfEdge = newFromBack.Handle,
-                        InnerHalfEdges = new List<int>()
-                    };
-
+                    var newFace = new Face2D(geometry.CreateFaceHandleId(), newFromBack.Handle);
+                    
                     geometry.DictFaces.Add(newFace.Handle, newFace);
 
                     newFromBack.IncidentFace = newFace.Handle;

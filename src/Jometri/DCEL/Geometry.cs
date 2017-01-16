@@ -10,7 +10,7 @@ namespace Fusee.Jometri.DCEL
     /// <summary>
     /// Each vertex contains:
     /// A handle to assign a abstract reference to it.
-    /// The vertex' coordinates.
+    /// Attribute information, e.g. the position of the vertex.
     /// </summary>
     public struct Vertex
     {
@@ -20,33 +20,33 @@ namespace Fusee.Jometri.DCEL
         internal int Handle;
 
         /// <summary>
-        /// The geometric data of the vertex
-        /// </summary>
-        public float3 Coord { get; internal set; }
-
-        /// <summary>
-        /// The handle to the half edge with this vertex as origin
+        /// The handle to the half edge with this vertex as origin.
         /// </summary>
         internal int IncidentHalfEdge;
 
         /// <summary>
-        /// Constructor for creating a new Vertex
+        /// Attribute information.
         /// </summary>
-        /// <param name="coord">The coordinate of the vertex</param>
-        public Vertex(float3 coord)
+        public VertexData VertData;
+
+        /// <summary>
+        /// Constructor for creating a new Vertex.
+        /// </summary>
+        /// <param name="pos">The coordinate of the vertex.</param>
+        public Vertex(float3 pos)
         {
-            Coord = coord;
             Handle = default(int);
             IncidentHalfEdge = default(int);
+            VertData = new VertexData {Pos = pos};
         }
 
         #region  Overloading comparison operators
 
         /// <summary>
-        /// Overload for "smaller than" operator. Comparison based on the vertex' handle
+        /// Overload for "smaller than" operator. Comparison based on the vertex' handle.
         /// </summary>
-        /// <param name="first">First parameter to be compared</param>
-        /// <param name="second">Second parameter to be compared</param>
+        /// <param name="first">First comparison parameter.</param>
+        /// <param name="second">Second comparison parameter.</param>
         /// <returns></returns>
         public static bool operator <(Vertex first, Vertex second)
         {
@@ -54,10 +54,10 @@ namespace Fusee.Jometri.DCEL
         }
 
         /// <summary>
-        /// Overload for "smaller than" operator. Comparison based on the vertex' handle
+        /// Overload for "smaller than" operator. Comparison based on the vertex' handle.
         /// </summary>
-        /// <param name="first">First parameter to be compared</param>
-        /// <param name="second">Second parameter to be compared</param>
+        /// <param name="first">First comparison parameter.</param>
+        /// <param name="second">Second comparison parameter.</param>
         /// <returns></returns>
         public static bool operator >(Vertex first,Vertex second)
         {
@@ -65,10 +65,10 @@ namespace Fusee.Jometri.DCEL
         }
 
         /// <summary>
-        /// Overload for != operator
+        /// Overload for != operator.
         /// </summary>
-        /// <param name="first">First parameter to be compared</param>
-        /// <param name="second">Second parameter to be compared</param>
+        /// <param name="first">First comparison parameter.</param>
+        /// <param name="second">Second comparison parameter.</param>
         /// <returns></returns>
         public static bool operator !=(Vertex first, Vertex second)
         {
@@ -78,16 +78,16 @@ namespace Fusee.Jometri.DCEL
         /// <summary>
         /// Overload for == operator.
         /// </summary>
-        /// <param name="first">First parameter to be compared.</param>
-        /// <param name="second">Second parameter to be compared.</param>
+        /// <param name="first">First comparison parameter.</param>
+        /// <param name="second">Second comparison parameter.</param>
         /// <returns></returns>
         public static bool operator ==(Vertex first, Vertex second)
         {
             return first.Handle == second.Handle;
         }
 
-        /// <summary>Overwrites Equals</summary>
-        /// <returns>true, if <paramref name="obj" /> and this instance are of the same type and represent the same value.</returns>
+        /// <summary>Overwrites "Equals".</summary>
+        /// <returns>true, if <paramref name="obj" /> and this instance of the object are of the same type and represent the same value.</returns>
         /// <param name="obj">Object to compare with.</param>
         public override bool Equals(object obj)
         {
@@ -100,8 +100,8 @@ namespace Fusee.Jometri.DCEL
         }
 
 
-        /// <summary>Overwrites GetHashCode</summary>
-        /// <returns>Handle is the hash code.</returns>
+        /// <summary>Overwrites GetHashCode.</summary>
+        /// <returns>Handle as code.</returns>
         public override int GetHashCode()
         {
             return Handle;
@@ -119,6 +119,7 @@ namespace Fusee.Jometri.DCEL
     /// A handle to the next half edge.
     /// A handle to the previous half edge.
     /// A handle to the face it belongs to.
+    /// Attribute information, e.g. the normal and the texture coordinates.
     /// </summary>
     public struct HalfEdge
     {
@@ -130,13 +131,32 @@ namespace Fusee.Jometri.DCEL
         internal int PrevHalfEdge;
         internal int IncidentFace;
 
+        /// <summary>
+        /// Attribute information.
+        /// </summary>
+        public HalfEdgeData HalfEdgeData;
+
+        /// <summary>
+        /// Constructor for creating a new HalfEdge.
+        /// </summary>
+        public HalfEdge(int handle = 0, int originVertex = 0, int twinHalfEdge = 0, int nextHalfEdge = 0, int prevHalfEdge = 0, int incidentFace = 0)
+        {
+            Handle = handle;
+            OriginVertex = originVertex;
+            TwinHalfEdge = twinHalfEdge;
+            NextHalfEdge = nextHalfEdge;
+            PrevHalfEdge = prevHalfEdge;
+            IncidentFace = incidentFace;
+            HalfEdgeData = new HalfEdgeData();
+        }
+
         #region  Overloading comparison operators
 
         /// <summary>
-        /// Overload for "smaller than" operator. Comparison based on the HalfEdges' handle
+        /// Overload for "smaller than" operator. Comparison based on the HalfEdges' handle.
         /// </summary>
-        /// <param name="first">First parameter to be compared</param>
-        /// <param name="second">Second parameter to be compared</param>
+        /// <param name="first">First comparison parameter.</param>
+        /// <param name="second">Second comparison parameter.</param>
         /// <returns></returns>
         public static bool operator <(HalfEdge first, HalfEdge second)
         {
@@ -146,8 +166,8 @@ namespace Fusee.Jometri.DCEL
         /// <summary>
         /// Overload for "smaller than" operator. Comparison based on the HalfEdges' handle
         /// </summary>
-        /// <param name="first">First parameter to be compared</param>
-        /// <param name="second">Second parameter to be compared</param>
+        /// <param name="first">First comparison parameter.</param>
+        /// <param name="second">Second comparison parameter.</param>
         /// <returns></returns>
         public static bool operator >(HalfEdge first, HalfEdge second)
         {
@@ -155,10 +175,10 @@ namespace Fusee.Jometri.DCEL
         }
 
         /// <summary>
-        /// Overload for != operator
+        /// Overload for != operator.
         /// </summary>
-        /// <param name="first">First parameter to be compared</param>
-        /// <param name="second">Second parameter to be compared</param>
+        /// <param name="first">First comparison parameter.</param>
+        /// <param name="second">Second comparison parameter.</param>
         /// <returns></returns>
         public static bool operator !=(HalfEdge first, HalfEdge second)
         {
@@ -166,19 +186,19 @@ namespace Fusee.Jometri.DCEL
         }
 
         /// <summary>
-        /// Overload for == operator
+        /// Overload for == operator.
         /// </summary>
-        /// <param name="first">First parameter to be compared</param>
-        /// <param name="second">Second parameter to be compared</param>
+        /// <param name="first">First comparison parameter.</param>
+        /// <param name="second">Second comparison parameter.</param>
         /// <returns></returns>
         public static bool operator ==(HalfEdge first, HalfEdge second)
         {
             return (first.Handle == second.Handle);
         }
 
-        /// <summary>Overwrites Equals</summary>
+        /// <summary>Overwrites "Equals".</summary>
         /// <returns>true, if <paramref name="obj" /> and this instance are of the same type and represent the same value.</returns>
-        /// <param name="obj">Object to compare with.</param>
+        /// <param name="obj">Comparison object.</param>
         public override bool Equals(object obj)
         {
             if (!(obj is HalfEdge))
@@ -191,7 +211,7 @@ namespace Fusee.Jometri.DCEL
 
 
         /// <summary>Overwrites GetHashCode</summary>
-        /// <returns>Handle is the hash code.</returns>
+        /// <returns>Handle as hash code.</returns>
         public override int GetHashCode()
         {
             return Handle;
@@ -202,17 +222,17 @@ namespace Fusee.Jometri.DCEL
 
 
     /// <summary>
-    /// Needed so the basic functions of Geometry work with both, 2D and 3D faces
+    /// Needed for the basic functions of Geometry to work with both, 2D and 3D faces.
     /// </summary>
     public interface IFace
     {
         /// <summary>
-        /// Handle to assign a abstract reference
+        /// Handle to assign a abstract reference.
         /// </summary>
         int Handle { get; set; }
 
         /// <summary>
-        /// handle to one of the half edges that belongs to the faces outer boundary.
+        /// Handle to one of the half edges that belongs to the faces outer boundary.
         /// </summary>
         int OuterHalfEdge { get; set; }
     }
@@ -221,23 +241,37 @@ namespace Fusee.Jometri.DCEL
     /// Each face belonging to a 2D geometry contains:
     /// A handle to assign a abstract reference to it.
     /// A handle to one of the half edges that belongs to the faces outer boundary.
-    /// A List that contains handles to one half edge for each hole in a face
-    /// Note that unbounded faces can't have a OuterHalfEdge but must have at least one InnerHalfEdge - bounded faces must have a OuterComponent
+    /// A List that contains handles to one half edge for each hole in a face.
+    /// Attribute information, e.g. the face nromal.
+    /// Note that unbounded faces can't have a OuterHalfEdge but must have at least one InnerHalfEdge - bounded faces must have a OuterComponent.
     /// </summary>
     internal struct Face2D : IFace
     {
         public int Handle { get; set; }
         public int OuterHalfEdge { get; set; }
 
+        public FaceData FaceData;
+
         internal List<int> InnerHalfEdges;
+
+        /// <summary>
+        /// Constructor for creating a new Face.
+        /// </summary>
+        public Face2D(int handle = 0, int outerHalfEdge = 0) : this()
+        {
+            Handle = handle;
+            OuterHalfEdge = outerHalfEdge;
+            FaceData = new FaceData();
+            InnerHalfEdges = new List<int>();
+        }
 
         #region  Overloading comparison operators
 
         /// <summary>
-        /// Overload for "smaller than" operator. Comparison based on the Faces' handle
+        /// Overload for "smaller than" operator. Comparison based on the Faces' handle.
         /// </summary>
-        /// <param name="first">First parameter to be compared</param>
-        /// <param name="second">Second parameter to be compared</param>
+        /// <param name="first">First comparison parameter.</param>
+        /// <param name="second">Second comparison parameter.</param>
         /// <returns></returns>
         public static bool operator <(Face2D first, Face2D second)
         {
@@ -245,10 +279,10 @@ namespace Fusee.Jometri.DCEL
         }
 
         /// <summary>
-        /// Overload for "smaller than" operator. Comparison based on the Faces' handle
+        /// Overload for "smaller than" operator. Comparison based on the Faces' handle.
         /// </summary>
-        /// <param name="first">First parameter to be compared</param>
-        /// <param name="second">Second parameter to be compared</param>
+        /// <param name="first">First comparison parameter.</param>
+        /// <param name="second">Second comparison parameter.</param>
         /// <returns></returns>
         public static bool operator >(Face2D first, Face2D second)
         {
@@ -256,10 +290,10 @@ namespace Fusee.Jometri.DCEL
         }
 
         /// <summary>
-        /// Overload for != operator
+        /// Overload for != operator.
         /// </summary>
-        /// <param name="first">First parameter to be compared</param>
-        /// <param name="second">Second parameter to be compared</param>
+        /// <param name="first">First comparison parameter.</param>
+        /// <param name="second">Second comparison parameter.</param>
         /// <returns></returns>
         public static bool operator !=(Face2D first, Face2D second)
         {
@@ -267,19 +301,19 @@ namespace Fusee.Jometri.DCEL
         }
 
         /// <summary>
-        /// Overload for == operator
+        /// Overload for == operator.
         /// </summary>
-        /// <param name="first">First parameter to be compared</param>
-        /// <param name="second">Second parameter to be compared</param>
+        /// <param name="first">First comparison parameter.</param>
+        /// <param name="second">Second comparison parameter.</param>
         /// <returns></returns>
         public static bool operator ==(Face2D first, Face2D second)
         {
             return (first.Handle == second.Handle);
         }
 
-        /// <summary>Overwrites Equals</summary>
+        /// <summary>Overwrites "Equals"</summary>
         /// <returns>true, if <paramref name="obj" /> and this instance are of the same type and represent the same value.</returns>
-        /// <param name="obj">Object to compare with.</param>
+        /// <param name="obj">Comparison object.</param>
         public override bool Equals(object obj)
         {
             if (!(obj is Face2D))
@@ -292,7 +326,7 @@ namespace Fusee.Jometri.DCEL
 
 
         /// <summary>Overwrites GetHashCode</summary>
-        /// <returns>Handle is the hash code.</returns>
+        /// <returns>Handle as hash code.</returns>
         public override int GetHashCode()
         {
             return Handle;
@@ -305,19 +339,33 @@ namespace Fusee.Jometri.DCEL
     /// Each face belonging to a 3D geometry contains:
     /// A handle to assign a abstract reference to it.
     /// A handle to one of the half edges that belongs to this faces outer boundary.
+    /// Attribute information, e.g. the face nromal.
     /// </summary>
     internal struct Face3D : IFace
     {
         public int Handle { get; set; }
         public int OuterHalfEdge { get; set; }
 
+        public FaceData FaceData;
+
+        /// <summary>
+        /// Constructor for creating a new Face.
+        /// </summary>
+        public Face3D(int handle = 0, int outerHalfEdge = 0) : this()
+        {
+            Handle = handle;
+            OuterHalfEdge = outerHalfEdge;
+            FaceData = new FaceData();
+            
+        }
+
         #region  Overloading comparison operators
 
         /// <summary>
         /// Overload for "smaller than" operator. Comparison based on the Faces' handle
         /// </summary>
-        /// <param name="first">First parameter to be compared</param>
-        /// <param name="second">Second parameter to be compared</param>
+        /// <param name="first">First comparison parameter.</param>
+        /// <param name="second">Second comparison parameter.</param>
         /// <returns></returns>
         public static bool operator <(Face3D first, Face3D second)
         {
@@ -327,8 +375,8 @@ namespace Fusee.Jometri.DCEL
         /// <summary>
         /// Overload for "smaller than" operator. Comparison based on the Faces' handle
         /// </summary>
-        /// <param name="first">First parameter to be compared</param>
-        /// <param name="second">Second parameter to be compared</param>
+        /// <param name="first">First comparison parameter.</param>
+        /// <param name="second">Second comparison parameter.</param>
         /// <returns></returns>
         public static bool operator >(Face3D first, Face3D second)
         {
@@ -382,7 +430,7 @@ namespace Fusee.Jometri.DCEL
     }
 
     /// <summary>
-    /// Represents an outer or inner boundary of a polygon
+    /// Represents an outer or inner boundary of a polygon.
     /// </summary>
     public struct PolyBoundary
     {
@@ -398,7 +446,7 @@ namespace Fusee.Jometri.DCEL
     }
 
     /// <summary>
-    /// Base class - Geometry, stored in a DCEL (doubly conneted edge list).
+    /// Base class - Geometry, stored in a DCEL (half edge data structure).
     /// </summary>
     public abstract class Geometry
     {
@@ -420,17 +468,17 @@ namespace Fusee.Jometri.DCEL
         protected internal Dictionary<int, IFace> DictFaces { get; set; }
 
         /// <summary>
-        /// The highes id of all half edge handles - used to create a new handle.
+        /// The highest handle of all half edge handles - used to create a new handle.
         /// </summary>
         protected internal int HighestHalfEdgeHandle { get; private set; }
 
         /// <summary>
-        /// The highes id of all vertex handles - used to create a new handle.
+        /// The highest handle of all vertex handles - used to create a new handle.
         /// </summary>
         protected internal int HighestVertHandle { get; private set; }
 
         /// <summary>
-        /// The highes id of all face handles - used to create a new handle.
+        /// The highest handle of all face handles - used to create a new handle.
         /// </summary>
         protected internal int HighestFaceHandle { get; private set; }
 
@@ -438,8 +486,7 @@ namespace Fusee.Jometri.DCEL
 
         /// <summary>
         /// Used in the initialisation process of a new Geometry.
-        /// A BoundaryEdge contains one edge of the boundary to be inserted into the Geometry
-        /// and the information whether the source vertex of the half edge (not the twin half edge) is already part of the Geometry
+        /// A BoundaryEdge contains one edge of the boundary and the information whether the source vertex of the half edge (not the twin half edge) is already part of the Geometry
         /// </summary>
         protected struct BoundaryEdge
         {
@@ -449,7 +496,7 @@ namespace Fusee.Jometri.DCEL
         }
 
         /// <summary>
-        /// Returns all Vertices of the Geometry
+        /// Returns all Vertices of the Geometry.
         /// </summary>
         /// <returns></returns>
         public IEnumerable<Vertex> GetAllVertices()
@@ -461,7 +508,7 @@ namespace Fusee.Jometri.DCEL
         }
 
         /// <summary>
-        /// Returns all HalfEdges of the Geometry
+        /// Returns all HalfEdges of the Geometry.
         /// </summary>
         /// <returns></returns>
         public IEnumerable<HalfEdge> GetAllHalfEdges()
@@ -473,7 +520,7 @@ namespace Fusee.Jometri.DCEL
         }
 
         /// <summary>
-        /// Returns all Faces of the Geometry
+        /// Returns all Faces of the Geometry.
         /// </summary>
         /// <returns></returns>
         public IEnumerable<IFace> GetAllFaces()
@@ -485,7 +532,7 @@ namespace Fusee.Jometri.DCEL
         }
 
         /// <summary>
-        /// Gets a vertex by its handle
+        /// Gets a vertex by its handle.
         /// </summary>
         /// <param name="vHandle">The vertex' reference</param>
         /// <returns></returns>
@@ -522,7 +569,7 @@ namespace Fusee.Jometri.DCEL
         /// <summary>
         /// This collection contains all vertices neighbouring a given vertex.
         /// </summary>
-        /// <param name="vHandle">The vertex reference</param>
+        /// <param name="vHandle">The reference of the vertex.</param>
         /// <returns></returns>
         public IEnumerable<Vertex> GetVertexAdjacentVertices(int vHandle)
         {
@@ -544,7 +591,7 @@ namespace Fusee.Jometri.DCEL
         /// <summary>
         /// This collection contains all handles to Faces adjacent to a given vertex.
         /// </summary>
-        /// <param name="vHandle">The vertex reference</param>
+        /// <param name="vHandle">The reference of the vertex.</param>
         /// <returns></returns>
         public IEnumerable<IFace> GetVertexAdajacentFaces(int vHandle)
         {
@@ -564,7 +611,7 @@ namespace Fusee.Jometri.DCEL
         /// <summary>
         /// This collection contains all handles to HalfEdges starting at or targeting a given vertex.
         /// </summary>
-        /// <param name="vHandle">The vertex reference</param>
+        /// <param name="vHandle">The reference of the vertex.</param>
         /// <returns></returns>
         public IEnumerable<HalfEdge> GetVertexIncidentHalfEdges(int vHandle)
         {
@@ -585,7 +632,7 @@ namespace Fusee.Jometri.DCEL
         /// <summary>
         /// This collection contains all handles to HalfEdges starting at a given vertex.
         /// </summary>
-        /// <param name="vHandle">The vertex reference</param>
+        /// <param name="vHandle">The reference of the vertex.</param>
         /// <returns></returns>
         public IEnumerable<HalfEdge> GetVertexStartingHalfEdges(int vHandle)
         {
@@ -605,7 +652,7 @@ namespace Fusee.Jometri.DCEL
         /// <summary>
         /// This collection contains all handles to HalfEdges ending at a given vertex.
         /// </summary>
-        /// <param name="vHandle">The vertex reference</param>
+        /// <param name="vHandle">The reference of the vertex.</param>
         /// <returns></returns>
         public IEnumerable<HalfEdge> GetVertexTargetingHalfEdges(int vHandle)
         {
@@ -652,7 +699,7 @@ namespace Fusee.Jometri.DCEL
         /// <summary>
         /// This collection contains all faces neighbouring a given face.
         /// </summary>
-        /// <param name="fHandle">The Faces reference</param>
+        /// <param name="fHandle">The reference of the face.</param>
         /// <returns></returns>
         public IEnumerable<IFace> GetFacesAdajacentToFace(int fHandle)
         {
@@ -685,9 +732,9 @@ namespace Fusee.Jometri.DCEL
         }
 
         /// <summary>
-        /// This collection contains all Vertices of a given Face.
+        /// This collection contains all Vertices of a given face.
         /// </summary>
-        /// <param name="fHandle">The faces reference</param>
+        /// <param name="fHandle">The reference of the face.</param>
         /// <returns></returns>
         public IEnumerable<Vertex> GetFaceVertices(int fHandle)
         {
@@ -730,7 +777,7 @@ namespace Fusee.Jometri.DCEL
         /// <summary>
         /// This collection contains all handles to HalfEdges of a given face.
         /// </summary>
-        /// <param name="fHandle">The faces reference</param>
+        /// <param name="fHandle">The reference of the face.</param>
         /// <returns></returns>
         public IEnumerable<HalfEdge> GetFaceHalfEdges(int fHandle)
         {
@@ -851,7 +898,7 @@ namespace Fusee.Jometri.DCEL
     }
 
     /// <summary>
-    /// 2D Geometry, stored in a DCEL (doubly conneted edge list).
+    /// 2D Geometry, stored in a DCEL (half edge data structure).
     /// </summary>
     public class Geometry2D : Geometry
     {
@@ -866,9 +913,9 @@ namespace Fusee.Jometri.DCEL
         }
 
         /// <summary>
-        /// 2D Geometry, stored in a DCEL (doubly conneted edge list). Geometry will be triangulated.
+        /// 2D Geometry, stored in a DCEL (half edge data structure).
         /// </summary>
-        /// <param name="outlines">A collection of the geometrys' outlines, each containing the geometric information as a list of float3 in ccw order</param>
+        /// <param name="outlines">A collection of the geometrys' outlines, each containing the geometric information as a list of float3 in ccw order.</param>
         public Geometry2D(IEnumerable<PolyBoundary> outlines)
         {
             DictVertices = new Dictionary<int, Vertex>();
@@ -880,7 +927,7 @@ namespace Fusee.Jometri.DCEL
             this.Triangulate();
         }
 
-        //Clones a existing Geometry object. E.g to create a backface for an extrusion
+        //Clones a existing Geometry object. E.g to create a backface for an extrusion.
         internal Geometry2D CloneGeometry()
         {
             var clone = new Geometry2D
@@ -893,12 +940,7 @@ namespace Fusee.Jometri.DCEL
             foreach (var f in DictFaces)
             {
                 var oldFace = (Face2D)f.Value;
-                var face = new Face2D
-                {
-                    Handle = oldFace.Handle,
-                    OuterHalfEdge = oldFace.OuterHalfEdge,
-                    InnerHalfEdges = new List<int>()
-                };
+                var face = new Face2D(oldFace.Handle, oldFace.OuterHalfEdge);
                 face.InnerHalfEdges.AddRange(oldFace.InnerHalfEdges);
                 clone.DictFaces.Add(face.Handle, face);
             }
@@ -910,13 +952,8 @@ namespace Fusee.Jometri.DCEL
 
         private void CreateHalfEdgesForGeometry(IEnumerable<PolyBoundary> outlines)
         {
-            var unboundedFace = new Face2D
-            {
-                Handle = DictHalfEdges.Count + 1,
-                OuterHalfEdge = new int(),
-                InnerHalfEdges = new List<int>()
-            };
-
+            var unboundedFace = new Face2D(DictHalfEdges.Count + 1);
+            
             DictFaces.Add(unboundedFace.Handle, unboundedFace);
 
             foreach (var o in outlines)
@@ -995,12 +1032,7 @@ namespace Fusee.Jometri.DCEL
 
         private int AddFace(int firstHalfEdge, out Face2D face)
         {
-            face = new Face2D
-            {
-                Handle = DictFaces.Count + 1,
-                OuterHalfEdge = firstHalfEdge,
-                InnerHalfEdges = new List<int>()
-            };
+            face = new Face2D(DictFaces.Count + 1, firstHalfEdge);
             return face.Handle;
         }
 
@@ -1014,7 +1046,7 @@ namespace Fusee.Jometri.DCEL
             {
                 foreach (var v in GetAllVertices())
                 {
-                    if (!pointCoord.Equals(v.Coord)) continue;
+                    if (!pointCoord.Equals(v.VertData.Pos)) continue;
                     isOldVertex = true;
                     return v;
                 }
@@ -1075,21 +1107,13 @@ namespace Fusee.Jometri.DCEL
                     DictVertices.Add(vert.Handle, vert);
                 }
 
-                var halfEdge = new HalfEdge
-                {
-                    OriginVertex = currentVert.Key.Handle,
-                    Handle = halfEdgeHandle,
-                    TwinHalfEdge = new int()
-                };
+                var halfEdge = new HalfEdge(halfEdgeHandle, currentVert.Key.Handle);
+                
 
                 halfEdgeHandle ++;
-                var twinHalfEdge = new HalfEdge
-                {
-                    Handle = halfEdgeHandle,
-                    TwinHalfEdge = halfEdge.Handle,
-                    OriginVertex = outlineVerts[(j + 1) % outlineVerts.Count].Key.Handle,
-                    IncidentFace = 1 //unbounded face is always added at first and therefor has 1 as handle
-                };
+                var twinHalfEdge = new HalfEdge(halfEdgeHandle, outlineVerts[(j + 1)%outlineVerts.Count].Key.Handle,
+                    halfEdge.Handle, 0, 0, 1); //The unbounded face is always added at first and therefor has 1 as handle.
+                
 
                 halfEdge.TwinHalfEdge = twinHalfEdge.Handle;
 
@@ -1258,8 +1282,8 @@ namespace Fusee.Jometri.DCEL
         /// <summary>
         /// Inserts a pair of half edges between two (non adjacant) vertices of a face.
         /// </summary>
-        /// <param name="p"></param>
-        /// <param name="q"></param>
+        /// <param name="p">First vertex handle.</param>
+        /// <param name="q">Second vertex handle.</param>
         /// <exception cref="Exception"></exception>
         public void InsertDiagonal(int p, int q)
         {
@@ -1342,20 +1366,14 @@ namespace Fusee.Jometri.DCEL
 
             if (holes.Count != 0 && IsHalfEdgeToHole(holes, p, q, face)) return;
 
-            var newFace = new Face2D
-            {
-                Handle = CreateFaceHandleId(),
-                InnerHalfEdges = new List<int>(),
-                OuterHalfEdge = newFromQ.Handle
-            };
+            var newFace = new Face2D(CreateFaceHandleId(), newFromQ.Handle);
 
             DictFaces.Add(newFace.Handle, newFace);
 
-            //Assign the handle of the new face to its half edges
+            //Assign the handle of the new face to its half edges.
             AssignFaceHandle(newFace.OuterHalfEdge, newFace);
 
             //Set face.OuterHalfEdge to newFromP - old OuterHalfEdge can be part of new face now!
-
             var faces = GetAllFaces().ToList();
             for (var i = 0; i < faces.Count; i++)
             {
@@ -1447,31 +1465,31 @@ namespace Fusee.Jometri.DCEL
         /// <summary>
         /// Tests if a point/vertex lies inside or outside a face - only works in 2D!
         /// </summary>
-        /// <param name="fHandle">The handle to the face</param>
-        /// <param name="v">The vertex</param>
+        /// <param name="fHandle">The handle to the face.</param>
+        /// <param name="v">The vertex to be tested.</param>
         /// <returns></returns>
         protected bool IsPointInPolygon(int fHandle, Vertex v)
         {
-            v.Coord = v.Coord.Reduce2D();
+            v.VertData.Pos = v.VertData.Pos.Reduce2D();
 
             var inside = false;
             var faceVerts = GetFaceVertices(fHandle).ToList();
 
             var e0 = GetVertexByHandle(faceVerts.LastItem().Handle);
-            e0.Coord = e0.Coord.Reduce2D();
+            e0.VertData.Pos = e0.VertData.Pos.Reduce2D();
 
-            var y0 = e0.Coord.y >= v.Coord.y;
+            var y0 = e0.VertData.Pos.y >= v.VertData.Pos.y;
 
             foreach (var vert in faceVerts)
             {
                 var e1 = vert;
-                e1.Coord = e1.Coord.Reduce2D();
+                e1.VertData.Pos = e1.VertData.Pos.Reduce2D();
 
-                var y1 = e1.Coord.y >= v.Coord.y;
+                var y1 = e1.VertData.Pos.y >= v.VertData.Pos.y;
                 if (y0 != y1)
                 {
-                    if ((e1.Coord.y - v.Coord.y) * (e0.Coord.x - e1.Coord.x) >=
-                        (e1.Coord.x - v.Coord.x) * (e0.Coord.y - e1.Coord.y) == y1)
+                    if ((e1.VertData.Pos.y - v.VertData.Pos.y) * (e0.VertData.Pos.x - e1.VertData.Pos.x) >=
+                        (e1.VertData.Pos.x - v.VertData.Pos.x) * (e0.VertData.Pos.y - e1.VertData.Pos.y) == y1)
                     {
                         inside = !inside;
                     }

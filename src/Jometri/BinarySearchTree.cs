@@ -7,13 +7,13 @@ namespace Fusee.Jometri
     /// <summary>
     /// Represents a node in a (binary) tree.
     /// </summary>
-    /// <typeparam name="TK">The key of the node as generic type</typeparam>
+    /// <typeparam name="TK">The key of the node as generic type.</typeparam>
     /// <typeparam name="TV">The payload of the node as generic type.</typeparam>
     public class Node<TK, TV>
     {
 
         /// <summary>
-        /// The key of the node - determines how a node is sorted into the tree
+        /// The key of the node - determines how a node is sorted into the tree.
         /// </summary>
         public TK Key { get; set; }
 
@@ -23,16 +23,16 @@ namespace Fusee.Jometri
         public TV Value { get; set; }
 
         /// <summary>
-        /// An item with lower a value than the value of this node will become a LeftNode.
+        /// An item with lower value than the value of this node will become a LeftNode.
         /// </summary>
         public Node<TK, TV> LeftNode;
         /// <summary>
-        /// An item with higher a value than the value of this node will become a RightNode.
+        /// An item with higher value than the value of this node will become a RightNode.
         /// </summary>
         public Node<TK, TV> RightNode;
 
         /// <summary>
-        /// Creates a new Node.
+        /// Creates a new node.
         /// </summary>
         /// <param name="key">The key of the new node</param>
         /// <param name="value">Payload of the new node</param>
@@ -47,16 +47,16 @@ namespace Fusee.Jometri
     /// Data structure that stores items and allows fast lookup, insertion and deletion.
     /// </summary>
     /// <typeparam name="TK">The type of the trees key.</typeparam>
-    /// <typeparam name="TV">The type of the trees key.</typeparam>
+    /// <typeparam name="TV">The type of the trees value.</typeparam>
     public class BinarySearchTree<TK, TV> where TK : IComparable<TK>
     {
         private Node<TK, TV> _globalRoot;
 
         /// <summary>
-        /// Inserts a new node in a existing tree
+        /// Inserts a new node in a existing tree.
         /// </summary>
-        /// <param name="key">The key of the node </param>
-        /// <param name="value">Value of the node to be inserted into the tree</param>
+        /// <param name="key">The key of the node. </param>
+        /// <param name="value">Value of the node to be inserted into the tree.</param>
         /// <returns></returns>
         public void InsertNode(TK key, TV value)
         {
@@ -207,9 +207,9 @@ namespace Fusee.Jometri
         }
 
         /// <summary>
-        /// Traverses the tree to find and return a Node with a certain value.
+        /// Traverses the tree to find and return a node with a certain value.
         /// </summary>
-        /// <param name="key">The key to search for</param>
+        /// <param name="key">The key to search for.</param>
         /// <returns></returns>
         public TV FindNode(TK key)
         {
@@ -234,7 +234,7 @@ namespace Fusee.Jometri
         }
 
         /// <summary>
-        /// Returns the minimum value in the tree
+        /// Returns the minimum value in the tree.
         /// </summary>
         /// <returns></returns>
         public TV FindMin()
@@ -256,7 +256,7 @@ namespace Fusee.Jometri
 
 
         /// <summary>
-        /// Balances a given tree
+        /// Balances a given tree.
         /// </summary>
         /// <returns></returns>
         public void BalanceTree()
@@ -281,9 +281,9 @@ namespace Fusee.Jometri
 
         ///<summary>
         /// Finds the value of a node whose key is the largest smaller than the given one.
-        /// Only works with a balanced tree. There may need to be the necessity to call BalanceTree before.
+        /// Only works with a balanced tree. There may be the necessity to call BalanceTree before calling this method.
         /// </summary>
-        /// <param name="key">The key that is uesed as search parameter</param>
+        /// <param name="key">The key that is uesed as search parameter.</param>
         /// <returns></returns>
         public TV FindLargestSmallerThanInBalanced(TK key)
         {

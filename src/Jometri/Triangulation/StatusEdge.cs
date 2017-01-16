@@ -4,16 +4,16 @@ namespace Fusee.Jometri.Triangulation
 {
     internal class StatusEdge 
     {
-        //Key is needed to insert the Node into a binary search tree and to find the edge directly left of an vertex (FindLargestSmalerThan(vertex.x)). 
+        //A key is needed to insert the Node into a binary search tree and to find the edge directly left of an vertex. 
         internal float IntersectionPointX;
-        //HalfEdge(Handle) identifies the HalfEdge
+        //HalfEdge(Handle) identifies the HalfEdge.
         internal int HalfEdgeHandle;
 
-        //The helper is the vertex to which a possible new diagonal is drawn. Additionally we need to know if the helper vertex is of type merge vertex.
+        //The helper vertex is the vertex to which a possible new diagonal is drawn. Additionally we need to know if the helper vertex is of type merge vertex.
         internal int HelperVertexHandle;
         internal bool IsMergeVertex;
 
-        //The vertices that define the HalfEdge
+        //Origin and target vertex of the half edge.
         private Vertex _origin;
         private Vertex _target;
 
@@ -25,20 +25,20 @@ namespace Fusee.Jometri.Triangulation
             SetKey(eventPoint);
         }
 
-        //If HalfEdge is not parallel (m = -Infinity) to x or y axis: Key = x value of the intersection point from sweep line with HalfEdge. Else Key = origin.x
+        //If the half edge is parallel (m = -Infinity) to x or y axis: Key = x value of the intersection point from sweep line with HalfEdge. Else Key = origin.x
         internal void SetKey(Vertex eventPoint)
         {
-            _target.Coord = _target.Coord.Reduce2D();
-            _origin.Coord = _origin.Coord.Reduce2D();
+            _target.VertData.Pos = _target.VertData.Pos.Reduce2D();
+            _origin.VertData.Pos = _origin.VertData.Pos.Reduce2D();
 
-            var y = eventPoint.Coord.Reduce2D().y;
-            var m = (_target.Coord.y - _origin.Coord.y) / (_target.Coord.x - _origin.Coord.x);
+            var y = eventPoint.VertData.Pos.Reduce2D().y;
+            var m = (_target.VertData.Pos.y - _origin.VertData.Pos.y) / (_target.VertData.Pos.x - _origin.VertData.Pos.x);
 
-            if (_target.Coord.y.Equals(_origin.Coord.y) || _target.Coord.x.Equals(_origin.Coord.x))
-                IntersectionPointX = _origin.Coord.x;
+            if (_target.VertData.Pos.y.Equals(_origin.VertData.Pos.y) || _target.VertData.Pos.x.Equals(_origin.VertData.Pos.x))
+                IntersectionPointX = _origin.VertData.Pos.x;
             else
             {
-                var b = _origin.Coord.y - (m*_origin.Coord.x);
+                var b = _origin.VertData.Pos.y - (m*_origin.VertData.Pos.x);
                 IntersectionPointX = (y - b)/m;
             }
         }

@@ -45,7 +45,7 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
                 foreach (var vertex in faceVerts)
                 {
                     var vert = vertex;
-                    verts.Add(vert.Coord);
+                    verts.Add(vert.VertData.Pos);
                 }
             }
 

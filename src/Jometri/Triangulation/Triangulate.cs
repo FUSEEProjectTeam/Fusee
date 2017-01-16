@@ -8,7 +8,7 @@ using Fusee.Math.Core;
 namespace Fusee.Jometri.Triangulation
 {
     /// <summary>
-    /// Contains the triangulation of some geometry, stored in a doubly connected halfe edge list.
+    /// Contains the triangulation of a geometry, stored in a half edge data structure list.
     /// </summary>
     internal static class Triangulation
     {
@@ -26,7 +26,7 @@ namespace Fusee.Jometri.Triangulation
 
             foreach (var face in originalFaces)
             {
-                //If face has no OuterHalfEdge it's unbounded and can be ignored 
+                //If the face has no OuterHalfEdge it's unbounded and can be ignored.
                 if (face.Value.OuterHalfEdge == default(int)) { continue; }
 
                 if (!IsMonotone((Face2D)face.Value))
@@ -100,8 +100,8 @@ namespace Fusee.Jometri.Triangulation
                         prev = sortedVerts[i];
                     }
 
-                    v1 = next.Coord - popped.Coord;
-                    v2 = prev.Coord - popped.Coord;
+                    v1 = next.VertData.Pos - popped.VertData.Pos;
+                    v2 = prev.VertData.Pos - popped.VertData.Pos;
 
                     while (vertStack.Count > 0 && !IsAngleGreaterOrEqualPi(v1, v2))
                     {
@@ -120,8 +120,8 @@ namespace Fusee.Jometri.Triangulation
                                 prev = sortedVerts[i];
                             }
 
-                            v1 = next.Coord - popped.Coord;
-                            v2 = prev.Coord - popped.Coord;
+                            v1 = next.VertData.Pos - popped.VertData.Pos;
+                            v2 = prev.VertData.Pos - popped.VertData.Pos;
                         }
 
                         _geometry.InsertDiagonal(current.Handle, popped.Handle);
@@ -180,13 +180,13 @@ namespace Fusee.Jometri.Triangulation
             return false;
         }
 
-        //Vertices need to be reduced to 2D
+        //Vertices need to be reduced to 2D.
         private static bool IsAngleGreaterOrEqualPi(float3 first, float3 second)
         {
             var redFirst = first.Reduce2D();
             var redSecond = second.Reduce2D();
 
-            var cross = redFirst.x * redSecond.y - redFirst.y * redSecond.x; //z component of the cross product
+            var cross = redFirst.x * redSecond.y - redFirst.y * redSecond.x; //Z component of the cross product.
             var dot = float3.Dot(first, second);
 
             var angle = (float)System.Math.Atan2(cross, dot);
@@ -237,8 +237,8 @@ namespace Fusee.Jometri.Triangulation
             var prevHalfEdge = _geometry.GetHalfEdgeByHandle(incidentHalfEdge.PrevHalfEdge);
             var prevVert = _geometry.GetVertexByHandle(prevHalfEdge.OriginVertex);
 
-            var v2 = new float3(prevVert.Coord - vert.Coord);
-            var v1 = new float3(nextVert.Coord - vert.Coord);
+            var v2 = new float3(prevVert.VertData.Pos - vert.VertData.Pos);
+            var v1 = new float3(nextVert.VertData.Pos - vert.VertData.Pos);
 
             if (IsUnderVert(vert, nextVert) && IsUnderVert(vert, prevVert))
             {
@@ -264,11 +264,11 @@ namespace Fusee.Jometri.Triangulation
             }
         }
 
-        //Vertices need to be reduced to 2D
+        //Vertices need to be reduced to 2D.
         private static bool IsUnderVert(Vertex middle, Vertex neighbour)
         {
-            var redMiddle = middle.Coord.Reduce2D();
-            var redNeighbour = neighbour.Coord.Reduce2D();
+            var redMiddle = middle.VertData.Pos.Reduce2D();
+            var redNeighbour = neighbour.VertData.Pos.Reduce2D();
 
             if (redMiddle.y > redNeighbour.y)
                 return true;
@@ -279,11 +279,11 @@ namespace Fusee.Jometri.Triangulation
             return false;
         }
 
-        //Vertices need to be reduced to 2D
+        //Vertices need to be reduced to 2D.
         private static bool IsOverVert(Vertex middle, Vertex neighbour)
         {
-            var redMiddle = middle.Coord.Reduce2D();
-            var redNeighbour = neighbour.Coord.Reduce2D();
+            var redMiddle = middle.VertData.Pos.Reduce2D();
+            var redNeighbour = neighbour.VertData.Pos.Reduce2D();
 
             if (redMiddle.y < redNeighbour.y)
                 return true;
@@ -294,13 +294,13 @@ namespace Fusee.Jometri.Triangulation
             return false;
         }
 
-        //Vertices need to be reduced to 2D
+        //Vertices need to be reduced to 2D.
         private static bool IsAngleGreaterPi(float3 first, float3 second)
         {
             var redFirst = first.Reduce2D();
             var redSecond = second.Reduce2D();
 
-            var cross = redFirst.x * redSecond.y - redFirst.y * redSecond.x; //z component of the cross product
+            var cross = redFirst.x * redSecond.y - redFirst.y * redSecond.x; //Z component of the cross product.
             var dot = float3.Dot(first, second);
 
             var angle = (float)System.Math.Atan2(cross, dot);
@@ -384,8 +384,8 @@ namespace Fusee.Jometri.Triangulation
             var prevHalfEdge = _geometry.GetHalfEdgeByHandle(incidentHalfEdge.PrevHalfEdge);
             var prevVert = _geometry.GetVertexByHandle(prevHalfEdge.OriginVertex);
 
-            var v2 = new float3(prevVert.Coord - vert.Coord);
-            var v1 = new float3(nextVert.Coord - vert.Coord);
+            var v2 = new float3(prevVert.VertData.Pos - vert.VertData.Pos);
+            var v1 = new float3(nextVert.VertData.Pos - vert.VertData.Pos);
 
             if (IsUnderVert(vert, nextVert) && IsUnderVert(vert, prevVert))
             {
@@ -462,7 +462,7 @@ namespace Fusee.Jometri.Triangulation
             _sweepLineStatus.UpdateNodes(vert);
             _sweepLineStatus.BalanceTree();
 
-            var ej = _sweepLineStatus.FindLargestSmallerThanInBalanced(vert.Coord.x);
+            var ej = _sweepLineStatus.FindLargestSmallerThanInBalanced(vert.VertData.Pos.x);
 
             _geometry.InsertDiagonal(vert.Handle, ej.HelperVertexHandle);
             newFaces.Add((Face2D)_geometry.DictFaces[_geometry.DictFaces.Keys.Max()]);
@@ -506,7 +506,7 @@ namespace Fusee.Jometri.Triangulation
             _sweepLineStatus.DeleteNode(eMinOne.IntersectionPointX);
             _sweepLineStatus.BalanceTree();
 
-            var ej = _sweepLineStatus.FindLargestSmallerThanInBalanced(vert.Coord.x);
+            var ej = _sweepLineStatus.FindLargestSmallerThanInBalanced(vert.VertData.Pos.x);
 
             if (ej.IsMergeVertex)
             {
@@ -560,7 +560,7 @@ namespace Fusee.Jometri.Triangulation
                 _sweepLineStatus.UpdateNodes(vert);
                 _sweepLineStatus.BalanceTree();
 
-                var ej = _sweepLineStatus.FindLargestSmallerThanInBalanced(vert.Coord.x);
+                var ej = _sweepLineStatus.FindLargestSmallerThanInBalanced(vert.VertData.Pos.x);
 
                 if (ej.IsMergeVertex)
                 {
@@ -578,7 +578,7 @@ namespace Fusee.Jometri.Triangulation
             var prevV = GetPrevVertex(vert);
             var nextV = GetNextVertex(vert);
 
-            return prevV.Coord.y > nextV.Coord.y;
+            return prevV.VertData.Pos.y > nextV.VertData.Pos.y;
         }
 
         private static Vertex GetNextVertex(Vertex currentVert)
@@ -600,15 +600,15 @@ namespace Fusee.Jometri.Triangulation
         #endregion
 
         //Vertices need to be reduced to 2D.
-        //Can be optimized by implementing a priority queue data structure and use it insted of sorting a list
+        //Can be optimized by implementing a priority queue data structure and use it instead of sorting a list.
         private static IList<Vertex> GetSortedVertices(IEnumerable<Vertex> unsortedVerts)
         {
             var sorted = new List<Vertex>();
             sorted.AddRange(unsortedVerts);
             sorted.Sort(delegate (Vertex a, Vertex b)
             {
-                var redA = a.Coord.Reduce2D();
-                var redB = b.Coord.Reduce2D();
+                var redA = a.VertData.Pos.Reduce2D();
+                var redB = b.VertData.Pos.Reduce2D();
 
                 var ydiff = -1 * redA.y.CompareTo(redB.y);
                 if (ydiff != 0) return ydiff;
