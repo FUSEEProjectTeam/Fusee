@@ -238,7 +238,7 @@ namespace Fusee.Jometri.Extrusion
             first.SetHighestHandles();
         }
 
-        private static IEnumerable<HalfEdge> HalfEdgesWChangedWinding(IEnumerable<HalfEdge> originHEdges, Geometry geom)
+        private static IEnumerable<HalfEdge> HalfEdgesWChangedWinding(IEnumerable<HalfEdge> originHEdges, DCEL.Geometry geom)
         {
             foreach (var hEdge in originHEdges)
             {

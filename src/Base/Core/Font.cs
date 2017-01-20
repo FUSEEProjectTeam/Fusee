@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using Fusee.Base.Common;
 using Fusee.Math.Core;
 
@@ -72,7 +69,6 @@ namespace Fusee.Base.Core
         /// </summary>
         /// <param name="c">The character to retrive the curve</param>
         /// <returns></returns>
-        //public Curve GetGlyphCurve(uint c) => _fontImp.GetGlyphCurve(c);
         public Curve GetGlyphCurve(uint c)
         {
             Curve curve;

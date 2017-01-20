@@ -39,7 +39,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="HalfEdgeListToMesh.cs" />
     <Compile Include="MeshingAround.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

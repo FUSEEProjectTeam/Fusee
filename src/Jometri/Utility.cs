@@ -21,34 +21,92 @@ namespace Fusee.Jometri
             return new float3(src.x, src.y, 0);
         }
 
-        /// <summary>
-        /// Reduces a vertex of a face to "2D" by calculating the face normal and rotating the face until its normal lies on z axis.
-        /// </summary>
-        /// <param name="src">Input vertex.</param>
-        /// <param name="faceHandle">The face the vertex belongs to.</param>
-        public static float3 Reduce2D(this float3 src, int faceHandle)
+        public static float3 Reduce2D(this float3 vert, float3 normal)
         {
-            //calculate face normal - rotate face until normal lies on z axis - buffer the normal for this polygon (?)
-            //retrun new value of src
+            //Set of orthonormal vectors
+            normal.Normalize(); //new z axis
+            var v2 = float3.Cross(normal, float3.UnitZ); //rotation axis - new x axis
+            var v3 = float3.Cross(normal, v2); //new y axis
 
-            //Dummy
-            return new float3(src.x, src.y, 0);
+            //Calculate change-of-basis matrix (orthonormal matrix).
+            var row1 = new float3(v2.x, v3.x, normal.x);
+            var row2 = new float3(v2.y, v3.y, normal.y);
+            var row3 = new float3(v2.z, v3.z, normal.z);
+
+            var changeOfBasisMat = new float3x3(row1, row2, row3);
+
+            //In an orthonomal matrix the inverse equals the transpose, therefor the transpose can be used to calculate vector in new basis.
+            var transposeMat = new float3x3(changeOfBasisMat.Row0, changeOfBasisMat.Row1, changeOfBasisMat.Row2);
+            transposeMat.Transpose();
+
+            var vec = transposeMat * vert;
+            var testvec = transposeMat * normal;
+
+            //Round to get rid of potential exponent representation
+            var vecX = System.Math.Round((decimal)vec.x, 5);
+            var vecY = System.Math.Round((decimal)vec.y, 5);
+            var vecZ = System.Math.Round((decimal)vec.z, 5);
+
+            vec = new float3((float)vecX, (float)vecY, (float)vecZ);
+
+            return vec;
+        }
+
+        public static float3 Reduce2D(this float3 vert, float3 normal, out float3x3 changeOfBasisMat)
+        {
+            //Set of orthonormal vectors
+            normal.Normalize(); //new z axis
+            var v2 = float3.Cross(normal, float3.UnitZ); //rotation axis - new x axis
+            var v3 = float3.Cross(normal, v2); //new y axis
+
+            //Calculate change-of-basis matrix (orthonormal matrix).
+            var row1 = new float3(v2.x, v3.x, normal.x);
+            var row2 = new float3(v2.y, v3.y, normal.y);
+            var row3 = new float3(v2.z, v3.z, normal.z);
+
+            changeOfBasisMat = new float3x3(row1, row2, row3);
+
+            //In an orthonomal matrix the inverse equals the transpose, therefor the transpose can be used to calculate vector in new basis.
+            var transposeMat = new float3x3(changeOfBasisMat.Row0, changeOfBasisMat.Row1, changeOfBasisMat.Row2);
+            transposeMat.Transpose();
+
+            var vec = transposeMat * vert;
+            var testvec = transposeMat*normal;
+
+            //Round to get rid of potential exponent representation
+            var vecX = System.Math.Round((decimal)vec.x, 5);
+            var vecY = System.Math.Round((decimal)vec.y, 5);
+            var vecZ = System.Math.Round((decimal)vec.z, 5);
+
+            vec = new float3((float)vecX, (float)vecY, (float)vecZ);
+
+            return vec;
         }
 
         /// <summary>
-        /// Reduces the vertices of a face to "2D" by calculating the face normal and rotating the face until its normal lies on z axis.
+        /// Calculates a face normal from three points. The points have to be coplanar and part of the face.
         /// </summary>
-        /// <param name="src">Input vertex.</param>
-        /// <param name="faceHandle"></param>
-        public static IEnumerable<float3> Reduce2D(this IEnumerable<float3> src, int faceHandle)
+        /// <param name="geometry"></param>
+        /// <param name="faceHandle">The reference of the face.</param>
+        /// <returns></returns>
+        public static float3 CalculateFaceNormal(this DCEL.Geometry geometry, int faceHandle)
         {
-            //calculate face normal - rotate face until normal lies on z axis - retrun new value of src
+            var face = geometry.GetFaceByHandle(faceHandle);
+            var outerHalfEdge = geometry.GetHalfEdgeByHandle(face.OuterHalfEdge);
+            var nextHalfEdge = geometry.GetHalfEdgeByHandle(outerHalfEdge.NextHalfEdge);
+            var prevHalfEdge = geometry.GetHalfEdgeByHandle(outerHalfEdge.PrevHalfEdge);
 
-            //Dummy
-            foreach (var coord in src)
-            {
-                yield return new float3(coord.x, coord.y, 0);
-            }
+            var firstP = geometry.GetVertexByHandle(prevHalfEdge.OriginVertex).VertData.Pos;
+            var secP = geometry.GetVertexByHandle(outerHalfEdge.OriginVertex).VertData.Pos;
+            var thirdP = geometry.GetVertexByHandle(nextHalfEdge.OriginVertex).VertData.Pos;
+
+            var a = secP - firstP;
+            var b = thirdP - secP;
+
+            var cross = float3.Cross(b, a);
+            cross.Normalize();
+
+            return cross;
         }
 
         //For an explanation of this algorythm see: http://blog.element84.com/polygon-winding.html

@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Fusee.Engine.Core;
+using Fusee.Jometri;
 using Fusee.Jometri.DCEL;
 using Fusee.Math.Core;
 
-
-namespace Fusee.Engine.Examples.MeshingAround.Core
+namespace Fusee.Engine.Core
 {
-    public class HalfEdgeListToMesh : Mesh
+    public class JometriMesh : Mesh
     {
-        public HalfEdgeListToMesh(Geometry3D geometry)
+        public JometriMesh(Geometry3D geometry)
         {
             float3[] vertices;
             ushort[] triangles;
@@ -23,7 +22,7 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
             Normals = normals.ToArray();
         }
 
-        //geometry has to be trinagulated
+        //Geometry has to be trinagulated!
         private static void ConvertToMesh(Geometry3D geometry, out float3[] vertices, out ushort[] triangles, out List<float3> normals)
         {
             var triangleCount = geometry.GetAllFaces().ToList().Count;
@@ -35,7 +34,9 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
             triangles = new ushort[vertCount];
             normals = new List<float3>();
 
-            foreach (var face in geometry.GetAllFaces())
+            var faces = geometry.GetAllFaces().ToList();
+
+            foreach (var face in faces)
             {
                 var faceVerts = geometry.GetFaceVertices(face.Handle).ToList();
 
@@ -44,8 +45,8 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
 
                 foreach (var vertex in faceVerts)
                 {
-                    var vert = vertex;
-                    verts.Add(vert.VertData.Pos);
+                    verts.Add(vertex.VertData.Pos);
+                    normals.Add(geometry.CalculateFaceNormal(face.Handle));
                 }
             }
 
@@ -55,19 +56,7 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
                 triangles[i] = (ushort)i;
             }
 
-            for (var i = 0; i < vertices.Length; i += 3)
-            {
-                var a = vertices[i + 1] - vertices[i];
-                var b = vertices[i + 2] - vertices[i];
-
-                var cross = float3.Cross(b, a);
-                cross.Normalize();
-
-                for (var j = 0; j < 3; j++)
-                {
-                    normals.Add(cross);
-                }
-            }
+           
         }
     }
 }

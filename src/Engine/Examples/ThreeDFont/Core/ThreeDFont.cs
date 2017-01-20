@@ -31,14 +31,23 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             var vladimir = AssetStorage.Get<Font>("VLADIMIR.TTF");
             var gnuSerif = AssetStorage.Get<Font>("GNU-FreeSerif.ttf");
 
+
             _text = "Hello World";
-            _threeDFontHelper = new ThreeDFontHelper(_text, gnuSerif);
+            _threeDFontHelper = new ThreeDFontHelper(_text, fontLato);
 
-            var outlines = _threeDFontHelper.GetTextOutlinesWAngle(90);
+            var outlines = _threeDFontHelper.GetTextOutlinesWAngle(10);
             var geom2D = new Geometry2D(outlines);
-            var geom3D = geom2D.Extrude2DPolygon(2000);
 
-            _textMesh = new HalfEdgeListToMesh(geom3D);
+            var backTransMat = new float3x3();
+            foreach (var vert in geom2D.GetAllVertices())
+            {
+                
+                //var vert2D = vert.VertData.Pos.Reduce2D(new float3(1, 2, 2), out backTransMat);
+            }
+
+            var geom3D = geom2D.Extrude2DPolygon(3000);
+
+            _textMesh = new JometriMesh(geom3D);
 
             var parentNode = new SceneNodeContainer
             {
@@ -50,7 +59,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             {
                 Rotation = float3.Zero,
                 Scale = new float3(0.01f, 0.01f, 0.01f),
-                Translation = new float3(0, 0, 0)
+                Translation = new float3(-10, 0, 0)
             };
 
             parentNode.Components.Add(parentTrans);
@@ -86,7 +95,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             RC.SetShader(shader);
 
             // Set the clear color for the backbuffer
-            RC.ClearColor = new float4(0, 0, 0, 1);
+            RC.ClearColor = new float4(0, 1, 1, 1);
         }
 
         // RenderAFrame is called once a frame
