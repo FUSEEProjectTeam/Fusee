@@ -211,7 +211,7 @@ namespace Fusee.Jometri.Extrusion
             second.DictHalfEdges = heDictHelper;
 
             //Change winding
-            var hEdgesWChangedWinding = HalfEdgesWChangedWinding(second.GetAllHalfEdges(), second).ToList();
+            var hEdgesWChangedWinding = GetHalfEdgesWChangedWinding(second.GetAllHalfEdges(), second).ToList();
 
             //Add data of second geometry to first one
             foreach (var vert in second.DictVertices)
@@ -238,7 +238,7 @@ namespace Fusee.Jometri.Extrusion
             first.SetHighestHandles();
         }
 
-        private static IEnumerable<HalfEdge> HalfEdgesWChangedWinding(IEnumerable<HalfEdge> originHEdges, DCEL.Geometry geom)
+        private static IEnumerable<HalfEdge> GetHalfEdgesWChangedWinding(IEnumerable<HalfEdge> originHEdges, Geometry geom)
         {
             foreach (var hEdge in originHEdges)
             {

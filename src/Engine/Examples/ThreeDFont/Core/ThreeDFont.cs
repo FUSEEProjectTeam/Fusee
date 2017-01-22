@@ -31,21 +31,13 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             var vladimir = AssetStorage.Get<Font>("VLADIMIR.TTF");
             var gnuSerif = AssetStorage.Get<Font>("GNU-FreeSerif.ttf");
 
-
             _text = "Hello World";
             _threeDFontHelper = new ThreeDFontHelper(_text, fontLato);
 
             var outlines = _threeDFontHelper.GetTextOutlinesWAngle(10);
             var geom2D = new Geometry2D(outlines);
 
-            var backTransMat = new float3x3();
-            foreach (var vert in geom2D.GetAllVertices())
-            {
-                
-                //var vert2D = vert.VertData.Pos.Reduce2D(new float3(1, 2, 2), out backTransMat);
-            }
-
-            var geom3D = geom2D.Extrude2DPolygon(3000);
+            var geom3D = geom2D.Extrude2DPolygon(2000);
 
             _textMesh = new JometriMesh(geom3D);
 

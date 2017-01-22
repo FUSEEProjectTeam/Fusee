@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using Fusee.Jometri;
-using Fusee.Jometri.DCEL;
 using Fusee.Math.Core;
 
 namespace Fusee.Engine.Core
 {
     public class JometriMesh : Mesh
     {
-        public JometriMesh(Geometry3D geometry)
+        public JometriMesh(Jometri.DCEL.Geometry geometry)
         {
             float3[] vertices;
             ushort[] triangles;
@@ -23,9 +22,14 @@ namespace Fusee.Engine.Core
         }
 
         //Geometry has to be trinagulated!
-        private static void ConvertToMesh(Geometry3D geometry, out float3[] vertices, out ushort[] triangles, out List<float3> normals)
+        private static void ConvertToMesh(Jometri.DCEL.Geometry geometry, out float3[] vertices, out ushort[] triangles, out List<float3> normals)
         {
-            var triangleCount = geometry.GetAllFaces().ToList().Count;
+            // Delete unbounded face - if it exists
+            var faces = geometry.GetAllFaces().ToList();
+            if (faces[0].Handle == 1)
+                faces.RemoveAt(0);
+
+            var triangleCount = faces.Count;
             var vertCount = triangleCount * 3;
 
             var verts = new List<float3>();
@@ -34,10 +38,10 @@ namespace Fusee.Engine.Core
             triangles = new ushort[vertCount];
             normals = new List<float3>();
 
-            var faces = geometry.GetAllFaces().ToList();
-
             foreach (var face in faces)
             {
+                if (face.Handle == 1) { continue; }
+
                 var faceVerts = geometry.GetFaceVertices(face.Handle).ToList();
 
                 if (faceVerts.Count > 3)
@@ -56,7 +60,7 @@ namespace Fusee.Engine.Core
                 triangles[i] = (ushort)i;
             }
 
-           
+
         }
     }
 }

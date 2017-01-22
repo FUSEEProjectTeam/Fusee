@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
-using Fusee.Jometri;
 using Fusee.Jometri.DCEL;
 using Fusee.Jometri.Extrusion;
 using Fusee.Math.Core;
@@ -29,28 +28,15 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
             {
                 Points = new List<float3>
                 {
-                    new float3(0, 0, 1),
-                    new float3(0, 0.5f, 1),
-                    new float3(-0.25f, 0.25f, 1.5f),
-                    new float3(-0.5f, 0.5f, 2),
-                    new float3(-0.5f, 0, 2)
+                    new float3(-0.5f, 0, 1),
+                    new float3(0.5f, 0, 1),
+                    new float3(0.5f, 1, 0),
+                    new float3(-0.5f, 1, 0)
                 },
                 IsOuter = true
             };
 
-            var vecA = outlineTest.Points[1] - outlineTest.Points[0];
-            var vecB = outlineTest.Points[2] - outlineTest.Points[1];
-
-            var normal = float3.Cross(vecB, vecA);
-            normal.Normalize();
-
-            var test = outlineTest.Points[0].Reduce2D(normal);
-            var test1 = outlineTest.Points[1].Reduce2D(normal);
-            var test2 = outlineTest.Points[2].Reduce2D(normal);
-            var test3 = outlineTest.Points[3].Reduce2D(normal);
-            var test4 = outlineTest.Points[4].Reduce2D(normal);
-
-
+            
             ////////////////////// Mesh creation ///////////////////////////////
             var outlineOne = new PolyBoundary //CCW!!
             {
@@ -103,10 +89,10 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
             };
 
             //var geomOutlines = new List<PolyBoundary> { outlineOne, outlineOneHole, outlineTwo, outlineThree };
-            var geomOutlines = new List<PolyBoundary> { outlineTest };
-            var geom2D = new Geometry2D(geomOutlines);
-            var geom3D = geom2D.Extrude2DPolygon(1);
-            var mesh = new JometriMesh(geom3D);
+            var geomOutlines = new List<PolyBoundary> {outlineTest };
+            var geom = new Geometry2D(geomOutlines); //2D
+            geom.Extrude2DPolygon(1);
+            var mesh = new JometriMesh(geom);
 
             ////////////////// Fill SceneNodeContainer ////////////////////////////////
             var parentNode = new SceneNodeContainer

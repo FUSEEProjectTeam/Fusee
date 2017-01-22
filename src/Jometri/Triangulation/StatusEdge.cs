@@ -17,8 +17,12 @@ namespace Fusee.Jometri.Triangulation
         private Vertex _origin;
         private Vertex _target;
 
-        public StatusEdge(Vertex origin, Vertex target, Vertex eventPoint)
+        private readonly Geometry _geometry;
+
+
+        public StatusEdge(Geometry geometry, Vertex origin, Vertex target, Vertex eventPoint)
         {
+            _geometry = geometry;
             _origin = origin;
             _target = target;
 
@@ -28,17 +32,17 @@ namespace Fusee.Jometri.Triangulation
         //If the half edge is parallel (m = -Infinity) to x or y axis: Key = x value of the intersection point from sweep line with HalfEdge. Else Key = origin.x
         internal void SetKey(Vertex eventPoint)
         {
-            _target.VertData.Pos = _target.VertData.Pos.Reduce2D();
-            _origin.VertData.Pos = _origin.VertData.Pos.Reduce2D();
+            var targetPos = _geometry.Get2DVertPos(_target.Handle);
+            var originPos = _geometry.Get2DVertPos(_origin.Handle);
 
-            var y = eventPoint.VertData.Pos.Reduce2D().y;
-            var m = (_target.VertData.Pos.y - _origin.VertData.Pos.y) / (_target.VertData.Pos.x - _origin.VertData.Pos.x);
+            var y = _geometry.Get2DVertPos(eventPoint.Handle).y;
+            var m = (targetPos.y - originPos.y) / (targetPos.x - originPos.x);
 
-            if (_target.VertData.Pos.y.Equals(_origin.VertData.Pos.y) || _target.VertData.Pos.x.Equals(_origin.VertData.Pos.x))
-                IntersectionPointX = _origin.VertData.Pos.x;
+            if (targetPos.y.Equals(originPos.y) || targetPos.x.Equals(originPos.x))
+                IntersectionPointX = originPos.x;
             else
             {
-                var b = _origin.VertData.Pos.y - (m*_origin.VertData.Pos.x);
+                var b = originPos.y - (m* originPos.x);
                 IntersectionPointX = (y - b)/m;
             }
         }

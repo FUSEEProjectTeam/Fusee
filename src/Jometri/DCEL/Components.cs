@@ -13,7 +13,7 @@ namespace Fusee.Jometri.DCEL
         /// <summary>
         /// The vertex' reference.
         /// </summary>
-        internal int Handle;
+        public int Handle;
 
         /// <summary>
         /// The handle to the half edge with this vertex as origin.
@@ -119,7 +119,10 @@ namespace Fusee.Jometri.DCEL
     /// </summary>
     public struct HalfEdge
     {
-        internal int Handle;
+        /// <summary>
+        /// The half edges' handle
+        /// </summary>
+        public int Handle;
 
         internal int OriginVertex;
         internal int TwinHalfEdge;
@@ -246,6 +249,7 @@ namespace Fusee.Jometri.DCEL
     internal struct Face2D : IFace
     {
         public int Handle { get; set; }
+
         public int OuterHalfEdge { get; set; }
 
         public FaceData FaceData { get; set; }

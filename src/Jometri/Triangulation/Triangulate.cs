@@ -55,7 +55,7 @@ namespace Fusee.Jometri.Triangulation
 
             if (faceVertices.Count.Equals(3)) return;
 
-            var sortedVerts = GetSortedVertices(faceVertices);
+            var sortedVerts = GetSortedVertices(_geometry, faceVertices);
             var vertStack = new Stack<Vertex>();
             var leftChain = GetLeftChain(sortedVerts, face.Handle).ToList();
 
@@ -100,10 +100,7 @@ namespace Fusee.Jometri.Triangulation
                         prev = sortedVerts[i];
                     }
 
-                    v1 = next.VertData.Pos - popped.VertData.Pos;
-                    v2 = prev.VertData.Pos - popped.VertData.Pos;
-
-                    while (vertStack.Count > 0 && !IsAngleGreaterOrEqualPi(v1, v2))
+                    while (vertStack.Count > 0 && !_geometry.IsAngleGreaterOrEqualPi(next, popped, prev))
                     {
                         popped = vertStack.Pop();
 
@@ -180,25 +177,11 @@ namespace Fusee.Jometri.Triangulation
             return false;
         }
 
-        //Vertices need to be reduced to 2D.
-        private static bool IsAngleGreaterOrEqualPi(float3 first, float3 second)
-        {
-            var redFirst = first.Reduce2D();
-            var redSecond = second.Reduce2D();
-
-            var cross = redFirst.x * redSecond.y - redFirst.y * redSecond.x; //Z component of the cross product.
-            var dot = float3.Dot(first, second);
-
-            var angle = (float)System.Math.Atan2(cross, dot);
-            var deg = M.RadiansToDegrees(angle);
-            return angle <= 0;
-        }
-
         #endregion
 
         #region Test face for y monotony
 
-        private static bool IsMonotone(Face2D face)
+        private static bool IsMonotone( Face2D face)
         {
             var noSplitOrMerge = HasNoSplitOrMerge(face);
 
@@ -237,12 +220,9 @@ namespace Fusee.Jometri.Triangulation
             var prevHalfEdge = _geometry.GetHalfEdgeByHandle(incidentHalfEdge.PrevHalfEdge);
             var prevVert = _geometry.GetVertexByHandle(prevHalfEdge.OriginVertex);
 
-            var v2 = new float3(prevVert.VertData.Pos - vert.VertData.Pos);
-            var v1 = new float3(nextVert.VertData.Pos - vert.VertData.Pos);
-
             if (IsUnderVert(vert, nextVert) && IsUnderVert(vert, prevVert))
             {
-                if (IsAngleGreaterPi(v1, v2))
+                if (_geometry.IsAngleGreaterPi(nextVert, vert, prevVert))
                     _vertType = VertexType.SPLIT_VERTEX;
                 else
                 {
@@ -251,7 +231,7 @@ namespace Fusee.Jometri.Triangulation
             }
             else if (IsOverVert(vert, nextVert) && IsOverVert(vert, prevVert))
             {
-                if (IsAngleGreaterPi(v1, v2))
+                if (_geometry.IsAngleGreaterPi(nextVert, vert, prevVert))
                     _vertType = VertexType.MERGE_VERTEX;
                 else
                 {
@@ -267,8 +247,8 @@ namespace Fusee.Jometri.Triangulation
         //Vertices need to be reduced to 2D.
         private static bool IsUnderVert(Vertex middle, Vertex neighbour)
         {
-            var redMiddle = middle.VertData.Pos.Reduce2D();
-            var redNeighbour = neighbour.VertData.Pos.Reduce2D();
+            var redMiddle = _geometry.Get2DVertPos(middle.Handle);
+            var redNeighbour = _geometry.Get2DVertPos(neighbour.Handle);
 
             if (redMiddle.y > redNeighbour.y)
                 return true;
@@ -282,8 +262,8 @@ namespace Fusee.Jometri.Triangulation
         //Vertices need to be reduced to 2D.
         private static bool IsOverVert(Vertex middle, Vertex neighbour)
         {
-            var redMiddle = middle.VertData.Pos.Reduce2D();
-            var redNeighbour = neighbour.VertData.Pos.Reduce2D();
+            var redMiddle = _geometry.Get2DVertPos(middle.Handle);
+            var redNeighbour = _geometry.Get2DVertPos(neighbour.Handle);
 
             if (redMiddle.y < redNeighbour.y)
                 return true;
@@ -294,21 +274,6 @@ namespace Fusee.Jometri.Triangulation
             return false;
         }
 
-        //Vertices need to be reduced to 2D.
-        private static bool IsAngleGreaterPi(float3 first, float3 second)
-        {
-            var redFirst = first.Reduce2D();
-            var redSecond = second.Reduce2D();
-
-            var cross = redFirst.x * redSecond.y - redFirst.y * redSecond.x; //Z component of the cross product.
-            var dot = float3.Dot(first, second);
-
-            var angle = (float)System.Math.Atan2(cross, dot);
-            var deg = M.RadiansToDegrees(angle);
-            if ((angle * -1).Equals(M.Pi))
-                return false;
-            return angle < 0;
-        }
         #endregion
 
         #region MakeMonotone
@@ -321,7 +286,7 @@ namespace Fusee.Jometri.Triangulation
                 vertices.Add(vert);
             }
 
-            var sortedVertices = GetSortedVertices(vertices.ToList());
+            var sortedVertices = GetSortedVertices(_geometry, vertices.ToList());
             var faceHalfEdges = _geometry.GetFaceHalfEdges(face.Handle).ToList();
 
             var newFaces = new List<Face2D>();
@@ -384,12 +349,9 @@ namespace Fusee.Jometri.Triangulation
             var prevHalfEdge = _geometry.GetHalfEdgeByHandle(incidentHalfEdge.PrevHalfEdge);
             var prevVert = _geometry.GetVertexByHandle(prevHalfEdge.OriginVertex);
 
-            var v2 = new float3(prevVert.VertData.Pos - vert.VertData.Pos);
-            var v1 = new float3(nextVert.VertData.Pos - vert.VertData.Pos);
-
             if (IsUnderVert(vert, nextVert) && IsUnderVert(vert, prevVert))
             {
-                if (IsAngleGreaterPi(v1, v2))
+                if (_geometry.IsAngleGreaterPi(nextVert, vert, prevVert))
                     _vertType = VertexType.SPLIT_VERTEX;
                 else
                 {
@@ -398,7 +360,7 @@ namespace Fusee.Jometri.Triangulation
             }
             else if (IsOverVert(vert, nextVert) && IsOverVert(vert, prevVert))
             {
-                if (IsAngleGreaterPi(v1, v2))
+                if (_geometry.IsAngleGreaterPi(nextVert, vert, prevVert))
                     _vertType = VertexType.MERGE_VERTEX;
                 else
                 {
@@ -424,7 +386,7 @@ namespace Fusee.Jometri.Triangulation
                 var targetH = _geometry.GetHalfEdgeByHandle(he.NextHalfEdge).OriginVertex;
                 var target = _geometry.GetVertexByHandle(targetH);
 
-                var ei = new StatusEdge(origin, target, vert);
+                var ei = new StatusEdge(_geometry, origin, target, vert);
                 ei.HalfEdgeHandle = he.Handle;
                 ei.HelperVertexHandle = vert.Handle;
                 ei.IsMergeVertex = false;
@@ -475,7 +437,7 @@ namespace Fusee.Jometri.Triangulation
             var targetH = _geometry.GetHalfEdgeByHandle(he.NextHalfEdge).OriginVertex;
             var target = _geometry.GetVertexByHandle(targetH);
 
-            var ei = new StatusEdge(origin, target, vert);
+            var ei = new StatusEdge(_geometry, origin, target, vert);
             ei.HalfEdgeHandle = vert.IncidentHalfEdge;
             ei.HelperVertexHandle = vert.Handle;
             ei.IsMergeVertex = false;
@@ -545,7 +507,7 @@ namespace Fusee.Jometri.Triangulation
                     var targetH = _geometry.GetHalfEdgeByHandle(halfEdge.NextHalfEdge).OriginVertex;
                     var target = _geometry.GetVertexByHandle(targetH);
 
-                    var ei = new StatusEdge(origin, target, vert);
+                    var ei = new StatusEdge(_geometry, origin, target, vert);
                     ei.HalfEdgeHandle = vert.IncidentHalfEdge;
                     ei.HelperVertexHandle = vert.Handle;
                     ei.IsMergeVertex = false;
@@ -601,14 +563,14 @@ namespace Fusee.Jometri.Triangulation
 
         //Vertices need to be reduced to 2D.
         //Can be optimized by implementing a priority queue data structure and use it instead of sorting a list.
-        private static IList<Vertex> GetSortedVertices(IEnumerable<Vertex> unsortedVerts)
+        private static IList<Vertex> GetSortedVertices(Geometry geometry, IEnumerable<Vertex> unsortedVerts)
         {
             var sorted = new List<Vertex>();
             sorted.AddRange(unsortedVerts);
             sorted.Sort(delegate (Vertex a, Vertex b)
             {
-                var redA = a.VertData.Pos.Reduce2D();
-                var redB = b.VertData.Pos.Reduce2D();
+                var redA = geometry.Get2DVertPos(a.Handle);
+                var redB = geometry.Get2DVertPos(b.Handle);
 
                 var ydiff = -1 * redA.y.CompareTo(redB.y);
                 if (ydiff != 0) return ydiff;

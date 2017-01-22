@@ -30,6 +30,23 @@ namespace Fusee.Jometri.DCEL
     public abstract class Geometry
     {
         #region Members
+        private readonly Dictionary<int, float3> _vertPos2DCache = new Dictionary<int, float3>();
+
+        internal float3 Get2DVertPos(int vertHandle)
+        {
+            float3 pos;
+            if (_vertPos2DCache.TryGetValue(vertHandle, out pos))
+                return pos;
+
+            // it is not in the cache...
+            var vert = GetVertexByHandle(vertHandle);
+            var faceHandle = GetHalfEdgeByHandle(vert.IncidentHalfEdge).IncidentFace;
+            var face = GetFaceByHandle(faceHandle);
+            pos = vert.VertData.Pos.Reduce2D(face.FaceData.FaceNormal);
+
+            _vertPos2DCache[vertHandle] = pos;
+            return pos;
+        }
 
         /// <summary>
         /// Contains all vertices of the Geometry.
@@ -317,7 +334,7 @@ namespace Fusee.Jometri.DCEL
         /// <returns></returns>
         public IEnumerable<Vertex> GetFaceVertices(int fHandle)
         {
-            //Outer Outline
+            //Outer boundaries
             var fistHalfEdgeHandle = GetFaceByHandle(fHandle).OuterHalfEdge;
             var halfEdgeOuter = GetHalfEdgeByHandle(fistHalfEdgeHandle);
 
@@ -329,10 +346,11 @@ namespace Fusee.Jometri.DCEL
 
             } while (halfEdgeOuter.Handle != fistHalfEdgeHandle);
 
-            //Inner Outlines
+            //Inner boundaries
             var face = GetFaceByHandle(fHandle);
 
             if (!(face is Face2D)) yield break;
+
             var face2D = (Face2D)face;
             var innerComponents = face2D.InnerHalfEdges;
 
@@ -472,8 +490,6 @@ namespace Fusee.Jometri.DCEL
         }
 
         #endregion
-
-
     }
 
     /// <summary>
@@ -575,7 +591,8 @@ namespace Fusee.Jometri.DCEL
                 if (!bEdge.IsOriginOldVert) continue; //A half-edge can only exist if its source vertex is an old one.
 
                 int existingHeHandle;
-                if (!IsEdgeExisting(bEdge.HalfEdge, boundaryEdges, out existingHeHandle)) continue; //Check the target vert to identify the existing half edge
+                if (!IsEdgeExisting(bEdge.HalfEdge, boundaryEdges, out existingHeHandle))
+                    continue; //Check the target vert to identify the existing half edge
 
                 //If the existing half edge is halfedge.IncidentFace.OuterHalfEdge - replace
                 var face = (Face2D)GetFaceByHandle(bEdge.HalfEdge.IncidentFace);
@@ -675,7 +692,8 @@ namespace Fusee.Jometri.DCEL
             return outlineVerts;
         }
 
-        private List<BoundaryEdge> BoundaryEdges(IList<KeyValuePair<Vertex, bool>> outlineVerts, PolyBoundary polyBoundary)
+        private List<BoundaryEdge> BoundaryEdges(IList<KeyValuePair<Vertex, bool>> outlineVerts,
+            PolyBoundary polyBoundary)
         {
             var faceHandle = new int();
             var boundaryEdges = new List<BoundaryEdge>();
@@ -702,7 +720,8 @@ namespace Fusee.Jometri.DCEL
 
                 halfEdgeHandle++;
                 var twinHalfEdge = new HalfEdge(halfEdgeHandle, outlineVerts[(j + 1) % outlineVerts.Count].Key.Handle,
-                    halfEdge.Handle, 0, 0, 1); //The unbounded face is always added at first and therefor has 1 as handle.
+                    halfEdge.Handle, 0, 0, 1);
+                //The unbounded face is always added at first and therefor has 1 as handle.
 
 
                 halfEdge.TwinHalfEdge = twinHalfEdge.Handle;
@@ -781,7 +800,8 @@ namespace Fusee.Jometri.DCEL
             }
         }
 
-        private void SetPrevAndNextToExistingHalfEdge(BoundaryEdge bEdge, int existingHeHandle, List<BoundaryEdge> boundaryEdges, List<HalfEdge> halfEdgesToUpdate)
+        private void SetPrevAndNextToExistingHalfEdge(BoundaryEdge bEdge, int existingHeHandle,
+            IList<BoundaryEdge> boundaryEdges, ICollection<HalfEdge> halfEdgesToUpdate)
         {
             var existingHe = GetHalfEdgeByHandle(existingHeHandle);
             var existingHeNext = GetHalfEdgeByHandle(existingHe.NextHalfEdge);
@@ -869,6 +889,7 @@ namespace Fusee.Jometri.DCEL
         #endregion
 
         #region Insert Diagonal
+
         /// <summary>
         /// Inserts a pair of half edges between two (non adjacant) vertices of a face.
         /// </summary>
@@ -1018,7 +1039,7 @@ namespace Fusee.Jometri.DCEL
             {
                 var origin = GetHalfEdgeByHandle(heh).OriginVertex;
 
-                if (!IsPointInPolygon(newFace.Handle, GetVertexByHandle(origin))) continue;
+                if (!this.IsPointInPolygon(newFace.Handle, GetVertexByHandle(origin))) continue;
 
                 oldFace.InnerHalfEdges.Remove(heh);
                 newFace.InnerHalfEdges.Add(heh);
@@ -1036,7 +1057,8 @@ namespace Fusee.Jometri.DCEL
             }
         }
 
-        private static bool IsHalfEdgeToHole(Dictionary<int, List<HalfEdge>> holes, int pHandle, int qHandle, Face2D face)
+        private static bool IsHalfEdgeToHole(Dictionary<int, List<HalfEdge>> holes, int pHandle, int qHandle,
+            Face2D face)
         {
             if (holes.Count == 0) return false;
 
@@ -1053,47 +1075,9 @@ namespace Fusee.Jometri.DCEL
             }
             return false;
         }
+
         #endregion
 
-        //Vertices need to be reduced to 2D
-        //see Akenine-Möller, Tomas; Haines, Eric; Hoffman, Naty (2016): Real-Time Rendering, p. 754
-        /// <summary>
-        /// Tests if a point/vertex lies inside or outside a face - only works for polygons parallel to the xy plane!
-        /// </summary>
-        /// <param name="fHandle">The handle to the face.</param>
-        /// <param name="v">The vertex to be tested.</param>
-        /// <returns></returns>
-        protected bool IsPointInPolygon(int fHandle, Vertex v)
-        {
-            var inside = false;
-            var faceVerts = GetFaceVertices(fHandle).ToList();
-
-            v.VertData.Pos = v.VertData.Pos.Reduce2D();
-
-            var e0 = GetVertexByHandle(faceVerts.LastItem().Handle);
-            e0.VertData.Pos = e0.VertData.Pos.Reduce2D();
-
-            var y0 = e0.VertData.Pos.y >= v.VertData.Pos.y;
-
-            foreach (var vert in faceVerts)
-            {
-                var e1 = vert;
-                e1.VertData.Pos = e1.VertData.Pos.Reduce2D();
-
-                var y1 = e1.VertData.Pos.y >= v.VertData.Pos.y;
-                if (y0 != y1)
-                {
-                    if ((e1.VertData.Pos.y - v.VertData.Pos.y) * (e0.VertData.Pos.x - e1.VertData.Pos.x) >=
-                        (e1.VertData.Pos.x - v.VertData.Pos.x) * (e0.VertData.Pos.y - e1.VertData.Pos.y) == y1)
-                    {
-                        inside = !inside;
-                    }
-                }
-                y0 = y1;
-                e0 = e1;
-            }
-            return inside;
-        }
     }
 
     /// <summary>
