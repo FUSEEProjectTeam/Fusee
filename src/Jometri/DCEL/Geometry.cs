@@ -30,21 +30,31 @@ namespace Fusee.Jometri.DCEL
     public abstract class Geometry
     {
         #region Members
-        private readonly Dictionary<int, float3> _vertPos2DCache = new Dictionary<int, float3>();
+        private readonly Dictionary<IFace, Dictionary<int, float3>> _vertPos2DCache = new Dictionary<IFace, Dictionary<int, float3>>();
 
-        internal float3 Get2DVertPos(int vertHandle)
+        internal float3 Get2DVertPos(IFace face, int vertHandle)
         {
+            Dictionary<int, float3> verts;
             float3 pos;
-            if (_vertPos2DCache.TryGetValue(vertHandle, out pos))
+            if (_vertPos2DCache.TryGetValue(face, out verts))
+            {
+                if (verts.TryGetValue(vertHandle, out pos))
+                    return pos;
+                
+                // it is not in the cache...
+                var vertex = GetVertexByHandle(vertHandle);
+                pos = vertex.VertData.Pos.Reduce2D(face.FaceData.FaceNormal);
+
+                verts[vertHandle] = pos;
                 return pos;
+            }
 
             // it is not in the cache...
             var vert = GetVertexByHandle(vertHandle);
-            var faceHandle = GetHalfEdgeByHandle(vert.IncidentHalfEdge).IncidentFace;
-            var face = GetFaceByHandle(faceHandle);
+            
             pos = vert.VertData.Pos.Reduce2D(face.FaceData.FaceNormal);
 
-            _vertPos2DCache[vertHandle] = pos;
+            _vertPos2DCache[face] = new Dictionary<int, float3> { { vert.Handle, pos } };
             return pos;
         }
 
@@ -1039,7 +1049,7 @@ namespace Fusee.Jometri.DCEL
             {
                 var origin = GetHalfEdgeByHandle(heh).OriginVertex;
 
-                if (!this.IsPointInPolygon(newFace.Handle, GetVertexByHandle(origin))) continue;
+                if (!this.IsPointInPolygon(newFace, GetVertexByHandle(origin))) continue;
 
                 oldFace.InnerHalfEdges.Remove(heh);
                 newFace.InnerHalfEdges.Add(heh);

@@ -55,7 +55,7 @@ namespace Fusee.Jometri.Triangulation
 
             if (faceVertices.Count.Equals(3)) return;
 
-            var sortedVerts = GetSortedVertices(_geometry, faceVertices);
+            var sortedVerts = GetSortedVertices(_geometry, face, faceVertices);
             var vertStack = new Stack<Vertex>();
             var leftChain = GetLeftChain(sortedVerts, face.Handle).ToList();
 
@@ -100,7 +100,7 @@ namespace Fusee.Jometri.Triangulation
                         prev = sortedVerts[i];
                     }
 
-                    while (vertStack.Count > 0 && !_geometry.IsAngleGreaterOrEqualPi(next, popped, prev))
+                    while (vertStack.Count > 0 && !_geometry.IsAngleGreaterOrEqualPi(face, next, popped, prev))
                     {
                         popped = vertStack.Pop();
 
@@ -220,18 +220,18 @@ namespace Fusee.Jometri.Triangulation
             var prevHalfEdge = _geometry.GetHalfEdgeByHandle(incidentHalfEdge.PrevHalfEdge);
             var prevVert = _geometry.GetVertexByHandle(prevHalfEdge.OriginVertex);
 
-            if (IsUnderVert(vert, nextVert) && IsUnderVert(vert, prevVert))
+            if (IsUnderVert(face, vert, nextVert) && IsUnderVert(face, vert, prevVert))
             {
-                if (_geometry.IsAngleGreaterPi(nextVert, vert, prevVert))
+                if (_geometry.IsAngleGreaterPi(face, nextVert, vert, prevVert))
                     _vertType = VertexType.SPLIT_VERTEX;
                 else
                 {
                     _vertType = VertexType.START_VERTEX;
                 }
             }
-            else if (IsOverVert(vert, nextVert) && IsOverVert(vert, prevVert))
+            else if (IsOverVert(face, vert, nextVert) && IsOverVert(face, vert, prevVert))
             {
-                if (_geometry.IsAngleGreaterPi(nextVert, vert, prevVert))
+                if (_geometry.IsAngleGreaterPi(face, nextVert, vert, prevVert))
                     _vertType = VertexType.MERGE_VERTEX;
                 else
                 {
@@ -245,10 +245,10 @@ namespace Fusee.Jometri.Triangulation
         }
 
         //Vertices need to be reduced to 2D.
-        private static bool IsUnderVert(Vertex middle, Vertex neighbour)
+        private static bool IsUnderVert(Face2D face, Vertex middle, Vertex neighbour)
         {
-            var redMiddle = _geometry.Get2DVertPos(middle.Handle);
-            var redNeighbour = _geometry.Get2DVertPos(neighbour.Handle);
+            var redMiddle = _geometry.Get2DVertPos(face, middle.Handle);
+            var redNeighbour = _geometry.Get2DVertPos(face, neighbour.Handle);
 
             if (redMiddle.y > redNeighbour.y)
                 return true;
@@ -260,10 +260,10 @@ namespace Fusee.Jometri.Triangulation
         }
 
         //Vertices need to be reduced to 2D.
-        private static bool IsOverVert(Vertex middle, Vertex neighbour)
+        private static bool IsOverVert(Face2D face, Vertex middle, Vertex neighbour)
         {
-            var redMiddle = _geometry.Get2DVertPos(middle.Handle);
-            var redNeighbour = _geometry.Get2DVertPos(neighbour.Handle);
+            var redMiddle = _geometry.Get2DVertPos(face, middle.Handle);
+            var redNeighbour = _geometry.Get2DVertPos(face, neighbour.Handle);
 
             if (redMiddle.y < redNeighbour.y)
                 return true;
@@ -286,7 +286,7 @@ namespace Fusee.Jometri.Triangulation
                 vertices.Add(vert);
             }
 
-            var sortedVertices = GetSortedVertices(_geometry, vertices.ToList());
+            var sortedVertices = GetSortedVertices(_geometry, face, vertices.ToList());
             var faceHalfEdges = _geometry.GetFaceHalfEdges(face.Handle).ToList();
 
             var newFaces = new List<Face2D>();
@@ -302,19 +302,19 @@ namespace Fusee.Jometri.Triangulation
                 switch (_vertType)
                 {
                     case VertexType.START_VERTEX:
-                        HandleStartVertex(current, faceHalfEdges);
+                        HandleStartVertex(face, current, faceHalfEdges);
                         break;
                     case VertexType.END_VERTEX:
                         HandleEndVertex(current, faceHalfEdges, newFaces);
                         break;
                     case VertexType.SPLIT_VERTEX:
-                        HandleSplitVertex(current, newFaces);
+                        HandleSplitVertex(face, current, newFaces);
                         break;
                     case VertexType.MERGE_VERTEX:
                         HandleMergeVertex(current, faceHalfEdges, newFaces);
                         break;
                     case VertexType.REGULAR_VERTEX:
-                        HandleRegularVertex(current, faceHalfEdges, newFaces);
+                        HandleRegularVertex(face, current, faceHalfEdges, newFaces);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -349,18 +349,18 @@ namespace Fusee.Jometri.Triangulation
             var prevHalfEdge = _geometry.GetHalfEdgeByHandle(incidentHalfEdge.PrevHalfEdge);
             var prevVert = _geometry.GetVertexByHandle(prevHalfEdge.OriginVertex);
 
-            if (IsUnderVert(vert, nextVert) && IsUnderVert(vert, prevVert))
+            if (IsUnderVert(face, vert, nextVert) && IsUnderVert(face, vert, prevVert))
             {
-                if (_geometry.IsAngleGreaterPi(nextVert, vert, prevVert))
+                if (_geometry.IsAngleGreaterPi(face, nextVert, vert, prevVert))
                     _vertType = VertexType.SPLIT_VERTEX;
                 else
                 {
                     _vertType = VertexType.START_VERTEX;
                 }
             }
-            else if (IsOverVert(vert, nextVert) && IsOverVert(vert, prevVert))
+            else if (IsOverVert(face, vert, nextVert) && IsOverVert(face, vert, prevVert))
             {
-                if (_geometry.IsAngleGreaterPi(nextVert, vert, prevVert))
+                if (_geometry.IsAngleGreaterPi(face, nextVert, vert, prevVert))
                     _vertType = VertexType.MERGE_VERTEX;
                 else
                 {
@@ -373,7 +373,7 @@ namespace Fusee.Jometri.Triangulation
             }
         }
 
-        private static void HandleStartVertex(Vertex vert, IEnumerable<HalfEdge> faceHalfEdges)
+        private static void HandleStartVertex(Face2D face, Vertex vert, IEnumerable<HalfEdge> faceHalfEdges)
         {
             foreach (var halfEdge in faceHalfEdges)
             {
@@ -386,7 +386,7 @@ namespace Fusee.Jometri.Triangulation
                 var targetH = _geometry.GetHalfEdgeByHandle(he.NextHalfEdge).OriginVertex;
                 var target = _geometry.GetVertexByHandle(targetH);
 
-                var ei = new StatusEdge(_geometry, origin, target, vert);
+                var ei = new StatusEdge(_geometry, face, origin, target, vert);
                 ei.HalfEdgeHandle = he.Handle;
                 ei.HelperVertexHandle = vert.Handle;
                 ei.IsMergeVertex = false;
@@ -419,7 +419,7 @@ namespace Fusee.Jometri.Triangulation
             }
         }
 
-        private static void HandleSplitVertex(Vertex vert, ICollection<Face2D> newFaces)
+        private static void HandleSplitVertex(Face2D face, Vertex vert, ICollection<Face2D> newFaces)
         {
             _sweepLineStatus.UpdateNodes(vert);
             _sweepLineStatus.BalanceTree();
@@ -437,7 +437,7 @@ namespace Fusee.Jometri.Triangulation
             var targetH = _geometry.GetHalfEdgeByHandle(he.NextHalfEdge).OriginVertex;
             var target = _geometry.GetVertexByHandle(targetH);
 
-            var ei = new StatusEdge(_geometry, origin, target, vert);
+            var ei = new StatusEdge(_geometry, face, origin, target, vert);
             ei.HalfEdgeHandle = vert.IncidentHalfEdge;
             ei.HelperVertexHandle = vert.Handle;
             ei.IsMergeVertex = false;
@@ -480,7 +480,7 @@ namespace Fusee.Jometri.Triangulation
             _sweepLineStatus.FindNode(ej.IntersectionPointX).IsMergeVertex = true;
         }
 
-        private static void HandleRegularVertex(Vertex vert, IEnumerable<HalfEdge> faceHalfEdges, ICollection<Face2D> newFaces)
+        private static void HandleRegularVertex(Face2D face, Vertex vert, IEnumerable<HalfEdge> faceHalfEdges, ICollection<Face2D> newFaces)
         {
             if (IsPolygonRightOfVert(vert))
             {
@@ -507,7 +507,7 @@ namespace Fusee.Jometri.Triangulation
                     var targetH = _geometry.GetHalfEdgeByHandle(halfEdge.NextHalfEdge).OriginVertex;
                     var target = _geometry.GetVertexByHandle(targetH);
 
-                    var ei = new StatusEdge(_geometry, origin, target, vert);
+                    var ei = new StatusEdge(_geometry, face, origin, target, vert);
                     ei.HalfEdgeHandle = vert.IncidentHalfEdge;
                     ei.HelperVertexHandle = vert.Handle;
                     ei.IsMergeVertex = false;
@@ -563,14 +563,14 @@ namespace Fusee.Jometri.Triangulation
 
         //Vertices need to be reduced to 2D.
         //Can be optimized by implementing a priority queue data structure and use it instead of sorting a list.
-        private static IList<Vertex> GetSortedVertices(Geometry geometry, IEnumerable<Vertex> unsortedVerts)
+        private static IList<Vertex> GetSortedVertices(Geometry geometry, Face2D face, IEnumerable<Vertex> unsortedVerts)
         {
             var sorted = new List<Vertex>();
             sorted.AddRange(unsortedVerts);
             sorted.Sort(delegate (Vertex a, Vertex b)
             {
-                var redA = geometry.Get2DVertPos(a.Handle);
-                var redB = geometry.Get2DVertPos(b.Handle);
+                var redA = geometry.Get2DVertPos(face, a.Handle);
+                var redB = geometry.Get2DVertPos(face, b.Handle);
 
                 var ydiff = -1 * redA.y.CompareTo(redB.y);
                 if (ydiff != 0) return ydiff;

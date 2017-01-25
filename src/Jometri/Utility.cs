@@ -93,21 +93,21 @@ namespace Fusee.Jometri
         /// <param name="fHandle">The handle to the face.</param>
         /// <param name="v">The vertex to be tested.</param>
         /// <returns></returns>
-        public static bool IsPointInPolygon(this Geometry geometry, int fHandle, Vertex v)
+        public static bool IsPointInPolygon(this Geometry geometry, IFace face, Vertex v)
         {
             var inside = false;
-            var faceVerts = geometry.GetFaceVertices(fHandle).ToList();
+            var faceVerts = geometry.GetFaceVertices(face.Handle).ToList();
 
-            var vPos = geometry.Get2DVertPos(v.Handle);
+            var vPos = geometry.Get2DVertPos(face, v.Handle);
 
             var v1 = geometry.GetVertexByHandle(faceVerts.LastItem().Handle);
-            var v1Pos = geometry.Get2DVertPos(v1.Handle);
+            var v1Pos = geometry.Get2DVertPos(face, v1.Handle);
 
             var y0 = v1Pos.y >= vPos.y;
 
             foreach (var vert in faceVerts)
             {
-                var e1Pos = geometry.Get2DVertPos(vert.Handle);
+                var e1Pos = geometry.Get2DVertPos(face, vert.Handle);
 
                 var y1 = e1Pos.y >= vPos.y;
                 if (y0 != y1)
@@ -134,11 +134,11 @@ namespace Fusee.Jometri
         /// <param name="v2">Vertex two</param>
         /// <param name="v3">Vertex three</param>
         /// <returns></returns>
-        public static bool IsAngleGreaterPi(this Geometry geom, Vertex v1, Vertex v2, Vertex v3)
+        public static bool IsAngleGreaterPi(this Geometry geom,IFace face, Vertex v1, Vertex v2, Vertex v3)
         {
-            var v1Pos = geom.Get2DVertPos(v1.Handle);
-            var v2Pos = geom.Get2DVertPos(v2.Handle);
-            var v3Pos = geom.Get2DVertPos(v3.Handle);
+            var v1Pos = geom.Get2DVertPos(face, v1.Handle);
+            var v2Pos = geom.Get2DVertPos(face, v2.Handle);
+            var v3Pos = geom.Get2DVertPos(face, v3.Handle);
 
             var firstVec = v1Pos - v2Pos;
             var secondVec = v3Pos - v2Pos;
@@ -162,11 +162,11 @@ namespace Fusee.Jometri
         /// <param name="v2">Vertex two</param>
         /// <param name="v3">Vertex three</param>
         /// <returns></returns>
-        public static bool IsAngleGreaterOrEqualPi(this Geometry geom,  Vertex v1, Vertex v2, Vertex v3)
+        public static bool IsAngleGreaterOrEqualPi(this Geometry geom,  IFace face, Vertex v1, Vertex v2, Vertex v3)
         {
-            var v1Pos = geom.Get2DVertPos(v1.Handle);
-            var v2Pos = geom.Get2DVertPos(v2.Handle);
-            var v3Pos = geom.Get2DVertPos(v3.Handle);
+            var v1Pos = geom.Get2DVertPos(face, v1.Handle);
+            var v2Pos = geom.Get2DVertPos(face, v2.Handle);
+            var v3Pos = geom.Get2DVertPos(face, v3.Handle);
 
             var firstVec = v1Pos - v2Pos;
             var secondVec = v3Pos - v2Pos;
