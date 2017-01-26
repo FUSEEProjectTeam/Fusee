@@ -28,9 +28,10 @@ namespace Fusee.Jometri.Extrusion
                 DictFaces = geometry.DictFaces, //TODO: Convert to List<Face3D>
                 DictVertices = geometry.DictVertices,
                 DictHalfEdges = geometry.DictHalfEdges,
+                HighestHalfEdgeHandle = geometry.HighestHalfEdgeHandle,
+                HighestFaceHandle = geometry.HighestFaceHandle,
+                HighestVertHandle = geometry.HighestVertHandle,
             };
-
-            //TODO: geom3D.HighestHalfEdgeHandle = geometry.HighestHalfEdgeHandle / HighestVertexHandle / HighestFaceHandle
 
             return geom3D;
         }
@@ -67,8 +68,8 @@ namespace Fusee.Jometri.Extrusion
             for (var i = 0; i < frontLoopsStartHalfEdges.Count; i++)
             {
                 var frontEdgeLoop = geometry.GetHalfEdgeLoop(frontLoopsStartHalfEdges[i]).ToList();
-                var backEdgeLoop = geometry.GetHalfEdgeLoop(backLoopsStartHalfEdges[i]).ToList();
-                backEdgeLoop.Reverse();
+                var backEdgeLoop = geometry.GetHalfEdgeLoopReverse(backLoopsStartHalfEdges[i]).ToList();
+                
 
                 var newHalfEdges = new List<HalfEdge>();
 
@@ -230,9 +231,11 @@ namespace Fusee.Jometri.Extrusion
             firstUnbounded.InnerHalfEdges.AddRange(secUnbounded.InnerHalfEdges);
             second.DictFaces.Remove(secUnbounded.Handle);
 
+            //Add faces to first and recalculate face normals (because of changed winding).
             foreach (var face in second.DictFaces)
             {
                 first.DictFaces.Add(face.Key,face.Value);
+                first.CalculateFaceNormal(face.Value);
             }
 
             first.SetHighestHandles();

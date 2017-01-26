@@ -57,16 +57,14 @@ namespace Fusee.Jometri
             return newVert;
         }
 
-        
+
         /// <summary>
         /// Calculates a face normal from three vertices. The vertices have to be coplanar and part of the face.
         /// </summary>
         /// <param name="geometry">The geometry to which the face belongs.</param>
-        /// <param name="faceHandle">The reference of the face.</param>
         /// <returns></returns>
-        public static float3 CalculateFaceNormal(this Geometry geometry, int faceHandle)
+        public static void CalculateFaceNormal(this Geometry geometry, IFace face)
         {
-            var face = geometry.GetFaceByHandle(faceHandle);
             var outerHalfEdge = geometry.GetHalfEdgeByHandle(face.OuterHalfEdge);
             var nextHalfEdge = geometry.GetHalfEdgeByHandle(outerHalfEdge.NextHalfEdge);
             var prevHalfEdge = geometry.GetHalfEdgeByHandle(outerHalfEdge.PrevHalfEdge);
@@ -81,7 +79,10 @@ namespace Fusee.Jometri
             var cross = float3.Cross(b, a);
             cross.Normalize();
 
-            return cross;
+            var faceData = face.FaceData;
+            faceData.FaceNormal = cross;
+            face.FaceData = faceData;
+
         }
 
         //Vertices need to be reduced to 2D
@@ -90,7 +91,6 @@ namespace Fusee.Jometri
         /// Tests if a point/vertex lies inside or outside a face - only works for polygons parallel to the xy plane!
         /// </summary>
         /// <param name="geometry">The geometry to which the polygon (here: face) belongs.</param>
-        /// <param name="fHandle">The handle to the face.</param>
         /// <param name="v">The vertex to be tested.</param>
         /// <returns></returns>
         public static bool IsPointInPolygon(this Geometry geometry, IFace face, Vertex v)
@@ -147,6 +147,7 @@ namespace Fusee.Jometri
             var dot = float3.Dot(firstVec, secondVec); // cosine / x
 
             var angle = (float)System.Math.Atan2(det, dot);
+
             if ((angle * -1).Equals(M.Pi))
                 return false;
             return angle < 0;

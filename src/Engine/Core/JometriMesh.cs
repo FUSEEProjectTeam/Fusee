@@ -50,7 +50,11 @@ namespace Fusee.Engine.Core
                 foreach (var vertex in faceVerts)
                 {
                     verts.Add(vertex.VertData.Pos);
-                    normals.Add(geometry.CalculateFaceNormal(face.Handle));
+
+                    if(face.FaceData.FaceNormal == float3.Zero)
+                        geometry.CalculateFaceNormal(face);
+
+                    normals.Add(face.FaceData.FaceNormal);
                 }
             }
 

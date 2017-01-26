@@ -76,17 +76,17 @@ namespace Fusee.Jometri.DCEL
         /// <summary>
         /// The highest handle of all half edge handles - used to create a new handle.
         /// </summary>
-        protected internal int HighestHalfEdgeHandle { get; private set; }
+        protected internal int HighestHalfEdgeHandle { get; set; }
 
         /// <summary>
         /// The highest handle of all vertex handles - used to create a new handle.
         /// </summary>
-        protected internal int HighestVertHandle { get; private set; }
+        protected internal int HighestVertHandle { get; internal set; }
 
         /// <summary>
         /// The highest handle of all face handles - used to create a new handle.
         /// </summary>
-        protected internal int HighestFaceHandle { get; private set; }
+        protected internal int HighestFaceHandle { get; set; }
 
         #endregion
 
@@ -297,6 +297,19 @@ namespace Fusee.Jometri.DCEL
             {
                 var currentHalfEdge = GetHalfEdgeByHandle(currentHandle);
                 currentHandle = currentHalfEdge.NextHalfEdge;
+                yield return GetHalfEdgeByHandle(currentHalfEdge.Handle);
+
+            } while (currentHandle != heHandle);
+        }
+
+        public IEnumerable<HalfEdge> GetHalfEdgeLoopReverse(int heHandle)
+        {
+            var currentHandle = heHandle;
+
+            do
+            {
+                var currentHalfEdge = GetHalfEdgeByHandle(currentHandle);
+                currentHandle = currentHalfEdge.PrevHalfEdge;
                 yield return GetHalfEdgeByHandle(currentHalfEdge.Handle);
 
             } while (currentHandle != heHandle);
@@ -534,10 +547,7 @@ namespace Fusee.Jometri.DCEL
             {
                 if (key == 1) continue;
                 var face = DictFaces[key];
-                var faceData = face.FaceData;
-                faceData.FaceNormal = this.CalculateFaceNormal(key);
-                face.FaceData = faceData;
-                DictFaces[key] = face;
+                this.CalculateFaceNormal(face);
             }
 
             this.Triangulate();
