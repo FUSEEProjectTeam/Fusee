@@ -18,12 +18,12 @@ namespace Fusee.Jometri.Extrusion
         /// <param name="geometry">The geometry to be extruded.</param>
         /// <param name="zOffset">zOffset will be added to each vertex' z coordinate in order to create the backface of the geometry.</param>
         /// <returns></returns>
-        public static Geometry3D Extrude2DPolygon(this Geometry2D geometry, int zOffset)
+        public static Geometry Extrude2DPolygon(this Geometry geometry, int zOffset)
         {
             CreateBackface(geometry, zOffset);
             CreateSidefaces(geometry);
 
-            var geom3D = new Geometry3D
+            var geom3D = new Geometry
             {
                 DictFaces = geometry.DictFaces, //TODO: Convert to List<Face3D>
                 DictVertices = geometry.DictVertices,
@@ -36,7 +36,7 @@ namespace Fusee.Jometri.Extrusion
             return geom3D;
         }
 
-        private static void CreateBackface(Geometry2D geometry, int zOffset)
+        private static void CreateBackface(Geometry geometry, int zOffset)
         {
             //Clone frontface
             var backface = geometry.CloneGeometry();
@@ -47,7 +47,7 @@ namespace Fusee.Jometri.Extrusion
             Join2DGeometries(geometry, backface);
         }
 
-        private static void UpdateAllVertexZCoord(Geometry2D geometry, int zOffset)
+        private static void UpdateAllVertexZCoord(Geometry geometry, int zOffset)
         {
             foreach (var vertkey in geometry.DictVertices.Keys.ToList())
             {
@@ -58,7 +58,7 @@ namespace Fusee.Jometri.Extrusion
             
         }
 
-        private static void CreateSidefaces(Geometry2D geometry)
+        private static void CreateSidefaces(Geometry geometry)
         {
             var unboundedFace = (Face2D)geometry.GetFaceByHandle(1); //The unbounded face is always added first - therefore it will always have 1 as handle.
 
@@ -70,8 +70,9 @@ namespace Fusee.Jometri.Extrusion
                 var frontEdgeLoop = geometry.GetHalfEdgeLoop(frontLoopsStartHalfEdges[i]).ToList();
                 var backEdgeLoop = geometry.GetHalfEdgeLoopReverse(backLoopsStartHalfEdges[i]).ToList();
                 
-
                 var newHalfEdges = new List<HalfEdge>();
+
+                var newFaces = new List<IFace>();
 
                 for (var j = 0; j < frontEdgeLoop.Count; j++)
                 {
@@ -93,6 +94,7 @@ namespace Fusee.Jometri.Extrusion
                     };
 
                     var newFace = new Face2D(geometry.CreateFaceHandleId(), newFromBack.Handle);
+                    newFaces.Add(newFace);
                     
                     geometry.DictFaces.Add(newFace.Handle, newFace);
 
@@ -138,9 +140,14 @@ namespace Fusee.Jometri.Extrusion
                     geometry.DictHalfEdges.Add(current.Handle, current);
                 }
 
-                for (var j = 0; j < newHalfEdges.Count; j += 2)
+                /*for (var j = 0; j < newHalfEdges.Count; j += 2)
                 {
                     geometry.InsertDiagonal(newHalfEdges[j].OriginVertex, newHalfEdges[j + 1].OriginVertex);
+                }*/
+
+                foreach (var face in newFaces)
+                {
+                    geometry.CalculateFaceNormal(geometry.DictFaces[face.Handle]);
                 }
             }
 
@@ -148,7 +155,7 @@ namespace Fusee.Jometri.Extrusion
             geometry.DictFaces.Remove(unboundedFace.Handle);
         }
 
-        private static void Join2DGeometries(Geometry2D first, Geometry2D second)
+        private static void Join2DGeometries(Geometry first, Geometry second)
         {
             var highestVertHandle = first.HighestVertHandle;
             var highestHalfEdgeHandle = first.HighestHalfEdgeHandle;
@@ -235,7 +242,7 @@ namespace Fusee.Jometri.Extrusion
             foreach (var face in second.DictFaces)
             {
                 first.DictFaces.Add(face.Key,face.Value);
-                first.CalculateFaceNormal(face.Value);
+                first.CalculateFaceNormal(first.DictFaces[face.Key]);
             }
 
             first.SetHighestHandles();

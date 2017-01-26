@@ -27,7 +27,7 @@ namespace Fusee.Jometri.DCEL
     /// <summary>
     /// Base class - Geometry, stored in a half edge data structure (doubly connected edge list).
     /// </summary>
-    public abstract class Geometry
+    public class Geometry
     {
         #region Members
         private readonly Dictionary<IFace, Dictionary<int, float3>> _vertPos2DCache = new Dictionary<IFace, Dictionary<int, float3>>();
@@ -513,17 +513,11 @@ namespace Fusee.Jometri.DCEL
         }
 
         #endregion
-    }
-
-    /// <summary>
-    /// 2D Geometry, stored in a DCEL (half edge data structure).
-    /// </summary>
-    public class Geometry2D : Geometry
-    {
+   
         /// <summary>
         /// Creates an empty geometry, that can be filled by the user using InsertFace, InsertHalfEdge and InsertVertex methodes
         /// </summary>
-        protected Geometry2D()
+        public Geometry()
         {
             DictVertices = new Dictionary<int, Vertex>();
             DictHalfEdges = new Dictionary<int, HalfEdge>();
@@ -534,7 +528,7 @@ namespace Fusee.Jometri.DCEL
         /// 2D Geometry, stored in a DCEL (half edge data structure).
         /// </summary>
         /// <param name="outlines">A collection of the geometrys' outlines, each containing the geometric information as a list of float3 in ccw order.</param>
-        public Geometry2D(IEnumerable<PolyBoundary> outlines)
+        public Geometry(IEnumerable<PolyBoundary> outlines)
         {
             DictVertices = new Dictionary<int, Vertex>();
             DictHalfEdges = new Dictionary<int, HalfEdge>();
@@ -546,17 +540,14 @@ namespace Fusee.Jometri.DCEL
             foreach (var key in keys)
             {
                 if (key == 1) continue;
-                var face = DictFaces[key];
-                this.CalculateFaceNormal(face);
+                this.CalculateFaceNormal(DictFaces[key]);
             }
-
-            this.Triangulate();
         }
 
         //Clones a existing Geometry object. E.g to create a backface for an extrusion.
-        internal Geometry2D CloneGeometry()
+        internal Geometry CloneGeometry()
         {
-            var clone = new Geometry2D
+            var clone = new Geometry
             {
                 DictVertices = new Dictionary<int, Vertex>(DictVertices),
                 DictHalfEdges = new Dictionary<int, HalfEdge>(DictHalfEdges),
@@ -1004,7 +995,6 @@ namespace Fusee.Jometri.DCEL
             newFaceData.FaceNormal = face.FaceData.FaceNormal;
             newFace.FaceData = newFaceData;
 
-
             DictFaces.Add(newFace.Handle, newFace);
 
             //Assign the handle of the new face to its half edges.
@@ -1021,6 +1011,8 @@ namespace Fusee.Jometri.DCEL
                 faces[i] = currentFace;
                 DictFaces[faces[i].Handle] = faces[i];
             }
+
+            
         }
 
         private Dictionary<int, List<HalfEdge>> GetHoles(Face2D face)
@@ -1097,16 +1089,6 @@ namespace Fusee.Jometri.DCEL
         }
 
         #endregion
-
-    }
-
-    /// <summary>
-    /// 3D Geometry, stored in a half edge data structure (doubly conneted edge list).
-    /// </summary>
-    public class Geometry3D : Geometry
-    {
-
-
     }
 
 }

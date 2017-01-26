@@ -10,13 +10,13 @@ namespace Fusee.Jometri.Triangulation
     /// <summary>
     /// Contains the triangulation of a geometry, stored in a half edge data structure list.
     /// </summary>
-    internal static class Triangulation
+    public static class Triangulation
     {
-        private static Geometry2D _geometry;
+        private static Geometry _geometry;
         private static VertexType _vertType;
         private static SweepLineStatus _sweepLineStatus;
 
-        internal static void Triangulate(this Geometry2D geometry)
+        public static void Triangulate(this Geometry geometry)
         {
             //TODO: Both, MakeMonotone and TriangulateMonotone need 2D coordinates instead of 3D. It is possibly more effective to call Reduce2D for the vertices of the whole face in those methods than in the sub methods
 

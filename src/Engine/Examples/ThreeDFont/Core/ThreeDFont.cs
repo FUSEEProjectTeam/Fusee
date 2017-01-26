@@ -6,7 +6,9 @@ using Fusee.Jometri.DCEL;
 using Fusee.Math.Core;
 using static Fusee.Engine.Core.Input;
 using Fusee.Jometri.Extrusion;
+using Fusee.Jometri.Triangulation;
 using Fusee.Serialization;
+using Geometry = Fusee.Jometri.DCEL.Geometry;
 
 namespace Fusee.Engine.Examples.ThreeDFont.Core
 {
@@ -35,7 +37,8 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             _threeDFontHelper = new ThreeDFontHelper(_text, fontLato);
 
             var outlines = _threeDFontHelper.GetTextOutlinesWAngle(10);
-            var geom2D = new Geometry2D(outlines);
+            var geom2D = new Geometry(outlines);
+            geom2D.Triangulate();
 
             var geom3D = geom2D.Extrude2DPolygon(2000);
 

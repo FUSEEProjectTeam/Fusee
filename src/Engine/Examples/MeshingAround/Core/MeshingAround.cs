@@ -4,9 +4,11 @@ using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Jometri.DCEL;
 using Fusee.Jometri.Extrusion;
+using Fusee.Jometri.Triangulation;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 using static Fusee.Engine.Core.Input;
+using Geometry = Fusee.Jometri.DCEL.Geometry;
 
 
 namespace Fusee.Engine.Examples.MeshingAround.Core
@@ -90,8 +92,9 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
 
             //var geomOutlines = new List<PolyBoundary> { outlineOne, outlineOneHole, outlineTwo, outlineThree };
             var geomOutlines = new List<PolyBoundary> {outlineTest };
-            var geom = new Geometry2D(geomOutlines); //2D
+            var geom = new Geometry(geomOutlines); //2D
             geom.Extrude2DPolygon(1);
+            geom.Triangulate();
             var mesh = new JometriMesh(geom);
 
             ////////////////// Fill SceneNodeContainer ////////////////////////////////
