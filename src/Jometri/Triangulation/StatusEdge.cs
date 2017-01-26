@@ -18,10 +18,10 @@ namespace Fusee.Jometri.Triangulation
         private Vertex _target;
 
         private readonly Geometry _geometry;
-        private readonly IFace _face;
+        private readonly Face _face;
 
 
-        public StatusEdge(Geometry geometry, IFace face, Vertex origin, Vertex target, Vertex eventPoint)
+        public StatusEdge(Geometry geometry, Face face, Vertex origin, Vertex target, Vertex eventPoint)
         {
             _geometry = geometry;
             _face = face;

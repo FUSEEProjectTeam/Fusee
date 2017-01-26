@@ -221,24 +221,6 @@ namespace Fusee.Jometri.DCEL
 
 
     /// <summary>
-    /// Needed for the basic functions of Geometry to work with both, 2D and 3D faces.
-    /// </summary>
-    public interface IFace
-    {
-        /// <summary>
-        /// Handle to assign a abstract reference.
-        /// </summary>
-        int Handle { get; set; }
-
-        /// <summary>
-        /// Handle to one of the half edges that belongs to the faces outer boundary.
-        /// </summary>
-        int OuterHalfEdge { get; set; }
-
-        FaceData FaceData { get; set; }
-    }
-
-    /// <summary>
     /// Each face belonging to a 2D geometry contains:
     /// A handle to assign a abstract reference to it.
     /// A handle to one of the half edges that belongs to the faces outer boundary.
@@ -246,20 +228,20 @@ namespace Fusee.Jometri.DCEL
     /// Attribute information, e.g. the face nromal.
     /// Note that unbounded faces can't have a OuterHalfEdge but must have at least one InnerHalfEdge - bounded faces must have a OuterComponent.
     /// </summary>
-    internal struct Face2D : IFace
+    public struct Face
     {
-        public int Handle { get; set; }
+        public int Handle;
 
-        public int OuterHalfEdge { get; set; }
+        public int OuterHalfEdge;
 
-        public FaceData FaceData { get; set; }
+        public FaceData FaceData;
 
         internal List<int> InnerHalfEdges;
 
         /// <summary>
         /// Constructor for creating a new Face.
         /// </summary>
-        public Face2D(int handle = 0, int outerHalfEdge = 0) : this()
+        public Face(int handle = 0, int outerHalfEdge = 0) : this()
         {
             Handle = handle;
             OuterHalfEdge = outerHalfEdge;
@@ -275,7 +257,7 @@ namespace Fusee.Jometri.DCEL
         /// <param name="first">First comparison parameter.</param>
         /// <param name="second">Second comparison parameter.</param>
         /// <returns></returns>
-        public static bool operator <(Face2D first, Face2D second)
+        public static bool operator <(Face first, Face second)
         {
             return first.Handle < second.Handle;
         }
@@ -286,7 +268,7 @@ namespace Fusee.Jometri.DCEL
         /// <param name="first">First comparison parameter.</param>
         /// <param name="second">Second comparison parameter.</param>
         /// <returns></returns>
-        public static bool operator >(Face2D first, Face2D second)
+        public static bool operator >(Face first, Face second)
         {
             return first.Handle > second.Handle;
         }
@@ -297,7 +279,7 @@ namespace Fusee.Jometri.DCEL
         /// <param name="first">First comparison parameter.</param>
         /// <param name="second">Second comparison parameter.</param>
         /// <returns></returns>
-        public static bool operator !=(Face2D first, Face2D second)
+        public static bool operator !=(Face first, Face second)
         {
             return first.Handle != second.Handle;
         }
@@ -308,7 +290,7 @@ namespace Fusee.Jometri.DCEL
         /// <param name="first">First comparison parameter.</param>
         /// <param name="second">Second comparison parameter.</param>
         /// <returns></returns>
-        public static bool operator ==(Face2D first, Face2D second)
+        public static bool operator ==(Face first, Face second)
         {
             return (first.Handle == second.Handle);
         }
@@ -318,10 +300,10 @@ namespace Fusee.Jometri.DCEL
         /// <param name="obj">Comparison object.</param>
         public override bool Equals(object obj)
         {
-            if (!(obj is Face2D))
+            if (!(obj is Face))
                 return false;
 
-            var comp = (Face2D)obj;
+            var comp = (Face)obj;
             return this == comp;
 
         }
@@ -329,100 +311,6 @@ namespace Fusee.Jometri.DCEL
 
         /// <summary>Overwrites GetHashCode</summary>
         /// <returns>Handle as hash code.</returns>
-        public override int GetHashCode()
-        {
-            return Handle;
-        }
-
-        #endregion
-    }
-
-    /// <summary>
-    /// Each face belonging to a 3D geometry contains:
-    /// A handle to assign a abstract reference to it.
-    /// A handle to one of the half edges that belongs to this faces outer boundary.
-    /// Attribute information, e.g. the face nromal.
-    /// </summary>
-    internal struct Face3D : IFace
-    {
-        public int Handle { get; set; }
-        public int OuterHalfEdge { get; set; }
-
-        public FaceData FaceData { get; set; }
-
-        /// <summary>
-        /// Constructor for creating a new Face.
-        /// </summary>
-        public Face3D(int handle = 0, int outerHalfEdge = 0) : this()
-        {
-            Handle = handle;
-            OuterHalfEdge = outerHalfEdge;
-            FaceData = new FaceData();
-
-        }
-
-        #region  Overloading comparison operators
-
-        /// <summary>
-        /// Overload for "smaller than" operator. Comparison based on the Faces' handle
-        /// </summary>
-        /// <param name="first">First comparison parameter.</param>
-        /// <param name="second">Second comparison parameter.</param>
-        /// <returns></returns>
-        public static bool operator <(Face3D first, Face3D second)
-        {
-            return first.Handle < second.Handle;
-        }
-
-        /// <summary>
-        /// Overload for "smaller than" operator. Comparison based on the Faces' handle
-        /// </summary>
-        /// <param name="first">First comparison parameter.</param>
-        /// <param name="second">Second comparison parameter.</param>
-        /// <returns></returns>
-        public static bool operator >(Face3D first, Face3D second)
-        {
-            return first.Handle > second.Handle;
-        }
-
-        /// <summary>
-        /// Overload for != operator
-        /// </summary>
-        /// <param name="first">First parameter to be compared</param>
-        /// <param name="second">Second parameter to be compared</param>
-        /// <returns></returns>
-        public static bool operator !=(Face3D first, Face3D second)
-        {
-            return first.Handle != second.Handle;
-        }
-
-        /// <summary>
-        /// Overload for == operator
-        /// </summary>
-        /// <param name="first">First parameter to be compared</param>
-        /// <param name="second">Second parameter to be compared</param>
-        /// <returns></returns>
-        public static bool operator ==(Face3D first, Face3D second)
-        {
-            return (first.Handle == second.Handle);
-        }
-
-        /// <summary>Overwrites Equals</summary>
-        /// <returns>true, if <paramref name="obj" /> and this instance are of the same type and represent the same value.</returns>
-        /// <param name="obj">Object to compare with.</param>
-        public override bool Equals(object obj)
-        {
-            if (!(obj is Face3D))
-                return false;
-
-            var comp = (Face3D)obj;
-            return this == comp;
-
-        }
-
-
-        /// <summary>Overwrites GetHashCode</summary>
-        /// <returns>Handle is the hash code.</returns>
         public override int GetHashCode()
         {
             return Handle;

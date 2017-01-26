@@ -52,7 +52,7 @@ namespace Fusee.Engine.Core
                     verts.Add(vertex.VertData.Pos);
 
                     if(face.FaceData.FaceNormal == float3.Zero)
-                        geometry.CalculateFaceNormal(face);
+                        geometry.SetFaceNormal(face);
 
                     normals.Add(face.FaceData.FaceNormal);
                 }

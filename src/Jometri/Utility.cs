@@ -58,12 +58,24 @@ namespace Fusee.Jometri
         }
 
 
+        public static void SetFaceNormal(this Geometry geometry, Face face)
+        {
+            var normal = CalculateFaceNormal(geometry, face);
+
+            var cur = geometry.DictFaces[face.Handle];
+            var faceData = face.FaceData;
+            faceData.FaceNormal = normal;
+            cur.FaceData = faceData;
+            geometry.DictFaces[face.Handle] = cur;
+
+        }
+
         /// <summary>
         /// Calculates a face normal from three vertices. The vertices have to be coplanar and part of the face.
         /// </summary>
         /// <param name="geometry">The geometry to which the face belongs.</param>
         /// <returns></returns>
-        public static void CalculateFaceNormal(this Geometry geometry, IFace face)
+        private static float3 CalculateFaceNormal(Geometry geometry, Face face)
         {
             var outerHalfEdge = geometry.GetHalfEdgeByHandle(face.OuterHalfEdge);
             var nextHalfEdge = geometry.GetHalfEdgeByHandle(outerHalfEdge.NextHalfEdge);
@@ -79,9 +91,7 @@ namespace Fusee.Jometri
             var cross = float3.Cross(b, a);
             cross.Normalize();
 
-            var faceData = face.FaceData;
-            faceData.FaceNormal = cross;
-            face.FaceData = faceData;
+            return cross;
 
         }
 
@@ -93,7 +103,7 @@ namespace Fusee.Jometri
         /// <param name="geometry">The geometry to which the polygon (here: face) belongs.</param>
         /// <param name="v">The vertex to be tested.</param>
         /// <returns></returns>
-        public static bool IsPointInPolygon(this Geometry geometry, IFace face, Vertex v)
+        public static bool IsPointInPolygon(this Geometry geometry, Face face, Vertex v)
         {
             var inside = false;
             var faceVerts = geometry.GetFaceVertices(face.Handle).ToList();
@@ -134,7 +144,7 @@ namespace Fusee.Jometri
         /// <param name="v2">Vertex two</param>
         /// <param name="v3">Vertex three</param>
         /// <returns></returns>
-        public static bool IsAngleGreaterPi(this Geometry geom,IFace face, Vertex v1, Vertex v2, Vertex v3)
+        public static bool IsAngleGreaterPi(this Geometry geom,Face face, Vertex v1, Vertex v2, Vertex v3)
         {
             var v1Pos = geom.Get2DVertPos(face, v1.Handle);
             var v2Pos = geom.Get2DVertPos(face, v2.Handle);
@@ -163,7 +173,7 @@ namespace Fusee.Jometri
         /// <param name="v2">Vertex two</param>
         /// <param name="v3">Vertex three</param>
         /// <returns></returns>
-        public static bool IsAngleGreaterOrEqualPi(this Geometry geom,  IFace face, Vertex v1, Vertex v2, Vertex v3)
+        public static bool IsAngleGreaterOrEqualPi(this Geometry geom, Face face, Vertex v1, Vertex v2, Vertex v3)
         {
             var v1Pos = geom.Get2DVertPos(face, v1.Handle);
             var v2Pos = geom.Get2DVertPos(face, v2.Handle);

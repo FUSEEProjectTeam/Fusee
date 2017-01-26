@@ -90,10 +90,10 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
                 IsOuter = true
             };
 
-            //var geomOutlines = new List<PolyBoundary> { outlineOne, outlineOneHole, outlineTwo, outlineThree };
-            var geomOutlines = new List<PolyBoundary> {outlineTest };
+            var geomOutlines = new List<PolyBoundary> { outlineOne, outlineOneHole};
+            //var geomOutlines = new List<PolyBoundary> {outlineTest };
             var geom = new Geometry(geomOutlines); //2D
-            geom.Extrude2DPolygon(1);
+            //geom.Extrude2DPolygon(1);
             geom.Triangulate();
             var mesh = new JometriMesh(geom);
 

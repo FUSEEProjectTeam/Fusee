@@ -22,30 +22,30 @@ namespace Fusee.Jometri.Triangulation
 
             _geometry = geometry;
 
-            var originalFaces = new Dictionary<int, IFace>(_geometry.DictFaces);
+            var originalFaces = new Dictionary<int, Face>(_geometry.DictFaces);
 
             foreach (var face in originalFaces)
             {
                 //If the face has no OuterHalfEdge it's unbounded and can be ignored.
                 if (face.Value.OuterHalfEdge == default(int)) { continue; }
 
-                if (!IsMonotone((Face2D)face.Value))
-                    MakeMonotone((Face2D)face.Value);
+                if (!IsMonotone(face.Value))
+                    MakeMonotone(face.Value);
             }
 
-            var monotoneFaces = new Dictionary<int, IFace>(_geometry.DictFaces);
+            var monotoneFaces = new Dictionary<int, Face>(_geometry.DictFaces);
 
             foreach (var face in monotoneFaces)
             {
                 if (face.Value.OuterHalfEdge == default(int)) { continue; }
 
-                TriangulateMonotone((Face2D)face.Value);
+                TriangulateMonotone(face.Value);
             }
         }
 
         #region Triangulate monotone polygone
 
-        private static void TriangulateMonotone(Face2D face)
+        private static void TriangulateMonotone(Face face)
         {
             var faceVertices = new List<Vertex>();
             foreach (var vHandle in _geometry.GetFaceVertices(face.Handle))
@@ -181,14 +181,14 @@ namespace Fusee.Jometri.Triangulation
 
         #region Test face for y monotony
 
-        private static bool IsMonotone( Face2D face)
+        private static bool IsMonotone( Face face)
         {
             var noSplitOrMerge = HasNoSplitOrMerge(face);
 
             return noSplitOrMerge && face.InnerHalfEdges.Count == 0;
         }
 
-        private static bool HasNoSplitOrMerge(Face2D face)
+        private static bool HasNoSplitOrMerge(Face face)
         {
             var verts = _geometry.GetFaceVertices(face.Handle).ToList();
 
@@ -201,7 +201,7 @@ namespace Fusee.Jometri.Triangulation
             return true;
         }
 
-        private static void TestVertexType(Vertex vert, Face2D face)
+        private static void TestVertexType(Vertex vert, Face face)
         {
             var heStartingAtFace = _geometry.GetVertexStartingHalfEdges(vert.Handle).ToList();
 
@@ -245,7 +245,7 @@ namespace Fusee.Jometri.Triangulation
         }
 
         //Vertices need to be reduced to 2D.
-        private static bool IsUnderVert(Face2D face, Vertex middle, Vertex neighbour)
+        private static bool IsUnderVert(Face face, Vertex middle, Vertex neighbour)
         {
             var redMiddle = _geometry.Get2DVertPos(face, middle.Handle);
             var redNeighbour = _geometry.Get2DVertPos(face, neighbour.Handle);
@@ -260,7 +260,7 @@ namespace Fusee.Jometri.Triangulation
         }
 
         //Vertices need to be reduced to 2D.
-        private static bool IsOverVert(Face2D face, Vertex middle, Vertex neighbour)
+        private static bool IsOverVert(Face face, Vertex middle, Vertex neighbour)
         {
             var redMiddle = _geometry.Get2DVertPos(face, middle.Handle);
             var redNeighbour = _geometry.Get2DVertPos(face, neighbour.Handle);
@@ -277,7 +277,7 @@ namespace Fusee.Jometri.Triangulation
         #endregion
 
         #region MakeMonotone
-        private static void MakeMonotone(Face2D face)
+        private static void MakeMonotone(Face face)
         {
             var vertices = new List<Vertex>();
 
@@ -289,7 +289,7 @@ namespace Fusee.Jometri.Triangulation
             var sortedVertices = GetSortedVertices(_geometry, face, vertices.ToList());
             var faceHalfEdges = _geometry.GetFaceHalfEdges(face.Handle).ToList();
 
-            var newFaces = new List<Face2D>();
+            var newFaces = new List<Face>();
 
             _sweepLineStatus = new SweepLineStatus();
 
@@ -323,7 +323,7 @@ namespace Fusee.Jometri.Triangulation
             }
         }
 
-        private static void TestVertexType(Vertex vert, Face2D face, ICollection<Face2D> newFaces)
+        private static void TestVertexType(Vertex vert, Face face, ICollection<Face> newFaces)
         {
             var heStartingAtVert = _geometry.GetVertexStartingHalfEdges(vert.Handle).ToList();
             var incidentHalfEdge = new HalfEdge();
@@ -373,7 +373,7 @@ namespace Fusee.Jometri.Triangulation
             }
         }
 
-        private static void HandleStartVertex(Face2D face, Vertex vert, IEnumerable<HalfEdge> faceHalfEdges)
+        private static void HandleStartVertex(Face face, Vertex vert, IEnumerable<HalfEdge> faceHalfEdges)
         {
             foreach (var halfEdge in faceHalfEdges)
             {
@@ -396,7 +396,7 @@ namespace Fusee.Jometri.Triangulation
             }
         }
 
-        private static void HandleEndVertex(Vertex vert, IEnumerable<HalfEdge> faceHalfEdges, ICollection<Face2D> newFaces)
+        private static void HandleEndVertex(Vertex vert, IEnumerable<HalfEdge> faceHalfEdges, ICollection<Face> newFaces)
         {
             foreach (var heh in faceHalfEdges)
             {
@@ -411,7 +411,7 @@ namespace Fusee.Jometri.Triangulation
                 if (eMinOne.IsMergeVertex)
                 {
                     _geometry.InsertDiagonal(vert.Handle, eMinOne.HelperVertexHandle);
-                    newFaces.Add((Face2D)_geometry.DictFaces[_geometry.DictFaces.Keys.Max()]);
+                    newFaces.Add(_geometry.DictFaces[_geometry.DictFaces.Keys.Max()]);
                 }
 
                 _sweepLineStatus.DeleteNode(eMinOne.IntersectionPointX);
@@ -419,7 +419,7 @@ namespace Fusee.Jometri.Triangulation
             }
         }
 
-        private static void HandleSplitVertex(Face2D face, Vertex vert, ICollection<Face2D> newFaces)
+        private static void HandleSplitVertex(Face face, Vertex vert, ICollection<Face> newFaces)
         {
             _sweepLineStatus.UpdateNodes(vert);
             _sweepLineStatus.BalanceTree();
@@ -427,7 +427,7 @@ namespace Fusee.Jometri.Triangulation
             var ej = _sweepLineStatus.FindLargestSmallerThanInBalanced(vert.VertData.Pos.x);
 
             _geometry.InsertDiagonal(vert.Handle, ej.HelperVertexHandle);
-            newFaces.Add((Face2D)_geometry.DictFaces[_geometry.DictFaces.Keys.Max()]);
+            newFaces.Add(_geometry.DictFaces[_geometry.DictFaces.Keys.Max()]);
 
             _sweepLineStatus.FindNode(ej.IntersectionPointX).HelperVertexHandle = vert.Handle;
             _sweepLineStatus.FindNode(ej.IntersectionPointX).IsMergeVertex = false;
@@ -445,7 +445,7 @@ namespace Fusee.Jometri.Triangulation
             _sweepLineStatus.InsertNode(ei.IntersectionPointX, ei);
         }
 
-        private static void HandleMergeVertex(Vertex vert, IEnumerable<HalfEdge> faceHalfEdges, ICollection<Face2D> newFaces)
+        private static void HandleMergeVertex(Vertex vert, IEnumerable<HalfEdge> faceHalfEdges, ICollection<Face> newFaces)
         {
             var he = new HalfEdge();
             foreach (var heh in faceHalfEdges)
@@ -462,7 +462,7 @@ namespace Fusee.Jometri.Triangulation
             if (eMinOne.IsMergeVertex)
             {
                 _geometry.InsertDiagonal(vert.Handle, eMinOne.HelperVertexHandle);
-                newFaces.Add((Face2D)_geometry.DictFaces[_geometry.DictFaces.Keys.Max()]);
+                newFaces.Add(_geometry.DictFaces[_geometry.DictFaces.Keys.Max()]);
             }
 
             _sweepLineStatus.DeleteNode(eMinOne.IntersectionPointX);
@@ -473,14 +473,14 @@ namespace Fusee.Jometri.Triangulation
             if (ej.IsMergeVertex)
             {
                 _geometry.InsertDiagonal(vert.Handle, ej.HelperVertexHandle);
-                newFaces.Add((Face2D)_geometry.DictFaces[_geometry.DictFaces.Keys.Max()]);
+                newFaces.Add(_geometry.DictFaces[_geometry.DictFaces.Keys.Max()]);
             }
 
             _sweepLineStatus.FindNode(ej.IntersectionPointX).HelperVertexHandle = vert.Handle;
             _sweepLineStatus.FindNode(ej.IntersectionPointX).IsMergeVertex = true;
         }
 
-        private static void HandleRegularVertex(Face2D face, Vertex vert, IEnumerable<HalfEdge> faceHalfEdges, ICollection<Face2D> newFaces)
+        private static void HandleRegularVertex(Face face, Vertex vert, IEnumerable<HalfEdge> faceHalfEdges, ICollection<Face> newFaces)
         {
             if (IsPolygonRightOfVert(vert))
             {
@@ -497,7 +497,7 @@ namespace Fusee.Jometri.Triangulation
                     if (eMinOne.IsMergeVertex)
                     {
                         _geometry.InsertDiagonal(vert.Handle, eMinOne.HelperVertexHandle);
-                        newFaces.Add((Face2D)_geometry.DictFaces[_geometry.DictFaces.Keys.Max()]);
+                        newFaces.Add(_geometry.DictFaces[_geometry.DictFaces.Keys.Max()]);
                     }
 
                     _sweepLineStatus.DeleteNode(eMinOne.IntersectionPointX);
@@ -527,7 +527,7 @@ namespace Fusee.Jometri.Triangulation
                 if (ej.IsMergeVertex)
                 {
                     _geometry.InsertDiagonal(vert.Handle, ej.HelperVertexHandle);
-                    newFaces.Add((Face2D)_geometry.DictFaces[_geometry.DictFaces.Keys.Max()]);
+                    newFaces.Add(_geometry.DictFaces[_geometry.DictFaces.Keys.Max()]);
                 }
 
                 _sweepLineStatus.FindNode(ej.IntersectionPointX).HelperVertexHandle = vert.Handle;
@@ -563,7 +563,7 @@ namespace Fusee.Jometri.Triangulation
 
         //Vertices need to be reduced to 2D.
         //Can be optimized by implementing a priority queue data structure and use it instead of sorting a list.
-        private static IList<Vertex> GetSortedVertices(Geometry geometry, Face2D face, IEnumerable<Vertex> unsortedVerts)
+        private static IList<Vertex> GetSortedVertices(Geometry geometry, Face face, IEnumerable<Vertex> unsortedVerts)
         {
             var sorted = new List<Vertex>();
             sorted.AddRange(unsortedVerts);

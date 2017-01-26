@@ -25,9 +25,9 @@ namespace Fusee.Jometri.Extrusion
 
             var geom3D = new Geometry
             {
-                DictFaces = geometry.DictFaces, //TODO: Convert to List<Face3D>
-                DictVertices = geometry.DictVertices,
-                DictHalfEdges = geometry.DictHalfEdges,
+                DictFaces = new Dictionary<int, Face>(geometry.DictFaces),
+                DictVertices = new Dictionary<int, Vertex>(geometry.DictVertices),
+                DictHalfEdges = new Dictionary<int, HalfEdge>(geometry.DictHalfEdges),
                 HighestHalfEdgeHandle = geometry.HighestHalfEdgeHandle,
                 HighestFaceHandle = geometry.HighestFaceHandle,
                 HighestVertHandle = geometry.HighestVertHandle,
@@ -60,7 +60,7 @@ namespace Fusee.Jometri.Extrusion
 
         private static void CreateSidefaces(Geometry geometry)
         {
-            var unboundedFace = (Face2D)geometry.GetFaceByHandle(1); //The unbounded face is always added first - therefore it will always have 1 as handle.
+            var unboundedFace = geometry.GetFaceByHandle(1); //The unbounded face is always added first - therefore it will always have 1 as handle.
 
             var frontLoopsStartHalfEdges = unboundedFace.InnerHalfEdges.TakeItems(unboundedFace.InnerHalfEdges.Count / 2).ToList();
             var backLoopsStartHalfEdges = unboundedFace.InnerHalfEdges.SkipItems(unboundedFace.InnerHalfEdges.Count / 2).ToList();
@@ -72,7 +72,7 @@ namespace Fusee.Jometri.Extrusion
                 
                 var newHalfEdges = new List<HalfEdge>();
 
-                var newFaces = new List<IFace>();
+                var newFaces = new List<Face>();
 
                 for (var j = 0; j < frontEdgeLoop.Count; j++)
                 {
@@ -93,7 +93,7 @@ namespace Fusee.Jometri.Extrusion
                         PrevHalfEdge = halfEdgeInBack.Handle
                     };
 
-                    var newFace = new Face2D(geometry.CreateFaceHandleId(), newFromBack.Handle);
+                    var newFace = new Face(geometry.CreateFaceHandleId(), newFromBack.Handle);
                     newFaces.Add(newFace);
                     
                     geometry.DictFaces.Add(newFace.Handle, newFace);
@@ -147,7 +147,7 @@ namespace Fusee.Jometri.Extrusion
 
                 foreach (var face in newFaces)
                 {
-                    geometry.CalculateFaceNormal(geometry.DictFaces[face.Handle]);
+                    geometry.SetFaceNormal(geometry.DictFaces[face.Handle]);
                 }
             }
 
@@ -172,10 +172,10 @@ namespace Fusee.Jometri.Extrusion
             second.DictVertices.Clear();
             second.DictVertices = vertDictHelper;
 
-            var faceDictHelper = new Dictionary<int, IFace>();
+            var faceDictHelper = new Dictionary<int, Face>();
             foreach (var f in second.DictFaces)
             {
-                var face = (Face2D)f.Value;
+                var face = f.Value;
 
                 face.Handle = face.Handle + highestFaceHandle;
 
@@ -233,8 +233,8 @@ namespace Fusee.Jometri.Extrusion
             }
 
             //Write content of second undbounded face into the first - delete second unbounded face
-            var firstUnbounded = (Face2D)first.DictFaces[first.DictFaces.Keys.Min()];
-            var secUnbounded = (Face2D)second.DictFaces[second.DictFaces.Keys.Min()];
+            var firstUnbounded = first.DictFaces[first.DictFaces.Keys.Min()];
+            var secUnbounded = second.DictFaces[second.DictFaces.Keys.Min()];
             firstUnbounded.InnerHalfEdges.AddRange(secUnbounded.InnerHalfEdges);
             second.DictFaces.Remove(secUnbounded.Handle);
 
@@ -242,7 +242,7 @@ namespace Fusee.Jometri.Extrusion
             foreach (var face in second.DictFaces)
             {
                 first.DictFaces.Add(face.Key,face.Value);
-                first.CalculateFaceNormal(first.DictFaces[face.Key]);
+                first.SetFaceNormal(first.DictFaces[face.Key]);
             }
 
             first.SetHighestHandles();

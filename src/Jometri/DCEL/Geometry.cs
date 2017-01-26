@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Fusee.Base.Core;
-using Fusee.Jometri.Triangulation;
 using Fusee.Math.Core;
 
 namespace Fusee.Jometri.DCEL
@@ -30,9 +29,9 @@ namespace Fusee.Jometri.DCEL
     public class Geometry
     {
         #region Members
-        private readonly Dictionary<IFace, Dictionary<int, float3>> _vertPos2DCache = new Dictionary<IFace, Dictionary<int, float3>>();
+        private readonly Dictionary<Face, Dictionary<int, float3>> _vertPos2DCache = new Dictionary<Face, Dictionary<int, float3>>();
 
-        internal float3 Get2DVertPos(IFace face, int vertHandle)
+        internal float3 Get2DVertPos(Face face, int vertHandle)
         {
             Dictionary<int, float3> verts;
             float3 pos;
@@ -61,27 +60,27 @@ namespace Fusee.Jometri.DCEL
         /// <summary>
         /// Contains all vertices of the Geometry.
         /// </summary>
-        protected internal Dictionary<int, Vertex> DictVertices { get; set; }
+        internal Dictionary<int, Vertex> DictVertices { get; set; }
 
         /// <summary>
         /// Contains all half edges of the Geometry.
         /// </summary>
-        protected internal Dictionary<int, HalfEdge> DictHalfEdges { get; set; }
+        internal Dictionary<int, HalfEdge> DictHalfEdges { get; set; }
 
         /// <summary>
         /// Contains all Faces of the Geometry.
         /// </summary>
-        protected internal Dictionary<int, IFace> DictFaces { get; set; }
+        internal Dictionary<int, Face> DictFaces { get; set; }
 
         /// <summary>
         /// The highest handle of all half edge handles - used to create a new handle.
         /// </summary>
-        protected internal int HighestHalfEdgeHandle { get; set; }
+        internal int HighestHalfEdgeHandle { get; set; }
 
         /// <summary>
         /// The highest handle of all vertex handles - used to create a new handle.
         /// </summary>
-        protected internal int HighestVertHandle { get; internal set; }
+        internal int HighestVertHandle { get; set; }
 
         /// <summary>
         /// The highest handle of all face handles - used to create a new handle.
@@ -129,7 +128,7 @@ namespace Fusee.Jometri.DCEL
         /// Returns all Faces of the Geometry.
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<IFace> GetAllFaces()
+        public IEnumerable<Face> GetAllFaces()
         {
             foreach (var face in DictFaces)
             {
@@ -161,7 +160,7 @@ namespace Fusee.Jometri.DCEL
             throw new HandleNotFoundException("HalfEdge with id " + hehandle + " not found!");
         }
 
-        internal IFace GetFaceByHandle(int fHandle)
+        internal Face GetFaceByHandle(int fHandle)
         {
             if (DictFaces.ContainsKey(fHandle))
             {
@@ -199,7 +198,7 @@ namespace Fusee.Jometri.DCEL
         /// </summary>
         /// <param name="vHandle">The reference of the vertex.</param>
         /// <returns></returns>
-        public IEnumerable<IFace> GetVertexAdajacentFaces(int vHandle)
+        public IEnumerable<Face> GetVertexAdajacentFaces(int vHandle)
         {
             var vert = GetVertexByHandle(vHandle);
             var e = GetHalfEdgeByHandle(vert.IncidentHalfEdge);
@@ -320,7 +319,7 @@ namespace Fusee.Jometri.DCEL
         /// </summary>
         /// <param name="fHandle">The reference of the face.</param>
         /// <returns></returns>
-        public IEnumerable<IFace> GetFacesAdajacentToFace(int fHandle)
+        public IEnumerable<Face> GetFacesAdajacentToFace(int fHandle)
         {
             var face = GetFaceByHandle(fHandle);
             var firstHandle = face.OuterHalfEdge;
@@ -331,11 +330,7 @@ namespace Fusee.Jometri.DCEL
                 current = GetHalfEdgeByHandle(current.NextHalfEdge);
             } while (firstHandle != current.Handle);
 
-
-            if (!(face is Face2D)) yield break;
-
-            var face2D = (Face2D)face;
-            var innerComponents = face2D.InnerHalfEdges;
+            var innerComponents = face.InnerHalfEdges;
             if (innerComponents.Count == 0) yield break;
 
             foreach (var he in innerComponents)
@@ -372,10 +367,7 @@ namespace Fusee.Jometri.DCEL
             //Inner boundaries
             var face = GetFaceByHandle(fHandle);
 
-            if (!(face is Face2D)) yield break;
-
-            var face2D = (Face2D)face;
-            var innerComponents = face2D.InnerHalfEdges;
+            var innerComponents = face.InnerHalfEdges;
 
             if (innerComponents.Count == 0) yield break;
 
@@ -411,11 +403,7 @@ namespace Fusee.Jometri.DCEL
             } while (firstHandle != current.Handle);
 
 
-            if (!(face is Face2D)) yield break;
-
-            var face2D = (Face2D)face;
-
-            foreach (var he in face2D.InnerHalfEdges)
+            foreach (var he in face.InnerHalfEdges)
             {
                 var cur = GetHalfEdgeByHandle(he);
                 do
@@ -476,7 +464,7 @@ namespace Fusee.Jometri.DCEL
             DictHalfEdges[key] = halfEdge;
         }
 
-        internal void ReplaceFace(IFace face)
+        internal void ReplaceFace(Face face)
         {
             var key = face.Handle;
             DictFaces[key] = face;
@@ -521,7 +509,7 @@ namespace Fusee.Jometri.DCEL
         {
             DictVertices = new Dictionary<int, Vertex>();
             DictHalfEdges = new Dictionary<int, HalfEdge>();
-            DictFaces = new Dictionary<int, IFace>();
+            DictFaces = new Dictionary<int, Face>();
         }
 
         /// <summary>
@@ -532,7 +520,7 @@ namespace Fusee.Jometri.DCEL
         {
             DictVertices = new Dictionary<int, Vertex>();
             DictHalfEdges = new Dictionary<int, HalfEdge>();
-            DictFaces = new Dictionary<int, IFace>();
+            DictFaces = new Dictionary<int, Face>();
 
             CreateHalfEdgesForGeometry(outlines);
 
@@ -540,7 +528,7 @@ namespace Fusee.Jometri.DCEL
             foreach (var key in keys)
             {
                 if (key == 1) continue;
-                this.CalculateFaceNormal(DictFaces[key]);
+                this.SetFaceNormal(DictFaces[key]);
             }
         }
 
@@ -551,13 +539,13 @@ namespace Fusee.Jometri.DCEL
             {
                 DictVertices = new Dictionary<int, Vertex>(DictVertices),
                 DictHalfEdges = new Dictionary<int, HalfEdge>(DictHalfEdges),
-                DictFaces = new Dictionary<int, IFace>()
+                DictFaces = new Dictionary<int, Face>()
             };
 
             foreach (var f in DictFaces)
             {
-                var oldFace = (Face2D)f.Value;
-                var face = new Face2D(oldFace.Handle, oldFace.OuterHalfEdge);
+                var oldFace = f.Value;
+                var face = new Face(oldFace.Handle, oldFace.OuterHalfEdge);
                 face.InnerHalfEdges.AddRange(oldFace.InnerHalfEdges);
                 clone.DictFaces.Add(face.Handle, face);
             }
@@ -569,7 +557,7 @@ namespace Fusee.Jometri.DCEL
 
         private void CreateHalfEdgesForGeometry(IEnumerable<PolyBoundary> outlines)
         {
-            var unboundedFace = new Face2D(DictHalfEdges.Count + 1);
+            var unboundedFace = new Face(DictHalfEdges.Count + 1);
 
             DictFaces.Add(unboundedFace.Handle, unboundedFace);
 
@@ -606,7 +594,7 @@ namespace Fusee.Jometri.DCEL
                     continue; //Check the target vert to identify the existing half edge
 
                 //If the existing half edge is halfedge.IncidentFace.OuterHalfEdge - replace
-                var face = (Face2D)GetFaceByHandle(bEdge.HalfEdge.IncidentFace);
+                var face = GetFaceByHandle(bEdge.HalfEdge.IncidentFace);
                 if (face.OuterHalfEdge == bEdge.HalfEdge.Handle)
                 {
                     face.OuterHalfEdge = existingHeHandle;
@@ -614,7 +602,7 @@ namespace Fusee.Jometri.DCEL
                 }
 
                 //If the existing half edge is one of the unbounded faces inner half edges - replace
-                var unboundedFace = (Face2D)DictFaces[1];
+                var unboundedFace = DictFaces[1];
                 for (var k = 0; k < unboundedFace.InnerHalfEdges.Count; k++)
                 {
                     var heHandle = unboundedFace.InnerHalfEdges[k];
@@ -648,9 +636,9 @@ namespace Fusee.Jometri.DCEL
             return boundaryEdges;
         }
 
-        private int AddFace(int firstHalfEdge, out Face2D face)
+        private int AddFace(int firstHalfEdge, out Face face)
         {
-            face = new Face2D(DictFaces.Count + 1, firstHalfEdge);
+            face = new Face(DictFaces.Count + 1, firstHalfEdge);
             return face.Handle;
         }
 
@@ -742,7 +730,7 @@ namespace Fusee.Jometri.DCEL
                 {
                     if (faceHandle == default(int))
                     {
-                        Face2D face;
+                        Face face;
                         faceHandle = AddFace(halfEdge.Handle, out face);
                         DictFaces.Add(face.Handle, face);
                     }
@@ -751,7 +739,7 @@ namespace Fusee.Jometri.DCEL
                 {
                     if (j == 0)
                     {
-                        var lastFace = (Face2D)DictFaces[DictFaces.Keys.Max()];
+                        var lastFace = DictFaces[DictFaces.Keys.Max()];
                         lastFace.InnerHalfEdges.Add(halfEdge.Handle);
                     }
                     faceHandle = DictFaces.LastItem().Value.Handle;
@@ -761,7 +749,7 @@ namespace Fusee.Jometri.DCEL
 
                 if (!outlineVerts[j].Value)
                 {
-                    var unboundFace = (Face2D)DictFaces[1];
+                    var unboundFace = DictFaces[1];
 
                     if (j == 0)
                     {
@@ -912,7 +900,7 @@ namespace Fusee.Jometri.DCEL
             var heStartingAtP = GetVertexStartingHalfEdges(p).ToList();
             var heStaringAtQ = GetVertexStartingHalfEdges(q).ToList();
 
-            var face = new Face2D();
+            var face = new Face();
             var pStartHe = new HalfEdge();
             var qStartHe = new HalfEdge();
 
@@ -930,7 +918,7 @@ namespace Fusee.Jometri.DCEL
 
                     if (commonFace.OuterHalfEdge == default(int)) break;
 
-                    face = (Face2D)GetFaceByHandle(faceHandleP);
+                    face = GetFaceByHandle(faceHandleP);
                     pStartHe = heP;
                     qStartHe = heQ;
 
@@ -942,8 +930,6 @@ namespace Fusee.Jometri.DCEL
 
             if (IsVertexAdjacentToVertex(p, q, pStartHe, qStartHe))
                 throw new ArgumentException("A diagonal can not be insertet beween adjacent Vertices!");
-
-            var holes = GetHoles(face);
 
             var newFromP = new HalfEdge();
             var newFromQ = new HalfEdge();
@@ -986,9 +972,11 @@ namespace Fusee.Jometri.DCEL
             nextHeQUpdate.PrevHalfEdge = newFromP.Handle;
             DictHalfEdges[qStartHe.Handle] = nextHeQUpdate;
 
+            var holes = GetHoles(face);
+
             if (holes.Count != 0 && IsHalfEdgeToHole(holes, p, q, face)) return;
 
-            var newFace = new Face2D(CreateFaceHandleId(), newFromQ.Handle);
+            var newFace = new Face(CreateFaceHandleId(), newFromQ.Handle);
 
             //The face normal of the newFace equals the normal of the original face because adding a diagonal does not change the face vertices position.
             var newFaceData = newFace.FaceData;
@@ -1015,7 +1003,7 @@ namespace Fusee.Jometri.DCEL
             
         }
 
-        private Dictionary<int, List<HalfEdge>> GetHoles(Face2D face)
+        private Dictionary<int, List<HalfEdge>> GetHoles(Face face)
         {
             var holes = new Dictionary<int, List<HalfEdge>>();
 
@@ -1027,7 +1015,7 @@ namespace Fusee.Jometri.DCEL
             return holes;
         }
 
-        private void AssignFaceHandle(int heHandle, Face2D newFace)
+        private void AssignFaceHandle(int heHandle, Face newFace)
         {
             var oldFaceHandle = GetHalfEdgeByHandle(heHandle).IncidentFace;
             var currentHe = GetHalfEdgeByHandle(heHandle);
@@ -1041,7 +1029,7 @@ namespace Fusee.Jometri.DCEL
             } while (currentHe.Handle != heHandle);
 
             //Assign newFace to possible holes in the "old" face
-            var oldFace = (Face2D)GetFaceByHandle(oldFaceHandle);
+            var oldFace = GetFaceByHandle(oldFaceHandle);
             if (oldFace.InnerHalfEdges.Count == 0) return;
 
             var inner = new List<int>();
@@ -1070,7 +1058,7 @@ namespace Fusee.Jometri.DCEL
         }
 
         private static bool IsHalfEdgeToHole(Dictionary<int, List<HalfEdge>> holes, int pHandle, int qHandle,
-            Face2D face)
+            Face face)
         {
             if (holes.Count == 0) return false;
 
